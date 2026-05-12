@@ -94,11 +94,35 @@ export const ToggleButtonSchema = z
     }
   })
 
+const LiveMetricDisplayModeSchema = z.enum(["progress", "text"])
+
+export const CpuButtonSchema = z
+  .object({
+    type: z.literal("cpu"),
+    position: z.number().int().min(0).max(31),
+    label: z.string().min(1).optional(),
+    interval_ms: z.number().int().positive().optional(),
+    display_mode: LiveMetricDisplayModeSchema.default("progress"),
+  })
+  .strict()
+
+export const MemoryButtonSchema = z
+  .object({
+    type: z.literal("memory"),
+    position: z.number().int().min(0).max(31),
+    label: z.string().min(1).optional(),
+    interval_ms: z.number().int().positive().optional(),
+    display_mode: LiveMetricDisplayModeSchema.default("progress"),
+  })
+  .strict()
+
 export const ButtonInstanceSchema = z.union([
   DisplayButtonSchema,
   ActionButtonSchema,
   ChangeDeckButtonSchema,
   ToggleButtonSchema,
+  CpuButtonSchema,
+  MemoryButtonSchema,
 ])
 
 export const DeckSchema = z
@@ -181,6 +205,8 @@ export type ActionButton = z.infer<typeof ActionButtonSchema>
 export type ChangeDeckButton = z.infer<typeof ChangeDeckButtonSchema>
 export type ToggleState = z.infer<typeof ToggleStateSchema>
 export type ToggleButton = z.infer<typeof ToggleButtonSchema>
+export type CpuButton = z.infer<typeof CpuButtonSchema>
+export type MemoryButton = z.infer<typeof MemoryButtonSchema>
 export type ButtonInstance = z.infer<typeof ButtonInstanceSchema>
 export type DeckConfig = z.infer<typeof DeckSchema>
 
