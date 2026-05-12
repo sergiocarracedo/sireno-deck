@@ -41,6 +41,7 @@ export const SirenoConfigSchema = z
       .object({
         model: z.string().optional(),
         path: z.string().optional(),
+        serial: z.string().min(1).optional(),
       })
       .optional(),
     theme: z.string().default("dark"),

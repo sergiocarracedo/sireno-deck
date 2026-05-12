@@ -1,5 +1,5 @@
 {
-  "name": "sireno-deck",
+  "name": "sireno-deck-cli",
   "type": "module",
   "version": "0.1.0",
   "private": true,
@@ -15,6 +15,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@elgato-stream-deck/node": "^7.6.0",
     "js-yaml": "^4.1.0",
     "pino": "^9.0.0",
     "yargs": "^18.0.0",
