@@ -1,0 +1,19 @@
+.planning/phases/02-device-rendering/02-VERIFICATION.md
+  s_136b450bea3e1f::t_e432d5011bb772 1-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "847334cec570dfa7ae502c6471bd3155224ffcbb",
+  "prompts": {},
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
