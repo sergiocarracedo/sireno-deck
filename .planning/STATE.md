@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-05-12)
 ## Current Position
 
 Phase: 2 of 5 (Device + Rendering)
-Plan: 1 of 3 in current phase
-Status: Wave 1 executed; device lifecycle and Linux diagnostics complete
-Last activity: 2026-05-12 — Executed Plan 02-01 for device detection, reconnect lifecycle, and Linux udev guidance
+Plan: 2 of 3 in current phase
+Status: Wave 2 executed; first render path and write dedupe complete
+Last activity: 2026-05-12 — Executed Plan 02-02 for the first React-to-device render, blanking, and deduped writes
 
 Progress: [██░░░░░░░░] 20%
 
@@ -47,7 +47,6 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- Execute `02-02-PLAN.md` for first React-to-device render and write dedupe.
 - Execute `02-03-PLAN.md` for 500ms polling with jitter across the deck.
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 
@@ -59,5 +58,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-12
-Stopped at: Plan 02-01 executed. Device discovery, reconnect handling, and Linux diagnostics are in place. Continue with `02-02-PLAN.md`.
-Resume file: .planning/phases/02-device-rendering/02-02-PLAN.md
+Stopped at: Plan 02-02 executed. First render path, blanking, and dedupe are in place. Continue with `02-03-PLAN.md`.
+Resume file: .planning/phases/02-device-rendering/02-03-PLAN.md
