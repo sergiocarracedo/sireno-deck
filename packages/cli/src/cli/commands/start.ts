@@ -3,6 +3,7 @@ import type pino from "pino"
 import { loadConfig } from "../../config/loader.js"
 import { resolveTheme } from "../../config/theme.js"
 import { ConfigValidationError } from "../../core/schemas.js"
+import { createDeckRuntime } from "../../deck/runtime.js"
 import {
   blankRemainingKeys,
   createStreamDeckLifecycle,
@@ -11,7 +12,9 @@ import {
   writeKeyBuffer,
 } from "../../device/stream-deck.js"
 import { formatLinuxUdevAccessError } from "../../device/linux-udev.js"
-import { createDeckSurfaceElement, createDisplayButtonModels, renderDeck } from "../../render/reconciler.js"
+import type { DeckButtonProps } from "../../render/reconciler.js"
+
+import { createDeckSurfaceElement, renderDeck } from "../../render/reconciler.js"
 import { renderBlankKeyImage, renderTextImage } from "../../render/text-image.js"
 import { formatConfigError } from "../../util/errors.js"
 import {
@@ -28,8 +31,8 @@ export interface StartOptions {
 }
 
 async function renderMainDeck(
-  connection: Awaited<ReturnType<ReturnType<typeof createStreamDeckLifecycle>["start"]>>,
-  deckButtons: ReturnType<typeof createDisplayButtonModels>,
+  connection: NonNullable<ReturnType<ReturnType<typeof createStreamDeckLifecycle>["getConnection"]>>,
+  deckButtons: DeckButtonProps[],
   theme: ReturnType<typeof resolveTheme>,
   logger: pino.Logger,
 ): Promise<void> {
@@ -71,7 +74,6 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     const config = loadConfig(options.config)
     const theme = resolveTheme(config.theme)
     const mainDeck = config.decks[config.main_deck]
-    const mainDeckButtons = createDisplayButtonModels(mainDeck.buttons)
     const lifecycle = createStreamDeckLifecycle({
       logger,
       onReconnect: async (connection) => {
@@ -82,7 +84,33 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     })
 
     const connection = await lifecycle.start()
-    await renderMainDeck(connection, mainDeckButtons, theme, logger)
+    const runtime = createDeckRuntime({
+      deck: mainDeck,
+      onRenderButton: async (button) => {
+        const activeConnection = lifecycle.getConnection()
+        if (!activeConnection) {
+          return
+        }
+
+        const buffer = await renderTextImage({
+          icon: button.icon,
+          text: button.label,
+          theme,
+        })
+        await writeKeyBuffer(activeConnection, button.keyIndex, buffer)
+      },
+      onRenderDeck: async (buttons) => {
+        const activeConnection = lifecycle.getConnection()
+        if (!activeConnection) {
+          return
+        }
+
+        await renderMainDeck(activeConnection, buttons, theme, logger)
+      },
+      subscribeKeyEvents: lifecycle.subscribeKeyEvents,
+    })
+
+    runtime.start()
 
     logger.info({ config }, "config loaded successfully")
     logger.info(
@@ -96,6 +124,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
     writePid()
     cleanupSignals = setupSignalHandlers(logger, async () => {
+      runtime.stop()
       await lifecycle.close()
     })
   } catch (error) {
@@ -122,7 +151,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
   }
 
   logger.info({ pid: process.pid }, "sireno-deck daemon started")
-  logger.info("started config-driven main deck runtime")
+  logger.info("started config-driven main deck runtime with action button polling")
   logger.info("press Ctrl+C to stop")
 
   try {
