@@ -1,0 +1,7 @@
+theme: dark
+
+addons: []
+
+logging:
+  level: info
+  verbose: false
