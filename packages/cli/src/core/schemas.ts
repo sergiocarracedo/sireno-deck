@@ -41,7 +41,21 @@ export const ActionButtonSchema = z
     path: ["label"],
   })
 
-export const ButtonInstanceSchema = z.union([DisplayButtonSchema, ActionButtonSchema])
+export const ChangeDeckButtonSchema = z
+  .object({
+    type: z.literal("change-deck"),
+    position: z.number().int().min(0).max(31),
+    target_deck: z.string().min(1),
+    label: z.string().min(1).optional(),
+    icon: z.string().min(1).optional(),
+  })
+  .strict()
+  .refine((button) => button.label !== undefined || button.icon !== undefined, {
+    message: "Change-deck buttons need a label or icon",
+    path: ["label"],
+  })
+
+export const ButtonInstanceSchema = z.union([DisplayButtonSchema, ActionButtonSchema, ChangeDeckButtonSchema])
 
 export const DeckSchema = z
   .object({
@@ -98,12 +112,29 @@ export const SirenoConfigSchema = z
           path: ["decks", deckKey, "id"],
         })
       }
+
+      for (const [buttonIndex, button] of deck.buttons.entries()) {
+        if (button.type !== "change-deck") {
+          continue
+        }
+
+        if (config.decks[button.target_deck] !== undefined) {
+          continue
+        }
+
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Change-deck button target '${button.target_deck}' is not defined`,
+          path: ["decks", deckKey, "buttons", buttonIndex, "target_deck"],
+        })
+      }
     }
   })
 
 export type SirenoConfig = z.infer<typeof SirenoConfigSchema>
 export type DisplayButton = z.infer<typeof DisplayButtonSchema>
 export type ActionButton = z.infer<typeof ActionButtonSchema>
+export type ChangeDeckButton = z.infer<typeof ChangeDeckButtonSchema>
 export type ButtonInstance = z.infer<typeof ButtonInstanceSchema>
 export type DeckConfig = z.infer<typeof DeckSchema>
 

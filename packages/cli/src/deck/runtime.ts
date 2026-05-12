@@ -31,6 +31,12 @@ interface ButtonRuntimeState {
   isRunning: boolean
 }
 
+function supportsDisplayCommand(
+  button: ButtonInstance,
+): button is Extract<ButtonInstance, { display_command?: string; interval_ms?: number }> {
+  return button.type === "display" || button.type === "action"
+}
+
 export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   const buttonsByPosition = new Map<number, ButtonInstance>(
     options.deck.buttons.map((button) => [button.position, button]),
@@ -105,7 +111,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   async function refreshDisplayCommand(button: ButtonInstance): Promise<void> {
-    if (button.display_command === undefined) {
+    if (!supportsDisplayCommand(button) || button.display_command === undefined) {
       return
     }
 
@@ -186,7 +192,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       void renderDeck()
 
       for (const button of options.deck.buttons) {
-        if (button.display_command === undefined) {
+        if (!supportsDisplayCommand(button) || button.display_command === undefined) {
           continue
         }
 
