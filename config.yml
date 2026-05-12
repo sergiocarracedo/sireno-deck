@@ -16,10 +16,15 @@ decks:
         position: 2
         label: Apps
         target_deck: apps
-      - type: display
-        icon: ./assets/shell.png
-        label: Shell
+      - type: toggle
         position: 3
+        states:
+          - key: muted
+            label: Muted
+            command: printf muted
+          - key: active
+            label: Active
+            command: printf active
       - type: display
         position: 13
         label: Sergio
@@ -34,6 +39,17 @@ decks:
         position: 1
         label: Date
         command: date +%H:%M
+      - type: toggle
+        position: 2
+        status_command: printf on
+        interval_ms: 1000
+        states:
+          - key: off
+            label: Pause
+            command: printf pause
+          - key: on
+            label: Play
+            command: printf play
 addons: []
 logging:
   level: info

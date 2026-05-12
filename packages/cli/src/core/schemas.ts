@@ -55,7 +55,51 @@ export const ChangeDeckButtonSchema = z
     path: ["label"],
   })
 
-export const ButtonInstanceSchema = z.union([DisplayButtonSchema, ActionButtonSchema, ChangeDeckButtonSchema])
+export const ToggleStateSchema = z
+  .object({
+    key: z.string().min(1),
+    command: z.string().min(1),
+    label: z.string().min(1).optional(),
+    icon: z.string().min(1).optional(),
+  })
+  .strict()
+  .refine((state) => state.label !== undefined || state.icon !== undefined, {
+    message: "Toggle states need a label or icon",
+    path: ["label"],
+  })
+
+export const ToggleButtonSchema = z
+  .object({
+    type: z.literal("toggle"),
+    position: z.number().int().min(0).max(31),
+    states: z.array(ToggleStateSchema).min(2),
+    status_command: z.string().min(1).optional(),
+    interval_ms: z.number().int().positive().optional(),
+  })
+  .strict()
+  .superRefine((button, context) => {
+    const seenKeys = new Set<string>()
+
+    for (const [stateIndex, state] of button.states.entries()) {
+      if (seenKeys.has(state.key)) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Toggle state key '${state.key}' must be unique within a button`,
+          path: ["states", stateIndex, "key"],
+        })
+        continue
+      }
+
+      seenKeys.add(state.key)
+    }
+  })
+
+export const ButtonInstanceSchema = z.union([
+  DisplayButtonSchema,
+  ActionButtonSchema,
+  ChangeDeckButtonSchema,
+  ToggleButtonSchema,
+])
 
 export const DeckSchema = z
   .object({
@@ -135,6 +179,8 @@ export type SirenoConfig = z.infer<typeof SirenoConfigSchema>
 export type DisplayButton = z.infer<typeof DisplayButtonSchema>
 export type ActionButton = z.infer<typeof ActionButtonSchema>
 export type ChangeDeckButton = z.infer<typeof ChangeDeckButtonSchema>
+export type ToggleState = z.infer<typeof ToggleStateSchema>
+export type ToggleButton = z.infer<typeof ToggleButtonSchema>
 export type ButtonInstance = z.infer<typeof ButtonInstanceSchema>
 export type DeckConfig = z.infer<typeof DeckSchema>
 
