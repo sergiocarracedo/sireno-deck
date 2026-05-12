@@ -86,6 +86,13 @@ Features not selected for v1 but documented for future consideration:
 | Browser-based control as primary interface | CLI-first; web control would be a separate product |
 | Closed-source addon model | Addons are TypeScript source; trust model relies on visibility |
 
+## Phase Traceability
+
+| Phase | Status | Requirements | Evidence |
+|------|--------|--------------|----------|
+| 1 — Foundation | Complete | INFRA-04, INFRA-05, INFRA-06, INFRA-07, INFRA-08, INFRA-09 | `.planning/phases/01-foundation/01-01-SUMMARY.md`, `.planning/phases/01-foundation/01-02-SUMMARY.md` |
+| 2 — Device + Rendering | Complete | INFRA-01, INFRA-02, INFRA-03, RENDER-01, RENDER-02, RENDER-03, INFRA-10, INFRA-11 | `.planning/phases/02-device-rendering/02-01-SUMMARY.md`, `.planning/phases/02-device-rendering/02-02-SUMMARY.md`, `.planning/phases/02-device-rendering/02-03-SUMMARY.md`, `.planning/phases/02-device-rendering/02-VERIFICATION.md` |
+
 ---
 
 *Requirements defined: 2026-05-12*

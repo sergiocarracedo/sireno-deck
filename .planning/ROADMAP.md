@@ -40,6 +40,8 @@ Full 37/37 requirements mapped. No circular dependencies.
 
 ### Phase 2: Device + Rendering
 
+**Status:** ✓ Complete (2026-05-12)
+
 **Goal:** Connect to a Stream Deck device, render a static React component to its keys via a custom reconciler and sharp pipeline, and survive disconnect/reconnect.
 
 **Requirements:** INFRA-01, INFRA-02, INFRA-03, RENDER-01, RENDER-02, RENDER-03, INFRA-10, INFRA-11
@@ -47,14 +49,14 @@ Full 37/37 requirements mapped. No circular dependencies.
 **Depends on:** Phase 1 (needs config to know device preferences, CLI to run daemon)
 
 **Success criteria:**
-- [ ] The CLI detects a connected Stream Deck and reports model + serial
-- [ ] On Linux, if the device is visible via `lsusb` but blocked by udev, the CLI prints a clear fix instruction
-- [ ] Unplugging the device does not crash the process; the CLI reports disconnection
-- [ ] Replugging the device triggers automatic reconnection and state restoration
-- [ ] A single static React component (e.g., "Hello World") renders to the correct Stream Deck key as a visible image
-- [ ] Rendered images are only written to the device when content changes
-- [ ] A test component polling at 500ms renders updates without visible flicker on all 15 keys simultaneously
-- [ ] Multiple polling intervals are staggered with jitter (no synchronous burst writes)
+- [x] The CLI detects a connected Stream Deck and reports model + serial
+- [x] On Linux, if the device is visible via `lsusb` but blocked by udev, the CLI prints a clear fix instruction
+- [x] Unplugging the device does not crash the process; the CLI reports disconnection
+- [x] Replugging the device triggers automatic reconnection and state restoration
+- [x] A single static React component (e.g., "Hello World") renders to the correct Stream Deck key as a visible image
+- [x] Rendered images are only written to the device when content changes
+- [x] A test component polling at 500ms renders updates without visible flicker on all 15 keys simultaneously
+- [x] Multiple polling intervals are staggered with jitter (no synchronous burst writes)
 
 **Research needed:** Yes — custom react-reconciler host config for image buffers is novel for this domain; sharp pipeline performance with Stream Deck buffer formats must be validated with benchmarks
 

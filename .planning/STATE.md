@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 2 — Device + Rendering
+**Current focus:** Phase 3 — Themes + Basic Buttons
 
 ## Current Position
 
-Phase: 2 of 5 (Device + Rendering)
-Plan: 3 of 3 in current phase
-Status: Phase execution complete; ready for verification
-Last activity: 2026-05-12 — Executed Plan 02-03 for jittered polling across the full 15-key deck
+Phase: 3 of 5 (Themes + Basic Buttons)
+Plan: 0 of ? in current phase
+Status: Phase 2 complete and manually approved; ready to discuss Phase 3
+Last activity: 2026-05-12 — Phase 2 verified on hardware and approved after manual UAT
 
-Progress: [██░░░░░░░░] 20%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
+- Total plans completed: 5
 - Average duration: 1 session
 - Total execution time: 1 session
 
@@ -28,6 +28,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 — Foundation | 2 | 1 session | 0.5 session |
+| 2 — Device + Rendering | 3 | 1 session | 0.33 session |
 
 **Recent Trend:**
 - Phase 1 implementation completed in a single execution pass, with verification catching multiple build/runtime mismatches before handoff.
@@ -47,17 +48,15 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- Run verifier for Phase 2 and record any gaps or human validation needs.
-- Run `verify-work 2` for manual UAT on real hardware behavior.
+- Run `discuss-phase 3` for themes, display-only buttons, action buttons, and sub-deck navigation.
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 
 ### Blockers/Concerns
 
-- **Phase 2 (Device + Rendering):** Custom react-reconciler host config is the highest technical risk — must prototype before committing to full implementation.
 - **Phase 5 (Addon System):** Addon API contract must be versioned from day one; design decisions here are hard to reverse.
 
 ## Session Continuity
 
 Last session: 2026-05-12
-Stopped at: Phase 2 plans executed. Awaiting verifier output and manual UAT.
-Resume file: .planning/phases/02-device-rendering/02-VERIFICATION.md
+Stopped at: Phase 2 complete. Hardware validation approved. Next workflow is `discuss-phase 3`.
+Resume file: .planning/ROADMAP.md
