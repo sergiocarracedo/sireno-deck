@@ -8,10 +8,32 @@ decks:
       - type: display
         position: 0
         label: Clock
-      - type: display
+      - type: action
         position: 1
-        label: Shell
+        label: Ping
+        command: printf 'pong'
+      - type: change-deck
+        position: 2
+        label: Apps
+        target_deck: apps
+      - type: display
         icon: ./assets/shell.png
+        label: Shell
+        position: 3
+      - type: display
+        position: 13
+        label: Sergio
+  apps:
+    id: apps
+    name: Apps
+    buttons:
+      - type: display
+        position: 0
+        label: Terminal
+      - type: action
+        position: 1
+        label: Date
+        command: date +%H:%M
 addons: []
 logging:
   level: info
