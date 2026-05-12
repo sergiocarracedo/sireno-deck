@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.0 — Sireno Deck CLI
-**Phase:** 3 — Themes + Basic Buttons ✓ complete → Phase 4 — Advanced Buttons
-**Status:** verifying
+**Phase:** 4 — Advanced Buttons
+**Status:** planning
 **Last updated:** 2026-05-12
 
 ---
