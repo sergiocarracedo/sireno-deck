@@ -1,0 +1,23 @@
+.planning/phases/01-foundation/01-RESEARCH.md
+  s_136b450bea3e1f::t_a9d997c53dc63b 1-55
+.planning/phases/01-foundation/01-01-PLAN.md
+  s_136b450bea3e1f::t_355a705ae04b6a 1-542
+.planning/phases/01-foundation/01-02-PLAN.md
+  s_136b450bea3e1f::t_7075655ac8290c 1-342
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "f2642cb5f9ed2ae511e0c33c4bff19515b480693",
+  "prompts": {},
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
