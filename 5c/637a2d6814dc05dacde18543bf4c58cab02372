@@ -1,0 +1,19 @@
+packages/cli/src/cli/commands/start.ts
+  s_136b450bea3e1f::t_e2ea504901e021 11,15-16,47-58,63,90-100,112-115,140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "5c637a2d6814dc05dacde18543bf4c58cab02372",
+  "prompts": {},
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
