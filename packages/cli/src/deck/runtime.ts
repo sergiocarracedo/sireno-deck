@@ -1,4 +1,5 @@
 import { executeCommand, type CommandExecutionResult } from "../action/executor.js"
+import { createDeckController, type DeckController } from "./controller.js"
 import { createPollingScheduler, type PollingScheduler } from "../render/scheduler.js"
 
 import type { ButtonInstance, DeckConfig } from "../core/schemas.js"
@@ -7,8 +8,10 @@ import type { DeckButtonProps } from "../render/reconciler.js"
 
 export interface DeckRuntimeOptions {
   deck: DeckConfig
+  decks?: Record<string, DeckConfig>
   executeAction?: (command: string) => Promise<CommandExecutionResult>
   executeDisplayCommand?: (command: string) => Promise<CommandExecutionResult>
+  keyCount?: number
   onRenderButton?: (button: DeckButtonProps) => Promise<void> | void
   onRenderDeck?: (buttons: DeckButtonProps[]) => Promise<void> | void
   subscribeKeyEvents: (listener: (event: StreamDeckKeyEvent) => void) => () => void
@@ -19,8 +22,10 @@ export interface DeckRuntimeOptions {
 
 export interface DeckRuntime {
   getActiveDeck: () => DeckConfig
+  getActiveDeckButtons: () => DeckButtonProps[]
   getButton: (keyIndex: number) => ButtonInstance | undefined
   getRenderButtons: () => DeckButtonProps[]
+  getReservedBackKeyIndex: () => number
   start: () => void
   stop: () => void
 }
@@ -38,10 +43,12 @@ function supportsDisplayCommand(
 }
 
 export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
-  const buttonsByPosition = new Map<number, ButtonInstance>(
-    options.deck.buttons.map((button) => [button.position, button]),
-  )
-  const buttonStates = new Map<number, ButtonRuntimeState>()
+  const reservedBackKeyIndex = Math.max(0, (options.keyCount ?? 15) - 1)
+  const deckController = createDeckController({
+    decks: options.decks ?? { [options.deck.id]: options.deck },
+    mainDeckId: options.deck.id,
+  })
+  const buttonStates = new Map<string, ButtonRuntimeState>()
   const pressedKeys = new Set<number>()
   const executeAction = options.executeAction ?? ((command: string) => executeCommand({ command }))
   const executeDisplayCommand = options.executeDisplayCommand ?? executeAction
@@ -53,15 +60,44 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   let unsubscribe: (() => void) | null = null
   let stopped = false
 
-  for (const button of options.deck.buttons) {
-    buttonStates.set(button.position, {
-      currentLabel: button.label,
-      isRunning: false,
+  function getButtonStateKey(deckId: string, keyIndex: number): string {
+    return `${deckId}:${keyIndex}`
+  }
+
+  function getDeckButtons(deck: DeckConfig): ButtonInstance[] {
+    return deck.buttons.filter((button) => {
+      if (!deckController.canGoBack()) {
+        return true
+      }
+
+      return button.position !== reservedBackKeyIndex
     })
   }
 
+  function getButtonState(deckId: string, button: ButtonInstance): ButtonRuntimeState {
+    const key = getButtonStateKey(deckId, button.position)
+    const existingState = buttonStates.get(key)
+    if (existingState) {
+      return existingState
+    }
+
+    const nextState = {
+      currentLabel: button.label,
+      isRunning: false,
+    }
+    buttonStates.set(key, nextState)
+    return nextState
+  }
+
+  function getBackButtonView(): DeckButtonProps {
+    return {
+      keyIndex: reservedBackKeyIndex,
+      label: "Back",
+    }
+  }
+
   function getButtonView(button: ButtonInstance): DeckButtonProps {
-    const state = buttonStates.get(button.position)
+    const state = getButtonState(deckController.getActiveDeckId(), button)
 
     return {
       icon: state?.feedbackLabel ? undefined : button.icon,
@@ -83,15 +119,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return
     }
 
-    await options.onRenderDeck?.(options.deck.buttons.map((button) => getButtonView(button)))
+    await options.onRenderDeck?.(buildActiveDeckButtons())
   }
 
-  function setFeedbackLabel(keyIndex: number, label: string | undefined): void {
-    const state = buttonStates.get(keyIndex)
-    if (!state) {
-      return
-    }
-
+  function setFeedbackLabel(state: ButtonRuntimeState, label: string | undefined): void {
     state.feedbackLabel = label
   }
 
@@ -103,7 +134,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
 
     const timer = scheduleFeedbackTimeout(() => {
       feedbackTimers.delete(button.position)
-      setFeedbackLabel(button.position, undefined)
+      setFeedbackLabel(getButtonState(deckController.getActiveDeckId(), button), undefined)
       void renderButton(button)
     }, delayMs)
 
@@ -116,10 +147,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     }
 
     const result = await executeDisplayCommand(button.display_command)
-    const state = buttonStates.get(button.position)
-    if (!state) {
-      return
-    }
+    const state = getButtonState(deckController.getActiveDeckId(), button)
 
     const nextLabel = result.failed
       ? button.label
@@ -137,25 +165,45 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   async function handleTap(keyIndex: number): Promise<void> {
-    const button = buttonsByPosition.get(keyIndex)
-    if (!button || button.type !== "action") {
+    if (deckController.canGoBack() && keyIndex === reservedBackKeyIndex) {
+      deckController.goBack()
+      await renderDeck()
       return
     }
 
-    const state = buttonStates.get(keyIndex)
-    if (!state || state.isRunning) {
+    const button = getDeckButtons(deckController.getActiveDeck()).find((candidate) => candidate.position === keyIndex)
+    if (!button || button.type !== "action") {
+      if (button?.type === "change-deck") {
+        deckController.navigateTo(button.target_deck)
+        await renderDeck()
+      }
+      return
+    }
+
+    const state = getButtonState(deckController.getActiveDeckId(), button)
+    if (state.isRunning) {
       return
     }
 
     state.isRunning = true
-    setFeedbackLabel(keyIndex, "...")
+    setFeedbackLabel(state, "...")
     await renderButton(button)
 
     const result = await executeAction(button.command)
     state.isRunning = false
-    setFeedbackLabel(keyIndex, result.failed ? "ERR" : "OK")
+    setFeedbackLabel(state, result.failed ? "ERR" : "OK")
     await renderButton(button)
     scheduleFeedbackReset(button, result.failed ? 2_000 : 1_500)
+  }
+
+  function buildActiveDeckButtons(): DeckButtonProps[] {
+    const buttons = getDeckButtons(deckController.getActiveDeck()).map((button) => getButtonView(button))
+
+    if (!deckController.canGoBack()) {
+      return buttons
+    }
+
+    return [...buttons, getBackButtonView()]
   }
 
   function onKeyEvent(event: StreamDeckKeyEvent): void {
@@ -174,13 +222,19 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
 
   return {
     getActiveDeck() {
-      return options.deck
+      return deckController.getActiveDeck()
+    },
+    getActiveDeckButtons() {
+      return buildActiveDeckButtons()
     },
     getButton(keyIndex) {
-      return buttonsByPosition.get(keyIndex)
+      return getDeckButtons(deckController.getActiveDeck()).find((button) => button.position === keyIndex)
     },
     getRenderButtons() {
-      return options.deck.buttons.map((button) => getButtonView(button))
+      return buildActiveDeckButtons()
+    },
+    getReservedBackKeyIndex() {
+      return reservedBackKeyIndex
     },
     start() {
       if (unsubscribe) {
@@ -191,7 +245,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       unsubscribe = options.subscribeKeyEvents(onKeyEvent)
       void renderDeck()
 
-      for (const button of options.deck.buttons) {
+      for (const button of getDeckButtons(deckController.getActiveDeck())) {
         if (!supportsDisplayCommand(button) || button.display_command === undefined) {
           continue
         }

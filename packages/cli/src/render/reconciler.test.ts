@@ -36,4 +36,17 @@ describe("render reconciler", () => {
 
     expect(descriptions).toEqual([{ keyIndex: 1, label: "Shell", icon: "./shell.svg" }])
   })
+
+  it("keeps generated back buttons in the render output", () => {
+    const descriptions = renderDeck(
+      createDeckSurfaceElement({
+        buttons: [
+          { keyIndex: 2, label: "Apps" },
+          { keyIndex: 14, label: "Back" },
+        ],
+      }),
+    )
+
+    expect(descriptions).toContainEqual({ keyIndex: 14, label: "Back", icon: undefined })
+  })
 })

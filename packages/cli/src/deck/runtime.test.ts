@@ -159,4 +159,29 @@ describe("createDeckRuntime", () => {
 
     expect(schedulerStop).toHaveBeenCalledTimes(1)
   })
+
+  it("injects a generated back button on the last key for sub-decks", async () => {
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{ type: "change-deck", position: 0, target_deck: "apps", label: "Apps" }],
+      },
+      decks: {
+        apps: { id: "apps", buttons: [{ type: "display", position: 2, label: "Terminal" }] },
+        main: { id: "main", buttons: [{ type: "change-deck", position: 0, target_deck: "apps", label: "Apps" }] },
+      },
+      keyCount: 15,
+      subscribeKeyEvents: (listener) => {
+        listener({ keyIndex: 0, type: "down" })
+        listener({ keyIndex: 0, type: "up" })
+        return () => {}
+      },
+    })
+
+    runtime.start()
+
+    await Promise.resolve()
+    expect(runtime.getReservedBackKeyIndex()).toBe(14)
+    expect(runtime.getRenderButtons()).toContainEqual({ keyIndex: 14, label: "Back" })
+  })
 })
