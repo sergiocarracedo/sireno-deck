@@ -116,6 +116,28 @@ export const MemoryButtonSchema = z
   })
   .strict()
 
+export const FanButtonSchema = z
+  .object({
+    type: z.literal("fan"),
+    position: z.number().int().min(0).max(31),
+    label: z.string().min(1).optional(),
+    interval_ms: z.number().int().positive().optional(),
+    unavailable_label: z.string().min(1).default("Unavailable"),
+  })
+  .strict()
+
+export const MediaButtonSchema = z
+  .object({
+    type: z.literal("media"),
+    position: z.number().int().min(0).max(31),
+    label: z.string().min(1).optional(),
+    command: z.string().min(1),
+    status_command: z.string().min(1),
+    display_command: z.string().min(1),
+    interval_ms: z.number().int().positive().optional(),
+  })
+  .strict()
+
 export const ButtonInstanceSchema = z.union([
   DisplayButtonSchema,
   ActionButtonSchema,
@@ -123,6 +145,8 @@ export const ButtonInstanceSchema = z.union([
   ToggleButtonSchema,
   CpuButtonSchema,
   MemoryButtonSchema,
+  FanButtonSchema,
+  MediaButtonSchema,
 ])
 
 export const DeckSchema = z
@@ -207,6 +231,8 @@ export type ToggleState = z.infer<typeof ToggleStateSchema>
 export type ToggleButton = z.infer<typeof ToggleButtonSchema>
 export type CpuButton = z.infer<typeof CpuButtonSchema>
 export type MemoryButton = z.infer<typeof MemoryButtonSchema>
+export type FanButton = z.infer<typeof FanButtonSchema>
+export type MediaButton = z.infer<typeof MediaButtonSchema>
 export type ButtonInstance = z.infer<typeof ButtonInstanceSchema>
 export type DeckConfig = z.infer<typeof DeckSchema>
 

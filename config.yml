@@ -30,6 +30,11 @@ decks:
         label: CPU
         display_mode: progress
         interval_ms: 1000
+      - type: fan
+        position: 5
+        label: Fan
+        unavailable_label: Unavailable
+        interval_ms: 2000
       - type: display
         position: 13
         label: Sergio
@@ -60,6 +65,13 @@ decks:
         label: RAM
         display_mode: text
         interval_ms: 1500
+      - type: media
+        position: 4
+        label: Music
+        command: playerctl play-pause
+        status_command: playerctl status | tr '[:upper:]' '[:lower:]'
+        display_command: playerctl metadata --format '{{title}}\n{{artist}}'
+        interval_ms: 1000
 addons: []
 logging:
   level: info
