@@ -34,6 +34,14 @@ describe("loadConfig", () => {
       join(tempDir, "config.yml"),
       [
         "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - type: display",
+        "        position: 0",
+        "        label: Clock",
         "logging:",
         "  level: info",
         "addons: []",
@@ -44,6 +52,7 @@ describe("loadConfig", () => {
     const config = loadConfig()
 
     expect(config.theme).toBe("dark")
+    expect(config.main_deck).toBe("main")
     expect(config.logging.level).toBe("info")
   })
 
@@ -67,7 +76,15 @@ describe("loadConfig", () => {
   it("throws on unknown keys because schema is strict", async () => {
     writeFileSync(
       join(tempDir, "config.yml"),
-      ["theme: dark", "unknown_key: true"].join("\n"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons: []",
+        "unknown_key: true",
+      ].join("\n"),
     )
 
     const { loadConfig } = await loadConfigModule()
@@ -79,9 +96,65 @@ describe("loadConfig", () => {
     } catch (error) {
       expect(error).toBeInstanceOf(ConfigValidationError)
       expect((error as ConfigValidationError).filePath).toBe(join(tempDir, "config.yml"))
-      expect((error as ConfigValidationError).lineNumber).toBe(2)
+      expect((error as ConfigValidationError).lineNumber).toBe(7)
       expect((error as ConfigValidationError).suggestion).toContain("Remove 'unknown_key'")
     }
+  })
+
+  it("throws when main_deck is missing from the deck map", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  secondary:",
+        "    id: secondary",
+        "    buttons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).lineNumber).toBe(2)
+      expect((error as ConfigValidationError).message).toContain("Main deck 'main' is not defined")
+      return
+    }
+
+    throw new Error("Expected config validation to fail")
+  })
+
+  it("throws when a display button has neither label nor icon", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - type: display",
+        "        position: 0",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).message).toContain("Display buttons need a label or icon")
+      expect((error as ConfigValidationError).lineNumber).toBe(7)
+      return
+    }
+
+    throw new Error("Expected config validation to fail")
   })
 
   it("loads from XDG fallback when no cwd config exists", async () => {
@@ -89,7 +162,15 @@ describe("loadConfig", () => {
     mkdirSync(join(fakeConfigHome, "sireno-deck"), { recursive: true })
     writeFileSync(
       join(fakeConfigHome, "sireno-deck", "config.yml"),
-      ["theme: dark", "addons: []"].join("\n"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons: []",
+        "addons: []",
+      ].join("\n"),
     )
     process.env.XDG_CONFIG_HOME = fakeConfigHome
 

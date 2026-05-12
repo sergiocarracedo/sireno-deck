@@ -8,20 +8,30 @@ export const ThemeSchema = z.object({
   accent: z.string().optional(),
   primary: z.string().optional(),
 })
+  .strict()
 
-export const ButtonInstanceSchema = z.object({
-  type: z.string().min(1),
-  position: z.number().int().min(0).max(31),
-  label: z.string().optional(),
-  icon: z.string().optional(),
-  config: z.record(z.unknown()).optional(),
-})
+export const DisplayButtonSchema = z
+  .object({
+    type: z.literal("display"),
+    position: z.number().int().min(0).max(31),
+    label: z.string().min(1).optional(),
+    icon: z.string().min(1).optional(),
+  })
+  .strict()
+  .refine((button) => button.label !== undefined || button.icon !== undefined, {
+    message: "Display buttons need a label or icon",
+    path: ["label"],
+  })
 
-export const DeckSchema = z.object({
-  id: z.string().min(1),
-  name: z.string().optional(),
-  buttons: z.array(ButtonInstanceSchema),
-})
+export const ButtonInstanceSchema = DisplayButtonSchema
+
+export const DeckSchema = z
+  .object({
+    id: z.string().min(1),
+    name: z.string().optional(),
+    buttons: z.array(ButtonInstanceSchema),
+  })
+  .strict()
 
 export const AddonSchema = z.object({
   name: z.string().min(1),
@@ -45,13 +55,37 @@ export const SirenoConfigSchema = z
       })
       .optional(),
     theme: z.string().default("dark"),
-    decks: z.record(DeckSchema).optional(),
+    main_deck: z.string().min(1),
+    decks: z.record(DeckSchema),
     addons: z.array(AddonSchema).default([]),
     logging: LoggingSchema.default({}),
   })
   .strict()
+  .superRefine((config, context) => {
+    const mainDeck = config.decks[config.main_deck]
+
+    if (!mainDeck) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Main deck '${config.main_deck}' is not defined`,
+        path: ["main_deck"],
+      })
+    }
+
+    for (const [deckKey, deck] of Object.entries(config.decks)) {
+      if (deck.id !== deckKey) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Deck id '${deck.id}' must match its map key '${deckKey}'`,
+          path: ["decks", deckKey, "id"],
+        })
+      }
+    }
+  })
 
 export type SirenoConfig = z.infer<typeof SirenoConfigSchema>
+export type DisplayButton = z.infer<typeof DisplayButtonSchema>
+export type DeckConfig = z.infer<typeof DeckSchema>
 
 export class ConfigValidationError extends Error {
   constructor(
