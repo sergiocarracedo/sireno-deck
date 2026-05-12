@@ -8,10 +8,12 @@ import {
   replayLastRenderedBuffers,
   StreamDeckConnection,
   StreamDeckSelectionError,
+  writeRenderDescriptions,
   writeKeyBuffer,
 } from "../../device/stream-deck.js"
 import { formatLinuxUdevAccessError } from "../../device/linux-udev.js"
-import { createDeckTextElement, renderDeck } from "../../render/reconciler.js"
+import { createDeckSurfaceElement, createDeckTextElement, renderDeck } from "../../render/reconciler.js"
+import { createPollingScheduler } from "../../render/scheduler.js"
 import { renderBlankKeyImage, renderTextImage } from "../../render/text-image.js"
 import { formatConfigError } from "../../util/errors.js"
 import {
@@ -42,10 +44,23 @@ async function renderPhaseTwoDemo(connection: StreamDeckConnection, logger: pino
   logger.info({ keyIndex: 0 }, "rendered first visual to key 0")
 }
 
+async function renderPollingDeck(connection: StreamDeckConnection, tick: number): Promise<void> {
+  const labels = Array.from({ length: 15 }, (_, keyIndex) => `K${keyIndex} ${String((tick + keyIndex) % 10)}`)
+  const descriptions = renderDeck(createDeckSurfaceElement({ labels }))
+  const buffersByKey = new Map<number, Buffer>()
+
+  for (const description of descriptions) {
+    buffersByKey.set(description.keyIndex, await renderTextImage({ text: description.text }))
+  }
+
+  await writeRenderDescriptions(connection, buffersByKey)
+}
+
 export async function startDaemon(options: StartOptions): Promise<void> {
   const { logger } = options
   const existingPid = readPid()
   let cleanupSignals = () => {}
+  let tick = 0
 
   if (existingPid !== null && isRunning(existingPid)) {
     logger.error({ pid: existingPid }, "daemon already running")
@@ -72,6 +87,17 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     const connection = await lifecycle.start()
     await renderPhaseTwoDemo(connection, logger)
 
+    const scheduler = createPollingScheduler({ intervalMs: 500 })
+    scheduler.start(
+      Array.from({ length: 15 }, (_, keyIndex) => ({
+        id: `key-${keyIndex}`,
+        run: async () => {
+          tick += 1
+          await renderPollingDeck(connection, tick + keyIndex)
+        },
+      })),
+    )
+
     logger.info({ config }, "config loaded successfully")
     logger.info(
       {
@@ -83,7 +109,10 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     )
 
     writePid()
-    cleanupSignals = setupSignalHandlers(logger, () => lifecycle.close())
+    cleanupSignals = setupSignalHandlers(logger, async () => {
+      scheduler.stop()
+      await lifecycle.close()
+    })
   } catch (error) {
     if (error instanceof ConfigValidationError) {
       console.error(formatConfigError(error))
@@ -108,6 +137,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
   }
 
   logger.info({ pid: process.pid }, "sireno-deck daemon started")
+  logger.info({ intervalMs: 500 }, "started scheduler-driven 15-key polling demo")
   logger.info("press Ctrl+C to stop")
 
   try {
