@@ -37,6 +37,7 @@
 | vitest | Test runner | Fast ESM-native testing for TypeScript; better than Jest for TypeScript-first projects |
 | tsup | Build tool | Fast TypeScript bundling powered by esbuild; produces CJS/ESM dual output |
 | oxlint | Linting | Fast Rust-based linter; catches TypeScript issues during development |
+| oxfmt | Formatting | Fast Rust-based formatter; consistent code style without Prettier performance cost |
 | nodemon / tsx | Dev reload | Auto-restart the CLI during development |
 
 ## Alternatives Considered
@@ -60,7 +61,7 @@
 | jimp | 10-50x slower than sharp for image processing; Stream Deck updates need to be fast (500ms refresh) | sharp |
 | React DOM / full React rendering | Unnecessary; we need buffer output not browser DOM | react-reconciler with custom host config for image buffers |
 | Cosmiconfig | Over-engineered for this use case; we want a single known config path | Direct js-yaml load on `./config.yml` |
-| process isolation for addons (v1) | Adds sandbox complexity before the addon API is stable; the user explicitly chose trusted in-process for v1 | Trusted in-process with zod manifest validation |
+| eslint + prettier | Slower JS-based tools; oxlint is 50-100x faster, oxfmt matches Prettier output with near-zero config | oxlint + oxfmt |
 | WebHID transport (`@elgato-stream-deck/webhid`) | Browser-only; CLI needs node-hid transport | `@elgato-stream-deck/node` |
 
 ## Versions
@@ -84,7 +85,7 @@ npm install @elgato-stream-deck/node @elgato-stream-deck/core yargs react react-
 npm install systeminformation execa chokidar zod pino ora
 
 # Dev dependencies
-npm install -D typescript vitest tsup @types/react @types/yargs @types/sharp
+npm install -D typescript vitest tsup @types/react @types/yargs @types/sharp oxlint oxfmt
 ```
 
 ---

@@ -23,6 +23,8 @@ Sireno Deck targets the underserved Stream Deck customization market on Linux (w
 | js-yaml | ^4.1 | Config and theme YAML parsing |
 | systeminformation | ^5.x | System stats for built-in data buttons |
 | execa | ^9.x | Command execution for button actions and status |
+| oxlint | latest | Linting (Rust-based, fast TypeScript linter) |
+| oxfmt | latest | Formatting (Rust-based, consistent code style) |
 
 ### Key Stack Decisions
 
@@ -30,7 +32,7 @@ Sireno Deck targets the underserved Stream Deck customization market on Linux (w
 - **yargs over commander:** Stronger TypeScript integration, built-in completion scripts, more active community.
 - **js-yaml over yaml package:** More battle-tested, simpler API, sufficient for single-document config files.
 - **systeminformation over raw os module:** Provides per-core CPU%, temperature, fan speed that `os` cannot; cross-platform.
-- **vitest over jest:** Faster startup, native ESM support, better TypeScript integration for new projects.
+- **oxlint + oxfmt over eslint + prettier:** Rust-based, dramatically faster (10-100x), oxlint covers TypeScript linting; oxfmt enforces consistent formatting without per-project config.
 
 ## Table Stakes Features
 
