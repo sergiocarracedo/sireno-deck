@@ -1,0 +1,24 @@
+packages/cli/src/device/stream-deck.ts
+  s_136b450bea3e1f::t_bd026a438a4b05 205-213
+packages/cli/src/render/reconciler.ts
+  s_136b450bea3e1f::t_bd026a438a4b05 13-16,18-20,66-74,100-106,109-118,120-121,187-200,253-255,266-267
+  s_136b450bea3e1f::t_e8c1a74a2d1b33 270-272
+packages/cli/src/render/reconciler.test.ts
+  s_136b450bea3e1f::t_bd026a438a4b05 3,17-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "6dd0d74a736126d1baf6aab195505c41f00a8613",
+  "prompts": {},
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
