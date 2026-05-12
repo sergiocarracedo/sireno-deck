@@ -89,4 +89,4 @@ Features not selected for v1 but documented for future consideration:
 ---
 
 *Requirements defined: 2026-05-12*
-*Total v1 requirements: 33 (INFRA: 11, RENDER: 6, BTN: 10, ADDN: 10)*
+*Total v1 requirements: 37 (INFRA: 11, RENDER: 6, BTN: 10, ADDN: 10)*
