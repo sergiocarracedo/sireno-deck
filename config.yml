@@ -1,0 +1,17 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    name: Main Deck
+    buttons:
+      - type: display
+        position: 0
+        label: Clock
+      - type: display
+        position: 1
+        label: Shell
+        icon: ./assets/shell.png
+addons: []
+logging:
+  level: info

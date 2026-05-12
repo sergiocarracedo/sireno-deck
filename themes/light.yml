@@ -1,0 +1,7 @@
+name: light
+background: "#e8edf4"
+foreground: "#16202b"
+primary: "#2563eb"
+accent: "#c2410c"
+success: "#059669"
+danger: "#dc2626"

@@ -1,0 +1,7 @@
+name: dark
+background: "#10161f"
+foreground: "#eef2f7"
+primary: "#7dd3fc"
+accent: "#f59e0b"
+success: "#34d399"
+danger: "#fb7185"
