@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.0 — Sireno Deck CLI
-**Phase:** 1 — Foundation
+**Phase:** 2 — Device + Rendering
 **Status:** planning
-**Last updated:** 2026-05-12 (plans created: 01-01 config+scaffold, 01-02 daemon lifecycle)
+**Last updated:** 2026-05-12 (plans created: 02-01 device lifecycle, 02-02 first render, 02-03 polling+jitter)
 
 ---
 
