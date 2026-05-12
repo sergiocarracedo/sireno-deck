@@ -64,6 +64,8 @@ Full 37/37 requirements mapped. No circular dependencies.
 
 ### Phase 3: Themes + Basic Buttons
 
+**Status:** ✓ Complete (2026-05-12)
+
 **Goal:** Apply visual themes and ship display-only, action, and change-deck buttons with sub-deck navigation.
 
 **Requirements:** RENDER-04, RENDER-05, RENDER-06, BTN-01, BTN-02, BTN-03, BTN-06, ADDN-08, ADDN-09
@@ -71,13 +73,13 @@ Full 37/37 requirements mapped. No circular dependencies.
 **Depends on:** Phase 2 (needs rendering pipeline and device connection)
 
 **Success criteria:**
-- [ ] Switching between dark and light themes in `config.yml` changes the visual appearance of all buttons
-- [ ] A display-only button renders static text or an icon from config
-- [ ] An action button executes a user-defined shell command on tap and shows result feedback
-- [ ] An action button whose display text is a periodically-executed command refreshes at its configured interval
-- [ ] A change-deck button navigates to the targeted sub-deck
-- [ ] Sub-decks render a back button that returns to the parent deck
-- [ ] Configuring multiple decks in `config.yml` with button positions per deck renders correctly
+- [x] Switching between dark and light themes in `config.yml` changes the visual appearance of all buttons
+- [x] A display-only button renders static text or an icon from config
+- [x] An action button executes a user-defined shell command on tap and shows result feedback
+- [x] An action button whose display text is a periodically-executed command refreshes at its configured interval
+- [x] A change-deck button navigates to the targeted sub-deck
+- [x] Sub-decks render a back button that returns to the parent deck
+- [x] Configuring multiple decks in `config.yml` with button positions per deck renders correctly
 
 **Research needed:** No — uses proven rendering pipeline from Phase 2
 

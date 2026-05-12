@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 3 — Themes + Basic Buttons
+**Current focus:** Phase 4 — Advanced Buttons
 
 ## Current Position
 
-Phase: 3 of 5 (Themes + Basic Buttons)
-Plan: 2 of 3 in current phase
-Status: Phase 3 waves 1-2 complete; ready to execute wave 3
-Last activity: 2026-05-12 - Completed quick task 001: update example config so taps are demoable in UAT
+Phase: 4 of 5 (Advanced Buttons)
+Plan: 0 of ? in current phase
+Status: Phase 3 complete, verified, and manually approved; ready to discuss Phase 4
+Last activity: 2026-05-12 - Completed Phase 3 execution, verification, and manual UAT approval
 
-Progress: [████░░░░░░] 40%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
@@ -48,7 +48,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- Execute Phase 3 wave 3: change-deck navigation and automatic back-button behavior.
+- Run `discuss-phase 4` for toggle buttons and live data button scope.
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 
 ### Blockers/Concerns
@@ -58,7 +58,7 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-12
-Stopped at: Phase 3 plan `03-02` complete. Next workflow is execution of `03-03-PLAN.md`.
+Stopped at: Phase 3 complete. Next workflow is `discuss-phase 4`.
 Resume file: .planning/ROADMAP.md
 
 ### Quick Tasks Completed
