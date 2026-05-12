@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.0 — Sireno Deck CLI
-**Phase:** 2 — Device + Rendering
-**Status:** planning
-**Last updated:** 2026-05-12 (plans created: 02-01 device lifecycle, 02-02 first render, 02-03 polling+jitter)
+**Phase:** 2 — Device + Rendering ✓ complete → Phase 3 — Themes + Basic Buttons
+**Status:** verifying
+**Last updated:** 2026-05-12
 
 ---
 
@@ -176,16 +176,20 @@ This project uses **learnship**. Key facts:
 ```
 sireno-deck/
 ├── .planning/               # Learnship planning artifacts (PROJECT, ROADMAP, STATE, research)
-├── src/                     # TypeScript source (to be created in Phase 1)
-│   ├── cli/                 # yargs command definitions
-│   ├── core/                # Domain types and zod schemas
-│   ├── config/              # Config loading and validation
-│   ├── device/              # Stream Deck hardware abstraction
-│   ├── render/              # Custom react-reconciler host config + sharp pipeline
-│   ├── deck/                # Deck controller, button types, poll scheduler
-│   ├── addon/               # Addon registry, manifest validation, module loader
-│   ├── action/              # Command execution
-│   └── util/                # Logging and shared utilities
+├── packages/
+│   └── cli/
+│       ├── fixtures/        # Config fixtures for loader and schema tests
+│       ├── src/
+│       │   ├── cli/         # yargs command definitions and startup wiring
+│       │   ├── config/      # Config loading and validation
+│       │   ├── core/        # Domain types and zod schemas
+│       │   ├── device/      # Stream Deck lifecycle, reconnect, and write cache
+│       │   ├── render/      # React reconciler, image composition, and polling scheduler
+│       │   └── util/        # Logging, daemon lifecycle, and CLI error formatting
+│       ├── package.json
+│       ├── tsconfig.json
+│       ├── tsdown.config.ts
+│       └── vitest.config.ts
 ├── addons/                  # User-installed addon folders
 ├── builtin-addons/          # First-party addons shipped with the CLI
 │   └── emoji-selector/
@@ -213,7 +217,7 @@ sireno-deck/
 - **Linting:** oxlint (latest)
 - **Formatting:** oxfmt (latest)
 - **Testing:** vitest
-- **Build:** tsup
+- **Build:** tsdown
 
 ---
 
