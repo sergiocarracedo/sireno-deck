@@ -14,12 +14,14 @@ export interface StreamDeckCandidate {
 }
 
 export interface StreamDeckConnectionInfo extends StreamDeckCandidate {
+  lcdKeyIndices: number[]
   keyCount: number
 }
 
 export interface StreamDeckConnection {
   device: StreamDeck
   info: StreamDeckConnectionInfo
+  lastWrittenBuffers: Map<number, Buffer>
 }
 
 export interface StreamDeckLogger {
@@ -97,6 +99,16 @@ function getButtonCount(device: StreamDeck): number {
   return device.CONTROLS.filter((control) => control.type === "button").length
 }
 
+function getLcdKeyIndices(device: StreamDeck): number[] {
+  return device.CONTROLS.flatMap((control) => {
+    if (control.type !== "button" || control.feedbackType !== "lcd") {
+      return []
+    }
+
+    return [control.index]
+  })
+}
+
 export function formatDetectedDevices(devices: readonly StreamDeckCandidate[]): string {
   return devices
     .map((device) => {
@@ -144,6 +156,7 @@ export function selectStreamDeck(
 export async function connectStreamDeck(
   selector: StreamDeckSelector = {},
   api: StreamDeckApi = defaultApi,
+  lastWrittenBuffers = new Map<number, Buffer>(),
 ): Promise<StreamDeckConnection> {
   const devices = await listConnectedStreamDecks(api)
   const selected = selectStreamDeck(devices, selector)
@@ -153,9 +166,45 @@ export async function connectStreamDeck(
     device,
     info: {
       ...selected,
+      lcdKeyIndices: getLcdKeyIndices(device),
       keyCount: getButtonCount(device),
       model: device.PRODUCT_NAME,
     },
+    lastWrittenBuffers,
+  }
+}
+
+export async function writeKeyBuffer(
+  connection: StreamDeckConnection,
+  keyIndex: number,
+  buffer: Buffer,
+): Promise<boolean> {
+  const previousBuffer = connection.lastWrittenBuffers.get(keyIndex)
+  if (previousBuffer?.equals(buffer)) {
+    // skip unchanged writes so repeated renders do not hammer the device
+    return false
+  }
+
+  await connection.device.fillKeyBuffer(keyIndex, buffer, { format: "rgb" })
+  connection.lastWrittenBuffers.set(keyIndex, Buffer.from(buffer))
+  return true
+}
+
+export async function blankRemainingKeys(
+  connection: StreamDeckConnection,
+  blankBuffer: Buffer,
+  renderedKeys: ReadonlySet<number>,
+): Promise<void> {
+  const blankWrites = connection.info.lcdKeyIndices
+    .filter((keyIndex) => !renderedKeys.has(keyIndex))
+    .map((keyIndex) => writeKeyBuffer(connection, keyIndex, blankBuffer))
+
+  await Promise.all(blankWrites)
+}
+
+export async function replayLastRenderedBuffers(connection: StreamDeckConnection): Promise<void> {
+  for (const [keyIndex, buffer] of connection.lastWrittenBuffers.entries()) {
+    await connection.device.fillKeyBuffer(keyIndex, buffer, { format: "rgb" })
   }
 }
 
@@ -182,6 +231,7 @@ export function createStreamDeckLifecycle(
   let activeConnection: StreamDeckConnection | null = null
   let activeErrorHandler: ((error: unknown) => void) | null = null
   let closed = false
+  const lastWrittenBuffers = new Map<number, Buffer>()
   let reconnectPromise: Promise<void> | null = null
   let reconnectSerial = options.selector?.serial
 
@@ -242,7 +292,7 @@ export function createStreamDeckLifecycle(
       attempt += 1
 
       try {
-        const connection = await connectStreamDeck({ serial: reconnectSerial }, api)
+        const connection = await connectStreamDeck({ serial: reconnectSerial }, api, lastWrittenBuffers)
         attachConnection(connection)
 
         logger.info(
@@ -293,7 +343,7 @@ export function createStreamDeckLifecycle(
         return activeConnection
       }
 
-      const connection = await connectStreamDeck(options.selector, api)
+      const connection = await connectStreamDeck(options.selector, api, lastWrittenBuffers)
       attachConnection(connection)
       return connection
     },

@@ -62,7 +62,8 @@ function buildBlankSvg(preset: TextImagePreset): string {
 async function renderSvg(svg: string, preset: TextImagePreset): Promise<Buffer> {
   return sharp(Buffer.from(svg))
     .resize(preset.keyWidth, preset.keyHeight)
-    .png()
+    .removeAlpha()
+    .raw()
     .toBuffer()
 }
 

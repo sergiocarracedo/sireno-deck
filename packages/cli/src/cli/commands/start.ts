@@ -2,8 +2,17 @@ import type pino from "pino"
 
 import { loadConfig } from "../../config/loader.js"
 import { ConfigValidationError } from "../../core/schemas.js"
-import { createStreamDeckLifecycle, StreamDeckSelectionError } from "../../device/stream-deck.js"
+import {
+  blankRemainingKeys,
+  createStreamDeckLifecycle,
+  replayLastRenderedBuffers,
+  StreamDeckConnection,
+  StreamDeckSelectionError,
+  writeKeyBuffer,
+} from "../../device/stream-deck.js"
 import { formatLinuxUdevAccessError } from "../../device/linux-udev.js"
+import { createDeckTextElement, renderDeck } from "../../render/reconciler.js"
+import { renderBlankKeyImage, renderTextImage } from "../../render/text-image.js"
 import { formatConfigError } from "../../util/errors.js"
 import {
   isRunning,
@@ -16,6 +25,21 @@ import {
 export interface StartOptions {
   config?: string
   logger: pino.Logger
+}
+
+async function renderPhaseTwoDemo(connection: StreamDeckConnection, logger: pino.Logger): Promise<void> {
+  const descriptions = renderDeck(createDeckTextElement({ keyIndex: 0, text: "Hello World" }))
+  const blankBuffer = await renderBlankKeyImage()
+  const renderedKeys = new Set<number>()
+
+  for (const description of descriptions) {
+    const buffer = await renderTextImage({ text: description.text })
+    renderedKeys.add(description.keyIndex)
+    await writeKeyBuffer(connection, description.keyIndex, buffer)
+  }
+
+  await blankRemainingKeys(connection, blankBuffer, renderedKeys)
+  logger.info({ keyIndex: 0 }, "rendered first visual to key 0")
 }
 
 export async function startDaemon(options: StartOptions): Promise<void> {
@@ -38,10 +62,15 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     const config = loadConfig(options.config)
     const lifecycle = createStreamDeckLifecycle({
       logger,
+      onReconnect: async (connection) => {
+        // Replay last rendered buffers after reconnect.
+        await replayLastRenderedBuffers(connection)
+      },
       selector: { serial: config.device?.serial },
     })
 
     const connection = await lifecycle.start()
+    await renderPhaseTwoDemo(connection, logger)
 
     logger.info({ config }, "config loaded successfully")
     logger.info(

@@ -4,8 +4,11 @@ import { describe, expect, it, vi } from "vitest"
 
 import {
   StreamDeckSelectionError,
+  blankRemainingKeys,
   connectStreamDeck,
   createStreamDeckLifecycle,
+  replayLastRenderedBuffers,
+  writeKeyBuffer,
 } from "./stream-deck.js"
 
 class FakeStreamDeck extends EventEmitter {
@@ -16,6 +19,7 @@ class FakeStreamDeck extends EventEmitter {
 
   cleared = 0
   closed = 0
+  writes: Array<{ keyIndex: number; buffer: Buffer }> = []
 
   constructor(productName: string, keyCount: number) {
     super()
@@ -37,6 +41,10 @@ class FakeStreamDeck extends EventEmitter {
 
   async close(): Promise<void> {
     this.closed += 1
+  }
+
+  async fillKeyBuffer(keyIndex: number, imageBuffer: Uint8Array): Promise<void> {
+    this.writes.push({ keyIndex, buffer: Buffer.from(imageBuffer) })
   }
 }
 
@@ -184,5 +192,30 @@ describe("stream deck connection", () => {
         },
       ),
     ).rejects.toBeInstanceOf(StreamDeckSelectionError)
+  })
+
+  it("skips identical key buffer writes and replays the last rendered state", async () => {
+    const device = new FakeStreamDeck("Stream Deck MK.2", 15)
+    const connection = await connectStreamDeck(
+      {},
+      {
+        listStreamDecks: async () => [
+          { model: "mk2" as never, path: "/dev/hidraw0", serialNumber: "SERIAL-42" },
+        ],
+        openStreamDeck: async () => device as never,
+        getStreamDeckModelName: () => "Stream Deck MK.2",
+      },
+    )
+
+    const helloBuffer = Buffer.from([1, 2, 3])
+
+    await expect(writeKeyBuffer(connection, 0, helloBuffer)).resolves.toBe(true)
+    await expect(writeKeyBuffer(connection, 0, helloBuffer)).resolves.toBe(false)
+
+    await blankRemainingKeys(connection, Buffer.from([0, 0, 0]), new Set([0]))
+    await replayLastRenderedBuffers(connection)
+
+    expect(device.writes.filter((write) => write.keyIndex === 0)).toHaveLength(2)
+    expect(device.writes.length).toBe(connection.info.lcdKeyIndices.length * 2)
   })
 })
