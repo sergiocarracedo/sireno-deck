@@ -1,0 +1,22 @@
+packages/cli/src/render/scheduler.test.ts
+  s_136b450bea3e1f::t_6c270bb712e8d1 16,24
+  s_136b450bea3e1f::t_2bb01b2e81d150 1-15,17-23,25-38
+packages/cli/src/render/scheduler.ts
+  s_136b450bea3e1f::t_2bb01b2e81d150 1-79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "b8d1016788e70ffe2e1a2fda6c99544c1d72769e",
+  "prompts": {},
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
