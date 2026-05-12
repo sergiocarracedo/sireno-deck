@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-05-12)
 Phase: 3 of 5 (Themes + Basic Buttons)
 Plan: 2 of 3 in current phase
 Status: Phase 3 waves 1-2 complete; ready to execute wave 3
-Last activity: 2026-05-12 — Completed 03-02 with action buttons, key tap runtime dispatch, and per-button polling
+Last activity: 2026-05-12 - Completed quick task 001: update example config so taps are demoable in UAT
 
 Progress: [████░░░░░░] 40%
 
@@ -60,3 +60,9 @@ Recent decisions affecting current work:
 Last session: 2026-05-12
 Stopped at: Phase 3 plan `03-02` complete. Next workflow is execution of `03-03-PLAN.md`.
 Resume file: .planning/ROADMAP.md
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 001 | update example config so taps are demoable in UAT | 2026-05-12 | `ea5b2d6` | `.planning/quick/001-example-config-demoable-taps` |
