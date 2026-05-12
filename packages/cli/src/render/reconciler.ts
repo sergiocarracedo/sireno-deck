@@ -5,25 +5,36 @@ import { DefaultEventPriority } from "react-reconciler/constants"
 import type { ReactElement } from "react"
 import type { ReactContext } from "react-reconciler"
 
+import type { DisplayButton } from "../core/schemas.js"
+
 export interface DeckTextProps {
   keyIndex: number
   text: string
 }
 
+export interface DeckButtonProps {
+  keyIndex: number
+  label?: string
+  icon?: string
+}
+
 export interface DeckSurfaceProps {
-  labels: string[]
+  buttons: DeckButtonProps[]
 }
 
 export interface RenderNode {
-  type: "deck-surface" | "deck-text"
+  type: "deck-button" | "deck-surface" | "deck-text"
   keyIndex?: number
+  label?: string
+  icon?: string
   text?: string
   children: RenderNode[]
 }
 
 export interface RenderDescription {
   keyIndex: number
-  text: string
+  label?: string
+  icon?: string
 }
 
 interface RenderContainer {
@@ -33,6 +44,7 @@ interface RenderContainer {
 type RenderInstance = RenderNode
 type RenderTextInstance = never
 type HostContext = Record<string, never>
+type RenderProps = DeckButtonProps | DeckSurfaceProps | DeckTextProps
 
 const ROOT_HOST_CONTEXT: HostContext = {}
 const HOST_TRANSITION_CONTEXT = createContext<"not-pending">("not-pending") as unknown as ReactContext<"not-pending">
@@ -67,14 +79,23 @@ function isDeckSurfaceProps(props: unknown): props is DeckSurfaceProps {
   return (
     typeof props === "object" &&
     props !== null &&
-    "labels" in props &&
-    Array.isArray((props as DeckSurfaceProps).labels)
+    "buttons" in props &&
+    Array.isArray((props as DeckSurfaceProps).buttons)
+  )
+}
+
+function isDeckButtonProps(props: unknown): props is DeckButtonProps {
+  return (
+    typeof props === "object" &&
+    props !== null &&
+    "keyIndex" in props &&
+    typeof (props as DeckButtonProps).keyIndex === "number"
   )
 }
 
 const hostConfig: ReactReconciler.HostConfig<
   string,
-  DeckTextProps,
+  RenderProps,
   RenderContainer,
   RenderInstance,
   RenderTextInstance,
@@ -97,6 +118,16 @@ const hostConfig: ReactReconciler.HostConfig<
   warnsIfNotActing: false,
 
   createInstance(type, props) {
+    if (type === "deck-button" && isDeckButtonProps(props)) {
+      return {
+        type: "deck-button",
+        keyIndex: props.keyIndex,
+        label: props.label,
+        icon: props.icon,
+        children: [],
+      }
+    }
+
     if (type === "deck-text" && isDeckTextProps(props)) {
       return {
         type: "deck-text",
@@ -109,10 +140,11 @@ const hostConfig: ReactReconciler.HostConfig<
     if (type === "deck-surface" && isDeckSurfaceProps(props)) {
       return {
         type: "deck-surface",
-        children: props.labels.map((label, keyIndex) => ({
-          type: "deck-text",
-          keyIndex,
-          text: label,
+        children: props.buttons.map((button) => ({
+          type: "deck-button",
+          keyIndex: button.keyIndex,
+          label: button.label,
+          icon: button.icon,
           children: [],
         })),
       }
@@ -184,6 +216,13 @@ const hostConfig: ReactReconciler.HostConfig<
     container.children.splice(index >= 0 ? index : container.children.length, 0, child)
   },
   commitUpdate(instance, _type, _oldProps, newProps) {
+    if (instance.type === "deck-button" && isDeckButtonProps(newProps)) {
+      instance.keyIndex = newProps.keyIndex
+      instance.label = newProps.label
+      instance.icon = newProps.icon
+      return
+    }
+
     if (instance.type === "deck-text" && isDeckTextProps(newProps)) {
       instance.keyIndex = newProps.keyIndex
       instance.text = newProps.text
@@ -191,10 +230,11 @@ const hostConfig: ReactReconciler.HostConfig<
     }
 
     if (instance.type === "deck-surface" && isDeckSurfaceProps(newProps)) {
-      instance.children = newProps.labels.map((label, keyIndex) => ({
-        type: "deck-text",
-        keyIndex,
-        text: label,
+      instance.children = newProps.buttons.map((button) => ({
+        type: "deck-button",
+        keyIndex: button.keyIndex,
+        label: button.label,
+        icon: button.icon,
         children: [],
       }))
     }
@@ -250,9 +290,14 @@ function collectRenderDescriptions(nodes: readonly RenderNode[]): RenderDescript
   const descriptions: RenderDescription[] = []
 
   for (const node of nodes) {
-    if (node.type === "deck-text" && node.keyIndex !== undefined && node.text !== undefined) {
-      descriptions.push({ keyIndex: node.keyIndex, text: node.text })
+    if (node.type === "deck-button" && node.keyIndex !== undefined) {
+      descriptions.push({ keyIndex: node.keyIndex, label: node.label, icon: node.icon })
     }
+
+    if (node.type === "deck-text" && node.keyIndex !== undefined && node.text !== undefined) {
+      descriptions.push({ keyIndex: node.keyIndex, label: node.text })
+    }
+
     descriptions.push(...collectRenderDescriptions(node.children))
   }
 
@@ -263,12 +308,24 @@ export function createDeckTextElement(props: DeckTextProps): ReactElement<DeckTe
   return createElement("deck-text", props)
 }
 
+export function createDeckButtonElement(props: DeckButtonProps): ReactElement<DeckButtonProps> {
+  return createElement("deck-button", props)
+}
+
 export function createDeckSurfaceElement(props: DeckSurfaceProps): ReactElement<DeckSurfaceProps> {
   return createElement("deck-surface", props)
 }
 
+export function createDisplayButtonModels(buttons: readonly DisplayButton[]): DeckButtonProps[] {
+  return buttons.map((button) => ({
+    keyIndex: button.position,
+    label: button.label,
+    icon: button.icon,
+  }))
+}
+
 export function renderDeck(
-  element: ReactElement<DeckTextProps | DeckSurfaceProps>,
+  element: ReactElement<DeckTextProps | DeckButtonProps | DeckSurfaceProps>,
 ): RenderDescription[] {
   const container = createContainer()
   const root = reconciler.createContainer(

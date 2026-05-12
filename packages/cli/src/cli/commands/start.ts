@@ -1,19 +1,17 @@
 import type pino from "pino"
 
 import { loadConfig } from "../../config/loader.js"
+import { resolveTheme } from "../../config/theme.js"
 import { ConfigValidationError } from "../../core/schemas.js"
 import {
   blankRemainingKeys,
   createStreamDeckLifecycle,
   replayLastRenderedBuffers,
-  StreamDeckConnection,
   StreamDeckSelectionError,
-  writeRenderDescriptions,
   writeKeyBuffer,
 } from "../../device/stream-deck.js"
 import { formatLinuxUdevAccessError } from "../../device/linux-udev.js"
-import { createDeckSurfaceElement, createDeckTextElement, renderDeck } from "../../render/reconciler.js"
-import { createPollingScheduler } from "../../render/scheduler.js"
+import { createDeckSurfaceElement, createDisplayButtonModels, renderDeck } from "../../render/reconciler.js"
 import { renderBlankKeyImage, renderTextImage } from "../../render/text-image.js"
 import { formatConfigError } from "../../util/errors.js"
 import {
@@ -29,38 +27,34 @@ export interface StartOptions {
   logger: pino.Logger
 }
 
-async function renderPhaseTwoDemo(connection: StreamDeckConnection, logger: pino.Logger): Promise<void> {
-  const descriptions = renderDeck(createDeckTextElement({ keyIndex: 0, text: "Hello World" }))
+async function renderMainDeck(
+  connection: Awaited<ReturnType<ReturnType<typeof createStreamDeckLifecycle>["start"]>>,
+  deckButtons: ReturnType<typeof createDisplayButtonModels>,
+  theme: ReturnType<typeof resolveTheme>,
+  logger: pino.Logger,
+): Promise<void> {
+  const descriptions = renderDeck(createDeckSurfaceElement({ buttons: deckButtons }))
   const blankBuffer = await renderBlankKeyImage()
   const renderedKeys = new Set<number>()
 
   for (const description of descriptions) {
-    const buffer = await renderTextImage({ text: description.text })
+    const buffer = await renderTextImage({
+      icon: description.icon,
+      text: description.label,
+      theme,
+    })
     renderedKeys.add(description.keyIndex)
     await writeKeyBuffer(connection, description.keyIndex, buffer)
   }
 
   await blankRemainingKeys(connection, blankBuffer, renderedKeys)
-  logger.info({ keyIndex: 0 }, "rendered first visual to key 0")
-}
-
-async function renderPollingDeck(connection: StreamDeckConnection, tick: number): Promise<void> {
-  const labels = Array.from({ length: 15 }, (_, keyIndex) => `K${keyIndex} ${String((tick + keyIndex) % 10)}`)
-  const descriptions = renderDeck(createDeckSurfaceElement({ labels }))
-  const buffersByKey = new Map<number, Buffer>()
-
-  for (const description of descriptions) {
-    buffersByKey.set(description.keyIndex, await renderTextImage({ text: description.text }))
-  }
-
-  await writeRenderDescriptions(connection, buffersByKey)
+  logger.info({ deckId: "main deck", renderedKeys: Array.from(renderedKeys).sort((left, right) => left - right) }, "rendered themed main deck")
 }
 
 export async function startDaemon(options: StartOptions): Promise<void> {
   const { logger } = options
   const existingPid = readPid()
   let cleanupSignals = () => {}
-  let tick = 0
 
   if (existingPid !== null && isRunning(existingPid)) {
     logger.error({ pid: existingPid }, "daemon already running")
@@ -75,6 +69,9 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
   try {
     const config = loadConfig(options.config)
+    const theme = resolveTheme(config.theme)
+    const mainDeck = config.decks[config.main_deck]
+    const mainDeckButtons = createDisplayButtonModels(mainDeck.buttons)
     const lifecycle = createStreamDeckLifecycle({
       logger,
       onReconnect: async (connection) => {
@@ -85,18 +82,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     })
 
     const connection = await lifecycle.start()
-    await renderPhaseTwoDemo(connection, logger)
-
-    const scheduler = createPollingScheduler({ intervalMs: 500 })
-    scheduler.start(
-      Array.from({ length: 15 }, (_, keyIndex) => ({
-        id: `key-${keyIndex}`,
-        run: async () => {
-          tick += 1
-          await renderPollingDeck(connection, tick + keyIndex)
-        },
-      })),
-    )
+    await renderMainDeck(connection, mainDeckButtons, theme, logger)
 
     logger.info({ config }, "config loaded successfully")
     logger.info(
@@ -110,7 +96,6 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
     writePid()
     cleanupSignals = setupSignalHandlers(logger, async () => {
-      scheduler.stop()
       await lifecycle.close()
     })
   } catch (error) {
@@ -137,7 +122,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
   }
 
   logger.info({ pid: process.pid }, "sireno-deck daemon started")
-  logger.info({ intervalMs: 500 }, "started scheduler-driven 15-key polling demo")
+  logger.info("started config-driven main deck runtime")
   logger.info("press Ctrl+C to stop")
 
   try {
