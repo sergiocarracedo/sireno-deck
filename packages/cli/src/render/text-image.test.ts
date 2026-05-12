@@ -77,4 +77,11 @@ describe("text-image", () => {
 
     expect(defaultBuffer.equals(toggleBuffer)).toBe(false)
   })
+
+  it("renders metric variants with progress and value text", async () => {
+    const defaultBuffer = await renderTextImage({ text: "CPU" })
+    const metricBuffer = await renderTextImage({ text: "CPU", displayValue: "48%", progress: 48, variant: "metric" })
+
+    expect(defaultBuffer.equals(metricBuffer)).toBe(false)
+  })
 })

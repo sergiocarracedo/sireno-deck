@@ -13,11 +13,13 @@ export interface DeckTextProps {
 }
 
 export interface DeckButtonProps {
+  displayValue?: string
   keyIndex: number
   label?: string
   icon?: string
+  progress?: number
   subtitle?: string
-  variant?: "default" | "toggle"
+  variant?: "default" | "metric" | "toggle"
 }
 
 export interface DeckSurfaceProps {
@@ -26,21 +28,25 @@ export interface DeckSurfaceProps {
 
 export interface RenderNode {
   type: "deck-button" | "deck-surface" | "deck-text"
+  displayValue?: string
   keyIndex?: number
   label?: string
   icon?: string
-   subtitle?: string
-   text?: string
-   variant?: "default" | "toggle"
+  progress?: number
+  subtitle?: string
+  text?: string
+  variant?: "default" | "metric" | "toggle"
   children: RenderNode[]
 }
 
 export interface RenderDescription {
+  displayValue?: string
   keyIndex: number
   label?: string
   icon?: string
+  progress?: number
   subtitle?: string
-  variant?: "default" | "toggle"
+  variant?: "default" | "metric" | "toggle"
 }
 
 interface RenderContainer {
@@ -128,8 +134,10 @@ const hostConfig: ReactReconciler.HostConfig<
       return {
         type: "deck-button",
         keyIndex: props.keyIndex,
+        displayValue: props.displayValue,
         label: props.label,
         icon: props.icon,
+        progress: props.progress,
         subtitle: props.subtitle,
         variant: props.variant,
         children: [],
@@ -151,8 +159,10 @@ const hostConfig: ReactReconciler.HostConfig<
         children: props.buttons.map((button) => ({
           type: "deck-button",
           keyIndex: button.keyIndex,
+          displayValue: button.displayValue,
           label: button.label,
           icon: button.icon,
+          progress: button.progress,
           subtitle: button.subtitle,
           variant: button.variant,
           children: [],
@@ -228,8 +238,10 @@ const hostConfig: ReactReconciler.HostConfig<
   commitUpdate(instance, _type, _oldProps, newProps) {
     if (instance.type === "deck-button" && isDeckButtonProps(newProps)) {
       instance.keyIndex = newProps.keyIndex
+      instance.displayValue = newProps.displayValue
       instance.label = newProps.label
       instance.icon = newProps.icon
+      instance.progress = newProps.progress
       instance.subtitle = newProps.subtitle
       instance.variant = newProps.variant
       return
@@ -245,8 +257,10 @@ const hostConfig: ReactReconciler.HostConfig<
       instance.children = newProps.buttons.map((button) => ({
         type: "deck-button",
         keyIndex: button.keyIndex,
+        displayValue: button.displayValue,
         label: button.label,
         icon: button.icon,
+        progress: button.progress,
         subtitle: button.subtitle,
         variant: button.variant,
         children: [],
@@ -307,8 +321,10 @@ function collectRenderDescriptions(nodes: readonly RenderNode[]): RenderDescript
     if (node.type === "deck-button" && node.keyIndex !== undefined) {
       descriptions.push({
         keyIndex: node.keyIndex,
+        ...(node.displayValue !== undefined ? { displayValue: node.displayValue } : {}),
         ...(node.icon !== undefined ? { icon: node.icon } : {}),
         ...(node.label !== undefined ? { label: node.label } : {}),
+        ...(node.progress !== undefined ? { progress: node.progress } : {}),
         ...(node.subtitle !== undefined ? { subtitle: node.subtitle } : {}),
         ...(node.variant !== undefined ? { variant: node.variant } : {}),
       })

@@ -45,6 +45,14 @@ describe("render reconciler", () => {
     expect(descriptions).toEqual([{ keyIndex: 3, label: "Active", subtitle: "ON", variant: "toggle" }])
   })
 
+  it("preserves richer metric button descriptions", () => {
+    const descriptions = renderDeck(
+      createDeckButtonElement({ keyIndex: 4, label: "CPU", displayValue: "48%", progress: 48, variant: "metric" }),
+    )
+
+    expect(descriptions).toEqual([{ keyIndex: 4, label: "CPU", displayValue: "48%", progress: 48, variant: "metric" }])
+  })
+
   it("keeps generated back buttons in the render output", () => {
     const descriptions = renderDeck(
       createDeckSurfaceElement({

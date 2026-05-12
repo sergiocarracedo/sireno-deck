@@ -1,12 +1,15 @@
 import { executeCommand, type CommandExecutionResult } from "../action/executor.js"
 import { createDeckController, type DeckController } from "./controller.js"
 import { createPollingScheduler, type PollingScheduler } from "../render/scheduler.js"
+import { getCpuMetric, getMemoryMetric, type MetricSnapshot } from "../system/live-metrics.js"
 
-import type { ButtonInstance, DeckConfig, ToggleButton, ToggleState } from "../core/schemas.js"
+import type { ButtonInstance, CpuButton, DeckConfig, MemoryButton, ToggleButton, ToggleState } from "../core/schemas.js"
 import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
 import type { DeckButtonProps } from "../render/reconciler.js"
 
 export interface DeckRuntimeOptions {
+  getCpuMetric?: () => Promise<MetricSnapshot>
+  getMemoryMetric?: () => Promise<MetricSnapshot>
   deck: DeckConfig
   decks?: Record<string, DeckConfig>
   executeAction?: (command: string) => Promise<CommandExecutionResult>
@@ -32,20 +35,24 @@ export interface DeckRuntime {
 }
 
 interface ButtonRuntimeState {
+  currentDisplayValue?: string
   currentIcon?: string
   currentLabel?: string
   currentStateKey?: string
   feedbackLabel?: string
   isRunning: boolean
+  progress?: number
   subtitle?: string
-  variant?: "default" | "toggle"
+  variant?: "default" | "metric" | "toggle"
 }
 
 function supportsPolledRefresh(
   button: ButtonInstance,
 ): button is Extract<ButtonInstance, { display_command?: string; interval_ms?: number }>
-  | Extract<ButtonInstance, { status_command?: string; interval_ms?: number }> {
-  return button.type === "display" || button.type === "action" || button.type === "toggle"
+  | Extract<ButtonInstance, { status_command?: string; interval_ms?: number }>
+  | CpuButton
+  | MemoryButton {
+  return button.type === "display" || button.type === "action" || button.type === "toggle" || button.type === "cpu" || button.type === "memory"
 }
 
 export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
@@ -58,6 +65,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   const pressedKeys = new Set<number>()
   const executeAction = options.executeAction ?? ((command: string) => executeCommand({ command }))
   const executeDisplayCommand = options.executeDisplayCommand ?? executeAction
+  const getCpuMetricSnapshot = options.getCpuMetric ?? (() => getCpuMetric())
+  const getMemoryMetricSnapshot = options.getMemoryMetric ?? (() => getMemoryMetric())
   const createScheduler = options.createScheduler ?? ((intervalMs: number) => createPollingScheduler({ intervalMs }))
   const scheduleFeedbackTimeout = options.scheduleFeedbackTimeout ?? setTimeout
   const clearFeedbackTimeout = options.clearFeedbackTimeout ?? clearTimeout
@@ -89,11 +98,13 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
 
     const nextState = {
       currentIcon: button.type === "toggle" ? button.states[0]?.icon : button.icon,
+      currentDisplayValue: undefined,
       currentLabel: button.type === "toggle" ? button.states[0]?.label : button.label,
       currentStateKey: button.type === "toggle" ? button.states[0]?.key : undefined,
       isRunning: false,
+      progress: undefined,
       subtitle: button.type === "toggle" ? button.states[0]?.key.toUpperCase() : undefined,
-      variant: button.type === "toggle" ? "toggle" : "default",
+      variant: button.type === "toggle" ? "toggle" : button.type === "cpu" || button.type === "memory" ? "metric" : "default",
     }
     buttonStates.set(key, nextState)
     return nextState
@@ -114,8 +125,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       ...(state.feedbackLabel !== undefined
         ? { label: state.feedbackLabel }
         : {
+            ...(state.currentDisplayValue !== undefined ? { displayValue: state.currentDisplayValue } : {}),
             ...(state.currentIcon !== undefined ? { icon: state.currentIcon } : {}),
             ...(state.currentLabel !== undefined ? { label: state.currentLabel } : {}),
+            ...(state.progress !== undefined ? { progress: state.progress } : {}),
             ...(state.subtitle !== undefined ? { subtitle: state.subtitle } : {}),
             ...(state.variant !== undefined ? { variant: state.variant } : {}),
           }),
@@ -190,9 +203,55 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       }
 
       state.currentLabel = nextLabel
+      state.currentDisplayValue = undefined
       state.currentIcon = button.icon
+      state.progress = undefined
       state.variant = "default"
       state.subtitle = undefined
+
+      if (!state.feedbackLabel) {
+        await renderButton(button, deckId)
+      }
+
+      return
+    }
+
+    if (button.type === "cpu") {
+      const metric = await getCpuMetricSnapshot()
+      const state = getButtonState(deckId, button)
+
+      if (state.currentDisplayValue === metric.label && state.progress === metric.percentage) {
+        return
+      }
+
+      state.currentDisplayValue = metric.label
+      state.currentLabel = button.label ?? "CPU"
+      state.currentIcon = undefined
+      state.progress = metric.percentage
+      state.subtitle = button.display_mode === "progress" ? undefined : "TEXT"
+      state.variant = "metric"
+
+      if (!state.feedbackLabel) {
+        await renderButton(button, deckId)
+      }
+
+      return
+    }
+
+    if (button.type === "memory") {
+      const metric = await getMemoryMetricSnapshot()
+      const state = getButtonState(deckId, button)
+
+      if (state.currentDisplayValue === metric.label && state.progress === metric.percentage) {
+        return
+      }
+
+      state.currentDisplayValue = metric.label
+      state.currentLabel = button.label ?? "Memory"
+      state.currentIcon = undefined
+      state.progress = metric.percentage
+      state.subtitle = button.display_mode === "progress" ? undefined : "TEXT"
+      state.variant = "metric"
 
       if (!state.feedbackLabel) {
         await renderButton(button, deckId)
@@ -257,6 +316,20 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       }
 
       if (button.type !== "toggle" || button.status_command === undefined) {
+        if (button.type === "cpu" || button.type === "memory") {
+          const scheduler = createScheduler(button.interval_ms ?? 500)
+          schedulers.push(scheduler)
+          scheduler.start([
+            {
+              id: `${activeDeckId}-button-${button.position}-metric`,
+              run: async () => {
+                await refreshPolledButton(activeDeckId, button)
+              },
+            },
+          ])
+
+          void refreshPolledButton(activeDeckId, button)
+        }
         continue
       }
 

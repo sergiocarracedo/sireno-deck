@@ -6,11 +6,13 @@ import sharp from "sharp"
 import type { Theme } from "../config/theme.js"
 
 export interface TextImageOptions {
+  displayValue?: string
   icon?: string
+  progress?: number
   subtitle?: string
   text?: string
   theme?: Theme
-  variant?: "default" | "toggle"
+  variant?: "default" | "metric" | "toggle"
   width?: number
   height?: number
 }
@@ -117,6 +119,8 @@ function buildTextSvg(options: TextImageOptions, preset: TextImagePreset, theme:
   const cardStart = mixHexColor(theme.background, theme.primary, 0.08)
   const cardEnd = mixHexColor(theme.background, "#ffffff", 0.04)
   const frame = mixHexColor(theme.primary, theme.background, 0.45)
+  const metricFill = mixHexColor(theme.primary, theme.background, 0.12)
+  const metricTrack = mixHexColor(theme.primary, theme.background, 0.78)
   const subtext = mixHexColor(theme.foreground, theme.background, 0.4)
   const iconMarkup = getIconMarkup(iconPath)
   const badgeFill = options.variant === "toggle"
@@ -127,6 +131,10 @@ function buildTextSvg(options: TextImageOptions, preset: TextImagePreset, theme:
     : mixHexColor(theme.primary, theme.background, 0.2)
   const badgeText = options.subtitle ? escapeSvgText(options.subtitle) : ""
   const labelY = iconMarkup ? 58 : 43
+  const metricText = options.displayValue ? escapeSvgText(options.displayValue) : ""
+  const progressWidth = options.progress !== undefined
+    ? Math.max(0, Math.min(preset.keyWidth - 20, Math.round(((preset.keyWidth - 20) * options.progress) / 100)))
+    : 0
 
   return `
     <svg width="${preset.keyWidth}" height="${preset.keyHeight}" viewBox="0 0 ${preset.keyWidth} ${preset.keyHeight}" xmlns="http://www.w3.org/2000/svg">
@@ -143,6 +151,9 @@ function buildTextSvg(options: TextImageOptions, preset: TextImagePreset, theme:
       ${options.subtitle ? `<text x="48" y="18" fill="${theme.foreground}" text-anchor="middle" font-family="IBM Plex Sans, Arial, sans-serif" font-size="7" font-weight="700">${badgeText}</text>` : ""}
       ${iconMarkup}
       <text x="${iconMarkup ? 36 : 10}" y="${labelY}" fill="${theme.foreground}" text-anchor="${iconMarkup ? "middle" : "start"}" font-family="IBM Plex Sans, Arial, sans-serif" font-size="${iconMarkup ? 11 : 15}" font-weight="600">${safeText}</text>
+      ${options.variant === "metric" && options.progress !== undefined ? `<rect x="10" y="52" width="${preset.keyWidth - 20}" height="8" rx="4" fill="${metricTrack}" />` : ""}
+      ${options.variant === "metric" && options.progress !== undefined ? `<rect x="10" y="52" width="${progressWidth}" height="8" rx="4" fill="${metricFill}" />` : ""}
+      ${options.variant === "metric" && options.displayValue ? `<text x="${preset.keyWidth - 10}" y="48" fill="${theme.foreground}" text-anchor="end" font-family="IBM Plex Sans, Arial, sans-serif" font-size="10" font-weight="700">${metricText}</text>` : ""}
       <text x="10" y="66" fill="${subtext}" font-family="IBM Plex Sans, Arial, sans-serif" font-size="8" letter-spacing="1.4">${escapeSvgText(theme.name.toUpperCase())}</text>
     </svg>
   `.trim()

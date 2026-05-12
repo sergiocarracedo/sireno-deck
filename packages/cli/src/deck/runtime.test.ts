@@ -397,4 +397,55 @@ describe("createDeckRuntime", () => {
     expect(schedulerStop).toHaveBeenCalledTimes(1)
     expect(schedulerStart).toHaveBeenCalledTimes(2)
   })
+
+  it("renders cpu buttons from live metrics through active-deck polling", async () => {
+    const onRenderButton = vi.fn()
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{ type: "cpu", position: 4, label: "CPU", display_mode: "progress", interval_ms: 1000 }],
+      },
+      getCpuMetric: async () => ({ label: "48%", percentage: 48 }),
+      onRenderButton,
+      subscribeKeyEvents: () => () => {},
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(onRenderButton).toHaveBeenCalledWith({
+        keyIndex: 4,
+        label: "CPU",
+        displayValue: "48%",
+        progress: 48,
+        variant: "metric",
+      })
+    })
+  })
+
+  it("renders memory buttons from live metrics through active-deck polling", async () => {
+    const onRenderButton = vi.fn()
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{ type: "memory", position: 5, label: "RAM", display_mode: "text", interval_ms: 1500 }],
+      },
+      getMemoryMetric: async () => ({ label: "62%", percentage: 62 }),
+      onRenderButton,
+      subscribeKeyEvents: () => () => {},
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(onRenderButton).toHaveBeenCalledWith({
+        keyIndex: 5,
+        label: "RAM",
+        displayValue: "62%",
+        progress: 62,
+        subtitle: "TEXT",
+        variant: "metric",
+      })
+    })
+  })
 })
