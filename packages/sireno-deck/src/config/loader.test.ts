@@ -4,10 +4,13 @@ import { join } from "node:path"
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+import { ConfigValidationError } from "../core/schemas.js"
+
 const loadConfigModule = async () => import("./loader.js")
 
 describe("loadConfig", () => {
   const originalCwd = process.cwd()
+  const originalXdgConfigHome = process.env.XDG_CONFIG_HOME
   let tempDir: string
 
   beforeEach(() => {
@@ -17,6 +20,11 @@ describe("loadConfig", () => {
 
   afterEach(() => {
     process.chdir(originalCwd)
+    if (originalXdgConfigHome === undefined) {
+      delete process.env.XDG_CONFIG_HOME
+    } else {
+      process.env.XDG_CONFIG_HOME = originalXdgConfigHome
+    }
     vi.restoreAllMocks()
     rmSync(tempDir, { recursive: true, force: true })
   })
@@ -45,6 +53,15 @@ describe("loadConfig", () => {
     const { loadConfig } = await loadConfigModule()
 
     expect(() => loadConfig()).toThrow(/YAML parse error/)
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).filePath).toBe(join(tempDir, "config.yml"))
+      expect((error as ConfigValidationError).lineNumber).toBe(2)
+      expect((error as ConfigValidationError).suggestion).toContain("Fix the YAML syntax")
+    }
   })
 
   it("throws on unknown keys because schema is strict", async () => {
@@ -56,21 +73,30 @@ describe("loadConfig", () => {
     const { loadConfig } = await loadConfigModule()
 
     expect(() => loadConfig()).toThrow()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).filePath).toBe(join(tempDir, "config.yml"))
+      expect((error as ConfigValidationError).lineNumber).toBe(2)
+      expect((error as ConfigValidationError).suggestion).toContain("Remove 'unknown_key'")
+    }
   })
 
   it("loads from XDG fallback when no cwd config exists", async () => {
-    const fakeHome = mkdtempSync(join(tmpdir(), "sireno-home-"))
-    mkdirSync(join(fakeHome, ".config", "sireno-deck"), { recursive: true })
+    const fakeConfigHome = mkdtempSync(join(tmpdir(), "sireno-xdg-"))
+    mkdirSync(join(fakeConfigHome, "sireno-deck"), { recursive: true })
     writeFileSync(
-      join(fakeHome, ".config", "sireno-deck", "config.yml"),
+      join(fakeConfigHome, "sireno-deck", "config.yml"),
       ["theme: dark", "addons: []"].join("\n"),
     )
-    vi.spyOn(await import("node:os"), "homedir").mockReturnValue(fakeHome)
+    process.env.XDG_CONFIG_HOME = fakeConfigHome
 
     const { loadConfig } = await loadConfigModule()
     const config = loadConfig()
 
     expect(config.theme).toBe("dark")
-    rmSync(fakeHome, { recursive: true, force: true })
+    rmSync(fakeConfigHome, { recursive: true, force: true })
   })
 })

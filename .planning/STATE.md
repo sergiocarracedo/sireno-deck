@@ -5,32 +5,32 @@
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 1 — Foundation
+**Current focus:** Phase 2 — Device + Rendering
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation)
+Phase: 2 of 5 (Device + Rendering)
 Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-05-12 — Phase 1 context captured via discuss-phase
+Status: Phase 1 implemented; ready for verify-work
+Last activity: 2026-05-12 — Executed Plans 01-01 and 01-02 for Phase 1
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: N/A
-- Total execution time: 0 hours
+- Total plans completed: 2
+- Average duration: 1 session
+- Total execution time: 1 session
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 1 — Foundation | 2 | 1 session | 0.5 session |
 
 **Recent Trend:**
-- No plans executed yet.
+- Phase 1 implementation completed in a single execution pass, with verification catching multiple build/runtime mismatches before handoff.
 
 *Updated after each plan completion*
 
@@ -41,11 +41,14 @@ Progress: [░░░░░░░░░░] 0%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- **Phase 1:** Followed recommended standard tooling (tsup, pnpm, ESM, strict TS). Full forward-looking config schema. PID-file daemon lifecycle. pino + colored error UX.
+- **Phase 1:** Followed recommended standard tooling (pnpm, ESM, strict TS) with tsdown for the CLI build output. Full forward-looking config schema. PID-file daemon lifecycle. pino + colored error UX.
+- **Execution:** Config validation errors must preserve metadata through schema, loader, and formatter layers or the CLI loses file/line/suggestion context.
+- **Execution:** yargs command handlers that return promises require `.parseAsync()`, and a foreground daemon must keep the event loop alive explicitly.
 
 ### Pending Todos
 
-None yet.
+- Run `verify-work` for Phase 1 and confirm success criteria against the implementation and summaries.
+- Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 
 ### Blockers/Concerns
 
@@ -55,5 +58,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-05-12
-Stopped at: Discuss-phase 1 complete. All decisions captured in .planning/phases/01-foundation/01-CONTEXT.md. Ready for `/plan-phase 1`.
-Resume file: None
+Stopped at: Phase 1 implementation complete. Summaries written for Plans 01-01 and 01-02. Ready for `verify-work` on Phase 1.
+Resume file: .planning/phases/01-foundation/01-02-SUMMARY.md

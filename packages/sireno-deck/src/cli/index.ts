@@ -2,23 +2,45 @@
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
 
-const cli = () => {
-  yargs(hideBin(process.argv))
+import { startDaemon } from "./commands/start.js"
+import { checkStatus } from "./commands/status.js"
+import { stopDaemon } from "./commands/stop.js"
+import { createLogger } from "../util/logger.js"
+
+const cli = async () => {
+  const logger = createLogger({ verbose: process.argv.includes("--verbose") })
+
+  await yargs(hideBin(process.argv))
     .scriptName("sireno")
     .usage("$0 <command> [options]")
-    .command("start", "Start the sireno-deck daemon", () => {}, () => {
-      console.log("start command - not yet implemented")
+    .option("verbose", {
+      alias: "v",
+      type: "boolean",
+      description: "Enable verbose debug logging",
+      default: false,
     })
-    .command("stop", "Stop the running daemon", () => {}, () => {
-      console.log("stop command - not yet implemented")
+    .option("config", {
+      type: "string",
+      description: "Path to config.yml",
     })
-    .command("status", "Check daemon status", () => {}, () => {
-      console.log("status command - not yet implemented")
-    })
+    .command(
+      "start",
+      "Start the sireno-deck daemon",
+      () => {},
+      async (argv) => startDaemon({ config: argv.config, logger }),
+    )
+    .command("stop", "Stop the running daemon", () => {}, async () => stopDaemon({ logger }))
+    .command("status", "Check daemon status", () => {}, async () => checkStatus({ logger }))
     .demandCommand(1, "Run $0 --help to see available commands")
     .strict()
     .help()
-    .parse()
+    .alias("help", "h")
+    .version()
+    .alias("version", "V")
+    .parseAsync()
 }
 
-cli()
+cli().catch((error: unknown) => {
+  console.error(error)
+  process.exitCode = 1
+})

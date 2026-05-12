@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+type ConfigPathSegment = string | number
+
 export const ThemeSchema = z.object({
   name: z.string().min(1),
   background: z.string().optional(),
@@ -55,10 +57,50 @@ export class ConfigValidationError extends Error {
     message: string,
     public readonly filePath?: string,
     public readonly lineNumber?: number,
+    public readonly suggestion?: string,
+    public readonly pathSegments: readonly ConfigPathSegment[] = [],
   ) {
     super(message)
     this.name = "ConfigValidationError"
   }
+}
+
+function getPathLabel(pathSegments: readonly ConfigPathSegment[]): string {
+  if (pathSegments.length === 0) {
+    return "config"
+  }
+
+  return pathSegments.join(".")
+}
+
+function getIssueMessage(issue: z.ZodIssue): string {
+  if (issue.code === "unrecognized_keys") {
+    const [unknownKey] = issue.keys
+    return unknownKey
+      ? `Unknown key '${unknownKey}'`
+      : "Unknown key found in config"
+  }
+
+  return issue.message
+}
+
+function getIssueSuggestion(issue: z.ZodIssue): string {
+  if (issue.code === "unrecognized_keys") {
+    const [unknownKey] = issue.keys
+    return unknownKey
+      ? `Remove '${unknownKey}' or move it under a supported top-level section.`
+      : "Remove the unsupported key from config.yml."
+  }
+
+  return `Check the value for '${getPathLabel(issue.path)}'.`
+}
+
+function getIssuePathSegments(issue: z.ZodIssue): readonly ConfigPathSegment[] {
+  if (issue.code === "unrecognized_keys" && issue.keys[0]) {
+    return [issue.keys[0]]
+  }
+
+  return issue.path
 }
 
 export function validateConfig(data: unknown): SirenoConfig {
@@ -66,9 +108,11 @@ export function validateConfig(data: unknown): SirenoConfig {
   if (!result.success) {
     const firstIssue = result.error.issues[0]
     throw new ConfigValidationError(
-      firstIssue.message,
+      getIssueMessage(firstIssue),
       undefined,
-      firstIssue.path.length > 0 ? undefined : undefined,
+      undefined,
+      getIssueSuggestion(firstIssue),
+      getIssuePathSegments(firstIssue),
     )
   }
 
