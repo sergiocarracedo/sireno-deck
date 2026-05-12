@@ -167,7 +167,7 @@ This project uses **learnship**. Key facts:
 **Milestone:** v1.0 — Sireno Deck CLI
 **Phase:** 1 — Foundation
 **Status:** planning
-**Last updated:** 2026-05-12
+**Last updated:** 2026-05-12 (plans created: 01-01 config+scaffold, 01-02 daemon lifecycle)
 
 ---
 
