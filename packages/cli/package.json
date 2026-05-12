@@ -22,6 +22,7 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
+    "@types/node": "^22.10.0",
     "@types/js-yaml": "^4.0.0",
     "@types/yargs": "^17.0.35",
     "oxfmt": "latest",
