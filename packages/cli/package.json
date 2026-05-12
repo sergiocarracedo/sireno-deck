@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@elgato-stream-deck/node": "^7.6.0",
+    "execa": "^9.5.2",
     "js-yaml": "^4.1.0",
     "pino": "^9.0.0",
     "react": "^19.2.6",

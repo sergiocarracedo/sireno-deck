@@ -14,6 +14,8 @@ export const DisplayButtonSchema = z
   .object({
     type: z.literal("display"),
     position: z.number().int().min(0).max(31),
+    display_command: z.string().min(1).optional(),
+    interval_ms: z.number().int().positive().optional(),
     label: z.string().min(1).optional(),
     icon: z.string().min(1).optional(),
   })
@@ -23,7 +25,23 @@ export const DisplayButtonSchema = z
     path: ["label"],
   })
 
-export const ButtonInstanceSchema = DisplayButtonSchema
+export const ActionButtonSchema = z
+  .object({
+    type: z.literal("action"),
+    position: z.number().int().min(0).max(31),
+    command: z.string().min(1),
+    label: z.string().min(1).optional(),
+    icon: z.string().min(1).optional(),
+    display_command: z.string().min(1).optional(),
+    interval_ms: z.number().int().positive().optional(),
+  })
+  .strict()
+  .refine((button) => button.label !== undefined || button.icon !== undefined || button.display_command !== undefined, {
+    message: "Action buttons need a label, icon, or display_command",
+    path: ["label"],
+  })
+
+export const ButtonInstanceSchema = z.union([DisplayButtonSchema, ActionButtonSchema])
 
 export const DeckSchema = z
   .object({
@@ -85,6 +103,8 @@ export const SirenoConfigSchema = z
 
 export type SirenoConfig = z.infer<typeof SirenoConfigSchema>
 export type DisplayButton = z.infer<typeof DisplayButtonSchema>
+export type ActionButton = z.infer<typeof ActionButtonSchema>
+export type ButtonInstance = z.infer<typeof ButtonInstanceSchema>
 export type DeckConfig = z.infer<typeof DeckSchema>
 
 export class ConfigValidationError extends Error {

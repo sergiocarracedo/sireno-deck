@@ -5,7 +5,7 @@ import { DefaultEventPriority } from "react-reconciler/constants"
 import type { ReactElement } from "react"
 import type { ReactContext } from "react-reconciler"
 
-import type { DisplayButton } from "../core/schemas.js"
+import type { ButtonInstance } from "../core/schemas.js"
 
 export interface DeckTextProps {
   keyIndex: number
@@ -316,7 +316,7 @@ export function createDeckSurfaceElement(props: DeckSurfaceProps): ReactElement<
   return createElement("deck-surface", props)
 }
 
-export function createDisplayButtonModels(buttons: readonly DisplayButton[]): DeckButtonProps[] {
+export function createDisplayButtonModels(buttons: readonly ButtonInstance[]): DeckButtonProps[] {
   return buttons.map((button) => ({
     keyIndex: button.position,
     label: button.label,
