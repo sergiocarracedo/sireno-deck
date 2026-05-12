@@ -1,0 +1,246 @@
+import { createContext, createElement } from "react"
+import ReactReconciler from "react-reconciler"
+import { DefaultEventPriority } from "react-reconciler/constants"
+
+import type { ReactElement } from "react"
+import type { ReactContext } from "react-reconciler"
+
+export interface DeckTextProps {
+  keyIndex: number
+  text: string
+}
+
+export interface RenderNode {
+  type: "deck-text"
+  keyIndex: number
+  text: string
+  children: RenderNode[]
+}
+
+export interface RenderDescription {
+  keyIndex: number
+  text: string
+}
+
+interface RenderContainer {
+  children: RenderNode[]
+}
+
+type RenderInstance = RenderNode
+type RenderTextInstance = never
+type HostContext = Record<string, never>
+
+const ROOT_HOST_CONTEXT: HostContext = {}
+const HOST_TRANSITION_CONTEXT = createContext<"not-pending">("not-pending") as unknown as ReactContext<"not-pending">
+
+function createContainer(): RenderContainer {
+  return { children: [] }
+}
+
+function appendChild(parent: RenderContainer | RenderInstance, child: RenderInstance): void {
+  parent.children.push(child)
+}
+
+function removeChild(parent: RenderContainer | RenderInstance, child: RenderInstance): void {
+  const index = parent.children.indexOf(child)
+  if (index >= 0) {
+    parent.children.splice(index, 1)
+  }
+}
+
+function isDeckTextProps(props: unknown): props is DeckTextProps {
+  return (
+    typeof props === "object" &&
+    props !== null &&
+    "keyIndex" in props &&
+    typeof (props as DeckTextProps).keyIndex === "number" &&
+    "text" in props &&
+    typeof (props as DeckTextProps).text === "string"
+  )
+}
+
+const hostConfig: ReactReconciler.HostConfig<
+  string,
+  DeckTextProps,
+  RenderContainer,
+  RenderInstance,
+  RenderTextInstance,
+  never,
+  never,
+  never,
+  RenderInstance,
+  HostContext,
+  never,
+  number,
+  -1,
+  "not-pending"
+> = {
+  supportsMutation: true,
+  supportsPersistence: false,
+  supportsHydration: false,
+  isPrimaryRenderer: false,
+  noTimeout: -1,
+  supportsMicrotasks: true,
+  warnsIfNotActing: false,
+
+  createInstance(type, props) {
+    if (type !== "deck-text" || !isDeckTextProps(props)) {
+      throw new Error(`Unsupported render node '${type}'`)
+    }
+
+    return {
+      type: "deck-text",
+      keyIndex: props.keyIndex,
+      text: props.text,
+      children: [],
+    }
+  },
+  createTextInstance() {
+    throw new Error("Text nodes are not supported; use <deck-text text=... />")
+  },
+  appendInitialChild(parent, child) {
+    appendChild(parent, child)
+  },
+  finalizeInitialChildren() {
+    return false
+  },
+  shouldSetTextContent() {
+    return false
+  },
+  getRootHostContext() {
+    return ROOT_HOST_CONTEXT
+  },
+  getChildHostContext() {
+    return ROOT_HOST_CONTEXT
+  },
+  getPublicInstance(instance) {
+    return instance
+  },
+  prepareForCommit() {
+    return null
+  },
+  resetAfterCommit() {},
+  preparePortalMount() {},
+  scheduleTimeout: setTimeout,
+  cancelTimeout: clearTimeout,
+  scheduleMicrotask(fn) {
+    queueMicrotask(fn)
+  },
+  getInstanceFromNode() {
+    return null
+  },
+  beforeActiveInstanceBlur() {},
+  afterActiveInstanceBlur() {},
+  prepareScopeUpdate() {},
+  getInstanceFromScope() {
+    return null
+  },
+  detachDeletedInstance() {},
+  appendChild(parent, child) {
+    appendChild(parent, child)
+  },
+  appendChildToContainer(container, child) {
+    appendChild(container, child)
+  },
+  removeChild(parent, child) {
+    removeChild(parent, child)
+  },
+  removeChildFromContainer(container, child) {
+    removeChild(container, child)
+  },
+  insertBefore(parent, child, beforeChild) {
+    removeChild(parent, child)
+    const index = parent.children.indexOf(beforeChild as RenderInstance)
+    parent.children.splice(index >= 0 ? index : parent.children.length, 0, child)
+  },
+  insertInContainerBefore(container, child, beforeChild) {
+    removeChild(container, child)
+    const index = container.children.indexOf(beforeChild as RenderInstance)
+    container.children.splice(index >= 0 ? index : container.children.length, 0, child)
+  },
+  commitUpdate(instance, _type, _oldProps, newProps) {
+    instance.keyIndex = newProps.keyIndex
+    instance.text = newProps.text
+  },
+  commitTextUpdate() {},
+  resetTextContent() {},
+  hideInstance() {},
+  hideTextInstance() {},
+  unhideInstance() {},
+  unhideTextInstance() {},
+  clearContainer(container) {
+    container.children = []
+  },
+  maySuspendCommit() {
+    return false
+  },
+  preloadInstance() {
+    return true
+  },
+  startSuspendingCommit() {},
+  suspendInstance() {},
+  waitForCommitToBeReady() {
+    return null
+  },
+  NotPendingTransition: "not-pending",
+  HostTransitionContext: HOST_TRANSITION_CONTEXT,
+  getCurrentUpdatePriority() {
+    return DefaultEventPriority
+  },
+  setCurrentUpdatePriority() {},
+  resolveUpdatePriority() {
+    return DefaultEventPriority
+  },
+  resetFormInstance() {},
+  requestPostPaintCallback(callback) {
+    callback(Date.now())
+  },
+  trackSchedulerEvent() {},
+  resolveEventType() {
+    return null
+  },
+  resolveEventTimeStamp() {
+    return Date.now()
+  },
+  shouldAttemptEagerTransition() {
+    return false
+  },
+}
+
+const reconciler = ReactReconciler(hostConfig)
+
+function collectRenderDescriptions(nodes: readonly RenderNode[]): RenderDescription[] {
+  const descriptions: RenderDescription[] = []
+
+  for (const node of nodes) {
+    descriptions.push({ keyIndex: node.keyIndex, text: node.text })
+    descriptions.push(...collectRenderDescriptions(node.children))
+  }
+
+  return descriptions
+}
+
+export function createDeckTextElement(props: DeckTextProps): ReactElement<DeckTextProps> {
+  return createElement("deck-text", props)
+}
+
+export function renderDeck(element: ReactElement<DeckTextProps>): RenderDescription[] {
+  const container = createContainer()
+  const root = reconciler.createContainer(
+    container,
+    0,
+    null,
+    false,
+    null,
+    "",
+    console.error,
+    console.error,
+    console.error,
+    () => {},
+  )
+
+  reconciler.updateContainerSync(element, root, null, null)
+  reconciler.flushSyncWork()
+
+  return collectRenderDescriptions(container.children)
+}
