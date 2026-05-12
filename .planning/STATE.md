@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-05-12)
 ## Current Position
 
 Phase: 2 of 5 (Device + Rendering)
-Plan: 0 of ? in current phase
-Status: Phase 2 context captured; ready to plan
-Last activity: 2026-05-12 — Discussed Phase 2 implementation decisions
+Plan: 1 of 3 in current phase
+Status: Wave 1 executed; device lifecycle and Linux diagnostics complete
+Last activity: 2026-05-12 — Executed Plan 02-01 for device detection, reconnect lifecycle, and Linux udev guidance
 
 Progress: [██░░░░░░░░] 20%
 
@@ -47,8 +47,8 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- Run `verify-work` for Phase 1 and confirm success criteria against the implementation and summaries.
-- Run `plan-phase 2` using `.planning/phases/02-device-rendering/02-CONTEXT.md`.
+- Execute `02-02-PLAN.md` for first React-to-device render and write dedupe.
+- Execute `02-03-PLAN.md` for 500ms polling with jitter across the deck.
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 
 ### Blockers/Concerns
@@ -59,5 +59,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-12
-Stopped at: Discuss-phase 2 complete. Context captured for device selection, reconnect behavior, first render scope, and render pipeline shape. Ready for `plan-phase 2`.
-Resume file: .planning/phases/02-device-rendering/02-CONTEXT.md
+Stopped at: Plan 02-01 executed. Device discovery, reconnect handling, and Linux diagnostics are in place. Continue with `02-02-PLAN.md`.
+Resume file: .planning/phases/02-device-rendering/02-02-PLAN.md
