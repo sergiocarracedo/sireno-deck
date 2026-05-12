@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-05-12)
 ## Current Position
 
 Phase: 3 of 5 (Themes + Basic Buttons)
-Plan: 0 of ? in current phase
-Status: Phase 2 complete and manually approved; ready to discuss Phase 3
-Last activity: 2026-05-12 — Phase 2 verified on hardware and approved after manual UAT
+Plan: 1 of 3 in current phase
+Status: Phase 3 wave 1 complete; ready to execute wave 2
+Last activity: 2026-05-12 — Completed 03-01 with theme loading, main-deck validation, and config-driven display rendering
 
 Progress: [████░░░░░░] 40%
 
@@ -48,7 +48,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- Run `discuss-phase 3` for themes, display-only buttons, action buttons, and sub-deck navigation.
+- Execute Phase 3 wave 2: action buttons, command execution, and per-button polling updates.
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 
 ### Blockers/Concerns
@@ -58,5 +58,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-12
-Stopped at: Phase 2 complete. Hardware validation approved. Next workflow is `discuss-phase 3`.
+Stopped at: Phase 3 plan `03-01` complete. Next workflow is execution of `03-02-PLAN.md`.
 Resume file: .planning/ROADMAP.md
