@@ -37,6 +37,14 @@ describe("render reconciler", () => {
     expect(descriptions).toEqual([{ keyIndex: 1, label: "Shell", icon: "./shell.svg" }])
   })
 
+  it("preserves richer toggle button descriptions", () => {
+    const descriptions = renderDeck(
+      createDeckButtonElement({ keyIndex: 3, label: "Active", subtitle: "ON", variant: "toggle" }),
+    )
+
+    expect(descriptions).toEqual([{ keyIndex: 3, label: "Active", subtitle: "ON", variant: "toggle" }])
+  })
+
   it("keeps generated back buttons in the render output", () => {
     const descriptions = renderDeck(
       createDeckSurfaceElement({

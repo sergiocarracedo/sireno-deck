@@ -43,8 +43,10 @@ async function renderMainDeck(
   for (const description of descriptions) {
     const buffer = await renderTextImage({
       icon: description.icon,
+      subtitle: description.subtitle,
       text: description.label,
       theme,
+      variant: description.variant,
     })
     renderedKeys.add(description.keyIndex)
     await writeKeyBuffer(connection, description.keyIndex, buffer)
@@ -101,8 +103,10 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
         const buffer = await renderTextImage({
           icon: button.icon,
+          subtitle: button.subtitle,
           text: button.label,
           theme,
+          variant: button.variant,
         })
         await writeKeyBuffer(activeConnection, button.keyIndex, buffer)
       },

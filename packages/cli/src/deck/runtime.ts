@@ -2,7 +2,7 @@ import { executeCommand, type CommandExecutionResult } from "../action/executor.
 import { createDeckController, type DeckController } from "./controller.js"
 import { createPollingScheduler, type PollingScheduler } from "../render/scheduler.js"
 
-import type { ButtonInstance, DeckConfig } from "../core/schemas.js"
+import type { ButtonInstance, DeckConfig, ToggleButton, ToggleState } from "../core/schemas.js"
 import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
 import type { DeckButtonProps } from "../render/reconciler.js"
 
@@ -32,15 +32,20 @@ export interface DeckRuntime {
 }
 
 interface ButtonRuntimeState {
+  currentIcon?: string
   currentLabel?: string
+  currentStateKey?: string
   feedbackLabel?: string
   isRunning: boolean
+  subtitle?: string
+  variant?: "default" | "toggle"
 }
 
-function supportsDisplayCommand(
+function supportsPolledRefresh(
   button: ButtonInstance,
-): button is Extract<ButtonInstance, { display_command?: string; interval_ms?: number }> {
-  return button.type === "display" || button.type === "action"
+): button is Extract<ButtonInstance, { display_command?: string; interval_ms?: number }>
+  | Extract<ButtonInstance, { status_command?: string; interval_ms?: number }> {
+  return button.type === "display" || button.type === "action" || button.type === "toggle"
 }
 
 export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
@@ -56,7 +61,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   const createScheduler = options.createScheduler ?? ((intervalMs: number) => createPollingScheduler({ intervalMs }))
   const scheduleFeedbackTimeout = options.scheduleFeedbackTimeout ?? setTimeout
   const clearFeedbackTimeout = options.clearFeedbackTimeout ?? clearTimeout
-  const feedbackTimers = new Map<number, ReturnType<typeof setTimeout>>()
+  const feedbackTimers = new Map<string, ReturnType<typeof setTimeout>>()
   const schedulers: PollingScheduler[] = []
   let unsubscribe: (() => void) | null = null
   let stopped = false
@@ -83,8 +88,12 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     }
 
     const nextState = {
-      currentLabel: button.label,
+      currentIcon: button.type === "toggle" ? button.states[0]?.icon : button.icon,
+      currentLabel: button.type === "toggle" ? button.states[0]?.label : button.label,
+      currentStateKey: button.type === "toggle" ? button.states[0]?.key : undefined,
       isRunning: false,
+      subtitle: button.type === "toggle" ? button.states[0]?.key.toUpperCase() : undefined,
+      variant: button.type === "toggle" ? "toggle" : "default",
     }
     buttonStates.set(key, nextState)
     return nextState
@@ -97,22 +106,28 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     }
   }
 
-  function getButtonView(button: ButtonInstance): DeckButtonProps {
-    const state = getButtonState(deckController.getActiveDeckId(), button)
+  function getButtonView(button: ButtonInstance, deckId = deckController.getActiveDeckId()): DeckButtonProps {
+    const state = getButtonState(deckId, button)
 
     return {
-      icon: state?.feedbackLabel ? undefined : button.icon,
       keyIndex: button.position,
-      label: state?.feedbackLabel ?? state?.currentLabel ?? button.label,
+      ...(state.feedbackLabel !== undefined
+        ? { label: state.feedbackLabel }
+        : {
+            ...(state.currentIcon !== undefined ? { icon: state.currentIcon } : {}),
+            ...(state.currentLabel !== undefined ? { label: state.currentLabel } : {}),
+            ...(state.subtitle !== undefined ? { subtitle: state.subtitle } : {}),
+            ...(state.variant !== undefined ? { variant: state.variant } : {}),
+          }),
     }
   }
 
-  async function renderButton(button: ButtonInstance): Promise<void> {
-    if (stopped) {
+  async function renderButton(button: ButtonInstance, deckId = deckController.getActiveDeckId()): Promise<void> {
+    if (stopped || deckController.getActiveDeckId() !== deckId) {
       return
     }
 
-    await options.onRenderButton?.(getButtonView(button))
+    await options.onRenderButton?.(getButtonView(button, deckId))
   }
 
   async function renderDeck(): Promise<void> {
@@ -127,74 +142,185 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     state.feedbackLabel = label
   }
 
-  function scheduleFeedbackReset(button: ButtonInstance, delayMs: number): void {
-    const existingTimer = feedbackTimers.get(button.position)
+  function getToggleState(button: ToggleButton, stateKey: string | undefined): ToggleState {
+    return button.states.find((state) => state.key === stateKey) ?? button.states[0]
+  }
+
+  function applyToggleState(state: ButtonRuntimeState, button: ToggleButton, stateKey: string | undefined): void {
+    const nextState = getToggleState(button, stateKey)
+
+    state.currentIcon = nextState.icon
+    state.currentLabel = nextState.label
+    state.currentStateKey = nextState.key
+    state.subtitle = nextState.key.toUpperCase()
+    state.variant = "toggle"
+  }
+
+  function scheduleFeedbackReset(button: ButtonInstance, deckId: string, delayMs: number): void {
+    const stateKey = getButtonStateKey(deckId, button.position)
+    const existingTimer = feedbackTimers.get(stateKey)
     if (existingTimer) {
       clearFeedbackTimeout(existingTimer)
     }
 
     const timer = scheduleFeedbackTimeout(() => {
-      feedbackTimers.delete(button.position)
-      setFeedbackLabel(getButtonState(deckController.getActiveDeckId(), button), undefined)
-      void renderButton(button)
+      feedbackTimers.delete(stateKey)
+      setFeedbackLabel(getButtonState(deckId, button), undefined)
+      void renderButton(button, deckId)
     }, delayMs)
 
-    feedbackTimers.set(button.position, timer)
+    feedbackTimers.set(stateKey, timer)
   }
 
-  async function refreshDisplayCommand(button: ButtonInstance): Promise<void> {
-    if (!supportsDisplayCommand(button) || button.display_command === undefined) {
+  async function refreshPolledButton(deckId: string, button: ButtonInstance): Promise<void> {
+    if (!supportsPolledRefresh(button)) {
       return
     }
 
-    const result = await executeDisplayCommand(button.display_command)
-    const state = getButtonState(deckController.getActiveDeckId(), button)
+    if ((button.type === "display" || button.type === "action") && button.display_command !== undefined) {
+      const result = await executeDisplayCommand(button.display_command)
+      const state = getButtonState(deckId, button)
 
-    const nextLabel = result.failed
-      ? button.label
-      : (result.stdout.split(/\r?\n/)[0]?.trim() || button.label)
+      const nextLabel = result.failed
+        ? button.label
+        : (result.stdout.split(/\r?\n/)[0]?.trim() || button.label)
 
-    if (state.currentLabel === nextLabel) {
+      if (state.currentLabel === nextLabel) {
+        return
+      }
+
+      state.currentLabel = nextLabel
+      state.currentIcon = button.icon
+      state.variant = "default"
+      state.subtitle = undefined
+
+      if (!state.feedbackLabel) {
+        await renderButton(button, deckId)
+      }
+
       return
     }
 
-    state.currentLabel = nextLabel
+    if (button.type !== "toggle" || button.status_command === undefined) {
+      return
+    }
+
+    const result = await executeDisplayCommand(button.status_command)
+    if (result.failed) {
+      return
+    }
+
+    const nextStateKey = result.stdout.split(/\r?\n/)[0]?.trim()
+    const matchedState = button.states.find((state) => state.key === nextStateKey)
+    if (!matchedState) {
+      return
+    }
+
+    const state = getButtonState(deckId, button)
+    if (state.currentStateKey === matchedState.key) {
+      return
+    }
+
+    applyToggleState(state, button, matchedState.key)
 
     if (!state.feedbackLabel) {
-      await renderButton(button)
+      await renderButton(button, deckId)
+    }
+  }
+
+  function stopActiveDeckPolling(): void {
+    for (const scheduler of schedulers.splice(0, schedulers.length)) {
+      scheduler.stop()
+    }
+  }
+
+  function startActiveDeckPolling(): void {
+    const activeDeckId = deckController.getActiveDeckId()
+
+    stopActiveDeckPolling()
+
+    for (const button of getDeckButtons(deckController.getActiveDeck())) {
+      if ((button.type === "display" || button.type === "action") && button.display_command !== undefined) {
+        const scheduler = createScheduler(button.interval_ms ?? 500)
+        schedulers.push(scheduler)
+        scheduler.start([
+          {
+            id: `${activeDeckId}-button-${button.position}-display`,
+            run: async () => {
+              await refreshPolledButton(activeDeckId, button)
+            },
+          },
+        ])
+
+        void refreshPolledButton(activeDeckId, button)
+        continue
+      }
+
+      if (button.type !== "toggle" || button.status_command === undefined) {
+        continue
+      }
+
+      const scheduler = createScheduler(button.interval_ms ?? 500)
+      schedulers.push(scheduler)
+      scheduler.start([
+        {
+          id: `${activeDeckId}-button-${button.position}-status`,
+          run: async () => {
+            await refreshPolledButton(activeDeckId, button)
+          },
+        },
+      ])
+
+      void refreshPolledButton(activeDeckId, button)
     }
   }
 
   async function handleTap(keyIndex: number): Promise<void> {
     if (deckController.canGoBack() && keyIndex === reservedBackKeyIndex) {
+      stopActiveDeckPolling()
       deckController.goBack()
+      startActiveDeckPolling()
       await renderDeck()
       return
     }
 
     const button = getDeckButtons(deckController.getActiveDeck()).find((candidate) => candidate.position === keyIndex)
-    if (!button || button.type !== "action") {
+    if (!button || (button.type !== "action" && button.type !== "toggle")) {
       if (button?.type === "change-deck") {
+        stopActiveDeckPolling()
         deckController.navigateTo(button.target_deck)
+        startActiveDeckPolling()
         await renderDeck()
       }
       return
     }
 
-    const state = getButtonState(deckController.getActiveDeckId(), button)
+    const deckId = deckController.getActiveDeckId()
+    const state = getButtonState(deckId, button)
     if (state.isRunning) {
       return
     }
 
     state.isRunning = true
-    setFeedbackLabel(state, "...")
-    await renderButton(button)
 
-    const result = await executeAction(button.command)
+    if (button.type === "toggle" && button.status_command === undefined) {
+      const currentIndex = button.states.findIndex((candidate) => candidate.key === state.currentStateKey)
+      const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % button.states.length : 0
+      applyToggleState(state, button, button.states[nextIndex]?.key)
+    }
+
+    setFeedbackLabel(state, "...")
+    await renderButton(button, deckId)
+
+    const command = button.type === "toggle"
+      ? getToggleState(button, button.status_command === undefined ? state.currentStateKey : state.currentStateKey === undefined ? button.states[0]?.key : button.states[(button.states.findIndex((candidate) => candidate.key === state.currentStateKey) + 1) % button.states.length]?.key).command
+      : button.command
+
+    const result = await executeAction(command)
     state.isRunning = false
     setFeedbackLabel(state, result.failed ? "ERR" : "OK")
-    await renderButton(button)
-    scheduleFeedbackReset(button, result.failed ? 2_000 : 1_500)
+    await renderButton(button, deckId)
+    scheduleFeedbackReset(button, deckId, result.failed ? 2_000 : 1_500)
   }
 
   function buildActiveDeckButtons(): DeckButtonProps[] {
@@ -223,6 +349,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
 
   return {
     async activateCurrentDeck() {
+      startActiveDeckPolling()
       await renderDeck()
     },
     getActiveDeck() {
@@ -247,26 +374,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
 
       stopped = false
       unsubscribe = options.subscribeKeyEvents(onKeyEvent)
+      startActiveDeckPolling()
       void renderDeck()
-
-      for (const button of getDeckButtons(deckController.getActiveDeck())) {
-        if (!supportsDisplayCommand(button) || button.display_command === undefined) {
-          continue
-        }
-
-        const scheduler = createScheduler(button.interval_ms ?? 500)
-        schedulers.push(scheduler)
-        scheduler.start([
-          {
-            id: `button-${button.position}-display`,
-            run: async () => {
-              await refreshDisplayCommand(button)
-            },
-          },
-        ])
-
-        void refreshDisplayCommand(button)
-      }
     },
     stop() {
       stopped = true
@@ -274,9 +383,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       unsubscribe?.()
       unsubscribe = null
 
-      for (const scheduler of schedulers.splice(0, schedulers.length)) {
-        scheduler.stop()
-      }
+      stopActiveDeckPolling()
 
       for (const timer of feedbackTimers.values()) {
         clearFeedbackTimeout(timer)

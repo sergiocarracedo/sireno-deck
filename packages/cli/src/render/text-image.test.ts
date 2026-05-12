@@ -70,4 +70,11 @@ describe("text-image", () => {
       rmSync(tempDir, { recursive: true, force: true })
     }
   })
+
+  it("renders toggle variants with badge metadata", async () => {
+    const defaultBuffer = await renderTextImage({ text: "Active" })
+    const toggleBuffer = await renderTextImage({ text: "Active", subtitle: "ON", variant: "toggle" })
+
+    expect(defaultBuffer.equals(toggleBuffer)).toBe(false)
+  })
 })

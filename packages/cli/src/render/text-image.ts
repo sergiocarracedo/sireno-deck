@@ -7,8 +7,10 @@ import type { Theme } from "../config/theme.js"
 
 export interface TextImageOptions {
   icon?: string
+  subtitle?: string
   text?: string
   theme?: Theme
+  variant?: "default" | "toggle"
   width?: number
   height?: number
 }
@@ -108,13 +110,22 @@ function escapeSvgText(text: string): string {
     .replace(/'/g, "&#39;")
 }
 
-function buildTextSvg(text: string, iconPath: string | undefined, preset: TextImagePreset, theme: Theme): string {
+function buildTextSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
+  const text = options.text ?? ""
+  const iconPath = options.icon
   const safeText = escapeSvgText(text)
   const cardStart = mixHexColor(theme.background, theme.primary, 0.08)
   const cardEnd = mixHexColor(theme.background, "#ffffff", 0.04)
   const frame = mixHexColor(theme.primary, theme.background, 0.45)
   const subtext = mixHexColor(theme.foreground, theme.background, 0.4)
   const iconMarkup = getIconMarkup(iconPath)
+  const badgeFill = options.variant === "toggle"
+    ? mixHexColor(theme.accent, theme.background, 0.15)
+    : mixHexColor(theme.primary, theme.background, 0.15)
+  const badgeStroke = options.variant === "toggle"
+    ? mixHexColor(theme.accent, theme.background, 0.05)
+    : mixHexColor(theme.primary, theme.background, 0.2)
+  const badgeText = options.subtitle ? escapeSvgText(options.subtitle) : ""
   const labelY = iconMarkup ? 58 : 43
 
   return `
@@ -128,6 +139,8 @@ function buildTextSvg(text: string, iconPath: string | undefined, preset: TextIm
       <rect x="0" y="0" width="${preset.keyWidth}" height="${preset.keyHeight}" rx="16" fill="url(#card)" />
       <rect x="4" y="4" width="${preset.keyWidth - 8}" height="${preset.keyHeight - 8}" rx="12" fill="none" stroke="${frame}" stroke-width="1.5" />
       <rect x="10" y="10" width="14" height="4" rx="2" fill="${theme.accent}" opacity="0.95" />
+      ${options.subtitle ? `<rect x="34" y="10" width="28" height="12" rx="6" fill="${badgeFill}" stroke="${badgeStroke}" stroke-width="1" />` : ""}
+      ${options.subtitle ? `<text x="48" y="18" fill="${theme.foreground}" text-anchor="middle" font-family="IBM Plex Sans, Arial, sans-serif" font-size="7" font-weight="700">${badgeText}</text>` : ""}
       ${iconMarkup}
       <text x="${iconMarkup ? 36 : 10}" y="${labelY}" fill="${theme.foreground}" text-anchor="${iconMarkup ? "middle" : "start"}" font-family="IBM Plex Sans, Arial, sans-serif" font-size="${iconMarkup ? 11 : 15}" font-weight="600">${safeText}</text>
       <text x="10" y="66" fill="${subtext}" font-family="IBM Plex Sans, Arial, sans-serif" font-size="8" letter-spacing="1.4">${escapeSvgText(theme.name.toUpperCase())}</text>
@@ -162,7 +175,7 @@ export async function renderTextImage(options: TextImageOptions): Promise<Buffer
     text: theme.foreground,
   }
 
-  return renderSvg(buildTextSvg(options.text ?? "", options.icon, preset, theme), preset)
+  return renderSvg(buildTextSvg(options, preset, theme), preset)
 }
 
 export async function renderBlankKeyImage(): Promise<Buffer> {

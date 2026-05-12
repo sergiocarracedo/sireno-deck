@@ -16,6 +16,8 @@ export interface DeckButtonProps {
   keyIndex: number
   label?: string
   icon?: string
+  subtitle?: string
+  variant?: "default" | "toggle"
 }
 
 export interface DeckSurfaceProps {
@@ -27,7 +29,9 @@ export interface RenderNode {
   keyIndex?: number
   label?: string
   icon?: string
-  text?: string
+   subtitle?: string
+   text?: string
+   variant?: "default" | "toggle"
   children: RenderNode[]
 }
 
@@ -35,6 +39,8 @@ export interface RenderDescription {
   keyIndex: number
   label?: string
   icon?: string
+  subtitle?: string
+  variant?: "default" | "toggle"
 }
 
 interface RenderContainer {
@@ -124,6 +130,8 @@ const hostConfig: ReactReconciler.HostConfig<
         keyIndex: props.keyIndex,
         label: props.label,
         icon: props.icon,
+        subtitle: props.subtitle,
+        variant: props.variant,
         children: [],
       }
     }
@@ -145,6 +153,8 @@ const hostConfig: ReactReconciler.HostConfig<
           keyIndex: button.keyIndex,
           label: button.label,
           icon: button.icon,
+          subtitle: button.subtitle,
+          variant: button.variant,
           children: [],
         })),
       }
@@ -220,6 +230,8 @@ const hostConfig: ReactReconciler.HostConfig<
       instance.keyIndex = newProps.keyIndex
       instance.label = newProps.label
       instance.icon = newProps.icon
+      instance.subtitle = newProps.subtitle
+      instance.variant = newProps.variant
       return
     }
 
@@ -235,6 +247,8 @@ const hostConfig: ReactReconciler.HostConfig<
         keyIndex: button.keyIndex,
         label: button.label,
         icon: button.icon,
+        subtitle: button.subtitle,
+        variant: button.variant,
         children: [],
       }))
     }
@@ -291,7 +305,13 @@ function collectRenderDescriptions(nodes: readonly RenderNode[]): RenderDescript
 
   for (const node of nodes) {
     if (node.type === "deck-button" && node.keyIndex !== undefined) {
-      descriptions.push({ keyIndex: node.keyIndex, label: node.label, icon: node.icon })
+      descriptions.push({
+        keyIndex: node.keyIndex,
+        ...(node.icon !== undefined ? { icon: node.icon } : {}),
+        ...(node.label !== undefined ? { label: node.label } : {}),
+        ...(node.subtitle !== undefined ? { subtitle: node.subtitle } : {}),
+        ...(node.variant !== undefined ? { variant: node.variant } : {}),
+      })
     }
 
     if (node.type === "deck-text" && node.keyIndex !== undefined && node.text !== undefined) {
@@ -319,8 +339,18 @@ export function createDeckSurfaceElement(props: DeckSurfaceProps): ReactElement<
 export function createDisplayButtonModels(buttons: readonly ButtonInstance[]): DeckButtonProps[] {
   return buttons.map((button) => ({
     keyIndex: button.position,
-    label: button.label,
-    icon: button.icon,
+    ...(button.type === "toggle"
+      ? {
+          ...(button.states[0]?.label !== undefined ? { label: button.states[0].label } : {}),
+          ...(button.states[0]?.icon !== undefined ? { icon: button.states[0].icon } : {}),
+          ...(button.states[0]?.key !== undefined ? { subtitle: button.states[0].key.toUpperCase() } : {}),
+          variant: "toggle" as const,
+        }
+      : {
+          ...(button.label !== undefined ? { label: button.label } : {}),
+          ...(button.icon !== undefined ? { icon: button.icon } : {}),
+          variant: "default" as const,
+        }),
   }))
 }
 
