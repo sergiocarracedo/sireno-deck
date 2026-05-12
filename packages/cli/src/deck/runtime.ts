@@ -21,6 +21,7 @@ export interface DeckRuntimeOptions {
 }
 
 export interface DeckRuntime {
+  activateCurrentDeck: () => Promise<void>
   getActiveDeck: () => DeckConfig
   getActiveDeckButtons: () => DeckButtonProps[]
   getButton: (keyIndex: number) => ButtonInstance | undefined
@@ -221,6 +222,9 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   return {
+    async activateCurrentDeck() {
+      await renderDeck()
+    },
     getActiveDeck() {
       return deckController.getActiveDeck()
     },

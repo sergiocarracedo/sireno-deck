@@ -74,18 +74,25 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     const config = loadConfig(options.config)
     const theme = resolveTheme(config.theme)
     const mainDeck = config.decks[config.main_deck]
+    let runtime: ReturnType<typeof createDeckRuntime> | null = null
     const lifecycle = createStreamDeckLifecycle({
       logger,
       onReconnect: async (connection) => {
-        // Replay last rendered buffers after reconnect.
-        await replayLastRenderedBuffers(connection)
+        if (!runtime) {
+          await replayLastRenderedBuffers(connection)
+          return
+        }
+
+        await runtime.activateCurrentDeck()
       },
       selector: { serial: config.device?.serial },
     })
 
     const connection = await lifecycle.start()
-    const runtime = createDeckRuntime({
+    runtime = createDeckRuntime({
       deck: mainDeck,
+      decks: config.decks,
+      keyCount: connection.info.keyCount,
       onRenderButton: async (button) => {
         const activeConnection = lifecycle.getConnection()
         if (!activeConnection) {
@@ -124,7 +131,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
     writePid()
     cleanupSignals = setupSignalHandlers(logger, async () => {
-      runtime.stop()
+      runtime?.stop()
       await lifecycle.close()
     })
   } catch (error) {
