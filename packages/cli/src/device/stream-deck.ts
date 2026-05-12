@@ -1,6 +1,11 @@
 import * as streamDeckNode from "@elgato-stream-deck/node"
 
-import type { StreamDeck, StreamDeckDeviceInfo } from "@elgato-stream-deck/node"
+import type {
+  StreamDeck,
+  StreamDeckButtonControlDefinition,
+  StreamDeckDeviceInfo,
+  StreamDeckEncoderControlDefinition,
+} from "@elgato-stream-deck/node"
 
 export interface StreamDeckSelector {
   serial?: string
@@ -52,8 +57,16 @@ export interface StreamDeckLifecycleOptions {
 export interface StreamDeckLifecycle {
   close: () => Promise<void>
   getConnection: () => StreamDeckConnection | null
+  subscribeKeyEvents: (listener: StreamDeckKeyListener) => () => void
   start: () => Promise<StreamDeckConnection>
 }
+
+export interface StreamDeckKeyEvent {
+  keyIndex: number
+  type: "down" | "up"
+}
+
+export type StreamDeckKeyListener = (event: StreamDeckKeyEvent) => void
 
 const defaultApi: StreamDeckApi = {
   listStreamDecks: streamDeckNode.listStreamDecks,
@@ -226,6 +239,12 @@ export async function closeStreamDeckConnection(connection: StreamDeckConnection
   await connection.device.close().catch(() => undefined)
 }
 
+function isButtonControl(
+  control: StreamDeckButtonControlDefinition | StreamDeckEncoderControlDefinition,
+): control is StreamDeckButtonControlDefinition {
+  return control.type === "button"
+}
+
 export function createStreamDeckLifecycle(
   options: StreamDeckLifecycleOptions = {},
 ): StreamDeckLifecycle {
@@ -239,8 +258,15 @@ export function createStreamDeckLifecycle(
 
   let activeConnection: StreamDeckConnection | null = null
   let activeErrorHandler: ((error: unknown) => void) | null = null
+  let activeDownHandler:
+    | ((control: StreamDeckButtonControlDefinition | StreamDeckEncoderControlDefinition) => void)
+    | null = null
+  let activeUpHandler:
+    | ((control: StreamDeckButtonControlDefinition | StreamDeckEncoderControlDefinition) => void)
+    | null = null
   let closed = false
   const lastWrittenBuffers = new Map<number, Buffer>()
+  const keyListeners = new Set<StreamDeckKeyListener>()
   let reconnectPromise: Promise<void> | null = null
   let reconnectSerial = options.selector?.serial
 
@@ -252,8 +278,22 @@ export function createStreamDeckLifecycle(
     activeErrorHandler = null
   }
 
+  function detachKeyHandlers(): void {
+    if (activeConnection && activeDownHandler) {
+      activeConnection.device.off("down", activeDownHandler)
+    }
+
+    if (activeConnection && activeUpHandler) {
+      activeConnection.device.off("up", activeUpHandler)
+    }
+
+    activeDownHandler = null
+    activeUpHandler = null
+  }
+
   function attachConnection(connection: StreamDeckConnection): void {
     detachErrorHandler()
+    detachKeyHandlers()
     activeConnection = connection
     reconnectSerial = connection.info.serialNumber ?? reconnectSerial
 
@@ -266,6 +306,29 @@ export function createStreamDeckLifecycle(
     }
 
     connection.device.on("error", activeErrorHandler)
+
+    activeDownHandler = (control) => {
+      if (!isButtonControl(control)) {
+        return
+      }
+
+      for (const listener of keyListeners) {
+        listener({ keyIndex: control.index, type: "down" })
+      }
+    }
+
+    activeUpHandler = (control) => {
+      if (!isButtonControl(control)) {
+        return
+      }
+
+      for (const listener of keyListeners) {
+        listener({ keyIndex: control.index, type: "up" })
+      }
+    }
+
+    connection.device.on("down", activeDownHandler)
+    connection.device.on("up", activeUpHandler)
   }
 
   async function handleDisconnect(error: unknown): Promise<void> {
@@ -359,11 +422,19 @@ export function createStreamDeckLifecycle(
     getConnection() {
       return activeConnection
     },
+    subscribeKeyEvents(listener) {
+      keyListeners.add(listener)
+
+      return () => {
+        keyListeners.delete(listener)
+      }
+    },
     async close() {
       closed = true
       const pendingReconnect = reconnectPromise
       reconnectPromise = null
       detachErrorHandler()
+      detachKeyHandlers()
 
       const connection = activeConnection
       activeConnection = null

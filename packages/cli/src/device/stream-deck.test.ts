@@ -8,6 +8,7 @@ import {
   connectStreamDeck,
   createStreamDeckLifecycle,
   replayLastRenderedBuffers,
+  type StreamDeckKeyEvent,
   writeKeyBuffer,
 } from "./stream-deck.js"
 
@@ -177,6 +178,56 @@ describe("stream deck connection", () => {
 
     await lifecycle.close()
     expect(secondDevice.closed).toBe(1)
+  })
+
+  it("dispatches key down and up events to subscribed listeners", async () => {
+    const device = new FakeStreamDeck("Stream Deck MK.2", 15)
+    const lifecycle = createStreamDeckLifecycle({
+      api: {
+        listStreamDecks: async () => [
+          { model: "mk2" as never, path: "/dev/hidraw0", serialNumber: "SERIAL-42" },
+        ],
+        openStreamDeck: async () => device as never,
+        getStreamDeckModelName: () => "Stream Deck MK.2",
+      },
+    })
+
+    const events: StreamDeckKeyEvent[] = []
+    lifecycle.subscribeKeyEvents((event) => {
+      events.push(event)
+    })
+
+    await lifecycle.start()
+
+    device.emit("down", device.CONTROLS[2])
+    device.emit("up", device.CONTROLS[2])
+
+    expect(events).toEqual([
+      { keyIndex: 2, type: "down" },
+      { keyIndex: 2, type: "up" },
+    ])
+  })
+
+  it("stops delivering key events after unsubscribe", async () => {
+    const device = new FakeStreamDeck("Stream Deck MK.2", 15)
+    const lifecycle = createStreamDeckLifecycle({
+      api: {
+        listStreamDecks: async () => [
+          { model: "mk2" as never, path: "/dev/hidraw0", serialNumber: "SERIAL-42" },
+        ],
+        openStreamDeck: async () => device as never,
+        getStreamDeckModelName: () => "Stream Deck MK.2",
+      },
+    })
+
+    const listener = vi.fn()
+    const unsubscribe = lifecycle.subscribeKeyEvents(listener)
+
+    await lifecycle.start()
+    unsubscribe()
+
+    device.emit("down", device.CONTROLS[1])
+    expect(listener).not.toHaveBeenCalled()
   })
 
   it("reports an unmatched serial clearly", async () => {
