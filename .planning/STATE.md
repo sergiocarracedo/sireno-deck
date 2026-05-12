@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-05-12)
 
 Phase: 1 of 5 (Foundation)
 Plan: 0 of ? in current phase
-Status: Ready to plan (run `/discuss-phase 1` to begin)
-Last activity: 2026-05-12 — Roadmap created, new-project workflow complete
+Status: Ready to plan
+Last activity: 2026-05-12 — Phase 1 context captured via discuss-phase
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -41,7 +41,7 @@ Progress: [░░░░░░░░░░] 0%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- None yet — project initialization complete, no phases executed.
+- **Phase 1:** Followed recommended standard tooling (tsup, pnpm, ESM, strict TS). Full forward-looking config schema. PID-file daemon lifecycle. pino + colored error UX.
 
 ### Pending Todos
 
@@ -55,5 +55,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-05-12
-Stopped at: New-project workflow complete. Roadmap approved. Ready for `/discuss-phase 1`.
+Stopped at: Discuss-phase 1 complete. All decisions captured in .planning/phases/01-foundation/01-CONTEXT.md. Ready for `/plan-phase 1`.
 Resume file: None
