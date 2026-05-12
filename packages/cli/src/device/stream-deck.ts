@@ -202,6 +202,15 @@ export async function blankRemainingKeys(
   await Promise.all(blankWrites)
 }
 
+export async function writeRenderDescriptions(
+  connection: StreamDeckConnection,
+  buffersByKey: ReadonlyMap<number, Buffer>,
+): Promise<void> {
+  for (const [keyIndex, buffer] of buffersByKey.entries()) {
+    await writeKeyBuffer(connection, keyIndex, buffer)
+  }
+}
+
 export async function replayLastRenderedBuffers(connection: StreamDeckConnection): Promise<void> {
   for (const [keyIndex, buffer] of connection.lastWrittenBuffers.entries()) {
     await connection.device.fillKeyBuffer(keyIndex, buffer, { format: "rgb" })

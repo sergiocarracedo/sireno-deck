@@ -10,10 +10,14 @@ export interface DeckTextProps {
   text: string
 }
 
+export interface DeckSurfaceProps {
+  labels: string[]
+}
+
 export interface RenderNode {
-  type: "deck-text"
-  keyIndex: number
-  text: string
+  type: "deck-surface" | "deck-text"
+  keyIndex?: number
+  text?: string
   children: RenderNode[]
 }
 
@@ -59,6 +63,15 @@ function isDeckTextProps(props: unknown): props is DeckTextProps {
   )
 }
 
+function isDeckSurfaceProps(props: unknown): props is DeckSurfaceProps {
+  return (
+    typeof props === "object" &&
+    props !== null &&
+    "labels" in props &&
+    Array.isArray((props as DeckSurfaceProps).labels)
+  )
+}
+
 const hostConfig: ReactReconciler.HostConfig<
   string,
   DeckTextProps,
@@ -84,16 +97,28 @@ const hostConfig: ReactReconciler.HostConfig<
   warnsIfNotActing: false,
 
   createInstance(type, props) {
-    if (type !== "deck-text" || !isDeckTextProps(props)) {
-      throw new Error(`Unsupported render node '${type}'`)
+    if (type === "deck-text" && isDeckTextProps(props)) {
+      return {
+        type: "deck-text",
+        keyIndex: props.keyIndex,
+        text: props.text,
+        children: [],
+      }
     }
 
-    return {
-      type: "deck-text",
-      keyIndex: props.keyIndex,
-      text: props.text,
-      children: [],
+    if (type === "deck-surface" && isDeckSurfaceProps(props)) {
+      return {
+        type: "deck-surface",
+        children: props.labels.map((label, keyIndex) => ({
+          type: "deck-text",
+          keyIndex,
+          text: label,
+          children: [],
+        })),
+      }
     }
+
+    throw new Error(`Unsupported render node '${type}'`)
   },
   createTextInstance() {
     throw new Error("Text nodes are not supported; use <deck-text text=... />")
@@ -159,8 +184,20 @@ const hostConfig: ReactReconciler.HostConfig<
     container.children.splice(index >= 0 ? index : container.children.length, 0, child)
   },
   commitUpdate(instance, _type, _oldProps, newProps) {
-    instance.keyIndex = newProps.keyIndex
-    instance.text = newProps.text
+    if (instance.type === "deck-text" && isDeckTextProps(newProps)) {
+      instance.keyIndex = newProps.keyIndex
+      instance.text = newProps.text
+      return
+    }
+
+    if (instance.type === "deck-surface" && isDeckSurfaceProps(newProps)) {
+      instance.children = newProps.labels.map((label, keyIndex) => ({
+        type: "deck-text",
+        keyIndex,
+        text: label,
+        children: [],
+      }))
+    }
   },
   commitTextUpdate() {},
   resetTextContent() {},
@@ -213,7 +250,9 @@ function collectRenderDescriptions(nodes: readonly RenderNode[]): RenderDescript
   const descriptions: RenderDescription[] = []
 
   for (const node of nodes) {
-    descriptions.push({ keyIndex: node.keyIndex, text: node.text })
+    if (node.type === "deck-text" && node.keyIndex !== undefined && node.text !== undefined) {
+      descriptions.push({ keyIndex: node.keyIndex, text: node.text })
+    }
     descriptions.push(...collectRenderDescriptions(node.children))
   }
 
@@ -224,7 +263,13 @@ export function createDeckTextElement(props: DeckTextProps): ReactElement<DeckTe
   return createElement("deck-text", props)
 }
 
-export function renderDeck(element: ReactElement<DeckTextProps>): RenderDescription[] {
+export function createDeckSurfaceElement(props: DeckSurfaceProps): ReactElement<DeckSurfaceProps> {
+  return createElement("deck-surface", props)
+}
+
+export function renderDeck(
+  element: ReactElement<DeckTextProps | DeckSurfaceProps>,
+): RenderDescription[] {
   const container = createContainer()
   const root = reconciler.createContainer(
     container,
