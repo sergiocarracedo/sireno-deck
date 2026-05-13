@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 5 — executing Plan 05-02
+**Current focus:** Phase 5 — executing Plan 05-03
 
 ## Current Position
 
-Phase: 4 of 5 (Advanced Buttons)
+Phase: 5 of 5 (Addon System)
 Plan: 3 of 3 in current phase
-Status: Phase 4 review finalized; ready for /ship after hardware UAT
-Last activity: 2026-05-13 - Completed Plan 05-01 and booted the addon-first runtime with a bundled button slice
+Status: Plan 05-02 complete; ready to execute final addon proof in Plan 05-03
+Last activity: 2026-05-13 - Completed Plan 05-02 and wired external addon loading with startup failure isolation
 
-Progress: [██████░░░░] 60%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Recent decisions affecting current work:
 ### Progress Notes
 
 - **Plan 05-01:** Completed the addon API, bundled registry, bootstrap-aware config validation, and the first generic addon-host runtime slice.
+- **Plan 05-02:** Completed addon manifest validation, unified local/npm loading, startup warning isolation, and external-addon regression coverage.
 
 ### Blockers/Concerns
 
@@ -64,8 +65,8 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-13
-Stopped at: Plan 05-01 complete. Next up is external addon manifest and loader execution in Plan 05-02.
-Resume file: .planning/phases/05-addon-system/05-02-PLAN.md
+Stopped at: Plan 05-02 complete. Next up is addon assets, deck types, and the bundled emoji selector in Plan 05-03.
+Resume file: .planning/phases/05-addon-system/05-03-PLAN.md
 
 ### Quick Tasks Completed
 
