@@ -4,6 +4,7 @@ import { join } from "node:path"
 
 import { afterEach, describe, expect, it } from "vitest"
 
+import { AddonManifestError } from "./manifest.js"
 import { createAddonRegistry } from "./registry.js"
 import { loadConfiguredAddons } from "./loader.js"
 
@@ -73,35 +74,49 @@ describe("loadConfiguredAddons", () => {
     expect(registry.getButton("npm-addon-button")?.type).toBe("npm-addon-button")
   })
 
-  it("returns warnings for broken manifests, broken imports, and apiVersion mismatches", async () => {
+  it("returns warnings for broken manifests and broken imports", async () => {
     const missingManifestRoot = mkdtempSync(join(tmpdir(), "sireno-addon-missing-"))
     const brokenImportRoot = mkdtempSync(join(tmpdir(), "sireno-addon-broken-"))
-    const badVersionRoot = mkdtempSync(join(tmpdir(), "sireno-addon-version-"))
-    tempDirs.push(missingManifestRoot, brokenImportRoot, badVersionRoot)
+    tempDirs.push(missingManifestRoot, brokenImportRoot)
 
     writeAddonFixture(missingManifestRoot, { missingManifest: true, name: "missing-addon" })
     writeAddonFixture(brokenImportRoot, { brokenImport: true, name: "broken-addon" })
-    writeAddonFixture(badVersionRoot, { apiVersion: 99, name: "version-addon" })
 
     const registry = createAddonRegistry()
     const result = await loadConfiguredAddons({
       addons: [
         { enabled: true, name: "missing-addon", path: missingManifestRoot, source: "local" },
         { enabled: true, name: "broken-addon", path: brokenImportRoot, source: "local" },
-        { enabled: true, name: "version-addon", path: badVersionRoot, source: "local" },
       ],
       registry,
     })
 
     expect(result.loaded).toEqual([])
-    expect(result.warnings).toHaveLength(3)
+    expect(result.warnings).toHaveLength(2)
     expect(result.warnings.map((warning) => warning.addonName)).toEqual([
       "missing-addon",
       "broken-addon",
-      "version-addon",
     ])
     expect(result.warnings[0]?.reason).toContain("missing package.json")
     expect(result.warnings[1]?.reason).toContain("broken import")
-    expect(result.warnings[2]?.reason).toContain("apiVersion 99")
+  })
+
+  it("rejects apiVersion mismatches explicitly", async () => {
+    const badVersionRoot = mkdtempSync(join(tmpdir(), "sireno-addon-version-"))
+    tempDirs.push(badVersionRoot)
+    writeAddonFixture(badVersionRoot, { apiVersion: 99, name: "version-addon" })
+
+    const registry = createAddonRegistry()
+
+    await expect(
+      loadConfiguredAddons({
+        addons: [{ enabled: true, name: "version-addon", path: badVersionRoot, source: "local" }],
+        registry,
+      }),
+    ).rejects.toEqual(expect.objectContaining<Partial<AddonManifestError>>({
+      code: "api_version_mismatch",
+      message: expect.stringContaining("apiVersion 99"),
+      name: "AddonManifestError",
+    }))
   })
 })

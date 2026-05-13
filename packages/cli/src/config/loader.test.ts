@@ -3,8 +3,10 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { z } from "zod"
 
 import { ConfigValidationError } from "../core/schemas.js"
+import { createAddonRegistry } from "../addon/registry.js"
 
 const loadConfigModule = async () => import("./loader.js")
 
@@ -241,5 +243,56 @@ describe("loadConfig", () => {
     }
 
     throw new Error("Expected config validation to fail")
+  })
+
+  it("validates externally registered addon payloads and preserves line information", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: external-clock",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const registry = createAddonRegistry()
+    registry.registerAddon({
+      apiVersion: 1,
+      name: "external-addon",
+      buttons: [
+        {
+          type: "external-clock",
+          configSchema: z.object({
+            label: z.string().min(1),
+          }),
+          createInstance() {
+            return {
+              render() {
+                return null as never
+              },
+            }
+          },
+        },
+      ],
+    })
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig(undefined, registry)
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).lineNumber).toBe(7)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "buttons", 0, "label"])
+      return
+    }
+
+    throw new Error("Expected external addon payload validation to fail")
   })
 })
