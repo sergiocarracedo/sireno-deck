@@ -8,10 +8,20 @@ decks:
       - position: 0
         type: builtin-display-text
         label: Clock
+        icon: addon://core-buttons/clock.svg
       - position: 1
-        type: builtin-display-text
-        label: Sireno
-        icon: themes/dark.yml
+        type: builtin-change-deck
+        label: Emoji
+        icon: addon://emoji-selector/favorites.svg
+        target_deck: emoji
+  emoji:
+    id: emoji
+    type: emoji-selector
+    favorites:
+      - 😀
+      - 🔥
+      - 🍕
+    select_command: "printf '%s' '{{emoji}}'"
 addons:
   - name: local-clock-addon
     source: local
