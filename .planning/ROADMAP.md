@@ -107,6 +107,8 @@ Full 37/37 requirements mapped. No circular dependencies.
 
 ### Phase 5: Addon System
 
+**Status:** ✓ Complete (2026-05-13)
+
 **Goal:** Let users install addons from local folders and npm, validate manifests, register custom button/deck types, and ship the emoji selector addon as a validation of the full extension model.
 
 **Requirements:** ADDN-01, ADDN-02, ADDN-03, ADDN-04, ADDN-05, ADDN-06, ADDN-07, ADDN-10
@@ -114,14 +116,14 @@ Full 37/37 requirements mapped. No circular dependencies.
 **Depends on:** Phase 3 (needs button type registry and deck controller to register/types against)
 
 **Success criteria:**
-- [ ] An addon in a local folder with a valid manifest loads at startup and its button type is available in config
-- [ ] An addon installed via npm with a valid manifest loads at startup
-- [ ] An addon with a broken manifest or import error is skipped with a logged warning; other addons and the CLI continue loading
-- [ ] An addon registers a custom button type with a React component that renders to a Stream Deck key
-- [ ] An addon registers a custom deck type with a pre-configured button layout
-- [ ] An addon ships icons that can be referenced by path in button config
-- [ ] An addon declaring `apiVersion: 99` (mismatched) is rejected with a clear error
-- [ ] The emoji selector addon boots, shows emoji categories as sub-decks, allows emoji selection, and respects the favorites config
+- [x] An addon in a local folder with a valid manifest loads at startup and its button type is available in config
+- [x] An addon installed via npm with a valid manifest loads at startup
+- [x] An addon with a broken manifest or import error is skipped with a logged warning; other addons and the CLI continue loading
+- [x] An addon registers a custom button type with a React component that renders to a Stream Deck key
+- [x] An addon registers a custom deck type with a pre-configured button layout
+- [x] An addon ships icons that can be referenced by path in button config
+- [x] An addon declaring `apiVersion: 99` (mismatched) is rejected with a clear error
+- [x] The emoji selector addon boots, shows emoji categories as sub-decks, allows emoji selection, and respects the favorites config
 
 **Research needed:** Yes — addon API contract design and dynamic `import()` module loading with error boundaries need careful architecture decisions during planning
 

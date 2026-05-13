@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.0 — Sireno Deck CLI
-**Phase:** 4 — Advanced Buttons
-**Status:** planning
-**Last updated:** 2026-05-12
+**Phase:** 5 — Addon System ✓ complete
+**Status:** verifying
+**Last updated:** 2026-05-13
 
 ---
 
@@ -192,6 +192,7 @@ sireno-deck/
 │       └── vitest.config.ts
 ├── addons/                  # User-installed addon folders
 ├── builtin-addons/          # First-party addons shipped with the CLI
+│   ├── core-buttons/
 │   └── emoji-selector/
 ├── themes/                  # Built-in theme YAML files
 │   ├── dark.yml
