@@ -1,0 +1,22 @@
+builtin-addons/emoji-selector/src/index.test.ts
+  s_26099f9ddf91b0::t_76bdd4ccb5cdf5 41,43-51,53-55,73-76
+  s_26099f9ddf91b0::t_05160b985cfae7 42,52,56-72
+packages/cli/src/deck/runtime.test.ts
+  s_26099f9ddf91b0::t_05160b985cfae7 202-207
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "29971cfdc5b113a75ef287068147ff6019c3bd1b",
+  "prompts": {},
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
