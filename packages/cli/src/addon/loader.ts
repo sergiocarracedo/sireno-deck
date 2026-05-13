@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from "node:fs"
 import { dirname, join, resolve } from "node:path"
 import { pathToFileURL } from "node:url"
 
-import { validateAddonApiVersion, validateAddonManifest, type AddonManifest } from "./manifest.js"
+import { AddonManifestError, validateAddonApiVersion, validateAddonManifest, type AddonManifest } from "./manifest.js"
 
 import type { AddonRegistry } from "./registry.js"
 import type { AddonSchema } from "../core/schemas.js"
@@ -107,6 +107,10 @@ export async function loadConfiguredAddons(options: LoadConfiguredAddonsOptions)
       options.registry.registerAddon(loadedAddon)
       loaded.push({ addon: loadedAddon, manifest, rootDir })
     } catch (error) {
+      if (error instanceof AddonManifestError && error.code === "api_version_mismatch") {
+        throw error
+      }
+
       warnings.push({
         addonName: addon.name,
         reason: error instanceof Error ? error.message : String(error),

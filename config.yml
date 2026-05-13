@@ -12,6 +12,11 @@ decks:
         type: builtin-display-text
         label: Sireno
         icon: themes/dark.yml
-addons: []
+addons:
+  - name: local-clock-addon
+    source: local
+    path: addons/local-clock-addon
+  - name: "@sireno-deck/community-addon"
+    source: npm
 logging:
   level: info

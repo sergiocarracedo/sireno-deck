@@ -89,7 +89,7 @@ export interface SirenoConfig {
   logging: z.infer<typeof LoggingSchema>
 }
 
-type BootstrapSirenoConfig = z.infer<typeof BootstrapSirenoConfigSchema>
+export type BootstrapSirenoConfig = z.infer<typeof BootstrapSirenoConfigSchema>
 
 export class ConfigValidationError extends Error {
   constructor(
@@ -154,7 +154,7 @@ function toConfigValidationError(issue: ZodIssue, pathPrefix: readonly ConfigPat
   )
 }
 
-function validateBootstrapConfig(data: unknown): BootstrapSirenoConfig {
+export function validateBootstrapConfig(data: unknown): BootstrapSirenoConfig {
   const result = BootstrapSirenoConfigSchema.safeParse(data)
   if (!result.success) {
     throw toConfigValidationError(result.error.issues[0])

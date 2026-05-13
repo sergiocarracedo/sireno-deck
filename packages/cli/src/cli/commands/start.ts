@@ -1,6 +1,8 @@
 import type pino from "pino"
 
-import { createBundledAddonRegistry, loadConfig } from "../../config/loader.js"
+import { loadConfiguredAddons } from "../../addon/loader.js"
+import { AddonManifestError } from "../../addon/manifest.js"
+import { createBundledAddonRegistry, loadBootstrapConfig, loadConfig } from "../../config/loader.js"
 import { resolveTheme } from "../../config/theme.js"
 import { ConfigValidationError } from "../../core/schemas.js"
 import { createDeckRuntime } from "../../deck/runtime.js"
@@ -28,6 +30,25 @@ import {
 export interface StartOptions {
   config?: string
   logger: pino.Logger
+}
+
+export async function loadRuntimeConfig(options: StartOptions) {
+  const bootstrap = loadBootstrapConfig(options.config)
+  const registry = createBundledAddonRegistry()
+  const addonLoadResult = await loadConfiguredAddons({
+    addons: bootstrap.config.addons,
+    cwd: bootstrap.cwd,
+    registry,
+  })
+
+  for (const warning of addonLoadResult.warnings) {
+    options.logger.warn({ addonName: warning.addonName, reason: warning.reason }, "skipping addon after startup warning")
+  }
+
+  return {
+    config: loadConfig(bootstrap.filePath, registry),
+    registry,
+  }
 }
 
 async function renderMainDeck(
@@ -76,8 +97,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
   }
 
   try {
-    const registry = createBundledAddonRegistry()
-    const config = loadConfig(options.config, registry)
+    const { config } = await loadRuntimeConfig(options)
     const theme = resolveTheme(config.theme)
     const mainDeck = config.decks[config.main_deck]
     let runtime: ReturnType<typeof createDeckRuntime> | null = null
@@ -147,6 +167,12 @@ export async function startDaemon(options: StartOptions): Promise<void> {
       await lifecycle.close()
     })
   } catch (error) {
+    if (error instanceof AddonManifestError && error.code === "api_version_mismatch") {
+      console.error(`Addon apiVersion error: ${error.message}`)
+      process.exitCode = 1
+      return
+    }
+
     if (error instanceof ConfigValidationError) {
       console.error(formatConfigError(error))
       process.exitCode = 1
@@ -170,7 +196,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
   }
 
   logger.info({ pid: process.pid }, "sireno-deck daemon started")
-    logger.info("started config-driven main deck runtime with addon-hosted buttons")
+  logger.info("started config-driven main deck runtime with addon-hosted buttons")
   logger.info("press Ctrl+C to stop")
 
   try {
