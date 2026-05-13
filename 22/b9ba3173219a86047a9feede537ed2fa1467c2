@@ -1,0 +1,22 @@
+.planning/phases/05-addon-system/05-01-SUMMARY.md
+  s_26099f9ddf91b0::t_ff3386e8859d37 1-26
+.planning/STATE.md
+  s_26099f9ddf91b0::t_d5dded5daaf16a 48-49,62
+  s_26099f9ddf91b0::t_ff3386e8859d37 8,15,55-58,67-68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "22b9ba3173219a86047a9feede537ed2fa1467c2",
+  "prompts": {},
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
