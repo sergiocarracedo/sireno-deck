@@ -13,7 +13,7 @@ export interface TextImageOptions {
   subtitle?: string
   text?: string
   theme?: Theme
-  variant?: "default" | "fan" | "media" | "metric" | "toggle"
+  variant?: "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
   width?: number
   height?: number
 }
@@ -88,6 +88,37 @@ function getMimeType(iconPath: string): string {
   }
 }
 
+function parseSvgViewBox(iconSvg: string): string {
+  const explicitViewBox = iconSvg.match(/viewBox\s*=\s*"([^"]+)"/i)?.[1]
+  if (explicitViewBox) {
+    return explicitViewBox
+  }
+
+  const width = Number.parseFloat(iconSvg.match(/width\s*=\s*"([^"]+)"/i)?.[1] ?? "72")
+  const height = Number.parseFloat(iconSvg.match(/height\s*=\s*"([^"]+)"/i)?.[1] ?? "72")
+
+  return `0 0 ${width} ${height}`
+}
+
+function getSvgIconMarkup(iconSvg: string): string {
+  const innerMarkup = iconSvg
+    .replace(/^[\s\S]*?<svg[^>]*>/i, "")
+    .replace(/<\/svg>\s*$/i, "")
+    .trim()
+
+  if (!innerMarkup) {
+    return ""
+  }
+
+  const [, , width, height] = parseSvgViewBox(iconSvg)
+    .split(/\s+/)
+    .map((value) => Number.parseFloat(value))
+  const scaleX = width > 0 ? 36 / width : 1
+  const scaleY = height > 0 ? 36 / height : 1
+
+  return `<g transform="translate(18 14) scale(${scaleX} ${scaleY})">${innerMarkup}</g>`
+}
+
 function getIconMarkup(iconPath: string | undefined): string {
   if (!iconPath) {
     return ""
@@ -96,6 +127,10 @@ function getIconMarkup(iconPath: string | undefined): string {
   const resolvedIconPath = resolve(process.cwd(), iconPath)
   if (!existsSync(resolvedIconPath)) {
     return ""
+  }
+
+  if (extname(resolvedIconPath).toLowerCase() === ".svg") {
+    return getSvgIconMarkup(readFileSync(resolvedIconPath, "utf-8"))
   }
 
   const encoded = readFileSync(resolvedIconPath).toString("base64")
@@ -218,7 +253,37 @@ function buildMediaSvg(options: TextImageOptions, preset: TextImagePreset, theme
   `.trim()
 }
 
+function buildEmojiSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
+  const alias = escapeSvgText(options.text ?? "EMOJI")
+  const category = options.subtitle ? escapeSvgText(options.subtitle) : "EMOJI"
+  const chipWidth = Math.max(28, Math.min(52, 14 + category.length * 4.2))
+  const chipX = (preset.keyWidth - chipWidth) / 2
+
+  return `
+    <svg width="${preset.keyWidth}" height="${preset.keyHeight}" viewBox="0 0 ${preset.keyWidth} ${preset.keyHeight}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="emoji-card" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="${mixHexColor(theme.background, theme.accent, 0.16)}" />
+          <stop offset="100%" stop-color="${mixHexColor(theme.background, theme.primary, 0.14)}" />
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="${preset.keyWidth}" height="${preset.keyHeight}" rx="16" fill="url(#emoji-card)" />
+      <rect x="4" y="4" width="${preset.keyWidth - 8}" height="${preset.keyHeight - 8}" rx="12" fill="none" stroke="${mixHexColor(theme.foreground, theme.background, 0.7)}" stroke-width="1.5" />
+      <circle cx="16" cy="16" r="5" fill="${theme.accent}" opacity="0.95" />
+      <circle cx="56" cy="16" r="3" fill="${theme.primary}" opacity="0.9" />
+      <rect x="${chipX}" y="10" width="${chipWidth}" height="12" rx="6" fill="${mixHexColor(theme.background, theme.foreground, 0.08)}" stroke="${mixHexColor(theme.foreground, theme.background, 0.2)}" stroke-width="1" />
+      <text x="${preset.keyWidth / 2}" y="18" fill="${theme.foreground}" text-anchor="middle" font-family="IBM Plex Sans, Arial, sans-serif" font-size="7" font-weight="700" letter-spacing="0.8">${category.toUpperCase()}</text>
+      <text x="${preset.keyWidth / 2}" y="42" fill="${theme.foreground}" text-anchor="middle" font-family="IBM Plex Sans, Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="0.6">${alias}</text>
+      <text x="${preset.keyWidth / 2}" y="58" fill="${mixHexColor(theme.foreground, theme.background, 0.38)}" text-anchor="middle" font-family="IBM Plex Sans, Arial, sans-serif" font-size="7" letter-spacing="1.8">SELECT</text>
+    </svg>
+  `.trim()
+}
+
 function buildTextSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
+  if (options.variant === "emoji") {
+    return buildEmojiSvg(options, preset, theme)
+  }
+
   if (options.variant === "fan") {
     return buildFanSvg(options, preset, theme)
   }

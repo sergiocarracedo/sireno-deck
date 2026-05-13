@@ -1,10 +1,31 @@
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
-import { join } from "node:path"
+import { join, resolve } from "node:path"
 
 import { describe, expect, it } from "vitest"
 
 import { renderBlankKeyImage, renderTextImage } from "./text-image.js"
+
+function countRegionDiffs(left: Buffer, right: Buffer, region: { height: number; width: number; x: number; y: number }): number {
+  let differences = 0
+  const channels = 3
+  const imageWidth = 72
+
+  for (let row = region.y; row < region.y + region.height; row += 1) {
+    for (let column = region.x; column < region.x + region.width; column += 1) {
+      const offset = (row * imageWidth + column) * channels
+      if (
+        left[offset] !== right[offset] ||
+        left[offset + 1] !== right[offset + 1] ||
+        left[offset + 2] !== right[offset + 2]
+      ) {
+        differences += 1
+      }
+    }
+  }
+
+  return differences
+}
 
 describe("text-image", () => {
   it("renders a non-empty image buffer for a text visual", async () => {
@@ -50,25 +71,15 @@ describe("text-image", () => {
     expect(darkBuffer.equals(lightBuffer)).toBe(false)
   })
 
-  it("renders icon-backed cards when the icon file exists", async () => {
-    const tempDir = mkdtempSync(join(tmpdir(), "sireno-icon-"))
-    const originalCwd = process.cwd()
+  it("renders visible pixels inside the icon region for shipped bundled svg assets", async () => {
+    const iconPath = resolve(process.cwd(), "../../builtin-addons/emoji-selector/assets/favorites.svg")
 
-    try {
-      const iconPath = join(tempDir, "shell.svg")
-      writeFileSync(
-        iconPath,
-        '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><circle cx="16" cy="16" r="12" fill="#2563eb" /></svg>',
-      )
-      process.chdir(tempDir)
+    const iconBuffer = await renderTextImage({ text: "Emoji", icon: iconPath })
+    const noIconBuffer = await renderTextImage({ text: "Emoji" })
 
-      const buffer = await renderTextImage({ text: "Shell", icon: "./shell.svg" })
-
-      expect(buffer.length).toBe(72 * 72 * 3)
-    } finally {
-      process.chdir(originalCwd)
-      rmSync(tempDir, { recursive: true, force: true })
-    }
+    expect(iconBuffer.length).toBe(72 * 72 * 3)
+    expect(iconBuffer.equals(noIconBuffer)).toBe(false)
+    expect(countRegionDiffs(iconBuffer, noIconBuffer, { height: 36, width: 36, x: 18, y: 14 })).toBeGreaterThan(150)
   })
 
   it("renders toggle variants with badge metadata", async () => {
@@ -109,5 +120,12 @@ describe("text-image", () => {
     })
 
     expect(defaultBuffer.equals(mediaBuffer)).toBe(false)
+  })
+
+  it("renders emoji variants with deterministic ascii-safe content", async () => {
+    const defaultBuffer = await renderTextImage({ text: "GRIN", subtitle: "Favorites" })
+    const emojiBuffer = await renderTextImage({ text: "GRIN", subtitle: "Favorites", variant: "emoji" })
+
+    expect(defaultBuffer.equals(emojiBuffer)).toBe(false)
   })
 })
