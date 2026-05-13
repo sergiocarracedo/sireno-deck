@@ -104,7 +104,7 @@ export async function loadConfiguredAddons(options: LoadConfiguredAddonsOptions)
       const rootDir = getAddonRootPath(addon, cwd, options.resolveBareSpecifier)
       const manifest = readAddonManifest(rootDir, addon.name)
       const loadedAddon = await importAddon(rootDir, manifest)
-      options.registry.registerAddon(loadedAddon)
+      options.registry.registerAddon(loadedAddon, { rootDir })
       loaded.push({ addon: loadedAddon, manifest, rootDir })
     } catch (error) {
       if (error instanceof AddonManifestError && error.code === "api_version_mismatch") {

@@ -11,6 +11,21 @@ export interface AddonButtonEnvelope {
   type: string
 }
 
+export interface AddonDeckEnvelope {
+  id: string
+  type: string
+}
+
+export interface AddonGeneratedButton extends AddonButtonEnvelope {
+  [key: string]: unknown
+}
+
+export interface AddonGeneratedDeck {
+  buttons: AddonGeneratedButton[]
+  id: string
+  name?: string
+}
+
 export interface AddonButtonMethods {
   getActiveDeckId: () => string
   goBack: () => Promise<void> | void
@@ -44,8 +59,21 @@ export interface AddonButtonDefinition<TConfig = unknown> {
   type: string
 }
 
+export interface CreateAddonDeckOptions<TConfig> {
+  config: TConfig
+  deck: AddonDeckEnvelope
+}
+
+export interface AddonDeckDefinition<TConfig = unknown> {
+  configSchema: ZodType<TConfig>
+  createDecks: (options: CreateAddonDeckOptions<TConfig>) => Record<string, AddonGeneratedDeck>
+  type: string
+}
+
 export interface SirenoAddon {
   apiVersion: number
+  assets?: Record<string, string>
   buttons: readonly AddonButtonDefinition[]
+  decks?: readonly AddonDeckDefinition[]
   name: string
 }

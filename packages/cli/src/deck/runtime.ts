@@ -124,15 +124,17 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     return {
       getActiveDeckId: () => deckController.getActiveDeckId(),
       goBack: async () => {
+        const previousDeckId = deckController.getActiveDeckId()
         deckController.goBack()
-        await activateDeckSurface()
+        await activateDeckSurface(undefined, previousDeckId)
       },
       invalidate: () => {
         void renderRuntimeButton(button, deckId)
       },
       navigateToDeck: async (targetDeckId: string) => {
+        const previousDeckId = deckController.getActiveDeckId()
         deckController.navigateTo(targetDeckId)
-        await activateDeckSurface(targetDeckId)
+        await activateDeckSurface(targetDeckId, previousDeckId)
       },
       runCommand: async (command: string) => executeAction(command),
     }
@@ -145,7 +147,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return existingInstance
     }
 
-    // Every runtime instance comes from the registry-backed button definition, not a built-in runtime branch.
+    // Every runtime instance comes from the registry-backed button definition, and deck type expansion happens before runtime start.
     const instance = button.definition.createInstance({
       button: {
         position: button.position,
@@ -160,8 +162,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     return instance
   }
 
-  async function activateDeckSurface(activeDeckId = deckController.getActiveDeckId()): Promise<void> {
-    const previousDeckId = deckController.getActiveDeckId()
+  async function activateDeckSurface(
+    activeDeckId = deckController.getActiveDeckId(),
+    previousDeckId = deckController.getActiveDeckId(),
+  ): Promise<void> {
     const activationVersion = activeActivationVersion + 1
     activeActivationVersion = activationVersion
 

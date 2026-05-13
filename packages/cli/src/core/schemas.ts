@@ -1,6 +1,6 @@
 import { z, type ZodIssue } from "zod"
 
-import type { AddonButtonDefinition, AddonButtonEnvelope } from "../addon/api.js"
+import type { AddonButtonDefinition, AddonButtonEnvelope, AddonGeneratedDeck } from "../addon/api.js"
 import type { AddonRegistry } from "../addon/registry.js"
 
 type ConfigPathSegment = string | number
@@ -31,12 +31,13 @@ const RawButtonEnvelopeSchema = z.object({
 })
   .passthrough()
 
-const BootstrapDeckSchema = z.object({
+const RawDeckSchema = z.object({
+  buttons: z.array(RawButtonEnvelopeSchema).optional(),
   id: z.string().min(1),
   name: z.string().optional(),
-  buttons: z.array(RawButtonEnvelopeSchema).default([]),
+  type: z.string().min(1).optional(),
 })
-  .strict()
+  .passthrough()
 
 const BootstrapSirenoConfigSchema = z
   .object({
@@ -49,7 +50,7 @@ const BootstrapSirenoConfigSchema = z
       .optional(),
     theme: z.string().default("dark"),
     main_deck: z.string().min(1),
-    decks: z.record(BootstrapDeckSchema),
+    decks: z.record(RawDeckSchema),
     addons: z.array(AddonSchema).default([]),
     logging: LoggingSchema.default({}),
   })
@@ -71,6 +72,7 @@ export interface ButtonInstance extends AddonButtonEnvelope {
 }
 
 export interface DeckConfig {
+  deckType?: string
   id: string
   name?: string
   buttons: ButtonInstance[]
@@ -194,34 +196,126 @@ function getButtonPayload(button: Record<string, unknown>): Record<string, unkno
   )
 }
 
+function getDeckPayload(deck: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(deck).filter(([key]) => key !== "buttons" && key !== "id" && key !== "name" && key !== "type"),
+  )
+}
+
+function resolveAssetReferences(value: unknown, registry: AddonRegistry): unknown {
+  if (typeof value === "string") {
+    return registry.resolveAssetPath(value) ?? value
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => resolveAssetReferences(item, registry))
+  }
+
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, resolveAssetReferences(item, registry)]),
+    )
+  }
+
+  return value
+}
+
+function expandDecks(bootstrap: BootstrapSirenoConfig, registry: AddonRegistry): Record<string, AddonGeneratedDeck> {
+  const decks: Record<string, AddonGeneratedDeck> = {}
+
+  for (const [deckKey, deck] of Object.entries(bootstrap.decks)) {
+    const deckType = deck.type ? registry.getDeckType(deck.type) : undefined
+    if (deck.type && !deckType) {
+      throw new ConfigValidationError(
+        `Unknown deck type '${deck.type}'`,
+        undefined,
+        undefined,
+        `Register '${deck.type}' before using it in config.yml.`,
+        ["decks", deckKey, "type"],
+      )
+    }
+
+    if (!deckType) {
+      decks[deckKey] = {
+        buttons: deck.buttons ?? [],
+        id: deck.id,
+        ...(deck.name !== undefined ? { name: deck.name } : {}),
+      }
+      continue
+    }
+
+    const parsedDeckPayload = deckType.configSchema.safeParse(getDeckPayload(deck))
+    if (!parsedDeckPayload.success) {
+      throw toConfigValidationError(parsedDeckPayload.error.issues[0], ["decks", deckKey])
+    }
+
+    const generatedDecks = deckType.createDecks({
+      config: parsedDeckPayload.data,
+      deck: { id: deck.id, type: deck.type },
+    })
+
+    for (const [generatedDeckId, generatedDeck] of Object.entries(generatedDecks)) {
+      if (generatedDeck.id !== generatedDeckId) {
+        throw new ConfigValidationError(
+          `Generated deck id '${generatedDeck.id}' must match its map key '${generatedDeckId}'`,
+          undefined,
+          undefined,
+          `Check the value for '${getPathLabel(["decks", deckKey, "id"])}'.`,
+          ["decks", deckKey, "id"],
+        )
+      }
+
+      if (decks[generatedDeckId]) {
+        throw new ConfigValidationError(
+          `Deck '${generatedDeckId}' is already defined`,
+          undefined,
+          undefined,
+          `Rename '${generatedDeckId}' or remove the duplicate deck definition.`,
+          ["decks", deckKey, "id"],
+        )
+      }
+
+      decks[generatedDeckId] = generatedDeck
+    }
+  }
+
+  return decks
+}
+
 export function validateConfig(data: unknown, registry: AddonRegistry): SirenoConfig {
   const bootstrap = validateBootstrapConfig(data)
   const decks: Record<string, DeckConfig> = {}
+  const expandedDecks = expandDecks(bootstrap, registry)
 
-  for (const [deckKey, deck] of Object.entries(bootstrap.decks)) {
+  for (const [deckKey, deck] of Object.entries(expandedDecks)) {
     const nextButtons: ButtonInstance[] = []
 
     for (const [buttonIndex, button] of deck.buttons.entries()) {
-      const definition = registry.getButton(button.type)
+      const parsedButton = RawButtonEnvelopeSchema.safeParse(button)
+      if (!parsedButton.success) {
+        throw toConfigValidationError(parsedButton.error.issues[0], ["decks", deckKey, "buttons", buttonIndex])
+      }
+
+      const definition = registry.getButton(parsedButton.data.type)
       if (!definition) {
         throw new ConfigValidationError(
-          `Unknown button type '${button.type}'`,
+          `Unknown button type '${parsedButton.data.type}'`,
           undefined,
           undefined,
-          `Register '${button.type}' before using it in config.yml.`,
+          `Register '${parsedButton.data.type}' before using it in config.yml.`,
           ["decks", deckKey, "buttons", buttonIndex, "type"],
         )
       }
 
-      const payload = getButtonPayload(button)
+      const payload = resolveAssetReferences(getButtonPayload(parsedButton.data), registry) as Record<string, unknown>
       const parsedPayload = definition.configSchema.safeParse(payload)
       if (!parsedPayload.success) {
         throw toConfigValidationError(parsedPayload.error.issues[0], ["decks", deckKey, "buttons", buttonIndex])
       }
 
       nextButtons.push({
-        position: button.position,
-        type: button.type,
+        position: parsedButton.data.position,
+        type: parsedButton.data.type,
         config: parsedPayload.data as Record<string, unknown>,
         definition,
         ...payload,
@@ -230,6 +324,7 @@ export function validateConfig(data: unknown, registry: AddonRegistry): SirenoCo
 
     decks[deckKey] = {
       id: deck.id,
+      ...(bootstrap.decks[deckKey]?.type !== undefined ? { deckType: bootstrap.decks[deckKey]?.type } : {}),
       ...(deck.name !== undefined ? { name: deck.name } : {}),
       buttons: nextButtons,
     }
