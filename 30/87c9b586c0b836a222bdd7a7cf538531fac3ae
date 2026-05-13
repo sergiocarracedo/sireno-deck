@@ -1,0 +1,42 @@
+.planning/REQUIREMENTS.md
+  s_26099f9ddf91b0::t_5beb38d1d61387 97
+.planning/ROADMAP.md
+  s_26099f9ddf91b0::t_5beb38d1d61387 110-111,119-126
+AGENTS.md
+  s_26099f9ddf91b0::t_5beb38d1d61387 168-169,195
+  s_26099f9ddf91b0::t_06068b4875ad63 170
+.planning/phases/05-addon-system/05-DISCUSSION-LOG.md
+  s_26099f9ddf91b0::t_d5dded5daaf16a 1-173
+.planning/phases/05-addon-system/05-02-PLAN.md
+  s_26099f9ddf91b0::t_06068b4875ad63 1-99
+.planning/phases/05-addon-system/05-CONTEXT.md
+  s_26099f9ddf91b0::t_d5dded5daaf16a 1-112
+.planning/phases/05-addon-system/05-RESEARCH.md
+  s_26099f9ddf91b0::t_06068b4875ad63 1-53
+.planning/STATE.md
+  s_26099f9ddf91b0::t_5beb38d1d61387 8,13-15,17,59,69-70
+.planning/phases/05-addon-system/05-03-SUMMARY.md
+  s_26099f9ddf91b0::t_5beb38d1d61387 1-22
+.planning/phases/05-addon-system/05-01-PLAN.md
+  s_26099f9ddf91b0::t_06068b4875ad63 1-108
+.planning/phases/05-addon-system/05-03-PLAN.md
+  s_26099f9ddf91b0::t_06068b4875ad63 1-105
+.planning/phases/05-addon-system/05-VERIFICATION.md
+  s_26099f9ddf91b0::t_5beb38d1d61387 1-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "3087c9b586c0b836a222bdd7a7cf538531fac3ae",
+  "prompts": {},
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
