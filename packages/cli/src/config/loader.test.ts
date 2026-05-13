@@ -39,8 +39,8 @@ describe("loadConfig", () => {
         "  main:",
         "    id: main",
         "    buttons:",
-        "      - type: display",
-        "        position: 0",
+        "      - position: 0",
+        "        type: builtin-display-text",
         "        label: Clock",
         "logging:",
         "  level: info",
@@ -138,8 +138,8 @@ describe("loadConfig", () => {
         "  main:",
         "    id: main",
         "    buttons:",
-        "      - type: display",
-        "        position: 0",
+        "      - position: 0",
+        "        type: builtin-display-text",
       ].join("\n"),
     )
 
@@ -149,7 +149,7 @@ describe("loadConfig", () => {
       loadConfig()
     } catch (error) {
       expect(error).toBeInstanceOf(ConfigValidationError)
-      expect((error as ConfigValidationError).message).toContain("Display buttons need a label or icon")
+      expect((error as ConfigValidationError).message).toContain("Required")
       expect((error as ConfigValidationError).lineNumber).toBe(7)
       return
     }
@@ -168,7 +168,10 @@ describe("loadConfig", () => {
         "decks:",
         "  main:",
         "    id: main",
-        "    buttons: []",
+        "    buttons:",
+        "      - position: 0",
+        "        type: builtin-display-text",
+        "        label: Clock",
         "addons: []",
       ].join("\n"),
     )
@@ -179,5 +182,64 @@ describe("loadConfig", () => {
 
     expect(config.theme).toBe("dark")
     rmSync(fakeConfigHome, { recursive: true, force: true })
+  })
+
+  it("validates addon-backed button payloads through the bundled registry", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: builtin-display-text",
+        "        label: Clock",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig()
+
+    expect(config.decks.main?.buttons[0]).toMatchObject({
+      config: { label: "Clock" },
+      label: "Clock",
+      position: 0,
+      type: "builtin-display-text",
+    })
+    expect(config.decks.main?.buttons[0]?.definition.type).toBe("builtin-display-text")
+  })
+
+  it("reports unknown addon button types with line information", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: missing-addon-button",
+        "        label: Clock",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).message).toContain("Unknown button type 'missing-addon-button'")
+      expect((error as ConfigValidationError).lineNumber).toBe(8)
+      return
+    }
+
+    throw new Error("Expected config validation to fail")
   })
 })
