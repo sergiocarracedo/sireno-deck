@@ -1,6 +1,8 @@
 import { createElement } from "react"
 import { describe, expect, it, vi } from "vitest"
 
+import { createBundledAddonRegistry } from "../config/loader.js"
+import { validateConfig } from "../core/schemas.js"
 import { createDeckRuntime } from "./runtime.js"
 
 import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
@@ -105,6 +107,103 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(onRenderButton).toHaveBeenCalledWith({ keyIndex: 1, label: "Updated" })
+    })
+  })
+
+  it("navigates generated emoji decks and runs the favorites selection command", async () => {
+    const registry = createBundledAddonRegistry()
+    const config = validateConfig({
+      addons: [],
+      decks: {
+        emoji: {
+          favorites: ["😀", "🔥"],
+          id: "emoji",
+          select_command: "printf '%s' '{{emoji}}'",
+          type: "emoji-selector",
+        },
+      },
+      logging: { level: "info" },
+      main_deck: "emoji",
+      theme: "dark",
+    }, registry)
+    const events: StreamDeckKeyEvent[] = []
+    const onRenderDeck = vi.fn()
+    const executeAction = vi.fn(async () => ({
+      exitCode: 0,
+      signal: null,
+      stderr: "",
+      stdout: "",
+    }))
+    const runtime = createDeckRuntime({
+      deck: config.decks[config.main_deck]!,
+      decks: config.decks,
+      executeAction,
+      onRenderDeck,
+      subscribeKeyEvents: (listener) => {
+        queueMicrotask(() => {
+          for (const event of events) {
+            listener(event)
+          }
+        })
+
+        return () => {}
+      },
+      theme: {
+        accent: "#f59e0b",
+        background: "#10161f",
+        danger: "#fb7185",
+        foreground: "#eef2f7",
+        name: "dark",
+        primary: "#7dd3fc",
+        success: "#34d399",
+      },
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("emoji")
+      expect(runtime.getRenderButtons()[0]).toMatchObject({ keyIndex: 0, label: "Favorites" })
+    })
+
+    events.push({ keyIndex: 0, type: "down" }, { keyIndex: 0, type: "up" })
+    runtime.stop()
+
+    const subscribedEvents: StreamDeckKeyEvent[] = [...events, { keyIndex: 0, type: "down" }, { keyIndex: 0, type: "up" }]
+    const navigatedRuntime = createDeckRuntime({
+      deck: config.decks[config.main_deck]!,
+      decks: config.decks,
+      executeAction,
+      onRenderDeck,
+      subscribeKeyEvents: (listener) => {
+        queueMicrotask(() => {
+          for (const event of subscribedEvents) {
+            listener(event)
+          }
+        })
+
+        return () => {}
+      },
+      theme: {
+        accent: "#f59e0b",
+        background: "#10161f",
+        danger: "#fb7185",
+        foreground: "#eef2f7",
+        name: "dark",
+        primary: "#7dd3fc",
+        success: "#34d399",
+      },
+    })
+
+    navigatedRuntime.start()
+
+    await vi.waitFor(() => {
+      expect(navigatedRuntime.getActiveDeck().id).toBe("emoji-favorites")
+      expect(navigatedRuntime.getRenderButtons()[0]).toMatchObject({ keyIndex: 0, label: "😀", subtitle: "Favorites" })
+    })
+
+    await vi.waitFor(() => {
+      expect(executeAction).toHaveBeenCalledWith("printf '%s' '😀'")
     })
   })
 })

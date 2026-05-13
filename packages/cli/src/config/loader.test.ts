@@ -295,4 +295,38 @@ describe("loadConfig", () => {
 
     throw new Error("Expected external addon payload validation to fail")
   })
+
+  it("expands bundled addon deck types and resolves addon asset paths", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: emoji",
+        "decks:",
+        "  emoji:",
+        "    id: emoji",
+        "    type: emoji-selector",
+        "    favorites:",
+        "      - 😀",
+        "    select_command: \"printf '%s' '{{emoji}}'\"",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig()
+
+    expect(config.decks.emoji?.deckType).toBe("emoji-selector")
+    expect(config.decks.emoji?.buttons[0]).toMatchObject({
+      icon: expect.stringContaining("favorites.svg"),
+      label: "Favorites",
+      target_deck: "emoji-favorites",
+      type: "emoji-category-button",
+    })
+    expect(config.decks["emoji-favorites"]?.buttons[1]).toMatchObject({
+      icon: expect.stringContaining("back.svg"),
+      label: "Back",
+      type: "emoji-back-button",
+    })
+  })
 })
