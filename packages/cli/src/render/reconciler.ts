@@ -13,13 +13,14 @@ export interface DeckTextProps {
 }
 
 export interface DeckButtonProps {
+  detailLines?: string[]
   displayValue?: string
   keyIndex: number
   label?: string
   icon?: string
   progress?: number
   subtitle?: string
-  variant?: "default" | "metric" | "toggle"
+  variant?: "default" | "fan" | "media" | "metric" | "toggle"
 }
 
 export interface DeckSurfaceProps {
@@ -27,6 +28,7 @@ export interface DeckSurfaceProps {
 }
 
 export interface RenderNode {
+  detailLines?: string[]
   type: "deck-button" | "deck-surface" | "deck-text"
   displayValue?: string
   keyIndex?: number
@@ -35,18 +37,19 @@ export interface RenderNode {
   progress?: number
   subtitle?: string
   text?: string
-  variant?: "default" | "metric" | "toggle"
+  variant?: "default" | "fan" | "media" | "metric" | "toggle"
   children: RenderNode[]
 }
 
 export interface RenderDescription {
+  detailLines?: string[]
   displayValue?: string
   keyIndex: number
   label?: string
   icon?: string
   progress?: number
   subtitle?: string
-  variant?: "default" | "metric" | "toggle"
+  variant?: "default" | "fan" | "media" | "metric" | "toggle"
 }
 
 interface RenderContainer {
@@ -134,6 +137,7 @@ const hostConfig: ReactReconciler.HostConfig<
       return {
         type: "deck-button",
         keyIndex: props.keyIndex,
+        detailLines: props.detailLines,
         displayValue: props.displayValue,
         label: props.label,
         icon: props.icon,
@@ -159,6 +163,7 @@ const hostConfig: ReactReconciler.HostConfig<
         children: props.buttons.map((button) => ({
           type: "deck-button",
           keyIndex: button.keyIndex,
+          detailLines: button.detailLines,
           displayValue: button.displayValue,
           label: button.label,
           icon: button.icon,
@@ -238,6 +243,7 @@ const hostConfig: ReactReconciler.HostConfig<
   commitUpdate(instance, _type, _oldProps, newProps) {
     if (instance.type === "deck-button" && isDeckButtonProps(newProps)) {
       instance.keyIndex = newProps.keyIndex
+      instance.detailLines = newProps.detailLines
       instance.displayValue = newProps.displayValue
       instance.label = newProps.label
       instance.icon = newProps.icon
@@ -257,6 +263,7 @@ const hostConfig: ReactReconciler.HostConfig<
       instance.children = newProps.buttons.map((button) => ({
         type: "deck-button",
         keyIndex: button.keyIndex,
+        detailLines: button.detailLines,
         displayValue: button.displayValue,
         label: button.label,
         icon: button.icon,
@@ -321,6 +328,7 @@ function collectRenderDescriptions(nodes: readonly RenderNode[]): RenderDescript
     if (node.type === "deck-button" && node.keyIndex !== undefined) {
       descriptions.push({
         keyIndex: node.keyIndex,
+        ...(node.detailLines !== undefined ? { detailLines: node.detailLines } : {}),
         ...(node.displayValue !== undefined ? { displayValue: node.displayValue } : {}),
         ...(node.icon !== undefined ? { icon: node.icon } : {}),
         ...(node.label !== undefined ? { label: node.label } : {}),
@@ -353,21 +361,48 @@ export function createDeckSurfaceElement(props: DeckSurfaceProps): ReactElement<
 }
 
 export function createDisplayButtonModels(buttons: readonly ButtonInstance[]): DeckButtonProps[] {
-  return buttons.map((button) => ({
-    keyIndex: button.position,
-    ...(button.type === "toggle"
-      ? {
-          ...(button.states[0]?.label !== undefined ? { label: button.states[0].label } : {}),
-          ...(button.states[0]?.icon !== undefined ? { icon: button.states[0].icon } : {}),
-          ...(button.states[0]?.key !== undefined ? { subtitle: button.states[0].key.toUpperCase() } : {}),
-          variant: "toggle" as const,
-        }
-      : {
-          ...(button.label !== undefined ? { label: button.label } : {}),
-          ...(button.icon !== undefined ? { icon: button.icon } : {}),
-          variant: "default" as const,
-        }),
-  }))
+  return buttons.map((button) => {
+    if (button.type === "toggle") {
+      return {
+        keyIndex: button.position,
+        ...(button.states[0]?.label !== undefined ? { label: button.states[0].label } : {}),
+        ...(button.states[0]?.icon !== undefined ? { icon: button.states[0].icon } : {}),
+        ...(button.states[0]?.key !== undefined ? { subtitle: button.states[0].key.toUpperCase() } : {}),
+        variant: "toggle" as const,
+      }
+    }
+
+    if (button.type === "cpu" || button.type === "memory") {
+      return {
+        keyIndex: button.position,
+        ...(button.label !== undefined ? { label: button.label } : {}),
+        variant: "metric" as const,
+      }
+    }
+
+    if (button.type === "fan") {
+      return {
+        keyIndex: button.position,
+        ...(button.label !== undefined ? { label: button.label } : {}),
+        variant: "fan" as const,
+      }
+    }
+
+    if (button.type === "media") {
+      return {
+        keyIndex: button.position,
+        ...(button.label !== undefined ? { label: button.label } : {}),
+        variant: "media" as const,
+      }
+    }
+
+    return {
+      keyIndex: button.position,
+      ...(button.label !== undefined ? { label: button.label } : {}),
+      ...(button.icon !== undefined ? { icon: button.icon } : {}),
+      variant: "default" as const,
+    }
+  })
 }
 
 export function renderDeck(

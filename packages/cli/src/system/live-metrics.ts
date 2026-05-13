@@ -5,13 +5,31 @@ export interface MetricSnapshot {
   percentage: number
 }
 
+export interface FanSnapshot {
+  available: boolean
+  label?: string
+  source?: string
+}
+
+interface GraphicsControllerSnapshot {
+  fanSpeed?: number
+  model?: string
+  vendor?: string
+}
+
+interface GraphicsSnapshot {
+  controllers?: GraphicsControllerSnapshot[]
+}
+
 export interface LiveMetricsClient {
   currentLoad: typeof si.currentLoad
+  graphics: typeof si.graphics
   mem: typeof si.mem
 }
 
 const defaultClient: LiveMetricsClient = {
   currentLoad: si.currentLoad,
+  graphics: si.graphics,
   mem: si.mem,
 }
 
@@ -42,5 +60,34 @@ export async function getMemoryMetric(client: LiveMetricsClient = defaultClient)
   return {
     label: `${percentage}%`,
     percentage,
+  }
+}
+
+export async function getFanMetric(client: LiveMetricsClient = defaultClient): Promise<FanSnapshot> {
+  let graphics: GraphicsSnapshot
+
+  try {
+    graphics = await client.graphics() as GraphicsSnapshot
+  } catch {
+    return { available: false }
+  }
+
+  const controller = graphics.controllers?.find((candidate) => (
+    typeof candidate.fanSpeed === "number" &&
+    Number.isFinite(candidate.fanSpeed) &&
+    candidate.fanSpeed >= 0
+  ))
+
+  if (!controller) {
+    return { available: false }
+  }
+
+  const speed = Math.round(controller.fanSpeed ?? 0)
+  const source = controller.model?.trim() || controller.vendor?.trim()
+
+  return {
+    available: true,
+    label: `${speed} RPM`,
+    source: source && source.length > 0 ? source : undefined,
   }
 }

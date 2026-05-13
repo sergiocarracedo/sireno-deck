@@ -93,6 +93,7 @@ Features not selected for v1 but documented for future consideration:
 | 1 — Foundation | Complete | INFRA-04, INFRA-05, INFRA-06, INFRA-07, INFRA-08, INFRA-09 | `.planning/phases/01-foundation/01-01-SUMMARY.md`, `.planning/phases/01-foundation/01-02-SUMMARY.md` |
 | 2 — Device + Rendering | Complete | INFRA-01, INFRA-02, INFRA-03, RENDER-01, RENDER-02, RENDER-03, INFRA-10, INFRA-11 | `.planning/phases/02-device-rendering/02-01-SUMMARY.md`, `.planning/phases/02-device-rendering/02-02-SUMMARY.md`, `.planning/phases/02-device-rendering/02-03-SUMMARY.md`, `.planning/phases/02-device-rendering/02-VERIFICATION.md` |
 | 3 — Themes + Basic Buttons | Complete | RENDER-04, RENDER-05, RENDER-06, BTN-01, BTN-02, BTN-03, BTN-06, ADDN-08, ADDN-09 | `.planning/phases/03-themes-basic-buttons/03-01-SUMMARY.md`, `.planning/phases/03-themes-basic-buttons/03-02-SUMMARY.md`, `.planning/phases/03-themes-basic-buttons/03-03-SUMMARY.md`, `.planning/phases/03-themes-basic-buttons/03-VERIFICATION.md` |
+| 4 — Advanced Buttons | Complete | BTN-04, BTN-05, BTN-07, BTN-08, BTN-09, BTN-10 | `.planning/phases/04-advanced-buttons/04-01-SUMMARY.md`, `.planning/phases/04-advanced-buttons/04-02-SUMMARY.md`, `.planning/phases/04-advanced-buttons/04-03-SUMMARY.md`, `.planning/phases/04-advanced-buttons/04-VERIFICATION.md` |
 
 ---
 

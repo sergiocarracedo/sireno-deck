@@ -6,13 +6,14 @@ import sharp from "sharp"
 import type { Theme } from "../config/theme.js"
 
 export interface TextImageOptions {
+  detailLines?: string[]
   displayValue?: string
   icon?: string
   progress?: number
   subtitle?: string
   text?: string
   theme?: Theme
-  variant?: "default" | "metric" | "toggle"
+  variant?: "default" | "fan" | "media" | "metric" | "toggle"
   width?: number
   height?: number
 }
@@ -112,7 +113,14 @@ function escapeSvgText(text: string): string {
     .replace(/'/g, "&#39;")
 }
 
-function buildTextSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
+function getDetailLines(lines: string[] | undefined, limit: number): string[] {
+  return (lines ?? [])
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .slice(0, limit)
+}
+
+function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
   const text = options.text ?? ""
   const iconPath = options.icon
   const safeText = escapeSvgText(text)
@@ -157,6 +165,69 @@ function buildTextSvg(options: TextImageOptions, preset: TextImagePreset, theme:
       <text x="10" y="66" fill="${subtext}" font-family="IBM Plex Sans, Arial, sans-serif" font-size="8" letter-spacing="1.4">${escapeSvgText(theme.name.toUpperCase())}</text>
     </svg>
   `.trim()
+}
+
+function buildFanSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
+  const title = escapeSvgText(options.text ?? "Fan")
+  const value = escapeSvgText(options.displayValue ?? "")
+  const detailLines = getDetailLines(options.detailLines, 2)
+  const unavailable = options.displayValue === undefined
+  const detailColor = unavailable ? theme.danger : mixHexColor(theme.foreground, theme.background, 0.32)
+  const frame = mixHexColor(unavailable ? theme.danger : theme.primary, theme.background, 0.38)
+
+  return `
+    <svg width="${preset.keyWidth}" height="${preset.keyHeight}" viewBox="0 0 ${preset.keyWidth} ${preset.keyHeight}" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="${preset.keyWidth}" height="${preset.keyHeight}" rx="16" fill="${mixHexColor(theme.background, unavailable ? theme.danger : theme.primary, 0.09)}" />
+      <rect x="4" y="4" width="${preset.keyWidth - 8}" height="${preset.keyHeight - 8}" rx="12" fill="none" stroke="${frame}" stroke-width="1.5" />
+      <circle cx="18" cy="17" r="7" fill="none" stroke="${theme.accent}" stroke-width="1.5" />
+      <path d="M18 10 L20 16 L16 17 Z" fill="${theme.accent}" />
+      <text x="30" y="20" fill="${theme.foreground}" font-family="IBM Plex Sans, Arial, sans-serif" font-size="11" font-weight="700">${title}</text>
+      ${value ? `<text x="10" y="43" fill="${theme.foreground}" font-family="IBM Plex Sans, Arial, sans-serif" font-size="16" font-weight="700">${value}</text>` : ""}
+      ${detailLines[0] ? `<text x="10" y="54" fill="${detailColor}" font-family="IBM Plex Sans, Arial, sans-serif" font-size="9" font-weight="600">${escapeSvgText(detailLines[0])}</text>` : ""}
+      ${detailLines[1] ? `<text x="10" y="64" fill="${mixHexColor(detailColor, theme.background, 0.18)}" font-family="IBM Plex Sans, Arial, sans-serif" font-size="8">${escapeSvgText(detailLines[1])}</text>` : ""}
+    </svg>
+  `.trim()
+}
+
+function buildMediaSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
+  const title = escapeSvgText(options.text ?? "Media")
+  const detailLines = getDetailLines(options.detailLines, 3)
+  const badgeText = options.subtitle ? escapeSvgText(options.subtitle) : ""
+  const badgeWidth = Math.max(20, Math.min(34, 10 + badgeText.length * 4))
+  const badgeX = preset.keyWidth - badgeWidth - 10
+
+  return `
+    <svg width="${preset.keyWidth}" height="${preset.keyHeight}" viewBox="0 0 ${preset.keyWidth} ${preset.keyHeight}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="media-card" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="${mixHexColor(theme.background, theme.primary, 0.12)}" />
+          <stop offset="100%" stop-color="${mixHexColor(theme.background, theme.accent, 0.08)}" />
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="${preset.keyWidth}" height="${preset.keyHeight}" rx="16" fill="url(#media-card)" />
+      <rect x="4" y="4" width="${preset.keyWidth - 8}" height="${preset.keyHeight - 8}" rx="12" fill="none" stroke="${mixHexColor(theme.primary, theme.background, 0.34)}" stroke-width="1.5" />
+      <circle cx="16" cy="18" r="8" fill="${mixHexColor(theme.accent, theme.background, 0.2)}" />
+      <path d="M14 14 L20 18 L14 22 Z" fill="${theme.accent}" />
+      <text x="28" y="21" fill="${theme.foreground}" font-family="IBM Plex Sans, Arial, sans-serif" font-size="11" font-weight="700">${title}</text>
+      ${options.subtitle ? `<rect x="${badgeX}" y="28" width="${badgeWidth}" height="12" rx="6" fill="${mixHexColor(theme.primary, theme.background, 0.18)}" stroke="${mixHexColor(theme.primary, theme.background, 0.05)}" stroke-width="1" />` : ""}
+      ${options.subtitle ? `<text x="${badgeX + badgeWidth / 2}" y="36" fill="${theme.foreground}" text-anchor="middle" font-family="IBM Plex Sans, Arial, sans-serif" font-size="7" font-weight="700">${badgeText}</text>` : ""}
+      ${detailLines[0] ? `<text x="10" y="45" fill="${theme.foreground}" font-family="IBM Plex Sans, Arial, sans-serif" font-size="10" font-weight="700">${escapeSvgText(detailLines[0])}</text>` : ""}
+      ${detailLines[1] ? `<text x="10" y="56" fill="${mixHexColor(theme.foreground, theme.background, 0.25)}" font-family="IBM Plex Sans, Arial, sans-serif" font-size="9">${escapeSvgText(detailLines[1])}</text>` : ""}
+      ${detailLines[2] ? `<text x="10" y="66" fill="${mixHexColor(theme.foreground, theme.background, 0.38)}" font-family="IBM Plex Sans, Arial, sans-serif" font-size="8">${escapeSvgText(detailLines[2])}</text>` : ""}
+    </svg>
+  `.trim()
+}
+
+function buildTextSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
+  if (options.variant === "fan") {
+    return buildFanSvg(options, preset, theme)
+  }
+
+  if (options.variant === "media") {
+    return buildMediaSvg(options, preset, theme)
+  }
+
+  return buildDefaultSvg(options, preset, theme)
 }
 
 function buildBlankSvg(preset: TextImagePreset): string {

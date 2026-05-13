@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-05-12)
 ## Current Position
 
 Phase: 4 of 5 (Advanced Buttons)
-Plan: 0 of ? in current phase
-Status: Phase 3 complete, verified, and manually approved; ready to discuss Phase 4
-Last activity: 2026-05-12 - Completed Phase 3 execution, verification, and manual UAT approval
+Plan: 3 of 3 in current phase
+Status: Phase 4 review finalized; ready for /ship after hardware UAT
+Last activity: 2026-05-13 - Completed quick task 009 to align fan review contract and finalize Phase 4 review
 
 Progress: [██████░░░░] 60%
 
@@ -48,7 +48,6 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- Run `discuss-phase 4` for toggle buttons and live data button scope.
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 
 ### Blockers/Concerns
@@ -57,8 +56,8 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-05-12
-Stopped at: Phase 3 complete. Next workflow is `discuss-phase 4`.
+Last session: 2026-05-13
+Stopped at: Phase 4 review finalized. Next workflow is `/ship` after manual UAT.
 Resume file: .planning/ROADMAP.md
 
 ### Quick Tasks Completed
@@ -66,3 +65,11 @@ Resume file: .planning/ROADMAP.md
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 001 | update example config so taps are demoable in UAT | 2026-05-12 | `ea5b2d6` | `.planning/quick/001-example-config-demoable-taps` |
+| 002 | finish remaining Phase 4 review regressions | 2026-05-13 | uncommitted | `.planning/quick/002-phase-4-review-regressions` |
+| 003 | fix fan label contract and make display_mode text truly text-only | 2026-05-13 | uncommitted | `.planning/quick/003-fan-label-contract-text-only-display-mode` |
+| 004 | fix Phase 4 activation blocking and stale-key priming regressions | 2026-05-13 | uncommitted | `.planning/quick/004-activation-blocking-stale-key-priming` |
+| 005 | fix independent priming, priming error handling, and stale media metadata | 2026-05-13 | uncommitted | `.planning/quick/005-fix-independent-priming-priming-err` |
+| 006 | start polling immediately per button and treat 0 RPM as valid fan data | 2026-05-13 | uncommitted | `.planning/quick/006-start-polling-immediately-zero-rpm-valid` |
+| 007 | preserve internal toggle state across deck activation and reconnect | 2026-05-13 | uncommitted | `.planning/quick/007-preserve-internal-toggle-state-across-deck-activation-and-reconnect` |
+| 008 | guard async deck activation after render and prevent stop from being undone | 2026-05-13 | uncommitted | `.planning/quick/008-guard-async-deck-activation-after-render-and-preserve-stop` |
+| 009 | align fan heuristic review with v1 contract and finalize Phase 4 review | 2026-05-13 | uncommitted | `.planning/quick/009-align-fan-review-contract-finalize-phase-4-review` |

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import {
   createDeckButtonElement,
+  createDisplayButtonModels,
   createDeckSurfaceElement,
   createDeckTextElement,
   renderDeck,
@@ -53,6 +54,22 @@ describe("render reconciler", () => {
     expect(descriptions).toEqual([{ keyIndex: 4, label: "CPU", displayValue: "48%", progress: 48, variant: "metric" }])
   })
 
+  it("preserves rich media button descriptions with detail lines", () => {
+    const descriptions = renderDeck(
+      createDeckButtonElement({
+        keyIndex: 5,
+        detailLines: ["Track Title", "Artist Name"],
+        label: "Music",
+        subtitle: "PLAYING",
+        variant: "media",
+      }),
+    )
+
+    expect(descriptions).toEqual([
+      { keyIndex: 5, detailLines: ["Track Title", "Artist Name"], label: "Music", subtitle: "PLAYING", variant: "media" },
+    ])
+  })
+
   it("keeps generated back buttons in the render output", () => {
     const descriptions = renderDeck(
       createDeckSurfaceElement({
@@ -64,5 +81,24 @@ describe("render reconciler", () => {
     )
 
     expect(descriptions).toContainEqual({ keyIndex: 14, label: "Back", icon: undefined })
+  })
+
+  it("keeps Phase 4 defaults in sync across display model generation", () => {
+    expect(createDisplayButtonModels([
+      { type: "cpu", position: 1, label: "CPU", display_mode: "progress" },
+      { type: "fan", position: 2, label: "Fan", unavailable_label: "Unavailable" },
+      {
+        type: "media",
+        position: 3,
+        label: "Music",
+        command: "playerctl play-pause",
+        status_command: "playerctl status",
+        display_command: "playerctl metadata",
+      },
+    ])).toEqual([
+      { keyIndex: 1, label: "CPU", variant: "metric" },
+      { keyIndex: 2, label: "Fan", variant: "fan" },
+      { keyIndex: 3, label: "Music", variant: "media" },
+    ])
   })
 })

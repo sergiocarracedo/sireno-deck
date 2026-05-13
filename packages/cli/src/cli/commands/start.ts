@@ -42,6 +42,7 @@ async function renderMainDeck(
 
   for (const description of descriptions) {
     const buffer = await renderTextImage({
+      detailLines: description.detailLines,
       displayValue: description.displayValue,
       icon: description.icon,
       progress: description.progress,
@@ -104,6 +105,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
         }
 
         const buffer = await renderTextImage({
+          detailLines: button.detailLines,
           displayValue: button.displayValue,
           icon: button.icon,
           progress: button.progress,

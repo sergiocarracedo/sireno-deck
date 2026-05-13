@@ -1,23 +1,132 @@
 import { describe, expect, it } from "vitest"
 
-import { getCpuMetric, getMemoryMetric } from "./live-metrics.js"
+import { getCpuMetric, getFanMetric, getMemoryMetric, type LiveMetricsClient } from "./live-metrics.js"
+
+type LiveMetricsStub = Pick<LiveMetricsClient, "currentLoad" | "graphics" | "mem">
+
+function createCurrentLoad(currentLoad: number) {
+  return {
+    avgLoad: 0,
+    cpus: [],
+    currentLoad,
+    currentLoadGuest: 0,
+    currentLoadIdle: 0,
+    currentLoadIrq: 0,
+    currentLoadNice: 0,
+    currentLoadSteal: 0,
+    currentLoadSystem: 0,
+    currentLoadUser: 0,
+    rawCurrentLoad: 0,
+    rawCurrentLoadGuest: 0,
+    rawCurrentLoadIdle: 0,
+    rawCurrentLoadIrq: 0,
+    rawCurrentLoadNice: 0,
+    rawCurrentLoadSteal: 0,
+    rawCurrentLoadSystem: 0,
+    rawCurrentLoadUser: 0,
+  }
+}
+
+function createGraphics(controllers: Array<{ fanSpeed?: number; model?: string; vendor?: string }>) {
+  return {
+    controllers: controllers.map((controller) => ({
+      bus: "pci",
+      model: controller.model ?? "GPU",
+      vendor: controller.vendor ?? "Vendor",
+      vram: null,
+      vramDynamic: false,
+      ...controller,
+    })),
+    displays: [],
+  }
+}
+
+function createMem(active: number, total: number) {
+  return {
+    active,
+    available: 0,
+    buffcache: 0,
+    buffers: 0,
+    cached: 0,
+    dirty: null,
+    free: 0,
+    reclaimable: 0,
+    slab: 0,
+    swaptotal: 0,
+    swapfree: 0,
+    swapused: 0,
+    total,
+    used: active,
+    writeback: null,
+  }
+}
 
 describe("live metrics", () => {
   it("normalizes cpu load into a rounded percentage snapshot", async () => {
     const metric = await getCpuMetric({
-      currentLoad: async () => ({ currentLoad: 43.6 }) as Awaited<ReturnType<typeof import("systeminformation").default.currentLoad>>,
-      mem: async () => ({}) as Awaited<ReturnType<typeof import("systeminformation").default.mem>>,
-    })
+      currentLoad: async () => createCurrentLoad(43.6),
+      graphics: async () => createGraphics([]),
+      mem: async () => createMem(0, 0),
+    } satisfies LiveMetricsStub)
 
     expect(metric).toEqual({ label: "44%", percentage: 44 })
   })
 
   it("derives memory usage from active over total memory", async () => {
     const metric = await getMemoryMetric({
-      currentLoad: async () => ({}) as Awaited<ReturnType<typeof import("systeminformation").default.currentLoad>>,
-      mem: async () => ({ active: 3, total: 8 }) as Awaited<ReturnType<typeof import("systeminformation").default.mem>>,
-    })
+      currentLoad: async () => createCurrentLoad(0),
+      graphics: async () => createGraphics([]),
+      mem: async () => createMem(3, 8),
+    } satisfies LiveMetricsStub)
 
     expect(metric).toEqual({ label: "38%", percentage: 38 })
+  })
+
+  it("returns the first readable fan sensor as an rpm snapshot", async () => {
+    const metric = await getFanMetric({
+      currentLoad: async () => createCurrentLoad(0),
+      graphics: async () => createGraphics([
+        { fanSpeed: 0, model: "Idle Fan" },
+        { fanSpeed: 1468.2, model: "RTX 4090" },
+      ]),
+      mem: async () => createMem(0, 0),
+    } satisfies LiveMetricsStub)
+
+    expect(metric).toEqual({ available: true, label: "0 RPM", source: "Idle Fan" })
+  })
+
+  it("returns later readable fan sensors when earlier controllers are missing data", async () => {
+    const metric = await getFanMetric({
+      currentLoad: async () => createCurrentLoad(0),
+      graphics: async () => createGraphics([
+        { model: "Missing Sensor" },
+        { fanSpeed: 1468.2, model: "RTX 4090" },
+      ]),
+      mem: async () => createMem(0, 0),
+    } satisfies LiveMetricsStub)
+
+    expect(metric).toEqual({ available: true, label: "1468 RPM", source: "RTX 4090" })
+  })
+
+  it("normalizes missing fan sensors into an unavailable state", async () => {
+    const metric = await getFanMetric({
+      currentLoad: async () => createCurrentLoad(0),
+      graphics: async () => createGraphics([{ model: "No Sensor" }]),
+      mem: async () => createMem(0, 0),
+    } satisfies LiveMetricsStub)
+
+    expect(metric).toEqual({ available: false })
+  })
+
+  it("degrades fan metric failures into an unavailable state", async () => {
+    const metric = await getFanMetric({
+      currentLoad: async () => createCurrentLoad(0),
+      graphics: async () => {
+        throw new Error("no graphics access")
+      },
+      mem: async () => createMem(0, 0),
+    } satisfies LiveMetricsStub)
+
+    expect(metric).toEqual({ available: false })
   })
 })

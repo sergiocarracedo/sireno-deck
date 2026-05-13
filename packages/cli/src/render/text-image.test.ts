@@ -84,4 +84,30 @@ describe("text-image", () => {
 
     expect(defaultBuffer.equals(metricBuffer)).toBe(false)
   })
+
+  it("renders text-only metric variants without the progress layout", async () => {
+    const textOnlyBuffer = await renderTextImage({ text: "RAM", displayValue: "62%", variant: "metric" })
+    const progressBuffer = await renderTextImage({ text: "RAM", displayValue: "62%", progress: 62, variant: "metric" })
+
+    expect(textOnlyBuffer.equals(progressBuffer)).toBe(false)
+  })
+
+  it("renders a stable fan unavailable layout", async () => {
+    const defaultBuffer = await renderTextImage({ text: "Fan" })
+    const fanBuffer = await renderTextImage({ text: "Fan", detailLines: ["Unavailable"], variant: "fan" })
+
+    expect(defaultBuffer.equals(fanBuffer)).toBe(false)
+  })
+
+  it("renders media metadata across multiple lines", async () => {
+    const defaultBuffer = await renderTextImage({ text: "Music" })
+    const mediaBuffer = await renderTextImage({
+      detailLines: ["Track Title", "Artist Name", "01:24 / 03:58"],
+      subtitle: "PLAYING",
+      text: "Music",
+      variant: "media",
+    })
+
+    expect(defaultBuffer.equals(mediaBuffer)).toBe(false)
+  })
 })
