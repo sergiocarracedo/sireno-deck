@@ -14,6 +14,11 @@ decks:
         label: Emoji
         icon: addon://emoji-selector/favorites.svg
         target_deck: emoji
+      - position: 2
+        type: local-clock
+        label: Open Notepad
+        icon: addon://core-buttons/app.svg
+        
   emoji:
     id: emoji
     type: emoji-selector
@@ -22,11 +27,21 @@ decks:
       - 🔥
       - 🍕
     select_command: "printf '%s' '{{emoji}}'"
+    buttons:
+      - position: 0
+        type: builtin-change-deck
+        label: Main
+        target_deck: main
 addons:
+  # Illustrative addon declarations ship disabled on purpose.
+  # They do not load and will not emit startup warnings until you set
+  # `enabled: true` and point them at a real local folder or installed npm addon.
   - name: local-clock-addon
+    enabled: false
     source: local
-    path: addons/local-clock-addon
+    path: addons2/local-clock-addon2
   - name: "@sireno-deck/community-addon"
+    enabled: false
     source: npm
 logging:
   level: info
