@@ -1,6 +1,6 @@
 # Roadmap — Sireno Deck v1.0
 
-**Last updated:** 2026-05-12
+**Last updated:** 2026-05-13
 **Granularity:** coarse (5 phases)
 **Total v1 requirements:** 33
 
@@ -107,7 +107,7 @@ Full 37/37 requirements mapped. No circular dependencies.
 
 ### Phase 5: Addon System
 
-**Status:** ✓ Complete (2026-05-13)
+**Status:** ✓ Complete (2026-05-13, gap closure verified)
 
 **Goal:** Let users install addons from local folders and npm, validate manifests, register custom button/deck types, and ship the emoji selector addon as a validation of the full extension model.
 

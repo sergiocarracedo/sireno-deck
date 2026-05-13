@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 5 — ready for verify-work 5
+**Current focus:** Phase 5 complete — ready for review and ship
 
 ## Current Position
 
 Phase: 5 of 5 (Addon System)
 Plan: complete
-Status: Phase 5 execution complete; awaiting hardware UAT in verify-work 5
-Last activity: 2026-05-13 - Completed Plan 05-03 and verified the full addon model through automated coverage
+Status: Phase 5 execution and verification complete; review and ship are next
+Last activity: 2026-05-13 - Approved hardware verification for Phase 5 after gap-closure fixes and committed fixture setup
 
 Progress: [██████████] 100%
 
@@ -57,6 +57,11 @@ Recent decisions affecting current work:
 - **Plan 05-01:** Completed the addon API, bundled registry, bootstrap-aware config validation, and the first generic addon-host runtime slice.
 - **Plan 05-02:** Completed addon manifest validation, unified local/npm loading, startup warning isolation, and external-addon regression coverage.
 - **Plan 05-03:** Completed addon asset resolution, deck-type expansion, and the bundled emoji selector proof with runtime coverage.
+- **Plan 05-04:** Replaced stale shipped local/npm addon examples with disabled illustrative declarations so the repo no longer claims nonexistent addons are ready to run.
+- **Plan 05-05:** Fixed SVG addon icon composition in the renderer and switched emoji-entry tiles to deterministic ASCII-safe visuals that do not depend on host emoji fonts.
+- **Plan 05-06:** Clarified disabled addon semantics in the shipped config and pinned the skip-vs-warning contract in loader/startup tests.
+- **Plan 05-07:** Realigned bundled SVG assets with the icon-slot contract and strengthened renderer verification around icon-region pixels.
+- **Plan 05-08:** Restored image-backed emoji tiles for the bundled emoji selector with bundled per-emoji assets and fallback coverage.
 
 ### Blockers/Concerns
 
@@ -66,7 +71,7 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-13
-Stopped at: Phase 5 execution complete. Next up is manual UAT in verify-work 5.
+Stopped at: Phase 5 approved after hardware verification. Next up is `/review`, `/ship`, and `/compound`.
 Resume file: .planning/phases/05-addon-system/05-VERIFICATION.md
 
 ### Quick Tasks Completed
@@ -82,3 +87,4 @@ Resume file: .planning/phases/05-addon-system/05-VERIFICATION.md
 | 007 | preserve internal toggle state across deck activation and reconnect | 2026-05-13 | uncommitted | `.planning/quick/007-preserve-internal-toggle-state-across-deck-activation-and-reconnect` |
 | 008 | guard async deck activation after render and prevent stop from being undone | 2026-05-13 | uncommitted | `.planning/quick/008-guard-async-deck-activation-after-render-and-preserve-stop` |
 | 009 | align fan heuristic review with v1 contract and finalize Phase 4 review | 2026-05-13 | uncommitted | `.planning/quick/009-align-fan-review-contract-finalize-phase-4-review` |
+| 010 | add Phase 5 verification fixtures under packages/cli/fixtures | 2026-05-13 | uncommitted | `.planning/quick/010-add-phase-5-verification-fixtures-under-packages-cli-fixtures` |

@@ -166,7 +166,7 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.0 — Sireno Deck CLI
 **Phase:** 5 — Addon System ✓ complete
-**Status:** verifying
+**Status:** review-ready
 **Last updated:** 2026-05-13
 
 ---
@@ -178,7 +178,7 @@ sireno-deck/
 ├── .planning/               # Learnship planning artifacts (PROJECT, ROADMAP, STATE, research)
 ├── packages/
 │   └── cli/
-│       ├── fixtures/        # Config fixtures for loader and schema tests
+│       ├── fixtures/        # Config fixtures for loader, schema, and Phase 5 verification
 │       ├── src/
 │       │   ├── cli/         # yargs command definitions and startup wiring
 │       │   ├── config/      # Config loading and validation
