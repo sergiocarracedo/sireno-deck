@@ -1,0 +1,19 @@
+.planning/phases/05-addon-system/05-08-SUMMARY.md
+  s_26099f9ddf91b0::t_3166429748d49e 1-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "4a6c34e42a8747bd6389ec539f2186ee290b4a24",
+  "prompts": {},
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
