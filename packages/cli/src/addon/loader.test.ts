@@ -101,6 +101,21 @@ describe("loadConfiguredAddons", () => {
     expect(result.warnings[1]?.reason).toContain("broken import")
   })
 
+  it("skips disabled addons before path resolution or warnings", async () => {
+    const registry = createAddonRegistry()
+
+    const result = await loadConfiguredAddons({
+      addons: [
+        { enabled: false, name: "missing-local-addon", path: "/definitely/missing", source: "local" },
+        { enabled: false, name: "missing-npm-addon", source: "npm" },
+      ],
+      registry,
+    })
+
+    expect(result.loaded).toEqual([])
+    expect(result.warnings).toEqual([])
+  })
+
   it("rejects apiVersion mismatches explicitly", async () => {
     const badVersionRoot = mkdtempSync(join(tmpdir(), "sireno-addon-version-"))
     tempDirs.push(badVersionRoot)
