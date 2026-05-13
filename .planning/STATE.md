@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-05-12)
 Phase: 5 of 5 (Addon System)
 Plan: complete
 Status: Phase 5 execution and verification complete; review and ship are next
-Last activity: 2026-05-13 - Approved hardware verification for Phase 5 after gap-closure fixes and committed fixture setup
+Last activity: 2026-05-13 - Completed quick task 011: commit learnings
 
 Progress: [██████████] 100%
 
@@ -88,3 +88,4 @@ Resume file: .planning/phases/05-addon-system/05-VERIFICATION.md
 | 008 | guard async deck activation after render and prevent stop from being undone | 2026-05-13 | uncommitted | `.planning/quick/008-guard-async-deck-activation-after-render-and-preserve-stop` |
 | 009 | align fan heuristic review with v1 contract and finalize Phase 4 review | 2026-05-13 | uncommitted | `.planning/quick/009-align-fan-review-contract-finalize-phase-4-review` |
 | 010 | add Phase 5 verification fixtures under packages/cli/fixtures | 2026-05-13 | uncommitted | `.planning/quick/010-add-phase-5-verification-fixtures-under-packages-cli-fixtures` |
+| 011 | commit learnings | 2026-05-13 | `0f6981a` | `.planning/quick/011-commit-learnings` |
