@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 4 — Advanced Buttons
+**Current focus:** Phase 5 — executing Plan 05-02
 
 ## Current Position
 
 Phase: 4 of 5 (Advanced Buttons)
 Plan: 3 of 3 in current phase
 Status: Phase 4 review finalized; ready for /ship after hardware UAT
-Last activity: 2026-05-13 - Completed quick task 009 to align fan review contract and finalize Phase 4 review
+Last activity: 2026-05-13 - Completed Plan 05-01 and booted the addon-first runtime with a bundled button slice
 
 Progress: [██████░░░░] 60%
 
@@ -45,20 +45,27 @@ Recent decisions affecting current work:
 - **Phase 1:** Followed recommended standard tooling (pnpm, ESM, strict TS) with tsdown for the CLI build output. Full forward-looking config schema. PID-file daemon lifecycle. pino + colored error UX.
 - **Execution:** Config validation errors must preserve metadata through schema, loader, and formatter layers or the CLI loses file/line/suggestion context.
 - **Execution:** yargs command handlers that return promises require `.parseAsync()`, and a foreground daemon must keep the event loop alive explicitly.
+- **Phase 5 discussion:** Button behavior should move behind addon-owned stateful instances that render React output, declare their own schemas, and use core-owned scheduling, command helpers, invalidation, and navigation methods.
+- **Phase 5 discussion:** Built-in buttons should become bundled addons loaded through the same registry path as external addons, and the button config surface should be redesigned around a core envelope plus inline addon fields.
 
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 
+### Progress Notes
+
+- **Plan 05-01:** Completed the addon API, bundled registry, bootstrap-aware config validation, and the first generic addon-host runtime slice.
+
 ### Blockers/Concerns
 
 - **Phase 5 (Addon System):** Addon API contract must be versioned from day one; design decisions here are hard to reverse.
+- **Phase 5 (Addon System):** The addon-first architecture pivot is intentionally not backward-compatible with the current button config surface, so planning must account for schema, docs, examples, and migration fallout together.
 
 ## Session Continuity
 
 Last session: 2026-05-13
-Stopped at: Phase 4 review finalized. Next workflow is `/ship` after manual UAT.
-Resume file: .planning/ROADMAP.md
+Stopped at: Plan 05-01 complete. Next up is external addon manifest and loader execution in Plan 05-02.
+Resume file: .planning/phases/05-addon-system/05-02-PLAN.md
 
 ### Quick Tasks Completed
 
