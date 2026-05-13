@@ -199,7 +199,12 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(navigatedRuntime.getActiveDeck().id).toBe("emoji-favorites")
-      expect(navigatedRuntime.getRenderButtons()[0]).toMatchObject({ keyIndex: 0, label: "😀", subtitle: "Favorites" })
+      expect(navigatedRuntime.getRenderButtons()[0]).toMatchObject({
+        icon: expect.stringContaining("emoji-grin.svg"),
+        keyIndex: 0,
+        label: "GRIN",
+        subtitle: "Favorites",
+      })
     })
 
     await vi.waitFor(() => {
