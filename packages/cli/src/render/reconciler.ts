@@ -362,40 +362,6 @@ export function createDeckSurfaceElement(props: DeckSurfaceProps): ReactElement<
 
 export function createDisplayButtonModels(buttons: readonly ButtonInstance[]): DeckButtonProps[] {
   return buttons.map((button) => {
-    if (button.type === "toggle") {
-      return {
-        keyIndex: button.position,
-        ...(button.states[0]?.label !== undefined ? { label: button.states[0].label } : {}),
-        ...(button.states[0]?.icon !== undefined ? { icon: button.states[0].icon } : {}),
-        ...(button.states[0]?.key !== undefined ? { subtitle: button.states[0].key.toUpperCase() } : {}),
-        variant: "toggle" as const,
-      }
-    }
-
-    if (button.type === "cpu" || button.type === "memory") {
-      return {
-        keyIndex: button.position,
-        ...(button.label !== undefined ? { label: button.label } : {}),
-        variant: "metric" as const,
-      }
-    }
-
-    if (button.type === "fan") {
-      return {
-        keyIndex: button.position,
-        ...(button.label !== undefined ? { label: button.label } : {}),
-        variant: "fan" as const,
-      }
-    }
-
-    if (button.type === "media") {
-      return {
-        keyIndex: button.position,
-        ...(button.label !== undefined ? { label: button.label } : {}),
-        variant: "media" as const,
-      }
-    }
-
     return {
       keyIndex: button.position,
       ...(button.label !== undefined ? { label: button.label } : {}),

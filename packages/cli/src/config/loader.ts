@@ -8,6 +8,8 @@ import {
   type SirenoConfig,
   validateConfig,
 } from "../core/schemas.js"
+import { getBundledAddons } from "../addon/builtin.js"
+import { createAddonRegistry, type AddonRegistry } from "../addon/registry.js"
 
 const CONFIG_FILENAME = "config.yml"
 
@@ -113,7 +115,17 @@ function findConfigPath(customPath?: string): string | undefined {
   return undefined
 }
 
-export function loadConfig(configPath?: string): SirenoConfig {
+export function createBundledAddonRegistry(): AddonRegistry {
+  const registry = createAddonRegistry()
+
+  for (const addon of getBundledAddons()) {
+    registry.registerAddon(addon)
+  }
+
+  return registry
+}
+
+export function loadConfig(configPath?: string, registry = createBundledAddonRegistry()): SirenoConfig {
   const foundPath = findConfigPath(configPath)
 
   if (!foundPath) {
@@ -142,7 +154,8 @@ export function loadConfig(configPath?: string): SirenoConfig {
   }
 
   try {
-    return validateConfig(parsed)
+    // Phase 5 bootstrap validation: load the addon registry before full button validation.
+    return validateConfig(parsed, registry)
   } catch (error) {
     if (error instanceof ConfigValidationError) {
       throw new ConfigValidationError(

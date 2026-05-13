@@ -5,73 +5,13 @@ decks:
     id: main
     name: Main Deck
     buttons:
-      - type: display
-        position: 0
+      - position: 0
+        type: builtin-display-text
         label: Clock
-      - type: action
-        position: 1
-        label: Ping
-        command: printf 'pong'
-      - type: change-deck
-        position: 2
-        label: Apps
-        target_deck: apps
-      - type: toggle
-        position: 3
-        states:
-          - key: muted
-            label: Muted
-            command: printf muted
-          - key: active
-            label: Active
-            command: printf active
-      - type: cpu
-        position: 4
-        label: CPU
-        display_mode: progress
-        interval_ms: 1000
-      - type: fan
-        position: 5
-        label: Fan
-        unavailable_label: Unavailable
-        interval_ms: 2000
-      - type: display
-        position: 13
-        label: Sergio
-  apps:
-    id: apps
-    name: Apps
-    buttons:
-      - type: display
-        position: 0
-        label: Terminal
-      - type: action
-        position: 1
-        label: Date
-        command: date +%H:%M
-      - type: toggle
-        position: 2
-        status_command: printf on
-        interval_ms: 1000
-        states:
-          - key: off
-            label: Pause
-            command: printf pause
-          - key: on
-            label: Play
-            command: printf play
-      - type: memory
-        position: 3
-        label: RAM
-        display_mode: text
-        interval_ms: 1500
-      - type: media
-        position: 4
-        label: Music
-        command: playerctl play-pause
-        status_command: playerctl status | tr '[:upper:]' '[:lower:]'
-        display_command: playerctl metadata --format '{{title}}\n{{artist}}'
-        interval_ms: 1000
+      - position: 1
+        type: builtin-display-text
+        label: Sireno
+        icon: themes/dark.yml
 addons: []
 logging:
   level: info

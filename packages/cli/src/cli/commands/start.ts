@@ -1,6 +1,6 @@
 import type pino from "pino"
 
-import { loadConfig } from "../../config/loader.js"
+import { createBundledAddonRegistry, loadConfig } from "../../config/loader.js"
 import { resolveTheme } from "../../config/theme.js"
 import { ConfigValidationError } from "../../core/schemas.js"
 import { createDeckRuntime } from "../../deck/runtime.js"
@@ -76,7 +76,8 @@ export async function startDaemon(options: StartOptions): Promise<void> {
   }
 
   try {
-    const config = loadConfig(options.config)
+    const registry = createBundledAddonRegistry()
+    const config = loadConfig(options.config, registry)
     const theme = resolveTheme(config.theme)
     const mainDeck = config.decks[config.main_deck]
     let runtime: ReturnType<typeof createDeckRuntime> | null = null
@@ -98,6 +99,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
       deck: mainDeck,
       decks: config.decks,
       keyCount: connection.info.keyCount,
+      theme,
       onRenderButton: async (button) => {
         const activeConnection = lifecycle.getConnection()
         if (!activeConnection) {
@@ -168,7 +170,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
   }
 
   logger.info({ pid: process.pid }, "sireno-deck daemon started")
-  logger.info("started config-driven main deck runtime with action button polling")
+    logger.info("started config-driven main deck runtime with addon-hosted buttons")
   logger.info("press Ctrl+C to stop")
 
   try {

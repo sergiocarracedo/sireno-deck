@@ -83,22 +83,20 @@ describe("render reconciler", () => {
     expect(descriptions).toContainEqual({ keyIndex: 14, label: "Back", icon: undefined })
   })
 
-  it("keeps Phase 4 defaults in sync across display model generation", () => {
+  it("keeps addon-backed display model generation minimal", () => {
     expect(createDisplayButtonModels([
-      { type: "cpu", position: 1, label: "CPU", display_mode: "progress" },
-      { type: "fan", position: 2, label: "Fan", unavailable_label: "Unavailable" },
+      { type: "builtin-display-text", position: 1, label: "CPU", config: { label: "CPU" }, definition: { configSchema: {} as never, createInstance: () => ({ render: () => null as never }), type: "builtin-display-text" } },
       {
-        type: "media",
-        position: 3,
+        type: "builtin-display-text",
+        position: 2,
         label: "Music",
-        command: "playerctl play-pause",
-        status_command: "playerctl status",
-        display_command: "playerctl metadata",
+        icon: "./music.svg",
+        config: { icon: "./music.svg", label: "Music" },
+        definition: { configSchema: {} as never, createInstance: () => ({ render: () => null as never }), type: "builtin-display-text" },
       },
     ])).toEqual([
-      { keyIndex: 1, label: "CPU", variant: "metric" },
-      { keyIndex: 2, label: "Fan", variant: "fan" },
-      { keyIndex: 3, label: "Music", variant: "media" },
+      { keyIndex: 1, label: "CPU", variant: "default" },
+      { keyIndex: 2, label: "Music", icon: "./music.svg", variant: "default" },
     ])
   })
 })
