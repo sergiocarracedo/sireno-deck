@@ -1,12 +1,20 @@
-import type { DeckButtonProps, DeckSurfaceProps, DeckTextProps } from "./reconciler.js"
+import type { DeckButtonProps, DeckSurfaceProps, DeckTextProps } from "./types.js"
 
-declare global {
+interface DeckIntrinsicElements {
+  "deck-button": DeckButtonProps
+  "deck-surface": DeckSurfaceProps
+  "deck-text": DeckTextProps
+}
+
+declare module "react" {
   namespace JSX {
-    interface IntrinsicElements {
-      "deck-button": DeckButtonProps
-      "deck-surface": DeckSurfaceProps
-      "deck-text": DeckTextProps
-    }
+    interface IntrinsicElements extends DeckIntrinsicElements {}
+  }
+}
+
+declare module "react/jsx-runtime" {
+  namespace JSX {
+    interface IntrinsicElements extends DeckIntrinsicElements {}
   }
 }
 

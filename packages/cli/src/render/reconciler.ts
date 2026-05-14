@@ -6,26 +6,9 @@ import type { ReactElement } from "react"
 import type { ReactContext } from "react-reconciler"
 
 import type { ButtonInstance } from "../core/schemas.js"
+import type { DeckButtonProps, DeckSurfaceProps, DeckTextProps } from "./types.js"
 
-export interface DeckTextProps {
-  keyIndex: number
-  text: string
-}
-
-export interface DeckButtonProps {
-  detailLines?: string[]
-  displayValue?: string
-  keyIndex: number
-  label?: string
-  icon?: string
-  progress?: number
-  subtitle?: string
-  variant?: "default" | "fan" | "media" | "metric" | "toggle"
-}
-
-export interface DeckSurfaceProps {
-  buttons: DeckButtonProps[]
-}
+export type { DeckButtonProps, DeckSurfaceProps, DeckTextProps } from "./types.js"
 
 export interface RenderNode {
   detailLines?: string[]
@@ -37,7 +20,7 @@ export interface RenderNode {
   progress?: number
   subtitle?: string
   text?: string
-  variant?: "default" | "fan" | "media" | "metric" | "toggle"
+   variant?: "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
   children: RenderNode[]
 }
 
@@ -49,7 +32,7 @@ export interface RenderDescription {
   icon?: string
   progress?: number
   subtitle?: string
-  variant?: "default" | "fan" | "media" | "metric" | "toggle"
+   variant?: "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
 }
 
 interface RenderContainer {
