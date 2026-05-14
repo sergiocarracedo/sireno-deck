@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-05-12)
 Phase: 5 of 5 (Addon System)
 Plan: complete
 Status: Phase 5 execution and verification complete; review and ship are next
-Last activity: 2026-05-13 - Completed quick task 011: commit learnings
+Last activity: 2026-05-14 - Captured Phase 5 extension context for addon authoring, live date-time widgets, and theme typography replanning
 
 Progress: [██████████] 100%
 
@@ -62,6 +62,7 @@ Recent decisions affecting current work:
 - **Plan 05-06:** Clarified disabled addon semantics in the shipped config and pinned the skip-vs-warning contract in loader/startup tests.
 - **Plan 05-07:** Realigned bundled SVG assets with the icon-slot contract and strengthened renderer verification around icon-region pixels.
 - **Plan 05-08:** Restored image-backed emoji tiles for the bundled emoji selector with bundled per-emoji assets and fallback coverage.
+- **Phase 5 re-discussion:** Captured follow-on context for typed JSX addon authoring, core-owned live update defaults plus `interval_ms` overrides, optional shared button wrapper/text helpers, full theme typography tokens, and separate `analog-clock` / `calendar-sheet` button types inside the built-in date-time addon.
 
 ### Blockers/Concerns
 
