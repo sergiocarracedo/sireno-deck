@@ -164,10 +164,10 @@ This project uses **learnship**. Key facts:
 
 ## Current Phase
 
-**Milestone:** v1.0 — Sireno Deck CLI
-**Phase:** 5 — Addon System ✓ complete
-**Status:** review-ready
-**Last updated:** 2026-05-13
+**Milestone:** v1.1 — Addon UI and Live Widgets
+**Phase:** 6 — Base Contracts (not started)
+**Status:** context captured, ready for phase planning
+**Last updated:** 2026-05-14
 
 ---
 
