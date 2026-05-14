@@ -19,6 +19,8 @@ All 12 v1.1 requirements are mapped. No circular dependencies.
 
 ### Phase 6: Base Contracts
 
+**Status:** ✓ Complete (2026-05-14)
+
 **Goal:** Keep the existing addon/runtime/reconciler architecture intact while fixing date-time live refresh and making custom deck elements first-class in TypeScript authoring.
 
 **Requirements:** UIW-01, UIW-02, UIW-04, UIW-05, UIW-06
@@ -26,11 +28,11 @@ All 12 v1.1 requirements are mapped. No circular dependencies.
 **Depends on:** Completed v1.0 runtime, renderer, and addon system
 
 **Success criteria:**
-- [ ] Addon authors can write JSX using `deck-button`, `deck-text`, and `deck-surface` with typechecking
-- [ ] Existing helper constructors continue working for the same render elements
-- [ ] Live buttons still refresh only through the core runtime scheduler
-- [ ] Per-button `interval_ms` overrides work where supported without local timers inside addons
-- [ ] The built-in digital `date-time` button updates at its default cadence without regressions to the scheduler contract
+- [x] Addon authors can write JSX using `deck-button`, `deck-text`, and `deck-surface` with typechecking
+- [x] Existing helper constructors continue working for the same render elements
+- [x] Live buttons still refresh only through the core runtime scheduler
+- [x] Per-button `interval_ms` overrides work where supported without local timers inside addons
+- [x] The built-in digital `date-time` button updates at its default cadence without regressions to the scheduler contract
 
 **Research needed:** No additional milestone research before planning; the current research already settled the architectural direction.
 
