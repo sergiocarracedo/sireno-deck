@@ -26,6 +26,7 @@ export const LoggingSchema = z.object({
 })
 
 const RawButtonEnvelopeSchema = z.object({
+  interval_ms: z.number().int().min(500).optional(),
   position: z.number().int().min(0).max(31),
   type: z.string().min(1),
 })
