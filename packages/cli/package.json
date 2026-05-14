@@ -7,7 +7,11 @@
     "sireno": "./dist/cli.js"
   },
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./jsx": {
+      "types": "./dist/render/jsx.d.ts",
+      "default": "./dist/render/jsx.js"
+    }
   },
   "scripts": {
     "build": "tsdown",
