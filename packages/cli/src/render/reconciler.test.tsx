@@ -8,6 +8,8 @@ import {
   renderDeck,
 } from "./reconciler.js"
 
+const jsxButton = <deck-button keyIndex={7} label="JSX" subtitle="typed" variant="toggle" />
+
 describe("render reconciler", () => {
   it("produces a render description for key 0", () => {
     const descriptions = renderDeck(createDeckTextElement({ keyIndex: 0, text: "Hello" }))
@@ -54,6 +56,14 @@ describe("render reconciler", () => {
     expect(descriptions).toEqual([{ keyIndex: 4, label: "CPU", displayValue: "48%", progress: 48, variant: "metric" }])
   })
 
+  it("preserves emoji button descriptions", () => {
+    const descriptions = renderDeck(
+      createDeckButtonElement({ keyIndex: 6, label: "GRIN", subtitle: "Favorites", variant: "emoji" }),
+    )
+
+    expect(descriptions).toEqual([{ keyIndex: 6, label: "GRIN", subtitle: "Favorites", variant: "emoji" }])
+  })
+
   it("preserves rich media button descriptions with detail lines", () => {
     const descriptions = renderDeck(
       createDeckButtonElement({
@@ -98,5 +108,13 @@ describe("render reconciler", () => {
       { keyIndex: 1, label: "CPU", variant: "default" },
       { keyIndex: 2, label: "Music", icon: "./music.svg", variant: "default" },
     ])
+  })
+
+  it("renders JSX-authored deck elements with the same descriptions as helper-authored ones", () => {
+    const helperDescriptions = renderDeck(
+      createDeckButtonElement({ keyIndex: 7, label: "JSX", subtitle: "typed", variant: "toggle" }),
+    )
+
+    expect(renderDeck(jsxButton)).toEqual(helperDescriptions)
   })
 })
