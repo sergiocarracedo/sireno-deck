@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-05-12)
 
 Phase: 6 — Base Contracts (not started)
 Plan: -
-Status: Executing Phase 6 Wave 1
-Last activity: 2026-05-14 - Completed Plan 06-01 explicit JSX authoring contract
+Status: Phase 6 implementation complete; running verifier
+Last activity: 2026-05-14 - Completed Plan 06-02 live digital date-time contract
 
 Progress: [----------] 0%
 
