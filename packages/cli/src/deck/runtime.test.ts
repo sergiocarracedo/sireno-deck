@@ -6,6 +6,7 @@ import { validateConfig } from "../core/schemas.js"
 import { createDeckRuntime } from "./runtime.js"
 
 import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
+import type { PollingScheduler } from "../render/scheduler.js"
 
 const createDisplayDefinition = () => ({
   configSchema: {
@@ -210,5 +211,128 @@ describe("createDeckRuntime", () => {
     await vi.waitFor(() => {
       expect(executeAction).toHaveBeenCalledWith("printf '%s' '😀'")
     })
+  })
+
+  it("prefers button interval_ms over definition defaults for polling", async () => {
+    const createScheduler = vi.fn((_intervalMs: number): PollingScheduler => ({
+      intervalMs: 0,
+      jitterMs: 0,
+      scheduleDelay: () => 0,
+      start: vi.fn(),
+      stop: vi.fn(),
+    }))
+
+    const runtime = createDeckRuntime({
+      createScheduler,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { interval_ms: 1000, label: "Clock" },
+          definition: { ...createDisplayDefinition(), defaultIntervalMs: 2000 },
+          interval_ms: 1000,
+          label: "Clock",
+          position: 0,
+          type: "builtin-display-text",
+        }],
+      },
+      subscribeKeyEvents: () => () => {},
+      theme: {
+        accent: "#f59e0b",
+        background: "#10161f",
+        danger: "#fb7185",
+        foreground: "#eef2f7",
+        name: "dark",
+        primary: "#7dd3fc",
+        success: "#34d399",
+      },
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(createScheduler).toHaveBeenCalledWith(1000)
+    })
+  })
+
+  it("uses definition defaults when no interval override is configured", async () => {
+    const createScheduler = vi.fn((_intervalMs: number): PollingScheduler => ({
+      intervalMs: 0,
+      jitterMs: 0,
+      scheduleDelay: () => 0,
+      start: vi.fn(),
+      stop: vi.fn(),
+    }))
+
+    const runtime = createDeckRuntime({
+      createScheduler,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Clock" },
+          definition: { ...createDisplayDefinition(), defaultIntervalMs: 1500 },
+          label: "Clock",
+          position: 0,
+          type: "builtin-display-text",
+        }],
+      },
+      subscribeKeyEvents: () => () => {},
+      theme: {
+        accent: "#f59e0b",
+        background: "#10161f",
+        danger: "#fb7185",
+        foreground: "#eef2f7",
+        name: "dark",
+        primary: "#7dd3fc",
+        success: "#34d399",
+      },
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(createScheduler).toHaveBeenCalledWith(1500)
+    })
+  })
+
+  it("skips polling when neither interval override nor default cadence exists", async () => {
+    const createScheduler = vi.fn((_intervalMs: number): PollingScheduler => ({
+      intervalMs: 0,
+      jitterMs: 0,
+      scheduleDelay: () => 0,
+      start: vi.fn(),
+      stop: vi.fn(),
+    }))
+
+    const runtime = createDeckRuntime({
+      createScheduler,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Clock" },
+          definition: createDisplayDefinition(),
+          label: "Clock",
+          position: 0,
+          type: "builtin-display-text",
+        }],
+      },
+      subscribeKeyEvents: () => () => {},
+      theme: {
+        accent: "#f59e0b",
+        background: "#10161f",
+        danger: "#fb7185",
+        foreground: "#eef2f7",
+        name: "dark",
+        primary: "#7dd3fc",
+        success: "#34d399",
+      },
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(runtime.getRenderButtons()).toEqual([{ keyIndex: 0, label: "Clock" }])
+    })
+
+    expect(createScheduler).not.toHaveBeenCalled()
   })
 })

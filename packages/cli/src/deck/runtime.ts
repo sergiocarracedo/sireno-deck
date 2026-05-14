@@ -204,7 +204,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     stopActiveDeckPolling()
 
     for (const button of getDeckButtons(deckController.getActiveDeck())) {
-      const intervalMs = button.definition.defaultIntervalMs
+      const intervalMs = button.interval_ms ?? button.definition.defaultIntervalMs
       if (!intervalMs) {
         continue
       }
