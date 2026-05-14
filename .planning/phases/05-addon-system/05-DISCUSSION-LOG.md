@@ -1,173 +1,160 @@
-# Phase 5 Discussion Log
+---
+phase: 5
+slug: addon-system
+areas_discussed:
+  - Addon Authoring Surface
+  - Live Update Contract
+  - Shared Visual Primitives
+  - Theme Typography Contract
+  - New Built-in Date/Time Buttons
+  - Render Surface Evolution
+created: 2026-05-14
+---
 
-**Date:** 2026-05-13
-**Mode:** standard
-**Outcome:** Context captured for planning
+# Phase 5: Addon System - Discussion Log
 
-## Areas Discussed
+> **Audit trail only.** Do not use as input to planning, research, or execution agents.
+> Decisions are captured in CONTEXT.md — this log preserves the alternatives considered.
 
-### Button Contract
+**Date:** 2026-05-14
+**Phase:** 5-addon-system
+**Areas discussed:** Addon Authoring Surface, Live Update Contract, Shared Visual Primitives, Theme Typography Contract, New Built-in Date/Time Buttons, Render Surface Evolution
 
-#### Visual output
-- Options considered:
-- `React element` (recommended): preserves one visual contract while moving feature logic out of core runtime.
-- `Raw image buffer`: gives addons full rendering responsibility but duplicates layout/rendering work.
-- `Either React or buffer`: too much API surface for v1.
-- User choice: `React element`
-- User note: asked whether React could replace scheduling.
-- Resolution: React remains the output contract, but core still owns refresh triggers such as scheduling, activation, reconnect, and input-driven rerendering.
+---
 
-#### Lifecycle shape
-- Options considered:
-- `Stateful instance` (recommended): one addon instance per configured button with lifecycle methods.
-- `Pure render function`: too limiting for stateful and async behaviors.
-- `Hybrid`: broader API surface than needed for v1.
-- User choice: `Stateful instance`
+## Addon Authoring Surface
 
-#### Refresh ownership
-- Options considered:
-- `Addon declares schedule, core drives it` (recommended): preserves jitter, cleanup, and daemon lifecycle guarantees.
-- `Addon owns timers`: pushes lifecycle complexity into every addon.
-- `No timers, action only`: incompatible with live button requirements.
-- User choice: `Addon declares schedule, core drives it`
+| Option | Description | Selected |
+|--------|-------------|----------|
+| JSX + helpers | Add JSX typings for deck-button/deck-text/deck-surface while keeping helper functions available | ✓ |
+| Helpers only | Keep addon authors on createElement/helper calls only | |
+| Helpers only in v1, JSX later | Delay JSX support to reduce immediate scope | |
 
-#### Input/actions model
-- Options considered:
-- `Event handler methods` (recommended): explicit lifecycle and self-documenting behavior.
-- `Single callback`: simpler but more ambiguous and switch-heavy.
-- `Render-triggered only`: too indirect.
-- User choice: `Event handler methods`
+**User's choice:** `JSX + helpers (Recommended)`
+**Notes:** The runtime should remain the same custom reconciler; the change is authoring ergonomics and typing clarity.
 
-#### State ownership
-- Options considered:
-- `Inside addon instance` (recommended): strongest decoupling from core.
-- `Core-owned state bag`: reintroduces coupling.
-- `Mixed model`: too ambiguous for v1.
-- User choice: `Inside addon instance`
+---
 
-#### Immediate rerender requests
-- Options considered:
-- `Injected invalidate() method` (recommended): supports async state changes cleanly.
-- `Return dirty flags from handlers`: weak for async/background changes.
-- `Core always rerenders after every event`: wasteful and incomplete.
-- User choice: `Injected invalidate() method`
+## Live Update Contract
 
-#### Navigation
-- Options considered:
-- `Addon calls injected navigation methods` (recommended): core owns navigation state, not button-specific runtime logic.
-- `Navigation stays special-cased in core`: preserves existing coupling.
-- `Config-only navigation`: also preserves special knowledge in core.
-- User choice: `Addon calls injected navigation methods`
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Default + override | Definitions set `defaultIntervalMs`; configs may override with `interval_ms` | ✓ |
+| Definition default only | Live buttons always use addon-defined defaults | |
+| Instance-driven invalidate only | Buttons self-manage timing and call `invalidate()` directly | |
 
-### Schema Ownership
+**User's choice:** `Default + override (Recommended)`
+**Notes:** This preserves the earlier architecture that core owns scheduling.
 
-#### Schema availability timing
-- Options considered:
-- `Load addons before full config validation` (recommended): required for addon-owned button schemas.
-- `Keep core-only config validation`: blocks addon-owned schemas.
-- `Two-pass with unknown-button placeholders`: possible but more complex than necessary.
-- User choice: `Load addons before full config validation`
+### Refresh Cadence
 
-#### Schema format
-- Options considered:
-- `Zod schema object` (recommended): matches current stack and error UX.
-- `JSON Schema`: more portable but mismatched with the current codebase.
-- `Custom validate() function`: too loose and inconsistent.
-- User choice: `Zod schema object`
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Per-button sensible defaults | Digital/analog update around 1000ms; calendar updates much more slowly | ✓ |
+| Uniform 500ms everywhere | Reuse the generic scheduler cadence for all date/time widgets | |
+| Uniform 1000ms everywhere | Simpler default, but still too frequent for a calendar tear sheet | |
 
-#### Post-validation runtime shape
-- Options considered:
-- `Generic descriptor + validated addon config` (recommended): keeps a stable core envelope with addon-owned payload.
-- `Typed core union`: current approach; too coupled.
-- `Opaque raw object only`: too little structure for runtime needs.
-- User choice: `Generic descriptor + validated addon config`
+**User's choice:** `Per-button sensible defaults (Recommended)`
+**Notes:** Avoid unnecessary writes for slower-changing visuals.
 
-#### Common field ownership
-- Options considered:
-- `Core owns envelope, addon owns payload` (recommended): clean separation.
-- `Addon owns full object`: too much repetition and weaker runtime guarantees.
-- `Core defines many shared fields`: risks rebuilding the same coupling.
-- User choice: `Core owns envelope, addon owns payload`
+---
 
-### Runtime Injection
+## Shared Visual Primitives
 
-#### Command execution
-- Options considered:
-- `Injected command helpers` (recommended): centralizes logging, policy, and future controls.
-- `Addon imports execa directly`: bypasses core conventions.
-- `No command helper`: incompatible with current button behaviors.
-- User choice: `Injected command helpers`
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Shared core render primitive | Reusable wrapper near render system | |
+| Date-time addon local only | Wrapper exists only inside builtin date-time addon | |
+| Mandatory wrapper for all buttons | Force all buttons through one shell | |
 
-#### Read-only context
-- Options considered:
-- `Theme + button config + minimal app context` (recommended): enough context without exposing the whole config tree.
-- `Entire resolved config object`: over-couples addons to global structure.
-- `Only button config`: too small for theme-aware/navigation-aware behavior.
-- User choice: `Theme + button config + minimal app context`
+**User's choice:** Initially selected `Mandatory wrapper for all buttons`, then clarified to `Optional shared wrapper (Recommended)`.
+**Notes:** This was the main contradiction resolved during discussion. The final decision is optional wrapper, because analog clock and other bespoke visuals should be free to bypass it.
 
-#### Generic subscription/cleanup primitive
-- Options considered:
-- `No, keep v1 smaller` (recommended): defer extra lifecycle API until a real addon needs it.
-- `Yes, include it now`: larger permanent API surface.
-- User question: asked what `generic subscription/cleanup` meant.
-- Clarification given: a helper for registering external listeners and cleanup callbacks such as media subscriptions.
-- User choice after clarification: `No, keep v1 smaller`
+### Text Helpers
 
-#### Method surface
-- Options considered:
-- `Small explicit methods` (recommended): easier to version and document.
-- `Single methods object with many capabilities`: tends to become a kitchen-sink API.
-- `Only invalidate + navigation`: too narrow for command-driven buttons.
-- User choice: `Small explicit methods`
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Shared helper contract | Explicit shared behavior like marquee and ellipsis | ✓ |
+| Inline per-button logic | Each button decides overflow handling itself | |
+| Ellipsis only | Skip marquee in the first cut | |
 
-### Built-in Migration
+**User's choice:** `Shared helper contract (Recommended)`
+**Notes:** The user explicitly wants to avoid overflow behavior emerging accidentally from rendering quirks.
 
-#### Built-in status
-- Options considered:
-- `Convert built-ins into bundled addons` (recommended): one contract for built-in and external buttons.
-- `Keep built-ins special`: preserves the existing architectural split.
-- `Partial migration`: risks a long-lived mixed model.
-- User choice: `Convert built-ins into bundled addons`
+---
 
-#### Loading path
-- Options considered:
-- `Same registry path as external addons` (recommended): one loader model and less drift.
-- `Separate built-in registry module`: workable but increases drift risk.
-- `Hardcoded imports in runtime`: defeats the goal.
-- User choice: `Same registry path as external addons`
+## Theme Typography Contract
 
-#### Compatibility strategy
-- Options considered:
-- `Yes, preserve current config surface` (recommended): easier migration but drags old assumptions forward.
-- `No, redesign config now`: bigger scope, cleaner addon-first model.
-- `Mostly compatible with selective cleanup`: requires naming exact exceptions.
-- User choice: `No, redesign config now`
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Single font_family token | One global font family in the theme | |
+| Full typography tokens | Theme carries a richer typography contract | ✓ |
+| Addon-local font config | Each addon controls fonts independently | |
 
-#### User-facing config shape
-- Options considered:
-- `Core envelope + addon fields inline` (recommended): YAML-friendly and simple.
-- `Nested addon payload`: cleaner separation but more verbose.
-- `Addon namespaced blocks`: overcomplicated for the first redesign.
-- User choice: `Core envelope + addon fields inline`
+**User's choice:** `Full typography tokens`
+**Notes:** This goes beyond the narrower recommendation and should be preserved exactly for planning.
 
-#### Scope of the architecture shift
-- Options considered:
-- `Buttons first, deck types follow same principles where possible` (recommended): strong button refactor without forcing a full deck redesign.
-- `Buttons only for now`: may make deck-type support feel bolted on later.
-- `Full button and deck redesign together`: highest risk.
-- User choice: `Buttons first, deck types follow same principles where possible`
+### Overflow Behavior Contract
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Explicit text behavior modes | Named behaviors like marquee and ellipsis | ✓ |
+| Renderer auto-decides | The renderer chooses based on available space | |
+| No shared behavior contract | Leave overflow undefined and test visually per button | |
+
+**User's choice:** `Explicit text behavior modes (Recommended)`
+**Notes:** Tests should assert declared behavior, not accidental clipping or overflow.
+
+---
+
+## New Built-in Date/Time Buttons
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Separate button types | `date-time`, `analog-clock`, and `calendar-sheet` are separate types within one addon | ✓ |
+| One type with big variant union | Extend `date-time` with more variants | |
+| New addon per visual type | Split each visual into its own built-in addon | |
+
+**User's choice:** `Separate button types (Recommended)`
+**Notes:** Keeps schemas and render logic cleaner.
+
+### Calendar Semantics
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Today-focused tear sheet | Emphasize current day/date readability on one key | ✓ |
+| Mini month grid | Show a tiny whole-month calendar | |
+| Configurable both ways | Support multiple calendar layouts immediately | |
+
+**User's choice:** `Today-focused tear sheet (Recommended)`
+**Notes:** Chosen for readability on actual Stream Deck hardware.
+
+---
+
+## Render Surface Evolution
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Minimal surface expansion | Keep deck-button/deck-text/deck-surface and extend only if needed | ✓ |
+| Broader custom render API now | Introduce a richer render surface upfront | |
+| Date-time addon local hacks | Special-case the new visuals in addon-local code | |
+
+**User's choice:** `Minimal surface expansion (Recommended)`
+**Notes:** Preserve addon API stability unless a real renderer limit appears.
+
+---
 
 ## Agent's Discretion
 
-- Exact naming of runtime host modules and built-in addon package layout.
-- Exact method names for button instance lifecycle hooks.
-- Exact shape of the minimal app context injected into addon instances.
+- Exact naming of typography tokens may be decided during planning.
+- Exact API shape of the optional wrapper component may be decided during planning.
+- Exact slow-refresh cadence for `calendar-sheet` may be decided during planning, as long as it reflects day/date semantics.
 
 ## Deferred Ideas
 
-- Add a generic subscription/cleanup primitive only when a real addon demands it.
-- Consider a fuller deck architecture redesign in a later step if custom deck types expose a similar coupling problem.
+- None explicitly deferred, but planning should call out if the requested typography expansion turns into a broader design-system initiative beyond the immediate addon/rendering work.
 
 ---
+
 *Phase: 05-addon-system*
-*Discussion captured: 2026-05-13*
+*Discussion log generated: 2026-05-14*

@@ -1,60 +1,69 @@
 # Phase 5: Addon System - Context
 
-**Gathered:** 2026-05-13
+**Gathered:** 2026-05-14
 **Mode:** standard
 **Status:** Ready for planning
 
 <domain>
 ## Phase Boundary
 
-Let users install trusted in-process addons from local folders and npm, validate addon manifests, register custom button and deck types, and prove the model with bundled built-in addons and the emoji selector addon. For this phase, button types move to an addon-first architecture so feature-specific button behavior no longer lives inside the core deck runtime.
+Phase 5 remains the addon/rendering extension surface: how addons author visuals, how live addon buttons refresh, and how shared rendering primitives and theme text tokens support built-in addons consistently. This context also captures the intended extension work on top of the completed addon system: fixing the built-in `date-time` addon refresh contract and adding new built-in date/time button types that validate the addon architecture more deeply.
 
 </domain>
 
 <decisions>
 ## Implementation Decisions
 
-### Button Contract
-- Addon button visuals should return a React element as the canonical v1 render output.
-- Button behavior should be implemented as a stateful addon instance created once per configured button, not as a pure stateless render function.
-- Addons declare their refresh cadence, but the core runtime owns scheduling, jitter, activation-time refresh, reconnect refresh, and cleanup.
-- Core delivers input through explicit event-handler methods on the addon instance rather than a single generic callback.
-- Runtime state for a button lives inside the addon instance; core should not own feature-specific button state.
-- Core injects an explicit `invalidate()` method so addon instances can request an immediate re-render after internal or async state changes.
-- Deck navigation remains core-owned, but addon buttons trigger it through injected navigation methods instead of special-cased runtime logic.
+### Addon Authoring Surface
+- Addon authors should be able to use typed JSX with custom intrinsic elements such as `<deck-button />`, `<deck-text />`, and `<deck-surface />`.
+- The existing helper functions should stay available for authors who prefer them or for cases where JSX is less convenient.
+- The underlying custom reconciler contract should remain intact; this is an authoring ergonomics improvement, not a runtime model change.
 
-### Schema Ownership
-- Core must load addons before full deck/button validation so addon-defined button schemas are available during config validation.
-- Addons register Zod schemas for their button payloads in v1.
-- Core should replace the current hardcoded button-type union with a generic button descriptor containing a stable envelope plus validated addon-owned config.
-- Core owns the common button envelope fields such as position and type; the addon owns the remaining payload schema.
+### Live Update Contract
+- Live addon buttons should continue using core-owned scheduling.
+- Button definitions should declare `defaultIntervalMs` as their default refresh cadence.
+- Button config should be allowed to override that cadence with `interval_ms` where appropriate.
+- The built-in `date-time` addon family should use per-button sensible defaults rather than a blanket scheduler cadence:
+  - digital/date-time button: 1000ms default
+  - analog clock button: 1000ms default
+  - calendar-sheet button: a slower cadence appropriate for day/date rollover rather than constant polling
 
-### Runtime Injection
-- Addon instances receive validated button config, the resolved theme, button identity, and a minimal read-only app context by default.
-- Command execution should go through injected core helpers rather than direct `execa` usage inside addons.
-- The v1 addon API should stay small: no generic subscription/cleanup primitive beyond scheduled refresh, input events, explicit invalidation, navigation helpers, command helpers, and instance disposal.
-- Inject a small explicit method surface rather than a large capability bag.
+### Shared Visual Primitives
+- Introduce a shared button wrapper primitive that buttons can opt into, but it must remain optional.
+- Analog clock and other strongly custom visuals must be free to bypass the wrapper.
+- Introduce shared text behavior helpers with explicit named modes rather than accidental overflow behavior.
+- Text behavior should be an intentional contract, with explicit modes such as marquee and ellipsis.
 
-### Built-in Migration
-- Current built-in button types should become bundled addons using the same contract as external addons.
-- Bundled addons and external addons should go through the same loader and registry path.
-- The user wants to redesign the button config surface now rather than preserve the current built-in config contract.
-- The new user-facing config shape should stay YAML-friendly: a core envelope with addon fields inline in the same button object.
-- Phase 5 should focus primarily on button types; custom deck types should follow the same registration and schema principles where possible without forcing a full deck-architecture redesign up front.
+### Theme Typography Contract
+- Theme typography should use full typography tokens rather than a single `font_family` string.
+- The current hardcoded font usage in SVG text rendering should be replaced by theme-driven typography decisions.
+- Shared text rendering and helper behavior should consume theme typography consistently.
+
+### New Built-in Date/Time Buttons
+- Keep `date-time` as a digital/text-oriented button type.
+- Add `analog-clock` and `calendar-sheet` as separate button types inside the same `builtin-addons/date-time` addon package.
+- Do not collapse these into a single large variant union.
+- `calendar-sheet` should prioritize a today-focused tear-sheet layout rather than a dense mini month grid.
+
+### Render Surface Evolution
+- Keep the current custom render surface (`deck-button`, `deck-text`, `deck-surface`) as the main contract.
+- Expand that surface minimally and only when a real rendering limit is reached.
+- Avoid addon-local hacks that bypass shared render primitives just to ship the new date/time visuals quickly.
 
 ### Agent's Discretion
-- Exact package/module split between addon loader, addon registry, runtime host, and built-in addon packages.
-- Exact naming of the addon instance methods so long as the lifecycle remains explicit and small.
-- Exact shape of the minimal read-only app context injected into addons.
+- Exact typography token names and structure can be chosen during planning, as long as the result is clearly theme-driven and broader than a single `font_family` field.
+- The exact calendar-sheet refresh cadence can be chosen during planning, as long as it reflects the slower-changing nature of date-only visuals.
+- The exact wrapper component API can be chosen during planning, as long as it stays optional and compatible with bespoke visual layouts.
 
 </decisions>
 
 <specifics>
 ## Specific Ideas
 
-- The current `deck/runtime.ts` has too much built-in feature knowledge for CPU, memory, fan, media, and toggle behavior; the Phase 5 design should remove that coupling rather than wrap it in a thinner API.
-- The addon contract should treat buttons as the interface between addon code and the core runtime: the addon defines config validation, behavior, and render output; the core owns scheduling, deck lifecycle, rendering to hardware, and navigation state.
-- React remains the visual contract, but React alone does not replace the scheduler because live buttons depend on external triggers such as polling, key events, activation, and reconnect.
+- Explain clearly in docs and code intent that `createElement('deck-button')` is building a custom React element for the Stream Deck renderer, not a DOM node.
+- Make JSX authoring feel first-class for addon authors rather than forcing raw `createElement(...)` calls.
+- Avoid overflow-test-driven behavior; text layout rules should be explicit and testable by contract.
+- The new `calendar-sheet` should feel like a readable tear sheet on a single Stream Deck key, not a cramped calendar grid.
 
 </specifics>
 
@@ -63,17 +72,16 @@ Let users install trusted in-process addons from local folders and npm, validate
 
 **Downstream agents MUST read these before planning or implementing.**
 
-- .planning/ROADMAP.md
-- .planning/REQUIREMENTS.md
-- .planning/PROJECT.md
-- .planning/phases/03-themes-basic-buttons/03-CONTEXT.md
-- .planning/phases/04-advanced-buttons/04-03-SUMMARY.md
-- packages/cli/src/core/schemas.ts
-- packages/cli/src/deck/runtime.ts
-- packages/cli/src/deck/controller.ts
-- packages/cli/src/render/reconciler.ts
-- packages/cli/src/render/scheduler.ts
-- packages/cli/src/cli/commands/start.ts
+- `.planning/PROJECT.md`
+- `.planning/REQUIREMENTS.md`
+- `.planning/ROADMAP.md`
+- `.planning/STATE.md`
+- `packages/cli/src/addon/api.ts`
+- `packages/cli/src/deck/runtime.ts`
+- `packages/cli/src/render/reconciler.ts`
+- `packages/cli/src/render/text-image.ts`
+- `packages/cli/src/config/theme.ts`
+- `builtin-addons/date-time/src/index.ts`
 
 </canonical_refs>
 
@@ -81,32 +89,31 @@ Let users install trusted in-process addons from local folders and npm, validate
 ## Existing Code Insights
 
 ### Reusable Assets
-- `packages/cli/src/render/reconciler.ts`: already establishes React as the render contract and should stay the bridge from addon output to render descriptions.
-- `packages/cli/src/render/scheduler.ts`: already provides jittered polling and should remain core-owned when addon buttons declare schedules.
-- `packages/cli/src/deck/controller.ts`: already centralizes deck navigation and should remain the core navigation boundary behind injected addon methods.
-- `packages/cli/src/cli/commands/start.ts`: already wires config loading, theme resolution, device lifecycle, and deck runtime startup; it is the natural integration point for bootstrap addon loading before full config validation.
+- `packages/cli/src/addon/api.ts`: already defines addon button instances, `refresh()`, `defaultIntervalMs`, and the theme/methods injection points.
+- `packages/cli/src/render/reconciler.ts`: already owns the custom React element collection path and exposes helper constructors for deck elements.
+- `packages/cli/src/render/text-image.ts`: central place for current text and SVG card rendering; this is where hardcoded font usage and future shared text behavior currently converge.
+- `packages/cli/src/config/theme.ts`: current theme schema entry point; typography expansion will route through here.
 
 ### Established Patterns
-- Validation errors must keep rich file/line/suggestion context through the full config pipeline.
-- The codebase prefers building the real architecture instead of temporary demos.
-- The current implementation already has a useful split between device lifecycle, scheduler, render bridge, and deck controller; the main coupling problem is feature-specific button behavior in the runtime and schemas.
+- Addon buttons are stateful instances that return React output and rely on core-owned scheduling/invalidation.
+- Built-in addons are expected to use the same addon registry path as external addons.
+- Rendering contracts are intentionally narrow and custom rather than DOM-like.
 
 ### Integration Points
-- Config loading needs a bootstrap phase that can discover addons before full button validation.
-- Addon registration must feed both config validation and runtime button instantiation.
-- Deck runtime should become a generic host that manages activation, key events, scheduling, invalidation, and rendering while delegating button behavior to addon instances.
-- Built-in button packages should be loaded through the same registry path as external addons to avoid permanent contract drift.
+- JSX authoring support will connect to the TypeScript typing layer around the existing reconciler contract.
+- Live date/time refresh behavior will connect to `defaultIntervalMs`, per-button config parsing, and runtime polling in `packages/cli/src/deck/runtime.ts`.
+- Shared wrapper and text helpers will connect to the rendering utilities in `packages/cli/src/render/text-image.ts` and any deck element prop model refinements.
+- New built-in button types will connect inside `builtin-addons/date-time/src/index.ts` and likely require schema, tests, and config fixture updates.
 
 </code_context>
 
 <deferred>
 ## Deferred Ideas
 
-- A generic subscription/cleanup primitive for external event listeners is deferred until a real addon needs it.
-- A full deck-architecture redesign is deferred; Phase 5 should make deck types align with the addon registration model without forcing a complete deck runtime rewrite.
+- None yet, but planning should explicitly call out if any typography ambitions exceed the immediate needs of Phase 5 extension work.
 
 </deferred>
 
 ---
 *Phase: 05-addon-system*
-*Context gathered: 2026-05-13*
+*Context gathered: 2026-05-14*
