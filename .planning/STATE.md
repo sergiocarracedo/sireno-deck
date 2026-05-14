@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Defining milestone v1.1 requirements and roadmap
+**Current focus:** Milestone v1.1 defined; ready to start Phase 1 discussion
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 1 — Base Contracts (not started)
 Plan: -
-Status: Defining requirements for milestone v1.1
-Last activity: 2026-05-14 - Milestone v1.1 started
+Status: Phase 1 context captured; ready for `plan-phase 1`
+Last activity: 2026-05-14 - Captured Phase 1 context for v1.1
 
-Progress: [██████████] 100%
+Progress: [----------] 0%
 
 ## Performance Metrics
 
@@ -71,9 +71,9 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-05-13
-Stopped at: Phase 5 approved after hardware verification. Next up is `/review`, `/ship`, and `/compound`.
-Resume file: .planning/phases/05-addon-system/05-VERIFICATION.md
+Last session: 2026-05-14
+Stopped at: Phase 1 discussion completed. Next up is `plan-phase 1`.
+Resume file: .planning/phases/01-foundation/01-CONTEXT.md
 
 ### Quick Tasks Completed
 
