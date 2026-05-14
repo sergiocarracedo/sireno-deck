@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.1 — Addon UI and Live Widgets
-**Phase:** 6 — Base Contracts (not started)
-**Status:** context captured, ready for phase planning
+**Phase:** 6 — Base Contracts ✓ complete -> Phase 7 — Typography + Text Behavior
+**Status:** verifying
 **Last updated:** 2026-05-14
 
 ---
