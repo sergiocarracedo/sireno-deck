@@ -8,6 +8,17 @@ Sireno Deck is a TypeScript CLI for controlling and managing Stream Deck devices
 
 Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
 
+## Current Milestone: v1.1 Addon UI and Live Widgets
+
+**Goal:** Improve addon authoring ergonomics and ship richer built-in live date/time visuals on top of the completed addon system.
+
+**Target features:**
+- Typed JSX authoring for custom deck elements while preserving helper-based authoring
+- Live-refreshing built-in `date-time` button with per-button interval control
+- New built-in `analog-clock` and `calendar-sheet` button types
+- Optional shared button wrapper and explicit shared marquee/ellipsis text behavior
+- Theme-driven typography tokens for render text output
+
 ## Requirements
 
 ### Validated
@@ -26,6 +37,9 @@ Make Stream Deck customization programmable and extensible through a fast TypeSc
 - [ ] Support trusted in-process addons written in TypeScript, installable from local folders and npm packages.
 - [ ] Let addons provide button types, button instances, deck types, deck instances, manifests, bundled decks, and reusable assets such as icons.
 - [ ] Provide a YAML-based theme system for global visual tokens such as background, accent, and primary colors, plus a small set of built-in themes.
+- [ ] Improve addon authoring ergonomics with typed JSX support for custom deck render elements.
+- [ ] Expand the built-in date/time addon with live digital, analog, and tear-sheet calendar visuals using shared rendering primitives.
+- [ ] Make theme typography and explicit text behavior part of the render contract so long text does not depend on accidental overflow.
 
 ### Out of Scope
 
@@ -63,4 +77,4 @@ The domain includes fast refresh behavior for live widgets such as CPU, memory, 
 | Run addons as trusted in-process code in v1 | Keeps the initial addon API simpler and avoids early sandbox complexity | — Pending |
 
 ---
-*Last updated: 2026-05-12 after new-project questioning*
+*Last updated: 2026-05-14 after starting milestone v1.1*
