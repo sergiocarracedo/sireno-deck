@@ -1,7 +1,7 @@
-# Phase 1 Discussion Log
+# Phase 6 Discussion Log
 
 **Date:** 2026-05-14
-**Phase:** 1 - Base Contracts
+**Phase:** 6 - Base Contracts
 **Mode:** standard
 
 ## Areas Selected
@@ -33,13 +33,13 @@
 - User choice: `Dedicated exported types entrypoint (Recommended)`
 - Rationale captured: Keep runtime API separate from TypeScript-only authoring concerns and make the setup easy to document.
 
-#### Decision point: How wide the JSX surface should be in Phase 1
+#### Decision point: How wide the JSX surface should be in Phase 6
 - Options considered:
   - Only current elements and props (recommended)
   - Current elements plus reserved future props
   - Custom wrapper component API instead
 - User choice: `Only current elements and props (Recommended)`
-- Rationale captured: Keep Phase 1 focused on ergonomics and avoid locking future renderer API decisions early.
+- Rationale captured: Keep Phase 6 focused on ergonomics and avoid locking future renderer API decisions early.
 
 #### Decision point: Who the JSX entrypoint should optimize for first
 - Options considered:
@@ -91,7 +91,7 @@
   - Use `100ms` and change scheduler too
   - Use `250ms` and revisit later
 - Final user choice: `Keep 500ms (Recommended)`
-- Final rationale captured: The current scheduler shape makes `100ms` misleadingly aggressive unless Phase 1 also redesigns jitter behavior.
+- Final rationale captured: The current scheduler shape makes `100ms` misleadingly aggressive unless Phase 6 also redesigns jitter behavior.
 
 ## Agent's Discretion
 
@@ -100,9 +100,9 @@
 
 ## Deferred Ideas
 
-- Future text-behavior or wrapper props on custom render elements belong to Phase 2.
-- Supporting sub-500ms polling safely would require scheduler work and is deferred beyond Phase 1.
+- Future text-behavior or wrapper props on custom render elements belong to Phase 7.
+- Supporting sub-500ms polling safely would require scheduler work and is deferred beyond Phase 6.
 
 ---
 
-This file is an audit trail for the discussion session. Downstream planning should use `01-CONTEXT.md` as the canonical decision source.
+This file is an audit trail for the discussion session. Downstream planning should use `06-CONTEXT.md` as the canonical decision source.

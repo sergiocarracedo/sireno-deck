@@ -1,142 +1,100 @@
-# Roadmap — Sireno Deck v1.0
+# Roadmap — Sireno Deck v1.1
 
-**Last updated:** 2026-05-13
-**Granularity:** coarse (5 phases)
-**Total v1 requirements:** 33
+**Last updated:** 2026-05-14
+**Granularity:** focused milestone (4 phases)
+**Total v1.1 requirements:** 12
 
 ## Phase Overview
 
-| #   | Phase                        | Goal                                                  | Requirements | Depends on |
-| --- | ---------------------------- | ----------------------------------------------------- | ------------ | ---------- |
-| 1   | Foundation                   | Config loading, CLI lifecycle, and project structure   | 6            | None       |
-| 2   | Device + Rendering           | Hardware connectivity and React → sharp → Stream Deck | 8            | Phase 1    |
-| 3   | Themes + Basic Buttons       | Visual themes and first interactive buttons            | 9            | Phase 2    |
-| 4   | Advanced Buttons             | Toggle, live data, and media control buttons           | 6            | Phase 3    |
-| 5   | Addon System                 | Extension ecosystem with emoji selector validation     | 8            | Phase 3    |
+| # | Phase | Goal | Requirements | Depends on |
+|---|-------|------|--------------|------------|
+| 6 | Base Contracts | Restore live date/time scheduling and add typed JSX support on the existing render contract | 5 | Completed v1.0 baseline |
+| 7 | Typography + Text Behavior | Make text rendering theme-driven and explicit instead of hardcoded or overflow-driven | 3 | Phase 6 |
+| 8 | Clock Visuals | Add shared clock-oriented visuals on top of the stabilized runtime and text contracts | 2 | Phases 6-7 |
+| 9 | Calendar + Authoring Clarity | Finish the date-time addon with calendar-sheet and document the custom element authoring model clearly | 3 | Phases 6-7 |
 
-Full 37/37 requirements mapped. No circular dependencies.
-
----
-
-### Phase 1: Foundation
-
-**Goal:** Ship a TypeScript CLI skeleton that loads and validates `config.yml` and responds to `start`, `stop`, `status`, and `--help` commands.
-
-**Requirements:** INFRA-04, INFRA-05, INFRA-06, INFRA-07, INFRA-08, INFRA-09
-
-**Depends on:** None
-
-**Success criteria:**
-- [ ] Running `sireno --help` prints available commands with descriptions
-- [ ] `sireno start` starts a daemon process that logs readiness
-- [ ] `sireno status` reports whether the daemon is running
-- [ ] `sireno stop` terminates the daemon cleanly
-- [ ] Editing `config.yml` with invalid YAML or missing required fields produces a readable error with file path, line number, and suggestion
-- [ ] Valid `config.yml` parses into a typed object without errors
-
-**Research needed:** No — well-understood technologies (yargs, js-yaml, zod)
+All 12 v1.1 requirements are mapped. No circular dependencies.
 
 ---
 
-### Phase 2: Device + Rendering
+### Phase 6: Base Contracts
 
-**Status:** ✓ Complete (2026-05-12)
+**Goal:** Keep the existing addon/runtime/reconciler architecture intact while fixing date-time live refresh and making custom deck elements first-class in TypeScript authoring.
 
-**Goal:** Connect to a Stream Deck device, render a static React component to its keys via a custom reconciler and sharp pipeline, and survive disconnect/reconnect.
+**Requirements:** UIW-01, UIW-02, UIW-04, UIW-05, UIW-06
 
-**Requirements:** INFRA-01, INFRA-02, INFRA-03, RENDER-01, RENDER-02, RENDER-03, INFRA-10, INFRA-11
-
-**Depends on:** Phase 1 (needs config to know device preferences, CLI to run daemon)
+**Depends on:** Completed v1.0 runtime, renderer, and addon system
 
 **Success criteria:**
-- [x] The CLI detects a connected Stream Deck and reports model + serial
-- [x] On Linux, if the device is visible via `lsusb` but blocked by udev, the CLI prints a clear fix instruction
-- [x] Unplugging the device does not crash the process; the CLI reports disconnection
-- [x] Replugging the device triggers automatic reconnection and state restoration
-- [x] A single static React component (e.g., "Hello World") renders to the correct Stream Deck key as a visible image
-- [x] Rendered images are only written to the device when content changes
-- [x] A test component polling at 500ms renders updates without visible flicker on all 15 keys simultaneously
-- [x] Multiple polling intervals are staggered with jitter (no synchronous burst writes)
+- [ ] Addon authors can write JSX using `deck-button`, `deck-text`, and `deck-surface` with typechecking
+- [ ] Existing helper constructors continue working for the same render elements
+- [ ] Live buttons still refresh only through the core runtime scheduler
+- [ ] Per-button `interval_ms` overrides work where supported without local timers inside addons
+- [ ] The built-in digital `date-time` button updates at its default cadence without regressions to the scheduler contract
 
-**Research needed:** Yes — custom react-reconciler host config for image buffers is novel for this domain; sharp pipeline performance with Stream Deck buffer formats must be validated with benchmarks
+**Research needed:** No additional milestone research before planning; the current research already settled the architectural direction.
 
 ---
 
-### Phase 3: Themes + Basic Buttons
+### Phase 7: Typography + Text Behavior
 
-**Status:** ✓ Complete (2026-05-12)
+**Goal:** Replace ad hoc text styling with theme-driven typography tokens and explicit overflow behavior that the renderer can test and share.
 
-**Goal:** Apply visual themes and ship display-only, action, and change-deck buttons with sub-deck navigation.
+**Requirements:** UIW-09, UIW-10, UIW-11
 
-**Requirements:** RENDER-04, RENDER-05, RENDER-06, BTN-01, BTN-02, BTN-03, BTN-06, ADDN-08, ADDN-09
-
-**Depends on:** Phase 2 (needs rendering pipeline and device connection)
+**Depends on:** Phase 6
 
 **Success criteria:**
-- [x] Switching between dark and light themes in `config.yml` changes the visual appearance of all buttons
-- [x] A display-only button renders static text or an icon from config
-- [x] An action button executes a user-defined shell command on tap and shows result feedback
-- [x] An action button whose display text is a periodically-executed command refreshes at its configured interval
-- [x] A change-deck button navigates to the targeted sub-deck
-- [x] Sub-decks render a back button that returns to the parent deck
-- [x] Configuring multiple decks in `config.yml` with button positions per deck renders correctly
+- [ ] Theme schema accepts typography tokens that the renderer consumes for shared text output
+- [ ] Shared text rendering supports named behaviors such as ellipsis and marquee by contract
+- [ ] A shared button wrapper primitive exists for buttons that want it, without forcing bespoke visuals to use it
 
-**Research needed:** No — uses proven rendering pipeline from Phase 2
+**Research needed:** No — milestone research already narrowed the typography/text direction enough for planning.
 
 ---
 
-### Phase 4: Advanced Buttons
+### Phase 8: Clock Visuals
 
-**Goal:** Ship toggle buttons (internal and external state) and live data buttons for CPU, memory, fan speed, and media control.
+**Goal:** Ship the first richer live visual in the new addon UI surface by adding an analog clock button type without widening the renderer more than necessary.
 
-**Requirements:** BTN-04, BTN-05, BTN-07, BTN-08, BTN-09, BTN-10
+**Requirements:** UIW-07, UIW-12
 
-**Depends on:** Phase 3 (needs action button and periodic display patterns)
+**Depends on:** Phases 6-7
 
 **Success criteria:**
-- [ ] A toggle button cycles display and action on each tap through all configured states
-- [ ] A toggle button with external status command reflects the command's output as its current state
-- [ ] A CPU usage button updates at its configured interval and displays as a progress bar or percentage text
-- [ ] A memory usage button updates at its configured interval and displays as a progress bar or text
-- [ ] A fan speed button renders fan information and shows a fallback display when sensors are unavailable
-- [ ] A media control button toggles play/pause via command and displays track title, artist, or time from external state commands
+- [ ] The built-in date/time addon exposes a separate `analog-clock` button type
+- [ ] The analog clock uses the core scheduler with a sensible default live cadence
+- [ ] Fixtures or tests cover the new clock type and its scheduling/render contract
 
-**Research needed:** No — builds on proven button infrastructure from Phase 3
+**Research needed:** No — this phase should build on the contracts stabilized in Phases 6-7.
 
 ---
 
-### Phase 5: Addon System
+### Phase 9: Calendar + Authoring Clarity
 
-**Status:** ✓ Complete (2026-05-13, gap closure verified)
+**Goal:** Complete the milestone with a readable tear-sheet calendar visual and docs that make addon UI authoring feel intentional rather than mysterious.
 
-**Goal:** Let users install addons from local folders and npm, validate manifests, register custom button/deck types, and ship the emoji selector addon as a validation of the full extension model.
+**Requirements:** UIW-03, UIW-08, UIW-12
 
-**Requirements:** ADDN-01, ADDN-02, ADDN-03, ADDN-04, ADDN-05, ADDN-06, ADDN-07, ADDN-10
-
-**Depends on:** Phase 3 (needs button type registry and deck controller to register/types against)
+**Depends on:** Phases 6-7
 
 **Success criteria:**
-- [x] An addon in a local folder with a valid manifest loads at startup and its button type is available in config
-- [x] An addon installed via npm with a valid manifest loads at startup
-- [x] An addon with a broken manifest or import error is skipped with a logged warning; other addons and the CLI continue loading
-- [x] An addon registers a custom button type with a React component that renders to a Stream Deck key
-- [x] An addon registers a custom deck type with a pre-configured button layout
-- [x] An addon ships icons that can be referenced by path in button config
-- [x] An addon declaring `apiVersion: 99` (mismatched) is rejected with a clear error
-- [x] The emoji selector addon boots, shows emoji categories as sub-decks, allows emoji selection, and respects the favorites config
+- [ ] The built-in date/time addon exposes a separate `calendar-sheet` button type with a slower date-appropriate refresh cadence
+- [ ] The calendar visual reads as a single-key tear sheet rather than a cramped month grid
+- [ ] Shipped docs and examples explain JSX/custom element authoring clearly and show the non-DOM render contract
+- [ ] Fixtures or tests cover calendar-sheet behavior and any authoring/documentation examples added for the milestone
 
-**Research needed:** Yes — addon API contract design and dynamic `import()` module loading with error boundaries need careful architecture decisions during planning
+**Research needed:** No — this phase applies the previously decided milestone constraints.
 
 ---
 
 ## Coverage Validation
 
-- [x] All 33 v1 requirements mapped to exactly one phase: INFRA (11), RENDER (6), BTN (10), ADDN (10) → minus 1 (ADDN-08/09 moved) → verified
-- [x] No circular dependencies: 1→2→3→4 and 1→2→3→5
-- [x] Phase 1 has no unmet dependencies
-- [x] All success criteria are observable and testable
-- [x] Phases 4 and 5 can run in parallel after Phase 3 completes
+- [x] All 12 v1.1 requirements map to at least one roadmap phase
+- [x] No circular dependencies: 6 → 7 → 8 and 6 → 7 → 9
+- [x] Every phase has observable success criteria
+- [x] Phases 8 and 9 can proceed in parallel once Phases 6-7 are stable
 
 ---
 
-*Roadmap created: 2026-05-12*
+*Roadmap created: 2026-05-14*

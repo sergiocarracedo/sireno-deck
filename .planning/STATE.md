@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Milestone v1.1 defined; ready to start Phase 1 discussion
+**Current focus:** Milestone v1.1 defined; ready to start Phase 6 planning
 
 ## Current Position
 
-Phase: 1 — Base Contracts (not started)
+Phase: 6 — Base Contracts (not started)
 Plan: -
-Status: Phase 1 context captured; ready for `plan-phase 1`
-Last activity: 2026-05-14 - Captured Phase 1 context for v1.1
+Status: Phase 6 context captured; ready for `plan-phase 6`
+Last activity: 2026-05-14 - Renumbered v1.1 phases and preserved Base Contracts context
 
 Progress: [----------] 0%
 
@@ -42,7 +42,7 @@ Progress: [----------] 0%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- **Phase 1:** Followed recommended standard tooling (pnpm, ESM, strict TS) with tsdown for the CLI build output. Full forward-looking config schema. PID-file daemon lifecycle. pino + colored error UX.
+- **Phase 1 (v1.0):** Followed recommended standard tooling (pnpm, ESM, strict TS) with tsdown for the CLI build output. Full forward-looking config schema. PID-file daemon lifecycle. pino + colored error UX.
 - **Execution:** Config validation errors must preserve metadata through schema, loader, and formatter layers or the CLI loses file/line/suggestion context.
 - **Execution:** yargs command handlers that return promises require `.parseAsync()`, and a foreground daemon must keep the event loop alive explicitly.
 - **Phase 5 discussion:** Button behavior should move behind addon-owned stateful instances that render React output, declare their own schemas, and use core-owned scheduling, command helpers, invalidation, and navigation methods.
@@ -72,8 +72,8 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-14
-Stopped at: Phase 1 discussion completed. Next up is `plan-phase 1`.
-Resume file: .planning/phases/01-foundation/01-CONTEXT.md
+Stopped at: Phase 6 discussion completed. Next up is `plan-phase 6`.
+Resume file: .planning/phases/06-base-contracts/06-CONTEXT.md
 
 ### Quick Tasks Completed
 

@@ -1,4 +1,4 @@
-# Phase 1: Base Contracts - Context
+# Phase 6: Base Contracts - Context
 
 **Gathered:** 2026-05-14
 **Mode:** standard
@@ -7,7 +7,7 @@
 <domain>
 ## Phase Boundary
 
-Phase 1 restores the live refresh contract for the built-in digital `date-time` button and makes the existing custom render elements first-class in TypeScript authoring. This phase extends the current addon/runtime/reconciler contracts without changing the renderer model, moving scheduling out of core, or introducing new visual capabilities beyond the digital date/time fix.
+Phase 6 restores the live refresh contract for the built-in digital `date-time` button and makes the existing custom render elements first-class in TypeScript authoring. This phase extends the current addon/runtime/reconciler contracts without changing the renderer model, moving scheduling out of core, or introducing new visual capabilities beyond the digital date/time fix.
 
 </domain>
 
@@ -17,14 +17,14 @@ Phase 1 restores the live refresh contract for the built-in digital `date-time` 
 ### JSX Typing Surface
 - Typed JSX should be an explicit addon opt-in, not a repo-wide ambient JSX change.
 - The opt-in should be delivered through a dedicated exported types entrypoint rather than mixed into the main addon runtime API.
-- Phase 1 should type only the existing intrinsic elements and current props: `deck-button`, `deck-text`, and `deck-surface`.
+- Phase 6 should type only the existing intrinsic elements and current props: `deck-button`, `deck-text`, and `deck-surface`.
 - The typed JSX authoring contract should be shared by both built-in addons and external addons.
 
 ### Refresh Override Contract
 - `interval_ms` should override `defaultIntervalMs` when both are present.
 - Any button may opt into polling via `interval_ms`; override support is not restricted only to definitions that already declare `defaultIntervalMs`.
 - Invalid or too-small `interval_ms` values should fail config validation rather than being clamped silently at runtime.
-- Phase 1 should keep a `500ms` minimum for `interval_ms` because the current scheduler jitter can drive effective delays far below the configured value at smaller intervals.
+- Phase 6 should keep a `500ms` minimum for `interval_ms` because the current scheduler jitter can drive effective delays far below the configured value at smaller intervals.
 
 ### Agent's Discretion
 - The exact packaging and naming of the dedicated JSX types entrypoint can be chosen during planning as long as it stays separate from the main runtime API surface.
@@ -35,7 +35,7 @@ Phase 1 restores the live refresh contract for the built-in digital `date-time` 
 <specifics>
 ## Specific Ideas
 
-- Keep JSX support narrow and boring in Phase 1: type what already exists rather than using this milestone as an excuse to predeclare future render props.
+- Keep JSX support narrow and boring in Phase 6: type what already exists rather than using this milestone as an excuse to predeclare future render props.
 - Treat `interval_ms` as a real runtime contract, not dead config baggage.
 - The digital `date-time` button should start refreshing correctly through core scheduling rather than relying on incidental re-renders.
 
@@ -83,11 +83,11 @@ Phase 1 restores the live refresh contract for the built-in digital `date-time` 
 <deferred>
 ## Deferred Ideas
 
-- Future render props for text behavior or shared wrappers belong to Phase 2, not this phase.
+- Future render props for text behavior or shared wrappers belong to Phase 7, not this phase.
 - Any scheduler redesign needed to safely support sub-500ms refresh intervals belongs to later work, not this phase.
 
 </deferred>
 
 ---
-*Phase: 01-foundation*
+*Phase: 06-base-contracts*
 *Context gathered: 2026-05-14*
