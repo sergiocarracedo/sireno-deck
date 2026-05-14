@@ -1,93 +1,108 @@
----
-phase: 1
-slug: foundation
-areas_discussed: [Project Structure, Config Schema Scope, Daemon Lifecycle, Error UX + Logging]
-created: 2026-05-12
----
+# Phase 1 Discussion Log
 
-# Phase 1: Foundation — Discussion Log
+**Date:** 2026-05-14
+**Phase:** 1 - Base Contracts
+**Mode:** standard
 
-> **Audit trail only.** Do not use as input to planning, research, or execution agents.
-> Decisions are captured in CONTEXT.md — this log preserves the alternatives considered.
+## Areas Selected
 
-**Date:** 2026-05-12
-**Phase:** 01-foundation
-**Areas discussed:** Project Structure, Config Schema Scope, Daemon Lifecycle, Error UX + Logging
+- JSX typing surface
+- Refresh override contract
 
----
+## Areas Not Selected
 
-## Project Structure
+- Date-time config shape
 
-| # | Question | Option A | Option B | Option C | Selected |
-|---|----------|----------|----------|----------|----------|
-| 1 | Monorepo or single package? | Single package (simpler) | Monorepo/npm workspaces | — | Monorepo (npm workspaces) |
-| 2 | Build tool? | tsup (recommended) | tsx + tsc | Vite | tsup |
-| 3 | Workspace layout? | CLI + addons split | Core + CLI + addons | Workspaces only for addons | CLI + addons split |
-| 4 | TS strictness? | strict: true (recommended) | Moderate | Minimal | strict: true |
-| 5 | Module format? | ESM (recommended) | CJS only | Dual | ESM |
-| 6 | Test layout? | Colocated (recommended) | __tests__/ dir | tests/ root | Colocated |
-| 7 | Addon deps? | Workspace protocol (recommended) | Peer dependency | No dependency | Workspace protocol |
-| 8 | Entry + scripts? | Standard npm scripts | pnpm workspaces | npm + turbo | pnpm workspaces |
+## Discussion Record
 
-**User's choice:** Monorepo with pnpm workspaces, tsup build, ESM, strict TS, colocated tests, workspace protocol for addon deps
-**Notes:** User showed clear preference for standard modern tooling without over-engineering
+### JSX typing surface
 
----
+#### Decision point: How addon authors opt into typed custom JSX elements
+- Options considered:
+  - Explicit addon opt-in (recommended)
+  - Global repo-wide JSX types
+  - No JSX support yet
+- User choice: `Explicit addon opt-in (Recommended)`
+- Rationale captured: Keep typing local to addon authoring and avoid polluting JSX globally across the repo.
 
-## Config Schema Scope
+#### Decision point: How opt-in is delivered
+- Options considered:
+  - Dedicated exported types entrypoint (recommended)
+  - Augment from main addon API entry
+  - Example-only local declarations
+- User choice: `Dedicated exported types entrypoint (Recommended)`
+- Rationale captured: Keep runtime API separate from TypeScript-only authoring concerns and make the setup easy to document.
 
-| # | Question | Option A | Option B | Option C | Selected |
-|---|----------|----------|----------|----------|----------|
-| 1 | Schema scope? | Full forward-looking (recommended) | Phase 1 + versioned | Phase 1 only | Full forward-looking schema |
-| 2 | Top-level shape? | Grouped by domain (recommended) | Flat | Split files | Grouped by domain |
-| 3 | Validation? | Strict — reject unknowns (recommended) | Permissive — ignore | Warn on unknowns | Strict — reject unknowns |
-| 4 | File location? | CWD + XDG paths (recommended) | CWD only | --config required | CWD + XDG paths |
+#### Decision point: How wide the JSX surface should be in Phase 1
+- Options considered:
+  - Only current elements and props (recommended)
+  - Current elements plus reserved future props
+  - Custom wrapper component API instead
+- User choice: `Only current elements and props (Recommended)`
+- Rationale captured: Keep Phase 1 focused on ergonomics and avoid locking future renderer API decisions early.
 
-**User's choice:** Full forward-looking grouped schema, strict zod validation, CWD + XDG config discovery
-**Notes:** User wants the config contract to be stable from the start so later phases don't need to restructure
+#### Decision point: Who the JSX entrypoint should optimize for first
+- Options considered:
+  - Both built-in and external addons (recommended)
+  - External addons first
+  - Built-in addons first
+- User choice: `Both built-in and external addons (Recommended)`
+- Rationale captured: Use one authoring contract and avoid separate first-party and third-party patterns.
 
----
+### Refresh override contract
 
-## Daemon Lifecycle
+#### Decision point: Which cadence wins when both config and definition provide one
+- Options considered:
+  - `interval_ms` overrides `defaultIntervalMs` (recommended)
+  - `defaultIntervalMs` always wins
+  - Per-button opt-in flag required
+- User choice: `interval_ms overrides defaultIntervalMs (Recommended)`
+- Rationale captured: Match the milestone intent and keep scheduler ownership centralized in core.
 
-| # | Question | Option A | Option B | Option C | Selected |
-|---|----------|----------|----------|----------|----------|
-| 1 | Process model? | Foreground + PID file (recommended) | Always daemonize | Foreground only | Foreground + PID file |
-| 2 | Stop mechanism? | PID file + SIGTERM (recommended) | Unix socket | HTTP endpoint | PID file + SIGTERM |
-| 3 | Status check? | PID + process check (recommended) | PID file only | Process name scan | PID + process check |
-| 4 | Graceful shutdown? | Clear display + disconnect (recommended) | Just exit cleanly | Persist state | Clear display + disconnect |
+#### Decision point: Which buttons may use `interval_ms`
+- Options considered:
+  - Only buttons with a default poll contract (recommended)
+  - Any button may opt in via `interval_ms`
+  - Whitelist specific built-in buttons only
+- User choice: `Any button may opt in via interval_ms`
+- Rationale captured: Treat `interval_ms` as a real runtime contract instead of a special-case override for only some live buttons.
 
-**User's choice:** Foreground by default with --daemon flag, PID file for lifecycle management, SIGTERM for stop, PID-based status, graceful shutdown with device cleanup
-**Notes:** User wants standard Unix daemon conventions without over-complicating the architecture
+#### Decision point: How to handle invalid or aggressive interval values
+- Options considered:
+  - Validate with a minimum floor (recommended)
+  - Accept any positive number
+  - Clamp silently at runtime
+- User choice: `Validate with a minimum floor (Recommended)`
+- Rationale captured: Keep runtime behavior predictable and fail invalid config explicitly.
 
----
-
-## Error UX + Logging
-
-| # | Question | Option A | Option B | Option C | Selected |
-|---|----------|----------|----------|----------|----------|
-| 1 | Logging library? | pino (recommended) | console.log wrapper | consola | pino |
-| 2 | Config error format? | Colored diff (recommended) | Stack trace | JSON report | Colored diff style |
-| 3 | Verbosity? | Quiet + --verbose (recommended) | Verbose by default | Three-level | Quiet + --verbose |
-| 4 | Log output? | stdout/stderr (recommended) | Always to file | journald | stdout/stderr |
-
-**User's choice:** pino for logging, colored diff for config errors, quiet by default with --verbose flag, stdout/stderr output
-**Notes:** Standard CLI convention preferences throughout
-
----
+#### Decision point: What minimum floor to use
+- Initial options considered:
+  - `250ms` (recommended)
+  - `500ms`
+  - `1000ms`
+- Initial user choice: `500ms`
+- Follow-up raised by user: `i want to check the min interval_ms to 100ms`
+- Codebase evidence checked:
+  - `packages/cli/src/render/scheduler.ts` uses default `75ms` jitter and computes delay as `intervalMs + baseOffset + jitter`
+  - With `100ms`, effective scheduling for the first task can dip to `25ms`
+  - Polling re-arms after each run completes, so small intervals amplify render/device churn
+- Final options considered after code review:
+  - Keep `500ms` (recommended)
+  - Use `100ms` and change scheduler too
+  - Use `250ms` and revisit later
+- Final user choice: `Keep 500ms (Recommended)`
+- Final rationale captured: The current scheduler shape makes `100ms` misleadingly aggressive unless Phase 1 also redesigns jitter behavior.
 
 ## Agent's Discretion
 
-- **Exact YAML key naming:** snake_case for user-facing keys, within the grouped structure
-- **PID file directory:** XDG-compatible path (~/.local/state/sireno-deck/), with fallback logic on macOS
-- **pino-pretty formatting style in dev:** dev script pipes through pino-pretty
-- **Binary entry name:** matches npm package naming convention
-- **Detailed zod error-to-message mapping:** no need to consult user on exact implementation
+- Exact package/export naming for the dedicated JSX types entrypoint
+- Exact schema location and error wording for `interval_ms` minimum validation
 
 ## Deferred Ideas
 
-None — discussion stayed within Phase 1 scope.
+- Future text-behavior or wrapper props on custom render elements belong to Phase 2.
+- Supporting sub-500ms polling safely would require scheduler work and is deferred beyond Phase 1.
 
 ---
-*Phase: 01-foundation*
-*Discussion log generated: 2026-05-12*
+
+This file is an audit trail for the discussion session. Downstream planning should use `01-CONTEXT.md` as the canonical decision source.
