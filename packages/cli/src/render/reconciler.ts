@@ -25,7 +25,7 @@ export interface RenderNode {
   progress?: number
   subtitle?: string
   text?: string
-  variant?: "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
+  variant?: "analog-clock" | "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
   wrapper?: "shared"
   children: RenderNode[]
 }
@@ -39,7 +39,7 @@ export interface RenderDescription {
   icon?: string
   progress?: number
   subtitle?: string
-  variant?: "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
+  variant?: "analog-clock" | "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
   wrapper?: "shared"
 }
 

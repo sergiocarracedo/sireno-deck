@@ -17,7 +17,7 @@ export interface DeckButtonProps {
   icon?: string
   progress?: number
   subtitle?: string
-  variant?: "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
+  variant?: "analog-clock" | "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
   wrapper?: DeckButtonWrapper
 }
 

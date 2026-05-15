@@ -64,6 +64,14 @@ describe("render reconciler", () => {
     expect(descriptions).toEqual([{ keyIndex: 6, label: "GRIN", subtitle: "Favorites", variant: "emoji" }])
   })
 
+  it("preserves analog clock button descriptions without forcing wrapper props", () => {
+    const descriptions = renderDeck(
+      createDeckButtonElement({ keyIndex: 11, variant: "analog-clock" }),
+    )
+
+    expect(descriptions).toEqual([{ keyIndex: 11, variant: "analog-clock" }])
+  })
+
   it("preserves rich media button descriptions with detail lines", () => {
     const descriptions = renderDeck(
       createDeckButtonElement({
@@ -154,6 +162,29 @@ describe("render reconciler", () => {
     )
 
     expect(jsxDescriptions).toEqual(helperDescriptions)
+  })
+
+  it("keeps helper-authored and JSX-authored analog clock output in parity", () => {
+    const helperDescriptions = renderDeck(
+      createDeckButtonElement({ keyIndex: 12, variant: "analog-clock" }),
+    )
+    const jsxDescriptions = renderDeck(<deck-button keyIndex={12} variant="analog-clock" />)
+
+    expect(jsxDescriptions).toEqual(helperDescriptions)
+    expect(helperDescriptions).toEqual([{ keyIndex: 12, variant: "analog-clock" }])
+  })
+
+  it("threads analog clock variants through deck-surface button collections", () => {
+    const descriptions = renderDeck(
+      createDeckSurfaceElement({
+        buttons: [
+          { keyIndex: 1, label: "Digital" },
+          { keyIndex: 13, variant: "analog-clock" },
+        ],
+      }),
+    )
+
+    expect(descriptions).toContainEqual({ keyIndex: 13, variant: "analog-clock" })
   })
 
   it("lets bespoke button renders omit the shared wrapper props", () => {
