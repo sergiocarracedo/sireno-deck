@@ -1,0 +1,24 @@
+.planning/phases/07-typography-text-behavior/07-03-SUMMARY.md
+  s_71e6a060343f2a::t_4ef15d39715fe7 1-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "12438eda4d9c9cd9f7f22c68c285f3589caaa6bc",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_71e6a060343f2a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d4ea86edffetdTde7xRydjX5C",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
