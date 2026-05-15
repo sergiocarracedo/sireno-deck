@@ -138,4 +138,29 @@ describe("render reconciler", () => {
 
     expect(descriptions).toEqual([{ keyIndex: 8, label: "Clock", overflow: "clip", subtitle: "Local", wrapper: "shared" }])
   })
+
+  it("keeps helper-authored and JSX-authored shared wrapper output in parity", () => {
+    const helperDescriptions = renderDeck(
+      createDeckButtonElement({
+        detailLines: ["Tue", "09:41"],
+        keyIndex: 9,
+        label: "Clock",
+        overflow: "clip",
+        wrapper: "shared",
+      }),
+    )
+    const jsxDescriptions = renderDeck(
+      <deck-button detailLines={["Tue", "09:41"]} keyIndex={9} label="Clock" overflow="clip" wrapper="shared" />,
+    )
+
+    expect(jsxDescriptions).toEqual(helperDescriptions)
+  })
+
+  it("lets bespoke button renders omit the shared wrapper props", () => {
+    const descriptions = renderDeck(
+      createDeckButtonElement({ keyIndex: 10, label: "Analog", subtitle: "Custom", variant: "toggle" }),
+    )
+
+    expect(descriptions).toEqual([{ keyIndex: 10, label: "Analog", subtitle: "Custom", variant: "toggle" }])
+  })
 })
