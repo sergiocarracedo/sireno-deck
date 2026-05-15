@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 6 complete; ready to discuss Phase 7
+**Current focus:** Phase 7 execution in progress; Plan 07-02 remains
 
 ## Current Position
 
-Phase: 6 — Base Contracts ✓ complete -> Phase 7 — Typography + Text Behavior
-Plan: -
-Status: Phase 6 complete; next up is `discuss-phase 7`
-Last activity: 2026-05-14 - Verified Phase 6 base contracts and marked the phase complete
+Phase: 7 — Typography + Text Behavior
+Plan: 07-02 — Optional Shared Wrapper Contract
+Status: Wave 1 complete; executing Plan 07-02
+Last activity: 2026-05-15 - Plan 07-01 delivered theme-driven typography roles and explicit clip-only shared text rendering
 
 Progress: [----------] 0%
 
@@ -72,7 +72,7 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-14
-Stopped at: Phase 6 execution and verification completed. Next up is `discuss-phase 7`.
+Stopped at: Quick task 012 implemented token-based date/time formatting for the bundled date-time addon. Next up is `discuss-phase 7`.
 Resume file: .planning/ROADMAP.md
 
 ### Quick Tasks Completed
@@ -90,3 +90,4 @@ Resume file: .planning/ROADMAP.md
 | 009 | align fan heuristic review with v1 contract and finalize Phase 4 review | 2026-05-13 | uncommitted | `.planning/quick/009-align-fan-review-contract-finalize-phase-4-review` |
 | 010 | add Phase 5 verification fixtures under packages/cli/fixtures | 2026-05-13 | uncommitted | `.planning/quick/010-add-phase-5-verification-fixtures-under-packages-cli-fixtures` |
 | 011 | commit learnings | 2026-05-13 | `0f6981a` | `.planning/quick/011-commit-learnings` |
+| 012 | honor token-based formatting in the bundled date-time addon | 2026-05-14 | uncommitted | `.planning/quick/012-date-time-token-formatting` |
