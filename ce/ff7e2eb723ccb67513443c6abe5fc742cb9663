@@ -1,0 +1,28 @@
+.planning/phases/08-clock-visuals/08-RESEARCH.md
+  s_93655350eb81a4::t_b974149c796acf 1-40
+.planning/phases/08-clock-visuals/08-01-PLAN.md
+  s_93655350eb81a4::t_b974149c796acf 1-99
+.planning/phases/08-clock-visuals/08-02-PLAN.md
+  s_93655350eb81a4::t_b974149c796acf 1-89
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "ceff7e2eb723ccb67513443c6abe5fc742cb9663",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_93655350eb81a4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d268a580ffeKDaoDEi53xekmu",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
