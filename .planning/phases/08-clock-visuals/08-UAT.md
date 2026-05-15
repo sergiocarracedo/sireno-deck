@@ -1,19 +1,19 @@
 ---
-status: ready
+status: complete
 phase: 08-clock-visuals
 source:
   - 08-01-SUMMARY.md
   - 08-02-SUMMARY.md
 started: 2026-05-15T23:57:00+02:00
-updated: 2026-05-15T23:57:00+02:00
+updated: 2026-05-16T00:10:00+02:00
 ---
 
 ## Current Test
-number: 1
-name: analog clock review fixture
+number: 0
+name: complete
 expected: |
-  Run the committed Phase 8 fixture through the real CLI/device path and confirm the analog clock is legible and updates once per second.
-awaiting: reviewer run
+  UAT session complete.
+awaiting: none
 
 ## Tests
 
@@ -28,14 +28,14 @@ fail_if:
   - The key shows a default/shared text card, clipped label text, or any subtitle badge instead of a pure analog clock face.
   - Any hand is missing or too hard to distinguish from the others.
   - The second hand stays frozen, jumps erratically, or updates slower/faster than once per second.
-result: pending
+result: pass
 
 ## Summary
 
 total: 1
-passed: 0
+passed: 1
 issues: 0
-pending: 1
+pending: 0
 skipped: 0
 
 ## Gaps

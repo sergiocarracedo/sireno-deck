@@ -58,6 +58,43 @@ describe("loadConfig", () => {
     expect(config.logging.level).toBe("info")
   })
 
+  it("accepts disabled illustrative addon declarations in the shipped config shape", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: builtin-display-text",
+        "        label: Clock",
+        "addons:",
+        "  - name: local-clock-addon",
+        "    enabled: false",
+        "    source: local",
+        "    path: addons/local-clock-addon",
+        "  - name: \"@sireno-deck/community-addon\"",
+        "    enabled: false",
+        "    source: npm",
+        "logging:",
+        "  level: info",
+      ].join("\n"),
+    )
+
+    const { loadBootstrapConfig, loadConfig } = await loadConfigModule()
+    const bootstrap = loadBootstrapConfig()
+    const config = loadConfig()
+
+    expect(bootstrap.config.addons).toEqual([
+      { enabled: false, name: "local-clock-addon", path: "addons/local-clock-addon", source: "local" },
+      { enabled: false, name: "@sireno-deck/community-addon", source: "npm" },
+    ])
+    expect(config.addons).toEqual(bootstrap.config.addons)
+  })
+
   it("throws on invalid YAML", async () => {
     writeFileSync(join(tempDir, "config.yml"), "theme: [oops")
 

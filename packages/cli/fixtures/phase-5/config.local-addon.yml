@@ -1,0 +1,20 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    buttons:
+      - position: 0
+        type: local-clock-button
+        label: Test
+
+      - position: 2
+        type: local-clock-button
+        label: "2"
+addons:
+  - name: local-clock-addon
+    enabled: true
+    source: local
+    path: ./local-clock-addon
+logging:
+  level: info

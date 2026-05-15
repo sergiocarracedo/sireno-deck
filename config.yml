@@ -6,18 +6,14 @@ decks:
     name: Main Deck
     buttons:
       - position: 0
-        type: builtin-display-text
-        label: Clock
-        icon: addon://core-buttons/clock.svg
+        type: date-time
+        variant: time
       - position: 1
-        type: builtin-change-deck
+        type: change-deck
         label: Emoji
         icon: addon://emoji-selector/favorites.svg
         target_deck: emoji
-      - position: 2
-        type: local-clock
-        label: Open Notepad
-        icon: addon://core-buttons/app.svg
+     
         
   emoji:
     id: emoji

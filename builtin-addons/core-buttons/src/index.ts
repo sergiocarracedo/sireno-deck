@@ -1,9 +1,9 @@
-import { fileURLToPath } from "node:url"
+import { fileURLToPath } from 'node:url'
 
-import { createElement } from "react"
-import { z } from "zod"
+import { createElement } from 'react'
+import { z } from 'zod'
 
-import type { SirenoAddon } from "../../../packages/cli/src/addon/api.js"
+import type { SirenoAddon } from '../../../packages/cli/src/addon/api.js'
 
 const BuiltinDisplayTextButtonSchema = z
   .object({
@@ -21,24 +21,35 @@ const BuiltinChangeDeckButtonSchema = z
   .strict()
 
 const assets = {
-  "clock.svg": fileURLToPath(new URL("../assets/clock.svg", import.meta.url)),
+  'clock.svg': fileURLToPath(new URL('../assets/clock.svg', import.meta.url)),
 }
 
 const builtinDisplayTextButton = {
   configSchema: BuiltinDisplayTextButtonSchema,
-  createInstance: ({ button, config }: { button: { position: number }; config: z.infer<typeof BuiltinDisplayTextButtonSchema> }) => ({
-    render: () => createElement("deck-button", {
-      ...(config.icon !== undefined ? { icon: config.icon } : {}),
-      keyIndex: button.position,
-      label: config.label,
-    }),
+  createInstance: ({
+    button,
+    config,
+  }: {
+    button: { position: number }
+    config: z.infer<typeof BuiltinDisplayTextButtonSchema>
+  }) => ({
+    render: () =>
+      createElement('deck-button', {
+        ...(config.icon !== undefined ? { icon: config.icon } : {}),
+        keyIndex: button.position,
+        label: config.label,
+      }),
   }),
-  type: "builtin-display-text",
+  type: 'display-text',
 }
 
 const builtinChangeDeckButton = {
   configSchema: BuiltinChangeDeckButtonSchema,
-  createInstance: ({ button, config, methods }: {
+  createInstance: ({
+    button,
+    config,
+    methods,
+  }: {
     button: { position: number }
     config: z.infer<typeof BuiltinChangeDeckButtonSchema>
     methods: { navigateToDeck: (deckId: string) => Promise<void> | void }
@@ -46,20 +57,21 @@ const builtinChangeDeckButton = {
     onTap: async () => {
       await methods.navigateToDeck(config.target_deck)
     },
-    render: () => createElement("deck-button", {
-      ...(config.icon !== undefined ? { icon: config.icon } : {}),
-      keyIndex: button.position,
-      label: config.label,
-    }),
+    render: () =>
+      createElement('deck-button', {
+        ...(config.icon !== undefined ? { icon: config.icon } : {}),
+        keyIndex: button.position,
+        label: config.label,
+      }),
   }),
-  type: "builtin-change-deck",
+  type: 'change-deck',
 }
 
 const coreButtonsAddon: SirenoAddon = {
   apiVersion: 1,
   assets,
   buttons: [builtinDisplayTextButton, builtinChangeDeckButton],
-  name: "core-buttons",
+  name: 'core-buttons',
 }
 
 export default coreButtonsAddon

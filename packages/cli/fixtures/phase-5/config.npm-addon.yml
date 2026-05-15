@@ -1,0 +1,16 @@
+# Install or link `./community-addon` into the environment running the CLI first.
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    buttons:
+      - position: 0
+        type: community-wave-button
+        label: Community Fixture
+addons:
+  - name: "@sireno-deck/community-addon"
+    enabled: true
+    source: npm
+logging:
+  level: info

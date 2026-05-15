@@ -1,0 +1,13 @@
+{
+  "name": "broken-local-addon",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "sirenoAddon": {
+    "apiVersion": 1,
+    "main": "./src/index.js"
+  }
+}
