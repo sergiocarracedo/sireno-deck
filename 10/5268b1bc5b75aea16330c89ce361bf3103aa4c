@@ -1,0 +1,40 @@
+builtin-addons/date-time/src/index.test.ts
+  s_f5a17a5bb0cabc::t_1da720e2ad8d26 4,10,14-17,19-22,27-30,71,86-102,106-107
+  s_d682ea75358b40::t_4b2cb74776de58 34-38,42,47-49,53,58-60,64
+  h_f90ee31b03fc41 1,7,9,11,23-25,33,39-41,43-45,50-52,54-56,61-63,65-67,70,75-77,104
+builtin-addons/date-time/src/index.ts
+  s_d682ea75358b40::t_4448ebd9d448c4 4
+  s_f5a17a5bb0cabc::t_1da720e2ad8d26 7,17-18,71-88,93,99
+  s_d682ea75358b40::t_4b2cb74776de58 19,23,26-31,33-34,41-43,45-50
+  s_d682ea75358b40::t_b4f91a53b797fb 32
+  h_f90ee31b03fc41 1-2,11-13,20-22,24-25,38,40,44,51,65,70,94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "105268b1bc5b75aea16330c89ce361bf3103aa4c",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_d682ea75358b40": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "eb77b24d-5468-4847-9ec6-a27b03d3ce91",
+        "model": "gpt-5-mini"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_f5a17a5bb0cabc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d26026d7ffeiNMKuTj5pDN2G3",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
