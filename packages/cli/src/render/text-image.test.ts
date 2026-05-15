@@ -1,9 +1,11 @@
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join, resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 
 import { describe, expect, it } from "vitest"
 
+import { resolveTheme } from "../config/theme.js"
 import { renderBlankKeyImage, renderTextImage } from "./text-image.js"
 
 function createTheme(overrides?: {
@@ -74,6 +76,19 @@ function countRegionDiffs(left: Buffer, right: Buffer, region: { height: number;
   return differences
 }
 
+function getRepoFilePath(relativePath: string): string {
+  return fileURLToPath(new URL(relativePath, import.meta.url))
+}
+
+function createPhase7ReviewTheme(themeName: "dark" | "light") {
+  const theme = resolveTheme(getRepoFilePath(`../../../../themes/${themeName}.yml`))
+
+  return createTheme({
+    name: "review",
+    typography: theme.typography,
+  })
+}
+
 describe("text-image", () => {
   it("renders a non-empty image buffer for a text visual", async () => {
     const buffer = await renderTextImage({ text: "Hello" })
@@ -89,26 +104,17 @@ describe("text-image", () => {
     expect(first.length).toBeGreaterThan(0)
   })
 
-  it("Phase 7 changes rendered output when shared typography tokens change", async () => {
-    const baseBuffer = await renderTextImage({
-      text: "Clock",
-      theme: createTheme(),
+  it("Phase 7 keeps the shipped dark and light review typography setups observably different on the shared-text review path", async () => {
+    const darkReviewBuffer = await renderTextImage({
+      text: "WIDE TYPE",
+      theme: createPhase7ReviewTheme("dark"),
     })
-    const typographyShiftBuffer = await renderTextImage({
-      text: "Clock",
-      theme: createTheme({
-        typography: {
-          main_text: {
-            font_family: "Times New Roman",
-            font_size: 10,
-            font_weight: 400,
-            letter_spacing: 1.6,
-          },
-        },
-      }),
+    const lightReviewBuffer = await renderTextImage({
+      text: "WIDE TYPE",
+      theme: createPhase7ReviewTheme("light"),
     })
 
-    expect(baseBuffer.equals(typographyShiftBuffer)).toBe(false)
+    expect(countRegionDiffs(darkReviewBuffer, lightReviewBuffer, { height: 20, width: 54, x: 10, y: 24 })).toBeGreaterThan(140)
   })
 
   it("Phase 7 honors the clip-only override for long shared text instead of spilling", async () => {
