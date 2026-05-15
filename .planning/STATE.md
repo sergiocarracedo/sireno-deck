@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-05-12)
 Phase: 7 — Typography + Text Behavior ✓ complete -> Phase 8 — Clock Visuals
 Plan: -
 Status: Phase 7 verified; next up is `verify-work 7`, then Phase 8 planning
-Last activity: 2026-05-15 - Phase 7 verification passed for theme-driven typography, clip-only overflow, and the optional shared wrapper contract
+Last activity: 2026-05-15 - Completed quick task 013: add the config needed for review (UAT) in the fixtures folder
 
 Progress: [##--------] 20%
 
@@ -91,3 +91,4 @@ Resume file: .planning/ROADMAP.md
 | 010 | add Phase 5 verification fixtures under packages/cli/fixtures | 2026-05-13 | uncommitted | `.planning/quick/010-add-phase-5-verification-fixtures-under-packages-cli-fixtures` |
 | 011 | commit learnings | 2026-05-13 | `0f6981a` | `.planning/quick/011-commit-learnings` |
 | 012 | honor token-based formatting in the bundled date-time addon | 2026-05-14 | uncommitted | `.planning/quick/012-date-time-token-formatting` |
+| 013 | add the config needed for review (UAT) in the fixtures folder | 2026-05-15 | uncommitted | `.planning/quick/013-add-uat-review-config-fixtures` |

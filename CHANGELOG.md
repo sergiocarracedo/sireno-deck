@@ -5,12 +5,14 @@
 ### Features
 - Added Phase 7 typography tokens to the theme contract and routed shared Stream Deck text rendering through theme-defined `main_text`, `auxiliary_text`, and `monospace` roles.
 - Added an opt-in shared wrapper/text render contract with explicit `overflow: "clip"` and `wrapper: "shared"` fields that now flow from reconciler output through the runtime render path.
+- Added repo-pinned Phase 7 review fixtures under `packages/cli/fixtures/phase-7/` so manual UAT can compare dark/light shared text and exercise the optional wrapper contract from committed inputs.
 
 ### Fixes
 - Fixed the shared SVG renderer to stop hardcoding inline font metrics and relying on incidental raster cropping for overflow. Root cause was that text styling and truncation behavior were still buried inside repeated SVG snippets instead of being expressed as a renderer contract.
 
 ### Learnings
 - Text rendering contracts need two seams, not one: theme tokens decide typography, and explicit render props decide overflow/wrapper behavior. When either seam is implicit, later widget work inherits accidental behavior instead of a reusable contract.
+- Manual review drifts for the same reason tests do. If the exact UAT configs and addon-backed inputs are not committed in the repo, people end up checking different surfaces and blaming the wrong layer.
 
 ## 2026-05-14
 
