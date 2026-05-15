@@ -6,6 +6,53 @@ import { describe, expect, it } from "vitest"
 
 import { renderBlankKeyImage, renderTextImage } from "./text-image.js"
 
+function createTheme(overrides?: {
+  accent?: string
+  background?: string
+  danger?: string
+  foreground?: string
+  name?: string
+  primary?: string
+  success?: string
+  typography?: {
+    auxiliary_text?: { font_family?: string; font_size?: number; font_weight?: number; letter_spacing?: number }
+    main_text?: { font_family?: string; font_size?: number; font_weight?: number; letter_spacing?: number }
+    monospace?: { font_family?: string; font_size?: number; font_weight?: number; letter_spacing?: number }
+  }
+}) {
+  return {
+    accent: overrides?.accent ?? "#f59e0b",
+    background: overrides?.background ?? "#10161f",
+    danger: overrides?.danger ?? "#fb7185",
+    foreground: overrides?.foreground ?? "#eef2f7",
+    name: overrides?.name ?? "dark",
+    primary: overrides?.primary ?? "#7dd3fc",
+    success: overrides?.success ?? "#34d399",
+    typography: {
+      main_text: {
+        font_family: overrides?.typography?.main_text?.font_family ?? "IBM Plex Sans",
+        font_size: overrides?.typography?.main_text?.font_size ?? 12,
+        font_weight: overrides?.typography?.main_text?.font_weight ?? 700,
+        ...(overrides?.typography?.main_text?.letter_spacing !== undefined
+          ? { letter_spacing: overrides.typography.main_text.letter_spacing }
+          : {}),
+      },
+      auxiliary_text: {
+        font_family: overrides?.typography?.auxiliary_text?.font_family ?? "IBM Plex Sans",
+        font_size: overrides?.typography?.auxiliary_text?.font_size ?? 8,
+        font_weight: overrides?.typography?.auxiliary_text?.font_weight ?? 600,
+        letter_spacing: overrides?.typography?.auxiliary_text?.letter_spacing ?? 1.2,
+      },
+      monospace: {
+        font_family: overrides?.typography?.monospace?.font_family ?? "IBM Plex Mono",
+        font_size: overrides?.typography?.monospace?.font_size ?? 10,
+        font_weight: overrides?.typography?.monospace?.font_weight ?? 700,
+        letter_spacing: overrides?.typography?.monospace?.letter_spacing ?? 0.4,
+      },
+    },
+  }
+}
+
 function countRegionDiffs(left: Buffer, right: Buffer, region: { height: number; width: number; x: number; y: number }): number {
   let differences = 0
   const channels = 3
@@ -45,19 +92,11 @@ describe("text-image", () => {
   it("renders visibly different buffers for dark and light themes", async () => {
     const darkBuffer = await renderTextImage({
       text: "Clock",
-      theme: {
-        accent: "#f59e0b",
-        background: "#10161f",
-        danger: "#fb7185",
-        foreground: "#eef2f7",
-        name: "dark",
-        primary: "#7dd3fc",
-        success: "#34d399",
-      },
+      theme: createTheme(),
     })
     const lightBuffer = await renderTextImage({
       text: "Clock",
-      theme: {
+      theme: createTheme({
         accent: "#c2410c",
         background: "#e8edf4",
         danger: "#dc2626",
@@ -65,10 +104,21 @@ describe("text-image", () => {
         name: "light",
         primary: "#2563eb",
         success: "#059669",
-      },
+      }),
     })
 
     expect(darkBuffer.equals(lightBuffer)).toBe(false)
+  })
+
+  it("keeps long shared text inside the default label clip region", async () => {
+    const shortBuffer = await renderTextImage({ text: "I", theme: createTheme() })
+    const longBuffer = await renderTextImage({
+      text: "CLOCK LABEL THAT SHOULD CLIP CLEANLY",
+      theme: createTheme(),
+    })
+
+    expect(countRegionDiffs(shortBuffer, longBuffer, { height: 18, width: 44, x: 18, y: 29 })).toBeGreaterThan(150)
+    expect(countRegionDiffs(shortBuffer, longBuffer, { height: 20, width: 8, x: 64, y: 26 })).toBe(0)
   })
 
   it("renders visible pixels inside the icon region for shipped bundled svg assets", async () => {
