@@ -1,0 +1,27 @@
+.planning/phases/09-calendar-authoring-clarity/09-DISCUSSION-LOG.md
+  ai_agent 1-115
+.planning/phases/09-calendar-authoring-clarity/09-CONTEXT.md
+  ai_agent 1-117
+.planning/phases/09-calendar-authoring-clarity/09-RESEARCH.md
+  s_d6536d4fe186f7::t_535d9a1ad0f7f0 1-51
+.planning/phases/09-calendar-authoring-clarity/09-01-PLAN.md
+  s_d6536d4fe186f7::t_535d9a1ad0f7f0 1-97
+.planning/phases/09-calendar-authoring-clarity/09-02-PLAN.md
+  s_d6536d4fe186f7::t_535d9a1ad0f7f0 1-85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "e35cf11a8d66ebc5a4963b5e295d66ab1eb75c6b",
+  "prompts": {},
+  "sessions": {
+    "s_d6536d4fe186f7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d7c51eddffe1f43C0djVdeiEx",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
