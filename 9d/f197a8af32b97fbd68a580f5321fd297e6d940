@@ -1,0 +1,24 @@
+.planning/phases/07-typography-text-behavior/07-VERIFICATION.md
+  s_b85718fe82fea9::t_120d167bf8640f 1-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "9df197a8af32b97fbd68a580f5321fd297e6d940",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b85718fe82fea9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d587c8aeffeNypGt9Ex7KuWTP",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
