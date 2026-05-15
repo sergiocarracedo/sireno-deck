@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.1 — Addon UI and Live Widgets
-**Phase:** 8 — Clock Visuals ✓ complete -> Phase 9 — Calendar + Authoring Clarity
-**Status:** verifying
-**Last updated:** 2026-05-15
+**Phase:** 9 — Calendar + Authoring Clarity
+**Status:** planning
+**Last updated:** 2026-05-16
 
 ---
 
