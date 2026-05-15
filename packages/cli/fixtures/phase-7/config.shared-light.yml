@@ -6,10 +6,10 @@ decks:
     name: Phase 7 Light Review
     buttons:
       - position: 0
-        type: builtin-display-text
-        label: Typography
+        type: display-text
+        label: WIDE TYPE
       - position: 1
-        type: builtin-display-text
+        type: display-text
         label: Long shared text should clip cleanly inside the button bounds
       - position: 2
         type: date-time
