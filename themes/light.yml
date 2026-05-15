@@ -5,3 +5,18 @@ primary: "#2563eb"
 accent: "#c2410c"
 success: "#059669"
 danger: "#dc2626"
+typography:
+  main_text:
+    font_family: "IBM Plex Sans"
+    font_size: 12
+    font_weight: 700
+  auxiliary_text:
+    font_family: "IBM Plex Sans"
+    font_size: 8
+    font_weight: 600
+    letter_spacing: 1.2
+  monospace:
+    font_family: "IBM Plex Mono"
+    font_size: 10
+    font_weight: 700
+    letter_spacing: 0.4

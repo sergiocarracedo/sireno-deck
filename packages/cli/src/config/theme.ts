@@ -6,6 +6,15 @@ import { z } from "zod"
 
 import { ConfigValidationError } from "../core/schemas.js"
 
+const ThemeTypographyRoleSchema = z
+  .object({
+    font_family: z.string().min(1),
+    font_size: z.number().positive(),
+    font_weight: z.number().int().positive(),
+    letter_spacing: z.number().optional(),
+  })
+  .strict()
+
 const ThemeSchema = z
   .object({
     name: z.string().min(1),
@@ -15,10 +24,23 @@ const ThemeSchema = z
     accent: z.string().min(1),
     success: z.string().min(1),
     danger: z.string().min(1),
+    typography: z
+      .object({
+        main_text: ThemeTypographyRoleSchema,
+        auxiliary_text: ThemeTypographyRoleSchema,
+        monospace: ThemeTypographyRoleSchema,
+      })
+      .strict(),
   })
   .strict()
 
-export type Theme = z.infer<typeof ThemeSchema>
+type ThemeSchemaOutput = z.infer<typeof ThemeSchema>
+
+export type ThemeTypographyRole = z.infer<typeof ThemeTypographyRoleSchema>
+
+export interface Theme extends Omit<ThemeSchemaOutput, "typography"> {
+  typography?: ThemeSchemaOutput["typography"]
+}
 
 const BUILTIN_THEME_DIRECTORY = resolve(process.cwd(), "themes")
 
