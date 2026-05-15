@@ -8,7 +8,7 @@ import {
   renderDeck,
 } from "./reconciler.js"
 
-const jsxButton = <deck-button keyIndex={7} label="JSX" subtitle="typed" variant="toggle" />
+const jsxButton = <deck-button keyIndex={7} label="JSX" overflow="clip" subtitle="typed" variant="toggle" wrapper="shared" />
 
 describe("render reconciler", () => {
   it("produces a render description for key 0", () => {
@@ -112,9 +112,30 @@ describe("render reconciler", () => {
 
   it("renders JSX-authored deck elements with the same descriptions as helper-authored ones", () => {
     const helperDescriptions = renderDeck(
-      createDeckButtonElement({ keyIndex: 7, label: "JSX", subtitle: "typed", variant: "toggle" }),
+      createDeckButtonElement({
+        keyIndex: 7,
+        label: "JSX",
+        overflow: "clip",
+        subtitle: "typed",
+        variant: "toggle",
+        wrapper: "shared",
+      }),
     )
 
     expect(renderDeck(jsxButton)).toEqual(helperDescriptions)
+  })
+
+  it("preserves explicit shared wrapper props in render descriptions", () => {
+    const descriptions = renderDeck(
+      createDeckButtonElement({
+        keyIndex: 8,
+        label: "Clock",
+        overflow: "clip",
+        subtitle: "Local",
+        wrapper: "shared",
+      }),
+    )
+
+    expect(descriptions).toEqual([{ keyIndex: 8, label: "Clock", overflow: "clip", subtitle: "Local", wrapper: "shared" }])
   })
 })

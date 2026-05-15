@@ -6,7 +6,11 @@ import type { ReactElement } from "react"
 import type { ReactContext } from "react-reconciler"
 
 import type { ButtonInstance } from "../core/schemas.js"
-import type { DeckButtonProps, DeckSurfaceProps, DeckTextProps } from "./types.js"
+import type {
+  DeckButtonProps,
+  DeckSurfaceProps,
+  DeckTextProps,
+} from "./types.js"
 
 export type { DeckButtonProps, DeckSurfaceProps, DeckTextProps } from "./types.js"
 
@@ -15,12 +19,14 @@ export interface RenderNode {
   type: "deck-button" | "deck-surface" | "deck-text"
   displayValue?: string
   keyIndex?: number
+  overflow?: "clip"
   label?: string
   icon?: string
   progress?: number
   subtitle?: string
   text?: string
-   variant?: "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
+  variant?: "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
+  wrapper?: "shared"
   children: RenderNode[]
 }
 
@@ -28,11 +34,13 @@ export interface RenderDescription {
   detailLines?: string[]
   displayValue?: string
   keyIndex: number
+  overflow?: "clip"
   label?: string
   icon?: string
   progress?: number
   subtitle?: string
-   variant?: "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
+  variant?: "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
+  wrapper?: "shared"
 }
 
 interface RenderContainer {
@@ -122,11 +130,13 @@ const hostConfig: ReactReconciler.HostConfig<
         keyIndex: props.keyIndex,
         detailLines: props.detailLines,
         displayValue: props.displayValue,
+        overflow: props.overflow,
         label: props.label,
         icon: props.icon,
         progress: props.progress,
         subtitle: props.subtitle,
         variant: props.variant,
+        wrapper: props.wrapper,
         children: [],
       }
     }
@@ -135,6 +145,7 @@ const hostConfig: ReactReconciler.HostConfig<
       return {
         type: "deck-text",
         keyIndex: props.keyIndex,
+        overflow: props.overflow,
         text: props.text,
         children: [],
       }
@@ -148,11 +159,13 @@ const hostConfig: ReactReconciler.HostConfig<
           keyIndex: button.keyIndex,
           detailLines: button.detailLines,
           displayValue: button.displayValue,
+          overflow: button.overflow,
           label: button.label,
           icon: button.icon,
           progress: button.progress,
           subtitle: button.subtitle,
           variant: button.variant,
+          wrapper: button.wrapper,
           children: [],
         })),
       }
@@ -228,16 +241,19 @@ const hostConfig: ReactReconciler.HostConfig<
       instance.keyIndex = newProps.keyIndex
       instance.detailLines = newProps.detailLines
       instance.displayValue = newProps.displayValue
+      instance.overflow = newProps.overflow
       instance.label = newProps.label
       instance.icon = newProps.icon
       instance.progress = newProps.progress
       instance.subtitle = newProps.subtitle
       instance.variant = newProps.variant
+      instance.wrapper = newProps.wrapper
       return
     }
 
     if (instance.type === "deck-text" && isDeckTextProps(newProps)) {
       instance.keyIndex = newProps.keyIndex
+      instance.overflow = newProps.overflow
       instance.text = newProps.text
       return
     }
@@ -248,11 +264,13 @@ const hostConfig: ReactReconciler.HostConfig<
         keyIndex: button.keyIndex,
         detailLines: button.detailLines,
         displayValue: button.displayValue,
+        overflow: button.overflow,
         label: button.label,
         icon: button.icon,
         progress: button.progress,
         subtitle: button.subtitle,
         variant: button.variant,
+        wrapper: button.wrapper,
         children: [],
       }))
     }
@@ -313,16 +331,22 @@ function collectRenderDescriptions(nodes: readonly RenderNode[]): RenderDescript
         keyIndex: node.keyIndex,
         ...(node.detailLines !== undefined ? { detailLines: node.detailLines } : {}),
         ...(node.displayValue !== undefined ? { displayValue: node.displayValue } : {}),
+        ...(node.overflow !== undefined ? { overflow: node.overflow } : {}),
         ...(node.icon !== undefined ? { icon: node.icon } : {}),
         ...(node.label !== undefined ? { label: node.label } : {}),
         ...(node.progress !== undefined ? { progress: node.progress } : {}),
         ...(node.subtitle !== undefined ? { subtitle: node.subtitle } : {}),
         ...(node.variant !== undefined ? { variant: node.variant } : {}),
+        ...(node.wrapper !== undefined ? { wrapper: node.wrapper } : {}),
       })
     }
 
     if (node.type === "deck-text" && node.keyIndex !== undefined && node.text !== undefined) {
-      descriptions.push({ keyIndex: node.keyIndex, label: node.text })
+      descriptions.push({
+        keyIndex: node.keyIndex,
+        label: node.text,
+        ...(node.overflow !== undefined ? { overflow: node.overflow } : {}),
+      })
     }
 
     descriptions.push(...collectRenderDescriptions(node.children))
