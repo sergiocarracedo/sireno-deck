@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 8 execution complete; ready for automated verification and manual UAT
+**Current focus:** Phase 8 execution and automated verification complete; ready for `verify-work 8`
 
 ## Current Position
 
-Phase: 8 — Clock Visuals
+Phase: 8 — Clock Visuals ✓ complete -> Phase 9 — Calendar + Authoring Clarity
 Plan: -
-Status: Phase 8 plans complete; next up is execution verification and `verify-work 8`
-Last activity: 2026-05-15 - Completed Plan 08-02 to ship the analog-clock review fixture, UAT path, and regression coverage
+Status: Phase 8 execution complete with human UAT pending; next up is `verify-work 8`, then Phase 9 discussion/planning
+Last activity: 2026-05-15 - Verified Phase 8 automatically after shipping the analog-clock button, fixture, and UAT path
 
 Progress: [##--------] 20%
 

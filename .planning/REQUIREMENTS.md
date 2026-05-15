@@ -40,7 +40,7 @@ Milestone `v1.1 Addon UI and Live Widgets` builds on the completed `v1.0` CLI, r
 |------|--------|--------------|----------|
 | 6 — Base Contracts | Complete | UIW-01, UIW-02, UIW-04, UIW-05, UIW-06 | `.planning/phases/06-base-contracts/06-01-SUMMARY.md`, `.planning/phases/06-base-contracts/06-02-SUMMARY.md`, `.planning/phases/06-base-contracts/06-VERIFICATION.md` |
 | 7 — Typography + Text Behavior | Complete | UIW-09, UIW-10, UIW-11, UIW-12 | `.planning/phases/07-typography-text-behavior/07-01-SUMMARY.md`, `.planning/phases/07-typography-text-behavior/07-02-SUMMARY.md`, `.planning/phases/07-typography-text-behavior/07-03-SUMMARY.md`, `.planning/phases/07-typography-text-behavior/07-VERIFICATION.md` |
-| 8 — Clock Visuals | Not started | UIW-07, UIW-12 | — |
+| 8 — Clock Visuals | Complete | UIW-07, UIW-12 | `.planning/phases/08-clock-visuals/08-01-SUMMARY.md`, `.planning/phases/08-clock-visuals/08-02-SUMMARY.md`, `.planning/phases/08-clock-visuals/08-VERIFICATION.md` |
 | 9 — Calendar + Authoring Clarity | Not started | UIW-03, UIW-08, UIW-12 | — |
 
 ---

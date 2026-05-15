@@ -59,6 +59,8 @@ All 12 v1.1 requirements are mapped. No circular dependencies.
 
 ### Phase 8: Clock Visuals
 
+**Status:** ✓ Complete (2026-05-15)
+
 **Goal:** Ship the first richer live visual in the new addon UI surface by adding an analog clock button type without widening the renderer more than necessary.
 
 **Requirements:** UIW-07, UIW-12
@@ -66,9 +68,9 @@ All 12 v1.1 requirements are mapped. No circular dependencies.
 **Depends on:** Phases 6-7
 
 **Success criteria:**
-- [ ] The built-in date/time addon exposes a separate `analog-clock` button type
-- [ ] The analog clock uses the core scheduler with a sensible default live cadence
-- [ ] Fixtures or tests cover the new clock type and its scheduling/render contract
+- [x] The built-in date/time addon exposes a separate `analog-clock` button type
+- [x] The analog clock uses the core scheduler with a sensible default live cadence
+- [x] Fixtures or tests cover the new clock type and its scheduling/render contract
 
 **Research needed:** No — this phase should build on the contracts stabilized in Phases 6-7.
 
