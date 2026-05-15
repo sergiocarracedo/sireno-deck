@@ -1,0 +1,24 @@
+.planning/phases/08-clock-visuals/08-VERIFICATION.md
+  s_f5a17a5bb0cabc::t_b710433a2d760d 1-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "4eac0ca005b323fb1a3c2e8d650ff6b614cc525f",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_f5a17a5bb0cabc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d26026d7ffeiNMKuTj5pDN2G3",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
