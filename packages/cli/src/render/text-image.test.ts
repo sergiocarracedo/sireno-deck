@@ -89,28 +89,29 @@ describe("text-image", () => {
     expect(first.length).toBeGreaterThan(0)
   })
 
-  it("renders visibly different buffers for dark and light themes", async () => {
-    const darkBuffer = await renderTextImage({
+  it("Phase 7 changes rendered output when shared typography tokens change", async () => {
+    const baseBuffer = await renderTextImage({
       text: "Clock",
       theme: createTheme(),
     })
-    const lightBuffer = await renderTextImage({
+    const typographyShiftBuffer = await renderTextImage({
       text: "Clock",
       theme: createTheme({
-        accent: "#c2410c",
-        background: "#e8edf4",
-        danger: "#dc2626",
-        foreground: "#16202b",
-        name: "light",
-        primary: "#2563eb",
-        success: "#059669",
+        typography: {
+          main_text: {
+            font_family: "Times New Roman",
+            font_size: 10,
+            font_weight: 400,
+            letter_spacing: 1.6,
+          },
+        },
       }),
     })
 
-    expect(darkBuffer.equals(lightBuffer)).toBe(false)
+    expect(baseBuffer.equals(typographyShiftBuffer)).toBe(false)
   })
 
-  it("keeps long shared text inside the default label clip region", async () => {
+  it("Phase 7 honors the clip-only override for long shared text instead of spilling", async () => {
     const shortBuffer = await renderTextImage({ text: "I", theme: createTheme() })
     const longBuffer = await renderTextImage({
       text: "CLOCK LABEL THAT SHOULD CLIP CLEANLY",
