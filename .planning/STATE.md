@@ -91,4 +91,4 @@ Resume file: .planning/ROADMAP.md
 | 010 | add Phase 5 verification fixtures under packages/cli/fixtures | 2026-05-13 | uncommitted | `.planning/quick/010-add-phase-5-verification-fixtures-under-packages-cli-fixtures` |
 | 011 | commit learnings | 2026-05-13 | `0f6981a` | `.planning/quick/011-commit-learnings` |
 | 012 | honor token-based formatting in the bundled date-time addon | 2026-05-14 | uncommitted | `.planning/quick/012-date-time-token-formatting` |
-| 013 | add the config needed for review (UAT) in the fixtures folder | 2026-05-15 | uncommitted | `.planning/quick/013-add-uat-review-config-fixtures` |
+| 013 | add the config needed for review (UAT) in the fixtures folder | 2026-05-15 | `8f321c9` | `.planning/quick/013-add-uat-review-config-fixtures` |
