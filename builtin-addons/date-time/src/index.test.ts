@@ -106,4 +106,12 @@ describe('date-time addon', () => {
     expect(element?.props.label).toBeUndefined()
     expect(element?.props.subtitle).toBeUndefined()
   })
+
+  it('keeps the shipped Phase 8 review contract on the bundled analog clock type', () => {
+    const definition = dateTimeAddon.buttons.find((button) => button.type === 'analog-clock')
+
+    expect(definition?.type).toBe('analog-clock')
+    expect(definition?.defaultIntervalMs).toBe(1000)
+    expect(definition?.configSchema.parse({})).toEqual({})
+  })
 })

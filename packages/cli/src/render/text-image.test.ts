@@ -89,6 +89,10 @@ function createPhase7ReviewTheme(themeName: "dark" | "light") {
   })
 }
 
+function createPhase8ReviewTheme() {
+  return createTheme({ name: "phase-8-review" })
+}
+
 describe("text-image", () => {
   afterEach(() => {
     vi.useRealTimers()
@@ -211,5 +215,16 @@ describe("text-image", () => {
 
     expect(firstBuffer.equals(secondBuffer)).toBe(false)
     expect(countRegionDiffs(firstBuffer, secondBuffer, { height: 42, width: 42, x: 15, y: 15 })).toBeGreaterThan(60)
+  })
+
+  it("protects the Phase 8 shipped review path with the real analog clock contract", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-05-15T09:41:12.000Z"))
+
+    const reviewAnalogBuffer = await renderTextImage({ theme: createPhase8ReviewTheme(), variant: "analog-clock" })
+    const reviewFallbackBuffer = await renderTextImage({ text: "09:41:12", theme: createPhase8ReviewTheme() })
+
+    expect(reviewAnalogBuffer.equals(reviewFallbackBuffer)).toBe(false)
+    expect(countRegionDiffs(reviewAnalogBuffer, reviewFallbackBuffer, { height: 52, width: 52, x: 10, y: 10 })).toBeGreaterThan(700)
   })
 })
