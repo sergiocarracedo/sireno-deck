@@ -3,7 +3,7 @@ import { tmpdir } from "node:os"
 import { join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
-import { describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { resolveTheme } from "../config/theme.js"
 import { renderBlankKeyImage, renderTextImage } from "./text-image.js"
@@ -90,6 +90,10 @@ function createPhase7ReviewTheme(themeName: "dark" | "light") {
 }
 
 describe("text-image", () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it("renders a non-empty image buffer for a text visual", async () => {
     const buffer = await renderTextImage({ text: "Hello" })
 
@@ -184,5 +188,28 @@ describe("text-image", () => {
     const emojiBuffer = await renderTextImage({ text: "GRIN", subtitle: "Favorites", variant: "emoji" })
 
     expect(defaultBuffer.equals(emojiBuffer)).toBe(false)
+  })
+
+  it("renders analog clock variants as a bespoke non-default visual", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-05-15T09:41:12.000Z"))
+
+    const defaultBuffer = await renderTextImage({ text: "Clock" })
+    const analogBuffer = await renderTextImage({ variant: "analog-clock" })
+
+    expect(defaultBuffer.equals(analogBuffer)).toBe(false)
+    expect(countRegionDiffs(defaultBuffer, analogBuffer, { height: 48, width: 48, x: 12, y: 12 })).toBeGreaterThan(500)
+  })
+
+  it("renders different analog hand positions for different times", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-05-15T09:41:12.000Z"))
+    const firstBuffer = await renderTextImage({ variant: "analog-clock" })
+
+    vi.setSystemTime(new Date("2026-05-15T09:41:47.000Z"))
+    const secondBuffer = await renderTextImage({ variant: "analog-clock" })
+
+    expect(firstBuffer.equals(secondBuffer)).toBe(false)
+    expect(countRegionDiffs(firstBuffer, secondBuffer, { height: 42, width: 42, x: 15, y: 15 })).toBeGreaterThan(60)
   })
 })

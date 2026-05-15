@@ -14,7 +14,7 @@ export interface TextImageOptions {
   subtitle?: string
   text?: string
   theme?: Theme
-  variant?: "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
+  variant?: "analog-clock" | "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
   wrapper?: "shared"
   width?: number
   height?: number
@@ -600,7 +600,92 @@ function buildEmojiSvg(options: TextImageOptions, preset: TextImagePreset, theme
   `.trim()
 }
 
+function polarToCartesian(centerX: number, centerY: number, radius: number, angleDegrees: number): { x: number; y: number } {
+  const angleRadians = ((angleDegrees - 90) * Math.PI) / 180
+
+  return {
+    x: centerX + radius * Math.cos(angleRadians),
+    y: centerY + radius * Math.sin(angleRadians),
+  }
+}
+
+function buildAnalogClockHand(
+  centerX: number,
+  centerY: number,
+  angleDegrees: number,
+  length: number,
+): { x: number; y: number } {
+  return polarToCartesian(centerX, centerY, length, angleDegrees)
+}
+
+function buildAnalogClockSvg(_options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
+  const centerX = preset.keyWidth / 2
+  const centerY = preset.keyHeight / 2
+  const outerRadius = 27
+  const innerRadius = 23
+  const now = new Date()
+  const hours = now.getHours() % 12
+  const minutes = now.getMinutes()
+  const seconds = now.getSeconds()
+  const hourAngle = hours * 30 + minutes * 0.5 + seconds / 120
+  const minuteAngle = minutes * 6 + seconds * 0.1
+  const secondAngle = seconds * 6
+  const hourHand = buildAnalogClockHand(centerX, centerY, hourAngle, 12)
+  const minuteHand = buildAnalogClockHand(centerX, centerY, minuteAngle, 18)
+  const secondHand = buildAnalogClockHand(centerX, centerY, secondAngle, 21)
+  const ringFill = mixHexColor(theme.background, theme.primary, 0.1)
+  const ringStroke = mixHexColor(theme.primary, theme.background, 0.28)
+  const faceFill = mixHexColor(theme.background, "#ffffff", 0.03)
+  const tickStroke = mixHexColor(theme.foreground, theme.background, 0.22)
+  const minorTickStroke = mixHexColor(theme.foreground, theme.background, 0.36)
+  const hourStroke = theme.foreground
+  const minuteStroke = mixHexColor(theme.foreground, theme.primary, 0.2)
+  const secondStroke = theme.accent
+  const cardinalTicks = [0, 90, 180, 270]
+    .map((angle) => {
+      const outerPoint = polarToCartesian(centerX, centerY, innerRadius, angle)
+      const innerPoint = polarToCartesian(centerX, centerY, innerRadius - 5, angle)
+
+      return `<line x1="${outerPoint.x.toFixed(2)}" y1="${outerPoint.y.toFixed(2)}" x2="${innerPoint.x.toFixed(2)}" y2="${innerPoint.y.toFixed(2)}" stroke="${tickStroke}" stroke-width="2.4" stroke-linecap="round" />`
+    })
+    .join("")
+  const minorTicks = Array.from({ length: 12 }, (_, index) => index * 30)
+    .filter((angle) => !cardinalTicks.includes(angle))
+    .map((angle) => {
+      const outerPoint = polarToCartesian(centerX, centerY, innerRadius, angle)
+      const innerPoint = polarToCartesian(centerX, centerY, innerRadius - 3.5, angle)
+
+      return `<line x1="${outerPoint.x.toFixed(2)}" y1="${outerPoint.y.toFixed(2)}" x2="${innerPoint.x.toFixed(2)}" y2="${innerPoint.y.toFixed(2)}" stroke="${minorTickStroke}" stroke-width="1.5" stroke-linecap="round" />`
+    })
+    .join("")
+
+  return `
+    <svg width="${preset.keyWidth}" height="${preset.keyHeight}" viewBox="0 0 ${preset.keyWidth} ${preset.keyHeight}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="analog-face" cx="50%" cy="38%" r="70%">
+          <stop offset="0%" stop-color="${mixHexColor(faceFill, "#ffffff", 0.1)}" />
+          <stop offset="100%" stop-color="${faceFill}" />
+        </radialGradient>
+      </defs>
+      <rect x="0" y="0" width="${preset.keyWidth}" height="${preset.keyHeight}" rx="16" fill="${mixHexColor(theme.background, theme.primary, 0.06)}" />
+      <circle cx="${centerX}" cy="${centerY}" r="${outerRadius}" fill="${ringFill}" stroke="${ringStroke}" stroke-width="1.5" />
+      <circle cx="${centerX}" cy="${centerY}" r="${innerRadius}" fill="url(#analog-face)" stroke="${mixHexColor(theme.foreground, theme.background, 0.78)}" stroke-width="1" />
+      <circle cx="${centerX}" cy="${centerY}" r="3" fill="${mixHexColor(theme.accent, theme.background, 0.18)}" />
+      ${cardinalTicks}
+      ${minorTicks}
+      <line x1="${centerX}" y1="${centerY}" x2="${hourHand.x.toFixed(2)}" y2="${hourHand.y.toFixed(2)}" stroke="${hourStroke}" stroke-width="3.4" stroke-linecap="round" />
+      <line x1="${centerX}" y1="${centerY}" x2="${minuteHand.x.toFixed(2)}" y2="${minuteHand.y.toFixed(2)}" stroke="${minuteStroke}" stroke-width="2.4" stroke-linecap="round" />
+      <line x1="${centerX}" y1="${centerY}" x2="${secondHand.x.toFixed(2)}" y2="${secondHand.y.toFixed(2)}" stroke="${secondStroke}" stroke-width="1.4" stroke-linecap="round" />
+      <circle cx="${centerX}" cy="${centerY}" r="1.8" fill="${secondStroke}" />
+    </svg>
+  `.trim()
+}
+
 function buildTextSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
+  if (options.variant === "analog-clock") {
+    return buildAnalogClockSvg(options, preset, theme)
+  }
+
   if (options.variant === "emoji") {
     return buildEmojiSvg(options, preset, theme)
   }
