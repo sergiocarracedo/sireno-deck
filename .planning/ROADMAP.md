@@ -1,6 +1,6 @@
 # Roadmap — Sireno Deck v1.1
 
-**Last updated:** 2026-05-14
+**Last updated:** 2026-05-15
 **Granularity:** focused milestone (4 phases)
 **Total v1.1 requirements:** 12
 
@@ -40,6 +40,8 @@ All 12 v1.1 requirements are mapped. No circular dependencies.
 
 ### Phase 7: Typography + Text Behavior
 
+**Status:** ✓ Complete (2026-05-15)
+
 **Goal:** Replace ad hoc text styling with theme-driven typography tokens and explicit overflow behavior that the renderer can test and share.
 
 **Requirements:** UIW-09, UIW-10, UIW-11
@@ -47,9 +49,9 @@ All 12 v1.1 requirements are mapped. No circular dependencies.
 **Depends on:** Phase 6
 
 **Success criteria:**
-- [ ] Theme schema accepts typography tokens that the renderer consumes for shared text output
-- [ ] Shared text rendering supports named behaviors such as ellipsis and marquee by contract
-- [ ] A shared button wrapper primitive exists for buttons that want it, without forcing bespoke visuals to use it
+- [x] Theme schema accepts typography tokens that the renderer consumes for shared text output
+- [x] Shared text rendering uses an explicit clip-only overflow contract per Phase 7 context instead of accidental overflow
+- [x] A shared button wrapper primitive exists for buttons that want it, without forcing bespoke visuals to use it
 
 **Research needed:** No — milestone research already narrowed the typography/text direction enough for planning.
 
