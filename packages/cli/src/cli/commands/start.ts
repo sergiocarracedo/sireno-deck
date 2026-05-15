@@ -66,11 +66,13 @@ async function renderMainDeck(
       detailLines: description.detailLines,
       displayValue: description.displayValue,
       icon: description.icon,
+      overflow: description.overflow,
       progress: description.progress,
       subtitle: description.subtitle,
       text: description.label,
       theme,
       variant: description.variant,
+      wrapper: description.wrapper,
     })
     renderedKeys.add(description.keyIndex)
     await writeKeyBuffer(connection, description.keyIndex, buffer)
@@ -130,11 +132,13 @@ export async function startDaemon(options: StartOptions): Promise<void> {
           detailLines: button.detailLines,
           displayValue: button.displayValue,
           icon: button.icon,
+          overflow: button.overflow,
           progress: button.progress,
           subtitle: button.subtitle,
           text: button.label,
           theme,
           variant: button.variant,
+          wrapper: button.wrapper,
         })
         await writeKeyBuffer(activeConnection, button.keyIndex, buffer)
       },

@@ -9,11 +9,13 @@ export interface TextImageOptions {
   detailLines?: string[]
   displayValue?: string
   icon?: string
+  overflow?: "clip"
   progress?: number
   subtitle?: string
   text?: string
   theme?: Theme
   variant?: "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
+  wrapper?: "shared"
   width?: number
   height?: number
 }
@@ -224,6 +226,10 @@ function getDetailLines(lines: string[] | undefined, limit: number): string[] {
     .slice(0, limit)
 }
 
+function usesSharedWrapper(options: TextImageOptions): boolean {
+  return options.wrapper === "shared" || options.overflow === "clip"
+}
+
 function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
   const text = options.text ?? ""
   const iconPath = options.icon
@@ -247,6 +253,7 @@ function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, the
   const progressWidth = options.progress !== undefined
     ? Math.max(0, Math.min(preset.keyWidth - 20, Math.round(((preset.keyWidth - 20) * options.progress) / 100)))
     : 0
+  const sharedContract = usesSharedWrapper(options)
   const textElements = [
     options.subtitle
       ? buildClippedText({
@@ -321,8 +328,8 @@ function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, the
         </linearGradient>
         ${textElements.map((element) => element.definition).join("")}
       </defs>
-      <rect x="0" y="0" width="${preset.keyWidth}" height="${preset.keyHeight}" rx="16" fill="url(#card)" />
-      <rect x="4" y="4" width="${preset.keyWidth - 8}" height="${preset.keyHeight - 8}" rx="12" fill="none" stroke="${frame}" stroke-width="1.5" />
+      <rect x="0" y="0" width="${preset.keyWidth}" height="${preset.keyHeight}" rx="${sharedContract ? 18 : 16}" fill="url(#card)" />
+      <rect x="4" y="4" width="${preset.keyWidth - 8}" height="${preset.keyHeight - 8}" rx="${sharedContract ? 13 : 12}" fill="none" stroke="${frame}" stroke-width="1.5" />
       <rect x="10" y="10" width="14" height="4" rx="2" fill="${theme.accent}" opacity="0.95" />
       ${options.subtitle ? `<rect x="34" y="10" width="28" height="12" rx="6" fill="${badgeFill}" stroke="${badgeStroke}" stroke-width="1" />` : ""}
       ${textElements.map((element) => element.markup).join("")}
