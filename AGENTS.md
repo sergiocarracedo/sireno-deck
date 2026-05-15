@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.1 — Addon UI and Live Widgets
-**Phase:** 7 — Typography + Text Behavior ✓ complete -> Phase 8 — Clock Visuals
-**Status:** verifying
+**Phase:** 8 — Clock Visuals
+**Status:** planning
 **Last updated:** 2026-05-15
 
 ---
