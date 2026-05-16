@@ -78,6 +78,8 @@ All 12 v1.1 requirements are mapped. No circular dependencies.
 
 ### Phase 9: Calendar + Authoring Clarity
 
+**Status:** ✓ Complete (2026-05-16)
+
 **Goal:** Complete the milestone with a readable tear-sheet calendar visual and docs that make addon UI authoring feel intentional rather than mysterious.
 
 **Requirements:** UIW-03, UIW-08, UIW-12
@@ -85,10 +87,10 @@ All 12 v1.1 requirements are mapped. No circular dependencies.
 **Depends on:** Phases 6-7
 
 **Success criteria:**
-- [ ] The built-in date/time addon exposes a separate `calendar-sheet` button type with a slower date-appropriate refresh cadence
-- [ ] The calendar visual reads as a single-key tear sheet rather than a cramped month grid
-- [ ] Shipped docs and examples explain JSX/custom element authoring clearly and show the non-DOM render contract
-- [ ] Fixtures or tests cover calendar-sheet behavior and any authoring/documentation examples added for the milestone
+- [x] The built-in date/time addon exposes a separate `calendar-sheet` button type with a slower date-appropriate refresh cadence
+- [x] The calendar visual reads as a single-key tear sheet rather than a cramped month grid
+- [x] Shipped docs and examples explain JSX/custom element authoring clearly and show the non-DOM render contract
+- [x] Fixtures or tests cover calendar-sheet behavior and any authoring/documentation examples added for the milestone
 
 **Research needed:** No — this phase applies the previously decided milestone constraints.
 

@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 8 execution and automated verification complete; ready for `verify-work 8`
+**Current focus:** Phase 9 execution and automated verification complete; ready for `verify-work 9`
 
 ## Current Position
 
-Phase: 8 — Clock Visuals ✓ complete -> Phase 9 — Calendar + Authoring Clarity
+Phase: 9 — Calendar + Authoring Clarity ✓ execution complete
 Plan: -
-Status: Phase 8 execution complete with human UAT pending; next up is `verify-work 8`, then Phase 9 discussion/planning
-Last activity: 2026-05-15 - Verified Phase 8 automatically after shipping the analog-clock button, fixture, and UAT path
+Status: Phase 9 execution complete with human UAT pending; next up is `verify-work 9`
+Last activity: 2026-05-16 - Executed Phase 9 by shipping the calendar-sheet widget, authoring guide, verified example, and phase verification record
 
-Progress: [##--------] 20%
+Progress: [###-------] 25%
 
 ## Performance Metrics
 
@@ -65,6 +65,8 @@ Recent decisions affecting current work:
 - **Phase 5 re-discussion:** Captured follow-on context for typed JSX addon authoring, core-owned live update defaults plus `interval_ms` overrides, optional shared button wrapper/text helpers, full theme typography tokens, and separate `analog-clock` / `calendar-sheet` button types inside the built-in date-time addon.
 - **Plan 08-01:** Shipped the first Phase 8 analog-clock tracer bullet end-to-end, including the separate bundled button type, runtime render-contract propagation, and a bespoke analog SVG render path.
 - **Plan 08-02:** Added the committed Phase 8 analog-clock fixture, UAT script, and review-path regression coverage so the shipped clock can be judged on the real CLI/device path.
+- **Plan 09-01:** Shipped the bundled `calendar-sheet` button type, tear-sheet render path, and committed Phase 9 review fixture/UAT script.
+- **Plan 09-02:** Added the focused non-DOM authoring guide, verified JSX/helper example, and review-visible authoring clarity checks.
 
 ### Blockers/Concerns
 
@@ -73,9 +75,9 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-05-14
-Stopped at: Quick task 012 implemented token-based date/time formatting for the bundled date-time addon. Next up is `discuss-phase 7`.
-Resume file: .planning/ROADMAP.md
+Last session: 2026-05-16
+Stopped at: Phase 9 execution and automated verification complete. Next up is `verify-work 9`.
+Resume file: .planning/phases/09-calendar-authoring-clarity/09-UAT.md
 
 ### Quick Tasks Completed
 
