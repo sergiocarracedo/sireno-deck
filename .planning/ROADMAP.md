@@ -1,7 +1,7 @@
 # Roadmap — Sireno Deck v1.1
 
-**Last updated:** 2026-05-15
-**Granularity:** focused milestone (4 phases)
+**Last updated:** 2026-05-16
+**Granularity:** focused milestone (5 phases)
 **Total v1.1 requirements:** 12
 
 ## Phase Overview
@@ -12,6 +12,7 @@
 | 7 | Typography + Text Behavior | Make text rendering theme-driven and explicit instead of hardcoded or overflow-driven | 3 | Phase 6 |
 | 8 | Clock Visuals | Add shared clock-oriented visuals on top of the stabilized runtime and text contracts | 2 | Phases 6-7 |
 | 9 | Calendar + Authoring Clarity | Finish the date-time addon with calendar-sheet and document the custom element authoring model clearly | 3 | Phases 6-7 |
+| 10 | Public Authoring Exports *(gap closure)* | Make the documented addon authoring entrypoints shippable from the built CLI package | 1 | Phase 9 |
 
 All 12 v1.1 requirements are mapped. No circular dependencies.
 
@@ -93,6 +94,27 @@ All 12 v1.1 requirements are mapped. No circular dependencies.
 - [x] Fixtures or tests cover calendar-sheet behavior and any authoring/documentation examples added for the milestone
 
 **Research needed:** No — this phase applies the previously decided milestone constraints.
+
+---
+
+### Phase 10: Public Authoring Exports *(gap closure)*
+
+**Status:** [ ] Not started
+
+**Goal:** Make the documented addon authoring surface actually shippable by aligning `packages/cli` build outputs with the public package exports used in Phase 6 and Phase 9 docs/examples.
+
+**Closes:** milestone audit integration gap for package exports/build output mismatch; packaged addon authoring flow from `README.md`
+
+**Requirements:** UIW-01, UIW-02, UIW-03
+
+**Depends on:** Phase 9
+
+**Success criteria:**
+- [ ] `pnpm --filter sireno-deck-cli build` emits the files referenced by `packages/cli/package.json` public exports
+- [ ] The packaged `sireno-deck-cli/jsx` entrypoint resolves from built output
+- [ ] The documented helper-based addon authoring path matches the shipped public package surface instead of repo-local internals
+
+**Research needed:** No — the milestone audit already isolated the release blocker.
 
 ---
 
