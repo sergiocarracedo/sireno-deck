@@ -5,6 +5,7 @@ import type { SirenoAddon } from '../../../packages/cli/src/addon/api.js'
 
 const DIGITAL_DATE_TIME_INTERVAL_MS = 1000
 const ANALOG_CLOCK_INTERVAL_MS = 1000
+const CALENDAR_SHEET_INTERVAL_MS = 60000
 
 const BuiltinDisplayDateTimeButtonSchema = z
   .object({
@@ -15,6 +16,7 @@ const BuiltinDisplayDateTimeButtonSchema = z
   .strict()
 
 const BuiltinAnalogClockButtonSchema = z.object({}).strict()
+const BuiltinCalendarSheetButtonSchema = z.object({}).strict()
 
 const DIGITAL_DATE_TIME_TOKENS = {
   DD: (date: Date) => String(date.getDate()).padStart(2, '0'),
@@ -88,12 +90,35 @@ const builtinAnalogClockButton = {
   type: 'analog-clock',
 }
 
+const builtinCalendarSheetButton = {
+  configSchema: BuiltinCalendarSheetButtonSchema,
+  defaultIntervalMs: CALENDAR_SHEET_INTERVAL_MS,
+  createInstance: ({
+    button,
+  }: {
+    button: { position: number }
+    config: z.infer<typeof BuiltinCalendarSheetButtonSchema>
+  }) => ({
+    render: () =>
+      createElement('deck-button', {
+        keyIndex: button.position,
+        variant: 'calendar-sheet',
+      }),
+  }),
+  type: 'calendar-sheet',
+}
+
 const datetimeButtonsAddon: SirenoAddon = {
   apiVersion: 1,
-  buttons: [builtinDisplayDateTimeButton, builtinAnalogClockButton] as SirenoAddon['buttons'],
+  buttons: [builtinDisplayDateTimeButton, builtinAnalogClockButton, builtinCalendarSheetButton] as SirenoAddon['buttons'],
   name: 'date-time',
 }
 
 export default datetimeButtonsAddon
 
-export { ANALOG_CLOCK_INTERVAL_MS, DIGITAL_DATE_TIME_INTERVAL_MS, formatDigitalDateTimeLabel }
+export {
+  ANALOG_CLOCK_INTERVAL_MS,
+  CALENDAR_SHEET_INTERVAL_MS,
+  DIGITAL_DATE_TIME_INTERVAL_MS,
+  formatDigitalDateTimeLabel,
+}
