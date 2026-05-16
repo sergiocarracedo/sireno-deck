@@ -3,8 +3,9 @@ status: pending
 phase: 09-calendar-authoring-clarity
 source:
   - 09-01-SUMMARY.md
+  - 09-02-SUMMARY.md
 started: 2026-05-16T10:15:00+02:00
-updated: 2026-05-16T10:15:00+02:00
+updated: 2026-05-16T10:22:00+02:00
 ---
 
 ## Current Test
@@ -31,12 +32,25 @@ result: pending
 
 ## Summary
 
-total: 1
+total: 2
 passed: 0
 issues: 0
-pending: 1
+pending: 2
 skipped: 0
 
 ## Gaps
 
 none yet
+
+### 2. Authoring Contract Clarity
+expected: Read the authoring section in `README.md` and inspect `packages/cli/fixtures/phase-9/jsx-addon-authoring-example.tsx`. It should now be obvious that `deck-button`, `deck-text`, and `deck-surface` are non-DOM render elements, that JSX opt-in happens explicitly through `sireno-deck-cli/jsx`, and that a helper-based alternative still exists for the same render contract.
+fixture: `README.md`, `packages/cli/fixtures/phase-9/jsx-addon-authoring-example.tsx`
+pass_if:
+  - The docs say the custom elements are non-DOM and describe what they target instead.
+  - The docs or example show the explicit `sireno-deck-cli/jsx` opt-in path instead of implying ambient JSX support.
+  - The example keeps a helper-based alternative visible enough that the two authoring paths can be compared directly.
+fail_if:
+  - The docs read like browser/DOM guidance or omit the non-DOM contract.
+  - JSX appears ambient or unexplained.
+  - The helper-based path is missing or too vague to compare against the JSX form.
+result: pending

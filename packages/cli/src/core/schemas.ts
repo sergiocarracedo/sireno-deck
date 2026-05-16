@@ -252,7 +252,7 @@ function expandDecks(bootstrap: BootstrapSirenoConfig, registry: AddonRegistry):
 
     const generatedDecks = deckType.createDecks({
       config: parsedDeckPayload.data,
-      deck: { id: deck.id, type: deck.type },
+      deck: { id: deck.id, type: deckType.type },
     })
 
     for (const [generatedDeckId, generatedDeck] of Object.entries(generatedDecks)) {

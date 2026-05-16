@@ -7,6 +7,14 @@ import {
   createDeckTextElement,
   renderDeck,
 } from "./reconciler.js"
+import {
+  helperAddonButton,
+  helperAddonSurface,
+  helperAddonText,
+  jsxAddonButton,
+  jsxAddonSurface,
+  jsxAddonText,
+} from "../../fixtures/phase-9/jsx-addon-authoring-example.js"
 
 const jsxButton = <deck-button keyIndex={7} label="JSX" overflow="clip" subtitle="typed" variant="toggle" wrapper="shared" />
 
@@ -224,5 +232,11 @@ describe("render reconciler", () => {
     )
 
     expect(descriptions).toEqual([{ keyIndex: 10, label: "Analog", subtitle: "Custom", variant: "toggle" }])
+  })
+
+  it("keeps the shipped Phase 9 addon authoring example in helper and JSX parity", () => {
+    expect(renderDeck(jsxAddonButton)).toEqual(renderDeck(helperAddonButton))
+    expect(renderDeck(jsxAddonSurface)).toEqual(renderDeck(helperAddonSurface))
+    expect(renderDeck(jsxAddonText)).toEqual(renderDeck(helperAddonText))
   })
 })

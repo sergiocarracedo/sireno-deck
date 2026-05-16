@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": ["node", "react"],
+    "baseUrl": ".",
+    "paths": {
+      "sireno-deck-cli/jsx": ["../../src/render/jsx.d.ts"]
+    }
+  },
+  "files": [
+    "../../src/render/jsx.d.ts",
+    "../../src/render/types.ts",
+    "../../src/render/reconciler.ts",
+    "./jsx-addon-authoring-example.tsx"
+  ]
+}
