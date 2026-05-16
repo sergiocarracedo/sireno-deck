@@ -14,7 +14,7 @@ export interface TextImageOptions {
   subtitle?: string
   text?: string
   theme?: Theme
-  variant?: "analog-clock" | "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
+  variant?: "analog-clock" | "calendar-sheet" | "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
   wrapper?: "shared"
   width?: number
   height?: number
@@ -681,9 +681,102 @@ function buildAnalogClockSvg(_options: TextImageOptions, preset: TextImagePreset
   `.trim()
 }
 
+function buildCalendarSheetSvg(_options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
+  const now = new Date()
+  const dayNumber = String(now.getDate())
+  const weekday = now.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase()
+  const month = now.toLocaleDateString("en-US", { month: "short" }).toUpperCase()
+  const year = String(now.getFullYear())
+  const textElements = [
+    buildClippedText({
+      clipHeight: 10,
+      clipId: "calendar-weekday",
+      clipWidth: 28,
+      clipX: 12,
+      clipY: 12,
+      fill: theme.foreground,
+      role: "auxiliary_text",
+      scale: 0.98,
+      text: weekday,
+      theme,
+      x: 12,
+      y: 20,
+    }),
+    buildClippedText({
+      clipHeight: 10,
+      clipId: "calendar-month",
+      clipWidth: 28,
+      clipX: 40,
+      clipY: 12,
+      fill: mixHexColor(theme.foreground, theme.background, 0.22),
+      role: "auxiliary_text",
+      scale: 0.98,
+      text: month,
+      textAnchor: "end",
+      theme,
+      x: 60,
+      y: 20,
+    }),
+    buildClippedText({
+      clipHeight: 30,
+      clipId: "calendar-day",
+      clipWidth: 44,
+      clipX: 14,
+      clipY: 23,
+      fill: theme.foreground,
+      role: "monospace",
+      scale: dayNumber.length > 1 ? 2.7 : 3,
+      text: dayNumber,
+      textAnchor: "middle",
+      theme,
+      x: preset.keyWidth / 2,
+      y: 48,
+    }),
+    buildClippedText({
+      clipHeight: 9,
+      clipId: "calendar-year",
+      clipWidth: 24,
+      clipX: 24,
+      clipY: 55,
+      fill: mixHexColor(theme.foreground, theme.background, 0.34),
+      role: "auxiliary_text",
+      scale: 0.92,
+      text: year,
+      textAnchor: "middle",
+      theme,
+      x: preset.keyWidth / 2,
+      y: 63,
+    }),
+  ]
+
+  return `
+    <svg width="${preset.keyWidth}" height="${preset.keyHeight}" viewBox="0 0 ${preset.keyWidth} ${preset.keyHeight}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="calendar-paper" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${mixHexColor(theme.background, "#ffffff", 0.16)}" />
+          <stop offset="100%" stop-color="${mixHexColor(theme.background, theme.primary, 0.08)}" />
+        </linearGradient>
+        ${textElements.map((element) => element.definition).join("")}
+      </defs>
+      <rect x="0" y="0" width="${preset.keyWidth}" height="${preset.keyHeight}" rx="16" fill="${mixHexColor(theme.background, theme.accent, 0.08)}" />
+      <rect x="8" y="8" width="${preset.keyWidth - 16}" height="${preset.keyHeight - 16}" rx="12" fill="url(#calendar-paper)" stroke="${mixHexColor(theme.foreground, theme.background, 0.76)}" stroke-width="1.2" />
+      <rect x="8" y="8" width="${preset.keyWidth - 16}" height="14" rx="12" fill="${mixHexColor(theme.accent, theme.background, 0.18)}" />
+      <rect x="8" y="16" width="${preset.keyWidth - 16}" height="6" fill="${mixHexColor(theme.accent, theme.background, 0.18)}" />
+      <circle cx="22" cy="15" r="2.2" fill="${theme.accent}" />
+      <circle cx="50" cy="15" r="2.2" fill="${theme.accent}" />
+      <line x1="14" y1="26" x2="58" y2="26" stroke="${mixHexColor(theme.foreground, theme.background, 0.78)}" stroke-width="1" />
+      ${textElements.map((element) => element.markup).join("")}
+    </svg>
+  `.trim()
+}
+
 function buildTextSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
   if (options.variant === "analog-clock") {
     return buildAnalogClockSvg(options, preset, theme)
+  }
+
+  if (options.variant === "calendar-sheet") {
+    return buildCalendarSheetSvg(options, preset, theme)
   }
 
   if (options.variant === "emoji") {

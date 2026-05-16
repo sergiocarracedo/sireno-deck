@@ -93,6 +93,10 @@ function createPhase8ReviewTheme() {
   return createTheme({ name: "phase-8-review" })
 }
 
+function createPhase9ReviewTheme() {
+  return createTheme({ name: "phase-9-review" })
+}
+
 describe("text-image", () => {
   afterEach(() => {
     vi.useRealTimers()
@@ -215,6 +219,40 @@ describe("text-image", () => {
 
     expect(firstBuffer.equals(secondBuffer)).toBe(false)
     expect(countRegionDiffs(firstBuffer, secondBuffer, { height: 42, width: 42, x: 15, y: 15 })).toBeGreaterThan(60)
+  })
+
+  it("renders calendar-sheet variants as a bespoke tear-sheet visual", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-05-16T10:12:00.000Z"))
+
+    const defaultBuffer = await renderTextImage({ text: "16 MAY" })
+    const calendarBuffer = await renderTextImage({ variant: "calendar-sheet" })
+
+    expect(defaultBuffer.equals(calendarBuffer)).toBe(false)
+    expect(countRegionDiffs(defaultBuffer, calendarBuffer, { height: 52, width: 52, x: 10, y: 10 })).toBeGreaterThan(700)
+  })
+
+  it("renders different calendar-sheet visuals on different dates", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-05-16T10:12:00.000Z"))
+    const firstBuffer = await renderTextImage({ variant: "calendar-sheet" })
+
+    vi.setSystemTime(new Date("2026-05-28T10:12:00.000Z"))
+    const secondBuffer = await renderTextImage({ variant: "calendar-sheet" })
+
+    expect(firstBuffer.equals(secondBuffer)).toBe(false)
+    expect(countRegionDiffs(firstBuffer, secondBuffer, { height: 40, width: 34, x: 19, y: 24 })).toBeGreaterThan(80)
+  })
+
+  it("protects the Phase 9 shipped review path with the real calendar-sheet contract", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-05-16T10:12:00.000Z"))
+
+    const reviewCalendarBuffer = await renderTextImage({ theme: createPhase9ReviewTheme(), variant: "calendar-sheet" })
+    const reviewFallbackBuffer = await renderTextImage({ text: "FRI MAY 16", theme: createPhase9ReviewTheme() })
+
+    expect(reviewCalendarBuffer.equals(reviewFallbackBuffer)).toBe(false)
+    expect(countRegionDiffs(reviewCalendarBuffer, reviewFallbackBuffer, { height: 52, width: 52, x: 10, y: 10 })).toBeGreaterThan(700)
   })
 
   it("protects the Phase 8 shipped review path with the real analog clock contract", async () => {

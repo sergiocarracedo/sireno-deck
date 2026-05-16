@@ -72,6 +72,14 @@ describe("render reconciler", () => {
     expect(descriptions).toEqual([{ keyIndex: 11, variant: "analog-clock" }])
   })
 
+  it("preserves calendar-sheet button descriptions without forcing wrapper props", () => {
+    const descriptions = renderDeck(
+      createDeckButtonElement({ keyIndex: 6, variant: "calendar-sheet" }),
+    )
+
+    expect(descriptions).toEqual([{ keyIndex: 6, variant: "calendar-sheet" }])
+  })
+
   it("preserves rich media button descriptions with detail lines", () => {
     const descriptions = renderDeck(
       createDeckButtonElement({
@@ -185,6 +193,29 @@ describe("render reconciler", () => {
     )
 
     expect(descriptions).toContainEqual({ keyIndex: 13, variant: "analog-clock" })
+  })
+
+  it("keeps helper-authored and JSX-authored calendar-sheet output in parity", () => {
+    const helperDescriptions = renderDeck(
+      createDeckButtonElement({ keyIndex: 2, variant: "calendar-sheet" }),
+    )
+    const jsxDescriptions = renderDeck(<deck-button keyIndex={2} variant="calendar-sheet" />)
+
+    expect(jsxDescriptions).toEqual(helperDescriptions)
+    expect(helperDescriptions).toEqual([{ keyIndex: 2, variant: "calendar-sheet" }])
+  })
+
+  it("threads calendar-sheet variants through deck-surface button collections", () => {
+    const descriptions = renderDeck(
+      createDeckSurfaceElement({
+        buttons: [
+          { keyIndex: 1, label: "Digital" },
+          { keyIndex: 14, variant: "calendar-sheet" },
+        ],
+      }),
+    )
+
+    expect(descriptions).toContainEqual({ keyIndex: 14, variant: "calendar-sheet" })
   })
 
   it("lets bespoke button renders omit the shared wrapper props", () => {
