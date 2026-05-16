@@ -1,0 +1,15 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    name: Phase 8 Analog Clock Review
+    buttons:
+      - position: 0
+        type: analog-clock
+      - position: 1
+        type: date-time
+        variant: time
+addons: []
+logging:
+  level: info

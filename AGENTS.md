@@ -164,10 +164,10 @@ This project uses **learnship**. Key facts:
 
 ## Current Phase
 
-**Milestone:** v1.0 — Sireno Deck CLI
-**Phase:** 4 — Advanced Buttons
-**Status:** planning
-**Last updated:** 2026-05-12
+**Milestone:** v1.1 — Addon UI and Live Widgets
+**Phase:** 9 — Calendar + Authoring Clarity ✓ execution complete
+**Status:** verifying
+**Last updated:** 2026-05-16
 
 ---
 
@@ -178,7 +178,7 @@ sireno-deck/
 ├── .planning/               # Learnship planning artifacts (PROJECT, ROADMAP, STATE, research)
 ├── packages/
 │   └── cli/
-│       ├── fixtures/        # Config fixtures for loader and schema tests
+│       ├── fixtures/        # Config fixtures for loader, schema, and Phase 5 verification
 │       ├── src/
 │       │   ├── cli/         # yargs command definitions and startup wiring
 │       │   ├── config/      # Config loading and validation
@@ -192,6 +192,7 @@ sireno-deck/
 │       └── vitest.config.ts
 ├── addons/                  # User-installed addon folders
 ├── builtin-addons/          # First-party addons shipped with the CLI
+│   ├── core-buttons/
 │   └── emoji-selector/
 ├── themes/                  # Built-in theme YAML files
 │   ├── dark.yml

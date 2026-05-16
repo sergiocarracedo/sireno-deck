@@ -1,6 +1,8 @@
 import type pino from "pino"
 
-import { loadConfig } from "../../config/loader.js"
+import { loadConfiguredAddons } from "../../addon/loader.js"
+import { AddonManifestError } from "../../addon/manifest.js"
+import { createBundledAddonRegistry, loadBootstrapConfig, loadConfig } from "../../config/loader.js"
 import { resolveTheme } from "../../config/theme.js"
 import { ConfigValidationError } from "../../core/schemas.js"
 import { createDeckRuntime } from "../../deck/runtime.js"
@@ -30,6 +32,25 @@ export interface StartOptions {
   logger: pino.Logger
 }
 
+export async function loadRuntimeConfig(options: StartOptions) {
+  const bootstrap = loadBootstrapConfig(options.config)
+  const registry = createBundledAddonRegistry()
+  const addonLoadResult = await loadConfiguredAddons({
+    addons: bootstrap.config.addons,
+    cwd: bootstrap.cwd,
+    registry,
+  })
+
+  for (const warning of addonLoadResult.warnings) {
+    options.logger.warn({ addonName: warning.addonName, reason: warning.reason }, "skipping addon after startup warning")
+  }
+
+  return {
+    config: loadConfig(bootstrap.filePath, registry),
+    registry,
+  }
+}
+
 async function renderMainDeck(
   connection: NonNullable<ReturnType<ReturnType<typeof createStreamDeckLifecycle>["getConnection"]>>,
   deckButtons: DeckButtonProps[],
@@ -45,11 +66,13 @@ async function renderMainDeck(
       detailLines: description.detailLines,
       displayValue: description.displayValue,
       icon: description.icon,
+      overflow: description.overflow,
       progress: description.progress,
       subtitle: description.subtitle,
       text: description.label,
       theme,
       variant: description.variant,
+      wrapper: description.wrapper,
     })
     renderedKeys.add(description.keyIndex)
     await writeKeyBuffer(connection, description.keyIndex, buffer)
@@ -76,7 +99,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
   }
 
   try {
-    const config = loadConfig(options.config)
+    const { config } = await loadRuntimeConfig(options)
     const theme = resolveTheme(config.theme)
     const mainDeck = config.decks[config.main_deck]
     let runtime: ReturnType<typeof createDeckRuntime> | null = null
@@ -98,6 +121,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
       deck: mainDeck,
       decks: config.decks,
       keyCount: connection.info.keyCount,
+      theme,
       onRenderButton: async (button) => {
         const activeConnection = lifecycle.getConnection()
         if (!activeConnection) {
@@ -108,11 +132,13 @@ export async function startDaemon(options: StartOptions): Promise<void> {
           detailLines: button.detailLines,
           displayValue: button.displayValue,
           icon: button.icon,
+          overflow: button.overflow,
           progress: button.progress,
           subtitle: button.subtitle,
           text: button.label,
           theme,
           variant: button.variant,
+          wrapper: button.wrapper,
         })
         await writeKeyBuffer(activeConnection, button.keyIndex, buffer)
       },
@@ -145,6 +171,12 @@ export async function startDaemon(options: StartOptions): Promise<void> {
       await lifecycle.close()
     })
   } catch (error) {
+    if (error instanceof AddonManifestError && error.code === "api_version_mismatch") {
+      console.error(`Addon apiVersion error: ${error.message}`)
+      process.exitCode = 1
+      return
+    }
+
     if (error instanceof ConfigValidationError) {
       console.error(formatConfigError(error))
       process.exitCode = 1
@@ -168,7 +200,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
   }
 
   logger.info({ pid: process.pid }, "sireno-deck daemon started")
-  logger.info("started config-driven main deck runtime with action button polling")
+  logger.info("started config-driven main deck runtime with addon-hosted buttons")
   logger.info("press Ctrl+C to stop")
 
   try {

@@ -1,0 +1,16 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    buttons:
+      - position: 0
+        type: display-text
+        label: Version Check
+addons:
+  - name: version-mismatch-addon
+    enabled: true
+    source: local
+    path: ./version-mismatch-addon
+logging:
+  level: info

@@ -5,3 +5,19 @@ primary: "#2563eb"
 accent: "#c2410c"
 success: "#059669"
 danger: "#dc2626"
+typography:
+  main_text:
+    font_family: "Dejavu Sans"
+    font_size: 15
+    font_weight: 500
+    letter_spacing: 1.4
+  auxiliary_text:
+    font_family: "Dejavu Sans"
+    font_size: 9
+    font_weight: 700
+    letter_spacing: 2.2
+  monospace:
+    font_family: "Dejavu Sans"
+    font_size: 11
+    font_weight: 600
+    letter_spacing: 1.2

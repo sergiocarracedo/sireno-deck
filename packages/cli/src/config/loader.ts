@@ -1,15 +1,25 @@
 import { existsSync, readFileSync } from "node:fs"
 import { homedir } from "node:os"
-import { join } from "node:path"
+import { dirname, join } from "node:path"
 import yaml from "js-yaml"
 
 import {
+  type BootstrapSirenoConfig,
   ConfigValidationError,
   type SirenoConfig,
+  validateBootstrapConfig,
   validateConfig,
 } from "../core/schemas.js"
+import { getBundledAddons } from "../addon/builtin.js"
+import { createAddonRegistry, type AddonRegistry } from "../addon/registry.js"
 
 const CONFIG_FILENAME = "config.yml"
+
+export interface LoadedBootstrapConfig {
+  config: BootstrapSirenoConfig
+  cwd: string
+  filePath: string
+}
 
 function getXdgConfigPath(): string {
   const configHome = process.env.XDG_CONFIG_HOME ?? join(homedir(), ".config")
@@ -113,7 +123,21 @@ function findConfigPath(customPath?: string): string | undefined {
   return undefined
 }
 
-export function loadConfig(configPath?: string): SirenoConfig {
+export function createBundledAddonRegistry(): AddonRegistry {
+  const registry = createAddonRegistry()
+
+  for (const addon of getBundledAddons()) {
+    registry.registerAddon(addon)
+  }
+
+  return registry
+}
+
+function parseConfigFile(configPath?: string): {
+  filePath: string
+  raw: string
+  parsed: unknown
+} {
   const foundPath = findConfigPath(configPath)
 
   if (!foundPath) {
@@ -124,9 +148,12 @@ export function loadConfig(configPath?: string): SirenoConfig {
 
   const raw = readFileSync(foundPath, "utf-8")
 
-  let parsed: unknown
   try {
-    parsed = yaml.load(raw)
+    return {
+      filePath: foundPath,
+      parsed: yaml.load(raw),
+      raw,
+    }
   } catch (error) {
     const lineNumber =
       typeof error === "object" && error !== null && "mark" in error
@@ -140,15 +167,44 @@ export function loadConfig(configPath?: string): SirenoConfig {
       "Fix the YAML syntax and try again.",
     )
   }
+}
+
+export function loadBootstrapConfig(configPath?: string): LoadedBootstrapConfig {
+  const parsedConfig = parseConfigFile(configPath)
 
   try {
-    return validateConfig(parsed)
+    return {
+      config: validateBootstrapConfig(parsedConfig.parsed),
+      cwd: dirname(parsedConfig.filePath),
+      filePath: parsedConfig.filePath,
+    }
   } catch (error) {
     if (error instanceof ConfigValidationError) {
       throw new ConfigValidationError(
         error.message,
-        foundPath,
-        error.lineNumber ?? getLineNumber(raw, error.pathSegments),
+        parsedConfig.filePath,
+        error.lineNumber ?? getLineNumber(parsedConfig.raw, error.pathSegments),
+        error.suggestion,
+        error.pathSegments,
+      )
+    }
+
+    throw error
+  }
+}
+
+export function loadConfig(configPath?: string, registry = createBundledAddonRegistry()): SirenoConfig {
+  const parsedConfig = parseConfigFile(configPath)
+
+  try {
+    // Phase 5 bootstrap validation: load the addon registry before full button validation.
+    return validateConfig(parsedConfig.parsed, registry)
+  } catch (error) {
+    if (error instanceof ConfigValidationError) {
+      throw new ConfigValidationError(
+        error.message,
+        parsedConfig.filePath,
+        error.lineNumber ?? getLineNumber(parsedConfig.raw, error.pathSegments),
         error.suggestion,
         error.pathSegments,
       )

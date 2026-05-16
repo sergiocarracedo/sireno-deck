@@ -1,0 +1,22 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    name: Phase 7 Wrapper Contract Review
+    buttons:
+      - position: 0
+        type: phase-7-shared-wrapper-button
+        label: Clock
+        subtitle: Shared
+      - position: 1
+        type: phase-7-bespoke-button
+        label: Analog
+        subtitle: Custom
+addons:
+  - name: phase-7-review-addon
+    enabled: true
+    source: local
+    path: ./phase-7-review-addon
+logging:
+  level: info

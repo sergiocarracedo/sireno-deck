@@ -1,93 +1,58 @@
 # Stack Research
 
-**Domain:** Stream Deck management CLI + addon system
-**Researched:** 2026-05-12
+**Domain:** v1.1 addon UI and live widget extension work
+**Researched:** 2026-05-14
 **Confidence:** HIGH
 
 ## Recommended Stack
 
-### Core Technologies
+### Keep The Existing Core Stack
 
-| Technology | Version | Purpose | Why Recommended |
-|------------|---------|---------|-----------------|
-| TypeScript | ~5.7 | Language and type system for core and addons | Required by user; unified language model across the entire project and addon ecosystem |
-| Node.js | >=20.x LTS | JavaScript runtime | Required by `@elgato-stream-deck` and `sharp`; LTS stability for CLI |
-| @elgato-stream-deck/node | ^7.6 | Stream Deck HID communication | De facto Node.js library for Elgato Stream Deck hardware (v7.6.2, Mar 2026); supports all Stream Deck models via node-hid |
-| @elgato-stream-deck/core | ^7.6 | Platform-agnostic Stream Deck abstraction | Provides image buffer format helpers and device-agnostic API; used internally by node/tcp/webhid transports |
-| yargs | ^18.0 | CLI argument parsing and command routing | Most popular Node.js CLI framework (11.5k stars); TypeScript types, subcommands, help generation, completion scripts |
-| React (react + react-reconciler) | ^19.x | Component-based UI rendering to image buffers | Custom reconciler renders React components to raw pixel buffers; enables shareable addon button components |
-| sharp | ^0.34 | Image composition and format conversion | Fastest Node.js image processor (32k stars); SVG compositing, buffer output, Stream Deck BMP/JPEG format compatible |
-| js-yaml | ^4.1 | YAML config parsing and dumping | Established YAML 1.2 parser (6.6k stars); handles user-editable config.yml with good error reporting |
+| Technology | Version / Source | Role In This Milestone | Why |
+|------------|------------------|------------------------|-----|
+| TypeScript | existing repo `~5.7` | JSX typing, theme contracts, addon API surfaces | TypeScript's JSX namespace and intrinsic element typing are the right mechanism for typed custom elements. [CITED: https://www.typescriptlang.org/docs/handbook/jsx.html] |
+| React + react-reconciler | existing repo `^19.x` + `^0.33` | custom deck element authoring and render tree shaping | The repo already uses React as a custom renderer boundary; milestone work should extend typings, not swap rendering models. [VERIFIED: codebase scan] |
+| sharp + SVG strings | existing repo | rasterize text and custom button visuals | Existing render path already turns SVG into raw key buffers; new visuals should build on it rather than introducing another drawing engine. [VERIFIED: codebase scan] |
+| Intl.DateTimeFormat | built into JS runtime | locale-aware digital date/time and calendar text formatting | `Intl.DateTimeFormat` supports locale-sensitive formatting plus `formatToParts()` for custom composition. [CITED: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat] |
+| YAML theme files + zod | existing repo | typography tokens and render behavior config | The theme contract already flows through YAML + zod validation; expanding it is lower-risk than inventing a separate style system. [VERIFIED: codebase scan] |
 
-### Supporting Libraries
+### Additional Milestone-Level Recommendations
 
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| systeminformation | ^5.x | System stats (CPU, memory, fan) | For built-in live data buttons; provides cross-platform `currentLoad`, `mem`, `cpuTemperature` |
-| execa | ^9.x | Child process execution with streaming | For button action commands and status commands; better error handling than raw `child_process` |
-| chokidar | ^4.x | File system watching | Live-reload addon folders and config changes without restart |
-| zod | ^3.x | Schema validation | Validate addon manifests, config.yml structure, and button type definitions |
-| pino | ^9.x | Structured logging | High-performance logging for CLI diagnostics and addon debug output |
-| ora | ^8.x | CLI spinners | Visual feedback during addon loading and device initialization |
-
-### Development Tools
-
-| Tool | Purpose | Notes |
-|------|---------|-------|
-| vitest | Test runner | Fast ESM-native testing for TypeScript; better than Jest for TypeScript-first projects |
-| tsup | Build tool | Fast TypeScript bundling powered by esbuild; produces CJS/ESM dual output |
-| oxlint | Linting | Fast Rust-based linter; catches TypeScript issues during development |
-| oxfmt | Formatting | Fast Rust-based formatter; consistent code style without Prettier performance cost |
-| nodemon / tsx | Dev reload | Auto-restart the CLI during development |
+| Recommendation | Use | Why |
+|---------------|-----|-----|
+| Use JSX intrinsic typings, not a new component DSL | addon authoring ergonomics | TypeScript already supports typing lowercase intrinsic elements through `JSX.IntrinsicElements`. [CITED: https://www.typescriptlang.org/docs/handbook/jsx.html] |
+| Use `Intl.DateTimeFormat.formatToParts()` when composing calendar/date labels | calendar-sheet and custom date text | It avoids brittle string splitting across locales. [CITED: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat] |
+| Keep SVG text rendering explicit | marquee/ellipsis/fit behavior | SVG `<text>` does not wrap by default, so overflow behavior must be intentional. [CITED: https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/text] |
+| Use `textLength` / `lengthAdjust` carefully for fit-to-width cases | bounded text fitting on small keys | SVG can constrain rendered width, but overuse will distort glyph spacing or glyph shapes. [CITED: https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/textLength] |
 
 ## Alternatives Considered
 
-| Recommended | Alternative | When to Use Alternative |
-|-------------|-------------|-------------------------|
-| yargs | commander | commander is slightly lighter but lacks TypeScript-first ergonomics and built-in completion |
-| yargs | clipanion | clipanion has stricter typing but less community adoption; better for yarn-style CLI architecture |
-| react-reconciler | node-canvas (canvas) | node-canvas renders to a graphics context but requires native Cairo/GDK dependencies; sharp-based approach is simpler and faster for pure image output |
-| sharp | jimp | jimp is pure JS (no native deps) but 10-50x slower; only if native module installs are impossible |
-| js-yaml | yaml (npm package) | `yaml` handles multi-document YAML better but js-yaml is more battle-tested and has simpler API |
-| systeminformation | os (built-in) | `os` module provides basic CPU/mem but lacks temp, fan, and per-core info; use only if zero-deps is critical |
-| vitest | jest | jest has broader ecosystem but slower startup and worse ESM support; vitest is preferred for new TS projects |
+| Recommended | Alternative | Why Not Preferred |
+|-------------|-------------|-------------------|
+| Extend custom intrinsic JSX typings | Replace with ordinary React components only | Components would still have to map back to the same narrow custom render surface; intrinsic typings better match the renderer contract |
+| Expand current theme schema | Add addon-local font options only | This would bypass theming consistency and make text rendering drift across buttons |
+| Extend current SVG/text renderer | Introduce a separate canvas/date-time drawing subsystem | Splits rendering logic and duplicates sizing/layout concerns on a tiny display |
+| Use explicit text behavior modes | Let SVG clipping decide overflow | SVG text does not wrap by default, and accidental clipping is not a stable contract [CITED: https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/text] |
 
 ## What NOT to Use
 
 | Avoid | Why | Use Instead |
 |-------|-----|-------------|
-| Electron in v1 | Desktop app is explicitly out of scope for v1; adds significant complexity and binary size | CLI-first with plain Node.js; revisit for desktop app in v2 |
-| commander | Weaker TypeScript integration and no built-in command completion compared to yargs | yargs |
-| jimp | 10-50x slower than sharp for image processing; Stream Deck updates need to be fast (500ms refresh) | sharp |
-| React DOM / full React rendering | Unnecessary; we need buffer output not browser DOM | react-reconciler with custom host config for image buffers |
-| Cosmiconfig | Over-engineered for this use case; we want a single known config path | Direct js-yaml load on `./config.yml` |
-| eslint + prettier | Slower JS-based tools; oxlint is 50-100x faster, oxfmt matches Prettier output with near-zero config | oxlint + oxfmt |
-| WebHID transport (`@elgato-stream-deck/webhid`) | Browser-only; CLI needs node-hid transport | `@elgato-stream-deck/node` |
+| A second render engine for clocks/calendars | Increases drift and duplicated tests | Extend `packages/cli/src/render/text-image.ts` and the existing reconciler model |
+| Locale formatting via hardcoded string templates only | Breaks non-US/non-default locale expectations | `Intl.DateTimeFormat` and `formatToParts()` |
+| Implicit overflow/clipping behavior as the API | Hard to test and explain | Explicit marquee / ellipsis / fit modes |
+| Mandatory wrapper for all buttons | Over-constrains custom visuals like analog clocks | Optional shared wrapper primitive |
 
 ## Versions
 
-### Version Compatibility
+### Relevant Compatibility Notes
 
-| Package A | Compatible With | Notes |
-|-----------|-----------------|-------|
-| @elgato-stream-deck/node@^7.6 | @elgato-stream-deck/core@^7.6 | Monorepo; always lock to same major |
-| react-reconciler@^0.31 | react@^19.x | Must match React major version; reconciler versioning is decoupled from React version |
-| sharp@^0.34 | Node.js >=18.17 or >=20.3 | Node-API v9 requirement; check `process.versions.napi` |
-| yargs@^18.0 | Node.js >=18 | Latest major; dropped CJS entry point in v18 |
-
-### Installation
-
-```bash
-# Core
-npm install @elgato-stream-deck/node @elgato-stream-deck/core yargs react react-reconciler sharp js-yaml
-
-# Supporting
-npm install systeminformation execa chokidar zod pino ora
-
-# Dev dependencies
-npm install -D typescript vitest tsup @types/react @types/yargs @types/sharp oxlint oxfmt
-```
+| Concern | Recommendation | Notes |
+|---------|----------------|-------|
+| JSX typing mode | stay compatible with current TS/React setup | The repo currently uses TS strict mode and React without `.tsx` authoring in the render layer; adding JSX support should be additive |
+| Date formatting | rely on modern Node 20 Intl support | The runtime target already assumes Node 20 in `packages/cli/tsdown.config.ts` |
+| SVG text layout | keep behavior deterministic and bounded | SVG text support is broad, but wrapping is not automatic and fit behaviors must be explicit [CITED: https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/text] |
 
 ---
-*Stack research for: Stream Deck CLI management tool*
-*Researched: 2026-05-12*
+*Stack research for: v1.1 addon UI and live widgets*
+*Researched: 2026-05-14*

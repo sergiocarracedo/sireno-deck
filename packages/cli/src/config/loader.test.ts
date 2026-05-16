@@ -3,8 +3,10 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { z } from "zod"
 
 import { ConfigValidationError } from "../core/schemas.js"
+import { createAddonRegistry } from "../addon/registry.js"
 
 const loadConfigModule = async () => import("./loader.js")
 
@@ -39,8 +41,8 @@ describe("loadConfig", () => {
         "  main:",
         "    id: main",
         "    buttons:",
-        "      - type: display",
-        "        position: 0",
+        "      - position: 0",
+        "        type: display-text",
         "        label: Clock",
         "logging:",
         "  level: info",
@@ -54,6 +56,43 @@ describe("loadConfig", () => {
     expect(config.theme).toBe("dark")
     expect(config.main_deck).toBe("main")
     expect(config.logging.level).toBe("info")
+  })
+
+  it("accepts disabled illustrative addon declarations in the shipped config shape", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: display-text",
+        "        label: Clock",
+        "addons:",
+        "  - name: local-clock-addon",
+        "    enabled: false",
+        "    source: local",
+        "    path: addons/local-clock-addon",
+        "  - name: \"@sireno-deck/community-addon\"",
+        "    enabled: false",
+        "    source: npm",
+        "logging:",
+        "  level: info",
+      ].join("\n"),
+    )
+
+    const { loadBootstrapConfig, loadConfig } = await loadConfigModule()
+    const bootstrap = loadBootstrapConfig()
+    const config = loadConfig()
+
+    expect(bootstrap.config.addons).toEqual([
+      { enabled: false, name: "local-clock-addon", path: "addons/local-clock-addon", source: "local" },
+      { enabled: false, name: "@sireno-deck/community-addon", source: "npm" },
+    ])
+    expect(config.addons).toEqual(bootstrap.config.addons)
   })
 
   it("throws on invalid YAML", async () => {
@@ -138,8 +177,8 @@ describe("loadConfig", () => {
         "  main:",
         "    id: main",
         "    buttons:",
-        "      - type: display",
-        "        position: 0",
+        "      - position: 0",
+        "        type: display-text",
       ].join("\n"),
     )
 
@@ -149,7 +188,7 @@ describe("loadConfig", () => {
       loadConfig()
     } catch (error) {
       expect(error).toBeInstanceOf(ConfigValidationError)
-      expect((error as ConfigValidationError).message).toContain("Display buttons need a label or icon")
+      expect((error as ConfigValidationError).message).toContain("Required")
       expect((error as ConfigValidationError).lineNumber).toBe(7)
       return
     }
@@ -168,7 +207,10 @@ describe("loadConfig", () => {
         "decks:",
         "  main:",
         "    id: main",
-        "    buttons: []",
+        "    buttons:",
+        "      - position: 0",
+        "        type: display-text",
+        "        label: Clock",
         "addons: []",
       ].join("\n"),
     )
@@ -179,5 +221,149 @@ describe("loadConfig", () => {
 
     expect(config.theme).toBe("dark")
     rmSync(fakeConfigHome, { recursive: true, force: true })
+  })
+
+  it("validates addon-backed button payloads through the bundled registry", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: display-text",
+        "        label: Clock",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig()
+
+    expect(config.decks.main?.buttons[0]).toMatchObject({
+      config: { label: "Clock" },
+      label: "Clock",
+      position: 0,
+      type: "display-text",
+    })
+    expect(config.decks.main?.buttons[0]?.definition.type).toBe("display-text")
+  })
+
+  it("reports unknown addon button types with line information", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: missing-addon-button",
+        "        label: Clock",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).message).toContain("Unknown button type 'missing-addon-button'")
+      expect((error as ConfigValidationError).lineNumber).toBe(8)
+      return
+    }
+
+    throw new Error("Expected config validation to fail")
+  })
+
+  it("validates externally registered addon payloads and preserves line information", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: external-clock",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const registry = createAddonRegistry()
+    registry.registerAddon({
+      apiVersion: 1,
+      name: "external-addon",
+      buttons: [
+        {
+          type: "external-clock",
+          configSchema: z.object({
+            label: z.string().min(1),
+          }),
+          createInstance() {
+            return {
+              render() {
+                return null as never
+              },
+            }
+          },
+        },
+      ],
+    })
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig(undefined, registry)
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).lineNumber).toBe(7)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "buttons", 0, "label"])
+      return
+    }
+
+    throw new Error("Expected external addon payload validation to fail")
+  })
+
+  it("expands bundled addon deck types and resolves addon asset paths", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: emoji",
+        "decks:",
+        "  emoji:",
+        "    id: emoji",
+        "    type: emoji-selector",
+        "    favorites:",
+        "      - 😀",
+        "    select_command: \"printf '%s' '{{emoji}}'\"",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig()
+
+    expect(config.decks.emoji?.deckType).toBe("emoji-selector")
+    expect(config.decks.emoji?.buttons[0]).toMatchObject({
+      icon: expect.stringContaining("favorites.svg"),
+      label: "Favorites",
+      target_deck: "emoji-favorites",
+      type: "emoji-category-button",
+    })
+    expect(config.decks["emoji-favorites"]?.buttons[1]).toMatchObject({
+      icon: expect.stringContaining("back.svg"),
+      label: "Back",
+      type: "emoji-back-button",
+    })
   })
 })
