@@ -1,0 +1,15 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    name: Phase 9 Calendar Review
+    buttons:
+      - position: 0
+        type: calendar-sheet
+      - position: 1
+        type: date-time
+        variant: date
+addons: []
+logging:
+  level: info
