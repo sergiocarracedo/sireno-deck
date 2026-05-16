@@ -1,0 +1,21 @@
+packages/cli/fixtures/phase-9/config.calendar-sheet.yml
+  s_07525a126d5ed9::t_7de56d0eab4280 1-15
+.planning/phases/09-calendar-authoring-clarity/09-UAT.md
+  s_07525a126d5ed9::t_7de56d0eab4280 1-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "4a3de38261de1a565b68865d83a26ba32a715f06",
+  "prompts": {},
+  "sessions": {
+    "s_07525a126d5ed9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d02b34d4ffefwtui9X14TkpRF",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
