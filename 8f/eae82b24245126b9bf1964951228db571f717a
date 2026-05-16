@@ -1,0 +1,19 @@
+.planning/phases/09-calendar-authoring-clarity/09-VERIFICATION.md
+  s_07525a126d5ed9::t_74c5c646a74684 1-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "8feae82b24245126b9bf1964951228db571f717a",
+  "prompts": {},
+  "sessions": {
+    "s_07525a126d5ed9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d02b34d4ffefwtui9X14TkpRF",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
