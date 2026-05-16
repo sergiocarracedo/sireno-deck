@@ -4,33 +4,22 @@ import {
   createDeckButtonElement,
   createDeckSurfaceElement,
   createDeckTextElement,
-} from "../../src/render/reconciler.js"
+} from "sireno-deck-cli"
 
-export const jsxAddonButton = <deck-button keyIndex={0} label="Clock" subtitle="Local" variant="metric" />
+import {
+  addonButtonProps,
+  addonSurfaceButtons,
+  addonTextProps,
+} from "./jsx-addon-authoring-example-data.js"
 
-export const helperAddonButton = createDeckButtonElement({
-  keyIndex: 0,
-  label: "Clock",
-  subtitle: "Local",
-  variant: "metric",
-})
+export const jsxAddonButton = <deck-button {...addonButtonProps} />
 
-export const jsxAddonSurface = (
-  <deck-surface
-    buttons={[
-      { keyIndex: 0, label: "Clock", subtitle: "Local", variant: "metric" },
-      { keyIndex: 1, label: "Date", subtitle: "Today" },
-    ]}
-  />
-)
+export const helperAddonButton = createDeckButtonElement(addonButtonProps)
 
-export const helperAddonSurface = createDeckSurfaceElement({
-  buttons: [
-    { keyIndex: 0, label: "Clock", subtitle: "Local", variant: "metric" },
-    { keyIndex: 1, label: "Date", subtitle: "Today" },
-  ],
-})
+export const jsxAddonSurface = <deck-surface buttons={[...addonSurfaceButtons]} />
 
-export const jsxAddonText = <deck-text keyIndex={2} text="10:48" />
+export const helperAddonSurface = createDeckSurfaceElement({ buttons: [...addonSurfaceButtons] })
 
-export const helperAddonText = createDeckTextElement({ keyIndex: 2, text: "10:48" })
+export const jsxAddonText = <deck-text {...addonTextProps} />
+
+export const helperAddonText = createDeckTextElement(addonTextProps)

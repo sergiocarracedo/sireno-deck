@@ -11,7 +11,7 @@ describe("core-buttons addon", () => {
     const definition = coreButtonsAddon.buttons[0]
     const config = definition?.configSchema.parse({ label: "Clock" })
 
-    expect(definition?.type).toBe("builtin-display-text")
+    expect(definition?.type).toBe("display-text")
     expect(config).toEqual({ label: "Clock" })
   })
 
@@ -33,7 +33,7 @@ describe("core-buttons addon", () => {
   })
 
   it("navigates with the bundled change-deck button", async () => {
-    const definition = coreButtonsAddon.buttons.find((button) => button.type === "builtin-change-deck")
+    const definition = coreButtonsAddon.buttons.find((button) => button.type === "change-deck")
     const navigateToDeck = vi.fn()
     const instance = definition?.createInstance({
       button: { position: 4 },

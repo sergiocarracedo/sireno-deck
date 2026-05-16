@@ -9,12 +9,10 @@ updated: 2026-05-16T10:32:00+02:00
 ---
 
 ## Current Test
-number: 2
-name: Authoring Contract Clarity
+number: 0
+name: complete
 expected: |
-  Read the authoring section in `README.md` and inspect `packages/cli/fixtures/phase-9/jsx-addon-authoring-example.tsx`.
-  It should now be obvious that `deck-button`, `deck-text`, and `deck-surface` are non-DOM render elements,
-  that JSX opt-in happens explicitly through `sireno-deck-cli/jsx`, and that a helper-based alternative still exists.
+  UAT session complete.
 awaiting: none
 
 ## Tests

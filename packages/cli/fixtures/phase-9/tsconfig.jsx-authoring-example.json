@@ -7,16 +7,9 @@
     "jsx": "react-jsx",
     "noEmit": true,
     "skipLibCheck": true,
-    "types": ["node", "react"],
-    "baseUrl": ".",
-    "paths": {
-      "sireno-deck-cli/jsx": ["../../src/render/jsx.d.ts"]
-    }
+    "types": ["node", "react"]
   },
   "files": [
-    "../../src/render/jsx.d.ts",
-    "../../src/render/types.ts",
-    "../../src/render/reconciler.ts",
     "./jsx-addon-authoring-example.tsx"
   ]
 }

@@ -25,7 +25,7 @@ decks:
     select_command: "printf '%s' '{{emoji}}'"
     buttons:
       - position: 0
-        type: builtin-change-deck
+        type: change-deck
         label: Main
         target_deck: main
 addons:

@@ -5,7 +5,7 @@ decks:
     id: main
     buttons:
       - position: 0
-        type: builtin-display-text
+        type: display-text
         label: Version Check
 addons:
   - name: version-mismatch-addon

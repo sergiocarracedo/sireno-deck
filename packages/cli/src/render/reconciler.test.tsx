@@ -119,14 +119,14 @@ describe("render reconciler", () => {
 
   it("keeps addon-backed display model generation minimal", () => {
     expect(createDisplayButtonModels([
-      { type: "builtin-display-text", position: 1, label: "CPU", config: { label: "CPU" }, definition: { configSchema: {} as never, createInstance: () => ({ render: () => null as never }), type: "builtin-display-text" } },
+      { type: "display-text", position: 1, label: "CPU", config: { label: "CPU" }, definition: { configSchema: {} as never, createInstance: () => ({ render: () => null as never }), type: "display-text" } },
       {
-        type: "builtin-display-text",
+        type: "display-text",
         position: 2,
         label: "Music",
         icon: "./music.svg",
         config: { icon: "./music.svg", label: "Music" },
-        definition: { configSchema: {} as never, createInstance: () => ({ render: () => null as never }), type: "builtin-display-text" },
+        definition: { configSchema: {} as never, createInstance: () => ({ render: () => null as never }), type: "display-text" },
       },
     ])).toEqual([
       { keyIndex: 1, label: "CPU", variant: "default" },

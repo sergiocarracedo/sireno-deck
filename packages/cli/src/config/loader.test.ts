@@ -42,7 +42,7 @@ describe("loadConfig", () => {
         "    id: main",
         "    buttons:",
         "      - position: 0",
-        "        type: builtin-display-text",
+        "        type: display-text",
         "        label: Clock",
         "logging:",
         "  level: info",
@@ -69,7 +69,7 @@ describe("loadConfig", () => {
         "    id: main",
         "    buttons:",
         "      - position: 0",
-        "        type: builtin-display-text",
+        "        type: display-text",
         "        label: Clock",
         "addons:",
         "  - name: local-clock-addon",
@@ -178,7 +178,7 @@ describe("loadConfig", () => {
         "    id: main",
         "    buttons:",
         "      - position: 0",
-        "        type: builtin-display-text",
+        "        type: display-text",
       ].join("\n"),
     )
 
@@ -209,7 +209,7 @@ describe("loadConfig", () => {
         "    id: main",
         "    buttons:",
         "      - position: 0",
-        "        type: builtin-display-text",
+        "        type: display-text",
         "        label: Clock",
         "addons: []",
       ].join("\n"),
@@ -234,7 +234,7 @@ describe("loadConfig", () => {
         "    id: main",
         "    buttons:",
         "      - position: 0",
-        "        type: builtin-display-text",
+        "        type: display-text",
         "        label: Clock",
         "addons: []",
       ].join("\n"),
@@ -247,9 +247,9 @@ describe("loadConfig", () => {
       config: { label: "Clock" },
       label: "Clock",
       position: 0,
-      type: "builtin-display-text",
+      type: "display-text",
     })
-    expect(config.decks.main?.buttons[0]?.definition.type).toBe("builtin-display-text")
+    expect(config.decks.main?.buttons[0]?.definition.type).toBe("display-text")
   })
 
   it("reports unknown addon button types with line information", async () => {

@@ -14,5 +14,5 @@ Make the documented addon authoring entrypoints shippable from the built CLI pac
 ## Expected planning focus
 
 1. Emit the public files promised by the package exports
-2. Expose a real public helper API surface for addon authoring
-3. Re-verify the release-facing addon authoring flow against built output
+2. Expose a real public helper API surface for addon authoring from `sireno-deck-cli`
+3. Re-verify the release-facing addon authoring flow against built output instead of repo-local source paths

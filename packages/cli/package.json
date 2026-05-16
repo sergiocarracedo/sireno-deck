@@ -7,7 +7,10 @@
     "sireno": "./dist/cli.js"
   },
   "exports": {
-    ".": "./dist/index.js",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
     "./jsx": {
       "types": "./dist/render/jsx.d.ts",
       "default": "./dist/render/jsx.js"
@@ -16,7 +19,9 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
-    "test": "vitest run"
+    "test": "vitest run",
+    "typecheck:authoring": "tsc -p fixtures/phase-9/tsconfig.jsx-authoring-example.json --noEmit",
+    "verify": "pnpm run test && pnpm run build && pnpm run typecheck:authoring"
   },
   "dependencies": {
     "@elgato-stream-deck/node": "^7.6.0",

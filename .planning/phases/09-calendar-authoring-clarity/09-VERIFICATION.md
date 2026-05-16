@@ -1,6 +1,6 @@
 ---
 phase: 9
-status: human_needed
+status: passed
 verified: 2026-05-16
 ---
 
@@ -12,7 +12,7 @@ verified: 2026-05-16
 |------|-----------|--------|
 | 09-01 | Bundled `date-time` addon exposes a third separate `calendar-sheet` button type with `defaultIntervalMs: 60000` | ✓ |
 | 09-01 | Calendar render path is a tear-sheet with dominant day text and supporting weekday/month context rather than a fallback card or month grid | ✓ |
-| 09-01 | Repo ships a committed Phase 9 fixture and UAT instructions for the real CLI/device calendar review path | ⚠ |
+| 09-01 | Repo ships a committed Phase 9 fixture and UAT instructions for the real CLI/device calendar review path | ✓ |
 | 09-02 | Shipped docs explain that `deck-button`, `deck-text`, and `deck-surface` target the Sireno renderer contract rather than the DOM | ✓ |
 | 09-02 | Repo contains one explicit addon-style example that shows explicit JSX opt-in plus a helper-based alternative | ✓ |
 | 09-02 | Verification keeps the docs/example tied to the current JSX and render-helper contract | ✓ |
@@ -36,7 +36,8 @@ verified: 2026-05-16
 
 ## Summary
 
-**Score:** 5/6 must-haves verified
+**Score:** 6/6 must-haves verified
 
-All automated checks passed. 1 implementation area still needs human testing:
-- Run `.planning/phases/09-calendar-authoring-clarity/09-UAT.md` against `packages/cli/fixtures/phase-9/config.calendar-sheet.yml`, `README.md`, and `packages/cli/fixtures/phase-9/jsx-addon-authoring-example.tsx` to confirm the calendar remains legible on the real CLI/device path and the docs/example make the non-DOM contract obvious to a human reviewer.
+Targeted automated verification passed via `pnpm exec vitest run ../../builtin-addons/date-time/src/index.test.ts src/render/reconciler.test.tsx src/render/text-image.test.ts` and `pnpm exec tsc --noEmit -p fixtures/phase-9/tsconfig.jsx-authoring-example.json` from `packages/cli`.
+
+Human UAT is complete in `.planning/phases/09-calendar-authoring-clarity/09-UAT.md`, including the real CLI/device calendar review path and the authoring-clarity docs/example review. Phase goal achieved.

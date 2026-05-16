@@ -12,6 +12,11 @@ To opt into JSX authoring explicitly, import `sireno-deck-cli/jsx` in addon code
 
 ```tsx
 import type {} from "sireno-deck-cli/jsx"
+import {
+  createDeckButtonElement,
+  createDeckSurfaceElement,
+  createDeckTextElement,
+} from "sireno-deck-cli"
 
 export const clockButton = <deck-button keyIndex={0} label="Clock" subtitle="Local" variant="metric" />
 
@@ -25,6 +30,22 @@ export const overviewSurface = (
 )
 
 export const clockText = <deck-text keyIndex={2} text="10:48" />
+
+export const helperClockButton = createDeckButtonElement({
+  keyIndex: 0,
+  label: "Clock",
+  subtitle: "Local",
+  variant: "metric",
+})
+
+export const helperOverviewSurface = createDeckSurfaceElement({
+  buttons: [
+    { keyIndex: 0, label: "Clock", subtitle: "Local", variant: "metric" },
+    { keyIndex: 1, label: "Date", subtitle: "Today" },
+  ],
+})
+
+export const helperClockText = createDeckTextElement({ keyIndex: 2, text: "10:48" })
 ```
 
 If you do not want JSX, the helper-based alternative is still supported. The same render contract can be expressed with `createDeckButtonElement`, `createDeckSurfaceElement`, and `createDeckTextElement`, which produce the same non-DOM render descriptions without relying on JSX syntax.

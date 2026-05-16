@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-05-12)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 9 execution and automated verification complete; ready for `verify-work 9`
+**Current focus:** Phase 10 verified; next up is milestone review on the rebuilt public authoring surface
 
 ## Current Position
 
-Phase: 9 — Calendar + Authoring Clarity ✓ execution complete
-Plan: -
-Status: Phase 9 execution complete with human UAT pending; next up is `verify-work 9`
-Last activity: 2026-05-16 - Executed Phase 9 by shipping the calendar-sheet widget, authoring guide, verified example, and phase verification record
+Phase: 10 — Public Authoring Exports *(gap closure)*
+Plan: 10-02-PLAN.md
+Status: Phase 10 verified against the built package surface; next up is `/review`
+Last activity: 2026-05-16 - Verified the emitted public root and `./jsx` package surface via build output, built-package typecheck, and focused render parity coverage
 
-Progress: [###-------] 25%
+Progress: [##########] 100%
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Recent decisions affecting current work:
 
 ### Progress Notes
 
+- **Phase 10 kickoff:** Milestone audit found that the documented addon authoring entrypoints do not line up with the built `packages/cli` exports, so release flow needs a gap-closure phase before `/review`.
 - **Plan 05-01:** Completed the addon API, bundled registry, bootstrap-aware config validation, and the first generic addon-host runtime slice.
 - **Plan 05-02:** Completed addon manifest validation, unified local/npm loading, startup warning isolation, and external-addon regression coverage.
 - **Plan 05-03:** Completed addon asset resolution, deck-type expansion, and the bundled emoji selector proof with runtime coverage.
@@ -67,6 +68,8 @@ Recent decisions affecting current work:
 - **Plan 08-02:** Added the committed Phase 8 analog-clock fixture, UAT script, and review-path regression coverage so the shipped clock can be judged on the real CLI/device path.
 - **Plan 09-01:** Shipped the bundled `calendar-sheet` button type, tear-sheet render path, and committed Phase 9 review fixture/UAT script.
 - **Plan 09-02:** Added the focused non-DOM authoring guide, verified JSX/helper example, and review-visible authoring clarity checks.
+- **Plan 10-01 / 10-02 execution:** Added explicit public root and `./jsx` package build entries, moved JSX type augmentation onto the built opt-in entrypoint, switched docs/example imports to `sireno-deck-cli`, and replaced source-path verification with a build-first package-surface typecheck.
+- **Phase 10 verification:** Confirmed `packages/cli/package.json#exports` now matches emitted `dist/` artifacts, the shipped authoring example resolves through the built package surface, and focused reconciler coverage keeps the helper/JSX parity example visible in tests.
 
 ### Blockers/Concerns
 
@@ -76,8 +79,8 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-16
-Stopped at: Phase 9 execution and automated verification complete. Next up is `verify-work 9`.
-Resume file: .planning/phases/09-calendar-authoring-clarity/09-UAT.md
+Stopped at: Phase 10 verified; next up is `/review` for milestone closure.
+Resume file: .planning/phases/10-public-authoring-exports/README.md
 
 ### Quick Tasks Completed
 

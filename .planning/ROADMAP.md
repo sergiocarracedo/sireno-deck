@@ -99,7 +99,7 @@ All 12 v1.1 requirements are mapped. No circular dependencies.
 
 ### Phase 10: Public Authoring Exports *(gap closure)*
 
-**Status:** [ ] Not started
+**Status:** ✓ Complete (2026-05-16)
 
 **Goal:** Make the documented addon authoring surface actually shippable by aligning `packages/cli` build outputs with the public package exports used in Phase 6 and Phase 9 docs/examples.
 
@@ -110,9 +110,9 @@ All 12 v1.1 requirements are mapped. No circular dependencies.
 **Depends on:** Phase 9
 
 **Success criteria:**
-- [ ] `pnpm --filter sireno-deck-cli build` emits the files referenced by `packages/cli/package.json` public exports
-- [ ] The packaged `sireno-deck-cli/jsx` entrypoint resolves from built output
-- [ ] The documented helper-based addon authoring path matches the shipped public package surface instead of repo-local internals
+- [x] `pnpm --filter sireno-deck-cli build` emits the files referenced by `packages/cli/package.json` public exports
+- [x] The packaged `sireno-deck-cli/jsx` entrypoint resolves from built output
+- [x] The documented helper-based addon authoring path matches the shipped public package surface instead of repo-local internals
 
 **Research needed:** No — the milestone audit already isolated the release blocker.
 

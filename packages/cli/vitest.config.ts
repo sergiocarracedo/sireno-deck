@@ -1,6 +1,14 @@
+import { fileURLToPath } from "node:url"
+
 import { defineConfig } from "vitest/config"
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "sireno-deck-cli": fileURLToPath(new URL("./src/index.ts", import.meta.url)),
+      "sireno-deck-cli/jsx": fileURLToPath(new URL("./src/render/jsx.ts", import.meta.url)),
+    },
+  },
   test: {
     globals: true,
     environment: "node",

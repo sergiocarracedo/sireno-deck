@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## 2026-05-16
+
+### Features
+- Added an explicit public root authoring facade for `sireno-deck-cli` so helper-based addon rendering now resolves from the packaged CLI instead of repo-local internals.
+- Added intentional build entries for the package root and `sireno-deck-cli/jsx`, so `dist/index.*` and `dist/render/jsx.*` are emitted exactly where the public exports promise them.
+
+### Fixes
+- Fixed the addon authoring release blocker where `packages/cli/package.json` advertised public root and JSX entrypoints that the build did not actually emit. Root cause was that `tsdown` only built the CLI binary entry while docs and fixture verification were still leaning on source-path access and local TypeScript path mapping.
+- Fixed the reconciler parity coverage to load the shipped JSX authoring example module itself instead of reconstructing that example piecemeal inside the test, and folded the built-package authoring typecheck into package verification so export drift gets caught in the normal verify path.
+- Fixed the package `verify` path to run the test suite again alongside build and built-package authoring checks, then aligned stale `builtin-*` button-type expectations with the actual bundled `display-text` / `change-deck` contract so restored coverage fails on real drift instead of historical leftovers.
+
+### Learnings
+- Package exports are a delivery contract, not documentation. If the build graph does not emit the exact exported files, in-repo examples can look healthy while the published package is still broken.
+- JSX opt-in seams that split runtime and types across separate source files are fragile unless the emitted package surface is verified directly from the built output.
+- A parity test only protects the shipped example if it imports that example through the same package surface authors use; rebuilding the example inline hides self-reference and verification wiring regressions.
+- Restoring verification coverage is only useful if the assertions still describe the live product surface. Otherwise `verify` goes red for archaeological reasons and people stop trusting it.
+
 ## 2026-05-15
 
 ### Features
