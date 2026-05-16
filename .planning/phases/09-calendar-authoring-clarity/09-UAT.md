@@ -1,19 +1,21 @@
 ---
-status: pending
+status: complete
 phase: 09-calendar-authoring-clarity
 source:
   - 09-01-SUMMARY.md
   - 09-02-SUMMARY.md
 started: 2026-05-16T10:15:00+02:00
-updated: 2026-05-16T10:22:00+02:00
+updated: 2026-05-16T10:32:00+02:00
 ---
 
 ## Current Test
-number: 1
-name: Calendar Sheet Tear-Sheet Legibility
+number: 2
+name: Authoring Contract Clarity
 expected: |
-  Run the Phase 9 calendar-sheet review fixture and inspect the bundled tear-sheet visual on the real CLI/device path.
-awaiting: reviewer run of fixture
+  Read the authoring section in `README.md` and inspect `packages/cli/fixtures/phase-9/jsx-addon-authoring-example.tsx`.
+  It should now be obvious that `deck-button`, `deck-text`, and `deck-surface` are non-DOM render elements,
+  that JSX opt-in happens explicitly through `sireno-deck-cli/jsx`, and that a helper-based alternative still exists.
+awaiting: none
 
 ## Tests
 
@@ -28,14 +30,14 @@ fail_if:
   - The key shows a default/shared text card, clipped fallback text, or a dense month-grid style layout.
   - The day number is not visually dominant or the weekday/month context is unreadable.
   - The key redraws erratically or implies a faster-than-minute cadence for the shipped contract.
-result: pending
+result: pass
 
 ## Summary
 
 total: 2
-passed: 0
+passed: 2
 issues: 0
-pending: 2
+pending: 0
 skipped: 0
 
 ## Gaps
@@ -53,4 +55,4 @@ fail_if:
   - The docs read like browser/DOM guidance or omit the non-DOM contract.
   - JSX appears ambient or unexplained.
   - The helper-based path is missing or too vague to compare against the JSX form.
-result: pending
+result: pass
