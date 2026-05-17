@@ -7,11 +7,13 @@ import type { Theme } from "../config/theme.js"
 import type { ButtonInstance, DeckConfig } from "../core/schemas.js"
 import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
 import type { DeckButtonProps } from "../render/reconciler.js"
+import { UNKNOWN_HOST_CONTEXT, type HostContext } from "../system/host-context.js"
 
 export interface DeckRuntimeOptions {
   deck: DeckConfig
   decks?: Record<string, DeckConfig>
   executeAction?: (command: string) => Promise<CommandExecutionResult>
+  hostContext?: HostContext
   keyCount?: number
   onRenderButton?: (button: DeckButtonProps) => Promise<void> | void
   onRenderDeck?: (buttons: DeckButtonProps[]) => Promise<void> | void
@@ -154,6 +156,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         type: button.type,
       },
       config: button.config,
+      hostContext: options.hostContext ?? UNKNOWN_HOST_CONTEXT,
       methods: createButtonMethods(button, deckId),
       theme: options.theme,
     }) as RuntimeButtonInstance

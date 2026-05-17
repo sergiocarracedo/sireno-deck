@@ -111,6 +111,67 @@ describe("createDeckRuntime", () => {
     })
   })
 
+  it("passes the configured canonical host context through to addon instances", async () => {
+    const hostContext = {
+      os: {
+        type: "linux",
+        variant: "ubuntu",
+        version: "24.04",
+      },
+      session: {
+        capability: "unknown" as const,
+        state: "unknown" as const,
+      },
+    }
+    const observedHostContext = vi.fn()
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Clock" },
+          definition: {
+            configSchema: {
+              parse: (value: unknown) => value,
+              safeParse: (value: unknown) => ({ data: value, success: true as const }),
+            },
+            createInstance: ({ button, hostContext: receivedHostContext }: {
+              button: { position: number }
+              hostContext: typeof hostContext
+            }) => {
+              observedHostContext(receivedHostContext)
+
+              return {
+                render: () => createElement("deck-button", { keyIndex: button.position, label: "Clock" }),
+              }
+            },
+            type: "display-text",
+          },
+          label: "Clock",
+          position: 0,
+          type: "display-text",
+        }],
+      },
+      hostContext,
+      subscribeKeyEvents: () => () => {},
+      theme: {
+        accent: "#f59e0b",
+        background: "#10161f",
+        danger: "#fb7185",
+        foreground: "#eef2f7",
+        name: "dark",
+        primary: "#7dd3fc",
+        success: "#34d399",
+      },
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(observedHostContext).toHaveBeenCalledWith(hostContext)
+      expect(observedHostContext.mock.calls[0]?.[0]).toBe(hostContext)
+    })
+  })
+
   it("navigates generated emoji decks and runs the favorites selection command", async () => {
     const registry = createBundledAddonRegistry()
     const config = validateConfig({

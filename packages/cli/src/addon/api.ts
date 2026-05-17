@@ -3,6 +3,7 @@ import type { ZodType } from "zod"
 
 import type { CommandExecutionResult } from "../action/executor.js"
 import type { Theme } from "../config/theme.js"
+import type { HostContext } from "../system/host-context.js"
 
 export const SIRENO_ADDON_API_VERSION = 1
 
@@ -48,6 +49,7 @@ export interface AddonButtonInstance {
 export interface CreateAddonButtonInstanceOptions<TConfig> {
   button: AddonButtonEnvelope
   config: TConfig
+  hostContext: HostContext
   methods: AddonButtonMethods
   theme: Theme
 }
