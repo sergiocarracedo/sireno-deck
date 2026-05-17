@@ -9,8 +9,10 @@ export interface DeckController {
   canGoBack: () => boolean
   getActiveDeck: () => DeckConfig
   getActiveDeckId: () => string
+  getStackSnapshot: () => string[]
   goBack: () => DeckConfig
   navigateTo: (deckId: string) => DeckConfig
+  restoreStack: (stackSnapshot?: readonly string[]) => DeckConfig
 }
 
 export class DeckNavigationError extends Error {
@@ -47,6 +49,9 @@ export function createDeckController(options: DeckControllerOptions): DeckContro
     getActiveDeckId() {
       return stack[stack.length - 1] ?? options.mainDeckId
     },
+    getStackSnapshot() {
+      return [...stack]
+    },
     goBack() {
       if (stack.length > 1) {
         stack.pop()
@@ -58,6 +63,18 @@ export function createDeckController(options: DeckControllerOptions): DeckContro
       const nextDeck = getDeck(deckId)
       stack.push(deckId)
       return nextDeck
+    },
+    restoreStack(stackSnapshot) {
+      const nextStack = stackSnapshot && stackSnapshot.length > 0
+        ? [...stackSnapshot]
+        : [options.mainDeckId]
+
+      for (const deckId of nextStack) {
+        getDeck(deckId)
+      }
+
+      stack.splice(0, stack.length, ...nextStack)
+      return getDeck(stack[stack.length - 1] ?? options.mainDeckId)
     },
   }
 }

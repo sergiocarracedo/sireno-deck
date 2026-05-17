@@ -7,6 +7,9 @@ areas_discussed:
   - Locked deck config
   - Unlock restore semantics
   - Unsupported-platform behavior
+  - Command interpolation safety
+  - Linux lock detection hardening
+  - Fallback surface ownership
 created: 2026-05-17
 ---
 
@@ -17,7 +20,7 @@ created: 2026-05-17
 
 **Date:** 2026-05-17
 **Phase:** 11-session-config-contracts
-**Areas discussed:** Context contract, Injection surfaces, Locked deck config, Unlock restore semantics, Unsupported-platform behavior
+**Areas discussed:** Context contract, Injection surfaces, Locked deck config, Unlock restore semantics, Unsupported-platform behavior, Command interpolation safety, Linux lock detection hardening, Fallback surface ownership
 
 ---
 
@@ -207,6 +210,128 @@ created: 2026-05-17
 
 ---
 
+## Command interpolation safety
+
+### Shell safety model
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Shell-escape values | Keep `{{host.*}}` syntax, but escape substituted host values before `/bin/sh -c` execution | ✓ |
+| Ban host placeholders in commands | Allow `{{host.*}}` only in non-command render/config text | |
+| Add separate safe command API | Introduce a new structured argv-style command contract | |
+
+**User's choice:** `Shell-escape values`
+**Notes:** This keeps the shipped Phase 11 capability while fixing the actual threat at the smallest boundary.
+
+### Escape boundary
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| At command execution only | Escape only at the `/bin/sh -c` boundary | ✓ |
+| During all placeholder resolution | Escape in the shared resolver everywhere | |
+| Split syntax by context | Introduce separate placeholder syntaxes for UI vs command contexts | |
+
+**User's choice:** `At command execution only`
+**Notes:** Rendered labels and config-expanded text should stay human-readable; shell safety belongs at the shell boundary.
+
+### Missing placeholder behavior
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Leave placeholder intact | Preserve current behavior when `{{host.*}}` cannot be resolved | ✓ |
+| Replace with empty string | Quietly drop missing placeholders | |
+| Fail command before execution | Reject execution on unresolved placeholders | |
+
+**User's choice:** `Leave placeholder intact`
+**Notes:** This keeps missing values observable and avoids silently changing command behavior.
+
+---
+
+## Linux lock detection hardening
+
+### Linux support claim
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Real detector or unsupported | Only report `supported` when a real detector initializes | |
+| Keep Linux supported-by-default | Continue to claim Linux support from platform alone | ✓ |
+| Report Linux as unknown | Soften the claim instead of supported/unsupported | |
+
+**User's choice:** `Keep Linux as supported-by-default`
+**Notes:** This was initially chosen, but it directly conflicts with the existing Phase 11 policy against fake support claims and leaves the security finding open.
+
+### Concrete supported path
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| One real Linux detector | Implement one specific real detector and only then mark `supported` | ✓ |
+| Simulated seam only | Keep tests/interfaces only, no real host integration | |
+| Custom answer | A different concrete Linux path chosen by the user | |
+
+**User's choice:** `One real Linux detector`
+**Notes:** This corrected the earlier over-broad support claim and re-aligned the discussion with the existing Phase 11 honesty requirement.
+
+### Detector init failure behavior
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Fallback to unsupported | Keep startup running, downgrade capability, warn once | ✓ |
+| Fail startup hard | Refuse to run without lock detection | |
+| Stay supported but unknown | Continue to overclaim support with no live detector | |
+
+**User's choice:** `Fallback to unsupported`
+**Notes:** This matches the original degradation policy captured earlier in Phase 11.
+
+### Detector scope
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Lock/unlock only | One long-lived detector limited to lock/unlock transitions | ✓ |
+| Richer session states | Include idle/dimmed/suspended semantics | |
+| Multi-platform parity | Expand to macOS/Windows in the same fix | |
+
+**User's choice:** `Lock/unlock only`
+**Notes:** The security fix should stay narrow and not widen Phase 11 into broader session-state work.
+
+---
+
+## Fallback surface ownership
+
+### Fallback ownership model
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Use bundled addon path | Build the implicit fallback from the bundled date-time addon contract | ✓ |
+| Keep runtime-owned fallback | Preserve the bespoke runtime-only date/time button definition | |
+| Make fallback config-required | Remove the implicit fallback entirely | |
+
+**User's choice:** `Use bundled addon path`
+**Notes:** This keeps the fallback aligned with repo conventions and avoids runtime-only drift.
+
+### Visible compatibility target
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Keep same behavior class | Remain an implicit useful locked-session date/time surface | ✓ |
+| Preserve exact current label output | Match the current bespoke fallback exactly | |
+| Open to a different fallback entirely | Re-decide the fallback experience during the fix | |
+
+**User's choice:** `Keep same behavior class`
+**Notes:** The security fix can change implementation details as long as it remains a useful implicit date/time lock surface.
+
+### Runtime boundary
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Selection only | Runtime decides configured-vs-implicit fallback, not bespoke render details | ✓ |
+| Selection plus render details | Keep fallback implementation details in runtime | |
+| Nothing runtime-owned | Push the whole fallback concept out of core | |
+
+**User's choice:** `Selection only`
+**Notes:** Runtime still owns lock-mode switching, but the fallback surface itself should come through the existing addon contract.
+
+---
+
 ## Contradictions And Risks
 
 - No major contradiction remains in the selected decisions. The chosen set consistently favors one canonical host-context contract and explicit degradation on unsupported hosts.
@@ -222,8 +347,12 @@ created: 2026-05-17
 - Exact config key names/nesting for runtime/session lock settings.
 - Exact templating syntax and evaluation boundaries for host-context interpolation.
 - Exact first supported lock-detection implementation path.
-- Exact built-in locked fallback deck composition, as long as it remains a simple date/time surface.
 - Exact startup warning wording and logging level.
+
+### Security-fix follow-up
+- Exact POSIX shell-escaping mechanics for host-derived command substitutions.
+- Exact concrete Linux detector implementation path, as long as `supported` only means a real detector initialized.
+- Exact bundled date-time button/deck composition used for the implicit locked fallback, as long as it stays an implicit useful date/time surface.
 
 ---
 

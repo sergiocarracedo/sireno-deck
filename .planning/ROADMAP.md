@@ -1,130 +1,130 @@
-# Roadmap — Sireno Deck v1.1
+# Roadmap — Sireno Deck v1.2
 
-**Last updated:** 2026-05-16
+**Last updated:** 2026-05-17
 **Granularity:** focused milestone (5 phases)
-**Total v1.1 requirements:** 12
+**Total v1.2 requirements:** 9
 
 ## Phase Overview
 
 | # | Phase | Goal | Requirements | Depends on |
 |---|-------|------|--------------|------------|
-| 6 | Base Contracts | Restore live date/time scheduling and add typed JSX support on the existing render contract | 5 | Completed v1.0 baseline |
-| 7 | Typography + Text Behavior | Make text rendering theme-driven and explicit instead of hardcoded or overflow-driven | 3 | Phase 6 |
-| 8 | Clock Visuals | Add shared clock-oriented visuals on top of the stabilized runtime and text contracts | 2 | Phases 6-7 |
-| 9 | Calendar + Authoring Clarity | Finish the date-time addon with calendar-sheet and document the custom element authoring model clearly | 3 | Phases 6-7 |
-| 10 | Public Authoring Exports *(gap closure)* | Make the documented addon authoring entrypoints shippable from the built CLI package | 1 | Phase 9 |
+| 11 | Session + Config Contracts | Introduce normalized session context, inject it consistently, and add config support for lock-aware behavior | 3 | Completed v1.1 runtime/addon/render baseline |
+| 12 | Backgrounds + Text Fitting | Make the render surface explicitly handle layered backgrounds and multiple text fitting modes | 2 | Phase 11 |
+| 13 | Global Wrapper/Style Primitives | Let addons register globally reusable wrapper/style primitives through validated public contracts | 1 | Phases 11-12 |
+| 14 | Richer Built-in Toggles | Expand the built-in toggle surface to cover both local and command-driven authority models | 2 | Phase 11 |
+| 15 | Lock-Screen Polish + Verification | Finish locked-session behavior with timed dimming and milestone-wide verification coverage | 2 | Phases 11-14 |
 
-All 12 v1.1 requirements are mapped. No circular dependencies.
-
----
-
-### Phase 6: Base Contracts
-
-**Status:** ✓ Complete (2026-05-14)
-
-**Goal:** Keep the existing addon/runtime/reconciler architecture intact while fixing date-time live refresh and making custom deck elements first-class in TypeScript authoring.
-
-**Requirements:** UIW-01, UIW-02, UIW-04, UIW-05, UIW-06
-
-**Depends on:** Completed v1.0 runtime, renderer, and addon system
-
-**Success criteria:**
-- [x] Addon authors can write JSX using `deck-button`, `deck-text`, and `deck-surface` with typechecking
-- [x] Existing helper constructors continue working for the same render elements
-- [x] Live buttons still refresh only through the core runtime scheduler
-- [x] Per-button `interval_ms` overrides work where supported without local timers inside addons
-- [x] The built-in digital `date-time` button updates at its default cadence without regressions to the scheduler contract
-
-**Research needed:** No additional milestone research before planning; the current research already settled the architectural direction.
+All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ---
 
-### Phase 7: Typography + Text Behavior
+### Phase 11: Session + Config Contracts
 
-**Status:** ✓ Complete (2026-05-15)
+**Status:** Verified
 
-**Goal:** Replace ad hoc text styling with theme-driven typography tokens and explicit overflow behavior that the renderer can test and share.
+**Goal:** Introduce normalized OS/session context, inject it consistently, and add config-level support for lock-aware behavior.
 
-**Requirements:** UIW-09, UIW-10, UIW-11
+**Requirements:** SCS-01, SCS-02, SCS-08
 
-**Depends on:** Phase 6
+**Depends on:** Completed v1.1 runtime, addon authoring, and render contract baseline
 
 **Success criteria:**
-- [x] Theme schema accepts typography tokens that the renderer consumes for shared text output
-- [x] Shared text rendering uses an explicit clip-only overflow contract per Phase 7 context instead of accidental overflow
-- [x] A shared button wrapper primitive exists for buttons that want it, without forcing bespoke visuals to use it
+- [x] Core runtime exposes one normalized session/OS context shape containing OS type, variant, and version
+- [x] Config templating, addon render, and action/status execution consume that same normalized context contract
+- [x] Runtime session-monitor updates can switch to a dedicated locked-session deck or implicit fallback surface without breaking startup on unsupported hosts
+- [x] Prior deck or navigation state is restored on unlock instead of dropping the user back to an arbitrary surface
 
-**Research needed:** No — milestone research already narrowed the typography/text direction enough for planning.
+**Phase 11 note:** The canonical contract, runtime lock-mode behavior, and committed review fixtures are shipped. The first `session-monitor` implementation remains a narrow seam rather than a live DBus-backed detector, and Phase 15 still owns the separate five-minute dimming clause.
+
+**Research needed:** No additional milestone research before planning; the current research already narrowed the session/context direction.
 
 ---
 
-### Phase 8: Clock Visuals
+### Phase 12: Backgrounds + Text Fitting
 
-**Status:** ✓ Complete (2026-05-15)
+**Status:** Not started
 
-**Goal:** Ship the first richer live visual in the new addon UI surface by adding an analog clock button type without widening the renderer more than necessary.
+**Goal:** Make the render surface explicitly handle layered backgrounds and multiple text fitting modes.
 
-**Requirements:** UIW-07, UIW-12
+**Requirements:** SCS-03, SCS-04
 
-**Depends on:** Phases 6-7
+**Depends on:** Phase 11
 
 **Success criteria:**
-- [x] The built-in date/time addon exposes a separate `analog-clock` button type
-- [x] The analog clock uses the core scheduler with a sensible default live cadence
-- [x] Fixtures or tests cover the new clock type and its scheduling/render contract
+- [ ] Background precedence is resolved consistently as config override, then deck background, then theme background
+- [ ] The render contract exposes named text fitting modes rather than implicit clipping behavior
+- [ ] Default text behavior shrinks to fit until a readable minimum size then clips cleanly
+- [ ] Wrap mode is supported and covered by focused renderer verification
 
-**Research needed:** No — this phase should build on the contracts stabilized in Phases 6-7.
+**Research needed:** No — the milestone research already settled the fit/background direction enough for planning.
 
 ---
 
-### Phase 9: Calendar + Authoring Clarity
+### Phase 13: Global Wrapper/Style Primitives
 
-**Status:** ✓ Complete (2026-05-16)
+**Status:** Not started
 
-**Goal:** Complete the milestone with a readable tear-sheet calendar visual and docs that make addon UI authoring feel intentional rather than mysterious.
+**Goal:** Let addons register globally reusable wrapper/style primitives through validated public contracts.
 
-**Requirements:** UIW-03, UIW-08, UIW-12
+**Requirements:** SCS-05
 
-**Depends on:** Phases 6-7
+**Depends on:** Phases 11-12
 
 **Success criteria:**
-- [x] The built-in date/time addon exposes a separate `calendar-sheet` button type with a slower date-appropriate refresh cadence
-- [x] The calendar visual reads as a single-key tear sheet rather than a cramped month grid
-- [x] Shipped docs and examples explain JSX/custom element authoring clearly and show the non-DOM render contract
-- [x] Fixtures or tests cover calendar-sheet behavior and any authoring/documentation examples added for the milestone
+- [ ] The addon registry supports globally named wrapper/style primitives
+- [ ] Built-in and addon render surfaces can reference those primitives through the public contract
+- [ ] Validation rejects unknown wrapper/style references instead of failing late in rendering
+- [ ] Examples or tests demonstrate primitive reuse beyond a single addon-local implementation
 
-**Research needed:** No — this phase applies the previously decided milestone constraints.
+**Research needed:** No — registry-backed primitives are the recommended extension path from the current research.
 
 ---
 
-### Phase 10: Public Authoring Exports *(gap closure)*
+### Phase 14: Richer Built-in Toggles
 
-**Status:** ✓ Complete (2026-05-16)
+**Status:** Not started
 
-**Goal:** Make the documented addon authoring surface actually shippable by aligning `packages/cli` build outputs with the public package exports used in Phase 6 and Phase 9 docs/examples.
+**Goal:** Expand the built-in toggle surface to cover both local and command-driven authority models.
 
-**Closes:** milestone audit integration gap for package exports/build output mismatch; packaged addon authoring flow from `README.md`
+**Requirements:** SCS-06, SCS-07
 
-**Requirements:** UIW-01, UIW-02, UIW-03
-
-**Depends on:** Phase 9
+**Depends on:** Phase 11
 
 **Success criteria:**
-- [x] `pnpm --filter sireno-deck-cli build` emits the files referenced by `packages/cli/package.json` public exports
-- [x] The packaged `sireno-deck-cli/jsx` entrypoint resolves from built output
-- [x] The documented helper-based addon authoring path matches the shipped public package surface instead of repo-local internals
+- [ ] Internal-state toggles preserve runtime-owned state correctly across normal deck and runtime lifecycle events
+- [ ] Command-driven toggles support both `get_state + set_on/set_off` and `toggle + status` models
+- [ ] Toggle rendering and behavior remain coherent across refreshes and lifecycle transitions
 
-**Research needed:** No — the milestone audit already isolated the release blocker.
+**Research needed:** No — the milestone research already narrowed the authority-model split enough for planning.
+
+---
+
+### Phase 15: Lock-Screen Polish + Verification
+
+**Status:** Not started
+
+**Goal:** Finish locked-session behavior with timed dimming and milestone-wide verification coverage.
+
+**Requirements:** SCS-08, SCS-09
+
+**Depends on:** Phases 11-14
+
+**Success criteria:**
+- [ ] Locked-session mode dims after five minutes while the session remains locked
+- [ ] Unlock restores prior active state cleanly after a locked-session interruption
+- [ ] Fixtures, tests, and shipped examples cover session context injection, backgrounds, text fitting, wrappers/styles, toggles, and locked-session behavior
+
+**Research needed:** No — this phase applies the already-decided milestone constraints on top of the earlier phases.
 
 ---
 
 ## Coverage Validation
 
-- [x] All 12 v1.1 requirements map to at least one roadmap phase
-- [x] No circular dependencies: 6 → 7 → 8 and 6 → 7 → 9
+- [x] All 9 v1.2 requirements map to at least one roadmap phase
+- [x] No circular dependencies: 11 → 12 → 13 and 11 → 14 → 15
 - [x] Every phase has observable success criteria
-- [x] Phases 8 and 9 can proceed in parallel once Phases 6-7 are stable
+- [x] Phase 14 can proceed in parallel with Phase 12 once Phase 11 stabilizes
 
 ---
 
-*Roadmap created: 2026-05-14*
+*Roadmap created: 2026-05-17*

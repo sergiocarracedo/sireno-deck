@@ -1,7 +1,7 @@
 # Stack Research
 
-**Domain:** v1.1 addon UI and live widget extension work
-**Researched:** 2026-05-14
+**Domain:** v1.2 session context and surface composition
+**Researched:** 2026-05-17
 **Confidence:** HIGH
 
 ## Recommended Stack
@@ -10,38 +10,42 @@
 
 | Technology | Version / Source | Role In This Milestone | Why |
 |------------|------------------|------------------------|-----|
-| TypeScript | existing repo `~5.7` | JSX typing, theme contracts, addon API surfaces | TypeScript's JSX namespace and intrinsic element typing are the right mechanism for typed custom elements. [CITED: https://www.typescriptlang.org/docs/handbook/jsx.html] |
-| React + react-reconciler | existing repo `^19.x` + `^0.33` | custom deck element authoring and render tree shaping | The repo already uses React as a custom renderer boundary; milestone work should extend typings, not swap rendering models. [VERIFIED: codebase scan] |
-| sharp + SVG strings | existing repo | rasterize text and custom button visuals | Existing render path already turns SVG into raw key buffers; new visuals should build on it rather than introducing another drawing engine. [VERIFIED: codebase scan] |
-| Intl.DateTimeFormat | built into JS runtime | locale-aware digital date/time and calendar text formatting | `Intl.DateTimeFormat` supports locale-sensitive formatting plus `formatToParts()` for custom composition. [CITED: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat] |
-| YAML theme files + zod | existing repo | typography tokens and render behavior config | The theme contract already flows through YAML + zod validation; expanding it is lower-risk than inventing a separate style system. [VERIFIED: codebase scan] |
+| TypeScript | existing repo `~5.7` | widen addon/runtime/render contracts safely | This milestone is mostly API and schema growth, not a rendering rewrite. Existing strict TS is the right guardrail. [HIGH: codebase scan] |
+| React + `react-reconciler` | existing repo `^19.x` | keep addon render authoring on the current custom element surface | The reconciler already converts `deck-*` elements into narrow render descriptions. New wrappers/styles should extend that surface instead of bypassing it. [HIGH: codebase scan] |
+| `sharp` SVG rasterization | existing repo `^0.34` | text fitting, wrapper rendering, background composition | The renderer already builds SVG strings and rasterizes them with `sharp`. `sharp` text rendering supports bounded width/height fitting and wrap modes, but the current repo mostly uses manual SVG `<text>`, so fitting should be explicit and tested. [HIGH: https://sharp.pixelplumbing.com/api-constructor/] |
+| `systeminformation` | existing repo `^5.x` | OS type, variant, version discovery | `si.osInfo()` exposes `platform`, `distro`, and `release`, which map cleanly to the requested OS context. [HIGH: https://systeminformation.io/os.html] |
+| Linux `loginctl` / `systemd-logind` | platform command, not npm dependency | lock-state and session-state detection on Linux | `loginctl show-session` is the computer-parsable interface for session properties, including `LockedHint` and `IdleHint`. [HIGH: https://manpages.ubuntu.com/manpages/noble/en/man1/loginctl.1.html] |
+| YAML + zod | existing repo | config layering, locked deck config, wrapper/style registration | The repo already validates user config and addon config through zod-backed schemas. New background and lock-deck settings should stay there. [HIGH: codebase scan] |
 
-### Additional Milestone-Level Recommendations
+### Milestone-Level Recommendations
 
 | Recommendation | Use | Why |
 |---------------|-----|-----|
-| Use JSX intrinsic typings, not a new component DSL | addon authoring ergonomics | TypeScript already supports typing lowercase intrinsic elements through `JSX.IntrinsicElements`. [CITED: https://www.typescriptlang.org/docs/handbook/jsx.html] |
-| Use `Intl.DateTimeFormat.formatToParts()` when composing calendar/date labels | calendar-sheet and custom date text | It avoids brittle string splitting across locales. [CITED: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat] |
-| Keep SVG text rendering explicit | marquee/ellipsis/fit behavior | SVG `<text>` does not wrap by default, so overflow behavior must be intentional. [CITED: https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/text] |
-| Use `textLength` / `lengthAdjust` carefully for fit-to-width cases | bounded text fitting on small keys | SVG can constrain rendered width, but overuse will distort glyph spacing or glyph shapes. [CITED: https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/textLength] |
+| Add a dedicated runtime session-context service | OS metadata + lock state + dim timer | The current runtime has no host/session seam. This milestone needs one place that polls host state and fans it out to config templating, button instances, and deck switching. [HIGH: codebase scan] |
+| Keep `systeminformation` only for OS metadata | `platform`, `distro`, `release` | It is already in the repo and directly covers the requested OS fields. Do not stretch it into lock-state detection because that is not the contract it documents. [HIGH: https://systeminformation.io/os.html] |
+| Use `loginctl show-session` with explicit property selection on Linux | `LockedHint`, `IdleHint`, `State`, session id resolution | The man page explicitly distinguishes human-readable `session-status` from computer-parsable `show-session`. [HIGH: https://manpages.ubuntu.com/manpages/noble/en/man1/loginctl.1.html] |
+| Model text fitting as renderer contract, not ad hoc SVG clipping | `fit`, `clip`, `wrap`, future extensibility | The current render types only expose `overflow: "clip"`. That is too narrow for this milestone and will produce drift if fitting is hidden inside one renderer path. [HIGH: codebase scan] |
+| Register wrapper/style primitives globally in the addon registry | addon-provided global visuals | The current addon registry only handles buttons, decks, and assets. Global wrappers/styles need registry-backed identity to avoid addon-local hidden magic. [MEDIUM: codebase inference] |
 
 ## Alternatives Considered
 
 | Recommended | Alternative | Why Not Preferred |
 |-------------|-------------|-------------------|
-| Extend custom intrinsic JSX typings | Replace with ordinary React components only | Components would still have to map back to the same narrow custom render surface; intrinsic typings better match the renderer contract |
-| Expand current theme schema | Add addon-local font options only | This would bypass theming consistency and make text rendering drift across buttons |
-| Extend current SVG/text renderer | Introduce a separate canvas/date-time drawing subsystem | Splits rendering logic and duplicates sizing/layout concerns on a tiny display |
-| Use explicit text behavior modes | Let SVG clipping decide overflow | SVG text does not wrap by default, and accidental clipping is not a stable contract [CITED: https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/text] |
+| Extend current registry with global style/wrapper primitives | Let each addon smuggle styles through button config only | That kills reuse and makes global primitives impossible to validate or document cleanly |
+| Add a session-context service owned by core runtime | Let each button or addon shell out for lock state / OS data | Duplicates polling, drifts semantics, and creates per-button host probing overhead |
+| Extend current SVG renderer contract | Introduce a second canvas/text-layout engine | Splits the rendering model and creates two paths for backgrounds, wrappers, and text fitting |
+| Use explicit fallback precedence for backgrounds | Let each renderer variant decide its own background fallback | Guarantees drift across visuals and makes config behavior impossible to reason about |
+| Add command-driven toggle variants to built-ins | Force addon authors to reimplement toggles every time | Built-in toggle behavior is a core UX surface and should be standardized |
 
 ## What NOT to Use
 
 | Avoid | Why | Use Instead |
 |-------|-----|-------------|
-| A second render engine for clocks/calendars | Increases drift and duplicated tests | Extend `packages/cli/src/render/text-image.ts` and the existing reconciler model |
-| Locale formatting via hardcoded string templates only | Breaks non-US/non-default locale expectations | `Intl.DateTimeFormat` and `formatToParts()` |
-| Implicit overflow/clipping behavior as the API | Hard to test and explain | Explicit marquee / ellipsis / fit modes |
-| Mandatory wrapper for all buttons | Over-constrains custom visuals like analog clocks | Optional shared wrapper primitive |
+| Per-button shelling to detect OS info | wasteful and inconsistent | one shared OS/session context snapshot in core |
+| Human-readable `loginctl session-status` parsing | unstable output for code | `loginctl show-session --property=... --value` |
+| Renderer-local background precedence | each visual will drift | one resolved background contract before variant rendering |
+| Distorting text as the default fit strategy | ugly output on tiny keys | shrink to a minimum readable size, then clip; separate wrap mode |
+| Addon-local wrapper semantics without registry identity | undocumented hidden coupling | explicit globally registered wrapper/style primitives |
 
 ## Versions
 
@@ -49,10 +53,10 @@
 
 | Concern | Recommendation | Notes |
 |---------|----------------|-------|
-| JSX typing mode | stay compatible with current TS/React setup | The repo currently uses TS strict mode and React without `.tsx` authoring in the render layer; adding JSX support should be additive |
-| Date formatting | rely on modern Node 20 Intl support | The runtime target already assumes Node 20 in `packages/cli/tsdown.config.ts` |
-| SVG text layout | keep behavior deterministic and bounded | SVG text support is broad, but wrapping is not automatic and fit behaviors must be explicit [CITED: https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/text] |
+| `systeminformation` | keep current v5 usage for `osInfo()` | The docs site advertises 5.31.6 and notes v6 is coming with breaking changes; do not plan around unreleased v6 semantics. [HIGH: https://systeminformation.io/] |
+| Linux lock detection | target `loginctl` / `systemd-logind` first | This is the most documented Linux path. Non-systemd environments should be treated as an explicit degraded path, not silently guessed. [HIGH: Ubuntu Noble manpage] |
+| `sharp` text fitting | verify bounded text behavior with tests and images | `sharp` supports width/height-constrained text generation and wrap modes, but the repo currently uses hand-built SVG text, so contract changes need direct coverage. [HIGH: https://sharp.pixelplumbing.com/api-constructor/] |
 
 ---
-*Stack research for: v1.1 addon UI and live widgets*
-*Researched: 2026-05-14*
+*Stack research for: v1.2 session context and surface composition*
+*Researched: 2026-05-17*

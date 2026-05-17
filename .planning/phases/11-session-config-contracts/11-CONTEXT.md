@@ -53,6 +53,13 @@ Phase 11 establishes the core host/session contract for the v1.2 milestone. It s
 - The canonical host context must expose unsupported lock-awareness explicitly through session capability rather than implying support from missing values.
 - Runtime should log a one-time startup warning when lock-aware behavior is unavailable on the current host path.
 
+### Security Hardening Follow-Up
+- Host-context placeholders may continue to use the narrow `{{host.*}}` contract, but host-derived values used in shell commands must be escaped at the command-execution boundary rather than during config/render interpolation.
+- Missing host placeholders in command execution should remain intact rather than becoming empty strings or hard failures.
+- Linux can only report `session.capability: supported` when a real lock/unlock detector initializes successfully; if initialization fails, startup must downgrade to `unsupported` and emit the existing one-time warning.
+- The security fix should stay scoped to lock/unlock detection only; broader session states remain deferred.
+- The implicit locked fallback should move onto the bundled date-time addon path. Runtime still owns choosing configured-vs-implicit lock surfaces, but it should not own a bespoke fallback button implementation.
+
 ### Agent's Discretion
 - Exact field names inside the canonical host-context object, as long as the contract preserves the user-approved semantics above.
 - Exact minimal templating syntax/mechanics for config-time host-context interpolation.
@@ -69,6 +76,7 @@ Phase 11 establishes the core host/session contract for the v1.2 milestone. It s
 - Keep the normalized contract honest: do not invent fake lock/session parity across unsupported desktop environments.
 - The default locked fallback should be useful immediately, which means a simple built-in date/time surface rather than a blank screen or required YAML setup.
 - Config templating should stay minimal and host-context-driven, not become a broad dynamic config language.
+- The security hardening pass should fix the two open threats without widening Phase 11 into a new command API, richer session-state model, or cross-platform lock-detection phase.
 
 </specifics>
 
@@ -101,17 +109,22 @@ Phase 11 establishes the core host/session contract for the v1.2 milestone. It s
 - `packages/cli/src/config/loader.ts`: current config loading and validation path has no templating/interpolation step, so the first host-context templating seam will need to enter here or immediately around it.
 - `packages/cli/src/core/schemas.ts`: owns the top-level config schema and deck/button expansion flow, so any runtime/session config keys for locked-session behavior should be validated here.
 - `packages/cli/src/cli/commands/start.ts`: central startup orchestration point and the likely home for one-time unsupported-host warnings plus the first host/session detector bootstrap.
+- `packages/cli/src/system/session-monitor.ts`: current seam is intentionally narrow, so the follow-up should harden it into one real Linux lock/unlock detector or downgrade honestly to unsupported.
 
 ### Established Patterns
 - Core owns runtime scheduling and command execution rather than delegating those concerns to addons.
 - Public contracts are kept narrow and explicit instead of leaking incidental internal structure.
 - Prior milestone research already committed the project to one core-owned normalized context contract shared across all host-aware surfaces.
+- Shell safety belongs at the shell boundary, not in render/config-time placeholder expansion.
+- Built-in behavior should prefer the addon/registry path over runtime-specific special cases when the same outcome can be achieved through existing bundled addon contracts.
 
 ### Integration Points
 - Canonical host context injection will connect config loading, addon instance creation, and command/status execution through a single runtime-owned source of truth.
 - Locked-session deck switching and unlock restoration will connect runtime activation logic in `packages/cli/src/deck/runtime.ts` with navigation-state handling in `packages/cli/src/deck/controller.ts`.
 - The top-level lock-aware config setting will connect schema validation in `packages/cli/src/core/schemas.ts` with startup/runtime behavior in `packages/cli/src/cli/commands/start.ts`.
 - The implicit date/time fallback will likely reuse existing built-in date/time render primitives rather than inventing a separate visual system.
+- The security fix for host placeholder interpolation should connect `packages/cli/src/action/executor.ts` and `packages/cli/src/deck/runtime.ts` without changing how config-time label interpolation works in `packages/cli/src/config/loader.ts`.
+- The lock-detection hardening pass should connect `packages/cli/src/system/session-monitor.ts` and `packages/cli/src/cli/commands/start.ts` so `supported` means a real live detector exists, not just a platform guess.
 
 </code_context>
 

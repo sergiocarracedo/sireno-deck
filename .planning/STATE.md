@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 11 planning for normalized session context, config injection, and lock-aware deck behavior
+**Current focus:** Phase 11 verified, with follow-up context captured for security hardening around shell-safe host interpolation, honest Linux lock detection, and bundled-addon fallback ownership.
 
 ## Current Position
 
 Phase: 11 — Session + Config Contracts
-Plan: -
-Status: planning
-Last activity: 2026-05-17 - Captured Phase 11 discussion context for normalized host/session contracts and lock-aware runtime behavior
+Plan: 11-01, 11-02
+Status: verified
+Last activity: 2026-05-17 - Updated Phase 11 context with security-fix decisions for shell-safe command interpolation, honest Linux lock detection, and bundled-addon fallback ownership
 
-Progress: [----------] 0%
+Progress: [##########] 100%
 
 ## Performance Metrics
 
@@ -78,17 +78,22 @@ Recent decisions affecting current work:
 - **Plan 09-02:** Added the focused non-DOM authoring guide, verified JSX/helper example, and review-visible authoring clarity checks.
 - **Plan 10-01 / 10-02 execution:** Added explicit public root and `./jsx` package build entries, moved JSX type augmentation onto the built opt-in entrypoint, switched docs/example imports to `sireno-deck-cli`, and replaced source-path verification with a build-first package-surface typecheck.
 - **Phase 10 verification:** Confirmed `packages/cli/package.json#exports` now matches emitted `dist/` artifacts, the shipped authoring example resolves through the built package surface, and focused reconciler coverage keeps the helper/JSX parity example visible in tests.
+- **Plan 11-01:** Shipped the canonical host/session context through runtime-owned host normalization, addon instance input, config templating, action/status execution, and a committed host-context review fixture.
+- **Plan 11-02:** Added the lock-aware session-monitor seam, validated `session.locked_deck`, implemented temporary locked-mode switching with exact unlock restore plus implicit fallback, and committed the Phase 11 lock-session fixture/UAT path.
+- **Phase 11 verification:** Confirmed the canonical host/session contract is wired end-to-end and that locked-mode runtime behavior is covered by focused tests and committed review artifacts, with live host detector hardening still noted as follow-up work.
+- **Phase 11 security follow-up discussion:** Captured that command safety must escape host values only at the shell boundary, Linux may only claim `supported` with a real detector, and the implicit locked fallback should move onto the bundled date-time addon path.
 
 ### Blockers/Concerns
 
 - **Phase 5 (Addon System):** Addon API contract must be versioned from day one; design decisions here are hard to reverse.
 - **Phase 5 (Addon System):** The addon-first architecture pivot is intentionally not backward-compatible with the current button config surface, so planning must account for schema, docs, examples, and migration fallout together.
+- **Phase 11:** `session-monitor.ts` is currently a narrow seam with honest supported/unsupported classification and simulated event handling, but it still needs a real supported-host event source to close the live lock-detection promise completely.
 
 ## Session Continuity
 
 Last session: 2026-05-17
-Stopped at: Phase 11 context captured; next up is `plan-phase 11`.
-Resume file: .planning/ROADMAP.md
+Stopped at: Phase 11 security-hardening context captured; next up is `plan-phase 11` if we want those decisions to reshape the remaining execution plan.
+Resume file: .planning/phases/11-session-config-contracts/11-CONTEXT.md
 
 ### Quick Tasks Completed
 

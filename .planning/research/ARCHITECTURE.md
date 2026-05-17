@@ -1,71 +1,85 @@
 # Architecture Research
 
-**Domain:** v1.1 addon UI and live widgets
-**Researched:** 2026-05-14
+**Domain:** v1.2 session context and surface composition
+**Researched:** 2026-05-17
 **Confidence:** HIGH
 
 ## Component Boundaries
 
 ### Main Architecture Constraint
 
-This milestone should stay inside the current architecture:
+This milestone still fits the existing architecture, but only if the new capabilities are added at the right seams:
 
-- addon API defines stateful button instances
-- runtime owns scheduling and invalidation
-- reconciler owns custom React element interpretation
-- text-image renderer owns SVG composition
-- theme resolver owns visual tokens
+- config/schema layer owns declared precedence and allowed config surface
+- addon registry owns globally named extension primitives
+- runtime owns session observation, deck switching, restore state, and dim timers
+- addon button instances consume injected context instead of probing the host directly
+- reconciler owns the render contract for wrappers/styles/text-fit props
+- renderer owns actual SVG/background/text composition
 
-That means the new work should extend boundaries, not replace them.
+The repo currently has no session service, no config templating seam, and only a clip-only text contract. Those are the real architectural gaps. [HIGH: codebase scan]
 
 ### Components Most Directly Touched
 
 | Component | Current Role | Milestone Pressure |
 |-----------|--------------|--------------------|
-| `packages/cli/src/render/reconciler.ts` | custom deck element interpretation | add typed JSX support and maybe small prop-surface growth |
-| `packages/cli/src/render/text-image.ts` | SVG text/card rendering | add typography-driven text output, text behavior modes, wrapper primitive, clock/calendar visuals |
-| `packages/cli/src/deck/runtime.ts` | scheduler + lifecycle host | keep core-owned polling and support live date/time cadence correctly |
-| `packages/cli/src/config/theme.ts` | theme YAML loading | expand theme contract for typography tokens |
-| `builtin-addons/date-time/src/index.ts` | built-in date/time addon | fix refresh contract and add separate `analog-clock` / `calendar-sheet` button types |
+| `packages/cli/src/core/schemas.ts` | config validation and deck/button expansion | add background layering fields, locked-deck config, toggle schemas, and templating input shape |
+| `packages/cli/src/addon/api.ts` | addon button/deck contracts | inject session/OS context into render and command/status paths; possibly define wrapper/style registration contracts |
+| `packages/cli/src/addon/registry.ts` | registry for buttons, decks, assets | widen to globally registered wrappers/styles |
+| `packages/cli/src/deck/runtime.ts` | lifecycle, polling, navigation, render invalidation | add session observation, locked-deck switching, dim timer, and restore behavior |
+| `packages/cli/src/render/reconciler.ts` and `render/types.ts` | narrow render node contract | add text-fit modes and wrapper/style references without blowing up the surface |
+| `packages/cli/src/render/text-image.ts` | SVG composition and rasterization | resolve background layers once, then render variants against that resolved surface |
+| `packages/cli/src/config/loader.ts` | YAML load and validation orchestration | likely host config templating expansion point before validation or during bootstrap |
 
 ## Data Flow
 
-### Milestone-Specific Flow
+### Recommended Flow For This Milestone
 
-1. Theme YAML resolves typography tokens in `packages/cli/src/config/theme.ts`
-2. Config validation carries per-button settings such as `interval_ms` and future text behavior flags through `packages/cli/src/core/schemas.ts`
-3. Addon button definitions declare default cadence and render custom deck elements
-4. `packages/cli/src/deck/runtime.ts` schedules refresh based on definition defaults plus config override
-5. `packages/cli/src/render/reconciler.ts` converts JSX/helper-authored custom elements into render descriptions
-6. `packages/cli/src/render/text-image.ts` turns those descriptions into SVG and finally buffers for the device
+1. Load YAML config.
+2. Resolve a limited template context for config expansion using core-owned OS/session snapshot.
+3. Validate config and expand addon decks/buttons.
+4. Build a runtime session-context service that refreshes OS/session state on a core-owned cadence.
+5. Inject the same normalized context into addon instances for render and action/status execution.
+6. Resolve active deck surface, including locked-deck substitution when session state demands it.
+7. Resolve background precedence once for each rendered button surface: config-level override, then deck background, then theme background.
+8. Reconciler emits explicit text-fit and wrapper/style identifiers.
+9. Renderer composes SVG from resolved background + wrapper/style + variant visual + text-fit behavior.
 
 ### Key Architectural Recommendation
 
-Keep the render surface narrow and evolve it minimally. TypeScript JSX support should mostly be a typing/documentation improvement over the existing `createElement('deck-button')` path, not a new rendering abstraction. [CITED: https://www.typescriptlang.org/docs/handbook/jsx.html]
+Do not let three different layers invent their own idea of “context”:
+
+- config templating should use the same normalized OS/session shape as runtime buttons
+- action/status code should receive the same shape as render code
+- lock-state switching should be owned by runtime, not buried inside button logic
+
+That keeps the milestone from becoming a bag of parallel one-off mechanisms.
 
 ## Build Order
 
 Recommended order for the milestone domain:
 
-1. Fix live `date-time` refresh using existing scheduler ownership
-2. Add typed JSX intrinsic support for deck elements
-3. Expand theme typography and explicit text behavior contract
-4. Introduce optional shared wrapper primitive in the renderer
-5. Add `analog-clock`
-6. Add `calendar-sheet`
-7. Update examples/docs to explain custom deck elements clearly
+1. Add normalized OS/session context model and Linux lock-state discovery seam
+2. Add config support for locked deck and background layering
+3. Inject context into addon instance creation and command/status helpers
+4. Add render contract growth: text-fit modes and wrapper/style references
+5. Add renderer support for background layering and fitting behavior
+6. Add registry-backed global wrappers/styles
+7. Add richer built-in toggles on top of the new runtime/config contracts
+8. Add lock-switch, dim timer, and restore-state runtime behavior
 
-This ordering keeps the base contracts stable before shipping the new visuals.
+This order stabilizes the host contracts before shipping user-facing widgets and visuals that depend on them.
 
 ## Integration Points
 
 | Boundary | Current Contract | Milestone Guidance |
 |----------|------------------|--------------------|
-| Addon authoring -> reconciler | custom intrinsic strings through `createElement()` | expose typed JSX support for the same intrinsic names |
-| Theme -> renderer | color tokens only | add typography tokens consumed by shared text rendering |
-| Button definition -> runtime scheduler | `defaultIntervalMs` and `refresh()` | reuse this for clocks and date widgets instead of adding addon-local timers |
-| Render description -> SVG text | label/subtitle/detail lines and variants | add explicit text behavior and wrapper semantics before growing variants further |
+| Config -> validation | bootstrap config then full registry-backed validation | add background and locked-deck config here, not in runtime-only hidden settings |
+| Runtime -> addon button instances | `button`, `config`, `methods`, `theme` | extend with normalized session/OS context and keep it stable across render/actions/status |
+| Addon registry -> renderer | buttons, decks, assets only | add globally named wrapper/style primitives if the user wants cross-addon reuse |
+| Reconciler -> renderer | narrow props like `label`, `subtitle`, `variant`, `overflow`, `wrapper` | evolve this minimally into explicit fit/wrap and wrapper/style ids |
+| Runtime -> deck controller | active deck / back stack only | runtime must own lock substitution and restore previous active deck after unlock |
 
 ---
-*Architecture research for: v1.1 addon UI and live widgets*
-*Researched: 2026-05-14*
+*Architecture research for: v1.2 session context and surface composition*
+*Researched: 2026-05-17*

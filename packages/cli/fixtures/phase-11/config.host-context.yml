@@ -1,0 +1,23 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    name: Phase 11 Host Context Review
+    buttons:
+      - position: 0
+        type: display-text
+        label: "{{host.os.type}} / {{host.os.variant}} / {{host.session.state}}"
+      - position: 1
+        type: change-deck
+        label: Host Actions
+        target_deck: emoji
+  emoji:
+    id: emoji
+    type: emoji-selector
+    favorites:
+      - 😀
+    select_command: "printf '%s' '{{emoji}} @ {{host.os.type}} @ {{host.session.state}}'"
+addons: []
+logging:
+  level: info

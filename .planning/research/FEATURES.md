@@ -1,43 +1,43 @@
 # Feature Research
 
-**Domain:** v1.1 addon UI and live widgets
-**Researched:** 2026-05-14
+**Domain:** v1.2 session context and surface composition
+**Researched:** 2026-05-17
 **Confidence:** HIGH
 
 ## Table Stakes
 
-Features the new milestone should deliver to feel like a coherent follow-on release rather than scattered polish.
+Features the milestone should deliver so the requested scope feels like one coherent release instead of six unrelated hacks.
 
 | Feature | Why Expected In This Milestone | Complexity | Notes |
 |---------|-------------------------------|------------|-------|
-| Live built-in date/time button refresh | The current built-in `date-time` button reads as broken if it renders once and never updates | LOW | Existing scheduler model already exists in runtime; this is mostly contract wiring |
-| Typed JSX addon authoring for custom deck elements | Addon authors should not have to stay on raw `createElement(...)` for a custom React renderer | MEDIUM | TypeScript supports intrinsic JSX typing directly [CITED: https://www.typescriptlang.org/docs/handbook/jsx.html] |
-| Theme-driven typography | Current renderer hardcodes font-family strings instead of reading from theme | MEDIUM | Existing theme pipeline already exists; schema expansion is needed |
-| Explicit text behavior contract | Long labels need predictable behavior on small keys | MEDIUM | SVG text does not wrap by default [CITED: https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/text] |
+| Background fallback layering | The user explicitly defined precedence: config override, then deck, then theme | MEDIUM | Must be one shared rule across all visuals |
+| OS context injection | OS type, variant, and version are now part of addon/runtime expectations | MEDIUM | Needs one authoritative context shape available in render, action/status paths, and config templating |
+| Multiple text fitting modes | The current clip-only text contract is too narrow for this milestone | MEDIUM | Default should be shrink-then-clip; wrap should be opt-in |
+| Lock-aware deck switching | Locked-session deck is part of user-visible behavior, not optional polish | HIGH | Requires runtime deck ownership and restore semantics |
 
 ## Differentiators
 
-Features that make this milestone more than a bugfix pack.
+Features that make this milestone materially stronger than a background-and-config patch.
 
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
-| `analog-clock` built-in button | Proves the addon/render model supports bespoke visuals, not just text cards | MEDIUM | Should reuse core scheduling and the existing render pipeline |
-| `calendar-sheet` built-in button | Gives a high-legibility date visual optimized for one key | MEDIUM | A today-focused tear sheet is more readable than a tiny month grid on 72x72 hardware |
-| Optional shared wrapper primitive | Gives built-ins and addons a consistent shell without forcing all visuals into one card layout | MEDIUM | Must remain optional so analog/custom visuals can bypass it |
-| Shared marquee / ellipsis helpers | Makes text layout a declared behavior rather than a rendering accident | MEDIUM | Can become a reusable contract for future built-ins and addons |
+| Global addon-provided wrappers/styles | Makes addon visuals reusable across the whole system, not trapped inside one addon | HIGH | Needs registry identity, validation, and render-surface integration |
+| Built-in rich toggles | Standardizes a common UX pattern instead of leaving every addon to reinvent it badly | MEDIUM | Support both internal-state and command-driven variants |
+| Lock idle dimming | Makes lock mode act like a real session-aware surface, not a static replacement deck | MEDIUM | Separate from lock detection; requires elapsed-time behavior |
+| Config templating with injected OS/session context | Lets decks and generated content respond to host metadata before runtime render | HIGH | Needs safe, limited interpolation scope, not arbitrary code execution |
 
 ## Anti-Features
 
-Features that would bloat or derail this milestone.
+Features that sound adjacent but would bloat or poison this milestone.
 
 | Feature | Why It Sounds Tempting | Why It’s Problematic | Better Alternative |
 |---------|------------------------|----------------------|--------------------|
-| Full design-system overhaul | Typography work can expand fast | Too broad for a focused milestone on addon UI and live widgets | Add only the typography tokens needed by render text now |
-| Mandatory wrapper for every button | Uniform visuals are appealing | Breaks the flexibility needed for clocks and future custom visuals | Optional shared wrapper primitive |
-| Month-grid calendar in first cut | Feels like “more calendar” | Tiny grids are low-legibility on Stream Deck hardware | Today-focused tear-sheet calendar |
-| Addon-local timers | Quick way to make clocks move | Contradicts current architecture where core owns scheduling | Keep `defaultIntervalMs` + config override in core-owned scheduler path |
-| New rendering engine for clocks | Easy to justify as “special visuals” | Doubles renderer complexity and splits the API surface | Extend current reconciler/text-image path minimally |
+| Full cross-platform session management abstraction | The product supports multiple OSes | Lock-state detection semantics differ too much; Linux-first is safer than pretending parity exists | Build a narrow session-context service with explicit degraded support paths |
+| CSS-like styling system for addons | “Styles” sounds like CSS | Far too broad for a custom reconciler + SVG renderer project | Register a narrow set of wrapper/style primitives the renderer actually understands |
+| Arbitrary environment/process context injection | Feels powerful for templating | Expands security/surface area immediately | Limit v1.2 to OS type, variant, version, plus lock-state where needed by core |
+| Automatic text fit with unlimited shrinking | Guarantees fit on paper | Produces unreadable keys | Minimum readable font size, then clip |
+| Lock overlay on top of the active deck | Looks cheaper to implement | Confuses action suppression and restore semantics | Switch to a dedicated locked-session deck |
 
 ---
-*Feature research for: v1.1 addon UI and live widgets*
-*Researched: 2026-05-14*
+*Feature research for: v1.2 session context and surface composition*
+*Researched: 2026-05-17*

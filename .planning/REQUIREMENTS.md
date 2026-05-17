@@ -1,49 +1,51 @@
 # Requirements — Sireno Deck
 
-**Version:** v1.1
-**Last updated:** 2026-05-15
+**Version:** v1.2
+**Last updated:** 2026-05-17
 
 ## Milestone Scope
 
-Milestone `v1.1 Addon UI and Live Widgets` builds on the completed `v1.0` CLI, rendering, advanced button, and addon-system work. This document tracks only the new requirements for the follow-on milestone so planning does not drift back into already-finished `v1.0` scope.
+Milestone `v1.2 Session Context and Surface Composition` builds on the completed `v1.1` addon authoring, text rendering, and date/time widget work. This document tracks only the new requirements for the follow-on milestone so planning stays focused on the new session-aware runtime and render-surface contracts.
 
-## v1.1 Requirements
+## v1.2 Requirements
 
 | ID | Requirement | Category |
 |----|-------------|----------|
-| UIW-01 | Addon authors can use typed JSX for the existing custom render elements such as `deck-button`, `deck-text`, and `deck-surface` | Addon Authoring |
-| UIW-02 | Helper-based authoring remains supported alongside JSX for the same custom render elements | Addon Authoring |
-| UIW-03 | Docs and examples explain that custom deck elements target the Stream Deck renderer contract rather than the DOM | Docs |
-| UIW-04 | Live addon buttons continue to refresh through the core-owned scheduler using per-button `defaultIntervalMs` defaults | Runtime |
-| UIW-05 | Button config can override supported live-button cadence through `interval_ms` without introducing addon-local timers | Runtime |
-| UIW-06 | The built-in `date-time` button refreshes correctly with a sensible default cadence for digital time output | Widgets |
-| UIW-07 | The built-in date/time addon exposes a separate `analog-clock` button type with a sensible live-refresh default | Widgets |
-| UIW-08 | The built-in date/time addon exposes a separate `calendar-sheet` button type with a slower date-appropriate refresh cadence | Widgets |
-| UIW-09 | Theme configuration supports typography tokens that the renderer uses for shared text output | Theme |
-| UIW-10 | Shared text rendering supports explicit behavior modes such as ellipsis and marquee instead of accidental overflow behavior | Render |
-| UIW-11 | The renderer exposes a shared button wrapper primitive that buttons can opt into without making it mandatory | Render |
-| UIW-12 | Tests, fixtures, and shipped examples cover the new JSX authoring, interval control, typography, and date/time widget behavior | Verification |
+| SCS-01 | Core runtime exposes a normalized session/OS context containing OS type, variant, and version | Runtime |
+| SCS-02 | The normalized session/OS context is available to addon render logic, action/status execution, and config templating through one consistent contract | Runtime |
+| SCS-03 | Config and render flow support layered background resolution with precedence: config override -> deck background -> theme background | Render |
+| SCS-04 | The render contract supports multiple explicit text fitting modes, including default shrink-to-fit until a readable minimum size then clip, plus wrap mode | Render |
+| SCS-05 | Addons can register globally reusable wrapper/style primitives that other addon or built-in surfaces can reference through validated public contracts | Addon Authoring |
+| SCS-06 | Built-in toggle buttons support internal-state toggles with runtime-owned state continuity across normal deck/runtime lifecycle events | Widgets |
+| SCS-07 | Built-in command-driven toggles support both `get_state + set_on/set_off` and `toggle + status` models | Widgets |
+| SCS-08 | Runtime detects supported session lock/unlock transitions, switches to a dedicated locked-session deck while locked, dims after five minutes of locked time, and restores prior deck state on unlock | Runtime |
+| SCS-09 | Tests, fixtures, and shipped examples cover session context injection, background layering, text fitting, global wrappers/styles, richer toggles, and locked-session behavior | Verification |
 
-## Out of Scope For v1.1
+## Implementation Sequencing Notes
+
+- **Phase 11 lands:** `SCS-01`, `SCS-02`, and the contract/switch/restore subset of `SCS-08` — canonical host/session context, host-aware config/action/render injection, validated `session.locked_deck`, unsupported-host startup warning, locked-surface switching, implicit fallback support, and exact unlock restore.
+- **Phase 15 still owns:** the five-minute dimming clause in `SCS-08` plus the broader milestone-wide verification surface in `SCS-09`.
+- **Known hardening gap:** the first `session-monitor` seam is intentionally narrow and honest about unsupported hosts, but it still needs a real supported-host event source to fully satisfy the live lock-detection promise in `SCS-08`.
+
+## v2 Candidates
+
+| Item | Why Deferred |
+|------|--------------|
+| Cross-platform lock/session parity beyond the first documented supported path | The milestone should ship one documented support path instead of pretending every desktop environment behaves the same |
+| Broader context injection beyond OS type, variant, and version | Wider context increases API surface and validation burden without being required for this milestone |
+| More advanced style systems beyond narrow wrapper/style primitives | A CSS-like or theme-engine expansion would swamp the milestone |
+| Richer dimming or overlay behaviors beyond locked-deck substitution | The requested behavior is deck substitution plus timed dimming; more visual states can wait |
+
+## Out of Scope For v1.2
 
 | Item | Reason |
 |------|--------|
-| Full renderer redesign or replacement | The milestone should extend the existing custom reconciler and SVG pipeline, not replace it |
-| Mandatory shared wrapper for every button | Analog clock and other bespoke visuals need a clear escape hatch |
-| Dense month-grid calendar widget | The first calendar visual should stay readable as a single-key tear sheet |
-| Addon-local timers or scheduler ownership | Core runtime scheduling is already the correct contract and should stay centralized |
-| Broad design-system expansion beyond typography needs | The milestone only needs the text tokens required by the renderer |
-
-## Phase Traceability
-
-| Phase | Status | Requirements | Evidence |
-|------|--------|--------------|----------|
-| 6 — Base Contracts | Complete | UIW-01, UIW-02, UIW-04, UIW-05, UIW-06 | `.planning/phases/06-base-contracts/06-01-SUMMARY.md`, `.planning/phases/06-base-contracts/06-02-SUMMARY.md`, `.planning/phases/06-base-contracts/06-VERIFICATION.md` |
-| 7 — Typography + Text Behavior | Complete | UIW-09, UIW-10, UIW-11, UIW-12 | `.planning/phases/07-typography-text-behavior/07-01-SUMMARY.md`, `.planning/phases/07-typography-text-behavior/07-02-SUMMARY.md`, `.planning/phases/07-typography-text-behavior/07-03-SUMMARY.md`, `.planning/phases/07-typography-text-behavior/07-VERIFICATION.md` |
-| 8 — Clock Visuals | Complete | UIW-07, UIW-12 | `.planning/phases/08-clock-visuals/08-01-SUMMARY.md`, `.planning/phases/08-clock-visuals/08-02-SUMMARY.md`, `.planning/phases/08-clock-visuals/08-VERIFICATION.md` |
-| 9 — Calendar + Authoring Clarity | Executed | UIW-03, UIW-08, UIW-12 | `.planning/phases/09-calendar-authoring-clarity/09-01-SUMMARY.md`, `.planning/phases/09-calendar-authoring-clarity/09-02-SUMMARY.md`, `.planning/phases/09-calendar-authoring-clarity/09-VERIFICATION.md` |
+| Full CSS-like styling system | The renderer should gain narrow explicit primitives, not a broad styling language |
+| Fake universal lock detection across all platforms/desktops without documented support | Unsupported environments should degrade explicitly, not lie |
+| Renderer-specific background fallback rules | Background precedence must be one shared contract |
+| Per-addon host probing for OS/session state | Host context should be normalized once in core and injected consistently |
 
 ---
 
-*Requirements defined: 2026-05-14*
-*Total v1.1 requirements: 12*
+*Requirements defined: 2026-05-17*
+*Total v1.2 requirements: 9*

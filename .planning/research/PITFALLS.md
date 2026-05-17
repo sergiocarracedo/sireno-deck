@@ -1,41 +1,46 @@
 # Pitfalls Research
 
-**Domain:** v1.1 addon UI and live widgets
-**Researched:** 2026-05-14
+**Domain:** v1.2 session context and surface composition
+**Researched:** 2026-05-17
 **Confidence:** HIGH
 
 ## Common Mistakes
 
 | # | Mistake | Severity | Why It Matters |
 |---|---------|----------|----------------|
-| 1 | Adding addon-local timers for clocks | HIGH | Breaks the existing architecture where core owns scheduling and cleanup |
-| 2 | Treating JSX support as a new renderer instead of typed sugar over the same intrinsic contract | HIGH | Creates unnecessary API churn for addons and tests |
-| 3 | Letting text overflow behavior emerge accidentally from SVG clipping | HIGH | Produces unstable output and brittle tests on tiny displays |
-| 4 | Over-designing typography into a full design-system rewrite | MEDIUM | Milestone scope explodes before the date/time widgets ship |
-| 5 | Building a month-grid calendar on a 72x72 key first | MEDIUM | Low legibility; wastes effort on a poor first experience |
-| 6 | Overusing `textLength` so text looks distorted | MEDIUM | Fit-to-width can compress spacing or glyphs unnaturally [CITED: https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/textLength] |
+| 1 | Letting each addon or button probe OS/session state itself | HIGH | Creates drift, duplicate polling, and inconsistent lock behavior |
+| 2 | Parsing human-readable `loginctl` output | HIGH | The man page explicitly reserves `show-session` for machine-readable output; formatted output is brittle |
+| 3 | Implementing lock behavior as a visual overlay only | HIGH | The user asked for deck switching and restore semantics, which overlays do not model cleanly |
+| 4 | Spreading background fallback logic across renderer variants | HIGH | Every built-in visual will drift on precedence and tests will become archaeological nonsense |
+| 5 | Treating text fitting as renderer magic instead of declared contract | HIGH | Addons, tests, and docs will all disagree on what “fit” means |
+| 6 | Registering wrappers/styles without global identity | MEDIUM | “Global primitives” become impossible to reference safely from config and addons |
+| 7 | Treating non-systemd Linux as if `loginctl` always exists | MEDIUM | Lock detection will fail silently on some environments unless degraded behavior is explicit |
+| 8 | Mixing internal-state toggle semantics with command-driven toggle semantics in one hidden implementation | MEDIUM | The two models have different authority and recovery behavior |
 
 ## Warning Signs
 
 | Warning Sign | Indicates | Action |
 |-------------|-----------|--------|
-| A clock button starts its own `setInterval` | Scheduler ownership drift | Move cadence back to button definition + runtime scheduler |
-| JSX work needs broad reconciler semantic changes | Over-scoped authoring change | Keep JSX as typing/ergonomics over existing intrinsic names |
-| Long labels only “work” because tests compare generic buffer inequality | Undefined overflow behavior | Introduce explicit text behavior modes and assert them directly |
-| Theme work starts adding many unrelated visual tokens | Design-system expansion | Limit milestone v1.1 to typography tokens needed by renderer text |
-| Calendar mockups look dense or unreadable on one key | Wrong information density | Prefer tear-sheet current-day layout |
+| New addon examples start shelling out to `loginctl` or `uname` | core context injection failed | move host probing back into runtime service |
+| Renderer functions each decide their own background fill source | precedence drift | resolve one background contract before variant selection |
+| Long text behavior can only be described by “whatever the SVG does” | no render contract | add named fit modes and test them explicitly |
+| Lock handling code starts living inside button instances | wrong ownership | keep lock switching in runtime / deck selection |
+| Global wrapper/style names are raw strings with no registry validation | extension drift | add registration and lookup in addon registry |
+| Unlock path does not restore prior deck stack | lossy session transition | store and restore runtime navigation state explicitly |
 
 ## Prevention Strategies
 
 | Strategy | Prevents | How |
 |----------|----------|-----|
-| Keep scheduler ownership in core | #1 | Use `defaultIntervalMs`, `refresh()`, and config override rather than timers inside addon instances |
-| Use TypeScript intrinsic JSX typing directly | #2 | Add `JSX.IntrinsicElements` support for the same `deck-*` names the reconciler already consumes [CITED: https://www.typescriptlang.org/docs/handbook/jsx.html] |
-| Make text behavior an explicit contract | #3 | Define modes such as marquee, ellipsis, and fit instead of letting clipping be the API |
-| Scope typography to renderer needs | #4 | Add only the token structure needed for current text rendering and wrapper visuals |
-| Use `Intl.DateTimeFormat` / `formatToParts()` | #5 | Compose locale-aware date labels without brittle string slicing [CITED: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat] |
-| Treat `textLength` as a controlled fit tool, not the default | #6 | Reserve it for bounded fit cases where distortion is acceptable and tested [CITED: https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/textLength] |
+| Normalize session context once in core | #1 | one shared snapshot type for config templating, render, and command/status execution |
+| Use `loginctl show-session --property=... --value` only | #2 | consume parsable fields like `LockedHint`, `IdleHint`, `State` from documented machine-readable output |
+| Model lock as deck substitution with saved prior state | #3, #6 | runtime stores active deck/back-stack and restores it after unlock |
+| Resolve background precedence before building variant SVG | #4 | renderer receives final background source/value instead of re-deciding it |
+| Add explicit text-fit enum and readable minimum font floor | #5 | make shrink, clip, and wrap behaviors visible in config and tests |
+| Extend addon registry for global primitives | #6 | wrappers/styles are named assets of the extension ecosystem, not accidental conventions |
+| Treat unsupported session environments as degraded, not broken | #7 | no silent fake lock-state; expose unavailable support path clearly |
+| Split toggle implementations by authority model | #8 | internal-state toggles persist local state; command-driven toggles reconcile against external status |
 
 ---
-*Pitfalls research for: v1.1 addon UI and live widgets*
-*Researched: 2026-05-14*
+*Pitfalls research for: v1.2 session context and surface composition*
+*Researched: 2026-05-17*

@@ -8,16 +8,17 @@ Sireno Deck is a TypeScript CLI for controlling and managing Stream Deck devices
 
 Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
 
-## Current Milestone: v1.1 Addon UI and Live Widgets
+## Current Milestone: v1.2 Session Context and Surface Composition
 
-**Goal:** Improve addon authoring ergonomics and ship richer built-in live date/time visuals on top of the completed addon system.
+**Goal:** Expand the render/runtime surface so addons and built-in buttons can react to richer session state, compose shared visual primitives, and handle background and lock-screen behavior coherently.
 
 **Target features:**
-- Typed JSX authoring for custom deck elements while preserving helper-based authoring
-- Live-refreshing built-in `date-time` button with per-button interval control
-- New built-in `analog-clock` and `calendar-sheet` button types
-- Optional shared button wrapper and explicit shared marquee/ellipsis text behavior
-- Theme-driven typography tokens for render text output
+- Layered background support with config, deck, and theme fallback precedence
+- OS/session context injection into render, execution, and config templating
+- Multiple text fitting modes with shrink-to-fit as the default and wrap support
+- Globally reusable addon-provided wrappers and styles
+- Richer built-in toggle buttons for internal and command-driven state models
+- Lock-screen awareness with a dedicated locked-session deck and timed dimming
 
 ## Requirements
 
@@ -37,9 +38,12 @@ Make Stream Deck customization programmable and extensible through a fast TypeSc
 - [ ] Support trusted in-process addons written in TypeScript, installable from local folders and npm packages.
 - [ ] Let addons provide button types, button instances, deck types, deck instances, manifests, bundled decks, and reusable assets such as icons.
 - [ ] Provide a YAML-based theme system for global visual tokens such as background, accent, and primary colors, plus a small set of built-in themes.
-- [ ] Improve addon authoring ergonomics with typed JSX support for custom deck render elements.
-- [ ] Expand the built-in date/time addon with live digital, analog, and tear-sheet calendar visuals using shared rendering primitives.
-- [ ] Make theme typography and explicit text behavior part of the render contract so long text does not depend on accidental overflow.
+- [ ] Support layered background composition with config-level override, deck fallback, and theme fallback.
+- [ ] Expose OS type, variant, and version to addons and built-in surfaces during render, command/status execution, and config templating.
+- [ ] Support multiple text fitting modes, with shrink-to-fit until a readable minimum size then clip as the default behavior, plus wrap mode.
+- [ ] Let addons register globally reusable button wrappers and style primitives.
+- [ ] Provide richer built-in toggle buttons covering internal state and command-driven state models.
+- [ ] Detect session lock/unlock state, switch to a dedicated locked-session deck while locked, dim after five minutes, and restore prior state on unlock.
 
 ### Out of Scope
 
@@ -77,4 +81,4 @@ The domain includes fast refresh behavior for live widgets such as CPU, memory, 
 | Run addons as trusted in-process code in v1 | Keeps the initial addon API simpler and avoids early sandbox complexity | — Pending |
 
 ---
-*Last updated: 2026-05-14 after starting milestone v1.1*
+*Last updated: 2026-05-17 after starting milestone v1.2*

@@ -25,6 +25,10 @@ export const LoggingSchema = z.object({
   verbose: z.boolean().default(false),
 })
 
+export const SessionSchema = z.object({
+  locked_deck: z.string().min(1).optional(),
+})
+
 const RawButtonEnvelopeSchema = z.object({
   interval_ms: z.number().int().min(500).optional(),
   position: z.number().int().min(0).max(31),
@@ -54,6 +58,7 @@ const BootstrapSirenoConfigSchema = z
     decks: z.record(RawDeckSchema),
     addons: z.array(AddonSchema).default([]),
     logging: LoggingSchema.default({}),
+    session: SessionSchema.optional(),
   })
   .strict()
 
@@ -90,6 +95,7 @@ export interface SirenoConfig {
   decks: Record<string, DeckConfig>
   addons: z.infer<typeof AddonSchema>[]
   logging: z.infer<typeof LoggingSchema>
+  session?: z.infer<typeof SessionSchema>
 }
 
 export type BootstrapSirenoConfig = z.infer<typeof BootstrapSirenoConfigSchema>
@@ -186,6 +192,16 @@ export function validateBootstrapConfig(data: unknown): BootstrapSirenoConfig {
         ["decks", deckKey, "id"],
       )
     }
+  }
+
+  if (config.session?.locked_deck && !config.decks[config.session.locked_deck]) {
+    throw new ConfigValidationError(
+      `Locked deck '${config.session.locked_deck}' is not defined`,
+      undefined,
+      undefined,
+      `Check the value for '${getPathLabel(["session", "locked_deck"])}'.`,
+      ["session", "locked_deck"],
+    )
   }
 
   return config
@@ -337,6 +353,7 @@ export function validateConfig(data: unknown, registry: AddonRegistry): SirenoCo
     ...(bootstrap.device !== undefined ? { device: bootstrap.device } : {}),
     logging: bootstrap.logging,
     main_deck: bootstrap.main_deck,
+    ...(bootstrap.session !== undefined ? { session: bootstrap.session } : {}),
     theme: bootstrap.theme,
   }
 }
