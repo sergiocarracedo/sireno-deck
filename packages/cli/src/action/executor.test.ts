@@ -29,7 +29,7 @@ describe("executeCommand", () => {
 
   it("resolves canonical host-context placeholders before execution", async () => {
     const result = await executeCommand({
-      command: "printf '%s|%s|%s' '{{host.os.type}}' '{{host.os.variant}}' '{{host.session.state}}'",
+      command: "printf '%s|%s|%s' {{host.os.type}} {{host.os.variant}} {{host.session.state}}",
       hostContext: {
         os: {
           type: "linux",
@@ -45,5 +45,45 @@ describe("executeCommand", () => {
 
     expect(result.failed).toBe(false)
     expect(result.stdout).toBe("linux|ubuntu|unknown")
+  })
+
+  it("shell-escapes host-context placeholders before command execution", async () => {
+    const result = await executeCommand({
+      command: "printf '%s' {{host.os.variant}}",
+      hostContext: {
+        os: {
+          type: "linux",
+          variant: "ubuntu'; touch /tmp/nope; '",
+          version: "24.04",
+        },
+        session: {
+          capability: "unknown",
+          state: "unknown",
+        },
+      },
+    })
+
+    expect(result.failed).toBe(false)
+    expect(result.stdout).toBe("ubuntu'; touch /tmp/nope; '")
+  })
+
+  it("leaves unresolved host-context placeholders intact during command execution", async () => {
+    const result = await executeCommand({
+      command: "printf '%s' {{host.session.missing}}",
+      hostContext: {
+        os: {
+          type: "linux",
+          variant: "ubuntu",
+          version: "24.04",
+        },
+        session: {
+          capability: "unknown",
+          state: "unknown",
+        },
+      },
+    })
+
+    expect(result.failed).toBe(false)
+    expect(result.stdout).toBe("{{host.session.missing}}")
   })
 })

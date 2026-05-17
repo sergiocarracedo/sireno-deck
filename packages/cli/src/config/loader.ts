@@ -16,6 +16,7 @@ import { createAddonRegistry, type AddonRegistry } from "../addon/registry.js"
 import { UNKNOWN_HOST_CONTEXT, type HostContext } from "../system/host-context.js"
 
 const CONFIG_FILENAME = "config.yml"
+const COMMAND_FIELD_NAMES = new Set(["command", "display_command", "select_command", "status_command"])
 
 export interface LoadedBootstrapConfig {
   config: BootstrapSirenoConfig
@@ -171,18 +172,27 @@ function parseConfigFile(configPath?: string): {
   }
 }
 
-function interpolateHostContextTemplates(value: unknown, hostContext: HostContext): unknown {
+function interpolateHostContextTemplates(
+  value: unknown,
+  hostContext: HostContext,
+  pathSegments: readonly (string | number)[] = [],
+): unknown {
   if (typeof value === "string") {
+    const lastSegment = pathSegments.at(-1)
+    if (typeof lastSegment === "string" && COMMAND_FIELD_NAMES.has(lastSegment)) {
+      return value
+    }
+
     return resolveHostContextPlaceholders(value, hostContext)
   }
 
   if (Array.isArray(value)) {
-    return value.map((item) => interpolateHostContextTemplates(item, hostContext))
+    return value.map((item, index) => interpolateHostContextTemplates(item, hostContext, [...pathSegments, index]))
   }
 
   if (value && typeof value === "object") {
     return Object.fromEntries(
-      Object.entries(value).map(([key, item]) => [key, interpolateHostContextTemplates(item, hostContext)]),
+      Object.entries(value).map(([key, item]) => [key, interpolateHostContextTemplates(item, hostContext, [...pathSegments, key])]),
     )
   }
 

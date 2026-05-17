@@ -21,6 +21,10 @@ const DEFAULT_TIMEOUT_MS = 10_000
 
 const HOST_CONTEXT_TEMPLATE_PATTERN = /\{\{\s*(host(?:\.[a-zA-Z0-9_]+)+)\s*\}\}/g
 
+function quotePosixShellValue(value: string): string {
+  return `'${value.replaceAll("'", "'\"'\"'")}'`
+}
+
 function normalizeOutput(value: string): string {
   return value.replace(/\r\n/g, "\n").trim()
 }
@@ -47,10 +51,17 @@ export function resolveHostContextPlaceholders(command: string, hostContext: Hos
   ))
 }
 
+export function resolveHostContextCommandPlaceholders(command: string, hostContext: HostContext): string {
+  return command.replace(HOST_CONTEXT_TEMPLATE_PATTERN, (placeholder, path) => {
+    const value = resolveHostContextPath(hostContext, path)
+    return value === undefined ? placeholder : quotePosixShellValue(value)
+  })
+}
+
 export async function executeCommand(options: CommandExecutionOptions): Promise<CommandExecutionResult> {
   try {
     const command = options.hostContext
-      ? resolveHostContextPlaceholders(options.command, options.hostContext)
+      ? resolveHostContextCommandPlaceholders(options.command, options.hostContext)
       : options.command
 
     const result = await execa("/bin/sh", ["-c", command], {

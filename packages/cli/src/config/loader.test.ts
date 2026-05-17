@@ -167,6 +167,63 @@ describe("loadConfig", () => {
     throw new Error("Expected config validation to fail")
   })
 
+  it("accepts a configured locked deck reference through the top-level session config", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "session:",
+        "  locked_deck: locked",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons: []",
+        "  locked:",
+        "    id: locked",
+        "    buttons:",
+        "      - position: 0",
+        "        type: display-text",
+        "        label: Locked",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig()
+
+    expect(config.session).toEqual({ locked_deck: "locked" })
+  })
+
+  it("reports missing locked deck references with line information", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "session:",
+        "  locked_deck: missing",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).message).toContain("Locked deck 'missing' is not defined")
+      expect((error as ConfigValidationError).lineNumber).toBe(4)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["session", "locked_deck"])
+      return
+    }
+
+    throw new Error("Expected config validation to fail")
+  })
+
   it("throws when a display button has neither label nor icon", async () => {
     writeFileSync(
       join(tempDir, "config.yml"),
@@ -403,7 +460,7 @@ describe("loadConfig", () => {
     })
   })
 
-  it("leaves non-host placeholders intact during config loading", async () => {
+  it("leaves command placeholders unresolved during config loading", async () => {
     writeFileSync(
       join(tempDir, "config.yml"),
       [
@@ -434,7 +491,33 @@ describe("loadConfig", () => {
     })
 
     expect(config.decks["emoji-favorites"]?.buttons[0]).toMatchObject({
-      select_command: "printf '%s' '{{emoji}} @ linux'",
+      select_command: "printf '%s' '{{emoji}} @ {{host.os.type}}'",
+    })
+  })
+
+  it("loads the committed Phase 11 host-context fixture through render and action-bearing config paths", async () => {
+    const fixturePath = join(originalCwd, "fixtures/phase-11/config.host-context.yml")
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig(fixturePath, undefined, {
+      os: {
+        type: "linux",
+        variant: "ubuntu",
+        version: "24.04",
+      },
+      session: {
+        capability: "unknown",
+        state: "unknown",
+      },
+    })
+
+    expect(config.decks.main?.buttons[0]).toMatchObject({
+      config: { label: "linux / ubuntu / unknown" },
+      label: "linux / ubuntu / unknown",
+      type: "display-text",
+    })
+    expect(config.decks["emoji-favorites"]?.buttons[0]).toMatchObject({
+      select_command: "printf '%s' '{{emoji}} @ {{host.os.type}} @ {{host.session.state}}'",
+      type: "emoji-entry-button",
     })
   })
 })

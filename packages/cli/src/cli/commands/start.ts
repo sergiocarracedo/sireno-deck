@@ -18,6 +18,8 @@ import type { DeckButtonProps } from "../../render/reconciler.js"
 
 import { createDeckSurfaceElement, renderDeck } from "../../render/reconciler.js"
 import { renderBlankKeyImage, renderTextImage } from "../../render/text-image.js"
+import { resolveHostContext } from "../../system/host-context.js"
+import { createSessionMonitor } from "../../system/session-monitor.js"
 import { formatConfigError } from "../../util/errors.js"
 import {
   isRunning,
@@ -33,7 +35,9 @@ export interface StartOptions {
 }
 
 export async function loadRuntimeConfig(options: StartOptions) {
-  const bootstrap = loadBootstrapConfig(options.config)
+  const sessionMonitor = await createSessionMonitor()
+  const hostContext = await resolveHostContext(undefined, sessionMonitor.getSnapshot())
+  const bootstrap = loadBootstrapConfig(options.config, hostContext)
   const registry = createBundledAddonRegistry()
   const addonLoadResult = await loadConfiguredAddons({
     addons: bootstrap.config.addons,
@@ -45,9 +49,18 @@ export async function loadRuntimeConfig(options: StartOptions) {
     options.logger.warn({ addonName: warning.addonName, reason: warning.reason }, "skipping addon after startup warning")
   }
 
+  if (sessionMonitor.getSnapshot().capability === "unsupported") {
+    options.logger.warn(
+      { platform: process.platform },
+      "session lock monitoring unavailable on this host; continuing without lock-aware deck switching",
+    )
+  }
+
   return {
-    config: loadConfig(bootstrap.filePath, registry),
+    config: loadConfig(bootstrap.filePath, registry, hostContext),
+    hostContext,
     registry,
+    sessionMonitor,
   }
 }
 
@@ -99,7 +112,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
   }
 
   try {
-    const { config } = await loadRuntimeConfig(options)
+    const { config, hostContext, sessionMonitor } = await loadRuntimeConfig(options)
     const theme = resolveTheme(config.theme)
     const mainDeck = config.decks[config.main_deck]
     let runtime: ReturnType<typeof createDeckRuntime> | null = null
@@ -120,7 +133,9 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     runtime = createDeckRuntime({
       deck: mainDeck,
       decks: config.decks,
+      hostContext,
       keyCount: connection.info.keyCount,
+      lockedDeckId: config.session?.locked_deck,
       theme,
       onRenderButton: async (button) => {
         const activeConnection = lifecycle.getConnection()
@@ -150,6 +165,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
         await renderMainDeck(activeConnection, buttons, theme, logger)
       },
+      sessionMonitor,
       subscribeKeyEvents: lifecycle.subscribeKeyEvents,
     })
 
@@ -168,6 +184,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     writePid()
     cleanupSignals = setupSignalHandlers(logger, async () => {
       runtime?.stop()
+      await sessionMonitor.stop()
       await lifecycle.close()
     })
   } catch (error) {

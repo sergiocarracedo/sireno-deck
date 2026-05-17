@@ -1,0 +1,45 @@
+theme: dark
+main_deck: main
+session:
+  locked_deck: locked
+decks:
+  main:
+    id: main
+    name: Main
+    buttons:
+      - position: 0
+        type: change-deck
+        label: Apps
+        target_deck: apps
+  apps:
+    id: apps
+    name: Apps
+    buttons:
+      - position: 0
+        type: change-deck
+        label: Settings
+        target_deck: settings
+  settings:
+    id: settings
+    name: Settings
+    buttons:
+      - position: 0
+        type: display-text
+        label: "Session {{host.session.state}}"
+  locked:
+    id: locked
+    name: Locked
+    buttons:
+      - position: 0
+        type: display-text
+        label: "Locked on {{host.os.type}}"
+  locked-fallback-review:
+    id: locked-fallback-review
+    name: Locked Fallback Review
+    buttons:
+      - position: 0
+        type: display-text
+        label: "Fallback stays runtime-owned; built-in date-time path is implicit only"
+addons: []
+logging:
+  level: info

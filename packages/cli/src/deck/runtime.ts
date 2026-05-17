@@ -1,5 +1,5 @@
 import { executeCommand, type CommandExecutionResult } from "../action/executor.js"
-import { resolveHostContextPlaceholders } from "../action/executor.js"
+import datetimeButtonsAddon from "../../../../builtin-addons/date-time/src/index.js"
 import { createPollingScheduler, type PollingScheduler } from "../render/scheduler.js"
 import { createDeckController, type DeckController } from "./controller.js"
 import { renderDeck } from "../render/reconciler.js"
@@ -9,6 +9,7 @@ import type { ButtonInstance, DeckConfig } from "../core/schemas.js"
 import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
 import type { DeckButtonProps } from "../render/reconciler.js"
 import { UNKNOWN_HOST_CONTEXT, type HostContext } from "../system/host-context.js"
+import type { SessionMonitor, SessionSnapshot } from "../system/session-monitor.js"
 
 export interface DeckRuntimeOptions {
   deck: DeckConfig
@@ -16,8 +17,10 @@ export interface DeckRuntimeOptions {
   executeAction?: (command: string) => Promise<CommandExecutionResult>
   hostContext?: HostContext
   keyCount?: number
+  lockedDeckId?: string
   onRenderButton?: (button: DeckButtonProps) => Promise<void> | void
   onRenderDeck?: (buttons: DeckButtonProps[]) => Promise<void> | void
+  sessionMonitor?: SessionMonitor
   subscribeKeyEvents: (listener: (event: StreamDeckKeyEvent) => void) => () => void
   createScheduler?: (intervalMs: number) => PollingScheduler
   theme: Theme
@@ -50,21 +53,70 @@ interface RuntimeButtonInstance {
   render: () => ReturnType<ButtonInstance["definition"]["createInstance"]>["render"] extends () => infer T ? T : never
 }
 
+const IMPLICIT_LOCKED_DECK_ID = "__sireno_locked_session__"
+const implicitLockedButtonDefinition = datetimeButtonsAddon.buttons.find((button) => button.type === "date-time")
+
+if (!implicitLockedButtonDefinition) {
+  throw new Error("Bundled date-time button definition is required for the implicit locked fallback")
+}
+
+function cloneHostContext(hostContext: HostContext): HostContext {
+  return {
+    os: { ...hostContext.os },
+    session: { ...hostContext.session },
+  }
+}
+
+function createImplicitLockedDeck(): DeckConfig {
+  return {
+    id: IMPLICIT_LOCKED_DECK_ID,
+    name: "Locked Session",
+    buttons: [{
+      config: {
+        date_format: "MM/DD/YYYY",
+        time_format: "HH:mm:ss",
+        variant: "date-time",
+      },
+      definition: implicitLockedButtonDefinition,
+      position: 0,
+      type: "date-time",
+    }],
+  }
+}
+
 export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   const reservedBackKeyIndex = Math.max(0, (options.keyCount ?? 15) - 1)
+  const hostContext = cloneHostContext(options.hostContext ?? UNKNOWN_HOST_CONTEXT)
+  const implicitLockedDeck = createImplicitLockedDeck()
+  const runtimeDecks = {
+    ...(options.decks ?? { [options.deck.id]: options.deck }),
+    [implicitLockedDeck.id]: implicitLockedDeck,
+  }
   const deckController = createDeckController({
-    decks: options.decks ?? { [options.deck.id]: options.deck },
+    decks: runtimeDecks,
     mainDeckId: options.deck.id,
   })
-  const executeAction = options.executeAction ?? ((command: string) => executeCommand({ command }))
+  const executeAction = options.executeAction ?? ((command: string) => executeCommand({ command, hostContext }))
   const createScheduler = options.createScheduler ?? ((intervalMs: number) => createPollingScheduler({ intervalMs }))
   const instances = new Map<string, RuntimeButtonInstance>()
   const pressedKeys = new Set<number>()
   const renderCache = new Map<string, DeckButtonProps>()
   const schedulers = new Map<string, PollingScheduler>()
   let unsubscribe: (() => void) | null = null
+  let unsubscribeSessionMonitor: (() => void) | null = null
   let activeActivationVersion = 0
+  let lockedNavigationSnapshot: string[] | null = null
+  let lockModeActive = false
   let stopped = false
+
+  function getLockedSurfaceDeckId(): string {
+    return options.lockedDeckId ?? IMPLICIT_LOCKED_DECK_ID
+  }
+
+  function syncSessionSnapshot(snapshot: SessionSnapshot): void {
+    hostContext.session.capability = snapshot.capability
+    hostContext.session.state = snapshot.state
+  }
 
   function getButtonStateKey(deckId: string, keyIndex: number): string {
     return `${deckId}:${keyIndex}`
@@ -139,9 +191,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         deckController.navigateTo(targetDeckId)
         await activateDeckSurface(targetDeckId, previousDeckId)
       },
-      runCommand: async (command: string) => executeAction(
-        resolveHostContextPlaceholders(command, options.hostContext ?? UNKNOWN_HOST_CONTEXT),
-      ),
+      runCommand: async (command: string) => executeAction(command),
     }
   }
 
@@ -159,7 +209,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         type: button.type,
       },
       config: button.config,
-      hostContext: options.hostContext ?? UNKNOWN_HOST_CONTEXT,
+      hostContext,
       methods: createButtonMethods(button, deckId),
       theme: options.theme,
     }) as RuntimeButtonInstance
@@ -178,7 +228,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     stopActiveDeckPolling()
 
     if (previousDeckId !== activeDeckId) {
-      for (const button of getDeckButtons(options.decks?.[previousDeckId] ?? options.deck)) {
+      for (const button of getDeckButtons(runtimeDecks[previousDeckId] ?? options.deck)) {
         await getOrCreateInstance(previousDeckId, button).onDeactivate?.()
       }
     }
@@ -228,6 +278,47 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
           },
         },
       ])
+    }
+  }
+
+  async function enterLockMode(): Promise<void> {
+    if (lockModeActive) {
+      return
+    }
+
+    lockModeActive = true
+    lockedNavigationSnapshot = deckController.getStackSnapshot()
+    const previousDeckId = deckController.getActiveDeckId()
+    const lockedDeckId = getLockedSurfaceDeckId()
+    deckController.restoreStack([lockedDeckId])
+    await activateDeckSurface(lockedDeckId, previousDeckId)
+  }
+
+  async function exitLockMode(): Promise<void> {
+    if (!lockModeActive) {
+      return
+    }
+
+    lockModeActive = false
+    const previousDeckId = deckController.getActiveDeckId()
+    const restoreStack = lockedNavigationSnapshot && lockedNavigationSnapshot.length > 0
+      ? lockedNavigationSnapshot
+      : [options.deck.id]
+    lockedNavigationSnapshot = null
+    deckController.restoreStack(restoreStack)
+    await activateDeckSurface(deckController.getActiveDeckId(), previousDeckId)
+  }
+
+  async function handleSessionSnapshot(snapshot: SessionSnapshot): Promise<void> {
+    syncSessionSnapshot(snapshot)
+
+    if (snapshot.state === "locked") {
+      await enterLockMode()
+      return
+    }
+
+    if (snapshot.state === "unlocked") {
+      await exitLockMode()
     }
   }
 
@@ -306,14 +397,30 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       }
 
       stopped = false
+      const initialSessionSnapshot = options.sessionMonitor?.getSnapshot()
+      if (initialSessionSnapshot) {
+        syncSessionSnapshot(initialSessionSnapshot)
+
+        if (initialSessionSnapshot.state === "locked") {
+          lockModeActive = true
+          lockedNavigationSnapshot = null
+          deckController.restoreStack([getLockedSurfaceDeckId()])
+        }
+      }
+
       unsubscribe = options.subscribeKeyEvents(onKeyEvent)
+      unsubscribeSessionMonitor = options.sessionMonitor?.subscribe((snapshot) => {
+        void handleSessionSnapshot(snapshot)
+      }) ?? null
       void activateDeckSurface()
     },
     stop() {
       stopped = true
       pressedKeys.clear()
       unsubscribe?.()
+      unsubscribeSessionMonitor?.()
       unsubscribe = null
+      unsubscribeSessionMonitor = null
 
       stopActiveDeckPolling()
 
