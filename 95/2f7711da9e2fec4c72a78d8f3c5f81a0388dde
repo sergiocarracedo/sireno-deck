@@ -1,0 +1,25 @@
+.planning/phases/11-session-config-contracts/11-UAT.md
+  s_50714901791ebe::t_56904f68af4f28 11-12,14,22
+  s_50714901791ebe::t_986c2cf2731311 2,7,15,36,47,49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "952f7711da9e2fec4c72a78d8f3c5f81a0388dde",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_50714901791ebe": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cad490d1ffe7qtGxWMYgUngfy",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
