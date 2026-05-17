@@ -164,10 +164,10 @@ This project uses **learnship**. Key facts:
 
 ## Current Phase
 
-**Milestone:** v1.1 — Addon UI and Live Widgets
-**Phase:** 9 — Calendar + Authoring Clarity ✓ execution complete
-**Status:** verifying
-**Last updated:** 2026-05-16
+**Milestone:** v1.2 — Session Context and Surface Composition
+**Phase:** 11 — Session + Config Contracts
+**Status:** planning
+**Last updated:** 2026-05-17
 
 ---
 
