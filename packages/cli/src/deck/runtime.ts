@@ -1,4 +1,5 @@
 import { executeCommand, type CommandExecutionResult } from "../action/executor.js"
+import { resolveHostContextPlaceholders } from "../action/executor.js"
 import { createPollingScheduler, type PollingScheduler } from "../render/scheduler.js"
 import { createDeckController, type DeckController } from "./controller.js"
 import { renderDeck } from "../render/reconciler.js"
@@ -138,7 +139,9 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         deckController.navigateTo(targetDeckId)
         await activateDeckSurface(targetDeckId, previousDeckId)
       },
-      runCommand: async (command: string) => executeAction(command),
+      runCommand: async (command: string) => executeAction(
+        resolveHostContextPlaceholders(command, options.hostContext ?? UNKNOWN_HOST_CONTEXT),
+      ),
     }
   }
 

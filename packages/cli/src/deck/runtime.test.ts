@@ -172,6 +172,157 @@ describe("createDeckRuntime", () => {
     })
   })
 
+  it("resolves host-context placeholders for action commands", async () => {
+    const executeAction = vi.fn(async () => ({
+      code: 0,
+      failed: false,
+      signal: undefined,
+      stderr: "",
+      stdout: "",
+      timedOut: false,
+    }))
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { emoji: "😀", label: "Smileys", select_command: "printf '%s' '{{emoji}} @ {{host.os.type}}'" },
+          definition: {
+            configSchema: {
+              parse: (value: unknown) => value,
+              safeParse: (value: unknown) => ({ data: value, success: true as const }),
+            },
+            createInstance: ({ button, config, methods }: {
+              button: { position: number }
+              config: { emoji: string; label: string; select_command: string }
+              methods: { runCommand: (command: string) => Promise<unknown> }
+            }) => ({
+              onTap: async () => {
+                await methods.runCommand(config.select_command.replaceAll("{{emoji}}", config.emoji))
+              },
+              render: () => createElement("deck-button", { keyIndex: button.position, label: config.label }),
+            }),
+            type: "emoji-entry-button",
+          },
+          position: 0,
+          type: "emoji-entry-button",
+        }],
+      },
+      executeAction,
+      hostContext: {
+        os: {
+          type: "linux",
+          variant: "ubuntu",
+          version: "24.04",
+        },
+        session: {
+          capability: "unknown",
+          state: "unknown",
+        },
+      },
+      subscribeKeyEvents: (listener) => {
+        queueMicrotask(() => {
+          listener({ keyIndex: 0, type: "down" })
+          listener({ keyIndex: 0, type: "up" })
+        })
+
+        return () => {}
+      },
+      theme: {
+        accent: "#f59e0b",
+        background: "#10161f",
+        danger: "#fb7185",
+        foreground: "#eef2f7",
+        name: "dark",
+        primary: "#7dd3fc",
+        success: "#34d399",
+      },
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(executeAction).toHaveBeenCalledWith("printf '%s' '😀 @ linux'")
+    })
+  })
+
+  it("resolves host-context placeholders for status-bearing refresh command flows", async () => {
+    const executeAction = vi.fn(async () => ({
+      code: 0,
+      failed: false,
+      signal: undefined,
+      stderr: "",
+      stdout: "linux|unknown",
+      timedOut: false,
+    }))
+    const createScheduler = vi.fn(() => ({
+      intervalMs: 1000,
+      jitterMs: 0,
+      scheduleDelay: () => 0,
+      start: (tasks: Array<{ id: string; run: () => Promise<void> }>) => {
+        void tasks[0]?.run()
+      },
+      stop: vi.fn(),
+    }))
+    const runtime = createDeckRuntime({
+      createScheduler,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Status" },
+          definition: {
+            configSchema: {
+              parse: (value: unknown) => value,
+              safeParse: (value: unknown) => ({ data: value, success: true as const }),
+            },
+            createInstance: ({ button, methods }: {
+              button: { position: number }
+              methods: { runCommand: (command: string) => Promise<unknown> }
+            }) => ({
+              refresh: async () => {
+                await methods.runCommand("printf '%s|%s' '{{host.os.type}}' '{{host.session.state}}'")
+              },
+              render: () => createElement("deck-button", { keyIndex: button.position, label: "Status" }),
+            }),
+            defaultIntervalMs: 1000,
+            type: "status-display",
+          },
+          label: "Status",
+          position: 0,
+          type: "status-display",
+        }],
+      },
+      executeAction,
+      hostContext: {
+        os: {
+          type: "linux",
+          variant: "ubuntu",
+          version: "24.04",
+        },
+        session: {
+          capability: "unknown",
+          state: "unknown",
+        },
+      },
+      subscribeKeyEvents: () => () => {},
+      theme: {
+        accent: "#f59e0b",
+        background: "#10161f",
+        danger: "#fb7185",
+        foreground: "#eef2f7",
+        name: "dark",
+        primary: "#7dd3fc",
+        success: "#34d399",
+      },
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(createScheduler).toHaveBeenCalledWith(1000)
+      expect(executeAction).toHaveBeenCalledWith("printf '%s|%s' 'linux' 'unknown'")
+    })
+  })
+
   it("navigates generated emoji decks and runs the favorites selection command", async () => {
     const registry = createBundledAddonRegistry()
     const config = validateConfig({

@@ -3,6 +3,7 @@ import { homedir } from "node:os"
 import { dirname, join } from "node:path"
 import yaml from "js-yaml"
 
+import { resolveHostContextPlaceholders } from "../action/executor.js"
 import {
   type BootstrapSirenoConfig,
   ConfigValidationError,
@@ -12,6 +13,7 @@ import {
 } from "../core/schemas.js"
 import { getBundledAddons } from "../addon/builtin.js"
 import { createAddonRegistry, type AddonRegistry } from "../addon/registry.js"
+import { UNKNOWN_HOST_CONTEXT, type HostContext } from "../system/host-context.js"
 
 const CONFIG_FILENAME = "config.yml"
 
@@ -169,12 +171,31 @@ function parseConfigFile(configPath?: string): {
   }
 }
 
-export function loadBootstrapConfig(configPath?: string): LoadedBootstrapConfig {
+function interpolateHostContextTemplates(value: unknown, hostContext: HostContext): unknown {
+  if (typeof value === "string") {
+    return resolveHostContextPlaceholders(value, hostContext)
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => interpolateHostContextTemplates(item, hostContext))
+  }
+
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, interpolateHostContextTemplates(item, hostContext)]),
+    )
+  }
+
+  return value
+}
+
+export function loadBootstrapConfig(configPath?: string, hostContext: HostContext = UNKNOWN_HOST_CONTEXT): LoadedBootstrapConfig {
   const parsedConfig = parseConfigFile(configPath)
+  const interpolatedConfig = interpolateHostContextTemplates(parsedConfig.parsed, hostContext)
 
   try {
     return {
-      config: validateBootstrapConfig(parsedConfig.parsed),
+      config: validateBootstrapConfig(interpolatedConfig),
       cwd: dirname(parsedConfig.filePath),
       filePath: parsedConfig.filePath,
     }
@@ -193,12 +214,17 @@ export function loadBootstrapConfig(configPath?: string): LoadedBootstrapConfig 
   }
 }
 
-export function loadConfig(configPath?: string, registry = createBundledAddonRegistry()): SirenoConfig {
+export function loadConfig(
+  configPath?: string,
+  registry = createBundledAddonRegistry(),
+  hostContext: HostContext = UNKNOWN_HOST_CONTEXT,
+): SirenoConfig {
   const parsedConfig = parseConfigFile(configPath)
+  const interpolatedConfig = interpolateHostContextTemplates(parsedConfig.parsed, hostContext)
 
   try {
     // Phase 5 bootstrap validation: load the addon registry before full button validation.
-    return validateConfig(parsedConfig.parsed, registry)
+    return validateConfig(interpolatedConfig, registry)
   } catch (error) {
     if (error instanceof ConfigValidationError) {
       throw new ConfigValidationError(

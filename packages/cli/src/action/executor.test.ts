@@ -26,4 +26,24 @@ describe("executeCommand", () => {
     expect(result.failed).toBe(true)
     expect(result.timedOut).toBe(true)
   })
+
+  it("resolves canonical host-context placeholders before execution", async () => {
+    const result = await executeCommand({
+      command: "printf '%s|%s|%s' '{{host.os.type}}' '{{host.os.variant}}' '{{host.session.state}}'",
+      hostContext: {
+        os: {
+          type: "linux",
+          variant: "ubuntu",
+          version: "24.04",
+        },
+        session: {
+          capability: "unknown",
+          state: "unknown",
+        },
+      },
+    })
+
+    expect(result.failed).toBe(false)
+    expect(result.stdout).toBe("linux|ubuntu|unknown")
+  })
 })

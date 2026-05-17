@@ -366,4 +366,75 @@ describe("loadConfig", () => {
       type: "emoji-back-button",
     })
   })
+
+  it("interpolates canonical host-context placeholders during config loading", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: display-text",
+        "        label: \"{{host.os.type}} / {{host.os.variant}} / {{host.session.state}}\"",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig(undefined, undefined, {
+      os: {
+        type: "linux",
+        variant: "ubuntu",
+        version: "24.04",
+      },
+      session: {
+        capability: "unknown",
+        state: "unknown",
+      },
+    })
+
+    expect(config.decks.main?.buttons[0]).toMatchObject({
+      config: { label: "linux / ubuntu / unknown" },
+      label: "linux / ubuntu / unknown",
+    })
+  })
+
+  it("leaves non-host placeholders intact during config loading", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: emoji",
+        "decks:",
+        "  emoji:",
+        "    id: emoji",
+        "    type: emoji-selector",
+        "    favorites:",
+        "      - 😀",
+        "    select_command: \"printf '%s' '{{emoji}} @ {{host.os.type}}'\"",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig(undefined, undefined, {
+      os: {
+        type: "linux",
+        variant: "ubuntu",
+        version: "24.04",
+      },
+      session: {
+        capability: "unknown",
+        state: "unknown",
+      },
+    })
+
+    expect(config.decks["emoji-favorites"]?.buttons[0]).toMatchObject({
+      select_command: "printf '%s' '{{emoji}} @ linux'",
+    })
+  })
 })
