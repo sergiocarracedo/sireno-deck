@@ -2,19 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-12)
+See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 10 verified; next up is milestone review on the rebuilt public authoring surface
+**Current focus:** Phase 11 planning for normalized session context, config injection, and lock-aware deck behavior
 
 ## Current Position
 
-Phase: 10 — Public Authoring Exports *(gap closure)*
-Plan: 10-02-PLAN.md
-Status: Phase 10 verified against the built package surface; next up is `/review`
-Last activity: 2026-05-16 - Verified the emitted public root and `./jsx` package surface via build output, built-package typecheck, and focused render parity coverage
+Phase: 11 — Session + Config Contracts
+Plan: -
+Status: planning
+Last activity: 2026-05-17 - Captured Phase 11 discussion context for normalized host/session contracts and lock-aware runtime behavior
 
-Progress: [##########] 100%
+Progress: [----------] 0%
 
 ## Performance Metrics
 
@@ -47,6 +47,12 @@ Recent decisions affecting current work:
 - **Execution:** yargs command handlers that return promises require `.parseAsync()`, and a foreground daemon must keep the event loop alive explicitly.
 - **Phase 5 discussion:** Button behavior should move behind addon-owned stateful instances that render React output, declare their own schemas, and use core-owned scheduling, command helpers, invalidation, and navigation methods.
 - **Phase 5 discussion:** Built-in buttons should become bundled addons loaded through the same registry path as external addons, and the button config surface should be redesigned around a core envelope plus inline addon fields.
+- **v1.2 research:** Session-aware behavior should be driven by one core-owned normalized context contract shared across config templating, addon render, and command/status execution.
+- **v1.2 research:** Background precedence and text fitting need explicit renderer contracts before global wrapper/style primitives are added, or the milestone will turn into per-visual special cases.
+- **Phase 11 discussion:** One canonical host context should carry OS `type` / `variant` / `version` plus session capability/state, and that exact shape should be reused across config templating, addon render, and command/status execution.
+- **Phase 11 discussion:** Lock-aware behavior should use a top-level runtime/session config setting, allow an ordinary configured locked deck, and otherwise fall back to an implicit built-in date/time locked surface.
+- **Phase 11 discussion:** Unlock must restore the full saved pre-lock navigation stack, while locked-mode navigation stays isolated from normal runtime state.
+- **Phase 11 discussion:** Unsupported lock detection should not block startup; it should expose unsupported capability in context and warn once.
 
 ### Pending Todos
 
@@ -55,6 +61,8 @@ Recent decisions affecting current work:
 ### Progress Notes
 
 - **Phase 10 kickoff:** Milestone audit found that the documented addon authoring entrypoints do not line up with the built `packages/cli` exports, so release flow needs a gap-closure phase before `/review`.
+- **Milestone v1.2 kickoff:** Captured session-context, layered background, text fitting, global wrapper/style, richer toggle, and lock-aware deck requirements plus the five-phase roadmap that sequences contract work before user-facing polish.
+- **Phase 11 discussion:** Captured the canonical host/session contract, first minimal config templating seam, implicit built-in locked fallback, isolated lock-mode navigation, and unsupported-host degradation policy for downstream planning.
 - **Plan 05-01:** Completed the addon API, bundled registry, bootstrap-aware config validation, and the first generic addon-host runtime slice.
 - **Plan 05-02:** Completed addon manifest validation, unified local/npm loading, startup warning isolation, and external-addon regression coverage.
 - **Plan 05-03:** Completed addon asset resolution, deck-type expansion, and the bundled emoji selector proof with runtime coverage.
@@ -78,9 +86,9 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-05-16
-Stopped at: Phase 10 verified; next up is `/review` for milestone closure.
-Resume file: .planning/phases/10-public-authoring-exports/README.md
+Last session: 2026-05-17
+Stopped at: Phase 11 context captured; next up is `plan-phase 11`.
+Resume file: .planning/ROADMAP.md
 
 ### Quick Tasks Completed
 
