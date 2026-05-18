@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 11 verified, with follow-up context captured for security hardening around shell-safe host interpolation, honest Linux lock detection, and bundled-addon fallback ownership.
+**Current focus:** Phase 12 context captured, with backgrounds pinned to color-only button->deck->theme precedence and text fitting pinned to explicit shrink/wrap modes with a renderer-owned readability floor.
 
 ## Current Position
 
-Phase: 11 — Session + Config Contracts
-Plan: 11-01, 11-02
-Status: verified
-Last activity: 2026-05-17 - Updated Phase 11 context with security-fix decisions for shell-safe command interpolation, honest Linux lock detection, and bundled-addon fallback ownership
+Phase: 12 — Backgrounds + Text Fitting
+Plan: —
+Status: discussed
+Last activity: 2026-05-18 - Captured Phase 12 background and text-fitting decisions for planning
 
 Progress: [##########] 100%
 
@@ -53,6 +53,9 @@ Recent decisions affecting current work:
 - **Phase 11 discussion:** Lock-aware behavior should use a top-level runtime/session config setting, allow an ordinary configured locked deck, and otherwise fall back to an implicit built-in date/time locked surface.
 - **Phase 11 discussion:** Unlock must restore the full saved pre-lock navigation stack, while locked-mode navigation stays isolated from normal runtime state.
 - **Phase 11 discussion:** Unsupported lock detection should not block startup; it should expose unsupported capability in context and warn once.
+- **Phase 12 discussion:** Backgrounds stay color-only in this phase and resolve with button override, then deck background, then theme background.
+- **Phase 12 discussion:** Text fitting becomes an explicit render contract with `shrink` as the default mode, `wrap` as the alternate mode, and a renderer-owned minimum readable size.
+- **Phase 12 discussion:** The new fitting contract lands on shared/default text paths first; bespoke variants should only adopt it where reuse is low-risk.
 
 ### Pending Todos
 
@@ -82,6 +85,7 @@ Recent decisions affecting current work:
 - **Plan 11-02:** Added the lock-aware session-monitor seam, validated `session.locked_deck`, implemented temporary locked-mode switching with exact unlock restore plus implicit fallback, and committed the Phase 11 lock-session fixture/UAT path.
 - **Phase 11 verification:** Confirmed the canonical host/session contract is wired end-to-end and that locked-mode runtime behavior is covered by focused tests and committed review artifacts, with live host detector hardening still noted as follow-up work.
 - **Phase 11 security follow-up discussion:** Captured that command safety must escape host values only at the shell boundary, Linux may only claim `supported` with a real detector, and the implicit locked fallback should move onto the bundled date-time addon path.
+- **Phase 12 discussion:** Captured the color-only background contract, exact button->deck->theme precedence, narrow `shrink`/`wrap` fit modes, and the decision to keep the readability floor renderer-owned while scoping the first rollout to shared/default text paths.
 
 ### Blockers/Concerns
 
@@ -91,9 +95,9 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-05-17
-Stopped at: Phase 11 security-hardening context captured; next up is `plan-phase 11` if we want those decisions to reshape the remaining execution plan.
-Resume file: .planning/phases/11-session-config-contracts/11-CONTEXT.md
+Last session: 2026-05-18
+Stopped at: Phase 12 context captured; next up is `plan-phase 12` to turn the background and text-fitting decisions into execution plans.
+Resume file: .planning/phases/12-backgrounds-text-fitting/12-CONTEXT.md
 
 ### Quick Tasks Completed
 
