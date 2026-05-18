@@ -22,6 +22,7 @@ export interface AddonGeneratedButton extends AddonButtonEnvelope {
 }
 
 export interface AddonGeneratedDeck {
+  background?: string
   buttons: AddonGeneratedButton[]
   id: string
   name?: string

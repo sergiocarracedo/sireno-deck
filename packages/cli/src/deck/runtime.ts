@@ -126,6 +126,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     return deck.buttons
   }
 
+  function resolveButtonBackground(button: ButtonInstance, deckId: string): string | undefined {
+    return button.background ?? runtimeDecks[deckId]?.background ?? options.theme.background
+  }
+
   function isActivationCurrent(deckId: string, activationVersion: number): boolean {
     return !stopped && deckController.getActiveDeckId() === deckId && activeActivationVersion === activationVersion
   }
@@ -151,8 +155,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     const instance = getOrCreateInstance(deckId, button)
     const descriptions = renderDeck(instance.render())
     const description = descriptions[0]
-      ? { ...descriptions[0], keyIndex: button.position }
-      : { keyIndex: button.position }
+      ? { ...descriptions[0], background: descriptions[0].background ?? resolveButtonBackground(button, deckId), keyIndex: button.position }
+      : { background: resolveButtonBackground(button, deckId), keyIndex: button.position }
 
     renderCache.set(getButtonStateKey(deckId, button.position), description)
     await options.onRenderButton?.(description)

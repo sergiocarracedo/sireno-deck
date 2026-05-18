@@ -6,6 +6,7 @@ import sharp from "sharp"
 import type { Theme, ThemeTypographyRole } from "../config/theme.js"
 
 export interface TextImageOptions {
+  background?: string
   detailLines?: string[]
   displayValue?: string
   icon?: string
@@ -234,19 +235,20 @@ function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, the
   const text = options.text ?? ""
   const iconPath = options.icon
   const safeText = escapeSvgText(text)
-  const cardStart = mixHexColor(theme.background, theme.primary, 0.08)
-  const cardEnd = mixHexColor(theme.background, "#ffffff", 0.04)
-  const frame = mixHexColor(theme.primary, theme.background, 0.45)
-  const metricFill = mixHexColor(theme.primary, theme.background, 0.12)
-  const metricTrack = mixHexColor(theme.primary, theme.background, 0.78)
-  const subtext = mixHexColor(theme.foreground, theme.background, 0.4)
+  const cardBackground = options.background ?? theme.background
+  const cardStart = mixHexColor(cardBackground, theme.primary, 0.08)
+  const cardEnd = mixHexColor(cardBackground, "#ffffff", 0.04)
+  const frame = mixHexColor(theme.primary, cardBackground, 0.45)
+  const metricFill = mixHexColor(theme.primary, cardBackground, 0.12)
+  const metricTrack = mixHexColor(theme.primary, cardBackground, 0.78)
+  const subtext = mixHexColor(theme.foreground, cardBackground, 0.4)
   const iconMarkup = getIconMarkup(iconPath)
   const badgeFill = options.variant === "toggle"
-    ? mixHexColor(theme.accent, theme.background, 0.15)
-    : mixHexColor(theme.primary, theme.background, 0.15)
+    ? mixHexColor(theme.accent, cardBackground, 0.15)
+    : mixHexColor(theme.primary, cardBackground, 0.15)
   const badgeStroke = options.variant === "toggle"
-    ? mixHexColor(theme.accent, theme.background, 0.05)
-    : mixHexColor(theme.primary, theme.background, 0.2)
+    ? mixHexColor(theme.accent, cardBackground, 0.05)
+    : mixHexColor(theme.primary, cardBackground, 0.2)
   const badgeText = options.subtitle ? escapeSvgText(options.subtitle) : ""
   const labelY = iconMarkup ? 58 : 43
   const metricText = options.displayValue ? escapeSvgText(options.displayValue) : ""
@@ -814,8 +816,8 @@ export async function renderTextImage(options: TextImageOptions): Promise<Buffer
   const theme = options.theme ?? getDefaultTheme()
   const preset: TextImagePreset = {
     ...STREAM_DECK_KEY_PRESET,
-    background: theme.background,
-    frame: mixHexColor(theme.primary, theme.background, 0.45),
+    background: options.background ?? theme.background,
+    frame: mixHexColor(theme.primary, options.background ?? theme.background, 0.45),
     keyHeight: options.height ?? STREAM_DECK_KEY_PRESET.keyHeight,
     keyWidth: options.width ?? STREAM_DECK_KEY_PRESET.keyWidth,
     text: theme.foreground,

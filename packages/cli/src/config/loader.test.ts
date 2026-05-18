@@ -224,6 +224,63 @@ describe("loadConfig", () => {
     throw new Error("Expected config validation to fail")
   })
 
+  it("keeps core-owned deck and button backgrounds while preserving strict addon validation", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    background: '#223344'",
+        "    buttons:",
+        "      - position: 0",
+        "        type: display-text",
+        "        label: Clock",
+        "        background: '#556677'",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig()
+
+    expect(config.decks.main?.background).toBe("#223344")
+    expect(config.decks.main?.buttons[0]?.background).toBe("#556677")
+    expect(config.decks.main?.buttons[0]?.config).toEqual({ label: "Clock" })
+  })
+
+  it("reports invalid button background values with line information", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: display-text",
+        "        label: Clock",
+        "        background:",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).lineNumber).toBe(10)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "buttons", 0, "background"])
+      return
+    }
+
+    throw new Error("Expected config validation to fail")
+  })
+
   it("throws when a display button has neither label nor icon", async () => {
     writeFileSync(
       join(tempDir, "config.yml"),

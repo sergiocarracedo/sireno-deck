@@ -94,8 +94,8 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(onRenderDeck).toHaveBeenCalledWith([{ keyIndex: 0, label: "Clock" }])
-      expect(runtime.getRenderButtons()).toEqual([{ keyIndex: 0, label: "Clock" }])
+      expect(onRenderDeck).toHaveBeenCalledWith([{ background: "#10161f", keyIndex: 0, label: "Clock" }])
+      expect(runtime.getRenderButtons()).toEqual([{ background: "#10161f", keyIndex: 0, label: "Clock" }])
     })
   })
 
@@ -148,7 +148,7 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(onRenderButton).toHaveBeenCalledWith({ keyIndex: 1, label: "Updated" })
+      expect(onRenderButton).toHaveBeenCalledWith({ background: "#10161f", keyIndex: 1, label: "Updated" })
     })
   })
 
@@ -210,6 +210,74 @@ describe("createDeckRuntime", () => {
     await vi.waitFor(() => {
       expect(observedHostContext).toHaveBeenCalledWith(hostContext)
       expect(observedHostContext.mock.calls[0]?.[0]).toStrictEqual(hostContext)
+    })
+  })
+
+  it("resolves button background precedence before runtime render output", async () => {
+    const onRenderDeck = vi.fn()
+    const runtime = createDeckRuntime({
+      deck: {
+        background: "#112233",
+        id: "main",
+        buttons: [
+          {
+            config: { label: "Deck" },
+            definition: createDisplayDefinition(),
+            label: "Deck",
+            position: 0,
+            type: "display-text",
+          },
+          {
+            background: "#445566",
+            config: { label: "Button" },
+            definition: createDisplayDefinition(),
+            label: "Button",
+            position: 1,
+            type: "display-text",
+          },
+        ],
+      },
+      onRenderDeck,
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(onRenderDeck).toHaveBeenCalledWith([
+        { background: "#112233", keyIndex: 0, label: "Deck" },
+        { background: "#445566", keyIndex: 1, label: "Button" },
+      ])
+      expect(runtime.getRenderButtons()).toEqual([
+        { background: "#112233", keyIndex: 0, label: "Deck" },
+        { background: "#445566", keyIndex: 1, label: "Button" },
+      ])
+    })
+  })
+
+  it("falls back to the theme background when neither button nor deck config overrides it", async () => {
+    const onRenderDeck = vi.fn()
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Clock" },
+          definition: createDisplayDefinition(),
+          label: "Clock",
+          position: 0,
+          type: "display-text",
+        }],
+      },
+      onRenderDeck,
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(onRenderDeck).toHaveBeenCalledWith([{ background: "#10161f", keyIndex: 0, label: "Clock" }])
     })
   })
 
@@ -423,7 +491,7 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ keyIndex: 0, label: "linux / ubuntu / unknown" })
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "linux / ubuntu / unknown" })
     })
 
     emitEvent?.({ keyIndex: 1, type: "down" })
@@ -667,7 +735,7 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toEqual([{ keyIndex: 0, label: "Clock" }])
+      expect(runtime.getRenderButtons()).toEqual([{ background: "#10161f", keyIndex: 0, label: "Clock" }])
     })
 
     expect(createScheduler).not.toHaveBeenCalled()
@@ -781,21 +849,21 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("settings")
-      expect(runtime.getRenderButtons()).toContainEqual({ keyIndex: 0, label: "Settings" })
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Settings" })
     })
 
     sessionMonitor.emit({ capability: "supported", state: "locked" })
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("locked")
-      expect(runtime.getRenderButtons()).toContainEqual({ keyIndex: 0, label: "Locked Deck" })
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Locked Deck" })
     })
 
     sessionMonitor.emit({ capability: "supported", state: "unlocked" })
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("settings")
-      expect(runtime.getRenderButtons()).toContainEqual({ keyIndex: 0, label: "Settings" })
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Settings" })
     })
   })
 
@@ -955,7 +1023,7 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("settings")
-      expect(runtime.getRenderButtons()).toContainEqual({ keyIndex: 0, label: "Settings Deck" })
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Settings Deck" })
     })
   })
 
@@ -1000,21 +1068,21 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("settings")
-      expect(runtime.getRenderButtons()).toContainEqual({ keyIndex: 0, label: "Session unlocked" })
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Session unlocked" })
     })
 
     sessionMonitor.emit({ capability: "supported", state: "locked" })
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("locked")
-      expect(runtime.getRenderButtons()).toContainEqual({ keyIndex: 0, label: "Locked on linux" })
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Locked on linux" })
     })
 
     sessionMonitor.emit({ capability: "supported", state: "unlocked" })
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("settings")
-      expect(runtime.getRenderButtons()).toContainEqual({ keyIndex: 0, label: "Session unlocked" })
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Session unlocked" })
     })
   })
 })

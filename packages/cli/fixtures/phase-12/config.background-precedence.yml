@@ -1,0 +1,33 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    name: Phase 12 Background Precedence Review
+    background: "#153423"
+    buttons:
+      - position: 0
+        type: display-text
+        label: Button Override
+        background: "#4b1f2f"
+      - position: 1
+        type: display-text
+        label: Deck Fallback
+      - position: 2
+        type: change-deck
+        label: Theme Fallback
+        target_deck: theme-fallback
+  theme-fallback:
+    id: theme-fallback
+    name: Phase 12 Theme Background Review
+    buttons:
+      - position: 0
+        type: display-text
+        label: Theme Fallback
+      - position: 1
+        type: change-deck
+        label: Back
+        target_deck: main
+addons: []
+logging:
+  level: info

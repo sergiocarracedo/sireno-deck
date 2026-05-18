@@ -117,6 +117,31 @@ describe("render reconciler", () => {
     expect(descriptions).toContainEqual({ keyIndex: 14, label: "Back", icon: undefined })
   })
 
+  it("threads explicit button backgrounds through render descriptions", () => {
+    const descriptions = renderDeck(
+      createDeckButtonElement({ background: "#224466", keyIndex: 2, label: "Clock" }),
+    )
+
+    expect(descriptions).toEqual([{ background: "#224466", keyIndex: 2, label: "Clock" }])
+  })
+
+  it("applies deck-surface background fallback only to buttons without overrides", () => {
+    const descriptions = renderDeck(
+      createDeckSurfaceElement({
+        background: "#112233",
+        buttons: [
+          { keyIndex: 0, label: "Deck" },
+          { background: "#445566", keyIndex: 1, label: "Button" },
+        ],
+      }),
+    )
+
+    expect(descriptions).toEqual([
+      { background: "#112233", keyIndex: 0, label: "Deck" },
+      { background: "#445566", keyIndex: 1, label: "Button" },
+    ])
+  })
+
   it("keeps addon-backed display model generation minimal", () => {
     expect(createDisplayButtonModels([
       { type: "display-text", position: 1, label: "CPU", config: { label: "CPU" }, definition: { configSchema: {} as never, createInstance: () => ({ render: () => null as never }), type: "display-text" } },

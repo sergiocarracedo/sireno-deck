@@ -15,6 +15,7 @@ import type {
 export type { DeckButtonProps, DeckSurfaceProps, DeckTextProps } from "./types.js"
 
 export interface RenderNode {
+  background?: string
   detailLines?: string[]
   type: "deck-button" | "deck-surface" | "deck-text"
   displayValue?: string
@@ -31,6 +32,7 @@ export interface RenderNode {
 }
 
 export interface RenderDescription {
+  background?: string
   detailLines?: string[]
   displayValue?: string
   keyIndex: number
@@ -127,6 +129,7 @@ const hostConfig: ReactReconciler.HostConfig<
     if (type === "deck-button" && isDeckButtonProps(props)) {
       return {
         type: "deck-button",
+        background: props.background,
         keyIndex: props.keyIndex,
         detailLines: props.detailLines,
         displayValue: props.displayValue,
@@ -144,6 +147,7 @@ const hostConfig: ReactReconciler.HostConfig<
     if (type === "deck-text" && isDeckTextProps(props)) {
       return {
         type: "deck-text",
+        background: props.background,
         keyIndex: props.keyIndex,
         overflow: props.overflow,
         text: props.text,
@@ -152,12 +156,13 @@ const hostConfig: ReactReconciler.HostConfig<
     }
 
     if (type === "deck-surface" && isDeckSurfaceProps(props)) {
-      return {
-        type: "deck-surface",
-        children: props.buttons.map((button) => ({
-          type: "deck-button",
-          keyIndex: button.keyIndex,
-          detailLines: button.detailLines,
+        return {
+          type: "deck-surface",
+          children: props.buttons.map((button) => ({
+            type: "deck-button",
+            background: button.background ?? props.background,
+            keyIndex: button.keyIndex,
+            detailLines: button.detailLines,
           displayValue: button.displayValue,
           overflow: button.overflow,
           label: button.label,
@@ -239,6 +244,7 @@ const hostConfig: ReactReconciler.HostConfig<
   commitUpdate(instance, _type, _oldProps, newProps) {
     if (instance.type === "deck-button" && isDeckButtonProps(newProps)) {
       instance.keyIndex = newProps.keyIndex
+      instance.background = newProps.background
       instance.detailLines = newProps.detailLines
       instance.displayValue = newProps.displayValue
       instance.overflow = newProps.overflow
@@ -253,6 +259,7 @@ const hostConfig: ReactReconciler.HostConfig<
 
     if (instance.type === "deck-text" && isDeckTextProps(newProps)) {
       instance.keyIndex = newProps.keyIndex
+      instance.background = newProps.background
       instance.overflow = newProps.overflow
       instance.text = newProps.text
       return
@@ -261,6 +268,7 @@ const hostConfig: ReactReconciler.HostConfig<
     if (instance.type === "deck-surface" && isDeckSurfaceProps(newProps)) {
       instance.children = newProps.buttons.map((button) => ({
         type: "deck-button",
+        background: button.background ?? newProps.background,
         keyIndex: button.keyIndex,
         detailLines: button.detailLines,
         displayValue: button.displayValue,
@@ -329,6 +337,7 @@ function collectRenderDescriptions(nodes: readonly RenderNode[]): RenderDescript
     if (node.type === "deck-button" && node.keyIndex !== undefined) {
       descriptions.push({
         keyIndex: node.keyIndex,
+        ...(node.background !== undefined ? { background: node.background } : {}),
         ...(node.detailLines !== undefined ? { detailLines: node.detailLines } : {}),
         ...(node.displayValue !== undefined ? { displayValue: node.displayValue } : {}),
         ...(node.overflow !== undefined ? { overflow: node.overflow } : {}),
@@ -344,6 +353,7 @@ function collectRenderDescriptions(nodes: readonly RenderNode[]): RenderDescript
     if (node.type === "deck-text" && node.keyIndex !== undefined && node.text !== undefined) {
       descriptions.push({
         keyIndex: node.keyIndex,
+        ...(node.background !== undefined ? { background: node.background } : {}),
         label: node.text,
         ...(node.overflow !== undefined ? { overflow: node.overflow } : {}),
       })
@@ -370,6 +380,7 @@ export function createDeckSurfaceElement(props: DeckSurfaceProps): ReactElement<
 export function createDisplayButtonModels(buttons: readonly ButtonInstance[]): DeckButtonProps[] {
   return buttons.map((button) => {
     return {
+      ...(button.background !== undefined ? { background: button.background } : {}),
       keyIndex: button.position,
       ...(button.label !== undefined ? { label: button.label } : {}),
       ...(button.icon !== undefined ? { icon: button.icon } : {}),

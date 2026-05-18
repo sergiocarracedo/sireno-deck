@@ -158,6 +158,23 @@ describe("text-image", () => {
     expect(defaultBuffer.equals(toggleBuffer)).toBe(false)
   })
 
+  it("uses an explicit button background as the shared default-card base tint", async () => {
+    const themeBuffer = await renderTextImage({ text: "Clock", theme: createTheme() })
+    const overrideBuffer = await renderTextImage({ background: "#5b2333", text: "Clock", theme: createTheme() })
+
+    expect(countRegionDiffs(themeBuffer, overrideBuffer, { height: 52, width: 52, x: 10, y: 10 })).toBeGreaterThan(800)
+  })
+
+  it("changes only the shared default-card path, not the bespoke analog clock path", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-05-15T09:41:12.000Z"))
+
+    const analogThemeBuffer = await renderTextImage({ theme: createTheme(), variant: "analog-clock" })
+    const analogOverrideBuffer = await renderTextImage({ background: "#5b2333", theme: createTheme(), variant: "analog-clock" })
+
+    expect(analogThemeBuffer.equals(analogOverrideBuffer)).toBe(true)
+  })
+
   it("renders metric variants with progress and value text", async () => {
     const defaultBuffer = await renderTextImage({ text: "CPU" })
     const metricBuffer = await renderTextImage({ text: "CPU", displayValue: "48%", progress: 48, variant: "metric" })

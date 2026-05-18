@@ -63,6 +63,7 @@ const BootstrapSirenoConfigSchema = z
   .strict()
 
 export interface ButtonInstance extends AddonButtonEnvelope {
+  background?: string
   config: Record<string, unknown>
   definition: AddonButtonDefinition
   command?: string
@@ -78,11 +79,22 @@ export interface ButtonInstance extends AddonButtonEnvelope {
 }
 
 export interface DeckConfig {
+  background?: string
   deckType?: string
   id: string
   name?: string
   buttons: ButtonInstance[]
 }
+
+const CoreButtonConfigSchema = z.object({
+  background: z.string().min(1).optional(),
+})
+  .strict()
+
+const CoreDeckConfigSchema = z.object({
+  background: z.string().min(1).optional(),
+})
+  .strict()
 
 export interface SirenoConfig {
   device?: {
@@ -209,13 +221,13 @@ export function validateBootstrapConfig(data: unknown): BootstrapSirenoConfig {
 
 function getButtonPayload(button: Record<string, unknown>): Record<string, unknown> {
   return Object.fromEntries(
-    Object.entries(button).filter(([key]) => key !== "position" && key !== "type"),
+    Object.entries(button).filter(([key]) => key !== "background" && key !== "position" && key !== "type"),
   )
 }
 
 function getDeckPayload(deck: Record<string, unknown>): Record<string, unknown> {
   return Object.fromEntries(
-    Object.entries(deck).filter(([key]) => key !== "buttons" && key !== "id" && key !== "name" && key !== "type"),
+    Object.entries(deck).filter(([key]) => key !== "background" && key !== "buttons" && key !== "id" && key !== "name" && key !== "type"),
   )
 }
 
@@ -253,7 +265,13 @@ function expandDecks(bootstrap: BootstrapSirenoConfig, registry: AddonRegistry):
     }
 
     if (!deckType) {
+      const parsedCoreDeckConfig = CoreDeckConfigSchema.safeParse({ background: deck.background })
+      if (!parsedCoreDeckConfig.success) {
+        throw toConfigValidationError(parsedCoreDeckConfig.error.issues[0], ["decks", deckKey])
+      }
+
       decks[deckKey] = {
+        ...(parsedCoreDeckConfig.data.background !== undefined ? { background: parsedCoreDeckConfig.data.background } : {}),
         buttons: deck.buttons ?? [],
         id: deck.id,
         ...(deck.name !== undefined ? { name: deck.name } : {}),
@@ -264,6 +282,11 @@ function expandDecks(bootstrap: BootstrapSirenoConfig, registry: AddonRegistry):
     const parsedDeckPayload = deckType.configSchema.safeParse(getDeckPayload(deck))
     if (!parsedDeckPayload.success) {
       throw toConfigValidationError(parsedDeckPayload.error.issues[0], ["decks", deckKey])
+    }
+
+    const parsedCoreDeckConfig = CoreDeckConfigSchema.safeParse({ background: deck.background })
+    if (!parsedCoreDeckConfig.success) {
+      throw toConfigValidationError(parsedCoreDeckConfig.error.issues[0], ["decks", deckKey])
     }
 
     const generatedDecks = deckType.createDecks({
@@ -293,6 +316,13 @@ function expandDecks(bootstrap: BootstrapSirenoConfig, registry: AddonRegistry):
       }
 
       decks[generatedDeckId] = generatedDeck
+
+      if (generatedDeckId === deckKey && parsedCoreDeckConfig.data.background !== undefined) {
+        decks[generatedDeckId] = {
+          ...generatedDeck,
+          background: parsedCoreDeckConfig.data.background,
+        }
+      }
     }
   }
 
@@ -325,12 +355,18 @@ export function validateConfig(data: unknown, registry: AddonRegistry): SirenoCo
       }
 
       const payload = resolveAssetReferences(getButtonPayload(parsedButton.data), registry) as Record<string, unknown>
+      const parsedCoreButtonConfig = CoreButtonConfigSchema.safeParse({ background: parsedButton.data.background })
+      if (!parsedCoreButtonConfig.success) {
+        throw toConfigValidationError(parsedCoreButtonConfig.error.issues[0], ["decks", deckKey, "buttons", buttonIndex])
+      }
+
       const parsedPayload = definition.configSchema.safeParse(payload)
       if (!parsedPayload.success) {
         throw toConfigValidationError(parsedPayload.error.issues[0], ["decks", deckKey, "buttons", buttonIndex])
       }
 
       nextButtons.push({
+        ...(parsedCoreButtonConfig.data.background !== undefined ? { background: parsedCoreButtonConfig.data.background } : {}),
         position: parsedButton.data.position,
         type: parsedButton.data.type,
         config: parsedPayload.data as Record<string, unknown>,
@@ -340,6 +376,7 @@ export function validateConfig(data: unknown, registry: AddonRegistry): SirenoCo
     }
 
     decks[deckKey] = {
+      ...(bootstrap.decks[deckKey]?.background !== undefined ? { background: bootstrap.decks[deckKey]?.background } : {}),
       id: deck.id,
       ...(bootstrap.decks[deckKey]?.type !== undefined ? { deckType: bootstrap.decks[deckKey]?.type } : {}),
       ...(deck.name !== undefined ? { name: deck.name } : {}),
