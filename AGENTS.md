@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 13 — Global Wrapper/Style Primitives ✓ complete → Phase 14 — Richer Built-in Toggles
-**Status:** verifying
+**Phase:** 14 — Richer Built-in Toggles
+**Status:** planning
 **Last updated:** 2026-05-18
 
 ---
