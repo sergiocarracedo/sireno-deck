@@ -166,7 +166,7 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.2 — Session Context and Surface Composition
 **Phase:** 13 — Global Wrapper/Style Primitives
-**Status:** ready to discuss
+**Status:** planning
 **Last updated:** 2026-05-18
 
 ---
