@@ -24,6 +24,9 @@ const assets = {
   'clock.svg': fileURLToPath(new URL('../assets/clock.svg', import.meta.url)),
 }
 
+const wrappers = [{ name: 'shared-card', wrapper: 'shared' }] as const
+const styles = [{ name: 'accent', shared: { tone: 'accent' } }] as const
+
 const builtinDisplayTextButton = {
   configSchema: BuiltinDisplayTextButtonSchema,
   createInstance: ({
@@ -72,6 +75,8 @@ const coreButtonsAddon: SirenoAddon = {
   assets,
   buttons: [builtinDisplayTextButton, builtinChangeDeckButton],
   name: 'core-buttons',
+  styles,
+  wrappers,
 }
 
 export default coreButtonsAddon

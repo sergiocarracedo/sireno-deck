@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 
+import { createAddonRegistry } from "../../../packages/cli/src/addon/registry.js"
 import coreButtonsAddon from "./index.js"
 
 describe("core-buttons addon", () => {
@@ -7,6 +8,8 @@ describe("core-buttons addon", () => {
     expect(coreButtonsAddon.name).toBe("core-buttons")
     expect(coreButtonsAddon.apiVersion).toBe(1)
     expect(coreButtonsAddon.assets).toHaveProperty("clock.svg")
+    expect(coreButtonsAddon.wrappers).toEqual([{ name: "shared-card", wrapper: "shared" }])
+    expect(coreButtonsAddon.styles).toEqual([{ name: "accent", shared: { tone: "accent" } }])
 
     const definition = coreButtonsAddon.buttons[0]
     const config = definition?.configSchema.parse({ label: "Clock" })
@@ -44,5 +47,23 @@ describe("core-buttons addon", () => {
     await instance?.onTap?.()
 
     expect(navigateToDeck).toHaveBeenCalledWith("emoji")
+  })
+
+  it("registers bundled wrapper and style primitives through the shared addon registry contract", () => {
+    const registry = createAddonRegistry()
+    registry.registerAddon(coreButtonsAddon)
+
+    expect(registry.getWrapperPrimitive("core-buttons/shared-card")).toEqual({
+      addonName: "core-buttons",
+      id: "core-buttons/shared-card",
+      name: "shared-card",
+      wrapper: "shared",
+    })
+    expect(registry.getStylePrimitive("core-buttons/accent")).toEqual({
+      addonName: "core-buttons",
+      id: "core-buttons/accent",
+      name: "accent",
+      shared: { tone: "accent" },
+    })
   })
 })
