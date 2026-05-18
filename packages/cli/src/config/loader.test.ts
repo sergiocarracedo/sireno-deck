@@ -447,6 +447,146 @@ describe("loadConfig", () => {
     throw new Error("Expected external addon payload validation to fail")
   })
 
+  it("loads registered wrapper and style primitive references through the core button envelope", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: external-clock",
+        "        label: Clock",
+        "        wrapper_id: external-addon/shared-card",
+        "        style_id: external-addon/accent",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const registry = createAddonRegistry()
+    registry.registerAddon({
+      apiVersion: 1,
+      name: "external-addon",
+      buttons: [
+        {
+          type: "external-clock",
+          configSchema: z.object({
+            label: z.string().min(1),
+          }),
+          createInstance() {
+            return {
+              render() {
+                return null as never
+              },
+            }
+          },
+        },
+      ],
+      styles: [{ name: "accent", shared: { tone: "accent" } }],
+      wrappers: [{ name: "shared-card", wrapper: "shared" }],
+    })
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig(undefined, registry)
+
+    expect(config.decks.main?.buttons[0]).toMatchObject({
+      config: { label: "Clock" },
+      label: "Clock",
+      style_id: "external-addon/accent",
+      wrapper_id: "external-addon/shared-card",
+    })
+  })
+
+  it("reports unknown wrapper primitive references with line information", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: display-text",
+        "        label: Clock",
+        "        wrapper_id: missing-addon/shared-card",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).message).toContain("Unknown wrapper primitive 'missing-addon/shared-card'")
+      expect((error as ConfigValidationError).lineNumber).toBe(10)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "buttons", 0, "wrapper_id"])
+      return
+    }
+
+    throw new Error("Expected wrapper primitive validation to fail")
+  })
+
+  it("reports wrong-kind wrapper references with line information", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: display-text",
+        "        label: Clock",
+        "        wrapper_id: external-addon/accent",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const registry = createAddonRegistry()
+    registry.registerAddon({
+      apiVersion: 1,
+      buttons: [
+        {
+          type: "display-text",
+          configSchema: z.object({
+            label: z.string().min(1),
+          }),
+          createInstance() {
+            return {
+              render() {
+                return null as never
+              },
+            }
+          },
+        },
+      ],
+      name: "external-addon",
+      styles: [{ name: "accent", shared: { tone: "accent" } }],
+    })
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig(undefined, registry)
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).message).toContain("Wrapper reference 'external-addon/accent' points to a style primitive")
+      expect((error as ConfigValidationError).lineNumber).toBe(10)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "buttons", 0, "wrapper_id"])
+      return
+    }
+
+    throw new Error("Expected wrong-kind wrapper validation to fail")
+  })
+
   it("expands bundled addon deck types and resolves addon asset paths", async () => {
     writeFileSync(
       join(tempDir, "config.yml"),
