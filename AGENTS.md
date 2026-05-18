@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 11 — Session + Config Contracts
+**Phase:** 12 — Backgrounds + Text Fitting
 **Status:** planning
-**Last updated:** 2026-05-17
+**Last updated:** 2026-05-18
 
 ---
 
