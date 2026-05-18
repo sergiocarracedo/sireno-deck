@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 13 implementation and focused verification are complete. Next up is `verify-work 13` for manual UAT, then Phase 14 discussion for richer built-in toggles.
+**Current focus:** Phase 14 discussion is complete. Next up is `plan-phase 14` for richer built-in toggles.
 
 ## Current Position
 
 Phase: 14 — Richer Built-in Toggles
 Plan: —
-Status: ready to discuss
-Last activity: 2026-05-18 - Executed and verified Phase 13 global wrapper/style primitives
+Status: ready for planning
+Last activity: 2026-05-18 - Captured Phase 14 richer built-in toggles context
 
 Progress: [##########] 100%
 
@@ -62,6 +62,9 @@ Recent decisions affecting current work:
 - **Phase 13 execution:** Wrapper/style primitives now live in the addon registry as separate namespaced definitions, and bundled addons register the same primitive contracts external addons use.
 - **Phase 13 execution:** Config-authored primitive refs fail early with path-aware loader diagnostics, while addon-authored render refs fail before image generation through runtime-side validation.
 - **Phase 13 execution:** Shared/default rendering consumes primitive-backed defaults without overriding explicit `background` and `fit`, and the repo now ships focused tests plus a committed Phase 13 review fixture for cross-boundary primitive reuse.
+- **Phase 14 discussion:** Built-in toggles should ship as one `toggle` type with explicit `mode: internal | get-set | toggle-status`, shared base presentation plus per-state overrides, and no separate per-mode button types.
+- **Phase 14 discussion:** Command-driven toggles are externally authoritative: `toggle-status` requires `status_command`, startup stays pending until the first read, failed writes preserve last authoritative truth plus error state, and output mapping uses explicit `on_values` / `off_values` token lists.
+- **Phase 14 discussion:** Toggle visuals may differ by mode, but only through shared-base mode accents rather than three bespoke renderers; internal toggle state continuity remains scoped to the running daemon, not durable restart persistence.
 
 ### Pending Todos
 
@@ -99,6 +102,7 @@ Recent decisions affecting current work:
 - **Plan 13-01:** Shipped registry-backed wrapper/style primitive definitions, direct config-authored `wrapper_id` / `style_id` references, early loader validation, and a bundled core-buttons primitive registration.
 - **Plan 13-02:** Carried primitive ids through the public render contract, added pre-render runtime validation for addon-authored refs, applied primitive-backed defaults on the shared/default renderer path, and committed a Phase 13 review fixture/UAT path.
 - **Phase 13 verification:** Confirmed `SCS-05` is covered by focused registry/config/reconciler/runtime/render tests plus bundled-addon coverage and a committed manual review path.
+- **Phase 14 discussion:** Captured the single-type toggle contract, command-authority rules, honest pending/error lifecycle behavior, and the constrained shared-base visual divergence expected for planning.
 
 ### Blockers/Concerns
 
@@ -109,7 +113,7 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-18
-Stopped at: Phase 13 execution and focused verification are complete; next up is `verify-work 13`, then `discuss-phase 14` for richer built-in toggles.
+Stopped at: Phase 14 context is captured and ready for `plan-phase 14`.
 Resume file: .planning/ROADMAP.md
 
 ### Quick Tasks Completed
