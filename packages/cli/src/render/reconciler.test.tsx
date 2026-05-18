@@ -213,6 +213,60 @@ describe("render reconciler", () => {
     expect(descriptions).toEqual([{ fit: "wrap", keyIndex: 4, label: "Long Label", wrapper: "shared" }])
   })
 
+  it("threads primitive ids through direct deck-button descriptions", () => {
+    const descriptions = renderDeck(
+      createDeckButtonElement({
+        keyIndex: 4,
+        label: "Long Label",
+        style_id: "core-buttons/accent",
+        wrapper_id: "core-buttons/shared-card",
+      }),
+    )
+
+    expect(descriptions).toEqual([
+      {
+        keyIndex: 4,
+        label: "Long Label",
+        style_id: "core-buttons/accent",
+        wrapper_id: "core-buttons/shared-card",
+      },
+    ])
+  })
+
+  it("keeps helper-authored and JSX-authored primitive id output in parity", () => {
+    const helperDescriptions = renderDeck(
+      createDeckButtonElement({
+        keyIndex: 9,
+        label: "Clock",
+        style_id: "core-buttons/accent",
+        wrapper_id: "core-buttons/shared-card",
+      }),
+    )
+    const jsxDescriptions = renderDeck(
+      <deck-button keyIndex={9} label="Clock" style_id="core-buttons/accent" wrapper_id="core-buttons/shared-card" />,
+    )
+
+    expect(jsxDescriptions).toEqual(helperDescriptions)
+  })
+
+  it("threads primitive ids through deck-surface button collections", () => {
+    const descriptions = renderDeck(
+      createDeckSurfaceElement({
+        buttons: [
+          { keyIndex: 0, label: "Deck" },
+          { keyIndex: 1, label: "Accent", style_id: "core-buttons/accent", wrapper_id: "core-buttons/shared-card" },
+        ],
+      }),
+    )
+
+    expect(descriptions).toContainEqual({
+      keyIndex: 1,
+      label: "Accent",
+      style_id: "core-buttons/accent",
+      wrapper_id: "core-buttons/shared-card",
+    })
+  })
+
   it("keeps helper-authored and JSX-authored analog clock output in parity", () => {
     const helperDescriptions = renderDeck(
       createDeckButtonElement({ keyIndex: 12, variant: "analog-clock" }),

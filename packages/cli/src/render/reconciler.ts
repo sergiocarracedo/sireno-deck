@@ -24,10 +24,12 @@ export interface RenderNode {
   label?: string
   icon?: string
   progress?: number
+  style_id?: string
   subtitle?: string
   text?: string
   variant?: "analog-clock" | "calendar-sheet" | "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
   wrapper?: "shared"
+  wrapper_id?: string
   children: RenderNode[]
 }
 
@@ -40,9 +42,11 @@ export interface RenderDescription {
   label?: string
   icon?: string
   progress?: number
+  style_id?: string
   subtitle?: string
   variant?: "analog-clock" | "calendar-sheet" | "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
   wrapper?: "shared"
+  wrapper_id?: string
 }
 
 interface RenderContainer {
@@ -137,9 +141,11 @@ const hostConfig: ReactReconciler.HostConfig<
         label: props.label,
         icon: props.icon,
         progress: props.progress,
+        style_id: props.style_id,
         subtitle: props.subtitle,
         variant: props.variant,
         wrapper: props.wrapper,
+        wrapper_id: props.wrapper_id,
         children: [],
       }
     }
@@ -168,9 +174,11 @@ const hostConfig: ReactReconciler.HostConfig<
           keyIndex: button.keyIndex,
           label: button.label,
           progress: button.progress,
+          style_id: button.style_id,
           subtitle: button.subtitle,
           variant: button.variant,
           wrapper: button.wrapper,
+          wrapper_id: button.wrapper_id,
           children: [],
         })),
       }
@@ -251,9 +259,11 @@ const hostConfig: ReactReconciler.HostConfig<
       instance.label = newProps.label
       instance.icon = newProps.icon
       instance.progress = newProps.progress
+      instance.style_id = newProps.style_id
       instance.subtitle = newProps.subtitle
       instance.variant = newProps.variant
       instance.wrapper = newProps.wrapper
+      instance.wrapper_id = newProps.wrapper_id
       return
     }
 
@@ -276,9 +286,11 @@ const hostConfig: ReactReconciler.HostConfig<
         label: button.label,
         icon: button.icon,
         progress: button.progress,
+        style_id: button.style_id,
         subtitle: button.subtitle,
         variant: button.variant,
         wrapper: button.wrapper,
+        wrapper_id: button.wrapper_id,
         children: [],
       }))
     }
@@ -344,9 +356,11 @@ function collectRenderDescriptions(nodes: readonly RenderNode[]): RenderDescript
         ...(node.icon !== undefined ? { icon: node.icon } : {}),
         ...(node.label !== undefined ? { label: node.label } : {}),
         ...(node.progress !== undefined ? { progress: node.progress } : {}),
+        ...(node.style_id !== undefined ? { style_id: node.style_id } : {}),
         ...(node.subtitle !== undefined ? { subtitle: node.subtitle } : {}),
         ...(node.variant !== undefined ? { variant: node.variant } : {}),
         ...(node.wrapper !== undefined ? { wrapper: node.wrapper } : {}),
+        ...(node.wrapper_id !== undefined ? { wrapper_id: node.wrapper_id } : {}),
       })
     }
 
@@ -385,6 +399,8 @@ export function createDisplayButtonModels(buttons: readonly ButtonInstance[]): D
       ...(button.label !== undefined ? { label: button.label } : {}),
       ...(button.icon !== undefined ? { icon: button.icon } : {}),
       variant: "default" as const,
+      ...(button.style_id !== undefined ? { style_id: button.style_id } : {}),
+      ...(button.wrapper_id !== undefined ? { wrapper_id: button.wrapper_id } : {}),
     }
   })
 }

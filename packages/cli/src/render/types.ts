@@ -18,9 +18,11 @@ export interface DeckButtonProps {
   label?: string
   icon?: string
   progress?: number
+  style_id?: string
   subtitle?: string
   variant?: "analog-clock" | "calendar-sheet" | "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
   wrapper?: DeckButtonWrapper
+  wrapper_id?: string
 }
 
 export interface DeckSurfaceProps {
