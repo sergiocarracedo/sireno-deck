@@ -20,7 +20,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ### Phase 11: Session + Config Contracts
 
-**Status:** Verified
+**Status:** ✓ Complete (2026-05-18)
 
 **Goal:** Introduce normalized OS/session context, inject it consistently, and add config-level support for lock-aware behavior.
 
@@ -64,7 +64,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ### Phase 13: Global Wrapper/Style Primitives
 
-**Status:** Not started
+**Status:** Verified
 
 **Goal:** Let addons register globally reusable wrapper/style primitives through validated public contracts.
 
@@ -73,10 +73,12 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 **Depends on:** Phases 11-12
 
 **Success criteria:**
-- [ ] The addon registry supports globally named wrapper/style primitives
-- [ ] Built-in and addon render surfaces can reference those primitives through the public contract
-- [ ] Validation rejects unknown wrapper/style references instead of failing late in rendering
-- [ ] Examples or tests demonstrate primitive reuse beyond a single addon-local implementation
+- [x] The addon registry supports globally named wrapper/style primitives
+- [x] Built-in and addon render surfaces can reference those primitives through the public contract
+- [x] Validation rejects unknown wrapper/style references instead of failing late in rendering
+- [x] Examples or tests demonstrate primitive reuse beyond a single addon-local implementation
+
+**Phase 13 note:** Registry-backed wrapper/style primitives now ship through the addon contract, config-authored refs fail early in loader validation, addon-authored refs fail before pixel generation, and the shared/default renderer consumes bundled primitive defaults while explicit `background` and `fit` props remain authoritative. The first rollout intentionally stays narrow: `deck-button` and `deck-surface` button collections first, no theme alias layer, no compatibility matrix, and no bespoke-variant rewrite.
 
 **Research needed:** No — registry-backed primitives are the recommended extension path from the current research.
 

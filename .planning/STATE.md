@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 12 is verified, with explicit color-only background precedence and explicit shrink/wrap text fitting now shipped on the shared/default render path. Next up is Phase 13 wrapper/style primitive planning.
+**Current focus:** Phase 13 implementation and focused verification are complete. Next up is `verify-work 13` for manual UAT, then Phase 14 discussion for richer built-in toggles.
 
 ## Current Position
 
-Phase: 13 — Global Wrapper/Style Primitives
+Phase: 14 — Richer Built-in Toggles
 Plan: —
 Status: ready to discuss
-Last activity: 2026-05-18 - Verified Phase 12 background precedence and explicit text fitting
+Last activity: 2026-05-18 - Executed and verified Phase 13 global wrapper/style primitives
 
 Progress: [##########] 100%
 
@@ -56,6 +56,12 @@ Recent decisions affecting current work:
 - **Phase 12 discussion:** Backgrounds stay color-only in this phase and resolve with button override, then deck background, then theme background.
 - **Phase 12 discussion:** Text fitting becomes an explicit render contract with `shrink` as the default mode, `wrap` as the alternate mode, and a renderer-owned minimum readable size.
 - **Phase 12 discussion:** The new fitting contract lands on shared/default text paths first; bespoke variants should only adopt it where reuse is low-risk.
+- **Phase 13 discussion:** Wrapper and style primitives stay separate, are registered through the addon registry, and use global namespaced ids referenced directly as `wrapper_id` / `style_id`.
+- **Phase 13 discussion:** Config-authored refs fail in config validation, addon-authored refs fail before rendering, missing providers hard-fail as unknown refs, and Phase 13 validation only checks existence plus wrapper/style kind.
+- **Phase 13 discussion:** The first primitive rollout stays on the shared/default button path, keeps explicit props like `background` and `fit` authoritative, and must prove cross-boundary reuse with at least one bundled primitive consumer.
+- **Phase 13 execution:** Wrapper/style primitives now live in the addon registry as separate namespaced definitions, and bundled addons register the same primitive contracts external addons use.
+- **Phase 13 execution:** Config-authored primitive refs fail early with path-aware loader diagnostics, while addon-authored render refs fail before image generation through runtime-side validation.
+- **Phase 13 execution:** Shared/default rendering consumes primitive-backed defaults without overriding explicit `background` and `fit`, and the repo now ships focused tests plus a committed Phase 13 review fixture for cross-boundary primitive reuse.
 
 ### Pending Todos
 
@@ -89,6 +95,10 @@ Recent decisions affecting current work:
 - **Plan 12-01:** Shipped color-only deck/button background config, explicit `button -> deck -> theme` resolution, shared/default card tinting, and a committed background review path.
 - **Plan 12-02:** Replaced the old `overflow` seam with explicit `fit` modes, shipped default shrink plus opt-in wrap on the primary shared/default label path, and added a committed text-fit review path.
 - **Phase 12 verification:** Confirmed `SCS-03` and `SCS-04` are covered by focused config/runtime/render tests plus committed manual review fixtures, while wider wrapper/style primitives remain Phase 13 scope.
+- **Phase 13 discussion:** Captured separate wrapper/style primitive registries, direct `wrapper_id` / `style_id` references, early unknown-ref failure boundaries, shared/default-first rollout scope, and the minimum cross-addon reuse proof expected from planning.
+- **Plan 13-01:** Shipped registry-backed wrapper/style primitive definitions, direct config-authored `wrapper_id` / `style_id` references, early loader validation, and a bundled core-buttons primitive registration.
+- **Plan 13-02:** Carried primitive ids through the public render contract, added pre-render runtime validation for addon-authored refs, applied primitive-backed defaults on the shared/default renderer path, and committed a Phase 13 review fixture/UAT path.
+- **Phase 13 verification:** Confirmed `SCS-05` is covered by focused registry/config/reconciler/runtime/render tests plus bundled-addon coverage and a committed manual review path.
 
 ### Blockers/Concerns
 
@@ -99,7 +109,7 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-18
-Stopped at: Phase 12 verified and committed in two execution slices; next up is `discuss-phase 13` for global wrapper/style primitives.
+Stopped at: Phase 13 execution and focused verification are complete; next up is `verify-work 13`, then `discuss-phase 14` for richer built-in toggles.
 Resume file: .planning/ROADMAP.md
 
 ### Quick Tasks Completed
