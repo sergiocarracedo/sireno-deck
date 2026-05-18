@@ -2,11 +2,13 @@ import { join } from "node:path"
 
 import { createElement } from "react"
 import { describe, expect, it, vi } from "vitest"
+import { z } from "zod"
 
 import { createBundledAddonRegistry, loadConfig } from "../config/loader.js"
 import { validateConfig } from "../core/schemas.js"
 import { createDeckRuntime } from "./runtime.js"
 
+import type { SirenoAddon } from "../addon/api.js"
 import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
 import type { PollingScheduler } from "../render/scheduler.js"
 import type { SessionMonitor, SessionSnapshot } from "../system/session-monitor.js"
@@ -1083,6 +1085,109 @@ describe("createDeckRuntime", () => {
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("settings")
       expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Session unlocked" })
+    })
+  })
+
+  it("rejects addon-authored wrapper ids before image generation when the provider is unknown", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {})
+    const registry = createBundledAddonRegistry()
+    const displayButtonAddon: SirenoAddon = {
+      apiVersion: 1,
+      buttons: [
+        {
+          configSchema: z.object({ label: z.string().min(1) }),
+          createInstance: ({ button, config }) => ({
+            render: () => createElement("deck-button", {
+              keyIndex: button.position,
+              label: config.label,
+              wrapper_id: "missing-addon/shared-card",
+            }),
+          }),
+          type: "runtime-invalid-primitive",
+        },
+      ],
+      name: "runtime-invalid-primitive-addon",
+    }
+    registry.registerAddon(displayButtonAddon)
+
+    const runtime = createDeckRuntime({
+      addonRegistry: registry,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Clock" },
+          definition: registry.getButton("runtime-invalid-primitive")!,
+          label: "Clock",
+          position: 0,
+          type: "runtime-invalid-primitive",
+        }],
+      },
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    expect(() => {
+      runtime.start()
+    }).not.toThrow()
+
+    await vi.waitFor(() => {
+      const errors = consoleError.mock.calls.map((call) => String(call[0]))
+      expect(errors.some((message) => message.includes("Unknown addon-authored wrapper primitive 'missing-addon/shared-card'"))).toBe(true)
+    })
+  })
+
+  it("keeps valid addon-authored primitive ids on runtime render output", async () => {
+    const registry = createBundledAddonRegistry()
+    const displayButtonAddon: SirenoAddon = {
+      apiVersion: 1,
+      buttons: [
+        {
+          configSchema: z.object({ label: z.string().min(1) }),
+          createInstance: ({ button, config }) => ({
+            render: () => createElement("deck-button", {
+              keyIndex: button.position,
+              label: config.label,
+              style_id: "core-buttons/accent",
+              wrapper_id: "core-buttons/shared-card",
+            }),
+          }),
+          type: "runtime-valid-primitive",
+        },
+      ],
+      name: "runtime-valid-primitive-addon",
+    }
+    registry.registerAddon(displayButtonAddon)
+
+    const onRenderDeck = vi.fn()
+    const runtime = createDeckRuntime({
+      addonRegistry: registry,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Clock" },
+          definition: registry.getButton("runtime-valid-primitive")!,
+          label: "Clock",
+          position: 0,
+          type: "runtime-valid-primitive",
+        }],
+      },
+      onRenderDeck,
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(onRenderDeck).toHaveBeenCalledWith([
+        {
+          background: "#10161f",
+          keyIndex: 0,
+          label: "Clock",
+          style_id: "core-buttons/accent",
+          wrapper_id: "core-buttons/shared-card",
+        },
+      ])
     })
   })
 })

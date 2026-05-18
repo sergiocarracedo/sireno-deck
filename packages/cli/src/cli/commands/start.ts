@@ -113,7 +113,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
   }
 
   try {
-    const { config, hostContext, sessionMonitor } = await loadRuntimeConfig(options)
+    const { config, hostContext, registry, sessionMonitor } = await loadRuntimeConfig(options)
     const theme = resolveTheme(config.theme)
     const mainDeck = config.decks[config.main_deck]
     let runtime: ReturnType<typeof createDeckRuntime> | null = null
@@ -132,6 +132,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
     const connection = await lifecycle.start()
     runtime = createDeckRuntime({
+      addonRegistry: registry,
       deck: mainDeck,
       decks: config.decks,
       hostContext,

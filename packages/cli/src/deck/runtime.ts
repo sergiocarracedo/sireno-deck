@@ -4,6 +4,7 @@ import { createPollingScheduler, type PollingScheduler } from "../render/schedul
 import { createDeckController, type DeckController } from "./controller.js"
 import { renderDeck } from "../render/reconciler.js"
 
+import type { AddonRegistry } from "../addon/registry.js"
 import type { Theme } from "../config/theme.js"
 import type { ButtonInstance, DeckConfig } from "../core/schemas.js"
 import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
@@ -12,6 +13,7 @@ import { UNKNOWN_HOST_CONTEXT, type HostContext } from "../system/host-context.j
 import type { SessionMonitor, SessionSnapshot } from "../system/session-monitor.js"
 
 export interface DeckRuntimeOptions {
+  addonRegistry?: AddonRegistry
   deck: DeckConfig
   decks?: Record<string, DeckConfig>
   executeAction?: (command: string) => Promise<CommandExecutionResult>
@@ -130,8 +132,48 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     return button.background ?? runtimeDecks[deckId]?.background ?? options.theme.background
   }
 
+  function validatePrimitiveReference(description: DeckButtonProps, field: "style_id" | "wrapper_id"): void {
+    const primitiveId = description[field]
+    if (!primitiveId) {
+      return
+    }
+
+    if (!options.addonRegistry) {
+      throw new Error(`Cannot validate addon-authored primitive reference '${primitiveId}' without an addon registry`)
+    }
+
+    if (field === "wrapper_id") {
+      if (options.addonRegistry.getStylePrimitive(primitiveId)) {
+        throw new Error(`Addon-authored wrapper reference '${primitiveId}' points to a style primitive`)
+      }
+
+      if (!options.addonRegistry.getWrapperPrimitive(primitiveId)) {
+        throw new Error(`Unknown addon-authored wrapper primitive '${primitiveId}'`)
+      }
+
+      return
+    }
+
+    if (options.addonRegistry.getWrapperPrimitive(primitiveId)) {
+      throw new Error(`Addon-authored style reference '${primitiveId}' points to a wrapper primitive`)
+    }
+
+    if (!options.addonRegistry.getStylePrimitive(primitiveId)) {
+      throw new Error(`Unknown addon-authored style primitive '${primitiveId}'`)
+    }
+  }
+
+  function validateAddonRenderDescription(description: DeckButtonProps): void {
+    validatePrimitiveReference(description, "wrapper_id")
+    validatePrimitiveReference(description, "style_id")
+  }
+
   function isActivationCurrent(deckId: string, activationVersion: number): boolean {
     return !stopped && deckController.getActiveDeckId() === deckId && activeActivationVersion === activationVersion
+  }
+
+  function reportRuntimeError(error: unknown): void {
+    console.error(error)
   }
 
   function getButtonHandle(deckId: string, keyIndex: number): RuntimeButtonHandle | undefined {
@@ -157,6 +199,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     const description = descriptions[0]
       ? { ...descriptions[0], background: descriptions[0].background ?? resolveButtonBackground(button, deckId), keyIndex: button.position }
       : { background: resolveButtonBackground(button, deckId), keyIndex: button.position }
+
+    validateAddonRenderDescription(description)
 
     renderCache.set(getButtonStateKey(deckId, button.position), description)
     await options.onRenderButton?.(description)
@@ -188,7 +232,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         await activateDeckSurface(undefined, previousDeckId)
       },
       invalidate: () => {
-        void renderRuntimeButton(button, deckId)
+        void renderRuntimeButton(button, deckId).catch(reportRuntimeError)
       },
       navigateToDeck: async (targetDeckId: string) => {
         const previousDeckId = deckController.getActiveDeckId()
@@ -414,9 +458,9 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
 
       unsubscribe = options.subscribeKeyEvents(onKeyEvent)
       unsubscribeSessionMonitor = options.sessionMonitor?.subscribe((snapshot) => {
-        void handleSessionSnapshot(snapshot)
+        void handleSessionSnapshot(snapshot).catch(reportRuntimeError)
       }) ?? null
-      void activateDeckSurface()
+      void activateDeckSurface().catch(reportRuntimeError)
     },
     stop() {
       stopped = true
