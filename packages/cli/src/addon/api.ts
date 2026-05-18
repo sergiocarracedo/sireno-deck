@@ -73,10 +73,36 @@ export interface AddonDeckDefinition<TConfig = unknown> {
   type: string
 }
 
+export interface AddonWrapperPrimitiveDefinition {
+  name: string
+  wrapper: "shared"
+}
+
+export interface AddonSharedStylePrimitiveDefinition {
+  tone?: "accent" | "default"
+}
+
+export interface AddonStylePrimitiveDefinition {
+  name: string
+  shared?: AddonSharedStylePrimitiveDefinition
+}
+
+export interface RegisteredAddonWrapperPrimitive extends AddonWrapperPrimitiveDefinition {
+  addonName: string
+  id: string
+}
+
+export interface RegisteredAddonStylePrimitive extends AddonStylePrimitiveDefinition {
+  addonName: string
+  id: string
+}
+
 export interface SirenoAddon {
   apiVersion: number
   assets?: Record<string, string>
   buttons: readonly AddonButtonDefinition[]
   decks?: readonly AddonDeckDefinition[]
   name: string
+  styles?: readonly AddonStylePrimitiveDefinition[]
+  wrappers?: readonly AddonWrapperPrimitiveDefinition[]
 }
