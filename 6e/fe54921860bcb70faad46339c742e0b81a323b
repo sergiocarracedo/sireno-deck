@@ -1,0 +1,32 @@
+.planning/phases/13-global-wrapper-style-primitives/13-UAT.md
+  s_50714901791ebe::t_8c01dc2476d4f7 1-54
+packages/cli/src/render/text-image.ts
+  s_50714901791ebe::t_8c01dc2476d4f7 15,312-313,316,319,405
+packages/cli/src/render/text-image.test.ts
+  s_50714901791ebe::t_8c01dc2476d4f7 202-234
+packages/cli/src/cli/commands/start.ts
+  s_50714901791ebe::t_8c01dc2476d4f7 71,79,87,92,123-131,167,172,182
+packages/cli/fixtures/phase-13/config.wrapper-style-primitives.yml
+  s_50714901791ebe::t_8c01dc2476d4f7 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "6efe54921860bcb70faad46339c742e0b81a323b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_50714901791ebe": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cad490d1ffe7qtGxWMYgUngfy",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
