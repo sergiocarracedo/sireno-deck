@@ -1,0 +1,28 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    buttons:
+      - position: 0
+        type: display-text
+        label: Core Accent Primitive
+        wrapper_id: core-buttons/shared-card
+        style_id: core-buttons/accent
+      - position: 1
+        type: display-text
+        label: Explicit Background Still Wins
+        background: "#1f3b52"
+        wrapper_id: core-buttons/shared-card
+        style_id: core-buttons/accent
+      - position: 2
+        type: change-deck
+        label: Plain Contrast
+        target_deck: plain
+  plain:
+    id: plain
+    buttons:
+      - position: 0
+        type: display-text
+        label: Plain Shared Path
+addons: []

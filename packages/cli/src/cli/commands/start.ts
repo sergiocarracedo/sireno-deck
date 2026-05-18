@@ -68,6 +68,7 @@ async function renderMainDeck(
   connection: NonNullable<ReturnType<ReturnType<typeof createStreamDeckLifecycle>["getConnection"]>>,
   deckButtons: DeckButtonProps[],
   theme: ReturnType<typeof resolveTheme>,
+  resolvePrimitiveRenderOptions: (button: DeckButtonProps) => { sharedStyleTone?: "accent" | "default"; wrapper?: "shared" },
   logger: pino.Logger,
 ): Promise<void> {
   const descriptions = renderDeck(createDeckSurfaceElement({ buttons: deckButtons }))
@@ -75,6 +76,7 @@ async function renderMainDeck(
   const renderedKeys = new Set<number>()
 
   for (const description of descriptions) {
+    const primitiveOptions = resolvePrimitiveRenderOptions(description)
     const buffer = await renderTextImage({
       background: description.background,
       detailLines: description.detailLines,
@@ -82,11 +84,12 @@ async function renderMainDeck(
       fit: description.fit,
       icon: description.icon,
       progress: description.progress,
+      sharedStyleTone: primitiveOptions.sharedStyleTone,
       subtitle: description.subtitle,
       text: description.label,
       theme,
       variant: description.variant,
-      wrapper: description.wrapper,
+      wrapper: description.wrapper ?? primitiveOptions.wrapper,
     })
     renderedKeys.add(description.keyIndex)
     await writeKeyBuffer(connection, description.keyIndex, buffer)
@@ -117,6 +120,15 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     const theme = resolveTheme(config.theme)
     const mainDeck = config.decks[config.main_deck]
     let runtime: ReturnType<typeof createDeckRuntime> | null = null
+    const resolvePrimitiveRenderOptions = (button: DeckButtonProps) => {
+      const wrapper = button.wrapper ?? (button.wrapper_id ? registry.getWrapperPrimitive(button.wrapper_id)?.wrapper : undefined)
+      const sharedStyleTone = button.style_id ? registry.getStylePrimitive(button.style_id)?.shared?.tone : undefined
+
+      return {
+        ...(sharedStyleTone !== undefined ? { sharedStyleTone } : {}),
+        ...(wrapper !== undefined ? { wrapper } : {}),
+      }
+    }
     const lifecycle = createStreamDeckLifecycle({
       logger,
       onReconnect: async (connection) => {
@@ -152,11 +164,12 @@ export async function startDaemon(options: StartOptions): Promise<void> {
           fit: button.fit,
           icon: button.icon,
           progress: button.progress,
+          ...resolvePrimitiveRenderOptions(button),
           subtitle: button.subtitle,
           text: button.label,
           theme,
           variant: button.variant,
-          wrapper: button.wrapper,
+          wrapper: button.wrapper ?? resolvePrimitiveRenderOptions(button).wrapper,
         })
         await writeKeyBuffer(activeConnection, button.keyIndex, buffer)
       },
@@ -166,7 +179,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
           return
         }
 
-        await renderMainDeck(activeConnection, buttons, theme, logger)
+        await renderMainDeck(activeConnection, buttons, theme, resolvePrimitiveRenderOptions, logger)
       },
       sessionMonitor,
       subscribeKeyEvents: lifecycle.subscribeKeyEvents,

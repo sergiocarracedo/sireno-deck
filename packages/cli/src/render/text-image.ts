@@ -12,6 +12,7 @@ export interface TextImageOptions {
   fit?: "shrink" | "wrap"
   icon?: string
   progress?: number
+  sharedStyleTone?: "accent" | "default"
   subtitle?: string
   text?: string
   theme?: Theme
@@ -308,12 +309,14 @@ function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, the
   const metricTrack = mixHexColor(theme.primary, cardBackground, 0.78)
   const subtext = mixHexColor(theme.foreground, cardBackground, 0.4)
   const iconMarkup = getIconMarkup(iconPath)
+  const primitiveTone = options.sharedStyleTone ?? "default"
+  const badgeBase = primitiveTone === "accent" ? theme.accent : theme.primary
   const badgeFill = options.variant === "toggle"
     ? mixHexColor(theme.accent, cardBackground, 0.15)
-    : mixHexColor(theme.primary, cardBackground, 0.15)
+    : mixHexColor(badgeBase, cardBackground, 0.15)
   const badgeStroke = options.variant === "toggle"
     ? mixHexColor(theme.accent, cardBackground, 0.05)
-    : mixHexColor(theme.primary, cardBackground, 0.2)
+    : mixHexColor(badgeBase, cardBackground, 0.2)
   const badgeText = options.subtitle ? escapeSvgText(options.subtitle) : ""
   const labelY = iconMarkup ? 58 : 43
   const metricText = options.displayValue ? escapeSvgText(options.displayValue) : ""
@@ -399,7 +402,7 @@ function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, the
       </defs>
       <rect x="0" y="0" width="${preset.keyWidth}" height="${preset.keyHeight}" rx="${sharedContract ? 18 : 16}" fill="url(#card)" />
       <rect x="4" y="4" width="${preset.keyWidth - 8}" height="${preset.keyHeight - 8}" rx="${sharedContract ? 13 : 12}" fill="none" stroke="${frame}" stroke-width="1.5" />
-      <rect x="10" y="10" width="14" height="4" rx="2" fill="${theme.accent}" opacity="0.95" />
+      <rect x="10" y="10" width="14" height="4" rx="2" fill="${primitiveTone === "accent" ? theme.accent : theme.primary}" opacity="0.95" />
       ${options.subtitle ? `<rect x="34" y="10" width="28" height="12" rx="6" fill="${badgeFill}" stroke="${badgeStroke}" stroke-width="1" />` : ""}
       ${textElements.map((element) => element.markup).join("")}
       ${iconMarkup}

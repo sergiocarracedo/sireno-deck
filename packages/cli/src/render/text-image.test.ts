@@ -199,6 +199,39 @@ describe("text-image", () => {
     expect(sharedBuffer.equals(plainBuffer)).toBe(false)
   })
 
+  it("renders primitive-backed shared accent styling on the shared/default path", async () => {
+    const defaultBuffer = await renderTextImage({ text: "Clock", theme: createTheme(), wrapper: "shared" })
+    const accentBuffer = await renderTextImage({
+      text: "Clock",
+      theme: createTheme(),
+      sharedStyleTone: "accent",
+      wrapper: "shared",
+    })
+
+    expect(defaultBuffer.equals(accentBuffer)).toBe(false)
+    expect(countRegionDiffs(defaultBuffer, accentBuffer, { height: 14, width: 52, x: 10, y: 8 })).toBeGreaterThan(40)
+  })
+
+  it("keeps explicit shared props authoritative over primitive-backed defaults", async () => {
+    const primitiveBuffer = await renderTextImage({
+      fit: "shrink",
+      text: "CLOCK LABEL THAT SHOULD WRAP DIFFERENTLY",
+      theme: createTheme(),
+      sharedStyleTone: "accent",
+      wrapper: "shared",
+    })
+    const explicitWrapBuffer = await renderTextImage({
+      fit: "wrap",
+      text: "CLOCK LABEL THAT SHOULD WRAP DIFFERENTLY",
+      theme: createTheme(),
+      sharedStyleTone: "accent",
+      wrapper: "shared",
+    })
+
+    expect(primitiveBuffer.equals(explicitWrapBuffer)).toBe(false)
+    expect(countRegionDiffs(primitiveBuffer, explicitWrapBuffer, { height: 24, width: 54, x: 10, y: 28 })).toBeGreaterThan(180)
+  })
+
   it("renders metric variants with progress and value text", async () => {
     const defaultBuffer = await renderTextImage({ text: "CPU" })
     const metricBuffer = await renderTextImage({ text: "CPU", displayValue: "48%", progress: 48, variant: "metric" })
