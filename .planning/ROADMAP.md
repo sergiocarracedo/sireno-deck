@@ -1,6 +1,6 @@
 # Roadmap — Sireno Deck v1.2
 
-**Last updated:** 2026-05-17
+**Last updated:** 2026-05-18
 **Granularity:** focused milestone (5 phases)
 **Total v1.2 requirements:** 9
 
@@ -42,7 +42,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ### Phase 12: Backgrounds + Text Fitting
 
-**Status:** Not started
+**Status:** Verified
 
 **Goal:** Make the render surface explicitly handle layered backgrounds and multiple text fitting modes.
 
@@ -51,10 +51,12 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 **Depends on:** Phase 11
 
 **Success criteria:**
-- [ ] Background precedence is resolved consistently as config override, then deck background, then theme background
-- [ ] The render contract exposes named text fitting modes rather than implicit clipping behavior
-- [ ] Default text behavior shrinks to fit until a readable minimum size then clips cleanly
-- [ ] Wrap mode is supported and covered by focused renderer verification
+- [x] Background precedence is resolved consistently as config override, then deck background, then theme background
+- [x] The render contract exposes named text fitting modes rather than implicit clipping behavior
+- [x] Default text behavior shrinks to fit until a readable minimum size then clips cleanly
+- [x] Wrap mode is supported and covered by focused renderer verification
+
+**Phase 12 note:** The first rollout intentionally keeps backgrounds color-only and text fitting scoped to the primary shared/default label path. Wider wrapper/style primitives remain Phase 13 work, and bespoke variants stay on their existing seams unless a low-risk reuse point appears later.
 
 **Research needed:** No — the milestone research already settled the fit/background direction enough for planning.
 

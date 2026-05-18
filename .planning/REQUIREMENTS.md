@@ -1,7 +1,7 @@
 # Requirements — Sireno Deck
 
 **Version:** v1.2
-**Last updated:** 2026-05-17
+**Last updated:** 2026-05-18
 
 ## Milestone Scope
 
@@ -24,6 +24,7 @@ Milestone `v1.2 Session Context and Surface Composition` builds on the completed
 ## Implementation Sequencing Notes
 
 - **Phase 11 lands:** `SCS-01`, `SCS-02`, and the contract/switch/restore subset of `SCS-08` — canonical host/session context, host-aware config/action/render injection, validated `session.locked_deck`, unsupported-host startup warning, locked-surface switching, implicit fallback support, and exact unlock restore.
+- **Phase 12 lands:** `SCS-03` and `SCS-04` — core-owned background config, explicit `button -> deck -> theme` resolution, explicit `fit` render modes, default shrink-to-fit with a renderer-owned floor, wrap support, and committed review fixtures for both contracts.
 - **Phase 15 still owns:** the five-minute dimming clause in `SCS-08` plus the broader milestone-wide verification surface in `SCS-09`.
 - **Known hardening gap:** the first `session-monitor` seam is intentionally narrow and honest about unsupported hosts, but it still needs a real supported-host event source to fully satisfy the live lock-detection promise in `SCS-08`.
 

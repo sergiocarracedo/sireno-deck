@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 12 context captured, with backgrounds pinned to color-only button->deck->theme precedence and text fitting pinned to explicit shrink/wrap modes with a renderer-owned readability floor.
+**Current focus:** Phase 12 is verified, with explicit color-only background precedence and explicit shrink/wrap text fitting now shipped on the shared/default render path. Next up is Phase 13 wrapper/style primitive planning.
 
 ## Current Position
 
-Phase: 12 — Backgrounds + Text Fitting
+Phase: 13 — Global Wrapper/Style Primitives
 Plan: —
-Status: discussed
-Last activity: 2026-05-18 - Captured Phase 12 background and text-fitting decisions for planning
+Status: ready to discuss
+Last activity: 2026-05-18 - Verified Phase 12 background precedence and explicit text fitting
 
 Progress: [##########] 100%
 
@@ -86,6 +86,9 @@ Recent decisions affecting current work:
 - **Phase 11 verification:** Confirmed the canonical host/session contract is wired end-to-end and that locked-mode runtime behavior is covered by focused tests and committed review artifacts, with live host detector hardening still noted as follow-up work.
 - **Phase 11 security follow-up discussion:** Captured that command safety must escape host values only at the shell boundary, Linux may only claim `supported` with a real detector, and the implicit locked fallback should move onto the bundled date-time addon path.
 - **Phase 12 discussion:** Captured the color-only background contract, exact button->deck->theme precedence, narrow `shrink`/`wrap` fit modes, and the decision to keep the readability floor renderer-owned while scoping the first rollout to shared/default text paths.
+- **Plan 12-01:** Shipped color-only deck/button background config, explicit `button -> deck -> theme` resolution, shared/default card tinting, and a committed background review path.
+- **Plan 12-02:** Replaced the old `overflow` seam with explicit `fit` modes, shipped default shrink plus opt-in wrap on the primary shared/default label path, and added a committed text-fit review path.
+- **Phase 12 verification:** Confirmed `SCS-03` and `SCS-04` are covered by focused config/runtime/render tests plus committed manual review fixtures, while wider wrapper/style primitives remain Phase 13 scope.
 
 ### Blockers/Concerns
 
@@ -96,8 +99,8 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-18
-Stopped at: Phase 12 context captured; next up is `plan-phase 12` to turn the background and text-fitting decisions into execution plans.
-Resume file: .planning/phases/12-backgrounds-text-fitting/12-CONTEXT.md
+Stopped at: Phase 12 verified and committed in two execution slices; next up is `discuss-phase 13` for global wrapper/style primitives.
+Resume file: .planning/ROADMAP.md
 
 ### Quick Tasks Completed
 

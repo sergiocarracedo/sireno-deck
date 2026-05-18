@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 2026-05-18
+
+### Features
+- Added explicit color-only background config for decks and buttons, with shared precedence resolved as `button -> deck -> theme` through the live runtime and render path.
+- Added an explicit public text-fit contract with `fit: "shrink" | "wrap"`, and shipped the first shared/default label rollout for default shrink plus opt-in wrap.
+- Added repo-pinned Phase 12 review fixtures under `packages/cli/fixtures/phase-12/` plus updated UAT instructions so background precedence and shrink-vs-wrap behavior are reviewable from committed inputs.
+
+### Fixes
+- Fixed the render pipeline so configured backgrounds no longer disappear inside strict addon validation or get re-decided ad hoc inside the renderer. Root cause was that deck/button background data did not have a core-owned seam outside addon payload schemas, and the shared/default card still derived its base tint only from `theme.background`.
+- Fixed the shared text contract to stop hiding future fit behavior behind `overflow: "clip"`. Root cause was that wrapper chrome and text fitting were still coupled accidentally through the Phase 7 overflow prop, which made the first explicit fit rollout harder than it needed to be.
+
+### Learnings
+- Core-owned config fields have to stay outside strict addon schemas or the platform turns legitimate product-level features into addon validation failures.
+- The real background precedence seam was runtime-plus-render transport, not the SVG renderer alone. `renderTextImage()` only sees one button at a time, so deck fallback has to be materialized before pixel generation.
+- Wrapper chrome and text fitting are separate contracts. If they share one legacy prop, later feature work inherits accidental coupling instead of a clean public API.
+
 ## 2026-05-16
 
 ### Features
