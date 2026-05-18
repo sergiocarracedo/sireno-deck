@@ -9,8 +9,8 @@ export interface TextImageOptions {
   background?: string
   detailLines?: string[]
   displayValue?: string
+  fit?: "shrink" | "wrap"
   icon?: string
-  overflow?: "clip"
   progress?: number
   subtitle?: string
   text?: string
@@ -40,6 +40,7 @@ export const STREAM_DECK_KEY_PRESET: TextImagePreset = {
 type TypographyRoleName = "main_text" | "auxiliary_text" | "monospace"
 
 interface TextStyleOptions {
+  fit?: "shrink" | "wrap"
   fill: string
   text: string
   theme: Theme
@@ -53,7 +54,10 @@ interface TextStyleOptions {
   clipHeight: number
   textAnchor?: "end" | "middle" | "start"
   scale?: number
+  lineHeight?: number
 }
+
+const MIN_SHRINK_SCALE = 0.72
 
 const DEFAULT_THEME: Theme = {
   accent: "#f59e0b",
@@ -111,10 +115,71 @@ function buildTextAttributes(theme: Theme, roleName: TypographyRoleName, scale: 
   return attributes.join(" ")
 }
 
+function estimateTextWidth(text: string, fontSize: number): number {
+  return text.length * fontSize * 0.58
+}
+
+function getFittedScale(text: string, clipWidth: number, role: ThemeTypographyRole, initialScale: number | undefined): number {
+  const baseScale = initialScale ?? 1
+  const baseFontSize = role.font_size * baseScale
+  const estimatedWidth = estimateTextWidth(text, baseFontSize)
+
+  if (estimatedWidth <= clipWidth) {
+    return baseScale
+  }
+
+  return Number(Math.max(MIN_SHRINK_SCALE, (clipWidth / estimatedWidth) * baseScale).toFixed(2))
+}
+
+function wrapText(text: string, clipWidth: number, role: ThemeTypographyRole, scale: number | undefined): string[] {
+  const words = text.trim().split(/\s+/).filter((word) => word.length > 0)
+  if (words.length === 0) {
+    return []
+  }
+
+  const fittedScale = scale ?? 1
+  const fontSize = role.font_size * fittedScale
+  const lines: string[] = []
+  let currentLine = ""
+
+  for (const word of words) {
+    const nextLine = currentLine.length > 0 ? `${currentLine} ${word}` : word
+    if (currentLine.length === 0 || estimateTextWidth(nextLine, fontSize) <= clipWidth) {
+      currentLine = nextLine
+      continue
+    }
+
+    lines.push(currentLine)
+    currentLine = word
+  }
+
+  if (currentLine.length > 0) {
+    lines.push(currentLine)
+  }
+
+  return lines
+}
+
 function buildClippedText(options: TextStyleOptions): { definition: string; markup: string } {
+  const role = getTypographyRole(options.theme, options.role)
+  const fit = options.fit ?? "shrink"
+  const resolvedScale = fit === "shrink"
+    ? getFittedScale(options.text, options.clipWidth, role, options.scale)
+    : (options.scale ?? 1)
+
+  if (fit === "wrap") {
+    const wrappedLines = wrapText(options.text, options.clipWidth, role, resolvedScale)
+    const lineHeight = options.lineHeight ?? getScaledFontSize(role, resolvedScale)
+
+    return {
+      definition: `<clipPath id="${options.clipId}"><rect x="${options.clipX}" y="${options.clipY}" width="${options.clipWidth}" height="${options.clipHeight}" /></clipPath>`,
+      markup: `<text x="${options.x}" y="${options.y}" fill="${options.fill}" text-anchor="${options.textAnchor ?? "start"}" clip-path="url(#${options.clipId})" ${buildTextAttributes(options.theme, options.role, resolvedScale)}>${wrappedLines.map((line, index) => `<tspan x="${options.x}" dy="${index === 0 ? 0 : lineHeight}">${escapeSvgText(line)}</tspan>`).join("")}</text>`,
+    }
+  }
+
   return {
     definition: `<clipPath id="${options.clipId}"><rect x="${options.clipX}" y="${options.clipY}" width="${options.clipWidth}" height="${options.clipHeight}" /></clipPath>`,
-    markup: `<text x="${options.x}" y="${options.y}" fill="${options.fill}" text-anchor="${options.textAnchor ?? "start"}" clip-path="url(#${options.clipId})" ${buildTextAttributes(options.theme, options.role, options.scale)}>${escapeSvgText(options.text)}</text>`,
+    markup: `<text x="${options.x}" y="${options.y}" fill="${options.fill}" text-anchor="${options.textAnchor ?? "start"}" clip-path="url(#${options.clipId})" ${buildTextAttributes(options.theme, options.role, resolvedScale)}>${escapeSvgText(options.text)}</text>`,
   }
 }
 
@@ -228,7 +293,7 @@ function getDetailLines(lines: string[] | undefined, limit: number): string[] {
 }
 
 function usesSharedWrapper(options: TextImageOptions): boolean {
-  return options.wrapper === "shared" || options.overflow === "clip"
+  return options.wrapper === "shared"
 }
 
 function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
@@ -275,12 +340,14 @@ function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, the
         })
       : null,
     buildClippedText({
-      clipHeight: iconMarkup ? 12 : 18,
+      clipHeight: options.fit === "wrap" ? 20 : iconMarkup ? 12 : 18,
       clipId: "default-label-text",
       clipWidth: iconMarkup ? 52 : 54,
       clipX: 10,
       clipY: iconMarkup ? 50 : 29,
       fill: theme.foreground,
+      fit: options.fit,
+      lineHeight: 8,
       role: "main_text",
       scale: iconMarkup ? 0.92 : 1.25,
       text: safeText,

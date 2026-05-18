@@ -17,9 +17,9 @@ const reviewAddon = {
         return {
           render() {
             return createElement("deck-button", {
+              fit: "shrink",
               keyIndex: button.position,
               label: config.label,
-              overflow: "clip",
               subtitle: config.subtitle,
               wrapper: "shared",
             })

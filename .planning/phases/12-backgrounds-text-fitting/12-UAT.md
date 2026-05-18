@@ -3,15 +3,16 @@ status: pending
 phase: 12-backgrounds-text-fitting
 source:
   - 12-01-SUMMARY.md
+  - 12-02-SUMMARY.md
 started: 2026-05-18T16:00:00+02:00
-updated: 2026-05-18T16:00:00+02:00
+updated: 2026-05-18T16:40:00+02:00
 ---
 
 ## Current Test
-number: 1
-name: color-only background precedence review path
+number: 2
+name: explicit shrink and wrap review path
 expected: |
-  Start the CLI from `packages/cli` with `pnpm exec tsx src/cli.ts start --config fixtures/phase-12/config.background-precedence.yml`. On the main deck, compare key `0` (`Button Override`) with key `1` (`Deck Fallback`). Key `0` must render with its own configured override color, while key `1` must inherit the deck background color from the `main` deck. Then press key `2` to navigate to `theme-fallback`. Key `0` on that deck must render with the active theme background rather than the `main` deck color, because the `theme-fallback` deck defines no background override.
+  Start the CLI from `packages/cli` with `pnpm exec tsx src/cli.ts start --config fixtures/phase-12/config.text-fit.yml`. Compare key `0` and key `1` on the same deck. Key `0` should stay on the one-line shared label path and shrink before clipping. Key `1` should visibly wrap into multiple lines because it opts into `fit: wrap`. Both keys should still use the shared/default card path rather than bespoke visuals.
 awaiting: review
 
 ## Tests
@@ -30,14 +31,28 @@ fail_if:
   - Deck fallback leaks across decks after navigation.
   - The theme-fallback deck still appears to use the `main` deck background.
 
+### 2. Explicit Shrink Default And Wrap Alternate Stay Reviewable On The Shared Label Path
+expected: Start the CLI from `packages/cli` with `pnpm exec tsx src/cli.ts start --config fixtures/phase-12/config.text-fit.yml`. On the main deck, compare key `0` with key `1`. Key `0` should keep a one-line shared label layout and visibly shrink the long text before any final clipping. Key `1` should visibly wrap that long label into multiple lines because the button opts into `fit: wrap`. The shared/default card chrome should otherwise stay consistent between the two keys.
+fixture: `packages/cli/fixtures/phase-12/config.text-fit.yml`
+result: pending
+pass_if:
+  - Key `0` remains on the one-line shrink path rather than jumping to multi-line layout.
+  - Key `1` visibly wraps into multiple lines on the same shared/default card path.
+  - The two keys differ because of fit behavior, not because one fell onto a bespoke variant path.
+  - Existing bespoke variants such as analog clock and calendar sheet are unaffected by this review path.
+fail_if:
+  - `fit: wrap` still renders as the same one-line shrink behavior.
+  - Removing `overflow` broke shared wrapper visuals or card chrome.
+  - The review path accidentally depends on a bespoke renderer rather than the shared/default label path.
+
 ## Summary
 
-total: 1
+total: 2
 passed: 0
 issues: 0
-pending: 1
+pending: 2
 skipped: 0
 
 ## Gaps
 
-This UAT covers only Wave 1 background precedence. Wave 2 still needs a separate committed review path for explicit `shrink` and `wrap` text fitting.
+Both checks still require human visual review on a real rendered surface.

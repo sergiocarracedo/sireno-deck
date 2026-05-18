@@ -1,0 +1,21 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    name: Phase 12 Text Fit Review
+    buttons:
+      - position: 0
+        type: phase-12-fit-review
+        label: This label should shrink before clipping at the edge
+      - position: 1
+        type: phase-12-fit-review
+        label: This label should wrap into multiple lines clearly
+        fit: wrap
+addons:
+  - name: phase-12-fit-review-addon
+    enabled: true
+    source: local
+    path: fixtures/phase-12/phase-12-fit-review-addon
+logging:
+  level: info

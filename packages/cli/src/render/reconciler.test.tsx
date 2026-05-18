@@ -16,7 +16,7 @@ import {
   jsxAddonText,
 } from "../../fixtures/phase-9/jsx-addon-authoring-example.js"
 
-const jsxButton = <deck-button keyIndex={7} label="JSX" overflow="clip" subtitle="typed" variant="toggle" wrapper="shared" />
+const jsxButton = <deck-button keyIndex={7} label="JSX" fit="shrink" subtitle="typed" variant="toggle" wrapper="shared" />
 
 describe("render reconciler", () => {
   it("produces a render description for key 0", () => {
@@ -163,8 +163,8 @@ describe("render reconciler", () => {
     const helperDescriptions = renderDeck(
       createDeckButtonElement({
         keyIndex: 7,
+        fit: "shrink",
         label: "JSX",
-        overflow: "clip",
         subtitle: "typed",
         variant: "toggle",
         wrapper: "shared",
@@ -178,31 +178,39 @@ describe("render reconciler", () => {
     const descriptions = renderDeck(
       createDeckButtonElement({
         keyIndex: 8,
+        fit: "shrink",
         label: "Clock",
-        overflow: "clip",
         subtitle: "Local",
         wrapper: "shared",
       }),
     )
 
-    expect(descriptions).toEqual([{ keyIndex: 8, label: "Clock", overflow: "clip", subtitle: "Local", wrapper: "shared" }])
+    expect(descriptions).toEqual([{ fit: "shrink", keyIndex: 8, label: "Clock", subtitle: "Local", wrapper: "shared" }])
   })
 
   it("keeps helper-authored and JSX-authored shared wrapper output in parity", () => {
     const helperDescriptions = renderDeck(
       createDeckButtonElement({
         detailLines: ["Tue", "09:41"],
+        fit: "shrink",
         keyIndex: 9,
         label: "Clock",
-        overflow: "clip",
         wrapper: "shared",
       }),
     )
     const jsxDescriptions = renderDeck(
-      <deck-button detailLines={["Tue", "09:41"]} keyIndex={9} label="Clock" overflow="clip" wrapper="shared" />,
+      <deck-button detailLines={["Tue", "09:41"]} fit="shrink" keyIndex={9} label="Clock" wrapper="shared" />,
     )
 
     expect(jsxDescriptions).toEqual(helperDescriptions)
+  })
+
+  it("threads explicit wrap fit props through render descriptions", () => {
+    const descriptions = renderDeck(
+      createDeckButtonElement({ fit: "wrap", keyIndex: 4, label: "Long Label", wrapper: "shared" }),
+    )
+
+    expect(descriptions).toEqual([{ fit: "wrap", keyIndex: 4, label: "Long Label", wrapper: "shared" }])
   })
 
   it("keeps helper-authored and JSX-authored analog clock output in parity", () => {

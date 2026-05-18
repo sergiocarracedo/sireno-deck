@@ -1,10 +1,10 @@
-export type DeckTextOverflow = "clip"
+export type DeckTextFit = "shrink" | "wrap"
 
 export type DeckButtonWrapper = "shared"
 
 export interface DeckTextProps {
   background?: string
-  overflow?: DeckTextOverflow
+  fit?: DeckTextFit
   keyIndex: number
   text: string
 }
@@ -13,7 +13,7 @@ export interface DeckButtonProps {
   background?: string
   detailLines?: string[]
   displayValue?: string
-  overflow?: DeckTextOverflow
+  fit?: DeckTextFit
   keyIndex: number
   label?: string
   icon?: string

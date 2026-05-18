@@ -129,7 +129,7 @@ describe("text-image", () => {
     expect(countRegionDiffs(darkReviewBuffer, lightReviewBuffer, { height: 20, width: 54, x: 10, y: 24 })).toBeGreaterThan(140)
   })
 
-  it("Phase 7 honors the clip-only override for long shared text instead of spilling", async () => {
+  it("defaults to shrink for long shared text instead of spilling into the edge columns", async () => {
     const shortBuffer = await renderTextImage({ text: "I", theme: createTheme() })
     const longBuffer = await renderTextImage({
       text: "CLOCK LABEL THAT SHOULD CLIP CLEANLY",
@@ -138,6 +138,23 @@ describe("text-image", () => {
 
     expect(countRegionDiffs(shortBuffer, longBuffer, { height: 18, width: 44, x: 18, y: 29 })).toBeGreaterThan(150)
     expect(countRegionDiffs(shortBuffer, longBuffer, { height: 20, width: 8, x: 64, y: 26 })).toBe(0)
+  })
+
+  it("renders wrap as an observably different multi-line shared label layout", async () => {
+    const shrinkBuffer = await renderTextImage({
+      fit: "shrink",
+      text: "CLOCK LABEL THAT SHOULD WRAP DIFFERENTLY",
+      theme: createTheme(),
+      wrapper: "shared",
+    })
+    const wrapBuffer = await renderTextImage({
+      fit: "wrap",
+      text: "CLOCK LABEL THAT SHOULD WRAP DIFFERENTLY",
+      theme: createTheme(),
+      wrapper: "shared",
+    })
+
+    expect(countRegionDiffs(shrinkBuffer, wrapBuffer, { height: 24, width: 54, x: 10, y: 28 })).toBeGreaterThan(180)
   })
 
   it("renders visible pixels inside the icon region for shipped bundled svg assets", async () => {
@@ -173,6 +190,13 @@ describe("text-image", () => {
     const analogOverrideBuffer = await renderTextImage({ background: "#5b2333", theme: createTheme(), variant: "analog-clock" })
 
     expect(analogThemeBuffer.equals(analogOverrideBuffer)).toBe(true)
+  })
+
+  it("keeps shared wrapper visuals without depending on the removed overflow field", async () => {
+    const sharedBuffer = await renderTextImage({ text: "Clock", theme: createTheme(), wrapper: "shared" })
+    const plainBuffer = await renderTextImage({ text: "Clock", theme: createTheme() })
+
+    expect(sharedBuffer.equals(plainBuffer)).toBe(false)
   })
 
   it("renders metric variants with progress and value text", async () => {

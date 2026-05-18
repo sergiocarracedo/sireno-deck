@@ -19,8 +19,8 @@ export interface RenderNode {
   detailLines?: string[]
   type: "deck-button" | "deck-surface" | "deck-text"
   displayValue?: string
+  fit?: "shrink" | "wrap"
   keyIndex?: number
-  overflow?: "clip"
   label?: string
   icon?: string
   progress?: number
@@ -35,8 +35,8 @@ export interface RenderDescription {
   background?: string
   detailLines?: string[]
   displayValue?: string
+  fit?: "shrink" | "wrap"
   keyIndex: number
-  overflow?: "clip"
   label?: string
   icon?: string
   progress?: number
@@ -133,7 +133,7 @@ const hostConfig: ReactReconciler.HostConfig<
         keyIndex: props.keyIndex,
         detailLines: props.detailLines,
         displayValue: props.displayValue,
-        overflow: props.overflow,
+        fit: props.fit,
         label: props.label,
         icon: props.icon,
         progress: props.progress,
@@ -148,25 +148,25 @@ const hostConfig: ReactReconciler.HostConfig<
       return {
         type: "deck-text",
         background: props.background,
+        fit: props.fit,
         keyIndex: props.keyIndex,
-        overflow: props.overflow,
         text: props.text,
         children: [],
       }
     }
 
     if (type === "deck-surface" && isDeckSurfaceProps(props)) {
-        return {
-          type: "deck-surface",
-          children: props.buttons.map((button) => ({
-            type: "deck-button",
-            background: button.background ?? props.background,
-            keyIndex: button.keyIndex,
-            detailLines: button.detailLines,
+      return {
+        type: "deck-surface",
+        children: props.buttons.map((button) => ({
+          type: "deck-button",
+          background: button.background ?? props.background,
+          detailLines: button.detailLines,
           displayValue: button.displayValue,
-          overflow: button.overflow,
-          label: button.label,
+          fit: button.fit,
           icon: button.icon,
+          keyIndex: button.keyIndex,
+          label: button.label,
           progress: button.progress,
           subtitle: button.subtitle,
           variant: button.variant,
@@ -247,7 +247,7 @@ const hostConfig: ReactReconciler.HostConfig<
       instance.background = newProps.background
       instance.detailLines = newProps.detailLines
       instance.displayValue = newProps.displayValue
-      instance.overflow = newProps.overflow
+      instance.fit = newProps.fit
       instance.label = newProps.label
       instance.icon = newProps.icon
       instance.progress = newProps.progress
@@ -260,7 +260,7 @@ const hostConfig: ReactReconciler.HostConfig<
     if (instance.type === "deck-text" && isDeckTextProps(newProps)) {
       instance.keyIndex = newProps.keyIndex
       instance.background = newProps.background
-      instance.overflow = newProps.overflow
+      instance.fit = newProps.fit
       instance.text = newProps.text
       return
     }
@@ -272,7 +272,7 @@ const hostConfig: ReactReconciler.HostConfig<
         keyIndex: button.keyIndex,
         detailLines: button.detailLines,
         displayValue: button.displayValue,
-        overflow: button.overflow,
+        fit: button.fit,
         label: button.label,
         icon: button.icon,
         progress: button.progress,
@@ -340,7 +340,7 @@ function collectRenderDescriptions(nodes: readonly RenderNode[]): RenderDescript
         ...(node.background !== undefined ? { background: node.background } : {}),
         ...(node.detailLines !== undefined ? { detailLines: node.detailLines } : {}),
         ...(node.displayValue !== undefined ? { displayValue: node.displayValue } : {}),
-        ...(node.overflow !== undefined ? { overflow: node.overflow } : {}),
+        ...(node.fit !== undefined ? { fit: node.fit } : {}),
         ...(node.icon !== undefined ? { icon: node.icon } : {}),
         ...(node.label !== undefined ? { label: node.label } : {}),
         ...(node.progress !== undefined ? { progress: node.progress } : {}),
@@ -354,8 +354,8 @@ function collectRenderDescriptions(nodes: readonly RenderNode[]): RenderDescript
       descriptions.push({
         keyIndex: node.keyIndex,
         ...(node.background !== undefined ? { background: node.background } : {}),
+        ...(node.fit !== undefined ? { fit: node.fit } : {}),
         label: node.text,
-        ...(node.overflow !== undefined ? { overflow: node.overflow } : {}),
       })
     }
 
