@@ -1,0 +1,25 @@
+.planning/phases/14-richer-built-in-toggles/14-UAT.md
+  s_738f8c54e2a345::t_47e0ae6b7d397e 9,37,64
+  s_738f8c54e2a345::t_c8af6f63d9f3b8 65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "dd5165cdcd91a56eaa28a556d21b20d283c4a4f0",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_738f8c54e2a345": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1c0aabbd0ffeKQeuqUsBJr26pO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
