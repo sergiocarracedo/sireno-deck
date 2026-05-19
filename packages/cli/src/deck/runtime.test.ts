@@ -1412,4 +1412,60 @@ describe("createDeckRuntime", () => {
       expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "get-set", variant: "toggle" })
     })
   })
+
+  it("reconciles toggle-status taps through status_command instead of local inversion", async () => {
+    const registry = createBundledAddonRegistry()
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    let statusOutput = "off"
+    const executeAction = vi.fn(async (command: string) => {
+      if (command === "read-lamp") {
+        return { code: 0, failed: false, signal: undefined, stderr: "", stdout: statusOutput, timedOut: false }
+      }
+
+      if (command === "toggle-lamp") {
+        statusOutput = "on"
+      }
+
+      return { code: 0, failed: false, signal: undefined, stderr: "", stdout: "", timedOut: false }
+    })
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{
+          config: {
+            label: "Lamp",
+            mode: "toggle-status",
+            off: { subtitle: "OFF" },
+            on: { subtitle: "ON" },
+            status_command: "read-lamp",
+            toggle_command: "toggle-lamp",
+          },
+          definition: registry.getButton("toggle")!,
+          label: "Lamp",
+          position: 0,
+          type: "toggle",
+        }],
+      },
+      executeAction,
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "toggle-status", variant: "toggle" })
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(executeAction.mock.calls.map((call) => call[0])).toEqual(["read-lamp", "toggle-lamp", "read-lamp"])
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "toggle-status", variant: "toggle" })
+    })
+  })
 })

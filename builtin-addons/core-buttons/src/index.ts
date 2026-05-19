@@ -140,8 +140,10 @@ const builtinToggleButton = {
       return undefined
     }
 
+    const readCommand = config.mode === 'get-set' ? config.get_state_command : config.status_command
+
     const syncAuthoritativeState = async () => {
-      const result = await methods.runCommand(config.get_state_command)
+      const result = await methods.runCommand(readCommand)
       if (isCommandFailure(result)) {
         displayState = 'error'
         return
@@ -174,7 +176,9 @@ const builtinToggleButton = {
         displayState = 'pending'
         methods.invalidate()
 
-        const command = lastKnownState === 'on' ? config.set_off_command : config.set_on_command
+        const command = config.mode === 'get-set'
+          ? (lastKnownState === 'on' ? config.set_off_command : config.set_on_command)
+          : config.toggle_command
         const result = await methods.runCommand(command)
         if (isCommandFailure(result)) {
           displayState = 'error'
@@ -193,7 +197,7 @@ const builtinToggleButton = {
           keyIndex: button.position,
           ...getStateProps(lastKnownState),
           subtitle: displayState === 'pending' ? 'PENDING' : displayState === 'error' ? 'ERROR' : getStateProps(lastKnownState).subtitle,
-          toggle_mode: 'get-set',
+          toggle_mode: config.mode,
           variant: 'toggle',
         }),
     }
