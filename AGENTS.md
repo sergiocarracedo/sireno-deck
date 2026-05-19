@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 14 — Richer Built-in Toggles
+**Phase:** 16 — Config Reload + Wrapper Polish
 **Status:** planning
-**Last updated:** 2026-05-18
+**Last updated:** 2026-05-19
 
 ---
 
