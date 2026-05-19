@@ -62,9 +62,19 @@ export const GetSetToggleButtonConfigSchema = ToggleSharedPresentationSchema.ext
 })
   .strict()
 
+export const ToggleStatusToggleButtonConfigSchema = ToggleSharedPresentationSchema.extend({
+  mode: z.literal("toggle-status"),
+  off_values: ToggleOutputTokensSchema.optional(),
+  on_values: ToggleOutputTokensSchema.optional(),
+  status_command: z.string().min(1),
+  toggle_command: z.string().min(1),
+})
+  .strict()
+
 export const BuiltinToggleButtonConfigSchema = z.discriminatedUnion("mode", [
   InternalToggleButtonConfigSchema,
   GetSetToggleButtonConfigSchema,
+  ToggleStatusToggleButtonConfigSchema,
 ])
 
 const RawButtonEnvelopeSchema = z.object({

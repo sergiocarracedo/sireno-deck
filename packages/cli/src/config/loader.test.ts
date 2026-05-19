@@ -937,4 +937,150 @@ describe("loadConfig", () => {
 
     throw new Error("Expected get-set token list validation to fail")
   })
+
+  it("loads bundled toggle-status config through the single-type toggle contract", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: toggle",
+        "        mode: toggle-status",
+        "        label: Desk Lamp",
+        "        toggle_command: \"toggle-lamp\"",
+        "        status_command: \"read-lamp\"",
+        "        on_values:",
+        "          - on",
+        "        off_values:",
+        "          - off",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig()
+
+    expect(config.decks.main?.buttons[0]).toMatchObject({
+      config: {
+        label: "Desk Lamp",
+        mode: "toggle-status",
+        off_values: ["off"],
+        on_values: ["on"],
+        status_command: "read-lamp",
+        toggle_command: "toggle-lamp",
+      },
+      label: "Desk Lamp",
+      type: "toggle",
+    })
+  })
+
+  it("rejects toggle-status config when status_command is missing", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: toggle",
+        "        mode: toggle-status",
+        "        label: Desk Lamp",
+        "        toggle_command: \"toggle-lamp\"",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).message).toContain("Required")
+      expect((error as ConfigValidationError).lineNumber).toBe(7)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "buttons", 0, "status_command"])
+      return
+    }
+
+    throw new Error("Expected toggle-status validation to fail")
+  })
+
+  it("rejects get-set fields on the toggle-status schema branch with line information", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: toggle",
+        "        mode: toggle-status",
+        "        label: Desk Lamp",
+        "        toggle_command: \"toggle-lamp\"",
+        "        status_command: \"read-lamp\"",
+        "        set_on_command: \"turn-on-lamp\"",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).message).toContain("Unknown key 'set_on_command'")
+      expect((error as ConfigValidationError).lineNumber).toBe(13)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "buttons", 0, "set_on_command"])
+      return
+    }
+
+    throw new Error("Expected wrong-branch toggle-status validation to fail")
+  })
+
+  it("rejects empty toggle-status token lists with line information", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: toggle",
+        "        mode: toggle-status",
+        "        label: Desk Lamp",
+        "        toggle_command: \"toggle-lamp\"",
+        "        status_command: \"read-lamp\"",
+        "        off_values: []",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).lineNumber).toBe(13)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "buttons", 0, "off_values"])
+      return
+    }
+
+    throw new Error("Expected toggle-status token list validation to fail")
+  })
 })
