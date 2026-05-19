@@ -1,0 +1,33 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    name: Internal Toggle Review
+    buttons:
+      - position: 0
+        type: toggle
+        mode: internal
+        label: Desk Lamp
+        off:
+          subtitle: OFF
+        on:
+          subtitle: ON
+      - position: 1
+        type: change-deck
+        label: Apps
+        target_deck: apps
+  apps:
+    id: apps
+    name: Secondary Deck
+    buttons:
+      - position: 0
+        type: change-deck
+        label: Main
+        target_deck: main
+      - position: 1
+        type: display-text
+        label: Review Surface
+addons: []
+logging:
+  level: info
