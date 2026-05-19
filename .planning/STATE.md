@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 14 discussion is complete. Next up is `plan-phase 14` for richer built-in toggles.
+**Current focus:** Phase 14 execution is underway. Plan 14-01 shipped the internal toggle mode end-to-end; next up is `execute-phase 14` for the command-driven toggle plans.
 
 ## Current Position
 
 Phase: 14 — Richer Built-in Toggles
-Plan: —
-Status: ready for planning
-Last activity: 2026-05-18 - Captured Phase 14 richer built-in toggles context
+Plan: 14-01 complete
+Status: executing
+Last activity: 2026-05-19 - Shipped internal-mode built-in toggle behavior, runtime continuity, and review fixture
 
 Progress: [##########] 100%
 
@@ -103,6 +103,7 @@ Recent decisions affecting current work:
 - **Plan 13-02:** Carried primitive ids through the public render contract, added pre-render runtime validation for addon-authored refs, applied primitive-backed defaults on the shared/default renderer path, and committed a Phase 13 review fixture/UAT path.
 - **Phase 13 verification:** Confirmed `SCS-05` is covered by focused registry/config/reconciler/runtime/render tests plus bundled-addon coverage and a committed manual review path.
 - **Phase 14 discussion:** Captured the single-type toggle contract, command-authority rules, honest pending/error lifecycle behavior, and the constrained shared-base visual divergence expected for planning.
+- **Plan 14-01:** Shipped the bundled internal-mode toggle contract end-to-end, including runtime-owned in-process state continuity across deck re-activation and reconnect-style activation, plus the committed Phase 14 internal-toggle review fixture/UAT path.
 
 ### Blockers/Concerns
 
@@ -113,7 +114,7 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-18
-Stopped at: Phase 14 context is captured and ready for `plan-phase 14`.
+Stopped at: Plan 14-01 is complete; next up is Plan 14-02 for authoritative `get-set` command toggles.
 Resume file: .planning/ROADMAP.md
 
 ### Quick Tasks Completed
