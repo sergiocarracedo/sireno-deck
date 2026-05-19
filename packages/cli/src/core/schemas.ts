@@ -29,6 +29,29 @@ export const SessionSchema = z.object({
   locked_deck: z.string().min(1).optional(),
 })
 
+const ToggleStatePresentationOverrideSchema = z.object({
+  icon: z.string().min(1).optional(),
+  label: z.string().min(1).optional(),
+  subtitle: z.string().min(1).optional(),
+})
+  .strict()
+
+const ToggleSharedPresentationSchema = z.object({
+  icon: z.string().min(1).optional(),
+  label: z.string().min(1).optional(),
+  subtitle: z.string().min(1).optional(),
+  on: ToggleStatePresentationOverrideSchema.optional(),
+  off: ToggleStatePresentationOverrideSchema.optional(),
+})
+
+export const InternalToggleButtonConfigSchema = ToggleSharedPresentationSchema.extend({
+  initial_state: z.enum(["on", "off"]).default("off"),
+  mode: z.literal("internal"),
+})
+  .strict()
+
+export const BuiltinToggleButtonConfigSchema = z.discriminatedUnion("mode", [InternalToggleButtonConfigSchema])
+
 const RawButtonEnvelopeSchema = z.object({
   interval_ms: z.number().int().min(500).optional(),
   position: z.number().int().min(0).max(31),

@@ -4,6 +4,7 @@ import { createElement } from 'react'
 import { z } from 'zod'
 
 import type { SirenoAddon } from '../../../packages/cli/src/addon/api.js'
+import { BuiltinToggleButtonConfigSchema } from '../../../packages/cli/src/core/schemas.js'
 
 const BuiltinDisplayTextButtonSchema = z
   .object({
@@ -70,10 +71,38 @@ const builtinChangeDeckButton = {
   type: 'change-deck',
 }
 
+const builtinToggleButton = {
+  configSchema: BuiltinToggleButtonConfigSchema,
+  createInstance: ({
+    button,
+    config,
+  }: {
+    button: { position: number }
+    config: z.infer<typeof BuiltinToggleButtonConfigSchema>
+  }) => {
+    const stateOverride = config.initial_state === 'on' ? config.on : config.off
+
+    return {
+      render: () =>
+        createElement('deck-button', {
+          ...(config.icon !== undefined ? { icon: config.icon } : {}),
+          ...(stateOverride?.icon !== undefined ? { icon: stateOverride.icon } : {}),
+          keyIndex: button.position,
+          ...(config.label !== undefined ? { label: config.label } : {}),
+          ...(stateOverride?.label !== undefined ? { label: stateOverride.label } : {}),
+          ...(config.subtitle !== undefined ? { subtitle: config.subtitle } : {}),
+          ...(stateOverride?.subtitle !== undefined ? { subtitle: stateOverride.subtitle } : {}),
+          variant: 'toggle',
+        }),
+    }
+  },
+  type: 'toggle',
+}
+
 const coreButtonsAddon: SirenoAddon = {
   apiVersion: 1,
   assets,
-  buttons: [builtinDisplayTextButton, builtinChangeDeckButton],
+  buttons: [builtinDisplayTextButton, builtinChangeDeckButton, builtinToggleButton],
   name: 'core-buttons',
   styles,
   wrappers,

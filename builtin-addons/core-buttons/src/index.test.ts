@@ -66,4 +66,44 @@ describe("core-buttons addon", () => {
       shared: { tone: "accent" },
     })
   })
+
+  it("exports a bundled toggle definition with the internal-mode schema", () => {
+    const definition = coreButtonsAddon.buttons.find((button) => button.type === "toggle")
+    const config = definition?.configSchema.parse({
+      label: "Desk Lamp",
+      mode: "internal",
+      on: { subtitle: "ON" },
+    })
+
+    expect(definition?.type).toBe("toggle")
+    expect(config).toEqual({
+      initial_state: "off",
+      label: "Desk Lamp",
+      mode: "internal",
+      on: { subtitle: "ON" },
+    })
+  })
+
+  it("creates a renderable internal toggle instance", () => {
+    const definition = coreButtonsAddon.buttons.find((button) => button.type === "toggle")
+    const instance = definition?.createInstance({
+      button: { position: 6 },
+      config: {
+        initial_state: "on",
+        label: "Desk Lamp",
+        mode: "internal",
+        on: { subtitle: "ON" },
+      },
+    } as never)
+
+    expect(instance?.render()).toMatchObject({
+      props: {
+        keyIndex: 6,
+        label: "Desk Lamp",
+        subtitle: "ON",
+        variant: "toggle",
+      },
+      type: "deck-button",
+    })
+  })
 })

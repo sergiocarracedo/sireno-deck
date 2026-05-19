@@ -717,4 +717,73 @@ describe("loadConfig", () => {
       type: "emoji-entry-button",
     })
   })
+
+  it("loads bundled internal toggle config through the single-type toggle contract", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: toggle",
+        "        mode: internal",
+        "        label: Desk Lamp",
+        "        on:",
+        "          subtitle: ON",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig()
+
+    expect(config.decks.main?.buttons[0]).toMatchObject({
+      config: {
+        initial_state: "off",
+        label: "Desk Lamp",
+        mode: "internal",
+        on: { subtitle: "ON" },
+      },
+      label: "Desk Lamp",
+      type: "toggle",
+    })
+  })
+
+  it("rejects command-only fields on the internal toggle schema branch with line information", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: toggle",
+        "        mode: internal",
+        "        label: Desk Lamp",
+        "        set_on_command: \"printf 'on'\"",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).message).toContain("Unknown key 'set_on_command'")
+      expect((error as ConfigValidationError).lineNumber).toBe(11)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "buttons", 0, "set_on_command"])
+      return
+    }
+
+    throw new Error("Expected internal toggle config validation to fail")
+  })
 })
