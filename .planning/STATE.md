@@ -76,6 +76,7 @@ Recent decisions affecting current work:
 
 ### Progress Notes
 
+- **Phase 16 discussion:** Captured deck-only file references with owning-file-relative path resolution, root-plus-ref hot-reload, built-in temporary error-deck fallback on invalid reload, stack-preserving successful reload restore, full runtime instance rebuild on reload, shared-wrapper footer removal, and narrow per-button accent overrides accepting tokens or raw colors.
 - **Phase 10 kickoff:** Milestone audit found that the documented addon authoring entrypoints do not line up with the built `packages/cli` exports, so release flow needs a gap-closure phase before `/review`.
 - **Milestone v1.2 kickoff:** Captured session-context, layered background, text fitting, global wrapper/style, richer toggle, and lock-aware deck requirements plus the five-phase roadmap that sequences contract work before user-facing polish.
 - **Phase 11 discussion:** Captured the canonical host/session contract, first minimal config templating seam, implicit built-in locked fallback, isolated lock-mode navigation, and unsupported-host degradation policy for downstream planning.
