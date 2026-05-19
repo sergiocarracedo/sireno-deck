@@ -45,6 +45,7 @@ interface RuntimeButtonHandle {
 }
 
 interface RuntimeButtonInstance {
+  defaultIntervalMs?: number
   dispose?: () => Promise<void> | void
   onActivate?: () => Promise<void> | void
   onDeactivate?: () => Promise<void> | void
@@ -312,7 +313,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     stopActiveDeckPolling()
 
     for (const button of getDeckButtons(deckController.getActiveDeck())) {
-      const intervalMs = button.interval_ms ?? button.definition.defaultIntervalMs
+      const intervalMs = button.interval_ms ?? getOrCreateInstance(activeDeckId, button).defaultIntervalMs ?? button.definition.defaultIntervalMs
       if (!intervalMs) {
         continue
       }

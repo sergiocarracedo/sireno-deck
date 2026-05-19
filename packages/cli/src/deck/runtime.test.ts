@@ -701,6 +701,46 @@ describe("createDeckRuntime", () => {
     })
   })
 
+  it("uses command-driven toggle instance defaults when no interval override is configured", async () => {
+    const registry = createBundledAddonRegistry()
+    const createScheduler = vi.fn((_intervalMs: number): PollingScheduler => ({
+      intervalMs: 0,
+      jitterMs: 0,
+      scheduleDelay: () => 0,
+      start: vi.fn(),
+      stop: vi.fn(),
+    }))
+
+    const runtime = createDeckRuntime({
+      createScheduler,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: {
+            get_state_command: "read-lamp",
+            label: "Lamp",
+            mode: "get-set",
+            set_off_command: "turn-off-lamp",
+            set_on_command: "turn-on-lamp",
+          },
+          definition: registry.getButton("toggle")!,
+          label: "Lamp",
+          position: 0,
+          type: "toggle",
+        }],
+      },
+      executeAction: async () => ({ code: 0, failed: false, signal: undefined, stderr: "", stdout: "off", timedOut: false }),
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(createScheduler).toHaveBeenCalledWith(1000)
+    })
+  })
+
   it("skips polling when neither interval override nor default cadence exists", async () => {
     const createScheduler = vi.fn((_intervalMs: number): PollingScheduler => ({
       intervalMs: 0,
@@ -738,6 +778,41 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(runtime.getRenderButtons()).toEqual([{ background: "#10161f", keyIndex: 0, label: "Clock" }])
+    })
+
+    expect(createScheduler).not.toHaveBeenCalled()
+  })
+
+  it("does not start default polling for internal toggles", async () => {
+    const registry = createBundledAddonRegistry()
+    const createScheduler = vi.fn((_intervalMs: number): PollingScheduler => ({
+      intervalMs: 0,
+      jitterMs: 0,
+      scheduleDelay: () => 0,
+      start: vi.fn(),
+      stop: vi.fn(),
+    }))
+
+    const runtime = createDeckRuntime({
+      createScheduler,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Lamp", mode: "internal", off: { subtitle: "OFF" }, on: { subtitle: "ON" } },
+          definition: registry.getButton("toggle")!,
+          label: "Lamp",
+          position: 0,
+          type: "toggle",
+        }],
+      },
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "internal", variant: "toggle" })
     })
 
     expect(createScheduler).not.toHaveBeenCalled()
@@ -1466,6 +1541,68 @@ describe("createDeckRuntime", () => {
     await vi.waitFor(() => {
       expect(executeAction.mock.calls.map((call) => call[0])).toEqual(["read-lamp", "toggle-lamp", "read-lamp"])
       expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "toggle-status", variant: "toggle" })
+    })
+  })
+
+  it("allows toggle-status taps before the first status read has resolved", async () => {
+    const registry = createBundledAddonRegistry()
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    let releaseFirstRead: (() => void) | undefined
+    const firstReadPromise = new Promise<void>((resolve) => {
+      releaseFirstRead = resolve
+    })
+    let statusOutput = "on"
+    const executeAction = vi.fn(async (command: string) => {
+      if (command === "read-lamp") {
+        await firstReadPromise
+        return { code: 0, failed: false, signal: undefined, stderr: "", stdout: statusOutput, timedOut: false }
+      }
+
+      if (command === "toggle-lamp") {
+        statusOutput = "off"
+      }
+
+      return { code: 0, failed: false, signal: undefined, stderr: "", stdout: "", timedOut: false }
+    })
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{
+          config: {
+            label: "Lamp",
+            mode: "toggle-status",
+            off: { subtitle: "OFF" },
+            on: { subtitle: "ON" },
+            status_command: "read-lamp",
+            toggle_command: "toggle-lamp",
+          },
+          definition: registry.getButton("toggle")!,
+          label: "Lamp",
+          position: 0,
+          type: "toggle",
+        }],
+      },
+      executeAction,
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "PENDING", toggle_mode: "toggle-status", variant: "toggle" })
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+    releaseFirstRead?.()
+
+    await vi.waitFor(() => {
+      expect(executeAction.mock.calls.map((call) => call[0])).toContain("toggle-lamp")
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "toggle-status", variant: "toggle" })
     })
   })
 

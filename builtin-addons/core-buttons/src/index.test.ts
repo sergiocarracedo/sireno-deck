@@ -270,18 +270,16 @@ describe("core-buttons addon", () => {
     })
   })
 
-  it("preserves last authoritative truth and shows error when toggle-status reconciliation fails", async () => {
+  it("allows toggle-status taps before the first authoritative read has resolved", async () => {
     const definition = coreButtonsAddon.buttons.find((button) => button.type === "toggle")
-    let readCount = 0
+    let statusOutput = "on"
     const runCommand = vi.fn(async (command: string) => {
       if (command === "read-lamp") {
-        readCount += 1
+        return { code: 0, failed: false, stdout: statusOutput, timedOut: false }
+      }
 
-        if (readCount === 1) {
-          return { code: 0, failed: false, stdout: "on", timedOut: false }
-        }
-
-        return { code: 0, failed: false, stdout: "unknown", timedOut: false }
+      if (command === "toggle-lamp") {
+        statusOutput = "off"
       }
 
       return { code: 0, failed: false, stdout: "", timedOut: false }
@@ -299,11 +297,48 @@ describe("core-buttons addon", () => {
       methods: { invalidate: vi.fn(), runCommand },
     } as never)
 
+    await instance?.onTap?.()
+
+    expect(runCommand.mock.calls.map((call) => call[0])).toEqual(["toggle-lamp", "read-lamp"])
+    expect(instance?.render()).toMatchObject({
+      props: { keyIndex: 12, label: "Desk Lamp", subtitle: "OFF", toggle_mode: "toggle-status", variant: "toggle" },
+    })
+  })
+
+  it("preserves last authoritative truth and shows error when toggle-status reconciliation fails", async () => {
+    const definition = coreButtonsAddon.buttons.find((button) => button.type === "toggle")
+    let readCount = 0
+    const runCommand = vi.fn(async (command: string) => {
+      if (command === "read-lamp") {
+        readCount += 1
+
+        if (readCount === 1) {
+          return { code: 0, failed: false, stdout: "on", timedOut: false }
+        }
+
+        return { code: 0, failed: false, stdout: "unknown", timedOut: false }
+      }
+
+      return { code: 0, failed: false, stdout: "", timedOut: false }
+    })
+    const instance = definition?.createInstance({
+      button: { position: 13 },
+      config: {
+        label: "Desk Lamp",
+        mode: "toggle-status",
+        off: { subtitle: "OFF" },
+        on: { subtitle: "ON" },
+        status_command: "read-lamp",
+        toggle_command: "toggle-lamp",
+      },
+      methods: { invalidate: vi.fn(), runCommand },
+    } as never)
+
     await instance?.onActivate?.()
     await instance?.onTap?.()
 
     expect(instance?.render()).toMatchObject({
-      props: { keyIndex: 12, label: "Desk Lamp", subtitle: "ERROR", toggle_mode: "toggle-status", variant: "toggle" },
+      props: { keyIndex: 13, label: "Desk Lamp", subtitle: "ERROR", toggle_mode: "toggle-status", variant: "toggle" },
     })
   })
 })

@@ -27,6 +27,7 @@ const assets = {
 
 const wrappers = [{ name: 'shared-card', wrapper: 'shared' }] as const
 const styles = [{ name: 'accent', shared: { tone: 'accent' } }] as const
+const COMMAND_DRIVEN_TOGGLE_INTERVAL_MS = 1_000
 
 const builtinDisplayTextButton = {
   configSchema: BuiltinDisplayTextButtonSchema,
@@ -165,11 +166,12 @@ const builtinToggleButton = {
     }
 
     return {
+      defaultIntervalMs: COMMAND_DRIVEN_TOGGLE_INTERVAL_MS,
       onActivate: () => {
         void syncAndInvalidate()
       },
       onTap: async () => {
-        if (!lastKnownState) {
+        if (config.mode === 'get-set' && !lastKnownState) {
           return
         }
 

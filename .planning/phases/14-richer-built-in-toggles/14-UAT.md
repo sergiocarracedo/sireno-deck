@@ -47,7 +47,6 @@ fail_if:
 ### 3. Toggle-Status Uses Write-Then-Reconcile Instead Of Local Inversion
 expected: From `packages/cli`, initialize both command fixtures with `printf 'off' > /tmp/sireno-phase14-toggle-status-state` and `printf 'off' > /tmp/sireno-phase14-get-set-state`, then start the CLI with `pnpm exec tsx src/cli.ts start --config fixtures/phase-14/config.toggle-toggle-status.yml`. On `main`, compare key `0` (`Desk Lamp`) against key `1` (`Get-Set Ref`) and confirm both stay on the shipped toggle family while `toggle-status` uses a visibly distinct mode accent from `get-set`. Tap key `0` once and confirm it finishes at `ON` only after the toggle command mutates the backing file and `status_command` reads the new truth back. The surface should reconcile through the command read, not by blindly inverting the prior visible state.
 fixture: `packages/cli/fixtures/phase-14/config.toggle-toggle-status.yml`
-result: pending
 result: pass
 pass_if:
   - Key `0` and key `1` share the same base toggle family but remain visually distinguishable by mode accent.
