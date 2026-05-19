@@ -6,7 +6,7 @@ source:
   - 14-02-PLAN.md
   - 14-03-PLAN.md
 started: 2026-05-19T10:40:00+02:00
-updated: 2026-05-19T10:55:00+02:00
+updated: 2026-05-19T12:03:00+02:00
 ---
 
 ## Current Test
@@ -34,9 +34,7 @@ fail_if:
 ### 2. Get-Set Toggle Starts Pending, Reads Authoritative State, And Uses Command-Mode Chrome
 expected: From `packages/cli`, initialize the fixture state file with `printf 'off' > /tmp/sireno-phase14-get-set-state`, then start the CLI with `pnpm exec tsx src/cli.ts start --config fixtures/phase-14/config.toggle-get-set.yml`. On `main`, key `0` (`Desk Lamp`) should start in a visibly pending state until the first read succeeds, then settle to `OFF`. Compare it against key `1` (`Internal Ref`) and confirm both stay on the same shipped toggle card family while the get-set key uses command-authority chrome that is visibly different from the internal key. Tap key `0` once and confirm it ends at `ON` only after the authoritative command path runs and reads back the updated state file.
 fixture: `packages/cli/fixtures/phase-14/config.toggle-get-set.yml`
-result: issue
-reported: "0 is always indeterminated"
-severity: major
+result: pass
 pass_if:
   - Key `0` starts pending and then settles from authoritative command output instead of guessing an initial state.
   - Key `0` and key `1` share the same base toggle family, but the get-set key uses visibly different command-mode chrome.
@@ -63,8 +61,8 @@ fail_if:
 ## Summary
 
 total: 3
-passed: 2
-issues: 1
+passed: 3
+issues: 0
 pending: 0
 skipped: 0
 
