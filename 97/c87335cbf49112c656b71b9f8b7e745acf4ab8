@@ -1,0 +1,28 @@
+builtin-addons/core-buttons/src/index.ts
+  s_738f8c54e2a345::t_fcac92d70b7b0d 143-144,146,179-181,200
+builtin-addons/core-buttons/src/index.test.ts
+  s_738f8c54e2a345::t_a98500481ebfe9 236-308
+packages/cli/src/deck/runtime.test.ts
+  s_738f8c54e2a345::t_6af899e562b91c 1415-1470
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "97c87335cbf49112c656b71b9f8b7e745acf4ab8",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_738f8c54e2a345": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1c0aabbd0ffeKQeuqUsBJr26pO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
