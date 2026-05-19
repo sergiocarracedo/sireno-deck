@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 14 execution is complete. Next up is `verify-work 14` to run manual UAT across the three committed toggle fixtures.
+**Current focus:** Phase 14 gap closure is complete. Next up is `verify-work 14` to rerun the fixed get-set UAT path and confirm the manual surface now settles correctly.
 
 ## Current Position
 
 Phase: 14 — Richer Built-in Toggles
-Plan: 14-03 complete
+Plan: 14-04 complete
 Status: ready for verification
-Last activity: 2026-05-19 - Finished toggle-status reconciliation and completed the full Phase 14 review surface
+Last activity: 2026-05-19 - Closed the get-set startup render race found during Phase 14 UAT
 
 Progress: [##########] 100%
 
@@ -106,6 +106,7 @@ Recent decisions affecting current work:
 - **Plan 14-01:** Shipped the bundled internal-mode toggle contract end-to-end, including runtime-owned in-process state continuity across deck re-activation and reconnect-style activation, plus the committed Phase 14 internal-toggle review fixture/UAT path.
 - **Plan 14-02:** Added the strict `get-set` toggle branch, authoritative command reads/writes with pending and error treatment, real CLI render-path mode accents, and a committed command-driven review fixture/UAT path.
 - **Plan 14-03:** Added the strict `toggle-status` toggle branch, write-then-status reconciliation without local inversion, restrained third-mode render accents, and the final committed Phase 14 fixture/UAT path covering all three modes.
+- **Plan 14-04:** Fixed the runtime startup render-order race so stale deck-wide `PENDING` writes cannot overwrite the first settled authoritative `get-set` state on the real device path.
 
 ### Blockers/Concerns
 
@@ -116,7 +117,7 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-18
-Stopped at: Phase 14 execution is complete; next up is `verify-work 14` for manual UAT.
+Stopped at: Phase 14 gap closure is complete; next up is `verify-work 14` to rerun the fixed get-set review path.
 Resume file: .planning/ROADMAP.md
 
 ### Quick Tasks Completed
