@@ -44,13 +44,28 @@ const ToggleSharedPresentationSchema = z.object({
   off: ToggleStatePresentationOverrideSchema.optional(),
 })
 
+const ToggleOutputTokensSchema = z.array(z.string().min(1)).nonempty()
+
 export const InternalToggleButtonConfigSchema = ToggleSharedPresentationSchema.extend({
   initial_state: z.enum(["on", "off"]).default("off"),
   mode: z.literal("internal"),
 })
   .strict()
 
-export const BuiltinToggleButtonConfigSchema = z.discriminatedUnion("mode", [InternalToggleButtonConfigSchema])
+export const GetSetToggleButtonConfigSchema = ToggleSharedPresentationSchema.extend({
+  get_state_command: z.string().min(1),
+  mode: z.literal("get-set"),
+  off_values: ToggleOutputTokensSchema.optional(),
+  on_values: ToggleOutputTokensSchema.optional(),
+  set_off_command: z.string().min(1),
+  set_on_command: z.string().min(1),
+})
+  .strict()
+
+export const BuiltinToggleButtonConfigSchema = z.discriminatedUnion("mode", [
+  InternalToggleButtonConfigSchema,
+  GetSetToggleButtonConfigSchema,
+])
 
 const RawButtonEnvelopeSchema = z.object({
   interval_ms: z.number().int().min(500).optional(),

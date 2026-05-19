@@ -786,4 +786,155 @@ describe("loadConfig", () => {
 
     throw new Error("Expected internal toggle config validation to fail")
   })
+
+  it("loads bundled get-set toggle config through the single-type toggle contract", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: toggle",
+        "        mode: get-set",
+        "        label: Desk Lamp",
+        "        get_state_command: \"printf 'on'\"",
+        "        set_on_command: \"turn-on-lamp\"",
+        "        set_off_command: \"turn-off-lamp\"",
+        "        on_values:",
+        "          - on",
+        "        off_values:",
+        "          - off",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig()
+
+    expect(config.decks.main?.buttons[0]).toMatchObject({
+      config: {
+        get_state_command: "printf 'on'",
+        label: "Desk Lamp",
+        mode: "get-set",
+        off_values: ["off"],
+        on_values: ["on"],
+        set_off_command: "turn-off-lamp",
+        set_on_command: "turn-on-lamp",
+      },
+      label: "Desk Lamp",
+      type: "toggle",
+    })
+  })
+
+  it("rejects get-set toggle config when required commands are missing", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: toggle",
+        "        mode: get-set",
+        "        label: Desk Lamp",
+        "        set_on_command: \"turn-on-lamp\"",
+        "        set_off_command: \"turn-off-lamp\"",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).message).toContain("Required")
+      expect((error as ConfigValidationError).lineNumber).toBe(7)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "buttons", 0, "get_state_command"])
+      return
+    }
+
+    throw new Error("Expected get-set toggle config validation to fail")
+  })
+
+  it("rejects toggle-status fields on the get-set toggle schema branch with line information", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: toggle",
+        "        mode: get-set",
+        "        label: Desk Lamp",
+        "        get_state_command: \"printf 'on'\"",
+        "        set_on_command: \"turn-on-lamp\"",
+        "        set_off_command: \"turn-off-lamp\"",
+        "        toggle_command: \"toggle-lamp\"",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).message).toContain("Unknown key 'toggle_command'")
+      expect((error as ConfigValidationError).lineNumber).toBe(14)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "buttons", 0, "toggle_command"])
+      return
+    }
+
+    throw new Error("Expected wrong-branch get-set toggle validation to fail")
+  })
+
+  it("rejects empty get-set token lists with line information", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: toggle",
+        "        mode: get-set",
+        "        label: Desk Lamp",
+        "        get_state_command: \"printf 'on'\"",
+        "        set_on_command: \"turn-on-lamp\"",
+        "        set_off_command: \"turn-off-lamp\"",
+        "        on_values: []",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).lineNumber).toBe(14)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "buttons", 0, "on_values"])
+      return
+    }
+
+    throw new Error("Expected get-set token list validation to fail")
+  })
 })
