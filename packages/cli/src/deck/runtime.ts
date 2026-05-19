@@ -1,7 +1,7 @@
 import { executeCommand, type CommandExecutionResult } from "../action/executor.js"
 import datetimeButtonsAddon from "../../../../builtin-addons/date-time/src/index.js"
 import { createPollingScheduler, type PollingScheduler } from "../render/scheduler.js"
-import { createDeckController, type DeckController } from "./controller.js"
+import { createDeckController } from "./controller.js"
 import { renderDeck } from "../render/reconciler.js"
 
 import type { AddonRegistry } from "../addon/registry.js"

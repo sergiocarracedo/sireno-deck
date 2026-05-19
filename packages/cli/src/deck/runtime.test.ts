@@ -436,7 +436,7 @@ describe("createDeckRuntime", () => {
 
   it("keeps the committed Phase 11 host-context fixture live across render and action execution", async () => {
     const config = loadConfig(
-      join(process.cwd(), "fixtures/phase-11/config.host-context.yml"),
+      join(process.cwd(), "packages/cli/fixtures/phase-11/config.host-context.yml"),
       createBundledAddonRegistry(),
       {
         os: {
@@ -1106,7 +1106,7 @@ describe("createDeckRuntime", () => {
 
   it("keeps the committed Phase 11 locked-session fixture restorable across lock and unlock transitions", async () => {
     const config = loadConfig(
-      join(process.cwd(), "fixtures/phase-11/config.locked-session.yml"),
+      join(process.cwd(), "packages/cli/fixtures/phase-11/config.locked-session.yml"),
       createBundledAddonRegistry(),
       {
         os: { type: "linux", variant: "ubuntu", version: "24.04" },

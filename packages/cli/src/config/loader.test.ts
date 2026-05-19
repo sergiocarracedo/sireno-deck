@@ -693,7 +693,7 @@ describe("loadConfig", () => {
   })
 
   it("loads the committed Phase 11 host-context fixture through render and action-bearing config paths", async () => {
-    const fixturePath = join(originalCwd, "fixtures/phase-11/config.host-context.yml")
+    const fixturePath = join(originalCwd, "packages/cli/fixtures/phase-11/config.host-context.yml")
     const { loadConfig } = await loadConfigModule()
     const config = loadConfig(fixturePath, undefined, {
       os: {
