@@ -13,8 +13,12 @@ decks:
         label: Emoji
         icon: addon://emoji-selector/favorites.svg
         target_deck: emoji
-     
-        
+      - position: 2
+        type: action
+        label: Action
+        command: 'google-chrome'
+        icon: addon://emoji-selector/favorites.svg
+
   emoji:
     id: emoji
     type: emoji-selector
@@ -36,7 +40,7 @@ addons:
     enabled: false
     source: local
     path: addons2/local-clock-addon2
-  - name: "@sireno-deck/community-addon"
+  - name: '@sireno-deck/community-addon'
     enabled: false
     source: npm
 logging:
