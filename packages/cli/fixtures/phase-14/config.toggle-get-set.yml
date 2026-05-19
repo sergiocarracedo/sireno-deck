@@ -1,0 +1,33 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    name: Get-Set Toggle Review
+    buttons:
+      - position: 0
+        type: toggle
+        mode: get-set
+        label: Desk Lamp
+        get_state_command: "cat /tmp/sireno-phase14-get-set-state"
+        set_on_command: "printf 'on' > /tmp/sireno-phase14-get-set-state"
+        set_off_command: "printf 'off' > /tmp/sireno-phase14-get-set-state"
+        on_values:
+          - on
+        off_values:
+          - off
+        off:
+          subtitle: OFF
+        on:
+          subtitle: ON
+      - position: 1
+        type: toggle
+        mode: internal
+        label: Internal Ref
+        off:
+          subtitle: OFF
+        on:
+          subtitle: ON
+addons: []
+logging:
+  level: info
