@@ -20,6 +20,7 @@ export interface DeckButtonProps {
   progress?: number
   style_id?: string
   subtitle?: string
+  toggle_mode?: "get-set" | "internal" | "toggle-status"
   variant?: "analog-clock" | "calendar-sheet" | "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
   wrapper?: DeckButtonWrapper
   wrapper_id?: string

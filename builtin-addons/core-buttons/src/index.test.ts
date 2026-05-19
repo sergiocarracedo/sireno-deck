@@ -94,6 +94,7 @@ describe("core-buttons addon", () => {
         mode: "internal",
         on: { subtitle: "ON" },
       },
+      methods: { invalidate: vi.fn() },
     } as never)
 
     expect(instance?.render()).toMatchObject({
@@ -101,9 +102,37 @@ describe("core-buttons addon", () => {
         keyIndex: 6,
         label: "Desk Lamp",
         subtitle: "ON",
+        toggle_mode: "internal",
         variant: "toggle",
       },
       type: "deck-button",
+    })
+  })
+
+  it("toggles internal state and invalidates on tap", async () => {
+    const definition = coreButtonsAddon.buttons.find((button) => button.type === "toggle")
+    const invalidate = vi.fn()
+    const instance = definition?.createInstance({
+      button: { position: 7 },
+      config: {
+        initial_state: "off",
+        label: "Desk Lamp",
+        mode: "internal",
+        off: { subtitle: "OFF" },
+        on: { subtitle: "ON" },
+      },
+      methods: { invalidate },
+    } as never)
+
+    expect(instance?.render()).toMatchObject({
+      props: { keyIndex: 7, label: "Desk Lamp", subtitle: "OFF", toggle_mode: "internal", variant: "toggle" },
+    })
+
+    await instance?.onTap?.()
+
+    expect(invalidate).toHaveBeenCalledTimes(1)
+    expect(instance?.render()).toMatchObject({
+      props: { keyIndex: 7, label: "Desk Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" },
     })
   })
 })

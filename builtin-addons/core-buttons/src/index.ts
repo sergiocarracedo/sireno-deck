@@ -76,22 +76,37 @@ const builtinToggleButton = {
   createInstance: ({
     button,
     config,
+    methods,
   }: {
     button: { position: number }
     config: z.infer<typeof BuiltinToggleButtonConfigSchema>
+    methods: { invalidate: () => void }
   }) => {
-    const stateOverride = config.initial_state === 'on' ? config.on : config.off
+    let currentState = config.initial_state
+
+    const getStateProps = () => {
+      const stateOverride = currentState === 'on' ? config.on : config.off
+
+      return {
+        ...(config.icon !== undefined ? { icon: config.icon } : {}),
+        ...(stateOverride?.icon !== undefined ? { icon: stateOverride.icon } : {}),
+        ...(config.label !== undefined ? { label: config.label } : {}),
+        ...(stateOverride?.label !== undefined ? { label: stateOverride.label } : {}),
+        ...(config.subtitle !== undefined ? { subtitle: config.subtitle } : {}),
+        ...(stateOverride?.subtitle !== undefined ? { subtitle: stateOverride.subtitle } : {}),
+      }
+    }
 
     return {
+      onTap: async () => {
+        currentState = currentState === 'on' ? 'off' : 'on'
+        methods.invalidate()
+      },
       render: () =>
         createElement('deck-button', {
-          ...(config.icon !== undefined ? { icon: config.icon } : {}),
-          ...(stateOverride?.icon !== undefined ? { icon: stateOverride.icon } : {}),
           keyIndex: button.position,
-          ...(config.label !== undefined ? { label: config.label } : {}),
-          ...(stateOverride?.label !== undefined ? { label: stateOverride.label } : {}),
-          ...(config.subtitle !== undefined ? { subtitle: config.subtitle } : {}),
-          ...(stateOverride?.subtitle !== undefined ? { subtitle: stateOverride.subtitle } : {}),
+          ...getStateProps(),
+          toggle_mode: 'internal',
           variant: 'toggle',
         }),
     }

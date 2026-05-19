@@ -50,10 +50,10 @@ describe("render reconciler", () => {
 
   it("preserves richer toggle button descriptions", () => {
     const descriptions = renderDeck(
-      createDeckButtonElement({ keyIndex: 3, label: "Active", subtitle: "ON", variant: "toggle" }),
+      createDeckButtonElement({ keyIndex: 3, label: "Active", subtitle: "ON", toggle_mode: "internal", variant: "toggle" }),
     )
 
-    expect(descriptions).toEqual([{ keyIndex: 3, label: "Active", subtitle: "ON", variant: "toggle" }])
+    expect(descriptions).toEqual([{ keyIndex: 3, label: "Active", subtitle: "ON", toggle_mode: "internal", variant: "toggle" }])
   })
 
   it("preserves richer metric button descriptions", () => {
@@ -319,6 +319,41 @@ describe("render reconciler", () => {
     )
 
     expect(descriptions).toEqual([{ keyIndex: 10, label: "Analog", subtitle: "Custom", variant: "toggle" }])
+  })
+
+  it("threads toggle mode through direct deck-button descriptions", () => {
+    const descriptions = renderDeck(
+      createDeckButtonElement({ keyIndex: 4, label: "Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" }),
+    )
+
+    expect(descriptions).toEqual([
+      {
+        keyIndex: 4,
+        label: "Lamp",
+        subtitle: "ON",
+        toggle_mode: "internal",
+        variant: "toggle",
+      },
+    ])
+  })
+
+  it("threads toggle mode through deck-surface button collections", () => {
+    const descriptions = renderDeck(
+      createDeckSurfaceElement({
+        buttons: [
+          { keyIndex: 0, label: "Deck" },
+          { keyIndex: 1, label: "Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" },
+        ],
+      }),
+    )
+
+    expect(descriptions).toContainEqual({
+      keyIndex: 1,
+      label: "Lamp",
+      subtitle: "ON",
+      toggle_mode: "internal",
+      variant: "toggle",
+    })
   })
 
   it("keeps the shipped Phase 9 addon authoring example in helper and JSX parity", () => {

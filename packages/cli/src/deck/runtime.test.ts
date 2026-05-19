@@ -1190,4 +1190,138 @@ describe("createDeckRuntime", () => {
       ])
     })
   })
+
+  it("keeps bundled internal toggle state across deck re-activation in the same runtime", async () => {
+    const registry = createBundledAddonRegistry()
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [
+          {
+            config: { label: "Lamp", mode: "internal", off: { subtitle: "OFF" }, on: { subtitle: "ON" } },
+            definition: registry.getButton("toggle")!,
+            label: "Lamp",
+            position: 0,
+            type: "toggle",
+          },
+          {
+            config: { label: "Apps", target_deck: "apps" },
+            definition: registry.getButton("change-deck")!,
+            label: "Apps",
+            position: 1,
+            target_deck: "apps",
+            type: "change-deck",
+          },
+        ],
+      },
+      decks: {
+        main: {
+          id: "main",
+          buttons: [
+            {
+              config: { label: "Lamp", mode: "internal", off: { subtitle: "OFF" }, on: { subtitle: "ON" } },
+              definition: registry.getButton("toggle")!,
+              label: "Lamp",
+              position: 0,
+              type: "toggle",
+            },
+            {
+              config: { label: "Apps", target_deck: "apps" },
+              definition: registry.getButton("change-deck")!,
+              label: "Apps",
+              position: 1,
+              target_deck: "apps",
+              type: "change-deck",
+            },
+          ],
+        },
+        apps: {
+          id: "apps",
+          buttons: [{
+            config: { label: "Main", target_deck: "main" },
+            definition: registry.getButton("change-deck")!,
+            label: "Main",
+            position: 0,
+            target_deck: "main",
+            type: "change-deck",
+          }],
+        },
+      },
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "internal", variant: "toggle" })
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" })
+    })
+
+    emitEvent?.({ keyIndex: 1, type: "down" })
+    emitEvent?.({ keyIndex: 1, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("apps")
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("main")
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" })
+    })
+  })
+
+  it("keeps bundled internal toggle state across reconnect-style deck re-activation in the same runtime", async () => {
+    const registry = createBundledAddonRegistry()
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Lamp", mode: "internal", off: { subtitle: "OFF" }, on: { subtitle: "ON" } },
+          definition: registry.getButton("toggle")!,
+          label: "Lamp",
+          position: 0,
+          type: "toggle",
+        }],
+      },
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "internal", variant: "toggle" })
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" })
+    })
+
+    await runtime.activateCurrentDeck()
+
+    await vi.waitFor(() => {
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" })
+    })
+  })
 })

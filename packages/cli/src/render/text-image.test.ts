@@ -175,6 +175,14 @@ describe("text-image", () => {
     expect(defaultBuffer.equals(toggleBuffer)).toBe(false)
   })
 
+  it("renders internal toggle mode with observably different chrome from the default toggle tone", async () => {
+    const commandToneBuffer = await renderTextImage({ text: "Lamp", subtitle: "ON", variant: "toggle" })
+    const internalToneBuffer = await renderTextImage({ text: "Lamp", subtitle: "ON", toggleMode: "internal", variant: "toggle", theme: createTheme() })
+
+    expect(commandToneBuffer.equals(internalToneBuffer)).toBe(false)
+    expect(countRegionDiffs(commandToneBuffer, internalToneBuffer, { height: 14, width: 52, x: 10, y: 8 })).toBeGreaterThan(20)
+  })
+
   it("uses an explicit button background as the shared default-card base tint", async () => {
     const themeBuffer = await renderTextImage({ text: "Clock", theme: createTheme() })
     const overrideBuffer = await renderTextImage({ background: "#5b2333", text: "Clock", theme: createTheme() })

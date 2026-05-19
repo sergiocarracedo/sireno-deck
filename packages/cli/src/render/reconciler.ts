@@ -26,6 +26,7 @@ export interface RenderNode {
   progress?: number
   style_id?: string
   subtitle?: string
+  toggle_mode?: "get-set" | "internal" | "toggle-status"
   text?: string
   variant?: "analog-clock" | "calendar-sheet" | "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
   wrapper?: "shared"
@@ -44,6 +45,7 @@ export interface RenderDescription {
   progress?: number
   style_id?: string
   subtitle?: string
+  toggle_mode?: "get-set" | "internal" | "toggle-status"
   variant?: "analog-clock" | "calendar-sheet" | "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
   wrapper?: "shared"
   wrapper_id?: string
@@ -143,6 +145,7 @@ const hostConfig: ReactReconciler.HostConfig<
         progress: props.progress,
         style_id: props.style_id,
         subtitle: props.subtitle,
+        toggle_mode: props.toggle_mode,
         variant: props.variant,
         wrapper: props.wrapper,
         wrapper_id: props.wrapper_id,
@@ -176,6 +179,7 @@ const hostConfig: ReactReconciler.HostConfig<
           progress: button.progress,
           style_id: button.style_id,
           subtitle: button.subtitle,
+          toggle_mode: button.toggle_mode,
           variant: button.variant,
           wrapper: button.wrapper,
           wrapper_id: button.wrapper_id,
@@ -261,6 +265,7 @@ const hostConfig: ReactReconciler.HostConfig<
       instance.progress = newProps.progress
       instance.style_id = newProps.style_id
       instance.subtitle = newProps.subtitle
+      instance.toggle_mode = newProps.toggle_mode
       instance.variant = newProps.variant
       instance.wrapper = newProps.wrapper
       instance.wrapper_id = newProps.wrapper_id
@@ -288,6 +293,7 @@ const hostConfig: ReactReconciler.HostConfig<
         progress: button.progress,
         style_id: button.style_id,
         subtitle: button.subtitle,
+        toggle_mode: button.toggle_mode,
         variant: button.variant,
         wrapper: button.wrapper,
         wrapper_id: button.wrapper_id,
@@ -358,6 +364,7 @@ function collectRenderDescriptions(nodes: readonly RenderNode[]): RenderDescript
         ...(node.progress !== undefined ? { progress: node.progress } : {}),
         ...(node.style_id !== undefined ? { style_id: node.style_id } : {}),
         ...(node.subtitle !== undefined ? { subtitle: node.subtitle } : {}),
+        ...(node.toggle_mode !== undefined ? { toggle_mode: node.toggle_mode } : {}),
         ...(node.variant !== undefined ? { variant: node.variant } : {}),
         ...(node.wrapper !== undefined ? { wrapper: node.wrapper } : {}),
         ...(node.wrapper_id !== undefined ? { wrapper_id: node.wrapper_id } : {}),
