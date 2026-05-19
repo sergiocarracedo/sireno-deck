@@ -1,0 +1,26 @@
+.planning/STATE.md
+  s_738f8c54e2a345::t_ce9a9aade2982a 8,13-15,106,117
+.planning/phases/14-richer-built-in-toggles/14-01-SUMMARY.md
+  s_738f8c54e2a345::t_a52fa8de923ef3 1-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "6998d438b8519c72b9dd4d1c917b8494003ae681",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_738f8c54e2a345": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1c0aabbd0ffeKQeuqUsBJr26pO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
