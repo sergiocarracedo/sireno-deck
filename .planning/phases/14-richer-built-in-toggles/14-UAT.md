@@ -81,3 +81,6 @@ skipped: 0
     - "packages/cli/src/deck/runtime.ts"
     - "packages/cli/src/cli/commands/start.ts"
     - "packages/cli/src/deck/runtime.test.ts"
+  closure_plan: "14-04-PLAN.md"
+  closure_status: fixed_pending_rerun
+  closure_note: "The runtime deck-surface render now rebuilds its final payload from `renderCache` after per-button renders settle, so a stale startup `PENDING` snapshot cannot overwrite the first settled authoritative state. Rerun Test 2 on the real fixture to confirm the manual surface now settles from pending to `OFF`."

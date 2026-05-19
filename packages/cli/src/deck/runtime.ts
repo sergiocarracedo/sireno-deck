@@ -216,11 +216,15 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return
     }
 
-    const buttons = await Promise.all(
+    await Promise.all(
       getDeckButtons(deckController.getActiveDeck()).map((button) => renderRuntimeButton(button, deckId, activationVersion)),
     )
 
-    await options.onRenderDeck?.(buttons.filter((button): button is DeckButtonProps => button !== undefined))
+    const latestButtons = getDeckButtons(deckController.getActiveDeck())
+      .map((button) => renderCache.get(getButtonStateKey(deckId, button.position)))
+      .filter((button): button is DeckButtonProps => button !== undefined)
+
+    await options.onRenderDeck?.(latestButtons)
   }
 
   function createButtonMethods(button: ButtonInstance, deckId: string) {

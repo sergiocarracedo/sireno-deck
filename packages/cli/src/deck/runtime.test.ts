@@ -1468,4 +1468,51 @@ describe("createDeckRuntime", () => {
       expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "toggle-status", variant: "toggle" })
     })
   })
+
+  it("keeps the settled get-set startup render from being overwritten by the stale deck-wide pending write", async () => {
+    const registry = createBundledAddonRegistry()
+    const onRenderDeck = vi.fn()
+    const onRenderButton = vi.fn()
+    const executeAction = vi.fn(async (command: string) => {
+      if (command === "read-lamp") {
+        return { code: 0, failed: false, signal: undefined, stderr: "", stdout: "off", timedOut: false }
+      }
+
+      return { code: 0, failed: false, signal: undefined, stderr: "", stdout: "", timedOut: false }
+    })
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{
+          config: {
+            get_state_command: "read-lamp",
+            label: "Lamp",
+            mode: "get-set",
+            off: { subtitle: "OFF" },
+            on: { subtitle: "ON" },
+            set_off_command: "turn-off-lamp",
+            set_on_command: "turn-on-lamp",
+          },
+          definition: registry.getButton("toggle")!,
+          label: "Lamp",
+          position: 0,
+          type: "toggle",
+        }],
+      },
+      executeAction,
+      onRenderButton,
+      onRenderDeck,
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "get-set", variant: "toggle" })
+    })
+
+    expect(onRenderButton).toHaveBeenCalledWith({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "get-set", variant: "toggle" })
+    expect(onRenderDeck).toHaveBeenCalledWith([{ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "get-set", variant: "toggle" }])
+  })
 })
