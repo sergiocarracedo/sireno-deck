@@ -70,6 +70,10 @@ Recent decisions affecting current work:
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 
+### Roadmap Evolution
+
+- Phase 16 added: config hot-reload, external deck-file references, wrapper label removal, and customizable wrapper accent colors.
+
 ### Progress Notes
 
 - **Phase 10 kickoff:** Milestone audit found that the documented addon authoring entrypoints do not line up with the built `packages/cli` exports, so release flow needs a gap-closure phase before `/review`.

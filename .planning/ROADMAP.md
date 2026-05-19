@@ -1,7 +1,7 @@
 # Roadmap — Sireno Deck v1.2
 
-**Last updated:** 2026-05-18
-**Granularity:** focused milestone (5 phases)
+**Last updated:** 2026-05-19
+**Granularity:** focused milestone (6 phases)
 **Total v1.2 requirements:** 9
 
 ## Phase Overview
@@ -13,6 +13,7 @@
 | 13 | Global Wrapper/Style Primitives | Let addons register globally reusable wrapper/style primitives through validated public contracts | 1 | Phases 11-12 |
 | 14 | Richer Built-in Toggles | Expand the built-in toggle surface to cover both local and command-driven authority models | 2 | Phase 11 |
 | 15 | Lock-Screen Polish + Verification | Finish locked-session behavior with timed dimming and milestone-wide verification coverage | 2 | Phases 11-14 |
+| 16 | Config Reload + Wrapper Polish | Add config hot-reload, deck-file references, and shared wrapper cleanup/customization controls | Post-roadmap scope | Phase 15 |
 
 All 9 v1.2 requirements are mapped. No circular dependencies.
 
@@ -122,10 +123,23 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ---
 
+### Phase 16: Config Reload + Wrapper Polish
+
+**Status:** [ ] Not started
+
+**Goal:** Users can split deck definitions into referenced files, have config edits reload without losing the current deck when it still exists, and clean up shared wrapper visuals with removable labels and customizable accent colors.
+
+**Depends on:** Phase 15
+
+### Plans
+*Not yet planned — run `plan-phase 16`*
+
+---
+
 ## Coverage Validation
 
 - [x] All 9 v1.2 requirements map to at least one roadmap phase
-- [x] No circular dependencies: 11 → 12 → 13 and 11 → 14 → 15
+- [x] No circular dependencies: 11 → 12 → 13 and 11 → 14 → 15 → 16
 - [x] Every phase has observable success criteria
 - [x] Phase 14 can proceed in parallel with Phase 12 once Phase 11 stabilizes
 
