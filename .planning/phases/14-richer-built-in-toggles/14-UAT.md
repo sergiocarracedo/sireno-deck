@@ -4,8 +4,9 @@ phase: 14-richer-built-in-toggles
 source:
   - 14-01-PLAN.md
   - 14-02-PLAN.md
+  - 14-03-PLAN.md
 started: 2026-05-19T10:40:00+02:00
-updated: 2026-05-19T10:46:00+02:00
+updated: 2026-05-19T10:50:00+02:00
 ---
 
 ## Current Test
@@ -43,12 +44,25 @@ fail_if:
   - The get-set key is visually indistinguishable from the internal key despite using a different authority model.
   - The button locally flips without reconciling through the configured command path.
 
+### 3. Toggle-Status Uses Write-Then-Reconcile Instead Of Local Inversion
+expected: From `packages/cli`, initialize both command fixtures with `printf 'off' > /tmp/sireno-phase14-toggle-status-state` and `printf 'off' > /tmp/sireno-phase14-get-set-state`, then start the CLI with `pnpm exec tsx src/cli.ts start --config fixtures/phase-14/config.toggle-toggle-status.yml`. On `main`, compare key `0` (`Desk Lamp`) against key `1` (`Get-Set Ref`) and confirm both stay on the shipped toggle family while `toggle-status` uses a visibly distinct mode accent from `get-set`. Tap key `0` once and confirm it finishes at `ON` only after the toggle command mutates the backing file and `status_command` reads the new truth back. The surface should reconcile through the command read, not by blindly inverting the prior visible state.
+fixture: `packages/cli/fixtures/phase-14/config.toggle-toggle-status.yml`
+result: pending
+pass_if:
+  - Key `0` and key `1` share the same base toggle family but remain visually distinguishable by mode accent.
+  - Tapping key `0` ends at `ON` only after the write-then-status reconciliation path completes.
+  - The review path proves `toggle-status` as a separate command-authority model from `get-set`, not as a local optimistic flip.
+fail_if:
+  - The `toggle-status` key is visually indistinguishable from the `get-set` key.
+  - The visible state flips immediately without depending on the follow-up `status_command` read.
+  - The final Phase 14 review surface omits one of the three shipped toggle modes.
+
 ## Summary
 
-total: 2
+total: 3
 passed: 0
 issues: 0
-pending: 2
+pending: 3
 skipped: 0
 
 ## Gaps

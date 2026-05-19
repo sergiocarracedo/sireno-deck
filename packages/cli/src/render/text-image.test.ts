@@ -191,6 +191,14 @@ describe("text-image", () => {
     expect(countRegionDiffs(internalToneBuffer, getSetToneBuffer, { height: 14, width: 52, x: 10, y: 8 })).toBeGreaterThan(20)
   })
 
+  it("renders toggle-status mode with observably different chrome from get-set mode on the same toggle family", async () => {
+    const getSetToneBuffer = await renderTextImage({ text: "Lamp", subtitle: "ON", toggleMode: "get-set", variant: "toggle", theme: createTheme() })
+    const toggleStatusToneBuffer = await renderTextImage({ text: "Lamp", subtitle: "ON", toggleMode: "toggle-status", variant: "toggle", theme: createTheme() })
+
+    expect(getSetToneBuffer.equals(toggleStatusToneBuffer)).toBe(false)
+    expect(countRegionDiffs(getSetToneBuffer, toggleStatusToneBuffer, { height: 14, width: 52, x: 10, y: 8 })).toBeGreaterThan(20)
+  })
+
   it("uses an explicit button background as the shared default-card base tint", async () => {
     const themeBuffer = await renderTextImage({ text: "Clock", theme: createTheme() })
     const overrideBuffer = await renderTextImage({ background: "#5b2333", text: "Clock", theme: createTheme() })

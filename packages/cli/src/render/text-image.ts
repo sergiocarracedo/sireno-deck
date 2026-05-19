@@ -314,7 +314,9 @@ function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, the
   const badgeBase = primitiveTone === "accent" ? theme.accent : theme.primary
   const toggleAccent = options.toggleMode === "internal"
     ? mixHexColor(theme.success, cardBackground, 0.08)
-    : theme.accent
+    : options.toggleMode === "toggle-status"
+      ? mixHexColor(theme.primary, theme.background, 0.1)
+      : theme.accent
   const badgeFill = options.variant === "toggle"
     ? mixHexColor(toggleAccent, cardBackground, 0.15)
     : mixHexColor(badgeBase, cardBackground, 0.15)
@@ -406,7 +408,15 @@ function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, the
       </defs>
       <rect x="0" y="0" width="${preset.keyWidth}" height="${preset.keyHeight}" rx="${sharedContract ? 18 : 16}" fill="url(#card)" />
       <rect x="4" y="4" width="${preset.keyWidth - 8}" height="${preset.keyHeight - 8}" rx="${sharedContract ? 13 : 12}" fill="none" stroke="${frame}" stroke-width="1.5" />
-      <rect x="10" y="10" width="14" height="4" rx="2" fill="${options.variant === "toggle" && options.toggleMode === "internal" ? theme.success : primitiveTone === "accent" ? theme.accent : theme.primary}" opacity="0.95" />
+      <rect x="10" y="10" width="14" height="4" rx="2" fill="${options.variant === "toggle"
+        ? options.toggleMode === "internal"
+          ? theme.success
+          : options.toggleMode === "toggle-status"
+            ? theme.primary
+            : theme.accent
+        : primitiveTone === "accent"
+          ? theme.accent
+          : theme.primary}" opacity="0.95" />
       ${options.subtitle ? `<rect x="34" y="10" width="28" height="12" rx="6" fill="${badgeFill}" stroke="${badgeStroke}" stroke-width="1" />` : ""}
       ${textElements.map((element) => element.markup).join("")}
       ${iconMarkup}
