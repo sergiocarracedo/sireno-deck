@@ -80,12 +80,10 @@ const builtinToggleButton = {
   }: {
     button: { position: number }
     config: z.infer<typeof BuiltinToggleButtonConfigSchema>
-    methods: { invalidate: () => void }
+    methods: { invalidate: () => void; runCommand: (command: string) => Promise<{ code: number | null; failed: boolean; stdout: string; timedOut: boolean }> }
   }) => {
-    let currentState = config.initial_state
-
-    const getStateProps = () => {
-      const stateOverride = currentState === 'on' ? config.on : config.off
+    const getStateProps = (currentState?: 'off' | 'on') => {
+      const stateOverride = currentState === 'on' ? config.on : currentState === 'off' ? config.off : undefined
 
       return {
         ...(config.icon !== undefined ? { icon: config.icon } : {}),
@@ -97,16 +95,105 @@ const builtinToggleButton = {
       }
     }
 
+    if (config.mode === 'internal') {
+      let currentState = config.initial_state ?? 'off'
+
+      return {
+        onTap: async () => {
+          currentState = currentState === 'on' ? 'off' : 'on'
+          methods.invalidate()
+        },
+        render: () =>
+          createElement('deck-button', {
+            keyIndex: button.position,
+            ...getStateProps(currentState),
+            toggle_mode: 'internal',
+            variant: 'toggle',
+          }),
+      }
+    }
+
+    const fallbackOffTokens = ['off', 'false', '0']
+    const fallbackOnTokens = ['on', 'true', '1']
+    let displayState: 'error' | 'known-off' | 'known-on' | 'pending' = 'pending'
+    let lastKnownState: 'off' | 'on' | undefined
+
+    const normalizeToken = (value: string) => value.trim().toLowerCase()
+    const isCommandFailure = (result: { code: number | null; failed: boolean; timedOut: boolean }) => result.failed || result.timedOut || result.code !== 0
+    const offTokens = (config.off_values ?? fallbackOffTokens).map(normalizeToken)
+    const onTokens = (config.on_values ?? fallbackOnTokens).map(normalizeToken)
+
+    const mapCommandState = (value: string): 'off' | 'on' | undefined => {
+      const normalized = normalizeToken(value)
+      if (normalized.length === 0) {
+        return undefined
+      }
+
+      if (onTokens.includes(normalized)) {
+        return 'on'
+      }
+
+      if (offTokens.includes(normalized)) {
+        return 'off'
+      }
+
+      return undefined
+    }
+
+    const syncAuthoritativeState = async () => {
+      const result = await methods.runCommand(config.get_state_command)
+      if (isCommandFailure(result)) {
+        displayState = 'error'
+        return
+      }
+
+      const nextState = mapCommandState(result.stdout)
+      if (!nextState) {
+        displayState = 'error'
+        return
+      }
+
+      lastKnownState = nextState
+      displayState = nextState === 'on' ? 'known-on' : 'known-off'
+    }
+
+    const syncAndInvalidate = async () => {
+      await syncAuthoritativeState()
+      methods.invalidate()
+    }
+
     return {
+      onActivate: () => {
+        void syncAndInvalidate()
+      },
       onTap: async () => {
-        currentState = currentState === 'on' ? 'off' : 'on'
+        if (!lastKnownState) {
+          return
+        }
+
+        displayState = 'pending'
         methods.invalidate()
+
+        const command = lastKnownState === 'on' ? config.set_off_command : config.set_on_command
+        const result = await methods.runCommand(command)
+        if (isCommandFailure(result)) {
+          displayState = 'error'
+          methods.invalidate()
+          return
+        }
+
+        await syncAuthoritativeState()
+        methods.invalidate()
+      },
+      refresh: async () => {
+        await syncAuthoritativeState()
       },
       render: () =>
         createElement('deck-button', {
           keyIndex: button.position,
-          ...getStateProps(),
-          toggle_mode: 'internal',
+          ...getStateProps(lastKnownState),
+          subtitle: displayState === 'pending' ? 'PENDING' : displayState === 'error' ? 'ERROR' : getStateProps(lastKnownState).subtitle,
+          toggle_mode: 'get-set',
           variant: 'toggle',
         }),
     }

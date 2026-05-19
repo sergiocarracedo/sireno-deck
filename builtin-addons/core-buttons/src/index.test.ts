@@ -135,4 +135,102 @@ describe("core-buttons addon", () => {
       props: { keyIndex: 7, label: "Desk Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" },
     })
   })
+
+  it("keeps get-set toggles pending until the first authoritative read", () => {
+    const definition = coreButtonsAddon.buttons.find((button) => button.type === "toggle")
+    const runCommand = vi.fn(async () => ({ code: 0, failed: false, stdout: "on", timedOut: false }))
+    const instance = definition?.createInstance({
+      button: { position: 8 },
+      config: {
+        get_state_command: "read-lamp",
+        label: "Desk Lamp",
+        mode: "get-set",
+        set_off_command: "turn-off-lamp",
+        set_on_command: "turn-on-lamp",
+      },
+      methods: { invalidate: vi.fn(), runCommand },
+    } as never)
+
+    expect(instance?.render()).toMatchObject({
+      props: { keyIndex: 8, label: "Desk Lamp", subtitle: "PENDING", toggle_mode: "get-set", variant: "toggle" },
+    })
+    expect(runCommand).not.toHaveBeenCalled()
+  })
+
+  it("runs authoritative reads and selects the correct get-set write command from last known truth", async () => {
+    const definition = coreButtonsAddon.buttons.find((button) => button.type === "toggle")
+    const invalidate = vi.fn()
+    let stateOutput = "off"
+    const runCommand = vi.fn(async (command: string) => {
+      if (command === "read-lamp") {
+        return { code: 0, failed: false, stdout: stateOutput, timedOut: false }
+      }
+
+      if (command === "turn-on-lamp") {
+        stateOutput = "on"
+      }
+
+      return { code: 0, failed: false, stdout: "", timedOut: false }
+    })
+    const instance = definition?.createInstance({
+      button: { position: 9 },
+      config: {
+        get_state_command: "read-lamp",
+        label: "Desk Lamp",
+        mode: "get-set",
+        off: { subtitle: "OFF" },
+        on: { subtitle: "ON" },
+        set_off_command: "turn-off-lamp",
+        set_on_command: "turn-on-lamp",
+      },
+      methods: { invalidate, runCommand },
+    } as never)
+
+    await instance?.onActivate?.()
+
+    expect(runCommand).toHaveBeenCalledWith("read-lamp")
+    expect(instance?.render()).toMatchObject({
+      props: { keyIndex: 9, label: "Desk Lamp", subtitle: "OFF", toggle_mode: "get-set", variant: "toggle" },
+    })
+
+    await instance?.onTap?.()
+
+    expect(runCommand).toHaveBeenCalledWith("turn-on-lamp")
+    expect(runCommand).toHaveBeenLastCalledWith("read-lamp")
+    expect(invalidate).toHaveBeenCalled()
+    expect(instance?.render()).toMatchObject({
+      props: { keyIndex: 9, label: "Desk Lamp", subtitle: "ON", toggle_mode: "get-set", variant: "toggle" },
+    })
+  })
+
+  it("preserves the last authoritative truth and shows error on get-set write failure", async () => {
+    const definition = coreButtonsAddon.buttons.find((button) => button.type === "toggle")
+    const runCommand = vi.fn(async (command: string) => {
+      if (command === "read-lamp") {
+        return { code: 0, failed: false, stdout: "on", timedOut: false }
+      }
+
+      return { code: 1, failed: true, stdout: "", timedOut: false }
+    })
+    const instance = definition?.createInstance({
+      button: { position: 10 },
+      config: {
+        get_state_command: "read-lamp",
+        label: "Desk Lamp",
+        mode: "get-set",
+        off: { subtitle: "OFF" },
+        on: { subtitle: "ON" },
+        set_off_command: "turn-off-lamp",
+        set_on_command: "turn-on-lamp",
+      },
+      methods: { invalidate: vi.fn(), runCommand },
+    } as never)
+
+    await instance?.onActivate?.()
+    await instance?.onTap?.()
+
+    expect(instance?.render()).toMatchObject({
+      props: { keyIndex: 10, label: "Desk Lamp", subtitle: "ERROR", toggle_mode: "get-set", variant: "toggle" },
+    })
+  })
 })

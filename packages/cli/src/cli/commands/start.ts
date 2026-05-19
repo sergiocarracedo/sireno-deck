@@ -88,6 +88,7 @@ async function renderMainDeck(
       subtitle: description.subtitle,
       text: description.label,
       theme,
+      toggleMode: description.toggle_mode,
       variant: description.variant,
       wrapper: description.wrapper ?? primitiveOptions.wrapper,
     })
@@ -168,6 +169,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
           subtitle: button.subtitle,
           text: button.label,
           theme,
+          toggleMode: button.toggle_mode,
           variant: button.variant,
           wrapper: button.wrapper ?? resolvePrimitiveRenderOptions(button).wrapper,
         })

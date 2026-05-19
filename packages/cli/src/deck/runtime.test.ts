@@ -1324,4 +1324,92 @@ describe("createDeckRuntime", () => {
       expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" })
     })
   })
+
+  it("keeps get-set toggles pending until the first read and ignores taps until truth is known", async () => {
+    const registry = createBundledAddonRegistry()
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    let schedulerTask: (() => Promise<void>) | undefined
+    let statusOutput = "off"
+    let releaseFirstRead: (() => void) | undefined
+    const firstReadPromise = new Promise<void>((resolve) => {
+      releaseFirstRead = resolve
+    })
+    const executeAction = vi.fn(async (command: string) => {
+      if (command === "read-lamp") {
+        await firstReadPromise
+        return { code: 0, failed: false, signal: undefined, stderr: "", stdout: statusOutput, timedOut: false }
+      }
+
+      if (command === "turn-on-lamp") {
+        statusOutput = "on"
+      }
+
+      return { code: 0, failed: false, signal: undefined, stderr: "", stdout: "", timedOut: false }
+    })
+    const createScheduler = vi.fn(() => ({
+      intervalMs: 500,
+      jitterMs: 0,
+      scheduleDelay: () => 0,
+      start: (tasks: Array<{ id: string; run: () => Promise<void> }>) => {
+        schedulerTask = tasks[0]?.run
+      },
+      stop: vi.fn(),
+    }))
+    const runtime = createDeckRuntime({
+      createScheduler,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: {
+            get_state_command: "read-lamp",
+            label: "Lamp",
+            mode: "get-set",
+            off: { subtitle: "OFF" },
+            on: { subtitle: "ON" },
+            set_off_command: "turn-off-lamp",
+            set_on_command: "turn-on-lamp",
+          },
+          definition: registry.getButton("toggle")!,
+          interval_ms: 500,
+          label: "Lamp",
+          position: 0,
+          type: "toggle",
+        }],
+      },
+      executeAction,
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "PENDING", toggle_mode: "get-set", variant: "toggle" })
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    expect(executeAction).toHaveBeenCalledTimes(1)
+    expect(executeAction).toHaveBeenCalledWith("read-lamp")
+
+    releaseFirstRead?.()
+
+    await schedulerTask?.()
+
+    await vi.waitFor(() => {
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "get-set", variant: "toggle" })
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(executeAction).toHaveBeenCalledWith("turn-on-lamp")
+      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "get-set", variant: "toggle" })
+    })
+  })
 })
