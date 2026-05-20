@@ -155,7 +155,7 @@ describe("text-image", () => {
   })
 
   it("renders visible pixels inside the icon region for shipped bundled svg assets", async () => {
-    const iconPath = getRepoFilePath("../../../../builtin-addons/emoji-selector/assets/favorites.svg")
+    const iconPath = getRepoFilePath("../builtin-addons/emoji-selector/assets/favorites.svg")
 
     const iconBuffer = await renderTextImage({ text: "Emoji", icon: iconPath })
     const noIconBuffer = await renderTextImage({ text: "Emoji" })

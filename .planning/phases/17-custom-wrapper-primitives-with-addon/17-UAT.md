@@ -39,4 +39,4 @@ skipped: 0
 
 ## Gaps
 
-Pending execution. Phase 17 interaction-state review will be added later if the base-shape path still cannot show tap/hold chrome honestly on the real surface.
+Pending execution. The first Phase 17 rollout preserves the existing shared/default chrome, but the real CLI/device path still does not expose separately reviewable tap/hold visual states. Treat interaction-state chrome as intentionally limited to the currently observable base-shape surface until a later slice adds honest device-path proof.

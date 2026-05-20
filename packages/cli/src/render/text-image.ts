@@ -311,7 +311,19 @@ function resolveSharedAccentColor(accent: string | undefined, theme: Theme, prim
   return accent
 }
 
-function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
+interface BaseShapeContentElements {
+  badgeFill: string
+  badgeStroke: string
+  badgeBase: string
+  iconMarkup: string
+  metricFill: string
+  metricTrack: string
+  progressWidth: number
+  sharedContract: boolean
+  textElements: Array<{ definition: string; markup: string }>
+}
+
+function buildBaseShapeContent(options: TextImageOptions, preset: TextImagePreset, theme: Theme): BaseShapeContentElements {
   const text = options.text ?? ""
   const iconPath = options.icon
   const safeText = escapeSvgText(text)
@@ -400,6 +412,29 @@ function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, the
       : null,
   ].filter((element): element is { definition: string; markup: string } => element !== null)
 
+  return {
+    badgeBase,
+    badgeFill,
+    badgeStroke,
+    iconMarkup,
+    metricFill,
+    metricTrack,
+    progressWidth,
+    sharedContract,
+    textElements,
+  }
+}
+
+function buildBaseShapeSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
+  const cardBackground = options.background ?? theme.background
+  const primitiveTone = options.sharedStyleTone ?? "default"
+  const sharedAccent = resolveSharedAccentColor(usesSharedWrapper(options) ? options.accent : undefined, theme, primitiveTone)
+  const sharedChromeAccent = usesSharedWrapper(options) ? sharedAccent : theme.primary
+  const cardStart = mixHexColor(cardBackground, sharedChromeAccent, usesSharedWrapper(options) ? 0.14 : 0.08)
+  const cardEnd = mixHexColor(cardBackground, sharedChromeAccent, usesSharedWrapper(options) ? 0.06 : 0.04)
+  const frame = mixHexColor(sharedChromeAccent, cardBackground, usesSharedWrapper(options) ? 0.24 : 0.45)
+  const content = buildBaseShapeContent(options, preset, theme)
+
   return `
     <svg width="${preset.keyWidth}" height="${preset.keyHeight}" viewBox="0 0 ${preset.keyWidth} ${preset.keyHeight}" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -407,22 +442,22 @@ function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, the
           <stop offset="0%" stop-color="${cardStart}" />
           <stop offset="100%" stop-color="${cardEnd}" />
         </linearGradient>
-        ${textElements.map((element) => element.definition).join("")}
+        ${content.textElements.map((element) => element.definition).join("")}
       </defs>
-      <rect x="0" y="0" width="${preset.keyWidth}" height="${preset.keyHeight}" rx="${sharedContract ? 18 : 16}" fill="url(#card)" />
-      <rect x="4" y="4" width="${preset.keyWidth - 8}" height="${preset.keyHeight - 8}" rx="${sharedContract ? 13 : 12}" fill="none" stroke="${frame}" stroke-width="1.5" />
+      <rect x="0" y="0" width="${preset.keyWidth}" height="${preset.keyHeight}" rx="${content.sharedContract ? 18 : 16}" fill="url(#card)" />
+      <rect x="4" y="4" width="${preset.keyWidth - 8}" height="${preset.keyHeight - 8}" rx="${content.sharedContract ? 13 : 12}" fill="none" stroke="${frame}" stroke-width="1.5" />
       <rect x="10" y="10" width="14" height="4" rx="2" fill="${options.variant === "toggle"
         ? options.toggleMode === "internal"
           ? theme.success
           : options.toggleMode === "toggle-status"
             ? theme.primary
             : theme.accent
-        : badgeBase}" opacity="0.95" />
-      ${options.subtitle ? `<rect x="34" y="10" width="28" height="12" rx="6" fill="${badgeFill}" stroke="${badgeStroke}" stroke-width="1" />` : ""}
-      ${textElements.map((element) => element.markup).join("")}
-      ${iconMarkup}
-      ${options.variant === "metric" && options.progress !== undefined ? `<rect x="10" y="52" width="${preset.keyWidth - 20}" height="8" rx="4" fill="${metricTrack}" />` : ""}
-      ${options.variant === "metric" && options.progress !== undefined ? `<rect x="10" y="52" width="${progressWidth}" height="8" rx="4" fill="${metricFill}" />` : ""}
+        : content.badgeBase}" opacity="0.95" />
+      ${options.subtitle ? `<rect x="34" y="10" width="28" height="12" rx="6" fill="${content.badgeFill}" stroke="${content.badgeStroke}" stroke-width="1" />` : ""}
+      ${content.textElements.map((element) => element.markup).join("")}
+      ${content.iconMarkup}
+      ${options.variant === "metric" && options.progress !== undefined ? `<rect x="10" y="52" width="${preset.keyWidth - 20}" height="8" rx="4" fill="${content.metricTrack}" />` : ""}
+      ${options.variant === "metric" && options.progress !== undefined ? `<rect x="10" y="52" width="${content.progressWidth}" height="8" rx="4" fill="${content.metricFill}" />` : ""}
     </svg>
   `.trim()
 }
@@ -985,7 +1020,7 @@ function buildTextSvg(options: TextImageOptions, preset: TextImagePreset, theme:
     return buildMediaSvg(options, preset, theme)
   }
 
-  return buildDefaultSvg(options, preset, theme)
+  return buildBaseShapeSvg(options, preset, theme)
 }
 
 function buildBlankSvg(preset: TextImagePreset): string {
