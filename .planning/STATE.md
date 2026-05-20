@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 17 context is captured for custom button-shape composition. Next up is `plan-phase 17`.
+**Current focus:** Phase 17 is planned around the default base-shape contract, explicit content helpers, and the full-surface opt-out. Next up is `execute-phase 17`.
 
 ## Current Position
 
 Phase: 17 — Custom Wrapper Primitives + Addon-Authored Rendering Variants
-Plan: context captured
-Status: discussing_complete
-Last activity: 2026-05-20 - Captured the Phase 17 button-shape composition decisions and prepared the phase for planning
+Plan: 17-01 through 17-03 drafted
+Status: planning_complete
+Last activity: 2026-05-20 - Executed Plan 17-01 by shipping the full-surface contract, preserving wrapper compatibility, and adding a CLI-visible Phase 17 review fixture
 
 Progress: [##########] 100%
 
@@ -82,6 +82,7 @@ Recent decisions affecting current work:
 - **Plan 16-05:** Closed the Phase 16 UAT startup blocker by making theme resolution config-owned, fixing the watched root-plus-ref file graph, and wiring the diagnosed gaps to a rerun-ready closure plan.
 - **Plan 16-06:** Made shared/default accent overrides visibly affect shared card chrome, reran the final UAT check, and finished Phase 16 verification.
 - **Phase 17 discussion:** Captured the shift from wrapper ids to a default base button-shape model, explicit full-surface opt-out, and narrow explicit content helpers while keeping bespoke variants on their current seams for now.
+- **Phase 17 planning:** Broke the phase into three slices: contract and compatibility first, core base-shape plus helper extraction second, and reviewable default-vs-full-surface proof third.
 - **Phase 16 discussion:** Captured deck-only file references with owning-file-relative path resolution, root-plus-ref hot-reload, built-in temporary error-deck fallback on invalid reload, stack-preserving successful reload restore, full runtime instance rebuild on reload, shared-wrapper footer removal, and narrow per-button accent overrides accepting tokens or raw colors.
 - **Phase 10 kickoff:** Milestone audit found that the documented addon authoring entrypoints do not line up with the built `packages/cli` exports, so release flow needs a gap-closure phase before `/review`.
 - **Milestone v1.2 kickoff:** Captured session-context, layered background, text fitting, global wrapper/style, richer toggle, and lock-aware deck requirements plus the five-phase roadmap that sequences contract work before user-facing polish.
@@ -128,8 +129,8 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-20
-Stopped at: Phase 17 context captured; next up is `plan-phase 17`.
-Resume file: .planning/phases/17-custom-wrapper-primitives-with-addon/17-CONTEXT.md
+Stopped at: Phase 17 planning drafted; next up is `execute-phase 17`.
+Resume file: .planning/phases/17-custom-wrapper-primitives-with-addon/17-01-PLAN.md
 
 ### Quick Tasks Completed
 
