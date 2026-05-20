@@ -2,7 +2,7 @@ import { createElement } from "react"
 import { z } from "zod"
 
 import { executeCommand, type CommandExecutionResult } from "../action/executor.js"
-import datetimeButtonsAddon from "../../../../builtin-addons/date-time/src/index.js"
+import datetimeButtonsAddon from "../builtin-addons/date-time/index.js"
 import { createPollingScheduler, type PollingScheduler } from "../render/scheduler.js"
 import { createDeckController } from "./controller.js"
 import { renderDeck } from "../render/reconciler.js"
@@ -252,6 +252,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   function validateAddonRenderDescription(description: DeckButtonProps): void {
+    if (description.full_surface && description.wrapper_id) {
+      throw new Error("Addon-authored render output cannot combine `full_surface` with `wrapper_id`")
+    }
+
     validatePrimitiveReference(description, "wrapper_id")
     validatePrimitiveReference(description, "style_id")
   }

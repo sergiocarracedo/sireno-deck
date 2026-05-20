@@ -1517,6 +1517,55 @@ describe("createDeckRuntime", () => {
     })
   })
 
+  it("rejects addon-authored render output that combines full-surface with wrapper compatibility", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {})
+    const registry = createBundledAddonRegistry()
+    const displayButtonAddon: SirenoAddon = {
+      apiVersion: 1,
+      buttons: [
+        {
+          configSchema: z.object({ label: z.string().min(1) }),
+          createInstance: ({ button, config }) => ({
+            render: () => createElement("deck-button", {
+              full_surface: true,
+              keyIndex: button.position,
+              label: config.label,
+              wrapper_id: "core-buttons/shared-card",
+            }),
+          }),
+          type: "runtime-conflicting-surface-contract",
+        },
+      ],
+      name: "runtime-conflicting-surface-addon",
+    }
+    registry.registerAddon(displayButtonAddon)
+
+    const runtime = createDeckRuntime({
+      addonRegistry: registry,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Clock" },
+          definition: registry.getButton("runtime-conflicting-surface-contract")!,
+          label: "Clock",
+          position: 0,
+          type: "runtime-conflicting-surface-contract",
+        }],
+      },
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    expect(() => {
+      runtime.start()
+    }).not.toThrow()
+
+    await vi.waitFor(() => {
+      const errors = consoleError.mock.calls.map((call) => String(call[0]))
+      expect(errors.some((message) => message.includes("Addon-authored render output cannot combine `full_surface` with `wrapper_id`"))).toBe(true)
+    })
+  })
+
   it("keeps bundled internal toggle state across deck re-activation in the same runtime", async () => {
     const registry = createBundledAddonRegistry()
     let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
