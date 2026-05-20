@@ -6,7 +6,7 @@ decks:
     name: Phase 11 Host Context Review
     buttons:
       - position: 0
-        type: display-text
+        type: action
         label: "{{host.os.type}} / {{host.os.variant}} / {{host.session.state}}"
       - position: 1
         type: change-deck

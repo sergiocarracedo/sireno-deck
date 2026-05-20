@@ -436,7 +436,7 @@ describe("createDeckRuntime", () => {
 
   it("keeps the committed Phase 11 host-context fixture live across render and action execution", async () => {
     const config = loadConfig(
-      join(process.cwd(), "packages/cli/fixtures/phase-11/config.host-context.yml"),
+      join(process.cwd(), "fixtures/phase-11/config.host-context.yml"),
       createBundledAddonRegistry(),
       {
         os: {
@@ -944,6 +944,257 @@ describe("createDeckRuntime", () => {
     })
   })
 
+  it("restores a saved navigation stack onto a rebuilt runtime", async () => {
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const createNavigationDefinition = (label: string, targetDeckId: string, type: string) => ({
+      configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
+      createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
+        onTap: async () => { await methods.navigateToDeck(targetDeckId) },
+        render: () => createElement("deck-button", { keyIndex: button.position, label }),
+      }),
+      type,
+    })
+    const decks = {
+      main: {
+        id: "main",
+        buttons: [{
+          config: { label: "Apps" },
+          definition: createNavigationDefinition("Apps", "apps", "nav-main-apps"),
+          label: "Apps",
+          position: 0,
+          type: "nav-main-apps",
+        }],
+      },
+      apps: {
+        id: "apps",
+        buttons: [{
+          config: { label: "Settings" },
+          definition: createNavigationDefinition("Settings", "settings", "nav-apps-settings"),
+          label: "Settings",
+          position: 0,
+          type: "nav-apps-settings",
+        }],
+      },
+      settings: {
+        id: "settings",
+        buttons: [{
+          config: { label: "Settings Deck" },
+          definition: createDisplayDefinition(),
+          label: "Settings Deck",
+          position: 0,
+          type: "display-text",
+        }],
+      },
+    } as const
+    const runtime = createDeckRuntime({
+      deck: decks.main,
+      decks,
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("apps")
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("settings")
+    })
+
+    const snapshot = runtime.getStackSnapshot()
+
+    runtime.stop()
+
+    const rebuiltRuntime = createDeckRuntime({
+      deck: decks.main,
+      decks,
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    rebuiltRuntime.start()
+    await rebuiltRuntime.restoreStack(snapshot)
+
+    await vi.waitFor(() => {
+      expect(rebuiltRuntime.getActiveDeck().id).toBe("settings")
+      expect(rebuiltRuntime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Settings Deck" })
+    })
+  })
+
+  it("shows a temporary reload error deck without overwriting the underlying navigation stack", async () => {
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const createNavigationDefinition = (label: string, targetDeckId: string, type: string) => ({
+      configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
+      createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
+        onTap: async () => { await methods.navigateToDeck(targetDeckId) },
+        render: () => createElement("deck-button", { keyIndex: button.position, label }),
+      }),
+      type,
+    })
+    const decks = {
+      main: {
+        id: "main",
+        buttons: [{
+          config: { label: "Apps" },
+          definition: createNavigationDefinition("Apps", "apps", "nav-main-apps"),
+          label: "Apps",
+          position: 0,
+          type: "nav-main-apps",
+        }],
+      },
+      apps: {
+        id: "apps",
+        buttons: [{
+          config: { label: "Settings" },
+          definition: createNavigationDefinition("Settings", "settings", "nav-apps-settings"),
+          label: "Settings",
+          position: 0,
+          type: "nav-apps-settings",
+        }],
+      },
+      settings: {
+        id: "settings",
+        buttons: [{
+          config: { label: "Settings Deck" },
+          definition: createDisplayDefinition(),
+          label: "Settings Deck",
+          position: 0,
+          type: "display-text",
+        }],
+      },
+    } as const
+    const runtime = createDeckRuntime({
+      deck: decks.main,
+      decks,
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("apps")
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("settings")
+    })
+
+    const snapshotBeforeError = runtime.getStackSnapshot()
+
+    await runtime.showTemporaryErrorDeck([
+      "config.yml:10",
+      "Unknown button type 'broken'",
+      "Fix the config and save again.",
+    ])
+
+    await vi.waitFor(() => {
+      expect(runtime.getRenderButtons()).toContainEqual({
+        background: "#10161f",
+        detailLines: [
+          "config.yml:10",
+          "Unknown button type 'broken'",
+          "Fix the config and save again.",
+        ],
+        fit: "wrap",
+        keyIndex: 0,
+        label: "Config Error",
+        subtitle: "RELOAD",
+        variant: "error",
+      })
+    })
+
+    expect(runtime.getActiveDeck().id).toBe("settings")
+    expect(runtime.getStackSnapshot()).toEqual(snapshotBeforeError)
+  })
+
+  it("lets a later rebuilt runtime recover from the saved valid stack after an error deck was shown", async () => {
+    const decks = {
+      main: {
+        id: "main",
+        buttons: [{
+          config: { label: "Apps" },
+          definition: {
+            configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
+            createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
+              onTap: async () => { await methods.navigateToDeck("settings") },
+              render: () => createElement("deck-button", { keyIndex: button.position, label: "Apps" }),
+            }),
+            type: "nav-main-settings",
+          },
+          label: "Apps",
+          position: 0,
+          type: "nav-main-settings",
+        }],
+      },
+      settings: {
+        id: "settings",
+        buttons: [{
+          config: { label: "Recovered Settings" },
+          definition: createDisplayDefinition(),
+          label: "Recovered Settings",
+          position: 0,
+          type: "display-text",
+        }],
+      },
+    } as const
+    const runtime = createDeckRuntime({
+      deck: decks.main,
+      decks,
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+    await runtime.restoreStack(["main", "settings"])
+    await runtime.showTemporaryErrorDeck([
+      "config.yml:10",
+      "Unknown button type 'broken'",
+      "Fix the config and save again.",
+    ])
+
+    const preservedSnapshot = runtime.getStackSnapshot()
+    const preservedActiveDeckId = runtime.getActiveDeck().id
+
+    runtime.stop()
+
+    const rebuiltRuntime = createDeckRuntime({
+      deck: decks.main,
+      decks,
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    rebuiltRuntime.start()
+    await rebuiltRuntime.restoreStack(preservedSnapshot)
+
+    await vi.waitFor(() => {
+      expect(preservedActiveDeckId).toBe("settings")
+      expect(rebuiltRuntime.getActiveDeck().id).toBe("settings")
+      expect(rebuiltRuntime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Recovered Settings" })
+    })
+  })
+
   it("uses the implicit built-in date-time fallback when no locked deck is configured", async () => {
     const sessionMonitor = createSessionMonitorDouble({ capability: "supported", state: "unlocked" })
     const runtime = createDeckRuntime({
@@ -1106,7 +1357,7 @@ describe("createDeckRuntime", () => {
 
   it("keeps the committed Phase 11 locked-session fixture restorable across lock and unlock transitions", async () => {
     const config = loadConfig(
-      join(process.cwd(), "packages/cli/fixtures/phase-11/config.locked-session.yml"),
+      join(process.cwd(), "fixtures/phase-11/config.locked-session.yml"),
       createBundledAddonRegistry(),
       {
         os: { type: "linux", variant: "ubuntu", version: "24.04" },

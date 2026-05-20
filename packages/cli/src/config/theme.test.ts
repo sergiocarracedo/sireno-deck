@@ -27,35 +27,17 @@ const typographyBlock = [
 ]
 
 describe("resolveTheme", () => {
-  const originalCwd = process.cwd()
   let tempDir: string
 
   beforeEach(() => {
     tempDir = mkdtempSync(join(tmpdir(), "sireno-theme-"))
-    mkdirSync(join(tempDir, "themes"), { recursive: true })
-    process.chdir(tempDir)
   })
 
   afterEach(() => {
-    process.chdir(originalCwd)
     rmSync(tempDir, { recursive: true, force: true })
   })
 
   it("loads a built-in theme by name", async () => {
-    writeFileSync(
-      join(tempDir, "themes", "dark.yml"),
-      [
-        "name: dark",
-        'background: "#10161f"',
-        'foreground: "#eef2f7"',
-        'primary: "#7dd3fc"',
-        'accent: "#f59e0b"',
-        'success: "#34d399"',
-        'danger: "#fb7185"',
-        ...typographyBlock,
-      ].join("\n"),
-    )
-
     const { resolveTheme } = await loadThemeModule()
     const theme = resolveTheme("dark")
 
@@ -65,7 +47,9 @@ describe("resolveTheme", () => {
   })
 
   it("loads a custom theme from a filesystem path", async () => {
-    const customThemePath = join(tempDir, "custom-theme.yml")
+    const configDir = join(tempDir, "config")
+    mkdirSync(configDir, { recursive: true })
+    const customThemePath = join(configDir, "custom-theme.yml")
     writeFileSync(
       customThemePath,
       [
@@ -81,7 +65,7 @@ describe("resolveTheme", () => {
     )
 
     const { resolveTheme } = await loadThemeModule()
-    const theme = resolveTheme("./custom-theme.yml")
+    const theme = resolveTheme("./custom-theme.yml", { baseDirectory: configDir })
 
     expect(theme.name).toBe("custom")
     expect(theme.accent).toBe("#14b8a6")
@@ -91,12 +75,14 @@ describe("resolveTheme", () => {
   it("fails clearly when a theme reference does not exist", async () => {
     const { resolveTheme } = await loadThemeModule()
 
-    expect(() => resolveTheme("missing")).toThrow(ConfigValidationError)
-    expect(() => resolveTheme("missing")).toThrow("Theme 'missing' could not be resolved")
+    expect(() => resolveTheme("missing", { baseDirectory: tempDir })).toThrow(ConfigValidationError)
+    expect(() => resolveTheme("missing", { baseDirectory: tempDir })).toThrow("Theme 'missing' could not be resolved")
   })
 
   it("rejects themes without the required typography roles", async () => {
-    const customThemePath = join(tempDir, "missing-typography.yml")
+    const configDir = join(tempDir, "config")
+    mkdirSync(configDir, { recursive: true })
+    const customThemePath = join(configDir, "missing-typography.yml")
     writeFileSync(
       customThemePath,
       [
@@ -112,7 +98,7 @@ describe("resolveTheme", () => {
 
     const { resolveTheme } = await loadThemeModule()
 
-    expect(() => resolveTheme("./missing-typography.yml")).toThrow(ConfigValidationError)
-    expect(() => resolveTheme("./missing-typography.yml")).toThrow("Required")
+    expect(() => resolveTheme("./missing-typography.yml", { baseDirectory: configDir })).toThrow(ConfigValidationError)
+    expect(() => resolveTheme("./missing-typography.yml", { baseDirectory: configDir })).toThrow("Required")
   })
 })

@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 14 gap closure is complete. Next up is `verify-work 14` to rerun the fixed get-set UAT path and confirm the manual surface now settles correctly.
+**Current focus:** Phase 16 is verification-complete after passing all manual UAT checks. Next up is `/review` for the Phase 16 changes.
 
 ## Current Position
 
-Phase: 14 — Richer Built-in Toggles
-Plan: 14-04 complete
-Status: ready for verification
-Last activity: 2026-05-19 - Closed the get-set startup render race found during Phase 14 UAT
+Phase: 16 — Config Reload + Wrapper Polish
+Plan: 16-06 complete
+Status: review_ready
+Last activity: 2026-05-20 - Completed the final Phase 16 UAT rerun, cleared stale gap metadata, and marked the phase ready for review
 
 Progress: [##########] 100%
 
@@ -73,9 +73,13 @@ Recent decisions affecting current work:
 ### Roadmap Evolution
 
 - Phase 16 added: config hot-reload, external deck-file references, wrapper label removal, and customizable wrapper accent colors.
+- Phase 16 executed: deck-only `@path` references, watched config graph reloads, shared-wrapper footer removal, narrow `accent` overrides, and runtime-owned invalid-reload fallback are all implemented and verified.
 
 ### Progress Notes
 
+- **Phase 16 execution:** Shipped deck-only file references through the existing loader contract, active config-graph watching with rebuild-and-restore reload semantics, shared-wrapper footer removal plus explicit per-button accent overrides, and a runtime-owned temporary error deck for invalid reloads.
+- **Plan 16-05:** Closed the Phase 16 UAT startup blocker by making theme resolution config-owned, fixing the watched root-plus-ref file graph, and wiring the diagnosed gaps to a rerun-ready closure plan.
+- **Plan 16-06:** Made shared/default accent overrides visibly affect shared card chrome, reran the final UAT check, and finished Phase 16 verification.
 - **Phase 16 discussion:** Captured deck-only file references with owning-file-relative path resolution, root-plus-ref hot-reload, built-in temporary error-deck fallback on invalid reload, stack-preserving successful reload restore, full runtime instance rebuild on reload, shared-wrapper footer removal, and narrow per-button accent overrides accepting tokens or raw colors.
 - **Phase 10 kickoff:** Milestone audit found that the documented addon authoring entrypoints do not line up with the built `packages/cli` exports, so release flow needs a gap-closure phase before `/review`.
 - **Milestone v1.2 kickoff:** Captured session-context, layered background, text fitting, global wrapper/style, richer toggle, and lock-aware deck requirements plus the five-phase roadmap that sequences contract work before user-facing polish.
@@ -121,9 +125,9 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-05-18
-Stopped at: Phase 14 gap closure is complete; next up is `verify-work 14` to rerun the fixed get-set review path.
-Resume file: .planning/ROADMAP.md
+Last session: 2026-05-20
+Stopped at: Phase 16 verification completed; next up is `/review` for the completed phase.
+Resume file: .planning/phases/16-config-reload-wrapper-polish/16-UAT.md
 
 ### Quick Tasks Completed
 

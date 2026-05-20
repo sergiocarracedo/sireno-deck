@@ -11,7 +11,7 @@ describe("getBundledAddons", () => {
       apiVersion: 1,
       name: "core-buttons",
     })
-    expect(addons[0]?.buttons.map((button) => button.type)).toContain("display-text")
+    expect(addons[0]?.buttons.map((button) => button.type)).toContain("action")
     expect(addons[1]).toMatchObject({
       apiVersion: 1,
       name: "emoji-selector",

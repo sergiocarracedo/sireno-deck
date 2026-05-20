@@ -233,6 +233,47 @@ describe("text-image", () => {
     expect(countRegionDiffs(defaultBuffer, accentBuffer, { height: 14, width: 52, x: 10, y: 8 })).toBeGreaterThan(40)
   })
 
+  it("removes the shared/default footer so theme-name changes no longer affect the output", async () => {
+    const firstTheme = createTheme({ name: "dark-review" })
+    const secondTheme = createTheme({ name: "light-review" })
+
+    const firstBuffer = await renderTextImage({ text: "Clock", theme: firstTheme, wrapper: "shared" })
+    const secondBuffer = await renderTextImage({ text: "Clock", theme: secondTheme, wrapper: "shared" })
+
+    expect(firstBuffer.equals(secondBuffer)).toBe(true)
+  })
+
+  it("renders a token-based accent override on the shared/default path", async () => {
+    const defaultBuffer = await renderTextImage({ text: "Clock", theme: createTheme(), wrapper: "shared" })
+    const tokenOverrideBuffer = await renderTextImage({
+      accent: "success",
+      text: "Clock",
+      theme: createTheme(),
+      wrapper: "shared",
+    })
+
+    expect(defaultBuffer.equals(tokenOverrideBuffer)).toBe(false)
+    expect(countRegionDiffs(defaultBuffer, tokenOverrideBuffer, { height: 14, width: 52, x: 10, y: 8 })).toBeGreaterThan(40)
+  })
+
+  it("renders a raw-color accent override on the shared/default path", async () => {
+    const tokenOverrideBuffer = await renderTextImage({
+      accent: "success",
+      text: "Clock",
+      theme: createTheme(),
+      wrapper: "shared",
+    })
+    const rawOverrideBuffer = await renderTextImage({
+      accent: "#7c3aed",
+      text: "Clock",
+      theme: createTheme(),
+      wrapper: "shared",
+    })
+
+    expect(tokenOverrideBuffer.equals(rawOverrideBuffer)).toBe(false)
+    expect(countRegionDiffs(tokenOverrideBuffer, rawOverrideBuffer, { height: 52, width: 52, x: 10, y: 10 })).toBeGreaterThan(350)
+  })
+
   it("keeps explicit shared props authoritative over primitive-backed defaults", async () => {
     const primitiveBuffer = await renderTextImage({
       fit: "shrink",
@@ -284,6 +325,20 @@ describe("text-image", () => {
     })
 
     expect(defaultBuffer.equals(mediaBuffer)).toBe(false)
+  })
+
+  it("renders error variants as a readable non-default failure surface", async () => {
+    const defaultBuffer = await renderTextImage({ text: "Config Error" })
+    const errorBuffer = await renderTextImage({
+      detailLines: ["config.yml:10", "Unknown button type 'broken'", "Fix the config and save again."],
+      subtitle: "RELOAD",
+      text: "Config Error",
+      theme: createTheme(),
+      variant: "error",
+    })
+
+    expect(defaultBuffer.equals(errorBuffer)).toBe(false)
+    expect(countRegionDiffs(defaultBuffer, errorBuffer, { height: 52, width: 52, x: 10, y: 10 })).toBeGreaterThan(500)
   })
 
   it("renders emoji variants with deterministic ascii-safe content", async () => {

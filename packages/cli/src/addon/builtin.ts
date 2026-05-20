@@ -1,6 +1,6 @@
-import coreButtonsAddon from '../../../../builtin-addons/core-buttons/src/index.js'
-import datetimeButtonsAddon from '../../../../builtin-addons/date-time/src/index.js'
-import emojiSelectorAddon from '../../../../builtin-addons/emoji-selector/src/index.js'
+import coreButtonsAddon from '../builtin-addons/core-buttons'
+import datetimeButtonsAddon from '../builtin-addons/date-time'
+import emojiSelectorAddon from '../builtin-addons/emoji-selector'
 
 import type { SirenoAddon } from './api.js'
 

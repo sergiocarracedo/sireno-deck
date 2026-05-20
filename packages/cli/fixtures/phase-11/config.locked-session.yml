@@ -24,21 +24,21 @@ decks:
     name: Settings
     buttons:
       - position: 0
-        type: display-text
+        type: action
         label: "Session {{host.session.state}}"
   locked:
     id: locked
     name: Locked
     buttons:
       - position: 0
-        type: display-text
+        type: action
         label: "Locked on {{host.os.type}}"
   locked-fallback-review:
     id: locked-fallback-review
     name: Locked Fallback Review
     buttons:
       - position: 0
-        type: display-text
+        type: action
         label: "Fallback stays runtime-owned; built-in date-time path is implicit only"
 addons: []
 logging:

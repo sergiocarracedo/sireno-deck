@@ -1,3 +1,6 @@
+import { createElement } from "react"
+import { z } from "zod"
+
 import { executeCommand, type CommandExecutionResult } from "../action/executor.js"
 import datetimeButtonsAddon from "../../../../builtin-addons/date-time/src/index.js"
 import { createPollingScheduler, type PollingScheduler } from "../render/scheduler.js"
@@ -35,6 +38,9 @@ export interface DeckRuntime {
   getButton: (keyIndex: number) => ButtonInstance | undefined
   getRenderButtons: () => DeckButtonProps[]
   getReservedBackKeyIndex: () => number
+  getStackSnapshot: () => string[]
+  restoreStack: (stackSnapshot?: readonly string[]) => Promise<void>
+  showTemporaryErrorDeck: (detailLines: readonly string[]) => Promise<void>
   start: () => void
   stop: () => void
 }
@@ -57,7 +63,32 @@ interface RuntimeButtonInstance {
 }
 
 const IMPLICIT_LOCKED_DECK_ID = "__sireno_locked_session__"
+const TEMPORARY_RELOAD_ERROR_DECK_ID = "__sireno_reload_error__"
 const implicitLockedButtonDefinition = datetimeButtonsAddon.buttons.find((button) => button.type === "date-time")
+const temporaryErrorButtonDefinition = {
+  configSchema: z.object({
+    detailLines: z.array(z.string().min(1)).default([]),
+    label: z.string().min(1),
+    subtitle: z.string().min(1),
+  }),
+  createInstance: ({
+    button,
+    config,
+  }: {
+    button: { position: number }
+    config: { detailLines: string[]; label: string; subtitle: string }
+  }) => ({
+    render: () => createElement("deck-button", {
+      detailLines: config.detailLines,
+      fit: "wrap",
+      keyIndex: button.position,
+      label: config.label,
+      subtitle: config.subtitle,
+      variant: "error",
+    }),
+  }),
+  type: "__runtime_reload_error__",
+} satisfies ButtonInstance["definition"]
 
 if (!implicitLockedButtonDefinition) {
   throw new Error("Bundled date-time button definition is required for the implicit locked fallback")
@@ -87,6 +118,23 @@ function createImplicitLockedDeck(): DeckConfig {
   }
 }
 
+function createTemporaryErrorDeck(detailLines: readonly string[]): DeckConfig {
+  return {
+    id: TEMPORARY_RELOAD_ERROR_DECK_ID,
+    name: "Config Error",
+    buttons: [{
+      config: {
+        detailLines: [...detailLines],
+        label: "Config Error",
+        subtitle: "RELOAD",
+      },
+      definition: temporaryErrorButtonDefinition,
+      position: 0,
+      type: temporaryErrorButtonDefinition.type,
+    }],
+  }
+}
+
 export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   const reservedBackKeyIndex = Math.max(0, (options.keyCount ?? 15) - 1)
   const hostContext = cloneHostContext(options.hostContext ?? UNKNOWN_HOST_CONTEXT)
@@ -111,9 +159,26 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   let lockedNavigationSnapshot: string[] | null = null
   let lockModeActive = false
   let stopped = false
+  let temporaryErrorDeck: DeckConfig | null = null
 
   function getLockedSurfaceDeckId(): string {
     return options.lockedDeckId ?? IMPLICIT_LOCKED_DECK_ID
+  }
+
+  function getDisplayDeckId(): string {
+    return temporaryErrorDeck?.id ?? deckController.getActiveDeckId()
+  }
+
+  function getDisplayDeck(): DeckConfig {
+    return temporaryErrorDeck ?? deckController.getActiveDeck()
+  }
+
+  function getDeckById(deckId: string): DeckConfig {
+    if (temporaryErrorDeck && deckId === temporaryErrorDeck.id) {
+      return temporaryErrorDeck
+    }
+
+    return runtimeDecks[deckId] ?? options.deck
   }
 
   function syncSessionSnapshot(snapshot: SessionSnapshot): void {
@@ -127,6 +192,28 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
 
   function getDeckButtons(deck: DeckConfig): ButtonInstance[] {
     return deck.buttons
+  }
+
+  function clearDeckState(deckId: string): void {
+    for (const key of [...instances.keys()]) {
+      if (key.startsWith(`${deckId}:`)) {
+        void instances.get(key)?.dispose?.()
+        instances.delete(key)
+      }
+    }
+
+    for (const key of [...renderCache.keys()]) {
+      if (key.startsWith(`${deckId}:`)) {
+        renderCache.delete(key)
+      }
+    }
+
+    for (const [key, scheduler] of schedulers.entries()) {
+      if (key.startsWith(`${deckId}:`)) {
+        scheduler.stop()
+        schedulers.delete(key)
+      }
+    }
   }
 
   function resolveButtonBackground(button: ButtonInstance, deckId: string): string | undefined {
@@ -170,7 +257,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   function isActivationCurrent(deckId: string, activationVersion: number): boolean {
-    return !stopped && deckController.getActiveDeckId() === deckId && activeActivationVersion === activationVersion
+    return !stopped && getDisplayDeckId() === deckId && activeActivationVersion === activationVersion
   }
 
   function reportRuntimeError(error: unknown): void {
@@ -178,7 +265,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   function getButtonHandle(deckId: string, keyIndex: number): RuntimeButtonHandle | undefined {
-    const button = getDeckButtons(deckController.getActiveDeck()).find((candidate) => candidate.position === keyIndex)
+    const button = getDeckButtons(getDisplayDeck()).find((candidate) => candidate.position === keyIndex)
     if (!button) {
       return undefined
     }
@@ -188,8 +275,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
 
   async function renderRuntimeButton(
     button: ButtonInstance,
-    deckId = deckController.getActiveDeckId(),
-    activationVersion = activeActivationVersion,
+      deckId = getDisplayDeckId(),
+      activationVersion = activeActivationVersion,
   ): Promise<DeckButtonProps | undefined> {
     if (!isActivationCurrent(deckId, activationVersion)) {
       return undefined
@@ -218,10 +305,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     }
 
     await Promise.all(
-      getDeckButtons(deckController.getActiveDeck()).map((button) => renderRuntimeButton(button, deckId, activationVersion)),
+      getDeckButtons(getDisplayDeck()).map((button) => renderRuntimeButton(button, deckId, activationVersion)),
     )
 
-    const latestButtons = getDeckButtons(deckController.getActiveDeck())
+    const latestButtons = getDeckButtons(getDisplayDeck())
       .map((button) => renderCache.get(getButtonStateKey(deckId, button.position)))
       .filter((button): button is DeckButtonProps => button !== undefined)
 
@@ -232,7 +319,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     return {
       getActiveDeckId: () => deckController.getActiveDeckId(),
       goBack: async () => {
-        const previousDeckId = deckController.getActiveDeckId()
+        temporaryErrorDeck = null
+        const previousDeckId = getDisplayDeckId()
         deckController.goBack()
         await activateDeckSurface(undefined, previousDeckId)
       },
@@ -240,7 +328,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         void renderRuntimeButton(button, deckId).catch(reportRuntimeError)
       },
       navigateToDeck: async (targetDeckId: string) => {
-        const previousDeckId = deckController.getActiveDeckId()
+        temporaryErrorDeck = null
+        const previousDeckId = getDisplayDeckId()
         deckController.navigateTo(targetDeckId)
         await activateDeckSurface(targetDeckId, previousDeckId)
       },
@@ -272,8 +361,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   async function activateDeckSurface(
-    activeDeckId = deckController.getActiveDeckId(),
-    previousDeckId = deckController.getActiveDeckId(),
+    activeDeckId = getDisplayDeckId(),
+    previousDeckId = getDisplayDeckId(),
   ): Promise<void> {
     const activationVersion = activeActivationVersion + 1
     activeActivationVersion = activationVersion
@@ -281,12 +370,12 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     stopActiveDeckPolling()
 
     if (previousDeckId !== activeDeckId) {
-      for (const button of getDeckButtons(runtimeDecks[previousDeckId] ?? options.deck)) {
+      for (const button of getDeckButtons(getDeckById(previousDeckId))) {
         await getOrCreateInstance(previousDeckId, button).onDeactivate?.()
       }
     }
 
-    for (const button of getDeckButtons(deckController.getActiveDeck())) {
+    for (const button of getDeckButtons(getDisplayDeck())) {
       await getOrCreateInstance(activeDeckId, button).onActivate?.()
     }
 
@@ -307,12 +396,12 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   function startActiveDeckPolling(
-    activeDeckId = deckController.getActiveDeckId(),
+    activeDeckId = getDisplayDeckId(),
     activationVersion = activeActivationVersion,
   ): void {
     stopActiveDeckPolling()
 
-    for (const button of getDeckButtons(deckController.getActiveDeck())) {
+    for (const button of getDeckButtons(getDisplayDeck())) {
       const intervalMs = button.interval_ms ?? getOrCreateInstance(activeDeckId, button).defaultIntervalMs ?? button.definition.defaultIntervalMs
       if (!intervalMs) {
         continue
@@ -403,8 +492,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   function buildActiveDeckButtons(): DeckButtonProps[] {
-    return getDeckButtons(deckController.getActiveDeck()).map((button) => (
-      renderCache.get(getButtonStateKey(deckController.getActiveDeckId(), button.position))
+    return getDeckButtons(getDisplayDeck()).map((button) => (
+      renderCache.get(getButtonStateKey(getDisplayDeckId(), button.position))
       ?? { keyIndex: button.position }
     ))
   }
@@ -436,13 +525,28 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return buildActiveDeckButtons()
     },
     getButton(keyIndex) {
-      return getDeckButtons(deckController.getActiveDeck()).find((button) => button.position === keyIndex)
+      return getDeckButtons(getDisplayDeck()).find((button) => button.position === keyIndex)
     },
     getRenderButtons() {
       return buildActiveDeckButtons()
     },
     getReservedBackKeyIndex() {
       return reservedBackKeyIndex
+    },
+    getStackSnapshot() {
+      return deckController.getStackSnapshot()
+    },
+    async restoreStack(stackSnapshot) {
+      temporaryErrorDeck = null
+      const previousDeckId = deckController.getActiveDeckId()
+      deckController.restoreStack(stackSnapshot)
+      await activateDeckSurface(deckController.getActiveDeckId(), previousDeckId)
+    },
+    async showTemporaryErrorDeck(detailLines) {
+      const previousDisplayDeckId = getDisplayDeckId()
+      clearDeckState(TEMPORARY_RELOAD_ERROR_DECK_ID)
+      temporaryErrorDeck = createTemporaryErrorDeck(detailLines)
+      await activateDeckSurface(TEMPORARY_RELOAD_ERROR_DECK_ID, previousDisplayDeckId)
     },
     start() {
       if (unsubscribe) {
@@ -476,6 +580,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       unsubscribeSessionMonitor = null
 
       stopActiveDeckPolling()
+      clearDeckState(TEMPORARY_RELOAD_ERROR_DECK_ID)
 
       for (const instance of instances.values()) {
         void instance.dispose?.()

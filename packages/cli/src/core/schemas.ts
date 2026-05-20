@@ -29,6 +29,12 @@ export const SessionSchema = z.object({
   locked_deck: z.string().min(1).optional(),
 })
 
+const ThemeColorTokenSchema = z.enum(["accent", "background", "danger", "foreground", "primary", "success"])
+const AccentOverrideSchema = z.union([
+  ThemeColorTokenSchema,
+  z.string().regex(/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, "Accent override must be a theme token or hex color"),
+])
+
 const ToggleStatePresentationOverrideSchema = z.object({
   icon: z.string().min(1).optional(),
   label: z.string().min(1).optional(),
@@ -111,6 +117,7 @@ const BootstrapSirenoConfigSchema = z
   .strict()
 
 export interface ButtonInstance extends AddonButtonEnvelope {
+  accent?: string
   background?: string
   config: Record<string, unknown>
   definition: AddonButtonDefinition
@@ -137,6 +144,7 @@ export interface DeckConfig {
 }
 
 const CoreButtonConfigSchema = z.object({
+  accent: AccentOverrideSchema.optional(),
   background: z.string().min(1).optional(),
   style_id: z.string().min(1).optional(),
   wrapper_id: z.string().min(1).optional(),
@@ -273,7 +281,7 @@ export function validateBootstrapConfig(data: unknown): BootstrapSirenoConfig {
 
 function getButtonPayload(button: Record<string, unknown>): Record<string, unknown> {
   return Object.fromEntries(
-    Object.entries(button).filter(([key]) => key !== "background" && key !== "position" && key !== "style_id" && key !== "type" && key !== "wrapper_id"),
+    Object.entries(button).filter(([key]) => key !== "accent" && key !== "background" && key !== "position" && key !== "style_id" && key !== "type" && key !== "wrapper_id"),
   )
 }
 
@@ -408,6 +416,7 @@ export function validateConfig(data: unknown, registry: AddonRegistry): SirenoCo
 
       const payload = resolveAssetReferences(getButtonPayload(parsedButton.data), registry) as Record<string, unknown>
       const parsedCoreButtonConfig = CoreButtonConfigSchema.safeParse({
+        accent: parsedButton.data.accent,
         background: parsedButton.data.background,
         style_id: parsedButton.data.style_id,
         wrapper_id: parsedButton.data.wrapper_id,
@@ -462,6 +471,7 @@ export function validateConfig(data: unknown, registry: AddonRegistry): SirenoCo
       }
 
       nextButtons.push({
+        ...(parsedCoreButtonConfig.data.accent !== undefined ? { accent: parsedCoreButtonConfig.data.accent } : {}),
         ...(parsedCoreButtonConfig.data.background !== undefined ? { background: parsedCoreButtonConfig.data.background } : {}),
         ...(parsedCoreButtonConfig.data.style_id !== undefined ? { style_id: parsedCoreButtonConfig.data.style_id } : {}),
         ...(parsedCoreButtonConfig.data.wrapper_id !== undefined ? { wrapper_id: parsedCoreButtonConfig.data.wrapper_id } : {}),

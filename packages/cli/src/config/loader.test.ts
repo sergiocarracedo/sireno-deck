@@ -42,7 +42,7 @@ describe("loadConfig", () => {
         "    id: main",
         "    buttons:",
         "      - position: 0",
-        "        type: display-text",
+        "        type: action",
         "        label: Clock",
         "logging:",
         "  level: info",
@@ -69,7 +69,7 @@ describe("loadConfig", () => {
         "    id: main",
         "    buttons:",
         "      - position: 0",
-        "        type: display-text",
+        "        type: action",
         "        label: Clock",
         "addons:",
         "  - name: local-clock-addon",
@@ -183,7 +183,7 @@ describe("loadConfig", () => {
         "    id: locked",
         "    buttons:",
         "      - position: 0",
-        "        type: display-text",
+        "        type: action",
         "        label: Locked",
       ].join("\n"),
     )
@@ -236,7 +236,7 @@ describe("loadConfig", () => {
         "    background: '#223344'",
         "    buttons:",
         "      - position: 0",
-        "        type: display-text",
+        "        type: action",
         "        label: Clock",
         "        background: '#556677'",
       ].join("\n"),
@@ -261,7 +261,7 @@ describe("loadConfig", () => {
         "    id: main",
         "    buttons:",
         "      - position: 0",
-        "        type: display-text",
+        "        type: action",
         "        label: Clock",
         "        background:",
       ].join("\n"),
@@ -292,7 +292,7 @@ describe("loadConfig", () => {
         "    id: main",
         "    buttons:",
         "      - position: 0",
-        "        type: display-text",
+        "        type: action",
       ].join("\n"),
     )
 
@@ -323,7 +323,7 @@ describe("loadConfig", () => {
         "    id: main",
         "    buttons:",
         "      - position: 0",
-        "        type: display-text",
+        "        type: action",
         "        label: Clock",
         "addons: []",
       ].join("\n"),
@@ -337,6 +337,213 @@ describe("loadConfig", () => {
     rmSync(fakeConfigHome, { recursive: true, force: true })
   })
 
+  it("loads deck definitions from relative referenced files", async () => {
+    mkdirSync(join(tempDir, "decks"), { recursive: true })
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main: '@decks/main.yml'",
+        "addons: []",
+      ].join("\n"),
+    )
+    writeFileSync(
+      join(tempDir, "decks", "main.yml"),
+      [
+        "id: main",
+        "buttons:",
+        "  - position: 0",
+        "    type: action",
+        "    label: Clock",
+      ].join("\n"),
+    )
+
+    const { loadConfig, loadConfigWithSources } = await loadConfigModule()
+    const config = loadConfig()
+    const loadedConfig = loadConfigWithSources()
+
+    expect(config.decks.main).toMatchObject({
+      id: "main",
+      buttons: [
+        expect.objectContaining({
+          label: "Clock",
+          position: 0,
+          type: "action",
+        }),
+      ],
+    })
+    expect(loadedConfig.filePaths).toEqual([
+      join(tempDir, "config.yml"),
+      join(tempDir, "decks", "main.yml"),
+    ])
+  })
+
+  it("loads deck definitions from absolute referenced files", async () => {
+    const deckPath = join(tempDir, "main.deck.yml")
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        `  main: '@${deckPath}'`,
+        "addons: []",
+      ].join("\n"),
+    )
+    writeFileSync(
+      deckPath,
+      [
+        "id: main",
+        "buttons:",
+        "  - position: 0",
+        "    type: action",
+        "    label: Clock",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig()
+
+    expect(config.decks.main?.id).toBe("main")
+    expect(config.decks.main?.buttons[0]).toMatchObject({ label: "Clock" })
+  })
+
+  it("reports missing referenced deck files from the owning config path", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main: '@decks/missing.yml'",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).filePath).toBe(join(tempDir, "config.yml"))
+      expect((error as ConfigValidationError).message).toContain("Referenced deck file 'decks/missing.yml' was not found")
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main"])
+      return
+    }
+
+    throw new Error("Expected missing referenced deck file validation to fail")
+  })
+
+  it("reports referenced deck id mismatches from the referenced file", async () => {
+    mkdirSync(join(tempDir, "decks"), { recursive: true })
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main: '@decks/main.yml'",
+        "addons: []",
+      ].join("\n"),
+    )
+    writeFileSync(
+      join(tempDir, "decks", "main.yml"),
+      [
+        "id: secondary",
+        "buttons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).filePath).toBe(join(tempDir, "decks", "main.yml"))
+      expect((error as ConfigValidationError).lineNumber).toBe(1)
+      expect((error as ConfigValidationError).message).toContain("Deck id 'secondary' must match its map key 'main'")
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "id"])
+      return
+    }
+
+    throw new Error("Expected referenced deck id mismatch validation to fail")
+  })
+
+  it("reports wrong-shape referenced deck files from the referenced file", async () => {
+    mkdirSync(join(tempDir, "decks"), { recursive: true })
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main: '@decks/main.yml'",
+        "addons: []",
+      ].join("\n"),
+    )
+    writeFileSync(
+      join(tempDir, "decks", "main.yml"),
+      [
+        "- not",
+        "- a deck",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).filePath).toBe(join(tempDir, "decks", "main.yml"))
+      expect((error as ConfigValidationError).message).toContain("Expected object")
+      return
+    }
+
+    throw new Error("Expected wrong-shape referenced deck validation to fail")
+  })
+
+  it("reports nested validation errors from referenced deck files with referenced file line numbers", async () => {
+    mkdirSync(join(tempDir, "decks"), { recursive: true })
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main: '@decks/main.yml'",
+        "addons: []",
+      ].join("\n"),
+    )
+    writeFileSync(
+      join(tempDir, "decks", "main.yml"),
+      [
+        "id: main",
+        "buttons:",
+        "  - position: 0",
+        "    type: action",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).filePath).toBe(join(tempDir, "decks", "main.yml"))
+      expect((error as ConfigValidationError).lineNumber).toBe(3)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "buttons", 0, "label"])
+      return
+    }
+
+    throw new Error("Expected nested referenced deck validation to fail")
+  })
+
   it("validates addon-backed button payloads through the bundled registry", async () => {
     writeFileSync(
       join(tempDir, "config.yml"),
@@ -348,7 +555,7 @@ describe("loadConfig", () => {
         "    id: main",
         "    buttons:",
         "      - position: 0",
-        "        type: display-text",
+        "        type: action",
         "        label: Clock",
         "addons: []",
       ].join("\n"),
@@ -361,9 +568,9 @@ describe("loadConfig", () => {
       config: { label: "Clock" },
       label: "Clock",
       position: 0,
-      type: "display-text",
+      type: "action",
     })
-    expect(config.decks.main?.buttons[0]?.definition.type).toBe("display-text")
+    expect(config.decks.main?.buttons[0]?.definition.type).toBe("action")
   })
 
   it("reports unknown addon button types with line information", async () => {
@@ -500,6 +707,68 @@ describe("loadConfig", () => {
     })
   })
 
+  it("loads a narrow button-level accent override through the core button envelope", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: action",
+        "        label: Clock",
+        "        wrapper_id: core-buttons/shared-card",
+        "        accent: success",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig()
+
+    expect(config.decks.main?.buttons[0]).toMatchObject({
+      accent: "success",
+      config: { label: "Clock" },
+      label: "Clock",
+      wrapper_id: "core-buttons/shared-card",
+    })
+  })
+
+  it("rejects invalid accent override values with line information", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: action",
+        "        label: Clock",
+        "        accent: not-a-color",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).message).toContain("Accent override must be a theme token or hex color")
+      expect((error as ConfigValidationError).lineNumber).toBe(10)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "buttons", 0, "accent"])
+      return
+    }
+
+    throw new Error("Expected accent override validation to fail")
+  })
+
   it("reports unknown wrapper primitive references with line information", async () => {
     writeFileSync(
       join(tempDir, "config.yml"),
@@ -511,7 +780,7 @@ describe("loadConfig", () => {
         "    id: main",
         "    buttons:",
         "      - position: 0",
-        "        type: display-text",
+        "        type: action",
         "        label: Clock",
         "        wrapper_id: missing-addon/shared-card",
       ].join("\n"),
@@ -543,7 +812,7 @@ describe("loadConfig", () => {
         "    id: main",
         "    buttons:",
         "      - position: 0",
-        "        type: display-text",
+        "        type: action",
         "        label: Clock",
         "        wrapper_id: external-addon/accent",
         "addons: []",
@@ -555,7 +824,7 @@ describe("loadConfig", () => {
       apiVersion: 1,
       buttons: [
         {
-          type: "display-text",
+          type: "action",
           configSchema: z.object({
             label: z.string().min(1),
           }),
@@ -632,7 +901,7 @@ describe("loadConfig", () => {
         "    id: main",
         "    buttons:",
         "      - position: 0",
-        "        type: display-text",
+        "        type: action",
         "        label: \"{{host.os.type}} / {{host.os.variant}} / {{host.session.state}}\"",
         "addons: []",
       ].join("\n"),
@@ -693,7 +962,7 @@ describe("loadConfig", () => {
   })
 
   it("loads the committed Phase 11 host-context fixture through render and action-bearing config paths", async () => {
-    const fixturePath = join(originalCwd, "packages/cli/fixtures/phase-11/config.host-context.yml")
+    const fixturePath = join(originalCwd, "fixtures/phase-11/config.host-context.yml")
     const { loadConfig } = await loadConfigModule()
     const config = loadConfig(fixturePath, undefined, {
       os: {
@@ -710,7 +979,7 @@ describe("loadConfig", () => {
     expect(config.decks.main?.buttons[0]).toMatchObject({
       config: { label: "linux / ubuntu / unknown" },
       label: "linux / ubuntu / unknown",
-      type: "display-text",
+      type: "action",
     })
     expect(config.decks["emoji-favorites"]?.buttons[0]).toMatchObject({
       select_command: "printf '%s' '{{emoji}} @ {{host.os.type}} @ {{host.session.state}}'",

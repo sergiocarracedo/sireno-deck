@@ -6,6 +6,7 @@ import sharp from "sharp"
 import type { Theme, ThemeTypographyRole } from "../config/theme.js"
 
 export interface TextImageOptions {
+  accent?: string
   background?: string
   detailLines?: string[]
   displayValue?: string
@@ -17,7 +18,7 @@ export interface TextImageOptions {
   text?: string
   theme?: Theme
   toggleMode?: "get-set" | "internal" | "toggle-status"
-  variant?: "analog-clock" | "calendar-sheet" | "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
+  variant?: "analog-clock" | "calendar-sheet" | "default" | "emoji" | "error" | "fan" | "media" | "metric" | "toggle"
   wrapper?: "shared"
   width?: number
   height?: number
@@ -298,21 +299,37 @@ function usesSharedWrapper(options: TextImageOptions): boolean {
   return options.wrapper === "shared"
 }
 
+function resolveSharedAccentColor(accent: string | undefined, theme: Theme, primitiveTone: "accent" | "default"): string {
+  if (!accent) {
+    return primitiveTone === "accent" ? theme.accent : theme.primary
+  }
+
+  if (accent === "accent" || accent === "background" || accent === "danger" || accent === "foreground" || accent === "primary" || accent === "success") {
+    return theme[accent]
+  }
+
+  return accent
+}
+
 function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
   const text = options.text ?? ""
   const iconPath = options.icon
   const safeText = escapeSvgText(text)
   const cardBackground = options.background ?? theme.background
-  const cardStart = mixHexColor(cardBackground, theme.primary, 0.08)
-  const cardEnd = mixHexColor(cardBackground, "#ffffff", 0.04)
-  const frame = mixHexColor(theme.primary, cardBackground, 0.45)
+  const sharedContract = usesSharedWrapper(options)
+  const primitiveTone = options.sharedStyleTone ?? "default"
+  const sharedAccent = resolveSharedAccentColor(sharedContract ? options.accent : undefined, theme, primitiveTone)
+  const sharedChromeAccent = sharedContract ? sharedAccent : theme.primary
+  const cardStart = mixHexColor(cardBackground, sharedChromeAccent, sharedContract ? 0.14 : 0.08)
+  const cardEnd = mixHexColor(cardBackground, sharedChromeAccent, sharedContract ? 0.06 : 0.04)
+  const frame = mixHexColor(sharedChromeAccent, cardBackground, sharedContract ? 0.24 : 0.45)
   const metricFill = mixHexColor(theme.primary, cardBackground, 0.12)
   const metricTrack = mixHexColor(theme.primary, cardBackground, 0.78)
-  const subtext = mixHexColor(theme.foreground, cardBackground, 0.4)
   const iconMarkup = getIconMarkup(iconPath)
-  const primitiveTone = options.sharedStyleTone ?? "default"
-  const badgeBase = primitiveTone === "accent" ? theme.accent : theme.primary
-  const toggleAccent = options.toggleMode === "internal"
+  const badgeBase = sharedAccent
+  const toggleAccent = sharedContract && options.accent
+    ? sharedAccent
+    : options.toggleMode === "internal"
     ? mixHexColor(theme.success, cardBackground, 0.08)
     : options.toggleMode === "toggle-status"
       ? mixHexColor(theme.primary, theme.background, 0.1)
@@ -329,7 +346,6 @@ function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, the
   const progressWidth = options.progress !== undefined
     ? Math.max(0, Math.min(preset.keyWidth - 20, Math.round(((preset.keyWidth - 20) * options.progress) / 100)))
     : 0
-  const sharedContract = usesSharedWrapper(options)
   const textElements = [
     options.subtitle
       ? buildClippedText({
@@ -382,19 +398,6 @@ function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, the
           y: 48,
         })
       : null,
-    buildClippedText({
-      clipHeight: 8,
-      clipId: "default-theme-name",
-      clipWidth: 52,
-      clipX: 10,
-      clipY: 58,
-      fill: subtext,
-      role: "auxiliary_text",
-      text: escapeSvgText(theme.name.toUpperCase()),
-      theme,
-      x: 10,
-      y: 66,
-    }),
   ].filter((element): element is { definition: string; markup: string } => element !== null)
 
   return `
@@ -414,9 +417,7 @@ function buildDefaultSvg(options: TextImageOptions, preset: TextImagePreset, the
           : options.toggleMode === "toggle-status"
             ? theme.primary
             : theme.accent
-        : primitiveTone === "accent"
-          ? theme.accent
-          : theme.primary}" opacity="0.95" />
+        : badgeBase}" opacity="0.95" />
       ${options.subtitle ? `<rect x="34" y="10" width="28" height="12" rx="6" fill="${badgeFill}" stroke="${badgeStroke}" stroke-width="1" />` : ""}
       ${textElements.map((element) => element.markup).join("")}
       ${iconMarkup}
@@ -686,6 +687,109 @@ function buildEmojiSvg(options: TextImageOptions, preset: TextImagePreset, theme
   `.trim()
 }
 
+function buildErrorSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
+  const title = escapeSvgText(options.text ?? "Config Error")
+  const detailLines = getDetailLines(options.detailLines, 3)
+  const badgeText = options.subtitle ? escapeSvgText(options.subtitle) : "RELOAD"
+  const textElements = [
+    buildClippedText({
+      clipHeight: 12,
+      clipId: "error-title",
+      clipWidth: 40,
+      clipX: 22,
+      clipY: 11,
+      fill: theme.foreground,
+      role: "main_text",
+      scale: 0.92,
+      text: title,
+      theme,
+      x: 22,
+      y: 21,
+    }),
+    buildClippedText({
+      clipHeight: 12,
+      clipId: "error-badge",
+      clipWidth: 24,
+      clipX: 38,
+      clipY: 28,
+      fill: theme.foreground,
+      role: "auxiliary_text",
+      scale: 0.88,
+      text: badgeText,
+      textAnchor: "middle",
+      theme,
+      x: 50,
+      y: 36,
+    }),
+    detailLines[0]
+      ? buildClippedText({
+          clipHeight: 10,
+          clipId: "error-detail-primary",
+          clipWidth: 52,
+          clipX: 10,
+          clipY: 40,
+          fill: theme.foreground,
+          role: "main_text",
+          scale: 0.82,
+          text: detailLines[0],
+          theme,
+          x: 10,
+          y: 48,
+        })
+      : null,
+    detailLines[1]
+      ? buildClippedText({
+          clipHeight: 9,
+          clipId: "error-detail-secondary",
+          clipWidth: 52,
+          clipX: 10,
+          clipY: 50,
+          fill: mixHexColor(theme.foreground, theme.background, 0.18),
+          role: "auxiliary_text",
+          scale: 1.05,
+          text: detailLines[1],
+          theme,
+          x: 10,
+          y: 58,
+        })
+      : null,
+    detailLines[2]
+      ? buildClippedText({
+          clipHeight: 8,
+          clipId: "error-detail-tertiary",
+          clipWidth: 52,
+          clipX: 10,
+          clipY: 59,
+          fill: mixHexColor(theme.foreground, theme.background, 0.32),
+          role: "auxiliary_text",
+          text: detailLines[2],
+          theme,
+          x: 10,
+          y: 66,
+        })
+      : null,
+  ].filter((element): element is { definition: string; markup: string } => element !== null)
+
+  return `
+    <svg width="${preset.keyWidth}" height="${preset.keyHeight}" viewBox="0 0 ${preset.keyWidth} ${preset.keyHeight}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="error-card" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="${mixHexColor(theme.background, theme.danger, 0.16)}" />
+          <stop offset="100%" stop-color="${mixHexColor(theme.background, theme.accent, 0.08)}" />
+        </linearGradient>
+        ${textElements.map((element) => element.definition).join("")}
+      </defs>
+      <rect x="0" y="0" width="${preset.keyWidth}" height="${preset.keyHeight}" rx="16" fill="url(#error-card)" />
+      <rect x="4" y="4" width="${preset.keyWidth - 8}" height="${preset.keyHeight - 8}" rx="12" fill="none" stroke="${mixHexColor(theme.danger, theme.background, 0.24)}" stroke-width="1.5" />
+      <circle cx="15" cy="17" r="8" fill="${mixHexColor(theme.danger, theme.background, 0.18)}" />
+      <path d="M15 12 L15 18" stroke="${theme.danger}" stroke-width="2.4" stroke-linecap="round" />
+      <circle cx="15" cy="22" r="1.4" fill="${theme.danger}" />
+      <rect x="38" y="28" width="24" height="12" rx="6" fill="${mixHexColor(theme.danger, theme.background, 0.12)}" stroke="${mixHexColor(theme.danger, theme.background, 0.02)}" stroke-width="1" />
+      ${textElements.map((element) => element.markup).join("")}
+    </svg>
+  `.trim()
+}
+
 function polarToCartesian(centerX: number, centerY: number, radius: number, angleDegrees: number): { x: number; y: number } {
   const angleRadians = ((angleDegrees - 90) * Math.PI) / 180
 
@@ -867,6 +971,10 @@ function buildTextSvg(options: TextImageOptions, preset: TextImagePreset, theme:
 
   if (options.variant === "emoji") {
     return buildEmojiSvg(options, preset, theme)
+  }
+
+  if (options.variant === "error") {
+    return buildErrorSvg(options, preset, theme)
   }
 
   if (options.variant === "fan") {

@@ -1,16 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+const watch = vi.fn()
 const createBundledAddonRegistry = vi.fn(() => ({ bundled: true }))
 const loadBootstrapConfig = vi.fn()
-const loadConfig = vi.fn()
+const loadConfigWithSources = vi.fn()
 const loadConfiguredAddons = vi.fn()
 const resolveHostContext = vi.fn()
 const createSessionMonitor = vi.fn()
 
+vi.mock("node:fs", async () => ({
+  watch,
+}))
+
 vi.mock("../../config/loader.js", () => ({
   createBundledAddonRegistry,
   loadBootstrapConfig,
-  loadConfig,
+  loadConfigWithSources,
 }))
 
 vi.mock("../../addon/loader.js", () => ({
@@ -38,9 +43,10 @@ describe("loadRuntimeConfig", () => {
   }
 
   beforeEach(() => {
+    watch.mockReset()
     createBundledAddonRegistry.mockClear()
     loadBootstrapConfig.mockReset()
-    loadConfig.mockReset()
+    loadConfigWithSources.mockReset()
     loadConfiguredAddons.mockReset()
     resolveHostContext.mockReset()
     createSessionMonitor.mockReset()
@@ -65,7 +71,11 @@ describe("loadRuntimeConfig", () => {
       loaded: [],
       warnings: [],
     })
-    loadConfig.mockReturnValue({ main_deck: "main" })
+    loadConfigWithSources.mockReturnValue({
+      config: { main_deck: "main" },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
 
     const { loadRuntimeConfig } = await import("./start.js")
     const logger = { warn: vi.fn() } as const
@@ -85,7 +95,7 @@ describe("loadRuntimeConfig", () => {
       cwd: "/tmp/project",
       registry: { bundled: true },
     })
-    expect(loadConfig).toHaveBeenCalledWith("/tmp/project/config.yml", { bundled: true }, {
+    expect(loadConfigWithSources).toHaveBeenCalledWith("/tmp/project/config.yml", { bundled: true }, {
       os: { type: "linux", variant: "ubuntu", version: "24.04" },
       session: { capability: "supported", state: "unknown" },
     })
@@ -104,7 +114,11 @@ describe("loadRuntimeConfig", () => {
       loaded: [],
       warnings: [{ addonName: "broken-addon", reason: "broken import" }],
     })
-    loadConfig.mockReturnValue({ main_deck: "main" })
+    loadConfigWithSources.mockReturnValue({
+      config: { main_deck: "main" },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml", "/tmp/project/decks/main.yml"],
+    })
 
     const { loadRuntimeConfig } = await import("./start.js")
     const logger = { warn: vi.fn() } as const
@@ -121,11 +135,13 @@ describe("loadRuntimeConfig", () => {
       { addonName: "broken-addon", reason: "broken import" },
       "skipping addon after startup warning",
     )
-    expect(loadConfig).toHaveBeenCalledWith("/tmp/project/config.yml", { bundled: true }, {
+    expect(loadConfigWithSources).toHaveBeenCalledWith("/tmp/project/config.yml", { bundled: true }, {
       os: { type: "linux", variant: "ubuntu", version: "24.04" },
       session: { capability: "supported", state: "unknown" },
     })
     expect(result.config).toEqual({ main_deck: "main" })
+    expect(result.configDirectory).toBe("/tmp/project")
+    expect(result.filePaths).toEqual(["/tmp/project/config.yml", "/tmp/project/decks/main.yml"])
   })
 
   it("warns once when session lock monitoring is unsupported on the current host", async () => {
@@ -140,7 +156,11 @@ describe("loadRuntimeConfig", () => {
       loaded: [],
       warnings: [],
     })
-    loadConfig.mockReturnValue({ main_deck: "main" })
+    loadConfigWithSources.mockReturnValue({
+      config: { main_deck: "main" },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
 
     const { loadRuntimeConfig } = await import("./start.js")
     const logger = { warn: vi.fn() } as const
@@ -156,5 +176,83 @@ describe("loadRuntimeConfig", () => {
       session: { capability: "unsupported", state: "unknown" },
     })
     expect(result.sessionMonitor).toBe(unsupportedSessionMonitor)
+  })
+})
+
+describe("watchConfigFiles", () => {
+  it("watches each config file once and debounces reload callbacks", async () => {
+    vi.useFakeTimers()
+    const closes: Array<() => void> = []
+    const listeners = new Map<string, () => void>()
+    watch.mockImplementation((filePath: string, _options: unknown, listener: () => void) => {
+      listeners.set(filePath, listener)
+      const close = vi.fn()
+      closes.push(close)
+      return { close }
+    })
+
+    const { watchConfigFiles } = await import("./start.js")
+    const onChange = vi.fn()
+    const stopWatching = watchConfigFiles([
+      "/tmp/project/config.yml",
+      "/tmp/project/config.yml",
+      "/tmp/project/decks/main.yml",
+    ], onChange)
+
+    expect(watch).toHaveBeenCalledTimes(2)
+
+    listeners.get("/tmp/project/config.yml")?.()
+    listeners.get("/tmp/project/decks/main.yml")?.()
+    await vi.advanceTimersByTimeAsync(74)
+    expect(onChange).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(1)
+    expect(onChange).toHaveBeenCalledTimes(1)
+
+    stopWatching()
+    expect(closes).toHaveLength(2)
+    expect(closes.every((close) => vi.mocked(close).mock.calls.length === 1)).toBe(true)
+    vi.useRealTimers()
+  })
+})
+
+describe("restoreReloadNavigation", () => {
+  it("falls back from full stack to active deck to main deck", async () => {
+    const restoreStack = vi.fn(async (stackSnapshot?: readonly string[]) => {
+      const stack = stackSnapshot ? [...stackSnapshot] : []
+
+      if (stack.length === 3 || stack[0] === "settings") {
+        throw new Error("missing deck")
+      }
+    })
+    const runtime = { restoreStack } as never
+
+    const { restoreReloadNavigation } = await import("./start.js")
+
+    await restoreReloadNavigation(runtime, ["main", "apps", "settings"], "settings", "main")
+
+    expect(restoreStack.mock.calls).toEqual([[["main", "apps", "settings"]], [["settings"]], [["main"]]])
+  })
+})
+
+describe("createTemporaryConfigErrorLines", () => {
+  it("formats a compact runtime-owned error summary from config validation failures", async () => {
+    const { ConfigValidationError } = await import("../../core/schemas.js")
+    const { createTemporaryConfigErrorLines } = await import("./start.js")
+
+    const lines = createTemporaryConfigErrorLines(
+      new ConfigValidationError(
+        "Unknown button type 'broken'",
+        "/tmp/project/decks/main.yml",
+        8,
+        "Register 'broken' before using it in config.yml.",
+      ),
+    )
+
+    expect(lines).toEqual([
+      "main.yml:8",
+      "Unknown button type 'broken'",
+      "Register 'broken' before using it in config.yml.",
+    ])
   })
 })

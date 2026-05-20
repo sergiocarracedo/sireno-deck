@@ -17,7 +17,7 @@ decks:
         type: action
         label: Action
         command: 'google-chrome'
-        icon: addon://emoji-selector/favorites.svg
+        icon: addon://emoji-selector/nature.svg
 
   emoji:
     id: emoji

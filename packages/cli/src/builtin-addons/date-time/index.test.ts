@@ -12,16 +12,30 @@ describe('date-time addon', () => {
     expect(dateTimeAddon.name).toBe('date-time')
     expect(dateTimeAddon.apiVersion).toBe(1)
 
-    const digitalDefinition = dateTimeAddon.buttons.find((definition) => definition.type === 'date-time')
-    const analogDefinition = dateTimeAddon.buttons.find((definition) => definition.type === 'analog-clock')
-    const calendarDefinition = dateTimeAddon.buttons.find((definition) => definition.type === 'calendar-sheet')
-    const digitalConfig = digitalDefinition?.configSchema.parse({ variant: 'date-time' })
+    const digitalDefinition = dateTimeAddon.buttons.find(
+      (definition) => definition.type === 'date-time',
+    )
+    const analogDefinition = dateTimeAddon.buttons.find(
+      (definition) => definition.type === 'analog-clock',
+    )
+    const calendarDefinition = dateTimeAddon.buttons.find(
+      (definition) => definition.type === 'calendar-sheet',
+    )
+    const digitalConfig = digitalDefinition?.configSchema.parse({
+      variant: 'date-time',
+    })
     const analogConfig = analogDefinition?.configSchema.parse({})
     const calendarConfig = calendarDefinition?.configSchema.parse({})
 
-    expect(dateTimeAddon.buttons.map((definition) => definition.type)).toEqual(['date-time', 'analog-clock', 'calendar-sheet'])
+    expect(dateTimeAddon.buttons.map((definition) => definition.type)).toEqual([
+      'date-time',
+      'analog-clock',
+      'calendar-sheet',
+    ])
     expect(digitalDefinition?.type).toBe('date-time')
-    expect(digitalDefinition?.defaultIntervalMs).toBe(DIGITAL_DATE_TIME_INTERVAL_MS)
+    expect(digitalDefinition?.defaultIntervalMs).toBe(
+      DIGITAL_DATE_TIME_INTERVAL_MS,
+    )
     expect(digitalConfig).toEqual({
       date_format: 'MM/DD/YYYY',
       time_format: 'HH:mm:ss',
@@ -33,7 +47,9 @@ describe('date-time addon', () => {
     expect(analogConfig).toEqual({})
 
     expect(calendarDefinition?.type).toBe('calendar-sheet')
-    expect(calendarDefinition?.defaultIntervalMs).toBe(CALENDAR_SHEET_INTERVAL_MS)
+    expect(calendarDefinition?.defaultIntervalMs).toBe(
+      CALENDAR_SHEET_INTERVAL_MS,
+    )
     expect(calendarConfig).toEqual({})
   })
 
@@ -75,7 +91,9 @@ describe('date-time addon', () => {
   })
 
   it('creates a renderable live date-time button instance', () => {
-    const definition = dateTimeAddon.buttons.find((button) => button.type === 'date-time')
+    const definition = dateTimeAddon.buttons.find(
+      (button) => button.type === 'date-time',
+    )
     const instance = definition?.createInstance({
       button: { position: 2 },
       config: {
@@ -95,7 +113,9 @@ describe('date-time addon', () => {
   })
 
   it('creates a renderable analog clock button instance with the expected cadence contract', () => {
-    const definition = dateTimeAddon.buttons.find((button) => button.type === 'analog-clock')
+    const definition = dateTimeAddon.buttons.find(
+      (button) => button.type === 'analog-clock',
+    )
     const instance = definition?.createInstance({
       button: { position: 4 },
       config: {},
@@ -115,7 +135,9 @@ describe('date-time addon', () => {
   })
 
   it('keeps the shipped Phase 8 review contract on the bundled analog clock type', () => {
-    const definition = dateTimeAddon.buttons.find((button) => button.type === 'analog-clock')
+    const definition = dateTimeAddon.buttons.find(
+      (button) => button.type === 'analog-clock',
+    )
 
     expect(definition?.type).toBe('analog-clock')
     expect(definition?.defaultIntervalMs).toBe(1000)
@@ -123,7 +145,9 @@ describe('date-time addon', () => {
   })
 
   it('creates a renderable calendar-sheet button instance with the expected cadence contract', () => {
-    const definition = dateTimeAddon.buttons.find((button) => button.type === 'calendar-sheet')
+    const definition = dateTimeAddon.buttons.find(
+      (button) => button.type === 'calendar-sheet',
+    )
     const instance = definition?.createInstance({
       button: { position: 6 },
       config: {},

@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs"
 import { homedir } from "node:os"
-import { dirname, join } from "node:path"
+import { dirname, isAbsolute, join, resolve } from "node:path"
 import yaml from "js-yaml"
 
 import { resolveHostContextPlaceholders } from "../action/executor.js"
@@ -18,10 +18,24 @@ import { UNKNOWN_HOST_CONTEXT, type HostContext } from "../system/host-context.j
 const CONFIG_FILENAME = "config.yml"
 const COMMAND_FIELD_NAMES = new Set(["command", "display_command", "select_command", "status_command"])
 
+type ConfigPathSegment = string | number
+
+interface DeckSource {
+  filePath: string
+  raw: string
+}
+
 export interface LoadedBootstrapConfig {
   config: BootstrapSirenoConfig
   cwd: string
   filePath: string
+  filePaths: string[]
+}
+
+export interface LoadedConfig {
+  config: SirenoConfig
+  filePath: string
+  filePaths: string[]
 }
 
 function getXdgConfigPath(): string {
@@ -126,34 +140,16 @@ function findConfigPath(customPath?: string): string | undefined {
   return undefined
 }
 
-export function createBundledAddonRegistry(): AddonRegistry {
-  const registry = createAddonRegistry()
-
-  for (const addon of getBundledAddons()) {
-    registry.registerAddon(addon)
-  }
-
-  return registry
-}
-
-function parseConfigFile(configPath?: string): {
+function parseYamlDocument(filePath: string): {
   filePath: string
-  raw: string
   parsed: unknown
+  raw: string
 } {
-  const foundPath = findConfigPath(configPath)
-
-  if (!foundPath) {
-    throw new ConfigValidationError(
-      "No config.yml found. Create one in the current directory or ~/.config/sireno-deck/config.yml",
-    )
-  }
-
-  const raw = readFileSync(foundPath, "utf-8")
+  const raw = readFileSync(filePath, "utf-8")
 
   try {
     return {
-      filePath: foundPath,
+      filePath,
       parsed: yaml.load(raw),
       raw,
     }
@@ -165,10 +161,145 @@ function parseConfigFile(configPath?: string): {
     const message = error instanceof Error ? error.message : String(error)
     throw new ConfigValidationError(
       `YAML parse error: ${message}`,
-      foundPath,
+      filePath,
       lineNumber !== undefined ? lineNumber + 1 : undefined,
       "Fix the YAML syntax and try again.",
     )
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
+function resolveDeckReferencePath(reference: string, ownerFilePath: string): string {
+  const referencePath = reference.slice(1).trim()
+  if (referencePath.length === 0) {
+    throw new ConfigValidationError("Deck file reference cannot be empty")
+  }
+
+  return isAbsolute(referencePath)
+    ? referencePath
+    : resolve(dirname(ownerFilePath), referencePath)
+}
+
+function expandDeckReferences(
+  parsed: unknown,
+  ownerFilePath: string,
+): {
+  deckSources: Map<string, DeckSource>
+  parsed: unknown
+} {
+  if (!isRecord(parsed) || !isRecord(parsed.decks)) {
+    return {
+      deckSources: new Map(),
+      parsed,
+    }
+  }
+
+  const deckSources = new Map<string, DeckSource>()
+  const expandedDecks: Record<string, unknown> = {}
+
+  for (const [deckKey, deckValue] of Object.entries(parsed.decks)) {
+    if (typeof deckValue !== "string" || !deckValue.startsWith("@")) {
+      expandedDecks[deckKey] = deckValue
+      continue
+    }
+
+    const resolvedDeckPath = resolveDeckReferencePath(deckValue, ownerFilePath)
+    if (!existsSync(resolvedDeckPath)) {
+      throw new ConfigValidationError(
+        `Referenced deck file '${deckValue.slice(1).trim()}' was not found`,
+        ownerFilePath,
+        undefined,
+        `Check the value for 'decks.${deckKey}'.`,
+        ["decks", deckKey],
+      )
+    }
+
+    const parsedDeck = parseYamlDocument(resolvedDeckPath)
+    expandedDecks[deckKey] = parsedDeck.parsed
+    deckSources.set(deckKey, {
+      filePath: parsedDeck.filePath,
+      raw: parsedDeck.raw,
+    })
+  }
+
+  return {
+    deckSources,
+    parsed: {
+      ...parsed,
+      decks: expandedDecks,
+    },
+  }
+}
+
+export function createBundledAddonRegistry(): AddonRegistry {
+  const registry = createAddonRegistry()
+
+  for (const addon of getBundledAddons()) {
+    registry.registerAddon(addon)
+  }
+
+  return registry
+}
+
+function parseConfigFile(configPath?: string): {
+  deckSources: Map<string, DeckSource>
+  filePath: string
+  filePaths: string[]
+  raw: string
+  parsed: unknown
+} {
+  const foundPath = findConfigPath(configPath)
+
+  if (!foundPath) {
+    throw new ConfigValidationError(
+      "No config.yml found. Create one in the current directory or ~/.config/sireno-deck/config.yml",
+    )
+  }
+
+  const parsedRootConfig = parseYamlDocument(foundPath)
+  const expandedConfig = expandDeckReferences(parsedRootConfig.parsed, foundPath)
+
+  return {
+    deckSources: expandedConfig.deckSources,
+    filePath: parsedRootConfig.filePath,
+    filePaths: [parsedRootConfig.filePath, ...Array.from(expandedConfig.deckSources.values(), (source) => source.filePath)],
+    parsed: expandedConfig.parsed,
+    raw: parsedRootConfig.raw,
+  }
+}
+
+function resolveErrorLocation(
+  parsedConfig: {
+    deckSources: Map<string, DeckSource>
+    filePath: string
+    raw: string
+  },
+  error: ConfigValidationError,
+): {
+  filePath: string
+  lineNumber?: number
+} {
+  const [rootSegment, deckId, ...nestedSegments] = error.pathSegments
+  if (rootSegment === "decks" && typeof deckId === "string") {
+    const deckSource = parsedConfig.deckSources.get(deckId)
+    if (deckSource) {
+      const resolvedLineNumber = getLineNumber(deckSource.raw, nestedSegments)
+
+      return {
+        filePath: error.filePath ?? deckSource.filePath,
+        lineNumber: resolvedLineNumber ?? error.lineNumber ?? (nestedSegments.length > 0 ? 1 : undefined),
+      }
+    }
+  }
+
+  const resolvedLineNumber = getLineNumber(parsedConfig.raw, error.pathSegments as readonly ConfigPathSegment[])
+
+  return {
+    filePath: error.filePath ?? parsedConfig.filePath,
+    lineNumber: resolvedLineNumber ?? error.lineNumber,
   }
 }
 
@@ -208,13 +339,16 @@ export function loadBootstrapConfig(configPath?: string, hostContext: HostContex
       config: validateBootstrapConfig(interpolatedConfig),
       cwd: dirname(parsedConfig.filePath),
       filePath: parsedConfig.filePath,
+      filePaths: parsedConfig.filePaths,
     }
   } catch (error) {
     if (error instanceof ConfigValidationError) {
+      const errorLocation = resolveErrorLocation(parsedConfig, error)
+
       throw new ConfigValidationError(
         error.message,
-        parsedConfig.filePath,
-        error.lineNumber ?? getLineNumber(parsedConfig.raw, error.pathSegments),
+        errorLocation.filePath,
+        errorLocation.lineNumber,
         error.suggestion,
         error.pathSegments,
       )
@@ -229,18 +363,32 @@ export function loadConfig(
   registry = createBundledAddonRegistry(),
   hostContext: HostContext = UNKNOWN_HOST_CONTEXT,
 ): SirenoConfig {
+  return loadConfigWithSources(configPath, registry, hostContext).config
+}
+
+export function loadConfigWithSources(
+  configPath?: string,
+  registry = createBundledAddonRegistry(),
+  hostContext: HostContext = UNKNOWN_HOST_CONTEXT,
+): LoadedConfig {
   const parsedConfig = parseConfigFile(configPath)
   const interpolatedConfig = interpolateHostContextTemplates(parsedConfig.parsed, hostContext)
 
   try {
     // Phase 5 bootstrap validation: load the addon registry before full button validation.
-    return validateConfig(interpolatedConfig, registry)
+    return {
+      config: validateConfig(interpolatedConfig, registry),
+      filePath: parsedConfig.filePath,
+      filePaths: parsedConfig.filePaths,
+    }
   } catch (error) {
     if (error instanceof ConfigValidationError) {
+      const errorLocation = resolveErrorLocation(parsedConfig, error)
+
       throw new ConfigValidationError(
         error.message,
-        parsedConfig.filePath,
-        error.lineNumber ?? getLineNumber(parsedConfig.raw, error.pathSegments),
+        errorLocation.filePath,
+        errorLocation.lineNumber,
         error.suggestion,
         error.pathSegments,
       )

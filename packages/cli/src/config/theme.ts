@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs"
-import { isAbsolute, resolve } from "node:path"
+import { dirname, isAbsolute, resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 
 import yaml from "js-yaml"
 import { z } from "zod"
@@ -42,15 +43,38 @@ export interface Theme extends Omit<ThemeSchemaOutput, "typography"> {
   typography?: ThemeSchemaOutput["typography"]
 }
 
-const BUILTIN_THEME_DIRECTORY = resolve(process.cwd(), "themes")
+const MODULE_DIRECTORY = dirname(fileURLToPath(import.meta.url))
 
-function getThemePath(themeReference: string): string {
-  const builtinPath = resolve(BUILTIN_THEME_DIRECTORY, `${themeReference}.yml`)
-  if (existsSync(builtinPath)) {
+export interface ResolveThemeOptions {
+  baseDirectory?: string
+}
+
+function getBuiltinThemePath(themeReference: string): string | undefined {
+  let searchDirectory = MODULE_DIRECTORY
+
+  while (true) {
+    const candidatePath = resolve(searchDirectory, "themes", `${themeReference}.yml`)
+    if (existsSync(candidatePath)) {
+      return candidatePath
+    }
+
+    const parentDirectory = dirname(searchDirectory)
+    if (parentDirectory === searchDirectory) {
+      return undefined
+    }
+
+    searchDirectory = parentDirectory
+  }
+}
+
+function getThemePath(themeReference: string, options: ResolveThemeOptions = {}): string {
+  const builtinPath = getBuiltinThemePath(themeReference)
+  if (builtinPath) {
     return builtinPath
   }
 
-  const resolvedPath = isAbsolute(themeReference) ? themeReference : resolve(process.cwd(), themeReference)
+  const baseDirectory = options.baseDirectory ?? process.cwd()
+  const resolvedPath = isAbsolute(themeReference) ? themeReference : resolve(baseDirectory, themeReference)
   if (existsSync(resolvedPath)) {
     return resolvedPath
   }
@@ -81,8 +105,8 @@ function getThemeLineNumber(raw: string, pathSegments: readonly (string | number
   return index >= 0 ? index + 1 : undefined
 }
 
-export function resolveTheme(themeReference: string): Theme {
-  const themePath = getThemePath(themeReference)
+export function resolveTheme(themeReference: string, options: ResolveThemeOptions = {}): Theme {
+  const themePath = getThemePath(themeReference, options)
   const raw = readFileSync(themePath, "utf-8")
 
   let parsed: unknown

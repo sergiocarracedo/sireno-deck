@@ -166,8 +166,8 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.2 — Session Context and Surface Composition
 **Phase:** 16 — Config Reload + Wrapper Polish
-**Status:** planning
-**Last updated:** 2026-05-19
+**Status:** review_ready
+**Last updated:** 2026-05-20
 
 ---
 

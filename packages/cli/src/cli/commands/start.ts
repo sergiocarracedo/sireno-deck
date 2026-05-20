@@ -1,8 +1,11 @@
+import { watch } from "node:fs"
+import { basename, dirname } from "node:path"
+
 import type pino from "pino"
 
 import { loadConfiguredAddons } from "../../addon/loader.js"
 import { AddonManifestError } from "../../addon/manifest.js"
-import { createBundledAddonRegistry, loadBootstrapConfig, loadConfig } from "../../config/loader.js"
+import { createBundledAddonRegistry, loadBootstrapConfig, loadConfigWithSources } from "../../config/loader.js"
 import { resolveTheme } from "../../config/theme.js"
 import { ConfigValidationError } from "../../core/schemas.js"
 import { createDeckRuntime } from "../../deck/runtime.js"
@@ -34,34 +37,116 @@ export interface StartOptions {
   logger: pino.Logger
 }
 
+const CONFIG_RELOAD_DEBOUNCE_MS = 75
+
 export async function loadRuntimeConfig(options: StartOptions) {
   const sessionMonitor = await createSessionMonitor()
-  const hostContext = await resolveHostContext(undefined, sessionMonitor.getSnapshot())
-  const bootstrap = loadBootstrapConfig(options.config, hostContext)
-  const registry = createBundledAddonRegistry()
-  const addonLoadResult = await loadConfiguredAddons({
-    addons: bootstrap.config.addons,
-    cwd: bootstrap.cwd,
-    registry,
-  })
 
-  for (const warning of addonLoadResult.warnings) {
-    options.logger.warn({ addonName: warning.addonName, reason: warning.reason }, "skipping addon after startup warning")
+  try {
+    const hostContext = await resolveHostContext(undefined, sessionMonitor.getSnapshot())
+    const bootstrap = loadBootstrapConfig(options.config, hostContext)
+    const registry = createBundledAddonRegistry()
+    const addonLoadResult = await loadConfiguredAddons({
+      addons: bootstrap.config.addons,
+      cwd: bootstrap.cwd,
+      registry,
+    })
+
+    for (const warning of addonLoadResult.warnings) {
+      options.logger.warn({ addonName: warning.addonName, reason: warning.reason }, "skipping addon after startup warning")
+    }
+
+    if (sessionMonitor.getSnapshot().capability === "unsupported") {
+      options.logger.warn(
+        { platform: process.platform },
+        "session lock monitoring unavailable on this host; continuing without lock-aware deck switching",
+      )
+    }
+
+    const loadedConfig = loadConfigWithSources(bootstrap.filePath, registry, hostContext)
+
+    return {
+      config: loadedConfig.config,
+      configDirectory: dirname(loadedConfig.filePath),
+      filePaths: loadedConfig.filePaths,
+      hostContext,
+      registry,
+      sessionMonitor,
+    }
+  } catch (error) {
+    await sessionMonitor.stop()
+    throw error
+  }
+}
+
+export function watchConfigFiles(filePaths: readonly string[], onChange: () => void): () => void {
+  const uniqueFilePaths = Array.from(new Set(filePaths))
+  const watchers = uniqueFilePaths.map((filePath) => watch(filePath, { persistent: false }, () => {
+    scheduleReload()
+  }))
+  let reloadTimer: NodeJS.Timeout | undefined
+
+  function scheduleReload(): void {
+    if (reloadTimer) {
+      clearTimeout(reloadTimer)
+    }
+
+    reloadTimer = setTimeout(() => {
+      reloadTimer = undefined
+      onChange()
+    }, CONFIG_RELOAD_DEBOUNCE_MS)
   }
 
-  if (sessionMonitor.getSnapshot().capability === "unsupported") {
-    options.logger.warn(
-      { platform: process.platform },
-      "session lock monitoring unavailable on this host; continuing without lock-aware deck switching",
-    )
+  return () => {
+    if (reloadTimer) {
+      clearTimeout(reloadTimer)
+      reloadTimer = undefined
+    }
+
+    for (const watcher of watchers) {
+      watcher.close()
+    }
+  }
+}
+
+export async function restoreReloadNavigation(
+  runtime: ReturnType<typeof createDeckRuntime>,
+  previousStack: readonly string[],
+  previousActiveDeckId: string,
+  mainDeckId: string,
+): Promise<void> {
+  const candidateStacks: string[][] = []
+
+  if (previousStack.length > 0) {
+    candidateStacks.push([...previousStack])
   }
 
-  return {
-    config: loadConfig(bootstrap.filePath, registry, hostContext),
-    hostContext,
-    registry,
-    sessionMonitor,
+  candidateStacks.push([previousActiveDeckId])
+
+  if (previousActiveDeckId !== mainDeckId) {
+    candidateStacks.push([mainDeckId])
   }
+
+  for (const candidateStack of candidateStacks) {
+    try {
+      await runtime.restoreStack(candidateStack)
+      return
+    } catch {
+      continue
+    }
+  }
+}
+
+export function createTemporaryConfigErrorLines(error: ConfigValidationError): string[] {
+  const location = error.filePath
+    ? `${basename(error.filePath)}${error.lineNumber !== undefined ? `:${error.lineNumber}` : ""}`
+    : "config.yml"
+
+  return [
+    location,
+    error.message,
+    error.suggestion ?? "Fix the config and save again.",
+  ]
 }
 
 async function renderMainDeck(
@@ -78,6 +163,7 @@ async function renderMainDeck(
   for (const description of descriptions) {
     const primitiveOptions = resolvePrimitiveRenderOptions(description)
     const buffer = await renderTextImage({
+      accent: description.accent,
       background: description.background,
       detailLines: description.detailLines,
       displayValue: description.displayValue,
@@ -117,10 +203,13 @@ export async function startDaemon(options: StartOptions): Promise<void> {
   }
 
   try {
-    const { config, hostContext, registry, sessionMonitor } = await loadRuntimeConfig(options)
-    const theme = resolveTheme(config.theme)
-    const mainDeck = config.decks[config.main_deck]
+    const initialLoad = await loadRuntimeConfig(options)
     let runtime: ReturnType<typeof createDeckRuntime> | null = null
+    let registry = initialLoad.registry
+    let sessionMonitor = initialLoad.sessionMonitor
+    let stopWatchingConfig = () => {}
+    let reloadInFlight = false
+    let reloadQueued = false
     const resolvePrimitiveRenderOptions = (button: DeckButtonProps) => {
       const wrapper = button.wrapper ?? (button.wrapper_id ? registry.getWrapperPrimitive(button.wrapper_id)?.wrapper : undefined)
       const sharedStyleTone = button.style_id ? registry.getStylePrimitive(button.style_id)?.shared?.tone : undefined
@@ -140,18 +229,20 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
         await runtime.activateCurrentDeck()
       },
-      selector: { serial: config.device?.serial },
+      selector: { serial: initialLoad.config.device?.serial },
     })
 
-    const connection = await lifecycle.start()
-    runtime = createDeckRuntime({
-      addonRegistry: registry,
-      deck: mainDeck,
-      decks: config.decks,
-      hostContext,
+    const createRuntime = (loadedConfig: Awaited<ReturnType<typeof loadRuntimeConfig>>) => {
+      const runtimeTheme = resolveTheme(loadedConfig.config.theme, { baseDirectory: loadedConfig.configDirectory })
+
+      return createDeckRuntime({
+      addonRegistry: loadedConfig.registry,
+      deck: loadedConfig.config.decks[loadedConfig.config.main_deck]!,
+      decks: loadedConfig.config.decks,
+      hostContext: loadedConfig.hostContext,
       keyCount: connection.info.keyCount,
-      lockedDeckId: config.session?.locked_deck,
-      theme,
+      lockedDeckId: loadedConfig.config.session?.locked_deck,
+      theme: runtimeTheme,
       onRenderButton: async (button) => {
         const activeConnection = lifecycle.getConnection()
         if (!activeConnection) {
@@ -159,6 +250,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
         }
 
         const buffer = await renderTextImage({
+          accent: button.accent,
           background: button.background,
           detailLines: button.detailLines,
           displayValue: button.displayValue,
@@ -168,7 +260,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
           ...resolvePrimitiveRenderOptions(button),
           subtitle: button.subtitle,
           text: button.label,
-          theme,
+          theme: runtimeTheme,
           toggleMode: button.toggle_mode,
           variant: button.variant,
           wrapper: button.wrapper ?? resolvePrimitiveRenderOptions(button).wrapper,
@@ -181,15 +273,82 @@ export async function startDaemon(options: StartOptions): Promise<void> {
           return
         }
 
-        await renderMainDeck(activeConnection, buttons, theme, resolvePrimitiveRenderOptions, logger)
+        await renderMainDeck(activeConnection, buttons, runtimeTheme, resolvePrimitiveRenderOptions, logger)
       },
-      sessionMonitor,
+      sessionMonitor: loadedConfig.sessionMonitor,
       subscribeKeyEvents: lifecycle.subscribeKeyEvents,
     })
+    }
+
+    const connection = await lifecycle.start()
+    runtime = createRuntime(initialLoad)
+
+    async function reloadRuntime(): Promise<void> {
+      if (!runtime) {
+        return
+      }
+
+      if (reloadInFlight) {
+        reloadQueued = true
+        return
+      }
+
+      reloadInFlight = true
+
+      do {
+        reloadQueued = false
+        let loadedConfig: Awaited<ReturnType<typeof loadRuntimeConfig>> | null = null
+
+        try {
+          loadedConfig = await loadRuntimeConfig(options)
+          const nextRuntime = createRuntime(loadedConfig)
+          const previousRuntime = runtime
+          const previousSessionMonitor = sessionMonitor
+          const previousStack = previousRuntime.getStackSnapshot()
+          const previousActiveDeckId = previousRuntime.getActiveDeck().id
+
+          registry = loadedConfig.registry
+          sessionMonitor = loadedConfig.sessionMonitor
+          runtime = nextRuntime
+
+          previousRuntime.stop()
+          await previousSessionMonitor.stop()
+
+          nextRuntime.start()
+          await restoreReloadNavigation(nextRuntime, previousStack, previousActiveDeckId, loadedConfig.config.main_deck)
+
+          stopWatchingConfig()
+          stopWatchingConfig = watchConfigFiles(loadedConfig.filePaths, () => {
+            void reloadRuntime().catch((error) => {
+              logger.error({ error }, "config reload failed")
+            })
+          })
+          logger.info({ filePaths: loadedConfig.filePaths }, "reloaded config after file change")
+        } catch (error) {
+          if (loadedConfig) {
+            await loadedConfig.sessionMonitor.stop()
+          }
+
+          if (error instanceof ConfigValidationError) {
+            console.error(formatConfigError(error))
+            await runtime.showTemporaryErrorDeck(createTemporaryConfigErrorLines(error))
+          } else {
+            logger.error({ error }, "config reload failed")
+          }
+        }
+      } while (reloadQueued)
+
+      reloadInFlight = false
+    }
 
     runtime.start()
+    stopWatchingConfig = watchConfigFiles(initialLoad.filePaths, () => {
+      void reloadRuntime().catch((error) => {
+        logger.error({ error }, "config reload failed")
+      })
+    })
 
-    logger.info({ config }, "config loaded successfully")
+    logger.info({ config: initialLoad.config }, "config loaded successfully")
     logger.info(
       {
         keyCount: connection.info.keyCount,
@@ -201,6 +360,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
     writePid()
     cleanupSignals = setupSignalHandlers(logger, async () => {
+      stopWatchingConfig()
       runtime?.stop()
       await sessionMonitor.stop()
       await lifecycle.close()

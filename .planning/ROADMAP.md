@@ -87,7 +87,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ### Phase 14: Richer Built-in Toggles
 
-**Status:** Not started
+**Status:** Verified
 
 **Goal:** Expand the built-in toggle surface to cover both local and command-driven authority models.
 
@@ -125,14 +125,27 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ### Phase 16: Config Reload + Wrapper Polish
 
-**Status:** [ ] Not started
+**Status:** ✓ Complete (2026-05-19)
 
 **Goal:** Users can split deck definitions into referenced files, have config edits reload without losing the current deck when it still exists, and clean up shared wrapper visuals with removable labels and customizable accent colors.
 
 **Depends on:** Phase 15
 
 ### Plans
-*Not yet planned — run `plan-phase 16`*
+- `16-01`: Expand deck-file references through the existing loader contract
+- `16-02`: Live reload valid config and preserve user navigation
+- `16-04`: Remove the shared footer and add narrow per-button accent overrides
+- `16-03`: Surface invalid reloads on-device with a temporary error deck
+
+**Success criteria:**
+- [x] `decks.<id>: @path/to/deck.yml` resolves through the existing strict loader and preserves file/line-aware errors
+- [x] Valid edits to the root config or referenced deck files trigger live reload with full-stack restore, active-deck fallback, and `main_deck` fallback in that order
+- [x] Shared/default wrapper visuals drop the theme-name footer and support one explicit button-level accent override using theme tokens or raw hex colors
+- [x] Invalid reloads switch to a runtime-owned temporary error deck and recover automatically on the next valid reload
+
+**Phase 16 note:** This is post-roadmap scope that landed as wrapper/render/runtime polish on top of the v1.2 milestone. It intentionally stayed narrow: deck-file refs only, targeted file watching, rebuild-on-reload semantics, one explicit accent field, and a runtime-owned error overlay instead of a broader styling or include system.
+
+**Research needed:** No — execution followed the Phase 16 research and context decisions already captured in planning.
 
 ---
 

@@ -10,6 +10,7 @@ export interface DeckTextProps {
 }
 
 export interface DeckButtonProps {
+  accent?: string
   background?: string
   detailLines?: string[]
   displayValue?: string
@@ -21,7 +22,7 @@ export interface DeckButtonProps {
   style_id?: string
   subtitle?: string
   toggle_mode?: "get-set" | "internal" | "toggle-status"
-  variant?: "analog-clock" | "calendar-sheet" | "default" | "emoji" | "fan" | "media" | "metric" | "toggle"
+  variant?: "analog-clock" | "calendar-sheet" | "default" | "emoji" | "error" | "fan" | "media" | "metric" | "toggle"
   wrapper?: DeckButtonWrapper
   wrapper_id?: string
 }
