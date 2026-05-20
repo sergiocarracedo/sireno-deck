@@ -1,0 +1,127 @@
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  h_f90ee31b03fc41 1-24
+packages/cli/src/cli/commands/start.ts
+  s_df3509a167c487::t_9c535606ddcc77 2,70,236
+  s_df3509a167c487::t_b8f524e2e78665 140-151,334
+  s_df3509a167c487::t_e1029348cdb49d 1,3,8,40-41,44-69,71-97,100-127,130-136,206,208-212,232,239-242,244,278,282-333,335-342,345-349,351,363
+  s_df3509a167c487::t_9f5ffa58d389b1 166,235,237-238,245,253,263,276,281
+.planning/phases/16-config-reload-wrapper-polish/16-06-SUMMARY.md
+  s_df3509a167c487::t_a1c6101c65cadf 1-21
+packages/cli/src/addon/builtin.ts
+  h_f90ee31b03fc41 1-3
+.planning/phases/16-config-reload-wrapper-polish/16-03-SUMMARY.md
+  s_df3509a167c487::t_1fbaa0eb6ea3fc 1-24
+packages/cli/src/config/theme.test.ts
+  s_df3509a167c487::t_e1545bc83e3e08 50-52,68,78-79,83-85,101-102
+.planning/ROADMAP.md
+  s_df3509a167c487::t_242850621adf9e 90,128,135-148
+packages/cli/src/deck/runtime.test.ts
+  s_df3509a167c487::t_b8f524e2e78665 1035-1118,1120-1197
+  s_df3509a167c487::t_0158a433ce9508 439,1360
+  s_df3509a167c487::t_e1029348cdb49d 947-1034
+  s_df3509a167c487::t_3dbd8a4facbedd 1119
+.planning/phases/16-config-reload-wrapper-polish/16-06-PLAN.md
+  s_df3509a167c487::t_a3073d680f0240 1-75
+packages/cli/src/config/loader.test.ts
+  s_df3509a167c487::t_0158a433ce9508 45,72,186,239,264,295,326,358,373,401,528,558,571,573,783,815,827,904,965,982
+  s_df3509a167c487::t_2033b31653248e 363,365,377-380
+  s_df3509a167c487::t_6f62da1d4e70bf 340-357,359-362,364,366-372,374-376,381-400,402-527,529-546
+  s_df3509a167c487::t_9f5ffa58d389b1 710-771
+packages/cli/src/addon/builtin.test.ts
+  s_df3509a167c487::t_0158a433ce9508 14
+.planning/phases/16-config-reload-wrapper-polish/16-UAT.md
+  s_df3509a167c487::t_cbb7f22859c2ba 2,18,64,77-78
+  s_df3509a167c487::t_45e529af4986d7 10,84
+  s_df3509a167c487::t_5d8cb583304879 1,3-9,11-13,16,19-24,26-37,39-50,52-63,65-76,81-83
+  s_df3509a167c487::t_58ef8107f215df 14-15,17,51
+  s_df3509a167c487::t_dcd68e0f4c100b 79
+  s_df3509a167c487::t_be13dcbec8321b 25
+  s_df3509a167c487::t_be3c68c41dfba0 38
+  s_df3509a167c487::t_4c2369f3f6fb95 80
+.planning/phases/16-config-reload-wrapper-polish/16-05-PLAN.md
+  s_df3509a167c487::t_e2423962393c6b 1-82
+.planning/debug/20260520-1050-shared-card-accent-override-not-visible.md
+  s_df3509a167c487::t_2288bd108866c9 1-9
+packages/cli/fixtures/phase-11/config.host-context.yml
+  s_df3509a167c487::t_0158a433ce9508 9
+.planning/REQUIREMENTS.md
+  s_df3509a167c487::t_242850621adf9e 29
+packages/cli/fixtures/phase-11/config.locked-session.yml
+  s_df3509a167c487::t_0158a433ce9508 27,34,41
+packages/cli/src/render/reconciler.ts
+  s_df3509a167c487::t_9f5ffa58d389b1 18,39,140,175,263,290-292,364,411
+  s_df3509a167c487::t_b8f524e2e78665 32,51
+.planning/phases/16-config-reload-wrapper-polish/16-05-SUMMARY.md
+  s_df3509a167c487::t_56d17d96c8c5ca 1-26
+.planning/phases/16-config-reload-wrapper-polish/16-VERIFICATION.md
+  s_df3509a167c487::t_45e529af4986d7 3,62-64,75
+  s_df3509a167c487::t_eb64246686ec8b 39-42,60,70
+  s_df3509a167c487::t_66afd404c73479 1-2,4-38,43-59,61,65-69,71-74
+packages/cli/src/render/text-image.ts
+  s_df3509a167c487::t_9f5ffa58d389b1 9,302-313,319-321,329-332,420
+  s_df3509a167c487::t_b8f524e2e78665 21,690-792,976-977
+  s_df3509a167c487::t_d4173b5ce9876c 322-325
+packages/cli/src/core/schemas.ts
+  s_df3509a167c487::t_9f5ffa58d389b1 32-37,120,147,284,419,474
+.planning/STATE.md
+  s_df3509a167c487::t_45e529af4986d7 8,13-15,76,82,128-130
+  s_df3509a167c487::t_242850621adf9e 12,80
+  s_df3509a167c487::t_5081d145a4db5a 81
+config.yml
+  h_f90ee31b03fc41 20
+packages/cli/src/render/text-image.test.ts
+  s_df3509a167c487::t_9f5ffa58d389b1 236-273,275-276
+  s_df3509a167c487::t_3695c00998fe16 274
+  s_df3509a167c487::t_b8f524e2e78665 330-343
+AGENTS.md
+  s_df3509a167c487::t_45e529af4986d7 169
+  s_df3509a167c487::t_777b72c347eb67 170
+packages/cli/src/builtin-addons/core-buttons/index.test.ts
+  h_f90ee31b03fc41 1,3-4,6-8,10-16,19,21-22,25,29,34,36,38,42-45,49,55,58,62-66,68-72,76-79,81-83,86,88-91,95-98,102-105,113-116,118,122-125,130-134,140-146,153-159,163-172,176-180,186-192,197-200,202,204,208-209,212,217-223,230,232-238,243-244,247-253,257-260,262-263,266,271-277,286-292,296-300,302,306-307,310,315-320,328-332,334-340,344-348,350,354-355,358,363-368,375-378,380-386,390-393,396,400,403,406,411-416,425-431
+.planning/phases/16-config-reload-wrapper-polish/16-02-SUMMARY.md
+  s_df3509a167c487::t_1fbaa0eb6ea3fc 1-24
+packages/cli/src/render/types.ts
+  s_df3509a167c487::t_9f5ffa58d389b1 13
+  s_df3509a167c487::t_b8f524e2e78665 25
+.planning/phases/16-config-reload-wrapper-polish/16-01-SUMMARY.md
+  s_df3509a167c487::t_1fbaa0eb6ea3fc 1-22
+packages/cli/src/deck/runtime.ts
+  s_df3509a167c487::t_b8f524e2e78665 1-3,43,66,68-91,121-137,162,168-183,197-218,260,268,278-279,308,311,322-323,331-332,364-365,373,378,399,404,495-496,528,540,544-550,583
+  s_df3509a167c487::t_e1029348cdb49d 41-42,536-539,541-543
+packages/cli/src/builtin-addons/date-time/index.test.ts
+  h_f90ee31b03fc41 1-168
+.planning/phases/16-config-reload-wrapper-polish/16-04-SUMMARY.md
+  s_df3509a167c487::t_1fbaa0eb6ea3fc 1-24
+packages/cli/src/config/loader.ts
+  s_df3509a167c487::t_b7039677ab1ab1 3,21-27,143-236,248,262-263,265-267,269-288,291-292,294,296,299-301,346-347,350-351,386-387,390-391
+  s_df3509a167c487::t_0158a433ce9508 289-290,293,297-298,302
+  s_df3509a167c487::t_4a8925731e4665 268
+  s_df3509a167c487::t_e1029348cdb49d 32-38,250,342,366-373,379-383
+packages/cli/src/cli/commands/start.test.ts
+  s_df3509a167c487::t_2b0404a2822225 74-78,117-120,143,159-162
+  s_df3509a167c487::t_b8f524e2e78665 237-258
+  s_df3509a167c487::t_e1029348cdb49d 3,6,11-14,18,46,49,98,138,144,181-234
+packages/cli/src/config/theme.ts
+  s_df3509a167c487::t_d88dfa34dccb4a 2-3,46,48-72,76-77,108-109
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.10",
+  "base_commit_sha": "8a67c8021aaf6487da6cdd667a615af9acdbce1d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
