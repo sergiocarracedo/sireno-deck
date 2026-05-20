@@ -220,6 +220,14 @@ describe("text-image", () => {
     expect(sharedBuffer.equals(plainBuffer)).toBe(false)
   })
 
+  it("renders explicit full-surface text as an observably different path from the base shape", async () => {
+    const baseShapeBuffer = await renderTextImage({ text: "Clock", theme: createTheme(), wrapper: "shared" })
+    const fullSurfaceBuffer = await renderTextImage({ full_surface: true, text: "Clock", theme: createTheme() })
+
+    expect(baseShapeBuffer.equals(fullSurfaceBuffer)).toBe(false)
+    expect(countRegionDiffs(baseShapeBuffer, fullSurfaceBuffer, { height: 52, width: 52, x: 10, y: 10 })).toBeGreaterThan(700)
+  })
+
   it("renders primitive-backed shared accent styling on the shared/default path", async () => {
     const defaultBuffer = await renderTextImage({ text: "Clock", theme: createTheme(), wrapper: "shared" })
     const accentBuffer = await renderTextImage({

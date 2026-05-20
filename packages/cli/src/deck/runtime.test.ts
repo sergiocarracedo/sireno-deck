@@ -1566,6 +1566,59 @@ describe("createDeckRuntime", () => {
     })
   })
 
+  it("keeps explicit full-surface addon-authored render output on runtime render output", async () => {
+    const registry = createBundledAddonRegistry()
+    const displayButtonAddon: SirenoAddon = {
+      apiVersion: 1,
+      buttons: [
+        {
+          configSchema: z.object({ label: z.string().min(1) }),
+          createInstance: ({ button, config }) => ({
+            render: () => createElement("deck-button", {
+              full_surface: true,
+              keyIndex: button.position,
+              label: config.label,
+            }),
+          }),
+          type: "runtime-full-surface",
+        },
+      ],
+      name: "runtime-full-surface-addon",
+    }
+    registry.registerAddon(displayButtonAddon)
+
+    const onRenderDeck = vi.fn()
+    const runtime = createDeckRuntime({
+      addonRegistry: registry,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Clock" },
+          definition: registry.getButton("runtime-full-surface")!,
+          label: "Clock",
+          position: 0,
+          type: "runtime-full-surface",
+        }],
+      },
+      onRenderDeck,
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(onRenderDeck).toHaveBeenCalledWith([
+        {
+          background: "#10161f",
+          full_surface: true,
+          keyIndex: 0,
+          label: "Clock",
+        },
+      ])
+    })
+  })
+
   it("keeps bundled internal toggle state across deck re-activation in the same runtime", async () => {
     const registry = createBundledAddonRegistry()
     let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined

@@ -462,6 +462,58 @@ function buildBaseShapeSvg(options: TextImageOptions, preset: TextImagePreset, t
   `.trim()
 }
 
+function buildFullSurfaceSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
+  const text = options.text ?? ""
+  const safeText = escapeSvgText(text)
+  const background = options.background ?? theme.background
+  const iconMarkup = getIconMarkup(options.icon)
+  const labelY = iconMarkup ? 58 : 42
+  const textElements = [
+    options.subtitle
+      ? buildClippedText({
+          clipHeight: 10,
+          clipId: "full-surface-subtitle",
+          clipWidth: 52,
+          clipX: 10,
+          clipY: 10,
+          fill: mixHexColor(theme.foreground, background, 0.26),
+          role: "auxiliary_text",
+          scale: 0.95,
+          text: escapeSvgText(options.subtitle),
+          theme,
+          x: 10,
+          y: 18,
+        })
+      : null,
+    buildClippedText({
+      clipHeight: options.fit === "wrap" ? 26 : iconMarkup ? 16 : 22,
+      clipId: "full-surface-label",
+      clipWidth: iconMarkup ? 52 : 56,
+      clipX: 8,
+      clipY: iconMarkup ? 46 : 24,
+      fill: theme.foreground,
+      fit: options.fit,
+      lineHeight: 9,
+      role: "main_text",
+      scale: iconMarkup ? 0.98 : 1.5,
+      text: safeText,
+      textAnchor: iconMarkup ? "middle" : "start",
+      theme,
+      x: iconMarkup ? preset.keyWidth / 2 : 8,
+      y: labelY,
+    }),
+  ].filter((element): element is { definition: string; markup: string } => element !== null)
+
+  return `
+    <svg width="${preset.keyWidth}" height="${preset.keyHeight}" viewBox="0 0 ${preset.keyWidth} ${preset.keyHeight}" xmlns="http://www.w3.org/2000/svg">
+      <defs>${textElements.map((element) => element.definition).join("")}</defs>
+      <rect x="0" y="0" width="${preset.keyWidth}" height="${preset.keyHeight}" rx="8" fill="${mixHexColor(background, theme.primary, 0.04)}" />
+      ${iconMarkup}
+      ${textElements.map((element) => element.markup).join("")}
+    </svg>
+  `.trim()
+}
+
 function buildFanSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
   const title = escapeSvgText(options.text ?? "Fan")
   const value = escapeSvgText(options.displayValue ?? "")
@@ -996,6 +1048,10 @@ function buildCalendarSheetSvg(_options: TextImageOptions, preset: TextImagePres
 }
 
 function buildTextSvg(options: TextImageOptions, preset: TextImagePreset, theme: Theme): string {
+  if (options.full_surface) {
+    return buildFullSurfaceSvg(options, preset, theme)
+  }
+
   if (options.variant === "analog-clock") {
     return buildAnalogClockSvg(options, preset, theme)
   }

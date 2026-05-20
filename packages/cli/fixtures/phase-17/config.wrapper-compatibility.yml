@@ -13,6 +13,7 @@ decks:
         type: display-text
         label: Explicit Full Surface
         full_surface: true
+        subtitle: Full Surface
       - position: 2
         type: change-deck
         label: Contrast
