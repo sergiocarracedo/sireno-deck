@@ -39,6 +39,21 @@ export interface StartOptions {
 
 const CONFIG_RELOAD_DEBOUNCE_MS = 75
 
+export function resolvePrimitiveRenderOptions(
+  button: DeckButtonProps,
+  registry: Pick<ReturnType<typeof createBundledAddonRegistry>, "getStylePrimitive" | "getWrapperPrimitive">,
+): { sharedStyleTone?: "accent" | "default"; wrapper?: "shared" } {
+  const sharedStyleTone = button.style_id ? registry.getStylePrimitive(button.style_id)?.shared?.tone : undefined
+  const wrapper = button.full_surface
+    ? undefined
+    : button.wrapper ?? (button.wrapper_id ? registry.getWrapperPrimitive(button.wrapper_id)?.wrapper : undefined)
+
+  return {
+    ...(sharedStyleTone !== undefined ? { sharedStyleTone } : {}),
+    ...(wrapper !== undefined ? { wrapper } : {}),
+  }
+}
+
 export async function loadRuntimeConfig(options: StartOptions) {
   const sessionMonitor = await createSessionMonitor()
 
@@ -210,15 +225,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     let stopWatchingConfig = () => {}
     let reloadInFlight = false
     let reloadQueued = false
-    const resolvePrimitiveRenderOptions = (button: DeckButtonProps) => {
-      const wrapper = button.wrapper ?? (button.wrapper_id ? registry.getWrapperPrimitive(button.wrapper_id)?.wrapper : undefined)
-      const sharedStyleTone = button.style_id ? registry.getStylePrimitive(button.style_id)?.shared?.tone : undefined
-
-      return {
-        ...(sharedStyleTone !== undefined ? { sharedStyleTone } : {}),
-        ...(wrapper !== undefined ? { wrapper } : {}),
-      }
-    }
+    const getPrimitiveRenderOptions = (button: DeckButtonProps) => resolvePrimitiveRenderOptions(button, registry)
     const lifecycle = createStreamDeckLifecycle({
       logger,
       onReconnect: async (connection) => {
@@ -257,13 +264,13 @@ export async function startDaemon(options: StartOptions): Promise<void> {
           fit: button.fit,
           icon: button.icon,
           progress: button.progress,
-          ...resolvePrimitiveRenderOptions(button),
+          ...getPrimitiveRenderOptions(button),
           subtitle: button.subtitle,
           text: button.label,
           theme: runtimeTheme,
           toggleMode: button.toggle_mode,
           variant: button.variant,
-          wrapper: button.wrapper ?? resolvePrimitiveRenderOptions(button).wrapper,
+          wrapper: button.wrapper ?? getPrimitiveRenderOptions(button).wrapper,
         })
         await writeKeyBuffer(activeConnection, button.keyIndex, buffer)
       },
@@ -273,7 +280,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
           return
         }
 
-        await renderMainDeck(activeConnection, buttons, runtimeTheme, resolvePrimitiveRenderOptions, logger)
+        await renderMainDeck(activeConnection, buttons, runtimeTheme, getPrimitiveRenderOptions, logger)
       },
       sessionMonitor: loadedConfig.sessionMonitor,
       subscribeKeyEvents: lifecycle.subscribeKeyEvents,

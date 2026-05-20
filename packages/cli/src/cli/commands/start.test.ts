@@ -256,3 +256,40 @@ describe("createTemporaryConfigErrorLines", () => {
     ])
   })
 })
+
+describe("resolvePrimitiveRenderOptions", () => {
+  it("maps legacy wrapper ids onto the shared wrapper on the shipped render path", async () => {
+    const { resolvePrimitiveRenderOptions } = await import("./start.js")
+
+    expect(resolvePrimitiveRenderOptions(
+      {
+        keyIndex: 0,
+        label: "Clock",
+        style_id: "core-buttons/accent",
+        wrapper_id: "core-buttons/shared-card",
+      },
+      {
+        getStylePrimitive: vi.fn(() => ({ addonName: "core-buttons", id: "core-buttons/accent", name: "accent", shared: { tone: "accent" } })),
+        getWrapperPrimitive: vi.fn(() => ({ addonName: "core-buttons", id: "core-buttons/shared-card", name: "shared-card", wrapper: "shared" })),
+      },
+    )).toEqual({ sharedStyleTone: "accent", wrapper: "shared" })
+  })
+
+  it("does not apply wrapper compatibility when full-surface rendering is explicit", async () => {
+    const { resolvePrimitiveRenderOptions } = await import("./start.js")
+
+    expect(resolvePrimitiveRenderOptions(
+      {
+        full_surface: true,
+        keyIndex: 0,
+        label: "Clock",
+        style_id: "core-buttons/accent",
+        wrapper_id: "core-buttons/shared-card",
+      },
+      {
+        getStylePrimitive: vi.fn(() => ({ addonName: "core-buttons", id: "core-buttons/accent", name: "accent", shared: { tone: "accent" } })),
+        getWrapperPrimitive: vi.fn(() => ({ addonName: "core-buttons", id: "core-buttons/shared-card", name: "shared-card", wrapper: "shared" })),
+      },
+    )).toEqual({ sharedStyleTone: "accent" })
+  })
+})

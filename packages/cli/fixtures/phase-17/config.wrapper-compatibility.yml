@@ -1,0 +1,26 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    buttons:
+      - position: 0
+        type: display-text
+        label: Legacy Wrapper Compatibility
+        wrapper_id: core-buttons/shared-card
+        style_id: core-buttons/accent
+      - position: 1
+        type: display-text
+        label: Explicit Full Surface
+        full_surface: true
+      - position: 2
+        type: change-deck
+        label: Contrast
+        target_deck: contrast
+  contrast:
+    id: contrast
+    buttons:
+      - position: 0
+        type: display-text
+        label: Plain Default Button
+addons: []
