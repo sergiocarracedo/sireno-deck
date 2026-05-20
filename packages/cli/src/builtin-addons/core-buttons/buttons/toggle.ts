@@ -1,6 +1,6 @@
 import { createElement } from 'react'
 import { z } from 'zod'
-import { BuiltinToggleButtonConfigSchema } from '../../../../packages/cli/src/core/schemas'
+import { BuiltinToggleButtonConfigSchema } from '../../../core/schemas.js'
 
 const COMMAND_DRIVEN_TOGGLE_INTERVAL_MS = 1_000
 

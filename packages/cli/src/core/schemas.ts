@@ -124,6 +124,7 @@ export interface ButtonInstance extends AddonButtonEnvelope {
   command?: string
   display_command?: string
   display_mode?: string
+  full_surface?: boolean
   icon?: string
   interval_ms?: number
   label?: string
@@ -146,6 +147,7 @@ export interface DeckConfig {
 const CoreButtonConfigSchema = z.object({
   accent: AccentOverrideSchema.optional(),
   background: z.string().min(1).optional(),
+  full_surface: z.boolean().optional(),
   style_id: z.string().min(1).optional(),
   wrapper_id: z.string().min(1).optional(),
 })
@@ -281,7 +283,7 @@ export function validateBootstrapConfig(data: unknown): BootstrapSirenoConfig {
 
 function getButtonPayload(button: Record<string, unknown>): Record<string, unknown> {
   return Object.fromEntries(
-    Object.entries(button).filter(([key]) => key !== "accent" && key !== "background" && key !== "position" && key !== "style_id" && key !== "type" && key !== "wrapper_id"),
+    Object.entries(button).filter(([key]) => key !== "accent" && key !== "background" && key !== "full_surface" && key !== "position" && key !== "style_id" && key !== "type" && key !== "wrapper_id"),
   )
 }
 
@@ -418,11 +420,22 @@ export function validateConfig(data: unknown, registry: AddonRegistry): SirenoCo
       const parsedCoreButtonConfig = CoreButtonConfigSchema.safeParse({
         accent: parsedButton.data.accent,
         background: parsedButton.data.background,
+        full_surface: parsedButton.data.full_surface,
         style_id: parsedButton.data.style_id,
         wrapper_id: parsedButton.data.wrapper_id,
       })
       if (!parsedCoreButtonConfig.success) {
         throw toConfigValidationError(parsedCoreButtonConfig.error.issues[0], ["decks", deckKey, "buttons", buttonIndex])
+      }
+
+      if (parsedCoreButtonConfig.data.full_surface && parsedCoreButtonConfig.data.wrapper_id) {
+        throw new ConfigValidationError(
+          "`full_surface` cannot be combined with `wrapper_id`",
+          undefined,
+          undefined,
+          `Remove 'wrapper_id' from '${getPathLabel(["decks", deckKey, "buttons", buttonIndex])}' or disable 'full_surface'.`,
+          ["decks", deckKey, "buttons", buttonIndex, "full_surface"],
+        )
       }
 
       if (parsedCoreButtonConfig.data.wrapper_id && registry.getStylePrimitive(parsedCoreButtonConfig.data.wrapper_id)) {
@@ -473,6 +486,7 @@ export function validateConfig(data: unknown, registry: AddonRegistry): SirenoCo
       nextButtons.push({
         ...(parsedCoreButtonConfig.data.accent !== undefined ? { accent: parsedCoreButtonConfig.data.accent } : {}),
         ...(parsedCoreButtonConfig.data.background !== undefined ? { background: parsedCoreButtonConfig.data.background } : {}),
+        ...(parsedCoreButtonConfig.data.full_surface !== undefined ? { full_surface: parsedCoreButtonConfig.data.full_surface } : {}),
         ...(parsedCoreButtonConfig.data.style_id !== undefined ? { style_id: parsedCoreButtonConfig.data.style_id } : {}),
         ...(parsedCoreButtonConfig.data.wrapper_id !== undefined ? { wrapper_id: parsedCoreButtonConfig.data.wrapper_id } : {}),
         position: parsedButton.data.position,

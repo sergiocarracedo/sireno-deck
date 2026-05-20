@@ -737,6 +737,67 @@ describe("loadConfig", () => {
     })
   })
 
+  it("loads explicit full-surface rendering through the core button envelope", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: action",
+        "        label: Clock",
+        "        full_surface: true",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig()
+
+    expect(config.decks.main?.buttons[0]).toMatchObject({
+      config: { label: "Clock" },
+      full_surface: true,
+      label: "Clock",
+    })
+  })
+
+  it("rejects conflicting full-surface and wrapper compatibility config with line information", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: action",
+        "        label: Clock",
+        "        full_surface: true",
+        "        wrapper_id: core-buttons/shared-card",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    try {
+      loadConfig()
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigValidationError)
+      expect((error as ConfigValidationError).message).toContain("`full_surface` cannot be combined with `wrapper_id`")
+      expect((error as ConfigValidationError).lineNumber).toBe(10)
+      expect((error as ConfigValidationError).pathSegments).toEqual(["decks", "main", "buttons", 0, "full_surface"])
+      return
+    }
+
+    throw new Error("Expected conflicting full-surface wrapper config to fail")
+  })
+
   it("rejects invalid accent override values with line information", async () => {
     writeFileSync(
       join(tempDir, "config.yml"),

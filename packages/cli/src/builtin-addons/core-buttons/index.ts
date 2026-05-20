@@ -1,9 +1,9 @@
 import { fileURLToPath } from 'node:url'
 
 import type { SirenoAddon } from '../../addon/api.js'
-import { builtinActionButton } from './src/buttons/action.js'
-import { builtinChangeDeckButton } from './src/buttons/change-deck.js'
-import { builtinToggleButton } from './src/buttons/toggle.js'
+import { builtinActionButton } from './buttons/action.js'
+import { builtinChangeDeckButton } from './buttons/change-deck.js'
+import { builtinToggleButton } from './buttons/toggle.js'
 
 const assets = {
   'clock.svg': fileURLToPath(new URL('../assets/clock.svg', import.meta.url)),
