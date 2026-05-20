@@ -1,5 +1,6 @@
-import { createElement } from 'react'
 import { z } from 'zod'
+
+import { createBaseShapeIconLabelContent } from '../../../addon/api.js'
 
 const BuiltinActionButtonSchema = z
   .object({
@@ -35,7 +36,7 @@ const builtinActionButton = {
     }
   }) => ({
     render: () =>
-      createElement('deck-button', {
+      createBaseShapeIconLabelContent({
         ...(config.icon !== undefined ? { icon: config.icon } : {}),
         keyIndex: button.position,
         label: config.label,

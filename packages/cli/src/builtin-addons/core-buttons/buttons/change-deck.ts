@@ -1,5 +1,6 @@
-import { createElement } from 'react'
 import { z } from 'zod'
+
+import { createBaseShapeIconLabelContent } from '../../../addon/api.js'
 
 const BuiltinChangeDeckButtonSchema = z
   .object({
@@ -24,7 +25,7 @@ const builtinChangeDeckButton = {
       await methods.navigateToDeck(config.target_deck)
     },
     render: () =>
-      createElement('deck-button', {
+      createBaseShapeIconLabelContent({
         ...(config.icon !== undefined ? { icon: config.icon } : {}),
         keyIndex: button.position,
         label: config.label,

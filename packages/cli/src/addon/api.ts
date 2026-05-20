@@ -1,3 +1,5 @@
+import { createElement } from "react"
+
 import type { ReactElement } from "react"
 import type { ZodType } from "zod"
 
@@ -64,6 +66,22 @@ export interface AddonButtonDefinition<TConfig = unknown> {
   createInstance: (options: CreateAddonButtonInstanceOptions<TConfig>) => AddonButtonInstance
   defaultIntervalMs?: number
   type: string
+}
+
+export function createBaseShapeIconLabelContent(props: {
+  icon?: string
+  keyIndex: number
+  label: string
+}): ReactElement {
+  return createElement("deck-button", props)
+}
+
+export function createBaseShapeTextContent(props: {
+  fit?: "shrink" | "wrap"
+  keyIndex: number
+  label: string
+}): ReactElement {
+  return createElement("deck-button", props)
 }
 
 export interface CreateAddonDeckOptions<TConfig> {

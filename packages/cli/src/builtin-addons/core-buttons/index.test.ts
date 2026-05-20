@@ -1,9 +1,30 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { createAddonRegistry } from '../../../packages/cli/src/addon/registry.js'
-import coreButtonsAddon from './src/index.js'
+import { createBaseShapeIconLabelContent, createBaseShapeTextContent } from '../../addon/api.js'
+import { createAddonRegistry } from '../../addon/registry.js'
+import coreButtonsAddon from './index.js'
 
 describe('core-buttons addon', () => {
+  it('exports explicit base-shape content helpers through the public addon API', () => {
+    expect(createBaseShapeIconLabelContent({ icon: './clock.svg', keyIndex: 2, label: 'Clock' })).toMatchObject({
+      props: {
+        icon: './clock.svg',
+        keyIndex: 2,
+        label: 'Clock',
+      },
+      type: 'deck-button',
+    })
+
+    expect(createBaseShapeTextContent({ fit: 'wrap', keyIndex: 3, label: 'Wrapped Label' })).toMatchObject({
+      props: {
+        fit: 'wrap',
+        keyIndex: 3,
+        label: 'Wrapped Label',
+      },
+      type: 'deck-button',
+    })
+  })
+
   it('exports a bundled action button definition with a zod schema', () => {
     expect(coreButtonsAddon.name).toBe('core-buttons')
     expect(coreButtonsAddon.apiVersion).toBe(1)
