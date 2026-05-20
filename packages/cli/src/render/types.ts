@@ -15,6 +15,7 @@ export interface DeckButtonProps {
   detailLines?: string[]
   displayValue?: string
   fit?: DeckTextFit
+  full_surface?: boolean
   keyIndex: number
   label?: string
   icon?: string

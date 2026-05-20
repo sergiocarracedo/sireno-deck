@@ -21,6 +21,7 @@ export interface RenderNode {
   type: "deck-button" | "deck-surface" | "deck-text"
   displayValue?: string
   fit?: "shrink" | "wrap"
+  full_surface?: boolean
   keyIndex?: number
   label?: string
   icon?: string
@@ -41,6 +42,7 @@ export interface RenderDescription {
   detailLines?: string[]
   displayValue?: string
   fit?: "shrink" | "wrap"
+  full_surface?: boolean
   keyIndex: number
   label?: string
   icon?: string
@@ -143,6 +145,7 @@ const hostConfig: ReactReconciler.HostConfig<
         detailLines: props.detailLines,
         displayValue: props.displayValue,
         fit: props.fit,
+        full_surface: props.full_surface,
         label: props.label,
         icon: props.icon,
         progress: props.progress,
@@ -177,6 +180,7 @@ const hostConfig: ReactReconciler.HostConfig<
           detailLines: button.detailLines,
           displayValue: button.displayValue,
           fit: button.fit,
+          full_surface: button.full_surface,
           icon: button.icon,
           keyIndex: button.keyIndex,
           label: button.label,
@@ -265,6 +269,7 @@ const hostConfig: ReactReconciler.HostConfig<
       instance.detailLines = newProps.detailLines
       instance.displayValue = newProps.displayValue
       instance.fit = newProps.fit
+      instance.full_surface = newProps.full_surface
       instance.label = newProps.label
       instance.icon = newProps.icon
       instance.progress = newProps.progress
@@ -294,6 +299,7 @@ const hostConfig: ReactReconciler.HostConfig<
         detailLines: button.detailLines,
         displayValue: button.displayValue,
         fit: button.fit,
+        full_surface: button.full_surface,
         label: button.label,
         icon: button.icon,
         progress: button.progress,
@@ -366,6 +372,7 @@ function collectRenderDescriptions(nodes: readonly RenderNode[]): RenderDescript
         ...(node.detailLines !== undefined ? { detailLines: node.detailLines } : {}),
         ...(node.displayValue !== undefined ? { displayValue: node.displayValue } : {}),
         ...(node.fit !== undefined ? { fit: node.fit } : {}),
+        ...(node.full_surface !== undefined ? { full_surface: node.full_surface } : {}),
         ...(node.icon !== undefined ? { icon: node.icon } : {}),
         ...(node.label !== undefined ? { label: node.label } : {}),
         ...(node.progress !== undefined ? { progress: node.progress } : {}),

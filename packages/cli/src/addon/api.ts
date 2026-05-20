@@ -12,12 +12,16 @@ export interface AddonButtonEnvelope {
   type: string
 }
 
+export interface AddonButtonSurfaceContract {
+  full_surface?: boolean
+}
+
 export interface AddonDeckEnvelope {
   id: string
   type: string
 }
 
-export interface AddonGeneratedButton extends AddonButtonEnvelope {
+export interface AddonGeneratedButton extends AddonButtonEnvelope, AddonButtonSurfaceContract {
   [key: string]: unknown
 }
 

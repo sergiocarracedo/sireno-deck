@@ -213,6 +213,38 @@ describe("render reconciler", () => {
     expect(descriptions).toEqual([{ fit: "wrap", keyIndex: 4, label: "Long Label", wrapper: "shared" }])
   })
 
+  it("threads explicit full-surface props through render descriptions", () => {
+    const descriptions = renderDeck(
+      createDeckButtonElement({ full_surface: true, keyIndex: 4, label: "Custom Surface" }),
+    )
+
+    expect(descriptions).toEqual([{ full_surface: true, keyIndex: 4, label: "Custom Surface" }])
+  })
+
+  it("keeps helper-authored and JSX-authored full-surface output in parity", () => {
+    const helperDescriptions = renderDeck(
+      createDeckButtonElement({ full_surface: true, keyIndex: 9, label: "Custom Surface" }),
+    )
+    const jsxDescriptions = renderDeck(
+      <deck-button full_surface keyIndex={9} label="Custom Surface" />,
+    )
+
+    expect(jsxDescriptions).toEqual(helperDescriptions)
+  })
+
+  it("threads full-surface flags through deck-surface button collections", () => {
+    const descriptions = renderDeck(
+      createDeckSurfaceElement({
+        buttons: [
+          { keyIndex: 0, label: "Deck" },
+          { full_surface: true, keyIndex: 1, label: "Custom Surface" },
+        ],
+      }),
+    )
+
+    expect(descriptions).toContainEqual({ full_surface: true, keyIndex: 1, label: "Custom Surface" })
+  })
+
   it("threads primitive ids through direct deck-button descriptions", () => {
     const descriptions = renderDeck(
       createDeckButtonElement({
