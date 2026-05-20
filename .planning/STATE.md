@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 Phase: 17 — Custom Wrapper Primitives + Addon-Authored Rendering Variants
 Plan: 17-01 through 17-03 drafted
 Status: planning_complete
-Last activity: 2026-05-20 - Executed Plan 17-01 by shipping the full-surface contract, preserving wrapper compatibility, and adding a CLI-visible Phase 17 review fixture
+Last activity: 2026-05-20 - Executed Plan 17-02 by extracting the base-shape renderer and moving low-risk bundled buttons onto explicit helper-backed content composition
 
 Progress: [##########] 100%
 
