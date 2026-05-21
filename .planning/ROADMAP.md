@@ -152,14 +152,38 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ### Phase 17: Custom Wrapper Primitives + Addon-Authored Rendering Variants
 
-**Status:** [ ] Not started
+**Status:** Verifying
 
-**Goal:** Addons can define custom wrapper primitives that map to addon-authored rendering variants instead of being limited to the built-in shared wrapper path.
+**Goal:** The shared/default path becomes one core-owned base button shape applied by default, addons compose explicit content helpers inside that shape, and custom visuals can explicitly opt out to render the full surface themselves.
 
 **Depends on:** Phase 16
 
 ### Plans
-*Not yet planned — run `plan-phase 17`*
+- `17-01`: Establish the base-shape contract and compatibility boundary
+- `17-02`: Extract the core base shape and migrate the first helper consumers
+- `17-03`: Prove the escape hatch and finish the planning state transition
+- `17-04`: Close the real CLI/device full-surface transport gap from UAT
+
+**Success criteria:**
+- [ ] Default text-oriented buttons use one core-owned base shape unless they explicitly opt out
+- [ ] The first rollout ships explicit `icon + label` and `text` content helpers instead of hidden renderer conventions
+- [ ] Already-shipped `wrapper_id` config remains compatible during the terminology shift
+- [ ] Full-surface custom rendering is explicit and reviewable, while bespoke variants stay on their current seams
+
+**Phase 17 note:** This phase is intentionally narrower than the original roadmap wording. It does not introduce a public `shape_id` catalog or migrate every bespoke variant. It turns the current shared/default card into an explicit base-shape contract, keeps legacy wrapper refs as first-rollout compatibility, and adds one honest full-surface escape hatch. A focused gap-closure slice (`17-04`) now forwards `full_surface` through the shipped CLI/device path; the phase remains in verifying status until manual UAT is rerun on the real surface.
+
+**Research needed:** No — the Phase 17 research and context now narrow the contract enough for execution planning.
+
+---
+
+### Phase 18: React DOM-Based Renderer With HTML/CSS Surface Support
+
+**Goal:** Replace the current pure-SVG render system with a React HTML/CSS DOM-based renderer that can support any surface HTML can express, including richer media such as GIFs and video.
+**Status:** [ ] Not started
+**Depends on:** Phase 17
+
+### Plans
+*Not yet planned — run `plan-phase 18`*
 
 ---
 

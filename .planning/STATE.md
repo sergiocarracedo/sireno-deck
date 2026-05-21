@@ -74,6 +74,7 @@ Recent decisions affecting current work:
 
 - Phase 16 added: config hot-reload, external deck-file references, wrapper label removal, and customizable wrapper accent colors.
 - Phase 17 added: custom wrapper primitives with addon-authored rendering variants.
+- Phase 18 added: React DOM-based renderer with HTML/CSS surface support, including richer media such as GIFs and video.
 - Phase 16 executed: deck-only `@path` references, watched config graph reloads, shared-wrapper footer removal, narrow `accent` overrides, and runtime-owned invalid-reload fallback are all implemented and verified.
 
 ### Progress Notes
