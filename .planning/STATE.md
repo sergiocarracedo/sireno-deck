@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 18 context is captured for the React DOM renderer contract; next up is Phase 18 planning.
+**Current focus:** Phase 18 execution is in progress; Wave 1 shipped the first browser-backed DOM action/change-deck path with `buttonFrame` and a real device-review fixture.
 
 ## Current Position
 
 Phase: 18 — React DOM-Based Renderer With HTML/CSS Surface Support
-Plan: context captured
-Status: discussing complete
-Last activity: 2026-05-21 - Captured Phase 18 context for the hard switch to browser-backed React HTML/CSS button components and `buttonFrame`
+Plan: 18-01 complete
+Status: executing
+Last activity: 2026-05-21 - Completed Plan 18-01 with the first browser-backed DOM button path, persistent renderer seam, and Phase 18 UAT fixture
 
 Progress: [##########] 100%
 
@@ -86,6 +86,7 @@ Recent decisions affecting current work:
 - **Phase 17 planning:** Broke the phase into three slices: contract and compatibility first, core base-shape plus helper extraction second, and reviewable default-vs-full-surface proof third.
 - **Plan 17-04:** Closed the Phase 17 UAT regression by forwarding `full_surface` through the shipped CLI/device render path, preserving config-authored surface metadata across builtin runtime re-renders, and passing the real-device rerun.
 - **Phase 18 discussion:** Captured the hard switch to browser-backed DOM button components, one persistent deck page, sampled media rendering, latest-state capture coalescing, and a core-owned React `buttonFrame` that wraps by default unless `full_surface: true`.
+- **Plan 18-01:** Added the persistent browser renderer seam, the real `buttonFrame` + DOM host, the first shipped DOM-backed `action` / `change-deck` path, and a committed Phase 18 browser-rendered UAT fixture while keeping runtime ownership in place.
 - **Phase 16 discussion:** Captured deck-only file references with owning-file-relative path resolution, root-plus-ref hot-reload, built-in temporary error-deck fallback on invalid reload, stack-preserving successful reload restore, full runtime instance rebuild on reload, shared-wrapper footer removal, and narrow per-button accent overrides accepting tokens or raw colors.
 - **Phase 10 kickoff:** Milestone audit found that the documented addon authoring entrypoints do not line up with the built `packages/cli` exports, so release flow needs a gap-closure phase before `/review`.
 - **Milestone v1.2 kickoff:** Captured session-context, layered background, text fitting, global wrapper/style, richer toggle, and lock-aware deck requirements plus the five-phase roadmap that sequences contract work before user-facing polish.
