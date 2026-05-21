@@ -1,6 +1,6 @@
 import { createElement } from "react"
 
-import type { ReactElement } from "react"
+import type { ReactElement, ReactNode } from "react"
 import type { ZodType } from "zod"
 
 import type { CommandExecutionResult } from "../action/executor.js"
@@ -50,7 +50,19 @@ export interface AddonButtonInstance {
   onRelease?: () => Promise<void> | void
   onTap?: () => Promise<void> | void
   refresh?: () => Promise<void> | void
-  render: () => ReactElement
+  render: () => AddonButtonRenderResult
+}
+
+export interface AddonDomButtonRender extends AddonButtonSurfaceContract {
+  content: ReactElement
+  keyIndex: number
+}
+
+export type AddonButtonRenderResult = AddonDomButtonRender | ReactElement
+
+export interface CreateAddonDomButtonRenderOptions extends AddonButtonSurfaceContract {
+  content: ReactElement
+  keyIndex: number
 }
 
 export interface CreateAddonButtonInstanceOptions<TConfig> {
@@ -66,6 +78,42 @@ export interface AddonButtonDefinition<TConfig = unknown> {
   createInstance: (options: CreateAddonButtonInstanceOptions<TConfig>) => AddonButtonInstance
   defaultIntervalMs?: number
   type: string
+}
+
+export function createDomButtonRender(options: CreateAddonDomButtonRenderOptions): AddonDomButtonRender {
+  return {
+    content: options.content,
+    ...(options.full_surface !== undefined ? { full_surface: options.full_surface } : {}),
+    keyIndex: options.keyIndex,
+  }
+}
+
+export function isAddonDomButtonRender(value: unknown): value is AddonDomButtonRender {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "content" in value &&
+    "keyIndex" in value &&
+    typeof (value as AddonDomButtonRender).keyIndex === "number"
+  )
+}
+
+export function createDomTextLabel(props: {
+  children: ReactNode
+}): ReactElement {
+  return createElement("span", {
+    children: props.children,
+    style: {
+      color: "#eef2f7",
+      display: "block",
+      fontFamily: "IBM Plex Sans, sans-serif",
+      fontSize: "12px",
+      fontWeight: 700,
+      letterSpacing: "0.01em",
+      lineHeight: 1.2,
+      textAlign: "center",
+    },
+  })
 }
 
 export function createBaseShapeIconLabelContent(props: {
