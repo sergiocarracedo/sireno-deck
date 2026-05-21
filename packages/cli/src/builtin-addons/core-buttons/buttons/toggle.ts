@@ -1,8 +1,98 @@
+import { existsSync, readFileSync } from 'node:fs'
+import { extname } from 'node:path'
+
 import { createElement } from 'react'
 import { z } from 'zod'
+
+import { createDomButtonRender, createDomTextLabel } from '../../../addon/api.js'
 import { BuiltinToggleButtonConfigSchema } from '../../../core/schemas.js'
 
 const COMMAND_DRIVEN_TOGGLE_INTERVAL_MS = 1_000
+
+function getMimeType(iconPath: string): string {
+  switch (extname(iconPath).toLowerCase()) {
+    case '.jpg':
+    case '.jpeg':
+      return 'image/jpeg'
+    case '.svg':
+      return 'image/svg+xml'
+    case '.webp':
+      return 'image/webp'
+    default:
+      return 'image/png'
+  }
+}
+
+function getInlineImageSource(iconPath: string | undefined): string | undefined {
+  if (!iconPath || !existsSync(iconPath)) {
+    return undefined
+  }
+
+  return `data:${getMimeType(iconPath)};base64,${readFileSync(iconPath).toString('base64')}`
+}
+
+function createToggleContent(options: {
+  icon?: string
+  label?: string
+  mode: 'get-set' | 'internal' | 'toggle-status'
+  state: 'error' | 'off' | 'on' | 'pending'
+  subtitle?: string
+}) {
+  const stateTone =
+    options.state === 'on'
+      ? '#34d399'
+      : options.state === 'off'
+        ? '#64748b'
+        : options.state === 'error'
+          ? '#fb7185'
+          : '#7dd3fc'
+
+  return createElement('div', {
+    'data-sireno-toggle-mode': options.mode,
+    'data-sireno-toggle-state': options.state,
+    style: {
+      alignItems: 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '6px',
+      justifyContent: 'center',
+      width: '100%',
+    },
+  },
+  createElement('div', {
+    style: {
+      background: stateTone,
+      borderRadius: '999px',
+      boxShadow: `0 0 0 3px color-mix(in srgb, ${stateTone} 24%, transparent)`,
+      height: '10px',
+      width: '10px',
+    },
+  }),
+  getInlineImageSource(options.icon)
+    ? createElement('img', {
+      alt: '',
+      src: getInlineImageSource(options.icon),
+      style: { height: '20px', objectFit: 'contain', width: '20px' },
+    })
+    : null,
+  options.label
+    ? createElement('span', null, createDomTextLabel({ children: options.label }))
+    : null,
+  options.subtitle
+    ? createElement('span', {
+      style: {
+        color: stateTone,
+        display: 'block',
+        fontFamily: 'IBM Plex Sans, sans-serif',
+        fontSize: '10px',
+        fontWeight: 700,
+        letterSpacing: '0.08em',
+        lineHeight: 1,
+        textAlign: 'center',
+      },
+    }, options.subtitle)
+    : null)
+}
 
 const builtinToggleButton = {
   configSchema: BuiltinToggleButtonConfigSchema,
@@ -55,13 +145,20 @@ const builtinToggleButton = {
           currentState = currentState === 'on' ? 'off' : 'on'
           methods.invalidate()
         },
-        render: () =>
-          createElement('deck-button', {
+        render: () => {
+          const stateProps = getStateProps(currentState)
+
+          return createDomButtonRender({
+            content: createToggleContent({
+              icon: stateProps.icon,
+              label: stateProps.label,
+              mode: 'internal',
+              state: currentState,
+              subtitle: stateProps.subtitle,
+            }),
             keyIndex: button.position,
-            ...getStateProps(currentState),
-            toggle_mode: 'internal',
-            variant: 'toggle',
-          }),
+          })
+        },
       }
     }
 
@@ -157,19 +254,31 @@ const builtinToggleButton = {
       refresh: async () => {
         await syncAuthoritativeState()
       },
-      render: () =>
-        createElement('deck-button', {
+      render: () => {
+        const stateProps = getStateProps(lastKnownState)
+        const visualState =
+          displayState === 'known-on'
+            ? 'on'
+            : displayState === 'known-off'
+              ? 'off'
+              : displayState
+
+        return createDomButtonRender({
+          content: createToggleContent({
+            icon: stateProps.icon,
+            label: stateProps.label,
+            mode: config.mode,
+            state: visualState,
+            subtitle:
+              displayState === 'pending'
+                ? 'PENDING'
+                : displayState === 'error'
+                  ? 'ERROR'
+                  : stateProps.subtitle,
+          }),
           keyIndex: button.position,
-          ...getStateProps(lastKnownState),
-          subtitle:
-            displayState === 'pending'
-              ? 'PENDING'
-              : displayState === 'error'
-                ? 'ERROR'
-                : getStateProps(lastKnownState).subtitle,
-          toggle_mode: config.mode,
-          variant: 'toggle',
-        }),
+        })
+      },
     }
   },
   type: 'toggle',

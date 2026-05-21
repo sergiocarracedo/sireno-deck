@@ -166,4 +166,30 @@ describe('date-time addon', () => {
 
     vi.useRealTimers()
   })
+
+  it('renders updated live time content on subsequent renders', () => {
+    const definition = dateTimeAddon.buttons.find(
+      (button) => button.type === 'date-time',
+    )
+    const instance = definition?.createInstance({
+      button: { position: 1 },
+      config: {
+        date_format: 'MM/DD/YYYY',
+        time_format: 'HH:mm:ss',
+        variant: 'time',
+      },
+    } as never)
+
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 4, 14, 10, 48, 7))
+    const firstRender = renderReactNodeToHtml(instance?.render().content)
+
+    vi.setSystemTime(new Date(2026, 4, 14, 10, 48, 8))
+    const secondRender = renderReactNodeToHtml(instance?.render().content)
+
+    expect(firstRender).toContain('10:48:07')
+    expect(secondRender).toContain('10:48:08')
+
+    vi.useRealTimers()
+  })
 })

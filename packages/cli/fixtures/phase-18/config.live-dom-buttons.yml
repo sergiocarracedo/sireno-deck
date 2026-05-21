@@ -1,0 +1,63 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    name: Live DOM Buttons
+    buttons:
+      - position: 0
+        type: toggle
+        mode: internal
+        label: Studio Lamp
+        off:
+          subtitle: OFF
+        on:
+          subtitle: ON
+      - position: 1
+        type: toggle
+        mode: get-set
+        label: Desk Fan
+        get_state_command: "printf 'off'"
+        set_on_command: "printf 'on'"
+        set_off_command: "printf 'off'"
+        on:
+          subtitle: ON
+        off:
+          subtitle: OFF
+      - position: 2
+        type: date-time
+        variant: time
+      - position: 3
+        type: analog-clock
+      - position: 4
+        type: calendar-sheet
+      - position: 5
+        type: change-deck
+        label: Tools
+        target_deck: tools
+
+  tools:
+    id: tools
+    name: Live DOM Tools
+    buttons:
+      - position: 0
+        type: toggle
+        mode: toggle-status
+        label: Office Audio
+        toggle_command: "printf 'toggle'"
+        status_command: "printf 'on'"
+        on:
+          subtitle: ON
+        off:
+          subtitle: OFF
+      - position: 1
+        type: date-time
+        variant: date-time
+      - position: 2
+        type: change-deck
+        label: Back Main
+        target_deck: main
+
+addons: []
+logging:
+  level: info

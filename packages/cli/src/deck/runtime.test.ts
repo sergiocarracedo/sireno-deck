@@ -71,6 +71,15 @@ function getRenderedDomText(button: { content?: unknown }): string {
   return renderReactNodeToHtml(button.content as Parameters<typeof renderReactNodeToHtml>[0])
 }
 
+function expectRuntimeDomContent(button: { background?: string; content?: unknown; keyIndex: number }, expectedText: string, expectedAttributes: string[] = []): void {
+  expect(button).toMatchObject({ background: "#10161f" })
+  const html = getRenderedDomText(button)
+  expect(html).toContain(expectedText)
+  for (const attribute of expectedAttributes) {
+    expect(html).toContain(attribute)
+  }
+}
+
 describe("createDeckRuntime", () => {
   it("renders a bundled addon-backed button through the generic runtime host", async () => {
     const onRenderDeck = vi.fn()
@@ -818,7 +827,7 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "internal", variant: "toggle" })
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "Lamp", ['data-sireno-toggle-state="off"'])
     })
 
     expect(createScheduler).not.toHaveBeenCalled()
@@ -1695,14 +1704,14 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "internal", variant: "toggle" })
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "Lamp", ['data-sireno-toggle-state="off"'])
     })
 
     emitEvent?.({ keyIndex: 0, type: "down" })
     emitEvent?.({ keyIndex: 0, type: "up" })
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" })
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "Lamp", ['data-sireno-toggle-state="on"'])
     })
 
     emitEvent?.({ keyIndex: 1, type: "down" })
@@ -1717,7 +1726,7 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("main")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" })
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "Lamp", ['data-sireno-toggle-state="on"'])
     })
   })
 
@@ -1745,20 +1754,20 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "internal", variant: "toggle" })
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "Lamp", ['data-sireno-toggle-state="off"'])
     })
 
     emitEvent?.({ keyIndex: 0, type: "down" })
     emitEvent?.({ keyIndex: 0, type: "up" })
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" })
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "Lamp", ['data-sireno-toggle-state="on"'])
     })
 
     await runtime.activateCurrentDeck()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" })
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "Lamp", ['data-sireno-toggle-state="on"'])
     })
   })
 
@@ -1824,7 +1833,7 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "PENDING", toggle_mode: "get-set", variant: "toggle" })
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "PENDING", ['data-sireno-toggle-mode="get-set"', 'data-sireno-toggle-state="pending"'])
     })
 
     emitEvent?.({ keyIndex: 0, type: "down" })
@@ -1838,7 +1847,7 @@ describe("createDeckRuntime", () => {
     await schedulerTask?.()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "get-set", variant: "toggle" })
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "OFF", ['data-sireno-toggle-mode="get-set"', 'data-sireno-toggle-state="off"'])
     })
 
     emitEvent?.({ keyIndex: 0, type: "down" })
@@ -1846,7 +1855,7 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(executeAction).toHaveBeenCalledWith("turn-on-lamp")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "get-set", variant: "toggle" })
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "ON", ['data-sireno-toggle-mode="get-set"', 'data-sireno-toggle-state="on"'])
     })
   })
 
@@ -1894,7 +1903,7 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "toggle-status", variant: "toggle" })
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "OFF", ['data-sireno-toggle-mode="toggle-status"', 'data-sireno-toggle-state="off"'])
     })
 
     emitEvent?.({ keyIndex: 0, type: "down" })
@@ -1902,7 +1911,7 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(executeAction.mock.calls.map((call) => call[0])).toEqual(["read-lamp", "toggle-lamp", "read-lamp"])
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "toggle-status", variant: "toggle" })
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "ON", ['data-sireno-toggle-mode="toggle-status"', 'data-sireno-toggle-state="on"'])
     })
   })
 
@@ -1955,7 +1964,7 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "PENDING", toggle_mode: "toggle-status", variant: "toggle" })
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "PENDING", ['data-sireno-toggle-mode="toggle-status"', 'data-sireno-toggle-state="pending"'])
     })
 
     emitEvent?.({ keyIndex: 0, type: "down" })
@@ -1964,7 +1973,7 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(executeAction.mock.calls.map((call) => call[0])).toContain("toggle-lamp")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "toggle-status", variant: "toggle" })
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "OFF", ['data-sireno-toggle-mode="toggle-status"', 'data-sireno-toggle-state="off"'])
     })
   })
 
@@ -2008,10 +2017,42 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "get-set", variant: "toggle" })
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "OFF", ['data-sireno-toggle-mode="get-set"', 'data-sireno-toggle-state="off"'])
     })
 
-    expect(onRenderButton).toHaveBeenCalledWith({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "get-set", variant: "toggle" })
-    expect(onRenderDeck).toHaveBeenCalledWith([{ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "get-set", variant: "toggle" }])
+    expect(onRenderButton).toHaveBeenCalledWith(expect.objectContaining({ background: "#10161f", keyIndex: 0, content: expect.anything() }))
+    expect(onRenderDeck).toHaveBeenCalledWith([expect.objectContaining({ background: "#10161f", keyIndex: 0, content: expect.anything() })])
+  })
+
+  it("re-renders the full DOM deck surface when a live DOM button invalidates itself", async () => {
+    const registry = createBundledAddonRegistry()
+    const onRenderDeck = vi.fn()
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Lamp", mode: "internal", off: { subtitle: "OFF" }, on: { subtitle: "ON" } },
+          definition: registry.getButton("toggle")!,
+          position: 0,
+          type: "toggle",
+        }],
+      },
+      onRenderDeck,
+      subscribeKeyEvents: (listener) => {
+        queueMicrotask(() => {
+          listener({ keyIndex: 0, type: "down" })
+          listener({ keyIndex: 0, type: "up" })
+        })
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(onRenderDeck).toHaveBeenCalledTimes(2)
+      expectRuntimeDomContent(runtime.getRenderButtons()[0]!, "ON", ['data-sireno-toggle-state="on"'])
+    })
   })
 })

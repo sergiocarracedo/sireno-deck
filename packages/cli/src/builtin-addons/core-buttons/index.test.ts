@@ -144,16 +144,14 @@ describe('core-buttons addon', () => {
       methods: { invalidate: vi.fn() },
     } as never)
 
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 6,
-        label: 'Desk Lamp',
-        subtitle: 'ON',
-        toggle_mode: 'internal',
-        variant: 'toggle',
-      },
-      type: 'deck-button',
-    })
+    const renderResult = instance?.render()
+
+    expect(isAddonDomButtonRender(renderResult)).toBe(true)
+    expect(renderResult).toMatchObject({ keyIndex: 6 })
+    expect(renderReactNodeToHtml(renderResult?.content)).toContain('data-sireno-toggle-mode="internal"')
+    expect(renderReactNodeToHtml(renderResult?.content)).toContain('data-sireno-toggle-state="on"')
+    expect(renderReactNodeToHtml(renderResult?.content)).toContain('Desk Lamp')
+    expect(renderReactNodeToHtml(renderResult?.content)).toContain('ON')
   })
 
   it('toggles internal state and invalidates on tap', async () => {
@@ -173,28 +171,14 @@ describe('core-buttons addon', () => {
       methods: { invalidate },
     } as never)
 
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 7,
-        label: 'Desk Lamp',
-        subtitle: 'OFF',
-        toggle_mode: 'internal',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-toggle-state="off"')
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('OFF')
 
     await instance?.onTap?.()
 
     expect(invalidate).toHaveBeenCalledTimes(1)
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 7,
-        label: 'Desk Lamp',
-        subtitle: 'ON',
-        toggle_mode: 'internal',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-toggle-state="on"')
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('ON')
   })
 
   it('keeps get-set toggles pending until the first authoritative read', () => {
@@ -219,15 +203,10 @@ describe('core-buttons addon', () => {
       methods: { invalidate: vi.fn(), runCommand },
     } as never)
 
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 8,
-        label: 'Desk Lamp',
-        subtitle: 'PENDING',
-        toggle_mode: 'get-set',
-        variant: 'toggle',
-      },
-    })
+    expect(isAddonDomButtonRender(instance?.render())).toBe(true)
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-toggle-mode="get-set"')
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-toggle-state="pending"')
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('PENDING')
     expect(runCommand).not.toHaveBeenCalled()
   })
 
@@ -265,30 +244,16 @@ describe('core-buttons addon', () => {
     await instance?.onActivate?.()
 
     expect(runCommand).toHaveBeenCalledWith('read-lamp')
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 9,
-        label: 'Desk Lamp',
-        subtitle: 'OFF',
-        toggle_mode: 'get-set',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-toggle-state="off"')
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('OFF')
 
     await instance?.onTap?.()
 
     expect(runCommand).toHaveBeenCalledWith('turn-on-lamp')
     expect(runCommand).toHaveBeenLastCalledWith('read-lamp')
     expect(invalidate).toHaveBeenCalled()
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 9,
-        label: 'Desk Lamp',
-        subtitle: 'ON',
-        toggle_mode: 'get-set',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-toggle-state="on"')
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('ON')
   })
 
   it('preserves the last authoritative truth and shows error on get-set write failure', async () => {
@@ -319,15 +284,8 @@ describe('core-buttons addon', () => {
     await instance?.onActivate?.()
     await instance?.onTap?.()
 
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 10,
-        label: 'Desk Lamp',
-        subtitle: 'ERROR',
-        toggle_mode: 'get-set',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-toggle-state="error"')
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('ERROR')
   })
 
   it('reconciles toggle-status writes through status_command instead of local inversion', async () => {
@@ -367,15 +325,9 @@ describe('core-buttons addon', () => {
       'toggle-lamp',
       'read-lamp',
     ])
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 11,
-        label: 'Desk Lamp',
-        subtitle: 'ON',
-        toggle_mode: 'toggle-status',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-toggle-mode="toggle-status"')
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-toggle-state="on"')
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('ON')
   })
 
   it('allows toggle-status taps before the first authoritative read has resolved', async () => {
@@ -413,15 +365,8 @@ describe('core-buttons addon', () => {
       'toggle-lamp',
       'read-lamp',
     ])
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 12,
-        label: 'Desk Lamp',
-        subtitle: 'OFF',
-        toggle_mode: 'toggle-status',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-toggle-state="off"')
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('OFF')
   })
 
   it('preserves last authoritative truth and shows error when toggle-status reconciliation fails', async () => {
@@ -458,14 +403,7 @@ describe('core-buttons addon', () => {
     await instance?.onActivate?.()
     await instance?.onTap?.()
 
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 13,
-        label: 'Desk Lamp',
-        subtitle: 'ERROR',
-        toggle_mode: 'toggle-status',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-toggle-state="error"')
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('ERROR')
   })
 })
