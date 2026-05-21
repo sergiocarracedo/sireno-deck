@@ -29,6 +29,7 @@
     "execa": "^9.5.2",
     "js-yaml": "^4.1.0",
     "pino": "^9.0.0",
+    "playwright": "^1.55.0",
     "react": "^19.2.6",
     "react-reconciler": "^0.33.0",
     "sharp": "^0.34.5",
