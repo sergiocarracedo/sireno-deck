@@ -1,0 +1,32 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    name: Browser Rendered Main
+    buttons:
+      - position: 0
+        type: action
+        label: Run Clock
+        command: "printf 'clock'"
+      - position: 1
+        type: change-deck
+        label: Go Tools
+        target_deck: tools
+
+  tools:
+    id: tools
+    name: Browser Rendered Tools
+    buttons:
+      - position: 0
+        type: action
+        label: Run Tool
+        command: "printf 'tool'"
+      - position: 1
+        type: change-deck
+        label: Back Main
+        target_deck: main
+
+addons: []
+logging:
+  level: info

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const watch = vi.fn()
+const createBrowserRenderer = vi.fn()
 const createBundledAddonRegistry = vi.fn(() => ({ bundled: true }))
 const loadBootstrapConfig = vi.fn()
 const loadConfigWithSources = vi.fn()
@@ -20,6 +21,10 @@ vi.mock("../../config/loader.js", () => ({
 
 vi.mock("../../addon/loader.js", () => ({
   loadConfiguredAddons,
+}))
+
+vi.mock("../../render/browser-renderer.js", () => ({
+  createBrowserRenderer,
 }))
 
 vi.mock("../../system/host-context.js", () => ({
@@ -44,6 +49,7 @@ describe("loadRuntimeConfig", () => {
 
   beforeEach(() => {
     watch.mockReset()
+    createBrowserRenderer.mockReset()
     createBundledAddonRegistry.mockClear()
     loadBootstrapConfig.mockReset()
     loadConfigWithSources.mockReset()
@@ -314,5 +320,14 @@ describe("createRenderTextImageOptions", () => {
       text: "Explicit Full Surface",
       wrapper: undefined,
     })
+  })
+})
+
+describe("isDomRenderButton", () => {
+  it("detects runtime render outputs that carry DOM content", async () => {
+    const { isDomRenderButton } = await import("./start.js")
+
+    expect(isDomRenderButton({ content: { type: 'div' }, keyIndex: 0 } as never)).toBe(true)
+    expect(isDomRenderButton({ keyIndex: 0, label: 'Clock' })).toBe(false)
   })
 })

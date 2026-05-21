@@ -12,33 +12,6 @@ importers:
         specifier: ^3.0.0
         version: 3.2.4(@types/node@22.19.19)(tsx@4.22.0)
 
-  builtin-addons/core-buttons:
-    dependencies:
-      react:
-        specifier: ^19.2.6
-        version: 19.2.6
-      zod:
-        specifier: ^3.24.0
-        version: 3.25.76
-
-  builtin-addons/date-time:
-    dependencies:
-      react:
-        specifier: ^19.2.6
-        version: 19.2.6
-      zod:
-        specifier: ^3.24.0
-        version: 3.25.76
-
-  builtin-addons/emoji-selector:
-    dependencies:
-      react:
-        specifier: ^19.2.6
-        version: 19.2.6
-      zod:
-        specifier: ^3.24.0
-        version: 3.25.76
-
   packages/cli:
     dependencies:
       '@elgato-stream-deck/node':
@@ -56,6 +29,9 @@ importers:
       pino:
         specifier: ^9.0.0
         version: 9.14.0
+      playwright:
+        specifier: ^1.55.0
+        version: 1.60.0
       react:
         specifier: ^19.2.6
         version: 19.2.6
@@ -1492,6 +1468,11 @@ packages:
   fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
 
+  fsevents@2.3.2:
+    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
+    os: [darwin]
+
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -1852,6 +1833,16 @@ packages:
   pkg-prebuilds@1.0.0:
     resolution: {integrity: sha512-D9wlkXZCmjxj2kBHTw3fGSyjoahr33breGBoJcoezpi7ouYS59DJVOHMZ+dgqacSrZiJo4qtkXxLQTE+BqXJmQ==}
     engines: {node: '>= 14.15.0'}
+    hasBin: true
+
+  playwright-core@1.60.0:
+    resolution: {integrity: sha512-9bW6zvX/m0lEbgTKJ6YppOKx8H3VOPBMOCFh2irXFOT4BbHgrx5hPjwJYLT40Lu+4qtD36qKc/Hn56StUW57IA==}
+    engines: {node: '>=18'}
+    hasBin: true
+
+  playwright@1.60.0:
+    resolution: {integrity: sha512-hheHdokM8cdqCb0lcE3s+zT4t4W+vvjpGxsZlDnikarzx8tSzMebh3UiFtgqwFwnTnjYQcsyMF8ei2mCO/tpeA==}
+    engines: {node: '>=18'}
     hasBin: true
 
   postcss@8.5.14:
@@ -3429,6 +3420,9 @@ snapshots:
   fs.realpath@1.0.0:
     optional: true
 
+  fsevents@2.3.2:
+    optional: true
+
   fsevents@2.3.3:
     optional: true
 
@@ -3819,6 +3813,14 @@ snapshots:
   pkg-prebuilds@1.0.0:
     dependencies:
       yargs: 17.7.2
+
+  playwright-core@1.60.0: {}
+
+  playwright@1.60.0:
+    dependencies:
+      playwright-core: 1.60.0
+    optionalDependencies:
+      fsevents: 2.3.2
 
   postcss@8.5.14:
     dependencies:

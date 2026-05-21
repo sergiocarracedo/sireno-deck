@@ -2,6 +2,7 @@ import { createElement } from "react"
 import { z } from "zod"
 
 import { executeCommand, type CommandExecutionResult } from "../action/executor.js"
+import { isAddonDomButtonRender, type AddonDomButtonRender } from "../addon/api.js"
 import datetimeButtonsAddon from "../builtin-addons/date-time/index.js"
 import { createPollingScheduler, type PollingScheduler } from "../render/scheduler.js"
 import { createDeckController } from "./controller.js"
@@ -23,8 +24,8 @@ export interface DeckRuntimeOptions {
   hostContext?: HostContext
   keyCount?: number
   lockedDeckId?: string
-  onRenderButton?: (button: DeckButtonProps) => Promise<void> | void
-  onRenderDeck?: (buttons: DeckButtonProps[]) => Promise<void> | void
+  onRenderButton?: (button: RuntimeRenderButton) => Promise<void> | void
+  onRenderDeck?: (buttons: RuntimeRenderButton[]) => Promise<void> | void
   sessionMonitor?: SessionMonitor
   subscribeKeyEvents: (listener: (event: StreamDeckKeyEvent) => void) => () => void
   createScheduler?: (intervalMs: number) => PollingScheduler
@@ -34,9 +35,9 @@ export interface DeckRuntimeOptions {
 export interface DeckRuntime {
   activateCurrentDeck: () => Promise<void>
   getActiveDeck: () => DeckConfig
-  getActiveDeckButtons: () => DeckButtonProps[]
+  getActiveDeckButtons: () => RuntimeRenderButton[]
   getButton: (keyIndex: number) => ButtonInstance | undefined
-  getRenderButtons: () => DeckButtonProps[]
+  getRenderButtons: () => RuntimeRenderButton[]
   getReservedBackKeyIndex: () => number
   getStackSnapshot: () => string[]
   restoreStack: (stackSnapshot?: readonly string[]) => Promise<void>
@@ -60,6 +61,11 @@ interface RuntimeButtonInstance {
   onTap?: () => Promise<void> | void
   refresh?: () => Promise<void> | void
   render: () => ReturnType<ButtonInstance["definition"]["createInstance"]>["render"] extends () => infer T ? T : never
+}
+
+export interface RuntimeRenderButton extends Partial<DeckButtonProps> {
+  content?: AddonDomButtonRender["content"]
+  keyIndex: number
 }
 
 const IMPLICIT_LOCKED_DECK_ID = "__sireno_locked_session__"
@@ -151,7 +157,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   const createScheduler = options.createScheduler ?? ((intervalMs: number) => createPollingScheduler({ intervalMs }))
   const instances = new Map<string, RuntimeButtonInstance>()
   const pressedKeys = new Set<number>()
-  const renderCache = new Map<string, DeckButtonProps>()
+  const renderCache = new Map<string, RuntimeRenderButton>()
   const schedulers = new Map<string, PollingScheduler>()
   let unsubscribe: (() => void) | null = null
   let unsubscribeSessionMonitor: (() => void) | null = null
@@ -281,18 +287,47 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     button: ButtonInstance,
       deckId = getDisplayDeckId(),
       activationVersion = activeActivationVersion,
-  ): Promise<DeckButtonProps | undefined> {
+  ): Promise<RuntimeRenderButton | undefined> {
     if (!isActivationCurrent(deckId, activationVersion)) {
       return undefined
     }
 
     const instance = getOrCreateInstance(deckId, button)
-    const descriptions = renderDeck(instance.render())
-    const description = descriptions[0]
-      ? { ...descriptions[0], background: descriptions[0].background ?? resolveButtonBackground(button, deckId), keyIndex: button.position }
-      : { background: resolveButtonBackground(button, deckId), keyIndex: button.position }
+    const rendered = instance.render()
+    const description = isAddonDomButtonRender(rendered)
+      ? {
+          background: resolveButtonBackground(button, deckId),
+          content: rendered.content,
+          ...(rendered.full_surface !== undefined ? { full_surface: rendered.full_surface } : button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
+          keyIndex: button.position,
+          ...(button.style_id !== undefined ? { style_id: button.style_id } : {}),
+          ...(button.wrapper_id !== undefined ? { wrapper_id: button.wrapper_id } : {}),
+        }
+      : (() => {
+          const descriptions = renderDeck(rendered)
+          const firstDescription = descriptions[0]
 
-    validateAddonRenderDescription(description)
+          return firstDescription
+            ? {
+                ...firstDescription,
+                background: firstDescription.background ?? resolveButtonBackground(button, deckId),
+                ...(firstDescription.full_surface !== undefined ? {} : button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
+                keyIndex: button.position,
+                ...(firstDescription.style_id !== undefined ? {} : button.style_id !== undefined ? { style_id: button.style_id } : {}),
+                ...(firstDescription.wrapper_id !== undefined ? {} : button.wrapper_id !== undefined ? { wrapper_id: button.wrapper_id } : {}),
+              }
+            : {
+                background: resolveButtonBackground(button, deckId),
+                ...(button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
+                keyIndex: button.position,
+                ...(button.style_id !== undefined ? { style_id: button.style_id } : {}),
+                ...(button.wrapper_id !== undefined ? { wrapper_id: button.wrapper_id } : {}),
+              }
+        })()
+
+    if (description.content === undefined) {
+      validateAddonRenderDescription(description)
+    }
 
     renderCache.set(getButtonStateKey(deckId, button.position), description)
     await options.onRenderButton?.(description)
@@ -314,7 +349,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
 
     const latestButtons = getDeckButtons(getDisplayDeck())
       .map((button) => renderCache.get(getButtonStateKey(deckId, button.position)))
-      .filter((button): button is DeckButtonProps => button !== undefined)
+      .filter((button): button is RuntimeRenderButton => button !== undefined)
 
     await options.onRenderDeck?.(latestButtons)
   }
@@ -495,7 +530,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     await getOrCreateInstance(handle.deckId, handle.button).onTap?.()
   }
 
-  function buildActiveDeckButtons(): DeckButtonProps[] {
+  function buildActiveDeckButtons(): RuntimeRenderButton[] {
     return getDeckButtons(getDisplayDeck()).map((button) => (
       renderCache.get(getButtonStateKey(getDisplayDeckId(), button.position))
       ?? { keyIndex: button.position }

@@ -1,20 +1,11 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { createBaseShapeIconLabelContent, createBaseShapeTextContent } from '../../addon/api.js'
+import { createBaseShapeTextContent, isAddonDomButtonRender } from '../../addon/api.js'
 import { createAddonRegistry } from '../../addon/registry.js'
 import coreButtonsAddon from './index.js'
 
 describe('core-buttons addon', () => {
-  it('exports explicit base-shape content helpers through the public addon API', () => {
-    expect(createBaseShapeIconLabelContent({ icon: './clock.svg', keyIndex: 2, label: 'Clock' })).toMatchObject({
-      props: {
-        icon: './clock.svg',
-        keyIndex: 2,
-        label: 'Clock',
-      },
-      type: 'deck-button',
-    })
-
+  it('exports the remaining explicit base-shape content helper through the public addon API', () => {
     expect(createBaseShapeTextContent({ fit: 'wrap', keyIndex: 3, label: 'Wrapped Label' })).toMatchObject({
       props: {
         fit: 'wrap',
@@ -50,26 +41,20 @@ describe('core-buttons addon', () => {
       config: { icon: './clock.svg', label: 'Clock' },
     })
 
-    expect(instance?.render()).toMatchObject({
-      props: {
-        icon: './clock.svg',
-        keyIndex: 2,
-        label: 'Clock',
-      },
-      type: 'deck-button',
-    })
+    expect(isAddonDomButtonRender(instance?.render())).toBe(true)
   })
 
-  it('renders the bundled action button through the explicit icon-label helper path', () => {
+  it('renders the bundled action button through the DOM render path', () => {
     const definition = coreButtonsAddon.buttons[0]
     const instance = definition?.createInstance({
       button: { position: 2 },
       config: { icon: './clock.svg', label: 'Clock' },
     } as never)
 
-    expect(instance?.render()).toEqual(
-      createBaseShapeIconLabelContent({ icon: './clock.svg', keyIndex: 2, label: 'Clock' }),
-    )
+    const renderResult = instance?.render()
+
+    expect(isAddonDomButtonRender(renderResult)).toBe(true)
+    expect(renderResult).toMatchObject({ keyIndex: 2 })
   })
 
   it('navigates with the bundled change-deck button', async () => {
@@ -88,7 +73,7 @@ describe('core-buttons addon', () => {
     expect(navigateToDeck).toHaveBeenCalledWith('emoji')
   })
 
-  it('renders the bundled change-deck button through the explicit icon-label helper path', () => {
+  it('renders the bundled change-deck button through the DOM render path', () => {
     const definition = coreButtonsAddon.buttons.find(
       (button) => button.type === 'change-deck',
     )
@@ -98,9 +83,10 @@ describe('core-buttons addon', () => {
       methods: { navigateToDeck: vi.fn() },
     } as never)
 
-    expect(instance?.render()).toEqual(
-      createBaseShapeIconLabelContent({ icon: './clock.svg', keyIndex: 4, label: 'Emoji' }),
-    )
+    const renderResult = instance?.render()
+
+    expect(isAddonDomButtonRender(renderResult)).toBe(true)
+    expect(renderResult).toMatchObject({ keyIndex: 4 })
   })
 
   it('registers bundled wrapper and style primitives through the shared addon registry contract', () => {

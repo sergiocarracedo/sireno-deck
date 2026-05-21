@@ -8,7 +8,7 @@ import { AddonManifestError } from "../../addon/manifest.js"
 import { createBundledAddonRegistry, loadBootstrapConfig, loadConfigWithSources } from "../../config/loader.js"
 import { resolveTheme } from "../../config/theme.js"
 import { ConfigValidationError } from "../../core/schemas.js"
-import { createDeckRuntime } from "../../deck/runtime.js"
+import { createDeckRuntime, type RuntimeRenderButton } from "../../deck/runtime.js"
 import {
   blankRemainingKeys,
   createStreamDeckLifecycle,
@@ -17,6 +17,8 @@ import {
   writeKeyBuffer,
 } from "../../device/stream-deck.js"
 import { formatLinuxUdevAccessError } from "../../device/linux-udev.js"
+import { createBrowserRenderer, type BrowserRenderer } from "../../render/browser-renderer.js"
+import { renderDomDeck } from "../../render/dom-host.js"
 import type { DeckButtonProps } from "../../render/reconciler.js"
 import type { TextImageOptions } from "../../render/text-image.js"
 
@@ -177,6 +179,10 @@ export async function restoreReloadNavigation(
   }
 }
 
+export function isDomRenderButton(button: RuntimeRenderButton): button is RuntimeRenderButton & { content: NonNullable<RuntimeRenderButton["content"]> } {
+  return button.content !== undefined
+}
+
 export function createTemporaryConfigErrorLines(error: ConfigValidationError): string[] {
   const location = error.filePath
     ? `${basename(error.filePath)}${error.lineNumber !== undefined ? `:${error.lineNumber}` : ""}`
@@ -211,6 +217,28 @@ async function renderMainDeck(
   logger.info({ deckId: "main deck", renderedKeys: Array.from(renderedKeys).sort((left, right) => left - right) }, "rendered themed main deck")
 }
 
+async function renderDomDeckSurface(
+  connection: NonNullable<ReturnType<ReturnType<typeof createStreamDeckLifecycle>["getConnection"]>>,
+  deckButtons: Array<RuntimeRenderButton & { content: NonNullable<RuntimeRenderButton["content"]> }>,
+  browserRenderer: BrowserRenderer,
+  logger: pino.Logger,
+): Promise<void> {
+  await browserRenderer.updateDeck(renderDomDeck(deckButtons.map((button) => ({
+    content: button.content,
+    ...(button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
+    keyIndex: button.keyIndex,
+  })), {
+    keyCount: connection.info.keyCount,
+  }))
+
+  const buffersByKey = await browserRenderer.captureKeyBuffers()
+  for (const [keyIndex, buffer] of buffersByKey.entries()) {
+    await writeKeyBuffer(connection, keyIndex, buffer)
+  }
+
+  logger.info({ deckId: "main deck", renderedKeys: Array.from(buffersByKey.keys()).sort((left, right) => left - right) }, "rendered browser-backed main deck")
+}
+
 export async function startDaemon(options: StartOptions): Promise<void> {
   const { logger } = options
   const existingPid = readPid()
@@ -235,6 +263,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     let stopWatchingConfig = () => {}
     let reloadInFlight = false
     let reloadQueued = false
+    let browserRenderer: BrowserRenderer | null = null
     const getPrimitiveRenderOptions = (button: DeckButtonProps) => resolvePrimitiveRenderOptions(button, registry)
     const lifecycle = createStreamDeckLifecycle({
       logger,
@@ -253,37 +282,48 @@ export async function startDaemon(options: StartOptions): Promise<void> {
       const runtimeTheme = resolveTheme(loadedConfig.config.theme, { baseDirectory: loadedConfig.configDirectory })
 
       return createDeckRuntime({
-      addonRegistry: loadedConfig.registry,
-      deck: loadedConfig.config.decks[loadedConfig.config.main_deck]!,
-      decks: loadedConfig.config.decks,
-      hostContext: loadedConfig.hostContext,
-      keyCount: connection.info.keyCount,
-      lockedDeckId: loadedConfig.config.session?.locked_deck,
-      theme: runtimeTheme,
-      onRenderButton: async (button) => {
-        const activeConnection = lifecycle.getConnection()
-        if (!activeConnection) {
-          return
-        }
+        addonRegistry: loadedConfig.registry,
+        deck: loadedConfig.config.decks[loadedConfig.config.main_deck]!,
+        decks: loadedConfig.config.decks,
+        hostContext: loadedConfig.hostContext,
+        keyCount: connection.info.keyCount,
+        lockedDeckId: loadedConfig.config.session?.locked_deck,
+        theme: runtimeTheme,
+        onRenderButton: async (button) => {
+          const activeConnection = lifecycle.getConnection()
+          if (!activeConnection) {
+            return
+          }
 
-        const primitiveOptions = getPrimitiveRenderOptions(button)
-        const buffer = await renderTextImage(createRenderTextImageOptions(button, runtimeTheme, primitiveOptions))
-        await writeKeyBuffer(activeConnection, button.keyIndex, buffer)
-      },
-      onRenderDeck: async (buttons) => {
-        const activeConnection = lifecycle.getConnection()
-        if (!activeConnection) {
-          return
-        }
+          if (isDomRenderButton(button)) {
+            return
+          }
 
-        await renderMainDeck(activeConnection, buttons, runtimeTheme, getPrimitiveRenderOptions, logger)
-      },
-      sessionMonitor: loadedConfig.sessionMonitor,
-      subscribeKeyEvents: lifecycle.subscribeKeyEvents,
-    })
+          const primitiveOptions = getPrimitiveRenderOptions(button)
+          const buffer = await renderTextImage(createRenderTextImageOptions(button, runtimeTheme, primitiveOptions))
+          await writeKeyBuffer(activeConnection, button.keyIndex, buffer)
+        },
+        onRenderDeck: async (buttons) => {
+          const activeConnection = lifecycle.getConnection()
+          if (!activeConnection) {
+            return
+          }
+
+          if (browserRenderer && buttons.length > 0 && buttons.every(isDomRenderButton)) {
+            await renderDomDeckSurface(activeConnection, buttons, browserRenderer, logger)
+            return
+          }
+
+          await renderMainDeck(activeConnection, buttons as DeckButtonProps[], runtimeTheme, getPrimitiveRenderOptions, logger)
+        },
+        sessionMonitor: loadedConfig.sessionMonitor,
+        subscribeKeyEvents: lifecycle.subscribeKeyEvents,
+      })
     }
 
     const connection = await lifecycle.start()
+    browserRenderer = createBrowserRenderer({ keyCount: connection.info.keyCount })
+    await browserRenderer.start()
     runtime = createRuntime(initialLoad)
 
     async function reloadRuntime(): Promise<void> {
@@ -365,6 +405,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     cleanupSignals = setupSignalHandlers(logger, async () => {
       stopWatchingConfig()
       runtime?.stop()
+      await browserRenderer?.close()
       await sessionMonitor.stop()
       await lifecycle.close()
     })

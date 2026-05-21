@@ -1,6 +1,32 @@
+import { extname } from 'node:path'
+import { existsSync, readFileSync } from 'node:fs'
+
+import { createElement } from 'react'
 import { z } from 'zod'
 
-import { createBaseShapeIconLabelContent } from '../../../addon/api.js'
+import { createDomButtonRender, createDomTextLabel } from '../../../addon/api.js'
+
+function getMimeType(iconPath: string): string {
+  switch (extname(iconPath).toLowerCase()) {
+    case '.jpg':
+    case '.jpeg':
+      return 'image/jpeg'
+    case '.svg':
+      return 'image/svg+xml'
+    case '.webp':
+      return 'image/webp'
+    default:
+      return 'image/png'
+  }
+}
+
+function getInlineImageSource(iconPath: string | undefined): string | undefined {
+  if (!iconPath || !existsSync(iconPath)) {
+    return undefined
+  }
+
+  return `data:${getMimeType(iconPath)};base64,${readFileSync(iconPath).toString('base64')}`
+}
 
 const BuiltinActionButtonSchema = z
   .object({
@@ -36,10 +62,17 @@ const builtinActionButton = {
     }
   }) => ({
     render: () =>
-      createBaseShapeIconLabelContent({
-        ...(config.icon !== undefined ? { icon: config.icon } : {}),
+      createDomButtonRender({
+        content: createElement('div', {
+          children: [
+            getInlineImageSource(config.icon)
+              ? createElement('img', { alt: '', key: 'icon', src: getInlineImageSource(config.icon), style: { height: '24px', objectFit: 'contain', width: '24px' } })
+              : null,
+            createElement('span', { key: 'label' }, createDomTextLabel({ children: config.label })),
+          ],
+          style: { alignItems: 'center', display: 'flex', flexDirection: 'column', gap: '6px', justifyContent: 'center', width: '100%' },
+        }),
         keyIndex: button.position,
-        label: config.label,
       }),
     onTap: async () => {
       if (config.command) {
