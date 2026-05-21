@@ -1,0 +1,21 @@
+packages/cli/package.json
+  s_df3509a167c487::t_73ff761b030c8a 32
+packages/cli/src/render/browser-renderer.ts
+  s_df3509a167c487::t_73ff761b030c8a 1-160
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "accb7b56ca71406f03840e9abffeed021e8600ad",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
