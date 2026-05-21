@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 17 gap closure is executed for the real CLI/device full-surface render path; next up is phase verification and UAT rerun.
+**Current focus:** Phase 18 context is captured for the React DOM renderer contract; next up is Phase 18 planning.
 
 ## Current Position
 
-Phase: 17 — Custom Wrapper Primitives + Addon-Authored Rendering Variants
-Plan: 17-01 through 17-04 executed
-Status: verifying
-Last activity: 2026-05-21 - Executed Plan 17-04 by forwarding `full_surface` through the shipped start path and adding focused regression coverage
+Phase: 18 — React DOM-Based Renderer With HTML/CSS Surface Support
+Plan: context captured
+Status: discussing complete
+Last activity: 2026-05-21 - Captured Phase 18 context for the hard switch to browser-backed React HTML/CSS button components and `buttonFrame`
 
 Progress: [##########] 100%
 
@@ -84,7 +84,8 @@ Recent decisions affecting current work:
 - **Plan 16-06:** Made shared/default accent overrides visibly affect shared card chrome, reran the final UAT check, and finished Phase 16 verification.
 - **Phase 17 discussion:** Captured the shift from wrapper ids to a default base button-shape model, explicit full-surface opt-out, and narrow explicit content helpers while keeping bespoke variants on their current seams for now.
 - **Phase 17 planning:** Broke the phase into three slices: contract and compatibility first, core base-shape plus helper extraction second, and reviewable default-vs-full-surface proof third.
-- **Plan 17-04:** Closed the Phase 17 UAT regression by forwarding `full_surface` through the shipped CLI/device render path and adding focused start-path regression coverage.
+- **Plan 17-04:** Closed the Phase 17 UAT regression by forwarding `full_surface` through the shipped CLI/device render path, preserving config-authored surface metadata across builtin runtime re-renders, and passing the real-device rerun.
+- **Phase 18 discussion:** Captured the hard switch to browser-backed DOM button components, one persistent deck page, sampled media rendering, latest-state capture coalescing, and a core-owned React `buttonFrame` that wraps by default unless `full_surface: true`.
 - **Phase 16 discussion:** Captured deck-only file references with owning-file-relative path resolution, root-plus-ref hot-reload, built-in temporary error-deck fallback on invalid reload, stack-preserving successful reload restore, full runtime instance rebuild on reload, shared-wrapper footer removal, and narrow per-button accent overrides accepting tokens or raw colors.
 - **Phase 10 kickoff:** Milestone audit found that the documented addon authoring entrypoints do not line up with the built `packages/cli` exports, so release flow needs a gap-closure phase before `/review`.
 - **Milestone v1.2 kickoff:** Captured session-context, layered background, text fitting, global wrapper/style, richer toggle, and lock-aware deck requirements plus the five-phase roadmap that sequences contract work before user-facing polish.
