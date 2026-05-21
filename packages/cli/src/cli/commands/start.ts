@@ -18,6 +18,7 @@ import {
 } from "../../device/stream-deck.js"
 import { formatLinuxUdevAccessError } from "../../device/linux-udev.js"
 import type { DeckButtonProps } from "../../render/reconciler.js"
+import type { TextImageOptions } from "../../render/text-image.js"
 
 import { createDeckSurfaceElement, renderDeck } from "../../render/reconciler.js"
 import { renderBlankKeyImage, renderTextImage } from "../../render/text-image.js"
@@ -51,6 +52,30 @@ export function resolvePrimitiveRenderOptions(
   return {
     ...(sharedStyleTone !== undefined ? { sharedStyleTone } : {}),
     ...(wrapper !== undefined ? { wrapper } : {}),
+  }
+}
+
+export function createRenderTextImageOptions(
+  button: DeckButtonProps,
+  theme: ReturnType<typeof resolveTheme>,
+  primitiveOptions: { sharedStyleTone?: "accent" | "default"; wrapper?: "shared" },
+): TextImageOptions {
+  return {
+    accent: button.accent,
+    background: button.background,
+    detailLines: button.detailLines,
+    displayValue: button.displayValue,
+    fit: button.fit,
+    full_surface: button.full_surface,
+    icon: button.icon,
+    progress: button.progress,
+    sharedStyleTone: primitiveOptions.sharedStyleTone,
+    subtitle: button.subtitle,
+    text: button.label,
+    theme,
+    toggleMode: button.toggle_mode,
+    variant: button.variant,
+    wrapper: button.wrapper ?? primitiveOptions.wrapper,
   }
 }
 
@@ -177,23 +202,7 @@ async function renderMainDeck(
 
   for (const description of descriptions) {
     const primitiveOptions = resolvePrimitiveRenderOptions(description)
-    const buffer = await renderTextImage({
-      accent: description.accent,
-      background: description.background,
-      detailLines: description.detailLines,
-      displayValue: description.displayValue,
-      fit: description.fit,
-      full_surface: description.full_surface,
-      icon: description.icon,
-      progress: description.progress,
-      sharedStyleTone: primitiveOptions.sharedStyleTone,
-      subtitle: description.subtitle,
-      text: description.label,
-      theme,
-      toggleMode: description.toggle_mode,
-      variant: description.variant,
-      wrapper: description.wrapper ?? primitiveOptions.wrapper,
-    })
+    const buffer = await renderTextImage(createRenderTextImageOptions(description, theme, primitiveOptions))
     renderedKeys.add(description.keyIndex)
     await writeKeyBuffer(connection, description.keyIndex, buffer)
   }
@@ -257,23 +266,8 @@ export async function startDaemon(options: StartOptions): Promise<void> {
           return
         }
 
-        const buffer = await renderTextImage({
-          accent: button.accent,
-          background: button.background,
-          detailLines: button.detailLines,
-          displayValue: button.displayValue,
-          fit: button.fit,
-          full_surface: button.full_surface,
-          icon: button.icon,
-          progress: button.progress,
-          ...getPrimitiveRenderOptions(button),
-          subtitle: button.subtitle,
-          text: button.label,
-          theme: runtimeTheme,
-          toggleMode: button.toggle_mode,
-          variant: button.variant,
-          wrapper: button.wrapper ?? getPrimitiveRenderOptions(button).wrapper,
-        })
+        const primitiveOptions = getPrimitiveRenderOptions(button)
+        const buffer = await renderTextImage(createRenderTextImageOptions(button, runtimeTheme, primitiveOptions))
         await writeKeyBuffer(activeConnection, button.keyIndex, buffer)
       },
       onRenderDeck: async (buttons) => {

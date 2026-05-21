@@ -293,3 +293,26 @@ describe("resolvePrimitiveRenderOptions", () => {
     )).toEqual({ sharedStyleTone: "accent" })
   })
 })
+
+describe("createRenderTextImageOptions", () => {
+  it("forwards explicit full-surface rendering on the shipped start path while keeping wrapper compatibility opt-out narrow", async () => {
+    const { createRenderTextImageOptions } = await import("./start.js")
+
+    expect(createRenderTextImageOptions(
+      {
+        full_surface: true,
+        keyIndex: 1,
+        label: "Explicit Full Surface",
+        style_id: "core-buttons/accent",
+        wrapper_id: "core-buttons/shared-card",
+      },
+      { accent: "#f59e0b", background: "#10161f", danger: "#fb7185", foreground: "#eef2f7", name: "dark", primary: "#7dd3fc", success: "#34d399" },
+      { sharedStyleTone: "accent" },
+    )).toMatchObject({
+      full_surface: true,
+      sharedStyleTone: "accent",
+      text: "Explicit Full Surface",
+      wrapper: undefined,
+    })
+  })
+})
