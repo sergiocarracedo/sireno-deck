@@ -1,0 +1,25 @@
+AGENTS.md
+  s_df3509a167c487::t_8d7866fbcb09ac 170
+  s_df3509a167c487::t_bfe79b189be0f4 168-169
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "206ee159e2b1d548b704f75c6e226c2d1bb252a6",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
