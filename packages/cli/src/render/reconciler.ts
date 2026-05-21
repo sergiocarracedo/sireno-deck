@@ -412,14 +412,15 @@ export function createDeckSurfaceElement(props: DeckSurfaceProps): ReactElement<
   return createElement("deck-surface", props)
 }
 
-export function createDisplayButtonModels(buttons: readonly ButtonInstance[]): DeckButtonProps[] {
+// Legacy compatibility helper for the SVG fallback path.
+export function createLegacyDisplayButtonModels(buttons: readonly ButtonInstance[]): DeckButtonProps[] {
   return buttons.map((button) => {
     return {
       ...(button.accent !== undefined ? { accent: button.accent } : {}),
       ...(button.background !== undefined ? { background: button.background } : {}),
       keyIndex: button.position,
-      ...(button.label !== undefined ? { label: button.label } : {}),
-      ...(button.icon !== undefined ? { icon: button.icon } : {}),
+      ...(typeof button.config.label === "string" ? { label: button.config.label } : {}),
+      ...(typeof button.config.icon === "string" ? { icon: button.config.icon } : {}),
       variant: "default" as const,
       ...(button.style_id !== undefined ? { style_id: button.style_id } : {}),
       ...(button.wrapper_id !== undefined ? { wrapper_id: button.wrapper_id } : {}),

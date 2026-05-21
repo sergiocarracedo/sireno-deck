@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import {
   createDeckButtonElement,
-  createDisplayButtonModels,
+  createLegacyDisplayButtonModels,
   createDeckSurfaceElement,
   createDeckTextElement,
   renderDeck,
@@ -142,8 +142,8 @@ describe("render reconciler", () => {
     ])
   })
 
-  it("keeps addon-backed display model generation minimal", () => {
-    expect(createDisplayButtonModels([
+  it("keeps the legacy fallback display model generation minimal", () => {
+    expect(createLegacyDisplayButtonModels([
       { type: "display-text", position: 1, label: "CPU", config: { label: "CPU" }, definition: { configSchema: {} as never, createInstance: () => ({ render: () => null as never }), type: "display-text" } },
       {
         type: "display-text",

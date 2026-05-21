@@ -368,7 +368,7 @@ describe("loadConfig", () => {
       id: "main",
       buttons: [
         expect.objectContaining({
-          label: "Clock",
+          config: { label: "Clock" },
           position: 0,
           type: "action",
         }),
@@ -407,7 +407,7 @@ describe("loadConfig", () => {
     const config = loadConfig()
 
     expect(config.decks.main?.id).toBe("main")
-    expect(config.decks.main?.buttons[0]).toMatchObject({ label: "Clock" })
+    expect(config.decks.main?.buttons[0]).toMatchObject({ config: { label: "Clock" } })
   })
 
   it("reports missing referenced deck files from the owning config path", async () => {
@@ -566,7 +566,6 @@ describe("loadConfig", () => {
 
     expect(config.decks.main?.buttons[0]).toMatchObject({
       config: { label: "Clock" },
-      label: "Clock",
       position: 0,
       type: "action",
     })
@@ -701,7 +700,6 @@ describe("loadConfig", () => {
 
     expect(config.decks.main?.buttons[0]).toMatchObject({
       config: { label: "Clock" },
-      label: "Clock",
       style_id: "external-addon/accent",
       wrapper_id: "external-addon/shared-card",
     })
@@ -732,7 +730,6 @@ describe("loadConfig", () => {
     expect(config.decks.main?.buttons[0]).toMatchObject({
       accent: "success",
       config: { label: "Clock" },
-      label: "Clock",
       wrapper_id: "core-buttons/shared-card",
     })
   })
@@ -761,7 +758,6 @@ describe("loadConfig", () => {
     expect(config.decks.main?.buttons[0]).toMatchObject({
       config: { label: "Clock" },
       full_surface: true,
-      label: "Clock",
     })
   })
 
@@ -939,14 +935,18 @@ describe("loadConfig", () => {
 
     expect(config.decks.emoji?.deckType).toBe("emoji-selector")
     expect(config.decks.emoji?.buttons[0]).toMatchObject({
-      icon: expect.stringContaining("favorites.svg"),
-      label: "Favorites",
-      target_deck: "emoji-favorites",
+      config: {
+        icon: expect.stringContaining("favorites.svg"),
+        label: "Favorites",
+        target_deck: "emoji-favorites",
+      },
       type: "emoji-category-button",
     })
     expect(config.decks["emoji-favorites"]?.buttons[1]).toMatchObject({
-      icon: expect.stringContaining("back.svg"),
-      label: "Back",
+      config: {
+        icon: expect.stringContaining("back.svg"),
+        label: "Back",
+      },
       type: "emoji-back-button",
     })
   })
@@ -983,7 +983,6 @@ describe("loadConfig", () => {
 
     expect(config.decks.main?.buttons[0]).toMatchObject({
       config: { label: "linux / ubuntu / unknown" },
-      label: "linux / ubuntu / unknown",
     })
   })
 
@@ -1018,7 +1017,9 @@ describe("loadConfig", () => {
     })
 
     expect(config.decks["emoji-favorites"]?.buttons[0]).toMatchObject({
-      select_command: "printf '%s' '{{emoji}} @ {{host.os.type}}'",
+      config: {
+        select_command: "printf '%s' '{{emoji}} @ {{host.os.type}}'",
+      },
     })
   })
 
@@ -1039,11 +1040,12 @@ describe("loadConfig", () => {
 
     expect(config.decks.main?.buttons[0]).toMatchObject({
       config: { label: "linux / ubuntu / unknown" },
-      label: "linux / ubuntu / unknown",
       type: "action",
     })
     expect(config.decks["emoji-favorites"]?.buttons[0]).toMatchObject({
-      select_command: "printf '%s' '{{emoji}} @ {{host.os.type}} @ {{host.session.state}}'",
+      config: {
+        select_command: "printf '%s' '{{emoji}} @ {{host.os.type}} @ {{host.session.state}}'",
+      },
       type: "emoji-entry-button",
     })
   })
@@ -1078,7 +1080,6 @@ describe("loadConfig", () => {
         mode: "internal",
         on: { subtitle: "ON" },
       },
-      label: "Desk Lamp",
       type: "toggle",
     })
   })
@@ -1155,7 +1156,6 @@ describe("loadConfig", () => {
         set_off_command: "turn-off-lamp",
         set_on_command: "turn-on-lamp",
       },
-      label: "Desk Lamp",
       type: "toggle",
     })
   })
@@ -1304,7 +1304,6 @@ describe("loadConfig", () => {
         status_command: "read-lamp",
         toggle_command: "toggle-lamp",
       },
-      label: "Desk Lamp",
       type: "toggle",
     })
   })

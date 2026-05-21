@@ -1,3 +1,6 @@
+// Legacy compatibility-only render description seam.
+// Phase 18 moves shipped button authoring to DOM-authored button components;
+// these types remain only for the SVG fallback path and focused compatibility tests.
 export type DeckTextFit = "shrink" | "wrap"
 
 export type DeckButtonWrapper = "shared"

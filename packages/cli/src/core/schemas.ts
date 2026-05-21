@@ -121,18 +121,9 @@ export interface ButtonInstance extends AddonButtonEnvelope {
   background?: string
   config: Record<string, unknown>
   definition: AddonButtonDefinition
-  command?: string
-  display_command?: string
-  display_mode?: string
   full_surface?: boolean
-  icon?: string
   interval_ms?: number
-  label?: string
   style_id?: string
-  states?: Array<{ key: string; command?: string; icon?: string; label?: string }>
-  status_command?: string
-  target_deck?: string
-  unavailable_label?: string
   wrapper_id?: string
 }
 
@@ -493,7 +484,6 @@ export function validateConfig(data: unknown, registry: AddonRegistry): SirenoCo
         type: parsedButton.data.type,
         config: parsedPayload.data as Record<string, unknown>,
         definition,
-        ...payload,
       })
     }
 
