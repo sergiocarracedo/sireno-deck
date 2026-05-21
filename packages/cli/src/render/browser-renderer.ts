@@ -43,6 +43,12 @@ export interface BrowserRenderer {
   updateDeck: (html: string) => Promise<void>
 }
 
+interface CaptureWaiter {
+  reject: (reason?: unknown) => void
+  requestedVersion: number
+  resolve: (buffers: Map<number, Buffer>) => void
+}
+
 async function loadPlaywrightLauncher(): Promise<BrowserLauncher> {
   const playwrightModule = await import("playwright")
   return playwrightModule.chromium as BrowserLauncher
@@ -117,6 +123,12 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
   let browser: BrowserLike | null = null
   let context: BrowserContextLike | null = null
   let page: BrowserPageLike | null = null
+  let latestHtml = ""
+  let latestVersion = 0
+  let renderedVersion = 0
+  let lastCapturedBuffers = new Map<number, Buffer>()
+  let captureLoopPromise: Promise<void> | null = null
+  const captureWaiters: CaptureWaiter[] = []
 
   async function ensurePage(): Promise<BrowserPageLike> {
     if (page) {
@@ -132,21 +144,95 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
     return page
   }
 
+  function resolveCaptureWaiters(): void {
+    const readyWaiters = captureWaiters.filter((waiter) => waiter.requestedVersion <= renderedVersion)
+    if (readyWaiters.length === 0) {
+      return
+    }
+
+    for (const waiter of readyWaiters) {
+      waiter.resolve(lastCapturedBuffers)
+    }
+
+    for (let index = captureWaiters.length - 1; index >= 0; index -= 1) {
+      if (captureWaiters[index]?.requestedVersion <= renderedVersion) {
+        captureWaiters.splice(index, 1)
+      }
+    }
+  }
+
+  function rejectCaptureWaiters(error: unknown): void {
+    const waiters = captureWaiters.splice(0, captureWaiters.length)
+    for (const waiter of waiters) {
+      waiter.reject(error)
+    }
+  }
+
+  async function runCaptureLoop(): Promise<void> {
+    try {
+      while (renderedVersion < latestVersion) {
+        const requestedVersion = latestVersion
+        const requestedHtml = latestHtml
+        const activePage = await ensurePage()
+
+        await activePage.setContent(requestedHtml)
+        const capture = await activePage.screenshot({ fullPage: true })
+
+        if (requestedVersion !== latestVersion) {
+          continue
+        }
+
+        lastCapturedBuffers = await cropDeckCaptureToKeyBuffers(capture, layout, preset)
+        renderedVersion = requestedVersion
+        resolveCaptureWaiters()
+      }
+    } catch (error) {
+      rejectCaptureWaiters(error)
+      throw error
+    } finally {
+      captureLoopPromise = null
+    }
+  }
+
+  function ensureCaptureLoop(): Promise<void> {
+    if (!captureLoopPromise) {
+      captureLoopPromise = runCaptureLoop()
+    }
+
+    return captureLoopPromise
+  }
+
   return {
     async start() {
       await ensurePage()
     },
     async updateDeck(html) {
-      const activePage = await ensurePage()
-      await activePage.setContent(html)
+      latestHtml = html
+      latestVersion += 1
     },
     async captureKeyBuffers() {
-      const activePage = await ensurePage()
-      const capture = await activePage.screenshot({ fullPage: true })
+      if (latestVersion === 0) {
+        return lastCapturedBuffers
+      }
 
-      return cropDeckCaptureToKeyBuffers(capture, layout, preset)
+      if (renderedVersion >= latestVersion) {
+        return lastCapturedBuffers
+      }
+
+      const requestedVersion = latestVersion
+
+      return new Promise<Map<number, Buffer>>((resolve, reject) => {
+        captureWaiters.push({ reject, requestedVersion, resolve })
+        void ensureCaptureLoop().catch(() => {})
+      })
     },
     async close() {
+      try {
+        await captureLoopPromise
+      } catch {
+        // Ignore prior capture failures during shutdown; callers already saw them.
+      }
+
       await page?.close?.()
       page = null
 
