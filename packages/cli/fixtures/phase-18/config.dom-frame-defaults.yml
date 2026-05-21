@@ -1,0 +1,47 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    name: DOM Frame Defaults
+    buttons:
+      - position: 0
+        type: date-time
+        variant: date-time
+      - position: 1
+        type: analog-clock
+      - position: 2
+        type: calendar-sheet
+      - position: 3
+        type: action
+        label: Framed Action
+        command: "printf 'framed action'"
+      - position: 4
+        type: action
+        label: Full Surface Action
+        command: "printf 'full surface action'"
+        full_surface: true
+      - position: 5
+        type: change-deck
+        label: Open Tools
+        target_deck: tools
+
+  tools:
+    id: tools
+    name: DOM Frame Defaults Tools
+    buttons:
+      - position: 0
+        type: date-time
+        variant: time
+      - position: 1
+        type: action
+        label: Tool Action
+        command: "printf 'tool action'"
+      - position: 2
+        type: change-deck
+        label: Back Main
+        target_deck: main
+
+addons: []
+logging:
+  level: info

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { createBaseShapeTextContent, isAddonDomButtonRender } from '../../addon/api.js'
 import { createAddonRegistry } from '../../addon/registry.js'
+import { createHostedButtonElement, renderReactNodeToHtml } from '../../render/dom-host.js'
 import coreButtonsAddon from './index.js'
 
 describe('core-buttons addon', () => {
@@ -55,6 +56,7 @@ describe('core-buttons addon', () => {
 
     expect(isAddonDomButtonRender(renderResult)).toBe(true)
     expect(renderResult).toMatchObject({ keyIndex: 2 })
+    expect(renderReactNodeToHtml(createHostedButtonElement(renderResult!))).toContain('data-sireno-button-frame="true"')
   })
 
   it('navigates with the bundled change-deck button', async () => {
@@ -87,6 +89,7 @@ describe('core-buttons addon', () => {
 
     expect(isAddonDomButtonRender(renderResult)).toBe(true)
     expect(renderResult).toMatchObject({ keyIndex: 4 })
+    expect(renderReactNodeToHtml(createHostedButtonElement(renderResult!))).toContain('data-sireno-button-frame="true"')
   })
 
   it('registers bundled wrapper and style primitives through the shared addon registry contract', () => {

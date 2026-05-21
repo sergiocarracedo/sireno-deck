@@ -1,5 +1,7 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
+import { isAddonDomButtonRender } from '../../addon/api.js'
+import { createHostedButtonElement, renderReactNodeToHtml } from '../../render/dom-host.js'
 import dateTimeAddon, {
   ANALOG_CLOCK_INTERVAL_MS,
   CALENDAR_SHEET_INTERVAL_MS,
@@ -94,6 +96,9 @@ describe('date-time addon', () => {
     const definition = dateTimeAddon.buttons.find(
       (button) => button.type === 'date-time',
     )
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 4, 14, 10, 48, 7))
+
     const instance = definition?.createInstance({
       button: { position: 2 },
       config: {
@@ -102,14 +107,16 @@ describe('date-time addon', () => {
         variant: 'date-time',
       },
     } as never)
+    const renderResult = instance?.render()
 
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 2,
-        label: expect.any(String),
-      },
-      type: 'deck-button',
-    })
+    expect(isAddonDomButtonRender(renderResult)).toBe(true)
+    expect(renderResult).toMatchObject({ keyIndex: 2 })
+    expect(renderReactNodeToHtml(createHostedButtonElement(renderResult!))).toContain('data-sireno-button-frame="true"')
+    expect(renderReactNodeToHtml(renderResult?.content)).toContain('data-sireno-date-time="digital"')
+    expect(renderReactNodeToHtml(renderResult?.content)).toContain('05/14/2026')
+    expect(renderReactNodeToHtml(renderResult?.content)).toContain('10:48:07')
+
+    vi.useRealTimers()
   })
 
   it('creates a renderable analog clock button instance with the expected cadence contract', () => {
@@ -120,18 +127,12 @@ describe('date-time addon', () => {
       button: { position: 4 },
       config: {},
     } as never)
-    const element = instance?.render()
+    const renderResult = instance?.render()
 
     expect(definition?.defaultIntervalMs).toBe(ANALOG_CLOCK_INTERVAL_MS)
-    expect(element).toMatchObject({
-      props: {
-        keyIndex: 4,
-        variant: 'analog-clock',
-      },
-      type: 'deck-button',
-    })
-    expect(element?.props.label).toBeUndefined()
-    expect(element?.props.subtitle).toBeUndefined()
+    expect(isAddonDomButtonRender(renderResult)).toBe(true)
+    expect(renderResult).toMatchObject({ keyIndex: 4 })
+    expect(renderReactNodeToHtml(renderResult?.content)).toContain('data-sireno-date-time="analog-clock"')
   })
 
   it('keeps the shipped Phase 8 review contract on the bundled analog clock type', () => {
@@ -152,17 +153,17 @@ describe('date-time addon', () => {
       button: { position: 6 },
       config: {},
     } as never)
-    const element = instance?.render()
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 4, 14, 10, 48, 7))
+    const renderResult = instance?.render()
 
     expect(definition?.defaultIntervalMs).toBe(CALENDAR_SHEET_INTERVAL_MS)
-    expect(element).toMatchObject({
-      props: {
-        keyIndex: 6,
-        variant: 'calendar-sheet',
-      },
-      type: 'deck-button',
-    })
-    expect(element?.props.label).toBeUndefined()
-    expect(element?.props.subtitle).toBeUndefined()
+    expect(isAddonDomButtonRender(renderResult)).toBe(true)
+    expect(renderResult).toMatchObject({ keyIndex: 6 })
+    expect(renderReactNodeToHtml(renderResult?.content)).toContain('data-sireno-date-time="calendar-sheet"')
+    expect(renderReactNodeToHtml(renderResult?.content)).toContain('MAY')
+    expect(renderReactNodeToHtml(renderResult?.content)).toContain('14')
+
+    vi.useRealTimers()
   })
 })

@@ -7,6 +7,7 @@ import { z } from "zod"
 import { createBundledAddonRegistry, loadConfig } from "../config/loader.js"
 import { validateConfig } from "../core/schemas.js"
 import { createDeckRuntime } from "./runtime.js"
+import { renderReactNodeToHtml } from "../render/dom-host.js"
 
 import type { SirenoAddon } from "../addon/api.js"
 import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
@@ -64,6 +65,10 @@ function createSessionMonitorDouble(initialSnapshot: SessionSnapshot): SessionMo
       }
     },
   }
+}
+
+function getRenderedDomText(button: { content?: unknown }): string {
+  return renderReactNodeToHtml(button.content as Parameters<typeof renderReactNodeToHtml>[0])
 }
 
 describe("createDeckRuntime", () => {
@@ -493,7 +498,8 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "linux / ubuntu / unknown" })
+      expect(runtime.getRenderButtons()[0]).toMatchObject({ background: "#10161f", keyIndex: 0 })
+      expect(getRenderedDomText(runtime.getRenderButtons()[0] ?? {})).toContain("linux / ubuntu / unknown")
     })
 
     emitEvent?.({ keyIndex: 1, type: "down" })
@@ -1231,7 +1237,7 @@ describe("createDeckRuntime", () => {
         },
         type: "date-time",
       })
-      expect(runtime.getRenderButtons()[0]?.label).toMatch(/\d{2}\/\d{2}\/\d{4}/)
+      expect(renderReactNodeToHtml(runtime.getRenderButtons()[0]?.content)).toContain('data-sireno-date-time="digital"')
     })
   })
 
@@ -1396,21 +1402,24 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("settings")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Session unlocked" })
+      expect(runtime.getRenderButtons()[0]).toMatchObject({ background: "#10161f", keyIndex: 0 })
+      expect(getRenderedDomText(runtime.getRenderButtons()[0] ?? {})).toContain("Session unlocked")
     })
 
     sessionMonitor.emit({ capability: "supported", state: "locked" })
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("locked")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Locked on linux" })
+      expect(runtime.getRenderButtons()[0]).toMatchObject({ background: "#10161f", keyIndex: 0 })
+      expect(getRenderedDomText(runtime.getRenderButtons()[0] ?? {})).toContain("Locked on linux")
     })
 
     sessionMonitor.emit({ capability: "supported", state: "unlocked" })
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("settings")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Session unlocked" })
+      expect(runtime.getRenderButtons()[0]).toMatchObject({ background: "#10161f", keyIndex: 0 })
+      expect(getRenderedDomText(runtime.getRenderButtons()[0] ?? {})).toContain("Session unlocked")
     })
   })
 
