@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 18 execution is in progress; Wave 1 shipped the first browser-backed DOM action/change-deck path with `buttonFrame` and a real device-review fixture.
+**Current focus:** Phase 18 execution is in progress; Waves 1-2 shipped the first browser-backed DOM button path, moved the bundled date/time addon onto it, and demoted the old SVG-era reconciler contract to legacy fallback status.
 
 ## Current Position
 
 Phase: 18 — React DOM-Based Renderer With HTML/CSS Surface Support
-Plan: 18-01 complete
+Plan: 18-02 complete
 Status: executing
-Last activity: 2026-05-21 - Completed Plan 18-01 with the first browser-backed DOM button path, persistent renderer seam, and Phase 18 UAT fixture
+Last activity: 2026-05-21 - Completed Plan 18-02 by demoting the legacy render contract, moving bundled date/time buttons onto DOM rendering, and adding the broader default-frame fixture
 
 Progress: [##########] 100%
 
@@ -65,6 +65,7 @@ Recent decisions affecting current work:
 - **Phase 14 discussion:** Built-in toggles should ship as one `toggle` type with explicit `mode: internal | get-set | toggle-status`, shared base presentation plus per-state overrides, and no separate per-mode button types.
 - **Phase 14 discussion:** Command-driven toggles are externally authoritative: `toggle-status` requires `status_command`, startup stays pending until the first read, failed writes preserve last authoritative truth plus error state, and output mapping uses explicit `on_values` / `off_values` token lists.
 - **Phase 14 discussion:** Toggle visuals may differ by mode, but only through shared-base mode accents rather than three bespoke renderers; internal toggle state continuity remains scoped to the running daemon, not durable restart persistence.
+- **Phase 18 execution:** Addon-owned visual payload now stays under `button.config`, the old reconciler/types seam is explicitly legacy-only, and the bundled date/time addon now renders through DOM content with default `buttonFrame` coverage.
 
 ### Pending Todos
 
@@ -87,6 +88,7 @@ Recent decisions affecting current work:
 - **Plan 17-04:** Closed the Phase 17 UAT regression by forwarding `full_surface` through the shipped CLI/device render path, preserving config-authored surface metadata across builtin runtime re-renders, and passing the real-device rerun.
 - **Phase 18 discussion:** Captured the hard switch to browser-backed DOM button components, one persistent deck page, sampled media rendering, latest-state capture coalescing, and a core-owned React `buttonFrame` that wraps by default unless `full_surface: true`.
 - **Plan 18-01:** Added the persistent browser renderer seam, the real `buttonFrame` + DOM host, the first shipped DOM-backed `action` / `change-deck` path, and a committed Phase 18 browser-rendered UAT fixture while keeping runtime ownership in place.
+- **Plan 18-02:** Demoted the old SVG-era button contract to legacy fallback status, moved bundled date/time buttons onto DOM-authored renders, and added a broader fixture proving default `buttonFrame` behavior across more of the shipped DOM surface.
 - **Phase 16 discussion:** Captured deck-only file references with owning-file-relative path resolution, root-plus-ref hot-reload, built-in temporary error-deck fallback on invalid reload, stack-preserving successful reload restore, full runtime instance rebuild on reload, shared-wrapper footer removal, and narrow per-button accent overrides accepting tokens or raw colors.
 - **Phase 10 kickoff:** Milestone audit found that the documented addon authoring entrypoints do not line up with the built `packages/cli` exports, so release flow needs a gap-closure phase before `/review`.
 - **Milestone v1.2 kickoff:** Captured session-context, layered background, text fitting, global wrapper/style, richer toggle, and lock-aware deck requirements plus the five-phase roadmap that sequences contract work before user-facing polish.
