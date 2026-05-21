@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 16 — Config Reload + Wrapper Polish
-**Status:** review_ready
-**Last updated:** 2026-05-20
+**Phase:** 18 — React DOM-Based Renderer With HTML/CSS Surface Support
+**Status:** planning
+**Last updated:** 2026-05-21
 
 ---
 
