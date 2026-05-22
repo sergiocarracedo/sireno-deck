@@ -6,6 +6,54 @@
 
 ## Areas Discussed
 
+### 2026-05-22 browser-only cleanup boundary
+- Options considered:
+  - Keep the browser renderer as primary but preserve a hidden non-browser fallback
+  - Fail startup honestly when the browser renderer is unavailable
+  - Keep the daemon alive with an internal error-only degraded mode
+- Recommended:
+  - Fail startup honestly when the browser renderer is unavailable
+- User choice:
+  - `Fail startup (Recommended)`
+- Captured rationale:
+  - Keeping a degraded fallback path would preserve the old renderer indefinitely and undermine the Phase 18 hard switch.
+
+### 2026-05-22 legacy contract removal scope
+- Options considered:
+  - Remove all legacy render contracts
+  - Remove addon-facing legacy APIs but keep internal legacy support
+  - Keep fallback metadata only for mixed decks
+- Recommended:
+  - Remove all legacy render contracts
+- User choice:
+  - `Remove all legacy contracts (Recommended)`
+- Captured rationale:
+  - The cleanup should remove `deck-button`, `deck-surface`, `deck-text`, and fallback metadata together instead of leaving half of the old system alive.
+
+### 2026-05-22 runtime-owned surface migration
+- Options considered:
+  - Convert all runtime-owned surfaces to TSX/browser rendering
+  - Keep a minimal internal legacy renderer for system-owned surfaces only
+  - Drop some runtime-owned surfaces instead of converting them
+- Recommended:
+  - Convert all runtime-owned surfaces to TSX/browser rendering
+- User choice:
+  - `Convert all to TSX (Recommended)`
+- Captured rationale:
+  - Implicit locked-session and temporary config-error surfaces should not keep the removed renderer alive internally.
+
+### 2026-05-22 shared constants extraction
+- Options considered:
+  - Extract shared preset/layout constants and delete the old renderer module
+  - Keep a reduced `text-image.ts` file for constants only
+  - Inline constants into browser modules
+- Recommended:
+  - Extract shared preset/layout constants and delete the old renderer module
+- User choice:
+  - `Extract and delete renderer (Recommended)`
+- Captured rationale:
+  - `text-image.ts` is currently doing two jobs; the browser path may keep shared key geometry, but the SVG renderer itself should be deleted.
+
 ### Renderer backend
 - Options considered:
   - Persistent Playwright browser with one full-deck page
@@ -176,6 +224,7 @@
 - Per-button page isolation.
 - Best-effort continuous animation semantics.
 - Richer update prioritization beyond latest-state coalescing.
+- Any browserless degraded mode or hidden emergency renderer path.
 
 ## User Verbatim Signals
 
@@ -185,3 +234,4 @@
 - "Obviously, `full_surface` is a common prop for all the buttons"
 - "And remember shared base MUST be a react component (and rename it to `buttonFrame`"
 - "i mean HTML/CSS because is what the browser understand, but react-dom do the job to convert the tsx to html and css"
+- "not only to remove text-image.ts, i want to remove everything not related wirth the browser rendering"
