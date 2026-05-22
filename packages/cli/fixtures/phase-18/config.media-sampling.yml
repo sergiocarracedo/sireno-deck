@@ -3,7 +3,7 @@ main_deck: main
 decks:
   main:
     id: main
-    name: Media Sampling Review
+    name: TSX Media Sampling Review
     buttons:
       - position: 0
         type: media-demo
@@ -28,7 +28,7 @@ decks:
             accent: "#a78bfa"
       - position: 2
         type: action
-        label: DOM Action
+        label: TSX Action
         command: "printf 'sampled'"
       - position: 3
         type: change-deck
@@ -37,7 +37,7 @@ decks:
 
   tools:
     id: tools
-    name: Media Sampling Tools
+    name: TSX Media Sampling Tools
     buttons:
       - position: 0
         type: toggle

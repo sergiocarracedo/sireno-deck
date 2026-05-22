@@ -1,7 +1,12 @@
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import { createDomButtonRender } from '../../../addon/api.js'
+function MediaSampleSurface(props: {
+  children: ReturnType<typeof createMediaDemoContent>
+  sample_interval_ms: number
+}) {
+  return props.children
+}
 
 const MEDIA_DEMO_REFRESH_INTERVAL_MS = 125
 
@@ -95,19 +100,12 @@ const builtinMediaDemoButton = {
       render: () => {
         const frame = config.frames[frameIndex] ?? config.frames[0]
 
-        return createDomButtonRender({
-          content: createMediaDemoContent({
+        return createElement(MediaSampleSurface, {
+          children: createMediaDemoContent({
             accent: frame?.accent ?? '#7dd3fc',
             frameLabel: frame?.label ?? 'FRAME',
             label: config.label,
           }),
-          fallback: {
-            detailLines: [frame?.label ?? 'FRAME'],
-            label: config.label,
-            subtitle: config.loop ? 'LOOP' : 'HOLD',
-            variant: 'media',
-          },
-          keyIndex: button.position,
           sample_interval_ms: config.sample_interval_ms,
         })
       },

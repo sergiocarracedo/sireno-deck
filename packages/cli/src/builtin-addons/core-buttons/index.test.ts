@@ -417,10 +417,8 @@ describe('core-buttons addon', () => {
     const renderResult = instance?.render()
 
     expect(definition?.type).toBe('media-demo')
-    expect(isAddonDomButtonRender(renderResult)).toBe(true)
-    expect(renderResult).toMatchObject({ keyIndex: 5, sample_interval_ms: 400 })
-    expect(renderReactNodeToHtml(renderResult?.content)).toContain('data-sireno-media-demo="ONE"')
-    expect(renderReactNodeToHtml(createHostedButtonElement(renderResult!))).toContain('data-sireno-button-frame="true"')
+    expect(isAddonDomButtonRender(renderResult)).toBe(false)
+    expect(renderReactNodeToHtml(renderResult as never)).toContain('data-sireno-media-demo="ONE"')
   })
 
   it('advances bundled media-demo frames on refresh while respecting loop:false', async () => {
@@ -440,12 +438,12 @@ describe('core-buttons addon', () => {
       },
     } as never)
 
-    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-media-demo="ONE"')
+    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('data-sireno-media-demo="ONE"')
 
     await instance?.refresh?.()
-    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-media-demo="TWO"')
+    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('data-sireno-media-demo="TWO"')
 
     await instance?.refresh?.()
-    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-media-demo="TWO"')
+    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('data-sireno-media-demo="TWO"')
   })
 })

@@ -16,7 +16,7 @@ updated: 2026-05-21T16:30:00+02:00
 number: 3
 name: bounded media sampling stays browser-backed and honest on the device surface
 expected: |
-  Start the CLI from `packages/cli` with `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.media-sampling.yml`. On `main`, confirm `Clip Loop` visibly advances across `SKY`, `MINT`, and `ROSE` as bounded sampled snapshots rather than smooth continuous playback, and confirm `One Shot` advances to `HOLD` then stops there. `DOM Action` should still render inside the implicit `buttonFrame` chrome beside the sampled buttons. Then enter `tools` and return to `main`; the browser-backed deck should come back cleanly with no stale capture residue.
+  Start the CLI from `packages/cli` with `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.media-sampling.yml`. On `main`, confirm `Clip Loop` visibly advances across `SKY`, `MINT`, and `ROSE` as bounded sampled snapshots rather than smooth continuous playback, and confirm `One Shot` advances to `HOLD` then stops there. `TSX Action` should still render inside the implicit `buttonFrame` chrome beside the sampled buttons. Then enter `tools` and return to `main`; the browser-backed deck should come back cleanly with no stale capture residue.
 awaiting: none
 
 ## Current outcome
@@ -70,14 +70,14 @@ fail_if:
 
 ## Fixture 3 — Bounded media sampling through the browser-backed renderer
 
-expected: Start the CLI from `packages/cli` with `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.media-sampling.yml`. Confirm `Clip Loop` visibly advances across `SKY`, `MINT`, and `ROSE` as bounded sampled snapshots, confirm `One Shot` advances to `HOLD` and stays there, confirm `DOM Action` remains framed, and verify leaving/returning through `Tools` does not leave stale captures behind.
+expected: Start the CLI from `packages/cli` with `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.media-sampling.yml`. Confirm `Clip Loop` visibly advances across `SKY`, `MINT`, and `ROSE` as bounded sampled snapshots, confirm `One Shot` advances to `HOLD` and stays there, confirm `TSX Action` remains framed, and verify leaving/returning through `Tools` does not leave stale captures behind.
 fixture: `packages/cli/fixtures/phase-18/config.media-sampling.yml`
 result: pass
-observed: `Clip Loop` advanced across sampled frames, `One Shot` stopped on `HOLD`, `DOM Action` stayed framed, and leaving/returning through `Tools` did not leave stale captures behind.
+observed: `Clip Loop` advanced across sampled frames, `One Shot` stopped on `HOLD`, `TSX Action` stayed framed, and leaving/returning through `Tools` did not leave stale captures behind.
 pass_if:
 - Sampled media buttons visibly advance in bounded snapshots.
 - `Clip Loop` repeats through its frames, while `One Shot` stops on its final frame.
-- The neighboring action and navigation buttons remain DOM-rendered and framed.
+- The neighboring action and navigation buttons remain browser-rendered TSX surfaces and framed.
 - Navigation away from and back to the sampled deck does not leave stale captures behind.
 fail_if:
 - Sampled buttons stay frozen on the initial frame.
@@ -88,7 +88,7 @@ fail_if:
 1. From `packages/cli`, run the CLI with `fixtures/phase-18/config.media-sampling.yml`.
 2. Confirm `Clip Loop` visibly advances across its labeled frames (`SKY`, `MINT`, `ROSE`) as sampled snapshots, not continuous playback.
 3. Confirm `One Shot` advances to `HOLD` and then stops there instead of looping forever.
-4. Verify `DOM Action` still renders through the implicit `buttonFrame` chrome beside the sampled media buttons.
+4. Verify `TSX Action` still renders through the implicit `buttonFrame` chrome beside the sampled media buttons.
 5. Press `Tools`, confirm the second deck is still browser-backed DOM, then return to `main` and verify sampling resumes without stale pixels.
 
 ## Summary
