@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 18 context is captured for the React DOM renderer contract; next up is Phase 18 planning.
+**Current focus:** Phase 18 context is updated for React TSX authoring rendered through `react-dom`; next up is Phase 18 planning.
 
 ## Current Position
 
 Phase: 18 — React DOM-Based Renderer With HTML/CSS Surface Support
-Plan: context captured
+Plan: context updated
 Status: discussing complete
-Last activity: 2026-05-21 - Captured Phase 18 context for the hard switch to browser-backed React HTML/CSS button components and `buttonFrame`
+Last activity: 2026-05-22 - Updated Phase 18 context to clarify React TSX authoring via `react-dom` inside the browser-backed HTML/CSS renderer
 
 Progress: [##########] 100%
 
@@ -85,7 +85,8 @@ Recent decisions affecting current work:
 - **Phase 17 discussion:** Captured the shift from wrapper ids to a default base button-shape model, explicit full-surface opt-out, and narrow explicit content helpers while keeping bespoke variants on their current seams for now.
 - **Phase 17 planning:** Broke the phase into three slices: contract and compatibility first, core base-shape plus helper extraction second, and reviewable default-vs-full-surface proof third.
 - **Plan 17-04:** Closed the Phase 17 UAT regression by forwarding `full_surface` through the shipped CLI/device render path, preserving config-authored surface metadata across builtin runtime re-renders, and passing the real-device rerun.
-- **Phase 18 discussion:** Captured the hard switch to browser-backed DOM button components, one persistent deck page, sampled media rendering, latest-state capture coalescing, and a core-owned React `buttonFrame` that wraps by default unless `full_surface: true`.
+- **Phase 18 discussion:** Captured the hard switch to browser-backed HTML/CSS button rendering, one persistent deck page, sampled media rendering, latest-state capture coalescing, and a core-owned React `buttonFrame` that wraps by default unless `full_surface: true`.
+- **Phase 18 context refresh:** Clarified that button authors write normal React TSX and `react-dom` performs the HTML/CSS conversion; the custom `deck-button`-style authoring path is not the Phase 18 target.
 - **Phase 16 discussion:** Captured deck-only file references with owning-file-relative path resolution, root-plus-ref hot-reload, built-in temporary error-deck fallback on invalid reload, stack-preserving successful reload restore, full runtime instance rebuild on reload, shared-wrapper footer removal, and narrow per-button accent overrides accepting tokens or raw colors.
 - **Phase 10 kickoff:** Milestone audit found that the documented addon authoring entrypoints do not line up with the built `packages/cli` exports, so release flow needs a gap-closure phase before `/review`.
 - **Milestone v1.2 kickoff:** Captured session-context, layered background, text fitting, global wrapper/style, richer toggle, and lock-aware deck requirements plus the five-phase roadmap that sequences contract work before user-facing polish.
@@ -131,9 +132,9 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-05-21
-Stopped at: Phase 17 gap-closure execution complete; next up is verification and UAT rerun.
-Resume file: .planning/phases/17-custom-wrapper-primitives-with-addon/17-VERIFICATION.md
+Last session: 2026-05-22
+Stopped at: Phase 18 context refreshed to replace the stale DOM-authored assumption with React TSX via `react-dom`; next up is Phase 18 planning.
+Resume file: .planning/phases/18-react-dom-based-renderer-with-htmlcss/18-CONTEXT.md
 
 ### Quick Tasks Completed
 
