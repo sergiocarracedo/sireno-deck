@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 18 context is updated for React TSX authoring rendered through `react-dom`; next up is Phase 18 planning.
+**Current focus:** Phase 18 context is updated for a hard browser-only renderer cleanup: React TSX via `react-dom`, no SVG/text-image fallback, and no legacy render contract retained.
 
 ## Current Position
 
 Phase: 18 — React DOM-Based Renderer With HTML/CSS Surface Support
 Plan: context updated
 Status: discussing complete
-Last activity: 2026-05-22 - Updated Phase 18 context to clarify React TSX authoring via `react-dom` inside the browser-backed HTML/CSS renderer
+Last activity: 2026-05-22 - Updated Phase 18 context to require browser-only rendering and remove the legacy SVG/fallback render path
 
 Progress: [##########] 100%
 
