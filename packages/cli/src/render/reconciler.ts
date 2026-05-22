@@ -7,12 +7,19 @@ import type { ReactContext } from "react-reconciler"
 
 import type { ButtonInstance } from "../core/schemas.js"
 import type {
+  LegacyDeckButtonProps,
+  LegacyDeckSurfaceProps,
+  LegacyDeckTextProps,
+} from "./types.js"
+
+export type {
   DeckButtonProps,
   DeckSurfaceProps,
   DeckTextProps,
+  LegacyDeckButtonProps,
+  LegacyDeckSurfaceProps,
+  LegacyDeckTextProps,
 } from "./types.js"
-
-export type { DeckButtonProps, DeckSurfaceProps, DeckTextProps } from "./types.js"
 
 export interface RenderNode {
   accent?: string
@@ -62,7 +69,7 @@ interface RenderContainer {
 type RenderInstance = RenderNode
 type RenderTextInstance = never
 type HostContext = Record<string, never>
-type RenderProps = DeckButtonProps | DeckSurfaceProps | DeckTextProps
+type RenderProps = LegacyDeckButtonProps | LegacyDeckSurfaceProps | LegacyDeckTextProps
 
 const ROOT_HOST_CONTEXT: HostContext = {}
 const HOST_TRANSITION_CONTEXT = createContext<"not-pending">("not-pending") as unknown as ReactContext<"not-pending">
@@ -82,32 +89,32 @@ function removeChild(parent: RenderContainer | RenderInstance, child: RenderInst
   }
 }
 
-function isDeckTextProps(props: unknown): props is DeckTextProps {
+function isDeckTextProps(props: unknown): props is LegacyDeckTextProps {
   return (
     typeof props === "object" &&
     props !== null &&
     "keyIndex" in props &&
-    typeof (props as DeckTextProps).keyIndex === "number" &&
+    typeof (props as LegacyDeckTextProps).keyIndex === "number" &&
     "text" in props &&
-    typeof (props as DeckTextProps).text === "string"
+    typeof (props as LegacyDeckTextProps).text === "string"
   )
 }
 
-function isDeckSurfaceProps(props: unknown): props is DeckSurfaceProps {
+function isDeckSurfaceProps(props: unknown): props is LegacyDeckSurfaceProps {
   return (
     typeof props === "object" &&
     props !== null &&
     "buttons" in props &&
-    Array.isArray((props as DeckSurfaceProps).buttons)
+    Array.isArray((props as LegacyDeckSurfaceProps).buttons)
   )
 }
 
-function isDeckButtonProps(props: unknown): props is DeckButtonProps {
+function isDeckButtonProps(props: unknown): props is LegacyDeckButtonProps {
   return (
     typeof props === "object" &&
     props !== null &&
     "keyIndex" in props &&
-    typeof (props as DeckButtonProps).keyIndex === "number"
+    typeof (props as LegacyDeckButtonProps).keyIndex === "number"
   )
 }
 
@@ -400,20 +407,20 @@ function collectRenderDescriptions(nodes: readonly RenderNode[]): RenderDescript
   return descriptions
 }
 
-export function createDeckTextElement(props: DeckTextProps): ReactElement<DeckTextProps> {
+export function createDeckTextElement(props: LegacyDeckTextProps): ReactElement<LegacyDeckTextProps> {
   return createElement("deck-text", props)
 }
 
-export function createDeckButtonElement(props: DeckButtonProps): ReactElement<DeckButtonProps> {
+export function createDeckButtonElement(props: LegacyDeckButtonProps): ReactElement<LegacyDeckButtonProps> {
   return createElement("deck-button", props)
 }
 
-export function createDeckSurfaceElement(props: DeckSurfaceProps): ReactElement<DeckSurfaceProps> {
+export function createDeckSurfaceElement(props: LegacyDeckSurfaceProps): ReactElement<LegacyDeckSurfaceProps> {
   return createElement("deck-surface", props)
 }
 
 // Legacy compatibility helper for the SVG fallback path.
-export function createLegacyDisplayButtonModels(buttons: readonly ButtonInstance[]): DeckButtonProps[] {
+export function createLegacyDisplayButtonModels(buttons: readonly ButtonInstance[]): LegacyDeckButtonProps[] {
   return buttons.map((button) => {
     return {
       ...(button.accent !== undefined ? { accent: button.accent } : {}),
@@ -429,7 +436,7 @@ export function createLegacyDisplayButtonModels(buttons: readonly ButtonInstance
 }
 
 export function renderDeck(
-  element: ReactElement<DeckTextProps | DeckButtonProps | DeckSurfaceProps>,
+  element: ReactElement<LegacyDeckTextProps | LegacyDeckButtonProps | LegacyDeckSurfaceProps>,
 ): RenderDescription[] {
   const container = createContainer()
   const root = reconciler.createContainer(

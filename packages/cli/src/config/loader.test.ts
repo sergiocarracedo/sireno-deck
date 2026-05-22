@@ -252,6 +252,34 @@ describe("loadConfig", () => {
     expect(config.decks.main?.buttons[0]?.config).toEqual({ label: "Clock" })
   })
 
+  it("keeps fallback-only render metadata in the core envelope while addon payload stays in config", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: action",
+        "        label: Clock",
+        "        style_id: core-buttons/accent",
+        "        full_surface: true",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig()
+
+    expect(config.decks.main?.buttons[0]).toMatchObject({
+      config: { label: "Clock" },
+      full_surface: true,
+      style_id: "core-buttons/accent",
+    })
+  })
+
   it("reports invalid button background values with line information", async () => {
     writeFileSync(
       join(tempDir, "config.yml"),

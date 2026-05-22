@@ -1,18 +1,18 @@
 // Legacy compatibility-only render description seam.
-// Phase 18 moves shipped button authoring to DOM-authored button components;
+// Phase 18 moves shipped button authoring to React TSX rendered through react-dom;
 // these types remain only for the SVG fallback path and focused compatibility tests.
 export type DeckTextFit = "shrink" | "wrap"
 
 export type DeckButtonWrapper = "shared"
 
-export interface DeckTextProps {
+export interface LegacyDeckTextProps {
   background?: string
   fit?: DeckTextFit
   keyIndex: number
   text: string
 }
 
-export interface DeckButtonProps {
+export interface LegacyDeckButtonProps {
   accent?: string
   background?: string
   detailLines?: string[]
@@ -31,7 +31,11 @@ export interface DeckButtonProps {
   wrapper_id?: string
 }
 
-export interface DeckSurfaceProps {
+export interface LegacyDeckSurfaceProps {
   background?: string
-  buttons: DeckButtonProps[]
+  buttons: LegacyDeckButtonProps[]
 }
+
+export type DeckTextProps = LegacyDeckTextProps
+export type DeckButtonProps = LegacyDeckButtonProps
+export type DeckSurfaceProps = LegacyDeckSurfaceProps

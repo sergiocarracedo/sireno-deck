@@ -19,6 +19,12 @@ import {
 const jsxButton = <deck-button keyIndex={7} label="JSX" fit="shrink" subtitle="typed" variant="toggle" wrapper="shared" />
 
 describe("render reconciler", () => {
+  it("keeps the old deck-* reconciler path explicitly as legacy fallback coverage", () => {
+    const descriptions = renderDeck(createDeckButtonElement({ keyIndex: 0, label: "Legacy" }))
+
+    expect(descriptions).toEqual([{ keyIndex: 0, label: "Legacy" }])
+  })
+
   it("produces a render description for key 0", () => {
     const descriptions = renderDeck(createDeckTextElement({ keyIndex: 0, text: "Hello" }))
 

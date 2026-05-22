@@ -136,6 +136,8 @@ export interface DeckConfig {
 }
 
 const CoreButtonConfigSchema = z.object({
+  // These fields remain core-owned because the legacy SVG fallback still needs
+  // enough metadata to render mixed decks while TSX/react-dom becomes primary.
   accent: AccentOverrideSchema.optional(),
   background: z.string().min(1).optional(),
   full_surface: z.boolean().optional(),
