@@ -184,4 +184,53 @@ describe('browser renderer', () => {
       vi.useRealTimers()
     }
   })
+
+  it('uses the lowest sampled media interval across the active deck instead of the first declared one', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const setContent = vi.fn(async () => {})
+      const screenshot = vi
+        .fn<() => Promise<Buffer>>()
+        .mockImplementationOnce(async () => createDeckScreenshot(['#ff0000']))
+        .mockImplementationOnce(async () => createDeckScreenshot(['#0000ff']))
+      const renderer = createBrowserRenderer({
+        keyCount: 1,
+        launcher: {
+          launch: async () => ({
+            close: async () => {},
+            newContext: async () => ({
+              close: async () => {},
+              newPage: async () => ({
+                screenshot,
+                setContent,
+                setViewportSize: async () => {},
+              }),
+            }),
+          }),
+        },
+      })
+
+      await renderer.start()
+      await renderer.updateDeck('<html><body><div id="deck-root"><div data-sireno-media-sample-interval-ms="400"></div><div data-sireno-media-sample-interval-ms="200"></div></div></body></html>')
+      await renderer.captureKeyBuffers()
+
+      await renderer.updateDeck('<html><body><div id="deck-root"><div data-sireno-media-sample-interval-ms="400">two</div><div data-sireno-media-sample-interval-ms="200">two</div></div></body></html>')
+      const latestCapturePromise = renderer.captureKeyBuffers()
+
+      await vi.advanceTimersByTimeAsync(199)
+      expect(screenshot).toHaveBeenCalledTimes(1)
+
+      await vi.advanceTimersByTimeAsync(1)
+      await latestCapturePromise
+
+      expect(setContent.mock.calls.map((call) => call[0])).toEqual([
+        '<html><body><div id="deck-root"><div data-sireno-media-sample-interval-ms="400"></div><div data-sireno-media-sample-interval-ms="200"></div></div></body></html>',
+        '<html><body><div id="deck-root"><div data-sireno-media-sample-interval-ms="400">two</div><div data-sireno-media-sample-interval-ms="200">two</div></div></body></html>',
+      ])
+      expect(screenshot).toHaveBeenCalledTimes(2)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
 })

@@ -113,12 +113,23 @@ async function cropDeckCaptureToKeyBuffers(
 }
 
 function parseMediaSampleIntervalMs(html: string): number | undefined {
-  const match = html.match(/data-sireno-media-sample-interval-ms="(\d+)"/)
-  if (!match) {
+  const matches = [...html.matchAll(/data-sireno-media-sample-interval-ms="(\d+)"/g)]
+  if (matches.length === 0) {
     return undefined
   }
 
-  return Number.parseInt(match[1] ?? "", 10)
+  return matches.reduce<number | undefined>((lowestIntervalMs, match) => {
+    const parsedIntervalMs = Number.parseInt(match[1] ?? "", 10)
+    if (Number.isNaN(parsedIntervalMs)) {
+      return lowestIntervalMs
+    }
+
+    if (lowestIntervalMs === undefined || parsedIntervalMs < lowestIntervalMs) {
+      return parsedIntervalMs
+    }
+
+    return lowestIntervalMs
+  }, undefined)
 }
 
 async function sleep(ms: number): Promise<void> {
