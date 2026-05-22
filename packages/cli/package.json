@@ -31,6 +31,7 @@
     "pino": "^9.0.0",
     "playwright": "^1.55.0",
     "react": "^19.2.6",
+    "react-dom": "^19.2.0",
     "react-reconciler": "^0.33.0",
     "sharp": "^0.34.5",
     "systeminformation": "^5.31.6",
