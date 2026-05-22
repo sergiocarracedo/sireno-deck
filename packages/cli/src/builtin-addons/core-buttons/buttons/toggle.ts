@@ -4,7 +4,7 @@ import { extname } from 'node:path'
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import { createDomButtonRender, createDomTextLabel } from '../../../addon/api.js'
+import { createDomTextLabel } from '../../../addon/api.js'
 import { BuiltinToggleButtonConfigSchema } from '../../../core/schemas.js'
 
 const COMMAND_DRIVEN_TOGGLE_INTERVAL_MS = 1_000
@@ -148,22 +148,12 @@ const builtinToggleButton = {
         render: () => {
           const stateProps = getStateProps(currentState)
 
-          return createDomButtonRender({
-            content: createToggleContent({
-              icon: stateProps.icon,
-              label: stateProps.label,
-              mode: 'internal',
-              state: currentState,
-              subtitle: stateProps.subtitle,
-            }),
-            fallback: {
-              ...(stateProps.icon !== undefined ? { icon: stateProps.icon } : {}),
-              ...(stateProps.label !== undefined ? { label: stateProps.label } : {}),
-              ...(stateProps.subtitle !== undefined ? { subtitle: stateProps.subtitle } : {}),
-              toggle_mode: 'internal',
-              variant: 'toggle',
-            },
-            keyIndex: button.position,
+          return createToggleContent({
+            icon: stateProps.icon,
+            label: stateProps.label,
+            mode: 'internal',
+            state: currentState,
+            subtitle: stateProps.subtitle,
           })
         },
       }
@@ -270,32 +260,17 @@ const builtinToggleButton = {
               ? 'off'
               : displayState
 
-        return createDomButtonRender({
-          content: createToggleContent({
-            icon: stateProps.icon,
-            label: stateProps.label,
-            mode: config.mode,
-            state: visualState,
-            subtitle:
-              displayState === 'pending'
-                ? 'PENDING'
-                : displayState === 'error'
-                  ? 'ERROR'
-                  : stateProps.subtitle,
-          }),
-          fallback: {
-            ...(stateProps.icon !== undefined ? { icon: stateProps.icon } : {}),
-            ...(stateProps.label !== undefined ? { label: stateProps.label } : {}),
-            subtitle:
-              displayState === 'pending'
-                ? 'PENDING'
-                : displayState === 'error'
-                  ? 'ERROR'
-                  : stateProps.subtitle,
-            toggle_mode: config.mode,
-            variant: 'toggle',
-          },
-          keyIndex: button.position,
+        return createToggleContent({
+          icon: stateProps.icon,
+          label: stateProps.label,
+          mode: config.mode,
+          state: visualState,
+          subtitle:
+            displayState === 'pending'
+              ? 'PENDING'
+              : displayState === 'error'
+                ? 'ERROR'
+                : stateProps.subtitle,
         })
       },
     }

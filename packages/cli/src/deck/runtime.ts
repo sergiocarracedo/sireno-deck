@@ -69,6 +69,15 @@ export interface RuntimeRenderButton extends Partial<DeckButtonProps> {
   sample_interval_ms?: number
 }
 
+interface RootDomRenderProps {
+  full_surface?: boolean
+  sample_interval_ms?: number
+  style_id?: string
+  wrapper_id?: string
+}
+
+const LEGACY_DECK_ELEMENT_TYPES = new Set(["deck-button", "deck-surface", "deck-text"])
+
 const IMPLICIT_LOCKED_DECK_ID = "__sireno_locked_session__"
 const TEMPORARY_RELOAD_ERROR_DECK_ID = "__sireno_reload_error__"
 const implicitLockedButtonDefinition = datetimeButtonsAddon.buttons.find((button) => button.type === "date-time")
@@ -140,6 +149,30 @@ function createTemporaryErrorDeck(detailLines: readonly string[]): DeckConfig {
       type: temporaryErrorButtonDefinition.type,
     }],
   }
+}
+
+function getRootDomRenderProps(rendered: unknown): RootDomRenderProps {
+  if (!isValidElement(rendered)) {
+    return {}
+  }
+
+  const props = rendered.props as RootDomRenderProps | null | undefined
+  if (!props) {
+    return {}
+  }
+
+  return {
+    ...(props.full_surface !== undefined ? { full_surface: props.full_surface } : {}),
+    ...(props.sample_interval_ms !== undefined ? { sample_interval_ms: props.sample_interval_ms } : {}),
+    ...(props.style_id !== undefined ? { style_id: props.style_id } : {}),
+    ...(props.wrapper_id !== undefined ? { wrapper_id: props.wrapper_id } : {}),
+  }
+}
+
+function isLegacyDeckRenderElement(rendered: unknown): boolean {
+  return isValidElement(rendered)
+    && typeof rendered.type === "string"
+    && LEGACY_DECK_ELEMENT_TYPES.has(rendered.type)
 }
 
 export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
@@ -306,17 +339,32 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
           ...(button.style_id !== undefined ? { style_id: button.style_id } : {}),
           ...(button.wrapper_id !== undefined ? { wrapper_id: button.wrapper_id } : {}),
         }
-      : isValidElement(rendered)
-        ? {
-            background: resolveButtonBackground(button, deckId),
-            content: createElement(ButtonSurface, {
-              ...(button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
-            }, rendered),
-            ...(button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
-            keyIndex: button.position,
-            ...(button.style_id !== undefined ? { style_id: button.style_id } : {}),
-            ...(button.wrapper_id !== undefined ? { wrapper_id: button.wrapper_id } : {}),
-          }
+      : isValidElement(rendered) && !isLegacyDeckRenderElement(rendered)
+        ? (() => {
+            const rootDomRenderProps = getRootDomRenderProps(rendered)
+            const fullSurface = rootDomRenderProps.full_surface ?? button.full_surface
+
+            return {
+              background: resolveButtonBackground(button, deckId),
+              content: createElement(ButtonSurface, {
+                ...(fullSurface !== undefined ? { full_surface: fullSurface } : {}),
+                ...(rootDomRenderProps.sample_interval_ms !== undefined ? { sample_interval_ms: rootDomRenderProps.sample_interval_ms } : {}),
+              }, rendered),
+              ...(fullSurface !== undefined ? { full_surface: fullSurface } : {}),
+              keyIndex: button.position,
+              ...(rootDomRenderProps.sample_interval_ms !== undefined ? { sample_interval_ms: rootDomRenderProps.sample_interval_ms } : {}),
+              ...(rootDomRenderProps.style_id !== undefined
+                ? { style_id: rootDomRenderProps.style_id }
+                : button.style_id !== undefined
+                  ? { style_id: button.style_id }
+                  : {}),
+              ...(rootDomRenderProps.wrapper_id !== undefined
+                ? { wrapper_id: rootDomRenderProps.wrapper_id }
+                : button.wrapper_id !== undefined
+                  ? { wrapper_id: button.wrapper_id }
+                  : {}),
+            }
+          })()
       : (() => {
           const descriptions = renderDeck(rendered)
           const firstDescription = descriptions[0]

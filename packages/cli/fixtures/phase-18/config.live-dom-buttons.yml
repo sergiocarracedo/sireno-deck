@@ -3,7 +3,7 @@ main_deck: main
 decks:
   main:
     id: main
-    name: Live DOM Buttons
+    name: Live TSX Buttons
     buttons:
       - position: 0
         type: toggle
@@ -38,7 +38,7 @@ decks:
 
   tools:
     id: tools
-    name: Live DOM Tools
+    name: Live TSX Tools
     buttons:
       - position: 0
         type: toggle

@@ -84,6 +84,11 @@ function expectRuntimeDomContent(button: { background?: string; content?: unknow
   }
 }
 
+function expectRenderButtonText(button: { background?: string; content?: unknown; keyIndex: number }, expectedText: string): void {
+  expect(button).toMatchObject({ background: "#10161f" })
+  expect(getRenderedDomText(button)).toContain(expectedText)
+}
+
 describe("createDeckRuntime", () => {
   it("renders a bundled addon-backed button through the generic runtime host", async () => {
     const onRenderDeck = vi.fn()
