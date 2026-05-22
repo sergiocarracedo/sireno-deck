@@ -10,7 +10,7 @@ started: 2026-05-21T00:00:00+02:00
 updated: 2026-05-21T16:30:00+02:00
 ---
 
-# Phase 18 UAT — Browser-Backed DOM Deck Rendering
+# Phase 18 UAT — Browser-Backed React TSX Deck Rendering
 
 ## Current Test
 number: 3
@@ -23,38 +23,38 @@ awaiting: none
 
 - Automated implementation verification is complete.
 - Manual real-device UAT has been recorded as passing across all three committed fixtures.
-- The browser-rendered action path, live DOM invalidation path, and sampled-media path all passed on hardware.
+- The browser-rendered TSX action path, live invalidation path, and sampled-media path all passed on hardware.
 
-## Fixture 1 — Browser-rendered action + change-deck path
+## Fixture 1 — Browser-rendered TSX action + change-deck path
 
-expected: Start the CLI from `packages/cli` with `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.browser-rendered-action.yml`. On `main`, verify `Run Clock` and `Go Tools` both render inside the implicit `buttonFrame` chrome on a browser-backed DOM surface. Press `Go Tools`, confirm the `tools` deck stays browser-backed and shows no stale pixels, then press `Back Main` and confirm the main deck restores cleanly.
+expected: Start the CLI from `packages/cli` with `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.browser-rendered-action.yml`. On `main`, verify `Run Clock` and `Go Tools` are authored as normal React TSX, render inside the implicit `buttonFrame` chrome on a browser-backed surface, and do not rely on custom `deck-button` authoring. Press `Go Tools`, confirm the `tools` deck stays browser-backed and shows no stale pixels, then press `Back Main` and confirm the main deck restores cleanly.
 fixture: `packages/cli/fixtures/phase-18/config.browser-rendered-action.yml`
 result: pass
-observed: Browser-backed DOM rendering was visible on both decks, framed buttons showed the shared buttonFrame chrome, and navigation to `tools` / back to `main` stayed clean with no stale pixels.
+observed: Browser-backed rendering was visible on both decks, framed TSX-authored buttons showed the shared buttonFrame chrome, and navigation to `tools` / back to `main` stayed clean with no stale pixels.
 pass_if:
-- Both decks are visibly browser-backed DOM surfaces.
+- Both decks are visibly browser-backed HTML/CSS surfaces driven from React TSX.
 - Default framed buttons show implicit shared chrome from `buttonFrame`.
 - Navigation updates the active surface correctly after the move to the browser-backed renderer.
 fail_if:
-- Buttons fall back to the old SVG-looking path for this fixture.
+- Buttons fall back to the old SVG-looking path for this fixture or still depend on custom `deck-button` authoring.
 - Navigation leaves stale pixels from the previous deck.
 - Framed buttons do not visibly show the shared `buttonFrame` treatment.
 
 1. From `packages/cli`, run the CLI with `fixtures/phase-18/config.browser-rendered-action.yml`.
-2. Confirm the main deck renders through the browser-backed path rather than the old SVG-only path.
+2. Confirm the main deck renders through the browser-backed TSX/react-dom path rather than the old SVG-only path.
 3. Verify key 0 (`Run Clock`) renders inside the implicit `buttonFrame` chrome.
 4. Verify key 1 (`Go Tools`) renders inside the implicit `buttonFrame` chrome.
 5. Press key 1 and confirm navigation switches to the `tools` deck without stale content remaining on the device.
 6. Verify the `tools` deck also renders through the browser-backed path and that `Back Main` returns to the main deck cleanly.
 
-## Fixture 2 — Live DOM buttons stay coherent across invalidation
+## Fixture 2 — Live browser-rendered TSX buttons stay coherent across invalidation
 
 expected: Start the CLI from `packages/cli` with `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.live-dom-buttons.yml`. On `main`, confirm the deck is browser-backed, tap `Studio Lamp` and verify it flips cleanly between `OFF` and `ON`, then wait for time/date widgets to update and confirm the deck never shows a mixed stale/current surface. Enter `Tools`, confirm the second deck stays browser-backed, then return to `main` cleanly.
 fixture: `packages/cli/fixtures/phase-18/config.live-dom-buttons.yml`
 result: pass
-observed: Live DOM buttons stayed browser-backed, `Studio Lamp` flipped cleanly between `OFF` and `ON`, and the time/date widgets refreshed without mixed stale/current deck state during navigation.
+observed: Live TSX-authored buttons stayed browser-backed, `Studio Lamp` flipped cleanly between `OFF` and `ON`, and the time/date widgets refreshed without mixed stale/current deck state during navigation.
 pass_if:
-- Toggle, time, analog clock, and calendar buttons all render as DOM-authored buttons through the browser-backed path.
+- Toggle, time, analog clock, and calendar buttons all render as TSX-authored buttons through the browser-backed path.
 - Live invalidation never leaves a partially updated surface.
 - Navigation between `main` and `tools` preserves the DOM renderer path.
 fail_if:
@@ -63,7 +63,7 @@ fail_if:
 - Navigation returns to a stale or partially updated browser capture.
 
 1. From `packages/cli`, run the CLI with `fixtures/phase-18/config.live-dom-buttons.yml`.
-2. Confirm the main deck renders as a browser-backed DOM surface instead of the old SVG helper path.
+2. Confirm the main deck renders as a browser-backed TSX/react-dom surface instead of the old SVG helper path.
 3. Tap `Studio Lamp` and verify the subtitle flips between `OFF` and `ON` with no mixed stale/current keys.
 4. Wait long enough to see the time, analog clock, or calendar buttons change, and confirm the whole DOM-backed deck remains visually coherent after each live refresh.
 5. Press `Tools`, confirm the second deck also stays browser-backed, then press `Back Main` and verify the return surface is clean.
