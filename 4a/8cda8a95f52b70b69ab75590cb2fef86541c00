@@ -1,0 +1,21 @@
+packages/cli/src/builtin-addons/date-time/index.test.ts
+  s_df3509a167c487::t_6ded4d785c5162 3,111-113,129,155-157,177,180
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_df3509a167c487::t_6ded4d785c5162 4,228,242,256
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "4a8cda8a95f52b70b69ab75590cb2fef86541c00",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
