@@ -1,7 +1,7 @@
 import { createElement } from "react"
 import { describe, expect, it } from "vitest"
 
-import { createDomButtonRender } from "../addon/api.js"
+import { ButtonSurface, createDomButtonRender } from "../addon/api.js"
 import { createHostedButtonElement, renderDomDeck, renderReactNodeToHtml } from "./dom-host.js"
 
 describe("dom host", () => {
@@ -47,5 +47,17 @@ describe("dom host", () => {
     expect(html).toContain('data-sireno-key="1"')
     expect(html).toContain('data-sireno-key="2"')
     expect(html).toContain('data-sireno-media-sample-interval-ms="250"')
+  })
+
+  it("renders React TSX metadata wrappers through react-dom static markup", () => {
+    const html = renderReactNodeToHtml(createElement(ButtonSurface, {
+      full_surface: true,
+      sample_interval_ms: 400,
+    }, createElement("span", null, "TSX")))
+
+    expect(html).toContain('data-sireno-button-surface="true"')
+    expect(html).toContain('data-sireno-full-surface="true"')
+    expect(html).toContain('data-sireno-media-sample-interval-ms="400"')
+    expect(html).toContain('display:contents')
   })
 })

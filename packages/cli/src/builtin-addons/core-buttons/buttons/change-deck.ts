@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import { createDomButtonRender, createDomTextLabel } from '../../../addon/api.js'
+import { ButtonSurface, createDomTextLabel } from '../../../addon/api.js'
 
 function getMimeType(iconPath: string): string {
   switch (extname(iconPath).toLowerCase()) {
@@ -51,8 +51,7 @@ const builtinChangeDeckButton = {
       await methods.navigateToDeck(config.target_deck)
     },
     render: () =>
-      createDomButtonRender({
-        content: createElement('div', {
+      createElement(ButtonSurface, null, createElement('div', {
           children: [
             getInlineImageSource(config.icon)
               ? createElement('img', { alt: '', key: 'icon', src: getInlineImageSource(config.icon), style: { height: '24px', objectFit: 'contain', width: '24px' } })
@@ -60,13 +59,7 @@ const builtinChangeDeckButton = {
             createElement('span', { key: 'label' }, createDomTextLabel({ children: config.label })),
           ],
           style: { alignItems: 'center', display: 'flex', flexDirection: 'column', gap: '6px', justifyContent: 'center', width: '100%' },
-        }),
-        fallback: {
-          ...(config.icon !== undefined ? { icon: config.icon } : {}),
-          label: config.label,
-        },
-        keyIndex: button.position,
-      }),
+        })),
   }),
   type: 'change-deck',
 }

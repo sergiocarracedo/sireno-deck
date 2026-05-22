@@ -1,8 +1,8 @@
-import { createElement } from "react"
+import { createElement, isValidElement } from "react"
 import { z } from "zod"
 
 import { executeCommand, type CommandExecutionResult } from "../action/executor.js"
-import { isAddonDomButtonRender, type AddonDomButtonRender } from "../addon/api.js"
+import { ButtonSurface, isAddonDomButtonRender, type AddonDomButtonRender } from "../addon/api.js"
 import datetimeButtonsAddon from "../builtin-addons/date-time/index.js"
 import { createPollingScheduler, type PollingScheduler } from "../render/scheduler.js"
 import { createDeckController } from "./controller.js"
@@ -306,6 +306,17 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
           ...(button.style_id !== undefined ? { style_id: button.style_id } : {}),
           ...(button.wrapper_id !== undefined ? { wrapper_id: button.wrapper_id } : {}),
         }
+      : isValidElement(rendered)
+        ? {
+            background: resolveButtonBackground(button, deckId),
+            content: createElement(ButtonSurface, {
+              ...(button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
+            }, rendered),
+            ...(button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
+            keyIndex: button.position,
+            ...(button.style_id !== undefined ? { style_id: button.style_id } : {}),
+            ...(button.wrapper_id !== undefined ? { wrapper_id: button.wrapper_id } : {}),
+          }
       : (() => {
           const descriptions = renderDeck(rendered)
           const firstDescription = descriptions[0]

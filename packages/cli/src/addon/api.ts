@@ -71,6 +71,10 @@ export interface CreateAddonDomButtonRenderOptions extends AddonButtonSurfaceCon
   keyIndex: number
 }
 
+export interface ButtonSurfaceProps extends AddonButtonSurfaceContract {
+  children: ReactNode
+}
+
 export interface CreateAddonButtonInstanceOptions<TConfig> {
   button: AddonButtonEnvelope
   config: TConfig
@@ -94,6 +98,18 @@ export function createDomButtonRender(options: CreateAddonDomButtonRenderOptions
     ...(options.sample_interval_ms !== undefined ? { sample_interval_ms: options.sample_interval_ms } : {}),
     keyIndex: options.keyIndex,
   }
+}
+
+export function ButtonSurface(props: ButtonSurfaceProps): ReactElement {
+  return createElement("div", {
+    "data-sireno-button-surface": "true",
+    ...(props.full_surface !== undefined ? { "data-sireno-full-surface": props.full_surface ? "true" : "false" } : {}),
+    ...(props.sample_interval_ms !== undefined ? { "data-sireno-media-sample-interval-ms": String(props.sample_interval_ms) } : {}),
+    children: props.children,
+    style: {
+      display: "contents",
+    },
+  })
 }
 
 export function isAddonDomButtonRender(value: unknown): value is AddonDomButtonRender {
@@ -129,7 +145,20 @@ export function createBaseShapeIconLabelContent(props: {
   keyIndex: number
   label: string
 }): ReactElement {
-  return createElement("deck-button", props)
+  return createElement(ButtonSurface, null, createElement("div", {
+    style: {
+      alignItems: "center",
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px",
+      justifyContent: "center",
+      width: "100%",
+    },
+  },
+  props.icon
+    ? createElement("img", { alt: "", src: props.icon, style: { height: "24px", objectFit: "contain", width: "24px" } })
+    : null,
+  createDomTextLabel({ children: props.label })))
 }
 
 export function createBaseShapeTextContent(props: {
@@ -137,7 +166,7 @@ export function createBaseShapeTextContent(props: {
   keyIndex: number
   label: string
 }): ReactElement {
-  return createElement("deck-button", props)
+  return createElement(ButtonSurface, null, createDomTextLabel({ children: props.label }))
 }
 
 export interface CreateAddonDeckOptions<TConfig> {
