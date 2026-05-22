@@ -70,6 +70,38 @@
   - Stated that props like `accent`, `background`, `label`, and `variant` should be button-owned config, not core-standardized props.
   - Stated that `full_surface` is the obvious shared prop.
 
+### 2026-05-22 contract clarification
+- Options considered:
+  - Buttons return React elements and `react-dom` renders them into browser HTML/CSS
+  - Buttons return a custom DOM description
+  - Buttons return raw HTML strings
+- Recommended:
+  - Buttons return React elements and `react-dom` renders them into browser HTML/CSS
+- User choice:
+  - `Buttons return React elements`
+- Captured rationale:
+  - The goal is HTML/CSS because that is what the browser understands, but `react-dom` should do the conversion from TSX so button authors do not deal with a custom DOM API.
+
+### 2026-05-22 authoring surface
+- Options considered:
+  - Standard HTML + exported React components like `buttonFrame`
+  - Custom intrinsic tags like `deck-button`
+  - HTML only with no core composition components
+- Recommended:
+  - Standard HTML + exported React components like `buttonFrame`
+- User choice:
+  - `Standard HTML + React components`
+
+### 2026-05-22 legacy helper boundary
+- Options considered:
+  - Replace helper-style authoring in Phase 18
+  - Keep helper-style authoring as optional compatibility
+  - Keep helper-style authoring as the primary API
+- Recommended:
+  - Replace helper-style authoring in Phase 18
+- User choice:
+  - `Replace it in Phase 18`
+
 ### Compatibility boundary
 - Options considered:
   - Compatibility shim
@@ -152,3 +184,4 @@
 - "Other props like, accent, background, label, variant, etc is something each button will expose via config"
 - "Obviously, `full_surface` is a common prop for all the buttons"
 - "And remember shared base MUST be a react component (and rename it to `buttonFrame`"
+- "i mean HTML/CSS because is what the browser understand, but react-dom do the job to convert the tsx to html and css"
