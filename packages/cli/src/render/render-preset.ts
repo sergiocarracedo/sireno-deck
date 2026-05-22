@@ -1,0 +1,15 @@
+export interface RenderPreset {
+  keyWidth: number
+  keyHeight: number
+  background: string
+  frame: string
+  text: string
+}
+
+export const STREAM_DECK_KEY_PRESET: RenderPreset = {
+  keyWidth: 72,
+  keyHeight: 72,
+  background: "#0f1720",
+  frame: "#2a3647",
+  text: "#f4f7fb",
+}
