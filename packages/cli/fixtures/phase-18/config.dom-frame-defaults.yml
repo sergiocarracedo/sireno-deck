@@ -3,7 +3,7 @@ main_deck: main
 decks:
   main:
     id: main
-    name: DOM Frame Defaults
+    name: TSX Frame Defaults
     buttons:
       - position: 0
         type: date-time
@@ -28,7 +28,7 @@ decks:
 
   tools:
     id: tools
-    name: DOM Frame Defaults Tools
+    name: TSX Frame Defaults Tools
     buttons:
       - position: 0
         type: date-time
