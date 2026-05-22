@@ -1,0 +1,31 @@
+packages/cli/src/builtin-addons/core-buttons/index.test.ts
+  s_df3509a167c487::t_983a24572c7f9e 140-144,164-165,170-171,196-199,237-238,245-246,277-278,318-320,358-359,396-397
+packages/cli/src/deck/runtime.test.ts
+  s_df3509a167c487::t_a4a42d826f46dc 87-91
+.planning/phases/18-react-dom-based-renderer-with-htmlcss/18-03-SUMMARY.md
+  s_df3509a167c487::t_80188977ac4503 9,14-16,21-23,26,29-30
+packages/cli/fixtures/phase-18/config.live-dom-buttons.yml
+  s_df3509a167c487::t_80188977ac4503 6,41
+packages/cli/src/deck/runtime.ts
+  s_df3509a167c487::t_aeb1e0a462d1dc 72-78,154-168,360
+  s_df3509a167c487::t_3e727b2499008a 343-359,361-367
+  s_df3509a167c487::t_f7565e6d5f6421 79-80,170-177,342
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle.ts
+  s_df3509a167c487::t_983a24572c7f9e 7,151-156,263-273
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "b0a47e0d4a84488e5dc0b9394668e9321f85fad1",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
