@@ -1,0 +1,60 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    name: Media Sampling Review
+    buttons:
+      - position: 0
+        type: media-demo
+        label: Clip Loop
+        sample_interval_ms: 400
+        frames:
+          - label: SKY
+            accent: "#7dd3fc"
+          - label: MINT
+            accent: "#34d399"
+          - label: ROSE
+            accent: "#f472b6"
+      - position: 1
+        type: media-demo
+        label: One Shot
+        loop: false
+        sample_interval_ms: 700
+        frames:
+          - label: IN
+            accent: "#f59e0b"
+          - label: HOLD
+            accent: "#a78bfa"
+      - position: 2
+        type: action
+        label: DOM Action
+        command: "printf 'sampled'"
+      - position: 3
+        type: change-deck
+        label: Tools
+        target_deck: tools
+
+  tools:
+    id: tools
+    name: Media Sampling Tools
+    buttons:
+      - position: 0
+        type: toggle
+        mode: internal
+        label: Sample Gate
+        off:
+          subtitle: OFF
+        on:
+          subtitle: ON
+      - position: 1
+        type: date-time
+        variant: time
+      - position: 2
+        type: change-deck
+        label: Back Main
+        target_deck: main
+
+addons: []
+logging:
+  level: info

@@ -31,6 +31,7 @@ describe("dom host", () => {
       createDomButtonRender({
         content: createElement("span", null, "Action"),
         keyIndex: 0,
+        sample_interval_ms: 250,
       }),
       createDomButtonRender({
         content: createElement("div", { "data-surface": "full" }, "Surface"),
@@ -45,5 +46,6 @@ describe("dom host", () => {
     expect(html).toContain('data-sireno-key="0"')
     expect(html).toContain('data-sireno-key="1"')
     expect(html).toContain('data-sireno-key="2"')
+    expect(html).toContain('data-sireno-media-sample-interval-ms="250"')
   })
 })

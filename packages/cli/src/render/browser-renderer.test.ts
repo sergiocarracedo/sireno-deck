@@ -131,4 +131,57 @@ describe('browser renderer', () => {
     expect(firstBuffers.get(0)?.subarray(0, 3)).toEqual(Buffer.from([0, 0, 255]))
     expect(latestBuffers.get(0)?.subarray(0, 3)).toEqual(Buffer.from([0, 0, 255]))
   })
+
+  it('throttles sampled media captures while still coalescing to the latest HTML state', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const setContent = vi.fn(async () => {})
+      const screenshot = vi
+        .fn<() => Promise<Buffer>>()
+        .mockImplementationOnce(async () => createDeckScreenshot(['#ff0000']))
+        .mockImplementationOnce(async () => createDeckScreenshot(['#0000ff']))
+      const renderer = createBrowserRenderer({
+        keyCount: 1,
+        launcher: {
+          launch: async () => ({
+            close: async () => {},
+            newContext: async () => ({
+              close: async () => {},
+              newPage: async () => ({
+                screenshot,
+                setContent,
+                setViewportSize: async () => {},
+              }),
+            }),
+          }),
+        },
+      })
+
+      await renderer.start()
+      await renderer.updateDeck('<html><body><div id="deck-root" data-sireno-media-sample-interval-ms="200"></div></body></html>')
+      await renderer.captureKeyBuffers()
+
+      expect(screenshot).toHaveBeenCalledTimes(1)
+
+      await renderer.updateDeck('<html><body><div id="deck-root" data-sireno-media-sample-interval-ms="200">two</div></body></html>')
+      const latestCapturePromise = renderer.captureKeyBuffers()
+      await renderer.updateDeck('<html><body><div id="deck-root" data-sireno-media-sample-interval-ms="200">three</div></body></html>')
+
+      await vi.advanceTimersByTimeAsync(199)
+      expect(screenshot).toHaveBeenCalledTimes(1)
+
+      await vi.advanceTimersByTimeAsync(1)
+      const latestBuffers = await latestCapturePromise
+
+      expect(setContent.mock.calls.map((call) => call[0])).toEqual([
+        '<html><body><div id="deck-root" data-sireno-media-sample-interval-ms="200"></div></body></html>',
+        '<html><body><div id="deck-root" data-sireno-media-sample-interval-ms="200">three</div></body></html>',
+      ])
+      expect(screenshot).toHaveBeenCalledTimes(2)
+      expect(latestBuffers.get(0)?.subarray(0, 3)).toEqual(Buffer.from([0, 0, 255]))
+    } finally {
+      vi.useRealTimers()
+    }
+  })
 })

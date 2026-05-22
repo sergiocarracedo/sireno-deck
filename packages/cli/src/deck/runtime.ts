@@ -66,6 +66,7 @@ interface RuntimeButtonInstance {
 export interface RuntimeRenderButton extends Partial<DeckButtonProps> {
   content?: AddonDomButtonRender["content"]
   keyIndex: number
+  sample_interval_ms?: number
 }
 
 const IMPLICIT_LOCKED_DECK_ID = "__sireno_locked_session__"
@@ -280,7 +281,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return undefined
     }
 
-    return { button, deckId }
+    return { button, deckId: getDisplayDeckId() }
   }
 
   async function renderRuntimeButton(
@@ -296,10 +297,12 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     const rendered = instance.render()
     const description = isAddonDomButtonRender(rendered)
       ? {
+          ...(rendered.fallback ?? {}),
           background: resolveButtonBackground(button, deckId),
           content: rendered.content,
           ...(rendered.full_surface !== undefined ? { full_surface: rendered.full_surface } : button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
           keyIndex: button.position,
+          ...(rendered.sample_interval_ms !== undefined ? { sample_interval_ms: rendered.sample_interval_ms } : {}),
           ...(button.style_id !== undefined ? { style_id: button.style_id } : {}),
           ...(button.wrapper_id !== undefined ? { wrapper_id: button.wrapper_id } : {}),
         }

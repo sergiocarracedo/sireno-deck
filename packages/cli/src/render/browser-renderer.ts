@@ -112,6 +112,23 @@ async function cropDeckCaptureToKeyBuffers(
   return keyBuffers
 }
 
+function parseMediaSampleIntervalMs(html: string): number | undefined {
+  const match = html.match(/data-sireno-media-sample-interval-ms="(\d+)"/)
+  if (!match) {
+    return undefined
+  }
+
+  return Number.parseInt(match[1] ?? "", 10)
+}
+
+async function sleep(ms: number): Promise<void> {
+  if (ms <= 0) {
+    return
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 export function createBrowserRenderer(options: BrowserRendererOptions): BrowserRenderer {
   const preset = options.preset ?? STREAM_DECK_KEY_PRESET
   const layout = resolveDeckLayout(options.keyCount)
@@ -124,9 +141,11 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
   let context: BrowserContextLike | null = null
   let page: BrowserPageLike | null = null
   let latestHtml = ""
+  let latestMediaSampleIntervalMs: number | undefined
   let latestVersion = 0
   let renderedVersion = 0
   let lastCapturedBuffers = new Map<number, Buffer>()
+  let lastCaptureAt = 0
   let captureLoopPromise: Promise<void> | null = null
   const captureWaiters: CaptureWaiter[] = []
 
@@ -173,6 +192,17 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
       while (renderedVersion < latestVersion) {
         const requestedVersion = latestVersion
         const requestedHtml = latestHtml
+        const requestedSampleIntervalMs = latestMediaSampleIntervalMs
+
+        if (renderedVersion > 0 && requestedSampleIntervalMs !== undefined) {
+          const waitMs = Math.max(0, lastCaptureAt + requestedSampleIntervalMs - Date.now())
+          await sleep(waitMs)
+
+          if (requestedVersion !== latestVersion) {
+            continue
+          }
+        }
+
         const activePage = await ensurePage()
 
         await activePage.setContent(requestedHtml)
@@ -183,6 +213,7 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
         }
 
         lastCapturedBuffers = await cropDeckCaptureToKeyBuffers(capture, layout, preset)
+        lastCaptureAt = Date.now()
         renderedVersion = requestedVersion
         resolveCaptureWaiters()
       }
@@ -208,6 +239,7 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
     },
     async updateDeck(html) {
       latestHtml = html
+      latestMediaSampleIntervalMs = parseMediaSampleIntervalMs(html)
       latestVersion += 1
     },
     async captureKeyBuffers() {

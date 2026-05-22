@@ -183,6 +183,48 @@ export function isDomRenderButton(button: RuntimeRenderButton): button is Runtim
   return button.content !== undefined
 }
 
+export function toLegacyRenderButton(button: RuntimeRenderButton): DeckButtonProps {
+  return {
+    ...(button.accent !== undefined ? { accent: button.accent } : {}),
+    ...(button.background !== undefined ? { background: button.background } : {}),
+    ...(button.detailLines !== undefined ? { detailLines: button.detailLines } : {}),
+    ...(button.displayValue !== undefined ? { displayValue: button.displayValue } : {}),
+    ...(button.fit !== undefined ? { fit: button.fit } : {}),
+    ...(button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
+    ...(button.icon !== undefined ? { icon: button.icon } : {}),
+    keyIndex: button.keyIndex,
+    ...(button.label !== undefined ? { label: button.label } : {}),
+    ...(button.progress !== undefined ? { progress: button.progress } : {}),
+    ...(button.style_id !== undefined ? { style_id: button.style_id } : {}),
+    ...(button.subtitle !== undefined ? { subtitle: button.subtitle } : {}),
+    ...(button.toggle_mode !== undefined ? { toggle_mode: button.toggle_mode } : {}),
+    ...(button.variant !== undefined ? { variant: button.variant } : {}),
+    ...(button.wrapper !== undefined ? { wrapper: button.wrapper } : {}),
+    ...(button.wrapper_id !== undefined ? { wrapper_id: button.wrapper_id } : {}),
+  }
+}
+
+export async function ensureBrowserRenderer(
+  browserRenderer: BrowserRenderer | null,
+  keyCount: number,
+  logger: pino.Logger,
+): Promise<BrowserRenderer | null> {
+  if (browserRenderer) {
+    return browserRenderer
+  }
+
+  const nextBrowserRenderer = createBrowserRenderer({ keyCount })
+
+  try {
+    await nextBrowserRenderer.start()
+    return nextBrowserRenderer
+  } catch (error) {
+    logger.warn({ error }, "browser renderer unavailable; falling back to SVG/text-image rendering")
+    await nextBrowserRenderer.close().catch(() => {})
+    return null
+  }
+}
+
 export function createTemporaryConfigErrorLines(error: ConfigValidationError): string[] {
   const location = error.filePath
     ? `${basename(error.filePath)}${error.lineNumber !== undefined ? `:${error.lineNumber}` : ""}`
@@ -227,6 +269,7 @@ async function renderDomDeckSurface(
     content: button.content,
     ...(button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
     keyIndex: button.keyIndex,
+    ...(button.sample_interval_ms !== undefined ? { sample_interval_ms: button.sample_interval_ms } : {}),
   })), {
     keyCount: connection.info.keyCount,
   }))
@@ -237,6 +280,26 @@ async function renderDomDeckSurface(
   }
 
   logger.info({ deckId: "main deck", renderedKeys: Array.from(buffersByKey.keys()).sort((left, right) => left - right) }, "rendered browser-backed main deck")
+}
+
+export async function renderRuntimeDeckSurface(
+  connection: NonNullable<ReturnType<ReturnType<typeof createStreamDeckLifecycle>["getConnection"]>>,
+  buttons: RuntimeRenderButton[],
+  browserRenderer: BrowserRenderer | null,
+  theme: ReturnType<typeof resolveTheme>,
+  resolvePrimitiveRenderOptions: (button: DeckButtonProps) => { sharedStyleTone?: "accent" | "default"; wrapper?: "shared" },
+  logger: pino.Logger,
+): Promise<BrowserRenderer | null> {
+  if (buttons.length > 0 && buttons.every(isDomRenderButton)) {
+    const readyBrowserRenderer = await ensureBrowserRenderer(browserRenderer, connection.info.keyCount, logger)
+    if (readyBrowserRenderer) {
+      await renderDomDeckSurface(connection, buttons, readyBrowserRenderer, logger)
+      return readyBrowserRenderer
+    }
+  }
+
+  await renderMainDeck(connection, buttons.map(toLegacyRenderButton), theme, resolvePrimitiveRenderOptions, logger)
+  return browserRenderer
 }
 
 export async function startDaemon(options: StartOptions): Promise<void> {
@@ -289,32 +352,13 @@ export async function startDaemon(options: StartOptions): Promise<void> {
         keyCount: connection.info.keyCount,
         lockedDeckId: loadedConfig.config.session?.locked_deck,
         theme: runtimeTheme,
-        onRenderButton: async (button) => {
-          const activeConnection = lifecycle.getConnection()
-          if (!activeConnection) {
-            return
-          }
-
-          if (isDomRenderButton(button)) {
-            return
-          }
-
-          const primitiveOptions = getPrimitiveRenderOptions(button)
-          const buffer = await renderTextImage(createRenderTextImageOptions(button, runtimeTheme, primitiveOptions))
-          await writeKeyBuffer(activeConnection, button.keyIndex, buffer)
-        },
         onRenderDeck: async (buttons) => {
           const activeConnection = lifecycle.getConnection()
           if (!activeConnection) {
             return
           }
 
-          if (browserRenderer && buttons.length > 0 && buttons.every(isDomRenderButton)) {
-            await renderDomDeckSurface(activeConnection, buttons, browserRenderer, logger)
-            return
-          }
-
-          await renderMainDeck(activeConnection, buttons as DeckButtonProps[], runtimeTheme, getPrimitiveRenderOptions, logger)
+          browserRenderer = await renderRuntimeDeckSurface(activeConnection, buttons, browserRenderer, runtimeTheme, getPrimitiveRenderOptions, logger)
         },
         sessionMonitor: loadedConfig.sessionMonitor,
         subscribeKeyEvents: lifecycle.subscribeKeyEvents,
@@ -322,8 +366,6 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     }
 
     const connection = await lifecycle.start()
-    browserRenderer = createBrowserRenderer({ keyCount: connection.info.keyCount })
-    await browserRenderer.start()
     runtime = createRuntime(initialLoad)
 
     async function reloadRuntime(): Promise<void> {

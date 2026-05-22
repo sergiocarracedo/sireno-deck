@@ -61,6 +61,10 @@ const builtinChangeDeckButton = {
           ],
           style: { alignItems: 'center', display: 'flex', flexDirection: 'column', gap: '6px', justifyContent: 'center', width: '100%' },
         }),
+        fallback: {
+          ...(config.icon !== undefined ? { icon: config.icon } : {}),
+          label: config.label,
+        },
         keyIndex: button.position,
       }),
   }),

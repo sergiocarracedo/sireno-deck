@@ -1,13 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+const blankRemainingKeys = vi.fn()
+const createStreamDeckLifecycle = vi.fn()
 const watch = vi.fn()
 const createBrowserRenderer = vi.fn()
 const createBundledAddonRegistry = vi.fn(() => ({ bundled: true }))
 const loadBootstrapConfig = vi.fn()
 const loadConfigWithSources = vi.fn()
 const loadConfiguredAddons = vi.fn()
+const renderBlankKeyImage = vi.fn(async () => Buffer.from("blank"))
+const renderTextImage = vi.fn(async () => Buffer.from("rendered"))
+const replayLastRenderedBuffers = vi.fn()
 const resolveHostContext = vi.fn()
 const createSessionMonitor = vi.fn()
+const writeKeyBuffer = vi.fn(async () => {})
+
+class StreamDeckSelectionError extends Error {}
 
 vi.mock("node:fs", async () => ({
   watch,
@@ -23,8 +31,21 @@ vi.mock("../../addon/loader.js", () => ({
   loadConfiguredAddons,
 }))
 
+vi.mock("../../device/stream-deck.js", () => ({
+  blankRemainingKeys,
+  createStreamDeckLifecycle,
+  replayLastRenderedBuffers,
+  StreamDeckSelectionError,
+  writeKeyBuffer,
+}))
+
 vi.mock("../../render/browser-renderer.js", () => ({
   createBrowserRenderer,
+}))
+
+vi.mock("../../render/text-image.js", () => ({
+  renderBlankKeyImage,
+  renderTextImage,
 }))
 
 vi.mock("../../system/host-context.js", () => ({
@@ -48,16 +69,22 @@ describe("loadRuntimeConfig", () => {
   }
 
   beforeEach(() => {
+    blankRemainingKeys.mockReset()
+    createStreamDeckLifecycle.mockReset()
     watch.mockReset()
     createBrowserRenderer.mockReset()
     createBundledAddonRegistry.mockClear()
     loadBootstrapConfig.mockReset()
     loadConfigWithSources.mockReset()
     loadConfiguredAddons.mockReset()
+    renderBlankKeyImage.mockClear()
+    renderTextImage.mockClear()
+    replayLastRenderedBuffers.mockReset()
     resolveHostContext.mockReset()
     createSessionMonitor.mockReset()
     supportedSessionMonitor.getSnapshot.mockClear()
     unsupportedSessionMonitor.getSnapshot.mockClear()
+    writeKeyBuffer.mockReset()
   })
 
   it("passes disabled illustrative addons through without logging startup warnings", async () => {
@@ -329,5 +356,117 @@ describe("isDomRenderButton", () => {
 
     expect(isDomRenderButton({ content: { type: 'div' }, keyIndex: 0 } as never)).toBe(true)
     expect(isDomRenderButton({ keyIndex: 0, label: 'Clock' })).toBe(false)
+  })
+})
+
+describe("toLegacyRenderButton", () => {
+  it("preserves fallback-compatible fields from runtime render output", async () => {
+    const { toLegacyRenderButton } = await import("./start.js")
+
+    expect(toLegacyRenderButton({
+      background: '#10161f',
+      detailLines: ['Line 1'],
+      full_surface: true,
+      keyIndex: 2,
+      label: 'Clock',
+      subtitle: 'NOW',
+      toggle_mode: 'internal',
+      variant: 'toggle',
+    })).toEqual({
+      background: '#10161f',
+      detailLines: ['Line 1'],
+      full_surface: true,
+      keyIndex: 2,
+      label: 'Clock',
+      subtitle: 'NOW',
+      toggle_mode: 'internal',
+      variant: 'toggle',
+    })
+  })
+})
+
+describe("ensureBrowserRenderer", () => {
+  it("warns and falls back when the browser renderer cannot start", async () => {
+    const start = vi.fn(async () => {
+      throw new Error('missing chromium')
+    })
+    const close = vi.fn(async () => {})
+    createBrowserRenderer.mockReturnValue({ close, start })
+
+    const { ensureBrowserRenderer } = await import("./start.js")
+    const logger = { warn: vi.fn() } as const
+
+    await expect(ensureBrowserRenderer(null, 15, logger as never)).resolves.toBeNull()
+    expect(createBrowserRenderer).toHaveBeenCalledWith({ keyCount: 15 })
+    expect(close).toHaveBeenCalledTimes(1)
+    expect(logger.warn).toHaveBeenCalledWith(
+      { error: expect.any(Error) },
+      "browser renderer unavailable; falling back to SVG/text-image rendering",
+    )
+  })
+})
+
+describe("renderRuntimeDeckSurface", () => {
+  beforeEach(() => {
+    createBrowserRenderer.mockReset()
+    renderTextImage.mockClear()
+    writeKeyBuffer.mockReset()
+  })
+
+  it("renders mixed DOM and legacy decks through the fallback path using DOM fallback metadata", async () => {
+    const browserRenderer = {
+      captureKeyBuffers: vi.fn(),
+      close: vi.fn(),
+      start: vi.fn(),
+      updateDeck: vi.fn(),
+    }
+    const connection = { info: { keyCount: 3 } }
+    const logger = { info: vi.fn(), warn: vi.fn() } as const
+    const { renderRuntimeDeckSurface } = await import("./start.js")
+
+    const result = await renderRuntimeDeckSurface(
+      connection as never,
+      [
+        { content: { type: 'div' }, keyIndex: 0, label: 'DOM Clock' } as never,
+        { keyIndex: 1, label: 'Legacy Clock' },
+      ],
+      browserRenderer as never,
+      { accent: '#f59e0b', background: '#10161f', danger: '#fb7185', foreground: '#eef2f7', name: 'dark', primary: '#7dd3fc', success: '#34d399' },
+      () => ({}),
+      logger as never,
+    )
+
+    expect(result).toBe(browserRenderer)
+    expect(browserRenderer.updateDeck).not.toHaveBeenCalled()
+    expect(renderTextImage).toHaveBeenCalledTimes(2)
+    expect(renderTextImage.mock.calls.map((call) => call[0]?.text)).toEqual(['DOM Clock', 'Legacy Clock'])
+    expect(writeKeyBuffer).toHaveBeenCalledTimes(2)
+  })
+
+  it("falls back to SVG rendering when an all-DOM deck cannot start the browser", async () => {
+    const browserRenderer = null
+    const start = vi.fn(async () => {
+      throw new Error('missing chromium')
+    })
+    const close = vi.fn(async () => {})
+    createBrowserRenderer.mockReturnValue({ close, start })
+    const connection = { info: { keyCount: 1 } }
+    const logger = { info: vi.fn(), warn: vi.fn() } as const
+    const { renderRuntimeDeckSurface } = await import("./start.js")
+
+    const result = await renderRuntimeDeckSurface(
+      connection as never,
+      [{ content: { type: 'div' }, keyIndex: 0, label: 'DOM Clock' } as never],
+      browserRenderer,
+      { accent: '#f59e0b', background: '#10161f', danger: '#fb7185', foreground: '#eef2f7', name: 'dark', primary: '#7dd3fc', success: '#34d399' },
+      () => ({}),
+      logger as never,
+    )
+
+    expect(result).toBeNull()
+    expect(renderTextImage).toHaveBeenCalledTimes(1)
+    expect(renderTextImage).toHaveBeenCalledWith(expect.objectContaining({ text: 'DOM Clock' }))
+    expect(writeKeyBuffer).toHaveBeenCalledTimes(1)
+    expect(logger.warn).toHaveBeenCalledTimes(1)
   })
 })

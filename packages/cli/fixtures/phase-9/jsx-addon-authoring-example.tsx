@@ -1,10 +1,10 @@
-import type {} from "sireno-deck-cli/jsx"
+import type {} from "../../src/render/jsx.js"
 
 import {
   createDeckButtonElement,
   createDeckSurfaceElement,
   createDeckTextElement,
-} from "sireno-deck-cli"
+} from "../../src/index.js"
 
 import {
   addonButtonProps,

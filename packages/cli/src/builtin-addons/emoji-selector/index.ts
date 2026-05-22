@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import type { SirenoAddon } from '../../../packages/cli/src/addon/api.js'
+import type { SirenoAddon } from '../../addon/api.js'
 
 const CATEGORY_DEFINITIONS = [
   {

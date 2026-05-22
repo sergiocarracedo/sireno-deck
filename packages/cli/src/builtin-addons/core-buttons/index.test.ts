@@ -406,4 +406,56 @@ describe('core-buttons addon', () => {
     expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-toggle-state="error"')
     expect(renderReactNodeToHtml(instance?.render().content)).toContain('ERROR')
   })
+
+  it('exports a bundled media-demo definition with sampled DOM metadata', () => {
+    const definition = coreButtonsAddon.buttons.find(
+      (button) => button.type === 'media-demo',
+    )
+    const config = definition?.configSchema.parse({
+      frames: [
+        { accent: '#7dd3fc', label: 'ONE' },
+        { accent: '#34d399', label: 'TWO' },
+      ],
+      label: 'Pulse',
+      sample_interval_ms: 400,
+    })
+    const instance = definition?.createInstance({
+      button: { position: 5 },
+      config,
+    } as never)
+
+    const renderResult = instance?.render()
+
+    expect(definition?.type).toBe('media-demo')
+    expect(isAddonDomButtonRender(renderResult)).toBe(true)
+    expect(renderResult).toMatchObject({ keyIndex: 5, sample_interval_ms: 400 })
+    expect(renderReactNodeToHtml(renderResult?.content)).toContain('data-sireno-media-demo="ONE"')
+    expect(renderReactNodeToHtml(createHostedButtonElement(renderResult!))).toContain('data-sireno-button-frame="true"')
+  })
+
+  it('advances bundled media-demo frames on refresh while respecting loop:false', async () => {
+    const definition = coreButtonsAddon.buttons.find(
+      (button) => button.type === 'media-demo',
+    )
+    const instance = definition?.createInstance({
+      button: { position: 6 },
+      config: {
+        frames: [
+          { accent: '#7dd3fc', label: 'ONE' },
+          { accent: '#34d399', label: 'TWO' },
+        ],
+        label: 'Pulse',
+        loop: false,
+        sample_interval_ms: 300,
+      },
+    } as never)
+
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-media-demo="ONE"')
+
+    await instance?.refresh?.()
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-media-demo="TWO"')
+
+    await instance?.refresh?.()
+    expect(renderReactNodeToHtml(instance?.render().content)).toContain('data-sireno-media-demo="TWO"')
+  })
 })

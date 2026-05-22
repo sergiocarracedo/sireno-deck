@@ -156,6 +156,13 @@ const builtinToggleButton = {
               state: currentState,
               subtitle: stateProps.subtitle,
             }),
+            fallback: {
+              ...(stateProps.icon !== undefined ? { icon: stateProps.icon } : {}),
+              ...(stateProps.label !== undefined ? { label: stateProps.label } : {}),
+              ...(stateProps.subtitle !== undefined ? { subtitle: stateProps.subtitle } : {}),
+              toggle_mode: 'internal',
+              variant: 'toggle',
+            },
             keyIndex: button.position,
           })
         },
@@ -276,6 +283,18 @@ const builtinToggleButton = {
                   ? 'ERROR'
                   : stateProps.subtitle,
           }),
+          fallback: {
+            ...(stateProps.icon !== undefined ? { icon: stateProps.icon } : {}),
+            ...(stateProps.label !== undefined ? { label: stateProps.label } : {}),
+            subtitle:
+              displayState === 'pending'
+                ? 'PENDING'
+                : displayState === 'error'
+                  ? 'ERROR'
+                  : stateProps.subtitle,
+            toggle_mode: config.mode,
+            variant: 'toggle',
+          },
           keyIndex: button.position,
         })
       },

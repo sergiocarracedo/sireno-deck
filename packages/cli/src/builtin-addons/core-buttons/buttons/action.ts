@@ -60,10 +60,10 @@ const builtinActionButton = {
         timedOut: boolean
       }>
     }
-  }) => ({
-    render: () =>
-      createDomButtonRender({
-        content: createElement('div', {
+    }) => ({
+      render: () =>
+        createDomButtonRender({
+          content: createElement('div', {
           children: [
             getInlineImageSource(config.icon)
               ? createElement('img', { alt: '', key: 'icon', src: getInlineImageSource(config.icon), style: { height: '24px', objectFit: 'contain', width: '24px' } })
@@ -71,9 +71,13 @@ const builtinActionButton = {
             createElement('span', { key: 'label' }, createDomTextLabel({ children: config.label })),
           ],
           style: { alignItems: 'center', display: 'flex', flexDirection: 'column', gap: '6px', justifyContent: 'center', width: '100%' },
+          }),
+          fallback: {
+            ...(config.icon !== undefined ? { icon: config.icon } : {}),
+            label: config.label,
+          },
+          keyIndex: button.position,
         }),
-        keyIndex: button.position,
-      }),
     onTap: async () => {
       if (config.command) {
         methods.invalidate()

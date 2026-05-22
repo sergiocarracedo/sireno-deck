@@ -5,6 +5,7 @@ import type { ZodType } from "zod"
 
 import type { CommandExecutionResult } from "../action/executor.js"
 import type { Theme } from "../config/theme.js"
+import type { DeckButtonProps } from "../render/types.js"
 import type { HostContext } from "../system/host-context.js"
 
 export const SIRENO_ADDON_API_VERSION = 1
@@ -16,6 +17,7 @@ export interface AddonButtonEnvelope {
 
 export interface AddonButtonSurfaceContract {
   full_surface?: boolean
+  sample_interval_ms?: number
 }
 
 export interface AddonDeckEnvelope {
@@ -53,8 +55,11 @@ export interface AddonButtonInstance {
   render: () => AddonButtonRenderResult
 }
 
+export type AddonLegacyButtonRenderFallback = Omit<DeckButtonProps, "keyIndex">
+
 export interface AddonDomButtonRender extends AddonButtonSurfaceContract {
   content: ReactElement
+  fallback?: AddonLegacyButtonRenderFallback
   keyIndex: number
 }
 
@@ -62,6 +67,7 @@ export type AddonButtonRenderResult = AddonDomButtonRender | ReactElement
 
 export interface CreateAddonDomButtonRenderOptions extends AddonButtonSurfaceContract {
   content: ReactElement
+  fallback?: AddonLegacyButtonRenderFallback
   keyIndex: number
 }
 
@@ -83,7 +89,9 @@ export interface AddonButtonDefinition<TConfig = unknown> {
 export function createDomButtonRender(options: CreateAddonDomButtonRenderOptions): AddonDomButtonRender {
   return {
     content: options.content,
+    ...(options.fallback !== undefined ? { fallback: options.fallback } : {}),
     ...(options.full_surface !== undefined ? { full_surface: options.full_surface } : {}),
+    ...(options.sample_interval_ms !== undefined ? { sample_interval_ms: options.sample_interval_ms } : {}),
     keyIndex: options.keyIndex,
   }
 }

@@ -228,6 +228,9 @@ const builtinDisplayDateTimeButton = {
     render: () =>
       createDomButtonRender({
         content: createDigitalDateTimeContent(config),
+        fallback: {
+          label: formatDigitalDateTimeLabel(config),
+        },
         keyIndex: button.position,
       }),
   }),
@@ -246,6 +249,9 @@ const builtinAnalogClockButton = {
     render: () =>
       createDomButtonRender({
         content: createAnalogClockContent(),
+        fallback: {
+          variant: 'analog-clock',
+        },
         keyIndex: button.position,
       }),
   }),
@@ -264,6 +270,9 @@ const builtinCalendarSheetButton = {
     render: () =>
       createDomButtonRender({
         content: createCalendarSheetContent(),
+        fallback: {
+          variant: 'calendar-sheet',
+        },
         keyIndex: button.position,
       }),
   }),

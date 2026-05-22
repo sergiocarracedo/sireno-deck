@@ -152,7 +152,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ### Phase 17: Custom Wrapper Primitives + Addon-Authored Rendering Variants
 
-**Status:** Verifying
+**Status:** Verified
 
 **Goal:** The shared/default path becomes one core-owned base button shape applied by default, addons compose explicit content helpers inside that shape, and custom visuals can explicitly opt out to render the full surface themselves.
 
@@ -179,11 +179,23 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 18: React DOM-Based Renderer With HTML/CSS Surface Support
 
 **Goal:** Replace the current pure-SVG render system with a React HTML/CSS DOM-based renderer that can support any surface HTML can express, including richer media such as GIFs and video.
-**Status:** [ ] Not started
+**Status:** Verifying
 **Depends on:** Phase 17
 
 ### Plans
-*Not yet planned — run `plan-phase 18`*
+- `18-01`: Add the browser renderer seam, DOM host, buttonFrame, and first shipped DOM-backed buttons
+- `18-02`: Demote the old SVG-era contract to legacy fallback and migrate bundled date/time buttons to DOM
+- `18-03`: Add bounded latest-state capture coalescing and move live bundled buttons onto the DOM path
+- `18-04`: Add bounded sampled-media capture, the review fixture, and final verification artifacts
+
+**Success criteria:**
+- [x] Bundled Phase 18 buttons ship through the browser-backed DOM render path instead of the old SVG helper path by default
+- [x] `buttonFrame` is implicit unless `full_surface` is explicit
+- [x] Live DOM button invalidation rerenders coherently at deck level
+- [x] Bounded sampled media is supported honestly as snapshot sampling, not continuous playback
+- [x] Manual device UAT is recorded for the browser-rendered action, live DOM, and media-sampling fixtures
+
+**Phase 18 note:** Execution is complete through Plans `18-01` to `18-04`, automated verification is green, and manual device UAT passed for all three committed review fixtures.
 
 ---
 

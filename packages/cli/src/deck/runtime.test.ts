@@ -1,4 +1,5 @@
 import { join } from "node:path"
+import { fileURLToPath } from "node:url"
 
 import { createElement } from "react"
 import { describe, expect, it, vi } from "vitest"
@@ -13,6 +14,9 @@ import type { SirenoAddon } from "../addon/api.js"
 import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
 import type { PollingScheduler } from "../render/scheduler.js"
 import type { SessionMonitor, SessionSnapshot } from "../system/session-monitor.js"
+
+const phase11HostContextFixturePath = fileURLToPath(new URL("../../fixtures/phase-11/config.host-context.yml", import.meta.url))
+const phase11LockedSessionFixturePath = fileURLToPath(new URL("../../fixtures/phase-11/config.locked-session.yml", import.meta.url))
 
 const createDisplayDefinition = () => ({
   configSchema: {
@@ -450,7 +454,7 @@ describe("createDeckRuntime", () => {
 
   it("keeps the committed Phase 11 host-context fixture live across render and action execution", async () => {
     const config = loadConfig(
-      join(process.cwd(), "fixtures/phase-11/config.host-context.yml"),
+      phase11HostContextFixturePath,
       createBundledAddonRegistry(),
       {
         os: {
@@ -1143,6 +1147,63 @@ describe("createDeckRuntime", () => {
     expect(runtime.getStackSnapshot()).toEqual(snapshotBeforeError)
   })
 
+  it("does not dispatch visible temporary error deck taps into the hidden underlying deck", async () => {
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const hiddenTap = vi.fn()
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Hidden Action" },
+          definition: {
+            configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
+            createInstance: ({ button }: { button: { position: number } }) => ({
+              onTap: async () => { hiddenTap() },
+              render: () => createElement("deck-button", { keyIndex: button.position, label: "Hidden Action" }),
+            }),
+            type: "hidden-action",
+          },
+          label: "Hidden Action",
+          position: 0,
+          type: "hidden-action",
+        }],
+      },
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+    await runtime.showTemporaryErrorDeck([
+      "config.yml:10",
+      "Unknown button type 'broken'",
+      "Fix the config and save again.",
+    ])
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getRenderButtons()).toContainEqual({
+        background: "#10161f",
+        detailLines: [
+          "config.yml:10",
+          "Unknown button type 'broken'",
+          "Fix the config and save again.",
+        ],
+        fit: "wrap",
+        keyIndex: 0,
+        label: "Config Error",
+        subtitle: "RELOAD",
+        variant: "error",
+      })
+    })
+
+    expect(hiddenTap).not.toHaveBeenCalled()
+  })
+
   it("lets a later rebuilt runtime recover from the saved valid stack after an error deck was shown", async () => {
     const decks = {
       main: {
@@ -1372,7 +1433,7 @@ describe("createDeckRuntime", () => {
 
   it("keeps the committed Phase 11 locked-session fixture restorable across lock and unlock transitions", async () => {
     const config = loadConfig(
-      join(process.cwd(), "fixtures/phase-11/config.locked-session.yml"),
+      phase11LockedSessionFixturePath,
       createBundledAddonRegistry(),
       {
         os: { type: "linux", variant: "ubuntu", version: "24.04" },

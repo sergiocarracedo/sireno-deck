@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import emojiSelectorAddon from '../index.js'
+import emojiSelectorAddon from './index.js'
 
 describe('emoji-selector addon', () => {
   it('exports emoji decks with favorites-first category navigation', () => {

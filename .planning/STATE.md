@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 18 execution is in progress; Waves 1-3 shipped browser-backed DOM buttons for static and live bundled surfaces, added capture coalescing, and kept runtime ownership of live updates while the old SVG-era contract remains legacy fallback only.
+**Current focus:** Phase 18 verification is complete; Waves 1-4 shipped browser-backed DOM buttons for static, live, and bounded sampled-media bundled surfaces, added capture coalescing plus sample throttling, and passed both automated checks and manual device UAT.
 
 ## Current Position
 
 Phase: 18 — React DOM-Based Renderer With HTML/CSS Surface Support
-Plan: 18-03 complete
-Status: executing
-Last activity: 2026-05-21 - Completed Plan 18-03 by adding browser capture coalescing, moving live bundled toggles onto DOM rendering, and committing the live DOM review fixture
+Plan: 18-04 complete
+Status: verified
+Last activity: 2026-05-21 - Recorded passing manual device UAT for all three Phase 18 fixtures and closed Phase 18 verification
 
 Progress: [##########] 100%
 
@@ -67,6 +67,7 @@ Recent decisions affecting current work:
 - **Phase 14 discussion:** Toggle visuals may differ by mode, but only through shared-base mode accents rather than three bespoke renderers; internal toggle state continuity remains scoped to the running daemon, not durable restart persistence.
 - **Phase 18 execution:** Addon-owned visual payload now stays under `button.config`, the old reconciler/types seam is explicitly legacy-only, and the bundled date/time addon now renders through DOM content with default `buttonFrame` coverage.
 - **Phase 18 execution:** Browser-backed rendering now coalesces capture requests to the latest active deck state, and runtime forces full-deck DOM rerenders for live DOM button invalidation so browser-backed stateful buttons stay coherent.
+- **Phase 18 execution:** Sampled media now uses a narrow `sample_interval_ms` DOM contract, browser capture throttles to bounded snapshot sampling instead of continuous playback, and the bundled media-demo button plus committed fixture make that behavior reviewable on-device.
 
 ### Pending Todos
 
@@ -91,6 +92,7 @@ Recent decisions affecting current work:
 - **Plan 18-01:** Added the persistent browser renderer seam, the real `buttonFrame` + DOM host, the first shipped DOM-backed `action` / `change-deck` path, and a committed Phase 18 browser-rendered UAT fixture while keeping runtime ownership in place.
 - **Plan 18-02:** Demoted the old SVG-era button contract to legacy fallback status, moved bundled date/time buttons onto DOM-authored renders, and added a broader fixture proving default `buttonFrame` behavior across more of the shipped DOM surface.
 - **Plan 18-03:** Added bounded latest-state browser capture coalescing, moved bundled live toggles onto the DOM path, preserved runtime-owned live update behavior, and committed a live DOM review fixture for device-path validation.
+- **Plan 18-04:** Added bounded sampled-media capture on the browser-backed DOM path, shipped a bundled media-demo button and review fixture, and wrote the final Phase 18 UAT plus verification artifact confirming the bundled surface no longer ships through the old SVG path by default.
 - **Phase 16 discussion:** Captured deck-only file references with owning-file-relative path resolution, root-plus-ref hot-reload, built-in temporary error-deck fallback on invalid reload, stack-preserving successful reload restore, full runtime instance rebuild on reload, shared-wrapper footer removal, and narrow per-button accent overrides accepting tokens or raw colors.
 - **Phase 10 kickoff:** Milestone audit found that the documented addon authoring entrypoints do not line up with the built `packages/cli` exports, so release flow needs a gap-closure phase before `/review`.
 - **Milestone v1.2 kickoff:** Captured session-context, layered background, text fitting, global wrapper/style, richer toggle, and lock-aware deck requirements plus the five-phase roadmap that sequences contract work before user-facing polish.
@@ -137,8 +139,8 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-21
-Stopped at: Phase 17 gap-closure execution complete; next up is verification and UAT rerun.
-Resume file: .planning/phases/17-custom-wrapper-primitives-with-addon/17-VERIFICATION.md
+Stopped at: Phase 18 verification aligned; next up is manual device UAT across the three Phase 18 fixtures and final review handoff.
+Resume file: .planning/phases/18-react-dom-based-renderer-with-htmlcss/18-UAT.md
 
 ### Quick Tasks Completed
 

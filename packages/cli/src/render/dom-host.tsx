@@ -122,6 +122,10 @@ export function renderDomDeck(buttons: readonly AddonDomButtonRender[], options:
   const preset = options.preset ?? STREAM_DECK_KEY_PRESET
   const layout = resolveDeckLayout(options.keyCount)
   const background = options.background ?? "#10161f"
+  const mediaSampleIntervalMs = buttons
+    .map((button) => button.sample_interval_ms)
+    .filter((value): value is number => value !== undefined)
+    .reduce<number | undefined>((lowest, value) => (lowest === undefined ? value : Math.min(lowest, value)), undefined)
   const buttonsByKey = new Map(buttons.map((button) => [button.keyIndex, button]))
   const slots = Array.from({ length: options.keyCount }, (_, keyIndex) => {
     const button = buttonsByKey.get(keyIndex)
@@ -133,7 +137,7 @@ export function renderDomDeck(buttons: readonly AddonDomButtonRender[], options:
   return [
     "<!doctype html>",
     `<html><body style="margin:0;background:${background};">`,
-    `<div id="deck-root" style="background:${background};display:grid;grid-template-columns:repeat(${layout.columns}, ${preset.keyWidth}px);grid-template-rows:repeat(${layout.rows}, ${preset.keyHeight}px);height:${layout.rows * preset.keyHeight}px;width:${layout.columns * preset.keyWidth}px;">`,
+    `<div id="deck-root"${mediaSampleIntervalMs !== undefined ? ` data-sireno-media-sample-interval-ms="${mediaSampleIntervalMs}"` : ""} style="background:${background};display:grid;grid-template-columns:repeat(${layout.columns}, ${preset.keyWidth}px);grid-template-rows:repeat(${layout.rows}, ${preset.keyHeight}px);height:${layout.rows * preset.keyHeight}px;width:${layout.columns * preset.keyWidth}px;">`,
     slots,
     "</div>",
     "</body></html>",
