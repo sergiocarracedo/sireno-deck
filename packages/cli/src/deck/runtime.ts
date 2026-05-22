@@ -419,7 +419,12 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         await activateDeckSurface(undefined, previousDeckId)
       },
       invalidate: () => {
-        void renderRuntimeButton(button, deckId).catch(reportRuntimeError)
+        void (async () => {
+          const renderedButton = await renderRuntimeButton(button, deckId)
+          if (renderedButton?.content !== undefined) {
+            await renderDeckSurface(deckId)
+          }
+        })().catch(reportRuntimeError)
       },
       navigateToDeck: async (targetDeckId: string) => {
         temporaryErrorDeck = null
