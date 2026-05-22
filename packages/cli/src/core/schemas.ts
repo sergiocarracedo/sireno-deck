@@ -128,12 +128,10 @@ export interface ButtonInstance extends AddonButtonEnvelope {
   icon?: string
   interval_ms?: number
   label?: string
-  style_id?: string
   states?: Array<{ key: string; command?: string; icon?: string; label?: string }>
   status_command?: string
   target_deck?: string
   unavailable_label?: string
-  wrapper_id?: string
 }
 
 export interface DeckConfig {
@@ -148,8 +146,6 @@ const CoreButtonConfigSchema = z.object({
   accent: AccentOverrideSchema.optional(),
   background: z.string().min(1).optional(),
   full_surface: z.boolean().optional(),
-  style_id: z.string().min(1).optional(),
-  wrapper_id: z.string().min(1).optional(),
 })
   .strict()
 
@@ -283,7 +279,7 @@ export function validateBootstrapConfig(data: unknown): BootstrapSirenoConfig {
 
 function getButtonPayload(button: Record<string, unknown>): Record<string, unknown> {
   return Object.fromEntries(
-    Object.entries(button).filter(([key]) => key !== "accent" && key !== "background" && key !== "full_surface" && key !== "position" && key !== "style_id" && key !== "type" && key !== "wrapper_id"),
+    Object.entries(button).filter(([key]) => key !== "accent" && key !== "background" && key !== "full_surface" && key !== "position" && key !== "type"),
   )
 }
 
@@ -421,61 +417,9 @@ export function validateConfig(data: unknown, registry: AddonRegistry): SirenoCo
         accent: parsedButton.data.accent,
         background: parsedButton.data.background,
         full_surface: parsedButton.data.full_surface,
-        style_id: parsedButton.data.style_id,
-        wrapper_id: parsedButton.data.wrapper_id,
       })
       if (!parsedCoreButtonConfig.success) {
         throw toConfigValidationError(parsedCoreButtonConfig.error.issues[0], ["decks", deckKey, "buttons", buttonIndex])
-      }
-
-      if (parsedCoreButtonConfig.data.full_surface && parsedCoreButtonConfig.data.wrapper_id) {
-        throw new ConfigValidationError(
-          "`full_surface` cannot be combined with `wrapper_id`",
-          undefined,
-          undefined,
-          `Remove 'wrapper_id' from '${getPathLabel(["decks", deckKey, "buttons", buttonIndex])}' or disable 'full_surface'.`,
-          ["decks", deckKey, "buttons", buttonIndex, "full_surface"],
-        )
-      }
-
-      if (parsedCoreButtonConfig.data.wrapper_id && registry.getStylePrimitive(parsedCoreButtonConfig.data.wrapper_id)) {
-        throw new ConfigValidationError(
-          `Wrapper reference '${parsedCoreButtonConfig.data.wrapper_id}' points to a style primitive`,
-          undefined,
-          undefined,
-          `Use a registered wrapper id for '${getPathLabel(["decks", deckKey, "buttons", buttonIndex, "wrapper_id"])}'.`,
-          ["decks", deckKey, "buttons", buttonIndex, "wrapper_id"],
-        )
-      }
-
-      if (parsedCoreButtonConfig.data.style_id && registry.getWrapperPrimitive(parsedCoreButtonConfig.data.style_id)) {
-        throw new ConfigValidationError(
-          `Style reference '${parsedCoreButtonConfig.data.style_id}' points to a wrapper primitive`,
-          undefined,
-          undefined,
-          `Use a registered style id for '${getPathLabel(["decks", deckKey, "buttons", buttonIndex, "style_id"])}'.`,
-          ["decks", deckKey, "buttons", buttonIndex, "style_id"],
-        )
-      }
-
-      if (parsedCoreButtonConfig.data.wrapper_id && !registry.getWrapperPrimitive(parsedCoreButtonConfig.data.wrapper_id)) {
-        throw new ConfigValidationError(
-          `Unknown wrapper primitive '${parsedCoreButtonConfig.data.wrapper_id}'`,
-          undefined,
-          undefined,
-          `Register '${parsedCoreButtonConfig.data.wrapper_id}' before using it in config.yml.`,
-          ["decks", deckKey, "buttons", buttonIndex, "wrapper_id"],
-        )
-      }
-
-      if (parsedCoreButtonConfig.data.style_id && !registry.getStylePrimitive(parsedCoreButtonConfig.data.style_id)) {
-        throw new ConfigValidationError(
-          `Unknown style primitive '${parsedCoreButtonConfig.data.style_id}'`,
-          undefined,
-          undefined,
-          `Register '${parsedCoreButtonConfig.data.style_id}' before using it in config.yml.`,
-          ["decks", deckKey, "buttons", buttonIndex, "style_id"],
-        )
       }
 
       const parsedPayload = definition.configSchema.safeParse(payload)
@@ -487,8 +431,6 @@ export function validateConfig(data: unknown, registry: AddonRegistry): SirenoCo
         ...(parsedCoreButtonConfig.data.accent !== undefined ? { accent: parsedCoreButtonConfig.data.accent } : {}),
         ...(parsedCoreButtonConfig.data.background !== undefined ? { background: parsedCoreButtonConfig.data.background } : {}),
         ...(parsedCoreButtonConfig.data.full_surface !== undefined ? { full_surface: parsedCoreButtonConfig.data.full_surface } : {}),
-        ...(parsedCoreButtonConfig.data.style_id !== undefined ? { style_id: parsedCoreButtonConfig.data.style_id } : {}),
-        ...(parsedCoreButtonConfig.data.wrapper_id !== undefined ? { wrapper_id: parsedCoreButtonConfig.data.wrapper_id } : {}),
         position: parsedButton.data.position,
         type: parsedButton.data.type,
         config: parsedPayload.data as Record<string, unknown>,

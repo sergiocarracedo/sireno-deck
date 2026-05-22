@@ -1,6 +1,7 @@
+import { createElement } from 'react'
 import { z } from 'zod'
 
-import { createBaseShapeIconLabelContent } from '../../../addon/api.js'
+import { createDomIcon, createDomStack, createDomTextLabel } from '../../../addon/api.js'
 
 const BuiltinActionButtonSchema = z
   .object({
@@ -36,10 +37,11 @@ const builtinActionButton = {
     }
   }) => ({
     render: () =>
-      createBaseShapeIconLabelContent({
-        ...(config.icon !== undefined ? { icon: config.icon } : {}),
-        keyIndex: button.position,
-        label: config.label,
+      createDomStack({
+        children: [
+          config.icon ? createDomIcon({ src: config.icon }) : null,
+          createDomTextLabel({ children: config.label }),
+        ],
       }),
     onTap: async () => {
       if (config.command) {

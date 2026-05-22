@@ -1,6 +1,7 @@
+import { createElement } from 'react'
 import { z } from 'zod'
 
-import { createBaseShapeIconLabelContent } from '../../../addon/api.js'
+import { createDomIcon, createDomStack, createDomTextLabel } from '../../../addon/api.js'
 
 const BuiltinChangeDeckButtonSchema = z
   .object({
@@ -25,10 +26,11 @@ const builtinChangeDeckButton = {
       await methods.navigateToDeck(config.target_deck)
     },
     render: () =>
-      createBaseShapeIconLabelContent({
-        ...(config.icon !== undefined ? { icon: config.icon } : {}),
-        keyIndex: button.position,
-        label: config.label,
+      createDomStack({
+        children: [
+          config.icon ? createDomIcon({ src: config.icon }) : null,
+          createDomTextLabel({ children: config.label }),
+        ],
       }),
   }),
   type: 'change-deck',

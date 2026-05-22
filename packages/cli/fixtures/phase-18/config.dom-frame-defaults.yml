@@ -1,0 +1,20 @@
+theme: dark
+main_deck: main
+addons: []
+decks:
+  main:
+    id: main
+    buttons:
+      - position: 0
+        type: action
+        label: Clock
+        icon: builtin://core-buttons/clock.svg
+      - position: 1
+        type: date-time
+        variant: date-time
+      - position: 2
+        type: analog-clock
+        full_surface: true
+      - position: 3
+        type: calendar-sheet
+        full_surface: true

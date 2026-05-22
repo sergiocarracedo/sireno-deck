@@ -3,7 +3,9 @@ import { fileURLToPath } from 'node:url'
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import type { SirenoAddon } from '../../../packages/cli/src/addon/api.js'
+import { createBaseShapeIconLabelContent, createBaseShapeTextContent } from '../../addon/api.js'
+
+import type { SirenoAddon } from '../../addon/api.js'
 
 const CATEGORY_DEFINITIONS = [
   {
@@ -146,7 +148,7 @@ function getEmojiFallbackLabel(emoji: string): string {
 }
 
 function createButtonNode(keyIndex: number, label: string, icon?: string) {
-  return createElement('deck-button', {
+  return createBaseShapeIconLabelContent({
     ...(icon !== undefined ? { icon } : {}),
     keyIndex,
     label,
@@ -191,17 +193,16 @@ const emojiEntryButton = {
       )
     },
     render: () =>
-      createElement('deck-button', {
-        ...(EMOJI_ICON_ASSETS[config.emoji] !== undefined
-          ? { icon: EMOJI_ICON_ASSETS[config.emoji] }
-          : {}),
-        keyIndex: button.position,
-        label: getEmojiFallbackLabel(config.emoji),
-        subtitle: config.label,
-        ...(EMOJI_ICON_ASSETS[config.emoji] === undefined
-          ? { variant: 'emoji' as const }
-          : {}),
-      }),
+      EMOJI_ICON_ASSETS[config.emoji] !== undefined
+        ? createBaseShapeIconLabelContent({
+            icon: EMOJI_ICON_ASSETS[config.emoji],
+            keyIndex: button.position,
+            label: getEmojiFallbackLabel(config.emoji),
+          })
+        : createBaseShapeTextContent({
+            keyIndex: button.position,
+            label: getEmojiFallbackLabel(config.emoji),
+          }),
   }),
   type: 'emoji-entry-button',
 }

@@ -1,0 +1,22 @@
+theme: dark
+main_deck: main
+addons: []
+decks:
+  main:
+    id: main
+    buttons:
+      - position: 0
+        type: action
+        label: Clock
+        icon: builtin://core-buttons/clock.svg
+      - position: 1
+        type: change-deck
+        label: Apps
+        target_deck: apps
+  apps:
+    id: apps
+    buttons:
+      - position: 0
+        type: change-deck
+        label: Main
+        target_deck: main

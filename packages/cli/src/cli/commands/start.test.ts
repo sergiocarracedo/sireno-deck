@@ -1,6 +1,12 @@
+import { createElement } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+const blankRemainingKeys = vi.fn()
+const createBrowserRenderer = vi.fn()
+const createStreamDeckLifecycle = vi.fn()
+const replayLastRenderedBuffers = vi.fn()
 const watch = vi.fn()
+const writeKeyBuffer = vi.fn(async () => {})
 const createBundledAddonRegistry = vi.fn(() => ({ bundled: true }))
 const loadBootstrapConfig = vi.fn()
 const loadConfigWithSources = vi.fn()
@@ -8,9 +14,16 @@ const loadConfiguredAddons = vi.fn()
 const resolveHostContext = vi.fn()
 const createSessionMonitor = vi.fn()
 
-vi.mock("node:fs", async () => ({
-  watch,
-}))
+class StreamDeckSelectionError extends Error {}
+
+vi.mock("node:fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:fs")>()
+
+  return {
+    ...actual,
+    watch,
+  }
+})
 
 vi.mock("../../config/loader.js", () => ({
   createBundledAddonRegistry,
@@ -21,6 +34,23 @@ vi.mock("../../config/loader.js", () => ({
 vi.mock("../../addon/loader.js", () => ({
   loadConfiguredAddons,
 }))
+
+vi.mock("../../device/stream-deck.js", () => ({
+  blankRemainingKeys,
+  createStreamDeckLifecycle,
+  replayLastRenderedBuffers,
+  StreamDeckSelectionError,
+  writeKeyBuffer,
+}))
+
+vi.mock("../../render/browser-renderer.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../render/browser-renderer.js")>()
+
+  return {
+    ...actual,
+    createBrowserRenderer,
+  }
+})
 
 vi.mock("../../system/host-context.js", () => ({
   resolveHostContext,
@@ -43,7 +73,12 @@ describe("loadRuntimeConfig", () => {
   }
 
   beforeEach(() => {
+    blankRemainingKeys.mockReset()
+    createBrowserRenderer.mockReset()
+    createStreamDeckLifecycle.mockReset()
     watch.mockReset()
+    replayLastRenderedBuffers.mockReset()
+    writeKeyBuffer.mockReset()
     createBundledAddonRegistry.mockClear()
     loadBootstrapConfig.mockReset()
     loadConfigWithSources.mockReset()
@@ -257,62 +292,125 @@ describe("createTemporaryConfigErrorLines", () => {
   })
 })
 
-describe("resolvePrimitiveRenderOptions", () => {
-  it("maps legacy wrapper ids onto the shared wrapper on the shipped render path", async () => {
-    const { resolvePrimitiveRenderOptions } = await import("./start.js")
+describe("isDomRenderButton", () => {
+  it("detects runtime render outputs that carry DOM content", async () => {
+    const { isDomRenderButton } = await import("./start.js")
 
-    expect(resolvePrimitiveRenderOptions(
-      {
-        keyIndex: 0,
-        label: "Clock",
-        style_id: "core-buttons/accent",
-        wrapper_id: "core-buttons/shared-card",
-      },
-      {
-        getStylePrimitive: vi.fn(() => ({ addonName: "core-buttons", id: "core-buttons/accent", name: "accent", shared: { tone: "accent" } })),
-        getWrapperPrimitive: vi.fn(() => ({ addonName: "core-buttons", id: "core-buttons/shared-card", name: "shared-card", wrapper: "shared" })),
-      },
-    )).toEqual({ sharedStyleTone: "accent", wrapper: "shared" })
-  })
-
-  it("does not apply wrapper compatibility when full-surface rendering is explicit", async () => {
-    const { resolvePrimitiveRenderOptions } = await import("./start.js")
-
-    expect(resolvePrimitiveRenderOptions(
-      {
-        full_surface: true,
-        keyIndex: 0,
-        label: "Clock",
-        style_id: "core-buttons/accent",
-        wrapper_id: "core-buttons/shared-card",
-      },
-      {
-        getStylePrimitive: vi.fn(() => ({ addonName: "core-buttons", id: "core-buttons/accent", name: "accent", shared: { tone: "accent" } })),
-        getWrapperPrimitive: vi.fn(() => ({ addonName: "core-buttons", id: "core-buttons/shared-card", name: "shared-card", wrapper: "shared" })),
-      },
-    )).toEqual({ sharedStyleTone: "accent" })
+    expect(isDomRenderButton({ content: { type: "div" }, keyIndex: 0 } as never)).toBe(true)
+    expect(isDomRenderButton({ keyIndex: 0, label: "Clock" })).toBe(false)
   })
 })
 
-describe("createRenderTextImageOptions", () => {
-  it("forwards explicit full-surface rendering on the shipped start path while keeping wrapper compatibility opt-out narrow", async () => {
-    const { createRenderTextImageOptions } = await import("./start.js")
-
-    expect(createRenderTextImageOptions(
-      {
-        full_surface: true,
-        keyIndex: 1,
-        label: "Explicit Full Surface",
-        style_id: "core-buttons/accent",
-        wrapper_id: "core-buttons/shared-card",
-      },
-      { accent: "#f59e0b", background: "#10161f", danger: "#fb7185", foreground: "#eef2f7", name: "dark", primary: "#7dd3fc", success: "#34d399" },
-      { sharedStyleTone: "accent" },
-    )).toMatchObject({
-      full_surface: true,
-      sharedStyleTone: "accent",
-      text: "Explicit Full Surface",
-      wrapper: undefined,
+describe("ensureBrowserRenderer", () => {
+  it("fails honestly when the browser renderer cannot start", async () => {
+    const start = vi.fn(async () => {
+      throw new Error("missing chromium")
     })
+    const close = vi.fn(async () => {})
+    createBrowserRenderer.mockReturnValue({ close, start })
+
+    const { ensureBrowserRenderer } = await import("./start.js")
+
+    await expect(ensureBrowserRenderer(null, 15)).rejects.toThrow("missing chromium")
+    expect(createBrowserRenderer).toHaveBeenCalledWith({ keyCount: 15 })
+    expect(close).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe("renderRuntimeDeckSurface", () => {
+  beforeEach(() => {
+    createBrowserRenderer.mockReset()
+    writeKeyBuffer.mockReset()
+  })
+
+  it("rejects decks that are not fully DOM-backed", async () => {
+    const browserRenderer = {
+      captureKeyBuffers: vi.fn(),
+      close: vi.fn(),
+      start: vi.fn(),
+      updateDeck: vi.fn(),
+    }
+    const connection = { info: { keyCount: 3 } }
+    const logger = { info: vi.fn() } as const
+    const { renderRuntimeDeckSurface } = await import("./start.js")
+
+    await expect(renderRuntimeDeckSurface(
+      connection as never,
+      [
+        { content: { type: "div" }, keyIndex: 0, label: "DOM Clock" } as never,
+        { keyIndex: 1, label: "Legacy Clock" },
+      ],
+      browserRenderer as never,
+      logger as never,
+    )).rejects.toThrow("Runtime deck rendering must provide DOM-backed button content")
+
+    expect(browserRenderer.updateDeck).not.toHaveBeenCalled()
+    expect(writeKeyBuffer).not.toHaveBeenCalled()
+  })
+
+  it("renders all-DOM decks through the browser-backed path", async () => {
+    const browserRenderer = {
+      captureKeyBuffers: vi.fn(async () => new Map([[0, Buffer.from("dom")]])),
+      close: vi.fn(),
+      start: vi.fn(),
+      updateDeck: vi.fn(async () => {}),
+    }
+    const connection = { info: { keyCount: 1 } }
+    const logger = { info: vi.fn() } as const
+    const { renderRuntimeDeckSurface } = await import("./start.js")
+
+    await renderRuntimeDeckSurface(
+      connection as never,
+      [{ content: createElement("div", null, "DOM Clock"), keyIndex: 0, label: "DOM Clock" } as never],
+      browserRenderer as never,
+      logger as never,
+    )
+
+    expect(browserRenderer.updateDeck).toHaveBeenCalledTimes(1)
+    expect(browserRenderer.captureKeyBuffers).toHaveBeenCalledTimes(1)
+    expect(writeKeyBuffer).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe("startDaemon", () => {
+  it("exits honestly when the browser renderer cannot start", async () => {
+    const lifecycle = {
+      close: vi.fn(async () => {}),
+      getConnection: vi.fn(() => ({ info: { keyCount: 15, model: "XL", serialNumber: "abc" } })),
+      start: vi.fn(async () => ({ info: { keyCount: 15, model: "XL", serialNumber: "abc" } })),
+      subscribeKeyEvents: vi.fn(() => () => {}),
+    }
+    const sessionMonitor = {
+      getSnapshot: vi.fn(() => ({ capability: "supported", state: "unknown" })),
+      stop: vi.fn(async () => {}),
+      subscribe: vi.fn(() => () => {}),
+    }
+    createStreamDeckLifecycle.mockReturnValue(lifecycle)
+    createSessionMonitor.mockResolvedValue(sessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    loadBootstrapConfig.mockReturnValue({
+      config: { addons: [] },
+      cwd: "/tmp/project",
+      filePath: "/tmp/project/config.yml",
+    })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    loadConfigWithSources.mockReturnValue({
+      config: {
+        decks: { main: { buttons: [], id: "main" } },
+        main_deck: "main",
+      },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
+    createBrowserRenderer.mockReturnValue({
+      close: vi.fn(async () => {}),
+      start: vi.fn(async () => {
+        throw new Error("missing chromium")
+      }),
+    })
+
+    const { startDaemon } = await import("./start.js")
+
+    await expect(startDaemon({ logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as never })).rejects.toThrow("missing chromium")
   })
 })

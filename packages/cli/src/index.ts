@@ -1,11 +1,8 @@
 export {
-  createDeckButtonElement,
-  createDeckSurfaceElement,
-  createDeckTextElement,
-} from "./render/reconciler.js"
-
-export type {
-  DeckButtonProps,
-  DeckSurfaceProps,
-  DeckTextProps,
-} from "./render/reconciler.js"
+  ButtonSurface,
+  createBaseShapeIconLabelContent,
+  createBaseShapeTextContent,
+  createDomIcon,
+  createDomStack,
+  createDomTextLabel,
+} from "./addon/api.js"
