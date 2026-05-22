@@ -17,7 +17,6 @@ number: 3
 name: bounded media sampling stays browser-backed and honest on the device surface
 expected: |
   Start the CLI from `packages/cli` with `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.media-sampling.yml`. On `main`, confirm `Clip Loop` visibly advances across `SKY`, `MINT`, and `ROSE` as bounded sampled snapshots rather than smooth continuous playback, and confirm `One Shot` advances to `HOLD` then stops there. `TSX Action` should still render inside the implicit `buttonFrame` chrome beside the sampled buttons. Then enter `tools` and return to `main`; the browser-backed deck should come back cleanly with no stale capture residue.
-awaiting: user response
 awaiting: none
 
 ## Tests
