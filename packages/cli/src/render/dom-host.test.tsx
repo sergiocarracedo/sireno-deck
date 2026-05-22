@@ -60,4 +60,19 @@ describe("dom host", () => {
     expect(html).toContain('data-sireno-media-sample-interval-ms="400"')
     expect(html).toContain('display:contents')
   })
+
+  it("preserves addon-authored ButtonSurface sampling metadata without nesting a duplicate host wrapper", () => {
+    const html = renderReactNodeToHtml(createHostedButtonElement({
+      content: createElement(ButtonSurface, {
+        full_surface: true,
+        sample_interval_ms: 600,
+      }, createElement("span", null, "Media")),
+      full_surface: true,
+      keyIndex: 0,
+      sample_interval_ms: 600,
+    }))
+
+    expect(html).toContain('data-sireno-media-sample-interval-ms="600"')
+    expect(html.match(/data-sireno-button-surface="true"/g)).toHaveLength(1)
+  })
 })

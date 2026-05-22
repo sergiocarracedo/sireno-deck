@@ -2,6 +2,8 @@ import { createElement } from 'react'
 import { z } from 'zod'
 import { BuiltinToggleButtonConfigSchema } from '../../../core/schemas.js'
 
+import { ButtonSurface, createDomIcon, createDomStack, createDomTextLabel } from '../../../addon/api.js'
+
 const COMMAND_DRIVEN_TOGGLE_INTERVAL_MS = 1_000
 
 const builtinToggleButton = {
@@ -55,13 +57,21 @@ const builtinToggleButton = {
           currentState = currentState === 'on' ? 'off' : 'on'
           methods.invalidate()
         },
-        render: () =>
-          createElement('deck-button', {
-            keyIndex: button.position,
-            ...getStateProps(currentState),
-            toggle_mode: 'internal',
-            variant: 'toggle',
-          }),
+        render: () => {
+          const stateProps = getStateProps(currentState)
+
+          const primaryLabel = stateProps.label ?? 'Toggle'
+          const secondaryLabel = stateProps.subtitle
+
+          return createElement(ButtonSurface, null, createDomStack({
+            children: [
+              stateProps.icon ? createDomIcon({ src: stateProps.icon }) : null,
+              createDomTextLabel({ children: primaryLabel }),
+              secondaryLabel ? createDomTextLabel({ children: secondaryLabel }) : null,
+            ],
+            gap: secondaryLabel ? 4 : 6,
+          }))
+        },
       }
     }
 
@@ -157,19 +167,26 @@ const builtinToggleButton = {
       refresh: async () => {
         await syncAuthoritativeState()
       },
-      render: () =>
-        createElement('deck-button', {
-          keyIndex: button.position,
-          ...getStateProps(lastKnownState),
-          subtitle:
-            displayState === 'pending'
-              ? 'PENDING'
-              : displayState === 'error'
-                ? 'ERROR'
-                : getStateProps(lastKnownState).subtitle,
-          toggle_mode: config.mode,
-          variant: 'toggle',
-        }),
+      render: () => {
+        const stateProps = getStateProps(lastKnownState)
+        const statusLabel =
+          displayState === 'pending'
+            ? 'PENDING'
+            : displayState === 'error'
+              ? 'ERROR'
+              : undefined
+        const primaryLabel = stateProps.label ?? 'Toggle'
+        const secondaryLabel = statusLabel ?? stateProps.subtitle
+
+        return createElement(ButtonSurface, null, createDomStack({
+          children: [
+            stateProps.icon ? createDomIcon({ src: stateProps.icon }) : null,
+            createDomTextLabel({ children: primaryLabel }),
+            secondaryLabel ? createDomTextLabel({ children: secondaryLabel }) : null,
+          ],
+          gap: secondaryLabel ? 4 : 6,
+        }))
+      },
     }
   },
   type: 'toggle',

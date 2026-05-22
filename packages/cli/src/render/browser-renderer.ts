@@ -43,6 +43,9 @@ export interface BrowserRenderer {
   updateDeck: (html: string) => Promise<void>
 }
 
+export const MIN_MEDIA_SAMPLE_INTERVAL_MS = 250
+export const MAX_MEDIA_SAMPLE_INTERVAL_MS = 2000
+
 interface CaptureWaiter {
   reject: (reason?: unknown) => void
   requestedVersion: number
@@ -124,8 +127,13 @@ function parseMediaSampleIntervalMs(html: string): number | undefined {
       return lowestIntervalMs
     }
 
-    if (lowestIntervalMs === undefined || parsedIntervalMs < lowestIntervalMs) {
-      return parsedIntervalMs
+    const boundedIntervalMs = Math.min(
+      MAX_MEDIA_SAMPLE_INTERVAL_MS,
+      Math.max(MIN_MEDIA_SAMPLE_INTERVAL_MS, parsedIntervalMs),
+    )
+
+    if (lowestIntervalMs === undefined || boundedIntervalMs < lowestIntervalMs) {
+      return boundedIntervalMs
     }
 
     return lowestIntervalMs

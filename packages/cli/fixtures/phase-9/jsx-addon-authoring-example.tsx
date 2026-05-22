@@ -1,25 +1,20 @@
-import type {} from "sireno-deck-cli/jsx"
+import { createElement } from "react"
 
 import {
-  createDeckButtonElement,
-  createDeckSurfaceElement,
-  createDeckTextElement,
+  ButtonSurface,
+  createBaseShapeTextContent,
+  createDomTextLabel,
 } from "sireno-deck-cli"
 
-import {
-  addonButtonProps,
-  addonSurfaceButtons,
-  addonTextProps,
-} from "./jsx-addon-authoring-example-data.js"
+export const helperAddonButton = createBaseShapeTextContent({
+  keyIndex: 0,
+  label: "Clock",
+})
 
-export const jsxAddonButton = <deck-button {...addonButtonProps} />
+export const helperAddonSurface = createElement(
+  ButtonSurface,
+  { full_surface: true },
+  createDomTextLabel({ children: "Date Today" }),
+)
 
-export const helperAddonButton = createDeckButtonElement(addonButtonProps)
-
-export const jsxAddonSurface = <deck-surface buttons={[...addonSurfaceButtons]} />
-
-export const helperAddonSurface = createDeckSurfaceElement({ buttons: [...addonSurfaceButtons] })
-
-export const jsxAddonText = <deck-text {...addonTextProps} />
-
-export const helperAddonText = createDeckTextElement(addonTextProps)
+export const helperAddonText = createDomTextLabel({ children: "10:48" })

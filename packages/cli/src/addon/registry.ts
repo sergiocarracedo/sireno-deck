@@ -3,8 +3,6 @@ import { resolve } from "node:path"
 import type {
   AddonButtonDefinition,
   AddonDeckDefinition,
-  RegisteredAddonStylePrimitive,
-  RegisteredAddonWrapperPrimitive,
   SirenoAddon,
 } from "./api.js"
 
@@ -12,10 +10,6 @@ const ADDON_ASSET_PREFIX = "addon://"
 
 function getAssetKey(addonName: string, assetName: string): string {
   return `${addonName}/${assetName}`
-}
-
-function getPrimitiveKey(addonName: string, primitiveName: string): string {
-  return `${addonName}/${primitiveName}`
 }
 
 function parseAssetReference(assetReference: string): { addonName: string; assetName: string } | undefined {
@@ -44,8 +38,6 @@ export class AddonRegistryError extends Error {
 export interface AddonRegistry {
   getDeckType: (type: string) => AddonDeckDefinition | undefined
   getButton: (type: string) => AddonButtonDefinition | undefined
-  getStylePrimitive: (id: string) => RegisteredAddonStylePrimitive | undefined
-  getWrapperPrimitive: (id: string) => RegisteredAddonWrapperPrimitive | undefined
   listButtons: () => AddonButtonDefinition[]
   registerAddon: (addon: SirenoAddon, options?: { rootDir?: string }) => void
   registerButton: (button: AddonButtonDefinition) => void
@@ -56,14 +48,6 @@ export function createAddonRegistry(): AddonRegistry {
   const assets = new Map<string, string>()
   const buttons = new Map<string, AddonButtonDefinition>()
   const decks = new Map<string, AddonDeckDefinition>()
-  const styles = new Map<string, RegisteredAddonStylePrimitive>()
-  const wrappers = new Map<string, RegisteredAddonWrapperPrimitive>()
-
-  function assertPrimitiveName(name: string, kind: "style" | "wrapper"): void {
-    if (name.includes("/")) {
-      throw new AddonRegistryError(`${kind} primitive name '${name}' must not contain '/'`)
-    }
-  }
 
   function registerButton(button: AddonButtonDefinition): void {
     if (buttons.has(button.type)) {
@@ -81,36 +65,12 @@ export function createAddonRegistry(): AddonRegistry {
     decks.set(deck.type, deck)
   }
 
-  function registerStylePrimitive(addonName: string, style: RegisteredAddonStylePrimitive): void {
-    assertPrimitiveName(style.name, "style")
-    if (styles.has(style.id)) {
-      throw new AddonRegistryError(`Style primitive '${style.id}' is already registered`)
-    }
-
-    styles.set(style.id, style)
-  }
-
-  function registerWrapperPrimitive(addonName: string, wrapper: RegisteredAddonWrapperPrimitive): void {
-    assertPrimitiveName(wrapper.name, "wrapper")
-    if (wrappers.has(wrapper.id)) {
-      throw new AddonRegistryError(`Wrapper primitive '${wrapper.id}' is already registered`)
-    }
-
-    wrappers.set(wrapper.id, wrapper)
-  }
-
   return {
     getDeckType(type) {
       return decks.get(type)
     },
     getButton(type) {
       return buttons.get(type)
-    },
-    getStylePrimitive(id) {
-      return styles.get(id)
-    },
-    getWrapperPrimitive(id) {
-      return wrappers.get(id)
     },
     listButtons() {
       return [...buttons.values()]
@@ -122,22 +82,6 @@ export function createAddonRegistry(): AddonRegistry {
 
       for (const deck of addon.decks ?? []) {
         registerDeck(deck)
-      }
-
-      for (const style of addon.styles ?? []) {
-        registerStylePrimitive(addon.name, {
-          ...style,
-          addonName: addon.name,
-          id: getPrimitiveKey(addon.name, style.name),
-        })
-      }
-
-      for (const wrapper of addon.wrappers ?? []) {
-        registerWrapperPrimitive(addon.name, {
-          ...wrapper,
-          addonName: addon.name,
-          id: getPrimitiveKey(addon.name, wrapper.name),
-        })
       }
 
       for (const [assetName, assetPath] of Object.entries(addon.assets ?? {})) {

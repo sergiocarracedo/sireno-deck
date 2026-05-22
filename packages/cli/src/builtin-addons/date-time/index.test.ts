@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
+import { renderReactNodeToHtml } from '../../render/dom-host.js'
 import dateTimeAddon, {
   ANALOG_CLOCK_INTERVAL_MS,
   CALENDAR_SHEET_INTERVAL_MS,
@@ -103,13 +104,7 @@ describe('date-time addon', () => {
       },
     } as never)
 
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 2,
-        label: expect.any(String),
-      },
-      type: 'deck-button',
-    })
+    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('/')
   })
 
   it('creates a renderable analog clock button instance with the expected cadence contract', () => {
@@ -123,15 +118,8 @@ describe('date-time addon', () => {
     const element = instance?.render()
 
     expect(definition?.defaultIntervalMs).toBe(ANALOG_CLOCK_INTERVAL_MS)
-    expect(element).toMatchObject({
-      props: {
-        keyIndex: 4,
-        variant: 'analog-clock',
-      },
-      type: 'deck-button',
-    })
-    expect(element?.props.label).toBeUndefined()
-    expect(element?.props.subtitle).toBeUndefined()
+    expect(renderReactNodeToHtml(element as never)).toContain('data-sireno-full-surface="true"')
+    expect(renderReactNodeToHtml(element as never)).toContain('Clock')
   })
 
   it('keeps the shipped Phase 8 review contract on the bundled analog clock type', () => {
@@ -155,14 +143,7 @@ describe('date-time addon', () => {
     const element = instance?.render()
 
     expect(definition?.defaultIntervalMs).toBe(CALENDAR_SHEET_INTERVAL_MS)
-    expect(element).toMatchObject({
-      props: {
-        keyIndex: 6,
-        variant: 'calendar-sheet',
-      },
-      type: 'deck-button',
-    })
-    expect(element?.props.label).toBeUndefined()
-    expect(element?.props.subtitle).toBeUndefined()
+    expect(renderReactNodeToHtml(element as never)).toContain('data-sireno-full-surface="true"')
+    expect(renderReactNodeToHtml(element as never)).toContain('Date')
   })
 })

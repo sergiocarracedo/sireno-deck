@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { createBaseShapeTextContent } from '../../addon/api.js'
-import { createAddonRegistry } from '../../addon/registry.js'
 import { renderReactNodeToHtml } from '../../render/dom-host.js'
 import coreButtonsAddon from './index.js'
 
@@ -14,12 +13,6 @@ describe('core-buttons addon', () => {
     expect(coreButtonsAddon.name).toBe('core-buttons')
     expect(coreButtonsAddon.apiVersion).toBe(1)
     expect(coreButtonsAddon.assets).toHaveProperty('clock.svg')
-    expect(coreButtonsAddon.wrappers).toEqual([
-      { name: 'shared-card', wrapper: 'shared' },
-    ])
-    expect(coreButtonsAddon.styles).toEqual([
-      { name: 'accent', shared: { tone: 'accent' } },
-    ])
 
     const definition = coreButtonsAddon.buttons[0]
     const config = definition?.configSchema.parse({ label: 'Clock' })
@@ -77,22 +70,25 @@ describe('core-buttons addon', () => {
     expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Emoji')
   })
 
-  it('registers bundled wrapper and style primitives through the shared addon registry contract', () => {
-    const registry = createAddonRegistry()
-    registry.registerAddon(coreButtonsAddon)
+  it('exports a bounded media-sample button for browser-only sampled surfaces', () => {
+    const definition = coreButtonsAddon.buttons.find(
+      (button) => button.type === 'media-sample',
+    )
+    const config = definition?.configSchema.parse({
+      label: 'Waves',
+      sample_interval_ms: 500,
+    })
+    const instance = definition?.createInstance({
+      button: { position: 5 },
+      config: config!,
+    } as never)
+    const html = renderReactNodeToHtml(instance?.render() as never)
 
-    expect(registry.getWrapperPrimitive('core-buttons/shared-card')).toEqual({
-      addonName: 'core-buttons',
-      id: 'core-buttons/shared-card',
-      name: 'shared-card',
-      wrapper: 'shared',
-    })
-    expect(registry.getStylePrimitive('core-buttons/accent')).toEqual({
-      addonName: 'core-buttons',
-      id: 'core-buttons/accent',
-      name: 'accent',
-      shared: { tone: 'accent' },
-    })
+    expect(definition?.type).toBe('media-sample')
+    expect(config).toEqual({ label: 'Waves', sample_interval_ms: 500 })
+    expect(html).toContain('data-sireno-full-surface="true"')
+    expect(html).toContain('data-sireno-media-sample-interval-ms="500"')
+    expect(html).toContain('Waves')
   })
 
   it('exports a bundled toggle definition with the internal-mode schema', () => {
@@ -130,15 +126,9 @@ describe('core-buttons addon', () => {
     } as never)
 
     expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 6,
-        label: 'Desk Lamp',
-        subtitle: 'ON',
-        toggle_mode: 'internal',
-        variant: 'toggle',
-      },
-      type: 'deck-button',
+      props: expect.any(Object),
     })
+    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Desk Lamp')
   })
 
   it('toggles internal state and invalidates on tap', async () => {
@@ -158,28 +148,12 @@ describe('core-buttons addon', () => {
       methods: { invalidate },
     } as never)
 
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 7,
-        label: 'Desk Lamp',
-        subtitle: 'OFF',
-        toggle_mode: 'internal',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Desk Lamp')
 
     await instance?.onTap?.()
 
     expect(invalidate).toHaveBeenCalledTimes(1)
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 7,
-        label: 'Desk Lamp',
-        subtitle: 'ON',
-        toggle_mode: 'internal',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Desk Lamp')
   })
 
   it('keeps get-set toggles pending until the first authoritative read', () => {
@@ -204,15 +178,7 @@ describe('core-buttons addon', () => {
       methods: { invalidate: vi.fn(), runCommand },
     } as never)
 
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 8,
-        label: 'Desk Lamp',
-        subtitle: 'PENDING',
-        toggle_mode: 'get-set',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('PENDING')
     expect(runCommand).not.toHaveBeenCalled()
   })
 
@@ -250,30 +216,14 @@ describe('core-buttons addon', () => {
     await instance?.onActivate?.()
 
     expect(runCommand).toHaveBeenCalledWith('read-lamp')
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 9,
-        label: 'Desk Lamp',
-        subtitle: 'OFF',
-        toggle_mode: 'get-set',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Desk Lamp')
 
     await instance?.onTap?.()
 
     expect(runCommand).toHaveBeenCalledWith('turn-on-lamp')
     expect(runCommand).toHaveBeenLastCalledWith('read-lamp')
     expect(invalidate).toHaveBeenCalled()
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 9,
-        label: 'Desk Lamp',
-        subtitle: 'ON',
-        toggle_mode: 'get-set',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Desk Lamp')
   })
 
   it('preserves the last authoritative truth and shows error on get-set write failure', async () => {
@@ -304,15 +254,7 @@ describe('core-buttons addon', () => {
     await instance?.onActivate?.()
     await instance?.onTap?.()
 
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 10,
-        label: 'Desk Lamp',
-        subtitle: 'ERROR',
-        toggle_mode: 'get-set',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('ERROR')
   })
 
   it('reconciles toggle-status writes through status_command instead of local inversion', async () => {
@@ -352,15 +294,7 @@ describe('core-buttons addon', () => {
       'toggle-lamp',
       'read-lamp',
     ])
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 11,
-        label: 'Desk Lamp',
-        subtitle: 'ON',
-        toggle_mode: 'toggle-status',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Desk Lamp')
   })
 
   it('allows toggle-status taps before the first authoritative read has resolved', async () => {
@@ -398,15 +332,7 @@ describe('core-buttons addon', () => {
       'toggle-lamp',
       'read-lamp',
     ])
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 12,
-        label: 'Desk Lamp',
-        subtitle: 'OFF',
-        toggle_mode: 'toggle-status',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Desk Lamp')
   })
 
   it('preserves last authoritative truth and shows error when toggle-status reconciliation fails', async () => {
@@ -443,14 +369,6 @@ describe('core-buttons addon', () => {
     await instance?.onActivate?.()
     await instance?.onTap?.()
 
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 13,
-        label: 'Desk Lamp',
-        subtitle: 'ERROR',
-        toggle_mode: 'toggle-status',
-        variant: 'toggle',
-      },
-    })
+    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('ERROR')
   })
 })

@@ -20,11 +20,7 @@ import { formatLinuxUdevAccessError } from "../../device/linux-udev.js"
 import { createBrowserRenderer } from "../../render/browser-renderer.js"
 import { renderDomDeck } from "../../render/dom-host.js"
 import type { RuntimeRenderButton } from "../../deck/runtime.js"
-import type { DeckButtonProps } from "../../render/reconciler.js"
-import type { TextImageOptions } from "../../render/text-image.js"
 
-import { createDeckSurfaceElement, renderDeck } from "../../render/reconciler.js"
-import { renderBlankKeyImage, renderTextImage } from "../../render/text-image.js"
 import { resolveHostContext } from "../../system/host-context.js"
 import { createSessionMonitor } from "../../system/session-monitor.js"
 import { formatConfigError } from "../../util/errors.js"
@@ -44,45 +40,6 @@ export interface StartOptions {
 }
 
 const CONFIG_RELOAD_DEBOUNCE_MS = 75
-
-export function resolvePrimitiveRenderOptions(
-  button: DeckButtonProps,
-  registry: Pick<ReturnType<typeof createBundledAddonRegistry>, "getStylePrimitive" | "getWrapperPrimitive">,
-): { sharedStyleTone?: "accent" | "default"; wrapper?: "shared" } {
-  const sharedStyleTone = button.style_id ? registry.getStylePrimitive(button.style_id)?.shared?.tone : undefined
-  const wrapper = button.full_surface
-    ? undefined
-    : button.wrapper ?? (button.wrapper_id ? registry.getWrapperPrimitive(button.wrapper_id)?.wrapper : undefined)
-
-  return {
-    ...(sharedStyleTone !== undefined ? { sharedStyleTone } : {}),
-    ...(wrapper !== undefined ? { wrapper } : {}),
-  }
-}
-
-export function createRenderTextImageOptions(
-  button: DeckButtonProps,
-  theme: ReturnType<typeof resolveTheme>,
-  primitiveOptions: { sharedStyleTone?: "accent" | "default"; wrapper?: "shared" },
-): TextImageOptions {
-  return {
-    accent: button.accent,
-    background: button.background,
-    detailLines: button.detailLines,
-    displayValue: button.displayValue,
-    fit: button.fit,
-    full_surface: button.full_surface,
-    icon: button.icon,
-    progress: button.progress,
-    sharedStyleTone: primitiveOptions.sharedStyleTone,
-    subtitle: button.subtitle,
-    text: button.label,
-    theme,
-    toggleMode: button.toggle_mode,
-    variant: button.variant,
-    wrapper: button.wrapper ?? primitiveOptions.wrapper,
-  }
-}
 
 export async function loadRuntimeConfig(options: StartOptions) {
   const sessionMonitor = await createSessionMonitor()
@@ -194,51 +151,8 @@ export function createTemporaryConfigErrorLines(error: ConfigValidationError): s
   ]
 }
 
-async function renderMainDeck(
-  connection: NonNullable<ReturnType<ReturnType<typeof createStreamDeckLifecycle>["getConnection"]>>,
-  deckButtons: DeckButtonProps[],
-  theme: ReturnType<typeof resolveTheme>,
-  resolvePrimitiveRenderOptions: (button: DeckButtonProps) => { sharedStyleTone?: "accent" | "default"; wrapper?: "shared" },
-  logger: pino.Logger,
-): Promise<void> {
-  const descriptions = renderDeck(createDeckSurfaceElement({ buttons: deckButtons }))
-  const blankBuffer = await renderBlankKeyImage()
-  const renderedKeys = new Set<number>()
-
-  for (const description of descriptions) {
-    const primitiveOptions = resolvePrimitiveRenderOptions(description)
-    const buffer = await renderTextImage(createRenderTextImageOptions(description, theme, primitiveOptions))
-    renderedKeys.add(description.keyIndex)
-    await writeKeyBuffer(connection, description.keyIndex, buffer)
-  }
-
-  await blankRemainingKeys(connection, blankBuffer, renderedKeys)
-  logger.info({ deckId: "main deck", renderedKeys: Array.from(renderedKeys).sort((left, right) => left - right) }, "rendered themed main deck")
-}
-
 export function isDomRenderButton(button: RuntimeRenderButton): button is RuntimeRenderButton & { content: NonNullable<RuntimeRenderButton["content"]> } {
   return button.content !== undefined
-}
-
-export function toLegacyRenderButton(button: RuntimeRenderButton): DeckButtonProps {
-  return {
-    ...(button.accent !== undefined ? { accent: button.accent } : {}),
-    ...(button.background !== undefined ? { background: button.background } : {}),
-    ...(button.detailLines !== undefined ? { detailLines: button.detailLines } : {}),
-    ...(button.displayValue !== undefined ? { displayValue: button.displayValue } : {}),
-    ...(button.fit !== undefined ? { fit: button.fit } : {}),
-    ...(button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
-    ...(button.icon !== undefined ? { icon: button.icon } : {}),
-    keyIndex: button.keyIndex,
-    ...(button.label !== undefined ? { label: button.label } : {}),
-    ...(button.progress !== undefined ? { progress: button.progress } : {}),
-    ...(button.style_id !== undefined ? { style_id: button.style_id } : {}),
-    ...(button.subtitle !== undefined ? { subtitle: button.subtitle } : {}),
-    ...(button.toggle_mode !== undefined ? { toggle_mode: button.toggle_mode } : {}),
-    ...(button.variant !== undefined ? { variant: button.variant } : {}),
-    ...(button.wrapper !== undefined ? { wrapper: button.wrapper } : {}),
-    ...(button.wrapper_id !== undefined ? { wrapper_id: button.wrapper_id } : {}),
-  }
 }
 
 export async function ensureBrowserRenderer(
@@ -286,16 +200,13 @@ export async function renderRuntimeDeckSurface(
   connection: NonNullable<ReturnType<ReturnType<typeof createStreamDeckLifecycle>["getConnection"]>>,
   buttons: RuntimeRenderButton[],
   browserRenderer: BrowserRenderer,
-  theme: ReturnType<typeof resolveTheme>,
-  resolvePrimitiveRenderOptions: (button: DeckButtonProps) => { sharedStyleTone?: "accent" | "default"; wrapper?: "shared" },
   logger: pino.Logger,
 ): Promise<void> {
-  if (buttons.length > 0 && buttons.every(isDomRenderButton)) {
-    await renderDomDeckSurface(connection, buttons, browserRenderer, logger)
-    return
+  if (buttons.length > 0 && !buttons.every(isDomRenderButton)) {
+    throw new Error("Runtime deck rendering must provide DOM-backed button content")
   }
 
-  await renderMainDeck(connection, buttons.map(toLegacyRenderButton), theme, resolvePrimitiveRenderOptions, logger)
+  await renderDomDeckSurface(connection, buttons.filter(isDomRenderButton), browserRenderer, logger)
 }
 
 export async function startDaemon(options: StartOptions): Promise<void> {
@@ -317,13 +228,11 @@ export async function startDaemon(options: StartOptions): Promise<void> {
   try {
     const initialLoad = await loadRuntimeConfig(options)
     let runtime: ReturnType<typeof createDeckRuntime> | null = null
-    let registry = initialLoad.registry
     let sessionMonitor = initialLoad.sessionMonitor
     let browserRenderer: BrowserRenderer | null = null
     let stopWatchingConfig = () => {}
     let reloadInFlight = false
     let reloadQueued = false
-    const getPrimitiveRenderOptions = (button: DeckButtonProps) => resolvePrimitiveRenderOptions(button, registry)
     const lifecycle = createStreamDeckLifecycle({
       logger,
       onReconnect: async (connection) => {
@@ -357,7 +266,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
             return
           }
 
-          await renderRuntimeDeckSurface(activeConnection, buttons, browserRenderer, runtimeTheme, getPrimitiveRenderOptions, logger)
+          await renderRuntimeDeckSurface(activeConnection, buttons, browserRenderer, logger)
         },
         sessionMonitor: loadedConfig.sessionMonitor,
         subscribeKeyEvents: lifecycle.subscribeKeyEvents,
@@ -390,7 +299,6 @@ export async function startDaemon(options: StartOptions): Promise<void> {
           const previousStack = previousRuntime.getStackSnapshot()
           const previousActiveDeckId = previousRuntime.getActiveDeck().id
 
-          registry = loadedConfig.registry
           sessionMonitor = loadedConfig.sessionMonitor
           runtime = nextRuntime
 

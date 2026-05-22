@@ -1,7 +1,7 @@
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import { createDomTextLabel } from '../../../addon/api.js'
+import { createDomIcon, createDomStack, createDomTextLabel } from '../../../addon/api.js'
 
 const BuiltinChangeDeckButtonSchema = z
   .object({
@@ -26,20 +26,12 @@ const builtinChangeDeckButton = {
       await methods.navigateToDeck(config.target_deck)
     },
     render: () =>
-      createElement('div', {
-        style: {
-          alignItems: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '6px',
-          justifyContent: 'center',
-          width: '100%',
-        },
-      },
-      config.icon
-        ? createElement('img', { alt: '', src: config.icon, style: { height: '24px', objectFit: 'contain', width: '24px' } })
-        : null,
-      createDomTextLabel({ children: config.label })),
+      createDomStack({
+        children: [
+          config.icon ? createDomIcon({ src: config.icon }) : null,
+          createDomTextLabel({ children: config.label }),
+        ],
+      }),
   }),
   type: 'change-deck',
 }

@@ -26,10 +26,12 @@ export function renderReactNodeToHtml(node: ReactElement): string {
 }
 
 export function createHostedButtonElement(button: HostedButton): ReactElement {
-  const surface = createElement(ButtonSurface, {
-    ...(button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
-    ...(button.sample_interval_ms !== undefined ? { sample_interval_ms: button.sample_interval_ms } : {}),
-  }, button.content)
+  const surface = button.content.type === ButtonSurface
+    ? button.content
+    : createElement(ButtonSurface, {
+        ...(button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
+        ...(button.sample_interval_ms !== undefined ? { sample_interval_ms: button.sample_interval_ms } : {}),
+      }, button.content)
 
   if (button.full_surface) {
     return surface

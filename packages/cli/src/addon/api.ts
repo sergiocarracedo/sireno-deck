@@ -56,8 +56,6 @@ export interface AddonButtonInstance {
 
 export interface ButtonSurfaceProps extends AddonButtonSurfaceContract {
   children: ReactNode
-  style_id?: string
-  wrapper_id?: string
 }
 
 export interface CreateAddonButtonInstanceOptions<TConfig> {
@@ -80,8 +78,6 @@ export function ButtonSurface(props: ButtonSurfaceProps): ReactElement {
     "data-sireno-button-surface": "true",
     ...(props.full_surface !== undefined ? { "data-sireno-full-surface": props.full_surface ? "true" : "false" } : {}),
     ...(props.sample_interval_ms !== undefined ? { "data-sireno-media-sample-interval-ms": String(props.sample_interval_ms) } : {}),
-    ...(props.style_id !== undefined ? { "data-sireno-style-id": props.style_id } : {}),
-    ...(props.wrapper_id !== undefined ? { "data-sireno-wrapper-id": props.wrapper_id } : {}),
     children: props.children,
     style: {
       display: "contents",
@@ -107,25 +103,55 @@ export function createDomTextLabel(props: {
   })
 }
 
+export function createDomIcon(props: {
+  src: string
+  size?: number
+}): ReactElement {
+  const size = props.size ?? 24
+
+  return createElement("img", {
+    alt: "",
+    src: props.src,
+    style: {
+      height: `${size}px`,
+      objectFit: "contain",
+      width: `${size}px`,
+    },
+  })
+}
+
+export function createDomStack(props: {
+  children: ReactNode
+  gap?: number
+}): ReactElement {
+  const children = Array.isArray(props.children)
+    ? props.children.map((child, index) => (child === null ? null : createElement("span", { key: index }, child)))
+    : props.children
+
+  return createElement("div", {
+    children,
+    style: {
+      alignItems: "center",
+      display: "flex",
+      flexDirection: "column",
+      gap: `${props.gap ?? 6}px`,
+      justifyContent: "center",
+      width: "100%",
+    },
+  })
+}
+
 export function createBaseShapeIconLabelContent(props: {
   icon?: string
   keyIndex: number
   label: string
 }): ReactElement {
-  return createElement(ButtonSurface, null, createElement("div", {
-    style: {
-      alignItems: "center",
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px",
-      justifyContent: "center",
-      width: "100%",
-    },
-  },
-  props.icon
-    ? createElement("img", { alt: "", src: props.icon, style: { height: "24px", objectFit: "contain", width: "24px" } })
-    : null,
-  createDomTextLabel({ children: props.label })))
+  return createDomStack({
+    children: [
+      props.icon ? createDomIcon({ src: props.icon }) : null,
+      createDomTextLabel({ children: props.label }),
+    ],
+  })
 }
 
 export function createBaseShapeTextContent(props: {
@@ -133,7 +159,7 @@ export function createBaseShapeTextContent(props: {
   keyIndex: number
   label: string
 }): ReactElement {
-  return createElement(ButtonSurface, null, createDomTextLabel({ children: props.label }))
+  return createDomTextLabel({ children: props.label })
 }
 
 export interface CreateAddonDeckOptions<TConfig> {
@@ -147,36 +173,10 @@ export interface AddonDeckDefinition<TConfig = unknown> {
   type: string
 }
 
-export interface AddonWrapperPrimitiveDefinition {
-  name: string
-  wrapper: "shared"
-}
-
-export interface AddonSharedStylePrimitiveDefinition {
-  tone?: "accent" | "default"
-}
-
-export interface AddonStylePrimitiveDefinition {
-  name: string
-  shared?: AddonSharedStylePrimitiveDefinition
-}
-
-export interface RegisteredAddonWrapperPrimitive extends AddonWrapperPrimitiveDefinition {
-  addonName: string
-  id: string
-}
-
-export interface RegisteredAddonStylePrimitive extends AddonStylePrimitiveDefinition {
-  addonName: string
-  id: string
-}
-
 export interface SirenoAddon {
   apiVersion: number
   assets?: Record<string, string>
   buttons: readonly AddonButtonDefinition[]
   decks?: readonly AddonDeckDefinition[]
   name: string
-  styles?: readonly AddonStylePrimitiveDefinition[]
-  wrappers?: readonly AddonWrapperPrimitiveDefinition[]
 }

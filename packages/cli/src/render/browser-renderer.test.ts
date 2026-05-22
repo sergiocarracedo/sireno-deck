@@ -1,7 +1,7 @@
 import sharp from "sharp"
 import { describe, expect, it, vi } from "vitest"
 
-import { createBrowserRenderer } from "./browser-renderer.js"
+import { createBrowserRenderer, MAX_MEDIA_SAMPLE_INTERVAL_MS, MIN_MEDIA_SAMPLE_INTERVAL_MS } from "./browser-renderer.js"
 
 async function createDeckScreenshot(colors: string[]): Promise<Buffer> {
   const overlays = colors.map((color, index) => ({
@@ -130,5 +130,51 @@ describe("browser renderer", () => {
     expect(screenshot).toHaveBeenCalledTimes(2)
     expect(firstBuffers.get(0)?.subarray(0, 3)).toEqual(Buffer.from([0, 0, 255]))
     expect(latestBuffers.get(0)?.subarray(0, 3)).toEqual(Buffer.from([0, 0, 255]))
+  })
+
+  it("bounds media sampling intervals before delaying the next capture", async () => {
+    vi.useFakeTimers()
+
+    let now = 0
+    vi.spyOn(Date, "now").mockImplementation(() => now)
+    const setContent = vi.fn(async () => {})
+    const screenshot = vi.fn(async () => createDeckScreenshot(["#ff0000"]))
+    const renderer = createBrowserRenderer({
+      keyCount: 1,
+      launcher: {
+        launch: async () => ({
+          close: async () => {},
+          newContext: async () => ({
+            close: async () => {},
+            newPage: async () => ({
+              screenshot,
+              setContent,
+              setViewportSize: async () => {},
+            }),
+          }),
+        }),
+      },
+    })
+
+    await renderer.start()
+    await renderer.updateDeck(`<html><body><div data-sireno-media-sample-interval-ms="${MIN_MEDIA_SAMPLE_INTERVAL_MS - 100}"></div></body></html>`)
+    await renderer.captureKeyBuffers()
+
+    now = 1
+    await renderer.updateDeck(`<html><body><div data-sireno-media-sample-interval-ms="${MAX_MEDIA_SAMPLE_INTERVAL_MS + 500}"></div></body></html>`)
+    const capturePromise = renderer.captureKeyBuffers()
+
+    await vi.advanceTimersByTimeAsync(MAX_MEDIA_SAMPLE_INTERVAL_MS - 2)
+    expect(screenshot).toHaveBeenCalledTimes(1)
+
+    now = MAX_MEDIA_SAMPLE_INTERVAL_MS + 1
+    await vi.advanceTimersByTimeAsync(2)
+    await capturePromise
+
+    expect(screenshot).toHaveBeenCalledTimes(2)
+    expect(setContent).toHaveBeenNthCalledWith(1, `<html><body><div data-sireno-media-sample-interval-ms="${MIN_MEDIA_SAMPLE_INTERVAL_MS - 100}"></div></body></html>`)
+    expect(setContent).toHaveBeenNthCalledWith(2, `<html><body><div data-sireno-media-sample-interval-ms="${MAX_MEDIA_SAMPLE_INTERVAL_MS + 500}"></div></body></html>`)
+
+    vi.useRealTimers()
   })
 })

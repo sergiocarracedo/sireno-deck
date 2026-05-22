@@ -4,8 +4,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 const blankRemainingKeys = vi.fn()
 const createBrowserRenderer = vi.fn()
 const createStreamDeckLifecycle = vi.fn()
-const renderBlankKeyImage = vi.fn(async () => Buffer.from("blank"))
-const renderTextImage = vi.fn(async () => Buffer.from("rendered"))
 const replayLastRenderedBuffers = vi.fn()
 const watch = vi.fn()
 const writeKeyBuffer = vi.fn(async () => {})
@@ -54,11 +52,6 @@ vi.mock("../../render/browser-renderer.js", async (importOriginal) => {
   }
 })
 
-vi.mock("../../render/text-image.js", () => ({
-  renderBlankKeyImage,
-  renderTextImage,
-}))
-
 vi.mock("../../system/host-context.js", () => ({
   resolveHostContext,
 }))
@@ -84,8 +77,6 @@ describe("loadRuntimeConfig", () => {
     createBrowserRenderer.mockReset()
     createStreamDeckLifecycle.mockReset()
     watch.mockReset()
-    renderBlankKeyImage.mockClear()
-    renderTextImage.mockClear()
     replayLastRenderedBuffers.mockReset()
     writeKeyBuffer.mockReset()
     createBundledAddonRegistry.mockClear()
@@ -301,98 +292,12 @@ describe("createTemporaryConfigErrorLines", () => {
   })
 })
 
-describe("resolvePrimitiveRenderOptions", () => {
-  it("maps legacy wrapper ids onto the shared wrapper on the shipped render path", async () => {
-    const { resolvePrimitiveRenderOptions } = await import("./start.js")
-
-    expect(resolvePrimitiveRenderOptions(
-      {
-        keyIndex: 0,
-        label: "Clock",
-        style_id: "core-buttons/accent",
-        wrapper_id: "core-buttons/shared-card",
-      },
-      {
-        getStylePrimitive: vi.fn(() => ({ addonName: "core-buttons", id: "core-buttons/accent", name: "accent", shared: { tone: "accent" } })),
-        getWrapperPrimitive: vi.fn(() => ({ addonName: "core-buttons", id: "core-buttons/shared-card", name: "shared-card", wrapper: "shared" })),
-      },
-    )).toEqual({ sharedStyleTone: "accent", wrapper: "shared" })
-  })
-
-  it("does not apply wrapper compatibility when full-surface rendering is explicit", async () => {
-    const { resolvePrimitiveRenderOptions } = await import("./start.js")
-
-    expect(resolvePrimitiveRenderOptions(
-      {
-        full_surface: true,
-        keyIndex: 0,
-        label: "Clock",
-        style_id: "core-buttons/accent",
-        wrapper_id: "core-buttons/shared-card",
-      },
-      {
-        getStylePrimitive: vi.fn(() => ({ addonName: "core-buttons", id: "core-buttons/accent", name: "accent", shared: { tone: "accent" } })),
-        getWrapperPrimitive: vi.fn(() => ({ addonName: "core-buttons", id: "core-buttons/shared-card", name: "shared-card", wrapper: "shared" })),
-      },
-    )).toEqual({ sharedStyleTone: "accent" })
-  })
-})
-
-describe("createRenderTextImageOptions", () => {
-  it("forwards explicit full-surface rendering on the shipped start path while keeping wrapper compatibility opt-out narrow", async () => {
-    const { createRenderTextImageOptions } = await import("./start.js")
-
-    expect(createRenderTextImageOptions(
-      {
-        full_surface: true,
-        keyIndex: 1,
-        label: "Explicit Full Surface",
-        style_id: "core-buttons/accent",
-        wrapper_id: "core-buttons/shared-card",
-      },
-      { accent: "#f59e0b", background: "#10161f", danger: "#fb7185", foreground: "#eef2f7", name: "dark", primary: "#7dd3fc", success: "#34d399" },
-      { sharedStyleTone: "accent" },
-    )).toMatchObject({
-      full_surface: true,
-      sharedStyleTone: "accent",
-      text: "Explicit Full Surface",
-      wrapper: undefined,
-    })
-  })
-})
-
 describe("isDomRenderButton", () => {
   it("detects runtime render outputs that carry DOM content", async () => {
     const { isDomRenderButton } = await import("./start.js")
 
     expect(isDomRenderButton({ content: { type: "div" }, keyIndex: 0 } as never)).toBe(true)
     expect(isDomRenderButton({ keyIndex: 0, label: "Clock" })).toBe(false)
-  })
-})
-
-describe("toLegacyRenderButton", () => {
-  it("preserves fallback-compatible fields from runtime render output", async () => {
-    const { toLegacyRenderButton } = await import("./start.js")
-
-    expect(toLegacyRenderButton({
-      background: "#10161f",
-      detailLines: ["Line 1"],
-      full_surface: true,
-      keyIndex: 2,
-      label: "Clock",
-      subtitle: "NOW",
-      toggle_mode: "internal",
-      variant: "toggle",
-    })).toEqual({
-      background: "#10161f",
-      detailLines: ["Line 1"],
-      full_surface: true,
-      keyIndex: 2,
-      label: "Clock",
-      subtitle: "NOW",
-      toggle_mode: "internal",
-      variant: "toggle",
-    })
   })
 })
 
@@ -415,11 +320,10 @@ describe("ensureBrowserRenderer", () => {
 describe("renderRuntimeDeckSurface", () => {
   beforeEach(() => {
     createBrowserRenderer.mockReset()
-    renderTextImage.mockClear()
     writeKeyBuffer.mockReset()
   })
 
-  it("renders mixed DOM and legacy decks through the fallback path using DOM fallback metadata", async () => {
+  it("rejects decks that are not fully DOM-backed", async () => {
     const browserRenderer = {
       captureKeyBuffers: vi.fn(),
       close: vi.fn(),
@@ -430,22 +334,18 @@ describe("renderRuntimeDeckSurface", () => {
     const logger = { info: vi.fn() } as const
     const { renderRuntimeDeckSurface } = await import("./start.js")
 
-    await renderRuntimeDeckSurface(
+    await expect(renderRuntimeDeckSurface(
       connection as never,
       [
         { content: { type: "div" }, keyIndex: 0, label: "DOM Clock" } as never,
         { keyIndex: 1, label: "Legacy Clock" },
       ],
       browserRenderer as never,
-      { accent: "#f59e0b", background: "#10161f", danger: "#fb7185", foreground: "#eef2f7", name: "dark", primary: "#7dd3fc", success: "#34d399" },
-      () => ({}),
       logger as never,
-    )
+    )).rejects.toThrow("Runtime deck rendering must provide DOM-backed button content")
 
     expect(browserRenderer.updateDeck).not.toHaveBeenCalled()
-    expect(renderTextImage).toHaveBeenCalledTimes(2)
-    expect(renderTextImage.mock.calls.map((call) => call[0]?.text)).toEqual(["DOM Clock", "Legacy Clock"])
-    expect(writeKeyBuffer).toHaveBeenCalledTimes(2)
+    expect(writeKeyBuffer).not.toHaveBeenCalled()
   })
 
   it("renders all-DOM decks through the browser-backed path", async () => {
@@ -463,14 +363,11 @@ describe("renderRuntimeDeckSurface", () => {
       connection as never,
       [{ content: createElement("div", null, "DOM Clock"), keyIndex: 0, label: "DOM Clock" } as never],
       browserRenderer as never,
-      { accent: "#f59e0b", background: "#10161f", danger: "#fb7185", foreground: "#eef2f7", name: "dark", primary: "#7dd3fc", success: "#34d399" },
-      () => ({}),
       logger as never,
     )
 
     expect(browserRenderer.updateDeck).toHaveBeenCalledTimes(1)
     expect(browserRenderer.captureKeyBuffers).toHaveBeenCalledTimes(1)
-    expect(renderTextImage).not.toHaveBeenCalled()
     expect(writeKeyBuffer).toHaveBeenCalledTimes(1)
   })
 })

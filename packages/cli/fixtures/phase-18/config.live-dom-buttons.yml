@@ -1,0 +1,24 @@
+theme: dark
+main_deck: main
+addons: []
+decks:
+  main:
+    id: main
+    buttons:
+      - position: 0
+        type: toggle
+        label: Desk Lamp
+        mode: internal
+        off:
+          subtitle: OFF
+        on:
+          subtitle: ON
+      - position: 1
+        type: date-time
+        variant: date-time
+      - position: 2
+        type: analog-clock
+        full_surface: true
+      - position: 3
+        type: calendar-sheet
+        full_surface: true

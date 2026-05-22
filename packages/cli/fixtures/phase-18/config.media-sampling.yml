@@ -1,0 +1,18 @@
+theme: dark
+main_deck: main
+addons: []
+decks:
+  main:
+    id: main
+    buttons:
+      - position: 0
+        type: media-sample
+        label: Waves
+        sample_interval_ms: 500
+      - position: 1
+        type: action
+        label: Browser
+        icon: builtin://core-buttons/clock.svg
+      - position: 2
+        type: date-time
+        variant: time

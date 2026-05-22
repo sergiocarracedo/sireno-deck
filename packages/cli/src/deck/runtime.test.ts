@@ -2,16 +2,31 @@ import { join } from "node:path"
 
 import { createElement } from "react"
 import { describe, expect, it, vi } from "vitest"
-import { z } from "zod"
+import { ButtonSurface, createBaseShapeTextContent } from "../addon/api.js"
 
 import { createBundledAddonRegistry, loadConfig } from "../config/loader.js"
 import { validateConfig } from "../core/schemas.js"
+import { renderReactNodeToHtml } from "../render/dom-host.js"
 import { createDeckRuntime } from "./runtime.js"
 
-import type { SirenoAddon } from "../addon/api.js"
 import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
 import type { PollingScheduler } from "../render/scheduler.js"
 import type { SessionMonitor, SessionSnapshot } from "../system/session-monitor.js"
+
+function createTextSurface(keyIndex: number, label: string) {
+  return createBaseShapeTextContent({ keyIndex, label })
+}
+
+function getRenderedButton(runtime: ReturnType<typeof createDeckRuntime>, keyIndex: number) {
+  const renderedButton = runtime.getRenderButtons().find((button) => button.keyIndex === keyIndex)
+  expect(renderedButton).toBeDefined()
+  return renderedButton!
+}
+
+function getRenderedButtonHtml(renderedButton: { content?: unknown }) {
+  expect(renderedButton.content).toBeTruthy()
+  return renderReactNodeToHtml(renderedButton.content as never)
+}
 
 const createDisplayDefinition = () => ({
   configSchema: {
@@ -19,11 +34,7 @@ const createDisplayDefinition = () => ({
     safeParse: (value: unknown) => ({ data: value, success: true as const }),
   },
   createInstance: ({ button, config }: { button: { position: number }; config: { icon?: string; label: string } }) => ({
-    render: () => createElement("deck-button", {
-      ...(config.icon !== undefined ? { icon: config.icon } : {}),
-      keyIndex: button.position,
-      label: config.label,
-    }),
+    render: () => createTextSurface(button.position, config.label),
   }),
   type: "display-text",
 })
@@ -96,8 +107,13 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(onRenderDeck).toHaveBeenCalledWith([{ background: "#10161f", keyIndex: 0, label: "Clock" }])
-      expect(runtime.getRenderButtons()).toEqual([{ background: "#10161f", keyIndex: 0, label: "Clock" }])
+      const renderedButton = onRenderDeck.mock.calls.at(-1)?.[0]?.[0]
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Clock" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Clock")
+
+      const runtimeButton = getRenderedButton(runtime, 0)
+      expect(runtimeButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Clock" })
+      expect(getRenderedButtonHtml(runtimeButton)).toContain("Clock")
     })
   })
 
@@ -138,7 +154,7 @@ describe("createDeckRuntime", () => {
     expect(renderedDeck).toHaveLength(1)
     expect(renderedDeck?.[0]).toMatchObject({ background: "#10161f", keyIndex: 0 })
     expect(renderedDeck?.[0]?.content).toBeTruthy()
-    expect(runtime.getRenderButtons()).toEqual([{ background: "#10161f", keyIndex: 0, label: "Clock" }])
+    expect(getRenderedButton(runtime, 0)).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Clock" })
   })
 
   it("re-renders when an addon instance invalidates itself", async () => {
@@ -154,13 +170,13 @@ describe("createDeckRuntime", () => {
               parse: (value: unknown) => value,
               safeParse: (value: unknown) => ({ data: value, success: true as const }),
             },
-            createInstance: ({ button, methods }: { button: { position: number }; methods: { invalidate: () => void } }) => ({
-              onTap: async () => {
-                currentLabel = "Updated"
-                methods.invalidate()
-              },
-              render: () => createElement("deck-button", { keyIndex: button.position, label: currentLabel }),
-            }),
+             createInstance: ({ button, methods }: { button: { position: number }; methods: { invalidate: () => void } }) => ({
+               onTap: async () => {
+                 currentLabel = "Updated"
+                 methods.invalidate()
+               },
+               render: () => createTextSurface(button.position, currentLabel),
+             }),
             type: "display-text",
           },
           label: "Clock",
@@ -190,7 +206,9 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(onRenderButton).toHaveBeenCalledWith({ background: "#10161f", keyIndex: 1, label: "Updated" })
+      const renderedButton = onRenderButton.mock.calls.at(-1)?.[0]
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 1, label: "Clock" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Updated")
     })
   })
 
@@ -221,12 +239,12 @@ describe("createDeckRuntime", () => {
               button: { position: number }
               hostContext: typeof hostContext
             }) => {
-              observedHostContext(receivedHostContext)
+               observedHostContext(receivedHostContext)
 
-              return {
-                render: () => createElement("deck-button", { keyIndex: button.position, label: "Clock" }),
-              }
-            },
+               return {
+                 render: () => createTextSurface(button.position, "Clock"),
+               }
+             },
             type: "display-text",
           },
           label: "Clock",
@@ -287,14 +305,12 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(onRenderDeck).toHaveBeenCalledWith([
-        { background: "#112233", keyIndex: 0, label: "Deck" },
-        { background: "#445566", keyIndex: 1, label: "Button" },
-      ])
-      expect(runtime.getRenderButtons()).toEqual([
-        { background: "#112233", keyIndex: 0, label: "Deck" },
-        { background: "#445566", keyIndex: 1, label: "Button" },
-      ])
+      const renderedButtons = onRenderDeck.mock.calls.at(-1)?.[0]
+      expect(renderedButtons).toHaveLength(2)
+      expect(renderedButtons?.[0]).toMatchObject({ background: "#112233", keyIndex: 0, label: "Deck" })
+      expect(renderedButtons?.[1]).toMatchObject({ background: "#445566", keyIndex: 1, label: "Button" })
+      expect(getRenderedButton(runtime, 0)).toMatchObject({ background: "#112233", keyIndex: 0, label: "Deck" })
+      expect(getRenderedButton(runtime, 1)).toMatchObject({ background: "#445566", keyIndex: 1, label: "Button" })
     })
   })
 
@@ -319,7 +335,9 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(onRenderDeck).toHaveBeenCalledWith([{ background: "#10161f", keyIndex: 0, label: "Clock" }])
+      const renderedButton = onRenderDeck.mock.calls.at(-1)?.[0]?.[0]
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Clock" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Clock")
     })
   })
 
@@ -346,12 +364,12 @@ describe("createDeckRuntime", () => {
               button: { position: number }
               config: { emoji: string; label: string; select_command: string }
               methods: { runCommand: (command: string) => Promise<unknown> }
-            }) => ({
-              onTap: async () => {
-                await methods.runCommand(config.select_command.replaceAll("{{emoji}}", config.emoji))
-              },
-              render: () => createElement("deck-button", { keyIndex: button.position, label: config.label }),
-            }),
+             }) => ({
+               onTap: async () => {
+                 await methods.runCommand(config.select_command.replaceAll("{{emoji}}", config.emoji))
+               },
+               render: () => createTextSurface(button.position, config.label),
+             }),
             type: "emoji-entry-button",
           },
           position: 0,
@@ -428,12 +446,12 @@ describe("createDeckRuntime", () => {
             createInstance: ({ button, methods }: {
               button: { position: number }
               methods: { runCommand: (command: string) => Promise<unknown> }
-            }) => ({
-              refresh: async () => {
-                await methods.runCommand("printf '%s|%s' '{{host.os.type}}' '{{host.session.state}}'")
-              },
-              render: () => createElement("deck-button", { keyIndex: button.position, label: "Status" }),
-            }),
+             }) => ({
+               refresh: async () => {
+                 await methods.runCommand("printf '%s|%s' '{{host.os.type}}' '{{host.session.state}}'")
+               },
+               render: () => createTextSurface(button.position, "Status"),
+             }),
             defaultIntervalMs: 1000,
             type: "status-display",
           },
@@ -533,7 +551,9 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "linux / ubuntu / unknown" })
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "linux / ubuntu / unknown" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("linux / ubuntu / unknown")
     })
 
     emitEvent?.({ keyIndex: 1, type: "down" })
@@ -574,7 +594,7 @@ describe("createDeckRuntime", () => {
       main_deck: "emoji",
       theme: "dark",
     }, registry)
-    const events: StreamDeckKeyEvent[] = []
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
     const onRenderDeck = vi.fn()
     const executeAction = vi.fn(async () => ({
       exitCode: 0,
@@ -588,12 +608,7 @@ describe("createDeckRuntime", () => {
       executeAction,
       onRenderDeck,
       subscribeKeyEvents: (listener) => {
-        queueMicrotask(() => {
-          for (const event of events) {
-            listener(event)
-          }
-        })
-
+        emitEvent = listener
         return () => {}
       },
       theme: {
@@ -611,49 +626,20 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("emoji")
-      expect(runtime.getRenderButtons()[0]).toMatchObject({ keyIndex: 0, label: "Favorites" })
+      expect(getRenderedButton(runtime, 0)).toMatchObject({ keyIndex: 0, label: "Favorites" })
     })
 
-    events.push({ keyIndex: 0, type: "down" }, { keyIndex: 0, type: "up" })
-    runtime.stop()
-
-    const subscribedEvents: StreamDeckKeyEvent[] = [...events, { keyIndex: 0, type: "down" }, { keyIndex: 0, type: "up" }]
-    const navigatedRuntime = createDeckRuntime({
-      deck: config.decks[config.main_deck]!,
-      decks: config.decks,
-      executeAction,
-      onRenderDeck,
-      subscribeKeyEvents: (listener) => {
-        queueMicrotask(() => {
-          for (const event of subscribedEvents) {
-            listener(event)
-          }
-        })
-
-        return () => {}
-      },
-      theme: {
-        accent: "#f59e0b",
-        background: "#10161f",
-        danger: "#fb7185",
-        foreground: "#eef2f7",
-        name: "dark",
-        primary: "#7dd3fc",
-        success: "#34d399",
-      },
-    })
-
-    navigatedRuntime.start()
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
 
     await vi.waitFor(() => {
-      expect(navigatedRuntime.getActiveDeck().id).toBe("emoji-favorites")
-      expect(navigatedRuntime.getRenderButtons()[0]).toMatchObject({
-        icon: expect.stringContaining("emoji-grin.svg"),
-        keyIndex: 0,
-        label: "GRIN",
-        subtitle: "Favorites",
-      })
+      expect(runtime.getActiveDeck().id).toBe("emoji-favorites")
+      expect(getRenderedButton(runtime, 0)).toMatchObject({ keyIndex: 0, label: "Favorites" })
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("GRIN")
     })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
 
     await vi.waitFor(() => {
       expect(executeAction).toHaveBeenCalledWith("printf '%s' '😀'")
@@ -817,7 +803,9 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toEqual([{ background: "#10161f", keyIndex: 0, label: "Clock" }])
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Clock" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Clock")
     })
 
     expect(createScheduler).not.toHaveBeenCalled()
@@ -852,7 +840,9 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "internal", variant: "toggle" })
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Lamp" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("OFF")
     })
 
     expect(createScheduler).not.toHaveBeenCalled()
@@ -870,7 +860,7 @@ describe("createDeckRuntime", () => {
             configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
             createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
               onTap: async () => { await methods.navigateToDeck("apps") },
-              render: () => createElement("deck-button", { keyIndex: button.position, label: "Go to Apps" }),
+              render: () => createTextSurface(button.position, "Go to Apps"),
             }),
             type: "nav-main-apps",
           },
@@ -888,7 +878,7 @@ describe("createDeckRuntime", () => {
               configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
               createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
                 onTap: async () => { await methods.navigateToDeck("apps") },
-                render: () => createElement("deck-button", { keyIndex: button.position, label: "Go to Apps" }),
+                render: () => createTextSurface(button.position, "Go to Apps"),
               }),
               type: "nav-main-apps",
             },
@@ -905,7 +895,7 @@ describe("createDeckRuntime", () => {
               configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
               createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
                 onTap: async () => { await methods.navigateToDeck("settings") },
-                render: () => createElement("deck-button", { keyIndex: button.position, label: "Open Settings" }),
+                render: () => createTextSurface(button.position, "Open Settings"),
               }),
               type: "nav-apps-settings",
             },
@@ -966,21 +956,27 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("settings")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Settings" })
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Settings" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Settings")
     })
 
     sessionMonitor.emit({ capability: "supported", state: "locked" })
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("locked")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Locked Deck" })
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Locked Deck" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Locked Deck")
     })
 
     sessionMonitor.emit({ capability: "supported", state: "unlocked" })
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("settings")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Settings" })
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Settings" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Settings")
     })
   })
 
@@ -990,7 +986,7 @@ describe("createDeckRuntime", () => {
       configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
       createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
         onTap: async () => { await methods.navigateToDeck(targetDeckId) },
-        render: () => createElement("deck-button", { keyIndex: button.position, label }),
+        render: () => createTextSurface(button.position, label),
       }),
       type,
     })
@@ -1068,7 +1064,9 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(rebuiltRuntime.getActiveDeck().id).toBe("settings")
-      expect(rebuiltRuntime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Settings Deck" })
+      const renderedButton = getRenderedButton(rebuiltRuntime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Settings Deck" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Settings Deck")
     })
   })
 
@@ -1078,7 +1076,7 @@ describe("createDeckRuntime", () => {
       configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
       createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
         onTap: async () => { await methods.navigateToDeck(targetDeckId) },
-        render: () => createElement("deck-button", { keyIndex: button.position, label }),
+        render: () => createTextSurface(button.position, label),
       }),
       type,
     })
@@ -1149,19 +1147,14 @@ describe("createDeckRuntime", () => {
     ])
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({
-        background: "#10161f",
-        detailLines: [
-          "config.yml:10",
-          "Unknown button type 'broken'",
-          "Fix the config and save again.",
-        ],
-        fit: "wrap",
-        keyIndex: 0,
-        label: "Config Error",
-        subtitle: "RELOAD",
-        variant: "error",
-      })
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", full_surface: true, keyIndex: 0 })
+      const html = getRenderedButtonHtml(renderedButton)
+      expect(html).toContain("Config Error")
+      expect(html).toContain("RELOAD")
+      expect(html).toContain("config.yml:10")
+      expect(html).toContain("Unknown button type &#x27;broken&#x27;")
+      expect(html).toContain("Fix the config and save again.")
     })
 
     expect(runtime.getActiveDeck().id).toBe("settings")
@@ -1178,7 +1171,7 @@ describe("createDeckRuntime", () => {
             configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
             createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
               onTap: async () => { await methods.navigateToDeck("settings") },
-              render: () => createElement("deck-button", { keyIndex: button.position, label: "Apps" }),
+              render: () => createTextSurface(button.position, "Apps"),
             }),
             type: "nav-main-settings",
           },
@@ -1231,7 +1224,9 @@ describe("createDeckRuntime", () => {
     await vi.waitFor(() => {
       expect(preservedActiveDeckId).toBe("settings")
       expect(rebuiltRuntime.getActiveDeck().id).toBe("settings")
-      expect(rebuiltRuntime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Recovered Settings" })
+      const renderedButton = getRenderedButton(rebuiltRuntime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Recovered Settings" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Recovered Settings")
     })
   })
 
@@ -1271,7 +1266,7 @@ describe("createDeckRuntime", () => {
         },
         type: "date-time",
       })
-      expect(runtime.getRenderButtons()[0]?.label).toMatch(/\d{2}\/\d{2}\/\d{4}/)
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toMatch(/\d{2}\/\d{2}\/\d{4}/)
     })
   })
 
@@ -1287,7 +1282,7 @@ describe("createDeckRuntime", () => {
             configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
             createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
               onTap: async () => { await methods.navigateToDeck("settings") },
-              render: () => createElement("deck-button", { keyIndex: button.position, label: "Settings" }),
+              render: () => createTextSurface(button.position, "Settings"),
             }),
             type: "nav-settings",
           },
@@ -1305,7 +1300,7 @@ describe("createDeckRuntime", () => {
               configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
               createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
                 onTap: async () => { await methods.navigateToDeck("settings") },
-                render: () => createElement("deck-button", { keyIndex: button.position, label: "Settings" }),
+                render: () => createTextSurface(button.position, "Settings"),
               }),
               type: "nav-settings",
             },
@@ -1332,7 +1327,7 @@ describe("createDeckRuntime", () => {
               configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
               createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
                 onTap: async () => { await methods.navigateToDeck("locked-tools") },
-                render: () => createElement("deck-button", { keyIndex: button.position, label: "Locked Tools" }),
+                render: () => createTextSurface(button.position, "Locked Tools"),
               }),
               type: "nav-locked-tools",
             },
@@ -1391,7 +1386,9 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("settings")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Settings Deck" })
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Settings Deck" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Settings Deck")
     })
   })
 
@@ -1436,205 +1433,47 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("settings")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Session unlocked" })
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Session unlocked" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Session unlocked")
     })
 
     sessionMonitor.emit({ capability: "supported", state: "locked" })
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("locked")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Locked on linux" })
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Locked on linux" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Locked on linux")
     })
 
     sessionMonitor.emit({ capability: "supported", state: "unlocked" })
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("settings")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Session unlocked" })
-    })
-  })
-
-  it("rejects addon-authored wrapper ids before image generation when the provider is unknown", async () => {
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {})
-    const registry = createBundledAddonRegistry()
-    const displayButtonAddon: SirenoAddon = {
-      apiVersion: 1,
-      buttons: [
-        {
-          configSchema: z.object({ label: z.string().min(1) }),
-          createInstance: ({ button, config }) => ({
-            render: () => createElement("deck-button", {
-              keyIndex: button.position,
-              label: config.label,
-              wrapper_id: "missing-addon/shared-card",
-            }),
-          }),
-          type: "runtime-invalid-primitive",
-        },
-      ],
-      name: "runtime-invalid-primitive-addon",
-    }
-    registry.registerAddon(displayButtonAddon)
-
-    const runtime = createDeckRuntime({
-      addonRegistry: registry,
-      deck: {
-        id: "main",
-        buttons: [{
-          config: { label: "Clock" },
-          definition: registry.getButton("runtime-invalid-primitive")!,
-          label: "Clock",
-          position: 0,
-          type: "runtime-invalid-primitive",
-        }],
-      },
-      subscribeKeyEvents: () => () => {},
-      theme: createTestTheme(),
-    })
-
-    expect(() => {
-      runtime.start()
-    }).not.toThrow()
-
-    await vi.waitFor(() => {
-      const errors = consoleError.mock.calls.map((call) => String(call[0]))
-      expect(errors.some((message) => message.includes("Unknown addon-authored wrapper primitive 'missing-addon/shared-card'"))).toBe(true)
-    })
-  })
-
-  it("keeps valid addon-authored primitive ids on runtime render output", async () => {
-    const registry = createBundledAddonRegistry()
-    const displayButtonAddon: SirenoAddon = {
-      apiVersion: 1,
-      buttons: [
-        {
-          configSchema: z.object({ label: z.string().min(1) }),
-          createInstance: ({ button, config }) => ({
-            render: () => createElement("deck-button", {
-              keyIndex: button.position,
-              label: config.label,
-              style_id: "core-buttons/accent",
-              wrapper_id: "core-buttons/shared-card",
-            }),
-          }),
-          type: "runtime-valid-primitive",
-        },
-      ],
-      name: "runtime-valid-primitive-addon",
-    }
-    registry.registerAddon(displayButtonAddon)
-
-    const onRenderDeck = vi.fn()
-    const runtime = createDeckRuntime({
-      addonRegistry: registry,
-      deck: {
-        id: "main",
-        buttons: [{
-          config: { label: "Clock" },
-          definition: registry.getButton("runtime-valid-primitive")!,
-          label: "Clock",
-          position: 0,
-          type: "runtime-valid-primitive",
-        }],
-      },
-      onRenderDeck,
-      subscribeKeyEvents: () => () => {},
-      theme: createTestTheme(),
-    })
-
-    runtime.start()
-
-    await vi.waitFor(() => {
-      expect(onRenderDeck).toHaveBeenCalledWith([
-        {
-          background: "#10161f",
-          keyIndex: 0,
-          label: "Clock",
-          style_id: "core-buttons/accent",
-          wrapper_id: "core-buttons/shared-card",
-        },
-      ])
-    })
-  })
-
-  it("rejects addon-authored render output that combines full-surface with wrapper compatibility", async () => {
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {})
-    const registry = createBundledAddonRegistry()
-    const displayButtonAddon: SirenoAddon = {
-      apiVersion: 1,
-      buttons: [
-        {
-          configSchema: z.object({ label: z.string().min(1) }),
-          createInstance: ({ button, config }) => ({
-            render: () => createElement("deck-button", {
-              full_surface: true,
-              keyIndex: button.position,
-              label: config.label,
-              wrapper_id: "core-buttons/shared-card",
-            }),
-          }),
-          type: "runtime-conflicting-surface-contract",
-        },
-      ],
-      name: "runtime-conflicting-surface-addon",
-    }
-    registry.registerAddon(displayButtonAddon)
-
-    const runtime = createDeckRuntime({
-      addonRegistry: registry,
-      deck: {
-        id: "main",
-        buttons: [{
-          config: { label: "Clock" },
-          definition: registry.getButton("runtime-conflicting-surface-contract")!,
-          label: "Clock",
-          position: 0,
-          type: "runtime-conflicting-surface-contract",
-        }],
-      },
-      subscribeKeyEvents: () => () => {},
-      theme: createTestTheme(),
-    })
-
-    expect(() => {
-      runtime.start()
-    }).not.toThrow()
-
-    await vi.waitFor(() => {
-      const errors = consoleError.mock.calls.map((call) => String(call[0]))
-      expect(errors.some((message) => message.includes("Addon-authored render output cannot combine `full_surface` with `wrapper_id`"))).toBe(true)
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Session unlocked" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Session unlocked")
     })
   })
 
   it("keeps explicit full-surface addon-authored render output on runtime render output", async () => {
-    const registry = createBundledAddonRegistry()
-    const displayButtonAddon: SirenoAddon = {
-      apiVersion: 1,
-      buttons: [
-        {
-          configSchema: z.object({ label: z.string().min(1) }),
-          createInstance: ({ button, config }) => ({
-            render: () => createElement("deck-button", {
-              full_surface: true,
-              keyIndex: button.position,
-              label: config.label,
-            }),
-          }),
-          type: "runtime-full-surface",
-        },
-      ],
-      name: "runtime-full-surface-addon",
-    }
-    registry.registerAddon(displayButtonAddon)
-
     const onRenderDeck = vi.fn()
     const runtime = createDeckRuntime({
-      addonRegistry: registry,
       deck: {
         id: "main",
         buttons: [{
           config: { label: "Clock" },
-          definition: registry.getButton("runtime-full-surface")!,
+          definition: {
+            configSchema: {
+              parse: (value: unknown) => value,
+              safeParse: (value: unknown) => ({ data: value, success: true as const }),
+            },
+            createInstance: ({ button }: { button: { position: number } }) => ({
+              render: () => createElement(ButtonSurface, { full_surface: true }, createTextSurface(button.position, "Clock")),
+            }),
+            type: "runtime-full-surface",
+          },
           label: "Clock",
           position: 0,
           type: "runtime-full-surface",
@@ -1648,14 +1487,9 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(onRenderDeck).toHaveBeenCalledWith([
-        {
-          background: "#10161f",
-          full_surface: true,
-          keyIndex: 0,
-          label: "Clock",
-        },
-      ])
+      const renderedButton = onRenderDeck.mock.calls.at(-1)?.[0]?.[0]
+      expect(renderedButton).toMatchObject({ background: "#10161f", full_surface: true, keyIndex: 0, label: "Clock" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Clock")
     })
   })
 
@@ -1726,14 +1560,16 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "internal", variant: "toggle" })
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Lamp" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("OFF")
     })
 
     emitEvent?.({ keyIndex: 0, type: "down" })
     emitEvent?.({ keyIndex: 0, type: "up" })
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" })
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("ON")
     })
 
     emitEvent?.({ keyIndex: 1, type: "down" })
@@ -1748,7 +1584,7 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("main")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" })
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("ON")
     })
   })
 
@@ -1776,20 +1612,22 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "internal", variant: "toggle" })
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Lamp" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("OFF")
     })
 
     emitEvent?.({ keyIndex: 0, type: "down" })
     emitEvent?.({ keyIndex: 0, type: "up" })
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" })
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("ON")
     })
 
     await runtime.activateCurrentDeck()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "internal", variant: "toggle" })
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("ON")
     })
   })
 
@@ -1855,7 +1693,9 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "PENDING", toggle_mode: "get-set", variant: "toggle" })
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Lamp" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("PENDING")
     })
 
     emitEvent?.({ keyIndex: 0, type: "down" })
@@ -1869,7 +1709,7 @@ describe("createDeckRuntime", () => {
     await schedulerTask?.()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "get-set", variant: "toggle" })
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("OFF")
     })
 
     emitEvent?.({ keyIndex: 0, type: "down" })
@@ -1877,7 +1717,7 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(executeAction).toHaveBeenCalledWith("turn-on-lamp")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "get-set", variant: "toggle" })
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("ON")
     })
   })
 
@@ -1925,7 +1765,9 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "toggle-status", variant: "toggle" })
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Lamp" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("OFF")
     })
 
     emitEvent?.({ keyIndex: 0, type: "down" })
@@ -1933,7 +1775,7 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(executeAction.mock.calls.map((call) => call[0])).toEqual(["read-lamp", "toggle-lamp", "read-lamp"])
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "ON", toggle_mode: "toggle-status", variant: "toggle" })
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("ON")
     })
   })
 
@@ -1986,7 +1828,9 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "PENDING", toggle_mode: "toggle-status", variant: "toggle" })
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Lamp" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("PENDING")
     })
 
     emitEvent?.({ keyIndex: 0, type: "down" })
@@ -1995,7 +1839,7 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(executeAction.mock.calls.map((call) => call[0])).toContain("toggle-lamp")
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "toggle-status", variant: "toggle" })
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("OFF")
     })
   })
 
@@ -2039,10 +1883,17 @@ describe("createDeckRuntime", () => {
     runtime.start()
 
     await vi.waitFor(() => {
-      expect(runtime.getRenderButtons()).toContainEqual({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "get-set", variant: "toggle" })
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Lamp" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("OFF")
     })
 
-    expect(onRenderButton).toHaveBeenCalledWith({ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "get-set", variant: "toggle" })
-    expect(onRenderDeck).toHaveBeenCalledWith([{ background: "#10161f", keyIndex: 0, label: "Lamp", subtitle: "OFF", toggle_mode: "get-set", variant: "toggle" }])
+    const renderedButton = onRenderButton.mock.calls.at(-1)?.[0]
+    expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Lamp" })
+    expect(getRenderedButtonHtml(renderedButton)).toContain("OFF")
+
+    const renderedDeckButton = onRenderDeck.mock.calls.at(-1)?.[0]?.[0]
+    expect(renderedDeckButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Lamp" })
+    expect(getRenderedButtonHtml(renderedDeckButton)).toContain("OFF")
   })
 })
