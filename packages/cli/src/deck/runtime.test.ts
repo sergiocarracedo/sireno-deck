@@ -101,6 +101,46 @@ describe("createDeckRuntime", () => {
     })
   })
 
+  it("preserves ordinary React DOM renders as browser-hosted content", async () => {
+    const onRenderDeck = vi.fn()
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Clock" },
+          definition: {
+            configSchema: {
+              parse: (value: unknown) => value,
+              safeParse: (value: unknown) => ({ data: value, success: true as const }),
+            },
+            createInstance: () => ({
+              render: () => createElement("div", null, "Clock"),
+            }),
+            type: "dom-button",
+          },
+          label: "Clock",
+          position: 0,
+          type: "dom-button",
+        }],
+      },
+      onRenderDeck,
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(onRenderDeck).toHaveBeenCalled()
+    })
+
+    const renderedDeck = onRenderDeck.mock.calls.at(-1)?.[0]
+    expect(renderedDeck).toHaveLength(1)
+    expect(renderedDeck?.[0]).toMatchObject({ background: "#10161f", keyIndex: 0 })
+    expect(renderedDeck?.[0]?.content).toBeTruthy()
+    expect(runtime.getRenderButtons()).toEqual([{ background: "#10161f", keyIndex: 0, label: "Clock" }])
+  })
+
   it("re-renders when an addon instance invalidates itself", async () => {
     const onRenderButton = vi.fn()
     let currentLabel = "Clock"

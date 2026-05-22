@@ -1,6 +1,6 @@
 import { createElement } from "react"
 
-import type { ReactElement } from "react"
+import type { ReactElement, ReactNode } from "react"
 import type { ZodType } from "zod"
 
 import type { CommandExecutionResult } from "../action/executor.js"
@@ -16,6 +16,7 @@ export interface AddonButtonEnvelope {
 
 export interface AddonButtonSurfaceContract {
   full_surface?: boolean
+  sample_interval_ms?: number
 }
 
 export interface AddonDeckEnvelope {
@@ -53,6 +54,12 @@ export interface AddonButtonInstance {
   render: () => ReactElement
 }
 
+export interface ButtonSurfaceProps extends AddonButtonSurfaceContract {
+  children: ReactNode
+  style_id?: string
+  wrapper_id?: string
+}
+
 export interface CreateAddonButtonInstanceOptions<TConfig> {
   button: AddonButtonEnvelope
   config: TConfig
@@ -68,12 +75,57 @@ export interface AddonButtonDefinition<TConfig = unknown> {
   type: string
 }
 
+export function ButtonSurface(props: ButtonSurfaceProps): ReactElement {
+  return createElement("div", {
+    "data-sireno-button-surface": "true",
+    ...(props.full_surface !== undefined ? { "data-sireno-full-surface": props.full_surface ? "true" : "false" } : {}),
+    ...(props.sample_interval_ms !== undefined ? { "data-sireno-media-sample-interval-ms": String(props.sample_interval_ms) } : {}),
+    ...(props.style_id !== undefined ? { "data-sireno-style-id": props.style_id } : {}),
+    ...(props.wrapper_id !== undefined ? { "data-sireno-wrapper-id": props.wrapper_id } : {}),
+    children: props.children,
+    style: {
+      display: "contents",
+    },
+  })
+}
+
+export function createDomTextLabel(props: {
+  children: ReactNode
+}): ReactElement {
+  return createElement("span", {
+    children: props.children,
+    style: {
+      color: "#eef2f7",
+      display: "block",
+      fontFamily: "IBM Plex Sans, sans-serif",
+      fontSize: "12px",
+      fontWeight: 700,
+      letterSpacing: "0.01em",
+      lineHeight: 1.2,
+      textAlign: "center",
+    },
+  })
+}
+
 export function createBaseShapeIconLabelContent(props: {
   icon?: string
   keyIndex: number
   label: string
 }): ReactElement {
-  return createElement("deck-button", props)
+  return createElement(ButtonSurface, null, createElement("div", {
+    style: {
+      alignItems: "center",
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px",
+      justifyContent: "center",
+      width: "100%",
+    },
+  },
+  props.icon
+    ? createElement("img", { alt: "", src: props.icon, style: { height: "24px", objectFit: "contain", width: "24px" } })
+    : null,
+  createDomTextLabel({ children: props.label })))
 }
 
 export function createBaseShapeTextContent(props: {
@@ -81,7 +133,7 @@ export function createBaseShapeTextContent(props: {
   keyIndex: number
   label: string
 }): ReactElement {
-  return createElement("deck-button", props)
+  return createElement(ButtonSurface, null, createDomTextLabel({ children: props.label }))
 }
 
 export interface CreateAddonDeckOptions<TConfig> {
