@@ -6,8 +6,8 @@ source:
   - 18-02-SUMMARY.md
   - 18-03-SUMMARY.md
   - 18-04-SUMMARY.md
-started: 2026-05-21T00:00:00+02:00
-updated: 2026-05-21T16:30:00+02:00
+started: 2026-05-22T12:07:50+02:00
+updated: 2026-05-22T12:55:14+02:00
 ---
 
 # Phase 18 UAT — Browser-Backed React TSX Deck Rendering
@@ -17,20 +17,17 @@ number: 3
 name: bounded media sampling stays browser-backed and honest on the device surface
 expected: |
   Start the CLI from `packages/cli` with `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.media-sampling.yml`. On `main`, confirm `Clip Loop` visibly advances across `SKY`, `MINT`, and `ROSE` as bounded sampled snapshots rather than smooth continuous playback, and confirm `One Shot` advances to `HOLD` then stops there. `TSX Action` should still render inside the implicit `buttonFrame` chrome beside the sampled buttons. Then enter `tools` and return to `main`; the browser-backed deck should come back cleanly with no stale capture residue.
+awaiting: user response
 awaiting: none
 
-## Current outcome
-
-- Automated implementation verification is complete.
-- Manual real-device UAT has been recorded as passing across all three committed fixtures.
-- The browser-rendered TSX action path, live invalidation path, and sampled-media path all passed on hardware.
+## Tests
 
 ## Fixture 1 — Browser-rendered TSX action + change-deck path
 
 expected: Start the CLI from `packages/cli` with `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.browser-rendered-action.yml`. On `main`, verify `Run Clock` and `Go Tools` are authored as normal React TSX, render inside the implicit `buttonFrame` chrome on a browser-backed surface, and do not rely on custom `deck-button` authoring. Press `Go Tools`, confirm the `tools` deck stays browser-backed and shows no stale pixels, then press `Back Main` and confirm the main deck restores cleanly.
 fixture: `packages/cli/fixtures/phase-18/config.browser-rendered-action.yml`
 result: pass
-observed: Browser-backed rendering was visible on both decks, framed TSX-authored buttons showed the shared buttonFrame chrome, and navigation to `tools` / back to `main` stayed clean with no stale pixels.
+observed: User reported pass.
 pass_if:
 - Both decks are visibly browser-backed HTML/CSS surfaces driven from React TSX.
 - Default framed buttons show implicit shared chrome from `buttonFrame`.
@@ -52,7 +49,7 @@ fail_if:
 expected: Start the CLI from `packages/cli` with `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.live-dom-buttons.yml`. On `main`, confirm the deck is browser-backed, tap `Studio Lamp` and verify it flips cleanly between `OFF` and `ON`, then wait for time/date widgets to update and confirm the deck never shows a mixed stale/current surface. Enter `Tools`, confirm the second deck stays browser-backed, then return to `main` cleanly.
 fixture: `packages/cli/fixtures/phase-18/config.live-dom-buttons.yml`
 result: pass
-observed: Live TSX-authored buttons stayed browser-backed, `Studio Lamp` flipped cleanly between `OFF` and `ON`, and the time/date widgets refreshed without mixed stale/current deck state during navigation.
+observed: User reported pass.
 pass_if:
 - Toggle, time, analog clock, and calendar buttons all render as TSX-authored buttons through the browser-backed path.
 - Live invalidation never leaves a partially updated surface.
@@ -73,7 +70,7 @@ fail_if:
 expected: Start the CLI from `packages/cli` with `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.media-sampling.yml`. Confirm `Clip Loop` visibly advances across `SKY`, `MINT`, and `ROSE` as bounded sampled snapshots, confirm `One Shot` advances to `HOLD` and stays there, confirm `TSX Action` remains framed, and verify leaving/returning through `Tools` does not leave stale captures behind.
 fixture: `packages/cli/fixtures/phase-18/config.media-sampling.yml`
 result: pass
-observed: `Clip Loop` advanced across sampled frames, `One Shot` stopped on `HOLD`, `TSX Action` stayed framed, and leaving/returning through `Tools` did not leave stale captures behind.
+observed: User reported pass.
 pass_if:
 - Sampled media buttons visibly advance in bounded snapshots.
 - `Clip Loop` repeats through its frames, while `One Shot` stops on its final frame.
@@ -110,4 +107,4 @@ If this UAT is rerun later, update each fixture block like this:
 
 ## Gaps
 
-None. All three committed Phase 18 fixtures passed on the device path.
+None.
