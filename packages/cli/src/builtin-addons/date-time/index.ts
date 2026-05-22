@@ -1,7 +1,7 @@
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import { createDomButtonRender, type SirenoAddon } from '../../addon/api.js'
+import type { SirenoAddon } from '../../addon/api.js'
 
 const DIGITAL_DATE_TIME_INTERVAL_MS = 1000
 const ANALOG_CLOCK_INTERVAL_MS = 1000
@@ -225,14 +225,7 @@ const builtinDisplayDateTimeButton = {
     button: { position: number }
     config: z.infer<typeof BuiltinDisplayDateTimeButtonSchema>
   }) => ({
-    render: () =>
-      createDomButtonRender({
-        content: createDigitalDateTimeContent(config),
-        fallback: {
-          label: formatDigitalDateTimeLabel(config),
-        },
-        keyIndex: button.position,
-      }),
+    render: () => createDigitalDateTimeContent(config),
   }),
   type: 'date-time',
 }
@@ -246,14 +239,7 @@ const builtinAnalogClockButton = {
     button: { position: number }
     config: z.infer<typeof BuiltinAnalogClockButtonSchema>
   }) => ({
-    render: () =>
-      createDomButtonRender({
-        content: createAnalogClockContent(),
-        fallback: {
-          variant: 'analog-clock',
-        },
-        keyIndex: button.position,
-      }),
+    render: () => createAnalogClockContent(),
   }),
   type: 'analog-clock',
 }
@@ -267,14 +253,7 @@ const builtinCalendarSheetButton = {
     button: { position: number }
     config: z.infer<typeof BuiltinCalendarSheetButtonSchema>
   }) => ({
-    render: () =>
-      createDomButtonRender({
-        content: createCalendarSheetContent(),
-        fallback: {
-          variant: 'calendar-sheet',
-        },
-        keyIndex: button.position,
-      }),
+    render: () => createCalendarSheetContent(),
   }),
   type: 'calendar-sheet',
 }
