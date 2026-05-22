@@ -1,6 +1,6 @@
 # Roadmap — Sireno Deck v1.2
 
-**Last updated:** 2026-05-19
+**Last updated:** 2026-05-22
 **Granularity:** focused milestone (7 phases)
 **Total v1.2 requirements:** 9
 
@@ -189,13 +189,13 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 - `18-04`: Add bounded sampled-media capture, the review fixture, and final verification artifacts
 
 **Success criteria:**
-- [x] Bundled Phase 18 buttons ship through the browser-backed DOM render path instead of the old SVG helper path by default
+- [x] Bundled Phase 18 buttons ship through the browser-backed TSX/react-dom render path instead of the old SVG helper path by default
 - [x] `buttonFrame` is implicit unless `full_surface` is explicit
-- [x] Live DOM button invalidation rerenders coherently at deck level
+- [x] Live TSX button invalidation rerenders coherently at deck level
 - [x] Bounded sampled media is supported honestly as snapshot sampling, not continuous playback
-- [x] Manual device UAT is recorded for the browser-rendered action, live DOM, and media-sampling fixtures
+- [x] Manual device UAT is recorded for the browser-rendered action, live TSX, and media-sampling fixtures
 
-**Phase 18 note:** Execution is complete through Plans `18-01` to `18-04`, automated verification is green, and manual device UAT passed for all three committed review fixtures.
+**Phase 18 note:** Execution is complete through Plans `18-01` to `18-04`, automated verification is green, and manual device UAT passed for all three committed review fixtures. The corrected contract is now explicit: shipped builtins use normal React TSX rendered through `react-dom`, while legacy `deck-*` elements remain a fallback-only compatibility seam.
 
 ---
 

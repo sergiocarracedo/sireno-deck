@@ -166,7 +166,7 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.2 — Session Context and Surface Composition
 **Phase:** 18 — React DOM-Based Renderer With HTML/CSS Surface Support
-**Status:** planning
+**Status:** verifying
 **Last updated:** 2026-05-22
 
 ---

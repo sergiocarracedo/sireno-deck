@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 18 implementation exists in this worktree, but the authoring contract was refreshed to require normal React TSX rendered through `react-dom`; execution now needs to align the shipped renderer with that corrected contract.
+**Current focus:** Phase 18 execution in this worktree is now aligned with the corrected authoring contract: shipped bundled buttons use normal React TSX rendered through `react-dom`, while the old `deck-*` seam remains explicit fallback-only compatibility.
 
 ## Current Position
 
 Phase: 18 — React DOM-Based Renderer With HTML/CSS Surface Support
-Plan: replanned for TSX/react-dom execution
-Status: planning complete
-Last activity: 2026-05-22 - Refreshed Phase 18 context and plans to replace the stale DOM-authored assumption with normal React TSX via `react-dom`
+Plan: 18-01 through 18-04 executed against corrected TSX/react-dom contract
+Status: execution complete, ready for verify-work
+Last activity: 2026-05-22 - Finished re-executing Phase 18 in the execution worktree, including live TSX button coherence, bounded media sampling, and refreshed verification/UAT artifacts
 
 Progress: [##########] 100%
 
@@ -65,9 +65,10 @@ Recent decisions affecting current work:
 - **Phase 14 discussion:** Built-in toggles should ship as one `toggle` type with explicit `mode: internal | get-set | toggle-status`, shared base presentation plus per-state overrides, and no separate per-mode button types.
 - **Phase 14 discussion:** Command-driven toggles are externally authoritative: `toggle-status` requires `status_command`, startup stays pending until the first read, failed writes preserve last authoritative truth plus error state, and output mapping uses explicit `on_values` / `off_values` token lists.
 - **Phase 14 discussion:** Toggle visuals may differ by mode, but only through shared-base mode accents rather than three bespoke renderers; internal toggle state continuity remains scoped to the running daemon, not durable restart persistence.
-- **Phase 18 execution:** Addon-owned visual payload now stays under `button.config`, the old reconciler/types seam is explicitly legacy-only, and the bundled date/time addon now renders through DOM content with default `buttonFrame` coverage.
-- **Phase 18 execution:** Browser-backed rendering now coalesces capture requests to the latest active deck state, and runtime forces full-deck DOM rerenders for live DOM button invalidation so browser-backed stateful buttons stay coherent.
-- **Phase 18 execution:** Sampled media now uses a narrow `sample_interval_ms` DOM contract, browser capture throttles to bounded snapshot sampling instead of continuous playback, and the bundled media-demo button plus committed fixture make that behavior reviewable on-device.
+- **Phase 18 execution:** Addon-owned visual payload now stays under `button.config`, the old reconciler/types seam is explicitly legacy-only, and the bundled date/time addon now renders through plain TSX with default `buttonFrame` coverage.
+- **Phase 18 execution:** Browser-backed rendering now coalesces capture requests to the latest active deck state, and runtime forces full-deck browser rerenders for live TSX button invalidation so browser-backed stateful buttons stay coherent.
+- **Phase 18 execution:** Legacy `deck-button` / `deck-surface` / `deck-text` elements now stay explicitly on the fallback-only path; real browser rendering is reserved for normal React TSX content.
+- **Phase 18 execution:** Sampled media now uses a narrow `sample_interval_ms` TSX/browser contract, browser capture throttles to bounded snapshot sampling instead of continuous playback, and the bundled media-demo button plus committed fixture make that behavior reviewable on-device.
 
 ### Pending Todos
 
@@ -90,7 +91,7 @@ Recent decisions affecting current work:
 - **Plan 17-04:** Closed the Phase 17 UAT regression by forwarding `full_surface` through the shipped CLI/device render path, preserving config-authored surface metadata across builtin runtime re-renders, and passing the real-device rerun.
 - **Phase 18 discussion:** Captured the hard switch to browser-backed HTML/CSS button rendering, one persistent deck page, sampled media rendering, latest-state capture coalescing, and a core-owned React `buttonFrame` that wraps by default unless `full_surface: true`.
 - **Phase 18 context refresh:** Clarified that button authors write normal React TSX and `react-dom` performs the HTML/CSS conversion; the custom `deck-button`-style authoring path is not the Phase 18 target.
-- **Phase 18 prior execution:** This worktree already proved the persistent browser, bounded capture coalescing, date/time/toggle/media migrations, and real-device UAT path, but it did so through a DOM-authored helper contract that now needs correction.
+- **Phase 18 re-execution:** Corrected the prior DOM-authored helper assumption by migrating shipped live/media builtins to plain TSX, preserving root TSX metadata in runtime, and refreshing the phase artifacts around the browser/react-dom contract.
 - **Phase 16 discussion:** Captured deck-only file references with owning-file-relative path resolution, root-plus-ref hot-reload, built-in temporary error-deck fallback on invalid reload, stack-preserving successful reload restore, full runtime instance rebuild on reload, shared-wrapper footer removal, and narrow per-button accent overrides accepting tokens or raw colors.
 - **Phase 10 kickoff:** Milestone audit found that the documented addon authoring entrypoints do not line up with the built `packages/cli` exports, so release flow needs a gap-closure phase before `/review`.
 - **Milestone v1.2 kickoff:** Captured session-context, layered background, text fitting, global wrapper/style, richer toggle, and lock-aware deck requirements plus the five-phase roadmap that sequences contract work before user-facing polish.
@@ -137,8 +138,8 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-22
-Stopped at: Phase 18 context and plans were refreshed to require TSX authoring via `react-dom`; next up is re-executing Phase 18 against that corrected contract.
-Resume file: .planning/phases/18-react-dom-based-renderer-with-htmlcss/18-01-PLAN.md
+Stopped at: Phase 18 execution finished in the worktree with corrected TSX/react-dom behavior; next up is formal phase verification and any follow-on planning-state synchronization outside this worktree.
+Resume file: .planning/phases/18-react-dom-based-renderer-with-htmlcss/18-VERIFICATION.md
 
 ### Quick Tasks Completed
 
