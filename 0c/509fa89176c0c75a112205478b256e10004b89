@@ -1,0 +1,21 @@
+.planning/phases/18-react-dom-based-renderer-with-htmlcss/18-01-SUMMARY.md
+  s_df3509a167c487::t_5d61489c5e3251 7,9,13,15-18,21,24,28,31
+.planning/phases/18-react-dom-based-renderer-with-htmlcss/18-UAT.md
+  s_df3509a167c487::t_5d61489c5e3251 13,26,28,30,33,35,39,44,50,55,57,66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "0c509fa89176c0c75a112205478b256e10004b89",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
