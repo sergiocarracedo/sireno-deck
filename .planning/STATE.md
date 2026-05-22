@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 18 verification is complete; Waves 1-4 shipped browser-backed DOM buttons for static, live, and bounded sampled-media bundled surfaces, added capture coalescing plus sample throttling, and passed both automated checks and manual device UAT.
+**Current focus:** Phase 18 implementation exists in this worktree, but the authoring contract was refreshed to require normal React TSX rendered through `react-dom`; execution now needs to align the shipped renderer with that corrected contract.
 
 ## Current Position
 
 Phase: 18 — React DOM-Based Renderer With HTML/CSS Surface Support
-Plan: 18-04 complete
-Status: verified
-Last activity: 2026-05-21 - Recorded passing manual device UAT for all three Phase 18 fixtures and closed Phase 18 verification
+Plan: replanned for TSX/react-dom execution
+Status: planning complete
+Last activity: 2026-05-22 - Refreshed Phase 18 context and plans to replace the stale DOM-authored assumption with normal React TSX via `react-dom`
 
 Progress: [##########] 100%
 
@@ -88,11 +88,9 @@ Recent decisions affecting current work:
 - **Phase 17 discussion:** Captured the shift from wrapper ids to a default base button-shape model, explicit full-surface opt-out, and narrow explicit content helpers while keeping bespoke variants on their current seams for now.
 - **Phase 17 planning:** Broke the phase into three slices: contract and compatibility first, core base-shape plus helper extraction second, and reviewable default-vs-full-surface proof third.
 - **Plan 17-04:** Closed the Phase 17 UAT regression by forwarding `full_surface` through the shipped CLI/device render path, preserving config-authored surface metadata across builtin runtime re-renders, and passing the real-device rerun.
-- **Phase 18 discussion:** Captured the hard switch to browser-backed DOM button components, one persistent deck page, sampled media rendering, latest-state capture coalescing, and a core-owned React `buttonFrame` that wraps by default unless `full_surface: true`.
-- **Plan 18-01:** Added the persistent browser renderer seam, the real `buttonFrame` + DOM host, the first shipped DOM-backed `action` / `change-deck` path, and a committed Phase 18 browser-rendered UAT fixture while keeping runtime ownership in place.
-- **Plan 18-02:** Demoted the old SVG-era button contract to legacy fallback status, moved bundled date/time buttons onto DOM-authored renders, and added a broader fixture proving default `buttonFrame` behavior across more of the shipped DOM surface.
-- **Plan 18-03:** Added bounded latest-state browser capture coalescing, moved bundled live toggles onto the DOM path, preserved runtime-owned live update behavior, and committed a live DOM review fixture for device-path validation.
-- **Plan 18-04:** Added bounded sampled-media capture on the browser-backed DOM path, shipped a bundled media-demo button and review fixture, and wrote the final Phase 18 UAT plus verification artifact confirming the bundled surface no longer ships through the old SVG path by default.
+- **Phase 18 discussion:** Captured the hard switch to browser-backed HTML/CSS button rendering, one persistent deck page, sampled media rendering, latest-state capture coalescing, and a core-owned React `buttonFrame` that wraps by default unless `full_surface: true`.
+- **Phase 18 context refresh:** Clarified that button authors write normal React TSX and `react-dom` performs the HTML/CSS conversion; the custom `deck-button`-style authoring path is not the Phase 18 target.
+- **Phase 18 prior execution:** This worktree already proved the persistent browser, bounded capture coalescing, date/time/toggle/media migrations, and real-device UAT path, but it did so through a DOM-authored helper contract that now needs correction.
 - **Phase 16 discussion:** Captured deck-only file references with owning-file-relative path resolution, root-plus-ref hot-reload, built-in temporary error-deck fallback on invalid reload, stack-preserving successful reload restore, full runtime instance rebuild on reload, shared-wrapper footer removal, and narrow per-button accent overrides accepting tokens or raw colors.
 - **Phase 10 kickoff:** Milestone audit found that the documented addon authoring entrypoints do not line up with the built `packages/cli` exports, so release flow needs a gap-closure phase before `/review`.
 - **Milestone v1.2 kickoff:** Captured session-context, layered background, text fitting, global wrapper/style, richer toggle, and lock-aware deck requirements plus the five-phase roadmap that sequences contract work before user-facing polish.
@@ -138,9 +136,9 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-05-21
-Stopped at: Phase 18 verification aligned; next up is manual device UAT across the three Phase 18 fixtures and final review handoff.
-Resume file: .planning/phases/18-react-dom-based-renderer-with-htmlcss/18-UAT.md
+Last session: 2026-05-22
+Stopped at: Phase 18 context and plans were refreshed to require TSX authoring via `react-dom`; next up is re-executing Phase 18 against that corrected contract.
+Resume file: .planning/phases/18-react-dom-based-renderer-with-htmlcss/18-01-PLAN.md
 
 ### Quick Tasks Completed
 
