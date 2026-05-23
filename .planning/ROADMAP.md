@@ -202,6 +202,17 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ---
 
+### Phase 20: Theme Packages, Asset Bundling, and Locked Time Layout
+
+**Goal:** Let themes ship as manifest-backed packages with bundled assets and theme-owned button chrome, restore reliable external image rendering, and move the locked deck to a five-button centered time layout.
+**Status:** [ ] Not started
+**Depends on:** Phase 19
+
+### Plans
+*Not yet planned — run `plan-phase 20`*
+
+---
+
 ## Coverage Validation
 
 - [x] All 9 v1.2 requirements map to at least one roadmap phase

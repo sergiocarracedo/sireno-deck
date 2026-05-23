@@ -72,6 +72,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 20 added: theme packages with manifest-backed assets and theme-owned button frames, external image rendering fixes, and a centered five-button locked time layout.
 - Phase 19 added: tailwind-backed button theming wired through Sireno theme CSS variables so browser-rendered surfaces can use utilities like `text-primary` against the active global theme.
 - Phase 16 added: config hot-reload, external deck-file references, wrapper label removal, and customizable wrapper accent colors.
 - Phase 17 added: custom wrapper primitives with addon-authored rendering variants.
