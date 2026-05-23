@@ -1,0 +1,35 @@
+.planning/phases/18-react-dom-based-renderer-with-htmlcss/18-UAT.md
+  s_c6a2811698d8c5::t_b100e09fc704a2 2,10,21,35,41,43
+  s_df3509a167c487::t_6a51d1742e3348 5-9,13,16,22-26,28-30,32-34,36-39,42,44-48
+  s_df3509a167c487::t_4996113cdb5b74 27
+  s_c6a2811698d8c5::t_df68b20d3c5ad6 14-15,17-20,31,40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "5932e49873e3f6ef43323e265ea541886da62bd4",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_c6a2811698d8c5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1abca706dffe22qVVP0TTqO9T8",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
