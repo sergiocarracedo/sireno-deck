@@ -1,0 +1,35 @@
+theme: dark
+main_deck: main
+addons: []
+decks:
+  main:
+    id: main
+    buttons:
+      - position: 0
+        type: action
+        label: Theme Package
+        icon: builtin://core-buttons/clock.svg
+      - position: 1
+        type: analog-clock
+      - position: 2
+        type: calendar-sheet
+      - position: 3
+        type: change-deck
+        label: Review
+        target_deck: review
+  review:
+    id: review
+    background: "#10161f"
+    buttons:
+      - position: 0
+        type: action
+        label: Frame Check
+        icon: builtin://core-buttons/clock.svg
+      - position: 1
+        type: analog-clock
+      - position: 2
+        type: calendar-sheet
+      - position: 3
+        type: change-deck
+        label: Main
+        target_deck: main
