@@ -38,7 +38,11 @@ describe('core-buttons addon', () => {
       config: { icon: './clock.svg', label: 'Clock' },
     } as never)
 
-    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Clock')
+    const html = renderReactNodeToHtml(instance?.render() as never)
+
+    expect(html).toContain('Clock')
+    expect(html).toContain('class="bg-background border-accent"')
+    expect(html).toContain('class="font-main text-primary"')
   })
 
   it('navigates with the bundled change-deck button', async () => {

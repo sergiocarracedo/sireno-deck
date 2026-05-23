@@ -1,0 +1,27 @@
+theme: dark
+main_deck: main
+addons: []
+decks:
+  main:
+    id: main
+    buttons:
+      - position: 0
+        type: action
+        label: Primary
+        icon: builtin://core-buttons/clock.svg
+      - position: 1
+        type: change-deck
+        label: Light
+        target_deck: light
+  light:
+    id: light
+    buttons:
+      - position: 0
+        type: action
+        label: Theme
+        icon: builtin://core-buttons/clock.svg
+      - position: 1
+        type: change-deck
+        label: Main
+        target_deck: main
+    background: "#e8edf4"

@@ -1,7 +1,7 @@
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import { createDomIcon, createDomStack, createDomTextLabel } from '../../../addon/api.js'
+import { createDomIcon, createDomStack } from '../../../addon/api.js'
 
 const BuiltinActionButtonSchema = z
   .object({
@@ -37,12 +37,37 @@ const builtinActionButton = {
     }
   }) => ({
     render: () =>
-      createDomStack({
-        children: [
-          config.icon ? createDomIcon({ src: config.icon }) : null,
-          createDomTextLabel({ children: config.label }),
-        ],
-      }),
+      createElement(
+        'div',
+        {
+          className: 'bg-background border-accent',
+          style: {
+            alignItems: 'center',
+            border: '1px solid var(--sireno-color-accent)',
+            borderRadius: '12px',
+            display: 'flex',
+            height: '100%',
+            justifyContent: 'center',
+            padding: '8px',
+            width: '100%',
+          },
+        },
+        createDomStack({
+          children: [
+            config.icon ? createDomIcon({ src: config.icon }) : null,
+            createElement('span', {
+              children: config.label,
+              className: 'font-main text-primary',
+              style: {
+                display: 'block',
+                lineHeight: 1.2,
+                textAlign: 'center',
+                textWrap: 'balance',
+              },
+            }),
+          ],
+        }),
+      ),
     onTap: async () => {
       if (config.command) {
         methods.invalidate()
