@@ -1,0 +1,36 @@
+.planning/phases/20-theme-packages-and-locked-time-layout/20-01-PLAN.md
+  s_df3509a167c487::t_a0b913c6550ab2 1-107
+.planning/phases/20-theme-packages-and-locked-time-layout/20-03-PLAN.md
+  s_df3509a167c487::t_a0b913c6550ab2 1,3-4,6-51,53-80
+  s_df3509a167c487::t_53020b623694f9 2,5,52
+.planning/phases/20-theme-packages-and-locked-time-layout/20-RESEARCH.md
+  s_df3509a167c487::t_71f3ef5b396b15 1-73
+.planning/ROADMAP.md
+  s_df3509a167c487::t_c96029be114fe5 3,208,212-214
+.planning/phases/20-theme-packages-and-locked-time-layout/20-02-PLAN.md
+  s_df3509a167c487::t_53020b623694f9 100
+  s_df3509a167c487::t_a0b913c6550ab2 1-99,101-108
+.planning/STATE.md
+  s_df3509a167c487::t_c96029be114fe5 8,12-15,84,144-145
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "80f32627620ddc8d346304923137526fb5bfc885",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
