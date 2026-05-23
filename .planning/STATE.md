@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 18 context is updated for a hard browser-only renderer cleanup: React TSX via `react-dom`, no SVG/text-image fallback, and no legacy render contract retained.
+**Current focus:** Phase 19 context is captured for Tailwind-style browser button theming backed by Sireno theme CSS variables, with core-owned utility mapping and existing override precedence preserved.
 
 ## Current Position
 
-Phase: 18 — React DOM-Based Renderer With HTML/CSS Surface Support
+Phase: 19 — Tailwind Button Theming via Theme CSS Variables
 Plan: context updated
 Status: discussing complete
-Last activity: 2026-05-22 - Updated Phase 18 context to require browser-only rendering and remove the legacy SVG/fallback render path
+Last activity: 2026-05-23 - Captured Phase 19 context for namespaced theme CSS vars, core-owned utility mapping, and className-first browser authoring
 
 Progress: [##########] 100%
 
@@ -133,9 +133,9 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-05-22
-Stopped at: Phase 18 context refreshed to replace the stale DOM-authored assumption with React TSX via `react-dom`; next up is Phase 18 planning.
-Resume file: .planning/phases/18-react-dom-based-renderer-with-htmlcss/18-CONTEXT.md
+Last session: 2026-05-23
+Stopped at: Phase 19 context captured for Tailwind-style theme-token utilities backed by Sireno CSS vars; next up is Phase 19 planning.
+Resume file: .planning/phases/19-tailwind-button-theming-css-vars/19-CONTEXT.md
 
 ### Quick Tasks Completed
 
