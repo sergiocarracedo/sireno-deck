@@ -81,6 +81,7 @@ Recent decisions affecting current work:
 
 ### Progress Notes
 
+- **Phase 20 discussion:** Captured the shift from single-file themes to manifest-backed theme packages with required runtime entries, theme-owned `buttonFrame` chrome with explicit `idle/tap/hold` state, manifest-declared bundled assets with CSS-relative URL rewriting, a general external asset-pipeline fix, and a fixed five-button implicit locked-time fallback.
 - **Phase 16 execution:** Shipped deck-only file references through the existing loader contract, active config-graph watching with rebuild-and-restore reload semantics, shared-wrapper footer removal plus explicit per-button accent overrides, and a runtime-owned temporary error deck for invalid reloads.
 - **Plan 16-05:** Closed the Phase 16 UAT startup blocker by making theme resolution config-owned, fixing the watched root-plus-ref file graph, and wiring the diagnosed gaps to a rerun-ready closure plan.
 - **Plan 16-06:** Made shared/default accent overrides visibly affect shared card chrome, reran the final UAT check, and finished Phase 16 verification.
