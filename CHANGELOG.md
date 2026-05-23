@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2026-05-23
+
+### Features
+- None.
+
+### Fixes
+- Fixed browser-backed live buttons such as the bundled clock/date-time surfaces so polling-driven second changes actually redraw on-device when running from the repo-root config. Root cause was that runtime polling refreshed the individual button cache, but the React DOM/browser render path only pushes pixels from a deck-level render callback.
+
+### Learnings
+- In the browser-backed renderer, a polled button refresh is not enough by itself. If the hardware write path is deck-scoped, polling updates have to trigger a fresh deck render or the device will keep showing stale frames.
+
 ## 2026-05-18
 
 ### Features
