@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 19 is fully verified, including headless browser review and real-device UAT on the attached Stream Deck.
+**Current focus:** Phase 20 is planned with three verified execution slices covering theme packages, the shared asset pipeline, and the centered locked-time fallback.
 
 ## Current Position
 
-Phase: 19 — Tailwind Button Theming via Theme CSS Variables
-Plan: 19-02 complete
-Status: complete
-Last activity: 2026-05-23 - Completed Phase 18 remaining media-sampling UAT and Phase 19 real-device visual signoff on the attached Stream Deck
+Phase: 20 — Theme Packages, Asset Bundling, and Locked Time Layout
+Plan: planning complete
+Status: planning
+Last activity: 2026-05-23 - Planned Phase 20 into three verified vertical slices after closing Phase 18/19 verification
 
 Progress: [##########] 100%
 
@@ -81,6 +81,7 @@ Recent decisions affecting current work:
 
 ### Progress Notes
 
+- **Phase 20 planning:** Broke the phase into three verified vertical slices: theme package resolution plus theme-owned browser frame first, shared theme/addon asset pipeline second, and the centered implicit locked `HH:MM` fallback third.
 - **Phase 20 discussion:** Captured the shift from single-file themes to manifest-backed theme packages with required runtime entries, theme-owned `buttonFrame` chrome with explicit `idle/tap/hold` state, manifest-declared bundled assets with CSS-relative URL rewriting, a general external asset-pipeline fix, and a fixed five-button implicit locked-time fallback.
 - **Phase 16 execution:** Shipped deck-only file references through the existing loader contract, active config-graph watching with rebuild-and-restore reload semantics, shared-wrapper footer removal plus explicit per-button accent overrides, and a runtime-owned temporary error deck for invalid reloads.
 - **Plan 16-05:** Closed the Phase 16 UAT startup blocker by making theme resolution config-owned, fixing the watched root-plus-ref file graph, and wiring the diagnosed gaps to a rerun-ready closure plan.
@@ -140,8 +141,8 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-23
-Stopped at: Phase 19 fully verified after real-device UAT and the previously paused Phase 18 sampled-media check also passed.
-Resume file: .planning/phases/19-tailwind-button-theming-css-vars/19-02-SUMMARY.md
+Stopped at: Phase 20 planning completed with three verified execution plans after Phase 18/19 verification closure.
+Resume file: .planning/phases/20-theme-packages-and-locked-time-layout/20-01-PLAN.md
 
 ### Quick Tasks Completed
 

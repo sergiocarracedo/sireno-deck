@@ -1,6 +1,6 @@
 # Roadmap — Sireno Deck v1.2
 
-**Last updated:** 2026-05-19
+**Last updated:** 2026-05-23
 **Granularity:** focused milestone (7 phases)
 **Total v1.2 requirements:** 9
 
@@ -205,11 +205,13 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 20: Theme Packages, Asset Bundling, and Locked Time Layout
 
 **Goal:** Let themes ship as manifest-backed packages with bundled assets and theme-owned button chrome, restore reliable external image rendering, and move the locked deck to a five-button centered time layout.
-**Status:** [ ] Not started
+**Status:** Planned
 **Depends on:** Phase 19
 
 ### Plans
-*Not yet planned — run `plan-phase 20`*
+- `20-01`: Resolve manifest-backed theme packages and move framed browser chrome behind the theme-owned `buttonFrame` contract
+- `20-02`: Fix the shared package-root asset pipeline for theme CSS/fonts and addon-authored images with a shipped proof fixture
+- `20-03`: Replace the implicit locked fallback with the centered five-button `HH:MM` layout while preserving explicit locked-deck authority
 
 ---
 
