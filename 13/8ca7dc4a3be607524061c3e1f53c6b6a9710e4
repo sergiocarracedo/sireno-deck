@@ -1,0 +1,26 @@
+.planning/phases/19-tailwind-button-theming-css-vars/19-DISCUSSION-LOG.md
+  s_df3509a167c487::t_65135dbfda17c9 1-96
+.planning/phases/19-tailwind-button-theming-css-vars/19-CONTEXT.md
+  s_df3509a167c487::t_65135dbfda17c9 1-83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "138ca7dc4a3be607524061c3e1f53c6b6a9710e4",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
