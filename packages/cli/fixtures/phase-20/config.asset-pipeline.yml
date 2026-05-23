@@ -1,0 +1,28 @@
+theme: dark
+main_deck: main
+addons: []
+decks:
+  main:
+    id: main
+    buttons:
+      - position: 0
+        type: action
+        label: Assets
+        icon: builtin://core-buttons/clock.svg
+      - position: 1
+        type: change-deck
+        label: Emoji
+        icon: addon://emoji-selector/favorites.svg
+        target_deck: emoji
+      - position: 2
+        type: analog-clock
+      - position: 3
+        type: calendar-sheet
+  emoji:
+    id: emoji
+    type: emoji-selector
+    favorites:
+      - 😀
+      - 🔥
+      - 🍕
+    select_command: "printf '%s' '{{emoji}}'"

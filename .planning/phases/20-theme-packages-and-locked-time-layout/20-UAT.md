@@ -3,11 +3,12 @@ status: in_progress
 phase: 20-theme-packages-and-locked-time-layout
 source:
   - 20-01-PLAN.md
+  - 20-02-PLAN.md
 started: 2026-05-23T23:43:00+02:00
-updated: 2026-05-23T23:43:00+02:00
+updated: 2026-05-23T23:47:00+02:00
 ---
 
-# Phase 20 UAT — Theme Packages and Theme-Owned Frame Chrome
+# Phase 20 UAT — Theme Packages and Shared Asset Pipeline
 
 ## Current Test
 number: 1
@@ -32,12 +33,28 @@ fail_if:
 - Changing `theme: dark` to `theme: light` does not visibly change frame chrome or leaves stale browser-rendered content behind.
 result: pending
 
+## Fixture 2 — Shared theme/addon asset pipeline on the browser path
+
+command: `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-20/config.asset-pipeline.yml`
+fixture: `packages/cli/fixtures/phase-20/config.asset-pipeline.yml`
+pass_if:
+- The manifest-backed theme injects packaged CSS/font assets into the browser host and the framed buttons still render correctly.
+- The emoji selector deck and category buttons render shipped addon icons through the shared asset pipeline rather than raw unresolved references or missing-image placeholders.
+- Builtin asset references such as `builtin://core-buttons/clock.svg` and addon asset references such as `addon://emoji-selector/favorites.svg` both resolve on the shipped browser path.
+- Breaking a referenced asset path fails clearly during config/theme loading rather than silently degrading on-device.
+fail_if:
+- Theme stylesheet assets are not injected into the browser document or packaged font references are ignored.
+- Emoji selector icons disappear, render as unresolved `addon://...` strings, or only work through one-off widget-local handling.
+- The browser path resolves builtin assets but not addon assets, or vice versa.
+- Broken asset paths degrade silently instead of failing with a path-aware error.
+result: pending
+
 ## Summary
 
-total: 1
+total: 2
 passed: 0
 issues: 0
-pending: 1
+pending: 2
 skipped: 0
 
 ## Gaps

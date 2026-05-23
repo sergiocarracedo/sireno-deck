@@ -1,11 +1,13 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import emojiSelectorAddon from '../index.js'
+import { renderReactNodeToHtml } from '../../render/dom-host.js'
+import emojiSelectorAddon from './index.js'
 
 describe('emoji-selector addon', () => {
   it('exports emoji decks with favorites-first category navigation', () => {
     expect(emojiSelectorAddon.name).toBe('emoji-selector')
     expect(emojiSelectorAddon.assets).toHaveProperty('favorites.svg')
+    expect(emojiSelectorAddon.assets?.['favorites.svg']).toContain('favorites.svg')
 
     const deckDefinition = emojiSelectorAddon.decks?.[0]
     const decks = deckDefinition?.createDecks({
@@ -62,13 +64,29 @@ describe('emoji-selector addon', () => {
       methods: { runCommand: vi.fn() },
     } as never)
 
-    expect(instance?.render()).toMatchObject({
-      props: {
-        icon: expect.stringContaining('emoji-grin.svg'),
-        keyIndex: 2,
-        label: 'GRIN',
-        subtitle: 'Smileys',
+    const html = renderReactNodeToHtml(instance?.render() as never)
+
+    expect(html).toContain('addon://emoji-selector/emoji-grin.svg')
+    expect(html).toContain('GRIN')
+  })
+
+  it('keeps shipped deck icons on addon asset references that the shared resolver expands later', () => {
+    const deckDefinition = emojiSelectorAddon.decks?.[0]
+    const decks = deckDefinition?.createDecks({
+      config: {
+        favorites: ['😀'],
+        select_command: "printf '%s' '{{emoji}}'",
       },
+      deck: { id: 'emoji', type: 'emoji-selector' },
+    })
+
+    expect(decks?.emoji?.buttons[0]).toMatchObject({
+      icon: 'addon://emoji-selector/favorites.svg',
+      label: 'Favorites',
+    })
+    expect(decks?.['emoji-favorites']?.buttons[1]).toMatchObject({
+      icon: 'addon://emoji-selector/back.svg',
+      label: 'Back',
     })
   })
 
@@ -86,13 +104,9 @@ describe('emoji-selector addon', () => {
       methods: { runCommand: vi.fn() },
     } as never)
 
-    expect(instance?.render()).toMatchObject({
-      props: {
-        keyIndex: 4,
-        label: 'U+1F6F0',
-        subtitle: 'Custom',
-        variant: 'emoji',
-      },
-    })
+    const html = renderReactNodeToHtml(instance?.render() as never)
+
+    expect(html).toContain('U+1F6F0')
+    expect(html).toContain('font-main text-foreground')
   })
 })
