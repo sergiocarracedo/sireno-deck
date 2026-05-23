@@ -178,6 +178,7 @@ async function renderDomDeckSurface(
   deckButtons: Array<RuntimeRenderButton & { content: NonNullable<RuntimeRenderButton["content"]> }>,
   browserRenderer: BrowserRenderer,
   logger: pino.Logger,
+  theme?: ReturnType<typeof resolveTheme>,
 ): Promise<void> {
   await browserRenderer.updateDeck(renderDomDeck(deckButtons.map((button) => ({
     content: button.content,
@@ -186,6 +187,7 @@ async function renderDomDeckSurface(
     ...(button.sample_interval_ms !== undefined ? { sample_interval_ms: button.sample_interval_ms } : {}),
   })), {
     keyCount: connection.info.keyCount,
+    theme,
   }))
 
   const buffersByKey = await browserRenderer.captureKeyBuffers()
@@ -201,12 +203,13 @@ export async function renderRuntimeDeckSurface(
   buttons: RuntimeRenderButton[],
   browserRenderer: BrowserRenderer,
   logger: pino.Logger,
+  theme?: ReturnType<typeof resolveTheme>,
 ): Promise<void> {
   if (buttons.length > 0 && !buttons.every(isDomRenderButton)) {
     throw new Error("Runtime deck rendering must provide DOM-backed button content")
   }
 
-  await renderDomDeckSurface(connection, buttons.filter(isDomRenderButton), browserRenderer, logger)
+  await renderDomDeckSurface(connection, buttons.filter(isDomRenderButton), browserRenderer, logger, theme)
 }
 
 export async function startDaemon(options: StartOptions): Promise<void> {
@@ -266,7 +269,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
             return
           }
 
-          await renderRuntimeDeckSurface(activeConnection, buttons, browserRenderer, logger)
+          await renderRuntimeDeckSurface(activeConnection, buttons, browserRenderer, logger, runtimeTheme)
         },
         sessionMonitor: loadedConfig.sessionMonitor,
         subscribeKeyEvents: lifecycle.subscribeKeyEvents,

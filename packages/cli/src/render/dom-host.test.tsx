@@ -2,6 +2,7 @@ import { createElement } from "react"
 import { describe, expect, it } from "vitest"
 
 import { ButtonSurface } from "../addon/api.js"
+import { resolveTheme } from "../config/theme.js"
 import { createHostedButtonElement, renderDomDeck, renderReactNodeToHtml } from "./dom-host.js"
 
 describe("dom host", () => {
@@ -47,6 +48,20 @@ describe("dom host", () => {
     expect(html).toContain('data-sireno-key="1"')
     expect(html).toContain('data-sireno-key="2"')
     expect(html).toContain('data-sireno-media-sample-interval-ms="250"')
+  })
+
+  it("exports theme CSS vars and the browser utility stylesheet on the deck root", () => {
+    const html = renderDomDeck([], {
+      keyCount: 1,
+      theme: resolveTheme("dark"),
+    })
+
+    expect(html).toContain('data-sireno-theme-utilities="true"')
+    expect(html).toContain('--sireno-color-primary:#7dd3fc;')
+    expect(html).toContain('--sireno-color-background:#10161f;')
+    expect(html).toContain('--sireno-font-main-family:')
+    expect(html).toContain('.text-primary{color:var(--sireno-color-primary);}')
+    expect(html).toContain('.font-main{font-family:var(--sireno-font-main-family);')
   })
 
   it("renders React TSX metadata wrappers through react-dom static markup", () => {
