@@ -4,6 +4,7 @@ import { z } from 'zod'
 import {
   ButtonSurface,
   createBaseShapeTextContent,
+  createDomStack,
   createDomTextLabel,
 } from '../../addon/api.js'
 
@@ -86,7 +87,45 @@ const builtinAnalogClockButton = {
     button: { position: number }
     config: z.infer<typeof BuiltinAnalogClockButtonSchema>
   }) => ({
-    render: () => createElement(ButtonSurface, { full_surface: true }, createDomTextLabel({ children: 'Clock' })),
+    render: () => createElement(ButtonSurface, { full_surface: true }, createElement(
+      'div',
+      {
+        className: 'bg-background border-primary',
+        style: {
+          alignItems: 'center',
+          border: '1px solid color-mix(in oklab, var(--sireno-color-primary) 58%, transparent)',
+          borderRadius: '16px',
+          display: 'flex',
+          height: '100%',
+          justifyContent: 'center',
+          padding: '10px',
+          width: '100%',
+        },
+      },
+      createDomStack({
+        gap: 4,
+        children: [
+          createElement('span', {
+            children: 'Clock',
+            className: 'font-main text-primary',
+            style: {
+              display: 'block',
+              textAlign: 'center',
+            },
+          }),
+          createElement('span', {
+            children: 'LIVE',
+            className: 'font-aux text-foreground',
+            style: {
+              display: 'block',
+              opacity: 0.85,
+              textAlign: 'center',
+              textTransform: 'uppercase',
+            },
+          }),
+        ],
+      }),
+    )),
   }),
   type: 'analog-clock',
 }
@@ -100,7 +139,44 @@ const builtinCalendarSheetButton = {
     button: { position: number }
     config: z.infer<typeof BuiltinCalendarSheetButtonSchema>
   }) => ({
-    render: () => createElement(ButtonSurface, { full_surface: true }, createDomTextLabel({ children: 'Date' })),
+    render: () => createElement(ButtonSurface, { full_surface: true }, createElement(
+      'div',
+      {
+        className: 'bg-background border-accent',
+        style: {
+          alignItems: 'center',
+          border: '1px solid color-mix(in oklab, var(--sireno-color-accent) 54%, transparent)',
+          borderRadius: '16px',
+          display: 'flex',
+          height: '100%',
+          justifyContent: 'center',
+          padding: '10px',
+          width: '100%',
+        },
+      },
+      createDomStack({
+        gap: 4,
+        children: [
+          createElement('span', {
+            children: 'Date',
+            className: 'font-main text-foreground',
+            style: {
+              display: 'block',
+              textAlign: 'center',
+            },
+          }),
+          createElement('span', {
+            children: 'SHEET',
+            className: 'font-aux text-accent',
+            style: {
+              display: 'block',
+              textAlign: 'center',
+              textTransform: 'uppercase',
+            },
+          }),
+        ],
+      }),
+    )),
   }),
   type: 'calendar-sheet',
 }

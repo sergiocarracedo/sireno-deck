@@ -152,7 +152,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ### Phase 17: Custom Wrapper Primitives + Addon-Authored Rendering Variants
 
-**Status:** Verifying
+**Status:** Complete
 
 **Goal:** The shared/default path becomes one core-owned base button shape applied by default, addons compose explicit content helpers inside that shape, and custom visuals can explicitly opt out to render the full surface themselves.
 
@@ -179,22 +179,26 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 18: React DOM-Based Renderer With HTML/CSS Surface Support
 
 **Goal:** Replace the current pure-SVG render system with a React HTML/CSS DOM-based renderer that can support any surface HTML can express, including richer media such as GIFs and video.
-**Status:** [ ] Not started
+**Status:** Complete
 **Depends on:** Phase 17
 
 ### Plans
-*Not yet planned — run `plan-phase 18`*
+- `18-01`: Establish the browser-rendered deck document and hosted button contract
+- `18-02`: Preserve default frame behavior and explicit full-surface escape hatches on the DOM path
+- `18-03`: Add sampled browser-only surfaces and runtime transport for media-backed HTML/CSS
+- `18-04`: Close real runtime/device gaps including full-surface transport and live refresh behavior
 
 ---
 
 ### Phase 19: Tailwind Button Theming via Theme CSS Variables
 
 **Goal:** Connect browser-rendered button styling to Sireno theme tokens through CSS variables so Tailwind utilities such as `text-primary` resolve against the active global theme.
-**Status:** [ ] Not started
+**Status:** Verifying
 **Depends on:** Phase 18
 
 ### Plans
-*Not yet planned — run `plan-phase 19`*
+- `19-01`: Export browser theme CSS vars and prove the first narrow utility-backed shipped button
+- `19-02`: Migrate shared browser chrome and helper-authored typography onto the theme-token utility bridge, then ship reviewable verification
 
 ---
 

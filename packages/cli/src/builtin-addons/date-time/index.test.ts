@@ -118,8 +118,12 @@ describe('date-time addon', () => {
     const element = instance?.render()
 
     expect(definition?.defaultIntervalMs).toBe(ANALOG_CLOCK_INTERVAL_MS)
-    expect(renderReactNodeToHtml(element as never)).toContain('data-sireno-full-surface="true"')
-    expect(renderReactNodeToHtml(element as never)).toContain('Clock')
+    const html = renderReactNodeToHtml(element as never)
+
+    expect(html).toContain('data-sireno-full-surface="true"')
+    expect(html).toContain('Clock')
+    expect(html).toContain('class="font-main text-primary"')
+    expect(html).toContain('class="font-aux text-foreground"')
   })
 
   it('keeps the shipped Phase 8 review contract on the bundled analog clock type', () => {
@@ -143,7 +147,11 @@ describe('date-time addon', () => {
     const element = instance?.render()
 
     expect(definition?.defaultIntervalMs).toBe(CALENDAR_SHEET_INTERVAL_MS)
-    expect(renderReactNodeToHtml(element as never)).toContain('data-sireno-full-surface="true"')
-    expect(renderReactNodeToHtml(element as never)).toContain('Date')
+    const html = renderReactNodeToHtml(element as never)
+
+    expect(html).toContain('data-sireno-full-surface="true"')
+    expect(html).toContain('Date')
+    expect(html).toContain('class="font-main text-foreground"')
+    expect(html).toContain('class="font-aux text-accent"')
   })
 })

@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 19 execution is underway: the browser deck shell now exports Sireno theme CSS variables and the first shipped action button proves theme-token utility classes such as `text-primary` on the real browser-rendered path.
+**Current focus:** Phase 19 is fully verified, including headless browser review and real-device UAT on the attached Stream Deck.
 
 ## Current Position
 
 Phase: 19 — Tailwind Button Theming via Theme CSS Variables
-Plan: 19-01 complete
-Status: executing
-Last activity: 2026-05-23 - Completed Plan 19-01 with browser theme CSS vars, a narrow utility layer, and the first themed browser action-button review path
+Plan: 19-02 complete
+Status: complete
+Last activity: 2026-05-23 - Completed Phase 18 remaining media-sampling UAT and Phase 19 real-device visual signoff on the attached Stream Deck
 
 Progress: [##########] 100%
 
@@ -125,6 +125,9 @@ Recent decisions affecting current work:
 - **Plan 14-03:** Added the strict `toggle-status` toggle branch, write-then-status reconciliation without local inversion, restrained third-mode render accents, and the final committed Phase 14 fixture/UAT path covering all three modes.
 - **Plan 14-04:** Fixed the runtime startup render-order race so stale deck-wide `PENDING` writes cannot overwrite the first settled authoritative `get-set` state on the real device path.
 - **Plan 19-01:** Exported the resolved Sireno theme as namespaced CSS vars on the browser deck shell, shipped the first narrow theme-token utility layer, and proved the contract through a themed action button plus a committed Phase 19 browser review fixture.
+- **Plan 19-02:** Migrated shared browser chrome and helper-authored typography onto the theme-token utility bridge, added a committed typography review fixture, and closed focused verification for the shipped browser path.
+- **Phase 18 verification:** The remaining real-device sampled-media UAT passed; `Waves` rendered as honest bounded browser sampling and the last paused Phase 18 verification item is now closed.
+- **Phase 19 verification:** Both committed physical-device review fixtures passed on the attached Stream Deck, closing the token-utility and typography/shared-frame UAT gap.
 
 ### Blockers/Concerns
 
@@ -135,8 +138,8 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-23
-Stopped at: Plan 19-01 completed with browser theme CSS vars and the first themed utility-backed browser button; next up is Plan 19-02 shared chrome and helper alignment.
-Resume file: .planning/phases/19-tailwind-button-theming-css-vars/19-01-SUMMARY.md
+Stopped at: Phase 19 fully verified after real-device UAT and the previously paused Phase 18 sampled-media check also passed.
+Resume file: .planning/phases/19-tailwind-button-theming-css-vars/19-02-SUMMARY.md
 
 ### Quick Tasks Completed
 

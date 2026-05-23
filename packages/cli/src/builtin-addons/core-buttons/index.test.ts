@@ -6,7 +6,10 @@ import coreButtonsAddon from './index.js'
 
 describe('core-buttons addon', () => {
   it('exports the remaining explicit base-shape content helper through the public addon API', () => {
-    expect(renderReactNodeToHtml(createBaseShapeTextContent({ fit: 'wrap', keyIndex: 3, label: 'Wrapped Label' }))).toContain('Wrapped Label')
+    const html = renderReactNodeToHtml(createBaseShapeTextContent({ fit: 'wrap', keyIndex: 3, label: 'Wrapped Label' }))
+
+    expect(html).toContain('Wrapped Label')
+    expect(html).toContain('class="font-main text-foreground"')
   })
 
   it('exports a bundled action button definition with a zod schema', () => {

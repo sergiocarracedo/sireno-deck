@@ -3,13 +3,17 @@
 ## 2026-05-23
 
 ### Features
-- None.
+- Added a Sireno-owned browser utility bridge that exports resolved theme CSS variables and makes shipped browser-rendered buttons consume classes such as `text-primary`, `bg-background`, `border-accent`, `font-main`, and `font-aux`.
+- Added theme-aware shared browser button chrome plus committed Phase 19 review fixtures for both token-color and typography/frame verification on the real browser path.
 
 ### Fixes
 - Fixed browser-backed live buttons such as the bundled clock/date-time surfaces so polling-driven second changes actually redraw on-device when running from the repo-root config. Root cause was that runtime polling refreshed the individual button cache, but the React DOM/browser render path only pushes pixels from a deck-level render callback.
+- Fixed the Phase 19 theming seam so helper-authored labels and shared browser chrome no longer bypass the new utility contract with hardcoded inline typography/colors. Root cause was that Wave 1 exported theme tokens successfully, but the default helper/frame path still owned presentation inline.
 
 ### Learnings
 - In the browser-backed renderer, a polled button refresh is not enough by itself. If the hardware write path is deck-scoped, polling updates have to trigger a fresh deck render or the device will keep showing stale frames.
+- Exporting theme tokens is not enough if the default helper path still hardcodes presentation. The real contract only exists once the shipped shared surface consumes it.
+- The safe migration path is additive: default helpers can emit stable theme-role classes while plain `className` authoring stays the primary model.
 
 ## 2026-05-18
 

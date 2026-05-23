@@ -166,7 +166,7 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.2 — Session Context and Surface Composition
 **Phase:** 19 — Tailwind Button Theming via Theme CSS Variables
-**Status:** planning
+**Status:** complete
 **Last updated:** 2026-05-23
 
 ---

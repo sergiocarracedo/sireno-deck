@@ -6,3 +6,5 @@ export {
   createDomStack,
   createDomTextLabel,
 } from "./addon/api.js"
+
+export type { DomElementStyleProps } from "./addon/api.js"

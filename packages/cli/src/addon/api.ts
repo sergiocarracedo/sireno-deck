@@ -1,6 +1,6 @@
 import { createElement } from "react"
 
-import type { ReactElement, ReactNode } from "react"
+import type { CSSProperties, ReactElement, ReactNode } from "react"
 import type { ZodType } from "zod"
 
 import type { CommandExecutionResult } from "../action/executor.js"
@@ -58,6 +58,11 @@ export interface ButtonSurfaceProps extends AddonButtonSurfaceContract {
   children: ReactNode
 }
 
+export interface DomElementStyleProps {
+  className?: string
+  style?: CSSProperties
+}
+
 export interface CreateAddonButtonInstanceOptions<TConfig> {
   button: AddonButtonEnvelope
   config: TConfig
@@ -87,18 +92,19 @@ export function ButtonSurface(props: ButtonSurfaceProps): ReactElement {
 
 export function createDomTextLabel(props: {
   children: ReactNode
+  className?: string
+  style?: CSSProperties
 }): ReactElement {
+  const className = ["font-main", "text-foreground", props.className].filter(Boolean).join(" ")
+
   return createElement("span", {
     children: props.children,
+    className,
     style: {
-      color: "#eef2f7",
       display: "block",
-      fontFamily: "IBM Plex Sans, sans-serif",
-      fontSize: "12px",
-      fontWeight: 700,
-      letterSpacing: "0.01em",
       lineHeight: 1.2,
       textAlign: "center",
+      ...props.style,
     },
   })
 }
@@ -122,13 +128,16 @@ export function createDomIcon(props: {
 
 export function createDomStack(props: {
   children: ReactNode
+  className?: string
   gap?: number
+  style?: CSSProperties
 }): ReactElement {
   const children = Array.isArray(props.children)
     ? props.children.map((child, index) => (child === null ? null : createElement("span", { key: index }, child)))
     : props.children
 
   return createElement("div", {
+    className: props.className,
     children,
     style: {
       alignItems: "center",
@@ -137,29 +146,43 @@ export function createDomStack(props: {
       gap: `${props.gap ?? 6}px`,
       justifyContent: "center",
       width: "100%",
+      ...props.style,
     },
   })
 }
 
 export function createBaseShapeIconLabelContent(props: {
+  className?: string
   icon?: string
   keyIndex: number
   label: string
+  labelClassName?: string
+  labelStyle?: CSSProperties
+  style?: CSSProperties
 }): ReactElement {
   return createDomStack({
+    className: props.className,
     children: [
       props.icon ? createDomIcon({ src: props.icon }) : null,
-      createDomTextLabel({ children: props.label }),
+      createDomTextLabel({ children: props.label, className: props.labelClassName, style: props.labelStyle }),
     ],
+    style: props.style,
   })
 }
 
 export function createBaseShapeTextContent(props: {
+  className?: string
   fit?: "shrink" | "wrap"
   keyIndex: number
   label: string
+  labelClassName?: string
+  labelStyle?: CSSProperties
 }): ReactElement {
-  return createDomTextLabel({ children: props.label })
+  return createDomTextLabel({
+    children: props.label,
+    className: [props.className, props.labelClassName].filter(Boolean).join(" "),
+    style: props.labelStyle,
+  })
 }
 
 export interface CreateAddonDeckOptions<TConfig> {

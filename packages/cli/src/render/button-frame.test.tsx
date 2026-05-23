@@ -10,5 +10,7 @@ describe("buttonFrame", () => {
 
     expect(html).toContain("data-sireno-button-frame=\"true\"")
     expect(html).toContain("Clock")
+    expect(html).toContain('class="bg-background border-accent"')
+    expect(html).toContain('var(--sireno-color-primary)')
   })
 })
