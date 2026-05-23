@@ -1,0 +1,26 @@
+.planning/phases/20-theme-packages-and-locked-time-layout/20-UAT.md
+  s_df3509a167c487::t_cfdf3cdf186845 1-45
+packages/cli/fixtures/phase-20/config.theme-package-frame.yml
+  s_df3509a167c487::t_cfdf3cdf186845 1-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "51ef562f41c52619adb34bd47b6b10f7baf17b56",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
