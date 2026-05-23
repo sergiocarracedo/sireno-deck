@@ -5,7 +5,7 @@ import type { ReactElement } from "react"
 
 import { ButtonSurface } from "../addon/api.js"
 import type { Theme } from "../config/theme.js"
-import { ButtonFrame } from "./button-frame.js"
+import { buttonFrame as defaultButtonFrame } from "./button-frame.js"
 import { resolveDeckLayout } from "./browser-renderer.js"
 import { STREAM_DECK_KEY_PRESET, type RenderPreset } from "./render-preset.js"
 import { getThemeUtilityStylesheet, renderThemeCssVariables } from "./theme-utilities.js"
@@ -15,6 +15,7 @@ export interface HostedButton {
   full_surface?: boolean
   keyIndex: number
   sample_interval_ms?: number
+  theme?: Theme
 }
 
 export interface DomHostRenderOptions {
@@ -40,7 +41,9 @@ export function createHostedButtonElement(button: HostedButton): ReactElement {
     return surface
   }
 
-  return createElement(ButtonFrame, null, surface)
+  const frame = button.theme?.buttonFrame ?? defaultButtonFrame
+
+  return createElement(frame, { state: "idle" }, surface)
 }
 
 export function renderDomDeck(buttons: readonly HostedButton[], options: DomHostRenderOptions): string {
@@ -52,7 +55,7 @@ export function renderDomDeck(buttons: readonly HostedButton[], options: DomHost
   const buttonsByKey = new Map(buttons.map((button) => [button.keyIndex, button]))
   const slots = Array.from({ length: options.keyCount }, (_, keyIndex) => {
     const button = buttonsByKey.get(keyIndex)
-    const content = button ? renderReactNodeToHtml(createHostedButtonElement(button)) : ""
+    const content = button ? renderReactNodeToHtml(createHostedButtonElement({ ...button, theme: options.theme })) : ""
 
     return `<div data-sireno-key="${keyIndex}" style="align-items:center;background:#05070a;box-sizing:border-box;display:flex;height:${preset.keyHeight}px;justify-content:center;overflow:hidden;width:${preset.keyWidth}px;">${content}</div>`
   }).join("")

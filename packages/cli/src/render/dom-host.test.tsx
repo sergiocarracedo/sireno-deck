@@ -10,6 +10,7 @@ describe("dom host", () => {
     const html = renderReactNodeToHtml(createHostedButtonElement({
       content: createElement("span", null, "Action"),
       keyIndex: 0,
+      theme: undefined,
     }))
 
     expect(html).toContain("data-sireno-button-frame=\"true\"")
@@ -21,6 +22,7 @@ describe("dom host", () => {
       content: createElement("div", { "data-surface": "full" }, "Surface"),
       full_surface: true,
       keyIndex: 1,
+      theme: undefined,
     }))
 
     expect(html).not.toContain("data-sireno-button-frame=\"true\"")
@@ -85,9 +87,22 @@ describe("dom host", () => {
       full_surface: true,
       keyIndex: 0,
       sample_interval_ms: 600,
+      theme: undefined,
     }))
 
     expect(html).toContain('data-sireno-media-sample-interval-ms="600"')
     expect(html.match(/data-sireno-button-surface="true"/g)).toHaveLength(1)
+  })
+
+  it("uses the resolved theme-owned buttonFrame when a theme provides one", async () => {
+    const theme = await resolveTheme("light")
+    const html = renderReactNodeToHtml(createHostedButtonElement({
+      content: createElement("span", null, "Action"),
+      keyIndex: 0,
+      theme,
+    }))
+
+    expect(html).toContain('data-sireno-button-frame="true"')
+    expect(html).toContain('color-mix(in oklab, white 68%, var(--sireno-color-background) 32%)')
   })
 })

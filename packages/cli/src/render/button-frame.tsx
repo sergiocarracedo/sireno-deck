@@ -1,10 +1,9 @@
 import { createElement } from "react"
 
 import type { ReactNode } from "react"
+import type { ThemeButtonFrameProps } from "../config/theme.js"
 
-export interface ButtonFrameProps {
-  children: ReactNode
-}
+export interface ButtonFrameProps extends ThemeButtonFrameProps {}
 
 export function ButtonFrame(props: ButtonFrameProps) {
   return createElement(
