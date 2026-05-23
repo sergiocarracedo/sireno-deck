@@ -727,6 +727,62 @@ describe("createDeckRuntime", () => {
     })
   })
 
+  it("re-renders the active deck when a polled live button refreshes", async () => {
+    let schedulerTask: (() => Promise<void>) | undefined
+    let currentLabel = "10:48:07"
+    const onRenderDeck = vi.fn()
+    const createScheduler = vi.fn((_intervalMs: number): PollingScheduler => ({
+      intervalMs: 0,
+      jitterMs: 0,
+      scheduleDelay: () => 0,
+      start: (tasks) => {
+        schedulerTask = tasks[0]?.run
+      },
+      stop: vi.fn(),
+    }))
+
+    const runtime = createDeckRuntime({
+      createScheduler,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Clock" },
+          definition: {
+            ...createDisplayDefinition(),
+            defaultIntervalMs: 1000,
+            createInstance: ({ button }: { button: { position: number } }) => ({
+              refresh: async () => {
+                currentLabel = "10:48:08"
+              },
+              render: () => createTextSurface(button.position, currentLabel),
+            }),
+          },
+          label: "Clock",
+          position: 0,
+          type: "display-text",
+        }],
+      },
+      onRenderDeck,
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("10:48:07")
+    })
+
+    await schedulerTask?.()
+
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("10:48:08")
+      const renderedButton = onRenderDeck.mock.calls.at(-1)?.[0]?.[0]
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Clock" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("10:48:08")
+    })
+  })
+
   it("uses command-driven toggle instance defaults when no interval override is configured", async () => {
     const registry = createBundledAddonRegistry()
     const createScheduler = vi.fn((_intervalMs: number): PollingScheduler => ({

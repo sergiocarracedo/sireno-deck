@@ -431,7 +431,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
           run: async () => {
             const instance = getOrCreateInstance(activeDeckId, button)
             await instance.refresh?.()
-            await renderRuntimeButton(button, activeDeckId, activationVersion)
+            const renderedButton = await renderRuntimeButton(button, activeDeckId, activationVersion)
+            if (renderedButton?.content !== undefined) {
+              await renderDeckSurface(activeDeckId, activationVersion)
+            }
           },
         },
       ])
