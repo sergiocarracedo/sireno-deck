@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 18 — React DOM-Based Renderer With HTML/CSS Surface Support
+**Phase:** 19 — Tailwind Button Theming via Theme CSS Variables
 **Status:** planning
-**Last updated:** 2026-05-22
+**Last updated:** 2026-05-23
 
 ---
 
