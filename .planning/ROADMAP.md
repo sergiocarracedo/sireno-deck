@@ -187,6 +187,17 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ---
 
+### Phase 19: Tailwind Button Theming via Theme CSS Variables
+
+**Goal:** Connect browser-rendered button styling to Sireno theme tokens through CSS variables so Tailwind utilities such as `text-primary` resolve against the active global theme.
+**Status:** [ ] Not started
+**Depends on:** Phase 18
+
+### Plans
+*Not yet planned — run `plan-phase 19`*
+
+---
+
 ## Coverage Validation
 
 - [x] All 9 v1.2 requirements map to at least one roadmap phase

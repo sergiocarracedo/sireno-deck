@@ -72,6 +72,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 19 added: tailwind-backed button theming wired through Sireno theme CSS variables so browser-rendered surfaces can use utilities like `text-primary` against the active global theme.
 - Phase 16 added: config hot-reload, external deck-file references, wrapper label removal, and customizable wrapper accent colors.
 - Phase 17 added: custom wrapper primitives with addon-authored rendering variants.
 - Phase 18 added: React DOM-based renderer with HTML/CSS surface support, including richer media such as GIFs and video.
