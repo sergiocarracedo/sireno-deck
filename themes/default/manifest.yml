@@ -5,6 +5,9 @@ description: The default theme for Sireno Deck.
 authors:
   - name: Sergio Carracedo
     email: hi@sergiocarracedo.es
+assets:
+  styles:
+    - ./theme.css
 background: '#10161f'
 foreground: '#eef2f7'
 primary: '#7dd3fc'

@@ -45,6 +45,9 @@ describe("resolveTheme", () => {
     expect(theme.foreground).toBe("#eef2f7")
     expect(theme.typography?.main_text.font_family).toBe("IBM Plex Sans")
     expect(theme.buttonFrame).toBeTypeOf("function")
+    expect(theme.stylesheets).toHaveLength(1)
+    expect(theme.stylesheets[0]).toContain("@font-face")
+    expect(theme.stylesheets[0]).toContain("file://")
   })
 
   it("loads a custom theme package from a filesystem path", async () => {
@@ -82,6 +85,7 @@ describe("resolveTheme", () => {
     expect(theme.accent).toBe("#14b8a6")
     expect(theme.typography?.monospace.font_family).toBe("IBM Plex Mono")
     expect(theme.buttonFrame).toBeTypeOf("function")
+    expect(theme.stylesheets).toEqual([])
   })
 
   it("fails clearly when a theme reference does not exist", async () => {
@@ -122,5 +126,33 @@ describe("resolveTheme", () => {
 
     await expect(resolveTheme("./missing-typography.yml", { baseDirectory: configDir })).rejects.toThrow(ConfigValidationError)
     await expect(resolveTheme("./missing-typography.yml", { baseDirectory: configDir })).rejects.toThrow("Required")
+  })
+
+  it("fails clearly when a theme stylesheet references a missing relative asset", async () => {
+    const configDir = join(tempDir, "config")
+    const customThemePath = join(configDir, "broken-theme")
+    mkdirSync(customThemePath, { recursive: true })
+    writeFileSync(
+      join(customThemePath, "manifest.yml"),
+      [
+        "name: broken",
+        'main: "./index.js"',
+        "assets:",
+        '  styles: ["./theme.css"]',
+        'background: "#20252d"',
+        'foreground: "#f5f7fa"',
+        'primary: "#8b5cf6"',
+        'accent: "#14b8a6"',
+        'success: "#22c55e"',
+        'danger: "#ef4444"',
+        ...typographyBlock,
+      ].join("\n"),
+    )
+    writeFileSync(join(customThemePath, "index.js"), 'export const buttonFrame = (props) => props.children\nexport default { buttonFrame }')
+    writeFileSync(join(customThemePath, "theme.css"), '@font-face { font-family: "Broken"; src: url("./missing.ttf"); }')
+
+    const { resolveTheme } = await loadThemeModule()
+
+    await expect(resolveTheme("./broken-theme", { baseDirectory: configDir })).rejects.toThrow("Theme CSS asset './missing.ttf' was not found")
   })
 })

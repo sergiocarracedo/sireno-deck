@@ -59,11 +59,14 @@ describe("dom host", () => {
     })
 
     expect(html).toContain('data-sireno-theme-utilities="true"')
+    expect(html).toContain('data-sireno-theme-assets="true"')
     expect(html).toContain('--sireno-color-primary:#7dd3fc;')
     expect(html).toContain('--sireno-color-background:#10161f;')
     expect(html).toContain('--sireno-font-main-family:')
     expect(html).toContain('.text-primary{color:var(--sireno-color-primary);}')
     expect(html).toContain('.font-main{font-family:var(--sireno-font-main-family);')
+    expect(html).toContain('@font-face')
+    expect(html).toContain('file://')
   })
 
   it("renders React TSX metadata wrappers through react-dom static markup", () => {

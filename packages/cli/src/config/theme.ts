@@ -39,6 +39,9 @@ const ThemeSchema = z
   .strict()
 
 const ThemeManifestSchema = ThemeSchema.extend({
+  assets: z.object({
+    styles: z.array(z.string().min(1)).optional(),
+  }).optional(),
   main: z.string().min(1),
 }).passthrough()
 
@@ -58,6 +61,7 @@ export type ThemeButtonFrame = (props: ThemeButtonFrameProps) => ReactElement
 export interface Theme extends Omit<ThemeSchemaOutput, "typography"> {
   buttonFrame: ThemeButtonFrame
   rootDir: string
+  stylesheets: string[]
   typography?: ThemeSchemaOutput["typography"]
 }
 
@@ -275,6 +279,58 @@ async function importThemeButtonFrame(manifest: ThemeManifest, manifestPath: str
   }
 }
 
+function rewriteThemeCssUrls(cssText: string, cssFilePath: string): string {
+  return cssText.replace(/url\(([^)]+)\)/g, (_match, rawValue: string) => {
+    const trimmedValue = rawValue.trim()
+    const unquotedValue = trimmedValue.replace(/^['"]|['"]$/g, "")
+
+    if (
+      unquotedValue.length === 0
+      || unquotedValue.startsWith("data:")
+      || unquotedValue.startsWith("http://")
+      || unquotedValue.startsWith("https://")
+      || unquotedValue.startsWith("file://")
+      || unquotedValue.startsWith("/")
+      || unquotedValue.startsWith("#")
+    ) {
+      return `url(${trimmedValue})`
+    }
+
+    const resolvedAssetPath = resolve(dirname(cssFilePath), unquotedValue)
+    if (!existsSync(resolvedAssetPath)) {
+      throw new ConfigValidationError(
+        `Theme CSS asset '${unquotedValue}' was not found`,
+        cssFilePath,
+        undefined,
+        `Check the asset path relative to '${basename(cssFilePath)}'.`,
+        ["theme", "assets", "styles"],
+      )
+    }
+
+    return `url("${pathToFileURL(resolvedAssetPath).href}")`
+  })
+}
+
+function loadThemeStylesheets(manifest: ThemeManifest, manifestPath: string, rootDir: string): string[] {
+  const stylesheetPaths = manifest.assets?.styles ?? []
+
+  return stylesheetPaths.map((stylesheetPath) => {
+    const resolvedStylesheetPath = resolve(rootDir, stylesheetPath)
+    if (!existsSync(resolvedStylesheetPath)) {
+      throw new ConfigValidationError(
+        `Theme stylesheet '${stylesheetPath}' was not found`,
+        manifestPath,
+        undefined,
+        `Check the value for 'assets.styles' in ${MANIFEST_FILENAME}.`,
+        ["theme", "assets", "styles"],
+      )
+    }
+
+    const cssText = readFileSync(resolvedStylesheetPath, "utf-8")
+    return rewriteThemeCssUrls(cssText, resolvedStylesheetPath)
+  })
+}
+
 export async function resolveTheme(themeReference: string, options: ResolveThemeOptions = {}): Promise<Theme> {
   const target = resolveThemeTarget(themeReference, options)
 
@@ -284,11 +340,13 @@ export async function resolveTheme(themeReference: string, options: ResolveTheme
       ...theme,
       buttonFrame: defaultButtonFrame,
       rootDir: target.rootDir,
+      stylesheets: [],
     }
   }
 
   const manifest = parseThemeYaml(target.manifestPath, ThemeManifestSchema, ["theme"])
   const buttonFrame = await importThemeButtonFrame(manifest, target.manifestPath, target.rootDir)
+  const stylesheets = loadThemeStylesheets(manifest, target.manifestPath, target.rootDir)
 
   return {
     accent: manifest.accent,
@@ -299,6 +357,7 @@ export async function resolveTheme(themeReference: string, options: ResolveTheme
     name: target.nameOverride ?? manifest.name,
     primary: manifest.primary,
     rootDir: target.rootDir,
+    stylesheets,
     success: manifest.success,
     typography: manifest.typography,
   }
