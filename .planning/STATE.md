@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 19 context is captured for Tailwind-style browser button theming backed by Sireno theme CSS variables, with core-owned utility mapping and existing override precedence preserved.
+**Current focus:** Phase 19 execution is underway: the browser deck shell now exports Sireno theme CSS variables and the first shipped action button proves theme-token utility classes such as `text-primary` on the real browser-rendered path.
 
 ## Current Position
 
 Phase: 19 — Tailwind Button Theming via Theme CSS Variables
-Plan: context updated
-Status: discussing complete
-Last activity: 2026-05-23 - Captured Phase 19 context for namespaced theme CSS vars, core-owned utility mapping, and className-first browser authoring
+Plan: 19-01 complete
+Status: executing
+Last activity: 2026-05-23 - Completed Plan 19-01 with browser theme CSS vars, a narrow utility layer, and the first themed browser action-button review path
 
 Progress: [##########] 100%
 
@@ -124,6 +124,7 @@ Recent decisions affecting current work:
 - **Plan 14-02:** Added the strict `get-set` toggle branch, authoritative command reads/writes with pending and error treatment, real CLI render-path mode accents, and a committed command-driven review fixture/UAT path.
 - **Plan 14-03:** Added the strict `toggle-status` toggle branch, write-then-status reconciliation without local inversion, restrained third-mode render accents, and the final committed Phase 14 fixture/UAT path covering all three modes.
 - **Plan 14-04:** Fixed the runtime startup render-order race so stale deck-wide `PENDING` writes cannot overwrite the first settled authoritative `get-set` state on the real device path.
+- **Plan 19-01:** Exported the resolved Sireno theme as namespaced CSS vars on the browser deck shell, shipped the first narrow theme-token utility layer, and proved the contract through a themed action button plus a committed Phase 19 browser review fixture.
 
 ### Blockers/Concerns
 
@@ -134,8 +135,8 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-23
-Stopped at: Phase 19 context captured for Tailwind-style theme-token utilities backed by Sireno CSS vars; next up is Phase 19 planning.
-Resume file: .planning/phases/19-tailwind-button-theming-css-vars/19-CONTEXT.md
+Stopped at: Plan 19-01 completed with browser theme CSS vars and the first themed utility-backed browser button; next up is Plan 19-02 shared chrome and helper alignment.
+Resume file: .planning/phases/19-tailwind-button-theming-css-vars/19-01-SUMMARY.md
 
 ### Quick Tasks Completed
 
