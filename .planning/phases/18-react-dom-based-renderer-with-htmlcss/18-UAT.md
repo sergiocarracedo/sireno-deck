@@ -1,51 +1,48 @@
 ---
-status: ready_for_review
+status: complete
 phase: 18-react-dom-based-renderer-with-htmlcss
 source:
-  - 18-01-PLAN.md
-  - 18-02-PLAN.md
-  - 18-03-PLAN.md
-  - 18-04-PLAN.md
-started: 2026-05-22T16:00:00+02:00
-updated: 2026-05-22T23:10:00+02:00
+  - 18-01-SUMMARY.md
+  - 18-02-SUMMARY.md
+  - 18-03-SUMMARY.md
+  - 18-04-SUMMARY.md
+started: 2026-05-23T10:16:45+02:00
+updated: 2026-05-23T13:30:37+02:00
 ---
 
-# Phase 18 UAT — Browser-Only React DOM Renderer
+## Current Test
+number: 3
+name: Bounded sampled media on browser surfaces
+expected: |
+  Run `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.media-sampling.yml`.
+  `Waves` should show browser-rendered sampled media behavior rather than fake continuous playback.
+  Repeated updates should stay bounded and coalesce to the latest sampled frame.
+  There should be no detectable legacy `text-image` or old render-contract behavior in product output.
+awaiting: complete
 
-## Fixture 1 — Browser-rendered action and deck navigation
+## Tests
 
-command: `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.browser-rendered-action.yml`
-fixture: `packages/cli/fixtures/phase-18/config.browser-rendered-action.yml`
-pass_if:
-- `Clock` and `Apps` render as browser-backed HTML/CSS buttons with the default `buttonFrame` chrome.
-- Moving between `main` and `apps` leaves no stale pixels on-device.
-- Breaking Chromium startup exits the CLI instead of reviving any legacy renderer fallback.
-fail_if:
-- Buttons resemble the old SVG/text-image path.
-- Navigation leaves stale content behind.
-- Startup continues without a working browser renderer.
+### 1. Browser-only startup and deck navigation
+expected: Run `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.browser-rendered-action.yml`. `Clock` and `Apps` render as browser-backed HTML/CSS buttons using the default `buttonFrame` chrome, moving between `main` and `apps` leaves no stale pixels, and breaking Chromium startup exits honestly instead of reviving a legacy fallback.
+result: pass
 
-## Fixture 2 — Live browser-rendered runtime surfaces
+### 2. Live browser-rendered runtime surfaces
+expected: Run `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.live-dom-buttons.yml`. The internal toggle flips visibly between `OFF` and `ON`, `date-time`, `analog-clock`, and `calendar-sheet` stay live on the browser surface, and runtime-owned surfaces such as lock or reload-error surfaces still appear through the browser path instead of freezing or falling back.
+result: pass
 
-command: `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.live-dom-buttons.yml`
-fixture: `packages/cli/fixtures/phase-18/config.live-dom-buttons.yml`
-pass_if:
-- The internal toggle flips between `OFF` and `ON` while staying browser-rendered.
-- `date-time`, `analog-clock`, and `calendar-sheet` remain live on the browser surface.
-- Lock/reload runtime-owned surfaces continue to appear through the same browser path.
-fail_if:
-- Toggle state stops being visible after the browser-only cutover.
-- Live surfaces freeze or fall back to non-browser rendering.
+### 3. Bounded sampled media on browser surfaces
+expected: Run `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.media-sampling.yml`. `Waves` shows browser-rendered sampled media behavior rather than fake continuous playback, repeated updates stay bounded and coalesce to the latest sampled frame, and there is no detectable legacy `text-image` or old render-contract behavior in product output.
+result: pass
 
-## Fixture 3 — Bounded media sampling on browser surfaces
+## Summary
 
-command: `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-18/config.media-sampling.yml`
-fixture: `packages/cli/fixtures/phase-18/config.media-sampling.yml`
-pass_if:
-- `Waves` shows browser-rendered sampled media behavior, not a promise of continuous video playback.
-- Repeated updates stay bounded and coalesce to the latest sampled frame.
-- The browser renderer remains the only shipped render path during this review.
-fail_if:
-- The fixture claims or behaves like continuous playback.
-- Sampling cadence is unbounded or visibly floods updates.
-- Reviewers can still detect a live `text-image` or legacy render contract path in product behavior.
+total: 3
+passed: 2
+passed: 3
+issues: 0
+pending: 0
+skipped: 0
+
+## Gaps
+
+none yet
