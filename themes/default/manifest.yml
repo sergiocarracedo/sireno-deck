@@ -1,0 +1,28 @@
+name: default
+main: ./index.js
+version: 0.1.0
+description: The default theme for Sireno Deck.
+authors:
+  - name: Sergio Carracedo
+    email: hi@sergiocarracedo.es
+background: '#10161f'
+foreground: '#eef2f7'
+primary: '#7dd3fc'
+accent: '#f59e0b'
+success: '#34d399'
+danger: '#fb7185'
+typography:
+  main_text:
+    font_family: 'IBM Plex Sans'
+    font_size: 12
+    font_weight: 700
+  auxiliary_text:
+    font_family: 'IBM Plex Sans'
+    font_size: 8
+    font_weight: 600
+    letter_spacing: 1.2
+  monospace:
+    font_family: 'IBM Plex Mono'
+    font_size: 10
+    font_weight: 700
+    letter_spacing: 0.4

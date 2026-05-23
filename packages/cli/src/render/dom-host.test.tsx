@@ -50,10 +50,10 @@ describe("dom host", () => {
     expect(html).toContain('data-sireno-media-sample-interval-ms="250"')
   })
 
-  it("exports theme CSS vars and the browser utility stylesheet on the deck root", () => {
+  it("exports theme CSS vars and the browser utility stylesheet on the deck root", async () => {
     const html = renderDomDeck([], {
       keyCount: 1,
-      theme: resolveTheme("dark"),
+      theme: await resolveTheme("dark"),
     })
 
     expect(html).toContain('data-sireno-theme-utilities="true"')

@@ -252,8 +252,8 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     const connection = await lifecycle.start()
     browserRenderer = await ensureBrowserRenderer(browserRenderer, connection.info.keyCount)
 
-    const createRuntime = (loadedConfig: Awaited<ReturnType<typeof loadRuntimeConfig>>) => {
-      const runtimeTheme = resolveTheme(loadedConfig.config.theme, { baseDirectory: loadedConfig.configDirectory })
+    const createRuntime = async (loadedConfig: Awaited<ReturnType<typeof loadRuntimeConfig>>) => {
+      const runtimeTheme = await resolveTheme(loadedConfig.config.theme, { baseDirectory: loadedConfig.configDirectory })
 
       return createDeckRuntime({
         addonRegistry: loadedConfig.registry,
@@ -276,7 +276,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
       })
     }
 
-    runtime = createRuntime(initialLoad)
+    runtime = await createRuntime(initialLoad)
 
     async function reloadRuntime(): Promise<void> {
       if (!runtime) {
@@ -296,7 +296,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
         try {
           loadedConfig = await loadRuntimeConfig(options)
-          const nextRuntime = createRuntime(loadedConfig)
+          const nextRuntime = await createRuntime(loadedConfig)
           const previousRuntime = runtime
           const previousSessionMonitor = sessionMonitor
           const previousStack = previousRuntime.getStackSnapshot()
