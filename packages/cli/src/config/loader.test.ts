@@ -776,6 +776,30 @@ describe("loadConfig", () => {
     })
   })
 
+  it("fails clearly when a config-authored asset reference is not registered", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: action",
+        "        label: Clock",
+        "        icon: builtin://core-buttons/missing.svg",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+
+    expect(() => loadConfig()).toThrow(ConfigValidationError)
+    expect(() => loadConfig()).toThrow("Asset 'builtin://core-buttons/missing.svg' is not registered")
+  })
+
   it("interpolates canonical host-context placeholders during config loading", async () => {
     writeFileSync(
       join(tempDir, "config.yml"),

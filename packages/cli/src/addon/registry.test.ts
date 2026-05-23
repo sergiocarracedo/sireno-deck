@@ -37,4 +37,25 @@ describe("createAddonRegistry", () => {
     }).toThrow("Button type 'duplicate-type' is already registered")
   })
 
+  it("resolves registered addon and builtin asset references", () => {
+    const registry = createAddonRegistry()
+
+    registry.registerAddon({
+      apiVersion: 1,
+      assets: { "clock.svg": "./assets/clock.svg" },
+      buttons: [],
+      name: "core-buttons",
+    }, { rootDir: "/tmp/core-buttons" })
+
+    expect(registry.resolveAssetPath("addon://core-buttons/clock.svg")).toBe("/tmp/core-buttons/assets/clock.svg")
+    expect(registry.resolveAssetPath("builtin://core-buttons/clock.svg")).toBe("/tmp/core-buttons/assets/clock.svg")
+    expect(registry.requireAssetPath("builtin://core-buttons/clock.svg")).toBe("/tmp/core-buttons/assets/clock.svg")
+  })
+
+  it("fails clearly when a registered asset reference is missing", () => {
+    const registry = createAddonRegistry()
+
+    expect(() => registry.requireAssetPath("addon://missing-addon/clock.svg")).toThrow("Asset 'addon://missing-addon/clock.svg' is not registered")
+  })
+
 })

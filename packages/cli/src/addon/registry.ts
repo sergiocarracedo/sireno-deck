@@ -6,18 +6,19 @@ import type {
   SirenoAddon,
 } from "./api.js"
 
-const ADDON_ASSET_PREFIX = "addon://"
+const ADDON_ASSET_PREFIXES = ["addon://", "builtin://"] as const
 
 function getAssetKey(addonName: string, assetName: string): string {
   return `${addonName}/${assetName}`
 }
 
 function parseAssetReference(assetReference: string): { addonName: string; assetName: string } | undefined {
-  if (!assetReference.startsWith(ADDON_ASSET_PREFIX)) {
+  const matchedPrefix = ADDON_ASSET_PREFIXES.find((prefix) => assetReference.startsWith(prefix))
+  if (!matchedPrefix) {
     return undefined
   }
 
-  const [addonName, ...assetNameParts] = assetReference.slice(ADDON_ASSET_PREFIX.length).split("/")
+  const [addonName, ...assetNameParts] = assetReference.slice(matchedPrefix.length).split("/")
   if (!addonName || assetNameParts.length === 0) {
     return undefined
   }
@@ -41,6 +42,7 @@ export interface AddonRegistry {
   listButtons: () => AddonButtonDefinition[]
   registerAddon: (addon: SirenoAddon, options?: { rootDir?: string }) => void
   registerButton: (button: AddonButtonDefinition) => void
+  requireAssetPath: (assetReference: string) => string
   resolveAssetPath: (assetReference: string) => string | undefined
 }
 
@@ -89,6 +91,14 @@ export function createAddonRegistry(): AddonRegistry {
       }
     },
     registerButton,
+    requireAssetPath(assetReference) {
+      const resolvedAssetPath = this.resolveAssetPath(assetReference)
+      if (!resolvedAssetPath) {
+        throw new AddonRegistryError(`Asset '${assetReference}' is not registered`)
+      }
+
+      return resolvedAssetPath
+    },
     resolveAssetPath(assetReference) {
       const parsed = parseAssetReference(assetReference)
       if (!parsed) {
