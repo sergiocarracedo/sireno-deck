@@ -1,0 +1,21 @@
+.planning/phases/21-theme-font-assets-for-browser-rendering/21-CONTEXT.md
+  s_8d74af9d4bfed8::t_4efb980e37453b 1-87
+.planning/phases/21-theme-font-assets-for-browser-rendering/21-DISCUSSION-LOG.md
+  s_8d74af9d4bfed8::t_4efb980e37453b 1-125
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "81ee76171f498ffca7dc76f98e38429a77f6717b",
+  "prompts": {},
+  "sessions": {
+    "s_8d74af9d4bfed8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a4269384ffeN1puLn8w7RzN1B",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
