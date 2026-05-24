@@ -7,7 +7,7 @@ import { builtinMediaSampleButton } from './buttons/media-sample.js'
 import { builtinToggleButton } from './buttons/toggle.js'
 
 const assets = {
-  'clock.svg': fileURLToPath(new URL('../assets/clock.svg', import.meta.url)),
+  'clock.svg': fileURLToPath(new URL('./assets/clock.svg', import.meta.url)),
 }
 
 const coreButtonsAddon: SirenoAddon = {

@@ -29,50 +29,50 @@ const CATEGORY_DEFINITIONS = [
 ] as const
 
 const assets = {
-  'back.svg': fileURLToPath(new URL('../assets/back.svg', import.meta.url)),
+  'back.svg': fileURLToPath(new URL('./assets/back.svg', import.meta.url)),
   'emoji-berry.svg': fileURLToPath(
-    new URL('../assets/emoji-berry.svg', import.meta.url),
+    new URL('./assets/emoji-berry.svg', import.meta.url),
   ),
   'emoji-coffee.svg': fileURLToPath(
-    new URL('../assets/emoji-coffee.svg', import.meta.url),
+    new URL('./assets/emoji-coffee.svg', import.meta.url),
   ),
   'emoji-cool.svg': fileURLToPath(
-    new URL('../assets/emoji-cool.svg', import.meta.url),
+    new URL('./assets/emoji-cool.svg', import.meta.url),
   ),
   'emoji-fire.svg': fileURLToPath(
-    new URL('../assets/emoji-fire.svg', import.meta.url),
+    new URL('./assets/emoji-fire.svg', import.meta.url),
   ),
   'emoji-grin.svg': fileURLToPath(
-    new URL('../assets/emoji-grin.svg', import.meta.url),
+    new URL('./assets/emoji-grin.svg', import.meta.url),
   ),
   'emoji-joy.svg': fileURLToPath(
-    new URL('../assets/emoji-joy.svg', import.meta.url),
+    new URL('./assets/emoji-joy.svg', import.meta.url),
   ),
   'emoji-leaf.svg': fileURLToPath(
-    new URL('../assets/emoji-leaf.svg', import.meta.url),
+    new URL('./assets/emoji-leaf.svg', import.meta.url),
   ),
   'emoji-party.svg': fileURLToPath(
-    new URL('../assets/emoji-party.svg', import.meta.url),
+    new URL('./assets/emoji-party.svg', import.meta.url),
   ),
   'emoji-pizza.svg': fileURLToPath(
-    new URL('../assets/emoji-pizza.svg', import.meta.url),
+    new URL('./assets/emoji-pizza.svg', import.meta.url),
   ),
   'emoji-rainbow.svg': fileURLToPath(
-    new URL('../assets/emoji-rainbow.svg', import.meta.url),
+    new URL('./assets/emoji-rainbow.svg', import.meta.url),
   ),
   'emoji-sushi.svg': fileURLToPath(
-    new URL('../assets/emoji-sushi.svg', import.meta.url),
+    new URL('./assets/emoji-sushi.svg', import.meta.url),
   ),
   'emoji-wave.svg': fileURLToPath(
-    new URL('../assets/emoji-wave.svg', import.meta.url),
+    new URL('./assets/emoji-wave.svg', import.meta.url),
   ),
   'favorites.svg': fileURLToPath(
-    new URL('../assets/favorites.svg', import.meta.url),
+    new URL('./assets/favorites.svg', import.meta.url),
   ),
-  'food.svg': fileURLToPath(new URL('../assets/food.svg', import.meta.url)),
-  'nature.svg': fileURLToPath(new URL('../assets/nature.svg', import.meta.url)),
+  'food.svg': fileURLToPath(new URL('./assets/food.svg', import.meta.url)),
+  'nature.svg': fileURLToPath(new URL('./assets/nature.svg', import.meta.url)),
   'smileys.svg': fileURLToPath(
-    new URL('../assets/smileys.svg', import.meta.url),
+    new URL('./assets/smileys.svg', import.meta.url),
   ),
 }
 

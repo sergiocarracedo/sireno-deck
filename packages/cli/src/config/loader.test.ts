@@ -769,12 +769,14 @@ describe("loadConfig", () => {
       target_deck: "emoji-favorites",
       type: "emoji-category-button",
     })
+    expect(config.decks.emoji?.buttons[0]?.icon).toContain("/builtin-addons/emoji-selector/assets/favorites.svg")
     expect(config.decks.emoji?.buttons[0]?.icon).toContain("favorites.svg")
     expect(config.decks["emoji-favorites"]?.buttons[1]).toMatchObject({
       icon: expect.stringContaining("file://"),
       label: "Back",
       type: "emoji-back-button",
     })
+    expect(config.decks["emoji-favorites"]?.buttons[1]?.icon).toContain("/builtin-addons/emoji-selector/assets/back.svg")
     expect(config.decks["emoji-favorites"]?.buttons[1]?.icon).toContain("back.svg")
   })
 

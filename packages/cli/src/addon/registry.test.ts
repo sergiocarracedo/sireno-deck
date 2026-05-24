@@ -52,6 +52,27 @@ describe("createAddonRegistry", () => {
     expect(registry.requireAssetPath("builtin://core-buttons/clock.svg")).toBe("/tmp/core-buttons/assets/clock.svg")
   })
 
+  it("keeps addon-local asset directory segments in registered paths", () => {
+    const registry = createAddonRegistry()
+
+    registry.registerAddon({
+      apiVersion: 1,
+      assets: {
+        "back.svg": "./assets/back.svg",
+        "clock.svg": "./assets/clock.svg",
+      },
+      buttons: [],
+      name: "emoji-selector",
+    }, { rootDir: "/tmp/builtin-addons/emoji-selector" })
+
+    expect(registry.requireAssetPath("addon://emoji-selector/back.svg")).toBe(
+      "/tmp/builtin-addons/emoji-selector/assets/back.svg",
+    )
+    expect(registry.requireAssetPath("builtin://emoji-selector/clock.svg")).toBe(
+      "/tmp/builtin-addons/emoji-selector/assets/clock.svg",
+    )
+  })
+
   it("fails clearly when a registered asset reference is missing", () => {
     const registry = createAddonRegistry()
 
