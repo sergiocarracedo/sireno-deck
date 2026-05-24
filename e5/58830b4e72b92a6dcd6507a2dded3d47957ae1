@@ -1,0 +1,24 @@
+.planning/phases/20-theme-packages-and-locked-time-layout/20-VERIFICATION.md
+  s_df3509a167c487::t_b2bfe09b059c89 3,74,76-77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "e558830b4e72b92a6dcd6507a2dded3d47957ae1",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
