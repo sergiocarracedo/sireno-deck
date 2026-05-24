@@ -72,6 +72,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 21 added: theme fonts must be shipped as real bundled assets so browser-rendered typography does not depend on missing host fonts or broken theme font references.
 - Phase 20 added: theme packages with manifest-backed assets and theme-owned button frames, external image rendering fixes, and a centered five-button locked time layout.
 - Phase 19 added: tailwind-backed button theming wired through Sireno theme CSS variables so browser-rendered surfaces can use utilities like `text-primary` against the active global theme.
 - Phase 16 added: config hot-reload, external deck-file references, wrapper label removal, and customizable wrapper accent colors.

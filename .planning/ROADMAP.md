@@ -217,6 +217,17 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ---
 
+### Phase 21: Theme Font Assets For Browser Rendering
+
+**Goal:** Ensure themes ship their declared fonts as bundled assets so browser-rendered typography matches the theme contract instead of falling back to host-installed fonts or broken font references.
+**Status:** [ ] Not started
+**Depends on:** Phase 20
+
+### Plans
+*Not yet planned — run `plan-phase 21`*
+
+---
+
 ## Coverage Validation
 
 - [x] All 9 v1.2 requirements map to at least one roadmap phase
