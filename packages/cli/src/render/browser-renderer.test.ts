@@ -1,4 +1,8 @@
 import sharp from "sharp"
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
+import { join } from "node:path"
+import { tmpdir } from "node:os"
+import { pathToFileURL } from "node:url"
 import { describe, expect, it, vi } from "vitest"
 
 import { createBrowserRenderer, MAX_MEDIA_SAMPLE_INTERVAL_MS, MIN_MEDIA_SAMPLE_INTERVAL_MS } from "./browser-renderer.js"
@@ -176,5 +180,71 @@ describe("browser renderer", () => {
     expect(setContent).toHaveBeenNthCalledWith(2, `<html><body><div data-sireno-media-sample-interval-ms="${MAX_MEDIA_SAMPLE_INTERVAL_MS + 500}"></div></body></html>`)
 
     vi.useRealTimers()
+  })
+
+  it("captures file-backed local image assets on the real browser page path", async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), "sireno-browser-renderer-test-"))
+
+    try {
+      const imagePath = join(tempDir, "icon.png")
+      const redPng = await sharp({
+        create: {
+          background: "#ff0000",
+          channels: 4,
+          height: 24,
+          width: 24,
+        },
+      }).png().toBuffer()
+      await writeFile(imagePath, redPng)
+
+      const setContent = vi.fn(async () => {})
+      const goto = vi.fn(async () => {})
+      const screenshot = vi.fn(async () => {
+        const activeUrl = goto.mock.calls.at(-1)?.[0]
+        const htmlPath = activeUrl ? new URL(activeUrl).pathname : undefined
+        const html = htmlPath ? await readFile(htmlPath, "utf8") : ""
+        const imageUrl = html.match(/src="([^"]+)"/)?.[1]
+
+        if (!imageUrl?.startsWith("file://")) {
+          return createDeckScreenshot(["#000000"])
+        }
+
+        const renderedIcon = await sharp(await readFile(new URL(imageUrl)))
+          .resize(72, 72, { fit: "contain", kernel: sharp.kernel.nearest })
+          .png()
+          .toBuffer()
+
+        return renderedIcon
+      })
+      const renderer = createBrowserRenderer({
+        keyCount: 1,
+        launcher: {
+          launch: async () => ({
+            close: async () => {},
+            newContext: async () => ({
+              close: async () => {},
+              newPage: async () => ({
+                goto,
+                screenshot,
+                setContent,
+                setViewportSize: async () => {},
+              }),
+            }),
+          }),
+        },
+      })
+
+      await renderer.start()
+      await renderer.updateDeck(`<html><body style="margin:0;background:#000;width:72px;height:72px;display:flex;align-items:center;justify-content:center;"><img src="${pathToFileURL(imagePath).href}" width="24" height="24"></body></html>`)
+      const buffers = await renderer.captureKeyBuffers()
+
+      expect(goto).toHaveBeenCalledTimes(1)
+      expect(setContent).not.toHaveBeenCalled()
+      expect(buffers.get(0)?.subarray(0, 3)).toEqual(Buffer.from([255, 0, 0]))
+
+      await renderer.close()
+    } finally {
+      await rm(tempDir, { force: true, recursive: true })
+    }
   })
 })

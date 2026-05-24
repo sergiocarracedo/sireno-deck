@@ -1,9 +1,15 @@
+import { mkdtemp, rm, writeFile } from "node:fs/promises"
+import { join } from "node:path"
+import { tmpdir } from "node:os"
+import { pathToFileURL } from "node:url"
+
 import sharp from "sharp"
 
 import { STREAM_DECK_KEY_PRESET, type RenderPreset } from "./render-preset.js"
 
 export interface BrowserPageLike {
   close?: () => Promise<void>
+  goto?: (url: string, options?: { waitUntil?: "domcontentloaded" | "load" | "networkidle" }) => Promise<void>
   screenshot: (options?: { fullPage?: boolean }) => Promise<Buffer>
   setContent: (html: string) => Promise<void>
   setViewportSize?: (size: { height: number; width: number }) => Promise<void>
@@ -45,6 +51,7 @@ export interface BrowserRenderer {
 
 export const MIN_MEDIA_SAMPLE_INTERVAL_MS = 250
 export const MAX_MEDIA_SAMPLE_INTERVAL_MS = 2000
+const CAPTURE_HTML_FILE_NAME = "deck.html"
 
 interface CaptureWaiter {
   reject: (reason?: unknown) => void
@@ -148,6 +155,14 @@ async function sleep(ms: number): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+async function createCaptureDocument(): Promise<{ directoryPath: string; filePath: string }> {
+  const directoryPath = await mkdtemp(join(tmpdir(), "sireno-browser-renderer-"))
+  return {
+    directoryPath,
+    filePath: join(directoryPath, CAPTURE_HTML_FILE_NAME),
+  }
+}
+
 export function createBrowserRenderer(options: BrowserRendererOptions): BrowserRenderer {
   const preset = options.preset ?? STREAM_DECK_KEY_PRESET
   const layout = resolveDeckLayout(options.keyCount)
@@ -157,6 +172,7 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
   let browser: BrowserLike | null = null
   let context: BrowserContextLike | null = null
   let page: BrowserPageLike | null = null
+  let captureDocument: { directoryPath: string; filePath: string } | null = null
   let latestHtml = ""
   let latestMediaSampleIntervalMs: number | undefined
   let latestVersion = 0
@@ -176,8 +192,19 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
     context = await browser.newContext()
     page = await context.newPage()
     await page.setViewportSize?.(viewport)
+    captureDocument = await createCaptureDocument()
 
     return page
+  }
+
+  async function renderPageHtml(activePage: BrowserPageLike, html: string, version: number): Promise<void> {
+    if (!activePage.goto || !captureDocument) {
+      await activePage.setContent(html)
+      return
+    }
+
+    await writeFile(captureDocument.filePath, html, "utf8")
+    await activePage.goto(`${pathToFileURL(captureDocument.filePath).href}?v=${version}`, { waitUntil: "load" })
   }
 
   function resolveCaptureWaiters(): void {
@@ -221,7 +248,7 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
         }
 
         const activePage = await ensurePage()
-        await activePage.setContent(requestedHtml)
+        await renderPageHtml(activePage, requestedHtml, requestedVersion)
         const capture = await activePage.screenshot({ fullPage: true })
 
         if (requestedVersion !== latestVersion) {
@@ -282,6 +309,10 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
       context = null
       await browser?.close()
       browser = null
+      if (captureDocument) {
+        await rm(captureDocument.directoryPath, { force: true, recursive: true }).catch(() => {})
+        captureDocument = null
+      }
     },
   }
 }
