@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 20 is complete after the approved shared asset browser/device rerun; next workflow step is post-phase review and shipping.
+**Current focus:** Phase 21 context is captured and ready for planning; Phase 20 remains complete and review-ready.
 
 ## Current Position
 
-Phase: 20 — Theme Packages, Asset Bundling, and Locked Time Layout
-Plan: phase complete
-Status: review_ready
-Last activity: 2026-05-24 - Approved the final shared asset browser/device UAT rerun and closed Phase 20
+Phase: 21 — Theme Font Assets For Browser Rendering
+Plan: discuss complete
+Status: ready_for_planning
+Last activity: 2026-05-24 - Captured Phase 21 context for browser theme font delivery and deferred a separate browser deck emulator idea
 
 Progress: [##########] 100%
 
@@ -83,6 +83,7 @@ Recent decisions affecting current work:
 ### Progress Notes
 
 - **Phase 20 planning:** Broke the phase into three verified vertical slices: theme package resolution plus theme-owned browser frame first, shared theme/addon asset pipeline second, and the centered implicit locked `HH:MM` fallback third.
+- **Phase 21 discussion:** Kept theme fonts CSS-native through `@font-face`, preserved hard failures only for missing stylesheet/font asset files, allowed silent browser/system fallback for unresolved family names, and required focused tests plus one committed browser fixture proving a packaged custom font visibly affects rendered text.
 - **Phase 20 discussion:** Captured the shift from single-file themes to manifest-backed theme packages with required runtime entries, theme-owned `buttonFrame` chrome with explicit `idle/tap/hold` state, manifest-declared bundled assets with CSS-relative URL rewriting, a general external asset-pipeline fix, and a fixed five-button implicit locked-time fallback.
 - **Plan 20-01:** Shipped async manifest-backed theme resolution, package-backed built-in theme aliases, and theme-owned browser `buttonFrame` rendering with a committed review fixture.
 - **Plan 20-02:** Shipped the shared package-root asset pipeline for `builtin://` and `addon://` assets, theme stylesheet/font injection with CSS-relative URL rewriting, and a committed shared-asset review fixture.
