@@ -1,7 +1,10 @@
 import { createElement } from "react"
 import { describe, expect, it } from "vitest"
 
-import { ButtonSurface } from "../addon/api.js"
+import {
+  ButtonSurface,
+  createBaseShapeIconLabelContent,
+} from "../addon/api.js"
 import { resolveTheme } from "../config/theme.js"
 import { createHostedButtonElement, renderDomDeck, renderReactNodeToHtml } from "./dom-host.js"
 
@@ -107,5 +110,19 @@ describe("dom host", () => {
 
     expect(html).toContain('data-sireno-button-frame="true"')
     expect(html).toContain('color-mix(in oklab, white 68%, var(--sireno-color-background) 32%)')
+  })
+
+  it("normalizes absolute icon paths into browser-loadable file URLs", () => {
+    const html = renderReactNodeToHtml(createHostedButtonElement({
+      content: createBaseShapeIconLabelContent({
+        icon: "/tmp/sireno-icon.svg",
+        keyIndex: 0,
+        label: "Icon",
+      }),
+      keyIndex: 0,
+      theme: undefined,
+    }))
+
+    expect(html).toContain('src="file:///tmp/sireno-icon.svg"')
   })
 })

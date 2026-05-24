@@ -1,5 +1,8 @@
+import { pathToFileURL } from 'node:url'
+
 import { z, type ZodIssue } from 'zod'
 
+import { setDomAssetPathResolver } from '../addon/api.js'
 import type {
   AddonButtonDefinition,
   AddonButtonEnvelope,
@@ -353,7 +356,7 @@ function resolveAssetReferences(
     }
 
     try {
-      return registry.requireAssetPath(value)
+      return pathToFileURL(registry.requireAssetPath(value)).href
     } catch (error) {
       if (error instanceof AddonRegistryError) {
         throw new ConfigValidationError(
@@ -496,6 +499,10 @@ export function validateConfig(
   data: unknown,
   registry: AddonRegistry,
 ): SirenoConfig {
+  setDomAssetPathResolver((assetReference) =>
+    registry.resolveAssetPath(assetReference),
+  )
+
   const bootstrap = validateBootstrapConfig(data)
   const decks: Record<string, DeckConfig> = {}
   const expandedDecks = expandDecks(bootstrap, registry)

@@ -1,9 +1,15 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { setDomAssetPathResolver } from '../../addon/api.js'
+import { createBundledAddonRegistry } from '../../config/loader.js'
 import { renderReactNodeToHtml } from '../../render/dom-host.js'
 import emojiSelectorAddon from './index.js'
 
 describe('emoji-selector addon', () => {
+  afterEach(() => {
+    setDomAssetPathResolver()
+  })
+
   it('exports emoji decks with favorites-first category navigation', () => {
     expect(emojiSelectorAddon.name).toBe('emoji-selector')
     expect(emojiSelectorAddon.assets).toHaveProperty('favorites.svg')
@@ -51,6 +57,11 @@ describe('emoji-selector addon', () => {
   })
 
   it('renders bundled icon-backed emoji entry buttons for shipped emoji values', () => {
+    const registry = createBundledAddonRegistry()
+    setDomAssetPathResolver((assetReference) =>
+      registry.resolveAssetPath(assetReference),
+    )
+
     const entryDefinition = emojiSelectorAddon.buttons.find(
       (button) => button.type === 'emoji-entry-button',
     )
@@ -66,7 +77,8 @@ describe('emoji-selector addon', () => {
 
     const html = renderReactNodeToHtml(instance?.render() as never)
 
-    expect(html).toContain('addon://emoji-selector/emoji-grin.svg')
+    expect(html).toContain('file://')
+    expect(html).toContain('emoji-grin.svg')
     expect(html).toContain('GRIN')
   })
 

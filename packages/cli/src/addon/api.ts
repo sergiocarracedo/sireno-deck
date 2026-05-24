@@ -1,3 +1,6 @@
+import { isAbsolute } from "node:path"
+import { pathToFileURL } from "node:url"
+
 import { createElement } from "react"
 
 import type { CSSProperties, ReactElement, ReactNode } from "react"
@@ -109,6 +112,34 @@ export function createDomTextLabel(props: {
   })
 }
 
+let domAssetPathResolver:
+  | ((assetReference: string) => string | undefined)
+  | undefined
+
+export function setDomAssetPathResolver(
+  resolver?: (assetReference: string) => string | undefined,
+): void {
+  domAssetPathResolver = resolver
+}
+
+function resolveDomAssetSrc(src: string): string {
+  if (
+    src.startsWith("data:")
+    || src.startsWith("http://")
+    || src.startsWith("https://")
+    || src.startsWith("file://")
+  ) {
+    return src
+  }
+
+  if (/^(?:addon|builtin):\/\//.test(src)) {
+    const resolvedAssetPath = domAssetPathResolver?.(src)
+    return resolvedAssetPath ? pathToFileURL(resolvedAssetPath).href : src
+  }
+
+  return isAbsolute(src) ? pathToFileURL(src).href : src
+}
+
 export function createDomIcon(props: {
   src: string
   size?: number
@@ -117,7 +148,7 @@ export function createDomIcon(props: {
 
   return createElement("img", {
     alt: "",
-    src: props.src,
+    src: resolveDomAssetSrc(props.src),
     style: {
       height: `${size}px`,
       objectFit: "contain",
