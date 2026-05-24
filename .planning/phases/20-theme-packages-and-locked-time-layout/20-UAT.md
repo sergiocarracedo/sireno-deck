@@ -6,7 +6,7 @@ source:
   - 20-02-PLAN.md
   - 20-03-PLAN.md
 started: 2026-05-23T23:43:00+02:00
-updated: 2026-05-24T11:52:32+02:00
+updated: 2026-05-24T12:34:45+02:00
 ---
 
 # Phase 20 UAT — Theme Packages, Shared Asset Pipeline, and Locked Time Layout
@@ -83,11 +83,11 @@ skipped: 0
 
 - truth: "The emoji selector deck and category buttons render shipped addon icons through the shared asset pipeline rather than raw unresolved references or missing-image placeholders."
   status: failed
-  reason: "User reported: I only see a quare instead of the imagess"
+  reason: "User reported: I only see a quare instead of the imagess. After the gap-closure rerun, the real browser/device path still shows the square plus a broken-image icon."
   severity: major
   test: 2
-  closure_plan: "20-04-PLAN.md"
-  root_cause: "Config/addon asset references are expanded to plain absolute filesystem paths in `packages/cli/src/core/schemas.ts`, but the browser image path used by `createDomIcon()` and the browser host never normalize those paths to `file://` URLs. CSS theme assets were rewritten for browser consumption, but `<img src>` assets were left as raw paths, so the shipped browser/device render path receives broken local image URLs and shows placeholder squares instead of icons."
+  closure_plan: "20-05-PLAN.md"
+  root_cause: "`20-04` fixed HTML-side URL normalization, but the shipped capture path still rendered the deck through `page.setContent(...)` on an originless browser document. The real Playwright/browser seam therefore failed to load local `file://` image assets reliably on the captured page even though static markup tests were green. The closure now lives in `packages/cli/src/render/browser-renderer.ts`, where the renderer writes the current deck HTML to a temporary file-backed document before screenshot capture so shared addon/config image assets load under the same browser contract as the real device path."
   affected_files:
     - packages/cli/src/core/schemas.ts
     - packages/cli/src/addon/api.ts
@@ -95,3 +95,4 @@ skipped: 0
     - packages/cli/src/render/dom-host.test.tsx
     - packages/cli/src/config/loader.test.ts
   rerun_fixture: "packages/cli/fixtures/phase-20/config.asset-pipeline.yml"
+  rerun_result: "Failed after 20-04: the real browser/device path still shows the square and the broken image icon. After 20-05, rerun the same fixture on the shipped browser/device path to confirm the file-backed browser capture seam now loads the images correctly."
