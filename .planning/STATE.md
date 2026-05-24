@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 20 is planned with three verified execution slices covering theme packages, the shared asset pipeline, and the centered locked-time fallback.
+**Current focus:** Phase 20 gap closure corrected built-in addon asset registrations and focused resolver coverage; the shared asset browser/device UAT rerun remains the last step to fully close the phase.
 
 ## Current Position
 
 Phase: 20 — Theme Packages, Asset Bundling, and Locked Time Layout
-Plan: planning complete
-Status: planning
-Last activity: 2026-05-23 - Planned Phase 20 into three verified vertical slices after closing Phase 18/19 verification
+Plan: 20-06 gap closure executed
+Status: verifying
+Last activity: 2026-05-24 - Fixed built-in addon asset registration paths, strengthened resolver coverage, and relinked the remaining shared-asset UAT rerun
 
 Progress: [##########] 100%
 
@@ -83,6 +83,9 @@ Recent decisions affecting current work:
 
 - **Phase 20 planning:** Broke the phase into three verified vertical slices: theme package resolution plus theme-owned browser frame first, shared theme/addon asset pipeline second, and the centered implicit locked `HH:MM` fallback third.
 - **Phase 20 discussion:** Captured the shift from single-file themes to manifest-backed theme packages with required runtime entries, theme-owned `buttonFrame` chrome with explicit `idle/tap/hold` state, manifest-declared bundled assets with CSS-relative URL rewriting, a general external asset-pipeline fix, and a fixed five-button implicit locked-time fallback.
+- **Plan 20-01:** Shipped async manifest-backed theme resolution, package-backed built-in theme aliases, and theme-owned browser `buttonFrame` rendering with a committed review fixture.
+- **Plan 20-02:** Shipped the shared package-root asset pipeline for `builtin://` and `addon://` assets, theme stylesheet/font injection with CSS-relative URL rewriting, and a committed shared-asset review fixture.
+- **Plan 20-03:** Replaced the implicit single-button lock surface with a centered live `HH:MM` row on buttons `5..9`, preserved explicit `session.locked_deck` authority plus unlock restore behavior, and added the committed locked-time review fixture.
 - **Phase 16 execution:** Shipped deck-only file references through the existing loader contract, active config-graph watching with rebuild-and-restore reload semantics, shared-wrapper footer removal plus explicit per-button accent overrides, and a runtime-owned temporary error deck for invalid reloads.
 - **Plan 16-05:** Closed the Phase 16 UAT startup blocker by making theme resolution config-owned, fixing the watched root-plus-ref file graph, and wiring the diagnosed gaps to a rerun-ready closure plan.
 - **Plan 16-06:** Made shared/default accent overrides visibly affect shared card chrome, reran the final UAT check, and finished Phase 16 verification.
@@ -141,8 +144,8 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-23
-Stopped at: Phase 20 planning completed with three verified execution plans after Phase 18/19 verification closure.
-Resume file: .planning/phases/20-theme-packages-and-locked-time-layout/20-01-PLAN.md
+Stopped at: Phase 20 execution completed with focused verification green; committed UAT reruns still pending for final phase closure.
+Resume file: .planning/phases/20-theme-packages-and-locked-time-layout/20-UAT.md
 
 ### Quick Tasks Completed
 
