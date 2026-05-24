@@ -1,6 +1,6 @@
 ---
 phase: 20
-status: gaps_found
+status: human_needed
 verified: 2026-05-24
 ---
 
@@ -71,8 +71,8 @@ Automated checks pass across theme package loading, shared asset resolution, the
 - Phase artifacts need to move together with the code. Adding the fixture, UAT script, verification note, and roadmap/state updates in one pass avoids another stale-status rerun.
 - Shared asset verification must prove the real browser screenshot seam, not just that an asset filename or `file://` URL survived config expansion.
 
-### Gaps
+### Human Verification Needed
 
-| Gap | Plan | What's missing |
-|-----|------|----------------|
+| Item | Plan | What's needed |
+|------|------|---------------|
 | Manual rerun of the shipped asset fixture is still required | 20-05 | Automated verification now covers the browser-renderer capture seam, but the real browser/device UAT rerun for `packages/cli/fixtures/phase-20/config.asset-pipeline.yml` still needs to be completed and recorded. |
