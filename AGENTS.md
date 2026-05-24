@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 20 — Theme Packages, Asset Bundling, and Locked Time Layout ✓ complete
-**Status:** review_ready
+**Phase:** 22 — Browser deck emulator
+**Status:** planning
 **Last updated:** 2026-05-24
 
 ---
@@ -306,4 +306,8 @@ Context fades fast. If a solution was worth finding, it's worth capturing.
 <!-- Updated automatically by the debug workflow after each resolved session -->
 <!-- Add entries in reverse chronological order: ### YYYY-MM-DD: Short description -->
 
-> No regressions logged yet. When bugs are fixed via `/debug`, lessons are recorded here.
+### 2026-05-24: Cwd-relative fixture tests broke workspace-root runs
+
+**Root cause:** `packages/cli/src/config/loader.test.ts` and `packages/cli/src/deck/runtime.test.ts` resolved committed fixtures from the current working directory instead of the test file location, and `packages/cli/src/builtin-addons/date-time/index.test.ts` used `vi` without importing it.
+**Fix:** Switched the Phase 11 fixture references to source-file-relative paths and imported `vi` in the locked-time tile test.
+**Lesson:** Test fixtures must be anchored to stable file-relative paths, not invocation-dependent cwd assumptions; otherwise package-scoped and workspace-root test runs diverge silently.
