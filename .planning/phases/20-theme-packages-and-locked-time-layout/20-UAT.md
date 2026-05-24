@@ -6,7 +6,7 @@ source:
   - 20-02-PLAN.md
   - 20-03-PLAN.md
 started: 2026-05-23T23:43:00+02:00
-updated: 2026-05-24T12:34:45+02:00
+updated: 2026-05-24T12:58:52+02:00
 ---
 
 # Phase 20 UAT — Theme Packages, Shared Asset Pipeline, and Locked Time Layout
@@ -83,16 +83,16 @@ skipped: 0
 
 - truth: "The emoji selector deck and category buttons render shipped addon icons through the shared asset pipeline rather than raw unresolved references or missing-image placeholders."
   status: failed
-  reason: "User reported: I only see a quare instead of the imagess. After the gap-closure rerun, the real browser/device path still shows the square plus a broken-image icon."
+  reason: "User reported: I only see a quare instead of the imagess. After the gap-closure rerun, the real browser/device path still shows the square plus a broken-image icon. The reported resolved paths are also wrong: `builtin://core-buttons/clock.svg` resolves to `packages/cli/src/builtin-addons/assets/clock.svg` instead of `packages/cli/src/builtin-addons/core-buttons/assets/clock.svg`, and addon asset paths likewise drop the addon folder segment."
   severity: major
   test: 2
-  closure_plan: "20-05-PLAN.md"
-  root_cause: "`20-04` fixed HTML-side URL normalization, but the shipped capture path still rendered the deck through `page.setContent(...)` on an originless browser document. The real Playwright/browser seam therefore failed to load local `file://` image assets reliably on the captured page even though static markup tests were green. The closure now lives in `packages/cli/src/render/browser-renderer.ts`, where the renderer writes the current deck HTML to a temporary file-backed document before screenshot capture so shared addon/config image assets load under the same browser contract as the real device path."
+  closure_plan: "20-06-PLAN.md"
+  root_cause: "`20-05` fixed the browser capture seam, but human verification exposed a deeper shared-asset registration bug: built-in addon asset definitions themselves were resolving from the wrong directory. For example, `packages/cli/src/builtin-addons/core-buttons/index.ts` built `clock.svg` from `new URL('../assets/clock.svg', import.meta.url)`, which pointed to `packages/cli/src/builtin-addons/assets/clock.svg` instead of the addon-local `packages/cli/src/builtin-addons/core-buttons/assets/clock.svg`. `20-06` corrects those built-in addon asset declarations to `./assets/...` and adds focused resolver coverage so the addon folder segment is asserted before browser rendering begins."
   affected_files:
-    - packages/cli/src/core/schemas.ts
-    - packages/cli/src/addon/api.ts
-    - packages/cli/src/render/dom-host.tsx
-    - packages/cli/src/render/dom-host.test.tsx
+    - packages/cli/src/builtin-addons/core-buttons/index.ts
+    - packages/cli/src/builtin-addons/emoji-selector/index.ts
+    - packages/cli/src/addon/registry.ts
+    - packages/cli/src/addon/registry.test.ts
     - packages/cli/src/config/loader.test.ts
   rerun_fixture: "packages/cli/fixtures/phase-20/config.asset-pipeline.yml"
-  rerun_result: "Failed after 20-04: the real browser/device path still shows the square and the broken image icon. After 20-05, rerun the same fixture on the shipped browser/device path to confirm the file-backed browser capture seam now loads the images correctly."
+  rerun_result: "Failed after 20-05: the real browser/device path still shows the square and the broken image icon, and the reported resolved asset paths are missing the addon folder segment. After 20-06, rerun the same fixture on the shipped browser/device path to confirm the corrected addon-local asset registrations now render the images correctly."
