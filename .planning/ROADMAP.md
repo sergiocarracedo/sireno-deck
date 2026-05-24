@@ -228,6 +228,17 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ---
 
+### Phase 22: Browser deck emulator
+
+**Goal:** Let users and developers run the deck locally in the browser with emulated device layouts and mouse-driven interaction so they can preview and test results without Stream Deck hardware.
+**Status:** [ ] Not started
+**Depends on:** Phase 21
+
+### Plans
+*Not yet planned — run `plan-phase 22`*
+
+---
+
 ## Coverage Validation
 
 - [x] All 9 v1.2 requirements map to at least one roadmap phase
