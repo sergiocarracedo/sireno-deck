@@ -764,16 +764,18 @@ describe("loadConfig", () => {
 
     expect(config.decks.emoji?.deckType).toBe("emoji-selector")
     expect(config.decks.emoji?.buttons[0]).toMatchObject({
-      icon: expect.stringContaining("favorites.svg"),
+      icon: expect.stringContaining("file://"),
       label: "Favorites",
       target_deck: "emoji-favorites",
       type: "emoji-category-button",
     })
+    expect(config.decks.emoji?.buttons[0]?.icon).toContain("favorites.svg")
     expect(config.decks["emoji-favorites"]?.buttons[1]).toMatchObject({
-      icon: expect.stringContaining("back.svg"),
+      icon: expect.stringContaining("file://"),
       label: "Back",
       type: "emoji-back-button",
     })
+    expect(config.decks["emoji-favorites"]?.buttons[1]?.icon).toContain("back.svg")
   })
 
   it("fails clearly when a config-authored asset reference is not registered", async () => {

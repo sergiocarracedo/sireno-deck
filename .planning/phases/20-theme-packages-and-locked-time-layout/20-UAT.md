@@ -1,22 +1,23 @@
 ---
-status: in_progress
+status: complete
 phase: 20-theme-packages-and-locked-time-layout
 source:
   - 20-01-PLAN.md
   - 20-02-PLAN.md
+  - 20-03-PLAN.md
 started: 2026-05-23T23:43:00+02:00
-updated: 2026-05-23T23:47:00+02:00
+updated: 2026-05-24T11:52:32+02:00
 ---
 
-# Phase 20 UAT — Theme Packages and Shared Asset Pipeline
+# Phase 20 UAT — Theme Packages, Shared Asset Pipeline, and Locked Time Layout
 
 ## Current Test
-number: 1
-name: Manifest-backed theme packages on the browser path
+number: 2
+name: Shared theme/addon asset pipeline on the browser path
 expected: |
-  Run `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-20/config.theme-package-frame.yml`.
-  The framed action button should render through the theme-owned `buttonFrame` contract, the analog clock and calendar sheet should remain honest `full_surface` escapes, and changing the fixture's first line from `theme: dark` to `theme: light` should hot-reload visibly different package-backed frame chrome and typography without stale browser pixels.
-awaiting: pending
+  Run `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-20/config.asset-pipeline.yml`.
+  The manifest-backed theme should inject packaged CSS/font assets into the browser host, the emoji selector deck and category buttons should render shipped addon icons through the shared asset pipeline, builtin refs such as `builtin://core-buttons/clock.svg` and addon refs such as `addon://emoji-selector/favorites.svg` should both resolve, and breaking a referenced asset path should fail clearly during config/theme loading rather than silently degrading.
+awaiting: complete
 
 ## Fixture 1 — Theme package frame chrome on the browser path
 
@@ -31,7 +32,26 @@ fail_if:
 - Framed buttons still appear to use only one fixed core frame regardless of the resolved theme package.
 - `full_surface` surfaces such as the analog clock or calendar sheet get wrapped in the package frame.
 - Changing `theme: dark` to `theme: light` does not visibly change frame chrome or leaves stale browser-rendered content behind.
-result: pending
+result: pass
+reported: "pass"
+
+## Fixture 3 — Implicit locked fallback centered `HH:MM` row
+
+command: `pnpm exec tsx src/cli/index.ts start --config fixtures/phase-20/config.locked-time-layout.yml`
+fixture: `packages/cli/fixtures/phase-20/config.locked-time-layout.yml`
+pass_if:
+- The fixture renders normally on `main`, allows navigation to `review`, and omits any explicit `session.locked_deck` override.
+- A supported lock transition replaces the current deck with the implicit fallback row on buttons `5..9` only, visibly arranged as `[H][H][:][M][M]` with the colon on button `7`.
+- The fallback remains live on the shipped path, advancing as real time changes instead of freezing as a one-time snapshot.
+- Unlock restores the exact pre-lock `review` deck rather than resetting to `main` or another shallower surface.
+- If a local copy adds `session.locked_deck` (or the reviewer reruns the Phase 11 locked-session fixture), the configured locked deck still overrides the implicit fallback.
+fail_if:
+- Lock mode still shows the old single date-time button or renders the implicit fallback anywhere other than buttons `5..9`.
+- The colon is not isolated on the center button, the row is visually misordered, or the time freezes after lock.
+- Unlock drops the session onto `main`, leaves the implicit fallback visible, or otherwise loses the exact pre-lock navigation stack.
+- Adding an explicit `session.locked_deck` still shows the implicit fallback row instead of the configured locked deck.
+result: pass
+reported: "pass"
 
 ## Fixture 2 — Shared theme/addon asset pipeline on the browser path
 
@@ -47,16 +67,31 @@ fail_if:
 - Emoji selector icons disappear, render as unresolved `addon://...` strings, or only work through one-off widget-local handling.
 - The browser path resolves builtin assets but not addon assets, or vice versa.
 - Broken asset paths degrade silently instead of failing with a path-aware error.
-result: pending
+result: issue
+reported: "I only see a quare instead of the imagess"
+severity: major
 
 ## Summary
 
-total: 2
-passed: 0
-issues: 0
-pending: 2
+total: 3
+passed: 2
+issues: 1
+pending: 0
 skipped: 0
 
 ## Gaps
 
-none yet
+- truth: "The emoji selector deck and category buttons render shipped addon icons through the shared asset pipeline rather than raw unresolved references or missing-image placeholders."
+  status: failed
+  reason: "User reported: I only see a quare instead of the imagess"
+  severity: major
+  test: 2
+  closure_plan: "20-04-PLAN.md"
+  root_cause: "Config/addon asset references are expanded to plain absolute filesystem paths in `packages/cli/src/core/schemas.ts`, but the browser image path used by `createDomIcon()` and the browser host never normalize those paths to `file://` URLs. CSS theme assets were rewritten for browser consumption, but `<img src>` assets were left as raw paths, so the shipped browser/device render path receives broken local image URLs and shows placeholder squares instead of icons."
+  affected_files:
+    - packages/cli/src/core/schemas.ts
+    - packages/cli/src/addon/api.ts
+    - packages/cli/src/render/dom-host.tsx
+    - packages/cli/src/render/dom-host.test.tsx
+    - packages/cli/src/config/loader.test.ts
+  rerun_fixture: "packages/cli/fixtures/phase-20/config.asset-pipeline.yml"
