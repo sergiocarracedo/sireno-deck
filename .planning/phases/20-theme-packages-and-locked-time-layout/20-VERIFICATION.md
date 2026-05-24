@@ -1,6 +1,6 @@
 ---
 phase: 20
-status: human_needed
+status: passed
 verified: 2026-05-24
 ---
 
@@ -43,7 +43,7 @@ verified: 2026-05-24
 
 **Score:** 10/10 must-haves verified
 
-Automated checks now pass across theme package loading, shared asset resolution, the centered implicit locked `HH:MM` fallback, URL normalization, the real browser-renderer capture seam, and the newly corrected built-in addon asset registration paths. The remaining work is one more human rerun of Fixture 2 on the shipped browser/device path to confirm the corrected addon-local asset registrations now render the images instead of the square plus broken-image indicator.
+Automated checks pass across theme package loading, shared asset resolution, the centered implicit locked `HH:MM` fallback, URL normalization, the real browser-renderer capture seam, and the corrected built-in addon asset registration paths. The final manual rerun of Fixture 2 on the shipped browser/device path was approved, so the phase goal is now achieved.
 
 ## Verification Performed In This Session
 
@@ -61,7 +61,7 @@ Automated checks now pass across theme package loading, shared asset resolution,
 - `20-06-PLAN.md` corrects the built-in addon asset declarations and adds focused coverage that asserts the addon folder segment is preserved in resolved asset paths.
 - Human rerun outcome after `20-04`: **failed**. The shared asset fixture still showed a square and broken-image icon on the real browser/device path.
 - Human rerun outcome after `20-05`: **failed**. The shared asset fixture still showed the square and broken-image icon, and the user reported that resolved asset paths are missing the addon folder segment.
-- Human rerun outcome after `20-06`: **pending**. Re-run `packages/cli/fixtures/phase-20/config.asset-pipeline.yml` on the shipped browser/device path.
+- Human rerun outcome after `20-06`: **approved**. `packages/cli/fixtures/phase-20/config.asset-pipeline.yml` now renders correctly on the shipped browser/device path.
 
 ## Why It Broke Before
 
@@ -78,8 +78,4 @@ Automated checks now pass across theme package loading, shared asset resolution,
 - Shared asset verification must prove the real browser screenshot seam, not just that an asset filename or `file://` URL survived config expansion.
 - Shared asset verification also needs to assert the registered filesystem path itself, not just that a resolver returned some `file://` URL.
 
-### Human Verification Needed
-
-| Item | Plan | What's needed |
-|------|------|---------------|
-| Manual rerun of the shipped asset fixture is still required | 20-06 | Automated verification now covers the corrected addon-local asset registrations, but the real browser/device UAT rerun for `packages/cli/fixtures/phase-20/config.asset-pipeline.yml` still needs to be completed and recorded. |
+Phase goal achieved.

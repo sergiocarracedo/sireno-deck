@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 20 gap closure corrected built-in addon asset registrations and focused resolver coverage; the shared asset browser/device UAT rerun remains the last step to fully close the phase.
+**Current focus:** Phase 20 is complete after the approved shared asset browser/device rerun; next workflow step is post-phase review and shipping.
 
 ## Current Position
 
 Phase: 20 — Theme Packages, Asset Bundling, and Locked Time Layout
-Plan: 20-06 gap closure executed
-Status: verifying
-Last activity: 2026-05-24 - Fixed built-in addon asset registration paths, strengthened resolver coverage, and relinked the remaining shared-asset UAT rerun
+Plan: phase complete
+Status: review_ready
+Last activity: 2026-05-24 - Approved the final shared asset browser/device UAT rerun and closed Phase 20
 
 Progress: [##########] 100%
 
@@ -144,7 +144,7 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-05-23
-Stopped at: Phase 20 execution completed with focused verification green; committed UAT reruns still pending for final phase closure.
+Stopped at: Phase 20 complete and ready for /review → /ship → /compound.
 Resume file: .planning/phases/20-theme-packages-and-locked-time-layout/20-UAT.md
 
 ### Quick Tasks Completed

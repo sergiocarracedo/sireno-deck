@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 20 — Theme Packages, Asset Bundling, and Locked Time Layout
-**Status:** planning
-**Last updated:** 2026-05-23
+**Phase:** 20 — Theme Packages, Asset Bundling, and Locked Time Layout ✓ complete
+**Status:** review_ready
+**Last updated:** 2026-05-24
 
 ---
 

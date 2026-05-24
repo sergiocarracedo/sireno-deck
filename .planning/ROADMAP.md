@@ -1,6 +1,6 @@
 # Roadmap — Sireno Deck v1.2
 
-**Last updated:** 2026-05-23
+**Last updated:** 2026-05-24
 **Granularity:** focused milestone (7 phases)
 **Total v1.2 requirements:** 9
 
@@ -193,7 +193,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 19: Tailwind Button Theming via Theme CSS Variables
 
 **Goal:** Connect browser-rendered button styling to Sireno theme tokens through CSS variables so Tailwind utilities such as `text-primary` resolve against the active global theme.
-**Status:** Verifying
+**Status:** ✓ Complete (2026-05-24)
 **Depends on:** Phase 18
 
 ### Plans
@@ -205,13 +205,15 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 20: Theme Packages, Asset Bundling, and Locked Time Layout
 
 **Goal:** Let themes ship as manifest-backed packages with bundled assets and theme-owned button chrome, restore reliable external image rendering, and move the locked deck to a five-button centered time layout.
-**Status:** Planned
+**Status:** Verifying
 **Depends on:** Phase 19
 
 ### Plans
 - `20-01`: Resolve manifest-backed theme packages and move framed browser chrome behind the theme-owned `buttonFrame` contract
 - `20-02`: Fix the shared package-root asset pipeline for theme CSS/fonts and addon-authored images with a shipped proof fixture
 - `20-03`: Replace the implicit locked fallback with the centered five-button `HH:MM` layout while preserving explicit locked-deck authority
+
+**Phase 20 note:** This phase is complete. It now ships manifest-backed built-in theme packages, a shared package-root-aware asset pipeline for theme/addon assets, corrected built-in addon asset registrations, and an implicit locked-session fallback that renders a centered live `HH:MM` row on buttons `5..9` when `session.locked_deck` is absent. The committed browser/device UAT fixtures now pass, including the shared asset fixture that previously failed on both the browser capture seam and the built-in asset registration path.
 
 ---
 
