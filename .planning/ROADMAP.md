@@ -250,7 +250,8 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 **Depends on:** Phase 22
 
 ### Plans
-*Not yet planned — run `plan-phase 23`*
+- `23-01`: Load local raw-source addons through manifest `sirenoAddon.main` using the fixed TSX/relative-import contract
+- `23-02`: Show a branded hardware startup placeholder until the first real browser capture or honest startup failure
 
 ---
 
