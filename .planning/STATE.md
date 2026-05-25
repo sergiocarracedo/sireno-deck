@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 22 implementation and verification are complete; Phase 21 remains the next planning target.
+**Current focus:** Phase 23 context is captured and ready for planning; Phase 22 implementation and verification are complete.
 
 ## Current Position
 
-Phase: 22 — Browser deck emulator
-Plan: execution complete
-Status: verifying
-Last activity: 2026-05-25 - Completed quick task 014: fix theme/font-face test failures blocking /ship
+Phase: 23 — JSX/TSX Addon Authoring + Startup Placeholder
+Plan: discussion complete
+Status: ready for planning
+Last activity: 2026-05-25 - Captured Phase 23 implementation context for local raw-source addon loading and hardware startup placeholder behavior
 
 Progress: [##########] 100%
 
@@ -84,6 +84,7 @@ Recent decisions affecting current work:
 
 ### Progress Notes
 
+- **Phase 23 discussion:** Captured a narrow local-addon raw-source contract (`sirenoAddon.main` may point at `.ts/.tsx/.js/.jsx`), kept the public authoring API on the root export only, and chose a branded temporary startup placeholder that clears on first real render and never hides honest browser startup failures.
 - **Phase 20 planning:** Broke the phase into three verified vertical slices: theme package resolution plus theme-owned browser frame first, shared theme/addon asset pipeline second, and the centered implicit locked `HH:MM` fallback third.
 - **Phase 22 discussion:** Chose a real-runtime virtual-device emulator, mouse-driven press/release semantics with visible press/hold states, in-page device selection with restart-on-change, clear emulator-specific layout errors, and an explicit CLI mode serving one local deck-focused page.
 - **Phase 22 execution:** Shipped `sireno emulate`, a virtual Stream Deck lifecycle, a local browser emulator page, runtime-owned `down` / `up` input bridging with visible pressed-state feedback, explicit supported virtual devices, restart-on-change behavior, and an emulator-specific mismatch error surface.
