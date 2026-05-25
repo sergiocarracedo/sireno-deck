@@ -69,6 +69,8 @@ describe("dom host", () => {
     expect(html).toContain('.text-primary{color:var(--sireno-color-primary);}')
     expect(html).toContain('.font-main{font-family:var(--sireno-font-main-family);')
     expect(html).toContain('@font-face')
+    expect(html).toContain('font-family: "IBM Plex Sans"')
+    expect(html).toContain('font-family: "IBM Plex Mono"')
     expect(html).toContain('file://')
   })
 

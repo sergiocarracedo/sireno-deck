@@ -49,6 +49,8 @@ describe("resolveTheme", () => {
     expect(theme.stylesheets[0]).toContain("@font-face")
     expect(theme.stylesheets[0]).toContain("file://")
   })
+    expect(theme.stylesheets[0]).toContain('font-family: "IBM Plex Sans"')
+    expect(theme.stylesheets[0]).toContain('font-family: "IBM Plex Mono"')
 
   it("loads a custom theme package from a filesystem path", async () => {
     const configDir = join(tempDir, "config")
