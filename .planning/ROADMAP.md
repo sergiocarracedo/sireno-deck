@@ -252,8 +252,9 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Plans
 - `23-01`: Load local raw-source addons through manifest `sirenoAddon.main` using the fixed TSX/relative-import contract
 - `23-02`: Show a branded hardware startup placeholder until the first real browser capture or honest startup failure
+- `23-03`: Fix the shipped sample-config button type drift and lock the config-to-registry seam with regression coverage
 
-**Phase 23 note:** This post-roadmap phase now ships manifest-driven local raw `.ts/.tsx/.jsx` addon loading through the normal startup path using a fixed `tsx`-backed policy, preserves the package root as the only public addon authoring surface, and shows a branded hardware startup placeholder that hands off to the first real browser capture or clears on honest startup failure.
+**Phase 23 note:** This post-roadmap phase now ships manifest-driven local raw `.ts/.tsx/.jsx` addon loading through the normal startup path using a fixed `tsx`-backed policy, preserves the package root as the only public addon authoring surface, shows a branded hardware startup placeholder that hands off to the first real browser capture or clears on honest startup failure, and includes a shipped sample-config regression fix so the Phase 23 fixture uses the addon's real registered button definition id.
 
 ---
 
