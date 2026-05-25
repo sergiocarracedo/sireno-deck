@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 23 gap closure is executed and re-verified; rerun `verify-work 23` and follow-on Phase 21 planning are next.
+**Current focus:** Phase 23 render-contract gap closure is executed and re-verified; rerun `verify-work 23` and follow-on Phase 21 planning are next.
 
 ## Current Position
 
 Phase: 23 — JSX/TSX Addon Authoring + Startup Placeholder ✓ complete
-Plan: execution complete + gap closure complete
-Status: re-verified after UAT gap closure, awaiting rerun manual review
-Last activity: 2026-05-25 - Corrected the shipped Phase 23 sample config drift, linked the UAT/verification rerun path, and re-verified the phase at PASS (27) FAIL (0)
+Plan: execution complete + gap closures complete
+Status: re-verified after render-contract gap closure, awaiting rerun manual review
+Last activity: 2026-05-25 - Restored the shipped raw fixture render contract, linked the rerun evidence to 23-04, and re-verified the phase at PASS (28) FAIL (0)
 
 Progress: [##########] 100%
 
@@ -89,7 +89,8 @@ Recent decisions affecting current work:
 - **Plan 23-01:** Shipped local raw-source addon loading through `sirenoAddon.main` for local `.ts/.tsx/.jsx` entries using `tsx`, bounded the relative source graph to the addon root, committed a raw `.tsx` fixture addon, and proved the normal startup config path loads it through the root export surface only.
 - **Plan 23-02:** Shipped branded hardware startup placeholder buffers, wired the placeholder into `startDaemon()` before the first real browser capture, documented the hardware review path, and locked write-order / handoff / failure-cleanup behavior in focused startup tests.
 - **Plan 23-03:** Closed the shipped fixture config drift by changing the sample config to `phase-23-local-raw-button`, added focused startup/config coverage for the real Phase 23 fixture config, and preserved the original failed UAT evidence with an explicit rerun path.
-- **Phase 23 verification:** Confirmed all three Phase 23 slices with focused loader/startup tests (`PASS (27) FAIL (0)`), including root-export-only raw `.tsx` addon startup, hardware placeholder handoff/cleanup behavior, and the corrected shipped sample-config seam.
+- **Plan 23-04:** Restored the shipped raw fixture entrypoint to the helper-based render contract, added focused startup/runtime coverage for real renderable output, and preserved the rerun `React is not defined` evidence with an explicit rerun path.
+- **Phase 23 verification:** Confirmed all four Phase 23 slices with focused loader/startup tests (`PASS (28) FAIL (0)`), including root-export-only raw `.tsx` addon startup, hardware placeholder handoff/cleanup behavior, the corrected shipped sample-config seam, and the restored helper-based fixture render contract.
 - **Phase 20 planning:** Broke the phase into three verified vertical slices: theme package resolution plus theme-owned browser frame first, shared theme/addon asset pipeline second, and the centered implicit locked `HH:MM` fallback third.
 - **Phase 22 discussion:** Chose a real-runtime virtual-device emulator, mouse-driven press/release semantics with visible press/hold states, in-page device selection with restart-on-change, clear emulator-specific layout errors, and an explicit CLI mode serving one local deck-focused page.
 - **Phase 22 execution:** Shipped `sireno emulate`, a virtual Stream Deck lifecycle, a local browser emulator page, runtime-owned `down` / `up` input bridging with visible pressed-state feedback, explicit supported virtual devices, restart-on-change behavior, and an emulator-specific mismatch error surface.
