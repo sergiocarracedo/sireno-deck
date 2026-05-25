@@ -1,18 +1,18 @@
 ---
-status: complete
+status: testing
 phase: 23-jsx-tsx-addon-buttons-startup-image
 source:
   - 23-01-SUMMARY.md
   - 23-02-SUMMARY.md
 started: 2026-05-25T20:17:37+02:00
-updated: 2026-05-25T20:41:15+02:00
+updated: 2026-05-25T23:36:39+02:00
 ---
 
 ## Current Test
-number: 4
-name: UAT complete
+number: 2
+name: Diagnose rerun blocker
 expected: |
-  Phase 23 manual UAT is complete.
+  Diagnose the new rerun blocker before continuing manual verification.
 awaiting: none
 
 ## Tests
@@ -20,7 +20,7 @@ awaiting: none
 ### 1. Local Raw TSX Addon Startup Test
 expected: Start Sireno with a config that points at `packages/cli/fixtures/phase-23/local-raw-addon/` as a local addon. The process should load successfully without a prebuild step, without any `./jsx` import surface, and the raw addon should register/render through the normal startup path.
 result: issue
-reported: "i used this config file: /works/opensource/sireno-deck/packages/cli/fixtures/phase-23/config.yml And i get the error: pnpm exec tsx packages/cli/src/cli/index.ts start --config packages/cli/fixtures/phase-23/config.yml config error file: packages/cli/fixtures/phase-23/config.yml line: 10 problem: Unknown button type 'phase-23-local-raw-addon' suggestion: Register 'phase-23-local-raw-addon' before using it in config.yml. Tip: Check your config.yml at packages/cli/fixtures/phase-23/config.yml."
+reported: "i used tsx in rthe local-raw-addon and i get the same error: pnpm exec tsx packages/cli/src/cli/index.ts start --config packages/cli/fixtures/phase-23/config.yml ReferenceError: React is not defined at Object.render (/works/opensource/sireno-deck/packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx:15:13) at renderRuntimeButton (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:286:31) at <anonymous> (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:325:56) at Array.map (<anonymous>) at renderDeckSurface (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:325:40) at activateDeckSurface (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:404:11)"
 severity: blocker
 
 ### 2. Hardware Startup Placeholder Handoff Test
@@ -41,15 +41,15 @@ skipped: 0
 
 ## Gaps
 
-- truth: "Start Sireno with a config that points at `packages/cli/fixtures/phase-23/local-raw-addon/` as a local addon. The process should load successfully without a prebuild step, without any `./jsx` import surface, and the raw addon should register/render through the normal startup path."
+- truth: "Start Sireno with the corrected shipped config at `packages/cli/fixtures/phase-23/config.yml`. Startup should succeed without a prebuild step, without any `./jsx` import surface, and the raw addon should register/render through the normal startup path."
   status: failed
-  reason: "User reported: i used this config file: /works/opensource/sireno-deck/packages/cli/fixtures/phase-23/config.yml And i get the error: pnpm exec tsx packages/cli/src/cli/index.ts start --config packages/cli/fixtures/phase-23/config.yml config error file: packages/cli/fixtures/phase-23/config.yml line: 10 problem: Unknown button type 'phase-23-local-raw-addon' suggestion: Register 'phase-23-local-raw-addon' before using it in config.yml. Tip: Check your config.yml at packages/cli/fixtures/phase-23/config.yml."
+  reason: "User reported: i used tsx in rthe local-raw-addon and i get the same error: pnpm exec tsx packages/cli/src/cli/index.ts start --config packages/cli/fixtures/phase-23/config.yml ReferenceError: React is not defined at Object.render (/works/opensource/sireno-deck/packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx:15:13) at renderRuntimeButton (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:286:31) at <anonymous> (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:325:56) at Array.map (<anonymous>) at renderDeckSurface (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:325:40) at activateDeckSurface (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:404:11)"
+  root_cause: "The shipped raw addon fixture drifted away from the Phase 23 render contract. `packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx` now returns raw JSX (`<span>🍕</span>`) from `render()` without importing React or using the root-export helper path, so runtime rendering throws `ReferenceError: React is not defined`. The adjacent helper-based file `packages/cli/fixtures/phase-23/local-raw-addon/src/content.tsx` still shows the intended contract (`createBaseShapeTextContent` from `sireno-deck-cli`), which means the shipped fixture entrypoint no longer matches the authoring model Phase 23 was supposed to prove. Existing automated tests cover registry/config loading, but they do not yet assert that the shipped fixture's `render()` output itself stays on the helper-based render contract." 
+  affected_files:
+    - packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx
+    - packages/cli/fixtures/phase-23/local-raw-addon/src/content.tsx
+    - packages/cli/src/cli/commands/start.test.ts
+  rerun_plan: ".planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-04-PLAN.md"
+  rerun_status: "Gap closure is in progress through 23-04-PLAN.md. Keep this rerun failure authoritative and rerun the first manual Phase 23 check against the restored helper-based fixture entrypoint after that plan lands."
   severity: blocker
   test: 1
-  root_cause: "The shipped Phase 23 sample config uses the addon package name `phase-23-local-raw-addon` as the deck button `type`, but config validation resolves button types through the registry's registered button definition ids. The fixture addon actually registers `phase-23-local-raw-button`, so `packages/cli/src/core/schemas.ts` rejects the config before startup with `Unknown button type 'phase-23-local-raw-addon'`."
-  rerun_plan: ".planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-03-PLAN.md"
-  rerun_status: "Gap closure is in progress through 23-03-PLAN.md. The original failed UAT evidence stays authoritative; rerun this test against the corrected shipped fixture config after that plan lands."
-  affected_files:
-    - packages/cli/fixtures/phase-23/config.yml
-    - packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx
-    - packages/cli/src/core/schemas.ts

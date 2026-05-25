@@ -19,6 +19,9 @@ verified: 2026-05-25
 | 23-03 | `packages/cli/fixtures/phase-23/config.yml` now references the raw addon's real registered button definition id instead of `phase-23-local-raw-addon` | ✓ |
 | 23-03 | Focused startup/config coverage proves the shipped Phase 23 sample config loads the raw addon fixture through the normal startup path with the corrected button type | ✓ |
 | 23-03 | UAT and verification artifacts preserve the original failed evidence and point rerun work at `23-03-PLAN.md` | ✓ |
+| 23-04 | `packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx` routes rendered output through the helper-based root-export contract again instead of raw JSX that depends on ambient React | ✓ |
+| 23-04 | Focused startup/runtime coverage proves the shipped Phase 23 sample config reaches valid renderable button output without `React is not defined` | ✓ |
+| 23-04 | UAT and verification artifacts preserve the rerun failure evidence and point the next rerun at `23-04-PLAN.md` | ✓ |
 
 ## Requirement Coverage
 
@@ -53,6 +56,9 @@ Gap follow-up after manual UAT:
 - Gap-closure rerun path: `.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-03-PLAN.md`.
 - The shipped fixture config has now been corrected, and `23-03-PLAN.md` adds focused regression coverage so config-to-registry drift cannot silently recur.
 - The rerun verification now passes with the corrected shipped fixture config and startup/config regression coverage in place.
+- A later rerun exposed fixture render-contract drift: `packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx` had fallen back to raw JSX (`<span>🍕</span>`), which caused `ReferenceError: React is not defined` during runtime render.
+- That rerun evidence remains preserved in `.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-UAT.md`, and the current gap-closure rerun path is `.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-04-PLAN.md`.
+- The fixture entrypoint is now restored to the helper-based root-export contract and covered by a runtime-level regression test that would fail on ambient-React JSX drift.
 
 Artifact checks passed:
 - `packages/cli/fixtures/phase-23/local-raw-addon/package.json`
@@ -63,6 +69,6 @@ Artifact checks passed:
 
 ## Summary
 
-**Score:** 9/9 must-haves verified
+**Score:** 12/12 must-haves verified
 
 All automated checks passed. Phase goal achieved.
