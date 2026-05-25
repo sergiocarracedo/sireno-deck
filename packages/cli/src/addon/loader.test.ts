@@ -1,6 +1,6 @@
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
-import { join } from "node:path"
+import { join, resolve } from "node:path"
 
 import { afterEach, describe, expect, it } from "vitest"
 
@@ -34,6 +34,7 @@ function writeAddonFixture(rootDir: string, options: { apiVersion?: number; brok
 
 describe("loadConfiguredAddons", () => {
   const tempDirs: string[] = []
+  const phase23FixtureRoot = resolve(import.meta.dirname, "../../fixtures/phase-23/local-raw-addon")
 
   afterEach(() => {
     for (const directory of tempDirs.splice(0, tempDirs.length)) {
@@ -133,5 +134,53 @@ describe("loadConfiguredAddons", () => {
       message: expect.stringContaining("apiVersion 99"),
       name: "AddonManifestError",
     }))
+  })
+
+  it("loads local raw .tsx addons with sibling relative imports and root-export-only helpers", async () => {
+    const registry = createAddonRegistry()
+
+    const result = await loadConfiguredAddons({
+      addons: [{ enabled: true, name: "phase-23-local-raw-addon", path: phase23FixtureRoot, source: "local" }],
+      registry,
+    })
+
+    expect(result.warnings).toEqual([])
+    expect(result.loaded[0]?.manifest.main).toBe("./src/index.tsx")
+    expect(registry.getButton("phase-23-local-raw-button")?.type).toBe("phase-23-local-raw-button")
+  })
+
+  it("returns a warning when local raw source reaches outside the addon root", async () => {
+    const escapingRoot = mkdtempSync(join(tmpdir(), "sireno-addon-escape-"))
+    tempDirs.push(escapingRoot)
+    mkdirSync(join(escapingRoot, "src"), { recursive: true })
+    const outsideRoot = join(tmpdir(), `sireno-addon-outside-${Date.now()}.tsx`)
+    writeFileSync(
+      join(escapingRoot, "package.json"),
+      JSON.stringify({
+        name: "escaping-addon",
+        type: "module",
+        sirenoAddon: {
+          apiVersion: 1,
+          main: "./src/index.tsx",
+        },
+      }, null, 2),
+    )
+    writeFileSync(
+      join(escapingRoot, "src", "index.tsx"),
+      `import ${JSON.stringify(outsideRoot)}\nexport default { apiVersion: 1, name: 'escaping-addon', buttons: [] }\n`,
+    )
+    writeFileSync(outsideRoot, "export const value = 1\n")
+
+    const registry = createAddonRegistry()
+    const result = await loadConfiguredAddons({
+      addons: [{ enabled: true, name: "escaping-addon", path: escapingRoot, source: "local" }],
+      registry,
+    })
+
+    expect(result.loaded).toEqual([])
+    expect(result.warnings).toHaveLength(1)
+    expect(result.warnings[0]?.reason).toContain("source imports must stay inside the addon root")
+
+    rmSync(outsideRoot, { force: true })
   })
 })

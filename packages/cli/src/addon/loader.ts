@@ -1,6 +1,6 @@
 import { createRequire } from "node:module"
 import { existsSync, readFileSync } from "node:fs"
-import { dirname, extname, join, relative, resolve, sep } from "node:path"
+import { dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path"
 import { pathToFileURL } from "node:url"
 import { tsImport } from "tsx/esm/api"
 
@@ -113,6 +113,35 @@ function getRawSourceImportSpecifiers(moduleSource: string): string[] {
   return [...specifiers]
 }
 
+function resolveRawSourceImportPath(modulePath: string, specifier: string): string | undefined {
+  if (isAbsolute(specifier)) {
+    return specifier
+  }
+
+  if (!(specifier.startsWith("./") || specifier.startsWith("../"))) {
+    return undefined
+  }
+
+  const directPath = resolve(dirname(modulePath), specifier)
+  const candidatePaths = [
+    directPath,
+    `${directPath}.js`,
+    `${directPath}.mjs`,
+    `${directPath}.cjs`,
+    `${directPath}.jsx`,
+    `${directPath}.ts`,
+    `${directPath}.tsx`,
+    join(directPath, "index.js"),
+    join(directPath, "index.mjs"),
+    join(directPath, "index.cjs"),
+    join(directPath, "index.jsx"),
+    join(directPath, "index.ts"),
+    join(directPath, "index.tsx"),
+  ]
+
+  return candidatePaths.find((candidatePath) => existsSync(candidatePath))
+}
+
 function isWithinRoot(rootDir: string, candidatePath: string): boolean {
   const relativePath = relative(rootDir, candidatePath)
 
@@ -144,11 +173,11 @@ function assertRawSourceModuleGraph(rootDir: string, entryPath: string, manifest
 
     const source = readFileSync(currentPath, "utf-8")
     for (const specifier of getRawSourceImportSpecifiers(source)) {
-      if (!(specifier.startsWith("./") || specifier.startsWith("../"))) {
+      const resolvedPath = resolveRawSourceImportPath(currentPath, specifier)
+      if (!resolvedPath) {
         continue
       }
 
-      const resolvedPath = require.resolve(specifier, { paths: [dirname(currentPath)] })
       if (!isWithinRoot(rootDir, resolvedPath)) {
         throw new AddonLoadError(`Addon '${manifest.name}' source imports must stay inside the addon root`, manifest.name)
       }
