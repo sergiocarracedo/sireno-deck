@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 23 plans are ready for execution; Phase 22 implementation and verification are complete.
+**Current focus:** Phase 23 Plan 23-01 is complete and Wave 2 startup-placeholder work is next.
 
 ## Current Position
 
 Phase: 23 — JSX/TSX Addon Authoring + Startup Placeholder
-Plan: 2 plans created
-Status: ready for execution
-Last activity: 2026-05-25 - Planned Phase 23 into raw-source local addon loading and hardware startup placeholder slices
+Plan: 23-01 complete, 23-02 pending
+Status: executing wave 2
+Last activity: 2026-05-25 - Completed raw-source local addon startup and moved to hardware startup placeholder execution
 
 Progress: [##########] 100%
 
@@ -86,6 +86,7 @@ Recent decisions affecting current work:
 
 - **Phase 23 discussion:** Captured a narrow local-addon raw-source contract (`sirenoAddon.main` may point at `.ts/.tsx/.js/.jsx`), kept the public authoring API on the root export only, and chose a branded temporary startup placeholder that clears on first real render and never hides honest browser startup failures.
 - **Phase 23 planning:** Broke the phase into two execution slices: manifest-driven local raw-source addon startup through the normal CLI path, and a branded physical-device startup placeholder that hands off cleanly to the first real browser capture.
+- **Plan 23-01:** Shipped local raw-source addon loading through `sirenoAddon.main` for local `.ts/.tsx/.jsx` entries using `tsx`, bounded the relative source graph to the addon root, committed a raw `.tsx` fixture addon, and proved the normal startup config path loads it through the root export surface only.
 - **Phase 20 planning:** Broke the phase into three verified vertical slices: theme package resolution plus theme-owned browser frame first, shared theme/addon asset pipeline second, and the centered implicit locked `HH:MM` fallback third.
 - **Phase 22 discussion:** Chose a real-runtime virtual-device emulator, mouse-driven press/release semantics with visible press/hold states, in-page device selection with restart-on-change, clear emulator-specific layout errors, and an explicit CLI mode serving one local deck-focused page.
 - **Phase 22 execution:** Shipped `sireno emulate`, a virtual Stream Deck lifecycle, a local browser emulator page, runtime-owned `down` / `up` input bridging with visible pressed-state feedback, explicit supported virtual devices, restart-on-change behavior, and an emulator-specific mismatch error surface.
