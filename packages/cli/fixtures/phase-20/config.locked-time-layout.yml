@@ -1,0 +1,32 @@
+theme: dark
+main_deck: main
+addons: []
+decks:
+  main:
+    id: main
+    name: Main
+    buttons:
+      - position: 0
+        type: change-deck
+        label: Review
+        target_deck: review
+      - position: 1
+        type: action
+        label: Lock Fallback
+        icon: builtin://core-buttons/clock.svg
+      - position: 2
+        type: analog-clock
+  review:
+    id: review
+    name: Review
+    background: "#10161f"
+    buttons:
+      - position: 0
+        type: action
+        label: "Unlock should restore here"
+      - position: 1
+        type: calendar-sheet
+      - position: 2
+        type: change-deck
+        label: Main
+        target_deck: main

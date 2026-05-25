@@ -1,6 +1,7 @@
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
+import { fileURLToPath } from "node:url"
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
@@ -9,6 +10,7 @@ import { ConfigValidationError } from "../core/schemas.js"
 import { createAddonRegistry } from "../addon/registry.js"
 
 const loadConfigModule = async () => import("./loader.js")
+const FIXTURES_DIRECTORY = fileURLToPath(new URL("../../fixtures", import.meta.url))
 
 describe("loadConfig", () => {
   const originalCwd = process.cwd()
@@ -876,7 +878,7 @@ describe("loadConfig", () => {
   })
 
   it("loads the committed Phase 11 host-context fixture through render and action-bearing config paths", async () => {
-    const fixturePath = join(originalCwd, "fixtures/phase-11/config.host-context.yml")
+    const fixturePath = join(FIXTURES_DIRECTORY, "phase-11/config.host-context.yml")
     const { loadConfig } = await loadConfigModule()
     const config = loadConfig(fixturePath, undefined, {
       os: {

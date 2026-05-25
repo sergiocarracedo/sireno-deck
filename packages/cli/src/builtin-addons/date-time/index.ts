@@ -22,6 +22,12 @@ const BuiltinDisplayDateTimeButtonSchema = z
   })
   .strict()
 
+const LockedTimeTileButtonSchema = z
+  .object({
+    slot: z.enum(['hour-tens', 'hour-ones', 'separator', 'minute-tens', 'minute-ones']),
+  })
+  .strict()
+
 const BuiltinAnalogClockButtonSchema = z.object({}).strict()
 const BuiltinCalendarSheetButtonSchema = z.object({}).strict()
 
@@ -60,6 +66,33 @@ function formatDigitalDateTimeLabel(
   ].join(' ')
 }
 
+function formatLockedTimeCharacters(date = new Date()): [string, string, string, string, string] {
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+
+  return [hours[0]!, hours[1]!, ':', minutes[0]!, minutes[1]!]
+}
+
+function formatLockedTimeTileCharacter(
+  slot: z.infer<typeof LockedTimeTileButtonSchema>['slot'],
+  date = new Date(),
+): string {
+  const [hourTens, hourOnes, separator, minuteTens, minuteOnes] = formatLockedTimeCharacters(date)
+
+  switch (slot) {
+    case 'hour-tens':
+      return hourTens
+    case 'hour-ones':
+      return hourOnes
+    case 'separator':
+      return separator
+    case 'minute-tens':
+      return minuteTens
+    case 'minute-ones':
+      return minuteOnes
+  }
+}
+
 const builtinDisplayDateTimeButton = {
   configSchema: BuiltinDisplayDateTimeButtonSchema,
   defaultIntervalMs: DIGITAL_DATE_TIME_INTERVAL_MS,
@@ -76,6 +109,29 @@ const builtinDisplayDateTimeButton = {
     }),
   }),
   type: 'date-time',
+}
+
+const builtinLockedTimeTileButton = {
+  configSchema: LockedTimeTileButtonSchema,
+  defaultIntervalMs: DIGITAL_DATE_TIME_INTERVAL_MS,
+  createInstance: ({
+    button,
+    config,
+  }: {
+    button: { position: number }
+    config: z.infer<typeof LockedTimeTileButtonSchema>
+  }) => ({
+    render: () => {
+      const character = formatLockedTimeTileCharacter(config.slot)
+
+      return createBaseShapeTextContent({
+        keyIndex: button.position,
+        label: character,
+        labelClassName: character === ':' ? 'font-mono text-accent' : 'font-mono text-primary',
+      })
+    },
+  }),
+  type: 'locked-time-tile',
 }
 
 const builtinAnalogClockButton = {
@@ -183,7 +239,7 @@ const builtinCalendarSheetButton = {
 
 const datetimeButtonsAddon: SirenoAddon = {
   apiVersion: 1,
-  buttons: [builtinDisplayDateTimeButton, builtinAnalogClockButton, builtinCalendarSheetButton] as SirenoAddon['buttons'],
+  buttons: [builtinDisplayDateTimeButton, builtinLockedTimeTileButton, builtinAnalogClockButton, builtinCalendarSheetButton] as SirenoAddon['buttons'],
   name: 'date-time',
 }
 
@@ -194,4 +250,6 @@ export {
   CALENDAR_SHEET_INTERVAL_MS,
   DIGITAL_DATE_TIME_INTERVAL_MS,
   formatDigitalDateTimeLabel,
+  formatLockedTimeCharacters,
+  formatLockedTimeTileCharacter,
 }

@@ -1,5 +1,5 @@
-import { existsSync, readFileSync, statSync } from "node:fs"
-import { basename, dirname, join, isAbsolute, resolve } from "node:path"
+import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, statSync } from "node:fs"
+import { basename, dirname, extname, join, isAbsolute, relative, resolve } from "node:path"
 import { fileURLToPath, pathToFileURL } from "node:url"
 
 import yaml from "js-yaml"
@@ -60,6 +60,7 @@ export type ThemeButtonFrame = (props: ThemeButtonFrameProps) => ReactElement
 
 export interface Theme extends Omit<ThemeSchemaOutput, "typography"> {
   buttonFrame: ThemeButtonFrame
+  filePaths: string[]
   rootDir: string
   stylesheets: string[]
   typography?: ThemeSchemaOutput["typography"]
@@ -87,6 +88,27 @@ type ThemeResolutionTarget =
       nameOverride?: string
       rootDir: string
     }
+
+function uniquePaths(paths: readonly string[]): string[] {
+  return Array.from(new Set(paths))
+}
+
+function findRuntimeSnapshotParent(rootDir: string): string {
+  let currentDirectory = rootDir
+
+  while (true) {
+    if (existsSync(join(currentDirectory, "node_modules"))) {
+      return currentDirectory
+    }
+
+    const parentDirectory = dirname(currentDirectory)
+    if (parentDirectory === currentDirectory) {
+      return process.cwd()
+    }
+
+    currentDirectory = parentDirectory
+  }
+}
 
 function getThemeLineNumber(raw: string, pathSegments: readonly (string | number)[]): number | undefined {
   if (pathSegments.length === 0) {
@@ -245,8 +267,14 @@ async function importThemeButtonFrame(manifest: ThemeManifest, manifestPath: str
     )
   }
 
+  const snapshotParent = mkdtempSync(join(findRuntimeSnapshotParent(rootDir), `.sireno-theme-runtime-${basename(rootDir)}-`))
+  const snapshotRoot = join(snapshotParent, basename(rootDir))
+
   try {
-    const importedModule = await import(pathToFileURL(entryPath).href)
+    cpSync(rootDir, snapshotRoot, { recursive: true })
+
+    const importedEntryPath = resolve(snapshotRoot, relative(rootDir, entryPath))
+    const importedModule = await import(pathToFileURL(importedEntryPath).href)
     const candidateFrame = importedModule.buttonFrame
       ?? importedModule.ButtonFrame
       ?? importedModule.default?.buttonFrame
@@ -276,11 +304,15 @@ async function importThemeButtonFrame(manifest: ThemeManifest, manifestPath: str
       `Check the runtime entry at '${manifest.main}'.`,
       ["theme", "main"],
     )
+  } finally {
+    rmSync(snapshotParent, { force: true, recursive: true })
   }
 }
 
-function rewriteThemeCssUrls(cssText: string, cssFilePath: string): string {
-  return cssText.replace(/url\(([^)]+)\)/g, (_match, rawValue: string) => {
+function rewriteThemeCssUrls(cssText: string, cssFilePath: string): { filePaths: string[]; rewrittenCss: string } {
+  const filePaths = [cssFilePath]
+
+  const rewrittenCss = cssText.replace(/url\(([^)]+)\)/g, (_match, rawValue: string) => {
     const trimmedValue = rawValue.trim()
     const unquotedValue = trimmedValue.replace(/^['"]|['"]$/g, "")
 
@@ -307,14 +339,25 @@ function rewriteThemeCssUrls(cssText: string, cssFilePath: string): string {
       )
     }
 
+    filePaths.push(resolvedAssetPath)
     return `url("${pathToFileURL(resolvedAssetPath).href}")`
   })
+
+  return {
+    filePaths: uniquePaths(filePaths),
+    rewrittenCss,
+  }
 }
 
-function loadThemeStylesheets(manifest: ThemeManifest, manifestPath: string, rootDir: string): string[] {
+function loadThemeStylesheets(
+  manifest: ThemeManifest,
+  manifestPath: string,
+  rootDir: string,
+): { filePaths: string[]; stylesheets: string[] } {
   const stylesheetPaths = manifest.assets?.styles ?? []
+  const filePaths: string[] = []
 
-  return stylesheetPaths.map((stylesheetPath) => {
+  const stylesheets = stylesheetPaths.map((stylesheetPath) => {
     const resolvedStylesheetPath = resolve(rootDir, stylesheetPath)
     if (!existsSync(resolvedStylesheetPath)) {
       throw new ConfigValidationError(
@@ -327,8 +370,84 @@ function loadThemeStylesheets(manifest: ThemeManifest, manifestPath: string, roo
     }
 
     const cssText = readFileSync(resolvedStylesheetPath, "utf-8")
-    return rewriteThemeCssUrls(cssText, resolvedStylesheetPath)
+    const result = rewriteThemeCssUrls(cssText, resolvedStylesheetPath)
+    filePaths.push(...result.filePaths)
+    return result.rewrittenCss
   })
+
+  return {
+    filePaths: uniquePaths(filePaths),
+    stylesheets,
+  }
+}
+
+function resolveThemeRuntimeImportPath(modulePath: string, specifier: string): string | undefined {
+  if (!(specifier.startsWith("./") || specifier.startsWith("../") || specifier.startsWith("/"))) {
+    return undefined
+  }
+
+  const directPath = resolve(dirname(modulePath), specifier)
+  const candidatePaths = [
+    directPath,
+    `${directPath}.js`,
+    `${directPath}.mjs`,
+    `${directPath}.cjs`,
+    `${directPath}.jsx`,
+    `${directPath}.ts`,
+    `${directPath}.tsx`,
+    join(directPath, "index.js"),
+    join(directPath, "index.mjs"),
+    join(directPath, "index.cjs"),
+  ]
+
+  return candidatePaths.find((candidatePath) => existsSync(candidatePath))
+}
+
+function getThemeRuntimeImportSpecifiers(moduleSource: string): string[] {
+  const specifiers = new Set<string>()
+  const patterns = [
+    /(?:import|export)\s+(?:[^"'`]+?\s+from\s+)?["'`]([^"'`]+)["'`]/g,
+    /import\(\s*["'`]([^"'`]+)["'`]\s*\)/g,
+  ]
+
+  for (const pattern of patterns) {
+    for (const match of moduleSource.matchAll(pattern)) {
+      const specifier = match[1]
+      if (specifier) {
+        specifiers.add(specifier)
+      }
+    }
+  }
+
+  return [...specifiers]
+}
+
+function collectThemeRuntimeFilePaths(entryPath: string): string[] {
+  const visited = new Set<string>()
+  const pendingPaths = [entryPath]
+
+  while (pendingPaths.length > 0) {
+    const currentPath = pendingPaths.pop()
+    if (!currentPath || visited.has(currentPath) || !existsSync(currentPath)) {
+      continue
+    }
+
+    visited.add(currentPath)
+    const extension = extname(currentPath)
+    if (![".js", ".mjs", ".cjs", ".jsx", ".ts", ".tsx"].includes(extension)) {
+      continue
+    }
+
+    const source = readFileSync(currentPath, "utf-8")
+    for (const specifier of getThemeRuntimeImportSpecifiers(source)) {
+      const resolvedImportPath = resolveThemeRuntimeImportPath(currentPath, specifier)
+      if (resolvedImportPath && !visited.has(resolvedImportPath)) {
+        pendingPaths.push(resolvedImportPath)
+      }
+    }
+  }
+
+  return [...visited]
 }
 
 export async function resolveTheme(themeReference: string, options: ResolveThemeOptions = {}): Promise<Theme> {
@@ -339,6 +458,7 @@ export async function resolveTheme(themeReference: string, options: ResolveTheme
     return {
       ...theme,
       buttonFrame: defaultButtonFrame,
+      filePaths: [target.path],
       rootDir: target.rootDir,
       stylesheets: [],
     }
@@ -346,18 +466,20 @@ export async function resolveTheme(themeReference: string, options: ResolveTheme
 
   const manifest = parseThemeYaml(target.manifestPath, ThemeManifestSchema, ["theme"])
   const buttonFrame = await importThemeButtonFrame(manifest, target.manifestPath, target.rootDir)
-  const stylesheets = loadThemeStylesheets(manifest, target.manifestPath, target.rootDir)
+  const runtimeFilePaths = collectThemeRuntimeFilePaths(resolve(target.rootDir, manifest.main))
+  const stylesheetResult = loadThemeStylesheets(manifest, target.manifestPath, target.rootDir)
 
   return {
     accent: manifest.accent,
     background: manifest.background,
     buttonFrame,
     danger: manifest.danger,
+    filePaths: uniquePaths([target.manifestPath, ...runtimeFilePaths, ...stylesheetResult.filePaths]),
     foreground: manifest.foreground,
     name: target.nameOverride ?? manifest.name,
     primary: manifest.primary,
     rootDir: target.rootDir,
-    stylesheets,
+    stylesheets: stylesheetResult.stylesheets,
     success: manifest.success,
     typography: manifest.typography,
   }

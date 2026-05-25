@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { renderReactNodeToHtml } from '../../render/dom-host.js'
 import dateTimeAddon, {
@@ -6,6 +6,8 @@ import dateTimeAddon, {
   CALENDAR_SHEET_INTERVAL_MS,
   DIGITAL_DATE_TIME_INTERVAL_MS,
   formatDigitalDateTimeLabel,
+  formatLockedTimeCharacters,
+  formatLockedTimeTileCharacter,
 } from './index.js'
 
 describe('date-time addon', () => {
@@ -19,6 +21,9 @@ describe('date-time addon', () => {
     const analogDefinition = dateTimeAddon.buttons.find(
       (definition) => definition.type === 'analog-clock',
     )
+    const lockedTimeTileDefinition = dateTimeAddon.buttons.find(
+      (definition) => definition.type === 'locked-time-tile',
+    )
     const calendarDefinition = dateTimeAddon.buttons.find(
       (definition) => definition.type === 'calendar-sheet',
     )
@@ -30,6 +35,7 @@ describe('date-time addon', () => {
 
     expect(dateTimeAddon.buttons.map((definition) => definition.type)).toEqual([
       'date-time',
+      'locked-time-tile',
       'analog-clock',
       'calendar-sheet',
     ])
@@ -41,6 +47,14 @@ describe('date-time addon', () => {
       date_format: 'MM/DD/YYYY',
       time_format: 'HH:mm:ss',
       variant: 'date-time',
+    })
+
+    expect(lockedTimeTileDefinition?.type).toBe('locked-time-tile')
+    expect(lockedTimeTileDefinition?.defaultIntervalMs).toBe(
+      DIGITAL_DATE_TIME_INTERVAL_MS,
+    )
+    expect(lockedTimeTileDefinition?.configSchema.parse({ slot: 'separator' })).toEqual({
+      slot: 'separator',
     })
 
     expect(analogDefinition?.type).toBe('analog-clock')
@@ -105,6 +119,44 @@ describe('date-time addon', () => {
     } as never)
 
     expect(renderReactNodeToHtml(instance?.render() as never)).toContain('/')
+  })
+
+  it('creates a renderable locked time tile instance for implicit lock fallback digits and colon', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 4, 14, 9, 8, 7))
+
+    const definition = dateTimeAddon.buttons.find(
+      (button) => button.type === 'locked-time-tile',
+    )
+    const digitInstance = definition?.createInstance({
+      button: { position: 5 },
+      config: { slot: 'hour-tens' },
+    } as never)
+    const colonInstance = definition?.createInstance({
+      button: { position: 7 },
+      config: { slot: 'separator' },
+    } as never)
+
+    const digitHtml = renderReactNodeToHtml(digitInstance?.render() as never)
+    const colonHtml = renderReactNodeToHtml(colonInstance?.render() as never)
+
+    expect(digitHtml).toContain('1')
+    expect(digitHtml).toContain('font-mono text-primary')
+    expect(colonHtml).toContain(':')
+    expect(colonHtml).toContain('font-mono text-accent')
+
+    vi.useRealTimers()
+  })
+
+  it('formats the implicit locked fallback as live HH:MM characters', () => {
+    const date = new Date(2026, 4, 14, 9, 8, 7)
+
+    expect(formatLockedTimeCharacters(date)).toEqual(['0', '9', ':', '0', '8'])
+    expect(formatLockedTimeTileCharacter('hour-tens', date)).toBe('0')
+    expect(formatLockedTimeTileCharacter('hour-ones', date)).toBe('9')
+    expect(formatLockedTimeTileCharacter('separator', date)).toBe(':')
+    expect(formatLockedTimeTileCharacter('minute-tens', date)).toBe('0')
+    expect(formatLockedTimeTileCharacter('minute-ones', date)).toBe('8')
   })
 
   it('creates a renderable analog clock button instance with the expected cadence contract', () => {

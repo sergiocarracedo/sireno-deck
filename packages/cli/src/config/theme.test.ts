@@ -45,12 +45,14 @@ describe("resolveTheme", () => {
     expect(theme.foreground).toBe("#eef2f7")
     expect(theme.typography?.main_text.font_family).toBe("IBM Plex Sans")
     expect(theme.buttonFrame).toBeTypeOf("function")
+    expect(theme.filePaths.some((filePath) => filePath.endsWith("themes/default/manifest.yml"))).toBe(true)
+    expect(theme.filePaths.some((filePath) => filePath.endsWith("themes/default/index.js") || filePath.endsWith("themes/default/ButtonFrame.js"))).toBe(true)
     expect(theme.stylesheets).toHaveLength(1)
     expect(theme.stylesheets[0]).toContain("@font-face")
-    expect(theme.stylesheets[0]).toContain("file://")
-  })
     expect(theme.stylesheets[0]).toContain('font-family: "IBM Plex Sans"')
     expect(theme.stylesheets[0]).toContain('font-family: "IBM Plex Mono"')
+    expect(theme.stylesheets[0]).toContain("file://")
+  })
 
   it("loads a custom theme package from a filesystem path", async () => {
     const configDir = join(tempDir, "config")
@@ -87,7 +89,64 @@ describe("resolveTheme", () => {
     expect(theme.accent).toBe("#14b8a6")
     expect(theme.typography?.monospace.font_family).toBe("IBM Plex Mono")
     expect(theme.buttonFrame).toBeTypeOf("function")
+    expect(theme.filePaths).toEqual(expect.arrayContaining([
+      join(customThemePath, "manifest.yml"),
+      join(customThemePath, "index.js"),
+    ]))
     expect(theme.stylesheets).toEqual([])
+  })
+
+  it("reloads updated theme runtime exports instead of returning a cached buttonFrame", async () => {
+    const configDir = join(tempDir, "config")
+    const customThemePath = join(configDir, "custom-theme")
+    mkdirSync(customThemePath, { recursive: true })
+    writeFileSync(
+      join(customThemePath, "manifest.yml"),
+      [
+        "name: custom",
+        'main: "./index.js"',
+        'background: "#20252d"',
+        'foreground: "#f5f7fa"',
+        'primary: "#8b5cf6"',
+        'accent: "#14b8a6"',
+        'success: "#22c55e"',
+        'danger: "#ef4444"',
+        ...typographyBlock,
+      ].join("\n"),
+    )
+    writeFileSync(
+      join(customThemePath, "index.js"),
+      [
+        'import { createElement } from "react"',
+        'export function buttonFrame(props) {',
+        '  return createElement("div", { "data-marker": "one" }, props.children)',
+        '}',
+        'export default { buttonFrame }',
+      ].join("\n"),
+    )
+
+    const { resolveTheme } = await loadThemeModule()
+    const firstTheme = await resolveTheme("./custom-theme", { baseDirectory: configDir })
+
+    writeFileSync(
+      join(customThemePath, "index.js"),
+      [
+        'import { createElement } from "react"',
+        'export function buttonFrame(props) {',
+        '  return createElement("div", { "data-marker": "two" }, props.children)',
+        '}',
+        'export default { buttonFrame }',
+      ].join("\n"),
+    )
+
+    const secondTheme = await resolveTheme("./custom-theme", { baseDirectory: configDir })
+
+    expect(firstTheme.buttonFrame({ children: null, state: "idle" }).props["data-marker"]).toBe("one")
+    expect(secondTheme.buttonFrame({ children: null, state: "idle" }).props["data-marker"]).toBe("two")
+    expect(secondTheme.filePaths).toEqual(expect.arrayContaining([
+      join(customThemePath, "manifest.yml"),
+      join(customThemePath, "index.js"),
+    ]))
   })
 
   it("fails clearly when a theme reference does not exist", async () => {
