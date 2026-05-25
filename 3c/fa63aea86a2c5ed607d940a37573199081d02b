@@ -1,0 +1,29 @@
+packages/cli/fixtures/phase-23/README.md
+  s_4a24c7997d2c84::t_5fd15ecbedcdd3 1-17
+packages/cli/src/cli/commands/start.test.ts
+  s_4a24c7997d2c84::t_79384b26185051 472-475,478-479
+packages/cli/src/cli/commands/start.ts
+  s_4a24c7997d2c84::t_a4f570e0a2c11a 689-690,692-693,703,707-708,713,733,807-813,820-821
+  s_4a24c7997d2c84::t_5fd15ecbedcdd3 25,249-258,645-651,666,669-675,688,691,712,714-730,798,824-835
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "3cfa63aea86a2c5ed607d940a37573199081d02b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4a24c7997d2c84": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a091daeaffeKrjgERsZBqFExO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
