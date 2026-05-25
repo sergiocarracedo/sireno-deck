@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 22 — Browser deck emulator
-**Status:** planning
-**Last updated:** 2026-05-24
+**Phase:** 22 — Browser deck emulator ✓ complete → Phase 21 — Theme Font Assets For Browser Rendering
+**Status:** verifying
+**Last updated:** 2026-05-25
 
 ---
 
