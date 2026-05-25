@@ -1,6 +1,6 @@
 # Roadmap — Sireno Deck v1.2
 
-**Last updated:** 2026-05-24
+**Last updated:** 2026-05-25
 **Granularity:** focused milestone (7 phases)
 **Total v1.2 requirements:** 9
 
@@ -231,11 +231,15 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 22: Browser deck emulator
 
 **Goal:** Let users and developers run the deck locally in the browser with emulated device layouts and mouse-driven interaction so they can preview and test results without Stream Deck hardware.
-**Status:** [ ] Not started
+**Status:** ✓ Complete (2026-05-25)
 **Depends on:** Phase 21
 
 ### Plans
-*Not yet planned — run `plan-phase 22`*
+- `22-01`: Add a dedicated hardware-free emulator startup path backed by the real runtime and browser renderer
+- `22-02`: Bridge browser `down` / `up` input through the runtime and surface visible pressed-state feedback
+- `22-03`: Add supported virtual-device switching with restart-on-change and explicit layout mismatch failures
+
+**Phase 22 note:** This post-roadmap phase now ships a local `sireno emulate` path, a virtual Stream Deck lifecycle, real browser-driven `down` / `up` interaction with runtime-owned pressed-state visuals, explicit supported virtual devices, restart-on-change behavior, and an honest emulator-specific mismatch error surface instead of clipping or silent fallback.
 
 ---
 

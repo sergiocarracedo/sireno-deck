@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 22 context is captured and ready for planning; Phase 21 remains queued for planning.
+**Current focus:** Phase 22 implementation and verification are complete; Phase 21 remains the next planning target.
 
 ## Current Position
 
 Phase: 22 — Browser deck emulator
-Plan: discuss complete
-Status: ready_for_planning
-Last activity: 2026-05-24 - Captured Phase 22 context for a local browser-run virtual deck mode without hardware
+Plan: execution complete
+Status: verifying
+Last activity: 2026-05-25 - Executed the browser deck emulator with hardware-free boot, browser input bridging, device switching, and honest layout failures
 
 Progress: [##########] 100%
 
@@ -85,6 +85,7 @@ Recent decisions affecting current work:
 
 - **Phase 20 planning:** Broke the phase into three verified vertical slices: theme package resolution plus theme-owned browser frame first, shared theme/addon asset pipeline second, and the centered implicit locked `HH:MM` fallback third.
 - **Phase 22 discussion:** Chose a real-runtime virtual-device emulator, mouse-driven press/release semantics with visible press/hold states, in-page device selection with restart-on-change, clear emulator-specific layout errors, and an explicit CLI mode serving one local deck-focused page.
+- **Phase 22 execution:** Shipped `sireno emulate`, a virtual Stream Deck lifecycle, a local browser emulator page, runtime-owned `down` / `up` input bridging with visible pressed-state feedback, explicit supported virtual devices, restart-on-change behavior, and an emulator-specific mismatch error surface.
 - **Phase 21 discussion:** Kept theme fonts CSS-native through `@font-face`, preserved hard failures only for missing stylesheet/font asset files, allowed silent browser/system fallback for unresolved family names, and required focused tests plus one committed browser fixture proving a packaged custom font visibly affects rendered text.
 - **Phase 20 discussion:** Captured the shift from single-file themes to manifest-backed theme packages with required runtime entries, theme-owned `buttonFrame` chrome with explicit `idle/tap/hold` state, manifest-declared bundled assets with CSS-relative URL rewriting, a general external asset-pipeline fix, and a fixed five-button implicit locked-time fallback.
 - **Plan 20-01:** Shipped async manifest-backed theme resolution, package-backed built-in theme aliases, and theme-owned browser `buttonFrame` rendering with a committed review fixture.
