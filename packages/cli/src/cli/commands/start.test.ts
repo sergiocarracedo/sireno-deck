@@ -19,6 +19,12 @@ const loadConfiguredAddons = vi.fn()
 const resolveHostContext = vi.fn()
 const createSessionMonitor = vi.fn()
 const resolveTheme = vi.fn()
+const createStartupPlaceholderBuffers = vi.fn()
+const isRunning = vi.fn()
+const readPid = vi.fn()
+const removePidFile = vi.fn()
+const setupSignalHandlers = vi.fn()
+const writePid = vi.fn()
 
 class StreamDeckSelectionError extends Error {}
 
@@ -71,6 +77,18 @@ vi.mock("../../system/session-monitor.js", () => ({
   createSessionMonitor,
 }))
 
+vi.mock("../../render/startup-placeholder.js", () => ({
+  createStartupPlaceholderBuffers,
+}))
+
+vi.mock("../../util/daemon.js", () => ({
+  isRunning,
+  readPid,
+  removePidFile,
+  setupSignalHandlers,
+  writePid,
+}))
+
 describe("loadRuntimeConfig", () => {
   const phase23FixtureRoot = resolve(import.meta.dirname, "../../../fixtures/phase-23/local-raw-addon")
   const supportedSessionMonitor = {
@@ -99,8 +117,19 @@ describe("loadRuntimeConfig", () => {
     resolveHostContext.mockReset()
     createSessionMonitor.mockReset()
     resolveTheme.mockReset()
+    createStartupPlaceholderBuffers.mockReset()
+    isRunning.mockReset()
+    readPid.mockReset()
+    removePidFile.mockReset()
+    setupSignalHandlers.mockReset()
+    writePid.mockReset()
     supportedSessionMonitor.getSnapshot.mockClear()
     unsupportedSessionMonitor.getSnapshot.mockClear()
+
+    isRunning.mockReturnValue(false)
+    readPid.mockReturnValue(null)
+    setupSignalHandlers.mockReturnValue(vi.fn())
+    watch.mockImplementation(() => ({ close: vi.fn() }))
   })
 
   it("passes disabled illustrative addons through without logging startup warnings", async () => {
@@ -307,6 +336,17 @@ beforeEach(() => {
   resolveHostContext.mockReset()
   createSessionMonitor.mockReset()
   resolveTheme.mockReset()
+  createStartupPlaceholderBuffers.mockReset()
+  isRunning.mockReset()
+  readPid.mockReset()
+  removePidFile.mockReset()
+  setupSignalHandlers.mockReset()
+  writePid.mockReset()
+
+  isRunning.mockReturnValue(false)
+  readPid.mockReturnValue(null)
+  setupSignalHandlers.mockReturnValue(vi.fn())
+  watch.mockImplementation(() => ({ close: vi.fn() }))
 })
 
 describe("watchConfigFiles", () => {
@@ -484,6 +524,7 @@ describe("startDaemon", () => {
       stop: vi.fn(async () => {}),
       subscribe: vi.fn(() => () => {}),
     }
+    createStartupPlaceholderBuffers.mockResolvedValue(new Map([[0, Buffer.from("placeholder")]]))
     createStreamDeckLifecycle.mockReturnValue(lifecycle)
     createSessionMonitor.mockResolvedValue(sessionMonitor)
     resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
@@ -539,6 +580,191 @@ describe("startDaemon", () => {
     const logger = { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as const
 
     await expect(startDaemon({ logger: logger as never })).rejects.toThrow("missing chromium")
+    expect(createStartupPlaceholderBuffers).toHaveBeenCalledWith(15)
+    expect(connection.device.clearPanel).toHaveBeenCalledTimes(1)
+    expect(lifecycle.close).toHaveBeenCalledTimes(1)
+    expect(sessionMonitor.stop).toHaveBeenCalledTimes(1)
+  })
+
+  it("writes placeholder buffers before the first real render and clears the pending state after handoff", async () => {
+    const stopAfterFirstRender = new Error("stop after first render")
+    const connection = {
+      device: { clearPanel: vi.fn(async () => {}) },
+      info: { keyCount: 2, model: "Mini", serialNumber: "mini-123" },
+    }
+    const lifecycle = {
+      close: vi.fn(async () => {}),
+      getConnection: vi.fn(() => connection),
+      start: vi.fn(async () => connection),
+      subscribeKeyEvents: vi.fn(() => () => {}),
+    }
+    const sessionMonitor = {
+      getSnapshot: vi.fn(() => ({ capability: "supported", state: "unknown" })),
+      stop: vi.fn(async () => {}),
+      subscribe: vi.fn(() => () => {}),
+    }
+    const browserRenderer = {
+      captureKeyBuffers: vi.fn(async () => new Map([
+        [0, Buffer.from("render-0")],
+        [1, Buffer.from("render-1")],
+      ])),
+      close: vi.fn(async () => {}),
+      start: vi.fn(async () => {}),
+      updateDeck: vi.fn(async () => {}),
+    }
+    createStartupPlaceholderBuffers.mockResolvedValue(new Map([
+      [0, Buffer.from("placeholder-0")],
+      [1, Buffer.from("placeholder-1")],
+    ]))
+    createStreamDeckLifecycle.mockReturnValue(lifecycle)
+    createBrowserRenderer.mockReturnValue(browserRenderer)
+    createSessionMonitor.mockResolvedValue(sessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    loadBootstrapConfig.mockReturnValue({
+      config: { addons: [] },
+      cwd: "/tmp/project",
+      filePath: "/tmp/project/config.yml",
+    })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    loadConfigWithSources.mockReturnValue({
+      config: {
+        decks: {
+          main: {
+            buttons: [{
+              config: { label: "Clock" },
+              definition: {
+                configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
+                createInstance: () => ({ render: () => createElement("div", null, "Clock") }),
+                type: "dom-button",
+              },
+              label: "Clock",
+              position: 0,
+              type: "dom-button",
+            }],
+            id: "main",
+          },
+        },
+        main_deck: "main",
+        theme: "dark",
+      },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
+    resolveTheme.mockResolvedValue({
+      accent: "#f59e0b",
+      background: "#10161f",
+      buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
+      danger: "#fb7185",
+      filePaths: ["/tmp/project/themes/default/index.js"],
+      foreground: "#eef2f7",
+      name: "dark",
+      primary: "#7dd3fc",
+      rootDir: "/tmp/project/themes/default",
+      stylesheets: [],
+      success: "#34d399",
+    })
+    writePid.mockImplementation(() => {
+      throw stopAfterFirstRender
+    })
+
+    const { startDaemon } = await import("./start.js")
+
+    await expect(startDaemon({ logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as never })).rejects.toThrow(stopAfterFirstRender.message)
+
+    expect(createStartupPlaceholderBuffers).toHaveBeenCalledWith(2)
+    expect(writeKeyBuffer.mock.calls.map((call) => call[2])).toEqual([
+      Buffer.from("placeholder-0"),
+      Buffer.from("placeholder-1"),
+      Buffer.from("render-0"),
+      Buffer.from("render-1"),
+    ])
+    expect(browserRenderer.updateDeck).toHaveBeenCalledTimes(1)
+    expect(browserRenderer.captureKeyBuffers).toHaveBeenCalledTimes(1)
+    expect(connection.device.clearPanel).not.toHaveBeenCalled()
+  })
+
+  it("clears the placeholder if the first real render fails", async () => {
+    const connection = {
+      device: { clearPanel: vi.fn(async () => {}) },
+      info: { keyCount: 1, model: "Mini", serialNumber: "mini-456" },
+    }
+    const lifecycle = {
+      close: vi.fn(async () => {}),
+      getConnection: vi.fn(() => connection),
+      start: vi.fn(async () => connection),
+      subscribeKeyEvents: vi.fn(() => () => {}),
+    }
+    const sessionMonitor = {
+      getSnapshot: vi.fn(() => ({ capability: "supported", state: "unknown" })),
+      stop: vi.fn(async () => {}),
+      subscribe: vi.fn(() => () => {}),
+    }
+    const browserRenderer = {
+      captureKeyBuffers: vi.fn(async () => {
+        throw new Error("capture failed")
+      }),
+      close: vi.fn(async () => {}),
+      start: vi.fn(async () => {}),
+      updateDeck: vi.fn(async () => {}),
+    }
+    createStartupPlaceholderBuffers.mockResolvedValue(new Map([[0, Buffer.from("placeholder-0")]]))
+    createStreamDeckLifecycle.mockReturnValue(lifecycle)
+    createBrowserRenderer.mockReturnValue(browserRenderer)
+    createSessionMonitor.mockResolvedValue(sessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    loadBootstrapConfig.mockReturnValue({
+      config: { addons: [] },
+      cwd: "/tmp/project",
+      filePath: "/tmp/project/config.yml",
+    })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    loadConfigWithSources.mockReturnValue({
+      config: {
+        decks: {
+          main: {
+            buttons: [{
+              config: { label: "Clock" },
+              definition: {
+                configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
+                createInstance: () => ({ render: () => createElement("div", null, "Clock") }),
+                type: "dom-button",
+              },
+              label: "Clock",
+              position: 0,
+              type: "dom-button",
+            }],
+            id: "main",
+          },
+        },
+        main_deck: "main",
+        theme: "dark",
+      },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
+    resolveTheme.mockResolvedValue({
+      accent: "#f59e0b",
+      background: "#10161f",
+      buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
+      danger: "#fb7185",
+      filePaths: ["/tmp/project/themes/default/index.js"],
+      foreground: "#eef2f7",
+      name: "dark",
+      primary: "#7dd3fc",
+      rootDir: "/tmp/project/themes/default",
+      stylesheets: [],
+      success: "#34d399",
+    })
+
+    const { startDaemon } = await import("./start.js")
+
+    await expect(startDaemon({ logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as never })).rejects.toThrow("capture failed")
+
+    expect(createStartupPlaceholderBuffers).toHaveBeenCalledWith(1)
+    expect(connection.device.clearPanel).toHaveBeenCalledTimes(1)
+    expect(browserRenderer.close).toHaveBeenCalledTimes(1)
+    expect(sessionMonitor.stop).toHaveBeenCalledTimes(1)
+    expect(lifecycle.close).toHaveBeenCalledTimes(1)
   })
 })
 

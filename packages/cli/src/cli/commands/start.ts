@@ -720,7 +720,6 @@ export async function startDaemon(options: StartOptions): Promise<void> {
             }
           } catch (error) {
             if (startupPlaceholderPending) {
-              startupPlaceholderPending = false
               rejectFirstRender?.(error)
               resolveFirstRender = null
               rejectFirstRender = null
