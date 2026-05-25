@@ -1,0 +1,48 @@
+packages/cli/src/render/dom-host.tsx
+  s_8d74af9d4bfed8::t_132f0840216b4d 7,16,48
+packages/cli/fixtures/phase-22/README.md
+  s_8d74af9d4bfed8::t_1666d8b5133e8e 1-14
+packages/cli/src/cli/commands/start.test.ts
+  s_8d74af9d4bfed8::t_b3066b86dbcabc 591-700
+packages/cli/src/deck/runtime.ts
+  s_8d74af9d4bfed8::t_d4d6cc9d8b149c 14,68,272-275,302,499-500,510-511
+  s_df3509a167c487::t_8881d7858f295f 121,126,128
+  s_df3509a167c487::t_46f1490dbc5ea4 83,109-110,122,130-133
+packages/cli/src/render/button-frame.tsx
+  s_8d74af9d4bfed8::t_642dc9db3a2203 9-10,15,32,34,49
+packages/cli/src/cli/commands/start.ts
+  s_8d74af9d4bfed8::t_1c9219c84df2d8 194
+  s_8d74af9d4bfed8::t_c881cb5fd405c8 324-328,353-355
+  s_8d74af9d4bfed8::t_e9db2eafa200f7 62-68,271-273,288,291,306-315,337,361-382,468
+packages/cli/src/render/button-frame.test.tsx
+  s_8d74af9d4bfed8::t_b89528b71fd46c 16-22
+packages/cli/src/deck/runtime.test.ts
+  s_df3509a167c487::t_46f1490dbc5ea4 1296,1327,1329-1331,1333-1335,1337,1339,1341-1343,1345-1346,1349
+  s_8d74af9d4bfed8::t_1f21ee966ce99d 1989-2042
+  s_df3509a167c487::t_4ee7f4c3fc4351 2,17-18,504,1487
+  s_df3509a167c487::t_8881d7858f295f 5,84-87,1297-1299,1328,1332,1336,1340,1344,1347-1348,1350-1359
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "cbf511104b182582e0eee1576c3440ab365bd8f0",
+  "prompts": {},
+  "sessions": {
+    "s_8d74af9d4bfed8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a4269384ffeN1puLn8w7RzN1B",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
