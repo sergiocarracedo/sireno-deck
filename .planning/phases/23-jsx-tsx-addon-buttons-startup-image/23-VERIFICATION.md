@@ -48,7 +48,7 @@ Focused Phase 23 verification passed after the gap-closure rerun:
 rtk vitest run src/addon/loader.test.ts src/cli/commands/start.test.ts
 ```
 
-Result: `PASS (27) FAIL (0)`
+Result: `PASS (28) FAIL (0)`
 
 Gap follow-up after manual UAT:
 - Manual UAT exposed one shipped-fixture regression: `packages/cli/fixtures/phase-23/config.yml` used addon package name `phase-23-local-raw-addon` where config validation requires the registered button id `phase-23-local-raw-button`.
@@ -59,6 +59,7 @@ Gap follow-up after manual UAT:
 - A later rerun exposed fixture render-contract drift: `packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx` had fallen back to raw JSX (`<span>🍕</span>`), which caused `ReferenceError: React is not defined` during runtime render.
 - That rerun evidence remains preserved in `.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-UAT.md`, and the current gap-closure rerun path is `.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-04-PLAN.md`.
 - The fixture entrypoint is now restored to the helper-based root-export contract and covered by a runtime-level regression test that would fail on ambient-React JSX drift.
+- Focused rerun verification now passes after the render-contract closure with `PASS (28) FAIL (0)`.
 
 Artifact checks passed:
 - `packages/cli/fixtures/phase-23/local-raw-addon/package.json`
