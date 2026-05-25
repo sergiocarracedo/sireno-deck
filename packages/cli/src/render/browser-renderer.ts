@@ -35,6 +35,11 @@ export interface BrowserRendererLayout {
   rows: number
 }
 
+export interface VirtualDeckDevice {
+  keyCount: number
+  label: string
+}
+
 export interface BrowserRendererOptions {
   keyCount: number
   launcher?: BrowserLauncher
@@ -45,6 +50,7 @@ export interface BrowserRendererOptions {
 export interface BrowserRenderer {
   captureKeyBuffers: () => Promise<Map<number, Buffer>>
   close: () => Promise<void>
+  keyCount: number
   start: () => Promise<void>
   updateDeck: (html: string) => Promise<void>
 }
@@ -86,6 +92,18 @@ export function resolveDeckLayout(keyCount: number): BrowserRendererLayout {
       return { columns, keyCount, rows }
     }
   }
+}
+
+export function getVirtualDeckDevices(): VirtualDeckDevice[] {
+  return [
+    { keyCount: 1, label: "Stream Deck Pedal" },
+    { keyCount: 2, label: "Stream Deck Neo (2-key preview)" },
+    { keyCount: 3, label: "Stream Deck Mini (row preview)" },
+    { keyCount: 6, label: "Stream Deck Mini" },
+    { keyCount: 8, label: "Stream Deck +" },
+    { keyCount: 15, label: "Stream Deck MK.2" },
+    { keyCount: 32, label: "Stream Deck XL" },
+  ]
 }
 
 function getDeckPixelSize(layout: BrowserRendererLayout, preset: RenderPreset): { height: number; width: number } {
@@ -277,6 +295,7 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
   }
 
   return {
+    keyCount: options.keyCount,
     async start() {
       await ensurePage()
     },

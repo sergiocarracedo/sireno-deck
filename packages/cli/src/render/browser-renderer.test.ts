@@ -6,7 +6,7 @@ import { pathToFileURL } from "node:url"
 import { createElement } from "react"
 import { describe, expect, it, vi } from "vitest"
 
-import { createBrowserRenderer, MAX_MEDIA_SAMPLE_INTERVAL_MS, MIN_MEDIA_SAMPLE_INTERVAL_MS } from "./browser-renderer.js"
+import { createBrowserRenderer, getVirtualDeckDevices, MAX_MEDIA_SAMPLE_INTERVAL_MS, MIN_MEDIA_SAMPLE_INTERVAL_MS } from "./browser-renderer.js"
 import { renderDomDeck } from "./dom-host.js"
 
 async function createDeckScreenshot(colors: string[]): Promise<Buffer> {
@@ -310,5 +310,17 @@ describe("browser renderer", () => {
     expect(buffers.size).toBe(15)
     expect(buffers.get(0)?.subarray(0, 3)).toEqual(Buffer.from([255, 0, 0]))
     expect(buffers.get(14)?.subarray(0, 3)).toEqual(Buffer.from([204, 204, 204]))
+  })
+
+  it("exposes stable supported virtual device shapes for the emulator selector", () => {
+    expect(getVirtualDeckDevices()).toEqual([
+      { keyCount: 1, label: "Stream Deck Pedal" },
+      { keyCount: 2, label: "Stream Deck Neo (2-key preview)" },
+      { keyCount: 3, label: "Stream Deck Mini (row preview)" },
+      { keyCount: 6, label: "Stream Deck Mini" },
+      { keyCount: 8, label: "Stream Deck +" },
+      { keyCount: 15, label: "Stream Deck MK.2" },
+      { keyCount: 32, label: "Stream Deck XL" },
+    ])
   })
 })

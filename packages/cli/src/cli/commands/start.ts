@@ -20,7 +20,7 @@ import {
   writeKeyBuffer,
 } from "../../device/stream-deck.js"
 import { formatLinuxUdevAccessError } from "../../device/linux-udev.js"
-import { createBrowserRenderer } from "../../render/browser-renderer.js"
+import { createBrowserRenderer, getVirtualDeckDevices } from "../../render/browser-renderer.js"
 import { renderDomDeck } from "../../render/dom-host.js"
 import type { RuntimeRenderButton } from "../../deck/runtime.js"
 
@@ -54,16 +54,21 @@ export interface EmulatorSession {
 }
 
 interface EmulatorSurfaceState {
+  activeDeckId: string
+  availableDevices: Array<{ keyCount: number; label: string }>
+  error: { code: string; detail: string } | null
   html: string
+  requestedKeyCount: number
+  selectedKeyCount: number
+  status: "error" | "ready" | "restarting" | "starting"
   updatedAt: string | null
   version: number
 }
 
-interface EmulatorClientScriptState {
-  activeDeckId: string
-  deviceLabel: string
-  frameVersion: number
-  renderStatus: string
+interface EmulatorManagedSession {
+  close: () => Promise<void>
+  lifecycle: ReturnType<typeof createVirtualStreamDeckLifecycle>
+  runtime: ReturnType<typeof createDeckRuntime>
 }
 
 const CONFIG_RELOAD_DEBOUNCE_MS = 75
@@ -205,8 +210,12 @@ export async function ensureBrowserRenderer(
   browserRenderer: BrowserRenderer | null,
   keyCount: number,
 ): Promise<BrowserRenderer> {
-  if (browserRenderer) {
+  if (browserRenderer?.keyCount === keyCount) {
     return browserRenderer
+  }
+
+  if (browserRenderer) {
+    await browserRenderer.close().catch(() => {})
   }
 
   const nextBrowserRenderer = createBrowserRenderer({ keyCount })
@@ -282,7 +291,10 @@ function renderEmulatorShellHtml(): string {
     "<div class=\"stat\"><span class=\"label\">Device</span><span class=\"value\" id=\"device\">starting</span></div>",
     "<div class=\"stat\"><span class=\"label\">Active Deck</span><span class=\"value\" id=\"deck\">starting</span></div>",
     "<div class=\"stat\"><span class=\"label\">Render Status</span><span class=\"value\" id=\"status\">starting</span></div>",
+    "<div class=\"stat\"><span class=\"label\">Emulator Error</span><span class=\"value\" id=\"error\">none</span></div>",
     "<div class=\"stat\"><span class=\"label\">Render Version</span><span class=\"value\" id=\"version\">0</span></div>",
+    "<label class=\"label\" for=\"device-select\" style=\"display:block;margin-top:20px\">Virtual Device</label>",
+    "<select id=\"device-select\" style=\"background:#171c24;border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#eef2f7;font:inherit;margin-top:8px;padding:10px 12px;width:100%\"></select>",
     "</div>",
     "</section>",
     "<section class=\"viewport\"><div class=\"deck-shell\"><div id=\"deck-mount\">Waiting for first render...</div></div></section>",
@@ -291,7 +303,9 @@ function renderEmulatorShellHtml(): string {
     "const mount = document.getElementById('deck-mount');",
     "const device = document.getElementById('device');",
     "const deck = document.getElementById('deck');",
+    "const error = document.getElementById('error');",
     "const status = document.getElementById('status');",
+    "const deviceSelect = document.getElementById('device-select');",
     "const version = document.getElementById('version');",
     "let currentVersion = -1;",
     "async function refresh(){",
@@ -299,8 +313,17 @@ function renderEmulatorShellHtml(): string {
     "  const state = await response.json();",
     "  device.textContent = state.device;",
     "  deck.textContent = state.activeDeckId;",
+    "  error.textContent = state.error ? state.error.detail : 'none';",
     "  status.textContent = state.status;",
     "  version.textContent = String(state.version);",
+    "  deviceSelect.innerHTML = '';",
+    "  state.availableDevices.forEach((entry) => {",
+    "    const option = document.createElement('option');",
+    "    option.value = String(entry.keyCount);",
+    "    option.textContent = entry.label;",
+    "    option.selected = entry.keyCount === state.selectedKeyCount;",
+    "    deviceSelect.appendChild(option);",
+    "  });",
     "  if (state.version > 0 && state.version !== currentVersion) {",
     "    currentVersion = state.version;",
     "    const deckResponse = await fetch(`/__sireno/deck?v=${state.version}`, { cache: 'no-store' });",
@@ -315,6 +338,10 @@ function renderEmulatorShellHtml(): string {
     "    });",
     "  }",
     "}",
+    "deviceSelect.onchange = async () => {",
+    "  await fetch('/__sireno/device', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ keyCount: Number(deviceSelect.value) }) });",
+    "  currentVersion = -1;",
+    "};",
     "refresh().catch((error) => { status.textContent = String(error); });",
     "setInterval(() => { void refresh().catch((error) => { status.textContent = String(error); }); }, 500);",
     "</script></body></html>",
@@ -333,9 +360,8 @@ function writeHttpResponse(response: ServerResponse, statusCode: number, body: s
 }
 
 function createEmulatorServer(options: {
-  connectionInfo: { keyCount: number; model: string }
+  restartWithKeyCount: (keyCount: number) => Promise<void>
   emitKeyEvent: (event: { keyIndex: number; type: "down" | "up" }) => void
-  runtime: ReturnType<typeof createDeckRuntime>
   surfaceState: EmulatorSurfaceState
 }): Server {
   return createServer((request: IncomingMessage, response: ServerResponse) => {
@@ -380,11 +406,37 @@ function createEmulatorServer(options: {
       return
     }
 
+    if (url.pathname === "/__sireno/device" && request.method === "POST") {
+      const chunks: Buffer[] = []
+      request.on("data", (chunk) => {
+        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
+      })
+      request.on("end", () => {
+        try {
+          const payload = JSON.parse(Buffer.concat(chunks).toString("utf8")) as { keyCount?: number }
+          if (typeof payload.keyCount !== "number") {
+            writeHttpResponse(response, 400, "Invalid device request", "text/plain; charset=utf-8")
+            return
+          }
+
+          void options.restartWithKeyCount(payload.keyCount)
+          writeHttpResponse(response, 202, "", "text/plain; charset=utf-8")
+        } catch {
+          writeHttpResponse(response, 400, "Invalid device request", "text/plain; charset=utf-8")
+        }
+      })
+      return
+    }
+
     if (url.pathname === "/__sireno/state") {
       writeHttpResponse(response, 200, JSON.stringify({
-        activeDeckId: options.runtime.getActiveDeck().id,
-        device: `${options.connectionInfo.model} (${options.connectionInfo.keyCount} keys)`,
-        status: options.surfaceState.version > 0 ? "ready" : "starting",
+        activeDeckId: options.surfaceState.activeDeckId,
+        availableDevices: options.surfaceState.availableDevices,
+        device: options.surfaceState.availableDevices.find((entry) => entry.keyCount === options.surfaceState.selectedKeyCount)?.label
+          ?? `Virtual Stream Deck ${options.surfaceState.selectedKeyCount}`,
+        error: options.surfaceState.error,
+        selectedKeyCount: options.surfaceState.selectedKeyCount,
+        status: options.surfaceState.status,
         updatedAt: options.surfaceState.updatedAt,
         version: options.surfaceState.version,
       }), "application/json; charset=utf-8")
@@ -427,70 +479,128 @@ async function closeServer(server: Server): Promise<void> {
 
 export async function startEmulatorSession(options: EmulatorStartOptions): Promise<EmulatorSession> {
   const loadedConfig = await loadRuntimeConfig(options)
-  const keyCount = options.keyCount ?? 15
-  const lifecycle = createVirtualStreamDeckLifecycle({
-    keyCount,
-    model: `Virtual Stream Deck ${keyCount}`,
-  })
-  const connection = await lifecycle.start()
-  const browserRenderer = await ensureBrowserRenderer(null, connection.info.keyCount)
+  const requestedKeyCount = options.keyCount ?? 15
+  const availableDevices = getVirtualDeckDevices()
   const surfaceState: EmulatorSurfaceState = {
+    activeDeckId: loadedConfig.config.main_deck,
+    availableDevices,
+    error: null,
     html: "",
+    requestedKeyCount,
+    selectedKeyCount: requestedKeyCount,
+    status: "starting",
     updatedAt: null,
     version: 0,
   }
   setDomAssetPathResolver((assetReference) => loadedConfig.registry.resolveAssetPath(assetReference))
+  let browserRenderer: BrowserRenderer | null = null
+  let managedSession: EmulatorManagedSession | null = null
 
-  const runtime = createDeckRuntime({
-    addonRegistry: loadedConfig.registry,
-    deck: loadedConfig.config.decks[loadedConfig.config.main_deck]!,
-    decks: loadedConfig.config.decks,
-    hostContext: loadedConfig.hostContext,
-    keyCount: connection.info.keyCount,
-    lockedDeckId: loadedConfig.config.session?.locked_deck,
-    onRenderDeck: async (buttons) => {
-      if (buttons.length > 0 && !buttons.every(isDomRenderButton)) {
-        throw new Error("Runtime deck rendering must provide DOM-backed button content")
+  async function closeManagedSession(): Promise<void> {
+    if (!managedSession) {
+      return
+    }
+
+    managedSession.runtime.stop()
+    await managedSession.lifecycle.close().catch(() => {})
+    managedSession = null
+  }
+
+  function getConfiguredDeckKeyRequirement(): number {
+    return Math.max(
+      0,
+      ...Object.values(loadedConfig.config.decks).flatMap((deck) => deck.buttons.map((button) => button.position + 1)),
+    )
+  }
+
+  async function startManagedSession(keyCount: number): Promise<void> {
+    surfaceState.selectedKeyCount = keyCount
+    surfaceState.status = surfaceState.version === 0 ? "starting" : "restarting"
+    surfaceState.error = null
+
+    await closeManagedSession()
+
+    const requiredKeyCount = getConfiguredDeckKeyRequirement()
+    if (keyCount < requiredKeyCount) {
+      surfaceState.activeDeckId = loadedConfig.config.main_deck
+      surfaceState.error = {
+        code: "emulator_layout_mismatch",
+        detail: `Selected virtual device exposes ${keyCount} keys but the configured deck needs ${requiredKeyCount}.`,
       }
-
-      const html = createDeckHtml(connection.info.keyCount, buttons.filter(isDomRenderButton), loadedConfig.theme)
-      surfaceState.html = html
+      surfaceState.html = `<div id="deck-root" style="align-items:center;background:#10161f;color:#eef2f7;display:grid;font-family:'IBM Plex Sans',sans-serif;gap:12px;min-height:240px;padding:24px;text-align:center;"><strong>Emulator Layout Error</strong><span>Selected virtual device exposes ${keyCount} keys but the configured deck needs ${requiredKeyCount}.</span></div>`
       surfaceState.updatedAt = new Date().toISOString()
       surfaceState.version += 1
-      await browserRenderer.updateDeck(html)
-    },
-    sessionMonitor: loadedConfig.sessionMonitor,
-    subscribeKeyEvents: lifecycle.subscribeKeyEvents,
-    theme: loadedConfig.theme,
-  })
+      surfaceState.status = "error"
+      browserRenderer = await ensureBrowserRenderer(browserRenderer, keyCount)
+      await browserRenderer.updateDeck(surfaceState.html)
+      return
+    }
+
+    const lifecycle = createVirtualStreamDeckLifecycle({
+      keyCount,
+      model: availableDevices.find((entry) => entry.keyCount === keyCount)?.label ?? `Virtual Stream Deck ${keyCount}`,
+    })
+    const connection = await lifecycle.start()
+    browserRenderer = await ensureBrowserRenderer(browserRenderer, connection.info.keyCount)
+    const runtime = createDeckRuntime({
+      addonRegistry: loadedConfig.registry,
+      deck: loadedConfig.config.decks[loadedConfig.config.main_deck]!,
+      decks: loadedConfig.config.decks,
+      hostContext: loadedConfig.hostContext,
+      keyCount: connection.info.keyCount,
+      lockedDeckId: loadedConfig.config.session?.locked_deck,
+      onRenderDeck: async (buttons) => {
+        if (buttons.length > 0 && !buttons.every(isDomRenderButton)) {
+          throw new Error("Runtime deck rendering must provide DOM-backed button content")
+        }
+
+        const html = createDeckHtml(connection.info.keyCount, buttons.filter(isDomRenderButton), loadedConfig.theme)
+        surfaceState.activeDeckId = runtime.getActiveDeck().id
+        surfaceState.error = null
+        surfaceState.html = html
+        surfaceState.updatedAt = new Date().toISOString()
+        surfaceState.version += 1
+        surfaceState.status = "ready"
+        await browserRenderer.updateDeck(html)
+      },
+      sessionMonitor: loadedConfig.sessionMonitor,
+      subscribeKeyEvents: lifecycle.subscribeKeyEvents,
+      theme: loadedConfig.theme,
+    })
+
+    managedSession = { close: closeManagedSession, lifecycle, runtime }
+    runtime.start()
+  }
+
   const server = createEmulatorServer({
-    connectionInfo: connection.info,
-    emitKeyEvent: lifecycle.emitKeyEvent,
-    runtime,
+    emitKeyEvent: (event) => {
+      managedSession?.lifecycle.emitKeyEvent(event)
+    },
+    restartWithKeyCount: async (keyCount) => {
+      await startManagedSession(keyCount)
+    },
     surfaceState,
   })
 
   try {
     const port = await listenServer(server, options.port ?? 0)
-    runtime.start()
+    await startManagedSession(requestedKeyCount)
     const url = `http://127.0.0.1:${port}`
 
     return {
       async close() {
-        runtime.stop()
-        await browserRenderer.close().catch(() => {})
+        await closeManagedSession()
+        await browserRenderer?.close().catch(() => {})
         await loadedConfig.sessionMonitor.stop().catch(() => {})
-        await lifecycle.close().catch(() => {})
         await closeServer(server).catch(() => {})
       },
       port,
       url,
     }
   } catch (error) {
-    runtime.stop()
-    await browserRenderer.close().catch(() => {})
+    await closeManagedSession()
+    await browserRenderer?.close().catch(() => {})
     await loadedConfig.sessionMonitor.stop().catch(() => {})
-    await lifecycle.close().catch(() => {})
     await closeServer(server).catch(() => {})
     throw error
   }

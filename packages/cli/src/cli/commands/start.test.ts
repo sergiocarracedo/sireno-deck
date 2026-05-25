@@ -555,7 +555,7 @@ describe("startEmulatorSession", () => {
     expect(createStreamDeckLifecycle).not.toHaveBeenCalled()
     expect(createVirtualStreamDeckLifecycle).toHaveBeenCalledWith({
       keyCount: 15,
-      model: "Virtual Stream Deck 15",
+      model: "Stream Deck MK.2",
     })
     expect(browserRenderer.start).toHaveBeenCalledTimes(1)
     await vi.waitFor(() => {
@@ -572,7 +572,8 @@ describe("startEmulatorSession", () => {
     expect(stateResponse.status).toBe(200)
     expect(state).toMatchObject({
       activeDeckId: "main",
-      device: "Virtual Stream Deck 15 (15 keys)",
+      device: "Stream Deck MK.2",
+      selectedKeyCount: 15,
       status: "ready",
       version: 1,
     })
@@ -695,6 +696,166 @@ describe("startEmulatorSession", () => {
 
     expect(lifecycle.emitKeyEvent).toHaveBeenCalledWith({ keyIndex: 0, type: "down" })
     expect(lifecycle.emitKeyEvent).toHaveBeenCalledWith({ keyIndex: 0, type: "up" })
+
+    await session.close()
+  })
+
+  it("restarts the emulator with a new virtual device when the page requests a device switch", async () => {
+    const firstLifecycle = {
+      close: vi.fn(async () => {}),
+      emitKeyEvent: vi.fn(),
+      getConnection: vi.fn(() => ({ info: { keyCount: 15, model: "Stream Deck MK.2", serialNumber: "virtual-15" } })),
+      start: vi.fn(async () => ({ info: { keyCount: 15, model: "Stream Deck MK.2", serialNumber: "virtual-15" } })),
+      subscribeKeyEvents: vi.fn(() => () => {}),
+    }
+    const secondLifecycle = {
+      close: vi.fn(async () => {}),
+      emitKeyEvent: vi.fn(),
+      getConnection: vi.fn(() => ({ info: { keyCount: 32, model: "Stream Deck XL", serialNumber: "virtual-32" } })),
+      start: vi.fn(async () => ({ info: { keyCount: 32, model: "Stream Deck XL", serialNumber: "virtual-32" } })),
+      subscribeKeyEvents: vi.fn(() => () => {}),
+    }
+    const firstRenderer = {
+      close: vi.fn(async () => {}),
+      keyCount: 15,
+      start: vi.fn(async () => {}),
+      updateDeck: vi.fn(async () => {}),
+    }
+    const secondRenderer = {
+      close: vi.fn(async () => {}),
+      keyCount: 32,
+      start: vi.fn(async () => {}),
+      updateDeck: vi.fn(async () => {}),
+    }
+    const sessionMonitor = {
+      getSnapshot: vi.fn(() => ({ capability: "supported", state: "unknown" })),
+      stop: vi.fn(async () => {}),
+      subscribe: vi.fn(() => () => {}),
+    }
+    createVirtualStreamDeckLifecycle.mockReturnValueOnce(firstLifecycle).mockReturnValueOnce(secondLifecycle)
+    createBrowserRenderer.mockReturnValueOnce(firstRenderer).mockReturnValueOnce(secondRenderer)
+    createSessionMonitor.mockResolvedValue(sessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    loadBootstrapConfig.mockReturnValue({ config: { addons: [] }, cwd: "/tmp/project", filePath: "/tmp/project/config.yml" })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    loadConfigWithSources.mockReturnValue({
+      config: {
+        decks: { main: { buttons: [{ config: { label: "Clock" }, definition: { configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) }, createInstance: () => ({ render: () => createElement("div", null, "Clock") }), type: "dom-button" }, label: "Clock", position: 0, type: "dom-button" }], id: "main" } },
+        main_deck: "main",
+        theme: "dark",
+      },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
+    resolveTheme.mockResolvedValue({
+      accent: "#f59e0b",
+      background: "#10161f",
+      buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
+      danger: "#fb7185",
+      filePaths: ["/tmp/project/themes/default/index.js"],
+      foreground: "#eef2f7",
+      name: "dark",
+      primary: "#7dd3fc",
+      rootDir: "/tmp/project/themes/default",
+      stylesheets: [],
+      success: "#34d399",
+    })
+
+    const { startEmulatorSession } = await import("./start.js")
+    const session = await startEmulatorSession({ logger: { info: vi.fn(), warn: vi.fn() } as never, port: 0, keyCount: 15 })
+
+    const switchResponse = await fetch(`${session.url}/__sireno/device`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ keyCount: 32 }),
+    })
+    expect(switchResponse.status).toBe(202)
+
+    await vi.waitFor(async () => {
+      const state = await fetch(`${session.url}/__sireno/state`).then(async (response) => response.json())
+      expect(state).toMatchObject({ selectedKeyCount: 32, status: "ready" })
+    })
+
+    expect(firstLifecycle.close).toHaveBeenCalledTimes(1)
+    expect(firstRenderer.close).toHaveBeenCalledTimes(1)
+    expect(secondRenderer.start).toHaveBeenCalledTimes(1)
+
+    await session.close()
+  })
+
+  it("fails honestly when the selected virtual device cannot represent the configured deck", async () => {
+    const lifecycle = {
+      close: vi.fn(async () => {}),
+      emitKeyEvent: vi.fn(),
+      getConnection: vi.fn(() => ({ info: { keyCount: 15, model: "Stream Deck MK.2", serialNumber: "virtual-15" } })),
+      start: vi.fn(async () => ({ info: { keyCount: 15, model: "Stream Deck MK.2", serialNumber: "virtual-15" } })),
+      subscribeKeyEvents: vi.fn(() => () => {}),
+    }
+    const renderer = {
+      close: vi.fn(async () => {}),
+      keyCount: 15,
+      start: vi.fn(async () => {}),
+      updateDeck: vi.fn(async () => {}),
+    }
+    const smallRenderer = {
+      close: vi.fn(async () => {}),
+      keyCount: 6,
+      start: vi.fn(async () => {}),
+      updateDeck: vi.fn(async () => {}),
+    }
+    const sessionMonitor = {
+      getSnapshot: vi.fn(() => ({ capability: "supported", state: "unknown" })),
+      stop: vi.fn(async () => {}),
+      subscribe: vi.fn(() => () => {}),
+    }
+    createVirtualStreamDeckLifecycle.mockReturnValue(lifecycle)
+    createBrowserRenderer.mockReturnValueOnce(renderer).mockReturnValueOnce(smallRenderer)
+    createSessionMonitor.mockResolvedValue(sessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    loadBootstrapConfig.mockReturnValue({ config: { addons: [] }, cwd: "/tmp/project", filePath: "/tmp/project/config.yml" })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    loadConfigWithSources.mockReturnValue({
+      config: {
+        decks: { main: { buttons: [{ config: { label: "Key 8" }, definition: { configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) }, createInstance: () => ({ render: () => createElement("div", null, "Key 8") }), type: "dom-button" }, label: "Key 8", position: 7, type: "dom-button" }], id: "main" } },
+        main_deck: "main",
+        theme: "dark",
+      },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
+    resolveTheme.mockResolvedValue({
+      accent: "#f59e0b",
+      background: "#10161f",
+      buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
+      danger: "#fb7185",
+      filePaths: ["/tmp/project/themes/default/index.js"],
+      foreground: "#eef2f7",
+      name: "dark",
+      primary: "#7dd3fc",
+      rootDir: "/tmp/project/themes/default",
+      stylesheets: [],
+      success: "#34d399",
+    })
+
+    const { startEmulatorSession } = await import("./start.js")
+    const session = await startEmulatorSession({ logger: { info: vi.fn(), warn: vi.fn() } as never, port: 0, keyCount: 15 })
+
+    const switchResponse = await fetch(`${session.url}/__sireno/device`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ keyCount: 6 }),
+    })
+    expect(switchResponse.status).toBe(202)
+
+    await vi.waitFor(async () => {
+      const state = await fetch(`${session.url}/__sireno/state`).then(async (response) => response.json())
+      expect(state.status).toBe("error")
+      expect(state.error).toMatchObject({ code: "emulator_layout_mismatch" })
+    })
+
+    const deckHtml = await fetch(`${session.url}/__sireno/deck`).then(async (response) => response.text())
+    expect(deckHtml).toContain("Emulator Layout Error")
+    expect(deckHtml).toContain("configured deck needs 8")
 
     await session.close()
   })
