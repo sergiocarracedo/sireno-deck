@@ -3,9 +3,11 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
 import { pathToFileURL } from "node:url"
+import { createElement } from "react"
 import { describe, expect, it, vi } from "vitest"
 
 import { createBrowserRenderer, MAX_MEDIA_SAMPLE_INTERVAL_MS, MIN_MEDIA_SAMPLE_INTERVAL_MS } from "./browser-renderer.js"
+import { renderDomDeck } from "./dom-host.js"
 
 async function createDeckScreenshot(colors: string[]): Promise<Buffer> {
   const overlays = colors.map((color, index) => ({
@@ -27,6 +29,31 @@ async function createDeckScreenshot(colors: string[]): Promise<Buffer> {
       channels: 4,
       height: 72,
       width: colors.length * 72,
+    },
+  }).composite(overlays).png().toBuffer()
+}
+
+async function createGridDeckScreenshot(colors: string[], columns: number): Promise<Buffer> {
+  const overlays = colors.map((color, index) => ({
+    input: {
+      create: {
+        background: color,
+        channels: 4,
+        height: 72,
+        width: 72,
+      },
+    },
+    left: (index % columns) * 72,
+    top: Math.floor(index / columns) * 72,
+  }))
+  const rows = Math.ceil(colors.length / columns)
+
+  return sharp({
+    create: {
+      background: "#000000",
+      channels: 4,
+      height: rows * 72,
+      width: columns * 72,
     },
   }).composite(overlays).png().toBuffer()
 }
@@ -246,5 +273,42 @@ describe("browser renderer", () => {
     } finally {
       await rm(tempDir, { force: true, recursive: true })
     }
+  })
+
+  it("renders a committed emulator-sized deck through the same persistent browser page", async () => {
+    const setContent = vi.fn(async () => {})
+    const screenshot = vi.fn(async () => createGridDeckScreenshot([
+      "#ff0000", "#00ff00", "#0000ff", "#111111", "#222222",
+      "#333333", "#444444", "#555555", "#666666", "#777777",
+      "#888888", "#999999", "#aaaaaa", "#bbbbbb", "#cccccc",
+    ], 5))
+    const renderer = createBrowserRenderer({
+      keyCount: 15,
+      launcher: {
+        launch: async () => ({
+          close: async () => {},
+          newContext: async () => ({
+            close: async () => {},
+            newPage: async () => ({
+              screenshot,
+              setContent,
+              setViewportSize: async () => {},
+            }),
+          }),
+        }),
+      },
+    })
+
+    await renderer.start()
+    await renderer.updateDeck(renderDomDeck(Array.from({ length: 15 }, (_, keyIndex) => ({
+      content: createElement("div", null, `Key ${keyIndex}`),
+      keyIndex,
+    })), { keyCount: 15 }))
+    const buffers = await renderer.captureKeyBuffers()
+
+    expect(setContent).toHaveBeenCalledTimes(1)
+    expect(buffers.size).toBe(15)
+    expect(buffers.get(0)?.subarray(0, 3)).toEqual(Buffer.from([255, 0, 0]))
+    expect(buffers.get(14)?.subarray(0, 3)).toEqual(Buffer.from([204, 204, 204]))
   })
 })
