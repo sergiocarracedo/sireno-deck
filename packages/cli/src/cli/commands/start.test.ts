@@ -1,5 +1,9 @@
+import { resolve } from "node:path"
+
 import { createElement } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+
+import { createAddonRegistry } from "../../addon/registry.js"
 
 const blankRemainingKeys = vi.fn()
 const createBrowserRenderer = vi.fn()
@@ -68,6 +72,7 @@ vi.mock("../../system/session-monitor.js", () => ({
 }))
 
 describe("loadRuntimeConfig", () => {
+  const phase23FixtureRoot = resolve(import.meta.dirname, "../../../fixtures/phase-23/local-raw-addon")
   const supportedSessionMonitor = {
     getSnapshot: vi.fn(() => ({ capability: "supported", state: "unknown" })),
     stop: vi.fn(),
@@ -251,6 +256,57 @@ describe("loadRuntimeConfig", () => {
 
     await expect(loadRuntimeConfig({ config: "/tmp/project/config.yml", logger: { warn: vi.fn() } as never })).rejects.toThrow("broken theme runtime")
   })
+
+  it("loads a local raw .tsx addon fixture through the normal startup config path", async () => {
+    const registry = createAddonRegistry()
+    const actualLoader = await vi.importActual<typeof import("../../addon/loader.js")>("../../addon/loader.js")
+
+    createSessionMonitor.mockResolvedValue(supportedSessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    createBundledAddonRegistry.mockReturnValue(registry)
+    loadConfiguredAddons.mockImplementation((options) => actualLoader.loadConfiguredAddons(options))
+    loadBootstrapConfig.mockReturnValue({
+      config: {
+        addons: [{ enabled: true, name: "phase-23-local-raw-addon", path: phase23FixtureRoot, source: "local" }],
+      },
+      cwd: "/tmp/project",
+      filePath: "/tmp/project/config.yml",
+    })
+    loadConfigWithSources.mockReturnValue({
+      config: { main_deck: "main", theme: "dark" },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
+    resolveTheme.mockResolvedValue({ filePaths: ["/tmp/project/themes/default/index.js"] })
+
+    const { loadRuntimeConfig } = await import("./start.js")
+
+    const result = await loadRuntimeConfig({ config: "/tmp/project/config.yml", logger: { warn: vi.fn() } as never })
+
+    expect(loadConfiguredAddons).toHaveBeenCalledWith({
+      addons: [{ enabled: true, name: "phase-23-local-raw-addon", path: phase23FixtureRoot, source: "local" }],
+      cwd: "/tmp/project",
+      registry,
+    })
+    expect(result.registry.getButton("phase-23-local-raw-button")?.type).toBe("phase-23-local-raw-button")
+  })
+})
+
+beforeEach(() => {
+  blankRemainingKeys.mockReset()
+  createBrowserRenderer.mockReset()
+  createStreamDeckLifecycle.mockReset()
+  createVirtualStreamDeckLifecycle.mockReset()
+  watch.mockReset()
+  replayLastRenderedBuffers.mockReset()
+  writeKeyBuffer.mockReset()
+  createBundledAddonRegistry.mockReset()
+  loadBootstrapConfig.mockReset()
+  loadConfigWithSources.mockReset()
+  loadConfiguredAddons.mockReset()
+  resolveHostContext.mockReset()
+  createSessionMonitor.mockReset()
+  resolveTheme.mockReset()
 })
 
 describe("watchConfigFiles", () => {
@@ -478,7 +534,7 @@ describe("startDaemon", () => {
     const { startDaemon } = await import("./start.js")
     const logger = { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as const
 
-    await expect(startDaemon({ logger: logger as never })).resolves.toBeUndefined()
+    await expect(startDaemon({ logger: logger as never })).rejects.toThrow("missing chromium")
   })
 })
 
