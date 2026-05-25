@@ -1,0 +1,26 @@
+packages/cli/src/cli/commands/start.test.ts
+  s_4a24c7997d2c84::t_5e1a83d3c60f84 1-2,6-7,75,259-291
+  s_4a24c7997d2c84::t_5f5da93a49e78a 295-309
+  s_4a24c7997d2c84::t_0e6d45c170b078 537
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "9d7d7459cc577b16aeee5e4d1e1f952c3345ebfa",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4a24c7997d2c84": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a091daeaffeKrjgERsZBqFExO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
