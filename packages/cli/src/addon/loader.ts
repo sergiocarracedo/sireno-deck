@@ -1,7 +1,8 @@
 import { createRequire } from "node:module"
 import { existsSync, readFileSync } from "node:fs"
-import { dirname, join, resolve } from "node:path"
+import { dirname, extname, join, relative, resolve, sep } from "node:path"
 import { pathToFileURL } from "node:url"
+import { tsImport } from "tsx/esm/api"
 
 import { AddonManifestError, validateAddonApiVersion, validateAddonManifest, type AddonManifest } from "./manifest.js"
 
@@ -10,6 +11,9 @@ import type { AddonSchema } from "../core/schemas.js"
 import type { SirenoAddon } from "./api.js"
 
 const require = createRequire(import.meta.url)
+const RAW_SOURCE_EXTENSIONS = new Set([".js", ".jsx", ".ts", ".tsx"])
+const TRANSPILED_SOURCE_EXTENSIONS = new Set([".jsx", ".ts", ".tsx"])
+const RAW_SOURCE_IMPORT_PATTERN = /(?:import|export)\s+(?:[^"'`]+?\s+from\s+)?["'`]([^"'`]+)["'`]|import\(\s*["'`]([^"'`]+)["'`]\s*\)/g
 
 export interface LoadedAddon {
   addon: SirenoAddon
@@ -78,9 +82,15 @@ function readAddonManifest(rootDir: string, addonName: string): AddonManifest {
   return manifest
 }
 
-async function importAddon(rootDir: string, manifest: AddonManifest): Promise<SirenoAddon> {
-  const entryUrl = pathToFileURL(resolve(rootDir, manifest.main)).href
-  const importedModule = await import(entryUrl)
+async function importAddon(rootDir: string, manifest: AddonManifest, source: AddonSchema["source"]): Promise<SirenoAddon> {
+  const entryPath = resolve(rootDir, manifest.main)
+  if (!existsSync(entryPath)) {
+    throw new AddonLoadError(`Addon '${manifest.name}' runtime entry '${manifest.main}' was not found`, manifest.name)
+  }
+
+  const importedModule = source === "local" && TRANSPILED_SOURCE_EXTENSIONS.has(extname(entryPath))
+    ? await importRawSourceAddon(rootDir, entryPath, manifest)
+    : await import(pathToFileURL(entryPath).href)
   const addon = importedModule.default as SirenoAddon | undefined
 
   if (!addon || typeof addon !== "object" || !Array.isArray(addon.buttons)) {
@@ -88,6 +98,78 @@ async function importAddon(rootDir: string, manifest: AddonManifest): Promise<Si
   }
 
   return addon
+}
+
+function getRawSourceImportSpecifiers(moduleSource: string): string[] {
+  const specifiers = new Set<string>()
+
+  for (const match of moduleSource.matchAll(RAW_SOURCE_IMPORT_PATTERN)) {
+    const specifier = match[1] ?? match[2]
+    if (specifier) {
+      specifiers.add(specifier)
+    }
+  }
+
+  return [...specifiers]
+}
+
+function isWithinRoot(rootDir: string, candidatePath: string): boolean {
+  const relativePath = relative(rootDir, candidatePath)
+
+  return relativePath === "" || (!relativePath.startsWith("..") && !relativePath.includes(`${sep}..${sep}`) && relativePath !== "..")
+}
+
+function assertRawSourceModuleGraph(rootDir: string, entryPath: string, manifest: AddonManifest): void {
+  const pendingPaths = [entryPath]
+  const visited = new Set<string>()
+
+  while (pendingPaths.length > 0) {
+    const currentPath = pendingPaths.pop()
+    if (!currentPath || visited.has(currentPath)) {
+      continue
+    }
+
+    visited.add(currentPath)
+    if (!existsSync(currentPath)) {
+      throw new AddonLoadError(`Addon '${manifest.name}' source module '${relative(rootDir, currentPath) || currentPath}' was not found`, manifest.name)
+    }
+
+    if (!isWithinRoot(rootDir, currentPath)) {
+      throw new AddonLoadError(`Addon '${manifest.name}' source imports must stay inside the addon root`, manifest.name)
+    }
+
+    if (!RAW_SOURCE_EXTENSIONS.has(extname(currentPath))) {
+      continue
+    }
+
+    const source = readFileSync(currentPath, "utf-8")
+    for (const specifier of getRawSourceImportSpecifiers(source)) {
+      if (!(specifier.startsWith("./") || specifier.startsWith("../"))) {
+        continue
+      }
+
+      const resolvedPath = require.resolve(specifier, { paths: [dirname(currentPath)] })
+      if (!isWithinRoot(rootDir, resolvedPath)) {
+        throw new AddonLoadError(`Addon '${manifest.name}' source imports must stay inside the addon root`, manifest.name)
+      }
+
+      pendingPaths.push(resolvedPath)
+    }
+  }
+}
+
+async function importRawSourceAddon(rootDir: string, entryPath: string, manifest: AddonManifest): Promise<unknown> {
+  assertRawSourceModuleGraph(rootDir, entryPath, manifest)
+
+  try {
+    return await tsImport(pathToFileURL(entryPath).href, {
+      parentURL: pathToFileURL(entryPath).href,
+      tsconfig: false,
+    })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    throw new AddonLoadError(`Failed to import addon '${manifest.name}' raw source: ${message}`, manifest.name)
+  }
 }
 
 export async function loadConfiguredAddons(options: LoadConfiguredAddonsOptions): Promise<LoadConfiguredAddonsResult> {
@@ -103,7 +185,7 @@ export async function loadConfiguredAddons(options: LoadConfiguredAddonsOptions)
     try {
       const rootDir = getAddonRootPath(addon, cwd, options.resolveBareSpecifier)
       const manifest = readAddonManifest(rootDir, addon.name)
-      const loadedAddon = await importAddon(rootDir, manifest)
+      const loadedAddon = await importAddon(rootDir, manifest, addon.source)
       options.registry.registerAddon(loadedAddon, { rootDir })
       loaded.push({ addon: loadedAddon, manifest, rootDir })
     } catch (error) {
