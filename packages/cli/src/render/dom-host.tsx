@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server"
 import type { ReactElement } from "react"
 
 import { ButtonSurface } from "../addon/api.js"
+import type { ThemeFrameState } from "../config/theme.js"
 import type { Theme } from "../config/theme.js"
 import { buttonFrame as defaultButtonFrame } from "./button-frame.js"
 import { resolveDeckLayout } from "./browser-renderer.js"
@@ -12,6 +13,7 @@ import { getThemeUtilityStylesheet, renderThemeCssVariables } from "./theme-util
 
 export interface HostedButton {
   content: ReactElement
+  frame_state?: ThemeFrameState
   full_surface?: boolean
   keyIndex: number
   sample_interval_ms?: number
@@ -43,7 +45,7 @@ export function createHostedButtonElement(button: HostedButton): ReactElement {
 
   const frame = button.theme?.buttonFrame ?? defaultButtonFrame
 
-  return createElement(frame, { state: "idle" }, surface)
+  return createElement(frame, { state: button.frame_state ?? "idle" }, surface)
 }
 
 export function renderDomDeck(buttons: readonly HostedButton[], options: DomHostRenderOptions): string {

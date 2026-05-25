@@ -588,4 +588,114 @@ describe("startEmulatorSession", () => {
     expect(sessionMonitor.stop).toHaveBeenCalledTimes(1)
     expect(lifecycle.close).toHaveBeenCalledTimes(1)
   })
+
+  it("bridges browser input through the virtual lifecycle and exposes pressed feedback in the served deck html", async () => {
+    let keyListener: ((event: { keyIndex: number; type: "down" | "up" }) => void) | undefined
+    const lifecycle = {
+      close: vi.fn(async () => {}),
+      emitKeyEvent: vi.fn((event: { keyIndex: number; type: "down" | "up" }) => {
+        keyListener?.(event)
+      }),
+      getConnection: vi.fn(() => ({ info: { keyCount: 15, model: "Virtual Stream Deck 15", serialNumber: "virtual-15" } })),
+      start: vi.fn(async () => ({ info: { keyCount: 15, model: "Virtual Stream Deck 15", serialNumber: "virtual-15" } })),
+      subscribeKeyEvents: vi.fn((listener: (event: { keyIndex: number; type: "down" | "up" }) => void) => {
+        keyListener = listener
+        return () => {
+          keyListener = undefined
+        }
+      }),
+    }
+    const sessionMonitor = {
+      getSnapshot: vi.fn(() => ({ capability: "supported", state: "unknown" })),
+      stop: vi.fn(async () => {}),
+      subscribe: vi.fn(() => () => {}),
+    }
+    createVirtualStreamDeckLifecycle.mockReturnValue(lifecycle)
+    createBrowserRenderer.mockReturnValue({
+      close: vi.fn(async () => {}),
+      start: vi.fn(async () => {}),
+      updateDeck: vi.fn(async () => {}),
+    })
+    createSessionMonitor.mockResolvedValue(sessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    loadBootstrapConfig.mockReturnValue({
+      config: { addons: [] },
+      cwd: "/tmp/project",
+      filePath: "/tmp/project/config.yml",
+    })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    loadConfigWithSources.mockReturnValue({
+      config: {
+        decks: {
+          main: {
+            buttons: [{
+              config: { label: "Tap Me" },
+              definition: {
+                configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
+                createInstance: () => ({ render: () => createElement("div", null, "Tap Me") }),
+                type: "dom-button",
+              },
+              label: "Tap Me",
+              position: 0,
+              type: "dom-button",
+            }],
+            id: "main",
+          },
+        },
+        main_deck: "main",
+        theme: "dark",
+      },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
+    resolveTheme.mockResolvedValue({
+      accent: "#f59e0b",
+      background: "#10161f",
+      buttonFrame: vi.fn(({ children, state }: { children: unknown; state: string }) => createElement("div", { "data-frame-state": state }, children)),
+      danger: "#fb7185",
+      filePaths: ["/tmp/project/themes/default/index.js"],
+      foreground: "#eef2f7",
+      name: "dark",
+      primary: "#7dd3fc",
+      rootDir: "/tmp/project/themes/default",
+      stylesheets: [],
+      success: "#34d399",
+    })
+
+    const { startEmulatorSession } = await import("./start.js")
+    const session = await startEmulatorSession({ logger: { info: vi.fn(), warn: vi.fn() } as never, port: 0 })
+
+    const initialDeckHtml = await fetch(`${session.url}/__sireno/deck`).then(async (response) => response.text())
+    expect(initialDeckHtml).toContain("deck-root")
+    expect(initialDeckHtml).toContain("data-frame-state=\"idle\"")
+
+    const downResponse = await fetch(`${session.url}/__sireno/input`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ keyIndex: 0, type: "down" }),
+    })
+    expect(downResponse.status).toBe(204)
+
+    await vi.waitFor(async () => {
+      const pressedDeckHtml = await fetch(`${session.url}/__sireno/deck`).then(async (response) => response.text())
+      expect(pressedDeckHtml).toContain("data-frame-state=\"hold\"")
+    })
+
+    const upResponse = await fetch(`${session.url}/__sireno/input`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ keyIndex: 0, type: "up" }),
+    })
+    expect(upResponse.status).toBe(204)
+
+    await vi.waitFor(async () => {
+      const releasedDeckHtml = await fetch(`${session.url}/__sireno/deck`).then(async (response) => response.text())
+      expect(releasedDeckHtml).toContain("data-frame-state=\"idle\"")
+    })
+
+    expect(lifecycle.emitKeyEvent).toHaveBeenCalledWith({ keyIndex: 0, type: "down" })
+    expect(lifecycle.emitKeyEvent).toHaveBeenCalledWith({ keyIndex: 0, type: "up" })
+
+    await session.close()
+  })
 })

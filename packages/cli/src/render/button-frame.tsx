@@ -6,10 +6,13 @@ import type { ThemeButtonFrameProps } from "../config/theme.js"
 export interface ButtonFrameProps extends ThemeButtonFrameProps {}
 
 export function ButtonFrame(props: ButtonFrameProps) {
+  const isPressed = props.state !== "idle"
+
   return createElement(
     "div",
     {
       className: "bg-background border-accent",
+      "data-sireno-button-frame-state": props.state,
       "data-sireno-button-frame": "true",
       style: {
         alignItems: "stretch",
@@ -26,7 +29,9 @@ export function ButtonFrame(props: ButtonFrameProps) {
         boxSizing: "border-box",
         display: "flex",
         height: "72px",
+        transform: isPressed ? "translateY(1px) scale(0.985)" : "translateY(0) scale(1)",
         padding: "4px",
+        transition: "transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease",
         width: "72px",
       },
     },
@@ -41,6 +46,7 @@ export function ButtonFrame(props: ButtonFrameProps) {
           display: "flex",
           flex: 1,
           justifyContent: "center",
+          opacity: props.state === "hold" ? 0.9 : 1,
           overflow: "hidden",
           padding: "8px",
           position: "relative",

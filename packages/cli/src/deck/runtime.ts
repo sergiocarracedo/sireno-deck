@@ -11,6 +11,7 @@ import type { AddonRegistry } from "../addon/registry.js"
 import type { Theme } from "../config/theme.js"
 import type { ButtonInstance, DeckConfig } from "../core/schemas.js"
 import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
+import type { ThemeFrameState } from "../config/theme.js"
 import { UNKNOWN_HOST_CONTEXT, type HostContext } from "../system/host-context.js"
 import type { SessionMonitor, SessionSnapshot } from "../system/session-monitor.js"
 
@@ -64,6 +65,7 @@ interface RuntimeButtonInstance {
 export interface RuntimeRenderButton {
   background?: string
   content?: ReturnType<typeof ButtonSurface>
+  frame_state?: ThemeFrameState
   full_surface?: boolean
   icon?: string
   keyIndex: number
@@ -78,7 +80,7 @@ interface RootDomRenderProps {
 
 const IMPLICIT_LOCKED_DECK_ID = "__sireno_locked_session__"
 const TEMPORARY_RELOAD_ERROR_DECK_ID = "__sireno_reload_error__"
-const implicitLockedButtonDefinition = datetimeButtonsAddon.buttons.find((button) => button.type === "date-time")
+const lockedTimeTileButtonDefinition = datetimeButtonsAddon.buttons.find((button) => button.type === "locked-time-tile")
 const temporaryErrorButtonDefinition = {
   configSchema: z.object({
     detailLines: z.array(z.string().min(1)).default([]),
@@ -104,8 +106,8 @@ const temporaryErrorButtonDefinition = {
   type: "__runtime_reload_error__",
 } satisfies ButtonInstance["definition"]
 
-if (!implicitLockedButtonDefinition) {
-  throw new Error("Bundled date-time button definition is required for the implicit locked fallback")
+if (!lockedTimeTileButtonDefinition) {
+  throw new Error("Bundled locked-time-tile button definition is required for the implicit locked fallback")
 }
 
 function cloneHostContext(hostContext: HostContext): HostContext {
@@ -116,19 +118,19 @@ function cloneHostContext(hostContext: HostContext): HostContext {
 }
 
 function createImplicitLockedDeck(): DeckConfig {
+  const slots = ["hour-tens", "hour-ones", "separator", "minute-tens", "minute-ones"] as const
+
   return {
     id: IMPLICIT_LOCKED_DECK_ID,
     name: "Locked Session",
-    buttons: [{
+    buttons: slots.map((slot, index) => ({
       config: {
-        date_format: "MM/DD/YYYY",
-        time_format: "HH:mm:ss",
-        variant: "date-time",
+        slot,
       },
-      definition: implicitLockedButtonDefinition,
-      position: 0,
-      type: "date-time",
-    }],
+      definition: lockedTimeTileButtonDefinition,
+      position: 5 + index,
+      type: "locked-time-tile",
+    })),
   }
 }
 
@@ -267,6 +269,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     return { button, deckId }
   }
 
+  function getFrameState(keyIndex: number): ThemeFrameState {
+    return pressedKeys.has(keyIndex) ? "hold" : "idle"
+  }
+
   async function renderRuntimeButton(
     button: ButtonInstance,
       deckId = getDisplayDeckId(),
@@ -293,6 +299,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     const description = {
       background: resolveButtonBackground(button, deckId),
       content,
+      frame_state: getFrameState(button.position),
       ...(fullSurface !== undefined ? { full_surface: fullSurface } : {}),
       keyIndex: button.position,
       ...(button.icon !== undefined ? { icon: button.icon } : {}),
@@ -489,6 +496,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     }
 
     await getOrCreateInstance(handle.deckId, handle.button).onPress?.()
+    await renderRuntimeButton(handle.button, handle.deckId)
+    await renderDeckSurface(handle.deckId)
   }
 
   async function handleRelease(keyIndex: number): Promise<void> {
@@ -498,6 +507,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     }
 
     await getOrCreateInstance(handle.deckId, handle.button).onRelease?.()
+    await renderRuntimeButton(handle.button, handle.deckId)
+    await renderDeckSurface(handle.deckId)
   }
 
   async function handleTap(keyIndex: number): Promise<void> {

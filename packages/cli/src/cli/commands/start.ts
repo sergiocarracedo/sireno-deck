@@ -59,6 +59,13 @@ interface EmulatorSurfaceState {
   version: number
 }
 
+interface EmulatorClientScriptState {
+  activeDeckId: string
+  deviceLabel: string
+  frameVersion: number
+  renderStatus: string
+}
+
 const CONFIG_RELOAD_DEBOUNCE_MS = 75
 
 export async function loadRuntimeConfig(options: StartOptions) {
@@ -184,6 +191,7 @@ function createDeckHtml(
 ): string {
   return renderDomDeck(deckButtons.map((button) => ({
     content: button.content,
+    ...(button.frame_state !== undefined ? { frame_state: button.frame_state } : {}),
     ...(button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
     keyIndex: button.keyIndex,
     ...(button.sample_interval_ms !== undefined ? { sample_interval_ms: button.sample_interval_ms } : {}),
@@ -260,8 +268,9 @@ function renderEmulatorShellHtml(): string {
     ".label{color:#8b97aa;font-family:'IBM Plex Mono','Cascadia Code',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase}",
     ".value{font-size:14px;font-weight:600;text-align:right}",
     ".viewport{display:grid;place-items:center;min-height:70vh}",
-    "iframe{background:#05070a;border:1px solid rgba(255,255,255,.08);border-radius:28px;box-shadow:0 26px 50px rgba(0,0,0,.36);height:min(80vh,720px);max-width:100%;width:100%}",
-    "@media (max-width: 900px){.shell{grid-template-columns:1fr;padding:16px}.viewport{min-height:auto}iframe{height:70vh}}",
+    ".deck-shell{align-items:center;background:#05070a;border:1px solid rgba(255,255,255,.08);border-radius:28px;box-shadow:0 26px 50px rgba(0,0,0,.36);display:grid;justify-items:center;min-height:min(80vh,720px);padding:24px;width:100%}",
+    "#deck-mount{display:contents}",
+    "@media (max-width: 900px){.shell{grid-template-columns:1fr;padding:16px}.viewport{min-height:auto}.deck-shell{min-height:70vh;padding:16px}}",
     "</style></head><body>",
     "<main class=\"shell\">",
     "<section class=\"panel\">",
@@ -276,10 +285,10 @@ function renderEmulatorShellHtml(): string {
     "<div class=\"stat\"><span class=\"label\">Render Version</span><span class=\"value\" id=\"version\">0</span></div>",
     "</div>",
     "</section>",
-    "<section class=\"viewport\"><iframe id=\"deck-frame\" title=\"Sireno deck emulator\"></iframe></section>",
+    "<section class=\"viewport\"><div class=\"deck-shell\"><div id=\"deck-mount\">Waiting for first render...</div></div></section>",
     "</main>",
     "<script>",
-    "const frame = document.getElementById('deck-frame');",
+    "const mount = document.getElementById('deck-mount');",
     "const device = document.getElementById('device');",
     "const deck = document.getElementById('deck');",
     "const status = document.getElementById('status');",
@@ -294,13 +303,27 @@ function renderEmulatorShellHtml(): string {
     "  version.textContent = String(state.version);",
     "  if (state.version > 0 && state.version !== currentVersion) {",
     "    currentVersion = state.version;",
-    "    frame.src = `/__sireno/deck?v=${state.version}`;",
+    "    const deckResponse = await fetch(`/__sireno/deck?v=${state.version}`, { cache: 'no-store' });",
+    "    const deckHtml = await deckResponse.text();",
+    "    mount.innerHTML = deckHtml;",
+    "    mount.querySelectorAll('[data-sireno-key]').forEach((element) => {",
+    "      const keyIndex = Number(element.getAttribute('data-sireno-key'));",
+    "      if (Number.isNaN(keyIndex)) { return; }",
+    "      element.onmousedown = async () => { await fetch(`/__sireno/input`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ keyIndex, type: 'down' }) }); };",
+    "      element.onmouseup = async () => { await fetch(`/__sireno/input`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ keyIndex, type: 'up' }) }); };",
+    "      element.onmouseleave = async (event) => { if (event.buttons === 1) { await fetch(`/__sireno/input`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ keyIndex, type: 'up' }) }); } };",
+    "    });",
     "  }",
     "}",
     "refresh().catch((error) => { status.textContent = String(error); });",
     "setInterval(() => { void refresh().catch((error) => { status.textContent = String(error); }); }, 500);",
     "</script></body></html>",
   ].join("")
+}
+
+function extractDeckRootHtml(html: string): string {
+  const match = html.match(/<div id="deck-root"[\s\S]*<\/div>/)
+  return match?.[0] ?? html
 }
 
 function writeHttpResponse(response: ServerResponse, statusCode: number, body: string, contentType: string): void {
@@ -311,6 +334,7 @@ function writeHttpResponse(response: ServerResponse, statusCode: number, body: s
 
 function createEmulatorServer(options: {
   connectionInfo: { keyCount: number; model: string }
+  emitKeyEvent: (event: { keyIndex: number; type: "down" | "up" }) => void
   runtime: ReturnType<typeof createDeckRuntime>
   surfaceState: EmulatorSurfaceState
 }): Server {
@@ -326,9 +350,33 @@ function createEmulatorServer(options: {
       writeHttpResponse(
         response,
         options.surfaceState.version > 0 ? 200 : 503,
-        options.surfaceState.html || "<!doctype html><html><body style=\"background:#05070a;color:#eef2f7;font-family:sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;\">Waiting for first render...</body></html>",
+        options.surfaceState.version > 0
+          ? extractDeckRootHtml(options.surfaceState.html)
+          : "<div style=\"color:#eef2f7;font-family:sans-serif;display:grid;place-items:center;min-height:240px;\">Waiting for first render...</div>",
         "text/html; charset=utf-8",
       )
+      return
+    }
+
+    if (url.pathname === "/__sireno/input" && request.method === "POST") {
+      const chunks: Buffer[] = []
+      request.on("data", (chunk) => {
+        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
+      })
+      request.on("end", () => {
+        try {
+          const payload = JSON.parse(Buffer.concat(chunks).toString("utf8")) as { keyIndex?: number; type?: "down" | "up" }
+          if (typeof payload.keyIndex !== "number" || (payload.type !== "down" && payload.type !== "up")) {
+            writeHttpResponse(response, 400, "Invalid input event", "text/plain; charset=utf-8")
+            return
+          }
+
+          options.emitKeyEvent({ keyIndex: payload.keyIndex, type: payload.type })
+          writeHttpResponse(response, 204, "", "text/plain; charset=utf-8")
+        } catch {
+          writeHttpResponse(response, 400, "Invalid input event", "text/plain; charset=utf-8")
+        }
+      })
       return
     }
 
@@ -417,6 +465,7 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
   })
   const server = createEmulatorServer({
     connectionInfo: connection.info,
+    emitKeyEvent: lifecycle.emitKeyEvent,
     runtime,
     surfaceState,
   })

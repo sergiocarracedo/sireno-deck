@@ -13,4 +13,11 @@ describe("buttonFrame", () => {
     expect(html).toContain('class="bg-background border-accent"')
     expect(html).toContain('var(--sireno-color-primary)')
   })
+
+  it("surfaces non-idle interaction state in the frame markup", () => {
+    const html = renderReactNodeToHtml(createElement(buttonFrame, { state: "hold" }, createElement("span", null, "Clock")))
+
+    expect(html).toContain('data-sireno-button-frame-state="hold"')
+    expect(html).toContain("translateY(1px) scale(0.985)")
+  })
 })

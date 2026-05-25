@@ -1,7 +1,8 @@
 import { join } from "node:path"
+import { fileURLToPath } from "node:url"
 
 import { createElement } from "react"
-import { describe, expect, it, vi } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import { ButtonSurface, createBaseShapeTextContent } from "../addon/api.js"
 
 import { createBundledAddonRegistry, loadConfig } from "../config/loader.js"
@@ -12,6 +13,8 @@ import { createDeckRuntime } from "./runtime.js"
 import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
 import type { PollingScheduler } from "../render/scheduler.js"
 import type { SessionMonitor, SessionSnapshot } from "../system/session-monitor.js"
+
+const FIXTURES_DIRECTORY = fileURLToPath(new URL("../../fixtures", import.meta.url))
 
 function createTextSurface(keyIndex: number, label: string) {
   return createBaseShapeTextContent({ keyIndex, label })
@@ -78,6 +81,10 @@ function createSessionMonitorDouble(initialSnapshot: SessionSnapshot): SessionMo
 }
 
 describe("createDeckRuntime", () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it("renders a bundled addon-backed button through the generic runtime host", async () => {
     const onRenderDeck = vi.fn()
     const runtime = createDeckRuntime({
@@ -494,7 +501,7 @@ describe("createDeckRuntime", () => {
 
   it("keeps the committed Phase 11 host-context fixture live across render and action execution", async () => {
     const config = loadConfig(
-      join(process.cwd(), "fixtures/phase-11/config.host-context.yml"),
+      join(FIXTURES_DIRECTORY, "phase-11/config.host-context.yml"),
       createBundledAddonRegistry(),
       {
         os: {
@@ -1286,7 +1293,10 @@ describe("createDeckRuntime", () => {
     })
   })
 
-  it("uses the implicit built-in date-time fallback when no locked deck is configured", async () => {
+  it("uses the implicit centered five-button time fallback when no locked deck is configured", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 4, 14, 9, 8, 7))
+
     const sessionMonitor = createSessionMonitorDouble({ capability: "supported", state: "unlocked" })
     const runtime = createDeckRuntime({
       deck: {
@@ -1314,15 +1324,39 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       expect(runtime.getActiveDeck().id).toBe("__sireno_locked_session__")
-      expect(runtime.getButton(0)).toMatchObject({
-        config: {
-          date_format: "MM/DD/YYYY",
-          time_format: "HH:mm:ss",
-          variant: "date-time",
-        },
-        type: "date-time",
+      expect(runtime.getButton(5)).toMatchObject({
+        config: { slot: "hour-tens" },
+        type: "locked-time-tile",
       })
-      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toMatch(/\d{2}\/\d{2}\/\d{4}/)
+      expect(runtime.getButton(6)).toMatchObject({
+        config: { slot: "hour-ones" },
+        type: "locked-time-tile",
+      })
+      expect(runtime.getButton(7)).toMatchObject({
+        config: { slot: "separator" },
+        type: "locked-time-tile",
+      })
+      expect(runtime.getButton(8)).toMatchObject({
+        config: { slot: "minute-tens" },
+        type: "locked-time-tile",
+      })
+      expect(runtime.getButton(9)).toMatchObject({
+        config: { slot: "minute-ones" },
+        type: "locked-time-tile",
+      })
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 5))).toContain('0')
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 6))).toContain('9')
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 7))).toContain(':')
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 8))).toContain('0')
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 9))).toContain('8')
+    })
+
+    vi.setSystemTime(new Date(2026, 4, 14, 9, 9, 1))
+    await vi.advanceTimersByTimeAsync(1000)
+
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 8))).toContain('0')
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 9))).toContain('9')
     })
   })
 
@@ -1450,7 +1484,7 @@ describe("createDeckRuntime", () => {
 
   it("keeps the committed Phase 11 locked-session fixture restorable across lock and unlock transitions", async () => {
     const config = loadConfig(
-      join(process.cwd(), "fixtures/phase-11/config.locked-session.yml"),
+      join(FIXTURES_DIRECTORY, "phase-11/config.locked-session.yml"),
       createBundledAddonRegistry(),
       {
         os: { type: "linux", variant: "ubuntu", version: "24.04" },
@@ -1951,5 +1985,59 @@ describe("createDeckRuntime", () => {
     const renderedDeckButton = onRenderDeck.mock.calls.at(-1)?.[0]?.[0]
     expect(renderedDeckButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Lamp" })
     expect(getRenderedButtonHtml(renderedDeckButton)).toContain("OFF")
+  })
+
+  it("re-renders pressed frame state on down and returns to idle on up while preserving tap behavior", async () => {
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    let taps = 0
+    const onRenderDeck = vi.fn()
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Press Me" },
+          definition: {
+            configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
+            createInstance: ({ button }: { button: { position: number } }) => ({
+              onTap: async () => {
+                taps += 1
+              },
+              render: () => createTextSurface(button.position, "Press Me"),
+            }),
+            type: "pressable-button",
+          },
+          label: "Press Me",
+          position: 0,
+          type: "pressable-button",
+        }],
+      },
+      onRenderDeck,
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(getRenderedButton(runtime, 0)).toMatchObject({ frame_state: "idle", keyIndex: 0, label: "Press Me" })
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+
+    await vi.waitFor(() => {
+      expect(getRenderedButton(runtime, 0)).toMatchObject({ frame_state: "hold", keyIndex: 0, label: "Press Me" })
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(getRenderedButton(runtime, 0)).toMatchObject({ frame_state: "idle", keyIndex: 0, label: "Press Me" })
+      expect(taps).toBe(1)
+    })
+
+    expect(onRenderDeck.mock.calls.at(-1)?.[0]?.[0]).toMatchObject({ frame_state: "idle", keyIndex: 0, label: "Press Me" })
   })
 })
