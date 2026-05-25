@@ -259,6 +259,17 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ---
 
+### Phase 24: Direct JSX/TSX Addon Render Definitions
+
+**Goal:** Simplify addon button authoring so button definitions can export a direct `render(...)` function with TSX/JSX output instead of a `createInstance(...).render()` wrapper, while keeping TSX/JSX authoring first-class.
+**Status:** [ ] Not started
+**Depends on:** Phase 23
+
+### Plans
+*Not yet planned — run `plan-phase 24`*
+
+---
+
 ## Coverage Validation
 
 - [x] All 9 v1.2 requirements map to at least one roadmap phase
