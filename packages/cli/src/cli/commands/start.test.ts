@@ -469,10 +469,14 @@ describe("renderRuntimeDeckSurface", () => {
 
 describe("startDaemon", () => {
   it("exits honestly when the browser renderer cannot start", async () => {
+    const connection = {
+      device: { clearPanel: vi.fn(async () => {}) },
+      info: { keyCount: 15, model: "XL", serialNumber: "abc" },
+    }
     const lifecycle = {
       close: vi.fn(async () => {}),
-      getConnection: vi.fn(() => ({ info: { keyCount: 15, model: "XL", serialNumber: "abc" } })),
-      start: vi.fn(async () => ({ info: { keyCount: 15, model: "XL", serialNumber: "abc" } })),
+      getConnection: vi.fn(() => connection),
+      start: vi.fn(async () => connection),
       subscribeKeyEvents: vi.fn(() => () => {}),
     }
     const sessionMonitor = {

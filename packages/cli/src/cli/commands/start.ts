@@ -22,6 +22,7 @@ import {
 import { formatLinuxUdevAccessError } from "../../device/linux-udev.js"
 import { createBrowserRenderer, getVirtualDeckDevices } from "../../render/browser-renderer.js"
 import { renderDomDeck } from "../../render/dom-host.js"
+import { createStartupPlaceholderBuffers } from "../../render/startup-placeholder.js"
 import type { RuntimeRenderButton } from "../../deck/runtime.js"
 
 import { resolveHostContext } from "../../system/host-context.js"
@@ -243,6 +244,16 @@ async function renderDomDeckSurface(
   }
 
   logger.info({ deckId: "main deck", renderedKeys: Array.from(buffersByKey.keys()).sort((left, right) => left - right) }, "rendered browser-backed main deck")
+}
+
+async function writePlaceholderDeckSurface(
+  connection: NonNullable<ReturnType<ReturnType<typeof createStreamDeckLifecycle>["getConnection"]>>,
+): Promise<void> {
+  const buffersByKey = await createStartupPlaceholderBuffers(connection.info.keyCount)
+
+  for (const [keyIndex, buffer] of buffersByKey.entries()) {
+    await writeKeyBuffer(connection, keyIndex, buffer)
+  }
 }
 
 export async function renderRuntimeDeckSurface(
@@ -631,6 +642,13 @@ export async function startDaemon(options: StartOptions): Promise<void> {
   const { logger } = options
   const existingPid = readPid()
   let cleanupSignals = () => {}
+  let runtime: ReturnType<typeof createDeckRuntime> | null = null
+  let sessionMonitor: Awaited<ReturnType<typeof loadRuntimeConfig>>["sessionMonitor"] | null = null
+  let browserRenderer: BrowserRenderer | null = null
+  let stopWatchingConfig = () => {}
+  let lifecycle: ReturnType<typeof createStreamDeckLifecycle> | null = null
+  let connection: NonNullable<ReturnType<ReturnType<typeof createStreamDeckLifecycle>["getConnection"]>> | null = null
+  let startupPlaceholderPending = false
 
   if (existingPid !== null && isRunning(existingPid)) {
     logger.error({ pid: existingPid }, "daemon already running")
@@ -645,13 +663,16 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
   try {
     const initialLoad = await loadRuntimeConfig(options)
-    let runtime: ReturnType<typeof createDeckRuntime> | null = null
-    let sessionMonitor = initialLoad.sessionMonitor
-    let browserRenderer: BrowserRenderer | null = null
-    let stopWatchingConfig = () => {}
+    sessionMonitor = initialLoad.sessionMonitor
     let reloadInFlight = false
     let reloadQueued = false
-    const lifecycle = createStreamDeckLifecycle({
+    let resolveFirstRender: (() => void) | null = null
+    let rejectFirstRender: ((error: unknown) => void) | null = null
+    const firstRenderReady = new Promise<void>((resolve, reject) => {
+      resolveFirstRender = resolve
+      rejectFirstRender = reject
+    })
+    lifecycle = createStreamDeckLifecycle({
       logger,
       onReconnect: async (connection) => {
         if (!runtime) {
@@ -664,8 +685,12 @@ export async function startDaemon(options: StartOptions): Promise<void> {
       selector: { serial: initialLoad.config.device?.serial },
     })
 
-    const connection = await lifecycle.start()
-    browserRenderer = await ensureBrowserRenderer(browserRenderer, connection.info.keyCount)
+    connection = await lifecycle.start()
+    const activeLifecycle = lifecycle
+    const activeConnection = connection
+    startupPlaceholderPending = true
+    await writePlaceholderDeckSurface(activeConnection)
+    browserRenderer = await ensureBrowserRenderer(browserRenderer, activeConnection.info.keyCount)
 
     setDomAssetPathResolver((assetReference) => initialLoad.registry.resolveAssetPath(assetReference))
 
@@ -675,19 +700,37 @@ export async function startDaemon(options: StartOptions): Promise<void> {
         deck: loadedConfig.config.decks[loadedConfig.config.main_deck]!,
         decks: loadedConfig.config.decks,
         hostContext: loadedConfig.hostContext,
-        keyCount: connection.info.keyCount,
+        keyCount: activeConnection.info.keyCount,
         lockedDeckId: loadedConfig.config.session?.locked_deck,
         theme: loadedConfig.theme,
         onRenderDeck: async (buttons) => {
-          const activeConnection = lifecycle.getConnection()
-          if (!activeConnection || !browserRenderer) {
+          const currentConnection = activeLifecycle.getConnection()
+          if (!currentConnection || !browserRenderer) {
             return
           }
 
-          await renderRuntimeDeckSurface(activeConnection, buttons, browserRenderer, logger, loadedConfig.theme)
+          try {
+            await renderRuntimeDeckSurface(currentConnection, buttons, browserRenderer, logger, loadedConfig.theme)
+
+            if (startupPlaceholderPending) {
+              startupPlaceholderPending = false
+              resolveFirstRender?.()
+              resolveFirstRender = null
+              rejectFirstRender = null
+            }
+          } catch (error) {
+            if (startupPlaceholderPending) {
+              startupPlaceholderPending = false
+              rejectFirstRender?.(error)
+              resolveFirstRender = null
+              rejectFirstRender = null
+            }
+
+            throw error
+          }
         },
         sessionMonitor: loadedConfig.sessionMonitor,
-        subscribeKeyEvents: lifecycle.subscribeKeyEvents,
+        subscribeKeyEvents: activeLifecycle.subscribeKeyEvents,
       })
     }
 
@@ -752,6 +795,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     }
 
     runtime.start()
+    await firstRenderReady
     stopWatchingConfig = watchConfigFiles(initialLoad.filePaths, () => {
       void reloadRuntime().catch((error) => {
         logger.error({ error }, "config reload failed")
@@ -760,23 +804,35 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
     logger.info({ config: initialLoad.config }, "config loaded successfully")
     logger.info(
-      {
-        keyCount: connection.info.keyCount,
-        model: connection.info.model,
-        serialNumber: connection.info.serialNumber,
-      },
-      "connected to Stream Deck",
-    )
+        {
+          keyCount: activeConnection.info.keyCount,
+          model: activeConnection.info.model,
+          serialNumber: activeConnection.info.serialNumber,
+        },
+        "connected to Stream Deck",
+      )
 
     writePid()
     cleanupSignals = setupSignalHandlers(logger, async () => {
       stopWatchingConfig()
       runtime?.stop()
       await browserRenderer?.close()
-      await sessionMonitor.stop()
-      await lifecycle.close()
+      await sessionMonitor?.stop()
+      await lifecycle?.close()
     })
   } catch (error) {
+    if (startupPlaceholderPending && connection) {
+      await connection.device.clearPanel().catch(() => {})
+      startupPlaceholderPending = false
+    }
+
+    cleanupSignals()
+    stopWatchingConfig()
+    runtime?.stop()
+    await browserRenderer?.close().catch(() => {})
+    await sessionMonitor?.stop().catch(() => {})
+    await lifecycle?.close().catch(() => {})
+
     if (error instanceof AddonManifestError && error.code === "api_version_mismatch") {
       console.error(`Addon apiVersion error: ${error.message}`)
       process.exitCode = 1
