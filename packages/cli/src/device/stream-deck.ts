@@ -24,9 +24,20 @@ export interface StreamDeckConnectionInfo extends StreamDeckCandidate {
 }
 
 export interface StreamDeckConnection {
-  device: StreamDeck
+  device: StreamDeckDeviceHandle
   info: StreamDeckConnectionInfo
   lastWrittenBuffers: Map<number, Buffer>
+}
+
+export interface StreamDeckDeviceHandle {
+  clearPanel: () => Promise<void>
+  close: () => Promise<void>
+  fillKeyBuffer: (keyIndex: number, imageBuffer: Uint8Array, options?: { format?: string }) => Promise<void>
+}
+
+interface StreamDeckEventHandle extends StreamDeckDeviceHandle {
+  off: (event: "down" | "error" | "up", listener: (...args: unknown[]) => void) => this
+  on: (event: "down" | "error" | "up", listener: (...args: unknown[]) => void) => this
 }
 
 export interface StreamDeckLogger {
@@ -59,6 +70,17 @@ export interface StreamDeckLifecycle {
   getConnection: () => StreamDeckConnection | null
   subscribeKeyEvents: (listener: StreamDeckKeyListener) => () => void
   start: () => Promise<StreamDeckConnection>
+}
+
+export interface VirtualStreamDeckOptions {
+  keyCount: number
+  model?: string
+  modelId?: string
+  serialNumber?: string
+}
+
+export interface VirtualStreamDeckLifecycle extends StreamDeckLifecycle {
+  emitKeyEvent: (event: StreamDeckKeyEvent) => void
 }
 
 export interface StreamDeckKeyEvent {
@@ -245,6 +267,81 @@ function isButtonControl(
   return control.type === "button"
 }
 
+function isStreamDeckEventHandle(device: StreamDeckDeviceHandle): device is StreamDeckEventHandle {
+  return "on" in device && typeof device.on === "function" && "off" in device && typeof device.off === "function"
+}
+
+function emitKeyEventToListeners(
+  keyListeners: ReadonlySet<StreamDeckKeyListener>,
+  event: StreamDeckKeyEvent,
+): void {
+  for (const listener of keyListeners) {
+    listener(event)
+  }
+}
+
+export function createVirtualStreamDeckLifecycle(options: VirtualStreamDeckOptions): VirtualStreamDeckLifecycle {
+  const connection: StreamDeckConnection = {
+    device: {
+      async clearPanel() {
+        return undefined
+      },
+      async close() {
+        return undefined
+      },
+      async fillKeyBuffer() {
+        return undefined
+      },
+    },
+    info: {
+      keyCount: options.keyCount,
+      lcdKeyIndices: Array.from({ length: options.keyCount }, (_, index) => index),
+      model: options.model ?? `Virtual Stream Deck ${options.keyCount}`,
+      modelId: options.modelId ?? `virtual-${options.keyCount}`,
+      path: `virtual://${options.keyCount}`,
+      serialNumber: options.serialNumber ?? `virtual-${options.keyCount}`,
+    },
+    lastWrittenBuffers: new Map<number, Buffer>(),
+  }
+  const keyListeners = new Set<StreamDeckKeyListener>()
+  let closed = false
+  let started = false
+
+  return {
+    emitKeyEvent(event) {
+      if (closed) {
+        return
+      }
+
+      emitKeyEventToListeners(keyListeners, event)
+    },
+    async start() {
+      if (closed) {
+        throw new Error("Stream Deck lifecycle is closed")
+      }
+
+      started = true
+      return connection
+    },
+    getConnection() {
+      return closed || !started ? null : connection
+    },
+    subscribeKeyEvents(listener) {
+      keyListeners.add(listener)
+
+      return () => {
+        keyListeners.delete(listener)
+      }
+    },
+    async close() {
+      closed = true
+      started = false
+      keyListeners.clear()
+      await closeStreamDeckConnection(connection)
+    },
+  }
+}
+
 export function createStreamDeckLifecycle(
   options: StreamDeckLifecycleOptions = {},
 ): StreamDeckLifecycle {
@@ -271,7 +368,7 @@ export function createStreamDeckLifecycle(
   let reconnectSerial = options.selector?.serial
 
   function detachErrorHandler(): void {
-    if (activeConnection && activeErrorHandler) {
+    if (activeConnection && activeErrorHandler && isStreamDeckEventHandle(activeConnection.device)) {
       activeConnection.device.off("error", activeErrorHandler)
     }
 
@@ -279,11 +376,11 @@ export function createStreamDeckLifecycle(
   }
 
   function detachKeyHandlers(): void {
-    if (activeConnection && activeDownHandler) {
+    if (activeConnection && activeDownHandler && isStreamDeckEventHandle(activeConnection.device)) {
       activeConnection.device.off("down", activeDownHandler)
     }
 
-    if (activeConnection && activeUpHandler) {
+    if (activeConnection && activeUpHandler && isStreamDeckEventHandle(activeConnection.device)) {
       activeConnection.device.off("up", activeUpHandler)
     }
 
@@ -296,6 +393,10 @@ export function createStreamDeckLifecycle(
     detachKeyHandlers()
     activeConnection = connection
     reconnectSerial = connection.info.serialNumber ?? reconnectSerial
+
+    if (!isStreamDeckEventHandle(connection.device)) {
+      return
+    }
 
     activeErrorHandler = (error: unknown) => {
       if (closed || reconnectPromise) {
@@ -312,9 +413,7 @@ export function createStreamDeckLifecycle(
         return
       }
 
-      for (const listener of keyListeners) {
-        listener({ keyIndex: control.index, type: "down" })
-      }
+      emitKeyEventToListeners(keyListeners, { keyIndex: control.index, type: "down" })
     }
 
     activeUpHandler = (control) => {
@@ -322,9 +421,7 @@ export function createStreamDeckLifecycle(
         return
       }
 
-      for (const listener of keyListeners) {
-        listener({ keyIndex: control.index, type: "up" })
-      }
+      emitKeyEventToListeners(keyListeners, { keyIndex: control.index, type: "up" })
     }
 
     connection.device.on("down", activeDownHandler)

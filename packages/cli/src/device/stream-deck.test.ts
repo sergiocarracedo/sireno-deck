@@ -7,6 +7,7 @@ import {
   blankRemainingKeys,
   connectStreamDeck,
   createStreamDeckLifecycle,
+  createVirtualStreamDeckLifecycle,
   replayLastRenderedBuffers,
   type StreamDeckKeyEvent,
   writeKeyBuffer,
@@ -228,6 +229,39 @@ describe("stream deck connection", () => {
 
     device.emit("down", device.CONTROLS[1])
     expect(listener).not.toHaveBeenCalled()
+  })
+
+  it("creates a virtual lifecycle that emits key events through the shared listener contract", async () => {
+    const lifecycle = createVirtualStreamDeckLifecycle({ keyCount: 15, model: "Virtual Stream Deck MK.2" })
+    const events: StreamDeckKeyEvent[] = []
+
+    lifecycle.subscribeKeyEvents((event) => {
+      events.push(event)
+    })
+
+    const connection = await lifecycle.start()
+    lifecycle.emitKeyEvent({ keyIndex: 4, type: "down" })
+    lifecycle.emitKeyEvent({ keyIndex: 4, type: "up" })
+
+    expect(connection.info).toMatchObject({
+      keyCount: 15,
+      model: "Virtual Stream Deck MK.2",
+      modelId: "virtual-15",
+    })
+    expect(events).toEqual([
+      { keyIndex: 4, type: "down" },
+      { keyIndex: 4, type: "up" },
+    ])
+  })
+
+  it("stores last written buffers on the virtual lifecycle connection", async () => {
+    const lifecycle = createVirtualStreamDeckLifecycle({ keyCount: 6 })
+    const connection = await lifecycle.start()
+
+    await expect(writeKeyBuffer(connection, 2, Buffer.from([1, 2, 3]))).resolves.toBe(true)
+    await expect(writeKeyBuffer(connection, 2, Buffer.from([1, 2, 3]))).resolves.toBe(false)
+
+    expect(connection.lastWrittenBuffers.get(2)).toEqual(Buffer.from([1, 2, 3]))
   })
 
   it("reports an unmatched serial clearly", async () => {
