@@ -43,6 +43,12 @@ rtk vitest run src/addon/loader.test.ts src/cli/commands/start.test.ts
 
 Result: `PASS (26) FAIL (0)`
 
+Gap follow-up after manual UAT:
+- Manual UAT exposed one shipped-fixture regression: `packages/cli/fixtures/phase-23/config.yml` used addon package name `phase-23-local-raw-addon` where config validation requires the registered button id `phase-23-local-raw-button`.
+- Root cause and failed evidence are preserved in `.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-UAT.md`.
+- Gap-closure rerun path: `.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-03-PLAN.md`.
+- The shipped fixture config has now been corrected, and `23-03-PLAN.md` adds focused regression coverage so config-to-registry drift cannot silently recur.
+
 Artifact checks passed:
 - `packages/cli/fixtures/phase-23/local-raw-addon/package.json`
 - `packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx`
