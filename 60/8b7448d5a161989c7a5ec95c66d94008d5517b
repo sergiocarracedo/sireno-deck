@@ -1,0 +1,28 @@
+.planning/phases/22-browser-deck-emulator/22-UAT.md
+  s_8d74af9d4bfed8::t_5022ed20f809a4 27
+  s_8d74af9d4bfed8::t_a4eb45507841fb 1,3-8,10-12,15,18-22,24-26,28-30,32-34,36-39,41,43-47
+  s_8d74af9d4bfed8::t_77c66b0d94086b 23
+  s_8d74af9d4bfed8::t_8a9283ee023712 13,31
+  s_8d74af9d4bfed8::t_299c06440bfd58 2,9,14,16-17,35,40,42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "608b7448d5a161989c7a5ec95c66d94008d5517b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_8d74af9d4bfed8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a4269384ffeN1puLn8w7RzN1B",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
