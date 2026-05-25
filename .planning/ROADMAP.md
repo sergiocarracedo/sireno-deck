@@ -246,12 +246,14 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 23: JSX/TSX Addon Authoring + Startup Placeholder
 
 **Goal:** Let addon buttons render through JSX/TSX authoring and show a startup image on the Stream Deck while the browser renderer boots and the first deck surface becomes available.
-**Status:** [ ] Not started
+**Status:** ✓ Complete (2026-05-25)
 **Depends on:** Phase 22
 
 ### Plans
 - `23-01`: Load local raw-source addons through manifest `sirenoAddon.main` using the fixed TSX/relative-import contract
 - `23-02`: Show a branded hardware startup placeholder until the first real browser capture or honest startup failure
+
+**Phase 23 note:** This post-roadmap phase now ships manifest-driven local raw `.ts/.tsx/.jsx` addon loading through the normal startup path using a fixed `tsx`-backed policy, preserves the package root as the only public addon authoring surface, and shows a branded hardware startup placeholder that hands off to the first real browser capture or clears on honest startup failure.
 
 ---
 
