@@ -1,11 +1,11 @@
-import { createPhase23Label } from "./content"
+import { createPhase23Label } from './content'
 
 const addon = {
   apiVersion: 1,
-  name: "phase-23-local-raw-addon",
+  name: 'phase-23-local-raw-addon',
   buttons: [
     {
-      type: "phase-23-local-raw-button",
+      type: 'phase-23-local-raw-button',
       configSchema: {
         safeParse(value: unknown) {
           return { success: true as const, data: value }

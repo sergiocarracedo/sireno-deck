@@ -346,6 +346,62 @@ describe("loadRuntimeConfig", () => {
     expect(result.registry.getButton("phase-23-local-raw-button")?.type).toBe("phase-23-local-raw-button")
     expect(result.config.decks.main.buttons[1]?.type).toBe("phase-23-local-raw-button")
   })
+
+  it("renders the shipped Phase 23 sample config through the runtime without ambient React JSX failures", async () => {
+    const actualLoader = await vi.importActual<typeof import("../../addon/loader.js")>("../../addon/loader.js")
+    const actualConfigLoader = await vi.importActual<typeof import("../../config/loader.js")>("../../config/loader.js")
+    const { createDeckRuntime } = await import("../../deck/runtime.js")
+    const registry = await actualConfigLoader.createBundledAddonRegistry()
+
+    createSessionMonitor.mockResolvedValue(supportedSessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    createBundledAddonRegistry.mockReturnValue(registry)
+    loadBootstrapConfig.mockImplementation((configPath, hostContext) => actualConfigLoader.loadBootstrapConfig(configPath, hostContext))
+    loadConfiguredAddons.mockImplementation((options) => actualLoader.loadConfiguredAddons(options))
+    loadConfigWithSources.mockImplementation((configPath, registryArg, hostContext) => actualConfigLoader.loadConfigWithSources(configPath, registryArg, hostContext))
+    resolveTheme.mockResolvedValue({
+      accent: "#f59e0b",
+      background: "#10161f",
+      buttonFrame: ({ children }: { children: unknown }) => createElement("div", null, children),
+      danger: "#fb7185",
+      filePaths: ["/tmp/project/themes/default/index.js"],
+      foreground: "#eef2f7",
+      name: "dark",
+      primary: "#7dd3fc",
+      rootDir: "/tmp/project/themes/default",
+      stylesheets: [],
+      success: "#34d399",
+    })
+
+    const { loadRuntimeConfig } = await import("./start.js")
+    const runtimeConfig = await loadRuntimeConfig({ config: phase23FixtureConfigPath, logger: { warn: vi.fn() } as never })
+    const onRenderDeck = vi.fn()
+    const runtime = createDeckRuntime({
+      addonRegistry: runtimeConfig.registry,
+      deck: runtimeConfig.config.decks.main,
+      decks: runtimeConfig.config.decks,
+      hostContext: runtimeConfig.hostContext,
+      keyCount: 15,
+      lockedDeckId: runtimeConfig.config.session?.locked_deck,
+      onRenderDeck,
+      sessionMonitor: runtimeConfig.sessionMonitor,
+      subscribeKeyEvents: () => () => {},
+      theme: runtimeConfig.theme,
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(onRenderDeck).toHaveBeenCalled()
+    })
+
+    const renderedButton = runtime.getRenderButtons().find((button) => button.keyIndex === 1)
+    expect(renderedButton).toMatchObject({ keyIndex: 1 })
+    expect(renderedButton?.content).toBeTruthy()
+
+    runtime.stop()
+    await runtimeConfig.sessionMonitor.stop()
+  })
 })
 
 beforeEach(() => {
