@@ -90,6 +90,7 @@ vi.mock("../../util/daemon.js", () => ({
 }))
 
 describe("loadRuntimeConfig", () => {
+  const phase23FixtureConfigPath = resolve(import.meta.dirname, "../../../fixtures/phase-23/config.yml")
   const phase23FixtureRoot = resolve(import.meta.dirname, "../../../fixtures/phase-23/local-raw-addon")
   const supportedSessionMonitor = {
     getSnapshot: vi.fn(() => ({ capability: "supported", state: "unknown" })),
@@ -318,6 +319,32 @@ describe("loadRuntimeConfig", () => {
       registry,
     })
     expect(result.registry.getButton("phase-23-local-raw-button")?.type).toBe("phase-23-local-raw-button")
+  })
+
+  it("loads the shipped Phase 23 sample config with the fixture's real registered button type", async () => {
+    const actualLoader = await vi.importActual<typeof import("../../addon/loader.js")>("../../addon/loader.js")
+    const actualConfigLoader = await vi.importActual<typeof import("../../config/loader.js")>("../../config/loader.js")
+    const registry = await actualConfigLoader.createBundledAddonRegistry()
+
+    createSessionMonitor.mockResolvedValue(supportedSessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    createBundledAddonRegistry.mockReturnValue(registry)
+    loadBootstrapConfig.mockImplementation((configPath, hostContext) => actualConfigLoader.loadBootstrapConfig(configPath, hostContext))
+    loadConfiguredAddons.mockImplementation((options) => actualLoader.loadConfiguredAddons(options))
+    loadConfigWithSources.mockImplementation((configPath, registryArg, hostContext) => actualConfigLoader.loadConfigWithSources(configPath, registryArg, hostContext))
+    resolveTheme.mockResolvedValue({ filePaths: ["/tmp/project/themes/default/index.js"] })
+
+    const { loadRuntimeConfig } = await import("./start.js")
+
+    const result = await loadRuntimeConfig({ config: phase23FixtureConfigPath, logger: { warn: vi.fn() } as never })
+
+    expect(loadBootstrapConfig).toHaveBeenCalledWith(phase23FixtureConfigPath, {
+      os: { type: "linux", variant: "ubuntu", version: "24.04" },
+      session: { capability: "supported", state: "unknown" },
+    })
+    expect(result.filePaths).toContain(phase23FixtureConfigPath)
+    expect(result.registry.getButton("phase-23-local-raw-button")?.type).toBe("phase-23-local-raw-button")
+    expect(result.config.decks.main.buttons[1]?.type).toBe("phase-23-local-raw-button")
   })
 })
 
