@@ -2,7 +2,7 @@
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
 
-import { startDaemon } from "./commands/start.js"
+import { startDaemon, startEmulator } from "./commands/start.js"
 import { checkStatus } from "./commands/status.js"
 import { stopDaemon } from "./commands/stop.js"
 import { createLogger } from "../util/logger.js"
@@ -28,6 +28,27 @@ const cli = async () => {
       "Start the sireno-deck daemon",
       () => {},
       async (argv) => startDaemon({ config: argv.config, logger }),
+    )
+    .command(
+      "emulate",
+      "Start a local browser deck emulator without hardware",
+      (command) => command
+        .option("key-count", {
+          type: "number",
+          description: "Virtual Stream Deck key count",
+          default: 15,
+        })
+        .option("port", {
+          type: "number",
+          description: "Port for the local emulator page (0 chooses a free port)",
+          default: 0,
+        }),
+      async (argv) => startEmulator({
+        config: argv.config,
+        keyCount: argv.keyCount,
+        logger,
+        port: argv.port,
+      }),
     )
     .command("stop", "Stop the running daemon", () => {}, async () => stopDaemon({ logger }))
     .command("status", "Check daemon status", () => {}, async () => checkStatus({ logger }))

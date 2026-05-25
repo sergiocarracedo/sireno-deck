@@ -1,0 +1,29 @@
+decks:
+  main:
+    id: main
+    name: Emulator Demo
+    buttons:
+      - position: 0
+        type: date-time
+        variant: time
+      - position: 1
+        type: action
+        label: Ping
+        command: "printf 'pong'"
+      - position: 2
+        type: change-deck
+        label: Emoji
+        target_deck: emoji
+
+  emoji:
+    id: emoji
+    type: emoji-selector
+    favorites:
+      - 😀
+      - 🔥
+      - 🍕
+    select_command: "printf '%s' '{{emoji}}'"
+
+logging:
+  level: info
+theme: dark

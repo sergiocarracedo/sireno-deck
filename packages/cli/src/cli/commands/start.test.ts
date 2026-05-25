@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 const blankRemainingKeys = vi.fn()
 const createBrowserRenderer = vi.fn()
 const createStreamDeckLifecycle = vi.fn()
+const createVirtualStreamDeckLifecycle = vi.fn()
 const replayLastRenderedBuffers = vi.fn()
 const watch = vi.fn()
 const writeKeyBuffer = vi.fn(async () => {})
@@ -13,6 +14,7 @@ const loadConfigWithSources = vi.fn()
 const loadConfiguredAddons = vi.fn()
 const resolveHostContext = vi.fn()
 const createSessionMonitor = vi.fn()
+const resolveTheme = vi.fn()
 
 class StreamDeckSelectionError extends Error {}
 
@@ -31,6 +33,10 @@ vi.mock("../../config/loader.js", () => ({
   loadConfigWithSources,
 }))
 
+vi.mock("../../config/theme.js", () => ({
+  resolveTheme,
+}))
+
 vi.mock("../../addon/loader.js", () => ({
   loadConfiguredAddons,
 }))
@@ -38,6 +44,7 @@ vi.mock("../../addon/loader.js", () => ({
 vi.mock("../../device/stream-deck.js", () => ({
   blankRemainingKeys,
   createStreamDeckLifecycle,
+  createVirtualStreamDeckLifecycle,
   replayLastRenderedBuffers,
   StreamDeckSelectionError,
   writeKeyBuffer,
@@ -76,6 +83,7 @@ describe("loadRuntimeConfig", () => {
     blankRemainingKeys.mockReset()
     createBrowserRenderer.mockReset()
     createStreamDeckLifecycle.mockReset()
+    createVirtualStreamDeckLifecycle.mockReset()
     watch.mockReset()
     replayLastRenderedBuffers.mockReset()
     writeKeyBuffer.mockReset()
@@ -85,6 +93,7 @@ describe("loadRuntimeConfig", () => {
     loadConfiguredAddons.mockReset()
     resolveHostContext.mockReset()
     createSessionMonitor.mockReset()
+    resolveTheme.mockReset()
     supportedSessionMonitor.getSnapshot.mockClear()
     unsupportedSessionMonitor.getSnapshot.mockClear()
   })
@@ -107,10 +116,11 @@ describe("loadRuntimeConfig", () => {
       warnings: [],
     })
     loadConfigWithSources.mockReturnValue({
-      config: { main_deck: "main" },
+      config: { main_deck: "main", theme: "dark" },
       filePath: "/tmp/project/config.yml",
       filePaths: ["/tmp/project/config.yml"],
     })
+    resolveTheme.mockResolvedValue({ filePaths: ["/tmp/project/themes/default/index.js"] })
 
     const { loadRuntimeConfig } = await import("./start.js")
     const logger = { warn: vi.fn() } as const
@@ -134,6 +144,7 @@ describe("loadRuntimeConfig", () => {
       os: { type: "linux", variant: "ubuntu", version: "24.04" },
       session: { capability: "supported", state: "unknown" },
     })
+    expect(resolveTheme).toHaveBeenCalledWith("dark", { baseDirectory: "/tmp/project" })
     expect(logger.warn).not.toHaveBeenCalled()
   })
 
@@ -150,10 +161,11 @@ describe("loadRuntimeConfig", () => {
       warnings: [{ addonName: "broken-addon", reason: "broken import" }],
     })
     loadConfigWithSources.mockReturnValue({
-      config: { main_deck: "main" },
+      config: { main_deck: "main", theme: "dark" },
       filePath: "/tmp/project/config.yml",
       filePaths: ["/tmp/project/config.yml", "/tmp/project/decks/main.yml"],
     })
+    resolveTheme.mockResolvedValue({ filePaths: ["/tmp/project/themes/default/index.js", "/tmp/project/themes/default/manifest.yml"] })
 
     const { loadRuntimeConfig } = await import("./start.js")
     const logger = { warn: vi.fn() } as const
@@ -174,9 +186,14 @@ describe("loadRuntimeConfig", () => {
       os: { type: "linux", variant: "ubuntu", version: "24.04" },
       session: { capability: "supported", state: "unknown" },
     })
-    expect(result.config).toEqual({ main_deck: "main" })
+    expect(result.config).toEqual({ main_deck: "main", theme: "dark" })
     expect(result.configDirectory).toBe("/tmp/project")
-    expect(result.filePaths).toEqual(["/tmp/project/config.yml", "/tmp/project/decks/main.yml"])
+    expect(result.filePaths).toEqual([
+      "/tmp/project/config.yml",
+      "/tmp/project/decks/main.yml",
+      "/tmp/project/themes/default/index.js",
+      "/tmp/project/themes/default/manifest.yml",
+    ])
   })
 
   it("warns once when session lock monitoring is unsupported on the current host", async () => {
@@ -192,10 +209,11 @@ describe("loadRuntimeConfig", () => {
       warnings: [],
     })
     loadConfigWithSources.mockReturnValue({
-      config: { main_deck: "main" },
+      config: { main_deck: "main", theme: "dark" },
       filePath: "/tmp/project/config.yml",
       filePaths: ["/tmp/project/config.yml"],
     })
+    resolveTheme.mockResolvedValue({ filePaths: ["/tmp/project/themes/default/index.js"] })
 
     const { loadRuntimeConfig } = await import("./start.js")
     const logger = { warn: vi.fn() } as const
@@ -211,6 +229,27 @@ describe("loadRuntimeConfig", () => {
       session: { capability: "unsupported", state: "unknown" },
     })
     expect(result.sessionMonitor).toBe(unsupportedSessionMonitor)
+  })
+
+  it("stops before swapping global asset resolution when theme loading fails", async () => {
+    createSessionMonitor.mockResolvedValue(supportedSessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    loadBootstrapConfig.mockReturnValue({
+      config: { addons: [] },
+      cwd: "/tmp/project",
+      filePath: "/tmp/project/config.yml",
+    })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    loadConfigWithSources.mockReturnValue({
+      config: { main_deck: "main", theme: "dark" },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
+    resolveTheme.mockRejectedValue(new Error("broken theme runtime"))
+
+    const { loadRuntimeConfig } = await import("./start.js")
+
+    await expect(loadRuntimeConfig({ config: "/tmp/project/config.yml", logger: { warn: vi.fn() } as never })).rejects.toThrow("broken theme runtime")
   })
 })
 
@@ -398,9 +437,23 @@ describe("startDaemon", () => {
       config: {
         decks: { main: { buttons: [], id: "main" } },
         main_deck: "main",
+        theme: "dark",
       },
       filePath: "/tmp/project/config.yml",
       filePaths: ["/tmp/project/config.yml"],
+    })
+    resolveTheme.mockResolvedValue({
+      accent: "#f59e0b",
+      background: "#10161f",
+      buttonFrame: vi.fn(),
+      danger: "#fb7185",
+      filePaths: ["/tmp/project/themes/default/index.js"],
+      foreground: "#eef2f7",
+      name: "dark",
+      primary: "#7dd3fc",
+      rootDir: "/tmp/project/themes/default",
+      stylesheets: [],
+      success: "#34d399",
     })
     createBrowserRenderer.mockReturnValue({
       close: vi.fn(async () => {}),
@@ -408,9 +461,131 @@ describe("startDaemon", () => {
         throw new Error("missing chromium")
       }),
     })
+    resolveTheme.mockResolvedValue({
+      accent: "#f59e0b",
+      background: "#10161f",
+      buttonFrame: vi.fn(),
+      danger: "#fb7185",
+      filePaths: ["/tmp/project/themes/default/index.js"],
+      foreground: "#eef2f7",
+      name: "dark",
+      primary: "#7dd3fc",
+      rootDir: "/tmp/project/themes/default",
+      stylesheets: [],
+      success: "#34d399",
+    })
 
     const { startDaemon } = await import("./start.js")
+    const logger = { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as const
 
-    await expect(startDaemon({ logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as never })).rejects.toThrow("missing chromium")
+    await expect(startDaemon({ logger: logger as never })).resolves.toBeUndefined()
+  })
+})
+
+describe("startEmulatorSession", () => {
+  it("starts a hardware-free emulator session and serves the current deck surface locally", async () => {
+    const lifecycle = {
+      close: vi.fn(async () => {}),
+      emitKeyEvent: vi.fn(),
+      getConnection: vi.fn(() => ({ info: { keyCount: 15, model: "Virtual Stream Deck 15", serialNumber: "virtual-15" } })),
+      start: vi.fn(async () => ({ info: { keyCount: 15, model: "Virtual Stream Deck 15", serialNumber: "virtual-15" } })),
+      subscribeKeyEvents: vi.fn(() => () => {}),
+    }
+    const sessionMonitor = {
+      getSnapshot: vi.fn(() => ({ capability: "supported", state: "unknown" })),
+      stop: vi.fn(async () => {}),
+      subscribe: vi.fn(() => () => {}),
+    }
+    const browserRenderer = {
+      close: vi.fn(async () => {}),
+      start: vi.fn(async () => {}),
+      updateDeck: vi.fn(async () => {}),
+    }
+    createVirtualStreamDeckLifecycle.mockReturnValue(lifecycle)
+    createBrowserRenderer.mockReturnValue(browserRenderer)
+    createSessionMonitor.mockResolvedValue(sessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    loadBootstrapConfig.mockReturnValue({
+      config: { addons: [] },
+      cwd: "/tmp/project",
+      filePath: "/tmp/project/config.yml",
+    })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    loadConfigWithSources.mockReturnValue({
+      config: {
+        decks: {
+          main: {
+            buttons: [{
+              config: { label: "Clock" },
+              definition: {
+                configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
+                createInstance: () => ({ render: () => createElement("div", null, "Clock") }),
+                type: "dom-button",
+              },
+              label: "Clock",
+              position: 0,
+              type: "dom-button",
+            }],
+            id: "main",
+          },
+        },
+        main_deck: "main",
+        theme: "dark",
+      },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
+    resolveTheme.mockResolvedValue({
+      accent: "#f59e0b",
+      background: "#10161f",
+      buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
+      danger: "#fb7185",
+      filePaths: ["/tmp/project/themes/default/index.js"],
+      foreground: "#eef2f7",
+      name: "dark",
+      primary: "#7dd3fc",
+      rootDir: "/tmp/project/themes/default",
+      stylesheets: [],
+      success: "#34d399",
+    })
+
+    const { startEmulatorSession } = await import("./start.js")
+    const session = await startEmulatorSession({ logger: { info: vi.fn(), warn: vi.fn() } as never, port: 0 })
+
+    expect(createStreamDeckLifecycle).not.toHaveBeenCalled()
+    expect(createVirtualStreamDeckLifecycle).toHaveBeenCalledWith({
+      keyCount: 15,
+      model: "Virtual Stream Deck 15",
+    })
+    expect(browserRenderer.start).toHaveBeenCalledTimes(1)
+    await vi.waitFor(() => {
+      expect(browserRenderer.updateDeck).toHaveBeenCalledTimes(1)
+    })
+
+    const stateResponse = await fetch(`${session.url}/__sireno/state`)
+    const state = await stateResponse.json()
+    const pageResponse = await fetch(session.url)
+    const pageHtml = await pageResponse.text()
+    const deckResponse = await fetch(`${session.url}/__sireno/deck`)
+    const deckHtml = await deckResponse.text()
+
+    expect(stateResponse.status).toBe(200)
+    expect(state).toMatchObject({
+      activeDeckId: "main",
+      device: "Virtual Stream Deck 15 (15 keys)",
+      status: "ready",
+      version: 1,
+    })
+    expect(pageResponse.status).toBe(200)
+    expect(pageHtml).toContain("Browser Deck Emulator")
+    expect(pageHtml).toContain("Local Emulator")
+    expect(deckResponse.status).toBe(200)
+    expect(deckHtml).toContain("deck-root")
+    expect(deckHtml).toContain("Clock")
+
+    await session.close()
+    expect(browserRenderer.close).toHaveBeenCalledTimes(1)
+    expect(sessionMonitor.stop).toHaveBeenCalledTimes(1)
+    expect(lifecycle.close).toHaveBeenCalledTimes(1)
   })
 })
