@@ -243,6 +243,17 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ---
 
+### Phase 23: JSX/TSX Addon Authoring + Startup Placeholder
+
+**Goal:** Let addon buttons render through JSX/TSX authoring and show a startup image on the Stream Deck while the browser renderer boots and the first deck surface becomes available.
+**Status:** [ ] Not started
+**Depends on:** Phase 22
+
+### Plans
+*Not yet planned — run `plan-phase 23`*
+
+---
+
 ## Coverage Validation
 
 - [x] All 9 v1.2 requirements map to at least one roadmap phase

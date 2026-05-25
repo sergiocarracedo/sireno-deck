@@ -72,6 +72,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 23 added: allow JSX/TSX addon button authoring and show a startup image on the Stream Deck before the browser path sends the first deck surface.
 - Phase 22 added: browser deck emulator
 - Phase 21 added: theme fonts must be shipped as real bundled assets so browser-rendered typography does not depend on missing host fonts or broken theme font references.
 - Phase 20 added: theme packages with manifest-backed assets and theme-owned button frames, external image rendering fixes, and a centered five-button locked time layout.
