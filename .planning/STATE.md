@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 Phase: 22 — Browser deck emulator
 Plan: execution complete
 Status: verifying
-Last activity: 2026-05-25 - Executed the browser deck emulator with hardware-free boot, browser input bridging, device switching, and honest layout failures
+Last activity: 2026-05-25 - Completed quick task 014: fix theme/font-face test failures blocking /ship
 
 Progress: [##########] 100%
 
@@ -169,3 +169,4 @@ Resume file: .planning/phases/20-theme-packages-and-locked-time-layout/20-UAT.md
 | 011 | commit learnings | 2026-05-13 | `0f6981a` | `.planning/quick/011-commit-learnings` |
 | 012 | honor token-based formatting in the bundled date-time addon | 2026-05-14 | uncommitted | `.planning/quick/012-date-time-token-formatting` |
 | 013 | add the config needed for review (UAT) in the fixtures folder | 2026-05-15 | `8f321c9` | `.planning/quick/013-add-uat-review-config-fixtures` |
+| 014 | fix theme/font-face test failures blocking /ship | 2026-05-25 | `866d442` | `.planning/quick/014-theme-font-face-test-failures` |
