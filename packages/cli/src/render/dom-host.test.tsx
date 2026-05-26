@@ -4,8 +4,10 @@ import { describe, expect, it } from "vitest"
 import {
   ButtonSurface,
   createBaseShapeIconLabelContent,
+  defineMountedButton,
 } from "../addon/api.js"
 import { resolveTheme } from "../config/theme.js"
+import { UNKNOWN_HOST_CONTEXT } from "../system/host-context.js"
 import { createHostedButtonElement, renderDomDeck, renderReactNodeToHtml } from "./dom-host.js"
 
 describe("dom host", () => {
@@ -126,5 +128,100 @@ describe("dom host", () => {
     }))
 
     expect(html).toContain('src="file:///tmp/sireno-icon.svg"')
+  })
+
+  it("renders mounted-button store snapshots through the public props-first contract", async () => {
+    let addonSnapshot: unknown = { total: 0 }
+    let buttonSnapshot: unknown = { taps: 0 }
+
+    const definition = defineMountedButton({
+      configSchema: {
+        parse: (value: unknown) => value,
+        safeParse: (value: unknown) => ({ data: value, success: true as const }),
+      } as never,
+      onTap({ store }) {
+        store.button.update((snapshot) => ({ taps: ((snapshot as { taps?: number } | undefined)?.taps ?? 0) + 1 }))
+        store.addon.update((snapshot) => ({ total: ((snapshot as { total?: number } | undefined)?.total ?? 0) + 1 }))
+      },
+      render({ config, store }) {
+        return createElement(
+          "span",
+          null,
+          `${config.label}:button=${(store.button.snapshot as { taps?: number } | undefined)?.taps ?? 0}:addon=${(store.addon.snapshot as { total?: number } | undefined)?.total ?? 0}`,
+        )
+      },
+      type: "mounted-store-proof",
+    })
+
+    const instance = definition.createInstance({
+      button: { position: 0, type: "mounted-store-proof" },
+      config: { label: "Mounted" },
+      hostContext: UNKNOWN_HOST_CONTEXT,
+      methods: {
+        getActiveDeckId: () => "main",
+        goBack() {},
+        invalidate() {},
+        navigateToDeck() {},
+        runCommand: async () => ({}) as never,
+      },
+      store: {
+        addon: {
+          clear() {
+            addonSnapshot = undefined
+          },
+          getSnapshot: () => addonSnapshot,
+          set(value) {
+            addonSnapshot = value
+          },
+          update(updater) {
+            addonSnapshot = updater(addonSnapshot)
+          },
+        },
+        button: {
+          clear() {
+            buttonSnapshot = undefined
+          },
+          getSnapshot: () => buttonSnapshot,
+          set(value) {
+            buttonSnapshot = value
+          },
+          update(updater) {
+            buttonSnapshot = updater(buttonSnapshot)
+          },
+        },
+      },
+      theme: await resolveTheme("dark"),
+    } as Parameters<typeof definition.createInstance>[0] & {
+      store: {
+        addon: {
+          clear: () => void
+          getSnapshot: () => unknown
+          set: (value: unknown) => void
+          update: (updater: (snapshot: unknown) => unknown) => void
+        }
+        button: {
+          clear: () => void
+          getSnapshot: () => unknown
+          set: (value: unknown) => void
+          update: (updater: (snapshot: unknown) => unknown) => void
+        }
+      }
+    })
+
+    const renderMountedHtml = () => renderReactNodeToHtml(createHostedButtonElement({
+      content: instance.render(),
+      keyIndex: 0,
+      theme: undefined,
+    }))
+
+    const initialHtml = renderMountedHtml()
+    const repeatedHtml = renderMountedHtml()
+
+    expect(initialHtml).toContain("Mounted:button=0:addon=0")
+    expect(repeatedHtml).toBe(initialHtml)
+
+    await instance.onTap?.()
+
+    expect(renderMountedHtml()).toContain("Mounted:button=1:addon=1")
   })
 })
