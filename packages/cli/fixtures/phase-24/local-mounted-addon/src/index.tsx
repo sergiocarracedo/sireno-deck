@@ -1,4 +1,4 @@
-import { createElement } from "react"
+import { createElement, useState } from "react"
 import { defineMountedButton } from "../../../../src/addon/api.js"
 
 const passthroughSchema = {
@@ -17,6 +17,14 @@ function getAddonTotal(snapshot: unknown): number {
 
 function renderStoreLabel(label: string, buttonSnapshot: unknown, addonSnapshot: unknown): string {
   return `${label}:button=${getButtonTaps(buttonSnapshot)}:addon=${getAddonTotal(addonSnapshot)}`
+}
+
+let mountedLocalSerial = 0
+
+function MountedLocalCounterView(props: { count: number; label: string }) {
+  const [mountId] = useState(() => ++mountedLocalSerial)
+
+  return createElement("p", null, `${props.label}:mount=${mountId}:count=${props.count}`)
 }
 
 const addon = {
@@ -51,6 +59,19 @@ const addon = {
         return createElement("p", null, renderStoreLabel(String(config.label ?? "Observer"), store.button.snapshot, store.addon.snapshot))
       },
       type: "phase-24-mounted-observer",
+    }),
+    defineMountedButton({
+      configSchema: passthroughSchema,
+      onTap({ store }) {
+        store.button.update((snapshot) => ({ taps: getButtonTaps(snapshot) + 1 }))
+      },
+      render({ config, store }) {
+        return createElement(MountedLocalCounterView, {
+          count: getButtonTaps(store.button.snapshot),
+          label: String(config.label ?? "Local Counter"),
+        })
+      },
+      type: "phase-24-mounted-local-counter",
     }),
   ],
 }

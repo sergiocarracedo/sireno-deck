@@ -16,6 +16,9 @@ decks:
         type: phase-24-mounted-button
         label: Go Apps
         target_deck: apps
+      - position: 3
+        type: phase-24-mounted-local-counter
+        label: Local Main
   apps:
     id: apps
     buttons:
@@ -26,5 +29,8 @@ decks:
         type: phase-24-mounted-button
         label: Back Main
         target_deck: main
+      - position: 2
+        type: phase-24-mounted-local-counter
+        label: Local Apps
 main_deck: main
 theme: dark

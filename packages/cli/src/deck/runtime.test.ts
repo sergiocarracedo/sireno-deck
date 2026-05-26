@@ -46,6 +46,16 @@ function getMountedCounterParts(html: string, label: string) {
   }
 }
 
+function getFixtureMountedLocalParts(html: string, label: string) {
+  const match = html.match(new RegExp(`${label}:mount=(\\d+):count=(\\d+)`))
+  expect(match).toBeTruthy()
+
+  return {
+    count: Number(match?.[2]),
+    mountId: Number(match?.[1]),
+  }
+}
+
 const createDisplayDefinition = () => ({
   configSchema: {
     parse: (value: unknown) => value,
@@ -1596,6 +1606,8 @@ describe("createDeckRuntime", () => {
       expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Shared" })
       expect(getRenderedButtonHtml(renderedButton)).toContain("Shared:button=0:addon=0")
       expect(getRenderedButtonHtml(getRenderedButton(runtime, 1))).toContain("Observer:button=0:addon=0")
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 3))).toContain("Local Main:mount=")
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 3))).toContain(":count=0")
     })
 
     emitEvent?.({ keyIndex: 0, type: "down" })
@@ -1691,6 +1703,78 @@ describe("createDeckRuntime", () => {
       expect(getRenderedButtonHtml(getRenderedButton(rebuiltRun.runtime, 0))).toContain("Shared:button=0:addon=0")
       expect(getRenderedButtonHtml(getRenderedButton(rebuiltRun.runtime, 1))).toContain("Observer:button=0:addon=0")
       expect(getRenderedButtonHtml(getRenderedButton(rebuiltRun.runtime, 2))).toContain("Go Apps:button=0:addon=0")
+      expect(getRenderedButtonHtml(getRenderedButton(rebuiltRun.runtime, 3))).toContain(":count=0")
+    })
+  })
+
+  it("proves committed Phase 24 mounted local state persists while active and resets after deck unmount", async () => {
+    const registry = createBundledAddonRegistry()
+    await loadConfiguredAddons({
+      addons: [{ enabled: true, name: "phase-24-local-mounted-addon", path: join(FIXTURES_DIRECTORY, "phase-24/local-mounted-addon"), source: "local" }],
+      cwd: FIXTURES_DIRECTORY,
+      registry,
+    })
+
+    const config = loadConfig(
+      join(FIXTURES_DIRECTORY, "phase-24/config.local-mounted-addon.yml"),
+      registry,
+      {
+        os: { type: "linux", variant: "ubuntu", version: "24.04" },
+        session: { capability: "unknown", state: "unknown" },
+      },
+    )
+
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const runtime = createDeckRuntime({
+      deck: config.decks[config.main_deck]!,
+      decks: config.decks,
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    let initialMainMountId = -1
+
+    await vi.waitFor(() => {
+      const parts = getFixtureMountedLocalParts(getRenderedButtonHtml(getRenderedButton(runtime, 3)), "Local Main")
+      expect(parts.count).toBe(0)
+      initialMainMountId = parts.mountId
+    })
+
+    emitEvent?.({ keyIndex: 3, type: "down" })
+    emitEvent?.({ keyIndex: 3, type: "up" })
+
+    await vi.waitFor(() => {
+      const parts = getFixtureMountedLocalParts(getRenderedButtonHtml(getRenderedButton(runtime, 3)), "Local Main")
+      expect(parts.mountId).toBe(initialMainMountId)
+      expect(parts.count).toBe(1)
+    })
+
+    emitEvent?.({ keyIndex: 2, type: "down" })
+    emitEvent?.({ keyIndex: 2, type: "up" })
+
+    let appsMountId = -1
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("apps")
+      const parts = getFixtureMountedLocalParts(getRenderedButtonHtml(getRenderedButton(runtime, 2)), "Local Apps")
+      expect(parts.count).toBe(0)
+      appsMountId = parts.mountId
+    })
+
+    emitEvent?.({ keyIndex: 1, type: "down" })
+    emitEvent?.({ keyIndex: 1, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("main")
+      const parts = getFixtureMountedLocalParts(getRenderedButtonHtml(getRenderedButton(runtime, 3)), "Local Main")
+      expect(parts.count).toBe(1)
+      expect(parts.mountId).not.toBe(initialMainMountId)
+      expect(parts.mountId).not.toBe(appsMountId)
     })
   })
 
