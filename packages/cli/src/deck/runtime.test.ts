@@ -1,7 +1,7 @@
 import { join } from "node:path"
 import { fileURLToPath } from "node:url"
 
-import { createElement } from "react"
+import { createElement, useState } from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { ButtonSurface, createBaseShapeTextContent, defineMountedButton, setAddonButtonOwnerName } from "../addon/api.js"
 import { loadConfiguredAddons } from "../addon/loader.js"
@@ -28,8 +28,22 @@ function getRenderedButton(runtime: ReturnType<typeof createDeckRuntime>, keyInd
 }
 
 function getRenderedButtonHtml(renderedButton: { content?: unknown }) {
+  if (typeof (renderedButton as { html?: unknown }).html === "string") {
+    return (renderedButton as { html: string }).html
+  }
+
   expect(renderedButton.content).toBeTruthy()
   return renderReactNodeToHtml(renderedButton.content as never)
+}
+
+function getMountedCounterParts(html: string, label: string) {
+  const match = html.match(new RegExp(`${label}:(\\d+):(\\d+)`))
+  expect(match).toBeTruthy()
+
+  return {
+    count: Number(match?.[2]),
+    mountId: Number(match?.[1]),
+  }
 }
 
 const createDisplayDefinition = () => ({
@@ -1850,6 +1864,146 @@ describe("createDeckRuntime", () => {
     await vi.waitFor(() => {
       expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Shared:button=1:addon=1")
       expect(getRenderedButtonHtml(getRenderedButton(runtime, 1))).toContain("Observer:button=0:addon=1")
+    })
+  })
+
+  it("preserves mounted local component state while a deck stays active but resets it after deck navigation unmounts the host", async () => {
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    let mountSerial = 0
+
+    function MountedCounterView(props: { count: number; label: string }) {
+      const [mountId] = useState(() => {
+        mountSerial += 1
+        return mountSerial
+      })
+
+      return createElement("span", null, `${props.label}:${mountId}:${props.count}`)
+    }
+
+    function createMountedCounterDefinition(label: string, targetDeckId?: string) {
+      return defineMountedButton({
+        configSchema: {
+          parse: (value: unknown) => value,
+          safeParse: (value: unknown) => ({ data: value, success: true as const }),
+        },
+        onTap: async ({ methods, store }) => {
+          store.button.update((snapshot) => ({
+            count: ((snapshot as { count?: number } | undefined)?.count ?? 0) + 1,
+          }))
+
+          if (targetDeckId) {
+            await methods.navigateToDeck(targetDeckId)
+          }
+        },
+        render: ({ button, config, store }) => {
+          const count = (store.button.snapshot as { count?: number } | undefined)?.count ?? 0
+
+          return createElement(MountedCounterView, {
+            count,
+            label: `${config.label}:${button.position}`,
+          })
+        },
+        type: `${label.toLowerCase()}-mounted-counter`,
+      })
+    }
+
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [
+          {
+            config: { label: "Main Counter" },
+            definition: createMountedCounterDefinition("main"),
+            label: "Main Counter",
+            position: 0,
+            type: "main-mounted-counter",
+          },
+          {
+            config: { label: "Go Apps" },
+            definition: createMountedCounterDefinition("main-nav", "apps"),
+            label: "Go Apps",
+            position: 1,
+            type: "main-nav-mounted-counter",
+          },
+        ],
+      },
+      decks: {
+        apps: {
+          id: "apps",
+          buttons: [{
+            config: { label: "Back Main" },
+            definition: createMountedCounterDefinition("apps-nav", "main"),
+            label: "Back Main",
+            position: 0,
+            type: "apps-nav-mounted-counter",
+          }],
+        },
+        main: {
+          id: "main",
+          buttons: [
+            {
+              config: { label: "Main Counter" },
+              definition: createMountedCounterDefinition("main"),
+              label: "Main Counter",
+              position: 0,
+              type: "main-mounted-counter",
+            },
+            {
+              config: { label: "Go Apps" },
+              definition: createMountedCounterDefinition("main-nav", "apps"),
+              label: "Go Apps",
+              position: 1,
+              type: "main-nav-mounted-counter",
+            },
+          ],
+        },
+      },
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    let initialMainMountId = -1
+    let appsMountId = -1
+
+    await vi.waitFor(() => {
+      const parts = getMountedCounterParts(getRenderedButtonHtml(getRenderedButton(runtime, 0)), "Main Counter:0")
+      expect(parts.count).toBe(0)
+      initialMainMountId = parts.mountId
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      const parts = getMountedCounterParts(getRenderedButtonHtml(getRenderedButton(runtime, 0)), "Main Counter:0")
+      expect(parts.mountId).toBe(initialMainMountId)
+      expect(parts.count).toBe(1)
+    })
+
+    emitEvent?.({ keyIndex: 1, type: "down" })
+    emitEvent?.({ keyIndex: 1, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("apps")
+      const parts = getMountedCounterParts(getRenderedButtonHtml(getRenderedButton(runtime, 0)), "Back Main:0")
+      expect(parts.count).toBe(0)
+      appsMountId = parts.mountId
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("main")
+      const parts = getMountedCounterParts(getRenderedButtonHtml(getRenderedButton(runtime, 0)), "Main Counter:0")
+      expect(parts.mountId).not.toBe(initialMainMountId)
+      expect(parts.mountId).not.toBe(appsMountId)
+      expect(parts.count).toBe(1)
     })
   })
 

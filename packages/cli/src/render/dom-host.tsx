@@ -17,6 +17,7 @@ export interface HostedButton {
   content: ReactElement
   frame_state?: ThemeFrameState
   full_surface?: boolean
+  html?: string
   keyIndex: number
   sample_interval_ms?: number
   theme?: Theme
@@ -53,10 +54,16 @@ export interface MountedDomHost {
   unmount(): void
 }
 
+export interface MountedHostedButtonSnapshot {
+  html: string
+  keyIndex: number
+}
+
 type MountedHostContext = {}
 
 const EMPTY_HOST_CONTEXT: MountedHostContext = Object.freeze({})
 const HOST_TRANSITION_CONTEXT = createContext<null>(null)
+const MOUNTED_BUTTON_SLOT_TAG = "sireno-mounted-slot"
 
 let currentUpdatePriority = DefaultEventPriority
 
@@ -291,6 +298,44 @@ export function createMountedDomHost(): MountedDomHost {
   }
 }
 
+export function renderMountedHostedButtons(
+  host: MountedDomHost,
+  buttons: readonly HostedButton[],
+): MountedHostedButtonSnapshot[] {
+  host.render(
+    createElement(
+      Fragment,
+      null,
+      ...buttons.map((button) => createElement(
+        MOUNTED_BUTTON_SLOT_TAG,
+        {
+          "data-sireno-mounted-key": button.keyIndex,
+          key: button.keyIndex,
+        },
+        createHostedButtonElement(button),
+      )),
+    ),
+  )
+
+  const snapshots: MountedHostedButtonSnapshot[] = []
+  const html = host.toHtml()
+  const slotPattern = new RegExp(`<${MOUNTED_BUTTON_SLOT_TAG} data-sireno-mounted-key=\"(\\d+)\">([\\s\\S]*?)</${MOUNTED_BUTTON_SLOT_TAG}>`, "g")
+
+  for (const match of html.matchAll(slotPattern)) {
+    const keyIndex = Number(match[1])
+    if (Number.isNaN(keyIndex)) {
+      continue
+    }
+
+    snapshots.push({
+      html: match[2] ?? "",
+      keyIndex,
+    })
+  }
+
+  return snapshots
+}
+
 export function createHostedButtonElement(button: HostedButton): ReactElement {
   const surface = button.content.type === ButtonSurface
     ? button.content
@@ -318,7 +363,10 @@ export function renderDomDeck(buttons: readonly HostedButton[], options: DomHost
   const buttonsByKey = new Map(buttons.map((button) => [button.keyIndex, button]))
   const slots = Array.from({ length: options.keyCount }, (_, keyIndex) => {
     const button = buttonsByKey.get(keyIndex)
-    const content = button ? renderReactNodeToHtml(createHostedButtonElement({ ...button, theme: options.theme })) : ""
+    const content = !button
+      ? ""
+      : button.html
+        ?? renderReactNodeToHtml(createHostedButtonElement({ ...button, theme: options.theme }))
 
     return `<div data-sireno-key="${keyIndex}" style="align-items:center;background:#05070a;box-sizing:border-box;display:flex;height:${preset.keyHeight}px;justify-content:center;overflow:hidden;width:${preset.keyWidth}px;">${content}</div>`
   }).join("")

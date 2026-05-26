@@ -8,7 +8,7 @@ import {
 } from "../addon/api.js"
 import { resolveTheme } from "../config/theme.js"
 import { UNKNOWN_HOST_CONTEXT } from "../system/host-context.js"
-import { createHostedButtonElement, createMountedDomHost, renderDomDeck, renderReactNodeToHtml } from "./dom-host.js"
+import { createHostedButtonElement, createMountedDomHost, renderDomDeck, renderMountedHostedButtons, renderReactNodeToHtml } from "./dom-host.js"
 
 describe("dom host", () => {
   it("applies buttonFrame by default", () => {
@@ -250,5 +250,41 @@ describe("dom host", () => {
 
     host.render(createElement(MountedCounter, { label: "Third" }))
     expect(host.toHtml()).toContain("Third:2")
+  })
+
+  it("preserves local component state across repeated mounted hosted-button snapshots", async () => {
+    let mountCount = 0
+
+    function MountedCounter(props: { label: string }) {
+      const [mountId] = useState(() => {
+        mountCount += 1
+        return mountCount
+      })
+
+      return createElement("span", null, `${props.label}:${mountId}`)
+    }
+
+    const host = createMountedDomHost()
+    const theme = await resolveTheme("dark")
+
+    const renderSnapshot = (label: string) => renderMountedHostedButtons(host, [
+      {
+        content: createElement(MountedCounter, { label }),
+        keyIndex: 0,
+        theme,
+      },
+      {
+        content: createElement("span", null, "Static"),
+        keyIndex: 1,
+        theme,
+      },
+    ])
+
+    expect(renderSnapshot("First")[0]?.html).toContain("First:1")
+    expect(renderSnapshot("Second")[0]?.html).toContain("Second:1")
+
+    host.unmount()
+
+    expect(renderSnapshot("Third")[0]?.html).toContain("Third:2")
   })
 })

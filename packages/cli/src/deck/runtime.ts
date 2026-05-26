@@ -4,6 +4,7 @@ import { z } from "zod"
 import { executeCommand, type CommandExecutionResult } from "../action/executor.js"
 import { ButtonSurface, createBaseShapeTextContent, createDomStack, createDomTextLabel, getAddonButtonOwnerName } from "../addon/api.js"
 import datetimeButtonsAddon from "../builtin-addons/date-time/index.js"
+import { createMountedDomHost, renderMountedHostedButtons, type HostedButton, type MountedDomHost } from "../render/dom-host.js"
 import { createPollingScheduler, type PollingScheduler } from "../render/scheduler.js"
 import { createDeckController } from "./controller.js"
 
@@ -80,6 +81,7 @@ export interface RuntimeRenderButton {
   content?: ReturnType<typeof ButtonSurface>
   frame_state?: ThemeFrameState
   full_surface?: boolean
+  html?: string
   icon?: string
   keyIndex: number
   label?: string
@@ -200,6 +202,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   const pressedKeys = new Set<number>()
   const renderCache = new Map<string, RuntimeRenderButton>()
   const schedulers = new Map<string, PollingScheduler>()
+  const mountedDeckHosts = new Map<string, MountedDomHost>()
   let unsubscribe: (() => void) | null = null
   let unsubscribeSessionMonitor: (() => void) | null = null
   let activeActivationVersion = 0
@@ -275,6 +278,9 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   function clearDeckState(deckId: string): void {
+    mountedDeckHosts.get(deckId)?.unmount()
+    mountedDeckHosts.delete(deckId)
+
     for (const key of [...instances.keys()]) {
       if (key.startsWith(`${deckId}:`)) {
         void instances.get(key)?.dispose?.()
@@ -321,10 +327,68 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     return pressedKeys.has(keyIndex) ? "hold" : "idle"
   }
 
+  function getOrCreateMountedDeckHost(deckId: string): MountedDomHost {
+    const existingHost = mountedDeckHosts.get(deckId)
+    if (existingHost) {
+      return existingHost
+    }
+
+    const host = createMountedDomHost()
+    mountedDeckHosts.set(deckId, host)
+    return host
+  }
+
+  function clearMountedDeckHost(deckId: string): void {
+    mountedDeckHosts.get(deckId)?.unmount()
+    mountedDeckHosts.delete(deckId)
+  }
+
+  async function renderMountedDeckButtons(
+    deckId: string,
+    activationVersion: number,
+  ): Promise<RuntimeRenderButton[]> {
+    const buttons = getDeckButtons(getDisplayDeck())
+    const hostedButtons: HostedButton[] = []
+
+    for (const button of buttons) {
+      const renderedButton = await renderRuntimeButton(button, deckId, activationVersion, false)
+      if (!renderedButton?.content) {
+        continue
+      }
+
+      hostedButtons.push({
+        content: renderedButton.content,
+        ...(renderedButton.frame_state !== undefined ? { frame_state: renderedButton.frame_state } : {}),
+        ...(renderedButton.full_surface !== undefined ? { full_surface: renderedButton.full_surface } : {}),
+        keyIndex: renderedButton.keyIndex,
+        ...(renderedButton.sample_interval_ms !== undefined ? { sample_interval_ms: renderedButton.sample_interval_ms } : {}),
+        theme: options.theme,
+      })
+    }
+
+    const snapshotsByKey = new Map(
+      renderMountedHostedButtons(getOrCreateMountedDeckHost(deckId), hostedButtons).map((snapshot) => [snapshot.keyIndex, snapshot.html]),
+    )
+
+    return buttons
+      .map((button) => renderCache.get(getButtonStateKey(deckId, button.position)))
+      .filter((button): button is RuntimeRenderButton => button !== undefined)
+      .map((button) => {
+        const description = {
+          ...button,
+          ...(snapshotsByKey.has(button.keyIndex) ? { html: snapshotsByKey.get(button.keyIndex) } : {}),
+        }
+
+        renderCache.set(getButtonStateKey(deckId, button.keyIndex), description)
+        return description
+      })
+  }
+
   async function renderRuntimeButton(
     button: ButtonInstance,
-      deckId = getDisplayDeckId(),
-      activationVersion = activeActivationVersion,
+    deckId = getDisplayDeckId(),
+    activationVersion = activeActivationVersion,
+    emitRender = true,
   ): Promise<RuntimeRenderButton | undefined> {
     if (!isActivationCurrent(deckId, activationVersion)) {
       return undefined
@@ -356,7 +420,9 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     }
 
     renderCache.set(getButtonStateKey(deckId, button.position), description)
-    await options.onRenderButton?.(description)
+    if (emitRender) {
+      await options.onRenderButton?.(description)
+    }
 
     return description
   }
@@ -369,13 +435,15 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return
     }
 
-    await Promise.all(
-      getDeckButtons(getDisplayDeck()).map((button) => renderRuntimeButton(button, deckId, activationVersion)),
-    )
+    const latestButtons = await renderMountedDeckButtons(deckId, activationVersion)
 
-    const latestButtons = getDeckButtons(getDisplayDeck())
-      .map((button) => renderCache.get(getButtonStateKey(deckId, button.position)))
-      .filter((button): button is RuntimeRenderButton => button !== undefined)
+    if (!isActivationCurrent(deckId, activationVersion)) {
+      return
+    }
+
+    for (const button of latestButtons) {
+      await options.onRenderButton?.(button)
+    }
 
     await options.onRenderDeck?.(latestButtons)
   }
@@ -448,6 +516,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     stopActiveDeckPolling()
 
     if (previousDeckId !== activeDeckId) {
+      clearMountedDeckHost(previousDeckId)
+
       for (const button of getDeckButtons(getDeckById(previousDeckId))) {
         await getOrCreateInstance(previousDeckId, button).onDeactivate?.()
       }
