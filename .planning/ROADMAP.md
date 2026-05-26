@@ -293,13 +293,15 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 26: Browser Deck React Shell Polish
 
 **Goal:** Refactor the browser deck shell onto explicit React/TSX composition so the default button frame and full browser deck layout render through honest JSX components, emulate the physical Stream Deck chrome more faithfully in browser mode, keep partial-device selections usable with a persistent warning, and show a logo-backed startup mosaic while the browser renderer boots.
-**Status:** [ ] Not started
+**Status:** ✓ Complete (2026-05-27)
 **Depends on:** Phase 25
 
 ### Plans
 - `26-01`: Refactor the browser deck page onto one shared React document tree with honest JSX button/frame components, moderate shell chrome, and explicit empty-button wells while preserving the single HTML-string transport boundary.
 - `26-02`: Replace the emulator's hard undersized-device error page with the rendered visible subset plus persistent inline warning on the same shared deck document path.
 - `26-03`: Keep startup loading on the existing pre-browser placeholder seam, but replace the repeated branded tile with a simple `assets/logoFull.png` loading card/mosaic treatment that stays browser-independent.
+
+**Phase 26 note:** This post-roadmap follow-on phase now makes the browser deck feel like one honest product surface. `renderDomDeck(...)` renders through a shared React document tree for browser capture and emulator serving, the deck shell exposes moderate Stream Deck-style chrome with explicit empty wells, undersized virtual devices stay usable through a visible subset plus persistent inline warning instead of a hard error-only page, and the hardware startup placeholder now uses a deck-wide `logoFull.png` treatment while staying on the original pre-browser seam.
 
 ---
 

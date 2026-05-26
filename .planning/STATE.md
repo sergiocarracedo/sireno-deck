@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Quick task 016 cleared the full-branch `/ship` blockers by aligning stale browser asset assertions with the live DOM asset contract and restoring the Phase 23 raw TSX fixture's runtime-safe render shape; next is to retry `/ship`.
+**Current focus:** Phase 26 execution is complete for browser deck react shell polish; next is `verify-work 26` for manual UAT before `/review`.
 
 ## Current Position
 
-Phase: 25 — Theme TSX Button Frame Support
+Phase: 26 — Browser Deck React Shell Polish
 Plan: execution complete
 Status: verifying
-Last activity: 2026-05-26 - Completed quick task 016 to clear the focused ship blockers from the full-branch test run and make the real Phase 23 raw fixture render again on the runtime path
+Last activity: 2026-05-27 - Completed all three Phase 26 slices, verified the shared React deck shell, undersized-device inline warning path, and pre-browser logo placeholder, and recorded execution summaries
 
 Progress: [##########] 100%
 
@@ -87,6 +87,7 @@ Recent decisions affecting current work:
 
 ### Progress Notes
 
+- **Phase 26 execution:** Moved the browser deck onto one shared React document tree with an honest JSX button frame, moderate shell chrome, and explicit empty wells; changed undersized virtual-device handling from a hard error page to visible subset plus persistent inline warning inside the shared shell; and replaced the repeated startup tile with a pre-browser `logoFull.png` deck-wide placeholder treatment that still hands off on the original hardware/startup seam.
 - **Phase 26 discussion:** Chose to make the whole browser deck document a shared React tree for both browser capture and emulator mode, changed undersized virtual-device handling from a hard error page to a rendered visible subset plus persistent inline warning, scoped shell polish to moderate Stream Deck-style bezel/gap/glass treatment, and kept startup loading on the existing pre-browser seam with a simple `assets/logoFull.png` loading card instead of a React-owned mosaic.
 - **Quick task 016:** Aligned the stale dom-host and emoji-selector browser asset assertions with the live absolute-path HTML contract and restored the committed Phase 23 local raw addon fixture to the current runtime shape (`createInstance() -> { render() { ... } }`) using explicit `createElement(...)`, which closed the three focused blockers from the aborted full-branch ship run.
 - **Phase 25 execution:** Switched manifest-backed theme runtime loading onto the same fixed-policy `tsx` import seam already used for raw addons while preserving tolerant `buttonFrame` exports and fresh reloads, updated the shipped default-theme proof path to the real `index.ts` plus `ButtonFrame.tsx` graph, and added committed custom `.tsx` theme fixtures plus explicit import-boundary failures when a runtime graph escapes the theme package root.
