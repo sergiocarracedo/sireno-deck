@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 24 verification and rerun gap closure are complete for the mounted addon render contract migration; next is `/review` for final review before ship.
+**Current focus:** Phase 25 execution is complete for theme TSX button frame support; next is `verify-work 25` for manual UAT before `/review`.
 
 ## Current Position
 
-Phase: 24 — Mounted Addon Render Contract
-Plan: execution complete + all gap closures complete
-Status: verified
-Last activity: 2026-05-26 - Closed the final emulator theme/css/font gap, refreshed Phase 24 verification/UAT artifacts, and finished the rerun verification loop with no open gaps
+Phase: 25 — Theme TSX Button Frame Support
+Plan: execution complete
+Status: verifying
+Last activity: 2026-05-26 - Completed both Phase 25 slices, verified the TSX theme runtime seam plus custom-theme root-boundary coverage, and recorded execution summaries
 
 Progress: [##########] 100%
 
@@ -86,6 +86,7 @@ Recent decisions affecting current work:
 
 ### Progress Notes
 
+- **Phase 25 execution:** Switched manifest-backed theme runtime loading onto the same fixed-policy `tsx` import seam already used for raw addons while preserving tolerant `buttonFrame` exports and fresh reloads, updated the shipped default-theme proof path to the real `index.ts` plus `ButtonFrame.tsx` graph, and added committed custom `.tsx` theme fixtures plus explicit import-boundary failures when a runtime graph escapes the theme package root.
 - **Phase 25 discussion:** Kept `manifest.main` as the only theme runtime entrypoint while allowing `.js/.jsx/.ts/.tsx`, applied that same contract to both built-in and custom manifest-backed themes, preserved tolerant `buttonFrame`/`ButtonFrame` export lookup, and constrained theme runtime relative imports to stay within the theme package root.
 - **Phase 23 discussion:** Captured a narrow local-addon raw-source contract (`sirenoAddon.main` may point at `.ts/.tsx/.js/.jsx`), kept the public authoring API on the root export only, and chose a branded temporary startup placeholder that clears on first real render and never hides honest browser startup failures.
 - **Phase 24 discussion:** Re-scoped the phase from a narrow direct-render cleanup into a runtime-contract migration: Node keeps hardware/event ownership, the active deck becomes a persistent mounted React tree while active, inactive decks unmount on navigation, button definitions expose definition-level runtime handlers plus `render(props)`, and core provides button-local plus addon-wide session store access without adding cross-restart persistence.

@@ -1,6 +1,6 @@
 # Roadmap — Sireno Deck v1.2
 
-**Last updated:** 2026-05-25
+**Last updated:** 2026-05-26
 **Granularity:** focused milestone (7 phases)
 **Total v1.2 requirements:** 9
 
@@ -279,12 +279,14 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 25: Theme TSX Button Frame Support
 
 **Goal:** Let themes provide `buttonFrame` implementations as `.tsx` modules in addition to `.js` so theme-owned frame rendering uses the same authoring path already prepared in `themes/default`.
-**Status:** [ ] Not started
+**Status:** ✓ Complete (2026-05-26)
 **Depends on:** Phase 24
 
 ### Plans
 - `25-01`: Make the shipped default theme and resolver path honestly support `manifest.main` authored in TypeScript/TSX while preserving tolerant exports, fresh reloads, and watched file-path truthfulness.
 - `25-02`: Extend the same truthful contract to custom manifest-backed themes by enforcing in-root relative imports, proving custom `.tsx` theme loading, and failing explicitly when the runtime graph escapes the theme root.
+
+**Phase 25 note:** This post-roadmap follow-on phase now makes the existing theme package contract honest for both built-in and custom themes. Manifest-backed themes can load `buttonFrame` from `.js/.jsx/.ts/.tsx` through one fixed-policy runtime seam, the shipped default theme is now a truthful `index.ts` plus `ButtonFrame.tsx` proof path in tests and watched file lists, fresh reload behavior remains intact, and custom filesystem themes get the same TSX support with explicit failure when their runtime graph escapes the theme package root.
 
 ---
 
