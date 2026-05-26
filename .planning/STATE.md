@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Quick task 015 fixed the shipped default theme's ambient React runtime dependency after Phase 25; Phase 25 still needs the UAT artifact cleanup before `/ship`.
+**Current focus:** Quick task 016 cleared the full-branch `/ship` blockers by aligning stale browser asset assertions with the live DOM asset contract and restoring the Phase 23 raw TSX fixture's runtime-safe render shape; next is to retry `/ship`.
 
 ## Current Position
 
 Phase: 25 — Theme TSX Button Frame Support
 Plan: execution complete
 Status: verifying
-Last activity: 2026-05-26 - Completed quick task 015 to remove the shipped default theme's ambient React dependency on the real TSX runtime path
+Last activity: 2026-05-26 - Completed quick task 016 to clear the focused ship blockers from the full-branch test run and make the real Phase 23 raw fixture render again on the runtime path
 
 Progress: [##########] 100%
 
@@ -86,6 +86,7 @@ Recent decisions affecting current work:
 
 ### Progress Notes
 
+- **Quick task 016:** Aligned the stale dom-host and emoji-selector browser asset assertions with the live absolute-path HTML contract and restored the committed Phase 23 local raw addon fixture to the current runtime shape (`createInstance() -> { render() { ... } }`) using explicit `createElement(...)`, which closed the three focused blockers from the aborted full-branch ship run.
 - **Phase 25 execution:** Switched manifest-backed theme runtime loading onto the same fixed-policy `tsx` import seam already used for raw addons while preserving tolerant `buttonFrame` exports and fresh reloads, updated the shipped default-theme proof path to the real `index.ts` plus `ButtonFrame.tsx` graph, and added committed custom `.tsx` theme fixtures plus explicit import-boundary failures when a runtime graph escapes the theme package root.
 - **Phase 25 discussion:** Kept `manifest.main` as the only theme runtime entrypoint while allowing `.js/.jsx/.ts/.tsx`, applied that same contract to both built-in and custom manifest-backed themes, preserved tolerant `buttonFrame`/`ButtonFrame` export lookup, and constrained theme runtime relative imports to stay within the theme package root.
 - **Phase 23 discussion:** Captured a narrow local-addon raw-source contract (`sirenoAddon.main` may point at `.ts/.tsx/.js/.jsx`), kept the public authoring API on the root export only, and chose a branded temporary startup placeholder that clears on first real render and never hides honest browser startup failures.
@@ -189,3 +190,4 @@ Resume file: .planning/phases/20-theme-packages-and-locked-time-layout/20-UAT.md
 | 013 | add the config needed for review (UAT) in the fixtures folder | 2026-05-15 | `8f321c9` | `.planning/quick/013-add-uat-review-config-fixtures` |
 | 014 | fix theme/font-face test failures blocking /ship | 2026-05-25 | `866d442` | `.planning/quick/014-theme-font-face-test-failures` |
 | 015 | fix this: pnpm exec tsx packages/cli/src/cli/index.ts start --config config.yml crashes with React is not defined from ButtonFrame.tsx | 2026-05-26 | `63fd4d8` | `.planning/quick/015-fix-theme-tsx-react-runtime` |
+| 016 | fix ship blockers from full branch test run | 2026-05-26 | `1762ae6`, `78817e7` | `.planning/quick/016-fix-ship-blockers-from-full-branch-test` |
