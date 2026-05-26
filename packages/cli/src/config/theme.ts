@@ -349,6 +349,22 @@ function rewriteThemeCssUrls(cssText: string, cssFilePath: string): { filePaths:
   }
 }
 
+export function rewriteThemeStylesheetAssetUrls(
+  cssText: string,
+  rewriteAssetUrl: (filePath: string) => string,
+): string {
+  return cssText.replace(/url\(([^)]+)\)/g, (_match, rawValue: string) => {
+    const trimmedValue = rawValue.trim()
+    const unquotedValue = trimmedValue.replace(/^['"]|['"]$/g, "")
+
+    if (!unquotedValue.startsWith("file://")) {
+      return `url(${trimmedValue})`
+    }
+
+    return `url("${rewriteAssetUrl(fileURLToPath(unquotedValue))}")`
+  })
+}
+
 function loadThemeStylesheets(
   manifest: ThemeManifest,
   manifestPath: string,

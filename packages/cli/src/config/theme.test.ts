@@ -216,4 +216,16 @@ describe("resolveTheme", () => {
 
     await expect(resolveTheme("./broken-theme", { baseDirectory: configDir })).rejects.toThrow("Theme CSS asset './missing.ttf' was not found")
   })
+
+  it("rewrites file-backed theme asset urls for browser-served transports", async () => {
+    const { rewriteThemeStylesheetAssetUrls } = await loadThemeModule()
+
+    const rewrittenCss = rewriteThemeStylesheetAssetUrls(
+      '@font-face { font-family: "IBM Plex Sans"; src: url("file:///tmp/fonts/plex.ttf"); }',
+      (filePath) => `/__sireno/assets?path=${encodeURIComponent(filePath)}`,
+    )
+
+    expect(rewrittenCss).toContain('/__sireno/assets?path=%2Ftmp%2Ffonts%2Fplex.ttf')
+    expect(rewrittenCss).not.toContain('file:///tmp/fonts/plex.ttf')
+  })
 })

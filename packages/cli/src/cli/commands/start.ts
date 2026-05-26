@@ -10,7 +10,7 @@ import { loadConfiguredAddons } from "../../addon/loader.js"
 import { setDomAssetPathResolver } from "../../addon/api.js"
 import { AddonManifestError } from "../../addon/manifest.js"
 import { createBundledAddonRegistry, loadBootstrapConfig, loadConfigWithSources } from "../../config/loader.js"
-import { resolveTheme, type Theme } from "../../config/theme.js"
+import { resolveTheme, rewriteThemeStylesheetAssetUrls, type Theme } from "../../config/theme.js"
 import { ConfigValidationError } from "../../core/schemas.js"
 import { createDeckRuntime } from "../../deck/runtime.js"
 import {
@@ -329,10 +329,17 @@ function renderEmulatorShellHtml(): string {
     "    element.onmouseleave = async (event) => { if (event.buttons === 1) { await fetch(`/__sireno/input`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ keyIndex, type: 'up' }) }); } };",
     "  });",
     "}",
-    "function patchDeckRoot(deckHtml){",
-    "  const template = document.createElement('template');",
-    "  template.innerHTML = deckHtml.trim();",
-    "  const nextDeckRoot = template.content.firstElementChild;",
+    "function patchThemeStyles(nextDocument){",
+    "  ['data-sireno-theme-utilities','data-sireno-theme-assets'].forEach((attributeName) => {",
+    "    const selector = `style[${attributeName}=\"true\"]`;",
+    "    const currentStyle = document.head.querySelector(selector);",
+    "    const nextStyle = nextDocument.head.querySelector(selector);",
+    "    if (!nextStyle) { currentStyle?.remove(); return; }",
+    "    if (!currentStyle) { document.head.appendChild(nextStyle.cloneNode(true)); return; }",
+    "    if (currentStyle.textContent !== nextStyle.textContent) { currentStyle.textContent = nextStyle.textContent; }",
+    "  });",
+    "}",
+    "function patchDeckRoot(nextDeckRoot){",
     "  if (!nextDeckRoot) { mount.textContent = 'Waiting for first render...'; return; }",
     "  const currentDeckRoot = mount.querySelector('#deck-root');",
     "  if (!currentDeckRoot) { mount.replaceChildren(nextDeckRoot); attachDeckInteractions(); return; }",
@@ -370,7 +377,9 @@ function renderEmulatorShellHtml(): string {
     "    currentVersion = state.version;",
     "    const deckResponse = await fetch(`/__sireno/deck?v=${state.version}`, { cache: 'no-store' });",
     "    const deckHtml = await deckResponse.text();",
-    "    patchDeckRoot(deckHtml);",
+    "    const nextDocument = new DOMParser().parseFromString(deckHtml, 'text/html');",
+    "    patchThemeStyles(nextDocument);",
+    "    patchDeckRoot(nextDocument.querySelector('#deck-root'));",
     "  }",
     "}",
     "deviceSelect.onchange = async () => {",
@@ -383,9 +392,15 @@ function renderEmulatorShellHtml(): string {
   ].join("")
 }
 
-function extractDeckRootHtml(html: string): string {
-  const match = html.match(/<div id="deck-root"[\s\S]*<\/div>/)
-  return match?.[0] ?? html
+function createEmulatorFileAssetUrl(filePath: string): string {
+  return `/__sireno/assets?path=${encodeURIComponent(filePath)}`
+}
+
+function rewriteEmulatorDeckHtml(html: string): string {
+  return html.replace(
+    /<style data-sireno-theme-assets="true">([\s\S]*?)<\/style>/,
+    (_match, cssText: string) => `<style data-sireno-theme-assets="true">${rewriteThemeStylesheetAssetUrls(cssText, createEmulatorFileAssetUrl)}</style>`,
+  )
 }
 
 function writeHttpResponse(response: ServerResponse, statusCode: number, body: string, contentType: string): void {
@@ -407,6 +422,10 @@ function getAssetContentType(filePath: string): string {
       return "image/png"
     case ".svg":
       return "image/svg+xml"
+    case ".ttf":
+      return "font/ttf"
+    case ".otf":
+      return "font/otf"
     case ".webp":
       return "image/webp"
     case ".woff":
@@ -425,6 +444,7 @@ function createEmulatorAssetUrl(baseUrl: string, assetReference: string): string
 function createEmulatorServer(options: {
   restartWithKeyCount: (keyCount: number) => Promise<void>
   emitKeyEvent: (event: { keyIndex: number; type: "down" | "up" }) => void
+  themeAssetPaths: ReadonlySet<string>
   resolveAssetPath: (assetReference: string) => string | undefined
   surfaceState: EmulatorSurfaceState
 }): Server {
@@ -441,7 +461,7 @@ function createEmulatorServer(options: {
         response,
         options.surfaceState.version > 0 ? 200 : 503,
         options.surfaceState.version > 0
-          ? extractDeckRootHtml(options.surfaceState.html)
+          ? rewriteEmulatorDeckHtml(options.surfaceState.html)
           : "<div style=\"color:#eef2f7;font-family:sans-serif;display:grid;place-items:center;min-height:240px;\">Waiting for first render...</div>",
         "text/html; charset=utf-8",
       )
@@ -450,9 +470,14 @@ function createEmulatorServer(options: {
 
     if (url.pathname === "/__sireno/assets") {
       const assetReference = url.searchParams.get("ref")
-      const assetPath = assetReference ? options.resolveAssetPath(assetReference) : undefined
+      const assetPathFromQuery = url.searchParams.get("path")
+      const assetPath = assetReference
+        ? options.resolveAssetPath(assetReference)
+        : assetPathFromQuery && options.themeAssetPaths.has(assetPathFromQuery)
+          ? assetPathFromQuery
+          : undefined
 
-      if (!assetReference || !assetPath) {
+      if (!assetPath) {
         writeHttpResponse(response, 404, "Asset not found", "text/plain; charset=utf-8")
         return
       }
@@ -665,6 +690,7 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
     },
     resolveAssetPath: (assetReference) => loadedConfig.registry.resolveAssetPath(assetReference),
     surfaceState,
+    themeAssetPaths: new Set(loadedConfig.theme.filePaths),
   })
 
   try {

@@ -44,9 +44,14 @@ vi.mock("../../config/loader.js", () => ({
   loadConfigWithSources,
 }))
 
-vi.mock("../../config/theme.js", () => ({
-  resolveTheme,
-}))
+vi.mock("../../config/theme.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../config/theme.js")>()
+
+  return {
+    ...actual,
+    resolveTheme,
+  }
+})
 
 vi.mock("../../addon/loader.js", () => ({
   loadConfiguredAddons,
@@ -1169,6 +1174,94 @@ describe("startEmulatorSession", () => {
     await session.close()
   })
 
+  it("serves theme styles and browser-loadable font urls on the emulator path", async () => {
+    const lifecycle = {
+      close: vi.fn(async () => {}),
+      emitKeyEvent: vi.fn(),
+      getConnection: vi.fn(() => ({ info: { keyCount: 15, model: "Virtual Stream Deck 15", serialNumber: "virtual-15" } })),
+      start: vi.fn(async () => ({ info: { keyCount: 15, model: "Virtual Stream Deck 15", serialNumber: "virtual-15" } })),
+      subscribeKeyEvents: vi.fn(() => () => {}),
+    }
+    const sessionMonitor = {
+      getSnapshot: vi.fn(() => ({ capability: "supported", state: "unknown" })),
+      stop: vi.fn(async () => {}),
+      subscribe: vi.fn(() => () => {}),
+    }
+    const themeFontPath = resolve(import.meta.dirname, "../../themes/default/assets/IBM_Plex_Mono/IBMPlexMono-Bold.ttf")
+
+    createVirtualStreamDeckLifecycle.mockReturnValue(lifecycle)
+    createBrowserRenderer.mockReturnValue({
+      close: vi.fn(async () => {}),
+      start: vi.fn(async () => {}),
+      updateDeck: vi.fn(async () => {}),
+    })
+    createSessionMonitor.mockResolvedValue(sessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    loadBootstrapConfig.mockReturnValue({
+      config: { addons: [] },
+      cwd: "/tmp/project",
+      filePath: "/tmp/project/config.yml",
+    })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    createBundledAddonRegistry.mockReturnValue({ resolveAssetPath: vi.fn(() => undefined) })
+    loadConfigWithSources.mockReturnValue({
+      config: {
+        decks: {
+          main: {
+            buttons: [{
+              config: { label: "Clock" },
+              definition: {
+                configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
+                createInstance: () => ({ render: () => createElement("div", null, "Clock") }),
+                type: "dom-button",
+              },
+              label: "Clock",
+              position: 0,
+              type: "dom-button",
+            }],
+            id: "main",
+          },
+        },
+        main_deck: "main",
+        theme: "dark",
+      },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
+    resolveTheme.mockResolvedValue({
+      accent: "#f59e0b",
+      background: "#10161f",
+      buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
+      danger: "#fb7185",
+      filePaths: [themeFontPath],
+      foreground: "#eef2f7",
+      name: "dark",
+      primary: "#7dd3fc",
+      rootDir: "/tmp/project/themes/default",
+      stylesheets: [
+        '@font-face { font-family: "IBM Plex Mono"; src: url("file:///works/opensource/sireno-deck/packages/cli/src/themes/default/assets/IBM_Plex_Mono/IBMPlexMono-Bold.ttf"); } .theme-font { font-family: "IBM Plex Mono"; }',
+      ],
+      success: "#34d399",
+    })
+
+    const { startEmulatorSession } = await import("./start.js")
+    const session = await startEmulatorSession({ logger: { info: vi.fn(), warn: vi.fn() } as never, port: 0 })
+
+    const deckHtml = await fetch(`${session.url}/__sireno/deck`).then(async (response) => response.text())
+    expect(deckHtml).toContain('data-sireno-theme-utilities="true"')
+    expect(deckHtml).toContain('data-sireno-theme-assets="true"')
+    expect(deckHtml).toContain('/__sireno/assets?path=')
+    expect(deckHtml).toContain('font-family: "IBM Plex Mono"')
+    expect(deckHtml).not.toContain('file://')
+
+    const fontAssetPath = `/__sireno/assets?path=${encodeURIComponent(themeFontPath)}`
+    const fontResponse = await fetch(`${session.url}${fontAssetPath}`)
+    expect(fontResponse.status).toBe(200)
+    expect(fontResponse.headers.get("content-type")).toContain("font/ttf")
+
+    await session.close()
+  })
+
   it("bridges browser input through the virtual lifecycle and exposes pressed feedback in the served deck html", async () => {
     let keyListener: ((event: { keyIndex: number; type: "down" | "up" }) => void) | undefined
     const lifecycle = {
@@ -1288,7 +1381,8 @@ describe("startEmulatorSession", () => {
       readFile(new URL("./start.ts", import.meta.url), "utf8"),
     )
 
-    expect(moduleSource).toContain("function patchDeckRoot(deckHtml)")
+    expect(moduleSource).toContain("function patchThemeStyles(nextDocument)")
+    expect(moduleSource).toContain("function patchDeckRoot(nextDeckRoot)")
     expect(moduleSource).toContain("currentKey.outerHTML !== nextKey.outerHTML")
     expect(moduleSource).toContain("currentKey.replaceWith(nextKey)")
     expect(moduleSource).toContain("mount.replaceChildren(nextDeckRoot)")
