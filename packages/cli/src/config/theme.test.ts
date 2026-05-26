@@ -41,11 +41,13 @@ describe("resolveTheme", () => {
   it("loads a built-in theme by name", async () => {
     const { resolveTheme } = await loadThemeModule()
     const theme = await resolveTheme("dark")
+    const frame = theme.buttonFrame({ children: null, state: "idle" })
 
     expect(theme.name).toBe("dark")
     expect(theme.foreground).toBe("#eef2f7")
     expect(theme.typography?.main_text.font_family).toBe("IBM Plex Sans")
     expect(theme.buttonFrame).toBeTypeOf("function")
+    expect(frame.props["data-sireno-button-frame"]).toBe("true")
     expect(theme.filePaths.some((filePath) => filePath.endsWith("themes/default/manifest.yml"))).toBe(true)
     expect(theme.filePaths).toEqual(expect.arrayContaining([
       expect.stringMatching(/themes\/default\/index\.ts$/),
