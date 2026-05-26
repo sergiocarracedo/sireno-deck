@@ -1,4 +1,4 @@
-import { createPhase23Label } from './content'
+import { createElement } from 'react'
 
 const addon = {
   apiVersion: 1,
@@ -11,10 +11,10 @@ const addon = {
           return { success: true as const, data: value }
         },
       },
-      createInstance() {
+      createInstance({}) {
         return {
           render() {
-            return createPhase23Label(0)
+            return createElement('p', null, 'Test')
           },
         }
       },
