@@ -283,7 +283,8 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 **Depends on:** Phase 24
 
 ### Plans
-*Not yet planned — run `plan-phase 25`*
+- `25-01`: Make the shipped default theme and resolver path honestly support `manifest.main` authored in TypeScript/TSX while preserving tolerant exports, fresh reloads, and watched file-path truthfulness.
+- `25-02`: Extend the same truthful contract to custom manifest-backed themes by enforcing in-root relative imports, proving custom `.tsx` theme loading, and failing explicitly when the runtime graph escapes the theme root.
 
 ---
 
