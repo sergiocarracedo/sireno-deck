@@ -1,0 +1,28 @@
+.planning/quick/015-fix-theme-tsx-react-runtime/015-SUMMARY.md
+  s_62d8b999b52dbd::t_403fe41bce6fef 1-14
+.planning/quick/015-fix-theme-tsx-react-runtime/015-PLAN.md
+  s_62d8b999b52dbd::t_b488b2c99636fd 1-46
+.planning/STATE.md
+  s_62d8b999b52dbd::t_403fe41bce6fef 8,15,191
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "2265da7edd0e450d725f7c8082439748fc5ad605",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_62d8b999b52dbd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19a95ab2cffelx1Pw48Hq6DfWk",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
