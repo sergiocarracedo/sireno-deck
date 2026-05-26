@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 25 — Theme TSX Button Frame Support
-**Status:** planned; next `/execute-phase 25`
+**Phase:** 25 — Theme TSX Button Frame Support ✓ complete → Phase 26 — next not planned yet
+**Status:** verifying
 **Last updated:** 2026-05-26
 
 ---
