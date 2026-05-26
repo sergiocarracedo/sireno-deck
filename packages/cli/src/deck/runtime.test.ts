@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url"
 
 import { createElement } from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { ButtonSurface, createBaseShapeTextContent, defineMountedButton } from "../addon/api.js"
+import { ButtonSurface, createBaseShapeTextContent, defineMountedButton, setAddonButtonOwnerName } from "../addon/api.js"
 import { loadConfiguredAddons } from "../addon/loader.js"
 
 import { createBundledAddonRegistry, loadConfig } from "../config/loader.js"
@@ -1694,6 +1694,78 @@ describe("createDeckRuntime", () => {
       expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Mounted:idle:up")
       const renderedButton = onRenderDeck.mock.calls.at(-1)?.[0]?.[0]
       expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Mounted" })
+    })
+  })
+
+  it("exposes runtime-owned mounted store scopes for button-local and addon-wide coordination", async () => {
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const sharedDefinition = setAddonButtonOwnerName(defineMountedButton({
+      configSchema: {
+        parse: (value: unknown) => value,
+        safeParse: (value: unknown) => ({ data: value, success: true as const }),
+      },
+      onTap: ({ store }) => {
+        store.button.update((snapshot) => ({ taps: ((snapshot as { taps?: number } | undefined)?.taps ?? 0) + 1 }))
+        store.addon.update((snapshot) => ({ total: ((snapshot as { total?: number } | undefined)?.total ?? 0) + 1 }))
+      },
+      render: ({ button, config, store }) => createTextSurface(
+        button.position,
+        `${config.label}:button=${(store.button.snapshot as { taps?: number } | undefined)?.taps ?? 0}:addon=${(store.addon.snapshot as { total?: number } | undefined)?.total ?? 0}`,
+      ),
+      type: "mounted-store-shared",
+    }), "runtime-mounted-store-test")
+    const observerDefinition = setAddonButtonOwnerName(defineMountedButton({
+      configSchema: {
+        parse: (value: unknown) => value,
+        safeParse: (value: unknown) => ({ data: value, success: true as const }),
+      },
+      render: ({ button, config, store }) => createTextSurface(
+        button.position,
+        `${config.label}:button=${(store.button.snapshot as { taps?: number } | undefined)?.taps ?? 0}:addon=${(store.addon.snapshot as { total?: number } | undefined)?.total ?? 0}`,
+      ),
+      type: "mounted-store-observer",
+    }), "runtime-mounted-store-test")
+
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [
+          {
+            config: { label: "Shared" },
+            definition: sharedDefinition,
+            label: "Shared",
+            position: 0,
+            type: "mounted-store-shared",
+          },
+          {
+            config: { label: "Observer" },
+            definition: observerDefinition,
+            label: "Observer",
+            position: 1,
+            type: "mounted-store-observer",
+          },
+        ],
+      },
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Shared:button=0:addon=0")
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 1))).toContain("Observer:button=0:addon=0")
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Shared:button=1:addon=1")
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 1))).toContain("Observer:button=0:addon=1")
     })
   })
 

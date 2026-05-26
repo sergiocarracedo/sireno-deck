@@ -2,7 +2,7 @@ import { createElement, isValidElement } from "react"
 import { z } from "zod"
 
 import { executeCommand, type CommandExecutionResult } from "../action/executor.js"
-import { ButtonSurface, createBaseShapeTextContent, createDomStack, createDomTextLabel } from "../addon/api.js"
+import { ButtonSurface, createBaseShapeTextContent, createDomStack, createDomTextLabel, getAddonButtonOwnerName } from "../addon/api.js"
 import datetimeButtonsAddon from "../builtin-addons/date-time/index.js"
 import { createPollingScheduler, type PollingScheduler } from "../render/scheduler.js"
 import { createDeckController } from "./controller.js"
@@ -15,6 +15,18 @@ import type { ThemeFrameState } from "../config/theme.js"
 import { UNKNOWN_HOST_CONTEXT, type HostContext } from "../system/host-context.js"
 import type { SessionMonitor, SessionSnapshot } from "../system/session-monitor.js"
 import type { ReactElement } from "react"
+
+interface RuntimeStoreScope {
+  clear: () => void
+  getSnapshot: () => unknown
+  set: (value: unknown) => void
+  update: (updater: (snapshot: unknown) => unknown) => void
+}
+
+interface RuntimeMountedStoreAccess {
+  addon: RuntimeStoreScope
+  button: RuntimeStoreScope
+}
 
 export interface DeckRuntimeOptions {
   addonRegistry?: AddonRegistry
@@ -183,6 +195,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   const executeAction = options.executeAction ?? ((command: string) => executeCommand({ command, hostContext }))
   const createScheduler = options.createScheduler ?? ((intervalMs: number) => createPollingScheduler({ intervalMs }))
   const instances = new Map<string, RuntimeButtonInstance>()
+  const addonStateStore = new Map<string, unknown>()
+  const buttonStateStore = new Map<string, unknown>()
   const pressedKeys = new Set<number>()
   const renderCache = new Map<string, RuntimeRenderButton>()
   const schedulers = new Map<string, PollingScheduler>()
@@ -225,6 +239,39 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
 
   function getDeckButtons(deck: DeckConfig): ButtonInstance[] {
     return deck.buttons
+  }
+
+  function getAddonStateKey(button: ButtonInstance): string {
+    return getAddonButtonOwnerName(button.definition) ?? button.type
+  }
+
+  function invalidateMountedStore(): void {
+    void renderDeckSurface(getDisplayDeckId(), activeActivationVersion).catch(reportRuntimeError)
+  }
+
+  function createRuntimeStoreScope(stateStore: Map<string, unknown>, stateKey: string): RuntimeStoreScope {
+    return {
+      clear: () => {
+        stateStore.delete(stateKey)
+        invalidateMountedStore()
+      },
+      getSnapshot: () => stateStore.get(stateKey),
+      set: (value) => {
+        stateStore.set(stateKey, value)
+        invalidateMountedStore()
+      },
+      update: (updater) => {
+        stateStore.set(stateKey, updater(stateStore.get(stateKey)))
+        invalidateMountedStore()
+      },
+    }
+  }
+
+  function createMountedStoreAccess(deckId: string, button: ButtonInstance): RuntimeMountedStoreAccess {
+    return {
+      addon: createRuntimeStoreScope(addonStateStore, getAddonStateKey(button)),
+      button: createRuntimeStoreScope(buttonStateStore, getButtonStateKey(deckId, button.position)),
+    }
   }
 
   function clearDeckState(deckId: string): void {
@@ -373,8 +420,9 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       config: button.config,
       hostContext,
       methods: createButtonMethods(button, deckId),
+      store: createMountedStoreAccess(deckId, button),
       theme: options.theme,
-    }) as RuntimeButtonInstance
+    } as Parameters<ButtonInstance["definition"]["createInstance"]>[0]) as RuntimeButtonInstance
   }
 
   function getOrCreateInstance(deckId: string, button: ButtonInstance): RuntimeButtonInstance {
@@ -624,6 +672,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       }
 
       instances.clear()
+      addonStateStore.clear()
+      buttonStateStore.clear()
       renderCache.clear()
     },
   }

@@ -5,6 +5,7 @@ import type {
   AddonDeckDefinition,
   SirenoAddon,
 } from "./api.js"
+import { setAddonButtonOwnerName } from "./api.js"
 
 const ADDON_ASSET_PREFIXES = ["addon://", "builtin://"] as const
 
@@ -79,7 +80,7 @@ export function createAddonRegistry(): AddonRegistry {
     },
     registerAddon(addon, options) {
       for (const button of addon.buttons) {
-        registerButton(button)
+        registerButton(setAddonButtonOwnerName(button, addon.name))
       }
 
       for (const deck of addon.decks ?? []) {

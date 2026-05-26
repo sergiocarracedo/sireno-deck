@@ -46,6 +46,18 @@ export interface AddonButtonMethods {
   runCommand: (command: string) => Promise<CommandExecutionResult>
 }
 
+export interface AddonButtonStoreScope {
+  clear: () => void
+  readonly snapshot: unknown
+  set: (value: unknown) => void
+  update: (updater: (snapshot: unknown) => unknown) => void
+}
+
+export interface MountedAddonButtonStore {
+  addon: AddonButtonStoreScope
+  button: AddonButtonStoreScope
+}
+
 export interface AddonButtonRenderState {
   frameState: ThemeFrameState
   pressed: boolean
@@ -80,7 +92,9 @@ export interface CreateAddonButtonInstanceOptions<TConfig> {
 }
 
 export interface MountedAddonButtonRenderProps<TConfig>
-  extends CreateAddonButtonInstanceOptions<TConfig>, AddonButtonRenderState {}
+  extends CreateAddonButtonInstanceOptions<TConfig>, AddonButtonRenderState {
+  store: MountedAddonButtonStore
+}
 
 export interface LegacyAddonButtonDefinition<TConfig = unknown> {
   configSchema: ZodType<TConfig>
@@ -105,6 +119,67 @@ export interface MountedAddonButtonDefinition<TConfig = unknown> {
 
 export type AddonButtonDefinition<TConfig = unknown> = LegacyAddonButtonDefinition<TConfig>
 
+interface MountedAddonButtonStoreAccessScope {
+  clear: () => void
+  getSnapshot: () => unknown
+  set: (value: unknown) => void
+  update: (updater: (snapshot: unknown) => unknown) => void
+}
+
+interface MountedAddonButtonStoreAccess {
+  addon: MountedAddonButtonStoreAccessScope
+  button: MountedAddonButtonStoreAccessScope
+}
+
+interface MountedAddonButtonInstanceOptions<TConfig> extends CreateAddonButtonInstanceOptions<TConfig> {
+  store?: MountedAddonButtonStoreAccess
+}
+
+const ADDON_BUTTON_OWNER_NAME = Symbol("sireno.addon.buttonOwnerName")
+
+const EMPTY_STORE_SCOPE_ACCESS: MountedAddonButtonStoreAccessScope = {
+  clear() {},
+  getSnapshot: () => undefined,
+  set() {},
+  update() {},
+}
+
+function createMountedStoreScope(access: MountedAddonButtonStoreAccessScope): AddonButtonStoreScope {
+  return {
+    clear: access.clear,
+    get snapshot() {
+      return access.getSnapshot()
+    },
+    set: access.set,
+    update: access.update,
+  }
+}
+
+function createMountedButtonStore(access?: MountedAddonButtonStoreAccess): MountedAddonButtonStore {
+  return {
+    addon: createMountedStoreScope(access?.addon ?? EMPTY_STORE_SCOPE_ACCESS),
+    button: createMountedStoreScope(access?.button ?? EMPTY_STORE_SCOPE_ACCESS),
+  }
+}
+
+export function getAddonButtonOwnerName(definition: AddonButtonDefinition): string | undefined {
+  return (definition as AddonButtonDefinition & { [ADDON_BUTTON_OWNER_NAME]?: string })[ADDON_BUTTON_OWNER_NAME]
+}
+
+export function setAddonButtonOwnerName<TDefinition extends AddonButtonDefinition>(
+  definition: TDefinition,
+  addonName: string,
+): TDefinition {
+  Object.defineProperty(definition, ADDON_BUTTON_OWNER_NAME, {
+    configurable: true,
+    enumerable: false,
+    value: addonName,
+    writable: false,
+  })
+
+  return definition
+}
+
 export function defineMountedButton<TConfig>(
   definition: MountedAddonButtonDefinition<TConfig>,
 ): LegacyAddonButtonDefinition<TConfig> {
@@ -112,14 +187,17 @@ export function defineMountedButton<TConfig>(
     configSchema: definition.configSchema,
     defaultIntervalMs: definition.defaultIntervalMs,
     createInstance(options) {
+      const mountedOptions = options as MountedAddonButtonInstanceOptions<TConfig>
       const renderState: AddonButtonRenderState = {
         frameState: "idle",
         pressed: false,
       }
+      const store = createMountedButtonStore(mountedOptions.store)
 
       const getRenderProps = (): MountedAddonButtonRenderProps<TConfig> => ({
         ...options,
         ...renderState,
+        store,
       })
 
       // Keep the migration boundary explicit: mounted definitions adapt into the legacy runtime seam for now.
