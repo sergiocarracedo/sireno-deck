@@ -127,7 +127,8 @@ describe("dom host", () => {
       theme: undefined,
     }))
 
-    expect(html).toContain('src="file:///tmp/sireno-icon.svg"')
+    expect(html).toContain('href="/tmp/sireno-icon.svg"')
+    expect(html).toContain('src="/tmp/sireno-icon.svg"')
   })
 
   it("renders mounted-button store snapshots through the public props-first contract", async () => {

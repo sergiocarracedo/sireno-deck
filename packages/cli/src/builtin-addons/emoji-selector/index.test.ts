@@ -77,7 +77,7 @@ describe('emoji-selector addon', () => {
 
     const html = renderReactNodeToHtml(instance?.render() as never)
 
-    expect(html).toContain('file://')
+    expect(html).toContain('<img')
     expect(html).toContain('emoji-grin.svg')
     expect(html).toContain('GRIN')
   })
