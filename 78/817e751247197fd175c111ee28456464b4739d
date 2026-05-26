@@ -1,0 +1,26 @@
+packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx
+  s_62d8b999b52dbd::t_8c8a0c8907f429 1
+  s_62d8b999b52dbd::t_c67d69836295bd 17
+  h_f90ee31b03fc41 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "78817e751247197fd175c111ee28456464b4739d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_62d8b999b52dbd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19a95ab2cffelx1Pw48Hq6DfWk",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
