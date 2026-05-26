@@ -195,6 +195,10 @@ function createDeckHtml(
   keyCount: number,
   deckButtons: Array<RuntimeRenderButton & { content: NonNullable<RuntimeRenderButton["content"]> }>,
   theme?: Theme,
+  inlineWarning?: {
+    detail: string
+    title: string
+  },
 ): string {
   return renderDomDeck(deckButtons.map((button) => ({
     content: button.content,
@@ -203,6 +207,7 @@ function createDeckHtml(
     keyIndex: button.keyIndex,
     ...(button.sample_interval_ms !== undefined ? { sample_interval_ms: button.sample_interval_ms } : {}),
   })), {
+    inlineWarning,
     keyCount,
     theme,
   })
@@ -631,15 +636,19 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
 
     const requiredKeyCount = getConfiguredDeckKeyRequirement()
     if (keyCount < requiredKeyCount) {
+      const mismatchDetail = `Selected virtual device exposes ${keyCount} keys but the configured deck needs ${requiredKeyCount}.`
       surfaceState.activeDeckId = loadedConfig.config.main_deck
       surfaceState.error = {
         code: "emulator_layout_mismatch",
-        detail: `Selected virtual device exposes ${keyCount} keys but the configured deck needs ${requiredKeyCount}.`,
+        detail: mismatchDetail,
       }
-      surfaceState.html = `<div id="deck-root" style="align-items:center;background:#10161f;color:#eef2f7;display:grid;font-family:'IBM Plex Sans',sans-serif;gap:12px;min-height:240px;padding:24px;text-align:center;"><strong>Emulator Layout Error</strong><span>Selected virtual device exposes ${keyCount} keys but the configured deck needs ${requiredKeyCount}.</span></div>`
+      surfaceState.html = createDeckHtml(keyCount, [], loadedConfig.theme, {
+        detail: mismatchDetail,
+        title: "Layout mismatch",
+      })
       surfaceState.updatedAt = new Date().toISOString()
       surfaceState.version += 1
-      surfaceState.status = "error"
+      surfaceState.status = "ready"
       browserRenderer = await ensureBrowserRenderer(browserRenderer, keyCount)
       await browserRenderer.updateDeck(surfaceState.html)
       return

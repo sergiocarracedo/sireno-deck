@@ -31,6 +31,10 @@ export interface HostedButton {
 
 export interface DomHostRenderOptions {
   background?: string
+  inlineWarning?: {
+    detail: string
+    title: string
+  }
   keyCount: number
   preset?: RenderPreset
   theme?: Theme
@@ -479,6 +483,10 @@ function DeckKeySlot(props: {
 function DeckDocument(props: {
   background: string
   buttons: readonly HostedButton[]
+  inlineWarning?: {
+    detail: string
+    title: string
+  }
   keyCount: number
   layout: ReturnType<typeof resolveDeckLayout>
   preset: RenderPreset
@@ -521,6 +529,29 @@ function DeckDocument(props: {
             width: `${props.layout.columns * props.preset.keyWidth}px`,
           }}
         >
+          {props.inlineWarning ? (
+            <div
+              data-sireno-inline-warning="true"
+              style={{
+                alignItems: 'flex-start',
+                background: 'linear-gradient(180deg, rgba(245,158,11,0.22) 0%, rgba(161,98,7,0.12) 100%)',
+                borderBottom: '1px solid rgba(245,158,11,0.35)',
+                color: 'var(--sireno-color-foreground)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px',
+                gridColumn: `1 / span ${props.layout.columns}`,
+                padding: '10px 12px',
+              }}
+            >
+              <strong style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                {props.inlineWarning.title}
+              </strong>
+              <span style={{ fontSize: '12px', lineHeight: 1.35 }}>
+                {props.inlineWarning.detail}
+              </span>
+            </div>
+          ) : null}
           {Array.from({ length: props.keyCount }, (_, keyIndex) => (
             <DeckKeySlot
               button={buttonsByKey.get(keyIndex)}
@@ -550,6 +581,7 @@ export function renderDomDeck(
     <DeckDocument
       background={background}
       buttons={buttons}
+      inlineWarning={options.inlineWarning}
       keyCount={options.keyCount}
       layout={layout}
       preset={preset}

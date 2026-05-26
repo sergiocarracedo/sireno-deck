@@ -1472,7 +1472,7 @@ describe("startEmulatorSession", () => {
     await session.close()
   })
 
-  it("fails honestly when the selected virtual device cannot represent the configured deck", async () => {
+  it("renders the visible subset with an inline warning when the selected virtual device cannot represent the configured deck", async () => {
     const lifecycle = {
       close: vi.fn(async () => {}),
       emitKeyEvent: vi.fn(),
@@ -1538,13 +1538,17 @@ describe("startEmulatorSession", () => {
 
     await vi.waitFor(async () => {
       const state = await fetch(`${session.url}/__sireno/state`).then(async (response) => response.json())
-      expect(state.status).toBe("error")
+      expect(state.status).toBe("ready")
       expect(state.error).toMatchObject({ code: "emulator_layout_mismatch" })
     })
 
     const deckHtml = await fetch(`${session.url}/__sireno/deck`).then(async (response) => response.text())
-    expect(deckHtml).toContain("Emulator Layout Error")
+    expect(deckHtml).toContain('data-sireno-inline-warning="true"')
+    expect(deckHtml).toContain("Layout mismatch")
     expect(deckHtml).toContain("configured deck needs 8")
+    expect(deckHtml).toContain('data-sireno-key="0"')
+    expect(deckHtml).toContain('data-sireno-key="5"')
+    expect(deckHtml).not.toContain('data-sireno-key="6"')
 
     await session.close()
   })

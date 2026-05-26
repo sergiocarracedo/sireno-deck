@@ -80,6 +80,23 @@ describe("dom host", () => {
     expect(html).toContain('file://')
   })
 
+  it("renders a persistent inline warning banner inside the shared deck shell when requested", () => {
+    const html = renderDomDeck([], {
+      inlineWarning: {
+        detail: "Selected virtual device exposes 6 keys but the configured deck needs 8.",
+        title: "Layout mismatch",
+      },
+      keyCount: 6,
+    })
+
+    expect(html).toContain('data-sireno-inline-warning="true"')
+    expect(html).toContain('Layout mismatch')
+    expect(html).toContain('configured deck needs 8')
+    expect(html).toContain('data-sireno-key="0"')
+    expect(html).toContain('data-sireno-key="5"')
+    expect(html).not.toContain('data-sireno-key="6"')
+  })
+
   it("renders React TSX metadata wrappers through react-dom static markup", () => {
     const html = renderReactNodeToHtml(createElement(ButtonSurface, {
       full_surface: true,
