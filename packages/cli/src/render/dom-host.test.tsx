@@ -1,4 +1,4 @@
-import { createElement } from "react"
+import { createElement, useState } from "react"
 import { describe, expect, it } from "vitest"
 
 import {
@@ -8,7 +8,7 @@ import {
 } from "../addon/api.js"
 import { resolveTheme } from "../config/theme.js"
 import { UNKNOWN_HOST_CONTEXT } from "../system/host-context.js"
-import { createHostedButtonElement, renderDomDeck, renderReactNodeToHtml } from "./dom-host.js"
+import { createHostedButtonElement, createMountedDomHost, renderDomDeck, renderReactNodeToHtml } from "./dom-host.js"
 
 describe("dom host", () => {
   it("applies buttonFrame by default", () => {
@@ -223,5 +223,32 @@ describe("dom host", () => {
     await instance.onTap?.()
 
     expect(renderMountedHtml()).toContain("Mounted:button=1:addon=1")
+  })
+
+  it("preserves local component state across mounted host updates and resets it on unmount", () => {
+    let mountCount = 0
+
+    function MountedCounter(props: { label: string }) {
+      const [mountId] = useState(() => {
+        mountCount += 1
+        return mountCount
+      })
+
+      return createElement("span", null, `${props.label}:${mountId}`)
+    }
+
+    const host = createMountedDomHost()
+
+    host.render(createElement(MountedCounter, { label: "First" }))
+    expect(host.toHtml()).toContain("First:1")
+
+    host.render(createElement(MountedCounter, { label: "Second" }))
+    expect(host.toHtml()).toContain("Second:1")
+
+    host.unmount()
+    expect(host.toHtml()).toBe("")
+
+    host.render(createElement(MountedCounter, { label: "Third" }))
+    expect(host.toHtml()).toContain("Third:2")
   })
 })
