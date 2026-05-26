@@ -290,6 +290,17 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ---
 
+### Phase 26: Browser Deck React Shell Polish
+
+**Goal:** Refactor the browser deck shell onto explicit React/TSX composition so the default button frame and full browser deck layout render through honest JSX components, emulate the physical Stream Deck chrome more faithfully in browser mode, keep partial-device selections usable with a persistent warning, and show a logo-backed startup mosaic while the browser renderer boots.
+**Status:** [ ] Not started
+**Depends on:** Phase 25
+
+### Plans
+*Not yet planned — run `plan-phase 26`*
+
+---
+
 ## Coverage Validation
 
 - [x] All 9 v1.2 requirements map to at least one roadmap phase
