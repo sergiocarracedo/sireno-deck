@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url"
 import { createElement } from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { ButtonSurface, createBaseShapeTextContent, defineMountedButton } from "../addon/api.js"
+import { loadConfiguredAddons } from "../addon/loader.js"
 
 import { createBundledAddonRegistry, loadConfig } from "../config/loader.js"
 import { validateConfig } from "../core/schemas.js"
@@ -1544,6 +1545,54 @@ describe("createDeckRuntime", () => {
       const renderedButton = getRenderedButton(runtime, 0)
       expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Session unlocked" })
       expect(getRenderedButtonHtml(renderedButton)).toContain("Session unlocked")
+    })
+  })
+
+  it("keeps the committed Phase 24 mounted-button fixture live across loader and runtime execution", async () => {
+    const registry = createBundledAddonRegistry()
+    await loadConfiguredAddons({
+      addons: [{ enabled: true, name: "phase-24-local-mounted-addon", path: join(FIXTURES_DIRECTORY, "phase-24/local-mounted-addon"), source: "local" }],
+      cwd: FIXTURES_DIRECTORY,
+      registry,
+    })
+
+    const config = loadConfig(
+      join(FIXTURES_DIRECTORY, "phase-24/config.local-mounted-addon.yml"),
+      registry,
+      {
+        os: { type: "linux", variant: "ubuntu", version: "24.04" },
+        session: { capability: "unknown", state: "unknown" },
+      },
+    )
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const runtime = createDeckRuntime({
+      deck: config.decks[config.main_deck]!,
+      decks: config.decks,
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      const renderedButton = getRenderedButton(runtime, 0)
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Mounted" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Mounted:phase-24-mounted-button:idle:up")
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Mounted:phase-24-mounted-button:hold:down")
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Mounted:phase-24-mounted-button:idle:up")
     })
   })
 

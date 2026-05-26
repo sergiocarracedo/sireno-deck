@@ -127,27 +127,21 @@ export function defineMountedButton<TConfig>(
         dispose: definition.dispose ? () => definition.dispose?.(getRenderProps()) : undefined,
         onActivate: definition.onActivate ? () => definition.onActivate?.(getRenderProps()) : undefined,
         onDeactivate: definition.onDeactivate ? () => definition.onDeactivate?.(getRenderProps()) : undefined,
-        onPress: definition.onPress
-          ? async () => {
-              renderState.pressed = true
-              renderState.frameState = "hold"
-              await definition.onPress?.(getRenderProps())
-            }
-          : undefined,
-        onRelease: definition.onRelease
-          ? async () => {
-              renderState.pressed = false
-              renderState.frameState = "idle"
-              await definition.onRelease?.(getRenderProps())
-            }
-          : undefined,
-        onTap: definition.onTap
-          ? async () => {
-              renderState.frameState = "tap"
-              await definition.onTap?.(getRenderProps())
-              renderState.frameState = renderState.pressed ? "hold" : "idle"
-            }
-          : undefined,
+        onPress: async () => {
+          renderState.pressed = true
+          renderState.frameState = "hold"
+          await definition.onPress?.(getRenderProps())
+        },
+        onRelease: async () => {
+          renderState.pressed = false
+          renderState.frameState = "idle"
+          await definition.onRelease?.(getRenderProps())
+        },
+        onTap: async () => {
+          renderState.frameState = "tap"
+          await definition.onTap?.(getRenderProps())
+          renderState.frameState = renderState.pressed ? "hold" : "idle"
+        },
         refresh: definition.refresh ? () => definition.refresh?.(getRenderProps()) : undefined,
         render: () => definition.render(getRenderProps()),
       }

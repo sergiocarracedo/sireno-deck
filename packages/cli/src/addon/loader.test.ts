@@ -35,6 +35,7 @@ function writeAddonFixture(rootDir: string, options: { apiVersion?: number; brok
 describe("loadConfiguredAddons", () => {
   const tempDirs: string[] = []
   const phase23FixtureRoot = resolve(import.meta.dirname, "../../fixtures/phase-23/local-raw-addon")
+  const phase24FixtureRoot = resolve(import.meta.dirname, "../../fixtures/phase-24/local-mounted-addon")
 
   afterEach(() => {
     for (const directory of tempDirs.splice(0, tempDirs.length)) {
@@ -147,6 +148,19 @@ describe("loadConfiguredAddons", () => {
     expect(result.warnings).toEqual([])
     expect(result.loaded[0]?.manifest.main).toBe("./src/index.tsx")
     expect(registry.getButton("phase-23-local-raw-button")?.type).toBe("phase-23-local-raw-button")
+  })
+
+  it("loads local raw .tsx addons that use the mounted button contract adapter", async () => {
+    const registry = createAddonRegistry()
+
+    const result = await loadConfiguredAddons({
+      addons: [{ enabled: true, name: "phase-24-local-mounted-addon", path: phase24FixtureRoot, source: "local" }],
+      registry,
+    })
+
+    expect(result.warnings).toEqual([])
+    expect(result.loaded[0]?.manifest.main).toBe("./src/index.tsx")
+    expect(registry.getButton("phase-24-mounted-button")?.type).toBe("phase-24-mounted-button")
   })
 
   it("returns a warning when local raw source reaches outside the addon root", async () => {

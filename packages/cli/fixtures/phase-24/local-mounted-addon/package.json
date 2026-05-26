@@ -1,0 +1,8 @@
+{
+  "name": "phase-24-local-mounted-addon",
+  "type": "module",
+  "sirenoAddon": {
+    "apiVersion": 1,
+    "main": "./src/index.tsx"
+  }
+}

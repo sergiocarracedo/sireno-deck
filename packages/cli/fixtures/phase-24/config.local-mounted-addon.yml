@@ -1,0 +1,13 @@
+addons:
+  - name: phase-24-local-mounted-addon
+    source: local
+    path: ./local-mounted-addon
+decks:
+  main:
+    id: main
+    buttons:
+      - position: 0
+        type: phase-24-mounted-button
+        label: Mounted
+main_deck: main
+theme: dark
