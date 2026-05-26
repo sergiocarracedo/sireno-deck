@@ -1159,6 +1159,22 @@ describe("startEmulatorSession", () => {
     await session.close()
   })
 
+  it("ships the emulator shell with keyed deck patching instead of whole mount replacement", async () => {
+    const { startEmulatorSession } = await import("./start.js")
+
+    expect(startEmulatorSession).toBeTypeOf("function")
+
+    const moduleSource = await import("node:fs/promises").then(({ readFile }) =>
+      readFile(new URL("./start.ts", import.meta.url), "utf8"),
+    )
+
+    expect(moduleSource).toContain("function patchDeckRoot(deckHtml)")
+    expect(moduleSource).toContain("currentKey.outerHTML !== nextKey.outerHTML")
+    expect(moduleSource).toContain("currentKey.replaceWith(nextKey)")
+    expect(moduleSource).toContain("mount.replaceChildren(nextDeckRoot)")
+    expect(moduleSource).not.toContain("mount.innerHTML = deckHtml;")
+  })
+
   it("restarts the emulator with a new virtual device when the page requests a device switch", async () => {
     const firstLifecycle = {
       close: vi.fn(async () => {}),
