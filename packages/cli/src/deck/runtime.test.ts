@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url"
 
 import { createElement } from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { ButtonSurface, createBaseShapeTextContent } from "../addon/api.js"
+import { ButtonSurface, createBaseShapeTextContent, defineMountedButton } from "../addon/api.js"
 
 import { createBundledAddonRegistry, loadConfig } from "../config/loader.js"
 import { validateConfig } from "../core/schemas.js"
@@ -1580,6 +1580,71 @@ describe("createDeckRuntime", () => {
       const renderedButton = onRenderDeck.mock.calls.at(-1)?.[0]?.[0]
       expect(renderedButton).toMatchObject({ background: "#10161f", full_surface: true, keyIndex: 0, label: "Clock" })
       expect(getRenderedButtonHtml(renderedButton)).toContain("Clock")
+    })
+  })
+
+  it("executes mounted button definitions through runtime-owned press, release, and tap semantics", async () => {
+    const onRenderDeck = vi.fn()
+    const onPress = vi.fn()
+    const onRelease = vi.fn()
+    const onTap = vi.fn()
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Mounted" },
+          definition: defineMountedButton({
+            configSchema: {
+              parse: (value: unknown) => value,
+              safeParse: (value: unknown) => ({ data: value, success: true as const }),
+            },
+            onPress: async (props) => {
+              onPress(props)
+            },
+            onRelease: async (props) => {
+              onRelease(props)
+            },
+            onTap: async (props) => {
+              onTap(props)
+            },
+            render: (props) => createTextSurface(props.button.position, `${props.config.label}:${props.frameState}:${props.pressed ? "down" : "up"}`),
+            type: "mounted-text",
+          }),
+          label: "Mounted",
+          position: 0,
+          type: "mounted-text",
+        }],
+      },
+      onRenderDeck,
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Mounted:idle:up")
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+
+    await vi.waitFor(() => {
+      expect(onPress).toHaveBeenCalledWith(expect.objectContaining({ frameState: "hold", pressed: true }))
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Mounted:hold:down")
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(onRelease).toHaveBeenCalledWith(expect.objectContaining({ frameState: "idle", pressed: false }))
+      expect(onTap).toHaveBeenCalledWith(expect.objectContaining({ frameState: "tap", pressed: false }))
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Mounted:idle:up")
+      const renderedButton = onRenderDeck.mock.calls.at(-1)?.[0]?.[0]
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Mounted" })
     })
   })
 

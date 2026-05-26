@@ -14,6 +14,7 @@ import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
 import type { ThemeFrameState } from "../config/theme.js"
 import { UNKNOWN_HOST_CONTEXT, type HostContext } from "../system/host-context.js"
 import type { SessionMonitor, SessionSnapshot } from "../system/session-monitor.js"
+import type { ReactElement } from "react"
 
 export interface DeckRuntimeOptions {
   addonRegistry?: AddonRegistry
@@ -59,7 +60,7 @@ interface RuntimeButtonInstance {
   onRelease?: () => Promise<void> | void
   onTap?: () => Promise<void> | void
   refresh?: () => Promise<void> | void
-  render: () => ReturnType<ButtonInstance["definition"]["createInstance"]>["render"] extends () => infer T ? T : never
+  render: () => ReactElement
 }
 
 export interface RuntimeRenderButton {
@@ -359,15 +360,12 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     }
   }
 
-  function getOrCreateInstance(deckId: string, button: ButtonInstance): RuntimeButtonInstance {
-    const key = getButtonStateKey(deckId, button.position)
-    const existingInstance = instances.get(key)
-    if (existingInstance) {
-      return existingInstance
-    }
-
-    // Every runtime instance comes from the registry-backed button definition, and deck type expansion happens before runtime start.
-    const instance = button.definition.createInstance({
+  function instantiateRuntimeButtonInstance(
+    deckId: string,
+    button: ButtonInstance,
+  ): RuntimeButtonInstance {
+    // Phase 24 mounted definitions adapt into the legacy createInstance seam so Node keeps one runtime entrypoint.
+    return button.definition.createInstance({
       button: {
         position: button.position,
         type: button.type,
@@ -377,6 +375,16 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       methods: createButtonMethods(button, deckId),
       theme: options.theme,
     }) as RuntimeButtonInstance
+  }
+
+  function getOrCreateInstance(deckId: string, button: ButtonInstance): RuntimeButtonInstance {
+    const key = getButtonStateKey(deckId, button.position)
+    const existingInstance = instances.get(key)
+    if (existingInstance) {
+      return existingInstance
+    }
+
+    const instance = instantiateRuntimeButtonInstance(deckId, button)
 
     instances.set(key, instance)
     return instance
