@@ -73,6 +73,20 @@ const addon = {
       },
       type: "phase-24-mounted-local-counter",
     }),
+    defineMountedButton({
+      configSchema: passthroughSchema,
+      onTap({ store }) {
+        store.button.update((snapshot) => ({ taps: getButtonTaps(snapshot) + 1 }))
+      },
+      render({ config, frameState, pressed, store }) {
+        return createElement(
+          "p",
+          null,
+          `${String(config.label ?? "Press Probe")}:frame=${frameState}:pressed=${pressed ? "down" : "up"}:count=${getButtonTaps(store.button.snapshot)}`,
+        )
+      },
+      type: "phase-24-mounted-press-probe",
+    }),
   ],
 }
 

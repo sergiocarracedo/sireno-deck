@@ -19,6 +19,9 @@ decks:
       - position: 3
         type: phase-24-mounted-local-counter
         label: Local Main
+      - position: 4
+        type: phase-24-mounted-press-probe
+        label: Press Probe
   apps:
     id: apps
     buttons:

@@ -163,6 +163,7 @@ describe("loadConfiguredAddons", () => {
     expect(registry.getButton("phase-24-mounted-button")?.type).toBe("phase-24-mounted-button")
     expect(registry.getButton("phase-24-mounted-observer")?.type).toBe("phase-24-mounted-observer")
     expect(registry.getButton("phase-24-mounted-local-counter")?.type).toBe("phase-24-mounted-local-counter")
+    expect(registry.getButton("phase-24-mounted-press-probe")?.type).toBe("phase-24-mounted-press-probe")
   })
 
   it("returns a warning when local raw source reaches outside the addon root", async () => {

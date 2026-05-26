@@ -1608,6 +1608,7 @@ describe("createDeckRuntime", () => {
       expect(getRenderedButtonHtml(getRenderedButton(runtime, 1))).toContain("Observer:button=0:addon=0")
       expect(getRenderedButtonHtml(getRenderedButton(runtime, 3))).toContain("Local Main:mount=")
       expect(getRenderedButtonHtml(getRenderedButton(runtime, 3))).toContain(":count=0")
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 4))).toContain("Press Probe:frame=idle:pressed=up:count=0")
     })
 
     emitEvent?.({ keyIndex: 0, type: "down" })
@@ -1775,6 +1776,56 @@ describe("createDeckRuntime", () => {
       expect(parts.count).toBe(1)
       expect(parts.mountId).not.toBe(initialMainMountId)
       expect(parts.mountId).not.toBe(appsMountId)
+    })
+  })
+
+  it("proves committed Phase 24 fixture carries runtime-driven transient props through the mounted deck path", async () => {
+    const registry = createBundledAddonRegistry()
+    await loadConfiguredAddons({
+      addons: [{ enabled: true, name: "phase-24-local-mounted-addon", path: join(FIXTURES_DIRECTORY, "phase-24/local-mounted-addon"), source: "local" }],
+      cwd: FIXTURES_DIRECTORY,
+      registry,
+    })
+
+    const config = loadConfig(
+      join(FIXTURES_DIRECTORY, "phase-24/config.local-mounted-addon.yml"),
+      registry,
+      {
+        os: { type: "linux", variant: "ubuntu", version: "24.04" },
+        session: { capability: "unknown", state: "unknown" },
+      },
+    )
+
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const runtime = createDeckRuntime({
+      deck: config.decks[config.main_deck]!,
+      decks: config.decks,
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(getRenderedButton(runtime, 4)).toMatchObject({ frame_state: "idle", keyIndex: 4, label: "Press Probe" })
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 4))).toContain("Press Probe:frame=idle:pressed=up:count=0")
+    })
+
+    emitEvent?.({ keyIndex: 4, type: "down" })
+
+    await vi.waitFor(() => {
+      expect(getRenderedButton(runtime, 4)).toMatchObject({ frame_state: "hold", keyIndex: 4, label: "Press Probe" })
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 4))).toContain("Press Probe:frame=hold:pressed=down:count=0")
+    })
+
+    emitEvent?.({ keyIndex: 4, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(getRenderedButton(runtime, 4)).toMatchObject({ frame_state: "idle", keyIndex: 4, label: "Press Probe" })
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 4))).toContain("Press Probe:frame=idle:pressed=up:count=1")
     })
   })
 
