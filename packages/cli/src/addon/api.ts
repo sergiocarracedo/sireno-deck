@@ -7,7 +7,7 @@ import type { CSSProperties, ReactElement, ReactNode } from "react"
 import type { ZodType } from "zod"
 
 import type { CommandExecutionResult } from "../action/executor.js"
-import type { Theme } from "../config/theme.js"
+import type { Theme, ThemeFrameState } from "../config/theme.js"
 import type { HostContext } from "../system/host-context.js"
 
 export const SIRENO_ADDON_API_VERSION = 1
@@ -46,6 +46,11 @@ export interface AddonButtonMethods {
   runCommand: (command: string) => Promise<CommandExecutionResult>
 }
 
+export interface AddonButtonRenderState {
+  frameState: ThemeFrameState
+  pressed: boolean
+}
+
 export interface AddonButtonInstance {
   dispose?: () => Promise<void> | void
   onActivate?: () => Promise<void> | void
@@ -74,11 +79,81 @@ export interface CreateAddonButtonInstanceOptions<TConfig> {
   theme: Theme
 }
 
-export interface AddonButtonDefinition<TConfig = unknown> {
+export interface MountedAddonButtonRenderProps<TConfig>
+  extends CreateAddonButtonInstanceOptions<TConfig>, AddonButtonRenderState {}
+
+export interface LegacyAddonButtonDefinition<TConfig = unknown> {
   configSchema: ZodType<TConfig>
   createInstance: (options: CreateAddonButtonInstanceOptions<TConfig>) => AddonButtonInstance
   defaultIntervalMs?: number
   type: string
+}
+
+export interface MountedAddonButtonDefinition<TConfig = unknown> {
+  configSchema: ZodType<TConfig>
+  defaultIntervalMs?: number
+  dispose?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
+  onActivate?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
+  onDeactivate?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
+  onPress?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
+  onRelease?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
+  onTap?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
+  refresh?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
+  render: (props: MountedAddonButtonRenderProps<TConfig>) => ReactElement
+  type: string
+}
+
+export type AddonButtonDefinition<TConfig = unknown> = LegacyAddonButtonDefinition<TConfig>
+
+export function defineMountedButton<TConfig>(
+  definition: MountedAddonButtonDefinition<TConfig>,
+): LegacyAddonButtonDefinition<TConfig> {
+  return {
+    configSchema: definition.configSchema,
+    defaultIntervalMs: definition.defaultIntervalMs,
+    createInstance(options) {
+      const renderState: AddonButtonRenderState = {
+        frameState: "idle",
+        pressed: false,
+      }
+
+      const getRenderProps = (): MountedAddonButtonRenderProps<TConfig> => ({
+        ...options,
+        ...renderState,
+      })
+
+      // Keep the migration boundary explicit: mounted definitions adapt into the legacy runtime seam for now.
+      return {
+        dispose: definition.dispose ? () => definition.dispose?.(getRenderProps()) : undefined,
+        onActivate: definition.onActivate ? () => definition.onActivate?.(getRenderProps()) : undefined,
+        onDeactivate: definition.onDeactivate ? () => definition.onDeactivate?.(getRenderProps()) : undefined,
+        onPress: definition.onPress
+          ? async () => {
+              renderState.pressed = true
+              renderState.frameState = "hold"
+              await definition.onPress?.(getRenderProps())
+            }
+          : undefined,
+        onRelease: definition.onRelease
+          ? async () => {
+              renderState.pressed = false
+              renderState.frameState = "idle"
+              await definition.onRelease?.(getRenderProps())
+            }
+          : undefined,
+        onTap: definition.onTap
+          ? async () => {
+              renderState.frameState = "tap"
+              await definition.onTap?.(getRenderProps())
+              renderState.frameState = renderState.pressed ? "hold" : "idle"
+            }
+          : undefined,
+        refresh: definition.refresh ? () => definition.refresh?.(getRenderProps()) : undefined,
+        render: () => definition.render(getRenderProps()),
+      }
+    },
+    type: definition.type,
+  }
 }
 
 export function ButtonSurface(props: ButtonSurfaceProps): ReactElement {
