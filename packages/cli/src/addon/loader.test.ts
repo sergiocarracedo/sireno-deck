@@ -161,6 +161,7 @@ describe("loadConfiguredAddons", () => {
     expect(result.warnings).toEqual([])
     expect(result.loaded[0]?.manifest.main).toBe("./src/index.tsx")
     expect(registry.getButton("phase-24-mounted-button")?.type).toBe("phase-24-mounted-button")
+    expect(registry.getButton("phase-24-mounted-observer")?.type).toBe("phase-24-mounted-observer")
   })
 
   it("returns a warning when local raw source reaches outside the addon root", async () => {

@@ -8,6 +8,23 @@ decks:
     buttons:
       - position: 0
         type: phase-24-mounted-button
-        label: Mounted
+        label: Shared
+      - position: 1
+        type: phase-24-mounted-observer
+        label: Observer
+      - position: 2
+        type: phase-24-mounted-button
+        label: Go Apps
+        target_deck: apps
+  apps:
+    id: apps
+    buttons:
+      - position: 0
+        type: phase-24-mounted-observer
+        label: Apps Observer
+      - position: 1
+        type: phase-24-mounted-button
+        label: Back Main
+        target_deck: main
 main_deck: main
 theme: dark

@@ -1579,20 +1579,104 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       const renderedButton = getRenderedButton(runtime, 0)
-      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Mounted" })
-      expect(getRenderedButtonHtml(renderedButton)).toContain("Mounted:phase-24-mounted-button:idle:up")
+      expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Shared" })
+      expect(getRenderedButtonHtml(renderedButton)).toContain("Shared:button=0:addon=0")
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 1))).toContain("Observer:button=0:addon=0")
     })
 
     emitEvent?.({ keyIndex: 0, type: "down" })
-
-    await vi.waitFor(() => {
-      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Mounted:phase-24-mounted-button:hold:down")
-    })
-
     emitEvent?.({ keyIndex: 0, type: "up" })
 
     await vi.waitFor(() => {
-      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Mounted:phase-24-mounted-button:idle:up")
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Shared:button=1:addon=1")
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 1))).toContain("Observer:button=0:addon=1")
+    })
+
+    emitEvent?.({ keyIndex: 2, type: "down" })
+    emitEvent?.({ keyIndex: 2, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("apps")
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Apps Observer:button=0:addon=2")
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 1))).toContain("Back Main:button=0:addon=2")
+    })
+
+    emitEvent?.({ keyIndex: 1, type: "down" })
+    emitEvent?.({ keyIndex: 1, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("main")
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Shared:button=1:addon=3")
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 1))).toContain("Observer:button=0:addon=3")
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 2))).toContain("Go Apps:button=1:addon=3")
+    })
+  })
+
+  it("keeps committed Phase 24 addon-store state across deck changes but resets on rebuilt runtime", async () => {
+    const registry = createBundledAddonRegistry()
+    await loadConfiguredAddons({
+      addons: [{ enabled: true, name: "phase-24-local-mounted-addon", path: join(FIXTURES_DIRECTORY, "phase-24/local-mounted-addon"), source: "local" }],
+      cwd: FIXTURES_DIRECTORY,
+      registry,
+    })
+
+    const config = loadConfig(
+      join(FIXTURES_DIRECTORY, "phase-24/config.local-mounted-addon.yml"),
+      registry,
+      {
+        os: { type: "linux", variant: "ubuntu", version: "24.04" },
+        session: { capability: "unknown", state: "unknown" },
+      },
+    )
+
+    const createFixtureRuntime = () => {
+      let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+      const runtime = createDeckRuntime({
+        deck: config.decks[config.main_deck]!,
+        decks: config.decks,
+        subscribeKeyEvents: (listener) => {
+          emitEvent = listener
+          return () => {}
+        },
+        theme: createTestTheme(),
+      })
+
+      runtime.start()
+
+      return {
+        emitEvent: (event: StreamDeckKeyEvent) => {
+          emitEvent?.(event)
+        },
+        runtime,
+      }
+    }
+
+    const firstRun = createFixtureRuntime()
+
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(firstRun.runtime, 0))).toContain("Shared:button=0:addon=0")
+    })
+
+    firstRun.emitEvent({ keyIndex: 0, type: "down" })
+    firstRun.emitEvent({ keyIndex: 0, type: "up" })
+    firstRun.emitEvent({ keyIndex: 2, type: "down" })
+    firstRun.emitEvent({ keyIndex: 2, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(firstRun.runtime.getActiveDeck().id).toBe("apps")
+      expect(getRenderedButtonHtml(getRenderedButton(firstRun.runtime, 0))).toContain("Apps Observer:button=0:addon=2")
+      expect(getRenderedButtonHtml(getRenderedButton(firstRun.runtime, 1))).toContain("Back Main:button=0:addon=2")
+    })
+
+    firstRun.runtime.stop()
+
+    const rebuiltRun = createFixtureRuntime()
+
+    await vi.waitFor(() => {
+      expect(rebuiltRun.runtime.getActiveDeck().id).toBe("main")
+      expect(getRenderedButtonHtml(getRenderedButton(rebuiltRun.runtime, 0))).toContain("Shared:button=0:addon=0")
+      expect(getRenderedButtonHtml(getRenderedButton(rebuiltRun.runtime, 1))).toContain("Observer:button=0:addon=0")
+      expect(getRenderedButtonHtml(getRenderedButton(rebuiltRun.runtime, 2))).toContain("Go Apps:button=0:addon=0")
     })
   })
 
