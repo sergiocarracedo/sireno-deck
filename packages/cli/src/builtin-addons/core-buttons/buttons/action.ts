@@ -1,7 +1,7 @@
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import { createDomIcon, createDomStack } from '../../../addon/api.js'
+import { createDomIcon, createDomStack, defineMountedButton } from '../../../addon/api.js'
 
 const BuiltinActionButtonSchema = z
   .object({
@@ -17,65 +17,47 @@ const isCommandFailure = (result: {
   timedOut: boolean
 }) => result.failed || result.timedOut || result.code !== 0
 
-const builtinActionButton = {
+const builtinActionButton = defineMountedButton({
   configSchema: BuiltinActionButtonSchema,
-  createInstance: ({
-    button,
-    config,
-    methods,
-  }: {
-    button: { position: number }
-    config: z.infer<typeof BuiltinActionButtonSchema>
-    methods: {
-      invalidate: () => void
-      runCommand: (command: string) => Promise<{
-        code: number | null
-        failed: boolean
-        stdout: string
-        timedOut: boolean
-      }>
+  onTap: async ({ config, methods }) => {
+    if (config.command) {
+      methods.invalidate()
+      methods.runCommand(config.command)
     }
-  }) => ({
-    render: () =>
-      createElement(
-        'div',
-        {
-          className: 'bg-background border-accent',
-          style: {
-            alignItems: 'center',
-            border: '1px solid var(--sireno-color-accent)',
-            borderRadius: '12px',
-            display: 'flex',
-            height: '100%',
-            justifyContent: 'center',
-            padding: '8px',
-            width: '100%',
-          },
+  },
+  render: ({ config }) =>
+    createElement(
+      'div',
+      {
+        className: 'bg-background border-accent',
+        style: {
+          alignItems: 'center',
+          border: '1px solid var(--sireno-color-accent)',
+          borderRadius: '12px',
+          display: 'flex',
+          height: '100%',
+          justifyContent: 'center',
+          padding: '8px',
+          width: '100%',
         },
-        createDomStack({
-          children: [
-            config.icon ? createDomIcon({ src: config.icon }) : null,
-            createElement('span', {
-              children: config.label,
-              className: 'font-main text-primary',
-              style: {
-                display: 'block',
-                lineHeight: 1.2,
-                textAlign: 'center',
-                textWrap: 'balance',
-              },
-            }),
-          ],
-        }),
-      ),
-    onTap: async () => {
-      if (config.command) {
-        methods.invalidate()
-        methods.runCommand(config.command)
-      }
-    },
-  }),
+      },
+      createDomStack({
+        children: [
+          config.icon ? createDomIcon({ src: config.icon }) : null,
+          createElement('span', {
+            children: config.label,
+            className: 'font-main text-primary',
+            style: {
+              display: 'block',
+              lineHeight: 1.2,
+              textAlign: 'center',
+              textWrap: 'balance',
+            },
+          }),
+        ],
+      }),
+    ),
   type: 'action',
-}
+})
 
 export { builtinActionButton, BuiltinActionButtonSchema }

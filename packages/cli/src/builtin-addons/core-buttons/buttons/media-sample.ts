@@ -1,7 +1,7 @@
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import { ButtonSurface, createDomTextLabel } from '../../../addon/api.js'
+import { ButtonSurface, createDomTextLabel, defineMountedButton } from '../../../addon/api.js'
 
 const ANIMATED_BLOB_SVG = encodeURIComponent([
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">',
@@ -25,15 +25,9 @@ const BuiltinMediaSampleButtonSchema = z
   })
   .strict()
 
-const builtinMediaSampleButton = {
+const builtinMediaSampleButton = defineMountedButton({
   configSchema: BuiltinMediaSampleButtonSchema,
-  createInstance: ({
-    config,
-  }: {
-    button: { position: number }
-    config: z.infer<typeof BuiltinMediaSampleButtonSchema>
-  }) => ({
-    render: () => createElement(
+  render: ({ config }) => createElement(
       ButtonSurface,
       { full_surface: true, sample_interval_ms: config.sample_interval_ms },
       createElement('div', {
@@ -66,8 +60,7 @@ const builtinMediaSampleButton = {
         },
       }, createDomTextLabel({ children: config.label }))),
     ),
-  }),
   type: 'media-sample',
-}
+})
 
 export { builtinMediaSampleButton, BuiltinMediaSampleButtonSchema }

@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import { createBaseShapeIconLabelContent, createBaseShapeTextContent } from '../../addon/api.js'
+import { createBaseShapeIconLabelContent, createBaseShapeTextContent, defineMountedButton } from '../../addon/api.js'
 
 import type { SirenoAddon } from '../../addon/api.js'
 
@@ -155,76 +155,46 @@ function createButtonNode(keyIndex: number, label: string, icon?: string) {
   })
 }
 
-const emojiCategoryButton = {
+const emojiCategoryButton = defineMountedButton({
   configSchema: EmojiCategoryButtonSchema,
-  createInstance: ({
-    button,
-    config,
-    methods,
-  }: {
-    button: { position: number }
-    config: z.infer<typeof EmojiCategoryButtonSchema>
-    methods: { navigateToDeck: (deckId: string) => Promise<void> | void }
-  }) => ({
-    onTap: async () => {
-      await methods.navigateToDeck(config.target_deck)
-    },
-    render: () => createButtonNode(button.position, config.label, config.icon),
-  }),
+  onTap: async ({ config, methods }) => {
+    await methods.navigateToDeck(config.target_deck)
+  },
+  render: ({ button, config }) => createButtonNode(button.position, config.label, config.icon),
   type: 'emoji-category-button',
-}
+})
 
-const emojiEntryButton = {
+const emojiEntryButton = defineMountedButton({
   configSchema: EmojiEntryButtonSchema,
-  createInstance: ({
-    button,
-    config,
-    methods,
-  }: {
-    button: { position: number }
-    config: z.infer<typeof EmojiEntryButtonSchema>
-    methods: { runCommand: (command: string) => Promise<unknown> }
-  }) => ({
-    onTap: async () => {
-      await methods.runCommand(
-        config.select_command
-          .replaceAll('{{emoji}}', config.emoji)
-          .replaceAll('{{label}}', config.label),
-      )
-    },
-    render: () =>
-      EMOJI_ICON_ASSETS[config.emoji] !== undefined
-        ? createBaseShapeIconLabelContent({
-            icon: EMOJI_ICON_ASSETS[config.emoji],
-            keyIndex: button.position,
-            label: getEmojiFallbackLabel(config.emoji),
-          })
-        : createBaseShapeTextContent({
-            keyIndex: button.position,
-            label: getEmojiFallbackLabel(config.emoji),
-          }),
-  }),
+  onTap: async ({ config, methods }) => {
+    await methods.runCommand(
+      config.select_command
+        .replaceAll('{{emoji}}', config.emoji)
+        .replaceAll('{{label}}', config.label),
+    )
+  },
+  render: ({ button, config }) =>
+    EMOJI_ICON_ASSETS[config.emoji] !== undefined
+      ? createBaseShapeIconLabelContent({
+          icon: EMOJI_ICON_ASSETS[config.emoji],
+          keyIndex: button.position,
+          label: getEmojiFallbackLabel(config.emoji),
+        })
+      : createBaseShapeTextContent({
+          keyIndex: button.position,
+          label: getEmojiFallbackLabel(config.emoji),
+        }),
   type: 'emoji-entry-button',
-}
+})
 
-const emojiBackButton = {
+const emojiBackButton = defineMountedButton({
   configSchema: EmojiBackButtonSchema,
-  createInstance: ({
-    button,
-    config,
-    methods,
-  }: {
-    button: { position: number }
-    config: z.infer<typeof EmojiBackButtonSchema>
-    methods: { goBack: () => Promise<void> | void }
-  }) => ({
-    onTap: async () => {
-      await methods.goBack()
-    },
-    render: () => createButtonNode(button.position, config.label, config.icon),
-  }),
+  onTap: async ({ methods }) => {
+    await methods.goBack()
+  },
+  render: ({ button, config }) => createButtonNode(button.position, config.label, config.icon),
   type: 'emoji-back-button',
-}
+})
 
 const emojiSelectorDeck = {
   configSchema: EmojiSelectorDeckSchema,

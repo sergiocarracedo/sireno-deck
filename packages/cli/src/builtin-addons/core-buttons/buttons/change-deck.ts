@@ -1,7 +1,7 @@
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import { createDomIcon, createDomStack, createDomTextLabel } from '../../../addon/api.js'
+import { createDomIcon, createDomStack, createDomTextLabel, defineMountedButton } from '../../../addon/api.js'
 
 const BuiltinChangeDeckButtonSchema = z
   .object({
@@ -11,29 +11,19 @@ const BuiltinChangeDeckButtonSchema = z
   })
   .strict()
 
-const builtinChangeDeckButton = {
+const builtinChangeDeckButton = defineMountedButton({
   configSchema: BuiltinChangeDeckButtonSchema,
-  createInstance: ({
-    button,
-    config,
-    methods,
-  }: {
-    button: { position: number }
-    config: z.infer<typeof BuiltinChangeDeckButtonSchema>
-    methods: { navigateToDeck: (deckId: string) => Promise<void> | void }
-  }) => ({
-    onTap: async () => {
-      await methods.navigateToDeck(config.target_deck)
-    },
-    render: () =>
-      createDomStack({
-        children: [
-          config.icon ? createDomIcon({ src: config.icon }) : null,
-          createDomTextLabel({ children: config.label }),
-        ],
-      }),
-  }),
+  onTap: async ({ config, methods }) => {
+    await methods.navigateToDeck(config.target_deck)
+  },
+  render: ({ config }) =>
+    createDomStack({
+      children: [
+        config.icon ? createDomIcon({ src: config.icon }) : null,
+        createDomTextLabel({ children: config.label }),
+      ],
+    }),
   type: 'change-deck',
-}
+})
 
 export { builtinChangeDeckButton, BuiltinChangeDeckButtonSchema }

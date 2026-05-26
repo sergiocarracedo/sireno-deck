@@ -105,7 +105,7 @@ export interface LegacyAddonButtonDefinition<TConfig = unknown> {
 
 export interface MountedAddonButtonDefinition<TConfig = unknown> {
   configSchema: ZodType<TConfig>
-  defaultIntervalMs?: number
+  defaultIntervalMs?: number | ((props: MountedAddonButtonRenderProps<TConfig>) => number | undefined)
   dispose?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
   onActivate?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
   onDeactivate?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
@@ -155,6 +155,39 @@ function createMountedStoreScope(access: MountedAddonButtonStoreAccessScope): Ad
   }
 }
 
+function createFallbackMountedStoreAccess(onMutate?: () => void): MountedAddonButtonStoreAccess {
+  let addonSnapshot: unknown
+  let buttonSnapshot: unknown
+
+  const createScope = (
+    getSnapshot: () => unknown,
+    setSnapshot: (value: unknown) => void,
+  ): MountedAddonButtonStoreAccessScope => ({
+    clear() {
+      setSnapshot(undefined)
+      onMutate?.()
+    },
+    getSnapshot,
+    set(value) {
+      setSnapshot(value)
+      onMutate?.()
+    },
+    update(updater) {
+      setSnapshot(updater(getSnapshot()))
+      onMutate?.()
+    },
+  })
+
+  return {
+    addon: createScope(() => addonSnapshot, (value) => {
+      addonSnapshot = value
+    }),
+    button: createScope(() => buttonSnapshot, (value) => {
+      buttonSnapshot = value
+    }),
+  }
+}
+
 function createMountedButtonStore(access?: MountedAddonButtonStoreAccess): MountedAddonButtonStore {
   return {
     addon: createMountedStoreScope(access?.addon ?? EMPTY_STORE_SCOPE_ACCESS),
@@ -185,14 +218,15 @@ export function defineMountedButton<TConfig>(
 ): LegacyAddonButtonDefinition<TConfig> {
   return {
     configSchema: definition.configSchema,
-    defaultIntervalMs: definition.defaultIntervalMs,
     createInstance(options) {
       const mountedOptions = options as MountedAddonButtonInstanceOptions<TConfig>
       const renderState: AddonButtonRenderState = {
         frameState: "idle",
         pressed: false,
       }
-      const store = createMountedButtonStore(mountedOptions.store)
+      const storeAccess = mountedOptions.store
+        ?? createFallbackMountedStoreAccess(() => mountedOptions.methods.invalidate?.())
+      const store = createMountedButtonStore(storeAccess)
 
       const getRenderProps = (): MountedAddonButtonRenderProps<TConfig> => ({
         ...options,
@@ -202,6 +236,10 @@ export function defineMountedButton<TConfig>(
 
       // Keep the migration boundary explicit: mounted definitions adapt into the legacy runtime seam for now.
       return {
+        defaultIntervalMs:
+          typeof definition.defaultIntervalMs === "function"
+            ? definition.defaultIntervalMs(getRenderProps())
+            : definition.defaultIntervalMs,
         dispose: definition.dispose ? () => definition.dispose?.(getRenderProps()) : undefined,
         onActivate: definition.onActivate ? () => definition.onActivate?.(getRenderProps()) : undefined,
         onDeactivate: definition.onDeactivate ? () => definition.onDeactivate?.(getRenderProps()) : undefined,
@@ -224,6 +262,7 @@ export function defineMountedButton<TConfig>(
         render: () => definition.render(getRenderProps()),
       }
     },
+    ...(typeof definition.defaultIntervalMs === "number" ? { defaultIntervalMs: definition.defaultIntervalMs } : {}),
     type: definition.type,
   }
 }
