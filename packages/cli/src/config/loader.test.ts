@@ -744,7 +744,7 @@ describe("loadConfig", () => {
     throw new Error("Expected accent override validation to fail")
   })
 
-  it("expands bundled addon deck types and resolves addon asset paths", async () => {
+  it("expands bundled addon deck types while keeping addon asset refs rewriteable", async () => {
     writeFileSync(
       join(tempDir, "config.yml"),
       [
@@ -766,20 +766,16 @@ describe("loadConfig", () => {
 
     expect(config.decks.emoji?.deckType).toBe("emoji-selector")
     expect(config.decks.emoji?.buttons[0]).toMatchObject({
-      icon: expect.stringContaining("file://"),
+      icon: "addon://emoji-selector/favorites.svg",
       label: "Favorites",
       target_deck: "emoji-favorites",
       type: "emoji-category-button",
     })
-    expect(config.decks.emoji?.buttons[0]?.icon).toContain("/builtin-addons/emoji-selector/assets/favorites.svg")
-    expect(config.decks.emoji?.buttons[0]?.icon).toContain("favorites.svg")
     expect(config.decks["emoji-favorites"]?.buttons[1]).toMatchObject({
-      icon: expect.stringContaining("file://"),
+      icon: "addon://emoji-selector/back.svg",
       label: "Back",
       type: "emoji-back-button",
     })
-    expect(config.decks["emoji-favorites"]?.buttons[1]?.icon).toContain("/builtin-addons/emoji-selector/assets/back.svg")
-    expect(config.decks["emoji-favorites"]?.buttons[1]?.icon).toContain("back.svg")
   })
 
   it("fails clearly when a config-authored asset reference is not registered", async () => {

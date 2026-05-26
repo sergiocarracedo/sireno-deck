@@ -1,5 +1,3 @@
-import { pathToFileURL } from 'node:url'
-
 import { z, type ZodIssue } from 'zod'
 
 import type {
@@ -355,7 +353,9 @@ function resolveAssetReferences(
     }
 
     try {
-      return pathToFileURL(registry.requireAssetPath(value)).href
+      // Keep addon/builtin asset refs rewriteable for the eventual render target.
+      registry.requireAssetPath(value)
+      return value
     } catch (error) {
       if (error instanceof AddonRegistryError) {
         throw new ConfigValidationError(

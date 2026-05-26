@@ -1049,6 +1049,126 @@ describe("startEmulatorSession", () => {
     await session.close()
   })
 
+  it("keeps config-expanded emoji deck icons rewriteable on the emulator path", async () => {
+    const lifecycle = {
+      close: vi.fn(async () => {}),
+      emitKeyEvent: vi.fn(),
+      getConnection: vi.fn(() => ({ info: { keyCount: 15, model: "Virtual Stream Deck 15", serialNumber: "virtual-15" } })),
+      start: vi.fn(async () => ({ info: { keyCount: 15, model: "Virtual Stream Deck 15", serialNumber: "virtual-15" } })),
+      subscribeKeyEvents: vi.fn(() => () => {}),
+    }
+    const sessionMonitor = {
+      getSnapshot: vi.fn(() => ({ capability: "supported", state: "unknown" })),
+      stop: vi.fn(async () => {}),
+      subscribe: vi.fn(() => () => {}),
+    }
+    const favoritesAssetPath = resolve(import.meta.dirname, "../../builtin-addons/emoji-selector/assets/favorites.svg")
+    const backAssetPath = resolve(import.meta.dirname, "../../builtin-addons/emoji-selector/assets/back.svg")
+    const registry = {
+      resolveAssetPath: vi.fn((assetReference: string) => {
+        if (assetReference === "addon://emoji-selector/favorites.svg") {
+          return favoritesAssetPath
+        }
+
+        if (assetReference === "addon://emoji-selector/back.svg") {
+          return backAssetPath
+        }
+
+        return undefined
+      }),
+    }
+
+    createVirtualStreamDeckLifecycle.mockReturnValue(lifecycle)
+    createBrowserRenderer.mockReturnValue({
+      close: vi.fn(async () => {}),
+      start: vi.fn(async () => {}),
+      updateDeck: vi.fn(async () => {}),
+    })
+    createSessionMonitor.mockResolvedValue(sessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    loadBootstrapConfig.mockReturnValue({
+      config: { addons: [] },
+      cwd: "/tmp/project",
+      filePath: "/tmp/project/config.yml",
+    })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    createBundledAddonRegistry.mockReturnValue(registry)
+    loadConfigWithSources.mockReturnValue({
+      config: {
+        decks: {
+          main: {
+            buttons: [{
+              config: { icon: "addon://emoji-selector/favorites.svg", label: "Favorites", target_deck: "emoji-favorites" },
+              definition: {
+                configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
+                createInstance: () => ({
+                  render: () => createElement("div", null, [
+                    createElement("span", { key: "icon" }, createDomIcon({ src: "addon://emoji-selector/favorites.svg" })),
+                    createElement("span", { key: "label" }, "Favorites"),
+                  ]),
+                }),
+                type: "emoji-category-button",
+              },
+              icon: "addon://emoji-selector/favorites.svg",
+              label: "Favorites",
+              position: 0,
+              target_deck: "emoji-favorites",
+              type: "emoji-category-button",
+            }],
+            id: "main",
+          },
+          "emoji-favorites": {
+            buttons: [{
+              config: { icon: "addon://emoji-selector/back.svg", label: "Back" },
+              definition: {
+                configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
+                createInstance: () => ({
+                  render: () => createElement("div", null, [
+                    createElement("span", { key: "icon" }, createDomIcon({ src: "addon://emoji-selector/back.svg" })),
+                    createElement("span", { key: "label" }, "Back"),
+                  ]),
+                }),
+                type: "emoji-back-button",
+              },
+              icon: "addon://emoji-selector/back.svg",
+              label: "Back",
+              position: 1,
+              type: "emoji-back-button",
+            }],
+            id: "emoji-favorites",
+          },
+        },
+        main_deck: "main",
+        theme: "dark",
+      },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
+    resolveTheme.mockResolvedValue({
+      accent: "#f59e0b",
+      background: "#10161f",
+      buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
+      danger: "#fb7185",
+      filePaths: ["/tmp/project/themes/default/index.js"],
+      foreground: "#eef2f7",
+      name: "dark",
+      primary: "#7dd3fc",
+      rootDir: "/tmp/project/themes/default",
+      stylesheets: [],
+      success: "#34d399",
+    })
+
+    const { startEmulatorSession } = await import("./start.js")
+    const session = await startEmulatorSession({ logger: { info: vi.fn(), warn: vi.fn() } as never, port: 0 })
+
+    const deckHtml = await fetch(`${session.url}/__sireno/deck`).then(async (response) => response.text())
+    expect(deckHtml).toContain(`/__sireno/assets?ref=${encodeURIComponent("addon://emoji-selector/favorites.svg")}`)
+    expect(deckHtml).not.toContain("file://")
+    expect(registry.resolveAssetPath).toHaveBeenCalledWith("addon://emoji-selector/favorites.svg")
+
+    await session.close()
+  })
+
   it("bridges browser input through the virtual lifecycle and exposes pressed feedback in the served deck html", async () => {
     let keyListener: ((event: { keyIndex: number; type: "down" | "up" }) => void) | undefined
     const lifecycle = {
