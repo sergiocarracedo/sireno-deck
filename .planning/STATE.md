@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 24 gap-closure execution is complete for the mounted addon render contract migration; next is a `verify-work 24` rerun to recheck the closed emulator UAT gaps.
+**Current focus:** Phase 24 verification is complete for the mounted addon render contract migration; next is `/review` for final review before ship.
 
 ## Current Position
 
 Phase: 24 — Mounted Addon Render Contract
-Plan: execution complete + gap closure complete
-Status: verifying
-Last activity: 2026-05-26 - Closed the two Phase 24 UAT gaps with committed emulator asset-serving and keyed deck-update fixes, then refreshed verification and closeout artifacts
+Plan: execution complete + all gap closures complete
+Status: verified
+Last activity: 2026-05-26 - Closed the final config-expanded emulator asset gap, refreshed Phase 24 verification/UAT artifacts, and finished the rerun verification loop
 
 Progress: [##########] 100%
 
@@ -90,6 +90,7 @@ Recent decisions affecting current work:
 - **Phase 24 planning:** Broke the migration into four execution slices: explicit contract compatibility first, core-owned addon session store second, mounted active-deck root and transient runtime props third, and built-in/doc/fixture truthfulness last. Phase 24 is a post-roadmap follow-on and does not introduce new v1.2 requirement IDs.
 - **Phase 24 execution:** Shipped the mounted addon button contract and compatibility adapter, added the runtime-owned addon session store, mounted the active deck as a Node-side React host that preserves local state while active and unmounts on deck exit, migrated shipped built-ins onto `defineMountedButton(...)`, extended the committed Phase 24 fixture to prove store coordination plus transient runtime props, and updated architecture docs so they match the live mounted runtime.
 - **Phase 24 gap closure:** Fixed the two verify-work emulator gaps without changing the runtime ownership boundary: emulator-served mounted assets now go through browser-loadable HTTP URLs instead of broken `file://` paths, and the emulator page now patches the existing deck root by key instead of replacing the whole `#deck-mount` subtree on each poll-driven render.
+- **Phase 24 final closure:** Stopped config validation from baking rewriteable addon/theme asset refs into `file://...` URLs, which let config-expanded emoji deck icons flow through the existing emulator HTTP asset route and close the last rerun UAT failure.
 - **Phase 23 planning:** Broke the phase into two execution slices: manifest-driven local raw-source addon startup through the normal CLI path, and a branded physical-device startup placeholder that hands off cleanly to the first real browser capture.
 - **Plan 23-01:** Shipped local raw-source addon loading through `sirenoAddon.main` for local `.ts/.tsx/.jsx` entries using `tsx`, bounded the relative source graph to the addon root, committed a raw `.tsx` fixture addon, and proved the normal startup config path loads it through the root export surface only.
 - **Plan 23-02:** Shipped branded hardware startup placeholder buffers, wired the placeholder into `startDaemon()` before the first real browser capture, documented the hardware review path, and locked write-order / handoff / failure-cleanup behavior in focused startup tests.
