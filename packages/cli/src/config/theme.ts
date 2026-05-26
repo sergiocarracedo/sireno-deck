@@ -3,6 +3,7 @@ import { basename, dirname, extname, join, isAbsolute, relative, resolve } from 
 import { fileURLToPath, pathToFileURL } from "node:url"
 
 import yaml from "js-yaml"
+import { tsImport } from "tsx/esm/api"
 import { z } from "zod"
 
 import { ConfigValidationError } from "../core/schemas.js"
@@ -68,6 +69,7 @@ export interface Theme extends Omit<ThemeSchemaOutput, "typography"> {
 
 const MODULE_DIRECTORY = dirname(fileURLToPath(import.meta.url))
 const MANIFEST_FILENAME = "manifest.yml"
+const TRANSPILED_THEME_RUNTIME_EXTENSIONS = new Set([".jsx", ".ts", ".tsx"])
 const BUILTIN_THEME_ALIASES = {
   dark: "default",
 } as const
@@ -274,7 +276,13 @@ async function importThemeButtonFrame(manifest: ThemeManifest, manifestPath: str
     cpSync(rootDir, snapshotRoot, { recursive: true })
 
     const importedEntryPath = resolve(snapshotRoot, relative(rootDir, entryPath))
-    const importedModule = await import(pathToFileURL(importedEntryPath).href)
+    const importedEntryUrl = pathToFileURL(importedEntryPath).href
+    const importedModule = TRANSPILED_THEME_RUNTIME_EXTENSIONS.has(extname(importedEntryPath))
+      ? await tsImport(importedEntryUrl, {
+          parentURL: importedEntryUrl,
+          tsconfig: false,
+        })
+      : await import(importedEntryUrl)
     const candidateFrame = importedModule.buttonFrame
       ?? importedModule.ButtonFrame
       ?? importedModule.default?.buttonFrame
@@ -414,6 +422,9 @@ function resolveThemeRuntimeImportPath(modulePath: string, specifier: string): s
     join(directPath, "index.js"),
     join(directPath, "index.mjs"),
     join(directPath, "index.cjs"),
+    join(directPath, "index.jsx"),
+    join(directPath, "index.ts"),
+    join(directPath, "index.tsx"),
   ]
 
   return candidatePaths.find((candidatePath) => existsSync(candidatePath))

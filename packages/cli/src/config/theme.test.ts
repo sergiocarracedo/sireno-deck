@@ -7,7 +7,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { ConfigValidationError } from "../core/schemas.js"
 
 const loadThemeModule = async () => import("./theme.js")
-
 const typographyBlock = [
   "typography:",
   "  main_text:",
@@ -46,7 +45,10 @@ describe("resolveTheme", () => {
     expect(theme.typography?.main_text.font_family).toBe("IBM Plex Sans")
     expect(theme.buttonFrame).toBeTypeOf("function")
     expect(theme.filePaths.some((filePath) => filePath.endsWith("themes/default/manifest.yml"))).toBe(true)
-    expect(theme.filePaths.some((filePath) => filePath.endsWith("themes/default/index.js") || filePath.endsWith("themes/default/ButtonFrame.js"))).toBe(true)
+    expect(theme.filePaths).toEqual(expect.arrayContaining([
+      expect.stringMatching(/themes\/default\/index\.ts$/),
+      expect.stringMatching(/themes\/default\/ButtonFrame\.tsx$/),
+    ]))
     expect(theme.stylesheets).toHaveLength(1)
     expect(theme.stylesheets[0]).toContain("@font-face")
     expect(theme.stylesheets[0]).toContain('font-family: "IBM Plex Sans"')

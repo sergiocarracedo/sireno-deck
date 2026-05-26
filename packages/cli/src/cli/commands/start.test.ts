@@ -161,7 +161,7 @@ describe("loadRuntimeConfig", () => {
       filePath: "/tmp/project/config.yml",
       filePaths: ["/tmp/project/config.yml"],
     })
-    resolveTheme.mockResolvedValue({ filePaths: ["/tmp/project/themes/default/index.js"] })
+    resolveTheme.mockResolvedValue({ filePaths: ["/tmp/project/themes/default/index.ts"] })
 
     const { loadRuntimeConfig } = await import("./start.js")
     const logger = { warn: vi.fn() } as const
@@ -206,7 +206,7 @@ describe("loadRuntimeConfig", () => {
       filePath: "/tmp/project/config.yml",
       filePaths: ["/tmp/project/config.yml", "/tmp/project/decks/main.yml"],
     })
-    resolveTheme.mockResolvedValue({ filePaths: ["/tmp/project/themes/default/index.js", "/tmp/project/themes/default/manifest.yml"] })
+    resolveTheme.mockResolvedValue({ filePaths: ["/tmp/project/themes/default/index.ts", "/tmp/project/themes/default/manifest.yml"] })
 
     const { loadRuntimeConfig } = await import("./start.js")
     const logger = { warn: vi.fn() } as const
@@ -232,7 +232,7 @@ describe("loadRuntimeConfig", () => {
     expect(result.filePaths).toEqual([
       "/tmp/project/config.yml",
       "/tmp/project/decks/main.yml",
-      "/tmp/project/themes/default/index.js",
+      "/tmp/project/themes/default/index.ts",
       "/tmp/project/themes/default/manifest.yml",
     ])
   })
@@ -254,7 +254,7 @@ describe("loadRuntimeConfig", () => {
       filePath: "/tmp/project/config.yml",
       filePaths: ["/tmp/project/config.yml"],
     })
-    resolveTheme.mockResolvedValue({ filePaths: ["/tmp/project/themes/default/index.js"] })
+    resolveTheme.mockResolvedValue({ filePaths: ["/tmp/project/themes/default/index.ts"] })
 
     const { loadRuntimeConfig } = await import("./start.js")
     const logger = { warn: vi.fn() } as const
@@ -313,7 +313,7 @@ describe("loadRuntimeConfig", () => {
       filePath: "/tmp/project/config.yml",
       filePaths: ["/tmp/project/config.yml"],
     })
-    resolveTheme.mockResolvedValue({ filePaths: ["/tmp/project/themes/default/index.js"] })
+    resolveTheme.mockResolvedValue({ filePaths: ["/tmp/project/themes/default/index.ts"] })
 
     const { loadRuntimeConfig } = await import("./start.js")
 
@@ -338,7 +338,7 @@ describe("loadRuntimeConfig", () => {
     loadBootstrapConfig.mockImplementation((configPath, hostContext) => actualConfigLoader.loadBootstrapConfig(configPath, hostContext))
     loadConfiguredAddons.mockImplementation((options) => actualLoader.loadConfiguredAddons(options))
     loadConfigWithSources.mockImplementation((configPath, registryArg, hostContext) => actualConfigLoader.loadConfigWithSources(configPath, registryArg, hostContext))
-    resolveTheme.mockResolvedValue({ filePaths: ["/tmp/project/themes/default/index.js"] })
+    resolveTheme.mockResolvedValue({ filePaths: ["/tmp/project/themes/default/index.ts"] })
 
     const { loadRuntimeConfig } = await import("./start.js")
 
@@ -370,7 +370,7 @@ describe("loadRuntimeConfig", () => {
       background: "#10161f",
       buttonFrame: ({ children }: { children: unknown }) => createElement("div", null, children),
       danger: "#fb7185",
-      filePaths: ["/tmp/project/themes/default/index.js"],
+      filePaths: ["/tmp/project/themes/default/index.ts"],
       foreground: "#eef2f7",
       name: "dark",
       primary: "#7dd3fc",
@@ -637,7 +637,7 @@ describe("startDaemon", () => {
       background: "#10161f",
       buttonFrame: vi.fn(),
       danger: "#fb7185",
-      filePaths: ["/tmp/project/themes/default/index.js"],
+      filePaths: ["/tmp/project/themes/default/index.ts"],
       foreground: "#eef2f7",
       name: "dark",
       primary: "#7dd3fc",
@@ -656,7 +656,7 @@ describe("startDaemon", () => {
       background: "#10161f",
       buttonFrame: vi.fn(),
       danger: "#fb7185",
-      filePaths: ["/tmp/project/themes/default/index.js"],
+      filePaths: ["/tmp/project/themes/default/index.ts"],
       foreground: "#eef2f7",
       name: "dark",
       primary: "#7dd3fc",
@@ -744,7 +744,7 @@ describe("startDaemon", () => {
       background: "#10161f",
       buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
       danger: "#fb7185",
-      filePaths: ["/tmp/project/themes/default/index.js"],
+      filePaths: ["/tmp/project/themes/default/index.ts"],
       foreground: "#eef2f7",
       name: "dark",
       primary: "#7dd3fc",
@@ -836,7 +836,7 @@ describe("startDaemon", () => {
       background: "#10161f",
       buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
       danger: "#fb7185",
-      filePaths: ["/tmp/project/themes/default/index.js"],
+      filePaths: ["/tmp/project/themes/default/index.ts"],
       foreground: "#eef2f7",
       name: "dark",
       primary: "#7dd3fc",
@@ -915,7 +915,7 @@ describe("startEmulatorSession", () => {
       background: "#10161f",
       buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
       danger: "#fb7185",
-      filePaths: ["/tmp/project/themes/default/index.js"],
+      filePaths: ["/tmp/project/themes/default/index.ts"],
       foreground: "#eef2f7",
       name: "dark",
       primary: "#7dd3fc",
@@ -1029,7 +1029,7 @@ describe("startEmulatorSession", () => {
       background: "#10161f",
       buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
       danger: "#fb7185",
-      filePaths: ["/tmp/project/themes/default/index.js"],
+      filePaths: ["/tmp/project/themes/default/index.ts"],
       foreground: "#eef2f7",
       name: "dark",
       primary: "#7dd3fc",
@@ -1154,7 +1154,7 @@ describe("startEmulatorSession", () => {
       background: "#10161f",
       buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
       danger: "#fb7185",
-      filePaths: ["/tmp/project/themes/default/index.js"],
+      filePaths: ["/tmp/project/themes/default/index.ts"],
       foreground: "#eef2f7",
       name: "dark",
       primary: "#7dd3fc",
@@ -1326,7 +1326,7 @@ describe("startEmulatorSession", () => {
       background: "#10161f",
       buttonFrame: vi.fn(({ children, state }: { children: unknown; state: string }) => createElement("div", { "data-frame-state": state }, children)),
       danger: "#fb7185",
-      filePaths: ["/tmp/project/themes/default/index.js"],
+      filePaths: ["/tmp/project/themes/default/index.ts"],
       foreground: "#eef2f7",
       name: "dark",
       primary: "#7dd3fc",
@@ -1441,7 +1441,7 @@ describe("startEmulatorSession", () => {
       background: "#10161f",
       buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
       danger: "#fb7185",
-      filePaths: ["/tmp/project/themes/default/index.js"],
+      filePaths: ["/tmp/project/themes/default/index.ts"],
       foreground: "#eef2f7",
       name: "dark",
       primary: "#7dd3fc",
@@ -1517,7 +1517,7 @@ describe("startEmulatorSession", () => {
       background: "#10161f",
       buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
       danger: "#fb7185",
-      filePaths: ["/tmp/project/themes/default/index.js"],
+      filePaths: ["/tmp/project/themes/default/index.ts"],
       foreground: "#eef2f7",
       name: "dark",
       primary: "#7dd3fc",
