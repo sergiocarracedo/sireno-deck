@@ -276,6 +276,17 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ---
 
+### Phase 25: Theme TSX Button Frame Support
+
+**Goal:** Let themes provide `buttonFrame` implementations as `.tsx` modules in addition to `.js` so theme-owned frame rendering uses the same authoring path already prepared in `themes/default`.
+**Status:** [ ] Not started
+**Depends on:** Phase 24
+
+### Plans
+*Not yet planned — run `plan-phase 25`*
+
+---
+
 ## Coverage Validation
 
 - [x] All 9 v1.2 requirements map to at least one roadmap phase

@@ -72,6 +72,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 25 added: themes can provide `buttonFrame` as `.tsx` modules too, not only `.js`, so theme-owned frame rendering can follow the authoring path prepared in `themes/default`.
 - Phase 23 added: allow JSX/TSX addon button authoring and show a startup image on the Stream Deck before the browser path sends the first deck surface.
 - Phase 24 added: replace the instance-first addon button contract with a mounted active-deck React render model, definition-level runtime handlers, and a core-owned addon store that survives deck changes for one runtime session.
 - Phase 22 added: browser deck emulator
