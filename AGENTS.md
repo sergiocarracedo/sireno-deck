@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 23 — JSX/TSX Addon Authoring + Startup Placeholder ✓ complete → Phase 21 — Theme Font Assets For Browser Rendering
-**Status:** verifying
-**Last updated:** 2026-05-25
+**Phase:** 24 — Mounted Addon Render Contract
+**Status:** planning
+**Last updated:** 2026-05-26
 
 ---
 
