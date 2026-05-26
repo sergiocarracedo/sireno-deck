@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 24 — Mounted Addon Render Contract ✓ complete
-**Status:** verified; rerun gaps closed; next `/review`
+**Phase:** 25 — Theme TSX Button Frame Support
+**Status:** planned; next `/execute-phase 25`
 **Last updated:** 2026-05-26
 
 ---
