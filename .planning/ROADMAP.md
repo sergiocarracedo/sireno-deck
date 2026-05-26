@@ -262,7 +262,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 24: Mounted Addon Render Contract
 
 **Goal:** Replace the current instance-first addon button contract with a mounted active-deck React view contract backed by a core-owned addon store, while keeping Node as the owner of hardware semantics, navigation, polling, and command execution.
-**Status:** planning
+**Status:** ✓ Complete (2026-05-26)
 **Depends on:** Phase 23
 **Requirements:** Post-roadmap follow-on; no new v1.2 requirement IDs assigned. This phase must preserve the already-shipped host/session injection and verification surfaces those earlier phases established.
 
@@ -271,6 +271,8 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 - `24-02`: Add the core-owned addon store with button-local isolation, addon-wide coordinated access, and runtime-session-only lifetime.
 - `24-03`: Integrate a persistent mounted React tree for the active deck, keep inactive decks unmounted, and preserve runtime-driven transient props like `pressed` and `frameState`.
 - `24-04`: Migrate built-in buttons and proof fixtures to the new contract and lock the mounted-deck/store/runtime boundary with focused tests and reviewable fixtures.
+
+**Phase 24 note:** This post-roadmap phase now ships a mounted addon render contract with `render(props)` plus definition-level handlers, a core-owned addon session store with button-local and addon-wide scopes, a Node-side mounted active-deck React host that preserves local component state while the deck stays active and unmounts it on deck exit, migrated built-in addon examples on the mounted contract, and committed Phase 24 proof fixtures that cover store coordination, mounted local state, and runtime-driven transient props through file-relative test paths.
 
 ---
 

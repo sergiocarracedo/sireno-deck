@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 24 planning is complete for the mounted addon render contract migration; next is `execute-phase 24` when implementation starts.
+**Current focus:** Phase 24 execution is complete for the mounted addon render contract migration; next is `verify-work 24` for manual/UAT validation.
 
 ## Current Position
 
 Phase: 24 — Mounted Addon Render Contract
-Plan: planning complete
-Status: planned
-Last activity: 2026-05-26 - Researched the mounted active-deck/runtime-store architecture and created four verified Phase 24 execution plans
+Plan: execution complete
+Status: verifying
+Last activity: 2026-05-26 - Finished all four Phase 24 execution plans, wrote summaries and verification, and updated shipped docs/examples to the mounted runtime contract
 
 Progress: [##########] 100%
 
@@ -88,6 +88,7 @@ Recent decisions affecting current work:
 - **Phase 23 discussion:** Captured a narrow local-addon raw-source contract (`sirenoAddon.main` may point at `.ts/.tsx/.js/.jsx`), kept the public authoring API on the root export only, and chose a branded temporary startup placeholder that clears on first real render and never hides honest browser startup failures.
 - **Phase 24 discussion:** Re-scoped the phase from a narrow direct-render cleanup into a runtime-contract migration: Node keeps hardware/event ownership, the active deck becomes a persistent mounted React tree while active, inactive decks unmount on navigation, button definitions expose definition-level runtime handlers plus `render(props)`, and core provides button-local plus addon-wide session store access without adding cross-restart persistence.
 - **Phase 24 planning:** Broke the migration into four execution slices: explicit contract compatibility first, core-owned addon session store second, mounted active-deck root and transient runtime props third, and built-in/doc/fixture truthfulness last. Phase 24 is a post-roadmap follow-on and does not introduce new v1.2 requirement IDs.
+- **Phase 24 execution:** Shipped the mounted addon button contract and compatibility adapter, added the runtime-owned addon session store, mounted the active deck as a Node-side React host that preserves local state while active and unmounts on deck exit, migrated shipped built-ins onto `defineMountedButton(...)`, extended the committed Phase 24 fixture to prove store coordination plus transient runtime props, and updated architecture docs so they match the live mounted runtime.
 - **Phase 23 planning:** Broke the phase into two execution slices: manifest-driven local raw-source addon startup through the normal CLI path, and a branded physical-device startup placeholder that hands off cleanly to the first real browser capture.
 - **Plan 23-01:** Shipped local raw-source addon loading through `sirenoAddon.main` for local `.ts/.tsx/.jsx` entries using `tsx`, bounded the relative source graph to the addon root, committed a raw `.tsx` fixture addon, and proved the normal startup config path loads it through the root export surface only.
 - **Plan 23-02:** Shipped branded hardware startup placeholder buffers, wired the placeholder into `startDaemon()` before the first real browser capture, documented the hardware review path, and locked write-order / handoff / failure-cleanup behavior in focused startup tests.
