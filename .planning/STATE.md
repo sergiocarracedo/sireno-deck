@@ -86,6 +86,7 @@ Recent decisions affecting current work:
 
 ### Progress Notes
 
+- **Phase 25 discussion:** Kept `manifest.main` as the only theme runtime entrypoint while allowing `.js/.jsx/.ts/.tsx`, applied that same contract to both built-in and custom manifest-backed themes, preserved tolerant `buttonFrame`/`ButtonFrame` export lookup, and constrained theme runtime relative imports to stay within the theme package root.
 - **Phase 23 discussion:** Captured a narrow local-addon raw-source contract (`sirenoAddon.main` may point at `.ts/.tsx/.js/.jsx`), kept the public authoring API on the root export only, and chose a branded temporary startup placeholder that clears on first real render and never hides honest browser startup failures.
 - **Phase 24 discussion:** Re-scoped the phase from a narrow direct-render cleanup into a runtime-contract migration: Node keeps hardware/event ownership, the active deck becomes a persistent mounted React tree while active, inactive decks unmount on navigation, button definitions expose definition-level runtime handlers plus `render(props)`, and core provides button-local plus addon-wide session store access without adding cross-restart persistence.
 - **Phase 24 planning:** Broke the migration into four execution slices: explicit contract compatibility first, core-owned addon session store second, mounted active-deck root and transient runtime props third, and built-in/doc/fixture truthfulness last. Phase 24 is a post-roadmap follow-on and does not introduce new v1.2 requirement IDs.
