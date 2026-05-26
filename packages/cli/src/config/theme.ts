@@ -1,5 +1,5 @@
 import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, statSync } from "node:fs"
-import { basename, dirname, extname, join, isAbsolute, relative, resolve } from "node:path"
+import { basename, dirname, extname, join, isAbsolute, relative, resolve, sep } from "node:path"
 import { fileURLToPath, pathToFileURL } from "node:url"
 
 import yaml from "js-yaml"
@@ -430,6 +430,12 @@ function resolveThemeRuntimeImportPath(modulePath: string, specifier: string): s
   return candidatePaths.find((candidatePath) => existsSync(candidatePath))
 }
 
+function isWithinThemeRoot(rootDir: string, candidatePath: string): boolean {
+  const relativePath = relative(rootDir, candidatePath)
+
+  return relativePath === "" || (!relativePath.startsWith("..") && !relativePath.includes(`${sep}..${sep}`) && relativePath !== "..")
+}
+
 function getThemeRuntimeImportSpecifiers(moduleSource: string): string[] {
   const specifiers = new Set<string>()
   const patterns = [
@@ -449,7 +455,7 @@ function getThemeRuntimeImportSpecifiers(moduleSource: string): string[] {
   return [...specifiers]
 }
 
-function collectThemeRuntimeFilePaths(entryPath: string): string[] {
+function collectThemeRuntimeFilePaths(entryPath: string, rootDir: string, manifest: ThemeManifest, manifestPath: string): string[] {
   const visited = new Set<string>()
   const pendingPaths = [entryPath]
 
@@ -457,6 +463,16 @@ function collectThemeRuntimeFilePaths(entryPath: string): string[] {
     const currentPath = pendingPaths.pop()
     if (!currentPath || visited.has(currentPath) || !existsSync(currentPath)) {
       continue
+    }
+
+    if (!isWithinThemeRoot(rootDir, currentPath)) {
+      throw new ConfigValidationError(
+        `Theme '${manifest.name}' runtime imports must stay inside the theme package root`,
+        manifestPath,
+        undefined,
+        `Keep relative imports from '${manifest.main}' inside the theme package directory.`,
+        ["theme", "main"],
+      )
     }
 
     visited.add(currentPath)
@@ -468,7 +484,21 @@ function collectThemeRuntimeFilePaths(entryPath: string): string[] {
     const source = readFileSync(currentPath, "utf-8")
     for (const specifier of getThemeRuntimeImportSpecifiers(source)) {
       const resolvedImportPath = resolveThemeRuntimeImportPath(currentPath, specifier)
-      if (resolvedImportPath && !visited.has(resolvedImportPath)) {
+      if (!resolvedImportPath) {
+        continue
+      }
+
+      if (!isWithinThemeRoot(rootDir, resolvedImportPath)) {
+        throw new ConfigValidationError(
+          `Theme '${manifest.name}' runtime imports must stay inside the theme package root`,
+          manifestPath,
+          undefined,
+          `Keep relative imports from '${manifest.main}' inside the theme package directory.`,
+          ["theme", "main"],
+        )
+      }
+
+      if (!visited.has(resolvedImportPath)) {
         pendingPaths.push(resolvedImportPath)
       }
     }
@@ -492,8 +522,9 @@ export async function resolveTheme(themeReference: string, options: ResolveTheme
   }
 
   const manifest = parseThemeYaml(target.manifestPath, ThemeManifestSchema, ["theme"])
+  const runtimeEntryPath = resolve(target.rootDir, manifest.main)
+  const runtimeFilePaths = collectThemeRuntimeFilePaths(runtimeEntryPath, target.rootDir, manifest, target.manifestPath)
   const buttonFrame = await importThemeButtonFrame(manifest, target.manifestPath, target.rootDir)
-  const runtimeFilePaths = collectThemeRuntimeFilePaths(resolve(target.rootDir, manifest.main))
   const stylesheetResult = loadThemeStylesheets(manifest, target.manifestPath, target.rootDir)
 
   return {

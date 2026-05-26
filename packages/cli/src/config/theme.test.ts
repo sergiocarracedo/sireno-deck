@@ -1,12 +1,14 @@
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
-import { join } from "node:path"
+import { join, resolve } from "node:path"
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 
 import { ConfigValidationError } from "../core/schemas.js"
 
 const loadThemeModule = async () => import("./theme.js")
+const phase25FixtureRoot = resolve(import.meta.dirname, "../../fixtures/phase-25")
+
 const typographyBlock = [
   "typography:",
   "  main_text:",
@@ -149,6 +151,33 @@ describe("resolveTheme", () => {
       join(customThemePath, "manifest.yml"),
       join(customThemePath, "index.js"),
     ]))
+  })
+
+  it("loads a committed custom .tsx theme fixture through the real resolver path", async () => {
+    const { resolveTheme } = await loadThemeModule()
+    const themeRoot = join(phase25FixtureRoot, "custom-tsx-theme")
+
+    const theme = await resolveTheme(themeRoot)
+
+    expect(theme.name).toBe("phase-25-custom")
+    expect(theme.buttonFrame).toBeTypeOf("function")
+    expect(theme.filePaths).toEqual(expect.arrayContaining([
+      join(themeRoot, "manifest.yml"),
+      join(themeRoot, "index.tsx"),
+      join(themeRoot, "frame.tsx"),
+    ]))
+    expect(theme.buttonFrame({ children: null, state: "hold" }).props).toMatchObject({
+      "data-frame-source": "phase-25-custom",
+      "data-frame-state": "hold",
+    })
+  })
+
+  it("fails clearly when a theme runtime import escapes the theme package root", async () => {
+    const { resolveTheme } = await loadThemeModule()
+    const themeRoot = join(phase25FixtureRoot, "out-of-root-theme")
+
+    await expect(resolveTheme(themeRoot)).rejects.toThrow(ConfigValidationError)
+    await expect(resolveTheme(themeRoot)).rejects.toThrow("runtime imports must stay inside the theme package root")
   })
 
   it("fails clearly when a theme reference does not exist", async () => {

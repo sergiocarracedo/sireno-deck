@@ -1,0 +1,23 @@
+name: phase-25-custom
+main: ./index.tsx
+background: "#20252d"
+foreground: "#f5f7fa"
+primary: "#8b5cf6"
+accent: "#14b8a6"
+success: "#22c55e"
+danger: "#ef4444"
+typography:
+  main_text:
+    font_family: "IBM Plex Sans"
+    font_size: 12
+    font_weight: 700
+  auxiliary_text:
+    font_family: "IBM Plex Sans"
+    font_size: 8
+    font_weight: 600
+    letter_spacing: 1.2
+  monospace:
+    font_family: "IBM Plex Mono"
+    font_size: 10
+    font_weight: 700
+    letter_spacing: 0.4
