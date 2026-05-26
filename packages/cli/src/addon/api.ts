@@ -314,13 +314,21 @@ function resolveDomAssetSrc(src: string): string {
     || src.startsWith("http://")
     || src.startsWith("https://")
     || src.startsWith("file://")
+    || src.startsWith("/")
   ) {
     return src
   }
 
   if (/^(?:addon|builtin):\/\//.test(src)) {
     const resolvedAssetPath = domAssetPathResolver?.(src)
-    return resolvedAssetPath ? pathToFileURL(resolvedAssetPath).href : src
+    if (!resolvedAssetPath) {
+      return src
+    }
+
+    return /^(?:data:|https?:\/\/|file:\/\/)/.test(resolvedAssetPath)
+      || resolvedAssetPath.startsWith("/")
+      ? resolvedAssetPath
+      : pathToFileURL(resolvedAssetPath).href
   }
 
   return isAbsolute(src) ? pathToFileURL(src).href : src

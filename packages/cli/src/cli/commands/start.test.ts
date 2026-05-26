@@ -3,6 +3,7 @@ import { resolve } from "node:path"
 import { createElement } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { createDomIcon } from "../../addon/api.js"
 import { createAddonRegistry } from "../../addon/registry.js"
 
 const blankRemainingKeys = vi.fn()
@@ -957,6 +958,95 @@ describe("startEmulatorSession", () => {
     expect(browserRenderer.close).toHaveBeenCalledTimes(1)
     expect(sessionMonitor.stop).toHaveBeenCalledTimes(1)
     expect(lifecycle.close).toHaveBeenCalledTimes(1)
+  })
+
+  it("serves mounted deck asset urls through emulator-safe http paths", async () => {
+    const lifecycle = {
+      close: vi.fn(async () => {}),
+      emitKeyEvent: vi.fn(),
+      getConnection: vi.fn(() => ({ info: { keyCount: 15, model: "Virtual Stream Deck 15", serialNumber: "virtual-15" } })),
+      start: vi.fn(async () => ({ info: { keyCount: 15, model: "Virtual Stream Deck 15", serialNumber: "virtual-15" } })),
+      subscribeKeyEvents: vi.fn(() => () => {}),
+    }
+    const sessionMonitor = {
+      getSnapshot: vi.fn(() => ({ capability: "supported", state: "unknown" })),
+      stop: vi.fn(async () => {}),
+      subscribe: vi.fn(() => () => {}),
+    }
+    const assetPath = resolve(import.meta.dirname, "../../builtin-addons/emoji-selector/assets/smileys.svg")
+    const registry = {
+      resolveAssetPath: vi.fn((assetReference: string) =>
+        assetReference === "addon://emoji-selector/smileys.svg" ? assetPath : undefined,
+      ),
+    }
+
+    createVirtualStreamDeckLifecycle.mockReturnValue(lifecycle)
+    createBrowserRenderer.mockReturnValue({
+      close: vi.fn(async () => {}),
+      start: vi.fn(async () => {}),
+      updateDeck: vi.fn(async () => {}),
+    })
+    createSessionMonitor.mockResolvedValue(sessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    loadBootstrapConfig.mockReturnValue({
+      config: { addons: [] },
+      cwd: "/tmp/project",
+      filePath: "/tmp/project/config.yml",
+    })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    createBundledAddonRegistry.mockReturnValue(registry)
+    loadConfigWithSources.mockReturnValue({
+      config: {
+        decks: {
+          main: {
+            buttons: [{
+              config: { icon: "addon://emoji-selector/smileys.svg", label: "Smileys" },
+              definition: {
+                configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
+                createInstance: () => ({ render: () => createDomIcon({ src: "addon://emoji-selector/smileys.svg" }) }),
+                type: "dom-button",
+              },
+              label: "Smileys",
+              position: 0,
+              type: "dom-button",
+            }],
+            id: "main",
+          },
+        },
+        main_deck: "main",
+        theme: "dark",
+      },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
+    resolveTheme.mockResolvedValue({
+      accent: "#f59e0b",
+      background: "#10161f",
+      buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
+      danger: "#fb7185",
+      filePaths: ["/tmp/project/themes/default/index.js"],
+      foreground: "#eef2f7",
+      name: "dark",
+      primary: "#7dd3fc",
+      rootDir: "/tmp/project/themes/default",
+      stylesheets: [],
+      success: "#34d399",
+    })
+
+    const { startEmulatorSession } = await import("./start.js")
+    const session = await startEmulatorSession({ logger: { info: vi.fn(), warn: vi.fn() } as never, port: 0 })
+
+    const deckHtml = await fetch(`${session.url}/__sireno/deck`).then(async (response) => response.text())
+    expect(deckHtml).toContain(`/__sireno/assets?ref=${encodeURIComponent("addon://emoji-selector/smileys.svg")}`)
+    expect(deckHtml).not.toContain("file://")
+
+    const assetResponse = await fetch(`${session.url}/__sireno/assets?ref=${encodeURIComponent("addon://emoji-selector/smileys.svg")}`)
+    const assetBody = await assetResponse.text()
+    expect(assetResponse.status).toBe(200)
+    expect(assetResponse.headers.get("content-type")).toContain("image/svg+xml")
+    expect(assetBody).toContain("<svg")
+
+    await session.close()
   })
 
   it("bridges browser input through the virtual lifecycle and exposes pressed feedback in the served deck html", async () => {

@@ -52,9 +52,21 @@ skipped: 0
   status: failed
   reason: "User reported: the images are broken"
   severity: major
+  root_cause: "Built-in icon/button images still resolve through `createDomIcon()` to `file://...` URLs via the global asset resolver, which works on the Playwright/browser-renderer capture path but breaks on the HTTP-served emulator page. The emulator shell injects deck HTML into `#deck-mount` with `mount.innerHTML = deckHtml`, but it does not proxy addon/theme assets over HTTP or rewrite those `file://` URLs to browser-loadable local endpoints, so bundled icons like the emoji/category assets render as broken images in the user-facing emulator even though the capture renderer can load them from disk."
+  affected_files:
+    - packages/cli/src/addon/api.ts
+    - packages/cli/src/cli/commands/start.ts
+    - packages/cli/src/builtin-addons/emoji-selector/index.ts
+  rerun_plan: ".planning/phases/24-mounted-addon-render-contract/24-05-PLAN.md"
   test: 2
 - truth: "The mounted active deck should only update when runtime-owned transient props or a button-driven refresh actually change visible state; polling cadence for buttons like `date-time` should come from the button contract, not from unconditional runtime-wide deck remount churn."
   status: failed
   reason: "User noted: The <div id=\"deck-mount\"> DOM elements updates every 1s; interval_ms should belong to the button/date-time behavior, not a runtime-wide deck update loop."
   severity: major
+  root_cause: "The 1s cadence is coming from the `date-time` button contract as intended (`defaultIntervalMs: 1000`), and `createDeckRuntime().startActiveDeckPolling()` respects that per-button polling seam. The visible churn happens because each poll-triggered render still produces a new whole-deck HTML snapshot, `startEmulatorSession()` bumps the surface `version` on every `onRenderDeck`, and the emulator shell responds by refetching `/__sireno/deck` and replacing `#deck-mount` with `mount.innerHTML = deckHtml`. So the bug is not that runtime owns the clock interval; it is that the emulator transport still republishes every polled button update as a full deck-mount DOM replacement instead of a narrower keyed patch/update path."
+  affected_files:
+    - packages/cli/src/builtin-addons/date-time/buttons/date-time.tsx
+    - packages/cli/src/deck/runtime.ts
+    - packages/cli/src/cli/commands/start.ts
+  rerun_plan: ".planning/phases/24-mounted-addon-render-contract/24-06-PLAN.md"
   test: 3

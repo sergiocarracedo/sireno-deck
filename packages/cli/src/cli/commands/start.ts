@@ -1,7 +1,8 @@
 import { watch } from "node:fs"
+import { readFile } from "node:fs/promises"
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http"
 import type { AddressInfo } from "node:net"
-import { basename, dirname } from "node:path"
+import { basename, dirname, extname } from "node:path"
 
 import type pino from "pino"
 
@@ -370,9 +371,38 @@ function writeHttpResponse(response: ServerResponse, statusCode: number, body: s
   response.end(body)
 }
 
+function getAssetContentType(filePath: string): string {
+  switch (extname(filePath).toLowerCase()) {
+    case ".avif":
+      return "image/avif"
+    case ".gif":
+      return "image/gif"
+    case ".jpeg":
+    case ".jpg":
+      return "image/jpeg"
+    case ".png":
+      return "image/png"
+    case ".svg":
+      return "image/svg+xml"
+    case ".webp":
+      return "image/webp"
+    case ".woff":
+      return "font/woff"
+    case ".woff2":
+      return "font/woff2"
+    default:
+      return "application/octet-stream"
+  }
+}
+
+function createEmulatorAssetUrl(baseUrl: string, assetReference: string): string {
+  return `${baseUrl}/__sireno/assets?ref=${encodeURIComponent(assetReference)}`
+}
+
 function createEmulatorServer(options: {
   restartWithKeyCount: (keyCount: number) => Promise<void>
   emitKeyEvent: (event: { keyIndex: number; type: "down" | "up" }) => void
+  resolveAssetPath: (assetReference: string) => string | undefined
   surfaceState: EmulatorSurfaceState
 }): Server {
   return createServer((request: IncomingMessage, response: ServerResponse) => {
@@ -392,6 +422,27 @@ function createEmulatorServer(options: {
           : "<div style=\"color:#eef2f7;font-family:sans-serif;display:grid;place-items:center;min-height:240px;\">Waiting for first render...</div>",
         "text/html; charset=utf-8",
       )
+      return
+    }
+
+    if (url.pathname === "/__sireno/assets") {
+      const assetReference = url.searchParams.get("ref")
+      const assetPath = assetReference ? options.resolveAssetPath(assetReference) : undefined
+
+      if (!assetReference || !assetPath) {
+        writeHttpResponse(response, 404, "Asset not found", "text/plain; charset=utf-8")
+        return
+      }
+
+      void readFile(assetPath)
+        .then((buffer) => {
+          response.statusCode = 200
+          response.setHeader("content-type", getAssetContentType(assetPath))
+          response.end(buffer)
+        })
+        .catch(() => {
+          writeHttpResponse(response, 404, "Asset not found", "text/plain; charset=utf-8")
+        })
       return
     }
 
@@ -503,7 +554,6 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
     updatedAt: null,
     version: 0,
   }
-  setDomAssetPathResolver((assetReference) => loadedConfig.registry.resolveAssetPath(assetReference))
   let browserRenderer: BrowserRenderer | null = null
   let managedSession: EmulatorManagedSession | null = null
 
@@ -590,16 +640,23 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
     restartWithKeyCount: async (keyCount) => {
       await startManagedSession(keyCount)
     },
+    resolveAssetPath: (assetReference) => loadedConfig.registry.resolveAssetPath(assetReference),
     surfaceState,
   })
 
   try {
     const port = await listenServer(server, options.port ?? 0)
-    await startManagedSession(requestedKeyCount)
     const url = `http://127.0.0.1:${port}`
+    setDomAssetPathResolver((assetReference) =>
+      loadedConfig.registry.resolveAssetPath(assetReference)
+        ? createEmulatorAssetUrl(url, assetReference)
+        : undefined,
+    )
+    await startManagedSession(requestedKeyCount)
 
     return {
       async close() {
+        setDomAssetPathResolver()
         await closeManagedSession()
         await browserRenderer?.close().catch(() => {})
         await loadedConfig.sessionMonitor.stop().catch(() => {})
@@ -609,6 +666,7 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
       url,
     }
   } catch (error) {
+    setDomAssetPathResolver()
     await closeManagedSession()
     await browserRenderer?.close().catch(() => {})
     await loadedConfig.sessionMonitor.stop().catch(() => {})
