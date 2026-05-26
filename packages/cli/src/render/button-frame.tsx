@@ -1,5 +1,3 @@
-import { createElement } from "react"
-
 import type { ReactNode } from "react"
 import type { ThemeButtonFrameProps } from "../config/theme.js"
 
@@ -8,13 +6,12 @@ export interface ButtonFrameProps extends ThemeButtonFrameProps {}
 export function ButtonFrame(props: ButtonFrameProps) {
   const isPressed = props.state !== "idle"
 
-  return createElement(
-    "div",
-    {
-      className: "bg-background border-accent",
-      "data-sireno-button-frame-state": props.state,
-      "data-sireno-button-frame": "true",
-      style: {
+  return (
+    <div
+      className="bg-background border-accent"
+      data-sireno-button-frame="true"
+      data-sireno-button-frame-state={props.state}
+      style={{
         alignItems: "stretch",
         background: [
           "radial-gradient(circle at 18% 18%, color-mix(in oklab, var(--sireno-color-primary) 20%, transparent) 0%, transparent 44%)",
@@ -29,17 +26,15 @@ export function ButtonFrame(props: ButtonFrameProps) {
         boxSizing: "border-box",
         display: "flex",
         height: "72px",
-        transform: isPressed ? "translateY(1px) scale(0.985)" : "translateY(0) scale(1)",
         padding: "4px",
+        transform: isPressed ? "translateY(1px) scale(0.985)" : "translateY(0) scale(1)",
         transition: "transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease",
         width: "72px",
-      },
-    },
-    createElement(
-      "div",
-      {
-        className: "bg-background",
-        style: {
+      }}
+    >
+      <div
+        className="bg-background"
+        style={{
           alignItems: "center",
           background: "linear-gradient(180deg, color-mix(in oklab, var(--sireno-color-background) 82%, var(--sireno-color-foreground) 18%) 0%, color-mix(in oklab, var(--sireno-color-background) 90%, var(--sireno-color-primary) 10%) 100%)",
           borderRadius: "13px",
@@ -50,10 +45,11 @@ export function ButtonFrame(props: ButtonFrameProps) {
           overflow: "hidden",
           padding: "8px",
           position: "relative",
-        },
-      },
-      props.children,
-    ),
+        }}
+      >
+        {props.children}
+      </div>
+    </div>
   )
 }
 
