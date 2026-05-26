@@ -1,0 +1,29 @@
+.planning/phases/24-mounted-addon-render-contract/24-08-PLAN.md
+  s_cdd484e59b7475::t_620059bc674727 1-73
+.planning/phases/24-mounted-addon-render-contract/24-UAT.md
+  s_cdd484e59b7475::t_832743c0c48373 8,20
+  s_cdd484e59b7475::t_620059bc674727 45-51
+  s_cdd484e59b7475::t_1793d431e82759 23,34,40-44
+  s_cdd484e59b7475::t_5178eb86032b1a 9,33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "c2f8c5424c388c81bbbdeba2ac52507bbf1a706e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_cdd484e59b7475": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19ce55eccffegkew6zlTjaidfE",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
