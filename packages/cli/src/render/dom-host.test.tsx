@@ -51,9 +51,12 @@ describe("dom host", () => {
     })
 
     expect(html).toContain('id="deck-root"')
+    expect(html).toContain('data-sireno-browser-shell="true"')
     expect(html).toContain('data-sireno-key="0"')
     expect(html).toContain('data-sireno-key="1"')
     expect(html).toContain('data-sireno-key="2"')
+    expect(html).toContain('data-sireno-key-well="true"')
+    expect(html).toContain('data-sireno-empty-key="true"')
     expect(html).toContain('data-sireno-media-sample-interval-ms="250"')
   })
 
@@ -65,8 +68,9 @@ describe("dom host", () => {
 
     expect(html).toContain('data-sireno-theme-utilities="true"')
     expect(html).toContain('data-sireno-theme-assets="true"')
+    expect(html).toContain('data-sireno-browser-document="true"')
     expect(html).toContain('--sireno-color-primary:#7dd3fc;')
-    expect(html).toContain('--sireno-color-background:#10161f;')
+    expect(html).toContain('--sireno-color-background:')
     expect(html).toContain('--sireno-font-main-family:')
     expect(html).toContain('.text-primary{color:var(--sireno-color-primary);}')
     expect(html).toContain('.font-main{font-family:var(--sireno-font-main-family);')

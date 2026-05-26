@@ -1,17 +1,23 @@
-import { Fragment, createContext, createElement } from "react"
-import { renderToStaticMarkup } from "react-dom/server"
-import Reconciler from "react-reconciler"
-import { ConcurrentRoot, DefaultEventPriority } from "react-reconciler/constants"
+import { Fragment, createContext, createElement } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
+import Reconciler from 'react-reconciler'
+import {
+  ConcurrentRoot,
+  DefaultEventPriority,
+} from 'react-reconciler/constants'
 
-import type { ReactElement, ReactNode } from "react"
+import type { ReactElement, ReactNode } from 'react'
 
-import { ButtonSurface } from "../addon/api.js"
-import type { ThemeFrameState } from "../config/theme.js"
-import type { Theme } from "../config/theme.js"
-import { buttonFrame as defaultButtonFrame } from "./button-frame.js"
-import { resolveDeckLayout } from "./browser-renderer.js"
-import { STREAM_DECK_KEY_PRESET, type RenderPreset } from "./render-preset.js"
-import { getThemeUtilityStylesheet, renderThemeCssVariables } from "./theme-utilities.js"
+import { ButtonSurface } from '../addon/api.js'
+import type { Theme, ThemeFrameState } from '../config/theme.js'
+import { resolveDeckLayout } from './browser-renderer.js'
+import { buttonFrame as defaultButtonFrame } from './button-frame.js'
+import { STREAM_DECK_KEY_PRESET, type RenderPreset } from './render-preset.js'
+import {
+  getThemeCssVariables,
+  getThemeUtilityStylesheet,
+  renderThemeCssVariables,
+} from './theme-utilities.js'
 
 export interface HostedButton {
   content: ReactElement
@@ -63,11 +69,14 @@ type MountedHostContext = {}
 
 const EMPTY_HOST_CONTEXT: MountedHostContext = Object.freeze({})
 const HOST_TRANSITION_CONTEXT = createContext<null>(null)
-const MOUNTED_BUTTON_SLOT_TAG = "sireno-mounted-slot"
+const MOUNTED_BUTTON_SLOT_TAG = 'sireno-mounted-slot'
 
 let currentUpdatePriority = DefaultEventPriority
 
-function createMountedHostElementNode(type: string, props: Record<string, unknown>): MountedHostElementNode {
+function createMountedHostElementNode(
+  type: string,
+  props: Record<string, unknown>,
+): MountedHostElementNode {
   return {
     children: [],
     hidden: false,
@@ -83,13 +92,18 @@ function createMountedHostTextNode(text: string): MountedHostTextNode {
   }
 }
 
-function omitChildrenProp(props: Record<string, unknown>): Record<string, unknown> {
+function omitChildrenProp(
+  props: Record<string, unknown>,
+): Record<string, unknown> {
   const { children: _children, ...rest } = props
 
   return rest
 }
 
-function appendMountedHostChild(parent: { children: MountedHostNode[] }, child: MountedHostNode): void {
+function appendMountedHostChild(
+  parent: { children: MountedHostNode[] },
+  child: MountedHostNode,
+): void {
   removeMountedHostChild(parent, child)
   parent.children.push(child)
 }
@@ -111,7 +125,10 @@ function insertMountedHostChild(
   parent.children.splice(beforeIndex, 0, child)
 }
 
-function removeMountedHostChild(parent: { children: MountedHostNode[] }, child: MountedHostNode): void {
+function removeMountedHostChild(
+  parent: { children: MountedHostNode[] },
+  child: MountedHostNode,
+): void {
   const childIndex = parent.children.indexOf(child)
 
   if (childIndex !== -1) {
@@ -124,7 +141,7 @@ function mountedHostNodeToReactNode(node: MountedHostNode): ReactNode {
     return null
   }
 
-  if ("text" in node) {
+  if ('text' in node) {
     return node.text
   }
 
@@ -135,7 +152,22 @@ function mountedHostNodeToReactNode(node: MountedHostNode): ReactNode {
   )
 }
 
-const mountedHostReconciler = Reconciler<string, Record<string, unknown>, MountedHostContainer, MountedHostElementNode, MountedHostTextNode, never, never, never, MountedHostNode, MountedHostContext, never, ReturnType<typeof setTimeout>, -1, null>({
+const mountedHostReconciler = Reconciler<
+  string,
+  Record<string, unknown>,
+  MountedHostContainer,
+  MountedHostElementNode,
+  MountedHostTextNode,
+  never,
+  never,
+  never,
+  MountedHostNode,
+  MountedHostContext,
+  never,
+  ReturnType<typeof setTimeout>,
+  -1,
+  null
+>({
   HostTransitionContext: HOST_TRANSITION_CONTEXT,
   NotPendingTransition: null,
   afterActiveInstanceBlur() {},
@@ -264,7 +296,7 @@ export function createMountedDomHost(): MountedDomHost {
     null,
     false,
     null,
-    "sireno-dom-host",
+    'sireno-dom-host',
     (error) => {
       throw error
     },
@@ -287,7 +319,9 @@ export function createMountedDomHost(): MountedDomHost {
         createElement(
           Fragment,
           null,
-          ...container.children.map((child) => mountedHostNodeToReactNode(child)),
+          ...container.children.map((child) =>
+            mountedHostNodeToReactNode(child),
+          ),
         ),
       )
     },
@@ -306,20 +340,25 @@ export function renderMountedHostedButtons(
     createElement(
       Fragment,
       null,
-      ...buttons.map((button) => createElement(
-        MOUNTED_BUTTON_SLOT_TAG,
-        {
-          "data-sireno-mounted-key": button.keyIndex,
-          key: button.keyIndex,
-        },
-        createHostedButtonElement(button),
-      )),
+      ...buttons.map((button) =>
+        createElement(
+          MOUNTED_BUTTON_SLOT_TAG,
+          {
+            'data-sireno-mounted-key': button.keyIndex,
+            key: button.keyIndex,
+          },
+          createHostedButtonElement(button),
+        ),
+      ),
     ),
   )
 
   const snapshots: MountedHostedButtonSnapshot[] = []
   const html = host.toHtml()
-  const slotPattern = new RegExp(`<${MOUNTED_BUTTON_SLOT_TAG} data-sireno-mounted-key=\"(\\d+)\">([\\s\\S]*?)</${MOUNTED_BUTTON_SLOT_TAG}>`, "g")
+  const slotPattern = new RegExp(
+    `<${MOUNTED_BUTTON_SLOT_TAG} data-sireno-mounted-key="(\\d+)">([\\s\\S]*?)</${MOUNTED_BUTTON_SLOT_TAG}>`,
+    'g',
+  )
 
   for (const match of html.matchAll(slotPattern)) {
     const keyIndex = Number(match[1])
@@ -328,7 +367,7 @@ export function renderMountedHostedButtons(
     }
 
     snapshots.push({
-      html: match[2] ?? "",
+      html: match[2] ?? '',
       keyIndex,
     })
   }
@@ -337,12 +376,21 @@ export function renderMountedHostedButtons(
 }
 
 export function createHostedButtonElement(button: HostedButton): ReactElement {
-  const surface = button.content.type === ButtonSurface
-    ? button.content
-    : createElement(ButtonSurface, {
-        ...(button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
-        ...(button.sample_interval_ms !== undefined ? { sample_interval_ms: button.sample_interval_ms } : {}),
-      }, button.content)
+  const surface =
+    button.content.type === ButtonSurface
+      ? button.content
+      : createElement(
+          ButtonSurface,
+          {
+            ...(button.full_surface !== undefined
+              ? { full_surface: button.full_surface }
+              : {}),
+            ...(button.sample_interval_ms !== undefined
+              ? { sample_interval_ms: button.sample_interval_ms }
+              : {}),
+          },
+          button.content,
+        )
 
   if (button.full_surface) {
     return surface
@@ -350,33 +398,166 @@ export function createHostedButtonElement(button: HostedButton): ReactElement {
 
   const frame = button.theme?.buttonFrame ?? defaultButtonFrame
 
-  return createElement(frame, { state: button.frame_state ?? "idle" }, surface)
+  return createElement(frame, { state: button.frame_state ?? 'idle' }, surface)
 }
 
-export function renderDomDeck(buttons: readonly HostedButton[], options: DomHostRenderOptions): string {
+function getThemeVariableStyle(theme?: Theme): Record<string, string> {
+  if (!theme) {
+    return {}
+  }
+
+  return Object.fromEntries(
+    getThemeCssVariables(theme).map((entry) => [entry.name, entry.value]),
+  )
+}
+
+function renderHostedButtonContent(
+  button: HostedButton | undefined,
+  theme: Theme | undefined,
+): ReactNode {
+  if (!button) {
+    return null
+  }
+
+  if (button.html !== undefined) {
+    return (
+      <div
+        dangerouslySetInnerHTML={{ __html: button.html }}
+        style={{ display: 'contents' }}
+      />
+    )
+  }
+
+  return createHostedButtonElement({ ...button, theme })
+}
+
+function DeckKeySlot(props: {
+  button?: HostedButton
+  keyIndex: number
+  preset: RenderPreset
+  theme?: Theme
+}): ReactElement {
+  const hasButton = props.button !== undefined
+
+  return (
+    <div
+      data-sireno-empty-key={hasButton ? 'false' : 'true'}
+      data-sireno-key={props.keyIndex}
+      data-sireno-key-well="true"
+      style={{
+        alignItems: 'center',
+        background: hasButton
+          ? 'radial-gradient(circle at 20% 18%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 48%), linear-gradient(180deg, rgba(15,23,32,0.92) 0%, rgba(7,10,14,0.98) 100%)'
+          : 'radial-gradient(circle at 50% 20%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 38%), linear-gradient(180deg, rgba(7,10,14,0.98) 0%, rgba(3,5,8,1) 100%)',
+        borderRadius: '18px',
+        boxShadow: hasButton
+          ? 'inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -2px 6px rgba(0,0,0,0.4), 0 8px 18px rgba(0,0,0,0.24)'
+          : 'inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -3px 8px rgba(0,0,0,0.46)',
+        boxSizing: 'border-box',
+        display: 'flex',
+        height: `${props.preset.keyHeight}px`,
+        justifyContent: 'center',
+        overflow: 'hidden',
+        position: 'relative',
+        width: `${props.preset.keyWidth}px`,
+      }}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 42%)',
+          inset: 0,
+          pointerEvents: 'none',
+          position: 'absolute',
+        }}
+      />
+      {renderHostedButtonContent(props.button, props.theme)}
+    </div>
+  )
+}
+
+function DeckDocument(props: {
+  background: string
+  buttons: readonly HostedButton[]
+  keyCount: number
+  layout: ReturnType<typeof resolveDeckLayout>
+  preset: RenderPreset
+  theme?: Theme
+  themeAssetStylesheet: string
+  themeStylesheet: string
+}): ReactElement {
+  const buttonsByKey = new Map(
+    props.buttons.map((button) => [button.keyIndex, button]),
+  )
+  const themeVariableStyle = getThemeVariableStyle(props.theme)
+
+  return (
+    <html>
+      <head>
+        <style data-sireno-theme-utilities="true">{props.themeStylesheet}</style>
+        <style data-sireno-theme-assets="true">{props.themeAssetStylesheet}</style>
+      </head>
+      <body
+        data-sireno-browser-document="true"
+        style={{
+          background: props.background,
+          margin: 0,
+        }}
+      >
+        <div
+          data-sireno-browser-shell="true"
+          id="deck-root"
+          style={{
+            ...themeVariableStyle,
+            background: `radial-gradient(circle at top, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0) 34%), linear-gradient(180deg, color-mix(in srgb, ${props.background} 82%, black) 0%, ${props.background} 100%)`,
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -14px 24px rgba(0,0,0,0.2)',
+            color: 'var(--sireno-color-foreground)',
+            display: 'grid',
+            gridTemplateColumns: `repeat(${props.layout.columns}, ${props.preset.keyWidth}px)`,
+            gridTemplateRows: `repeat(${props.layout.rows}, ${props.preset.keyHeight}px)`,
+            height: `${props.layout.rows * props.preset.keyHeight}px`,
+            isolation: 'isolate',
+            overflow: 'hidden',
+            width: `${props.layout.columns * props.preset.keyWidth}px`,
+          }}
+        >
+          {Array.from({ length: props.keyCount }, (_, keyIndex) => (
+            <DeckKeySlot
+              button={buttonsByKey.get(keyIndex)}
+              key={keyIndex}
+              keyIndex={keyIndex}
+              preset={props.preset}
+              theme={props.theme}
+            />
+          ))}
+        </div>
+      </body>
+    </html>
+  )
+}
+
+export function renderDomDeck(
+  buttons: readonly HostedButton[],
+  options: DomHostRenderOptions,
+): string {
   const preset = options.preset ?? STREAM_DECK_KEY_PRESET
   const layout = resolveDeckLayout(options.keyCount)
   const background = options.background ?? preset.background
-  const themeVariables = options.theme ? renderThemeCssVariables(options.theme) : ""
   const themeStylesheet = getThemeUtilityStylesheet()
-  const themeAssetStylesheet = options.theme?.stylesheets.join("\n") ?? ""
-  const buttonsByKey = new Map(buttons.map((button) => [button.keyIndex, button]))
-  const slots = Array.from({ length: options.keyCount }, (_, keyIndex) => {
-    const button = buttonsByKey.get(keyIndex)
-    const content = !button
-      ? ""
-      : button.html
-        ?? renderReactNodeToHtml(createHostedButtonElement({ ...button, theme: options.theme }))
+  const themeAssetStylesheet = options.theme?.stylesheets.join('\n') ?? ''
 
-    return `<div data-sireno-key="${keyIndex}" style="align-items:center;background:#05070a;box-sizing:border-box;display:flex;height:${preset.keyHeight}px;justify-content:center;overflow:hidden;width:${preset.keyWidth}px;">${content}</div>`
-  }).join("")
+  const html = renderToStaticMarkup(
+    <DeckDocument
+      background={background}
+      buttons={buttons}
+      keyCount={options.keyCount}
+      layout={layout}
+      preset={preset}
+      theme={options.theme}
+      themeAssetStylesheet={themeAssetStylesheet}
+      themeStylesheet={themeStylesheet}
+    />,
+  )
 
-  return [
-    "<!doctype html>",
-    `<html><head><style data-sireno-theme-utilities="true">${themeStylesheet}</style><style data-sireno-theme-assets="true">${themeAssetStylesheet}</style></head><body style="margin:0;background:${background};">`,
-    `<div id="deck-root" style="${themeVariables}background:${background};display:grid;grid-template-columns:repeat(${layout.columns}, ${preset.keyWidth}px);grid-template-rows:repeat(${layout.rows}, ${preset.keyHeight}px);height:${layout.rows * preset.keyHeight}px;width:${layout.columns * preset.keyWidth}px;">`,
-    slots,
-    "</div>",
-    "</body></html>",
-  ].join("")
+  return `<!doctype html>${html}`
 }
