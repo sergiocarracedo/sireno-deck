@@ -5,7 +5,7 @@
 
 ## Verification Summary
 
-Phase 24 passed verification. The mounted addon render contract is now the shipped authoring model, the active deck preserves mounted local React state while active and unmounts cleanly on deck exit, runtime-owned addon session store scopes behave as planned, the repo's architecture-facing docs no longer describe the pre-Phase-24 static instance-first model as current truth, and all three emulator-facing UAT gaps are now closed in code: browser-loadable mounted asset URLs, keyed deck-root patching instead of whole-mount replacement, and rewriteable config-expanded icon refs that no longer leak `file://...` into the emulator page.
+Phase 24 passed verification. The mounted addon render contract is now the shipped authoring model, the active deck preserves mounted local React state while active and unmounts cleanly on deck exit, runtime-owned addon session store scopes behave as planned, the repo's architecture-facing docs no longer describe the pre-Phase-24 static instance-first model as current truth, and all four emulator-facing rerun UAT gaps are now closed in code: browser-loadable mounted asset URLs, keyed deck-root patching instead of whole-mount replacement, rewriteable config-expanded icon refs that no longer leak `file://...` into the emulator page, and preserved theme CSS/font loading on the HTTP emulator path.
 
 ## Must-Have Checks
 
@@ -44,6 +44,11 @@ Phase 24 passed verification. The mounted addon render contract is now the shipp
 - Passed: bundled emoji-selector deck expansion keeps `addon://...` icon refs while still failing early for unknown assets.
 - Passed: focused loader/emulator regression coverage proves the Favorites icon no longer leaks `file://...favorites.svg` into the HTTP-served emulator page.
 
+### 24-08
+- Passed: the emulator page now receives and reapplies the theme utility and theme asset style blocks instead of stripping them when deck updates are served.
+- Passed: emulator-facing theme font URLs are browser-loadable `/__sireno/assets?path=...` endpoints instead of unusable `file://...` paths.
+- Passed: focused theme/emulator regression coverage proves the shipped dark theme CSS/font surface survives end to end without regressing keyed deck patching or earlier addon asset fixes.
+
 ## Evidence
 
 - `pnpm --filter sireno-deck-cli exec vitest run src/builtin-addons/core-buttons/index.test.ts src/builtin-addons/emoji-selector/index.test.ts src/builtin-addons/date-time/index.test.ts src/addon/loader.test.ts src/deck/runtime.test.ts src/render/dom-host.test.tsx`
@@ -56,14 +61,18 @@ Phase 24 passed verification. The mounted addon render contract is now the shipp
   - `38 passed`
 - `pnpm --filter sireno-deck-cli exec vitest run src/config/loader.test.ts src/cli/commands/start.test.ts --testNamePattern "expands bundled addon deck types while keeping addon asset refs rewriteable|serves mounted deck asset urls through emulator-safe http paths|keeps config-expanded emoji deck icons rewriteable on the emulator path|starts a hardware-free emulator session and serves the current deck surface locally|bridges browser input through the virtual lifecycle|restarts the emulator with a new virtual device|fails honestly when the selected virtual device|ships the emulator shell with keyed deck patching instead of whole mount replacement"`
   - `8 passed | 54 skipped`
+- `pnpm --filter sireno-deck-cli exec vitest run src/config/theme.test.ts src/cli/commands/start.test.ts --testNamePattern "rewrites file-backed theme asset urls for browser-served transports|serves theme styles and browser-loadable font urls on the emulator path|serves mounted deck asset urls through emulator-safe http paths|keeps config-expanded emoji deck icons rewriteable on the emulator path|starts a hardware-free emulator session and serves the current deck surface locally|bridges browser input through the virtual lifecycle|restarts the emulator with a new virtual device|fails honestly when the selected virtual device|ships the emulator shell with keyed deck patching instead of whole mount replacement"`
+  - `9 passed | 24 skipped`
 - `grep createInstance packages/cli/src/builtin-addons`
   - source built-ins migrated; only tests/intentional compatibility code should remain
 - `grep -n "Stateful button instances\|not DOM-based\|mounted" .planning/codebase/ARCHITECTURE.md AGENTS.md`
   - stale architecture claims removed or updated
 - `rg -n "24-07-PLAN.md|favorites\.svg|file:///works/opensource/sireno-deck/packages/cli/src/builtin-addons/emoji-selector/assets/favorites\.svg|root_cause" .planning/phases/24-mounted-addon-render-contract/24-UAT.md`
   - rerun UAT evidence preserved and linked to the final closure plan
+- `rg -n "24-08-PLAN.md|theme css|fonts are loaded|root_cause" .planning/phases/24-mounted-addon-render-contract/24-UAT.md`
+  - rerun UAT preserved the theme/css/font failure and now records it as closed by the final rerun pass
 
 ## Residual Notes
 
 - Phase 24 is post-roadmap follow-on work and does not add new v1.2 requirement IDs; `REQUIREMENTS.md` remains milestone-scoped.
-- `verify-work 24` rerun diagnosed and closed the remaining emulator gaps. The next workflow step is `/review`, followed by `/ship` and `/compound`.
+- `verify-work 24` rerun diagnosed and closed the remaining emulator gaps. The rerun UAT now has no open gaps, and the next workflow step is `/review`, followed by `/ship` and `/compound`.
