@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 25 execution is complete for theme TSX button frame support; next is `verify-work 25` for manual UAT before `/review`.
+**Current focus:** Quick task 015 fixed the shipped default theme's ambient React runtime dependency after Phase 25; Phase 25 still needs the UAT artifact cleanup before `/ship`.
 
 ## Current Position
 
 Phase: 25 — Theme TSX Button Frame Support
 Plan: execution complete
 Status: verifying
-Last activity: 2026-05-26 - Completed both Phase 25 slices, verified the TSX theme runtime seam plus custom-theme root-boundary coverage, and recorded execution summaries
+Last activity: 2026-05-26 - Completed quick task 015 to remove the shipped default theme's ambient React dependency on the real TSX runtime path
 
 Progress: [##########] 100%
 
@@ -188,3 +188,4 @@ Resume file: .planning/phases/20-theme-packages-and-locked-time-layout/20-UAT.md
 | 012 | honor token-based formatting in the bundled date-time addon | 2026-05-14 | uncommitted | `.planning/quick/012-date-time-token-formatting` |
 | 013 | add the config needed for review (UAT) in the fixtures folder | 2026-05-15 | `8f321c9` | `.planning/quick/013-add-uat-review-config-fixtures` |
 | 014 | fix theme/font-face test failures blocking /ship | 2026-05-25 | `866d442` | `.planning/quick/014-theme-font-face-test-failures` |
+| 015 | fix this: pnpm exec tsx packages/cli/src/cli/index.ts start --config config.yml crashes with React is not defined from ButtonFrame.tsx | 2026-05-26 | `63fd4d8` | `.planning/quick/015-fix-theme-tsx-react-runtime` |
