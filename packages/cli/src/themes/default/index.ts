@@ -1,4 +1,4 @@
-import { ButtonFrame } from "./ButtonFrame.js"
+import { ButtonFrame } from './ButtonFrame'
 
 export const buttonFrame = ButtonFrame
 

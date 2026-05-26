@@ -5,7 +5,7 @@ source:
   - 23-01-SUMMARY.md
   - 23-02-SUMMARY.md
 started: 2026-05-25T20:17:37+02:00
-updated: 2026-05-25T23:36:39+02:00
+updated: 2026-05-26T00:03:25+02:00
 ---
 
 ## Current Test
@@ -20,7 +20,7 @@ awaiting: none
 ### 1. Local Raw TSX Addon Startup Test
 expected: Start Sireno with a config that points at `packages/cli/fixtures/phase-23/local-raw-addon/` as a local addon. The process should load successfully without a prebuild step, without any `./jsx` import surface, and the raw addon should register/render through the normal startup path.
 result: issue
-reported: "i used tsx in rthe local-raw-addon and i get the same error: pnpm exec tsx packages/cli/src/cli/index.ts start --config packages/cli/fixtures/phase-23/config.yml ReferenceError: React is not defined at Object.render (/works/opensource/sireno-deck/packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx:15:13) at renderRuntimeButton (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:286:31) at <anonymous> (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:325:56) at Array.map (<anonymous>) at renderDeckSurface (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:325:40) at activateDeckSurface (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:404:11)"
+reported: "same issue when the addon have tsx. pnpm exec tsx packages/cli/src/cli/index.ts start --config packages/cli/fixtures/phase-23/config.yml ReferenceError: React is not defined at Object.render (/works/opensource/sireno-deck/packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx:15:13) at renderRuntimeButton (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:286:31) at <anonymous> (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:325:56) at Array.map (<anonymous>) at renderDeckSurface (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:325:40) at activateDeckSurface (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:404:11)"
 severity: blocker
 
 ### 2. Hardware Startup Placeholder Handoff Test
@@ -43,8 +43,8 @@ skipped: 0
 
 - truth: "Start Sireno with the corrected shipped config at `packages/cli/fixtures/phase-23/config.yml`. Startup should succeed without a prebuild step, without any `./jsx` import surface, and the raw addon should register/render through the normal startup path."
   status: failed
-  reason: "User reported: i used tsx in rthe local-raw-addon and i get the same error: pnpm exec tsx packages/cli/src/cli/index.ts start --config packages/cli/fixtures/phase-23/config.yml ReferenceError: React is not defined at Object.render (/works/opensource/sireno-deck/packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx:15:13) at renderRuntimeButton (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:286:31) at <anonymous> (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:325:56) at Array.map (<anonymous>) at renderDeckSurface (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:325:40) at activateDeckSurface (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:404:11)"
-  root_cause: "The shipped raw addon fixture drifted away from the Phase 23 render contract. `packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx` now returns raw JSX (`<span>🍕</span>`) from `render()` without importing React or using the root-export helper path, so runtime rendering throws `ReferenceError: React is not defined`. The adjacent helper-based file `packages/cli/fixtures/phase-23/local-raw-addon/src/content.tsx` still shows the intended contract (`createBaseShapeTextContent` from `sireno-deck-cli`), which means the shipped fixture entrypoint no longer matches the authoring model Phase 23 was supposed to prove. Existing automated tests cover registry/config loading, but they do not yet assert that the shipped fixture's `render()` output itself stays on the helper-based render contract." 
+  reason: "User reported: same issue when the addon have tsx. pnpm exec tsx packages/cli/src/cli/index.ts start --config packages/cli/fixtures/phase-23/config.yml ReferenceError: React is not defined at Object.render (/works/opensource/sireno-deck/packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx:15:13) at renderRuntimeButton (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:286:31) at <anonymous> (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:325:56) at Array.map (<anonymous>) at renderDeckSurface (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:325:40) at activateDeckSurface (/works/opensource/sireno-deck/packages/cli/src/deck/runtime.ts:404:11)"
+  root_cause: "This rerun is hitting worktree drift in `packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx`, not a new loader/runtime failure. The committed `23-04` closure (`80aa3bd`) restored that fixture entrypoint to the helper-based `createPhase23Label()` path, but the current local file has been modified again and now returns raw JSX directly from `createInstance()` (`return <p>Test</p>`). That reintroduces the exact ambient-React dependency the phase was trying to eliminate, so runtime rendering throws `ReferenceError: React is not defined`. The adjacent `src/content.tsx` file still contains the intended helper-based contract, and the focused regression test in `packages/cli/src/cli/commands/start.test.ts` now fails in the dirty worktree (`PASS (27) FAIL (1)`) because the runtime never reaches `onRenderDeck` for the shipped fixture config." 
   affected_files:
     - packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx
     - packages/cli/fixtures/phase-23/local-raw-addon/src/content.tsx
