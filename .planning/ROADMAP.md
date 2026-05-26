@@ -259,14 +259,18 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ---
 
-### Phase 24: Direct JSX/TSX Addon Render Definitions
+### Phase 24: Mounted Addon Render Contract
 
-**Goal:** Simplify addon button authoring so button definitions can export a direct `render(...)` function with TSX/JSX output instead of a `createInstance(...).render()` wrapper, while keeping TSX/JSX authoring first-class.
-**Status:** [ ] Not started
+**Goal:** Replace the current instance-first addon button contract with a mounted active-deck React view contract backed by a core-owned addon store, while keeping Node as the owner of hardware semantics, navigation, polling, and command execution.
+**Status:** planning
 **Depends on:** Phase 23
+**Requirements:** Post-roadmap follow-on; no new v1.2 requirement IDs assigned. This phase must preserve the already-shipped host/session injection and verification surfaces those earlier phases established.
 
 ### Plans
-*Not yet planned — run `plan-phase 24`*
+- `24-01`: Land the new addon button contract and migration strategy so definitions expose `render(props)` plus definition-level runtime handlers without silently breaking built-ins and fixtures.
+- `24-02`: Add the core-owned addon store with button-local isolation, addon-wide coordinated access, and runtime-session-only lifetime.
+- `24-03`: Integrate a persistent mounted React tree for the active deck, keep inactive decks unmounted, and preserve runtime-driven transient props like `pressed` and `frameState`.
+- `24-04`: Migrate built-in buttons and proof fixtures to the new contract and lock the mounted-deck/store/runtime boundary with focused tests and reviewable fixtures.
 
 ---
 

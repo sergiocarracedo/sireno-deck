@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 23 render-contract gap closure is executed and re-verified; rerun `verify-work 23` and follow-on Phase 21 planning are next.
+**Current focus:** Phase 24 planning is complete for the mounted addon render contract migration; next is `execute-phase 24` when implementation starts.
 
 ## Current Position
 
-Phase: 23 — JSX/TSX Addon Authoring + Startup Placeholder ✓ complete
-Plan: execution complete + gap closures complete
-Status: re-verified after render-contract gap closure, awaiting rerun manual review
-Last activity: 2026-05-25 - Restored the shipped raw fixture render contract, linked the rerun evidence to 23-04, and re-verified the phase at PASS (28) FAIL (0)
+Phase: 24 — Mounted Addon Render Contract
+Plan: planning complete
+Status: planned
+Last activity: 2026-05-26 - Researched the mounted active-deck/runtime-store architecture and created four verified Phase 24 execution plans
 
 Progress: [##########] 100%
 
@@ -73,7 +73,7 @@ Recent decisions affecting current work:
 ### Roadmap Evolution
 
 - Phase 23 added: allow JSX/TSX addon button authoring and show a startup image on the Stream Deck before the browser path sends the first deck surface.
-- Phase 24 added: simplify addon button render definitions so addons can export direct TSX/JSX-capable `render(...)` functions instead of `createInstance(...).render()` wrappers.
+- Phase 24 added: replace the instance-first addon button contract with a mounted active-deck React render model, definition-level runtime handlers, and a core-owned addon store that survives deck changes for one runtime session.
 - Phase 22 added: browser deck emulator
 - Phase 21 added: theme fonts must be shipped as real bundled assets so browser-rendered typography does not depend on missing host fonts or broken theme font references.
 - Phase 20 added: theme packages with manifest-backed assets and theme-owned button frames, external image rendering fixes, and a centered five-button locked time layout.
@@ -86,6 +86,8 @@ Recent decisions affecting current work:
 ### Progress Notes
 
 - **Phase 23 discussion:** Captured a narrow local-addon raw-source contract (`sirenoAddon.main` may point at `.ts/.tsx/.js/.jsx`), kept the public authoring API on the root export only, and chose a branded temporary startup placeholder that clears on first real render and never hides honest browser startup failures.
+- **Phase 24 discussion:** Re-scoped the phase from a narrow direct-render cleanup into a runtime-contract migration: Node keeps hardware/event ownership, the active deck becomes a persistent mounted React tree while active, inactive decks unmount on navigation, button definitions expose definition-level runtime handlers plus `render(props)`, and core provides button-local plus addon-wide session store access without adding cross-restart persistence.
+- **Phase 24 planning:** Broke the migration into four execution slices: explicit contract compatibility first, core-owned addon session store second, mounted active-deck root and transient runtime props third, and built-in/doc/fixture truthfulness last. Phase 24 is a post-roadmap follow-on and does not introduce new v1.2 requirement IDs.
 - **Phase 23 planning:** Broke the phase into two execution slices: manifest-driven local raw-source addon startup through the normal CLI path, and a branded physical-device startup placeholder that hands off cleanly to the first real browser capture.
 - **Plan 23-01:** Shipped local raw-source addon loading through `sirenoAddon.main` for local `.ts/.tsx/.jsx` entries using `tsx`, bounded the relative source graph to the addon root, committed a raw `.tsx` fixture addon, and proved the normal startup config path loads it through the root export surface only.
 - **Plan 23-02:** Shipped branded hardware startup placeholder buffers, wired the placeholder into `startDaemon()` before the first real browser capture, documented the hardware review path, and locked write-order / handoff / failure-cleanup behavior in focused startup tests.
