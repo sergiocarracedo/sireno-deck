@@ -166,7 +166,7 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.2 — Session Context and Surface Composition
 **Phase:** 24 — Mounted Addon Render Contract ✓ complete
-**Status:** verifying
+**Status:** verifying (gap closures complete; rerun `verify-work 24`)
 **Last updated:** 2026-05-26
 
 ---

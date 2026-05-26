@@ -5,7 +5,7 @@
 
 ## Verification Summary
 
-Phase 24 passed verification. The mounted addon render contract is now the shipped authoring model, the active deck preserves mounted local React state while active and unmounts cleanly on deck exit, runtime-owned addon session store scopes behave as planned, and the repo's architecture-facing docs no longer describe the pre-Phase-24 static instance-first model as current truth.
+Phase 24 passed verification. The mounted addon render contract is now the shipped authoring model, the active deck preserves mounted local React state while active and unmounts cleanly on deck exit, runtime-owned addon session store scopes behave as planned, the repo's architecture-facing docs no longer describe the pre-Phase-24 static instance-first model as current truth, and the two `verify-work 24` UAT gaps now have committed code closures for emulator asset serving and emulator deck-update churn.
 
 ## Must-Have Checks
 
@@ -29,12 +29,26 @@ Phase 24 passed verification. The mounted addon render contract is now the shipp
 - Passed: focused addon/runtime/dom-host tests cover the migrated contract from file-relative fixture paths.
 - Passed: `.planning/codebase/ARCHITECTURE.md` and `AGENTS.md` reflect the mounted runtime instead of the stale instance-first/non-DOM description.
 
+### 24-05
+- Passed: the emulator now serves mounted addon/theme assets through a browser-loadable HTTP path instead of leaving built-in icons on broken `file://...` URLs in the user-facing browser page.
+- Passed: `packages/cli/src/addon/api.ts` preserves the capture path while accepting emulator-safe browser URLs from the resolver.
+- Passed: focused emulator/start coverage proves a real shipped built-in icon path resolves through the HTTP-served emulator seam.
+
+### 24-06
+- Passed: the `date-time` button still owns its 1s cadence through the runtime polling seam; the fix did not move or globalize that cadence.
+- Passed: the emulator no longer relies on whole-`#deck-mount` replacement for each render-version bump and instead patches the mounted deck root more narrowly.
+- Passed: focused emulator/start plus runtime regression coverage prove transient press/release updates and polled button updates still surface correctly.
+
 ## Evidence
 
 - `pnpm --filter sireno-deck-cli exec vitest run src/builtin-addons/core-buttons/index.test.ts src/builtin-addons/emoji-selector/index.test.ts src/builtin-addons/date-time/index.test.ts src/addon/loader.test.ts src/deck/runtime.test.ts src/render/dom-host.test.tsx`
   - `85 passed`
 - `pnpm --filter sireno-deck-cli exec vitest run src/addon/loader.test.ts src/deck/runtime.test.ts src/render/dom-host.test.tsx`
   - `57 passed`
+- `pnpm --filter sireno-deck-cli exec vitest run src/cli/commands/start.test.ts --testNamePattern "starts a hardware-free emulator session and serves the current deck surface locally|serves mounted deck asset urls through emulator-safe http paths|bridges browser input through the virtual lifecycle|restarts the emulator with a new virtual device|fails honestly when the selected virtual device|ships the emulator shell with keyed deck patching instead of whole mount replacement"`
+  - `6 passed`
+- `pnpm --filter sireno-deck-cli exec vitest run src/deck/runtime.test.ts`
+  - `38 passed`
 - `grep createInstance packages/cli/src/builtin-addons`
   - source built-ins migrated; only tests/intentional compatibility code should remain
 - `grep -n "Stateful button instances\|not DOM-based\|mounted" .planning/codebase/ARCHITECTURE.md AGENTS.md`
@@ -43,4 +57,4 @@ Phase 24 passed verification. The mounted addon render contract is now the shipp
 ## Residual Notes
 
 - Phase 24 is post-roadmap follow-on work and does not add new v1.2 requirement IDs; `REQUIREMENTS.md` remains milestone-scoped.
-- Manual `verify-work 24` is still the next workflow step for human/UAT validation, followed by `/review`, `/ship`, and `/compound`.
+- Manual `verify-work 24` rerun is still the next workflow step so the two original UAT gaps can be explicitly rechecked on the live emulator path, followed by `/review`, `/ship`, and `/compound`.
