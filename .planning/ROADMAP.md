@@ -297,7 +297,9 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 **Depends on:** Phase 25
 
 ### Plans
-*Not yet planned — run `plan-phase 26`*
+- `26-01`: Refactor the browser deck page onto one shared React document tree with honest JSX button/frame components, moderate shell chrome, and explicit empty-button wells while preserving the single HTML-string transport boundary.
+- `26-02`: Replace the emulator's hard undersized-device error page with the rendered visible subset plus persistent inline warning on the same shared deck document path.
+- `26-03`: Keep startup loading on the existing pre-browser placeholder seam, but replace the repeated branded tile with a simple `assets/logoFull.png` loading card/mosaic treatment that stays browser-independent.
 
 ---
 

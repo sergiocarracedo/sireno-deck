@@ -1,0 +1,63 @@
+# Phase 26: Browser Deck React Shell Polish — Research
+
+**Researched:** 2026-05-26
+**Phase goal:** Refactor the browser deck shell onto explicit React/TSX composition so the default button frame and full browser deck layout render through honest JSX components, emulate physical Stream Deck chrome more faithfully in browser mode, keep undersized virtual-device selections usable with a persistent warning, and show a logo-backed startup loading state while the browser renderer boots.
+
+## Don't Hand-Roll
+
+| Problem | Recommended solution | Why | Provenance |
+|---------|----------------------|-----|------------|
+| Turning the full browser deck page into a React-owned composition surface without changing the transport contract | Keep `renderToStaticMarkup(...)` as the final HTML-string boundary, but move the deck document itself onto one shared React tree | React's own docs explicitly position `renderToStaticMarkup` as a non-interactive HTML string producer. That fits Sireno's browser-renderer seam: React can own the whole document tree while `browser-renderer.ts` still receives plain HTML strings for capture and emulator serving. | [CITED: https://react.dev/reference/react-dom/server/renderToStaticMarkup] [VERIFIED: packages/cli/src/render/dom-host.tsx] [VERIFIED: packages/cli/src/render/browser-renderer.ts] |
+| Keeping browser capture and emulator shell honest | Refactor toward one shared deck document component used by both browser capture and emulator deck serving instead of introducing a second preview-only shell | Phase 18 and 22 already committed the repo to one real browser renderer path. The current code already routes both daemon capture and emulator deck serving through `renderDomDeck(...)`, even though emulator still wraps it in an outer control page. Phase 26 should deepen that seam, not fork it. | [VERIFIED: .planning/phases/22-browser-deck-emulator/22-CONTEXT.md] [VERIFIED: packages/cli/src/cli/commands/start.ts] [VERIFIED: packages/cli/src/render/dom-host.tsx] |
+| Replacing the hard error-only emulator mismatch page | Keep the runtime/browser seam honest by rendering the visible subset plus an inline warning inside the same shared document | The current mismatch path swaps in a special error-only `#deck-root` document and exits early. That keeps the emulator honest, but it makes the deck unusable. Phase 26's locked decision is to preserve honesty without dropping usability: same document contract, subset render, persistent warning. | [VERIFIED: packages/cli/src/cli/commands/start.ts] [VERIFIED: packages/cli/src/cli/commands/start.test.ts] [VERIFIED: .planning/phases/26-browser-deck-react-shell-polish/26-CONTEXT.md] |
+| Startup loading while the browser is not ready yet | Keep startup on the pre-browser placeholder seam instead of moving it into the new React document tree | The current placeholder path is explicitly pre-browser and hardware-owned: `start.ts` writes placeholder buffers before the first real browser-backed deck capture, and `startup-placeholder.ts` has zero browser dependency. The user explicitly chose the simplest non-React loading path for this phase. | [VERIFIED: packages/cli/src/render/startup-placeholder.ts] [VERIFIED: packages/cli/src/cli/commands/start.ts] [VERIFIED: .planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-CONTEXT.md] [VERIFIED: .planning/phases/26-browser-deck-react-shell-polish/26-CONTEXT.md] |
+
+## Common Pitfalls
+
+### A React document refactor can accidentally create two top-level browser products
+**What goes wrong:** The repo already has two visible browser surfaces: the captured deck HTML from `renderDomDeck(...)`, and the emulator wrapper page from `renderEmulatorShellHtml()`. A naive Phase 26 change can move only one of them onto React, leaving two subtly divergent top-level shells again. [VERIFIED: packages/cli/src/cli/commands/start.ts] [VERIFIED: packages/cli/src/render/dom-host.tsx]
+
+**Why:** `renderDomDeck(...)` currently returns the deck document string, but the emulator page still owns a separate outer document with controls and patches only `#deck-root`. If planning is sloppy, "shared document" becomes "shared inner fragment plus two wrappers" again. [VERIFIED: packages/cli/src/cli/commands/start.ts]
+
+**How to avoid:** Make the first slice explicitly establish one shared React document component for the deck page itself and keep stringification at the final transport boundary. If emulator-specific controls must remain outside the deck document for now, call that out as wrapper chrome rather than pretending the deck document is still separate. [VERIFIED: .planning/phases/26-browser-deck-react-shell-polish/26-CONTEXT.md] [CITED: https://react.dev/reference/react-dom/server/renderToStaticMarkup]
+
+### Theme `buttonFrame` can easily bleed into outer shell responsibilities
+**What goes wrong:** Once the page shell becomes a React tree, it is tempting to let theme/default frame code start owning inter-button spacing, outer bezel, warning placement, or empty-slot rendering. That would contradict the existing boundary that `buttonFrame` is button chrome only. [VERIFIED: packages/cli/src/render/button-frame.tsx] [VERIFIED: packages/cli/src/render/dom-host.tsx] [VERIFIED: .planning/phases/20-theme-packages-and-locked-time-layout/20-CONTEXT.md]
+
+**Why:** `createHostedButtonElement(...)` already composes frame + button content, and the new shell work lives adjacent to it in `dom-host.tsx`. Without a clear slice boundary, page-level polish can drift into theme-owned frame code. [VERIFIED: packages/cli/src/render/dom-host.tsx]
+
+**How to avoid:** Keep one explicit boundary in the plans: `button-frame.tsx` may move to honest JSX and keep button chrome behavior, but shell layout, empty wells, warnings, and deck-level glass/bezel treatment stay in the deck document component. [VERIFIED: .planning/phases/26-browser-deck-react-shell-polish/26-CONTEXT.md]
+
+### Changing undersized-device behavior without preserving honesty can regress emulator diagnostics
+**What goes wrong:** Replacing the current hard error with subset rendering can accidentally hide the mismatch or make it look like the selected device fully supports the configured deck. [VERIFIED: packages/cli/src/cli/commands/start.ts] [VERIFIED: packages/cli/src/cli/commands/start.test.ts]
+
+**Why:** The current contract is brutally honest: `emulator_layout_mismatch`, status `error`, and an explicit error document. Phase 26 intentionally softens the UX, so the warning layer now carries the truth burden. [VERIFIED: packages/cli/src/cli/commands/start.ts] [VERIFIED: .planning/phases/22-browser-deck-emulator/22-CONTEXT.md]
+
+**How to avoid:** Treat the warning as product work, not decoration. Plans should explicitly update the emulator mismatch state/tests so the warning is persistent, inline, and tied to the selected-device-vs-required-key mismatch instead of silently clipping hidden keys. [VERIFIED: .planning/phases/26-browser-deck-react-shell-polish/26-CONTEXT.md]
+
+### Startup-logo work can accidentally move onto the wrong seam
+**What goes wrong:** Because the phase also talks about a richer browser shell, it is easy to assume the loading state should live in the same React document. That would force startup visuals to depend on the browser path being ready first, contradicting both the current code and the user's explicit decision. [VERIFIED: packages/cli/src/render/startup-placeholder.ts] [VERIFIED: packages/cli/src/cli/commands/start.ts]
+
+**Why:** The current startup path writes hardware buffers before the browser renderer has produced the first real deck capture. That is a different lifecycle seam from the browser/emulator HTML document. [VERIFIED: .planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-CONTEXT.md] [VERIFIED: packages/cli/src/cli/commands/start.ts]
+
+**How to avoid:** Keep startup as its own slice on the existing placeholder seam, using `assets/logoFull.png` in a simple loading-card implementation and proving it without React/browser dependency. [VERIFIED: .planning/phases/26-browser-deck-react-shell-polish/26-CONTEXT.md]
+
+## Existing Patterns In This Codebase
+
+- **Static React-to-HTML boundary already exists:** `packages/cli/src/render/dom-host.tsx` already uses `renderToStaticMarkup(...)` for both ordinary React nodes and mounted host snapshots. Phase 26 can raise the composition boundary without changing the final HTML-string contract. [VERIFIED: packages/cli/src/render/dom-host.tsx]
+- **Current deck document seam is centralized:** `renderDomDeck(...)` already owns key-slot allocation, theme stylesheets, theme CSS variables, and the final document string. This is the natural place to refactor toward a shared React document component. [VERIFIED: packages/cli/src/render/dom-host.tsx]
+- **Empty slots are already honest in the current renderer:** the existing implementation allocates one slot per key via `Array.from({ length: options.keyCount }, ...)`, so explicit empty wells are already part of the live contract and can become a styled shell feature instead of a brand-new capability. [VERIFIED: packages/cli/src/render/dom-host.tsx] [VERIFIED: packages/cli/src/render/dom-host.test.tsx]
+- **Browser renderer remains the only capture/emulator transport:** `packages/cli/src/render/browser-renderer.ts` still owns page lifecycle, updates, and image capture, so Phase 26 should feed it better HTML rather than building a second transport seam. [VERIFIED: packages/cli/src/render/browser-renderer.ts]
+- **Emulator mismatch policy is currently owned in `start.ts`:** the "too few keys" behavior is not inside the browser renderer; it is injected by startup/session wiring. That gives Phase 26 a crisp integration point for the new warning + subset policy. [VERIFIED: packages/cli/src/cli/commands/start.ts]
+- **Startup placeholder is explicitly separate from steady-state rendering:** `createStartupPlaceholderBuffers(...)` produces per-key buffers before the first real browser capture. That seam is already narrow and should stay narrow when the loading art changes. [VERIFIED: packages/cli/src/render/startup-placeholder.ts] [VERIFIED: packages/cli/src/cli/commands/start.ts]
+- **Proof surfaces already exist for document structure and emulator behavior:** `dom-host.test.tsx` covers key-slot/document output and theme frame usage; `start.test.ts` covers emulator mismatch behavior; `browser-renderer.test.ts` covers the one real browser-capture seam. Phase 26 should extend these rather than inventing new proof-only fixtures first. [VERIFIED: packages/cli/src/render/dom-host.test.tsx] [VERIFIED: packages/cli/src/cli/commands/start.test.ts] [VERIFIED: packages/cli/src/render/browser-renderer.test.ts]
+
+## Recommended Approach
+
+Keep Phase 26 as one honest browser-surface follow-on, not a grab bag of visuals. The safest plan shape is three slices.
+
+First, establish the shared React document shell in `packages/cli/src/render/dom-host.tsx`: move the deck document and default frame to honest JSX/TSX composition, keep `renderToStaticMarkup(...)` as the final string boundary, and prove the new document still renders all key slots, theme styles, theme-owned button frames, and explicit empty wells through `dom-host.test.tsx`. This slice should not change undersized-device policy or startup behavior yet. [VERIFIED: packages/cli/src/render/dom-host.tsx] [VERIFIED: packages/cli/src/render/button-frame.tsx] [VERIFIED: packages/cli/src/render/dom-host.test.tsx] [CITED: https://react.dev/reference/react-dom/server/renderToStaticMarkup]
+
+Second, change the undersized-device path in `packages/cli/src/cli/commands/start.ts` from hard error-only to visible subset plus persistent inline warning, while preserving the one-browser-renderer seam. This slice should update the emulator/startup tests so the mismatch remains explicit but usable, and it should avoid pushing warning ownership into themes or browser-renderer internals. [VERIFIED: packages/cli/src/cli/commands/start.ts] [VERIFIED: packages/cli/src/cli/commands/start.test.ts] [VERIFIED: .planning/phases/26-browser-deck-react-shell-polish/26-CONTEXT.md]
+
+Third, keep startup loading on the existing pre-browser placeholder seam and swap the repeated `SIRENO / STARTING` tile for a simple `assets/logoFull.png`-backed loading card/mosaic treatment that still works before the browser exists. This slice should add focused proof around `startup-placeholder.ts` and the startup handoff in `start.ts`, not route loading through the new browser document. [VERIFIED: packages/cli/src/render/startup-placeholder.ts] [VERIFIED: packages/cli/src/cli/commands/start.ts] [VERIFIED: .planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-CONTEXT.md]
