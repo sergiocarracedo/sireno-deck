@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 26 — Browser Deck React Shell Polish
-**Status:** planned; next `/execute-phase 26`
-**Last updated:** 2026-05-26
+**Phase:** 26 — Browser Deck React Shell Polish ✓ complete → Phase 27 — next not planned yet
+**Status:** verifying
+**Last updated:** 2026-05-27
 
 ---
 
