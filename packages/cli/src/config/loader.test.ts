@@ -631,12 +631,8 @@ describe("loadConfig", () => {
           configSchema: z.object({
             label: z.string().min(1),
           }),
-          createInstance() {
-            return {
-              render() {
-                return null as never
-              },
-            }
+          render() {
+            return null as never
           },
         },
       ],

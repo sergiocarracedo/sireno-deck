@@ -17,6 +17,7 @@ import type { ThemeFrameState } from "../config/theme.js"
 import { UNKNOWN_HOST_CONTEXT, type HostContext } from "../system/host-context.js"
 import type { SessionMonitor, SessionSnapshot } from "../system/session-monitor.js"
 import type { ReactElement } from "react"
+import type { AddonButtonRenderState, AddonButtonRuntimeProps, AddonButtonStoreScope, MountedAddonButtonRenderProps, MountedAddonButtonStore } from "../addon/api.js"
 
 interface RuntimeStoreScope {
   clear: () => void
@@ -28,6 +29,10 @@ interface RuntimeStoreScope {
 interface RuntimeMountedStoreAccess {
   addon: RuntimeStoreScope
   button: RuntimeStoreScope
+}
+
+interface RuntimeMountedButtonState extends AddonButtonRenderState {
+  pressed: boolean
 }
 
 export interface DeckRuntimeOptions {
@@ -103,14 +108,10 @@ const temporaryErrorButtonDefinition = {
     label: z.string().min(1),
     subtitle: z.string().min(1),
   }),
-  createInstance: ({
+  render: ({
     button,
     config,
-  }: {
-    button: { position: number }
-    config: { detailLines: string[]; label: string; subtitle: string }
-  }) => ({
-    render: () => createElement(
+  }: MountedAddonButtonRenderProps<{ detailLines: string[]; label: string; subtitle: string }>) => createElement(
       ButtonSurface,
       { full_surface: true },
       createElement(
@@ -126,7 +127,6 @@ const temporaryErrorButtonDefinition = {
         ),
       ),
     ),
-  }),
   type: "__runtime_reload_error__",
 } satisfies ButtonInstance["definition"]
 
@@ -283,6 +283,59 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     return {
       addon: createRuntimeStoreScope(addonStateStore, getAddonStateKey(button)),
       button: createRuntimeStoreScope(buttonStateStore, getButtonStateKey(deckId, button.position)),
+    }
+  }
+
+  function createMountedStoreScope(scope: RuntimeStoreScope): AddonButtonStoreScope {
+    return {
+      clear: () => {
+        scope.clear()
+      },
+      get snapshot() {
+        return scope.getSnapshot()
+      },
+      set: (value) => {
+        scope.set(value)
+      },
+      update: (updater) => {
+        scope.update(updater)
+      },
+    }
+  }
+
+  function createMountedButtonStore(access: RuntimeMountedStoreAccess): MountedAddonButtonStore {
+    return {
+      addon: createMountedStoreScope(access.addon),
+      button: createMountedStoreScope(access.button),
+    }
+  }
+
+  function createMountedRuntimeProps(
+    deckId: string,
+    button: ButtonInstance,
+  ): AddonButtonRuntimeProps<unknown> {
+    return {
+      button: {
+        position: button.position,
+        type: button.type,
+      },
+      config: button.config,
+      hostContext,
+      methods: createButtonMethods(button, deckId),
+      theme: options.theme,
+    }
+  }
+
+  function createMountedRenderProps(
+    runtimeProps: AddonButtonRuntimeProps<unknown>,
+    renderState: RuntimeMountedButtonState,
+    store: MountedAddonButtonStore,
+  ): MountedAddonButtonRenderProps<unknown> {
+    return {
+      ...runtimeProps,
+      frameState: renderState.frameState,
+      pressed: renderState.pressed,
+      store,
     }
   }
 
@@ -488,18 +541,62 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     deckId: string,
     button: ButtonInstance,
   ): RuntimeButtonInstance {
-    // Phase 24 mounted definitions adapt into the legacy createInstance seam so Node keeps one runtime entrypoint.
-    return button.definition.createInstance({
-      button: {
-        position: button.position,
-        type: button.type,
-      },
-      config: button.config,
-      hostContext,
-      methods: createButtonMethods(button, deckId),
-      store: createMountedStoreAccess(deckId, button),
-      theme: options.theme,
-    } as Parameters<ButtonInstance["definition"]["createInstance"]>[0]) as RuntimeButtonInstance
+    const runtimeProps = createMountedRuntimeProps(deckId, button)
+    const store = createMountedButtonStore(createMountedStoreAccess(deckId, button))
+    const renderState: RuntimeMountedButtonState = {
+      frameState: "idle",
+      pressed: false,
+    }
+    const definition = button.definition
+    const getRenderProps = () => createMountedRenderProps(runtimeProps, renderState, store)
+
+    return {
+      ...(typeof definition.defaultIntervalMs === "number"
+        ? { defaultIntervalMs: definition.defaultIntervalMs }
+        : {}),
+      ...(typeof definition.defaultIntervalMs === "function"
+        ? { defaultIntervalMs: definition.defaultIntervalMs(getRenderProps()) }
+        : {}),
+      ...(definition.dispose ? { dispose: () => definition.dispose?.(getRenderProps()) } : {}),
+      ...(definition.onActivate ? { onActivate: () => definition.onActivate?.(getRenderProps()) } : {}),
+      ...(definition.onDeactivate ? { onDeactivate: () => definition.onDeactivate?.(getRenderProps()) } : {}),
+      ...(definition.onPress ? {
+        onPress: async () => {
+          renderState.pressed = true
+          renderState.frameState = "hold"
+          await definition.onPress?.(getRenderProps())
+        },
+      } : {
+        onPress: async () => {
+          renderState.pressed = true
+          renderState.frameState = "hold"
+        },
+      }),
+      ...(definition.onRelease ? {
+        onRelease: async () => {
+          renderState.pressed = false
+          renderState.frameState = "idle"
+          await definition.onRelease?.(getRenderProps())
+        },
+      } : {
+        onRelease: async () => {
+          renderState.pressed = false
+          renderState.frameState = "idle"
+        },
+      }),
+      ...(definition.onTap ? {
+        onTap: async () => {
+          renderState.frameState = "tap"
+          try {
+            await definition.onTap?.(getRenderProps())
+          } finally {
+            renderState.frameState = renderState.pressed ? "hold" : "idle"
+          }
+        },
+      } : {}),
+      ...(definition.refresh ? { refresh: () => definition.refresh?.(getRenderProps()) } : {}),
+      render: () => definition.render(getRenderProps()),
+    }
   }
 
   function getOrCreateInstance(deckId: string, button: ButtonInstance): RuntimeButtonInstance {
@@ -559,7 +656,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     stopActiveDeckPolling()
 
     for (const button of getDeckButtons(getDisplayDeck())) {
-      const intervalMs = button.interval_ms ?? getOrCreateInstance(activeDeckId, button).defaultIntervalMs ?? button.definition.defaultIntervalMs
+      const intervalMs = button.interval_ms ?? getOrCreateInstance(activeDeckId, button).defaultIntervalMs
       if (!intervalMs) {
         continue
       }
@@ -653,6 +750,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     }
 
     await getOrCreateInstance(handle.deckId, handle.button).onTap?.()
+    await renderRuntimeButton(handle.button, handle.deckId)
+    await renderDeckSurface(handle.deckId)
   }
 
   function buildActiveDeckButtons(): RuntimeRenderButton[] {

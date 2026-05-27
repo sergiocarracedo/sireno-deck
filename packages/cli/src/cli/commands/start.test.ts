@@ -795,7 +795,7 @@ describe("startDaemon", () => {
               config: { label: "Clock" },
               definition: {
                 configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-                createInstance: () => ({ render: () => createElement("div", null, "Clock") }),
+                render: () => createElement("div", null, "Clock"),
                 type: "dom-button",
               },
               label: "Clock",
@@ -887,7 +887,7 @@ describe("startDaemon", () => {
               config: { label: "Clock" },
               definition: {
                 configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-                createInstance: () => ({ render: () => createElement("div", null, "Clock") }),
+                render: () => createElement("div", null, "Clock"),
                 type: "dom-button",
               },
               label: "Clock",
@@ -966,7 +966,7 @@ describe("startEmulatorSession", () => {
               config: { label: "Clock" },
               definition: {
                 configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-                createInstance: () => ({ render: () => createElement("div", null, "Clock") }),
+                render: () => createElement("div", null, "Clock"),
                 type: "dom-button",
               },
               label: "Clock",
@@ -1080,7 +1080,7 @@ describe("startEmulatorSession", () => {
               config: { icon: "addon://emoji-selector/smileys.svg", label: "Smileys" },
               definition: {
                 configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-                createInstance: () => ({ render: () => createElement(Icon, { src: "addon://emoji-selector/smileys.svg" }) }),
+                render: () => createElement(Icon, { src: "addon://emoji-selector/smileys.svg" }),
                 type: "dom-button",
               },
               label: "Smileys",
@@ -1178,12 +1178,10 @@ describe("startEmulatorSession", () => {
               config: { icon: "addon://emoji-selector/favorites.svg", label: "Favorites", target_deck: "emoji-favorites" },
               definition: {
                 configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-                createInstance: () => ({
-                  render: () => createElement("div", null, [
-                    createElement("span", { key: "icon" }, createElement(Icon, { src: "addon://emoji-selector/favorites.svg" })),
-                    createElement("span", { key: "label" }, "Favorites"),
-                  ]),
-                }),
+                render: () => createElement("div", null, [
+                  createElement("span", { key: "icon" }, createElement(Icon, { src: "addon://emoji-selector/favorites.svg" })),
+                  createElement("span", { key: "label" }, "Favorites"),
+                ]),
                 type: "emoji-category-button",
               },
               icon: "addon://emoji-selector/favorites.svg",
@@ -1199,12 +1197,10 @@ describe("startEmulatorSession", () => {
               config: { icon: "addon://emoji-selector/back.svg", label: "Back" },
               definition: {
                 configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-                createInstance: () => ({
-                  render: () => createElement("div", null, [
-                    createElement("span", { key: "icon" }, createElement(Icon, { src: "addon://emoji-selector/back.svg" })),
-                    createElement("span", { key: "label" }, "Back"),
-                  ]),
-                }),
+                render: () => createElement("div", null, [
+                  createElement("span", { key: "icon" }, createElement(Icon, { src: "addon://emoji-selector/back.svg" })),
+                  createElement("span", { key: "label" }, "Back"),
+                ]),
                 type: "emoji-back-button",
               },
               icon: "addon://emoji-selector/back.svg",
@@ -1284,7 +1280,7 @@ describe("startEmulatorSession", () => {
               config: { label: "Clock" },
               definition: {
                 configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-                createInstance: () => ({ render: () => createElement("div", null, "Clock") }),
+                render: () => createElement("div", null, "Clock"),
                 type: "dom-button",
               },
               label: "Clock",
@@ -1377,7 +1373,7 @@ describe("startEmulatorSession", () => {
               config: { label: "Tap Me" },
               definition: {
                 configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-                createInstance: () => ({ render: () => createElement("div", null, "Tap Me") }),
+                render: () => createElement("div", null, "Tap Me"),
                 type: "dom-button",
               },
               label: "Tap Me",
@@ -1524,7 +1520,7 @@ describe("startEmulatorSession", () => {
     loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
     loadConfigWithSources.mockReturnValue({
       config: {
-        decks: { main: { buttons: [{ config: { label: "Clock" }, definition: { configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) }, createInstance: () => ({ render: () => createElement("div", null, "Clock") }), type: "dom-button" }, label: "Clock", position: 0, type: "dom-button" }], id: "main" } },
+        decks: { main: { buttons: [{ config: { label: "Clock" }, definition: { configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) }, render: () => createElement("div", null, "Clock"), type: "dom-button" }, label: "Clock", position: 0, type: "dom-button" }], id: "main" } },
         main_deck: "main",
         theme: "dark",
       },
@@ -1600,7 +1596,7 @@ describe("startEmulatorSession", () => {
     loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
     loadConfigWithSources.mockReturnValue({
       config: {
-        decks: { main: { buttons: [{ config: { label: "Key 8" }, definition: { configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) }, createInstance: () => ({ render: () => createElement("div", null, "Key 8") }), type: "dom-button" }, label: "Key 8", position: 7, type: "dom-button" }], id: "main" } },
+        decks: { main: { buttons: [{ config: { label: "Key 8" }, definition: { configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) }, render: () => createElement("div", null, "Key 8"), type: "dom-button" }, label: "Key 8", position: 7, type: "dom-button" }], id: "main" } },
         main_deck: "main",
         theme: "dark",
       },

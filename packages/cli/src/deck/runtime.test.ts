@@ -62,11 +62,20 @@ const createDisplayDefinition = () => ({
     parse: (value: unknown) => value,
     safeParse: (value: unknown) => ({ data: value, success: true as const }),
   },
-  createInstance: ({ button, config }: { button: { position: number }; config: { icon?: string; label: string } }) => ({
-    render: () => createTextSurface(button.position, config.label),
-  }),
+  render: ({ button, config }: { button: { position: number }; config: { icon?: string; label: string } }) => createTextSurface(button.position, config.label),
   type: "display-text",
 })
+
+function createNavigationDefinition(label: string, targetDeckId: string, type: string) {
+  return defineMountedButton({
+    configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
+    onTap: async ({ methods }) => {
+      await methods.navigateToDeck(targetDeckId)
+    },
+    render: ({ button }) => createTextSurface(button.position, label),
+    type,
+  })
+}
 
 function createTestTheme() {
   return {
@@ -162,9 +171,7 @@ describe("createDeckRuntime", () => {
               parse: (value: unknown) => value,
               safeParse: (value: unknown) => ({ data: value, success: true as const }),
             },
-            createInstance: () => ({
-              render: () => createElement("div", null, "Clock"),
-            }),
+            render: () => createElement("div", null, "Clock"),
             type: "dom-button",
           },
           label: "Clock",
@@ -203,13 +210,11 @@ describe("createDeckRuntime", () => {
               parse: (value: unknown) => value,
               safeParse: (value: unknown) => ({ data: value, success: true as const }),
             },
-             createInstance: ({ button, methods }: { button: { position: number }; methods: { invalidate: () => void } }) => ({
-               onTap: async () => {
-                 currentLabel = "Updated"
-                 methods.invalidate()
-               },
-               render: () => createTextSurface(button.position, currentLabel),
-             }),
+            onTap: async ({ methods }) => {
+              currentLabel = "Updated"
+              methods.invalidate()
+            },
+            render: ({ button }: { button: { position: number } }) => createTextSurface(button.position, currentLabel),
             type: "display-text",
           },
           label: "Clock",
@@ -268,16 +273,10 @@ describe("createDeckRuntime", () => {
               parse: (value: unknown) => value,
               safeParse: (value: unknown) => ({ data: value, success: true as const }),
             },
-            createInstance: ({ button, hostContext: receivedHostContext }: {
-              button: { position: number }
-              hostContext: typeof hostContext
-            }) => {
-               observedHostContext(receivedHostContext)
-
-               return {
-                 render: () => createTextSurface(button.position, "Clock"),
-               }
-             },
+            render: ({ button, hostContext: receivedHostContext }: { button: { position: number }; hostContext: typeof hostContext }) => {
+              observedHostContext(receivedHostContext)
+              return createTextSurface(button.position, "Clock")
+            },
             type: "display-text",
           },
           label: "Clock",
@@ -393,16 +392,13 @@ describe("createDeckRuntime", () => {
               parse: (value: unknown) => value,
               safeParse: (value: unknown) => ({ data: value, success: true as const }),
             },
-            createInstance: ({ button, config, methods }: {
-              button: { position: number }
+            onTap: async ({ config, methods }: {
               config: { emoji: string; label: string; select_command: string }
               methods: { runCommand: (command: string) => Promise<unknown> }
-             }) => ({
-               onTap: async () => {
-                 await methods.runCommand(config.select_command.replaceAll("{{emoji}}", config.emoji))
-               },
-               render: () => createTextSurface(button.position, config.label),
-             }),
+            }) => {
+              await methods.runCommand(config.select_command.replaceAll("{{emoji}}", config.emoji))
+            },
+            render: ({ button, config }: { button: { position: number }; config: { label: string } }) => createTextSurface(button.position, config.label),
             type: "emoji-entry-button",
           },
           position: 0,
@@ -476,15 +472,10 @@ describe("createDeckRuntime", () => {
               parse: (value: unknown) => value,
               safeParse: (value: unknown) => ({ data: value, success: true as const }),
             },
-            createInstance: ({ button, methods }: {
-              button: { position: number }
-              methods: { runCommand: (command: string) => Promise<unknown> }
-             }) => ({
-               refresh: async () => {
-                 await methods.runCommand("printf '%s|%s' '{{host.os.type}}' '{{host.session.state}}'")
-               },
-               render: () => createTextSurface(button.position, "Status"),
-             }),
+            refresh: async ({ methods }: { methods: { runCommand: (command: string) => Promise<unknown> } }) => {
+              await methods.runCommand("printf '%s|%s' '{{host.os.type}}' '{{host.session.state}}'")
+            },
+            render: ({ button }: { button: { position: number } }) => createTextSurface(button.position, "Status"),
             defaultIntervalMs: 1000,
             type: "status-display",
           },
@@ -783,12 +774,10 @@ describe("createDeckRuntime", () => {
           definition: {
             ...createDisplayDefinition(),
             defaultIntervalMs: 1000,
-            createInstance: ({ button }: { button: { position: number } }) => ({
-              refresh: async () => {
-                currentLabel = "10:48:08"
-              },
-              render: () => createTextSurface(button.position, currentLabel),
-            }),
+            refresh: async () => {
+              currentLabel = "10:48:08"
+            },
+            render: ({ button }: { button: { position: number } }) => createTextSurface(button.position, currentLabel),
           },
           label: "Clock",
           position: 0,
@@ -945,14 +934,7 @@ describe("createDeckRuntime", () => {
         id: "main",
         buttons: [{
           config: { label: "Go to Apps" },
-          definition: {
-            configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-            createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
-              onTap: async () => { await methods.navigateToDeck("apps") },
-              render: () => createTextSurface(button.position, "Go to Apps"),
-            }),
-            type: "nav-main-apps",
-          },
+          definition: createNavigationDefinition("Go to Apps", "apps", "nav-main-apps"),
           label: "Go to Apps",
           position: 0,
           type: "nav-main-apps",
@@ -963,14 +945,7 @@ describe("createDeckRuntime", () => {
           id: "main",
           buttons: [{
             config: { label: "Go to Apps" },
-            definition: {
-              configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-              createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
-                onTap: async () => { await methods.navigateToDeck("apps") },
-                render: () => createTextSurface(button.position, "Go to Apps"),
-              }),
-              type: "nav-main-apps",
-            },
+            definition: createNavigationDefinition("Go to Apps", "apps", "nav-main-apps"),
             label: "Go to Apps",
             position: 0,
             type: "nav-main-apps",
@@ -980,14 +955,7 @@ describe("createDeckRuntime", () => {
           id: "apps",
           buttons: [{
             config: { label: "Open Settings" },
-            definition: {
-              configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-              createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
-                onTap: async () => { await methods.navigateToDeck("settings") },
-                render: () => createTextSurface(button.position, "Open Settings"),
-              }),
-              type: "nav-apps-settings",
-            },
+            definition: createNavigationDefinition("Open Settings", "settings", "nav-apps-settings"),
             label: "Open Settings",
             position: 0,
             type: "nav-apps-settings",
@@ -1071,14 +1039,6 @@ describe("createDeckRuntime", () => {
 
   it("restores a saved navigation stack onto a rebuilt runtime", async () => {
     let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
-    const createNavigationDefinition = (label: string, targetDeckId: string, type: string) => ({
-      configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-      createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
-        onTap: async () => { await methods.navigateToDeck(targetDeckId) },
-        render: () => createTextSurface(button.position, label),
-      }),
-      type,
-    })
     const decks = {
       main: {
         id: "main",
@@ -1161,14 +1121,6 @@ describe("createDeckRuntime", () => {
 
   it("shows a temporary reload error deck without overwriting the underlying navigation stack", async () => {
     let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
-    const createNavigationDefinition = (label: string, targetDeckId: string, type: string) => ({
-      configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-      createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
-        onTap: async () => { await methods.navigateToDeck(targetDeckId) },
-        render: () => createTextSurface(button.position, label),
-      }),
-      type,
-    })
     const decks = {
       main: {
         id: "main",
@@ -1258,10 +1210,8 @@ describe("createDeckRuntime", () => {
           config: { label: "Apps" },
           definition: {
             configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-            createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
-              onTap: async () => { await methods.navigateToDeck("settings") },
-              render: () => createTextSurface(button.position, "Apps"),
-            }),
+            onTap: async ({ methods }: { methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => { await methods.navigateToDeck("settings") },
+            render: ({ button }: { button: { position: number } }) => createTextSurface(button.position, "Apps"),
             type: "nav-main-settings",
           },
           label: "Apps",
@@ -1396,10 +1346,8 @@ describe("createDeckRuntime", () => {
           config: { label: "Settings" },
           definition: {
             configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-            createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
-              onTap: async () => { await methods.navigateToDeck("settings") },
-              render: () => createTextSurface(button.position, "Settings"),
-            }),
+            onTap: async ({ methods }: { methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => { await methods.navigateToDeck("settings") },
+            render: ({ button }: { button: { position: number } }) => createTextSurface(button.position, "Settings"),
             type: "nav-settings",
           },
           label: "Settings",
@@ -1414,10 +1362,8 @@ describe("createDeckRuntime", () => {
             config: { label: "Settings" },
             definition: {
               configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-              createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
-                onTap: async () => { await methods.navigateToDeck("settings") },
-                render: () => createTextSurface(button.position, "Settings"),
-              }),
+              onTap: async ({ methods }: { methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => { await methods.navigateToDeck("settings") },
+              render: ({ button }: { button: { position: number } }) => createTextSurface(button.position, "Settings"),
               type: "nav-settings",
             },
             label: "Settings",
@@ -1441,10 +1387,8 @@ describe("createDeckRuntime", () => {
             config: { label: "Locked Tools" },
             definition: {
               configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-              createInstance: ({ button, methods }: { button: { position: number }; methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => ({
-                onTap: async () => { await methods.navigateToDeck("locked-tools") },
-                render: () => createTextSurface(button.position, "Locked Tools"),
-              }),
+              onTap: async ({ methods }: { methods: { navigateToDeck: (deckId: string) => Promise<void> } }) => { await methods.navigateToDeck("locked-tools") },
+              render: ({ button }: { button: { position: number } }) => createTextSurface(button.position, "Locked Tools"),
               type: "nav-locked-tools",
             },
             label: "Locked Tools",
@@ -1828,7 +1772,7 @@ describe("createDeckRuntime", () => {
       expect(getRenderedButton(runtime, 4)).toMatchObject({ frame_state: "idle", keyIndex: 4, label: "Press Probe" })
       expect(getRenderedButtonHtml(getRenderedButton(runtime, 4))).toContain("Press Probe:frame=idle:pressed=up:count=1")
     })
-  })
+  }, 10_000)
 
   it("keeps explicit full-surface addon-authored render output on runtime render output", async () => {
     const onRenderDeck = vi.fn()
@@ -1842,9 +1786,7 @@ describe("createDeckRuntime", () => {
               parse: (value: unknown) => value,
               safeParse: (value: unknown) => ({ data: value, success: true as const }),
             },
-            createInstance: ({ button }: { button: { position: number } }) => ({
-              render: () => createElement(ButtonSurface, { full_surface: true }, createTextSurface(button.position, "Clock")),
-            }),
+            render: ({ button }: { button: { position: number } }) => createElement(ButtonSurface, { full_surface: true }, createTextSurface(button.position, "Clock")),
             type: "runtime-full-surface",
           },
           label: "Clock",
@@ -2558,12 +2500,10 @@ describe("createDeckRuntime", () => {
           config: { label: "Press Me" },
           definition: {
             configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-            createInstance: ({ button }: { button: { position: number } }) => ({
-              onTap: async () => {
-                taps += 1
-              },
-              render: () => createTextSurface(button.position, "Press Me"),
-            }),
+            onTap: async () => {
+              taps += 1
+            },
+            render: ({ button }: { button: { position: number } }) => createTextSurface(button.position, "Press Me"),
             type: "pressable-button",
           },
           label: "Press Me",

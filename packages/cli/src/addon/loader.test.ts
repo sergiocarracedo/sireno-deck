@@ -28,7 +28,7 @@ function writeAddonFixture(rootDir: string, options: { apiVersion?: number; brok
     join(rootDir, "index.js"),
     options.brokenImport
       ? "throw new Error('broken import')"
-      : `export default { apiVersion: 1, name: ${JSON.stringify(options.name)}, buttons: [{ type: ${JSON.stringify(options.name + "-button")}, configSchema: { safeParse(value) { return { success: true, data: value } } }, createInstance() { return { render() { return null } } } }] }`,
+      : `export default { apiVersion: 1, name: ${JSON.stringify(options.name)}, buttons: [{ type: ${JSON.stringify(options.name + "-button")}, configSchema: { safeParse(value) { return { success: true, data: value } } }, render() { return null } }] }`,
   )
 }
 
@@ -150,7 +150,7 @@ describe("loadConfiguredAddons", () => {
     expect(registry.getButton("phase-23-local-raw-button")?.type).toBe("phase-23-local-raw-button")
   })
 
-  it("loads local raw .tsx addons that use the mounted button contract adapter", async () => {
+  it("loads local raw .tsx addons that use the mounted button contract", async () => {
     const registry = createAddonRegistry()
 
     const result = await loadConfiguredAddons({

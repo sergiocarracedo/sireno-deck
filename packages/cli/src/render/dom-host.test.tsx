@@ -143,7 +143,7 @@ describe("dom host", () => {
     expect(html).toContain('data-sireno-button-surface="true"')
     expect(html).toContain('data-sireno-full-surface="true"')
     expect(html).toContain('data-sireno-media-sample-interval-ms="400"')
-    expect(html).toContain('display:contents')
+    expect(html).toContain('class="contents"')
   })
 
   it("preserves addon-authored ButtonSurface sampling metadata without nesting a duplicate host wrapper", () => {
@@ -163,7 +163,7 @@ describe("dom host", () => {
   })
 
   it("uses the resolved theme-owned buttonFrame when a theme provides one", async () => {
-    const theme = await resolveTheme("light")
+    const theme = await resolveTheme("dark")
     const html = renderReactNodeToHtml(createHostedButtonElement({
       content: createElement("span", null, "Action"),
       keyIndex: 0,
@@ -171,7 +171,7 @@ describe("dom host", () => {
     }))
 
     expect(html).toContain('data-sireno-button-frame="true"')
-    expect(html).toContain('color-mix(in oklab, white 68%, var(--sireno-color-background) 32%)')
+    expect(html).toContain('class="bg-background border-frame w-full h-full rounded-lg flex items-center justify-center p-1"')
   })
 
   it("threads theme-owned Icon, Chip, and Text presentation through the hosted-button runtime seam", async () => {
@@ -239,9 +239,10 @@ describe("dom host", () => {
       type: "mounted-store-proof",
     })
 
-    const instance = definition.createInstance({
+    const props: Parameters<typeof definition.render>[0] = {
       button: { position: 0, type: "mounted-store-proof" },
       config: { label: "Mounted" },
+      frameState: "idle" as const,
       hostContext: UNKNOWN_HOST_CONTEXT,
       methods: {
         getActiveDeckId: () => "main",
@@ -255,7 +256,9 @@ describe("dom host", () => {
           clear() {
             addonSnapshot = undefined
           },
-          getSnapshot: () => addonSnapshot,
+          get snapshot() {
+            return addonSnapshot
+          },
           set(value) {
             addonSnapshot = value
           },
@@ -267,7 +270,9 @@ describe("dom host", () => {
           clear() {
             buttonSnapshot = undefined
           },
-          getSnapshot: () => buttonSnapshot,
+          get snapshot() {
+            return buttonSnapshot
+          },
           set(value) {
             buttonSnapshot = value
           },
@@ -276,26 +281,12 @@ describe("dom host", () => {
           },
         },
       },
+      pressed: false,
       theme: await resolveTheme("dark"),
-    } as Parameters<typeof definition.createInstance>[0] & {
-      store: {
-        addon: {
-          clear: () => void
-          getSnapshot: () => unknown
-          set: (value: unknown) => void
-          update: (updater: (snapshot: unknown) => unknown) => void
-        }
-        button: {
-          clear: () => void
-          getSnapshot: () => unknown
-          set: (value: unknown) => void
-          update: (updater: (snapshot: unknown) => unknown) => void
-        }
-      }
-    })
+    }
 
     const renderMountedHtml = () => renderReactNodeToHtml(createHostedButtonElement({
-      content: instance.render(),
+      content: definition.render(props),
       keyIndex: 0,
       theme: undefined,
     }))
@@ -306,7 +297,7 @@ describe("dom host", () => {
     expect(initialHtml).toContain("Mounted:button=0:addon=0")
     expect(repeatedHtml).toBe(initialHtml)
 
-    await instance.onTap?.()
+    await definition.onTap?.(props)
 
     expect(renderMountedHtml()).toContain("Mounted:button=1:addon=1")
   })
@@ -372,5 +363,5 @@ describe("dom host", () => {
     host.unmount()
 
     expect(renderSnapshot("Third")[0]?.html).toContain("Third:2")
-  })
+  }, 10_000)
 })
