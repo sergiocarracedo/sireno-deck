@@ -2,8 +2,8 @@ import { builtinAnalogClockButton } from './buttons/analog-clock.js'
 import { builtinCalendarSheetButton } from './buttons/calendar-sheet.js'
 import {
   builtinDateTimeButton,
-  formatDigitalDateTimeLabel,
 } from './buttons/date-time.js'
+import { formatDigitalDateTimeLabel } from './format.js'
 import {
   builtinLockedTimeTileButton,
   formatLockedTimeCharacters,

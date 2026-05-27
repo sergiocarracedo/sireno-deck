@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@elgato-stream-deck/node": "^7.6.0",
+    "dayjs": "^1.11.21",
     "dbus-next": "^0.10.2",
     "execa": "^9.5.2",
     "js-yaml": "^4.1.0",
