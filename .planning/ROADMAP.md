@@ -319,6 +319,17 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ---
 
+### Phase 28: Component-First TSX Theme UI Kit + CLI Watch Mode
+
+**Goal:** Let the UI/render path move to JSX/TSX component-first authoring with reusable theme-customizable utility components, tailwind-style class composition via `cn`, and a workspace-root `p cli:dev` watch flow that reruns the CLI through `tsx` on changes.
+**Status:** [ ] Not started
+**Depends on:** Phase 27
+
+### Plans
+*Not yet planned - run `plan-phase 28`*
+
+---
+
 ## Coverage Validation
 
 - [x] All 9 v1.2 requirements map to at least one roadmap phase

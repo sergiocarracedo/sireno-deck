@@ -72,6 +72,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 28 added: move toward JSX/TSX component-first rendering, replace `createDomIcon`-style helper rendering with components, use tailwind-style classes plus `cn` where possible, add a workspace-root `p cli:dev` watch mode that runs the CLI through `tsx`, and provide theme-customizable utility components such as `Icon`, `Chip`, and `Text`.
 - Phase 27 added: remove the legacy YAML theme fallback, use the built-in default theme `ButtonFrame.tsx` as the only frame fallback, stop requiring manual `import React from 'react'` in TSX runtime files, ensure theme `ButtonFrame.tsx` edits trigger autoupdate, and show deck glass chrome only in emulator mode.
 - Phase 26 added: refactor the browser deck shell onto React/TSX components, emulate Stream Deck button spacing/glass chrome in browser mode, keep undersized virtual-device selections renderable with a persistent warning, and use `assets/logoFull.png` as a startup mosaic while the browser renderer boots.
 - Phase 25 added: themes can provide `buttonFrame` as `.tsx` modules too, not only `.js`, so theme-owned frame rendering can follow the authoring path prepared in `themes/default`.
