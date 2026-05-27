@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 2026-05-27
+
+### Features
+- Added explicit emulator render intent to the shared browser deck renderer so one `renderDomDeck(...)` seam can serve both flat browser-capture HTML and emulator-only shell chrome.
+- Added truthful Phase 27 execution artifacts covering manifest-only theme fallback ownership, watched built-in theme runtime graphs, emulator-only shell chrome, and the real TSX runtime proof path.
+
+### Fixes
+- Fixed the theme contract so manifest-backed theme packages are now the only supported theme model and the built-in default theme package owns the sole fallback `buttonFrame`. Root cause was that a leftover `legacy_yaml` branch and core-owned fallback frame kept two contradictory theme/fallback contracts alive.
+- Fixed raw theme and addon TSX runtime loading to use the package `tsconfig.json` instead of `tsconfig: false`, and moved the honest regression proof from the flaky `tsx` CLI wrapper to `node --import tsx/esm`. Root cause was that the real runtime seam had drifted away from the package TSX policy, so touched runtime modules still depended on ambient React-import workarounds outside test-only transforms.
+- Fixed emulator deck-root patching so stale non-key children such as inline warnings are removed when deck HTML changes. Root cause was that the browser-side patcher only reconciled keyed button nodes and left sibling UI chrome behind.
+
+### Learnings
+- Theme fallback ownership has to live in exactly one shipped runtime seam. Leaving both a core fallback frame and a built-in theme fallback alive guarantees drift.
+- For TSX runtime bugs, the honest proof is the same loader/runtime path production uses. A passing Vitest transform or a hanging wrapper CLI does not prove the actual seam is healthy.
+- DOM patchers that only reconcile the main repeated nodes will quietly accumulate stale sibling UI. Patch the whole direct-child list of the container you own.
+
 ## 2026-05-23
 
 ### Features

@@ -1,6 +1,6 @@
 # Roadmap — Sireno Deck v1.2
 
-**Last updated:** 2026-05-26
+**Last updated:** 2026-05-27
 **Granularity:** focused milestone (7 phases)
 **Total v1.2 requirements:** 9
 
@@ -220,7 +220,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 21: Theme Font Assets For Browser Rendering
 
 **Goal:** Ensure themes ship their declared fonts as bundled assets so browser-rendered typography matches the theme contract instead of falling back to host-installed fonts or broken font references.
-**Status:** [ ] Not started
+**Status:** ✓ Complete (2026-05-27)
 **Depends on:** Phase 20
 
 ### Plans
@@ -315,7 +315,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 - `27-01`: Delete the legacy YAML theme path, collapse fallback frame ownership onto the built-in default theme package, and keep `themes/default/ButtonFrame.tsx` inside the existing watched reload graph.
 - `27-02`: Keep one shared deck renderer while gating glass/chrome to emulator mode only and making the real TSX runtime path work without manual React-import boilerplate in touched runtime TSX files.
 
-**Phase 27 note:** This post-roadmap follow-on phase now tightens already-shipped seams instead of adding new surface capabilities. Manifest-backed theme packages become the only supported theme model, the built-in default theme package becomes the sole fallback frame owner, the real `tsx` execution seams stop needing manual React-import crutches in touched runtime TSX files, `themes/default/ButtonFrame.tsx` remains inside the truthful reload graph, and emulator-specific shell glass stays on emulator output instead of bleeding into every browser-rendered deck.
+**Phase 27 note:** This post-roadmap follow-on phase now tightens already-shipped seams instead of adding new surface capabilities. Manifest-backed theme packages are now the only supported theme model, the built-in default theme package is the sole fallback frame owner, built-in theme runtime graphs still resolve to authored TS/TSX files for watched reload truthfulness, the raw theme/addon `tsx` seams now use the package `tsconfig.json` instead of ambient React-import crutches, and emulator-specific shell glass stays on emulator output instead of bleeding into every browser-rendered deck.
 
 ---
 

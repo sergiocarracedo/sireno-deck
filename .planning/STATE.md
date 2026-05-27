@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 26 execution is complete for browser deck react shell polish and still needs `verify-work 26` before `/review`; Phase 27 is now planned and ready for `execute-phase 27` once that verify/review handoff is closed.
+**Current focus:** Phase 27 execution is complete for theme fallback and emulator shell boundaries and is ready for `verify-work 27`; Phase 26 verification evidence should also be refreshed so `STATE.md` stops pointing at already-closed rerun work.
 
 ## Current Position
 
-Phase: 26 — Browser Deck React Shell Polish
+Phase: 27 — Theme Fallback And Emulator Shell Boundaries
 Plan: execution complete
-Status: verifying
-Last activity: 2026-05-27 - Completed all three Phase 26 slices, verified the shared React deck shell, undersized-device inline warning path, and pre-browser logo placeholder, and recorded execution summaries
+Status: ready_for_verify
+Last activity: 2026-05-27 - Completed both Phase 27 slices, removed legacy YAML theme fallback, moved fallback frame ownership onto the built-in default theme package, gated browser shell chrome to emulator mode only, fixed the real TSX runtime policy on raw theme/addon seams, and recorded execution summaries
 
 Progress: [##########] 100%
 
@@ -89,6 +89,7 @@ Recent decisions affecting current work:
 ### Progress Notes
 
 - **Phase 27 discussion:** Locked the phase around deleting the legacy YAML theme path, moving fallback frame ownership to the built-in default theme package, fixing the real TSX runtime seam so `.tsx` runtime modules no longer need manual `React` imports, keeping `themes/default/ButtonFrame.tsx` inside the truthful watched reload graph, and restricting deck glass chrome to emulator mode only.
+- **Phase 27 execution:** Removed the legacy YAML theme branch, deleted the core-owned fallback frame seam in favor of the built-in default theme package runtime, kept the built-in theme runtime graph truthful for watched reloads, gated browser shell chrome to emulator-only output through explicit render intent, fixed raw theme/addon TSX execution by passing the package `tsconfig.json` into `tsx`, and committed the emulator deck-root patcher fix so stale inline warnings do not survive HTML updates.
 - **Phase 27 planning:** Broke the phase into two tracer bullets: theme-contract cleanup first by deleting `legacy_yaml`, moving fallback frame ownership onto the built-in default theme package, and proving `themes/default/ButtonFrame.tsx` stays in the watched reload graph; then browser-shell/runtime truthfulness second by gating glass chrome to emulator mode only and proving the real `tsx` execution path no longer needs manual React-import boilerplate in touched runtime TSX files.
 - **Phase 26 execution:** Moved the browser deck onto one shared React document tree with an honest JSX button frame, moderate shell chrome, and explicit empty wells; changed undersized virtual-device handling from a hard error page to visible subset plus persistent inline warning inside the shared shell; and replaced the repeated startup tile with a pre-browser `logoFull.png` deck-wide placeholder treatment that still hands off on the original hardware/startup seam.
 - **Phase 26 discussion:** Chose to make the whole browser deck document a shared React tree for both browser capture and emulator mode, changed undersized virtual-device handling from a hard error page to a rendered visible subset plus persistent inline warning, scoped shell polish to moderate Stream Deck-style bezel/gap/glass treatment, and kept startup loading on the existing pre-browser seam with a simple `assets/logoFull.png` loading card instead of a React-owned mosaic.

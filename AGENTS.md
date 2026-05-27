@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 26 — Browser Deck React Shell Polish ✓ complete → Phase 27 planned (theme fallback and emulator shell boundaries)
-**Status:** verifying
+**Phase:** 27 — Theme Fallback And Emulator Shell Boundaries ✓ execution complete
+**Status:** ready for verify-work 27
 **Last updated:** 2026-05-27
 
 ---
@@ -311,3 +311,9 @@ Context fades fast. If a solution was worth finding, it's worth capturing.
 **Root cause:** `packages/cli/src/config/loader.test.ts` and `packages/cli/src/deck/runtime.test.ts` resolved committed fixtures from the current working directory instead of the test file location, and `packages/cli/src/builtin-addons/date-time/index.test.ts` used `vi` without importing it.
 **Fix:** Switched the Phase 11 fixture references to source-file-relative paths and imported `vi` in the locked-time tile test.
 **Lesson:** Test fixtures must be anchored to stable file-relative paths, not invocation-dependent cwd assumptions; otherwise package-scoped and workspace-root test runs diverge silently.
+
+### 2026-05-27: Real TSX runtime policy drift hid behind test-only seams
+
+**Root cause:** raw theme/addon runtime imports were still using `tsx/esm/api` with `tsconfig: false`, so the honest runtime path diverged from the package TSX policy and kept needing manual `React` imports or other seam-specific crutches. The original subprocess proof also relied on the `tsx` CLI wrapper, which hangs under `execa` for this repo's eval-based regression.
+**Fix:** Passed the package `tsconfig.json` explicitly into the raw theme/addon loader seams, kept browser/emulator rendering on one shared `renderDomDeck(...)` path with explicit emulator intent, and moved the runtime regression proof to `node --import tsx/esm --eval`.
+**Lesson:** If TSX runtime behavior matters, verify the same loader/runtime path the product actually uses. Vitest-only success and a flaky CLI wrapper can both hide the real seam.
