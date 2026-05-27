@@ -7,7 +7,7 @@ import { tsImport } from "tsx/esm/api"
 import { z } from "zod"
 
 import { ConfigValidationError } from "../core/schemas.js"
-import { buttonFrame as defaultButtonFrame } from "../render/button-frame.js"
+import { buttonFrame as defaultButtonFrame } from "../themes/default/index.js"
 
 import type { ReactElement, ReactNode } from "react"
 
@@ -78,18 +78,12 @@ export interface ResolveThemeOptions {
   baseDirectory?: string
 }
 
-type ThemeResolutionTarget =
-  | {
-      kind: "legacy_yaml"
-      path: string
-      rootDir: string
-    }
-  | {
-      kind: "package"
-      manifestPath: string
-      nameOverride?: string
-      rootDir: string
-    }
+type ThemeResolutionTarget = {
+  kind: "package"
+  manifestPath: string
+  nameOverride?: string
+  rootDir: string
+}
 
 function uniquePaths(paths: readonly string[]): string[] {
   return Array.from(new Set(paths))
@@ -220,11 +214,7 @@ function getLocalThemeTarget(themeReference: string, options: ResolveThemeOption
     }
   }
 
-  return {
-    kind: "legacy_yaml",
-    path: resolvedPath,
-    rootDir: dirname(resolvedPath),
-  }
+  return undefined
 }
 
 function resolveThemeTarget(themeReference: string, options: ResolveThemeOptions = {}): ThemeResolutionTarget {
@@ -235,12 +225,12 @@ function resolveThemeTarget(themeReference: string, options: ResolveThemeOptions
 
   const localTheme = getLocalThemeTarget(themeReference, options)
   if (localTheme) {
-    if (localTheme.kind === "package" && !existsSync(localTheme.manifestPath)) {
+    if (!existsSync(localTheme.manifestPath)) {
       throw new ConfigValidationError(
         `Theme package '${themeReference}' is missing ${MANIFEST_FILENAME}`,
         localTheme.rootDir,
         undefined,
-        `Add ${MANIFEST_FILENAME} to '${localTheme.rootDir}' or point theme at an existing package root or YAML file.`,
+        `Add ${MANIFEST_FILENAME} to '${localTheme.rootDir}' or point theme at an existing package root.`,
         ["theme"],
       )
     }
@@ -252,7 +242,7 @@ function resolveThemeTarget(themeReference: string, options: ResolveThemeOptions
     `Theme '${themeReference}' could not be resolved`,
     undefined,
     undefined,
-    "Use a built-in theme name like 'dark' or 'light', point theme at an existing package directory, or point theme at an existing YAML file.",
+    "Use a built-in theme name like 'dark' or 'light', or point theme at an existing package directory.",
     ["theme"],
   )
 }
@@ -411,8 +401,15 @@ function resolveThemeRuntimeImportPath(modulePath: string, specifier: string): s
   }
 
   const directPath = resolve(dirname(modulePath), specifier)
+  const specifierExtension = extname(specifier)
+  const extensionlessDirectPath = specifierExtension === ".js" || specifierExtension === ".mjs" || specifierExtension === ".cjs"
+    ? directPath.slice(0, -specifierExtension.length)
+    : directPath
   const candidatePaths = [
     directPath,
+    `${extensionlessDirectPath}.ts`,
+    `${extensionlessDirectPath}.tsx`,
+    `${extensionlessDirectPath}.jsx`,
     `${directPath}.js`,
     `${directPath}.mjs`,
     `${directPath}.cjs`,
@@ -509,17 +506,6 @@ function collectThemeRuntimeFilePaths(entryPath: string, rootDir: string, manife
 
 export async function resolveTheme(themeReference: string, options: ResolveThemeOptions = {}): Promise<Theme> {
   const target = resolveThemeTarget(themeReference, options)
-
-  if (target.kind === "legacy_yaml") {
-    const theme = parseThemeYaml(target.path, ThemeSchema, ["theme"])
-    return {
-      ...theme,
-      buttonFrame: defaultButtonFrame,
-      filePaths: [target.path],
-      rootDir: target.rootDir,
-      stylesheets: [],
-    }
-  }
 
   const manifest = parseThemeYaml(target.manifestPath, ThemeManifestSchema, ["theme"])
   const runtimeEntryPath = resolve(target.rootDir, manifest.main)

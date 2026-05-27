@@ -1,4 +1,4 @@
-import React, { Fragment, createContext, createElement } from 'react'
+import { Fragment, createContext, createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import Reconciler from 'react-reconciler'
 import {
@@ -11,7 +11,7 @@ import type { ReactElement, ReactNode } from 'react'
 import { ButtonSurface } from '../addon/api.js'
 import type { Theme, ThemeFrameState } from '../config/theme.js'
 import { resolveDeckLayout } from './browser-renderer.js'
-import { buttonFrame as defaultButtonFrame } from './button-frame.js'
+import { buttonFrame as defaultButtonFrame } from '../themes/default/index.js'
 import { STREAM_DECK_KEY_PRESET, type RenderPreset } from './render-preset.js'
 import {
   getThemeCssVariables,
