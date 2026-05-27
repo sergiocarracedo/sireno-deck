@@ -6,6 +6,14 @@
 
 Phase 28 hardens that proof around the component-first surface: the fixture now uses the mounted `render(props)` authoring seam together with the root-exported `ButtonSurface`, `Icon`, `Chip`, and `Text` kit instead of helper-factory rendering.
 
+Treat this fixture as the canonical raw-source authoring story for the repo:
+
+```tsx
+import { ButtonSurface, Chip, Icon, Text, defineMountedButton } from "sireno-deck-cli"
+```
+
+If docs or examples drift away from that component-first contract, this fixture is the executable correction.
+
 ## Hardware Startup Placeholder
 
 Phase 23 also adds a temporary branded hardware placeholder that is written before browser startup and cleared by the first successful real deck render.

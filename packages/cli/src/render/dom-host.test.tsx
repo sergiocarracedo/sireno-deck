@@ -3,12 +3,14 @@ import { describe, expect, it } from "vitest"
 
 import {
   ButtonSurface,
+  Chip,
   defineMountedButton,
-} from "../addon/api.js"
+  Icon,
+  Text,
+} from "../index.js"
 import { resolveTheme } from "../config/theme.js"
 import { UNKNOWN_HOST_CONTEXT } from "../system/host-context.js"
 import { buttonFrame as defaultButtonFrame } from "../themes/default/index.js"
-import { Chip, Icon, Text } from "../ui/index.js"
 import { createHostedButtonElement, createMountedDomHost, renderDomDeck, renderMountedHostedButtons, renderReactNodeToHtml } from "./dom-host.js"
 
 describe("dom host", () => {

@@ -4,50 +4,31 @@ TypeScript CLI for programmable Stream Deck layouts, themes, and addons.
 
 ## Addon Authoring
 
-### Custom Render Elements Are Not The DOM
+Sireno addon UI is component-first TSX authoring on the mounted `render(props)` seam.
 
-`deck-button`, `deck-text`, and `deck-surface` are Sireno render elements, not the DOM. They describe what should be painted onto a Stream Deck key through the custom reconciler and SVG renderer, so they do not support browser layout, event handlers, or ambient HTML semantics.
-
-To opt into JSX authoring explicitly, import `sireno-deck-cli/jsx` in addon code before using those custom elements:
+Import the public kit from `sireno-deck-cli` and return normal React elements from `defineMountedButton(...)`.
 
 ```tsx
-import type {} from "sireno-deck-cli/jsx"
-import {
-  createDeckButtonElement,
-  createDeckSurfaceElement,
-  createDeckTextElement,
-} from "sireno-deck-cli"
+import { ButtonSurface, Chip, Icon, Text, defineMountedButton } from "sireno-deck-cli"
 
-export const clockButton = <deck-button keyIndex={0} label="Clock" subtitle="Local" variant="metric" />
-
-export const overviewSurface = (
-  <deck-surface
-    buttons={[
-      { keyIndex: 0, label: "Clock", subtitle: "Local", variant: "metric" },
-      { keyIndex: 1, label: "Date", subtitle: "Today" },
-    ]}
-  />
-)
-
-export const clockText = <deck-text keyIndex={2} text="10:48" />
-
-export const helperClockButton = createDeckButtonElement({
-  keyIndex: 0,
-  label: "Clock",
-  subtitle: "Local",
-  variant: "metric",
+export const clockButton = defineMountedButton({
+  configSchema: {
+    parse: (value) => value,
+    safeParse: (value) => ({ data: value, success: true as const }),
+  },
+  render: ({ config }) => (
+    <ButtonSurface>
+      <div className="flex h-full w-full flex-col items-center justify-center gap-1">
+        <Chip tone="accent">component-first</Chip>
+        <Icon icon="clock" tone="primary" />
+        <Text fit="wrap">{String((config as { label?: unknown }).label ?? "Clock")}</Text>
+      </div>
+    </ButtonSurface>
+  ),
+  type: "clock-button",
 })
-
-export const helperOverviewSurface = createDeckSurfaceElement({
-  buttons: [
-    { keyIndex: 0, label: "Clock", subtitle: "Local", variant: "metric" },
-    { keyIndex: 1, label: "Date", subtitle: "Today" },
-  ],
-})
-
-export const helperClockText = createDeckTextElement({ keyIndex: 2, text: "10:48" })
 ```
 
-If you do not want JSX, the helper-based alternative is still supported. The same render contract can be expressed with `createDeckButtonElement`, `createDeckSurfaceElement`, and `createDeckTextElement`, which produce the same non-DOM render descriptions without relying on JSX syntax.
+Use `Text` for the canonical text-fit behavior (`wrap`, `ellipsis`, `shrink`, `marquee`), `Icon` for generic/brand/asset icons, and `Chip` for compact status chrome. Themes may restyle those primitives, but the behavior contract stays in core.
 
-See `packages/cli/fixtures/phase-9/jsx-addon-authoring-example.tsx` for a focused example that keeps the JSX opt-in and helper-based forms side by side.
+See `packages/cli/fixtures/phase-9/jsx-addon-authoring-example.tsx` for a focused public-surface example, and `packages/cli/fixtures/phase-23/local-raw-addon/` for the executable raw-source component-first addon proof.
