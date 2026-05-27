@@ -10,11 +10,13 @@
 - Fixed the theme contract so manifest-backed theme packages are now the only supported theme model and the built-in default theme package owns the sole fallback `buttonFrame`. Root cause was that a leftover `legacy_yaml` branch and core-owned fallback frame kept two contradictory theme/fallback contracts alive.
 - Fixed raw theme and addon TSX runtime loading to use the package `tsconfig.json` instead of `tsconfig: false`, and moved the honest regression proof from the flaky `tsx` CLI wrapper to `node --import tsx/esm`. Root cause was that the real runtime seam had drifted away from the package TSX policy, so touched runtime modules still depended on ambient React-import workarounds outside test-only transforms.
 - Fixed emulator deck-root patching so stale non-key children such as inline warnings are removed when deck HTML changes. Root cause was that the browser-side patcher only reconciled keyed button nodes and left sibling UI chrome behind.
+- Fixed the repo-root raw-source CLI seam so `pnpm exec tsx packages/cli/src/cli/index.ts ...` now inherits the same JSX policy as the package runtime and no longer crashes with `React is not defined` during emulator startup. Root cause was that the workspace root had no TSX policy anchor, so the exact developer/UAT command compiled JSX-authored runtime code differently from the package-local seams already under test.
 
 ### Learnings
 - Theme fallback ownership has to live in exactly one shipped runtime seam. Leaving both a core fallback frame and a built-in theme fallback alive guarantees drift.
 - For TSX runtime bugs, the honest proof is the same loader/runtime path production uses. A passing Vitest transform or a hanging wrapper CLI does not prove the actual seam is healthy.
 - DOM patchers that only reconcile the main repeated nodes will quietly accumulate stale sibling UI. Patch the whole direct-child list of the container you own.
+- If the documented developer command runs from repo root, keep a regression on that exact repo-root seam. Package-local import proofs are useful, but they can still miss the CLI path people actually run.
 
 ## 2026-05-23
 

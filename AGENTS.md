@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 27 — Theme Fallback And Emulator Shell Boundaries ✓ execution complete
-**Status:** ready for verify-work 27
+**Phase:** 27 — Theme Fallback And Emulator Shell Boundaries ✓ verified after gap closure
+**Status:** ready for /review
 **Last updated:** 2026-05-27
 
 ---
