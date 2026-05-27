@@ -342,7 +342,11 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 **Depends on:** Phase 28
 
 ### Plans
-*Not yet planned - run `plan-phase 29`*
+- `29-01`: Remove the legacy button-definition seam end to end so startup/runtime/render proofs run only on mounted `render(props)` without a hidden `createInstance()` bridge.
+- `29-02`: Split the shipped date-time addon into per-button TSX files and normalize `date_format` / `time_format` onto an explicit `dayjs` contract.
+- `29-03`: Finish the remaining built-in cleanup by splitting emoji-selector, converting core buttons to TSX-first modules, and paying down simple inline-style debt through the Sireno utility layer.
+
+**Phase 29 note:** This post-roadmap follow-on phase hard-cuts the last instance-era built-in button seam instead of preserving another adapter, keeps `ButtonSurface` or an equivalent explicit metadata carrier honest for runtime-owned button metadata, moves shipped multi-button addons onto one-definition-per-file organization with local support modules, standardizes built-in date/time formatting on declared `dayjs` behavior instead of the old custom token map, and treats simple shipped inline styles as Sireno utility-layer debt to eliminate rather than normalize.
 
 ---
 
