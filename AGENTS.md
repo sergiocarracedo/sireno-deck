@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 27 — Theme Fallback And Emulator Shell Boundaries ✓ verified after gap closure
-**Status:** ready for /review
+**Phase:** 28 — Component-First TSX Theme UI Kit + CLI Watch Mode
+**Status:** planning
 **Last updated:** 2026-05-27
 
 ---
