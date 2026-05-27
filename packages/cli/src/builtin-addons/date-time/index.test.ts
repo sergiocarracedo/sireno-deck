@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
+import { UNKNOWN_HOST_CONTEXT } from '../../system/host-context.js'
 import { renderReactNodeToHtml } from '../../render/dom-host.js'
 import dateTimeAddon, {
   ANALOG_CLOCK_INTERVAL_MS,
@@ -9,6 +10,43 @@ import dateTimeAddon, {
   formatLockedTimeCharacters,
   formatLockedTimeTileCharacter,
 } from './index.js'
+
+const noopStoreScope = {
+  clear() {},
+  get snapshot() {
+    return undefined
+  },
+  set() {},
+  update() {},
+}
+
+const mountedButtonMethods = {
+  getActiveDeckId: () => 'main',
+  goBack() {},
+  invalidate() {},
+  navigateToDeck() {},
+  runCommand: async () => ({}) as never,
+}
+
+function renderMountedDefinition(
+  definition: NonNullable<(typeof dateTimeAddon.buttons)[number]>,
+  config: unknown,
+  position: number,
+) {
+  return definition.render({
+    button: { position, type: definition.type },
+    config,
+    frameState: 'idle',
+    hostContext: UNKNOWN_HOST_CONTEXT,
+    methods: mountedButtonMethods,
+    pressed: false,
+    store: {
+      addon: noopStoreScope,
+      button: noopStoreScope,
+    },
+    theme: {} as never,
+  } as never)
+}
 
 describe('date-time addon', () => {
   it('exports bundled digital, analog, and calendar button definitions with strict schemas', () => {
@@ -105,42 +143,37 @@ describe('date-time addon', () => {
     ).toBe('14/05/2026 10:48:07')
   })
 
-  it('creates a renderable live date-time button instance', () => {
+  it('creates a renderable live date-time surface through the mounted contract', () => {
     const definition = dateTimeAddon.buttons.find(
       (button) => button.type === 'date-time',
     )
-    const instance = definition?.createInstance({
-      button: { position: 2 },
-      config: {
+
+    expect(renderReactNodeToHtml(renderMountedDefinition(
+      definition!,
+      {
         date_format: 'MM/DD/YYYY',
         time_format: 'HH:mm:ss',
         variant: 'date-time',
       },
-    } as never)
-
-    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('/')
+      2,
+    ) as never)).toContain('/')
   })
 
-  it('creates a renderable locked time tile instance for implicit lock fallback digits and colon', () => {
+  it('creates a renderable locked time tile surface for implicit lock fallback digits and colon', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date(2026, 4, 14, 9, 8, 7))
 
     const definition = dateTimeAddon.buttons.find(
       (button) => button.type === 'locked-time-tile',
     )
-    const digitInstance = definition?.createInstance({
-      button: { position: 5 },
-      config: { slot: 'hour-tens' },
-    } as never)
-    const colonInstance = definition?.createInstance({
-      button: { position: 7 },
-      config: { slot: 'separator' },
-    } as never)
+    const digitHtml = renderReactNodeToHtml(
+      renderMountedDefinition(definition!, { slot: 'hour-tens' }, 5) as never,
+    )
+    const colonHtml = renderReactNodeToHtml(
+      renderMountedDefinition(definition!, { slot: 'separator' }, 7) as never,
+    )
 
-    const digitHtml = renderReactNodeToHtml(digitInstance?.render() as never)
-    const colonHtml = renderReactNodeToHtml(colonInstance?.render() as never)
-
-    expect(digitHtml).toContain('1')
+    expect(digitHtml).toContain('0')
     expect(digitHtml).toContain('font-mono text-primary')
     expect(colonHtml).toContain(':')
     expect(colonHtml).toContain('font-mono text-accent')
@@ -159,23 +192,20 @@ describe('date-time addon', () => {
     expect(formatLockedTimeTileCharacter('minute-ones', date)).toBe('8')
   })
 
-  it('creates a renderable analog clock button instance with the expected cadence contract', () => {
+  it('creates a renderable analog clock button surface with the expected cadence contract', () => {
     const definition = dateTimeAddon.buttons.find(
       (button) => button.type === 'analog-clock',
     )
-    const instance = definition?.createInstance({
-      button: { position: 4 },
-      config: {},
-    } as never)
-    const element = instance?.render()
 
     expect(definition?.defaultIntervalMs).toBe(ANALOG_CLOCK_INTERVAL_MS)
-    const html = renderReactNodeToHtml(element as never)
+    const html = renderReactNodeToHtml(
+      renderMountedDefinition(definition!, {}, 4) as never,
+    )
 
     expect(html).toContain('data-sireno-full-surface="true"')
     expect(html).toContain('Clock')
-    expect(html).toContain('class="font-main text-primary"')
-    expect(html).toContain('class="font-aux text-foreground"')
+    expect(html).toContain('font-main text-primary')
+    expect(html).toContain('font-aux text-foreground')
   })
 
   it('keeps the shipped Phase 8 review contract on the bundled analog clock type', () => {
@@ -188,22 +218,19 @@ describe('date-time addon', () => {
     expect(definition?.configSchema.parse({})).toEqual({})
   })
 
-  it('creates a renderable calendar-sheet button instance with the expected cadence contract', () => {
+  it('creates a renderable calendar-sheet button surface with the expected cadence contract', () => {
     const definition = dateTimeAddon.buttons.find(
       (button) => button.type === 'calendar-sheet',
     )
-    const instance = definition?.createInstance({
-      button: { position: 6 },
-      config: {},
-    } as never)
-    const element = instance?.render()
 
     expect(definition?.defaultIntervalMs).toBe(CALENDAR_SHEET_INTERVAL_MS)
-    const html = renderReactNodeToHtml(element as never)
+    const html = renderReactNodeToHtml(
+      renderMountedDefinition(definition!, {}, 6) as never,
+    )
 
     expect(html).toContain('data-sireno-full-surface="true"')
     expect(html).toContain('Date')
-    expect(html).toContain('class="font-main text-foreground"')
-    expect(html).toContain('class="font-aux text-accent"')
+    expect(html).toContain('font-main text-foreground')
+    expect(html).toContain('font-aux text-accent')
   })
 })

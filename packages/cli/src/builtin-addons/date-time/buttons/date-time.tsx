@@ -1,39 +1,23 @@
-import { createElement } from 'react'
-import { z } from 'zod'
-
 import { defineMountedButton } from '../../../addon/api.js'
 import { Text } from '../../../ui/index.js'
+import {
+  BuiltinDisplayDateTimeButtonSchema,
+  DIGITAL_DATE_TIME_INTERVAL_MS,
+  type BuiltinDisplayDateTimeButtonConfig,
+} from '../schemas.js'
 
-const DIGITAL_DATE_TIME_INTERVAL_MS = 1000
-
-export const BuiltinDateTimeButtonSchema = z
-  .object({
-    variant: z.enum(['date', 'time', 'date-time']).default('date-time'),
-    date_format: z.string().min(1).optional().default('MM/DD/YYYY'),
-    time_format: z.string().min(1).optional().default('HH:mm:ss'),
-  })
-  .strict()
+export const BuiltinDateTimeButtonSchema = BuiltinDisplayDateTimeButtonSchema
 
 export const builtinDateTimeButton = defineMountedButton({
   configSchema: BuiltinDateTimeButtonSchema,
   defaultIntervalMs: DIGITAL_DATE_TIME_INTERVAL_MS,
-  render: ({ button, config }) =>
-    createElement(
-      'span',
-      {
-        className: 'font-main text-foreground',
-        style: { display: 'block' },
-      },
-      createElement(
-        Text,
-        {
-          className: 'w-full',
-          fit: 'wrap',
-          style: { lineHeight: 1.2 },
-        },
-        formatDigitalDateTimeLabel(config),
-      ),
-    ),
+  render: ({ button, config }) => (
+    <div className="font-main text-foreground">
+      <Text className="w-full fit-wrap leading-1">
+        {formatDigitalDateTimeLabel(config)}
+      </Text>
+    </div>
+  ),
   type: 'date-time',
 })
 
@@ -50,12 +34,14 @@ const DIGITAL_DATE_TIME_TOKEN_PATTERN = /YYYY|MM|DD|HH|mm|ss/g
 
 function formatDigitalDateTimePattern(pattern: string, date: Date): string {
   return pattern.replace(DIGITAL_DATE_TIME_TOKEN_PATTERN, (token) =>
-    DIGITAL_DATE_TIME_TOKENS[token as keyof typeof DIGITAL_DATE_TIME_TOKENS](date),
+    DIGITAL_DATE_TIME_TOKENS[token as keyof typeof DIGITAL_DATE_TIME_TOKENS](
+      date,
+    ),
   )
 }
 
 function formatDigitalDateTimeLabel(
-  config: z.infer<typeof BuiltinDateTimeButtonSchema>,
+  config: BuiltinDisplayDateTimeButtonConfig,
   date = new Date(),
 ): string {
   if (config.variant === 'date') {
