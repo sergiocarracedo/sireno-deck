@@ -1,0 +1,29 @@
+.planning/phases/28-component-first-tsx-theme-ui-kit-cli/28-UAT.md
+  s_59d030c8de308d::t_136393940ccd0c 15,17-25,44
+  s_59d030c8de308d::t_d058206c282e4e 2,10,26,48,53,55
+  s_59d030c8de308d::t_0bfe09ba8d9ccd 1,3-9,11-14,16,27-31,33-35,37-39,41-43,45-47,49-52,54,56-60
+  s_59d030c8de308d::t_1e555832a3a40f 32
+  s_59d030c8de308d::t_0e25919b587729 40
+  s_59d030c8de308d::t_5d06f253cfa26d 36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "e94fc815a226ee0d29ba3ed44b3a715e645155dd",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_59d030c8de308d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19694ac2dffeX8MJU78d98rSIi",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
