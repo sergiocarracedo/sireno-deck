@@ -326,7 +326,10 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 **Depends on:** Phase 27
 
 ### Plans
-*Not yet planned - run `plan-phase 28`*
+- `28-01`: Introduce the core `Icon`/`Text`/`Chip` TSX kit, extend the theme runtime with presentation-only kit overrides, and prove the new surface through the committed Phase 23 raw-source addon plus real theme/render seams.
+- `28-02`: Migrate the shipped core-button family and runtime fallback UI off helper factories so the main built-in interaction path proves the component-first contract.
+- `28-03`: Finish the hard cut across the remaining shipped addon families, public exports, authoring fixtures, and docs so no supported helper-based presentation path remains.
+- `28-04`: Add the truthful workspace-root `cli:dev` `tsx watch` loop on `start --config config.yml` and record the Phase 28 cutover plus learnings in changelog/state artifacts.
 
 ---
 
