@@ -1,7 +1,8 @@
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import { createDomIcon, createDomStack, defineMountedButton } from '../../../addon/api.js'
+import { Icon, Text } from '../../../ui/index.js'
+import { defineMountedButton } from '../../../addon/api.js'
 
 const BuiltinActionButtonSchema = z
   .object({
@@ -35,21 +36,27 @@ const builtinActionButton = defineMountedButton({
           width: '100%',
         },
       },
-      createDomStack({
-        children: [
-          config.icon ? createDomIcon({ src: config.icon }) : null,
-          createElement('span', {
-            children: config.label,
-            className: 'font-main text-primary',
-            style: {
-              display: 'block',
-              lineHeight: 1.2,
-              textAlign: 'center',
-              textWrap: 'balance',
-            },
-          }),
-        ],
-      }),
+      createElement(
+        'div',
+        {
+          className: 'flex flex-col items-center justify-center w-full',
+          style: { gap: '6px' },
+        },
+        config.icon
+          ? createElement(Icon, { size: 24, src: config.icon })
+          : null,
+        createElement(
+          'span',
+          { className: 'font-main text-primary' },
+          createElement(Text, {
+            className: 'w-full',
+            fit: 'wrap',
+            style: { textWrap: 'balance' },
+            tone: 'primary',
+            typography: 'main',
+          }, config.label),
+        ),
+      ),
     ),
   type: 'action',
 })

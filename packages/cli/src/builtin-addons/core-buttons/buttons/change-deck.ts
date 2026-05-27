@@ -1,7 +1,20 @@
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import { createDomIcon, createDomStack, createDomTextLabel, defineMountedButton } from '../../../addon/api.js'
+import { Icon, Text } from '../../../ui/index.js'
+import { defineMountedButton } from '../../../addon/api.js'
+
+function renderCenteredButtonContent(label: string, icon?: string) {
+  return createElement(
+    'div',
+    {
+      className: 'flex flex-col items-center justify-center w-full',
+      style: { gap: '6px' },
+    },
+    icon ? createElement(Icon, { size: 24, src: icon }) : null,
+    createElement(Text, { fit: 'wrap' }, label),
+  )
+}
 
 const BuiltinChangeDeckButtonSchema = z
   .object({
@@ -16,13 +29,7 @@ const builtinChangeDeckButton = defineMountedButton({
   onTap: async ({ config, methods }) => {
     await methods.navigateToDeck(config.target_deck)
   },
-  render: ({ config }) =>
-    createDomStack({
-      children: [
-        config.icon ? createDomIcon({ src: config.icon }) : null,
-        createDomTextLabel({ children: config.label }),
-      ],
-    }),
+  render: ({ config }) => renderCenteredButtonContent(config.label, config.icon),
   type: 'change-deck',
 })
 

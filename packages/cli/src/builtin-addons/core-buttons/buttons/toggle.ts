@@ -2,7 +2,8 @@ import { createElement } from 'react'
 import { z } from 'zod'
 import { BuiltinToggleButtonConfigSchema } from '../../../core/schemas.js'
 
-import { ButtonSurface, createDomIcon, createDomStack, createDomTextLabel, defineMountedButton } from '../../../addon/api.js'
+import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
+import { Icon, Text } from '../../../ui/index.js'
 
 const COMMAND_DRIVEN_TOGGLE_INTERVAL_MS = 1_000
 
@@ -45,6 +46,29 @@ function getStateProps(
       ? { subtitle: stateOverride.subtitle }
       : {}),
   }
+}
+
+function renderToggleSurface(props: {
+  icon?: string
+  primaryLabel: string
+  secondaryLabel?: string
+}) {
+  return createElement(
+    ButtonSurface,
+    null,
+    createElement(
+      'div',
+      {
+        className: 'flex flex-col items-center justify-center w-full',
+        style: { gap: props.secondaryLabel ? '4px' : '6px' },
+      },
+      props.icon ? createElement(Icon, { size: 24, src: props.icon }) : null,
+      createElement(Text, { fit: 'wrap' }, props.primaryLabel),
+      props.secondaryLabel
+        ? createElement(Text, { fit: 'wrap' }, props.secondaryLabel)
+        : null,
+    ),
+  )
 }
 
 function syncCommandDrivenToggleState(
@@ -228,14 +252,11 @@ const builtinToggleButton = defineMountedButton({
       const primaryLabel = stateProps.label ?? 'Toggle'
       const secondaryLabel = stateProps.subtitle
 
-      return createElement(ButtonSurface, null, createDomStack({
-        children: [
-          stateProps.icon ? createDomIcon({ src: stateProps.icon }) : null,
-          createDomTextLabel({ children: primaryLabel }),
-          secondaryLabel ? createDomTextLabel({ children: secondaryLabel }) : null,
-        ],
-        gap: secondaryLabel ? 4 : 6,
-      }))
+      return renderToggleSurface({
+        icon: stateProps.icon,
+        primaryLabel,
+        secondaryLabel,
+      })
     }
 
     const storeState = getToggleButtonStoreState(store.button.snapshot)
@@ -252,14 +273,11 @@ const builtinToggleButton = defineMountedButton({
     const primaryLabel = stateProps.label ?? 'Toggle'
     const secondaryLabel = statusLabel ?? stateProps.subtitle
 
-    return createElement(ButtonSurface, null, createDomStack({
-      children: [
-        stateProps.icon ? createDomIcon({ src: stateProps.icon }) : null,
-        createDomTextLabel({ children: primaryLabel }),
-        secondaryLabel ? createDomTextLabel({ children: secondaryLabel }) : null,
-      ],
-      gap: secondaryLabel ? 4 : 6,
-    }))
+    return renderToggleSurface({
+      icon: stateProps.icon,
+      primaryLabel,
+      secondaryLabel,
+    })
   },
   type: 'toggle',
 })

@@ -1,7 +1,8 @@
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import { ButtonSurface, createDomTextLabel, defineMountedButton } from '../../../addon/api.js'
+import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
+import { Text } from '../../../ui/index.js'
 
 const ANIMATED_BLOB_SVG = encodeURIComponent([
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">',
@@ -48,17 +49,17 @@ const builtinMediaSampleButton = defineMountedButton({
           width: '100%',
         },
       }),
-      createElement('div', {
-        style: {
-          alignItems: 'flex-end',
+       createElement('div', {
+         style: {
+           alignItems: 'flex-end',
           background: 'linear-gradient(180deg, rgba(2, 6, 23, 0) 0%, rgba(2, 6, 23, 0.88) 100%)',
           display: 'flex',
           inset: 0,
           justifyContent: 'center',
           padding: '8px 6px',
-          position: 'absolute',
-        },
-      }, createDomTextLabel({ children: config.label }))),
+           position: 'absolute',
+         },
+      }, createElement(Text, { fit: 'wrap' }, config.label))),
     ),
   type: 'media-sample',
 })

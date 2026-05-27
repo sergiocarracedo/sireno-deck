@@ -2,10 +2,11 @@ import { createElement, isValidElement } from "react"
 import { z } from "zod"
 
 import { executeCommand, type CommandExecutionResult } from "../action/executor.js"
-import { ButtonSurface, createBaseShapeTextContent, createDomStack, createDomTextLabel, getAddonButtonOwnerName } from "../addon/api.js"
+import { ButtonSurface, getAddonButtonOwnerName } from "../addon/api.js"
 import datetimeButtonsAddon from "../builtin-addons/date-time/index.js"
 import { createMountedDomHost, renderMountedHostedButtons, type HostedButton, type MountedDomHost } from "../render/dom-host.js"
 import { createPollingScheduler, type PollingScheduler } from "../render/scheduler.js"
+import { Text } from "../ui/index.js"
 import { createDeckController } from "./controller.js"
 
 import type { AddonRegistry } from "../addon/registry.js"
@@ -109,14 +110,22 @@ const temporaryErrorButtonDefinition = {
     button: { position: number }
     config: { detailLines: string[]; label: string; subtitle: string }
   }) => ({
-    render: () => createElement(ButtonSurface, { full_surface: true }, createDomStack({
-      gap: 4,
-      children: [
-        createDomTextLabel({ children: config.label }),
-        createDomTextLabel({ children: config.subtitle }),
-        ...config.detailLines.map((line) => createDomTextLabel({ children: line })),
-      ],
-    })),
+    render: () => createElement(
+      ButtonSurface,
+      { full_surface: true },
+      createElement(
+        'div',
+        {
+          className: 'flex flex-col items-center justify-center w-full h-full',
+          style: { gap: '4px' },
+        },
+        createElement(Text, { fit: 'wrap' }, config.label),
+        createElement(Text, { fit: 'wrap' }, config.subtitle),
+        ...config.detailLines.map((line, index) =>
+          createElement(Text, { fit: 'wrap', key: `${button.position}-${index}` }, line),
+        ),
+      ),
+    ),
   }),
   type: "__runtime_reload_error__",
 } satisfies ButtonInstance["definition"]
