@@ -335,6 +335,17 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ---
 
+### Phase 29: Built-in Addon TSX Hard Cut + Tailwind Cleanup
+
+**Goal:** Remove remaining legacy built-in addon rendering seams, require JSX/TSX-first button authoring with Tailwind-first styling, split multi-button built-in addons into per-button files, and standardize date/time formatting on one dedicated library.
+**Status:** [ ] Not started
+**Depends on:** Phase 28
+
+### Plans
+*Not yet planned - run `plan-phase 29`*
+
+---
+
 ## Coverage Validation
 
 - [x] All 9 v1.2 requirements map to at least one roadmap phase
