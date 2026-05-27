@@ -1,28 +1,28 @@
 # Phase 26 Verification
 
 **Date:** 2026-05-27
-**Status:** passed
+**Status:** gaps_found
 
 ## Verification Summary
 
-Phase 26 passed verification. The browser deck now renders through one shared React document tree while still shipping an HTML-string transport boundary, undersized virtual-device selections now render the visible subset with a persistent inline warning instead of an error-only page, and the startup placeholder stays on the pre-browser seam while using a deck-wide `logoFull.png` treatment instead of repeated identical tiles.
+Phase 26's automated verification passed, but manual UAT found one upstream runtime blocker that invalidates the shipped CLI/emulator path: `packages/cli/src/render/dom-host.tsx` and `packages/cli/src/render/button-frame.tsx` were moved onto JSX syntax without a compatible runtime `React` value on the real `tsx` execution path. That caused `renderDomDeck(...)` to throw `ReferenceError: React is not defined` before the shared shell, undersized-device warning path, or startup handoff could render. The gap is now covered by closure plan `26-04-PLAN.md`.
 
 ## Must-Have Checks
 
 ### 26-01
-- Passed: `packages/cli/src/render/button-frame.tsx` is now an honest JSX-authored button-frame component without expanding ownership into outer shell layout.
-- Passed: `packages/cli/src/render/dom-host.tsx` renders the deck document through one shared React tree and still stringifies only at the final transport boundary.
-- Passed: the shared shell now exposes explicit shell/well markers and stable all-slot rendering while preserving theme utility/styles injection and theme-owned frame wrapping.
+- Automated pass retained: `packages/cli/src/render/button-frame.tsx` is an honest JSX-authored button-frame component without expanding ownership into outer shell layout.
+- Automated pass retained: `packages/cli/src/render/dom-host.tsx` renders the deck document through one shared React tree and still stringifies only at the final transport boundary.
+- Gap found in manual UAT: the real CLI/emulator `tsx` runtime still required a runtime `React` value in scope, so both `ButtonFrame(...)` and `renderDomDeck(...)` crashed with `ReferenceError: React is not defined` outside Vitest transforms.
 
 ### 26-02
-- Passed: undersized virtual-device selections now render the visible subset instead of swapping to a hard error-only page.
-- Passed: the mismatch remains explicit through `emulator_layout_mismatch` state and a persistent inline warning banner inside the shared deck document.
-- Passed: focused emulator/start and host tests prove the contract shift intentionally and keep the warning on the real browser/emulator path.
+- Automated pass retained: undersized virtual-device selections now render the visible subset instead of swapping to a hard error-only page.
+- Automated pass retained: the mismatch remains explicit through `emulator_layout_mismatch` state and a persistent inline warning banner inside the shared deck document.
+- Blocked in manual UAT by the same upstream JSX runtime failure before the warning path could render on the real emulator path.
 
 ### 26-03
-- Passed: `packages/cli/src/render/startup-placeholder.ts` now uses `logoFull.png` on the existing pre-browser buffer-rendering seam instead of repeated `SIRENO / STARTING` tiles.
-- Passed: startup placeholder output is now deck-wide and non-repeating across keys, while still returning one raw key buffer per requested key.
-- Passed: the existing startup handoff tests still prove placeholder-before-first-render behavior and failure-path cleanup on the original startup seam.
+- Automated pass retained: `packages/cli/src/render/startup-placeholder.ts` now uses `logoFull.png` on the existing pre-browser buffer-rendering seam instead of repeated `SIRENO / STARTING` tiles.
+- Automated pass retained: startup placeholder output is now deck-wide and non-repeating across keys, while still returning one raw key buffer per requested key.
+- Blocked in manual UAT by the same upstream JSX runtime failure when startup handed off from placeholder buffers to the first real browser-backed deck render.
 
 ## Evidence
 
@@ -37,8 +37,13 @@ Phase 26 passed verification. The browser deck now renders through one shared Re
   - mismatch now feeds the shared deck document, warning text is explicit, and undersized-device state stays `ready`
 - `rg -n "logoFull|createStartupPlaceholderBuffers|createStartupPlaceholderDeckBuffer|STARTUP_LOGO_FULL_PATH" packages/cli/src/render/startup-placeholder.ts packages/cli/src/render/startup-placeholder.test.ts`
   - startup placeholder now resolves the shipped logo and composes a deck-wide placeholder path with focused test coverage
+- `pnpm exec tsx --eval "(async () => { const { renderDomDeck } = await import('./packages/cli/src/render/dom-host.tsx'); console.log(typeof renderDomDeck); console.log(renderDomDeck([], { keyCount: 1 }).slice(0, 40)); })().catch((error) => { console.error(error); process.exit(1); });"`
+  - reproduced the real CLI/runtime failure before the gap-closure fix: `ReferenceError: React is not defined at renderDomDeck (.../dom-host.tsx:581:5)`
+- `pnpm exec tsx --eval "(async () => { const { ButtonFrame } = await import('./packages/cli/src/render/button-frame.tsx'); const element = ButtonFrame({ children: null, state: 'idle' }); console.log(element?.props?.['data-sireno-button-frame']); })().catch((error) => { console.error(error); process.exit(1); });"`
+  - reproduced the same runtime-seam failure in the default frame component: `ReferenceError: React is not defined at ButtonFrame (.../button-frame.tsx:9:3)`
 
 ## Residual Notes
 
 - Phase 26 is post-roadmap follow-on work and does not add a new v1.2 requirement ID; `REQUIREMENTS.md` remains milestone-scoped.
-- Verification here is automated only. The next workflow step is `verify-work 26` for manual UAT, then `/review`, `/ship`, and `/compound`.
+- Manual UAT found one shared blocker that affects all three user-observable checks. The fix is tracked in `.planning/phases/26-browser-deck-react-shell-polish/26-04-PLAN.md`.
+- After implementing `26-04-PLAN.md`, rerun `verify-work 26` before `/review`, `/ship`, and `/compound`.
