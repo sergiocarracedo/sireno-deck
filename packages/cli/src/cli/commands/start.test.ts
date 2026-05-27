@@ -98,6 +98,7 @@ vi.mock("../../util/daemon.js", () => ({
 }))
 
 describe("loadRuntimeConfig", () => {
+  const workspaceRoot = resolve(import.meta.dirname, "../../../../..")
   const phase23FixtureConfigPath = resolve(import.meta.dirname, "../../../fixtures/phase-23/config.yml")
   const phase23FixtureRoot = resolve(import.meta.dirname, "../../../fixtures/phase-23/local-raw-addon")
   const supportedSessionMonitor = {
@@ -418,7 +419,6 @@ describe("loadRuntimeConfig", () => {
   })
 
   it("starts the repo-root raw-source emulator path without React runtime crashes", async () => {
-    const workspaceRoot = resolve(import.meta.dirname, "../../../../..")
     const result = await execa("pnpm", [
       "exec",
       "tsx",
@@ -441,6 +441,45 @@ describe("loadRuntimeConfig", () => {
     expect(output).not.toContain("React is not defined")
     expect(result.timedOut).toBe(true)
   }, 10_000)
+
+  it("documents the workspace-root cli:dev script on the truthful raw-source start seam", async () => {
+    const { readFileSync } = await import("node:fs")
+    const rootPackageJson = JSON.parse(
+      readFileSync(resolve(workspaceRoot, "package.json"), "utf8"),
+    ) as {
+      scripts?: Record<string, string>
+    }
+    const cliPackageJson = JSON.parse(
+      readFileSync(resolve(workspaceRoot, "packages/cli/package.json"), "utf8"),
+    ) as {
+      scripts?: Record<string, string>
+    }
+
+    expect(rootPackageJson.scripts?.["cli:dev"]).toContain("tsx watch")
+    expect(rootPackageJson.scripts?.["cli:dev"]).toContain(
+      "packages/cli/src/cli/index.ts",
+    )
+    expect(rootPackageJson.scripts?.["cli:dev"]).toContain(
+      "start --config config.yml",
+    )
+    expect(rootPackageJson.scripts?.["cli:dev"]).toContain(
+      "--include ./packages/cli/src/**/*",
+    )
+    expect(rootPackageJson.scripts?.["cli:dev"]).toContain(
+      "--include ./config.yml",
+    )
+    expect(rootPackageJson.scripts?.["cli:dev"]).toContain(
+      "--include ./themes/**/*",
+    )
+    expect(rootPackageJson.scripts?.["cli:dev"]).toContain(
+      "--include ./addons/**/*",
+    )
+    expect(rootPackageJson.scripts?.["cli:dev"]).toContain(
+      "--include ./builtin-addons/**/*",
+    )
+    expect(cliPackageJson.scripts?.dev).toBe("pnpm --workspace-root run cli:dev")
+    expect(cliPackageJson.scripts?.["dev:bundle"]).toBe("tsdown --watch")
+  })
 })
 
 beforeEach(() => {

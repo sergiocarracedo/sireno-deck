@@ -14,9 +14,10 @@
   },
   "scripts": {
     "build": "tsdown",
-    "dev": "tsdown --watch",
+    "dev": "pnpm --workspace-root run cli:dev",
     "test": "vitest run",
-    "verify": "pnpm run test && pnpm run build"
+    "verify": "pnpm run test && pnpm run build",
+    "dev:bundle": "tsdown --watch"
   },
   "dependencies": {
     "@elgato-stream-deck/node": "^7.6.0",
