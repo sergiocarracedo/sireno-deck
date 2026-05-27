@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 28 — Component-First TSX Theme UI Kit + CLI Watch Mode ✓ complete
-**Status:** verifying
+**Phase:** 29 — Built-in Addon TSX Hard Cut + Tailwind Cleanup
+**Status:** planning
 **Last updated:** 2026-05-27
 
 ---
