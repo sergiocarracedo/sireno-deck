@@ -410,20 +410,30 @@ describe("loadRuntimeConfig", () => {
     await runtimeConfig.sessionMonitor.stop()
   })
 
-  it("renders shared deck html on the real tsx runtime path without ambient React globals", async () => {
-    const result = await execa("node", [
-      "--import",
-      "tsx/esm",
-      "--eval",
-      "(async () => { const [{ renderDomDeck }, { ButtonFrame }] = await Promise.all([import('./src/render/dom-host.tsx'), import('./src/themes/default/ButtonFrame.tsx')]); console.log(renderDomDeck([], { keyCount: 1 }).slice(0, 40)); console.log(typeof ButtonFrame({ children: null, state: 'idle' })); process.exit(0); })().catch((error) => { console.error(error); process.exit(1); });",
+  it("starts the repo-root raw-source emulator path without React runtime crashes", async () => {
+    const workspaceRoot = resolve(import.meta.dirname, "../../../../..")
+    const result = await execa("pnpm", [
+      "exec",
+      "tsx",
+      "packages/cli/src/cli/index.ts",
+      "emulate",
+      "--config",
+      "config.yml",
+      "--port",
+      "0",
     ], {
-      cwd: resolve(import.meta.dirname, "../../.."),
+      all: true,
+      cwd: workspaceRoot,
+      reject: false,
+      timeout: 5_000,
     })
 
-    expect(result.stdout).toContain("<!doctype html>")
-    expect(result.stdout).not.toContain("React is not defined")
-    expect(result.stderr).not.toContain("React is not defined")
-  })
+    const output = result.all ?? ""
+
+    expect(output).toContain("browser deck emulator started")
+    expect(output).not.toContain("React is not defined")
+    expect(result.timedOut).toBe(true)
+  }, 10_000)
 })
 
 beforeEach(() => {
