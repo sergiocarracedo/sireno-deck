@@ -59,8 +59,7 @@ function renderToggleSurface(props: {
     createElement(
       'div',
       {
-        className: 'flex flex-col items-center justify-center w-full',
-        style: { gap: props.secondaryLabel ? '4px' : '6px' },
+        className: `flex flex-col items-center justify-center w-full ${props.secondaryLabel ? 'gap-1' : 'gap-1.5'}`,
       },
       props.icon ? createElement(Icon, { size: 24, src: props.icon }) : null,
       createElement(Text, { fit: 'wrap' }, props.primaryLabel),

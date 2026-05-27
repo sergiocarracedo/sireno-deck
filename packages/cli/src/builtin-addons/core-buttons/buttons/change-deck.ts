@@ -8,8 +8,7 @@ function renderCenteredButtonContent(label: string, icon?: string) {
   return createElement(
     'div',
     {
-      className: 'flex flex-col items-center justify-center w-full',
-      style: { gap: '6px' },
+      className: 'flex flex-col items-center justify-center w-full gap-1.5',
     },
     icon ? createElement(Icon, { size: 24, src: icon }) : null,
     createElement(Text, { fit: 'wrap' }, label),

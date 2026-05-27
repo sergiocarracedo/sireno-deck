@@ -21,43 +21,21 @@ const builtinActionButton = defineMountedButton({
     }
   },
   render: ({ config }) =>
-    createElement(
-      'div',
-      {
-        className: 'bg-background border-accent',
-        style: {
-          alignItems: 'center',
-          border: '1px solid var(--sireno-color-accent)',
-          borderRadius: '12px',
-          display: 'flex',
-          height: '100%',
-          justifyContent: 'center',
-          padding: '8px',
-          width: '100%',
-        },
-      },
-      createElement(
-        'div',
-        {
-          className: 'flex flex-col items-center justify-center w-full',
-          style: { gap: '6px' },
-        },
-        config.icon
-          ? createElement(Icon, { size: 24, src: config.icon })
-          : null,
-        createElement(
-          'span',
-          { className: 'font-main text-primary' },
-          createElement(Text, {
-            className: 'w-full',
-            fit: 'wrap',
-            style: { textWrap: 'balance' },
-            tone: 'primary',
-            typography: 'main',
-          }, config.label),
-        ),
-      ),
-    ),
+    <div className="bg-background border border-accent rounded-lg flex items-center justify-center h-full w-full p-2">
+      <div className="flex flex-col items-center justify-center w-full gap-1.5">
+        {config.icon ? <Icon size={24} src={config.icon} /> : null}
+        <span className="font-main text-primary">
+          <Text
+            className="w-full text-balance"
+            fit="wrap"
+            tone="primary"
+            typography="main"
+          >
+            {config.label}
+          </Text>
+        </span>
+      </div>
+    </div>,
   type: 'action',
 })
 

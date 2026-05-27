@@ -152,15 +152,13 @@ function renderEmojiText(label: string, className = 'font-main text-foreground')
   return createElement(
     'span',
     {
-      className,
-      style: { display: 'block' },
+      className: `${className} block`,
     },
     createElement(
       Text,
       {
-        className: 'w-full',
+        className: 'w-full leading-tight',
         fit: 'wrap',
-        style: { lineHeight: 1.2 },
       },
       label,
     ),
@@ -171,8 +169,7 @@ function createButtonNode(label: string, icon?: string) {
   return createElement(
     'div',
     {
-      className: 'flex flex-col items-center justify-center w-full',
-      style: { gap: '6px' },
+      className: 'flex flex-col items-center justify-center w-full gap-1.5',
     },
     icon ? createElement(Icon, { src: icon }) : null,
     renderEmojiText(label),
