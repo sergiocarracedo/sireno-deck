@@ -5,7 +5,7 @@
 
 ## Verification Summary
 
-Phase 26's automated verification passed, but manual UAT found one upstream runtime blocker that invalidates the shipped CLI/emulator path: `packages/cli/src/render/dom-host.tsx` and `packages/cli/src/render/button-frame.tsx` were moved onto JSX syntax without a compatible runtime `React` value on the real `tsx` execution path. That caused `renderDomDeck(...)` to throw `ReferenceError: React is not defined` before the shared shell, undersized-device warning path, or startup handoff could render. The gap is now covered by closure plan `26-04-PLAN.md`.
+Phase 26's original automated verification passed, but manual UAT found one upstream runtime blocker that invalidated the shipped CLI/emulator path: `packages/cli/src/render/dom-host.tsx` and `packages/cli/src/render/button-frame.tsx` were moved onto JSX syntax without a compatible runtime `React` value on the real `tsx` execution path. That blocker was fixed by `26-04-PLAN.md`, and the rerun UAT now confirms the shared shell plus undersized-device warning path work on the real runtime seam. One narrower visual gap remains: the startup placeholder still showed extra shell/card/`STARTING` overlay artwork on top of `logoFull.png` instead of only the full-deck logo image. That remaining rerun gap is now tracked by closure plan `26-05-PLAN.md`.
 
 ## Must-Have Checks
 
@@ -22,7 +22,8 @@ Phase 26's automated verification passed, but manual UAT found one upstream runt
 ### 26-03
 - Automated pass retained: `packages/cli/src/render/startup-placeholder.ts` now uses `logoFull.png` on the existing pre-browser buffer-rendering seam instead of repeated `SIRENO / STARTING` tiles.
 - Automated pass retained: startup placeholder output is now deck-wide and non-repeating across keys, while still returning one raw key buffer per requested key.
-- Blocked in manual UAT by the same upstream JSX runtime failure when startup handed off from placeholder buffers to the first real browser-backed deck render.
+- Original manual UAT was first blocked by the same upstream JSX runtime failure when startup handed off from placeholder buffers to the first real browser-backed deck render.
+- Rerun UAT after `26-04` confirmed the startup path no longer crashes, but surfaced a narrower visual mismatch: the placeholder composition still included extra shell/card/`STARTING` overlay artwork instead of only the full-deck `logoFull.png` image.
 
 ## Evidence
 
@@ -41,9 +42,13 @@ Phase 26's automated verification passed, but manual UAT found one upstream runt
   - reproduced the real CLI/runtime failure before the gap-closure fix: `ReferenceError: React is not defined at renderDomDeck (.../dom-host.tsx:581:5)`
 - `pnpm exec tsx --eval "(async () => { const { ButtonFrame } = await import('./packages/cli/src/render/button-frame.tsx'); const element = ButtonFrame({ children: null, state: 'idle' }); console.log(element?.props?.['data-sireno-button-frame']); })().catch((error) => { console.error(error); process.exit(1); });"`
   - reproduced the same runtime-seam failure in the default frame component: `ReferenceError: React is not defined at ButtonFrame (.../button-frame.tsx:9:3)`
+- `.planning/phases/26-browser-deck-react-shell-polish/26-UAT-rerun-2026-05-27.md`
+  - rerun UAT result: `2 passed, 1 issue`
+  - confirmed browser shell and undersized-device warning path now pass on the real CLI/emulator seam after `26-04`
+  - remaining issue is startup-placeholder visuals: user reported it should show only the full-deck `logoFull.png` image and no extra elements
 
 ## Residual Notes
 
 - Phase 26 is post-roadmap follow-on work and does not add a new v1.2 requirement ID; `REQUIREMENTS.md` remains milestone-scoped.
-- Manual UAT found one shared blocker that affects all three user-observable checks. The fix is tracked in `.planning/phases/26-browser-deck-react-shell-polish/26-04-PLAN.md`.
-- After implementing `26-04-PLAN.md`, rerun `verify-work 26` before `/review`, `/ship`, and `/compound`.
+- The original shared runtime blocker was fixed by `.planning/phases/26-browser-deck-react-shell-polish/26-04-PLAN.md`, but rerun UAT found one remaining startup-placeholder visual gap now tracked in `.planning/phases/26-browser-deck-react-shell-polish/26-05-PLAN.md`.
+- After implementing `26-05-PLAN.md`, rerun `verify-work 26` again before `/review`, `/ship`, and `/compound`.
