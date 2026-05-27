@@ -1,6 +1,6 @@
 # Roadmap — Sireno Deck v1.2
 
-**Last updated:** 2026-05-27
+**Last updated:** 2026-05-28
 **Granularity:** focused milestone (7 phases)
 **Total v1.2 requirements:** 9
 
@@ -338,7 +338,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 29: Built-in Addon TSX Hard Cut + Tailwind Cleanup
 
 **Goal:** Remove remaining legacy built-in addon rendering seams, require JSX/TSX-first button authoring with Tailwind-first styling, split multi-button built-in addons into per-button files, and standardize date/time formatting on one dedicated library.
-**Status:** [ ] Not started
+**Status:** ✓ Complete (2026-05-28)
 **Depends on:** Phase 28
 
 ### Plans
@@ -346,7 +346,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 - `29-02`: Split the shipped date-time addon into per-button TSX files and normalize `date_format` / `time_format` onto an explicit `dayjs` contract.
 - `29-03`: Finish the remaining built-in cleanup by splitting emoji-selector, converting core buttons to TSX-first modules, and paying down simple inline-style debt through the Sireno utility layer.
 
-**Phase 29 note:** This post-roadmap follow-on phase hard-cuts the last instance-era built-in button seam instead of preserving another adapter, keeps `ButtonSurface` or an equivalent explicit metadata carrier honest for runtime-owned button metadata, moves shipped multi-button addons onto one-definition-per-file organization with local support modules, standardizes built-in date/time formatting on declared `dayjs` behavior instead of the old custom token map, and treats simple shipped inline styles as Sireno utility-layer debt to eliminate rather than normalize.
+**Phase 29 note:** This post-roadmap follow-on phase is now complete. It hard-cuts the last instance-era built-in button seam instead of preserving another adapter, keeps `ButtonSurface` as the explicit runtime metadata carrier, moves shipped multi-button addons onto one-definition-per-file organization with local support modules, standardizes built-in date/time formatting on declared `dayjs` behavior instead of the old custom token map, and treats simple shipped inline styles as Sireno utility-layer debt to eliminate rather than normalize.
 
 ---
 

@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 28 execution is complete and ready for `verify-work 28` manual UAT. Earlier Phase 27 closeout breadcrumbs remain in history below, but the active workflow step is now Phase 28 verification/review.
+**Current focus:** Phase 29 execution is complete and ready for `verify-work 29` manual UAT. Earlier Phase 28 closeout breadcrumbs remain in history below, but the active workflow step is now Phase 29 verification/review.
 
 ## Current Position
 
-Phase: 28 — Component-First TSX Theme UI Kit + CLI Watch Mode
+Phase: 29 — Built-in Addon TSX Hard Cut + Tailwind Cleanup
 Plan: execution complete
 Status: verifying
-Last activity: 2026-05-27 - Completed all four Phase 28 plan slices, added the public component-first `Icon`/`Chip`/`Text` addon surface plus theme presentation seam, removed helper-factory addon exports from the supported runtime/docs/examples, added the truthful workspace-root `cli:dev` loop, and wrote `28-VERIFICATION.md` with passing focused checks
+Last activity: 2026-05-28 - Completed all three Phase 29 plan slices, hard-cut the mounted button contract end to end, split shipped multi-button built-ins into explicit per-button TSX modules, normalized built-in date/time formatting onto declared `dayjs`, paid down the remaining simple built-in utility debt, and wrote `29-VERIFICATION.md` with passing focused checks
 
 Progress: [##########] 100%
 
@@ -90,6 +90,7 @@ Recent decisions affecting current work:
 
 ### Progress Notes
 
+- **Phase 29 completion:** All three Phase 29 slices are now executed and summarized, `29-VERIFICATION.md` passes with focused runtime/date-time/emoji/core-button proof, and the next workflow step is `verify-work 29` followed by `/review`, `/ship`, and `/compound`.
 - **Phase 29 discussion:** Locked a hard cut that removes `LegacyAddonButtonDefinition` plus the runtime `createInstance()` bridge, requires one built-in button definition per file with local shared support files allowed, treats simple inline built-in styles as utility-layer debt to eliminate, and standardizes built-in date/time formatting on `dayjs` with Day.js token syntax. Richer date-time formatting ideas raised during discussion were explicitly kept out of scope and noted for future roadmap backlog work.
 - **Phase 28 execution:** Closed Wave 1 and Wave 2 with the public component-first `Icon`/`Chip`/`Text` kit, theme presentation seam, core-button/runtime fallback migration, and the hard authoring cut that removed helper exports from the shipped addon surface, tests, fixtures, and docs. Wave 4 now adds the truthful workspace-root `cli:dev` watch loop on `tsx watch ... start --config config.yml` plus final changelog/state learnings.
 - **Phase 28 completion:** All four plan slices are now executed and summarized, `28-VERIFICATION.md` passes with focused source/runtime/script proof, and the next workflow step is `verify-work 28` followed by `/review`, `/ship`, and `/compound`.
