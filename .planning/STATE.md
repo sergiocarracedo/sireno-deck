@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 26 execution is complete for browser deck react shell polish; next is `verify-work 26` for manual UAT before `/review`.
+**Current focus:** Phase 26 execution is complete for browser deck react shell polish and still needs `verify-work 26` before `/review`; Phase 27 is now planned and ready for `execute-phase 27` once that verify/review handoff is closed.
 
 ## Current Position
 
@@ -89,6 +89,7 @@ Recent decisions affecting current work:
 ### Progress Notes
 
 - **Phase 27 discussion:** Locked the phase around deleting the legacy YAML theme path, moving fallback frame ownership to the built-in default theme package, fixing the real TSX runtime seam so `.tsx` runtime modules no longer need manual `React` imports, keeping `themes/default/ButtonFrame.tsx` inside the truthful watched reload graph, and restricting deck glass chrome to emulator mode only.
+- **Phase 27 planning:** Broke the phase into two tracer bullets: theme-contract cleanup first by deleting `legacy_yaml`, moving fallback frame ownership onto the built-in default theme package, and proving `themes/default/ButtonFrame.tsx` stays in the watched reload graph; then browser-shell/runtime truthfulness second by gating glass chrome to emulator mode only and proving the real `tsx` execution path no longer needs manual React-import boilerplate in touched runtime TSX files.
 - **Phase 26 execution:** Moved the browser deck onto one shared React document tree with an honest JSX button frame, moderate shell chrome, and explicit empty wells; changed undersized virtual-device handling from a hard error page to visible subset plus persistent inline warning inside the shared shell; and replaced the repeated startup tile with a pre-browser `logoFull.png` deck-wide placeholder treatment that still hands off on the original hardware/startup seam.
 - **Phase 26 discussion:** Chose to make the whole browser deck document a shared React tree for both browser capture and emulator mode, changed undersized virtual-device handling from a hard error page to a rendered visible subset plus persistent inline warning, scoped shell polish to moderate Stream Deck-style bezel/gap/glass treatment, and kept startup loading on the existing pre-browser seam with a simple `assets/logoFull.png` loading card instead of a React-owned mosaic.
 - **Quick task 016:** Aligned the stale dom-host and emoji-selector browser asset assertions with the live absolute-path HTML contract and restored the committed Phase 23 local raw addon fixture to the current runtime shape (`createInstance() -> { render() { ... } }`) using explicit `createElement(...)`, which closed the three focused blockers from the aborted full-branch ship run.
