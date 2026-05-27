@@ -8,6 +8,7 @@ import {
 } from "../addon/api.js"
 import { resolveTheme } from "../config/theme.js"
 import { UNKNOWN_HOST_CONTEXT } from "../system/host-context.js"
+import { buttonFrame as defaultButtonFrame } from "../themes/default/index.js"
 import { createHostedButtonElement, createMountedDomHost, renderDomDeck, renderMountedHostedButtons, renderReactNodeToHtml } from "./dom-host.js"
 
 describe("dom host", () => {
@@ -20,6 +21,16 @@ describe("dom host", () => {
 
     expect(html).toContain("data-sireno-button-frame=\"true\"")
     expect(html).toContain("Action")
+  })
+
+  it("uses the built-in default theme package as the fallback buttonFrame", () => {
+    const element = createHostedButtonElement({
+      content: createElement("span", null, "Action"),
+      keyIndex: 0,
+      theme: undefined,
+    })
+
+    expect(element.type).toBe(defaultButtonFrame)
   })
 
   it("skips buttonFrame when full_surface is explicit", () => {

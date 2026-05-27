@@ -199,14 +199,16 @@ describe("resolveTheme", () => {
     await expect(resolveTheme("./custom-theme", { baseDirectory: configDir })).rejects.toThrow("missing manifest.yml")
   })
 
-  it("rejects themes without the required typography roles", async () => {
+  it("rejects a theme package manifest without the required typography roles", async () => {
     const configDir = join(tempDir, "config")
     mkdirSync(configDir, { recursive: true })
-    const customThemePath = join(configDir, "missing-typography.yml")
+    const customThemePath = join(configDir, "missing-typography")
+    mkdirSync(customThemePath, { recursive: true })
     writeFileSync(
-      customThemePath,
+      join(customThemePath, "manifest.yml"),
       [
         "name: custom",
+        'main: "./index.js"',
         'background: "#20252d"',
         'foreground: "#f5f7fa"',
         'primary: "#8b5cf6"',
@@ -218,8 +220,8 @@ describe("resolveTheme", () => {
 
     const { resolveTheme } = await loadThemeModule()
 
-    await expect(resolveTheme("./missing-typography.yml", { baseDirectory: configDir })).rejects.toThrow(ConfigValidationError)
-    await expect(resolveTheme("./missing-typography.yml", { baseDirectory: configDir })).rejects.toThrow("Required")
+    await expect(resolveTheme("./missing-typography", { baseDirectory: configDir })).rejects.toThrow(ConfigValidationError)
+    await expect(resolveTheme("./missing-typography", { baseDirectory: configDir })).rejects.toThrow("Required")
   })
 
   it("fails clearly when a theme stylesheet references a missing relative asset", async () => {
