@@ -1,17 +1,14 @@
-import { createElement } from 'react'
 import { z } from 'zod'
 
 import { Icon, Text } from '../../../ui/index.js'
 import { defineMountedButton } from '../../../addon/api.js'
 
 function renderCenteredButtonContent(label: string, icon?: string) {
-  return createElement(
-    'div',
-    {
-      className: 'flex flex-col items-center justify-center w-full gap-1.5',
-    },
-    icon ? createElement(Icon, { size: 24, src: icon }) : null,
-    createElement(Text, { fit: 'wrap' }, label),
+  return (
+    <div className="flex flex-col items-center justify-center w-full gap-1.5">
+      {icon ? <Icon size={24} src={icon} /> : null}
+      <Text fit="wrap">{label}</Text>
+    </div>
   )
 }
 

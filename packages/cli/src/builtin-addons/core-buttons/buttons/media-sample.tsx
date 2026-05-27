@@ -1,4 +1,3 @@
-import { createElement } from 'react'
 import { z } from 'zod'
 
 import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
@@ -28,39 +27,36 @@ const BuiltinMediaSampleButtonSchema = z
 
 const builtinMediaSampleButton = defineMountedButton({
   configSchema: BuiltinMediaSampleButtonSchema,
-  render: ({ config }) => createElement(
-      ButtonSurface,
-      { full_surface: true, sample_interval_ms: config.sample_interval_ms },
-      createElement('div', {
-        style: {
+  render: ({ config }) => (
+    <ButtonSurface full_surface={true} sample_interval_ms={config.sample_interval_ms}>
+      <div
+        className="h-full w-full overflow-hidden relative"
+        style={{
           background: 'linear-gradient(180deg, #111827 0%, #020617 100%)',
-          height: '100%',
-          overflow: 'hidden',
-          position: 'relative',
-          width: '100%',
-        },
-      },
-      createElement('img', {
-        alt: '',
-        src: `data:image/svg+xml;charset=utf-8,${ANIMATED_BLOB_SVG}`,
-        style: {
-          height: '100%',
-          objectFit: 'cover',
-          width: '100%',
-        },
-      }),
-       createElement('div', {
-         style: {
-           alignItems: 'flex-end',
-          background: 'linear-gradient(180deg, rgba(2, 6, 23, 0) 0%, rgba(2, 6, 23, 0.88) 100%)',
-          display: 'flex',
-          inset: 0,
-          justifyContent: 'center',
-          padding: '8px 6px',
-           position: 'absolute',
-         },
-      }, createElement(Text, { fit: 'wrap' }, config.label))),
-    ),
+        }}
+      >
+        <img
+          alt=""
+          src={`data:image/svg+xml;charset=utf-8,${ANIMATED_BLOB_SVG}`}
+          style={{
+            height: '100%',
+            objectFit: 'cover',
+            width: '100%',
+          }}
+        />
+        <div
+          className="absolute inset-0 flex items-end justify-center"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(2, 6, 23, 0) 0%, rgba(2, 6, 23, 0.88) 100%)',
+            padding: '8px 6px',
+          }}
+        >
+          <Text fit="wrap">{config.label}</Text>
+        </div>
+      </div>
+    </ButtonSurface>
+  ),
   type: 'media-sample',
 })
 

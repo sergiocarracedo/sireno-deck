@@ -1,4 +1,3 @@
-import { createElement } from 'react'
 import { z } from 'zod'
 import { BuiltinToggleButtonConfigSchema } from '../../../core/schemas.js'
 
@@ -53,20 +52,16 @@ function renderToggleSurface(props: {
   primaryLabel: string
   secondaryLabel?: string
 }) {
-  return createElement(
-    ButtonSurface,
-    null,
-    createElement(
-      'div',
-      {
-        className: `flex flex-col items-center justify-center w-full ${props.secondaryLabel ? 'gap-1' : 'gap-1.5'}`,
-      },
-      props.icon ? createElement(Icon, { size: 24, src: props.icon }) : null,
-      createElement(Text, { fit: 'wrap' }, props.primaryLabel),
-      props.secondaryLabel
-        ? createElement(Text, { fit: 'wrap' }, props.secondaryLabel)
-        : null,
-    ),
+  return (
+    <ButtonSurface>
+      <div
+        className={`flex flex-col items-center justify-center w-full ${props.secondaryLabel ? 'gap-1' : 'gap-1.5'}`}
+      >
+        {props.icon ? <Icon size={24} src={props.icon} /> : null}
+        <Text fit="wrap">{props.primaryLabel}</Text>
+        {props.secondaryLabel ? <Text fit="wrap">{props.secondaryLabel}</Text> : null}
+      </div>
+    </ButtonSurface>
   )
 }
 

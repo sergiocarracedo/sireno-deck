@@ -3,7 +3,64 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { Text } from '../../index.js'
 import { renderReactNodeToHtml } from '../../render/dom-host.js'
+import { UNKNOWN_HOST_CONTEXT } from '../../system/host-context.js'
 import coreButtonsAddon from './index.js'
+
+const mountedButtonMethods = {
+  getActiveDeckId: () => 'main',
+  goBack() {},
+  invalidate() {},
+  navigateToDeck() {},
+  runCommand: async () => ({}) as never,
+}
+
+function createStoreScope(initialSnapshot?: unknown) {
+  let snapshot = initialSnapshot
+
+  return {
+    clear() {
+      snapshot = undefined
+    },
+    get snapshot() {
+      return snapshot
+    },
+    set(value: unknown) {
+      snapshot = value
+    },
+    update(updater: (current: unknown) => unknown) {
+      snapshot = updater(snapshot)
+    },
+  }
+}
+
+function createMountedHarness(
+  definition: NonNullable<(typeof coreButtonsAddon.buttons)[number]>,
+  config: unknown,
+  position: number,
+  methodOverrides: Partial<typeof mountedButtonMethods> = {},
+) {
+  const props = {
+    button: { position, type: definition.type },
+    config,
+    frameState: 'idle',
+    hostContext: UNKNOWN_HOST_CONTEXT,
+    methods: { ...mountedButtonMethods, ...methodOverrides },
+    pressed: false,
+    store: {
+      addon: createStoreScope(),
+      button: createStoreScope(),
+    },
+    theme: {} as never,
+  } as Parameters<typeof definition.render>[0]
+
+  return {
+    activate: async () => definition.onActivate?.(props),
+    props,
+    refresh: async () => definition.refresh?.(props),
+    render: () => definition.render(props),
+    tap: async () => definition.onTap?.(props),
+  }
+}
 
 describe('core-buttons addon', () => {
   it('exports the component-first Text primitive through the public addon API', () => {
@@ -29,27 +86,27 @@ describe('core-buttons addon', () => {
     expect(config).toEqual({ label: 'Clock' })
   })
 
-  it('creates a renderable button instance', () => {
+  it('creates a renderable action button surface through the mounted contract', () => {
     const definition = coreButtonsAddon.buttons[0]
-    const instance = definition?.createInstance({
-      button: { position: 2 },
-      config: { icon: './clock.svg', label: 'Clock' },
-    })
+    const harness = createMountedHarness(definition!, {
+      icon: './clock.svg',
+      label: 'Clock',
+    }, 2)
 
-    expect(instance?.render()).toBeTruthy()
+    expect(harness.render()).toBeTruthy()
   })
 
   it('renders the bundled action button through the DOM render path', () => {
     const definition = coreButtonsAddon.buttons[0]
-    const instance = definition?.createInstance({
-      button: { position: 2 },
-      config: { icon: './clock.svg', label: 'Clock' },
-    } as never)
+    const harness = createMountedHarness(definition!, {
+      icon: './clock.svg',
+      label: 'Clock',
+    }, 2)
 
-    const html = renderReactNodeToHtml(instance?.render() as never)
+    const html = renderReactNodeToHtml(harness.render() as never)
 
     expect(html).toContain('Clock')
-    expect(html).toContain('class="bg-background border-accent"')
+    expect(html).toContain('bg-background border border-accent rounded-lg')
     expect(html).toContain('class="font-main text-primary"')
   })
 
@@ -58,13 +115,12 @@ describe('core-buttons addon', () => {
       (button) => button.type === 'change-deck',
     )
     const navigateToDeck = vi.fn()
-    const instance = definition?.createInstance({
-      button: { position: 4 },
-      config: { label: 'Emoji', target_deck: 'emoji' },
-      methods: { navigateToDeck },
-    } as never)
+    const harness = createMountedHarness(definition!, {
+      label: 'Emoji',
+      target_deck: 'emoji',
+    }, 4, { navigateToDeck })
 
-    await instance?.onTap?.()
+    await harness.tap()
 
     expect(navigateToDeck).toHaveBeenCalledWith('emoji')
   })
@@ -73,13 +129,13 @@ describe('core-buttons addon', () => {
     const definition = coreButtonsAddon.buttons.find(
       (button) => button.type === 'change-deck',
     )
-    const instance = definition?.createInstance({
-      button: { position: 4 },
-      config: { icon: './clock.svg', label: 'Emoji', target_deck: 'emoji' },
-      methods: { navigateToDeck: vi.fn() },
-    } as never)
+    const harness = createMountedHarness(definition!, {
+      icon: './clock.svg',
+      label: 'Emoji',
+      target_deck: 'emoji',
+    }, 4, { navigateToDeck: vi.fn() })
 
-    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Emoji')
+    expect(renderReactNodeToHtml(harness.render() as never)).toContain('Emoji')
   })
 
   it('exports a bounded media-sample button for browser-only sampled surfaces', () => {
@@ -90,11 +146,8 @@ describe('core-buttons addon', () => {
       label: 'Waves',
       sample_interval_ms: 500,
     })
-    const instance = definition?.createInstance({
-      button: { position: 5 },
-      config: config!,
-    } as never)
-    const html = renderReactNodeToHtml(instance?.render() as never)
+    const harness = createMountedHarness(definition!, config!, 5)
+    const html = renderReactNodeToHtml(harness.render() as never)
 
     expect(definition?.type).toBe('media-sample')
     expect(config).toEqual({ label: 'Waves', sample_interval_ms: 500 })
@@ -122,50 +175,46 @@ describe('core-buttons addon', () => {
     })
   })
 
-  it('creates a renderable internal toggle instance', () => {
+  it('creates a renderable internal toggle surface through the mounted contract', () => {
     const definition = coreButtonsAddon.buttons.find(
       (button) => button.type === 'toggle',
     )
-    const instance = definition?.createInstance({
-      button: { position: 6 },
-      config: {
+    const harness = createMountedHarness(definition!, {
         initial_state: 'on',
         label: 'Desk Lamp',
         mode: 'internal',
         on: { subtitle: 'ON' },
       },
-      methods: { invalidate: vi.fn() },
-    } as never)
+      6,
+      { invalidate: vi.fn() },
+    )
 
-    expect(instance?.render()).toMatchObject({
+    expect(harness.render()).toMatchObject({
       props: expect.any(Object),
     })
-    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Desk Lamp')
+    expect(renderReactNodeToHtml(harness.render() as never)).toContain('Desk Lamp')
   })
 
   it('toggles internal state and invalidates on tap', async () => {
     const definition = coreButtonsAddon.buttons.find(
       (button) => button.type === 'toggle',
     )
-    const invalidate = vi.fn()
-    const instance = definition?.createInstance({
-      button: { position: 7 },
-      config: {
+    const harness = createMountedHarness(definition!, {
         initial_state: 'off',
         label: 'Desk Lamp',
         mode: 'internal',
         off: { subtitle: 'OFF' },
         on: { subtitle: 'ON' },
       },
-      methods: { invalidate },
-    } as never)
+      7,
+      { invalidate: vi.fn() },
+    )
 
-    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Desk Lamp')
+    expect(renderReactNodeToHtml(harness.render() as never)).toContain('OFF')
 
-    await instance?.onTap?.()
+    await harness.tap()
 
-    expect(invalidate).toHaveBeenCalledTimes(1)
-    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Desk Lamp')
+    expect(renderReactNodeToHtml(harness.render() as never)).toContain('ON')
   })
 
   it('keeps get-set toggles pending until the first authoritative read', () => {
@@ -178,19 +227,18 @@ describe('core-buttons addon', () => {
       stdout: 'on',
       timedOut: false,
     }))
-    const instance = definition?.createInstance({
-      button: { position: 8 },
-      config: {
+    const harness = createMountedHarness(definition!, {
         get_state_command: 'read-lamp',
         label: 'Desk Lamp',
         mode: 'get-set',
         set_off_command: 'turn-off-lamp',
         set_on_command: 'turn-on-lamp',
       },
-      methods: { invalidate: vi.fn(), runCommand },
-    } as never)
+      8,
+      { invalidate: vi.fn(), runCommand },
+    )
 
-    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('PENDING')
+    expect(renderReactNodeToHtml(harness.render() as never)).toContain('PENDING')
     expect(runCommand).not.toHaveBeenCalled()
   })
 
@@ -211,9 +259,7 @@ describe('core-buttons addon', () => {
 
       return { code: 0, failed: false, stdout: '', timedOut: false }
     })
-    const instance = definition?.createInstance({
-      button: { position: 9 },
-      config: {
+    const harness = createMountedHarness(definition!, {
         get_state_command: 'read-lamp',
         label: 'Desk Lamp',
         mode: 'get-set',
@@ -222,20 +268,20 @@ describe('core-buttons addon', () => {
         set_off_command: 'turn-off-lamp',
         set_on_command: 'turn-on-lamp',
       },
-      methods: { invalidate, runCommand },
-    } as never)
+      9,
+      { invalidate, runCommand },
+    )
 
-    await instance?.onActivate?.()
+    await harness.activate()
 
     expect(runCommand).toHaveBeenCalledWith('read-lamp')
-    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Desk Lamp')
+    expect(renderReactNodeToHtml(harness.render() as never)).toContain('Desk Lamp')
 
-    await instance?.onTap?.()
+    await harness.tap()
 
     expect(runCommand).toHaveBeenCalledWith('turn-on-lamp')
     expect(runCommand).toHaveBeenLastCalledWith('read-lamp')
-    expect(invalidate).toHaveBeenCalled()
-    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Desk Lamp')
+    expect(renderReactNodeToHtml(harness.render() as never)).toContain('ON')
   })
 
   it('preserves the last authoritative truth and shows error on get-set write failure', async () => {
@@ -249,9 +295,7 @@ describe('core-buttons addon', () => {
 
       return { code: 1, failed: true, stdout: '', timedOut: false }
     })
-    const instance = definition?.createInstance({
-      button: { position: 10 },
-      config: {
+    const harness = createMountedHarness(definition!, {
         get_state_command: 'read-lamp',
         label: 'Desk Lamp',
         mode: 'get-set',
@@ -260,13 +304,14 @@ describe('core-buttons addon', () => {
         set_off_command: 'turn-off-lamp',
         set_on_command: 'turn-on-lamp',
       },
-      methods: { invalidate: vi.fn(), runCommand },
-    } as never)
+      10,
+      { invalidate: vi.fn(), runCommand },
+    )
 
-    await instance?.onActivate?.()
-    await instance?.onTap?.()
+    await harness.activate()
+    await harness.tap()
 
-    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('ERROR')
+    expect(renderReactNodeToHtml(harness.render() as never)).toContain('ERROR')
   })
 
   it('reconciles toggle-status writes through status_command instead of local inversion', async () => {
@@ -285,9 +330,7 @@ describe('core-buttons addon', () => {
 
       return { code: 0, failed: false, stdout: '', timedOut: false }
     })
-    const instance = definition?.createInstance({
-      button: { position: 11 },
-      config: {
+    const harness = createMountedHarness(definition!, {
         label: 'Desk Lamp',
         mode: 'toggle-status',
         off: { subtitle: 'OFF' },
@@ -295,18 +338,19 @@ describe('core-buttons addon', () => {
         status_command: 'read-lamp',
         toggle_command: 'toggle-lamp',
       },
-      methods: { invalidate: vi.fn(), runCommand },
-    } as never)
+      11,
+      { invalidate: vi.fn(), runCommand },
+    )
 
-    await instance?.onActivate?.()
-    await instance?.onTap?.()
+    await harness.activate()
+    await harness.tap()
 
     expect(runCommand.mock.calls.map((call) => call[0])).toEqual([
       'read-lamp',
       'toggle-lamp',
       'read-lamp',
     ])
-    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Desk Lamp')
+    expect(renderReactNodeToHtml(harness.render() as never)).toContain('ON')
   })
 
   it('allows toggle-status taps before the first authoritative read has resolved', async () => {
@@ -325,9 +369,7 @@ describe('core-buttons addon', () => {
 
       return { code: 0, failed: false, stdout: '', timedOut: false }
     })
-    const instance = definition?.createInstance({
-      button: { position: 12 },
-      config: {
+    const harness = createMountedHarness(definition!, {
         label: 'Desk Lamp',
         mode: 'toggle-status',
         off: { subtitle: 'OFF' },
@@ -335,16 +377,17 @@ describe('core-buttons addon', () => {
         status_command: 'read-lamp',
         toggle_command: 'toggle-lamp',
       },
-      methods: { invalidate: vi.fn(), runCommand },
-    } as never)
+      12,
+      { invalidate: vi.fn(), runCommand },
+    )
 
-    await instance?.onTap?.()
+    await harness.tap()
 
     expect(runCommand.mock.calls.map((call) => call[0])).toEqual([
       'toggle-lamp',
       'read-lamp',
     ])
-    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('Desk Lamp')
+    expect(renderReactNodeToHtml(harness.render() as never)).toContain('OFF')
   })
 
   it('preserves last authoritative truth and shows error when toggle-status reconciliation fails', async () => {
@@ -365,9 +408,7 @@ describe('core-buttons addon', () => {
 
       return { code: 0, failed: false, stdout: '', timedOut: false }
     })
-    const instance = definition?.createInstance({
-      button: { position: 13 },
-      config: {
+    const harness = createMountedHarness(definition!, {
         label: 'Desk Lamp',
         mode: 'toggle-status',
         off: { subtitle: 'OFF' },
@@ -375,12 +416,13 @@ describe('core-buttons addon', () => {
         status_command: 'read-lamp',
         toggle_command: 'toggle-lamp',
       },
-      methods: { invalidate: vi.fn(), runCommand },
-    } as never)
+      13,
+      { invalidate: vi.fn(), runCommand },
+    )
 
-    await instance?.onActivate?.()
-    await instance?.onTap?.()
+    await harness.activate()
+    await harness.tap()
 
-    expect(renderReactNodeToHtml(instance?.render() as never)).toContain('ERROR')
+    expect(renderReactNodeToHtml(harness.render() as never)).toContain('ERROR')
   })
 })

@@ -3,7 +3,62 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { setDomAssetPathResolver } from '../../addon/api.js'
 import { createBundledAddonRegistry } from '../../config/loader.js'
 import { renderReactNodeToHtml } from '../../render/dom-host.js'
+import { UNKNOWN_HOST_CONTEXT } from '../../system/host-context.js'
 import emojiSelectorAddon from './index.js'
+
+const mountedButtonMethods = {
+  getActiveDeckId: () => 'main',
+  goBack() {},
+  invalidate() {},
+  navigateToDeck() {},
+  runCommand: async () => ({}) as never,
+}
+
+function createStoreScope(initialSnapshot?: unknown) {
+  let snapshot = initialSnapshot
+
+  return {
+    clear() {
+      snapshot = undefined
+    },
+    get snapshot() {
+      return snapshot
+    },
+    set(value: unknown) {
+      snapshot = value
+    },
+    update(updater: (current: unknown) => unknown) {
+      snapshot = updater(snapshot)
+    },
+  }
+}
+
+function createMountedHarness(
+  definition: NonNullable<(typeof emojiSelectorAddon.buttons)[number]>,
+  config: unknown,
+  position: number,
+  methodOverrides: Partial<typeof mountedButtonMethods> = {},
+) {
+  const props = {
+    button: { position, type: definition.type },
+    config,
+    frameState: 'idle',
+    hostContext: UNKNOWN_HOST_CONTEXT,
+    methods: { ...mountedButtonMethods, ...methodOverrides },
+    pressed: false,
+    store: {
+      addon: createStoreScope(),
+      button: createStoreScope(),
+    },
+    theme: {} as never,
+  } as Parameters<typeof definition.render>[0]
+
+  return {
+    props,
+    render: () => definition.render(props),
+    tap: async () => definition.onTap?.(props),
+  }
+}
 
 describe('emoji-selector addon', () => {
   afterEach(() => {
@@ -41,17 +96,18 @@ describe('emoji-selector addon', () => {
       (button) => button.type === 'emoji-entry-button',
     )
     const runCommand = vi.fn()
-    const instance = entryDefinition?.createInstance({
-      button: { position: 2 },
-      config: {
+    const harness = createMountedHarness(
+      entryDefinition!,
+      {
         emoji: '😀',
         label: 'Smileys',
         select_command: "printf '%s' '{{emoji}}'",
       },
-      methods: { runCommand },
-    } as never)
+      2,
+      { runCommand },
+    )
 
-    await instance?.onTap?.()
+    await harness.tap()
 
     expect(runCommand).toHaveBeenCalledWith("printf '%s' '😀'")
   })
@@ -65,17 +121,16 @@ describe('emoji-selector addon', () => {
     const entryDefinition = emojiSelectorAddon.buttons.find(
       (button) => button.type === 'emoji-entry-button',
     )
-    const instance = entryDefinition?.createInstance({
-      button: { position: 2 },
-      config: {
+    const harness = createMountedHarness(entryDefinition!, {
         emoji: '😀',
         label: 'Smileys',
         select_command: "printf '%s' '{{emoji}}'",
       },
-      methods: { runCommand: vi.fn() },
-    } as never)
+      2,
+      { runCommand: vi.fn() },
+    )
 
-    const html = renderReactNodeToHtml(instance?.render() as never)
+    const html = renderReactNodeToHtml(harness.render() as never)
 
     expect(html).toContain('<img')
     expect(html).toContain('emoji-grin.svg')
@@ -106,17 +161,16 @@ describe('emoji-selector addon', () => {
     const entryDefinition = emojiSelectorAddon.buttons.find(
       (button) => button.type === 'emoji-entry-button',
     )
-    const instance = entryDefinition?.createInstance({
-      button: { position: 4 },
-      config: {
+    const harness = createMountedHarness(entryDefinition!, {
         emoji: '🛰️',
         label: 'Custom',
         select_command: "printf '%s' '{{emoji}}'",
       },
-      methods: { runCommand: vi.fn() },
-    } as never)
+      4,
+      { runCommand: vi.fn() },
+    )
 
-    const html = renderReactNodeToHtml(instance?.render() as never)
+    const html = renderReactNodeToHtml(harness.render() as never)
 
     expect(html).toContain('U+1F6F0')
     expect(html).toContain('font-main text-foreground')
