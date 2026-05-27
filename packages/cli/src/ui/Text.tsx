@@ -1,6 +1,7 @@
 import { createElement, type CSSProperties, type ReactElement, type ReactNode } from "react"
 
 import { cn } from "../themes/utils/cn.js"
+import { useThemeUiPresentation } from "./theme-presentation.js"
 
 const ALIGN_CLASS = {
   center: "text-center",
@@ -39,15 +40,19 @@ export interface TextProps {
 
 export function Text(props: TextProps): ReactElement {
   const fit = props.fit ?? "wrap"
+  const align = props.align ?? "center"
+  const tone = props.tone ?? "foreground"
+  const typography = props.typography ?? "main"
+  const themeUi = useThemeUiPresentation()
 
-  return createElement(
+  const element = createElement(
     "span",
     {
       className: cn(
         "block max-w-full min-w-0 leading-tight",
-        TYPOGRAPHY_CLASS[props.typography ?? "main"],
-        TONE_CLASS[props.tone ?? "foreground"],
-        ALIGN_CLASS[props.align ?? "center"],
+        TYPOGRAPHY_CLASS[typography],
+        TONE_CLASS[tone],
+        ALIGN_CLASS[align],
         fit === "wrap" && "whitespace-normal break-words",
         fit === "ellipsis" && "overflow-hidden whitespace-nowrap text-ellipsis",
         fit === "shrink" && "sireno-text-fit-shrink whitespace-normal break-words",
@@ -66,4 +71,14 @@ export function Text(props: TextProps): ReactElement {
         )
       : props.children,
   )
+
+  return themeUi?.text
+    ? themeUi.text({
+        align,
+        children: element,
+        fit,
+        tone,
+        typography,
+      })
+    : element
 }

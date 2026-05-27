@@ -8,16 +8,15 @@ import {
 
 import type { ReactElement, ReactNode } from 'react'
 
-import { ButtonSurface } from '../addon/api.js'
 import type { Theme, ThemeFrameState } from '../config/theme.js'
 import { resolveDeckLayout } from './browser-renderer.js'
-import { buttonFrame as defaultButtonFrame } from '../themes/default/index.js'
-import { STREAM_DECK_KEY_PRESET, type RenderPreset } from './render-preset.js'
+import { DeckDocument } from './dom-host-deck-document.js'
 import {
-  getThemeCssVariables,
-  getThemeUtilityStylesheet,
-  renderThemeCssVariables,
-} from './theme-utilities.js'
+  createHostedButtonElement,
+  createMountedHostedButtonElement,
+} from './dom-host-button.js'
+import { STREAM_DECK_KEY_PRESET, type RenderPreset } from './render-preset.js'
+import { getThemeUtilityStylesheet } from './theme-utilities.js'
 
 export interface HostedButton {
   content: ReactElement
@@ -352,7 +351,7 @@ export function renderMountedHostedButtons(
             'data-sireno-mounted-key': button.keyIndex,
             key: button.keyIndex,
           },
-          createHostedButtonElement(button),
+          createMountedHostedButtonElement(button),
         ),
       ),
     ),
@@ -378,207 +377,6 @@ export function renderMountedHostedButtons(
   }
 
   return snapshots
-}
-
-export function createHostedButtonElement(button: HostedButton): ReactElement {
-  const surface =
-    button.content.type === ButtonSurface
-      ? button.content
-      : createElement(
-          ButtonSurface,
-          {
-            ...(button.full_surface !== undefined
-              ? { full_surface: button.full_surface }
-              : {}),
-            ...(button.sample_interval_ms !== undefined
-              ? { sample_interval_ms: button.sample_interval_ms }
-              : {}),
-          },
-          button.content,
-        )
-
-  if (button.full_surface) {
-    return surface
-  }
-
-  const frame = button.theme?.buttonFrame ?? defaultButtonFrame
-
-  return createElement(frame, { state: button.frame_state ?? 'idle' }, surface)
-}
-
-function getThemeVariableStyle(theme?: Theme): Record<string, string> {
-  if (!theme) {
-    return {}
-  }
-
-  return Object.fromEntries(
-    getThemeCssVariables(theme).map((entry) => [entry.name, entry.value]),
-  )
-}
-
-function renderHostedButtonContent(
-  button: HostedButton | undefined,
-  theme: Theme | undefined,
-): ReactNode {
-  if (!button) {
-    return null
-  }
-
-  if (button.html !== undefined) {
-    return (
-      <div
-        dangerouslySetInnerHTML={{ __html: button.html }}
-        style={{ display: 'contents' }}
-      />
-    )
-  }
-
-  return createHostedButtonElement({ ...button, theme })
-}
-
-function DeckKeySlot(props: {
-  button?: HostedButton
-  emulatorMode: boolean
-  keyIndex: number
-  preset: RenderPreset
-  theme?: Theme
-}): ReactElement {
-  const hasButton = props.button !== undefined
-
-  return (
-    <div
-      data-sireno-empty-key={hasButton ? 'false' : 'true'}
-      data-sireno-key={props.keyIndex}
-      data-sireno-key-well="true"
-      style={{
-        alignItems: 'center',
-        background: props.emulatorMode
-          ? hasButton
-            ? 'radial-gradient(circle at 20% 18%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 48%), linear-gradient(180deg, rgba(15,23,32,0.92) 0%, rgba(7,10,14,0.98) 100%)'
-            : 'radial-gradient(circle at 50% 20%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 38%), linear-gradient(180deg, rgba(7,10,14,0.98) 0%, rgba(3,5,8,1) 100%)'
-          : 'transparent',
-        borderRadius: props.emulatorMode ? '18px' : '0',
-        boxShadow: props.emulatorMode
-          ? hasButton
-            ? 'inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -2px 6px rgba(0,0,0,0.4), 0 8px 18px rgba(0,0,0,0.24)'
-            : 'inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -3px 8px rgba(0,0,0,0.46)'
-          : 'none',
-        boxSizing: 'border-box',
-        display: 'flex',
-        height: `${props.preset.keyHeight}px`,
-        justifyContent: 'center',
-        overflow: 'hidden',
-        position: 'relative',
-        width: `${props.preset.keyWidth}px`,
-      }}
-    >
-      {props.emulatorMode ? (
-        <div
-          aria-hidden="true"
-          style={{
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 42%)',
-            inset: 0,
-            pointerEvents: 'none',
-            position: 'absolute',
-          }}
-        />
-      ) : null}
-      {renderHostedButtonContent(props.button, props.theme)}
-    </div>
-  )
-}
-
-function DeckDocument(props: {
-  background: string
-  buttons: readonly HostedButton[]
-  emulatorMode: boolean
-  inlineWarning?: {
-    detail: string
-    title: string
-  }
-  keyCount: number
-  layout: ReturnType<typeof resolveDeckLayout>
-  preset: RenderPreset
-  theme?: Theme
-  themeAssetStylesheet: string
-  themeStylesheet: string
-}): ReactElement {
-  const buttonsByKey = new Map(
-    props.buttons.map((button) => [button.keyIndex, button]),
-  )
-  const themeVariableStyle = getThemeVariableStyle(props.theme)
-
-  return (
-    <html>
-      <head>
-        <style data-sireno-theme-utilities="true">{props.themeStylesheet}</style>
-        <style data-sireno-theme-assets="true">{props.themeAssetStylesheet}</style>
-      </head>
-      <body
-        data-sireno-browser-document="true"
-        style={{
-          background: props.background,
-          margin: 0,
-        }}
-      >
-        <div
-          data-sireno-browser-shell="true"
-          id="deck-root"
-          style={{
-            ...themeVariableStyle,
-            background: props.emulatorMode
-              ? `radial-gradient(circle at top, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0) 34%), linear-gradient(180deg, color-mix(in srgb, ${props.background} 82%, black) 0%, ${props.background} 100%)`
-              : props.background,
-            boxShadow: props.emulatorMode
-              ? 'inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -14px 24px rgba(0,0,0,0.2)'
-              : 'none',
-            color: 'var(--sireno-color-foreground)',
-            display: 'grid',
-            gridTemplateColumns: `repeat(${props.layout.columns}, ${props.preset.keyWidth}px)`,
-            gridTemplateRows: `repeat(${props.layout.rows}, ${props.preset.keyHeight}px)`,
-            height: `${props.layout.rows * props.preset.keyHeight}px`,
-            isolation: 'isolate',
-            overflow: 'hidden',
-            width: `${props.layout.columns * props.preset.keyWidth}px`,
-          }}
-        >
-          {props.inlineWarning ? (
-            <div
-              data-sireno-inline-warning="true"
-              style={{
-                alignItems: 'flex-start',
-                background: 'linear-gradient(180deg, rgba(245,158,11,0.22) 0%, rgba(161,98,7,0.12) 100%)',
-                borderBottom: '1px solid rgba(245,158,11,0.35)',
-                color: 'var(--sireno-color-foreground)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '4px',
-                gridColumn: `1 / span ${props.layout.columns}`,
-                padding: '10px 12px',
-              }}
-            >
-              <strong style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                {props.inlineWarning.title}
-              </strong>
-              <span style={{ fontSize: '12px', lineHeight: 1.35 }}>
-                {props.inlineWarning.detail}
-              </span>
-            </div>
-          ) : null}
-          {Array.from({ length: props.keyCount }, (_, keyIndex) => (
-            <DeckKeySlot
-              button={buttonsByKey.get(keyIndex)}
-              emulatorMode={props.emulatorMode}
-              key={keyIndex}
-              keyIndex={keyIndex}
-              preset={props.preset}
-              theme={props.theme}
-            />
-          ))}
-        </div>
-      </body>
-    </html>
-  )
 }
 
 export function renderDomDeck(
@@ -608,3 +406,5 @@ export function renderDomDeck(
 
   return `<!doctype html>${html}`
 }
+
+export { createHostedButtonElement }

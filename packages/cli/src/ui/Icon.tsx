@@ -2,6 +2,7 @@ import { createElement, type CSSProperties, type ReactElement, type ReactNode } 
 
 import { resolveDomAssetSrc } from "../addon/api.js"
 import { cn } from "../themes/utils/cn.js"
+import { useThemeUiPresentation } from "./theme-presentation.js"
 
 const GENERIC_ICON_REGISTRY = {
   clock: {
@@ -107,11 +108,13 @@ function renderSvg(
 }
 
 export function Icon(props: IconProps): ReactElement {
+  const themeUi = useThemeUiPresentation()
+
   if ("src" in props) {
     const size = props.size ?? 20
     const decorative = !props.label
 
-    return createElement("img", {
+    const element = createElement("img", {
       alt: props.label ?? "",
       "aria-hidden": decorative ? "true" : undefined,
       className: cn("inline-block shrink-0", props.className),
@@ -125,11 +128,38 @@ export function Icon(props: IconProps): ReactElement {
         ...props.style,
       },
     })
+
+    return themeUi?.icon
+      ? themeUi.icon({
+          children: element,
+          decorative,
+          source: "asset",
+          tone: props.tone,
+        })
+      : element
   }
 
   if ("brand" in props) {
-    return renderSvg(props, BRAND_ICON_REGISTRY[props.brand], "brand")
+    const element = renderSvg(props, BRAND_ICON_REGISTRY[props.brand], "brand")
+
+    return themeUi?.icon
+      ? themeUi.icon({
+          children: element,
+          decorative: !props.label,
+          source: "brand",
+          tone: props.tone,
+        })
+      : element
   }
 
-  return renderSvg(props, GENERIC_ICON_REGISTRY[props.icon], "generic")
+  const element = renderSvg(props, GENERIC_ICON_REGISTRY[props.icon], "generic")
+
+  return themeUi?.icon
+    ? themeUi.icon({
+        children: element,
+        decorative: !props.label,
+        source: "generic",
+        tone: props.tone,
+      })
+    : element
 }

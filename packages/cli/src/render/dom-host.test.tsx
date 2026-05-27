@@ -9,6 +9,7 @@ import {
 import { resolveTheme } from "../config/theme.js"
 import { UNKNOWN_HOST_CONTEXT } from "../system/host-context.js"
 import { buttonFrame as defaultButtonFrame } from "../themes/default/index.js"
+import { Chip, Icon, Text } from "../ui/index.js"
 import { createHostedButtonElement, createMountedDomHost, renderDomDeck, renderMountedHostedButtons, renderReactNodeToHtml } from "./dom-host.js"
 
 describe("dom host", () => {
@@ -170,6 +171,32 @@ describe("dom host", () => {
 
     expect(html).toContain('data-sireno-button-frame="true"')
     expect(html).toContain('color-mix(in oklab, white 68%, var(--sireno-color-background) 32%)')
+  })
+
+  it("threads theme-owned Icon, Chip, and Text presentation through the hosted-button runtime seam", async () => {
+    const theme = await resolveTheme("dark")
+    const html = renderReactNodeToHtml(createHostedButtonElement({
+      content: createElement(
+        ButtonSurface,
+        null,
+        createElement(
+          "div",
+          { className: "flex flex-col items-center justify-center gap-1" },
+          createElement(Chip, { tone: "accent" }, "LIVE"),
+          createElement(Icon, { icon: "clock", tone: "primary" }),
+          createElement(Text, { fit: "marquee", tone: "foreground" }, "Theme proof"),
+        ),
+      ),
+      keyIndex: 0,
+      theme,
+    }))
+
+    expect(html).toContain('sireno-default-chip')
+    expect(html).toContain('sireno-default-icon')
+    expect(html).toContain('sireno-default-text')
+    expect(html).toContain('data-sireno-default-text-fit="marquee"')
+    expect(html).toContain('data-sireno-text-fit="marquee"')
+    expect(html).toContain('sireno-marquee-track')
   })
 
   it("normalizes absolute icon paths into browser-loadable file URLs", () => {

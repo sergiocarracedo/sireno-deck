@@ -1,6 +1,7 @@
 import { createElement, type CSSProperties, type ReactElement, type ReactNode } from "react"
 
 import { cn } from "../themes/utils/cn.js"
+import { useThemeUiPresentation } from "./theme-presentation.js"
 
 const TONE_CLASS = {
   accent: "border-accent text-accent",
@@ -20,12 +21,15 @@ export interface ChipProps {
 }
 
 export function Chip(props: ChipProps): ReactElement {
-  return createElement(
+  const tone = props.tone ?? "foreground"
+  const themeUi = useThemeUiPresentation()
+
+  const element = createElement(
     "span",
     {
       className: cn(
         "inline-flex items-center justify-center rounded-full border px-2 py-0.5 font-aux uppercase tracking-wide",
-        TONE_CLASS[props.tone ?? "foreground"],
+        TONE_CLASS[tone],
         props.className,
       ),
       "data-sireno-ui-chip": "true",
@@ -33,4 +37,6 @@ export function Chip(props: ChipProps): ReactElement {
     },
     props.children,
   )
+
+  return themeUi?.chip ? themeUi.chip({ children: element, tone }) : element
 }
