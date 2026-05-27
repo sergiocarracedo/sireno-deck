@@ -1,7 +1,7 @@
 import { createRequire } from "node:module"
 import { existsSync, readFileSync } from "node:fs"
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path"
-import { pathToFileURL } from "node:url"
+import { fileURLToPath, pathToFileURL } from "node:url"
 import { tsImport } from "tsx/esm/api"
 
 import { AddonManifestError, validateAddonApiVersion, validateAddonManifest, type AddonManifest } from "./manifest.js"
@@ -13,6 +13,8 @@ import type { SirenoAddon } from "./api.js"
 const require = createRequire(import.meta.url)
 const RAW_SOURCE_EXTENSIONS = new Set([".js", ".jsx", ".ts", ".tsx"])
 const TRANSPILED_SOURCE_EXTENSIONS = new Set([".jsx", ".ts", ".tsx"])
+const MODULE_DIRECTORY = dirname(fileURLToPath(import.meta.url))
+const PACKAGE_TSCONFIG_PATH = resolve(MODULE_DIRECTORY, "../../tsconfig.json")
 const RAW_SOURCE_IMPORT_PATTERN = /(?:import|export)\s+(?:[^"'`]+?\s+from\s+)?["'`]([^"'`]+)["'`]|import\(\s*["'`]([^"'`]+)["'`]\s*\)/g
 
 export interface LoadedAddon {
@@ -193,7 +195,7 @@ async function importRawSourceAddon(rootDir: string, entryPath: string, manifest
   try {
     return await tsImport(pathToFileURL(entryPath).href, {
       parentURL: pathToFileURL(entryPath).href,
-      tsconfig: false,
+      tsconfig: PACKAGE_TSCONFIG_PATH,
     })
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)

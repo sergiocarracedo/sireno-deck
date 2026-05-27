@@ -31,6 +31,7 @@ export interface HostedButton {
 
 export interface DomHostRenderOptions {
   background?: string
+  emulatorMode?: boolean
   inlineWarning?: {
     detail: string
     title: string
@@ -437,6 +438,7 @@ function renderHostedButtonContent(
 
 function DeckKeySlot(props: {
   button?: HostedButton
+  emulatorMode: boolean
   keyIndex: number
   preset: RenderPreset
   theme?: Theme
@@ -450,13 +452,17 @@ function DeckKeySlot(props: {
       data-sireno-key-well="true"
       style={{
         alignItems: 'center',
-        background: hasButton
-          ? 'radial-gradient(circle at 20% 18%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 48%), linear-gradient(180deg, rgba(15,23,32,0.92) 0%, rgba(7,10,14,0.98) 100%)'
-          : 'radial-gradient(circle at 50% 20%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 38%), linear-gradient(180deg, rgba(7,10,14,0.98) 0%, rgba(3,5,8,1) 100%)',
-        borderRadius: '18px',
-        boxShadow: hasButton
-          ? 'inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -2px 6px rgba(0,0,0,0.4), 0 8px 18px rgba(0,0,0,0.24)'
-          : 'inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -3px 8px rgba(0,0,0,0.46)',
+        background: props.emulatorMode
+          ? hasButton
+            ? 'radial-gradient(circle at 20% 18%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 48%), linear-gradient(180deg, rgba(15,23,32,0.92) 0%, rgba(7,10,14,0.98) 100%)'
+            : 'radial-gradient(circle at 50% 20%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 38%), linear-gradient(180deg, rgba(7,10,14,0.98) 0%, rgba(3,5,8,1) 100%)'
+          : 'transparent',
+        borderRadius: props.emulatorMode ? '18px' : '0',
+        boxShadow: props.emulatorMode
+          ? hasButton
+            ? 'inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -2px 6px rgba(0,0,0,0.4), 0 8px 18px rgba(0,0,0,0.24)'
+            : 'inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -3px 8px rgba(0,0,0,0.46)'
+          : 'none',
         boxSizing: 'border-box',
         display: 'flex',
         height: `${props.preset.keyHeight}px`,
@@ -466,15 +472,17 @@ function DeckKeySlot(props: {
         width: `${props.preset.keyWidth}px`,
       }}
     >
-      <div
-        aria-hidden="true"
-        style={{
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 42%)',
-          inset: 0,
-          pointerEvents: 'none',
-          position: 'absolute',
-        }}
-      />
+      {props.emulatorMode ? (
+        <div
+          aria-hidden="true"
+          style={{
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 42%)',
+            inset: 0,
+            pointerEvents: 'none',
+            position: 'absolute',
+          }}
+        />
+      ) : null}
       {renderHostedButtonContent(props.button, props.theme)}
     </div>
   )
@@ -483,6 +491,7 @@ function DeckKeySlot(props: {
 function DeckDocument(props: {
   background: string
   buttons: readonly HostedButton[]
+  emulatorMode: boolean
   inlineWarning?: {
     detail: string
     title: string
@@ -517,8 +526,12 @@ function DeckDocument(props: {
           id="deck-root"
           style={{
             ...themeVariableStyle,
-            background: `radial-gradient(circle at top, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0) 34%), linear-gradient(180deg, color-mix(in srgb, ${props.background} 82%, black) 0%, ${props.background} 100%)`,
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -14px 24px rgba(0,0,0,0.2)',
+            background: props.emulatorMode
+              ? `radial-gradient(circle at top, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0) 34%), linear-gradient(180deg, color-mix(in srgb, ${props.background} 82%, black) 0%, ${props.background} 100%)`
+              : props.background,
+            boxShadow: props.emulatorMode
+              ? 'inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -14px 24px rgba(0,0,0,0.2)'
+              : 'none',
             color: 'var(--sireno-color-foreground)',
             display: 'grid',
             gridTemplateColumns: `repeat(${props.layout.columns}, ${props.preset.keyWidth}px)`,
@@ -555,6 +568,7 @@ function DeckDocument(props: {
           {Array.from({ length: props.keyCount }, (_, keyIndex) => (
             <DeckKeySlot
               button={buttonsByKey.get(keyIndex)}
+              emulatorMode={props.emulatorMode}
               key={keyIndex}
               keyIndex={keyIndex}
               preset={props.preset}
@@ -581,6 +595,7 @@ export function renderDomDeck(
     <DeckDocument
       background={background}
       buttons={buttons}
+      emulatorMode={options.emulatorMode ?? false}
       inlineWarning={options.inlineWarning}
       keyCount={options.keyCount}
       layout={layout}

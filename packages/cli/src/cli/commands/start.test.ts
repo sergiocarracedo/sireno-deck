@@ -411,13 +411,13 @@ describe("loadRuntimeConfig", () => {
   })
 
   it("renders shared deck html on the real tsx runtime path without ambient React globals", async () => {
-    const result = await execa("pnpm", [
-      "exec",
-      "tsx",
+    const result = await execa("node", [
+      "--import",
+      "tsx/esm",
       "--eval",
-      "(async () => { const { renderDomDeck } = await import('./packages/cli/src/render/dom-host.tsx'); console.log(renderDomDeck([], { keyCount: 1 }).slice(0, 40)); })().catch((error) => { console.error(error); process.exit(1); });",
+      "(async () => { const [{ renderDomDeck }, { ButtonFrame }] = await Promise.all([import('./src/render/dom-host.tsx'), import('./src/themes/default/ButtonFrame.tsx')]); console.log(renderDomDeck([], { keyCount: 1 }).slice(0, 40)); console.log(typeof ButtonFrame({ children: null, state: 'idle' })); process.exit(0); })().catch((error) => { console.error(error); process.exit(1); });",
     ], {
-      cwd: resolve(import.meta.dirname, "../../../.."),
+      cwd: resolve(import.meta.dirname, "../../.."),
     })
 
     expect(result.stdout).toContain("<!doctype html>")
@@ -1399,10 +1399,33 @@ describe("startEmulatorSession", () => {
 
     expect(moduleSource).toContain("function patchThemeStyles(nextDocument)")
     expect(moduleSource).toContain("function patchDeckRoot(nextDeckRoot)")
-    expect(moduleSource).toContain("currentKey.outerHTML !== nextKey.outerHTML")
-    expect(moduleSource).toContain("currentKey.replaceWith(nextKey)")
+    expect(moduleSource).toContain("emulatorMode,")
+    expect(moduleSource).toContain("const currentChildren = Array.from(currentDeckRoot.children)")
+    expect(moduleSource).toContain("currentChildren.slice(nextChildren.length).forEach((staleChild) => { staleChild.remove(); });")
+    expect(moduleSource).toContain("const canPatchKey = currentKey !== null && currentKey === nextKey;")
+    expect(moduleSource).toContain("currentChild.replaceWith(nextChild);")
     expect(moduleSource).toContain("mount.replaceChildren(nextDeckRoot)")
     expect(moduleSource).not.toContain("mount.innerHTML = deckHtml;")
+  })
+
+  it("passes emulator render intent only on emulator-served deck html", async () => {
+    const moduleSource = await import("node:fs/promises").then(({ readFile }) =>
+      readFile(new URL("./start.ts", import.meta.url), "utf8"),
+    )
+
+    expect(moduleSource).toContain("createDeckHtml(connection.info.keyCount, deckButtons, theme, undefined, false)")
+    expect(moduleSource).toContain("}, true)")
+    expect(moduleSource).toContain("buttons.filter(isDomRenderButton), loadedConfig.theme, undefined, true")
+  })
+
+  it("ships emulator deck patching that removes stale non-key children like inline warnings", async () => {
+    const moduleSource = await import("node:fs/promises").then(({ readFile }) =>
+      readFile(new URL("./start.ts", import.meta.url), "utf8"),
+    )
+
+    expect(moduleSource).toContain("currentChildren.slice(nextChildren.length).forEach((staleChild) => { staleChild.remove(); });")
+    expect(moduleSource).toContain("const currentChildren = Array.from(currentDeckRoot.children)")
+    expect(moduleSource).toContain("const nextChildren = Array.from(nextDeckRoot.children)")
   })
 
   it("restarts the emulator with a new virtual device when the page requests a device switch", async () => {

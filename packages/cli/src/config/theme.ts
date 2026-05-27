@@ -70,6 +70,7 @@ export interface Theme extends Omit<ThemeSchemaOutput, "typography"> {
 const MODULE_DIRECTORY = dirname(fileURLToPath(import.meta.url))
 const MANIFEST_FILENAME = "manifest.yml"
 const TRANSPILED_THEME_RUNTIME_EXTENSIONS = new Set([".jsx", ".ts", ".tsx"])
+const PACKAGE_TSCONFIG_PATH = resolve(MODULE_DIRECTORY, "../../tsconfig.json")
 const BUILTIN_THEME_ALIASES = {
   dark: "default",
 } as const
@@ -270,7 +271,7 @@ async function importThemeButtonFrame(manifest: ThemeManifest, manifestPath: str
     const importedModule = TRANSPILED_THEME_RUNTIME_EXTENSIONS.has(extname(importedEntryPath))
       ? await tsImport(importedEntryUrl, {
           parentURL: importedEntryUrl,
-          tsconfig: false,
+          tsconfig: PACKAGE_TSCONFIG_PATH,
         })
       : await import(importedEntryUrl)
     const candidateFrame = importedModule.buttonFrame

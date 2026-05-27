@@ -199,6 +199,7 @@ function createDeckHtml(
     detail: string
     title: string
   },
+  emulatorMode = false,
 ): string {
   return renderDomDeck(deckButtons.map((button) => ({
     content: button.content,
@@ -207,6 +208,7 @@ function createDeckHtml(
     keyIndex: button.keyIndex,
     ...(button.sample_interval_ms !== undefined ? { sample_interval_ms: button.sample_interval_ms } : {}),
   })), {
+    emulatorMode,
     inlineWarning,
     keyCount,
     theme,
@@ -242,7 +244,7 @@ async function renderDomDeckSurface(
   logger: pino.Logger,
   theme?: Theme,
 ): Promise<void> {
-  await browserRenderer.updateDeck(createDeckHtml(connection.info.keyCount, deckButtons, theme))
+  await browserRenderer.updateDeck(createDeckHtml(connection.info.keyCount, deckButtons, theme, undefined, false))
 
   const buffersByKey = await browserRenderer.captureKeyBuffers()
   for (const [keyIndex, buffer] of buffersByKey.entries()) {
@@ -350,16 +352,19 @@ function renderEmulatorShellHtml(): string {
     "  if (!currentDeckRoot) { mount.replaceChildren(nextDeckRoot); attachDeckInteractions(); return; }",
     "  Array.from(currentDeckRoot.getAttributeNames()).forEach((name) => { if (!nextDeckRoot.hasAttribute(name)) { currentDeckRoot.removeAttribute(name); } });",
     "  Array.from(nextDeckRoot.getAttributeNames()).forEach((name) => { currentDeckRoot.setAttribute(name, nextDeckRoot.getAttribute(name) ?? ''); });",
-    "  const currentKeys = new Map(Array.from(currentDeckRoot.querySelectorAll('[data-sireno-key]')).map((element) => [element.getAttribute('data-sireno-key'), element]));",
-    "  nextDeckRoot.querySelectorAll('[data-sireno-key]').forEach((nextKey) => {",
-    "    const key = nextKey.getAttribute('data-sireno-key');",
-    "    if (key === null) { return; }",
-    "    const currentKey = currentKeys.get(key);",
-    "    if (!currentKey) { currentDeckRoot.appendChild(nextKey); return; }",
-    "    if (currentKey.outerHTML !== nextKey.outerHTML) { currentKey.replaceWith(nextKey); }",
-    "    currentKeys.delete(key);",
+    "  const currentChildren = Array.from(currentDeckRoot.children);",
+    "  const nextChildren = Array.from(nextDeckRoot.children);",
+    "  nextChildren.forEach((nextChild, index) => {",
+    "    const currentChild = currentChildren[index];",
+    "    if (!currentChild) { currentDeckRoot.appendChild(nextChild); return; }",
+    "    const currentKey = currentChild.getAttribute('data-sireno-key');",
+    "    const nextKey = nextChild.getAttribute('data-sireno-key');",
+    "    const canPatchKey = currentKey !== null && currentKey === nextKey;",
+    "    if (canPatchKey && currentChild.outerHTML === nextChild.outerHTML) { return; }",
+    "    if (!canPatchKey && currentChild.outerHTML === nextChild.outerHTML) { return; }",
+    "    currentChild.replaceWith(nextChild);",
     "  });",
-    "  currentKeys.forEach((staleKey) => { staleKey.remove(); });",
+    "  currentChildren.slice(nextChildren.length).forEach((staleChild) => { staleChild.remove(); });",
     "  attachDeckInteractions();",
     "}",
     "async function refresh(){",
@@ -645,7 +650,7 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
       surfaceState.html = createDeckHtml(keyCount, [], loadedConfig.theme, {
         detail: mismatchDetail,
         title: "Layout mismatch",
-      })
+      }, true)
       surfaceState.updatedAt = new Date().toISOString()
       surfaceState.version += 1
       surfaceState.status = "ready"
@@ -672,7 +677,7 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
           throw new Error("Runtime deck rendering must provide DOM-backed button content")
         }
 
-        const html = createDeckHtml(connection.info.keyCount, buttons.filter(isDomRenderButton), loadedConfig.theme)
+        const html = createDeckHtml(connection.info.keyCount, buttons.filter(isDomRenderButton), loadedConfig.theme, undefined, true)
         surfaceState.activeDeckId = runtime.getActiveDeck().id
         surfaceState.error = null
         surfaceState.html = html
