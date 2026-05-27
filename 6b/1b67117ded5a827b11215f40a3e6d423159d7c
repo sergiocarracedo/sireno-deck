@@ -1,0 +1,43 @@
+packages/cli/src/builtin-addons/emoji-selector/support.tsx
+  s_b21ef815cd71c9::t_37e18770f2710f 1-180
+packages/cli/src/builtin-addons/core-buttons/buttons/media-sample.tsx
+  s_b21ef815cd71c9::t_31b45b5650c711 30-34,36-59
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle.tsx
+  s_b21ef815cd71c9::t_31b45b5650c711 55-64
+packages/cli/src/builtin-addons/emoji-selector/buttons/back.tsx
+  s_b21ef815cd71c9::t_31b45b5650c711 1-14
+packages/cli/src/builtin-addons/emoji-selector/buttons/category.tsx
+  s_b21ef815cd71c9::t_31b45b5650c711 1-14
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_b21ef815cd71c9::t_31b45b5650c711 4-7
+packages/cli/src/builtin-addons/emoji-selector/buttons/entry.tsx
+  s_b21ef815cd71c9::t_31b45b5650c711 1-30
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck.tsx
+  s_b21ef815cd71c9::t_31b45b5650c711 7-11
+packages/cli/src/builtin-addons/core-buttons/index.test.ts
+  s_b21ef815cd71c9::t_31b45b5650c711 6,9-64,89,91-94,96,101-104,106,109,118-121,123,132-136,138,149-150,178,182,188-190,192,195,202,209-211,213,215,217,230,237-239,241,262,271-273,275,278,280,284,298,307-309,311-312,314,333,341-343,345-346,353,372,380-382,384,390,411,419-421,423-424,426
+packages/cli/src/builtin-addons/emoji-selector/index.test.ts
+  s_b21ef815cd71c9::t_31b45b5650c711 6,9-62,110,124,129-131,133,164,169-171,173
+  s_b21ef815cd71c9::t_abb8210fd28347 99-101,106-108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6b1b67117ded5a827b11215f40a3e6d423159d7c",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b21ef815cd71c9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_194c6ab8dffeZgB4hXir7Qu8T0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
