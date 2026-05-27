@@ -71,6 +71,30 @@ describe("dom host", () => {
     expect(html).toContain('data-sireno-media-sample-interval-ms="250"')
   })
 
+  it("keeps deck shell chrome off by default outside emulator mode", () => {
+    const html = renderDomDeck([], {
+      keyCount: 1,
+    })
+
+    expect(html).toContain('data-sireno-browser-shell="true"')
+    expect(html).toContain('background:#0f1720;')
+    expect(html).toContain('box-shadow:none;')
+    expect(html).toContain('data-sireno-key-well="true"')
+    expect(html).not.toContain('radial-gradient(circle at top, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0) 34%)')
+  })
+
+  it("renders deck shell chrome only when emulator mode is explicit", () => {
+    const html = renderDomDeck([], {
+      emulatorMode: true,
+      keyCount: 1,
+    })
+
+    expect(html).toContain('data-sireno-browser-shell="true"')
+    expect(html).toContain('radial-gradient(circle at top, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0) 34%)')
+    expect(html).toContain('inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -14px 24px rgba(0,0,0,0.2)')
+    expect(html).toContain('linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 42%)')
+  })
+
   it("exports theme CSS vars and the browser utility stylesheet on the deck root", async () => {
     const html = renderDomDeck([], {
       keyCount: 1,
