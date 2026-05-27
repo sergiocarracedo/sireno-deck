@@ -1,5 +1,6 @@
 import { resolve } from "node:path"
 
+import { execa } from "execa"
 import { createElement } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -407,6 +408,21 @@ describe("loadRuntimeConfig", () => {
 
     runtime.stop()
     await runtimeConfig.sessionMonitor.stop()
+  })
+
+  it("renders shared deck html on the real tsx runtime path without ambient React globals", async () => {
+    const result = await execa("pnpm", [
+      "exec",
+      "tsx",
+      "--eval",
+      "(async () => { const { renderDomDeck } = await import('./packages/cli/src/render/dom-host.tsx'); console.log(renderDomDeck([], { keyCount: 1 }).slice(0, 40)); })().catch((error) => { console.error(error); process.exit(1); });",
+    ], {
+      cwd: resolve(import.meta.dirname, "../../../.."),
+    })
+
+    expect(result.stdout).toContain("<!doctype html>")
+    expect(result.stdout).not.toContain("React is not defined")
+    expect(result.stderr).not.toContain("React is not defined")
   })
 })
 

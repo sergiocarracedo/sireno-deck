@@ -1,4 +1,4 @@
-import { Fragment, createContext, createElement } from 'react'
+import React, { Fragment, createContext, createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import Reconciler from 'react-reconciler'
 import {
