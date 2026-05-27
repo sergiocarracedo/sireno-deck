@@ -1,0 +1,27 @@
+.planning/phases/26-browser-deck-react-shell-polish/26-UAT-rerun-2026-05-27.md
+  s_62d8b999b52dbd::t_4ee71faf2ed2ff 2,10,15-18,32-34,40-41,46-50
+  s_62d8b999b52dbd::t_9089b160ab7e2f 28,39
+  s_62d8b999b52dbd::t_05c9b53655602a 1,3-9,11-14,19-23,25-27,29-31,35-38,42-45
+  s_62d8b999b52dbd::t_9bb0c290bb7714 24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "924d5768b2305754e1dea2e39e43fbd1eb5eeff3",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_62d8b999b52dbd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19a95ab2cffelx1Pw48Hq6DfWk",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
