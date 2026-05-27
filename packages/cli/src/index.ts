@@ -6,6 +6,8 @@ export {
 export { Chip, Icon, Text } from "./ui/index.js"
 
 export type {
+  AddonButtonDefinition,
+  AddonButtonRuntimeProps,
   DomElementStyleProps,
   MountedAddonButtonDefinition,
   MountedAddonButtonRenderProps,

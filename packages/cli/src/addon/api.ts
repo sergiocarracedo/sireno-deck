@@ -1,7 +1,7 @@
 import { isAbsolute } from "node:path"
 import { pathToFileURL } from "node:url"
 
-import { createElement } from "react"
+import { jsx } from "react/jsx-runtime"
 
 import type { CSSProperties, ReactElement, ReactNode } from "react"
 import type { ZodType } from "zod"
@@ -63,17 +63,6 @@ export interface AddonButtonRenderState {
   pressed: boolean
 }
 
-export interface AddonButtonInstance {
-  dispose?: () => Promise<void> | void
-  onActivate?: () => Promise<void> | void
-  onDeactivate?: () => Promise<void> | void
-  onPress?: () => Promise<void> | void
-  onRelease?: () => Promise<void> | void
-  onTap?: () => Promise<void> | void
-  refresh?: () => Promise<void> | void
-  render: () => ReactElement
-}
-
 export interface ButtonSurfaceProps extends AddonButtonSurfaceContract {
   children: ReactNode
 }
@@ -83,7 +72,7 @@ export interface DomElementStyleProps {
   style?: CSSProperties
 }
 
-export interface CreateAddonButtonInstanceOptions<TConfig> {
+export interface AddonButtonRuntimeProps<TConfig> {
   button: AddonButtonEnvelope
   config: TConfig
   hostContext: HostContext
@@ -92,15 +81,8 @@ export interface CreateAddonButtonInstanceOptions<TConfig> {
 }
 
 export interface MountedAddonButtonRenderProps<TConfig>
-  extends CreateAddonButtonInstanceOptions<TConfig>, AddonButtonRenderState {
+  extends AddonButtonRuntimeProps<TConfig>, AddonButtonRenderState {
   store: MountedAddonButtonStore
-}
-
-export interface LegacyAddonButtonDefinition<TConfig = unknown> {
-  configSchema: ZodType<TConfig>
-  createInstance: (options: CreateAddonButtonInstanceOptions<TConfig>) => AddonButtonInstance
-  defaultIntervalMs?: number
-  type: string
 }
 
 export interface MountedAddonButtonDefinition<TConfig = unknown> {
@@ -117,83 +99,9 @@ export interface MountedAddonButtonDefinition<TConfig = unknown> {
   type: string
 }
 
-export type AddonButtonDefinition<TConfig = unknown> = LegacyAddonButtonDefinition<TConfig>
-
-interface MountedAddonButtonStoreAccessScope {
-  clear: () => void
-  getSnapshot: () => unknown
-  set: (value: unknown) => void
-  update: (updater: (snapshot: unknown) => unknown) => void
-}
-
-interface MountedAddonButtonStoreAccess {
-  addon: MountedAddonButtonStoreAccessScope
-  button: MountedAddonButtonStoreAccessScope
-}
-
-interface MountedAddonButtonInstanceOptions<TConfig> extends CreateAddonButtonInstanceOptions<TConfig> {
-  store?: MountedAddonButtonStoreAccess
-}
+export type AddonButtonDefinition<TConfig = unknown> = MountedAddonButtonDefinition<TConfig>
 
 const ADDON_BUTTON_OWNER_NAME = Symbol("sireno.addon.buttonOwnerName")
-
-const EMPTY_STORE_SCOPE_ACCESS: MountedAddonButtonStoreAccessScope = {
-  clear() {},
-  getSnapshot: () => undefined,
-  set() {},
-  update() {},
-}
-
-function createMountedStoreScope(access: MountedAddonButtonStoreAccessScope): AddonButtonStoreScope {
-  return {
-    clear: access.clear,
-    get snapshot() {
-      return access.getSnapshot()
-    },
-    set: access.set,
-    update: access.update,
-  }
-}
-
-function createFallbackMountedStoreAccess(onMutate?: () => void): MountedAddonButtonStoreAccess {
-  let addonSnapshot: unknown
-  let buttonSnapshot: unknown
-
-  const createScope = (
-    getSnapshot: () => unknown,
-    setSnapshot: (value: unknown) => void,
-  ): MountedAddonButtonStoreAccessScope => ({
-    clear() {
-      setSnapshot(undefined)
-      onMutate?.()
-    },
-    getSnapshot,
-    set(value) {
-      setSnapshot(value)
-      onMutate?.()
-    },
-    update(updater) {
-      setSnapshot(updater(getSnapshot()))
-      onMutate?.()
-    },
-  })
-
-  return {
-    addon: createScope(() => addonSnapshot, (value) => {
-      addonSnapshot = value
-    }),
-    button: createScope(() => buttonSnapshot, (value) => {
-      buttonSnapshot = value
-    }),
-  }
-}
-
-function createMountedButtonStore(access?: MountedAddonButtonStoreAccess): MountedAddonButtonStore {
-  return {
-    addon: createMountedStoreScope(access?.addon ?? EMPTY_STORE_SCOPE_ACCESS),
-    button: createMountedStoreScope(access?.button ?? EMPTY_STORE_SCOPE_ACCESS),
-  }
-}
 
 export function getAddonButtonOwnerName(definition: AddonButtonDefinition): string | undefined {
   return (definition as AddonButtonDefinition & { [ADDON_BUTTON_OWNER_NAME]?: string })[ADDON_BUTTON_OWNER_NAME]
@@ -215,67 +123,17 @@ export function setAddonButtonOwnerName<TDefinition extends AddonButtonDefinitio
 
 export function defineMountedButton<TConfig>(
   definition: MountedAddonButtonDefinition<TConfig>,
-): LegacyAddonButtonDefinition<TConfig> {
-  return {
-    configSchema: definition.configSchema,
-    createInstance(options) {
-      const mountedOptions = options as MountedAddonButtonInstanceOptions<TConfig>
-      const renderState: AddonButtonRenderState = {
-        frameState: "idle",
-        pressed: false,
-      }
-      const storeAccess = mountedOptions.store
-        ?? createFallbackMountedStoreAccess(() => mountedOptions.methods.invalidate?.())
-      const store = createMountedButtonStore(storeAccess)
-
-      const getRenderProps = (): MountedAddonButtonRenderProps<TConfig> => ({
-        ...options,
-        ...renderState,
-        store,
-      })
-
-      // Keep the migration boundary explicit: mounted definitions adapt into the legacy runtime seam for now.
-      return {
-        defaultIntervalMs:
-          typeof definition.defaultIntervalMs === "function"
-            ? definition.defaultIntervalMs(getRenderProps())
-            : definition.defaultIntervalMs,
-        dispose: definition.dispose ? () => definition.dispose?.(getRenderProps()) : undefined,
-        onActivate: definition.onActivate ? () => definition.onActivate?.(getRenderProps()) : undefined,
-        onDeactivate: definition.onDeactivate ? () => definition.onDeactivate?.(getRenderProps()) : undefined,
-        onPress: async () => {
-          renderState.pressed = true
-          renderState.frameState = "hold"
-          await definition.onPress?.(getRenderProps())
-        },
-        onRelease: async () => {
-          renderState.pressed = false
-          renderState.frameState = "idle"
-          await definition.onRelease?.(getRenderProps())
-        },
-        onTap: async () => {
-          renderState.frameState = "tap"
-          await definition.onTap?.(getRenderProps())
-          renderState.frameState = renderState.pressed ? "hold" : "idle"
-        },
-        refresh: definition.refresh ? () => definition.refresh?.(getRenderProps()) : undefined,
-        render: () => definition.render(getRenderProps()),
-      }
-    },
-    ...(typeof definition.defaultIntervalMs === "number" ? { defaultIntervalMs: definition.defaultIntervalMs } : {}),
-    type: definition.type,
-  }
+): MountedAddonButtonDefinition<TConfig> {
+  return definition
 }
 
 export function ButtonSurface(props: ButtonSurfaceProps): ReactElement {
-  return createElement("div", {
+  return jsx("div", {
     "data-sireno-button-surface": "true",
     ...(props.full_surface !== undefined ? { "data-sireno-full-surface": props.full_surface ? "true" : "false" } : {}),
     ...(props.sample_interval_ms !== undefined ? { "data-sireno-media-sample-interval-ms": String(props.sample_interval_ms) } : {}),
     children: props.children,
-    style: {
-      display: "contents",
-    },
+    className: "contents",
   })
 }
 
