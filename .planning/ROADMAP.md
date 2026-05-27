@@ -305,6 +305,17 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ---
 
+### Phase 27: Theme Fallback And Emulator Shell Boundaries
+
+**Goal:** Remove the legacy YAML theme fallback, make the built-in default theme frame the only fallback frame contract, keep TSX runtime execution aligned so React does not need to be imported manually in every file, ensure theme `ButtonFrame.tsx` changes trigger live updates, and limit deck glass chrome to emulator mode only.
+**Status:** [ ] Not started
+**Depends on:** Phase 26
+
+### Plans
+*Not yet planned - run `plan-phase 27`*
+
+---
+
 ## Coverage Validation
 
 - [x] All 9 v1.2 requirements map to at least one roadmap phase
