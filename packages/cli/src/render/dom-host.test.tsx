@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest"
 
 import {
   ButtonSurface,
-  createBaseShapeIconLabelContent,
   defineMountedButton,
 } from "../addon/api.js"
 import { resolveTheme } from "../config/theme.js"
@@ -201,11 +200,12 @@ describe("dom host", () => {
 
   it("normalizes absolute icon paths into browser-loadable file URLs", () => {
     const html = renderReactNodeToHtml(createHostedButtonElement({
-      content: createBaseShapeIconLabelContent({
-        icon: "/tmp/sireno-icon.svg",
-        keyIndex: 0,
-        label: "Icon",
-      }),
+      content: createElement(
+        "div",
+        { className: "flex flex-col items-center justify-center gap-1" },
+        createElement(Icon, { src: "/tmp/sireno-icon.svg" }),
+        createElement(Text, { fit: "wrap" }, "Icon"),
+      ),
       keyIndex: 0,
       theme: undefined,
     }))

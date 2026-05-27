@@ -3,12 +3,13 @@ import { fileURLToPath } from "node:url"
 
 import { createElement, useState } from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { ButtonSurface, createBaseShapeTextContent, defineMountedButton, setAddonButtonOwnerName } from "../addon/api.js"
+import { ButtonSurface, defineMountedButton, setAddonButtonOwnerName } from "../addon/api.js"
 import { loadConfiguredAddons } from "../addon/loader.js"
 
 import { createBundledAddonRegistry, loadConfig } from "../config/loader.js"
 import { validateConfig } from "../core/schemas.js"
 import { renderReactNodeToHtml } from "../render/dom-host.js"
+import { Text } from "../ui/index.js"
 import { createDeckRuntime } from "./runtime.js"
 
 import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
@@ -18,7 +19,7 @@ import type { SessionMonitor, SessionSnapshot } from "../system/session-monitor.
 const FIXTURES_DIRECTORY = fileURLToPath(new URL("../../fixtures", import.meta.url))
 
 function createTextSurface(keyIndex: number, label: string) {
-  return createBaseShapeTextContent({ keyIndex, label })
+  return createElement(Text, { fit: "wrap" }, label)
 }
 
 function getRenderedButton(runtime: ReturnType<typeof createDeckRuntime>, keyIndex: number) {

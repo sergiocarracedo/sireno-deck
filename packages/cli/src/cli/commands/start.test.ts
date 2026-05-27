@@ -5,8 +5,8 @@ import { createElement } from "react"
 import { renderToStaticMarkup } from "react-dom/server"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { createDomIcon } from "../../addon/api.js"
 import { createAddonRegistry } from "../../addon/registry.js"
+import { Icon } from "../../ui/index.js"
 
 const blankRemainingKeys = vi.fn()
 const createBrowserRenderer = vi.fn()
@@ -1041,7 +1041,7 @@ describe("startEmulatorSession", () => {
               config: { icon: "addon://emoji-selector/smileys.svg", label: "Smileys" },
               definition: {
                 configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
-                createInstance: () => ({ render: () => createDomIcon({ src: "addon://emoji-selector/smileys.svg" }) }),
+                createInstance: () => ({ render: () => createElement(Icon, { src: "addon://emoji-selector/smileys.svg" }) }),
                 type: "dom-button",
               },
               label: "Smileys",
@@ -1141,7 +1141,7 @@ describe("startEmulatorSession", () => {
                 configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
                 createInstance: () => ({
                   render: () => createElement("div", null, [
-                    createElement("span", { key: "icon" }, createDomIcon({ src: "addon://emoji-selector/favorites.svg" })),
+                    createElement("span", { key: "icon" }, createElement(Icon, { src: "addon://emoji-selector/favorites.svg" })),
                     createElement("span", { key: "label" }, "Favorites"),
                   ]),
                 }),
@@ -1162,7 +1162,7 @@ describe("startEmulatorSession", () => {
                 configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) },
                 createInstance: () => ({
                   render: () => createElement("div", null, [
-                    createElement("span", { key: "icon" }, createDomIcon({ src: "addon://emoji-selector/back.svg" })),
+                    createElement("span", { key: "icon" }, createElement(Icon, { src: "addon://emoji-selector/back.svg" })),
                     createElement("span", { key: "label" }, "Back"),
                   ]),
                 }),

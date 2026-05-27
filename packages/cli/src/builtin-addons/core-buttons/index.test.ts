@@ -1,15 +1,20 @@
+import { createElement } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
-import { createBaseShapeTextContent } from '../../addon/api.js'
+import { Text } from '../../index.js'
 import { renderReactNodeToHtml } from '../../render/dom-host.js'
 import coreButtonsAddon from './index.js'
 
 describe('core-buttons addon', () => {
-  it('exports the remaining explicit base-shape content helper through the public addon API', () => {
-    const html = renderReactNodeToHtml(createBaseShapeTextContent({ fit: 'wrap', keyIndex: 3, label: 'Wrapped Label' }))
+  it('exports the component-first Text primitive through the public addon API', () => {
+    const html = renderReactNodeToHtml(
+      createElement(Text, { fit: 'wrap' }, 'Wrapped Label'),
+    )
 
     expect(html).toContain('Wrapped Label')
-    expect(html).toContain('class="font-main text-foreground"')
+    expect(html).toContain('data-sireno-ui-text="true"')
+    expect(html).toContain('font-main')
+    expect(html).toContain('text-foreground')
   })
 
   it('exports a bundled action button definition with a zod schema', () => {

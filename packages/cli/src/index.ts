@@ -1,10 +1,5 @@
 export {
   ButtonSurface,
-  createBaseShapeIconLabelContent,
-  createBaseShapeTextContent,
-  createDomIcon,
-  createDomStack,
-  createDomTextLabel,
   defineMountedButton,
 } from "./addon/api.js"
 

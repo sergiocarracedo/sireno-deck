@@ -1,5 +1,8 @@
-import { createBaseShapeTextContent, defineMountedButton } from '../../../addon/api.js'
+import { createElement } from 'react'
 import { z } from 'zod'
+
+import { defineMountedButton } from '../../../addon/api.js'
+import { Text } from '../../../ui/index.js'
 
 const DIGITAL_DATE_TIME_INTERVAL_MS = 1000
 
@@ -15,10 +18,22 @@ export const builtinDateTimeButton = defineMountedButton({
   configSchema: BuiltinDateTimeButtonSchema,
   defaultIntervalMs: DIGITAL_DATE_TIME_INTERVAL_MS,
   render: ({ button, config }) =>
-    createBaseShapeTextContent({
-      keyIndex: button.position,
-      label: formatDigitalDateTimeLabel(config),
-    }),
+    createElement(
+      'span',
+      {
+        className: 'font-main text-foreground',
+        style: { display: 'block' },
+      },
+      createElement(
+        Text,
+        {
+          className: 'w-full',
+          fit: 'wrap',
+          style: { lineHeight: 1.2 },
+        },
+        formatDigitalDateTimeLabel(config),
+      ),
+    ),
   type: 'date-time',
 })
 

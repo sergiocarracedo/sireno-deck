@@ -279,25 +279,6 @@ export function ButtonSurface(props: ButtonSurfaceProps): ReactElement {
   })
 }
 
-export function createDomTextLabel(props: {
-  children: ReactNode
-  className?: string
-  style?: CSSProperties
-}): ReactElement {
-  const className = ["font-main", "text-foreground", props.className].filter(Boolean).join(" ")
-
-  return createElement("span", {
-    children: props.children,
-    className,
-    style: {
-      display: "block",
-      lineHeight: 1.2,
-      textAlign: "center",
-      ...props.style,
-    },
-  })
-}
-
 let domAssetPathResolver:
   | ((assetReference: string) => string | undefined)
   | undefined
@@ -332,82 +313,6 @@ export function resolveDomAssetSrc(src: string): string {
   }
 
   return isAbsolute(src) ? pathToFileURL(src).href : src
-}
-
-export function createDomIcon(props: {
-  src: string
-  size?: number
-}): ReactElement {
-  const size = props.size ?? 24
-
-  return createElement("img", {
-    alt: "",
-    src: resolveDomAssetSrc(props.src),
-    style: {
-      height: `${size}px`,
-      objectFit: "contain",
-      width: `${size}px`,
-    },
-  })
-}
-
-export function createDomStack(props: {
-  children: ReactNode
-  className?: string
-  gap?: number
-  style?: CSSProperties
-}): ReactElement {
-  const children = Array.isArray(props.children)
-    ? props.children.map((child, index) => (child === null ? null : createElement("span", { key: index }, child)))
-    : props.children
-
-  return createElement("div", {
-    className: props.className,
-    children,
-    style: {
-      alignItems: "center",
-      display: "flex",
-      flexDirection: "column",
-      gap: `${props.gap ?? 6}px`,
-      justifyContent: "center",
-      width: "100%",
-      ...props.style,
-    },
-  })
-}
-
-export function createBaseShapeIconLabelContent(props: {
-  className?: string
-  icon?: string
-  keyIndex: number
-  label: string
-  labelClassName?: string
-  labelStyle?: CSSProperties
-  style?: CSSProperties
-}): ReactElement {
-  return createDomStack({
-    className: props.className,
-    children: [
-      props.icon ? createDomIcon({ src: props.icon }) : null,
-      createDomTextLabel({ children: props.label, className: props.labelClassName, style: props.labelStyle }),
-    ],
-    style: props.style,
-  })
-}
-
-export function createBaseShapeTextContent(props: {
-  className?: string
-  fit?: "shrink" | "wrap"
-  keyIndex: number
-  label: string
-  labelClassName?: string
-  labelStyle?: CSSProperties
-}): ReactElement {
-  return createDomTextLabel({
-    children: props.label,
-    className: [props.className, props.labelClassName].filter(Boolean).join(" "),
-    style: props.labelStyle,
-  })
 }
 
 export interface CreateAddonDeckOptions<TConfig> {

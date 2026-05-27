@@ -3,7 +3,8 @@ import { fileURLToPath } from 'node:url'
 import { createElement } from 'react'
 import { z } from 'zod'
 
-import { createBaseShapeIconLabelContent, createBaseShapeTextContent, defineMountedButton } from '../../addon/api.js'
+import { defineMountedButton } from '../../addon/api.js'
+import { Icon, Text } from '../../ui/index.js'
 
 import type { SirenoAddon } from '../../addon/api.js'
 
@@ -147,12 +148,35 @@ function getEmojiFallbackLabel(emoji: string): string {
   return codePoints[0] ? `U+${codePoints[0]}` : 'EMOJI'
 }
 
-function createButtonNode(keyIndex: number, label: string, icon?: string) {
-  return createBaseShapeIconLabelContent({
-    ...(icon !== undefined ? { icon } : {}),
-    keyIndex,
-    label,
-  })
+function renderEmojiText(label: string, className = 'font-main text-foreground') {
+  return createElement(
+    'span',
+    {
+      className,
+      style: { display: 'block' },
+    },
+    createElement(
+      Text,
+      {
+        className: 'w-full',
+        fit: 'wrap',
+        style: { lineHeight: 1.2 },
+      },
+      label,
+    ),
+  )
+}
+
+function createButtonNode(label: string, icon?: string) {
+  return createElement(
+    'div',
+    {
+      className: 'flex flex-col items-center justify-center w-full',
+      style: { gap: '6px' },
+    },
+    icon ? createElement(Icon, { src: icon }) : null,
+    renderEmojiText(label),
+  )
 }
 
 const emojiCategoryButton = defineMountedButton({
@@ -160,7 +184,7 @@ const emojiCategoryButton = defineMountedButton({
   onTap: async ({ config, methods }) => {
     await methods.navigateToDeck(config.target_deck)
   },
-  render: ({ button, config }) => createButtonNode(button.position, config.label, config.icon),
+  render: ({ config }) => createButtonNode(config.label, config.icon),
   type: 'emoji-category-button',
 })
 
@@ -175,15 +199,11 @@ const emojiEntryButton = defineMountedButton({
   },
   render: ({ button, config }) =>
     EMOJI_ICON_ASSETS[config.emoji] !== undefined
-      ? createBaseShapeIconLabelContent({
-          icon: EMOJI_ICON_ASSETS[config.emoji],
-          keyIndex: button.position,
-          label: getEmojiFallbackLabel(config.emoji),
-        })
-      : createBaseShapeTextContent({
-          keyIndex: button.position,
-          label: getEmojiFallbackLabel(config.emoji),
-        }),
+      ? createButtonNode(
+          getEmojiFallbackLabel(config.emoji),
+          EMOJI_ICON_ASSETS[config.emoji],
+        )
+      : renderEmojiText(getEmojiFallbackLabel(config.emoji)),
   type: 'emoji-entry-button',
 })
 
@@ -192,7 +212,7 @@ const emojiBackButton = defineMountedButton({
   onTap: async ({ methods }) => {
     await methods.goBack()
   },
-  render: ({ button, config }) => createButtonNode(button.position, config.label, config.icon),
+  render: ({ config }) => createButtonNode(config.label, config.icon),
   type: 'emoji-back-button',
 })
 

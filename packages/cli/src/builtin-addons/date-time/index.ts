@@ -3,10 +3,9 @@ import { z } from 'zod'
 
 import {
   ButtonSurface,
-  createBaseShapeTextContent,
-  createDomStack,
   defineMountedButton,
 } from '../../addon/api.js'
+import { Text } from '../../ui/index.js'
 import { builtinDateTimeButton } from './buttons/date-time.js'
 
 import type { SirenoAddon } from '../../addon/api.js'
@@ -106,19 +105,48 @@ function formatLockedTimeTileCharacter(
 
 const DIGITAL_DATE_TIME_INTERVAL_MS = 1000
 
+function renderLabel(
+  label: string,
+  options?: {
+    className?: string
+    fit?: 'marquee' | 'wrap'
+    typography?: 'aux' | 'main' | 'mono'
+    tone?: 'accent' | 'foreground' | 'primary'
+  },
+) {
+  return createElement(
+    'span',
+    {
+      className: options?.className,
+      style: { display: 'block' },
+    },
+    createElement(
+      Text,
+      {
+        className: 'w-full',
+        fit: options?.fit ?? 'wrap',
+        style: { lineHeight: 1.2 },
+        tone: options?.tone,
+        typography: options?.typography,
+      },
+      label,
+    ),
+  )
+}
+
 const builtinLockedTimeTileButton = defineMountedButton({
   configSchema: LockedTimeTileButtonSchema,
   defaultIntervalMs: DIGITAL_DATE_TIME_INTERVAL_MS,
   render: ({ button, config }) => {
     const character = formatLockedTimeTileCharacter(config.slot)
 
-    return createBaseShapeTextContent({
-      keyIndex: button.position,
-      label: character,
-      labelClassName:
+    return renderLabel(character, {
+      className:
         character === ':'
           ? 'font-mono text-accent'
           : 'font-mono text-primary',
+      tone: character === ':' ? 'accent' : 'primary',
+      typography: 'mono',
     })
   },
   type: 'locked-time-tile',
@@ -147,29 +175,23 @@ const builtinAnalogClockButton = defineMountedButton({
             width: '100%',
           },
         },
-        createDomStack({
-          gap: 4,
-          children: [
-            createElement('span', {
-              children: 'Clock',
-              className: 'font-main text-primary',
-              style: {
-                display: 'block',
-                textAlign: 'center',
-              },
-            }),
-            createElement('span', {
-              children: 'LIVE',
-              className: 'font-aux text-foreground',
-              style: {
-                display: 'block',
-                opacity: 0.85,
-                textAlign: 'center',
-                textTransform: 'uppercase',
-              },
-            }),
-          ],
-        }),
+        createElement(
+          'div',
+          {
+            className: 'flex flex-col items-center justify-center w-full',
+            style: { gap: '4px' },
+          },
+          renderLabel('Clock', {
+            className: 'font-main text-primary',
+            tone: 'primary',
+            typography: 'main',
+          }),
+          renderLabel('LIVE', {
+            className: 'font-aux text-foreground',
+            tone: 'foreground',
+            typography: 'aux',
+          }),
+        ),
       ),
     ),
   type: 'analog-clock',
@@ -198,28 +220,23 @@ const builtinCalendarSheetButton = defineMountedButton({
             width: '100%',
           },
         },
-        createDomStack({
-          gap: 4,
-          children: [
-            createElement('span', {
-              children: 'Date',
-              className: 'font-main text-foreground',
-              style: {
-                display: 'block',
-                textAlign: 'center',
-              },
-            }),
-            createElement('span', {
-              children: 'SHEET',
-              className: 'font-aux text-accent',
-              style: {
-                display: 'block',
-                textAlign: 'center',
-                textTransform: 'uppercase',
-              },
-            }),
-          ],
-        }),
+        createElement(
+          'div',
+          {
+            className: 'flex flex-col items-center justify-center w-full',
+            style: { gap: '4px' },
+          },
+          renderLabel('Date', {
+            className: 'font-main text-foreground',
+            tone: 'foreground',
+            typography: 'main',
+          }),
+          renderLabel('SHEET', {
+            className: 'font-aux text-accent',
+            tone: 'accent',
+            typography: 'aux',
+          }),
+        ),
       ),
     ),
   type: 'calendar-sheet',
