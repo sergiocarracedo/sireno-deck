@@ -1,5 +1,5 @@
 import { createRequire } from "node:module"
-import { existsSync, readFileSync } from "node:fs"
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs"
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path"
 import { fileURLToPath, pathToFileURL } from "node:url"
 import { tsImport } from "tsx/esm/api"
@@ -15,6 +15,7 @@ const RAW_SOURCE_EXTENSIONS = new Set([".js", ".jsx", ".ts", ".tsx"])
 const TRANSPILED_SOURCE_EXTENSIONS = new Set([".jsx", ".ts", ".tsx"])
 const MODULE_DIRECTORY = dirname(fileURLToPath(import.meta.url))
 const PACKAGE_TSCONFIG_PATH = resolve(MODULE_DIRECTORY, "../../tsconfig.json")
+const PACKAGE_SOURCE_ENTRY_PATH = resolve(MODULE_DIRECTORY, "../index.ts")
 const RAW_SOURCE_IMPORT_PATTERN = /(?:import|export)\s+(?:[^"'`]+?\s+from\s+)?["'`]([^"'`]+)["'`]|import\(\s*["'`]([^"'`]+)["'`]\s*\)/g
 
 export interface LoadedAddon {
@@ -192,14 +193,50 @@ function assertRawSourceModuleGraph(rootDir: string, entryPath: string, manifest
 async function importRawSourceAddon(rootDir: string, entryPath: string, manifest: AddonManifest): Promise<unknown> {
   assertRawSourceModuleGraph(rootDir, entryPath, manifest)
 
+  const rootTsconfigPath = join(rootDir, "tsconfig.json")
+  const wroteTempTsconfig = !existsSync(rootTsconfigPath)
+
   try {
-    return await tsImport(pathToFileURL(entryPath).href, {
-      parentURL: pathToFileURL(entryPath).href,
-      tsconfig: PACKAGE_TSCONFIG_PATH,
+    if (wroteTempTsconfig) {
+      writeFileSync(
+        rootTsconfigPath,
+        JSON.stringify(
+          {
+            compilerOptions: {
+              target: "ES2022",
+              types: ["node"],
+              jsx: "react-jsx",
+              module: "ESNext",
+              moduleResolution: "bundler",
+              baseUrl: rootDir,
+              paths: {
+                "sireno-deck-cli": [PACKAGE_SOURCE_ENTRY_PATH],
+              },
+              strict: true,
+              esModuleInterop: true,
+              skipLibCheck: true,
+            },
+            include: ["./**/*"],
+          },
+          undefined,
+          2,
+        ),
+      )
+    }
+
+    const importedEntryUrl = pathToFileURL(entryPath).href
+
+    return await tsImport(importedEntryUrl, {
+      parentURL: importedEntryUrl,
+      tsconfig: rootTsconfigPath,
     })
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     throw new AddonLoadError(`Failed to import addon '${manifest.name}' raw source: ${message}`, manifest.name)
+  } finally {
+    if (wroteTempTsconfig) {
+      rmSync(rootTsconfigPath, { force: true })
+    }
   }
 }
 

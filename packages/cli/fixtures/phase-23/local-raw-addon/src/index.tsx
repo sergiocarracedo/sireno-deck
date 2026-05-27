@@ -1,24 +1,28 @@
-import { createElement } from 'react'
+import { ButtonSurface, defineMountedButton } from "sireno-deck-cli"
+
+import { Phase23ButtonContent } from "./content.js"
+
+const passthroughSchema = {
+  safeParse(value: unknown) {
+    return { data: value as { label?: string }, success: true as const }
+  },
+}
 
 const addon = {
   apiVersion: 1,
-  name: 'phase-23-local-raw-addon',
+  name: "phase-23-local-raw-addon",
   buttons: [
-    {
-      type: 'phase-23-local-raw-button',
-      configSchema: {
-        safeParse(value: unknown) {
-          return { success: true as const, data: value }
-        },
+    defineMountedButton({
+      configSchema: passthroughSchema,
+      render({ config }) {
+        return (
+          <ButtonSurface>
+            <Phase23ButtonContent label={typeof config.label === "string" ? config.label : "Phase 23"} />
+          </ButtonSurface>
+        )
       },
-      createInstance({}) {
-        return {
-          render() {
-            return createElement('p', null, 'Test')
-          },
-        }
-      },
-    },
+      type: "phase-23-local-raw-button",
+    }),
   ],
 }
 

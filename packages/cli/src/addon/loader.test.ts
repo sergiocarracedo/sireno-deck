@@ -137,7 +137,7 @@ describe("loadConfiguredAddons", () => {
     }))
   })
 
-  it("loads local raw .tsx addons with sibling relative imports and root-export-only helpers", async () => {
+  it("loads local raw .tsx addons with sibling relative imports and the root-exported component-first kit", async () => {
     const registry = createAddonRegistry()
 
     const result = await loadConfiguredAddons({

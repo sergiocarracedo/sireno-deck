@@ -308,7 +308,7 @@ export function setDomAssetPathResolver(
   domAssetPathResolver = resolver
 }
 
-function resolveDomAssetSrc(src: string): string {
+export function resolveDomAssetSrc(src: string): string {
   if (
     src.startsWith("data:")
     || src.startsWith("http://")

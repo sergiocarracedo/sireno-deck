@@ -11,12 +11,6 @@ const BuiltinActionButtonSchema = z
   })
   .strict()
 
-const isCommandFailure = (result: {
-  code: number | null
-  failed: boolean
-  timedOut: boolean
-}) => result.failed || result.timedOut || result.code !== 0
-
 const builtinActionButton = defineMountedButton({
   configSchema: BuiltinActionButtonSchema,
   onTap: async ({ config, methods }) => {

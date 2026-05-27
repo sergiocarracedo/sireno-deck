@@ -2,6 +2,7 @@ import { resolve } from "node:path"
 
 import { execa } from "execa"
 import { createElement } from "react"
+import { renderToStaticMarkup } from "react-dom/server"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { createDomIcon } from "../../addon/api.js"
@@ -403,8 +404,14 @@ describe("loadRuntimeConfig", () => {
     })
 
     const renderedButton = runtime.getRenderButtons().find((button) => button.keyIndex === 1)
+    const renderedButtonHtml = renderToStaticMarkup(renderedButton?.content as ReturnType<typeof createElement>)
     expect(renderedButton).toMatchObject({ keyIndex: 1 })
     expect(renderedButton?.content).toBeTruthy()
+    expect(renderedButtonHtml).toContain('data-sireno-ui-chip="true"')
+    expect(renderedButtonHtml).toContain('data-sireno-ui-icon="true"')
+    expect(renderedButtonHtml).toContain('data-sireno-ui-text="true"')
+    expect(renderedButtonHtml).toContain('data-sireno-text-fit="wrap"')
+    expect(renderedButtonHtml).toContain("Emoji")
 
     runtime.stop()
     await runtimeConfig.sessionMonitor.stop()
