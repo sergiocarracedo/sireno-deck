@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 27 gap closure and rerun verification are complete after `27-03-PLAN.md`; the next workflow step is `/review`. Phase 26 state breadcrumbs are still stale and should be refreshed the next time that phase is touched.
+**Current focus:** Phase 28 execution is complete and ready for `verify-work 28` manual UAT. Earlier Phase 27 closeout breadcrumbs remain in history below, but the active workflow step is now Phase 28 verification/review.
 
 ## Current Position
 
-Phase: 27 — Theme Fallback And Emulator Shell Boundaries
-Plan: execution + gap closure complete
-Status: ready_for_review
-Last activity: 2026-05-27 - Closed the repo-root raw-source CLI TSX policy drift with a workspace-root tsconfig anchor, proved the exact `pnpm exec tsx packages/cli/src/cli/index.ts ...` seam, reran the blocked legacy-YAML rejection check successfully, and synchronized the Phase 27 UAT and verification artifacts
+Phase: 28 — Component-First TSX Theme UI Kit + CLI Watch Mode
+Plan: execution complete
+Status: verifying
+Last activity: 2026-05-27 - Completed all four Phase 28 plan slices, added the public component-first `Icon`/`Chip`/`Text` addon surface plus theme presentation seam, removed helper-factory addon exports from the supported runtime/docs/examples, added the truthful workspace-root `cli:dev` loop, and wrote `28-VERIFICATION.md` with passing focused checks
 
 Progress: [##########] 100%
 
@@ -90,6 +90,7 @@ Recent decisions affecting current work:
 ### Progress Notes
 
 - **Phase 28 execution:** Closed Wave 1 and Wave 2 with the public component-first `Icon`/`Chip`/`Text` kit, theme presentation seam, core-button/runtime fallback migration, and the hard authoring cut that removed helper exports from the shipped addon surface, tests, fixtures, and docs. Wave 4 now adds the truthful workspace-root `cli:dev` watch loop on `tsx watch ... start --config config.yml` plus final changelog/state learnings.
+- **Phase 28 completion:** All four plan slices are now executed and summarized, `28-VERIFICATION.md` passes with focused source/runtime/script proof, and the next workflow step is `verify-work 28` followed by `/review`, `/ship`, and `/compound`.
 - **Phase 28 discussion:** Locked Phase 28 around a hard cut from helper-factory rendering to component-first TSX authoring, a core-owned but theme-presentable `Icon`/`Chip`/`Text` kit, `Text` as the new canonical fit/marquee/ellipsis/wrap contract with auto-animating overflow marquee, a workspace-root `p cli:dev` loop that runs the real `tsx`-driven `start --config config.yml` seam, and one `Icon` API backed by Lucide plus Simple Icons.
 - **Phase 27 discussion:** Locked the phase around deleting the legacy YAML theme path, moving fallback frame ownership to the built-in default theme package, fixing the real TSX runtime seam so `.tsx` runtime modules no longer need manual `React` imports, keeping `themes/default/ButtonFrame.tsx` inside the truthful watched reload graph, and restricting deck glass chrome to emulator mode only.
 - **Phase 27 gap closure:** Added a minimal workspace-root TSX policy anchor so the repo-root raw-source CLI startup command inherits the same JSX behavior as the package runtime, replaced the neighboring package-root proof with a regression on the exact `pnpm exec tsx packages/cli/src/cli/index.ts ...` seam, reran the blocked legacy-YAML theme check, and updated the UAT/verification artifacts so the original blocker evidence remains inspectable through `27-03-PLAN.md`.

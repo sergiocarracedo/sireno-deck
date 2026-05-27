@@ -322,7 +322,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 28: Component-First TSX Theme UI Kit + CLI Watch Mode
 
 **Goal:** Let the UI/render path move to JSX/TSX component-first authoring with reusable theme-customizable utility components, tailwind-style class composition via `cn`, and a workspace-root `p cli:dev` watch flow that reruns the CLI through `tsx` on changes.
-**Status:** [ ] Not started
+**Status:** ✓ Complete (2026-05-27)
 **Depends on:** Phase 27
 
 ### Plans
@@ -330,6 +330,8 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 - `28-02`: Migrate the shipped core-button family and runtime fallback UI off helper factories so the main built-in interaction path proves the component-first contract.
 - `28-03`: Finish the hard cut across the remaining shipped addon families, public exports, authoring fixtures, and docs so no supported helper-based presentation path remains.
 - `28-04`: Add the truthful workspace-root `cli:dev` `tsx watch` loop on `start --config config.yml` and record the Phase 28 cutover plus learnings in changelog/state artifacts.
+
+**Phase 28 note:** This post-roadmap follow-on phase now ships one component-first addon authoring surface at the public `sireno-deck-cli` root export, a core-owned `Icon` / `Chip` / `Text` kit with a presentation-only theme seam, a hard cut that removes helper-factory addon rendering from shipped code/docs/examples, and a truthful workspace-root `cli:dev` loop on the real raw-source CLI start seam.
 
 ---
 
