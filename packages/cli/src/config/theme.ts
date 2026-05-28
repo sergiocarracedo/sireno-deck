@@ -33,6 +33,7 @@ import type {
   IconTone,
   TextAlign,
   TextFit,
+  TextSize,
   TextTone,
   TextTypography,
 } from '../ui/index.js'
@@ -50,7 +51,7 @@ const ThemeSchema = z
   .object({
     name: z.string().min(1),
     background: z.string().min(1),
-    border: z.string().min(1).optional(),
+    frame: z.string().min(1),
     foreground: z.string().min(1),
     primary: z.string().min(1),
     accent: z.string().min(1),
@@ -106,6 +107,7 @@ export interface ThemeTextPresentationProps {
   fit: TextFit
   tone: TextTone
   typography: TextTypography
+  size: TextSize
 }
 
 export interface ThemeUiPresentation {

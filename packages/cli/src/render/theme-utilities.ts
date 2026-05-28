@@ -40,7 +40,7 @@ function formatTypographyRoleVariables(
 export function getThemeCssVariables(theme: Theme): ThemeCssVariable[] {
   const variables: ThemeCssVariable[] = [
     { name: `${CSS_VAR_PREFIX}-color-background`, value: theme.background },
-    { name: `${CSS_VAR_PREFIX}-color-border`, value: theme.border },
+    { name: `${CSS_VAR_PREFIX}-color-frame`, value: theme.frame },
     { name: `${CSS_VAR_PREFIX}-color-foreground`, value: theme.foreground },
     { name: `${CSS_VAR_PREFIX}-color-primary`, value: theme.primary },
     { name: `${CSS_VAR_PREFIX}-color-accent`, value: theme.accent },
@@ -87,7 +87,7 @@ export function getThemeUtilityStylesheet(): string {
     '.overflow-hidden{overflow:hidden;}',
     '.isolate{isolation:isolate;}',
     '.gap-1{gap:4px;}',
-    '.gap-1\.5{gap:6px;}',
+    '.gap-1.5{gap:6px;}',
     '.min-w-0{min-width:0;}',
     '.max-w-full{max-width:100%;}',
     '.w-full{width:100%;}',
@@ -126,6 +126,7 @@ export function getThemeUtilityStylesheet(): string {
     '.border-foreground{border-color:var(--sireno-color-foreground);}',
     '.border-primary{border-color:var(--sireno-color-primary);}',
     '.border-accent{border-color:var(--sireno-color-accent);}',
+    '.border-frame{border-color:var(--sireno-color-frame);}',
     '.fill-primary{fill:var(--sireno-color-primary);}',
     '.fill-foreground{fill:var(--sireno-color-foreground);}',
     '.stroke-accent{stroke:var(--sireno-color-accent);}',

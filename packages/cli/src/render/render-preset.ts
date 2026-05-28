@@ -4,12 +4,14 @@ export interface RenderPreset {
   background: string
   frame: string
   text: string
+  gap: number
 }
 
 export const STREAM_DECK_KEY_PRESET: RenderPreset = {
   keyWidth: 72,
   keyHeight: 72,
-  background: "#0f1720",
-  frame: "#2a3647",
-  text: "#f4f7fb",
+  gap: 8,
+  background: '#0f1720',
+  frame: '#2a3647',
+  text: '#f4f7fb',
 }

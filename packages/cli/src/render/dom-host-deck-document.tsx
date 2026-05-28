@@ -21,6 +21,7 @@ function getThemeVariableStyle(theme?: Theme): Record<string, string> {
 
 export interface DeckDocumentProps {
   background: string
+  frame: string
   buttons: readonly HostedButton[]
   emulatorMode: boolean
   inlineWarning?: {
@@ -40,6 +41,8 @@ export function DeckDocument(props: DeckDocumentProps): ReactElement {
     props.buttons.map((button) => [button.keyIndex, button]),
   )
   const themeVariableStyle = getThemeVariableStyle(props.theme)
+
+  const gap = props.emulatorMode ? props.preset.gap : 0
 
   return (
     <html>
@@ -65,6 +68,7 @@ export function DeckDocument(props: DeckDocumentProps): ReactElement {
           className={cn('grid isolate overflow-hidden')}
           style={{
             ...themeVariableStyle,
+            gap: `${gap}px`,
             background: props.emulatorMode
               ? `radial-gradient(circle at top, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0) 34%), linear-gradient(180deg, color-mix(in srgb, ${props.background} 82%, black) 0%, ${props.background} 100%)`
               : props.background,
@@ -74,8 +78,8 @@ export function DeckDocument(props: DeckDocumentProps): ReactElement {
             color: 'var(--sireno-color-foreground)',
             gridTemplateColumns: `repeat(${props.layout.columns}, ${props.preset.keyWidth}px)`,
             gridTemplateRows: `repeat(${props.layout.rows}, ${props.preset.keyHeight}px)`,
-            height: `${props.layout.rows * props.preset.keyHeight}px`,
-            width: `${props.layout.columns * props.preset.keyWidth}px`,
+            height: `${props.layout.rows * props.preset.keyHeight + (props.layout.rows - 1) * gap}px`,
+            width: `${props.layout.columns * props.preset.keyWidth + (props.layout.columns - 1) * gap}px`,
           }}
         >
           {props.inlineWarning ? (

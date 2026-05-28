@@ -10,18 +10,7 @@ function formatDigitalDateTimeLabel(
   config: BuiltinDisplayDateTimeButtonConfig,
   date = new Date(),
 ): string {
-  if (config.variant === 'date') {
-    return formatDigitalDateTimePattern(config.date_format, date)
-  }
-
-  if (config.variant === 'time') {
-    return formatDigitalDateTimePattern(config.time_format, date)
-  }
-
-  return [
-    formatDigitalDateTimePattern(config.date_format, date),
-    formatDigitalDateTimePattern(config.time_format, date),
-  ].join(' ')
+  return formatDigitalDateTimePattern(config.format, date)
 }
 
 export { formatDigitalDateTimeLabel }

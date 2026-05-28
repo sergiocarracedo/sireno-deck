@@ -5,8 +5,7 @@ decks:
     buttons:
       - position: 0
         type: date-time
-        variant: time
-        time_format: 'HH:mm'
+        format: 'HH:mm'
       - position: 1
         type: change-deck
         label: Emoji
@@ -19,7 +18,7 @@ decks:
         icon: addon://emoji-selector/nature.svg
       - position: 3
         type: date-time
-        variant: time
+        format: 'HH:mm'
       - position: 4
         type: action
         label: Action

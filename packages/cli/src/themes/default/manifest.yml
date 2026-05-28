@@ -9,12 +9,12 @@ assets:
   styles:
     - ./theme.css
 background: '#2e3540'
-border: '#2e35400'
+frame: '#53738B'
 foreground: '#eef2f7'
 primary: '#7dd3fc'
-accent: '#f59e0b'
+accent: '#C3F5FF'
 success: '#34d399'
-danger: '#fb7185'
+danger: '#FFB4AB'
 typography:
   main_text:
     font_family: 'IBM Plex Sans'

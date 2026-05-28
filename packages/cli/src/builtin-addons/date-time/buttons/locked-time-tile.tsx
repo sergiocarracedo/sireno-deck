@@ -1,5 +1,5 @@
-import { Text } from '../../../ui/index.js'
 import { defineMountedButton } from '../../../addon/api.js'
+import { Text } from '../../../ui/index.js'
 import {
   DIGITAL_DATE_TIME_INTERVAL_MS,
   LockedTimeTileButtonSchema,
@@ -8,31 +8,26 @@ import {
 
 export function formatLockedTimeCharacters(
   date = new Date(),
-): [string, string, string, string, string] {
+): [string, string, string] {
   const hours = String(date.getHours()).padStart(2, '0')
   const minutes = String(date.getMinutes()).padStart(2, '0')
 
-  return [hours[0]!, hours[1]!, ':', minutes[0]!, minutes[1]!]
+  return [hours, ':', minutes]
 }
 
 export function formatLockedTimeTileCharacter(
   slot: LockedTimeTileButtonConfig['slot'],
   date = new Date(),
 ): string {
-  const [hourTens, hourOnes, separator, minuteTens, minuteOnes] =
-    formatLockedTimeCharacters(date)
+  const [hours, separator, minutes] = formatLockedTimeCharacters(date)
 
   switch (slot) {
-    case 'hour-tens':
-      return hourTens
-    case 'hour-ones':
-      return hourOnes
+    case 'hour':
+      return hours
     case 'separator':
       return separator
-    case 'minute-tens':
-      return minuteTens
-    case 'minute-ones':
-      return minuteOnes
+    case 'minute':
+      return minutes
   }
 }
 
@@ -44,8 +39,16 @@ export const builtinLockedTimeTileButton = defineMountedButton({
     const tone = character === ':' ? 'accent' : 'primary'
 
     return (
-      <span className={`block font-mono ${tone === 'accent' ? 'text-accent' : 'text-primary'}`}>
-        <Text className="w-full" fit="wrap" tone={tone} typography="mono">
+      <span
+        className={`block font-mono ${tone === 'accent' ? 'text-accent' : 'text-primary'}`}
+      >
+        <Text
+          className="w-full"
+          fit="wrap"
+          tone={tone}
+          typography="mono"
+          size="2xl"
+        >
           {character}
         </Text>
       </span>
