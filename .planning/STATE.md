@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 2 context is captured for milestone v1.3 Typography and Rich Formatting; planning can start.
+**Current focus:** Verify completed Phase 2 shrink-fit work for milestone v1.3 and prepare Phase 3 planning.
 
 ## Current Position
 
-Phase: 2 — Live Shrink-Fit Measurement
+Phase: 3 — Rich Date-Time Formatting Surface
 Plan: —
 Status: verifying
-Last activity: 2026-05-28 - Captured Phase 2 implementation context for plan-phase 2
+Last activity: 2026-05-28 - Executed Phase 2 and passed automated verification
 
-Progress: [###-------] 25%
+Progress: [#####-----] 50%
 
 ## Performance Metrics
 
@@ -69,7 +69,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
-- Run `plan-phase 2` for Live Shrink-Fit Measurement.
+- Run `verify-work 2` for Live Shrink-Fit Measurement.
 
 ### Roadmap Evolution
 
@@ -91,6 +91,7 @@ Recent decisions affecting current work:
 
 ### Progress Notes
 
+- **Phase 2 execution:** Replaced the fake shrink clamp with a browser-only shrink-fit helper shared by browser capture and emulator paths, kept mounted/static output on honest ellipsis fallback, shipped a committed Phase 22 shrink-fit review addon/fixture/UAT path, and fixed the emulator shutdown seam so the review command closes cleanly when `sessionMonitor.stop()` is synchronous.
 - **Phase 2 discussion:** Locked shrink-fit as a browser-only live measurement seam on canonical `Text`, removed the CSS clamp as primary logic, kept measurement limited to `fit="shrink"`, chose fixed `ellipsis` fallback after the readable floor, deferred configurable fallback/floor API, and required content/container/theme-metric remeasurement plus aggressive loop guards and browser-path regression proof.
 - **Phase 1 execution:** Shipped the theme-relative typography contract by moving final sizing onto shared `Text` tokens, exposing size metadata through the default theme presentation seam, sweeping shipped raw typography callers onto explicit `Text` semantics, and updating focused regressions plus the live date-time test contract to the honest single-`format` surface.
 - **Phase 1 discussion:** Locked the typography contract around role-base variables plus shared `Text` scaling, fixed-core moderate size multipliers with `md` as the exact role base, theme wrappers as observe-only metadata consumers, a repo-wide raw typography sweep with `Text` preferred for real text nodes, and explicit regression guardrails against implicit role-class sizing.

@@ -22,7 +22,7 @@ Milestone `v1.3 Typography and Rich Formatting` builds on the shipped `v1.2` tex
 ## Implementation Sequencing Notes
 
 - **Phase 1 landed (2026-05-28):** `TRF-01` and `TRF-02` — moved effective font-size responsibility off typography role classes, made `md` the exact typography-role base, kept relative size semantics in the shared `Text` contract, preserved size metadata through the theme UI seam, and swept shipped raw typography callers onto the honest contract.
-- **Phase 2 should land:** `TRF-03` and `TRF-04` — add browser-path measured shrink-fit only for `fit="shrink"`, recompute on content/container changes, enforce a readable minimum floor, and keep `wrap`, `ellipsis`, and `marquee` CSS/declarative.
+- **Phase 2 landed (2026-05-28):** `TRF-03` and `TRF-04` — replaced the fake shrink clamp with browser-path measured shrink-fit on shared `Text`, recompute on content/container changes through the browser helper seam, enforce a readable minimum floor plus deterministic ellipsis fallback, keep `wrap`, `ellipsis`, and `marquee` CSS/declarative, and ship a committed browser/emulator review path.
 - **Phase 3 should land:** `TRF-05` and `TRF-06` — lock the built-in date-time config to one rich `format` string, parse the bounded widget-local grammar on top of Day.js output, render multi-line/rich spans, and implement blink through CSS with reduced-motion handling.
 - **Phase 4 should land:** `TRF-07` — add regression coverage, fixtures, and shipped examples that prove the new typography, shrink-fit, and rich date-time contracts while removing stale assertions around split date/time config fields.
 
@@ -32,8 +32,8 @@ Milestone `v1.3 Typography and Rich Formatting` builds on the shipped `v1.2` tex
 |--------|-------|--------|-------|
 | TRF-01 | Phase 1 | ✓ Complete (2026-05-28) | Typography role classes now publish role-base variables and the shared `Text` size tokens scale from the active base with `md` exact. |
 | TRF-02 | Phase 1 | ✓ Complete (2026-05-28) | Theme text wrappers observe explicit `size` metadata, and shipped callers now rely on `Text` semantics rather than raw wrapper-based sizing. |
-| TRF-03 | Phase 2 | Planned | Live shrink-fit recomputation remains Phase 2 scope. |
-| TRF-04 | Phase 2 | Planned | Minimum-floor shrink-fit behavior remains Phase 2 scope. |
+| TRF-03 | Phase 2 | ✓ Complete (2026-05-28) | Browser decks now inject a shared shrink-fit helper so canonical `Text fit="shrink"` surfaces remeasure from real DOM boxes instead of relying on the old clamp. |
+| TRF-04 | Phase 2 | ✓ Complete (2026-05-28) | Shrink-fit now stops at a fixed readable floor, falls back to deterministic ellipsis, keeps other fit modes declarative, and ships a real browser/emulator review path. |
 | TRF-05 | Phase 3 | Planned | Rich date-time formatting stays queued behind the Phase 1/2 typography contract work. |
 | TRF-06 | Phase 3 | Planned | Date-time-only rich formatting grammar remains queued for Phase 3. |
 | TRF-07 | Phase 4 | Planned | Final regression/fixture/examples cleanup remains Phase 4 scope. |

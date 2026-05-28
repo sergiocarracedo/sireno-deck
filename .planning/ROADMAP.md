@@ -23,15 +23,15 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] Focused tests prove the same `size` token behaves relatively across `main`, `aux`, and `mono`
 **Research needed:** No
 
-### Phase 2: Live Shrink-Fit Measurement
+### Phase 2: Live Shrink-Fit Measurement ✓ Complete (2026-05-28)
 **Goal:** Make `fit="shrink"` recompute live in the browser render path so text seeks the largest non-wrapping size while respecting a readable minimum floor.
 **Requirements:** `TRF-03`, `TRF-04`
 **Depends on:** 1
 **Success criteria:**
-- [ ] Browser-rendered `fit="shrink"` text recomputes on content and container changes instead of relying on a static CSS clamp
-- [ ] Shrink-fit stops at a defined minimum floor and then applies the documented fallback behavior deterministically
-- [ ] `wrap`, `ellipsis`, and `marquee` remain declarative and do not depend on JS measurement observers
-- [ ] Regression coverage proves shrink-fit behavior without introducing resize-observer loops or mounted-host regressions
+- [x] Browser-rendered `fit="shrink"` text recomputes on content and container changes instead of relying on a static CSS clamp
+- [x] Shrink-fit stops at a defined minimum floor and then applies the documented fallback behavior deterministically
+- [x] `wrap`, `ellipsis`, and `marquee` remain declarative and do not depend on JS measurement observers
+- [x] Regression coverage proves shrink-fit behavior without introducing resize-observer loops or mounted-host regressions
 **Research needed:** No
 
 ### Phase 3: Rich Date-Time Formatting Surface
