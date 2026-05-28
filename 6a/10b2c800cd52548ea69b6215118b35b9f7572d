@@ -1,0 +1,30 @@
+.planning/phases/01-theme-relative-typography-contract/01-UAT.md
+  s_bd261d9d2ee90a::t_5c589444ab8428 35
+  s_bd261d9d2ee90a::t_089db454811419 39
+  s_bd261d9d2ee90a::t_d1b1c9f3528244 1,3-7,9-11,14,22-26,28-30,32-34,36-38,40-42,44-46,48-51,53,55-59
+  s_bd261d9d2ee90a::t_db9c7b1b2a3325 2,8,21,47,52,54
+  s_bd261d9d2ee90a::t_60c198669e7d8e 31
+  s_bd261d9d2ee90a::t_64e0ce730245c8 27
+  s_bd261d9d2ee90a::t_ae605a017d1a47 12-13,15-20,43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6a10b2c800cd52548ea69b6215118b35b9f7572d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_bd261d9d2ee90a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_191f2cdb0ffeLEC0tibNQY6g6z",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
