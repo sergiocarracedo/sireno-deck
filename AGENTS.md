@@ -164,9 +164,9 @@ This project uses **learnship**. Key facts:
 
 ## Current Phase
 
-**Milestone:** v1.2 — Session Context and Surface Composition
+**Milestone:** v1.2 — Session Context and Surface Composition ✓ shipped
 **Phase:** —
-**Status:** ready to rerun complete-milestone
+**Status:** milestone complete — ready for next milestone
 **Last updated:** 2026-05-28
 
 ---
