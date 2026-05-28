@@ -251,6 +251,22 @@ describe("dom host", () => {
     expect(browserHtml).toContain('window.__sirenoApplyShrinkFit(document);')
   })
 
+  it("ships deterministic shrink-fit floor and ellipsis semantics through the browser helper", () => {
+    const browserHtml = renderDomDeck([
+      {
+        content: createElement(Text, { fit: "shrink", size: "2xl" }, "Shrink floor proof"),
+        keyIndex: 0,
+      },
+    ], {
+      keyCount: 1,
+    })
+
+    expect(browserHtml).toContain('const MIN_FONT_SIZE_PX = 11;')
+    expect(browserHtml).toContain("element.setAttribute('data-sireno-text-shrink-applied-size', String(appliedSize));")
+    expect(browserHtml).toContain("fitsWithoutWrapping(element) ? 'measured' : 'floor'")
+    expect(browserHtml).toContain('.sireno-text-fit-shrink{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}')
+  })
+
   it("renders mounted-button store snapshots through the public props-first contract", async () => {
     let addonSnapshot: unknown = { total: 0 }
     let buttonSnapshot: unknown = { taps: 0 }

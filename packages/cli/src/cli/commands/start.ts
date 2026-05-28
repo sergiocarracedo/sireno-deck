@@ -727,7 +727,7 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
         setDomAssetPathResolver()
         await closeManagedSession()
         await browserRenderer?.close().catch(() => {})
-        await loadedConfig.sessionMonitor.stop().catch(() => {})
+        await Promise.resolve(loadedConfig.sessionMonitor.stop()).catch(() => {})
         await closeServer(server).catch(() => {})
       },
       port,
@@ -737,7 +737,7 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
     setDomAssetPathResolver()
     await closeManagedSession()
     await browserRenderer?.close().catch(() => {})
-    await loadedConfig.sessionMonitor.stop().catch(() => {})
+    await Promise.resolve(loadedConfig.sessionMonitor.stop()).catch(() => {})
     await closeServer(server).catch(() => {})
     throw error
   }

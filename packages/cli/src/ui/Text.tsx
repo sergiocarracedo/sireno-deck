@@ -1,4 +1,4 @@
-import { type CSSProperties, type ReactElement, type ReactNode } from 'react'
+import { createElement, type CSSProperties, type ReactElement, type ReactNode } from 'react'
 
 import { cn } from '../themes/utils/cn.js'
 import { useThemeUiPresentation } from './theme-presentation.js'
@@ -57,9 +57,10 @@ export function Text(props: TextProps): ReactElement {
   const size = props.size ?? 'md'
   const themeUi = useThemeUiPresentation()
 
-  const element = (
-    <span
-      className={cn([
+  const element = createElement(
+    'span',
+    {
+      className: cn([
         'block max-w-full min-w-0 leading-tight',
         TYPOGRAPHY_CLASS[typography],
         TONE_CLASS[tone],
@@ -67,26 +68,23 @@ export function Text(props: TextProps): ReactElement {
         SIZE_CLASS[size],
         fit === 'wrap' && 'whitespace-normal break-words',
         fit === 'ellipsis' && 'overflow-hidden whitespace-nowrap text-ellipsis',
-        fit === 'shrink' &&
-          'sireno-text-fit-shrink whitespace-normal break-words',
-        fit === 'marquee' &&
-          'sireno-text-fit-marquee overflow-hidden whitespace-nowrap',
+        fit === 'shrink' && 'sireno-text-fit-shrink whitespace-normal break-words',
+        fit === 'marquee' && 'sireno-text-fit-marquee overflow-hidden whitespace-nowrap',
         props.className,
-      ])}
-      data-sireno-text-fit={fit}
-      data-sireno-text-shrink-state={fit === 'shrink' ? 'pending' : undefined}
-      data-sireno-text-size={size}
-      data-sireno-ui-text="true"
-      style={props.style}
-    >
-      {fit === 'marquee' ? (
-        <span className="sireno-marquee-track inline-block">
-          {props.children}
-        </span>
-      ) : (
-        props.children
-      )}
-    </span>
+      ]),
+      'data-sireno-text-fit': fit,
+      'data-sireno-text-shrink-state': fit === 'shrink' ? 'pending' : undefined,
+      'data-sireno-text-size': size,
+      'data-sireno-ui-text': 'true',
+      style: props.style,
+    },
+    fit === 'marquee'
+      ? createElement(
+          'span',
+          { className: 'sireno-marquee-track inline-block' },
+          props.children,
+        )
+      : props.children,
   )
 
   return themeUi?.text

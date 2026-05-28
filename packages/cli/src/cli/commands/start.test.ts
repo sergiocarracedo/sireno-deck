@@ -1563,6 +1563,64 @@ describe("startEmulatorSession", () => {
     await session.close()
   })
 
+  it("closes emulator sessions cleanly when sessionMonitor.stop is synchronous", async () => {
+    const lifecycle = {
+      close: vi.fn(async () => {}),
+      emitKeyEvent: vi.fn(),
+      getConnection: vi.fn(() => ({ info: { keyCount: 15, model: "Stream Deck MK.2", serialNumber: "virtual-15" } })),
+      start: vi.fn(async () => ({ info: { keyCount: 15, model: "Stream Deck MK.2", serialNumber: "virtual-15" } })),
+      subscribeKeyEvents: vi.fn(() => () => {}),
+    }
+    const renderer = {
+      close: vi.fn(async () => {}),
+      keyCount: 15,
+      start: vi.fn(async () => {}),
+      updateDeck: vi.fn(async () => {}),
+    }
+    const sessionMonitor = {
+      getSnapshot: vi.fn(() => ({ capability: "supported", state: "unknown" })),
+      stop: vi.fn(() => {}),
+      subscribe: vi.fn(() => () => {}),
+    }
+
+    createVirtualStreamDeckLifecycle.mockReturnValue(lifecycle)
+    createBrowserRenderer.mockReturnValue(renderer)
+    createSessionMonitor.mockResolvedValue(sessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    loadBootstrapConfig.mockReturnValue({ config: { addons: [] }, cwd: "/tmp/project", filePath: "/tmp/project/config.yml" })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    loadConfigWithSources.mockReturnValue({
+      config: {
+        decks: { main: { buttons: [{ config: { label: "Clock" }, definition: { configSchema: { parse: (value: unknown) => value, safeParse: (value: unknown) => ({ data: value, success: true as const }) }, render: () => createElement("div", null, "Clock"), type: "dom-button" }, label: "Clock", position: 0, type: "dom-button" }], id: "main" } },
+        main_deck: "main",
+        theme: "dark",
+      },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
+    resolveTheme.mockResolvedValue({
+      accent: "#f59e0b",
+      background: "#10161f",
+      buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
+      danger: "#fb7185",
+      filePaths: ["/tmp/project/themes/default/index.ts"],
+      foreground: "#eef2f7",
+      name: "dark",
+      primary: "#7dd3fc",
+      rootDir: "/tmp/project/themes/default",
+      stylesheets: [],
+      success: "#34d399",
+    })
+
+    const { startEmulatorSession } = await import("./start.js")
+    const session = await startEmulatorSession({ logger: { info: vi.fn(), warn: vi.fn() } as never, port: 0 })
+
+    await expect(session.close()).resolves.toBeUndefined()
+    expect(sessionMonitor.stop).toHaveBeenCalledTimes(1)
+    expect(renderer.close).toHaveBeenCalledTimes(1)
+    expect(lifecycle.close).toHaveBeenCalledTimes(1)
+  })
+
   it("renders the visible subset with an inline warning when the selected virtual device cannot represent the configured deck", async () => {
     const lifecycle = {
       close: vi.fn(async () => {}),

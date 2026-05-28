@@ -6,14 +6,15 @@ Use this config with `sireno emulate --config packages/cli/fixtures/phase-22/con
 
 Wave 1 review:
 - Confirm the local emulator page boots without attached hardware.
-- Confirm the rendered deck shows the real configured `date-time`, `action`, and `emoji-selector` buttons.
+- Confirm the rendered deck shows the shrink-fit review button, the real `action` button, and the `Emoji` deck navigation button.
 
 Wave 2 review:
-- Press and hold the `Ping` or `Emoji` button in the browser page.
-- Confirm the button frame visibly changes while held and returns to idle on release.
-- Confirm release still triggers the real runtime behavior rather than a fake click-only preview.
+- On the main deck, inspect key `0`.
+- Confirm the long label stays on a single line by shrinking in the browser/emulator path instead of wrapping.
+- Navigate to the `Emoji` deck.
+- Confirm key `0` hits the readable minimum floor and then ellipsizes instead of wrapping or overflowing.
 
 Wave 3 review:
 - Use the virtual device selector to switch from `Stream Deck MK.2` to `Stream Deck XL`.
-- Confirm the emulator restarts cleanly and the page keeps serving the active deck without stale pressed state.
+- Confirm the emulator restarts cleanly and the shrink-fit review buttons recompute instead of freezing at the previous size.
 - Switch to a layout that is too small for the configured deck and confirm the page shows `Emulator Layout Error` instead of clipping or auto-switching.
