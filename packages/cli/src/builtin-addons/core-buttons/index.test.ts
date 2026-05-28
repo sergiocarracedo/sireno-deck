@@ -242,6 +242,31 @@ describe('core-buttons addon', () => {
     expect(runCommand).not.toHaveBeenCalled()
   })
 
+  it('does not mutate persisted command-driven toggle store state during render fallback', () => {
+    const definition = coreButtonsAddon.buttons.find(
+      (button) => button.type === 'toggle',
+    )
+    const harness = createMountedHarness(
+      definition!,
+      {
+        get_state_command: 'read-lamp',
+        label: 'Desk Lamp',
+        mode: 'get-set',
+        set_off_command: 'turn-off-lamp',
+        set_on_command: 'turn-on-lamp',
+      },
+      8,
+      { invalidate: vi.fn(), runCommand: vi.fn() },
+    )
+
+    harness.props.store.button.set({ lastKnownState: 'on' })
+
+    const html = renderReactNodeToHtml(harness.render() as never)
+
+    expect(html).toContain('PENDING')
+    expect(harness.props.store.button.snapshot).toEqual({ lastKnownState: 'on' })
+  })
+
   it('runs authoritative reads and selects the correct get-set write command from last known truth', async () => {
     const definition = coreButtonsAddon.buttons.find(
       (button) => button.type === 'toggle',

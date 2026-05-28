@@ -148,7 +148,7 @@ describe('date-time addon', () => {
       (button) => button.type === 'date-time',
     )
 
-    expect(renderReactNodeToHtml(renderMountedDefinition(
+    const html = renderReactNodeToHtml(renderMountedDefinition(
       definition!,
       {
         date_format: 'MM/DD/YYYY',
@@ -156,7 +156,12 @@ describe('date-time addon', () => {
         variant: 'date-time',
       },
       2,
-    ) as never)).toContain('/')
+    ) as never)
+
+    expect(html).toContain('/')
+    expect(html).toContain('w-full')
+    expect(html).not.toContain('fit-wrap')
+    expect(html).not.toContain('leading-1')
   })
 
   it('creates a renderable locked time tile surface for implicit lock fallback digits and colon', () => {
