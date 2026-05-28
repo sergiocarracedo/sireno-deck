@@ -164,9 +164,9 @@ This project uses **learnship**. Key facts:
 
 ## Current Phase
 
-**Milestone:** v1.2 — Session Context and Surface Composition ✓ shipped
-**Phase:** —
-**Status:** milestone complete — ready for next milestone
+**Milestone:** v1.3 — Typography and Rich Formatting
+**Phase:** 1 — Theme-Relative Typography Contract
+**Status:** planning
 **Last updated:** 2026-05-28
 
 ---
