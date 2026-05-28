@@ -1,0 +1,54 @@
+.planning/phases/17-custom-wrapper-primitives-with-addon/17-UAT.md
+  s_b21ef815cd71c9::t_6d58ed7af08f34 2,7,11-12,14,22,35,48,50,55
+.planning/STATE.md
+  s_b21ef815cd71c9::t_08100d630b2c17 12-13,94
+  s_b21ef815cd71c9::t_f856c6349171ec 212
+  s_b21ef815cd71c9::t_9d7d2e2de2d93e 8,14-15,93
+.planning/phases/21-theme-font-assets-for-browser-rendering/21-01-PLAN.md
+  s_b21ef815cd71c9::t_6d58ed7af08f34 1-12
+.planning/quick/019-reconcile-v12-milestone-drift/019-PLAN.md
+  s_b21ef815cd71c9::t_e7f06c2a60f1a1 1-69
+AGENTS.md
+  s_b21ef815cd71c9::t_d8e427a115e923 168
+  s_b21ef815cd71c9::t_9d7d2e2de2d93e 169
+.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-05-SUMMARY.md
+  s_b21ef815cd71c9::t_87fcedb4b5557c 1-24
+.planning/REQUIREMENTS.md
+  s_b21ef815cd71c9::t_61a8ed90057cda 4,21,34-35,44
+.planning/phases/17-custom-wrapper-primitives-with-addon/17-02-PLAN.md
+  s_b21ef815cd71c9::t_6d58ed7af08f34 1-12
+.planning/phases/17-custom-wrapper-primitives-with-addon/17-01-PLAN.md
+  s_b21ef815cd71c9::t_6d58ed7af08f34 1-12
+.planning/PROJECT.md
+  s_b21ef815cd71c9::t_571f9431fa8e69 21,27,46,75-81,84
+.planning/phases/17-custom-wrapper-primitives-with-addon/17-03-PLAN.md
+  s_b21ef815cd71c9::t_6d58ed7af08f34 1-12
+.planning/phases/21-theme-font-assets-for-browser-rendering/21-01-SUMMARY.md
+  s_b21ef815cd71c9::t_6d58ed7af08f34 1-29
+.planning/quick/019-reconcile-v12-milestone-drift/019-SUMMARY.md
+  s_b21ef815cd71c9::t_9d7d2e2de2d93e 1-35
+  s_b21ef815cd71c9::t_f856c6349171ec 36
+.planning/phases/17-custom-wrapper-primitives-with-addon/17-04-PLAN.md
+  s_b21ef815cd71c9::t_6d58ed7af08f34 1-12
+.planning/quick/019-reconcile-v12-milestone-drift/019-VERIFICATION.md
+  s_b21ef815cd71c9::t_9d7d2e2de2d93e 1-27
+.planning/ROADMAP.md
+  s_b21ef815cd71c9::t_ad355b80b7dc59 4,15-16,39,100-102,110,112,116,118,203,224,309,354
+  s_b21ef815cd71c9::t_6d58ed7af08f34 128,150,163-166,168,218,222,225
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "5ab3e0f5a7e1e60ca07425b226f327a113648041",
+  "prompts": {},
+  "sessions": {
+    "s_b21ef815cd71c9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_194c6ab8dffeZgB4hXir7Qu8T0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
