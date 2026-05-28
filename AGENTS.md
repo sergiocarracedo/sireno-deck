@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.3 — Typography and Rich Formatting
-**Phase:** 1 — Theme-Relative Typography Contract
-**Status:** planning
+**Phase:** 1 — Theme-Relative Typography Contract ✓ complete → Phase 2 — Live Shrink-Fit Measurement
+**Status:** verifying
 **Last updated:** 2026-05-28
 
 ---
