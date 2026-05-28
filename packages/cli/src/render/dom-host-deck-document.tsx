@@ -58,9 +58,11 @@ export function DeckDocument(props: DeckDocumentProps): ReactElement {
         data-sireno-browser-document="true"
         style={{
           background: props.background,
+          fontFamily: 'var(--sireno-font-main-family)',
+          fontWeight: 'var(--sireno-font-main-weight)',
+          letterSpacing: 'var(--sireno-font-main-tracking)',
           margin: 0,
         }}
-        className="font-main"
       >
         <div
           data-sireno-browser-shell="true"

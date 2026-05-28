@@ -106,8 +106,8 @@ describe('core-buttons addon', () => {
     const html = renderReactNodeToHtml(harness.render() as never)
 
     expect(html).toContain('Clock')
-    expect(html).toContain('bg-background border border-accent rounded-lg')
-    expect(html).toContain('class="font-main text-primary"')
+    expect(html).toContain('data-sireno-ui-text="true"')
+    expect(html).toContain('font-main text-primary')
   })
 
   it('navigates with the bundled change-deck button', async () => {

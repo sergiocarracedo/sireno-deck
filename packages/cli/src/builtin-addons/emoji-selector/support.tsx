@@ -146,14 +146,16 @@ function getEmojiFallbackLabel(emoji: string): string {
 
 function renderEmojiText(
   label: string,
-  className = 'font-main text-foreground',
 ) {
   return (
-    <span className={`${className} block`}>
-      <Text className="w-full leading-tight" fit="wrap">
-        {label}
-      </Text>
-    </span>
+    <Text
+      className="w-full leading-tight"
+      fit="wrap"
+      tone="foreground"
+      typography="main"
+    >
+      {label}
+    </Text>
   )
 }
 

@@ -6,17 +6,14 @@ import {
 } from '../schemas.js'
 
 function CalendarSheetLabel(props: {
-  className: string
   label: string
   tone: 'accent' | 'foreground'
   typography: 'aux' | 'main'
 }) {
   return (
-    <span className={`block ${props.className}`}>
-      <Text className="w-full" fit="wrap" tone={props.tone} typography={props.typography}>
-        {props.label}
-      </Text>
-    </span>
+    <Text className="w-full" fit="wrap" tone={props.tone} typography={props.typography}>
+      {props.label}
+    </Text>
   )
 }
 
@@ -36,13 +33,11 @@ export const builtinCalendarSheetButton = defineMountedButton({
       >
         <div className="flex flex-col items-center justify-center w-full" style={{ gap: '4px' }}>
           <CalendarSheetLabel
-            className="font-main text-foreground"
             label="Date"
             tone="foreground"
             typography="main"
           />
           <CalendarSheetLabel
-            className="font-aux text-accent"
             label="SHEET"
             tone="accent"
             typography="aux"

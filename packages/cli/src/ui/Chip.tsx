@@ -28,12 +28,18 @@ export function Chip(props: ChipProps): ReactElement {
     "span",
     {
       className: cn(
-        "inline-flex items-center justify-center rounded-full border px-2 py-0.5 font-aux uppercase tracking-wide",
+        "inline-flex items-center justify-center rounded-full border px-2 py-0.5 uppercase tracking-wide",
         TONE_CLASS[tone],
         props.className,
       ),
       "data-sireno-ui-chip": "true",
-      style: props.style,
+      style: {
+        fontFamily: "var(--sireno-font-aux-family)",
+        fontSize: "calc(var(--sireno-font-aux-size, 16px) * 0.875)",
+        fontWeight: "var(--sireno-font-aux-weight)",
+        letterSpacing: "var(--sireno-font-aux-tracking)",
+        ...props.style,
+      },
     },
     props.children,
   )

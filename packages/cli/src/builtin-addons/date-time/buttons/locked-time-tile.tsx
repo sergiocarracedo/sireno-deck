@@ -39,19 +39,15 @@ export const builtinLockedTimeTileButton = defineMountedButton({
     const tone = character === ':' ? 'accent' : 'primary'
 
     return (
-      <span
-        className={`block font-mono ${tone === 'accent' ? 'text-accent' : 'text-primary'}`}
+      <Text
+        className="w-full"
+        fit="wrap"
+        tone={tone}
+        typography="mono"
+        size="2xl"
       >
-        <Text
-          className="w-full"
-          fit="wrap"
-          tone={tone}
-          typography="mono"
-          size="2xl"
-        >
-          {character}
-        </Text>
-      </span>
+        {character}
+      </Text>
     )
   },
   type: 'locked-time-tile',

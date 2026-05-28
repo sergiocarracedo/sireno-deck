@@ -173,6 +173,7 @@ describe('emoji-selector addon', () => {
     const html = renderReactNodeToHtml(harness.render() as never)
 
     expect(html).toContain('U+1F6F0')
+    expect(html).toContain('data-sireno-ui-text="true"')
     expect(html).toContain('font-main text-foreground')
   })
 })

@@ -22,16 +22,14 @@ const builtinActionButton = defineMountedButton({
   render: ({ config }) => (
     <div className="flex flex-col items-center justify-center w-full gap-1.5">
       {config.icon ? <Icon size={24} src={config.icon} /> : null}
-      <span className="font-main text-primary">
-        <Text
-          className="w-full text-balance"
-          fit="wrap"
-          tone="primary"
-          typography="main"
-        >
-          {config.label}
-        </Text>
-      </span>
+      <Text
+        className="w-full text-balance"
+        fit="wrap"
+        tone="primary"
+        typography="main"
+      >
+        {config.label}
+      </Text>
     </div>
   ),
   type: 'action',

@@ -65,9 +65,7 @@ describe('date-time addon', () => {
     const calendarDefinition = dateTimeAddon.buttons.find(
       (definition) => definition.type === 'calendar-sheet',
     )
-    const digitalConfig = digitalDefinition?.configSchema.parse({
-      variant: 'date-time',
-    })
+    const digitalConfig = digitalDefinition?.configSchema.parse({})
     const analogConfig = analogDefinition?.configSchema.parse({})
     const calendarConfig = calendarDefinition?.configSchema.parse({})
 
@@ -82,9 +80,7 @@ describe('date-time addon', () => {
       DIGITAL_DATE_TIME_INTERVAL_MS,
     )
     expect(digitalConfig).toEqual({
-      date_format: 'MM/DD/YYYY',
-      time_format: 'HH:mm:ss',
-      variant: 'date-time',
+      format: 'DD/MM/YYYY|HH:mm:ss',
     })
 
     expect(lockedTimeTileDefinition?.type).toBe('locked-time-tile')
@@ -112,9 +108,7 @@ describe('date-time addon', () => {
     expect(
       formatDigitalDateTimeLabel(
         {
-          date_format: 'DD/MM/YYYY',
-          time_format: 'HH:mm:ss',
-          variant: 'date',
+          format: 'DD/MM/YYYY',
         },
         date,
       ),
@@ -123,9 +117,7 @@ describe('date-time addon', () => {
     expect(
       formatDigitalDateTimeLabel(
         {
-          date_format: 'DD/MM/YYYY',
-          time_format: 'HH:mm:ss',
-          variant: 'time',
+          format: 'HH:mm:ss',
         },
         date,
       ),
@@ -134,13 +126,11 @@ describe('date-time addon', () => {
     expect(
       formatDigitalDateTimeLabel(
         {
-          date_format: 'DD/MM/YYYY',
-          time_format: 'HH:mm:ss',
-          variant: 'date-time',
+          format: 'DD/MM/YYYY|HH:mm:ss',
         },
         date,
       ),
-    ).toBe('14/05/2026 10:48:07')
+    ).toBe('14/05/2026|10:48:07')
   })
 
   it('creates a renderable live date-time surface through the mounted contract', () => {
@@ -151,17 +141,17 @@ describe('date-time addon', () => {
     const html = renderReactNodeToHtml(renderMountedDefinition(
       definition!,
       {
-        date_format: 'MM/DD/YYYY',
-        time_format: 'HH:mm:ss',
-        variant: 'date-time',
+        format: 'MM/DD/YYYY|HH:mm:ss',
       },
       2,
     ) as never)
 
     expect(html).toContain('/')
     expect(html).toContain('w-full')
-    expect(html).not.toContain('fit-wrap')
-    expect(html).not.toContain('leading-1')
+    expect(html).toContain('data-sireno-ui-text="true"')
+    expect(html).toContain('data-sireno-text-size="xl"')
+    expect(html).toContain('font-main')
+    expect(html).toContain('text-foreground')
   })
 
   it('creates a renderable locked time tile surface for implicit lock fallback digits and colon', () => {
@@ -172,14 +162,15 @@ describe('date-time addon', () => {
       (button) => button.type === 'locked-time-tile',
     )
     const digitHtml = renderReactNodeToHtml(
-      renderMountedDefinition(definition!, { slot: 'hour-tens' }, 5) as never,
+      renderMountedDefinition(definition!, { slot: 'hour' }, 5) as never,
     )
     const colonHtml = renderReactNodeToHtml(
       renderMountedDefinition(definition!, { slot: 'separator' }, 7) as never,
     )
 
-    expect(digitHtml).toContain('0')
+    expect(digitHtml).toContain('09')
     expect(digitHtml).toContain('font-mono text-primary')
+    expect(digitHtml).toContain('data-sireno-text-size="2xl"')
     expect(colonHtml).toContain(':')
     expect(colonHtml).toContain('font-mono text-accent')
 
@@ -189,12 +180,10 @@ describe('date-time addon', () => {
   it('formats the implicit locked fallback as live HH:MM characters', () => {
     const date = new Date(2026, 4, 14, 9, 8, 7)
 
-    expect(formatLockedTimeCharacters(date)).toEqual(['0', '9', ':', '0', '8'])
-    expect(formatLockedTimeTileCharacter('hour-tens', date)).toBe('0')
-    expect(formatLockedTimeTileCharacter('hour-ones', date)).toBe('9')
+    expect(formatLockedTimeCharacters(date)).toEqual(['09', ':', '08'])
+    expect(formatLockedTimeTileCharacter('hour', date)).toBe('09')
     expect(formatLockedTimeTileCharacter('separator', date)).toBe(':')
-    expect(formatLockedTimeTileCharacter('minute-tens', date)).toBe('0')
-    expect(formatLockedTimeTileCharacter('minute-ones', date)).toBe('8')
+    expect(formatLockedTimeTileCharacter('minute', date)).toBe('08')
   })
 
   it('creates a renderable analog clock button surface with the expected cadence contract', () => {

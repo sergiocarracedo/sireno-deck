@@ -6,17 +6,14 @@ import {
 } from '../schemas.js'
 
 function AnalogClockLabel(props: {
-  className: string
   label: string
   tone: 'foreground' | 'primary'
   typography: 'aux' | 'main'
 }) {
   return (
-    <span className={`block ${props.className}`}>
-      <Text className="w-full" fit="wrap" tone={props.tone} typography={props.typography}>
-        {props.label}
-      </Text>
-    </span>
+    <Text className="w-full" fit="wrap" tone={props.tone} typography={props.typography}>
+      {props.label}
+    </Text>
   )
 }
 
@@ -36,13 +33,11 @@ export const builtinAnalogClockButton = defineMountedButton({
       >
         <div className="flex flex-col items-center justify-center w-full" style={{ gap: '4px' }}>
           <AnalogClockLabel
-            className="font-main text-primary"
             label="Clock"
             tone="primary"
             typography="main"
           />
           <AnalogClockLabel
-            className="font-aux text-foreground"
             label="LIVE"
             tone="foreground"
             typography="aux"
