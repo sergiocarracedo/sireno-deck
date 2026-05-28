@@ -1,0 +1,26 @@
+packages/cli/src/render/theme-utilities.ts
+  s_bd261d9d2ee90a::t_2e17764268c864 9-16,142-150
+packages/cli/src/ui/Text.tsx
+  s_bd261d9d2ee90a::t_2e17764268c864 77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "2760609583db56f74656c321e1d4a954188091ab",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_bd261d9d2ee90a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_191f2cdb0ffeLEC0tibNQY6g6z",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
