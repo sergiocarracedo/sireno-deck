@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.3 — Typography and Rich Formatting
-**Phase:** 2 — Live Shrink-Fit Measurement
-**Status:** planning
+**Phase:** 2 — Live Shrink-Fit Measurement ✓ complete → Phase 3 — Rich Date-Time Formatting Surface
+**Status:** verifying
 **Last updated:** 2026-05-28
 
 ---
