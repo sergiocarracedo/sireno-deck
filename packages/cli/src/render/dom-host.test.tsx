@@ -110,7 +110,8 @@ describe("dom host", () => {
     expect(html).toContain('--sireno-color-background:')
     expect(html).toContain('--sireno-font-main-family:')
     expect(html).toContain('.text-primary{color:var(--sireno-color-primary);}')
-    expect(html).toContain('.font-main{font-family:var(--sireno-font-main-family);')
+    expect(html).toContain('.font-main{--sireno-active-font-size:var(--sireno-font-main-size);font-family:var(--sireno-font-main-family);')
+    expect(html).toContain('.text-md{font-size:calc(var(--sireno-active-font-size, 16px) * 1);}')
     expect(html).toContain('@font-face')
     expect(html).toContain('font-family: "IBM Plex Sans"')
     expect(html).toContain('font-family: "IBM Plex Mono"')
@@ -171,7 +172,7 @@ describe("dom host", () => {
     }))
 
     expect(html).toContain('data-sireno-button-frame="true"')
-    expect(html).toContain('class="bg-background border-frame w-full h-full rounded-lg flex items-center justify-center p-1"')
+    expect(html).toContain('class="bg-background border-frame border-2 border-solid w-full h-full rounded-lg flex items-center justify-center p-1 overflow-hidden"')
   })
 
   it("threads theme-owned Icon, Chip, and Text presentation through the hosted-button runtime seam", async () => {
@@ -180,14 +181,14 @@ describe("dom host", () => {
       content: createElement(
         ButtonSurface,
         null,
-        createElement(
-          "div",
-          { className: "flex flex-col items-center justify-center gap-1" },
-          createElement(Chip, { tone: "accent" }, "LIVE"),
-          createElement(Icon, { icon: "clock", tone: "primary" }),
-          createElement(Text, { fit: "marquee", tone: "foreground" }, "Theme proof"),
+          createElement(
+            "div",
+            { className: "flex flex-col items-center justify-center gap-1" },
+            createElement(Chip, { tone: "accent" }, "LIVE"),
+            createElement(Icon, { icon: "clock", tone: "primary" }),
+            createElement(Text, { fit: "marquee", size: "lg", tone: "foreground" }, "Theme proof"),
+          ),
         ),
-      ),
       keyIndex: 0,
       theme,
     }))
@@ -196,7 +197,9 @@ describe("dom host", () => {
     expect(html).toContain('sireno-default-icon')
     expect(html).toContain('sireno-default-text')
     expect(html).toContain('data-sireno-default-text-fit="marquee"')
+    expect(html).toContain('data-sireno-default-text-size="lg"')
     expect(html).toContain('data-sireno-text-fit="marquee"')
+    expect(html).toContain('data-sireno-text-size="lg"')
     expect(html).toContain('sireno-marquee-track')
   })
 

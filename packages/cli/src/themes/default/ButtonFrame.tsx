@@ -22,6 +22,7 @@ export interface ThemeTextProps {
   align: 'center' | 'left' | 'right'
   children: ReactElement
   fit: 'ellipsis' | 'marquee' | 'shrink' | 'wrap'
+  size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
   tone: 'accent' | 'danger' | 'foreground' | 'primary' | 'success'
   typography: 'aux' | 'main' | 'mono'
 }
@@ -67,6 +68,7 @@ export function ThemeChip(props: ThemeChipProps): ReactElement {
 export function ThemeText(props: ThemeTextProps): ReactElement {
   return addThemeClass(props.children, 'sireno-default-text', {
     'data-sireno-default-text-fit': props.fit,
+    'data-sireno-default-text-size': props.size,
     'data-sireno-default-text-tone': props.tone,
     'data-sireno-default-text-typography': props.typography,
   })
