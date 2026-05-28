@@ -254,14 +254,12 @@ const builtinToggleButton = defineMountedButton({
     }
 
     const storeState = getToggleButtonStoreState(store.button.snapshot)
-    if (!storeState.displayState) {
-      storeState.displayState = 'pending'
-    }
+    const displayState = storeState.displayState ?? 'pending'
     const stateProps = getStateProps(config, storeState.lastKnownState)
     const statusLabel =
-      storeState.displayState === 'pending'
+      displayState === 'pending'
         ? 'PENDING'
-        : storeState.displayState === 'error'
+        : displayState === 'error'
           ? 'ERROR'
           : undefined
     const primaryLabel = stateProps.label ?? 'Toggle'

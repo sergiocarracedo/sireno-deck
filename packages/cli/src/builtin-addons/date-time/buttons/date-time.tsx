@@ -13,7 +13,7 @@ export const builtinDateTimeButton = defineMountedButton({
   defaultIntervalMs: DIGITAL_DATE_TIME_INTERVAL_MS,
   render: ({ button, config }) => (
     <div className="font-main text-foreground">
-      <Text className="w-full fit-wrap leading-1">
+      <Text className="w-full" fit="wrap">
         {formatDigitalDateTimeLabel(config)}
       </Text>
     </div>
