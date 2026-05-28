@@ -5,8 +5,10 @@ import {
   readFileSync,
   rmSync,
   statSync,
+  symlinkSync,
   writeFileSync,
 } from 'node:fs'
+import { tmpdir } from 'node:os'
 import {
   basename,
   dirname,
@@ -48,6 +50,7 @@ const ThemeSchema = z
   .object({
     name: z.string().min(1),
     background: z.string().min(1),
+    border: z.string().min(1).optional(),
     foreground: z.string().min(1),
     primary: z.string().min(1),
     accent: z.string().min(1),
@@ -147,8 +150,8 @@ function uniquePaths(paths: readonly string[]): string[] {
   return Array.from(new Set(paths))
 }
 
-function findRuntimeSnapshotParent(rootDir: string): string {
-  let currentDirectory = rootDir
+function findPackageRoot(startDirectory: string): string {
+  let currentDirectory = startDirectory
 
   while (true) {
     if (existsSync(join(currentDirectory, 'node_modules'))) {
@@ -161,6 +164,26 @@ function findRuntimeSnapshotParent(rootDir: string): string {
     }
 
     currentDirectory = parentDirectory
+  }
+}
+
+function getRuntimeSnapshotParent(): string {
+  return tmpdir()
+}
+
+function ensureSnapshotPackageContext(
+  snapshotParent: string,
+  packageRoot: string,
+): void {
+  writeFileSync(join(snapshotParent, 'package.json'), '{"type":"module"}\n')
+
+  const packageNodeModulesPath = join(packageRoot, 'node_modules')
+  if (existsSync(packageNodeModulesPath)) {
+    symlinkSync(
+      packageNodeModulesPath,
+      join(snapshotParent, 'node_modules'),
+      'dir',
+    )
   }
 }
 
@@ -384,9 +407,10 @@ async function importThemeRuntime(
     )
   }
 
+  const packageRoot = findPackageRoot(rootDir)
   const snapshotParent = mkdtempSync(
     join(
-      findRuntimeSnapshotParent(rootDir),
+      getRuntimeSnapshotParent(),
       `.sireno-theme-runtime-${basename(rootDir)}-`,
     ),
   )
@@ -395,6 +419,7 @@ async function importThemeRuntime(
   const snapshotUtilsRoot = join(snapshotParent, 'utils')
 
   try {
+    ensureSnapshotPackageContext(snapshotParent, packageRoot)
     cpSync(rootDir, snapshotRoot, { recursive: true })
     if (existsSync(siblingUtilsRoot)) {
       cpSync(siblingUtilsRoot, snapshotUtilsRoot, { recursive: true })
@@ -738,6 +763,7 @@ export async function resolveTheme(
   return {
     accent: manifest.accent,
     background: manifest.background,
+    border: manifest.border ?? manifest.accent,
     buttonFrame: runtime.buttonFrame,
     danger: manifest.danger,
     filePaths: uniquePaths([

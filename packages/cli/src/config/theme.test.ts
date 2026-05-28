@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { createElement } from 'react'
@@ -9,10 +9,17 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { ConfigValidationError } from '../core/schemas.js'
 
 const loadThemeModule = async () => import('./theme.js')
+const packageRoot = resolve(import.meta.dirname, '../..')
 const phase25FixtureRoot = resolve(
   import.meta.dirname,
   '../../fixtures/phase-25',
 )
+
+function listThemeRuntimeSnapshots(): string[] {
+  return readdirSync(packageRoot).filter((entry) =>
+    entry.startsWith('.sireno-theme-runtime-'),
+  )
+}
 
 const typographyBlock = [
   'typography:',
@@ -45,7 +52,9 @@ describe('resolveTheme', () => {
 
   it('loads a built-in theme by name', async () => {
     const { resolveTheme } = await loadThemeModule()
+    const snapshotsBefore = listThemeRuntimeSnapshots()
     const theme = await resolveTheme('dark')
+    const snapshotsAfter = listThemeRuntimeSnapshots()
     const frame = theme.buttonFrame({ children: null, state: 'idle' })
     const themedText = theme.ui?.text?.({
       align: 'center',
@@ -76,6 +85,7 @@ describe('resolveTheme', () => {
     expect(theme.stylesheets[0]).toContain('font-family: "IBM Plex Sans"')
     expect(theme.stylesheets[0]).toContain('font-family: "IBM Plex Mono"')
     expect(theme.stylesheets[0]).toContain('file://')
+    expect(snapshotsAfter).toEqual(snapshotsBefore)
     expect(theme.ui?.icon).toBeTypeOf('function')
     expect(theme.ui?.chip).toBeTypeOf('function')
     expect(theme.ui?.text).toBeTypeOf('function')
@@ -188,6 +198,7 @@ describe('resolveTheme', () => {
 
     expect(theme.name).toBe('custom')
     expect(theme.accent).toBe('#14b8a6')
+    expect(theme.border).toBe('#14b8a6')
     expect(theme.typography?.monospace.font_family).toBe('IBM Plex Mono')
     expect(theme.buttonFrame).toBeTypeOf('function')
     expect(theme.filePaths).toEqual(
@@ -339,6 +350,7 @@ describe('resolveTheme', () => {
     })
 
     expect(theme.buttonFrame({ children: null, state: 'idle' })).toBeNull()
+    expect(theme.border).toBe('#14b8a6')
     expect(theme.filePaths).toEqual(
       expect.arrayContaining([
         join(customThemePath, 'manifest.yml'),
@@ -346,6 +358,43 @@ describe('resolveTheme', () => {
         join(siblingUtilsPath, 'frame.js'),
       ]),
     )
+  })
+
+  it('preserves an explicit border token when a theme manifest provides one', async () => {
+    const configDir = join(tempDir, 'config')
+    const customThemePath = join(configDir, 'custom-theme')
+    mkdirSync(customThemePath, { recursive: true })
+    writeFileSync(
+      join(customThemePath, 'manifest.yml'),
+      [
+        'name: custom',
+        'main: "./index.js"',
+        'background: "#20252d"',
+        'border: "#111827"',
+        'foreground: "#f5f7fa"',
+        'primary: "#8b5cf6"',
+        'accent: "#14b8a6"',
+        'success: "#22c55e"',
+        'danger: "#ef4444"',
+        ...typographyBlock,
+      ].join('\n'),
+    )
+    writeFileSync(
+      join(customThemePath, 'index.js'),
+      [
+        'export function buttonFrame(props) {',
+        '  return props.children',
+        '}',
+        'export default { buttonFrame }',
+      ].join('\n'),
+    )
+
+    const { resolveTheme } = await loadThemeModule()
+    const theme = await resolveTheme('./custom-theme', {
+      baseDirectory: configDir,
+    })
+
+    expect(theme.border).toBe('#111827')
   })
 
   it('fails clearly when a theme reference does not exist', async () => {
