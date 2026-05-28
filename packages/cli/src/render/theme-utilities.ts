@@ -6,6 +6,14 @@ interface ThemeCssVariable {
 }
 
 const CSS_VAR_PREFIX = '--sireno'
+const TEXT_SIZE_MULTIPLIERS = {
+  '2xl': '1.5',
+  lg: '1.125',
+  md: '1',
+  sm: '0.875',
+  xl: '1.25',
+  xs: '0.75',
+} as const
 
 function toFontFamilyValue(fontFamily: string): string {
   return fontFamily.includes(',')
@@ -131,9 +139,15 @@ export function getThemeUtilityStylesheet(): string {
     '.fill-foreground{fill:var(--sireno-color-foreground);}',
     '.stroke-accent{stroke:var(--sireno-color-accent);}',
     '.stroke-primary{stroke:var(--sireno-color-primary);}',
-    '.font-main{font-family:var(--sireno-font-main-family);font-size:var(--sireno-font-main-size);font-weight:var(--sireno-font-main-weight);letter-spacing:var(--sireno-font-main-tracking);}',
-    '.font-aux{font-family:var(--sireno-font-aux-family);font-size:var(--sireno-font-aux-size);font-weight:var(--sireno-font-aux-weight);letter-spacing:var(--sireno-font-aux-tracking);}',
-    '.font-mono{font-family:var(--sireno-font-mono-family);font-size:var(--sireno-font-mono-size);font-weight:var(--sireno-font-mono-weight);letter-spacing:var(--sireno-font-mono-tracking);}',
+    '.font-main{--sireno-active-font-size:var(--sireno-font-main-size);font-family:var(--sireno-font-main-family);font-weight:var(--sireno-font-main-weight);letter-spacing:var(--sireno-font-main-tracking);}',
+    '.font-aux{--sireno-active-font-size:var(--sireno-font-aux-size);font-family:var(--sireno-font-aux-family);font-weight:var(--sireno-font-aux-weight);letter-spacing:var(--sireno-font-aux-tracking);}',
+    '.font-mono{--sireno-active-font-size:var(--sireno-font-mono-size);font-family:var(--sireno-font-mono-family);font-weight:var(--sireno-font-mono-weight);letter-spacing:var(--sireno-font-mono-tracking);}',
+    `.text-xs{font-size:calc(var(--sireno-active-font-size, 16px) * ${TEXT_SIZE_MULTIPLIERS.xs});}`,
+    `.text-sm{font-size:calc(var(--sireno-active-font-size, 16px) * ${TEXT_SIZE_MULTIPLIERS.sm});}`,
+    `.text-md{font-size:calc(var(--sireno-active-font-size, 16px) * ${TEXT_SIZE_MULTIPLIERS.md});}`,
+    `.text-lg{font-size:calc(var(--sireno-active-font-size, 16px) * ${TEXT_SIZE_MULTIPLIERS.lg});}`,
+    `.text-xl{font-size:calc(var(--sireno-active-font-size, 16px) * ${TEXT_SIZE_MULTIPLIERS.xl});}`,
+    `.text-2xl{font-size:calc(var(--sireno-active-font-size, 16px) * ${TEXT_SIZE_MULTIPLIERS['2xl']});}`,
     '.sireno-text-fit-shrink{font-size:clamp(0.7rem,0.45rem + 0.9vw,1rem);}',
     '.sireno-text-fit-marquee{position:relative;}',
     '.sireno-marquee-track{display:inline-block;min-width:max-content;padding-inline-end:100%;animation:sireno-marquee-scroll 8s linear infinite;}',
