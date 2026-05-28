@@ -6,12 +6,31 @@ decks:
       - position: 0
         type: date-time
         variant: time
+        time_format: 'HH:mm'
       - position: 1
         type: change-deck
         label: Emoji
         icon: addon://emoji-selector/favorites.svg
         target_deck: emoji
       - position: 2
+        type: action
+        label: Action
+        command: 'google-chrome'
+        icon: addon://emoji-selector/nature.svg
+      - position: 3
+        type: date-time
+        variant: time
+      - position: 4
+        type: action
+        label: Action
+        command: 'google-chrome'
+        icon: addon://emoji-selector/nature.svg
+      - position: 5
+        type: action
+        label: Action
+        command: 'google-chrome'
+        icon: addon://emoji-selector/nature.svg
+      - position: 6
         type: action
         label: Action
         command: 'google-chrome'

@@ -8,7 +8,8 @@ authors:
 assets:
   styles:
     - ./theme.css
-background: '#10161f'
+background: '#2e3540'
+border: '#2e35400'
 foreground: '#eef2f7'
 primary: '#7dd3fc'
 accent: '#f59e0b'

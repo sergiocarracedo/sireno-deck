@@ -26,7 +26,7 @@ decks:
         label: Main
         target_deck: main
       - position: 1
-        type: display-text
+        type: action
         label: Review Surface
 addons: []
 logging:

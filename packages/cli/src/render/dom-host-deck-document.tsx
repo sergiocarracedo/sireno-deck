@@ -4,8 +4,8 @@ import type { Theme } from '../config/theme.js'
 import { cn } from '../themes/utils/cn'
 
 import type { BrowserRendererLayout } from './browser-renderer.js'
-import type { HostedButton } from './dom-host.js'
 import { DeckKeySlot } from './dom-host-deck-key-slot.js'
+import type { HostedButton } from './dom-host.js'
 import type { RenderPreset } from './render-preset.js'
 import { getThemeCssVariables } from './theme-utilities.js'
 
@@ -44,7 +44,9 @@ export function DeckDocument(props: DeckDocumentProps): ReactElement {
   return (
     <html>
       <head>
-        <style data-sireno-theme-utilities="true">{props.themeStylesheet}</style>
+        <style data-sireno-theme-utilities="true">
+          {props.themeStylesheet}
+        </style>
         <style data-sireno-theme-assets="true">
           {props.themeAssetStylesheet}
         </style>
@@ -55,6 +57,7 @@ export function DeckDocument(props: DeckDocumentProps): ReactElement {
           background: props.background,
           margin: 0,
         }}
+        className="font-main"
       >
         <div
           data-sireno-browser-shell="true"

@@ -30,11 +30,11 @@ export function ButtonFrame(props: ButtonFrameProps) {
   return (
     <div
       className={cn([
-        'bg-background border-accent w-full h-full rounded-lg flex items-center justify-center p-1',
+        'bg-background border-frame w-full h-full rounded-lg flex items-center justify-center p-1',
       ])}
       data-sireno-button-frame="true"
     >
-      {props.children}
+      {props.children}XX
     </div>
   )
 }
