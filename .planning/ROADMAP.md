@@ -1,7 +1,7 @@
 # Roadmap — Sireno Deck v1.2
 
 **Last updated:** 2026-05-28
-**Granularity:** focused milestone (7 phases)
+**Granularity:** focused milestone (4 core phases) plus shipped post-roadmap follow-ons
 **Total v1.2 requirements:** 9
 
 ## Phase Overview
@@ -12,8 +12,8 @@
 | 12 | Backgrounds + Text Fitting | Make the render surface explicitly handle layered backgrounds and multiple text fitting modes | 2 | Phase 11 |
 | 13 | Global Wrapper/Style Primitives | Let addons register globally reusable wrapper/style primitives through validated public contracts | 1 | Phases 11-12 |
 | 14 | Richer Built-in Toggles | Expand the built-in toggle surface to cover both local and command-driven authority models | 2 | Phase 11 |
-| 15 | Lock-Screen Polish + Verification | Finish locked-session behavior with timed dimming and milestone-wide verification coverage | 2 | Phases 11-14 |
-| 16 | Config Reload + Wrapper Polish | Add config hot-reload, deck-file references, and shared wrapper cleanup/customization controls | Post-roadmap scope | Phase 15 |
+| 15 | Lock-Screen Polish + Verification | Retired draft phase; timed dimming was deferred and verification landed incrementally elsewhere | Retired during closeout | Phases 11-14 |
+| 16 | Config Reload + Wrapper Polish | Add config hot-reload, deck-file references, and shared wrapper cleanup/customization controls | Post-roadmap scope | Phase 14 |
 | 17 | Custom Wrapper Primitives + Addon-Authored Rendering Variants | Expand the wrapper system beyond the shared built-in contract with addon-owned rendering variants | Post-roadmap scope | Phase 16 |
 
 All 9 v1.2 requirements are mapped. No circular dependencies.
@@ -36,7 +36,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 - [x] Runtime session-monitor updates can switch to a dedicated locked-session deck or implicit fallback surface without breaking startup on unsupported hosts
 - [x] Prior deck or navigation state is restored on unlock instead of dropping the user back to an arbitrary surface
 
-**Phase 11 note:** The canonical contract, runtime lock-mode behavior, and committed review fixtures are shipped. The first `session-monitor` implementation remains a narrow seam rather than a live DBus-backed detector, and Phase 15 still owns the separate five-minute dimming clause.
+**Phase 11 note:** The canonical contract, runtime lock-mode behavior, and committed review fixtures are shipped. The first `session-monitor` implementation remains a narrow seam rather than a live DBus-backed detector, and any future timed dimming or richer lock-state polish is deferred beyond the shipped v1.2 line.
 
 **Research needed:** No additional milestone research before planning; the current research already narrowed the session/context direction.
 
@@ -97,9 +97,9 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 **Depends on:** Phase 11
 
 **Success criteria:**
-- [ ] Internal-state toggles preserve runtime-owned state correctly across normal deck and runtime lifecycle events
-- [ ] Command-driven toggles support both `get_state + set_on/set_off` and `toggle + status` models
-- [ ] Toggle rendering and behavior remain coherent across refreshes and lifecycle transitions
+- [x] Internal-state toggles preserve runtime-owned state correctly across normal deck and runtime lifecycle events
+- [x] Command-driven toggles support both `get_state + set_on/set_off` and `toggle + status` models
+- [x] Toggle rendering and behavior remain coherent across refreshes and lifecycle transitions
 
 **Research needed:** No — the milestone research already narrowed the authority-model split enough for planning.
 
@@ -107,20 +107,15 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ### Phase 15: Lock-Screen Polish + Verification
 
-**Status:** Not started
+**Status:** Retired during milestone closeout (2026-05-28)
 
-**Goal:** Finish locked-session behavior with timed dimming and milestone-wide verification coverage.
-
-**Requirements:** SCS-08, SCS-09
+**Original draft goal:** Finish locked-session behavior with timed dimming and milestone-wide verification coverage.
 
 **Depends on:** Phases 11-14
 
-**Success criteria:**
-- [ ] Locked-session mode dims after five minutes while the session remains locked
-- [ ] Unlock restores prior active state cleanly after a locked-session interruption
-- [ ] Fixtures, tests, and shipped examples cover session context injection, backgrounds, text fitting, wrappers/styles, toggles, and locked-session behavior
+**Outcome:** This dedicated polish phase never ran as a standalone execution slice. The shipped v1.2 line already closed with lock-deck substitution/restore behavior delivered through Phase 11, richer widget verification delivered across Phases 11-14 and later follow-on checks, and five-minute dimming explicitly deferred to a future milestone instead of being silently left half-owned here.
 
-**Research needed:** No — this phase applies the already-decided milestone constraints on top of the earlier phases.
+**Research needed:** No — retained only as an audit trail of the original milestone draft.
 
 ---
 
@@ -130,7 +125,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 **Goal:** Users can split deck definitions into referenced files, have config edits reload without losing the current deck when it still exists, and clean up shared wrapper visuals with removable labels and customizable accent colors.
 
-**Depends on:** Phase 15
+**Depends on:** Phase 14
 
 ### Plans
 - `16-01`: Expand deck-file references through the existing loader contract
@@ -152,7 +147,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 
 ### Phase 17: Custom Wrapper Primitives + Addon-Authored Rendering Variants
 
-**Status:** Complete
+**Status:** ✓ Complete (2026-05-21)
 
 **Goal:** The shared/default path becomes one core-owned base button shape applied by default, addons compose explicit content helpers inside that shape, and custom visuals can explicitly opt out to render the full surface themselves.
 
@@ -165,12 +160,12 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 - `17-04`: Close the real CLI/device full-surface transport gap from UAT
 
 **Success criteria:**
-- [ ] Default text-oriented buttons use one core-owned base shape unless they explicitly opt out
-- [ ] The first rollout ships explicit `icon + label` and `text` content helpers instead of hidden renderer conventions
-- [ ] Already-shipped `wrapper_id` config remains compatible during the terminology shift
-- [ ] Full-surface custom rendering is explicit and reviewable, while bespoke variants stay on their current seams
+- [x] Default text-oriented buttons use one core-owned base shape unless they explicitly opt out
+- [x] The first rollout ships explicit `icon + label` and `text` content helpers instead of hidden renderer conventions
+- [x] Already-shipped `wrapper_id` config remains compatible during the terminology shift
+- [x] Full-surface custom rendering is explicit and reviewable, while bespoke variants stay on their current seams
 
-**Phase 17 note:** This phase is intentionally narrower than the original roadmap wording. It does not introduce a public `shape_id` catalog or migrate every bespoke variant. It turns the current shared/default card into an explicit base-shape contract, keeps legacy wrapper refs as first-rollout compatibility, and adds one honest full-surface escape hatch. A focused gap-closure slice (`17-04`) now forwards `full_surface` through the shipped CLI/device path; the phase remains in verifying status until manual UAT is rerun on the real surface.
+**Phase 17 note:** This phase is intentionally narrower than the original roadmap wording. It does not introduce a public `shape_id` catalog or migrate every bespoke variant. It turns the current shared/default card into an explicit base-shape contract, keeps legacy wrapper refs as first-rollout compatibility, and adds one honest full-surface escape hatch. The final gap-closure slice (`17-04`) forwarded `full_surface` through the shipped CLI/device path, and the later real-device rerun passed even though the original plan files were not preserved in the repo.
 
 **Research needed:** No — the Phase 17 research and context now narrow the contract enough for execution planning.
 
@@ -205,7 +200,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 20: Theme Packages, Asset Bundling, and Locked Time Layout
 
 **Goal:** Let themes ship as manifest-backed packages with bundled assets and theme-owned button chrome, restore reliable external image rendering, and move the locked deck to a five-button centered time layout.
-**Status:** Verifying
+**Status:** ✓ Complete (2026-05-24)
 **Depends on:** Phase 19
 
 ### Plans
@@ -220,11 +215,14 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 21: Theme Font Assets For Browser Rendering
 
 **Goal:** Ensure themes ship their declared fonts as bundled assets so browser-rendered typography matches the theme contract instead of falling back to host-installed fonts or broken font references.
-**Status:** ✓ Complete (2026-05-27)
+**Status:** ✓ Closed via quick task 014 (2026-05-25)
 **Depends on:** Phase 20
 
 ### Plans
-*Not yet planned — run `plan-phase 21`*
+- `21-01`: Close the scoped theme-font asset hardening through the focused default-theme/browser font fix that later shipped as quick task `014`.
+
+### Closure Path
+- Theme-font hardening ultimately landed through the focused default-theme/browser font fix path in quick task `014` rather than a standalone multi-slice Phase 21 execution directory.
 
 ---
 
@@ -308,7 +306,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ### Phase 27: Theme Fallback And Emulator Shell Boundaries
 
 **Goal:** Remove the legacy YAML theme fallback, make the built-in default theme frame the only fallback frame contract, keep TSX runtime execution aligned so React does not need to be imported manually in every file, ensure theme `ButtonFrame.tsx` changes trigger live updates, and limit deck glass chrome to emulator mode only.
-**Status:** [ ] Not started
+**Status:** ✓ Complete (2026-05-27)
 **Depends on:** Phase 26
 
 ### Plans
@@ -353,7 +351,7 @@ All 9 v1.2 requirements are mapped. No circular dependencies.
 ## Coverage Validation
 
 - [x] All 9 v1.2 requirements map to at least one roadmap phase
-- [x] No circular dependencies: 11 → 12 → 13 and 11 → 14 → 15 → 16 → 17
+- [x] No circular dependencies across the shipped milestone chain: 11 → 12 → 13 and 11 → 14, with later follow-on phases layered on top of that baseline
 - [x] Every phase has observable success criteria
 - [x] Phase 14 can proceed in parallel with Phase 12 once Phase 11 stabilizes
 

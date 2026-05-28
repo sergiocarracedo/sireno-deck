@@ -1,7 +1,7 @@
 # Requirements — Sireno Deck
 
 **Version:** v1.2
-**Last updated:** 2026-05-18
+**Last updated:** 2026-05-28
 
 ## Milestone Scope
 
@@ -18,7 +18,7 @@ Milestone `v1.2 Session Context and Surface Composition` builds on the completed
 | SCS-05 | Addons can register globally reusable wrapper/style primitives that other addon or built-in surfaces can reference through validated public contracts | Addon Authoring |
 | SCS-06 | Built-in toggle buttons support internal-state toggles with runtime-owned state continuity across normal deck/runtime lifecycle events | Widgets |
 | SCS-07 | Built-in command-driven toggles support both `get_state + set_on/set_off` and `toggle + status` models | Widgets |
-| SCS-08 | Runtime detects supported session lock/unlock transitions, switches to a dedicated locked-session deck while locked, dims after five minutes of locked time, and restores prior deck state on unlock | Runtime |
+| SCS-08 | Runtime detects supported session lock/unlock transitions, switches to a dedicated locked-session deck while locked, and restores prior deck state on unlock | Runtime |
 | SCS-09 | Tests, fixtures, and shipped examples cover session context injection, background layering, text fitting, global wrappers/styles, richer toggles, and locked-session behavior | Verification |
 
 ## Implementation Sequencing Notes
@@ -31,8 +31,8 @@ Milestone `v1.2 Session Context and Surface Composition` builds on the completed
 - **Phase 24 follow-on mounted-runtime work:** post-roadmap addon/runtime migration on top of the shipped browser path — mounted `render(props)` button definitions plus definition-level handlers, a core-owned addon session store with button-local and addon-wide scopes, a Node-side mounted active-deck React host that preserves local component state while active and unmounts on deck exit, migrated built-in addon examples, committed proof fixtures covering store coordination, mounted local state, and transient runtime props, plus emulator gap closures that serve built-in assets through browser-loadable HTTP URLs, patch the mounted deck root without whole-mount replacement churn, preserve config-expanded addon/theme asset refs in rewriteable form instead of baking them into `file://...` URLs before browser-target rendering, and keep theme CSS/font loading intact on the HTTP emulator path.
 - **Phase 29 follow-on built-in contract cleanup:** post-roadmap built-in/runtime cleanup on top of the mounted/browser path — hard-cut the last public `createInstance(...)` seam, keep runtime-owned button metadata explicit through `ButtonSurface`, split shipped multi-button built-ins into one-definition-per-file TSX modules, standardize the built-in date/time formatter on declared `dayjs` behavior, and move the remaining simple built-in layout/text debt onto the curated Sireno utility layer.
 - **Phase 16 follow-on polish lands:** post-roadmap config/render/runtime hardening on top of the v1.2 surface — deck-only external deck references, watched config reload with navigation restoration, shared-wrapper footer removal, narrow button-level accent overrides, and runtime-owned invalid-reload error fallback.
-- **Phase 15 still owns:** the five-minute dimming clause in `SCS-08` plus the broader milestone-wide verification surface in `SCS-09`.
-- **Known hardening gap:** the first `session-monitor` seam is intentionally narrow and honest about unsupported hosts, but it still needs a real supported-host event source to fully satisfy the live lock-detection promise in `SCS-08`.
+- **Milestone closeout note:** the original five-minute dimming clause was retired from shipped v1.2 scope during closeout; the delivered lock-session contract covers detect/switch/restore behavior, and any future timed dimming belongs to a later milestone rather than this archived requirement set.
+- **Known hardening gap:** the first `session-monitor` seam is intentionally narrow and honest about unsupported hosts, but it still needs a real supported-host event source if a future milestone wants to expand the live lock-detection promise beyond the currently shipped supported path.
 
 ## v2 Candidates
 
@@ -41,7 +41,7 @@ Milestone `v1.2 Session Context and Surface Composition` builds on the completed
 | Cross-platform lock/session parity beyond the first documented supported path | The milestone should ship one documented support path instead of pretending every desktop environment behaves the same |
 | Broader context injection beyond OS type, variant, and version | Wider context increases API surface and validation burden without being required for this milestone |
 | More advanced style systems beyond narrow wrapper/style primitives | A CSS-like or theme-engine expansion would swamp the milestone |
-| Richer dimming or overlay behaviors beyond locked-deck substitution | The requested behavior is deck substitution plus timed dimming; more visual states can wait |
+| Richer dimming or overlay behaviors beyond locked-deck substitution | The shipped v1.2 line stopped at deck substitution and restore behavior; richer dimming can wait for a later milestone |
 
 ## Out of Scope For v1.2
 

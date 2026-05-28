@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 29 execution is complete and ready for `verify-work 29` manual UAT. Earlier Phase 28 closeout breadcrumbs remain in history below, but the active workflow step is now Phase 29 verification/review.
+**Current focus:** v1.2 milestone closeout reconciliation is complete; the planning state is now truthful enough to rerun `complete-milestone`.
 
 ## Current Position
 
-Phase: 29 — Built-in Addon TSX Hard Cut + Tailwind Cleanup
-Plan: execution complete
-Status: verifying
-Last activity: 2026-05-28 - Completed quick task 018: fixed the theme resolver ship blocker by restoring border fallback compatibility and adding focused resolver coverage
+Phase: —
+Plan: milestone closeout reconciliation
+Status: ready to rerun `complete-milestone`
+Last activity: 2026-05-28 - Completed quick task 019: reconciled v1.2 milestone planning-state drift and closed the remaining artifact-level readiness gaps
 
 Progress: [##########] 100%
 
@@ -90,7 +90,8 @@ Recent decisions affecting current work:
 
 ### Progress Notes
 
-- **Phase 29 completion:** All three Phase 29 slices are now executed and summarized, `29-VERIFICATION.md` passes with focused runtime/date-time/emoji/core-button proof, and the next workflow step is `verify-work 29` followed by `/review`, `/ship`, and `/compound`.
+- **Milestone closeout reconciliation:** Quick task 019 reconciled the stale v1.2 draft claims, backfilled the missing `23-05` summary, reconstructed truthful Phase 17 and Phase 21 closure artifacts, and left the planning layer ready for a clean `complete-milestone` rerun.
+- **Phase 29 completion:** All three Phase 29 slices are executed, summarized, verified, reviewed, shipped, and compounded.
 - **Phase 29 discussion:** Locked a hard cut that removes `LegacyAddonButtonDefinition` plus the runtime `createInstance()` bridge, requires one built-in button definition per file with local shared support files allowed, treats simple inline built-in styles as utility-layer debt to eliminate, and standardizes built-in date/time formatting on `dayjs` with Day.js token syntax. Richer date-time formatting ideas raised during discussion were explicitly kept out of scope and noted for future roadmap backlog work.
 - **Phase 28 execution:** Closed Wave 1 and Wave 2 with the public component-first `Icon`/`Chip`/`Text` kit, theme presentation seam, core-button/runtime fallback migration, and the hard authoring cut that removed helper exports from the shipped addon surface, tests, fixtures, and docs. Wave 4 now adds the truthful workspace-root `cli:dev` watch loop on `tsx watch ... start --config config.yml` plus final changelog/state learnings.
 - **Phase 28 completion:** All four plan slices are now executed and summarized, `28-VERIFICATION.md` passes with focused source/runtime/script proof, and the next workflow step is `verify-work 28` followed by `/review`, `/ship`, and `/compound`.
@@ -208,3 +209,4 @@ Resume file: .planning/phases/20-theme-packages-and-locked-time-layout/20-UAT.md
 | 016 | fix ship blockers from full branch test run | 2026-05-26 | `1762ae6`, `78817e7` | `.planning/quick/016-fix-ship-blockers-from-full-branch-test` |
 | 017 | fix the Phase 29 review findings: stop toggle render from mutating persisted store state, remove dead date-time class tokens, and add focused regression coverage | 2026-05-28 | `701229a`, `b97fea5` | `.planning/quick/017-fix-phase-29-review-findings` |
 | 018 | Fix theme resolver regressions blocking ship | 2026-05-28 | `d6a6a73` | `.planning/quick/018-fix-theme-resolver-regressions-blockin` |
+| 019 | Reconcile v1.2 milestone planning-state drift so complete-milestone can run truthfully | 2026-05-28 | documentary reconciliation commit | `.planning/quick/019-reconcile-v12-milestone-drift` |

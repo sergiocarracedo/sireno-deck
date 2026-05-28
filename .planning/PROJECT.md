@@ -18,13 +18,13 @@ Make Stream Deck customization programmable and extensible through a fast TypeSc
 - Multiple text fitting modes with shrink-to-fit as the default and wrap support
 - Globally reusable addon-provided wrappers and styles
 - Richer built-in toggle buttons for internal and command-driven state models
-- Lock-screen awareness with a dedicated locked-session deck and timed dimming
+- Lock-screen awareness with a dedicated locked-session deck and clean unlock restore behavior
 
 ## Requirements
 
 ### Validated
 
-(None yet — ship to validate)
+- Background precedence, text fitting, wrapper/style primitives, richer built-in toggles, lock-deck substitution/restore behavior, browser-rendered theme/font delivery, mounted addon rendering, TSX-first built-ins, and emulator/browser verification all shipped across the v1.2 line and its follow-on hardening phases.
 
 ### Active
 
@@ -43,7 +43,7 @@ Make Stream Deck customization programmable and extensible through a fast TypeSc
 - [ ] Support multiple text fitting modes, with shrink-to-fit until a readable minimum size then clip as the default behavior, plus wrap mode.
 - [ ] Let addons register globally reusable button wrappers and style primitives.
 - [ ] Provide richer built-in toggle buttons covering internal state and command-driven state models.
-- [ ] Detect session lock/unlock state, switch to a dedicated locked-session deck while locked, dim after five minutes, and restore prior state on unlock.
+- [ ] Detect session lock/unlock state, switch to a dedicated locked-session deck while locked, and restore prior state on unlock.
 
 ### Out of Scope
 
@@ -72,13 +72,13 @@ The domain includes fast refresh behavior for live widgets such as CPU, memory, 
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Build v1 as a CLI only | Reduces scope and focuses the first release on core device control, config, rendering, and addons | — Pending |
-| Use TypeScript across core and addons | Creates one language and tooling model for the product and its extension ecosystem | — Pending |
-| Use `node-elgato-stream-deck` as the hardware support boundary | Lets the project target any compatible supported device instead of inventing a new transport layer | — Pending |
-| Use hand-edited YAML for config and themes | Keeps v1 transparent, scriptable, and easy to modify without a desktop app | — Pending |
-| Use React-based rendering for button visuals | Enables component-driven image rendering for built-in buttons and addons | — Pending |
-| Support addons from both local folders and npm packages | Makes the extension model practical for local development and user installation | — Pending |
-| Run addons as trusted in-process code in v1 | Keeps the initial addon API simpler and avoids early sandbox complexity | — Pending |
+| Build v1 as a CLI only | Reduces scope and focuses the first release on core device control, config, rendering, and addons | Landed |
+| Use TypeScript across core and addons | Creates one language and tooling model for the product and its extension ecosystem | Landed |
+| Use `node-elgato-stream-deck` as the hardware support boundary | Lets the project target any compatible supported device instead of inventing a new transport layer | Landed |
+| Use hand-edited YAML for config and themes | Keeps v1 transparent, scriptable, and easy to modify without a desktop app | Landed |
+| Use React-based rendering for button visuals | Enables component-driven image rendering for built-in buttons and addons | Landed |
+| Support addons from both local folders and npm packages | Makes the extension model practical for local development and user installation | Landed |
+| Run addons as trusted in-process code in v1 | Keeps the initial addon API simpler and avoids early sandbox complexity | Landed |
 
 ---
-*Last updated: 2026-05-17 after starting milestone v1.2*
+*Last updated: 2026-05-28 during v1.2 milestone closeout reconciliation*

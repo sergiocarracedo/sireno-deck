@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.2 — Session Context and Surface Composition
-**Phase:** 29 — Built-in Addon TSX Hard Cut + Tailwind Cleanup ✓ complete
-**Status:** verifying
+**Phase:** —
+**Status:** ready to rerun complete-milestone
 **Last updated:** 2026-05-28
 
 ---
