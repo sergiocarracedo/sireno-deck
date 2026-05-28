@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Verify completed Phase 1 typography work for milestone v1.3 and prepare Phase 2 planning.
+**Current focus:** Phase 2 context is captured for milestone v1.3 Typography and Rich Formatting; planning can start.
 
 ## Current Position
 
 Phase: 2 — Live Shrink-Fit Measurement
 Plan: —
 Status: verifying
-Last activity: 2026-05-28 - Executed Phase 1 and passed automated verification
+Last activity: 2026-05-28 - Captured Phase 2 implementation context for plan-phase 2
 
 Progress: [###-------] 25%
 
@@ -69,7 +69,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
-- Run `verify-work 1` for Theme-Relative Typography Contract.
+- Run `plan-phase 2` for Live Shrink-Fit Measurement.
 
 ### Roadmap Evolution
 
@@ -91,6 +91,7 @@ Recent decisions affecting current work:
 
 ### Progress Notes
 
+- **Phase 2 discussion:** Locked shrink-fit as a browser-only live measurement seam on canonical `Text`, removed the CSS clamp as primary logic, kept measurement limited to `fit="shrink"`, chose fixed `ellipsis` fallback after the readable floor, deferred configurable fallback/floor API, and required content/container/theme-metric remeasurement plus aggressive loop guards and browser-path regression proof.
 - **Phase 1 execution:** Shipped the theme-relative typography contract by moving final sizing onto shared `Text` tokens, exposing size metadata through the default theme presentation seam, sweeping shipped raw typography callers onto explicit `Text` semantics, and updating focused regressions plus the live date-time test contract to the honest single-`format` surface.
 - **Phase 1 discussion:** Locked the typography contract around role-base variables plus shared `Text` scaling, fixed-core moderate size multipliers with `md` as the exact role base, theme wrappers as observe-only metadata consumers, a repo-wide raw typography sweep with `Text` preferred for real text nodes, and explicit regression guardrails against implicit role-class sizing.
 - **Milestone v1.2 shipped:** `complete-milestone` archived the live roadmap and requirements into `.planning/milestones/v1.2-ROADMAP.md` and `.planning/milestones/v1.2-REQUIREMENTS.md`, collapsed the active roadmap into milestone history, and tagged the release as `v1.2`.
