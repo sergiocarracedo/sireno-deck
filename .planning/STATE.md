@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 Phase: 29 — Built-in Addon TSX Hard Cut + Tailwind Cleanup
 Plan: execution complete
 Status: verifying
-Last activity: 2026-05-28 - Completed quick task 017: fixed the Phase 29 review findings by removing toggle render-state mutation, deleting dead date-time class tokens, and adding focused regression coverage
+Last activity: 2026-05-28 - Completed quick task 018: fixed the theme resolver ship blocker by restoring border fallback compatibility and adding focused resolver coverage
 
 Progress: [##########] 100%
 
@@ -207,3 +207,4 @@ Resume file: .planning/phases/20-theme-packages-and-locked-time-layout/20-UAT.md
 | 015 | fix this: pnpm exec tsx packages/cli/src/cli/index.ts start --config config.yml crashes with React is not defined from ButtonFrame.tsx | 2026-05-26 | `63fd4d8` | `.planning/quick/015-fix-theme-tsx-react-runtime` |
 | 016 | fix ship blockers from full branch test run | 2026-05-26 | `1762ae6`, `78817e7` | `.planning/quick/016-fix-ship-blockers-from-full-branch-test` |
 | 017 | fix the Phase 29 review findings: stop toggle render from mutating persisted store state, remove dead date-time class tokens, and add focused regression coverage | 2026-05-28 | `701229a`, `b97fea5` | `.planning/quick/017-fix-phase-29-review-findings` |
+| 018 | Fix theme resolver regressions blocking ship | 2026-05-28 | `d6a6a73` | `.planning/quick/018-fix-theme-resolver-regressions-blockin` |
