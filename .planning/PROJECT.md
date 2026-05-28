@@ -8,7 +8,7 @@ Sireno Deck is a TypeScript CLI for controlling and managing Stream Deck devices
 
 Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
 
-## Current Milestone: v1.2 Session Context and Surface Composition
+## Latest Shipped Milestone: v1.2 Session Context and Surface Composition
 
 **Goal:** Expand the render/runtime surface so addons and built-in buttons can react to richer session state, compose shared visual primitives, and handle background and lock-screen behavior coherently.
 
@@ -25,25 +25,26 @@ Make Stream Deck customization programmable and extensible through a fast TypeSc
 ### Validated
 
 - Background precedence, text fitting, wrapper/style primitives, richer built-in toggles, lock-deck substitution/restore behavior, browser-rendered theme/font delivery, mounted addon rendering, TSX-first built-ins, and emulator/browser verification all shipped across the v1.2 line and its follow-on hardening phases.
+- [x] Ship a v1 CLI in TypeScript that can detect and control devices supported by `node-elgato-stream-deck`, with Linux as the minimum supported OS and a path to macOS and Windows support.
+- [x] Support a YAML-based `config.yml` that defines global settings, themes, the main deck, additional decks, button placement, and per-button configuration edited by users by hand.
+- [x] Implement core button and deck concepts: main deck, nested decks with back navigation, button types, and button instances.
+- [x] Provide built-in button types for change-deck, display-only, action, and toggle behaviors.
+- [x] Provide built-in live data buttons for CPU usage, memory usage, fan speed, emoji selector, audio control, and media control.
+- [x] Support periodic status and display updates for buttons, with default polling around 500ms and user-configurable intervals.
+- [x] Use a React-based rendering model so built-in buttons and addons can render images or visual output through components.
+- [x] Support trusted in-process addons written in TypeScript, installable from local folders and npm packages.
+- [x] Let addons provide button types, button instances, deck types, deck instances, manifests, bundled decks, and reusable assets such as icons.
+- [x] Provide a YAML-based theme system for global visual tokens such as background, accent, and primary colors, plus a small set of built-in themes.
+- [x] Support layered background composition with config-level override, deck fallback, and theme fallback.
+- [x] Expose OS type, variant, and version to addons and built-in surfaces during render, command/status execution, and config templating.
+- [x] Support multiple text fitting modes, with shrink-to-fit until a readable minimum size then clip as the default behavior, plus wrap mode.
+- [x] Let addons register globally reusable button wrappers and style primitives.
+- [x] Provide richer built-in toggle buttons covering internal state and command-driven state models.
+- [x] Detect session lock/unlock state, switch to a dedicated locked-session deck while locked, and restore prior state on unlock.
 
 ### Active
 
-- [ ] Ship a v1 CLI in TypeScript that can detect and control devices supported by `node-elgato-stream-deck`, with Linux as the minimum supported OS and a path to macOS and Windows support.
-- [ ] Support a YAML-based `config.yml` that defines global settings, themes, the main deck, additional decks, button placement, and per-button configuration edited by users by hand.
-- [ ] Implement core button and deck concepts: main deck, nested decks with back navigation, button types, and button instances.
-- [ ] Provide built-in button types for change-deck, display-only, action, and toggle behaviors.
-- [ ] Provide built-in live data buttons for CPU usage, memory usage, fan speed, emoji selector, audio control, and media control.
-- [ ] Support periodic status and display updates for buttons, with default polling around 500ms and user-configurable intervals.
-- [ ] Use a React-based rendering model so built-in buttons and addons can render images or visual output through components.
-- [ ] Support trusted in-process addons written in TypeScript, installable from local folders and npm packages.
-- [ ] Let addons provide button types, button instances, deck types, deck instances, manifests, bundled decks, and reusable assets such as icons.
-- [ ] Provide a YAML-based theme system for global visual tokens such as background, accent, and primary colors, plus a small set of built-in themes.
-- [ ] Support layered background composition with config-level override, deck fallback, and theme fallback.
-- [ ] Expose OS type, variant, and version to addons and built-in surfaces during render, command/status execution, and config templating.
-- [ ] Support multiple text fitting modes, with shrink-to-fit until a readable minimum size then clip as the default behavior, plus wrap mode.
-- [ ] Let addons register globally reusable button wrappers and style primitives.
-- [ ] Provide richer built-in toggle buttons covering internal state and command-driven state models.
-- [ ] Detect session lock/unlock state, switch to a dedicated locked-session deck while locked, and restore prior state on unlock.
+- No active milestone requirements yet. Run `new-milestone` to define the next version's goals and requirements.
 
 ### Out of Scope
 
@@ -81,4 +82,4 @@ The domain includes fast refresh behavior for live widgets such as CPU, memory, 
 | Run addons as trusted in-process code in v1 | Keeps the initial addon API simpler and avoids early sandbox complexity | Landed |
 
 ---
-*Last updated: 2026-05-28 during v1.2 milestone closeout reconciliation*
+*Last updated: 2026-05-28 after shipping milestone v1.2*

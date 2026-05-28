@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** v1.2 milestone closeout reconciliation is complete; the planning state is now truthful enough to rerun `complete-milestone`.
+**Current focus:** v1.2 is shipped and archived. The repo is ready to define the next milestone.
 
 ## Current Position
 
 Phase: —
-Plan: milestone closeout reconciliation
-Status: ready to rerun `complete-milestone`
-Last activity: 2026-05-28 - Completed quick task 019: reconciled v1.2 milestone planning-state drift and closed the remaining artifact-level readiness gaps
+Plan: —
+Status: milestone complete — ready for next milestone
+Last activity: 2026-05-28 - Archived milestone v1.2, tagged release `v1.2`, and closed the milestone planning loop
 
 Progress: [##########] 100%
 
@@ -69,6 +69,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
+- Define the next milestone now that `v1.2` is archived.
 
 ### Roadmap Evolution
 
@@ -90,6 +91,7 @@ Recent decisions affecting current work:
 
 ### Progress Notes
 
+- **Milestone v1.2 shipped:** `complete-milestone` archived the live roadmap and requirements into `.planning/milestones/v1.2-ROADMAP.md` and `.planning/milestones/v1.2-REQUIREMENTS.md`, collapsed the active roadmap into milestone history, and tagged the release as `v1.2`.
 - **Milestone closeout reconciliation:** Quick task 019 reconciled the stale v1.2 draft claims, backfilled the missing `23-05` summary, reconstructed truthful Phase 17 and Phase 21 closure artifacts, and left the planning layer ready for a clean `complete-milestone` rerun.
 - **Phase 29 completion:** All three Phase 29 slices are executed, summarized, verified, reviewed, shipped, and compounded.
 - **Phase 29 discussion:** Locked a hard cut that removes `LegacyAddonButtonDefinition` plus the runtime `createInstance()` bridge, requires one built-in button definition per file with local shared support files allowed, treats simple inline built-in styles as utility-layer debt to eliminate, and standardizes built-in date/time formatting on `dayjs` with Day.js token syntax. Richer date-time formatting ideas raised during discussion were explicitly kept out of scope and noted for future roadmap backlog work.
@@ -181,6 +183,14 @@ Recent decisions affecting current work:
 - **Phase 5 (Addon System):** The addon-first architecture pivot is intentionally not backward-compatible with the current button config surface, so planning must account for schema, docs, examples, and migration fallout together.
 - **Phase 11:** `session-monitor.ts` is currently a narrow seam with honest supported/unsupported classification and simulated event handling, but it still needs a real supported-host event source to close the live lock-detection promise completely.
 
+## Milestone History
+
+### v1.2 — Session Context and Surface Composition
+Completed: 2026-05-28
+Phases: 19 tracked phase directories executed or truthfully closed
+Requirements delivered: SCS-01, SCS-02, SCS-03, SCS-04, SCS-05, SCS-06, SCS-07, SCS-08, SCS-09
+Key achievements: v1.2 delivered the session-aware runtime/render contract, layered backgrounds, text fitting, reusable wrapper/style primitives, richer built-in toggles, and lock-deck substitution with unlock restore. The shipped follow-on hardening phases then carried the browser theme/font pipeline, emulator, mounted addon rendering, TSX-first built-ins, and final legacy-seam cleanup across the product surface.
+
 ## Session Continuity
 
 Last session: 2026-05-23
@@ -209,4 +219,4 @@ Resume file: .planning/phases/20-theme-packages-and-locked-time-layout/20-UAT.md
 | 016 | fix ship blockers from full branch test run | 2026-05-26 | `1762ae6`, `78817e7` | `.planning/quick/016-fix-ship-blockers-from-full-branch-test` |
 | 017 | fix the Phase 29 review findings: stop toggle render from mutating persisted store state, remove dead date-time class tokens, and add focused regression coverage | 2026-05-28 | `701229a`, `b97fea5` | `.planning/quick/017-fix-phase-29-review-findings` |
 | 018 | Fix theme resolver regressions blocking ship | 2026-05-28 | `d6a6a73` | `.planning/quick/018-fix-theme-resolver-regressions-blockin` |
-| 019 | Reconcile v1.2 milestone planning-state drift so complete-milestone can run truthfully | 2026-05-28 | documentary reconciliation commit | `.planning/quick/019-reconcile-v12-milestone-drift` |
+| 019 | Reconcile v1.2 milestone planning-state drift so complete-milestone can run truthfully | 2026-05-28 | `5ab3e0f` | `.planning/quick/019-reconcile-v12-milestone-drift` |
