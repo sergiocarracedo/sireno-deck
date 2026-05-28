@@ -148,7 +148,7 @@ export function getThemeUtilityStylesheet(): string {
     `.text-lg{font-size:calc(var(--sireno-active-font-size, 16px) * ${TEXT_SIZE_MULTIPLIERS.lg});}`,
     `.text-xl{font-size:calc(var(--sireno-active-font-size, 16px) * ${TEXT_SIZE_MULTIPLIERS.xl});}`,
     `.text-2xl{font-size:calc(var(--sireno-active-font-size, 16px) * ${TEXT_SIZE_MULTIPLIERS['2xl']});}`,
-    '.sireno-text-fit-shrink{font-size:clamp(0.7rem,0.45rem + 0.9vw,1rem);}',
+    '.sireno-text-fit-shrink{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}',
     '.sireno-text-fit-marquee{position:relative;}',
     '.sireno-marquee-track{display:inline-block;min-width:max-content;padding-inline-end:100%;animation:sireno-marquee-scroll 8s linear infinite;}',
     '@keyframes sireno-marquee-scroll{0%{transform:translateX(0%);}100%{transform:translateX(-50%);}}',

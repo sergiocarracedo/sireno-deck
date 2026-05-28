@@ -23,6 +23,7 @@ import {
 import { formatLinuxUdevAccessError } from "../../device/linux-udev.js"
 import { createBrowserRenderer, getVirtualDeckDevices } from "../../render/browser-renderer.js"
 import { renderDomDeck } from "../../render/dom-host.js"
+import { getShrinkFitBrowserScript } from "../../render/shrink-fit-browser-script.js"
 import { createStartupPlaceholderBuffers } from "../../render/startup-placeholder.js"
 import type { RuntimeRenderButton } from "../../deck/runtime.js"
 
@@ -279,6 +280,8 @@ export async function renderRuntimeDeckSurface(
 }
 
 function renderEmulatorShellHtml(): string {
+  const shrinkFitScript = getShrinkFitBrowserScript()
+
   return [
     "<!doctype html>",
     "<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">",
@@ -327,6 +330,7 @@ function renderEmulatorShellHtml(): string {
     "const deviceSelect = document.getElementById('device-select');",
     "const version = document.getElementById('version');",
     "let currentVersion = -1;",
+    shrinkFitScript,
     "function attachDeckInteractions(){",
     "  mount.querySelectorAll('[data-sireno-key]').forEach((element) => {",
     "    const keyIndex = Number(element.getAttribute('data-sireno-key'));",
@@ -349,7 +353,7 @@ function renderEmulatorShellHtml(): string {
     "function patchDeckRoot(nextDeckRoot){",
     "  if (!nextDeckRoot) { mount.textContent = 'Waiting for first render...'; return; }",
     "  const currentDeckRoot = mount.querySelector('#deck-root');",
-    "  if (!currentDeckRoot) { mount.replaceChildren(nextDeckRoot); attachDeckInteractions(); return; }",
+    "  if (!currentDeckRoot) { mount.replaceChildren(nextDeckRoot); attachDeckInteractions(); window.__sirenoApplyShrinkFit?.(mount); return; }",
     "  Array.from(currentDeckRoot.getAttributeNames()).forEach((name) => { if (!nextDeckRoot.hasAttribute(name)) { currentDeckRoot.removeAttribute(name); } });",
     "  Array.from(nextDeckRoot.getAttributeNames()).forEach((name) => { currentDeckRoot.setAttribute(name, nextDeckRoot.getAttribute(name) ?? ''); });",
     "  const currentChildren = Array.from(currentDeckRoot.children);",
@@ -366,6 +370,7 @@ function renderEmulatorShellHtml(): string {
     "  });",
     "  currentChildren.slice(nextChildren.length).forEach((staleChild) => { staleChild.remove(); });",
     "  attachDeckInteractions();",
+    "  window.__sirenoApplyShrinkFit?.(mount);",
     "}",
     "async function refresh(){",
     "  const response = await fetch('/__sireno/state', { cache: 'no-store' });",

@@ -74,6 +74,7 @@ export function Text(props: TextProps): ReactElement {
         props.className,
       ])}
       data-sireno-text-fit={fit}
+      data-sireno-text-shrink-state={fit === 'shrink' ? 'pending' : undefined}
       data-sireno-text-size={size}
       data-sireno-ui-text="true"
       style={props.style}

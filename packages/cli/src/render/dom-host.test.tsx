@@ -105,6 +105,7 @@ describe("dom host", () => {
 
     expect(html).toContain('data-sireno-theme-utilities="true"')
     expect(html).toContain('data-sireno-theme-assets="true"')
+    expect(html).toContain('data-sireno-shrink-fit-script="true"')
     expect(html).toContain('data-sireno-browser-document="true"')
     expect(html).toContain('--sireno-color-primary:#7dd3fc;')
     expect(html).toContain('--sireno-color-background:')
@@ -114,6 +115,8 @@ describe("dom host", () => {
     expect(html).toContain('.text-primary{color:var(--sireno-color-primary);}')
     expect(html).toContain('.font-main{--sireno-active-font-size:var(--sireno-font-main-size);font-family:var(--sireno-font-main-family);')
     expect(html).toContain('.text-md{font-size:calc(var(--sireno-active-font-size, 16px) * 1);}')
+    expect(html).toContain('.sireno-text-fit-shrink{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}')
+    expect(html).toContain('window.__sirenoApplyShrinkFit = function(root){')
     expect(html).toContain('@font-face')
     expect(html).toContain('font-family: "IBM Plex Sans"')
     expect(html).toContain('font-family: "IBM Plex Mono"')
@@ -222,6 +225,30 @@ describe("dom host", () => {
 
     expect(html).toContain('href="/tmp/sireno-icon.svg"')
     expect(html).toContain('src="/tmp/sireno-icon.svg"')
+  })
+
+  it("keeps shrink text honest in static markup while browser decks receive the measurement helper", () => {
+    const mountedHtml = renderReactNodeToHtml(createHostedButtonElement({
+      content: createElement(Text, { fit: "shrink", size: "xl" }, "Shrink me"),
+      keyIndex: 0,
+      theme: undefined,
+    }))
+
+    const browserHtml = renderDomDeck([
+      {
+        content: createElement(Text, { fit: "shrink", size: "xl" }, "Shrink me"),
+        keyIndex: 0,
+      },
+    ], {
+      keyCount: 1,
+    })
+
+    expect(mountedHtml).toContain('data-sireno-text-fit="shrink"')
+    expect(mountedHtml).toContain('data-sireno-text-shrink-state="pending"')
+    expect(mountedHtml).not.toContain('window.__sirenoApplyShrinkFit')
+    expect(browserHtml).toContain('data-sireno-text-fit="shrink"')
+    expect(browserHtml).toContain('data-sireno-text-shrink-state="pending"')
+    expect(browserHtml).toContain('window.__sirenoApplyShrinkFit(document);')
   })
 
   it("renders mounted-button store snapshots through the public props-first contract", async () => {

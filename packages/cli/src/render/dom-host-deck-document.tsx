@@ -7,6 +7,7 @@ import type { BrowserRendererLayout } from './browser-renderer.js'
 import { DeckKeySlot } from './dom-host-deck-key-slot.js'
 import type { HostedButton } from './dom-host.js'
 import type { RenderPreset } from './render-preset.js'
+import { getShrinkFitBrowserScript } from './shrink-fit-browser-script.js'
 import { getThemeCssVariables } from './theme-utilities.js'
 
 function getThemeVariableStyle(theme?: Theme): Record<string, string> {
@@ -53,6 +54,10 @@ export function DeckDocument(props: DeckDocumentProps): ReactElement {
         <style data-sireno-theme-assets="true">
           {props.themeAssetStylesheet}
         </style>
+        <script
+          data-sireno-shrink-fit-script="true"
+          dangerouslySetInnerHTML={{ __html: getShrinkFitBrowserScript() }}
+        />
       </head>
       <body
         data-sireno-browser-document="true"
