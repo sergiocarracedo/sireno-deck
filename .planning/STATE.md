@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 3 context is captured for milestone v1.3 Typography and Rich Formatting; planning can start.
+**Current focus:** Phase 3 gap closure is implemented for milestone v1.3 Typography and Rich Formatting; rerun `verify-work 3` to confirm the real emulator review path before Phase 4 cleanup.
 
 ## Current Position
 
 Phase: 3 — Rich Date-Time Formatting Surface
 Plan: —
-Status: planning
-Last activity: 2026-05-29 - Completed quick task 021: Align Phase 3 planning docs to the shared `Text` markup scope
+Status: verifying
+Last activity: 2026-05-29 - Completed execute-phase 3 gap closure with a `2xl` date-time review path and wider shared size ladder
 
-Progress: [#####-----] 50%
+Progress: [#######---] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
+- Total plans completed: 8
 - Average duration: 1 session
 - Total execution time: 1 session
 
@@ -29,6 +29,7 @@ Progress: [#####-----] 50%
 |-------|-------|-------|----------|
 | 1 — Foundation | 2 | 1 session | 0.5 session |
 | 2 — Device + Rendering | 3 | 1 session | 0.33 session |
+| 3 — Rich Date-Time Formatting Surface | 3 | 1 session | 0.33 session |
 
 **Recent Trend:**
 - Phase 1 implementation completed in a single execution pass, with verification catching multiple build/runtime mismatches before handoff.
@@ -43,6 +44,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
 - **Phase 1 (v1.0):** Followed recommended standard tooling (pnpm, ESM, strict TS) with tsdown for the CLI build output. Full forward-looking config schema. PID-file daemon lifecycle. pino + colored error UX.
+- **Phase 3 execution:** Shared `Text` now owns the strict-whitelist rich-markup grammar (`|`, `*...*`, size tags, tone tags, `<blink>`), always parses string children, keeps invalid markup on full literal fallback, and leaves themes as outer metadata observers only.
+- **Phase 3 execution:** Built-in date-time keeps one `format` field and Day.js token engine, preserves markup literal segments during formatting, and relies on shared `Text` for the post-format rich render path.
+- **Phase 3 gap closure:** The honest larger-time-line fix uses the existing shared `2xl` token plus a wider shared size ladder; copied size multipliers such as `Chip` must stay in sync with `Text` utilities.
 - **Execution:** Config validation errors must preserve metadata through schema, loader, and formatter layers or the CLI loses file/line/suggestion context.
 - **Execution:** yargs command handlers that return promises require `.parseAsync()`, and a foreground daemon must keep the event loop alive explicitly.
 - **Phase 5 discussion:** Button behavior should move behind addon-owned stateful instances that render React output, declare their own schemas, and use core-owned scheduling, command helpers, invalidation, and navigation methods.
@@ -69,7 +73,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
-- Re-run `plan-phase 3` now that Phase 3 planning sources agree on the shared `Text` markup scope.
+- Run `verify-work 3` again to rerun the Phase 3 emulator review after `03-03-PLAN.md` closed the size-contrast gap.
 
 ### Roadmap Evolution
 
@@ -92,6 +96,10 @@ Recent decisions affecting current work:
 ### Progress Notes
 
 - **Phase 3 discussion:** Re-scoped the phase from a bounded date-time-only formatter into a shared `Text` mini markup language with strict whitelist nesting, existing tone-token tags, shared size tags, structural `|` line breaks, CSS-only blink, Day.js-first then `Text` parsing, and literal fallback for any invalid markup.
+
+- **Phase 3 execution:** Shipped the shared `Text` strict-whitelist rich-markup parser/render seam, added narrow utility CSS plus DOM-host regression proof, preserved markup literals around Day.js token expansion in the built-in date-time formatter, replaced the Phase 22 review fixture with a real rich date-time emulator path, and recorded the always-on blink tradeoff explicitly in Phase 3 UAT and verification.
+
+- **Phase 3 gap closure:** Fixed the real UAT size-contrast miss by moving the committed date-time review path and mounted proof onto shared `2xl`, widening the global text size ladder, and syncing `Chip` with the updated `sm` multiplier so the theme seam stays truthful.
 
 - **Phase 2 execution:** Replaced the fake shrink clamp with a browser-only shrink-fit helper shared by browser capture and emulator paths, kept mounted/static output on honest ellipsis fallback, shipped a committed Phase 22 shrink-fit review addon/fixture/UAT path, and fixed the emulator shutdown seam so the review command closes cleanly when `sessionMonitor.stop()` is synchronous.
 - **Phase 2 discussion:** Locked shrink-fit as a browser-only live measurement seam on canonical `Text`, removed the CSS clamp as primary logic, kept measurement limited to `fit="shrink"`, chose fixed `ellipsis` fallback after the readable floor, deferred configurable fallback/floor API, and required content/container/theme-metric remeasurement plus aggressive loop guards and browser-path regression proof.
@@ -199,9 +207,9 @@ Key achievements: v1.2 delivered the session-aware runtime/render contract, laye
 
 ## Session Continuity
 
-Last session: 2026-05-23
-Stopped at: Phase 20 complete and ready for /review → /ship → /compound.
-Resume file: .planning/phases/20-theme-packages-and-locked-time-layout/20-UAT.md
+Last session: 2026-05-29
+Stopped at: Phase 3 execute-phase gap closure complete and ready for `verify-work 3` rerun.
+Resume file: .planning/phases/03-rich-date-time-formatting-surface/03-UAT.md
 
 ### Quick Tasks Completed
 

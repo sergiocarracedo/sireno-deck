@@ -23,7 +23,7 @@ Milestone `v1.3 Typography and Rich Formatting` builds on the shipped `v1.2` tex
 
 - **Phase 1 landed (2026-05-28):** `TRF-01` and `TRF-02` — moved effective font-size responsibility off typography role classes, made `md` the exact typography-role base, kept relative size semantics in the shared `Text` contract, preserved size metadata through the theme UI seam, and swept shipped raw typography callers onto the honest contract.
 - **Phase 2 landed (2026-05-28):** `TRF-03` and `TRF-04` — replaced the fake shrink clamp with browser-path measured shrink-fit on shared `Text`, recompute on content/container changes through the browser helper seam, enforce a readable minimum floor plus deterministic ellipsis fallback, keep `wrap`, `ellipsis`, and `marquee` CSS/declarative, and ship a committed browser/emulator review path.
-- **Phase 3 should land:** `TRF-05` and `TRF-06` — keep the built-in date-time config on one `format` field, run Day.js expansion first, then let shared `Text` parse/render the strict-whitelist nested mini markup language with line breaks, highlight shorthand, shared size tags, existing tone-token tags, blink spans, and literal fallback on invalid markup.
+- **Phase 3 landed (2026-05-29):** `TRF-05` and `TRF-06` — shared `Text` now parses/renders the strict-whitelist nested mini markup language for string children, the built-in date-time button keeps one `format` field plus Day.js-first token expansion, markup literals survive the formatting seam, theme wrappers stay outer observers, and invalid markup falls back to the original literal text.
 - **Phase 4 should land:** `TRF-07` — add regression coverage, fixtures, and shipped examples that prove the new typography, shrink-fit, shared `Text` rich-markup contract, and date-time passthrough path while removing stale assertions around split date/time config fields.
 
 ## Phase Traceability
@@ -34,8 +34,8 @@ Milestone `v1.3 Typography and Rich Formatting` builds on the shipped `v1.2` tex
 | TRF-02 | Phase 1 | ✓ Complete (2026-05-28) | Theme text wrappers observe explicit `size` metadata, and shipped callers now rely on `Text` semantics rather than raw wrapper-based sizing. |
 | TRF-03 | Phase 2 | ✓ Complete (2026-05-28) | Browser decks now inject a shared shrink-fit helper so canonical `Text fit="shrink"` surfaces remeasure from real DOM boxes instead of relying on the old clamp. |
 | TRF-04 | Phase 2 | ✓ Complete (2026-05-28) | Shrink-fit now stops at a fixed readable floor, falls back to deterministic ellipsis, keeps other fit modes declarative, and ships a real browser/emulator review path. |
-| TRF-05 | Phase 3 | Planned | Shared `Text` rich markup remains queued behind the Phase 1/2 typography contract work, with date-time staying on one `format` field and handing parsed strings through after Day.js expansion. |
-| TRF-06 | Phase 3 | Planned | Nested shared rich-markup rendering, literal fallback, and tone/size/blink tag behavior remain Phase 3 scope. |
+| TRF-05 | Phase 3 | ✓ Complete (2026-05-29) | Shared `Text` now owns the strict-whitelist markup parser/render seam, while built-in date-time keeps one `format` field and passes Day.js-expanded strings through after preserving markup literals. |
+| TRF-06 | Phase 3 | ✓ Complete (2026-05-29) | Shared rich text now supports nested line breaks, highlight shorthand, size/tone tags, blink spans, and deterministic literal fallback without giving themes inner-markup ownership. |
 | TRF-07 | Phase 4 | Planned | Final regression/fixture/examples cleanup remains Phase 4 scope. |
 
 ## v2 Candidates
@@ -44,7 +44,7 @@ Milestone `v1.3 Typography and Rich Formatting` builds on the shipped `v1.2` tex
 |------|--------------|
 | Broader author-facing markup controls beyond the strict shared whitelist | The milestone already stretches into a shared `Text` markup contract; anything looser would turn it into an open-ended text language |
 | Support raw HTML, Markdown, or arbitrary nested markup in text surfaces | That would turn a strict shared formatting improvement into a sanitization and layout-engine problem |
-| Expand blink/animation effects beyond a narrow accessibility-safe contract | The milestone only needs one reduced-motion-safe blink behavior |
+| Expand blink/animation effects beyond the current narrow product contract | The milestone only needs one always-on blink behavior and does not widen animation semantics further |
 | Add richer Day.js plugin surface by default | Current scope only requires existing Day.js tokens unless a later milestone needs advanced calendar/timezone features |
 | Rework all text fit modes under one new layout engine | The honest fix is narrow measured behavior for `shrink`, not a whole-system rewrite |
 

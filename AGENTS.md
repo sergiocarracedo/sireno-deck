@@ -166,7 +166,7 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.3 — Typography and Rich Formatting
 **Phase:** 3 — Rich Date-Time Formatting Surface
-**Status:** planning
+**Status:** verifying
 **Last updated:** 2026-05-29
 
 ---

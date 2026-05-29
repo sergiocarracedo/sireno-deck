@@ -34,15 +34,15 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] Regression coverage proves shrink-fit behavior without introducing resize-observer loops or mounted-host regressions
 **Research needed:** No
 
-### Phase 3: Rich Date-Time Formatting Surface
+### Phase 3: Rich Date-Time Formatting Surface ✓ Complete (2026-05-29)
 **Goal:** Add a strict-whitelist shared `Text` mini markup language that date-time consumes after Day.js token expansion, so rich formatting becomes nested, reusable, and still tightly bounded.
 **Requirements:** `TRF-05`, `TRF-06`
 **Depends on:** 1, 2
 **Success criteria:**
-- [ ] Shared `Text` parses string children through a strict-whitelist nested mini markup language while date-time keeps one `format` field and runs Day.js expansion first
-- [ ] Rich text supports `|` line breaks, `*...*` highlight shorthand, shared size tags, existing tone-token tags, and `<blink>...</blink>` composition through one core render path
-- [ ] Invalid or unsupported markup falls back to the original literal source text rather than partially rendering broken structure
-- [ ] Theme wrappers remain outer metadata observers and do not become inner markup or parsing owners
+- [x] Shared `Text` parses string children through a strict-whitelist nested mini markup language while date-time keeps one `format` field and runs Day.js expansion first
+- [x] Rich text supports `|` line breaks, `*...*` highlight shorthand, shared size tags, existing tone-token tags, and `<blink>...</blink>` composition through one core render path
+- [x] Invalid or unsupported markup falls back to the original literal source text rather than partially rendering broken structure
+- [x] Theme wrappers remain outer metadata observers and do not become inner markup or parsing owners
 **Research needed:** No
 
 ### Phase 4: Verification and Contract Cleanup
