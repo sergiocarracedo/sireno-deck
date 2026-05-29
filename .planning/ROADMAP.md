@@ -2,13 +2,13 @@
 
 **Version:** v1.3
 **Milestone:** Typography and Rich Formatting
-**Last updated:** 2026-05-28
+**Last updated:** 2026-05-29
 
 ## Milestone Summary
 
-Milestone `v1.3 Typography and Rich Formatting` fixes the typography-size contract, adds honest live shrink-fit where measurement is actually needed, and extends the built-in date-time widget with bounded rich formatting on top of the existing Day.js-based `format` field.
+Milestone `v1.3 Typography and Rich Formatting` fixes the typography-size contract, adds honest live shrink-fit where measurement is actually needed, and extends the shared text surface with a strict-whitelist rich-markup contract that the built-in date-time widget consumes after Day.js expansion.
 
-The roadmap is intentionally narrow: typography sizing is fixed once in the shared text/theme seam, measured layout is limited to `fit="shrink"`, and the rich formatting grammar remains local to the date-time widget instead of becoming generic markup support.
+The roadmap is intentionally narrow: typography sizing is fixed once in the shared text/theme seam, measured layout is limited to `fit="shrink"`, and the rich formatting work expands only into a strict shared `Text` mini markup language rather than arbitrary HTML/Markdown or theme-owned parsing behavior.
 
 ## Phases
 
@@ -35,14 +35,14 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 **Research needed:** No
 
 ### Phase 3: Rich Date-Time Formatting Surface
-**Goal:** Extend the built-in date-time widget with one bounded rich `format` grammar for multi-line and inline emphasis behavior while keeping Day.js token formatting as the base layer.
+**Goal:** Add a strict-whitelist shared `Text` mini markup language that date-time consumes after Day.js token expansion, so rich formatting becomes nested, reusable, and still tightly bounded.
 **Requirements:** `TRF-05`, `TRF-06`
 **Depends on:** 1, 2
 **Success criteria:**
-- [ ] Date-time config standardizes on one `format` field rather than split date/time config surfaces
-- [ ] The widget supports `|` line breaks, `*...*` highlight spans, inline size tags, and `<blink>...</blink>` segments
-- [ ] Blink behavior is implemented with reduced-motion-safe output instead of timer-driven widget logic
-- [ ] The rich formatting grammar stays local to the date-time widget and does not expand the generic `Text` component into a markup engine
+- [ ] Shared `Text` parses string children through a strict-whitelist nested mini markup language while date-time keeps one `format` field and runs Day.js expansion first
+- [ ] Rich text supports `|` line breaks, `*...*` highlight shorthand, shared size tags, existing tone-token tags, and `<blink>...</blink>` composition through one core render path
+- [ ] Invalid or unsupported markup falls back to the original literal source text rather than partially rendering broken structure
+- [ ] Theme wrappers remain outer metadata observers and do not become inner markup or parsing owners
 **Research needed:** No
 
 ### Phase 4: Verification and Contract Cleanup
@@ -72,7 +72,7 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 
 - Phase 1 must come first because the date-time formatter and shrink-fit behavior both sit on top of the shared typography contract.
 - Phase 2 stays browser-specific on purpose; mounted/static rendering should not inherit browser-only measurement machinery.
-- Phase 3 deliberately avoids generic rich text so the milestone can ship one honest parser/render seam without opening sanitization or arbitrary nesting scope.
+- Phase 3 now intentionally widens into shared `Text`, but only through a strict whitelist mini markup language; it must still avoid arbitrary HTML/Markdown, theme-owned parsing, and open-ended text-language scope.
 - Phase 4 is not optional cleanup; it closes the known stale test/live seam around the date-time config contract.
 
 ---

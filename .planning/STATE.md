@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 Phase: 3 — Rich Date-Time Formatting Surface
 Plan: —
 Status: planning
-Last activity: 2026-05-29 - Captured Phase 3 implementation context for plan-phase 3
+Last activity: 2026-05-29 - Aligned Phase 3 planning docs to the shared Text markup scope
 
 Progress: [#####-----] 50%
 
@@ -69,7 +69,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
-- Run `plan-phase 3` for Rich Date-Time Formatting Surface.
+- Re-run `plan-phase 3` now that Phase 3 planning sources agree on the shared `Text` markup scope.
 
 ### Roadmap Evolution
 
