@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Verify completed Phase 2 shrink-fit work for milestone v1.3 and prepare Phase 3 planning.
+**Current focus:** Phase 3 context is captured for milestone v1.3 Typography and Rich Formatting; planning can start.
 
 ## Current Position
 
 Phase: 3 — Rich Date-Time Formatting Surface
 Plan: —
-Status: verifying
-Last activity: 2026-05-29 - Closed quick task 020 for Phase 2 shrink-fit review findings
+Status: planning
+Last activity: 2026-05-29 - Captured Phase 3 implementation context for plan-phase 3
 
 Progress: [#####-----] 50%
 
@@ -69,7 +69,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
-- Run `verify-work 2` for Live Shrink-Fit Measurement.
+- Run `plan-phase 3` for Rich Date-Time Formatting Surface.
 
 ### Roadmap Evolution
 
@@ -90,6 +90,8 @@ Recent decisions affecting current work:
 - Phase 16 executed: deck-only `@path` references, watched config graph reloads, shared-wrapper footer removal, narrow `accent` overrides, and runtime-owned invalid-reload fallback are all implemented and verified.
 
 ### Progress Notes
+
+- **Phase 3 discussion:** Re-scoped the phase from a bounded date-time-only formatter into a shared `Text` mini markup language with strict whitelist nesting, existing tone-token tags, shared size tags, structural `|` line breaks, CSS-only blink, Day.js-first then `Text` parsing, and literal fallback for any invalid markup.
 
 - **Phase 2 execution:** Replaced the fake shrink clamp with a browser-only shrink-fit helper shared by browser capture and emulator paths, kept mounted/static output on honest ellipsis fallback, shipped a committed Phase 22 shrink-fit review addon/fixture/UAT path, and fixed the emulator shutdown seam so the review command closes cleanly when `sessionMonitor.stop()` is synchronous.
 - **Phase 2 discussion:** Locked shrink-fit as a browser-only live measurement seam on canonical `Text`, removed the CSS clamp as primary logic, kept measurement limited to `fit="shrink"`, chose fixed `ellipsis` fallback after the readable floor, deferred configurable fallback/floor API, and required content/container/theme-metric remeasurement plus aggressive loop guards and browser-path regression proof.
