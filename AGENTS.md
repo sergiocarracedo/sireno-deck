@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.3 — Typography and Rich Formatting
-**Phase:** 3 — Rich Date-Time Formatting Surface
-**Status:** verifying
+**Phase:** 4 — Verification and Contract Cleanup
+**Status:** planning
 **Last updated:** 2026-05-29
 
 ---
