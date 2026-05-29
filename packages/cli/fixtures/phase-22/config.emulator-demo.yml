@@ -1,34 +1,27 @@
-addons:
-  - name: phase-22-shrink-fit-review-addon
-    source: local
-    path: ./shrink-fit-review-addon
-
 decks:
   main:
     id: main
     name: Emulator Demo
     buttons:
       - position: 0
-        type: phase-22-shrink-fit-review
-        label: Browser shrink fit should stay on one line until the floor
-        size: 2xl
+        type: date-time
+        format: <accent><xl>HH:mm</xl></accent>|*DD/MM* <blink><danger>ss</danger></blink>
       - position: 1
+        type: change-deck
+        label: Fallback
+        target_deck: fallback
+      - position: 2
         type: action
         label: Ping
         command: "printf 'pong'"
-      - position: 2
-        type: change-deck
-        label: Emoji
-        target_deck: emoji
 
-  emoji:
-    id: emoji
-    name: Shrink Floor Review
+  fallback:
+    id: fallback
+    name: Invalid Markup Review
     buttons:
       - position: 0
-        type: phase-22-shrink-fit-review
-        label: This label is intentionally long enough to force the readable floor and then ellipsis in the browser emulator path
-        size: 2xl
+        type: date-time
+        format: Broken <accent><danger>HH:mm</accent></danger>|DD/MM/YYYY
       - position: 1
         type: change-deck
         label: Back

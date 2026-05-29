@@ -131,9 +131,30 @@ describe('date-time addon', () => {
         date,
       ),
     ).toBe('14/05/2026|10:48:07')
+
+    expect(
+      formatDigitalDateTimeLabel(
+        {
+          format: '<accent><lg>HH:mm</lg></accent>|*DD/MM* <blink><danger>ss</danger></blink>',
+        },
+        date,
+      ),
+    ).toBe('<accent><lg>10:48</lg></accent>|*14/05* <blink><danger>07</danger></blink>')
+
+    expect(
+      formatDigitalDateTimeLabel(
+        {
+          format: 'Broken <accent><danger>HH:mm</accent></danger>',
+        },
+        date,
+      ),
+    ).toBe('Broken <accent><danger>10:48</accent></danger>')
   })
 
   it('creates a renderable live date-time surface through the mounted contract', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 4, 14, 10, 48, 7))
+
     const definition = dateTimeAddon.buttons.find(
       (button) => button.type === 'date-time',
     )
@@ -141,17 +162,47 @@ describe('date-time addon', () => {
     const html = renderReactNodeToHtml(renderMountedDefinition(
       definition!,
       {
-        format: 'MM/DD/YYYY|HH:mm:ss',
+        format: '<accent><lg>HH:mm</lg></accent>|*DD/MM* <blink><danger>ss</danger></blink>',
       },
       2,
     ) as never)
 
-    expect(html).toContain('/')
+    expect(html).toContain('10:48')
     expect(html).toContain('w-full')
     expect(html).toContain('data-sireno-ui-text="true"')
     expect(html).toContain('data-sireno-text-size="xl"')
     expect(html).toContain('font-main')
     expect(html).toContain('text-foreground')
+    expect(html).toContain('data-sireno-rich-text-tag="accent"')
+    expect(html).toContain('data-sireno-rich-text-tag="lg"')
+    expect(html).toContain('data-sireno-rich-text-tag="line-break"')
+    expect(html).toContain('data-sireno-rich-text-tag="highlight"')
+    expect(html).toContain('data-sireno-rich-text-tag="blink"')
+    expect(html).toContain('data-sireno-rich-text-tag="danger"')
+
+    vi.useRealTimers()
+  })
+
+  it('falls back to literal output when formatted date-time markup is invalid', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 4, 14, 10, 48, 7))
+
+    const definition = dateTimeAddon.buttons.find(
+      (button) => button.type === 'date-time',
+    )
+
+    const html = renderReactNodeToHtml(renderMountedDefinition(
+      definition!,
+      {
+        format: 'Broken <accent><danger>HH:mm</accent></danger>',
+      },
+      2,
+    ) as never)
+
+    expect(html).toContain('Broken &lt;accent&gt;&lt;danger&gt;10:48&lt;/accent&gt;&lt;/danger&gt;')
+    expect(html).not.toContain('data-sireno-rich-text-tag="accent"')
+
+    vi.useRealTimers()
   })
 
   it('creates a renderable locked time tile surface for implicit lock fallback digits and colon', () => {
