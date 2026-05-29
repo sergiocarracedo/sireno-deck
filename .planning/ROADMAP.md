@@ -45,15 +45,15 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] Theme wrappers remain outer metadata observers and do not become inner markup or parsing owners
 **Research needed:** No
 
-### Phase 4: Verification and Contract Cleanup
+### Phase 4: Verification and Contract Cleanup ✓ Complete (2026-05-29)
 **Goal:** Lock the milestone by updating tests, fixtures, examples, and planning truth so the shipped contract matches the live implementation and no stale date-time assumptions remain.
 **Requirements:** `TRF-07`
 **Depends on:** 3
 **Success criteria:**
-- [ ] Tests and fixtures cover theme-relative typography sizing, live shrink-fit, and rich date-time formatting on the single-field `format` contract
-- [ ] Stale assertions and fixtures referencing split date/time config fields are removed or rewritten to the live v1.3 contract
-- [ ] Shipped examples or review fixtures demonstrate the new formatting grammar and typography behavior end-to-end
-- [ ] Milestone docs truthfully reflect the delivered contract and no longer carry conflicting text-format assumptions
+- [x] Tests and fixtures cover theme-relative typography sizing, live shrink-fit, and rich date-time formatting on the single-field `format` contract
+- [x] Stale assertions and fixtures referencing split date/time config fields are removed or rewritten to the live v1.3 contract
+- [x] Shipped examples or review fixtures demonstrate the new formatting grammar and typography behavior end-to-end
+- [x] Milestone docs truthfully reflect the delivered contract and no longer carry conflicting text-format assumptions
 **Research needed:** No
 
 ## Coverage Check

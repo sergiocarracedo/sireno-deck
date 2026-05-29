@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 4 execution is in progress for milestone v1.3 Typography and Rich Formatting; the remaining work is contract cleanup, phase verification, and final milestone truth sync.
+**Current focus:** Phase 4 execution is complete for milestone v1.3 Typography and Rich Formatting; run `verify-work 4` to finish manual UAT before review and ship.
 
 ## Current Position
 
 Phase: 4 — Verification and Contract Cleanup
 Plan: —
-Status: executing
-Last activity: 2026-05-29 - Started execute-phase 4 for unmatched-angle formatter closure and workflow-truth cleanup
+Status: verifying
+Last activity: 2026-05-29 - Completed execute-phase 4 for contract cleanup and milestone truth sync
 
-Progress: [#######---] 75%
+Progress: [##########] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
+- Total plans completed: 10
 - Average duration: 1 session
 - Total execution time: 1 session
 
@@ -30,6 +30,7 @@ Progress: [#######---] 75%
 | 1 — Foundation | 2 | 1 session | 0.5 session |
 | 2 — Device + Rendering | 3 | 1 session | 0.33 session |
 | 3 — Rich Date-Time Formatting Surface | 3 | 1 session | 0.33 session |
+| 4 — Verification and Contract Cleanup | 2 | 1 session | 0.5 session |
 
 **Recent Trend:**
 - Phase 1 implementation completed in a single execution pass, with verification catching multiple build/runtime mismatches before handoff.
@@ -48,6 +49,8 @@ Recent decisions affecting current work:
 - **Phase 3 execution:** Built-in date-time keeps one `format` field and Day.js token engine, preserves markup literal segments during formatting, and relies on shared `Text` for the post-format rich render path.
 - **Phase 3 gap closure:** The honest larger-time-line fix uses the existing shared `2xl` token plus a wider shared size ladder; copied size multipliers such as `Chip` must stay in sync with `Text` utilities.
 - **Phase 4 discussion:** Keep cleanup scoped to active shipped surfaces, include the unmatched-angle-bracket invalid-markup formatter gap, clean only shipped examples/verification fixtures, and fix only current-phase planning drift.
+- **Phase 4 execution:** Built-in `date-time` now preserves malformed unmatched-angle prefixes literally while still expanding useful Day.js tokens, and focused regression coverage proves both formatter-level and mounted shared-`Text` fallback behavior.
+- **Phase 4 execution:** Active workflow-routing artifacts now match the completed Phase 3 rerun and live Phase 4 handoff, so verification/state surfaces no longer route operators back into stale rerun steps.
 - **Execution:** Config validation errors must preserve metadata through schema, loader, and formatter layers or the CLI loses file/line/suggestion context.
 - **Execution:** yargs command handlers that return promises require `.parseAsync()`, and a foreground daemon must keep the event loop alive explicitly.
 - **Phase 5 discussion:** Button behavior should move behind addon-owned stateful instances that render React output, declare their own schemas, and use core-owned scheduling, command helpers, invalidation, and navigation methods.
@@ -74,7 +77,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
-- Finish `execute-phase 4`, then run phase verification and `verify-work 4`.
+- Run `verify-work 4`, then continue to `/review`, `/ship`, and `/compound` for milestone v1.3 closeout.
 
 ### Roadmap Evolution
 
@@ -103,6 +106,8 @@ Recent decisions affecting current work:
 - **Phase 3 gap closure:** Fixed the real UAT size-contrast miss by moving the committed date-time review path and mounted proof onto shared `2xl`, widening the global text size ladder, and syncing `Chip` with the updated `sm` multiplier so the theme seam stays truthful.
 
 - **Phase 4 discussion:** Locked the final milestone phase around truthful cleanup only: active shipped tests/fixtures/examples/docs, the unmatched-angle-bracket invalid-markup gap in the built-in date-time formatter, shipped-example-only fixture normalization, and current-phase planning-state drift rather than archive-wide cleanup.
+
+- **Phase 4 execution:** Closed the unmatched-angle invalid-markup formatter gap without widening the date-time contract, added focused raw/mounted regression coverage for that edge case, reconciled stale Phase 3 verification text with the already-passed rerun UAT, and moved the project handoff onto truthful Phase 4 verification state.
 
 - **Phase 2 execution:** Replaced the fake shrink clamp with a browser-only shrink-fit helper shared by browser capture and emulator paths, kept mounted/static output on honest ellipsis fallback, shipped a committed Phase 22 shrink-fit review addon/fixture/UAT path, and fixed the emulator shutdown seam so the review command closes cleanly when `sessionMonitor.stop()` is synchronous.
 - **Phase 2 discussion:** Locked shrink-fit as a browser-only live measurement seam on canonical `Text`, removed the CSS clamp as primary logic, kept measurement limited to `fit="shrink"`, chose fixed `ellipsis` fallback after the readable floor, deferred configurable fallback/floor API, and required content/container/theme-metric remeasurement plus aggressive loop guards and browser-path regression proof.
@@ -211,8 +216,8 @@ Key achievements: v1.2 delivered the session-aware runtime/render contract, laye
 ## Session Continuity
 
 Last session: 2026-05-29
-Stopped at: Phase 4 execution in progress after Wave 1 and entering workflow-truth cleanup.
-Resume file: .planning/phases/04-verification-and-contract-cleanup/04-02-PLAN.md
+Stopped at: Phase 4 execution complete and ready for `verify-work 4`.
+Resume file: .planning/phases/04-verification-and-contract-cleanup/04-VERIFICATION.md
 
 ### Quick Tasks Completed
 

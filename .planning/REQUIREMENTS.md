@@ -24,7 +24,7 @@ Milestone `v1.3 Typography and Rich Formatting` builds on the shipped `v1.2` tex
 - **Phase 1 landed (2026-05-28):** `TRF-01` and `TRF-02` — moved effective font-size responsibility off typography role classes, made `md` the exact typography-role base, kept relative size semantics in the shared `Text` contract, preserved size metadata through the theme UI seam, and swept shipped raw typography callers onto the honest contract.
 - **Phase 2 landed (2026-05-28):** `TRF-03` and `TRF-04` — replaced the fake shrink clamp with browser-path measured shrink-fit on shared `Text`, recompute on content/container changes through the browser helper seam, enforce a readable minimum floor plus deterministic ellipsis fallback, keep `wrap`, `ellipsis`, and `marquee` CSS/declarative, and ship a committed browser/emulator review path.
 - **Phase 3 landed (2026-05-29):** `TRF-05` and `TRF-06` — shared `Text` now parses/renders the strict-whitelist nested mini markup language for string children, the built-in date-time button keeps one `format` field plus Day.js-first token expansion, markup literals survive the formatting seam, theme wrappers stay outer observers, and invalid markup falls back to the original literal text.
-- **Phase 4 should land:** `TRF-07` — add regression coverage, fixtures, and shipped examples that prove the new typography, shrink-fit, shared `Text` rich-markup contract, and date-time passthrough path while removing stale assertions around split date/time config fields.
+- **Phase 4 landed (2026-05-29):** `TRF-07` — focused regression coverage now proves the unmatched-angle invalid-markup edge case and the live single-field date-time `format` passthrough path, while active workflow-truth artifacts no longer preserve stale Phase 3 rerun guidance.
 
 ## Phase Traceability
 
@@ -36,7 +36,7 @@ Milestone `v1.3 Typography and Rich Formatting` builds on the shipped `v1.2` tex
 | TRF-04 | Phase 2 | ✓ Complete (2026-05-28) | Shrink-fit now stops at a fixed readable floor, falls back to deterministic ellipsis, keeps other fit modes declarative, and ships a real browser/emulator review path. |
 | TRF-05 | Phase 3 | ✓ Complete (2026-05-29) | Shared `Text` now owns the strict-whitelist markup parser/render seam, while built-in date-time keeps one `format` field and passes Day.js-expanded strings through after preserving markup literals. |
 | TRF-06 | Phase 3 | ✓ Complete (2026-05-29) | Shared rich text now supports nested line breaks, highlight shorthand, size/tone tags, blink spans, and deterministic literal fallback without giving themes inner-markup ownership. |
-| TRF-07 | Phase 4 | Planned | Final regression/fixture/examples cleanup remains Phase 4 scope. |
+| TRF-07 | Phase 4 | ✓ Complete (2026-05-29) | Focused date-time regression coverage now proves unmatched-angle literal fallback plus token expansion, and active workflow artifacts were reconciled so the delivered Phase 3/4 contract truth matches the live implementation. |
 
 ## v2 Candidates
 
