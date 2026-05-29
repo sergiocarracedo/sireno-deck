@@ -35,7 +35,7 @@ export function Chip(props: ChipProps): ReactElement {
       "data-sireno-ui-chip": "true",
       style: {
         fontFamily: "var(--sireno-font-aux-family)",
-        fontSize: "calc(var(--sireno-font-aux-size, 16px) * 0.875)",
+        fontSize: "calc(var(--sireno-font-aux-size, 16px) * 0.85)",
         fontWeight: "var(--sireno-font-aux-weight)",
         letterSpacing: "var(--sireno-font-aux-tracking)",
         ...props.style,

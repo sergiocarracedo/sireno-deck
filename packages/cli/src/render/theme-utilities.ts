@@ -7,12 +7,12 @@ interface ThemeCssVariable {
 
 const CSS_VAR_PREFIX = '--sireno'
 const TEXT_SIZE_MULTIPLIERS = {
-  '2xl': '1.5',
-  lg: '1.125',
+  '2xl': '1.75',
+  lg: '1.2',
   md: '1',
-  sm: '0.875',
-  xl: '1.25',
-  xs: '0.75',
+  sm: '0.85',
+  xl: '1.4',
+  xs: '0.7',
 } as const
 
 function toFontFamilyValue(fontFamily: string): string {

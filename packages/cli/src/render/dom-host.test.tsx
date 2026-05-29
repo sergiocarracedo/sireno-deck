@@ -213,7 +213,7 @@ describe("dom host", () => {
     expect(html).toContain('data-sireno-default-text-size="lg"')
     expect(html).toContain('data-sireno-ui-chip="true"')
     expect(html).toContain('font-family:var(--sireno-font-aux-family)')
-    expect(html).toContain('font-size:calc(var(--sireno-font-aux-size, 16px) * 0.875)')
+    expect(html).toContain('font-size:calc(var(--sireno-font-aux-size, 16px) * 0.85)')
     expect(html).toContain('data-sireno-text-fit="marquee"')
     expect(html).toContain('data-sireno-text-size="lg"')
     expect(html).toContain('sireno-marquee-track')
