@@ -5,7 +5,7 @@
 
 ## Verification Summary
 
-Phase 3 now passes automated verification again after closure plan `03-03-PLAN.md`. The original manual UAT correctly found that the committed review path never encoded a real size delta: the main-deck time line used inner `<xl>` tags inside a built-in date-time button already rendered through outer `Text size="xl"`, so the first line could not look larger. That gap is now closed by moving the review path and mounted proof onto the existing shared `<2xl>` token and by widening the shared size ladder in `packages/cli/src/render/theme-utilities.ts` so adjacent levels read more distinctly. The original failed UAT evidence remains preserved in `.planning/phases/03-rich-date-time-formatting-surface/03-UAT.md`, and `verify-work 3` should now be rerun to confirm the visual result on the real emulator path.
+Phase 3 passes verification after closure plan `03-03-PLAN.md` and the rerun UAT committed in `bea2860`. The original manual UAT correctly found that the committed review path never encoded a real size delta: the main-deck time line used inner `<xl>` tags inside a built-in date-time button already rendered through outer `Text size="xl"`, so the first line could not look larger. That gap was closed by moving the review path and mounted proof onto the existing shared `<2xl>` token and by widening the shared size ladder in `packages/cli/src/render/theme-utilities.ts` so adjacent levels read more distinctly. The original failed UAT evidence remains preserved in `.planning/phases/03-rich-date-time-formatting-surface/03-UAT.md`, and the rerun confirmed the visual result on the real emulator path before Phase 4 cleanup moved on to the next verification seams.
 
 ## Must-Have Checks
 
@@ -42,8 +42,8 @@ Phase 3 now passes automated verification again after closure plan `03-03-PLAN.m
 - `rg -n "03-03-PLAN.md|2xl|root_cause|size ladder|larger" .planning/phases/03-rich-date-time-formatting-surface/03-UAT.md .planning/phases/03-rich-date-time-formatting-surface/03-VERIFICATION.md packages/cli/src/render/theme-utilities.ts`
   - confirms the preserved root_cause evidence, explicit `03-03-PLAN.md` rerun path, `2xl` review-token fix, and updated size ladder wording all live in the committed artifacts
 - `.planning/phases/03-rich-date-time-formatting-surface/03-UAT.md`
-  - manual UAT result: `0 passed, 1 issue`
-  - user reported: `every perfect, except: the 0 button in the main deck is nice except the HH:mm is not bigger, in any case i guess we need a xxl size and make the diference between sizes more evident`
+  - manual UAT rerun result: `1 passed, 0 issues`
+  - preserved gap history: `rerun_passed_via_03-03-PLAN.md` with the original user report and root-cause record still intact below the passing rerun result
 - `packages/cli/src/builtin-addons/date-time/buttons/date-time.tsx`
   - outer built-in date-time shell still renders through `Text size="xl"`
 - `packages/cli/fixtures/phase-22/config.emulator-demo.yml`
@@ -53,6 +53,6 @@ Phase 3 now passes automated verification again after closure plan `03-03-PLAN.m
 
 ## Residual Notes
 
-- Phase 3 core behavior and the `03-03` size-contrast closure are now implemented and verified in code, but the original failed UAT history remains preserved in `.planning/phases/03-rich-date-time-formatting-surface/03-UAT.md` rather than being rewritten away.
+- Phase 3 core behavior and the `03-03` size-contrast closure are now implemented, verified in code, and confirmed by the rerun UAT, while the original failed history remains preserved in `.planning/phases/03-rich-date-time-formatting-surface/03-UAT.md` rather than being rewritten away.
 - No new public size name was introduced; the closure uses the existing shared `2xl` token and a wider shared size ladder instead of widget-local styling.
-- Next: rerun `verify-work 3` so the emulator review path can confirm the visual fix before `/review`, `/ship`, and `/compound`.
+- Next at the time of closure was `/review`, and active workflow routing has since moved forward into Phase 4 verification-and-contract cleanup work.
