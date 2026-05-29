@@ -27,7 +27,7 @@ function splitDateTimeFormat(pattern: string): DateTimeFormatSegment[] {
 
     const tagEnd = pattern.indexOf('>', tagStart + 1)
     if (tagEnd === -1) {
-      segments.push({ kind: 'markup', value: pattern.slice(tagStart) })
+      segments.push({ kind: 'text', value: pattern.slice(tagStart) })
       break
     }
 
