@@ -135,11 +135,11 @@ describe('date-time addon', () => {
     expect(
       formatDigitalDateTimeLabel(
         {
-          format: '<accent><lg>HH:mm</lg></accent>|*DD/MM* <blink><danger>ss</danger></blink>',
+          format: '<accent><2xl>HH</2xl></accent><blink>:</blink><2xl>mm</2xl>|<xs>DD/MMM</xs>',
         },
         date,
       ),
-    ).toBe('<accent><lg>10:48</lg></accent>|*14/05* <blink><danger>07</danger></blink>')
+    ).toBe('<accent><2xl>10</2xl></accent><blink>:</blink><2xl>48</2xl>|<xs>14/May</xs>')
 
     expect(
       formatDigitalDateTimeLabel(
@@ -162,23 +162,25 @@ describe('date-time addon', () => {
     const html = renderReactNodeToHtml(renderMountedDefinition(
       definition!,
       {
-        format: '<accent><lg>HH:mm</lg></accent>|*DD/MM* <blink><danger>ss</danger></blink>',
+        format: '<accent><2xl>HH</2xl></accent><blink>:</blink><2xl>mm</2xl>|<xs>DD/MMM</xs>',
       },
       2,
     ) as never)
 
-    expect(html).toContain('10:48')
+    expect(html).toContain('>10<')
+    expect(html).toContain('data-sireno-rich-text-tag="blink">:</span>')
+    expect(html).toContain('>48<')
     expect(html).toContain('w-full')
     expect(html).toContain('data-sireno-ui-text="true"')
     expect(html).toContain('data-sireno-text-size="xl"')
     expect(html).toContain('font-main')
     expect(html).toContain('text-foreground')
     expect(html).toContain('data-sireno-rich-text-tag="accent"')
-    expect(html).toContain('data-sireno-rich-text-tag="lg"')
+    expect(html).toContain('data-sireno-rich-text-tag="2xl"')
     expect(html).toContain('data-sireno-rich-text-tag="line-break"')
-    expect(html).toContain('data-sireno-rich-text-tag="highlight"')
     expect(html).toContain('data-sireno-rich-text-tag="blink"')
-    expect(html).toContain('data-sireno-rich-text-tag="danger"')
+    expect(html).toContain('data-sireno-rich-text-tag="xs"')
+    expect(html).toContain('text-2xl')
 
     vi.useRealTimers()
   })

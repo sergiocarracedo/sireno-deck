@@ -5,7 +5,7 @@ decks:
     buttons:
       - position: 0
         type: date-time
-        format: <accent><xl>HH:mm</xl></accent>|*DD/MM* <blink><danger>ss</danger></blink>
+        format: <accent><2xl>HH</2xl></accent><blink>:</blink><2xl>mm</2xl>|<xs>DD/MMM</xs>
       - position: 1
         type: change-deck
         label: Fallback
