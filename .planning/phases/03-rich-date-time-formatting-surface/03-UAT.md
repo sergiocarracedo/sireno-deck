@@ -5,39 +5,36 @@ source:
   - .planning/phases/03-rich-date-time-formatting-surface/03-01-SUMMARY.md
   - .planning/phases/03-rich-date-time-formatting-surface/03-02-SUMMARY.md
 started: 2026-05-29T17:55:00+02:00
-updated: 2026-05-29T18:39:00+02:00
+updated: 2026-05-29T19:28:15+02:00
 ---
 
 # Phase 3 UAT — Rich Date-Time Formatting Surface
 
 ## Current Test
 
-number: 1
-name: Browser Date-Time Rich Markup Review
+number: rerun
+name: Browser Date-Time Rich Markup Review (rerun after 03-03)
 expected: |
   From `packages/cli`, run:
 
   `pnpm exec tsx src/cli/index.ts emulate --config fixtures/phase-22/config.emulator-demo.yml --port 0`
 
-  On the main deck, key `0` should render the built-in `date-time` button through the real single-field `format` contract. The first line should show `HH:mm` with accent tone and a larger size. The second line should show highlighted date text plus a blinking danger-toned seconds segment. Blink is intentionally always-on in this phase.
-
-  Then navigate to `Fallback`. The invalid markup example should render literally rather than partially parsing, while still showing expanded time/date values inside the literal output.
-awaiting: user response
+  Expected: the main-deck time line now looks visibly larger than the surrounding shell because the review path uses shared `2xl` for `HH` and `mm`, while the fallback deck still renders invalid markup literally.
+awaiting: none
 
 ## Tests
 
 ### Test 1: Browser Date-Time Rich Markup Review
 expected: From `packages/cli`, run `pnpm exec tsx src/cli/index.ts emulate --config fixtures/phase-22/config.emulator-demo.yml --port 0`. On the main deck, key `0` should render the built-in `date-time` button through the real single-field `format` contract, with accent-toned larger `HH:mm` on the first line and highlighted date text plus a blinking danger-toned seconds segment on the second line. Then navigate to `Fallback` and confirm invalid markup renders literally rather than partially parsing, while still showing expanded time/date values.
-result: issue
-reported: "every perfect, except: the 0 button in the main deck is nice except the HH:mm is not bigger, in any case i guess we need a xxl size and make the diference between sizes more evident"
-severity: major
+result: pass (rerun after 03-03)
+reported: "Original issue preserved below. Rerun result: pass. Main-deck key 0 now shows a visibly larger first line, and the fallback deck still renders invalid markup literally."
 
 ## Summary
 
 ```yaml
 total: 1
-passed: 0
-issues: 1
+passed: 1
+issues: 0
 pending: 0
 skipped: 0
 ```
@@ -45,8 +42,8 @@ skipped: 0
 ## Gaps
 
 - truth: "On the main deck, key `0` should render the first line `HH:mm` with a visibly larger size than the surrounding date-time content."
-  status: failed
-  reason: "User reported: every perfect, except: the 0 button in the main deck is nice except the HH:mm is not bigger, in any case i guess we need a xxl size and make the diference between sizes more evident"
+  status: rerun_passed_via_03-03-PLAN.md
+  reason: "Original issue preserved: user reported `every perfect, except: the 0 button in the main deck is nice except the HH:mm is not bigger, in any case i guess we need a xxl size and make the diference between sizes more evident`. Rerun after `03-03-PLAN.md` passed: the main-deck time line is now visibly larger and the fallback deck still renders invalid markup literally."
   severity: major
   root_cause: "The Phase 3 review fixture asks shared `Text` to render `<xl>HH:mm</xl>` inside the built-in date-time button, but that button already wraps the whole label in outer `Text size=\"xl\"`. Because the inner rich tag and the outer shell resolve to the same `text-xl` utility, the first line has no actual size step-up against its surroundings. The automated tests only proved that rich size tags survive the parser and appear in HTML; they did not prove that the chosen fixture creates a visible contrast on the real review path. The repo already has a larger shared size token (`2xl`), so the gap is fixture/coverage drift, not missing parser support."
   affected_files:
@@ -54,6 +51,12 @@ skipped: 0
     - packages/cli/src/builtin-addons/date-time/index.test.ts
     - packages/cli/src/render/theme-utilities.ts
   test: 1
+
+## Rerun After 03-03-PLAN.md
+
+- command: `pnpm exec tsx src/cli/index.ts emulate --config fixtures/phase-22/config.emulator-demo.yml --port 0`
+  result: pass
+  observed: "Main-deck key 0 now renders a visibly larger `HH:mm` line through the committed `2xl` review path, and the `Fallback` deck still renders invalid markup literally while preserving expanded time/date values."
 
 ## Investigation
 
