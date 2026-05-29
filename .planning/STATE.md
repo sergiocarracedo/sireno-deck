@@ -81,6 +81,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 5 added: restore hot refresh when config or React files change, and add a shared button error helper that renders a warning triangle plus a four-digit error code while logging richer deck/button-aware diagnostics.
 - Phase 29 added: remove remaining legacy seams such as `LegacyAddonButtonDefinition`, stop using `createElement` in favor of JSX/TSX, prefer Tailwind utilities over inline styles except where impossible, split built-in multi-button addons into one button per file, and decide between `dayjs` and `momentjs` for the date-time button formatting path.
 - Phase 28 added: move toward JSX/TSX component-first rendering, replace `createDomIcon`-style helper rendering with components, use tailwind-style classes plus `cn` where possible, add a workspace-root `p cli:dev` watch mode that runs the CLI through `tsx`, and provide theme-customizable utility components such as `Icon`, `Chip`, and `Text`.
 - Phase 27 added: remove the legacy YAML theme fallback, use the built-in default theme `ButtonFrame.tsx` as the only frame fallback, stop requiring manual `import React from 'react'` in TSX runtime files, ensure theme `ButtonFrame.tsx` edits trigger autoupdate, and show deck glass chrome only in emulator mode.

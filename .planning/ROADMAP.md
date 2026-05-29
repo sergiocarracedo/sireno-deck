@@ -56,6 +56,14 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] Milestone docs truthfully reflect the delivered contract and no longer carry conflicting text-format assumptions
 **Research needed:** No
 
+### Phase 5: Hot Refresh and Button Error Helper
+**Goal:** Restore honest hot refresh for config and React source edits, and provide a shared button-facing error helper that renders a warning triangle plus a four-digit error code while logging deck/button-aware diagnostics.
+**Status:** [ ] Not started
+**Depends on:** Phase 4
+
+### Plans
+*Not yet planned - run `plan-phase 5`*
+
 ## Coverage Check
 
 | Requirement | Phase |
@@ -78,4 +86,4 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 ---
 
 *Roadmap defined: 2026-05-28*
-*Total phases: 4*
+*Total phases: 5*
