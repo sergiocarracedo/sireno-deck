@@ -32,6 +32,184 @@ const SIZE_CLASS = {
   '2xl': 'text-2xl',
 } as const
 
+const RICH_TONE_TAGS = ['accent', 'danger', 'foreground', 'primary', 'success'] as const
+const RICH_SIZE_TAGS = ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] as const
+
+type RichToneTag = (typeof RICH_TONE_TAGS)[number]
+type RichSizeTag = (typeof RICH_SIZE_TAGS)[number]
+type RichMarkupTag = 'blink' | 'highlight' | RichToneTag | RichSizeTag
+
+type RichTextNode =
+  | { type: 'line-break' }
+  | { type: 'tag'; tag: RichMarkupTag; children: RichTextNode[] }
+  | { type: 'text'; value: string }
+
+type ParseStop = { kind: 'highlight' } | { kind: 'tag'; tag: Exclude<RichMarkupTag, 'highlight'> }
+
+const RICH_TAG_NAMES = new Set<string>([...RICH_TONE_TAGS, ...RICH_SIZE_TAGS, 'blink'])
+
+function isRichToneTag(tag: string): tag is RichToneTag {
+  return RICH_TONE_TAGS.includes(tag as RichToneTag)
+}
+
+function isRichSizeTag(tag: string): tag is RichSizeTag {
+  return RICH_SIZE_TAGS.includes(tag as RichSizeTag)
+}
+
+function parseRichText(input: string): RichTextNode[] | null {
+  let index = 0
+
+  function parseSequence(stop?: ParseStop): RichTextNode[] | null {
+    const nodes: RichTextNode[] = []
+    let textStart = index
+
+    const flushText = () => {
+      if (textStart < index) {
+        nodes.push({ type: 'text', value: input.slice(textStart, index) })
+      }
+    }
+
+    while (index < input.length) {
+      if (stop?.kind === 'highlight' && input[index] === '*') {
+        flushText()
+        index += 1
+        return nodes
+      }
+
+      if (stop?.kind === 'tag' && input.startsWith(`</${stop.tag}>`, index)) {
+        flushText()
+        index += stop.tag.length + 3
+        return nodes
+      }
+
+      const current = input[index]
+
+      if (current === '|') {
+        flushText()
+        nodes.push({ type: 'line-break' })
+        index += 1
+        textStart = index
+        continue
+      }
+
+      if (current === '*') {
+        flushText()
+        index += 1
+        textStart = index
+        const children = parseSequence({ kind: 'highlight' })
+        if (children === null) {
+          return null
+        }
+        nodes.push({ type: 'tag', tag: 'highlight', children })
+        textStart = index
+        continue
+      }
+
+      if (current === '<') {
+        if (input.startsWith('</', index)) {
+          return null
+        }
+
+        const closeIndex = input.indexOf('>', index + 1)
+        if (closeIndex === -1) {
+          return null
+        }
+
+        const tagName = input.slice(index + 1, closeIndex)
+        if (!RICH_TAG_NAMES.has(tagName)) {
+          return null
+        }
+
+        flushText()
+        index = closeIndex + 1
+        textStart = index
+
+        const children = parseSequence({
+          kind: 'tag',
+          tag: tagName as Exclude<RichMarkupTag, 'highlight'>,
+        })
+        if (children === null) {
+          return null
+        }
+
+        nodes.push({
+          type: 'tag',
+          tag: tagName as Exclude<RichMarkupTag, 'highlight'>,
+          children,
+        })
+        textStart = index
+        continue
+      }
+
+      index += 1
+    }
+
+    flushText()
+    return stop ? null : nodes
+  }
+
+  return parseSequence()
+}
+
+function isPlainTextTree(nodes: RichTextNode[]): boolean {
+  return nodes.every((node) => node.type === 'text')
+}
+
+function renderRichTextNodes(nodes: RichTextNode[], keyPrefix: string): ReactNode[] {
+  return nodes.map((node, index) => {
+    const key = `${keyPrefix}-${index}`
+
+    if (node.type === 'text') {
+      return node.value
+    }
+
+    if (node.type === 'line-break') {
+      return createElement('span', {
+        className: 'sireno-rich-text-break',
+        'data-sireno-rich-text-tag': 'line-break',
+        key,
+      })
+    }
+
+    const classNames = ['sireno-rich-text-node']
+
+    if (node.tag === 'blink') {
+      classNames.push('sireno-rich-text-blink')
+    }
+
+    if (node.tag === 'highlight') {
+      classNames.push('sireno-rich-text-strong', TONE_CLASS.accent)
+    } else if (isRichToneTag(node.tag)) {
+      classNames.push(TONE_CLASS[node.tag])
+    } else if (isRichSizeTag(node.tag)) {
+      classNames.push(SIZE_CLASS[node.tag])
+    }
+
+    return createElement(
+      'span',
+      {
+        className: cn(classNames),
+        'data-sireno-rich-text-tag': node.tag,
+        key,
+      },
+      ...renderRichTextNodes(node.children, key),
+    )
+  })
+}
+
+function renderTextChildren(children: ReactNode): ReactNode {
+  if (typeof children !== 'string') {
+    return children
+  }
+
+  const parsed = parseRichText(children)
+  if (parsed === null || isPlainTextTree(parsed)) {
+    return children
+  }
+
+  return renderRichTextNodes(parsed, 'rich')
+}
+
 export type TextAlign = keyof typeof ALIGN_CLASS
 export type TextFit = 'ellipsis' | 'marquee' | 'shrink' | 'wrap'
 export type TextTone = keyof typeof TONE_CLASS
@@ -56,6 +234,7 @@ export function Text(props: TextProps): ReactElement {
   const typography = props.typography ?? 'main'
   const size = props.size ?? 'md'
   const themeUi = useThemeUiPresentation()
+  const renderedChildren = renderTextChildren(props.children)
 
   const element = createElement(
     'span',
@@ -82,9 +261,9 @@ export function Text(props: TextProps): ReactElement {
       ? createElement(
           'span',
           { className: 'sireno-marquee-track inline-block' },
-          props.children,
+          renderedChildren,
         )
-      : props.children,
+      : renderedChildren,
   )
 
   return themeUi?.text

@@ -115,6 +115,8 @@ describe("dom host", () => {
     expect(html).toContain('.text-primary{color:var(--sireno-color-primary);}')
     expect(html).toContain('.font-main{--sireno-active-font-size:var(--sireno-font-main-size);font-family:var(--sireno-font-main-family);')
     expect(html).toContain('.text-md{font-size:calc(var(--sireno-active-font-size, 16px) * 1);}')
+    expect(html).toContain('.sireno-rich-text-break{display:block;height:0;}')
+    expect(html).toContain('.sireno-rich-text-blink{animation:sireno-rich-text-blink 1s steps(1,end) infinite;}')
     expect(html).toContain('.sireno-text-fit-shrink{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}')
     expect(html).toContain('window.__sirenoApplyShrinkFit = function(root){')
     expect(html).toContain("const CANONICAL_ROOT_SELECTOR = '[data-sireno-browser-shell=\"true\"]';")
@@ -193,6 +195,11 @@ describe("dom host", () => {
             createElement(Chip, { tone: "accent" }, "LIVE"),
             createElement(Icon, { icon: "clock", tone: "primary" }),
             createElement(Text, { fit: "marquee", size: "lg", tone: "foreground" }, "Theme proof"),
+            createElement(
+              Text,
+              { fit: "wrap", size: "xl", tone: "foreground", typography: "main" },
+              "Status|<accent><sm>GO</sm></accent> *Now* <blink><danger>!</danger></blink>",
+            ),
           ),
         ),
       keyIndex: 0,
@@ -210,6 +217,15 @@ describe("dom host", () => {
     expect(html).toContain('data-sireno-text-fit="marquee"')
     expect(html).toContain('data-sireno-text-size="lg"')
     expect(html).toContain('sireno-marquee-track')
+    expect(html).toContain('data-sireno-default-text-tone="foreground"')
+    expect(html).toContain('data-sireno-rich-text-tag="line-break"')
+    expect(html).toContain('data-sireno-rich-text-tag="accent"')
+    expect(html).toContain('data-sireno-rich-text-tag="sm"')
+    expect(html).toContain('data-sireno-rich-text-tag="highlight"')
+    expect(html).toContain('data-sireno-rich-text-tag="blink"')
+    expect(html).toContain('data-sireno-rich-text-tag="danger"')
+    expect(html).toContain('sireno-rich-text-strong')
+    expect(html).toContain('sireno-rich-text-blink')
   })
 
   it("normalizes absolute icon paths into browser-loadable file URLs", () => {
@@ -283,6 +299,25 @@ describe("dom host", () => {
     expect(browserHtml).toContain('return root.closest?.(CANONICAL_ROOT_SELECTOR) || root.querySelector?.(CANONICAL_ROOT_SELECTOR) || root;')
     expect(browserHtml).toContain('return root.querySelector(CANONICAL_ROOT_SELECTOR) || root.body || root.documentElement;')
     expect(browserHtml).toContain('schedule(rootElement);')
+  })
+
+  it("falls back to the original literal string when shared rich markup is invalid", () => {
+    const html = renderDomDeck([
+      {
+        content: createElement(
+          Text,
+          { fit: "wrap", size: "xl", tone: "foreground", typography: "main" },
+          "Broken <accent><danger>tags</accent></danger>",
+        ),
+        keyIndex: 0,
+      },
+    ], {
+      keyCount: 1,
+    })
+
+    expect(html).toContain('Broken &lt;accent&gt;&lt;danger&gt;tags&lt;/accent&gt;&lt;/danger&gt;')
+    expect(html).not.toContain('data-sireno-rich-text-tag="accent"')
+    expect(html).not.toContain('data-sireno-rich-text-tag="highlight"')
   })
 
   it("renders mounted-button store snapshots through the public props-first contract", async () => {

@@ -148,9 +148,14 @@ export function getThemeUtilityStylesheet(): string {
     `.text-lg{font-size:calc(var(--sireno-active-font-size, 16px) * ${TEXT_SIZE_MULTIPLIERS.lg});}`,
     `.text-xl{font-size:calc(var(--sireno-active-font-size, 16px) * ${TEXT_SIZE_MULTIPLIERS.xl});}`,
     `.text-2xl{font-size:calc(var(--sireno-active-font-size, 16px) * ${TEXT_SIZE_MULTIPLIERS['2xl']});}`,
+    '.sireno-rich-text-node{display:inline;}',
+    '.sireno-rich-text-break{display:block;height:0;}',
+    '.sireno-rich-text-strong{font-weight:700;}',
+    '.sireno-rich-text-blink{animation:sireno-rich-text-blink 1s steps(1,end) infinite;}',
     '.sireno-text-fit-shrink{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}',
     '.sireno-text-fit-marquee{position:relative;}',
     '.sireno-marquee-track{display:inline-block;min-width:max-content;padding-inline-end:100%;animation:sireno-marquee-scroll 8s linear infinite;}',
+    '@keyframes sireno-rich-text-blink{0%,49.999%{opacity:1;}50%,100%{opacity:0;}}',
     '@keyframes sireno-marquee-scroll{0%{transform:translateX(0%);}100%{transform:translateX(-50%);}}',
   ].join('')
 }
