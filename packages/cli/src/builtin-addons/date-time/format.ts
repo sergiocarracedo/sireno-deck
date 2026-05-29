@@ -7,6 +7,20 @@ interface DateTimeFormatSegment {
   value: string
 }
 
+function escapeDayjsLiteral(value: string): string {
+  return `[${value.replaceAll(']', '\\]')}]`
+}
+
+function preserveMalformedTagPrefix(fragment: string): string {
+  const separatorIndex = fragment.search(/\s/)
+
+  if (separatorIndex === -1) {
+    return escapeDayjsLiteral(fragment)
+  }
+
+  return `${escapeDayjsLiteral(fragment.slice(0, separatorIndex + 1))}${fragment.slice(separatorIndex + 1)}`
+}
+
 function splitDateTimeFormat(pattern: string): DateTimeFormatSegment[] {
   const segments: DateTimeFormatSegment[] = []
   let cursor = 0
@@ -27,7 +41,10 @@ function splitDateTimeFormat(pattern: string): DateTimeFormatSegment[] {
 
     const tagEnd = pattern.indexOf('>', tagStart + 1)
     if (tagEnd === -1) {
-      segments.push({ kind: 'text', value: pattern.slice(tagStart) })
+      segments.push({
+        kind: 'text',
+        value: preserveMalformedTagPrefix(pattern.slice(tagStart)),
+      })
       break
     }
 

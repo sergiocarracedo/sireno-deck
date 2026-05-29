@@ -149,6 +149,15 @@ describe('date-time addon', () => {
         date,
       ),
     ).toBe('Broken <accent><danger>10:48</accent></danger>')
+
+    expect(
+      formatDigitalDateTimeLabel(
+        {
+          format: 'Broken <accent HH:mm',
+        },
+        date,
+      ),
+    ).toBe('Broken <accent 10:48')
   })
 
   it('creates a renderable live date-time surface through the mounted contract', () => {
@@ -203,6 +212,17 @@ describe('date-time addon', () => {
 
     expect(html).toContain('Broken &lt;accent&gt;&lt;danger&gt;10:48&lt;/accent&gt;&lt;/danger&gt;')
     expect(html).not.toContain('data-sireno-rich-text-tag="accent"')
+
+    const unmatchedHtml = renderReactNodeToHtml(renderMountedDefinition(
+      definition!,
+      {
+        format: 'Broken <accent HH:mm',
+      },
+      2,
+    ) as never)
+
+    expect(unmatchedHtml).toContain('Broken &lt;accent 10:48')
+    expect(unmatchedHtml).not.toContain('data-sireno-rich-text-tag="accent"')
 
     vi.useRealTimers()
   })
