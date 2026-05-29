@@ -4,15 +4,23 @@ export function getShrinkFitBrowserScript(): string {
   return String.raw`
 (function(){
   const ROOT_STATE_KEY = '__sirenoShrinkFitState';
+  const CANONICAL_ROOT_SELECTOR = '[data-sireno-browser-shell="true"]';
   const TEXT_SELECTOR = '[data-sireno-text-fit="shrink"]';
   const MIN_FONT_SIZE_PX = ${MIN_SHRINK_FIT_FONT_SIZE_PX};
   const PRECISION_PX = 0.25;
 
-  function getRootElement(root){
-    if (root instanceof Document) {
-      return root.body || root.documentElement;
+  function resolveCanonicalRoot(root){
+    if (root instanceof Element) {
+      return root.closest?.(CANONICAL_ROOT_SELECTOR) || root.querySelector?.(CANONICAL_ROOT_SELECTOR) || root;
     }
-    return root instanceof Element ? root : document.body;
+    if (root instanceof Document) {
+      return root.querySelector(CANONICAL_ROOT_SELECTOR) || root.body || root.documentElement;
+    }
+    return document.querySelector(CANONICAL_ROOT_SELECTOR) || document.body;
+  }
+
+  function getRootElement(root){
+    return resolveCanonicalRoot(root);
   }
 
   function getRootState(rootElement){
@@ -22,11 +30,12 @@ export function getShrinkFitBrowserScript(): string {
 
     const state = {
       observedResizeTargets: new WeakSet(),
+      observedFonts: false,
       pending: false,
       resizeObserver: typeof ResizeObserver === 'function'
         ? new ResizeObserver((entries) => {
             for (const entry of entries) {
-              schedule(entry.target.closest?.('[data-sireno-browser-shell="true"]') || rootElement);
+              schedule(rootElement);
             }
           })
         : null,
@@ -117,8 +126,27 @@ export function getShrinkFitBrowserScript(): string {
     }
   }
 
+  function observeFonts(rootElement){
+    const state = getRootState(rootElement);
+    if (state.observedFonts || !('fonts' in document) || !document.fonts) {
+      return;
+    }
+
+    state.observedFonts = true;
+    document.fonts.ready.then(() => {
+      schedule(rootElement);
+    }).catch(() => {});
+
+    if (typeof document.fonts.addEventListener === 'function') {
+      document.fonts.addEventListener('loadingdone', () => {
+        schedule(rootElement);
+      });
+    }
+  }
+
   function apply(root){
     const rootElement = getRootElement(root);
+    observeFonts(rootElement);
     for (const element of resolveShrinkElements(rootElement)) {
       observeElement(rootElement, element);
       measure(element);

@@ -117,6 +117,7 @@ describe("dom host", () => {
     expect(html).toContain('.text-md{font-size:calc(var(--sireno-active-font-size, 16px) * 1);}')
     expect(html).toContain('.sireno-text-fit-shrink{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}')
     expect(html).toContain('window.__sirenoApplyShrinkFit = function(root){')
+    expect(html).toContain("const CANONICAL_ROOT_SELECTOR = '[data-sireno-browser-shell=\"true\"]';")
     expect(html).toContain('@font-face')
     expect(html).toContain('font-family: "IBM Plex Sans"')
     expect(html).toContain('font-family: "IBM Plex Mono"')
@@ -265,6 +266,23 @@ describe("dom host", () => {
     expect(browserHtml).toContain("element.setAttribute('data-sireno-text-shrink-applied-size', String(appliedSize));")
     expect(browserHtml).toContain("fitsWithoutWrapping(element) ? 'measured' : 'floor'")
     expect(browserHtml).toContain('.sireno-text-fit-shrink{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}')
+  })
+
+  it("reruns shrink-fit after browser fonts settle and normalizes onto one canonical root", () => {
+    const browserHtml = renderDomDeck([
+      {
+        content: createElement(Text, { fit: "shrink", size: "2xl" }, "Shrink font rerun proof"),
+        keyIndex: 0,
+      },
+    ], {
+      keyCount: 1,
+    })
+
+    expect(browserHtml).toContain('document.fonts.ready.then(() => {')
+    expect(browserHtml).toContain("document.fonts.addEventListener('loadingdone', () => {")
+    expect(browserHtml).toContain('return root.closest?.(CANONICAL_ROOT_SELECTOR) || root.querySelector?.(CANONICAL_ROOT_SELECTOR) || root;')
+    expect(browserHtml).toContain('return root.querySelector(CANONICAL_ROOT_SELECTOR) || root.body || root.documentElement;')
+    expect(browserHtml).toContain('schedule(rootElement);')
   })
 
   it("renders mounted-button store snapshots through the public props-first contract", async () => {
