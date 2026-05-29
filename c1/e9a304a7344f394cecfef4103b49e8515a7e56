@@ -1,0 +1,26 @@
+.planning/phases/04-verification-and-contract-cleanup/04-UAT.md
+  s_bd261d9d2ee90a::t_5d6b79ccd741ee 2,8,21,31,37,39
+  s_bd261d9d2ee90a::t_7aa05de460e886 12-13,15,17-18,20,27
+  s_bd261d9d2ee90a::t_63a1b9591f54a9 1,3-7,9-11,14,16,19,22-26,28-30,32-36,38,40-45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "c1e9a304a7344f394cecfef4103b49e8515a7e56",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_bd261d9d2ee90a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_191f2cdb0ffeLEC0tibNQY6g6z",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
