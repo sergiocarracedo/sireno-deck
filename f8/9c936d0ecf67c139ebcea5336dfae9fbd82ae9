@@ -1,0 +1,37 @@
+packages/cli/src/ui/Chip.tsx
+  s_bd261d9d2ee90a::t_7de2eb15088ca8 38
+.planning/phases/03-rich-date-time-formatting-surface/03-UAT.md
+  s_bd261d9d2ee90a::t_e641f1e7b909fa 8,108-113
+  s_bd261d9d2ee90a::t_9a69ceefc1c03d 5-6,17-18,20,22,24-25,27,29-30
+  s_bd261d9d2ee90a::t_17b3cab1dfdb5e 51-55,57-107
+  s_bd261d9d2ee90a::t_2305448db2326d 2,31-33,40-41,47-50,56
+packages/cli/src/render/dom-host.test.tsx
+  s_bd261d9d2ee90a::t_e641f1e7b909fa 216
+.planning/phases/03-rich-date-time-formatting-surface/03-VERIFICATION.md
+  s_bd261d9d2ee90a::t_39b4527e530fb4 1,3,6,10,12-16,18-21,30,32-33,35-38,40,44-49,51,53-55
+  s_bd261d9d2ee90a::t_e641f1e7b909fa 4,8,22,24-29,34,39,41-43,50,52,56-58
+  s_bd261d9d2ee90a::t_37a69142e71538 2,5,7,9,11,17,23,31
+packages/cli/src/render/theme-utilities.ts
+  s_bd261d9d2ee90a::t_e641f1e7b909fa 10-11,13-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f89c936d0ecf67c139ebcea5336dfae9fbd82ae9",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_bd261d9d2ee90a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_191f2cdb0ffeLEC0tibNQY6g6z",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
