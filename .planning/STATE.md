@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 4 execution is complete for milestone v1.3 Typography and Rich Formatting; run `verify-work 4` to finish manual UAT before review and ship.
+**Current focus:** Phase 5 context is captured for milestone v1.3 Typography and Rich Formatting; planning can start on hot refresh truth and the shared button error helper.
 
 ## Current Position
 
-Phase: 4 — Verification and Contract Cleanup
+Phase: 5 — Hot Refresh and Button Error Helper
 Plan: —
-Status: verifying
-Last activity: 2026-05-29 - Completed execute-phase 4 for contract cleanup and milestone truth sync
+Status: planning
+Last activity: 2026-05-30 - Completed discuss-phase 5 for hot refresh and button error helper scope
 
 Progress: [##########] 100%
 
@@ -51,6 +51,7 @@ Recent decisions affecting current work:
 - **Phase 4 discussion:** Keep cleanup scoped to active shipped surfaces, include the unmatched-angle-bracket invalid-markup formatter gap, clean only shipped examples/verification fixtures, and fix only current-phase planning drift.
 - **Phase 4 execution:** Built-in `date-time` now preserves malformed unmatched-angle prefixes literally while still expanding useful Day.js tokens, and focused regression coverage proves both formatter-level and mounted shared-`Text` fallback behavior.
 - **Phase 4 execution:** Active workflow-routing artifacts now match the completed Phase 3 rerun and live Phase 4 handoff, so verification/state surfaces no longer route operators back into stale rerun steps.
+- **Phase 5 discussion:** Treat both live refresh seams as product truth, keep config reload failures on the existing full-deck error surface, add a compact button-facing warning-triangle plus four-digit-code helper for button failures, require deck/button-aware logs, and prefer explicit full reload over magical partial refresh.
 - **Execution:** Config validation errors must preserve metadata through schema, loader, and formatter layers or the CLI loses file/line/suggestion context.
 - **Execution:** yargs command handlers that return promises require `.parseAsync()`, and a foreground daemon must keep the event loop alive explicitly.
 - **Phase 5 discussion:** Button behavior should move behind addon-owned stateful instances that render React output, declare their own schemas, and use core-owned scheduling, command helpers, invalidation, and navigation methods.
@@ -77,7 +78,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
-- Run `verify-work 4`, then continue to `/review`, `/ship`, and `/compound` for milestone v1.3 closeout.
+- Run `plan-phase 5` now that the hot-refresh and button-error-helper boundaries are locked.
 
 ### Roadmap Evolution
 
@@ -109,6 +110,8 @@ Recent decisions affecting current work:
 - **Phase 4 discussion:** Locked the final milestone phase around truthful cleanup only: active shipped tests/fixtures/examples/docs, the unmatched-angle-bracket invalid-markup gap in the built-in date-time formatter, shipped-example-only fixture normalization, and current-phase planning-state drift rather than archive-wide cleanup.
 
 - **Phase 4 execution:** Closed the unmatched-angle invalid-markup formatter gap without widening the date-time contract, added focused raw/mounted regression coverage for that edge case, reconciled stale Phase 3 verification text with the already-passed rerun UAT, and moved the project handoff onto truthful Phase 4 verification state.
+
+- **Phase 5 discussion:** Locked the next phase around both existing hot-refresh seams (`tsx watch` plus in-process reload), preserved the current full-deck config-error path, scoped the new shared error helper to button-facing failures, required deck/button-aware diagnostics, and chose explicit full reload as the default refresh truth.
 
 - **Phase 2 execution:** Replaced the fake shrink clamp with a browser-only shrink-fit helper shared by browser capture and emulator paths, kept mounted/static output on honest ellipsis fallback, shipped a committed Phase 22 shrink-fit review addon/fixture/UAT path, and fixed the emulator shutdown seam so the review command closes cleanly when `sessionMonitor.stop()` is synchronous.
 - **Phase 2 discussion:** Locked shrink-fit as a browser-only live measurement seam on canonical `Text`, removed the CSS clamp as primary logic, kept measurement limited to `fit="shrink"`, chose fixed `ellipsis` fallback after the readable floor, deferred configurable fallback/floor API, and required content/container/theme-metric remeasurement plus aggressive loop guards and browser-path regression proof.
@@ -216,9 +219,9 @@ Key achievements: v1.2 delivered the session-aware runtime/render contract, laye
 
 ## Session Continuity
 
-Last session: 2026-05-29
-Stopped at: Phase 4 execution complete and ready for `verify-work 4`.
-Resume file: .planning/phases/04-verification-and-contract-cleanup/04-VERIFICATION.md
+Last session: 2026-05-30
+Stopped at: Phase 5 discussion complete and ready for `plan-phase 5`.
+Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-CONTEXT.md
 
 ### Quick Tasks Completed
 

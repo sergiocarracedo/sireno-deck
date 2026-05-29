@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.3 — Typography and Rich Formatting
-**Phase:** 4 — Verification and Contract Cleanup ✓ complete
-**Status:** verifying
-**Last updated:** 2026-05-29
+**Phase:** 5 — Hot Refresh and Button Error Helper
+**Status:** planning
+**Last updated:** 2026-05-30
 
 ---
 
