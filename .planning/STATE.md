@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 4 context is captured for milestone v1.3 Typography and Rich Formatting; planning can start on verification and contract cleanup.
+**Current focus:** Phase 4 execution is in progress for milestone v1.3 Typography and Rich Formatting; the remaining work is contract cleanup, phase verification, and final milestone truth sync.
 
 ## Current Position
 
 Phase: 4 — Verification and Contract Cleanup
 Plan: —
-Status: planning
-Last activity: 2026-05-29 - Completed discuss-phase 4 for active-surface verification and contract cleanup
+Status: executing
+Last activity: 2026-05-29 - Started execute-phase 4 for unmatched-angle formatter closure and workflow-truth cleanup
 
 Progress: [#######---] 75%
 
@@ -74,7 +74,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
-- Run `plan-phase 4` now that the cleanup scope is locked around active shipped surfaces and the unmatched-angle-bracket contract gap.
+- Finish `execute-phase 4`, then run phase verification and `verify-work 4`.
 
 ### Roadmap Evolution
 
@@ -211,8 +211,8 @@ Key achievements: v1.2 delivered the session-aware runtime/render contract, laye
 ## Session Continuity
 
 Last session: 2026-05-29
-Stopped at: Phase 4 discussion complete and ready for `plan-phase 4`.
-Resume file: .planning/phases/04-verification-and-contract-cleanup/04-CONTEXT.md
+Stopped at: Phase 4 execution in progress after Wave 1 and entering workflow-truth cleanup.
+Resume file: .planning/phases/04-verification-and-contract-cleanup/04-02-PLAN.md
 
 ### Quick Tasks Completed
 
