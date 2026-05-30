@@ -7,6 +7,7 @@ import datetimeButtonsAddon from "../builtin-addons/date-time/index.js"
 import { createMountedDomHost, renderMountedHostedButtons, type HostedButton, type MountedDomHost } from "../render/dom-host.js"
 import { createPollingScheduler, type PollingScheduler } from "../render/scheduler.js"
 import { Text } from "../ui/index.js"
+import { createRuntimeButtonErrorLogEntry, getRuntimeButtonErrorCode, type RuntimeButtonErrorKind } from "../util/errors.js"
 import { createDeckController } from "./controller.js"
 
 import type { AddonRegistry } from "../addon/registry.js"
@@ -189,6 +190,24 @@ function getRootDomRenderProps(rendered: unknown): RootDomRenderProps {
     ...(props.full_surface !== undefined ? { full_surface: props.full_surface } : {}),
     ...(props.sample_interval_ms !== undefined ? { sample_interval_ms: props.sample_interval_ms } : {}),
   }
+}
+
+function createRuntimeButtonErrorContent(errorCode: string, fullSurface?: boolean): ReturnType<typeof ButtonSurface> {
+  return createElement(
+    ButtonSurface,
+    {
+      ...(fullSurface !== undefined ? { full_surface: fullSurface } : {}),
+    },
+    createElement(
+      'div',
+      {
+        className: 'flex flex-col items-center justify-center w-full h-full',
+        style: { gap: '2px' },
+      },
+      createElement(Text, { tone: 'danger' }, '▲'),
+      createElement(Text, { tone: 'danger' }, errorCode),
+    ),
+  )
 }
 
 export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
@@ -376,6 +395,79 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     console.error(error)
   }
 
+  function buildRenderedButtons(deckId = getDisplayDeckId()): RuntimeRenderButton[] {
+    return getDeckButtons(getDeckById(deckId)).map((button) => (
+      renderCache.get(getButtonStateKey(deckId, button.position))
+      ?? { keyIndex: button.position }
+    ))
+  }
+
+  async function emitRenderedDeck(deckId: string, activationVersion = activeActivationVersion): Promise<void> {
+    if (!isActivationCurrent(deckId, activationVersion)) {
+      return
+    }
+
+    const renderedButtons = buildRenderedButtons(deckId)
+    for (const button of renderedButtons) {
+      await options.onRenderButton?.(button)
+    }
+
+    await options.onRenderDeck?.(renderedButtons)
+  }
+
+  function toHostedButton(renderedButton: RuntimeRenderButton): HostedButton | undefined {
+    if (!renderedButton.content) {
+      return undefined
+    }
+
+    return {
+      content: renderedButton.content,
+      ...(renderedButton.frame_state !== undefined ? { frame_state: renderedButton.frame_state } : {}),
+      ...(renderedButton.full_surface !== undefined ? { full_surface: renderedButton.full_surface } : {}),
+      keyIndex: renderedButton.keyIndex,
+      ...(renderedButton.sample_interval_ms !== undefined ? { sample_interval_ms: renderedButton.sample_interval_ms } : {}),
+      theme: options.theme,
+    }
+  }
+
+  function setRuntimeButtonErrorState(
+    button: ButtonInstance,
+    deckId: string,
+    operation: RuntimeButtonErrorKind,
+    error: unknown,
+  ): void {
+    const errorCode = getRuntimeButtonErrorCode(operation)
+    console.error(
+      "button runtime error",
+      createRuntimeButtonErrorLogEntry({
+        buttonPosition: button.position,
+        buttonType: button.type,
+        deckId,
+        errorCode,
+        operation,
+      }, error),
+    )
+
+    renderCache.set(getButtonStateKey(deckId, button.position), {
+      background: resolveButtonBackground(button, deckId),
+      content: createRuntimeButtonErrorContent(errorCode, button.full_surface),
+      frame_state: getFrameState(button.position),
+      ...(button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
+      keyIndex: button.position,
+    })
+  }
+
+  async function showRuntimeButtonError(
+    button: ButtonInstance,
+    deckId: string,
+    operation: RuntimeButtonErrorKind,
+    error: unknown,
+    activationVersion = activeActivationVersion,
+  ): Promise<void> {
+    setRuntimeButtonErrorState(button, deckId, operation, error)
+    await emitRenderedDeck(deckId, activationVersion)
+  }
+
   function getButtonHandle(deckId: string, keyIndex: number): RuntimeButtonHandle | undefined {
     const button = getDeckButtons(getDisplayDeck()).find((candidate) => candidate.position === keyIndex)
     if (!button) {
@@ -413,19 +505,19 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     const hostedButtons: HostedButton[] = []
 
     for (const button of buttons) {
-      const renderedButton = await renderRuntimeButton(button, deckId, activationVersion, false)
-      if (!renderedButton?.content) {
-        continue
+      let renderedButton: RuntimeRenderButton | undefined
+
+      try {
+        renderedButton = await renderRuntimeButton(button, deckId, activationVersion, false)
+      } catch (error) {
+        setRuntimeButtonErrorState(button, deckId, "render", error)
+        renderedButton = renderCache.get(getButtonStateKey(deckId, button.position))
       }
 
-      hostedButtons.push({
-        content: renderedButton.content,
-        ...(renderedButton.frame_state !== undefined ? { frame_state: renderedButton.frame_state } : {}),
-        ...(renderedButton.full_surface !== undefined ? { full_surface: renderedButton.full_surface } : {}),
-        keyIndex: renderedButton.keyIndex,
-        ...(renderedButton.sample_interval_ms !== undefined ? { sample_interval_ms: renderedButton.sample_interval_ms } : {}),
-        theme: options.theme,
-      })
+      const hostedButton = renderedButton ? toHostedButton(renderedButton) : undefined
+      if (hostedButton) {
+        hostedButtons.push(hostedButton)
+      }
     }
 
     const snapshotsByKey = new Map(
@@ -521,9 +613,13 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       },
       invalidate: () => {
         void (async () => {
-          const renderedButton = await renderRuntimeButton(button, deckId)
-          if (renderedButton?.content !== undefined) {
-            await renderDeckSurface(deckId)
+          try {
+            const renderedButton = await renderRuntimeButton(button, deckId)
+            if (renderedButton?.content !== undefined) {
+              await renderDeckSurface(deckId)
+            }
+          } catch (error) {
+            await showRuntimeButtonError(button, deckId, "invalidate", error)
           }
         })().catch(reportRuntimeError)
       },
@@ -668,11 +764,15 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         {
           id: `${key}-refresh`,
           run: async () => {
-            const instance = getOrCreateInstance(activeDeckId, button)
-            await instance.refresh?.()
-            const renderedButton = await renderRuntimeButton(button, activeDeckId, activationVersion)
-            if (renderedButton?.content !== undefined) {
-              await renderDeckSurface(activeDeckId, activationVersion)
+            try {
+              const instance = getOrCreateInstance(activeDeckId, button)
+              await instance.refresh?.()
+              const renderedButton = await renderRuntimeButton(button, activeDeckId, activationVersion)
+              if (renderedButton?.content !== undefined) {
+                await renderDeckSurface(activeDeckId, activationVersion)
+              }
+            } catch (error) {
+              await showRuntimeButtonError(button, activeDeckId, "refresh", error, activationVersion)
             }
           },
         },
@@ -727,9 +827,13 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return
     }
 
-    await getOrCreateInstance(handle.deckId, handle.button).onPress?.()
-    await renderRuntimeButton(handle.button, handle.deckId)
-    await renderDeckSurface(handle.deckId)
+    try {
+      await getOrCreateInstance(handle.deckId, handle.button).onPress?.()
+      await renderRuntimeButton(handle.button, handle.deckId)
+      await renderDeckSurface(handle.deckId)
+    } catch (error) {
+      await showRuntimeButtonError(handle.button, handle.deckId, "press", error)
+    }
   }
 
   async function handleRelease(keyIndex: number): Promise<void> {
@@ -738,9 +842,13 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return
     }
 
-    await getOrCreateInstance(handle.deckId, handle.button).onRelease?.()
-    await renderRuntimeButton(handle.button, handle.deckId)
-    await renderDeckSurface(handle.deckId)
+    try {
+      await getOrCreateInstance(handle.deckId, handle.button).onRelease?.()
+      await renderRuntimeButton(handle.button, handle.deckId)
+      await renderDeckSurface(handle.deckId)
+    } catch (error) {
+      await showRuntimeButtonError(handle.button, handle.deckId, "release", error)
+    }
   }
 
   async function handleTap(keyIndex: number): Promise<void> {
@@ -749,16 +857,13 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return
     }
 
-    await getOrCreateInstance(handle.deckId, handle.button).onTap?.()
-    await renderRuntimeButton(handle.button, handle.deckId)
-    await renderDeckSurface(handle.deckId)
-  }
-
-  function buildActiveDeckButtons(): RuntimeRenderButton[] {
-    return getDeckButtons(getDisplayDeck()).map((button) => (
-      renderCache.get(getButtonStateKey(getDisplayDeckId(), button.position))
-      ?? { keyIndex: button.position }
-    ))
+    try {
+      await getOrCreateInstance(handle.deckId, handle.button).onTap?.()
+      await renderRuntimeButton(handle.button, handle.deckId)
+      await renderDeckSurface(handle.deckId)
+    } catch (error) {
+      await showRuntimeButtonError(handle.button, handle.deckId, "tap", error)
+    }
   }
 
   function onKeyEvent(event: StreamDeckKeyEvent): void {
@@ -785,13 +890,13 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return deckController.getActiveDeck()
     },
     getActiveDeckButtons() {
-      return buildActiveDeckButtons()
+      return buildRenderedButtons()
     },
     getButton(keyIndex) {
       return getDeckButtons(getDisplayDeck()).find((button) => button.position === keyIndex)
     },
     getRenderButtons() {
-      return buildActiveDeckButtons()
+      return buildRenderedButtons()
     },
     getReservedBackKeyIndex() {
       return reservedBackKeyIndex

@@ -6,6 +6,25 @@ const CYAN = "\x1b[36m"
 const RESET = "\x1b[0m"
 const BOLD = "\x1b[1m"
 
+export type RuntimeButtonErrorKind = "render" | "invalidate" | "press" | "refresh" | "release" | "tap"
+
+export interface RuntimeButtonErrorLogContext {
+  buttonPosition: number
+  buttonType: string
+  deckId: string
+  errorCode: string
+  operation: RuntimeButtonErrorKind
+}
+
+const RUNTIME_BUTTON_ERROR_CODES: Record<RuntimeButtonErrorKind, string> = {
+  invalidate: "4102",
+  press: "4103",
+  refresh: "4106",
+  release: "4104",
+  render: "4101",
+  tap: "4105",
+}
+
 export function formatConfigError(error: ConfigValidationError): string {
   let message = `\n${BOLD}${RED}config error${RESET}\n\n`
 
@@ -26,4 +45,19 @@ export function formatConfigError(error: ConfigValidationError): string {
   message += `\n  Tip: Check your config.yml at ${error.filePath || "the config file"}.\n`
 
   return message
+}
+
+export function createRuntimeButtonErrorLogEntry(
+  context: RuntimeButtonErrorLogContext,
+  error: unknown,
+): RuntimeButtonErrorLogContext & { error: unknown; scope: "button-runtime" } {
+  return {
+    ...context,
+    error,
+    scope: "button-runtime",
+  }
+}
+
+export function getRuntimeButtonErrorCode(operation: RuntimeButtonErrorKind): string {
+  return RUNTIME_BUTTON_ERROR_CODES[operation]
 }
