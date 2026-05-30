@@ -4,7 +4,7 @@ These fixtures pin the manual verification inputs for the remaining Phase 5 addo
 
 - `config.local-addon.yml`: healthy local-folder addon startup using `./local-clock-addon`.
 - `config.warning-isolation.yml`: one healthy local addon plus one broken-import addon; startup should warn once and keep going.
-- `config.api-version-mismatch.yml`: incompatible addon manifest; startup should fail with an addon apiVersion error.
+- `config.api-version-mismatch.yml`: incompatible addon manifest; startup should exit before runtime rendering with a clear addon apiVersion error, so no button-local helper should appear for this fixture. Rerun/closure trail: `05-05-PLAN.md`.
 - `config.npm-addon.yml`: npm-style addon startup using `@sireno-deck/community-addon` after that fixture package is installed or linked into the environment running the CLI.
 
 Local addon fixture packages:

@@ -6,7 +6,7 @@ source:
   - .planning/phases/05-hot-refresh-and-button-error-helper/05-02-SUMMARY.md
   - .planning/phases/05-hot-refresh-and-button-error-helper/05-03-SUMMARY.md
 started: 2026-05-30T11:40:30+02:00
-updated: 2026-05-30T11:55:59+02:00
+updated: 2026-05-30T12:06:00+02:00
 ---
 
 ## Current Test
@@ -29,7 +29,7 @@ reported: "1 step renders the error component in button that is correct? Anyway 
 severity: major
 
 ### 3. Config Error Deck Versus Button Error Helper Review
-expected: Using the Phase 5 verification fixtures plus the delivered runtime helper behavior, confirm the two error surfaces stay separate. `fixtures/phase-5/config.api-version-mismatch.yml` should fail startup with an addon apiVersion/config-level error rather than showing the button-local `▲ + code` helper. Separately, a button-scoped runtime failure should surface as the compact `▲` plus four-digit code on the affected button with deck/button-aware diagnostics in logs, not as the full-deck config error surface.
+expected: Using the Phase 5 verification fixtures plus the delivered runtime helper behavior, confirm the two error surfaces stay separate. `fixtures/phase-5/config.api-version-mismatch.yml` is expected to exit during startup with a clear addon `apiVersion` / config-level error before any runtime or button-local helper can render. Separately, a button-scoped runtime failure should surface as the compact warning icon plus four-digit code on the affected button with deck/button-aware diagnostics in logs, not as the full-deck config error surface.
 result: issue
 reported: "the error led to exit"
 severity: major
@@ -54,11 +54,12 @@ skipped: 0
   rerun_plan: "05-04-PLAN.md"
   root_cause: "The warning-isolation startup path is working, but the shipped button-scoped error helper in `packages/cli/src/deck/runtime.ts` renders only a plain danger-text `▲` plus code via `createRuntimeButtonErrorContent(...)`. That minimal text treatment does not satisfy the UAT expectation for a clear warning icon treatment, so the observed problem is the helper's visual contract rather than startup isolation itself."
   affected_files: ["packages/cli/src/deck/runtime.ts", "packages/cli/src/ui/Icon.tsx"]
-- truth: "Using the Phase 5 verification fixtures plus the delivered runtime helper behavior, confirm the two error surfaces stay separate. `fixtures/phase-5/config.api-version-mismatch.yml` should fail startup with an addon apiVersion/config-level error rather than showing the button-local `▲ + code` helper. Separately, a button-scoped runtime failure should surface as the compact `▲` plus four-digit code on the affected button with deck/button-aware diagnostics in logs, not as the full-deck config error surface."
+- truth: "Using the Phase 5 verification fixtures plus the delivered runtime helper behavior, confirm the two error surfaces stay separate. `fixtures/phase-5/config.api-version-mismatch.yml` is expected to exit during startup with a clear addon `apiVersion` / config-level error before any runtime or button-local helper can render. Separately, a button-scoped runtime failure should surface as the compact warning icon plus four-digit code on the affected button with deck/button-aware diagnostics in logs, not as the full-deck config error surface."
   status: failed
   reason: "User reported: the error led to exit"
   severity: major
   test: 3
+  rerun_plan: "05-05-PLAN.md"
   root_cause: "The product behavior is correct: `packages/cli/src/cli/commands/start.ts` intentionally treats addon `apiVersion` mismatches as startup/config-level failures, logs `Addon apiVersion error: ...`, sets `process.exitCode = 1`, and returns before any runtime/button helper can render. The gap is that this UAT step did not state clearly enough that process exit is the expected success condition for this fixture, so the issue is a verification-script wording mismatch rather than a runtime bug."
   affected_files: [".planning/phases/05-hot-refresh-and-button-error-helper/05-UAT.md", "packages/cli/fixtures/phase-5/README.md"]
 
