@@ -86,6 +86,14 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] 30-02: Ship the template-driven system-status addon
 - [x] 30-03: Ship the cross-platform media-player button
 
+### Phase 31: CLI Dev Watch Mode Argument Forwarding
+**Goal:** Make `pnpm cli:dev ...` start the real CLI watch mode and honor forwarded command arguments such as `emulate --port 8912`.
+**Status:** [ ] Not started
+**Depends on:** Phase 30
+
+### Plans
+*Not yet planned - run `plan-phase 31`*
+
 ## Coverage Check
 
 | Requirement | Phase |
@@ -108,4 +116,4 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 ---
 
 *Roadmap defined: 2026-05-28*
-*Total phases: 6*
+*Total phases: 7*

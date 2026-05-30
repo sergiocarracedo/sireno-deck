@@ -92,6 +92,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 31 added: make `pnpm cli:dev ...` start the real CLI watch mode and honor forwarded command arguments such as `emulate --port 8912`.
 - Phase 5 added: restore hot refresh when config or React files change, and add a shared button error helper that renders a warning triangle plus a four-digit error code while logging richer deck/button-aware diagnostics.
 - Phase 30 added: add shared content helpers for bar and label-value button layouts, then ship configurable built-in system-status and media-player addons backed by platform-specific metric and media-control adapters.
 - Phase 29 added: remove remaining legacy seams such as `LegacyAddonButtonDefinition`, stop using `createElement` in favor of JSX/TSX, prefer Tailwind utilities over inline styles except where impossible, split built-in multi-button addons into one button per file, and decide between `dayjs` and `momentjs` for the date-time button formatting path.
