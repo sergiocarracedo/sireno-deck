@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 30 execution is complete for milestone v1.3 Typography and Rich Formatting. The phase now ships the public helper surface plus bundled `system-status` and `media-player` addons, and the next workflow step is `verify-work 30` for manual UAT.
+**Current focus:** Phase 31 execution is in progress for the follow-on `cli:dev` watch-mode contract repair. Plan `31-01` has landed the runtime launcher fix, and the next execution step is re-syncing the shipped regression and README seams.
 
 ## Current Position
 
-Phase: 30 — Content Helpers, System Status, and Media Player Addons
-Plan: 30 complete; verify-work 30 next
-Status: verifying
-Last activity: 2026-05-30 - Completed Plan 30-03 bundled media-player addon and phase verification
+Phase: 31 — CLI Dev Watch Mode Argument Forwarding
+Plan: 31-01 complete; 31-02 next
+Status: executing
+Last activity: 2026-05-30 - Completed Plan 31-01 cli:dev runtime watch launcher repair
 
-Progress: [##########] 100%
+Progress: [#####.....] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
+- Total plans completed: 14
 - Average duration: 1 session
 - Total execution time: 1 session
 
@@ -81,6 +81,7 @@ Recent decisions affecting current work:
 - **Phase 30 discussion:** The built-in system-status addon should use a canonical cross-platform metric catalog with honest per-OS unavailable states, helper-template-driven button configs, metadata-only overrides, and optional tap/hold actions rather than a generic layout DSL.
 - **Phase 30 discussion:** The built-in media-player button should require truthful play/pause/stop state, use best-effort title/artist/app/progress metadata, reuse shared `Text` marquee for overflow, keep tap fixed to play/pause, and expose only optional hold configuration beyond that.
 - **Phase 31 discussion:** `cli:dev` stays the external `tsx watch` raw-source restart seam, bare `pnpm cli:dev` should still launch `start --config config.yml`, and forwarded args such as `pnpm cli:dev emulate --port 8912` must reach the real CLI entrypoint truthfully without widening the dev workflow.
+- **Phase 31 execution:** The workspace-root `cli:dev` seam now routes through a narrow `dev-watch` launcher that keeps the existing `tsx watch` include graph, restores bare `start --config config.yml` behavior, and passes forwarded subcommand args through untouched to the real CLI entrypoint.
 - **Phase 30 execution:** The shared helper surface now ships as public `Bars` and `LabelValueList` TSX components from the package root, with runtime-enforced count bounds and `LabelValueList` auto-layout still kept presentation-only.
 - **Phase 30 execution:** The bundled `system-status` addon now loads through the real shipped registry with `system-status-bars` and `system-status-label-values`, backed by one canonical metric catalog, a bounded numbro-backed display mapper, explicit unavailable slots, and button-local tap/hold handling that does not widen runtime semantics.
 - **Phase 30 execution:** The bundled `media-player` addon now loads through the real shipped registry on top of a shared media-controller seam, uses a real Linux `playerctl` adapter, keeps macOS and Windows explicitly unsupported until verified, reuses `Bars` and shared `Text` marquee, and keeps tap fixed to play/pause with optional hold behavior implemented locally inside the button seam.
@@ -90,7 +91,7 @@ Recent decisions affecting current work:
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 - Run `/review` on the completed Phase 5 closure pass, then continue with `/ship` and `/compound` once review is clean.
 - Run `verify-work 30` for the committed manual UAT pass, then continue with `/review`, `/ship`, and `/compound`.
-- Run `plan-phase 31` now that the `cli:dev` watch-mode contract is captured.
+- Execute Phase 31 plan `31-02` to re-sync the shipped regression seam and README with the repaired `cli:dev` contract.
 
 ### Roadmap Evolution
 
@@ -116,6 +117,8 @@ Recent decisions affecting current work:
 ### Progress Notes
 
 - **Phase 31 discussion:** Kept the phase narrow to restoring the truthful root `cli:dev` contract: default `start --config config.yml` behavior plus real forwarded subcommand args on the external `tsx watch` seam, with docs/tests/script kept in sync.
+
+- **Phase 31 execution:** Completed Plan `31-01` by replacing the broken raw-entrypoint `cli:dev` script with a narrow `dev-watch` launcher, keeping `tsx watch` as the external full-process seam, defaulting bare runs to `start --config config.yml`, and adding focused argv-resolution regression coverage.
 
 - **Phase 30 discussion:** Locked the new helper surface to public component-first `Bars` and `LabelValueList` components, bounded system-status around canonical metric adapters plus helper-template buttons with honest unavailable states, and bounded media-player around truthful status, best-effort metadata, shared marquee overflow, fixed tap play/pause, and optional hold behavior.
 
