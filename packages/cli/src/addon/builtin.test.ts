@@ -6,7 +6,7 @@ describe("getBundledAddons", () => {
   it("returns bundled addons through the shared addon contract", () => {
     const addons = getBundledAddons()
 
-    expect(addons).toHaveLength(4)
+    expect(addons).toHaveLength(5)
     expect(addons[0]).toMatchObject({
       apiVersion: 1,
       name: "core-buttons",
@@ -28,6 +28,13 @@ describe("getBundledAddons", () => {
     expect(addons[3]?.buttons.map((button) => button.type)).toEqual([
       "system-status-bars",
       "system-status-label-values",
+    ])
+    expect(addons[4]).toMatchObject({
+      apiVersion: 1,
+      name: 'media-player',
+    })
+    expect(addons[4]?.buttons.map((button) => button.type)).toEqual([
+      'media-player',
     ])
   })
 })
