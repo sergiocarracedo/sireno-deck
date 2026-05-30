@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 5 gap closure is in progress for milestone v1.3 Typography and Rich Formatting. Plan `05-04` closed the real product UAT issue by upgrading the button warning helper to the shared warning icon treatment, and the remaining closure work is Plan `05-05` to tighten the apiVersion-mismatch UAT/verification wording so expected startup exit is explicit.
+**Current focus:** Phase 5 gap closure is complete for milestone v1.3 Typography and Rich Formatting. Plans `05-04` and `05-05` closed the recorded UAT issues by upgrading the button warning helper to the shared warning icon treatment and aligning the mismatch-fixture verification wording with the already-correct startup exit behavior. Next step is a final verifier/sync pass for the closure plans.
 
 ## Current Position
 
 Phase: 5 — Hot Refresh and Button Error Helper
-Plan: 05-05 next
-Status: executing
-Last activity: 2026-05-30 - Completed Plan 05-04 warning helper visual gap closure
+Plan: gap-closure execution complete; verifier next
+Status: verifying
+Last activity: 2026-05-30 - Completed Plan 05-05 mismatch wording closure
 
 Progress: [##########] 100%
 
@@ -81,7 +81,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
-- Finish Plan `05-05` so the apiVersion-mismatch fixture wording, UAT trail, and verification artifact all state explicitly that startup exit is the expected success condition for that config-level failure path.
+- Run the Phase 5 closure-pass verifier and then sync any top-level planning artifacts that should mention the completed `05-04` / `05-05` gap-closure plans.
 
 ### Roadmap Evolution
 
@@ -223,8 +223,8 @@ Key achievements: v1.2 delivered the session-aware runtime/render contract, laye
 ## Session Continuity
 
 Last session: 2026-05-30
-Stopped at: Plan `05-04` complete; next continue Phase 5 gap-closure execution for `05-05-PLAN.md`.
-Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-05-PLAN.md
+Stopped at: Plan `05-05` complete; next run the Phase 5 closure-pass verifier and final sync.
+Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-05-SUMMARY.md
 
 ### Quick Tasks Completed
 
