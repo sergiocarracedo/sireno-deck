@@ -76,6 +76,14 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] 05-04: Close button warning helper visual gap
 - [x] 05-05: Close apiVersion mismatch UAT wording gap
 
+### Phase 30: Content Helpers, System Status, and Media Player Addons
+**Goal:** Add shared content helper components for bars and label-value layouts, then use them to ship configurable built-in system-status and media-player addons with platform adapter seams.
+**Status:** [ ] Not started
+**Depends on:** Phase 29
+
+### Plans
+*Not yet planned - run `plan-phase 30`*
+
 ## Coverage Check
 
 | Requirement | Phase |
@@ -98,4 +106,4 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 ---
 
 *Roadmap defined: 2026-05-28*
-*Total phases: 5*
+*Total phases: 6*
