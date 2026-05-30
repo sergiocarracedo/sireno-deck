@@ -240,6 +240,41 @@ describe("loadRuntimeConfig", () => {
     ])
   })
 
+  it("deduplicates the in-process reload graph and keeps addon source edits on the external watch seam", async () => {
+    createSessionMonitor.mockResolvedValue(supportedSessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    loadBootstrapConfig.mockReturnValue({
+      config: {
+        addons: [{ enabled: true, name: "local-clock-addon", path: "addons/local-clock-addon", source: "local" }],
+      },
+      cwd: "/tmp/project",
+      filePath: "/tmp/project/config.yml",
+    })
+    loadConfiguredAddons.mockResolvedValue({
+      loaded: [],
+      warnings: [],
+    })
+    loadConfigWithSources.mockReturnValue({
+      config: { main_deck: "main", theme: "dark" },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml", "/tmp/project/decks/main.yml", "/tmp/project/config.yml"],
+    })
+    resolveTheme.mockResolvedValue({
+      filePaths: ["/tmp/project/themes/default/index.ts", "/tmp/project/decks/main.yml"],
+    })
+
+    const { loadRuntimeConfig } = await import("./start.js")
+
+    const result = await loadRuntimeConfig({ config: "/tmp/project/config.yml", logger: { warn: vi.fn() } as never })
+
+    expect(result.filePaths).toEqual([
+      "/tmp/project/config.yml",
+      "/tmp/project/decks/main.yml",
+      "/tmp/project/themes/default/index.ts",
+    ])
+    expect(result.filePaths).not.toContain("/tmp/project/addons/local-clock-addon")
+  })
+
   it("warns once when session lock monitoring is unsupported on the current host", async () => {
     createSessionMonitor.mockResolvedValue(unsupportedSessionMonitor)
     resolveHostContext.mockResolvedValue({ os: { type: "macos", variant: "unknown", version: "14.0" }, session: { capability: "unsupported", state: "unknown" } })

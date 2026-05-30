@@ -412,6 +412,34 @@ describe("loadConfig", () => {
     expect(config.decks.main?.buttons[0]).toMatchObject({ label: "Clock" })
   })
 
+  it("keeps loadConfigWithSources file paths scoped to config-owned files", async () => {
+    mkdirSync(join(tempDir, "addons", "local-clock-addon"), { recursive: true })
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: action",
+        "        label: Clock",
+        "addons:",
+        "  - name: local-clock-addon",
+        "    enabled: false",
+        "    source: local",
+        "    path: addons/local-clock-addon",
+      ].join("\n"),
+    )
+
+    const { loadConfigWithSources } = await loadConfigModule()
+    const loadedConfig = loadConfigWithSources()
+
+    expect(loadedConfig.filePaths).toEqual([join(tempDir, "config.yml")])
+  })
+
   it("reports missing referenced deck files from the owning config path", async () => {
     writeFileSync(
       join(tempDir, "config.yml"),

@@ -102,11 +102,12 @@ export async function loadRuntimeConfig(options: StartOptions) {
 
     const loadedConfig = loadConfigWithSources(bootstrap.filePath, registry, hostContext)
     const theme = await resolveTheme(loadedConfig.config.theme, { baseDirectory: dirname(loadedConfig.filePath) })
+    const filePaths = Array.from(new Set([...loadedConfig.filePaths, ...theme.filePaths]))
 
     return {
       config: loadedConfig.config,
       configDirectory: dirname(loadedConfig.filePath),
-      filePaths: [...loadedConfig.filePaths, ...theme.filePaths],
+      filePaths,
       hostContext,
       registry,
       sessionMonitor,
