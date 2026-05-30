@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.3 — Typography and Rich Formatting
-**Phase:** 5 — Hot Refresh and Button Error Helper
-**Status:** planning
+**Phase:** 5 — Hot Refresh and Button Error Helper ✓ complete -> Next phase TBD
+**Status:** verifying
 **Last updated:** 2026-05-30
 
 ---
