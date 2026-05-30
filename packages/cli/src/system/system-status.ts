@@ -1,6 +1,5 @@
 import numbro from "numbro"
 
-import type { GenericIconName } from "../ui/index.js"
 import type { CanonicalSystemMetricSnapshot, SystemMetricId } from "./live-metrics.js"
 
 export type SystemStatusFormatter = "bytes" | "count" | "frequency-ghz" | "percent" | "uptime"
@@ -8,7 +7,7 @@ export type SystemStatusFormatter = "bytes" | "count" | "frequency-ghz" | "perce
 export interface SystemStatusMetricOverride {
   color?: string
   formatter?: SystemStatusFormatter
-  icon?: GenericIconName
+  icon?: string
   label?: string
   unavailable_label?: string
   units?: string
@@ -18,7 +17,7 @@ export interface SystemStatusDisplayMetric {
   available: boolean
   color?: string
   formattedValue: string
-  icon?: GenericIconName
+  icon?: string
   id: SystemMetricId
   label: string
   raw: CanonicalSystemMetricSnapshot

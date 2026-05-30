@@ -1,14 +1,17 @@
 import si from "systeminformation"
 
-export type SystemMetricId =
-  | "cpu_frequency"
-  | "cpu_max_frequency"
-  | "cpu_usage"
-  | "fan_speed"
-  | "memory_usage"
-  | "swap_usage"
-  | "system_load"
-  | "uptime"
+export const SYSTEM_METRIC_IDS = [
+  "cpu_frequency",
+  "cpu_max_frequency",
+  "cpu_usage",
+  "fan_speed",
+  "memory_usage",
+  "swap_usage",
+  "system_load",
+  "uptime",
+] as const
+
+export type SystemMetricId = (typeof SYSTEM_METRIC_IDS)[number]
 
 export interface MetricSnapshot {
   label: string
