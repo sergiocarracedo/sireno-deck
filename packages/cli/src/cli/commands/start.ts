@@ -859,6 +859,34 @@ export async function startDaemon(options: StartOptions): Promise<void> {
       })
     }
 
+    const applyReloadedRuntime = async (
+      loadedConfig: Awaited<ReturnType<typeof loadRuntimeConfig>>,
+      nextRuntime: ReturnType<typeof createDeckRuntime>,
+    ): Promise<void> => {
+      const previousRuntime = runtime
+      const previousSessionMonitor = sessionMonitor
+      const previousStack = previousRuntime.getStackSnapshot()
+      const previousActiveDeckId = previousRuntime.getActiveDeck().id
+
+      sessionMonitor = loadedConfig.sessionMonitor
+      runtime = nextRuntime
+      setDomAssetPathResolver((assetReference) => loadedConfig.registry.resolveAssetPath(assetReference))
+
+      previousRuntime.stop()
+      await previousSessionMonitor.stop()
+
+      nextRuntime.start()
+      await restoreReloadNavigation(nextRuntime, previousStack, previousActiveDeckId, loadedConfig.config.main_deck)
+
+      stopWatchingConfig()
+      stopWatchingConfig = watchConfigFiles(loadedConfig.filePaths, () => {
+        void reloadRuntime().catch((error) => {
+          logger.error({ error }, "config reload failed")
+        })
+      })
+      logger.info({ filePaths: loadedConfig.filePaths }, "reloaded config after file change")
+    }
+
     runtime = await createRuntime(initialLoad)
 
     async function reloadRuntime(): Promise<void> {
@@ -880,28 +908,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
         try {
           loadedConfig = await loadRuntimeConfig(options)
           const nextRuntime = await createRuntime(loadedConfig)
-          const previousRuntime = runtime
-          const previousSessionMonitor = sessionMonitor
-          const previousStack = previousRuntime.getStackSnapshot()
-          const previousActiveDeckId = previousRuntime.getActiveDeck().id
-
-          sessionMonitor = loadedConfig.sessionMonitor
-          runtime = nextRuntime
-          setDomAssetPathResolver((assetReference) => loadedConfig.registry.resolveAssetPath(assetReference))
-
-          previousRuntime.stop()
-          await previousSessionMonitor.stop()
-
-          nextRuntime.start()
-          await restoreReloadNavigation(nextRuntime, previousStack, previousActiveDeckId, loadedConfig.config.main_deck)
-
-          stopWatchingConfig()
-          stopWatchingConfig = watchConfigFiles(loadedConfig.filePaths, () => {
-            void reloadRuntime().catch((error) => {
-              logger.error({ error }, "config reload failed")
-            })
-          })
-          logger.info({ filePaths: loadedConfig.filePaths }, "reloaded config after file change")
+          await applyReloadedRuntime(loadedConfig, nextRuntime)
         } catch (error) {
           if (loadedConfig) {
             await loadedConfig.sessionMonitor.stop()
