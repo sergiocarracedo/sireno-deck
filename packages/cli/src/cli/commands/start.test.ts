@@ -519,6 +519,17 @@ describe("loadRuntimeConfig", () => {
     expect(cliPackageJson.scripts?.["dev:bundle"]).toBe("tsdown --watch")
   })
 
+  it("documents the README refresh seams without conflating source restarts and in-process config reloads", async () => {
+    const { readFileSync } = await import("node:fs")
+    const readme = readFileSync(resolve(workspaceRoot, "README.md"), "utf8")
+
+    expect(readme).toContain("## Development Refresh")
+    expect(readme).toContain("`pnpm run cli:dev`")
+    expect(readme).toContain("full-process restart seam")
+    expect(readme).toContain("in-process config-owned reload seam")
+    expect(readme).toContain("Raw addon/theme/React source edits stay on `cli:dev`")
+  })
+
 })
 
 beforeEach(() => {
