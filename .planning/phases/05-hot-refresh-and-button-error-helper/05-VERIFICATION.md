@@ -34,12 +34,15 @@ verified: 2026-05-30
 | `README.md` `Development Refresh` guidance matches `package.json#cli:dev` and `packages/cli/src/cli/commands/start.test.ts` assertions | ✓ | ✓ |
 | `packages/cli/src/deck/runtime.ts` imports `getRuntimeButtonErrorCode(...)` and `createRuntimeButtonErrorLogEntry(...)` from `packages/cli/src/util/errors.ts` | ✓ | ✓ |
 | `packages/cli/src/deck/runtime.test.ts` asserts button-helper UI/log payloads against the runtime helper path in `packages/cli/src/deck/runtime.ts` | ✓ | ✓ |
+| `packages/cli/src/cli/commands/start.ts` startup exit on addon `apiVersion` mismatch matches the clarified fixture/UAT wording in `packages/cli/fixtures/phase-5/README.md` and `.planning/phases/05-hot-refresh-and-button-error-helper/05-UAT.md` (`05-05-PLAN.md` rerun trail) | ✓ | ✓ |
 
 ## Summary
 
 **Score:** 9/9 must-haves verified
 
 All automated checks passed. Phase goal achieved.
+
+Follow-up UAT gap note: the `config.api-version-mismatch.yml` fixture exiting during startup is the intended product behavior, not a failed runtime boundary. The blocker recorded in `.planning/phases/05-hot-refresh-and-button-error-helper/05-UAT.md` test 3 was a wording ambiguity, and the rerun/closure trail is tracked in `05-05-PLAN.md`.
 
 Verification evidence used:
 - `pnpm exec vitest run src/cli/commands/start.test.ts -t "startDaemon|deduplicates the in-process reload graph and keeps addon source edits on the external watch seam|documents the workspace-root cli:dev script as the full-process raw-source restart seam|documents the README refresh seams without conflating source restarts and in-process config reloads"`
