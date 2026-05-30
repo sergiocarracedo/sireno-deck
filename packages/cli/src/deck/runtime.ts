@@ -6,7 +6,7 @@ import { ButtonSurface, getAddonButtonOwnerName } from "../addon/api.js"
 import datetimeButtonsAddon from "../builtin-addons/date-time/index.js"
 import { createMountedDomHost, renderMountedHostedButtons, type HostedButton, type MountedDomHost } from "../render/dom-host.js"
 import { createPollingScheduler, type PollingScheduler } from "../render/scheduler.js"
-import { Text } from "../ui/index.js"
+import { Icon, Text } from "../ui/index.js"
 import { createRuntimeButtonErrorLogEntry, getRuntimeButtonErrorCode, type RuntimeButtonErrorKind } from "../util/errors.js"
 import { createDeckController } from "./controller.js"
 
@@ -202,9 +202,9 @@ function createRuntimeButtonErrorContent(errorCode: string, fullSurface?: boolea
       'div',
       {
         className: 'flex flex-col items-center justify-center w-full h-full',
-        style: { gap: '2px' },
+        style: { gap: '3px' },
       },
-      createElement(Text, { tone: 'danger' }, '▲'),
+      createElement(Icon, { icon: 'warning', size: 22, tone: 'danger' }),
       createElement(Text, { tone: 'danger' }, errorCode),
     ),
   )

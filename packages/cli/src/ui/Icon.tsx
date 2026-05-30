@@ -31,6 +31,26 @@ const GENERIC_ICON_REGISTRY = {
       }),
     ],
   },
+  warning: {
+    stroke: true,
+    viewBox: "0 0 24 24",
+    paths: [
+      createElement("path", {
+        d: "M12 4.5 20 19H4L12 4.5Z",
+        key: "triangle",
+      }),
+      createElement("path", {
+        d: "M12 9.5v4.5",
+        key: "stem",
+      }),
+      createElement("circle", {
+        cx: "12",
+        cy: "16.75",
+        key: "dot",
+        r: "0.9",
+      }),
+    ],
+  },
 } as const
 
 const BRAND_ICON_REGISTRY = {
