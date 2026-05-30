@@ -77,11 +77,15 @@ Recent decisions affecting current work:
 - **Phase 14 discussion:** Built-in toggles should ship as one `toggle` type with explicit `mode: internal | get-set | toggle-status`, shared base presentation plus per-state overrides, and no separate per-mode button types.
 - **Phase 14 discussion:** Command-driven toggles are externally authoritative: `toggle-status` requires `status_command`, startup stays pending until the first read, failed writes preserve last authoritative truth plus error state, and output mapping uses explicit `on_values` / `off_values` token lists.
 - **Phase 14 discussion:** Toggle visuals may differ by mode, but only through shared-base mode accents rather than three bespoke renderers; internal toggle state continuity remains scoped to the running daemon, not durable restart persistence.
+- **Phase 30 discussion:** Shared `Bars` and `LabelValueList` should ship as public component-first TSX surfaces, `LabelValueList` should auto-select its 1/2/3-4 line layout from line count, and helper components should stay mostly presentation-only with formatting owned by callers or built-ins.
+- **Phase 30 discussion:** The built-in system-status addon should use a canonical cross-platform metric catalog with honest per-OS unavailable states, helper-template-driven button configs, metadata-only overrides, and optional tap/hold actions rather than a generic layout DSL.
+- **Phase 30 discussion:** The built-in media-player button should require truthful play/pause/stop state, use best-effort title/artist/app/progress metadata, reuse shared `Text` marquee for overflow, keep tap fixed to play/pause, and expose only optional hold configuration beyond that.
 
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 - Run `/review` on the completed Phase 5 closure pass, then continue with `/ship` and `/compound` once review is clean.
+- Run `plan-phase 30` now that the helper/addon context is captured.
 
 ### Roadmap Evolution
 
@@ -104,6 +108,8 @@ Recent decisions affecting current work:
 - Phase 16 executed: deck-only `@path` references, watched config graph reloads, shared-wrapper footer removal, narrow `accent` overrides, and runtime-owned invalid-reload fallback are all implemented and verified.
 
 ### Progress Notes
+
+- **Phase 30 discussion:** Locked the new helper surface to public component-first `Bars` and `LabelValueList` components, bounded system-status around canonical metric adapters plus helper-template buttons with honest unavailable states, and bounded media-player around truthful status, best-effort metadata, shared marquee overflow, fixed tap play/pause, and optional hold behavior.
 
 - **Phase 3 discussion:** Re-scoped the phase from a bounded date-time-only formatter into a shared `Text` mini markup language with strict whitelist nesting, existing tone-token tags, shared size tags, structural `|` line breaks, CSS-only blink, Day.js-first then `Text` parsing, and literal fallback for any invalid markup.
 
