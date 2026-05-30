@@ -40,7 +40,7 @@ Milestone `v1.3 Typography and Rich Formatting` builds on the shipped `v1.2` tex
 
 ### Post-Milestone Follow-On
 
-Phase 5 (`Hot Refresh and Button Error Helper`) was planned and executed after the v1.3 milestone requirements above were already fully delivered. It does not introduce additional `TRF-*` requirement IDs in this document; its verification traces to the Phase 5 roadmap goal, locked context decisions, and plan `must_haves` recorded under `.planning/phases/05-hot-refresh-and-button-error-helper/`.
+Phase 5 (`Hot Refresh and Button Error Helper`) was planned and executed after the v1.3 milestone requirements above were already fully delivered. It does not introduce additional `TRF-*` requirement IDs in this document; its verification traces to the Phase 5 roadmap goal, locked context decisions, and plan `must_haves` recorded under `.planning/phases/05-hot-refresh-and-button-error-helper/`, including the `05-04` and `05-05` gap-closure plans that resolved the follow-up UAT visual and wording gaps without expanding milestone scope.
 
 ## v2 Candidates
 

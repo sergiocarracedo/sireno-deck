@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 5 gap closure is complete for milestone v1.3 Typography and Rich Formatting. Plans `05-04` and `05-05` closed the recorded UAT issues by upgrading the button warning helper to the shared warning icon treatment and aligning the mismatch-fixture verification wording with the already-correct startup exit behavior. Next step is a final verifier/sync pass for the closure plans.
+**Current focus:** Phase 5 gap closure is complete for milestone v1.3 Typography and Rich Formatting. Plans `05-04` and `05-05` closed the recorded UAT issues, and the closure-pass verifier now confirms the shared warning-icon helper and clarified mismatch-fixture startup-exit contract are synced across runtime tests, UAT artifacts, fixture docs, roadmap, and verification records. Next step is project review and shipping follow-through, not another Phase 5 execution pass.
 
 ## Current Position
 
 Phase: 5 — Hot Refresh and Button Error Helper
-Plan: gap-closure execution complete; verifier next
-Status: verifying
-Last activity: 2026-05-30 - Completed Plan 05-05 mismatch wording closure
+Plan: gap closure complete; `/review` next
+Status: complete
+Last activity: 2026-05-30 - Verified and synced Phase 5 gap-closure pass
 
 Progress: [##########] 100%
 
@@ -54,7 +54,7 @@ Recent decisions affecting current work:
 - **Phase 5 discussion:** Treat both live refresh seams as product truth, keep config reload failures on the existing full-deck error surface, add a compact button-facing warning-triangle plus four-digit-code helper for button failures, require deck/button-aware logs, and prefer explicit full reload over magical partial refresh.
 - **Phase 5 execution:** `start.ts` now applies successful in-process reloads through one explicit runtime-apply seam, and focused loader/start tests pin the in-process watch graph to config/deck/theme ownership instead of silently claiming addon source edits.
 - **Phase 5 execution:** The workspace-root `cli:dev` command is now pinned and documented as the full-process raw-source restart seam, while README guidance explicitly keeps daemon in-process reload scoped to the config-owned graph it already owns.
-- **Phase 5 execution:** Button-scoped runtime failures now route through one shared helper with stable `4101`-`4106` codes, compact `▲ + code` button output, and structured deck/button-aware diagnostics, while config reload failures remain on the separate temporary full-deck error surface.
+- **Phase 5 execution:** Button-scoped runtime failures now route through one shared helper with stable `4101`-`4106` codes, compact warning-icon plus code button output, and structured deck/button-aware diagnostics, while config reload failures remain on the separate temporary full-deck error surface.
 - **Execution:** Config validation errors must preserve metadata through schema, loader, and formatter layers or the CLI loses file/line/suggestion context.
 - **Execution:** yargs command handlers that return promises require `.parseAsync()`, and a foreground daemon must keep the event loop alive explicitly.
 - **Phase 5 discussion:** Button behavior should move behind addon-owned stateful instances that render React output, declare their own schemas, and use core-owned scheduling, command helpers, invalidation, and navigation methods.
@@ -81,7 +81,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
-- Run the Phase 5 closure-pass verifier and then sync any top-level planning artifacts that should mention the completed `05-04` / `05-05` gap-closure plans.
+- Run `/review` on the completed Phase 5 closure pass, then continue with `/ship` and `/compound` once review is clean.
 
 ### Roadmap Evolution
 
@@ -223,8 +223,8 @@ Key achievements: v1.2 delivered the session-aware runtime/render contract, laye
 ## Session Continuity
 
 Last session: 2026-05-30
-Stopped at: Plan `05-05` complete; next run the Phase 5 closure-pass verifier and final sync.
-Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-05-SUMMARY.md
+Stopped at: Phase 5 gap-closure pass verified and synced; next run `/review` before shipping.
+Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-VERIFICATION.md
 
 ### Quick Tasks Completed
 
