@@ -92,7 +92,8 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 **Depends on:** Phase 30
 
 ### Plans
-*Not yet planned - run `plan-phase 31`*
+- [ ] 31-01: Restore the runtime watch launcher contract
+- [ ] 31-02: Re-sync regression and README truth
 
 ## Coverage Check
 
