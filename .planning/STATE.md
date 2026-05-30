@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 5 is complete for milestone v1.3 Typography and Rich Formatting; verification passed and the top-level planning artifacts are being synced so roadmap/state surfaces match the delivered hot-refresh and button-error-helper truth. The next workflow step is `verify-work 5` for manual UAT.
+**Current focus:** Phase 5 gap closure is in progress for milestone v1.3 Typography and Rich Formatting. Plan `05-04` closed the real product UAT issue by upgrading the button warning helper to the shared warning icon treatment, and the remaining closure work is Plan `05-05` to tighten the apiVersion-mismatch UAT/verification wording so expected startup exit is explicit.
 
 ## Current Position
 
 Phase: 5 — Hot Refresh and Button Error Helper
-Plan: phase complete; `verify-work 5` next
-Status: complete
-Last activity: 2026-05-30 - Verified Phase 5 hot refresh and button error helper goal
+Plan: 05-05 next
+Status: executing
+Last activity: 2026-05-30 - Completed Plan 05-04 warning helper visual gap closure
 
 Progress: [##########] 100%
 
@@ -81,7 +81,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
-- Run `verify-work 5` for manual UAT, then continue with `/review`, `/ship`, and `/compound` for the completed Phase 5 slice.
+- Finish Plan `05-05` so the apiVersion-mismatch fixture wording, UAT trail, and verification artifact all state explicitly that startup exit is the expected success condition for that config-level failure path.
 
 ### Roadmap Evolution
 
@@ -223,8 +223,8 @@ Key achievements: v1.2 delivered the session-aware runtime/render contract, laye
 ## Session Continuity
 
 Last session: 2026-05-30
-Stopped at: Phase 5 verified and synced; next run `verify-work 5` for manual UAT.
-Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-VERIFICATION.md
+Stopped at: Plan `05-04` complete; next continue Phase 5 gap-closure execution for `05-05-PLAN.md`.
+Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-05-PLAN.md
 
 ### Quick Tasks Completed
 
