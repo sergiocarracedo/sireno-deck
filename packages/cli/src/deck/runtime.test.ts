@@ -117,6 +117,7 @@ function createSessionMonitorDouble(initialSnapshot: SessionSnapshot): SessionMo
 
 describe("createDeckRuntime", () => {
   afterEach(() => {
+    vi.restoreAllMocks()
     vi.useRealTimers()
   })
 
@@ -247,6 +248,64 @@ describe("createDeckRuntime", () => {
       const renderedButton = onRenderButton.mock.calls.at(-1)?.[0]
       expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 1, label: "Clock" })
       expect(getRenderedButtonHtml(renderedButton)).toContain("Updated")
+    })
+  })
+
+  it("shows a compact button runtime helper and structured diagnostics when a tap handler fails", async () => {
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {})
+    const runtime = createDeckRuntime({
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Broken Tap" },
+          definition: {
+            configSchema: {
+              parse: (value: unknown) => value,
+              safeParse: (value: unknown) => ({ data: value, success: true as const }),
+            },
+            onTap: async () => {
+              throw new Error("tap exploded")
+            },
+            render: ({ button }: { button: { position: number } }) => createTextSurface(button.position, "Broken Tap"),
+            type: "broken-tap",
+          },
+          label: "Broken Tap",
+          position: 0,
+          type: "broken-tap",
+        }],
+      },
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      const renderedButton = getRenderedButton(runtime, 0)
+      const html = getRenderedButtonHtml(renderedButton)
+      expect(html).toContain("▲")
+      expect(html).toContain("4105")
+      expect(html).not.toContain("Config Error")
+      expect(runtime.getActiveDeck().id).toBe("main")
+      expect(consoleError).toHaveBeenCalledWith(
+        "button runtime error",
+        expect.objectContaining({
+          buttonPosition: 0,
+          buttonType: "broken-tap",
+          deckId: "main",
+          errorCode: "4105",
+          operation: "tap",
+          scope: "button-runtime",
+          error: expect.any(Error),
+        }),
+      )
     })
   })
 
@@ -802,6 +861,69 @@ describe("createDeckRuntime", () => {
       const renderedButton = onRenderDeck.mock.calls.at(-1)?.[0]?.[0]
       expect(renderedButton).toMatchObject({ background: "#10161f", keyIndex: 0, label: "Clock" })
       expect(getRenderedButtonHtml(renderedButton)).toContain("10:48:08")
+    })
+  })
+
+  it("shows the button runtime helper and structured diagnostics when a polled refresh fails", async () => {
+    let schedulerTask: (() => Promise<void>) | undefined
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {})
+    const createScheduler = vi.fn((_intervalMs: number): PollingScheduler => ({
+      intervalMs: 0,
+      jitterMs: 0,
+      scheduleDelay: () => 0,
+      start: (tasks) => {
+        schedulerTask = tasks[0]?.run
+      },
+      stop: vi.fn(),
+    }))
+    const runtime = createDeckRuntime({
+      createScheduler,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Status" },
+          definition: {
+            ...createDisplayDefinition(),
+            defaultIntervalMs: 1000,
+            refresh: async () => {
+              throw new Error("refresh exploded")
+            },
+            type: "broken-refresh",
+          },
+          label: "Status",
+          position: 0,
+          type: "broken-refresh",
+        }],
+      },
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Status")
+    })
+
+    await schedulerTask?.()
+
+    await vi.waitFor(() => {
+      const renderedButton = getRenderedButton(runtime, 0)
+      const html = getRenderedButtonHtml(renderedButton)
+      expect(html).toContain("▲")
+      expect(html).toContain("4106")
+      expect(consoleError).toHaveBeenCalledWith(
+        "button runtime error",
+        expect.objectContaining({
+          buttonPosition: 0,
+          buttonType: "broken-refresh",
+          deckId: "main",
+          errorCode: "4106",
+          operation: "refresh",
+          scope: "button-runtime",
+          error: expect.any(Error),
+        }),
+      )
     })
   })
 
