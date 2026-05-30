@@ -42,6 +42,8 @@ Milestone `v1.3 Typography and Rich Formatting` builds on the shipped `v1.2` tex
 
 Phase 5 (`Hot Refresh and Button Error Helper`) was planned and executed after the v1.3 milestone requirements above were already fully delivered. It does not introduce additional `TRF-*` requirement IDs in this document; its verification traces to the Phase 5 roadmap goal, locked context decisions, and plan `must_haves` recorded under `.planning/phases/05-hot-refresh-and-button-error-helper/`, including the `05-04` and `05-05` gap-closure plans that resolved the follow-up UAT visual and wording gaps without expanding milestone scope.
 
+Phase 30 (`Content Helpers, System Status, and Media Player Addons`) is also a post-milestone follow-on after the v1.3 `TRF-*` requirements were already complete. It does not introduce additional `TRF-*` ids here; its verification traces to the Phase 30 roadmap goal, `30-CONTEXT.md`, and the `30-01` through `30-03` plan `must_haves` recorded under `.planning/phases/30-content-helpers-system-status-and-media/`, including the focused verification artifact in `30-VERIFICATION.md`.
+
 ## v2 Candidates
 
 | Item | Why Deferred |

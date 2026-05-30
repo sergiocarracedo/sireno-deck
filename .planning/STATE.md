@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 30 execution is in flight for milestone v1.3 Typography and Rich Formatting. Plans `30-01` and `30-02` landed the shared public helper surface plus the template-driven bundled `system-status` addon, and the next execution step is the cross-platform `media-player` slice.
+**Current focus:** Phase 30 execution is complete for milestone v1.3 Typography and Rich Formatting. The phase now ships the public helper surface plus bundled `system-status` and `media-player` addons, and the next workflow step is `verify-work 30` for manual UAT.
 
 ## Current Position
 
 Phase: 30 — Content Helpers, System Status, and Media Player Addons
-Plan: 30-02 complete; 30-03 next
-Status: executing
-Last activity: 2026-05-30 - Completed Plan 30-02 bundled system-status addon and canonical metric seam
+Plan: 30 complete; verify-work 30 next
+Status: verifying
+Last activity: 2026-05-30 - Completed Plan 30-03 bundled media-player addon and phase verification
 
-Progress: [#######...] 67%
+Progress: [##########] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
+- Total plans completed: 13
 - Average duration: 1 session
 - Total execution time: 1 session
 
@@ -82,12 +82,13 @@ Recent decisions affecting current work:
 - **Phase 30 discussion:** The built-in media-player button should require truthful play/pause/stop state, use best-effort title/artist/app/progress metadata, reuse shared `Text` marquee for overflow, keep tap fixed to play/pause, and expose only optional hold configuration beyond that.
 - **Phase 30 execution:** The shared helper surface now ships as public `Bars` and `LabelValueList` TSX components from the package root, with runtime-enforced count bounds and `LabelValueList` auto-layout still kept presentation-only.
 - **Phase 30 execution:** The bundled `system-status` addon now loads through the real shipped registry with `system-status-bars` and `system-status-label-values`, backed by one canonical metric catalog, a bounded numbro-backed display mapper, explicit unavailable slots, and button-local tap/hold handling that does not widen runtime semantics.
+- **Phase 30 execution:** The bundled `media-player` addon now loads through the real shipped registry on top of a shared media-controller seam, uses a real Linux `playerctl` adapter, keeps macOS and Windows explicitly unsupported until verified, reuses `Bars` and shared `Text` marquee, and keeps tap fixed to play/pause with optional hold behavior implemented locally inside the button seam.
 
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 - Run `/review` on the completed Phase 5 closure pass, then continue with `/ship` and `/compound` once review is clean.
-- Execute Phase 30 plan `30-03` for the cross-platform `media-player` button.
+- Run `verify-work 30` for the committed manual UAT pass, then continue with `/review`, `/ship`, and `/compound`.
 
 ### Roadmap Evolution
 
@@ -116,6 +117,8 @@ Recent decisions affecting current work:
 - **Phase 30 execution:** Completed Plan `30-01` by publishing `Bars` and `LabelValueList` on the public TSX surface, adding focused helper tests, and proving `Bars` through the shipped mounted `media-sample` built-in path.
 
 - **Phase 30 execution:** Completed Plan `30-02` by expanding `live-metrics.ts` into a canonical system metric seam, adding the bounded `system-status.ts` formatter/mapping layer, shipping bundled `system-status-bars` and `system-status-label-values` buttons, and proving honest unavailable slots plus button-local tap/hold behavior through the shipped addon registry path.
+
+- **Phase 30 execution:** Completed Plan `30-03` by shipping the shared media-controller seam, a Linux `playerctl` adapter with honest best-effort metadata/progress parsing, explicit unsupported macOS/Windows adapters, and a bundled `media-player` button that proves fixed tap play/pause, optional hold behavior, shared-helper progress, and shared marquee overflow through the real addon registry path.
 
 - **Phase 3 discussion:** Re-scoped the phase from a bounded date-time-only formatter into a shared `Text` mini markup language with strict whitelist nesting, existing tone-token tags, shared size tags, structural `|` line breaks, CSS-only blink, Day.js-first then `Text` parsing, and literal fallback for any invalid markup.
 

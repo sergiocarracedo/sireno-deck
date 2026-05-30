@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.3 — Typography and Rich Formatting
-**Phase:** 30 — Content Helpers, System Status, and Media Player Addons
-**Status:** planning
+**Phase:** 30 — Content Helpers, System Status, and Media Player Addons ✓ complete -> Next phase TBD
+**Status:** verifying
 **Last updated:** 2026-05-30
 
 ---
@@ -193,7 +193,10 @@ sireno-deck/
 ├── addons/                  # User-installed addon folders
 ├── builtin-addons/          # First-party addons shipped with the CLI
 │   ├── core-buttons/
-│   └── emoji-selector/
+│   ├── date-time/
+│   ├── emoji-selector/
+│   ├── media-player/
+│   └── system-status/
 ├── themes/                  # Built-in theme YAML files
 │   ├── dark.yml
 │   └── light.yml

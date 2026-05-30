@@ -76,15 +76,15 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] 05-04: Close button warning helper visual gap
 - [x] 05-05: Close apiVersion mismatch UAT wording gap
 
-### Phase 30: Content Helpers, System Status, and Media Player Addons
+### Phase 30: Content Helpers, System Status, and Media Player Addons ✓ Complete (2026-05-30)
 **Goal:** Add shared content helper components for bars and label-value layouts, then use them to ship configurable built-in system-status and media-player addons with platform adapter seams.
-**Status:** [ ] Not started
+**Status:** [x] Complete
 **Depends on:** Phase 29
 
 ### Plans
-- [ ] 30-01: Publish the shared helper components
-- [ ] 30-02: Ship the template-driven system-status addon
-- [ ] 30-03: Ship the cross-platform media-player button
+- [x] 30-01: Publish the shared helper components
+- [x] 30-02: Ship the template-driven system-status addon
+- [x] 30-03: Ship the cross-platform media-player button
 
 ## Coverage Check
 
