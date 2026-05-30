@@ -1,0 +1,26 @@
+.planning/phases/05-hot-refresh-and-button-error-helper/05-UAT.md
+  s_6594eef402867c::t_15e7ac0c79b413 9,32,57,62
+packages/cli/fixtures/phase-5/README.md
+  s_6594eef402867c::t_6e8bb083d03bf3 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ebf0e9463edf853dc88043204c81bde697f6ecde",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_6594eef402867c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_189d742cdffeZcbRHUHZ6X53l2",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
