@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 5 execution is in progress for milestone v1.3 Typography and Rich Formatting; Plans 05-01 and 05-02 now close the truthful in-process and external refresh seams, and the remaining Wave 2 work is the shared button-scoped runtime error helper.
+**Current focus:** Phase 5 execution work is complete for milestone v1.3 Typography and Rich Formatting; all three plan slices now close the truthful in-process reload seam, the external raw-source restart seam, and the shared button-scoped runtime error helper. The next workflow step is verifier plus top-level planning-artifact sync.
 
 ## Current Position
 
 Phase: 5 — Hot Refresh and Button Error Helper
-Plan: 05-03 next
-Status: executing
-Last activity: 2026-05-30 - Completed Plan 05-02 truthful external source-edit refresh
+Plan: execution complete; verifier next
+Status: verifying
+Last activity: 2026-05-30 - Completed Plan 05-03 shared button error helper
 
 Progress: [##########] 100%
 
@@ -54,6 +54,7 @@ Recent decisions affecting current work:
 - **Phase 5 discussion:** Treat both live refresh seams as product truth, keep config reload failures on the existing full-deck error surface, add a compact button-facing warning-triangle plus four-digit-code helper for button failures, require deck/button-aware logs, and prefer explicit full reload over magical partial refresh.
 - **Phase 5 execution:** `start.ts` now applies successful in-process reloads through one explicit runtime-apply seam, and focused loader/start tests pin the in-process watch graph to config/deck/theme ownership instead of silently claiming addon source edits.
 - **Phase 5 execution:** The workspace-root `cli:dev` command is now pinned and documented as the full-process raw-source restart seam, while README guidance explicitly keeps daemon in-process reload scoped to the config-owned graph it already owns.
+- **Phase 5 execution:** Button-scoped runtime failures now route through one shared helper with stable `4101`-`4106` codes, compact `▲ + code` button output, and structured deck/button-aware diagnostics, while config reload failures remain on the separate temporary full-deck error surface.
 - **Execution:** Config validation errors must preserve metadata through schema, loader, and formatter layers or the CLI loses file/line/suggestion context.
 - **Execution:** yargs command handlers that return promises require `.parseAsync()`, and a foreground daemon must keep the event loop alive explicitly.
 - **Phase 5 discussion:** Button behavior should move behind addon-owned stateful instances that render React output, declare their own schemas, and use core-owned scheduling, command helpers, invalidation, and navigation methods.
@@ -80,7 +81,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
-- Finish Wave 2 of Phase 5 by shipping the shared button error helper with deck/button-aware diagnostics while preserving the existing full-deck config reload error surface.
+- Run the Phase 5 verifier and then sync top-level planning artifacts (`ROADMAP.md`, `STATE.md`, `AGENTS.md`, and any requirement/traceability updates) to match the completed execution truth.
 
 ### Roadmap Evolution
 
@@ -222,8 +223,8 @@ Key achievements: v1.2 delivered the session-aware runtime/render contract, laye
 ## Session Continuity
 
 Last session: 2026-05-30
-Stopped at: Plan 05-02 complete; next continue Wave 2 execution for `05-03-PLAN.md`.
-Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-03-PLAN.md
+Stopped at: Plan 05-03 complete; next run verifier and final Phase 5 planning-artifact sync.
+Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-03-SUMMARY.md
 
 ### Quick Tasks Completed
 
