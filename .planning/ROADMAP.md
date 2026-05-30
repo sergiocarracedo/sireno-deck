@@ -2,7 +2,7 @@
 
 **Version:** v1.3
 **Milestone:** Typography and Rich Formatting
-**Last updated:** 2026-05-29
+**Last updated:** 2026-05-30
 
 ## Milestone Summary
 
@@ -56,13 +56,23 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] Milestone docs truthfully reflect the delivered contract and no longer carry conflicting text-format assumptions
 **Research needed:** No
 
-### Phase 5: Hot Refresh and Button Error Helper
+### Phase 5: Hot Refresh and Button Error Helper ✓ Complete (2026-05-30)
 **Goal:** Restore honest hot refresh for config and React source edits, and provide a shared button-facing error helper that renders a warning triangle plus a four-digit error code while logging deck/button-aware diagnostics.
-**Status:** [ ] Not started
+**Status:** [x] Complete
 **Depends on:** Phase 4
 
+**Success criteria:**
+- [x] The in-process daemon reload path now goes through one explicit runtime rebuild seam while preserving the temporary full-deck config reload fallback.
+- [x] The workspace-root `cli:dev` `tsx watch` loop is pinned and documented as the full-process raw-source restart seam, distinct from the narrower daemon reload path.
+- [x] Button-scoped runtime failures now render a compact `▲` plus four-digit code helper and emit deck/button-aware diagnostics without replacing the separate config error deck.
+- [x] Focused loader/start/runtime tests prove the truthful boundaries and error-helper behavior without regressing the existing config reload surface.
+
+**Research needed:** Yes - completed in `05-RESEARCH.md`
+
 ### Plans
-*Not yet planned - run `plan-phase 5`*
+- [x] 05-01: Truthful in-process runtime reload
+- [x] 05-02: Truthful external source-edit refresh
+- [x] 05-03: Shared button error helper
 
 ## Coverage Check
 

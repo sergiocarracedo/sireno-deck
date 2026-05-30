@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 5 execution work is complete for milestone v1.3 Typography and Rich Formatting; all three plan slices now close the truthful in-process reload seam, the external raw-source restart seam, and the shared button-scoped runtime error helper. The next workflow step is verifier plus top-level planning-artifact sync.
+**Current focus:** Phase 5 is complete for milestone v1.3 Typography and Rich Formatting; verification passed and the top-level planning artifacts are being synced so roadmap/state surfaces match the delivered hot-refresh and button-error-helper truth. The next workflow step is `verify-work 5` for manual UAT.
 
 ## Current Position
 
 Phase: 5 — Hot Refresh and Button Error Helper
-Plan: execution complete; verifier next
-Status: verifying
-Last activity: 2026-05-30 - Completed Plan 05-03 shared button error helper
+Plan: phase complete; `verify-work 5` next
+Status: complete
+Last activity: 2026-05-30 - Verified Phase 5 hot refresh and button error helper goal
 
 Progress: [##########] 100%
 
@@ -81,7 +81,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
-- Run the Phase 5 verifier and then sync top-level planning artifacts (`ROADMAP.md`, `STATE.md`, `AGENTS.md`, and any requirement/traceability updates) to match the completed execution truth.
+- Run `verify-work 5` for manual UAT, then continue with `/review`, `/ship`, and `/compound` for the completed Phase 5 slice.
 
 ### Roadmap Evolution
 
@@ -223,8 +223,8 @@ Key achievements: v1.2 delivered the session-aware runtime/render contract, laye
 ## Session Continuity
 
 Last session: 2026-05-30
-Stopped at: Plan 05-03 complete; next run verifier and final Phase 5 planning-artifact sync.
-Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-03-SUMMARY.md
+Stopped at: Phase 5 verified and synced; next run `verify-work 5` for manual UAT.
+Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-VERIFICATION.md
 
 ### Quick Tasks Completed
 

@@ -38,6 +38,10 @@ Milestone `v1.3 Typography and Rich Formatting` builds on the shipped `v1.2` tex
 | TRF-06 | Phase 3 | ✓ Complete (2026-05-29) | Shared rich text now supports nested line breaks, highlight shorthand, size/tone tags, blink spans, and deterministic literal fallback without giving themes inner-markup ownership. |
 | TRF-07 | Phase 4 | ✓ Complete (2026-05-29) | Focused date-time regression coverage now proves unmatched-angle literal fallback plus token expansion, and active workflow artifacts were reconciled so the delivered Phase 3/4 contract truth matches the live implementation. |
 
+### Post-Milestone Follow-On
+
+Phase 5 (`Hot Refresh and Button Error Helper`) was planned and executed after the v1.3 milestone requirements above were already fully delivered. It does not introduce additional `TRF-*` requirement IDs in this document; its verification traces to the Phase 5 roadmap goal, locked context decisions, and plan `must_haves` recorded under `.planning/phases/05-hot-refresh-and-button-error-helper/`.
+
 ## v2 Candidates
 
 | Item | Why Deferred |
