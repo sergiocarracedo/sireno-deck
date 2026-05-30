@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
-import { Text } from '../../../ui/index.js'
+import { Bars, Text } from '../../../ui/index.js'
 
 const ANIMATED_BLOB_SVG = encodeURIComponent([
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">',
@@ -45,13 +45,22 @@ const builtinMediaSampleButton = defineMountedButton({
           }}
         />
         <div
-          className="absolute inset-0 flex items-end justify-center"
+          className="absolute inset-0 flex flex-col justify-between"
           style={{
             background:
               'linear-gradient(180deg, rgba(2, 6, 23, 0) 0%, rgba(2, 6, 23, 0.88) 100%)',
-            padding: '8px 6px',
+            padding: '8px 6px 6px',
           }}
         >
+          <div className="px-1 pt-1">
+            <Bars
+              items={[
+                { color: '#8ecae6', maxValue: 100, title: 'low', value: 72 },
+                { color: '#cdb4db', maxValue: 100, title: 'mid', value: 48 },
+                { color: '#adb5bd', maxValue: 100, title: 'high', value: 21 },
+              ]}
+            />
+          </div>
           <Text fit="wrap">{config.label}</Text>
         </div>
       </div>
