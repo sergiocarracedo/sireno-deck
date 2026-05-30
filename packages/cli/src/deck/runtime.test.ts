@@ -290,7 +290,9 @@ describe("createDeckRuntime", () => {
     await vi.waitFor(() => {
       const renderedButton = getRenderedButton(runtime, 0)
       const html = getRenderedButtonHtml(renderedButton)
-      expect(html).toContain("▲")
+      expect(html).toContain('data-sireno-icon-source="generic"')
+      expect(html).toContain('data-sireno-ui-icon="true"')
+      expect(html).not.toContain("▲")
       expect(html).toContain("4105")
       expect(html).not.toContain("Config Error")
       expect(runtime.getActiveDeck().id).toBe("main")
@@ -910,7 +912,9 @@ describe("createDeckRuntime", () => {
     await vi.waitFor(() => {
       const renderedButton = getRenderedButton(runtime, 0)
       const html = getRenderedButtonHtml(renderedButton)
-      expect(html).toContain("▲")
+      expect(html).toContain('data-sireno-icon-source="generic"')
+      expect(html).toContain('data-sireno-ui-icon="true"')
+      expect(html).not.toContain("▲")
       expect(html).toContain("4106")
       expect(consoleError).toHaveBeenCalledWith(
         "button runtime error",
