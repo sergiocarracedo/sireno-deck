@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 31 execution is complete for the narrow `cli:dev` watch-mode contract repair. The next workflow step is phase verification so the repaired launcher, regression seam, and README stay synchronized.
+**Current focus:** Phase 31 execution and verification are complete for the narrow `cli:dev` watch-mode contract repair. The next workflow step is `verify-work 31` so the committed launcher repair can be checked on the manual UAT path.
 
 ## Current Position
 
 Phase: 31 — CLI Dev Watch Mode Argument Forwarding
-Plan: 31 complete; verification next
+Plan: 31 complete; verify-work 31 next
 Status: verifying
-Last activity: 2026-05-30 - Completed Plan 31-02 regression and README contract sync
+Last activity: 2026-05-30 - Verified Phase 31 cli:dev launcher, regression seam, and README contract
 
 Progress: [##########] 100%
 
@@ -92,7 +92,7 @@ Recent decisions affecting current work:
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 - Run `/review` on the completed Phase 5 closure pass, then continue with `/ship` and `/compound` once review is clean.
 - Run `verify-work 30` for the committed manual UAT pass, then continue with `/review`, `/ship`, and `/compound`.
-- Verify and close Phase 31 so the repaired `cli:dev` runtime, regression seam, and README stay in sync.
+- Run `verify-work 31` for the committed manual UAT pass, then continue with `/review`, `/ship`, and `/compound`.
 
 ### Roadmap Evolution
 
@@ -122,6 +122,8 @@ Recent decisions affecting current work:
 - **Phase 31 execution:** Completed Plan `31-01` by replacing the broken raw-entrypoint `cli:dev` script with a narrow `dev-watch` launcher, keeping `tsx watch` as the external full-process seam, defaulting bare runs to `start --config config.yml`, and adding focused argv-resolution regression coverage.
 
 - **Phase 31 execution:** Completed Plan `31-02` by updating the shipped `start.test.ts` root-script regression to match the launcher-based contract and documenting the forwarded `pnpm run cli:dev emulate --port 8912` path in README without widening the watch-mode workflow.
+
+- **Phase 31 verification:** Verified the repaired `cli:dev` seam end-to-end with focused launcher tests, the shipped root-script regression, and grep proof that `package.json`, `dev-watch.ts`, and README all describe the same bare-plus-forwarded contract.
 
 - **Phase 30 discussion:** Locked the new helper surface to public component-first `Bars` and `LabelValueList` components, bounded system-status around canonical metric adapters plus helper-template buttons with honest unavailable states, and bounded media-player around truthful status, best-effort metadata, shared marquee overflow, fixed tap play/pause, and optional hold behavior.
 
