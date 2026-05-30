@@ -4,7 +4,9 @@ TypeScript CLI for programmable Stream Deck layouts, themes, and addons.
 
 ## Development Refresh
 
-`pnpm run cli:dev` is the full-process restart seam for raw source edits. It runs the workspace-root `tsx watch` loop over the CLI source tree plus config, themes, addons, and built-in addons so changes re-enter the real `start --config config.yml` process from the top.
+`pnpm run cli:dev` is the full-process restart seam for raw source edits. With no extra args it runs the workspace-root `tsx watch` loop over the CLI source tree plus config, themes, addons, and built-in addons so changes re-enter the real `start --config config.yml` process from the top.
+
+The same seam also forwards explicit CLI args truthfully. For example, `pnpm run cli:dev emulate --port 8912` keeps the same watch graph but restarts the real emulator command instead of the default start path.
 
 `sireno start --config ...` also has an in-process config-owned reload seam, but that path is narrower on purpose: it reloads the resolved config/deck/theme graph the daemon already owns without pretending to hot-reload arbitrary source modules.
 

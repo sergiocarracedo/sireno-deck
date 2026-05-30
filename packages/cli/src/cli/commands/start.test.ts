@@ -479,6 +479,7 @@ describe("loadRuntimeConfig", () => {
 
   it("documents the workspace-root cli:dev script as the full-process raw-source restart seam", async () => {
     const { readFileSync } = await import("node:fs")
+    const { resolveDevWatchArgs } = await import("../dev-watch.js")
     const rootPackageJson = JSON.parse(
       readFileSync(resolve(workspaceRoot, "package.json"), "utf8"),
     ) as {
@@ -493,10 +494,7 @@ describe("loadRuntimeConfig", () => {
     expect(rootPackageJson.scripts?.["cli:dev"]).toContain("tsx watch")
     expect(rootPackageJson.scripts?.["cli:dev"]).toContain("pnpm exec tsx watch")
     expect(rootPackageJson.scripts?.["cli:dev"]).toContain(
-      "packages/cli/src/cli/index.ts",
-    )
-    expect(rootPackageJson.scripts?.["cli:dev"]).toContain(
-      "start --config config.yml",
+      "packages/cli/src/cli/dev-watch.ts",
     )
     expect(rootPackageJson.scripts?.["cli:dev"]).toContain(
       "--include ./packages/cli/src/**/*",
@@ -514,6 +512,12 @@ describe("loadRuntimeConfig", () => {
       "--include ./builtin-addons/**/*",
     )
     expect(rootPackageJson.scripts?.["cli:dev"]).not.toContain("tsdown --watch")
+    expect(resolveDevWatchArgs([])).toEqual(["start", "--config", "config.yml"])
+    expect(resolveDevWatchArgs(["emulate", "--port", "8912"])).toEqual([
+      "emulate",
+      "--port",
+      "8912",
+    ])
     expect(rootPackageJson.scripts?.dev).toBe("pnpm run cli:dev")
     expect(cliPackageJson.scripts?.dev).toBe("pnpm --workspace-root run cli:dev")
     expect(cliPackageJson.scripts?.["dev:bundle"]).toBe("tsdown --watch")
