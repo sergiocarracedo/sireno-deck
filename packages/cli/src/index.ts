@@ -3,7 +3,7 @@ export {
   defineMountedButton,
 } from "./addon/api.js"
 
-export { Chip, Icon, Text } from "./ui/index.js"
+export { Bars, Chip, Icon, LabelValueList, Text } from "./ui/index.js"
 
 export type {
   AddonButtonDefinition,
@@ -13,12 +13,16 @@ export type {
   MountedAddonButtonRenderProps,
 } from "./addon/api.js"
 export type {
+  BarsItem,
+  BarsProps,
   BrandIconName,
   ChipProps,
   ChipTone,
   GenericIconName,
   IconProps,
   IconTone,
+  LabelValueListLine,
+  LabelValueListProps,
   TextAlign,
   TextFit,
   TextProps,

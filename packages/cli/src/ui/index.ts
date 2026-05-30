@@ -1,4 +1,5 @@
 export { Chip, type ChipProps, type ChipTone } from './Chip.js'
+export { Bars, type BarsItem, type BarsProps } from './Bars.js'
 export {
   Icon,
   type BrandIconName,
@@ -6,6 +7,11 @@ export {
   type IconProps,
   type IconTone,
 } from './Icon.js'
+export {
+  LabelValueList,
+  type LabelValueListLine,
+  type LabelValueListProps,
+} from './LabelValueList.js'
 export {
   Text,
   type TextAlign,
