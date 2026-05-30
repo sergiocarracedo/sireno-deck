@@ -82,7 +82,9 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 **Depends on:** Phase 29
 
 ### Plans
-*Not yet planned - run `plan-phase 30`*
+- [ ] 30-01: Publish the shared helper components
+- [ ] 30-02: Ship the template-driven system-status addon
+- [ ] 30-03: Ship the cross-platform media-player button
 
 ## Coverage Check
 
