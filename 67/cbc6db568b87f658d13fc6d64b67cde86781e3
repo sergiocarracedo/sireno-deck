@@ -1,0 +1,28 @@
+packages/cli/src/cli/dev-watch.test.ts
+  s_70eeb05163558f::t_975a3eac0805ef 1-21
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-01-SUMMARY.md
+  s_70eeb05163558f::t_975a3eac0805ef 1-22
+.planning/STATE.md
+  s_70eeb05163558f::t_975a3eac0805ef 8,12-15,17,22,84,94,121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "67cbc6db568b87f658d13fc6d64b67cde86781e3",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_70eeb05163558f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_18597e378ffevCYrDZtni4nuEZ",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
