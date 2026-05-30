@@ -1,8 +1,15 @@
 import { describe, expect, it } from "vitest"
 
-import { getCpuMetric, getFanMetric, getMemoryMetric, type LiveMetricsClient } from "./live-metrics.js"
+import {
+  getCanonicalSystemMetric,
+  getCpuMetric,
+  getFanMetric,
+  getMemoryMetric,
+  getSwapUsageMetric,
+  type LiveMetricsClient,
+} from "./live-metrics.js"
 
-type LiveMetricsStub = Pick<LiveMetricsClient, "currentLoad" | "graphics" | "mem">
+type LiveMetricsStub = Pick<LiveMetricsClient, "cpu" | "currentLoad" | "graphics" | "mem" | "time">
 
 function createCurrentLoad(currentLoad: number) {
   return {
@@ -62,8 +69,14 @@ function createMem(active: number, total: number) {
 }
 
 describe("live metrics", () => {
+  const baseStub = {
+    cpu: async () => ({ speed: 4.2, speedMax: 5.1 }),
+    time: async () => ({ current: 0, timezone: "UTC", timezoneName: "UTC", uptime: 7265 }),
+  }
+
   it("normalizes cpu load into a rounded percentage snapshot", async () => {
     const metric = await getCpuMetric({
+      ...baseStub,
       currentLoad: async () => createCurrentLoad(43.6),
       graphics: async () => createGraphics([]),
       mem: async () => createMem(0, 0),
@@ -74,6 +87,7 @@ describe("live metrics", () => {
 
   it("derives memory usage from active over total memory", async () => {
     const metric = await getMemoryMetric({
+      ...baseStub,
       currentLoad: async () => createCurrentLoad(0),
       graphics: async () => createGraphics([]),
       mem: async () => createMem(3, 8),
@@ -84,6 +98,7 @@ describe("live metrics", () => {
 
   it("returns the first readable fan sensor as an rpm snapshot", async () => {
     const metric = await getFanMetric({
+      ...baseStub,
       currentLoad: async () => createCurrentLoad(0),
       graphics: async () => createGraphics([
         { fanSpeed: 0, model: "Idle Fan" },
@@ -97,6 +112,7 @@ describe("live metrics", () => {
 
   it("returns later readable fan sensors when earlier controllers are missing data", async () => {
     const metric = await getFanMetric({
+      ...baseStub,
       currentLoad: async () => createCurrentLoad(0),
       graphics: async () => createGraphics([
         { model: "Missing Sensor" },
@@ -110,6 +126,7 @@ describe("live metrics", () => {
 
   it("normalizes missing fan sensors into an unavailable state", async () => {
     const metric = await getFanMetric({
+      ...baseStub,
       currentLoad: async () => createCurrentLoad(0),
       graphics: async () => createGraphics([{ model: "No Sensor" }]),
       mem: async () => createMem(0, 0),
@@ -120,6 +137,7 @@ describe("live metrics", () => {
 
   it("degrades fan metric failures into an unavailable state", async () => {
     const metric = await getFanMetric({
+      ...baseStub,
       currentLoad: async () => createCurrentLoad(0),
       graphics: async () => {
         throw new Error("no graphics access")
@@ -128,5 +146,40 @@ describe("live metrics", () => {
     } satisfies LiveMetricsStub)
 
     expect(metric).toEqual({ available: false })
+  })
+
+  it("exposes canonical cpu usage snapshots through the shared metric catalog", async () => {
+    const metric = await getCanonicalSystemMetric("cpu_usage", {
+      ...baseStub,
+      currentLoad: async () => createCurrentLoad(43.6),
+      graphics: async () => createGraphics([]),
+      mem: async () => createMem(0, 0),
+    } satisfies LiveMetricsStub)
+
+    expect(metric).toEqual({
+      available: true,
+      id: "cpu_usage",
+      label: "44%",
+      max: 100,
+      percentage: 44,
+      unit: "%",
+      value: 44,
+    })
+  })
+
+  it("keeps swap usage honestly unavailable when the host exposes no swap", async () => {
+    const metric = await getSwapUsageMetric({
+      ...baseStub,
+      currentLoad: async () => createCurrentLoad(0),
+      graphics: async () => createGraphics([]),
+      mem: async () => createMem(3, 8),
+    } satisfies LiveMetricsStub)
+
+    expect(metric).toEqual({
+      available: false,
+      id: "swap_usage",
+      label: "Unavailable",
+      unit: "B",
+    })
   })
 })
