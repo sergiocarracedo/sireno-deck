@@ -80,6 +80,7 @@ Recent decisions affecting current work:
 - **Phase 30 discussion:** Shared `Bars` and `LabelValueList` should ship as public component-first TSX surfaces, `LabelValueList` should auto-select its 1/2/3-4 line layout from line count, and helper components should stay mostly presentation-only with formatting owned by callers or built-ins.
 - **Phase 30 discussion:** The built-in system-status addon should use a canonical cross-platform metric catalog with honest per-OS unavailable states, helper-template-driven button configs, metadata-only overrides, and optional tap/hold actions rather than a generic layout DSL.
 - **Phase 30 discussion:** The built-in media-player button should require truthful play/pause/stop state, use best-effort title/artist/app/progress metadata, reuse shared `Text` marquee for overflow, keep tap fixed to play/pause, and expose only optional hold configuration beyond that.
+- **Phase 31 discussion:** `cli:dev` stays the external `tsx watch` raw-source restart seam, bare `pnpm cli:dev` should still launch `start --config config.yml`, and forwarded args such as `pnpm cli:dev emulate --port 8912` must reach the real CLI entrypoint truthfully without widening the dev workflow.
 - **Phase 30 execution:** The shared helper surface now ships as public `Bars` and `LabelValueList` TSX components from the package root, with runtime-enforced count bounds and `LabelValueList` auto-layout still kept presentation-only.
 - **Phase 30 execution:** The bundled `system-status` addon now loads through the real shipped registry with `system-status-bars` and `system-status-label-values`, backed by one canonical metric catalog, a bounded numbro-backed display mapper, explicit unavailable slots, and button-local tap/hold handling that does not widen runtime semantics.
 - **Phase 30 execution:** The bundled `media-player` addon now loads through the real shipped registry on top of a shared media-controller seam, uses a real Linux `playerctl` adapter, keeps macOS and Windows explicitly unsupported until verified, reuses `Bars` and shared `Text` marquee, and keeps tap fixed to play/pause with optional hold behavior implemented locally inside the button seam.
@@ -89,6 +90,7 @@ Recent decisions affecting current work:
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 - Run `/review` on the completed Phase 5 closure pass, then continue with `/ship` and `/compound` once review is clean.
 - Run `verify-work 30` for the committed manual UAT pass, then continue with `/review`, `/ship`, and `/compound`.
+- Run `plan-phase 31` now that the `cli:dev` watch-mode contract is captured.
 
 ### Roadmap Evolution
 
@@ -112,6 +114,8 @@ Recent decisions affecting current work:
 - Phase 16 executed: deck-only `@path` references, watched config graph reloads, shared-wrapper footer removal, narrow `accent` overrides, and runtime-owned invalid-reload fallback are all implemented and verified.
 
 ### Progress Notes
+
+- **Phase 31 discussion:** Kept the phase narrow to restoring the truthful root `cli:dev` contract: default `start --config config.yml` behavior plus real forwarded subcommand args on the external `tsx watch` seam, with docs/tests/script kept in sync.
 
 - **Phase 30 discussion:** Locked the new helper surface to public component-first `Bars` and `LabelValueList` components, bounded system-status around canonical metric adapters plus helper-template buttons with honest unavailable states, and bounded media-player around truthful status, best-effort metadata, shared marquee overflow, fixed tap play/pause, and optional hold behavior.
 
