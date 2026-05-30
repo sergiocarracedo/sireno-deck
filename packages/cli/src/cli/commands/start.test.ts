@@ -477,7 +477,7 @@ describe("loadRuntimeConfig", () => {
     expect(result.timedOut).toBe(true)
   }, 10_000)
 
-  it("documents the workspace-root cli:dev script on the truthful raw-source start seam", async () => {
+  it("documents the workspace-root cli:dev script as the full-process raw-source restart seam", async () => {
     const { readFileSync } = await import("node:fs")
     const rootPackageJson = JSON.parse(
       readFileSync(resolve(workspaceRoot, "package.json"), "utf8"),
@@ -491,6 +491,7 @@ describe("loadRuntimeConfig", () => {
     }
 
     expect(rootPackageJson.scripts?.["cli:dev"]).toContain("tsx watch")
+    expect(rootPackageJson.scripts?.["cli:dev"]).toContain("pnpm exec tsx watch")
     expect(rootPackageJson.scripts?.["cli:dev"]).toContain(
       "packages/cli/src/cli/index.ts",
     )
@@ -512,9 +513,12 @@ describe("loadRuntimeConfig", () => {
     expect(rootPackageJson.scripts?.["cli:dev"]).toContain(
       "--include ./builtin-addons/**/*",
     )
+    expect(rootPackageJson.scripts?.["cli:dev"]).not.toContain("tsdown --watch")
+    expect(rootPackageJson.scripts?.dev).toBe("pnpm run cli:dev")
     expect(cliPackageJson.scripts?.dev).toBe("pnpm --workspace-root run cli:dev")
     expect(cliPackageJson.scripts?.["dev:bundle"]).toBe("tsdown --watch")
   })
+
 })
 
 beforeEach(() => {
