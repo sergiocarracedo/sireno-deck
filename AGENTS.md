@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.3 — Typography and Rich Formatting
-**Phase:** 30 — Content Helpers, System Status, and Media Player Addons ✓ complete -> Next phase TBD
-**Status:** verifying
+**Phase:** 31 — CLI Dev Watch Mode Argument Forwarding
+**Status:** planning
 **Last updated:** 2026-05-30
 
 ---
