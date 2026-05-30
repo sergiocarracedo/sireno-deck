@@ -878,8 +878,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     }
 
     pressedKeys.delete(event.keyIndex)
-    void handleRelease(event.keyIndex)
-    void handleTap(event.keyIndex)
+    void (async () => {
+      await handleRelease(event.keyIndex)
+      await handleTap(event.keyIndex)
+    })().catch(reportRuntimeError)
   }
 
   return {
