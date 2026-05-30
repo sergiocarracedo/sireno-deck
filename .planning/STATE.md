@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 5 gap closure is complete for milestone v1.3 Typography and Rich Formatting. Plans `05-04` and `05-05` closed the recorded UAT issues, and the closure-pass verifier now confirms the shared warning-icon helper and clarified mismatch-fixture startup-exit contract are synced across runtime tests, UAT artifacts, fixture docs, roadmap, and verification records. Next step is project review and shipping follow-through, not another Phase 5 execution pass.
+**Current focus:** Phase 30 execution is in flight for milestone v1.3 Typography and Rich Formatting. Plan `30-01` landed the shared public `Bars` and `LabelValueList` helper surface plus a real mounted built-in proof path, and the next execution step is the template-driven `system-status` addon slice.
 
 ## Current Position
 
-Phase: 5 — Hot Refresh and Button Error Helper
-Plan: gap closure complete; `/review` next
-Status: complete
-Last activity: 2026-05-30 - Verified and synced Phase 5 gap-closure pass
+Phase: 30 — Content Helpers, System Status, and Media Player Addons
+Plan: 30-01 complete; 30-02 next
+Status: executing
+Last activity: 2026-05-30 - Completed Plan 30-01 shared helper surface and mounted built-in proof
 
-Progress: [##########] 100%
+Progress: [###.......] 33%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
+- Total plans completed: 11
 - Average duration: 1 session
 - Total execution time: 1 session
 
@@ -80,12 +80,13 @@ Recent decisions affecting current work:
 - **Phase 30 discussion:** Shared `Bars` and `LabelValueList` should ship as public component-first TSX surfaces, `LabelValueList` should auto-select its 1/2/3-4 line layout from line count, and helper components should stay mostly presentation-only with formatting owned by callers or built-ins.
 - **Phase 30 discussion:** The built-in system-status addon should use a canonical cross-platform metric catalog with honest per-OS unavailable states, helper-template-driven button configs, metadata-only overrides, and optional tap/hold actions rather than a generic layout DSL.
 - **Phase 30 discussion:** The built-in media-player button should require truthful play/pause/stop state, use best-effort title/artist/app/progress metadata, reuse shared `Text` marquee for overflow, keep tap fixed to play/pause, and expose only optional hold configuration beyond that.
+- **Phase 30 execution:** The shared helper surface now ships as public `Bars` and `LabelValueList` TSX components from the package root, with runtime-enforced count bounds and `LabelValueList` auto-layout still kept presentation-only.
 
 ### Pending Todos
 
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 - Run `/review` on the completed Phase 5 closure pass, then continue with `/ship` and `/compound` once review is clean.
-- Run `plan-phase 30` now that the helper/addon context is captured.
+- Execute Phase 30 plan `30-02` for the template-driven `system-status` addon.
 
 ### Roadmap Evolution
 
@@ -110,6 +111,8 @@ Recent decisions affecting current work:
 ### Progress Notes
 
 - **Phase 30 discussion:** Locked the new helper surface to public component-first `Bars` and `LabelValueList` components, bounded system-status around canonical metric adapters plus helper-template buttons with honest unavailable states, and bounded media-player around truthful status, best-effort metadata, shared marquee overflow, fixed tap play/pause, and optional hold behavior.
+
+- **Phase 30 execution:** Completed Plan `30-01` by publishing `Bars` and `LabelValueList` on the public TSX surface, adding focused helper tests, and proving `Bars` through the shipped mounted `media-sample` built-in path.
 
 - **Phase 3 discussion:** Re-scoped the phase from a bounded date-time-only formatter into a shared `Text` mini markup language with strict whitelist nesting, existing tone-token tags, shared size tags, structural `|` line breaks, CSS-only blink, Day.js-first then `Text` parsing, and literal fallback for any invalid markup.
 
