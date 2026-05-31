@@ -167,7 +167,7 @@ This project uses **learnship**. Key facts:
 **Milestone:** v1.3 — Typography and Rich Formatting
 **Phase:** 31 — CLI Dev Watch Mode Argument Forwarding ✓ complete -> Next phase TBD
 **Status:** verifying
-**Last updated:** 2026-05-31
+**Last updated:** 2026-06-01
 
 ---
 

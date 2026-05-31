@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 31 gap-closure execution is complete. Both the shared watch-loop blocker and the downstream bare-start cleanup defect are closed, and the next workflow step is `verify-work 31` again for a fresh manual UAT pass against the repaired runtime seam.
+**Current focus:** Phase 31 live-seam restoration is complete. The shared watch-loop blocker, downstream bare-start cleanup defect, and rerun-specific worktree drift in the root `cli:dev` seam are all closed, and the next workflow step is `verify-work 31` again for a fresh manual UAT pass against the fully restored runtime seam.
 
 ## Current Position
 
 Phase: 31 — CLI Dev Watch Mode Argument Forwarding
-Plan: 31 gap closure complete; verify-work 31 next
+Plan: 31 rerun closure complete; verify-work 31 next
 Status: verifying
-Last activity: 2026-05-31 - Completed Plan 31-04 bare-start cleanup and verification truth sync
+Last activity: 2026-06-01 - Completed Plan 31-05 live cli:dev seam restoration
 
 Progress: [##########] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
+- Total plans completed: 18
 - Average duration: 1 session
 - Total execution time: 1 session
 
@@ -85,6 +85,7 @@ Recent decisions affecting current work:
 - **Phase 31 execution:** The shipped `start.test.ts` regression seam and README refresh section now match the repaired launcher contract, covering both bare `pnpm run cli:dev` and forwarded invocations such as `pnpm run cli:dev emulate --port 8912` without redefining the narrower in-process reload seam.
 - **Phase 31 gap closure:** Theme runtime imports now stay on the real source path with `tsx` cache-busting instead of temp snapshot copy/delete churn, so the watched emulator seam no longer self-invalidates on `.sireno-theme-runtime-*` unlink events. The remaining bare-path cleanup defect stays scoped to Plan `31-04`.
 - **Phase 31 gap closure:** `startDaemon()` cleanup now honors the real `SessionMonitor.stop(): Promise<void> | void` contract by tolerating synchronous stops, and the Phase 31 UAT/verification artifacts now preserve the original failed reports while recording that `31-03` and `31-04` closed the underlying runtime defects.
+- **Phase 31 rerun closure:** The live worktree `cli:dev` seam is now re-pinned to the same verified root-script and launcher contract the phase originally shipped, including the `pnpm exec tsx watch` wrapper, the full include graph, and the narrow `--` sentinel normalization in `dev-watch.ts`, so rerun attempt 3 can exercise the real restored seam instead of dirty local drift.
 - **Phase 30 execution:** The shared helper surface now ships as public `Bars` and `LabelValueList` TSX components from the package root, with runtime-enforced count bounds and `LabelValueList` auto-layout still kept presentation-only.
 - **Phase 30 execution:** The bundled `system-status` addon now loads through the real shipped registry with `system-status-bars` and `system-status-label-values`, backed by one canonical metric catalog, a bounded numbro-backed display mapper, explicit unavailable slots, and button-local tap/hold handling that does not widen runtime semantics.
 - **Phase 30 execution:** The bundled `media-player` addon now loads through the real shipped registry on top of a shared media-controller seam, uses a real Linux `playerctl` adapter, keeps macOS and Windows explicitly unsupported until verified, reuses `Bars` and shared `Text` marquee, and keeps tap fixed to play/pause with optional hold behavior implemented locally inside the button seam.
@@ -94,7 +95,7 @@ Recent decisions affecting current work:
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 - Run `/review` on the completed Phase 5 closure pass, then continue with `/ship` and `/compound` once review is clean.
 - Run `verify-work 30` for the committed manual UAT pass, then continue with `/review`, `/ship`, and `/compound`.
-- Run `verify-work 31` again for a fresh manual UAT pass now that `31-03` and `31-04` have closed the diagnosed runtime defects.
+- Run `verify-work 31` again for a fresh manual UAT pass now that `31-03`, `31-04`, and `31-05` have closed the diagnosed runtime defects and live seam drift.
 
 ### Roadmap Evolution
 
@@ -130,6 +131,8 @@ Recent decisions affecting current work:
 - **Phase 31 gap closure:** Completed Plan `31-03` by removing theme runtime temp snapshot churn from the watched startup seam, proving repeated built-in theme loads no longer create new `.sireno-theme-runtime-*` temp entries, and pinning the exact watched emulator path so it starts once without self-triggering restart-loop logs.
 
 - **Phase 31 gap closure:** Completed Plan `31-04` by hardening the bare `startDaemon()` cleanup path against synchronous `sessionMonitor.stop()` behavior and updating the preserved UAT/verification history so rerun work now points directly at the two gap-closure plans that fixed the runtime seam.
+
+- **Phase 31 rerun closure:** Completed Plan `31-05` by restoring the live root `cli:dev` script and `dev-watch` launcher back to the verified contract, preserving only the required `pnpm` `--` sentinel normalization, and pointing the remaining bare-path rerun gap at the live-seam restoration rather than the already-closed runtime defects.
 
 - **Phase 30 discussion:** Locked the new helper surface to public component-first `Bars` and `LabelValueList` components, bounded system-status around canonical metric adapters plus helper-template buttons with honest unavailable states, and bounded media-player around truthful status, best-effort metadata, shared marquee overflow, fixed tap play/pause, and optional hold behavior.
 

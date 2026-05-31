@@ -86,7 +86,7 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] 30-02: Ship the template-driven system-status addon
 - [x] 30-03: Ship the cross-platform media-player button
 
-### Phase 31: CLI Dev Watch Mode Argument Forwarding ✓ Complete (2026-05-31)
+### Phase 31: CLI Dev Watch Mode Argument Forwarding ✓ Complete (2026-06-01)
 **Goal:** Make `pnpm cli:dev ...` start the real CLI watch mode and honor forwarded command arguments such as `emulate --port 8912`.
 **Status:** [x] Complete
 **Depends on:** Phase 30
@@ -96,6 +96,7 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] 31-02: Re-sync regression and README truth
 - [x] 31-03: Close the shared cli:dev watch-loop blocker
 - [x] 31-04: Harden bare-start cleanup and re-sync verification truth
+- [x] 31-05: Restore the live cli:dev seam
 
 ## Coverage Check
 
