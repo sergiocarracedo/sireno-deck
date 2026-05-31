@@ -477,6 +477,32 @@ describe("loadRuntimeConfig", () => {
     expect(result.timedOut).toBe(true)
   }, 10_000)
 
+  it("keeps the watched cli:dev emulator seam on one stable process instead of temp theme-runtime reruns", async () => {
+    const result = await execa("pnpm", [
+      "exec",
+      "tsx",
+      "watch",
+      "packages/cli/src/cli/dev-watch.ts",
+      "emulate",
+      "--port",
+      "0",
+    ], {
+      all: true,
+      cwd: workspaceRoot,
+      reject: false,
+      timeout: 5_000,
+    })
+
+    const output = result.all ?? ""
+
+    expect(output).toContain("browser deck emulator started")
+    expect(output).not.toContain(".sireno-theme-runtime-")
+    expect(output).not.toContain("Restarting...")
+    expect(output).not.toContain("Rerunning...")
+    expect(output).not.toContain("Previous process hasn't exited yet. Force killing...")
+    expect(result.timedOut).toBe(true)
+  }, 10_000)
+
   it("documents the workspace-root cli:dev script as the full-process raw-source restart seam", async () => {
     const { readFileSync } = await import("node:fs")
     const { resolveDevWatchArgs } = await import("../dev-watch.js")

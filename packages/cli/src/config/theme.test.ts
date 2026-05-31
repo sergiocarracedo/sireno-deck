@@ -16,7 +16,7 @@ const phase25FixtureRoot = resolve(
 )
 
 function listThemeRuntimeSnapshots(): string[] {
-  return readdirSync(packageRoot).filter((entry) =>
+  return readdirSync(tmpdir()).filter((entry) =>
     entry.startsWith('.sireno-theme-runtime-'),
   )
 }
@@ -298,6 +298,16 @@ describe('resolveTheme', () => {
       'data-frame-source': 'phase-25-custom',
       'data-frame-state': 'hold',
     })
+  })
+
+  it('reuses a stable cache path instead of temp snapshot churn', async () => {
+    const { resolveTheme } = await loadThemeModule()
+    const snapshotsBefore = listThemeRuntimeSnapshots()
+
+    await resolveTheme('dark')
+    await resolveTheme('dark')
+
+    expect(listThemeRuntimeSnapshots()).toEqual(snapshotsBefore)
   })
 
   it('fails clearly when a theme runtime import escapes the theme package root', async () => {

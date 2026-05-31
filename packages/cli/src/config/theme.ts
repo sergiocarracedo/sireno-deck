@@ -1,14 +1,5 @@
-import {
-  cpSync,
-  existsSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  statSync,
-  symlinkSync,
-  writeFileSync,
-} from 'node:fs'
-import { tmpdir } from 'node:os'
+import { existsSync, readFileSync, statSync } from 'node:fs'
+import { createHash } from 'node:crypto'
 import {
   basename,
   dirname,
@@ -131,6 +122,7 @@ interface ImportedThemeRuntime {
 }
 
 const MODULE_DIRECTORY = dirname(fileURLToPath(import.meta.url))
+const PACKAGE_TSCONFIG_PATH = resolve(MODULE_DIRECTORY, '../../tsconfig.json')
 const MANIFEST_FILENAME = 'manifest.yml'
 const TRANSPILED_THEME_RUNTIME_EXTENSIONS = new Set(['.jsx', '.ts', '.tsx'])
 const BUILTIN_THEME_ALIASES = {
@@ -169,24 +161,17 @@ function findPackageRoot(startDirectory: string): string {
   }
 }
 
-function getRuntimeSnapshotParent(): string {
-  return tmpdir()
-}
+function getThemeRuntimeCacheKey(runtimeFilePaths: readonly string[]): string {
+  const hash = createHash('sha1')
 
-function ensureSnapshotPackageContext(
-  snapshotParent: string,
-  packageRoot: string,
-): void {
-  writeFileSync(join(snapshotParent, 'package.json'), '{"type":"module"}\n')
-
-  const packageNodeModulesPath = join(packageRoot, 'node_modules')
-  if (existsSync(packageNodeModulesPath)) {
-    symlinkSync(
-      packageNodeModulesPath,
-      join(snapshotParent, 'node_modules'),
-      'dir',
-    )
+  for (const filePath of [...runtimeFilePaths].sort()) {
+    const fileStats = statSync(filePath)
+    hash.update(filePath)
+    hash.update(String(fileStats.mtimeMs))
+    hash.update(String(fileStats.size))
   }
+
+  return hash.digest('hex').slice(0, 12)
 }
 
 function getThemeLineNumber(
@@ -397,6 +382,7 @@ async function importThemeRuntime(
   manifest: ThemeManifest,
   manifestPath: string,
   rootDir: string,
+  runtimeFilePaths: readonly string[],
 ): Promise<ImportedThemeRuntime> {
   const entryPath = resolve(rootDir, manifest.main)
   if (!existsSync(entryPath)) {
@@ -409,57 +395,16 @@ async function importThemeRuntime(
     )
   }
 
-  const packageRoot = findPackageRoot(rootDir)
-  const snapshotParent = mkdtempSync(
-    join(
-      getRuntimeSnapshotParent(),
-      `.sireno-theme-runtime-${basename(rootDir)}-`,
-    ),
-  )
-  const snapshotRoot = join(snapshotParent, basename(rootDir))
-  const siblingUtilsRoot = resolve(rootDir, '..', 'utils')
-  const snapshotUtilsRoot = join(snapshotParent, 'utils')
+  const runtimeCacheKey = getThemeRuntimeCacheKey(runtimeFilePaths)
 
   try {
-    ensureSnapshotPackageContext(snapshotParent, packageRoot)
-    cpSync(rootDir, snapshotRoot, { recursive: true })
-    if (existsSync(siblingUtilsRoot)) {
-      cpSync(siblingUtilsRoot, snapshotUtilsRoot, { recursive: true })
-    }
-
-    const snapshotTsconfigPath = join(snapshotParent, 'tsconfig.json')
-    writeFileSync(
-      snapshotTsconfigPath,
-      JSON.stringify(
-        {
-          compilerOptions: {
-            target: 'ES2022',
-            types: ['node'],
-            jsx: 'react-jsx',
-            module: 'ESNext',
-            moduleResolution: 'bundler',
-            strict: true,
-            esModuleInterop: true,
-            skipLibCheck: true,
-          },
-          include: ['./**/*'],
-        },
-        undefined,
-        2,
-      ),
-    )
-
-    const importedEntryPath = resolve(
-      snapshotRoot,
-      relative(rootDir, entryPath),
-    )
-    const importedEntryUrl = pathToFileURL(importedEntryPath).href
+    const importedEntryUrl = `${pathToFileURL(entryPath).href}?sireno-theme-runtime=${runtimeCacheKey}`
     const importedModule = TRANSPILED_THEME_RUNTIME_EXTENSIONS.has(
-      extname(importedEntryPath),
+      extname(entryPath),
     )
       ? await tsImport(importedEntryUrl, {
           parentURL: importedEntryUrl,
-          tsconfig: snapshotTsconfigPath,
+          tsconfig: PACKAGE_TSCONFIG_PATH,
         })
       : await import(importedEntryUrl)
     const candidateFrame =
@@ -499,8 +444,6 @@ async function importThemeRuntime(
       `Check the runtime entry at '${manifest.main}'.`,
       ['theme', 'main'],
     )
-  } finally {
-    rmSync(snapshotParent, { force: true, recursive: true })
   }
 }
 
@@ -755,6 +698,7 @@ export async function resolveTheme(
     manifest,
     target.manifestPath,
     target.rootDir,
+    runtimeFilePaths,
   )
   const stylesheetResult = loadThemeStylesheets(
     manifest,
