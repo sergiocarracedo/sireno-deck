@@ -1,0 +1,45 @@
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-VERIFICATION.md
+  s_70eeb05163558f::t_95aa9455ff1e7f 4,23,27,37,43,48,55,59,61
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-05-SUMMARY.md
+  s_70eeb05163558f::t_95aa9455ff1e7f 1-10,12-23
+  s_70eeb05163558f::t_702c2a296422fb 11
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-05-PLAN.md
+  s_70eeb05163558f::t_94c0976d0f1e61 1-70
+.planning/ROADMAP.md
+  s_70eeb05163558f::t_95aa9455ff1e7f 89,99
+.planning/REQUIREMENTS.md
+  s_70eeb05163558f::t_95aa9455ff1e7f 47
+AGENTS.md
+  s_70eeb05163558f::t_95aa9455ff1e7f 170
+.planning/STATE.md
+  s_70eeb05163558f::t_95aa9455ff1e7f 8,13,15,22,88,98,135
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-UAT.md
+  s_70eeb05163558f::t_d229f44eeaa22b 32-43,98-99,110,119
+  s_70eeb05163558f::t_94c0976d0f1e61 100
+  s_70eeb05163558f::t_95aa9455ff1e7f 8,30,75,81,101
+  s_70eeb05163558f::t_953bc6c3ab13b1 67,87,94-97
+  s_70eeb05163558f::t_9c0111ee54c271 11-19
+  s_70eeb05163558f::t_9b6e5d2ac50fdc 26-27
+  s_70eeb05163558f::t_ddd67a6fc2e448 61,66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "83ac7e416321822d32a54eb97aa8869bed83151c",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_70eeb05163558f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_18597e378ffevCYrDZtni4nuEZ",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
