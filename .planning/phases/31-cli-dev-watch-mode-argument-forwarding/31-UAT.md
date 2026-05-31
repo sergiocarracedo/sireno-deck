@@ -5,7 +5,7 @@ source:
   - .planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-01-SUMMARY.md
   - .planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-02-SUMMARY.md
 started: 2026-05-31T10:11:05+02:00
-updated: 2026-05-31T10:26:07+02:00
+updated: 2026-05-31T22:29:00+02:00
 ---
 
 ## Current Test
@@ -18,7 +18,7 @@ expected: |
   and defaults to `start --config config.yml`, and it also documents the forwarded example
   `pnpm run cli:dev emulate --port 8912` while keeping the distinction from the narrower
   in-process config-owned reload seam.
-awaiting: diagnosis
+awaiting: rerun after closure
 
 ## Tests
 
@@ -53,6 +53,12 @@ skipped: 0
 - Shared runtime blocker closure: `31-03-PLAN.md`
 - Downstream bare-start cleanup closure: `31-04-PLAN.md`
 
+## Closure Status
+
+- `31-03-PLAN.md` is now implemented: theme runtime imports stay on the real source path with `tsx` cache-busting, and the watched emulator seam no longer self-restarts on `.sireno-theme-runtime-*` unlink churn.
+- `31-04-PLAN.md` is now implemented: `startDaemon()` cleanup tolerates synchronous `sessionMonitor.stop()` behavior, so the bare default-start seam no longer throws `reading 'catch'` during error cleanup.
+- Manual rerun is still required because this file preserves the original failed user reports; do not rewrite those reports into synthetic passes.
+
 ## Gaps
 
 - truth: "Bare `pnpm run cli:dev` enters the watched raw-source CLI seam and behaves like the real default `start --config config.yml` path instead of doing nothing."
@@ -62,6 +68,7 @@ skipped: 0
   root_cause: "`cli:dev` does enter the repaired launcher, but the watched process immediately loads the theme runtime through `resolveTheme()`, which snapshots the theme into a temp directory under `/tmp` and then deletes that snapshot in `importThemeRuntime(...)`. `tsx watch` treats those imported temp files as watched dependencies, sees the cleanup `unlink` events, and reruns in a tight loop while clearing the terminal, so the user perceives an idle no-op instead of a stable default `start --config config.yml` run. The bare path also throws a separate cleanup bug in `startDaemon()` because it chains `.catch(...)` on `sessionMonitor?.stop()` even when `stop()` returns `undefined`, but that is downstream noise after the restart-loop trigger, not the primary watch-mode cause."
   affected_files: ["packages/cli/src/config/theme.ts", "packages/cli/src/cli/commands/start.ts", "packages/cli/src/cli/dev-watch.ts", "package.json"]
   rerun_plan: "31-03-PLAN.md first, then 31-04-PLAN.md for the downstream bare-start cleanup seam."
+  closure: "Shared watch-loop blocker closed by 31-03; downstream bare cleanup defect closed by 31-04. Manual UAT rerun still pending."
   test: 1
 - truth: "Forwarded args such as `pnpm run cli:dev emulate --port 8912` reach the real emulator CLI path instead of being swallowed or doing nothing."
   status: failed
@@ -70,6 +77,7 @@ skipped: 0
   root_cause: "The forwarded args are reaching the real emulator path correctly outside watch mode, but `startEmulatorSession()` shares the same `loadRuntimeConfig() -> resolveTheme() -> importThemeRuntime()` seam as the bare path. Under `tsx watch`, the temp theme-runtime snapshot is imported and then removed, generating watched `unlink` events under `/tmp/.sireno-theme-runtime-*` that force immediate restarts before the emulator can settle or show stable logs. The observed no-op is therefore the same watch-loop bug, not broken argv forwarding in the launcher."
   affected_files: ["packages/cli/src/config/theme.ts", "packages/cli/src/cli/commands/start.ts", "packages/cli/src/cli/dev-watch.ts", "package.json"]
   rerun_plan: "31-03-PLAN.md"
+  closure: "Closed by 31-03. Manual UAT rerun still pending."
   test: 2
 - truth: "README `## Development Refresh` matches the repaired bare-plus-forwarded `cli:dev` contract the user can actually observe in practice."
   status: failed
@@ -78,4 +86,5 @@ skipped: 0
   root_cause: "The README and shipped regression both describe the repaired launcher contract truthfully, but the runtime behavior no longer matches those docs because the watch loop is destabilized by temp theme-runtime snapshot cleanup. The docs gap is therefore not stale wording; it is that the live `tsx watch` seam is still being invalidated by files the theme loader generates and deletes during startup, so the documented behavior cannot be observed in practice until that runtime seam is fixed."
   affected_files: ["README.md", "packages/cli/src/config/theme.ts", "packages/cli/src/cli/dev-watch.ts", "package.json"]
   rerun_plan: "31-03-PLAN.md closes the shared watch-loop blocker; 31-04-PLAN.md re-syncs final UAT/verification truth after the bare cleanup fix."
+  closure: "README remained truthful; 31-03 and 31-04 closed the runtime defects that had prevented users from observing that truth in practice. Manual UAT rerun still pending."
   test: 3

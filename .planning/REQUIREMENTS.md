@@ -44,7 +44,7 @@ Phase 5 (`Hot Refresh and Button Error Helper`) was planned and executed after t
 
 Phase 30 (`Content Helpers, System Status, and Media Player Addons`) is also a post-milestone follow-on after the v1.3 `TRF-*` requirements were already complete. It does not introduce additional `TRF-*` ids here; its verification traces to the Phase 30 roadmap goal, `30-CONTEXT.md`, and the `30-01` through `30-03` plan `must_haves` recorded under `.planning/phases/30-content-helpers-system-status-and-media/`, including the focused verification artifact in `30-VERIFICATION.md`.
 
-Phase 31 (`CLI Dev Watch Mode Argument Forwarding`) is also a post-milestone follow-on after the v1.3 `TRF-*` requirements were already complete. It does not introduce additional `TRF-*` ids here; its verification traces to the Phase 31 roadmap goal, `31-CONTEXT.md`, and the `31-01` through `31-02` plan `must_haves` recorded under `.planning/phases/31-cli-dev-watch-mode-argument-forwarding/`, including the focused verification artifact in `31-VERIFICATION.md`.
+Phase 31 (`CLI Dev Watch Mode Argument Forwarding`) is also a post-milestone follow-on after the v1.3 `TRF-*` requirements were already complete. It does not introduce additional `TRF-*` ids here; its verification traces to the Phase 31 roadmap goal, `31-CONTEXT.md`, and the `31-01` through `31-04` plan `must_haves` recorded under `.planning/phases/31-cli-dev-watch-mode-argument-forwarding/`, including the focused verification artifact in `31-VERIFICATION.md` and the preserved rerun evidence in `31-UAT.md`.
 
 ## v2 Candidates
 
