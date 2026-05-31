@@ -963,7 +963,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     stopWatchingConfig()
     runtime?.stop()
     await browserRenderer?.close().catch(() => {})
-    await sessionMonitor?.stop().catch(() => {})
+    await Promise.resolve(sessionMonitor?.stop()).catch(() => {})
     await lifecycle?.close().catch(() => {})
 
     if (error instanceof AddonManifestError && error.code === "api_version_mismatch") {

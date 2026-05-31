@@ -827,6 +827,72 @@ describe("startDaemon", () => {
     expect(sessionMonitor.stop).toHaveBeenCalledTimes(1)
   })
 
+  it("cleans up honestly with synchronous session monitor stop", async () => {
+    const connection = {
+      device: { clearPanel: vi.fn(async () => {}) },
+      info: { keyCount: 15, model: "XL", serialNumber: "abc" },
+    }
+    const lifecycle = {
+      close: vi.fn(async () => {}),
+      getConnection: vi.fn(() => connection),
+      start: vi.fn(async () => connection),
+      subscribeKeyEvents: vi.fn(() => () => {}),
+    }
+    const sessionMonitor = {
+      getSnapshot: vi.fn(() => ({ capability: "supported", state: "unknown" })),
+      stop: vi.fn(() => {}),
+      subscribe: vi.fn(() => () => {}),
+    }
+    createStartupPlaceholderBuffers.mockResolvedValue(
+      new Map([[0, Buffer.from("placeholder")]]),
+    )
+    createStreamDeckLifecycle.mockReturnValue(lifecycle)
+    createSessionMonitor.mockResolvedValue(sessionMonitor)
+    resolveHostContext.mockResolvedValue({ os: { type: "linux", variant: "ubuntu", version: "24.04" }, session: { capability: "supported", state: "unknown" } })
+    loadBootstrapConfig.mockReturnValue({
+      config: { addons: [] },
+      cwd: "/tmp/project",
+      filePath: "/tmp/project/config.yml",
+    })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    loadConfigWithSources.mockReturnValue({
+      config: {
+        decks: { main: { buttons: [], id: "main" } },
+        main_deck: "main",
+        theme: "dark",
+      },
+      filePath: "/tmp/project/config.yml",
+      filePaths: ["/tmp/project/config.yml"],
+    })
+    resolveTheme.mockResolvedValue({
+      accent: "#f59e0b",
+      background: "#10161f",
+      buttonFrame: vi.fn(),
+      danger: "#fb7185",
+      filePaths: ["/tmp/project/themes/default/index.ts"],
+      foreground: "#eef2f7",
+      name: "dark",
+      primary: "#7dd3fc",
+      rootDir: "/tmp/project/themes/default",
+      stylesheets: [],
+      success: "#34d399",
+    })
+    createBrowserRenderer.mockReturnValue({
+      close: vi.fn(async () => {}),
+      start: vi.fn(async () => {
+        throw new Error("missing chromium")
+      }),
+    })
+
+    const { startDaemon } = await import("./start.js")
+    const logger = { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as const
+
+    await expect(startDaemon({ logger: logger as never })).rejects.toThrow(
+      "missing chromium",
+    )
+    expect(sessionMonitor.stop).toHaveBeenCalledTimes(1)
+  })
+
   it("writes placeholder buffers before the first real render and clears the pending state after handoff", async () => {
     const stopAfterFirstRender = new Error("stop after first render")
     const connection = {
