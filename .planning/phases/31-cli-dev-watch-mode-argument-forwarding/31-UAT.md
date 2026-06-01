@@ -5,19 +5,18 @@ source:
   - .planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-01-SUMMARY.md
   - .planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-02-SUMMARY.md
 started: 2026-05-31T10:11:05+02:00
-updated: 2026-06-01T10:48:06+02:00
+updated: 2026-06-01T11:48:43+02:00
 ---
 
 ## Rerun Session
 
-attempt: 3
+attempt: 4
 reason: |
-  Re-running manual UAT after `31-03-PLAN.md` closed the shared watch-loop blocker
-  and `31-04-PLAN.md` closed the downstream bare `startDaemon()` cleanup defect.
-  `31-05-PLAN.md` then restored the live root script and launcher seam back to the
-  verified Phase 31 contract after rerun-specific worktree drift. Preserve the
-  original failed reports below; this rerun checks whether the fully restored runtime
-  seam now matches the documented contract in practice.
+  Starting a fresh manual rerun after local diagnosis confirmed the current code no
+  longer reproduces the preserved shell/runtime blockers from rerun attempt 3.
+  `31-03-PLAN.md`, `31-04-PLAN.md`, `31-05-PLAN.md`, and `31-06-PLAN.md` are all
+  implemented; this attempt tests the current live seam directly while preserving the
+  earlier failed reports below as historical evidence.
 
 ## Current Test
 number: 3
@@ -25,23 +24,19 @@ name: README Matches The Repaired Bare And Forwarded Watch Contract
 expected: |
   Open `README.md` and inspect `## Development Refresh`.
 
-  Expected on this rerun: it explicitly says bare `pnpm run cli:dev` uses the full-process restart
-  seam and defaults to `start --config config.yml`, and it also documents the forwarded example
-  `pnpm run cli:dev emulate --port 8912` while keeping the distinction from the narrower
-  in-process config-owned reload seam.
-awaiting: fresh manual rerun
+  Expected on this fresh rerun: it explicitly documents bare `pnpm run cli:dev` as the full-process
+  restart seam with default `start --config config.yml`, and also documents
+  `pnpm run cli:dev emulate --port 8912` as the forwarded emulator path while preserving the
+  distinction from the narrower in-process config-owned reload seam.
+awaiting: complete
 
 ## Rerun Results
 
 ### 1. Bare cli:dev Now Reaches A Stable Default Start Boundary
-result: issue
-reported: "nothing, still the same as before"
-severity: major
+result: pass
 
 ### 2. Forwarded Emulator Args Now Reach A Stable Emulator Path
-result: issue
-reported: "zsh: no matches found: ./themes/**/*"
-severity: major
+result: pass
 
 ### 3. README Matches The Repaired Bare And Forwarded Watch Contract
 result: pass
@@ -67,8 +62,8 @@ result: pass
 ## Summary
 
 total: 3
-passed: 2
-issues: 2
+passed: 3
+issues: 0
 pending: 0
 skipped: 0
 
