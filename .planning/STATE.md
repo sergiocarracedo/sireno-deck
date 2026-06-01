@@ -87,6 +87,9 @@ Recent decisions affecting current work:
 - **Phase 31 gap closure:** `startDaemon()` cleanup now honors the real `SessionMonitor.stop(): Promise<void> | void` contract by tolerating synchronous stops, and the Phase 31 UAT/verification artifacts now preserve the original failed reports while recording that `31-03` and `31-04` closed the underlying runtime defects.
 - **Phase 31 rerun closure:** The live worktree `cli:dev` seam is now re-pinned to the same verified root-script and launcher contract the phase originally shipped, including the `pnpm exec tsx watch` wrapper, the full include graph, and the narrow `--` sentinel normalization in `dev-watch.ts`, so rerun attempt 3 can exercise the real restored seam instead of dirty local drift.
 - **Phase 31 shell closure:** The workspace-root `cli:dev` script now quotes its `tsx watch --include` globs so zsh no longer aborts on missing repo-root patterns before the launcher/runtime seam starts, and the shipped root-script regression plus preserved UAT history now pin that shell-safe contract explicitly.
+- **Phase 32 discussion:** Core runtime should stay capability-agnostic (scheduling/store/methods/render transport only), while system/media capability types, polling/data callbacks, mappers, and OS adapters move into addon-owned modules.
+- **Phase 32 discussion:** Polling contract should support split data vs render intervals with addon-owned schema validation/defaults, and callback-returned typed payloads should be passed into render props by core.
+- **Phase 32 discussion:** Migration strategy is a big-bang ownership move with strong regression proof gates rather than long-lived compatibility facades.
 - **Phase 30 execution:** The shared helper surface now ships as public `Bars` and `LabelValueList` TSX components from the package root, with runtime-enforced count bounds and `LabelValueList` auto-layout still kept presentation-only.
 - **Phase 30 execution:** The bundled `system-status` addon now loads through the real shipped registry with `system-status-bars` and `system-status-label-values`, backed by one canonical metric catalog, a bounded numbro-backed display mapper, explicit unavailable slots, and button-local tap/hold handling that does not widen runtime semantics.
 - **Phase 30 execution:** The bundled `media-player` addon now loads through the real shipped registry on top of a shared media-controller seam, uses a real Linux `playerctl` adapter, keeps macOS and Windows explicitly unsupported until verified, reuses `Bars` and shared `Text` marquee, and keeps tap fixed to play/pause with optional hold behavior implemented locally inside the button seam.
@@ -97,6 +100,7 @@ Recent decisions affecting current work:
 - Run `/review` on the completed Phase 5 closure pass, then continue with `/ship` and `/compound` once review is clean.
 - Run `verify-work 30` for the committed manual UAT pass, then continue with `/review`, `/ship`, and `/compound`.
 - Run `verify-work 31` again for a fresh manual UAT pass now that `31-03`, `31-04`, `31-05`, and `31-06` have closed the diagnosed runtime defects, live seam drift, and shell-level root-script abort.
+- Run `plan-phase 32` now that addon-owned polling contract decisions are captured.
 
 ### Roadmap Evolution
 
@@ -137,6 +141,8 @@ Recent decisions affecting current work:
 - **Phase 31 rerun closure:** Completed Plan `31-05` by restoring the live root `cli:dev` script and `dev-watch` launcher back to the verified contract, preserving only the required `pnpm` `--` sentinel normalization, and pointing the remaining bare-path rerun gap at the live-seam restoration rather than the already-closed runtime defects.
 
 - **Phase 31 shell closure:** Completed Plan `31-06` by shell-proofing the root `cli:dev` watch command for zsh, tightening the shipped root-script regression around quoted include globs, and pointing the remaining rerun history at the shell-safe root-script closure before the final manual UAT rerun.
+
+- **Phase 32 discussion:** Locked addon-owned polling/data ownership with core as a capability-agnostic scheduler/transport seam, split data/render interval support, callback payload handoff into render props, addon-local OS adapters, and a deliberate big-bang migration strategy.
 
 - **Phase 30 discussion:** Locked the new helper surface to public component-first `Bars` and `LabelValueList` components, bounded system-status around canonical metric adapters plus helper-template buttons with honest unavailable states, and bounded media-player around truthful status, best-effort metadata, shared marquee overflow, fixed tap play/pause, and optional hold behavior.
 
