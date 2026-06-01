@@ -100,6 +100,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 32 added: move addon-specific polling/data-fetching logic out of core system modules into addon-owned callbacks so core only schedules intervals, passes command output props to render, and publishes rendered frames.
 - Phase 31 added: make `pnpm cli:dev ...` start the real CLI watch mode and honor forwarded command arguments such as `emulate --port 8912`.
 - Phase 5 added: restore hot refresh when config or React files change, and add a shared button error helper that renders a warning triangle plus a four-digit error code while logging richer deck/button-aware diagnostics.
 - Phase 30 added: add shared content helpers for bar and label-value button layouts, then ship configurable built-in system-status and media-player addons backed by platform-specific metric and media-control adapters.

@@ -99,6 +99,14 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] 31-05: Restore the live cli:dev seam
 - [x] 31-06: Shell-proof the root cli:dev script
 
+### Phase 32: Addon-Owned Data Polling Contract
+**Goal:** Move addon-specific polling/data-fetching logic out of core system modules into addon-owned callbacks so core only schedules intervals, passes command output props to render, and publishes rendered frames.
+**Status:** [ ] Not started
+**Depends on:** Phase 31
+
+### Plans
+*Not yet planned - run `plan-phase 32`*
+
 ## Coverage Check
 
 | Requirement | Phase |
@@ -121,4 +129,4 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 ---
 
 *Roadmap defined: 2026-05-28*
-*Total phases: 7*
+*Total phases: 8*
