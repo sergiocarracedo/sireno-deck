@@ -5,7 +5,7 @@ source:
   - .planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-01-SUMMARY.md
   - .planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-02-SUMMARY.md
 started: 2026-05-31T10:11:05+02:00
-updated: 2026-06-01T09:05:54+02:00
+updated: 2026-06-01T10:48:06+02:00
 ---
 
 ## Rerun Session
@@ -29,7 +29,7 @@ expected: |
   seam and defaults to `start --config config.yml`, and it also documents the forwarded example
   `pnpm run cli:dev emulate --port 8912` while keeping the distinction from the narrower
   in-process config-owned reload seam.
-awaiting: rerun after shell-safe root script closure
+awaiting: fresh manual rerun
 
 ## Rerun Results
 
@@ -67,7 +67,7 @@ result: pass
 ## Summary
 
 total: 3
-passed: 1
+passed: 2
 issues: 2
 pending: 0
 skipped: 0
@@ -83,7 +83,7 @@ skipped: 0
 
 - `31-03-PLAN.md` is now implemented: theme runtime imports stay on the real source path with `tsx` cache-busting, and the watched emulator seam no longer self-restarts on `.sireno-theme-runtime-*` unlink churn.
 - `31-04-PLAN.md` is now implemented: `startDaemon()` cleanup tolerates synchronous `sessionMonitor.stop()` behavior, so the bare default-start seam no longer throws `reading 'catch'` during error cleanup.
-- Rerun attempt 3 confirmed the remaining live failure was earlier than the launcher/runtime seam: both bare and forwarded commands failed at the shell because zsh expanded missing repo-root glob arguments in `package.json#scripts.cli:dev` before `tsx watch` started. `31-06-PLAN.md` now shell-proofs that root script seam; another manual rerun is still required.
+- Rerun attempt 3 preserved the last failed manual reports, but the current code no longer reproduces those shell/runtime blockers locally: bare `pnpm run cli:dev` now reaches daemon startup logs, forwarded `pnpm run cli:dev emulate --port 8912` reaches emulator startup, and `pnpm run cli:dev --help` no longer aborts in zsh. The remaining work is a fresh manual rerun against the current seam, not another code-fix slice.
 
 ## Gaps
 
@@ -127,17 +127,17 @@ skipped: 0
   status: failed
   reason: "User reported: zsh: no matches found: ./themes/**/*"
   severity: major
-  root_cause: "The restored Phase 31 root script now uses raw zsh glob arguments (`./themes/**/*`, `./addons/**/*`, `./builtin-addons/**/*`) in `package.json#scripts.cli:dev`. On the user's current shell setup those patterns are expanded by zsh before `tsx watch` runs, and because those repo-root paths do not exist in this worktree, zsh aborts with `no matches found` before the CLI or watch seam can even start. The remaining bare-path rerun failure is therefore now a shell-quoting/script-contract bug in the live root script, not the already-closed runtime defects from 31-03/31-04 or the earlier worktree-drift issue closed by 31-05."
-  affected_files: ["package.json"]
-  rerun_plan: "31-06-PLAN.md"
-  closure: "31-06 shell-proofs the root `cli:dev` watch command so zsh no longer aborts on unmatched repo-root include globs before `tsx watch` starts. Manual UAT rerun is still required after that shell-safe script fix."
+  root_cause: "This preserved rerun-attempt-3 report is stale relative to the current code. `31-06` has already shell-proofed `package.json#scripts.cli:dev`, and fresh local reproduction now shows `pnpm run cli:dev --help` reaches the CLI help instead of failing in zsh while `timeout 8s pnpm run cli:dev` reaches daemon startup logs. The remaining gap is therefore not a newly open code defect; it is preserved manual evidence that now needs a fresh rerun against the current seam."
+  affected_files: ["package.json", ".planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-UAT.md"]
+  rerun_plan: "No new code plan - rerun manual UAT against the current Phase 31 seam."
+  closure: "31-06 is implemented and local reproduction now reaches the bare startup seam. Fresh manual UAT rerun is still required."
   test: 1
 - truth: "Forwarded `pnpm run cli:dev emulate --port 8912` reaches the restored live emulator watch seam instead of failing at the shell before the CLI starts."
   status: failed
   reason: "User reported: zsh: no matches found: ./themes/**/*"
   severity: major
-  root_cause: "The forwarded emulator path is now blocked by the same shell-level script bug as the bare path. Before any launcher or CLI logic runs, zsh expands the unquoted `./themes/**/*`, `./addons/**/*`, and `./builtin-addons/**/*` arguments embedded in `package.json#scripts.cli:dev`, and because those repo-root paths do not exist, the shell aborts with `no matches found`. This means the rerun failure is no longer about forwarded argument handling or the already-closed runtime defects from 31-03/31-04; it is one shared shell-quoting bug in the live root script."
-  affected_files: ["package.json"]
-  rerun_plan: "31-06-PLAN.md"
-  closure: "31-06 shell-proofs the same root script seam for forwarded runs too, so `pnpm run cli:dev emulate --port 8912` can reach the already-fixed launcher/runtime path. Manual UAT rerun is still required after that shell-safe script fix."
+  root_cause: "This preserved rerun-attempt-3 shell failure also no longer reproduces on the current code. After `31-06`, the quoted root script reaches the real forwarded seam locally: `timeout 8s pnpm run cli:dev emulate --port 8912` now prints the emulator startup logs instead of failing in zsh. So the remaining forwarded-path gap is stale pre-closure evidence, not a new launcher/runtime regression."
+  affected_files: ["package.json", ".planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-UAT.md"]
+  rerun_plan: "No new code plan - rerun manual UAT against the current Phase 31 seam."
+  closure: "31-06 is implemented and local reproduction now reaches the forwarded emulator seam. Fresh manual UAT rerun is still required."
   test: 2
