@@ -97,6 +97,7 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] 31-03: Close the shared cli:dev watch-loop blocker
 - [x] 31-04: Harden bare-start cleanup and re-sync verification truth
 - [x] 31-05: Restore the live cli:dev seam
+- [x] 31-06: Shell-proof the root cli:dev script
 
 ## Coverage Check
 
