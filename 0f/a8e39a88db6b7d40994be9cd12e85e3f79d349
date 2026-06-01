@@ -1,0 +1,41 @@
+.planning/ROADMAP.md
+  s_70eeb05163558f::t_8e887486a264cc 100
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-UAT.md
+  s_70eeb05163558f::t_9f1cf48067a688 8,80,86,133,142
+  s_70eeb05163558f::t_391693385b4a42 42-44,70-71,132,141
+  s_70eeb05163558f::t_0eab4111638693 126-131,134
+  s_70eeb05163558f::t_0273f2d3cf327b 13,17-20
+  s_70eeb05163558f::t_8e887486a264cc 32
+  s_70eeb05163558f::t_61f34c97f5723c 135-140,143
+.planning/STATE.md
+  s_70eeb05163558f::t_8e887486a264cc 8,15,22,89,99,138
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-VERIFICATION.md
+  s_70eeb05163558f::t_8e887486a264cc 24,28,39,51,53,59,63,65
+.planning/REQUIREMENTS.md
+  s_70eeb05163558f::t_8e887486a264cc 47
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-06-SUMMARY.md
+  s_70eeb05163558f::t_8e887486a264cc 1-22
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-06-PLAN.md
+  s_70eeb05163558f::t_ff0a2fd253e8d7 1-67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "0fa8e39a88db6b7d40994be9cd12e85e3f79d349",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_70eeb05163558f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_18597e378ffevCYrDZtni4nuEZ",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
