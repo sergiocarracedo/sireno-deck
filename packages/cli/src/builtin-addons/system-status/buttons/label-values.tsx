@@ -14,6 +14,8 @@ import {
   type SystemStatusLabelValuesButtonConfig,
 } from '../schemas.js'
 
+const GENERIC_ICON_NAMES = new Set(['clock', 'sparkles', 'warning'])
+
 type SystemStatusButtonStoreState = {
   metrics?: readonly CanonicalSystemMetricSnapshot[]
 }
@@ -47,9 +49,9 @@ function renderMetricIcon(icon?: string) {
     return undefined
   }
 
-  return icon.includes('://') || icon.startsWith('.') || icon.startsWith('/')
-    ? <Icon size={16} src={icon} />
-    : <Icon icon={icon} size={16} />
+  return GENERIC_ICON_NAMES.has(icon)
+    ? <Icon icon={icon as 'clock' | 'sparkles' | 'warning'} size={16} />
+    : <Icon size={16} src={icon} />
 }
 
 const builtinSystemStatusLabelValuesButton = defineMountedButton({

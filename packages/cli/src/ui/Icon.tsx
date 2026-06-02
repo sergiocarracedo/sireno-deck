@@ -1,11 +1,24 @@
 import type { CSSProperties, ReactElement } from 'react'
 
-import * as lucideIcons from 'lucide-react'
-import { Github, type LucideIcon } from 'lucide-react'
+import {
+  CircleAlert,
+  Clock3,
+  Github,
+  Play,
+  Sparkles,
+  type LucideIcon,
+} from 'lucide-react'
 
 import { resolveDomAssetSrc } from '../addon/api.js'
 import { cn } from '../themes/utils/cn.js'
 import { useThemeUiPresentation } from './theme-presentation.js'
+
+const GENERIC_ICON_REGISTRY = {
+  clock: Clock3,
+  play: Play,
+  sparkles: Sparkles,
+  warning: CircleAlert,
+} as const satisfies Record<string, LucideIcon>
 
 const BRAND_ICON_REGISTRY = {
   github: Github,
@@ -19,8 +32,8 @@ const TONE_CLASS = {
   success: 'text-success',
 } as const
 
+export type GenericIconName = keyof typeof GENERIC_ICON_REGISTRY
 export type BrandIconName = keyof typeof BRAND_ICON_REGISTRY
-export type GenericIconName = string
 export type IconTone = keyof typeof TONE_CLASS
 
 interface IconCommonProps {
@@ -64,34 +77,6 @@ function renderLucide(
       style={props.style}
     />
   )
-}
-
-const LUCIDE_ICON_EXPORTS = Object.fromEntries(
-  Object.entries(lucideIcons).filter((entry): entry is [string, LucideIcon] => {
-    const [exportName, value] = entry
-    return typeof value === 'object' && exportName[0] === exportName[0]?.toUpperCase()
-  }),
-) satisfies Record<string, LucideIcon>
-
-function toLucideExportName(name: string): string {
-  return name
-    .trim()
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-    .split(/[^a-zA-Z0-9]+/)
-    .filter(Boolean)
-    .map((segment) => segment[0]!.toUpperCase() + segment.slice(1).toLowerCase())
-    .join('')
-}
-
-function resolveLucideIcon(name: string): LucideIcon {
-  const exportName = toLucideExportName(name)
-  const icon = LUCIDE_ICON_EXPORTS[exportName]
-
-  if (!icon) {
-    throw new Error(`Unknown Lucide icon: ${name}`)
-  }
-
-  return icon
 }
 
 export function Icon(props: IconProps): ReactElement {
@@ -145,7 +130,7 @@ export function Icon(props: IconProps): ReactElement {
       : element
   }
 
-  const element = renderLucide(props, resolveLucideIcon(props.icon), 'generic')
+  const element = renderLucide(props, GENERIC_ICON_REGISTRY[props.icon], 'generic')
 
   return themeUi?.icon
     ? themeUi.icon({

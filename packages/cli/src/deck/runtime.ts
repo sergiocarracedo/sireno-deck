@@ -264,7 +264,7 @@ function createRuntimeButtonErrorContent(
         className: 'flex flex-col items-center justify-center w-full h-full',
         style: { gap: '3px' },
       },
-      createElement(Icon, { icon: 'triangle-alert', size: 22, tone: 'danger' }),
+      createElement(Icon, { icon: 'warning', size: 22, tone: 'danger' }),
       createElement(Text, { tone: 'danger' }, errorCode),
     ),
   )
