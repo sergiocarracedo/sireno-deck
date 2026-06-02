@@ -114,7 +114,9 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 **Depends on:** Phase 32
 
 ### Plans
-*Not yet planned - run `plan-phase 33`*
+- [ ] 33-01: Land the real Tailwind build and browser delivery seam
+- [ ] 33-02: Hard-cut shared UI and built-ins onto canonical Tailwind utilities
+- [ ] 33-03: Wire workspace theme and addon sources into the Tailwind contract
 
 ## Coverage Check
 
