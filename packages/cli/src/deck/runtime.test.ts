@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { join } from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -292,6 +293,7 @@ describe("createDeckRuntime", () => {
       const html = getRenderedButtonHtml(renderedButton)
       expect(html).toContain('data-sireno-icon-source="generic"')
       expect(html).toContain('data-sireno-ui-icon="true"')
+      expect(html).toContain('lucide lucide-circle-alert')
       expect(html).not.toContain("▲")
       expect(html).toContain("4105")
       expect(html).not.toContain("Config Error")
@@ -914,6 +916,7 @@ describe("createDeckRuntime", () => {
       const html = getRenderedButtonHtml(renderedButton)
       expect(html).toContain('data-sireno-icon-source="generic"')
       expect(html).toContain('data-sireno-ui-icon="true"')
+      expect(html).toContain('lucide lucide-circle-alert')
       expect(html).not.toContain("▲")
       expect(html).toContain("4106")
       expect(consoleError).toHaveBeenCalledWith(
@@ -929,6 +932,17 @@ describe("createDeckRuntime", () => {
         }),
       )
     })
+  })
+
+  it('backs shared generic and brand icons with lucide-react instead of handwritten svg registries', () => {
+    const source = readFileSync(
+      fileURLToPath(new URL('../ui/Icon.tsx', import.meta.url)),
+      'utf8',
+    )
+
+    expect(source).toContain("from 'lucide-react'")
+    expect(source).not.toContain('createElement("circle"')
+    expect(source).not.toContain('createElement("path"')
   })
 
   it("forwards the latest polled payload into mounted render props", async () => {

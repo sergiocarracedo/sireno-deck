@@ -622,12 +622,25 @@ describe('loadRuntimeConfig', () => {
     expect(renderedButton?.content).toBeTruthy()
     expect(renderedButtonHtml).toContain('data-sireno-ui-chip="true"')
     expect(renderedButtonHtml).toContain('data-sireno-ui-icon="true"')
+    expect(renderedButtonHtml).toContain('lucide lucide-sparkles')
     expect(renderedButtonHtml).toContain('data-sireno-ui-text="true"')
     expect(renderedButtonHtml).toContain('data-sireno-text-fit="wrap"')
     expect(renderedButtonHtml).toContain('Emoji')
 
     runtime.stop()
     await runtimeConfig.sessionMonitor.stop()
+  })
+
+  it('keeps the shared Icon seam pinned to lucide-react for named icons', async () => {
+    const moduleSource = await import('node:fs/promises').then(({ readFile }) =>
+      readFile(resolve(workspaceRoot, 'packages/cli/src/ui/Icon.tsx'), 'utf8'),
+    )
+
+    expect(moduleSource).toContain("from 'lucide-react'")
+    expect(moduleSource).toContain('play: Play')
+    expect(moduleSource).toContain('github: Github')
+    expect(moduleSource).not.toContain('createElement("circle"')
+    expect(moduleSource).not.toContain('createElement("path"')
   })
 
   it('starts the repo-root raw-source emulator path without React runtime crashes', async () => {
