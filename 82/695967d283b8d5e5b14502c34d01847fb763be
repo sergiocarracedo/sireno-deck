@@ -1,0 +1,24 @@
+.planning/quick/024-fix-dev-watch-index-import/024-SUMMARY.md
+  s_14408a12eaea31::t_6606d1114629b5 1-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "82695967d283b8d5e5b14502c34d01847fb763be",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_14408a12eaea31": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_178b344dbffea2AyCo2mQv0JQx",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
