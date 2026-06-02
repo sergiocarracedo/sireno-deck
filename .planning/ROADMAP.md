@@ -107,6 +107,15 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 ### Plans
 *Not yet planned - run `plan-phase 32`*
 
+### Phase 33: Add full tailwind support
+
+**Goal:** Enable full Tailwind support across the browser-rendered UI surface so shared components, themes, and addon-authored TSX can rely on a consistent utility-first styling contract.
+**Status:** [ ] Not started
+**Depends on:** Phase 32
+
+### Plans
+*Not yet planned - run `plan-phase 33`*
+
 ## Coverage Check
 
 | Requirement | Phase |
@@ -129,4 +138,4 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 ---
 
 *Roadmap defined: 2026-05-28*
-*Total phases: 8*
+*Total phases: 9*
