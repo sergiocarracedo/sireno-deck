@@ -1,3 +1,5 @@
+import { buildTailwindBrowserStylesheet } from './build-tailwind-browser.js'
+
 // Keep cli:dev on the external tsx watch seam while restoring the
 // default `start --config config.yml` path and passthrough args like
 // `emulate --port 8912`.
@@ -13,11 +15,40 @@ export const resolveDevWatchArgs = (args: readonly string[]) => {
     : [...DEFAULT_DEV_WATCH_ARGS]
 }
 
+export const resolveDevWatchConfigPath = (args: readonly string[]) => {
+  const normalizedArgs = normalizeForwardedArgs(args)
+  const configFlagIndex = normalizedArgs.findIndex(
+    (argument) => argument === '--config' || argument.startsWith('--config='),
+  )
+
+  if (configFlagIndex < 0) {
+    return 'config.yml'
+  }
+
+  const configFlag = normalizedArgs[configFlagIndex]
+  if (configFlag?.startsWith('--config=')) {
+    return configFlag.slice('--config='.length)
+  }
+
+  return normalizedArgs[configFlagIndex + 1] ?? 'config.yml'
+}
+
+export const prepareDevWatchRuntime = async (
+  args: readonly string[],
+  buildTailwind = buildTailwindBrowserStylesheet,
+) => {
+  const resolvedArgs = resolveDevWatchArgs(args)
+  await buildTailwind({ configPath: resolveDevWatchConfigPath(args) })
+  return resolvedArgs
+}
+
 const run = async () => {
+  const resolvedArgs = await prepareDevWatchRuntime(process.argv.slice(2))
+
   process.argv = [
     process.argv[0] ?? 'node',
     process.argv[1] ?? 'packages/cli/src/cli/index.ts',
-    ...resolveDevWatchArgs(process.argv.slice(2)),
+    ...resolvedArgs,
   ]
 
   await import('./index.js')
