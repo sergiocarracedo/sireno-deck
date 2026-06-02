@@ -128,7 +128,9 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 **Depends on:** Phase 33
 
 ### Plans
-*Not yet planned - run `plan-phase 34`*
+- [ ] 34-01: Publish the shared command-action contract and prove it on the action button
+- [ ] 34-02: Migrate system-status onto the shared command-action contract
+- [ ] 34-03: Roll the shared command contract across regular date-time buttons
 
 ## Coverage Check
 
