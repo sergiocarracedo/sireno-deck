@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 
@@ -73,6 +73,15 @@ describe('prepareDevWatchRuntime', () => {
       prepareDevWatchRuntime(['emulate', '--config', 'custom.yml'], buildTailwind),
     ).resolves.toEqual(['emulate', '--config', 'custom.yml'])
     expect(buildTailwind).toHaveBeenCalledWith({ configPath: 'custom.yml' })
+  })
+})
+
+describe('dev-watch source entry seam', () => {
+  it('imports the real source cli entrypoint instead of a missing built js sibling', () => {
+    const source = readFileSync(resolve(import.meta.dirname, './dev-watch.ts'), 'utf8')
+
+    expect(source).toContain("await import('./index.ts')")
+    expect(source).not.toContain("await import('./index.js')")
   })
 })
 

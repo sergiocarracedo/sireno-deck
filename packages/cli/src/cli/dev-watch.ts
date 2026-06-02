@@ -51,7 +51,7 @@ const run = async () => {
     ...resolvedArgs,
   ]
 
-  await import('./index.js')
+  await import('./index.ts')
 }
 
 run().catch((error: unknown) => {
