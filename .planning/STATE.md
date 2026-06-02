@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 32 addon-owned polling contract execution is complete. Core runtime now stays capability-agnostic while system-status/media-player capability domains and polling adapters are addon-owned, `verify-work 32` remains the next workflow step for the shipped seam, and Phase 33 context is now captured for follow-on planning.
+**Current focus:** Phase 32 addon-owned polling contract execution is complete. Core runtime now stays capability-agnostic while system-status/media-player capability domains and polling adapters are addon-owned, `verify-work 32` remains the next workflow step for the shipped seam, and Phase 34 context is now captured for follow-on planning.
 
 ## Current Position
 
 Phase: 32 — Addon-Owned Data Polling Contract
 Plan: 32-01 through 32-04 complete; verify-work 32 next
 Status: verifying
-Last activity: 2026-06-02 - Completed quick task 027: I want to use full instead of 'full_surface'
+Last activity: 2026-06-02 - Captured Phase 34 context for the button action command interface
 
 Progress: [##########] 100%
 
@@ -92,6 +92,8 @@ Recent decisions affecting current work:
 - **Phase 32 discussion:** Migration strategy is a big-bang ownership move with strong regression proof gates rather than long-lived compatibility facades.
 - **Phase 33 discussion:** Full Tailwind support means real Tailwind integration with Tailwind as the canonical browser utility layer, a hard cut for shared/core UI, and truthful config/build/watch tooling instead of a larger handwritten Sireno utility sheet.
 - **Phase 33 discussion:** Sireno theme resolution stays authoritative through the Tailwind bridge, the full resolved browser theme contract should remain available to utilities, shipped color/typography styling stays Sireno-token-backed, and dynamic class needs require an explicit safelist-generation contract rather than runtime compilation magic.
+- **Phase 34 discussion:** Shared command-action behavior should standardize on a public nested `commands.tap | hold | double-tap` contract plus a reusable schema/interface and narrow gesture-handler hook, with partial gesture support allowed and `double-tap` suppressing `tap` when both are configured.
+- **Phase 34 discussion:** Migrate all command-capable built-ins except `media-player` onto the shared contract, expose the optional command-action config across all regular `date-time` buttons except locked tiles, keep `media-player` internal-only, await command execution, and avoid adding automatic invalidation or a second failure UX.
 - **Phase 33 execution:** Plan `33-01` replaced the handwritten browser utility generator with a real Tailwind browser asset build, kept Sireno theme vars authoritative, and narrowed `theme-utilities.ts` to Tailwind asset loading plus product-only runtime glue.
 - **Phase 33 execution:** Browser and emulator delivery now use explicit split stylesheet seams (`data-sireno-tailwind`, `data-sireno-runtime`, `data-sireno-theme-assets`) instead of the legacy `data-sireno-theme-utilities` contract, with focused regression proof on the shipped browser/emulator paths.
 - **Phase 30 execution:** The shared helper surface now ships as public `Bars` and `LabelValueList` TSX components from the package root, with runtime-enforced count bounds and `LabelValueList` auto-layout still kept presentation-only.
@@ -149,6 +151,7 @@ Recent decisions affecting current work:
 
 - **Phase 32 discussion:** Locked addon-owned polling/data ownership with core as a capability-agnostic scheduler/transport seam, split data/render interval support, callback payload handoff into render props, addon-local OS adapters, and a deliberate big-bang migration strategy.
 - **Phase 33 discussion:** Locked Phase 33 around real Tailwind adoption for the browser-rendered surface, a prebuilt Tailwind stylesheet asset plus Sireno-specific runtime CSS glue, first-class workspace support for core/shared UI plus built-ins/theme TSX/local addons, and a truthful `pnpm cli:dev` seam for Tailwind changes.
+- **Phase 34 discussion:** Locked Phase 34 around a public addon-facing shared command-action schema/interface and hook, one shared hold threshold plus double-tap suppression semantics, a hard-cut migration for every command-capable built-in except `media-player`, and a broadened `date-time` rollout covering all regular button types except locked-session tiles.
 - **Phase 33 execution:** Completed Plan `33-01` by adding a real Tailwind v4 browser stylesheet build for the CLI package, keeping Sireno token/runtime glue ownership narrow, and splitting browser/emulator stylesheet delivery into explicit Tailwind/runtime/theme-asset seams with focused regression coverage.
 
 - **Phase 30 discussion:** Locked the new helper surface to public component-first `Bars` and `LabelValueList` components, bounded system-status around canonical metric adapters plus helper-template buttons with honest unavailable states, and bounded media-player around truthful status, best-effort metadata, shared marquee overflow, fixed tap play/pause, and optional hold behavior.
