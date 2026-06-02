@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.3 — Typography and Rich Formatting
-**Phase:** 33 — Add full tailwind support ✓ complete
-**Status:** verifying
+**Phase:** 34 — Button action command interface
+**Status:** planning
 **Last updated:** 2026-06-02
 
 ---
