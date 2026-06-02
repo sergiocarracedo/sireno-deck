@@ -1,12 +1,13 @@
 name: phase-25-custom
 main: ./index.tsx
-background: "#20252d"
-frame: "#111827"
-foreground: "#f5f7fa"
-primary: "#8b5cf6"
-accent: "#14b8a6"
-success: "#22c55e"
-danger: "#ef4444"
+colorTokens:
+  background: "#20252d"
+  frame: "#111827"
+  foreground: "#f5f7fa"
+  primary: "#8b5cf6"
+  accent: "#14b8a6"
+  success: "#22c55e"
+  danger: "#ef4444"
 tailwind:
   safelist:
     - rounded-[17px]
