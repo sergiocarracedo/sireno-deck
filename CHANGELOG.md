@@ -12,12 +12,14 @@
 - Fixed the bundled analog clock button so it now renders a real analog dial with live hour and minute hands instead of a placeholder text card. Root cause was that the Phase 8 button file had drifted into a static label surface while the product and review fixtures still treated it as a real clock visual.
 - Fixed the built-in date-time addon contract drift by registering both `clock` and `analog-clock` button ids against the same analog clock implementation and updating the focused addon test to cover the live shipped button set. Root cause was that the repo example config had moved to `clock` while older fixtures and tests still referenced `analog-clock`, leaving the addon surface internally inconsistent.
 - Fixed the core button-surface contract to use `full` instead of `full_surface` across config parsing, runtime transport, hosted rendering, and shipped fixtures while keeping the emitted DOM marker `data-sireno-full-surface` stable for browser assertions. Root cause was that the outer product contract had drifted away from the authored `ButtonSurface` prop, leaving one concept with two names depending on which seam you touched.
+- Fixed browser theme button/frame color drift after enabling Tailwind slash-opacity color variants by exporting Tailwind `--color-*` runtime tokens from the deck root alongside existing `--sireno-*` tokens. Root cause was that Tailwind utilities were resolving through `--color-*` while live theme values were only guaranteed on `--sireno-*`, which created an indirection seam that could mis-resolve in frame surfaces.
 
 ### Learnings
 
 - If a shared component claims to accept library-defined names, the resolver should derive from the library surface itself. Once callers start carrying their own allowlists or aliases, the contract is already lying.
 - Live visual buttons need output-focused regression coverage. A cadence assertion alone will stay green even after the visual silently collapses back into placeholder text.
 - If one runtime concept already has a canonical authored name, the surrounding config and transport seams should use that same name. Leaving `full_surface` outside and `full` inside only creates needless translation drift.
+- Tailwind color tokens should be materialized where theme values actually live at runtime. Build-time token mapping alone is not enough if rendered surfaces consume color classes from a different variable namespace.
 
 ## 2026-05-31
 

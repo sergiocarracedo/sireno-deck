@@ -130,7 +130,9 @@ describe('dom host', () => {
     expect(html).toContain('data-sireno-shrink-fit-script="true"')
     expect(html).toContain('data-sireno-browser-document="true"')
     expect(html).toContain('--sireno-color-primary:#7dd3fc;')
+    expect(html).toContain('--color-primary:#7dd3fc;')
     expect(html).toContain('--sireno-color-background:')
+    expect(html).toContain('--color-background:')
     expect(html).toContain('--sireno-font-main-family:')
     expect(html).toContain('font-family:var(--sireno-font-main-family)')
     expect(html).not.toContain(

@@ -3,7 +3,6 @@ import {
   defineMountedButton,
   useButtonActionCommand,
 } from '../../../addon/api.js'
-import { Text } from '../../../ui/index.js'
 import {
   ANALOG_CLOCK_INTERVAL_MS,
   BuiltinAnalogClockButtonSchema,
@@ -24,74 +23,61 @@ function AnalogClockFace() {
   const { hour, minute } = getAnalogClockAngles()
 
   return (
-    <ButtonSurface full>
-      <div className="bg-background/90 relative flex h-full w-full items-center justify-center overflow-hidden rounded-[16px] border border-white/10 px-2 pb-2 pt-1.5">
-        <svg
-          aria-label="Analog clock"
-          className="absolute inset-x-[11%] top-[10%] h-[64%] w-[78%]"
-          viewBox="0 0 100 100"
+    <ButtonSurface>
+      <svg
+        aria-label="Analog clock"
+        className="w-full h-full"
+        viewBox="0 0 100 100"
+      >
+        <circle
+          cx="50"
+          cy="50"
+          fill="none"
+          r="41"
+          stroke="color-mix(in srgb, var(--sireno-color-foreground) 24%, transparent)"
+          strokeWidth="2"
+        />
+        <g
+          data-sireno-clock-minute-hand="true"
+          style={{
+            transform: `rotate(${minute}deg)`,
+            transformOrigin: '50% 50%',
+          }}
         >
-          <circle
-            cx="50"
-            cy="50"
-            fill="none"
-            r="41"
-            stroke="color-mix(in srgb, var(--sireno-color-foreground) 24%, transparent)"
-            strokeWidth="2"
+          <line
+            stroke="color-mix(in srgb, white 88%, var(--sireno-color-foreground) 12%)"
+            strokeLinecap="round"
+            strokeWidth="3.4"
+            x1="50"
+            x2="50"
+            y1="50"
+            y2="79"
           />
-          <g
-            data-sireno-clock-minute-hand="true"
-            style={{
-              transform: `rotate(${minute}deg)`,
-              transformOrigin: '50px 50px',
-            }}
-          >
-            <line
-              stroke="color-mix(in srgb, white 88%, var(--sireno-color-foreground) 12%)"
-              strokeLinecap="round"
-              strokeWidth="3.4"
-              x1="50"
-              x2="50"
-              y1="50"
-              y2="79"
-            />
-          </g>
-          <g
-            data-sireno-clock-hour-hand="true"
-            style={{
-              transform: `rotate(${hour}deg)`,
-              transformOrigin: '50px 50px',
-            }}
-          >
-            <line
-              stroke="var(--sireno-color-primary)"
-              strokeLinecap="round"
-              strokeWidth="3"
-              x1="50"
-              x2="50"
-              y1="50"
-              y2="29"
-            />
-          </g>
-          <circle
-            cx="50"
-            cy="50"
-            fill="color-mix(in srgb, white 92%, var(--sireno-color-foreground) 8%)"
-            r="3.6"
+        </g>
+        <g
+          data-sireno-clock-hour-hand="true"
+          style={{
+            transform: `rotate(${hour}deg)`,
+            transformOrigin: '50% 50%',
+          }}
+        >
+          <line
+            stroke="var(--sireno-color-primary)"
+            strokeLinecap="round"
+            strokeWidth="3"
+            x1="50"
+            x2="50"
+            y1="50"
+            y2="29"
           />
-        </svg>
-        <div className="relative mt-auto flex w-full justify-center pt-14">
-          <Text
-            className="w-full text-center uppercase tracking-[0.22em] opacity-70"
-            fit="wrap"
-            size="xs"
-            tone="foreground"
-            typography="aux"
-          >
-            ANALOG
-          </Text>
-        </div>
-      </div>
+        </g>
+        <circle
+          cx="50"
+          cy="50"
+          fill="color-mix(in srgb, white 92%, var(--sireno-color-foreground) 8%)"
+          r="3.6"
+        />
+      </svg>
     </ButtonSurface>
   )
 }

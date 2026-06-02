@@ -24,7 +24,7 @@ import {
 export interface HostedButton {
   content: ReactElement
   frame_state?: ThemeFrameState
-  full_surface?: boolean
+  full?: boolean
   html?: string
   keyIndex: number
   sample_interval_ms?: number

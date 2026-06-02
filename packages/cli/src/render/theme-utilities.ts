@@ -52,6 +52,13 @@ export function getThemeCssVariables(theme: Theme): ThemeCssVariable[] {
     { name: `${CSS_VAR_PREFIX}-color-accent`, value: theme.accent },
     { name: `${CSS_VAR_PREFIX}-color-success`, value: theme.success },
     { name: `${CSS_VAR_PREFIX}-color-danger`, value: theme.danger },
+    { name: '--color-background', value: theme.background },
+    { name: '--color-frame', value: theme.frame },
+    { name: '--color-foreground', value: theme.foreground },
+    { name: '--color-primary', value: theme.primary },
+    { name: '--color-accent', value: theme.accent },
+    { name: '--color-success', value: theme.success },
+    { name: '--color-danger', value: theme.danger },
   ]
 
   if (theme.typography) {

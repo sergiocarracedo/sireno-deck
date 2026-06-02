@@ -1,8 +1,18 @@
-@import "tailwindcss" source(none);
-@import "./.tailwind.browser.contract.generated.css";
+@import 'tailwindcss' source(none);
+@import './.tailwind.browser.contract.generated.css';
 
 @source "./src";
 @source "../../addons";
+
+@theme {
+  --color-background: var(--sireno-color-background);
+  --color-foreground: var(--sireno-color-foreground);
+  --color-primary: var(--sireno-color-primary);
+  --color-accent: var(--sireno-color-accent);
+  --color-success: var(--sireno-color-success);
+  --color-danger: var(--sireno-color-danger);
+  --color-frame: var(--sireno-color-frame);
+}
 
 @utility text-background {
   color: var(--sireno-color-background);

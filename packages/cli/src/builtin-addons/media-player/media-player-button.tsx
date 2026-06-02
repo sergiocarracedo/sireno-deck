@@ -1,6 +1,7 @@
-import type { ReactElement } from 'react'
-
 import { ButtonSurface, defineMountedButton } from '../../addon/api.js'
+import { Text } from '../../ui/index.js'
+import { MediaStatusIcon } from './components/MediaStatus.js'
+import { ProgressBar } from './components/ProgressBar.js'
 import {
   createMediaController,
   createUnavailableMediaSnapshot,
@@ -8,11 +9,7 @@ import {
   type MediaControllerSnapshot,
   type MediaPlaybackStatus,
 } from './domain/media-controller.js'
-import { Bars, Text } from '../../ui/index.js'
-import {
-  MediaPlayerButtonSchema,
-  type MediaPlayerButtonConfig,
-} from './schemas.js'
+import { MediaPlayerButtonSchema } from './schemas.js'
 
 const HOLD_ACTION_DELAY_MS = 600
 
@@ -29,7 +26,7 @@ interface MediaPlayerPollPayload {
 
 function getButtonStoreState(snapshot: unknown): MediaPlayerButtonStoreState {
   return typeof snapshot === 'object' && snapshot !== null
-    ? snapshot as MediaPlayerButtonStoreState
+    ? (snapshot as MediaPlayerButtonStoreState)
     : {}
 }
 
@@ -45,7 +42,10 @@ function clearHoldTimer(snapshot: unknown): MediaPlayerButtonStoreState {
   }
 }
 
-function getStatusLabel(status: MediaPlaybackStatus | undefined, available: boolean): string {
+function getStatusLabel(
+  status: MediaPlaybackStatus | undefined,
+  available: boolean,
+): string {
   if (!available) {
     return 'OFFLINE'
   }
@@ -62,7 +62,10 @@ function getStatusLabel(status: MediaPlaybackStatus | undefined, available: bool
   }
 }
 
-function getProgressColor(status: MediaPlaybackStatus | undefined, available: boolean): string {
+function getProgressColor(
+  status: MediaPlaybackStatus | undefined,
+  available: boolean,
+): string {
   if (!available) {
     return '#6b7280'
   }
@@ -79,82 +82,11 @@ function getProgressColor(status: MediaPlaybackStatus | undefined, available: bo
   }
 }
 
-function MediaStatusIcon(props: {
-  available: boolean
-  status?: MediaPlaybackStatus
-}): ReactElement {
-  const stroke = props.available ? '#eef2f7' : '#94a3b8'
-  const fill = props.available ? '#8ecae6' : '#6b7280'
-
-  if (!props.available) {
-    return (
-      <svg
-        aria-hidden="true"
-        data-sireno-media-status="unsupported"
-        fill="none"
-        height="16"
-        viewBox="0 0 24 24"
-        width="16"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path d="M12 4.5 20 19H4L12 4.5Z" stroke={stroke} strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
-        <path d="M12 9.5v4.5" stroke={stroke} strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
-        <circle cx="12" cy="16.75" fill={stroke} r="0.9" />
-      </svg>
-    )
-  }
-
-  if (props.status === 'pause') {
-    return (
-      <svg
-        aria-hidden="true"
-        data-sireno-media-status="pause"
-        fill="none"
-        height="16"
-        viewBox="0 0 24 24"
-        width="16"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <rect fill={fill} height="12" rx="1.5" width="4" x="6" y="6" />
-        <rect fill={fill} height="12" rx="1.5" width="4" x="14" y="6" />
-      </svg>
-    )
-  }
-
-  if (props.status === 'stop') {
-    return (
-      <svg
-        aria-hidden="true"
-        data-sireno-media-status="stop"
-        fill="none"
-        height="16"
-        viewBox="0 0 24 24"
-        width="16"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <rect fill={fill} height="12" rx="2" width="12" x="6" y="6" />
-      </svg>
-    )
-  }
-
-  return (
-    <svg
-      aria-hidden="true"
-      data-sireno-media-status="play"
-      fill="none"
-      height="16"
-      viewBox="0 0 24 24"
-      width="16"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M8 6.5v11l8-5.5-8-5.5Z" fill={fill} stroke={stroke} strokeLinejoin="round" strokeWidth="1.2" />
-    </svg>
-  )
-}
-
 async function refreshSnapshot(
   controller: MediaController,
-  store: { button: { update: (updater: (snapshot: unknown) => unknown) => void } },
+  store: {
+    button: { update: (updater: (snapshot: unknown) => unknown) => void }
+  },
 ): Promise<MediaControllerSnapshot> {
   const snapshot = await controller.getSnapshot()
   store.button.update((currentSnapshot) => ({
@@ -169,7 +101,10 @@ function getOrCreateController(
   snapshot: unknown,
   hostContext: Parameters<typeof createMediaController>[0]['hostContext'],
 ): MediaController {
-  return getButtonStoreState(snapshot).controller ?? createMediaController({ hostContext })
+  return (
+    getButtonStoreState(snapshot).controller ??
+    createMediaController({ hostContext })
+  )
 }
 
 const builtinMediaPlayerButton = defineMountedButton({
@@ -238,49 +173,44 @@ const builtinMediaPlayerButton = defineMountedButton({
   },
   render: ({ config, payload, store }) => {
     const state = getButtonStoreState(store.button.snapshot)
-    const snapshot = payload?.snapshot
-      ?? state.snapshot
-      ?? createUnavailableMediaSnapshot('media-controller-unavailable')
-    const statusLabel = getStatusLabel(snapshot.status, snapshot.available)
+    const snapshot =
+      payload?.snapshot ??
+      state.snapshot ??
+      createUnavailableMediaSnapshot('media-controller-unavailable')
     const title = snapshot.title ?? config.unavailable_label ?? 'Unavailable'
-    const artist = snapshot.artist ?? (snapshot.available ? 'Unknown artist' : 'No active player')
+    const artist =
+      snapshot.artist ??
+      (snapshot.available ? 'Unknown artist' : 'No active player')
     const source = snapshot.app ?? snapshot.source
-    const progress = snapshot.available ? snapshot.percentage ?? 0 : 0
+    const progress = snapshot.available ? (snapshot.percentage ?? 0) : 0
+
+    const localStatus = snapshot.available ? snapshot.status : 'unavailable'
 
     return (
       <ButtonSurface>
-        <div className="flex h-full w-full flex-col justify-between gap-1.5">
+        <div className="flex h-full w-full flex-col gap-0.5">
           <div className="flex items-center justify-between gap-2">
-            <div className="flex min-w-0 items-center gap-2">
-              <div
-                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
-                style={{
-                  background: snapshot.available
-                    ? 'rgba(142, 202, 230, 0.18)'
-                    : 'rgba(148, 163, 184, 0.18)',
-                }}
-              >
-                <MediaStatusIcon available={snapshot.available} status={snapshot.status} />
-              </div>
-              <Text align="left" fit="ellipsis" size="xs" tone="accent">{statusLabel}</Text>
+            <div className="flex items-center gap-1">
+              <MediaStatusIcon status={localStatus} />
             </div>
-            <Text align="right" fit="ellipsis" size="xs" tone="foreground">{source}</Text>
+            <Text align="right" fit="ellipsis" size="xs" tone="foreground">
+              {source}
+            </Text>
           </div>
 
           <div className="flex min-w-0 flex-col gap-0.5">
-            <Text align="left" fit="marquee" size="sm" tone="foreground">{title}</Text>
-            <Text align="left" fit="marquee" size="xs" tone="primary">{artist}</Text>
+            <Text align="left" fit="marquee" size="md" tone="primary">
+              {title}
+            </Text>
+            <Text align="left" fit="marquee" size="sm" tone="foreground">
+              {artist}
+            </Text>
           </div>
 
-          <Bars
-            items={[
-              {
-                color: getProgressColor(snapshot.status, snapshot.available),
-                maxValue: 100,
-                title: statusLabel,
-                value: progress,
-              },
-            ]}
+          <ProgressBar
+            className="absolute bottom-1 left-0 right-0"
+            status={localStatus}
+            value={progress}
           />
         </div>
       </ButtonSurface>

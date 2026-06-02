@@ -15,7 +15,8 @@ decks:
       - position: 2
         type: action
         label: Action
-        command: 'google-chrome'
+        commands:
+          tap: 'google-chrome'
         icon: addon://emoji-selector/nature.svg
       - position: 4
         type: system-status-bars
