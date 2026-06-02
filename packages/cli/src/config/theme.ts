@@ -38,6 +38,12 @@ const ThemeTypographyRoleSchema = z
   })
   .strict()
 
+const ThemeTailwindSchema = z
+  .object({
+    safelist: z.array(z.string().min(1)).default([]),
+  })
+  .strict()
+
 const ThemeSchema = z
   .object({
     name: z.string().min(1),
@@ -65,6 +71,7 @@ const ThemeManifestSchema = ThemeSchema.extend({
     })
     .optional(),
   main: z.string().min(1),
+  tailwind: ThemeTailwindSchema.optional(),
 }).passthrough()
 
 type ThemeSchemaOutput = z.infer<typeof ThemeSchema>
@@ -112,6 +119,7 @@ export interface Theme extends Omit<ThemeSchemaOutput, 'typography'> {
   filePaths: string[]
   rootDir: string
   stylesheets: string[]
+  tailwindSafelist: string[]
   typography?: ThemeSchemaOutput['typography']
   ui?: ThemeUiPresentation
 }
@@ -723,6 +731,7 @@ export async function resolveTheme(
     rootDir: target.rootDir,
     stylesheets: stylesheetResult.stylesheets,
     success: manifest.success,
+    tailwindSafelist: manifest.tailwind?.safelist ?? [],
     typography: manifest.typography,
     ui: runtime.ui,
   }

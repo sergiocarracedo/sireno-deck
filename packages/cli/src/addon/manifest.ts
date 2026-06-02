@@ -2,6 +2,10 @@ import { z } from "zod"
 
 import { SIRENO_ADDON_API_VERSION } from "./api.js"
 
+const TailwindManifestSchema = z.object({
+  safelist: z.array(z.string().min(1)).default([]),
+})
+
 const AddonPackageSchema = z.object({
   name: z.string().min(1),
   sirenoAddon: z.object({
@@ -9,6 +13,7 @@ const AddonPackageSchema = z.object({
     main: z.string().min(1),
   })
     .strict(),
+  tailwind: TailwindManifestSchema.optional(),
 })
   .passthrough()
 
@@ -16,6 +21,7 @@ export interface AddonManifest {
   apiVersion: number
   main: string
   name: string
+  tailwindSafelist: string[]
 }
 
 export type AddonManifestErrorCode = "api_version_mismatch" | "invalid_manifest"
@@ -40,6 +46,7 @@ export function validateAddonManifest(data: unknown): AddonManifest {
     apiVersion: result.data.sirenoAddon.apiVersion,
     main: result.data.sirenoAddon.main,
     name: result.data.name,
+    tailwindSafelist: result.data.tailwind?.safelist ?? [],
   }
 }
 

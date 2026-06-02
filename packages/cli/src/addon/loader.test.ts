@@ -147,6 +147,10 @@ describe("loadConfiguredAddons", () => {
 
     expect(result.warnings).toEqual([])
     expect(result.loaded[0]?.manifest.main).toBe("./src/index.tsx")
+    expect(result.loaded[0]?.manifest.tailwindSafelist).toEqual([
+      "rotate-6",
+      "tracking-[0.33em]",
+    ])
     expect(registry.getButton("phase-23-local-raw-button")?.type).toBe("phase-23-local-raw-button")
   })
 

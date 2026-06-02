@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build": "pnpm run build:tailwind-browser && tsdown",
-    "build:tailwind-browser": "tailwindcss -i tailwind.browser.css -o tailwind.browser.generated.css",
+    "build:tailwind-browser": "tsx src/cli/build-tailwind-browser.ts",
     "dev": "pnpm --workspace-root run cli:dev",
     "dev:bundle": "tsdown --watch",
     "test": "vitest run",

@@ -16,7 +16,26 @@ describe("validateAddonManifest", () => {
       apiVersion: 1,
       main: "./src/index.js",
       name: "test-addon",
+      tailwindSafelist: [],
     })
+  })
+
+  it("accepts an optional tailwind safelist contract", () => {
+    const manifest = validateAddonManifest({
+      name: "test-addon",
+      sirenoAddon: {
+        apiVersion: 1,
+        main: "./src/index.js",
+      },
+      tailwind: {
+        safelist: ["rotate-6", "tracking-[0.33em]"],
+      },
+    })
+
+    expect(manifest.tailwindSafelist).toEqual([
+      "rotate-6",
+      "tracking-[0.33em]",
+    ])
   })
 
   it("rejects apiVersion mismatches explicitly", () => {

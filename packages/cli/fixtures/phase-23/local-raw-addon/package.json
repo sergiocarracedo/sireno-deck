@@ -4,5 +4,11 @@
   "sirenoAddon": {
     "apiVersion": 1,
     "main": "./src/index.tsx"
+  },
+  "tailwind": {
+    "safelist": [
+      "rotate-6",
+      "tracking-[0.33em]"
+    ]
   }
 }

@@ -1,6 +1,8 @@
 @import "tailwindcss" source(none);
+@import "./.tailwind.browser.contract.generated.css";
 
 @source "./src";
+@source "../../addons";
 
 @utility text-background {
   color: var(--sireno-color-background);
