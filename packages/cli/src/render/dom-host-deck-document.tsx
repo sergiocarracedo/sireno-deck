@@ -32,9 +32,10 @@ export interface DeckDocumentProps {
   keyCount: number
   layout: BrowserRendererLayout
   preset: RenderPreset
+  runtimeStylesheet: string
+  tailwindStylesheet: string
   theme?: Theme
   themeAssetStylesheet: string
-  themeStylesheet: string
 }
 
 export function DeckDocument(props: DeckDocumentProps): ReactElement {
@@ -48,8 +49,11 @@ export function DeckDocument(props: DeckDocumentProps): ReactElement {
   return (
     <html>
       <head>
-        <style data-sireno-theme-utilities="true">
-          {props.themeStylesheet}
+        <style data-sireno-tailwind="true">
+          {props.tailwindStylesheet}
+        </style>
+        <style data-sireno-runtime="true">
+          {props.runtimeStylesheet}
         </style>
         <style data-sireno-theme-assets="true">
           {props.themeAssetStylesheet}

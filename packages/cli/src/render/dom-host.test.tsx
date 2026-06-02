@@ -97,13 +97,14 @@ describe("dom host", () => {
     expect(html).toContain('linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 42%)')
   })
 
-  it("exports theme CSS vars and the browser utility stylesheet on the deck root", async () => {
+  it("exports theme CSS vars plus split Tailwind/runtime stylesheets on the deck root", async () => {
     const html = renderDomDeck([], {
       keyCount: 1,
       theme: await resolveTheme("dark"),
     })
 
-    expect(html).toContain('data-sireno-theme-utilities="true"')
+    expect(html).toContain('data-sireno-tailwind="true"')
+    expect(html).toContain('data-sireno-runtime="true"')
     expect(html).toContain('data-sireno-theme-assets="true"')
     expect(html).toContain('data-sireno-shrink-fit-script="true"')
     expect(html).toContain('data-sireno-browser-document="true"')
@@ -112,9 +113,15 @@ describe("dom host", () => {
     expect(html).toContain('--sireno-font-main-family:')
     expect(html).toContain('font-family:var(--sireno-font-main-family)')
     expect(html).not.toContain('<body data-sireno-browser-document="true" class="font-main"')
-    expect(html).toContain('.text-primary{color:var(--sireno-color-primary);}')
-    expect(html).toContain('.font-main{--sireno-active-font-size:var(--sireno-font-main-size);font-family:var(--sireno-font-main-family);')
-    expect(html).toContain('.text-md{font-size:calc(var(--sireno-active-font-size, 16px) * 1);}')
+    expect(html).toContain('.text-primary')
+    expect(html).toContain('color: var(--sireno-color-primary);')
+    expect(html).toContain('.font-main')
+    expect(html).toContain('--sireno-active-font-size: var(--sireno-font-main-size);')
+    expect(html).toContain('font-family: var(--sireno-font-main-family);')
+    expect(html).toContain('.text-md')
+    expect(html).toContain('font-size: calc(var(--sireno-active-font-size, 16px) * 1);')
+    expect(html).toContain('.bg-background')
+    expect(html).toContain('background-color: var(--sireno-color-background);')
     expect(html).toContain('.sireno-rich-text-break{display:block;height:0;}')
     expect(html).toContain('.sireno-rich-text-blink{animation:sireno-rich-text-blink 1s steps(1,end) infinite;}')
     expect(html).toContain('.sireno-text-fit-shrink{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}')

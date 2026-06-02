@@ -16,7 +16,10 @@ import {
   createMountedHostedButtonElement,
 } from './dom-host-button.js'
 import { STREAM_DECK_KEY_PRESET, type RenderPreset } from './render-preset.js'
-import { getThemeUtilityStylesheet } from './theme-utilities.js'
+import {
+  getSirenoRuntimeStylesheet,
+  getTailwindBrowserStylesheet,
+} from './theme-utilities.js'
 
 export interface HostedButton {
   content: ReactElement
@@ -386,7 +389,8 @@ export function renderDomDeck(
   const preset = options.preset ?? STREAM_DECK_KEY_PRESET
   const layout = resolveDeckLayout(options.keyCount)
   const background = options.background ?? preset.background
-  const themeStylesheet = getThemeUtilityStylesheet()
+  const runtimeStylesheet = getSirenoRuntimeStylesheet()
+  const tailwindStylesheet = getTailwindBrowserStylesheet()
   const themeAssetStylesheet = options.theme?.stylesheets.join('\n') ?? ''
 
   const html = renderToStaticMarkup(
@@ -398,9 +402,10 @@ export function renderDomDeck(
       keyCount={options.keyCount}
       layout={layout}
       preset={preset}
+      runtimeStylesheet={runtimeStylesheet}
+      tailwindStylesheet={tailwindStylesheet}
       theme={options.theme}
       themeAssetStylesheet={themeAssetStylesheet}
-      themeStylesheet={themeStylesheet}
     />,
   )
 

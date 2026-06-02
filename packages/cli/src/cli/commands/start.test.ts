@@ -1909,7 +1909,8 @@ describe('startEmulatorSession', () => {
     const deckHtml = await fetch(`${session.url}/__sireno/deck`).then(
       async (response) => response.text(),
     )
-    expect(deckHtml).toContain('data-sireno-theme-utilities="true"')
+    expect(deckHtml).toContain('data-sireno-tailwind="true"')
+    expect(deckHtml).toContain('data-sireno-runtime="true"')
     expect(deckHtml).toContain('data-sireno-theme-assets="true"')
     expect(deckHtml).toContain('/__sireno/assets?path=')
     expect(deckHtml).toContain('font-family: "IBM Plex Mono"')
@@ -2092,6 +2093,7 @@ describe('startEmulatorSession', () => {
     )
 
     expect(moduleSource).toContain('function patchThemeStyles(nextDocument)')
+    expect(moduleSource).toContain("['data-sireno-tailwind','data-sireno-runtime','data-sireno-theme-assets'].forEach((attributeName) => {")
     expect(moduleSource).toContain('function patchDeckRoot(nextDeckRoot)')
     expect(moduleSource).toContain('emulatorMode,')
     expect(moduleSource).toContain(

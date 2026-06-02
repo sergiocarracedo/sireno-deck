@@ -342,7 +342,7 @@ function renderEmulatorShellHtml(): string {
     "  });",
     "}",
     "function patchThemeStyles(nextDocument){",
-    "  ['data-sireno-theme-utilities','data-sireno-theme-assets'].forEach((attributeName) => {",
+    "  ['data-sireno-tailwind','data-sireno-runtime','data-sireno-theme-assets'].forEach((attributeName) => {",
     "    const selector = `style[${attributeName}=\"true\"]`;",
     "    const currentStyle = document.head.querySelector(selector);",
     "    const nextStyle = nextDocument.head.querySelector(selector);",
