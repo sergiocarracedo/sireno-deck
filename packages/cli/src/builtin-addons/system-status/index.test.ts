@@ -107,8 +107,10 @@ describe('system-status addon', () => {
       render_interval_ms: 1_000,
     })
     expect(labelValuesDefinition?.configSchema.parse({
+      commands: { tap: 'date' },
       metrics: [{ label: 'CPU', metric: 'cpu_usage' }, { metric: 'fan_speed' }],
     })).toEqual({
+      commands: { tap: 'date' },
       metrics: [{ label: 'CPU', metric: 'cpu_usage' }, { metric: 'fan_speed' }],
       poll_interval_ms: 1_000,
       render_interval_ms: 1_000,
@@ -215,7 +217,7 @@ describe('system-status addon', () => {
     expect(html).toContain('N/A')
   })
 
-  it('keeps tap and hold commands distinct with a button-local long-press timer', async () => {
+  it('keeps tap and hold commands distinct through the shared command hook', async () => {
     getCanonicalSystemMetricsMock.mockResolvedValue([
       {
         available: true,
@@ -233,9 +235,8 @@ describe('system-status addon', () => {
     )
     const runCommand = vi.fn(async () => ({ code: 0, failed: false, signal: undefined, stderr: '', stdout: '', timedOut: false }))
     const harness = createMountedHarness(definition!, {
-      hold_command: 'hold-cpu',
+      commands: { hold: 'hold-cpu', tap: 'tap-cpu' },
       metrics: [{ metric: 'cpu_usage' }],
-      tap_command: 'tap-cpu',
     }, 2, { runCommand })
 
     await harness.activate()
@@ -254,5 +255,38 @@ describe('system-status addon', () => {
     await harness.tap()
 
     expect(runCommand.mock.calls.map((call) => call[0])).toEqual(['tap-cpu'])
+  })
+
+  it('suppresses tap and runs double-tap for system-status buttons with both commands configured', async () => {
+    getCanonicalSystemMetricsMock.mockResolvedValue([
+      {
+        available: true,
+        id: 'cpu_usage',
+        label: '45%',
+        max: 100,
+        percentage: 45,
+        unit: '%',
+        value: 45,
+      },
+    ])
+
+    const definition = systemStatusAddon.buttons.find(
+      (button) => button.type === 'system-status-bars',
+    )
+    const runCommand = vi.fn(async () => ({ code: 0, failed: false, signal: undefined, stderr: '', stdout: '', timedOut: false }))
+    const harness = createMountedHarness(definition!, {
+      commands: { 'double-tap': 'double-cpu', tap: 'tap-cpu' },
+      metrics: [{ metric: 'cpu_usage' }],
+    }, 3, { runCommand })
+
+    await harness.activate()
+
+    const firstTap = harness.tap()
+    await vi.advanceTimersByTimeAsync(100)
+    const secondTap = harness.tap()
+    await secondTap
+    await firstTap
+
+    expect(runCommand.mock.calls.map((call) => call[0])).toEqual(['double-cpu'])
   })
 })

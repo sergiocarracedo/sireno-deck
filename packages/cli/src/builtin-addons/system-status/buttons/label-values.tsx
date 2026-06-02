@@ -1,4 +1,8 @@
-import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
+import {
+  ButtonSurface,
+  defineMountedButton,
+  useButtonActionCommand,
+} from '../../../addon/api.js'
 import {
   getCanonicalSystemMetrics,
   type CanonicalSystemMetricSnapshot,
@@ -10,12 +14,9 @@ import {
   type SystemStatusLabelValuesButtonConfig,
 } from '../schemas.js'
 
-const HOLD_ACTION_DELAY_MS = 600
 const GENERIC_ICON_NAMES = new Set(['clock', 'sparkles', 'warning'])
 
 type SystemStatusButtonStoreState = {
-  holdTriggered?: boolean
-  holdTimer?: ReturnType<typeof globalThis.setTimeout>
   metrics?: readonly CanonicalSystemMetricSnapshot[]
 }
 
@@ -23,18 +24,6 @@ function getButtonStoreState(snapshot: unknown): SystemStatusButtonStoreState {
   return typeof snapshot === 'object' && snapshot !== null
     ? snapshot as SystemStatusButtonStoreState
     : {}
-}
-
-function clearHoldTimer(snapshot: unknown): SystemStatusButtonStoreState {
-  const state = getButtonStoreState(snapshot)
-  if (state.holdTimer) {
-    globalThis.clearTimeout(state.holdTimer)
-  }
-
-  return {
-    ...state,
-    holdTimer: undefined,
-  }
 }
 
 function createUnavailableMetric(
@@ -69,9 +58,6 @@ const builtinSystemStatusLabelValuesButton = defineMountedButton({
   configSchema: SystemStatusLabelValuesButtonSchema,
   defaultPollIntervalMs: ({ config }) => config.poll_interval_ms,
   defaultRenderIntervalMs: ({ config }) => config.render_interval_ms,
-  dispose: ({ store }) => {
-    store.button.set(clearHoldTimer(store.button.snapshot))
-  },
   onActivate: async ({ config, store }) => {
     const metrics = await refreshMetrics(config)
     store.button.update((snapshot) => ({
@@ -79,48 +65,7 @@ const builtinSystemStatusLabelValuesButton = defineMountedButton({
       metrics,
     }))
   },
-  onPress: ({ config, methods, store }) => {
-    if (!config.hold_command) {
-      return
-    }
-
-    store.button.update((snapshot) => {
-      const nextState = clearHoldTimer(snapshot)
-      const holdTimer = globalThis.setTimeout(() => {
-        void methods.runCommand(config.hold_command!)
-        store.button.update((currentSnapshot) => ({
-          ...clearHoldTimer(currentSnapshot),
-          holdTriggered: true,
-        }))
-        methods.invalidate()
-      }, HOLD_ACTION_DELAY_MS)
-
-      return {
-        ...nextState,
-        holdTimer,
-        holdTriggered: false,
-      }
-    })
-  },
-  onRelease: ({ store }) => {
-    store.button.set(clearHoldTimer(store.button.snapshot))
-  },
-  onTap: async ({ config, methods, store }) => {
-    const state = getButtonStoreState(store.button.snapshot)
-    if (state.holdTriggered) {
-      store.button.update((snapshot) => ({
-        ...clearHoldTimer(snapshot),
-        holdTriggered: false,
-      }))
-      return
-    }
-
-    if (!config.tap_command) {
-      return
-    }
-
-    await methods.runCommand(config.tap_command)
-  },
+  ...useButtonActionCommand(({ config }) => config.commands),
   poll: async ({ config }) => ({
     metrics: await refreshMetrics(config),
   }),
