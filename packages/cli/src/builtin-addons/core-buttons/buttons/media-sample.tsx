@@ -45,11 +45,10 @@ const builtinMediaSampleButton = defineMountedButton({
           }}
         />
         <div
-          className="absolute inset-0 flex flex-col justify-between"
+          className="absolute inset-0 flex flex-col justify-between px-1.5 pb-1.5 pt-2"
           style={{
             background:
               'linear-gradient(180deg, rgba(2, 6, 23, 0) 0%, rgba(2, 6, 23, 0.88) 100%)',
-            padding: '8px 6px 6px',
           }}
         >
           <div className="px-1 pt-1">

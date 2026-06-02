@@ -273,6 +273,9 @@ describe('date-time addon', () => {
     expect(html).toContain('Clock')
     expect(html).toContain('font-main text-primary')
     expect(html).toContain('font-aux text-foreground')
+    expect(html).toContain('rounded-[16px] border p-2.5')
+    expect(html).toContain('gap-1')
+    expect(html).toContain('border-color:color-mix(in oklab, var(--sireno-color-primary) 58%, transparent)')
   })
 
   it('keeps the shipped Phase 8 review contract on the bundled analog clock type', () => {
@@ -299,5 +302,6 @@ describe('date-time addon', () => {
     expect(html).toContain('Date')
     expect(html).toContain('font-main text-foreground')
     expect(html).toContain('font-aux text-accent')
+    expect(html).toContain('gap-1')
   })
 })

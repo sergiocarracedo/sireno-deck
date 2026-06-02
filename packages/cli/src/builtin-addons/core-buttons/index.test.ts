@@ -154,6 +154,7 @@ describe('core-buttons addon', () => {
     expect(html).toContain('data-sireno-full-surface="true"')
     expect(html).toContain('data-sireno-media-sample-interval-ms="500"')
     expect(html).toContain('Waves')
+    expect(html).toContain('px-1.5 pb-1.5 pt-2')
   })
 
   it('exports a bundled toggle definition with the internal-mode schema', () => {

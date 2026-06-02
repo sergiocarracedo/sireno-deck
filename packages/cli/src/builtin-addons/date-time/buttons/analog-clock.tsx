@@ -23,15 +23,13 @@ export const builtinAnalogClockButton = defineMountedButton({
   render: () => (
     <ButtonSurface full_surface>
       <div
-        className="bg-background border-primary flex items-center justify-center w-full h-full"
+        className="bg-background flex h-full w-full items-center justify-center rounded-[16px] border p-2.5"
         style={{
-          border:
-            '1px solid color-mix(in oklab, var(--sireno-color-primary) 58%, transparent)',
-          borderRadius: '16px',
-          padding: '10px',
+          borderColor:
+            'color-mix(in oklab, var(--sireno-color-primary) 58%, transparent)',
         }}
       >
-        <div className="flex flex-col items-center justify-center w-full" style={{ gap: '4px' }}>
+        <div className="flex w-full flex-col items-center justify-center gap-1">
           <AnalogClockLabel
             label="Clock"
             tone="primary"
