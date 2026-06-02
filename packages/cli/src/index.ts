@@ -1,11 +1,15 @@
 export {
+  AddonButtonActionCommandsSchema,
+  AddonButtonActionConfigSchema,
   ButtonSurface,
   defineMountedButton,
+  useButtonActionCommand,
 } from "./addon/api.js"
 
 export { Bars, Chip, Icon, LabelValueList, Text } from "./ui/index.js"
 
 export type {
+  AddonButtonActionCommands,
   AddonButtonDefinition,
   AddonButtonRuntimeProps,
   DomElementStyleProps,

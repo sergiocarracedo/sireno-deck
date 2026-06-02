@@ -2,6 +2,7 @@ import { isAbsolute } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
 import { jsx } from 'react/jsx-runtime'
+import { z } from 'zod'
 
 import type { CSSProperties, ReactElement, ReactNode } from 'react'
 import type { ZodType } from 'zod'
@@ -62,6 +63,186 @@ export interface MountedAddonButtonStore {
 export interface AddonButtonRenderState {
   frameState: ThemeFrameState
   pressed: boolean
+}
+
+export const AddonButtonActionCommandsSchema = z
+  .object({
+    'double-tap': z.string().min(1),
+    hold: z.string().min(1),
+    tap: z.string().min(1),
+  })
+  .partial()
+  .strict()
+
+export type AddonButtonActionCommands = z.infer<
+  typeof AddonButtonActionCommandsSchema
+>
+
+export const AddonButtonActionConfigSchema = z.object({
+  commands: AddonButtonActionCommandsSchema.optional(),
+})
+
+const HOLD_ACTION_DELAY_MS = 600
+const DOUBLE_TAP_DELAY_MS = 250
+const ACTION_COMMAND_STORE_KEY = '__sirenoActionCommand'
+
+interface PendingTapState {
+  resolve: () => void
+  timer: ReturnType<typeof setTimeout>
+}
+
+interface ActionCommandStoreState {
+  holdTimer?: ReturnType<typeof setTimeout>
+  holdTriggered?: boolean
+  pendingTap?: PendingTapState
+}
+
+type ActionCommandResolver<TConfig, TPayload> =
+  | AddonButtonActionCommands
+  | ((
+      props: MountedAddonButtonRenderProps<TConfig, TPayload>,
+    ) => AddonButtonActionCommands | undefined)
+
+function isSnapshotRecord(snapshot: unknown): snapshot is Record<string, unknown> {
+  return typeof snapshot === 'object' && snapshot !== null
+}
+
+function readActionCommandState(snapshot: unknown): ActionCommandStoreState {
+  if (!isSnapshotRecord(snapshot)) {
+    return {}
+  }
+
+  return (snapshot[ACTION_COMMAND_STORE_KEY] as ActionCommandStoreState | undefined) ?? {}
+}
+
+function updateActionCommandState(
+  store: AddonButtonStoreScope,
+  updater: (state: ActionCommandStoreState) => ActionCommandStoreState,
+): void {
+  store.update((snapshot) => {
+    const nextState = updater(readActionCommandState(snapshot))
+
+    return {
+      ...(isSnapshotRecord(snapshot) ? snapshot : {}),
+      [ACTION_COMMAND_STORE_KEY]: nextState,
+    }
+  })
+}
+
+function resolveActionCommands<TConfig, TPayload>(
+  commands: ActionCommandResolver<TConfig, TPayload>,
+  props: MountedAddonButtonRenderProps<TConfig, TPayload>,
+): AddonButtonActionCommands | undefined {
+  return typeof commands === 'function' ? commands(props) : commands
+}
+
+export function useButtonActionCommand<TConfig, TPayload = unknown>(
+  commands: ActionCommandResolver<TConfig, TPayload>,
+): Pick<
+  MountedAddonButtonDefinition<TConfig, TPayload>,
+  'onPress' | 'onRelease' | 'onTap'
+> {
+  return {
+    onPress: ({ methods, store, ...rest }) => {
+      const resolvedCommands = resolveActionCommands(commands, {
+        ...rest,
+        methods,
+        store,
+      } as MountedAddonButtonRenderProps<TConfig, TPayload>)
+
+      if (!resolvedCommands?.hold) {
+        return
+      }
+
+      const currentState = readActionCommandState(store.button.snapshot)
+      if (currentState.holdTimer) {
+        clearTimeout(currentState.holdTimer)
+      }
+
+      const holdTimer = setTimeout(async () => {
+        updateActionCommandState(store.button, (state) => ({
+          ...state,
+          holdTimer: undefined,
+          holdTriggered: true,
+        }))
+
+        await methods.runCommand(resolvedCommands.hold!)
+      }, HOLD_ACTION_DELAY_MS)
+
+      updateActionCommandState(store.button, (state) => ({
+        ...state,
+        holdTimer,
+        holdTriggered: false,
+      }))
+    },
+    onRelease: ({ store }) => {
+      const currentState = readActionCommandState(store.button.snapshot)
+      if (!currentState.holdTimer) {
+        return
+      }
+
+      clearTimeout(currentState.holdTimer)
+      updateActionCommandState(store.button, (state) => ({
+        ...state,
+        holdTimer: undefined,
+      }))
+    },
+    onTap: async ({ methods, store, ...rest }) => {
+      const props = {
+        ...rest,
+        methods,
+        store,
+      } as MountedAddonButtonRenderProps<TConfig, TPayload>
+      const resolvedCommands = resolveActionCommands(commands, props)
+      const currentState = readActionCommandState(store.button.snapshot)
+
+      if (currentState.holdTriggered) {
+        updateActionCommandState(store.button, (state) => ({
+          ...state,
+          holdTriggered: false,
+        }))
+        return
+      }
+
+      if (currentState.pendingTap && resolvedCommands?.['double-tap']) {
+        clearTimeout(currentState.pendingTap.timer)
+        updateActionCommandState(store.button, (state) => ({
+          ...state,
+          pendingTap: undefined,
+        }))
+        await methods.runCommand(resolvedCommands['double-tap'])
+        currentState.pendingTap.resolve()
+        return
+      }
+
+      if (!resolvedCommands?.['double-tap']) {
+        if (resolvedCommands?.tap) {
+          await methods.runCommand(resolvedCommands.tap)
+        }
+        return
+      }
+
+      await new Promise<void>((resolve) => {
+        const timer = setTimeout(async () => {
+          updateActionCommandState(store.button, (state) => ({
+            ...state,
+            pendingTap: undefined,
+          }))
+
+          if (resolvedCommands.tap) {
+            await methods.runCommand(resolvedCommands.tap)
+          }
+
+          resolve()
+        }, DOUBLE_TAP_DELAY_MS)
+
+        updateActionCommandState(store.button, (state) => ({
+          ...state,
+          pendingTap: { resolve, timer },
+        }))
+      })
+    },
+  }
 }
 
 export interface ButtonSurfaceProps extends AddonButtonSurfaceContract {
