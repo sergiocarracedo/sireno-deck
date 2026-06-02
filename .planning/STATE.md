@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 Phase: 32 — Addon-Owned Data Polling Contract
 Plan: 32-01 through 32-04 complete; verify-work 32 next
 Status: verifying
-Last activity: 2026-06-02 - Completed Plan 33-01 Tailwind browser asset and split stylesheet delivery seam
+Last activity: 2026-06-02 - Completed quick task 026: icon component should use lucide icons not svg
 
 Progress: [##########] 100%
 
@@ -307,3 +307,4 @@ Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-VERIFICA
 | 021 | Align Phase 3 planning docs to the shared `Text` markup scope | 2026-05-29 | `6576f55` | `.planning/quick/021-align-phase-3-markup-scope` |
 | 022 | add the @ alias to import from src/ | 2026-06-01 | uncommitted | `.planning/quick/022-add-at-alias-to-import-from-src` |
 | 023 | make @ alias resolve when running pnpm cli:dev | 2026-06-01 | uncommitted | `.planning/quick/023-make-at-alias-work-on-cli-dev` |
+| 026 | Icon component should use lucide icons not svg | 2026-06-02 | `bfc0cc2` | `.planning/quick/026-icon-component-should-use-lucide-icons` |
