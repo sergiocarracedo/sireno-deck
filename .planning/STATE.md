@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 Phase: 32 — Addon-Owned Data Polling Contract
 Plan: 32-01 through 32-04 complete; verify-work 32 next
 Status: verifying
-Last activity: 2026-06-02 - Captured Phase 34 context for the button action command interface
+Last activity: 2026-06-02 - Completed quick task 029: in /works/opensource/sireno-deck/packages/cli/src/ui/Icon.tsx the icon component will get a icon name, and it should resolve that name automatically to the lucide icon, dont use a hardcoed map
 
 Progress: [##########] 100%
 
@@ -313,3 +313,4 @@ Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-VERIFICA
 | 023 | make @ alias resolve when running pnpm cli:dev | 2026-06-01 | uncommitted | `.planning/quick/023-make-at-alias-work-on-cli-dev` |
 | 026 | Icon component should use lucide icons not svg | 2026-06-02 | `bfc0cc2` | `.planning/quick/026-icon-component-should-use-lucide-icons` |
 | 027 | I want to use full instead of 'full_surface' | 2026-06-02 | `d120a29` | `.planning/quick/027-use-full-instead-of-full-surface` |
+| 029 | in /works/opensource/sireno-deck/packages/cli/src/ui/Icon.tsx the icon component will get a icon name, and it should resolve that name automatically to the lucide icon, dont use a hardcoed map | 2026-06-02 | `4d4f086` | `.planning/quick/029-icon-component-auto-resolve-lucide-name` |

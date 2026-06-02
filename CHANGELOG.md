@@ -2,14 +2,20 @@
 
 ## 2026-06-02
 
+### Features
+
+- Added export-driven Lucide icon resolution to the shared `Icon` component so generic icon names now resolve directly from the installed `lucide-react` package instead of a handwritten local registry.
+
 ### Fixes
 
+- Fixed shared icon-name drift by removing local generic icon allowlists from the `Icon` surface and nearby caller seams, and by switching the runtime warning icon to the real Lucide name `triangle-alert`. Root cause was that the UI layer had claimed to accept icon names while still depending on a private hardcoded subset, which forced nearby code to maintain shadow icon maps and stale aliases.
 - Fixed the bundled analog clock button so it now renders a real analog dial with live hour and minute hands instead of a placeholder text card. Root cause was that the Phase 8 button file had drifted into a static label surface while the product and review fixtures still treated it as a real clock visual.
 - Fixed the built-in date-time addon contract drift by registering both `clock` and `analog-clock` button ids against the same analog clock implementation and updating the focused addon test to cover the live shipped button set. Root cause was that the repo example config had moved to `clock` while older fixtures and tests still referenced `analog-clock`, leaving the addon surface internally inconsistent.
 - Fixed the core button-surface contract to use `full` instead of `full_surface` across config parsing, runtime transport, hosted rendering, and shipped fixtures while keeping the emitted DOM marker `data-sireno-full-surface` stable for browser assertions. Root cause was that the outer product contract had drifted away from the authored `ButtonSurface` prop, leaving one concept with two names depending on which seam you touched.
 
 ### Learnings
 
+- If a shared component claims to accept library-defined names, the resolver should derive from the library surface itself. Once callers start carrying their own allowlists or aliases, the contract is already lying.
 - Live visual buttons need output-focused regression coverage. A cadence assertion alone will stay green even after the visual silently collapses back into placeholder text.
 - If one runtime concept already has a canonical authored name, the surrounding config and transport seams should use that same name. Leaving `full_surface` outside and `full` inside only creates needless translation drift.
 
