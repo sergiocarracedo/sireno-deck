@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+import { AddonButtonActionConfigSchema } from '../../addon/api.js'
 import { SYSTEM_METRIC_IDS } from './domain/live-metrics.js'
 
 const SystemMetricIdSchema = z.enum(SYSTEM_METRIC_IDS)
@@ -10,8 +11,6 @@ const SystemStatusFormatterSchema = z.enum([
   'percent',
   'uptime',
 ])
-
-const OptionalActionSchema = z.string().min(1).optional()
 
 const SystemStatusMetricOverrideSchema = z
   .object({
@@ -35,7 +34,7 @@ const LabelValueMetricSchema = SystemStatusMetricOverrideSchema.extend({
 
 export const SystemStatusBarsButtonSchema = z
   .object({
-    hold_command: OptionalActionSchema,
+    ...AddonButtonActionConfigSchema.shape,
     metrics: z.union([
       z.tuple([BarsMetricSchema]),
       z.tuple([BarsMetricSchema, BarsMetricSchema]),
@@ -43,13 +42,12 @@ export const SystemStatusBarsButtonSchema = z
     ]),
     poll_interval_ms: z.number().int().min(500).default(1_000),
     render_interval_ms: z.number().int().min(500).default(1_000),
-    tap_command: OptionalActionSchema,
   })
   .strict()
 
 export const SystemStatusLabelValuesButtonSchema = z
   .object({
-    hold_command: OptionalActionSchema,
+    ...AddonButtonActionConfigSchema.shape,
     metrics: z.union([
       z.tuple([LabelValueMetricSchema]),
       z.tuple([LabelValueMetricSchema, LabelValueMetricSchema]),
@@ -67,7 +65,6 @@ export const SystemStatusLabelValuesButtonSchema = z
       ]),
     poll_interval_ms: z.number().int().min(500).default(1_000),
     render_interval_ms: z.number().int().min(500).default(1_000),
-    tap_command: OptionalActionSchema,
   })
   .strict()
 
