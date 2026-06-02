@@ -40,7 +40,7 @@ export function Bars(props: BarsProps): ReactElement {
       style={props.style}
     >
       {props.items.map((item, index) => {
-        const color = item.color ?? 'var(--color-primary)'
+        const color = item.color ?? 'var(--sireno-color-primary)'
 
         return (
           <div className="flex min-w-0 flex-1 flex-col gap-2" key={`${item.title}-${index}`}>

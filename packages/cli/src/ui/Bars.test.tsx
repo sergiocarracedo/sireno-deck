@@ -23,6 +23,17 @@ describe('Bars', () => {
     expect(html).toContain('disk')
   })
 
+  it('falls back to the authoritative Sireno primary token when a bar color is omitted', () => {
+    const html = renderReactNodeToHtml(
+      createElement(Bars, {
+        items: [{ maxValue: 100, title: 'cpu', value: 45 }],
+      }),
+    )
+
+    expect(html).toContain('var(--sireno-color-primary)')
+    expect(html).not.toContain('var(--color-primary)')
+  })
+
   it('rejects counts outside the 1-3 item contract', () => {
     expect(() =>
       Bars({
