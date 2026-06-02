@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 Phase: 33 — Add full tailwind support
 Plan: 33-01 through 33-03 complete; verify-work 33 next
 Status: verifying
-Last activity: 2026-06-02 - Completed quick task 024: fix real cli:dev source runner seam
+Last activity: 2026-06-02 - Completed quick task 025: fix real cli:dev theme prebuild seam
 
 Progress: [##########] 100%
 
@@ -314,3 +314,4 @@ Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-VERIFICA
 | 020 | Fix the Phase 2 shrink-fit review findings around font-load reruns and duplicate observer roots | 2026-05-29 | `c00a32f` | `.planning/quick/020-fix-phase-2-shrink-fit-review-findings` |
 | 021 | Align Phase 3 planning docs to the shared `Text` markup scope | 2026-05-29 | `6576f55` | `.planning/quick/021-align-phase-3-markup-scope` |
 | 024 | Done in 78ms ERR_MODULE_NOT_FOUND in cli:dev dev-watch import | 2026-06-02 | `1a68c57`, `b9aaf0c` | `.planning/quick/024-fix-dev-watch-index-import` |
+| 025 | Fix tailwind prebuild theme tsconfig path on real cli:dev seam | 2026-06-02 | `c9a0158` | `.planning/quick/025-fix-tailwind-theme-tsconfig-path` |
