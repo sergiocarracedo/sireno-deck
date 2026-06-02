@@ -132,6 +132,15 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] 34-02: Migrate system-status onto the shared command-action contract
 - [x] 34-03: Roll the shared command contract across regular date-time buttons
 
+### Phase 35: Live hardware resampling at 250ms
+
+**Goal:** Keep browser-rendered animated button surfaces live on physical Stream Deck hardware by resampling the mounted deck surface at roughly 250ms cadence without restarting the page on every frame.
+**Status:** [ ] Not started
+**Depends on:** Phase 34
+
+### Plans
+*Not yet planned - run `plan-phase 35`*
+
 ## Coverage Check
 
 | Requirement | Phase |

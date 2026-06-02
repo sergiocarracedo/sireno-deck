@@ -112,6 +112,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 35 added: keep browser-rendered animated button surfaces live on physical Stream Deck hardware by resampling the mounted deck surface at roughly 250ms cadence without restarting the page on every frame.
 - Phase 34 added: create a common interface addon buttons can optionally implement to handle button-action system commands (`tap`, `hold`, `double-tap`) through a shared schema and hook, refactoring action-button and date-time buttons onto the pattern while keeping media-player internal.
 - Phase 33 added: add full Tailwind support.
 - Phase 32 added: move addon-specific polling/data-fetching logic out of core system modules into addon-owned callbacks so core only schedules intervals, passes command output props to render, and publishes rendered frames.
