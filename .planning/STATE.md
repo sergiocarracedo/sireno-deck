@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 Phase: 31 — CLI Dev Watch Mode Argument Forwarding
 Plan: 31 rerun closure complete; verify-work 31 next
 Status: verifying
-Last activity: 2026-06-02 - Completed Plan 33-02 shared UI and built-in Tailwind hard cut
+Last activity: 2026-06-02 - Completed Plan 33-03 workspace Tailwind contract and cli:dev rebuild hook
 
 Progress: [##########] 100%
 
@@ -94,6 +94,8 @@ Recent decisions affecting current work:
 - **Phase 33 discussion:** Sireno theme resolution stays authoritative through the Tailwind bridge, the full resolved browser theme contract should remain available to utilities, shipped color/typography styling stays Sireno-token-backed, and dynamic class needs require an explicit safelist-generation contract rather than runtime compilation magic.
 - **Phase 33 execution:** Plan `33-01` replaced the handwritten browser utility generator with a real Tailwind browser asset build, kept Sireno theme vars authoritative, and narrowed `theme-utilities.ts` to Tailwind asset loading plus product-only runtime glue.
 - **Phase 33 execution:** Browser and emulator delivery now use explicit split stylesheet seams (`data-sireno-tailwind`, `data-sireno-runtime`, `data-sireno-theme-assets`) instead of the legacy `data-sireno-theme-utilities` contract, with focused regression proof on the shipped browser/emulator paths.
+- **Phase 33 execution:** Plan `33-03` added a generated Tailwind contract builder that collects real theme and enabled local-addon roots plus explicit manifest safelist entries, keeping workspace Tailwind participation bounded to the user-locked repo-owned surfaces.
+- **Phase 33 execution:** `cli:dev` now rebuilds the Tailwind browser stylesheet before restarting the CLI, so the shipped watch seam stays truthful for core UI, built-ins, committed custom themes, and enabled local addons without inventing a second watcher.
 - **Phase 33 execution:** Plan `33-02` hard-cut the shipped shared UI and narrowed built-in browser surfaces onto canonical Tailwind classes, replacing the stale shared `--color-primary` fallback and remaining fixed inline typography/layout values while keeping genuinely runtime-driven styles inline.
 - **Phase 30 execution:** The shared helper surface now ships as public `Bars` and `LabelValueList` TSX components from the package root, with runtime-enforced count bounds and `LabelValueList` auto-layout still kept presentation-only.
 - **Phase 30 execution:** The bundled `system-status` addon now loads through the real shipped registry with `system-status-bars` and `system-status-label-values`, backed by one canonical metric catalog, a bounded numbro-backed display mapper, explicit unavailable slots, and button-local tap/hold handling that does not widen runtime semantics.
@@ -151,6 +153,7 @@ Recent decisions affecting current work:
 - **Phase 32 discussion:** Locked addon-owned polling/data ownership with core as a capability-agnostic scheduler/transport seam, split data/render interval support, callback payload handoff into render props, addon-local OS adapters, and a deliberate big-bang migration strategy.
 - **Phase 33 discussion:** Locked Phase 33 around real Tailwind adoption for the browser-rendered surface, a prebuilt Tailwind stylesheet asset plus Sireno-specific runtime CSS glue, first-class workspace support for core/shared UI plus built-ins/theme TSX/local addons, and a truthful `pnpm cli:dev` seam for Tailwind changes.
 - **Phase 33 execution:** Completed Plan `33-01` by adding a real Tailwind v4 browser stylesheet build for the CLI package, keeping Sireno token/runtime glue ownership narrow, and splitting browser/emulator stylesheet delivery into explicit Tailwind/runtime/theme-asset seams with focused regression coverage.
+- **Phase 33 execution:** Completed Plan `33-03` by adding the explicit addon/theme Tailwind safelist contract, generating browser stylesheet source inputs from the real bootstrap config, and rebuilding Tailwind automatically inside the shipped `cli:dev` restart seam.
 - **Phase 33 execution:** Completed Plan `33-02` by aligning shared `Bars`/`Chip` seams and the touched built-in browser layouts with canonical Tailwind token/spacing classes, while refreshing focused regressions only around the exact render surfaces changed by the hard cut.
 
 - **Phase 30 discussion:** Locked the new helper surface to public component-first `Bars` and `LabelValueList` components, bounded system-status around canonical metric adapters plus helper-template buttons with honest unavailable states, and bounded media-player around truthful status, best-effort metadata, shared marquee overflow, fixed tap play/pause, and optional hold behavior.
