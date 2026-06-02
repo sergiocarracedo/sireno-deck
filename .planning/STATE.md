@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 Phase: 33 — Add full tailwind support
 Plan: 33-01 through 33-03 complete; verify-work 33 next
 Status: verifying
-Last activity: 2026-06-02 - Verified Phase 33 Tailwind support and moved to manual UAT
+Last activity: 2026-06-02 - Completed quick task 024: fix dev-watch index import
 
 Progress: [##########] 100%
 
@@ -313,3 +313,4 @@ Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-VERIFICA
 | 019 | Reconcile v1.2 milestone planning-state drift so complete-milestone can run truthfully | 2026-05-28 | `5ab3e0f` | `.planning/quick/019-reconcile-v12-milestone-drift` |
 | 020 | Fix the Phase 2 shrink-fit review findings around font-load reruns and duplicate observer roots | 2026-05-29 | `c00a32f` | `.planning/quick/020-fix-phase-2-shrink-fit-review-findings` |
 | 021 | Align Phase 3 planning docs to the shared `Text` markup scope | 2026-05-29 | `6576f55` | `.planning/quick/021-align-phase-3-markup-scope` |
+| 024 | Done in 78ms ERR_MODULE_NOT_FOUND in cli:dev dev-watch import | 2026-06-02 | `1a68c57` | `.planning/quick/024-fix-dev-watch-index-import` |
