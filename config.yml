@@ -6,6 +6,7 @@ decks:
       - position: 0
         type: date-time
         format: 'HH:mm'
+
       - position: 1
         type: change-deck
         label: Emoji
@@ -16,24 +17,40 @@ decks:
         label: Action
         command: 'google-chrome'
         icon: addon://emoji-selector/nature.svg
-      - position: 3
-        type: date-time
-        format: 'HH:mm'
       - position: 4
-        type: action
-        label: Action
-        command: 'google-chrome'
-        icon: addon://emoji-selector/nature.svg
+        type: system-status-bars
+        metrics:
+          - metric: cpu_usage
+            label: CPU
+          - metric: memory_usage
+            label: RAM
+          - metric: swap_usage
+            label: Swap
+            unavailable_label: N/A
       - position: 5
-        type: action
-        label: Action
-        command: 'google-chrome'
-        icon: addon://emoji-selector/nature.svg
+        type: system-status-label-values
+        metrics:
+          - metric: cpu_usage
+            label: CPU
+            icon: sparkles
+          - metric: fan_speed
+            label: Fan
+            unavailable_label: N/A
+          - metric: uptime
+            label: Uptime
       - position: 6
-        type: action
-        label: Action
-        command: 'google-chrome'
-        icon: addon://emoji-selector/nature.svg
+        type: media-player
+        unavailable_label: Unavailable
+
+      - position: 10
+        type: time
+        variant: big
+      - position: 11
+        type: time
+      - position: 12
+        type: calendar-sheet
+      - position: 13
+        type: clock
 
   emoji:
     id: emoji

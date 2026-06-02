@@ -31,7 +31,7 @@ export function ButtonFrame(props: ButtonFrameProps) {
   return (
     <div
       className={cn([
-        'bg-background border-frame border-2 border-solid w-full h-full rounded-lg flex items-center justify-center p-1 overflow-hidden',
+        'bg-background border-frame border-2 border-solid w-full h-full rounded-2xl flex items-center justify-center p-1 overflow-hidden',
       ])}
       data-sireno-button-frame="true"
     >

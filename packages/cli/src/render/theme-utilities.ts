@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
-import type { Theme, ThemeTypographyRole } from '../config/theme.js'
+import type { Theme, ThemeTypographyRole } from '@/config/theme'
 
 interface ThemeCssVariable {
   name: string

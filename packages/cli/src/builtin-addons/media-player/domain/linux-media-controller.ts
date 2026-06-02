@@ -99,8 +99,6 @@ export function createLinuxMediaController(
 ): MediaController {
   return {
     async getSnapshot(): Promise<MediaControllerSnapshot> {
-      // `playerctl` keeps Linux media support on the documented MPRIS/dbus path
-      // without pushing raw dbus details into the button renderer.
       const [statusResult, metadataResult, positionResult] = await Promise.all([
         client.run(['status']),
         client.run(['metadata', '--format', '{{playerName}}|||{{artist}}|||{{title}}|||{{mpris:length}}']),

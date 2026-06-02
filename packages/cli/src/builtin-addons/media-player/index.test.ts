@@ -10,9 +10,9 @@ const {
   togglePlayPauseMock: vi.fn(),
 }))
 
-vi.mock('../../system/media-controller.js', async () => {
-  const actual = await vi.importActual<typeof import('../../system/media-controller.js')>(
-    '../../system/media-controller.js',
+vi.mock('./domain/media-controller.js', async () => {
+  const actual = await vi.importActual<typeof import('./domain/media-controller.js')>(
+    './domain/media-controller.js',
   )
 
   return {
@@ -105,7 +105,10 @@ describe('media-player addon', () => {
     expect(mediaPlayerAddon.buttons.map((button) => button.type)).toEqual([
       'media-player',
     ])
-    expect(mediaPlayerAddon.buttons[0]?.configSchema.parse({})).toEqual({})
+    expect(mediaPlayerAddon.buttons[0]?.configSchema.parse({})).toEqual({
+      poll_interval_ms: 1_000,
+      render_interval_ms: 1_000,
+    })
   })
 
   it('loads the bundled media-player through the real registry and renders shared progress plus marquee metadata', async () => {

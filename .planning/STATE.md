@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 33 full Tailwind support execution is complete. Browser-rendered UI now runs on the real Tailwind utility surface, themes and enabled local addons feed an explicit Tailwind contract, and `verify-work 33` is the next workflow step for manual UAT on the shipped browser/emulator seams.
+**Current focus:** Phase 32 addon-owned polling contract execution is complete. Core runtime now stays capability-agnostic while system-status/media-player capability domains and polling adapters are addon-owned, `verify-work 32` remains the next workflow step for the shipped seam, and Phase 33 context is now captured for follow-on planning.
 
 ## Current Position
 
-Phase: 33 — Add full tailwind support
-Plan: 33-01 through 33-03 complete; verify-work 33 next
+Phase: 32 — Addon-Owned Data Polling Contract
+Plan: 32-01 through 32-04 complete; verify-work 32 next
 Status: verifying
-Last activity: 2026-06-02 - Completed quick task 025: fix real cli:dev theme prebuild seam
+Last activity: 2026-06-02 - Completed Plan 33-01 Tailwind browser asset and split stylesheet delivery seam
 
 Progress: [##########] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 19
+- Total plans completed: 23
 - Average duration: 1 session
 - Total execution time: 1 session
 
@@ -94,10 +94,6 @@ Recent decisions affecting current work:
 - **Phase 33 discussion:** Sireno theme resolution stays authoritative through the Tailwind bridge, the full resolved browser theme contract should remain available to utilities, shipped color/typography styling stays Sireno-token-backed, and dynamic class needs require an explicit safelist-generation contract rather than runtime compilation magic.
 - **Phase 33 execution:** Plan `33-01` replaced the handwritten browser utility generator with a real Tailwind browser asset build, kept Sireno theme vars authoritative, and narrowed `theme-utilities.ts` to Tailwind asset loading plus product-only runtime glue.
 - **Phase 33 execution:** Browser and emulator delivery now use explicit split stylesheet seams (`data-sireno-tailwind`, `data-sireno-runtime`, `data-sireno-theme-assets`) instead of the legacy `data-sireno-theme-utilities` contract, with focused regression proof on the shipped browser/emulator paths.
-- **Phase 33 execution:** Plan `33-03` added a generated Tailwind contract builder that collects real theme and enabled local-addon roots plus explicit manifest safelist entries, keeping workspace Tailwind participation bounded to the user-locked repo-owned surfaces.
-- **Phase 33 execution:** `cli:dev` now rebuilds the Tailwind browser stylesheet before restarting the CLI, so the shipped watch seam stays truthful for core UI, built-ins, committed custom themes, and enabled local addons without inventing a second watcher.
-- **Phase 33 execution:** Plan `33-02` hard-cut the shipped shared UI and narrowed built-in browser surfaces onto canonical Tailwind classes, replacing the stale shared `--color-primary` fallback and remaining fixed inline typography/layout values while keeping genuinely runtime-driven styles inline.
-- **Phase 33 verification:** Focused browser, emulator, shared UI, built-in, dev-watch, theme, and addon-loader seams all pass on the real Tailwind contract, so the phase is ready for `verify-work 33` manual UAT rather than more implementation work.
 - **Phase 30 execution:** The shared helper surface now ships as public `Bars` and `LabelValueList` TSX components from the package root, with runtime-enforced count bounds and `LabelValueList` auto-layout still kept presentation-only.
 - **Phase 30 execution:** The bundled `system-status` addon now loads through the real shipped registry with `system-status-bars` and `system-status-label-values`, backed by one canonical metric catalog, a bounded numbro-backed display mapper, explicit unavailable slots, and button-local tap/hold handling that does not widen runtime semantics.
 - **Phase 30 execution:** The bundled `media-player` addon now loads through the real shipped registry on top of a shared media-controller seam, uses a real Linux `playerctl` adapter, keeps macOS and Windows explicitly unsupported until verified, reuses `Bars` and shared `Text` marquee, and keeps tap fixed to play/pause with optional hold behavior implemented locally inside the button seam.
@@ -107,7 +103,6 @@ Recent decisions affecting current work:
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 - Run `/review` on the completed Phase 5 closure pass, then continue with `/ship` and `/compound` once review is clean.
 - Run `verify-work 30` for the committed manual UAT pass, then continue with `/review`, `/ship`, and `/compound`.
-- Run `verify-work 33` for a fresh manual UAT pass on the shipped browser/emulator Tailwind seams, shared UI hard cut, and workspace theme/local-addon Tailwind contract.
 - Run `verify-work 32` for a fresh manual UAT pass on addon-owned polling payload flow, split cadence behavior, and migrated built-in system-status/media-player paths.
 
 ### Roadmap Evolution
@@ -154,9 +149,6 @@ Recent decisions affecting current work:
 - **Phase 32 discussion:** Locked addon-owned polling/data ownership with core as a capability-agnostic scheduler/transport seam, split data/render interval support, callback payload handoff into render props, addon-local OS adapters, and a deliberate big-bang migration strategy.
 - **Phase 33 discussion:** Locked Phase 33 around real Tailwind adoption for the browser-rendered surface, a prebuilt Tailwind stylesheet asset plus Sireno-specific runtime CSS glue, first-class workspace support for core/shared UI plus built-ins/theme TSX/local addons, and a truthful `pnpm cli:dev` seam for Tailwind changes.
 - **Phase 33 execution:** Completed Plan `33-01` by adding a real Tailwind v4 browser stylesheet build for the CLI package, keeping Sireno token/runtime glue ownership narrow, and splitting browser/emulator stylesheet delivery into explicit Tailwind/runtime/theme-asset seams with focused regression coverage.
-- **Phase 33 execution:** Completed Plan `33-03` by adding the explicit addon/theme Tailwind safelist contract, generating browser stylesheet source inputs from the real bootstrap config, and rebuilding Tailwind automatically inside the shipped `cli:dev` restart seam.
-- **Phase 33 execution:** Completed Plan `33-02` by aligning shared `Bars`/`Chip` seams and the touched built-in browser layouts with canonical Tailwind token/spacing classes, while refreshing focused regressions only around the exact render surfaces changed by the hard cut.
-- **Phase 33 verification:** Confirmed all three Phase 33 slices with focused runtime/UI/theme/addon/watch checks plus the real Tailwind browser build, and wrote `33-VERIFICATION.md` with 6/6 must-haves passing before the manual UAT handoff.
 
 - **Phase 30 discussion:** Locked the new helper surface to public component-first `Bars` and `LabelValueList` components, bounded system-status around canonical metric adapters plus helper-template buttons with honest unavailable states, and bounded media-player around truthful status, best-effort metadata, shared marquee overflow, fixed tap play/pause, and optional hold behavior.
 
@@ -313,5 +305,5 @@ Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-VERIFICA
 | 019 | Reconcile v1.2 milestone planning-state drift so complete-milestone can run truthfully | 2026-05-28 | `5ab3e0f` | `.planning/quick/019-reconcile-v12-milestone-drift` |
 | 020 | Fix the Phase 2 shrink-fit review findings around font-load reruns and duplicate observer roots | 2026-05-29 | `c00a32f` | `.planning/quick/020-fix-phase-2-shrink-fit-review-findings` |
 | 021 | Align Phase 3 planning docs to the shared `Text` markup scope | 2026-05-29 | `6576f55` | `.planning/quick/021-align-phase-3-markup-scope` |
-| 024 | Done in 78ms ERR_MODULE_NOT_FOUND in cli:dev dev-watch import | 2026-06-02 | `1a68c57`, `b9aaf0c` | `.planning/quick/024-fix-dev-watch-index-import` |
-| 025 | Fix tailwind prebuild theme tsconfig path on real cli:dev seam | 2026-06-02 | `c9a0158` | `.planning/quick/025-fix-tailwind-theme-tsconfig-path` |
+| 022 | add the @ alias to import from src/ | 2026-06-01 | uncommitted | `.planning/quick/022-add-at-alias-to-import-from-src` |
+| 023 | make @ alias resolve when running pnpm cli:dev | 2026-06-01 | uncommitted | `.planning/quick/023-make-at-alias-work-on-cli-dev` |

@@ -24,6 +24,7 @@
     --tracking-wide: 0.025em;
     --leading-tight: 1.25;
     --radius-lg: 0.5rem;
+    --radius-2xl: 1rem;
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
   }
@@ -321,6 +322,9 @@
   .overflow-hidden {
     overflow: hidden;
   }
+  .rounded-2xl {
+    border-radius: var(--radius-2xl);
+  }
   .rounded-\[10px\] {
     border-radius: 10px;
   }
@@ -471,9 +475,13 @@
   .text-xs {
     font-size: calc(var(--sireno-active-font-size, 16px) * 0.7);
   }
-  .leading-\[0\.85\] {
-    --tw-leading: 0.85;
-    line-height: 0.85;
+  .\!leading-\[inherit\] {
+    --tw-leading: inherit !important;
+    line-height: inherit !important;
+  }
+  .leading-\[0\.80\] {
+    --tw-leading: 0.80;
+    line-height: 0.80;
   }
   .leading-tight {
     --tw-leading: var(--leading-tight);

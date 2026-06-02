@@ -24,10 +24,18 @@ export function formatLockedTimeTileCharacter(
   switch (slot) {
     case 'hour':
       return hours
+    case 'hour-tens':
+      return hours[0] ?? '0'
+    case 'hour-ones':
+      return hours[1] ?? '0'
     case 'separator':
       return separator
     case 'minute':
       return minutes
+    case 'minute-tens':
+      return minutes[0] ?? '0'
+    case 'minute-ones':
+      return minutes[1] ?? '0'
   }
 }
 

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { SYSTEM_METRIC_IDS } from '../../system/live-metrics.js'
+import { SYSTEM_METRIC_IDS } from './domain/live-metrics.js'
 
 const SystemMetricIdSchema = z.enum(SYSTEM_METRIC_IDS)
 const SystemStatusFormatterSchema = z.enum([
@@ -41,6 +41,8 @@ export const SystemStatusBarsButtonSchema = z
       z.tuple([BarsMetricSchema, BarsMetricSchema]),
       z.tuple([BarsMetricSchema, BarsMetricSchema, BarsMetricSchema]),
     ]),
+    poll_interval_ms: z.number().int().min(500).default(1_000),
+    render_interval_ms: z.number().int().min(500).default(1_000),
     tap_command: OptionalActionSchema,
   })
   .strict()
@@ -62,7 +64,9 @@ export const SystemStatusLabelValuesButtonSchema = z
         LabelValueMetricSchema,
         LabelValueMetricSchema,
       ]),
-    ]),
+      ]),
+    poll_interval_ms: z.number().int().min(500).default(1_000),
+    render_interval_ms: z.number().int().min(500).default(1_000),
     tap_command: OptionalActionSchema,
   })
   .strict()

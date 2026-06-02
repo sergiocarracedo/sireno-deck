@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react'
 
-import type { Theme } from '../config/theme.js'
-import { cn } from '../themes/utils/cn'
+import type { Theme } from '@/config/theme'
+import { cn } from '@/themes/utils/cn'
 
 import type { BrowserRendererLayout } from './browser-renderer.js'
 import { DeckKeySlot } from './dom-host-deck-key-slot.js'
@@ -49,12 +49,8 @@ export function DeckDocument(props: DeckDocumentProps): ReactElement {
   return (
     <html>
       <head>
-        <style data-sireno-tailwind="true">
-          {props.tailwindStylesheet}
-        </style>
-        <style data-sireno-runtime="true">
-          {props.runtimeStylesheet}
-        </style>
+        <style data-sireno-tailwind="true">{props.tailwindStylesheet}</style>
+        <style data-sireno-runtime="true">{props.runtimeStylesheet}</style>
         <style data-sireno-theme-assets="true">
           {props.themeAssetStylesheet}
         </style>

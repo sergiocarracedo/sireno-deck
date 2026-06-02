@@ -1,85 +1,79 @@
 # Architecture Research
 
-**Domain:** v1.2 session context and surface composition
-**Researched:** 2026-05-17
+**Domain:** v1.3 typography scaling, live text fitting, and rich date-time formatting
+**Researched:** 2026-05-28
 **Confidence:** HIGH
 
 ## Component Boundaries
 
 ### Main Architecture Constraint
 
-This milestone still fits the existing architecture, but only if the new capabilities are added at the right seams:
+This milestone still fits the existing architecture if each concern lands in one seam:
 
-- config/schema layer owns declared precedence and allowed config surface
-- addon registry owns globally named extension primitives
-- runtime owns session observation, deck switching, restore state, and dim timers
-- addon button instances consume injected context instead of probing the host directly
-- reconciler owns the render contract for wrappers/styles/text-fit props
-- renderer owns actual SVG/background/text composition
+- theme runtime owns typography base variables per role
+- `Text` owns declarative text intent: `fit`, `size`, `typography`, alignment, tone
+- theme UI presentation owns wrapper-level styling and metadata passthrough
+- browser-render path owns measured shrink-fit behavior
+- built-in date-time addon owns parsing of date-time-only rich formatting syntax
+- Day.js remains the date token formatter under that parser, not a replacement target
 
-The repo currently has no session service, no config templating seam, and only a clip-only text contract. Those are the real architectural gaps. [HIGH: codebase scan]
+The repo's current issue is simple: `.font-main/.font-aux/.font-mono` already set the final `font-size`, so `text-sm/lg/xl` cannot be truly relative. [HIGH: `packages/cli/src/render/theme-utilities.ts`, `packages/cli/src/ui/Text.tsx`]
 
 ### Components Most Directly Touched
 
 | Component | Current Role | Milestone Pressure |
 |-----------|--------------|--------------------|
-| `packages/cli/src/core/schemas.ts` | config validation and deck/button expansion | add background layering fields, locked-deck config, toggle schemas, and templating input shape |
-| `packages/cli/src/addon/api.ts` | addon button/deck contracts | inject session/OS context into render and command/status paths; possibly define wrapper/style registration contracts |
-| `packages/cli/src/addon/registry.ts` | registry for buttons, decks, assets | widen to globally registered wrappers/styles |
-| `packages/cli/src/deck/runtime.ts` | lifecycle, polling, navigation, render invalidation | add session observation, locked-deck switching, dim timer, and restore behavior |
-| `packages/cli/src/render/reconciler.ts` and `render/types.ts` | narrow render node contract | add text-fit modes and wrapper/style references without blowing up the surface |
-| `packages/cli/src/render/text-image.ts` | SVG composition and rasterization | resolve background layers once, then render variants against that resolved surface |
-| `packages/cli/src/config/loader.ts` | YAML load and validation orchestration | likely host config templating expansion point before validation or during bootstrap |
+| `packages/cli/src/ui/Text.tsx` | public text component surface | keep public props stable while changing how size and shrink-fit are realized |
+| `packages/cli/src/render/theme-utilities.ts` | emits shared theme CSS classes and variables | split typography-role base values from size multipliers and add blink/reduced-motion helpers if global |
+| `packages/cli/src/config/theme.ts` | typed theme contract and theme UI presentation props | may need stronger typing/docs around size semantics, but existing props already carry the needed metadata |
+| `packages/cli/src/themes/default/ButtonFrame.tsx` | default theme presentation wrappers | should keep forwarding `size`, `fit`, and typography metadata without assuming absolute font sizing |
+| `packages/cli/src/builtin-addons/date-time/format.ts` | current plain Day.js string formatting | natural home for rich format parsing or an adjacent parser helper |
+| `packages/cli/src/builtin-addons/date-time/buttons/date-time.tsx` | current one-line rendered widget | needs to render segmented rich content instead of a single flat string |
+| `packages/cli/src/builtin-addons/date-time/schemas.ts` | widget config schema | requirements must choose whether v1.3 standardizes one rich `format` string or reintroduces split date/time config fields |
 
 ## Data Flow
 
 ### Recommended Flow For This Milestone
 
-1. Load YAML config.
-2. Resolve a limited template context for config expansion using core-owned OS/session snapshot.
-3. Validate config and expand addon decks/buttons.
-4. Build a runtime session-context service that refreshes OS/session state on a core-owned cadence.
-5. Inject the same normalized context into addon instances for render and action/status execution.
-6. Resolve active deck surface, including locked-deck substitution when session state demands it.
-7. Resolve background precedence once for each rendered button surface: config-level override, then deck background, then theme background.
-8. Reconciler emits explicit text-fit and wrapper/style identifiers.
-9. Renderer composes SVG from resolved background + wrapper/style + variant visual + text-fit behavior.
+1. Load theme typography roles as base variables for family, weight, tracking, and base size.
+2. `Text` resolves `typography` and `size` to a role-specific base plus a size multiplier.
+3. For `fit="wrap"`, `ellipsis`, and `marquee`, render declaratively with CSS classes only.
+4. For `fit="shrink"`, mount a measured text container in the browser-render path and recompute when text or container size changes.
+5. For the built-in date-time widget, first format the raw date tokens with Day.js.
+6. Parse the resulting format string plus rich markers into a small segment tree.
+7. Render that segment tree as nested spans or stacked lines using `Text`-compatible styling primitives.
+8. Apply blink presentation through CSS, with reduced-motion overrides.
 
 ### Key Architectural Recommendation
 
-Do not let three different layers invent their own idea of “context”:
+Do not collapse three different concerns into one mechanism:
 
-- config templating should use the same normalized OS/session shape as runtime buttons
-- action/status code should receive the same shape as render code
-- lock-state switching should be owned by runtime, not buried inside button logic
+- typography scaling is a theme/CSS concern
+- shrink-fit is a measured layout concern
+- rich date-time formatting is a parsing/render-tree concern
 
-That keeps the milestone from becoming a bag of parallel one-off mechanisms.
+Trying to solve all three with one generic text engine will overcomplicate the milestone and blur ownership.
 
 ## Build Order
 
-Recommended order for the milestone domain:
-
-1. Add normalized OS/session context model and Linux lock-state discovery seam
-2. Add config support for locked deck and background layering
-3. Inject context into addon instance creation and command/status helpers
-4. Add render contract growth: text-fit modes and wrapper/style references
-5. Add renderer support for background layering and fitting behavior
-6. Add registry-backed global wrappers/styles
-7. Add richer built-in toggles on top of the new runtime/config contracts
-8. Add lock-switch, dim timer, and restore-state runtime behavior
-
-This order stabilizes the host contracts before shipping user-facing widgets and visuals that depend on them.
+1. Redefine typography CSS so role classes expose a scalable base instead of the final size.
+2. Update `Text` size semantics and add tests that prove `sm/md/lg/...` are proportional to active typography bases.
+3. Add browser-path shrink-fit measurement with a minimum font floor and realtime invalidation.
+4. Decide and document the v1.3 date-time config contract: one rich `format` string vs split fields.
+5. Add a date-time-local rich format parser that outputs segments/lines.
+6. Render rich segments with accent, bold, size overrides, and blink behavior.
+7. Add accessibility and stale-contract regression tests.
 
 ## Integration Points
 
 | Boundary | Current Contract | Milestone Guidance |
 |----------|------------------|--------------------|
-| Config -> validation | bootstrap config then full registry-backed validation | add background and locked-deck config here, not in runtime-only hidden settings |
-| Runtime -> addon button instances | `button`, `config`, `methods`, `theme` | extend with normalized session/OS context and keep it stable across render/actions/status |
-| Addon registry -> renderer | buttons, decks, assets only | add globally named wrapper/style primitives if the user wants cross-addon reuse |
-| Reconciler -> renderer | narrow props like `label`, `subtitle`, `variant`, `overflow`, `wrapper` | evolve this minimally into explicit fit/wrap and wrapper/style ids |
-| Runtime -> deck controller | active deck / back stack only | runtime must own lock substitution and restore previous active deck after unlock |
+| Theme -> shared CSS | typography role classes currently include final font size | move to base-size variable plus size multiplier composition |
+| `Text` -> theme UI presentation | passes `fit`, `tone`, `typography`, `size` into theme wrappers | keep this contract stable; do not hide sizing semantics inside themes alone |
+| Browser render -> text layout | mostly declarative DOM/CSS output today | add measured logic only for shrink mode |
+| Date-time config -> formatter | currently live code is `format`, while tests still reference older split fields | requirements must pick one contract explicitly to avoid drifting implementation/tests |
+| Rich formatter -> rendered spans | not present yet | output a narrow segment model, not arbitrary HTML |
 
 ---
-*Architecture research for: v1.2 session context and surface composition*
-*Researched: 2026-05-17*
+*Architecture research for: v1.3 typography scaling, live text fitting, and rich date-time formatting*
+*Researched: 2026-05-28*

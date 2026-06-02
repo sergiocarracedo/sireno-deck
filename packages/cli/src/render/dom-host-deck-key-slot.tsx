@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 
-import type { Theme } from '../config/theme.js'
+import type { Theme } from '@/config/theme'
 import { cn } from '../themes/utils/cn'
 
 import { HostedButtonContent } from './dom-host-hosted-button-content.js'

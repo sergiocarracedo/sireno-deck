@@ -46,8 +46,8 @@ vi.mock('../../config/loader.js', () => ({
   loadConfigWithSources,
 }))
 
-vi.mock('../../config/theme.js', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../../config/theme.js')>()
+vi.mock('../../config/theme', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../config/theme')>()
 
   return {
     ...actual,
@@ -2093,7 +2093,9 @@ describe('startEmulatorSession', () => {
     )
 
     expect(moduleSource).toContain('function patchThemeStyles(nextDocument)')
-    expect(moduleSource).toContain("['data-sireno-tailwind','data-sireno-runtime','data-sireno-theme-assets'].forEach((attributeName) => {")
+    expect(moduleSource).toContain(
+      "['data-sireno-tailwind','data-sireno-runtime','data-sireno-theme-assets'].forEach((attributeName) => {",
+    )
     expect(moduleSource).toContain('function patchDeckRoot(nextDeckRoot)')
     expect(moduleSource).toContain('emulatorMode,')
     expect(moduleSource).toContain(

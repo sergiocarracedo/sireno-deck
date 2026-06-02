@@ -931,6 +931,201 @@ describe("createDeckRuntime", () => {
     })
   })
 
+  it("forwards the latest polled payload into mounted render props", async () => {
+    let schedulerTask: (() => Promise<void>) | undefined
+    let nextLabel = "fresh"
+    const createScheduler = vi.fn((_intervalMs: number): PollingScheduler => ({
+      intervalMs: 0,
+      jitterMs: 0,
+      scheduleDelay: () => 0,
+      start: (tasks) => {
+        schedulerTask = tasks[0]?.run
+      },
+      stop: vi.fn(),
+    }))
+
+    const runtime = createDeckRuntime({
+      createScheduler,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Payload" },
+          definition: {
+            configSchema: {
+              parse: (value: unknown) => value,
+              safeParse: (value: unknown) => ({ data: value, success: true as const }),
+            },
+            defaultPollIntervalMs: 1000,
+            poll: async () => ({ label: nextLabel }),
+            render: ({ button, payload }: { button: { position: number }; payload?: { label: string } }) => (
+              createTextSurface(button.position, payload?.label ?? "empty")
+            ),
+            type: "payload-button",
+          },
+          label: "Payload",
+          position: 0,
+          type: "payload-button",
+        }],
+      },
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("empty")
+      expect(createScheduler).toHaveBeenCalledWith(1000)
+    })
+
+    await schedulerTask?.()
+
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("fresh")
+    })
+  })
+
+  it("keeps poll and render cadence loops independent when both are configured", async () => {
+    const scheduledTasks = new Map<string, () => Promise<void>>()
+    const createScheduler = vi.fn((intervalMs: number): PollingScheduler => ({
+      intervalMs,
+      jitterMs: 0,
+      scheduleDelay: () => 0,
+      start: (tasks) => {
+        for (const task of tasks) {
+          scheduledTasks.set(task.id, task.run)
+        }
+      },
+      stop: vi.fn(),
+    }))
+    let pollTick = 0
+
+    const runtime = createDeckRuntime({
+      createScheduler,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Split" },
+          definition: {
+            configSchema: {
+              parse: (value: unknown) => value,
+              safeParse: (value: unknown) => ({ data: value, success: true as const }),
+            },
+            defaultPollIntervalMs: 2000,
+            defaultRenderIntervalMs: 1000,
+            poll: async () => {
+              pollTick += 1
+              return { label: `tick-${pollTick}` }
+            },
+            render: ({ button, payload }: { button: { position: number }; payload?: { label: string } }) => (
+              createTextSurface(button.position, payload?.label ?? "none")
+            ),
+            type: "split-cadence-button",
+          },
+          label: "Split",
+          position: 0,
+          type: "split-cadence-button",
+        }],
+      },
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(createScheduler).toHaveBeenCalledWith(2000)
+      expect(createScheduler).toHaveBeenCalledWith(1000)
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("none")
+    })
+
+    const pollTask = [...scheduledTasks.entries()].find(([id]) => id.endsWith("-poll"))?.[1]
+    const renderTask = [...scheduledTasks.entries()].find(([id]) => id.endsWith("-render"))?.[1]
+    expect(pollTask).toBeTypeOf("function")
+    expect(renderTask).toBeTypeOf("function")
+
+    await renderTask?.()
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("none")
+    })
+
+    await pollTask?.()
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("none")
+    })
+
+    await renderTask?.()
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("tick-1")
+    })
+  })
+
+  it("surfaces poll callback failures through runtime refresh diagnostics", async () => {
+    let schedulerTask: (() => Promise<void>) | undefined
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {})
+    const createScheduler = vi.fn((_intervalMs: number): PollingScheduler => ({
+      intervalMs: 0,
+      jitterMs: 0,
+      scheduleDelay: () => 0,
+      start: (tasks) => {
+        schedulerTask = tasks[0]?.run
+      },
+      stop: vi.fn(),
+    }))
+    const runtime = createDeckRuntime({
+      createScheduler,
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Status" },
+          definition: {
+            configSchema: {
+              parse: (value: unknown) => value,
+              safeParse: (value: unknown) => ({ data: value, success: true as const }),
+            },
+            defaultPollIntervalMs: 1000,
+            poll: async () => {
+              throw new Error("poll exploded")
+            },
+            render: ({ button }: { button: { position: number } }) => createTextSurface(button.position, "Status"),
+            type: "broken-poll",
+          },
+          label: "Status",
+          position: 0,
+          type: "broken-poll",
+        }],
+      },
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(getRenderedButtonHtml(getRenderedButton(runtime, 0))).toContain("Status")
+    })
+
+    await schedulerTask?.()
+
+    await vi.waitFor(() => {
+      const renderedButton = getRenderedButton(runtime, 0)
+      const html = getRenderedButtonHtml(renderedButton)
+      expect(html).toContain("4106")
+      expect(consoleError).toHaveBeenCalledWith(
+        "button runtime error",
+        expect.objectContaining({
+          buttonPosition: 0,
+          buttonType: "broken-poll",
+          deckId: "main",
+          errorCode: "4106",
+          operation: "refresh",
+          scope: "button-runtime",
+          error: expect.any(Error),
+        }),
+      )
+    })
+  })
+
   it("uses command-driven toggle instance defaults when no interval override is configured", async () => {
     const registry = createBundledAddonRegistry()
     const createScheduler = vi.fn((_intervalMs: number): PollingScheduler => ({

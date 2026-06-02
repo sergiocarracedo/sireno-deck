@@ -106,7 +106,9 @@ export const BuiltinToggleButtonConfigSchema = z.discriminatedUnion('mode', [
 const RawButtonEnvelopeSchema = z
   .object({
     interval_ms: z.number().int().min(500).optional(),
+    poll_interval_ms: z.number().int().min(500).optional(),
     position: z.number().int().min(0).max(31),
+    render_interval_ms: z.number().int().min(500).optional(),
     type: z.string().min(1),
   })
   .passthrough()
@@ -150,6 +152,8 @@ export interface ButtonInstance extends AddonButtonEnvelope {
   icon?: string
   interval_ms?: number
   label?: string
+  poll_interval_ms?: number
+  render_interval_ms?: number
   states?: Array<{
     key: string
     command?: string

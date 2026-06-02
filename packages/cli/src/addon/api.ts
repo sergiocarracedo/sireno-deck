@@ -1,14 +1,14 @@
-import { isAbsolute } from "node:path"
-import { pathToFileURL } from "node:url"
+import { isAbsolute } from 'node:path'
+import { pathToFileURL } from 'node:url'
 
-import { jsx } from "react/jsx-runtime"
+import { jsx } from 'react/jsx-runtime'
 
-import type { CSSProperties, ReactElement, ReactNode } from "react"
-import type { ZodType } from "zod"
+import type { CSSProperties, ReactElement, ReactNode } from 'react'
+import type { ZodType } from 'zod'
 
-import type { CommandExecutionResult } from "../action/executor.js"
-import type { Theme, ThemeFrameState } from "../config/theme.js"
-import type { HostContext } from "../system/host-context.js"
+import type { CommandExecutionResult } from '../action/executor'
+import type { Theme, ThemeFrameState } from '../config/theme'
+import type { HostContext } from '../system/host-context.js'
 
 export const SIRENO_ADDON_API_VERSION = 1
 
@@ -27,7 +27,8 @@ export interface AddonDeckEnvelope {
   type: string
 }
 
-export interface AddonGeneratedButton extends AddonButtonEnvelope, AddonButtonSurfaceContract {
+export interface AddonGeneratedButton
+  extends AddonButtonEnvelope, AddonButtonSurfaceContract {
   [key: string]: unknown
 }
 
@@ -80,37 +81,80 @@ export interface AddonButtonRuntimeProps<TConfig> {
   theme: Theme
 }
 
-export interface MountedAddonButtonRenderProps<TConfig>
+export interface MountedAddonButtonRenderProps<TConfig, TPayload = unknown>
   extends AddonButtonRuntimeProps<TConfig>, AddonButtonRenderState {
+  payload?: TPayload
   store: MountedAddonButtonStore
 }
 
-export interface MountedAddonButtonDefinition<TConfig = unknown> {
+export interface MountedAddonButtonDefinition<
+  TConfig = unknown,
+  TPayload = unknown,
+> {
   configSchema: ZodType<TConfig>
-  defaultIntervalMs?: number | ((props: MountedAddonButtonRenderProps<TConfig>) => number | undefined)
-  dispose?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
-  onActivate?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
-  onDeactivate?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
-  onPress?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
-  onRelease?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
-  onTap?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
-  refresh?: (props: MountedAddonButtonRenderProps<TConfig>) => Promise<void> | void
-  render: (props: MountedAddonButtonRenderProps<TConfig>) => ReactElement
+  defaultIntervalMs?:
+    | number
+    | ((
+        props: MountedAddonButtonRenderProps<TConfig, TPayload>,
+      ) => number | undefined)
+  defaultPollIntervalMs?:
+    | number
+    | ((
+        props: MountedAddonButtonRenderProps<TConfig, TPayload>,
+      ) => number | undefined)
+  defaultRenderIntervalMs?:
+    | number
+    | ((
+        props: MountedAddonButtonRenderProps<TConfig, TPayload>,
+      ) => number | undefined)
+  dispose?: (
+    props: MountedAddonButtonRenderProps<TConfig, TPayload>,
+  ) => Promise<void> | void
+  onActivate?: (
+    props: MountedAddonButtonRenderProps<TConfig, TPayload>,
+  ) => Promise<void> | void
+  onDeactivate?: (
+    props: MountedAddonButtonRenderProps<TConfig, TPayload>,
+  ) => Promise<void> | void
+  onPress?: (
+    props: MountedAddonButtonRenderProps<TConfig, TPayload>,
+  ) => Promise<void> | void
+  onRelease?: (
+    props: MountedAddonButtonRenderProps<TConfig, TPayload>,
+  ) => Promise<void> | void
+  onTap?: (
+    props: MountedAddonButtonRenderProps<TConfig, TPayload>,
+  ) => Promise<void> | void
+  poll?: (
+    props: MountedAddonButtonRenderProps<TConfig, TPayload>,
+  ) => Promise<TPayload> | TPayload
+  refresh?: (
+    props: MountedAddonButtonRenderProps<TConfig, TPayload>,
+  ) => Promise<void> | void
+  render: (
+    props: MountedAddonButtonRenderProps<TConfig, TPayload>,
+  ) => ReactElement
   type: string
 }
 
-export type AddonButtonDefinition<TConfig = unknown> = MountedAddonButtonDefinition<TConfig>
+export type AddonButtonDefinition<
+  TConfig = unknown,
+  TPayload = unknown,
+> = MountedAddonButtonDefinition<TConfig, TPayload>
 
-const ADDON_BUTTON_OWNER_NAME = Symbol("sireno.addon.buttonOwnerName")
+const ADDON_BUTTON_OWNER_NAME = Symbol('sireno.addon.buttonOwnerName')
 
-export function getAddonButtonOwnerName(definition: AddonButtonDefinition): string | undefined {
-  return (definition as AddonButtonDefinition & { [ADDON_BUTTON_OWNER_NAME]?: string })[ADDON_BUTTON_OWNER_NAME]
+export function getAddonButtonOwnerName(
+  definition: AddonButtonDefinition,
+): string | undefined {
+  return (
+    definition as AddonButtonDefinition & { [ADDON_BUTTON_OWNER_NAME]?: string }
+  )[ADDON_BUTTON_OWNER_NAME]
 }
 
-export function setAddonButtonOwnerName<TDefinition extends AddonButtonDefinition>(
-  definition: TDefinition,
-  addonName: string,
-): TDefinition {
+export function setAddonButtonOwnerName<
+  TDefinition extends AddonButtonDefinition,
+>(definition: TDefinition, addonName: string): TDefinition {
   Object.defineProperty(definition, ADDON_BUTTON_OWNER_NAME, {
     configurable: true,
     enumerable: false,
@@ -121,19 +165,27 @@ export function setAddonButtonOwnerName<TDefinition extends AddonButtonDefinitio
   return definition
 }
 
-export function defineMountedButton<TConfig>(
-  definition: MountedAddonButtonDefinition<TConfig>,
-): MountedAddonButtonDefinition<TConfig> {
+export function defineMountedButton<TConfig, TPayload = unknown>(
+  definition: MountedAddonButtonDefinition<TConfig, TPayload>,
+): MountedAddonButtonDefinition<TConfig, TPayload> {
   return definition
 }
 
 export function ButtonSurface(props: ButtonSurfaceProps): ReactElement {
-  return jsx("div", {
-    "data-sireno-button-surface": "true",
-    ...(props.full_surface !== undefined ? { "data-sireno-full-surface": props.full_surface ? "true" : "false" } : {}),
-    ...(props.sample_interval_ms !== undefined ? { "data-sireno-media-sample-interval-ms": String(props.sample_interval_ms) } : {}),
+  return jsx('div', {
+    'data-sireno-button-surface': 'true',
+    ...(props.full_surface !== undefined
+      ? { 'data-sireno-full-surface': props.full_surface ? 'true' : 'false' }
+      : {}),
+    ...(props.sample_interval_ms !== undefined
+      ? {
+          'data-sireno-media-sample-interval-ms': String(
+            props.sample_interval_ms,
+          ),
+        }
+      : {}),
     children: props.children,
-    className: "contents",
+    className: 'contents',
   })
 }
 
@@ -149,11 +201,11 @@ export function setDomAssetPathResolver(
 
 export function resolveDomAssetSrc(src: string): string {
   if (
-    src.startsWith("data:")
-    || src.startsWith("http://")
-    || src.startsWith("https://")
-    || src.startsWith("file://")
-    || src.startsWith("/")
+    src.startsWith('data:') ||
+    src.startsWith('http://') ||
+    src.startsWith('https://') ||
+    src.startsWith('file://') ||
+    src.startsWith('/')
   ) {
     return src
   }
@@ -164,8 +216,8 @@ export function resolveDomAssetSrc(src: string): string {
       return src
     }
 
-    return /^(?:data:|https?:\/\/|file:\/\/)/.test(resolvedAssetPath)
-      || resolvedAssetPath.startsWith("/")
+    return /^(?:data:|https?:\/\/|file:\/\/)/.test(resolvedAssetPath) ||
+      resolvedAssetPath.startsWith('/')
       ? resolvedAssetPath
       : pathToFileURL(resolvedAssetPath).href
   }
@@ -180,7 +232,9 @@ export interface CreateAddonDeckOptions<TConfig> {
 
 export interface AddonDeckDefinition<TConfig = unknown> {
   configSchema: ZodType<TConfig>
-  createDecks: (options: CreateAddonDeckOptions<TConfig>) => Record<string, AddonGeneratedDeck>
+  createDecks: (
+    options: CreateAddonDeckOptions<TConfig>,
+  ) => Record<string, AddonGeneratedDeck>
   type: string
 }
 

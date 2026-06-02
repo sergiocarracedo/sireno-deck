@@ -2,8 +2,8 @@ import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
 import {
   getCanonicalSystemMetrics,
   type CanonicalSystemMetricSnapshot,
-} from '../../../system/live-metrics.js'
-import { toSystemStatusDisplayMetric } from '../../../system/system-status.js'
+} from '../domain/live-metrics.js'
+import { toSystemStatusDisplayMetric } from '../domain/display-metrics.js'
 import { Bars, Text } from '../../../ui/index.js'
 import {
   SystemStatusBarsButtonSchema,
@@ -20,7 +20,7 @@ type SystemStatusButtonStoreState = {
 
 function getButtonStoreState(snapshot: unknown): SystemStatusButtonStoreState {
   return typeof snapshot === 'object' && snapshot !== null
-    ? snapshot as SystemStatusButtonStoreState
+    ? (snapshot as SystemStatusButtonStoreState)
     : {}
 }
 
@@ -36,7 +36,9 @@ function clearHoldTimer(snapshot: unknown): SystemStatusButtonStoreState {
   }
 }
 
-function createUnavailableMetric(id: SystemStatusBarsButtonConfig['metrics'][number]['metric']) {
+function createUnavailableMetric(
+  id: SystemStatusBarsButtonConfig['metrics'][number]['metric'],
+) {
   return {
     available: false,
     id,
@@ -44,18 +46,18 @@ function createUnavailableMetric(id: SystemStatusBarsButtonConfig['metrics'][num
   } as const
 }
 
-async function refreshMetrics(config: SystemStatusBarsButtonConfig, store: { button: { update: (updater: (snapshot: unknown) => unknown) => void } }) {
-  const metrics = await getCanonicalSystemMetrics(
+async function refreshMetrics(
+  config: SystemStatusBarsButtonConfig,
+): Promise<readonly CanonicalSystemMetricSnapshot[]> {
+  return getCanonicalSystemMetrics(
     config.metrics.map((metric) => metric.metric),
   )
-
-  store.button.update((snapshot) => ({
-    ...getButtonStoreState(snapshot),
-    metrics,
-  }))
 }
 
-function getBarValue(metric: CanonicalSystemMetricSnapshot, configuredMax?: number): { maxValue: number; value: number } {
+function getBarValue(
+  metric: CanonicalSystemMetricSnapshot,
+  configuredMax?: number,
+): { maxValue: number; value: number } {
   if (!metric.available) {
     return { maxValue: configuredMax ?? 100, value: 0 }
   }
@@ -86,11 +88,18 @@ function getBarValue(metric: CanonicalSystemMetricSnapshot, configuredMax?: numb
 
 const builtinSystemStatusBarsButton = defineMountedButton({
   configSchema: SystemStatusBarsButtonSchema,
-  defaultIntervalMs: 1_000,
+  defaultPollIntervalMs: ({ config }) => config.poll_interval_ms,
+  defaultRenderIntervalMs: ({ config }) => config.render_interval_ms,
   dispose: ({ store }) => {
     store.button.set(clearHoldTimer(store.button.snapshot))
   },
-  onActivate: ({ config, store }) => refreshMetrics(config, store),
+  onActivate: async ({ config, store }) => {
+    const metrics = await refreshMetrics(config)
+    store.button.update((snapshot) => ({
+      ...getButtonStoreState(snapshot),
+      metrics,
+    }))
+  },
   onPress: ({ config, methods, store }) => {
     if (!config.hold_command) {
       return
@@ -133,12 +142,18 @@ const builtinSystemStatusBarsButton = defineMountedButton({
 
     await methods.runCommand(config.tap_command)
   },
-  refresh: ({ config, store }) => refreshMetrics(config, store),
-  render: ({ config, store }) => {
+  poll: async ({ config }) => ({
+    metrics: await refreshMetrics(config),
+  }),
+  render: ({ config, payload, store }) => {
     const state = getButtonStoreState(store.button.snapshot)
-    const metrics = config.metrics.map((metricConfig, index) => (
-      state.metrics?.[index] ?? createUnavailableMetric(metricConfig.metric)
-    ))
+    const payloadMetrics = payload?.metrics
+    const metrics = config.metrics.map(
+      (metricConfig, index) =>
+        payloadMetrics?.[index]
+        ?? state.metrics?.[index]
+        ?? createUnavailableMetric(metricConfig.metric),
+    )
     const displayMetrics = metrics.map((metric, index) =>
       toSystemStatusDisplayMetric(metric, config.metrics[index]),
     )

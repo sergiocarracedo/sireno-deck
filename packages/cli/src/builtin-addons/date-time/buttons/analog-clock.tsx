@@ -11,7 +11,12 @@ function AnalogClockLabel(props: {
   typography: 'aux' | 'main'
 }) {
   return (
-    <Text className="w-full" fit="wrap" tone={props.tone} typography={props.typography}>
+    <Text
+      className="w-full"
+      fit="wrap"
+      tone={props.tone}
+      typography={props.typography}
+    >
       {props.label}
     </Text>
   )
@@ -30,19 +35,11 @@ export const builtinAnalogClockButton = defineMountedButton({
         }}
       >
         <div className="flex w-full flex-col items-center justify-center gap-1">
-          <AnalogClockLabel
-            label="Clock"
-            tone="primary"
-            typography="main"
-          />
-          <AnalogClockLabel
-            label="LIVE"
-            tone="foreground"
-            typography="aux"
-          />
+          <AnalogClockLabel label="Clock" tone="primary" typography="main" />
+          <AnalogClockLabel label="LIVE" tone="foreground" typography="aux" />
         </div>
       </div>
     </ButtonSurface>
   ),
-  type: 'analog-clock',
+  type: 'clock',
 })

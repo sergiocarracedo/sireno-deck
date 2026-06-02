@@ -1,22 +1,17 @@
-import si from "systeminformation"
+import si from 'systeminformation'
 
 export const SYSTEM_METRIC_IDS = [
-  "cpu_frequency",
-  "cpu_max_frequency",
-  "cpu_usage",
-  "fan_speed",
-  "memory_usage",
-  "swap_usage",
-  "system_load",
-  "uptime",
+  'cpu_frequency',
+  'cpu_max_frequency',
+  'cpu_usage',
+  'fan_speed',
+  'memory_usage',
+  'swap_usage',
+  'system_load',
+  'uptime',
 ] as const
 
 export type SystemMetricId = (typeof SYSTEM_METRIC_IDS)[number]
-
-export interface MetricSnapshot {
-  label: string
-  percentage: number
-}
 
 export interface CanonicalSystemMetricSnapshot {
   available: boolean
@@ -27,12 +22,6 @@ export interface CanonicalSystemMetricSnapshot {
   source?: string
   unit?: string
   value?: number
-}
-
-export interface FanSnapshot {
-  available: boolean
-  label?: string
-  source?: string
 }
 
 interface CpuSnapshot {
@@ -85,7 +74,7 @@ function createUnavailableMetric(
   return {
     available: false,
     id,
-    label: options.label ?? "Unavailable",
+    label: options.label ?? 'Unavailable',
     ...(options.source ? { source: options.source } : {}),
     ...(options.unit ? { unit: options.unit } : {}),
   }
@@ -114,22 +103,22 @@ function createAvailableMetric(
   }
 }
 
-export async function getCpuUsageMetric(
+async function getCpuUsageMetric(
   client: LiveMetricsClient = defaultClient,
 ): Promise<CanonicalSystemMetricSnapshot> {
   const load = await client.currentLoad()
   const percentage = clampPercentage(load.currentLoad)
 
-  return createAvailableMetric("cpu_usage", {
+  return createAvailableMetric('cpu_usage', {
     label: `${percentage}%`,
     max: 100,
     percentage,
-    unit: "%",
+    unit: '%',
     value: percentage,
   })
 }
 
-export async function getMemoryUsageMetric(
+async function getMemoryUsageMetric(
   client: LiveMetricsClient = defaultClient,
 ): Promise<CanonicalSystemMetricSnapshot> {
   const memory = await client.mem()
@@ -137,168 +126,39 @@ export async function getMemoryUsageMetric(
     ? clampPercentage((memory.active / memory.total) * 100)
     : 0
 
-  return createAvailableMetric("memory_usage", {
+  return createAvailableMetric('memory_usage', {
     label: `${percentage}%`,
     max: memory.total > 0 ? memory.total : undefined,
     percentage,
-    unit: "B",
+    unit: 'B',
     value: memory.active,
   })
 }
 
-export async function getSwapUsageMetric(
+async function getSwapUsageMetric(
   client: LiveMetricsClient = defaultClient,
 ): Promise<CanonicalSystemMetricSnapshot> {
   const memory = await client.mem()
   if (memory.swaptotal <= 0) {
-    return createUnavailableMetric("swap_usage", { unit: "B" })
+    return createUnavailableMetric('swap_usage', { unit: 'B' })
   }
 
   const percentage = clampPercentage((memory.swapused / memory.swaptotal) * 100)
 
-  return createAvailableMetric("swap_usage", {
+  return createAvailableMetric('swap_usage', {
     label: `${percentage}%`,
     max: memory.swaptotal,
     percentage,
-    unit: "B",
+    unit: 'B',
     value: memory.swapused,
   })
 }
 
-export async function getFanSpeedMetric(
-  client: LiveMetricsClient = defaultClient,
-): Promise<CanonicalSystemMetricSnapshot> {
-  const fan = await getFanMetric(client)
-  if (!fan.available || !fan.label) {
-    return createUnavailableMetric("fan_speed", {
-      ...(fan.source ? { source: fan.source } : {}),
-      unit: "rpm",
-    })
-  }
-
-  const value = Number.parseInt(fan.label, 10)
-  if (!Number.isFinite(value)) {
-    return createUnavailableMetric("fan_speed", {
-      ...(fan.source ? { source: fan.source } : {}),
-      unit: "rpm",
-    })
-  }
-
-  return createAvailableMetric("fan_speed", {
-    label: fan.label,
-    ...(fan.source ? { source: fan.source } : {}),
-    unit: "rpm",
-    value,
-  })
-}
-
-export async function getCpuFrequencyMetric(
-  client: LiveMetricsClient = defaultClient,
-): Promise<CanonicalSystemMetricSnapshot> {
-  const cpu = await client.cpu() as CpuSnapshot
-  if (typeof cpu.speed !== "number" || !Number.isFinite(cpu.speed) || cpu.speed <= 0) {
-    return createUnavailableMetric("cpu_frequency", { unit: "GHz" })
-  }
-
-  return createAvailableMetric("cpu_frequency", {
-    label: `${cpu.speed.toFixed(2)} GHz`,
-    unit: "GHz",
-    value: cpu.speed,
-  })
-}
-
-export async function getCpuMaxFrequencyMetric(
-  client: LiveMetricsClient = defaultClient,
-): Promise<CanonicalSystemMetricSnapshot> {
-  const cpu = await client.cpu() as CpuSnapshot
-  if (typeof cpu.speedMax !== "number" || !Number.isFinite(cpu.speedMax) || cpu.speedMax <= 0) {
-    return createUnavailableMetric("cpu_max_frequency", { unit: "GHz" })
-  }
-
-  return createAvailableMetric("cpu_max_frequency", {
-    label: `${cpu.speedMax.toFixed(2)} GHz`,
-    unit: "GHz",
-    value: cpu.speedMax,
-  })
-}
-
-export async function getSystemLoadMetric(
-  client: LiveMetricsClient = defaultClient,
-): Promise<CanonicalSystemMetricSnapshot> {
-  const load = await client.currentLoad()
-  const value = Number.isFinite(load.avgLoad) ? Number(load.avgLoad.toFixed(2)) : 0
-
-  return createAvailableMetric("system_load", {
-    label: value.toFixed(2),
-    value,
-  })
-}
-
-export async function getUptimeMetric(
-  client: LiveMetricsClient = defaultClient,
-): Promise<CanonicalSystemMetricSnapshot> {
-  const time = await client.time()
-  if (typeof time.uptime !== "number" || !Number.isFinite(time.uptime) || time.uptime < 0) {
-    return createUnavailableMetric("uptime", { unit: "seconds" })
-  }
-
-  return createAvailableMetric("uptime", {
-    label: `${Math.round(time.uptime)}s`,
-    unit: "seconds",
-    value: time.uptime,
-  })
-}
-
-export async function getCanonicalSystemMetric(
-  metricId: SystemMetricId,
-  client: LiveMetricsClient = defaultClient,
-): Promise<CanonicalSystemMetricSnapshot> {
-  switch (metricId) {
-    case "cpu_frequency":
-      return getCpuFrequencyMetric(client)
-    case "cpu_max_frequency":
-      return getCpuMaxFrequencyMetric(client)
-    case "cpu_usage":
-      return getCpuUsageMetric(client)
-    case "fan_speed":
-      return getFanSpeedMetric(client)
-    case "memory_usage":
-      return getMemoryUsageMetric(client)
-    case "swap_usage":
-      return getSwapUsageMetric(client)
-    case "system_load":
-      return getSystemLoadMetric(client)
-    case "uptime":
-      return getUptimeMetric(client)
-  }
-}
-
-export async function getCanonicalSystemMetrics(
-  metricIds: readonly SystemMetricId[],
-  client: LiveMetricsClient = defaultClient,
-): Promise<CanonicalSystemMetricSnapshot[]> {
-  return Promise.all(metricIds.map((metricId) => getCanonicalSystemMetric(metricId, client)))
-}
-
-export async function getCpuMetric(client: LiveMetricsClient = defaultClient): Promise<MetricSnapshot> {
-  const metric = await getCpuUsageMetric(client)
-
-  return {
-    label: metric.label,
-    percentage: metric.percentage ?? 0,
-  }
-}
-
-export async function getMemoryMetric(client: LiveMetricsClient = defaultClient): Promise<MetricSnapshot> {
-  const metric = await getMemoryUsageMetric(client)
-
-  return {
-    label: metric.label,
-    percentage: metric.percentage ?? 0,
-  }
-}
-
-export async function getFanMetric(client: LiveMetricsClient = defaultClient): Promise<FanSnapshot> {
+async function getFanMetric(client: LiveMetricsClient = defaultClient): Promise<{
+  available: boolean
+  label?: string
+  source?: string
+}> {
   let graphics: GraphicsSnapshot
 
   try {
@@ -308,9 +168,9 @@ export async function getFanMetric(client: LiveMetricsClient = defaultClient): P
   }
 
   const controller = graphics.controllers?.find((candidate) => (
-    typeof candidate.fanSpeed === "number" &&
-    Number.isFinite(candidate.fanSpeed) &&
-    candidate.fanSpeed >= 0
+    typeof candidate.fanSpeed === 'number'
+    && Number.isFinite(candidate.fanSpeed)
+    && candidate.fanSpeed >= 0
   ))
 
   if (!controller) {
@@ -325,4 +185,119 @@ export async function getFanMetric(client: LiveMetricsClient = defaultClient): P
     label: `${speed} RPM`,
     source: source && source.length > 0 ? source : undefined,
   }
+}
+
+async function getFanSpeedMetric(
+  client: LiveMetricsClient = defaultClient,
+): Promise<CanonicalSystemMetricSnapshot> {
+  const fan = await getFanMetric(client)
+  if (!fan.available || !fan.label) {
+    return createUnavailableMetric('fan_speed', {
+      ...(fan.source ? { source: fan.source } : {}),
+      unit: 'rpm',
+    })
+  }
+
+  const value = Number.parseInt(fan.label, 10)
+  if (!Number.isFinite(value)) {
+    return createUnavailableMetric('fan_speed', {
+      ...(fan.source ? { source: fan.source } : {}),
+      unit: 'rpm',
+    })
+  }
+
+  return createAvailableMetric('fan_speed', {
+    label: fan.label,
+    ...(fan.source ? { source: fan.source } : {}),
+    unit: 'rpm',
+    value,
+  })
+}
+
+async function getCpuFrequencyMetric(
+  client: LiveMetricsClient = defaultClient,
+): Promise<CanonicalSystemMetricSnapshot> {
+  const cpu = await client.cpu() as CpuSnapshot
+  if (typeof cpu.speed !== 'number' || !Number.isFinite(cpu.speed) || cpu.speed <= 0) {
+    return createUnavailableMetric('cpu_frequency', { unit: 'GHz' })
+  }
+
+  return createAvailableMetric('cpu_frequency', {
+    label: `${cpu.speed.toFixed(2)} GHz`,
+    unit: 'GHz',
+    value: cpu.speed,
+  })
+}
+
+async function getCpuMaxFrequencyMetric(
+  client: LiveMetricsClient = defaultClient,
+): Promise<CanonicalSystemMetricSnapshot> {
+  const cpu = await client.cpu() as CpuSnapshot
+  if (typeof cpu.speedMax !== 'number' || !Number.isFinite(cpu.speedMax) || cpu.speedMax <= 0) {
+    return createUnavailableMetric('cpu_max_frequency', { unit: 'GHz' })
+  }
+
+  return createAvailableMetric('cpu_max_frequency', {
+    label: `${cpu.speedMax.toFixed(2)} GHz`,
+    unit: 'GHz',
+    value: cpu.speedMax,
+  })
+}
+
+async function getSystemLoadMetric(
+  client: LiveMetricsClient = defaultClient,
+): Promise<CanonicalSystemMetricSnapshot> {
+  const load = await client.currentLoad()
+  const value = Number.isFinite(load.avgLoad) ? Number(load.avgLoad.toFixed(2)) : 0
+
+  return createAvailableMetric('system_load', {
+    label: value.toFixed(2),
+    value,
+  })
+}
+
+async function getUptimeMetric(
+  client: LiveMetricsClient = defaultClient,
+): Promise<CanonicalSystemMetricSnapshot> {
+  const time = await client.time()
+  if (typeof time.uptime !== 'number' || !Number.isFinite(time.uptime) || time.uptime < 0) {
+    return createUnavailableMetric('uptime', { unit: 'seconds' })
+  }
+
+  return createAvailableMetric('uptime', {
+    label: `${Math.round(time.uptime)}s`,
+    unit: 'seconds',
+    value: time.uptime,
+  })
+}
+
+async function getCanonicalSystemMetric(
+  metricId: SystemMetricId,
+  client: LiveMetricsClient = defaultClient,
+): Promise<CanonicalSystemMetricSnapshot> {
+  switch (metricId) {
+    case 'cpu_frequency':
+      return getCpuFrequencyMetric(client)
+    case 'cpu_max_frequency':
+      return getCpuMaxFrequencyMetric(client)
+    case 'cpu_usage':
+      return getCpuUsageMetric(client)
+    case 'fan_speed':
+      return getFanSpeedMetric(client)
+    case 'memory_usage':
+      return getMemoryUsageMetric(client)
+    case 'swap_usage':
+      return getSwapUsageMetric(client)
+    case 'system_load':
+      return getSystemLoadMetric(client)
+    case 'uptime':
+      return getUptimeMetric(client)
+  }
+}
+
+export async function getCanonicalSystemMetrics(
+  metricIds: readonly SystemMetricId[],
+  client: LiveMetricsClient = defaultClient,
+): Promise<CanonicalSystemMetricSnapshot[]> {
+  return Promise.all(metricIds.map((metricId) => getCanonicalSystemMetric(metricId, client)))
 }

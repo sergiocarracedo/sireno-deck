@@ -4,9 +4,9 @@ const { getCanonicalSystemMetricsMock } = vi.hoisted(() => ({
   getCanonicalSystemMetricsMock: vi.fn(),
 }))
 
-vi.mock('../../system/live-metrics.js', async () => {
-  const actual = await vi.importActual<typeof import('../../system/live-metrics.js')>(
-    '../../system/live-metrics.js',
+vi.mock('./domain/live-metrics.js', async () => {
+  const actual = await vi.importActual<typeof import('./domain/live-metrics.js')>(
+    './domain/live-metrics.js',
   )
 
   return {
@@ -101,11 +101,17 @@ describe('system-status addon', () => {
 
     expect(barsDefinition?.configSchema.parse({
       metrics: [{ metric: 'cpu_usage' }],
-    })).toEqual({ metrics: [{ metric: 'cpu_usage' }] })
+    })).toEqual({
+      metrics: [{ metric: 'cpu_usage' }],
+      poll_interval_ms: 1_000,
+      render_interval_ms: 1_000,
+    })
     expect(labelValuesDefinition?.configSchema.parse({
       metrics: [{ label: 'CPU', metric: 'cpu_usage' }, { metric: 'fan_speed' }],
     })).toEqual({
       metrics: [{ label: 'CPU', metric: 'cpu_usage' }, { metric: 'fan_speed' }],
+      poll_interval_ms: 1_000,
+      render_interval_ms: 1_000,
     })
   })
 

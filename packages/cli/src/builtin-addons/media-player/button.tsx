@@ -7,7 +7,7 @@ import {
   type MediaController,
   type MediaControllerSnapshot,
   type MediaPlaybackStatus,
-} from '../../system/media-controller.js'
+} from './domain/media-controller.js'
 import { Bars, Text } from '../../ui/index.js'
 import {
   MediaPlayerButtonSchema,
@@ -21,6 +21,10 @@ type MediaPlayerButtonStoreState = {
   holdTimer?: ReturnType<typeof globalThis.setTimeout>
   holdTriggered?: boolean
   snapshot?: MediaControllerSnapshot
+}
+
+interface MediaPlayerPollPayload {
+  snapshot: MediaControllerSnapshot
 }
 
 function getButtonStoreState(snapshot: unknown): MediaPlayerButtonStoreState {
@@ -151,12 +155,14 @@ function MediaStatusIcon(props: {
 async function refreshSnapshot(
   controller: MediaController,
   store: { button: { update: (updater: (snapshot: unknown) => unknown) => void } },
-) {
+): Promise<MediaControllerSnapshot> {
   const snapshot = await controller.getSnapshot()
   store.button.update((currentSnapshot) => ({
     ...getButtonStoreState(currentSnapshot),
     snapshot,
   }))
+
+  return snapshot
 }
 
 function getOrCreateController(
@@ -168,7 +174,8 @@ function getOrCreateController(
 
 const builtinMediaPlayerButton = defineMountedButton({
   configSchema: MediaPlayerButtonSchema,
-  defaultIntervalMs: 1_000,
+  defaultPollIntervalMs: ({ config }) => config.poll_interval_ms,
+  defaultRenderIntervalMs: ({ config }) => config.render_interval_ms,
   dispose: ({ store }) => {
     store.button.set(clearHoldTimer(store.button.snapshot))
   },
@@ -223,13 +230,17 @@ const builtinMediaPlayerButton = defineMountedButton({
     await refreshSnapshot(controller, store)
     methods.invalidate()
   },
-  refresh: async ({ hostContext, store }) => {
+  poll: async ({ hostContext, store }): Promise<MediaPlayerPollPayload> => {
     const controller = getOrCreateController(store.button.snapshot, hostContext)
-    await refreshSnapshot(controller, store)
+    const snapshot = await refreshSnapshot(controller, store)
+
+    return { snapshot }
   },
-  render: ({ config, store }) => {
+  render: ({ config, payload, store }) => {
     const state = getButtonStoreState(store.button.snapshot)
-    const snapshot = state.snapshot ?? createUnavailableMediaSnapshot('media-controller-unavailable')
+    const snapshot = payload?.snapshot
+      ?? state.snapshot
+      ?? createUnavailableMediaSnapshot('media-controller-unavailable')
     const statusLabel = getStatusLabel(snapshot.status, snapshot.available)
     const title = snapshot.title ?? config.unavailable_label ?? 'Unavailable'
     const artist = snapshot.artist ?? (snapshot.available ? 'Unknown artist' : 'No active player')

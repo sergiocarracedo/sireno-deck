@@ -12,6 +12,7 @@ type ToggleButtonStoreState = {
   currentState?: 'off' | 'on'
   displayState?: ToggleDisplayState
   lastKnownState?: 'off' | 'on'
+  tappedWhilePending?: boolean
 }
 
 function getToggleButtonStoreState(snapshot: unknown): ToggleButtonStoreState {
@@ -156,13 +157,18 @@ const builtinToggleButton = defineMountedButton({
     }
 
     const currentStoreState = getToggleButtonStoreState(store.button.snapshot)
-    if (config.mode === 'get-set' && !currentStoreState.lastKnownState) {
+    if (config.mode === 'get-set' && (currentStoreState.tappedWhilePending || !currentStoreState.lastKnownState)) {
+      store.button.update((snapshot) => ({
+        ...getToggleButtonStoreState(snapshot),
+        tappedWhilePending: false,
+      }))
       return
     }
 
     store.button.update((snapshot) => ({
       ...getToggleButtonStoreState(snapshot),
       displayState: 'pending',
+      tappedWhilePending: false,
     }))
 
     const command =
@@ -204,6 +210,18 @@ const builtinToggleButton = defineMountedButton({
         : undefined
 
     syncCommandDrivenToggleState(store, nextState)
+  },
+  onPress: ({ config, store }) => {
+    if (config.mode !== 'get-set') {
+      return
+    }
+
+    const state = getToggleButtonStoreState(store.button.snapshot)
+    const tappedWhilePending = !state.lastKnownState || state.displayState === 'pending'
+    store.button.update((snapshot) => ({
+      ...getToggleButtonStoreState(snapshot),
+      tappedWhilePending,
+    }))
   },
   refresh: async ({ config, methods, store }) => {
     if (config.mode === 'internal') {

@@ -1,13 +1,25 @@
 # CHANGELOG
 
+## 2026-05-31
+
+### Fixes
+
+- Fixed `cli:dev` argument forwarding so `pnpm cli:dev -- emulate --port 8912` no longer stalls behind a literal leading `--` token passed through by pnpm script forwarding. Root cause was that the dev watch argument resolver treated any non-empty argv as final command args and forwarded pnpm's sentinel token directly to yargs.
+
+### Learnings
+
+- Workspace-root script forwarding can inject a leading `--` sentinel that is transport metadata, not a user command token. Wrapper entrypoints must normalize forwarded argv before delegating to strict command parsers.
+
 ## 2026-05-27
 
 ### Features
+
 - Added a component-first addon authoring kit at the public `sireno-deck-cli` root surface, including mounted `ButtonSurface`, core-owned `Icon` / `Chip` / `Text` primitives, theme presentation hooks for those primitives, and a truthful workspace-root `cli:dev` watch loop that runs the real `start --config config.yml` seam through `tsx`.
 - Added explicit emulator render intent to the shared browser deck renderer so one `renderDomDeck(...)` seam can serve both flat browser-capture HTML and emulator-only shell chrome.
 - Added truthful Phase 27 execution artifacts covering manifest-only theme fallback ownership, watched built-in theme runtime graphs, emulator-only shell chrome, and the real TSX runtime proof path.
 
 ### Fixes
+
 - Fixed Phase 28's helper-factory authoring drift by migrating shipped addons, runtime fallback UI, tests, fixtures, and docs onto the same component-first TSX contract instead of keeping `createDom*` / `createBaseShape*` as a shadow public surface. Root cause was that the repo had accumulated two contradictory authoring models, so helpers remained the real runtime/default path even after the mounted `render(props)` seam and TSX runtime work were already in place.
 - Fixed the theme contract so manifest-backed theme packages are now the only supported theme model and the built-in default theme package owns the sole fallback `buttonFrame`. Root cause was that a leftover `legacy_yaml` branch and core-owned fallback frame kept two contradictory theme/fallback contracts alive.
 - Fixed raw theme and addon TSX runtime loading to use the package `tsconfig.json` instead of `tsconfig: false`, and moved the honest regression proof from the flaky `tsx` CLI wrapper to `node --import tsx/esm`. Root cause was that the real runtime seam had drifted away from the package TSX policy, so touched runtime modules still depended on ambient React-import workarounds outside test-only transforms.
@@ -15,6 +27,7 @@
 - Fixed the repo-root raw-source CLI seam so `pnpm exec tsx packages/cli/src/cli/index.ts ...` now inherits the same JSX policy as the package runtime and no longer crashes with `React is not defined` during emulator startup. Root cause was that the workspace root had no TSX policy anchor, so the exact developer/UAT command compiled JSX-authored runtime code differently from the package-local seams already under test.
 
 ### Learnings
+
 - Helper removal only becomes real when shipped addons, runtime-owned fallback UI, tests, fixtures, and docs all move in the same cut. Leaving any of those seams on the old helpers creates fake compatibility and the next phase inherits drift instead of a clean contract.
 - A dev watch command is only honest if it runs the exact raw-source CLI/start seam developers use and explicitly includes non-imported config/theme/addon files. Watching TypeScript imports or bundler output alone will miss the repo edits people actually make.
 - Theme fallback ownership has to live in exactly one shipped runtime seam. Leaving both a core fallback frame and a built-in theme fallback alive guarantees drift.
@@ -25,14 +38,17 @@
 ## 2026-05-23
 
 ### Features
+
 - Added a Sireno-owned browser utility bridge that exports resolved theme CSS variables and makes shipped browser-rendered buttons consume classes such as `text-primary`, `bg-background`, `border-accent`, `font-main`, and `font-aux`.
 - Added theme-aware shared browser button chrome plus committed Phase 19 review fixtures for both token-color and typography/frame verification on the real browser path.
 
 ### Fixes
+
 - Fixed browser-backed live buttons such as the bundled clock/date-time surfaces so polling-driven second changes actually redraw on-device when running from the repo-root config. Root cause was that runtime polling refreshed the individual button cache, but the React DOM/browser render path only pushes pixels from a deck-level render callback.
 - Fixed the Phase 19 theming seam so helper-authored labels and shared browser chrome no longer bypass the new utility contract with hardcoded inline typography/colors. Root cause was that Wave 1 exported theme tokens successfully, but the default helper/frame path still owned presentation inline.
 
 ### Learnings
+
 - In the browser-backed renderer, a polled button refresh is not enough by itself. If the hardware write path is deck-scoped, polling updates have to trigger a fresh deck render or the device will keep showing stale frames.
 - Exporting theme tokens is not enough if the default helper path still hardcodes presentation. The real contract only exists once the shipped shared surface consumes it.
 - The safe migration path is additive: default helpers can emit stable theme-role classes while plain `className` authoring stays the primary model.
@@ -40,15 +56,18 @@
 ## 2026-05-18
 
 ### Features
+
 - Added explicit color-only background config for decks and buttons, with shared precedence resolved as `button -> deck -> theme` through the live runtime and render path.
 - Added an explicit public text-fit contract with `fit: "shrink" | "wrap"`, and shipped the first shared/default label rollout for default shrink plus opt-in wrap.
 - Added repo-pinned Phase 12 review fixtures under `packages/cli/fixtures/phase-12/` plus updated UAT instructions so background precedence and shrink-vs-wrap behavior are reviewable from committed inputs.
 
 ### Fixes
+
 - Fixed the render pipeline so configured backgrounds no longer disappear inside strict addon validation or get re-decided ad hoc inside the renderer. Root cause was that deck/button background data did not have a core-owned seam outside addon payload schemas, and the shared/default card still derived its base tint only from `theme.background`.
 - Fixed the shared text contract to stop hiding future fit behavior behind `overflow: "clip"`. Root cause was that wrapper chrome and text fitting were still coupled accidentally through the Phase 7 overflow prop, which made the first explicit fit rollout harder than it needed to be.
 
 ### Learnings
+
 - Core-owned config fields have to stay outside strict addon schemas or the platform turns legitimate product-level features into addon validation failures.
 - The real background precedence seam was runtime-plus-render transport, not the SVG renderer alone. `renderTextImage()` only sees one button at a time, so deck fallback has to be materialized before pixel generation.
 - Wrapper chrome and text fitting are separate contracts. If they share one legacy prop, later feature work inherits accidental coupling instead of a clean public API.
@@ -56,15 +75,18 @@
 ## 2026-05-16
 
 ### Features
+
 - Added an explicit public root authoring facade for `sireno-deck-cli` so helper-based addon rendering now resolves from the packaged CLI instead of repo-local internals.
 - Added intentional build entries for the package root and `sireno-deck-cli/jsx`, so `dist/index.*` and `dist/render/jsx.*` are emitted exactly where the public exports promise them.
 
 ### Fixes
+
 - Fixed the addon authoring release blocker where `packages/cli/package.json` advertised public root and JSX entrypoints that the build did not actually emit. Root cause was that `tsdown` only built the CLI binary entry while docs and fixture verification were still leaning on source-path access and local TypeScript path mapping.
 - Fixed the reconciler parity coverage to load the shipped JSX authoring example module itself instead of reconstructing that example piecemeal inside the test, and folded the built-package authoring typecheck into package verification so export drift gets caught in the normal verify path.
 - Fixed the package `verify` path to run the test suite again alongside build and built-package authoring checks, then aligned stale `builtin-*` button-type expectations with the actual bundled `display-text` / `change-deck` contract so restored coverage fails on real drift instead of historical leftovers.
 
 ### Learnings
+
 - Package exports are a delivery contract, not documentation. If the build graph does not emit the exact exported files, in-repo examples can look healthy while the published package is still broken.
 - JSX opt-in seams that split runtime and types across separate source files are fragile unless the emitted package surface is verified directly from the built output.
 - A parity test only protects the shipped example if it imports that example through the same package surface authors use; rebuilding the example inline hides self-reference and verification wiring regressions.
@@ -73,33 +95,40 @@
 ## 2026-05-15
 
 ### Features
+
 - Added Phase 7 typography tokens to the theme contract and routed shared Stream Deck text rendering through theme-defined `main_text`, `auxiliary_text`, and `monospace` roles.
 - Added an opt-in shared wrapper/text render contract with explicit `overflow: "clip"` and `wrapper: "shared"` fields that now flow from reconciler output through the runtime render path.
 - Added repo-pinned Phase 7 review fixtures under `packages/cli/fixtures/phase-7/` so manual UAT can compare dark/light shared text and exercise the optional wrapper contract from committed inputs.
 
 ### Fixes
+
 - Fixed the shared SVG renderer to stop hardcoding inline font metrics and relying on incidental raster cropping for overflow. Root cause was that text styling and truncation behavior were still buried inside repeated SVG snippets instead of being expressed as a renderer contract.
 
 ### Learnings
+
 - Text rendering contracts need two seams, not one: theme tokens decide typography, and explicit render props decide overflow/wrapper behavior. When either seam is implicit, later widget work inherits accidental behavior instead of a reusable contract.
 - Manual review drifts for the same reason tests do. If the exact UAT configs and addon-backed inputs are not committed in the repo, people end up checking different surfaces and blaming the wrong layer.
 
 ## 2026-05-14
 
 ### Fixes
+
 - Fixed the bundled date-time addon to honor `date_format` and `time_format` token strings such as `DD/MM/YYYY` and `HH:mm:ss` instead of ignoring them and always rendering locale-short output through `Intl.DateTimeFormat`. Root cause was that the schema exposed token-based config fields, but the render path still hard-coded Intl style options.
 
 ### Learnings
+
 - Config fields are part of the runtime contract. If a built-in addon advertises format strings, the render path has to consume those exact strings or the addon ships dead configuration.
 
 ## 2026-05-13
 
 ### Features
+
 - Added Phase 4 fan and media button support, including config examples, active-deck polling, fan fallback rendering, and command-driven media metadata layouts.
 - Added deterministic emoji-entry card visuals for the bundled emoji selector so selection tiles stay identifiable without host emoji font support.
 - Added repo-pinned Phase 5 verification fixtures under `packages/cli/fixtures/phase-5/` for healthy local addon startup, warning isolation, apiVersion mismatch, and npm-addon manual verification.
 
 ### Fixes
+
 - Fixed the shipped Phase 5 example config to stop advertising nonexistent local and npm addons as runnable examples, and removed the stale `addon://core-buttons/home.svg` asset reference. Root cause was that the sample config had drifted away from the actual repo contents after the addon-system rollout.
 - Fixed addon SVG icons to render through inline SVG composition instead of nested data-URI `<image>` embedding, which was producing blank icon regions on-device through the sharp/libvips pipeline.
 - Fixed async deck activation so a late `onRenderDeck` completion cannot restart polling after `stop()` or replace a newer activation's schedulers after restart. Root cause was that activation only checked ownership before awaiting the deck render, then always resumed polling startup afterward even if that activation had been stopped or superseded.
@@ -117,6 +146,7 @@
 - Fixed media buttons to clear stale metadata when a later metadata refresh fails, instead of continuing to render the last successful track details as if they were current.
 
 ### Learnings
+
 - Example configs are part of the product surface. If they point at fake addons or dead assets, UAT fails even when the underlying loader behaves exactly as designed.
 - Manual verification drifts for the same reason tests do: if the inputs are not committed in the repo, people will verify different things and blame the wrong layer.
 - SVG support in a renderer is not binary. A path that accepts SVG files can still fail visually if the composition strategy depends on image embedding behavior that the downstream rasterizer handles poorly.
@@ -134,16 +164,19 @@
 ## 2026-05-12
 
 ### Features
+
 - Added the initial pnpm workspace, `sireno-deck` CLI package, strict config schema, YAML config loader, shared logger, and lifecycle commands for `start`, `status`, and `stop`.
 - Added PID-file daemon lifecycle management with graceful `SIGTERM` / `SIGINT` shutdown handling.
 
 ### Fixes
+
 - Fixed config validation so invalid `config.yml` errors retain file path, line number, and actionable suggestions instead of losing context after schema validation.
 - Fixed the CLI build output to produce `dist/cli.js`, matching the package binary entry.
 - Fixed the manifest to use a real `@types/yargs` version after install failed on the original non-existent range.
 - Fixed the daemon start path to use `yargs.parseAsync()` and an actual event-loop keepalive; root cause was that async handlers were returning early and an unresolved promise alone does not keep Node alive.
 
 ### Learnings
+
 - Pretty error formatting is useless if metadata gets dropped before rendering; error context has to survive the full parse/validate/load pipeline.
 - Verification caught more truth than the plan text alone: install, build, and live lifecycle runs exposed manifest and process-lifetime bugs that static code review would have missed.
 - For Node CLIs, async command handlers require async parsing, and foreground daemons need a real event-loop anchor.

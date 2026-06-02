@@ -1,44 +1,60 @@
-import { watch } from "node:fs"
-import { readFile } from "node:fs/promises"
-import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http"
-import type { AddressInfo } from "node:net"
-import { basename, dirname, extname } from "node:path"
+import { watch } from 'node:fs'
+import { readFile } from 'node:fs/promises'
+import {
+  createServer,
+  type IncomingMessage,
+  type Server,
+  type ServerResponse,
+} from 'node:http'
+import type { AddressInfo } from 'node:net'
+import { basename, dirname, extname } from 'node:path'
 
-import type pino from "pino"
+import type pino from 'pino'
 
-import { loadConfiguredAddons } from "../../addon/loader.js"
-import { setDomAssetPathResolver } from "../../addon/api.js"
-import { AddonManifestError } from "../../addon/manifest.js"
-import { createBundledAddonRegistry, loadBootstrapConfig, loadConfigWithSources } from "../../config/loader.js"
-import { resolveTheme, rewriteThemeStylesheetAssetUrls, type Theme } from "../../config/theme.js"
-import { ConfigValidationError } from "../../core/schemas.js"
-import { createDeckRuntime } from "../../deck/runtime.js"
+import {
+  resolveTheme,
+  rewriteThemeStylesheetAssetUrls,
+  type Theme,
+} from '@/config/theme'
+import { setDomAssetPathResolver } from '../../addon/api.js'
+import { loadConfiguredAddons } from '../../addon/loader.js'
+import { AddonManifestError } from '../../addon/manifest.js'
+import {
+  createBundledAddonRegistry,
+  loadBootstrapConfig,
+  loadConfigWithSources,
+} from '../../config/loader.js'
+import { ConfigValidationError } from '../../core/schemas.js'
+import type { RuntimeRenderButton } from '../../deck/runtime.js'
+import { createDeckRuntime } from '../../deck/runtime.js'
+import { formatLinuxUdevAccessError } from '../../device/linux-udev.js'
 import {
   createStreamDeckLifecycle,
   createVirtualStreamDeckLifecycle,
   replayLastRenderedBuffers,
   StreamDeckSelectionError,
   writeKeyBuffer,
-} from "../../device/stream-deck.js"
-import { formatLinuxUdevAccessError } from "../../device/linux-udev.js"
-import { createBrowserRenderer, getVirtualDeckDevices } from "../../render/browser-renderer.js"
-import { renderDomDeck } from "../../render/dom-host.js"
-import { getShrinkFitBrowserScript } from "../../render/shrink-fit-browser-script.js"
-import { createStartupPlaceholderBuffers } from "../../render/startup-placeholder.js"
-import type { RuntimeRenderButton } from "../../deck/runtime.js"
+} from '../../device/stream-deck.js'
+import {
+  createBrowserRenderer,
+  getVirtualDeckDevices,
+} from '../../render/browser-renderer.js'
+import { renderDomDeck } from '../../render/dom-host.js'
+import { getShrinkFitBrowserScript } from '../../render/shrink-fit-browser-script.js'
+import { createStartupPlaceholderBuffers } from '../../render/startup-placeholder.js'
 
-import { resolveHostContext } from "../../system/host-context.js"
-import { createSessionMonitor } from "../../system/session-monitor.js"
-import { formatConfigError } from "../../util/errors.js"
+import { resolveHostContext } from '../../system/host-context.js'
+import { createSessionMonitor } from '../../system/session-monitor.js'
 import {
   isRunning,
   readPid,
   removePidFile,
   setupSignalHandlers,
   writePid,
-} from "../../util/daemon.js"
+} from '../../util/daemon.js'
+import { formatConfigError } from '../../util/errors.js'
 
-import type { BrowserRenderer } from "../../render/browser-renderer.js"
+import type { BrowserRenderer } from '../../render/browser-renderer.js'
 
 export interface StartOptions {
   config?: string
@@ -63,7 +79,7 @@ interface EmulatorSurfaceState {
   html: string
   requestedKeyCount: number
   selectedKeyCount: number
-  status: "error" | "ready" | "restarting" | "starting"
+  status: 'error' | 'ready' | 'restarting' | 'starting'
   updatedAt: string | null
   version: number
 }
@@ -80,7 +96,10 @@ export async function loadRuntimeConfig(options: StartOptions) {
   const sessionMonitor = await createSessionMonitor()
 
   try {
-    const hostContext = await resolveHostContext(undefined, sessionMonitor.getSnapshot())
+    const hostContext = await resolveHostContext(
+      undefined,
+      sessionMonitor.getSnapshot(),
+    )
     const bootstrap = loadBootstrapConfig(options.config, hostContext)
     const registry = createBundledAddonRegistry()
     const addonLoadResult = await loadConfiguredAddons({
@@ -90,19 +109,30 @@ export async function loadRuntimeConfig(options: StartOptions) {
     })
 
     for (const warning of addonLoadResult.warnings) {
-      options.logger.warn({ addonName: warning.addonName, reason: warning.reason }, "skipping addon after startup warning")
-    }
-
-    if (sessionMonitor.getSnapshot().capability === "unsupported") {
       options.logger.warn(
-        { platform: process.platform },
-        "session lock monitoring unavailable on this host; continuing without lock-aware deck switching",
+        { addonName: warning.addonName, reason: warning.reason },
+        'skipping addon after startup warning',
       )
     }
 
-    const loadedConfig = loadConfigWithSources(bootstrap.filePath, registry, hostContext)
-    const theme = await resolveTheme(loadedConfig.config.theme, { baseDirectory: dirname(loadedConfig.filePath) })
-    const filePaths = Array.from(new Set([...loadedConfig.filePaths, ...theme.filePaths]))
+    if (sessionMonitor.getSnapshot().capability === 'unsupported') {
+      options.logger.warn(
+        { platform: process.platform },
+        'session lock monitoring unavailable on this host; continuing without lock-aware deck switching',
+      )
+    }
+
+    const loadedConfig = loadConfigWithSources(
+      bootstrap.filePath,
+      registry,
+      hostContext,
+    )
+    const theme = await resolveTheme(loadedConfig.config.theme, {
+      baseDirectory: dirname(loadedConfig.filePath),
+    })
+    const filePaths = Array.from(
+      new Set([...loadedConfig.filePaths, ...theme.filePaths]),
+    )
 
     return {
       config: loadedConfig.config,
@@ -119,11 +149,16 @@ export async function loadRuntimeConfig(options: StartOptions) {
   }
 }
 
-export function watchConfigFiles(filePaths: readonly string[], onChange: () => void): () => void {
+export function watchConfigFiles(
+  filePaths: readonly string[],
+  onChange: () => void,
+): () => void {
   const uniqueFilePaths = Array.from(new Set(filePaths))
-  const watchers = uniqueFilePaths.map((filePath) => watch(filePath, { persistent: false }, () => {
-    scheduleReload()
-  }))
+  const watchers = uniqueFilePaths.map((filePath) =>
+    watch(filePath, { persistent: false }, () => {
+      scheduleReload()
+    }),
+  )
   let reloadTimer: NodeJS.Timeout | undefined
 
   function scheduleReload(): void {
@@ -177,25 +212,35 @@ export async function restoreReloadNavigation(
   }
 }
 
-export function createTemporaryConfigErrorLines(error: ConfigValidationError): string[] {
+export function createTemporaryConfigErrorLines(
+  error: ConfigValidationError,
+): string[] {
   const location = error.filePath
-    ? `${basename(error.filePath)}${error.lineNumber !== undefined ? `:${error.lineNumber}` : ""}`
-    : "config.yml"
+    ? `${basename(error.filePath)}${error.lineNumber !== undefined ? `:${error.lineNumber}` : ''}`
+    : 'config.yml'
 
   return [
     location,
     error.message,
-    error.suggestion ?? "Fix the config and save again.",
+    error.suggestion ?? 'Fix the config and save again.',
   ]
 }
 
-export function isDomRenderButton(button: RuntimeRenderButton): button is RuntimeRenderButton & { content: NonNullable<RuntimeRenderButton["content"]> } {
+export function isDomRenderButton(
+  button: RuntimeRenderButton,
+): button is RuntimeRenderButton & {
+  content: NonNullable<RuntimeRenderButton['content']>
+} {
   return button.content !== undefined
 }
 
 function createDeckHtml(
   keyCount: number,
-  deckButtons: Array<RuntimeRenderButton & { content: NonNullable<RuntimeRenderButton["content"]> }>,
+  deckButtons: Array<
+    RuntimeRenderButton & {
+      content: NonNullable<RuntimeRenderButton['content']>
+    }
+  >,
   theme?: Theme,
   inlineWarning?: {
     detail: string
@@ -203,18 +248,27 @@ function createDeckHtml(
   },
   emulatorMode = false,
 ): string {
-  return renderDomDeck(deckButtons.map((button) => ({
-    content: button.content,
-    ...(button.frame_state !== undefined ? { frame_state: button.frame_state } : {}),
-    ...(button.full_surface !== undefined ? { full_surface: button.full_surface } : {}),
-    keyIndex: button.keyIndex,
-    ...(button.sample_interval_ms !== undefined ? { sample_interval_ms: button.sample_interval_ms } : {}),
-  })), {
-    emulatorMode,
-    inlineWarning,
-    keyCount,
-    theme,
-  })
+  return renderDomDeck(
+    deckButtons.map((button) => ({
+      content: button.content,
+      ...(button.frame_state !== undefined
+        ? { frame_state: button.frame_state }
+        : {}),
+      ...(button.full_surface !== undefined
+        ? { full_surface: button.full_surface }
+        : {}),
+      keyIndex: button.keyIndex,
+      ...(button.sample_interval_ms !== undefined
+        ? { sample_interval_ms: button.sample_interval_ms }
+        : {}),
+    })),
+    {
+      emulatorMode,
+      inlineWarning,
+      keyCount,
+      theme,
+    },
+  )
 }
 
 export async function ensureBrowserRenderer(
@@ -240,26 +294,52 @@ export async function ensureBrowserRenderer(
 }
 
 async function renderDomDeckSurface(
-  connection: NonNullable<ReturnType<ReturnType<typeof createStreamDeckLifecycle>["getConnection"]>>,
-  deckButtons: Array<RuntimeRenderButton & { content: NonNullable<RuntimeRenderButton["content"]> }>,
+  connection: NonNullable<
+    ReturnType<ReturnType<typeof createStreamDeckLifecycle>['getConnection']>
+  >,
+  deckButtons: Array<
+    RuntimeRenderButton & {
+      content: NonNullable<RuntimeRenderButton['content']>
+    }
+  >,
   browserRenderer: BrowserRenderer,
   logger: pino.Logger,
   theme?: Theme,
 ): Promise<void> {
-  await browserRenderer.updateDeck(createDeckHtml(connection.info.keyCount, deckButtons, theme, undefined, false))
+  await browserRenderer.updateDeck(
+    createDeckHtml(
+      connection.info.keyCount,
+      deckButtons,
+      theme,
+      undefined,
+      false,
+    ),
+  )
 
   const buffersByKey = await browserRenderer.captureKeyBuffers()
   for (const [keyIndex, buffer] of buffersByKey.entries()) {
     await writeKeyBuffer(connection, keyIndex, buffer)
   }
 
-  logger.info({ deckId: "main deck", renderedKeys: Array.from(buffersByKey.keys()).sort((left, right) => left - right) }, "rendered browser-backed main deck")
+  logger.info(
+    {
+      deckId: 'main deck',
+      renderedKeys: Array.from(buffersByKey.keys()).sort(
+        (left, right) => left - right,
+      ),
+    },
+    'rendered browser-backed main deck',
+  )
 }
 
 async function writePlaceholderDeckSurface(
-  connection: NonNullable<ReturnType<ReturnType<typeof createStreamDeckLifecycle>["getConnection"]>>,
+  connection: NonNullable<
+    ReturnType<ReturnType<typeof createStreamDeckLifecycle>['getConnection']>
+  >,
 ): Promise<void> {
-  const buffersByKey = await createStartupPlaceholderBuffers(connection.info.keyCount)
+  const buffersByKey = await createStartupPlaceholderBuffers(
+    connection.info.keyCount,
+  )
 
   for (const [keyIndex, buffer] of buffersByKey.entries()) {
     await writeKeyBuffer(connection, keyIndex, buffer)
@@ -267,62 +347,72 @@ async function writePlaceholderDeckSurface(
 }
 
 export async function renderRuntimeDeckSurface(
-  connection: NonNullable<ReturnType<ReturnType<typeof createStreamDeckLifecycle>["getConnection"]>>,
+  connection: NonNullable<
+    ReturnType<ReturnType<typeof createStreamDeckLifecycle>['getConnection']>
+  >,
   buttons: RuntimeRenderButton[],
   browserRenderer: BrowserRenderer,
   logger: pino.Logger,
   theme?: Theme,
 ): Promise<void> {
   if (buttons.length > 0 && !buttons.every(isDomRenderButton)) {
-    throw new Error("Runtime deck rendering must provide DOM-backed button content")
+    throw new Error(
+      'Runtime deck rendering must provide DOM-backed button content',
+    )
   }
 
-  await renderDomDeckSurface(connection, buttons.filter(isDomRenderButton), browserRenderer, logger, theme)
+  await renderDomDeckSurface(
+    connection,
+    buttons.filter(isDomRenderButton),
+    browserRenderer,
+    logger,
+    theme,
+  )
 }
 
 function renderEmulatorShellHtml(): string {
   const shrinkFitScript = getShrinkFitBrowserScript()
 
   return [
-    "<!doctype html>",
-    "<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">",
-    "<title>Sireno Deck Emulator</title>",
-    "<style>",
+    '<!doctype html>',
+    '<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">',
+    '<title>Sireno Deck Emulator</title>',
+    '<style>',
     ":root{color-scheme:dark;font-family:'IBM Plex Sans', 'Aptos', sans-serif;background:#121418;color:#eef2f7}",
-    "body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#1f2530 0,#121418 55%);color:inherit}",
-    ".shell{display:grid;gap:24px;grid-template-columns:minmax(280px,360px) minmax(320px,1fr);padding:24px}",
-    ".panel{background:rgba(11,15,21,.84);border:1px solid rgba(125,211,252,.18);border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.28);padding:20px}",
+    'body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#1f2530 0,#121418 55%);color:inherit}',
+    '.shell{display:grid;gap:24px;grid-template-columns:minmax(280px,360px) minmax(320px,1fr);padding:24px}',
+    '.panel{background:rgba(11,15,21,.84);border:1px solid rgba(125,211,252,.18);border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.28);padding:20px}',
     ".eyebrow{color:#7dd3fc;font-family:'IBM Plex Mono','Cascadia Code',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase}",
-    "h1{font-size:32px;line-height:1.05;margin:10px 0 12px}",
-    "p{color:#b7c0cf;line-height:1.5;margin:0 0 18px}",
-    ".stats{display:grid;gap:10px}",
-    ".stat{align-items:center;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;padding-top:10px}",
+    'h1{font-size:32px;line-height:1.05;margin:10px 0 12px}',
+    'p{color:#b7c0cf;line-height:1.5;margin:0 0 18px}',
+    '.stats{display:grid;gap:10px}',
+    '.stat{align-items:center;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;padding-top:10px}',
     ".label{color:#8b97aa;font-family:'IBM Plex Mono','Cascadia Code',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase}",
-    ".value{font-size:14px;font-weight:600;text-align:right}",
-    ".viewport{display:grid;place-items:center;min-height:70vh}",
-    ".deck-shell{align-items:center;background:#05070a;border:1px solid rgba(255,255,255,.08);border-radius:28px;box-shadow:0 26px 50px rgba(0,0,0,.36);display:grid;justify-items:center;min-height:min(80vh,720px);padding:24px;width:100%}",
-    "#deck-mount{display:contents}",
-    "@media (max-width: 900px){.shell{grid-template-columns:1fr;padding:16px}.viewport{min-height:auto}.deck-shell{min-height:70vh;padding:16px}}",
-    "</style></head><body>",
-    "<main class=\"shell\">",
-    "<section class=\"panel\">",
-    "<div class=\"eyebrow\">Local Emulator</div>",
-    "<h1>Browser Deck Emulator</h1>",
-    "<p>The iframe below renders the current deck through the same browser HTML path used by the runtime. This first slice is intentionally local, single-user, and hardware-free.</p>",
-    "<div class=\"stats\">",
-    "<div class=\"stat\"><span class=\"label\">Mode</span><span class=\"value\" id=\"mode\">emulator</span></div>",
-    "<div class=\"stat\"><span class=\"label\">Device</span><span class=\"value\" id=\"device\">starting</span></div>",
-    "<div class=\"stat\"><span class=\"label\">Active Deck</span><span class=\"value\" id=\"deck\">starting</span></div>",
-    "<div class=\"stat\"><span class=\"label\">Render Status</span><span class=\"value\" id=\"status\">starting</span></div>",
-    "<div class=\"stat\"><span class=\"label\">Emulator Error</span><span class=\"value\" id=\"error\">none</span></div>",
-    "<div class=\"stat\"><span class=\"label\">Render Version</span><span class=\"value\" id=\"version\">0</span></div>",
-    "<label class=\"label\" for=\"device-select\" style=\"display:block;margin-top:20px\">Virtual Device</label>",
-    "<select id=\"device-select\" style=\"background:#171c24;border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#eef2f7;font:inherit;margin-top:8px;padding:10px 12px;width:100%\"></select>",
-    "</div>",
-    "</section>",
-    "<section class=\"viewport\"><div class=\"deck-shell\"><div id=\"deck-mount\">Waiting for first render...</div></div></section>",
-    "</main>",
-    "<script>",
+    '.value{font-size:14px;font-weight:600;text-align:right}',
+    '.viewport{display:grid;place-items:center;min-height:70vh}',
+    '.deck-shell{align-items:center;background:#05070a;border:1px solid rgba(255,255,255,.08);border-radius:28px;box-shadow:0 26px 50px rgba(0,0,0,.36);display:grid;justify-items:center;min-height:min(80vh,720px);padding:24px;width:100%}',
+    '#deck-mount{display:contents}',
+    '@media (max-width: 900px){.shell{grid-template-columns:1fr;padding:16px}.viewport{min-height:auto}.deck-shell{min-height:70vh;padding:16px}}',
+    '</style></head><body>',
+    '<main class="shell">',
+    '<section class="panel">',
+    '<div class="eyebrow">Local Emulator</div>',
+    '<h1>Browser Deck Emulator</h1>',
+    '<p>The iframe below renders the current deck through the same browser HTML path used by the runtime. This first slice is intentionally local, single-user, and hardware-free.</p>',
+    '<div class="stats">',
+    '<div class="stat"><span class="label">Mode</span><span class="value" id="mode">emulator</span></div>',
+    '<div class="stat"><span class="label">Device</span><span class="value" id="device">starting</span></div>',
+    '<div class="stat"><span class="label">Active Deck</span><span class="value" id="deck">starting</span></div>',
+    '<div class="stat"><span class="label">Render Status</span><span class="value" id="status">starting</span></div>',
+    '<div class="stat"><span class="label">Emulator Error</span><span class="value" id="error">none</span></div>',
+    '<div class="stat"><span class="label">Render Version</span><span class="value" id="version">0</span></div>',
+    '<label class="label" for="device-select" style="display:block;margin-top:20px">Virtual Device</label>',
+    '<select id="device-select" style="background:#171c24;border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#eef2f7;font:inherit;margin-top:8px;padding:10px 12px;width:100%"></select>',
+    '</div>',
+    '</section>',
+    '<section class="viewport"><div class="deck-shell"><div id="deck-mount">Waiting for first render...</div></div></section>',
+    '</main>',
+    '<script>',
     "const mount = document.getElementById('deck-mount');",
     "const device = document.getElementById('device');",
     "const deck = document.getElementById('deck');",
@@ -330,82 +420,82 @@ function renderEmulatorShellHtml(): string {
     "const status = document.getElementById('status');",
     "const deviceSelect = document.getElementById('device-select');",
     "const version = document.getElementById('version');",
-    "let currentVersion = -1;",
+    'let currentVersion = -1;',
     shrinkFitScript,
-    "function attachDeckInteractions(){",
+    'function attachDeckInteractions(){',
     "  mount.querySelectorAll('[data-sireno-key]').forEach((element) => {",
     "    const keyIndex = Number(element.getAttribute('data-sireno-key'));",
-    "    if (Number.isNaN(keyIndex)) { return; }",
+    '    if (Number.isNaN(keyIndex)) { return; }',
     "    element.onmousedown = async () => { await fetch(`/__sireno/input`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ keyIndex, type: 'down' }) }); };",
     "    element.onmouseup = async () => { await fetch(`/__sireno/input`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ keyIndex, type: 'up' }) }); };",
     "    element.onmouseleave = async (event) => { if (event.buttons === 1) { await fetch(`/__sireno/input`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ keyIndex, type: 'up' }) }); } };",
-    "  });",
-    "}",
-    "function patchThemeStyles(nextDocument){",
+    '  });',
+    '}',
+    'function patchThemeStyles(nextDocument){',
     "  ['data-sireno-tailwind','data-sireno-runtime','data-sireno-theme-assets'].forEach((attributeName) => {",
-    "    const selector = `style[${attributeName}=\"true\"]`;",
-    "    const currentStyle = document.head.querySelector(selector);",
-    "    const nextStyle = nextDocument.head.querySelector(selector);",
-    "    if (!nextStyle) { currentStyle?.remove(); return; }",
-    "    if (!currentStyle) { document.head.appendChild(nextStyle.cloneNode(true)); return; }",
-    "    if (currentStyle.textContent !== nextStyle.textContent) { currentStyle.textContent = nextStyle.textContent; }",
-    "  });",
-    "}",
-    "function patchDeckRoot(nextDeckRoot){",
+    '    const selector = `style[${attributeName}="true"]`;',
+    '    const currentStyle = document.head.querySelector(selector);',
+    '    const nextStyle = nextDocument.head.querySelector(selector);',
+    '    if (!nextStyle) { currentStyle?.remove(); return; }',
+    '    if (!currentStyle) { document.head.appendChild(nextStyle.cloneNode(true)); return; }',
+    '    if (currentStyle.textContent !== nextStyle.textContent) { currentStyle.textContent = nextStyle.textContent; }',
+    '  });',
+    '}',
+    'function patchDeckRoot(nextDeckRoot){',
     "  if (!nextDeckRoot) { mount.textContent = 'Waiting for first render...'; return; }",
     "  const currentDeckRoot = mount.querySelector('#deck-root');",
-    "  if (!currentDeckRoot) { mount.replaceChildren(nextDeckRoot); attachDeckInteractions(); window.__sirenoApplyShrinkFit?.(mount); return; }",
-    "  Array.from(currentDeckRoot.getAttributeNames()).forEach((name) => { if (!nextDeckRoot.hasAttribute(name)) { currentDeckRoot.removeAttribute(name); } });",
+    '  if (!currentDeckRoot) { mount.replaceChildren(nextDeckRoot); attachDeckInteractions(); window.__sirenoApplyShrinkFit?.(mount); return; }',
+    '  Array.from(currentDeckRoot.getAttributeNames()).forEach((name) => { if (!nextDeckRoot.hasAttribute(name)) { currentDeckRoot.removeAttribute(name); } });',
     "  Array.from(nextDeckRoot.getAttributeNames()).forEach((name) => { currentDeckRoot.setAttribute(name, nextDeckRoot.getAttribute(name) ?? ''); });",
-    "  const currentChildren = Array.from(currentDeckRoot.children);",
-    "  const nextChildren = Array.from(nextDeckRoot.children);",
-    "  nextChildren.forEach((nextChild, index) => {",
-    "    const currentChild = currentChildren[index];",
-    "    if (!currentChild) { currentDeckRoot.appendChild(nextChild); return; }",
+    '  const currentChildren = Array.from(currentDeckRoot.children);',
+    '  const nextChildren = Array.from(nextDeckRoot.children);',
+    '  nextChildren.forEach((nextChild, index) => {',
+    '    const currentChild = currentChildren[index];',
+    '    if (!currentChild) { currentDeckRoot.appendChild(nextChild); return; }',
     "    const currentKey = currentChild.getAttribute('data-sireno-key');",
     "    const nextKey = nextChild.getAttribute('data-sireno-key');",
-    "    const canPatchKey = currentKey !== null && currentKey === nextKey;",
-    "    if (canPatchKey && currentChild.outerHTML === nextChild.outerHTML) { return; }",
-    "    if (!canPatchKey && currentChild.outerHTML === nextChild.outerHTML) { return; }",
-    "    currentChild.replaceWith(nextChild);",
-    "  });",
-    "  currentChildren.slice(nextChildren.length).forEach((staleChild) => { staleChild.remove(); });",
-    "  attachDeckInteractions();",
-    "  window.__sirenoApplyShrinkFit?.(mount);",
-    "}",
-    "async function refresh(){",
+    '    const canPatchKey = currentKey !== null && currentKey === nextKey;',
+    '    if (canPatchKey && currentChild.outerHTML === nextChild.outerHTML) { return; }',
+    '    if (!canPatchKey && currentChild.outerHTML === nextChild.outerHTML) { return; }',
+    '    currentChild.replaceWith(nextChild);',
+    '  });',
+    '  currentChildren.slice(nextChildren.length).forEach((staleChild) => { staleChild.remove(); });',
+    '  attachDeckInteractions();',
+    '  window.__sirenoApplyShrinkFit?.(mount);',
+    '}',
+    'async function refresh(){',
     "  const response = await fetch('/__sireno/state', { cache: 'no-store' });",
-    "  const state = await response.json();",
-    "  device.textContent = state.device;",
-    "  deck.textContent = state.activeDeckId;",
+    '  const state = await response.json();',
+    '  device.textContent = state.device;',
+    '  deck.textContent = state.activeDeckId;',
     "  error.textContent = state.error ? state.error.detail : 'none';",
-    "  status.textContent = state.status;",
-    "  version.textContent = String(state.version);",
+    '  status.textContent = state.status;',
+    '  version.textContent = String(state.version);',
     "  deviceSelect.innerHTML = '';",
-    "  state.availableDevices.forEach((entry) => {",
+    '  state.availableDevices.forEach((entry) => {',
     "    const option = document.createElement('option');",
-    "    option.value = String(entry.keyCount);",
-    "    option.textContent = entry.label;",
-    "    option.selected = entry.keyCount === state.selectedKeyCount;",
-    "    deviceSelect.appendChild(option);",
-    "  });",
-    "  if (state.version > 0 && state.version !== currentVersion) {",
-    "    currentVersion = state.version;",
+    '    option.value = String(entry.keyCount);',
+    '    option.textContent = entry.label;',
+    '    option.selected = entry.keyCount === state.selectedKeyCount;',
+    '    deviceSelect.appendChild(option);',
+    '  });',
+    '  if (state.version > 0 && state.version !== currentVersion) {',
+    '    currentVersion = state.version;',
     "    const deckResponse = await fetch(`/__sireno/deck?v=${state.version}`, { cache: 'no-store' });",
-    "    const deckHtml = await deckResponse.text();",
+    '    const deckHtml = await deckResponse.text();',
     "    const nextDocument = new DOMParser().parseFromString(deckHtml, 'text/html');",
-    "    patchThemeStyles(nextDocument);",
+    '    patchThemeStyles(nextDocument);',
     "    patchDeckRoot(nextDocument.querySelector('#deck-root'));",
-    "  }",
-    "}",
-    "deviceSelect.onchange = async () => {",
+    '  }',
+    '}',
+    'deviceSelect.onchange = async () => {',
     "  await fetch('/__sireno/device', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ keyCount: Number(deviceSelect.value) }) });",
-    "  currentVersion = -1;",
-    "};",
-    "refresh().catch((error) => { status.textContent = String(error); });",
-    "setInterval(() => { void refresh().catch((error) => { status.textContent = String(error); }); }, 500);",
-    "</script></body></html>",
-  ].join("")
+    '  currentVersion = -1;',
+    '};',
+    'refresh().catch((error) => { status.textContent = String(error); });',
+    'setInterval(() => { void refresh().catch((error) => { status.textContent = String(error); }); }, 500);',
+    '</script></body></html>',
+  ].join('')
 }
 
 function createEmulatorFileAssetUrl(filePath: string): string {
@@ -415,78 +505,92 @@ function createEmulatorFileAssetUrl(filePath: string): string {
 function rewriteEmulatorDeckHtml(html: string): string {
   return html.replace(
     /<style data-sireno-theme-assets="true">([\s\S]*?)<\/style>/,
-    (_match, cssText: string) => `<style data-sireno-theme-assets="true">${rewriteThemeStylesheetAssetUrls(cssText, createEmulatorFileAssetUrl)}</style>`,
+    (_match, cssText: string) =>
+      `<style data-sireno-theme-assets="true">${rewriteThemeStylesheetAssetUrls(cssText, createEmulatorFileAssetUrl)}</style>`,
   )
 }
 
-function writeHttpResponse(response: ServerResponse, statusCode: number, body: string, contentType: string): void {
+function writeHttpResponse(
+  response: ServerResponse,
+  statusCode: number,
+  body: string,
+  contentType: string,
+): void {
   response.statusCode = statusCode
-  response.setHeader("content-type", contentType)
+  response.setHeader('content-type', contentType)
   response.end(body)
 }
 
 function getAssetContentType(filePath: string): string {
   switch (extname(filePath).toLowerCase()) {
-    case ".avif":
-      return "image/avif"
-    case ".gif":
-      return "image/gif"
-    case ".jpeg":
-    case ".jpg":
-      return "image/jpeg"
-    case ".png":
-      return "image/png"
-    case ".svg":
-      return "image/svg+xml"
-    case ".ttf":
-      return "font/ttf"
-    case ".otf":
-      return "font/otf"
-    case ".webp":
-      return "image/webp"
-    case ".woff":
-      return "font/woff"
-    case ".woff2":
-      return "font/woff2"
+    case '.avif':
+      return 'image/avif'
+    case '.gif':
+      return 'image/gif'
+    case '.jpeg':
+    case '.jpg':
+      return 'image/jpeg'
+    case '.png':
+      return 'image/png'
+    case '.svg':
+      return 'image/svg+xml'
+    case '.ttf':
+      return 'font/ttf'
+    case '.otf':
+      return 'font/otf'
+    case '.webp':
+      return 'image/webp'
+    case '.woff':
+      return 'font/woff'
+    case '.woff2':
+      return 'font/woff2'
     default:
-      return "application/octet-stream"
+      return 'application/octet-stream'
   }
 }
 
-function createEmulatorAssetUrl(baseUrl: string, assetReference: string): string {
+function createEmulatorAssetUrl(
+  baseUrl: string,
+  assetReference: string,
+): string {
   return `${baseUrl}/__sireno/assets?ref=${encodeURIComponent(assetReference)}`
 }
 
 function createEmulatorServer(options: {
   restartWithKeyCount: (keyCount: number) => Promise<void>
-  emitKeyEvent: (event: { keyIndex: number; type: "down" | "up" }) => void
+  emitKeyEvent: (event: { keyIndex: number; type: 'down' | 'up' }) => void
   themeAssetPaths: ReadonlySet<string>
   resolveAssetPath: (assetReference: string) => string | undefined
   surfaceState: EmulatorSurfaceState
 }): Server {
   return createServer((request: IncomingMessage, response: ServerResponse) => {
-    const url = new URL(request.url ?? "/", "http://127.0.0.1")
+    const url = new URL(request.url ?? '/', 'http://127.0.0.1')
 
-    if (url.pathname === "/" || url.pathname === "/index.html") {
-      writeHttpResponse(response, 200, renderEmulatorShellHtml(), "text/html; charset=utf-8")
+    if (url.pathname === '/' || url.pathname === '/index.html') {
+      writeHttpResponse(
+        response,
+        200,
+        renderEmulatorShellHtml(),
+        'text/html; charset=utf-8',
+      )
       return
     }
 
-    if (url.pathname === "/__sireno/deck") {
+    if (url.pathname === '/__sireno/deck') {
       writeHttpResponse(
         response,
         options.surfaceState.version > 0 ? 200 : 503,
         options.surfaceState.version > 0
           ? rewriteEmulatorDeckHtml(options.surfaceState.html)
-          : "<div style=\"color:#eef2f7;font-family:sans-serif;display:grid;place-items:center;min-height:240px;\">Waiting for first render...</div>",
-        "text/html; charset=utf-8",
+          : '<div style="color:#eef2f7;font-family:sans-serif;display:grid;place-items:center;min-height:240px;">Waiting for first render...</div>',
+        'text/html; charset=utf-8',
       )
       return
     }
 
-    if (url.pathname === "/__sireno/assets") {
-      const assetReference = url.searchParams.get("ref")
-      const assetPathFromQuery = url.searchParams.get("path")
+    if (url.pathname === '/__sireno/assets') {
+      const assetReference = url.searchParams.get('ref')
+      const assetPathFromQuery = url.searchParams.get('path')
       const assetPath = assetReference
         ? options.resolveAssetPath(assetReference)
         : assetPathFromQuery && options.themeAssetPaths.has(assetPathFromQuery)
@@ -494,97 +598,146 @@ function createEmulatorServer(options: {
           : undefined
 
       if (!assetPath) {
-        writeHttpResponse(response, 404, "Asset not found", "text/plain; charset=utf-8")
+        writeHttpResponse(
+          response,
+          404,
+          'Asset not found',
+          'text/plain; charset=utf-8',
+        )
         return
       }
 
       void readFile(assetPath)
         .then((buffer) => {
           response.statusCode = 200
-          response.setHeader("content-type", getAssetContentType(assetPath))
+          response.setHeader('content-type', getAssetContentType(assetPath))
           response.end(buffer)
         })
         .catch(() => {
-          writeHttpResponse(response, 404, "Asset not found", "text/plain; charset=utf-8")
+          writeHttpResponse(
+            response,
+            404,
+            'Asset not found',
+            'text/plain; charset=utf-8',
+          )
         })
       return
     }
 
-    if (url.pathname === "/__sireno/input" && request.method === "POST") {
+    if (url.pathname === '/__sireno/input' && request.method === 'POST') {
       const chunks: Buffer[] = []
-      request.on("data", (chunk) => {
+      request.on('data', (chunk) => {
         chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
       })
-      request.on("end", () => {
+      request.on('end', () => {
         try {
-          const payload = JSON.parse(Buffer.concat(chunks).toString("utf8")) as { keyIndex?: number; type?: "down" | "up" }
-          if (typeof payload.keyIndex !== "number" || (payload.type !== "down" && payload.type !== "up")) {
-            writeHttpResponse(response, 400, "Invalid input event", "text/plain; charset=utf-8")
+          const payload = JSON.parse(
+            Buffer.concat(chunks).toString('utf8'),
+          ) as { keyIndex?: number; type?: 'down' | 'up' }
+          if (
+            typeof payload.keyIndex !== 'number' ||
+            (payload.type !== 'down' && payload.type !== 'up')
+          ) {
+            writeHttpResponse(
+              response,
+              400,
+              'Invalid input event',
+              'text/plain; charset=utf-8',
+            )
             return
           }
 
-          options.emitKeyEvent({ keyIndex: payload.keyIndex, type: payload.type })
-          writeHttpResponse(response, 204, "", "text/plain; charset=utf-8")
+          options.emitKeyEvent({
+            keyIndex: payload.keyIndex,
+            type: payload.type,
+          })
+          writeHttpResponse(response, 204, '', 'text/plain; charset=utf-8')
         } catch {
-          writeHttpResponse(response, 400, "Invalid input event", "text/plain; charset=utf-8")
+          writeHttpResponse(
+            response,
+            400,
+            'Invalid input event',
+            'text/plain; charset=utf-8',
+          )
         }
       })
       return
     }
 
-    if (url.pathname === "/__sireno/device" && request.method === "POST") {
+    if (url.pathname === '/__sireno/device' && request.method === 'POST') {
       const chunks: Buffer[] = []
-      request.on("data", (chunk) => {
+      request.on('data', (chunk) => {
         chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
       })
-      request.on("end", () => {
+      request.on('end', () => {
         try {
-          const payload = JSON.parse(Buffer.concat(chunks).toString("utf8")) as { keyCount?: number }
-          if (typeof payload.keyCount !== "number") {
-            writeHttpResponse(response, 400, "Invalid device request", "text/plain; charset=utf-8")
+          const payload = JSON.parse(
+            Buffer.concat(chunks).toString('utf8'),
+          ) as { keyCount?: number }
+          if (typeof payload.keyCount !== 'number') {
+            writeHttpResponse(
+              response,
+              400,
+              'Invalid device request',
+              'text/plain; charset=utf-8',
+            )
             return
           }
 
           void options.restartWithKeyCount(payload.keyCount)
-          writeHttpResponse(response, 202, "", "text/plain; charset=utf-8")
+          writeHttpResponse(response, 202, '', 'text/plain; charset=utf-8')
         } catch {
-          writeHttpResponse(response, 400, "Invalid device request", "text/plain; charset=utf-8")
+          writeHttpResponse(
+            response,
+            400,
+            'Invalid device request',
+            'text/plain; charset=utf-8',
+          )
         }
       })
       return
     }
 
-    if (url.pathname === "/__sireno/state") {
-      writeHttpResponse(response, 200, JSON.stringify({
-        activeDeckId: options.surfaceState.activeDeckId,
-        availableDevices: options.surfaceState.availableDevices,
-        device: options.surfaceState.availableDevices.find((entry) => entry.keyCount === options.surfaceState.selectedKeyCount)?.label
-          ?? `Virtual Stream Deck ${options.surfaceState.selectedKeyCount}`,
-        error: options.surfaceState.error,
-        selectedKeyCount: options.surfaceState.selectedKeyCount,
-        status: options.surfaceState.status,
-        updatedAt: options.surfaceState.updatedAt,
-        version: options.surfaceState.version,
-      }), "application/json; charset=utf-8")
+    if (url.pathname === '/__sireno/state') {
+      writeHttpResponse(
+        response,
+        200,
+        JSON.stringify({
+          activeDeckId: options.surfaceState.activeDeckId,
+          availableDevices: options.surfaceState.availableDevices,
+          device:
+            options.surfaceState.availableDevices.find(
+              (entry) =>
+                entry.keyCount === options.surfaceState.selectedKeyCount,
+            )?.label ??
+            `Virtual Stream Deck ${options.surfaceState.selectedKeyCount}`,
+          error: options.surfaceState.error,
+          selectedKeyCount: options.surfaceState.selectedKeyCount,
+          status: options.surfaceState.status,
+          updatedAt: options.surfaceState.updatedAt,
+          version: options.surfaceState.version,
+        }),
+        'application/json; charset=utf-8',
+      )
       return
     }
 
-    writeHttpResponse(response, 404, "Not Found", "text/plain; charset=utf-8")
+    writeHttpResponse(response, 404, 'Not Found', 'text/plain; charset=utf-8')
   })
 }
 
 async function listenServer(server: Server, port: number): Promise<number> {
   await new Promise<void>((resolve, reject) => {
-    server.once("error", reject)
-    server.listen(port, "127.0.0.1", () => {
-      server.off("error", reject)
+    server.once('error', reject)
+    server.listen(port, '127.0.0.1', () => {
+      server.off('error', reject)
       resolve()
     })
   })
 
   const address = server.address() as AddressInfo | null
   if (!address) {
-    throw new Error("Failed to resolve emulator server address")
+    throw new Error('Failed to resolve emulator server address')
   }
 
   return address.port
@@ -603,7 +756,9 @@ async function closeServer(server: Server): Promise<void> {
   })
 }
 
-export async function startEmulatorSession(options: EmulatorStartOptions): Promise<EmulatorSession> {
+export async function startEmulatorSession(
+  options: EmulatorStartOptions,
+): Promise<EmulatorSession> {
   const loadedConfig = await loadRuntimeConfig(options)
   const requestedKeyCount = options.keyCount ?? 15
   const availableDevices = getVirtualDeckDevices()
@@ -611,10 +766,10 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
     activeDeckId: loadedConfig.config.main_deck,
     availableDevices,
     error: null,
-    html: "",
+    html: '',
     requestedKeyCount,
     selectedKeyCount: requestedKeyCount,
-    status: "starting",
+    status: 'starting',
     updatedAt: null,
     version: 0,
   }
@@ -634,13 +789,15 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
   function getConfiguredDeckKeyRequirement(): number {
     return Math.max(
       0,
-      ...Object.values(loadedConfig.config.decks).flatMap((deck) => deck.buttons.map((button) => button.position + 1)),
+      ...Object.values(loadedConfig.config.decks).flatMap((deck) =>
+        deck.buttons.map((button) => button.position + 1),
+      ),
     )
   }
 
   async function startManagedSession(keyCount: number): Promise<void> {
     surfaceState.selectedKeyCount = keyCount
-    surfaceState.status = surfaceState.version === 0 ? "starting" : "restarting"
+    surfaceState.status = surfaceState.version === 0 ? 'starting' : 'restarting'
     surfaceState.error = null
 
     await closeManagedSession()
@@ -650,16 +807,22 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
       const mismatchDetail = `Selected virtual device exposes ${keyCount} keys but the configured deck needs ${requiredKeyCount}.`
       surfaceState.activeDeckId = loadedConfig.config.main_deck
       surfaceState.error = {
-        code: "emulator_layout_mismatch",
+        code: 'emulator_layout_mismatch',
         detail: mismatchDetail,
       }
-      surfaceState.html = createDeckHtml(keyCount, [], loadedConfig.theme, {
-        detail: mismatchDetail,
-        title: "Layout mismatch",
-      }, true)
+      surfaceState.html = createDeckHtml(
+        keyCount,
+        [],
+        loadedConfig.theme,
+        {
+          detail: mismatchDetail,
+          title: 'Layout mismatch',
+        },
+        true,
+      )
       surfaceState.updatedAt = new Date().toISOString()
       surfaceState.version += 1
-      surfaceState.status = "ready"
+      surfaceState.status = 'ready'
       browserRenderer = await ensureBrowserRenderer(browserRenderer, keyCount)
       await browserRenderer.updateDeck(surfaceState.html)
       return
@@ -667,10 +830,15 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
 
     const lifecycle = createVirtualStreamDeckLifecycle({
       keyCount,
-      model: availableDevices.find((entry) => entry.keyCount === keyCount)?.label ?? `Virtual Stream Deck ${keyCount}`,
+      model:
+        availableDevices.find((entry) => entry.keyCount === keyCount)?.label ??
+        `Virtual Stream Deck ${keyCount}`,
     })
     const connection = await lifecycle.start()
-    browserRenderer = await ensureBrowserRenderer(browserRenderer, connection.info.keyCount)
+    browserRenderer = await ensureBrowserRenderer(
+      browserRenderer,
+      connection.info.keyCount,
+    )
     const runtime = createDeckRuntime({
       addonRegistry: loadedConfig.registry,
       deck: loadedConfig.config.decks[loadedConfig.config.main_deck]!,
@@ -680,16 +848,24 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
       lockedDeckId: loadedConfig.config.session?.locked_deck,
       onRenderDeck: async (buttons) => {
         if (buttons.length > 0 && !buttons.every(isDomRenderButton)) {
-          throw new Error("Runtime deck rendering must provide DOM-backed button content")
+          throw new Error(
+            'Runtime deck rendering must provide DOM-backed button content',
+          )
         }
 
-        const html = createDeckHtml(connection.info.keyCount, buttons.filter(isDomRenderButton), loadedConfig.theme, undefined, true)
+        const html = createDeckHtml(
+          connection.info.keyCount,
+          buttons.filter(isDomRenderButton),
+          loadedConfig.theme,
+          undefined,
+          true,
+        )
         surfaceState.activeDeckId = runtime.getActiveDeck().id
         surfaceState.error = null
         surfaceState.html = html
         surfaceState.updatedAt = new Date().toISOString()
         surfaceState.version += 1
-        surfaceState.status = "ready"
+        surfaceState.status = 'ready'
         await browserRenderer.updateDeck(html)
       },
       sessionMonitor: loadedConfig.sessionMonitor,
@@ -708,7 +884,8 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
     restartWithKeyCount: async (keyCount) => {
       await startManagedSession(keyCount)
     },
-    resolveAssetPath: (assetReference) => loadedConfig.registry.resolveAssetPath(assetReference),
+    resolveAssetPath: (assetReference) =>
+      loadedConfig.registry.resolveAssetPath(assetReference),
     surfaceState,
     themeAssetPaths: new Set(loadedConfig.theme.filePaths),
   })
@@ -728,7 +905,9 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
         setDomAssetPathResolver()
         await closeManagedSession()
         await browserRenderer?.close().catch(() => {})
-        await Promise.resolve(loadedConfig.sessionMonitor.stop()).catch(() => {})
+        await Promise.resolve(loadedConfig.sessionMonitor.stop()).catch(
+          () => {},
+        )
         await closeServer(server).catch(() => {})
       },
       port,
@@ -744,7 +923,9 @@ export async function startEmulatorSession(options: EmulatorStartOptions): Promi
   }
 }
 
-export async function startEmulator(options: EmulatorStartOptions): Promise<void> {
+export async function startEmulator(
+  options: EmulatorStartOptions,
+): Promise<void> {
   const session = await startEmulatorSession(options)
   let cleanupSignals = () => {}
 
@@ -752,9 +933,9 @@ export async function startEmulator(options: EmulatorStartOptions): Promise<void
     await session.close()
   })
 
-  options.logger.info({ url: session.url }, "browser deck emulator started")
-  options.logger.info("open the local emulator page in your browser")
-  options.logger.info("press Ctrl+C to stop")
+  options.logger.info({ url: session.url }, 'browser deck emulator started')
+  options.logger.info('open the local emulator page in your browser')
+  options.logger.info('press Ctrl+C to stop')
 
   try {
     await new Promise(() => {
@@ -770,21 +951,28 @@ export async function startDaemon(options: StartOptions): Promise<void> {
   const existingPid = readPid()
   let cleanupSignals = () => {}
   let runtime: ReturnType<typeof createDeckRuntime> | null = null
-  let sessionMonitor: Awaited<ReturnType<typeof loadRuntimeConfig>>["sessionMonitor"] | null = null
+  let sessionMonitor:
+    | Awaited<ReturnType<typeof loadRuntimeConfig>>['sessionMonitor']
+    | null = null
   let browserRenderer: BrowserRenderer | null = null
   let stopWatchingConfig = () => {}
   let lifecycle: ReturnType<typeof createStreamDeckLifecycle> | null = null
-  let connection: NonNullable<ReturnType<ReturnType<typeof createStreamDeckLifecycle>["getConnection"]>> | null = null
+  let connection: NonNullable<
+    ReturnType<ReturnType<typeof createStreamDeckLifecycle>['getConnection']>
+  > | null = null
   let startupPlaceholderPending = false
 
   if (existingPid !== null && isRunning(existingPid)) {
-    logger.error({ pid: existingPid }, "daemon already running")
+    logger.error({ pid: existingPid }, 'daemon already running')
     process.exitCode = 1
     return
   }
 
   if (existingPid !== null) {
-    logger.warn({ pid: existingPid }, "stale PID file found; removing it before start")
+    logger.warn(
+      { pid: existingPid },
+      'stale PID file found; removing it before start',
+    )
     removePidFile()
   }
 
@@ -817,11 +1005,18 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     const activeConnection = connection
     startupPlaceholderPending = true
     await writePlaceholderDeckSurface(activeConnection)
-    browserRenderer = await ensureBrowserRenderer(browserRenderer, activeConnection.info.keyCount)
+    browserRenderer = await ensureBrowserRenderer(
+      browserRenderer,
+      activeConnection.info.keyCount,
+    )
 
-    setDomAssetPathResolver((assetReference) => initialLoad.registry.resolveAssetPath(assetReference))
+    setDomAssetPathResolver((assetReference) =>
+      initialLoad.registry.resolveAssetPath(assetReference),
+    )
 
-    const createRuntime = async (loadedConfig: Awaited<ReturnType<typeof loadRuntimeConfig>>) => {
+    const createRuntime = async (
+      loadedConfig: Awaited<ReturnType<typeof loadRuntimeConfig>>,
+    ) => {
       return createDeckRuntime({
         addonRegistry: loadedConfig.registry,
         deck: loadedConfig.config.decks[loadedConfig.config.main_deck]!,
@@ -837,7 +1032,13 @@ export async function startDaemon(options: StartOptions): Promise<void> {
           }
 
           try {
-            await renderRuntimeDeckSurface(currentConnection, buttons, browserRenderer, logger, loadedConfig.theme)
+            await renderRuntimeDeckSurface(
+              currentConnection,
+              buttons,
+              browserRenderer,
+              logger,
+              loadedConfig.theme,
+            )
 
             if (startupPlaceholderPending) {
               startupPlaceholderPending = false
@@ -871,21 +1072,31 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
       sessionMonitor = loadedConfig.sessionMonitor
       runtime = nextRuntime
-      setDomAssetPathResolver((assetReference) => loadedConfig.registry.resolveAssetPath(assetReference))
+      setDomAssetPathResolver((assetReference) =>
+        loadedConfig.registry.resolveAssetPath(assetReference),
+      )
 
       previousRuntime.stop()
       await previousSessionMonitor.stop()
 
       nextRuntime.start()
-      await restoreReloadNavigation(nextRuntime, previousStack, previousActiveDeckId, loadedConfig.config.main_deck)
+      await restoreReloadNavigation(
+        nextRuntime,
+        previousStack,
+        previousActiveDeckId,
+        loadedConfig.config.main_deck,
+      )
 
       stopWatchingConfig()
       stopWatchingConfig = watchConfigFiles(loadedConfig.filePaths, () => {
         void reloadRuntime().catch((error) => {
-          logger.error({ error }, "config reload failed")
+          logger.error({ error }, 'config reload failed')
         })
       })
-      logger.info({ filePaths: loadedConfig.filePaths }, "reloaded config after file change")
+      logger.info(
+        { filePaths: loadedConfig.filePaths },
+        'reloaded config after file change',
+      )
     }
 
     runtime = await createRuntime(initialLoad)
@@ -904,7 +1115,8 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
       do {
         reloadQueued = false
-        let loadedConfig: Awaited<ReturnType<typeof loadRuntimeConfig>> | null = null
+        let loadedConfig: Awaited<ReturnType<typeof loadRuntimeConfig>> | null =
+          null
 
         try {
           loadedConfig = await loadRuntimeConfig(options)
@@ -917,9 +1129,11 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
           if (error instanceof ConfigValidationError) {
             console.error(formatConfigError(error))
-            await runtime.showTemporaryErrorDeck(createTemporaryConfigErrorLines(error))
+            await runtime.showTemporaryErrorDeck(
+              createTemporaryConfigErrorLines(error),
+            )
           } else {
-            logger.error({ error }, "config reload failed")
+            logger.error({ error }, 'config reload failed')
           }
         }
       } while (reloadQueued)
@@ -931,19 +1145,19 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     await firstRenderReady
     stopWatchingConfig = watchConfigFiles(initialLoad.filePaths, () => {
       void reloadRuntime().catch((error) => {
-        logger.error({ error }, "config reload failed")
+        logger.error({ error }, 'config reload failed')
       })
     })
 
-    logger.info({ config: initialLoad.config }, "config loaded successfully")
+    logger.info({ config: initialLoad.config }, 'config loaded successfully')
     logger.info(
-        {
-          keyCount: activeConnection.info.keyCount,
-          model: activeConnection.info.model,
-          serialNumber: activeConnection.info.serialNumber,
-        },
-        "connected to Stream Deck",
-      )
+      {
+        keyCount: activeConnection.info.keyCount,
+        model: activeConnection.info.model,
+        serialNumber: activeConnection.info.serialNumber,
+      },
+      'connected to Stream Deck',
+    )
 
     writePid()
     cleanupSignals = setupSignalHandlers(logger, async () => {
@@ -966,7 +1180,10 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     await Promise.resolve(sessionMonitor?.stop()).catch(() => {})
     await lifecycle?.close().catch(() => {})
 
-    if (error instanceof AddonManifestError && error.code === "api_version_mismatch") {
+    if (
+      error instanceof AddonManifestError &&
+      error.code === 'api_version_mismatch'
+    ) {
       console.error(`Addon apiVersion error: ${error.message}`)
       process.exitCode = 1
       return
@@ -994,9 +1211,11 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     throw error
   }
 
-  logger.info({ pid: process.pid }, "sireno-deck daemon started")
-  logger.info("started config-driven main deck runtime with addon-hosted buttons")
-  logger.info("press Ctrl+C to stop")
+  logger.info({ pid: process.pid }, 'sireno-deck daemon started')
+  logger.info(
+    'started config-driven main deck runtime with addon-hosted buttons',
+  )
+  logger.info('press Ctrl+C to stop')
 
   try {
     await new Promise(() => {

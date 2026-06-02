@@ -1,4 +1,4 @@
-theme: light
+theme: default
 main_deck: main
 addons: []
 decks:
@@ -19,7 +19,7 @@ decks:
         target_deck: dark-review
   dark-review:
     id: dark-review
-    background: "#10161f"
+    background: '#10161f'
     buttons:
       - position: 0
         type: action

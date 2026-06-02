@@ -1,43 +1,39 @@
 # Feature Research
 
-**Domain:** v1.2 session context and surface composition
-**Researched:** 2026-05-17
+**Domain:** v1.3 typography scaling, live text fitting, and rich date-time formatting
+**Researched:** 2026-05-28
 **Confidence:** HIGH
 
 ## Table Stakes
 
-Features the milestone should deliver so the requested scope feels like one coherent release instead of six unrelated hacks.
-
 | Feature | Why Expected In This Milestone | Complexity | Notes |
 |---------|-------------------------------|------------|-------|
-| Background fallback layering | The user explicitly defined precedence: config override, then deck, then theme | MEDIUM | Must be one shared rule across all visuals |
-| OS context injection | OS type, variant, and version are now part of addon/runtime expectations | MEDIUM | Needs one authoritative context shape available in render, action/status paths, and config templating |
-| Multiple text fitting modes | The current clip-only text contract is too narrow for this milestone | MEDIUM | Default should be shrink-then-clip; wrap should be opt-in |
-| Lock-aware deck switching | Locked-session deck is part of user-visible behavior, not optional polish | HIGH | Requires runtime deck ownership and restore semantics |
+| Theme-relative typography scaling | This is the core user request: `size` must not be pinned to the theme's exact font size | MEDIUM | `md` should mean the typography base for the selected role; other sizes scale proportionally |
+| Live shrink-fit recomputation on text changes | The user explicitly wants the max non-wrapping size found in realtime before falling back to min-and-wrap behavior | HIGH | This is the only feature that likely needs measured DOM feedback |
+| Clear minimum-size floor for shrink-fit | Unlimited shrinking produces unreadable keys | MEDIUM | Requirements should define whether fallback after min is wrap-only or wrap/clip depending on fit mode |
+| Rich built-in date-time formatting | The user explicitly asked for richer layout and inline emphasis | MEDIUM | Scope stays date-time-only this milestone |
+| Explicit newline token using `|` | Needed for multi-line date/time layouts in one format string | LOW | Must coexist cleanly with Day.js literals and escaping rules |
 
 ## Differentiators
 
-Features that make this milestone materially stronger than a background-and-config patch.
-
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
-| Global addon-provided wrappers/styles | Makes addon visuals reusable across the whole system, not trapped inside one addon | HIGH | Needs registry identity, validation, and render-surface integration |
-| Built-in rich toggles | Standardizes a common UX pattern instead of leaving every addon to reinvent it badly | MEDIUM | Support both internal-state and command-driven variants |
-| Lock idle dimming | Makes lock mode act like a real session-aware surface, not a static replacement deck | MEDIUM | Separate from lock detection; requires elapsed-time behavior |
-| Config templating with injected OS/session context | Lets decks and generated content respond to host metadata before runtime render | HIGH | Needs safe, limited interpolation scope, not arbitrary code execution |
+| Accent-bold highlight syntax `*XXX*` | Lets time/date widgets call out one segment without addon code forks | LOW | Use accent color plus bold, matching user request |
+| Inline size override tags like `<xs>...</xs>` | Makes compact secondary lines possible without splitting into multiple widgets | MEDIUM | Requirements should decide the supported size tag set beyond `xs` |
+| Blink segments with accessibility guardrails | Makes time separators or alerts expressive without hardcoded widget variants | MEDIUM | Must respect reduced-motion preference |
+| One rich format string instead of many widget-specific knobs | Keeps config authoring compact | MEDIUM | Stronger if the same parser can output a simple segment tree into `Text`/span nodes |
+| Theme-aware rich formatting | Rich spans should still inherit typography family and base sizing from the active role | MEDIUM | Formatting should override as little as possible |
 
 ## Anti-Features
 
-Features that sound adjacent but would bloat or poison this milestone.
-
 | Feature | Why It Sounds Tempting | Why It’s Problematic | Better Alternative |
 |---------|------------------------|----------------------|--------------------|
-| Full cross-platform session management abstraction | The product supports multiple OSes | Lock-state detection semantics differ too much; Linux-first is safer than pretending parity exists | Build a narrow session-context service with explicit degraded support paths |
-| CSS-like styling system for addons | “Styles” sounds like CSS | Far too broad for a custom reconciler + SVG renderer project | Register a narrow set of wrapper/style primitives the renderer actually understands |
-| Arbitrary environment/process context injection | Feels powerful for templating | Expands security/surface area immediately | Limit v1.2 to OS type, variant, version, plus lock-state where needed by core |
-| Automatic text fit with unlimited shrinking | Guarantees fit on paper | Produces unreadable keys | Minimum readable font size, then clip |
-| Lock overlay on top of the active deck | Looks cheaper to implement | Confuses action suppression and restore semantics | Switch to a dedicated locked-session deck |
+| General markdown/HTML support in `Text` | Feels flexible | Creates parsing, escaping, and rendering obligations well beyond this milestone | narrow widget-local formatting grammar |
+| Rich formatting for every widget immediately | Reuse sounds efficient | Locks in a global syntax before it has been validated on one widget | ship it on date-time first |
+| Unlimited nested formatting grammar | Feels expressive | Parser complexity grows fast and edge cases explode | support a shallow, explicit tag set |
+| Replacing Day.js tokens with custom date placeholders | Could unify syntax visually | Reinvents well-documented date formatting and confuses users | keep Day.js tokens, add a separate rich wrapper grammar |
+| Pure CSS shrink-fit with no measurement | Looks simpler | Cannot satisfy "largest size that does not wrap" reliably on content changes | measured shrink seam only |
 
 ---
-*Feature research for: v1.2 session context and surface composition*
-*Researched: 2026-05-17*
+*Feature research for: v1.3 typography scaling, live text fitting, and rich date-time formatting*
+*Researched: 2026-05-28*

@@ -5,6 +5,7 @@ import { defineConfig } from "vitest/config"
 export default defineConfig({
   resolve: {
     alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
       "sireno-deck-cli": fileURLToPath(new URL("./src/index.ts", import.meta.url)),
     },
   },

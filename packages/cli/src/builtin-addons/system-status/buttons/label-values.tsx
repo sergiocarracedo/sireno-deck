@@ -2,8 +2,8 @@ import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
 import {
   getCanonicalSystemMetrics,
   type CanonicalSystemMetricSnapshot,
-} from '../../../system/live-metrics.js'
-import { toSystemStatusDisplayMetric } from '../../../system/system-status.js'
+} from '../domain/live-metrics.js'
+import { toSystemStatusDisplayMetric } from '../domain/display-metrics.js'
 import { Icon, LabelValueList } from '../../../ui/index.js'
 import {
   SystemStatusLabelValuesButtonSchema,
@@ -49,16 +49,10 @@ function createUnavailableMetric(
 
 async function refreshMetrics(
   config: SystemStatusLabelValuesButtonConfig,
-  store: { button: { update: (updater: (snapshot: unknown) => unknown) => void } },
-) {
-  const metrics = await getCanonicalSystemMetrics(
+): Promise<readonly CanonicalSystemMetricSnapshot[]> {
+  return getCanonicalSystemMetrics(
     config.metrics.map((metric) => metric.metric),
   )
-
-  store.button.update((snapshot) => ({
-    ...getButtonStoreState(snapshot),
-    metrics,
-  }))
 }
 
 function renderMetricIcon(icon?: string) {
@@ -73,11 +67,18 @@ function renderMetricIcon(icon?: string) {
 
 const builtinSystemStatusLabelValuesButton = defineMountedButton({
   configSchema: SystemStatusLabelValuesButtonSchema,
-  defaultIntervalMs: 1_000,
+  defaultPollIntervalMs: ({ config }) => config.poll_interval_ms,
+  defaultRenderIntervalMs: ({ config }) => config.render_interval_ms,
   dispose: ({ store }) => {
     store.button.set(clearHoldTimer(store.button.snapshot))
   },
-  onActivate: ({ config, store }) => refreshMetrics(config, store),
+  onActivate: async ({ config, store }) => {
+    const metrics = await refreshMetrics(config)
+    store.button.update((snapshot) => ({
+      ...getButtonStoreState(snapshot),
+      metrics,
+    }))
+  },
   onPress: ({ config, methods, store }) => {
     if (!config.hold_command) {
       return
@@ -120,11 +121,16 @@ const builtinSystemStatusLabelValuesButton = defineMountedButton({
 
     await methods.runCommand(config.tap_command)
   },
-  refresh: ({ config, store }) => refreshMetrics(config, store),
-  render: ({ config, store }) => {
+  poll: async ({ config }) => ({
+    metrics: await refreshMetrics(config),
+  }),
+  render: ({ config, payload, store }) => {
     const state = getButtonStoreState(store.button.snapshot)
+    const payloadMetrics = payload?.metrics
     const metrics = config.metrics.map((metricConfig, index) => (
-      state.metrics?.[index] ?? createUnavailableMetric(metricConfig.metric)
+      payloadMetrics?.[index]
+      ?? state.metrics?.[index]
+      ?? createUnavailableMetric(metricConfig.metric)
     ))
     const lines = metrics.map((metric, index) => {
       const displayMetric = toSystemStatusDisplayMetric(metric, config.metrics[index])

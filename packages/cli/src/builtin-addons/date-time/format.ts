@@ -48,7 +48,10 @@ function splitDateTimeFormat(pattern: string): DateTimeFormatSegment[] {
       break
     }
 
-    segments.push({ kind: 'markup', value: pattern.slice(tagStart, tagEnd + 1) })
+    segments.push({
+      kind: 'markup',
+      value: pattern.slice(tagStart, tagEnd + 1),
+    })
     cursor = tagEnd + 1
   }
 
@@ -58,16 +61,18 @@ function splitDateTimeFormat(pattern: string): DateTimeFormatSegment[] {
 function formatDigitalDateTimePattern(pattern: string, date: Date): string {
   return splitDateTimeFormat(pattern)
     .map((segment) =>
-      segment.kind === 'markup' ? segment.value : dayjs(date).format(segment.value),
+      segment.kind === 'markup'
+        ? segment.value
+        : dayjs(date).format(segment.value),
     )
     .join('')
 }
 
 function formatDigitalDateTimeLabel(
-  config: BuiltinDisplayDateTimeButtonConfig,
+  format: BuiltinDisplayDateTimeButtonConfig['format'],
   date = new Date(),
 ): string {
-  return formatDigitalDateTimePattern(config.format, date)
+  return formatDigitalDateTimePattern(format, date)
 }
 
 export { formatDigitalDateTimeLabel }

@@ -1,4 +1,4 @@
-import type { HostContext } from './host-context.js'
+import type { HostContext } from '../../../system/host-context.js'
 
 import {
   createLinuxMediaController,

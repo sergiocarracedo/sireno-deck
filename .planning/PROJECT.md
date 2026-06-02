@@ -8,6 +8,15 @@ Sireno Deck is a TypeScript CLI for controlling and managing Stream Deck devices
 
 Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
 
+## Current Milestone: v1.3 Typography and Rich Formatting
+
+**Goal:** Make text rendering theme-relative, live-fit aware, and expressive enough for richer built-in date/time layouts without hard-coded typography seams.
+
+**Target features:**
+- Theme-relative typography scaling so component `size` variants like `sm`, `md`, and `lg` scale proportionally from each active typography base instead of pinning exact theme font sizes
+- Live text fitting that recomputes on content changes to find the largest non-wrapping size before falling back to the configured minimum and wrapping behavior
+- Advanced built-in date-time formatting with inline line breaks, accent-highlighted bold spans, inline size overrides, and 1-second blinking segments
+
 ## Latest Shipped Milestone: v1.2 Session Context and Surface Composition
 
 **Goal:** Expand the render/runtime surface so addons and built-in buttons can react to richer session state, compose shared visual primitives, and handle background and lock-screen behavior coherently.
@@ -44,7 +53,7 @@ Make Stream Deck customization programmable and extensible through a fast TypeSc
 
 ### Active
 
-- No active milestone requirements yet. Run `new-milestone` to define the next version's goals and requirements.
+- TBD for v1.3 Typography and Rich Formatting. Define them through `new-milestone` requirements and roadmap.
 
 ### Out of Scope
 
@@ -82,4 +91,4 @@ The domain includes fast refresh behavior for live widgets such as CPU, memory, 
 | Run addons as trusted in-process code in v1 | Keeps the initial addon API simpler and avoids early sandbox complexity | Landed |
 
 ---
-*Last updated: 2026-05-28 after shipping milestone v1.2*
+*Last updated: 2026-05-28 after starting milestone v1.3*

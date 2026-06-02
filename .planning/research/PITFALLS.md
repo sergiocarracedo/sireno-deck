@@ -1,46 +1,46 @@
 # Pitfalls Research
 
-**Domain:** v1.2 session context and surface composition
-**Researched:** 2026-05-17
+**Domain:** v1.3 typography scaling, live text fitting, and rich date-time formatting
+**Researched:** 2026-05-28
 **Confidence:** HIGH
 
 ## Common Mistakes
 
 | # | Mistake | Severity | Why It Matters |
 |---|---------|----------|----------------|
-| 1 | Letting each addon or button probe OS/session state itself | HIGH | Creates drift, duplicate polling, and inconsistent lock behavior |
-| 2 | Parsing human-readable `loginctl` output | HIGH | The man page explicitly reserves `show-session` for machine-readable output; formatted output is brittle |
-| 3 | Implementing lock behavior as a visual overlay only | HIGH | The user asked for deck switching and restore semantics, which overlays do not model cleanly |
-| 4 | Spreading background fallback logic across renderer variants | HIGH | Every built-in visual will drift on precedence and tests will become archaeological nonsense |
-| 5 | Treating text fitting as renderer magic instead of declared contract | HIGH | Addons, tests, and docs will all disagree on what “fit” means |
-| 6 | Registering wrappers/styles without global identity | MEDIUM | “Global primitives” become impossible to reference safely from config and addons |
-| 7 | Treating non-systemd Linux as if `loginctl` always exists | MEDIUM | Lock detection will fail silently on some environments unless degraded behavior is explicit |
-| 8 | Mixing internal-state toggle semantics with command-driven toggle semantics in one hidden implementation | MEDIUM | The two models have different authority and recovery behavior |
+| 1 | Keeping typography role classes responsible for the final `font-size` | HIGH | This is the exact reason `size` cannot currently scale relative to theme bases |
+| 2 | Using one generic fit mechanism for wrap, ellipsis, marquee, and shrink | HIGH | Only shrink needs measurement; the rest become harder to reason about for no gain |
+| 3 | Letting shrink-fit mutate the observed element in a resize loop | HIGH | `ResizeObserver` can thrash or emit loop warnings if feedback is uncontrolled |
+| 4 | Turning date-time rich formatting into generic HTML/markdown support | HIGH | Scope explodes into escaping, nesting, and security questions immediately |
+| 5 | Mixing Day.js token parsing with custom rich-marker parsing in one ambiguous pass | MEDIUM | Escaping rules get muddy fast, especially around literals and `|` line breaks |
+| 6 | Ignoring reduced-motion for blink | MEDIUM | The feature becomes an accessibility regression instead of a useful visual affordance |
+| 7 | Formalizing requirements against stale tests instead of live code | MEDIUM | The repo already shows drift: current schema is one `format` field while tests still expect `date_format`/`time_format`/`variant` |
+| 8 | Allowing rich tags to override typography family/weight more broadly than needed | MEDIUM | Widget formatting starts fighting theme ownership instead of extending it |
 
 ## Warning Signs
 
 | Warning Sign | Indicates | Action |
 |-------------|-----------|--------|
-| New addon examples start shelling out to `loginctl` or `uname` | core context injection failed | move host probing back into runtime service |
-| Renderer functions each decide their own background fill source | precedence drift | resolve one background contract before variant selection |
-| Long text behavior can only be described by “whatever the SVG does” | no render contract | add named fit modes and test them explicitly |
-| Lock handling code starts living inside button instances | wrong ownership | keep lock switching in runtime / deck selection |
-| Global wrapper/style names are raw strings with no registry validation | extension drift | add registration and lookup in addon registry |
-| Unlock path does not restore prior deck stack | lossy session transition | store and restore runtime navigation state explicitly |
+| `.font-main` still contains a hard-coded `font-size` after the milestone starts | root bug not actually fixed | split role base size from variant size multiplier |
+| `fit="wrap"` or `fit="ellipsis"` starts depending on JS observers | overengineered text pipeline | push those modes back to CSS |
+| The formatter starts supporting arbitrary nesting or raw markup passthrough | parser scope leak | reduce grammar to the explicit v1.3 markers |
+| Blink implementation adds intervals/timeouts in widget code | presentation leaked into logic | move blink to CSS animation |
+| Tests still assert split date/time config while implementation uses single `format` | contract drift remains unresolved | requirements must choose one surface and update both code and tests later |
+| Theme wrappers begin inferring size from class names instead of props | duplicated hidden contract | rely on explicit `size` prop metadata |
 
 ## Prevention Strategies
 
 | Strategy | Prevents | How |
 |----------|----------|-----|
-| Normalize session context once in core | #1 | one shared snapshot type for config templating, render, and command/status execution |
-| Use `loginctl show-session --property=... --value` only | #2 | consume parsable fields like `LockedHint`, `IdleHint`, `State` from documented machine-readable output |
-| Model lock as deck substitution with saved prior state | #3, #6 | runtime stores active deck/back-stack and restores it after unlock |
-| Resolve background precedence before building variant SVG | #4 | renderer receives final background source/value instead of re-deciding it |
-| Add explicit text-fit enum and readable minimum font floor | #5 | make shrink, clip, and wrap behaviors visible in config and tests |
-| Extend addon registry for global primitives | #6 | wrappers/styles are named assets of the extension ecosystem, not accidental conventions |
-| Treat unsupported session environments as degraded, not broken | #7 | no silent fake lock-state; expose unavailable support path clearly |
-| Split toggle implementations by authority model | #8 | internal-state toggles persist local state; command-driven toggles reconcile against external status |
+| Layer typography CSS variables explicitly | #1 | emit base size per role, then multiply with size tokens |
+| Restrict measured logic to shrink mode | #2 | keep wrap/ellipsis/marquee declarative |
+| Guard ResizeObserver updates with expected-size logic or frame deferral | #3 | avoid resize feedback loops documented by MDN |
+| Define a tiny rich-format grammar up front | #4, #5 | support only `|`, `*...*`, selected size tags, and `<blink>` |
+| Keep Day.js as the token formatter under the rich parser | #5 | one pass formats date tokens, a second pass applies widget-local rich markers |
+| Add reduced-motion behavior in the same change as blink | #6 | do not let accessibility become a follow-up |
+| Call out stale test/implementation seams in requirements | #7 | avoid planning against dead contracts |
+| Let rich spans inherit typography by default | #8 | only override tone, weight, size, or blink when markup asks for it |
 
 ---
-*Pitfalls research for: v1.2 session context and surface composition*
-*Researched: 2026-05-17*
+*Pitfalls research for: v1.3 typography scaling, live text fitting, and rich date-time formatting*
+*Researched: 2026-05-28*

@@ -1,4 +1,9 @@
-import { createElement, type CSSProperties, type ReactElement, type ReactNode } from 'react'
+import {
+  createElement,
+  type CSSProperties,
+  type ReactElement,
+  type ReactNode,
+} from 'react'
 
 import { cn } from '../themes/utils/cn.js'
 import { useThemeUiPresentation } from './theme-presentation.js'
@@ -30,10 +35,17 @@ const SIZE_CLASS = {
   lg: 'text-lg',
   xl: 'text-xl',
   '2xl': 'text-2xl',
+  '3xl': 'text-3xl',
 } as const
 
-const RICH_TONE_TAGS = ['accent', 'danger', 'foreground', 'primary', 'success'] as const
-const RICH_SIZE_TAGS = ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] as const
+const RICH_TONE_TAGS = [
+  'accent',
+  'danger',
+  'foreground',
+  'primary',
+  'success',
+] as const
+const RICH_SIZE_TAGS = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'] as const
 
 type RichToneTag = (typeof RICH_TONE_TAGS)[number]
 type RichSizeTag = (typeof RICH_SIZE_TAGS)[number]
@@ -44,9 +56,15 @@ type RichTextNode =
   | { type: 'tag'; tag: RichMarkupTag; children: RichTextNode[] }
   | { type: 'text'; value: string }
 
-type ParseStop = { kind: 'highlight' } | { kind: 'tag'; tag: Exclude<RichMarkupTag, 'highlight'> }
+type ParseStop =
+  | { kind: 'highlight' }
+  | { kind: 'tag'; tag: Exclude<RichMarkupTag, 'highlight'> }
 
-const RICH_TAG_NAMES = new Set<string>([...RICH_TONE_TAGS, ...RICH_SIZE_TAGS, 'blink'])
+const RICH_TAG_NAMES = new Set<string>([
+  ...RICH_TONE_TAGS,
+  ...RICH_SIZE_TAGS,
+  'blink',
+])
 
 function isRichToneTag(tag: string): tag is RichToneTag {
   return RICH_TONE_TAGS.includes(tag as RichToneTag)
@@ -155,7 +173,11 @@ function isPlainTextTree(nodes: RichTextNode[]): boolean {
   return nodes.every((node) => node.type === 'text')
 }
 
-function renderRichTextNodes(nodes: RichTextNode[], keyPrefix: string): ReactNode[] {
+function renderRichTextNodes(
+  nodes: RichTextNode[],
+  keyPrefix: string,
+  className?: string,
+): ReactNode[] {
   return nodes.map((node, index) => {
     const key = `${keyPrefix}-${index}`
 
@@ -171,7 +193,7 @@ function renderRichTextNodes(nodes: RichTextNode[], keyPrefix: string): ReactNod
       })
     }
 
-    const classNames = ['sireno-rich-text-node']
+    const classNames = ['sireno-rich-text-node', className]
 
     if (node.tag === 'blink') {
       classNames.push('sireno-rich-text-blink')
@@ -185,19 +207,22 @@ function renderRichTextNodes(nodes: RichTextNode[], keyPrefix: string): ReactNod
       classNames.push(SIZE_CLASS[node.tag])
     }
 
-    return createElement(
-      'span',
-      {
-        className: cn(classNames),
-        'data-sireno-rich-text-tag': node.tag,
-        key,
-      },
-      ...renderRichTextNodes(node.children, key),
+    return (
+      <span
+        className={cn(classNames)}
+        data-sireno-rich-text-tag={node.tag}
+        key={key}
+      >
+        {renderRichTextNodes(node.children, key, className)}
+      </span>
     )
   })
 }
 
-function renderTextChildren(children: ReactNode): ReactNode {
+function renderTextChildren(
+  children: ReactNode,
+  lineHeight: number | string,
+): ReactNode {
   if (typeof children !== 'string') {
     return children
   }
@@ -207,7 +232,7 @@ function renderTextChildren(children: ReactNode): ReactNode {
     return children
   }
 
-  return renderRichTextNodes(parsed, 'rich')
+  return renderRichTextNodes(parsed, 'rich', '!leading-[inherit]')
 }
 
 export type TextAlign = keyof typeof ALIGN_CLASS
@@ -225,6 +250,7 @@ export interface TextProps {
   tone?: TextTone
   typography?: TextTypography
   size?: TextSize
+  lineHeight?: number | string
 }
 
 export function Text(props: TextProps): ReactElement {
@@ -233,37 +259,43 @@ export function Text(props: TextProps): ReactElement {
   const tone = props.tone ?? 'foreground'
   const typography = props.typography ?? 'main'
   const size = props.size ?? 'md'
+  const lineHeight = props.lineHeight ?? 1
   const themeUi = useThemeUiPresentation()
-  const renderedChildren = renderTextChildren(props.children)
+  const renderedChildren = renderTextChildren(props.children, lineHeight)
 
-  const element = createElement(
-    'span',
-    {
-      className: cn([
+  const fitModesClasses = {
+    wrap: 'whitespace-normal break-words',
+    ellipsis: 'overflow-hidden whitespace-nowrap text-ellipsis',
+    shrink: 'sireno-text-fit-shrink whitespace-normal break-words',
+    marquee: 'sireno-text-fit-marquee overflow-hidden whitespace-nowrap',
+  }
+
+  const element = (
+    <div
+      className={cn([
         'block max-w-full min-w-0 leading-tight',
         TYPOGRAPHY_CLASS[typography],
         TONE_CLASS[tone],
         ALIGN_CLASS[align],
         SIZE_CLASS[size],
-        fit === 'wrap' && 'whitespace-normal break-words',
-        fit === 'ellipsis' && 'overflow-hidden whitespace-nowrap text-ellipsis',
-        fit === 'shrink' && 'sireno-text-fit-shrink whitespace-normal break-words',
-        fit === 'marquee' && 'sireno-text-fit-marquee overflow-hidden whitespace-nowrap',
+        fitModesClasses[fit],
         props.className,
-      ]),
-      'data-sireno-text-fit': fit,
-      'data-sireno-text-shrink-state': fit === 'shrink' ? 'pending' : undefined,
-      'data-sireno-text-size': size,
-      'data-sireno-ui-text': 'true',
-      style: props.style,
-    },
-    fit === 'marquee'
-      ? createElement(
-          'span',
-          { className: 'sireno-marquee-track inline-block' },
-          renderedChildren,
-        )
-      : renderedChildren,
+        lineHeight !== 1 ? `!leading-[${lineHeight}]` : null,
+      ])}
+      data-sireno-text-fit={fit}
+      data-sireno-text-shrink-state={fit === 'shrink' ? 'pending' : undefined}
+      data-sireno-text-size={size}
+      data-sireno-ui-text="true"
+      style={props.style}
+    >
+      {fit === 'marquee' ? (
+        <span className="sireno-marquee-track inline-block">
+          {renderedChildren}
+        </span>
+      ) : (
+        renderedChildren
+      )}
+    </div>
   )
 
   return themeUi?.text

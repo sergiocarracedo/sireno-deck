@@ -1,10 +1,15 @@
-import { createContext, createElement, useContext, type ReactElement } from 'react'
+import {
+  createContext,
+  createElement,
+  useContext,
+  type ReactElement,
+} from 'react'
 
-import type { ThemeUiPresentation } from '../config/theme.js'
+import type { ThemeUiPresentation } from '@/config/theme'
 
-const DomThemeUiPresentationContext = createContext<ThemeUiPresentation | undefined>(
-  undefined,
-)
+const DomThemeUiPresentationContext = createContext<
+  ThemeUiPresentation | undefined
+>(undefined)
 const MountedThemeUiPresentationContext = createContext<
   ThemeUiPresentation | undefined
 >(undefined)
