@@ -5,6 +5,7 @@
   "packageManager": "pnpm@10.0.0",
   "scripts": {
     "build": "pnpm -r build",
+    "cli:build:tailwind-browser": "pnpm --filter sireno-deck-cli run build:tailwind-browser",
     "cli:dev": "pnpm exec tsx watch --include \"./packages/cli/src/**/*\" --include \"./config.yml\" --include \"./themes/**/*\" --include \"./addons/**/*\" --include \"./builtin-addons/**/*\" packages/cli/src/cli/dev-watch.ts",
     "dev": "pnpm run cli:dev",
     "lint": "oxlint packages/",

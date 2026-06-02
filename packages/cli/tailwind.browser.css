@@ -1,0 +1,152 @@
+@import "tailwindcss" source(none);
+
+@source "./src";
+
+@utility text-background {
+  color: var(--sireno-color-background);
+}
+
+@utility text-foreground {
+  color: var(--sireno-color-foreground);
+}
+
+@utility text-primary {
+  color: var(--sireno-color-primary);
+}
+
+@utility text-accent {
+  color: var(--sireno-color-accent);
+}
+
+@utility text-success {
+  color: var(--sireno-color-success);
+}
+
+@utility text-danger {
+  color: var(--sireno-color-danger);
+}
+
+@utility bg-background {
+  background-color: var(--sireno-color-background);
+}
+
+@utility bg-foreground {
+  background-color: var(--sireno-color-foreground);
+}
+
+@utility bg-primary {
+  background-color: var(--sireno-color-primary);
+}
+
+@utility bg-accent {
+  background-color: var(--sireno-color-accent);
+}
+
+@utility bg-success {
+  background-color: var(--sireno-color-success);
+}
+
+@utility bg-danger {
+  background-color: var(--sireno-color-danger);
+}
+
+@utility border-background {
+  border-color: var(--sireno-color-background);
+}
+
+@utility border-foreground {
+  border-color: var(--sireno-color-foreground);
+}
+
+@utility border-primary {
+  border-color: var(--sireno-color-primary);
+}
+
+@utility border-accent {
+  border-color: var(--sireno-color-accent);
+}
+
+@utility border-success {
+  border-color: var(--sireno-color-success);
+}
+
+@utility border-danger {
+  border-color: var(--sireno-color-danger);
+}
+
+@utility border-frame {
+  border-color: var(--sireno-color-frame);
+}
+
+@utility fill-foreground {
+  fill: var(--sireno-color-foreground);
+}
+
+@utility fill-primary {
+  fill: var(--sireno-color-primary);
+}
+
+@utility fill-accent {
+  fill: var(--sireno-color-accent);
+}
+
+@utility stroke-foreground {
+  stroke: var(--sireno-color-foreground);
+}
+
+@utility stroke-primary {
+  stroke: var(--sireno-color-primary);
+}
+
+@utility stroke-accent {
+  stroke: var(--sireno-color-accent);
+}
+
+@utility font-main {
+  --sireno-active-font-size: var(--sireno-font-main-size);
+  font-family: var(--sireno-font-main-family);
+  font-weight: var(--sireno-font-main-weight);
+  letter-spacing: var(--sireno-font-main-tracking);
+}
+
+@utility font-aux {
+  --sireno-active-font-size: var(--sireno-font-aux-size);
+  font-family: var(--sireno-font-aux-family);
+  font-weight: var(--sireno-font-aux-weight);
+  letter-spacing: var(--sireno-font-aux-tracking);
+}
+
+@utility font-mono {
+  --sireno-active-font-size: var(--sireno-font-mono-size);
+  font-family: var(--sireno-font-mono-family);
+  font-weight: var(--sireno-font-mono-weight);
+  letter-spacing: var(--sireno-font-mono-tracking);
+}
+
+@utility text-xs {
+  font-size: calc(var(--sireno-active-font-size, 16px) * 0.7);
+}
+
+@utility text-sm {
+  font-size: calc(var(--sireno-active-font-size, 16px) * 0.85);
+}
+
+@utility text-md {
+  font-size: calc(var(--sireno-active-font-size, 16px) * 1);
+}
+
+@utility text-lg {
+  font-size: calc(var(--sireno-active-font-size, 16px) * 1.2);
+}
+
+@utility text-xl {
+  font-size: calc(var(--sireno-active-font-size, 16px) * 1.4);
+}
+
+@utility text-2xl {
+  font-size: calc(var(--sireno-active-font-size, 16px) * 1.75);
+}
+
+@utility text-3xl {
+  font-size: calc(var(--sireno-active-font-size, 16px) * 2.25);
+}
