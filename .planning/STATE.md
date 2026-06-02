@@ -107,6 +107,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 34 added: create a common interface addon buttons can optionally implement to handle button-action system commands (`tap`, `hold`, `double-tap`) through a shared schema and hook, refactoring action-button and date-time buttons onto the pattern while keeping media-player internal.
 - Phase 33 added: add full Tailwind support.
 - Phase 32 added: move addon-specific polling/data-fetching logic out of core system modules into addon-owned callbacks so core only schedules intervals, passes command output props to render, and publishes rendered frames.
 - Phase 31 added: make `pnpm cli:dev ...` start the real CLI watch mode and honor forwarded command arguments such as `emulate --port 8912`.
