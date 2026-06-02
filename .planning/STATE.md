@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 Phase: 31 — CLI Dev Watch Mode Argument Forwarding
 Plan: 31 rerun closure complete; verify-work 31 next
 Status: verifying
-Last activity: 2026-06-01 - Completed Plan 31-06 shell-safe root script closure
+Last activity: 2026-06-02 - Completed Plan 33-01 Tailwind browser asset and split stylesheet delivery seam
 
 Progress: [##########] 100%
 
@@ -92,6 +92,8 @@ Recent decisions affecting current work:
 - **Phase 32 discussion:** Migration strategy is a big-bang ownership move with strong regression proof gates rather than long-lived compatibility facades.
 - **Phase 33 discussion:** Full Tailwind support means real Tailwind integration with Tailwind as the canonical browser utility layer, a hard cut for shared/core UI, and truthful config/build/watch tooling instead of a larger handwritten Sireno utility sheet.
 - **Phase 33 discussion:** Sireno theme resolution stays authoritative through the Tailwind bridge, the full resolved browser theme contract should remain available to utilities, shipped color/typography styling stays Sireno-token-backed, and dynamic class needs require an explicit safelist-generation contract rather than runtime compilation magic.
+- **Phase 33 execution:** Plan `33-01` replaced the handwritten browser utility generator with a real Tailwind browser asset build, kept Sireno theme vars authoritative, and narrowed `theme-utilities.ts` to Tailwind asset loading plus product-only runtime glue.
+- **Phase 33 execution:** Browser and emulator delivery now use explicit split stylesheet seams (`data-sireno-tailwind`, `data-sireno-runtime`, `data-sireno-theme-assets`) instead of the legacy `data-sireno-theme-utilities` contract, with focused regression proof on the shipped browser/emulator paths.
 - **Phase 30 execution:** The shared helper surface now ships as public `Bars` and `LabelValueList` TSX components from the package root, with runtime-enforced count bounds and `LabelValueList` auto-layout still kept presentation-only.
 - **Phase 30 execution:** The bundled `system-status` addon now loads through the real shipped registry with `system-status-bars` and `system-status-label-values`, backed by one canonical metric catalog, a bounded numbro-backed display mapper, explicit unavailable slots, and button-local tap/hold handling that does not widen runtime semantics.
 - **Phase 30 execution:** The bundled `media-player` addon now loads through the real shipped registry on top of a shared media-controller seam, uses a real Linux `playerctl` adapter, keeps macOS and Windows explicitly unsupported until verified, reuses `Bars` and shared `Text` marquee, and keeps tap fixed to play/pause with optional hold behavior implemented locally inside the button seam.
@@ -147,6 +149,7 @@ Recent decisions affecting current work:
 
 - **Phase 32 discussion:** Locked addon-owned polling/data ownership with core as a capability-agnostic scheduler/transport seam, split data/render interval support, callback payload handoff into render props, addon-local OS adapters, and a deliberate big-bang migration strategy.
 - **Phase 33 discussion:** Locked Phase 33 around real Tailwind adoption for the browser-rendered surface, a prebuilt Tailwind stylesheet asset plus Sireno-specific runtime CSS glue, first-class workspace support for core/shared UI plus built-ins/theme TSX/local addons, and a truthful `pnpm cli:dev` seam for Tailwind changes.
+- **Phase 33 execution:** Completed Plan `33-01` by adding a real Tailwind v4 browser stylesheet build for the CLI package, keeping Sireno token/runtime glue ownership narrow, and splitting browser/emulator stylesheet delivery into explicit Tailwind/runtime/theme-asset seams with focused regression coverage.
 
 - **Phase 30 discussion:** Locked the new helper surface to public component-first `Bars` and `LabelValueList` components, bounded system-status around canonical metric adapters plus helper-template buttons with honest unavailable states, and bounded media-player around truthful status, best-effort metadata, shared marquee overflow, fixed tap play/pause, and optional hold behavior.
 
