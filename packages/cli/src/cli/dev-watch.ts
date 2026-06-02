@@ -1,4 +1,5 @@
 import { buildTailwindBrowserStylesheet } from './build-tailwind-browser.js'
+import { cli } from './index.ts'
 
 // Keep cli:dev on the external tsx watch seam while restoring the
 // default `start --config config.yml` path and passthrough args like
@@ -51,7 +52,7 @@ const run = async () => {
     ...resolvedArgs,
   ]
 
-  await import('./index.ts')
+  await cli()
 }
 
 run().catch((error: unknown) => {

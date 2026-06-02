@@ -1,67 +1,84 @@
 #!/usr/bin/env node
-import yargs from "yargs"
-import { hideBin } from "yargs/helpers"
+import { fileURLToPath } from 'node:url'
 
-import { startDaemon, startEmulator } from "./commands/start.js"
-import { checkStatus } from "./commands/status.js"
-import { stopDaemon } from "./commands/stop.js"
-import { createLogger } from "../util/logger.js"
+import yargs from 'yargs'
+import { hideBin } from 'yargs/helpers'
 
-const cli = async () => {
-  const logger = createLogger({ verbose: process.argv.includes("--verbose") })
+import { createLogger } from '../util/logger'
+import { startDaemon, startEmulator } from './commands/start'
+import { checkStatus } from './commands/status'
+import { stopDaemon } from './commands/stop'
+
+export const cli = async () => {
+  const logger = createLogger({ verbose: process.argv.includes('--verbose') })
 
   await yargs(hideBin(process.argv))
-    .scriptName("sireno")
-    .usage("$0 <command> [options]")
-    .option("verbose", {
-      alias: "v",
-      type: "boolean",
-      description: "Enable verbose debug logging",
+    .scriptName('sireno')
+    .usage('$0 <command> [options]')
+    .option('verbose', {
+      alias: 'v',
+      type: 'boolean',
+      description: 'Enable verbose debug logging',
       default: false,
     })
-    .option("config", {
-      type: "string",
-      description: "Path to config.yml",
+    .option('config', {
+      type: 'string',
+      description: 'Path to config.yml',
     })
     .command(
-      "start",
-      "Start the sireno-deck daemon",
+      'start',
+      'Start the sireno-deck daemon',
       () => {},
       async (argv) => startDaemon({ config: argv.config, logger }),
     )
     .command(
-      "emulate",
-      "Start a local browser deck emulator without hardware",
-      (command) => command
-        .option("key-count", {
-          type: "number",
-          description: "Virtual Stream Deck key count",
-          default: 15,
-        })
-        .option("port", {
-          type: "number",
-          description: "Port for the local emulator page (0 chooses a free port)",
-          default: 0,
+      'emulate',
+      'Start a local browser deck emulator without hardware',
+      (command) =>
+        command
+          .option('key-count', {
+            type: 'number',
+            description: 'Virtual Stream Deck key count',
+            default: 15,
+          })
+          .option('port', {
+            type: 'number',
+            description:
+              'Port for the local emulator page (0 chooses a free port)',
+            default: 0,
+          }),
+      async (argv) =>
+        startEmulator({
+          config: argv.config,
+          keyCount: argv.keyCount,
+          logger,
+          port: argv.port,
         }),
-      async (argv) => startEmulator({
-        config: argv.config,
-        keyCount: argv.keyCount,
-        logger,
-        port: argv.port,
-      }),
     )
-    .command("stop", "Stop the running daemon", () => {}, async () => stopDaemon({ logger }))
-    .command("status", "Check daemon status", () => {}, async () => checkStatus({ logger }))
-    .demandCommand(1, "Run $0 --help to see available commands")
+    .command(
+      'stop',
+      'Stop the running daemon',
+      () => {},
+      async () => stopDaemon({ logger }),
+    )
+    .command(
+      'status',
+      'Check daemon status',
+      () => {},
+      async () => checkStatus({ logger }),
+    )
+    .demandCommand(1, 'Run $0 --help to see available commands')
     .strict()
     .help()
-    .alias("help", "h")
+    .alias('help', 'h')
     .version()
-    .alias("version", "V")
+    .alias('version', 'V')
     .parseAsync()
 }
 
-cli().catch((error: unknown) => {
-  console.error(error)
-  process.exitCode = 1
-})
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  cli().catch((error: unknown) => {
+    console.error(error)
+    process.exitCode = 1
+  })
+}

@@ -77,11 +77,15 @@ describe('prepareDevWatchRuntime', () => {
 })
 
 describe('dev-watch source entry seam', () => {
-  it('imports the real source cli entrypoint instead of a missing built js sibling', () => {
-    const source = readFileSync(resolve(import.meta.dirname, './dev-watch.ts'), 'utf8')
+  it('calls the exported source cli runner instead of dynamically importing the entry module', () => {
+    const devWatchSource = readFileSync(resolve(import.meta.dirname, './dev-watch.ts'), 'utf8')
+    const indexSource = readFileSync(resolve(import.meta.dirname, './index.ts'), 'utf8')
 
-    expect(source).toContain("await import('./index.ts')")
-    expect(source).not.toContain("await import('./index.js')")
+    expect(devWatchSource).toContain("import { cli } from './index.ts'")
+    expect(devWatchSource).toContain('await cli()')
+    expect(devWatchSource).not.toContain("await import('./index.ts')")
+    expect(indexSource).toContain('export const cli = async () => {')
+    expect(indexSource).toContain('if (process.argv[1] === fileURLToPath(import.meta.url))')
   })
 })
 
