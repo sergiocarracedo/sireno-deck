@@ -302,6 +302,8 @@ describe('date-time addon', () => {
     expect(html).toContain('data-sireno-clock-minute-hand="true"')
     expect(html).toContain('rotate(45deg)')
     expect(html).toContain('rotate(180deg)')
+    expect(html).toContain('y1="50"')
+    expect(html).toContain('y2="21"')
     expect(html).toContain('class="w-full h-full"')
 
     vi.useRealTimers()

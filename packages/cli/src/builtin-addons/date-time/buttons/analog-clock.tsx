@@ -51,7 +51,7 @@ function AnalogClockFace() {
             x1="50"
             x2="50"
             y1="50"
-            y2="79"
+            y2="21"
           />
         </g>
         <g
