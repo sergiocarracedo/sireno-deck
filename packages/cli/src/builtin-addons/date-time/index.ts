@@ -1,4 +1,7 @@
-import { builtinAnalogClockButton } from './buttons/analog-clock.js'
+import {
+  builtinAnalogClockButton,
+  builtinClockButton,
+} from './buttons/analog-clock.js'
 import { builtinCalendarSheetButton } from './buttons/calendar-sheet.js'
 import {
   builtinDateTimeButton,
@@ -24,6 +27,7 @@ const datetimeButtonsAddon: SirenoAddon = {
     builtinDateTimeButton,
     builtinLockedTimeTileButton,
     builtinAnalogClockButton,
+    builtinClockButton,
     builtinCalendarSheetButton,
     builtinTimeButton,
   ] as SirenoAddon['buttons'],

@@ -1,4 +1,8 @@
-import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
+import {
+  ButtonSurface,
+  defineMountedButton,
+  useButtonActionCommand,
+} from '../../../addon/api.js'
 import { Text } from '../../../ui/index.js'
 import {
   BuiltinCalendarSheetButtonSchema,
@@ -26,6 +30,7 @@ function CalendarSheetLabel(props: {
 export const builtinCalendarSheetButton = defineMountedButton({
   configSchema: BuiltinCalendarSheetButtonSchema,
   defaultIntervalMs: CALENDAR_SHEET_INTERVAL_MS,
+  ...useButtonActionCommand(({ config }) => config.commands),
   render: () => (
     <ButtonSurface full>
       <div className="flex w-full flex-col items-center justify-center gap-1">

@@ -1,4 +1,8 @@
-import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
+import {
+  ButtonSurface,
+  defineMountedButton,
+  useButtonActionCommand,
+} from '../../../addon/api.js'
 import { Text } from '../../../ui/index.js'
 import {
   ANALOG_CLOCK_INTERVAL_MS,
@@ -96,6 +100,7 @@ function createAnalogClockButton(type: 'analog-clock' | 'clock') {
   return defineMountedButton({
     configSchema: BuiltinAnalogClockButtonSchema,
     defaultIntervalMs: ANALOG_CLOCK_INTERVAL_MS,
+    ...useButtonActionCommand(({ config }) => config.commands),
     render: () => <AnalogClockFace />,
     type,
   })

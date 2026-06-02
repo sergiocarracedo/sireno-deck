@@ -1,4 +1,4 @@
-import { defineMountedButton } from '@/addon/api'
+import { defineMountedButton, useButtonActionCommand } from '@/addon/api'
 import { cn } from '@/themes/utils/cn'
 import { Text } from '@/ui'
 import { formatDigitalDateTimeLabel } from '../format'
@@ -35,6 +35,7 @@ const DateTimeLabel = ({
 export const builtinDateTimeButton = defineMountedButton({
   configSchema: BuiltinDateTimeButtonSchema,
   defaultIntervalMs: DIGITAL_DATE_TIME_INTERVAL_MS,
+  ...useButtonActionCommand(({ config }) => config.commands),
   render: ({ button, config }) => {
     const format = config.format ?? '*HH*<blink>:</blink>mm'
     return <DateTimeLabel format={format} />
@@ -45,6 +46,7 @@ export const builtinDateTimeButton = defineMountedButton({
 export const builtinTimeButton = defineMountedButton({
   configSchema: BuiltinTimePresetButtonSchema,
   defaultIntervalMs: DIGITAL_DATE_TIME_INTERVAL_MS,
+  ...useButtonActionCommand(({ config }) => config.commands),
   render: ({ button, config }) => {
     const variants: Record<
       NonNullable<typeof config.variant>,
