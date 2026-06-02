@@ -4,11 +4,13 @@
 **Completed:** 2026-06-02
 
 ## What was done
-Fixed the raw-source `cli:dev` launcher so `dev-watch.ts` imports the real source CLI entrypoint instead of assuming a built sibling `index.js` exists next to it. Added a focused regression in `dev-watch.test.ts` and verified the full `dev-watch` suite passes.
+Fixed the real workspace-root `cli:dev` watch seam in two steps. The first pass corrected the missing `./index.js` import in `dev-watch.ts`, and the second pass fixed the actual root cause: under `tsx watch`, dynamically importing the self-executing `index.ts` entrypoint broke sibling `.js` command resolution, so `dev-watch.ts` now calls an exported `cli()` runner directly instead.
 
 ## Files changed
-- `packages/cli/src/cli/dev-watch.ts`: switched the dynamic import from `./index.js` to `./index.ts` for the source-run watch seam.
-- `packages/cli/src/cli/dev-watch.test.ts`: added regression coverage that locks the source entry import contract.
+- `packages/cli/src/cli/index.ts`: exports the CLI runner and only self-executes when invoked as the actual entrypoint file.
+- `packages/cli/src/cli/dev-watch.ts`: imports the source CLI runner and calls `await cli()` after preparing args/Tailwind rebuild state.
+- `packages/cli/src/cli/dev-watch.test.ts`: locks the direct-runner contract and the watched `cli:dev` seam behavior.
 
 ## Commit
-`1a68c57`
+- `1a68c57`
+- `b9aaf0c`
