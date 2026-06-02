@@ -44,11 +44,12 @@ interface IconCommonProps {
   tone?: IconTone
 }
 
-export type IconProps = IconCommonProps & (
-  | { brand: BrandIconName; icon?: never; src?: never }
-  | { brand?: never; icon: GenericIconName; src?: never }
-  | { brand?: never; icon?: never; src: string }
-)
+export type IconProps = IconCommonProps &
+  (
+    | { brand: BrandIconName; icon?: never; src?: never }
+    | { brand?: never; icon: string; src?: never }
+    | { brand?: never; icon?: never; src: string }
+  )
 
 function renderLucide(
   props: IconCommonProps,
@@ -81,7 +82,7 @@ function renderLucide(
 export function Icon(props: IconProps): ReactElement {
   const themeUi = useThemeUiPresentation()
 
-  if ('src' in props) {
+  if ('src' in props && props.src) {
     const size = props.size ?? 20
     const decorative = !props.label
 
@@ -112,8 +113,12 @@ export function Icon(props: IconProps): ReactElement {
       : element
   }
 
-  if ('brand' in props) {
-    const element = renderLucide(props, BRAND_ICON_REGISTRY[props.brand], 'brand')
+  if ('brand' in props && props.brand) {
+    const element = renderLucide(
+      props,
+      BRAND_ICON_REGISTRY[props.brand],
+      'brand',
+    )
 
     return themeUi?.icon
       ? themeUi.icon({
