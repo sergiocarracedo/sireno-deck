@@ -55,7 +55,9 @@ function createMountedHarness(
 
   return {
     activate: async () => definition.onActivate?.(props),
+    press: async () => definition.onPress?.(props),
     props,
+    release: async () => definition.onRelease?.(props),
     refresh: async () => definition.refresh?.(props),
     render: () => definition.render(props),
     tap: async () => definition.onTap?.(props),
@@ -80,10 +82,13 @@ describe('core-buttons addon', () => {
     expect(coreButtonsAddon.assets).toHaveProperty('clock.svg')
 
     const definition = coreButtonsAddon.buttons[0]
-    const config = definition?.configSchema.parse({ label: 'Clock' })
+    const config = definition?.configSchema.parse({
+      commands: { tap: 'date' },
+      label: 'Clock',
+    })
 
     expect(definition?.type).toBe('action')
-    expect(config).toEqual({ label: 'Clock' })
+    expect(config).toEqual({ commands: { tap: 'date' }, label: 'Clock' })
   })
 
   it('creates a renderable action button surface through the mounted contract', () => {
@@ -108,6 +113,96 @@ describe('core-buttons addon', () => {
     expect(html).toContain('Clock')
     expect(html).toContain('data-sireno-ui-text="true"')
     expect(html).toContain('font-main text-primary')
+  })
+
+  it('runs the configured tap command for the bundled action button', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const definition = coreButtonsAddon.buttons[0]
+      const runCommand = vi.fn(async () => ({}) as never)
+      const harness = createMountedHarness(definition!, {
+        commands: { tap: 'date' },
+        label: 'Clock',
+      }, 2, { runCommand })
+
+      const tapPromise = harness.tap()
+      await vi.advanceTimersByTimeAsync(300)
+      await tapPromise
+
+      expect(runCommand).toHaveBeenCalledTimes(1)
+      expect(runCommand).toHaveBeenCalledWith('date')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('runs hold instead of tap on a long press for the bundled action button', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const definition = coreButtonsAddon.buttons[0]
+      const runCommand = vi.fn(async () => ({}) as never)
+      const harness = createMountedHarness(definition!, {
+        commands: { hold: 'uptime', tap: 'date' },
+        label: 'Clock',
+      }, 2, { runCommand })
+
+      await harness.press()
+      await vi.advanceTimersByTimeAsync(650)
+      await harness.release()
+      await harness.tap()
+
+      expect(runCommand).toHaveBeenCalledTimes(1)
+      expect(runCommand).toHaveBeenCalledWith('uptime')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('suppresses tap and runs double-tap when both commands are configured', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const definition = coreButtonsAddon.buttons[0]
+      const runCommand = vi.fn(async () => ({}) as never)
+      const harness = createMountedHarness(definition!, {
+        commands: { 'double-tap': 'cal', tap: 'date' },
+        label: 'Clock',
+      }, 2, { runCommand })
+
+      const firstTap = harness.tap()
+      await vi.advanceTimersByTimeAsync(100)
+      const secondTap = harness.tap()
+      await secondTap
+      await firstTap
+
+      expect(runCommand).toHaveBeenCalledTimes(1)
+      expect(runCommand).toHaveBeenCalledWith('cal')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('stays silent for unmatched action-button gestures when commands are partial', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const definition = coreButtonsAddon.buttons[0]
+      const runCommand = vi.fn(async () => ({}) as never)
+      const harness = createMountedHarness(definition!, {
+        commands: { 'double-tap': 'cal' },
+        label: 'Clock',
+      }, 2, { runCommand })
+
+      const tapPromise = harness.tap()
+      await vi.advanceTimersByTimeAsync(300)
+      await tapPromise
+
+      expect(runCommand).not.toHaveBeenCalled()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('navigates with the bundled change-deck button', async () => {
