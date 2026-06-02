@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-06-02
+
+### Fixes
+
+- Fixed the bundled analog clock button so it now renders a real analog dial with live hour and minute hands instead of a placeholder text card. Root cause was that the Phase 8 button file had drifted into a static label surface while the product and review fixtures still treated it as a real clock visual.
+- Fixed the built-in date-time addon contract drift by registering both `clock` and `analog-clock` button ids against the same analog clock implementation and updating the focused addon test to cover the live shipped button set. Root cause was that the repo example config had moved to `clock` while older fixtures and tests still referenced `analog-clock`, leaving the addon surface internally inconsistent.
+- Fixed the core button-surface contract to use `full` instead of `full_surface` across config parsing, runtime transport, hosted rendering, and shipped fixtures while keeping the emitted DOM marker `data-sireno-full-surface` stable for browser assertions. Root cause was that the outer product contract had drifted away from the authored `ButtonSurface` prop, leaving one concept with two names depending on which seam you touched.
+
+### Learnings
+
+- Live visual buttons need output-focused regression coverage. A cadence assertion alone will stay green even after the visual silently collapses back into placeholder text.
+- If one runtime concept already has a canonical authored name, the surrounding config and transport seams should use that same name. Leaving `full_surface` outside and `full` inside only creates needless translation drift.
+
 ## 2026-05-31
 
 ### Fixes

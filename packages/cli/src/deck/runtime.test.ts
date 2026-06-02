@@ -1524,7 +1524,7 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       const renderedButton = getRenderedButton(runtime, 0)
-      expect(renderedButton).toMatchObject({ background: "#10161f", full_surface: true, keyIndex: 0 })
+      expect(renderedButton).toMatchObject({ background: "#10161f", full: true, keyIndex: 0 })
       const html = getRenderedButtonHtml(renderedButton)
       expect(html).toContain("Config Error")
       expect(html).toContain("RELOAD")
@@ -2121,7 +2121,7 @@ describe("createDeckRuntime", () => {
               parse: (value: unknown) => value,
               safeParse: (value: unknown) => ({ data: value, success: true as const }),
             },
-            render: ({ button }: { button: { position: number } }) => createElement(ButtonSurface, { full_surface: true }, createTextSurface(button.position, "Clock")),
+            render: ({ button }: { button: { position: number } }) => createElement(ButtonSurface, { full: true }, createTextSurface(button.position, "Clock")),
             type: "runtime-full-surface",
           },
           label: "Clock",
@@ -2138,7 +2138,7 @@ describe("createDeckRuntime", () => {
 
     await vi.waitFor(() => {
       const renderedButton = onRenderDeck.mock.calls.at(-1)?.[0]?.[0]
-      expect(renderedButton).toMatchObject({ background: "#10161f", full_surface: true, keyIndex: 0, label: "Clock" })
+      expect(renderedButton).toMatchObject({ background: "#10161f", full: true, keyIndex: 0, label: "Clock" })
       expect(getRenderedButtonHtml(renderedButton)).toContain("Clock")
     })
   })

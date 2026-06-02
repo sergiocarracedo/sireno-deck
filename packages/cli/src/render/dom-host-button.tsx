@@ -19,9 +19,7 @@ function createHostedButtonElementWithProvider(
       : createElement(
           ButtonSurface,
           {
-            ...(button.full_surface !== undefined
-              ? { full_surface: button.full_surface }
-              : {}),
+            ...(button.full !== undefined ? { full: button.full } : {}),
             ...(button.sample_interval_ms !== undefined
               ? { sample_interval_ms: button.sample_interval_ms }
               : {}),
@@ -36,11 +34,15 @@ function createHostedButtonElementWithProvider(
     surface,
   )
 
-  if (button.full_surface) {
+  if (button.full) {
     return themedSurface
   }
 
-  return createElement(frame, { state: button.frame_state ?? 'idle' }, themedSurface)
+  return createElement(
+    frame,
+    { state: button.frame_state ?? 'idle' },
+    themedSurface,
+  )
 }
 
 export function createHostedButtonElement(button: HostedButton): ReactElement {

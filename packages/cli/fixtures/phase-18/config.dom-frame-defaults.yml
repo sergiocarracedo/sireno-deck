@@ -14,7 +14,7 @@ decks:
         variant: date-time
       - position: 2
         type: analog-clock
-        full_surface: true
+        full: true
       - position: 3
         type: calendar-sheet
-        full_surface: true
+        full: true

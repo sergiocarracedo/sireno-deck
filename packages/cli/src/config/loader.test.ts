@@ -721,7 +721,7 @@ describe("loadConfig", () => {
         "      - position: 0",
         "        type: action",
         "        label: Clock",
-        "        full_surface: true",
+        "        full: true",
         "addons: []",
       ].join("\n"),
     )
@@ -731,7 +731,7 @@ describe("loadConfig", () => {
 
     expect(config.decks.main?.buttons[0]).toMatchObject({
       config: { label: "Clock" },
-      full_surface: true,
+      full: true,
       label: "Clock",
     })
   })

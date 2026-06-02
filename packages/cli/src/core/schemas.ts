@@ -148,7 +148,7 @@ export interface ButtonInstance extends AddonButtonEnvelope {
   command?: string
   display_command?: string
   display_mode?: string
-  full_surface?: boolean
+  full?: boolean
   icon?: string
   interval_ms?: number
   label?: string
@@ -177,7 +177,7 @@ const CoreButtonConfigSchema = z
   .object({
     accent: AccentOverrideSchema.optional(),
     background: z.string().min(1).optional(),
-    full_surface: z.boolean().optional(),
+    full: z.boolean().optional(),
   })
   .strict()
 
@@ -324,7 +324,7 @@ function getButtonPayload(
       ([key]) =>
         key !== 'accent' &&
         key !== 'background' &&
-        key !== 'full_surface' &&
+        key !== 'full' &&
         key !== 'position' &&
         key !== 'type',
     ),
@@ -539,7 +539,7 @@ export function validateConfig(
       const parsedCoreButtonConfig = CoreButtonConfigSchema.safeParse({
         accent: parsedButton.data.accent,
         background: parsedButton.data.background,
-        full_surface: parsedButton.data.full_surface,
+        full: parsedButton.data.full,
       })
       if (!parsedCoreButtonConfig.success) {
         throw toConfigValidationError(parsedCoreButtonConfig.error.issues[0], [
@@ -567,8 +567,8 @@ export function validateConfig(
         ...(parsedCoreButtonConfig.data.background !== undefined
           ? { background: parsedCoreButtonConfig.data.background }
           : {}),
-        ...(parsedCoreButtonConfig.data.full_surface !== undefined
-          ? { full_surface: parsedCoreButtonConfig.data.full_surface }
+        ...(parsedCoreButtonConfig.data.full !== undefined
+          ? { full: parsedCoreButtonConfig.data.full }
           : {}),
         position: parsedButton.data.position,
         type: parsedButton.data.type,

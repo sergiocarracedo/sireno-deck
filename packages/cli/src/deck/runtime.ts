@@ -123,7 +123,7 @@ export interface RuntimeRenderButton {
   background?: string
   content?: ReturnType<typeof ButtonSurface>
   frame_state?: ThemeFrameState
-  full_surface?: boolean
+  full?: boolean
   html?: string
   icon?: string
   keyIndex: number
@@ -132,7 +132,7 @@ export interface RuntimeRenderButton {
 }
 
 interface RootDomRenderProps {
-  full_surface?: boolean
+  full?: boolean
   sample_interval_ms?: number
 }
 
@@ -157,7 +157,7 @@ const temporaryErrorButtonDefinition = {
   }>) =>
     createElement(
       ButtonSurface,
-      { full_surface: true },
+      { full: true },
       createElement(
         'div',
         {
@@ -244,9 +244,7 @@ function getRootDomRenderProps(rendered: unknown): RootDomRenderProps {
   }
 
   return {
-    ...(props.full_surface !== undefined
-      ? { full_surface: props.full_surface }
-      : {}),
+    ...(props.full !== undefined ? { full: props.full } : {}),
     ...(props.sample_interval_ms !== undefined
       ? { sample_interval_ms: props.sample_interval_ms }
       : {}),
@@ -259,7 +257,7 @@ function createRuntimeButtonErrorContent(
 ): ReturnType<typeof ButtonSurface> {
   return createElement(
     ButtonSurface,
-    fullSurface !== undefined ? { full_surface: fullSurface } : {},
+    fullSurface !== undefined ? { full: fullSurface } : {},
     createElement(
       'div',
       {
@@ -568,8 +566,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       ...(renderedButton.frame_state !== undefined
         ? { frame_state: renderedButton.frame_state }
         : {}),
-      ...(renderedButton.full_surface !== undefined
-        ? { full_surface: renderedButton.full_surface }
+      ...(renderedButton.full !== undefined
+        ? { full: renderedButton.full }
         : {}),
       keyIndex: renderedButton.keyIndex,
       ...(renderedButton.sample_interval_ms !== undefined
@@ -602,10 +600,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
 
     renderCache.set(getButtonStateKey(deckId, button.position), {
       background: resolveButtonBackground(button, deckId),
-      content: createRuntimeButtonErrorContent(errorCode, button.full_surface),
+      content: createRuntimeButtonErrorContent(errorCode, button.full),
       frame_state: getFrameState(button.position),
-      ...(button.full_surface !== undefined
-        ? { full_surface: button.full_surface }
+      ...(button.full !== undefined
+        ? { full: button.full }
         : {}),
       keyIndex: button.position,
     })
@@ -730,7 +728,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     }
 
     const rootDomRenderProps = getRootDomRenderProps(rendered)
-    const fullSurface = rootDomRenderProps.full_surface ?? button.full_surface
+    const fullSurface = rootDomRenderProps.full ?? button.full
     const content =
       rendered.type === ButtonSurface
         ? rendered
@@ -738,7 +736,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
             ButtonSurface,
             {
               ...(fullSurface !== undefined
-                ? { full_surface: fullSurface }
+                ? { full: fullSurface }
                 : {}),
               ...(rootDomRenderProps.sample_interval_ms !== undefined
                 ? { sample_interval_ms: rootDomRenderProps.sample_interval_ms }
@@ -750,7 +748,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       background: resolveButtonBackground(button, deckId),
       content,
       frame_state: getFrameState(button.position),
-      ...(fullSurface !== undefined ? { full_surface: fullSurface } : {}),
+      ...(fullSurface !== undefined ? { full: fullSurface } : {}),
       keyIndex: button.position,
       ...(button.icon !== undefined ? { icon: button.icon } : {}),
       ...(button.label !== undefined ? { label: button.label } : {}),

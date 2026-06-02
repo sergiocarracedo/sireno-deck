@@ -12,7 +12,7 @@ decks:
       - position: 1
         type: display-text
         label: Explicit Full Surface
-        full_surface: true
+        full: true
         subtitle: Full Surface
       - position: 2
         type: change-deck

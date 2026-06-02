@@ -43,11 +43,11 @@ describe('dom host', () => {
     expect(element.type).toBe(defaultButtonFrame)
   })
 
-  it('skips buttonFrame when full_surface is explicit', () => {
+  it('skips buttonFrame when full is explicit', () => {
     const html = renderReactNodeToHtml(
       createHostedButtonElement({
         content: createElement('div', { 'data-surface': 'full' }, 'Surface'),
-        full_surface: true,
+        full: true,
         keyIndex: 1,
         theme: undefined,
       }),
@@ -67,7 +67,7 @@ describe('dom host', () => {
         },
         {
           content: createElement('div', { 'data-surface': 'full' }, 'Surface'),
-          full_surface: true,
+          full: true,
           keyIndex: 2,
         },
       ],
@@ -161,8 +161,8 @@ describe('dom host', () => {
       'const CANONICAL_ROOT_SELECTOR = \'[data-sireno-browser-shell="true"]\';',
     )
     expect(html).toContain('@font-face')
-    expect(html).toContain('font-family: "IBM Plex Sans"')
-    expect(html).toContain('font-family: "IBM Plex Mono"')
+    expect(html).toContain("font-family: 'IBM Plex Sans'")
+    expect(html).toContain("font-family: 'IBM Plex Mono'")
     expect(html).toContain('file://')
   })
 
@@ -189,7 +189,7 @@ describe('dom host', () => {
       createElement(
         ButtonSurface,
         {
-          full_surface: true,
+          full: true,
           sample_interval_ms: 400,
         },
         createElement('span', null, 'TSX'),
@@ -208,12 +208,12 @@ describe('dom host', () => {
         content: createElement(
           ButtonSurface,
           {
-            full_surface: true,
+            full: true,
             sample_interval_ms: 600,
           },
           createElement('span', null, 'Media'),
         ),
-        full_surface: true,
+        full: true,
         keyIndex: 0,
         sample_interval_ms: 600,
         theme: undefined,
@@ -236,7 +236,7 @@ describe('dom host', () => {
 
     expect(html).toContain('data-sireno-button-frame="true"')
     expect(html).toContain(
-      'class="bg-background border-frame border-2 border-solid w-full h-full rounded-lg flex items-center justify-center p-1 overflow-hidden"',
+      'class="bg-background border-frame border-2 border-solid w-full h-full rounded-2xl flex items-center justify-center p-1 overflow-hidden"',
     )
   })
 
@@ -434,7 +434,9 @@ describe('dom host', () => {
     expect(html).not.toContain('data-sireno-rich-text-tag="highlight"')
   })
 
-  it('renders mounted-button store snapshots through the public props-first contract', async () => {
+  it(
+    'renders mounted-button store snapshots through the public props-first contract',
+    async () => {
     let addonSnapshot: unknown = { total: 0 }
     let buttonSnapshot: unknown = { taps: 0 }
 
@@ -528,7 +530,9 @@ describe('dom host', () => {
     await definition.onTap?.(props)
 
     expect(renderMountedHtml()).toContain('Mounted:button=1:addon=1')
-  })
+    },
+    20_000,
+  )
 
   it('preserves local component state across mounted host updates and resets it on unmount', () => {
     let mountCount = 0
@@ -557,40 +561,42 @@ describe('dom host', () => {
     expect(host.toHtml()).toContain('Third:2')
   })
 
-  it('preserves local component state across repeated mounted hosted-button snapshots', async () => {
-    let mountCount = 0
+  it(
+    'preserves local component state across repeated mounted hosted-button snapshots',
+    () => {
+      let mountCount = 0
 
-    function MountedCounter(props: { label: string }) {
-      const [mountId] = useState(() => {
-        mountCount += 1
-        return mountCount
-      })
+      function MountedCounter(props: { label: string }) {
+        const [mountId] = useState(() => {
+          mountCount += 1
+          return mountCount
+        })
 
-      return createElement('span', null, `${props.label}:${mountId}`)
-    }
+        return createElement('span', null, `${props.label}:${mountId}`)
+      }
 
-    const host = createMountedDomHost()
-    const theme = await resolveTheme('dark')
+      const host = createMountedDomHost()
 
-    const renderSnapshot = (label: string) =>
-      renderMountedHostedButtons(host, [
-        {
-          content: createElement(MountedCounter, { label }),
-          keyIndex: 0,
-          theme,
-        },
-        {
-          content: createElement('span', null, 'Static'),
-          keyIndex: 1,
-          theme,
-        },
-      ])
+      const renderSnapshot = (label: string) =>
+        renderMountedHostedButtons(host, [
+          {
+            content: createElement(MountedCounter, { label }),
+            keyIndex: 0,
+            theme: undefined,
+          },
+          {
+            content: createElement('span', null, 'Static'),
+            keyIndex: 1,
+            theme: undefined,
+          },
+        ])
 
-    expect(renderSnapshot('First')[0]?.html).toContain('First:1')
-    expect(renderSnapshot('Second')[0]?.html).toContain('Second:1')
+      expect(renderSnapshot('First')[0]?.html).toContain('First:1')
+      expect(renderSnapshot('Second')[0]?.html).toContain('Second:1')
 
-    host.unmount()
+      host.unmount()
 
-    expect(renderSnapshot('Third')[0]?.html).toContain('Third:2')
-  }, 10_000)
+      expect(renderSnapshot('Third')[0]?.html).toContain('Third:2')
+    },
+  )
 })

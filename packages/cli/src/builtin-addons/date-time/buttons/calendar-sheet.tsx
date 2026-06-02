@@ -27,7 +27,7 @@ export const builtinCalendarSheetButton = defineMountedButton({
   configSchema: BuiltinCalendarSheetButtonSchema,
   defaultIntervalMs: CALENDAR_SHEET_INTERVAL_MS,
   render: () => (
-    <ButtonSurface full_surface>
+    <ButtonSurface full>
       <div className="flex w-full flex-col items-center justify-center gap-1">
         <CalendarSheetLabel label="Date" tone="foreground" typography="main" />
         <CalendarSheetLabel label="SHEET" tone="accent" typography="aux" />

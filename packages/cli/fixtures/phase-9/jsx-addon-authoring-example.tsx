@@ -1,9 +1,4 @@
-import {
-  ButtonSurface,
-  Chip,
-  Icon,
-  Text,
-} from "sireno-deck-cli"
+import { ButtonSurface, Chip, Icon, Text } from 'sireno-deck-cli'
 
 export const componentFirstButton = (
   <div className="flex flex-col items-center justify-center gap-1">
@@ -13,7 +8,7 @@ export const componentFirstButton = (
 )
 
 export const componentFirstSurface = (
-  <ButtonSurface full_surface>
+  <ButtonSurface full>
     <div className="flex h-full w-full flex-col items-center justify-center gap-1">
       <Chip tone="accent">Live</Chip>
       <Text fit="wrap">Date Today</Text>

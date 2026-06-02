@@ -3,20 +3,22 @@ import { z } from 'zod'
 import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
 import { Bars, Text } from '../../../ui/index.js'
 
-const ANIMATED_BLOB_SVG = encodeURIComponent([
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">',
-  '<rect width="72" height="72" fill="#05070a"/>',
-  '<circle cx="16" cy="20" r="18" fill="#7dd3fc" opacity="0.9">',
-  '<animate attributeName="cx" values="16;56;16" dur="1.6s" repeatCount="indefinite"/>',
-  '<animate attributeName="cy" values="20;52;20" dur="1.2s" repeatCount="indefinite"/>',
-  '</circle>',
-  '<circle cx="56" cy="52" r="14" fill="#f59e0b" opacity="0.85">',
-  '<animate attributeName="cx" values="56;20;56" dur="1.4s" repeatCount="indefinite"/>',
-  '<animate attributeName="cy" values="52;16;52" dur="1.8s" repeatCount="indefinite"/>',
-  '</circle>',
-  '<rect x="10" y="10" width="52" height="52" rx="16" fill="none" stroke="#eef2f7" stroke-opacity="0.18"/>',
-  '</svg>',
-].join(''))
+const ANIMATED_BLOB_SVG = encodeURIComponent(
+  [
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">',
+    '<rect width="72" height="72" fill="#05070a"/>',
+    '<circle cx="16" cy="20" r="18" fill="#7dd3fc" opacity="0.9">',
+    '<animate attributeName="cx" values="16;56;16" dur="1.6s" repeatCount="indefinite"/>',
+    '<animate attributeName="cy" values="20;52;20" dur="1.2s" repeatCount="indefinite"/>',
+    '</circle>',
+    '<circle cx="56" cy="52" r="14" fill="#f59e0b" opacity="0.85">',
+    '<animate attributeName="cx" values="56;20;56" dur="1.4s" repeatCount="indefinite"/>',
+    '<animate attributeName="cy" values="52;16;52" dur="1.8s" repeatCount="indefinite"/>',
+    '</circle>',
+    '<rect x="10" y="10" width="52" height="52" rx="16" fill="none" stroke="#eef2f7" stroke-opacity="0.18"/>',
+    '</svg>',
+  ].join(''),
+)
 
 const BuiltinMediaSampleButtonSchema = z
   .object({
@@ -28,7 +30,7 @@ const BuiltinMediaSampleButtonSchema = z
 const builtinMediaSampleButton = defineMountedButton({
   configSchema: BuiltinMediaSampleButtonSchema,
   render: ({ config }) => (
-    <ButtonSurface full_surface={true} sample_interval_ms={config.sample_interval_ms}>
+    <ButtonSurface full={true} sample_interval_ms={config.sample_interval_ms}>
       <div
         className="h-full w-full overflow-hidden relative"
         style={{

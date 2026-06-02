@@ -18,7 +18,7 @@ export interface AddonButtonEnvelope {
 }
 
 export interface AddonButtonSurfaceContract {
-  full_surface?: boolean
+  full?: boolean
   sample_interval_ms?: number
 }
 
@@ -174,8 +174,8 @@ export function defineMountedButton<TConfig, TPayload = unknown>(
 export function ButtonSurface(props: ButtonSurfaceProps): ReactElement {
   return jsx('div', {
     'data-sireno-button-surface': 'true',
-    ...(props.full_surface !== undefined
-      ? { 'data-sireno-full-surface': props.full_surface ? 'true' : 'false' }
+    ...(props.full !== undefined
+      ? { 'data-sireno-full-surface': props.full ? 'true' : 'false' }
       : {}),
     ...(props.sample_interval_ms !== undefined
       ? {

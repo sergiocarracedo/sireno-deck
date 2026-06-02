@@ -254,8 +254,8 @@ function createDeckHtml(
       ...(button.frame_state !== undefined
         ? { frame_state: button.frame_state }
         : {}),
-      ...(button.full_surface !== undefined
-        ? { full_surface: button.full_surface }
+      ...(button.full !== undefined
+        ? { full: button.full }
         : {}),
       keyIndex: button.keyIndex,
       ...(button.sample_interval_ms !== undefined
