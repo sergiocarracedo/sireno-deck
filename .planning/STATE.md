@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 31 shell-safe root-script closure is complete. The shared watch-loop blocker, downstream bare-start cleanup defect, rerun-specific worktree drift, and zsh shell-glob abort in the root `cli:dev` seam are all closed, and the next workflow step is `verify-work 31` again for a fresh manual UAT pass against the fully restored runtime seam.
+**Current focus:** Phase 33 full Tailwind support execution is complete. Browser-rendered UI now runs on the real Tailwind utility surface, themes and enabled local addons feed an explicit Tailwind contract, and `verify-work 33` is the next workflow step for manual UAT on the shipped browser/emulator seams.
 
 ## Current Position
 
-Phase: 31 — CLI Dev Watch Mode Argument Forwarding
-Plan: 31 rerun closure complete; verify-work 31 next
+Phase: 33 — Add full tailwind support
+Plan: 33-01 through 33-03 complete; verify-work 33 next
 Status: verifying
-Last activity: 2026-06-02 - Completed Plan 33-03 workspace Tailwind contract and cli:dev rebuild hook
+Last activity: 2026-06-02 - Verified Phase 33 Tailwind support and moved to manual UAT
 
 Progress: [##########] 100%
 
@@ -97,6 +97,7 @@ Recent decisions affecting current work:
 - **Phase 33 execution:** Plan `33-03` added a generated Tailwind contract builder that collects real theme and enabled local-addon roots plus explicit manifest safelist entries, keeping workspace Tailwind participation bounded to the user-locked repo-owned surfaces.
 - **Phase 33 execution:** `cli:dev` now rebuilds the Tailwind browser stylesheet before restarting the CLI, so the shipped watch seam stays truthful for core UI, built-ins, committed custom themes, and enabled local addons without inventing a second watcher.
 - **Phase 33 execution:** Plan `33-02` hard-cut the shipped shared UI and narrowed built-in browser surfaces onto canonical Tailwind classes, replacing the stale shared `--color-primary` fallback and remaining fixed inline typography/layout values while keeping genuinely runtime-driven styles inline.
+- **Phase 33 verification:** Focused browser, emulator, shared UI, built-in, dev-watch, theme, and addon-loader seams all pass on the real Tailwind contract, so the phase is ready for `verify-work 33` manual UAT rather than more implementation work.
 - **Phase 30 execution:** The shared helper surface now ships as public `Bars` and `LabelValueList` TSX components from the package root, with runtime-enforced count bounds and `LabelValueList` auto-layout still kept presentation-only.
 - **Phase 30 execution:** The bundled `system-status` addon now loads through the real shipped registry with `system-status-bars` and `system-status-label-values`, backed by one canonical metric catalog, a bounded numbro-backed display mapper, explicit unavailable slots, and button-local tap/hold handling that does not widen runtime semantics.
 - **Phase 30 execution:** The bundled `media-player` addon now loads through the real shipped registry on top of a shared media-controller seam, uses a real Linux `playerctl` adapter, keeps macOS and Windows explicitly unsupported until verified, reuses `Bars` and shared `Text` marquee, and keeps tap fixed to play/pause with optional hold behavior implemented locally inside the button seam.
@@ -106,8 +107,8 @@ Recent decisions affecting current work:
 - Decide whether to normalize planning docs that still mention `tsup` now that the codebase uses `tsdown`.
 - Run `/review` on the completed Phase 5 closure pass, then continue with `/ship` and `/compound` once review is clean.
 - Run `verify-work 30` for the committed manual UAT pass, then continue with `/review`, `/ship`, and `/compound`.
-- Run `verify-work 31` again for a fresh manual UAT pass now that `31-03`, `31-04`, `31-05`, and `31-06` have closed the diagnosed runtime defects, live seam drift, and shell-level root-script abort.
-- Run `plan-phase 32` now that addon-owned polling contract decisions are captured.
+- Run `verify-work 33` for a fresh manual UAT pass on the shipped browser/emulator Tailwind seams, shared UI hard cut, and workspace theme/local-addon Tailwind contract.
+- Run `verify-work 32` for a fresh manual UAT pass on addon-owned polling payload flow, split cadence behavior, and migrated built-in system-status/media-player paths.
 
 ### Roadmap Evolution
 
@@ -155,6 +156,7 @@ Recent decisions affecting current work:
 - **Phase 33 execution:** Completed Plan `33-01` by adding a real Tailwind v4 browser stylesheet build for the CLI package, keeping Sireno token/runtime glue ownership narrow, and splitting browser/emulator stylesheet delivery into explicit Tailwind/runtime/theme-asset seams with focused regression coverage.
 - **Phase 33 execution:** Completed Plan `33-03` by adding the explicit addon/theme Tailwind safelist contract, generating browser stylesheet source inputs from the real bootstrap config, and rebuilding Tailwind automatically inside the shipped `cli:dev` restart seam.
 - **Phase 33 execution:** Completed Plan `33-02` by aligning shared `Bars`/`Chip` seams and the touched built-in browser layouts with canonical Tailwind token/spacing classes, while refreshing focused regressions only around the exact render surfaces changed by the hard cut.
+- **Phase 33 verification:** Confirmed all three Phase 33 slices with focused runtime/UI/theme/addon/watch checks plus the real Tailwind browser build, and wrote `33-VERIFICATION.md` with 6/6 must-haves passing before the manual UAT handoff.
 
 - **Phase 30 discussion:** Locked the new helper surface to public component-first `Bars` and `LabelValueList` components, bounded system-status around canonical metric adapters plus helper-template buttons with honest unavailable states, and bounded media-player around truthful status, best-effort metadata, shared marquee overflow, fixed tap play/pause, and optional hold behavior.
 

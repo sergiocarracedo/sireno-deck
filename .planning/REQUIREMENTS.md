@@ -46,6 +46,10 @@ Phase 30 (`Content Helpers, System Status, and Media Player Addons`) is also a p
 
 Phase 31 (`CLI Dev Watch Mode Argument Forwarding`) is also a post-milestone follow-on after the v1.3 `TRF-*` requirements were already complete. It does not introduce additional `TRF-*` ids here; its verification traces to the Phase 31 roadmap goal, `31-CONTEXT.md`, and the `31-01` through `31-06` plan `must_haves` recorded under `.planning/phases/31-cli-dev-watch-mode-argument-forwarding/`, including the focused verification artifact in `31-VERIFICATION.md` and the preserved rerun evidence in `31-UAT.md`.
 
+Phase 32 (`Addon-Owned Data Polling Contract`) is also a post-milestone follow-on after the v1.3 `TRF-*` requirements were already complete. It does not introduce additional `TRF-*` ids here; its verification traces to the Phase 32 roadmap goal, `32-CONTEXT.md`, and the `32-01` through `32-04` plan `must_haves` recorded under `.planning/phases/32-addon-owned-data-polling-contract/`, including the focused verification artifact in `32-VERIFICATION.md`.
+
+Phase 33 (`Add full tailwind support`) is also a post-milestone follow-on after the v1.3 `TRF-*` requirements were already complete. It does not introduce additional `TRF-*` ids here; its verification traces to the Phase 33 roadmap goal, `33-CONTEXT.md`, and the `33-01` through `33-03` plan `must_haves` recorded under `.planning/phases/33-add-full-tailwind-support/`, including the focused verification artifact in `33-VERIFICATION.md`.
+
 ## v2 Candidates
 
 | Item | Why Deferred |

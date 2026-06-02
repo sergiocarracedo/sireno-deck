@@ -2,7 +2,7 @@
 
 **Version:** v1.3
 **Milestone:** Typography and Rich Formatting
-**Last updated:** 2026-05-30
+**Last updated:** 2026-06-02
 
 ## Milestone Summary
 
@@ -99,24 +99,27 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] 31-05: Restore the live cli:dev seam
 - [x] 31-06: Shell-proof the root cli:dev script
 
-### Phase 32: Addon-Owned Data Polling Contract
+### Phase 32: Addon-Owned Data Polling Contract ✓ Complete (2026-06-01)
 **Goal:** Move addon-specific polling/data-fetching logic out of core system modules into addon-owned callbacks so core only schedules intervals, passes command output props to render, and publishes rendered frames.
-**Status:** [ ] Not started
+**Status:** [x] Complete
 **Depends on:** Phase 31
 
 ### Plans
-*Not yet planned - run `plan-phase 32`*
+- [x] 32-01: Land the core-agnostic payload and split-cadence runtime contract
+- [x] 32-02: Migrate system-status to addon-owned polling and domain modules
+- [x] 32-03: Migrate media-player to addon-owned polling and OS adapters
+- [x] 32-04: Close the big-bang migration and regression gate
 
-### Phase 33: Add full tailwind support
+### Phase 33: Add full tailwind support ✓ Complete (2026-06-02)
 
 **Goal:** Enable full Tailwind support across the browser-rendered UI surface so shared components, themes, and addon-authored TSX can rely on a consistent utility-first styling contract.
-**Status:** [ ] Not started
+**Status:** [x] Complete
 **Depends on:** Phase 32
 
 ### Plans
-- [ ] 33-01: Land the real Tailwind build and browser delivery seam
-- [ ] 33-02: Hard-cut shared UI and built-ins onto canonical Tailwind utilities
-- [ ] 33-03: Wire workspace theme and addon sources into the Tailwind contract
+- [x] 33-01: Land the real Tailwind build and browser delivery seam
+- [x] 33-02: Hard-cut shared UI and built-ins onto canonical Tailwind utilities
+- [x] 33-03: Wire workspace theme and addon sources into the Tailwind contract
 
 ## Coverage Check
 
