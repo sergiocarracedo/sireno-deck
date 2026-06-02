@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 32 addon-owned polling contract execution is complete. Core runtime now stays capability-agnostic while system-status/media-player capability domains and polling adapters are addon-owned, `verify-work 32` remains the next workflow step for the shipped seam, and Phase 34 context is now captured for follow-on planning.
+**Current focus:** Phase 34 button action command interface execution is complete. Addon authors and the shipped `action`, `system-status`, and regular `date-time` button families now share one public nested `commands` contract plus gesture hook, and `verify-work 34` is the next workflow step for the shipped seam.
 
 ## Current Position
 
-Phase: 32 — Addon-Owned Data Polling Contract
-Plan: 32-01 through 32-04 complete; verify-work 32 next
+Phase: 34 — Button action command interface
+Plan: 34-01 through 34-03 complete; verify-work 34 next
 Status: verifying
-Last activity: 2026-06-02 - Completed quick task 029: in /works/opensource/sireno-deck/packages/cli/src/ui/Icon.tsx the icon component will get a icon name, and it should resolve that name automatically to the lucide icon, dont use a hardcoed map
+Last activity: 2026-06-02 - Completed Phase 34 execution and focused verification for the shared button action command interface
 
 Progress: [##########] 100%
 
@@ -94,6 +94,8 @@ Recent decisions affecting current work:
 - **Phase 33 discussion:** Sireno theme resolution stays authoritative through the Tailwind bridge, the full resolved browser theme contract should remain available to utilities, shipped color/typography styling stays Sireno-token-backed, and dynamic class needs require an explicit safelist-generation contract rather than runtime compilation magic.
 - **Phase 34 discussion:** Shared command-action behavior should standardize on a public nested `commands.tap | hold | double-tap` contract plus a reusable schema/interface and narrow gesture-handler hook, with partial gesture support allowed and `double-tap` suppressing `tap` when both are configured.
 - **Phase 34 discussion:** Migrate all command-capable built-ins except `media-player` onto the shared contract, expose the optional command-action config across all regular `date-time` buttons except locked tiles, keep `media-player` internal-only, await command execution, and avoid adding automatic invalidation or a second failure UX.
+- **Phase 34 execution:** `packages/cli/src/addon/api.ts` and the package root now publish one shared nested `commands` schema plus `useButtonActionCommand(...)`, and the bundled `action` button proves awaited tap/hold/double-tap command behavior without widening `deck/runtime.ts` or auto-invalidating buttons.
+- **Phase 34 execution:** System-status and the full regular date-time button family now reuse the shared command-action contract, while `media-player` and locked date-time tiles remain on their separate bounded seams and focused addon regression tests prove the migration boundaries.
 - **Phase 33 execution:** Plan `33-01` replaced the handwritten browser utility generator with a real Tailwind browser asset build, kept Sireno theme vars authoritative, and narrowed `theme-utilities.ts` to Tailwind asset loading plus product-only runtime glue.
 - **Phase 33 execution:** Browser and emulator delivery now use explicit split stylesheet seams (`data-sireno-tailwind`, `data-sireno-runtime`, `data-sireno-theme-assets`) instead of the legacy `data-sireno-theme-utilities` contract, with focused regression proof on the shipped browser/emulator paths.
 - **Phase 30 execution:** The shared helper surface now ships as public `Bars` and `LabelValueList` TSX components from the package root, with runtime-enforced count bounds and `LabelValueList` auto-layout still kept presentation-only.
@@ -106,6 +108,7 @@ Recent decisions affecting current work:
 - Run `/review` on the completed Phase 5 closure pass, then continue with `/ship` and `/compound` once review is clean.
 - Run `verify-work 30` for the committed manual UAT pass, then continue with `/review`, `/ship`, and `/compound`.
 - Run `verify-work 32` for a fresh manual UAT pass on addon-owned polling payload flow, split cadence behavior, and migrated built-in system-status/media-player paths.
+- Run `verify-work 34` for a fresh manual UAT pass on action-button, system-status, and regular date-time tap/hold/double-tap command behavior plus locked-tile/media-player boundary checks.
 
 ### Roadmap Evolution
 

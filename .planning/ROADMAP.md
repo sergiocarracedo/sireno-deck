@@ -121,16 +121,16 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] 33-02: Hard-cut shared UI and built-ins onto canonical Tailwind utilities
 - [x] 33-03: Wire workspace theme and addon sources into the Tailwind contract
 
-### Phase 34: Button action command interface
+### Phase 34: Button action command interface ✓ Complete (2026-06-02)
 
 **Goal:** Add a shared optional button action-command contract so addon buttons can declaratively map `tap`, `hold`, and `double-tap` events to system commands through one common schema and hook.
-**Status:** [ ] Not started
+**Status:** [x] Complete (2026-06-02)
 **Depends on:** Phase 33
 
 ### Plans
-- [ ] 34-01: Publish the shared command-action contract and prove it on the action button
-- [ ] 34-02: Migrate system-status onto the shared command-action contract
-- [ ] 34-03: Roll the shared command contract across regular date-time buttons
+- [x] 34-01: Publish the shared command-action contract and prove it on the action button
+- [x] 34-02: Migrate system-status onto the shared command-action contract
+- [x] 34-03: Roll the shared command contract across regular date-time buttons
 
 ## Coverage Check
 

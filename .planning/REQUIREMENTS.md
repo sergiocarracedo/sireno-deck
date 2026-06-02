@@ -50,6 +50,8 @@ Phase 32 (`Addon-Owned Data Polling Contract`) is also a post-milestone follow-o
 
 Phase 33 (`Add full tailwind support`) is also a post-milestone follow-on after the v1.3 `TRF-*` requirements were already complete. It does not introduce additional `TRF-*` ids here; its verification traces to the Phase 33 roadmap goal, `33-CONTEXT.md`, and the `33-01` through `33-03` plan `must_haves` recorded under `.planning/phases/33-add-full-tailwind-support/`, including the focused verification artifact in `33-VERIFICATION.md`.
 
+Phase 34 (`Button action command interface`) is also a post-milestone follow-on after the v1.3 `TRF-*` requirements were already complete. It does not introduce additional `TRF-*` ids here; its verification traces to the Phase 34 roadmap goal, `34-CONTEXT.md`, and the `34-01` through `34-03` plan `must_haves` recorded under `.planning/phases/34-button-action-command-interface/`, including the focused verification artifact in `34-VERIFICATION.md`.
+
 ## v2 Candidates
 
 | Item | Why Deferred |
