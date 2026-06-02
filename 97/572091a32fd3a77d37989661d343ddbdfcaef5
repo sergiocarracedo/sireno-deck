@@ -1,0 +1,76 @@
+.planning/phases/34-button-action-command-interface/34-UAT.md
+  s_ae90c119517753::t_5f6d37aa72dcfe 1-47
+packages/cli/src/render/dom-host.test.tsx
+  h_f90ee31b03fc41 133,135
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock.tsx
+  h_f90ee31b03fc41 29,31,35-39,44,47-52,54,61,73-78,80
+packages/cli/src/builtin-addons/media-player/media-player-button.tsx
+  h_f90ee31b03fc41 2-4,12,29,45-48,65-68,87-89,104-107,176-179,181-183,185-187,191,193-194,196-198,202-207,210-213
+packages/cli/src/ui/Icon.tsx
+  h_f90ee31b03fc41 3-4,23,69-99,153
+.planning/quick/028-add-lines-for-hours/028-PLAN.md
+  s_64b0a20264500f::t_58db817cc013c4 1-38
+packages/cli/src/builtin-addons/media-player/components/ProgressBar.tsx
+  h_f90ee31b03fc41 1-18,21-23
+packages/cli/src/builtin-addons/media-player/components/MediaStatus.tsx
+  h_f90ee31b03fc41 4,6,9,12
+packages/cli/src/render/dom-host.tsx
+  h_f90ee31b03fc41 27
+packages/cli/src/builtin-addons/media-player/index.ts
+  h_f90ee31b03fc41 3
+CHANGELOG.md
+  h_f90ee31b03fc41 15,22
+packages/cli/tailwind.browser.css
+  s_c2103c8dd3baf5::t_59813507d807cf 1-2
+  h_f90ee31b03fc41 7-16
+packages/cli/src/builtin-addons/media-player/components/status-meta.ts
+  h_f90ee31b03fc41 1-27
+packages/cli/src/builtin-addons/date-time/index.test.ts
+  s_ae90c119517753::t_c5cda20d45f48a 299,305
+  s_ae90c119517753::t_c6b58733a74e77 63,96,137,207-211,239-241,246-248,264,267,296,333,351-353,374-377,395,397-399,419-422
+  s_64b0a20264500f::t_f8e4c267d2f15f 158-161,163-168,170-175,191-193
+  s_64b0a20264500f::t_5d24c136dd5e79 78,133-136,289-292,300-304,306-307
+packages/cli/src/render/theme-utilities.ts
+  h_f90ee31b03fc41 55-61
+packages/cli/src/builtin-addons/media-player/internal-types.ts
+  h_f90ee31b03fc41 1-6
+config.yml
+  h_f90ee31b03fc41 18-19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "97572091a32fd3a77d37989661d343ddbdfcaef5",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_64b0a20264500f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_177461909ffeUmLmSRYWKcY35o",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_ae90c119517753": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_17709f905ffehOWAuC9CPZ8744",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_c2103c8dd3baf5": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "3d5cb15d-634a-4e58-b96f-2190a167d861",
+        "model": "gpt-5-mini"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
