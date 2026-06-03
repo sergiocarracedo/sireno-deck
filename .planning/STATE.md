@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 35 is now planned. Execution next should land the renderer-owned live hardware capture path first, then harden reconnect, reload, and placeholder truth around it.
+**Current focus:** Phase 35 is complete. Live hardware resampling now keeps mounted browser pages alive at ~250ms on physical Stream Deck hardware, with placeholder, reconnect, and runtime replacement edge hardening in place.
 
 ## Current Position
 
 Phase: 35 — Live hardware resampling at 250ms
 Plan: `35-01`, `35-02`
-Status: planned
-Last activity: 2026-06-03 - Planned Phase 35 live hardware resampling at 250ms
+Status: complete
+Last activity: 2026-06-03 - Completed Phase 35 live hardware resampling at 250ms
 
 Progress: [##########] 100%
 
