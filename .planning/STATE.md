@@ -114,6 +114,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 37 added: reload only the affected buttons in watch mode when config or addon JSX/TSX/CSS source files change, instead of restarting the full app.
 - Phase 36 context captured (discuss-phase): remove marquee from TextFit, migrate media-player to ellipsis, narrow theme frame contract.
 - Phase 36 added: remove the text marquee overflow mode because it requires very frequent rapid updates that are too expensive to sustain.
 - Phase 35 added: keep browser-rendered animated button surfaces live on physical Stream Deck hardware by resampling the mounted deck surface at roughly 250ms cadence without restarting the page on every frame.

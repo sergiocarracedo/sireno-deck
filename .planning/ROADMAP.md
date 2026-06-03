@@ -151,6 +151,15 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 ### Plans
 *Not yet planned — run `plan-phase 36`*
 
+### Phase 37: Partial Rerender on Source Changes
+
+**Goal:** Reload only the affected buttons in watch mode when config or addon JSX/TSX/CSS source files change, instead of restarting the full app.
+**Status:** [ ] Not started
+**Depends on:** Phase 36
+
+### Plans
+*Not yet planned — run `plan-phase 37`*
+
 ## Coverage Check
 
 | Requirement | Phase |
