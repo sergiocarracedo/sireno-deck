@@ -97,10 +97,7 @@ export function getSirenoRuntimeStylesheet(): string {
     '.sireno-rich-text-strong{font-weight:700;}',
     '.sireno-rich-text-blink{animation:sireno-rich-text-blink 1s steps(1,end) infinite;}',
     '.sireno-text-fit-shrink{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}',
-    '.sireno-text-fit-marquee{position:relative;}',
-    '.sireno-marquee-track{display:inline-block;min-width:max-content;padding-inline-end:100%;animation:sireno-marquee-scroll 8s linear infinite;}',
     '@keyframes sireno-rich-text-blink{0%,49.999%{opacity:1;}50%,100%{opacity:0;}}',
-    '@keyframes sireno-marquee-scroll{0%{transform:translateX(0%);}100%{transform:translateX(-50%);}}',
   ].join('')
 }
 
