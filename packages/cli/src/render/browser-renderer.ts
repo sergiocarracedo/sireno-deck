@@ -41,22 +41,34 @@ export interface VirtualDeckDevice {
 }
 
 export interface BrowserRendererOptions {
+  frameHandler?: BrowserRendererFrameHandler
   keyCount: number
   launcher?: BrowserLauncher
-  launchOptions?: Record<string, unknown>
+   launchOptions?: Record<string, unknown>
+  liveHardwareMode?: boolean
   preset?: RenderPreset
 }
+
+export interface BrowserRendererFrame {
+  buffers: Map<number, Buffer>
+  reason: "steady-state" | "update"
+  version: number
+}
+
+export type BrowserRendererFrameHandler = (frame: BrowserRendererFrame) => Promise<void> | void
 
 export interface BrowserRenderer {
   captureKeyBuffers: () => Promise<Map<number, Buffer>>
   close: () => Promise<void>
   keyCount: number
+  setFrameHandler: (handler?: BrowserRendererFrameHandler) => void
   start: () => Promise<void>
   updateDeck: (html: string) => Promise<void>
 }
 
 export const MIN_MEDIA_SAMPLE_INTERVAL_MS = 250
 export const MAX_MEDIA_SAMPLE_INTERVAL_MS = 2000
+export const LIVE_HARDWARE_CAPTURE_INTERVAL_MS = 250
 const CAPTURE_HTML_FILE_NAME = "deck.html"
 
 interface CaptureWaiter {
@@ -186,11 +198,14 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
   const layout = resolveDeckLayout(options.keyCount)
   const viewport = getDeckPixelSize(layout, preset)
   const launchOptions = options.launchOptions ?? { headless: true }
+  const liveHardwareMode = options.liveHardwareMode ?? false
 
   let browser: BrowserLike | null = null
   let context: BrowserContextLike | null = null
   let page: BrowserPageLike | null = null
   let captureDocument: { directoryPath: string; filePath: string } | null = null
+  let closed = false
+  let frameHandler = options.frameHandler
   let latestHtml = ""
   let latestMediaSampleIntervalMs: number | undefined
   let latestVersion = 0
@@ -198,6 +213,7 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
   let lastCapturedBuffers = new Map<number, Buffer>()
   let lastCaptureAt = 0
   let captureLoopPromise: Promise<void> | null = null
+  let wakeCaptureLoop: (() => void) | null = null
   const captureWaiters: CaptureWaiter[] = []
 
   async function ensurePage(): Promise<BrowserPageLike> {
@@ -249,16 +265,74 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
     }
   }
 
+  function notifyCaptureLoop(): void {
+    wakeCaptureLoop?.()
+  }
+
+  async function waitForNextCaptureWindow(ms: number): Promise<void> {
+    if (ms <= 0) {
+      return
+    }
+
+    await new Promise<void>((resolve) => {
+      const timeout = setTimeout(() => {
+        if (wakeCaptureLoop === wake) {
+          wakeCaptureLoop = null
+        }
+        resolve()
+      }, ms)
+
+      const wake = () => {
+        clearTimeout(timeout)
+        if (wakeCaptureLoop === wake) {
+          wakeCaptureLoop = null
+        }
+        resolve()
+      }
+
+      wakeCaptureLoop = wake
+    })
+  }
+
   async function runCaptureLoop(): Promise<void> {
     try {
-      while (renderedVersion < latestVersion) {
+      while (!closed) {
+        const hasPendingUpdate = renderedVersion < latestVersion
+        const shouldSteadyStateCapture = liveHardwareMode && renderedVersion > 0 && renderedVersion === latestVersion
+
+        if (!hasPendingUpdate && !shouldSteadyStateCapture) {
+          break
+        }
+
+        if (shouldSteadyStateCapture) {
+          const waitMs = Math.max(0, lastCaptureAt + LIVE_HARDWARE_CAPTURE_INTERVAL_MS - Date.now())
+          await waitForNextCaptureWindow(waitMs)
+
+          if (closed) {
+            break
+          }
+
+          if (renderedVersion < latestVersion) {
+            continue
+          }
+        }
+
         const requestedVersion = latestVersion
         const requestedHtml = latestHtml
         const requestedSampleIntervalMs = latestMediaSampleIntervalMs
+        const captureReason = renderedVersion < requestedVersion ? "update" : "steady-state"
 
-        if (renderedVersion > 0 && requestedSampleIntervalMs !== undefined) {
+        if (
+          captureReason === "update" &&
+          renderedVersion > 0 &&
+          requestedSampleIntervalMs !== undefined
+        ) {
           const waitMs = Math.max(0, lastCaptureAt + requestedSampleIntervalMs - Date.now())
-          await sleep(waitMs)
+          await waitForNextCaptureWindow(waitMs)
+
+          if (closed) {
+            break
+          }
 
           if (requestedVersion !== latestVersion) {
             continue
@@ -266,7 +340,9 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
         }
 
         const activePage = await ensurePage()
-        await renderPageHtml(activePage, requestedHtml, requestedVersion)
+        if (captureReason === "update") {
+          await renderPageHtml(activePage, requestedHtml, requestedVersion)
+        }
         const capture = await activePage.screenshot({ fullPage: true })
 
         if (requestedVersion !== latestVersion) {
@@ -275,7 +351,14 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
 
         lastCapturedBuffers = await cropDeckCaptureToKeyBuffers(capture, layout, preset)
         lastCaptureAt = Date.now()
-        renderedVersion = requestedVersion
+        renderedVersion = Math.max(renderedVersion, requestedVersion)
+
+        await frameHandler?.({
+          buffers: lastCapturedBuffers,
+          reason: captureReason,
+          version: requestedVersion,
+        })
+
         resolveCaptureWaiters()
       }
     } catch (error) {
@@ -296,6 +379,12 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
 
   return {
     keyCount: options.keyCount,
+    setFrameHandler(handler) {
+      frameHandler = handler
+      if (frameHandler && liveHardwareMode && latestVersion > 0) {
+        void ensureCaptureLoop().catch(() => {})
+      }
+    },
     async start() {
       await ensurePage()
     },
@@ -303,6 +392,11 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
       latestHtml = html
       latestMediaSampleIntervalMs = parseMediaSampleIntervalMs(html)
       latestVersion += 1
+      notifyCaptureLoop()
+
+      if (liveHardwareMode && frameHandler) {
+        void ensureCaptureLoop().catch(() => {})
+      }
     },
     async captureKeyBuffers() {
       if (latestVersion === 0 || renderedVersion >= latestVersion) {
@@ -316,6 +410,9 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
       })
     },
     async close() {
+      closed = true
+      notifyCaptureLoop()
+
       try {
         await captureLoopPromise
       } catch {

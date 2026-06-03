@@ -4,9 +4,15 @@ import { join } from "node:path"
 import { tmpdir } from "node:os"
 import { pathToFileURL } from "node:url"
 import { createElement } from "react"
-import { describe, expect, it, vi } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
-import { createBrowserRenderer, getVirtualDeckDevices, MAX_MEDIA_SAMPLE_INTERVAL_MS, MIN_MEDIA_SAMPLE_INTERVAL_MS } from "./browser-renderer.js"
+import {
+  createBrowserRenderer,
+  getVirtualDeckDevices,
+  LIVE_HARDWARE_CAPTURE_INTERVAL_MS,
+  MAX_MEDIA_SAMPLE_INTERVAL_MS,
+  MIN_MEDIA_SAMPLE_INTERVAL_MS,
+} from "./browser-renderer.js"
 import { renderDomDeck } from "./dom-host.js"
 
 async function createDeckScreenshot(colors: string[]): Promise<Buffer> {
@@ -59,6 +65,10 @@ async function createGridDeckScreenshot(colors: string[], columns: number): Prom
 }
 
 describe("browser renderer", () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it("keeps one persistent page alive across updates", async () => {
     const setContent = vi.fn(async () => {})
     const screenshot = vi.fn(async () => createDeckScreenshot(["#ff0000"]))
@@ -207,6 +217,107 @@ describe("browser renderer", () => {
     expect(setContent).toHaveBeenNthCalledWith(2, `<html><body><div data-sireno-media-sample-interval-ms="${MAX_MEDIA_SAMPLE_INTERVAL_MS + 500}"></div></body></html>`)
 
     vi.useRealTimers()
+  })
+
+  it("keeps steady-state live hardware captures on the mounted page without rerendering unchanged html", async () => {
+    vi.useFakeTimers()
+
+    let now = 0
+    vi.spyOn(Date, "now").mockImplementation(() => now)
+    const frameHandler = vi.fn(async () => {})
+    const setContent = vi.fn(async () => {})
+    const goto = vi.fn(async () => {})
+    const screenshot = vi.fn(async () => createDeckScreenshot(["#ff0000"]))
+    const renderer = createBrowserRenderer({
+      frameHandler,
+      keyCount: 1,
+      launcher: {
+        launch: async () => ({
+          close: async () => {},
+          newContext: async () => ({
+            close: async () => {},
+            newPage: async () => ({
+              goto,
+              screenshot,
+              setContent,
+              setViewportSize: async () => {},
+            }),
+          }),
+        }),
+      },
+      liveHardwareMode: true,
+    })
+
+    await renderer.start()
+    await renderer.updateDeck("<html><body>live</body></html>")
+    await renderer.captureKeyBuffers()
+
+    expect(goto).toHaveBeenCalledTimes(1)
+    expect(screenshot).toHaveBeenCalledTimes(1)
+    expect(frameHandler).toHaveBeenCalledTimes(1)
+    expect(frameHandler).toHaveBeenLastCalledWith({
+      buffers: expect.any(Map),
+      reason: "update",
+      version: 1,
+    })
+
+    now = LIVE_HARDWARE_CAPTURE_INTERVAL_MS - 1
+    await vi.advanceTimersByTimeAsync(LIVE_HARDWARE_CAPTURE_INTERVAL_MS - 1)
+    expect(goto).toHaveBeenCalledTimes(1)
+    expect(setContent).not.toHaveBeenCalled()
+    expect(screenshot).toHaveBeenCalledTimes(1)
+
+    now = LIVE_HARDWARE_CAPTURE_INTERVAL_MS
+    await vi.advanceTimersByTimeAsync(1)
+    await vi.waitFor(() => {
+      expect(screenshot).toHaveBeenCalledTimes(2)
+    })
+    await vi.waitFor(() => {
+      expect(frameHandler).toHaveBeenCalledTimes(2)
+    })
+
+    expect(goto).toHaveBeenCalledTimes(1)
+    expect(setContent).not.toHaveBeenCalled()
+    expect(frameHandler).toHaveBeenLastCalledWith({
+      buffers: expect.any(Map),
+      reason: "steady-state",
+      version: 1,
+    })
+  })
+
+  it("does not start steady-state captures in default mode after the first capture settles", async () => {
+    vi.useFakeTimers()
+
+    let now = 0
+    vi.spyOn(Date, "now").mockImplementation(() => now)
+    const setContent = vi.fn(async () => {})
+    const screenshot = vi.fn(async () => createDeckScreenshot(["#ff0000"]))
+    const renderer = createBrowserRenderer({
+      keyCount: 1,
+      launcher: {
+        launch: async () => ({
+          close: async () => {},
+          newContext: async () => ({
+            close: async () => {},
+            newPage: async () => ({
+              screenshot,
+              setContent,
+              setViewportSize: async () => {},
+            }),
+          }),
+        }),
+      },
+    })
+
+    await renderer.start()
+    await renderer.updateDeck("<html><body>one</body></html>")
+    await renderer.captureKeyBuffers()
+
+    now = LIVE_HARDWARE_CAPTURE_INTERVAL_MS * 2
+    await vi.advanceTimersByTimeAsync(LIVE_HARDWARE_CAPTURE_INTERVAL_MS * 2)
+
+    expect(screenshot).toHaveBeenCalledTimes(1)
+    expect(setContent).toHaveBeenCalledTimes(1)
   })
 
   it("captures file-backed local image assets on the real browser page path", async () => {
