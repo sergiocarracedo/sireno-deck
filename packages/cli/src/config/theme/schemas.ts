@@ -12,10 +12,10 @@ import { z } from 'zod'
 
 const ThemeTypographyRoleSchema = z
   .object({
-    'font-family': z.string().min(1),
+    fontFamily: z.string().min(1),
     fontSize: z.number().positive(),
-    'font-weight': z.number().int().positive(),
-    'letter-spacing': z.number().optional(),
+    fontWeight: z.number().int().positive(),
+    letterSpacing: z.number().optional(),
   })
   .strict()
 

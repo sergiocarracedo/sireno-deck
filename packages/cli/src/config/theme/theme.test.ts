@@ -29,20 +29,20 @@ function listThemeRuntimeSnapshots(): string[] {
 
 const typographyBlock = [
   'typography:',
-  '  main_text:',
-  '    font_family: "IBM Plex Sans"',
-  '    font_size: 12',
-  '    font_weight: 700',
-  '  auxiliary_text:',
-  '    font_family: "IBM Plex Sans"',
-  '    font_size: 8',
-  '    font_weight: 600',
-  '    letter_spacing: 1.2',
+  '  main-text:',
+  '    fontFamily: "IBM Plex Sans"',
+  '    fontSize: 12',
+  '    fontWeight: 700',
+  '  auxiliary-text:',
+  '    fontFamily: "IBM Plex Sans"',
+  '    fontSize: 8',
+  '    fontWeight: 600',
+  '    letterSpacing: 1.2',
   '  monospace:',
-  '    font_family: "IBM Plex Mono"',
-  '    font_size: 10',
-  '    font_weight: 700',
-  '    letter_spacing: 0.4',
+  '    fontFamily: "IBM Plex Mono"',
+  '    fontSize: 10',
+  '    fontWeight: 700',
+  '    letterSpacing: 0.4',
 ]
 
 const colorTokensBlock = [
@@ -50,6 +50,7 @@ const colorTokensBlock = [
   '  background: "#20252d"',
   '  frame: "#111827"',
   '  foreground: "#f5f7fa"',
+  '  foreground-contrast: "#1c1c1c"',
   '  primary: "#8b5cf6"',
   '  accent: "#14b8a6"',
   '  success: "#22c55e"',
@@ -83,7 +84,8 @@ describe('resolveTheme', () => {
 
     expect(theme.name).toBe('dark')
     expect(theme.foreground).toBe('#eef2f7')
-    expect(theme.typography?.main_text.font_family).toBe('IBM Plex Sans')
+    expect(theme.foregroundContrast).toBe('#1c1c1c')
+    expect(theme.typography?.mainText.fontFamily).toBe('IBM Plex Sans')
     expect(theme.buttonFrame).toBeTypeOf('function')
     expect(frame.props['data-sireno-button-frame']).toBe('true')
     expect(
@@ -208,7 +210,7 @@ describe('resolveTheme', () => {
     expect(theme.name).toBe('custom')
     expect(theme.accent).toBe('#14b8a6')
     expect(theme.frame).toBe('#111827')
-    expect(theme.typography?.monospace.font_family).toBe('IBM Plex Mono')
+    expect(theme.typography?.monospace.fontFamily).toBe('IBM Plex Mono')
     expect(theme.buttonFrame).toBeTypeOf('function')
     expect(theme.filePaths).toEqual(
       expect.arrayContaining([
@@ -429,11 +431,7 @@ describe('resolveTheme', () => {
     mkdirSync(customThemePath, { recursive: true })
     writeFileSync(
       join(customThemePath, 'manifest.yml'),
-      [
-        'name: custom',
-        'main: "./index.js"',
-        ...colorTokensBlock,
-      ].join('\n'),
+      ['name: custom', 'main: "./index.js"', ...colorTokensBlock].join('\n'),
     )
 
     const { resolveTheme } = await loadThemeModule()

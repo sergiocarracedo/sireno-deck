@@ -26,7 +26,7 @@ function formatTypographyRoleVariables(
   return [
     {
       name: `${CSS_VAR_PREFIX}-font-${roleName}-family`,
-      value: toFontFamilyValue(role.font_family),
+      value: toFontFamilyValue(role.fontFamily),
     },
     {
       name: `${CSS_VAR_PREFIX}-font-${roleName}-size`,
@@ -34,11 +34,11 @@ function formatTypographyRoleVariables(
     },
     {
       name: `${CSS_VAR_PREFIX}-font-${roleName}-weight`,
-      value: String(role.font_weight),
+      value: String(role.fontWeight),
     },
     {
       name: `${CSS_VAR_PREFIX}-font-${roleName}-tracking`,
-      value: `${role.letter_spacing ?? 0}px`,
+      value: `${role.letterSpacing ?? 0}px`,
     },
   ]
 }
