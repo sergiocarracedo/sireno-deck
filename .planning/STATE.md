@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 37 context captured. Config changes → full reloadRuntime; addon source changes → registry-diff path with 100ms debounce.
+**Current focus:** Phase 37 planning complete. Wave 1: `watchAddonSources` + `updateAddonRegistry`; Wave 2: CSS reload + structural fallback + tests. All three plans use vertical slices.
 
 ## Current Position
 
 Phase: 37 — Partial Rerender on Source Changes
-Plan: Not yet planned
-Status: context
-Last activity: 2026-06-03 - discuss-phase captured change classification, per-button invalidation scope, addon watching, and debounce strategy
+Plan: `37-01`, `37-02`, `37-03`
+Status: planning
+Last activity: 2026-06-03 - planned phase with 3 tracer-bullet plans (Wave 1: addon watcher + registry-diff, Wave 2: CSS reload + structural fallback, tests)
 
 Progress: [##########] 100%
 
