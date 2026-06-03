@@ -63,6 +63,7 @@ type MountedHostNode = MountedHostElementNode | MountedHostTextNode
 
 export interface MountedDomHost {
   render(node: ReactElement): void
+  reloadStylesheet(): void
   toHtml(): string
   unmount(): void
 }
@@ -335,6 +336,8 @@ export function createMountedDomHost(): MountedDomHost {
     unmount() {
       mountedHostReconciler.updateContainerSync(null, root, null, null)
       mountedHostReconciler.flushSyncWork()
+    },
+    reloadStylesheet() {
     },
   }
 }

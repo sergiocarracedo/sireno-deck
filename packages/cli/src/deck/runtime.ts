@@ -88,10 +88,13 @@ export interface DeckRuntime {
   getRenderButtons: () => RuntimeRenderButton[]
   getReservedBackKeyIndex: () => number
   getStackSnapshot: () => string[]
+  reloadStylesheet: () => void
+  requestFullReload: () => void
   restoreStack: (stackSnapshot?: readonly string[]) => Promise<void>
   showTemporaryErrorDeck: (detailLines: readonly string[]) => Promise<void>
   start: () => void
   stop: () => void
+  updateAddonRegistry: (registry: AddonRegistry) => void
 }
 
 interface RuntimeButtonHandle {
@@ -306,6 +309,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   let lockModeActive = false
   let stopped = false
   let temporaryErrorDeck: DeckConfig | null = null
+  let runningButtonTypes = new Set<string>()
+  let requestReloadCallback: (() => void) | null = null
 
   function getLockedSurfaceDeckId(): string {
     return options.lockedDeckId ?? IMPLICIT_LOCKED_DECK_ID
@@ -1257,6 +1262,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         options.sessionMonitor?.subscribe((snapshot) => {
           void handleSessionSnapshot(snapshot).catch(reportRuntimeError)
         }) ?? null
+      runningButtonTypes = new Set(options.addonRegistry.listButtons().map((b) => b.type))
       void activateDeckSurface().catch(reportRuntimeError)
     },
     stop() {
@@ -1278,6 +1284,31 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       addonStateStore.clear()
       buttonStateStore.clear()
       renderCache.clear()
+      runningButtonTypes.clear()
+    },
+    reloadStylesheet() {
+      for (const host of mountedDeckHosts.values()) {
+        host.reloadStylesheet()
+      }
+    },
+    requestFullReload() {
+      requestReloadCallback?.()
+    },
+    updateAddonRegistry(registry: AddonRegistry) {
+      const nextButtonTypes = new Set(registry.listButtons().map((b) => b.type))
+      const added = [...nextButtonTypes].filter((t) => !runningButtonTypes.has(t))
+      const removed = [...runningButtonTypes].filter((t) => !nextButtonTypes.has(t))
+      const isStructural = added.length > 0 || removed.length > 0
+      if (isStructural) {
+        logger.warn(
+          { added, removed },
+          'addon registry structural change detected — full restart required for addon additions/removals',
+        )
+        requestReloadCallback?.()
+        return
+      }
+      runningButtonTypes = nextButtonTypes
+      invalidateMountedStore()
     },
   }
 }

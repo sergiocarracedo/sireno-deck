@@ -34,6 +34,7 @@ export interface LoadedBootstrapConfig {
 
 export interface LoadedConfig {
   config: SirenoConfig
+  cwd: string
   filePath: string
   filePaths: string[]
 }
@@ -378,6 +379,7 @@ export function loadConfigWithSources(
     // Phase 5 bootstrap validation: load the addon registry before full button validation.
     return {
       config: validateConfig(interpolatedConfig, registry),
+      cwd: dirname(parsedConfig.filePath),
       filePath: parsedConfig.filePath,
       filePaths: parsedConfig.filePaths,
     }

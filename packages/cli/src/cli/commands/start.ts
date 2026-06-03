@@ -19,6 +19,7 @@ import {
 import { setDomAssetPathResolver } from '../../addon/api.js'
 import { loadConfiguredAddons } from '../../addon/loader.js'
 import { AddonManifestError } from '../../addon/manifest.js'
+import type { AddonRegistry } from '../../addon/registry.js'
 import {
   createBundledAddonRegistry,
   loadBootstrapConfig,
@@ -138,6 +139,7 @@ export async function loadRuntimeConfig(options: StartOptions) {
     return {
       config: loadedConfig.config,
       configDirectory: dirname(loadedConfig.filePath),
+      cwd: bootstrap.cwd,
       filePaths,
       hostContext,
       registry,
@@ -182,6 +184,44 @@ export function watchConfigFiles(
     for (const watcher of watchers) {
       watcher.close()
     }
+  }
+}
+
+const ADDON_RELOAD_DEBOUNCE_MS = 100
+
+export function watchAddonSources(
+  rootDir: string,
+  runtime: NonNullable<ReturnType<typeof createDeckRuntime>>,
+  registry: AddonRegistry,
+  onStylesheetChange: () => void,
+): () => void {
+  let addonReloadTimer: NodeJS.Timeout | undefined
+
+  function scheduleAddonReload(): void {
+    if (addonReloadTimer) {
+      clearTimeout(addonReloadTimer)
+    }
+
+    addonReloadTimer = setTimeout(() => {
+      addonReloadTimer = undefined
+      runtime.updateAddonRegistry(registry)
+    }, ADDON_RELOAD_DEBOUNCE_MS)
+  }
+
+  const watcher = watch(rootDir, { persistent: false, recursive: true }, (event, filename) => {
+    if (filename && /\.(css)$/i.test(filename)) {
+      onStylesheetChange()
+      return
+    }
+    scheduleAddonReload()
+  })
+
+  return () => {
+    if (addonReloadTimer) {
+      clearTimeout(addonReloadTimer)
+      addonReloadTimer = undefined
+    }
+    watcher.close()
   }
 }
 
@@ -978,6 +1018,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     | null = null
   let browserRenderer: BrowserRenderer | null = null
   let stopWatchingConfig = () => {}
+  let stopWatchingAddons = () => {}
   let lifecycle: ReturnType<typeof createStreamDeckLifecycle> | null = null
   let connection: NonNullable<
     ReturnType<ReturnType<typeof createStreamDeckLifecycle>['getConnection']>
@@ -1126,11 +1167,20 @@ export async function startDaemon(options: StartOptions): Promise<void> {
       )
 
       stopWatchingConfig()
+      stopWatchingAddons()
       stopWatchingConfig = watchConfigFiles(loadedConfig.filePaths, () => {
         void reloadRuntime().catch((error) => {
           logger.error({ error }, 'config reload failed')
         })
       })
+      stopWatchingAddons = watchAddonSources(
+        loadedConfig.cwd,
+        runtime,
+        loadedConfig.registry,
+        () => {
+          runtime.reloadStylesheet()
+        },
+      )
       logger.info(
         { filePaths: loadedConfig.filePaths },
         'reloaded config after file change',
@@ -1186,6 +1236,19 @@ export async function startDaemon(options: StartOptions): Promise<void> {
         logger.error({ error }, 'config reload failed')
       })
     })
+    stopWatchingAddons = watchAddonSources(
+      initialLoad.cwd,
+      runtime,
+      initialLoad.registry,
+      () => {
+        runtime.reloadStylesheet()
+      },
+    )
+    runtime.requestFullReload = () => {
+      void reloadRuntime().catch((error) => {
+        logger.error({ error }, 'addon structural reload failed')
+      })
+    }
 
     logger.info({ config: initialLoad.config }, 'config loaded successfully')
     logger.info(
@@ -1200,6 +1263,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     writePid()
     cleanupSignals = setupSignalHandlers(logger, async () => {
       stopWatchingConfig()
+      stopWatchingAddons()
       runtime?.stop()
       await browserRenderer?.close()
       await sessionMonitor?.stop()
@@ -1213,6 +1277,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
     cleanupSignals()
     stopWatchingConfig()
+    stopWatchingAddons()
     runtime?.stop()
     await browserRenderer?.close().catch(() => {})
     await Promise.resolve(sessionMonitor?.stop()).catch(() => {})
