@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 36 is complete. The `marquee` text overflow mode has been removed from the `TextFit` contract, its CSS animation stripped, and the media-player addon migrated to `ellipsis`.
+**Current focus:** Phase 37 context captured. Config changes → full reloadRuntime; addon source changes → registry-diff path with 100ms debounce.
 
 ## Current Position
 
-Phase: 36 — Remove Text Marquee
-Plan: `36-01`, `36-02`
-Status: complete
-Last activity: 2026-06-03 - Completed quick task 032: Rename font-size to fontSize in TypeScript code
+Phase: 37 — Partial Rerender on Source Changes
+Plan: Not yet planned
+Status: context
+Last activity: 2026-06-03 - discuss-phase captured change classification, per-button invalidation scope, addon watching, and debounce strategy
 
 Progress: [##########] 100%
 
