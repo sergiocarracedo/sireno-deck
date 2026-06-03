@@ -1,0 +1,38 @@
+.planning/phases/37-partial-rerender-on-source-changes/37-01-PLAN.md
+  s_5bb94676964533::t_60c19f9976a708 1-58
+.planning/phases/37-partial-rerender-on-source-changes/37-03-PLAN.md
+  s_5bb94676964533::t_6d0f25d57e504f 1-56
+.planning/phases/37-partial-rerender-on-source-changes/37-02-PLAN.md
+  s_5bb94676964533::t_3210dd72d39842 1-59
+.planning/phases/37-partial-rerender-on-source-changes/37-RESEARCH.md
+  s_35c779a4fb93f2::t_3b5c7e1a0924f4 1-305
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "00455fad99036db2e9bb578d7bfc2589acd21619",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_35c779a4fb93f2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_170a8f8acffedQP1bYcJGATVSd",
+        "model": "MiniMax-M2.7"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_5bb94676964533": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_170c8dfafffeQ79121GZrEzSK5",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
