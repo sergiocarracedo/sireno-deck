@@ -1,0 +1,30 @@
+.planning/STATE.md
+  s_43a1f95302eacf::t_c1b6871cb67cfa 12-13,15
+  s_43a1f95302eacf::t_fdcc152f6ebc6f 8
+  s_43a1f95302eacf::t_7cb442f78768a0 22
+.planning/ROADMAP.md
+  s_43a1f95302eacf::t_328cab530198ae 145,148
+.planning/phases/36-remove-text-marquee/36-VERIFICATION.md
+  s_43a1f95302eacf::t_d9b988b5fda369 1-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "14a5284e41217c8b4dc54327383ac1bdacb06660",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_43a1f95302eacf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1713bb85cffeuUVJXNOTOl6k4H",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
