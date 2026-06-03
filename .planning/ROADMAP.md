@@ -169,6 +169,15 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 ### Plans
 *Not yet planned — run `plan-phase 38`*
 
+### Phase 39: Themable Media Player Surface
+
+**Goal:** Let external themes override the `Surface` component used by the built-in media-player addon so they can render the button surface however they want.
+**Status:** [ ] Not started
+**Depends on:** Phase 36
+
+### Plans
+*Not yet planned — run `plan-phase 39`*
+
 ## Coverage Check
 
 | Requirement | Phase |
