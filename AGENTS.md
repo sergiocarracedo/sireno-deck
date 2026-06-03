@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.3 — Typography and Rich Formatting
-**Phase:** 35 — Live hardware resampling at 250ms
-**Status:** complete
+**Phase:** 36 — Remove Text Marquee
+**Status:** planning
 **Last updated:** 2026-06-03
 
 ---
