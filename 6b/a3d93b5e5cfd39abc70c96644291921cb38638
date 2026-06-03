@@ -1,0 +1,32 @@
+.planning/phases/35-live-hardware-resampling-at-250ms/35-01-PLAN.md
+  s_d8a76f591c3baf::t_11eabffdfb9fe9 1-74
+.planning/STATE.md
+  s_d8a76f591c3baf::t_644563829099a5 8,13-15,100
+.planning/phases/35-live-hardware-resampling-at-250ms/35-RESEARCH.md
+  s_d8a76f591c3baf::t_11eabffdfb9fe9 1-50
+.planning/ROADMAP.md
+  s_d8a76f591c3baf::t_644563829099a5 5,138,142-143
+.planning/phases/35-live-hardware-resampling-at-250ms/35-02-PLAN.md
+  s_d8a76f591c3baf::t_11eabffdfb9fe9 1-77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6ba3d93b5e5cfd39abc70c96644291921cb38638",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_d8a76f591c3baf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_175cd27c2ffeW4mFN1ilBeYzMI",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
