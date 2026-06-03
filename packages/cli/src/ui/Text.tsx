@@ -236,7 +236,7 @@ function renderTextChildren(
 }
 
 export type TextAlign = keyof typeof ALIGN_CLASS
-export type TextFit = 'ellipsis' | 'marquee' | 'shrink' | 'wrap'
+export type TextFit = 'ellipsis' | 'shrink' | 'wrap'
 export type TextTone = keyof typeof TONE_CLASS
 export type TextTypography = keyof typeof TYPOGRAPHY_CLASS
 export type TextSize = keyof typeof SIZE_CLASS
@@ -267,7 +267,6 @@ export function Text(props: TextProps): ReactElement {
     wrap: 'whitespace-normal break-words',
     ellipsis: 'overflow-hidden whitespace-nowrap text-ellipsis',
     shrink: 'sireno-text-fit-shrink whitespace-normal break-words',
-    marquee: 'sireno-text-fit-marquee overflow-hidden whitespace-nowrap',
   }
 
   const element = (
@@ -288,13 +287,7 @@ export function Text(props: TextProps): ReactElement {
       data-sireno-ui-text="true"
       style={props.style}
     >
-      {fit === 'marquee' ? (
-        <span className="sireno-marquee-track inline-block">
-          {renderedChildren}
-        </span>
-      ) : (
-        renderedChildren
-      )}
+      {renderedChildren}
     </div>
   )
 
