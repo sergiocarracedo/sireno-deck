@@ -199,10 +199,10 @@ const builtinMediaPlayerButton = defineMountedButton({
           </div>
 
           <div className="flex min-w-0 flex-col gap-0.5">
-            <Text align="left" fit="marquee" size="md" tone="primary">
+            <Text align="left" fit="ellipsis" size="md" tone="primary">
               {title}
             </Text>
-            <Text align="left" fit="marquee" size="sm" tone="foreground">
+            <Text align="left" fit="ellipsis" size="sm" tone="foreground">
               {artist}
             </Text>
           </div>
