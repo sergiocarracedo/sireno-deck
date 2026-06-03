@@ -12,22 +12,23 @@ colorTokens:
   background: '#2e3540'
   frame: '#53738B'
   foreground: '#eef2f7'
+  foreground-contrast: '#000000'
   primary: '#7dd3fc'
   accent: '#C3F5FF'
   success: '#34d399'
   danger: '#FFB4AB'
 typography:
   main_text:
-    font_family: 'IBM Plex Sans'
-    font_size: 12
-    font_weight: 100
+    font-family: 'IBM Plex Sans'
+    fontSize: 12
+    font-weight: 100
   auxiliary_text:
-    font_family: 'IBM Plex Sans'
-    font_size: 8
-    font_weight: 300
-    letter_spacing: 1.2
+    font-family: 'IBM Plex Sans'
+    fontSize: 8
+    font-weight: 300
+    letter-spacing: 1.2
   monospace:
-    font_family: 'IBM Plex Mono'
-    font_size: 10
-    font_weight: 300
-    letter_spacing: 0.4
+    font-family: 'IBM Plex Mono'
+    fontSize: 10
+    font-weight: 300
+    letter-spacing: 0.4
