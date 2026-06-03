@@ -21,7 +21,7 @@ export interface ThemeChipProps {
 export interface ThemeTextProps {
   align: 'center' | 'left' | 'right'
   children: ReactElement
-  fit: 'ellipsis' | 'marquee' | 'shrink' | 'wrap'
+  fit: 'ellipsis' | 'shrink' | 'wrap'
   size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
   tone: 'accent' | 'danger' | 'foreground' | 'primary' | 'success'
   typography: 'aux' | 'main' | 'mono'
