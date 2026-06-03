@@ -911,7 +911,7 @@ describe('ensureBrowserRenderer', () => {
       throw new Error('missing chromium')
     })
     const close = vi.fn(async () => {})
-    createBrowserRenderer.mockReturnValue({ close, start })
+    createBrowserRenderer.mockReturnValue({ close, setFrameHandler: vi.fn(), start })
 
     const { ensureBrowserRenderer } = await import('./start.js')
 
@@ -933,6 +933,7 @@ describe('renderRuntimeDeckSurface', () => {
     const browserRenderer = {
       captureKeyBuffers: vi.fn(),
       close: vi.fn(),
+      setFrameHandler: vi.fn(),
       start: vi.fn(),
       updateDeck: vi.fn(),
     }
@@ -967,6 +968,7 @@ describe('renderRuntimeDeckSurface', () => {
       captureKeyBuffers: vi.fn(async () => new Map([[0, Buffer.from('dom')]])),
       close: vi.fn(),
       start: vi.fn(),
+      setFrameHandler: vi.fn(),
       updateDeck: vi.fn(async () => {}),
     }
     const connection = { info: { keyCount: 1 } }
@@ -1048,6 +1050,7 @@ describe('startDaemon', () => {
     })
     createBrowserRenderer.mockReturnValue({
       close: vi.fn(async () => {}),
+      setFrameHandler: vi.fn(),
       start: vi.fn(async () => {
         throw new Error('missing chromium')
       }),
@@ -1133,6 +1136,7 @@ describe('startDaemon', () => {
     })
     createBrowserRenderer.mockReturnValue({
       close: vi.fn(async () => {}),
+      setFrameHandler: vi.fn(),
       start: vi.fn(async () => {
         throw new Error('missing chromium')
       }),
@@ -1174,6 +1178,7 @@ describe('startDaemon', () => {
       ),
       close: vi.fn(async () => {}),
       start: vi.fn(async () => {}),
+      setFrameHandler: vi.fn(),
       updateDeck: vi.fn(async () => {}),
     }
     createStartupPlaceholderBuffers.mockResolvedValue(
@@ -1264,6 +1269,124 @@ describe('startDaemon', () => {
     expect(connection.device.clearPanel).not.toHaveBeenCalled()
   })
 
+  it('keeps writing later live browser-renderer frames without a second html update', async () => {
+    const stopAfterSteadyFrame = new Error('stop after steady frame')
+    const connection = {
+      device: { clearPanel: vi.fn(async () => {}) },
+      info: { keyCount: 1, model: 'Mini', serialNumber: 'mini-live' },
+    }
+    const lifecycle = {
+      close: vi.fn(async () => {}),
+      getConnection: vi.fn(() => connection),
+      start: vi.fn(async () => connection),
+      subscribeKeyEvents: vi.fn(() => () => {}),
+    }
+    const browserRenderer = {
+      captureKeyBuffers: vi.fn(async () => new Map([[0, Buffer.from('render-0')]])),
+      close: vi.fn(async () => {}),
+      keyCount: 1,
+      setFrameHandler: vi.fn(),
+      start: vi.fn(async () => {}),
+      updateDeck: vi.fn(async () => {}),
+    }
+    const sessionMonitor = {
+      getSnapshot: vi.fn(() => ({ capability: 'supported', state: 'unknown' })),
+      stop: vi.fn(async () => {}),
+      subscribe: vi.fn(() => () => {}),
+    }
+    createStartupPlaceholderBuffers.mockResolvedValue(
+      new Map([[0, Buffer.from('placeholder-0')]]),
+    )
+    createStreamDeckLifecycle.mockReturnValue(lifecycle)
+    createBrowserRenderer.mockReturnValue(browserRenderer)
+    createSessionMonitor.mockResolvedValue(sessionMonitor)
+    resolveHostContext.mockResolvedValue({
+      os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+      session: { capability: 'supported', state: 'unknown' },
+    })
+    loadBootstrapConfig.mockReturnValue({
+      config: { addons: [] },
+      cwd: '/tmp/project',
+      filePath: '/tmp/project/config.yml',
+    })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    loadConfigWithSources.mockReturnValue({
+      config: {
+        decks: {
+          main: {
+            buttons: [
+              {
+                config: { label: 'Clock' },
+                definition: {
+                  configSchema: {
+                    parse: (value: unknown) => value,
+                    safeParse: (value: unknown) => ({
+                      data: value,
+                      success: true as const,
+                    }),
+                  },
+                  render: () => createElement('div', null, 'Clock'),
+                  type: 'dom-button',
+                },
+                label: 'Clock',
+                position: 0,
+                type: 'dom-button',
+              },
+            ],
+            id: 'main',
+          },
+        },
+        main_deck: 'main',
+        theme: 'dark',
+      },
+      filePath: '/tmp/project/config.yml',
+      filePaths: ['/tmp/project/config.yml'],
+    })
+    resolveTheme.mockResolvedValue({
+      accent: '#f59e0b',
+      background: '#10161f',
+      buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
+      danger: '#fb7185',
+      filePaths: ['/tmp/project/themes/default/index.ts'],
+      foreground: '#eef2f7',
+      name: 'dark',
+      primary: '#7dd3fc',
+      rootDir: '/tmp/project/themes/default',
+      stylesheets: [],
+      success: '#34d399',
+    })
+    writePid.mockImplementation(() => {
+      throw stopAfterSteadyFrame
+    })
+
+    const { startDaemon } = await import('./start.js')
+
+    await expect(
+      startDaemon({
+        logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as never,
+      }),
+    ).rejects.toThrow(stopAfterSteadyFrame.message)
+
+    const frameHandler = browserRenderer.setFrameHandler.mock.calls[0]?.[0] as
+      | ((frame: { buffers: Map<number, Buffer> }) => Promise<void>)
+      | undefined
+    expect(frameHandler).toBeTypeOf('function')
+
+    await frameHandler?.({
+      buffers: new Map([[0, Buffer.from('steady-0')]]),
+      reason: 'steady-state',
+      version: 1,
+    })
+
+    expect(browserRenderer.updateDeck).toHaveBeenCalledTimes(1)
+    expect(browserRenderer.captureKeyBuffers).toHaveBeenCalledTimes(1)
+    expect(writeKeyBuffer.mock.calls.map((call) => call[2])).toEqual([
+      Buffer.from('placeholder-0'),
+      Buffer.from('render-0'),
+      Buffer.from('steady-0'),
+    ])
+  })
+
   it('clears the placeholder if the first real render fails', async () => {
     const connection = {
       device: { clearPanel: vi.fn(async () => {}) },
@@ -1285,6 +1408,7 @@ describe('startDaemon', () => {
         throw new Error('capture failed')
       }),
       close: vi.fn(async () => {}),
+      setFrameHandler: vi.fn(),
       start: vi.fn(async () => {}),
       updateDeck: vi.fn(async () => {}),
     }
@@ -1394,6 +1518,7 @@ describe('startEmulatorSession', () => {
     }
     const browserRenderer = {
       close: vi.fn(async () => {}),
+      setFrameHandler: vi.fn(),
       start: vi.fn(async () => {}),
       updateDeck: vi.fn(async () => {}),
     }
@@ -1540,6 +1665,7 @@ describe('startEmulatorSession', () => {
     createVirtualStreamDeckLifecycle.mockReturnValue(lifecycle)
     createBrowserRenderer.mockReturnValue({
       close: vi.fn(async () => {}),
+      setFrameHandler: vi.fn(),
       start: vi.fn(async () => {}),
       updateDeck: vi.fn(async () => {}),
     })
@@ -1682,6 +1808,7 @@ describe('startEmulatorSession', () => {
     createVirtualStreamDeckLifecycle.mockReturnValue(lifecycle)
     createBrowserRenderer.mockReturnValue({
       close: vi.fn(async () => {}),
+      setFrameHandler: vi.fn(),
       start: vi.fn(async () => {}),
       updateDeck: vi.fn(async () => {}),
     })
@@ -1848,6 +1975,7 @@ describe('startEmulatorSession', () => {
     createVirtualStreamDeckLifecycle.mockReturnValue(lifecycle)
     createBrowserRenderer.mockReturnValue({
       close: vi.fn(async () => {}),
+      setFrameHandler: vi.fn(),
       start: vi.fn(async () => {}),
       updateDeck: vi.fn(async () => {}),
     })
@@ -2131,12 +2259,25 @@ describe('startEmulatorSession', () => {
     )
 
     expect(moduleSource).toContain(
-      'createDeckHtml(connection.info.keyCount, deckButtons, theme, undefined, false)',
+      'connection.info.keyCount,',
     )
-    expect(moduleSource).toContain('}, true)')
     expect(moduleSource).toContain(
-      'buttons.filter(isDomRenderButton), loadedConfig.theme, undefined, true',
+      'deckButtons,',
     )
+    expect(moduleSource).toContain(
+      'theme,',
+    )
+    expect(moduleSource).toContain(
+      'undefined,',
+    )
+    expect(moduleSource).toContain(
+      'false,',
+    )
+    expect(moduleSource).toContain('buttons.filter(isDomRenderButton),')
+    expect(moduleSource).toContain(
+      'loadedConfig.theme,',
+    )
+    expect(moduleSource).toContain('true,')
   })
 
   it('ships emulator deck patching that removes stale non-key children like inline warnings', async () => {
@@ -2325,6 +2466,7 @@ describe('startEmulatorSession', () => {
     const renderer = {
       close: vi.fn(async () => {}),
       keyCount: 15,
+      setFrameHandler: vi.fn(),
       start: vi.fn(async () => {}),
       updateDeck: vi.fn(async () => {}),
     }
@@ -2428,12 +2570,14 @@ describe('startEmulatorSession', () => {
     const renderer = {
       close: vi.fn(async () => {}),
       keyCount: 15,
+      setFrameHandler: vi.fn(),
       start: vi.fn(async () => {}),
       updateDeck: vi.fn(async () => {}),
     }
     const smallRenderer = {
       close: vi.fn(async () => {}),
       keyCount: 6,
+      setFrameHandler: vi.fn(),
       start: vi.fn(async () => {}),
       updateDeck: vi.fn(async () => {}),
     }

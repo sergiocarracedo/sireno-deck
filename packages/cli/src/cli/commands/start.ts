@@ -55,6 +55,7 @@ import {
 import { formatConfigError } from '../../util/errors.js'
 
 import type { BrowserRenderer } from '../../render/browser-renderer.js'
+import type { BrowserRendererFrame, BrowserRendererFrameHandler } from '../../render/browser-renderer.js'
 
 export interface StartOptions {
   config?: string
@@ -274,8 +275,13 @@ function createDeckHtml(
 export async function ensureBrowserRenderer(
   browserRenderer: BrowserRenderer | null,
   keyCount: number,
+  options: {
+    frameHandler?: BrowserRendererFrameHandler
+    liveHardwareMode?: boolean
+  } = {},
 ): Promise<BrowserRenderer> {
   if (browserRenderer?.keyCount === keyCount) {
+    if (options.frameHandler) browserRenderer.setFrameHandler(options.frameHandler)
     return browserRenderer
   }
 
@@ -283,7 +289,12 @@ export async function ensureBrowserRenderer(
     await browserRenderer.close().catch(() => {})
   }
 
-  const nextBrowserRenderer = createBrowserRenderer({ keyCount })
+  const nextBrowserRenderer = createBrowserRenderer({
+    ...(options.frameHandler ? { frameHandler: options.frameHandler } : {}),
+    keyCount,
+    ...(options.liveHardwareMode ? { liveHardwareMode: true } : {}),
+  })
+  if (options.frameHandler) nextBrowserRenderer.setFrameHandler(options.frameHandler)
   try {
     await nextBrowserRenderer.start()
     return nextBrowserRenderer
@@ -330,6 +341,17 @@ async function renderDomDeckSurface(
     },
     'rendered browser-backed main deck',
   )
+}
+
+async function writeBrowserRendererFrame(
+  connection: NonNullable<
+    ReturnType<ReturnType<typeof createStreamDeckLifecycle>['getConnection']>
+  >,
+  frame: BrowserRendererFrame,
+): Promise<void> {
+  for (const [keyIndex, buffer] of frame.buffers.entries()) {
+    await writeKeyBuffer(connection, keyIndex, buffer)
+  }
 }
 
 async function writePlaceholderDeckSurface(
@@ -1003,11 +1025,23 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     connection = await lifecycle.start()
     const activeLifecycle = lifecycle
     const activeConnection = connection
+    const renderHardwareFrame: BrowserRendererFrameHandler = async (frame) => {
+      const currentConnection = activeLifecycle.getConnection()
+      if (!currentConnection) {
+        return
+      }
+
+      await writeBrowserRendererFrame(currentConnection, frame)
+    }
     startupPlaceholderPending = true
     await writePlaceholderDeckSurface(activeConnection)
     browserRenderer = await ensureBrowserRenderer(
       browserRenderer,
       activeConnection.info.keyCount,
+      {
+        frameHandler: renderHardwareFrame,
+        liveHardwareMode: true,
+      },
     )
 
     setDomAssetPathResolver((assetReference) =>
