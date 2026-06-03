@@ -114,6 +114,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 36 context captured (discuss-phase): remove marquee from TextFit, migrate media-player to ellipsis, narrow theme frame contract.
 - Phase 36 added: remove the text marquee overflow mode because it requires very frequent rapid updates that are too expensive to sustain.
 - Phase 35 added: keep browser-rendered animated button surfaces live on physical Stream Deck hardware by resampling the mounted deck surface at roughly 250ms cadence without restarting the page on every frame.
 - Phase 34 added: create a common interface addon buttons can optionally implement to handle button-action system commands (`tap`, `hold`, `double-tap`) through a shared schema and hook, refactoring action-button and date-time buttons onto the pattern while keeping media-player internal.
