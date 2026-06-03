@@ -111,7 +111,7 @@ describe('media-player addon', () => {
     })
   })
 
-  it('loads the bundled media-player through the real registry and renders shared progress plus marquee metadata', async () => {
+  it('loads the bundled media-player through the real registry and renders shared progress plus ellipsis metadata', async () => {
     getSnapshotMock.mockResolvedValue({
       app: 'Spotify',
       artist: 'Massive Attack',
@@ -151,7 +151,7 @@ describe('media-player addon', () => {
 
     expect(createMediaControllerMock).toHaveBeenCalled()
     expect(html).toContain('data-sireno-ui-bars="true"')
-    expect(html).toContain('data-sireno-text-fit="marquee"')
+    expect(html).toContain('data-sireno-text-fit="ellipsis"')
     expect(html).toContain('Teardrop')
     expect(html).toContain('Massive Attack')
     expect(html).toContain('Spotify')

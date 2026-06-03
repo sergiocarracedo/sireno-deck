@@ -76,7 +76,7 @@ describe('resolveTheme', () => {
     const themedText = theme.ui?.text?.({
       align: 'center',
       children: createElement('span', { 'data-proof': 'text' }),
-      fit: 'marquee',
+      fit: 'ellipsis',
       tone: 'primary',
       typography: 'main',
     })
