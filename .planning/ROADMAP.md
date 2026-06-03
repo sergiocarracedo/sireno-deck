@@ -142,10 +142,10 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 - [x] 35-01: Keep the physical hardware deck live between HTML changes
 - [x] 35-02: Harden live hardware resampling across placeholder, reload, and reconnect edges
 
-### Phase 36: Remove Text Marquee
+### Phase 36: Remove Text Marquee ✓ Complete (2026-06-03)
 
 **Goal:** Remove the `marquee` text overflow mode because it requires very frequent rapid updates that are too expensive to sustain.
-**Status:** [ ] Not started
+**Status:** [x] Complete (2026-06-03)
 **Depends on:** Phase 35
 
 ### Plans

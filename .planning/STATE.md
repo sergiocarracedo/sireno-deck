@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 35 is complete. Live hardware resampling now keeps mounted browser pages alive at ~250ms on physical Stream Deck hardware, with placeholder, reconnect, and runtime replacement edge hardening in place.
+**Current focus:** Phase 36 is complete. The `marquee` text overflow mode has been removed from the `TextFit` contract, its CSS animation stripped, and the media-player addon migrated to `ellipsis`.
 
 ## Current Position
 
-Phase: 35 — Live hardware resampling at 250ms
-Plan: `35-01`, `35-02`
+Phase: 36 — Remove Text Marquee
+Plan: `36-01`, `36-02`
 Status: complete
-Last activity: 2026-06-03 - Completed Phase 35 live hardware resampling at 250ms
+Last activity: 2026-06-03 - Completed Phase 36 remove text marquee
 
 Progress: [##########] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 23
+- Total plans completed: 25
 - Average duration: 1 session
 - Total execution time: 1 session
 
