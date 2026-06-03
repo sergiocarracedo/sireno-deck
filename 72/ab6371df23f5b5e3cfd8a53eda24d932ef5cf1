@@ -1,0 +1,26 @@
+.planning/phases/37-partial-rerender-on-source-changes/37-CONTEXT.md
+  s_5bb94676964533::t_06eee764c0792e 1-95
+.planning/phases/37-partial-rerender-on-source-changes/37-DISCUSSION-LOG.md
+  s_5bb94676964533::t_c5a2d59375f92a 1-68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "72ab6371df23f5b5e3cfd8a53eda24d932ef5cf1",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_5bb94676964533": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_170c8dfafffeQ79121GZrEzSK5",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
