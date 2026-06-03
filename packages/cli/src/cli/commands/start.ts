@@ -1031,7 +1031,11 @@ export async function startDaemon(options: StartOptions): Promise<void> {
         return
       }
 
-      await writeBrowserRendererFrame(currentConnection, frame)
+      try {
+        await writeBrowserRendererFrame(currentConnection, frame)
+      } catch (error) {
+        logger.error({ error, reason: frame.reason }, "failed to deliver live hardware frame")
+      }
     }
     startupPlaceholderPending = true
     await writePlaceholderDeckSurface(activeConnection)

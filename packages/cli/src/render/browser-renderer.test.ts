@@ -423,6 +423,57 @@ describe("browser renderer", () => {
     expect(buffers.get(14)?.subarray(0, 3)).toEqual(Buffer.from([204, 204, 204]))
   })
 
+  it("stops steady-state captures after close() in live hardware mode", async () => {
+    vi.useFakeTimers()
+    const now = vi.spyOn(Date, "now").mockReturnValue(0)
+    const frameHandler = vi.fn(async () => {})
+    const setContent = vi.fn(async () => {})
+    const screenshot = vi.fn(async () => createDeckScreenshot(["#ff0000"]))
+    const closePage = vi.fn(async () => {})
+    const closeContext = vi.fn(async () => {})
+    const closeBrowser = vi.fn(async () => {})
+
+    const renderer = createBrowserRenderer({
+      keyCount: 1,
+      launcher: {
+        launch: async () => ({
+          close: closeBrowser,
+          newContext: async () => ({
+            close: closeContext,
+            newPage: async () => ({
+              close: closePage,
+              screenshot,
+              setContent,
+              setViewportSize: async () => {},
+            }),
+          }),
+        }),
+      },
+      frameHandler,
+      liveHardwareMode: true,
+    })
+
+    await renderer.start()
+    await renderer.updateDeck("<html><body>live</body></html>")
+    await renderer.captureKeyBuffers()
+
+    expect(frameHandler).toHaveBeenCalledTimes(1)
+
+    now.mockReturnValue(LIVE_HARDWARE_CAPTURE_INTERVAL_MS)
+    vi.advanceTimersToNextTimer()
+    await vi.waitFor(() => expect(screenshot).toHaveBeenCalledTimes(2))
+    await vi.waitFor(() => expect(frameHandler).toHaveBeenCalledTimes(2))
+
+    await renderer.close()
+
+    now.mockReturnValue(LIVE_HARDWARE_CAPTURE_INTERVAL_MS * 2)
+    vi.advanceTimersToNextTimer()
+    await vi.runAllTimers()
+
+    expect(frameHandler).toHaveBeenCalledTimes(2)
+    expect(closePage).toHaveBeenCalled()
+  })
+
   it("exposes stable supported virtual device shapes for the emulator selector", () => {
     expect(getVirtualDeckDevices()).toEqual([
       { keyCount: 1, label: "Stream Deck Pedal" },

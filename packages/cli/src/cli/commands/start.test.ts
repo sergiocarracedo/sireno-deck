@@ -1488,6 +1488,205 @@ describe('startDaemon', () => {
     expect(sessionMonitor.stop).toHaveBeenCalledTimes(1)
     expect(lifecycle.close).toHaveBeenCalledTimes(1)
   })
+
+  it('delivers live frames to the current connection after device reconnects', async () => {
+    const firstDevice = { fillKeyBuffer: vi.fn(async () => {}), clearPanel: vi.fn(async () => {}) }
+    const secondDevice = { fillKeyBuffer: vi.fn(async () => {}), clearPanel: vi.fn(async () => {}) }
+    const firstConnection = { device: firstDevice, info: { keyCount: 1, model: 'Mini', serialNumber: 'mini-rc' } }
+    const secondConnection = { device: secondDevice, info: { keyCount: 1, model: 'Mini', serialNumber: 'mini-rc' } }
+    let currentConn = firstConnection
+
+    const lifecycle = {
+      close: vi.fn(async () => {}),
+      getConnection: vi.fn(() => currentConn),
+      start: vi.fn(async () => firstConnection),
+      subscribeKeyEvents: vi.fn(() => () => {}),
+    }
+    const stopAfterFirstFrame = new Error('stop after first frame')
+    const sessionMonitor = {
+      getSnapshot: vi.fn(() => ({ capability: 'supported', state: 'unknown' })),
+      stop: vi.fn(async () => {}),
+      subscribe: vi.fn(() => () => {}),
+    }
+    const browserRenderer = {
+      captureKeyBuffers: vi.fn(async () => new Map([[0, Buffer.from('first')]])),
+      close: vi.fn(async () => {}),
+      keyCount: 1,
+      setFrameHandler: vi.fn(),
+      start: vi.fn(async () => {}),
+      updateDeck: vi.fn(async () => {}),
+    }
+
+    createStartupPlaceholderBuffers.mockResolvedValue(new Map([[0, Buffer.from('placeholder')]]))
+    createStreamDeckLifecycle.mockReturnValue(lifecycle)
+    createBrowserRenderer.mockReturnValue(browserRenderer)
+    createSessionMonitor.mockResolvedValue(sessionMonitor)
+    resolveHostContext.mockResolvedValue({
+      os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+      session: { capability: 'supported', state: 'unknown' },
+    })
+    loadBootstrapConfig.mockReturnValue({
+      config: { addons: [] },
+      cwd: '/tmp/project',
+      filePath: '/tmp/project/config.yml',
+    })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    loadConfigWithSources.mockReturnValue({
+      config: {
+        decks: {
+          main: {
+            buttons: [
+              {
+                config: { label: 'Btn' },
+                definition: {
+                  configSchema: { parse: (v: unknown) => v, safeParse: (v: unknown) => ({ data: v, success: true as const }) },
+                  render: () => createElement('div', null, 'Btn'),
+                  type: 'dom-button',
+                },
+                label: 'Btn',
+                position: 0,
+                type: 'dom-button',
+              },
+            ],
+            id: 'main',
+          },
+        },
+        main_deck: 'main',
+        theme: 'dark',
+      },
+      filePath: '/tmp/project/config.yml',
+      filePaths: ['/tmp/project/config.yml'],
+    })
+    resolveTheme.mockResolvedValue({
+      accent: '#f59e0b',
+      background: '#10161f',
+      buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
+      danger: '#fb7185',
+      filePaths: ['/tmp/project/themes/default/index.ts'],
+      foreground: '#eef2f7',
+      name: 'dark',
+      primary: '#7dd3fc',
+      rootDir: '/tmp/project/themes/default',
+      stylesheets: [],
+      success: '#34d399',
+    })
+    writePid.mockImplementation(() => { throw stopAfterFirstFrame })
+
+    const { startDaemon } = await import('./start.js')
+
+    await expect(startDaemon({ logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as never })).rejects.toThrow(stopAfterFirstFrame.message)
+
+    const frameHandler = browserRenderer.setFrameHandler.mock.calls[0]?.[0] as
+      | ((frame: { buffers: Map<number, Buffer>; reason: string; version: number }) => Promise<void>)
+      | undefined
+    expect(frameHandler).toBeTypeOf('function')
+
+    expect(writeKeyBuffer.mock.calls.length).toBeGreaterThan(0)
+    const firstConnectionCalls = writeKeyBuffer.mock.calls.length
+
+    currentConn = secondConnection
+
+    await frameHandler?.({ buffers: new Map([[0, Buffer.from('post-reconnect')]]), reason: 'steady-state', version: 1 })
+
+    expect(writeKeyBuffer.mock.calls.length).toBeGreaterThan(firstConnectionCalls)
+  })
+
+  it('keeps delivering live frames after runtime replacement', async () => {
+    const device = { fillKeyBuffer: vi.fn(async () => {}), clearPanel: vi.fn(async () => {}) }
+    const connection = { device, info: { keyCount: 1, model: 'Mini', serialNumber: 'mini-rr' } }
+
+    const lifecycle = {
+      close: vi.fn(async () => {}),
+      getConnection: vi.fn(() => connection),
+      start: vi.fn(async () => connection),
+      subscribeKeyEvents: vi.fn(() => () => {}),
+    }
+    const stopAfterFirstFrame = new Error('stop after first frame')
+    const sessionMonitor = {
+      getSnapshot: vi.fn(() => ({ capability: 'supported', state: 'unknown' })),
+      stop: vi.fn(async () => {}),
+      subscribe: vi.fn(() => () => {}),
+    }
+    const browserRenderer = {
+      captureKeyBuffers: vi.fn(async () => new Map([[0, Buffer.from('render')]])),
+      close: vi.fn(async () => {}),
+      keyCount: 1,
+      setFrameHandler: vi.fn(),
+      start: vi.fn(async () => {}),
+      updateDeck: vi.fn(async () => {}),
+    }
+
+    createStartupPlaceholderBuffers.mockResolvedValue(new Map([[0, Buffer.from('placeholder')]]))
+    createStreamDeckLifecycle.mockReturnValue(lifecycle)
+    createBrowserRenderer.mockReturnValue(browserRenderer)
+    createSessionMonitor.mockResolvedValue(sessionMonitor)
+    resolveHostContext.mockResolvedValue({
+      os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+      session: { capability: 'supported', state: 'unknown' },
+    })
+    loadBootstrapConfig.mockReturnValue({
+      config: { addons: [] },
+      cwd: '/tmp/project',
+      filePath: '/tmp/project/config.yml',
+    })
+    loadConfiguredAddons.mockResolvedValue({ loaded: [], warnings: [] })
+    loadConfigWithSources.mockReturnValue({
+      config: {
+        decks: {
+          main: {
+            buttons: [
+              {
+                config: { label: 'Btn' },
+                definition: {
+                  configSchema: { parse: (v: unknown) => v, safeParse: (v: unknown) => ({ data: v, success: true as const }) },
+                  render: () => createElement('div', null, 'Btn'),
+                  type: 'dom-button',
+                },
+                label: 'Btn',
+                position: 0,
+                type: 'dom-button',
+              },
+            ],
+            id: 'main',
+          },
+        },
+        main_deck: 'main',
+        theme: 'dark',
+      },
+      filePath: '/tmp/project/config.yml',
+      filePaths: ['/tmp/project/config.yml'],
+    })
+    resolveTheme.mockResolvedValue({
+      accent: '#f59e0b',
+      background: '#10161f',
+      buttonFrame: vi.fn(({ children }: { children: unknown }) => children),
+      danger: '#fb7185',
+      filePaths: ['/tmp/project/themes/default/index.ts'],
+      foreground: '#eef2f7',
+      name: 'dark',
+      primary: '#7dd3fc',
+      rootDir: '/tmp/project/themes/default',
+      stylesheets: [],
+      success: '#34d399',
+    })
+    writePid.mockImplementation(() => { throw stopAfterFirstFrame })
+
+    const { startDaemon } = await import('./start.js')
+
+    await expect(startDaemon({ logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as never })).rejects.toThrow(stopAfterFirstFrame.message)
+
+    const frameHandler = browserRenderer.setFrameHandler.mock.calls[0]?.[0] as
+      | ((frame: { buffers: Map<number, Buffer>; reason: string; version: number }) => Promise<void>)
+      | undefined
+    expect(frameHandler).toBeTypeOf('function')
+
+    const callsBefore = writeKeyBuffer.mock.calls.length
+
+    await frameHandler?.({ buffers: new Map([[0, Buffer.from('post-reload')]]), reason: 'steady-state', version: 2 })
+
+    expect(writeKeyBuffer.mock.calls.length).toBe(callsBefore + 1)
+    expect(writeKeyBuffer.mock.calls.at(-1)?.[2]).toEqual(Buffer.from('post-reload'))
+  })
 })
 
 describe('startEmulatorSession', () => {
