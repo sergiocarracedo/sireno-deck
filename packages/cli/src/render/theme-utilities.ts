@@ -30,7 +30,7 @@ function formatTypographyRoleVariables(
     },
     {
       name: `${CSS_VAR_PREFIX}-font-${roleName}-size`,
-      value: `${role.font_size}px`,
+      value: `${role.fontSize}px`,
     },
     {
       name: `${CSS_VAR_PREFIX}-font-${roleName}-weight`,

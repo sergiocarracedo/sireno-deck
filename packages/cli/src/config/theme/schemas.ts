@@ -12,10 +12,10 @@ import { z } from 'zod'
 
 const ThemeTypographyRoleSchema = z
   .object({
-    font_family: z.string().min(1),
-    font_size: z.number().positive(),
-    font_weight: z.number().int().positive(),
-    letter_spacing: z.number().optional(),
+    'font-family': z.string().min(1),
+    fontSize: z.number().positive(),
+    'font-weight': z.number().int().positive(),
+    'letter-spacing': z.number().optional(),
   })
   .strict()
 
@@ -29,6 +29,7 @@ export const colorTokens = [
   'accent',
   'danger',
   'foreground',
+  'foreground-contrast',
   'primary',
   'success',
   'background',
@@ -111,7 +112,6 @@ export interface Theme extends Omit<ThemeSchemaOutput, 'typography'> {
   buttonFrame: ThemeButtonFrame
   danger: string
   filePaths: string[]
-  foreground: string
   frame: string
   primary: string
   rootDir: string
