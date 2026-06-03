@@ -114,6 +114,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 38 added: make the Stream Deck startup image cover 100% of the device surface instead of being centered.
 - Phase 37 added: reload only the affected buttons in watch mode when config or addon JSX/TSX/CSS source files change, instead of restarting the full app.
 - Phase 36 context captured (discuss-phase): remove marquee from TextFit, migrate media-player to ellipsis, narrow theme frame contract.
 - Phase 36 added: remove the text marquee overflow mode because it requires very frequent rapid updates that are too expensive to sustain.
