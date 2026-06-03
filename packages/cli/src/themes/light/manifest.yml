@@ -2,25 +2,25 @@ name: light
 main: ./index.js
 version: 0.1.0
 description: The light theme for Sireno Deck.
-background: "#e8edf4"
-foreground: "#16202b"
-primary: "#2563eb"
-accent: "#c2410c"
-success: "#059669"
-danger: "#dc2626"
+background: '#e8edf4'
+foreground: '#16202b'
+primary: '#2563eb'
+accent: '#c2410c'
+success: '#059669'
+danger: '#dc2626'
 typography:
-  main_text:
-    font_family: "Dejavu Sans"
-    font_size: 15
-    font_weight: 500
-    letter_spacing: 1.4
-  auxiliary_text:
-    font_family: "Dejavu Sans"
-    font_size: 9
-    font_weight: 700
-    letter_spacing: 2.2
+  main-text:
+    fontFamily: 'Dejavu Sans'
+    fontSize: 15
+    fontWeight: 500
+    letterSpacing: 1.4
+  auxiliary-text:
+    fontFamily: 'Dejavu Sans'
+    fontSize: 9
+    fontWeight: 700
+    letterSpacing: 2.2
   monospace:
-    font_family: "Dejavu Sans"
-    font_size: 11
-    font_weight: 600
-    letter_spacing: 1.2
+    fontFamily: 'Dejavu Sans'
+    fontSize: 11
+    fontWeight: 600
+    letterSpacing: 1.2

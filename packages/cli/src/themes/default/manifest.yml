@@ -19,16 +19,16 @@ colorTokens:
   danger: '#FFB4AB'
 typography:
   main_text:
-    font-family: 'IBM Plex Sans'
+    fontFamily: 'IBM Plex Sans'
     fontSize: 12
-    font-weight: 100
+    fontWeight: 100
   auxiliary_text:
-    font-family: 'IBM Plex Sans'
+    fontFamily: 'IBM Plex Sans'
     fontSize: 8
-    font-weight: 300
-    letter-spacing: 1.2
+    fontWeight: 300
+    letterSpacing: 1.2
   monospace:
-    font-family: 'IBM Plex Mono'
+    fontFamily: 'IBM Plex Mono'
     fontSize: 10
-    font-weight: 300
-    letter-spacing: 0.4
+    fontWeight: 300
+    letterSpacing: 0.4

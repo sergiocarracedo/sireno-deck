@@ -14,16 +14,16 @@ tailwind:
     - outline-2
 typography:
   main_text:
-    font_family: "IBM Plex Sans"
-    font_size: 12
-    font_weight: 700
+    fontFamily: "IBM Plex Sans"
+    fontSize: 12
+    fontWeight: 700
   auxiliary_text:
-    font_family: "IBM Plex Sans"
-    font_size: 8
-    font_weight: 600
-    letter_spacing: 1.2
+    fontFamily: "IBM Plex Sans"
+    fontSize: 8
+    fontWeight: 600
+    letterSpacing: 1.2
   monospace:
-    font_family: "IBM Plex Mono"
-    font_size: 10
-    font_weight: 700
-    letter_spacing: 0.4
+    fontFamily: "IBM Plex Mono"
+    fontSize: 10
+    fontWeight: 700
+    letterSpacing: 0.4
