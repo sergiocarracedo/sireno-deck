@@ -2,7 +2,7 @@
 
 **Version:** v1.3
 **Milestone:** Typography and Rich Formatting
-**Last updated:** 2026-06-02
+**Last updated:** 2026-06-03
 
 ## Milestone Summary
 
@@ -135,11 +135,12 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 ### Phase 35: Live hardware resampling at 250ms
 
 **Goal:** Keep browser-rendered animated button surfaces live on physical Stream Deck hardware by resampling the mounted deck surface at roughly 250ms cadence without restarting the page on every frame.
-**Status:** [ ] Not started
+**Status:** [ ] Planned
 **Depends on:** Phase 34
 
 ### Plans
-*Not yet planned - run `plan-phase 35`*
+- [ ] 35-01: Keep the physical hardware deck live between HTML changes
+- [ ] 35-02: Harden live hardware resampling across placeholder, reload, and reconnect edges
 
 ## Coverage Check
 
