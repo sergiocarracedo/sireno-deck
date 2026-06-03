@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 
 Phase: 37 — Partial Rerender on Source Changes
 Plan: `37-01`, `37-02`, `37-03`
-Status: planning
-Last activity: 2026-06-03 - planned phase with 3 tracer-bullet plans (Wave 1: addon watcher + registry-diff, Wave 2: CSS reload + structural fallback, tests)
+Status: executing
+Last activity: 2026-06-03 - committed 37-01+37-02 implementation together in 3e212d0 (watchAddonSources, updateAddonRegistry, reloadStylesheet, requestFullReload, CSS pre-check, LoadedConfig.cwd)
 
 Progress: [##########] 100%
 
