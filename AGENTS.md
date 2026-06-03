@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.3 — Typography and Rich Formatting
-**Phase:** 34 — Button action command interface ✓ complete → Phase TBD
-**Status:** verifying
-**Last updated:** 2026-06-02
+**Phase:** 35 — Live hardware resampling at 250ms
+**Status:** planning
+**Last updated:** 2026-06-03
 
 ---
 
