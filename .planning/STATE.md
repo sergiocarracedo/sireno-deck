@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 Phase: 36 — Remove Text Marquee
 Plan: `36-01`, `36-02`
 Status: complete
-Last activity: 2026-06-03 - Completed Phase 36 remove text marquee
+Last activity: 2026-06-03 - Completed quick task 032: Rename font-size to fontSize in TypeScript code
 
 Progress: [##########] 100%
 
@@ -324,3 +324,4 @@ Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-VERIFICA
 | 029 | in /works/opensource/sireno-deck/packages/cli/src/ui/Icon.tsx the icon component will get a icon name, and it should resolve that name automatically to the lucide icon, dont use a hardcoed map | 2026-06-02 | `4d4f086` | `.planning/quick/029-icon-component-auto-resolve-lucide-name` |
 | 030 | Diagnose why blinking marquee text updates in emulator/browser but not on Stream Deck hardware | 2026-06-02 | `3ec2aac` | `.planning/quick/030-diagnose-why-blinking-marquee-text-updat` |
 | 031 | date-time clock button minutes needle position is not correct. it's 23:47 and the neddle is arroud pass quartr position | 2026-06-02 | `21b1fe8` | `.planning/quick/031-date-time-clock-minute-needle-position` |
+| 032 | Rename font-size to fontSize in TypeScript code | 2026-06-03 | `004d344` | `.planning/quick/032-fontsize-camelcase` |
