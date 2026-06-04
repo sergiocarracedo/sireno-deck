@@ -165,7 +165,7 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.4 — Build, Bundle & UX Polish
-**Phase:** 42 — System-Reserved Back Button
+**Phase:** 42 — System-Reserved Back Button (gap-closure: runtime injection)
 **Status:** planning complete
 **Last updated:** 2026-06-04
 
