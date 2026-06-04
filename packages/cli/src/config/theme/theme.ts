@@ -714,6 +714,7 @@ export async function resolveTheme(
       ...stylesheetResult.filePaths,
     ]),
     buttonFrame: runtime.buttonFrame,
+    mediaPlayerSurface: runtime.mediaPlayerSurface,
     rootDir: target.rootDir,
     stylesheets: stylesheetResult.stylesheets,
     tailwindSafelist: manifest.tailwind?.safelist ?? [],
