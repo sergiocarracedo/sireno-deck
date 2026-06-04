@@ -7,7 +7,7 @@ import {
   type ServerResponse,
 } from 'node:http'
 import type { AddressInfo } from 'node:net'
-import { basename, dirname, extname } from 'node:path'
+import { basename, dirname, extname, join } from 'node:path'
 
 import type pino from 'pino'
 
@@ -190,7 +190,7 @@ export function watchConfigFiles(
 const ADDON_RELOAD_DEBOUNCE_MS = 100
 
 export function watchAddonSources(
-  rootDir: string,
+  rootDirs: readonly string[],
   runtime: NonNullable<ReturnType<typeof createDeckRuntime>>,
   registry: AddonRegistry,
   onStylesheetChange: () => void,
@@ -208,20 +208,24 @@ export function watchAddonSources(
     }, ADDON_RELOAD_DEBOUNCE_MS)
   }
 
-  const watcher = watch(rootDir, { persistent: false, recursive: true }, (event, filename) => {
-    if (filename && /\.(css)$/i.test(filename)) {
-      onStylesheetChange()
-      return
-    }
-    scheduleAddonReload()
-  })
+  const watchers = rootDirs.map((rootDir) =>
+    watch(rootDir, { persistent: false, recursive: true }, (event, filename) => {
+      if (filename && /\.(css)$/i.test(filename)) {
+        onStylesheetChange()
+        return
+      }
+      scheduleAddonReload()
+    }),
+  )
 
   return () => {
     if (addonReloadTimer) {
       clearTimeout(addonReloadTimer)
       addonReloadTimer = undefined
     }
-    watcher.close()
+    for (const watcher of watchers) {
+      watcher.close()
+    }
   }
 }
 
@@ -1174,7 +1178,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
         })
       })
       stopWatchingAddons = watchAddonSources(
-        loadedConfig.cwd,
+        [loadedConfig.cwd, join(loadedConfig.cwd, "packages", "cli", "src", "builtin-addons")],
         runtime,
         loadedConfig.registry,
         () => {
@@ -1237,7 +1241,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
       })
     })
     stopWatchingAddons = watchAddonSources(
-      initialLoad.cwd,
+      [initialLoad.cwd, join(initialLoad.cwd, "packages", "cli", "src", "builtin-addons")],
       runtime,
       initialLoad.registry,
       () => {

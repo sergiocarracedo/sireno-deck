@@ -6,7 +6,7 @@
   "scripts": {
     "build": "pnpm -r build",
     "cli:build:tailwind-browser": "pnpm --filter sireno-deck-cli run build:tailwind-browser",
-    "cli:dev": "pnpm exec tsx watch --include \"./packages/cli/src/**/*\" --include \"./config.yml\" --include \"./themes/**/*\" --include \"./addons/**/*\" --include \"./builtin-addons/**/*\" packages/cli/src/cli/dev-watch.ts",
+    "cli:dev": "pnpm exec tsx watch --include \"./packages/cli/src/cli/**/*\" --include \"./packages/cli/src/deck/**/*\" --include \"./packages/cli/src/render/**/*\" --include \"./packages/cli/src/config/**/*\" --include \"./packages/cli/src/core/**/*\" --include \"./packages/cli/src/util/**/*\" --include \"./packages/cli/src/system/**/*\" --include \"./packages/cli/src/device/**/*\" --include \"./packages/cli/src/ui/**/*\" --include \"./packages/cli/src/action/**/*\" --include \"./packages/cli/src/assets/**/*\" --include \"./config.yml\" --include \"./themes/**/*\" packages/cli/src/cli/dev-watch.ts",
     "dev": "pnpm run cli:dev",
     "lint": "oxlint packages/",
     "format": "oxfmt packages/",
