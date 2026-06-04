@@ -166,7 +166,7 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.4 — Build, Bundle & UX Polish
 **Phase:** 40 — Distribution Build Pipeline
-**Status:** planning
+**Status:** planning complete
 **Last updated:** 2026-06-04
 
 ---
