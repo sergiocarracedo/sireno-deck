@@ -1,10 +1,10 @@
 import { SIRENO_ADDON_API_VERSION, type SirenoAddon } from '../../addon/api.js'
 
-import { builtinMediaPlayerButton } from './media-player-button.js'
+import { createMediaPlayerButton } from './media-player-button.js'
 
 const mediaPlayerAddon: SirenoAddon = {
   apiVersion: SIRENO_ADDON_API_VERSION,
-  buttons: [builtinMediaPlayerButton],
+  buttons: [createMediaPlayerButton()],
   name: 'media-player',
 }
 

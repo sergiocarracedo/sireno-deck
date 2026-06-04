@@ -1,14 +1,13 @@
-import { ButtonSurface, defineMountedButton } from '../../addon/api.js'
-import { Text } from '../../ui/index.js'
-import { MediaStatusIcon } from './components/MediaStatus.js'
-import { ProgressBar } from './components/ProgressBar.js'
+import { defineMountedButton } from '../../addon/api.js'
+import type { ThemeMediaPlayerSurface } from '../../config/theme/schemas.js'
+import { Surface } from './components/Surface.js'
 import {
   createMediaController,
   createUnavailableMediaSnapshot,
   type MediaController,
   type MediaControllerSnapshot,
-  type MediaPlaybackStatus,
 } from './domain/media-controller.js'
+import type { MediaButtonStatus } from './internal-types.js'
 import { MediaPlayerButtonSchema } from './schemas.js'
 
 const HOLD_ACTION_DELAY_MS = 600
@@ -42,46 +41,6 @@ function clearHoldTimer(snapshot: unknown): MediaPlayerButtonStoreState {
   }
 }
 
-function getStatusLabel(
-  status: MediaPlaybackStatus | undefined,
-  available: boolean,
-): string {
-  if (!available) {
-    return 'OFFLINE'
-  }
-
-  switch (status) {
-    case 'pause':
-      return 'PAUSED'
-    case 'play':
-      return 'PLAYING'
-    case 'stop':
-      return 'STOPPED'
-    default:
-      return 'OFFLINE'
-  }
-}
-
-function getProgressColor(
-  status: MediaPlaybackStatus | undefined,
-  available: boolean,
-): string {
-  if (!available) {
-    return '#6b7280'
-  }
-
-  switch (status) {
-    case 'pause':
-      return '#cdb4db'
-    case 'play':
-      return '#8ecae6'
-    case 'stop':
-      return '#94a3b8'
-    default:
-      return '#6b7280'
-  }
-}
-
 async function refreshSnapshot(
   controller: MediaController,
   store: {
@@ -107,116 +66,118 @@ function getOrCreateController(
   )
 }
 
-const builtinMediaPlayerButton = defineMountedButton({
-  configSchema: MediaPlayerButtonSchema,
-  defaultPollIntervalMs: ({ config }) => config.poll_interval_ms,
-  defaultRenderIntervalMs: ({ config }) => config.render_interval_ms,
-  dispose: ({ store }) => {
-    store.button.set(clearHoldTimer(store.button.snapshot))
-  },
-  onActivate: async ({ hostContext, store }) => {
-    const controller = getOrCreateController(store.button.snapshot, hostContext)
-    const snapshot = await controller.getSnapshot()
+function formatTimeLabel(snapshot: MediaControllerSnapshot): string {
+  if (!snapshot.available || snapshot.positionSeconds === undefined) {
+    return ''
+  }
 
-    store.button.update((currentSnapshot) => ({
-      ...getButtonStoreState(currentSnapshot),
-      controller,
-      snapshot,
-    }))
-  },
-  onPress: ({ config, methods, store }) => {
-    if (!config.hold_command) {
-      return
-    }
+  const totalSeconds = Math.max(0, Math.floor(snapshot.positionSeconds))
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`
+}
 
-    store.button.update((snapshot) => {
-      const nextState = clearHoldTimer(snapshot)
-      const holdTimer = globalThis.setTimeout(() => {
-        void methods.runCommand(config.hold_command!)
-        store.button.update((currentSnapshot) => ({
-          ...clearHoldTimer(currentSnapshot),
-          holdTriggered: true,
-        }))
-        methods.invalidate()
-      }, HOLD_ACTION_DELAY_MS)
+interface CreateMediaPlayerButtonOptions {
+  surface?: ThemeMediaPlayerSurface
+}
 
-      return {
-        ...nextState,
-        holdTimer,
-        holdTriggered: false,
-      }
-    })
-  },
-  onRelease: ({ store }) => {
-    store.button.set(clearHoldTimer(store.button.snapshot))
-  },
-  onTap: async ({ hostContext, methods, store }) => {
-    const state = getButtonStoreState(store.button.snapshot)
-    if (state.holdTriggered) {
-      store.button.update((snapshot) => ({
-        ...clearHoldTimer(snapshot),
-        holdTriggered: false,
+function createMediaPlayerButton(
+  options: CreateMediaPlayerButtonOptions = {},
+) {
+  const renderSurface = options.surface ?? Surface
+
+  return defineMountedButton({
+    configSchema: MediaPlayerButtonSchema,
+    defaultPollIntervalMs: ({ config }) => config.poll_interval_ms,
+    defaultRenderIntervalMs: ({ config }) => config.render_interval_ms,
+    dispose: ({ store }) => {
+      store.button.set(clearHoldTimer(store.button.snapshot))
+    },
+    onActivate: async ({ hostContext, store }) => {
+      const controller = getOrCreateController(store.button.snapshot, hostContext)
+      const snapshot = await controller.getSnapshot()
+
+      store.button.update((currentSnapshot) => ({
+        ...getButtonStoreState(currentSnapshot),
+        controller,
+        snapshot,
       }))
-      return
-    }
+    },
+    onPress: ({ config, methods, store }) => {
+      if (!config.hold_command) {
+        return
+      }
 
-    const controller = getOrCreateController(store.button.snapshot, hostContext)
-    await controller.togglePlayPause()
-    await refreshSnapshot(controller, store)
-    methods.invalidate()
-  },
-  poll: async ({ hostContext, store }): Promise<MediaPlayerPollPayload> => {
-    const controller = getOrCreateController(store.button.snapshot, hostContext)
-    const snapshot = await refreshSnapshot(controller, store)
+      store.button.update((snapshot) => {
+        const nextState = clearHoldTimer(snapshot)
+        const holdTimer = globalThis.setTimeout(() => {
+          void methods.runCommand(config.hold_command!)
+          store.button.update((currentSnapshot) => ({
+            ...clearHoldTimer(currentSnapshot),
+            holdTriggered: true,
+          }))
+          methods.invalidate()
+        }, HOLD_ACTION_DELAY_MS)
 
-    return { snapshot }
-  },
-  render: ({ config, payload, store }) => {
-    const state = getButtonStoreState(store.button.snapshot)
-    const snapshot =
-      payload?.snapshot ??
-      state.snapshot ??
-      createUnavailableMediaSnapshot('media-controller-unavailable')
-    const title = snapshot.title ?? config.unavailable_label ?? 'Unavailable'
-    const artist =
-      snapshot.artist ??
-      (snapshot.available ? 'Unknown artist' : 'No active player')
-    const source = snapshot.app ?? snapshot.source
-    const progress = snapshot.available ? (snapshot.percentage ?? 0) : 0
+        return {
+          ...nextState,
+          holdTimer,
+          holdTriggered: false,
+        }
+      })
+    },
+    onRelease: ({ store }) => {
+      store.button.set(clearHoldTimer(store.button.snapshot))
+    },
+    onTap: async ({ hostContext, methods, store }) => {
+      const state = getButtonStoreState(store.button.snapshot)
+      if (state.holdTriggered) {
+        store.button.update((snapshot) => ({
+          ...clearHoldTimer(snapshot),
+          holdTriggered: false,
+        }))
+        return
+      }
 
-    const localStatus = snapshot.available ? snapshot.status : 'unavailable'
+      const controller = getOrCreateController(store.button.snapshot, hostContext)
+      await controller.togglePlayPause()
+      await refreshSnapshot(controller, store)
+      methods.invalidate()
+    },
+    poll: async ({ hostContext, store }): Promise<MediaPlayerPollPayload> => {
+      const controller = getOrCreateController(store.button.snapshot, hostContext)
+      const snapshot = await refreshSnapshot(controller, store)
 
-    return (
-      <ButtonSurface>
-        <div className="flex h-full w-full flex-col gap-0.5">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1">
-              <MediaStatusIcon status={localStatus} />
-            </div>
-            <Text align="right" fit="ellipsis" size="xs" tone="foreground">
-              {source}
-            </Text>
-          </div>
+      return { snapshot }
+    },
+    render: ({ config, payload, store }) => {
+      const state = getButtonStoreState(store.button.snapshot)
+      const snapshot =
+        payload?.snapshot ??
+        state.snapshot ??
+        createUnavailableMediaSnapshot('media-controller-unavailable')
+      const title = snapshot.title ?? config.unavailable_label ?? 'Unavailable'
+      const artist =
+        snapshot.artist ??
+        (snapshot.available ? 'Unknown artist' : 'No active player')
+      const source = snapshot.app ?? snapshot.source ?? ''
+      const progress = snapshot.available ? (snapshot.percentage ?? 0) : 0
+      const status: MediaButtonStatus = snapshot.available
+        ? (snapshot.status ?? 'notAvailable')
+        : 'notAvailable'
+      const time = formatTimeLabel(snapshot)
 
-          <div className="flex min-w-0 flex-col gap-0.5">
-            <Text align="left" fit="ellipsis" size="md" tone="primary">
-              {title}
-            </Text>
-            <Text align="left" fit="ellipsis" size="sm" tone="foreground">
-              {artist}
-            </Text>
-          </div>
+      return renderSurface({
+        artist,
+        progress,
+        source,
+        status,
+        time,
+        title,
+      })
+    },
+    type: 'media-player',
+  })
+}
 
-          <ProgressBar
-            className="absolute bottom-1 left-0 right-0"
-            status={localStatus}
-            value={progress}
-          />
-        </div>
-      </ButtonSurface>
-    )
-  },
-  type: 'media-player',
-})
-
-export { builtinMediaPlayerButton }
+export { createMediaPlayerButton }
