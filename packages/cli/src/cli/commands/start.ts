@@ -54,6 +54,7 @@ import {
   writePid,
 } from '../../util/daemon.js'
 import { formatConfigError } from '../../util/errors.js'
+import { ensureChromium } from '../../util/chromium-detect.js'
 
 import type { BrowserRenderer } from '../../render/browser-renderer.js'
 import type { BrowserRendererFrame, BrowserRendererFrameHandler } from '../../render/browser-renderer.js'
@@ -993,6 +994,10 @@ export async function startEmulatorSession(
 export async function startEmulator(
   options: EmulatorStartOptions,
 ): Promise<void> {
+  if (options.skipBrowserInstall) {
+    process.env.SIRENO_SKIP_BROWSER_INSTALL = '1'
+  }
+  await ensureChromium()
   const session = await startEmulatorSession(options)
   let cleanupSignals = () => {}
 
@@ -1014,7 +1019,11 @@ export async function startEmulator(
 }
 
 export async function startDaemon(options: StartOptions): Promise<void> {
-  const { logger } = options
+  const { logger, skipBrowserInstall } = options
+  if (skipBrowserInstall) {
+    process.env.SIRENO_SKIP_BROWSER_INSTALL = '1'
+  }
+  await ensureChromium()
   const existingPid = readPid()
   let cleanupSignals = () => {}
   let runtime: ReturnType<typeof createDeckRuntime> | null = null
