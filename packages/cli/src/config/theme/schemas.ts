@@ -106,6 +106,24 @@ export interface ThemeUiPresentation {
 
 export type ThemeColorToken = (typeof colorTokens)[number]
 
+export interface ThemeMediaPlayerSurfaceProps {
+  artist: string
+  progress: number
+  source: string
+  status:
+    | 'play'
+    | 'pause'
+    | 'stop'
+    | 'notAvailable'
+    | 'unsupported'
+  time: string
+  title: string
+}
+
+export type ThemeMediaPlayerSurface = (
+  props: ThemeMediaPlayerSurfaceProps,
+) => ReactElement
+
 export interface Theme extends Omit<ThemeSchemaOutput, 'typography'> {
   accent: string
   background: string
@@ -113,6 +131,7 @@ export interface Theme extends Omit<ThemeSchemaOutput, 'typography'> {
   danger: string
   filePaths: string[]
   frame: string
+  mediaPlayerSurface?: ThemeMediaPlayerSurface
   primary: string
   rootDir: string
   stylesheets: string[]
