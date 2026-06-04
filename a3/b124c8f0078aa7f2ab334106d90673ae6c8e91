@@ -1,0 +1,26 @@
+.planning/phases/42-system-reserved-back-button/42-DISCUSSION-LOG.md
+  s_4e4ee307096ddc::t_e90f68383d4d6c 1-73
+.planning/phases/42-system-reserved-back-button/42-CONTEXT.md
+  s_4e4ee307096ddc::t_416876bbb3932c 1-127
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a3b124c8f0078aa7f2ab334106d90673ae6c8e91",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
