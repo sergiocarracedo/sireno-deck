@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.3 — Typography and Rich Formatting
-**Phase:** 37 — Partial Rerender on Source Changes
-**Status:** executing
-**Last updated:** 2026-06-03
+**Phase:** 38 — Startup Image Full Deck Coverage
+**Status:** planning
+**Last updated:** 2026-06-04
 
 ---
 
