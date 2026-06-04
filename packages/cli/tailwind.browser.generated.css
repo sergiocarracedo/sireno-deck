@@ -22,6 +22,7 @@
     --text-2xl--line-height: calc(2 / 1.5);
     --text-3xl: 1.875rem;
     --text-3xl--line-height: calc(2.25 / 1.875);
+    --font-weight-bold: 700;
     --tracking-tight: -0.025em;
     --tracking-wide: 0.025em;
     --leading-tight: 1.25;
@@ -276,6 +277,9 @@
   .h-2 {
     height: calc(var(--spacing) * 2);
   }
+  .h-5 {
+    height: calc(var(--spacing) * 5);
+  }
   .h-6 {
     height: calc(var(--spacing) * 6);
   }
@@ -284,6 +288,9 @@
   }
   .min-h-0 {
     min-height: calc(var(--spacing) * 0);
+  }
+  .w-5 {
+    width: calc(var(--spacing) * 5);
   }
   .w-6 {
     width: calc(var(--spacing) * 6);
@@ -329,6 +336,9 @@
   }
   .justify-center {
     justify-content: center;
+  }
+  .gap-0 {
+    gap: calc(var(--spacing) * 0);
   }
   .gap-0\.5 {
     gap: calc(var(--spacing) * 0.5);
@@ -579,6 +589,10 @@
     --tw-leading: var(--leading-tight);
     line-height: var(--leading-tight);
   }
+  .font-bold {
+    --tw-font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-bold);
+  }
   .tracking-\[0\.33em\] {
     --tw-tracking: 0.33em;
     letter-spacing: 0.33em;
@@ -679,6 +693,10 @@
   syntax: "*";
   inherits: false;
 }
+@property --tw-font-weight {
+  syntax: "*";
+  inherits: false;
+}
 @property --tw-tracking {
   syntax: "*";
   inherits: false;
@@ -698,6 +716,7 @@
       --tw-skew-y: initial;
       --tw-border-style: solid;
       --tw-leading: initial;
+      --tw-font-weight: initial;
       --tw-tracking: initial;
       --tw-outline-style: solid;
     }

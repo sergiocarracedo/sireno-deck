@@ -3,22 +3,24 @@ decks:
     id: main
     name: Main Deck
     buttons:
-      - position: 0
+      - position: 8
         type: date-time
         format: 'HH:mm'
 
-      - position: 1
+      - position: 9
         type: change-deck
         label: Emoji
         icon: addon://emoji-selector/favorites.svg
         target_deck: emoji
-      - position: 2
+
+      - position: 10
         type: action
         label: Action
         commands:
           tap: 'google-chrome'
         icon: addon://emoji-selector/nature.svg
-      - position: 4
+
+      - position: 0
         type: system-status-bars
         metrics:
           - metric: cpu_usage
@@ -28,6 +30,7 @@ decks:
           - metric: swap_usage
             label: Swap
             unavailable_label: N/A
+
       - position: 5
         type: system-status-label-values
         metrics:
@@ -39,16 +42,17 @@ decks:
             unavailable_label: N/A
           - metric: uptime
             label: Uptime
-      - position: 6
+
+      - position: 12
         type: media-player
         unavailable_label: Unavailable
 
-      - position: 10
+      - position: 2
         type: time
         variant: big
       - position: 11
         type: time
-      - position: 12
+      - position: 3
         type: calendar-sheet
       - position: 13
         type: clock
