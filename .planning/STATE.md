@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 37 planning complete. Wave 1: `watchAddonSources` + `updateAddonRegistry`; Wave 2: CSS reload + structural fallback + tests. All three plans use vertical slices.
+**Current focus:** Phase 38 complete — startup image fills full deck surface on warm beige. Next: Phase 39 (themable media-player surface).
 
 ## Current Position
 
-Phase: 37 — Partial Rerender on Source Changes
-Plan: `37-01`, `37-02`, `37-03`
-Status: executing
-Last activity: 2026-06-04 - captured Phase 38 context (startup image full deck coverage)
+Phase: 38 — Startup Image Full Deck Coverage
+Plan: `38-01`
+Status: ✓ complete
+Last activity: 2026-06-04
 
 Progress: [##########] 100%
 

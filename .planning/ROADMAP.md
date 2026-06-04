@@ -160,10 +160,10 @@ The roadmap is intentionally narrow: typography sizing is fixed once in the shar
 ### Plans
 *Not yet planned — run `plan-phase 37`*
 
-### Phase 38: Startup Image Full Deck Coverage
+### Phase 38: Startup Image Full Deck Coverage ✓ Complete (2026-06-04)
 
 **Goal:** Make the Stream Deck startup image cover 100% of the device surface instead of being centered.
-**Status:** [ ] Not started
+**Status:** [x] ✓ Complete (2026-06-04)
 **Depends on:** Phase 36
 
 ### Plans
