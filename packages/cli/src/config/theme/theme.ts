@@ -24,6 +24,7 @@ import {
   ThemeColorToken,
   ThemeManifest,
   ThemeManifestSchema,
+  ThemeMediaPlayerSurface,
   ThemeUiPresentation,
 } from './schemas'
 
@@ -48,6 +49,7 @@ type ThemeResolutionTarget = {
 
 interface ImportedThemeRuntime {
   buttonFrame: ThemeButtonFrame
+  mediaPlayerSurface?: ThemeMediaPlayerSurface
   ui?: ThemeUiPresentation
 }
 
@@ -289,6 +291,72 @@ function getThemeUiPresentation(
   return Object.keys(ui).length > 0 ? ui : undefined
 }
 
+async function importThemeMediaPlayerSurface(
+  manifest: ThemeManifest,
+  manifestPath: string,
+  rootDir: string,
+  runtimeCacheKey: string,
+): Promise<ThemeMediaPlayerSurface | undefined> {
+  const surfacePath = manifest.mediaPlayer?.surface
+  if (!surfacePath) {
+    return undefined
+  }
+
+  const resolvedSurfacePath = resolve(rootDir, surfacePath)
+  if (!existsSync(resolvedSurfacePath)) {
+    throw new ConfigValidationError(
+      `Theme mediaPlayer surface '${surfacePath}' was not found`,
+      manifestPath,
+      undefined,
+      `Check the value for 'mediaPlayer.surface' in ${MANIFEST_FILENAME}.`,
+      ['theme', 'mediaPlayer', 'surface'],
+    )
+  }
+
+  const importedSurfaceUrl = `${pathToFileURL(resolvedSurfacePath).href}?sireno-theme-runtime=${runtimeCacheKey}`
+
+  try {
+    const importedSurfaceModule = TRANSPILED_THEME_RUNTIME_EXTENSIONS.has(
+      extname(resolvedSurfacePath),
+    )
+      ? await tsImport(importedSurfaceUrl, {
+          parentURL: importedSurfaceUrl,
+          tsconfig: PACKAGE_TSCONFIG_PATH,
+        })
+      : await import(importedSurfaceUrl)
+    const candidateSurface =
+      importedSurfaceModule.surface ??
+      importedSurfaceModule.Surface ??
+      importedSurfaceModule.default?.surface ??
+      importedSurfaceModule.default?.Surface
+
+    if (typeof candidateSurface !== 'function') {
+      throw new ConfigValidationError(
+        `Theme '${manifest.name}' did not export a valid mediaPlayer surface`,
+        manifestPath,
+        undefined,
+        `Export a 'surface' function from '${surfacePath}'.`,
+        ['theme', 'mediaPlayer', 'surface'],
+      )
+    }
+
+    return candidateSurface as ThemeMediaPlayerSurface
+  } catch (error) {
+    if (error instanceof ConfigValidationError) {
+      throw error
+    }
+
+    const message = error instanceof Error ? error.message : String(error)
+    throw new ConfigValidationError(
+      `Failed to import theme mediaPlayer surface: ${message}`,
+      manifestPath,
+      undefined,
+      `Check the surface entry at '${surfacePath}'.`,
+      ['theme', 'mediaPlayer', 'surface'],
+    )
+  }
+}
+
 async function importThemeRuntime(
   manifest: ThemeManifest,
   manifestPath: string,
@@ -306,7 +374,13 @@ async function importThemeRuntime(
     )
   }
 
-  const runtimeCacheKey = getThemeRuntimeCacheKey(runtimeFilePaths)
+  const cacheKeyPaths = [
+    ...runtimeFilePaths,
+    ...(manifest.mediaPlayer?.surface
+      ? [resolve(rootDir, manifest.mediaPlayer.surface)]
+      : []),
+  ]
+  const runtimeCacheKey = getThemeRuntimeCacheKey(cacheKeyPaths)
 
   try {
     const importedEntryUrl = `${pathToFileURL(entryPath).href}?sireno-theme-runtime=${runtimeCacheKey}`
@@ -334,8 +408,16 @@ async function importThemeRuntime(
       )
     }
 
+    const mediaPlayerSurface = await importThemeMediaPlayerSurface(
+      manifest,
+      manifestPath,
+      rootDir,
+      runtimeCacheKey,
+    )
+
     return {
       buttonFrame: candidateFrame as ThemeButtonFrame,
+      mediaPlayerSurface,
       ui: getThemeUiPresentation(
         importedModule.ui ?? importedModule.default?.ui,
         manifest,
