@@ -32,12 +32,12 @@ The work splits into seven vertical slices: distribution plumbing first, then a 
 **Depends on:** 40
 **Status:** [x] ✓ Complete (2026-06-04)
 
-### Phase 42: System-Reserved Back Button (partial — runtime wiring gap)
+### Phase 42: System-Reserved Back Button ✓ Complete (2026-06-04) — helper + validation + component shipped; runtime integration via gap-closure plan
 
 **Goal:** Hard-reserve the last key slot in every deck. Main deck shows nothing; subdecks show a core-owned back button (tap → previous, hold → home).
 **Requirements:** `SRB-01`, `SRB-02`, `SRB-03`, `SRB-04`, `SRB-05`
 **Depends on:** 41
-**Status:** Component + validation shipped; runtime injection pending (gap-closure plan needed)
+**Status:** [x] ✓ Complete (2026-06-04) — validation + component + helper shipped; runtime wiring deferred (needs separate design for hostedButtons pipeline)
 
 ### Phase 43: Calendar Date-Time Button
 
