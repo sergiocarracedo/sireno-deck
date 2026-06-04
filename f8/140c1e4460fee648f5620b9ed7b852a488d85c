@@ -1,0 +1,38 @@
+packages/cli/src/builtin-addons/media-player/components/MediaStatusIcon.tsx
+  s_4e4ee307096ddc::t_a42087b9d9ea8b 1-19,21-23,25-27
+  h_f90ee31b03fc41 20,24
+config.yml
+  s_4e4ee307096ddc::t_182759033077be 6,10,15-16,22-23,33,45-46,50,55
+packages/cli/src/builtin-addons/date-time/buttons/calendar-sheet.tsx
+  s_4e4ee307096ddc::t_182759033077be 37
+.planning/phases/38-startup-image-full-deck-coverage/38-01-SUMMARY.md
+  s_4e4ee307096ddc::t_182759033077be 1-23
+packages/cli/tailwind.browser.generated.css
+  ai_agent 25,280-282,292-294,340-342,592-595,696-699,719
+packages/cli/fixtures/phase-24/local-mounted-addon/tsconfig.json
+  s_4e4ee307096ddc::t_182759033077be 1-23
+packages/cli/src/builtin-addons/media-player/components/Surface.tsx
+  s_4e4ee307096ddc::t_a42087b9d9ea8b 1-24,26-35,37-53
+  h_f90ee31b03fc41 25,36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f8140c1e4460fee648f5620b9ed7b852a488d85c",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
