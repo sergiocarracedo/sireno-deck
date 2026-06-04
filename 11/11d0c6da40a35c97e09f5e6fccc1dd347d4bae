@@ -1,0 +1,24 @@
+.planning/phases/42-system-reserved-back-button/42-G01-PLAN.md
+  s_4e4ee307096ddc::t_45bf50f9093322 1-142
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1111d0c6da40a35c97e09f5e6fccc1dd347d4bae",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
