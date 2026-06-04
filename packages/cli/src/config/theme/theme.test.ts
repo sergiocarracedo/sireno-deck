@@ -20,6 +20,10 @@ const phase25FixtureRoot = resolve(
   import.meta.dirname,
   '../../../fixtures/phase-25',
 )
+const phase39FixtureRoot = resolve(
+  import.meta.dirname,
+  '../../../fixtures/phase-39',
+)
 
 function listThemeRuntimeSnapshots(): string[] {
   return readdirSync(tmpdir()).filter((entry) =>
@@ -487,5 +491,57 @@ describe('resolveTheme', () => {
       '/__sireno/assets?path=%2Ftmp%2Ffonts%2Fplex.ttf',
     )
     expect(rewrittenCss).not.toContain('file:///tmp/fonts/plex.ttf')
+  })
+
+  it('loads a theme-provided mediaPlayer.surface override and exposes it on the resolved theme', async () => {
+    const { resolveTheme } = await loadThemeModule()
+    const themeRoot = join(phase39FixtureRoot, 'theme-with-media-player-surface')
+
+    const theme = await resolveTheme(themeRoot)
+
+    expect(theme.name).toBe('phase-39-media-player-surface')
+    expect(theme.mediaPlayerSurface).toBeTypeOf('function')
+    expect(theme.filePaths).toEqual(
+      expect.arrayContaining([
+        join(themeRoot, 'manifest.yml'),
+        join(themeRoot, 'index.ts'),
+        join(themeRoot, 'surface.tsx'),
+      ]),
+    )
+  })
+
+  it('leaves mediaPlayerSurface undefined when the manifest does not declare one', async () => {
+    const { resolveTheme } = await loadThemeModule()
+
+    const theme = await resolveTheme('dark')
+
+    expect(theme.mediaPlayerSurface).toBeUndefined()
+  })
+
+  it('hard-fails when a manifest declares a mediaPlayer.surface pointing at a missing file', async () => {
+    const configDir = join(tempDir, 'config')
+    const customThemePath = join(configDir, 'broken-surface-theme')
+    mkdirSync(customThemePath, { recursive: true })
+    writeFileSync(
+      join(customThemePath, 'manifest.yml'),
+      [
+        'name: broken-surface',
+        'main: "./index.js"',
+        'mediaPlayer:',
+        '  surface: "./missing-surface.tsx"',
+        ...colorTokensBlock,
+        ...typographyBlock,
+      ].join('\n'),
+    )
+    writeFileSync(
+      join(customThemePath, 'index.js'),
+      'export const buttonFrame = (props) => props.children\nexport default { buttonFrame }',
+    )
+
+    const { resolveTheme } = await loadThemeModule()
+
+    await expect(
+      resolveTheme('./broken-surface-theme', { baseDirectory: configDir }),
+    ).rejects.toThrow()
   })
 })

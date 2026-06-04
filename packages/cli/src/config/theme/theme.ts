@@ -712,6 +712,9 @@ export async function resolveTheme(
       target.manifestPath,
       ...runtimeFilePaths,
       ...stylesheetResult.filePaths,
+      ...(manifest.mediaPlayer?.surface
+        ? [resolve(target.rootDir, manifest.mediaPlayer.surface)]
+        : []),
     ]),
     buttonFrame: runtime.buttonFrame,
     mediaPlayerSurface: runtime.mediaPlayerSurface,

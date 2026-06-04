@@ -6,6 +6,7 @@ colorTokens:
   background: "#20252d"
   frame: "#111827"
   foreground: "#f5f7fa"
+  foreground-contrast: "#1c1c1c"
   primary: "#8b5cf6"
   accent: "#14b8a6"
   success: "#22c55e"

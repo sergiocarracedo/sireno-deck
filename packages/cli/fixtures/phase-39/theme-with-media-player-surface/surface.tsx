@@ -23,4 +23,6 @@ export function CustomMediaPlayerSurface(props: ThemeMediaPlayerSurfaceProps) {
   )
 }
 
+export const surface = CustomMediaPlayerSurface
+
 export default CustomMediaPlayerSurface
