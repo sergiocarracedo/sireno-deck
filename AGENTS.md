@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.3 — Typography and Rich Formatting
-**Phase:** 38 — Startup Image Full Deck Coverage ✓ complete → Phase 39 — Themable Media Player Surface
-**Status:** verifying
+**Phase:** 39 — Themable Media Player Surface
+**Status:** planning
 **Last updated:** 2026-06-04
 
 ---
