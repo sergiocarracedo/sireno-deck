@@ -1,0 +1,30 @@
+.planning/phases/41-first-run-chromium-auto-install/41-UAT.md
+  s_4e4ee307096ddc::t_00428b1757982c 25
+  s_4e4ee307096ddc::t_1a4134d37b1b33 31,36,38
+  s_4e4ee307096ddc::t_9cbf187f766397 19
+  s_4e4ee307096ddc::t_025d6f51123283 22
+  s_4e4ee307096ddc::t_e1015f28cc1a73 2
+  s_4e4ee307096ddc::t_517cd21399e8e3 1,3-9,12,14-18,20-21,23-24,26-27,29-30,32-35,37,39-43
+  s_4e4ee307096ddc::t_efa31594049072 10-11,13,28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "cfad295001f3065092a1a0e39a2473fed0682e57",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
