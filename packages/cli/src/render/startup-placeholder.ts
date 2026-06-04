@@ -21,20 +21,20 @@ async function createStartupPlaceholderDeckBuffer(keyCount: number): Promise<{
   const logoBuffer = await sharp(STARTUP_LOGO_FULL_PATH)
     .resize({
       fit: "contain",
-      height: Math.max(40, Math.round(height * 0.36)),
-      width: Math.max(72, Math.round(width * 0.88)),
+      height,
+      width,
     })
     .png()
     .toBuffer()
   const logoMetadata = await sharp(logoBuffer).metadata()
-  const logoWidth = logoMetadata.width ?? Math.max(72, Math.round(width * 0.88))
-  const logoHeight = logoMetadata.height ?? Math.max(40, Math.round(height * 0.36))
+  const logoWidth = logoMetadata.width ?? width
+  const logoHeight = logoMetadata.height ?? height
   const logoLeft = Math.max(0, Math.round((width - logoWidth) / 2))
   const logoTop = Math.max(0, Math.round((height - logoHeight) / 2))
 
   const deckBuffer = await sharp({
     create: {
-      background: STREAM_DECK_KEY_PRESET.background,
+      background: "#efe3e1",
       channels: 4,
       height,
       width,
