@@ -25,17 +25,12 @@ The work splits into seven vertical slices: distribution plumbing first, then a 
 - [x] Built executable runs `start --help` without Node.js installed
 **Research needed:** No (covered by v1.4 research)
 
-### Phase 41: First-Run Chromium Auto-Install
+### Phase 41: First-Run Chromium Auto-Install ✓ Complete (2026-06-04)
 
 **Goal:** Detect missing Playwright Chromium on first CLI run and auto-install via `npx playwright install chromium`.
 **Requirements:** `BD-03`, `BD-05`
 **Depends on:** 40
-**Success criteria:**
-- [x] On `start` or `emulate` invocation, check for `~/.cache/ms-playwright/` or platform-specific path
-- [x] If missing, prompt user to install (or auto-install with `--yes` flag)
-- [x] Clear error if install fails (network, permission, etc.)
-- [x] After successful install, run proceeds normally
-**Research needed:** No (covered by v1.4 research)
+**Status:** [x] ✓ Complete (2026-06-04)
 
 ### Phase 42: System-Reserved Back Button
 

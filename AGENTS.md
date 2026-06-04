@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.4 — Build, Bundle & UX Polish
-**Phase:** 41 — First-Run Chromium Auto-Install
-**Status:** planning complete
+**Phase:** 41 — First-Run Chromium Auto-Install ✓ complete → Phase 42 — System-Reserved Back Button
+**Status:** verifying
 **Last updated:** 2026-06-04
 
 ---
