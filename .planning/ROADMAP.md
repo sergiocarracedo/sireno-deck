@@ -153,3 +153,12 @@ The work splits into seven vertical slices: distribution plumbing first, then a 
 | EMO-03      | 46    |
 | EMO-04      | 46    |
 | EMO-05      | 46    |
+
+### Phase 48: Build and Install Documentation
+
+**Goal:** Ship end-user and developer documentation for the v1.4 standalone binary — install, run, and build-from-source flows.
+**Status:** [ ] Not started
+**Depends on:** Phase 40
+
+### Plans
+*Not yet planned — run `plan-phase 48`*

@@ -130,6 +130,7 @@ Recent decisions affecting current work:
 ### Roadmap Evolution
 
 - Phase 39 added: let external themes override the `Surface` component used by the built-in media-player addon so they can render the button surface however they want.
+- Phase 48 added: document the build and install flow for the v1.4 standalone binary — README updates for end-user install of the prebuilt binary, plus developer quickstart for building from source.
 - Phase 38 added: make the Stream Deck startup image cover 100% of the device surface instead of being centered.
 - Phase 37 added: reload only the affected buttons in watch mode when config or addon JSX/TSX/CSS source files change, instead of restarting the full app.
 - Phase 36 context captured (discuss-phase): remove marquee from TextFit, migrate media-player to ellipsis, narrow theme frame contract.
