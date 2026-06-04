@@ -32,19 +32,12 @@ The work splits into seven vertical slices: distribution plumbing first, then a 
 **Depends on:** 40
 **Status:** [x] ✓ Complete (2026-06-04)
 
-### Phase 42: System-Reserved Back Button
+### Phase 42: System-Reserved Back Button (partial — runtime wiring gap)
 
 **Goal:** Hard-reserve the last key slot in every deck. Main deck shows nothing; subdecks show a core-owned back button (tap → previous, hold → home).
 **Requirements:** `SRB-01`, `SRB-02`, `SRB-03`, `SRB-04`, `SRB-05`
 **Depends on:** 41
-**Success criteria:**
-- [x] Config validation rejects button placement at reserved slot
-- [x] Main deck: reserved slot renders as empty placeholder
-- [x] Subdecks: reserved slot renders core-owned back button
-- [x] Back button tap → `controller.restoreStack([previousDeckId])`
-- [x] Back button hold (≥600ms) → `controller.restoreStack([mainDeckId])`
-- [x] Existing bundled addons (date-time, media-player, system-status, emoji-selector) continue to render correctly with reserved slot
-**Research needed:** No (covered by v1.4 research)
+**Status:** Component + validation shipped; runtime injection pending (gap-closure plan needed)
 
 ### Phase 43: Calendar Date-Time Button
 
