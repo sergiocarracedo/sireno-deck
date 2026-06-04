@@ -150,12 +150,11 @@ describe('media-player addon', () => {
     const html = renderReactNodeToHtml(harness.render() as never)
 
     expect(createMediaControllerMock).toHaveBeenCalled()
-    expect(html).toContain('data-sireno-ui-bars="true"')
     expect(html).toContain('data-sireno-text-fit="ellipsis"')
     expect(html).toContain('Teardrop')
     expect(html).toContain('Massive Attack')
-    expect(html).toContain('Spotify')
-    expect(html).toContain('data-sireno-media-status="play"')
+    expect(html).toContain('lucide-play')
+    expect(html).toContain('width:42%')
   })
 
   it('degrades honestly when the media controller reports an unsupported host', async () => {
@@ -173,8 +172,7 @@ describe('media-player addon', () => {
 
     expect(html).toContain('Unavailable')
     expect(html).toContain('No active player')
-    expect(html).toContain('data-sireno-media-status="unsupported"')
-    expect(html).toContain('OFFLINE')
+    expect(html).toContain('lucide-slash')
   })
 
   it('keeps tap fixed to play-pause while hold stays optional and distinct', async () => {
