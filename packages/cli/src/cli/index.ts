@@ -28,8 +28,18 @@ export const cli = async () => {
     .command(
       'start',
       'Start the sireno-deck daemon',
-      () => {},
-      async (argv) => startDaemon({ config: argv.config, logger }),
+      (command) =>
+        command.option('skip-browser-install', {
+          type: 'boolean',
+          default: false,
+          description: 'Skip the check and auto-install of Playwright Chromium',
+        }),
+      async (argv) =>
+        startDaemon({
+          config: argv.config,
+          logger,
+          skipBrowserInstall: argv.skipBrowserInstall,
+        }),
     )
     .command(
       'emulate',
@@ -46,6 +56,11 @@ export const cli = async () => {
             description:
               'Port for the local emulator page (0 chooses a free port)',
             default: 0,
+          })
+          .option('skip-browser-install', {
+            type: 'boolean',
+            default: false,
+            description: 'Skip the check and auto-install of Playwright Chromium',
           }),
       async (argv) =>
         startEmulator({
@@ -53,6 +68,7 @@ export const cli = async () => {
           keyCount: argv.keyCount,
           logger,
           port: argv.port,
+          skipBrowserInstall: argv.skipBrowserInstall,
         }),
     )
     .command(

@@ -61,6 +61,7 @@ import type { BrowserRendererFrame, BrowserRendererFrameHandler } from '../../re
 export interface StartOptions {
   config?: string
   logger: pino.Logger
+  skipBrowserInstall?: boolean
 }
 
 export interface EmulatorStartOptions extends StartOptions {
