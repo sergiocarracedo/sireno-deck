@@ -1,0 +1,109 @@
+import { describe, expect, it } from "vitest"
+
+import { createBundledAddonRegistry } from "../config/loader.js"
+import { validateConfig } from "./schemas.js"
+
+const KEY_COUNT = 15
+
+function makeDeck(
+  position: number,
+  extras: Record<string, unknown> = {},
+): Record<string, unknown> {
+  return {
+    addons: [],
+    decks: {
+      main: {
+        buttons: [
+          {
+            label: "Test",
+            position,
+            target_deck: "subdeck",
+            type: "change-deck",
+            ...extras,
+          },
+        ],
+        id: "main",
+        keyCount: KEY_COUNT,
+      },
+    },
+    main_deck: "main",
+    theme: "dark",
+  }
+}
+
+function withAllowOverride(
+  base: Record<string, unknown>,
+  scope: "root" | "deck",
+): Record<string, unknown> {
+  if (scope === "root") {
+    return { ...base, allow_reserved_slot_override: true }
+  }
+  return {
+    ...base,
+    decks: {
+      ...(base.decks as Record<string, unknown>),
+      main: {
+        ...((base.decks as Record<string, unknown>).main as Record<string, unknown>),
+        allow_reserved_slot_override: true,
+      },
+    },
+  }
+}
+
+function withLockDeck(
+  base: Record<string, unknown>,
+  lockedDeckId = "locked",
+): Record<string, unknown> {
+  return {
+    ...base,
+    decks: {
+      ...(base.decks as Record<string, unknown>),
+      locked: {
+        buttons: [
+          {
+            label: "Locked",
+            position: KEY_COUNT - 1,
+            target_deck: "main",
+            type: "change-deck",
+          },
+        ],
+        id: lockedDeckId,
+        keyCount: KEY_COUNT,
+      },
+    },
+    main_deck: "main",
+    session: { locked_deck: lockedDeckId },
+  }
+}
+
+describe("reserved slot validation", () => {
+  it("rejects a button at the reserved slot (keyCount - 1) on a normal deck", () => {
+    const registry = createBundledAddonRegistry()
+    const config = makeDeck(KEY_COUNT - 1)
+    expect(() => validateConfig(config, registry)).toThrow(/reserved slot/i)
+  })
+
+  it("accepts a button at the reserved slot when root allow_reserved_slot_override is true", () => {
+    const registry = createBundledAddonRegistry()
+    const config = withAllowOverride(makeDeck(KEY_COUNT - 1), "root")
+    expect(() => validateConfig(config, registry)).not.toThrow()
+  })
+
+  it("accepts a button at the reserved slot when deck allow_reserved_slot_override is true", () => {
+    const registry = createBundledAddonRegistry()
+    const config = withAllowOverride(makeDeck(KEY_COUNT - 1), "deck")
+    expect(() => validateConfig(config, registry)).not.toThrow()
+  })
+
+  it("does not reject a button at the reserved slot on the lock-session deck", () => {
+    const registry = createBundledAddonRegistry()
+    const config = withLockDeck(makeDeck(0))
+    expect(() => validateConfig(config, registry)).not.toThrow()
+  })
+
+  it("regression: a config with no button at the reserved slot passes", () => {
+    const registry = createBundledAddonRegistry()
+    const config = makeDeck(0)
+    expect(() => validateConfig(config, registry)).not.toThrow()
+  })
+})
