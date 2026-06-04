@@ -8,23 +8,20 @@ Sireno Deck is a TypeScript CLI for controlling and managing Stream Deck devices
 
 Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
 
-## Current Milestone: v1.3 Addon Extensibility & Live Hardware
+## Current Milestone: v1.4 — Build, Bundle & UX Polish
 
-**Goal:** Make addons first-class authoring targets, keep browser-rendered surfaces live on physical hardware, and improve the day-to-day dev/iteration loop.
+**Goal:** Make the CLI distributable as standalone Linux and Mac executables, expand the bundled addon surface, and add the system-reserved back button for subdeck navigation.
 
 **Target features:**
-- Shared content helpers (Bars, LabelValueList) and bundled system-status / media-player addons with honest per-OS unavailable states
-- Truthful `pnpm cli:dev` watch mode with forwarded subcommand arguments
-- Addon-owned polling/data-fetching with split data/render intervals and OS-specific adapters
-- Full Tailwind support as the canonical browser utility layer
-- Shared command-action contract for `tap` / `hold` / `double-tap` across command-capable built-ins
-- Browser-backed hardware decks stay live at roughly 250ms resampling cadence
-- Removed text marquee (too expensive) and replaced with ellipsis fallback
-- Partial rerender on config/addon source changes instead of full app restart
-- Startup image covers 100% of device surface on warm beige background
-- Themable media-player Surface via manifest declaration
+- Build and bundle workflow that produces Linux and Mac executables in `/works/test/test-sireno-deck`
+- Auto-install Chromium on first run when missing (no bundled Playwright, license-safe)
+- Calendar button in the built-in date-time addon (month/day/weekday vertical layout)
+- New bundled weather addon (icon + temperature + location)
+- Media-player addon: mute toggle (real state), volume up, volume down
+- Emoji-selector multi-page layout: split large categories across pages with next/prev
+- System-reserved last button: hard-reserved, core-owned back button in subdecks (tap → previous, hold → home), empty placeholder in main deck
 
-## Latest Shipped Milestone: v1.2 Session Context and Surface Composition
+## Latest Shipped Milestone: v1.3 Addon Extensibility & Live Hardware
 
 **Goal:** Expand the render/runtime surface so addons and built-in buttons can react to richer session state, compose shared visual primitives, and handle background and lock-screen behavior coherently.
 

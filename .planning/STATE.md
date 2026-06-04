@@ -9,11 +9,11 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 
 ## Current Position
 
-Milestone: v1.3 — Addon Extensibility & Live Hardware ✓ shipped
-Status: ready for next milestone
-Last activity: 2026-06-04 - complete-milestone
+Milestone: v1.4 — Build, Bundle & UX Polish
+Status: Defining requirements
+Last activity: 2026-06-04 — Milestone v1.4 started
 
-Progress: [##########] 100%
+Progress: [          ] 0%
 
 ## Milestone History
 
