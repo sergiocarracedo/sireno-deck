@@ -1,0 +1,30 @@
+.planning/phases/39-themable-media-player-surface/39-UAT.md
+  s_4e4ee307096ddc::t_5756dee18af171 1,3-9,12,14-18,21-22,25-26,29-30,33-34,37-40,42,44-48
+  s_4e4ee307096ddc::t_f001a75f0d119b 28
+  s_4e4ee307096ddc::t_f5263b17610b3c 19-20,23,27,31,35
+  s_4e4ee307096ddc::t_909cf2c5bcfd0a 36,41,43
+  s_4e4ee307096ddc::t_93215ccfd5abe3 2
+  s_4e4ee307096ddc::t_1975743e2d4444 10-11,13,32
+  s_4e4ee307096ddc::t_e5ac717bd75843 24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "aef465b98b9dcc8646fb813b87a1caf692029e89",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
