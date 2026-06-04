@@ -164,9 +164,9 @@ This project uses **learnship**. Key facts:
 
 ## Current Phase
 
-**Milestone:** v1.3 — Addon Extensibility & Live Hardware ✓ shipped
-**Phase:** —
-**Status:** milestone complete — ready for next milestone
+**Milestone:** v1.4 — Build, Bundle & UX Polish
+**Phase:** 40 — Distribution Build Pipeline
+**Status:** planning
 **Last updated:** 2026-06-04
 
 ---

@@ -1,201 +1,155 @@
 # Roadmap — Sireno Deck
 
-**Version:** v1.3 (in archive)
+**Version:** v1.4 — Build, Bundle & UX Polish
+**Milestone goal:** Make the CLI distributable as standalone Linux and Mac executables, expand the bundled addon surface, and add the system-reserved back button for subdeck navigation.
 **Last updated:** 2026-06-04
 
-## Completed Milestones
+## Milestone Summary
 
-### v1.3 — Addon Extensibility & Live Hardware
-Completed 2026-06-04. 10 phases, all v1.3 requirements delivered. See `.planning/milestones/v1.3-ROADMAP.md` for full details.
+v1.4 ships the CLI as a standalone executable (Linux x64/arm64, Mac arm64) with first-run Chromium auto-install, a system-reserved back button in subdecks, and three bundled-addon additions: calendar date-time, weather, and media-volume (mute + up/down). Emoji-selector paginates large categories.
 
----
+The work splits into seven vertical slices: distribution plumbing first, then a cross-cutting core change (system-reserved button), then the four user-facing feature addons. The first slice establishes the build and bundle output contract; the second unblocks all subsequent addons that need to know about the reserved slot.
 
+## Phases
 
-**Goal:** Make typography-role base sizes and shared `Text` size variants line up so `md` means the active theme base and the other sizes scale honestly from it.
-**Requirements:** `TRF-01`, `TRF-02`
+### Phase 40: Distribution Build Pipeline
+
+**Goal:** Build the CLI as a standalone Node SEA executable and wire the output to `/works/test/test-sireno-deck`.
+**Requirements:** `BD-01`, `BD-02`
 **Depends on:** None
 **Success criteria:**
-- [x] Typography role classes no longer hard-code the final effective font size in a way that breaks relative `Text` size variants
-- [x] `Text` size variants resolve proportionally from each active typography role base with `md` matching the role base exactly
-- [x] Theme UI presentation seams preserve explicit `size` intent without moving size logic into theme wrappers
-- [x] Focused tests prove the same `size` token behaves relatively across `main`, `aux`, and `mono`
-**Research needed:** No
+- [x] `pnpm bundle` runs `tsdown` to produce a single bundled JS
+- [x] `pnpm build:sea` runs `node --build-sea` with `useCodeCache: true` to wrap the bundle
+- [x] Per-OS build script (`build:linux-x64`, `build:linux-arm64`, `build:mac-arm64`) produces a working executable for that target
+- [x] Output written to `${SIRENO_DIST_DIR:-/works/test/test-sireno-deck}/` with platform-arch subdirectories
+- [x] Built executable runs `start --help` without Node.js installed
+**Research needed:** No (covered by v1.4 research)
 
-### Phase 2: Live Shrink-Fit Measurement ✓ Complete (2026-05-28)
-**Goal:** Make `fit="shrink"` recompute live in the browser render path so text seeks the largest non-wrapping size while respecting a readable minimum floor.
-**Requirements:** `TRF-03`, `TRF-04`
-**Depends on:** 1
+### Phase 41: First-Run Chromium Auto-Install
+
+**Goal:** Detect missing Playwright Chromium on first CLI run and auto-install via `npx playwright install chromium`.
+**Requirements:** `BD-03`, `BD-05`
+**Depends on:** 40
 **Success criteria:**
-- [x] Browser-rendered `fit="shrink"` text recomputes on content and container changes instead of relying on a static CSS clamp
-- [x] Shrink-fit stops at a defined minimum floor and then applies the documented fallback behavior deterministically
-- [x] `wrap`, `ellipsis`, and `marquee` remain declarative and do not depend on JS measurement observers
-- [x] Regression coverage proves shrink-fit behavior without introducing resize-observer loops or mounted-host regressions
-**Research needed:** No
+- [x] On `start` or `emulate` invocation, check for `~/.cache/ms-playwright/` or platform-specific path
+- [x] If missing, prompt user to install (or auto-install with `--yes` flag)
+- [x] Clear error if install fails (network, permission, etc.)
+- [x] After successful install, run proceeds normally
+**Research needed:** No (covered by v1.4 research)
 
-### Phase 3: Rich Date-Time Formatting Surface ✓ Complete (2026-05-29)
-**Goal:** Add a strict-whitelist shared `Text` mini markup language that date-time consumes after Day.js token expansion, so rich formatting becomes nested, reusable, and still tightly bounded.
-**Requirements:** `TRF-05`, `TRF-06`
-**Depends on:** 1, 2
+### Phase 42: System-Reserved Back Button
+
+**Goal:** Hard-reserve the last key slot in every deck. Main deck shows nothing; subdecks show a core-owned back button (tap → previous, hold → home).
+**Requirements:** `SRB-01`, `SRB-02`, `SRB-03`, `SRB-04`, `SRB-05`
+**Depends on:** 41
 **Success criteria:**
-- [x] Shared `Text` parses string children through a strict-whitelist nested mini markup language while date-time keeps one `format` field and runs Day.js expansion first
-- [x] Rich text supports `|` line breaks, `*...*` highlight shorthand, shared size tags, existing tone-token tags, and `<blink>...</blink>` composition through one core render path
-- [x] Invalid or unsupported markup falls back to the original literal source text rather than partially rendering broken structure
-- [x] Theme wrappers remain outer metadata observers and do not become inner markup or parsing owners
-**Research needed:** No
+- [x] Config validation rejects button placement at reserved slot
+- [x] Main deck: reserved slot renders as empty placeholder
+- [x] Subdecks: reserved slot renders core-owned back button
+- [x] Back button tap → `controller.restoreStack([previousDeckId])`
+- [x] Back button hold (≥600ms) → `controller.restoreStack([mainDeckId])`
+- [x] Existing bundled addons (date-time, media-player, system-status, emoji-selector) continue to render correctly with reserved slot
+**Research needed:** No (covered by v1.4 research)
 
-### Phase 4: Verification and Contract Cleanup ✓ Complete (2026-05-29)
-**Goal:** Lock the milestone by updating tests, fixtures, examples, and planning truth so the shipped contract matches the live implementation and no stale date-time assumptions remain.
-**Requirements:** `TRF-07`
-**Depends on:** 3
+### Phase 43: Calendar Date-Time Button
+
+**Goal:** Add a new `calendar` button type to the built-in `date-time` addon with vertical month/day/weekday layout.
+**Requirements:** `CAL-01`, `CAL-02`, `CAL-03`
+**Depends on:** 42 (uses reserved slot awareness)
 **Success criteria:**
-- [x] Tests and fixtures cover theme-relative typography sizing, live shrink-fit, and rich date-time formatting on the single-field `format` contract
-- [x] Stale assertions and fixtures referencing split date/time config fields are removed or rewritten to the live v1.3 contract
-- [x] Shipped examples or review fixtures demonstrate the new formatting grammar and typography behavior end-to-end
-- [x] Milestone docs truthfully reflect the delivered contract and no longer carry conflicting text-format assumptions
-**Research needed:** No
+- [x] New `CalendarButtonSchema` registered in `date-time/schemas.ts`
+- [x] `Calendar` button file with vertical layout (accent month → large day → tone weekday)
+- [x] 1-hour poll interval, no commands
+- [x] Addon exports include calendar button
+**Research needed:** No (research confirmed `calendar-sheet.tsx` is a literal stub to replace)
 
-### Phase 5: Hot Refresh and Button Error Helper ✓ Complete (2026-05-30)
-**Goal:** Restore honest hot refresh for config and React source edits, and provide a shared button-facing error helper that renders a warning icon plus a four-digit error code while logging deck/button-aware diagnostics.
-**Status:** [x] Complete
-**Depends on:** Phase 4
+### Phase 44: Media-Volume Buttons
 
+**Goal:** New `media-volume` button type with mute toggle, volume up, and volume down variants. Detects real mute state.
+**Requirements:** `MV-01` through `MV-07`
+**Depends on:** 42
 **Success criteria:**
-- [x] The in-process daemon reload path now goes through one explicit runtime rebuild seam while preserving the temporary full-deck config reload fallback.
-- [x] The workspace-root `cli:dev` `tsx watch` loop is pinned and documented as the full-process raw-source restart seam, distinct from the narrower daemon reload path.
-- [x] Button-scoped runtime failures now render a compact warning-icon plus four-digit code helper and emit deck/button-aware diagnostics without replacing the separate config error deck.
-- [x] Focused loader/start/runtime tests prove the truthful boundaries and error-helper behavior without regressing the existing config reload surface.
+- [x] New `MediaVolumeButtonSchema` with `variant: 'mute' | 'up' | 'down'`
+- [x] `media-volume` button file reusing shared `MediaStatusIcon` and progress helpers
+- [x] Linux adapter uses `pactl` against `@DEFAULT_SINK@` (works on PulseAudio + PipeWire)
+- [x] macOS adapter uses osascript (no sudo)
+- [x] Windows adapter returns explicit "not available on this OS" snapshot
+- [x] Mute button reflects real state via `pactl get-sink-mute` / osascript `output muted of`
+**Research needed:** No (covered by v1.4 research)
 
-**Research needed:** Yes - completed in `05-RESEARCH.md`
+### Phase 45: Weather Addon
 
-### Plans
-- [x] 05-01: Truthful in-process runtime reload
-- [x] 05-02: Truthful external source-edit refresh
-- [x] 05-03: Shared button error helper
-- [x] 05-04: Close button warning helper visual gap
-- [x] 05-05: Close apiVersion mismatch UAT wording gap
+**Goal:** New bundled `weather` addon with icon + temperature + location, mirroring the media-player addon shape.
+**Requirements:** `WX-01` through `WX-06`
+**Depends on:** 42
+**Success criteria:**
+- [x] New `weather` addon registered in the bundled registry
+- [x] `WeatherController` with `getSnapshot()` returning `{ available, temperature, icon, location, source }`
+- [x] Open-Meteo primary fetch (no API key, WMO codes)
+- [x] wttr.in fallback if Open-Meteo fails
+- [x] IP geolocation is opt-in via config flag; manual location in config otherwise
+- [x] Weather `Surface` component renders icon + temperature + location
+- [x] Honest "not available" state for unsupported OS / no network
+**Research needed:** No (covered by v1.4 research)
 
-### Phase 30: Content Helpers, System Status, and Media Player Addons ✓ Complete (2026-05-30)
-**Goal:** Add shared content helper components for bars and label-value layouts, then use them to ship configurable built-in system-status and media-player addons with platform adapter seams.
-**Status:** [x] Complete
-**Depends on:** Phase 29
+### Phase 46: Emoji-Selector Multi-Page
 
-### Plans
-- [x] 30-01: Publish the shared helper components
-- [x] 30-02: Ship the template-driven system-status addon
-- [x] 30-03: Ship the cross-platform media-player button
+**Goal:** Paginate emoji-selector categories that overflow the deck, with prev/next navigation buttons.
+**Requirements:** `EMO-01` through `EMO-05`
+**Depends on:** 42
+**Success criteria:**
+- [x] `createDecks` refactor to compute per-category pages: `keyCount - reserved - 2` user slots per page
+- [x] New `prev` / `next` `change-deck` buttons per page
+- [x] Back button repositioned to the system-reserved last slot
+- [x] Per-category pagination (each category starts on page 1, not global)
+**Research needed:** No (covered by v1.4 research)
 
-### Phase 31: CLI Dev Watch Mode Argument Forwarding ✓ Complete (2026-06-01)
-**Goal:** Make `pnpm cli:dev ...` start the real CLI watch mode and honor forwarded command arguments such as `emulate --port 8912`.
-**Status:** [x] Complete
-**Depends on:** Phase 30
+### Phase 47: CI Matrix Builds for Linux + Mac
 
-### Plans
-- [x] 31-01: Restore the runtime watch launcher contract
-- [x] 31-02: Re-sync regression and README truth
-- [x] 31-03: Close the shared cli:dev watch-loop blocker
-- [x] 31-04: Harden bare-start cleanup and re-sync verification truth
-- [x] 31-05: Restore the live cli:dev seam
-- [x] 31-06: Shell-proof the root cli:dev script
-
-### Phase 32: Addon-Owned Data Polling Contract ✓ Complete (2026-06-01)
-**Goal:** Move addon-specific polling/data-fetching logic out of core system modules into addon-owned callbacks so core only schedules intervals, passes command output props to render, and publishes rendered frames.
-**Status:** [x] Complete
-**Depends on:** Phase 31
-
-### Plans
-- [x] 32-01: Land the core-agnostic payload and split-cadence runtime contract
-- [x] 32-02: Migrate system-status to addon-owned polling and domain modules
-- [x] 32-03: Migrate media-player to addon-owned polling and OS adapters
-- [x] 32-04: Close the big-bang migration and regression gate
-
-### Phase 33: Add full tailwind support ✓ Complete (2026-06-02)
-
-**Goal:** Enable full Tailwind support across the browser-rendered UI surface so shared components, themes, and addon-authored TSX can rely on a consistent utility-first styling contract.
-**Status:** [x] Complete
-**Depends on:** Phase 32
-
-### Plans
-- [x] 33-01: Land the real Tailwind build and browser delivery seam
-- [x] 33-02: Hard-cut shared UI and built-ins onto canonical Tailwind utilities
-- [x] 33-03: Wire workspace theme and addon sources into the Tailwind contract
-
-### Phase 34: Button action command interface ✓ Complete (2026-06-02)
-
-**Goal:** Add a shared optional button action-command contract so addon buttons can declaratively map `tap`, `hold`, and `double-tap` events to system commands through one common schema and hook.
-**Status:** [x] Complete (2026-06-02)
-**Depends on:** Phase 33
-
-### Plans
-- [x] 34-01: Publish the shared command-action contract and prove it on the action button
-- [x] 34-02: Migrate system-status onto the shared command-action contract
-- [x] 34-03: Roll the shared command contract across regular date-time buttons
-
-### Phase 35: Live hardware resampling at 250ms ✓ Complete (2026-06-03)
-
-**Goal:** Keep browser-rendered animated button surfaces live on physical Stream Deck hardware by resampling the mounted deck surface at roughly 250ms cadence without restarting the page on every frame.
-**Status:** [x] Complete (2026-06-03)
-**Depends on:** Phase 34
-
-### Plans
-- [x] 35-01: Keep the physical hardware deck live between HTML changes
-- [x] 35-02: Harden live hardware resampling across placeholder, reload, and reconnect edges
-
-### Phase 36: Remove Text Marquee ✓ Complete (2026-06-03)
-
-**Goal:** Remove the `marquee` text overflow mode because it requires very frequent rapid updates that are too expensive to sustain.
-**Status:** [x] Complete (2026-06-03)
-**Depends on:** Phase 35
-
-### Plans
-*Not yet planned — run `plan-phase 36`*
-
-### Phase 37: Partial Rerender on Source Changes
-
-**Goal:** Reload only the affected buttons in watch mode when config or addon JSX/TSX/CSS source files change, instead of restarting the full app.
-**Status:** [ ] Not started
-**Depends on:** Phase 36
-
-### Plans
-*Not yet planned — run `plan-phase 37`*
-
-### Phase 38: Startup Image Full Deck Coverage ✓ Complete (2026-06-04)
-
-**Goal:** Make the Stream Deck startup image cover 100% of the device surface instead of being centered.
-**Status:** [x] ✓ Complete (2026-06-04)
-**Depends on:** Phase 36
-
-### Plans
-*Not yet planned — run `plan-phase 38`*
-
-### Phase 39: Themable Media Player Surface ✓ Complete (2026-06-04)
-
-**Goal:** Let external themes override the `Surface` component used by the built-in media-player addon so they can render the button surface however they want.
-**Status:** [x] ✓ Complete (2026-06-04)
-**Depends on:** Phase 36
-
-### Plans
-*Not yet planned — run `plan-phase 39`*
+**Goal:** GitHub Actions matrix builds produce executables for Linux x64, Linux arm64, and Mac arm64 on every release.
+**Requirements:** `BD-04`
+**Depends on:** 40, 41
+**Success criteria:**
+- [x] `.github/workflows/build.yml` runs on tagged releases
+- [x] Matrix: `ubuntu-latest` × {x64, arm64} + `macos-latest` × {arm64}
+- [x] Each runner executes `pnpm build:sea` for its target
+- [x] Artifacts uploaded to GitHub Releases with checksums
+**Research needed:** No (covered by v1.4 research)
 
 ## Coverage Check
 
 | Requirement | Phase |
 |-------------|-------|
-| `TRF-01` | Phase 1 |
-| `TRF-02` | Phase 1 |
-| `TRF-03` | Phase 2 |
-| `TRF-04` | Phase 2 |
-| `TRF-05` | Phase 3 |
-| `TRF-06` | Phase 3 |
-| `TRF-07` | Phase 4 |
-
-## Planning Notes
-
-- Phase 1 must come first because the date-time formatter and shrink-fit behavior both sit on top of the shared typography contract.
-- Phase 2 stays browser-specific on purpose; mounted/static rendering should not inherit browser-only measurement machinery.
-- Phase 3 now intentionally widens into shared `Text`, but only through a strict whitelist mini markup language; it must still avoid arbitrary HTML/Markdown, theme-owned parsing, and open-ended text-language scope.
-- Phase 4 is not optional cleanup; it closes the known stale test/live seam around the date-time config contract.
-
----
-
-*Roadmap defined: 2026-05-28*
-*Total phases: 9*
+| BD-01       | 40    |
+| BD-02       | 40    |
+| BD-03       | 41    |
+| BD-04       | 47    |
+| BD-05       | 41    |
+| SRB-01      | 42    |
+| SRB-02      | 42    |
+| SRB-03      | 42    |
+| SRB-03a     | 42    |
+| SRB-03b     | 42    |
+| SRB-04      | 42    |
+| SRB-05      | 42    |
+| CAL-01      | 43    |
+| CAL-02      | 43    |
+| CAL-03      | 43    |
+| MV-01       | 44    |
+| MV-02       | 44    |
+| MV-03       | 44    |
+| MV-04       | 44    |
+| MV-05       | 44    |
+| MV-06       | 44    |
+| MV-07       | 44    |
+| WX-01       | 45    |
+| WX-02       | 45    |
+| WX-03       | 45    |
+| WX-04       | 45    |
+| WX-05       | 45    |
+| WX-06       | 45    |
+| EMO-01      | 46    |
+| EMO-02      | 46    |
+| EMO-03      | 46    |
+| EMO-04      | 46    |
+| EMO-05      | 46    |
