@@ -1,0 +1,31 @@
+.planning/ROADMAP.md
+  s_4e4ee307096ddc::t_418f966c7065d6 163,166
+.planning/phases/38-startup-image-full-deck-coverage/38-VERIFICATION.md
+  s_4e4ee307096ddc::t_96d1e889120b19 1-33
+AGENTS.md
+  s_4e4ee307096ddc::t_8dfb38351b4dc9 168-169
+.planning/STATE.md
+  s_4e4ee307096ddc::t_2ace51d45e6566 12-15
+  s_4e4ee307096ddc::t_2314903cb7907b 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "0a2e307634dc9f4395e258e0a34080ecdb4b37be",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
