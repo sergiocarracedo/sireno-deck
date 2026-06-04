@@ -1,0 +1,31 @@
+.planning/phases/37-partial-rerender-on-source-changes/37-UAT.md
+  s_5bb94676964533::t_431cefc5f7e34b 8,13,18,20,27-28
+  s_5bb94676964533::t_18f9246ad191bf 63
+  s_5bb94676964533::t_6a8a502007d95e 10-11,14-17,19,21-26
+  s_5bb94676964533::t_583fecea52b8f6 12
+  s_5bb94676964533::t_86b883ae08d42f 2
+  s_5bb94676964533::t_6bce92f4b6247e 1,3-7,9,29-30,39-46,49-53,55-62,64-96,98,100-104
+  s_5bb94676964533::t_e10299cff257a1 97,99
+  s_5bb94676964533::t_eb5fe58ea9e60b 31-38,47-48,54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "76da0c057a696257aab06908febd0ac38765dbea",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_5bb94676964533": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_170c8dfafffeQ79121GZrEzSK5",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
