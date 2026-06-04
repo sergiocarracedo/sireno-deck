@@ -9,12 +9,27 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 
 ## Current Position
 
-Phase: 39 — Themable Media Player Surface
-Plan: not yet planned
-Status: context captured
-Last activity: 2026-06-04
+Milestone: v1.3 — Addon Extensibility & Live Hardware ✓ shipped
+Status: ready for next milestone
+Last activity: 2026-06-04 - complete-milestone
 
-Progress: [          ] 0%
+Progress: [##########] 100%
+
+## Milestone History
+
+### v1.3 — Addon Extensibility & Live Hardware
+Completed: 2026-06-04
+Phases: 10 (30-39)
+Key achievements:
+- Shared content helpers (Bars, LabelValueList) + bundled system-status / media-player addons
+- Truthful `pnpm cli:dev` watch mode with forwarded arguments
+- Addon-owned polling with split data/render intervals
+- Full Tailwind support as canonical browser utility layer
+- Shared command-action contract for tap/hold/double-tap
+- Browser-backed hardware decks stay live at ~250ms resampling
+- Partial rerender on config/addon source changes
+- Startup image fills 100% of device surface on warm beige
+- Themable media-player Surface via manifest declaration
 
 ## Performance Metrics
 

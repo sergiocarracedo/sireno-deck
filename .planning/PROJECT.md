@@ -8,14 +8,21 @@ Sireno Deck is a TypeScript CLI for controlling and managing Stream Deck devices
 
 Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
 
-## Current Milestone: v1.3 Typography and Rich Formatting
+## Current Milestone: v1.3 Addon Extensibility & Live Hardware
 
-**Goal:** Make text rendering theme-relative, live-fit aware, and expressive enough for richer built-in date/time layouts without hard-coded typography seams.
+**Goal:** Make addons first-class authoring targets, keep browser-rendered surfaces live on physical hardware, and improve the day-to-day dev/iteration loop.
 
 **Target features:**
-- Theme-relative typography scaling so component `size` variants like `sm`, `md`, and `lg` scale proportionally from each active typography base instead of pinning exact theme font sizes
-- Live text fitting that recomputes on content changes to find the largest non-wrapping size before falling back to the configured minimum and wrapping behavior
-- Advanced built-in date-time formatting with inline line breaks, accent-highlighted bold spans, inline size overrides, and 1-second blinking segments
+- Shared content helpers (Bars, LabelValueList) and bundled system-status / media-player addons with honest per-OS unavailable states
+- Truthful `pnpm cli:dev` watch mode with forwarded subcommand arguments
+- Addon-owned polling/data-fetching with split data/render intervals and OS-specific adapters
+- Full Tailwind support as the canonical browser utility layer
+- Shared command-action contract for `tap` / `hold` / `double-tap` across command-capable built-ins
+- Browser-backed hardware decks stay live at roughly 250ms resampling cadence
+- Removed text marquee (too expensive) and replaced with ellipsis fallback
+- Partial rerender on config/addon source changes instead of full app restart
+- Startup image covers 100% of device surface on warm beige background
+- Themable media-player Surface via manifest declaration
 
 ## Latest Shipped Milestone: v1.2 Session Context and Surface Composition
 
