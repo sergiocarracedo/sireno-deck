@@ -1,0 +1,24 @@
+.planning/STATE.md
+  s_0580d7c7a41764::t_ba2fd6968ce121 371
+  s_0580d7c7a41764::t_f3e53eaf134b7a 14
+.planning/quick/034-weather-normalize-metric-units/034-PLAN.md
+  s_0580d7c7a41764::t_96b53541353bd6 1-85
+.planning/quick/034-weather-normalize-metric-units/034-SUMMARY.md
+  s_0580d7c7a41764::t_c0492631bd9700 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ab4f423cb34537a58169a9c7af931fd4f980c0c8",
+  "prompts": {},
+  "sessions": {
+    "s_0580d7c7a41764": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_166a141a1ffeuVB57GbHYAshIa",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
