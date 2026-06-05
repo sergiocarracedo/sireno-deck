@@ -4,7 +4,7 @@ import { AddonButtonActionConfigSchema } from '../../addon/api.js'
 
 export const DIGITAL_DATE_TIME_INTERVAL_MS = 1000
 export const ANALOG_CLOCK_INTERVAL_MS = 1000
-export const CALENDAR_SHEET_INTERVAL_MS = 60000
+export const DATE_BUTTON_INTERVAL_MS = 60000
 
 export const BuiltinDateTimeButtonSchema = z
   .object({
@@ -38,9 +38,10 @@ export const BuiltinAnalogClockButtonSchema = z
     ...AddonButtonActionConfigSchema.shape,
   })
   .strict()
-export const BuiltinCalendarSheetButtonSchema = z
+export const BuiltinDateButtonSchema = z
   .object({
-    ...AddonButtonActionConfigSchema.shape,
+    locale: z.string().min(2).max(35).optional(),
+    time_zone: z.string().min(1).optional(),
   })
   .strict()
 
@@ -60,6 +61,6 @@ export type BuiltinAnalogClockButtonConfig = z.infer<
   typeof BuiltinAnalogClockButtonSchema
 >
 
-export type BuiltinCalendarSheetButtonConfig = z.infer<
-  typeof BuiltinCalendarSheetButtonSchema
+export type BuiltinDateButtonConfig = z.infer<
+  typeof BuiltinDateButtonSchema
 >
