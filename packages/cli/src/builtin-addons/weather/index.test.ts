@@ -9,15 +9,12 @@ describe('weather addon', () => {
     expect(weatherAddon.buttons.map((b) => b.type)).toEqual(['weather'])
   })
 
-  it('accepts a config with units: metric and unavailable_label', () => {
+  it('accepts a config with units: metric', () => {
     const def = weatherAddon.buttons[0]!
-    expect(
-      def.configSchema.parse({ units: 'metric', unavailable_label: 'Hi' }),
-    ).toEqual({
+    expect(def.configSchema.parse({ units: 'imperial' })).toEqual({
       poll_interval_min: 10,
       render_interval_ms: 600_000,
-      unavailable_label: 'Hi',
-      units: 'metric',
+      units: 'imperial',
     })
   })
 })

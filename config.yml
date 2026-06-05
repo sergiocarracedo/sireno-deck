@@ -53,7 +53,7 @@ decks:
       - position: 11
         type: time
       - position: 3
-        type: calendar-sheet
+        type: date
       - position: 13
         type: clock
 

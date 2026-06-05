@@ -17,3 +17,6 @@ export const WeatherButtonSchema = z
   .strict()
 
 export type WeatherButtonConfig = z.infer<typeof WeatherButtonSchema>
+
+export const SurfacePageSchema = z.enum(['main', 'data', 'forecast'])
+export type SurfacePage = z.infer<typeof SurfacePageSchema>
