@@ -11,7 +11,13 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 
 Milestone: v1.4 — Addons & UX Polish (scope cut: distribution removed)
 Status: In execution — Phases 41-45 complete, Phase 46 next
-Last activity: 2026-06-05 — Completed quick task 034: Weather snapshot stores metric internally with conversion functions
+Last activity: 2026-06-05 — Completed quick task 036: Move default theme presentation interfaces to core contract and fix ButtonFrame line 53
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 036 | Move default theme presentation interfaces to core contract and fix ButtonFrame line 53 | 2026-06-05 | 1d1b359 | .planning/quick/036-move-theme-interfaces-to-core/ |
 
 Progress: [█████████░] ~90% (5 of 6 in-scope v1.4 phases complete; Phase 46 unstarted)
 
