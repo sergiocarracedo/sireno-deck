@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-06-05
+
+### Features
+
+- Added real hourly forecast (next 6 entries) to the weather button's `forecast` page: each column shows hour, WMO icon, converted temperature, and precipitation chance. Primary provider (open-meteo) walks 2h stride; the wttr.in fallback walks native 3h cadence.
+
+### Fixes
+
+- Fixed the weather button's forecast page only rendering 3 columns when the next future hour sat late in the open-meteo hourly window. Root cause was that `buildHourlyEntries` walked at stride 2 and broke out of bounds, so the page silently collapsed to whatever slots remained. Bumped `forecast_days` to 3 and made the walker fall back to stride 1 when fewer than 12 future slots remain, so the page renders a full 6 columns in all real cases.
+
+### Learnings
+
+- A "stride N" walker that breaks out of bounds silently produces a too-short list that the UI renders as a partial layout. The fix that preserves the original cadence intent is to fall back to a denser stride within available data, not to fabricate. Always validate that the worst-case start offset still yields the desired count.
+- When a UI commits to "show 6 of X", the data layer should guarantee 6 wherever the source has data. A test that uses 3 entries hides this class of bug — the populated-case test now uses 6 to mirror production.
+
 ## 2026-06-02
 
 ### Features

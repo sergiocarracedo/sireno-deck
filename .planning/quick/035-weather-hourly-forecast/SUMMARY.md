@@ -65,6 +65,17 @@ The forecast page may show entries 2h apart (open-meteo) or 3h apart (wttr.in). 
 1. `weather-controller.ts`, `open-meteo-client.ts` — commit `1738536`
 2. `wttr-in-fallback.ts` — commit `1539b71`
 3. `Forecast.tsx` (new), `Surface.tsx`, `weather.test.tsx` — commit `15dea99`
+4. **Fix:** `open-meteo-client.ts`, `weather.test.tsx` — commit `bb17c56` (always return 6 entries)
+
+## Followup Fix: 6-Column Guarantee
+
+After ship, the runtime was returning only 3 columns when the next future hour sat late in the open-meteo hourly window (e.g. querying a location ~18-24h into the data set). Root cause: stride-2 walker broke out of bounds and stopped early.
+
+Resolution:
+- Bumped `forecast_days` from 2 to 3 (72 hours of headroom).
+- `buildHourlyEntries` now falls back to stride 1 when fewer than 12 future slots remain, so the page always renders 6 columns wherever the source has data.
+- Test fixture updated from 3 to 6 entries so the test mirrors production.
+- Cadence asymmetry still intentional between providers (2h primary vs 3h fallback); the new fallback is within-stride, not between-provider.
 
 ## Out of Scope (deferred)
 

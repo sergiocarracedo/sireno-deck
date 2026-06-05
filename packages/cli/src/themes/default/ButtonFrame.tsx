@@ -43,16 +43,9 @@ export function ThemeIcon(props: ThemeIconPresentationProps): ReactElement {
 }
 
 export function ThemeChip(props: ThemeChipPresentationProps): ReactElement {
-  return addThemeClass(
-    props.children as ReactElement,
-    'sireno-default-chip',
-    {
-      'data-sireno-default-chip-tone': props.tone as string,
-      ...(props.size !== undefined
-        ? { 'data-sireno-default-text-size': props.size as string }
-        : {}),
-    },
-  )
+  return addThemeClass(props.children, 'sireno-default-chip', {
+    'data-sireno-default-chip-tone': props.tone,
+  })
 }
 
 export function ThemeText(props: ThemeTextPresentationProps): ReactElement {
