@@ -42,7 +42,7 @@ export const builtinWeatherButton = defineMountedButton({
   },
   render: ({ config, store }) => {
     const state = getState(store.button.snapshot)
-    return <Surface snap={state.snapshot} unavailable={config.unavailable_label} />
+    return <Surface snap={state.snapshot} units={config.units} />
   },
   type: 'weather',
 })
