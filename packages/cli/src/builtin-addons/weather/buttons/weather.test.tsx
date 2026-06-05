@@ -37,6 +37,7 @@ function createHarness(button: typeof builtinWeatherButton, config: unknown, sna
 
 const availableSnapshot: WeatherSnapshot = {
   available: true,
+  hourly: [],
   humidity: 65,
   location: 'London',
   source: 'open-meteo',
@@ -106,5 +107,41 @@ describe('weather', () => {
     )
     const html = renderReactNodeToHtml(harness.render() as never)
     expect(html).toContain('cloud-rain')
+  })
+
+  it('renders the forecast page placeholder when hourly is empty', () => {
+    const button = builtinWeatherButton
+    const harness = createHarness(
+      button,
+      { units: 'metric' },
+      { snapshot: availableSnapshot, page: 'forecast' },
+    )
+    const html = renderReactNodeToHtml(harness.render() as never)
+    expect(html).toContain('No forecast')
+  })
+
+  it('renders hour labels and converted temperatures on the forecast page', () => {
+    const button = builtinWeatherButton
+    const harness = createHarness(
+      button,
+      { units: 'metric' },
+      {
+        snapshot: {
+          ...availableSnapshot,
+          hourly: [
+            { precipitationChance: 10, temperature: 23, time: '14', weatherCode: 1 },
+            { precipitationChance: 20, temperature: 22, time: '16', weatherCode: 2 },
+            { precipitationChance: 30, temperature: 21, time: '18', weatherCode: 3 },
+          ],
+        },
+        page: 'forecast',
+      },
+    )
+    const html = renderReactNodeToHtml(harness.render() as never)
+    expect(html).toContain('14')
+    expect(html).toContain('16')
+    expect(html).toContain('18')
+    expect(html).toContain('23')
+    expect(html).toContain('10%')
   })
 })

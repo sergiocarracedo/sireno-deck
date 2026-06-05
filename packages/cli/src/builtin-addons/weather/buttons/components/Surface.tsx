@@ -8,6 +8,7 @@ import {
 } from '../../domain/unit-conversion'
 import type { WeatherSnapshot } from '../../domain/weather-controller'
 import { SurfacePage } from '../../schemas'
+import { Forecast } from './Forecast'
 import { WmoIcon } from './WmoIcon'
 
 export function Surface({
@@ -50,41 +51,20 @@ export function Surface({
         </Text>
         <div className="flex gap-1">
           <Icon icon="wind" size={14} />
-          <Text size="xl">Wind</Text>
-          <Text size="xl" tone="primary">
+          <Text size="sm" tone="primary">
             {wind.value} {wind.units}
           </Text>
         </div>
+
         <div className="flex gap-1">
           <Icon icon="droplet" size={14} />
-          <Text size="xl">Hum.</Text>
-          <Text size="xl" tone="primary">
+          <Text size="sm" tone="primary">
             {snap.humidity} {wind.units}
           </Text>
         </div>
       </div>
     ),
-    forecast: (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-1">
-        <Text size="md" tone="primary">
-          {snap.location}
-        </Text>
-        <div>
-          <Icon icon="wind" size={14} />
-          <Text size="xl">Wind</Text>
-          <Text size="xl" tone="primary">
-            {wind.value} {wind.units}
-          </Text>
-        </div>
-        <div>
-          <Icon icon="droplet" size={14} />
-          <Text size="xl">Hum.</Text>
-          <Text size="xl" tone="primary">
-            {snap.humidity} {wind.units}
-          </Text>
-        </div>
-      </div>
-    ),
+    forecast: <Forecast entries={snap.hourly} units={displayUnits} />,
   }
 
   return pages[page ?? 'main']
