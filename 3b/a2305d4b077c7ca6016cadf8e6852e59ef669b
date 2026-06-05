@@ -1,0 +1,26 @@
+.planning/quick/036-move-theme-interfaces-to-core/036-SUMMARY.md
+  s_422e21ef30493a::t_b07c46dba470b1 1-41
+.planning/quick/036-move-theme-interfaces-to-core/036-PLAN.md
+  s_422e21ef30493a::t_98c6d9b4b55f88 1-86
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3ba2305d4b077c7ca6016cadf8e6852e59ef669b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_422e21ef30493a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_166632b95ffer6DrMJlBFvHUvF",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
