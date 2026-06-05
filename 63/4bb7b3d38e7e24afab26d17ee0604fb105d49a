@@ -1,0 +1,19 @@
+packages/cli/src/builtin-addons/date-time/buttons/date.test.tsx
+  s_4e4ee307096ddc::t_58994cd0d6a980 1-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "634bb7b3d38e7e24afab26d17ee0604fb105d49a",
+  "prompts": {},
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
