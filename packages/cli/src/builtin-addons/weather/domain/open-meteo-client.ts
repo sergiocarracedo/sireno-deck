@@ -10,7 +10,9 @@ interface OpenMeteoHourly {
   precipitation_probability: number[]
 }
 
-function buildHourlyEntries(hourly: OpenMeteoHourly | undefined): HourlyForecastEntry[] {
+function buildHourlyEntries(
+  hourly: OpenMeteoHourly | undefined,
+): HourlyForecastEntry[] {
   if (!hourly?.time?.length) return []
   const now = globalThis.Date.now()
   const startIndex = hourly.time.findIndex((iso) => {
@@ -19,9 +21,13 @@ function buildHourlyEntries(hourly: OpenMeteoHourly | undefined): HourlyForecast
   })
   if (startIndex < 0) return []
 
+  // Prefer 2h cadence; fall back to 1h when fewer than 12 future slots remain
+  // so the page can still render 6 columns instead of 3.
+  const stride = startIndex + 10 < hourly.time.length ? 2 : 1
   const out: HourlyForecastEntry[] = []
-  for (let offset = 0; offset < 12 && out.length < 6; offset += 2) {
+  for (let offset = 0; out.length < 6; offset += stride) {
     const idx = startIndex + offset
+    if (idx >= hourly.time.length) break
     const iso = hourly.time[idx]
     if (iso === undefined) break
     const date = new globalThis.Date(iso)
@@ -46,7 +52,7 @@ export async function fetchOpenMeteoSnapshot(
     `?latitude=${latitude}&longitude=${longitude}` +
     `&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m` +
     `&hourly=temperature_2m,weather_code,precipitation_probability` +
-    `&forecast_days=2` +
+    `&forecast_days=3` +
     `&temperature_unit=celsius&wind_speed_unit=kmh&timezone=auto`
 
   const response = await fetch(url)

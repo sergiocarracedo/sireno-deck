@@ -130,8 +130,11 @@ describe('weather', () => {
           ...availableSnapshot,
           hourly: [
             { precipitationChance: 10, temperature: 23, time: '14', weatherCode: 1 },
-            { precipitationChance: 20, temperature: 22, time: '16', weatherCode: 2 },
-            { precipitationChance: 30, temperature: 21, time: '18', weatherCode: 3 },
+            { precipitationChance: 20, temperature: 22, time: '15', weatherCode: 2 },
+            { precipitationChance: 30, temperature: 21, time: '16', weatherCode: 3 },
+            { precipitationChance: 40, temperature: 20, time: '17', weatherCode: 45 },
+            { precipitationChance: 50, temperature: 19, time: '18', weatherCode: 61 },
+            { precipitationChance: 60, temperature: 18, time: '19', weatherCode: 71 },
           ],
         },
         page: 'forecast',
@@ -139,8 +142,7 @@ describe('weather', () => {
     )
     const html = renderReactNodeToHtml(harness.render() as never)
     expect(html).toContain('14')
-    expect(html).toContain('16')
-    expect(html).toContain('18')
+    expect(html).toContain('19')
     expect(html).toContain('23')
     expect(html).toContain('10%')
   })
