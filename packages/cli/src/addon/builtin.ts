@@ -3,6 +3,7 @@ import datetimeButtonsAddon from '../builtin-addons/date-time'
 import emojiSelectorAddon from '../builtin-addons/emoji-selector'
 import mediaPlayerAddon from '../builtin-addons/media-player'
 import systemStatusAddon from '../builtin-addons/system-status'
+import weatherAddon from '../builtin-addons/weather'
 
 import type { SirenoAddon } from './api.js'
 
@@ -13,5 +14,6 @@ export function getBundledAddons(): readonly SirenoAddon[] {
     datetimeButtonsAddon,
     systemStatusAddon,
     mediaPlayerAddon,
+    weatherAddon,
   ]
 }
