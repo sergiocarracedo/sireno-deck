@@ -5,13 +5,13 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 45 complete (Weather Addon). Phase 40 (Distribution Build Pipeline) cut from v1.4 — Node SEA architecturally incompatible with the codebase's native deps (node-hid, sharp libvips, playwright chromium, dbus x11). v1.4 scope: Phases 41-46 only. Distribution work deferred to v1.5. Next: execute-phase 46 (Emoji-Selector Multi-Page).
+**Current focus:** Phase 46 (Emoji-Selector Multi-Page) context captured — ready for planning. Phase 45 complete (Weather Addon). Phase 40 (Distribution Build Pipeline) cut from v1.4 — Node SEA architecturally incompatible with the codebase's native deps (node-hid, sharp libvips, playwright chromium, dbus x11). v1.4 scope: Phases 41-46 only. Distribution work deferred to v1.5.
 
 ## Current Position
 
 Milestone: v1.4 — Addons & UX Polish (scope cut: distribution removed)
 Status: In execution — Phases 41-45 complete, Phase 46 next
-Last activity: 2026-06-05 — Completed quick task 036: Move default theme presentation interfaces to core contract and fix ButtonFrame line 53
+Last activity: 2026-06-06 — discuss-phase 46 (Emoji-Selector Multi-Page) — context captured, ready for planning
 
 ### Quick Tasks Completed
 
@@ -31,7 +31,7 @@ Progress: [█████████░] ~90% (5 of 6 in-scope v1.4 phases com
 | 43 — Date-Time Calendar Button | 1 | 1 | Complete | Replaced `calendar-sheet` stub with real `date` button. |
 | 44 — Media-Volume Buttons | 1 | 1 | Complete | Verification `passed`. |
 | 45 — Weather Addon | 1 | 1 | Complete | Verification `passed`, UAT `testing` — manual UAT rerun still pending. |
-| 46 — Emoji-Selector Multi-Page | 0 | 0 | **Not started** | Next phase in v1.4. |
+| 46 — Emoji-Selector Multi-Page | 0 | 0 | **Context captured** | Next step: plan-phase 46. |
 | 47 — CI Matrix Builds for Linux + Mac | — | — | **Cut — deferred to v1.5** | Was predicated on Phase 40 SEA artifacts. |
 | 48 — Build and Install Documentation | — | — | **Cut — deferred to v1.5** | Was predicated on Phase 40 SEA artifacts. |
 
