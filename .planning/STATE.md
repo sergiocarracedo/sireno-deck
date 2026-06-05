@@ -375,3 +375,4 @@ Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-VERIFICA
 | 032 | Rename font-size to fontSize in TypeScript code | 2026-06-03 | `004d344` | `.planning/quick/032-fontsize-camelcase` |
 | 033 | Change weather button poll interval units to minutes | 2026-06-05 | `c9e1205` | `.planning/quick/033-change-weather-poll-interval-minutes` |
 | 034 | Weather snapshot stores metric internally with conversion functions | 2026-06-05 | `a1ee8e8`, `d3debeb`, `e4c83a7` | `.planning/quick/034-weather-normalize-metric-units` |
+| 035 | Render real hourly forecast in weather button forecast page | 2026-06-05 | `1738536`, `1539b71`, `15dea99` | `.planning/quick/035-weather-hourly-forecast` |
