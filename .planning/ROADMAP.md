@@ -39,17 +39,12 @@ The work splits into seven vertical slices: distribution plumbing first, then a 
 **Depends on:** 41
 **Status:** [x] ✓ Complete (2026-06-04) — validation + component + helper shipped; runtime wiring deferred (needs separate design for hostedButtons pipeline)
 
-### Phase 43: Calendar Date-Time Button
+### Phase 43: Calendar Date-Time Button ✓ Complete (2026-06-04)
 
-**Goal:** Add a new `calendar` button type to the built-in `date-time` addon with vertical month/day/weekday layout.
+**Goal:** Add a new `date` button type to the built-in `date-time` addon with vertical month/day/weekday layout.
 **Requirements:** `CAL-01`, `CAL-02`, `CAL-03`
-**Depends on:** 42 (uses reserved slot awareness)
-**Success criteria:**
-- [x] New `CalendarButtonSchema` registered in `date-time/schemas.ts`
-- [x] `Calendar` button file with vertical layout (accent month → large day → tone weekday)
-- [x] 1-hour poll interval, no commands
-- [x] Addon exports include calendar button
-**Research needed:** No (research confirmed `calendar-sheet.tsx` is a literal stub to replace)
+**Depends on:** 42
+**Status:** [x] ✓ Complete (2026-06-04) — replaced `calendar-sheet` stub with real `date` button, configurable timezone + locale, 60s refresh
 
 ### Phase 44: Media-Volume Buttons
 

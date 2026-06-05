@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.4 — Build, Bundle & UX Polish
-**Phase:** 43 — Date-Time Calendar Button
-**Status:** planning complete
+**Phase:** 43 — Date-Time Calendar Button ✓ complete → Phase 44 — Media-Volume Buttons
+**Status:** verifying
 **Last updated:** 2026-06-04
 
 ---
