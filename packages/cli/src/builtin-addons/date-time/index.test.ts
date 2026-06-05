@@ -4,7 +4,7 @@ import { UNKNOWN_HOST_CONTEXT } from '../../system/host-context.js'
 import { renderReactNodeToHtml } from '../../render/dom-host.js'
 import dateTimeAddon, {
   ANALOG_CLOCK_INTERVAL_MS,
-  CALENDAR_SHEET_INTERVAL_MS,
+  DATE_BUTTON_INTERVAL_MS,
   DIGITAL_DATE_TIME_INTERVAL_MS,
   formatDigitalDateTimeLabel,
   formatLockedTimeCharacters,
@@ -85,7 +85,7 @@ describe('date-time addon', () => {
       (definition) => definition.type === 'locked-time-tile',
     )
     const calendarDefinition = dateTimeAddon.buttons.find(
-      (definition) => definition.type === 'calendar-sheet',
+      (definition) => definition.type === 'date',
     )
     const timeDefinition = dateTimeAddon.buttons.find(
       (definition) => definition.type === 'time',
@@ -99,9 +99,7 @@ describe('date-time addon', () => {
     const clockConfig = clockDefinition?.configSchema.parse({
       commands: { 'double-tap': 'cal' },
     })
-    const calendarConfig = calendarDefinition?.configSchema.parse({
-      commands: { tap: 'open-calendar' },
-    })
+    const calendarConfig = calendarDefinition?.configSchema.parse({})
 
     expect(dateTimeAddon.buttons.map((definition) => definition.type)).toEqual(
       expect.arrayContaining([
@@ -109,7 +107,7 @@ describe('date-time addon', () => {
         'locked-time-tile',
         'analog-clock',
         'clock',
-        'calendar-sheet',
+        'date',
         'time',
       ]),
     )
@@ -140,11 +138,11 @@ describe('date-time addon', () => {
     expect(clockDefinition?.defaultIntervalMs).toBe(ANALOG_CLOCK_INTERVAL_MS)
     expect(clockConfig).toEqual({ commands: { 'double-tap': 'cal' } })
 
-    expect(calendarDefinition?.type).toBe('calendar-sheet')
+    expect(calendarDefinition?.type).toBe('date')
     expect(calendarDefinition?.defaultIntervalMs).toBe(
-      CALENDAR_SHEET_INTERVAL_MS,
+      DATE_BUTTON_INTERVAL_MS,
     )
-    expect(calendarConfig).toEqual({ commands: { tap: 'open-calendar' } })
+    expect(calendarConfig).toEqual({})
 
     expect(timeDefinition?.type).toBe('time')
     expect(timeDefinition?.defaultIntervalMs).toBe(DIGITAL_DATE_TIME_INTERVAL_MS)
@@ -325,21 +323,21 @@ describe('date-time addon', () => {
     expect(clockDefinition?.configSchema.parse({})).toEqual({})
   })
 
-  it('creates a renderable calendar-sheet button surface with the expected cadence contract', () => {
+  it('creates a renderable date button surface with the expected cadence contract', () => {
     const definition = dateTimeAddon.buttons.find(
-      (button) => button.type === 'calendar-sheet',
+      (button) => button.type === 'date',
     )
 
-    expect(definition?.defaultIntervalMs).toBe(CALENDAR_SHEET_INTERVAL_MS)
+    expect(definition?.defaultIntervalMs).toBe(DATE_BUTTON_INTERVAL_MS)
     const html = renderReactNodeToHtml(
       createMountedHarness(definition!, {}, 6).render() as never,
     )
 
     expect(html).toContain('data-sireno-full-surface="true"')
-    expect(html).toContain('Date')
-    expect(html).toContain('font-main text-foreground')
-    expect(html).toContain('font-aux text-accent')
-    expect(html).toContain('gap-1')
+    expect(html).toMatch(/<[^>]*>(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)</) // month abbreviation
+    expect(html).toContain('text-accent')
+    expect(html).toContain('text-primary')
+    expect(html).toContain('text-foreground')
   })
 
   it('runs shared tap commands on regular digital date-time buttons', async () => {
