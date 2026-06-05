@@ -53,20 +53,12 @@ The work splits into seven vertical slices: distribution plumbing first, then a 
 **Depends on:** 42
 **Status:** [x] ✓ Complete (2026-06-04)
 
-### Phase 45: Weather Addon
+### Phase 45: Weather Addon ✓ Complete (2026-06-04)
 
-**Goal:** New bundled `weather` addon with icon + temperature + location, mirroring the media-player addon shape.
-**Requirements:** `WX-01` through `WX-06`
+**Goal:** New bundled `weather` addon mirroring media-player shape (controller, surface, button, schema, addon registration). Open-Meteo as the primary backend (free, no key, WMO codes), wttr.in as the fallback. Honest "not available" state for unsupported OS / no network.
+**Requirements:** `WX-01`, `WX-02`, `WX-03`, `WX-04`, `WX-05`, `WX-06`
 **Depends on:** 42
-**Success criteria:**
-- [x] New `weather` addon registered in the bundled registry
-- [x] `WeatherController` with `getSnapshot()` returning `{ available, temperature, icon, location, source }`
-- [x] Open-Meteo primary fetch (no API key, WMO codes)
-- [x] wttr.in fallback if Open-Meteo fails
-- [x] IP geolocation is opt-in via config flag; manual location in config otherwise
-- [x] Weather `Surface` component renders icon + temperature + location
-- [x] Honest "not available" state for unsupported OS / no network
-**Research needed:** No (covered by v1.4 research)
+**Status:** [x] ✓ Complete (2026-06-04)
 
 ### Phase 46: Emoji-Selector Multi-Page
 

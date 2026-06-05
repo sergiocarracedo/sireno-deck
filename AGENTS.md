@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.4 — Build, Bundle & UX Polish
-**Phase:** 45 — Weather Addon
-**Status:** planning complete
+**Phase:** 45 — Weather Addon ✓ complete → Phase 46 — Emoji-Selector Multi-Page
+**Status:** verifying
 **Last updated:** 2026-06-04
 
 ---
