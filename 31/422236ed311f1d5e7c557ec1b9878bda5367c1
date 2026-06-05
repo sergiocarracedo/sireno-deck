@@ -1,0 +1,24 @@
+packages/cli/scripts/build-sea.mjs
+  s_228741f14b70e9::t_60346042177af8 1-85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "31422236ed311f1d5e7c557ec1b9878bda5367c1",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_228741f14b70e9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_167162d7affejXF6Te6G05qTh8",
+        "model": "minimax-m3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
