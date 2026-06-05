@@ -86,7 +86,6 @@ export async function fetchWttrInSnapshot(
   latitude: number,
   longitude: number,
   name: string,
-  units: 'metric' | 'imperial',
 ): Promise<WeatherSnapshot> {
   const response = await fetch(
     `https://wttr.in/${latitude},${longitude}?format=j1`,
@@ -108,12 +107,8 @@ export async function fetchWttrInSnapshot(
   if (!current) {
     throw new Error('wttr.in: no current_condition')
   }
-  const temperature = units === 'imperial'
-    ? Number(current.temp_F ?? '0')
-    : Number(current.temp_C ?? '0')
-  const windSpeed = units === 'imperial'
-    ? Number(current.windspeedMiles ?? '0')
-    : Number(current.windspeedKmph ?? '0')
+  const temperature = Number(current.temp_C ?? '0')
+  const windSpeed = Number(current.windspeedKmph ?? '0')
   return {
     available: true,
     humidity: Number(current.humidity ?? '0'),

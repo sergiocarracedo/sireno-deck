@@ -4,15 +4,12 @@ export async function fetchOpenMeteoSnapshot(
   latitude: number,
   longitude: number,
   name: string,
-  units: 'metric' | 'imperial',
 ): Promise<WeatherSnapshot> {
-  const tempUnit = units === 'imperial' ? 'fahrenheit' : 'celsius'
-  const windUnit = units === 'imperial' ? 'mph' : 'kmh'
   const url =
     `https://api.open-meteo.com/v1/forecast` +
     `?latitude=${latitude}&longitude=${longitude}` +
     `&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m` +
-    `&temperature_unit=${tempUnit}&wind_speed_unit=${windUnit}`
+    `&temperature_unit=celsius&wind_speed_unit=kmh`
 
   const response = await fetch(url)
   if (!response.ok) {

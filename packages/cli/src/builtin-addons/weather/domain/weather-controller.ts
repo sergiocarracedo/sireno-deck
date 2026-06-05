@@ -1,17 +1,18 @@
 import type { HostContext } from '../../../system/host-context.js'
+import type { WeatherButtonConfig } from '../schemas.js'
 import { fetchIpGeolocation } from './ip-geolocation.js'
 import { fetchOpenMeteoSnapshot } from './open-meteo-client.js'
 import { fetchWttrInSnapshot } from './wttr-in-fallback.js'
-import type { WeatherButtonConfig } from '../schemas.js'
 
+// Units are metrics unics
 export interface WeatherSnapshot {
   available: boolean
   humidity: number
   location: string
   source: string
-  temperature: number
+  temperature: number // C
   weatherCode: number
-  windSpeed: number
+  windSpeed: number // km/h
 }
 
 export function createUnavailableWeatherSnapshot(
@@ -62,7 +63,6 @@ export async function fetchWeatherSnapshot(
       coords.latitude,
       coords.longitude,
       coords.name,
-      config.units,
     )
   } catch {
     try {
@@ -70,7 +70,6 @@ export async function fetchWeatherSnapshot(
         coords.latitude,
         coords.longitude,
         coords.name,
-        config.units,
       )
     } catch {
       return createUnavailableWeatherSnapshot('all-providers-failed')
