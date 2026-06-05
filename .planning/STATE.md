@@ -5,15 +5,38 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** Phase 38 complete. Phase 39 context captured — themable media-player surface. Next: plan-phase 39.
+**Current focus:** Phase 45 complete (Weather Addon). Phase 40 (Distribution Build Pipeline) cut from v1.4 — Node SEA architecturally incompatible with the codebase's native deps (node-hid, sharp libvips, playwright chromium, dbus x11). v1.4 scope: Phases 41-46 only. Distribution work deferred to v1.5. Next: execute-phase 46 (Emoji-Selector Multi-Page).
 
 ## Current Position
 
-Milestone: v1.4 — Build, Bundle & UX Polish
-Status: Defining requirements
-Last activity: 2026-06-04 — Milestone v1.4 started
+Milestone: v1.4 — Addons & UX Polish (scope cut: distribution removed)
+Status: In execution — Phases 41-45 complete, Phase 46 next
+Last activity: 2026-06-05 — Phase 40 cut from v1.4; Phases 47/48 deferred to v1.5 alongside 40
 
-Progress: [          ] 0%
+Progress: [█████████░] ~90% (5 of 6 in-scope v1.4 phases complete; Phase 46 unstarted)
+
+### v1.4 Phase Snapshot (2026-06-05 — post Phase 40 cut)
+
+| Phase | Plans | Summaries | Status | Notes |
+|-------|-------|-----------|--------|-------|
+| 40 — Distribution Build Pipeline | — | — | **Cut — deferred to v1.5** | Node SEA architecturally incompatible with native deps (node-hid, sharp libvips, playwright chromium, dbus x11). See `.planning/solutions/build-errors/node-sea-not-viable-for-native-deps-2026-06-05.md`. |
+| 41 — First-Run Chromium Auto-Install | 1 | 1 | Complete | Verified. |
+| 42 — System-Reserved Back Button | 2 | 2 | Complete | Runtime wiring deferred via gap-closure plan; helper/validation/component shipped. |
+| 43 — Date-Time Calendar Button | 1 | 1 | Complete | Replaced `calendar-sheet` stub with real `date` button. |
+| 44 — Media-Volume Buttons | 1 | 1 | Complete | Verification `passed`. |
+| 45 — Weather Addon | 1 | 1 | Complete | Verification `passed`, UAT `testing` — manual UAT rerun still pending. |
+| 46 — Emoji-Selector Multi-Page | 0 | 0 | **Not started** | Next phase in v1.4. |
+| 47 — CI Matrix Builds for Linux + Mac | — | — | **Cut — deferred to v1.5** | Was predicated on Phase 40 SEA artifacts. |
+| 48 — Build and Install Documentation | — | — | **Cut — deferred to v1.5** | Was predicated on Phase 40 SEA artifacts. |
+
+### Phase 40 Cut Rationale (2026-06-05)
+
+- Node SEA's `node --build-sea` flag was Node 23 experimental, never carried into Node 22/24 LTS.
+- Real SEA flow on supported Node versions: `node --experimental-sea-config` (generates blob) + `postject` (injects into a copy of node binary). mksnapshot cannot load code with native bindings.
+- esbuild `--bundle` on this codebase fails on `x11` (dbus-next media addon), `chromium-bidi` (playwright-core), and similar native-bound paths.
+- Even a "slim" sireno-host binary (option 2) has the same constraint — `@elgato-stream-deck/node` is required to talk to the device, and it can't be snapshotted.
+- Honest distribution paths: native FFI binary (Rust/Go), Bun compile, or ship the source. None are v1.4 work; all are v1.5 candidates.
+- User decision: cut from v1.4, defer to v1.5. v1.4 milestone renamed from "Build, Bundle & UX Polish" to "Addons & UX Polish".
 
 ## Milestone History
 

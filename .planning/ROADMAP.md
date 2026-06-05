@@ -1,35 +1,27 @@
 # Roadmap — Sireno Deck
 
-**Version:** v1.4 — Build, Bundle & UX Polish
-**Milestone goal:** Make the CLI distributable as standalone Linux and Mac executables, expand the bundled addon surface, and add the system-reserved back button for subdeck navigation.
-**Last updated:** 2026-06-04
+**Version:** v1.4 — Addons & UX Polish (scope cut 2026-06-05: distribution removed)
+**Milestone goal:** Expand the bundled addon surface and add the system-reserved back button for subdeck navigation. Distribution work (Phases 40, 47, 48) deferred to v1.5 — Node SEA is architecturally incompatible with the codebase's native bindings. v1.4 scope is six phases (41-46).
+**Last updated:** 2026-06-05
 
 ## Milestone Summary
 
-v1.4 ships the CLI as a standalone executable (Linux x64/arm64, Mac arm64) with first-run Chromium auto-install, a system-reserved back button in subdecks, and three bundled-addon additions: calendar date-time, weather, and media-volume (mute + up/down). Emoji-selector paginates large categories.
+v1.4 ships first-run Chromium auto-install, a system-reserved back button in subdecks, and three bundled-addon additions: calendar date-time, weather, and media-volume (mute + up/down). Emoji-selector paginates large categories.
 
-The work splits into seven vertical slices: distribution plumbing first, then a cross-cutting core change (system-reserved button), then the four user-facing feature addons. The first slice establishes the build and bundle output contract; the second unblocks all subsequent addons that need to know about the reserved slot.
+The work splits into six vertical slices: a cross-cutting core change (system-reserved button + first-run UX), then four user-facing feature addons, then the multi-page emoji selector. v1.4 has no distribution work — the dev install path is `git clone && pnpm install`, and the bundled `dist/` artifact is the ship target for v1.5.
 
 ## Phases
 
-### Phase 40: Distribution Build Pipeline
+### ~~Phase 40: Distribution Build Pipeline~~ — Cut from v1.4 (deferred to v1.5)
 
-**Goal:** Build the CLI as a standalone Node SEA executable and wire the output to `/works/test/test-sireno-deck`.
-**Requirements:** `BD-01`, `BD-02`
-**Depends on:** None
-**Success criteria:**
-- [x] `pnpm bundle` runs `tsdown` to produce a single bundled JS
-- [x] `pnpm build:sea` runs `node --build-sea` with `useCodeCache: true` to wrap the bundle
-- [x] Per-OS build script (`build:linux-x64`, `build:linux-arm64`, `build:mac-arm64`) produces a working executable for that target
-- [x] Output written to `${SIRENO_DIST_DIR:-/works/test/test-sireno-deck}/` with platform-arch subdirectories
-- [x] Built executable runs `start --help` without Node.js installed
-**Research needed:** No (covered by v1.4 research)
+**Original goal:** Build the CLI as a standalone Node SEA executable and wire the output to `/works/test/test-sireno-deck`.
+**Cut rationale (2026-06-05):** Node SEA cannot snapshot this codebase. `node --build-sea` was Node 23 experimental and never landed in Node 22/24 LTS. The real two-step flow (`--experimental-sea-config` + `postject`) cannot load code with native bindings. The project imports `@elgato-stream-deck/node` (node-hid), `sharp` (libvips), `playwright` (chromium), and `dbus-next` (x11) — none survive V8 snapshotting. See `.planning/solutions/build-errors/node-sea-not-viable-for-native-deps-2026-06-05.md`.
+**Requirements moved to v1.5:** `BD-01`, `BD-02`
 
 ### Phase 41: First-Run Chromium Auto-Install ✓ Complete (2026-06-04)
 
 **Goal:** Detect missing Playwright Chromium on first CLI run and auto-install via `npx playwright install chromium`.
 **Requirements:** `BD-03`, `BD-05`
-**Depends on:** 40
 **Status:** [x] ✓ Complete (2026-06-04)
 
 ### Phase 42: System-Reserved Back Button ✓ Complete (2026-06-04) — helper + validation + component shipped; runtime integration via gap-closure plan
@@ -72,61 +64,62 @@ The work splits into seven vertical slices: distribution plumbing first, then a 
 - [x] Per-category pagination (each category starts on page 1, not global)
 **Research needed:** No (covered by v1.4 research)
 
-### Phase 47: CI Matrix Builds for Linux + Mac
+### ~~Phase 47: CI Matrix Builds for Linux + Mac~~ — Cut from v1.4 (deferred to v1.5)
 
-**Goal:** GitHub Actions matrix builds produce executables for Linux x64, Linux arm64, and Mac arm64 on every release.
-**Requirements:** `BD-04`
-**Depends on:** 40, 41
-**Success criteria:**
-- [x] `.github/workflows/build.yml` runs on tagged releases
-- [x] Matrix: `ubuntu-latest` × {x64, arm64} + `macos-latest` × {arm64}
-- [x] Each runner executes `pnpm build:sea` for its target
-- [x] Artifacts uploaded to GitHub Releases with checksums
-**Research needed:** No (covered by v1.4 research)
+**Original goal:** GitHub Actions matrix builds produce executables for Linux x64, Linux arm64, and Mac arm64 on every release.
+**Cut rationale:** Was predicated on Phase 40's SEA artifact. With Phase 40 deferred, the CI matrix has no artifact to build. The honest v1.5 question is: "what artifact does CI build?" — native binary? Bun compile? tarball? — and that decision is part of v1.5 planning.
+**Requirements moved to v1.5:** `BD-04`
 
 ## Coverage Check
 
-| Requirement | Phase |
-|-------------|-------|
-| BD-01       | 40    |
-| BD-02       | 40    |
-| BD-03       | 41    |
-| BD-04       | 47    |
-| BD-05       | 41    |
-| SRB-01      | 42    |
-| SRB-02      | 42    |
-| SRB-03      | 42    |
-| SRB-03a     | 42    |
-| SRB-03b     | 42    |
-| SRB-04      | 42    |
-| SRB-05      | 42    |
-| CAL-01      | 43    |
-| CAL-02      | 43    |
-| CAL-03      | 43    |
-| MV-01       | 44    |
-| MV-02       | 44    |
-| MV-03       | 44    |
-| MV-04       | 44    |
-| MV-05       | 44    |
-| MV-06       | 44    |
-| MV-07       | 44    |
-| WX-01       | 45    |
-| WX-02       | 45    |
-| WX-03       | 45    |
-| WX-04       | 45    |
-| WX-05       | 45    |
-| WX-06       | 45    |
-| EMO-01      | 46    |
-| EMO-02      | 46    |
-| EMO-03      | 46    |
-| EMO-04      | 46    |
-| EMO-05      | 46    |
+| Requirement | Phase    | Status |
+|-------------|----------|--------|
+| BD-01       | v1.5     | Deferred from v1.4 (Phase 40 cut) |
+| BD-02       | v1.5     | Deferred from v1.4 (Phase 40 cut) |
+| BD-03       | 41       | ✓ Complete |
+| BD-04       | v1.5     | Deferred from v1.4 (Phase 47 cut) |
+| BD-05       | 41       | ✓ Complete |
+| SRB-01      | 42       | ✓ Complete |
+| SRB-02      | 42       | ✓ Complete |
+| SRB-03      | 42       | ✓ Complete |
+| SRB-03a     | 42       | ✓ Complete |
+| SRB-03b     | 42       | ✓ Complete |
+| SRB-04      | 42       | ✓ Complete |
+| SRB-05      | 42       | ✓ Complete |
+| CAL-01      | 43       | ✓ Complete |
+| CAL-02      | 43       | ✓ Complete |
+| CAL-03      | 43       | ✓ Complete |
+| MV-01       | 44       | ✓ Complete |
+| MV-02       | 44       | ✓ Complete |
+| MV-03       | 44       | ✓ Complete |
+| MV-04       | 44       | ✓ Complete |
+| MV-05       | 44       | ✓ Complete |
+| MV-06       | 44       | ✓ Complete |
+| MV-07       | 44       | ✓ Complete |
+| WX-01       | 45       | ✓ Complete |
+| WX-02       | 45       | ✓ Complete |
+| WX-03       | 45       | ✓ Complete |
+| WX-04       | 45       | ✓ Complete |
+| WX-05       | 45       | ✓ Complete |
+| WX-06       | 45       | ✓ Complete |
+| EMO-01      | 46       | Not started (next) |
+| EMO-02      | 46       | Not started (next) |
+| EMO-03      | 46       | Not started (next) |
+| EMO-04      | 46       | Not started (next) |
+| EMO-05      | 46       | Not started (next) |
 
-### Phase 48: Build and Install Documentation
+### ~~Phase 48: Build and Install Documentation~~ — Cut from v1.4 (deferred to v1.5)
 
-**Goal:** Ship end-user and developer documentation for the v1.4 standalone binary — install, run, and build-from-source flows.
-**Status:** [ ] Not started
-**Depends on:** Phase 40
+**Original goal:** Ship end-user and developer documentation for the v1.4 standalone binary.
+**Cut rationale:** Was predicated on Phase 40's SEA artifact. README is already truthful about the dev install path (`git clone && pnpm install`). End-user install documentation needs a real distribution target, which is a v1.5 question.
+
+### v1.5 Backlog (informational)
+
+These phases are deferred from v1.4 and queued for v1.5 planning:
+
+- **Phase 40 (re-scope)** — Distribution Build Pipeline. v1.5 must first decide the distribution target (native FFI binary / Bun compile / npm distribution / pkg) before re-planning.
+- **Phase 47 (re-scope)** — CI Matrix Builds. Depends on the v1.5 distribution decision.
+- **Phase 48 (re-scope)** — Build & Install Documentation. Depends on the v1.5 distribution decision.
 
 ### Plans
-*Not yet planned — run `plan-phase 48`*
+*Not yet planned — run `plan-phase 46` next*

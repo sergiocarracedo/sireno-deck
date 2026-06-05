@@ -8,12 +8,12 @@ Sireno Deck is a TypeScript CLI for controlling and managing Stream Deck devices
 
 Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
 
-## Current Milestone: v1.4 — Build, Bundle & UX Polish
+## Current Milestone: v1.4 — Addons & UX Polish (scope cut 2026-06-05: distribution removed)
 
-**Goal:** Make the CLI distributable as standalone Linux and Mac executables, expand the bundled addon surface, and add the system-reserved back button for subdeck navigation.
+**Goal:** Expand the bundled addon surface and add the system-reserved back button for subdeck navigation. Distribution work deferred to v1.5 — Node SEA architecturally incompatible with the codebase's native bindings (see `.planning/solutions/build-errors/node-sea-not-viable-for-native-deps-2026-06-05.md`).
 
 **Target features:**
-- Build and bundle workflow that produces Linux and Mac executables in `/works/test/test-sireno-deck`
+- ~~Build and bundle workflow that produces Linux and Mac executables in `/works/test/test-sireno-deck`~~ — Deferred to v1.5
 - Auto-install Chromium on first run when missing (no bundled Playwright, license-safe)
 - Calendar button in the built-in date-time addon (month/day/weekday vertical layout)
 - New bundled weather addon (icon + temperature + location)
