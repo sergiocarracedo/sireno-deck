@@ -4,7 +4,14 @@ import { fetchIpGeolocation } from './ip-geolocation.js'
 import { fetchOpenMeteoSnapshot } from './open-meteo-client.js'
 import { fetchWttrInSnapshot } from './wttr-in-fallback.js'
 
-// Units are metrics unics
+// Units are metric only
+export interface HourlyForecastEntry {
+  time: string // 2-digit local hour, e.g. '14'
+  temperature: number // C
+  weatherCode: number
+  precipitationChance: number // 0-100
+}
+
 export interface WeatherSnapshot {
   available: boolean
   humidity: number
@@ -13,6 +20,7 @@ export interface WeatherSnapshot {
   temperature: number // C
   weatherCode: number
   windSpeed: number // km/h
+  hourly: HourlyForecastEntry[]
 }
 
 export function createUnavailableWeatherSnapshot(
@@ -26,6 +34,7 @@ export function createUnavailableWeatherSnapshot(
     temperature: 0,
     weatherCode: 0,
     windSpeed: 0,
+    hourly: [],
   }
 }
 

@@ -1,4 +1,40 @@
-import type { WeatherSnapshot } from './weather-controller.js'
+import type {
+  HourlyForecastEntry,
+  WeatherSnapshot,
+} from './weather-controller.js'
+
+interface OpenMeteoHourly {
+  time: string[]
+  temperature_2m: number[]
+  weather_code: number[]
+  precipitation_probability: number[]
+}
+
+function buildHourlyEntries(hourly: OpenMeteoHourly | undefined): HourlyForecastEntry[] {
+  if (!hourly?.time?.length) return []
+  const now = globalThis.Date.now()
+  const startIndex = hourly.time.findIndex((iso) => {
+    const t = globalThis.Date.parse(iso)
+    return Number.isFinite(t) && t >= now
+  })
+  if (startIndex < 0) return []
+
+  const out: HourlyForecastEntry[] = []
+  for (let offset = 0; offset < 12 && out.length < 6; offset += 2) {
+    const idx = startIndex + offset
+    const iso = hourly.time[idx]
+    if (iso === undefined) break
+    const date = new globalThis.Date(iso)
+    if (Number.isNaN(date.getTime())) break
+    out.push({
+      time: String(date.getHours()).padStart(2, '0'),
+      temperature: hourly.temperature_2m[idx] ?? 0,
+      weatherCode: hourly.weather_code[idx] ?? 0,
+      precipitationChance: hourly.precipitation_probability[idx] ?? 0,
+    })
+  }
+  return out
+}
 
 export async function fetchOpenMeteoSnapshot(
   latitude: number,
@@ -9,7 +45,9 @@ export async function fetchOpenMeteoSnapshot(
     `https://api.open-meteo.com/v1/forecast` +
     `?latitude=${latitude}&longitude=${longitude}` +
     `&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m` +
-    `&temperature_unit=celsius&wind_speed_unit=kmh`
+    `&hourly=temperature_2m,weather_code,precipitation_probability` +
+    `&forecast_days=2` +
+    `&temperature_unit=celsius&wind_speed_unit=kmh&timezone=auto`
 
   const response = await fetch(url)
   if (!response.ok) {
@@ -22,6 +60,7 @@ export async function fetchOpenMeteoSnapshot(
       wind_speed_10m?: number
       relative_humidity_2m?: number
     }
+    hourly?: OpenMeteoHourly
   }
   const current = json.current
   if (!current || typeof current.temperature_2m !== 'number') {
@@ -35,5 +74,6 @@ export async function fetchOpenMeteoSnapshot(
     temperature: current.temperature_2m,
     weatherCode: current.weather_code ?? 0,
     windSpeed: current.wind_speed_10m ?? 0,
+    hourly: buildHourlyEntries(json.hourly),
   }
 }
