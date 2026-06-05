@@ -1,0 +1,25 @@
+packages/cli/src/builtin-addons/weather/domain/wttr-in-fallback.ts
+  s_3261d8b10ef836::t_f4799b9e681787 1-4
+  s_3261d8b10ef836::t_4d521da63411c3 88-122,143-151,167
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1539b71aed6fcfb5629299b3cf538be167264cdf",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_3261d8b10ef836": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1667395a0fferl43AlHc5lyRrf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
