@@ -1,33 +1,15 @@
-import { cloneElement, type ReactElement, type ReactNode } from 'react'
+import { cloneElement, type ReactElement } from 'react'
+
+import {
+  ThemeButtonFrameProps,
+  ThemeChipPresentationProps,
+  ThemeIconPresentationProps,
+  ThemeTextPresentationProps,
+} from '@/config/theme'
 
 import { cn } from '../utils/cn'
 
-export interface ButtonFrameProps {
-  children: ReactNode
-}
-
-export interface ThemeIconProps {
-  children: ReactElement
-  decorative: boolean
-  source: 'asset' | 'brand' | 'generic'
-  tone?: 'accent' | 'danger' | 'foreground' | 'primary' | 'success'
-}
-
-export interface ThemeChipProps {
-  children: ReactElement
-  tone: 'accent' | 'danger' | 'foreground' | 'primary' | 'success'
-}
-
-export interface ThemeTextProps {
-  align: 'center' | 'left' | 'right'
-  children: ReactElement
-  fit: 'ellipsis' | 'shrink' | 'wrap'
-  size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
-  tone: 'accent' | 'danger' | 'foreground' | 'primary' | 'success'
-  typography: 'aux' | 'main' | 'mono'
-}
-
-export function ButtonFrame(props: ButtonFrameProps) {
+export function ButtonFrame(props: ThemeButtonFrameProps) {
   return (
     <div
       className={cn([
@@ -46,26 +28,34 @@ function addThemeClass(
   extraProps?: Record<string, string>,
 ): ReactElement {
   const currentProps = element.props as { className?: string }
-
-  return cloneElement(element, {
+  const newProps: Record<string, string> = {
     ...extraProps,
     className: cn(className, currentProps.className),
-  })
+  }
+
+  return cloneElement(element, newProps)
 }
 
-export function ThemeIcon(props: ThemeIconProps): ReactElement {
+export function ThemeIcon(props: ThemeIconPresentationProps): ReactElement {
   return addThemeClass(props.children, 'sireno-default-icon', {
     'data-sireno-default-icon-source': props.source,
   })
 }
 
-export function ThemeChip(props: ThemeChipProps): ReactElement {
-  return addThemeClass(props.children, 'sireno-default-chip', {
-    'data-sireno-default-chip-tone': props.tone,
-  })
+export function ThemeChip(props: ThemeChipPresentationProps): ReactElement {
+  return addThemeClass(
+    props.children as ReactElement,
+    'sireno-default-chip',
+    {
+      'data-sireno-default-chip-tone': props.tone as string,
+      ...(props.size !== undefined
+        ? { 'data-sireno-default-text-size': props.size as string }
+        : {}),
+    },
+  )
 }
 
-export function ThemeText(props: ThemeTextProps): ReactElement {
+export function ThemeText(props: ThemeTextPresentationProps): ReactElement {
   return addThemeClass(props.children, 'sireno-default-text', {
     'data-sireno-default-text-fit': props.fit,
     'data-sireno-default-text-size': props.size,
