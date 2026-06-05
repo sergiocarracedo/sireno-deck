@@ -11,7 +11,7 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 
 Milestone: v1.4 — Addons & UX Polish (scope cut: distribution removed)
 Status: In execution — Phases 41-45 complete, Phase 46 next
-Last activity: 2026-06-05 — Phase 40 cut from v1.4; Phases 47/48 deferred to v1.5 alongside 40
+Last activity: 2026-06-05 — Completed quick task 033: Change weather button poll interval units to minutes
 
 Progress: [█████████░] ~90% (5 of 6 in-scope v1.4 phases complete; Phase 46 unstarted)
 
@@ -367,3 +367,4 @@ Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-VERIFICA
 | 030 | Diagnose why blinking marquee text updates in emulator/browser but not on Stream Deck hardware | 2026-06-02 | `3ec2aac` | `.planning/quick/030-diagnose-why-blinking-marquee-text-updat` |
 | 031 | date-time clock button minutes needle position is not correct. it's 23:47 and the neddle is arroud pass quartr position | 2026-06-02 | `21b1fe8` | `.planning/quick/031-date-time-clock-minute-needle-position` |
 | 032 | Rename font-size to fontSize in TypeScript code | 2026-06-03 | `004d344` | `.planning/quick/032-fontsize-camelcase` |
+| 033 | Change weather button poll interval units to minutes | 2026-06-05 | `c9e1205` | `.planning/quick/033-change-weather-poll-interval-minutes` |
