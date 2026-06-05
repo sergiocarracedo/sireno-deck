@@ -30,8 +30,14 @@ function renderVolumeSurface(
         </Text>
         <Bars
           className="w-3/4"
-          max={100}
-          value={isMuted ? 0 : snap.percentage}
+          items={[
+            {
+              color: 'var(--sireno-color-primary)',
+              maxValue: 100,
+              title: 'vol',
+              value: isMuted ? 0 : snap.percentage,
+            },
+          ]}
         />
       </div>
     </ButtonSurface>
