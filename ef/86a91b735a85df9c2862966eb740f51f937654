@@ -1,0 +1,27 @@
+packages/cli/src/builtin-addons/date-time/index.test.ts
+  s_4e4ee307096ddc::t_05d72a533e9f71 88,102,110,141,143,145
+  s_4e4ee307096ddc::t_526d32e8c04a64 326,328,331
+  s_4e4ee307096ddc::t_686e2a06a96058 337-340
+  s_4e4ee307096ddc::t_4a610738f06234 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ef86a91b735a85df9c2862966eb740f51f937654",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
