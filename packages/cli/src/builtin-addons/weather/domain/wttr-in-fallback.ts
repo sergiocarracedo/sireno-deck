@@ -1,4 +1,7 @@
-import type { WeatherSnapshot } from './weather-controller.js'
+import type {
+  HourlyForecastEntry,
+  WeatherSnapshot,
+} from './weather-controller.js'
 
 const WMO_FROM_WTTR: Record<string, number> = {
   '113': 0,
@@ -82,6 +85,41 @@ function mapWttrCodeToWmo(wttrCode: string | number | undefined): number {
   return WMO_FROM_WTTR[String(wttrCode)] ?? 0
 }
 
+function buildHourlyEntries(
+  weatherDays: Array<{
+    date: string
+    hourly: Array<{
+      time: string // '0'..'2100'
+      tempC: string
+      weatherCode: string | number
+      chanceofrain: string
+    }>
+  }> | undefined,
+): HourlyForecastEntry[] {
+  if (!weatherDays?.length) return []
+  const now = globalThis.Date.now()
+  const flat: Array<{ ts: number; entry: HourlyForecastEntry }> = []
+  for (const day of weatherDays) {
+    for (const slot of day.hourly ?? []) {
+      const hour = Number.parseInt(slot.time, 10) / 100
+      if (!Number.isFinite(hour) || hour < 0 || hour > 23) continue
+      const ts = new globalThis.Date(`${day.date}T${String(hour).padStart(2, '0')}:00:00`).getTime()
+      if (!Number.isFinite(ts) || ts < now) continue
+      flat.push({
+        ts,
+        entry: {
+          time: String(hour).padStart(2, '0'),
+          temperature: Number(slot.tempC ?? '0'),
+          weatherCode: mapWttrCodeToWmo(slot.weatherCode),
+          precipitationChance: Number(slot.chanceofrain ?? '0'),
+        },
+      })
+    }
+  }
+  flat.sort((a, b) => a.ts - b.ts)
+  return flat.slice(0, 6).map((x) => x.entry)
+}
+
 export async function fetchWttrInSnapshot(
   latitude: number,
   longitude: number,
@@ -102,6 +140,15 @@ export async function fetchWttrInSnapshot(
       windspeedKmph?: string | number
       windspeedMiles?: string | number
     }>
+    weather?: Array<{
+      date: string
+      hourly: Array<{
+        time: string
+        tempC: string
+        weatherCode: string | number
+        chanceofrain: string
+      }>
+    }>
   }
   const current = json.current_condition?.[0]
   if (!current) {
@@ -117,5 +164,6 @@ export async function fetchWttrInSnapshot(
     temperature,
     weatherCode: mapWttrCodeToWmo(current.weatherCode),
     windSpeed,
+    hourly: buildHourlyEntries(json.weather),
   }
 }
