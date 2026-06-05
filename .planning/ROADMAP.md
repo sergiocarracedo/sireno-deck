@@ -46,19 +46,12 @@ The work splits into seven vertical slices: distribution plumbing first, then a 
 **Depends on:** 42
 **Status:** [x] ✓ Complete (2026-06-04) — replaced `calendar-sheet` stub with real `date` button, configurable timezone + locale, 60s refresh
 
-### Phase 44: Media-Volume Buttons
+### Phase 44: Media-Volume Buttons ✓ Complete (2026-06-04)
 
-**Goal:** New `media-volume` button type with mute toggle, volume up, and volume down variants. Detects real mute state.
+**Goal:** New `media-volume` button type (separate from `media-player`) with mute toggle, volume up, and volume down variants. Detects real mute state.
 **Requirements:** `MV-01` through `MV-07`
 **Depends on:** 42
-**Success criteria:**
-- [x] New `MediaVolumeButtonSchema` with `variant: 'mute' | 'up' | 'down'`
-- [x] `media-volume` button file reusing shared `MediaStatusIcon` and progress helpers
-- [x] Linux adapter uses `pactl` against `@DEFAULT_SINK@` (works on PulseAudio + PipeWire)
-- [x] macOS adapter uses osascript (no sudo)
-- [x] Windows adapter returns explicit "not available on this OS" snapshot
-- [x] Mute button reflects real state via `pactl get-sink-mute` / osascript `output muted of`
-**Research needed:** No (covered by v1.4 research)
+**Status:** [x] ✓ Complete (2026-06-04)
 
 ### Phase 45: Weather Addon
 

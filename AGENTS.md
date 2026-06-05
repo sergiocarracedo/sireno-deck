@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.4 — Build, Bundle & UX Polish
-**Phase:** 44 — Media-Volume Buttons
-**Status:** planning complete
+**Phase:** 44 — Media-Volume Buttons ✓ complete → Phase 45 — Weather Addon
+**Status:** verifying
 **Last updated:** 2026-06-04
 
 ---
