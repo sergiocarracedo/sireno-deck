@@ -1,0 +1,22 @@
+packages/cli/src/builtin-addons/weather/index.test.ts
+  h_f90ee31b03fc41 12,14,17
+config.yml
+  h_f90ee31b03fc41 56
+packages/cli/src/builtin-addons/weather/schemas.ts
+  h_f90ee31b03fc41 20-22
+packages/cli/src/builtin-addons/weather/buttons/weather.tsx
+  h_f90ee31b03fc41 8,25,60-61
+packages/cli/src/builtin-addons/weather/buttons/components/Surface.tsx
+  h_f90ee31b03fc41 3,8-10,41-42,51-70,72-85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4941280ba4ba7f9397b4e04de86c57431ef4bcc7",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
