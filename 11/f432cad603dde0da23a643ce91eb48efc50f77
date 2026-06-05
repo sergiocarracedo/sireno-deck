@@ -1,0 +1,24 @@
+packages/cli/sea-config.template.json
+  s_228741f14b70e9::t_d52fcac0da4e13 1-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "11f432cad603dde0da23a643ce91eb48efc50f77",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_228741f14b70e9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_167162d7affejXF6Te6G05qTh8",
+        "model": "minimax-m3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
