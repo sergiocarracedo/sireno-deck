@@ -1,0 +1,27 @@
+packages/cli/src/builtin-addons/weather/domain/open-meteo-client.ts
+  s_3261d8b10ef836::t_2c8c7971ff2b79 13-15,24-26,28,30
+  s_3261d8b10ef836::t_11cd0fb7a8d932 55
+packages/cli/src/builtin-addons/weather/buttons/weather.test.tsx
+  s_3261d8b10ef836::t_b174e396a06506 133-137,145
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "bb17c5636031a5ea721ef8ba8f7b6d88074f192b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_3261d8b10ef836": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1667395a0fferl43AlHc5lyRrf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
