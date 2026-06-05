@@ -1,0 +1,26 @@
+.planning/phases/44-media-volume-buttons/44-CONTEXT.md
+  s_4e4ee307096ddc::t_6b775521e5d45d 1-106
+.planning/phases/44-media-volume-buttons/44-DISCUSSION-LOG.md
+  s_4e4ee307096ddc::t_0f01ce58856aac 1-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "eec7ea7f974bd9f2d534e1ba786529f2972223ef",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
