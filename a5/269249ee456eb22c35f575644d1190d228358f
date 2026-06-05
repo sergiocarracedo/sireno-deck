@@ -1,0 +1,28 @@
+.planning/solutions/build-errors/node-sea-not-viable-for-native-deps-2026-06-05.md
+  s_228741f14b70e9::t_91c0358136ad97 1-37
+.planning/PROJECT.md
+  s_228741f14b70e9::t_70f02a1b727160 11,13,16
+.planning/STATE.md
+  s_228741f14b70e9::t_57779218afede2 8,12-16
+  s_228741f14b70e9::t_f46079f4460eb1 18-39
+.planning/ROADMAP.md
+  s_228741f14b70e9::t_2ab98e23b16bde 4
+  s_228741f14b70e9::t_1de299e78eaae3 67,69-71,75-122,125
+  s_228741f14b70e9::t_27224593ae06be 3,5,9,11,15,17-19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a5269249ee456eb22c35f575644d1190d228358f",
+  "prompts": {},
+  "sessions": {
+    "s_228741f14b70e9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_167162d7affejXF6Te6G05qTh8",
+        "model": "minimax-m3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
