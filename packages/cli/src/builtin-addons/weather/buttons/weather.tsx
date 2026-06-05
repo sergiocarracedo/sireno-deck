@@ -19,7 +19,7 @@ function getState(snapshot: unknown): WeatherStoreState {
 export const builtinWeatherButton = defineMountedButton({
   configSchema: WeatherButtonSchema,
   defaultIntervalMs: ({ config }) => config.render_interval_ms,
-  defaultPollIntervalMs: ({ config }) => config.poll_interval_ms,
+  defaultPollIntervalMs: ({ config }) => config.poll_interval_min * 60_000,
   onActivate: async ({ config, hostContext, store }) => {
     const controller = createWeatherController({ hostContext, config })
     try {

@@ -9,9 +9,8 @@ export const WeatherButtonSchema = z
         name: z.string().min(1).optional(),
       })
       .optional(),
-    poll_interval_ms: z.number().int().min(60_000).default(600_000),
+    poll_interval_min: z.number().int().min(1).default(10),
     render_interval_ms: z.number().int().min(60_000).default(600_000),
-    unavailable_label: z.string().min(1).default('Weather'),
     units: z.enum(['metric', 'imperial']).default('metric'),
     use_ip_geolocation: z.boolean().optional(),
   })

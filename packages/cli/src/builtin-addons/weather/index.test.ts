@@ -14,7 +14,7 @@ describe('weather addon', () => {
     expect(
       def.configSchema.parse({ units: 'metric', unavailable_label: 'Hi' }),
     ).toEqual({
-      poll_interval_ms: 600_000,
+      poll_interval_min: 10,
       render_interval_ms: 600_000,
       unavailable_label: 'Hi',
       units: 'metric',
