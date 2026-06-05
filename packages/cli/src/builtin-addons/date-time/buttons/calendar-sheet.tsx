@@ -1,44 +1,63 @@
-import {
-  ButtonSurface,
-  defineMountedButton,
-  useButtonActionCommand,
-} from '../../../addon/api.js'
+import { useEffect, useState } from 'react'
+
+import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
 import { Text } from '../../../ui/index.js'
 import {
-  BuiltinCalendarSheetButtonSchema,
-  CALENDAR_SHEET_INTERVAL_MS,
+  BuiltinDateButtonSchema,
+  DATE_BUTTON_INTERVAL_MS,
+  type BuiltinDateButtonConfig,
 } from '../schemas.js'
 
-function CalendarSheetLabel(props: {
-  label: string
-  tone: 'accent' | 'foreground'
-  typography: 'aux' | 'main'
-}) {
-  return (
-    <Text
-      className="w-full"
-      fit="wrap"
-      tone={props.tone}
-      typography={props.typography}
-      size="xs"
-    >
-      {props.label}
-    </Text>
-  )
+function formatDateParts(
+  config: BuiltinDateButtonConfig,
+  date: Date,
+): { day: string; month: string; weekday: string } {
+  const locale = config.locale ?? 'en-US'
+  const timeZone = config.time_zone
+  const monthFmt = new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    ...(timeZone ? { timeZone } : {}),
+  })
+  const dayFmt = new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    ...(timeZone ? { timeZone } : {}),
+  })
+  const weekdayFmt = new Intl.DateTimeFormat(locale, {
+    weekday: 'long',
+    ...(timeZone ? { timeZone } : {}),
+  })
+  return {
+    day: dayFmt.format(date),
+    month: monthFmt.format(date).toUpperCase(),
+    weekday: weekdayFmt.format(date).toUpperCase(),
+  }
 }
 
-export const builtinCalendarSheetButton = defineMountedButton({
-  configSchema: BuiltinCalendarSheetButtonSchema,
-  defaultIntervalMs: CALENDAR_SHEET_INTERVAL_MS,
-  ...useButtonActionCommand(({ config }) => config.commands),
-  render: () => (
-    <ButtonSurface full>
-      <div className="flex w-full flex-col items-center justify-center gap-1">
-        asd2
-        <CalendarSheetLabel label="Date" tone="foreground" typography="main" />
-        <CalendarSheetLabel label="SHEET" tone="accent" typography="aux" />
-      </div>
-    </ButtonSurface>
-  ),
-  type: 'calendar-sheet',
+export const builtinDateButton = defineMountedButton({
+  configSchema: BuiltinDateButtonSchema,
+  defaultRenderIntervalMs: DATE_BUTTON_INTERVAL_MS,
+  render: ({ config }) => {
+    const [now, setNow] = useState(() => new Date())
+    useEffect(() => {
+      const id = setInterval(() => setNow(new Date()), DATE_BUTTON_INTERVAL_MS)
+      return () => clearInterval(id)
+    }, [])
+    const { day, month, weekday } = formatDateParts(config, now)
+    return (
+      <ButtonSurface full>
+        <div className="flex h-full w-full flex-col items-center justify-center gap-0.5">
+          <Text size="xs" tone="accent">
+            {month}
+          </Text>
+          <Text size="xl" tone="primary">
+            {day}
+          </Text>
+          <Text size="xs" tone="foreground">
+            {weekday}
+          </Text>
+        </div>
+      </ButtonSurface>
+    )
+  },
+  type: 'date',
 })
