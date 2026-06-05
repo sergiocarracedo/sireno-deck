@@ -1,0 +1,29 @@
+packages/cli/src/builtin-addons/media-player/buttons/media-volume.tsx
+  s_4e4ee307096ddc::t_373d025a4f3a94 33-40
+packages/cli/src/builtin-addons/media-player/buttons/media-volume.test.tsx
+  s_4e4ee307096ddc::t_d6ff052d8b02e0 2-6,24-35,37-43,45-52,54-60,62-70,72-78,80-86,88-94,96-106
+  s_4e4ee307096ddc::t_36f2441d569d84 53,61,71,79,87,95
+  s_4e4ee307096ddc::t_243153404bd903 44
+  s_4e4ee307096ddc::t_f4b971f23d58cf 1,7-23,36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4414a25d52e6bc832cdeb7491b35b834450011ca",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
