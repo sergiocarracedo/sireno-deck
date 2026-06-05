@@ -78,9 +78,10 @@ export async function fetchWeatherSnapshot(
   }
 }
 
-export function createWeatherController(_options: {
+export function createWeatherController(options: {
   hostContext: HostContext
   config: WeatherButtonConfig
 }): WeatherController {
-  return { async getSnapshot: () => fetchWeatherSnapshot(_options.config) }
+  const { config } = options
+  return { getSnapshot: () => fetchWeatherSnapshot(config) }
 }
