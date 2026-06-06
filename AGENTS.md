@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.4 — Addons & UX Polish (distribution cut)
-**Phase:** 49 — Emoji-Selector UX Revamp ✓ planned (4 plans, 4 waves, awaiting execute-phase)
-**Status:** planning — v1.4 late addition (6 → 7 in-scope phases), 4 plans ready in `.planning/phases/49-emoji-selector-ux-revamp/`
+**Phase:** 49 — Emoji-Selector UX Revamp ✓ complete → ready for verify-work 49 → /review → /ship → /compound
+**Status:** verifying — v1.4 late addition (7 of 7 in-scope phases shipped), 4 plans executed across 4 waves, 27/27 in-scope tests pass, verification `passed`. All EMO-06..14 ✓ Complete.
 **Last updated:** 2026-06-06
 
 ---
