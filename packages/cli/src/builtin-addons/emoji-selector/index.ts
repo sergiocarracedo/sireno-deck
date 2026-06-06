@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import type { SirenoAddon } from '../../addon/api.js'
+import { emojiBackButton } from './buttons/back.js'
 import { emojiCategoryButton } from './buttons/category.js'
 import { emojiEntryButton } from './buttons/entry.js'
 import {
@@ -153,7 +154,7 @@ const emojiSelectorDeck = {
 const emojiSelectorAddon: SirenoAddon = {
   apiVersion: 1,
   assets,
-  buttons: [emojiCategoryButton, emojiEntryButton],
+  buttons: [emojiCategoryButton, emojiEntryButton, emojiBackButton],
   decks: [emojiSelectorDeck],
   name: 'emoji-selector',
 }
