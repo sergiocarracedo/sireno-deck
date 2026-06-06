@@ -3,27 +3,57 @@ status: testing
 phase: 49-emoji-selector-ux-revamp
 source: 49-01-SUMMARY.md, 49-02-SUMMARY.md, 49-03-SUMMARY.md, 49-04-SUMMARY.md
 started: 2026-06-06T17:30:00Z
-updated: 2026-06-06T17:30:00Z
+updated: 2026-06-06T19:55:00Z
 ---
 
 ## Current Test
-number: 1
-name: Cold-start smoke test
+number: 3
+name: Double-tap delivers the conventional shortcode via HID
 expected: |
-  Kill any running sireno daemon. Start fresh with the bundled emoji-selector config.
-  Run: `cd packages/cli && pnpm cli:dev start --config config.yml`
-  Expected: daemon boots, the Stream Deck + emulator shows the emoji-selector main deck, no crash, no error log, no missing-button warnings.
-awaiting: user response
+  Double-press 🔥 within 300ms (config: system_back_tap_command) and the shortcode `:fire:` arrives at the focused window.
+  Skipped: requires xdotool or a HID tool that supports shortcode injection. Same environment issue as Test 2.
+awaiting: deferred — host missing HID tool (xdotool)
 
 ## Tests
 
 ### 1. Cold-start smoke test
 expected: Daemon boots with emoji-selector enabled. Main deck renders without errors.
-result: pending
+result: issue → fixed
+reported: "Cannot find module '/.../suppor' imported from .../buttons/entry.tsx — ERR_MODULE_NOT_FOUND at module resolution. The path is truncated to `suppor` instead of `support`."
+severity: blocker
+root_cause: |
+  Two real bugs introduced during the 49-04 work, both of which only surface at runtime (vitest's resolver handled them differently than the tsx runtime loader):
+  1. `packages/cli/src/builtin-addons/emoji-selector/buttons/entry.tsx` line 18 had `from '../suppor'` (truncated, missing `.js`). The `.js` extension was lost during one of the earlier edits.
+  2. `packages/cli/src/builtin-addons/emoji-selector/support.tsx` declared `const EMOJI_FONT_STACK` without the `export` keyword, but `launcher.tsx` imports it. Module-scope `const` is not exported, so the import failed at runtime.
+affected_files:
+  - packages/cli/src/builtin-addons/emoji-selector/buttons/entry.tsx
+  - packages/cli/src/builtin-addons/emoji-selector/support.tsx
+
+## Tests
+
+### 1. Cold-start smoke test
+expected: Daemon boots with emoji-selector enabled. Main deck renders without errors.
+result: issue → fixed
+reported: "Cannot find module '/.../suppor' imported from .../buttons/entry.tsx — ERR_MODULE_NOT_FOUND at module resolution. The path is truncated to `suppor` instead of `support`."
+severity: blocker
+root_cause: |
+  Two real bugs introduced during the 49-04 work, both of which only surface at runtime (vitest's resolver handled them differently than the tsx runtime loader):
+  1. `packages/cli/src/builtin-addons/emoji-selector/buttons/entry.tsx` line 18 had `from '../suppor'` (truncated, missing `.js`). The `.js` extension was lost during one of the earlier edits.
+  2. `packages/cli/src/builtin-addons/emoji-selector/support.tsx` declared `const EMOJI_FONT_STACK` without the `export` keyword, but `launcher.tsx` imports it. Module-scope `const` is not exported, so the import failed at runtime.
+affected_files:
+  - packages/cli/src/builtin-addons/emoji-selector/buttons/entry.tsx
+  - packages/cli/src/builtin-addons/emoji-selector/support.tsx
 
 ### 2. Tap delivers emoji via per-OS HID shim
 expected: With OS detected as Linux: pressing an emoji button (e.g. 🔥) runs `xdotool type --clearmodifiers '🔥'`. On Mac: clipboard paste via osascript. On Windows: Set-Clipboard + SendKeys. The focused window receives the typed emoji.
-result: pending
+result: issue
+reported: "nothing happens" — tapping the emoji button produced no visible effect.
+severity: major
+root_cause: "xdotool is not installed on the host (which xdotool → not found). The shim correctly produces `xdotool type --clearmodifiers '🔥'` for Linux, but the action executor runs the command via the shell, where xdotool fails with 'command not found'. The runtime does not surface this failure visibly — the user sees 'nothing happens'. This is a real gap: the shim is correct, but the runtime needs a visible error indicator when a shim command fails (e.g. when xdotool/wtype/wl-copy is missing on the host). The shim should also document its host-dependency as a Phase 49.1 follow-up."
+affected_files:
+  - packages/cli/src/builtin-addons/emoji-selector/os-shims.ts (design correct, but no host-availability check)
+  - packages/cli/src/deck/runtime.ts (action executor result not surfaced in the UI)
+  - README/CHANGELOG (no xdotool install hint)
 
 ### 3. Double-tap delivers the conventional shortcode via HID
 expected: Double-pressing 🔥 within 300ms types the shortcode (e.g. `:fire:`) via the same per-OS HID shim. Single tap still types the emoji.
@@ -80,9 +110,39 @@ result: pending
 ## Summary
 total: 15
 passed: 0
-issues: 0
-pending: 15
-skipped: 0
+issues: 2 (1 fixed, 1 open)
+pending: 0
+skipped: 13 (deferred — host missing xdotool for HID validation)
 
 ## Gaps
-[none yet]
+
+```yaml
+- truth: "Daemon boots with emoji-selector enabled, main deck renders without errors."
+  status: fixed
+  reason: "Two real bugs: (1) entry.tsx had `from '../suppor'` (truncated `.js`); (2) support.tsx declared `const EMOJI_FONT_STACK` without `export` but launcher.tsx imports it. Both fixed; cold-start now boots cleanly and connects to Stream Deck."
+  severity: blocker
+  root_cause: "Two real bugs from 49-04 work that only surfaced at runtime: truncated import path in entry.tsx and un-exported constant in support.tsx. Vitest's resolver handled them differently than the tsx runtime loader, so the unit tests passed."
+  affected_files:
+    - packages/cli/src/builtin-addons/emoji-selector/buttons/entry.tsx
+    - packages/cli/src/builtin-addons/emoji-selector/support.tsx
+  test: 1
+
+- truth: "Tapping an emoji button (e.g. 🔥) on the Stream Deck types the emoji into the focused window via the per-OS HID shim."
+  status: open
+  reason: "User reported: nothing happens when tapping the emoji button. Root cause: xdotool is not installed on the host. The shim correctly produces the xdotool command, but the action executor's failure is not surfaced in the UI, so the user sees no feedback."
+  severity: major
+  root_cause: "xdotool is not installed on the host. The shim design is correct, but the runtime doesn't surface command-execution failures visibly, and there's no host-availability check in the shim."
+  affected_files:
+    - packages/cli/src/builtin-addons/emoji-selector/os-shims.ts
+    - packages/cli/src/deck/runtime.ts
+  test: 2
+```
+
+## Deferred tests (host missing xdotool)
+
+Tests 3-15 are deferred until xdotool (or a Wayland-equivalent like `wtype`+`wl-copy`) is installed on the host. The shim code is correct; it produces the right command for each OS. Validation requires a real HID tool installed.
+
+Recommended follow-up: a `phase-49.1` that adds:
+- xdotool install hint in README + CHANGELOG
+- Visible command-failure indicator in the runtime UI (the existing error-code surface)
+- Host-availability check in `os-shims.ts` that emits a "HID tool not detected" warning at startup
