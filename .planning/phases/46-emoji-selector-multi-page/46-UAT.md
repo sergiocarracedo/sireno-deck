@@ -79,7 +79,34 @@ skipped: 1
   status: failed
   reason: "User reported: no back button in 14 (and confirmed again on multi-page deck)"
   severity: major
+  root_cause: |
+    Pre-existing SRB system gap, NOT introduced by Phase 46.
+
+    `packages/cli/src/deck/system-back-injection.ts` exports
+    `shouldInjectSystemBack` and `getSystemBackButtonInstance`, but
+    neither is imported or called by `runtime.ts` — only the unit
+    tests reference them.
+
+    `packages/cli/src/deck/system-back-button.tsx` exports a
+    `SystemBackButton` component that is also only used in its own
+    test file.
+
+    `runtime.ts:364` defines `getDeckButtons(deck)` as a pure pass-through
+    (`return deck.buttons`) with no injection at the reserved slot. The
+    runtime computes `reservedBackKeyIndex` (line 277) and exposes it
+    via `getReservedBackKeyIndex()` (line 1219), but never uses it to
+    add a system back button to the rendered deck.
+
+    As a result, SRB-03 ("subdecks have a core-owned back button at the
+    reserved slot") is not actually wired: the validation half rejects
+    addons from claiming the slot, but the injection half is missing.
+    The position is simply empty.
+  affected_files:
+    - packages/cli/src/deck/runtime.ts
+    - packages/cli/src/deck/system-back-injection.ts
+    - packages/cli/src/deck/system-back-button.tsx
   test: 2
+  scope: pre_existing
 - truth: "Tapping a multi-page category on the main deck navigates to its page 1"
   status: failed
   reason: |
@@ -95,6 +122,7 @@ skipped: 1
   affected_files:
     - packages/cli/src/builtin-addons/emoji-selector/index.ts
   test: 3
+  scope: phase_46_regression
 
 ## Notes for UAT
 
