@@ -1,0 +1,29 @@
+.planning/quick/038-lock-deck-no-home-back-button/038-SUMMARY.md
+  s_8c552308315f8f::t_685f32db2b8558 1-14
+.planning/STATE.md
+  s_8c552308315f8f::t_67aebd42ca04ca 14
+  s_8c552308315f8f::t_3d4ed8c6cb46a7 21
+.planning/quick/038-lock-deck-no-home-back-button/038-PLAN.md
+  s_8c552308315f8f::t_07ea14222f69d0 1-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "bec99876f154e3a02f5746ae8a3727c6945bcf6b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_8c552308315f8f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16314b791ffeJkqdeQer0Q4SXy",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
