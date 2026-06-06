@@ -173,6 +173,8 @@ export interface DeckConfig {
   deckType?: string
   id: string
   name?: string
+  system_back_hold_command?: string
+  system_back_tap_command?: string
   buttons: ButtonInstance[]
 }
 

@@ -219,19 +219,23 @@ describe('emoji-selector addon', () => {
 
     expect(
       page1?.buttons.filter((b) => b.type === 'emoji-entry-button').length,
-    ).toBe(14)
+    ).toBe(12)
 
-    const page2NavButtons = page2?.buttons.filter(
-      (b) => b.type === 'change-deck',
+    const page1NavButton = page1?.buttons.find(
+      (b) => b.type === 'change-deck' && b.position === 13,
     )
-    expect(page2NavButtons?.length).toBe(1)
+    expect(page1NavButton).toMatchObject({
+      meta: 'page-nav',
+      target_deck: 'emoji-drink-p2',
+    })
 
-    const page2Prev = page2?.buttons.find(
-      (b) => b.type === 'change-deck' && b.position === 12,
+    const page2NavButton = page2?.buttons.find(
+      (b) => b.type === 'change-deck' && b.position === 13,
     )
-    expect(page2Prev).toMatchObject({
-      label: '‹ Page 2',
-      target_deck: 'emoji-drink-p1',
+    expect(page2NavButton).toMatchObject({
+      meta: 'page-nav',
+      target_deck: 'emoji-drink-p2',
+      target_deck_double_tap: 'emoji-drink-p1',
     })
 
     expect(page2?.name).toBe('Drink (2/2)')
@@ -255,12 +259,12 @@ describe('emoji-selector addon', () => {
   })
 
   it('treats a category that exactly fits the page as a single page (no nav buttons)', () => {
-    const emojiPage = Array.from({ length: 14 }, (_, index) =>
+    const emojiPage = Array.from({ length: 12 }, (_, index) =>
       String.fromCodePoint(0x1f600 + index),
     )
 
     const pageBoundaries = emojiPage.length
-    expect(pageBoundaries).toBe(14)
+    expect(pageBoundaries).toBe(12)
 
     const deckDefinition = emojiSelectorAddon.decks?.[0]
     const decks = deckDefinition?.createDecks({
@@ -278,13 +282,13 @@ describe('emoji-selector addon', () => {
     const favButtons = decks?.['emoji-favorites']?.buttons ?? []
     expect(favButtons.filter((b) => b.type === 'change-deck').length).toBe(0)
     expect(favButtons.filter((b) => b.type === 'emoji-entry-button').length).toBe(
-      14,
+      12,
     )
   })
 
   it('treats EMOJI_PAGE_SIZE+1 favorites as 2 pages with prev on page 2 and no next', () => {
     const overflowEmojis = Array.from(
-      { length: 15 },
+      { length: 13 },
       (_, index) => String.fromCodePoint(0x1f600 + index),
     )
 
@@ -303,12 +307,12 @@ describe('emoji-selector addon', () => {
     const page1 = decks?.['emoji-favorites-p1']
     const page2 = decks?.['emoji-favorites-p2']
 
-    expect(page1?.buttons.filter((b) => b.type === 'emoji-entry-button').length).toBe(14)
+    expect(page1?.buttons.filter((b) => b.type === 'emoji-entry-button').length).toBe(12)
     const page1Next = page1?.buttons.find(
       (b) => b.type === 'change-deck' && b.position === 13,
     )
     expect(page1Next).toMatchObject({
-      label: 'Page 2 ›',
+      meta: 'page-nav',
       target_deck: 'emoji-favorites-p2',
     })
 
@@ -318,15 +322,13 @@ describe('emoji-selector addon', () => {
     )
     expect(page2NavButtons?.length).toBe(1)
 
-    const page2Prev = page2?.buttons.find((b) => b.position === 12)
-    expect(page2Prev).toMatchObject({
-      label: '‹ Page 2',
-      target_deck: 'emoji-favorites-p1',
+    const page2Nav = page2?.buttons.find((b) => b.position === 13)
+    expect(page2Nav).toMatchObject({
+      meta: 'page-nav',
+      target_deck: 'emoji-favorites-p2',
+      target_deck_double_tap: 'emoji-favorites-p1',
       type: 'change-deck',
     })
-
-    const lastSlot = page2?.buttons.find((b) => b.position === 13)
-    expect(lastSlot).toBeUndefined()
   })
 
   it('handles empty favorites array as if there are no favorites', () => {

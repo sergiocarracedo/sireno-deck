@@ -145,6 +145,20 @@ const EmojiSelectorDeckSchema = z
   .object({
     favorites: z.array(z.string().min(1)).default([]),
     select_command: z.string().min(1),
+    system_back_hold_command: z
+      .string()
+      .min(1)
+      .optional()
+      .describe(
+        'Optional command to run on the system back hold gesture (≥600ms). When omitted, the default SRB-03 behavior applies (navigate to main deck).',
+      ),
+    system_back_tap_command: z
+      .string()
+      .min(1)
+      .optional()
+      .describe(
+        'Optional command to run on the system back tap gesture. When omitted, the default SRB-03 behavior applies (navigate to previous deck).',
+      ),
   })
   .strict()
 
@@ -231,7 +245,7 @@ export function renderEmojiGlyph(
   )
 }
 
-export const EMOJI_PAGE_SIZE = 14
+export const EMOJI_PAGE_SIZE = 12
 
 export interface EmojiPage {
   emojis: string[]
@@ -246,7 +260,7 @@ export function paginateEmojis(
   if (emojis.length === 0) return []
 
   const firstPageSize = pageSize
-  const restPageSize = pageSize - 1
+  const restPageSize = pageSize
 
   const pages: EmojiPage[] = []
   let remaining = [...emojis]

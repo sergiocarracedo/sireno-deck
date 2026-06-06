@@ -14,8 +14,6 @@ import {
 } from './support.js'
 
 const EMOJI_KEY_COUNT = 15
-const PREV_ICON = 'addon://emoji-selector/back.svg'
-const NEXT_ICON = 'addon://emoji-selector/back.svg'
 const FAVORITES_ICON = 'addon://emoji-selector/favorites.svg'
 
 interface CategorySpec {
@@ -24,6 +22,25 @@ interface CategorySpec {
   icon: string
   id: string
   label: string
+}
+
+function buildPageNavButton(
+  isFirstPage: boolean,
+  isLastPage: boolean,
+  prevDeckId: string,
+  nextDeckId: string,
+  currentDeckId: string,
+) {
+  const tapTarget = isLastPage ? currentDeckId : nextDeckId
+  const doubleTapTarget = isFirstPage ? currentDeckId : prevDeckId
+  return {
+    label: 'Page',
+    meta: 'page-nav',
+    position: EMOJI_KEY_COUNT - 2,
+    target_deck: tapTarget,
+    target_deck_double_tap: doubleTapTarget,
+    type: 'change-deck',
+  }
 }
 
 const emojiSelectorDeck = {
@@ -89,37 +106,28 @@ const emojiSelectorDeck = {
 
         const buttons: Array<Record<string, unknown>> = []
 
-        const emojiStart = 0
         page.emojis.forEach((emoji, offset) => {
           buttons.push({
             emoji,
             label: category.label,
-            position: emojiStart + offset,
+            position: offset,
             select_command: config.select_command,
             type: 'emoji-entry-button',
           })
         })
 
-        if (!isFirstPage) {
+        if (isMultiPage) {
           const prevDeckId = `${baseDeckId}-p${pageIndex}`
-          buttons.push({
-            icon: PREV_ICON,
-            label: `\u2039 Page ${pageIndex + 1}`,
-            position: EMOJI_KEY_COUNT - 3,
-            target_deck: prevDeckId,
-            type: 'change-deck',
-          })
-        }
-
-        if (!isLastPage) {
           const nextDeckId = `${baseDeckId}-p${pageIndex + 2}`
-          buttons.push({
-            icon: NEXT_ICON,
-            label: `Page ${pageIndex + 2} \u203a`,
-            position: EMOJI_KEY_COUNT - 2,
-            target_deck: nextDeckId,
-            type: 'change-deck',
-          })
+          buttons.push(
+            buildPageNavButton(
+              isFirstPage,
+              isLastPage,
+              prevDeckId,
+              nextDeckId,
+              pageDeckId,
+            ),
+          )
         }
 
         generatedDecks[pageDeckId] = {

@@ -12,7 +12,12 @@ function renderCenteredButtonContent(label: string, icon?: string) {
   )
 }
 
-function renderPageNavContent(targetDeck: string, isMainDeck = false) {
+function renderPageNavContent(
+  targetDeck: string,
+  isMainDeck = false,
+  tapNoop = false,
+  doubleTapNoop = false,
+) {
   if (isMainDeck) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-full">
@@ -22,9 +27,13 @@ function renderPageNavContent(targetDeck: string, isMainDeck = false) {
   }
   return (
     <div className="flex flex-col items-center justify-center w-full h-full relative">
-      <div className="absolute top-1 left-1 text-[10px] opacity-70">Tap</div>
+      {tapNoop ? null : (
+        <div className="absolute top-1 left-1 text-[10px] opacity-70">Tap</div>
+      )}
       <Icon icon="chevron-right" size={20} />
-      <div className="absolute bottom-1 right-1 text-[10px] opacity-70">Dbl Tap</div>
+      {doubleTapNoop ? null : (
+        <div className="absolute bottom-1 right-1 text-[10px] opacity-70">Dbl Tap</div>
+      )}
     </div>
   )
 }
@@ -71,7 +80,16 @@ const builtinChangeDeckButton = defineMountedButton({
   },
   render: ({ config, button }) => {
     if (config.meta === 'page-nav') {
-      return renderPageNavContent(config.target_deck, button.position === 14)
+      const doubleTapTarget = config.target_deck_double_tap
+      const tapNoop = config.target_deck === doubleTapTarget
+      const doubleTapNoop =
+        doubleTapTarget === undefined || doubleTapTarget === config.target_deck
+      return renderPageNavContent(
+        config.target_deck,
+        button.position === 14,
+        tapNoop,
+        doubleTapNoop,
+      )
     }
     return renderCenteredButtonContent(config.label, config.icon)
   },
