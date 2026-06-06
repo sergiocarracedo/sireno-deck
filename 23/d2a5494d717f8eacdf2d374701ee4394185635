@@ -1,0 +1,24 @@
+packages/cli/src/deck/system-back-button.tsx
+  s_8ace353e1275e2::t_b2693d1646de34 1-2,8-18,35-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "23d2a5494d717f8eacdf2d374701ee4394185635",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_8ace353e1275e2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_163156e4dffeiwvCwW8bbAkT9n",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
