@@ -2926,4 +2926,32 @@ describe("createDeckRuntime", () => {
     const reservedButton = runtime.getButton(14)
     expect(reservedButton).toBeUndefined()
   })
+
+  it("does not inject a system-back button on the implicit locked deck", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 5, 6, 12, 0, 0))
+
+    const sessionMonitor = createSessionMonitorDouble({ capability: "supported", state: "unlocked" })
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { buttons: [], id: "main" },
+      hostContext: {
+        os: { type: "linux", variant: "ubuntu", version: "24.04" },
+        session: { capability: "supported", state: "unlocked" },
+      },
+      sessionMonitor,
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    sessionMonitor.emit({ capability: "supported", state: "locked" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("__sireno_locked_session__")
+      const reservedButton = runtime.getButton(14)
+      expect(reservedButton).toBeUndefined()
+    })
+  })
 })

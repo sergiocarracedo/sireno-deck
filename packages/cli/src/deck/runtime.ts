@@ -372,9 +372,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     const reservedIndex = Math.max(0, (options.keyCount ?? 15) - 1)
     const syntheticConfig = {
       ...(options.config ?? {}),
-      ...(options.lockedDeckId !== undefined
-        ? { session: { locked_deck: options.lockedDeckId } }
-        : {}),
+      session: {
+        ...(options.config?.session ?? {}),
+        locked_deck: options.lockedDeckId ?? IMPLICIT_LOCKED_DECK_ID,
+      },
     } as SirenoConfig
     if (shouldInjectSystemBack(deck, syntheticConfig)) {
       return [
