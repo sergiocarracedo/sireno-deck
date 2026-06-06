@@ -340,4 +340,40 @@ describe('emoji-selector addon', () => {
     expect(decks?.['emoji-favorites-p1']).toBeUndefined()
     expect(decks?.emoji).toBeDefined()
   })
+
+  it('covers the pre-split piliapp-style subcategories', () => {
+    const expectedIds = [
+      'smileys',
+      'people',
+      'animals',
+      'nature',
+      'food',
+      'drink',
+      'activities',
+      'travel',
+      'objects',
+      'symbols',
+      'flags',
+    ]
+    const deckDefinition = emojiSelectorAddon.decks?.[0]
+    const decks = deckDefinition?.createDecks({
+      config: {
+        favorites: [],
+        select_command: "printf '%s' '{{emoji}}'",
+      },
+      deck: { id: 'emoji', type: 'emoji-selector' },
+    })
+    for (const id of expectedIds) {
+      const firstPageId = `emoji-${id}-p1`
+      const singleId = `emoji-${id}`
+      expect(decks?.[firstPageId] ?? decks?.[singleId]).toBeDefined()
+    }
+  })
+
+  it('exposes the conventional shortcode for emojis in the catalog', async () => {
+    const { getEmojiShortcode } = await import('./support.js')
+    expect(getEmojiShortcode('🔥')).toBe('fire')
+    expect(getEmojiShortcode('😀')).toBe('grinning')
+    expect(getEmojiShortcode('not-in-catalog')).toBeUndefined()
+  })
 })
