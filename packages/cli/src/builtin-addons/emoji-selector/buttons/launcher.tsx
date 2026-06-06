@@ -4,7 +4,7 @@ import {
   EmojiLauncherButtonSchema,
   EMOJI_LAUNCHER_GRID,
   EMOJI_FONT_STACK,
-} from '../support.js'
+} from '../support'
 
 const emojiLauncherButton = defineMountedButton({
   configSchema: EmojiLauncherButtonSchema,

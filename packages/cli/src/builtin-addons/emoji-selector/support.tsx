@@ -245,7 +245,7 @@ function createButtonNode(label: string, icon?: string) {
   )
 }
 
-const EMOJI_FONT_STACK =
+export const EMOJI_FONT_STACK =
   "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Twemoji Mozilla', system-ui, sans-serif"
 
 export function renderEmojiGlyph(
