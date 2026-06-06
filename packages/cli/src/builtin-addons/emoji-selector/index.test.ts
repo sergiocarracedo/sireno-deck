@@ -79,7 +79,7 @@ describe('emoji-selector addon', () => {
       deck: { id: 'emoji', type: 'emoji-selector' },
     })
 
-    expect(decks?.emoji?.buttons[0]).toMatchObject({
+    expect(decks?.emoji?.buttons[1]).toMatchObject({
       label: 'Favorites',
       target_deck: 'emoji-favorites',
       type: 'emoji-category-button',
@@ -168,9 +168,13 @@ describe('emoji-selector addon', () => {
       deck: { id: 'emoji', type: 'emoji-selector' },
     })
 
-    expect(decks?.emoji?.buttons[0]).toMatchObject({
+    expect(decks?.emoji?.buttons[1]).toMatchObject({
       icon: 'addon://emoji-selector/favorites.svg',
       label: 'Favorites',
+    })
+    expect(decks?.emoji?.buttons[0]).toMatchObject({
+      label: 'Emoji',
+      type: 'emoji-launcher',
     })
     expect(decks?.['emoji-favorites']?.buttons[0]).toMatchObject({
       emoji: '😀',

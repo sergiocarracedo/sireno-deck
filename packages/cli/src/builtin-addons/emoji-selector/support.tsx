@@ -56,6 +56,9 @@ export function getEmojiShortcode(char: string): string | undefined {
 
 const assets = {
   'back.svg': fileURLToPath(new URL('./assets/back.svg', import.meta.url)),
+  'launcher.svg': fileURLToPath(
+    new URL('./assets/launcher.svg', import.meta.url),
+  ),
   'emoji-berry.svg': fileURLToPath(
     new URL('./assets/emoji-berry.svg', import.meta.url),
   ),
@@ -159,6 +162,21 @@ const EmojiSelectorDeckSchema = z
       .describe(
         'Optional command to run on the system back tap gesture. When omitted, the default SRB-03 behavior applies (navigate to previous deck).',
       ),
+  })
+  .strict()
+
+const EMOJI_LAUNCHER_GRID: readonly string[] = [
+  '\u{1F602}',
+  '\u{1F525}',
+  '\u2764\uFE0F',
+  '\u2B50',
+  '\u{1F355}',
+  '\u{1F3B5}',
+]
+
+const EmojiLauncherButtonSchema = z
+  .object({
+    label: z.string().min(1).default('Emoji'),
   })
   .strict()
 
@@ -306,6 +324,8 @@ export {
   EmojiCategoryButtonSchema,
   EMOJI_ICON_ASSETS,
   EmojiEntryButtonSchema,
+  EmojiLauncherButtonSchema,
+  EMOJI_LAUNCHER_GRID,
   getEmojiFallbackLabel,
   EmojiSelectorDeckSchema,
   renderEmojiText,

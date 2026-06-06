@@ -4,6 +4,7 @@ import type { SirenoAddon } from '../../addon/api.js'
 import { emojiBackButton } from './buttons/back.js'
 import { emojiCategoryButton } from './buttons/category.js'
 import { emojiEntryButton } from './buttons/entry.js'
+import { emojiLauncherButton } from './buttons/launcher.js'
 import {
   assets,
   CATEGORY_DEFINITIONS,
@@ -141,10 +142,15 @@ const emojiSelectorDeck = {
     return {
       [deck.id]: {
         buttons: [
+          {
+            label: 'Emoji',
+            position: 0,
+            type: 'emoji-launcher',
+          },
           ...orderedCategories.map((category, index) => ({
             icon: category.icon,
             label: category.label,
-            position: index,
+            position: index + 1,
             target_deck: firstPageDeckIds[index],
             type: 'emoji-category-button',
           })),
@@ -167,7 +173,12 @@ const emojiSelectorDeck = {
 const emojiSelectorAddon: SirenoAddon = {
   apiVersion: 1,
   assets,
-  buttons: [emojiCategoryButton, emojiEntryButton, emojiBackButton],
+  buttons: [
+    emojiCategoryButton,
+    emojiEntryButton,
+    emojiLauncherButton,
+    emojiBackButton,
+  ],
   decks: [emojiSelectorDeck],
   name: 'emoji-selector',
 }
