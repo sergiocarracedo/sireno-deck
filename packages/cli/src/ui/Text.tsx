@@ -36,6 +36,7 @@ const SIZE_CLASS = {
   xl: 'text-xl',
   '2xl': 'text-2xl',
   '3xl': 'text-3xl',
+  '5xl': 'text-5xl',
 } as const
 
 const RICH_TONE_TAGS = [
@@ -45,7 +46,7 @@ const RICH_TONE_TAGS = [
   'primary',
   'success',
 ] as const
-const RICH_SIZE_TAGS = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'] as const
+const RICH_SIZE_TAGS = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '5xl'] as const
 
 type RichToneTag = (typeof RICH_TONE_TAGS)[number]
 type RichSizeTag = (typeof RICH_SIZE_TAGS)[number]
@@ -246,6 +247,7 @@ export interface TextProps {
   children: ReactNode
   className?: string
   fit?: TextFit
+  fontStack?: string
   style?: CSSProperties
   tone?: TextTone
   typography?: TextTypography
@@ -269,6 +271,11 @@ export function Text(props: TextProps): ReactElement {
     shrink: 'sireno-text-fit-shrink whitespace-normal break-words',
   }
 
+  const composedStyle =
+    props.fontStack !== undefined
+      ? { ...props.style, fontFamily: props.fontStack }
+      : props.style
+
   const element = (
     <div
       className={cn([
@@ -285,7 +292,7 @@ export function Text(props: TextProps): ReactElement {
       data-sireno-text-shrink-state={fit === 'shrink' ? 'pending' : undefined}
       data-sireno-text-size={size}
       data-sireno-ui-text="true"
-      style={props.style}
+      style={composedStyle}
     >
       {renderedChildren}
     </div>
