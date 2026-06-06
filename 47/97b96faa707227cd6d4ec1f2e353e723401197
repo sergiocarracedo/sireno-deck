@@ -1,0 +1,40 @@
+.planning/phases/49-emoji-selector-ux-revamp/49-02-PLAN.md
+  s_bab938378ab377::t_f3ae2a7ba264c1 1-76,79-86
+  s_bab938378ab377::t_b33c82f8a9394b 77-78
+.planning/phases/49-emoji-selector-ux-revamp/49-03-PLAN.md
+  s_bab938378ab377::t_087419cf11a1a0 1-122,125-134
+  s_bab938378ab377::t_4f3e00b76ef3c6 123-124
+.planning/REQUIREMENTS.md
+  s_bab938378ab377::t_796e120fcc7593 52-60
+.planning/phases/49-emoji-selector-ux-revamp/49-RESEARCH.md
+  s_bab938378ab377::t_0bfff235a76115 1-138
+.planning/phases/49-emoji-selector-ux-revamp/49-04-PLAN.md
+  s_bab938378ab377::t_742e51f8669009 115-116
+  s_bab938378ab377::t_e87c02cec6a9e4 1-114,117-124
+.planning/ROADMAP.md
+  s_bab938378ab377::t_61bd6395504e9d 111-119
+.planning/phases/49-emoji-selector-ux-revamp/49-01-PLAN.md
+  s_bab938378ab377::t_db60dd915ea481 102-103
+  s_bab938378ab377::t_085d845c51da51 1-101,104-112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4797b96faa707227cd6d4ec1f2e353e723401197",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_bab938378ab377": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16388a05dffeQ84UIVBVOB9XaV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
