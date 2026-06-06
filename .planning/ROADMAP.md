@@ -108,15 +108,15 @@ The work splits into six vertical slices: a cross-cutting core change (system-re
 | EMO-03      | 46       | ✓ Complete |
 | EMO-04      | 46       | ✓ Complete |
 | EMO-05      | 46       | ✓ Complete |
-| EMO-06      | 49       | Not started (next) |
-| EMO-07      | 49       | Not started (next) |
-| EMO-08      | 49       | Not started (next) |
-| EMO-09      | 49       | Not started (next) |
-| EMO-10      | 49       | Not started (next) |
-| EMO-11      | 49       | Not started (next) |
-| EMO-12      | 49       | Not started (next) |
-| EMO-13      | 49       | Not started (next) |
-| EMO-14      | 49       | Not started (next) |
+| EMO-06      | 49       | ✓ Complete |
+| EMO-07      | 49       | ✓ Complete |
+| EMO-08      | 49       | ✓ Complete |
+| EMO-09      | 49       | ✓ Complete |
+| EMO-10      | 49       | ✓ Complete |
+| EMO-11      | 49       | ✓ Complete |
+| EMO-12      | 49       | ✓ Complete |
+| EMO-13      | 49       | ✓ Complete |
+| EMO-14      | 49       | ✓ Complete |
 
 ### ~~Phase 48: Build and Install Documentation~~ — Cut from v1.4 (deferred to v1.5)
 
@@ -126,9 +126,9 @@ The work splits into six vertical slices: a cross-cutting core change (system-re
 ### Phase 49: Emoji-Selector UX Revamp — Added 2026-06-06 (v1.4 late addition)
 
 **Goal:** Rewrite the emoji-selector based on real-world Stream Deck usage feedback so each emoji category is a navigable subdeck with proper pagination, real-emoji rendering (no U+1Fxxx placeholders), bigger key-art, and HID keyboard-stroke output (tap = emoji, double-tap = shortcode). Ship a new addon-provided entry button that shows a 2×3 grid of six emojis so the user discovers the addon's affordance without authoring boilerplate.
-**Requirements:** `EMO-06` through `EMO-14` (to be assigned at plan-phase)
+**Requirements:** `EMO-06` through `EMO-14` (all ✓ Complete)
 **Depends on:** Phase 46 (current emoji-selector base)
-**Status:** [ ] Not started
+**Status:** ✓ Complete (2026-06-06)
 
 User feedback driving this phase:
 - Subdeck back button must return all the way home (currently bounces one level — surface the system back wiring on subdecks for the emoji case).
@@ -142,7 +142,10 @@ User feedback driving this phase:
 **Research needed:** Yes — emoji catalog sourcing, HID keyboard-stroke output (`@elgato-stream-deck/node` capabilities or a separate HID path), and the browser-side font stack for real emoji glyphs.
 
 ### Plans
-*Not yet planned — run `plan-phase 49`*
+* 49-01: Catalog data + per-OS HID shim ✓ Complete (2026-06-06)
+* 49-02: Real emoji rendering + size ladder ✓ Complete (2026-06-06)
+* 49-03: n-2 page nav + addon-decorated system back ✓ Complete (2026-06-06)
+* 49-04: emoji-launcher button type with 2×3 grid ✓ Complete (2026-06-06)
 
 ### v1.5 Backlog (informational)
 

@@ -5,13 +5,13 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** v1.4 milestone: 6 phases shipped (41-46). Phase 49 (Emoji-Selector UX Revamp) added as a v1.4 late addition based on real-world usage feedback and now in `discuss-phase` (CONTEXT.md captured 2026-06-06). Next milestone is v1.5 (Distribution Build Pipeline re-scope + CI matrix + build/install docs) — blocked on the v1.5 distribution-target decision. Phase 40 (Distribution Build Pipeline) cut from v1.4 — Node SEA architecturally incompatible with the codebase's native deps (node-hid, sharp libvips, playwright chromium, dbus x11). v1.4 scope is Phases 41-46 + 49.
+**Current focus:** v1.4 milestone: 7 phases shipped (41-46, 49). Phase 49 (Emoji-Selector UX Revamp) shipped 2026-06-06 — hand-curated emoji catalog, per-OS HID shim, real emoji rendering, n-2 page nav, addon-decorated system back, new emoji-launcher button type. Next milestone is v1.5 (Distribution Build Pipeline re-scope + CI matrix + build/install docs) — blocked on the v1.5 distribution-target decision. Phase 40 (Distribution Build Pipeline) cut from v1.4 — Node SEA architecturally incompatible with the codebase's native deps (node-hid, sharp libvips, playwright chromium, dbus x11). v1.4 scope is Phases 41-46 + 49.
 
 ## Current Position
 
 Milestone: v1.4 — Addons & UX Polish (scope cut: distribution removed)
-Status: v1.4 milestone: 6 of 7 in-scope phases (41-46) shipped, including 2 gap-closure plans (46-03 multi-page `target_deck` fix, 46-04 SRB-03 system-back injection wiring) that closed UAT-surfaced defects. Phase 49 (Emoji-Selector UX Revamp) added as a v1.4 late addition — CONTEXT.md captured, ready for plan-phase 49.
-Last activity: 2026-06-06 — Completed quick task 037: main deck home button logo + version; 038: lock deck no home/back button
+Status: v1.4 milestone: 7 of 7 in-scope phases (41-46, 49) shipped. Phase 49 (Emoji-Selector UX Revamp) closed 2026-06-06 with verification `passed` and 27/27 in-scope tests passing. Ready for verify-work 49 (manual UAT) and the review/ship/compound chain.
+Last activity: 2026-06-06 — Phase 49 executed: 4 plans across 4 waves (49-01 catalog + HID shim, 49-02 real emoji render, 49-03 n-2 page nav + system back decoration, 49-04 emoji-launcher + type rename). All EMO-06..14 requirements ✓ Complete.
 
 ### Quick Tasks Completed
 
@@ -21,9 +21,9 @@ Last activity: 2026-06-06 — Completed quick task 037: main deck home button lo
 | 037 | Replace main deck home button with logo + cli version | 2026-06-06 | 23d2a54 | .planning/quick/037-main-deck-home-button-logo-version/ |
 | 038 | Lock deck should not show home or back button | 2026-06-06 | a967147 | .planning/quick/038-lock-deck-no-home-back-button/ |
 
-Progress: [██████████] 100% (6 of 6 in-scope v1.4 phases complete)
+Progress: [██████████] 100% (7 of 7 in-scope v1.4 phases complete)
 
-### v1.4 Phase Snapshot (2026-06-05 — post Phase 40 cut)
+### v1.4 Phase Snapshot (2026-06-06 — post Phase 49)
 
 | Phase | Plans | Summaries | Status | Notes |
 |-------|-------|-----------|--------|-------|
@@ -33,9 +33,10 @@ Progress: [██████████] 100% (6 of 6 in-scope v1.4 phases com
 | 43 — Date-Time Calendar Button | 1 | 1 | Complete | Replaced `calendar-sheet` stub with real `date` button. |
 | 44 — Media-Volume Buttons | 1 | 1 | Complete | Verification `passed`. |
 | 45 — Weather Addon | 1 | 1 | Complete | Verification `passed`, UAT `testing` — manual UAT rerun still pending. |
-| 46 — Emoji-Selector Multi-Page | 4 | 4 | **Complete** | Verification `passed`. 6 categories, 12-16 emojis each, prev/next `change-deck` at positions 12/13, system back at 14. 11/11 emoji-selector tests pass. Gap-closure plans 46-03 (multi-page `target_deck`) and 46-04 (SRB-03 system-back injection) executed and verified. |
+| 46 — Emoji-Selector Multi-Page | 4 | 4 | Complete | Verification `passed`. Gap-closure plans 46-03 (multi-page `target_deck`) and 46-04 (SRB-03 system-back injection) executed and verified. |
 | 47 — CI Matrix Builds for Linux + Mac | — | — | **Cut — deferred to v1.5** | Was predicated on Phase 40 SEA artifacts. |
 | 48 — Build and Install Documentation | — | — | **Cut — deferred to v1.5** | Was predicated on Phase 40 SEA artifacts. |
+| 49 — Emoji-Selector UX Revamp | 4 | 4 | **Complete** | Verification `passed`. 27/27 in-scope tests pass (15 emoji-selector + 9 os-shims + 3 Text). All EMO-06..14 requirements ✓ Complete. Hand-curated piliapp-style catalog, per-OS HID shim, real emoji render, n-2 page nav, addon-decorated system back, new emoji-launcher button type. Type rename `emoji-entry-button` → `emoji-emoji-button` documented in CHANGELOG as a breaking change. |
 
 ### Phase 40 Cut Rationale (2026-06-05)
 
