@@ -851,14 +851,32 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     button: ButtonInstance,
   ): RuntimeButtonInstance {
     if (button.type === 'system-back') {
+      const currentDeck = decks[deckId]
+      const tapCommand =
+        currentDeck && 'system_back_tap_command' in currentDeck
+          ? currentDeck.system_back_tap_command
+          : undefined
+      const holdCommand =
+        currentDeck && 'system_back_hold_command' in currentDeck
+          ? currentDeck.system_back_hold_command
+          : undefined
+
       return {
         onPress: async () => {
+          if (holdCommand) {
+            await executeAction(holdCommand)
+            return
+          }
           const previousDeckId = getDisplayDeckId()
           deckController.restoreStack([])
           await activateDeckSurface(undefined, previousDeckId)
         },
         onTap: async () => {
           temporaryErrorDeck = null
+          if (tapCommand) {
+            await executeAction(tapCommand)
+            return
+          }
           const previousDeckId = getDisplayDeckId()
           if (previousDeckId === options.deck.id) {
             return
