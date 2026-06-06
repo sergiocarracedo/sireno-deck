@@ -24,6 +24,11 @@ import {
   type RuntimeButtonErrorKind,
 } from '../util/errors.js'
 import { createDeckController } from './controller.js'
+import { SystemBackButton } from './system-back-button.js'
+import {
+  getSystemBackButtonInstance,
+  shouldInjectSystemBack,
+} from './system-back-injection.js'
 
 import type { ReactElement } from 'react'
 import type {
@@ -35,7 +40,7 @@ import type {
 } from '../addon/api.js'
 import type { AddonRegistry } from '../addon/registry.js'
 import type { Theme, ThemeFrameState } from '../config/theme'
-import type { ButtonInstance, DeckConfig } from '../core/schemas.js'
+import type { ButtonInstance, DeckConfig, SirenoConfig } from '../core/schemas.js'
 import type { StreamDeckKeyEvent } from '../device/stream-deck.js'
 import {
   UNKNOWN_HOST_CONTEXT,
@@ -64,6 +69,7 @@ interface RuntimeMountedButtonState extends AddonButtonRenderState {
 
 export interface DeckRuntimeOptions {
   addonRegistry?: AddonRegistry
+  config?: SirenoConfig
   deck: DeckConfig
   decks?: Record<string, DeckConfig>
   executeAction?: (command: string) => Promise<CommandExecutionResult>
@@ -362,7 +368,21 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   function getDeckButtons(deck: DeckConfig): ButtonInstance[] {
-    return deck.buttons
+    const baseButtons = deck.buttons
+    const reservedIndex = Math.max(0, (options.keyCount ?? 15) - 1)
+    const syntheticConfig = {
+      ...(options.config ?? {}),
+      ...(options.lockedDeckId !== undefined
+        ? { session: { locked_deck: options.lockedDeckId } }
+        : {}),
+    } as SirenoConfig
+    if (shouldInjectSystemBack(deck, syntheticConfig)) {
+      return [
+        ...baseButtons,
+        getSystemBackButtonInstance(deck, reservedIndex),
+      ]
+    }
+    return baseButtons
   }
 
   function getAddonStateKey(button: ButtonInstance): string {
@@ -829,6 +849,41 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     deckId: string,
     button: ButtonInstance,
   ): RuntimeButtonInstance {
+    if (button.type === 'system-back') {
+      return {
+        onPress: async () => {
+          const previousDeckId = getDisplayDeckId()
+          deckController.restoreStack([])
+          await activateDeckSurface(undefined, previousDeckId)
+        },
+        onTap: async () => {
+          temporaryErrorDeck = null
+          const previousDeckId = getDisplayDeckId()
+          if (previousDeckId === options.deck.id) {
+            return
+          }
+          deckController.goBack()
+          await activateDeckSurface(undefined, previousDeckId)
+        },
+        render: () =>
+          createElement(SystemBackButton, {
+            isMainDeck: deckId === options.deck.id,
+            onHold: () => {
+              void (async () => {
+                const previousDeckId = getDisplayDeckId()
+                deckController.restoreStack([])
+                await activateDeckSurface(undefined, previousDeckId)
+              })()
+            },
+            onTap: () => {
+              // Real tap is handled by the runtime's onTap above; this is
+              // a no-op so the component's internal pointer handlers do
+              // not trigger a second navigation when running in-browser.
+            },
+          }),
+      }
+    }
+
     const runtimeProps = createMountedRuntimeProps(deckId, button)
     const store = createMountedButtonStore(
       createMountedStoreAccess(deckId, button),

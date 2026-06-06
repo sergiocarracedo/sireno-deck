@@ -8,12 +8,14 @@ import { ButtonSurface, defineMountedButton, setAddonButtonOwnerName } from "../
 import { loadConfiguredAddons } from "../addon/loader.js"
 
 import { createBundledAddonRegistry, loadConfig } from "../config/loader.js"
+import { createAddonRegistry } from "../addon/registry.js"
 import { validateConfig } from "../core/schemas.js"
 import { renderReactNodeToHtml } from "../render/dom-host.js"
 import { Text } from "../ui/index.js"
 import { createDeckRuntime } from "./runtime.js"
 
 import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
+import type { AddonRegistry } from "../addon/registry.js"
 import type { PollingScheduler } from "../render/scheduler.js"
 import type { SessionMonitor, SessionSnapshot } from "../system/session-monitor.js"
 
@@ -88,6 +90,10 @@ function createTestTheme() {
     primary: "#7dd3fc",
     success: "#34d399",
   } as const
+}
+
+function createEmptyAddonRegistry(): AddonRegistry {
+  return createAddonRegistry()
 }
 
 function createSessionMonitorDouble(initialSnapshot: SessionSnapshot): SessionMonitor & { emit: (snapshot: SessionSnapshot) => void } {
@@ -2874,5 +2880,50 @@ describe("createDeckRuntime", () => {
     })
 
     expect(onRenderDeck.mock.calls.at(-1)?.[0]?.[0]).toMatchObject({ frame_state: "idle", keyIndex: 0, label: "Press Me" })
+  })
+
+  it("injects a system-back button at the reserved slot on a deck that has no button there", () => {
+    const sessionMonitor = createSessionMonitorDouble({ capability: "supported", state: "unlocked" })
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { buttons: [], id: "main" },
+      hostContext: {
+        os: { type: "linux", variant: "ubuntu", version: "24.04" },
+        session: { capability: "supported", state: "unlocked" },
+      },
+      sessionMonitor,
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    const reservedButton = runtime.getButton(14)
+    expect(reservedButton).toMatchObject({
+      id: "system-back",
+      position: 14,
+      type: "system-back",
+    })
+  })
+
+  it("does not inject a system-back button on the locked deck", () => {
+    const sessionMonitor = createSessionMonitorDouble({ capability: "supported", state: "unlocked" })
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { buttons: [], id: "main" },
+      hostContext: {
+        os: { type: "linux", variant: "ubuntu", version: "24.04" },
+        session: { capability: "supported", state: "unlocked" },
+      },
+      lockedDeckId: "main",
+      sessionMonitor,
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    const reservedButton = runtime.getButton(14)
+    expect(reservedButton).toBeUndefined()
   })
 })
