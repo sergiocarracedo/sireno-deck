@@ -145,7 +145,79 @@ Rewrite the built-in `emoji-selector` addon based on real-world feedback so each
 
 </deferred>
 
+<amendments>
+## Post-Ship Amendments (2026-06-06)
+
+Three amendments captured in a follow-up discussion after phase 49 verification. A1 modifies a locked decision (the original HID shim spec is dropped, replaced by fixing the existing `pasteText` path with `clipboardy`). A2 and A3 add new scope. Plans 49-01..49-04 remain the record of what shipped; this section describes what changes next.
+
+### A1. Replace HID shim with `clipboardy` (supersedes "HID output mechanism (Per-OS shim)")
+
+The original Phase 49 spec called for a per-OS HID keyboard-stroke shim. Post-ship feedback reported that the existing `pasteText` fallback (clipboard + Cmd/Ctrl+V) is the intended path but is silently failing in the user's environment. The user does NOT want a new HID shim; they want the existing clipboard-paste path fixed.
+
+**Decision:** Use the `clipboardy` npm package for the cross-platform clipboard write, replacing the per-OS `pbcopy` / `xclip` / PowerShell implementations. The paste keystroke (`xdotool ctrl+v` / `osascript cmd-v` / `SendKeys ^v`) remains per-OS — there is no cross-platform alternative for the keystroke step.
+
+**Why `clipboardy`:**
+- Surfaces clear errors when the underlying tool (xclip, pbcopy, etc.) is missing — fixes the "emojis are not being delivered" silent-failure bug. The current `execa`-spawned `xclip` swallows stderr in subtle ways.
+- Active maintenance, used internally by `execa`.
+- Drops ~30 lines of per-OS conditional code from `packages/cli/src/util/clipboard.ts`.
+
+**Impact on shipped code:**
+- `packages/cli/src/util/clipboard.ts`: rewritten to use `clipboardy.write(text)` for the write step. The per-OS paste keystroke stays. Both `pasteText` (full op) and `writeClipboard` (if exposed) benefit.
+- `packages/cli/src/builtin-addons/emoji-selector/buttons/entry.tsx`: unchanged at the call site (still `methods.pasteText(...)`); the new backend flows through automatically.
+- `select_command_shortcode` config field: removed. With the HID shim path gone, double-tap falls back to `methods.pasteText(shortcode)`. If a user supplies `select_command` for tap, double-tap becomes a no-op (matches the original CONTEXT contract for the `select_command_shortcode` unset case).
+- `packages/cli/package.json`: add `clipboardy` as a dependency.
+
+### A2. Paged-category button as internal core utility
+
+The Phase 46 / 49 `buildPageNavButton` (currently inline in `packages/cli/src/builtin-addons/emoji-selector/index.ts`) and the emoji-specific `category.tsx` are extracted into a shared internal core utility, so future addons that paginate (e.g. icon-picker, snippet-picker) can reuse the same pattern.
+
+**Location:** `packages/cli/src/core/pagination.ts` (internal to core; addons import the helpers directly, NOT exposed in the public addon API surface).
+
+**Render:** Per the Phase 49 original design — two `Chip` overlays (top-left "Tap", bottom-right "Dbl Tap") on a button with `[N/M]` as the primary label. Per-page layout unchanged: 12 entries (positions 0-11) + n-2 page nav (position 13) + system back (position 14); position 12 is empty as visual breathing room.
+
+**API surface (candidates — exact names deferred to plan-phase):**
+- `definePagedCategoryButton({...config})` — high-level helper returning a button config for a category tile in the main deck; tap navigates to the first page of the category with `addToHistory: true`.
+- `paginateDecks({...})` — generator that produces the per-page deck IDs given a base ID, page size, and total count.
+- `buildPageNavButton(currentPage, totalPages, prevDeckId, nextDeckId)` — the per-page nav button at the n-2 slot; tap and double-tap both pass `addToHistory: false` (per A3).
+
+### A3. `navigateToDeck` noHistory flag
+
+The paginated emoji subdecks currently push every page onto the history stack. The user wants the back button on a paginated page to go to the parent (the main emoji deck, or whatever spawned the pagination), not the previous page.
+
+**API change (additive, backward-compatible):**
+```ts
+navigateToDeck(
+  targetDeckId: string,
+  options?: { addToHistory?: boolean }
+): Promise<void>
+```
+Default: `addToHistory: true` (preserves current behavior for all existing callers — `core-buttons/change-deck.tsx`, `emoji-launcher`, `category.tsx`, etc.).
+
+**Internal change:** `DeckController.navigateTo(targetDeckId, { push?: boolean } = { push: true })`. When `push: false`, the active deck is replaced without modifying the stack. `goBack` is unchanged — back navigation is its own semantic; the flag affects forward navigation only.
+
+**Callers that opt in to `addToHistory: false`:**
+- The new `definePagedCategoryButton` helper (A2) and the page-nav button (A2) — every page-to-page transition passes `false` so the back stack only contains the entry point.
+- Direct navigation from the emoji main deck into the first page of a category: `true` (so back from the first page returns to main).
+- Anything outside the emoji-selector: unchanged.
+
+</amendments>
+
+<canonical_refs_addendum>
+## Canonical References — Amendment-Specific
+
+**Downstream agents implementing the amendments MUST also read these:**
+
+- `packages/cli/src/util/clipboard.ts` — current per-OS clipboard impl, to be rewritten to use `clipboardy`
+- `packages/cli/src/deck/controller.ts` — `DeckController.navigateTo` to gain `push: boolean`
+- `packages/cli/src/addon/api.ts` — `AddonButtonMethods.navigateToDeck` signature to add optional `options` arg
+- `https://www.npmjs.com/package/clipboardy` — `clipboardy.write(text)` API surface
+- `packages/cli/src/builtin-addons/emoji-selector/index.ts:28-45` — current `buildPageNavButton` (to be extracted)
+- `packages/cli/src/builtin-addons/emoji-selector/buttons/category.tsx` — current emoji-specific category button (to be extracted)
+
+</canonical_refs_addendum>
+
 ---
 
 *Phase: 49-emoji-selector-ux-revamp*
 *Context gathered: 2026-06-06*
+*Post-ship amendments: 2026-06-06*

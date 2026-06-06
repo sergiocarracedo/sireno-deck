@@ -513,9 +513,6 @@
   .p-1 {
     padding: calc(var(--spacing) * 1);
   }
-  .p-2 {
-    padding: calc(var(--spacing) * 2);
-  }
   .px-1 {
     padding-inline: calc(var(--spacing) * 1);
   }
@@ -600,9 +597,6 @@
   }
   .text-3xl {
     font-size: calc(var(--sireno-active-font-size, 16px) * 2.25);
-  }
-  .text-\[9px\] {
-    font-size: 9px;
   }
   .text-\[10px\] {
     font-size: 10px;
@@ -710,20 +704,11 @@
   .uppercase {
     text-transform: uppercase;
   }
-  .italic {
-    font-style: italic;
-  }
-  .opacity-60 {
-    opacity: 60%;
-  }
   .opacity-70 {
     opacity: 70%;
   }
   .opacity-75 {
     opacity: 75%;
-  }
-  .opacity-80 {
-    opacity: 80%;
   }
   .outline-2 {
     outline-style: var(--tw-outline-style);

@@ -45,6 +45,7 @@ export interface AddonButtonMethods {
   goBack: () => Promise<void> | void
   invalidate: () => void
   navigateToDeck: (deckId: string) => Promise<void> | void
+  pasteText: (text: string) => Promise<void>
   runCommand: (command: string) => Promise<CommandExecutionResult>
 }
 

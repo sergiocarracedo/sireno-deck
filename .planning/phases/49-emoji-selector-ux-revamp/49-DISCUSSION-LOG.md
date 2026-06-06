@@ -138,3 +138,104 @@ All 5 areas were selected for discussion.
 - Recent / frequently-used emoji history — future phase.
 - Theme overrides for the new entry button's 2×3 grid — future phase.
 - Per-emoji `commands.hold` action — future phase.
+
+---
+
+## Post-Ship Amendment Discussion (2026-06-06)
+
+After phase 49 verification, three amendments were captured in a follow-up discussion. The user reported issues against the shipped code and asked for specific corrections.
+
+### Amendment A1: clipboardy for the pasteText path (supersedes Area 1)
+
+**Context:** User reported the emojis are not being delivered. The shipped `entry.tsx` uses `methods.pasteText(config.emoji)` for the default tap path and `methods.pasteText(shortcode)` for the default double-tap path, backed by the per-OS clipboard impl in `packages/cli/src/util/clipboard.ts` (xclip / pbcopy / PowerShell + xdotool / osascript / SendKeys). The clipboard-write step is silently failing in the user's environment.
+
+**Options presented (interpretation):**
+- (a) Replace HID shim section entirely (Recommended) — build the per-OS HID shim that was decided in Area 1 but never actually wired (no per-OS shim module exists in the repo)
+- (b) Fix broken pasteText path — keep the clipboard-paste model, just fix the silent-failure issue
+
+**User choice:** Fix broken pasteText path (option b).
+
+**Follow-up options for the fix:**
+- (a) Mixed: Linux `xdotool type` direct, macOS `osascript keystroke` direct, Windows clipboard+SendKeys (Recommended)
+- (b) All direct keystroke
+- (c) All clipboard+paste
+- (d) Use `clipboardy` npm package (https://www.npmjs.com/package/clipboardy) for the clipboard write step
+
+**User choice:** Use `clipboardy` (option d).
+
+**Rationale captured:** The user does not want a new HID shim path; they want the existing clipboard-paste path to be reliable. `clipboardy` is a well-known cross-platform clipboard library that surfaces clear errors when the underlying tool is missing. The paste keystroke (xdotool/osascript/SendKeys) stays per-OS since there's no cross-platform alternative.
+
+**Decision details:** Drop the per-OS clipboard write in `packages/cli/src/util/clipboard.ts` and use `clipboardy.write(text)`. Add `clipboardy` to `packages/cli/package.json`. The HID shim section in the original CONTEXT (Area 1) is SUPERSEDED — `entry.tsx` continues to call `methods.pasteText(...)`, just with a more reliable backend. The `select_command_shortcode` config field is removed (the HID shim path it was designed for no longer exists).
+
+**Options not chosen:**
+- (a, HID shim rebuild) rejected: user explicitly does not want a new shim; they want the existing pasteText fixed.
+- (a, mixed per-OS semantics) rejected: superseded by user's choice to use clipboardy.
+- (b, all direct keystroke) rejected: Windows SendKeys can't reliably send arbitrary unicode.
+- (c, all clipboard+paste) rejected: same as today, doesn't fix the silent failure.
+
+### Amendment A2: Paged-category button as internal core utility (new scope)
+
+**Context:** `buildPageNavButton` lives inline in `packages/cli/src/builtin-addons/emoji-selector/index.ts:28-45` and `category.tsx` is emoji-specific. Future paginated addons (icon-picker, snippet-picker) would need to re-implement this. The user wants it extracted as a shared core utility.
+
+**Options presented (location):**
+- (a) `packages/cli/src/builtin-support/page-nav.ts` (Recommended) — semi-internal, importable by addons, not in public addon API
+- (b) `packages/cli/src/addon/page-nav.ts` — public addon API
+- (c) `packages/cli/src/core/pagination.ts` — internal to core
+
+**User choice:** `packages/cli/src/core/pagination.ts` (option c).
+
+**Follow-up options for render:**
+- (a) Label + footer (Recommended) — `[2/5]` as primary label + `> Tap / < Dbl Tap` as footer line
+- (b) Chip overlays — top-right "Tap >" / top-left "Dbl Tap" (Phase 49 original)
+- (c) Label only, no hint
+
+**User choice:** Chip overlays (option b).
+
+**Rationale captured:** The user wants the chip overlays from the original Phase 49 design (small "Tap" / "Dbl Tap" chips in the corners) and the page count `[N/M]` as the primary label. The utility location is internal to core — not in the public addon API surface.
+
+**Decision details:** New file `packages/cli/src/core/pagination.ts`. Exports helpers for: defining a paged-category button, generating per-page deck IDs, and building the n-2 page-nav button with chip overlays + `[N/M]` primary label. The emoji-selector migrates to use these helpers. Specific API names deferred to plan-phase.
+
+**Options not chosen:**
+- (a, builtin-support) rejected: user chose core.
+- (b, public addon API) rejected: not in scope for user-facing addon config.
+- (a, label + footer) rejected: user wanted the chip overlay design from Phase 49.
+- (c, no hint) rejected: explicitly contradicts the user's "it should show the [current page]/[total pages] / Tab: > < Dbl tap" requirement.
+
+### Amendment A3: navigateToDeck noHistory flag (new scope)
+
+**Context:** Paginated emoji subdecks push every page onto the history stack. The user wants the back button on a paginated page to go to the parent, not the previous page (so back from `emoji-smileys-p2` → main, not → `emoji-smileys-p1`).
+
+**Options presented:**
+- (a) Options object, default true (Recommended) — `navigateToDeck(deckId, options?: { addToHistory?: boolean })`
+- (b) Positional with default — `navigateToDeck(deckId, addToHistory = true)`
+- (c) Split into two methods — `navigateToDeck(deckId)` and `replaceDeck(deckId)`
+
+**User choice:** Options object, default true (option a).
+
+**Rationale captured:** Options object is the modern TS pattern, extensible (future flags like `replace`, `clearStack`), and backward compatible. Default `true` preserves current behavior for all existing callers. Opt-in `false` for the paginated emoji back paths.
+
+**Decision details:** Public API change (additive, backward-compatible):
+```ts
+navigateToDeck(
+  targetDeckId: string,
+  options?: { addToHistory?: boolean }
+): Promise<void>
+```
+Internal: `DeckController.navigateTo(targetDeckId, { push?: boolean } = { push: true })`. When `push: false`, the active deck is replaced without modifying the stack. `goBack` is unchanged — back navigation is its own semantic; the flag affects forward navigation only.
+
+**Callers that opt in to `addToHistory: false`:**
+- The new `definePagedCategoryButton` helper (A2) — every page-to-page transition passes `false` so the back stack only contains the entry point.
+- The page-nav button (A2) — tap and double-tap both pass `false`.
+- Anything outside the emoji-selector: unchanged.
+
+**Options not chosen:**
+- (b, positional) rejected: less extensible than options object.
+- (c, split methods) rejected: doesn't compose with the existing `methods` API surface; users would need to know two method names.
+
+---
+
+## Areas Deferred to Plan-Phase (Amendment-Specific)
+
+- Exact API names for `core/pagination.ts` helpers (candidates in 49-CONTEXT.md `<amendments>` A2).
+- Whether the `select_command_shortcode` config field is removed outright or kept as a no-op override (49-CONTEXT.md says removed).
+- The exact `Chip` positioning: top-left "Tap" and bottom-right "Dbl Tap" (the existing Phase 49 design), but the visual sizes and `tone` props may need to be adjusted for the new `[N/M]` primary label.

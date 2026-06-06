@@ -395,48 +395,22 @@ describe('emoji-selector addon', () => {
     expect(getEmojiShortcode('not-in-catalog')).toBeUndefined()
   })
 
-  it('renders the launcher button as a 2x3 grid of the six representative emojis when the HID tool is available', async () => {
-    const { __setHostHidToolExecCheckForTesting } = await import('./os-shims.js')
-    __setHostHidToolExecCheckForTesting(() => '/usr/bin/osascript\n')
-    try {
-      const launcherDefinition = emojiSelectorAddon.buttons.find(
-        (button) => button.type === 'emoji-selector',
-      )
-      expect(launcherDefinition).toBeDefined()
-      const harness = createMountedHarness(launcherDefinition!, { label: 'Emojis' }, 0, {
-        hostContext: {
-          os: { type: 'darwin', variant: 'macos', version: '14.0' },
-          session: { capability: 'supported', state: 'unlocked' },
-        },
-        methodOverrides: { runCommand: vi.fn() },
-      })
-      const html = renderReactNodeToHtml(harness.render() as never)
-      expect(html).toContain('data-sireno-launcher-grid="true"')
-      for (const cell of ['😂', '🔥', '❤️', '⭐', '🍕', '🎵']) {
-        expect(html).toContain(cell)
-      }
-    } finally {
-      __setHostHidToolExecCheckForTesting(undefined)
-    }
-  })
-
-  it('renders an error state on the launcher when the HID tool is missing on the host', () => {
+  it('renders the launcher button as a 2x3 grid of the six representative emojis', () => {
     const launcherDefinition = emojiSelectorAddon.buttons.find(
       (button) => button.type === 'emoji-selector',
     )
     expect(launcherDefinition).toBeDefined()
     const harness = createMountedHarness(launcherDefinition!, { label: 'Emojis' }, 0, {
       hostContext: {
-        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        os: { type: 'darwin', variant: 'macos', version: '14.0' },
         session: { capability: 'supported', state: 'unlocked' },
       },
       methodOverrides: { runCommand: vi.fn() },
     })
     const html = renderReactNodeToHtml(harness.render() as never)
-    expect(html).toContain('data-sireno-launcher-error="true"')
-    expect(html).toContain('HID tool missing')
-    expect(html).toContain('xdotool')
-    expect(html).toContain('Install')
-    expect(html).not.toContain('data-sireno-launcher-grid="true"')
+    expect(html).toContain('data-sireno-launcher-grid="true"')
+    for (const cell of ['😂', '🔥', '❤️', '⭐', '🍕', '🎵']) {
+      expect(html).toContain(cell)
+    }
   })
 })

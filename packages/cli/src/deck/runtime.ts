@@ -858,6 +858,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         deckController.navigateTo(targetDeckId)
         await activateDeckSurface(targetDeckId, previousDeckId)
       },
+      pasteText: async (text: string) => {
+        const { pasteText: doPaste } = await import('../util/clipboard.js')
+        await doPaste(text)
+      },
       runCommand: async (command: string) => executeAction(command),
     }
   }
