@@ -1,0 +1,26 @@
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_5435879e916352::t_900699790f75c8 18,21,39,51,53,72,80-83,85-95,100-101,104-105,111-112,115-116,120-121,137
+  s_5435879e916352::t_eb1dda0c60700d 73
+  s_5435879e916352::t_ba46b2029f178a 6-17,19-20,22-26,37-38,40-45,47,61-71,74-79,84,96-99,102-103,106-110,113-114,117-119,122-128,159
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c63202f5cd85a3c9d15be1cbaad5c3353f921f12",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_5435879e916352": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1662feb4cffeE0yLzL3Illbyk2",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
