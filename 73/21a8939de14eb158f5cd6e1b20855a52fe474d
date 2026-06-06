@@ -1,0 +1,26 @@
+.planning/phases/46-emoji-selector-multi-page/46-03-PLAN.md
+  s_5435879e916352::t_7a34ce6daeb5b1 1-46
+.planning/phases/46-emoji-selector-multi-page/46-04-PLAN.md
+  s_5435879e916352::t_32a6e5b9036a3c 1-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7321a8939de14eb158f5cd6e1b20855a52fe474d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_5435879e916352": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1662feb4cffeE0yLzL3Illbyk2",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
