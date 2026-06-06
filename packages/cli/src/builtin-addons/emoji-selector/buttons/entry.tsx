@@ -65,7 +65,7 @@ const emojiEntryButton = defineMountedButton({
           EMOJI_ICON_ASSETS[config.emoji],
         )
       : renderEmojiGlyph(config.emoji),
-  type: 'emoji-entry-button',
+  type: 'emoji-emoji-button',
 })
 
 export { emojiEntryButton, EmojiEntryButtonWithActionsSchema }

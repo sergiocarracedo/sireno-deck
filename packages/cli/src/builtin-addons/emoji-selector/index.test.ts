@@ -87,7 +87,7 @@ describe('emoji-selector addon', () => {
     expect(decks?.['emoji-favorites']?.buttons[0]).toMatchObject({
       emoji: '🔥',
       label: 'Favorites',
-      type: 'emoji-entry-button',
+      type: 'emoji-emoji-button',
     })
   })
 
@@ -114,7 +114,7 @@ describe('emoji-selector addon', () => {
 
   it('runs the select command with the chosen emoji', async () => {
     const entryDefinition = emojiSelectorAddon.buttons.find(
-      (button) => button.type === 'emoji-entry-button',
+      (button) => button.type === 'emoji-emoji-button',
     )
     const runCommand = vi.fn()
     const harness = createMountedHarness(
@@ -140,7 +140,7 @@ describe('emoji-selector addon', () => {
     )
 
     const entryDefinition = emojiSelectorAddon.buttons.find(
-      (button) => button.type === 'emoji-entry-button',
+      (button) => button.type === 'emoji-emoji-button',
     )
     const harness = createMountedHarness(entryDefinition!, {
         emoji: '😀',
@@ -174,13 +174,13 @@ describe('emoji-selector addon', () => {
     })
     expect(decks?.['emoji-favorites']?.buttons[0]).toMatchObject({
       emoji: '😀',
-      type: 'emoji-entry-button',
+      type: 'emoji-emoji-button',
     })
   })
 
   it('renders the real unicode glyph for non-branded emojis via the native font stack', () => {
     const entryDefinition = emojiSelectorAddon.buttons.find(
-      (button) => button.type === 'emoji-entry-button',
+      (button) => button.type === 'emoji-emoji-button',
     )
     const harness = createMountedHarness(entryDefinition!, {
         emoji: '🛰️',
@@ -218,7 +218,7 @@ describe('emoji-selector addon', () => {
     const page2 = decks?.['emoji-drink-p2']
 
     expect(
-      page1?.buttons.filter((b) => b.type === 'emoji-entry-button').length,
+      page1?.buttons.filter((b) => b.type === 'emoji-emoji-button').length,
     ).toBe(12)
 
     const page1NavButton = page1?.buttons.find(
@@ -281,7 +281,7 @@ describe('emoji-selector addon', () => {
 
     const favButtons = decks?.['emoji-favorites']?.buttons ?? []
     expect(favButtons.filter((b) => b.type === 'change-deck').length).toBe(0)
-    expect(favButtons.filter((b) => b.type === 'emoji-entry-button').length).toBe(
+    expect(favButtons.filter((b) => b.type === 'emoji-emoji-button').length).toBe(
       12,
     )
   })
@@ -307,7 +307,7 @@ describe('emoji-selector addon', () => {
     const page1 = decks?.['emoji-favorites-p1']
     const page2 = decks?.['emoji-favorites-p2']
 
-    expect(page1?.buttons.filter((b) => b.type === 'emoji-entry-button').length).toBe(12)
+    expect(page1?.buttons.filter((b) => b.type === 'emoji-emoji-button').length).toBe(12)
     const page1Next = page1?.buttons.find(
       (b) => b.type === 'change-deck' && b.position === 13,
     )
@@ -316,7 +316,7 @@ describe('emoji-selector addon', () => {
       target_deck: 'emoji-favorites-p2',
     })
 
-    expect(page2?.buttons.filter((b) => b.type === 'emoji-entry-button').length).toBe(1)
+    expect(page2?.buttons.filter((b) => b.type === 'emoji-emoji-button').length).toBe(1)
     const page2NavButtons = page2?.buttons.filter(
       (b) => b.type === 'change-deck',
     )

@@ -112,7 +112,7 @@ const emojiSelectorDeck = {
             label: category.label,
             position: offset,
             select_command: config.select_command,
-            type: 'emoji-entry-button',
+            type: 'emoji-emoji-button',
           })
         })
 
