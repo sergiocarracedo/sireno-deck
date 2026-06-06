@@ -1,0 +1,28 @@
+.planning/STATE.md
+  s_8ace353e1275e2::t_cbc7a2d886172a 14,21
+.planning/quick/037-main-deck-home-button-logo-version/037-PLAN.md
+  s_8ace353e1275e2::t_77564714aeb946 1-31
+.planning/quick/037-main-deck-home-button-logo-version/037-SUMMARY.md
+  s_8ace353e1275e2::t_34af0d645a39b4 1-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b185547e97c6ca00c1b7a2639c509914a8549914",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_8ace353e1275e2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_163156e4dffeiwvCwW8bbAkT9n",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
