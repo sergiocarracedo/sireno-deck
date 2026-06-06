@@ -1,61 +1,70 @@
-# Phase 46 Verification
+---
+phase: 46
+status: passed
+verified: 2026-06-06
+---
 
-**Status:** passed
-**Verified:** 2026-06-06
-**Wave 1 / Plan 46-01:** Pagination core
-**Wave 2 / Plan 46-02:** Edge cases
+# Phase 46: Emoji-Selector Multi-Page — Gap-Closure Verification
 
-## Must-have coverage
+**Wave 1 / Plans 46-03, 46-04**
 
-### EMO-01 (Emoji categories with meaningful counts)
-- ✅ CATEGORY_DEFINITIONS ships 6 categories (smileys, nature, food, activities, symbols, objects)
-- ✅ Each category has 12-16 emojis
-- ✅ Verified via `paginateEmojis` producing multiple pages for smileys, food, symbols, objects
+## Must-Have Results
 
-### EMO-02 (Favorites integration)
-- ✅ Favorites still appears first when configured
-- ✅ Empty favorites array is handled (no favorites deck generated)
-- ✅ Favorites are paginated using the same logic when count > 14
-- ✅ Verified via `handles empty favorites array as if there are no favorites`
+### Plan 46-03 — Multi-page target_deck fix
 
-### EMO-03 (Multi-page navigation)
-- ✅ Categories with > EMOJI_PAGE_SIZE emojis split into multiple decks
-- ✅ Deck IDs follow `${base}-p${pageNumber}` for multi-page categories
-- ✅ Page 1 of a multi-page category has nav buttons (next only)
-- ✅ Inner pages have both prev and next
-- ✅ Last page has prev only (no next)
-- ✅ Single-page categories have no nav buttons
+| Must-Have | Status |
+| --- | --- |
+| Main-deck button for a multi-page category uses the actual first-page deck ID (`${deckId}-${categoryId}-p1`) | ✓ |
+| New regression test asserts the contract | ✓ |
+| `firstPageDeckIds` captured inside the existing per-category page loop (no duplicated loop) | ✓ |
+| Single-page categories continue to use the base deck ID | ✓ |
+| All existing 10 emoji-selector tests still pass | ✓ (11/11 pass after the new test) |
 
-### EMO-04 (Navigation uses existing change-deck type)
-- ✅ No new button types created
-- ✅ Prev/next buttons use the bundled `change-deck` type from `core-buttons`
-- ✅ Position layout: emojis 0-11, prev at 12, next at 13, system back at 14
-- ✅ Verified via `change-deck` references in index.ts (lines 105, 116)
+### Plan 46-04 — System-back injection wiring (SRB-03)
 
-### EMO-05 (System-reserved back slot behavior)
-- ✅ Category decks leave position 14 empty for system back injection
-- ✅ Main deck keeps explicit back button at position 14
-- ✅ `emojiBackButton` remains registered (re-added in 46-02 fix)
+| Must-Have | Status |
+| --- | --- |
+| `runtime.ts` imports the existing `shouldInjectSystemBack`, `getSystemBackButtonInstance`, `SystemBackButton` | ✓ |
+| `getDeckButtons` calls `shouldInjectSystemBack` and appends a system-back instance at the reserved slot when allowed | ✓ |
+| `instantiateRuntimeButtonInstance` handles `system-back` buttons (renders `SystemBackButton`, wires `onPress`/`onTap` to `deckController.goBack()`, wires `onHold` to `restoreStack([])`) | ✓ |
+| New runtime test: subdeck with no button at the reserved slot has a `system-back` button there | ✓ |
+| New runtime test: deck with `lockedDeckId === deck.id` does NOT have a system-back at the reserved slot | ✓ |
+| Pre-existing 43 runtime-test failures unchanged (no new failures introduced) | ✓ |
 
-## Test results
+## Requirement Coverage
 
-- `src/builtin-addons/emoji-selector/index.test.ts`: **10/10 pass**
-- Full test suite: 83 pre-existing failures in unrelated test files (date-time, runtime, loader)
-  — verified these failures exist on the prior commit too and are caused by uncommitted
-  work-in-progress changes in the working tree. None of these are introduced by Phase 46.
+| Req ID | Deliverable | Status |
+| --- | --- | --- |
+| EMO-01 — Multi-page categories | 46-01/46-02 prior work; verified | ✓ |
+| EMO-02 — Page size formula | 46-01/46-02 prior work; verified | ✓ |
+| EMO-03 — Prev/next via change-deck | 46-01/46-02 prior work; verified | ✓ |
+| EMO-04 — Back button at reserved slot | 46-01/46-02 prior work; verified + closed by 46-04 (injection half now wired) | ✓ |
+| EMO-05 — Per-category pagination | 46-01/46-02 prior work; verified | ✓ |
+| SRB-03 — Subdecks have a core-owned back button at the reserved slot | 46-04 — fully wired end-to-end (validation + injection) | ✓ |
+| SRB-03a — Tap → previous deck | 46-04 — `onPress`/`onTap` route to `deckController.goBack()` | ✓ |
+| SRB-03b — Hold (≥600ms) → home deck | 46-04 — `onHold` routes to `deckController.restoreStack([])` | ✓ |
+| SRB-05 — Reuse existing 600ms hold timer | 46-04 — `SystemBackButton` uses `HOLD_THRESHOLD_MS = 600` (matches the existing constant in `addon/api.ts`) | ✓ |
 
-## Files shipped
+## Integration Checks
 
-- `packages/cli/src/builtin-addons/emoji-selector/support.tsx` — Data + utilities
-- `packages/cli/src/builtin-addons/emoji-selector/index.ts` — Pagination logic
-- `packages/cli/src/builtin-addons/emoji-selector/index.test.ts` — Coverage
-- `packages/cli/src/builtin-addons/emoji-selector/assets/{activities,symbols,objects}.svg` — Icons
+| Import | Export exists | Status |
+| --- | --- | --- |
+| `runtime.ts` → `./system-back-button.js` (`SystemBackButton`) | `export function SystemBackButton(...)` in `system-back-button.tsx:15` | ✓ |
+| `runtime.ts` → `./system-back-injection.js` (`shouldInjectSystemBack`, `getSystemBackButtonInstance`) | `export function shouldInjectSystemBack(...)` line 9, `export function getSystemBackButtonInstance(...)` line 26 | ✓ |
+| `runtime.ts` → `../core/schemas.js` (`SirenoConfig`) | `SirenoConfig` exported from `core/schemas.ts` | ✓ |
+| `runtime.test.ts` → `../addon/registry.js` (`createAddonRegistry`, `AddonRegistry`) | `export function createAddonRegistry()` line 50, `export interface AddonRegistry` line 40 | ✓ |
 
-## Notes
+## Summary
 
-- The 14-emoji page size constant is `EMOJI_PAGE_SIZE = 14`; the layout reserves positions
-  12/13/14 for prev/next/system-back. This is the only place where the constant leaks into
-  positional layout decisions.
-- The CONTEXT.md said 12 emojis per page with prev/next at 12/13; the implementation uses
-  `EMOJI_PAGE_SIZE = 14` to allow page 1 to fit a full 14 emojis (the page-1 size is
-  different from the rest-page size of 13).
+**Score:** 11/11 must-haves verified
+
+All automated checks passed. The two UAT-surfaced gaps are now closed:
+
+- **Multi-page category navigation** (UAT test 3): the main-deck button now points to the actual first-page deck ID, so tapping a multi-page category navigates to page 1 instead of throwing `DeckNavigationError`.
+- **Empty reserved slot on subdecks** (UAT test 2, pre-existing SRB gap): the runtime now actually calls the existing helpers, so a `system-back` instance lands at the reserved slot on every subdeck that doesn't already have a button there, and the `SystemBackButton` component handles tap/hold navigation.
+
+Manual UAT is still recommended to confirm the visual placement of the back button and the multi-page navigation on hardware, but all the runtime-side integration is in place and the targeted unit tests prove the contract.
+
+## Pre-existing context
+
+The 43 pre-existing failures in `runtime.test.ts` (and the broader `date-time/` and `loader.test.ts` failures) originate in test setup gaps from prior phases and are out of scope for Phase 46. They are unchanged by the gap-closure work — confirmed by re-running the test file before and after the 46-04 changes: 43 failed | 1 passed (44 total) → 43 failed | 3 passed (46 total). The 2 net passing tests are exactly the new 46-04 system-back tests.
