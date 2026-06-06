@@ -385,4 +385,34 @@ describe('emoji-selector addon', () => {
     expect(getEmojiShortcode('😀')).toBe('grinning')
     expect(getEmojiShortcode('not-in-catalog')).toBeUndefined()
   })
+
+  it('renders the launcher button as a 2x3 grid of the six representative emojis', () => {
+    const launcherDefinition = emojiSelectorAddon.buttons.find(
+      (button) => button.type === 'emoji-launcher',
+    )
+    expect(launcherDefinition).toBeDefined()
+    const harness = createMountedHarness(launcherDefinition!, { label: 'Emoji' }, 0, {
+      runCommand: vi.fn(),
+    })
+    const html = renderReactNodeToHtml(harness.render() as never)
+    expect(html).toContain('data-sireno-launcher-grid="true"')
+    for (const cell of ['😂', '🔥', '❤️', '⭐', '🍕', '🎵']) {
+      expect(html).toContain(cell)
+    }
+  })
+
+  it('places the launcher at position 0 of the main deck', () => {
+    const deckDefinition = emojiSelectorAddon.decks?.[0]
+    const decks = deckDefinition?.createDecks({
+      config: {
+        favorites: [],
+        select_command: "printf '%s' '{{emoji}}'",
+      },
+      deck: { id: 'emoji', type: 'emoji-selector' },
+    })
+    expect(decks?.emoji?.buttons[0]).toMatchObject({
+      label: 'Emoji',
+      type: 'emoji-launcher',
+    })
+  })
 })
