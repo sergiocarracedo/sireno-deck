@@ -2954,4 +2954,79 @@ describe("createDeckRuntime", () => {
       expect(reservedButton).toBeUndefined()
     })
   })
+
+  it("routes the system-back tap through system_back_tap_command when set on the active deck", async () => {
+    const executeAction = vi.fn(async () => ({
+      code: 0,
+      failed: false,
+      signal: undefined,
+      stderr: "",
+      stdout: "",
+      timedOut: false,
+    }))
+    const sessionMonitor = createSessionMonitorDouble({ capability: "supported", state: "unlocked" })
+    const listeners: Array<(event: { keyIndex: number; type: "down" | "up" }) => void> = []
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { buttons: [], id: "main", system_back_tap_command: "sireno-navigate --back" },
+      executeAction,
+      hostContext: {
+        os: { type: "linux", variant: "ubuntu", version: "24.04" },
+        session: { capability: "supported", state: "unlocked" },
+      },
+      sessionMonitor,
+      subscribeKeyEvents: (listener) => {
+        listeners.push(listener)
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+    const reservedButton = runtime.getButton(14)
+    expect(reservedButton).toMatchObject({ id: "system-back", position: 14, type: "system-back" })
+    for (const listener of listeners) {
+      listener({ keyIndex: 14, type: "down" })
+      listener({ keyIndex: 14, type: "up" })
+    }
+    await vi.waitFor(() => {
+      expect(executeAction).toHaveBeenCalledWith("sireno-navigate --back")
+    })
+  })
+
+  it("routes the system-back press through system_back_hold_command when set on the active deck", async () => {
+    const executeAction = vi.fn(async () => ({
+      code: 0,
+      failed: false,
+      signal: undefined,
+      stderr: "",
+      stdout: "",
+      timedOut: false,
+    }))
+    const sessionMonitor = createSessionMonitorDouble({ capability: "supported", state: "unlocked" })
+    const listeners: Array<(event: { keyIndex: number; type: "down" | "up" }) => void> = []
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { buttons: [], id: "main", system_back_hold_command: "sireno-navigate --home" },
+      executeAction,
+      hostContext: {
+        os: { type: "linux", variant: "ubuntu", version: "24.04" },
+        session: { capability: "supported", state: "unlocked" },
+      },
+      sessionMonitor,
+      subscribeKeyEvents: (listener) => {
+        listeners.push(listener)
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+    for (const listener of listeners) {
+      listener({ keyIndex: 14, type: "down" })
+    }
+    await vi.waitFor(() => {
+      expect(executeAction).toHaveBeenCalledWith("sireno-navigate --home")
+    })
+  })
 })
