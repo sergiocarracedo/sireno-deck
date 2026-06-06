@@ -37,13 +37,26 @@ function createMountedHarness(
   definition: NonNullable<(typeof emojiSelectorAddon.buttons)[number]>,
   config: unknown,
   position: number,
-  methodOverrides: Partial<typeof mountedButtonMethods> = {},
+  options:
+    | Partial<typeof mountedButtonMethods>
+    | {
+        hostContext?: Parameters<typeof definition.render>[0]['hostContext']
+        methodOverrides?: Partial<typeof mountedButtonMethods>
+      } = {},
 ) {
+  const isOptionsObject = 'hostContext' in options || 'methodOverrides' in options
+  const methodOverrides = isOptionsObject
+    ? (options as { methodOverrides?: Partial<typeof mountedButtonMethods> }).methodOverrides ?? {}
+    : (options as Partial<typeof mountedButtonMethods>)
+  const hostContext =
+    isOptionsObject && (options as { hostContext?: typeof UNKNOWN_HOST_CONTEXT }).hostContext !== undefined
+      ? (options as { hostContext: typeof UNKNOWN_HOST_CONTEXT }).hostContext
+      : UNKNOWN_HOST_CONTEXT
   const props = {
     button: { position, type: definition.type },
     config,
     frameState: 'idle',
-    hostContext: UNKNOWN_HOST_CONTEXT,
+    hostContext,
     methods: { ...mountedButtonMethods, ...methodOverrides },
     pressed: false,
     store: {
@@ -79,7 +92,7 @@ describe('emoji-selector addon', () => {
       deck: { id: 'emoji', type: 'emoji-selector' },
     })
 
-    expect(decks?.emoji?.buttons[1]).toMatchObject({
+    expect(decks?.emoji?.buttons[0]).toMatchObject({
       label: 'Favorites',
       target_deck: 'emoji-favorites',
       type: 'emoji-category-button',
@@ -168,13 +181,9 @@ describe('emoji-selector addon', () => {
       deck: { id: 'emoji', type: 'emoji-selector' },
     })
 
-    expect(decks?.emoji?.buttons[1]).toMatchObject({
+    expect(decks?.emoji?.buttons[0]).toMatchObject({
       icon: 'addon://emoji-selector/favorites.svg',
       label: 'Favorites',
-    })
-    expect(decks?.emoji?.buttons[0]).toMatchObject({
-      label: 'Emoji',
-      type: 'emoji-launcher',
     })
     expect(decks?.['emoji-favorites']?.buttons[0]).toMatchObject({
       emoji: '😀',
@@ -386,33 +395,48 @@ describe('emoji-selector addon', () => {
     expect(getEmojiShortcode('not-in-catalog')).toBeUndefined()
   })
 
-  it('renders the launcher button as a 2x3 grid of the six representative emojis', () => {
-    const launcherDefinition = emojiSelectorAddon.buttons.find(
-      (button) => button.type === 'emoji-launcher',
-    )
-    expect(launcherDefinition).toBeDefined()
-    const harness = createMountedHarness(launcherDefinition!, { label: 'Emoji' }, 0, {
-      runCommand: vi.fn(),
-    })
-    const html = renderReactNodeToHtml(harness.render() as never)
-    expect(html).toContain('data-sireno-launcher-grid="true"')
-    for (const cell of ['😂', '🔥', '❤️', '⭐', '🍕', '🎵']) {
-      expect(html).toContain(cell)
+  it('renders the launcher button as a 2x3 grid of the six representative emojis when the HID tool is available', async () => {
+    const { __setHostHidToolExecCheckForTesting } = await import('./os-shims.js')
+    __setHostHidToolExecCheckForTesting(() => '/usr/bin/osascript\n')
+    try {
+      const launcherDefinition = emojiSelectorAddon.buttons.find(
+        (button) => button.type === 'emoji-selector',
+      )
+      expect(launcherDefinition).toBeDefined()
+      const harness = createMountedHarness(launcherDefinition!, { label: 'Emojis' }, 0, {
+        hostContext: {
+          os: { type: 'darwin', variant: 'macos', version: '14.0' },
+          session: { capability: 'supported', state: 'unlocked' },
+        },
+        methodOverrides: { runCommand: vi.fn() },
+      })
+      const html = renderReactNodeToHtml(harness.render() as never)
+      expect(html).toContain('data-sireno-launcher-grid="true"')
+      for (const cell of ['😂', '🔥', '❤️', '⭐', '🍕', '🎵']) {
+        expect(html).toContain(cell)
+      }
+    } finally {
+      __setHostHidToolExecCheckForTesting(undefined)
     }
   })
 
-  it('places the launcher at position 0 of the main deck', () => {
-    const deckDefinition = emojiSelectorAddon.decks?.[0]
-    const decks = deckDefinition?.createDecks({
-      config: {
-        favorites: [],
-        select_command: "printf '%s' '{{emoji}}'",
+  it('renders an error state on the launcher when the HID tool is missing on the host', () => {
+    const launcherDefinition = emojiSelectorAddon.buttons.find(
+      (button) => button.type === 'emoji-selector',
+    )
+    expect(launcherDefinition).toBeDefined()
+    const harness = createMountedHarness(launcherDefinition!, { label: 'Emojis' }, 0, {
+      hostContext: {
+        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        session: { capability: 'supported', state: 'unlocked' },
       },
-      deck: { id: 'emoji', type: 'emoji-selector' },
+      methodOverrides: { runCommand: vi.fn() },
     })
-    expect(decks?.emoji?.buttons[0]).toMatchObject({
-      label: 'Emoji',
-      type: 'emoji-launcher',
-    })
+    const html = renderReactNodeToHtml(harness.render() as never)
+    expect(html).toContain('data-sireno-launcher-error="true"')
+    expect(html).toContain('HID tool missing')
+    expect(html).toContain('xdotool')
+    expect(html).toContain('Install')
+    expect(html).not.toContain('data-sireno-launcher-grid="true"')
   })
 })

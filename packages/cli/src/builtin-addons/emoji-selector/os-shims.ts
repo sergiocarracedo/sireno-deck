@@ -120,9 +120,17 @@ const defaultExecCheck: ExecCheck = (cmd) => {
   }
 }
 
+let testingExecCheck: ExecCheck | undefined
+
+export function __setHostHidToolExecCheckForTesting(
+  execCheck: ExecCheck | undefined,
+): void {
+  testingExecCheck = execCheck
+}
+
 export function getHostHidToolStatus(
   osType: string,
-  execCheck: ExecCheck = defaultExecCheck,
+  execCheck?: ExecCheck,
 ): HostHidToolStatus {
   const toolName = getRequiredHidToolName(osType)
   if (toolName === '') {
@@ -135,7 +143,8 @@ export function getHostHidToolStatus(
   }
   const checkCmd =
     process.platform === 'win32' ? `where ${toolName}` : `command -v ${toolName}`
-  const resolvedPath = execCheck(checkCmd)
+  const checker = execCheck ?? testingExecCheck ?? defaultExecCheck
+  const resolvedPath = checker(checkCmd)
   if (resolvedPath !== null) {
     return { available: true, toolName }
   }
