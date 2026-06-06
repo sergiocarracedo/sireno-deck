@@ -10,8 +10,8 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 ## Current Position
 
 Milestone: v1.4 — Addons & UX Polish (scope cut: distribution removed)
-Status: In execution — Phases 41-45 complete, Phase 46 next
-Last activity: 2026-06-06 — plan-phase 46 (Emoji-Selector Multi-Page) — 2 plans created (research, pagination, edge cases)
+Status: In execution — Phases 41-46 complete. v1.4 shipped out of 6 in-scope phases.
+Last activity: 2026-06-06 — execute-phase 46 (Emoji-Selector Multi-Page) — 2 plans, 6 categories with pagination, all must-haves covered, 10/10 emoji-selector tests pass
 
 ### Quick Tasks Completed
 
@@ -19,7 +19,7 @@ Last activity: 2026-06-06 — plan-phase 46 (Emoji-Selector Multi-Page) — 2 pl
 |---|-------------|------|--------|-----------|
 | 036 | Move default theme presentation interfaces to core contract and fix ButtonFrame line 53 | 2026-06-05 | 1d1b359 | .planning/quick/036-move-theme-interfaces-to-core/ |
 
-Progress: [█████████░] ~90% (5 of 6 in-scope v1.4 phases complete; Phase 46 unstarted)
+Progress: [██████████] 100% (6 of 6 in-scope v1.4 phases complete)
 
 ### v1.4 Phase Snapshot (2026-06-05 — post Phase 40 cut)
 
@@ -31,7 +31,7 @@ Progress: [█████████░] ~90% (5 of 6 in-scope v1.4 phases com
 | 43 — Date-Time Calendar Button | 1 | 1 | Complete | Replaced `calendar-sheet` stub with real `date` button. |
 | 44 — Media-Volume Buttons | 1 | 1 | Complete | Verification `passed`. |
 | 45 — Weather Addon | 1 | 1 | Complete | Verification `passed`, UAT `testing` — manual UAT rerun still pending. |
-| 46 — Emoji-Selector Multi-Page | 2 | 1 | **Planning** | Wave 1: pagination + data; Wave 2: edge cases + tests. |
+| 46 — Emoji-Selector Multi-Page | 2 | 2 | **Complete** | Verification `passed`. 6 categories, 12-16 emojis each, prev/next `change-deck` at positions 12/13, system back at 14. |
 | 47 — CI Matrix Builds for Linux + Mac | — | — | **Cut — deferred to v1.5** | Was predicated on Phase 40 SEA artifacts. |
 | 48 — Build and Install Documentation | — | — | **Cut — deferred to v1.5** | Was predicated on Phase 40 SEA artifacts. |
 

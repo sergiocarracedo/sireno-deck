@@ -52,7 +52,7 @@ The work splits into six vertical slices: a cross-cutting core change (system-re
 **Depends on:** 42
 **Status:** [x] ✓ Complete (2026-06-04)
 
-### Phase 46: Emoji-Selector Multi-Page
+### Phase 46: Emoji-Selector Multi-Page ✓ Complete (2026-06-06)
 
 **Goal:** Paginate emoji-selector categories that overflow the deck, with prev/next navigation buttons.
 **Requirements:** `EMO-01` through `EMO-05`
@@ -63,6 +63,7 @@ The work splits into six vertical slices: a cross-cutting core change (system-re
 - [x] Back button repositioned to the system-reserved last slot
 - [x] Per-category pagination (each category starts on page 1, not global)
 **Research needed:** No (covered by v1.4 research)
+**Status:** [x] ✓ Complete (2026-06-06) — 6 categories shipped (12-16 emojis each), pagination with `change-deck` prev/next at positions 12/13, system back at 14, 10/10 emoji-selector tests pass
 
 ### ~~Phase 47: CI Matrix Builds for Linux + Mac~~ — Cut from v1.4 (deferred to v1.5)
 
