@@ -208,11 +208,11 @@ describe('emoji-selector addon', () => {
       deck: { id: 'emoji', type: 'emoji-selector' },
     })
 
-    expect(decks?.['emoji-smileys-p1']).toBeDefined()
-    expect(decks?.['emoji-smileys-p2']).toBeDefined()
+    expect(decks?.['emoji-drink-p1']).toBeDefined()
+    expect(decks?.['emoji-drink-p2']).toBeDefined()
 
-    const page1 = decks?.['emoji-smileys-p1']
-    const page2 = decks?.['emoji-smileys-p2']
+    const page1 = decks?.['emoji-drink-p1']
+    const page2 = decks?.['emoji-drink-p2']
 
     expect(
       page1?.buttons.filter((b) => b.type === 'emoji-entry-button').length,
@@ -228,10 +228,10 @@ describe('emoji-selector addon', () => {
     )
     expect(page2Prev).toMatchObject({
       label: '‹ Page 2',
-      target_deck: 'emoji-smileys-p1',
+      target_deck: 'emoji-drink-p1',
     })
 
-    expect(page2?.name).toBe('Smileys (2/2)')
+    expect(page2?.name).toBe('Drink (2/2)')
   })
 
   it('omits pagination for single-page categories', () => {

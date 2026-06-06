@@ -4,125 +4,55 @@ import { z } from 'zod'
 
 import { Icon, Text } from '../../ui/index.js'
 
-const CATEGORY_DEFINITIONS = [
-  {
-    emojis: [
-      '😀',
-      '😂',
-      '🥳',
-      '😎',
-      '😍',
-      '🤩',
-      '😇',
-      '🤔',
-      '😴',
-      '😭',
-      '🤯',
-      '🥶',
-      '🥵',
-      '😡',
-      '🤢',
-      '🤡',
-    ],
-    icon: 'addon://emoji-selector/smileys.svg',
-    id: 'smileys',
-    label: 'Smileys',
-  },
-  {
-    emojis: ['🌿', '🌊', '🔥', '🌈', '⭐', '🌙', '☀️', '⚡', '❄️', '🌸', '🌳', '🌵'],
-    icon: 'addon://emoji-selector/nature.svg',
-    id: 'nature',
-    label: 'Nature',
-  },
-  {
-    emojis: [
-      '🍕',
-      '🍣',
-      '☕',
-      '🍓',
-      '🍔',
-      '🍟',
-      '🌮',
-      '🍣',
-      '🍦',
-      '🍩',
-      '🍪',
-      '🍰',
-      '🍫',
-      '🍿',
-      '🥗',
-      '🍜',
-    ],
-    icon: 'addon://emoji-selector/food.svg',
-    id: 'food',
-    label: 'Food',
-  },
-  {
-    emojis: [
-      '⚽',
-      '🏀',
-      '🎾',
-      '🏈',
-      '⚾',
-      '🎱',
-      '🏓',
-      '🏸',
-      '🥊',
-      '🏆',
-      '🎯',
-      '🎮',
-      '🎲',
-      '🎵',
-    ],
-    icon: 'addon://emoji-selector/activities.svg',
-    id: 'activities',
-    label: 'Activities',
-  },
-  {
-    emojis: [
-      '❤️',
-      '💛',
-      '💚',
-      '💙',
-      '💜',
-      '🖤',
-      '🤍',
-      '💔',
-      '❗',
-      '❓',
-      '💯',
-      '✨',
-      '⭐',
-      '🔔',
-      '🎉',
-    ],
-    icon: 'addon://emoji-selector/symbols.svg',
-    id: 'symbols',
-    label: 'Symbols',
-  },
-  {
-    emojis: [
-      '⌚',
-      '📱',
-      '💻',
-      '⌨️',
-      '🖥️',
-      '🖱️',
-      '🖨️',
-      '💾',
-      '💿',
-      '📷',
-      '🎥',
-      '📺',
-      '📻',
-      '☎️',
-      '🔋',
-    ],
-    icon: 'addon://emoji-selector/objects.svg',
-    id: 'objects',
-    label: 'Objects',
-  },
-]
+import categoriesData from './data/categories.json' with { type: 'json' }
+
+export interface EmojiEntryData {
+  readonly char: string
+  readonly shortcode: string
+}
+
+export interface CategoryData {
+  readonly emojis: readonly string[]
+  readonly icon: string
+  readonly id: string
+  readonly label: string
+  readonly shortcodes: Readonly<Record<string, string>>
+}
+
+const CATEGORIES: readonly CategoryData[] = (
+  categoriesData as Array<{
+    emojis: EmojiEntryData[]
+    icon: string
+    id: string
+    label: string
+  }>
+).map((category) => {
+  const emojis: string[] = []
+  const shortcodes: Record<string, string> = {}
+  for (const entry of category.emojis) {
+    emojis.push(entry.char)
+    if (!(entry.char in shortcodes)) {
+      shortcodes[entry.char] = entry.shortcode
+    }
+  }
+  return {
+    emojis,
+    icon: category.icon,
+    id: category.id,
+    label: category.label,
+    shortcodes,
+  }
+})
+
+const CATEGORY_DEFINITIONS: readonly CategoryData[] = CATEGORIES
+
+export function getEmojiShortcode(char: string): string | undefined {
+  for (const category of CATEGORIES) {
+    const code = category.shortcodes[char]
+    if (code !== undefined) return code
+  }
+  return undefined
+}
 
 const assets = {
   'back.svg': fileURLToPath(new URL('./assets/back.svg', import.meta.url)),
