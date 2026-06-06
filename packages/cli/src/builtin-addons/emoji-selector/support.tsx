@@ -276,6 +276,59 @@ function createButtonNode(label: string, icon?: string) {
   )
 }
 
+export const EMOJI_PAGE_SIZE = 14
+
+export interface EmojiPage {
+  emojis: string[]
+  pageIndex: number
+  totalPages: number
+}
+
+export function paginateEmojis(
+  emojis: readonly string[],
+  pageSize: number,
+): EmojiPage[] {
+  if (emojis.length === 0) return []
+
+  const firstPageSize = pageSize
+  const restPageSize = pageSize - 1
+
+  const pages: EmojiPage[] = []
+  let remaining = [...emojis]
+
+  pages.push({
+    emojis: remaining.slice(0, firstPageSize),
+    pageIndex: 0,
+    totalPages: 0,
+  })
+  remaining = remaining.slice(firstPageSize)
+
+  while (remaining.length > 0) {
+    pages.push({
+      emojis: remaining.slice(0, restPageSize),
+      pageIndex: 0,
+      totalPages: 0,
+    })
+    remaining = remaining.slice(restPageSize)
+  }
+
+  const total = pages.length
+  for (const page of pages) {
+    page.totalPages = total
+  }
+
+  return pages
+}
+
+export function generatePageLabel(
+  categoryLabel: string,
+  pageIndex: number,
+  totalPages: number,
+): string {
+  if (totalPages <= 1) return categoryLabel
+  return `${categoryLabel} (${pageIndex + 1}/${totalPages})`
+}
+
 export {
   assets,
   CATEGORY_DEFINITIONS,
