@@ -114,6 +114,27 @@ The work splits into six vertical slices: a cross-cutting core change (system-re
 **Original goal:** Ship end-user and developer documentation for the v1.4 standalone binary.
 **Cut rationale:** Was predicated on Phase 40's SEA artifact. README is already truthful about the dev install path (`git clone && pnpm install`). End-user install documentation needs a real distribution target, which is a v1.5 question.
 
+### Phase 49: Emoji-Selector UX Revamp — Added 2026-06-06 (v1.4 late addition)
+
+**Goal:** Rewrite the emoji-selector based on real-world Stream Deck usage feedback so each emoji category is a navigable subdeck with proper pagination, real-emoji rendering (no U+1Fxxx placeholders), bigger key-art, and HID keyboard-stroke output (tap = emoji, double-tap = shortcode). Ship a new addon-provided entry button that shows a 2×3 grid of six emojis so the user discovers the addon's affordance without authoring boilerplate.
+**Requirements:** `EMO-06` through `EMO-14` (to be assigned at plan-phase)
+**Depends on:** Phase 46 (current emoji-selector base)
+**Status:** [ ] Not started
+
+User feedback driving this phase:
+- Subdeck back button must return all the way home (currently bounces one level — surface the system back wiring on subdecks for the emoji case).
+- Tap should send the emoji to the host via an HID keyboard stroke; double-tap should send the emoji's shortcode (e.g. `:fire:`) via the same HID path.
+- Emoji glyphs render as `U+1Fxxx` placeholders in the browser — must render real platform emoji glyphs (browser font stack, e.g. `Apple Color Emoji`, `Segoe UI Emoji`, `Noto Color Emoji`).
+- Emoji key art should be much larger on the button (full-surface or near-full-surface, not a small icon in a card).
+- Subcategories must be split (e.g. "Smileys and People" → "Smileys" + "People") and the category list sourced from a real emoji catalog (`piliapp.com/emoji/list/`), not a hand-rolled one.
+- Pagination: the `n-2` button on each page is the page nav — tap = next, double-tap = previous — and a `Chip` overlay shows "Tap" / "Dbl Tap" hints.
+- The main emoji entry button (the one on a parent deck that jumps into the emoji main deck) is provided by the addon as a first-class button type, not a config-authored button. Its render is a 2×3 grid of six emojis (see attached reference image).
+
+**Research needed:** Yes — emoji catalog sourcing, HID keyboard-stroke output (`@elgato-stream-deck/node` capabilities or a separate HID path), and the browser-side font stack for real emoji glyphs.
+
+### Plans
+*Not yet planned — run `plan-phase 49`*
+
 ### v1.5 Backlog (informational)
 
 These phases are deferred from v1.4 and queued for v1.5 planning:

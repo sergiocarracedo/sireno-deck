@@ -158,6 +158,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 49 added: emoji-selector UX revamp as a v1.4 late addition — rewrite based on real-world feedback (real emoji glyphs not U+1Fxxx placeholders, bigger key art, HID keyboard-stroke output for tap=emoji / double-tap=shortcode, proper subcategory split using the piliapp.com catalog, n-2 page-nav button with Tap/Dbl-Tap chip hints, addon-provided entry button that renders a 2×3 grid of six emojis as a first-class button type).
 - Phase 39 added: let external themes override the `Surface` component used by the built-in media-player addon so they can render the button surface however they want.
 - Phase 48 added: document the build and install flow for the v1.4 standalone binary — README updates for end-user install of the prebuilt binary, plus developer quickstart for building from source.
 - Phase 38 added: make the Stream Deck startup image cover 100% of the device surface instead of being centered.
