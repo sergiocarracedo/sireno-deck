@@ -95,10 +95,7 @@ const emojiSelectorDeck = {
         })
 
         if (!isFirstPage) {
-          const prevDeckId =
-            pageIndex === 1
-              ? baseDeckId
-              : `${baseDeckId}-p${pageIndex}`
+          const prevDeckId = `${baseDeckId}-p${pageIndex}`
           buttons.push({
             icon: PREV_ICON,
             label: `\u2039 Page ${pageIndex + 1}`,

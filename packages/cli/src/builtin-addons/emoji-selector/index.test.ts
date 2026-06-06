@@ -151,9 +151,9 @@ describe('emoji-selector addon', () => {
       icon: 'addon://emoji-selector/favorites.svg',
       label: 'Favorites',
     })
-    expect(decks?.['emoji-favorites']?.buttons[1]).toMatchObject({
-      icon: 'addon://emoji-selector/back.svg',
-      label: 'Back',
+    expect(decks?.['emoji-favorites']?.buttons[0]).toMatchObject({
+      emoji: '😀',
+      type: 'emoji-entry-button',
     })
   })
 
@@ -175,5 +175,58 @@ describe('emoji-selector addon', () => {
     expect(html).toContain('U+1F6F0')
     expect(html).toContain('data-sireno-ui-text="true"')
     expect(html).toContain('font-main text-foreground')
+  })
+
+  it('paginates categories with more emojis than fit on one page', () => {
+    const deckDefinition = emojiSelectorAddon.decks?.[0]
+    const decks = deckDefinition?.createDecks({
+      config: {
+        favorites: [],
+        select_command: "printf '%s' '{{emoji}}'",
+      },
+      deck: { id: 'emoji', type: 'emoji-selector' },
+    })
+
+    expect(decks?.['emoji-smileys-p1']).toBeDefined()
+    expect(decks?.['emoji-smileys-p2']).toBeDefined()
+
+    const page1 = decks?.['emoji-smileys-p1']
+    const page2 = decks?.['emoji-smileys-p2']
+
+    expect(
+      page1?.buttons.filter((b) => b.type === 'emoji-entry-button').length,
+    ).toBe(14)
+
+    const page2NavButtons = page2?.buttons.filter(
+      (b) => b.type === 'change-deck',
+    )
+    expect(page2NavButtons?.length).toBe(1)
+
+    const page2Prev = page2?.buttons.find(
+      (b) => b.type === 'change-deck' && b.position === 12,
+    )
+    expect(page2Prev).toMatchObject({
+      label: '‹ Page 2',
+      target_deck: 'emoji-smileys-p1',
+    })
+
+    expect(page2?.name).toBe('Smileys (2/2)')
+  })
+
+  it('omits pagination for single-page categories', () => {
+    const deckDefinition = emojiSelectorAddon.decks?.[0]
+    const decks = deckDefinition?.createDecks({
+      config: {
+        favorites: ['😀', '😂'],
+        select_command: "printf '%s' '{{emoji}}'",
+      },
+      deck: { id: 'emoji', type: 'emoji-selector' },
+    })
+
+    expect(decks?.['emoji-favorites']).toBeDefined()
+    expect(decks?.['emoji-favorites-p1']).toBeUndefined()
+
+    const favButtons = decks?.['emoji-favorites']?.buttons ?? []
+    expect(favButtons.filter((b) => b.type === 'change-deck').length).toBe(0)
   })
 })
