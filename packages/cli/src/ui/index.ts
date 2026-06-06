@@ -1,5 +1,5 @@
-export { Chip, type ChipProps, type ChipTone } from './Chip.js'
-export { Bars, type BarsItem, type BarsProps } from './Bars.js'
+export { Bars, type BarsItem, type BarsProps } from './Bars'
+export { Chip, type ChipProps, type ChipTone } from './Chip'
 export {
   Icon,
   type BrandIconName,
@@ -7,6 +7,7 @@ export {
   type IconProps,
   type IconTone,
 } from './Icon.js'
+export { Label, type LabelProps } from './Label'
 export {
   LabelValueList,
   type LabelValueListLine,

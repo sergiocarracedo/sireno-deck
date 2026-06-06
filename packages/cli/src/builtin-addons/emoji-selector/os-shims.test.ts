@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 
 import type { HostContext } from '../../system/host-context.js'
 import {
+  getHostHidToolStatus,
+  getRequiredHidToolName,
   getShimUnsupportedReason,
   resolveEmojiShortcodeCommand,
   resolveEmojiTypeCommand,
@@ -86,5 +88,59 @@ describe('emoji-selector os-shims', () => {
 
   it('getShimUnsupportedReason returns a human-readable string', () => {
     expect(getShimUnsupportedReason('freebsd')).toMatch(/freebsd/)
+  })
+})
+
+describe('emoji-selector os-shims host-availability', () => {
+  it('maps the linux OS to the xdotool tool', () => {
+    expect(getRequiredHidToolName('linux')).toBe('xdotool')
+  })
+
+  it('maps the darwin OS to the osascript tool', () => {
+    expect(getRequiredHidToolName('darwin')).toBe('osascript')
+  })
+
+  it('maps the win32 OS to the powershell tool', () => {
+    expect(getRequiredHidToolName('win32')).toBe('powershell')
+  })
+
+  it('returns an empty tool name for unknown OSes', () => {
+    expect(getRequiredHidToolName('freebsd')).toBe('')
+  })
+
+  it('reports the tool as available when execCheck returns a path', () => {
+    const status = getHostHidToolStatus('linux', () => '/usr/bin/xdotool')
+    expect(status.available).toBe(true)
+    if (!status.available) return
+    expect(status.toolName).toBe('xdotool')
+  })
+
+  it('reports the tool as unavailable when execCheck returns null', () => {
+    const status = getHostHidToolStatus('linux', () => null)
+    expect(status.available).toBe(false)
+    if (status.available) return
+    expect(status.toolName).toBe('xdotool')
+    expect(status.reason).toMatch(/xdotool/)
+    expect(status.installHint).toMatch(/Install.*xdotool|apt install/)
+  })
+
+  it('reports the tool as unavailable for unknown OSes with an install hint', () => {
+    const status = getHostHidToolStatus('freebsd', () => null)
+    expect(status.available).toBe(false)
+    if (status.available) return
+    expect(status.toolName).toBe('')
+    expect(status.reason).toMatch(/freebsd/)
+  })
+
+  it('emits the windows/darwin install hint when the tool is missing on those OSes', () => {
+    const win = getHostHidToolStatus('win32', () => null)
+    expect(win.available).toBe(false)
+    if (win.available) return
+    expect(win.installHint).toMatch(/Windows/)
+
+    const darwin = getHostHidToolStatus('darwin', () => null)
+    expect(darwin.available).toBe(false)
+    if (darwin.available) return
+    expect(darwin.installHint).toMatch(/macOS/)
   })
 })

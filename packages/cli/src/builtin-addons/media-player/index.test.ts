@@ -77,10 +77,11 @@ function createMountedHarness(
 
   return {
     activate: async () => definition?.onActivate?.(props),
-    press: async () => definition?.onPress?.(props),
-    release: async () => definition?.onRelease?.(props),
-    render: () => definition?.render(props),
+    hold: async () => definition?.onHold?.(props),
+    press: async () => {},
+    release: async () => {},
     tap: async () => definition?.onTap?.(props),
+    render: () => definition?.render?.(props),
   }
 }
 
@@ -104,6 +105,8 @@ describe('media-player addon', () => {
     expect(mediaPlayerAddon.apiVersion).toBe(1)
     expect(mediaPlayerAddon.buttons.map((button) => button.type)).toEqual([
       'media-player',
+      'media-mute',
+      'media-volume',
     ])
     expect(mediaPlayerAddon.buttons[0]?.configSchema.parse({})).toEqual({
       poll_interval_ms: 1_000,
@@ -191,20 +194,13 @@ describe('media-player addon', () => {
     const harness = createMountedHarness({ hold_command: 'next-track' }, { runCommand })
 
     await harness.activate()
-    await harness.press()
-    await vi.advanceTimersByTimeAsync(650)
-    await harness.release()
-    await harness.tap()
+    await harness.hold()
 
     expect(runCommand.mock.calls.map((call) => call[0])).toEqual(['next-track'])
-    expect(togglePlayPauseMock).not.toHaveBeenCalled()
 
     runCommand.mockClear()
     togglePlayPauseMock.mockClear()
 
-    await harness.press()
-    await vi.advanceTimersByTimeAsync(200)
-    await harness.release()
     await harness.tap()
 
     expect(runCommand).not.toHaveBeenCalled()

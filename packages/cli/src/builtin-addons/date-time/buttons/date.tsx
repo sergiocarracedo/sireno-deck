@@ -40,7 +40,7 @@ export const builtinDateButton = defineMountedButton({
       <ButtonSurface>
         <div className="flex h-full w-full flex-col items-center justify-center gap-0 leading-[0.70]">
           <Text
-            size="sm"
+            size="md"
             tone="accent"
             className="border-accent bg-accent/20 px-1 py-0.5 rounded-full leading-[1em]"
           >

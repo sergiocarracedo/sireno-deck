@@ -141,26 +141,13 @@ const emojiSelectorDeck = {
 
     return {
       [deck.id]: {
-        buttons: [
-          {
-            label: 'Emoji',
-            position: 0,
-            type: 'emoji-launcher',
-          },
-          ...orderedCategories.map((category, index) => ({
-            icon: category.icon,
-            label: category.label,
-            position: index + 1,
-            target_deck: firstPageDeckIds[index],
-            type: 'emoji-category-button',
-          })),
-          {
-            icon: 'addon://emoji-selector/back.svg',
-            label: 'Back',
-            position: 14,
-            type: 'emoji-back-button',
-          },
-        ],
+        buttons: orderedCategories.map((category, index) => ({
+          icon: category.icon,
+          label: category.label,
+          position: index,
+          target_deck: firstPageDeckIds[index],
+          type: 'emoji-category-button',
+        })),
         id: deck.id,
         name: 'Emoji Selector',
       },

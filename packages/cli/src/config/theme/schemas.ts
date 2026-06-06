@@ -7,6 +7,7 @@ import {
   TextTone,
   TextTypography,
 } from '@/ui'
+import { LabelProps } from '@/ui/Label'
 import { ReactElement, ReactNode } from 'react'
 import { z } from 'zod'
 
@@ -98,10 +99,13 @@ export interface ThemeTextPresentationProps {
   size: TextSize
 }
 
+export type ThemeLabelProps = LabelProps
+
 export interface ThemeUiPresentation {
   chip?: (props: ThemeChipPresentationProps) => ReactElement
   icon?: (props: ThemeIconPresentationProps) => ReactElement
   text?: (props: ThemeTextPresentationProps) => ReactElement
+  label?: (props: ThemeLabelProps) => ReactElement
 }
 
 export type ThemeColorToken = (typeof colorTokens)[number]
@@ -110,12 +114,7 @@ export interface ThemeMediaPlayerSurfaceProps {
   artist: string
   progress: number
   source: string
-  status:
-    | 'play'
-    | 'pause'
-    | 'stop'
-    | 'notAvailable'
-    | 'unsupported'
+  status: 'play' | 'pause' | 'stop' | 'notAvailable' | 'unsupported'
   time: string
   title: string
 }

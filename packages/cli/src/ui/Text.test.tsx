@@ -1,11 +1,11 @@
 import { createElement } from 'react'
-import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
+import { renderReactNodeToHtml } from '../render/dom-host.js'
 import { Text } from './Text.js'
 
 function renderText(props: Parameters<typeof Text>[0]): string {
-  return renderToStaticMarkup(createElement(Text, props))
+  return renderReactNodeToHtml(createElement(Text, props) as never)
 }
 
 describe('Text', () => {

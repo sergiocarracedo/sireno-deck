@@ -3,15 +3,22 @@ decks:
     id: main
     name: Main Deck
     buttons:
-      - position: 8
-        type: date-time
-        format: 'HH:mm'
+      - position: 2
+        type: time
+        variant: big
+
+      - position: 3
+        type: date
+
+      - position: 4
+        type: weather
+        location:
+          latitude: 42.2304
+          longitude: -8.7256
+          name: Vigo
 
       - position: 9
-        type: change-deck
-        label: Emoji
-        icon: addon://emoji-selector/favorites.svg
-        target_deck: emoji
+        type: emoji-selector
 
       - position: 10
         type: action
@@ -47,13 +54,9 @@ decks:
         type: media-player
         unavailable_label: Unavailable
 
-      - position: 2
-        type: time
-        variant: big
       - position: 11
         type: time
-      - position: 3
-        type: date
+
       - position: 13
         type: clock
 

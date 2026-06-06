@@ -7,8 +7,6 @@ import {
 } from '../domain/media-volume-controller.js'
 import { MediaMuteButtonSchema } from '../schemas.js'
 
-const HOLD_MS = 600
-
 function renderMuteSurface(snap: MediaVolumeSnapshot) {
   return (
     <ButtonSurface full>
@@ -51,6 +49,14 @@ export const builtinMediaMuteButton = defineMountedButton({
       } as MuteStoreState)
     }
   },
+  onHold: async ({ hostContext, methods, store }) => {
+    const controller = createMediaVolumeController({ hostContext })
+    const current = getState(store.button.snapshot).snapshot
+    await controller.setMuted(!current.muted)
+    const snap = await controller.getSnapshot()
+    store.button.set({ snapshot: snap } as MuteStoreState)
+    methods.invalidate()
+  },
   onTap: async ({ hostContext, methods, store }) => {
     const controller = createMediaVolumeController({ hostContext })
     const current = getState(store.button.snapshot).snapshot
@@ -60,29 +66,6 @@ export const builtinMediaMuteButton = defineMountedButton({
       store.button.set({ snapshot: snap } as MuteStoreState)
     }
     methods.invalidate()
-  },
-  onPress: ({ store }) => {
-    store.button.update((current) => {
-      const state = getState(current)
-      return {
-        ...state,
-        holdStartedAt: Date.now(),
-      } as MuteStoreState
-    })
-  },
-  onRelease: ({ hostContext, methods, store }) => {
-    const state = getState(store.button.snapshot)
-    const startedAt = (state as MuteStoreState & { holdStartedAt?: number })
-      .holdStartedAt
-    if (startedAt && Date.now() - startedAt >= HOLD_MS) {
-      const controller = createMediaVolumeController({ hostContext })
-      void controller.getMuted().then(async (currentMuted) => {
-        await controller.setMuted(!currentMuted)
-        const snap = await controller.getSnapshot()
-        store.button.set({ snapshot: snap } as MuteStoreState)
-        methods.invalidate()
-      })
-    }
   },
   poll: async ({ hostContext, store }) => {
     const controller = createMediaVolumeController({ hostContext })

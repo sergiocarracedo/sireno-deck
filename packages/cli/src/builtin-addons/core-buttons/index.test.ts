@@ -55,9 +55,11 @@ function createMountedHarness(
 
   return {
     activate: async () => definition.onActivate?.(props),
-    press: async () => definition.onPress?.(props),
+    dblTap: async () => definition.onDblTap?.(props),
+    hold: async () => definition.onHold?.(props),
+    press: async () => {},
     props,
-    release: async () => definition.onRelease?.(props),
+    release: async () => {},
     refresh: async () => definition.refresh?.(props),
     render: () => definition.render(props),
     tap: async () => definition.onTap?.(props),
@@ -138,50 +140,31 @@ describe('core-buttons addon', () => {
   })
 
   it('runs hold instead of tap on a long press for the bundled action button', async () => {
-    vi.useFakeTimers()
+    const definition = coreButtonsAddon.buttons[0]
+    const runCommand = vi.fn(async () => ({}) as never)
+    const harness = createMountedHarness(definition!, {
+      commands: { hold: 'uptime', tap: 'date' },
+      label: 'Clock',
+    }, 2, { runCommand })
 
-    try {
-      const definition = coreButtonsAddon.buttons[0]
-      const runCommand = vi.fn(async () => ({}) as never)
-      const harness = createMountedHarness(definition!, {
-        commands: { hold: 'uptime', tap: 'date' },
-        label: 'Clock',
-      }, 2, { runCommand })
+    await harness.hold()
 
-      await harness.press()
-      await vi.advanceTimersByTimeAsync(650)
-      await harness.release()
-      await harness.tap()
-
-      expect(runCommand).toHaveBeenCalledTimes(1)
-      expect(runCommand).toHaveBeenCalledWith('uptime')
-    } finally {
-      vi.useRealTimers()
-    }
+    expect(runCommand).toHaveBeenCalledTimes(1)
+    expect(runCommand).toHaveBeenCalledWith('uptime')
   })
 
   it('suppresses tap and runs double-tap when both commands are configured', async () => {
-    vi.useFakeTimers()
+    const definition = coreButtonsAddon.buttons[0]
+    const runCommand = vi.fn(async () => ({}) as never)
+    const harness = createMountedHarness(definition!, {
+      commands: { 'double-tap': 'cal', tap: 'date' },
+      label: 'Clock',
+    }, 2, { runCommand })
 
-    try {
-      const definition = coreButtonsAddon.buttons[0]
-      const runCommand = vi.fn(async () => ({}) as never)
-      const harness = createMountedHarness(definition!, {
-        commands: { 'double-tap': 'cal', tap: 'date' },
-        label: 'Clock',
-      }, 2, { runCommand })
+    await harness.dblTap()
 
-      const firstTap = harness.tap()
-      await vi.advanceTimersByTimeAsync(100)
-      const secondTap = harness.tap()
-      await secondTap
-      await firstTap
-
-      expect(runCommand).toHaveBeenCalledTimes(1)
-      expect(runCommand).toHaveBeenCalledWith('cal')
-    } finally {
-      vi.useRealTimers()
-    }
+    expect(runCommand).toHaveBeenCalledTimes(1)
+    expect(runCommand).toHaveBeenCalledWith('cal')
   })
 
   it('stays silent for unmatched action-button gestures when commands are partial', async () => {

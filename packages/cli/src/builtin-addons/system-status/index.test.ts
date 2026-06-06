@@ -70,9 +70,11 @@ function createMountedHarness(
 
   return {
     activate: async () => definition.onActivate?.(props),
-    press: async () => definition.onPress?.(props),
+    dblTap: async () => definition.onDblTap?.(props),
+    hold: async () => definition.onHold?.(props),
+    press: async () => {},
     props,
-    release: async () => definition.onRelease?.(props),
+    release: async () => {},
     render: () => definition.render(props),
     tap: async () => definition.onTap?.(props),
   }
@@ -240,18 +242,12 @@ describe('system-status addon', () => {
     }, 2, { runCommand })
 
     await harness.activate()
-    await harness.press()
-    await vi.advanceTimersByTimeAsync(650)
-    await harness.release()
-    await harness.tap()
+    await harness.hold()
 
     expect(runCommand.mock.calls.map((call) => call[0])).toEqual(['hold-cpu'])
 
     runCommand.mockClear()
 
-    await harness.press()
-    await vi.advanceTimersByTimeAsync(200)
-    await harness.release()
     await harness.tap()
 
     expect(runCommand.mock.calls.map((call) => call[0])).toEqual(['tap-cpu'])
@@ -281,11 +277,7 @@ describe('system-status addon', () => {
 
     await harness.activate()
 
-    const firstTap = harness.tap()
-    await vi.advanceTimersByTimeAsync(100)
-    const secondTap = harness.tap()
-    await secondTap
-    await firstTap
+    await harness.dblTap()
 
     expect(runCommand.mock.calls.map((call) => call[0])).toEqual(['double-cpu'])
   })

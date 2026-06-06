@@ -20,15 +20,25 @@ exist in type 'Partial<unknown> & Attributes'` from the `cloneElement` call).
   - `ThemeTextPresentationProps` for `ThemeText`
 - Fixed the line 53 error by binding the new props object to a typed
   `Record<string, string>` variable before passing it to `cloneElement`.
-  This sidesteps TypeScript's excess-property check on the literal (which
-  was failing because `ReactElement` (default `<unknown>`) plus
+  This sidesteps TypeScript's excess-property check on the literal
+  (which was failing because `ReactElement` (default `<unknown>`) plus
   `Attributes` (just `{ key? }`) does not include `className`).
-- Added narrow casts at the `ThemeChip` call site to bridge the small
-  contract gap between the local original (where `children: ReactElement`
-  and `tone` were required) and the core contract (where
-  `children: ReactNode` and `tone` are optional through `ChipProps`). The
-  casts are documented by the runtime reality: `Chip` always renders a
-  single React element and always carries a tone.
+- The `addThemeClass` helper signature is preserved (it takes
+  `ReactElement`, the three callers stay the same). The runtime works
+  because `ui/Chip.tsx`, `ui/Icon.tsx`, and `ui/Text.tsx` all wrap their
+  internal child in a styled element first and then hand that element to
+  the theme override — so `props.children` is always a real `ReactElement`
+  (the styled span / img / div), not a raw user string.
+
+## Runtime verification
+
+`pnpm exec vitest run src/render/dom-host.test.tsx` → 20/20 passing,
+including the `threads theme-owned Icon, Chip, and Text presentation
+through the hosted-button runtime seam` regression that pins
+`font-aux` / `text-sm` / `data-sireno-ui-chip="true"` on the rendered
+chip, plus the data attributes and tone class added by `addThemeClass`.
+`pnpm exec tsc --noEmit` no longer reports
+`ButtonFrame.tsx(53,5): error TS2769`.
 
 ## Files changed
 

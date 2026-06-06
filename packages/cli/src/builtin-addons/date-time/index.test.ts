@@ -59,9 +59,11 @@ function createMountedHarness(
   } as Parameters<typeof definition.render>[0]
 
   return {
-    press: async () => definition.onPress?.(props),
+    dblTap: async () => definition.onDblTap?.(props),
+    hold: async () => definition.onHold?.(props),
+    press: async () => {},
     props,
-    release: async () => definition.onRelease?.(props),
+    release: async () => {},
     render: () => definition.render(props),
     tap: async () => definition.onTap?.(props),
   }
@@ -364,51 +366,32 @@ describe('date-time addon', () => {
   })
 
   it('runs hold instead of tap on regular time buttons', async () => {
-    vi.useFakeTimers()
+    const definition = dateTimeAddon.buttons.find(
+      (button) => button.type === 'time',
+    )
+    const runCommand = vi.fn(async () => ({}) as never)
+    const harness = createMountedHarness(definition!, {
+      commands: { hold: 'uptime', tap: 'date' },
+      variant: 'big',
+    }, 3, { runCommand })
 
-    try {
-      const definition = dateTimeAddon.buttons.find(
-        (button) => button.type === 'time',
-      )
-      const runCommand = vi.fn(async () => ({}) as never)
-      const harness = createMountedHarness(definition!, {
-        commands: { hold: 'uptime', tap: 'date' },
-        variant: 'big',
-      }, 3, { runCommand })
+    await harness.hold()
 
-      await harness.press()
-      await vi.advanceTimersByTimeAsync(650)
-      await harness.release()
-      await harness.tap()
-
-      expect(runCommand).toHaveBeenCalledTimes(1)
-      expect(runCommand).toHaveBeenCalledWith('uptime')
-    } finally {
-      vi.useRealTimers()
-    }
+    expect(runCommand).toHaveBeenCalledTimes(1)
+    expect(runCommand).toHaveBeenCalledWith('uptime')
   })
 
   it('suppresses tap and runs double-tap on the regular clock alias', async () => {
-    vi.useFakeTimers()
+    const definition = dateTimeAddon.buttons.find((button) => button.type === 'clock')
+    const runCommand = vi.fn(async () => ({}) as never)
+    const harness = createMountedHarness(definition!, {
+      commands: { 'double-tap': 'calendar', tap: 'time' },
+    }, 4, { runCommand })
 
-    try {
-      const definition = dateTimeAddon.buttons.find((button) => button.type === 'clock')
-      const runCommand = vi.fn(async () => ({}) as never)
-      const harness = createMountedHarness(definition!, {
-        commands: { 'double-tap': 'calendar', tap: 'time' },
-      }, 4, { runCommand })
+    await harness.dblTap()
 
-      const firstTap = harness.tap()
-      await vi.advanceTimersByTimeAsync(100)
-      const secondTap = harness.tap()
-      await secondTap
-      await firstTap
-
-      expect(runCommand).toHaveBeenCalledTimes(1)
-      expect(runCommand).toHaveBeenCalledWith('calendar')
-    } finally {
-      vi.useRealTimers()
-    }
+    expect(runCommand).toHaveBeenCalledTimes(1)
+    expect(runCommand).toHaveBeenCalledWith('calendar')
   })
 
   it('keeps locked time tiles outside the shared command rollout', () => {

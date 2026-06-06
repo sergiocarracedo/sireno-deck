@@ -5,7 +5,12 @@ import {
   executeCommand,
   type CommandExecutionResult,
 } from '../action/executor.js'
-import { ButtonSurface, getAddonButtonOwnerName } from '../addon/api.js'
+import {
+  ButtonSurface,
+  DOUBLE_TAP_DELAY_MS,
+  getAddonButtonOwnerName,
+  HOLD_ACTION_DELAY_MS,
+} from '../addon/api.js'
 import datetimeButtonsAddon from '../builtin-addons/date-time/index.js'
 import {
   createMountedDomHost,
@@ -114,7 +119,9 @@ interface RuntimeButtonInstance {
   defaultRenderIntervalMs?: number
   dispose?: () => Promise<void> | void
   onActivate?: () => Promise<void> | void
+  onDblTap?: () => Promise<void> | void
   onDeactivate?: () => Promise<void> | void
+  onHold?: () => Promise<void> | void
   onPress?: () => Promise<void> | void
   poll?: () => Promise<unknown> | unknown
   onRelease?: () => Promise<void> | void
@@ -303,6 +310,15 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   const addonStateStore = new Map<string, unknown>()
   const buttonStateStore = new Map<string, unknown>()
   const pressedKeys = new Set<number>()
+
+  interface ButtonGestureState {
+    holdTimer?: ReturnType<typeof setTimeout>
+    holdTriggered?: boolean
+    pendingDblTapTimer?: ReturnType<typeof setTimeout>
+  }
+
+  const gestureStates = new Map<string, ButtonGestureState>()
+
   const renderCache = new Map<string, RuntimeRenderButton>()
   const pollSchedulers = new Map<string, PollingScheduler>()
   const renderSchedulers = new Map<string, PollingScheduler>()
@@ -851,7 +867,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     button: ButtonInstance,
   ): RuntimeButtonInstance {
     if (button.type === 'system-back') {
-      const currentDeck = decks[deckId]
+      const currentDeck = runtimeDecks[deckId]
       const tapCommand =
         currentDeck && 'system_back_tap_command' in currentDeck
           ? currentDeck.system_back_tap_command
@@ -862,7 +878,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
           : undefined
 
       return {
-        onPress: async () => {
+        onHold: async () => {
           if (holdCommand) {
             await executeAction(holdCommand)
             return
@@ -887,18 +903,6 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         render: () =>
           createElement(SystemBackButton, {
             isMainDeck: deckId === options.deck.id,
-            onHold: () => {
-              void (async () => {
-                const previousDeckId = getDisplayDeckId()
-                deckController.restoreStack([])
-                await activateDeckSurface(undefined, previousDeckId)
-              })()
-            },
-            onTap: () => {
-              // Real tap is handled by the runtime's onTap above; this is
-              // a no-op so the component's internal pointer handlers do
-              // not trigger a second navigation when running in-browser.
-            },
           }),
       }
     }
@@ -992,6 +996,25 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
               } finally {
                 renderState.frameState = renderState.pressed ? 'hold' : 'idle'
               }
+            },
+          }
+        : {}),
+      ...(definition.onDblTap
+        ? {
+            onDblTap: async () => {
+              renderState.frameState = 'tap'
+              try {
+                await definition.onDblTap?.(getRenderProps())
+              } finally {
+                renderState.frameState = renderState.pressed ? 'hold' : 'idle'
+              }
+            },
+          }
+        : {}),
+      ...(definition.onHold
+        ? {
+            onHold: async () => {
+              await definition.onHold?.(getRenderProps())
             },
           }
         : {}),
@@ -1210,8 +1233,21 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return
     }
 
+    const instance = getOrCreateInstance(handle.deckId, handle.button)
+
     try {
-      await getOrCreateInstance(handle.deckId, handle.button).onPress?.()
+      await instance.onPress?.()
+
+      if (instance.onHold) {
+        const stateKey = getButtonStateKey(handle.deckId, handle.button.position)
+        const gs = gestureStates.get(stateKey)
+        if (gs?.holdTimer) clearTimeout(gs.holdTimer)
+        const holdTimer = setTimeout(() => {
+          void handleHold(handle.deckId, handle.button).catch(reportRuntimeError)
+        }, HOLD_ACTION_DELAY_MS)
+        gestureStates.set(stateKey, { holdTimer, holdTriggered: false })
+      }
+
       await renderRuntimeButton(handle.button, handle.deckId)
       await renderDeckSurface(handle.deckId)
     } catch (error) {
@@ -1225,8 +1261,18 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return
     }
 
+    const instance = getOrCreateInstance(handle.deckId, handle.button)
+
     try {
-      await getOrCreateInstance(handle.deckId, handle.button).onRelease?.()
+      await instance.onRelease?.()
+
+      const stateKey = getButtonStateKey(handle.deckId, handle.button.position)
+      const gs = gestureStates.get(stateKey)
+      if (gs?.holdTimer) {
+        clearTimeout(gs.holdTimer)
+        gestureStates.set(stateKey, { ...gs, holdTimer: undefined, holdTriggered: false })
+      }
+
       await renderRuntimeButton(handle.button, handle.deckId)
       await renderDeckSurface(handle.deckId)
     } catch (error) {
@@ -1254,6 +1300,38 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     }
   }
 
+  async function handleDblTap(keyIndex: number): Promise<void> {
+    const handle = getButtonHandle(deckController.getActiveDeckId(), keyIndex)
+    if (!handle) {
+      return
+    }
+
+    try {
+      await getOrCreateInstance(handle.deckId, handle.button).onDblTap?.()
+      await renderRuntimeButton(handle.button, handle.deckId)
+      await renderDeckSurface(handle.deckId)
+    } catch (error) {
+      await showRuntimeButtonError(handle.button, handle.deckId, 'dbl-tap', error)
+    }
+  }
+
+  async function handleHold(
+    deckId: string,
+    button: ButtonInstance,
+  ): Promise<void> {
+    const stateKey = getButtonStateKey(deckId, button.position)
+    gestureStates.set(stateKey, {
+      holdTimer: undefined,
+      holdTriggered: true,
+    })
+
+    try {
+      await getOrCreateInstance(deckId, button).onHold?.()
+    } catch (error) {
+      await showRuntimeButtonError(button, deckId, 'hold', error)
+    }
+  }
+
   function onKeyEvent(event: StreamDeckKeyEvent): void {
     if (event.type === 'down') {
       pressedKeys.add(event.keyIndex)
@@ -1268,7 +1346,39 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     pressedKeys.delete(event.keyIndex)
     void (async () => {
       await handleRelease(event.keyIndex)
-      await handleTap(event.keyIndex)
+
+      const handle = getButtonHandle(
+        deckController.getActiveDeckId(),
+        event.keyIndex,
+      )
+      if (!handle) return
+
+      const instance = getOrCreateInstance(handle.deckId, handle.button)
+      const stateKey = getButtonStateKey(handle.deckId, handle.button.position)
+      const gs = gestureStates.get(stateKey)
+
+      if (gs?.holdTriggered) {
+        gestureStates.delete(stateKey)
+        return
+      }
+
+      if (instance.onDblTap) {
+        if (gs?.pendingDblTapTimer) {
+          clearTimeout(gs.pendingDblTapTimer)
+          gestureStates.delete(stateKey)
+          await handleDblTap(event.keyIndex)
+        } else {
+          await new Promise<void>((resolve) => {
+            const timer = setTimeout(() => {
+              gestureStates.delete(stateKey)
+              void handleTap(event.keyIndex).then(resolve).catch(reportRuntimeError)
+            }, DOUBLE_TAP_DELAY_MS)
+            gestureStates.set(stateKey, { pendingDblTapTimer: timer })
+          })
+        }
+      } else {
+        await handleTap(event.keyIndex)
+      }
     })().catch(reportRuntimeError)
   }
 
@@ -1346,6 +1456,12 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       unsubscribeSessionMonitor?.()
       unsubscribe = null
       unsubscribeSessionMonitor = null
+
+      for (const gs of gestureStates.values()) {
+        if (gs.holdTimer) clearTimeout(gs.holdTimer)
+        if (gs.pendingDblTapTimer) clearTimeout(gs.pendingDblTapTimer)
+      }
+      gestureStates.clear()
 
       stopActiveDeckPolling()
       clearDeckState(TEMPORARY_RELOAD_ERROR_DECK_ID)

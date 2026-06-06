@@ -1,25 +1,22 @@
 import {
   builtinAnalogClockButton,
   builtinClockButton,
-} from './buttons/analog-clock.js'
-import { builtinDateButton } from './buttons/calendar-sheet.js'
-import {
-  builtinDateTimeButton,
-  builtinTimeButton,
-} from './buttons/date-time.js'
+} from './buttons/analog-clock'
+import { builtinDateButton } from './buttons/date'
+import { builtinDateTimeButton, builtinTimeButton } from './buttons/date-time'
 import {
   builtinLockedTimeTileButton,
   formatLockedTimeCharacters,
   formatLockedTimeTileCharacter,
-} from './buttons/locked-time-tile.js'
-import { formatDigitalDateTimeLabel } from './format.js'
+} from './buttons/locked-time-tile'
+import { formatDigitalDateTimeLabel } from './format'
 import {
   ANALOG_CLOCK_INTERVAL_MS,
   DATE_BUTTON_INTERVAL_MS,
   DIGITAL_DATE_TIME_INTERVAL_MS,
-} from './schemas.js'
+} from './schemas'
 
-import type { SirenoAddon } from '../../addon/api.js'
+import type { SirenoAddon } from '@/addon/api'
 
 const datetimeButtonsAddon: SirenoAddon = {
   apiVersion: 1,

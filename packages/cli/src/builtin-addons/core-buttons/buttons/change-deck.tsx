@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
-import { Icon, Text } from '../../../ui/index.js'
 import { defineMountedButton } from '../../../addon/api.js'
+import { Icon, Text } from '../../../ui/index.js'
 
 function renderCenteredButtonContent(label: string, icon?: string) {
   return (
@@ -32,14 +32,13 @@ function renderPageNavContent(
       )}
       <Icon icon="chevron-right" size={20} />
       {doubleTapNoop ? null : (
-        <div className="absolute bottom-1 right-1 text-[10px] opacity-70">Dbl Tap</div>
+        <div className="absolute bottom-1 right-1 text-[10px] opacity-70">
+          Dbl Tap
+        </div>
       )}
     </div>
   )
 }
-
-const DOUBLE_TAP_WINDOW_MS = 300
-const NAVIGATE_BUTTON = '__sireno_navigate__'
 
 const BuiltinChangeDeckButtonSchema = z
   .object({
@@ -53,30 +52,19 @@ const BuiltinChangeDeckButtonSchema = z
 
 const builtinChangeDeckButton = defineMountedButton({
   configSchema: BuiltinChangeDeckButtonSchema,
-  onTap: async ({ config, methods, store }) => {
-    const previousTapAt = (store.button.snapshot as { tapAt?: number } | null)
-      ?.tapAt
-    const now = Date.now()
-    const isDoubleTap =
-      typeof previousTapAt === 'number' &&
-      now - previousTapAt < DOUBLE_TAP_WINDOW_MS
-
-    store.button.set({ tapAt: now })
-
-    if (isDoubleTap && config.target_deck_double_tap) {
-      await methods.navigateToDeck(config.target_deck_double_tap)
-      return
-    }
-
+  onTap: async ({ config, methods }) => {
     if (
-      !isDoubleTap &&
       config.target_deck_double_tap &&
       config.target_deck === config.target_deck_double_tap
     ) {
       return
     }
-
     await methods.navigateToDeck(config.target_deck)
+  },
+  onDblTap: async ({ config, methods }) => {
+    if (config.target_deck_double_tap) {
+      await methods.navigateToDeck(config.target_deck_double_tap)
+    }
   },
   render: ({ config, button }) => {
     if (config.meta === 'page-nav') {

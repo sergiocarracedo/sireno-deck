@@ -10,12 +10,8 @@ import {
 import type { MediaButtonStatus } from './internal-types.js'
 import { MediaPlayerButtonSchema } from './schemas.js'
 
-const HOLD_ACTION_DELAY_MS = 600
-
 type MediaPlayerButtonStoreState = {
   controller?: MediaController
-  holdTimer?: ReturnType<typeof globalThis.setTimeout>
-  holdTriggered?: boolean
   snapshot?: MediaControllerSnapshot
 }
 
@@ -27,18 +23,6 @@ function getButtonStoreState(snapshot: unknown): MediaPlayerButtonStoreState {
   return typeof snapshot === 'object' && snapshot !== null
     ? (snapshot as MediaPlayerButtonStoreState)
     : {}
-}
-
-function clearHoldTimer(snapshot: unknown): MediaPlayerButtonStoreState {
-  const state = getButtonStoreState(snapshot)
-  if (state.holdTimer) {
-    globalThis.clearTimeout(state.holdTimer)
-  }
-
-  return {
-    ...state,
-    holdTimer: undefined,
-  }
 }
 
 async function refreshSnapshot(
@@ -91,7 +75,7 @@ function createMediaPlayerButton(
     defaultPollIntervalMs: ({ config }) => config.poll_interval_ms,
     defaultRenderIntervalMs: ({ config }) => config.render_interval_ms,
     dispose: ({ store }) => {
-      store.button.set(clearHoldTimer(store.button.snapshot))
+      store.button.set(undefined)
     },
     onActivate: async ({ hostContext, store }) => {
       const controller = getOrCreateController(store.button.snapshot, hostContext)
@@ -103,42 +87,12 @@ function createMediaPlayerButton(
         snapshot,
       }))
     },
-    onPress: ({ config, methods, store }) => {
-      if (!config.hold_command) {
-        return
+    onHold: async ({ config, methods }) => {
+      if (config.hold_command) {
+        await methods.runCommand(config.hold_command)
       }
-
-      store.button.update((snapshot) => {
-        const nextState = clearHoldTimer(snapshot)
-        const holdTimer = globalThis.setTimeout(() => {
-          void methods.runCommand(config.hold_command!)
-          store.button.update((currentSnapshot) => ({
-            ...clearHoldTimer(currentSnapshot),
-            holdTriggered: true,
-          }))
-          methods.invalidate()
-        }, HOLD_ACTION_DELAY_MS)
-
-        return {
-          ...nextState,
-          holdTimer,
-          holdTriggered: false,
-        }
-      })
-    },
-    onRelease: ({ store }) => {
-      store.button.set(clearHoldTimer(store.button.snapshot))
     },
     onTap: async ({ hostContext, methods, store }) => {
-      const state = getButtonStoreState(store.button.snapshot)
-      if (state.holdTriggered) {
-        store.button.update((snapshot) => ({
-          ...clearHoldTimer(snapshot),
-          holdTriggered: false,
-        }))
-        return
-      }
-
       const controller = getOrCreateController(store.button.snapshot, hostContext)
       await controller.togglePlayPause()
       await refreshSnapshot(controller, store)

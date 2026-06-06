@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { useRef, type ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
 import { ButtonSurface } from '../addon/api.js'
 import { Icon, Text } from '../ui/index.js'
@@ -16,19 +16,13 @@ const { version: CLI_VERSION } = JSON.parse(
   ),
 )
 
-const HOLD_THRESHOLD_MS = 600
-
 interface SystemBackButtonProps {
   isMainDeck: boolean
-  onTap: () => void
-  onHold: () => void
   backIconOverride?: string
 }
 
 export function SystemBackButton(props: SystemBackButtonProps): ReactElement {
-  const { isMainDeck, onTap, onHold, backIconOverride } = props
-  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const holdTriggeredRef = useRef(false)
+  const { isMainDeck, backIconOverride } = props
 
   if (isMainDeck) {
     return (
@@ -48,31 +42,11 @@ export function SystemBackButton(props: SystemBackButtonProps): ReactElement {
     )
   }
 
-  const onPointerDown = () => {
-    holdTriggeredRef.current = false
-    holdTimerRef.current = setTimeout(() => {
-      holdTriggeredRef.current = true
-      onHold()
-    }, HOLD_THRESHOLD_MS)
-  }
-
-  const onPointerUp = () => {
-    if (holdTimerRef.current) {
-      clearTimeout(holdTimerRef.current)
-      holdTimerRef.current = null
-    }
-    if (!holdTriggeredRef.current) {
-      onTap()
-    }
-  }
-
   return (
     <ButtonSurface>
       <button
         className="flex h-full w-full items-center justify-center gap-1"
         data-sireno-system-back="true"
-        onPointerDown={onPointerDown}
-        onPointerUp={onPointerUp}
         type="button"
       >
         <Icon icon={backIconOverride ?? 'chevron-left'} size={16} />

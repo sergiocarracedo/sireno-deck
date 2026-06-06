@@ -8,7 +8,6 @@ import {
 import { MediaVolumeButtonSchema } from '../schemas.js'
 
 const STEP = 5
-const HOLD_MS = 600
 
 function renderVolumeSurface(
   variant: 'up' | 'down',
@@ -45,7 +44,6 @@ function renderVolumeSurface(
 }
 
 type VolumeStoreState = {
-  holdStartedAt?: number
   snapshot: MediaVolumeSnapshot
 }
 
@@ -70,6 +68,14 @@ export const builtinMediaVolumeButton = defineMountedButton({
       } as VolumeStoreState)
     }
   },
+  onHold: async ({ hostContext, methods, store }) => {
+    const controller = createMediaVolumeController({ hostContext })
+    const current = getState(store.button.snapshot).snapshot
+    await controller.setMuted(!current.muted)
+    const snap = await controller.getSnapshot()
+    store.button.set({ snapshot: snap } as VolumeStoreState)
+    methods.invalidate()
+  },
   onTap: async ({ config, hostContext, methods, store }) => {
     const controller = createMediaVolumeController({ hostContext })
     const delta = config.variant === 'up' ? STEP : -STEP
@@ -77,28 +83,6 @@ export const builtinMediaVolumeButton = defineMountedButton({
     const snap = await controller.getSnapshot()
     store.button.set({ snapshot: snap } as VolumeStoreState)
     methods.invalidate()
-  },
-  onPress: ({ store }) => {
-    store.button.update((current) => {
-      const state = getState(current)
-      return {
-        ...state,
-        holdStartedAt: Date.now(),
-      } as VolumeStoreState
-    })
-  },
-  onRelease: ({ hostContext, methods, store }) => {
-    const state = getState(store.button.snapshot)
-    const startedAt = state.holdStartedAt
-    if (startedAt && Date.now() - startedAt >= HOLD_MS) {
-      const controller = createMediaVolumeController({ hostContext })
-      void controller.getMuted().then(async (currentMuted) => {
-        await controller.setMuted(!currentMuted)
-        const snap = await controller.getSnapshot()
-        store.button.set({ snapshot: snap } as VolumeStoreState)
-        methods.invalidate()
-      })
-    }
   },
   poll: async ({ hostContext, store }) => {
     const controller = createMediaVolumeController({ hostContext })
