@@ -213,6 +213,24 @@ function createButtonNode(label: string, icon?: string) {
   )
 }
 
+const EMOJI_FONT_STACK =
+  "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Twemoji Mozilla', system-ui, sans-serif"
+
+export function renderEmojiGlyph(
+  char: string,
+  options?: { size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '5xl' },
+) {
+  return (
+    <Text
+      className="w-full h-full flex items-center justify-center leading-none"
+      fontStack={EMOJI_FONT_STACK}
+      size={options?.size ?? '5xl'}
+    >
+      {char}
+    </Text>
+  )
+}
+
 export const EMOJI_PAGE_SIZE = 14
 
 export interface EmojiPage {

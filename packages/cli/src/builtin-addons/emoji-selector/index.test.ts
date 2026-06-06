@@ -178,7 +178,7 @@ describe('emoji-selector addon', () => {
     })
   })
 
-  it('keeps an explicit text fallback for unsupported emoji values', () => {
+  it('renders the real unicode glyph for non-branded emojis via the native font stack', () => {
     const entryDefinition = emojiSelectorAddon.buttons.find(
       (button) => button.type === 'emoji-entry-button',
     )
@@ -193,9 +193,12 @@ describe('emoji-selector addon', () => {
 
     const html = renderReactNodeToHtml(harness.render() as never)
 
-    expect(html).toContain('U+1F6F0')
+    expect(html).toContain('🛰️')
+    expect(html).not.toContain('U+1F6F0')
+    expect(html).toContain('Apple Color Emoji')
+    expect(html).toContain('Noto Color Emoji')
     expect(html).toContain('data-sireno-ui-text="true"')
-    expect(html).toContain('font-main text-foreground')
+    expect(html).toContain('text-5xl')
   })
 
   it('paginates categories with more emojis than fit on one page', () => {

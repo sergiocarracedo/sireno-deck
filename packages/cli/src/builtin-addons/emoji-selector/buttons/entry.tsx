@@ -14,7 +14,7 @@ import {
   EmojiEntryButtonSchema,
   getEmojiFallbackLabel,
   getEmojiShortcode,
-  renderEmojiText,
+  renderEmojiGlyph,
 } from '../support.js'
 
 const EmojiEntryButtonWithActionsSchema = EmojiEntryButtonSchema.extend(
@@ -64,7 +64,7 @@ const emojiEntryButton = defineMountedButton({
           getEmojiFallbackLabel(config.emoji),
           EMOJI_ICON_ASSETS[config.emoji],
         )
-      : renderEmojiText(getEmojiFallbackLabel(config.emoji)),
+      : renderEmojiGlyph(config.emoji),
   type: 'emoji-entry-button',
 })
 
