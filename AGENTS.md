@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.4 — Addons & UX Polish (distribution cut)
-**Phase:** 46 — Emoji-Selector Multi-Page ✓ complete
-**Status:** verifying — v1.4 milestone complete (6/6 in-scope phases shipped)
+**Phase:** 46 — Emoji-Selector Multi-Page ✓ complete (gap-closure plans 46-03 and 46-04 verified)
+**Status:** v1.4 milestone complete (6/6 in-scope phases shipped, all EMO/SRB requirements closed)
 **Last updated:** 2026-06-06
 
 ---
