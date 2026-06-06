@@ -63,7 +63,7 @@ The work splits into six vertical slices: a cross-cutting core change (system-re
 - [x] Back button repositioned to the system-reserved last slot
 - [x] Per-category pagination (each category starts on page 1, not global)
 **Research needed:** No (covered by v1.4 research)
-**Status:** [x] ✓ Complete (2026-06-06) — 6 categories shipped (12-16 emojis each), pagination with `change-deck` prev/next at positions 12/13, system back at 14, 10/10 emoji-selector tests pass
+**Status:** [x] ✓ Complete (2026-06-06) — 6 categories shipped (12-16 emojis each), pagination with `change-deck` prev/next at positions 12/13, system back at 14, 11/11 emoji-selector tests pass. UAT surfaced two gaps: multi-page `target_deck` (closed by 46-03) and pre-existing SRB-03 system-back injection half (closed by 46-04). Verification re-confirmed.
 
 ### ~~Phase 47: CI Matrix Builds for Linux + Mac~~ — Cut from v1.4 (deferred to v1.5)
 
@@ -103,11 +103,11 @@ The work splits into six vertical slices: a cross-cutting core change (system-re
 | WX-04       | 45       | ✓ Complete |
 | WX-05       | 45       | ✓ Complete |
 | WX-06       | 45       | ✓ Complete |
-| EMO-01      | 46       | Not started (next) |
-| EMO-02      | 46       | Not started (next) |
-| EMO-03      | 46       | Not started (next) |
-| EMO-04      | 46       | Not started (next) |
-| EMO-05      | 46       | Not started (next) |
+| EMO-01      | 46       | ✓ Complete |
+| EMO-02      | 46       | ✓ Complete |
+| EMO-03      | 46       | ✓ Complete |
+| EMO-04      | 46       | ✓ Complete |
+| EMO-05      | 46       | ✓ Complete |
 
 ### ~~Phase 48: Build and Install Documentation~~ — Cut from v1.4 (deferred to v1.5)
 
@@ -123,4 +123,4 @@ These phases are deferred from v1.4 and queued for v1.5 planning:
 - **Phase 48 (re-scope)** — Build & Install Documentation. Depends on the v1.5 distribution decision.
 
 ### Plans
-*Not yet planned — run `plan-phase 46` next*
+*Phase 46 complete with gap-closure plans 46-03 and 46-04 executed and verified. v1.4 milestone complete.*
