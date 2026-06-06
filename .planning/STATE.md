@@ -5,12 +5,12 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** v1.4 milestone complete. Phases 41-46 all shipped. Next milestone is v1.5 (Distribution Build Pipeline re-scope + CI matrix + build/install docs) — blocked on the v1.5 distribution-target decision. Phase 40 (Distribution Build Pipeline) cut from v1.4 — Node SEA architecturally incompatible with the codebase's native deps (node-hid, sharp libvips, playwright chromium, dbus x11). v1.4 scope was Phases 41-46 only.
+**Current focus:** v1.4 milestone: 6 phases shipped (41-46). Phase 49 (Emoji-Selector UX Revamp) added as a v1.4 late addition based on real-world usage feedback and now in `discuss-phase` (CONTEXT.md captured 2026-06-06). Next milestone is v1.5 (Distribution Build Pipeline re-scope + CI matrix + build/install docs) — blocked on the v1.5 distribution-target decision. Phase 40 (Distribution Build Pipeline) cut from v1.4 — Node SEA architecturally incompatible with the codebase's native deps (node-hid, sharp libvips, playwright chromium, dbus x11). v1.4 scope is Phases 41-46 + 49.
 
 ## Current Position
 
 Milestone: v1.4 — Addons & UX Polish (scope cut: distribution removed)
-Status: v1.4 milestone complete — all 6 in-scope phases (41-46) shipped, including 2 gap-closure plans (46-03 multi-page `target_deck` fix, 46-04 SRB-03 system-back injection wiring) that closed UAT-surfaced defects.
+Status: v1.4 milestone: 6 of 7 in-scope phases (41-46) shipped, including 2 gap-closure plans (46-03 multi-page `target_deck` fix, 46-04 SRB-03 system-back injection wiring) that closed UAT-surfaced defects. Phase 49 (Emoji-Selector UX Revamp) added as a v1.4 late addition — CONTEXT.md captured, ready for plan-phase 49.
 Last activity: 2026-06-06 — gap-closure verification for Phase 46 (11/11 emoji-selector tests pass; 2 new system-back runtime tests pass; SRB-03 fully wired end-to-end).
 
 ### Quick Tasks Completed
