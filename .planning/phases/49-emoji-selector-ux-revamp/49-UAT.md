@@ -128,13 +128,14 @@ skipped: 13 (deferred — host missing xdotool for HID validation)
   test: 1
 
 - truth: "Tapping an emoji button (e.g. 🔥) on the Stream Deck types the emoji into the focused window via the per-OS HID shim."
-  status: open
-  reason: "User reported: nothing happens when tapping the emoji button. Root cause: xdotool is not installed on the host. The shim correctly produces the xdotool command, but the action executor's failure is not surfaced in the UI, so the user sees no feedback."
+  status: open (xdotool required on host)
+  reason: "User reported: nothing happens when tapping the emoji button. Root cause: xdotool is not installed on the host. The shim correctly produces the xdotool command, but the action executor's failure is not surfaced in the UI, so the user sees no feedback. **Mitigation landed in follow-up commit:** `os-shims.ts` now exposes `getHostHidToolStatus()` and `launcher.tsx` renders a visible error state ('HID tool missing — install xdotool') when the tool is not detected. So the user can SEE why the tap does nothing, even before installing xdotool."
   severity: major
-  root_cause: "xdotool is not installed on the host. The shim design is correct, but the runtime doesn't surface command-execution failures visibly, and there's no host-availability check in the shim."
+  root_cause: "xdotool is not installed on the host. The shim design is correct, the runtime still doesn't surface per-tap command failures visibly, and the entry buttons in subdecks don't have the launcher-style error fallback."
   affected_files:
     - packages/cli/src/builtin-addons/emoji-selector/os-shims.ts
-    - packages/cli/src/deck/runtime.ts
+    - packages/cli/src/builtin-addons/emoji-selector/buttons/launcher.tsx
+    - packages/cli/src/deck/runtime.ts (per-tap failures still not surfaced in UI)
   test: 2
 ```
 
