@@ -11,13 +11,14 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 
 Milestone: v1.4 — Addons & UX Polish (scope cut: distribution removed)
 Status: v1.4 milestone: 6 of 7 in-scope phases (41-46) shipped, including 2 gap-closure plans (46-03 multi-page `target_deck` fix, 46-04 SRB-03 system-back injection wiring) that closed UAT-surfaced defects. Phase 49 (Emoji-Selector UX Revamp) added as a v1.4 late addition — CONTEXT.md captured, ready for plan-phase 49.
-Last activity: 2026-06-06 — gap-closure verification for Phase 46 (11/11 emoji-selector tests pass; 2 new system-back runtime tests pass; SRB-03 fully wired end-to-end).
+Last activity: 2026-06-06 — Completed quick task 038: lock deck no home/back button
 
 ### Quick Tasks Completed
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 036 | Move default theme presentation interfaces to core contract and fix ButtonFrame line 53 | 2026-06-05 | 1d1b359 | .planning/quick/036-move-theme-interfaces-to-core/ |
+| 038 | Lock deck should not show home or back button | 2026-06-06 | a967147 | .planning/quick/038-lock-deck-no-home-back-button/ |
 
 Progress: [██████████] 100% (6 of 6 in-scope v1.4 phases complete)
 
