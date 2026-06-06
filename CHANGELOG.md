@@ -1,5 +1,30 @@
 # CHANGELOG
 
+## 2026-06-06
+
+### Features
+
+- Added the emoji-selector's first-class `emoji-launcher` button type. The launcher renders a 2×3 grid of six representative emojis (😂 🔥 ❤️ ⭐ 🍕 🎵) at a larger size and lives at position 0 of the main deck as the addon's visual entry point. The bundled `launcher.svg` asset ships alongside the button type for the icon-backed fallback path.
+- Added a per-OS HID keyboard-stroke shim to the emoji-selector so single-tap types the emoji (via `xdotool` on Linux, `pbcopy`+`osascript` on macOS, or `Set-Clipboard`+`SendKeys` on Windows) and double-tap types the conventional shortcode (e.g. `:fire:`). The new `select_command_shortcode` config field lets users override the shortcode path; `select_command` keeps its existing role for the tap path.
+- Added a hand-curated `data/categories.json` emoji catalog with 11 pre-split subcategories (smileys, people, animals, nature, food, drink, activities, travel, objects, symbols, flags) and 383 emojis. The catalog is the new source of truth; the addon's per-category default emoji lists are gone.
+- Added real emoji rendering via the native platform font stack (`'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Twemoji Mozilla', system-ui, sans-serif`). The `Text` component grew a `5xl` size step and a `fontStack` prop. The bundled 12 branded SVG icons stay as deliberate overrides.
+- Added the n-2 page nav layout: each emoji-selector subdeck page has 12 emojis (positions 0-11), a single page-nav button at position 13 with `meta: 'page-nav'` (Tap = next page, Double-tap = previous page) and corner chip overlays (`Tap` top-left, `Dbl Tap` bottom-right). The change-deck button type grew a `target_deck_double_tap` field and a 300ms timestamp-based double-tap detector.
+- Added the addon-decorated system back: deck configs can now set `system_back_tap_command` and `system_back_hold_command` to route the system-back gesture through a custom command via the action executor. When unset, the default goBack/restoreStack behavior is preserved.
+
+### Breaking Changes
+
+- Renamed the per-emoji entry button type from `emoji-entry-button` to `emoji-emoji-button`. The new `emoji-launcher` button type replaces the conceptual "main entry button" role. **Action required:** existing config files that reference `type: emoji-entry-button` in `buttons` lists must be updated to `type: emoji-emoji-button`. The rename is documented here for any out-of-tree configs (the bundled example config has been updated).
+
+### Fixes
+
+- Fixed the emoji-selector pagination layout so subsequent pages no longer displace an emoji slot for a prev button. The new `n-2` page nav is at position 13 (outside the emoji grid), and `EMOJI_PAGE_SIZE` is now 12 with a uniform 12-emoji-per-page model.
+
+### Learnings
+
+- The Phase 34 `commands.tap` action contract is a literal command string, not a method call. Where a button needs to call `methods.navigateToDeck` on a different target per gesture, a custom onTap with timestamp-based double-tap detection is simpler than trying to extend the command-string contract to encode navigation. Pragmatic deviation > over-abstraction.
+- The runtime's `runtimeDecks` lookup at instance creation time is the right place to read deck-level decoration. Mutating the deck config after `runtime.start()` has no effect, which matches the "config is immutable for the lifetime of the runtime" model.
+- The "U+1Fxxx" text fallback was a bug, not a feature. Once a native emoji font stack is in the platform's font catalog, the placeholder text becomes visual noise. The real fix is a font-stack render, not better placeholder formatting.
+
 ## 2026-06-05
 
 ### Features
