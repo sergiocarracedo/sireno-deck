@@ -49,6 +49,15 @@
 - **EMO-03** New `prev` / `next` navigation buttons per page (existing `change-deck` button type)
 - **EMO-04** Back button repositions to the system-reserved last slot
 - **EMO-05** Per-category pagination (no global cap)
+- **EMO-06** Tap on an emoji button delivers the emoji to the host via a per-OS HID keyboard-stroke shim (xdotool on Linux, pbcopy+osascript on macOS, Set-Clipboard+SendKeys on Windows). User-configured `select_command` overrides the default.
+- **EMO-07** Double-tap on an emoji button delivers the emoji's shortcode (e.g. `:fire:`) via the same HID shim. User-configured `select_command_shortcode` overrides the default.
+- **EMO-08** Emoji entry buttons render the actual unicode character via a native emoji font stack (Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, Twemoji Mozilla, system-ui). The 12 bundled branded SVG icons remain as deliberate overrides.
+- **EMO-09** Each multi-page category uses a single page-nav button at position `n-2` (keyCount - 2). Tap routes to the next page; double-tap routes to the previous page. The button has two `Chip` overlays: "Tap" (top-left) and "Dbl Tap" (bottom-right).
+- **EMO-10** Decks can opt in to a deck-config-decorated system back via two optional fields: `system_back_tap_command` (runs on tap) and `system_back_hold_command` (runs on hold ≥600ms). When set, the runtime routes the system-reserved back slot through `runCommand` for those gestures. Default behavior (tap=parent, hold=main) is preserved when the fields are absent.
+- **EMO-11** The emoji catalog groups composite piliapp.com groups into separate subcategories: `Smileys and People` → `Smileys` + `People`, `Animals and Nature` → `Animals` + `Nature`, `Food and Drink` → `Food` + `Drink`. Each subcategory has 20-60 emojis.
+- **EMO-12** The emoji catalog is shipped as a hand-curated JSON file at `packages/cli/src/builtin-addons/emoji-selector/data/categories.json`, not scraped at build time. Each entry has `{ char, shortcode }`.
+- **EMO-13** The emoji-selector addon provides a new first-class `emoji-launcher` button type. When added to a parent deck config (`{ type: 'emoji-launcher', target_deck: 'emoji', label: 'Emojis' }`), the button renders a 2×3 grid of six representative emojis (😂 🔥 ❤️ ⭐ 🍕 🎵) and navigates to the emoji-selector main deck on tap.
+- **EMO-14** The existing per-emoji entry button type is renamed from `emoji-entry-button` to `emoji-emoji-button` to make room for the new `emoji-launcher` type. This is a breaking change for any user who has `emoji-entry-button` in their config; the rename is documented in CHANGELOG.
 
 ## v2 Requirements (deferred to next milestone)
 

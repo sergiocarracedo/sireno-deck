@@ -108,6 +108,15 @@ The work splits into six vertical slices: a cross-cutting core change (system-re
 | EMO-03      | 46       | ✓ Complete |
 | EMO-04      | 46       | ✓ Complete |
 | EMO-05      | 46       | ✓ Complete |
+| EMO-06      | 49       | Not started (next) |
+| EMO-07      | 49       | Not started (next) |
+| EMO-08      | 49       | Not started (next) |
+| EMO-09      | 49       | Not started (next) |
+| EMO-10      | 49       | Not started (next) |
+| EMO-11      | 49       | Not started (next) |
+| EMO-12      | 49       | Not started (next) |
+| EMO-13      | 49       | Not started (next) |
+| EMO-14      | 49       | Not started (next) |
 
 ### ~~Phase 48: Build and Install Documentation~~ — Cut from v1.4 (deferred to v1.5)
 
