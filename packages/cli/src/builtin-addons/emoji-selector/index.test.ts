@@ -91,6 +91,27 @@ describe('emoji-selector addon', () => {
     })
   })
 
+  it('targets the actual first-page deck ID for multi-page categories on the main deck', () => {
+    const deckDefinition = emojiSelectorAddon.decks?.[0]
+    const decks = deckDefinition?.createDecks({
+      config: {
+        favorites: [],
+        select_command: "printf '%s' '{{emoji}}'",
+      },
+      deck: { id: 'emoji', type: 'emoji-selector' },
+    })
+
+    const mainDeckButtons = decks?.emoji?.buttons ?? []
+    const smileysButton = mainDeckButtons.find(
+      (b) => b.type === 'emoji-category-button' && b.label === 'Smileys',
+    )
+    expect(smileysButton).toMatchObject({
+      label: 'Smileys',
+      target_deck: 'emoji-smileys-p1',
+      type: 'emoji-category-button',
+    })
+  })
+
   it('runs the select command with the chosen emoji', async () => {
     const entryDefinition = emojiSelectorAddon.buttons.find(
       (button) => button.type === 'emoji-entry-button',

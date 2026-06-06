@@ -67,6 +67,7 @@ const emojiSelectorDeck = {
         name: string
       }
     > = {}
+    const firstPageDeckIds: string[] = []
 
     for (const category of orderedCategories) {
       const pages = paginateEmojis(category.emojis, EMOJI_PAGE_SIZE)
@@ -81,6 +82,10 @@ const emojiSelectorDeck = {
         const pageDeckId = isMultiPage
           ? `${baseDeckId}-p${pageIndex + 1}`
           : baseDeckId
+
+        if (isFirstPage) {
+          firstPageDeckIds.push(pageDeckId)
+        }
 
         const buttons: Array<Record<string, unknown>> = []
 
@@ -132,7 +137,7 @@ const emojiSelectorDeck = {
             icon: category.icon,
             label: category.label,
             position: index,
-            target_deck: category.deckIdPrefix,
+            target_deck: firstPageDeckIds[index],
             type: 'emoji-category-button',
           })),
           {
