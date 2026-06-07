@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.4 — Addons & UX Polish (distribution cut)
-**Phase:** 49 — Emoji-Selector UX Revamp ✓ complete → ready for verify-work 49 → /review → /ship → /compound
-**Status:** verifying — v1.4 late addition (7 of 7 in-scope phases shipped), 4 plans executed across 4 waves, 27/27 in-scope tests pass, verification `passed`. All EMO-06..14 ✓ Complete.
-**Last updated:** 2026-06-06
+**Phase:** 49 — Emoji-Selector UX Revamp (post-ship amendments in planning)
+**Status:** planning — 3 new plans added for amendments captured 2026-06-06: 49-05 (A1: clipboardy migration, Wave 1), 49-06 (A3: navigateToDeck noHistory flag, Wave 1), 49-07 (A2: core/pagination.ts + Chip migration, Wave 2, depends on 49-06). Original 4 plans (49-01..49-04) remain shipped with all EMO-06..14 ✓ Complete; commit 5593c95 holds the intermediate refactor awaiting plan execution.
+**Last updated:** 2026-06-07
 
 ---
 
