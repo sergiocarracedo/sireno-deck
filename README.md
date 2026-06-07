@@ -39,6 +39,6 @@ export const clockButton = defineMountedButton({
 })
 ```
 
-Use `Text` for the canonical text-fit behavior (`wrap`, `ellipsis`, `shrink`, `marquee`), `Icon` for generic/brand/asset icons, and `Chip` for compact status chrome. Themes may restyle those primitives, but the behavior contract stays in core.
+Use `Text` for the canonical text-fit behavior (`wrap`, `ellipsis`, `shrink`), `Icon` for generic/brand/asset icons, and `Chip` for compact status chrome. Themes may restyle those primitives, but the behavior contract stays in core.
 
 See `packages/cli/fixtures/phase-9/jsx-addon-authoring-example.tsx` for a focused public-surface example, and `packages/cli/fixtures/phase-23/local-raw-addon/` for the executable raw-source component-first addon proof.
