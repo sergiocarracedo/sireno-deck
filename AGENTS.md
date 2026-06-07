@@ -164,9 +164,9 @@ This project uses **learnship**. Key facts:
 
 ## Current Phase
 
-**Milestone:** v1.4 — Addons & UX Polish (distribution cut)
-**Phase:** 49 — Emoji-Selector UX Revamp ✓ complete → v1.5 next (Distribution Build Pipeline re-scope, blocked on distribution-target decision)
-**Status:** execution complete — all 7 plans (49-01..49-07) shipped. Original 4 plans shipped 2026-06-06; post-ship amendments 49-05 (A1: clipboardy), 49-06 (A3: navigateToDeck noHistory), 49-07 (A2: core/pagination.ts + Chip migration) shipped 2026-06-07. Phase 49 is now ready for `verify-work` (manual UAT) and the `/review → /ship → /compound` chain.
+**Milestone:** v1.5 — Distribution Build Pipeline (planning blocked: distribution target decision needed)
+**Phase:** — (waiting for distribution target decision before re-scoping Phase 40)
+**Status:** milestone complete — v1.4 shipped, tagged v1.4. v1.5 planning deferred pending distribution target decision (native FFI binary / Bun compile / npm distribution / pkg).
 **Last updated:** 2026-06-07
 
 ---

@@ -5,13 +5,13 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** v1.4 milestone: 7 phases shipped (41-46, 49). Phase 49 (Emoji-Selector UX Revamp) shipped 2026-06-06 (original 4 plans) and 2026-06-07 (post-ship amendments 49-05/49-06/49-07) — hand-curated emoji catalog, per-OS HID shim via clipboardy, real emoji rendering, n-2 page nav with noHistory back-stack, addon-decorated system back, new emoji-launcher button type, shared `core/pagination.ts` utility. Next milestone is v1.5 (Distribution Build Pipeline re-scope + CI matrix + build/install docs) — blocked on the v1.5 distribution-target decision. Phase 40 (Distribution Build Pipeline) cut from v1.4 — Node SEA architecturally incompatible with the codebase's native deps (node-hid, sharp libvips, playwright chromium, dbus x11). v1.4 scope is Phases 41-46 + 49.
+**Current focus:** v1.5 — Distribution Build Pipeline (re-scope pending: must decide distribution target first). v1.4 is complete — see Milestone History.
 
 ## Current Position
 
-Milestone: v1.4 — Addons & UX Polish (scope cut: distribution removed)
-Status: v1.4 milestone: 7 of 7 in-scope phases (41-46, 49) shipped. Phase 49 (Emoji-Selector UX Revamp) closed 2026-06-06 with verification `passed` and 27/27 in-scope tests passing. Ready for verify-work 49 (manual UAT) and the review/ship/compound chain.
-Last activity: 2026-06-07 — Completed quick task 040: reduce weather forecast from 6 to 2 columns
+Milestone: v1.5 — Distribution Build Pipeline (planning blocked: distribution target decision needed)
+Status: v1.4 complete — 7 phases (41-46, 49) shipped, 35/35 requirements satisfied, milestone audit passed, tagged v1.4. v1.5 planning deferred pending distribution target decision (native FFI binary / Bun compile / npm distribution / pkg).
+Last activity: 2026-06-07 — Tagged v1.4 milestone
 
 ### Quick Tasks Completed
 
@@ -332,6 +332,12 @@ Recent decisions affecting current work:
 - **Phase 11:** `session-monitor.ts` is currently a narrow seam with honest supported/unsupported classification and simulated event handling, but it still needs a real supported-host event source to close the live lock-detection promise completely.
 
 ## Milestone History
+
+### v1.4 — Addons & UX Polish
+Completed: 2026-06-07
+Phases: 7 (41-46, 49)
+Requirements delivered: BD-03, BD-05, SRB-01, SRB-02, SRB-03, SRB-03a, SRB-03b, SRB-04, SRB-05, CAL-01, CAL-02, CAL-03, MV-01 through MV-07, WX-01 through WX-06, EMO-01 through EMO-14
+Key achievements: v1.4 shipped 7 phases expanding the bundled addon surface and adding the system-reserved back button. Features include first-run Chromium auto-install, system-reserved back button in subdecks, calendar date-time button, media-volume (mute + up/down), weather addon (Open-Meteo + wttr.in fallback), and emoji-selector with real emoji rendering, paginated categories, emoji-launcher button, and noHistory page-to-page navigation. All 35 requirements satisfied, milestone audit passed.
 
 ### v1.2 — Session Context and Surface Composition
 Completed: 2026-05-28

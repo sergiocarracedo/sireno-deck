@@ -8,20 +8,28 @@ Sireno Deck is a TypeScript CLI for controlling and managing Stream Deck devices
 
 Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
 
-## Current Milestone: v1.4 — Addons & UX Polish (scope cut 2026-06-05: distribution removed)
+## Current Milestone: v1.5 — Distribution Build Pipeline (planning blocked: distribution target decision needed)
 
-**Goal:** Expand the bundled addon surface and add the system-reserved back button for subdeck navigation. Distribution work deferred to v1.5 — Node SEA architecturally incompatible with the codebase's native bindings (see `.planning/solutions/build-errors/node-sea-not-viable-for-native-deps-2026-06-05.md`).
+**Goal:** Build and ship a distributable Sireno binary. v1.5 must first decide the distribution target (native FFI binary / Bun compile / npm distribution / pkg) before re-planning Phases 40, 47, 48. Node SEA is not viable — see `.planning/solutions/build-errors/node-sea-not-viable-for-native-deps-2026-06-05.md`.
 
 **Target features:**
-- ~~Build and bundle workflow that produces Linux and Mac executables in `/works/test/test-sireno-deck`~~ — Deferred to v1.5
-- Auto-install Chromium on first run when missing (no bundled Playwright, license-safe)
-- Calendar button in the built-in date-time addon (month/day/weekday vertical layout)
-- New bundled weather addon (icon + temperature + location)
-- Media-player addon: mute toggle (real state), volume up, volume down
-- Emoji-selector multi-page layout: split large categories across pages with next/prev
-- System-reserved last button: hard-reserved, core-owned back button in subdecks (tap → previous, hold → home), empty placeholder in main deck
+- Build pipeline producing standalone executables (Linux x64/arm64, Mac arm64)
+- CI matrix builds for Linux + Mac
+- Build & install documentation
 
-## Latest Shipped Milestone: v1.3 Addon Extensibility & Live Hardware
+## Latest Shipped Milestone: v1.4 Addons & UX Polish
+
+**Completed:** 2026-06-07
+**Phases:** 7 (41-46, 49)
+**Requirements delivered:** BD-03, BD-05, SRB-01 through SRB-05, CAL-01 through CAL-03, MV-01 through MV-07, WX-01 through WX-06, EMO-01 through EMO-14 (35 total)
+
+**Key achievements:**
+- First-run Chromium auto-install via Playwright
+- System-reserved back button in subdecks (tap → previous, hold → home)
+- Calendar date-time button (vertical month/day/weekday layout)
+- Media-volume buttons (mute toggle, volume up/down, real OS state)
+- Weather addon (Open-Meteo primary, wttr.in fallback, configurable location)
+- Emoji-selector revamp: real emoji rendering via native font stack, 11-category hand-curated catalog (383 emojis), paginated subdecks with noHistory page-to-page navigation, emoji-launcher 2×3 grid button, addon-decorated system back
 
 **Goal:** Expand the render/runtime surface so addons and built-in buttons can react to richer session state, compose shared visual primitives, and handle background and lock-screen behavior coherently.
 
@@ -57,7 +65,7 @@ Make Stream Deck customization programmable and extensible through a fast TypeSc
 
 ### Active
 
-- TBD for v1.3 Typography and Rich Formatting. Define them through `new-milestone` requirements and roadmap.
+- TBD for v1.5 — Distribution Build Pipeline. Define through `new-milestone` or `discuss-milestone` after distribution target decision.
 
 ### Out of Scope
 
