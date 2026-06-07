@@ -8,14 +8,16 @@ Sireno Deck is a TypeScript CLI for controlling and managing Stream Deck devices
 
 Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
 
-## Current Milestone: v1.5 — Distribution Build Pipeline (planning blocked: distribution target decision needed)
+## Current Milestone: v1.5 — Addons & UX Polish II
 
-**Goal:** Build and ship a distributable Sireno binary. v1.5 must first decide the distribution target (native FFI binary / Bun compile / npm distribution / pkg) before re-planning Phases 40, 47, 48. Node SEA is not viable — see `.planning/solutions/build-errors/node-sea-not-viable-for-native-deps-2026-06-05.md`.
+**Goal:** Close the most visible UX gaps in the current addon surface and ship a richer settings + active-app overlay model, pivoting away from the deferred distribution build pipeline (Phases 40/47/48 from v1.4). Distribution work remains on the deferred list pending a distribution-target decision.
 
 **Target features:**
-- Build pipeline producing standalone executables (Linux x64/arm64, Mac arm64)
-- CI matrix builds for Linux + Mac
-- Build & install documentation
+- Weather: location by city name (Open-Meteo Geocoding) + 2-day daily forecast page
+- Bars content polish: primary-color labels, in-bar rotated value text, auto-contrast fallback
+- Settings deck: brightness up/down controls, logo + version relocated from main deck
+- Lock deck: pre-warm access from unlocked sessions, no back injection when locked
+- Active-app addon decks: declarative `process_names` overlay, toggle button, double-tap back
 
 ## Latest Shipped Milestone: v1.4 Addons & UX Polish
 
@@ -65,7 +67,15 @@ Make Stream Deck customization programmable and extensible through a fast TypeSc
 
 ### Active
 
-- TBD for v1.5 — Distribution Build Pipeline. Define through `new-milestone` or `discuss-milestone` after distribution target decision.
+v1.5 — Addons & UX Polish II (25 requirements, see `.planning/REQUIREMENTS.md`):
+- WX-07..10 — Weather city-name + geocoding
+- WX2-01..03 — Weather 2-day daily forecast
+- BARS-01..03 — Bars content polish
+- SETTINGS-01..04 — Settings deck with brightness controls
+- LOCK-01..02 — Lock deck access and back-injection suppression
+- BR-01..02 — Brightness device control
+- ACTIVEAPP-01..06 — Addon active-app overlay decks
+- VERIFY-01 — Verification coverage
 
 ### Out of Scope
 
@@ -103,4 +113,4 @@ The domain includes fast refresh behavior for live widgets such as CPU, memory, 
 | Run addons as trusted in-process code in v1 | Keeps the initial addon API simpler and avoids early sandbox complexity | Landed |
 
 ---
-*Last updated: 2026-05-28 after starting milestone v1.3*
+*Last updated: 2026-06-08 starting milestone v1.5 — Addons & UX Polish II*

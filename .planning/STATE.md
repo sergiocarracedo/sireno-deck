@@ -2,16 +2,17 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-17)
+See: .planning/PROJECT.md (updated 2026-06-08)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** v1.5 — Distribution Build Pipeline (re-scope pending: must decide distribution target first). v1.4 is complete — see Milestone History.
+**Current focus:** v1.5 — Addons & UX Polish II. v1.4 is complete — see Milestone History.
 
 ## Current Position
 
-Milestone: v1.5 — Distribution Build Pipeline (planning blocked: distribution target decision needed)
-Status: v1.4 complete — 7 phases (41-46, 49) shipped, 35/35 requirements satisfied, milestone audit passed, tagged v1.4. v1.5 planning deferred pending distribution target decision (native FFI binary / Bun compile / npm distribution / pkg).
-Last activity: 2026-06-07 — Tagged v1.4 milestone
+Phase: Not started (defining requirements)
+Plan: —
+Status: Milestone v1.5 started — 25 requirements defined in `.planning/REQUIREMENTS.md` across 7 groups (weather city-name + 2-day forecast, bars content, settings deck, lock deck, brightness, active-app decks, verification). v1.4 complete — 7 phases (41-46, 49) shipped, 35/35 requirements satisfied, milestone audit passed, tagged v1.4. Distribution work (Phases 40/47/48 from v1.4) remains deferred pending distribution-target decision.
+Last activity: 2026-06-08 — Milestone v1.5 started (requirements defined)
 
 ### Quick Tasks Completed
 
