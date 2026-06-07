@@ -1,7 +1,8 @@
 import { z } from 'zod'
 
 import { defineMountedButton } from '@/addon/api'
-import { Icon, Text } from '@/ui/index'
+import { Chip, Icon, Text } from '@/ui/index'
+import { PAGE_NAV_META } from '@/core/pagination'
 
 function renderCenteredButtonContent(label: string, icon?: string) {
   return (
@@ -28,13 +29,15 @@ function renderPageNavContent(
   return (
     <div className="flex flex-col items-center justify-center w-full h-full relative">
       {tapNoop ? null : (
-        <div className="absolute top-1 left-1 text-[10px] opacity-70">Tap</div>
+        <Chip tone="muted" className="absolute top-1 left-1 text-[10px] opacity-70">
+          Tap
+        </Chip>
       )}
       <Icon icon="chevron-right" size={20} />
       {doubleTapNoop ? null : (
-        <div className="absolute bottom-1 right-1 text-[10px] opacity-70">
+        <Chip tone="muted" className="absolute bottom-1 right-1 text-[10px] opacity-70">
           Dbl Tap
-        </div>
+        </Chip>
       )}
     </div>
   )
@@ -59,10 +62,19 @@ const builtinChangeDeckButton = defineMountedButton({
     ) {
       return
     }
-    await methods.navigateToDeck(config.target_deck)
+    if (config.meta === PAGE_NAV_META) {
+      await methods.navigateToDeck(config.target_deck, { addToHistory: false })
+    } else {
+      await methods.navigateToDeck(config.target_deck)
+    }
   },
   onDblTap: async ({ config, methods }) => {
-    if (config.target_deck_double_tap) {
+    if (!config.target_deck_double_tap) return
+    if (config.meta === PAGE_NAV_META) {
+      await methods.navigateToDeck(config.target_deck_double_tap, {
+        addToHistory: false,
+      })
+    } else {
       await methods.navigateToDeck(config.target_deck_double_tap)
     }
   },

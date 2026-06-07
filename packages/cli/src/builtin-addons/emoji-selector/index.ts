@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import type { SirenoAddon } from '@/addon/api'
+import { buildPageNavButton, paginateDecks } from '@/core/pagination'
 import { emojiBackButton } from './buttons/back'
 import { emojiCategoryButton } from './buttons/category'
 import { emojiEntryButton } from './buttons/entry'
@@ -11,10 +12,8 @@ import {
   EMOJI_PAGE_SIZE,
   EmojiSelectorDeckSchema,
   generatePageLabel,
-  paginateEmojis,
 } from './support'
 
-const EMOJI_KEY_COUNT = 15
 const FAVORITES_ICON = 'addon://emoji-selector/favorites.svg'
 
 interface CategorySpec {
@@ -23,25 +22,6 @@ interface CategorySpec {
   icon: string
   id: string
   label: string
-}
-
-function buildPageNavButton(
-  isFirstPage: boolean,
-  isLastPage: boolean,
-  prevDeckId: string,
-  nextDeckId: string,
-  currentDeckId: string,
-) {
-  const tapTarget = isLastPage ? currentDeckId : nextDeckId
-  const doubleTapTarget = isFirstPage ? currentDeckId : prevDeckId
-  return {
-    label: 'Page',
-    meta: 'page-nav',
-    position: EMOJI_KEY_COUNT - 2,
-    target_deck: tapTarget,
-    target_deck_double_tap: doubleTapTarget,
-    type: 'change-deck',
-  }
 }
 
 const emojiSelectorDeck = {
@@ -88,18 +68,21 @@ const emojiSelectorDeck = {
     const firstPageDeckIds: string[] = []
 
     for (const category of orderedCategories) {
-      const pages = paginateEmojis(category.emojis, EMOJI_PAGE_SIZE)
-      const isMultiPage = pages.length > 1
       const baseDeckId = category.deckIdPrefix
+      const pages = paginateDecks({
+        baseDeckId,
+        pageSize: EMOJI_PAGE_SIZE,
+        totalItems: category.emojis.length,
+      })
+      const isMultiPage = pages.length > 1
 
-      for (let pageIndex = 0; pageIndex < pages.length; pageIndex += 1) {
-        const isFirstPage = pageIndex === 0
-        const isLastPage = pageIndex === pages.length - 1
-        const page = pages[pageIndex]!
-
-        const pageDeckId = isMultiPage
-          ? `${baseDeckId}-p${pageIndex + 1}`
-          : baseDeckId
+      for (const page of pages) {
+        const pageDeckId = isMultiPage ? page.deckId : baseDeckId
+        const isFirstPage = page.pageNumber === 1
+        const pageEmojis = category.emojis.slice(
+          page.startIndex,
+          page.endIndex + 1,
+        )
 
         if (isFirstPage) {
           firstPageDeckIds.push(pageDeckId)
@@ -107,7 +90,7 @@ const emojiSelectorDeck = {
 
         const buttons: Array<Record<string, unknown>> = []
 
-        page.emojis.forEach((emoji, offset) => {
+        pageEmojis.forEach((emoji, offset) => {
           buttons.push({
             emoji,
             label: category.label,
@@ -118,15 +101,16 @@ const emojiSelectorDeck = {
         })
 
         if (isMultiPage) {
-          const prevDeckId = `${baseDeckId}-p${pageIndex}`
-          const nextDeckId = `${baseDeckId}-p${pageIndex + 2}`
+          const prevDeckId = page.pageNumber > 1 ? `${baseDeckId}-p${page.pageNumber - 1}` : null
+          const nextDeckId = page.pageNumber < pages.length
+            ? `${baseDeckId}-p${page.pageNumber + 1}`
+            : null
           buttons.push(
             buildPageNavButton(
-              isFirstPage,
-              isLastPage,
+              page.pageNumber,
+              pages.length,
               prevDeckId,
               nextDeckId,
-              pageDeckId,
             ),
           )
         }
@@ -134,7 +118,7 @@ const emojiSelectorDeck = {
         generatedDecks[pageDeckId] = {
           buttons,
           id: pageDeckId,
-          name: generatePageLabel(category.label, pageIndex, page.totalPages),
+          name: generatePageLabel(category.label, page.pageNumber - 1, pages.length),
         }
       }
     }

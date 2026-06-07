@@ -1,12 +1,10 @@
-import { defineMountedButton } from '@/addon/api'
+import { definePagedCategoryButton } from '@/core/pagination'
 
 import { createButtonNode, EmojiCategoryButtonSchema } from '../support'
 
-const emojiCategoryButton = defineMountedButton({
+const emojiCategoryButton = definePagedCategoryButton({
   configSchema: EmojiCategoryButtonSchema,
-  onTap: async ({ config, methods }) => {
-    await methods.navigateToDeck(config.target_deck)
-  },
+  getTargetDeckId: (config) => config.target_deck,
   render: ({ config }) => createButtonNode(config.label, config.icon),
   type: 'emoji-category-button',
 })

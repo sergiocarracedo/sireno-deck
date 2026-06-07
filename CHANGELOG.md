@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2026-06-07
+
+### Features
+
+- Added a shared internal `core/pagination.ts` utility that owns the paged-category pattern. Exposes `buildPageNavButton`, `definePagedCategoryButton`, and `paginateDecks` so future paginated addons (icon-picker, snippet-picker) reuse the same seam instead of inlining a per-addon copy. The emoji-selector now imports the helpers from `@/core/pagination` and no longer carries its own `buildPageNavButton`.
+- Made page-to-page navigation on paginated emoji subdecks invisible to the back stack. The change-deck button detects `meta: 'page-nav'` and routes both tap and double-tap through `methods.navigateToDeck(target, { addToHistory: false })`, so the n-2 page-nav replaces the active deck instead of pushing. Pressing back from any paginated page now returns to the parent deck, not the previous page.
+- Migrated the page-nav render in `change-deck.tsx` to the actual `Chip` component (`@/ui/Chip`) with the existing `tone="muted"` palette. The raw `text-[10px] opacity-70` divs for the "Tap" / "Dbl Tap" overlays are gone; the chrome is consistent with the rest of the deck's badge surface.
+
+### Fixes
+
+- The `pasteText` path is now backed by `clipboardy`, surfacing clear errors when the host's clipboard tool (xclip / pbcopy / Set-Clipboard) is missing. Root cause was the per-OS `execa`-spawned clipboard writer silently failing on hosts without a clipboard tool — the subprocess exit code was swallowed and the user saw a "type" with no output. `clipboardy` throws on failure, so the runtime now surfaces a structured button-runtime diagnostic instead of a silent miss.
+
 ## 2026-06-06
 
 ### Features

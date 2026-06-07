@@ -9,6 +9,7 @@ import { loadConfiguredAddons } from "@/addon/loader"
 
 import { createBundledAddonRegistry, loadConfig } from "@/config/loader"
 import { createAddonRegistry } from "@/addon/registry"
+import { buildPageNavButton } from "@/core/pagination"
 import { validateConfig } from "@/core/schemas"
 import { renderReactNodeToHtml } from "@/render/dom-host"
 import { Text } from "@/ui/index"
@@ -3027,6 +3028,133 @@ describe("createDeckRuntime", () => {
     }
     await vi.waitFor(() => {
       expect(executeAction).toHaveBeenCalledWith("sireno-navigate --home")
+    })
+  })
+
+  it("treats paginated deck navigation as a noHistory page-to-page flow (49-07)", async () => {
+    const registry = createBundledAddonRegistry()
+    const changeDeckDefinition = registry.getButton("change-deck")!
+
+    function navButton(position: number, target: string) {
+      return {
+        config: {
+          label: "Go",
+          target_deck: target,
+        },
+        definition: changeDeckDefinition,
+        label: "Go",
+        position,
+        type: "change-deck",
+      }
+    }
+
+    function pageNavButton(position: number, currentPage: number, totalPages: number, prev: string | null, next: string | null) {
+      const config = buildPageNavButton(currentPage, totalPages, prev, next)
+      return {
+        config,
+        definition: changeDeckDefinition,
+        label: "Page",
+        position,
+        type: "change-deck",
+      }
+    }
+
+    function goBackButton(position: number) {
+      return {
+        config: { label: "Back" },
+        definition: defineMountedButton({
+          configSchema: {
+            parse: (value: unknown) => value,
+            safeParse: (value: unknown) => ({ data: value, success: true as const }),
+          },
+          onTap: async ({ methods }) => {
+            await methods.goBack()
+          },
+          render: ({ button }) => createTextSurface(button.position, "Back"),
+          type: "paged-back",
+        }),
+        label: "Back",
+        position,
+        type: "paged-back",
+      }
+    }
+
+    const listeners: Array<(event: { keyIndex: number; type: "down" | "up" }) => void> = []
+    const mainDeck = { id: "main", buttons: [navButton(0, "cat-p1")] }
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: mainDeck,
+      decks: {
+        main: mainDeck,
+        "cat-p1": {
+          buttons: [pageNavButton(0, 1, 5, null, "cat-p2"), goBackButton(1)],
+          id: "cat-p1",
+        },
+        "cat-p2": {
+          buttons: [pageNavButton(0, 2, 5, "cat-p1", "cat-p3"), goBackButton(1)],
+          id: "cat-p2",
+        },
+        "cat-p3": {
+          buttons: [pageNavButton(0, 3, 5, "cat-p2", "cat-p4"), goBackButton(1)],
+          id: "cat-p3",
+        },
+        "cat-p4": {
+          buttons: [pageNavButton(0, 4, 5, "cat-p3", "cat-p5"), goBackButton(1)],
+          id: "cat-p4",
+        },
+        "cat-p5": {
+          buttons: [pageNavButton(0, 5, 5, "cat-p4", null), goBackButton(1)],
+          id: "cat-p5",
+        },
+      },
+      subscribeKeyEvents: (listener) => {
+        listeners.push(listener)
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    function tap(keyIndex: number) {
+      for (const listener of listeners) {
+        listener({ keyIndex, type: "down" })
+        listener({ keyIndex, type: "up" })
+      }
+    }
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("main")
+    })
+
+    tap(0)
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("cat-p1")
+    })
+
+    tap(0)
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("cat-p2")
+    })
+
+    tap(0)
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("cat-p3")
+    })
+
+    tap(0)
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("cat-p4")
+    })
+
+    tap(0)
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("cat-p5")
+    })
+
+    tap(1)
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("main")
     })
   })
 })
