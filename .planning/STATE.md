@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 50 — Weather city-name + 2-day daily forecast (next: discuss-phase 50 → plan-phase 50)
 Plan: —
-Status: Milestone v1.5 started — 25 requirements defined in `.planning/REQUIREMENTS.md` across 7 groups (weather city-name + 2-day forecast, bars content, settings deck, lock deck, brightness, active-app decks, verification). v1.4 complete — 7 phases (41-46, 49) shipped, 35/35 requirements satisfied, milestone audit passed, tagged v1.4. Distribution work (Phases 40/47/48 from v1.4) remains deferred pending distribution-target decision.
-Last activity: 2026-06-08 — Milestone v1.5 started (requirements defined)
+Status: Milestone v1.5 started — 7 phases (50-56), 25 requirements in `.planning/REQUIREMENTS.md`. Roadmap in `.planning/ROADMAP.md` approved. v1.4 complete — 7 phases (41-46, 49) shipped, 35/35 requirements satisfied, milestone audit passed, tagged v1.4. Distribution work (Phases 40/47/48 from v1.4) remains deferred pending distribution-target decision.
+Last activity: 2026-06-08 — v1.5 roadmap approved (7 phases, 25 reqs)
 
 ### Quick Tasks Completed
 
