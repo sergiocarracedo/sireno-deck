@@ -82,16 +82,16 @@ skipped: 0
   status: failed
   reason: "wl-clipboard installed but nothing happens on tap"
   severity: major
-  root_cause: "[under investigation — likely wl-copy present but simulatePaste keystroke not reaching focused Wayland window]"
-  affected_files: ["packages/cli/src/util/clipboard.ts", "packages/cli/src/device/os-shims.ts"]
+  root_cause: "clipboard.ts L28: simulatePaste() uses 'xdotool key ctrl+v'. xdotool only works on X11. On Wayland (XDG_SESSION_TYPE=wayland) it silently fails — no X11 server to send to. clipboardy.write() works (wl-copy auto-detection), but the paste keystroke goes nowhere."
+  affected_files: ["packages/cli/src/util/clipboard.ts"]
   test: 7
 
 - truth: "Dbl-tap delivers shortcode (49-01 + 49-05)"
   status: failed
   reason: "same issue as before"
   severity: major
-  root_cause: "[same root cause as test 7 — clipboardy+simulatePaste not reaching Wayland focused window]"
-  affected_files: ["packages/cli/src/util/clipboard.ts", "packages/cli/src/device/os-shims.ts"]
+  root_cause: "same root cause as test 7 — simulatePaste() uses xdotool which is X11-only on Wayland"
+  affected_files: ["packages/cli/src/util/clipboard.ts"]
   test: 8
 
 ## Prerequisites
