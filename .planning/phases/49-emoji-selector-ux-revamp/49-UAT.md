@@ -3,63 +3,65 @@ status: testing
 phase: 49-emoji-selector-ux-revamp
 source: 49-01..49-07 SUMMARY.md
 started: 2026-06-07T11:00:00Z
-updated: 2026-06-07T11:00:00Z
+updated: 2026-06-07T11:30:00Z
 ---
 
 ## Current Test
 number: 1
-name: Subcategories show on first drill-in (49-01)
+name: Daemon boots; main deck shows launcher + categories + system back (49-04)
 expected: |
-  From the main deck, tap the "Smileys" tile.
-  The next deck shows subcategories (Happy / Sad / Laughing / …) —
-  not the full emoji list. Tapping a subcategory drills into that
-  subset of emojis.
+  With the emoji-selector enabled, start the daemon. The main deck
+  renders with: top-left tile = emoji launcher (2×3 grid of 6 emojis),
+  11 category buttons (smileys, people, animals, nature, food, drink,
+  activities, travel, objects, symbols, flags), then a page-nav tile
+  (if a paginated sub-deck is open) and the system back tile.
+  No config-validation errors in the log.
 awaiting: user response
 
 ## Tests
 
-### 1. Subcategories show on first drill-in (49-01)
-expected: Tapping a category tile drills into subcategories, not the raw emoji list.
+### 1. Daemon boots; main deck shows launcher + categories + system back (49-04)
+expected: Main deck renders the launcher at top-left, the 11 flat categories behind it, and the system back tile at the bottom-right. No config errors.
 result: pending
 
-### 2. Branded social icons render (49-02)
-expected: A share button bound to a brand (Twitter / Slack / Discord / GitHub) renders the brand's SVG mark, not a generic emoji glyph.
+### 2. Launcher is a 2×3 grid of real emoji glyphs (49-02 + 49-04)
+expected: The launcher shows 😂 🔥 ❤️ ⭐ 🍕 🎵 as actual color glyphs (not "U+1F600" text or "?" placeholders). Tapping the launcher does nothing (display-only).
 result: pending
 
-### 3. system_back_tap_command overrides default (49-03)
-expected: With `system_back_tap_command: "<command>"` set on a deck, tapping the bottom-right system back runs that command via the action executor instead of `goBack`.
+### 3. Tapping a category opens a paginated deck (49-01 + 49-03)
+expected: Tap a category with > EMOJI_PAGE_SIZE emojis (e.g. smileys, 48 emojis → 4 pages). The next deck shows the first page of emojis with a page-nav tile in the bottom-right.
 result: pending
 
-### 4. system_back_hold_command overrides default (49-03)
-expected: With `system_back_hold_command: "<command>"` set, holding the system back ≥600ms runs that command via the action executor instead of `restoreStack`.
+### 4. Page nav: tap = next, dbl-tap = prev (49-03)
+expected: On a paginated deck, tapping the page-nav tile advances to the next page. Double-tapping within the 300ms window goes back a page. Already on page 1, dbl-tap is a no-op.
 result: pending
 
-### 5. Launcher sits top-left of main deck (49-04)
-expected: On the main deck, the top-left tile is the emoji-selector launcher — a 2×3 grid of category entry points (Smileys, People, Animals, Nature, Food, Drink).
+### 5. System back from a paginated sub-deck returns to main (49-06 + 49-07)
+expected: Walk main → cat-p1 → cat-p2 → … → cat-p5 (all via page-nav taps, which use `addToHistory: false`). Tap system back. Lands on main, NOT on a sub-deck page. Stack is `[main]` after the back.
 result: pending
 
-### 6. Tap delivers emoji to focused window (49-05)
-expected: With a text input focused, tapping an emoji button on the deck inserts that emoji into the input. Mechanism: clipboardy write → paste keystroke. Requires a host clipboard tool (`pbcopy` / `xclip` / `wl-copy` / `clip.exe`).
+### 6. Page-nav corner chips use the Chip component (49-07)
+expected: The "Tap" / "Dbl Tap" labels on the page-nav tile render as `Chip` components, visually consistent with the deck's other navigation chips (not raw `text-[10px] opacity-70` divs).
 result: pending
 
-### 7. Double-tap delivers shortcode (49-05)
-expected: Double-tapping an emoji whose catalog entry has a shortcode inserts `:<shortcode>:` into the focused input. Same host prerequisites as test 6.
+### 7. Tap delivers emoji to focused window (49-01 + 49-05)
+expected: With a text input focused, tap an emoji button on the deck. The emoji appears in the input. Mechanism: clipboardy write → simulate-paste keystroke. Requires host clipboard tool (`pbcopy` / `xclip` / `wl-copy` / `clip.exe`).
 result: pending
 
-### 8. select_command override (49-05)
-expected: A button with `select_command: "echo {{emoji}}"` runs that command (with template substitution) via the action executor instead of the paste path.
+### 8. Dbl-tap delivers shortcode (49-01 + 49-05)
+expected: Double-tap an emoji whose catalog entry has a shortcode (e.g. 🔥 → `:fire:`). The shortcode appears in the focused input. Same host prereq as test 7.
 result: pending
 
-### 9. No-history page navigation (49-06 + 49-07)
-expected: In a paginated category (e.g. "Smileys"), tapping "next page" 3 times then tapping the system back returns to the main deck — not to the previous page of "Smileys". The deck stack is `[main, last-page]` after the walk.
+### 9. select_command override (49-01)
+expected: A button configured with `select_command: "echo {{emoji}}"` runs that command via the action executor (with template substitution) on tap, instead of the paste path.
 result: pending
 
-### 10. Page-nav chips share the Chip style (49-07)
-expected: Page-nav buttons on a paginated deck render as `Chip` components — visually consistent with the deck's other navigation chips, not raw Tailwind divs with `text-[10px] opacity-70`.
+### 10. system_back_tap_command override (49-03)
+expected: With `system_back_tap_command: "<command>"` set on a deck, tapping the bottom-right system back runs that command via the action executor, NOT the default goBack.
 result: pending
 
-### 11. paginateDecks is reusable (49-07)
-expected: A second addon that imports `paginateDecks` from `@sireno-deck/core/pagination` can paginate its own deck and get the same slice / page-count / page-nav semantics without re-implementing them.
+### 11. system_back_hold_command override (49-03)
+expected: With `system_back_hold_command: "<command>"` set, holding the system back ≥600ms runs that command via the action executor, NOT the default `restoreStack`.
 result: pending
 
 ## Summary
@@ -73,7 +75,8 @@ skipped: 0
 
 [none yet]
 
-## Host prerequisites (no items deferred — just the prerequisite for tests 6, 7, 8)
+## Prerequisites
 
-- A clipboard tool installed on the host: `pbcopy` (macOS) / `xclip` or `wl-copy` (Linux) / `clip.exe` (Windows). The CLI surfaces a structured error if none is found.
-- A focused text-input target window for tests 6 and 7 (the paste keystroke targets the active focused window).
+- **All tests:** daemon running with emoji-selector enabled, a connected (or emulated) Stream Deck.
+- **Tests 7, 8:** host clipboard tool installed (`pbcopy` / `xclip` / `wl-copy` / `clip.exe`) + a focused text-input target window.
+- **Tests 9, 10, 11:** a deck (or example config) that uses `select_command`, `system_back_tap_command`, or `system_back_hold_command`. None ship as defaults; you have to wire them into a config to verify.
