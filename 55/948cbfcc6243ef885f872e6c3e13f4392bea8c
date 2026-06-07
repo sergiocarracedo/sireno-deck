@@ -1,0 +1,41 @@
+.planning/phases/49-emoji-selector-ux-revamp/49-UAT.md
+  s_908d014142bc69::t_d785c6c21e56a5 45-50
+  s_908d014142bc69::t_e8a1d58280e5fa 34
+  s_908d014142bc69::t_81053a90d36d34 10-11,13-15
+  s_908d014142bc69::t_68c9ebd6184a28 22
+  s_908d014142bc69::t_b4c06e281d7c63 38
+  s_908d014142bc69::t_20122e05d04d4f 53-58
+  s_908d014142bc69::t_bd45c2b537349e 2
+  s_908d014142bc69::t_e606321c30f301 66
+  s_908d014142bc69::t_7ad71421089987 89-95
+  s_908d014142bc69::t_c6c9588dfb8c6e 62
+  s_908d014142bc69::t_b5de5798632a34 75
+  s_908d014142bc69::t_f8cf58236b1451 74,76
+  s_908d014142bc69::t_94d221029df6b9 30
+  s_908d014142bc69::t_7659d09465ff1c 69-70
+  s_908d014142bc69::t_909757b399af8c 81-87
+  s_908d014142bc69::t_f393d136e2f907 26
+  s_908d014142bc69::t_9fa6a492817587 6
+  s_908d014142bc69::t_7ec4c444b0c8df 42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "55948cbfcc6243ef885f872e6c3e13f4392bea8c",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_908d014142bc69": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15e0e3cfbffe6xh6RWjPEUvQJN",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
