@@ -10,7 +10,7 @@
 
 ### Fixes
 
-- The `pasteText` path is now backed by `clipboardy`, surfacing clear errors when the host's clipboard tool (xclip / pbcopy / Set-Clipboard) is missing. Root cause was the per-OS `execa`-spawned clipboard writer silently failing on hosts without a clipboard tool — the subprocess exit code was swallowed and the user saw a "type" with no output. `clipboardy` throws on failure, so the runtime now surfaces a structured button-runtime diagnostic instead of a silent miss.
+- The `pasteText` path is now backed by `clipboardy`, surfacing clear errors when the host's clipboard tool (xclip / pbcopy / wl-copy / Set-Clipboard) is missing. `clipboardy` throws on failure, so the runtime surfaces a structured diagnostic instead of a silent miss. **Note:** the automated paste keystroke (`xdotool` / `osascript` / `SendKeys`) has been removed — `pasteText` now calls `clipboardy.write()` only. The user pastes manually with Cmd/Ctrl+V. This avoids the X11/Wayland incompatibility of `xdotool` and eliminates the host tool dependency for keystroke emulation.
 
 ## 2026-06-06
 
