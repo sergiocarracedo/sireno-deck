@@ -1,12 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { execa } from "execa"
-
 import { checkPasteAvailable, pasteText } from "./clipboard"
 
-const { writeMock, execaMock } = vi.hoisted(() => ({
+const { writeMock } = vi.hoisted(() => ({
   writeMock: vi.fn(),
-  execaMock: vi.fn(),
 }))
 
 vi.mock("clipboardy", () => ({
@@ -18,18 +15,10 @@ vi.mock("clipboardy", () => ({
   },
 }))
 
-vi.mock("execa", () => ({
-  execa: execaMock,
-}))
-
-const execaTyped = vi.mocked(execa)
-
 describe("clipboard", () => {
   beforeEach(() => {
     writeMock.mockReset()
     writeMock.mockResolvedValue(undefined)
-    execaMock.mockReset()
-    execaMock.mockResolvedValue({ stdout: "", stderr: "", exitCode: 0 } as never)
   })
 
   afterEach(() => {
@@ -43,28 +32,6 @@ describe("clipboard", () => {
     expect(writeMock).toHaveBeenCalledWith("🦄")
   })
 
-  it("writes the clipboard before simulating the paste keystroke", async () => {
-    let clipboardyInvokedAt = 0
-    let execaInvokedAt = 0
-    let order = 0
-
-    writeMock.mockImplementation(async () => {
-      order += 1
-      clipboardyInvokedAt = order
-    })
-    execaTyped.mockImplementation(async () => {
-      order += 1
-      execaInvokedAt = order
-      return { stdout: "", stderr: "", exitCode: 0 } as never
-    })
-
-    await pasteText("hello")
-
-    expect(clipboardyInvokedAt).toBeGreaterThan(0)
-    expect(execaInvokedAt).toBeGreaterThan(0)
-    expect(clipboardyInvokedAt).toBeLessThan(execaInvokedAt)
-  })
-
   it("surfaces clipboardy.write errors instead of silently swallowing them", async () => {
     const clipboardError = new Error("clipboard not available")
     writeMock.mockRejectedValue(clipboardError)
@@ -72,16 +39,19 @@ describe("clipboard", () => {
     await expect(pasteText("text")).rejects.toBe(clipboardError)
   })
 
-  it("surfaces paste-keystroke errors when the host tool is missing", async () => {
-    const pasteError = new Error("xdotool not found")
-    execaTyped.mockRejectedValue(pasteError)
+  it("checkPasteAvailable reports true when clipboardy is available", async () => {
+    writeMock.mockResolvedValue(undefined)
 
-    await expect(pasteText("text")).rejects.toBe(pasteError)
-  })
-
-  it("checkPasteAvailable reports true when the host paste tool is present", async () => {
     const available = await checkPasteAvailable()
 
     expect(available).toBe(true)
+  })
+
+  it("checkPasteAvailable reports false when clipboardy throws", async () => {
+    writeMock.mockRejectedValue(new Error("clipboard unavailable"))
+
+    const available = await checkPasteAvailable()
+
+    expect(available).toBe(false)
   })
 })

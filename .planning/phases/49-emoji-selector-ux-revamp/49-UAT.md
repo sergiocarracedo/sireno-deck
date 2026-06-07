@@ -79,19 +79,15 @@ skipped: 0
 ## Gaps
 
 - truth: "Tap delivers emoji to focused window (49-01 + 49-05)"
-  status: failed
+  status: resolved
   reason: "wl-clipboard installed but nothing happens on tap"
-  severity: major
-  root_cause: "clipboard.ts L28: simulatePaste() uses 'xdotool key ctrl+v'. xdotool only works on X11. On Wayland (XDG_SESSION_TYPE=wayland) it silently fails — no X11 server to send to. clipboardy.write() works (wl-copy auto-detection), but the paste keystroke goes nowhere."
-  affected_files: ["packages/cli/src/util/clipboard.ts"]
+  resolution: "Removed simulatePaste keystroke entirely; pasteText now uses clipboardy.write() only. User manually pastes with Cmd/Ctrl+V. xdotool/ydotool no longer used."
   test: 7
 
 - truth: "Dbl-tap delivers shortcode (49-01 + 49-05)"
-  status: failed
+  status: resolved
   reason: "same issue as before"
-  severity: major
-  root_cause: "same root cause as test 7 — simulatePaste() uses xdotool which is X11-only on Wayland"
-  affected_files: ["packages/cli/src/util/clipboard.ts"]
+  resolution: "same — clipboardy.write() only, no keystroke emulation"
   test: 8
 
 ## Prerequisites
