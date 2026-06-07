@@ -11,12 +11,13 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 
 Milestone: v1.4 — Addons & UX Polish (scope cut: distribution removed)
 Status: v1.4 milestone: 7 of 7 in-scope phases (41-46, 49) shipped. Phase 49 (Emoji-Selector UX Revamp) closed 2026-06-06 with verification `passed` and 27/27 in-scope tests passing. Ready for verify-work 49 (manual UAT) and the review/ship/compound chain.
-Last activity: 2026-06-06 — Phase 49 executed: 4 plans across 4 waves (49-01 catalog + HID shim, 49-02 real emoji render, 49-03 n-2 page nav + system back decoration, 49-04 emoji-launcher + type rename). All EMO-06..14 requirements ✓ Complete.
+Last activity: 2026-06-07 — Completed quick task 037: overlap emoji-selector launcher grid cells on X and Y
 
 ### Quick Tasks Completed
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
+| 037 | Overlap emoji-selector launcher grid cells on X and Y | 2026-06-07 | a794fb8 | .planning/quick/037-grid-overlaps-icons/ |
 | 036 | Move default theme presentation interfaces to core contract and fix ButtonFrame line 53 | 2026-06-05 | 1d1b359 | .planning/quick/036-move-theme-interfaces-to-core/ |
 | 037 | Replace main deck home button with logo + cli version | 2026-06-06 | 23d2a54 | .planning/quick/037-main-deck-home-button-logo-version/ |
 | 038 | Lock deck should not show home or back button | 2026-06-06 | a967147 | .planning/quick/038-lock-deck-no-home-back-button/ |
