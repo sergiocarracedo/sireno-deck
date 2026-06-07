@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** v1.4 milestone: 7 phases shipped (41-46, 49). Phase 49 (Emoji-Selector UX Revamp) shipped 2026-06-06 — hand-curated emoji catalog, per-OS HID shim, real emoji rendering, n-2 page nav, addon-decorated system back, new emoji-launcher button type. Next milestone is v1.5 (Distribution Build Pipeline re-scope + CI matrix + build/install docs) — blocked on the v1.5 distribution-target decision. Phase 40 (Distribution Build Pipeline) cut from v1.4 — Node SEA architecturally incompatible with the codebase's native deps (node-hid, sharp libvips, playwright chromium, dbus x11). v1.4 scope is Phases 41-46 + 49.
+**Current focus:** v1.4 milestone: 7 phases shipped (41-46, 49). Phase 49 (Emoji-Selector UX Revamp) shipped 2026-06-06 (original 4 plans) and 2026-06-07 (post-ship amendments 49-05/49-06/49-07) — hand-curated emoji catalog, per-OS HID shim via clipboardy, real emoji rendering, n-2 page nav with noHistory back-stack, addon-decorated system back, new emoji-launcher button type, shared `core/pagination.ts` utility. Next milestone is v1.5 (Distribution Build Pipeline re-scope + CI matrix + build/install docs) — blocked on the v1.5 distribution-target decision. Phase 40 (Distribution Build Pipeline) cut from v1.4 — Node SEA architecturally incompatible with the codebase's native deps (node-hid, sharp libvips, playwright chromium, dbus x11). v1.4 scope is Phases 41-46 + 49.
 
 ## Current Position
 
@@ -37,7 +37,7 @@ Progress: [██████████] 100% (7 of 7 in-scope v1.4 phases com
 | 46 — Emoji-Selector Multi-Page | 4 | 4 | Complete | Verification `passed`. Gap-closure plans 46-03 (multi-page `target_deck`) and 46-04 (SRB-03 system-back injection) executed and verified. |
 | 47 — CI Matrix Builds for Linux + Mac | — | — | **Cut — deferred to v1.5** | Was predicated on Phase 40 SEA artifacts. |
 | 48 — Build and Install Documentation | — | — | **Cut — deferred to v1.5** | Was predicated on Phase 40 SEA artifacts. |
-| 49 — Emoji-Selector UX Revamp | 4 | 4 | **Complete** | Verification `passed`. 27/27 in-scope tests pass (15 emoji-selector + 9 os-shims + 3 Text). All EMO-06..14 requirements ✓ Complete. Hand-curated piliapp-style catalog, per-OS HID shim, real emoji render, n-2 page nav, addon-decorated system back, new emoji-launcher button type. Type rename `emoji-entry-button` → `emoji-emoji-button` documented in CHANGELOG as a breaking change. |
+| 49 — Emoji-Selector UX Revamp | 7 | 7 | **Complete** | Original 4 plans (49-01..49-04) shipped 2026-06-06 with verification `passed`. Post-ship amendments 49-05 (clipboardy migration, A1), 49-06 (navigateToDeck addToHistory, A3), 49-07 (core/pagination.ts + Chip migration + noHistory page-to-page nav, A2) shipped 2026-06-07. 27/27 in-scope tests pass on the original 4 plans; 13 new tests added by the amendments all pass with 0 new failures. All EMO-06..14 requirements ✓ Complete. Type rename `emoji-entry-button` → `emoji-emoji-button` documented in CHANGELOG as a breaking change. |
 
 ### Phase 40 Cut Rationale (2026-06-05)
 
