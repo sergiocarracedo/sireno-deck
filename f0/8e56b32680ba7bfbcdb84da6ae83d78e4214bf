@@ -1,0 +1,31 @@
+.planning/phases/49-emoji-selector-ux-revamp/49-07-SUMMARY.md
+  s_908d014142bc69::t_0abe6dd1b8448a 1-43
+.planning/ROADMAP.md
+  s_908d014142bc69::t_635b83b07c7c5f 131,149-151
+AGENTS.md
+  s_908d014142bc69::t_f90301e186a8f0 168-169
+.planning/STATE.md
+  s_908d014142bc69::t_d077119fb0f8be 40
+  s_908d014142bc69::t_02515b5ff3caf1 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f08e56b32680ba7bfbcdb84da6ae83d78e4214bf",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_908d014142bc69": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15e0e3cfbffe6xh6RWjPEUvQJN",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
