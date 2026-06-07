@@ -41,11 +41,33 @@ The plan called for "reusing the Phase 34 commands.tap / commands.double-tap act
 ### 49-04 launcher button has no onTap
 The launcher is a display-only button (no tap behavior). The "main entry point" purpose is satisfied by being prominent at position 0 of the main deck. A future plan can wire an `onTap` that navigates to a quick-pick subdeck if needed. The CHANGELOG entry documents the launcher's purpose as the visual entry point.
 
+## Post-ship amendment plans (49-05, 49-06, 49-07)
+
+Three plans were added on 2026-06-07 to address regressions surfaced by post-ship UAT feedback and to consolidate the paged-category pattern into a shared seam.
+
+### 49-05 (Wave 1) — `pasteText` clipboardy migration (A1)
+- ✓ `pasteText` no longer silently fails when the host's clipboard tool (xclip / pbcopy / Set-Clipboard) is missing — `clipboardy` throws a clear error that the runtime can surface as a structured button-runtime diagnostic
+- ✓ `select_command_shortcode` schema field and wiring dropped; per-emoji double-tap routes through `methods.pasteText(shortcode)` consistently
+- ✓ `util/clipboard.test.ts` covers the happy path and the error-surfacing path
+
+### 49-06 (Wave 1) — `navigateToDeck` addToHistory option (A3)
+- ✓ Additive `addToHistory?: boolean` option on the public `AddonButtonMethods.navigateToDeck`; default `true` preserves every existing caller
+- ✓ Internal `DeckController.navigateTo(deckId, { push: false })` replaces the top of the stack instead of pushing
+- ✓ `controller.test.ts` and `runtime.test.ts` cover the new option in both directions
+
+### 49-07 (Wave 2, depends on 49-06) — `core/pagination.ts` + noHistory page-to-page nav + Chip migration (A2)
+- ✓ `packages/cli/src/core/pagination.ts` exists with `buildPageNavButton`, `definePagedCategoryButton`, `paginateDecks` exports
+- ✓ `core/pagination.test.ts` (12 tests) covers all three helpers including the `addToHistory: false` wiring on `buildPageNavButton` and `addToHistory: true` on `definePagedCategoryButton`
+- ✓ The page-nav render in `change-deck.tsx` uses the actual `Chip` component (asserted via `data-sireno-ui-chip="true"` markers, two of them in the test render)
+- ✓ `emoji-selector/index.ts` imports `buildPageNavButton` + `paginateDecks` from `core/pagination.js`; no inline `buildPageNavButton` remains
+- ✓ `emoji-selector/buttons/category.tsx` uses `definePagedCategoryButton`
+- ✓ End-to-end test in `runtime.test.ts` ("treats paginated deck navigation as a noHistory page-to-page flow") documents the noHistory semantic: walking `main → cat-p1 → cat-p2 → … → cat-p5` does NOT grow the stack, so `goBack()` from `cat-p5` returns to `main` (not `cat-p4`)
+
 ## Pre-existing test/typecheck noise (out of scope, unchanged)
 
-- 43 pre-existing failures in `src/deck/runtime.test.ts` (predates Phase 46; tests call `options.addonRegistry.listButtons()` without providing `addonRegistry`; new tests in this phase use `createEmptyAddonRegistry()`)
-- Pre-existing TS errors in unrelated files: runtime.ts, core-buttons/buttons/action.tsx, core-buttons/buttons/toggle.tsx, addon/loader.ts, addon/registry.test.ts, dom-host*.tsx, dom-host.test.tsx, theme-utilities.ts, stream-deck.ts, browser-renderer.test.ts, system-back-injection.test.ts. All from Quick 036 / date-time drift in the working tree.
-- Working tree has 5 unrelated pre-existing modifications (`.planning/quick/036-move-theme-interfaces-to-core/036-SUMMARY.md`, `config.yml`, `packages/cli/src/builtin-addons/date-time/buttons/calendar-sheet.tsx`, `packages/cli/src/builtin-addons/date-time/buttons/date.tsx`, `packages/cli/src/builtin-addons/date-time/index.ts`) — must NOT include in commits (verified clean via `rtk git status` at the end of each plan)
+- 46 pre-existing failures in `src/deck/runtime.test.ts` (predates Phase 46; tests call `options.addonRegistry.listButtons()` without providing `addonRegistry`; new tests in this phase use `createEmptyAddonRegistry()`)
+- 3 pre-existing failures in `src/builtin-addons/emoji-selector/index.test.ts` (predates the amendments; tests reference EMOJI_PAGE_SIZE=12 but the current value is 13 from 49-02's bump; out of scope for the amendments)
+- 678 pre-existing TS errors in unrelated files: runtime.ts, core-buttons/buttons/action.tsx, core-buttons/buttons/toggle.tsx, addon/loader.ts, addon/registry.test.ts, dom-host*.tsx, dom-host.test.tsx, theme-utilities.ts, stream-deck.ts, browser-renderer.test.ts, system-back-injection.test.ts. All from the global find-and-replace of relative imports to the `@/` alias (49-05-era refactor). None of the new 49-07 files contribute to this count.
 
 ## Key files
 
@@ -69,10 +91,13 @@ The launcher is a display-only button (no tap behavior). The "main entry point" 
 
 ## Commits added by this phase
 
-12 commits across 4 plans:
+12 commits across 4 plans + 8 commits across 3 amendment plans (49-05, 49-06, 49-07):
 - 49-01: 5 commits (categories.json, support.tsx, os-shims, entry wiring, tests + 1 SUMMARY)
 - 49-02: 4 commits (Text 5xl/fontStack, renderEmojiGlyph, entry render, tests + 1 SUMMARY)
 - 49-03: 4 commits (change-deck, schemas + createDecks, runtime decoration, tests + 1 SUMMARY)
 - 49-04: 4 commits (type rename, launcher, tests, CHANGELOG + 1 SUMMARY)
+- 49-05: 3 commits (clipboardy migration, double-tap routing, tests + 1 SUMMARY) + 1 docs
+- 49-06: 2 commits (navigateToDeck addToHistory flag, tests + 1 SUMMARY) + 1 docs
+- 49-07: 2 commits (pagination utility + Chip migration, docs SUMMARY + phase status)
 
 All commits are clean — no working-tree drift or unrelated changes included.
