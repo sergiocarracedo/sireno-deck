@@ -1,0 +1,17 @@
+{
+  "plugins": ["import"],
+  "rules": {
+    "import/extensions": ["error", "never", { "ignorePackages": true }],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["../../*", "../../../*", "../../../../*"],
+            "message": "Cross-folder imports must use the @/ alias (see AGENTS.md Import Conventions)."
+          }
+        ]
+      }
+    ]
+  }
+}
