@@ -3,17 +3,17 @@ import { homedir } from "node:os"
 import { dirname, isAbsolute, join, resolve } from "node:path"
 import yaml from "js-yaml"
 
-import { resolveHostContextPlaceholders } from "../action/executor.js"
+import { resolveHostContextPlaceholders } from "@/action/executor"
 import {
   type BootstrapSirenoConfig,
   ConfigValidationError,
   type SirenoConfig,
   validateBootstrapConfig,
   validateConfig,
-} from "../core/schemas.js"
-import { getBundledAddons } from "../addon/builtin.js"
-import { createAddonRegistry, type AddonRegistry } from "../addon/registry.js"
-import { UNKNOWN_HOST_CONTEXT, type HostContext } from "../system/host-context.js"
+} from "@/core/schemas"
+import { getBundledAddons } from "@/addon/builtin"
+import { createAddonRegistry, type AddonRegistry } from "@/addon/registry"
+import { UNKNOWN_HOST_CONTEXT, type HostContext } from "@/system/host-context"
 
 const CONFIG_FILENAME = "config.yml"
 const COMMAND_FIELD_NAMES = new Set(["command", "display_command", "select_command", "status_command"])

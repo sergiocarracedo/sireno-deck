@@ -1,6 +1,6 @@
 import type pino from "pino"
 
-import { isRunning, readPid, removePidFile } from "../../util/daemon.js"
+import { isRunning, readPid, removePidFile } from "@/util/daemon"
 
 export interface StopOptions {
   logger: pino.Logger

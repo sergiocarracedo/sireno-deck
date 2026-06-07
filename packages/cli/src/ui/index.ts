@@ -6,13 +6,13 @@ export {
   type GenericIconName,
   type IconProps,
   type IconTone,
-} from './Icon.js'
+} from './Icon'
 export { Label, type LabelProps } from './Label'
 export {
   LabelValueList,
   type LabelValueListLine,
   type LabelValueListProps,
-} from './LabelValueList.js'
+} from './LabelValueList'
 export {
   Text,
   type TextAlign,
@@ -21,4 +21,4 @@ export {
   type TextSize,
   type TextTone,
   type TextTypography,
-} from './Text.js'
+} from './Text'

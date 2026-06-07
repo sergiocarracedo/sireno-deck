@@ -8,16 +8,16 @@ import {
   defineMountedButton,
   Icon,
   Text,
-} from '../index.js'
-import { UNKNOWN_HOST_CONTEXT } from '../system/host-context.js'
-import { buttonFrame as defaultButtonFrame } from '../themes/default/index.js'
+} from '@/index'
+import { UNKNOWN_HOST_CONTEXT } from '@/system/host-context'
+import { buttonFrame as defaultButtonFrame } from '@/themes/default/index'
 import {
   createHostedButtonElement,
   createMountedDomHost,
   renderDomDeck,
   renderMountedHostedButtons,
   renderReactNodeToHtml,
-} from './dom-host.js'
+} from './dom-host'
 
 describe('dom host', () => {
   it('applies buttonFrame by default', () => {

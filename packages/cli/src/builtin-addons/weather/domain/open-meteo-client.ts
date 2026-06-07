@@ -1,7 +1,7 @@
 import type {
   HourlyForecastEntry,
   WeatherSnapshot,
-} from './weather-controller.js'
+} from './weather-controller'
 
 interface OpenMeteoHourly {
   time: string[]

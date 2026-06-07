@@ -2,11 +2,11 @@ import {
   ButtonSurface,
   defineMountedButton,
   useButtonActionCommand,
-} from '../../../addon/api.js'
+} from '@/addon/api'
 import {
   ANALOG_CLOCK_INTERVAL_MS,
   BuiltinAnalogClockButtonSchema,
-} from '../schemas.js'
+} from '../schemas'
 
 function getAnalogClockAngles(date = new Date()) {
   const hours = date.getHours() % 12

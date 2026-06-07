@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import weatherAddon from './index.js'
+import weatherAddon from './index'
 
 describe('weather addon', () => {
   it('exports a bundled weather button definition', () => {

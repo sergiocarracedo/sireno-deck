@@ -1,10 +1,10 @@
-import { defineMountedButton } from '../../../addon/api.js'
-import { Text } from '../../../ui/index.js'
+import { defineMountedButton } from '@/addon/api'
+import { Text } from '@/ui/index'
 import {
   DIGITAL_DATE_TIME_INTERVAL_MS,
   LockedTimeTileButtonSchema,
   type LockedTimeTileButtonConfig,
-} from '../schemas.js'
+} from '../schemas'
 
 export function formatLockedTimeCharacters(
   date = new Date(),

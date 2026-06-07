@@ -1,8 +1,8 @@
-import type { HostContext } from '../../../system/host-context.js'
-import { createLinuxMediaVolumeController } from './linux-media-volume-controller.js'
-import { createMacosMediaVolumeController } from './macos-media-volume-controller.js'
-import { createUnsupportedMediaVolumeController } from './unsupported-media-volume-controller.js'
-import { createWindowsMediaVolumeController } from './windows-media-volume-controller.js'
+import type { HostContext } from '@/system/host-context'
+import { createLinuxMediaVolumeController } from './linux-media-volume-controller'
+import { createMacosMediaVolumeController } from './macos-media-volume-controller'
+import { createUnsupportedMediaVolumeController } from './unsupported-media-volume-controller'
+import { createWindowsMediaVolumeController } from './windows-media-volume-controller'
 
 export interface MediaVolumeSnapshot {
   available: boolean

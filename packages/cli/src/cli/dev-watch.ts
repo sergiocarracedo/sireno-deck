@@ -1,5 +1,5 @@
-import { buildTailwindBrowserStylesheet } from './build-tailwind-browser.js'
-import { cli } from './index.ts'
+import { buildTailwindBrowserStylesheet } from './build-tailwind-browser'
+import { cli } from './index'
 
 // Keep cli:dev on the external tsx watch seam while restoring the
 // default `start --config config.yml` path and passthrough args like

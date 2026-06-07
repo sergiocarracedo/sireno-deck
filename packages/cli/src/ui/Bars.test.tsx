@@ -1,8 +1,8 @@
 import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 
-import { renderReactNodeToHtml } from '../render/dom-host.js'
-import { Bars } from './Bars.js'
+import { renderReactNodeToHtml } from '@/render/dom-host'
+import { Bars } from './Bars'
 
 describe('Bars', () => {
   it('renders bounded bar counts through the shared UI surface', () => {

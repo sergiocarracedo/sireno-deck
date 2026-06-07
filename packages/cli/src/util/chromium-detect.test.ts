@@ -12,7 +12,7 @@ import { existsSync } from "node:fs"
 import {
   isChromiumInstalled,
   isChromiumInstallSkipped,
-} from "./chromium-detect.js"
+} from "./chromium-detect"
 
 describe("isChromiumInstallSkipped", () => {
   beforeEach(() => {

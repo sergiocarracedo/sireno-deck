@@ -5,7 +5,7 @@ import { pathToFileURL } from "node:url"
 
 import sharp from "sharp"
 
-import { STREAM_DECK_KEY_PRESET, type RenderPreset } from "./render-preset.js"
+import { STREAM_DECK_KEY_PRESET, type RenderPreset } from "./render-preset"
 
 export interface BrowserPageLike {
   close?: () => Promise<void>

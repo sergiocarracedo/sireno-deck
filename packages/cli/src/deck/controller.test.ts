@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { DeckNavigationError, createDeckController } from "./controller.js"
+import { DeckNavigationError, createDeckController } from "./controller"
 
 describe("createDeckController", () => {
   const decks = {

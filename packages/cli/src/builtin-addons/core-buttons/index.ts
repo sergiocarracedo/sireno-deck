@@ -1,10 +1,10 @@
 import { fileURLToPath } from 'node:url'
 
-import type { SirenoAddon } from '../../addon/api.js'
-import { builtinActionButton } from './buttons/action.js'
-import { builtinChangeDeckButton } from './buttons/change-deck.js'
-import { builtinMediaSampleButton } from './buttons/media-sample.js'
-import { builtinToggleButton } from './buttons/toggle.js'
+import type { SirenoAddon } from '@/addon/api'
+import { builtinActionButton } from './buttons/action'
+import { builtinChangeDeckButton } from './buttons/change-deck'
+import { builtinMediaSampleButton } from './buttons/media-sample'
+import { builtinToggleButton } from './buttons/toggle'
 
 const assets = {
   'clock.svg': fileURLToPath(new URL('./assets/clock.svg', import.meta.url)),

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { getBundledAddons } from "./builtin.js"
+import { getBundledAddons } from "./builtin"
 
 describe("getBundledAddons", () => {
   it("returns bundled addons through the shared addon contract", () => {

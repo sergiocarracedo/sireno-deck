@@ -2,17 +2,17 @@ import {
   ButtonSurface,
   defineMountedButton,
   useButtonActionCommand,
-} from '../../../addon/api.js'
+} from '@/addon/api'
 import {
   getCanonicalSystemMetrics,
   type CanonicalSystemMetricSnapshot,
-} from '../domain/live-metrics.js'
-import { toSystemStatusDisplayMetric } from '../domain/display-metrics.js'
-import { Icon, LabelValueList } from '../../../ui/index.js'
+} from '../domain/live-metrics'
+import { toSystemStatusDisplayMetric } from '../domain/display-metrics'
+import { Icon, LabelValueList } from '@/ui/index'
 import {
   SystemStatusLabelValuesButtonSchema,
   type SystemStatusLabelValuesButtonConfig,
-} from '../schemas.js'
+} from '../schemas'
 
 type SystemStatusButtonStoreState = {
   metrics?: readonly CanonicalSystemMetricSnapshot[]

@@ -2,8 +2,8 @@ import { fileURLToPath } from "node:url"
 
 import sharp from "sharp"
 
-import { resolveDeckLayout } from "./browser-renderer.js"
-import { STREAM_DECK_KEY_PRESET } from "./render-preset.js"
+import { resolveDeckLayout } from "./browser-renderer"
+import { STREAM_DECK_KEY_PRESET } from "./render-preset"
 
 const STARTUP_LOGO_FULL_PATH = fileURLToPath(
   new URL("../assets/logoFull.png", import.meta.url),

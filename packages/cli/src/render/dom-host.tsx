@@ -9,17 +9,17 @@ import {
 import type { ReactElement, ReactNode } from 'react'
 
 import type { Theme, ThemeFrameState } from '@/config/theme'
-import { resolveDeckLayout } from './browser-renderer.js'
+import { resolveDeckLayout } from './browser-renderer'
 import {
   createHostedButtonElement,
   createMountedHostedButtonElement,
-} from './dom-host-button.js'
-import { DeckDocument } from './dom-host-deck-document.js'
-import { STREAM_DECK_KEY_PRESET, type RenderPreset } from './render-preset.js'
+} from './dom-host-button'
+import { DeckDocument } from './dom-host-deck-document'
+import { STREAM_DECK_KEY_PRESET, type RenderPreset } from './render-preset'
 import {
   getSirenoRuntimeStylesheet,
   getTailwindBrowserStylesheet,
-} from './theme-utilities.js'
+} from './theme-utilities'
 
 export interface HostedButton {
   content: ReactElement

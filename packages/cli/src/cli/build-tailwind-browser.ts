@@ -4,10 +4,10 @@ import { fileURLToPath } from 'node:url'
 
 import { execa } from 'execa'
 
-import { loadConfiguredAddons } from '../addon/loader.js'
-import { createAddonRegistry } from '../addon/registry.js'
-import { loadBootstrapConfig } from '../config/loader.js'
-import { resolveTheme } from '../config/theme'
+import { loadConfiguredAddons } from '@/addon/loader'
+import { createAddonRegistry } from '@/addon/registry'
+import { loadBootstrapConfig } from '@/config/loader'
+import { resolveTheme } from '@/config/theme'
 
 const MODULE_DIRECTORY = dirname(fileURLToPath(import.meta.url))
 const PACKAGE_ROOT = resolve(MODULE_DIRECTORY, '../..')

@@ -1,8 +1,8 @@
 import { z } from 'zod'
-import { BuiltinToggleButtonConfigSchema } from '../../../core/schemas.js'
+import { BuiltinToggleButtonConfigSchema } from '@/core/schemas'
 
-import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
-import { Icon, Text } from '../../../ui/index.js'
+import { ButtonSurface, defineMountedButton } from '@/addon/api'
+import { Icon, Text } from '@/ui/index'
 
 const COMMAND_DRIVEN_TOGGLE_INTERVAL_MS = 1_000
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import { renderReactNodeToHtml } from "../../../render/dom-host.js"
-import { builtinDateButton } from "./calendar-sheet.js"
+import { renderReactNodeToHtml } from "@/render/dom-host"
+import { builtinDateButton } from "./calendar-sheet"
 
 function renderDate(config: Record<string, unknown> = {}) {
   return renderReactNodeToHtml(

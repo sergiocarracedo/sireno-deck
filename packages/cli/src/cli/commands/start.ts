@@ -16,48 +16,48 @@ import {
   rewriteThemeStylesheetAssetUrls,
   type Theme,
 } from '@/config/theme'
-import { setDomAssetPathResolver } from '../../addon/api.js'
-import { loadConfiguredAddons } from '../../addon/loader.js'
-import { AddonManifestError } from '../../addon/manifest.js'
-import type { AddonRegistry } from '../../addon/registry.js'
+import { setDomAssetPathResolver } from '@/addon/api'
+import { loadConfiguredAddons } from '@/addon/loader'
+import { AddonManifestError } from '@/addon/manifest'
+import type { AddonRegistry } from '@/addon/registry'
 import {
   createBundledAddonRegistry,
   loadBootstrapConfig,
   loadConfigWithSources,
-} from '../../config/loader.js'
-import { ConfigValidationError } from '../../core/schemas.js'
-import type { RuntimeRenderButton } from '../../deck/runtime.js'
-import { createDeckRuntime } from '../../deck/runtime.js'
-import { formatLinuxUdevAccessError } from '../../device/linux-udev.js'
+} from '@/config/loader'
+import { ConfigValidationError } from '@/core/schemas'
+import type { RuntimeRenderButton } from '@/deck/runtime'
+import { createDeckRuntime } from '@/deck/runtime'
+import { formatLinuxUdevAccessError } from '@/device/linux-udev'
 import {
   createStreamDeckLifecycle,
   createVirtualStreamDeckLifecycle,
   replayLastRenderedBuffers,
   StreamDeckSelectionError,
   writeKeyBuffer,
-} from '../../device/stream-deck.js'
+} from '@/device/stream-deck'
 import {
   createBrowserRenderer,
   getVirtualDeckDevices,
-} from '../../render/browser-renderer.js'
-import { renderDomDeck } from '../../render/dom-host.js'
-import { getShrinkFitBrowserScript } from '../../render/shrink-fit-browser-script.js'
-import { createStartupPlaceholderBuffers } from '../../render/startup-placeholder.js'
+} from '@/render/browser-renderer'
+import { renderDomDeck } from '@/render/dom-host'
+import { getShrinkFitBrowserScript } from '@/render/shrink-fit-browser-script'
+import { createStartupPlaceholderBuffers } from '@/render/startup-placeholder'
 
-import { resolveHostContext } from '../../system/host-context.js'
-import { createSessionMonitor } from '../../system/session-monitor.js'
+import { resolveHostContext } from '@/system/host-context'
+import { createSessionMonitor } from '@/system/session-monitor'
 import {
   isRunning,
   readPid,
   removePidFile,
   setupSignalHandlers,
   writePid,
-} from '../../util/daemon.js'
-import { formatConfigError } from '../../util/errors.js'
-import { ensureChromium } from '../../util/chromium-detect.js'
+} from '@/util/daemon'
+import { formatConfigError } from '@/util/errors'
+import { ensureChromium } from '@/util/chromium-detect'
 
-import type { BrowserRenderer } from '../../render/browser-renderer.js'
-import type { BrowserRendererFrame, BrowserRendererFrameHandler } from '../../render/browser-renderer.js'
+import type { BrowserRenderer } from '@/render/browser-renderer'
+import type { BrowserRendererFrame, BrowserRendererFrameHandler } from '@/render/browser-renderer'
 
 export interface StartOptions {
   config?: string

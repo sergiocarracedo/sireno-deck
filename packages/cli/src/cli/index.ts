@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
-import { createLogger } from '../util/logger'
+import { createLogger } from '@/util/logger'
 import { startDaemon, startEmulator } from './commands/start'
 import { checkStatus } from './commands/status'
 import { stopDaemon } from './commands/stop'

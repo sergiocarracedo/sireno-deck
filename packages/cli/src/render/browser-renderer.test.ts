@@ -12,8 +12,8 @@ import {
   LIVE_HARDWARE_CAPTURE_INTERVAL_MS,
   MAX_MEDIA_SAMPLE_INTERVAL_MS,
   MIN_MEDIA_SAMPLE_INTERVAL_MS,
-} from "./browser-renderer.js"
-import { renderDomDeck } from "./dom-host.js"
+} from "./browser-renderer"
+import { renderDomDeck } from "./dom-host"
 
 async function createDeckScreenshot(colors: string[]): Promise<Buffer> {
   const overlays = colors.map((color, index) => ({

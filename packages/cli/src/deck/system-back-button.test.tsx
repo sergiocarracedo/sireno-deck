@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
 
-import { renderReactNodeToHtml } from "../render/dom-host.js"
-import { SystemBackButton } from "./system-back-button.js"
+import { renderReactNodeToHtml } from "@/render/dom-host"
+import { SystemBackButton } from "./system-back-button"
 
 describe("SystemBackButton", () => {
   it("renders 'Home' text when isMainDeck is true", () => {

@@ -3,7 +3,7 @@ import numbro from 'numbro'
 import type {
   CanonicalSystemMetricSnapshot,
   SystemMetricId,
-} from './live-metrics.js'
+} from './live-metrics'
 
 export type SystemStatusFormatter =
   | 'bytes'

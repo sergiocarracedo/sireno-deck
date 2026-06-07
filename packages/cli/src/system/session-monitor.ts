@@ -1,6 +1,6 @@
 import { sessionBus } from "dbus-next"
 
-import type { HostSessionCapability, HostSessionState } from "./host-context.js"
+import type { HostSessionCapability, HostSessionState } from "./host-context"
 
 export interface SessionSnapshot {
   capability: HostSessionCapability

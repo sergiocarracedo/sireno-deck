@@ -1,10 +1,10 @@
 import { createElement } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
-import { Text } from '../../index.js'
-import { renderReactNodeToHtml } from '../../render/dom-host.js'
-import { UNKNOWN_HOST_CONTEXT } from '../../system/host-context.js'
-import coreButtonsAddon from './index.js'
+import { Text } from '@/index'
+import { renderReactNodeToHtml } from '@/render/dom-host'
+import { UNKNOWN_HOST_CONTEXT } from '@/system/host-context'
+import coreButtonsAddon from './index'
 
 const mountedButtonMethods = {
   getActiveDeckId: () => 'main',

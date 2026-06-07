@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 
-import type { BuiltinDisplayDateTimeButtonConfig } from './schemas.js'
+import type { BuiltinDisplayDateTimeButtonConfig } from './schemas'
 
 interface DateTimeFormatSegment {
   kind: 'markup' | 'text'

@@ -1,8 +1,8 @@
-import type { HostContext } from '../../../system/host-context.js'
-import type { WeatherButtonConfig } from '../schemas.js'
-import { fetchIpGeolocation } from './ip-geolocation.js'
-import { fetchOpenMeteoSnapshot } from './open-meteo-client.js'
-import { fetchWttrInSnapshot } from './wttr-in-fallback.js'
+import type { HostContext } from '@/system/host-context'
+import type { WeatherButtonConfig } from '../schemas'
+import { fetchIpGeolocation } from './ip-geolocation'
+import { fetchOpenMeteoSnapshot } from './open-meteo-client'
+import { fetchWttrInSnapshot } from './wttr-in-fallback'
 
 // Units are metric only
 export interface HourlyForecastEntry {

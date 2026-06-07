@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
-import { defineMountedButton } from '../../../addon/api.js'
-import { Icon, Text } from '../../../ui/index.js'
+import { defineMountedButton } from '@/addon/api'
+import { Icon, Text } from '@/ui/index'
 
 function renderCenteredButtonContent(label: string, icon?: string) {
   return (

@@ -3,9 +3,9 @@ import type { CSSProperties, ReactElement } from 'react'
 import * as lucideIcons from 'lucide-react'
 import { Github, type LucideIcon } from 'lucide-react'
 
-import { resolveDomAssetSrc } from '../addon/api.js'
-import { cn } from '../themes/utils/cn.js'
-import { useThemeUiPresentation } from './theme-presentation.js'
+import { resolveDomAssetSrc } from '@/addon/api'
+import { cn } from '@/themes/utils/cn'
+import { useThemeUiPresentation } from './theme-presentation'
 
 const BRAND_ICON_REGISTRY = {
   github: Github,

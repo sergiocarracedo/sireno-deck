@@ -4,9 +4,9 @@ export {
   ButtonSurface,
   defineMountedButton,
   useButtonActionCommand,
-} from "./addon/api.js"
+} from "@/addon/api"
 
-export { Bars, Chip, Icon, LabelValueList, Text } from "./ui/index.js"
+export { Bars, Chip, Icon, LabelValueList, Text } from "@/ui/index"
 
 export type {
   AddonButtonActionCommands,
@@ -15,7 +15,7 @@ export type {
   DomElementStyleProps,
   MountedAddonButtonDefinition,
   MountedAddonButtonRenderProps,
-} from "./addon/api.js"
+} from "@/addon/api"
 export type {
   BarsItem,
   BarsProps,
@@ -32,4 +32,4 @@ export type {
   TextProps,
   TextTone,
   TextTypography,
-} from "./ui/index.js"
+} from "@/ui/index"

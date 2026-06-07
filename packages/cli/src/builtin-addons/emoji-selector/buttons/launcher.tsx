@@ -1,5 +1,5 @@
 import { Label } from '@/ui'
-import { defineMountedButton } from '../../../addon/api.js'
+import { defineMountedButton } from '@/addon/api'
 
 import {
   EMOJI_FONT_STACK,

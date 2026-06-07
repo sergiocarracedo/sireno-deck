@@ -7,9 +7,9 @@ import { z } from 'zod'
 import type { CSSProperties, ReactElement, ReactNode } from 'react'
 import type { ZodType } from 'zod'
 
-import type { CommandExecutionResult } from '../action/executor'
-import type { Theme, ThemeFrameState } from '../config/theme'
-import type { HostContext } from '../system/host-context.js'
+import type { CommandExecutionResult } from '@/action/executor'
+import type { Theme, ThemeFrameState } from '@/config/theme'
+import type { HostContext } from '@/system/host-context'
 
 export const SIRENO_ADDON_API_VERSION = 1
 

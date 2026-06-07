@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
-import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
-import { Bars, Text } from '../../../ui/index.js'
+import { ButtonSurface, defineMountedButton } from '@/addon/api'
+import { Bars, Text } from '@/ui/index'
 
 const ANIMATED_BLOB_SVG = encodeURIComponent(
   [

@@ -1,14 +1,14 @@
-import { defineMountedButton } from '../../addon/api.js'
-import type { ThemeMediaPlayerSurface } from '../../config/theme/schemas.js'
-import { Surface } from './components/Surface.js'
+import { defineMountedButton } from '@/addon/api'
+import type { ThemeMediaPlayerSurface } from '@/config/theme/schemas'
+import { Surface } from './components/Surface'
 import {
   createMediaController,
   createUnavailableMediaSnapshot,
   type MediaController,
   type MediaControllerSnapshot,
-} from './domain/media-controller.js'
-import type { MediaButtonStatus } from './internal-types.js'
-import { MediaPlayerButtonSchema } from './schemas.js'
+} from './domain/media-controller'
+import type { MediaButtonStatus } from './internal-types'
+import { MediaPlayerButtonSchema } from './schemas'
 
 type MediaPlayerButtonStoreState = {
   controller?: MediaController

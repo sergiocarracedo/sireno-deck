@@ -3,12 +3,12 @@ import type { ReactElement } from 'react'
 import type { Theme } from '@/config/theme'
 import { cn } from '@/themes/utils/cn'
 
-import type { BrowserRendererLayout } from './browser-renderer.js'
-import { DeckKeySlot } from './dom-host-deck-key-slot.js'
-import type { HostedButton } from './dom-host.js'
-import type { RenderPreset } from './render-preset.js'
-import { getShrinkFitBrowserScript } from './shrink-fit-browser-script.js'
-import { getThemeCssVariables } from './theme-utilities.js'
+import type { BrowserRendererLayout } from './browser-renderer'
+import { DeckKeySlot } from './dom-host-deck-key-slot'
+import type { HostedButton } from './dom-host'
+import type { RenderPreset } from './render-preset'
+import { getShrinkFitBrowserScript } from './shrink-fit-browser-script'
+import { getThemeCssVariables } from './theme-utilities'
 
 function getThemeVariableStyle(theme?: Theme): Record<string, string> {
   if (!theme) {

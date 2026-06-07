@@ -1,7 +1,7 @@
 import type {
   HourlyForecastEntry,
   WeatherSnapshot,
-} from './weather-controller.js'
+} from './weather-controller'
 
 const WMO_FROM_WTTR: Record<string, number> = {
   '113': 0,

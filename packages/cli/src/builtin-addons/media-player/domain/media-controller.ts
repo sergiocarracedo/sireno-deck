@@ -1,11 +1,11 @@
-import type { HostContext } from '../../../system/host-context.js'
+import type { HostContext } from '@/system/host-context'
 
 import {
   createLinuxMediaController,
   type LinuxMediaControllerClient,
-} from './linux-media-controller.js'
-import { createMacosMediaController } from './macos-media-controller.js'
-import { createWindowsMediaController } from './windows-media-controller.js'
+} from './linux-media-controller'
+import { createMacosMediaController } from './macos-media-controller'
+import { createWindowsMediaController } from './windows-media-controller'
 
 export type MediaPlaybackStatus = 'pause' | 'play' | 'stop'
 

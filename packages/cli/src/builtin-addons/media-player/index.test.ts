@@ -10,9 +10,9 @@ const {
   togglePlayPauseMock: vi.fn(),
 }))
 
-vi.mock('./domain/media-controller.js', async () => {
-  const actual = await vi.importActual<typeof import('./domain/media-controller.js')>(
-    './domain/media-controller.js',
+vi.mock('./domain/media-controller', async () => {
+  const actual = await vi.importActual<typeof import('./domain/media-controller')>(
+    './domain/media-controller',
   )
 
   return {
@@ -21,10 +21,10 @@ vi.mock('./domain/media-controller.js', async () => {
   }
 })
 
-import { createBundledAddonRegistry } from '../../config/loader.js'
-import { validateConfig } from '../../core/schemas.js'
-import { renderReactNodeToHtml } from '../../render/dom-host.js'
-import mediaPlayerAddon from './index.js'
+import { createBundledAddonRegistry } from '@/config/loader'
+import { validateConfig } from '@/core/schemas'
+import { renderReactNodeToHtml } from '@/render/dom-host'
+import mediaPlayerAddon from './index'
 
 const mountedButtonMethods = {
   getActiveDeckId: () => 'main',

@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import type { ReactElement } from 'react'
 
-import { ButtonSurface } from '../addon/api.js'
-import { Icon, Text } from '../ui/index.js'
+import { ButtonSurface } from '@/addon/api'
+import { Icon, Text } from '@/ui/index'
 
 const LOGO_DATA_URL = `data:image/png;base64,${readFileSync(
   fileURLToPath(new URL('../assets/logo72x72.png', import.meta.url)),

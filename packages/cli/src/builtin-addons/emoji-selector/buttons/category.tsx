@@ -1,6 +1,6 @@
-import { defineMountedButton } from '../../../addon/api.js'
+import { defineMountedButton } from '@/addon/api'
 
-import { createButtonNode, EmojiCategoryButtonSchema } from '../support.js'
+import { createButtonNode, EmojiCategoryButtonSchema } from '../support'
 
 const emojiCategoryButton = defineMountedButton({
   configSchema: EmojiCategoryButtonSchema,

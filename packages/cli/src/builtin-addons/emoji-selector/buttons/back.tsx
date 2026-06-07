@@ -1,6 +1,6 @@
-import { defineMountedButton } from '../../../addon/api.js'
+import { defineMountedButton } from '@/addon/api'
 
-import { createButtonNode, EmojiBackButtonSchema } from '../support.js'
+import { createButtonNode, EmojiBackButtonSchema } from '../support'
 
 const emojiBackButton = defineMountedButton({
   configSchema: EmojiBackButtonSchema,

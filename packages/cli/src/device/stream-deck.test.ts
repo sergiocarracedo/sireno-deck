@@ -11,7 +11,7 @@ import {
   replayLastRenderedBuffers,
   type StreamDeckKeyEvent,
   writeKeyBuffer,
-} from "./stream-deck.js"
+} from "./stream-deck"
 
 class FakeStreamDeck extends EventEmitter {
   readonly CONTROLS

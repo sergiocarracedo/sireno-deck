@@ -1,4 +1,4 @@
-import { ConfigValidationError } from "../core/schemas.js"
+import { ConfigValidationError } from "@/core/schemas"
 
 const RED = "\x1b[31m"
 const YELLOW = "\x1b[33m"

@@ -4,10 +4,10 @@ import type {
   AddonButtonDefinition,
   AddonButtonEnvelope,
   AddonGeneratedDeck,
-} from '../addon/api.js'
-import { AddonRegistryError } from '../addon/registry.js'
+} from '@/addon/api'
+import { AddonRegistryError } from '@/addon/registry'
 
-import type { AddonRegistry } from '../addon/registry.js'
+import type { AddonRegistry } from '@/addon/registry'
 
 type ConfigPathSegment = string | number
 

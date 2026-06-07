@@ -1,10 +1,10 @@
-import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
-import { Text } from '../../../ui/index.js'
+import { ButtonSurface, defineMountedButton } from '@/addon/api'
+import { Text } from '@/ui/index'
 import {
   BuiltinDateButtonSchema,
   DATE_BUTTON_INTERVAL_MS,
   type BuiltinDateButtonConfig,
-} from '../schemas.js'
+} from '../schemas'
 
 function formatDateParts(
   config: BuiltinDateButtonConfig,

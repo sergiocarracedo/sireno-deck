@@ -1,6 +1,6 @@
 import { execa } from "execa"
 
-import type { HostContext } from "../system/host-context.js"
+import type { HostContext } from "@/system/host-context"
 
 export interface CommandExecutionOptions {
   command: string

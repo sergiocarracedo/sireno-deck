@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { AddonButtonActionConfigSchema } from '../../addon/api.js'
+import { AddonButtonActionConfigSchema } from '@/addon/api'
 
 export const DIGITAL_DATE_TIME_INTERVAL_MS = 1000
 export const ANALOG_CLOCK_INTERVAL_MS = 1000

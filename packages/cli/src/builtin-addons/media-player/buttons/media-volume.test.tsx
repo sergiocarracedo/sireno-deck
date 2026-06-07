@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { renderReactNodeToHtml } from '../../../render/dom-host.js'
-import { builtinMediaMuteButton } from './media-mute.js'
-import { builtinMediaVolumeButton } from './media-volume.js'
+import { renderReactNodeToHtml } from '@/render/dom-host'
+import { builtinMediaMuteButton } from './media-mute'
+import { builtinMediaVolumeButton } from './media-volume'
 
 type AnyButton = typeof builtinMediaMuteButton | typeof builtinMediaVolumeButton
 

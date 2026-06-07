@@ -9,6 +9,9 @@
     "moduleResolution": "bundler",
     "baseUrl": "/works/opensource/sireno-deck/packages/cli/fixtures/phase-23/local-raw-addon",
     "paths": {
+      "@/*": [
+        "/works/opensource/sireno-deck/packages/cli/src/*"
+      ],
       "sireno-deck-cli": [
         "/works/opensource/sireno-deck/packages/cli/src/index.ts"
       ]

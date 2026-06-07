@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactElement, ReactNode } from 'react'
 
-import { cn } from '../themes/utils/cn.js'
-import { Text } from './Text.js'
+import { cn } from '@/themes/utils/cn'
+import { Text } from './Text'
 
 export interface LabelValueListLine {
   color?: string

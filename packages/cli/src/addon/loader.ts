@@ -4,11 +4,11 @@ import { dirname, extname, isAbsolute, join, relative, resolve, sep } from "node
 import { fileURLToPath, pathToFileURL } from "node:url"
 import { tsImport } from "tsx/esm/api"
 
-import { AddonManifestError, validateAddonApiVersion, validateAddonManifest, type AddonManifest } from "./manifest.js"
+import { AddonManifestError, validateAddonApiVersion, validateAddonManifest, type AddonManifest } from "./manifest"
 
-import type { AddonRegistry } from "./registry.js"
-import type { AddonSchema } from "../core/schemas.js"
-import type { SirenoAddon } from "./api.js"
+import type { AddonRegistry } from "./registry"
+import type { AddonSchema } from "@/core/schemas"
+import type { SirenoAddon } from "./api"
 
 const require = createRequire(import.meta.url)
 const RAW_SOURCE_EXTENSIONS = new Set([".js", ".jsx", ".ts", ".tsx"])
@@ -16,6 +16,7 @@ const TRANSPILED_SOURCE_EXTENSIONS = new Set([".jsx", ".ts", ".tsx"])
 const MODULE_DIRECTORY = dirname(fileURLToPath(import.meta.url))
 const PACKAGE_TSCONFIG_PATH = resolve(MODULE_DIRECTORY, "../../tsconfig.json")
 const PACKAGE_SOURCE_ENTRY_PATH = resolve(MODULE_DIRECTORY, "../index.ts")
+const PACKAGE_SOURCE_ROOT = dirname(PACKAGE_SOURCE_ENTRY_PATH)
 const RAW_SOURCE_IMPORT_PATTERN = /(?:import|export)\s+(?:[^"'`]+?\s+from\s+)?["'`]([^"'`]+)["'`]|import\(\s*["'`]([^"'`]+)["'`]\s*\)/g
 
 export interface LoadedAddon {
@@ -210,6 +211,7 @@ async function importRawSourceAddon(rootDir: string, entryPath: string, manifest
               moduleResolution: "bundler",
               baseUrl: rootDir,
               paths: {
+                "@/*": [PACKAGE_SOURCE_ROOT + "/*"],
                 "sireno-deck-cli": [PACKAGE_SOURCE_ENTRY_PATH],
               },
               strict: true,

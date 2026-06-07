@@ -5,8 +5,8 @@ import {
   type ReactNode,
 } from 'react'
 
-import { cn } from '../themes/utils/cn.js'
-import { useThemeUiPresentation } from './theme-presentation.js'
+import { cn } from '@/themes/utils/cn'
+import { useThemeUiPresentation } from './theme-presentation'
 
 const ALIGN_CLASS = {
   center: 'text-center',

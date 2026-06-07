@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
-import { AddonButtonActionConfigSchema } from '../../addon/api.js'
-import { SYSTEM_METRIC_IDS } from './domain/live-metrics.js'
+import { AddonButtonActionConfigSchema } from '@/addon/api'
+import { SYSTEM_METRIC_IDS } from './domain/live-metrics'
 
 const SystemMetricIdSchema = z.enum(SYSTEM_METRIC_IDS)
 const SystemStatusFormatterSchema = z.enum([

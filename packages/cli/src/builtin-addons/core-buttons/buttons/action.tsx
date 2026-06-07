@@ -4,8 +4,8 @@ import {
   AddonButtonActionConfigSchema,
   defineMountedButton,
   useButtonActionCommand,
-} from '../../../addon/api.js'
-import { Icon, Text } from '../../../ui/index.js'
+} from '@/addon/api'
+import { Icon, Text } from '@/ui/index'
 
 const BuiltinActionButtonSchema = z
   .object({

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { renderReactNodeToHtml } from '../../../render/dom-host.js'
-import { builtinWeatherButton } from './weather.js'
-import type { WeatherSnapshot } from '../domain/weather-controller.js'
+import { renderReactNodeToHtml } from '@/render/dom-host'
+import { builtinWeatherButton } from './weather'
+import type { WeatherSnapshot } from '../domain/weather-controller'
 
 function createHarness(button: typeof builtinWeatherButton, config: unknown, snapshot: unknown) {
   const buttonStore: {

@@ -11,7 +11,7 @@ import {
   readPid,
   removePidFile,
   writePid,
-} from "./daemon.js"
+} from "./daemon"
 
 describe("daemon utilities", () => {
   const originalXdgStateHome = process.env.XDG_STATE_HOME

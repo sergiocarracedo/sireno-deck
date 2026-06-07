@@ -4,36 +4,36 @@ import { z } from 'zod'
 import {
   executeCommand,
   type CommandExecutionResult,
-} from '../action/executor.js'
+} from '@/action/executor'
 import {
   ButtonSurface,
   DOUBLE_TAP_DELAY_MS,
   getAddonButtonOwnerName,
   HOLD_ACTION_DELAY_MS,
-} from '../addon/api.js'
-import datetimeButtonsAddon from '../builtin-addons/date-time/index.js'
+} from '@/addon/api'
+import datetimeButtonsAddon from '@/builtin-addons/date-time/index'
 import {
   createMountedDomHost,
   renderMountedHostedButtons,
   type HostedButton,
   type MountedDomHost,
-} from '../render/dom-host.js'
+} from '@/render/dom-host'
 import {
   createPollingScheduler,
   type PollingScheduler,
-} from '../render/scheduler.js'
-import { Icon, Text } from '../ui/index.js'
+} from '@/render/scheduler'
+import { Icon, Text } from '@/ui/index'
 import {
   createRuntimeButtonErrorLogEntry,
   getRuntimeButtonErrorCode,
   type RuntimeButtonErrorKind,
-} from '../util/errors.js'
-import { createDeckController } from './controller.js'
-import { SystemBackButton } from './system-back-button.js'
+} from '@/util/errors'
+import { createDeckController } from './controller'
+import { SystemBackButton } from './system-back-button'
 import {
   getSystemBackButtonInstance,
   shouldInjectSystemBack,
-} from './system-back-injection.js'
+} from './system-back-injection'
 
 import type { ReactElement } from 'react'
 import type {
@@ -42,19 +42,19 @@ import type {
   AddonButtonStoreScope,
   MountedAddonButtonRenderProps,
   MountedAddonButtonStore,
-} from '../addon/api.js'
-import type { AddonRegistry } from '../addon/registry.js'
-import type { Theme, ThemeFrameState } from '../config/theme'
-import type { ButtonInstance, DeckConfig, SirenoConfig } from '../core/schemas.js'
-import type { StreamDeckKeyEvent } from '../device/stream-deck.js'
+} from '@/addon/api'
+import type { AddonRegistry } from '@/addon/registry'
+import type { Theme, ThemeFrameState } from '@/config/theme'
+import type { ButtonInstance, DeckConfig, SirenoConfig } from '@/core/schemas'
+import type { StreamDeckKeyEvent } from '@/device/stream-deck'
 import {
   UNKNOWN_HOST_CONTEXT,
   type HostContext,
-} from '../system/host-context.js'
+} from '@/system/host-context'
 import type {
   SessionMonitor,
   SessionSnapshot,
-} from '../system/session-monitor.js'
+} from '@/system/session-monitor'
 
 interface RuntimeStoreScope {
   clear: () => void

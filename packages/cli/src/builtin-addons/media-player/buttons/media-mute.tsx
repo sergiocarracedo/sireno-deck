@@ -1,11 +1,11 @@
-import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
-import { Icon, Text } from '../../../ui/index.js'
+import { ButtonSurface, defineMountedButton } from '@/addon/api'
+import { Icon, Text } from '@/ui/index'
 import {
   createMediaVolumeController,
   createUnavailableMediaVolumeSnapshot,
   type MediaVolumeSnapshot,
-} from '../domain/media-volume-controller.js'
-import { MediaMuteButtonSchema } from '../schemas.js'
+} from '../domain/media-volume-controller'
+import { MediaMuteButtonSchema } from '../schemas'
 
 function renderMuteSurface(snap: MediaVolumeSnapshot) {
   return (

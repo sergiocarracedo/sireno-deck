@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest"
 
-import type { DeckConfig, SirenoConfig } from "../core/schemas.js"
+import type { DeckConfig, SirenoConfig } from "@/core/schemas"
 import {
   shouldInjectSystemBack,
   SYSTEM_BACK_TYPE,
-} from "./system-back-injection.js"
+} from "./system-back-injection"
 
 function makeDeck(overrides: Partial<DeckConfig> = {}): DeckConfig {
   return {

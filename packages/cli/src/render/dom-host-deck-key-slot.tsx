@@ -1,11 +1,11 @@
 import type { ReactElement } from 'react'
 
 import type { Theme } from '@/config/theme'
-import { cn } from '../themes/utils/cn'
+import { cn } from '@/themes/utils/cn'
 
-import { HostedButtonContent } from './dom-host-hosted-button-content.js'
-import type { HostedButton } from './dom-host.js'
-import type { RenderPreset } from './render-preset.js'
+import { HostedButtonContent } from './dom-host-hosted-button-content'
+import type { HostedButton } from './dom-host'
+import type { RenderPreset } from './render-preset'
 
 export interface DeckKeySlotProps {
   button?: HostedButton

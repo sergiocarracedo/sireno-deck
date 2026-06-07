@@ -4,8 +4,8 @@ import type {
   AddonButtonDefinition,
   AddonDeckDefinition,
   SirenoAddon,
-} from "./api.js"
-import { setAddonButtonOwnerName } from "./api.js"
+} from "./api"
+import { setAddonButtonOwnerName } from "./api"
 
 const ADDON_ASSET_PREFIXES = ["addon://", "builtin://"] as const
 

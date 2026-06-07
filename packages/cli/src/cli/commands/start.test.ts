@@ -5,8 +5,8 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { createAddonRegistry } from '../../addon/registry.js'
-import { Icon } from '../../ui/index.js'
+import { createAddonRegistry } from '@/addon/registry'
+import { Icon } from '@/ui/index'
 
 const blankRemainingKeys = vi.fn()
 const createBrowserRenderer = vi.fn()
@@ -40,14 +40,14 @@ vi.mock('node:fs', async (importOriginal) => {
   }
 })
 
-vi.mock('../../config/loader.js', () => ({
+vi.mock('@/config/loader', () => ({
   createBundledAddonRegistry,
   loadBootstrapConfig,
   loadConfigWithSources,
 }))
 
-vi.mock('../../config/theme', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../../config/theme')>()
+vi.mock('@/config/theme', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/config/theme')>()
 
   return {
     ...actual,
@@ -55,11 +55,11 @@ vi.mock('../../config/theme', async (importOriginal) => {
   }
 })
 
-vi.mock('../../addon/loader.js', () => ({
+vi.mock('@/addon/loader', () => ({
   loadConfiguredAddons,
 }))
 
-vi.mock('../../device/stream-deck.js', () => ({
+vi.mock('@/device/stream-deck', () => ({
   blankRemainingKeys,
   createStreamDeckLifecycle,
   createVirtualStreamDeckLifecycle,
@@ -68,9 +68,9 @@ vi.mock('../../device/stream-deck.js', () => ({
   writeKeyBuffer,
 }))
 
-vi.mock('../../render/browser-renderer.js', async (importOriginal) => {
+vi.mock('@/render/browser-renderer', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('../../render/browser-renderer.js')>()
+    await importOriginal<typeof import('@/render/browser-renderer')>()
 
   return {
     ...actual,
@@ -78,19 +78,19 @@ vi.mock('../../render/browser-renderer.js', async (importOriginal) => {
   }
 })
 
-vi.mock('../../system/host-context.js', () => ({
+vi.mock('@/system/host-context', () => ({
   resolveHostContext,
 }))
 
-vi.mock('../../system/session-monitor.js', () => ({
+vi.mock('@/system/session-monitor', () => ({
   createSessionMonitor,
 }))
 
-vi.mock('../../render/startup-placeholder.js', () => ({
+vi.mock('@/render/startup-placeholder', () => ({
   createStartupPlaceholderBuffers,
 }))
 
-vi.mock('../../util/daemon.js', () => ({
+vi.mock('@/util/daemon', () => ({
   isRunning,
   readPid,
   removePidFile,
@@ -187,7 +187,7 @@ describe('loadRuntimeConfig', () => {
       filePaths: ['/tmp/project/themes/default/index.ts'],
     })
 
-    const { loadRuntimeConfig } = await import('./start.js')
+    const { loadRuntimeConfig } = await import('./start')
     const logger = { warn: vi.fn() } as const
 
     await loadRuntimeConfig({
@@ -262,7 +262,7 @@ describe('loadRuntimeConfig', () => {
       ],
     })
 
-    const { loadRuntimeConfig } = await import('./start.js')
+    const { loadRuntimeConfig } = await import('./start')
     const logger = { warn: vi.fn() } as const
 
     const result = await loadRuntimeConfig({
@@ -338,7 +338,7 @@ describe('loadRuntimeConfig', () => {
       ],
     })
 
-    const { loadRuntimeConfig } = await import('./start.js')
+    const { loadRuntimeConfig } = await import('./start')
 
     const result = await loadRuntimeConfig({
       config: '/tmp/project/config.yml',
@@ -379,7 +379,7 @@ describe('loadRuntimeConfig', () => {
       filePaths: ['/tmp/project/themes/default/index.ts'],
     })
 
-    const { loadRuntimeConfig } = await import('./start.js')
+    const { loadRuntimeConfig } = await import('./start')
     const logger = { warn: vi.fn() } as const
 
     const result = await loadRuntimeConfig({
@@ -417,7 +417,7 @@ describe('loadRuntimeConfig', () => {
     })
     resolveTheme.mockRejectedValue(new Error('broken theme runtime'))
 
-    const { loadRuntimeConfig } = await import('./start.js')
+    const { loadRuntimeConfig } = await import('./start')
 
     await expect(
       loadRuntimeConfig({
@@ -430,8 +430,8 @@ describe('loadRuntimeConfig', () => {
   it('loads a local raw .tsx addon fixture through the normal startup config path', async () => {
     const registry = createAddonRegistry()
     const actualLoader = await vi.importActual<
-      typeof import('../../addon/loader.js')
-    >('../../addon/loader.js')
+      typeof import('@/addon/loader')
+    >('@/addon/loader')
 
     createSessionMonitor.mockResolvedValue(supportedSessionMonitor)
     resolveHostContext.mockResolvedValue({
@@ -465,7 +465,7 @@ describe('loadRuntimeConfig', () => {
       filePaths: ['/tmp/project/themes/default/index.ts'],
     })
 
-    const { loadRuntimeConfig } = await import('./start.js')
+    const { loadRuntimeConfig } = await import('./start')
 
     const result = await loadRuntimeConfig({
       config: '/tmp/project/config.yml',
@@ -491,11 +491,11 @@ describe('loadRuntimeConfig', () => {
 
   it("loads the shipped Phase 23 sample config with the fixture's real registered button type", async () => {
     const actualLoader = await vi.importActual<
-      typeof import('../../addon/loader.js')
-    >('../../addon/loader.js')
+      typeof import('@/addon/loader')
+    >('@/addon/loader')
     const actualConfigLoader = await vi.importActual<
-      typeof import('../../config/loader.js')
-    >('../../config/loader.js')
+      typeof import('@/config/loader')
+    >('@/config/loader')
     const registry = await actualConfigLoader.createBundledAddonRegistry()
 
     createSessionMonitor.mockResolvedValue(supportedSessionMonitor)
@@ -522,7 +522,7 @@ describe('loadRuntimeConfig', () => {
       filePaths: ['/tmp/project/themes/default/index.ts'],
     })
 
-    const { loadRuntimeConfig } = await import('./start.js')
+    const { loadRuntimeConfig } = await import('./start')
 
     const result = await loadRuntimeConfig({
       config: phase23FixtureConfigPath,
@@ -544,12 +544,12 @@ describe('loadRuntimeConfig', () => {
 
   it('renders the shipped Phase 23 sample config through the runtime without ambient React JSX failures', async () => {
     const actualLoader = await vi.importActual<
-      typeof import('../../addon/loader.js')
-    >('../../addon/loader.js')
+      typeof import('@/addon/loader')
+    >('@/addon/loader')
     const actualConfigLoader = await vi.importActual<
-      typeof import('../../config/loader.js')
-    >('../../config/loader.js')
-    const { createDeckRuntime } = await import('../../deck/runtime.js')
+      typeof import('@/config/loader')
+    >('@/config/loader')
+    const { createDeckRuntime } = await import('@/deck/runtime')
     const registry = await actualConfigLoader.createBundledAddonRegistry()
 
     createSessionMonitor.mockResolvedValue(supportedSessionMonitor)
@@ -587,7 +587,7 @@ describe('loadRuntimeConfig', () => {
       success: '#34d399',
     })
 
-    const { loadRuntimeConfig } = await import('./start.js')
+    const { loadRuntimeConfig } = await import('./start')
     const runtimeConfig = await loadRuntimeConfig({
       config: phase23FixtureConfigPath,
       logger: { warn: vi.fn() } as never,
@@ -705,7 +705,7 @@ describe('loadRuntimeConfig', () => {
 
   it('documents the workspace-root cli:dev script as the full-process raw-source restart seam', async () => {
     const { readFileSync } = await import('node:fs')
-    const { resolveDevWatchArgs } = await import('../dev-watch.js')
+    const { resolveDevWatchArgs } = await import('../dev-watch')
     const rootPackageJson = JSON.parse(
       readFileSync(resolve(workspaceRoot, 'package.json'), 'utf8'),
     ) as {
@@ -814,7 +814,7 @@ describe('watchConfigFiles', () => {
       },
     )
 
-    const { watchConfigFiles } = await import('./start.js')
+    const { watchConfigFiles } = await import('./start')
     const onChange = vi.fn()
     const stopWatching = watchConfigFiles(
       [
@@ -855,7 +855,7 @@ describe('restoreReloadNavigation', () => {
     })
     const runtime = { restoreStack } as never
 
-    const { restoreReloadNavigation } = await import('./start.js')
+    const { restoreReloadNavigation } = await import('./start')
 
     await restoreReloadNavigation(
       runtime,
@@ -874,8 +874,8 @@ describe('restoreReloadNavigation', () => {
 
 describe('createTemporaryConfigErrorLines', () => {
   it('formats a compact runtime-owned error summary from config validation failures', async () => {
-    const { ConfigValidationError } = await import('../../core/schemas.js')
-    const { createTemporaryConfigErrorLines } = await import('./start.js')
+    const { ConfigValidationError } = await import('@/core/schemas')
+    const { createTemporaryConfigErrorLines } = await import('./start')
 
     const lines = createTemporaryConfigErrorLines(
       new ConfigValidationError(
@@ -896,7 +896,7 @@ describe('createTemporaryConfigErrorLines', () => {
 
 describe('isDomRenderButton', () => {
   it('detects runtime render outputs that carry DOM content', async () => {
-    const { isDomRenderButton } = await import('./start.js')
+    const { isDomRenderButton } = await import('./start')
 
     expect(
       isDomRenderButton({ content: { type: 'div' }, keyIndex: 0 } as never),
@@ -913,7 +913,7 @@ describe('ensureBrowserRenderer', () => {
     const close = vi.fn(async () => {})
     createBrowserRenderer.mockReturnValue({ close, setFrameHandler: vi.fn(), start })
 
-    const { ensureBrowserRenderer } = await import('./start.js')
+    const { ensureBrowserRenderer } = await import('./start')
 
     await expect(ensureBrowserRenderer(null, 15)).rejects.toThrow(
       'missing chromium',
@@ -939,7 +939,7 @@ describe('renderRuntimeDeckSurface', () => {
     }
     const connection = { info: { keyCount: 3 } }
     const logger = { info: vi.fn() } as const
-    const { renderRuntimeDeckSurface } = await import('./start.js')
+    const { renderRuntimeDeckSurface } = await import('./start')
 
     await expect(
       renderRuntimeDeckSurface(
@@ -973,7 +973,7 @@ describe('renderRuntimeDeckSurface', () => {
     }
     const connection = { info: { keyCount: 1 } }
     const logger = { info: vi.fn() } as const
-    const { renderRuntimeDeckSurface } = await import('./start.js')
+    const { renderRuntimeDeckSurface } = await import('./start')
 
     await renderRuntimeDeckSurface(
       connection as never,
@@ -1069,7 +1069,7 @@ describe('startDaemon', () => {
       success: '#34d399',
     })
 
-    const { startDaemon } = await import('./start.js')
+    const { startDaemon } = await import('./start')
     const logger = { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as const
 
     await expect(startDaemon({ logger: logger as never })).rejects.toThrow(
@@ -1142,7 +1142,7 @@ describe('startDaemon', () => {
       }),
     })
 
-    const { startDaemon } = await import('./start.js')
+    const { startDaemon } = await import('./start')
     const logger = { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as const
 
     await expect(startDaemon({ logger: logger as never })).rejects.toThrow(
@@ -1249,7 +1249,7 @@ describe('startDaemon', () => {
       throw stopAfterFirstRender
     })
 
-    const { startDaemon } = await import('./start.js')
+    const { startDaemon } = await import('./start')
 
     await expect(
       startDaemon({
@@ -1359,7 +1359,7 @@ describe('startDaemon', () => {
       throw stopAfterSteadyFrame
     })
 
-    const { startDaemon } = await import('./start.js')
+    const { startDaemon } = await import('./start')
 
     await expect(
       startDaemon({
@@ -1474,7 +1474,7 @@ describe('startDaemon', () => {
       success: '#34d399',
     })
 
-    const { startDaemon } = await import('./start.js')
+    const { startDaemon } = await import('./start')
 
     await expect(
       startDaemon({
@@ -1572,7 +1572,7 @@ describe('startDaemon', () => {
     })
     writePid.mockImplementation(() => { throw stopAfterFirstFrame })
 
-    const { startDaemon } = await import('./start.js')
+    const { startDaemon } = await import('./start')
 
     await expect(startDaemon({ logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as never })).rejects.toThrow(stopAfterFirstFrame.message)
 
@@ -1671,7 +1671,7 @@ describe('startDaemon', () => {
     })
     writePid.mockImplementation(() => { throw stopAfterFirstFrame })
 
-    const { startDaemon } = await import('./start.js')
+    const { startDaemon } = await import('./start')
 
     await expect(startDaemon({ logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as never })).rejects.toThrow(stopAfterFirstFrame.message)
 
@@ -1780,7 +1780,7 @@ describe('startEmulatorSession', () => {
       success: '#34d399',
     })
 
-    const { startEmulatorSession } = await import('./start.js')
+    const { startEmulatorSession } = await import('./start')
     const session = await startEmulatorSession({
       logger: { info: vi.fn(), warn: vi.fn() } as never,
       port: 0,

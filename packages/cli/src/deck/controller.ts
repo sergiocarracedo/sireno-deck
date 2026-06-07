@@ -1,4 +1,4 @@
-import type { DeckConfig } from "../core/schemas.js"
+import type { DeckConfig } from "@/core/schemas"
 
 export interface DeckControllerOptions {
   decks: Record<string, DeckConfig>

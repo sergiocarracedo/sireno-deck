@@ -1,11 +1,11 @@
-import { ButtonSurface, defineMountedButton } from '../../../addon/api.js'
-import { Bars, Icon, Text } from '../../../ui/index.js'
+import { ButtonSurface, defineMountedButton } from '@/addon/api'
+import { Bars, Icon, Text } from '@/ui/index'
 import {
   createMediaVolumeController,
   createUnavailableMediaVolumeSnapshot,
   type MediaVolumeSnapshot,
-} from '../domain/media-volume-controller.js'
-import { MediaVolumeButtonSchema } from '../schemas.js'
+} from '../domain/media-volume-controller'
+import { MediaVolumeButtonSchema } from '../schemas'
 
 const STEP = 5
 

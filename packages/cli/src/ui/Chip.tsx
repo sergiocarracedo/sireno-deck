@@ -1,7 +1,7 @@
 import { createElement, type CSSProperties, type ReactElement, type ReactNode } from 'react'
 
-import { cn } from '../themes/utils/cn.js'
-import { useThemeUiPresentation } from './theme-presentation.js'
+import { cn } from '@/themes/utils/cn'
+import { useThemeUiPresentation } from './theme-presentation'
 
 const TONE_CLASS = {
   accent: 'border-accent text-accent',

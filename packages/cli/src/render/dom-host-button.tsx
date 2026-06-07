@@ -1,13 +1,13 @@
 import { createElement, type ReactElement } from 'react'
 
-import { ButtonSurface } from '../addon/api.js'
-import { buttonFrame as defaultButtonFrame } from '../themes/default/index.js'
+import { ButtonSurface } from '@/addon/api'
+import { buttonFrame as defaultButtonFrame } from '@/themes/default/index'
 import {
   DomThemeUiPresentationProvider,
   MountedThemeUiPresentationProvider,
-} from '../ui/theme-presentation.js'
+} from '@/ui/theme-presentation'
 
-import type { HostedButton } from './dom-host.js'
+import type { HostedButton } from './dom-host'
 
 function createHostedButtonElementWithProvider(
   button: HostedButton,

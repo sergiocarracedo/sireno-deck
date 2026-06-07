@@ -4,20 +4,20 @@ import { fileURLToPath } from "node:url"
 
 import { createElement, useState } from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { ButtonSurface, defineMountedButton, setAddonButtonOwnerName } from "../addon/api.js"
-import { loadConfiguredAddons } from "../addon/loader.js"
+import { ButtonSurface, defineMountedButton, setAddonButtonOwnerName } from "@/addon/api"
+import { loadConfiguredAddons } from "@/addon/loader"
 
-import { createBundledAddonRegistry, loadConfig } from "../config/loader.js"
-import { createAddonRegistry } from "../addon/registry.js"
-import { validateConfig } from "../core/schemas.js"
-import { renderReactNodeToHtml } from "../render/dom-host.js"
-import { Text } from "../ui/index.js"
-import { createDeckRuntime } from "./runtime.js"
+import { createBundledAddonRegistry, loadConfig } from "@/config/loader"
+import { createAddonRegistry } from "@/addon/registry"
+import { validateConfig } from "@/core/schemas"
+import { renderReactNodeToHtml } from "@/render/dom-host"
+import { Text } from "@/ui/index"
+import { createDeckRuntime } from "./runtime"
 
-import type { StreamDeckKeyEvent } from "../device/stream-deck.js"
-import type { AddonRegistry } from "../addon/registry.js"
-import type { PollingScheduler } from "../render/scheduler.js"
-import type { SessionMonitor, SessionSnapshot } from "../system/session-monitor.js"
+import type { StreamDeckKeyEvent } from "@/device/stream-deck"
+import type { AddonRegistry } from "@/addon/registry"
+import type { PollingScheduler } from "@/render/scheduler"
+import type { SessionMonitor, SessionSnapshot } from "@/system/session-monitor"
 
 const FIXTURES_DIRECTORY = fileURLToPath(new URL("../../fixtures", import.meta.url))
 

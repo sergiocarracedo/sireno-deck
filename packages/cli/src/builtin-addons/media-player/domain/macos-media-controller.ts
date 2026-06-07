@@ -1,7 +1,7 @@
 import {
   createUnavailableMediaSnapshot,
   type MediaController,
-} from './media-controller.js'
+} from './media-controller'
 
 export function createMacosMediaController(): MediaController {
   return {

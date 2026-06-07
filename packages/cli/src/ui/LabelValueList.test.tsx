@@ -1,9 +1,9 @@
 import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 
-import { renderReactNodeToHtml } from '../render/dom-host.js'
-import { Icon } from './Icon.js'
-import { LabelValueList } from './LabelValueList.js'
+import { renderReactNodeToHtml } from '@/render/dom-host'
+import { Icon } from './Icon'
+import { LabelValueList } from './LabelValueList'
 
 describe('LabelValueList', () => {
   it('auto-selects the single-line layout', () => {

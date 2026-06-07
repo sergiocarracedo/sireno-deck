@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { UNKNOWN_HOST_CONTEXT } from '../../system/host-context.js'
-import { renderReactNodeToHtml } from '../../render/dom-host.js'
+import { UNKNOWN_HOST_CONTEXT } from '@/system/host-context'
+import { renderReactNodeToHtml } from '@/render/dom-host'
 import dateTimeAddon, {
   ANALOG_CLOCK_INTERVAL_MS,
   DATE_BUTTON_INTERVAL_MS,
@@ -9,7 +9,7 @@ import dateTimeAddon, {
   formatDigitalDateTimeLabel,
   formatLockedTimeCharacters,
   formatLockedTimeTileCharacter,
-} from './index.js'
+} from './index'
 
 function createStoreScope(initialSnapshot?: unknown) {
   let snapshot = initialSnapshot

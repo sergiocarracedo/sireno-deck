@@ -1,8 +1,8 @@
-import { SIRENO_ADDON_API_VERSION, type SirenoAddon } from '../../addon/api.js'
+import { SIRENO_ADDON_API_VERSION, type SirenoAddon } from '@/addon/api'
 
-import { builtinMediaMuteButton } from './buttons/media-mute.js'
-import { builtinMediaVolumeButton } from './buttons/media-volume.js'
-import { createMediaPlayerButton } from './media-player-button.js'
+import { builtinMediaMuteButton } from './buttons/media-mute'
+import { builtinMediaVolumeButton } from './buttons/media-volume'
+import { createMediaPlayerButton } from './media-player-button'
 
 const mediaPlayerAddon: SirenoAddon = {
   apiVersion: SIRENO_ADDON_API_VERSION,

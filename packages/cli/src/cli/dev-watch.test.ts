@@ -8,11 +8,11 @@ import {
   resolveDevWatchArgs,
   resolveDevWatchConfigPath,
   prepareDevWatchRuntime,
-} from './dev-watch.js'
+} from './dev-watch'
 import {
   resolveTailwindBrowserContract,
   serializeTailwindBrowserContract,
-} from './build-tailwind-browser.js'
+} from './build-tailwind-browser'
 
 const tempDirs: string[] = []
 const phase23FixtureRoot = resolve(

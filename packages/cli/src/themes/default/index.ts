@@ -3,7 +3,7 @@ import {
   ThemeChip,
   ThemeIcon,
   ThemeText,
-} from './ButtonFrame.js'
+} from './ButtonFrame'
 
 export const buttonFrame = ButtonFrame
 export const ui = {

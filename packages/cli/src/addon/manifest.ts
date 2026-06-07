@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { SIRENO_ADDON_API_VERSION } from "./api.js"
+import { SIRENO_ADDON_API_VERSION } from "./api"
 
 const TailwindManifestSchema = z.object({
   safelist: z.array(z.string().min(1)).default([]),

@@ -2,7 +2,7 @@ import type {
   ButtonInstance,
   DeckConfig,
   SirenoConfig,
-} from "../core/schemas.js"
+} from "@/core/schemas"
 
 export const SYSTEM_BACK_TYPE = "system-back" as const
 

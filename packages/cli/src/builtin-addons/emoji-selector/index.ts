@@ -1,10 +1,10 @@
 import { z } from 'zod'
 
-import type { SirenoAddon } from '../../addon/api.js'
-import { emojiBackButton } from './buttons/back.js'
-import { emojiCategoryButton } from './buttons/category.js'
-import { emojiEntryButton } from './buttons/entry.js'
-import { emojiLauncherButton } from './buttons/launcher.js'
+import type { SirenoAddon } from '@/addon/api'
+import { emojiBackButton } from './buttons/back'
+import { emojiCategoryButton } from './buttons/category'
+import { emojiEntryButton } from './buttons/entry'
+import { emojiLauncherButton } from './buttons/launcher'
 import {
   assets,
   CATEGORY_DEFINITIONS,
@@ -12,7 +12,7 @@ import {
   EmojiSelectorDeckSchema,
   generatePageLabel,
   paginateEmojis,
-} from './support.js'
+} from './support'
 
 const EMOJI_KEY_COUNT = 15
 const FAVORITES_ICON = 'addon://emoji-selector/favorites.svg'

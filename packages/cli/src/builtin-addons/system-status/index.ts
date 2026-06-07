@@ -1,6 +1,6 @@
-import type { SirenoAddon } from '../../addon/api.js'
-import { builtinSystemStatusBarsButton } from './buttons/bars.js'
-import { builtinSystemStatusLabelValuesButton } from './buttons/label-values.js'
+import type { SirenoAddon } from '@/addon/api'
+import { builtinSystemStatusBarsButton } from './buttons/bars'
+import { builtinSystemStatusLabelValuesButton } from './buttons/label-values'
 
 const systemStatusAddon: SirenoAddon = {
   apiVersion: 1,

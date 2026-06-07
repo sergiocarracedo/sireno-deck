@@ -4,7 +4,7 @@ import {
   createUnavailableMediaVolumeSnapshot,
   type MediaVolumeController,
   type MediaVolumeSnapshot,
-} from './media-volume-controller.js'
+} from './media-volume-controller'
 
 const SINK = '@DEFAULT_SINK@'
 

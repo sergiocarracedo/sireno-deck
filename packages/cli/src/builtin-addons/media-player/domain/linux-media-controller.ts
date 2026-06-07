@@ -5,7 +5,7 @@ import {
   type MediaController,
   type MediaControllerSnapshot,
   type MediaPlaybackStatus,
-} from './media-controller.js'
+} from './media-controller'
 
 interface LinuxMediaCommandResult {
   exitCode: number | null

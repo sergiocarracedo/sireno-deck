@@ -6,10 +6,10 @@ import { fileURLToPath } from "node:url"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
-import { ConfigValidationError } from "../core/schemas.js"
-import { createAddonRegistry } from "../addon/registry.js"
+import { ConfigValidationError } from "@/core/schemas"
+import { createAddonRegistry } from "@/addon/registry"
 
-const loadConfigModule = async () => import("./loader.js")
+const loadConfigModule = async () => import("./loader")
 const FIXTURES_DIRECTORY = fileURLToPath(new URL("../../fixtures", import.meta.url))
 
 describe("loadConfig", () => {
