@@ -1,0 +1,20 @@
+packages/cli/src/ui/Label.tsx
+  h_f90ee31b03fc41 21-24
+packages/cli/src/builtin-addons/emoji-selector/support.tsx
+  h_f90ee31b03fc41 5,225,231,248,255,312-313,319
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher.tsx
+  h_f90ee31b03fc41 20
+packages/cli/tailwind.browser.generated.css
+  ai_agent 258-263
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "921a86ec648b9c0e9ac6ae0bbc1aa08dc0cd11a8",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
