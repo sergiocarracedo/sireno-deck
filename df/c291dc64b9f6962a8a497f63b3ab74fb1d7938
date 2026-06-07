@@ -1,0 +1,24 @@
+.planning/phases/49-emoji-selector-ux-revamp/49-UAT.md
+  s_908d014142bc69::t_b2e94e0a1a045a 85-86,93-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "dfc291dc64b9f6962a8a497f63b3ab74fb1d7938",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_908d014142bc69": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15e0e3cfbffe6xh6RWjPEUvQJN",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
