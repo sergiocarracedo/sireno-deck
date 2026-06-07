@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url'
 
 import { z } from 'zod'
 
-import { Icon, Text } from '../../ui/index.js'
+import { Icon, Label, Text } from '../../ui/index.js'
 
 import categoriesData from './data/categories.json' with { type: 'json' }
 
@@ -221,25 +221,14 @@ function getEmojiFallbackLabel(emoji: string): string {
   return codePoints[0] ? `U+${codePoints[0]}` : 'EMOJI'
 }
 
-function renderEmojiText(
-  label: string,
-) {
-  return (
-    <Text
-      className="w-full leading-tight"
-      fit="wrap"
-      tone="foreground"
-      typography="main"
-    >
-      {label}
-    </Text>
-  )
+function renderEmojiText(label: string) {
+  return <Label>{label}</Label>
 }
 
 function createButtonNode(label: string, icon?: string) {
   return (
     <div className="flex flex-col items-center justify-center w-full gap-1.5">
-      {icon ? <Icon src={icon} /> : null}
+      {icon ? <Icon src={icon} size={30} /> : null}
       {renderEmojiText(label)}
     </div>
   )
@@ -256,14 +245,14 @@ export function renderEmojiGlyph(
     <Text
       className="w-full h-full flex items-center justify-center leading-none"
       fontStack={EMOJI_FONT_STACK}
-      size={options?.size ?? '5xl'}
+      size={options?.size ?? '2xl'}
     >
       {char}
     </Text>
   )
 }
 
-export const EMOJI_PAGE_SIZE = 12
+export const EMOJI_PAGE_SIZE = 13
 
 export interface EmojiPage {
   emojis: string[]
@@ -320,13 +309,13 @@ export {
   assets,
   CATEGORY_DEFINITIONS,
   createButtonNode,
+  EMOJI_ICON_ASSETS,
+  EMOJI_LAUNCHER_GRID,
   EmojiBackButtonSchema,
   EmojiCategoryButtonSchema,
-  EMOJI_ICON_ASSETS,
   EmojiEntryButtonSchema,
   EmojiLauncherButtonSchema,
-  EMOJI_LAUNCHER_GRID,
-  getEmojiFallbackLabel,
   EmojiSelectorDeckSchema,
+  getEmojiFallbackLabel,
   renderEmojiText,
 }

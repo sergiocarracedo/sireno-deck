@@ -18,7 +18,10 @@ export function Label(props: LabelProps): ReactElement {
     <Text
       data-sireno-ui-label="true"
       size="md"
-      className="uppercase tracking-wide"
+      className="uppercase leading-tight tracking-tight"
+      fit="ellipsis"
+      tone="foreground"
+      typography="main"
     >
       {props.children}
     </Text>

@@ -255,14 +255,17 @@
       max-width: 96rem;
     }
   }
+  .-mx-1 {
+    margin-inline: calc(var(--spacing) * -1);
+  }
+  .-my-1 {
+    margin-block: calc(var(--spacing) * -1);
+  }
   .-mt-1 {
     margin-top: calc(var(--spacing) * -1);
   }
   .mt-1 {
     margin-top: calc(var(--spacing) * 1);
-  }
-  .-ml-1 {
-    margin-left: calc(var(--spacing) * -1);
   }
   .block {
     display: block;

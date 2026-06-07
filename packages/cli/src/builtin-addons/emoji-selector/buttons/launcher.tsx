@@ -17,7 +17,7 @@ const emojiSelectorButton = defineMountedButton({
       >
         {EMOJI_LAUNCHER_GRID.map((char) => (
           <div
-            className="-mx-0.5 -my-0.5 flex items-center justify-center text-md"
+            className="-mx-1 -my-1 flex items-center justify-center text-md"
             data-sireno-launcher-cell="true"
             key={char}
             style={{ fontFamily: EMOJI_FONT_STACK }}
