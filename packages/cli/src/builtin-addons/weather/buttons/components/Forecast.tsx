@@ -24,7 +24,7 @@ export function Forecast({
   }
   return (
     <div className="flex h-full w-full items-stretch justify-between gap-0.5 px-1">
-      {entries.map((entry, index) => {
+      {entries.slice(0, 2).map((entry, index) => {
         const temp = convertTemperature(entry.temperature, units)
         return (
           <div
