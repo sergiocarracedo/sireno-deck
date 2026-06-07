@@ -1,8 +1,5 @@
+import clipboardy from 'clipboardy'
 import { execa } from 'execa'
-
-function shellQuote(value: string): string {
-  return `'${value.replaceAll("'", "'\"'\"'")}'`
-}
 
 function getPlatform(): 'darwin' | 'linux' | 'win32' {
   if (process.platform === 'darwin') return 'darwin'
@@ -10,27 +7,8 @@ function getPlatform(): 'darwin' | 'linux' | 'win32' {
   return 'linux'
 }
 
-function powershellQuote(value: string): string {
-  return `'${value.replaceAll("'", "''")}'`
-}
-
 async function writeClipboard(text: string): Promise<void> {
-  const platform = getPlatform()
-  if (platform === 'darwin') {
-    await execa('pbcopy', { input: text })
-  } else if (platform === 'win32') {
-    await execa(
-      'powershell',
-      [
-        '-NoProfile',
-        '-Command',
-        `Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(${powershellQuote(text)})`,
-      ],
-      { input: text },
-    )
-  } else {
-    await execa('xclip', ['-selection', 'clipboard'], { input: text })
-  }
+  await clipboardy.write(text)
 }
 
 async function simulatePaste(): Promise<void> {
@@ -80,5 +58,3 @@ export async function pasteText(text: string): Promise<void> {
 export async function checkPasteAvailable(): Promise<boolean> {
   return detectPasteTool()
 }
-
-export { shellQuote }

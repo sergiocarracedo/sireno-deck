@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url'
 
 import { z } from 'zod'
 
-import { Icon, Label, Text } from '../../ui/index.js'
+import { Icon, Label, Text } from '@/ui/index'
 
 import categoriesData from './data/categories.json' with { type: 'json' }
 
@@ -127,13 +127,6 @@ const EmojiEntryButtonSchema = z
     emoji: z.string().min(1),
     label: z.string().min(1),
     select_command: z.string().min(1),
-    select_command_shortcode: z
-      .string()
-      .min(1)
-      .optional()
-      .describe(
-        'Optional command override for double-tap. When omitted, the double-tap uses the per-OS HID shim to deliver the emoji shortcode (e.g. `:fire:`).',
-      ),
   })
   .strict()
 

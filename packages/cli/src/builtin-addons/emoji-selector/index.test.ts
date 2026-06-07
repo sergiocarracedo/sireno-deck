@@ -1,16 +1,17 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { setDomAssetPathResolver } from '../../addon/api.js'
-import { createBundledAddonRegistry } from '../../config/loader.js'
-import { renderReactNodeToHtml } from '../../render/dom-host.js'
-import { UNKNOWN_HOST_CONTEXT } from '../../system/host-context.js'
-import emojiSelectorAddon from './index.js'
+import { setDomAssetPathResolver } from '@/addon/api'
+import { createBundledAddonRegistry } from '@/config/loader'
+import { renderReactNodeToHtml } from '@/render/dom-host'
+import { UNKNOWN_HOST_CONTEXT } from '@/system/host-context'
+import emojiSelectorAddon from './index'
 
 const mountedButtonMethods = {
   getActiveDeckId: () => 'main',
   goBack() {},
   invalidate() {},
   navigateToDeck() {},
+  pasteText: async () => {},
   runCommand: async () => ({}) as never,
 }
 
@@ -144,6 +145,48 @@ describe('emoji-selector addon', () => {
     await harness.tap()
 
     expect(runCommand).toHaveBeenCalledWith("printf '%s' '😀'")
+  })
+
+  it('pastes the shortcode on double-tap when the catalog knows one', async () => {
+    const entryDefinition = emojiSelectorAddon.buttons.find(
+      (button) => button.type === 'emoji-emoji-button',
+    )
+    const pasteText = vi.fn()
+    const harness = createMountedHarness(
+      entryDefinition!,
+      {
+        emoji: '😀',
+        label: 'Smileys',
+        select_command: "printf '%s' '{{emoji}}'",
+      },
+      2,
+      { pasteText },
+    )
+
+    await entryDefinition!.onDblTap?.(harness.props)
+
+    expect(pasteText).toHaveBeenCalledWith(':grinning:')
+  })
+
+  it('is a no-op on double-tap when the catalog has no shortcode for the emoji', async () => {
+    const entryDefinition = emojiSelectorAddon.buttons.find(
+      (button) => button.type === 'emoji-emoji-button',
+    )
+    const pasteText = vi.fn()
+    const harness = createMountedHarness(
+      entryDefinition!,
+      {
+        emoji: '\u{1F4A9}', // pile of poo, intentionally not in shipped shortcode catalog
+        label: 'Pile of Poo',
+        select_command: "printf '%s' '{{emoji}}'",
+      },
+      2,
+      { pasteText },
+    )
+
+    await entryDefinition!.onDblTap?.(harness.props)
+
+    expect(pasteText).not.toHaveBeenCalled()
   })
 
   it('renders bundled icon-backed emoji entry buttons for shipped emoji values', () => {

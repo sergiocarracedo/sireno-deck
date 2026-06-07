@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@elgato-stream-deck/node": "^7.6.0",
+    "clipboardy": "^4.0.0",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.21",
     "dbus-next": "^0.10.2",

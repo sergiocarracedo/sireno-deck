@@ -1,7 +1,7 @@
 import {
   AddonButtonActionConfigSchema,
   defineMountedButton,
-} from '../../../addon/api.js'
+} from '@/addon/api'
 
 import {
   EMOJI_ICON_ASSETS,
@@ -9,8 +9,8 @@ import {
   getEmojiFallbackLabel,
   getEmojiShortcode,
   renderEmojiGlyph,
-} from '../support.js'
-import { createButtonNode } from '../support.js'
+} from '../support'
+import { createButtonNode } from '../support'
 
 const EmojiEntryButtonWithActionsSchema = EmojiEntryButtonSchema.extend(
   AddonButtonActionConfigSchema.shape,
@@ -25,27 +25,14 @@ function resolveTapCommand(config: z.infer<typeof EmojiEntryButtonWithActionsSch
   return undefined
 }
 
-function resolveDblTapCommand(config: z.infer<typeof EmojiEntryButtonWithActionsSchema>): string | undefined {
-  const shortcode = getEmojiShortcode(config.emoji)
-  if (config.select_command_shortcode) {
-    return config.select_command_shortcode
-      .replaceAll('{{shortcode}}', shortcode ?? '')
-      .replaceAll('{{emoji}}', config.emoji)
-  }
-  if (shortcode !== undefined) {
-    return `:${shortcode}:`
-  }
-  return undefined
-}
-
 import { z } from 'zod'
 
 const emojiEntryButton = defineMountedButton({
   configSchema: EmojiEntryButtonWithActionsSchema,
   onDblTap: async ({ config, methods }) => {
-    const cmd = resolveDblTapCommand(config)
-    if (cmd) {
-      await methods.pasteText(cmd)
+    const shortcode = getEmojiShortcode(config.emoji)
+    if (shortcode) {
+      await methods.pasteText(`:${shortcode}:`)
     }
   },
   onTap: async ({ config, methods }) => {
