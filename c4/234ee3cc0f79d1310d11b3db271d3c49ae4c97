@@ -1,0 +1,19 @@
+docs/decisions/2026-06-06-decisions.md
+  s_23f1376bf0bcd5::t_4e43eb6b16e947 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c4234ee3cc0f79d1310d11b3db271d3c49ae4c97",
+  "prompts": {},
+  "sessions": {
+    "s_23f1376bf0bcd5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1611af187ffe8aBh1kgeeye5Wx",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
