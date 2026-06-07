@@ -45,4 +45,35 @@ describe("createDeckController", () => {
 
     expect(() => controller.navigateTo("missing")).toThrow("Deck 'missing' is not defined")
   })
+
+  it("replaces the active deck when push is false and keeps the stack length unchanged", () => {
+    const controller = createDeckController({ decks, mainDeckId: "main" })
+
+    controller.navigateTo("apps", { push: false })
+
+    expect(controller.getActiveDeckId()).toBe("apps")
+    expect(controller.getStackSnapshot()).toEqual(["apps"])
+    expect(controller.getStackSnapshot().length).toBe(1)
+    expect(controller.canGoBack()).toBe(false)
+  })
+
+  it("still pushes to the stack when push is true (explicit)", () => {
+    const controller = createDeckController({ decks, mainDeckId: "main" })
+
+    controller.navigateTo("apps", { push: true })
+
+    expect(controller.getActiveDeckId()).toBe("apps")
+    expect(controller.getStackSnapshot()).toEqual(["main", "apps"])
+    expect(controller.canGoBack()).toBe(true)
+  })
+
+  it("treats push:false as a top-replacement — goBack returns to the deck before the entry push", () => {
+    const controller = createDeckController({ decks, mainDeckId: "main" })
+
+    controller.navigateTo("apps", { push: true })
+    controller.navigateTo("tools", { push: false })
+    controller.goBack()
+
+    expect(controller.getActiveDeckId()).toBe("main")
+  })
 })

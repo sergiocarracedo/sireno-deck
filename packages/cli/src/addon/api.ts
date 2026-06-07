@@ -44,7 +44,10 @@ export interface AddonButtonMethods {
   getActiveDeckId: () => string
   goBack: () => Promise<void> | void
   invalidate: () => void
-  navigateToDeck: (deckId: string) => Promise<void> | void
+  navigateToDeck: (
+    deckId: string,
+    options?: { addToHistory?: boolean },
+  ) => Promise<void> | void
   pasteText: (text: string) => Promise<void>
   runCommand: (command: string) => Promise<CommandExecutionResult>
 }

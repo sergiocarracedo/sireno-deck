@@ -11,7 +11,7 @@ export interface DeckController {
   getActiveDeckId: () => string
   getStackSnapshot: () => string[]
   goBack: () => DeckConfig
-  navigateTo: (deckId: string) => DeckConfig
+  navigateTo: (deckId: string, options?: { push?: boolean }) => DeckConfig
   restoreStack: (stackSnapshot?: readonly string[]) => DeckConfig
 }
 
@@ -59,9 +59,13 @@ export function createDeckController(options: DeckControllerOptions): DeckContro
 
       return getDeck(stack[stack.length - 1] ?? options.mainDeckId)
     },
-    navigateTo(deckId) {
+    navigateTo(deckId, options) {
       const nextDeck = getDeck(deckId)
-      stack.push(deckId)
+      if (options?.push === false) {
+        stack[stack.length - 1] = deckId
+      } else {
+        stack.push(deckId)
+      }
       return nextDeck
     },
     restoreStack(stackSnapshot) {

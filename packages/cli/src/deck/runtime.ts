@@ -852,10 +852,20 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
           }
         })().catch(reportRuntimeError)
       },
-      navigateToDeck: async (targetDeckId: string) => {
+      navigateToDeck: async (
+        targetDeckId: string,
+        options?: { addToHistory?: boolean },
+      ) => {
         temporaryErrorDeck = null
         const previousDeckId = getDisplayDeckId()
-        deckController.navigateTo(targetDeckId)
+        try {
+          deckController.navigateTo(targetDeckId, {
+            push: options?.addToHistory ?? true,
+          })
+        } catch (error) {
+          await showRuntimeButtonError(button, deckId, 'navigateToDeck', error)
+          return
+        }
         await activateDeckSurface(targetDeckId, previousDeckId)
       },
       pasteText: async (text: string) => {
