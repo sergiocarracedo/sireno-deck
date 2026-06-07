@@ -11,7 +11,7 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 
 Milestone: v1.4 — Addons & UX Polish (scope cut: distribution removed)
 Status: v1.4 milestone: 7 of 7 in-scope phases (41-46, 49) shipped. Phase 49 (Emoji-Selector UX Revamp) closed 2026-06-06 with verification `passed` and 27/27 in-scope tests passing. Ready for verify-work 49 (manual UAT) and the review/ship/compound chain.
-Last activity: 2026-06-07 — Completed quick task 037: overlap emoji-selector launcher grid cells on X and Y
+Last activity: 2026-06-07 — Completed quick task 040: reduce weather forecast from 6 to 2 columns
 
 ### Quick Tasks Completed
 
@@ -381,3 +381,4 @@ Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-VERIFICA
 | 033 | Change weather button poll interval units to minutes | 2026-06-05 | `c9e1205` | `.planning/quick/033-change-weather-poll-interval-minutes` |
 | 034 | Weather snapshot stores metric internally with conversion functions | 2026-06-05 | `a1ee8e8`, `d3debeb`, `e4c83a7` | `.planning/quick/034-weather-normalize-metric-units` |
 | 035 | Render real hourly forecast in weather button forecast page | 2026-06-05 | `1738536`, `1539b71`, `15dea99` | `.planning/quick/035-weather-hourly-forecast` |
+| 040 | Reduce weather widget forecast page from 6 columns to 2 | 2026-06-07 | `d68174c` | `.planning/quick/040-weather-forecast-reduce-to-2` |
