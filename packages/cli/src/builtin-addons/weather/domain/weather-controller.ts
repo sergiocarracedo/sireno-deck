@@ -13,6 +13,14 @@ export interface HourlyForecastEntry {
   precipitationChance: number // 0-100
 }
 
+export interface DailyForecastEntry {
+  date: string // ISO 'YYYY-MM-DD' (local date in resolved timezone)
+  weatherCode: number
+  tempMax: number // C
+  tempMin: number // C
+  precipitationSum: number // mm
+}
+
 export interface WeatherSnapshot {
   status: WeatherSnapshotStatus
   humidity: number
@@ -22,6 +30,7 @@ export interface WeatherSnapshot {
   weatherCode: number
   windSpeed: number // km/h
   hourly: HourlyForecastEntry[]
+  daily: DailyForecastEntry[]
 }
 
 export type WeatherLocation =
@@ -50,6 +59,7 @@ export function createLocatingWeatherSnapshot(): WeatherSnapshot {
     weatherCode: 0,
     windSpeed: 0,
     hourly: [],
+    daily: [],
   }
 }
 
@@ -65,6 +75,7 @@ export function createUnavailableWeatherSnapshot(
     weatherCode: 0,
     windSpeed: 0,
     hourly: [],
+    daily: [],
   }
 }
 

@@ -165,5 +165,6 @@ export async function fetchWttrInSnapshot(
     weatherCode: mapWttrCodeToWmo(current.weatherCode),
     windSpeed,
     hourly: buildHourlyEntries(json.weather),
+    daily: [],
   }
 }

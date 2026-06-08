@@ -81,5 +81,6 @@ export async function fetchOpenMeteoSnapshot(
     weatherCode: current.weather_code ?? 0,
     windSpeed: current.wind_speed_10m ?? 0,
     hourly: buildHourlyEntries(json.hourly),
+    daily: [],
   }
 }
