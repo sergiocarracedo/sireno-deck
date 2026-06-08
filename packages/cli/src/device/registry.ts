@@ -2,6 +2,7 @@ import type { StreamDeckLogger } from "./stream-deck"
 import type { StreamDeckDeviceHandle } from "./stream-deck"
 
 let openHandles: Set<StreamDeckDeviceHandle> = new Set()
+let currentBrightness = 50
 
 export function registerDeviceHandle(handle: StreamDeckDeviceHandle): void {
   openHandles.add(handle)
@@ -15,8 +16,13 @@ export function getOpenDeviceHandles(): readonly StreamDeckDeviceHandle[] {
   return [...openHandles]
 }
 
+export function getCurrentBrightness(): number {
+  return currentBrightness
+}
+
 export function _resetDeviceRegistryForTests(): void {
   openHandles = new Set()
+  currentBrightness = 50
 }
 
 export interface SetBrightnessResult {
@@ -41,5 +47,6 @@ export async function setBrightnessAll(
       logger?.warn({ error, percentage }, "setBrightnessAll: device failed")
     }
   }
+  currentBrightness = percentage
   return result
 }

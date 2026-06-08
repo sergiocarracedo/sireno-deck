@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest"
 import type { StreamDeckDeviceHandle } from "./stream-deck"
 import {
   _resetDeviceRegistryForTests,
+  getCurrentBrightness,
   getOpenDeviceHandles,
   registerDeviceHandle,
   setBrightnessAll,
@@ -119,5 +120,20 @@ describe("device registry", () => {
     expect(getOpenDeviceHandles()).toHaveLength(1)
     _resetDeviceRegistryForTests()
     expect(getOpenDeviceHandles()).toHaveLength(0)
+  })
+
+  it("getCurrentBrightness returns 50 by default", () => {
+    _resetDeviceRegistryForTests()
+    expect(getCurrentBrightness()).toBe(50)
+  })
+
+  it("setBrightnessAll updates the shared currentBrightness", async () => {
+    _resetDeviceRegistryForTests()
+    const a = makeHandle({ setBrightness: vi.fn().mockResolvedValue(undefined) })
+    registerDeviceHandle(a)
+    await setBrightnessAll(75)
+    expect(getCurrentBrightness()).toBe(75)
+    await setBrightnessAll(0)
+    expect(getCurrentBrightness()).toBe(0)
   })
 })
