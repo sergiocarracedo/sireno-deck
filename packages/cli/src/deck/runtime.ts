@@ -153,6 +153,7 @@ interface RootDomRenderProps {
 }
 
 const IMPLICIT_LOCKED_DECK_ID = '__sireno_locked_session__'
+const SETTINGS_DECK_ID = 'settings'
 const TEMPORARY_RELOAD_ERROR_DECK_ID = '__sireno_reload_error__'
 const lockedTimeTileButtonDefinition = datetimeButtonsAddon.buttons.find(
   (button) => button.type === 'locked-time-tile',
@@ -917,6 +918,12 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         render: () =>
           createElement(SystemBackButton, {
             isMainDeck: deckId === options.deck.id,
+            onNavigateToSettings:
+              deckId === options.deck.id && SETTINGS_DECK_ID in runtimeDecks
+                ? () => {
+                    void methods.navigateToDeck(SETTINGS_DECK_ID, { addToHistory: true })
+                  }
+                : undefined,
           }),
       }
     }
