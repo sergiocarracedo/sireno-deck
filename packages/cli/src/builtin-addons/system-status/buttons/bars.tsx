@@ -8,7 +8,7 @@ import {
   type CanonicalSystemMetricSnapshot,
 } from '../domain/live-metrics'
 import { toSystemStatusDisplayMetric } from '../domain/display-metrics'
-import { Bars, Text } from '@/ui/index'
+import { Bars } from '@/ui/index'
 import {
   SystemStatusBarsButtonSchema,
   type SystemStatusBarsButtonConfig,
@@ -108,6 +108,7 @@ const builtinSystemStatusBarsButton = defineMountedButton({
 
       return {
         color: displayMetric.color,
+        displayValue: displayMetric.formattedValue,
         maxValue: barValue.maxValue,
         title: displayMetric.label,
         value: barValue.value,
@@ -118,24 +119,8 @@ const builtinSystemStatusBarsButton = defineMountedButton({
 
     return (
       <ButtonSurface>
-        <div className="flex h-full w-full min-h-0 flex-col justify-between gap-2">
-          <div className="min-h-0 flex-1 overflow-hidden">
-            <Bars items={barsItems} />
-          </div>
-          <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${displayMetrics.length}, minmax(0, 1fr))` }}>
-            {displayMetrics.map((metric) => (
-              <Text
-                align="center"
-                className="block whitespace-nowrap"
-                key={metric.id}
-                size="xs"
-                style={metric.color ? { color: metric.color } : undefined}
-                typography="aux"
-              >
-                {metric.formattedValue}
-              </Text>
-            ))}
-          </div>
+        <div className="h-full w-full min-h-0 overflow-hidden">
+          <Bars items={barsItems} />
         </div>
       </ButtonSurface>
     )
