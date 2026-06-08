@@ -4,11 +4,11 @@ import { renderReactNodeToHtml } from "@/render/dom-host"
 import { SystemBackButton } from "./system-back-button"
 
 describe("SystemBackButton", () => {
-  it("renders 'Home' text when isMainDeck is true", () => {
+  it("renders the logo+version element when isMainDeck is true and no onNavigateToSettings is provided", () => {
     const html = renderReactNodeToHtml(
       <SystemBackButton isMainDeck onHold={() => {}} onTap={() => {}} />,
     )
-    expect(html).toContain("Home")
+    expect(html).toContain("sireno-logo-version")
   })
 
   it("renders back chevron + 'Back' text when isMainDeck is false", () => {
@@ -65,5 +65,30 @@ describe("SystemBackButton", () => {
     )
     // The "Home" string should not appear (we want "Back" instead)
     expect(html).not.toContain(">Home<")
+  })
+
+  it("renders the settings affordance when isMainDeck and onNavigateToSettings are provided", () => {
+    const html = renderReactNodeToHtml(
+      <SystemBackButton
+        isMainDeck
+        onHold={() => {}}
+        onTap={() => {}}
+        onNavigateToSettings={() => {}}
+      />,
+    )
+    expect(html).toContain("data-sireno-settings-affordance=\"true\"")
+    expect(html).toContain("Settings")
+  })
+
+  it("falls back to logo+version when isMainDeck but no onNavigateToSettings is provided", () => {
+    const html = renderReactNodeToHtml(
+      <SystemBackButton
+        isMainDeck
+        onHold={() => {}}
+        onTap={() => {}}
+      />,
+    )
+    expect(html).toContain("sireno-logo-version")
+    expect(html).not.toContain("data-sireno-settings-affordance=\"true\"")
   })
 })
