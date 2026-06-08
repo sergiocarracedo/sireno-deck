@@ -64,7 +64,9 @@ export function Surface({
         </div>
       </div>
     ),
-    forecast: <Forecast entries={snap.hourly} units={displayUnits} />,
+    'hourly-forecast': <Forecast entries={snap.hourly} units={displayUnits} />,
+    // TODO(50-02): add daily-forecast page here
+    'daily-forecast': <Forecast entries={snap.hourly} units={displayUnits} />,
   }
 
   return pages[page ?? 'main']

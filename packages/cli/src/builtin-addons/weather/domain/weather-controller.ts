@@ -47,6 +47,9 @@ async function resolveCoordinates(config: WeatherButtonConfig): Promise<{
   longitude: number
   name: string
 } | null> {
+  if (typeof config.location === 'string') {
+    return null
+  }
   if (config.location) {
     return {
       latitude: config.location.latitude,

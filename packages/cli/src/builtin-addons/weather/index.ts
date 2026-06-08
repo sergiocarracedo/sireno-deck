@@ -4,7 +4,7 @@ import { builtinWeatherButton } from './buttons/weather'
 
 const weatherAddon: SirenoAddon = {
   apiVersion: SIRENO_ADDON_API_VERSION,
-  buttons: [builtinWeatherButton],
+  buttons: [builtinWeatherButton] as SirenoAddon['buttons'],
   name: 'weather',
 }
 

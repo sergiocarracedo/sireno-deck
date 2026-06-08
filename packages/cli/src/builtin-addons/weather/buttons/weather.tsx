@@ -22,7 +22,7 @@ function getState(snapshot: unknown): WeatherStoreState {
 }
 
 function getNextPage(current: SurfacePage): SurfacePage {
-  const pages: SurfacePage[] = ['main', 'data', 'forecast']
+  const pages: SurfacePage[] = ['main', 'data', 'hourly-forecast', 'daily-forecast']
   const currentIndex = pages.indexOf(current)
   const nextIndex = (currentIndex + 1) % pages.length
   return pages[nextIndex]

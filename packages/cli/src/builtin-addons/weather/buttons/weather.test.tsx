@@ -114,7 +114,7 @@ describe('weather', () => {
     const harness = createHarness(
       button,
       { units: 'metric' },
-      { snapshot: availableSnapshot, page: 'forecast' },
+      { snapshot: availableSnapshot, page: 'hourly-forecast' },
     )
     const html = renderReactNodeToHtml(harness.render() as never)
     expect(html).toContain('No forecast')
@@ -137,7 +137,7 @@ describe('weather', () => {
             { precipitationChance: 60, temperature: 18, time: '19', weatherCode: 71 },
           ],
         },
-        page: 'forecast',
+        page: 'hourly-forecast',
       },
     )
     const html = renderReactNodeToHtml(harness.render() as never)
