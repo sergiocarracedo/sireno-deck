@@ -1379,6 +1379,78 @@ describe("createDeckRuntime", () => {
     })
   })
 
+  it("renders the system-back button on the lock deck when the session is unlocked (LOCK-02)", async () => {
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const sessionMonitor = createSessionMonitorDouble({ capability: "supported", state: "unlocked" })
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: {
+        id: "main",
+        buttons: [{
+          config: { label: "Go to Locked" },
+          definition: createNavigationDefinition("Go to Locked", "locked", "nav-main-locked"),
+          label: "Go to Locked",
+          position: 0,
+          type: "nav-main-locked",
+        }],
+      },
+      decks: {
+        main: {
+          id: "main",
+          buttons: [{
+            config: { label: "Go to Locked" },
+            definition: createNavigationDefinition("Go to Locked", "locked", "nav-main-locked"),
+            label: "Go to Locked",
+            position: 0,
+            type: "nav-main-locked",
+          }],
+        },
+        locked: {
+          id: "locked",
+          buttons: [{
+            config: { label: "Locked Deck" },
+            definition: createDisplayDefinition(),
+            label: "Locked Deck",
+            position: 0,
+            type: "display-text",
+          }],
+        },
+      },
+      hostContext: {
+        os: { type: "linux", variant: "ubuntu", version: "24.04" },
+        session: { capability: "supported", state: "unlocked" },
+      },
+      lockedDeckId: "locked",
+      sessionMonitor,
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("main")
+    })
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("locked")
+      const reservedButton = runtime.getButton(14)
+      expect(reservedButton).toMatchObject({
+        id: "system-back",
+        position: 14,
+        type: "system-back",
+      })
+      const renderedButton = getRenderedButton(runtime, 14)
+      expect(getRenderedButtonHtml(renderedButton)).toContain("data-sireno-system-back=\"true\"")
+    })
+  })
+
   it("restores a saved navigation stack onto a rebuilt runtime", async () => {
     let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
     const decks = {
