@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.5 — Addons & UX Polish II
-**Phase:** 50 ✓ Complete (2026-06-08) — weather city-name + 2-day daily forecast. Next: 51 — Bars content polish
-**Status:** phase 50 verified (passed) — UAT visual confirmation pending; 1/7 phases complete, 7/25 reqs satisfied
+**Phase:** 51 — Bars content polish (next: execute-phase 51)
+**Status:** planning — 2 plans in 2 waves (51-01 = Bars component + negative-color helper; 51-02 = system-status consumer). 7 phases (50-56), 25 requirements. v1.4 complete (tagged v1.4). Phase 50 shipped (verified passed, UAT visual confirmation pending). Distribution work (Phases 40/47/48) remains deferred.
 **Last updated:** 2026-06-08
 
 ---
