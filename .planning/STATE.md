@@ -22,7 +22,7 @@ Last activity: 2026-06-08 — Completed quick task 041: Remove .js compiled file
 | 036 | Move default theme presentation interfaces to core contract and fix ButtonFrame line 53 | 2026-06-05 | 1d1b359 | .planning/quick/036-move-theme-interfaces-to-core/ |
 | 037 | Replace main deck home button with logo + cli version | 2026-06-06 | 23d2a54 | .planning/quick/037-main-deck-home-button-logo-version/ |
 | 038 | Lock deck should not show home or back button | 2026-06-06 | a967147 | .planning/quick/038-lock-deck-no-home-back-button/ |
-| 041 | Remove .js compiled files and prevent recurrence | 2026-06-08 | cb7b884 | .planning/quick/041-remove-js-compiled-files/ |
+| 041 | Remove .js compiled files and prevent recurrence | 2026-06-08 | 9826feb | .planning/quick/041-remove-js-compiled-files/ |
 
 Progress: [██████████] 100% (7 of 7 in-scope v1.4 phases complete)
 

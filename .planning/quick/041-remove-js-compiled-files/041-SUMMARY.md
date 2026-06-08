@@ -5,13 +5,19 @@
 
 ## What was done
 
-Added `"noEmit": true` to root `tsconfig.json` to prevent `tsc` from emitting `.js` alongside `.ts` sources (root cause). Added `*.js` pattern to `.gitignore` with explicit exceptions for 11 hand-written fixture and theme `.js` files that have no `.ts` counterpart. No compiled `.js` artifacts existed on disk after the fix.
+**Root cause:** Root `tsconfig.json` lacked `noEmit` so running `tsc` at workspace root emitted `.js` alongside every `.ts` file. `.gitignore` had no `*.js` pattern — these files were untracked but visible.
+
+**Fix:**
+1. Added `"noEmit": true` to root `tsconfig.json` — prevents `tsc` from emitting `.js` (primary fix)
+2. Added `*.js` to `.gitignore` with exceptions for 7 hand-written fixture/theme `.js` files that have no `.ts` counterpart — safety net
+3. Removed ~170 compiled `.js` files from disk across `src/`, `fixtures/`, and config files
 
 ## Files changed
 
 - `tsconfig.json`: added `"noEmit": true` to `compilerOptions`
-- `.gitignore`: added `*.js` with exceptions for hand-written fixture/theme files
+- `.gitignore`: added `*.js` with exceptions for 7 hand-written fixture/theme files
 
 ## Commit
 
 `cb7b884` — feat(quick-041): prevent accidental tsc .js emissions — noEmit + gitignore *.js
+`9826feb` — fix(quick-041): remove stale gitignore exceptions for compiled fixture .js files
