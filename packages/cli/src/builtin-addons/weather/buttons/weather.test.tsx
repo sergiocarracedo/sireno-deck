@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { renderReactNodeToHtml } from '@/render/dom-host'
-import { builtinWeatherButton } from './weather'
+import { builtinWeatherButton, getNextPage } from './weather'
 import type { WeatherSnapshot } from '../domain/weather-controller'
 
 function createHarness(button: typeof builtinWeatherButton, config: unknown, snapshot: unknown) {
@@ -208,5 +208,14 @@ describe('weather', () => {
     )
     const html = renderReactNodeToHtml(harness.render() as never)
     expect(html).toContain('Unavailable')
+  })
+})
+
+describe('getNextPage', () => {
+  it('cycles main → data → hourly-forecast → daily-forecast → main', () => {
+    expect(getNextPage('main')).toBe('data')
+    expect(getNextPage('data')).toBe('hourly-forecast')
+    expect(getNextPage('hourly-forecast')).toBe('daily-forecast')
+    expect(getNextPage('daily-forecast')).toBe('main')
   })
 })
