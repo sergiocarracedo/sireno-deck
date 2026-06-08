@@ -1,0 +1,28 @@
+.planning/phases/50-weather-city-name-and-2-day-forecast/50-02-PLAN.md
+  s_a44d509d67bdce::t_220f8c58cc2c22 1-278
+.planning/phases/50-weather-city-name-and-2-day-forecast/50-RESEARCH.md
+  s_a44d509d67bdce::t_3d6cbae203da25 1-116
+.planning/phases/50-weather-city-name-and-2-day-forecast/50-01-PLAN.md
+  s_a44d509d67bdce::t_3fe004c87daf37 1-374
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c461d415a5054950be18b622c53b38dc052e7755",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
