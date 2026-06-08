@@ -36,7 +36,7 @@ function createHarness(button: typeof builtinWeatherButton, config: unknown, sna
 }
 
 const availableSnapshot: WeatherSnapshot = {
-  available: true,
+  status: 'available',
   hourly: [],
   humidity: 65,
   location: 'London',
@@ -145,5 +145,68 @@ describe('weather', () => {
     expect(html).toContain('19')
     expect(html).toContain('23')
     expect(html).toContain('10%')
+  })
+
+  it('renders the locating message while geocoding is in flight', () => {
+    const button = builtinWeatherButton
+    const locatingSnapshot: WeatherSnapshot = {
+      status: 'locating',
+      source: 'locating',
+      humidity: 0,
+      location: '',
+      temperature: 0,
+      weatherCode: 0,
+      windSpeed: 0,
+      hourly: [],
+    }
+    const harness = createHarness(
+      button,
+      { units: 'metric' },
+      { snapshot: locatingSnapshot },
+    )
+    const html = renderReactNodeToHtml(harness.render() as never)
+    expect(html).toContain('Locating…')
+  })
+
+  it('renders the location-not-found message when the geocoder returns no results', () => {
+    const button = builtinWeatherButton
+    const notFoundSnapshot: WeatherSnapshot = {
+      status: 'unavailable',
+      source: 'location-not-found',
+      humidity: 0,
+      location: '',
+      temperature: 0,
+      weatherCode: 0,
+      windSpeed: 0,
+      hourly: [],
+    }
+    const harness = createHarness(
+      button,
+      { units: 'metric' },
+      { snapshot: notFoundSnapshot },
+    )
+    const html = renderReactNodeToHtml(harness.render() as never)
+    expect(html).toContain('Location not found')
+  })
+
+  it('renders the generic unavailable message for non-geocoder failures', () => {
+    const button = builtinWeatherButton
+    const noLocationSnapshot: WeatherSnapshot = {
+      status: 'unavailable',
+      source: 'no-location',
+      humidity: 0,
+      location: '',
+      temperature: 0,
+      weatherCode: 0,
+      windSpeed: 0,
+      hourly: [],
+    }
+    const harness = createHarness(
+      button,
+      { units: 'metric' },
+      { snapshot: noLocationSnapshot },
+    )
+    const html = renderReactNodeToHtml(harness.render() as never)
+    expect(html).toContain('Unavailable')
   })
 })

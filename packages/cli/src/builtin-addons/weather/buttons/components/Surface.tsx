@@ -20,11 +20,23 @@ export function Surface({
   page?: SurfacePage
   units?: 'metric' | 'imperial'
 }): ReactElement {
-  if (!snap?.available) {
+  if (snap?.status === 'locating') {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center gap-1">
         <Text size="xs" tone="foreground">
-          Unavailable
+          Locating…
+        </Text>
+      </div>
+    )
+  }
+
+  if (snap?.status === 'unavailable') {
+    const message =
+      snap.source === 'location-not-found' ? 'Location not found' : 'Unavailable'
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center gap-1">
+        <Text size="xs" tone="foreground">
+          {message}
         </Text>
       </div>
     )
