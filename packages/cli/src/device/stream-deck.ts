@@ -1,5 +1,7 @@
 import * as streamDeckNode from "@elgato-stream-deck/node"
 
+import { registerDeviceHandle, unregisterDeviceHandle } from "./registry"
+
 import type {
   StreamDeck,
   StreamDeckButtonControlDefinition,
@@ -580,7 +582,6 @@ export function createStreamDeckLifecycle(
       }
       if (!registeredHandle) {
         registeredHandle = handle
-        const { registerDeviceHandle } = await import("./registry")
         registerDeviceHandle(registeredHandle)
       }
       return connection
@@ -607,7 +608,6 @@ export function createStreamDeckLifecycle(
       await closeStreamDeckConnection(connection)
 
       if (registeredHandle) {
-        const { unregisterDeviceHandle } = await import("./registry")
         unregisterDeviceHandle(registeredHandle)
         registeredHandle = null
       }
