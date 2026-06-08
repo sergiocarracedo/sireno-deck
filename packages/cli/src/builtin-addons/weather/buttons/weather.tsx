@@ -1,6 +1,7 @@
 import { defineMountedButton } from '@/addon/api'
 
 import {
+  createLocatingWeatherSnapshot,
   createUnavailableWeatherSnapshot,
   createWeatherController,
   type WeatherSnapshot,
@@ -66,6 +67,16 @@ export const builtinWeatherButton = defineMountedButton({
   onActivate: async ({ config, hostContext, store }) => {
     const state = getState(store.button.snapshot)
     clearAutoReturnTimer(state)
+
+    // Show "Locating…" immediately when we have a string location to resolve.
+    if (typeof config.location === 'string') {
+      store.button.set({
+        snapshot: createLocatingWeatherSnapshot(),
+        page: 'main',
+        pageChangedAt: undefined,
+        autoReturnTimer: undefined,
+      } as WeatherStoreState)
+    }
 
     const controller = createWeatherController({
       hostContext,
