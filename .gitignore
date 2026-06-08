@@ -2,3 +2,14 @@
 node_modules/
 dist/
 .tsdown/
+
+# Compiled JS artifacts — prevent accidental commits from workspace tsc runs
+*.js
+!packages/cli/fixtures/phase-5/*/src/index.js
+!packages/cli/fixtures/phase-7/phase-7-review-addon/src/index.js
+!packages/cli/fixtures/phase-12/phase-12-fit-review-addon/src/index.js
+!packages/cli/fixtures/phase-22/shrink-fit-review-addon/src/index.js
+!packages/cli/fixtures/phase-23/local-raw-addon/src/index.js
+!packages/cli/fixtures/phase-23/local-raw-addon/src/content.js
+!packages/cli/fixtures/phase-24/local-mounted-addon/src/index.js
+!packages/cli/src/themes/light/index.js
