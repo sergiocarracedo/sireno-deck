@@ -1,10 +1,12 @@
 import type { CSSProperties, ReactElement } from 'react'
 
 import { cn } from '@/themes/utils/cn'
+import { computeNegativeColor } from './negative-color'
 import { Text } from './Text'
 
 export interface BarsItem {
   color?: string
+  displayValue?: string
   maxValue: number
   title: string
   value: number
@@ -16,6 +18,8 @@ export interface BarsProps {
   className?: string
   items: BarsItems
   style?: CSSProperties
+  themePrimaryHex?: string
+  useSharpPath?: boolean
 }
 
 function getBarFillHeight(item: BarsItem): string {
@@ -41,6 +45,18 @@ export function Bars(props: BarsProps): ReactElement {
     >
       {props.items.map((item, index) => {
         const color = item.color ?? 'var(--sireno-color-primary)'
+        const valueText = item.displayValue ?? String(Math.round(item.value))
+        const valueTextStyle: CSSProperties = props.useSharpPath
+          ? {
+              transform: 'rotate(-90deg)',
+              transformOrigin: 'center',
+              color: computeNegativeColor(item.color ?? '', props.themePrimaryHex ?? null),
+            }
+          : {
+              transform: 'rotate(-90deg)',
+              transformOrigin: 'center',
+              mixBlendMode: 'difference',
+            }
 
         return (
           <div className="flex min-w-0 flex-1 flex-col gap-2" key={`${item.title}-${index}`}>
@@ -70,6 +86,17 @@ export function Bars(props: BarsProps): ReactElement {
                   minHeight: item.value > 0 ? '4px' : undefined,
                 }}
               />
+              <Text
+                align="center"
+                className="pointer-events-none absolute inset-0 flex items-center justify-center whitespace-nowrap"
+                data-sireno-bars-value="true"
+                size="xs"
+                style={valueTextStyle}
+                tone={props.useSharpPath ? undefined : 'foreground'}
+                typography="mono"
+              >
+                {valueText}
+              </Text>
             </div>
           </div>
         )
