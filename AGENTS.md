@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.5 — Addons & UX Polish II
-**Phase:** 53 — Brightness device control (next: execute-phase 53)
-**Status:** planning — 2 plans in 2 waves (53-01 = device layer with setBrightness + registry.ts + setBrightnessAll + reconnect persistence; 53-02 = built-in brightness button addon that cycles 0/25/50/75/100 and calls setBrightnessAll). 7 phases (50-56), 25 requirements. v1.4 complete (tagged v1.4). Phases 50-52 shipped (all verified passed). Distribution work (Phases 40/47/48) remains deferred.
+**Phase:** 53 ✓ Complete (2026-06-08) — brightness device control. Next: 54 — Settings deck with brightness controls
+**Status:** phase 53 verified (passed) — UAT visual confirmation pending; 4/7 phases complete, 14/25 reqs satisfied
 **Last updated:** 2026-06-08
 
 ---
