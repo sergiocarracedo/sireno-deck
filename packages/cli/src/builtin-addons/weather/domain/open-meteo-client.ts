@@ -73,7 +73,7 @@ export async function fetchOpenMeteoSnapshot(
     throw new Error('open-meteo: missing current data')
   }
   return {
-    available: true,
+    status: 'available',
     humidity: current.relative_humidity_2m ?? 0,
     location: name,
     source: 'open-meteo',

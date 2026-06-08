@@ -157,7 +157,7 @@ export async function fetchWttrInSnapshot(
   const temperature = Number(current.temp_C ?? '0')
   const windSpeed = Number(current.windspeedKmph ?? '0')
   return {
-    available: true,
+    status: 'available',
     humidity: Number(current.humidity ?? '0'),
     location: name,
     source: 'wttr.in',

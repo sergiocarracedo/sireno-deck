@@ -1,10 +1,11 @@
 import type { HostContext } from '@/system/host-context'
 import type { WeatherButtonConfig } from '../schemas'
-import { fetchIpGeolocation } from './ip-geolocation'
+import { searchCity } from './geocoder'
 import { fetchOpenMeteoSnapshot } from './open-meteo-client'
 import { fetchWttrInSnapshot } from './wttr-in-fallback'
 
-// Units are metric only
+export type WeatherSnapshotStatus = 'locating' | 'available' | 'unavailable'
+
 export interface HourlyForecastEntry {
   time: string // 2-digit local hour, e.g. '14'
   temperature: number // C
@@ -13,7 +14,7 @@ export interface HourlyForecastEntry {
 }
 
 export interface WeatherSnapshot {
-  available: boolean
+  status: WeatherSnapshotStatus
   humidity: number
   location: string
   source: string
@@ -23,14 +24,43 @@ export interface WeatherSnapshot {
   hourly: HourlyForecastEntry[]
 }
 
+export type WeatherLocation =
+  | {
+      kind: 'coords'
+      latitude: number
+      longitude: number
+      name: string
+    }
+  | {
+      kind: 'name'
+      latitude: number
+      longitude: number
+      name: string
+      country: string
+      timezone: string
+    }
+
+export function createLocatingWeatherSnapshot(): WeatherSnapshot {
+  return {
+    status: 'locating',
+    source: 'locating',
+    humidity: 0,
+    location: '',
+    temperature: 0,
+    weatherCode: 0,
+    windSpeed: 0,
+    hourly: [],
+  }
+}
+
 export function createUnavailableWeatherSnapshot(
   source: string,
 ): WeatherSnapshot {
   return {
-    available: false,
+    status: 'unavailable',
+    source,
     humidity: 0,
     location: '',
-    source,
     temperature: 0,
     weatherCode: 0,
     windSpeed: 0,
@@ -42,46 +72,55 @@ export interface WeatherController {
   getSnapshot: () => Promise<WeatherSnapshot>
 }
 
-async function resolveCoordinates(config: WeatherButtonConfig): Promise<{
-  latitude: number
-  longitude: number
-  name: string
-} | null> {
+export async function resolveLocation(
+  config: WeatherButtonConfig,
+  options?: { signal?: AbortSignal },
+): Promise<WeatherLocation | null> {
   if (typeof config.location === 'string') {
-    return null
+    const result = await searchCity(config.location, options)
+    if (!result) return null
+    return {
+      kind: 'name',
+      latitude: result.latitude,
+      longitude: result.longitude,
+      name: result.name,
+      country: result.country,
+      timezone: result.timezone,
+    }
   }
   if (config.location) {
     return {
+      kind: 'coords',
       latitude: config.location.latitude,
       longitude: config.location.longitude,
       name: config.location.name ?? '',
     }
-  }
-  if (config.use_ip_geolocation) {
-    return await fetchIpGeolocation()
   }
   return null
 }
 
 export async function fetchWeatherSnapshot(
   config: WeatherButtonConfig,
+  options?: { signal?: AbortSignal },
 ): Promise<WeatherSnapshot> {
-  const coords = await resolveCoordinates(config)
-  if (!coords) {
-    return createUnavailableWeatherSnapshot('no-location')
+  const loc = await resolveLocation(config, options)
+  if (!loc) {
+    const source =
+      typeof config.location === 'string' ? 'location-not-found' : 'no-location'
+    return createUnavailableWeatherSnapshot(source)
   }
   try {
     return await fetchOpenMeteoSnapshot(
-      coords.latitude,
-      coords.longitude,
-      coords.name,
+      loc.latitude,
+      loc.longitude,
+      loc.name,
     )
   } catch {
     try {
       return await fetchWttrInSnapshot(
-        coords.latitude,
-        coords.longitude,
-        coords.name,
+        loc.latitude,
+        loc.longitude,
+        loc.name,
       )
     } catch {
       return createUnavailableWeatherSnapshot('all-providers-failed')
