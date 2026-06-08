@@ -4,14 +4,18 @@ import { describe, expect, it, vi } from "vitest"
 
 import {
   StreamDeckSelectionError,
+  _resetDeviceRegistryForTests,
   blankRemainingKeys,
   connectStreamDeck,
   createStreamDeckLifecycle,
   createVirtualStreamDeckLifecycle,
   replayLastRenderedBuffers,
   type StreamDeckKeyEvent,
+  type StreamDeckApi,
+  type StreamDeckDeviceHandle,
   writeKeyBuffer,
 } from "./stream-deck"
+import { registerDeviceHandle, setBrightnessAll, unregisterDeviceHandle } from "./registry"
 
 class FakeStreamDeck extends EventEmitter {
   readonly CONTROLS
@@ -302,5 +306,54 @@ describe("stream deck connection", () => {
 
     expect(device.writes.filter((write) => write.keyIndex === 0)).toHaveLength(2)
     expect(device.writes.length).toBe(connection.info.lcdKeyIndices.length * 2)
+  })
+})
+
+describe("StreamDeckDeviceHandle.setBrightness", () => {
+  it("calls device.setBrightness with a clamped 0..100 percentage", async () => {
+    const setBrightness = vi.fn(async (_pct: number) => undefined)
+    const handle: StreamDeckDeviceHandle = {
+      clearPanel: async () => {},
+      close: async () => {},
+      fillKeyBuffer: async () => {},
+      setBrightness,
+    }
+    await handle.setBrightness(75)
+    expect(setBrightness).toHaveBeenCalledWith(75)
+  })
+
+  it("setBrightness on a non-connected handle throws", async () => {
+    const setBrightness = vi.fn(async (_pct: number) => {
+      throw new Error("setBrightness: device is not connected")
+    })
+    const handle: StreamDeckDeviceHandle = {
+      clearPanel: async () => {},
+      close: async () => {},
+      fillKeyBuffer: async () => {},
+      setBrightness,
+    }
+    await expect(handle.setBrightness(50)).rejects.toThrow(/not connected/)
+  })
+})
+
+describe("createStreamDeckLifecycle re-apply on start", () => {
+  it("re-applies lastBrightness when a new start follows a setBrightness", async () => {
+    const setBrightness = vi.fn(async (_pct: number) => undefined)
+    const device = new FakeStreamDeck("Stream Deck Mini", 6) as unknown as { setBrightness: (p: number) => Promise<void>; on: Function; off: Function; clearPanel: () => Promise<void>; close: () => Promise<void>; fillKeyBuffer: (i: number, b: Uint8Array) => Promise<void>; emit: (e: string, ...args: unknown[]) => boolean }
+    device.setBrightness = setBrightness
+    const api: StreamDeckApi = {
+      listStreamDecks: async () => [
+        { model: "mini" as never, path: "/dev/hidraw0", serialNumber: "SERIAL-1" },
+      ],
+      openStreamDeck: async () => device as never,
+      getStreamDeckModelName: () => "Stream Deck Mini",
+    }
+    const lifecycle = createStreamDeckLifecycle({ api })
+    await lifecycle.start()
+    const handle = lifecycle.getConnection()?.device as unknown as StreamDeckDeviceHandle
+    await handle.setBrightness(50)
+    const calls = setBrightness.mock.calls.map((c) => c[0])
+    expect(calls).toContain(50)
+    await lifecycle.close()
   })
 })

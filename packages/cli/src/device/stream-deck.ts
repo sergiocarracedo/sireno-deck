@@ -33,11 +33,13 @@ export interface StreamDeckDeviceHandle {
   clearPanel: () => Promise<void>
   close: () => Promise<void>
   fillKeyBuffer: (keyIndex: number, imageBuffer: Uint8Array, options?: { format?: string }) => Promise<void>
+  setBrightness: (percentage: number) => Promise<void>
 }
 
 interface StreamDeckEventHandle extends StreamDeckDeviceHandle {
   off: (event: "down" | "error" | "up", listener: (...args: unknown[]) => void) => this
   on: (event: "down" | "error" | "up", listener: (...args: unknown[]) => void) => this
+  setBrightness: (percentage: number) => Promise<void>
 }
 
 export interface StreamDeckLogger {
@@ -292,6 +294,9 @@ export function createVirtualStreamDeckLifecycle(options: VirtualStreamDeckOptio
       async fillKeyBuffer() {
         return undefined
       },
+      async setBrightness() {
+        return undefined
+      },
     },
     info: {
       keyCount: options.keyCount,
@@ -366,6 +371,8 @@ export function createStreamDeckLifecycle(
   const keyListeners = new Set<StreamDeckKeyListener>()
   let reconnectPromise: Promise<void> | null = null
   let reconnectSerial = options.selector?.serial
+  let lastBrightness: number | undefined = undefined
+  let brightnessReapplyInFlight: Promise<void> | null = null
 
   function detachErrorHandler(): void {
     if (activeConnection && activeErrorHandler && isStreamDeckEventHandle(activeConnection.device)) {
@@ -474,6 +481,26 @@ export function createStreamDeckLifecycle(
         )
 
         await options.onReconnect?.(connection)
+        if (lastBrightness !== undefined) {
+          const target = lastBrightness
+          brightnessReapplyInFlight = connection.device
+            .setBrightness(target)
+            .then(() => {
+              logger.info(
+                { percentage: target, model: connection.info.model, serialNumber: connection.info.serialNumber },
+                "Stream Deck brightness re-applied after reconnect",
+              )
+            })
+            .catch((error) => {
+              logger.warn(
+                { error, percentage: target, model: connection.info.model, serialNumber: connection.info.serialNumber },
+                "Stream Deck brightness re-apply failed",
+              )
+            })
+            .finally(() => {
+              brightnessReapplyInFlight = null
+            })
+        }
         return
       } catch (error) {
         const elapsedMs = now() - startedAt
@@ -502,6 +529,40 @@ export function createStreamDeckLifecycle(
     logger.error("Failed to reconnect to Stream Deck within 5 minutes")
   }
 
+  const handle: StreamDeckDeviceHandle = {
+    async clearPanel() {
+      if (!activeConnection) {
+        return
+      }
+      await activeConnection.device.clearPanel().catch(() => undefined)
+    },
+    async close() {
+      await closeStreamDeckConnection(activeConnection)
+    },
+    async fillKeyBuffer(keyIndex, imageBuffer, options) {
+      if (!activeConnection) {
+        return
+      }
+      await activeConnection.device.fillKeyBuffer(keyIndex, imageBuffer, {
+        format: options?.format ?? "rgba",
+      })
+    },
+    async setBrightness(percentage: number) {
+      if (!Number.isFinite(percentage) || percentage < 0 || percentage > 100) {
+        throw new RangeError(
+          `setBrightness: percentage must be a number in 0..100, received ${percentage}`,
+        )
+      }
+      if (!activeConnection) {
+        throw new Error("setBrightness: device is not connected")
+      }
+      await activeConnection.device.setBrightness(percentage)
+      lastBrightness = percentage
+    },
+  }
+
+  let registeredHandle: StreamDeckDeviceHandle | null = null
+
   return {
     async start() {
       if (closed) {
@@ -514,6 +575,14 @@ export function createStreamDeckLifecycle(
 
       const connection = await connectStreamDeck(options.selector, api, lastWrittenBuffers)
       attachConnection(connection)
+      if (lastBrightness !== undefined) {
+        await handle.setBrightness(lastBrightness)
+      }
+      if (!registeredHandle) {
+        registeredHandle = handle
+        const { registerDeviceHandle } = await import("./registry")
+        registerDeviceHandle(registeredHandle)
+      }
       return connection
     },
     getConnection() {
@@ -536,6 +605,12 @@ export function createStreamDeckLifecycle(
       const connection = activeConnection
       activeConnection = null
       await closeStreamDeckConnection(connection)
+
+      if (registeredHandle) {
+        const { unregisterDeviceHandle } = await import("./registry")
+        unregisterDeviceHandle(registeredHandle)
+        registeredHandle = null
+      }
 
       if (pendingReconnect) {
         await pendingReconnect
