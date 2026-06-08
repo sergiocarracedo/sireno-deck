@@ -38,9 +38,11 @@ describe("nextBrightnessDown", () => {
     expect(nextBrightnessDown(50)).toBe(40)
   })
 
-  it("clamps to 0", () => {
-    expect(nextBrightnessDown(5)).toBe(0)
-    expect(nextBrightnessDown(0)).toBe(0)
+  it("clamps to 10 (the minimum allowed level)", () => {
+    expect(nextBrightnessDown(15)).toBe(10)
+    expect(nextBrightnessDown(10)).toBe(10)
+    expect(nextBrightnessDown(5)).toBe(10)
+    expect(nextBrightnessDown(0)).toBe(10)
   })
 })
 
@@ -93,10 +95,10 @@ describe("handleSettingsButtonTap", () => {
     expect(getCurrentBrightness()).toBe(100)
   })
 
-  it("clamps brightness-down at 0", async () => {
+  it("clamps brightness-down at 10 (the minimum allowed level)", async () => {
     await setBrightnessAll(5)
     await handleSettingsButtonTap("brightness-down")
-    expect(getCurrentBrightness()).toBe(0)
+    expect(getCurrentBrightness()).toBe(10)
   })
 
   it("is a no-op for non-brightness button ids", async () => {
