@@ -1,0 +1,28 @@
+.planning/phases/52-lock-deck-navigation-refinement/52-CONTEXT.md
+  s_a44d509d67bdce::t_d7f11392bc9fe5 1-158
+.planning/phases/52-lock-deck-navigation-refinement/52-DISCUSSION-LOG.md
+  s_a44d509d67bdce::t_c4a48259508bd1 1-62
+.planning/STATE.md
+  s_a44d509d67bdce::t_4d43b834ac8b7c 12,14-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b5630acf3e1fcd1542b917d38d90f7902420004c",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
