@@ -1,0 +1,24 @@
+packages/cli/src/builtin-addons/system-status/buttons/bars.tsx
+  s_a44d509d67bdce::t_ed4e5ec59bacbb 11,111,122-123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "53a044abfc35ff723b6fe9280327d4277f9f0c06",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
