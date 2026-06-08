@@ -44,17 +44,17 @@ Every v1.5 requirement maps to exactly one phase. Verification (VERIFY-01) is th
 - [x] The system-status addon (canonical Bars consumer) renders correctly with both the new label color and the in-bar value text
 **Research needed:** No
 
-### Phase 52: Lock deck navigation refinement
+### Phase 52: Lock deck navigation refinement ✓ Complete (2026-06-08)
 
 **Goal:** Allow the lock deck to be navigated to from the main deck even when the session is not locked, and stop the core from injecting the system back button into the lock deck while it is locked.
 **Requirements:** `LOCK-01`, `LOCK-02`
 **Depends on:** None
 **Success criteria:**
-- [ ] The user can navigate to the configured lock deck from the main deck regardless of the current session state
-- [ ] While the session state is `locked`, the core does not inject the system-reserved back button into the lock deck
-- [ ] While the session state is `unlocked`, the lock deck behaves like any other subdeck (back button present, navigable as normal)
-- [ ] The lock deck's "no home or back button when locked" behavior from v1.4 quick 038 is preserved
-- [ ] Session monitor integration is unchanged; only the navigation and injection gates change
+- [x] The user can navigate to the configured lock deck from the main deck regardless of the current session state
+- [x] While the session state is `locked`, the core does not inject the system-reserved back button into the lock deck
+- [x] While the session state is `unlocked`, the lock deck behaves like any other subdeck (back button present, navigable as normal)
+- [x] The lock deck's "no home or back button when locked" behavior from v1.4 quick 038 is preserved
+- [x] Session monitor integration is unchanged; only the navigation and injection gates change
 **Research needed:** No
 
 ### Phase 53: Brightness device control
