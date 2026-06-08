@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 50 — Weather city-name + 2-day daily forecast (context captured, next: plan-phase 50)
+Phase: 51 — Bars content polish (next: discuss-phase 51 → plan-phase 51)
 Plan: —
-Status: Milestone v1.5 started — 7 phases (50-56), 25 requirements. Phase 50 context captured (schema union with internal normalization, smart country-match for ambiguous geocoding, status enum on snapshot, page cycle `main → data → hourly-forecast → daily-forecast`, 30s auto-return). v1.4 complete — 7 phases (41-46, 49) shipped, 35/35 requirements satisfied, milestone audit passed, tagged v1.4. Distribution work (Phases 40/47/48 from v1.4) remains deferred pending distribution-target decision.
-Last activity: 2026-06-08 — Phase 50 context captured (4 gray areas discussed)
+Status: Phase 50 complete — weather city-name + 2-day daily forecast shipped (15 commits, 49 weather tests / 43 pass / 3 baseline pre-existing failures unchanged / 0 regressions; VERIFICATION.md status: passed). UAT pending visual confirmation of "Locating…" tile, "Location not found" tile, and the daily-forecast page. Milestone v1.5 progress: 1/7 phases complete, 7/25 requirements satisfied. v1.4 complete — 7 phases (41-46, 49) shipped, 35/35 requirements satisfied, milestone audit passed, tagged v1.4. Distribution work (Phases 40/47/48 from v1.4) remains deferred pending distribution-target decision.
+Last activity: 2026-06-08 — Phase 50 verification passed (status: passed)
 
 ### Quick Tasks Completed
 

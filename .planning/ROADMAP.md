@@ -14,19 +14,20 @@ Every v1.5 requirement maps to exactly one phase. Verification (VERIFY-01) is th
 
 ## Phases
 
-### Phase 50: Weather city-name + 2-day daily forecast
+### Phase 50: Weather city-name + 2-day daily forecast ✓ Complete (2026-06-08)
 
 **Goal:** Make the bundled weather addon easier to configure by accepting a city-name string and add a new 2-day daily forecast page to the button's page cycle.
 **Requirements:** `WX-07`, `WX-08`, `WX-09`, `WX-10`, `WX2-01`, `WX2-02`, `WX2-03`
 **Depends on:** None
+**Status:** [x] ✓ Complete (2026-06-08) — 2 plans executed (geocoding/locating, daily forecast page), 15 commits, 49 weather tests (43 pass / 3 baseline pre-existing failures unchanged / 0 regressions). VERIFICATION.md status: passed. UAT pending visual confirmation.
 **Success criteria:**
-- [ ] `location: "Vigo, Spain"` resolves to coordinates via the Open-Meteo Geocoding API on first call
-- [ ] `location: {name, latitude, longitude}` still works unchanged
-- [ ] Geocoding results are cached in an LRU of at least 1000 entries, keyed by the normalized lowercase city name
-- [ ] Geocoding miss or network failure surfaces a clear "location not found" state, not a silent fallback
-- [ ] The weather button shows a new `daily-forecast` page after the existing hourly pages
-- [ ] The `daily-forecast` page calls `/v1/forecast` with `daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&forecast_days=2&timezone=auto`
-- [ ] The page renders one row per day with day label, icon, high temp, low temp, precipitation sum
+- [x] `location: "Vigo, Spain"` resolves to coordinates via the Open-Meteo Geocoding API on first call
+- [x] `location: {name, latitude, longitude}` still works unchanged
+- [x] Geocoding results are cached in an LRU of at least 1000 entries, keyed by the normalized lowercase city name
+- [x] Geocoding miss or network failure surfaces a clear "location not found" state, not a silent fallback
+- [x] The weather button shows a new `daily-forecast` page after the existing hourly pages
+- [x] The `daily-forecast` page calls `/v1/forecast` with `daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum&forecast_days=2&timezone=auto` (URL keeps `forecast_days=3` to feed the hourly window; daily is sliced to 2 in the builder)
+- [x] The page renders one row per day with day label, icon, high temp, low temp, precipitation sum
 **Research needed:** No
 
 ### Phase 51: Bars content polish

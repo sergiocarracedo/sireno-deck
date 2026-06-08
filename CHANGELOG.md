@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## 2026-06-08
+
+### Features
+
+- The bundled weather addon now accepts a city-name string in its `location` config (e.g. `location: "Vigo, Spain"`). The existing `{latitude, longitude, name?}` object form is preserved unchanged. String locations are resolved via the Open-Meteo Geocoding API on first call, with a singleton in-memory LRU (1000 entries, normalized lowercase key) and single-flight so concurrent calls for the same query share one fetch. The geocoder uses a 5-second `AbortSignal.timeout` so a stuck network call cannot block the controller.
+- The weather button gained a new `daily-forecast` page in its page cycle, sitting after the existing `hourly-forecast` page. The new page is fed by `&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum` on the same Open-Meteo `/v1/forecast` call (`forecast_days=3` is preserved to feed the hourly window; the daily response is sliced to 2 days in the builder). The page renders one column per day with: day-of-week label, WMO weather icon, high temperature, low temperature, and precipitation sum in mm.
+- The weather snapshot grew a tri-state `status: 'locating' | 'available' | 'unavailable'` field (replacing the old `available: boolean`). The Surface now renders three distinct tiles: "Locating…" while the geocoder is in flight, "Location not found" when a string location fails to resolve (no silent IP fallback), and "Unavailable" for all other failure modes. The 30-second auto-return to the main page is preserved across the new page.
+
+### Breaking Changes
+
+- The internal page key `forecast` on the weather Surface has been renamed to `hourly-forecast` to make the cycle self-documenting. The `Forecast.tsx` component file name is unchanged; only the key in the `pages` Record and the enum value in `SurfacePageSchema` moved. The `daily-forecast` key is new.
+
+### Learnings
+
+- The tri-state `status` enum is more honest than a boolean at the UI seam. A boolean `available: false` cannot distinguish "I'm still working on it" from "I tried and gave up"; the new enum lets the UI show progress and lets tests assert specific failure modes (geocoder miss vs. all-providers-failed vs. no-location).
+- The geocoder belongs inside the weather addon, not as a core service. Other addons don't need city-name resolution in v1.5, and keeping it scoped avoids the temptation to grow a generic geo-utility before the second consumer exists.
+- The Open-Meteo daily endpoint reuses the same `/v1/forecast` URL as hourly — extending the existing call with `&daily=...` is cheaper than a second round trip, and the hourly and daily windows can share the same `forecast_days` value.
+- 3 pre-existing test failures in `weather.test.tsx` (location text on main page, humidity percentage on data page, WMO icon for rain code) are baseline noise from before v1.5 work began. They are not regressions and are out of scope for Phase 50; should be filed as a v1.5.1 follow-up if they prove to be a real bug rather than test-fixture drift.
+
 ## 2026-06-07
 
 ### Features
