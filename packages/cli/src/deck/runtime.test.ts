@@ -3229,4 +3229,58 @@ describe("createDeckRuntime", () => {
       expect(runtime.getActiveDeck().id).toBe("main")
     })
   })
+
+  it("renders the implicit settings deck with brightness up/down and logo+version (54-02)", async () => {
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { id: "main", buttons: [] },
+      hostContext: {
+        os: { type: "linux", variant: "ubuntu", version: "24.04" },
+        session: { capability: "unsupported", state: "unlocked" },
+      },
+      sessionMonitor: createSessionMonitorDouble({
+        capability: "unsupported",
+        state: "unlocked",
+      }),
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("main")
+    })
+
+    emitEvent?.({ keyIndex: 14, type: "down" })
+    emitEvent?.({ keyIndex: 14, type: "up" })
+
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe("settings")
+    })
+
+    const brightnessUpHtml = getRenderedButtonHtml(
+      getRenderedButton(runtime, 0),
+    )
+    const brightnessDownHtml = getRenderedButtonHtml(
+      getRenderedButton(runtime, 1),
+    )
+    const currentBrightnessHtml = getRenderedButtonHtml(
+      getRenderedButton(runtime, 2),
+    )
+    const logoVersionHtml = getRenderedButtonHtml(
+      getRenderedButton(runtime, 3),
+    )
+
+    expect(brightnessUpHtml).toContain("Brighter")
+    expect(brightnessUpHtml).toContain('sireno-settings-button="brightness-up"')
+    expect(brightnessDownHtml).toContain("Dimmer")
+    expect(brightnessDownHtml).toContain('sireno-settings-button="brightness-down"')
+    expect(currentBrightnessHtml).toContain("50%")
+    expect(currentBrightnessHtml).toContain('sireno-settings-button="current-brightness"')
+    expect(logoVersionHtml).toContain("sireno-logo-version")
+  })
 })

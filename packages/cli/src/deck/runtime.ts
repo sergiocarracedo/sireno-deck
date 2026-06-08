@@ -30,6 +30,7 @@ import {
 } from '@/util/errors'
 import { createDeckController } from './controller'
 import { SystemBackButton } from './system-back-button'
+import { renderSettingsButton } from './settings-deck'
 import {
   getSystemBackButtonInstance,
   shouldInjectSystemBack,
@@ -231,16 +232,29 @@ function createImplicitLockedDeck(): DeckConfig {
   }
 }
 
-function createImplicitSettingsDeck(keyCount: number): DeckConfig {
-  const reservedIndex = Math.max(0, keyCount - 1)
+function createImplicitSettingsDeck(): DeckConfig {
+  const stubDefinition = {
+    configSchema: { parse: (input: unknown) => input },
+    defaultRenderIntervalMs: () => Number.POSITIVE_INFINITY,
+    type: 'settings-placeholder',
+  } as unknown as ButtonInstance['definition']
+  const placeholder = (
+    id: string,
+    position: number,
+  ): ButtonInstance =>
+    ({
+      config: {},
+      definition: stubDefinition,
+      id,
+      position,
+      type: 'settings-placeholder',
+    }) as unknown as ButtonInstance
   return {
     buttons: [
-      { id: 'brightness-up', position: 0, type: 'display-text' },
-      { id: 'brightness-down', position: 1, type: 'display-text' },
-      { id: 'current-brightness', position: 2, type: 'display-text' },
-      { id: 'logo-version', position: 3, type: 'display-text' },
-      { id: 'spacer-1', position: reservedIndex - 2, type: 'display-text' },
-      { id: 'spacer-2', position: reservedIndex - 1, type: 'display-text' },
+      placeholder('brightness-up', 0),
+      placeholder('brightness-down', 1),
+      placeholder('current-brightness', 2),
+      placeholder('logo-version', 3),
     ],
     id: SETTINGS_DECK_ID,
     name: 'Settings',
@@ -309,7 +323,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     options.hostContext ?? UNKNOWN_HOST_CONTEXT,
   )
   const implicitLockedDeck = createImplicitLockedDeck()
-  const implicitSettingsDeck = createImplicitSettingsDeck(options.keyCount ?? 15)
+  const implicitSettingsDeck = createImplicitSettingsDeck()
   const runtimeDecks = {
     ...(options.decks ?? { [options.deck.id]: options.deck }),
     [implicitLockedDeck.id]: implicitLockedDeck,
@@ -784,6 +798,22 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return undefined
     }
 
+    if (deckId === SETTINGS_DECK_ID && button.type === 'settings-placeholder') {
+      const rendered = renderSettingsButton(button.id)
+      const content = createElement(ButtonSurface, { full: false }, rendered)
+      const description: RuntimeRenderButton = {
+        background: resolveButtonBackground(button, deckId),
+        content,
+        frame_state: getFrameState(button.position),
+        keyIndex: button.position,
+      }
+      renderCache.set(getButtonStateKey(deckId, button.position), description)
+      if (emitRender) {
+        await options.onRenderButton?.(description)
+      }
+      return description
+    }
+
     const instance = getOrCreateInstance(deckId, button)
     const rendered = instance.render()
     if (!isValidElement(rendered)) {
@@ -930,6 +960,15 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
           }
           const previousDeckId = getDisplayDeckId()
           if (previousDeckId === options.deck.id) {
+            if (SETTINGS_DECK_ID in runtimeDecks) {
+              try {
+                deckController.navigateTo(SETTINGS_DECK_ID, { push: true })
+              } catch (error) {
+                await showRuntimeButtonError(button, deckId, 'navigateToDeck', error)
+                return
+              }
+              await activateDeckSurface(SETTINGS_DECK_ID, previousDeckId)
+            }
             return
           }
           deckController.goBack()
