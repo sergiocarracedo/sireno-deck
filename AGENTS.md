@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.5 — Addons & UX Polish II
-**Phase:** 51 ✓ Complete (2026-06-08) — bars content polish. Next: 52 — Lock deck navigation refinement
-**Status:** phase 51 verified (passed) — UAT visual confirmation pending; 2/7 phases complete, 10/25 reqs satisfied
+**Phase:** 52 — Lock deck navigation refinement (next: execute-phase 52)
+**Status:** planning — 1 plan in 1 wave (52-01 = shouldInjectSystemBack gains sessionState arg, runtime call site update, unit + integration tests, JSDoc note). 7 phases (50-56), 25 requirements. v1.4 complete (tagged v1.4). Phases 50 + 51 shipped (both verified passed). Distribution work (Phases 40/47/48) remains deferred.
 **Last updated:** 2026-06-08
 
 ---
