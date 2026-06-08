@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.5 — Addons & UX Polish II
-**Phase:** 54 ✓ complete — Settings deck with brightness controls (5 commits, 2 plans, verified passed)
-**Status:** v1.5 milestone 5/7 phases complete, 18/25 requirements satisfied. Phases 50-54 shipped (all verified passed). v1.4 complete (tagged v1.4). Distribution work (Phases 40/47/48) remains deferred.
+**Phase:** 55 — Active-app overlay decks (next: execute-phase 55)
+**Status:** planning — 3 plans in 3 waves (55-01 = process_names schema + OS-abstracted provider + monitor; 55-02 = runtime overlay state + dismiss gestures; 55-03 = settings-under-overlay + duplicate warnings). 7 phases (50-56), 25 requirements. v1.4 complete (tagged v1.4). Phases 50-54 shipped (all verified passed). Distribution work (Phases 40/47/48) remains deferred.
 **Last updated:** 2026-06-08
 
 ---
