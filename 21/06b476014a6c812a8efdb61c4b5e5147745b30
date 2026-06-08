@@ -1,0 +1,28 @@
+packages/cli/src/builtin-addons/brightness/index.ts
+  s_a44d509d67bdce::t_70225f28cd643e 1-10
+packages/cli/src/addon/builtin.ts
+  s_a44d509d67bdce::t_2f67f048916b02 1,19
+packages/cli/src/builtin-addons/brightness/index.test.ts
+  s_a44d509d67bdce::t_733be8eb202b6c 1-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "2106b476014a6c812a8efdb61c4b5e5147745b30",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
