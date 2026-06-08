@@ -1,0 +1,35 @@
+packages/cli/src/builtin-addons/weather/buttons/weather.tsx
+  s_a44d509d67bdce::t_f233e62dc2b5c2 25
+packages/cli/src/builtin-addons/weather/buttons/components/Surface.tsx
+  s_a44d509d67bdce::t_f233e62dc2b5c2 67-69
+packages/cli/src/builtin-addons/weather/schemas.ts
+  s_a44d509d67bdce::t_f233e62dc2b5c2 4-20,24
+packages/cli/src/builtin-addons/weather/domain/weather-controller.ts
+  s_a44d509d67bdce::t_f233e62dc2b5c2 50-52
+packages/cli/src/builtin-addons/weather/buttons/weather.test.tsx
+  s_a44d509d67bdce::t_7a8842764f3de6 117
+  s_a44d509d67bdce::t_450e5980eafa23 140
+packages/cli/src/builtin-addons/weather/index.ts
+  s_a44d509d67bdce::t_f233e62dc2b5c2 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1fcd7a261e994c98877cf7e0b714f3d1fb31f07d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
