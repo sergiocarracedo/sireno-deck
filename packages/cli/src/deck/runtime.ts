@@ -231,6 +231,22 @@ function createImplicitLockedDeck(): DeckConfig {
   }
 }
 
+function createImplicitSettingsDeck(keyCount: number): DeckConfig {
+  const reservedIndex = Math.max(0, keyCount - 1)
+  return {
+    buttons: [
+      { id: 'brightness-up', position: 0, type: 'display-text' },
+      { id: 'brightness-down', position: 1, type: 'display-text' },
+      { id: 'current-brightness', position: 2, type: 'display-text' },
+      { id: 'logo-version', position: 3, type: 'display-text' },
+      { id: 'spacer-1', position: reservedIndex - 2, type: 'display-text' },
+      { id: 'spacer-2', position: reservedIndex - 1, type: 'display-text' },
+    ],
+    id: SETTINGS_DECK_ID,
+    name: 'Settings',
+  }
+}
+
 function createTemporaryErrorDeck(detailLines: readonly string[]): DeckConfig {
   return {
     id: TEMPORARY_RELOAD_ERROR_DECK_ID,
@@ -293,9 +309,13 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     options.hostContext ?? UNKNOWN_HOST_CONTEXT,
   )
   const implicitLockedDeck = createImplicitLockedDeck()
+  const implicitSettingsDeck = createImplicitSettingsDeck(options.keyCount ?? 15)
   const runtimeDecks = {
     ...(options.decks ?? { [options.deck.id]: options.deck }),
     [implicitLockedDeck.id]: implicitLockedDeck,
+    ...(SETTINGS_DECK_ID in (options.decks ?? {})
+      ? {}
+      : { [SETTINGS_DECK_ID]: implicitSettingsDeck }),
   }
   const deckController = createDeckController({
     decks: runtimeDecks,
