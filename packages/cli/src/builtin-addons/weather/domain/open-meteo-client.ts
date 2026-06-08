@@ -1,4 +1,5 @@
 import type {
+  DailyForecastEntry,
   HourlyForecastEntry,
   WeatherSnapshot,
 } from './weather-controller'
@@ -8,6 +9,14 @@ interface OpenMeteoHourly {
   temperature_2m: number[]
   weather_code: number[]
   precipitation_probability: number[]
+}
+
+interface OpenMeteoDaily {
+  time: string[]
+  temperature_2m_max: number[]
+  temperature_2m_min: number[]
+  weather_code: number[]
+  precipitation_sum: number[]
 }
 
 function buildHourlyEntries(
@@ -42,6 +51,26 @@ function buildHourlyEntries(
   return out
 }
 
+function buildDailyEntries(
+  daily: OpenMeteoDaily | undefined,
+): DailyForecastEntry[] {
+  if (!daily?.time?.length) return []
+  const limit = Math.min(2, daily.time.length)
+  const out: DailyForecastEntry[] = []
+  for (let i = 0; i < limit; i += 1) {
+    const date = daily.time[i]
+    if (date === undefined) break
+    out.push({
+      date,
+      weatherCode: daily.weather_code[i] ?? 0,
+      tempMax: daily.temperature_2m_max[i] ?? 0,
+      tempMin: daily.temperature_2m_min[i] ?? 0,
+      precipitationSum: daily.precipitation_sum[i] ?? 0,
+    })
+  }
+  return out
+}
+
 export async function fetchOpenMeteoSnapshot(
   latitude: number,
   longitude: number,
@@ -52,6 +81,7 @@ export async function fetchOpenMeteoSnapshot(
     `?latitude=${latitude}&longitude=${longitude}` +
     `&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m` +
     `&hourly=temperature_2m,weather_code,precipitation_probability` +
+    `&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum` +
     `&forecast_days=3` +
     `&temperature_unit=celsius&wind_speed_unit=kmh&timezone=auto`
 
@@ -67,6 +97,7 @@ export async function fetchOpenMeteoSnapshot(
       relative_humidity_2m?: number
     }
     hourly?: OpenMeteoHourly
+    daily?: OpenMeteoDaily
   }
   const current = json.current
   if (!current || typeof current.temperature_2m !== 'number') {
@@ -81,6 +112,6 @@ export async function fetchOpenMeteoSnapshot(
     weatherCode: current.weather_code ?? 0,
     windSpeed: current.wind_speed_10m ?? 0,
     hourly: buildHourlyEntries(json.hourly),
-    daily: [],
+    daily: buildDailyEntries(json.daily),
   }
 }
