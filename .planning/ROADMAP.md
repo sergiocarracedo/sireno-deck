@@ -105,6 +105,23 @@ Every v1.5 requirement maps to exactly one phase. Verification (VERIFY-01) is th
 - [ ] Keyboard escape (Esc, q) still works to exit the daemon even while an overlay is active
 **Research needed:** Yes — `active-win` behavior in the install environment, macOS Accessibility permission flow, Wayland detection, and the double-tap window timing should be verified during plan-phase
 
+### Phase 57: Distribution build pipeline (bundled tarball)
+
+**Goal:** Ship a reproducible build that produces a self-contained, versioned tarball of the CLI plus all its runtime native dependencies, ready to extract and run on a target system with Node already installed.
+**Requirements:** `DIST-01`, `DIST-02`, `DIST-03`
+**Depends on:** None (build-only; produces artifacts, does not affect runtime)
+**Success criteria:**
+- [ ] A new `pnpm bundle` script (or `build:bundle` namespace) runs the existing `build:tailwind-browser` + `tsdown` pipeline and packages the output `dist/` together with a pinned `package.json` (production deps only, no devDependencies) and the platform-specific native module binaries (node-hid from `@elgato-stream-deck/node`, libvips from `sharp`, dbus/x11 native bits, etc.) into a versioned tarball under `dist-bundle/`
+- [ ] The produced tarball extracts to a directory containing `bin/sireno`, `package.json`, `node_modules/`, and a `README` snippet; running `bin/sireno start --config config.yml` from the extracted directory launches the CLI without requiring an additional `pnpm install` step
+- [ ] The native binaries inside the tarball match the host platform/arch (linux-x64 today; the build script rejects cross-platform builds with a clear error rather than producing a broken tarball)
+- [ ] `verify` script is extended so `pnpm verify` runs `build`, `test`, and `bundle` in sequence; the bundle artifact is rebuilt on every verify run and is gitignored
+- [ ] A `BUILD.md` (or appended README section) documents: prerequisites (Node 20+ on the build host, pnpm 9+), the exact `pnpm bundle` invocation, what the tarball contains, and how to install it (extract + symlink or copy `bin/sireno` into `$PATH`)
+- [ ] No source code refactors; this phase reuses the existing tsdown config and the existing production `dependencies` list from `packages/cli/package.json` without modification
+- [ ] The bundle script fails loudly if any declared `dependency` cannot be resolved against the lockfile, so a missing or moved dep does not silently produce a half-broken tarball
+**Research needed:** No (tsdown output + production deps are already known; the only new surface is the tarball assembly script)
+
+**Distribution target:** bundled tarball (Option A from the v1.4 Phase 40 cut solution). SEA was ruled out for this codebase because `@elgato-stream-deck/node` (node-hid), `sharp` (libvips), `dbus-next` (x11), and `playwright-core` (chromium-bidi) load `.node` binaries or spawn subprocesses that V8 snapshots cannot capture. See `.planning/solutions/build-errors/node-sea-not-viable-for-native-deps-2026-06-05.md`.
+
 ### Phase 56: v1.5 verification sweep
 
 **Goal:** A single focused verification phase that proves the v1.5 features work together: geocoder cache + miss + invalid city; daily forecast `timezone=auto`; Bars negative-color for known solids and near-gray fallback; brightness up/down with a mock device; lock-deck back-injection skip when locked; active-app overlay toggle and base-deck double-tap back.
@@ -149,8 +166,11 @@ Every v1.5 requirement maps to exactly one phase. Verification (VERIFY-01) is th
 | ACTIVEAPP-05 | 55 | pending |
 | ACTIVEAPP-06 | 55 | pending |
 | VERIFY-01 | 56 | pending |
+| DIST-01 | 57 | pending |
+| DIST-02 | 57 | pending |
+| DIST-03 | 57 | pending |
 
-**Total:** 25/25 v1.5 requirements mapped, 0 circular dependencies, Phase 50 has no unmet dependencies.
+**Total:** 28/28 v1.5 requirements mapped, 0 circular dependencies, Phase 50 has no unmet dependencies.
 
 ## Build Order Rationale
 
@@ -158,6 +178,7 @@ Every v1.5 requirement maps to exactly one phase. Verification (VERIFY-01) is th
 - **Phase 53 (brightness) is independent** of the addon/content work and is sequenced before the settings deck purely so the settings deck has a stable brightness API to call.
 - **Phase 54 (settings) depends on 53** because the settings deck is the first user of the brightness API.
 - **Phase 55 (active-app) is the risk concentration point** and is sequenced last so all the preconditions (overlay concept, double-tap detector, system-back-injection gate) are already exercised by the lock-deck phase. The double-tap detector's design also benefits from a clean run of the lock-deck phase first.
+- **Phase 57 (distribution)** is build-only infrastructure that ships a bundled tarball; it sits after the feature work and before verification so the verify sweep runs against the same artifacts users will receive.
 - **Phase 56 (verification)** is the cross-cutting regression sweep and sits at the end.
 
 ## Phase Sizing
@@ -171,8 +192,9 @@ Every v1.5 requirement maps to exactly one phase. Verification (VERIFY-01) is th
 | 54 — Settings deck | 2 | 1-2 | New addon + reserved-slot replacement |
 | 55 — Active-app | 3 | 2-3 | New dep, new concept, new gesture |
 | 56 — Verification | 1 | 1 | Regression sweep |
+| 57 — Distribution | 1 | 1 | Tarball assembly script + BUILD.md |
 
-**Total:** 7 phases, ~11 plans, ~7-10 sessions.
+**Total:** 8 phases, ~12 plans, ~8-11 sessions.
 
 ## Anti-Features Carried Forward (kept out of v1.5)
 
@@ -182,9 +204,10 @@ Every v1.5 requirement maps to exactly one phase. Verification (VERIFY-01) is th
 - 7-day or 14-day weather forecast
 - Configurable back-button double-tap threshold
 - Bumping `SIRENO_ADDON_API_VERSION`
-- Distribution build pipeline (Phases 40/47/48 from v1.4)
+- Single-file SEA / native FFI binary distribution (ruled out for this codebase; see Phase 57 for the chosen tarball path)
+- CI matrix builds for Linux + Mac (Phase 47 from v1.4; deferred — manual cross-platform testing only for v1.5)
 
 ---
 
 *Roadmap created: 2026-06-08*
-*Total v1.5 phases: 7, total requirements: 25*
+*Total v1.5 phases: 8, total requirements: 28*

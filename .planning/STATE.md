@@ -9,9 +9,9 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 54 — Settings deck with brightness controls (next: plan-phase 54)
+Phase: 54 — Settings deck with brightness controls (next: plan-phase 54). Phase 57 added to v1.5 roadmap (distribution build pipeline, bundled tarball).
 Plan: —
-Status: Phase 53 complete — brightness device control shipped (12 commits; device/registry.ts with setBrightnessAll + lifecycle wiring; builtin-addons/brightness/ for the standalone button; 21 new tests in 4 files; VERIFICATION.md status: passed). Phase 54 context locked (54-CONTEXT.md + 54-DISCUSSION-LOG.md); 4 decisions made: settings deck is core-managed (NOT a built-in addon), logo+version moves to @/ui/LogoVersion (extracted from system-back-button.tsx), always-settings-button on main deck (unconditional), 10% brightness steps, standard chevron+Back on settings. Milestone v1.5 progress: 4/7 phases complete, 14/25 requirements satisfied. v1.4 complete. Distribution work (Phases 40/47/48) remains deferred.
+Status: Phase 53 complete — brightness device control shipped (12 commits; device/registry.ts with setBrightnessAll + lifecycle wiring; builtin-addons/brightness/ for the standalone button; 21 new tests in 4 files; VERIFICATION.md status: passed). Phase 54 context locked (54-CONTEXT.md + 54-DISCUSSION-LOG.md); 4 decisions made: settings deck is core-managed (NOT a built-in addon), logo+version moves to @/ui/LogoVersion (extracted from system-back-button.tsx), always-settings-button on main deck (unconditional), 10% brightness steps, standard chevron+Back on settings. Milestone v1.5 progress: 4/7 phases complete, 14/25 requirements satisfied (28/28 after Phase 57). v1.4 complete. Phase 57 added to roadmap: distribution build pipeline (bundled tarball, Option A from the v1.4 Phase 40 cut solution). Phases 47 (CI matrix) and 48 (install docs) remain deferred.
 Last activity: 2026-06-08 — Phase 54 context locked (discuss-phase 54 complete)
 
 ### Quick Tasks Completed
@@ -164,6 +164,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 57 added: distribution build pipeline (bundled tarball) — reproduces the v1.4 Phase 40 cut as Option A (ship self-contained tarball with native deps bundled) instead of SEA. Reuses existing tsdown + tailwind build outputs, adds a tarball assembly script + BUILD.md. Excludes 47 (CI matrix) and 48 (docs) per user scope decision.
 - Phase 49 added: emoji-selector UX revamp as a v1.4 late addition — rewrite based on real-world feedback (real emoji glyphs not U+1Fxxx placeholders, bigger key art, HID keyboard-stroke output for tap=emoji / double-tap=shortcode, proper subcategory split using the piliapp.com catalog, n-2 page-nav button with Tap/Dbl-Tap chip hints, addon-provided entry button that renders a 2×3 grid of six emojis as a first-class button type).
 - Phase 39 added: let external themes override the `Surface` component used by the built-in media-player addon so they can render the button surface however they want.
 - Phase 48 added: document the build and install flow for the v1.4 standalone binary — README updates for end-user install of the prebuilt binary, plus developer quickstart for building from source.
