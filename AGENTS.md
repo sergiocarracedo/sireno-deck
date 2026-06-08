@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.5 — Addons & UX Polish II
-**Phase:** 50 — Weather city-name + 2-day daily forecast (next: discuss-phase 50 → plan-phase 50)
-**Status:** planning — 7 phases (50-56), 25 requirements approved. v1.4 complete (tagged v1.4). Distribution work (Phases 40/47/48) remains deferred pending distribution-target decision.
+**Phase:** 50 — Weather city-name + 2-day daily forecast
+**Status:** planning
 **Last updated:** 2026-06-08
 
 ---
