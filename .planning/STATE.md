@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 53 — Brightness device control (next: plan-phase 53)
+Phase: 54 — Settings deck with brightness controls (next: plan-phase 54)
 Plan: —
-Status: Phase 52 complete — lock deck navigation refinement shipped (5 commits; shouldInjectSystemBack gains sessionState arg; runtime call site update; 1 new integration test + 3 new unit tests; JSDoc note for change-deck affordance; VERIFICATION.md status: passed). Phase 53 context locked (53-CONTEXT.md + 53-DISCUSSION-LOG.md); 4 decisions made: registry = new device/registry.ts module, persistence = in-memory lastBrightness private field, setBrightnessAll returns {succeeded, failed, errors} summary, scope includes a built-in brightness button. SDK v7.6.2 confirmed (no 0-1 vs 0-100 ambiguity). Milestone v1.5 progress: 3/7 phases complete, 12/25 requirements satisfied. v1.4 complete. Distribution work (Phases 40/47/48) remains deferred.
-Last activity: 2026-06-08 — Completed quick task 041: Remove .js compiled files and prevent recurrence
+Status: Phase 53 complete — brightness device control shipped (12 commits; device/registry.ts with setBrightnessAll + lifecycle wiring; builtin-addons/brightness/ for the standalone button; 21 new tests in 4 files; VERIFICATION.md status: passed). Phase 54 context locked (54-CONTEXT.md + 54-DISCUSSION-LOG.md); 4 decisions made: settings deck is core-managed (NOT a built-in addon), logo+version moves to @/ui/LogoVersion (extracted from system-back-button.tsx), always-settings-button on main deck (unconditional), 10% brightness steps, standard chevron+Back on settings. Milestone v1.5 progress: 4/7 phases complete, 14/25 requirements satisfied. v1.4 complete. Distribution work (Phases 40/47/48) remains deferred.
+Last activity: 2026-06-08 — Phase 54 context locked (discuss-phase 54 complete)
 
 ### Quick Tasks Completed
 
