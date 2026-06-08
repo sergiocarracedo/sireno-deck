@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 54 — Settings deck with brightness controls (next: plan-phase 54). Phase 57 added to v1.5 roadmap (distribution build pipeline, bundled tarball).
-Plan: —
-Status: Phase 53 complete — brightness device control shipped (12 commits; device/registry.ts with setBrightnessAll + lifecycle wiring; builtin-addons/brightness/ for the standalone button; 21 new tests in 4 files; VERIFICATION.md status: passed). Phase 54 context locked (54-CONTEXT.md + 54-DISCUSSION-LOG.md); 4 decisions made: settings deck is core-managed (NOT a built-in addon), logo+version moves to @/ui/LogoVersion (extracted from system-back-button.tsx), always-settings-button on main deck (unconditional), 10% brightness steps, standard chevron+Back on settings. Milestone v1.5 progress: 4/7 phases complete, 14/25 requirements satisfied (28/28 after Phase 57). v1.4 complete. Phase 57 added to roadmap: distribution build pipeline (bundled tarball, Option A from the v1.4 Phase 40 cut solution). Phases 47 (CI matrix) and 48 (install docs) remain deferred.
-Last activity: 2026-06-08 — Phase 54 context locked (discuss-phase 54 complete)
+Phase: 54 ✓ complete — Settings deck with brightness controls shipped. Next: ship v1.5 or move to phase 55 (active app).
+Plan: 2 plans, 5 commits, all verified passed.
+Status: Phase 54 complete — settings deck (core-managed) shipped: 4 buttons (brightness-up, brightness-down, current-brightness, logo+version) injected into runtimeDecks when user hasn't configured their own; system-back onTap on main navigates to settings; 6 new tests pass; pre-existing baseline unchanged. Phase 54-VERIFICATION.md status: passed. Milestone v1.5 progress: 5/7 phases complete, 18/25 requirements satisfied (32/32 after Phase 57). v1.4 complete. Phase 57 added to roadmap: distribution build pipeline (bundled tarball, Option A from the v1.4 Phase 40 cut solution). Phases 47 (CI matrix) and 48 (install docs) remain deferred.
+Last activity: 2026-06-08 — Phase 54 executed and verified (5 commits: LogoVersion extraction, system-back-button refactor, runtime wiring, registry helper, settings deck + dispatch)
 
 ### Quick Tasks Completed
 

@@ -155,10 +155,10 @@ Every v1.5 requirement maps to exactly one phase. Verification (VERIFY-01) is th
 | LOCK-02 | 52 | pending |
 | BR-01 | 53 | pending |
 | BR-02 | 53 | pending |
-| SETTINGS-01 | 54 | pending |
-| SETTINGS-02 | 54 | pending |
-| SETTINGS-03 | 54 | pending |
-| SETTINGS-04 | 54 | pending |
+| SETTINGS-01 | 54 | complete |
+| SETTINGS-02 | 54 | complete |
+| SETTINGS-03 | 54 | complete |
+| SETTINGS-04 | 54 | complete |
 | ACTIVEAPP-01 | 55 | pending |
 | ACTIVEAPP-02 | 55 | pending |
 | ACTIVEAPP-03 | 55 | pending |
