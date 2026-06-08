@@ -31,6 +31,7 @@ import {
 import { createDeckController } from './controller'
 import { SystemBackButton } from './system-back-button'
 import { renderSettingsButton } from './settings-deck'
+import { handleSettingsButtonTap } from './settings-deck'
 import {
   getSystemBackButtonInstance,
   shouldInjectSystemBack,
@@ -798,22 +799,6 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return undefined
     }
 
-    if (deckId === SETTINGS_DECK_ID && button.type === 'settings-placeholder') {
-      const rendered = renderSettingsButton(button.id)
-      const content = createElement(ButtonSurface, { full: false }, rendered)
-      const description: RuntimeRenderButton = {
-        background: resolveButtonBackground(button, deckId),
-        content,
-        frame_state: getFrameState(button.position),
-        keyIndex: button.position,
-      }
-      renderCache.set(getButtonStateKey(deckId, button.position), description)
-      if (emitRender) {
-        await options.onRenderButton?.(description)
-      }
-      return description
-    }
-
     const instance = getOrCreateInstance(deckId, button)
     const rendered = instance.render()
     if (!isValidElement(rendered)) {
@@ -931,6 +916,15 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     deckId: string,
     button: ButtonInstance,
   ): RuntimeButtonInstance {
+    if (button.type === 'settings-placeholder') {
+      return {
+        onTap: async () => {
+          await handleSettingsButtonTap(button.id).catch(reportRuntimeError)
+        },
+        render: () => renderSettingsButton(button.id),
+      }
+    }
+
     if (button.type === 'system-back') {
       const currentDeck = runtimeDecks[deckId]
       const tapCommand =

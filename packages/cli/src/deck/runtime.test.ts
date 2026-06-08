@@ -3281,6 +3281,24 @@ describe("createDeckRuntime", () => {
     expect(brightnessDownHtml).toContain('sireno-settings-button="brightness-down"')
     expect(currentBrightnessHtml).toContain("50%")
     expect(currentBrightnessHtml).toContain('sireno-settings-button="current-brightness"')
+
+    emitEvent?.({ keyIndex: 0, type: "down" })
+    emitEvent?.({ keyIndex: 0, type: "up" })
+    await vi.waitFor(() => {
+      const updatedHtml = getRenderedButtonHtml(
+        getRenderedButton(runtime, 2),
+      )
+      expect(updatedHtml).toContain("60%")
+    })
+
+    emitEvent?.({ keyIndex: 1, type: "down" })
+    emitEvent?.({ keyIndex: 1, type: "up" })
+    await vi.waitFor(() => {
+      const updatedHtml = getRenderedButtonHtml(
+        getRenderedButton(runtime, 2),
+      )
+      expect(updatedHtml).toContain("50%")
+    })
     expect(logoVersionHtml).toContain("sireno-logo-version")
   })
 })

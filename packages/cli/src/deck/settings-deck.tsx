@@ -14,6 +14,19 @@ export function nextBrightnessDown(current: number): number {
   return Math.max(0, current - BRIGHTNESS_STEP)
 }
 
+export async function handleSettingsButtonTap(buttonId: string): Promise<void> {
+  switch (buttonId) {
+    case "brightness-up":
+      await setBrightnessAll(nextBrightnessUp(getCurrentBrightness()))
+      return
+    case "brightness-down":
+      await setBrightnessAll(nextBrightnessDown(getCurrentBrightness()))
+      return
+    default:
+      return
+  }
+}
+
 export function renderSettingsButton(buttonId: string): ReactElement {
   switch (buttonId) {
     case "brightness-up":
@@ -21,9 +34,6 @@ export function renderSettingsButton(buttonId: string): ReactElement {
         <div
           className="flex h-full w-full flex-col items-center justify-center gap-1"
           data-sireno-settings-button="brightness-up"
-          onClick={async () => {
-            await setBrightnessAll(nextBrightnessUp(getCurrentBrightness()))
-          }}
         >
           <Icon icon="sun" size={32} />
           <Text size="xs">Brighter</Text>
@@ -34,9 +44,6 @@ export function renderSettingsButton(buttonId: string): ReactElement {
         <div
           className="flex h-full w-full flex-col items-center justify-center gap-1"
           data-sireno-settings-button="brightness-down"
-          onClick={async () => {
-            await setBrightnessAll(nextBrightnessDown(getCurrentBrightness()))
-          }}
         >
           <Icon icon="moon" size={32} />
           <Text size="xs">Dimmer</Text>
