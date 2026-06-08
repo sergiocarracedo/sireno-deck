@@ -38,6 +38,7 @@ function createHarness(button: typeof builtinWeatherButton, config: unknown, sna
 const availableSnapshot: WeatherSnapshot = {
   status: 'available',
   hourly: [],
+  daily: [],
   humidity: 65,
   location: 'London',
   source: 'open-meteo',
@@ -158,6 +159,7 @@ describe('weather', () => {
       weatherCode: 0,
       windSpeed: 0,
       hourly: [],
+      daily: [],
     }
     const harness = createHarness(
       button,
@@ -179,6 +181,7 @@ describe('weather', () => {
       weatherCode: 0,
       windSpeed: 0,
       hourly: [],
+      daily: [],
     }
     const harness = createHarness(
       button,
@@ -200,6 +203,7 @@ describe('weather', () => {
       weatherCode: 0,
       windSpeed: 0,
       hourly: [],
+      daily: [],
     }
     const harness = createHarness(
       button,

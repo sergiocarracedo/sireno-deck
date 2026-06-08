@@ -43,6 +43,16 @@ export function Surface({
     )
   }
 
+  if (!snap) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center gap-1">
+        <Text size="xs" tone="foreground">
+          Unavailable
+        </Text>
+      </div>
+    )
+  }
+
   const displayUnits = units ?? 'metric'
   const temp = convertTemperature(snap.temperature, displayUnits)
   const wind = convertWindSpeed(snap.windSpeed, displayUnits)

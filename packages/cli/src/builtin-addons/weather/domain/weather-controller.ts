@@ -84,7 +84,7 @@ export interface WeatherController {
 }
 
 export async function resolveLocation(
-  config: WeatherButtonConfig,
+  config: WeatherButtonConfig | { location?: WeatherButtonConfig['location'] },
   options?: { signal?: AbortSignal },
 ): Promise<WeatherLocation | null> {
   if (typeof config.location === 'string') {
@@ -111,7 +111,7 @@ export async function resolveLocation(
 }
 
 export async function fetchWeatherSnapshot(
-  config: WeatherButtonConfig,
+  config: WeatherButtonConfig | { location?: WeatherButtonConfig['location'] },
   options?: { signal?: AbortSignal },
 ): Promise<WeatherSnapshot> {
   const loc = await resolveLocation(config, options)
