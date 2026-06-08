@@ -88,8 +88,7 @@ export function Bars(props: BarsProps): ReactElement {
               />
               <Text
                 align="center"
-                className="pointer-events-none absolute inset-0 flex items-center justify-center whitespace-nowrap"
-                data-sireno-bars-value="true"
+                className="sireno-bars-value pointer-events-none absolute inset-0 flex items-center justify-center whitespace-nowrap"
                 size="xs"
                 style={valueTextStyle}
                 tone={props.useSharpPath ? undefined : 'foreground'}

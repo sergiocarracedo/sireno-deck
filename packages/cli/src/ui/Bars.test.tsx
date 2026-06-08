@@ -52,4 +52,87 @@ describe('Bars', () => {
       }),
     ).toThrow('Bars supports 1-3 items')
   })
+
+  it('renders the value as rotated text inside the bar fill', () => {
+    const html = renderReactNodeToHtml(
+      createElement(Bars, {
+        items: [{ displayValue: '12.3 GB', maxValue: 100, title: 'ram', value: 78 }],
+      }),
+    )
+
+    expect(html).toContain('sireno-bars-value')
+    expect(html).toContain('12.3 GB')
+    expect(html).toContain('transform:rotate(-90deg)')
+    expect(html).toContain('mix-blend-mode:difference')
+  })
+
+  it('falls back to Math.round(value) when displayValue is omitted', () => {
+    const html = renderReactNodeToHtml(
+      createElement(Bars, {
+        items: [{ maxValue: 100, title: 'cpu', value: 45.7 }],
+      }),
+    )
+
+    expect(html).toContain('sireno-bars-value')
+    expect(html).toContain('>46<')
+  })
+
+  it('prefers displayValue over the rounded number', () => {
+    const html = renderReactNodeToHtml(
+      createElement(Bars, {
+        items: [{ displayValue: '67%', maxValue: 100, title: 'cpu', value: 67 }],
+      }),
+    )
+
+    expect(html).toContain('>67%<')
+  })
+
+  it('emits an explicit precomputed color in the sharp path', () => {
+    const html = renderReactNodeToHtml(
+      createElement(Bars, {
+        items: [{ maxValue: 100, title: 'cpu', value: 45 }],
+        themePrimaryHex: '#7dd3fc',
+        useSharpPath: true,
+      }),
+    )
+
+    expect(html).toContain('sireno-bars-value')
+    expect(html).toContain('color:#822c03')
+    expect(html).not.toContain('mix-blend-mode')
+    expect(html).toContain('transform:rotate(-90deg)')
+  })
+
+  it('emits white text for a near-gray bar in the sharp path (luma 127 < 128)', () => {
+    const html = renderReactNodeToHtml(
+      createElement(Bars, {
+        items: [{ color: '#7f7f7f', maxValue: 100, title: 'cpu', value: 45 }],
+        useSharpPath: true,
+      }),
+    )
+
+    expect(html).toContain('color:#ffffff')
+  })
+
+  it('falls back to the theme primary when item.color is a CSS variable', () => {
+    const html = renderReactNodeToHtml(
+      createElement(Bars, {
+        items: [{ maxValue: 100, title: 'cpu', value: 45 }],
+        themePrimaryHex: '#2563eb',
+        useSharpPath: true,
+      }),
+    )
+
+    expect(html).toContain('color:#da9c14')
+  })
+
+  it('emits a static white fallback when neither color nor theme is provided in the sharp path', () => {
+    const html = renderReactNodeToHtml(
+      createElement(Bars, {
+        items: [{ maxValue: 100, title: 'cpu', value: 45 }],
+        useSharpPath: true,
+      }),
+    )
+
+    expect(html).toContain('color:#ffffff')
+  })
 })
