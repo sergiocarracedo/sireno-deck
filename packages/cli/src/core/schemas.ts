@@ -33,6 +33,15 @@ export const LoggingSchema = z.object({
 })
 
 export const SessionSchema = z.object({
+  /**
+   * The deck rendered when the user's session is locked.
+   *
+   * Users add a `change-deck` button on the main deck pointing at this
+   * deck to navigate to it (per v1.5 phase 52). The lock deck's back
+   * button is suppressed only when the session state is `locked`; when
+   * unlocked, the lock deck behaves like any other subdeck so users can
+   * pre-warm and inspect it.
+   */
   locked_deck: z.string().min(1).optional(),
 })
 
