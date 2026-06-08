@@ -393,7 +393,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         locked_deck: options.lockedDeckId ?? IMPLICIT_LOCKED_DECK_ID,
       },
     } as SirenoConfig
-    if (shouldInjectSystemBack(deck, syntheticConfig)) {
+    if (shouldInjectSystemBack(deck, syntheticConfig, hostContext.session.state)) {
       return [
         ...baseButtons,
         getSystemBackButtonInstance(deck, reservedIndex),
