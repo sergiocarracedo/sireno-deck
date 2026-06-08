@@ -219,6 +219,49 @@ describe('system-status addon', () => {
     expect(html).toContain('N/A')
   })
 
+  it('renders formatted metric values inside each bar (no separate value grid)', async () => {
+    getCanonicalSystemMetricsMock.mockResolvedValue([
+      {
+        available: true,
+        id: 'cpu_usage',
+        label: '45%',
+        max: 100,
+        percentage: 45,
+        unit: '%',
+        value: 45,
+      },
+      {
+        available: true,
+        id: 'mem_usage',
+        label: '12.3 GB',
+        max: 32,
+        unit: 'GB',
+        value: 12.3,
+      },
+    ])
+
+    const definition = systemStatusAddon.buttons.find(
+      (button) => button.type === 'system-status-bars',
+    )
+    const harness = createMountedHarness(definition!, {
+      metrics: [
+        { label: 'CPU', metric: 'cpu_usage' },
+        { label: 'MEM', metric: 'mem_usage' },
+      ],
+    }, 2)
+
+    await harness.activate()
+
+    const html = renderReactNodeToHtml(harness.render() as never)
+
+    // The formatted values appear inside the bars via the sireno-bars-value class.
+    // The separate value grid below the bars is gone (no repeat(2, minmax(0, 1fr))).
+    const valueElements = html.match(/sireno-bars-value[^>]*>[^<]*(?:45%|12\.3 GB)/g) ?? []
+    expect(valueElements.length).toBeGreaterThanOrEqual(2)
+    expect(html).not.toContain('repeat(2, minmax(0, 1fr))')
+    expect(html).toContain('transform:rotate(-90deg)')
+  })
+
   it('keeps tap and hold commands distinct through the shared command hook', async () => {
     getCanonicalSystemMetricsMock.mockResolvedValue([
       {
