@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 Phase: 53 — Brightness device control (next: plan-phase 53)
 Plan: —
 Status: Phase 52 complete — lock deck navigation refinement shipped (5 commits; shouldInjectSystemBack gains sessionState arg; runtime call site update; 1 new integration test + 3 new unit tests; JSDoc note for change-deck affordance; VERIFICATION.md status: passed). Phase 53 context locked (53-CONTEXT.md + 53-DISCUSSION-LOG.md); 4 decisions made: registry = new device/registry.ts module, persistence = in-memory lastBrightness private field, setBrightnessAll returns {succeeded, failed, errors} summary, scope includes a built-in brightness button. SDK v7.6.2 confirmed (no 0-1 vs 0-100 ambiguity). Milestone v1.5 progress: 3/7 phases complete, 12/25 requirements satisfied. v1.4 complete. Distribution work (Phases 40/47/48) remains deferred.
-Last activity: 2026-06-08 — Phase 53 context locked (discuss-phase 53 complete)
+Last activity: 2026-06-08 — Completed quick task 041: Remove .js compiled files and prevent recurrence
 
 ### Quick Tasks Completed
 
@@ -22,6 +22,7 @@ Last activity: 2026-06-08 — Phase 53 context locked (discuss-phase 53 complete
 | 036 | Move default theme presentation interfaces to core contract and fix ButtonFrame line 53 | 2026-06-05 | 1d1b359 | .planning/quick/036-move-theme-interfaces-to-core/ |
 | 037 | Replace main deck home button with logo + cli version | 2026-06-06 | 23d2a54 | .planning/quick/037-main-deck-home-button-logo-version/ |
 | 038 | Lock deck should not show home or back button | 2026-06-06 | a967147 | .planning/quick/038-lock-deck-no-home-back-button/ |
+| 041 | Remove .js compiled files and prevent recurrence | 2026-06-08 | cb7b884 | .planning/quick/041-remove-js-compiled-files/ |
 
 Progress: [██████████] 100% (7 of 7 in-scope v1.4 phases complete)
 
