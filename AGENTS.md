@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.5 — Addons & UX Polish II
-**Phase:** 51 — Bars content polish (next: execute-phase 51)
-**Status:** planning — 2 plans in 2 waves (51-01 = Bars component + negative-color helper; 51-02 = system-status consumer). 7 phases (50-56), 25 requirements. v1.4 complete (tagged v1.4). Phase 50 shipped (verified passed, UAT visual confirmation pending). Distribution work (Phases 40/47/48) remains deferred.
+**Phase:** 51 ✓ Complete (2026-06-08) — bars content polish. Next: 52 — Lock deck navigation refinement
+**Status:** phase 51 verified (passed) — UAT visual confirmation pending; 2/7 phases complete, 10/25 reqs satisfied
 **Last updated:** 2026-06-08
 
 ---

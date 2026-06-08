@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 51 — Bars content polish (next: plan-phase 51)
+Phase: 52 — Lock deck navigation refinement (next: discuss-phase 52 → plan-phase 52)
 Plan: —
-Status: Phase 50 complete — weather city-name + 2-day daily forecast shipped (15 commits, 49 weather tests / 43 pass / 3 baseline pre-existing failures unchanged / 0 regressions; VERIFICATION.md status: passed). Phase 51 context locked (51-CONTEXT.md + 51-DISCUSSION-LOG.md); 3 decisions made: drop system-status value grid, add displayValue?: string, mix-blend-mode for DOM + precompute for sharp. UAT pending visual confirmation of "Locating…" tile, "Location not found" tile, and the daily-forecast page. Milestone v1.5 progress: 1/7 phases complete, 7/25 requirements satisfied. v1.4 complete — 7 phases (41-46, 49) shipped, 35/35 requirements satisfied, milestone audit passed, tagged v1.4. Distribution work (Phases 40/47/48 from v1.4) remains deferred pending distribution-target decision.
-Last activity: 2026-06-08 — Phase 51 context locked (discuss-phase 51 complete)
+Status: Phase 51 complete — bars content polish shipped (10 commits, 40 new tests in 3 files / all green; VERIFICATION.md status: passed). All BARS-01/02/03 satisfied. Milestone v1.5 progress: 2/7 phases complete, 10/25 requirements satisfied. UAT pending visual confirmation of in-bar value rendering, near-gray fallback, and the dropped system-status value grid. v1.4 complete — 7 phases (41-46, 49) shipped, 35/35 requirements satisfied, milestone audit passed, tagged v1.4. Distribution work (Phases 40/47/48 from v1.4) remains deferred pending distribution-target decision.
+Last activity: 2026-06-08 — Phase 51 verification passed (status: passed)
 
 ### Quick Tasks Completed
 

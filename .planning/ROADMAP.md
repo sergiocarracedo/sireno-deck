@@ -30,18 +30,18 @@ Every v1.5 requirement maps to exactly one phase. Verification (VERIFY-01) is th
 - [x] The page renders one row per day with day label, icon, high temp, low temp, precipitation sum
 **Research needed:** No
 
-### Phase 51: Bars content polish
+### Phase 51: Bars content polish ✓ Complete (2026-06-08)
 
 **Goal:** Make the shared `Bars` component's labels use the theme primary color and render the value text inside the bar with a color that is the visual negative of the bar's pixels.
 **Requirements:** `BARS-01`, `BARS-02`, `BARS-03`
 **Depends on:** None
 **Success criteria:**
-- [ ] A `Bars` item with no `color` field renders its label in the active theme's primary color
-- [ ] Each bar renders its `value` text inside the bar body, rotated 90 degrees
-- [ ] The value text color is the visual negative of the bar's fill color, precomputed at config load when the bar uses a known solid color
-- [ ] The DOM path uses `mix-blend-mode: difference` so browser and sharp renderers agree
-- [ ] When the bar's effective color is near gray (luma within 32 of 128), the value text falls back to white-on-dark or black-on-light automatically
-- [ ] The system-status addon (canonical Bars consumer) renders correctly with both the new label color and the in-bar value text
+- [x] A `Bars` item with no `color` field renders its label in the active theme's primary color
+- [x] Each bar renders its `value` text inside the bar body, rotated 90 degrees
+- [x] The value text color is the visual negative of the bar's fill color, precomputed at config load when the bar uses a known solid color
+- [x] The DOM path uses `mix-blend-mode: difference` so browser and sharp renderers agree
+- [x] When the bar's effective color is near gray (luma within 32 of 128), the value text falls back to white-on-dark or black-on-light automatically
+- [x] The system-status addon (canonical Bars consumer) renders correctly with both the new label color and the in-bar value text
 **Research needed:** No
 
 ### Phase 52: Lock deck navigation refinement
