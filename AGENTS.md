@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.5 — Addons & UX Polish II
-**Phase:** 53 ✓ Complete (2026-06-08) — brightness device control. Next: 54 — Settings deck with brightness controls
-**Status:** phase 53 verified (passed) — UAT visual confirmation pending; 4/7 phases complete, 14/25 reqs satisfied
+**Phase:** 54 — Settings deck with brightness controls (next: execute-phase 54)
+**Status:** planning — 2 plans in 2 waves (54-01 = LogoVersion extraction + main-deck settings affordance; 54-02 = core settings deck with brightness up/down + logo+version). 7 phases (50-56), 25 requirements. v1.4 complete (tagged v1.4). Phases 50-53 shipped (all verified passed). Distribution work (Phases 40/47/48) remains deferred.
 **Last updated:** 2026-06-08
 
 ---
