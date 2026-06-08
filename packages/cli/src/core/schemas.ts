@@ -128,6 +128,7 @@ const RawDeckSchema = z
     buttons: z.array(RawButtonEnvelopeSchema).optional(),
     id: z.string().min(1),
     name: z.string().optional(),
+    process_names: z.array(z.string().min(1)).optional(),
     type: z.string().min(1).optional(),
   })
   .passthrough()
@@ -182,6 +183,7 @@ export interface DeckConfig {
   deckType?: string
   id: string
   name?: string
+  process_names?: readonly string[]
   system_back_hold_command?: string
   system_back_tap_command?: string
   buttons: ButtonInstance[]
@@ -469,6 +471,9 @@ function expandDecks(
         buttons: deck.buttons ?? [],
         id: deck.id,
         ...(deck.name !== undefined ? { name: deck.name } : {}),
+        ...(deck.process_names !== undefined
+          ? { process_names: deck.process_names }
+          : {}),
       }
       continue
     }
@@ -627,6 +632,9 @@ export function validateConfig(
         ? { deckType: bootstrap.decks[deckKey]?.type }
         : {}),
       ...(deck.name !== undefined ? { name: deck.name } : {}),
+      ...(bootstrap.decks[deckKey]?.process_names !== undefined
+        ? { process_names: bootstrap.decks[deckKey]?.process_names }
+        : {}),
       buttons: nextButtons,
     }
   }

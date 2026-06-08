@@ -107,3 +107,72 @@ describe("reserved slot validation", () => {
     expect(() => validateConfig(config, registry)).not.toThrow()
   })
 })
+
+describe("process_names schema (55-01)", () => {
+  it("preserves a user-declared process_names array on a regular deck", () => {
+    const registry = createBundledAddonRegistry()
+    const config = {
+      ...makeDeck(0),
+      decks: {
+        main: {
+          buttons: [],
+          id: "main",
+          keyCount: KEY_COUNT,
+        },
+        code_deck: {
+          buttons: [],
+          id: "code_deck",
+          keyCount: KEY_COUNT,
+          process_names: ["code", "code-insiders"],
+        },
+      },
+    }
+    const result = validateConfig(config, registry)
+    expect(result.decks?.code_deck?.process_names).toEqual([
+      "code",
+      "code-insiders",
+    ])
+  })
+
+  it("accepts a deck without process_names (backwards compatible)", () => {
+    const registry = createBundledAddonRegistry()
+    const config = {
+      ...makeDeck(0),
+      decks: {
+        main: {
+          buttons: [],
+          id: "main",
+          keyCount: KEY_COUNT,
+        },
+        plain_deck: {
+          buttons: [],
+          id: "plain_deck",
+          keyCount: KEY_COUNT,
+        },
+      },
+    }
+    const result = validateConfig(config, registry)
+    expect(result.decks?.plain_deck?.process_names).toBeUndefined()
+  })
+
+  it("rejects an empty process_names string", () => {
+    const registry = createBundledAddonRegistry()
+    const config = {
+      ...makeDeck(0),
+      decks: {
+        main: {
+          buttons: [],
+          id: "main",
+          keyCount: KEY_COUNT,
+        },
+        bad_deck: {
+          buttons: [],
+          id: "bad_deck",
+          keyCount: KEY_COUNT,
+          process_names: [""],
+        },
+      },
+    }
+    expect(() => validateConfig(config, registry)).toThrow()
+  })
+})

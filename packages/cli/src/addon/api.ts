@@ -38,6 +38,7 @@ export interface AddonGeneratedDeck {
   buttons: AddonGeneratedButton[]
   id: string
   name?: string
+  process_names?: readonly string[]
 }
 
 export interface AddonButtonMethods {
