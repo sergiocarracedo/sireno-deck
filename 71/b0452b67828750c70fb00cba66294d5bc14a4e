@@ -1,0 +1,30 @@
+packages/cli/src/builtin-addons/weather/domain/weather-controller.test.ts
+  s_a44d509d67bdce::t_af630b21edd142 1-208
+packages/cli/src/builtin-addons/weather/domain/wttr-in-fallback.ts
+  s_a44d509d67bdce::t_bb1a4ce67e58fc 160
+packages/cli/src/builtin-addons/weather/domain/weather-controller.ts
+  s_a44d509d67bdce::t_940f6105fe36cc 3,7-8,17,27-55,60-61,75-78,80-89,93,104,106-110,114-116,121-123
+packages/cli/src/builtin-addons/weather/domain/open-meteo-client.ts
+  s_a44d509d67bdce::t_72251f3546e936 76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "71b0452b67828750c70fb00cba66294d5bc14a4e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
