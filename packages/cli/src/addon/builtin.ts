@@ -1,3 +1,4 @@
+import brightnessAddon from '@/builtin-addons/brightness'
 import coreButtonsAddon from '@/builtin-addons/core-buttons'
 import datetimeButtonsAddon from '@/builtin-addons/date-time'
 import emojiSelectorAddon from '@/builtin-addons/emoji-selector'
@@ -15,5 +16,6 @@ export function getBundledAddons(): readonly SirenoAddon[] {
     systemStatusAddon,
     mediaPlayerAddon,
     weatherAddon,
+    brightnessAddon,
   ]
 }
