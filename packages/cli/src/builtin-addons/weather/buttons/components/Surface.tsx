@@ -8,7 +8,8 @@ import {
 } from '../../domain/unit-conversion'
 import type { WeatherSnapshot } from '../../domain/weather-controller'
 import { SurfacePage } from '../../schemas'
-import { Forecast } from './Forecast'
+import { DailyForecast } from './DailyForecast'
+import { Forecast } from './Forecast' // rendered as the 'hourly-forecast' page
 import { WmoIcon } from './WmoIcon'
 
 export function Surface({
@@ -77,8 +78,7 @@ export function Surface({
       </div>
     ),
     'hourly-forecast': <Forecast entries={snap.hourly} units={displayUnits} />,
-    // TODO(50-02): add daily-forecast page here
-    'daily-forecast': <Forecast entries={snap.hourly} units={displayUnits} />,
+    'daily-forecast': <DailyForecast entries={snap.daily} units={displayUnits} />,
   }
 
   return pages[page ?? 'main']
