@@ -1,0 +1,29 @@
+.planning/quick/041-remove-js-compiled-files/041-PLAN.md
+  s_8dee7b8335b94d::t_cb48268d17035e 1-30
+.planning/STATE.md
+  s_8dee7b8335b94d::t_d074c595c35bc4 25
+  s_8dee7b8335b94d::t_d178f955e86fc3 15
+.planning/quick/041-remove-js-compiled-files/041-SUMMARY.md
+  s_8dee7b8335b94d::t_0cc52e500d3eaa 1-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "4485aefba8a05c392f16d276bd780d32c80821b9",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_8dee7b8335b94d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_158b69c7bffeqYQJX9jm91R2VC",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
