@@ -1,0 +1,26 @@
+.planning/phases/55-active-app-overlay-decks/55-02-PLAN.md
+  s_33de7f93c0a086::t_6f58d768057f9b 1-84,90,93,99,101,107-108,112,115,117,122,124,126,128-129,131-133,135-138,142-145,147,149,151-152,154-171,173,175,177,179-183,186-191,194-195,197,199-204,206,208-212
+.planning/phases/55-active-app-overlay-decks/55-01-PLAN.md
+  s_33de7f93c0a086::t_5c904a1180c3ee 1-97,100,110,112,116-118,121,123-125,130-131,133-134,137,142-144,146,148,150,152-164,166-170,172-174,176-177,179-184,186-188,191,194-195,197,199-201,203-205,208-211,215-217,219-223,225-226,231-253,255,257-265,268-273,275-277,279,281-283,285,287-294
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "d1b24ecea7458505de1789581fdec93b415e56da",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_33de7f93c0a086": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15494d94fffeRoQ0W9Y1D67dM2",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
