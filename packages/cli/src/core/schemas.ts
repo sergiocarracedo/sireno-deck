@@ -181,6 +181,7 @@ export interface DeckConfig {
   id: string
   name?: string
   process_names?: readonly string[]
+  system?: boolean
   system_back_hold_command?: string
   system_back_tap_command?: string
   buttons: ButtonInstance[]
@@ -197,6 +198,7 @@ const CoreButtonConfigSchema = z
 const CoreDeckConfigSchema = z
   .object({
     background: z.string().min(1).optional(),
+    system: z.boolean().optional(),
   })
   .strict()
 

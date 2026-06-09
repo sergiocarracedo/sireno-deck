@@ -166,3 +166,27 @@ describe('process_names schema (55-01)', () => {
     expect(() => validateConfig(config, registry)).toThrow()
   })
 })
+
+describe('system flag (55-01)', () => {
+  it('drops a user-declared system: true from the deck (no user opt-in)', () => {
+    const registry = createBundledAddonRegistry()
+    const config = {
+      ...makeDeck(0),
+      decks: {
+        main: {
+          buttons: [],
+          id: 'main',
+          keyCount: KEY_COUNT,
+        },
+        sneaky_deck: {
+          buttons: [],
+          id: 'sneaky_deck',
+          keyCount: KEY_COUNT,
+          system: true,
+        },
+      },
+    }
+    const result = validateConfig(config, registry)
+    expect(result.decks?.sneaky_deck?.system).toBeUndefined()
+  })
+})
