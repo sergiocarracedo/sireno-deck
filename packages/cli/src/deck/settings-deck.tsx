@@ -61,6 +61,18 @@ export function renderSettingsButton(buttonId: string): ReactElement {
           <Text size="xs">Brightness</Text>
         </div>
       )
+    case 'logo-version':
+      return (
+        <div
+          className="sireno-logo-version flex h-full w-full flex-col items-center justify-center gap-0.5"
+          data-sireno-settings-button="logo-version"
+        >
+          <Text size="xl" tone="primary">
+            sireno
+          </Text>
+          <Text size="xs">v1</Text>
+        </div>
+      )
     default:
       return (
         <div
