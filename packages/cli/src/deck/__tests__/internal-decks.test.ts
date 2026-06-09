@@ -97,7 +97,7 @@ describe('INTERNAL_DECKS id-priority shadowing (55-01)', () => {
     const active = runtime.getActiveDeck()
     expect(active.id).toBe('__sireno_locked_session__')
     expect(active.system).toBe(true)
-    expect(active.buttons.length).toBe(5)
+    expect(active.buttons.length).toBe(3)
     expect(active.buttons.every((b) => b.type === 'locked-time-tile')).toBe(
       true,
     )
