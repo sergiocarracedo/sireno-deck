@@ -4,17 +4,27 @@ import type {
   ActiveAppProviderDeps,
   ActiveAppSnapshot,
   DbusBus,
-  DbusClient,
 } from './provider'
 
 const POLL_INTERVAL_MS = 500
 const MAX_CONSECUTIVE_POLL_FAILURES = 5
+const PROBE_TIMEOUT_MS = 3000
 
 const WAYLAND_GNOME_SERVICE = 'org.gnome.Shell'
 const WAYLAND_GNOME_PATH = '/org/gnome/Shell/Extensions/WindowsExt'
 const WAYLAND_GNOME_INTERFACE = 'org.gnome.Shell.Extensions.WindowsExt'
 const EXTENSION_INSTALL_URL =
   'https://extensions.gnome.org/extension/4974/window-calls-extended/'
+
+function serializeError(error: unknown): unknown {
+  if (error instanceof Error) {
+    return { message: error.message, name: error.name, stack: error.stack }
+  }
+  if (typeof error === 'object' && error !== null) {
+    return { ...error }
+  }
+  return error
+}
 
 interface ProbeResult {
   bus: DbusBus
@@ -25,11 +35,34 @@ function probeExtension(
   deps: ActiveAppProviderDeps,
 ): Promise<ProbeResult | null> {
   const client = deps.dbusClient
-  if (!client) return Promise.resolve(null)
+  if (!client) {
+    deps.logger.warn(
+      'active-app: no DBus client available for fallback probe',
+    )
+    return Promise.resolve(null)
+  }
 
   return new Promise((resolve) => {
-    const bus = createSessionBusOrLog(deps, client)
-    if (!bus) {
+    const timeout = setTimeout(() => {
+      deps.logger.warn(
+        { timeoutMs: PROBE_TIMEOUT_MS, installUrl: EXTENSION_INSTALL_URL },
+        'active-app: DBus extension probe timed out — falling through to unsupported',
+      )
+      resolve(null)
+    }, PROBE_TIMEOUT_MS)
+
+    let bus: DbusBus
+    try {
+      bus = client.createSessionBus()
+    } catch (error) {
+      clearTimeout(timeout)
+      deps.logger.warn(
+        {
+          error: serializeError(error),
+          installUrl: EXTENSION_INSTALL_URL,
+        },
+        'active-app: GNOME session bus createSessionBus() threw',
+      )
       resolve(null)
       return
     }
@@ -40,36 +73,31 @@ function probeExtension(
         const iface = proxy.getInterface(WAYLAND_GNOME_INTERFACE)
         const focusClass = iface.FocusClass
         if (typeof focusClass !== 'function') {
+          clearTimeout(timeout)
+          deps.logger.warn(
+            { ifaceKeys: Object.keys(iface) },
+            'active-app: GNOME extension reached but FocusClass method missing',
+          )
           bus.disconnect?.()
           resolve(null)
           return
         }
+        clearTimeout(timeout)
         resolve({ bus, focusClass: focusClass.bind(iface) })
       })
       .catch((error) => {
-        deps.logger.info(
-          { error, installUrl: EXTENSION_INSTALL_URL },
+        clearTimeout(timeout)
+        deps.logger.warn(
+          {
+            error: serializeError(error),
+            installUrl: EXTENSION_INSTALL_URL,
+          },
           'active-app: GNOME Window Calls Extended extension not detected — install it to enable active-app detection on Wayland',
         )
         bus.disconnect?.()
         resolve(null)
       })
   })
-}
-
-function createSessionBusOrLog(
-  deps: ActiveAppProviderDeps,
-  client: DbusClient,
-): DbusBus | null {
-  try {
-    return client.createSessionBus()
-  } catch (error) {
-    deps.logger.info(
-      { error, installUrl: EXTENSION_INSTALL_URL },
-      'active-app: GNOME session bus unavailable on this host — install the GNOME Shell extension to enable active-app detection',
-    )
-    return null
-  }
 }
 
 export async function createWaylandGnomeProvider(
@@ -109,7 +137,10 @@ export async function createWaylandGnomeProvider(
           consecutiveFailures += 1
           if (consecutiveFailures === MAX_CONSECUTIVE_POLL_FAILURES) {
             deps.logger.warn(
-              { error, maxFailures: MAX_CONSECUTIVE_POLL_FAILURES },
+              {
+                error: serializeError(error),
+                maxFailures: MAX_CONSECUTIVE_POLL_FAILURES,
+              },
               'active-app: wayland-gnome poll failed repeatedly — disabling poller',
             )
             stopped = true
@@ -129,3 +160,4 @@ export async function createWaylandGnomeProvider(
     },
   }
 }
+

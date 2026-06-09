@@ -130,7 +130,7 @@ describe('getActiveAppProvider', () => {
     await vi.advanceTimersByTimeAsync(0)
 
     expect(provider.supportsActiveApp).toBe(true)
-    const installHint = logger.info.mock.calls.find(
+    const installHint = logger.warn.mock.calls.find(
       (call) => call[1]?.includes('install it to enable active-app detection on Wayland'),
     )
     expect(installHint).toBeDefined()

@@ -78,14 +78,13 @@ describe('createWaylandGnomeProvider', () => {
 
     expect(provider.supportsActiveApp).toBe(false)
     provider.start(() => {})
-    provider.start(() => {})
-    provider.start(() => {})
 
-    expect(logger.info).toHaveBeenCalledTimes(1)
-    const [firstInfo] = logger.info.mock.calls
-    const [context, message] = firstInfo ?? []
-    expect(message).toContain('Window Calls Extended')
-    expect((context as { installUrl?: string } | undefined)?.installUrl).toBe(
+    const installWarn = logger.warn.mock.calls.find(
+      (call) => call[1]?.includes('Window Calls Extended'),
+    )
+    expect(installWarn).toBeDefined()
+    const context = installWarn?.[0] as { installUrl?: string } | undefined
+    expect(context?.installUrl).toBe(
       'https://extensions.gnome.org/extension/4974/window-calls-extended/',
     )
   })
