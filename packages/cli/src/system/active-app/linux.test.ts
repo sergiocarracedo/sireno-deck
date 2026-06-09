@@ -29,7 +29,7 @@ describe('createLinuxProvider poll failure cap', () => {
       },
     }
 
-    const provider = createLinuxProvider({ logger, probe }, {})
+    const provider = await createLinuxProvider({ logger, probe }, {})
     const changes: Array<{ ownerName: string } | null> = []
     provider.start((snapshot) => {
       changes.push(snapshot)
@@ -53,7 +53,7 @@ describe('createLinuxProvider poll failure cap', () => {
       },
     }
 
-    const provider = createLinuxProvider({ logger, probe }, {})
+    const provider = await createLinuxProvider({ logger, probe }, {})
     const changes: Array<unknown> = []
     provider.start((snapshot) => {
       changes.push(snapshot)
@@ -80,7 +80,7 @@ describe('createLinuxProvider poll failure cap', () => {
       },
     }
 
-    const provider = createLinuxProvider({ logger, probe }, {})
+    const provider = await createLinuxProvider({ logger, probe }, {})
     const changes: Array<{ ownerName: string } | null> = []
     provider.start((snapshot) => {
       changes.push(snapshot)

@@ -1,4 +1,6 @@
-import { createUnsupportedProvider } from './unsupported'
+import { sessionBus } from 'dbus-next'
+
+import { createWaylandGnomeProvider } from './wayland-gnome'
 import type {
   ActiveAppProvider,
   ActiveAppProviderDeps,
@@ -12,12 +14,20 @@ function isPureWayland(env: NodeJS.ProcessEnv): boolean {
   return env.XDG_SESSION_TYPE === 'wayland' && !env.WAYLAND_DISPLAY
 }
 
-export function createLinuxProvider(
+const defaultDbusClient: ActiveAppProviderDeps['dbusClient'] = {
+  createSessionBus: () => sessionBus() as never,
+}
+
+export async function createLinuxProvider(
   deps: ActiveAppProviderDeps,
   env: NodeJS.ProcessEnv = process.env,
-): ActiveAppProvider {
+): Promise<ActiveAppProvider> {
+  const withBus: ActiveAppProviderDeps = deps.dbusClient
+    ? deps
+    : { ...deps, dbusClient: defaultDbusClient }
+
   if (isPureWayland(env)) {
-    return createUnsupportedProvider(deps, 'pure-wayland')
+    return createWaylandGnomeProvider(withBus)
   }
 
   const probe = deps.probe ?? {

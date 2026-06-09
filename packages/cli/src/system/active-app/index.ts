@@ -17,11 +17,15 @@ export interface GetActiveAppProviderOptions extends ActiveAppProviderDeps {
   env?: NodeJS.ProcessEnv
 }
 
-export function getActiveAppProvider(
+export async function getActiveAppProvider(
   opts: GetActiveAppProviderOptions,
-): ActiveAppProvider {
+): Promise<ActiveAppProvider> {
   const platform = opts.platform ?? process.platform
-  const deps: ActiveAppProviderDeps = { logger: opts.logger }
+  const deps: ActiveAppProviderDeps = {
+    ...(opts.dbusClient !== undefined ? { dbusClient: opts.dbusClient } : {}),
+    logger: opts.logger,
+    ...(opts.probe !== undefined ? { probe: opts.probe } : {}),
+  }
   switch (platform) {
     case 'linux':
       return createLinuxProvider(deps, opts.env)

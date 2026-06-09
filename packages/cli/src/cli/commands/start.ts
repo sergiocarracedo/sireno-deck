@@ -905,7 +905,9 @@ export async function startEmulatorSession(
       browserRenderer,
       connection.info.keyCount,
     )
-    const activeAppProvider = getActiveAppProvider({ logger: options.logger })
+    const activeAppProvider = await getActiveAppProvider({
+      logger: options.logger,
+    })
     if (activeAppProvider.supportsActiveApp) {
       options.logger.info(
         { platform: process.platform },
@@ -1121,7 +1123,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     const createRuntime = async (
       loadedConfig: Awaited<ReturnType<typeof loadRuntimeConfig>>,
     ) => {
-      const activeAppProvider = getActiveAppProvider({
+      const activeAppProvider = await getActiveAppProvider({
         logger: options.logger,
       })
       if (activeAppProvider.supportsActiveApp) {
