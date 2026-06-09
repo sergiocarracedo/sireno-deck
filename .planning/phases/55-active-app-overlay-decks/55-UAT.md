@@ -72,16 +72,13 @@ expected: |
   - On a Linux X11/XWayland host, `pnpm --filter sireno-deck-cli start` (or `node -e "..."` against the runtime) logs a single info-level line containing `'active-app overlay enabled'` at boot.
   - On a pure-Wayland host, the same path logs `'active-app overlay unsupported on this platform'` instead.
   - The log appears once, not on every snapshot.
-result: issue
-reported: "Saw 'active-app: linux poll failed' on the running daemon — on a real session, the poller is failing repeatedly because the daemon's process env doesn't carry the user's session vars (XDG_SESSION_TYPE / WAYLAND_DISPLAY) when launched outside the user's graphical session."
-severity: major
-resolution: |
-  Fixed in commit 206c4a2. The linux provider now stops the poller after
-  5 consecutive failures (logs once: "active-app: linux poll failed
-  repeatedly — disabling poller") and the probe is now injectable via
-  `ActiveAppProviderDeps.probe` so the failure path is testable without
-  dynamic imports. The user should re-test on hardware to confirm the
-  poller stops cleanly on their pure-Wayland setup.
+result: pass
+verified_by: user (hardware test, 2026-06-09)
+notes: |
+  After the fix in 206c4a2 (poller stops after 5 consecutive failures on
+  a host where the daemon's process env is stripped of session vars),
+  the user restarted on pure-Wayland and confirmed the poller now
+  disables cleanly after the threshold.
 
 ### 6. Main-deck reserved slot shows Settings entry button
 expected: |
@@ -132,15 +129,10 @@ result: pending
 
 ## Summary
 total: 12
-passed: 4
-issues: 1
+passed: 5
+issues: 0
 pending: 7
 skipped: 0
 
 ## Gaps
-- truth: "Boot log announces active-app support at startup without poller spam on unsupported env"
-  status: failed
-  reason: "User reported: 'active-app: linux poll failed' on the running daemon"
-  severity: major
-  test: 5
-  resolution: "Fixed in 206c4a2 — poller stops after 5 consecutive failures, probe is now injectable"
+[none yet]
