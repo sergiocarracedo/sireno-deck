@@ -1,0 +1,38 @@
+packages/cli/src/builtin-addons/core-buttons/buttons/action.tsx
+  s_b5888af49640de::t_f687307a1473f8 29-64
+  s_b5888af49640de::t_317090009cc430 17-25
+packages/cli/src/index.ts
+  s_b5888af49640de::t_1fdebe4069d0a0 4,12-17,21
+packages/cli/src/addon/api.ts
+  s_b5888af49640de::t_9fb2f2536cfc45 102
+  s_b5888af49640de::t_9f3553769b6a68 87-101,103-107
+  s_b5888af49640de::t_f1ee08916b42aa 48
+packages/cli/src/builtin-addons/core-buttons/index.test.ts
+  s_b5888af49640de::t_91c449f963e521 13,15
+packages/cli/src/deck/runtime.ts
+  s_b5888af49640de::t_205adb8f19851a 353-355
+  s_b5888af49640de::t_78ce58759e3bb1 46
+  s_b5888af49640de::t_a13879a2d3c175 937-940
+  s_b5888af49640de::t_de29bb9f413532 77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "e2575c0125548b1a6bc262b7fb7766f85c45eb58",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b5888af49640de": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15438c969ffeR54heuHaj7FhxV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
