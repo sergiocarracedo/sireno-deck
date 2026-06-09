@@ -379,14 +379,11 @@ async function renderDomDeckSurface(
     await writeKeyBuffer(connection, keyIndex, buffer)
   }
 
-  logger.info(
-    {
-      deckId: 'main deck',
-      renderedKeys: Array.from(buffersByKey.keys()).sort(
-        (left, right) => left - right,
-      ),
-    },
-    'rendered browser-backed main deck',
+  const minKey = buffersByKey.size === 0 ? 0 : Math.min(...buffersByKey.keys())
+  const maxKey = buffersByKey.size === 0 ? 0 : Math.max(...buffersByKey.keys())
+
+  logger.debug(
+    `rendered browser-backed main deck (${buffersByKey.size} keys: ${minKey}-${maxKey})`,
   )
 }
 
