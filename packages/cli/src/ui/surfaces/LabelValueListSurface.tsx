@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactElement, ReactNode } from 'react'
 
 import { cn } from '@/themes/utils/cn'
-import { Text } from './Text'
+import { Text } from '../Text'
 
 export interface LabelValueListLine {
   color?: string
@@ -15,7 +15,12 @@ type LabelValueListLines =
   | readonly [LabelValueListLine]
   | readonly [LabelValueListLine, LabelValueListLine]
   | readonly [LabelValueListLine, LabelValueListLine, LabelValueListLine]
-  | readonly [LabelValueListLine, LabelValueListLine, LabelValueListLine, LabelValueListLine]
+  | readonly [
+      LabelValueListLine,
+      LabelValueListLine,
+      LabelValueListLine,
+      LabelValueListLine,
+    ]
 
 export interface LabelValueListProps {
   className?: string
@@ -37,14 +42,19 @@ function getLayout(lines: LabelValueListLines): LabelValueLayout {
   return 'stack'
 }
 
-function renderValue(line: LabelValueListLine, layout: LabelValueLayout): ReactElement {
+function renderValue(
+  line: LabelValueListLine,
+  layout: LabelValueLayout,
+): ReactElement {
   const valueTone = layout === 'stack' ? 'foreground' : 'primary'
 
   return (
     <div className={cn('min-w-0', layout === 'single' ? 'mt-1' : 'text-right')}>
       <Text
         align={layout === 'single' ? 'center' : 'right'}
-        className={cn(layout === 'single' ? 'tracking-tight' : 'whitespace-nowrap')}
+        className={cn(
+          layout === 'single' ? 'tracking-tight' : 'whitespace-nowrap',
+        )}
         size={layout === 'single' ? '2xl' : layout === 'double' ? 'xl' : 'md'}
         style={line.color ? { color: line.color } : undefined}
         tone={valueTone}
@@ -70,7 +80,9 @@ function renderValue(line: LabelValueListLine, layout: LabelValueLayout): ReactE
 
 export function LabelValueList(props: LabelValueListProps): ReactElement {
   if (props.lines.length < 1 || props.lines.length > 4) {
-    throw new Error(`LabelValueList supports 1-4 lines. Received ${props.lines.length}.`)
+    throw new Error(
+      `LabelValueList supports 1-4 lines. Received ${props.lines.length}.`,
+    )
   }
 
   const layout = getLayout(props.lines)
@@ -98,7 +110,9 @@ export function LabelValueList(props: LabelValueListProps): ReactElement {
             )}
           >
             {line.icon ? (
-              <span className="inline-flex shrink-0 items-center justify-center">{line.icon}</span>
+              <span className="inline-flex shrink-0 items-center justify-center">
+                {line.icon}
+              </span>
             ) : null}
             <Text
               align={layout === 'single' ? 'center' : 'left'}
@@ -116,7 +130,8 @@ export function LabelValueList(props: LabelValueListProps): ReactElement {
           <div
             className={cn(
               'min-w-0',
-              layout === 'single' && 'flex w-full flex-col items-center justify-center text-center',
+              layout === 'single' &&
+                'flex w-full flex-col items-center justify-center text-center',
               layout !== 'single' && 'flex items-center justify-between gap-3',
             )}
             key={`${line.label}-${index}`}

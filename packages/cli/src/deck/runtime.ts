@@ -1,10 +1,7 @@
 import { createElement, isValidElement } from 'react'
 import { z } from 'zod'
 
-import {
-  executeCommand,
-  type CommandExecutionResult,
-} from '@/action/executor'
+import { executeCommand, type CommandExecutionResult } from '@/action/executor'
 import {
   ButtonSurface,
   DOUBLE_TAP_DELAY_MS,
@@ -29,15 +26,10 @@ import {
   type RuntimeButtonErrorKind,
 } from '@/util/errors'
 import { createDeckController } from './controller'
-import { SystemBackButton } from './system-back-button'
-import { renderSettingsButton } from './settings-deck'
-import { handleSettingsButtonTap } from './settings-deck'
-import {
-  getSystemBackButtonInstance,
-  shouldInjectSystemBack,
-} from './system-back-injection'
+import { handleSettingsButtonTap, renderSettingsButton } from './settings-deck'
+import { OverlayToggleButton } from './system-buttons/overlay-toggle-button'
+import { SystemBackButton } from './system-buttons/SystemBackButton'
 
-import type { ReactElement } from 'react'
 import type {
   AddonButtonRenderState,
   AddonButtonRuntimeProps,
@@ -49,14 +41,11 @@ import type { AddonRegistry } from '@/addon/registry'
 import type { Theme, ThemeFrameState } from '@/config/theme'
 import type { ButtonInstance, DeckConfig, SirenoConfig } from '@/core/schemas'
 import type { StreamDeckKeyEvent } from '@/device/stream-deck'
-import {
-  UNKNOWN_HOST_CONTEXT,
-  type HostContext,
-} from '@/system/host-context'
-import type {
-  SessionMonitor,
-  SessionSnapshot,
-} from '@/system/session-monitor'
+import type { ActiveAppMonitor, ActiveAppSnapshot } from '@/system/active-app'
+import { UNKNOWN_HOST_CONTEXT, type HostContext } from '@/system/host-context'
+import type { SessionMonitor, SessionSnapshot } from '@/system/session-monitor'
+import type { ReactElement } from 'react'
+import { getLastPositionSystemButton } from './system-buttons/system-buttons'
 
 interface RuntimeStoreScope {
   clear: () => void
@@ -81,7 +70,8 @@ export interface DeckRuntimeOptions {
   decks?: Record<string, DeckConfig>
   executeAction?: (command: string) => Promise<CommandExecutionResult>
   hostContext?: HostContext
-  keyCount?: number
+  keyCount: number
+  activeAppMonitor?: ActiveAppMonitor
   lockedDeckId?: string
   onRenderButton?: (button: RuntimeRenderButton) => Promise<void> | void
   onRenderDeck?: (buttons: RuntimeRenderButton[]) => Promise<void> | void
@@ -95,6 +85,7 @@ export interface DeckRuntimeOptions {
 
 export interface DeckRuntime {
   activateCurrentDeck: () => Promise<void>
+  dismissOverlay: () => void
   getActiveDeck: () => DeckConfig
   getActiveDeckButtons: () => RuntimeRenderButton[]
   getButton: (keyIndex: number) => ButtonInstance | undefined
@@ -108,6 +99,7 @@ export interface DeckRuntime {
   start: () => void
   stop: () => void
   updateAddonRegistry: (registry: AddonRegistry) => void
+  getButtonIndexFromLast: (n?: number) => number
 }
 
 interface RuntimeButtonHandle {
@@ -156,6 +148,26 @@ interface RootDomRenderProps {
 
 const IMPLICIT_LOCKED_DECK_ID = '__sireno_locked_session__'
 const SETTINGS_DECK_ID = 'settings'
+const OVERLAY_TOGGLE_TYPE = 'overlay-toggle'
+const ACTIVE_APP_DISMISS_WINDOW_MS = 350
+
+export function processNamesMatch(
+  declared: readonly string[],
+  active: string,
+  platform: NodeJS.Platform,
+): boolean {
+  if (declared.length === 0) return false
+  const normalizedActive = (
+    platform === 'darwin'
+      ? active.replace(/\.app$/i, '')
+      : platform === 'win32'
+        ? active.replace(/\.exe$/i, '')
+        : active
+  ).toLowerCase()
+  return declared.some((name) =>
+    normalizedActive.includes(name.toLowerCase().trim()),
+  )
+}
 const TEMPORARY_RELOAD_ERROR_DECK_ID = '__sireno_reload_error__'
 const lockedTimeTileButtonDefinition = datetimeButtonsAddon.buttons.find(
   (button) => button.type === 'locked-time-tile',
@@ -239,10 +251,8 @@ function createImplicitSettingsDeck(): DeckConfig {
     defaultRenderIntervalMs: () => Number.POSITIVE_INFINITY,
     type: 'settings-placeholder',
   } as unknown as ButtonInstance['definition']
-  const placeholder = (
-    id: string,
-    position: number,
-  ): ButtonInstance =>
+
+  const placeholder = (id: string, position: number): ButtonInstance =>
     ({
       config: {},
       definition: stubDefinition,
@@ -312,7 +322,11 @@ function createRuntimeButtonErrorContent(
         className: 'flex flex-col items-center justify-center w-full h-full',
         style: { gap: '3px' },
       },
-      createElement(Icon, { icon: 'triangle-alert', size: 22, tone: 'danger' }),
+      createElement(Icon, {
+        name: 'triangle-alert',
+        size: 22,
+        tone: 'danger',
+      }),
       createElement(Text, { tone: 'danger' }, errorCode),
     ),
   )
@@ -369,6 +383,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   let temporaryErrorDeck: DeckConfig | null = null
   let runningButtonTypes = new Set<string>()
   let requestReloadCallback: (() => void) | null = null
+  let overlayDeckId: string | null = null
+  let lastBackActionAt = 0
 
   function getLockedSurfaceDeckId(): string {
     return options.lockedDeckId ?? IMPLICIT_LOCKED_DECK_ID
@@ -388,6 +404,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     }
 
     return runtimeDecks[deckId] ?? options.deck
+  }
+
+  function getButtonPositionFromLast(n: number = 0) {
+    return options.keyCount - 1 - n
   }
 
   function syncSessionSnapshot(snapshot: SessionSnapshot): void {
@@ -420,22 +440,23 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   function getDeckButtons(deck: DeckConfig): ButtonInstance[] {
-    const baseButtons = deck.buttons
-    const reservedIndex = Math.max(0, (options.keyCount ?? 15) - 1)
-    const syntheticConfig = {
-      ...(options.config ?? {}),
-      session: {
-        ...(options.config?.session ?? {}),
-        locked_deck: options.lockedDeckId ?? IMPLICIT_LOCKED_DECK_ID,
-      },
-    } as SirenoConfig
-    if (shouldInjectSystemBack(deck, syntheticConfig, hostContext.session.state)) {
-      return [
-        ...baseButtons,
-        getSystemBackButtonInstance(deck, reservedIndex),
-      ]
-    }
-    return baseButtons
+    const lastPosition = getButtonPositionFromLast()
+
+    const buttons = [...deck.buttons].filter(
+      (button) => button.position !== lastPosition,
+    )
+
+    return [
+      ...buttons,
+      getLastPositionSystemButton(
+        lastPosition,
+        deck,
+        overlayDeckId,
+        options,
+        IMPLICIT_LOCKED_DECK_ID,
+        hostContext,
+      ),
+    ].filter((button): button is ButtonInstance => Boolean(button))
   }
 
   function getAddonStateKey(button: ButtonInstance): string {
@@ -680,9 +701,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       background: resolveButtonBackground(button, deckId),
       content: createRuntimeButtonErrorContent(errorCode, button.full),
       frame_state: getFrameState(button.position),
-      ...(button.full !== undefined
-        ? { full: button.full }
-        : {}),
+      ...(button.full !== undefined ? { full: button.full } : {}),
       keyIndex: button.position,
     })
   }
@@ -813,9 +832,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         : createElement(
             ButtonSurface,
             {
-              ...(fullSurface !== undefined
-                ? { full: fullSurface }
-                : {}),
+              ...(fullSurface !== undefined ? { full: fullSurface } : {}),
               ...(rootDomRenderProps.sample_interval_ms !== undefined
                 ? { sample_interval_ms: rootDomRenderProps.sample_interval_ms }
                 : {}),
@@ -925,6 +942,15 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       }
     }
 
+    if (button.type === OVERLAY_TOGGLE_TYPE) {
+      return {
+        onTap: async () => {
+          dismissOverlay()
+        },
+        render: () => createElement(OverlayToggleButton),
+      }
+    }
+
     if (button.type === 'system-back') {
       const currentDeck = runtimeDecks[deckId]
       const tapCommand =
@@ -948,6 +974,14 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         },
         onTap: async () => {
           temporaryErrorDeck = null
+          const now = Date.now()
+          const isDoubleTap =
+            now - lastBackActionAt < ACTIVE_APP_DISMISS_WINDOW_MS
+          lastBackActionAt = now
+          if (isDoubleTap && overlayDeckId !== null) {
+            dismissOverlay()
+            return
+          }
           if (tapCommand) {
             await executeAction(tapCommand)
             return
@@ -958,7 +992,12 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
               try {
                 deckController.navigateTo(SETTINGS_DECK_ID, { push: true })
               } catch (error) {
-                await showRuntimeButtonError(button, deckId, 'navigateToDeck', error)
+                await showRuntimeButtonError(
+                  button,
+                  deckId,
+                  'navigateToDeck',
+                  error,
+                )
                 return
               }
               await activateDeckSurface(SETTINGS_DECK_ID, previousDeckId)
@@ -968,16 +1007,19 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
           deckController.goBack()
           await activateDeckSurface(undefined, previousDeckId)
         },
-        render: () =>
-          createElement(SystemBackButton, {
-            isMainDeck: deckId === options.deck.id,
-            onNavigateToSettings:
-              deckId === options.deck.id && SETTINGS_DECK_ID in runtimeDecks
-                ? () => {
-                    void methods.navigateToDeck(SETTINGS_DECK_ID, { addToHistory: true })
-                  }
-                : undefined,
-          }),
+        render: () => createElement(SystemBackButton),
+
+        // , {
+        //     isMainDeck: deckId === options.deck.id,
+        //     onNavigateToSettings:
+        //       deckId === options.deck.id && SETTINGS_DECK_ID in runtimeDecks
+        //         ? () => {
+        //             void methods.navigateToDeck(SETTINGS_DECK_ID, {
+        //               addToHistory: true,
+        //             })
+        //           }
+        //         : undefined,
+        //   }),
       }
     }
 
@@ -1301,6 +1343,36 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     }
   }
 
+  function findActiveAppDeckFor(ownerName: string): string | null {
+    const platform = process.platform
+    for (const [deckId, deck] of Object.entries(runtimeDecks)) {
+      if (!deck.process_names || deck.process_names.length === 0) continue
+      if (processNamesMatch(deck.process_names, ownerName, platform)) {
+        return deckId
+      }
+    }
+    return null
+  }
+
+  function handleActiveAppChange(snapshot: ActiveAppSnapshot): void {
+    const newOverlay = snapshot
+      ? findActiveAppDeckFor(snapshot.ownerName)
+      : null
+    if (newOverlay === overlayDeckId) return
+    overlayDeckId = newOverlay
+    void renderDeckSurface(getDisplayDeckId(), activeActivationVersion).catch(
+      reportRuntimeError,
+    )
+  }
+
+  function dismissOverlay(): void {
+    if (overlayDeckId === null) return
+    overlayDeckId = null
+    void renderDeckSurface(getDisplayDeckId(), activeActivationVersion).catch(
+      reportRuntimeError,
+    )
+  }
+
   async function handlePress(keyIndex: number): Promise<void> {
     const handle = getButtonHandle(deckController.getActiveDeckId(), keyIndex)
     if (!handle) {
@@ -1313,11 +1385,16 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       await instance.onPress?.()
 
       if (instance.onHold) {
-        const stateKey = getButtonStateKey(handle.deckId, handle.button.position)
+        const stateKey = getButtonStateKey(
+          handle.deckId,
+          handle.button.position,
+        )
         const gs = gestureStates.get(stateKey)
         if (gs?.holdTimer) clearTimeout(gs.holdTimer)
         const holdTimer = setTimeout(() => {
-          void handleHold(handle.deckId, handle.button).catch(reportRuntimeError)
+          void handleHold(handle.deckId, handle.button).catch(
+            reportRuntimeError,
+          )
         }, HOLD_ACTION_DELAY_MS)
         gestureStates.set(stateKey, { holdTimer, holdTriggered: false })
       }
@@ -1344,7 +1421,11 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       const gs = gestureStates.get(stateKey)
       if (gs?.holdTimer) {
         clearTimeout(gs.holdTimer)
-        gestureStates.set(stateKey, { ...gs, holdTimer: undefined, holdTriggered: false })
+        gestureStates.set(stateKey, {
+          ...gs,
+          holdTimer: undefined,
+          holdTriggered: false,
+        })
       }
 
       await renderRuntimeButton(handle.button, handle.deckId)
@@ -1385,7 +1466,12 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       await renderRuntimeButton(handle.button, handle.deckId)
       await renderDeckSurface(handle.deckId)
     } catch (error) {
-      await showRuntimeButtonError(handle.button, handle.deckId, 'dbl-tap', error)
+      await showRuntimeButtonError(
+        handle.button,
+        handle.deckId,
+        'dbl-tap',
+        error,
+      )
     }
   }
 
@@ -1445,7 +1531,9 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
           await new Promise<void>((resolve) => {
             const timer = setTimeout(() => {
               gestureStates.delete(stateKey)
-              void handleTap(event.keyIndex).then(resolve).catch(reportRuntimeError)
+              void handleTap(event.keyIndex)
+                .then(resolve)
+                .catch(reportRuntimeError)
             }, DOUBLE_TAP_DELAY_MS)
             gestureStates.set(stateKey, { pendingDblTapTimer: timer })
           })
@@ -1457,8 +1545,14 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   return {
+    getButtonIndexFromLast(n: number = 0) {
+      return getButtonPositionFromLast(n)
+    },
     async activateCurrentDeck() {
       await activateDeckSurface()
+    },
+    dismissOverlay() {
+      dismissOverlay()
     },
     getActiveDeck() {
       return deckController.getActiveDeck()
@@ -1520,7 +1614,12 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         options.sessionMonitor?.subscribe((snapshot) => {
           void handleSessionSnapshot(snapshot).catch(reportRuntimeError)
         }) ?? null
-      runningButtonTypes = new Set(options.addonRegistry.listButtons().map((b) => b.type))
+      if (options.activeAppMonitor) {
+        options.activeAppMonitor.start(handleActiveAppChange)
+      }
+      runningButtonTypes = new Set(
+        options.addonRegistry.listButtons().map((b) => b.type),
+      )
       void activateDeckSurface().catch(reportRuntimeError)
     },
     stop() {
@@ -1560,8 +1659,12 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     },
     updateAddonRegistry(registry: AddonRegistry) {
       const nextButtonTypes = new Set(registry.listButtons().map((b) => b.type))
-      const added = [...nextButtonTypes].filter((t) => !runningButtonTypes.has(t))
-      const removed = [...runningButtonTypes].filter((t) => !nextButtonTypes.has(t))
+      const added = [...nextButtonTypes].filter(
+        (t) => !runningButtonTypes.has(t),
+      )
+      const removed = [...runningButtonTypes].filter(
+        (t) => !nextButtonTypes.has(t),
+      )
       const isStructural = added.length > 0 || removed.length > 0
       if (isStructural) {
         logger.warn(

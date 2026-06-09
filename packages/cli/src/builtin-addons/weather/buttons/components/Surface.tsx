@@ -33,7 +33,9 @@ export function Surface({
 
   if (snap?.status === 'unavailable') {
     const message =
-      snap.source === 'location-not-found' ? 'Location not found' : 'Unavailable'
+      snap.source === 'location-not-found'
+        ? 'Location not found'
+        : 'Unavailable'
     return (
       <div className="flex h-full w-full flex-col items-center justify-center gap-1">
         <Text size="xs" tone="foreground">
@@ -73,14 +75,14 @@ export function Surface({
           {snap.location}
         </Text>
         <div className="flex gap-1">
-          <Icon icon="wind" size={14} />
+          <Icon name="wind" size={14} />
           <Text size="sm" tone="primary">
             {wind.value} {wind.units}
           </Text>
         </div>
 
         <div className="flex gap-1">
-          <Icon icon="droplet" size={14} />
+          <Icon name="droplet" size={14} />
           <Text size="sm" tone="primary">
             {snap.humidity} {wind.units}
           </Text>
@@ -88,7 +90,9 @@ export function Surface({
       </div>
     ),
     'hourly-forecast': <Forecast entries={snap.hourly} units={displayUnits} />,
-    'daily-forecast': <DailyForecast entries={snap.daily} units={displayUnits} />,
+    'daily-forecast': (
+      <DailyForecast entries={snap.daily} units={displayUnits} />
+    ),
   }
 
   return pages[page ?? 'main']

@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
 import { defineMountedButton } from '@/addon/api'
-import { Chip, Icon, Text } from '@/ui/index'
 import { PAGE_NAV_META } from '@/core/pagination'
+import { Chip, Icon, Text } from '@/ui/index'
 
 function renderCenteredButtonContent(label: string, icon?: string) {
   return (
@@ -22,20 +22,26 @@ function renderPageNavContent(
   if (isMainDeck) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-full">
-        <Icon icon="chevron-right" size={20} />
+        <Icon name="chevron-right" size={20} />
       </div>
     )
   }
   return (
     <div className="flex flex-col items-center justify-center w-full h-full relative">
       {tapNoop ? null : (
-        <Chip tone="muted" className="absolute top-1 left-1 text-[10px] opacity-70">
+        <Chip
+          tone="muted"
+          className="absolute top-1 left-1 text-[10px] opacity-70"
+        >
           Tap
         </Chip>
       )}
-      <Icon icon="chevron-right" size={20} />
+      <Icon name="chevron-right" size={20} />
       {doubleTapNoop ? null : (
-        <Chip tone="muted" className="absolute bottom-1 right-1 text-[10px] opacity-70">
+        <Chip
+          tone="muted"
+          className="absolute bottom-1 right-1 text-[10px] opacity-70"
+        >
           Dbl Tap
         </Chip>
       )}

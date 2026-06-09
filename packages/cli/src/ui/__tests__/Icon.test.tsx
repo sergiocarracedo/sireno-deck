@@ -2,12 +2,12 @@ import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 
 import { renderReactNodeToHtml } from '@/render/dom-host'
-import { Icon } from './Icon'
+import { Icon } from '../Icon'
 
 describe('Icon', () => {
   it('resolves kebab-case Lucide names through the live export surface', () => {
     const html = renderReactNodeToHtml(
-      createElement(Icon, { icon: 'triangle-alert', tone: 'danger' }),
+      createElement(Icon, { name: 'triangle-alert', tone: 'danger' }),
     )
 
     expect(html).toContain('data-sireno-icon-source="generic"')
@@ -17,10 +17,10 @@ describe('Icon', () => {
 
   it('accepts camelCase and snake_case Lucide names too', () => {
     const camelHtml = renderReactNodeToHtml(
-      createElement(Icon, { icon: 'triangleAlert' }),
+      createElement(Icon, { name: 'triangleAlert' }),
     )
     const snakeHtml = renderReactNodeToHtml(
-      createElement(Icon, { icon: 'triangle_alert' }),
+      createElement(Icon, { name: 'triangle_alert' }),
     )
 
     expect(camelHtml).toContain('data-sireno-icon-source="generic"')
@@ -28,8 +28,12 @@ describe('Icon', () => {
   })
 
   it('renders current generic caller names like square and clock', () => {
-    const squareHtml = renderReactNodeToHtml(createElement(Icon, { icon: 'square' }))
-    const clockHtml = renderReactNodeToHtml(createElement(Icon, { icon: 'clock' }))
+    const squareHtml = renderReactNodeToHtml(
+      createElement(Icon, { name: 'square' }),
+    )
+    const clockHtml = renderReactNodeToHtml(
+      createElement(Icon, { name: 'clock' }),
+    )
 
     expect(squareHtml).toContain('data-sireno-icon-source="generic"')
     expect(clockHtml).toContain('data-sireno-icon-source="generic"')
@@ -38,7 +42,7 @@ describe('Icon', () => {
   it('throws for unknown generic icon names', () => {
     expect(() =>
       renderReactNodeToHtml(
-        createElement(Icon, { icon: 'definitely-not-a-real-icon' }),
+        createElement(Icon, { name: 'definitely-not-a-real-icon' }),
       ),
     ).toThrow('Unknown Lucide icon: definitely-not-a-real-icon')
   })

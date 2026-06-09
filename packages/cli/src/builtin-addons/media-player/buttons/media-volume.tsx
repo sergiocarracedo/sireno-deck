@@ -20,7 +20,7 @@ function renderVolumeSurface(
     <ButtonSurface full>
       <div className="flex h-full w-full flex-col items-center justify-center gap-1">
         <Icon
-          icon={variant === 'up' ? 'volume-1' : 'volume-1'}
+          name={variant === 'up' ? 'volume-1' : 'volume-1'}
           size={22}
           tone={isMuted ? 'danger' : 'foreground'}
         />

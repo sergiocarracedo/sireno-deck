@@ -3,12 +3,12 @@ import {
   defineMountedButton,
   useButtonActionCommand,
 } from '@/addon/api'
+import { Bars } from '@/ui/index'
+import { toSystemStatusDisplayMetric } from '../domain/display-metrics'
 import {
   getCanonicalSystemMetrics,
   type CanonicalSystemMetricSnapshot,
 } from '../domain/live-metrics'
-import { toSystemStatusDisplayMetric } from '../domain/display-metrics'
-import { Bars } from '@/ui/index'
 import {
   SystemStatusBarsButtonSchema,
   type SystemStatusBarsButtonConfig,
@@ -94,9 +94,9 @@ const builtinSystemStatusBarsButton = defineMountedButton({
     const payloadMetrics = payload?.metrics
     const metrics = config.metrics.map(
       (metricConfig, index) =>
-        payloadMetrics?.[index]
-        ?? state.metrics?.[index]
-        ?? createUnavailableMetric(metricConfig.metric),
+        payloadMetrics?.[index] ??
+        state.metrics?.[index] ??
+        createUnavailableMetric(metricConfig.metric),
     )
     const displayMetrics = metrics.map((metric, index) =>
       toSystemStatusDisplayMetric(metric, config.metrics[index]),
@@ -119,7 +119,7 @@ const builtinSystemStatusBarsButton = defineMountedButton({
 
     return (
       <ButtonSurface>
-        <div className="h-full w-full min-h-0 overflow-hidden">
+        <div className="h-full w-full min-h-0 overflow-hidden p-0.5">
           <Bars items={barsItems} />
         </div>
       </ButtonSurface>

@@ -4,8 +4,8 @@ import type { Theme } from '@/config/theme'
 import { cn } from '@/themes/utils/cn'
 
 import type { BrowserRendererLayout } from './browser-renderer'
-import { DeckKeySlot } from './dom-host-deck-key-slot'
 import type { HostedButton } from './dom-host'
+import { DeckKeySlot } from './dom-host-deck-key-slot'
 import type { RenderPreset } from './render-preset'
 import { getShrinkFitBrowserScript } from './shrink-fit-browser-script'
 import { getThemeCssVariables } from './theme-utilities'
@@ -22,7 +22,6 @@ function getThemeVariableStyle(theme?: Theme): Record<string, string> {
 
 export interface DeckDocumentProps {
   background: string
-  frame: string
   buttons: readonly HostedButton[]
   emulatorMode: boolean
   inlineWarning?: {

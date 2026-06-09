@@ -46,7 +46,16 @@ const RICH_TONE_TAGS = [
   'primary',
   'success',
 ] as const
-const RICH_SIZE_TAGS = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '5xl'] as const
+const RICH_SIZE_TAGS = [
+  'xs',
+  'sm',
+  'md',
+  'lg',
+  'xl',
+  '2xl',
+  '3xl',
+  '5xl',
+] as const
 
 type RichToneTag = (typeof RICH_TONE_TAGS)[number]
 type RichSizeTag = (typeof RICH_SIZE_TAGS)[number]
@@ -201,7 +210,7 @@ function renderRichTextNodes(
     }
 
     if (node.tag === 'highlight') {
-      classNames.push('sireno-rich-text-strong', TONE_CLASS.accent)
+      classNames.push('sireno-rich-text-strong', TONE_CLASS.primary)
     } else if (isRichToneTag(node.tag)) {
       classNames.push(TONE_CLASS[node.tag])
     } else if (isRichSizeTag(node.tag)) {
@@ -237,7 +246,7 @@ function renderTextChildren(
 }
 
 export type TextAlign = keyof typeof ALIGN_CLASS
-export type TextFit = 'ellipsis' | 'shrink' | 'wrap'
+export type TextFit = 'ellipsis' | 'shrink' | 'wrap' | 'hidden'
 export type TextTone = keyof typeof TONE_CLASS
 export type TextTypography = keyof typeof TYPOGRAPHY_CLASS
 export type TextSize = keyof typeof SIZE_CLASS
@@ -265,10 +274,22 @@ export function Text(props: TextProps): ReactElement {
   const themeUi = useThemeUiPresentation()
   const renderedChildren = renderTextChildren(props.children, lineHeight)
 
+  if (themeUi?.text) {
+    return themeUi.text({
+      align,
+      children: renderedChildren,
+      fit,
+      tone,
+      typography,
+      size: size,
+    })
+  }
+
   const fitModesClasses = {
     wrap: 'whitespace-normal break-words',
     ellipsis: 'overflow-hidden whitespace-nowrap text-ellipsis',
     shrink: 'sireno-text-fit-shrink whitespace-normal break-words',
+    hidden: 'overflow-hidden whitespace-nowrap',
   }
 
   const composedStyle =
@@ -276,7 +297,7 @@ export function Text(props: TextProps): ReactElement {
       ? { ...props.style, fontFamily: props.fontStack }
       : props.style
 
-  const element = (
+  return (
     <div
       className={cn([
         'block max-w-full min-w-0 leading-tight',
@@ -297,15 +318,4 @@ export function Text(props: TextProps): ReactElement {
       {renderedChildren}
     </div>
   )
-
-  return themeUi?.text
-    ? themeUi.text({
-        align,
-        children: element,
-        fit,
-        tone,
-        typography,
-        size: size,
-      })
-    : element
 }

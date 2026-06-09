@@ -19,7 +19,13 @@ Sireno addon UI is component-first TSX authoring on the mounted `render(props)` 
 Import the public kit from `sireno-deck-cli` and return normal React elements from `defineMountedButton(...)`.
 
 ```tsx
-import { ButtonSurface, Chip, Icon, Text, defineMountedButton } from "sireno-deck-cli"
+import {
+  ButtonSurface,
+  Chip,
+  Icon,
+  Text,
+  defineMountedButton,
+} from 'sireno-deck-cli'
 
 export const clockButton = defineMountedButton({
   configSchema: {
@@ -30,12 +36,14 @@ export const clockButton = defineMountedButton({
     <ButtonSurface>
       <div className="flex h-full w-full flex-col items-center justify-center gap-1">
         <Chip tone="accent">component-first</Chip>
-        <Icon icon="clock" tone="primary" />
-        <Text fit="wrap">{String((config as { label?: unknown }).label ?? "Clock")}</Text>
+        <Icon name="clock" tone="primary" />
+        <Text fit="wrap">
+          {String((config as { label?: unknown }).label ?? 'Clock')}
+        </Text>
       </div>
     </ButtonSurface>
   ),
-  type: "clock-button",
+  type: 'clock-button',
 })
 ```
 

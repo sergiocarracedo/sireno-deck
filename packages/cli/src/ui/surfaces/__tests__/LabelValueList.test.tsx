@@ -2,14 +2,21 @@ import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 
 import { renderReactNodeToHtml } from '@/render/dom-host'
-import { Icon } from './Icon'
-import { LabelValueList } from './LabelValueList'
+import { Icon } from '../Icon'
+import { LabelValueList } from '../surfaces/LabelValueList'
 
 describe('LabelValueList', () => {
   it('auto-selects the single-line layout', () => {
     const html = renderReactNodeToHtml(
       createElement(LabelValueList, {
-        lines: [{ icon: createElement(Icon, { icon: 'clock' }), label: 'temp', units: 'C', value: '22.5' }],
+        lines: [
+          {
+            icon: createElement(Icon, { icon: 'clock' }),
+            label: 'temp',
+            units: 'C',
+            value: '22.5',
+          },
+        ],
       }),
     )
 

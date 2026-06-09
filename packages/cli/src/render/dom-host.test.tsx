@@ -2,13 +2,7 @@ import { createElement, useState } from 'react'
 import { describe, expect, it } from 'vitest'
 
 import { resolveTheme } from '@/config/theme'
-import {
-  ButtonSurface,
-  Chip,
-  defineMountedButton,
-  Icon,
-  Text,
-} from '@/index'
+import { ButtonSurface, Chip, defineMountedButton, Icon, Text } from '@/index'
 import { UNKNOWN_HOST_CONTEXT } from '@/system/host-context'
 import { buttonFrame as defaultButtonFrame } from '@/themes/default/index'
 import {
@@ -253,7 +247,7 @@ describe('dom host', () => {
             'div',
             { className: 'flex flex-col items-center justify-center gap-1' },
             createElement(Chip, { tone: 'accent' }, 'LIVE'),
-            createElement(Icon, { icon: 'clock', tone: 'primary' }),
+            createElement(Icon, { name: 'clock', tone: 'primary' }),
             createElement(
               Text,
               { fit: 'ellipsis', size: 'lg', tone: 'foreground' },

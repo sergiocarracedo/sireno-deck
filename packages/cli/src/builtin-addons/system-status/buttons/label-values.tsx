@@ -3,12 +3,12 @@ import {
   defineMountedButton,
   useButtonActionCommand,
 } from '@/addon/api'
+import { Icon, LabelValueList } from '@/ui/index'
+import { toSystemStatusDisplayMetric } from '../domain/display-metrics'
 import {
   getCanonicalSystemMetrics,
   type CanonicalSystemMetricSnapshot,
 } from '../domain/live-metrics'
-import { toSystemStatusDisplayMetric } from '../domain/display-metrics'
-import { Icon, LabelValueList } from '@/ui/index'
 import {
   SystemStatusLabelValuesButtonSchema,
   type SystemStatusLabelValuesButtonConfig,
@@ -20,7 +20,7 @@ type SystemStatusButtonStoreState = {
 
 function getButtonStoreState(snapshot: unknown): SystemStatusButtonStoreState {
   return typeof snapshot === 'object' && snapshot !== null
-    ? snapshot as SystemStatusButtonStoreState
+    ? (snapshot as SystemStatusButtonStoreState)
     : {}
 }
 
@@ -47,9 +47,13 @@ function renderMetricIcon(icon?: string) {
     return undefined
   }
 
-  return icon.includes('://') || icon.startsWith('.') || icon.startsWith('/')
-    ? <Icon size={16} src={icon} />
-    : <Icon icon={icon} size={16} />
+  return icon.includes('://') ||
+    icon.startsWith('.') ||
+    icon.startsWith('/') ? (
+    <Icon size={16} src={icon} />
+  ) : (
+    <Icon name={icon} size={16} />
+  )
 }
 
 const builtinSystemStatusLabelValuesButton = defineMountedButton({
@@ -70,13 +74,17 @@ const builtinSystemStatusLabelValuesButton = defineMountedButton({
   render: ({ config, payload, store }) => {
     const state = getButtonStoreState(store.button.snapshot)
     const payloadMetrics = payload?.metrics
-    const metrics = config.metrics.map((metricConfig, index) => (
-      payloadMetrics?.[index]
-      ?? state.metrics?.[index]
-      ?? createUnavailableMetric(metricConfig.metric)
-    ))
+    const metrics = config.metrics.map(
+      (metricConfig, index) =>
+        payloadMetrics?.[index] ??
+        state.metrics?.[index] ??
+        createUnavailableMetric(metricConfig.metric),
+    )
     const lines = metrics.map((metric, index) => {
-      const displayMetric = toSystemStatusDisplayMetric(metric, config.metrics[index])
+      const displayMetric = toSystemStatusDisplayMetric(
+        metric,
+        config.metrics[index],
+      )
 
       return {
         color: displayMetric.color,

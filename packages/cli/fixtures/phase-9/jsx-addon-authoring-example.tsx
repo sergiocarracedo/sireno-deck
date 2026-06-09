@@ -2,7 +2,7 @@ import { ButtonSurface, Chip, Icon, Text } from 'sireno-deck-cli'
 
 export const componentFirstButton = (
   <div className="flex flex-col items-center justify-center gap-1">
-    <Icon icon="clock" tone="primary" />
+    <Icon name="clock" tone="primary" />
     <Text fit="wrap">Clock</Text>
   </div>
 )

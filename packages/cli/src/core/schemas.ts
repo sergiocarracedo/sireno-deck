@@ -124,7 +124,6 @@ const RawButtonEnvelopeSchema = z
 
 const RawDeckSchema = z
   .object({
-    allow_reserved_slot_override: z.boolean().optional(),
     buttons: z.array(RawButtonEnvelopeSchema).optional(),
     id: z.string().min(1),
     name: z.string().optional(),
@@ -135,7 +134,6 @@ const RawDeckSchema = z
 
 const BootstrapSirenoConfigSchema = z
   .object({
-    allow_reserved_slot_override: z.boolean().optional(),
     device: z
       .object({
         model: z.string().optional(),
@@ -178,7 +176,6 @@ export interface ButtonInstance extends AddonButtonEnvelope {
 }
 
 export interface DeckConfig {
-  allow_reserved_slot_override?: boolean
   background?: string
   deckType?: string
   id: string
@@ -204,7 +201,6 @@ const CoreDeckConfigSchema = z
   .strict()
 
 export interface SirenoConfig {
-  allow_reserved_slot_override?: boolean
   device?: {
     model?: string
     path?: string
@@ -334,8 +330,8 @@ export function validateBootstrapConfig(data: unknown): BootstrapSirenoConfig {
     const lockedDeckId = config.session?.locked_deck
     for (const [deckKey, deck] of Object.entries(config.decks ?? {})) {
       if (deckKey === lockedDeckId) continue
-      if (deck.allow_reserved_slot_override) continue
-      const reservedPosition = (deck.buttons?.length ?? 0) > 0 ? deck.keyCount - 1 : -1
+      const reservedPosition =
+        (deck.buttons?.length ?? 0) > 0 ? deck.keyCount - 1 : -1
       if (reservedPosition < 0) continue
       const conflict = (deck.buttons ?? []).find(
         (b: { position?: number }) => b.position === reservedPosition,
@@ -634,6 +630,10 @@ export function validateConfig(
       ...(deck.name !== undefined ? { name: deck.name } : {}),
       ...(bootstrap.decks[deckKey]?.process_names !== undefined
         ? { process_names: bootstrap.decks[deckKey]?.process_names }
+        : {}),
+      ...(bootstrap.decks[deckKey]?.process_names === undefined &&
+      deck.process_names !== undefined
+        ? { process_names: deck.process_names }
         : {}),
       buttons: nextButtons,
     }

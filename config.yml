@@ -52,7 +52,6 @@ decks:
 
       - position: 12
         type: media-player
-        unavailable_label: Unavailable
 
       - position: 11
         type: time

@@ -8,6 +8,7 @@ import type {
 } from './provider'
 
 export type { ActiveAppProvider, ActiveAppSnapshot } from './provider'
+export type { ActiveAppMonitor } from './active-app-monitor'
 
 export interface GetActiveAppProviderOptions extends ActiveAppProviderDeps {
   platform?: NodeJS.Platform

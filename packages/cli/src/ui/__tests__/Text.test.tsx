@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 
 import { renderReactNodeToHtml } from '@/render/dom-host'
-import { Text } from './Text'
+import { Text } from '../Text'
 
 function renderText(props: Parameters<typeof Text>[0]): string {
   return renderReactNodeToHtml(createElement(Text, props) as never)

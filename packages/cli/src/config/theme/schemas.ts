@@ -1,13 +1,6 @@
-import {
-  ChipTone,
-  IconTone,
-  TextAlign,
-  TextFit,
-  TextSize,
-  TextTone,
-  TextTypography,
-} from '@/ui'
+import { BarsProps, ChipProps, IconProps, TextProps } from '@/ui'
 import { LabelProps } from '@/ui/Label'
+import { IconLabelSurfaceProps } from '@/ui/surfaces/IconLabelSurface'
 import { ReactElement, ReactNode } from 'react'
 import { z } from 'zod'
 
@@ -78,50 +71,26 @@ export interface ThemeButtonFrameProps {
 
 export type ThemeButtonFrame = (props: ThemeButtonFrameProps) => ReactElement
 
-export interface ThemeIconPresentationProps {
-  children: ReactElement
-  decorative: boolean
-  source: 'asset' | 'brand' | 'generic'
-  tone?: IconTone
-}
-
-export interface ThemeChipPresentationProps {
-  children: ReactElement
-  tone: ChipTone
-}
-
-export interface ThemeTextPresentationProps {
-  align: TextAlign
-  children: ReactElement
-  fit: TextFit
-  tone: TextTone
-  typography: TextTypography
-  size: TextSize
-}
-
+export type ThemeChipProps = ChipProps
+export type ThemeTextProps = TextProps
+export type ThemeIconProps = IconProps
 export type ThemeLabelProps = LabelProps
 
+export type ThemeIconLabelSurfaceProps = IconLabelSurfaceProps
+export type ThemeBarsSurfaceProps = BarsProps
+
 export interface ThemeUiPresentation {
-  chip?: (props: ThemeChipPresentationProps) => ReactElement
-  icon?: (props: ThemeIconPresentationProps) => ReactElement
-  text?: (props: ThemeTextPresentationProps) => ReactElement
+  chip?: (props: ThemeChipProps) => ReactElement
+  icon?: (props: ThemeIconProps) => ReactElement
+  text?: (props: ThemeTextProps) => ReactElement
   label?: (props: ThemeLabelProps) => ReactElement
+  surfaces?: {
+    iconLabel?: (props: ThemeIconLabelSurfaceProps) => ReactElement
+    bars?: (props: ThemeBarsSurfaceProps) => ReactElement
+  }
 }
 
 export type ThemeColorToken = (typeof colorTokens)[number]
-
-export interface ThemeMediaPlayerSurfaceProps {
-  artist: string
-  progress: number
-  source: string
-  status: 'play' | 'pause' | 'stop' | 'notAvailable' | 'unsupported'
-  time: string
-  title: string
-}
-
-export type ThemeMediaPlayerSurface = (
-  props: ThemeMediaPlayerSurfaceProps,
-) => ReactElement
 
 export interface Theme extends Omit<ThemeSchemaOutput, 'typography'> {
   accent: string
@@ -130,7 +99,6 @@ export interface Theme extends Omit<ThemeSchemaOutput, 'typography'> {
   danger: string
   filePaths: string[]
   frame: string
-  mediaPlayerSurface?: ThemeMediaPlayerSurface
   primary: string
   rootDir: string
   stylesheets: string[]

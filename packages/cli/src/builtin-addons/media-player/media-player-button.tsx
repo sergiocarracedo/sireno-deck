@@ -65,9 +65,7 @@ interface CreateMediaPlayerButtonOptions {
   surface?: ThemeMediaPlayerSurface
 }
 
-function createMediaPlayerButton(
-  options: CreateMediaPlayerButtonOptions = {},
-) {
+function createMediaPlayerButton(options: CreateMediaPlayerButtonOptions = {}) {
   const renderSurface = options.surface ?? Surface
 
   return defineMountedButton({
@@ -78,7 +76,10 @@ function createMediaPlayerButton(
       store.button.set(undefined)
     },
     onActivate: async ({ hostContext, store }) => {
-      const controller = getOrCreateController(store.button.snapshot, hostContext)
+      const controller = getOrCreateController(
+        store.button.snapshot,
+        hostContext,
+      )
       const snapshot = await controller.getSnapshot()
 
       store.button.update((currentSnapshot) => ({
@@ -93,13 +94,19 @@ function createMediaPlayerButton(
       }
     },
     onTap: async ({ hostContext, methods, store }) => {
-      const controller = getOrCreateController(store.button.snapshot, hostContext)
+      const controller = getOrCreateController(
+        store.button.snapshot,
+        hostContext,
+      )
       await controller.togglePlayPause()
       await refreshSnapshot(controller, store)
       methods.invalidate()
     },
     poll: async ({ hostContext, store }): Promise<MediaPlayerPollPayload> => {
-      const controller = getOrCreateController(store.button.snapshot, hostContext)
+      const controller = getOrCreateController(
+        store.button.snapshot,
+        hostContext,
+      )
       const snapshot = await refreshSnapshot(controller, store)
 
       return { snapshot }
@@ -110,10 +117,9 @@ function createMediaPlayerButton(
         payload?.snapshot ??
         state.snapshot ??
         createUnavailableMediaSnapshot('media-controller-unavailable')
-      const title = snapshot.title ?? config.unavailable_label ?? 'Unavailable'
+      const title = snapshot.title ?? '...'
       const artist =
-        snapshot.artist ??
-        (snapshot.available ? 'Unknown artist' : 'No active player')
+        snapshot.artist ?? (snapshot.available ? '...' : 'No active player')
       const source = snapshot.app ?? snapshot.source ?? ''
       const progress = snapshot.available ? (snapshot.percentage ?? 0) : 0
       const status: MediaButtonStatus = snapshot.available

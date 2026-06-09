@@ -12,7 +12,7 @@ function renderMuteSurface(snap: MediaVolumeSnapshot) {
     <ButtonSurface full>
       <div className="flex h-full w-full flex-col items-center justify-center gap-1">
         <Icon
-          icon={snap.muted ? 'volume-x' : 'volume-2'}
+          name={snap.muted ? 'volume-x' : 'volume-2'}
           size={28}
           tone={snap.muted ? 'danger' : 'foreground'}
         />

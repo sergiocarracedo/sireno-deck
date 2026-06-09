@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
 import * as lucideIcons from 'lucide-react'
 import { Github, type LucideIcon } from 'lucide-react'
@@ -24,18 +24,15 @@ export type GenericIconName = string
 export type IconTone = keyof typeof TONE_CLASS
 
 interface IconCommonProps {
-  className?: string
-  label?: string
   size?: number
-  style?: CSSProperties
   tone?: IconTone
 }
 
 export type IconProps = IconCommonProps &
   (
-    | { brand: BrandIconName; icon?: never; src?: never }
-    | { brand?: never; icon: string; src?: never }
-    | { brand?: never; icon?: never; src: string }
+    | { brand: BrandIconName; name?: never; src?: never }
+    | { brand?: never; name: string; src?: never }
+    | { brand?: never; name?: never; src: string }
   )
 
 function renderLucide(
@@ -44,24 +41,18 @@ function renderLucide(
   source: 'brand' | 'generic',
 ): ReactElement {
   const size = props.size ?? 20
-  const decorative = !props.label
 
   return (
     <LucideComponent
-      aria-hidden={decorative ? 'true' : undefined}
-      aria-label={props.label}
       className={cn(
         'inline-block shrink-0',
         TONE_CLASS[props.tone ?? 'foreground'],
-        props.className,
       )}
       data-sireno-icon-source={source}
       data-sireno-ui-icon="true"
       focusable="false"
-      role={decorative ? undefined : 'img'}
       size={size}
       strokeWidth={1.8}
-      style={props.style}
     />
   )
 }
@@ -102,15 +93,16 @@ function resolveLucideIcon(name: string): LucideIcon {
 export function Icon(props: IconProps): ReactElement {
   const themeUi = useThemeUiPresentation()
 
+  if (themeUi?.icon) {
+    return themeUi.icon(props)
+  }
+
   if ('src' in props && props.src) {
     const size = props.size ?? 20
-    const decorative = !props.label
 
-    const element = (
+    return (
       <img
-        alt={props.label ?? ''}
-        aria-hidden={decorative ? 'true' : undefined}
-        className={cn('inline-block shrink-0', props.className)}
+        className={cn('inline-block shrink-0')}
         data-sireno-icon-source="asset"
         data-sireno-ui-icon="true"
         src={resolveDomAssetSrc(props.src)}
@@ -118,46 +110,19 @@ export function Icon(props: IconProps): ReactElement {
           height: `${size}px`,
           objectFit: 'contain',
           width: `${size}px`,
-          ...props.style,
         }}
       />
     )
-
-    return themeUi?.icon
-      ? themeUi.icon({
-          children: element,
-          decorative,
-          source: 'asset',
-          tone: props.tone,
-        })
-      : element
   }
 
   if ('brand' in props && props.brand) {
-    const element = renderLucide(
-      props,
-      BRAND_ICON_REGISTRY[props.brand],
-      'brand',
-    )
-
-    return themeUi?.icon
-      ? themeUi.icon({
-          children: element,
-          decorative: !props.label,
-          source: 'brand',
-          tone: props.tone,
-        })
-      : element
+    return renderLucide(props, BRAND_ICON_REGISTRY[props.brand], 'brand')
   }
 
-  const element = renderLucide(props, resolveLucideIcon(props.icon!), 'generic')
+  if (!props.name) {
+    console.error('Empty icon name')
+    return <></>
+  }
 
-  return themeUi?.icon
-    ? themeUi.icon({
-        children: element,
-        decorative: !props.label,
-        source: 'generic',
-        tone: props.tone,
-      })
-    : element
+  return renderLucide(props, resolveLucideIcon(props.name), 'generic')
 }

@@ -20,7 +20,7 @@ export function Label(props: LabelProps): ReactElement {
       size="md"
       className="uppercase leading-tight tracking-tight"
       fit="ellipsis"
-      tone="foreground"
+      tone="primary"
       typography="main"
     >
       {props.children}

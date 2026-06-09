@@ -1,8 +1,7 @@
-import { getCurrentBrightness, setBrightnessAll } from "@/device/registry"
-import { Icon, Text } from "@/ui/index"
-import { LogoVersion } from "@/ui/LogoVersion"
+import { getCurrentBrightness, setBrightnessAll } from '@/device/registry'
+import { Icon, Text } from '@/ui/index'
 
-import type { ReactElement } from "react"
+import type { ReactElement } from 'react'
 
 const BRIGHTNESS_STEP = 10
 const MIN_BRIGHTNESS = 10
@@ -17,10 +16,10 @@ export function nextBrightnessDown(current: number): number {
 
 export async function handleSettingsButtonTap(buttonId: string): Promise<void> {
   switch (buttonId) {
-    case "brightness-up":
+    case 'brightness-up':
       await setBrightnessAll(nextBrightnessUp(getCurrentBrightness()))
       return
-    case "brightness-down":
+    case 'brightness-down':
       await setBrightnessAll(nextBrightnessDown(getCurrentBrightness()))
       return
     default:
@@ -30,27 +29,27 @@ export async function handleSettingsButtonTap(buttonId: string): Promise<void> {
 
 export function renderSettingsButton(buttonId: string): ReactElement {
   switch (buttonId) {
-    case "brightness-up":
+    case 'brightness-up':
       return (
         <div
           className="flex h-full w-full flex-col items-center justify-center gap-1"
           data-sireno-settings-button="brightness-up"
         >
-          <Icon icon="sun" size={32} />
+          <Icon name="sun" size={32} />
           <Text size="xs">Brighter</Text>
         </div>
       )
-    case "brightness-down":
+    case 'brightness-down':
       return (
         <div
           className="flex h-full w-full flex-col items-center justify-center gap-1"
           data-sireno-settings-button="brightness-down"
         >
-          <Icon icon="moon" size={32} />
+          <Icon name="moon" size={32} />
           <Text size="xs">Dimmer</Text>
         </div>
       )
-    case "current-brightness":
+    case 'current-brightness':
       return (
         <div
           className="flex h-full w-full flex-col items-center justify-center gap-0.5"
@@ -62,8 +61,6 @@ export function renderSettingsButton(buttonId: string): ReactElement {
           <Text size="xs">Brightness</Text>
         </div>
       )
-    case "logo-version":
-      return <LogoVersion />
     default:
       return (
         <div

@@ -5,7 +5,7 @@ import {
   defineMountedButton,
   useButtonActionCommand,
 } from '@/addon/api'
-import { Icon, Text } from '@/ui/index'
+import { IconLabelSurface } from '@/ui/index'
 
 const BuiltinActionButtonSchema = z
   .object({
@@ -19,17 +19,7 @@ const builtinActionButton = defineMountedButton({
   configSchema: BuiltinActionButtonSchema,
   ...useButtonActionCommand(({ config }) => config.commands),
   render: ({ config }) => (
-    <div className="flex flex-col items-center justify-center w-full gap-1.5">
-      {config.icon ? <Icon size={24} src={config.icon} /> : null}
-      <Text
-        className="w-full text-balance"
-        fit="wrap"
-        tone="primary"
-        typography="main"
-      >
-        {config.label}
-      </Text>
-    </div>
+    <IconLabelSurface icon={{ src: config.icon }} label={config.label} />
   ),
   type: 'action',
 })

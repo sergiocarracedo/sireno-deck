@@ -76,6 +76,7 @@ function getReservedSlotPosition(keyCount: number): number {
 ### Runtime injection
 
 In `deck/runtime.ts`, after user-defined buttons are placed:
+
 - If deck is the locked-session deck, skip injection
 - If `allow_reserved_slot_override` is true for the deck, skip injection (addon owns the slot)
 - Otherwise, inject the system back button (or home indicator for main deck) at position `keyCount - 1`
@@ -95,7 +96,7 @@ export function SystemBackButton({ isMainDeck, onTap, onHold }: {
   return (
     <ButtonSurface>
       <button onClick={onTap} onPointerDown={...} onPointerUp={...}>
-        <Icon icon="chevron-left" />
+        <Icon name="chevron-left" />
         <Text>Back</Text>
       </button>
     </ButtonSurface>

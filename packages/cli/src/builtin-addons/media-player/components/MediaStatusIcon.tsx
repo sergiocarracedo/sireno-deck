@@ -21,7 +21,7 @@ export function MediaStatusIcon(props: {
         bgColor,
       )}
     >
-      <Icon icon={icon} size={13} />
+      <Icon name={icon} size={13} />
     </div>
   )
 }

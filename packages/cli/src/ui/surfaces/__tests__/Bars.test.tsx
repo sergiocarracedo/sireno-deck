@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 
 import { renderReactNodeToHtml } from '@/render/dom-host'
-import { Bars } from './Bars'
+import { Bars } from '../surfaces/Bars'
 
 describe('Bars', () => {
   it('renders bounded bar counts through the shared UI surface', () => {
@@ -56,7 +56,9 @@ describe('Bars', () => {
   it('renders the value as rotated text inside the bar fill', () => {
     const html = renderReactNodeToHtml(
       createElement(Bars, {
-        items: [{ displayValue: '12.3 GB', maxValue: 100, title: 'ram', value: 78 }],
+        items: [
+          { displayValue: '12.3 GB', maxValue: 100, title: 'ram', value: 78 },
+        ],
       }),
     )
 
@@ -80,7 +82,9 @@ describe('Bars', () => {
   it('prefers displayValue over the rounded number', () => {
     const html = renderReactNodeToHtml(
       createElement(Bars, {
-        items: [{ displayValue: '67%', maxValue: 100, title: 'cpu', value: 67 }],
+        items: [
+          { displayValue: '67%', maxValue: 100, title: 'cpu', value: 67 },
+        ],
       }),
     )
 

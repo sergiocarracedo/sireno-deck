@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { computeNegativeColor, luma, parseHex, toHex } from './negative-color'
+import {
+  computeNegativeColor,
+  luma,
+  parseHex,
+  toHex,
+} from '../utils/negative-color'
 
 describe('parseHex', () => {
   it('parses a 6-digit hex', () => {
@@ -96,7 +101,9 @@ describe('computeNegativeColor', () => {
   })
 
   it('uses the theme primary when bar color is a CSS variable', () => {
-    expect(computeNegativeColor('var(--sireno-color-primary)', '#7dd3fc')).toBe('#822c03')
+    expect(computeNegativeColor('var(--sireno-color-primary)', '#7dd3fc')).toBe(
+      '#822c03',
+    )
   })
 
   it('uses the theme primary when bar color is an empty string', () => {

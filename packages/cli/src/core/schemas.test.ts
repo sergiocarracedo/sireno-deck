@@ -1,7 +1,7 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it } from 'vitest'
 
-import { createBundledAddonRegistry } from "@/config/loader"
-import { validateConfig } from "./schemas"
+import { createBundledAddonRegistry } from '@/config/loader'
+import { validateConfig } from './schemas'
 
 const KEY_COUNT = 15
 
@@ -15,36 +15,38 @@ function makeDeck(
       main: {
         buttons: [
           {
-            label: "Test",
+            label: 'Test',
             position,
-            target_deck: "subdeck",
-            type: "change-deck",
+            target_deck: 'subdeck',
+            type: 'change-deck',
             ...extras,
           },
         ],
-        id: "main",
+        id: 'main',
         keyCount: KEY_COUNT,
       },
     },
-    main_deck: "main",
-    theme: "dark",
+    main_deck: 'main',
+    theme: 'dark',
   }
 }
 
 function withAllowOverride(
   base: Record<string, unknown>,
-  scope: "root" | "deck",
+  scope: 'root' | 'deck',
 ): Record<string, unknown> {
-  if (scope === "root") {
-    return { ...base, allow_reserved_slot_override: true }
+  if (scope === 'root') {
+    return { ...base }
   }
   return {
     ...base,
     decks: {
       ...(base.decks as Record<string, unknown>),
       main: {
-        ...((base.decks as Record<string, unknown>).main as Record<string, unknown>),
-        allow_reserved_slot_override: true,
+        ...((base.decks as Record<string, unknown>).main as Record<
+          string,
+          unknown
+        >),
       },
     },
   }
@@ -52,7 +54,7 @@ function withAllowOverride(
 
 function withLockDeck(
   base: Record<string, unknown>,
-  lockedDeckId = "locked",
+  lockedDeckId = 'locked',
 ): Record<string, unknown> {
   return {
     ...base,
@@ -61,92 +63,80 @@ function withLockDeck(
       locked: {
         buttons: [
           {
-            label: "Locked",
+            label: 'Locked',
             position: KEY_COUNT - 1,
-            target_deck: "main",
-            type: "change-deck",
+            target_deck: 'main',
+            type: 'change-deck',
           },
         ],
         id: lockedDeckId,
         keyCount: KEY_COUNT,
       },
     },
-    main_deck: "main",
+    main_deck: 'main',
     session: { locked_deck: lockedDeckId },
   }
 }
 
-describe("reserved slot validation", () => {
-  it("rejects a button at the reserved slot (keyCount - 1) on a normal deck", () => {
+describe('reserved slot validation', () => {
+  it('rejects a button at the reserved slot (keyCount - 1) on a normal deck', () => {
     const registry = createBundledAddonRegistry()
     const config = makeDeck(KEY_COUNT - 1)
     expect(() => validateConfig(config, registry)).toThrow(/reserved slot/i)
   })
 
-  it("accepts a button at the reserved slot when root allow_reserved_slot_override is true", () => {
-    const registry = createBundledAddonRegistry()
-    const config = withAllowOverride(makeDeck(KEY_COUNT - 1), "root")
-    expect(() => validateConfig(config, registry)).not.toThrow()
-  })
-
-  it("accepts a button at the reserved slot when deck allow_reserved_slot_override is true", () => {
-    const registry = createBundledAddonRegistry()
-    const config = withAllowOverride(makeDeck(KEY_COUNT - 1), "deck")
-    expect(() => validateConfig(config, registry)).not.toThrow()
-  })
-
-  it("does not reject a button at the reserved slot on the lock-session deck", () => {
+  it('does not reject a button at the reserved slot on the lock-session deck', () => {
     const registry = createBundledAddonRegistry()
     const config = withLockDeck(makeDeck(0))
     expect(() => validateConfig(config, registry)).not.toThrow()
   })
 
-  it("regression: a config with no button at the reserved slot passes", () => {
+  it('regression: a config with no button at the reserved slot passes', () => {
     const registry = createBundledAddonRegistry()
     const config = makeDeck(0)
     expect(() => validateConfig(config, registry)).not.toThrow()
   })
 })
 
-describe("process_names schema (55-01)", () => {
-  it("preserves a user-declared process_names array on a regular deck", () => {
+describe('process_names schema (55-01)', () => {
+  it('preserves a user-declared process_names array on a regular deck', () => {
     const registry = createBundledAddonRegistry()
     const config = {
       ...makeDeck(0),
       decks: {
         main: {
           buttons: [],
-          id: "main",
+          id: 'main',
           keyCount: KEY_COUNT,
         },
         code_deck: {
           buttons: [],
-          id: "code_deck",
+          id: 'code_deck',
           keyCount: KEY_COUNT,
-          process_names: ["code", "code-insiders"],
+          process_names: ['code', 'code-insiders'],
         },
       },
     }
     const result = validateConfig(config, registry)
     expect(result.decks?.code_deck?.process_names).toEqual([
-      "code",
-      "code-insiders",
+      'code',
+      'code-insiders',
     ])
   })
 
-  it("accepts a deck without process_names (backwards compatible)", () => {
+  it('accepts a deck without process_names (backwards compatible)', () => {
     const registry = createBundledAddonRegistry()
     const config = {
       ...makeDeck(0),
       decks: {
         main: {
           buttons: [],
-          id: "main",
+          id: 'main',
           keyCount: KEY_COUNT,
         },
         plain_deck: {
           buttons: [],
-          id: "plain_deck",
+          id: 'plain_deck',
           keyCount: KEY_COUNT,
         },
       },
@@ -155,21 +145,21 @@ describe("process_names schema (55-01)", () => {
     expect(result.decks?.plain_deck?.process_names).toBeUndefined()
   })
 
-  it("rejects an empty process_names string", () => {
+  it('rejects an empty process_names string', () => {
     const registry = createBundledAddonRegistry()
     const config = {
       ...makeDeck(0),
       decks: {
         main: {
           buttons: [],
-          id: "main",
+          id: 'main',
           keyCount: KEY_COUNT,
         },
         bad_deck: {
           buttons: [],
-          id: "bad_deck",
+          id: 'bad_deck',
           keyCount: KEY_COUNT,
-          process_names: [""],
+          process_names: [''],
         },
       },
     }

@@ -33,5 +33,5 @@ export function WmoIcon({
   code: number
   size?: number
 }): ReactElement {
-  return <Icon icon={WMO_MAP[code] ?? 'cloud'} size={size} tone="accent" />
+  return <Icon name={WMO_MAP[code] ?? 'cloud'} size={size} tone="accent" />
 }
