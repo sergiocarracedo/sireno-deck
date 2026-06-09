@@ -1,0 +1,28 @@
+.planning/ROADMAP.md
+  s_8eaa4083520faf::t_12e24123237bc3 88
+.planning/STATE.md
+  s_8eaa4083520faf::t_0630359ffe5225 12-14
+.planning/phases/55-active-app-overlay-decks/55-03-SUMMARY.md
+  s_8eaa4083520faf::t_3492f827bbea87 1-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "fc879cbdc244f9e60d5dcff305237864909a88ad",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_8eaa4083520faf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_151dd58eeffeFt0TLJhZBrtyC3",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
