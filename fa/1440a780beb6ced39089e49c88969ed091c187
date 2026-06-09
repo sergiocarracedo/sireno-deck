@@ -1,0 +1,29 @@
+.planning/STATE.md
+  s_b5888af49640de::t_988775fd06f7c7 26
+  s_b5888af49640de::t_51fb43f8d93c62 15
+.planning/quick/042-key-macro-action-button/042-SUMMARY.md
+  s_b5888af49640de::t_f8e7f9beb391b2 1-30
+.planning/quick/042-key-macro-action-button/042-PLAN.md
+  s_b5888af49640de::t_18574ddf41202a 1-117
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "fa1440a780beb6ced39089e49c88969ed091c187",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b5888af49640de": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15438c969ffeR54heuHaj7FhxV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
