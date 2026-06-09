@@ -166,8 +166,8 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.5 — Addons & UX Polish II
 **Phase:** 55 — Active-app overlay decks (next: execute-phase 55)
-**Status:** planning — 3 plans in 3 waves (55-01 = process_names schema + OS-abstracted provider + monitor; 55-02 = runtime overlay state + dismiss gestures; 55-03 = settings-under-overlay + duplicate warnings). 7 phases (50-56), 25 requirements. v1.4 complete (tagged v1.4). Phases 50-54 shipped (all verified passed). Distribution work (Phases 40/47/48) remains deferred.
-**Last updated:** 2026-06-08
+**Status:** planning — 2 plans in 2 waves (55-01 = system-flag foundation + process_names schema + OS-abstracted active-app provider + monitor; 55-02 = runtime overlay state + dismiss gestures + settings-under-overlay + duplicate warnings). 7 phases (50-56), 25 requirements. v1.4 complete (tagged v1.4). Phases 50-54 shipped (all verified passed). Distribution work (Phases 40/47/48) remains deferred.
+**Last updated:** 2026-06-09
 
 ---
 
