@@ -414,11 +414,17 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   function getDisplayDeckId(): string {
-    return temporaryErrorDeck?.id ?? deckController.getActiveDeckId()
+    return (
+      temporaryErrorDeck?.id ??
+      overlayDeckId ??
+      deckController.getActiveDeckId()
+    )
   }
 
   function getDisplayDeck(): DeckConfig {
-    return temporaryErrorDeck ?? deckController.getActiveDeck()
+    if (temporaryErrorDeck) return temporaryErrorDeck
+    if (overlayDeckId) return getDeckById(overlayDeckId)
+    return deckController.getActiveDeck()
   }
 
   function getDeckById(deckId: string): DeckConfig {
