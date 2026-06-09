@@ -927,6 +927,7 @@ export async function startEmulatorSession(
       hostContext: loadedConfig.hostContext,
       keyCount: connection.info.keyCount,
       lockedDeckId: loadedConfig.config.session?.locked_deck,
+      logger: options.logger,
       onRenderDeck: async (buttons) => {
         if (buttons.length > 0 && !buttons.every(isDomRenderButton)) {
           throw new Error(
@@ -1145,6 +1146,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
         hostContext: loadedConfig.hostContext,
         keyCount: activeConnection.info.keyCount,
         lockedDeckId: loadedConfig.config.session?.locked_deck,
+        logger: options.logger,
         theme: loadedConfig.theme,
         onRenderDeck: async (buttons) => {
           const currentConnection = activeLifecycle.getConnection()

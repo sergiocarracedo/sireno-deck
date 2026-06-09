@@ -42,12 +42,23 @@ import type { AddonRegistry } from '@/addon/registry'
 import type { Theme, ThemeFrameState } from '@/config/theme'
 import type { ButtonInstance, DeckConfig, SirenoConfig } from '@/core/schemas'
 import type { StreamDeckKeyEvent } from '@/device/stream-deck'
-import { createActiveAppMonitor, type ActiveAppProvider, type ActiveAppSnapshot } from '@/system/active-app'
-import { getKeyMacroProvider, parseKeyMacro, type KeyMacroProvider } from '@/system/key-macro'
+import {
+  createActiveAppMonitor,
+  type ActiveAppProvider,
+  type ActiveAppSnapshot,
+} from '@/system/active-app'
 import { UNKNOWN_HOST_CONTEXT, type HostContext } from '@/system/host-context'
+import {
+  getKeyMacroProvider,
+  parseKeyMacro,
+  type KeyMacroProvider,
+} from '@/system/key-macro'
 import type { SessionMonitor, SessionSnapshot } from '@/system/session-monitor'
 import type { ReactElement } from 'react'
-import { getLastPositionSystemButton, SYSTEM_SETTINGS_TYPE } from './system-buttons/system-buttons'
+import {
+  getLastPositionSystemButton,
+  SYSTEM_SETTINGS_TYPE,
+} from './system-buttons/system-buttons'
 
 interface RuntimeStoreScope {
   clear: () => void
@@ -75,6 +86,12 @@ export interface DeckRuntimeOptions {
   keyCount: number
   activeAppProvider?: ActiveAppProvider
   keyMacroProvider?: KeyMacroProvider
+  logger?: {
+    info: (...args: unknown[]) => void
+    warn: (...args: unknown[]) => void
+    error: (...args: unknown[]) => void
+    debug?: (...args: unknown[]) => void
+  }
   lockedDeckId?: string
   onRenderButton?: (button: RuntimeRenderButton) => Promise<void> | void
   onRenderDeck?: (buttons: RuntimeRenderButton[]) => Promise<void> | void
@@ -225,24 +242,20 @@ function cloneHostContext(hostContext: HostContext): HostContext {
   }
 }
 
-const INTERNAL_LOCKED_DECK: DeckConfig = {
-  id: INTERNAL_LOCKED_DECK_ID,
-  name: 'Locked Session',
-  system: true,
-  buttons: (
-    [
-      'hour-tens',
-      'hour-ones',
-      'separator',
-      'minute-tens',
-      'minute-ones',
-    ] as const
-  ).map((slot, index) => ({
-    config: { slot },
-    definition: lockedTimeTileButtonDefinition,
-    position: 5 + index,
-    type: 'locked-time-tile',
-  })),
+function createInternalLockedDeck(keyCount: number): DeckConfig {
+  const centerStart = Math.floor(keyCount / 2) - 1
+  return {
+    id: INTERNAL_LOCKED_DECK_ID,
+    name: 'Locked Session',
+    system: true,
+    buttons: (['hour', 'separator', 'minute'] as const).map((slot, index) => ({
+      config: { slot },
+      definition: lockedTimeTileButtonDefinition,
+      full: true,
+      position: centerStart + index,
+      type: 'locked-time-tile',
+    })),
+  }
 }
 
 const INTERNAL_SETTINGS_STUB_DEFINITION = {
@@ -260,18 +273,23 @@ const INTERNAL_SETTINGS_DECK: DeckConfig = {
     { id: 'brightness-down', position: 1 },
     { id: 'current-brightness', position: 2 },
     { id: 'logo-version', position: 3 },
-  ].map(({ id, position }) => ({
-    config: {},
-    definition: INTERNAL_SETTINGS_STUB_DEFINITION,
-    id,
-    position,
-    type: 'settings-placeholder',
-  } as unknown as ButtonInstance)),
+  ].map(
+    ({ id, position }) =>
+      ({
+        config: {},
+        definition: INTERNAL_SETTINGS_STUB_DEFINITION,
+        id,
+        position,
+        type: 'settings-placeholder',
+      }) as unknown as ButtonInstance,
+  ),
 }
 
-const INTERNAL_DECKS: Readonly<Record<string, DeckConfig>> = {
-  [INTERNAL_LOCKED_DECK_ID]: INTERNAL_LOCKED_DECK,
-  [SETTINGS_DECK_ID]: INTERNAL_SETTINGS_DECK,
+function createInternalDecks(keyCount: number): Record<string, DeckConfig> {
+  return {
+    [INTERNAL_LOCKED_DECK_ID]: createInternalLockedDeck(keyCount),
+    [SETTINGS_DECK_ID]: INTERNAL_SETTINGS_DECK,
+  }
 }
 
 function createTemporaryErrorDeck(detailLines: readonly string[]): DeckConfig {
@@ -339,10 +357,15 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   const hostContext = cloneHostContext(
     options.hostContext ?? UNKNOWN_HOST_CONTEXT,
   )
-const runtimeDecks: Record<string, DeckConfig> = {
-  ...(options.decks ?? { [options.deck.id]: options.deck }),
-  ...INTERNAL_DECKS,
-}
+  const runtimeLogger = options.logger ?? {
+    error: () => {},
+    info: () => {},
+    warn: () => {},
+  }
+  const runtimeDecks: Record<string, DeckConfig> = {
+    ...(options.decks ?? { [options.deck.id]: options.deck }),
+    ...createInternalDecks(options.keyCount ?? 15),
+  }
   const deckController = createDeckController({
     decks: runtimeDecks,
     mainDeckId: options.deck.id,
@@ -1000,7 +1023,10 @@ const runtimeDecks: Record<string, DeckConfig> = {
             await executeAction(holdCommand)
             return
           }
-          if (overlayDeckId !== null && getDisplayDeckId() === SETTINGS_DECK_ID) {
+          if (
+            overlayDeckId !== null &&
+            getDisplayDeckId() === SETTINGS_DECK_ID
+          ) {
             dismissOverlay()
             return
           }
@@ -1394,6 +1420,14 @@ const runtimeDecks: Record<string, DeckConfig> = {
     const newOverlay = snapshot
       ? findActiveAppDeckFor(snapshot.ownerName)
       : null
+    runtimeLogger.info(
+      {
+        snapshotOwner: snapshot?.ownerName ?? null,
+        newOverlay,
+        currentOverlay: overlayDeckId,
+      },
+      'active-app: handleActiveAppChange',
+    )
     if (newOverlay === overlayDeckId) return
     overlayDeckId = newOverlay
     void renderDeckSurface(getDisplayDeckId(), activeActivationVersion).catch(
