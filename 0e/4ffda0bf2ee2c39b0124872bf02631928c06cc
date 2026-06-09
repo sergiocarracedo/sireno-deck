@@ -1,0 +1,33 @@
+config.yml
+  s_b5888af49640de::t_8b5ee88864bd2d 13-17,80-81,84-88
+  s_f594808ff9a3b4::t_5784c9ff474310 82-83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0e4ffda0bf2ee2c39b0124872bf02631928c06cc",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b5888af49640de": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15438c969ffeR54heuHaj7FhxV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_f594808ff9a3b4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15437801fffeeBHdIEvbnHqzV3",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
