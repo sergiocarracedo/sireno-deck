@@ -1,0 +1,32 @@
+packages/cli/src/deck/runtime.ts
+  s_33de7f93c0a086::t_d27146608a5765 49
+  s_33de7f93c0a086::t_f9730e01d66a86 32
+  s_33de7f93c0a086::t_b176a4f3dbdc33 994-997
+  s_33de7f93c0a086::t_d658ddd344bd71 957-965,967-976
+  s_33de7f93c0a086::t_cc594f7f8b2a91 966
+packages/cli/src/deck/system-buttons/system-buttons.ts
+  s_33de7f93c0a086::t_315c4f605bda12 9,34-41
+packages/cli/src/deck/system-buttons/SystemSettingsEntryButton.tsx
+  s_33de7f93c0a086::t_fffa34e83535be 1-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "9275a2a03c610261dad822456f3bccec30687e8e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_33de7f93c0a086": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15494d94fffeRoQ0W9Y1D67dM2",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
