@@ -43,6 +43,7 @@ import type { Theme, ThemeFrameState } from '@/config/theme'
 import type { ButtonInstance, DeckConfig, SirenoConfig } from '@/core/schemas'
 import type { StreamDeckKeyEvent } from '@/device/stream-deck'
 import { createActiveAppMonitor, type ActiveAppProvider, type ActiveAppSnapshot } from '@/system/active-app'
+import { getKeyMacroProvider, parseKeyMacro, type KeyMacroProvider } from '@/system/key-macro'
 import { UNKNOWN_HOST_CONTEXT, type HostContext } from '@/system/host-context'
 import type { SessionMonitor, SessionSnapshot } from '@/system/session-monitor'
 import type { ReactElement } from 'react'
@@ -73,6 +74,7 @@ export interface DeckRuntimeOptions {
   hostContext?: HostContext
   keyCount: number
   activeAppProvider?: ActiveAppProvider
+  keyMacroProvider?: KeyMacroProvider
   lockedDeckId?: string
   onRenderButton?: (button: RuntimeRenderButton) => Promise<void> | void
   onRenderDeck?: (buttons: RuntimeRenderButton[]) => Promise<void> | void
@@ -348,6 +350,9 @@ const runtimeDecks: Record<string, DeckConfig> = {
   const executeAction =
     options.executeAction ??
     ((command: string) => executeCommand({ command, hostContext }))
+  const keyMacroProvider =
+    options.keyMacroProvider ??
+    getKeyMacroProvider({ logger: { warn: () => {} } })
   const createScheduler =
     options.createScheduler ??
     ((intervalMs: number) => createPollingScheduler({ intervalMs }))
@@ -929,6 +934,10 @@ const runtimeDecks: Record<string, DeckConfig> = {
         await doPaste(text)
       },
       runCommand: async (command: string) => executeAction(command),
+      keyMacro: async (sequence: string) => {
+        const steps = parseKeyMacro(sequence)
+        await keyMacroProvider.send(steps)
+      },
     }
   }
 

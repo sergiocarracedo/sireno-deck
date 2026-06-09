@@ -45,6 +45,7 @@ export interface AddonButtonMethods {
   getActiveDeckId: () => string
   goBack: () => Promise<void> | void
   invalidate: () => void
+  keyMacro: (sequence: string) => Promise<void>
   navigateToDeck: (
     deckId: string,
     options?: { addToHistory?: boolean },
@@ -83,9 +84,27 @@ export type AddonButtonActionCommands = z.infer<
   typeof AddonButtonActionCommandsSchema
 >
 
-export const AddonButtonActionConfigSchema = z.object({
-  commands: AddonButtonActionCommandsSchema.optional(),
-})
+const AddonButtonKeyMacroGestureSchema = z
+  .object({
+    'double-tap': z.string().min(1).optional(),
+    hold: z.string().min(1).optional(),
+    tap: z.string().min(1).optional(),
+  })
+  .strict()
+
+export const AddonButtonKeyMacroSchema = z.union([
+  z.string().min(1),
+  AddonButtonKeyMacroGestureSchema,
+])
+
+export type AddonButtonKeyMacro = z.infer<typeof AddonButtonKeyMacroSchema>
+
+export const AddonButtonActionConfigSchema = z
+  .object({
+    commands: AddonButtonActionCommandsSchema.optional(),
+    key_macro: AddonButtonKeyMacroSchema.optional(),
+  })
+  .strict()
 
 export const HOLD_ACTION_DELAY_MS = 600
 export const DOUBLE_TAP_DELAY_MS = 250

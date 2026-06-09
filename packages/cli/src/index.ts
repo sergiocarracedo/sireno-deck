@@ -1,6 +1,7 @@
 export {
   AddonButtonActionCommandsSchema,
   AddonButtonActionConfigSchema,
+  AddonButtonKeyMacroSchema,
   ButtonSurface,
   defineMountedButton,
   useButtonActionCommand,
@@ -8,9 +9,16 @@ export {
 
 export { Bars, Chip, Icon, LabelValueList, Text } from "@/ui/index"
 
+export {
+  KeyMacroParseError,
+  parseKeyMacro,
+} from "@/system/key-macro"
+export type { KeyMacroProvider, KeyMacroStep } from "@/system/key-macro"
+
 export type {
   AddonButtonActionCommands,
   AddonButtonDefinition,
+  AddonButtonKeyMacro,
   AddonButtonRuntimeProps,
   DomElementStyleProps,
   MountedAddonButtonDefinition,

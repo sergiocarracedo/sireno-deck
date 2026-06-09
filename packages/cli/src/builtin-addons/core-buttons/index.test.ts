@@ -10,7 +10,9 @@ const mountedButtonMethods = {
   getActiveDeckId: () => 'main',
   goBack() {},
   invalidate() {},
+  keyMacro: async () => {},
   navigateToDeck() {},
+  pasteText: async () => {},
   runCommand: async () => ({}) as never,
 }
 
