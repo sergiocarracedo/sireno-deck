@@ -4,7 +4,7 @@ import { createLinuxProvider } from './linux'
 import type { ActiveAppProbe } from './provider'
 
 function silentLogger() {
-  return { warn: vi.fn(), error: vi.fn() }
+  return { warn: vi.fn(), error: vi.fn(), info: vi.fn() }
 }
 
 describe('createLinuxProvider poll failure cap', () => {
@@ -67,7 +67,7 @@ describe('createLinuxProvider poll failure cap', () => {
 
     expect(logger.warn).toHaveBeenCalledTimes(1)
     const [firstCall] = logger.warn.mock.calls
-    expect(firstCall?.[1]).toContain('disabling poller')
+    expect(firstCall?.[1]).toContain('falling back to GNOME DBus extension')
 
     provider.stop()
   })

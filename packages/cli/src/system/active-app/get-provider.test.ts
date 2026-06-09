@@ -1,7 +1,7 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { getActiveAppProvider } from './index'
-import type { DbusClient, DbusBus } from './provider'
+import type { ActiveAppProbe, DbusClient, DbusBus } from './provider'
 
 function silentLogger() {
   return { warn: vi.fn(), error: vi.fn(), info: vi.fn() }
@@ -32,6 +32,14 @@ function makePresentExtensionClient(focusClassImpl: () => Promise<string> = asyn
 }
 
 describe('getActiveAppProvider', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('returns a supported provider for darwin', async () => {
     const provider = await getActiveAppProvider({
       logger: silentLogger(),
@@ -48,54 +56,93 @@ describe('getActiveAppProvider', () => {
     expect(provider.supportsActiveApp).toBe(true)
   })
 
-  it('returns a supported provider for linux when not pure Wayland', async () => {
+  it('returns a supported provider for linux when get-windows works', async () => {
+    const probe: ActiveAppProbe = {
+      async getActiveWindow() {
+        return { owner: { name: 'firefox' } }
+      },
+    }
     const provider = await getActiveAppProvider({
       logger: silentLogger(),
       platform: 'linux',
       env: {},
+      probe,
     })
     expect(provider.supportsActiveApp).toBe(true)
   })
 
-  it('returns a supported provider on pure Wayland when the GNOME extension is reachable', async () => {
-    const provider = await getActiveAppProvider({
-      logger: silentLogger(),
-      platform: 'linux',
-      env: { XDG_SESSION_TYPE: 'wayland' },
-      dbusClient: makePresentExtensionClient(),
-    })
-    expect(provider.supportsActiveApp).toBe(true)
-  })
-
-  it('returns an unsupported provider on pure Wayland when the GNOME extension is missing and logs the install hint', async () => {
+  it('falls back to the GNOME extension after get-windows returns null repeatedly', async () => {
     const logger = silentLogger()
+    const probe: ActiveAppProbe = {
+      async getActiveWindow() {
+        return null
+      },
+    }
     const provider = await getActiveAppProvider({
       logger,
       platform: 'linux',
-      env: { XDG_SESSION_TYPE: 'wayland' },
+      env: {},
+      probe,
+      dbusClient: makePresentExtensionClient(),
+    })
+
+    const changes: Array<{ ownerName: string } | null> = []
+    provider.start((snapshot) => {
+      changes.push(snapshot)
+    })
+
+    for (let i = 0; i < 5; i += 1) {
+      await vi.advanceTimersByTimeAsync(500)
+    }
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(provider.supportsActiveApp).toBe(true)
+    expect(changes.some((c) => c?.ownerName === 'firefox')).toBe(true)
+    expect(
+      logger.info.mock.calls.some((call) =>
+        call[1]?.includes('falling back to GNOME DBus extension'),
+      ),
+    ).toBe(true)
+
+    provider.stop()
+  })
+
+  it('logs the GNOME extension install hint when fallback probe also fails', async () => {
+    const logger = silentLogger()
+    const probe: ActiveAppProbe = {
+      async getActiveWindow() {
+        return null
+      },
+    }
+    const provider = await getActiveAppProvider({
+      logger,
+      platform: 'linux',
+      env: {},
+      probe,
       dbusClient: makeMissingExtensionClient(),
     })
-    expect(provider.supportsActiveApp).toBe(false)
+
     provider.start(() => {})
-    expect(logger.info).toHaveBeenCalledTimes(1)
-    const [firstCall] = logger.info.mock.calls
-    const [context, message] = firstCall ?? []
-    expect(message).toContain('Window Calls Extended')
-    expect((context as { installUrl?: string } | undefined)?.installUrl).toBe(
+
+    for (let i = 0; i < 5; i += 1) {
+      await vi.advanceTimersByTimeAsync(500)
+    }
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(provider.supportsActiveApp).toBe(true)
+    const installHint = logger.info.mock.calls.find(
+      (call) => call[1]?.includes('install it to enable active-app detection on Wayland'),
+    )
+    expect(installHint).toBeDefined()
+    const context = installHint?.[0] as { installUrl?: string } | undefined
+    expect(context?.installUrl).toBe(
       'https://extensions.gnome.org/extension/4974/window-calls-extended/',
     )
+
+    provider.stop()
   })
 
-  it('returns a supported provider when XDG=wayland AND WAYLAND_DISPLAY is set (XWayland)', async () => {
-    const provider = await getActiveAppProvider({
-      logger: silentLogger(),
-      platform: 'linux',
-      env: { WAYLAND_DISPLAY: 'wayland-0', XDG_SESSION_TYPE: 'wayland' },
-    })
-    expect(provider.supportsActiveApp).toBe(true)
-  })
-
-  it('returns an unsupported provider for unknown platforms', async () => {
+  it('returns a supported provider for unknown platforms (then unsupported at the platform level)', async () => {
     const provider = await getActiveAppProvider({
       logger: silentLogger(),
       platform: 'aix' as NodeJS.Platform,
