@@ -27,7 +27,7 @@ import {
 } from '@/util/errors'
 import { createDeckController } from './controller'
 import { handleSettingsButtonTap, renderSettingsButton } from './settings-deck'
-import { OverlayToggleButton } from './system-buttons/overlay-toggle-button'
+import { OverlayToggleButton } from './system-buttons/OverlayToggleButton'
 import { SystemBackButton } from './system-buttons/SystemBackButton'
 import { SystemSettingsEntryButton } from './system-buttons/SystemSettingsEntryButton'
 
@@ -758,14 +758,15 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     deckId: string,
     keyIndex: number,
   ): RuntimeButtonHandle | undefined {
-    const button = getDeckButtons(getDisplayDeck()).find(
+    const displayDeck = getDisplayDeck()
+    const button = getDeckButtons(displayDeck).find(
       (candidate) => candidate.position === keyIndex,
     )
     if (!button) {
       return undefined
     }
 
-    return { button, deckId }
+    return { button, deckId: displayDeck.id }
   }
 
   function getFrameState(keyIndex: number): ThemeFrameState {
