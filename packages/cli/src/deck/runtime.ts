@@ -1070,10 +1070,6 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
           await activateDeckSurface(undefined, previousDeckId)
         },
         onDblTap: async () => {
-          runtimeLogger.info(
-            { overlay: overlayDeckId, lastDismissed: lastDismissedOverlayDeckId },
-            'active-app: system-back onDblTap fired',
-          )
           if (overlayDeckId !== null) {
             dismissOverlay()
             return
@@ -1462,7 +1458,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   async function handlePress(keyIndex: number): Promise<void> {
-    const handle = getButtonHandle(deckController.getActiveDeckId(), keyIndex)
+    const handle = getButtonHandle(getDisplayDeckId(), keyIndex)
     if (!handle) {
       return
     }
@@ -1495,7 +1491,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   async function handleRelease(keyIndex: number): Promise<void> {
-    const handle = getButtonHandle(deckController.getActiveDeckId(), keyIndex)
+    const handle = getButtonHandle(getDisplayDeckId(), keyIndex)
     if (!handle) {
       return
     }
@@ -1529,7 +1525,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   async function handleTap(keyIndex: number): Promise<void> {
-    const handle = getButtonHandle(deckController.getActiveDeckId(), keyIndex)
+    const handle = getButtonHandle(getDisplayDeckId(), keyIndex)
     if (!handle) {
       return
     }
@@ -1544,7 +1540,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   async function handleDblTap(keyIndex: number): Promise<void> {
-    const handle = getButtonHandle(deckController.getActiveDeckId(), keyIndex)
+    const handle = getButtonHandle(getDisplayDeckId(), keyIndex)
     if (!handle) {
       return
     }
@@ -1595,10 +1591,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     void (async () => {
       await handleRelease(event.keyIndex)
 
-      const handle = getButtonHandle(
-        deckController.getActiveDeckId(),
-        event.keyIndex,
-      )
+      const handle = getButtonHandle(getDisplayDeckId(), event.keyIndex)
       if (!handle) return
 
       const instance = getOrCreateInstance(handle.deckId, handle.button)
@@ -1611,10 +1604,6 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       }
 
       if (instance.onDblTap) {
-        runtimeLogger.info(
-          { stateKey, keyIndex: event.keyIndex, hasPending: Boolean(gs?.pendingDblTapTimer) },
-          'active-app: gesture state machine engaging for double-tap',
-        )
         if (gs?.pendingDblTapTimer) {
           clearTimeout(gs.pendingDblTapTimer)
           gestureStates.delete(stateKey)
