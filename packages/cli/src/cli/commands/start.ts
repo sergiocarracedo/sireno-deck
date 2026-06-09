@@ -44,6 +44,7 @@ import { renderDomDeck } from '@/render/dom-host'
 import { getShrinkFitBrowserScript } from '@/render/shrink-fit-browser-script'
 import { createStartupPlaceholderBuffers } from '@/render/startup-placeholder'
 
+import { getActiveAppProvider } from '@/system/active-app'
 import { resolveHostContext } from '@/system/host-context'
 import { createSessionMonitor } from '@/system/session-monitor'
 import {
@@ -908,6 +909,7 @@ export async function startEmulatorSession(
       connection.info.keyCount,
     )
     const runtime = createDeckRuntime({
+      activeAppProvider: getActiveAppProvider({ logger: options.logger }),
       addonRegistry: loadedConfig.registry,
       deck: loadedConfig.config.decks[loadedConfig.config.main_deck]!,
       decks: loadedConfig.config.decks,
@@ -1111,6 +1113,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
       loadedConfig: Awaited<ReturnType<typeof loadRuntimeConfig>>,
     ) => {
       return createDeckRuntime({
+        activeAppProvider: getActiveAppProvider({ logger: options.logger }),
         addonRegistry: loadedConfig.registry,
         deck: loadedConfig.config.decks[loadedConfig.config.main_deck]!,
         decks: loadedConfig.config.decks,

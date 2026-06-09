@@ -41,7 +41,7 @@ import type { AddonRegistry } from '@/addon/registry'
 import type { Theme, ThemeFrameState } from '@/config/theme'
 import type { ButtonInstance, DeckConfig, SirenoConfig } from '@/core/schemas'
 import type { StreamDeckKeyEvent } from '@/device/stream-deck'
-import type { ActiveAppMonitor, ActiveAppSnapshot } from '@/system/active-app'
+import { createActiveAppMonitor, type ActiveAppProvider, type ActiveAppSnapshot } from '@/system/active-app'
 import { UNKNOWN_HOST_CONTEXT, type HostContext } from '@/system/host-context'
 import type { SessionMonitor, SessionSnapshot } from '@/system/session-monitor'
 import type { ReactElement } from 'react'
@@ -71,7 +71,7 @@ export interface DeckRuntimeOptions {
   executeAction?: (command: string) => Promise<CommandExecutionResult>
   hostContext?: HostContext
   keyCount: number
-  activeAppMonitor?: ActiveAppMonitor
+  activeAppProvider?: ActiveAppProvider
   lockedDeckId?: string
   onRenderButton?: (button: RuntimeRenderButton) => Promise<void> | void
   onRenderDeck?: (buttons: RuntimeRenderButton[]) => Promise<void> | void
@@ -440,13 +440,13 @@ const runtimeDecks: Record<string, DeckConfig> = {
       (button) => button.position !== lastPosition,
     )
 
-    const systemConfig: SirenoConfig = {
+    const systemConfig = {
       ...(options.config ?? {}),
       session: {
         ...(options.config?.session ?? {}),
         locked_deck: options.lockedDeckId ?? INTERNAL_LOCKED_DECK_ID,
       },
-    }
+    } as SirenoConfig
 
     return [
       ...buttons,
@@ -1616,8 +1616,11 @@ const runtimeDecks: Record<string, DeckConfig> = {
         options.sessionMonitor?.subscribe((snapshot) => {
           void handleSessionSnapshot(snapshot).catch(reportRuntimeError)
         }) ?? null
-      if (options.activeAppMonitor) {
-        options.activeAppMonitor.start(handleActiveAppChange)
+      if (options.activeAppProvider) {
+        createActiveAppMonitor({
+          onChange: handleActiveAppChange,
+          provider: options.activeAppProvider,
+        }).start()
       }
       runningButtonTypes = new Set(
         options.addonRegistry.listButtons().map((b) => b.type),

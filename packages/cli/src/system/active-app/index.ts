@@ -1,3 +1,4 @@
+import { createActiveAppMonitor } from './active-app-monitor'
 import { createDarwinProvider } from './darwin'
 import { createLinuxProvider } from './linux'
 import { createUnsupportedProvider } from './unsupported'
@@ -7,6 +8,7 @@ import type {
   ActiveAppProviderDeps,
 } from './provider'
 
+export { createActiveAppMonitor }
 export type { ActiveAppProvider, ActiveAppSnapshot } from './provider'
 export type { ActiveAppMonitor } from './active-app-monitor'
 
