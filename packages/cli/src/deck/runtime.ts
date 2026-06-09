@@ -414,6 +414,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   function getDisplayDeckId(): string {
+    if (lockModeActive) return getLockedSurfaceDeckId()
     return (
       temporaryErrorDeck?.id ??
       overlayDeckId ??
@@ -422,6 +423,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   function getDisplayDeck(): DeckConfig {
+    if (lockModeActive) return getDeckById(getLockedSurfaceDeckId())
     if (temporaryErrorDeck) return temporaryErrorDeck
     if (overlayDeckId) return getDeckById(overlayDeckId)
     return deckController.getActiveDeck()
