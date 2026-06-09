@@ -6,6 +6,7 @@ import {
   useButtonActionCommand,
 } from '@/addon/api'
 import { IconLabelSurface } from '@/ui/index'
+import { resolveIconSpec } from '@/ui/Icon'
 
 const BuiltinActionButtonSchema = z
   .object({
@@ -19,7 +20,7 @@ const builtinActionButton = defineMountedButton({
   configSchema: BuiltinActionButtonSchema,
   ...useButtonActionCommand(({ config }) => config.commands),
   render: ({ config }) => (
-    <IconLabelSurface icon={{ src: config.icon }} label={config.label} />
+    <IconLabelSurface icon={resolveIconSpec(config.icon)} label={config.label} />
   ),
   type: 'action',
 })

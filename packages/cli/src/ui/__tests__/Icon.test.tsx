@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 
 import { renderReactNodeToHtml } from '@/render/dom-host'
-import { Icon } from '../Icon'
+import { Icon, resolveIconSpec } from '../Icon'
 
 describe('Icon', () => {
   it('resolves kebab-case Lucide names through the live export surface', () => {
@@ -45,5 +45,27 @@ describe('Icon', () => {
         createElement(Icon, { name: 'definitely-not-a-real-icon' }),
       ),
     ).toThrow('Unknown Lucide icon: definitely-not-a-real-icon')
+  })
+})
+
+describe('resolveIconSpec', () => {
+  it('routes icon:// names to the lucide name path', () => {
+    expect(resolveIconSpec('icon://chevron-right')).toEqual({
+      name: 'chevron-right',
+    })
+  })
+
+  it('preserves addon:// and absolute paths under the src path', () => {
+    expect(resolveIconSpec('addon://core-buttons/clock.svg')).toEqual({
+      src: 'addon://core-buttons/clock.svg',
+    })
+    expect(resolveIconSpec('/abs/path/icon.png')).toEqual({
+      src: '/abs/path/icon.png',
+    })
+  })
+
+  it('returns undefined for missing or empty input', () => {
+    expect(resolveIconSpec(undefined)).toBeUndefined()
+    expect(resolveIconSpec('')).toBeUndefined()
   })
 })

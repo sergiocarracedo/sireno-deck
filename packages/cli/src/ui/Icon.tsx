@@ -90,6 +90,16 @@ function resolveLucideIcon(name: string): LucideIcon {
   return icon
 }
 
+export type ResolvedIconSpec = { name: string } | { src: string } | undefined
+
+export function resolveIconSpec(icon: string | undefined): ResolvedIconSpec {
+  if (!icon) return undefined
+  if (icon.startsWith('icon://')) {
+    return { name: icon.slice('icon://'.length) }
+  }
+  return { src: icon }
+}
+
 export function Icon(props: IconProps): ReactElement {
   const themeUi = useThemeUiPresentation()
 

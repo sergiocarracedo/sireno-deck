@@ -11,7 +11,7 @@ This plan also expanded the committed Phase 17 fixture/UAT path so reviewers can
 - `packages/cli/src/render/text-image.ts`: adds the explicit full-surface SVG path and routes `full_surface` away from the base-shape card.
 - `packages/cli/src/render/text-image.test.ts`: pins the visible difference between base-shape and full-surface rendering.
 - `packages/cli/src/deck/runtime.test.ts`: proves valid full-surface render descriptions survive the runtime seam.
-- `packages/cli/fixtures/phase-17/config.wrapper-compatibility.yml`: committed Phase 17 fixture that shows legacy wrapper compatibility and explicit full-surface rendering together.
+- `packages/cli/fixtures/phase-17/config.button-shape-composition.yml`: committed Phase 17 fixture that shows legacy wrapper compatibility and explicit full-surface rendering together.
 - `.planning/phases/17-custom-wrapper-primitives-with-addon/17-UAT.md`: manual review path with concrete expected outcomes for both rendering modes.
 
 ## Decisions made

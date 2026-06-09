@@ -13,7 +13,7 @@ This slice also added a committed Phase 17 wrapper-compatibility fixture and UAT
 - `packages/cli/src/core/schemas.ts`: validates `full_surface` in config and rejects conflicting `full_surface + wrapper_id` usage.
 - `packages/cli/src/deck/runtime.ts`: rejects conflicting addon-authored surface contracts before image generation.
 - `packages/cli/src/cli/commands/start.ts`: resolves primitive render options through one helper and preserves `wrapper_id` compatibility unless `full_surface` explicitly opts out.
-- `packages/cli/fixtures/phase-17/config.wrapper-compatibility.yml`: committed review fixture for legacy wrapper compatibility vs explicit full-surface rendering.
+- `packages/cli/fixtures/phase-17/config.button-shape-composition.yml`: committed review fixture for legacy wrapper compatibility vs explicit full-surface rendering.
 - `.planning/phases/17-custom-wrapper-primitives-with-addon/17-UAT.md`: manual review path for the wrapper-compatibility slice.
 
 ## Decisions made

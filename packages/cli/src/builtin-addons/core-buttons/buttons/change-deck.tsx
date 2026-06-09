@@ -3,11 +3,13 @@ import { z } from 'zod'
 import { defineMountedButton } from '@/addon/api'
 import { PAGE_NAV_META } from '@/core/pagination'
 import { Chip, Icon, Text } from '@/ui/index'
+import { resolveIconSpec } from '@/ui/Icon'
 
 function renderCenteredButtonContent(label: string, icon?: string) {
+  const spec = resolveIconSpec(icon)
   return (
     <div className="flex flex-col items-center justify-center w-full gap-1.5">
-      {icon ? <Icon size={24} src={icon} /> : null}
+      {spec ? <Icon size={24} {...spec} /> : null}
       <Text fit="wrap">{label}</Text>
     </div>
   )

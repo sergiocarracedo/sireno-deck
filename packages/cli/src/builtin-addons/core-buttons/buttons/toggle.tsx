@@ -3,6 +3,7 @@ import { BuiltinToggleButtonConfigSchema } from '@/core/schemas'
 
 import { ButtonSurface, defineMountedButton } from '@/addon/api'
 import { Icon, Text } from '@/ui/index'
+import { resolveIconSpec } from '@/ui/Icon'
 
 const COMMAND_DRIVEN_TOGGLE_INTERVAL_MS = 1_000
 
@@ -53,12 +54,13 @@ function renderToggleSurface(props: {
   primaryLabel: string
   secondaryLabel?: string
 }) {
+  const spec = resolveIconSpec(props.icon)
   return (
     <ButtonSurface>
       <div
         className={`flex flex-col items-center justify-center w-full ${props.secondaryLabel ? 'gap-1' : 'gap-1.5'}`}
       >
-        {props.icon ? <Icon size={24} src={props.icon} /> : null}
+        {spec ? <Icon size={24} {...spec} /> : null}
         <Text fit="wrap">{props.primaryLabel}</Text>
         {props.secondaryLabel ? <Text fit="wrap">{props.secondaryLabel}</Text> : null}
       </div>
