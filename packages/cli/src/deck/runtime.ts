@@ -1070,11 +1070,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
           await activateDeckSurface(undefined, previousDeckId)
         },
         onDblTap: async () => {
-          // First press dismissed, second press within the gesture
-          // window restores. The gesture state machine in handleDblTap
-          // is the only place that knows whether this is a true
-          // double-tap, so we trust it to invoke us only when the
-          // user actually pressed twice within DOUBLE_TAP_DELAY_MS.
+          runtimeLogger.info(
+            { overlay: overlayDeckId, lastDismissed: lastDismissedOverlayDeckId },
+            'active-app: system-back onDblTap fired',
+          )
           if (overlayDeckId !== null) {
             dismissOverlay()
             return
@@ -1612,6 +1611,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       }
 
       if (instance.onDblTap) {
+        runtimeLogger.info(
+          { stateKey, keyIndex: event.keyIndex, hasPending: Boolean(gs?.pendingDblTapTimer) },
+          'active-app: gesture state machine engaging for double-tap',
+        )
         if (gs?.pendingDblTapTimer) {
           clearTimeout(gs.pendingDblTapTimer)
           gestureStates.delete(stateKey)
