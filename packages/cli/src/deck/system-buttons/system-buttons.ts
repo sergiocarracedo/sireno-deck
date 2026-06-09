@@ -6,6 +6,7 @@ import {
 } from '../system-back-injection'
 
 export const OVERLAY_TOGGLE_TYPE = 'overlay-toggle' as const
+export const SYSTEM_SETTINGS_TYPE = 'system-settings' as const
 
 export interface SystemButtonContext {
   config: SirenoConfig
@@ -30,7 +31,14 @@ export function getLastPositionSystemButton(
     } as unknown as ButtonInstance
   }
 
-  // 55-02 will add a settings branch for the main-deck reserved slot.
+  if (deck.id === ctx.mainDeckId && 'settings' in ctx.runtimeDecks) {
+    return {
+      config: {},
+      id: SYSTEM_SETTINGS_TYPE,
+      position: lastPosition,
+      type: SYSTEM_SETTINGS_TYPE,
+    } as unknown as ButtonInstance
+  }
 
   return shouldInjectSystemBack(
     deck,

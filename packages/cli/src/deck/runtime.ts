@@ -29,6 +29,7 @@ import { createDeckController } from './controller'
 import { handleSettingsButtonTap, renderSettingsButton } from './settings-deck'
 import { OverlayToggleButton } from './system-buttons/overlay-toggle-button'
 import { SystemBackButton } from './system-buttons/SystemBackButton'
+import { SystemSettingsEntryButton } from './system-buttons/SystemSettingsEntryButton'
 
 import type {
   AddonButtonRenderState,
@@ -45,7 +46,7 @@ import { createActiveAppMonitor, type ActiveAppProvider, type ActiveAppSnapshot 
 import { UNKNOWN_HOST_CONTEXT, type HostContext } from '@/system/host-context'
 import type { SessionMonitor, SessionSnapshot } from '@/system/session-monitor'
 import type { ReactElement } from 'react'
-import { getLastPositionSystemButton } from './system-buttons/system-buttons'
+import { getLastPositionSystemButton, SYSTEM_SETTINGS_TYPE } from './system-buttons/system-buttons'
 
 interface RuntimeStoreScope {
   clear: () => void
@@ -953,6 +954,26 @@ const runtimeDecks: Record<string, DeckConfig> = {
       }
     }
 
+    if (button.type === SYSTEM_SETTINGS_TYPE) {
+      return {
+        onTap: async () => {
+          try {
+            deckController.navigateTo(SETTINGS_DECK_ID, { push: true })
+          } catch (error) {
+            await showRuntimeButtonError(
+              button,
+              deckId,
+              'navigateToDeck',
+              error,
+            )
+            return
+          }
+          await activateDeckSurface(SETTINGS_DECK_ID, deckId)
+        },
+        render: () => createElement(SystemSettingsEntryButton),
+      }
+    }
+
     if (button.type === 'system-back') {
       const currentDeck = runtimeDecks[deckId]
       const tapCommand =
@@ -968,6 +989,10 @@ const runtimeDecks: Record<string, DeckConfig> = {
         onHold: async () => {
           if (holdCommand) {
             await executeAction(holdCommand)
+            return
+          }
+          if (overlayDeckId !== null && getDisplayDeckId() === SETTINGS_DECK_ID) {
+            dismissOverlay()
             return
           }
           const previousDeckId = getDisplayDeckId()
