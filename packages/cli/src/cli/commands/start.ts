@@ -908,8 +908,20 @@ export async function startEmulatorSession(
       browserRenderer,
       connection.info.keyCount,
     )
+    const activeAppProvider = getActiveAppProvider({ logger: options.logger })
+    if (activeAppProvider.supportsActiveApp) {
+      options.logger.info(
+        { platform: process.platform },
+        'active-app overlay enabled',
+      )
+    } else {
+      options.logger.info(
+        { platform: process.platform },
+        'active-app overlay unsupported on this platform',
+      )
+    }
     const runtime = createDeckRuntime({
-      activeAppProvider: getActiveAppProvider({ logger: options.logger }),
+      activeAppProvider,
       addonRegistry: loadedConfig.registry,
       deck: loadedConfig.config.decks[loadedConfig.config.main_deck]!,
       decks: loadedConfig.config.decks,
@@ -1112,8 +1124,22 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     const createRuntime = async (
       loadedConfig: Awaited<ReturnType<typeof loadRuntimeConfig>>,
     ) => {
+      const activeAppProvider = getActiveAppProvider({
+        logger: options.logger,
+      })
+      if (activeAppProvider.supportsActiveApp) {
+        options.logger.info(
+          { platform: process.platform },
+          'active-app overlay enabled',
+        )
+      } else {
+        options.logger.info(
+          { platform: process.platform },
+          'active-app overlay unsupported on this platform',
+        )
+      }
       return createDeckRuntime({
-        activeAppProvider: getActiveAppProvider({ logger: options.logger }),
+        activeAppProvider,
         addonRegistry: loadedConfig.registry,
         deck: loadedConfig.config.decks[loadedConfig.config.main_deck]!,
         decks: loadedConfig.config.decks,
