@@ -1,0 +1,25 @@
+packages/cli/src/deck/runtime.ts
+  s_b5888af49640de::t_929095720151e3 1594
+  s_b5888af49640de::t_e191830b2af545 1461,1494,1528,1543
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "fca1c360120814d93f8fbe032b0c628923e49b62",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b5888af49640de": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15438c969ffeR54heuHaj7FhxV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
