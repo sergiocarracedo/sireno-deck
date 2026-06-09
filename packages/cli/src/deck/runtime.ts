@@ -407,6 +407,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   let runningButtonTypes = new Set<string>()
   let requestReloadCallback: (() => void) | null = null
   let overlayDeckId: string | null = null
+  let lastDismissedOverlayDeckId: string | null = null
   let lastBackActionAt = 0
 
   function getLockedSurfaceDeckId(): string {
@@ -1053,6 +1054,9 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
             dismissOverlay()
             return
           }
+          if (isDoubleTap && restoreLastDismissedOverlay()) {
+            return
+          }
           if (tapCommand) {
             await executeAction(tapCommand)
             return
@@ -1439,6 +1443,9 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     )
     if (newOverlay === overlayDeckId) return
     overlayDeckId = newOverlay
+    if (newOverlay !== null) {
+      lastDismissedOverlayDeckId = null
+    }
     void renderDeckSurface(getDisplayDeckId(), activeActivationVersion).catch(
       reportRuntimeError,
     )
@@ -1446,10 +1453,26 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
 
   function dismissOverlay(): void {
     if (overlayDeckId === null) return
+    lastDismissedOverlayDeckId = overlayDeckId
     overlayDeckId = null
     void renderDeckSurface(getDisplayDeckId(), activeActivationVersion).catch(
       reportRuntimeError,
     )
+  }
+
+  function restoreLastDismissedOverlay(): boolean {
+    if (overlayDeckId !== null) return false
+    if (lastDismissedOverlayDeckId === null) return false
+    runtimeLogger.info(
+      { restoredOverlay: lastDismissedOverlayDeckId },
+      'active-app: restoring last dismissed overlay',
+    )
+    overlayDeckId = lastDismissedOverlayDeckId
+    lastDismissedOverlayDeckId = null
+    void renderDeckSurface(getDisplayDeckId(), activeActivationVersion).catch(
+      reportRuntimeError,
+    )
+    return true
   }
 
   async function handlePress(keyIndex: number): Promise<void> {
