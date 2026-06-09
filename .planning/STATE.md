@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 Phase: 55 — Active-app overlay decks (next: execute-phase 55).
 Plan: 3 plans, 3 waves, written and verified inline.
 Status: Phase 55 plans written (55-01: process_names schema + OS-abstracted get-windows provider + ActiveAppMonitor; 55-02: runtime overlay state + dismiss gestures + 350ms double-tap; 55-03: settings hold-back-to-overlay + duplicate process_name warnings). Research noted critical: `active-win` was renamed to `get-windows` (v9.3.0, Mar 2026) and is ESM-only. Milestone v1.5 progress: 5/7 phases complete, 18/25 requirements satisfied. v1.4 complete. Phase 54 verified passed (5 commits, 14 tests, post-fix commits for tap wiring + 10% min). Phases 47 (CI matrix) and 48 (install docs) remain deferred.
-Last activity: 2026-06-09 — Completed quick task 043: inline deck-render log to debug level
+Last activity: 2026-06-09 — Completed quick task 043: wayland-gnome active-app provider via DBus (extension hint)
 
 ### Quick Tasks Completed
 
@@ -24,6 +24,7 @@ Last activity: 2026-06-09 — Completed quick task 043: inline deck-render log t
 | 038 | Lock deck should not show home or back button | 2026-06-06 | a967147 | .planning/quick/038-lock-deck-no-home-back-button/ |
 | 041 | Remove .js compiled files and prevent recurrence | 2026-06-08 | 9826feb | .planning/quick/041-remove-js-compiled-files/ |
 | 042 | key_macro prop on action button (OS-abstracted in core) | 2026-06-09 | a9cffb0 | .planning/quick/042-key-macro-action-button/ |
+| 043 | wayland-gnome active-app provider via DBus (extension hint) | 2026-06-09 | (pending) | .planning/quick/043-gnome-wayland-extension-active-app/ |
 | 043 | Inline deck-render log to debug level (reduce per-frame noise) | 2026-06-09 | e2a7d4c | .planning/quick/043-reduce-deck-render-log-noise/ |
 
 Progress: [██████████] 100% (7 of 7 in-scope v1.4 phases complete)
