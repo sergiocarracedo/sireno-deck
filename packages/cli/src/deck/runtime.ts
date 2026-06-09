@@ -169,7 +169,6 @@ interface RootDomRenderProps {
 const INTERNAL_LOCKED_DECK_ID = '__sireno_locked_session__'
 const SETTINGS_DECK_ID = 'settings'
 const OVERLAY_TOGGLE_TYPE = 'overlay-toggle'
-const ACTIVE_APP_DISMISS_WINDOW_MS = 350
 
 export function processNamesMatch(
   declared: readonly string[],
@@ -408,7 +407,6 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   let requestReloadCallback: (() => void) | null = null
   let overlayDeckId: string | null = null
   let lastDismissedOverlayDeckId: string | null = null
-  let lastBackActionAt = 0
 
   function getLockedSurfaceDeckId(): string {
     return options.lockedDeckId ?? INTERNAL_LOCKED_DECK_ID
@@ -1046,17 +1044,6 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         },
         onTap: async () => {
           temporaryErrorDeck = null
-          const now = Date.now()
-          const isDoubleTap =
-            now - lastBackActionAt < ACTIVE_APP_DISMISS_WINDOW_MS
-          lastBackActionAt = now
-          if (isDoubleTap && overlayDeckId !== null) {
-            dismissOverlay()
-            return
-          }
-          if (isDoubleTap && restoreLastDismissedOverlay()) {
-            return
-          }
           if (tapCommand) {
             await executeAction(tapCommand)
             return
@@ -1082,19 +1069,19 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
           deckController.goBack()
           await activateDeckSurface(undefined, previousDeckId)
         },
+        onDblTap: async () => {
+          // First press dismissed, second press within the gesture
+          // window restores. The gesture state machine in handleDblTap
+          // is the only place that knows whether this is a true
+          // double-tap, so we trust it to invoke us only when the
+          // user actually pressed twice within DOUBLE_TAP_DELAY_MS.
+          if (overlayDeckId !== null) {
+            dismissOverlay()
+            return
+          }
+          restoreLastDismissedOverlay()
+        },
         render: () => createElement(SystemBackButton),
-
-        // , {
-        //     isMainDeck: deckId === options.deck.id,
-        //     onNavigateToSettings:
-        //       deckId === options.deck.id && SETTINGS_DECK_ID in runtimeDecks
-        //         ? () => {
-        //             void methods.navigateToDeck(SETTINGS_DECK_ID, {
-        //               addToHistory: true,
-        //             })
-        //           }
-        //         : undefined,
-        //   }),
       }
     }
 
