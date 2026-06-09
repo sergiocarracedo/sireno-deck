@@ -10,6 +10,11 @@ decks:
       - position: 3
         type: date
 
+      - position: 1
+        type: action
+        label: 'New tab'
+        icon: 'icon://square-plus'
+
       - position: 4
         type: weather
         location:
@@ -72,6 +77,15 @@ decks:
         type: change-deck
         label: Main
         target_deck: main
+  chrome:
+    id: chrome
+    process_names:
+      - chrome
+    buttons:
+      - position: 0
+        type: action
+        label: 'New tab'
+        icon: 'icon://square-plus'
 addons:
   # Illustrative addon declarations ship disabled on purpose.
   # They do not load and will not emit startup warnings until you set
