@@ -85,7 +85,7 @@ Every v1.5 requirement maps to exactly one phase. Verification (VERIFY-01) is th
 - [ ] UAT confirms the new default layout is comfortable and the logo + version are still readable in the settings deck
 **Research needed:** No
 
-### Phase 55: Active-app addon decks — manifest, overlay, and double-tap
+### Phase 55: Active-app addon decks — manifest, overlay, and double-tap ✓ Complete (2026-06-09)
 
 **Goal:** Let addons declare decks that should appear when a specific process is the active app, with overlay semantics (no history pollution) and a toggle button on the overlay; let the user double-tap the back button in a base deck to return to the most recent active-app deck.
 **Requirements:** `ACTIVEAPP-01`, `ACTIVEAPP-02`, `ACTIVEAPP-03`, `ACTIVEAPP-04`, `ACTIVEAPP-05`, `ACTIVEAPP-06`

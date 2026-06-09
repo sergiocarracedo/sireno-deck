@@ -9,9 +9,9 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 55 — Active-app overlay decks (next: execute-phase 55).
-Plan: 3 plans, 3 waves, written and verified inline.
-Status: Phase 55 plans written (55-01: process_names schema + OS-abstracted get-windows provider + ActiveAppMonitor; 55-02: runtime overlay state + dismiss gestures + 350ms double-tap; 55-03: settings hold-back-to-overlay + duplicate process_name warnings). Research noted critical: `active-win` was renamed to `get-windows` (v9.3.0, Mar 2026) and is ESM-only. Milestone v1.5 progress: 5/7 phases complete, 18/25 requirements satisfied. v1.4 complete. Phase 54 verified passed (5 commits, 14 tests, post-fix commits for tap wiring + 10% min). Phases 47 (CI matrix) and 48 (install docs) remain deferred.
+Phase: 55 — Active-app overlay decks ✓ complete (next: 56 — v1.5 verification sweep).
+Plan: 2 original plans (55-01, 55-02) + 1 gap-closure plan (55-03). All executed. Original 3-plan split consolidated into 2 during execution (see 55-01-PLAN.md: "Fix in place; consolidate 55-01 + 55-02 + 55-03 → 2 plans"). 55-02 explicitly covers settings hold-back-to-overlay as Task 3. 55-03 closes 2 pre-existing UAT issues (locked-deck button count + settings logo-version rendering).
+Status: 55-01 done (system-deck foundation + INTERNAL_DECKS map + get-windows provider + ActiveAppMonitor). 55-02 done (settings reserved-slot injection + SystemSettingsEntryButton + system-back onHold drops overlay + boot log). 55-03 done (gap closure — 2 issues fixed, 17/17 tests green). UAT: 10/12 pass, 2 pre-existing issues (6a locked-deck count, 6b logo-version rendering) — both fixed. Research noted critical: `active-win` was renamed to `get-windows` (v9.3.0, Mar 2026) and is ESM-only. Milestone v1.5 progress: 6/7 phases complete, 18/25 requirements satisfied. v1.4 complete. Phase 54 verified passed (5 commits, 14 tests). Phases 47 (CI matrix) and 48 (install docs) remain deferred.
 Last activity: 2026-06-09 — Completed quick task 043: wayland-gnome active-app provider via DBus (extension hint)
 
 ### Quick Tasks Completed
