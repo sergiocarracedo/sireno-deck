@@ -1,0 +1,43 @@
+packages/cli/src/system/key-macro/get-provider.test.ts
+  s_b5888af49640de::t_215e806c345121 127
+  s_b5888af49640de::t_af97f558ca63cc 1-126,128-141
+packages/cli/src/system/key-macro/darwin.ts
+  s_b5888af49640de::t_da02d231487527 1-128
+packages/cli/src/system/key-macro/unsupported.ts
+  s_b5888af49640de::t_0dfc5f68b1df99 1-23
+packages/cli/src/system/key-macro/windows.ts
+  s_b5888af49640de::t_fac1ef872f481d 1-129
+packages/cli/src/system/key-macro/provider.ts
+  s_b5888af49640de::t_acc692c2abb169 1-29
+packages/cli/src/system/key-macro/linux.ts
+  s_b5888af49640de::t_750f079b3ac29f 1-94
+packages/cli/src/system/key-macro/parser.test.ts
+  s_b5888af49640de::t_fa98ae975f5548 35
+  s_b5888af49640de::t_5b20b0c1b745d4 1-34,36-56
+packages/cli/src/system/key-macro/index.ts
+  s_b5888af49640de::t_030bc9d0492835 1-66
+packages/cli/src/system/key-macro/parser.ts
+  s_b5888af49640de::t_fbc39d2ae9ed74 1-51,58-96
+  s_b5888af49640de::t_e39eea7159fcd3 52-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "87a019784d4b3662a9a1e9538f6afbb0141b8140",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b5888af49640de": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15438c969ffeR54heuHaj7FhxV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
