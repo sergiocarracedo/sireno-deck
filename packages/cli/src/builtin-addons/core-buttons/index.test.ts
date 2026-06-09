@@ -531,4 +531,69 @@ describe('core-buttons addon', () => {
 
     expect(renderReactNodeToHtml(harness.render() as never)).toContain('ERROR')
   })
+
+  it('parses key_macro as a string on the bundled action button', () => {
+    const definition = coreButtonsAddon.buttons[0]
+    const config = definition?.configSchema.parse({
+      key_macro: 'ctrl+c',
+      label: 'Copy',
+    })
+
+    expect(config).toEqual({ key_macro: 'ctrl+c', label: 'Copy' })
+  })
+
+  it('parses key_macro as a per-gesture object on the bundled action button', () => {
+    const definition = coreButtonsAddon.buttons[0]
+    const config = definition?.configSchema.parse({
+      key_macro: { hold: 'ctrl+alt+Delete', tap: 'ctrl+c' },
+      label: 'Hotkey',
+    })
+
+    expect(config).toEqual({
+      key_macro: { hold: 'ctrl+alt+Delete', tap: 'ctrl+c' },
+      label: 'Hotkey',
+    })
+  })
+
+  it('rejects the bundled action button when both commands and key_macro are set', () => {
+    const definition = coreButtonsAddon.buttons[0]
+    expect(() =>
+      definition?.configSchema.parse({
+        commands: { tap: 'date' },
+        key_macro: 'ctrl+c',
+        label: 'Conflict',
+      }),
+    ).toThrowError(/Cannot set both 'commands' and 'key_macro'/)
+  })
+
+  it('emits a key_macro on tap and never falls through to runCommand', async () => {
+    const definition = coreButtonsAddon.buttons[0]
+    const runCommand = vi.fn(async () => ({}) as never)
+    const keyMacro = vi.fn(async () => {})
+    const harness = createMountedHarness(definition!, {
+      key_macro: 'ctrl+c',
+      label: 'Copy',
+    }, 14, { keyMacro, runCommand })
+
+    await harness.tap()
+
+    expect(keyMacro).toHaveBeenCalledTimes(1)
+    expect(keyMacro).toHaveBeenCalledWith('ctrl+c')
+    expect(runCommand).not.toHaveBeenCalled()
+  })
+
+  it('emits the gesture-specific key_macro for hold and double-tap', async () => {
+    const definition = coreButtonsAddon.buttons[0]
+    const keyMacro = vi.fn(async () => {})
+    const harness = createMountedHarness(definition!, {
+      key_macro: { hold: 'ctrl+alt+Delete', 'double-tap': 'cmd+space', tap: 'ctrl+c' },
+      label: 'Hotkey',
+    }, 15, { keyMacro })
+
+    await harness.hold()
+    expect(keyMacro).toHaveBeenLastCalledWith('ctrl+alt+Delete')
+
+    await harness.dblTap()
+    expect(keyMacro).toHaveBeenLastCalledWith('cmd+space')
+  })
 })
