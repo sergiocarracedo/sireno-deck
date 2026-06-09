@@ -1,47 +1,41 @@
 import { ButtonInstance, DeckConfig, SirenoConfig } from '@/core/schemas'
-import { HostContext } from '@/system/host-context'
-import { DeckRuntimeOptions } from '../runtime'
+import type { HostContext } from '@/system/host-context'
 import {
   getSystemBackButtonInstance,
   shouldInjectSystemBack,
 } from '../system-back-injection'
 
-const OVERLAY_TOGGLE_TYPE = 'oveerlay-toggle'
+export const OVERLAY_TOGGLE_TYPE = 'overlay-toggle' as const
 
-export const getLastPositionSystemButton = (
+export interface SystemButtonContext {
+  config: SirenoConfig
+  hostContext: HostContext
+  internalLockedDeckId: string
+  mainDeckId: string
+  overlayDeckId: string | null
+  runtimeDecks: Readonly<Record<string, DeckConfig>>
+}
+
+export function getLastPositionSystemButton(
   lastPosition: number,
   deck: DeckConfig,
-  overlayDeckId: string | null,
-  // TODO remove this
-  options: DeckRuntimeOptions,
-  IMPLICIT_LOCKED_DECK_ID: string,
-  hostContext: HostContext,
-) => {
-  // Overlay button
-  if (overlayDeckId !== null && overlayDeckId === deck.id) {
+  ctx: SystemButtonContext,
+): ButtonInstance | null {
+  if (ctx.overlayDeckId !== null && ctx.overlayDeckId === deck.id) {
     return {
       config: {},
-      id: 'overlay-toggle',
+      id: OVERLAY_TOGGLE_TYPE,
       position: lastPosition,
       type: OVERLAY_TOGGLE_TYPE,
     } as unknown as ButtonInstance
   }
 
-  // Settings button
-
-  // Back button
-  const syntheticConfig = {
-    ...(options.config ?? {}),
-    session: {
-      ...(options.config?.session ?? {}),
-      locked_deck: options.lockedDeckId ?? IMPLICIT_LOCKED_DECK_ID,
-    },
-  } as SirenoConfig
+  // 55-02 will add a settings branch for the main-deck reserved slot.
 
   return shouldInjectSystemBack(
     deck,
-    syntheticConfig,
-    hostContext.session.state,
+    ctx.config,
+    ctx.hostContext.session.state,
   )
     ? getSystemBackButtonInstance(deck, lastPosition)
     : null

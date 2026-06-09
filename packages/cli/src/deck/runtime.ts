@@ -146,7 +146,7 @@ interface RootDomRenderProps {
   sample_interval_ms?: number
 }
 
-const IMPLICIT_LOCKED_DECK_ID = '__sireno_locked_session__'
+const INTERNAL_LOCKED_DECK_ID = '__sireno_locked_session__'
 const SETTINGS_DECK_ID = 'settings'
 const OVERLAY_TOGGLE_TYPE = 'overlay-toggle'
 const ACTIVE_APP_DISMISS_WINDOW_MS = 350
@@ -222,54 +222,53 @@ function cloneHostContext(hostContext: HostContext): HostContext {
   }
 }
 
-function createImplicitLockedDeck(): DeckConfig {
-  const slots = [
-    'hour-tens',
-    'hour-ones',
-    'separator',
-    'minute-tens',
-    'minute-ones',
-  ] as const
-
-  return {
-    id: IMPLICIT_LOCKED_DECK_ID,
-    name: 'Locked Session',
-    buttons: slots.map((slot, index) => ({
-      config: {
-        slot,
-      },
-      definition: lockedTimeTileButtonDefinition,
-      position: 5 + index,
-      type: 'locked-time-tile',
-    })),
-  }
+const INTERNAL_LOCKED_DECK: DeckConfig = {
+  id: INTERNAL_LOCKED_DECK_ID,
+  name: 'Locked Session',
+  system: true,
+  buttons: (
+    [
+      'hour-tens',
+      'hour-ones',
+      'separator',
+      'minute-tens',
+      'minute-ones',
+    ] as const
+  ).map((slot, index) => ({
+    config: { slot },
+    definition: lockedTimeTileButtonDefinition,
+    position: 5 + index,
+    type: 'locked-time-tile',
+  })),
 }
 
-function createImplicitSettingsDeck(): DeckConfig {
-  const stubDefinition = {
-    configSchema: { parse: (input: unknown) => input },
-    defaultRenderIntervalMs: () => Number.POSITIVE_INFINITY,
-    type: 'settings-placeholder',
-  } as unknown as ButtonInstance['definition']
+const INTERNAL_SETTINGS_STUB_DEFINITION = {
+  configSchema: { parse: (input: unknown) => input },
+  defaultRenderIntervalMs: () => Number.POSITIVE_INFINITY,
+  type: 'settings-placeholder',
+} as unknown as ButtonInstance['definition']
 
-  const placeholder = (id: string, position: number): ButtonInstance =>
-    ({
-      config: {},
-      definition: stubDefinition,
-      id,
-      position,
-      type: 'settings-placeholder',
-    }) as unknown as ButtonInstance
-  return {
-    buttons: [
-      placeholder('brightness-up', 0),
-      placeholder('brightness-down', 1),
-      placeholder('current-brightness', 2),
-      placeholder('logo-version', 3),
-    ],
-    id: SETTINGS_DECK_ID,
-    name: 'Settings',
-  }
+const INTERNAL_SETTINGS_DECK: DeckConfig = {
+  id: SETTINGS_DECK_ID,
+  name: 'Settings',
+  system: true,
+  buttons: [
+    { id: 'brightness-up', position: 0 },
+    { id: 'brightness-down', position: 1 },
+    { id: 'current-brightness', position: 2 },
+    { id: 'logo-version', position: 3 },
+  ].map(({ id, position }) => ({
+    config: {},
+    definition: INTERNAL_SETTINGS_STUB_DEFINITION,
+    id,
+    position,
+    type: 'settings-placeholder',
+  } as unknown as ButtonInstance)),
+}
+
+const INTERNAL_DECKS: Readonly<Record<string, DeckConfig>> = {
+  [INTERNAL_LOCKED_DECK_ID]: INTERNAL_LOCKED_DECK,
+  [SETTINGS_DECK_ID]: INTERNAL_SETTINGS_DECK,
 }
 
 function createTemporaryErrorDeck(detailLines: readonly string[]): DeckConfig {
@@ -337,15 +336,10 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   const hostContext = cloneHostContext(
     options.hostContext ?? UNKNOWN_HOST_CONTEXT,
   )
-  const implicitLockedDeck = createImplicitLockedDeck()
-  const implicitSettingsDeck = createImplicitSettingsDeck()
-  const runtimeDecks = {
-    ...(options.decks ?? { [options.deck.id]: options.deck }),
-    [implicitLockedDeck.id]: implicitLockedDeck,
-    ...(SETTINGS_DECK_ID in (options.decks ?? {})
-      ? {}
-      : { [SETTINGS_DECK_ID]: implicitSettingsDeck }),
-  }
+const runtimeDecks: Record<string, DeckConfig> = {
+  ...(options.decks ?? { [options.deck.id]: options.deck }),
+  ...INTERNAL_DECKS,
+}
   const deckController = createDeckController({
     decks: runtimeDecks,
     mainDeckId: options.deck.id,
@@ -387,7 +381,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   let lastBackActionAt = 0
 
   function getLockedSurfaceDeckId(): string {
-    return options.lockedDeckId ?? IMPLICIT_LOCKED_DECK_ID
+    return options.lockedDeckId ?? INTERNAL_LOCKED_DECK_ID
   }
 
   function getDisplayDeckId(): string {
@@ -446,16 +440,24 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       (button) => button.position !== lastPosition,
     )
 
+    const systemConfig: SirenoConfig = {
+      ...(options.config ?? {}),
+      session: {
+        ...(options.config?.session ?? {}),
+        locked_deck: options.lockedDeckId ?? INTERNAL_LOCKED_DECK_ID,
+      },
+    }
+
     return [
       ...buttons,
-      getLastPositionSystemButton(
-        lastPosition,
-        deck,
-        overlayDeckId,
-        options,
-        IMPLICIT_LOCKED_DECK_ID,
+      getLastPositionSystemButton(lastPosition, deck, {
+        config: systemConfig,
         hostContext,
-      ),
+        internalLockedDeckId: INTERNAL_LOCKED_DECK_ID,
+        mainDeckId: options.deck.id,
+        overlayDeckId,
+        runtimeDecks,
+      }),
     ].filter((button): button is ButtonInstance => Boolean(button))
   }
 
