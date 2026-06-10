@@ -94,6 +94,27 @@ describe('fetchOpenMeteoSnapshot daily parsing', () => {
     }
   })
 
+  it('daily forecast URL includes timezone=auto query parameter', async () => {
+    const { fetchMock, restore } = setupFetchMock()
+    try {
+      fetchMock.mockResolvedValueOnce(
+        cannedResponse(baseCurrent(), {
+          time: ['2026-06-08', '2026-06-09', '2026-06-10'],
+          temperature_2m_max: [22, 25, 20],
+          temperature_2m_min: [10, 12, 11],
+          weather_code: [3, 1, 61],
+          precipitation_sum: [0, 0, 5.4],
+        }),
+      )
+
+      await fetchOpenMeteoSnapshot(42, -8, 'Vigo')
+      const calledUrl = fetchMock.mock.calls[0][0] as string
+      expect(calledUrl).toContain('timezone=auto')
+    } finally {
+      restore()
+    }
+  })
+
   it('daily.time empty: snapshot.daily is an empty array', async () => {
     const { fetchMock, restore } = setupFetchMock()
     try {
