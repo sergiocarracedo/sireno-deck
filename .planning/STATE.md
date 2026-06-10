@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 Phase: 55 — Active-app overlay decks ✓ complete (next: 56 — v1.5 verification sweep).
 Plan: 2 original plans (55-01, 55-02) + 1 gap-closure plan (55-03). All executed. Original 3-plan split consolidated into 2 during execution (see 55-01-PLAN.md: "Fix in place; consolidate 55-01 + 55-02 + 55-03 → 2 plans"). 55-02 explicitly covers settings hold-back-to-overlay as Task 3. 55-03 closes 2 pre-existing UAT issues (locked-deck button count + settings logo-version rendering).
 Status: 55-01 done (system-deck foundation + INTERNAL_DECKS map + get-windows provider + ActiveAppMonitor). 55-02 done (settings reserved-slot injection + SystemSettingsEntryButton + system-back onHold drops overlay + boot log). 55-03 done (gap closure — 2 issues fixed, 17/17 tests green). UAT: 10/12 pass, 2 pre-existing issues (6a locked-deck count, 6b logo-version rendering) — both fixed. Research noted critical: `active-win` was renamed to `get-windows` (v9.3.0, Mar 2026) and is ESM-only. Milestone v1.5 progress: 6/7 phases complete, 18/25 requirements satisfied. v1.4 complete. Phase 54 verified passed (5 commits, 14 tests). Phases 47 (CI matrix) and 48 (install docs) remain deferred.
-Last activity: 2026-06-09 — Completed quick task 043: wayland-gnome active-app provider via DBus (extension hint)
+Last activity: 2026-06-10 — Completed quick task 044: add ellipsis to date button weekday text
 
 ### Quick Tasks Completed
 
@@ -26,6 +26,7 @@ Last activity: 2026-06-09 — Completed quick task 043: wayland-gnome active-app
 | 042 | key_macro prop on action button (OS-abstracted in core) | 2026-06-09 | a9cffb0 | .planning/quick/042-key-macro-action-button/ |
 | 043 | wayland-gnome active-app provider via DBus (extension hint) | 2026-06-09 | (pending) | .planning/quick/043-gnome-wayland-extension-active-app/ |
 | 043 | Inline deck-render log to debug level (reduce per-frame noise) | 2026-06-09 | e2a7d4c | .planning/quick/043-reduce-deck-render-log-noise/ |
+| 044 | Add ellipsis to date button weekday text to prevent wrapping | 2026-06-10 | 088454b | .planning/quick/044-date-button-day-name-ellipsis/ |
 
 Progress: [██████████] 100% (7 of 7 in-scope v1.4 phases complete)
 
