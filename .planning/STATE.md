@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 55 — Active-app overlay decks ✓ complete (next: 56 — v1.5 verification sweep).
-Plan: 2 original plans (55-01, 55-02) + 1 gap-closure plan (55-03). All executed. Original 3-plan split consolidated into 2 during execution (see 55-01-PLAN.md: "Fix in place; consolidate 55-01 + 55-02 + 55-03 → 2 plans"). 55-02 explicitly covers settings hold-back-to-overlay as Task 3. 55-03 closes 2 pre-existing UAT issues (locked-deck button count + settings logo-version rendering).
-Status: 56-01 and 56-02 both executed. Phase 56 complete — all VERIFY-01 sub-criteria covered.
-Last activity: 2026-06-10 — Plan 56-01 executed (overlay lifecycle tests + 3 runtime bug fixes). Plan 56-02 executed (coverage gaps closed + VERIFICATION.md generated). Phase 56 complete.
+Phase: 56 — v1.5 verification sweep ✓ complete (shipped 2026-06-10)
+Phase 57 — distribution build pipeline (bundled tarball) pending.
+Status: 56-01 and 56-02 both executed and shipped. All VERIFY-01 sub-criteria covered.
+Last activity: 2026-06-10 — Phase 56 complete. 64 new tests, 3 runtime bugs fixed, VERIFICATION.md generated. Shipped after review.
 
 ### Quick Tasks Completed
 

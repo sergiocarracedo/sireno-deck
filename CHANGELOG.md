@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## 2026-06-10
+
+### Features
+
+- Added `ActiveAppMonitor` integration: when an active app's process name matches a deck's `process_names`, that deck activates as an overlay with system-back replaced by overlay-toggle. Overlay supports double-tap dismiss via overlay-toggle, local navigation history isolation, and restores the base deck on deactivation.
+- Added overlay pagination support: `isOverlayOrPageOf()` helper ensures overlay-toggle button appears on paginated overlay sub-decks too.
+
+### Fixes
+
+- `getButtonPositionFromLast()` now defaults `options.keyCount` to 15, preventing `NaN` button positions in test environments without explicit keyCount.
+- `handlePress()` now spreads existing gesture state (`{ ...gs, holdTimer, holdTriggered: false }`) instead of replacing it whole, preserving `pendingDblTapTimer` across press cycles.
+- Overlay-toggle button now has an `onDblTap` handler that calls `dismissOverlay()` so double-tap on the reserved slot dismisses the overlay.
+- `processNamesMatch`: reject whitespace-only declared names (was matching every process via `String.includes('')` which always returns `true`).
+- Collision detection: replaced dead `Map<string, string[]>` with `Set<string>` for seen-name dedup only — the Map was built but never read after construction.
+
+### Coverage
+
+- 64 new tests across 7 test files: processNamesMatch unit tests (10), overlay lifecycle integration (8), collision warning (1), overlay pagination toggle injection (2), DailyForecast WMO icon rendering (3), timezone=auto fetch parameter (1), imperial unit rendering (2), Bars label_color + negative-color edge cases (3), BrightnessSurface rendering (2), and miscellaneous import fixes.
+
 ## 2026-06-08
 
 ### Features
