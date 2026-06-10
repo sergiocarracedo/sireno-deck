@@ -1,0 +1,32 @@
+packages/cli/src/deck/runtime.ts
+  s_0c62b680825d4a::t_c9635e63cbe608 368-383
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_0c62b680825d4a::t_626bec9f3af5d4 4491
+  s_0c62b680825d4a::t_c9635e63cbe608 20-21,153-208,4243-4490
+  s_0c62b680825d4a::t_2042798b050035 4492
+packages/cli/src/deck/system-buttons/system-buttons.ts
+  s_0c62b680825d4a::t_c9635e63cbe608 20-26,32
+packages/cli/src/deck/__tests__/system-buttons-dispatcher.test.ts
+  s_0c62b680825d4a::t_c9635e63cbe608 118-145
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "fb18924d81a44d616ab0c96c07c60f727cd6c8db",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_0c62b680825d4a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14fa596feffedU17ZzovT65yl1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
