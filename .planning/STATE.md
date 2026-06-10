@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 Phase: 55 — Active-app overlay decks ✓ complete (next: 56 — v1.5 verification sweep).
 Plan: 2 original plans (55-01, 55-02) + 1 gap-closure plan (55-03). All executed. Original 3-plan split consolidated into 2 during execution (see 55-01-PLAN.md: "Fix in place; consolidate 55-01 + 55-02 + 55-03 → 2 plans"). 55-02 explicitly covers settings hold-back-to-overlay as Task 3. 55-03 closes 2 pre-existing UAT issues (locked-deck button count + settings logo-version rendering).
-Status: 56-01 and 56-02 planned (overlay lifecycle tests + coverage gaps + sweep document). Phase 55 complete and shipped.
-Last activity: 2026-06-10 — plan-phase 56 completed (2 plans created for v1.5 verification sweep)
+Status: 56-01 and 56-02 both executed. Phase 56 complete — all VERIFY-01 sub-criteria covered.
+Last activity: 2026-06-10 — Plan 56-02 executed (coverage gaps closed + VERIFICATION.md generated). Phase 56 complete.
 
 ### Quick Tasks Completed
 
@@ -97,6 +97,10 @@ Key achievements:
 
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
+
+- **Phase 56 execution (Plan 56-02):** Fixed broken imports in `Bars.test.tsx` and `negative-color.test.ts` where a prior refactor (commit `4aa5f5e`) renamed component files but left stale `../surfaces/Bars` and `../utils/negative-color` paths in the tests. Tests in `__tests__/` directories must use sibling-relative imports, not double-nested paths.
+- **Phase 56 execution (Plan 56-02):** Used WMO code 71 instead of 85 for the snow icon test because 85 is not in `WmoIcon.tsx`'s `WMO_MAP` (falls back to `'cloud'`). The test assertion matches the actual map, not an imaginary mapping.
+- **Phase 56 execution (Plan 56-02):** Used `createElement` instead of JSX in `brightness.test.ts` (`.ts` extension doesn't support JSX). Other test files in this codebase use `.tsx` extension with JSX or `createElement` for `.ts` files.
 
 - **Phase 1 (v1.0):** Followed recommended standard tooling (pnpm, ESM, strict TS) with tsdown for the CLI build output. Full forward-looking config schema. PID-file daemon lifecycle. pino + colored error UX.
 - **Phase 3 execution:** Shared `Text` now owns the strict-whitelist rich-markup grammar (`|`, `*...*`, size tags, tone tags, `<blink>`), always parses string children, keeps invalid markup on full literal fallback, and leaves themes as outer metadata observers only.
