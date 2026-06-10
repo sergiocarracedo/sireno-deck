@@ -453,7 +453,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   function getButtonPositionFromLast(n: number = 0) {
-    return options.keyCount - 1 - n
+    const result = (options.keyCount ?? 15) - 1 - n
+    return result
   }
 
   function syncSessionSnapshot(snapshot: SessionSnapshot): void {
@@ -487,7 +488,6 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
 
   function getDeckButtons(deck: DeckConfig): ButtonInstance[] {
     const lastPosition = getButtonPositionFromLast()
-
     const buttons = [...deck.buttons].filter(
       (button) => button.position !== lastPosition,
     )
@@ -1006,6 +1006,9 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         onTap: async () => {
           dismissOverlay()
         },
+        onDblTap: async () => {
+          dismissOverlay()
+        },
         render: () => createElement(OverlayToggleButton),
       }
     }
@@ -1496,7 +1499,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
             reportRuntimeError,
           )
         }, HOLD_ACTION_DELAY_MS)
-        gestureStates.set(stateKey, { holdTimer, holdTriggered: false })
+        gestureStates.set(stateKey, { ...gs, holdTimer, holdTriggered: false })
       }
 
       await renderRuntimeButton(handle.button, handle.deckId)

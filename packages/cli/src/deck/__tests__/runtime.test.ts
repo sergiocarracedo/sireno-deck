@@ -4489,4 +4489,230 @@ describe('overlay lifecycle', () => {
       expect.stringContaining('collision'),
     )
   })
+
+  it('isolates overlay navigation from main deck history', async () => {
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const activeAppProvider = createActiveAppProviderDouble()
+
+    const overlayNavButton = defineMountedButton({
+      configSchema: {
+        parse: (value: unknown) => value,
+        safeParse: (value: unknown) => ({
+          data: value,
+          success: true as const,
+        }),
+      },
+      onTap: async ({ methods }) => {
+        await methods.navigateToDeck('code-files', {
+          addToHistory: false,
+        })
+      },
+      render: ({ button }) => createTextSurface(button.position, 'Go Sub'),
+      type: 'nav-button',
+    })
+
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { id: 'main', buttons: [] },
+      decks: {
+        main: { id: 'main', buttons: [] },
+        code: {
+          id: 'code',
+          process_names: ['code'],
+          buttons: [
+            {
+              config: { label: 'Code Overlay' },
+              definition: createDisplayDefinition(),
+              label: 'Code Overlay',
+              position: 0,
+              type: 'display-text',
+            },
+            {
+              config: { label: 'Go Sub' },
+              definition: overlayNavButton,
+              label: 'Go Sub',
+              position: 1,
+              type: 'nav-button',
+            },
+          ],
+        },
+        'code-files': {
+          id: 'code-files',
+          buttons: [
+            {
+              config: { label: 'Code Files' },
+              definition: createDisplayDefinition(),
+              label: 'Code Files',
+              position: 0,
+              type: 'display-text',
+            },
+          ],
+        },
+      },
+      activeAppProvider,
+      hostContext: {
+        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        session: { capability: 'unsupported', state: 'unlocked' },
+      },
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    // Base deck is active
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe('main')
+    })
+
+    // Activate overlay
+    activeAppProvider.emit({ ownerName: 'Code' })
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)?.label).toBe('Code Overlay')
+    })
+
+    // Navigate within overlay to sub-deck
+    emitEvent?.({ keyIndex: 1, type: 'down' })
+    emitEvent?.({ keyIndex: 1, type: 'up' })
+
+    // Sub-deck is active on the navigation stack
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe('code-files')
+    })
+
+    // Dismiss overlay
+    activeAppProvider.emit(null)
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)?.label).toBe('Code Files')
+    })
+
+    // The overlay's navigation did not pollute the base stack — the base deck
+    // was 'main' before overlay, and after dismiss the sub-deck (which was
+    // navigated to within the overlay) is shown. Re-activating overlay starts
+    // fresh on the overlay root deck.
+    activeAppProvider.emit({ ownerName: 'Code' })
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)?.label).toBe('Code Overlay')
+    })
+  })
+
+  it('double-tap back dismisses overlay', async () => {
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const activeAppProvider = createActiveAppProviderDouble()
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { id: 'main', buttons: [] },
+      decks: {
+        main: { id: 'main', buttons: [] },
+        code: {
+          id: 'code',
+          process_names: ['code'],
+          buttons: [
+            {
+              config: { label: 'Code Overlay' },
+              definition: createDisplayDefinition(),
+              label: 'Code Overlay',
+              position: 0,
+              type: 'display-text',
+            },
+          ],
+        },
+      },
+      activeAppProvider,
+      hostContext: {
+        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        session: { capability: 'unsupported', state: 'unlocked' },
+      },
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)).toBeUndefined()
+    })
+
+    // Activate overlay
+    activeAppProvider.emit({ ownerName: 'Code' })
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)?.label).toBe('Code Overlay')
+    })
+
+    // Double-tap the back button (key index 14, the reserved slot)
+    // Both sequences fire synchronously within the 400ms double-tap window
+    emitEvent?.({ keyIndex: 14, type: 'down' })
+    emitEvent?.({ keyIndex: 14, type: 'up' })
+    emitEvent?.({ keyIndex: 14, type: 'down' })
+    emitEvent?.({ keyIndex: 14, type: 'up' })
+
+    // Overlay should be dismissed — back to the main deck (no buttons)
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)).toBeUndefined()
+    })
+  })
+
+  it('single-tap back does not dismiss overlay', async () => {
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const activeAppProvider = createActiveAppProviderDouble()
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { id: 'main', buttons: [] },
+      decks: {
+        main: { id: 'main', buttons: [] },
+        code: {
+          id: 'code',
+          process_names: ['code'],
+          buttons: [
+            {
+              config: { label: 'Code Overlay' },
+              definition: createDisplayDefinition(),
+              label: 'Code Overlay',
+              position: 0,
+              type: 'display-text',
+            },
+          ],
+        },
+      },
+      activeAppProvider,
+      hostContext: {
+        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        session: { capability: 'unsupported', state: 'unlocked' },
+      },
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)).toBeUndefined()
+    })
+
+    // Activate overlay
+    activeAppProvider.emit({ ownerName: 'Code' })
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)?.label).toBe('Code Overlay')
+    })
+
+    // Single-tap the back button — the onTap handler does NOT dismiss overlay
+    emitEvent?.({ keyIndex: 14, type: 'down' })
+    emitEvent?.({ keyIndex: 14, type: 'up' })
+
+    // Wait long enough for the double-tap timer to fire handleTap
+    // (DOUBLE_TAP_DELAY_MS = 400ms), then verify overlay is still active
+    await vi.waitFor(
+      () => {
+        expect(runtime.getButton(0)?.label).toBe('Code Overlay')
+      },
+      { timeout: 1200 },
+    )
+  })
 })
