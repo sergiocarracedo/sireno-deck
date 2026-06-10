@@ -183,9 +183,11 @@ export function processNamesMatch(
         ? active.replace(/\.exe$/i, '')
         : active
   ).toLowerCase()
-  return declared.some((name) =>
-    normalizedActive.includes(name.toLowerCase().trim()),
-  )
+  return declared.some((name) => {
+    const trimmed = name.toLowerCase().trim()
+    if (!trimmed) return false
+    return normalizedActive.includes(trimmed)
+  })
 }
 const TEMPORARY_RELOAD_ERROR_DECK_ID = '__sireno_reload_error__'
 const lockedTimeTileButtonDefinition = datetimeButtonsAddon.buttons.find(
@@ -365,20 +367,17 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     ...(options.decks ?? { [options.deck.id]: options.deck }),
     ...createInternalDecks(options.keyCount ?? 15),
   }
-  const processNameToDecks = new Map<string, string[]>()
+  const seenProcessNames = new Set<string>()
   for (const [deckId, deck] of Object.entries(runtimeDecks)) {
     if (!deck.process_names) continue
     for (const name of deck.process_names) {
-      const existing = processNameToDecks.get(name)
-      if (existing) {
-        existing.push(deckId)
+      if (seenProcessNames.has(name)) {
         runtimeLogger.warn(
-          { process_name: name, decks: [existing[0], deckId] },
+          { process_name: name },
           'process_names collision: multiple decks match the same process name — first registered deck wins',
         )
-      } else {
-        processNameToDecks.set(name, [deckId])
       }
+      seenProcessNames.add(name)
     }
   }
   const deckController = createDeckController({

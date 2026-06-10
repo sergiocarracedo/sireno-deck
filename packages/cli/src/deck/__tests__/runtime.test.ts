@@ -183,6 +183,10 @@ describe('processNamesMatch', () => {
     ).toBe(true)
   })
 
+  it('rejects whitespace-only declared names to prevent universal match', () => {
+    expect(processNamesMatch(['   '], 'firefox', 'linux')).toBe(false)
+  })
+
   it('matches substring of active name', () => {
     expect(processNamesMatch(['code'], 'Visual Studio Code', 'linux')).toBe(
       true,
@@ -4484,7 +4488,6 @@ describe('overlay lifecycle', () => {
     expect(warnSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         process_name: 'same-process',
-        decks: expect.arrayContaining(['deckA', 'deckB']),
       }),
       expect.stringContaining('collision'),
     )
