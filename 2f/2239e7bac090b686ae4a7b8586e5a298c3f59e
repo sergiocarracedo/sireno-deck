@@ -1,0 +1,27 @@
+packages/cli/src/builtin-addons/brightness/buttons/brightness.test.ts
+  s_bf2fdf7a5e1d62::t_4b8168e1e1073a 1
+  s_bf2fdf7a5e1d62::t_a84554889ef0fe 26,29,34
+  s_bf2fdf7a5e1d62::t_12e9844acd96b4 4-5,7
+  s_bf2fdf7a5e1d62::t_45fd9025c351aa 23-25,27-28,30-33,35-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "2f2239e7bac090b686ae4a7b8586e5a298c3f59e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_bf2fdf7a5e1d62": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14f63cde6ffeixFCbEaouv6G40",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
