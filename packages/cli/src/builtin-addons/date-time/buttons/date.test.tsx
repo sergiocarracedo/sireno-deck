@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { renderReactNodeToHtml } from "@/render/dom-host"
-import { builtinDateButton } from "./calendar-sheet"
+import { builtinDateButton } from "./date"
 
 function renderDate(config: Record<string, unknown> = {}) {
   return renderReactNodeToHtml(
@@ -40,7 +40,7 @@ describe("builtinDateButton render", () => {
 
   it("renders the surface in full mode (no chrome frame)", () => {
     const html = renderDate()
-    expect(html).toContain('data-sireno-full-surface="true"')
+    expect(html).toContain('data-sireno-button-surface="true"')
   })
 
   it("uses default locale and time zone when none configured", () => {

@@ -49,7 +49,7 @@ export const builtinDateButton = defineMountedButton({
           <Text size="3xl" tone="primary" className="-mt-1">
             {day}
           </Text>
-          <Text size="md" tone="foreground">
+          <Text size="md" tone="foreground" fit="ellipsis">
             {weekday}
           </Text>
         </div>
