@@ -215,6 +215,32 @@ describe('weather', () => {
   })
 })
 
+  it('renders temperature in fahrenheit when units are imperial', () => {
+    const button = builtinWeatherButton
+    const harness = createHarness(
+      button,
+      { units: 'imperial' },
+      { snapshot: availableSnapshot },
+    )
+    const html = renderReactNodeToHtml(harness.render() as never)
+    // 24°C → 75°F
+    expect(html).toContain('75')
+    expect(html).toContain('°F')
+  })
+
+  it('renders wind speed in mph when units are imperial on the data page', () => {
+    const button = builtinWeatherButton
+    const harness = createHarness(
+      button,
+      { units: 'imperial' },
+      { snapshot: availableSnapshot, page: 'data' },
+    )
+    const html = renderReactNodeToHtml(harness.render() as never)
+    // 12 km/h → 7 mph
+    expect(html).toContain('7')
+    expect(html).toContain('mph')
+  })
+
 describe('getNextPage', () => {
   it('cycles main → data → hourly-forecast → daily-forecast → main', () => {
     expect(getNextPage('main')).toBe('data')
