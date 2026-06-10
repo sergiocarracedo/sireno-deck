@@ -10,9 +10,8 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 ## Current Position
 
 Phase: 56 — v1.5 verification sweep ✓ complete (shipped 2026-06-10)
-Phase 57 — distribution build pipeline (bundled tarball) pending.
 Status: 56-01 and 56-02 both executed and shipped. All VERIFY-01 sub-criteria covered.
-Last activity: 2026-06-10 — Phase 56 complete. 64 new tests, 3 runtime bugs fixed, VERIFICATION.md generated. Shipped after review.
+Last activity: 2026-06-10 — Phase 57 (distribution pipeline) removed from roadmap per user decision. v1.5 scope finalized at 7 phases.
 
 ### Quick Tasks Completed
 
@@ -175,7 +174,6 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
-- Phase 57 added: distribution build pipeline (bundled tarball) — reproduces the v1.4 Phase 40 cut as Option A (ship self-contained tarball with native deps bundled) instead of SEA. Reuses existing tsdown + tailwind build outputs, adds a tarball assembly script + BUILD.md. Excludes 47 (CI matrix) and 48 (docs) per user scope decision.
 - Phase 49 added: emoji-selector UX revamp as a v1.4 late addition — rewrite based on real-world feedback (real emoji glyphs not U+1Fxxx placeholders, bigger key art, HID keyboard-stroke output for tap=emoji / double-tap=shortcode, proper subcategory split using the piliapp.com catalog, n-2 page-nav button with Tap/Dbl-Tap chip hints, addon-provided entry button that renders a 2×3 grid of six emojis as a first-class button type).
 - Phase 39 added: let external themes override the `Surface` component used by the built-in media-player addon so they can render the button surface however they want.
 - Phase 48 added: document the build and install flow for the v1.4 standalone binary — README updates for end-user install of the prebuilt binary, plus developer quickstart for building from source.
