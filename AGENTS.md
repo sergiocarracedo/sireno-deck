@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.5 — Addons & UX Polish II
-**Phase:** 55 — Active-app overlay decks ✓ complete → Phase 56 — v1.5 verification sweep (next: discuss-phase 56 → plan-phase 56)
-**Status:** planning — Phase 55 complete (3 plans: 55-01 foundation + 55-02 overlay + 55-03 gap closure). UAT: 10/12 pass, 2 pre-existing issues fixed. 7 phases (50-56), 25 requirements. v1.4 complete (tagged v1.4). Phases 50-55 shipped (all verified passed). Phase 56 (verification sweep) is next. Distribution work (Phases 40/47/48) remains deferred.
-**Last updated:** 2026-06-09
+**Phase:** 56 — v1.5 verification sweep
+**Status:** planning — 2 plans created (56-01: overlay lifecycle tests, 56-02: coverage gaps + sweep doc). Phase 55 complete and shipped. Distribution work (Phases 40/47/48) remains deferred.
+**Last updated:** 2026-06-10
 
 ---
 
