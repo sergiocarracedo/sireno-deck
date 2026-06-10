@@ -5,7 +5,7 @@ import {
   luma,
   parseHex,
   toHex,
-} from '../utils/negative-color'
+} from '../negative-color'
 
 describe('parseHex', () => {
   it('parses a 6-digit hex', () => {
@@ -117,5 +117,11 @@ describe('computeNegativeColor', () => {
 
   it('handles a near-gray theme primary correctly via the fallback path', () => {
     expect(computeNegativeColor('', '#7f7f7f')).toBe('#ffffff')
+  })
+
+  it('returns the complement for a color at the exact near-gray boundary (luma 96)', () => {
+    // luma 96 → Math.abs(96 - 128) = 32, which is NOT < 32 → complement applies
+    // #606060 → complement #9f9f9f
+    expect(computeNegativeColor('#606060', null)).toBe('#9f9f9f')
   })
 })

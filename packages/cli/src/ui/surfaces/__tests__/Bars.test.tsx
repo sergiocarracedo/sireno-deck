@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 
 import { renderReactNodeToHtml } from '@/render/dom-host'
-import { Bars } from '../surfaces/Bars'
+import { Bars } from '../BarsSurface'
 
 describe('Bars', () => {
   it('renders bounded bar counts through the shared UI surface', () => {
@@ -89,6 +89,22 @@ describe('Bars', () => {
     )
 
     expect(html).toContain('>67%<')
+  })
+
+  it('renders the label with primary tone when no color is provided on the item', () => {
+    const html = renderReactNodeToHtml(
+      createElement(Bars, {
+        items: [{ maxValue: 100, title: 'cpu', value: 45 }],
+      }),
+    )
+
+    // The label (title "cpu") is rendered inside a <Text tone="primary">,
+    // which produces the text-primary CSS class mapping to var(--sireno-color-primary)
+    expect(html).toContain('text-primary')
+    // The value "45" is in-bar with mix-blend-mode:difference (DOM path)
+    expect(html).toContain('mix-blend-mode:difference')
+    // The bar fill falls back to the theme primary variable
+    expect(html).toContain('var(--sireno-color-primary)')
   })
 
   it('emits an explicit precomputed color in the sharp path', () => {
