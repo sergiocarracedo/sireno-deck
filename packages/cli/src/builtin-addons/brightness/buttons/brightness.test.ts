@@ -1,7 +1,10 @@
+import { createElement } from "react"
 import { describe, expect, it } from "vitest"
 
+import { renderReactNodeToHtml } from "@/render/dom-host"
+
 import { builtinBrightnessButton } from "./brightness"
-import { nextPercentage } from "./BrightnessSurface"
+import { BrightnessSurface, nextPercentage } from "./BrightnessSurface"
 import { BrightnessButtonSchema } from "./brightness"
 
 describe("BrightnessButtonSchema", () => {
@@ -14,6 +17,23 @@ describe("builtinBrightnessButton", () => {
   it("has the expected shape", () => {
     expect(builtinBrightnessButton.type).toBe("brightness")
     expect(builtinBrightnessButton.configSchema).toBe(BrightnessButtonSchema)
+  })
+})
+
+describe("BrightnessSurface", () => {
+  it("renders the percentage text", () => {
+    const html = renderReactNodeToHtml(
+      createElement(BrightnessSurface, { percentage: 50 }),
+    )
+    expect(html).toContain("50%")
+    expect(html).toContain("data-sireno-brightness-surface")
+  })
+
+  it("renders a different percentage value", () => {
+    const html = renderReactNodeToHtml(
+      createElement(BrightnessSurface, { percentage: 75 }),
+    )
+    expect(html).toContain("75%")
   })
 })
 
