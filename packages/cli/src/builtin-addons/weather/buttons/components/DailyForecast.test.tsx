@@ -65,4 +65,46 @@ describe('DailyForecast', () => {
     expect(html).toContain('32')
     expect(html).toContain('°F')
   })
+
+  it('renders the clear-sky icon (sun) for WMO code 0', () => {
+    const entries: DailyForecastEntry[] = [
+      { date: '2026-06-09', weatherCode: 0, tempMax: 25, tempMin: 15, precipitationSum: 0 },
+    ]
+    const html = renderReactNodeToHtml(
+      <DailyForecast entries={entries} units="metric" /> as never,
+    )
+    expect(html).toContain('sun')
+    expect(html).toContain('Tue')
+    expect(html).toContain('25')
+    expect(html).toContain('°C')
+    expect(html).toContain('0mm')
+  })
+
+  it('renders the rain icon (cloud-rain) for WMO code 65', () => {
+    const entries: DailyForecastEntry[] = [
+      { date: '2026-06-10', weatherCode: 65, tempMax: 18, tempMin: 12, precipitationSum: 15 },
+    ]
+    const html = renderReactNodeToHtml(
+      <DailyForecast entries={entries} units="metric" /> as never,
+    )
+    expect(html).toContain('cloud-rain')
+    expect(html).toContain('Wed')
+    expect(html).toContain('18')
+    expect(html).toContain('°C')
+    expect(html).toContain('15mm')
+  })
+
+  it('renders the snow icon (cloud-snow) for WMO code 71', () => {
+    const entries: DailyForecastEntry[] = [
+      { date: '2026-06-11', weatherCode: 71, tempMax: -2, tempMin: -8, precipitationSum: 8 },
+    ]
+    const html = renderReactNodeToHtml(
+      <DailyForecast entries={entries} units="metric" /> as never,
+    )
+    expect(html).toContain('cloud-snow')
+    expect(html).toContain('Thu')
+    expect(html).toContain('-2')
+    expect(html).toContain('°C')
+    expect(html).toContain('8mm')
+  })
 })
