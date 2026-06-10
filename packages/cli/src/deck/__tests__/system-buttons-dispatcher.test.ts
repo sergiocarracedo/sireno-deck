@@ -115,4 +115,32 @@ describe('getLastPositionSystemButton dispatcher (55-02)', () => {
     )
     expect(button).toBeNull()
   })
+
+  it('injects overlay-toggle on paginated overlay page decks', () => {
+    const runtime = makeRuntime()
+    const ctx = makeCtx(runtime, { overlayDeckId: 'overlay-target' })
+    const page1Button = getLastPositionSystemButton(
+      KEY_COUNT - 1,
+      makeDeck({ id: 'overlay-target-p1' }),
+      ctx,
+    )
+    const page2Button = getLastPositionSystemButton(
+      KEY_COUNT - 1,
+      makeDeck({ id: 'overlay-target-p2' }),
+      ctx,
+    )
+    expect(page1Button?.type).toBe(OVERLAY_TOGGLE_TYPE)
+    expect(page2Button?.type).toBe(OVERLAY_TOGGLE_TYPE)
+  })
+
+  it('does not inject overlay-toggle on non-overlay decks', () => {
+    const runtime = makeRuntime()
+    const ctx = makeCtx(runtime, { overlayDeckId: 'overlay-target' })
+    const button = getLastPositionSystemButton(
+      KEY_COUNT - 1,
+      makeDeck({ id: 'other-deck' }),
+      ctx,
+    )
+    expect(button?.type).not.toBe(OVERLAY_TOGGLE_TYPE)
+  })
 })

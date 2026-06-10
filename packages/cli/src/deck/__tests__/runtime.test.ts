@@ -17,7 +17,8 @@ import { buildPageNavButton } from '@/core/pagination'
 import { validateConfig } from '@/core/schemas'
 import { renderReactNodeToHtml } from '@/render/dom-host'
 import { Text } from '@/ui/index'
-import { createDeckRuntime } from '../runtime'
+import type { ActiveAppProvider, ActiveAppSnapshot } from '@/system/active-app'
+import { createDeckRuntime, processNamesMatch } from '../runtime'
 
 import type { AddonRegistry } from '@/addon/registry'
 import type { StreamDeckKeyEvent } from '@/device/stream-deck'
@@ -148,6 +149,62 @@ function createSessionMonitorDouble(
     },
   }
 }
+
+describe('processNamesMatch', () => {
+  it('returns false for empty declared array', () => {
+    expect(processNamesMatch([], 'Firefox', 'linux')).toBe(false)
+  })
+
+  it('matches on linux without extension stripping', () => {
+    expect(processNamesMatch(['firefox'], 'Firefox', 'linux')).toBe(true)
+  })
+
+  it('strips .app on darwin', () => {
+    expect(
+      processNamesMatch(['safari'], 'Safari.app', 'darwin'),
+    ).toBe(true)
+  })
+
+  it('strips .exe on win32', () => {
+    expect(processNamesMatch(['chrome'], 'chrome.exe', 'win32')).toBe(
+      true,
+    )
+  })
+
+  it('is case insensitive', () => {
+    expect(
+      processNamesMatch(['CHROME'], 'google-chrome', 'linux'),
+    ).toBe(true)
+  })
+
+  it('trims whitespace from declared names', () => {
+    expect(
+      processNamesMatch([' chrome '], 'google-chrome', 'linux'),
+    ).toBe(true)
+  })
+
+  it('matches substring of active name', () => {
+    expect(processNamesMatch(['code'], 'Visual Studio Code', 'linux')).toBe(
+      true,
+    )
+  })
+
+  it('returns true if any declared name matches', () => {
+    expect(
+      processNamesMatch(
+        ['terminal', 'iterm2'],
+        'iTerm2',
+        'darwin',
+      ),
+    ).toBe(true)
+  })
+
+  it('returns false when no declared name matches', () => {
+    expect(
+      processNamesMatch(['chrome', 'firefox'], 'Safari', 'darwin'),
+    ).toBe(false)
+  })
+})
 
 describe('createDeckRuntime', () => {
   afterEach(() => {
@@ -4181,5 +4238,255 @@ describe('createDeckRuntime', () => {
       expect(updatedHtml).toContain('50%')
     })
     expect(logoVersionHtml).toContain('sireno-logo-version')
+  })
+})
+
+describe('overlay lifecycle', () => {
+  function createActiveAppProviderDouble(): ActiveAppProvider & {
+    emit: (snapshot: ActiveAppSnapshot) => void
+  } {
+    let onChange: ((snapshot: ActiveAppSnapshot) => void) | null = null
+    return {
+      supportsActiveApp: true,
+      start(fn) {
+        onChange = fn
+      },
+      stop() {
+        onChange = null
+      },
+      emit(snapshot) {
+        onChange?.(snapshot)
+      },
+    }
+  }
+
+  it('activates overlay deck when process_names match the active app', async () => {
+    const activeAppProvider = createActiveAppProviderDouble()
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { id: 'main', buttons: [] },
+      decks: {
+        main: { id: 'main', buttons: [] },
+        code: {
+          id: 'code',
+          process_names: ['code', 'cursor'],
+          buttons: [
+            {
+              config: { label: 'Code Overlay' },
+              definition: createDisplayDefinition(),
+              label: 'Code Overlay',
+              position: 0,
+              type: 'display-text',
+            },
+          ],
+        },
+      },
+      activeAppProvider,
+      hostContext: {
+        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        session: { capability: 'unsupported', state: 'unlocked' },
+      },
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)).toBeUndefined()
+    })
+
+    activeAppProvider.emit({ ownerName: 'Code - OSS' })
+
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)?.label).toBe('Code Overlay')
+    })
+  })
+
+  it('does not activate overlay when no process_names match', async () => {
+    const activeAppProvider = createActiveAppProviderDouble()
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { id: 'main', buttons: [] },
+      decks: {
+        main: { id: 'main', buttons: [] },
+        code: {
+          id: 'code',
+          process_names: ['code'],
+          buttons: [],
+        },
+      },
+      activeAppProvider,
+      hostContext: {
+        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        session: { capability: 'unsupported', state: 'unlocked' },
+      },
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)).toBeUndefined()
+    })
+
+    activeAppProvider.emit({ ownerName: 'Firefox' })
+
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)).toBeUndefined()
+    })
+  })
+
+  it('dismisses overlay via overlay-toggle button tap', async () => {
+    let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
+    const activeAppProvider = createActiveAppProviderDouble()
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { id: 'main', buttons: [] },
+      decks: {
+        main: { id: 'main', buttons: [] },
+        code: {
+          id: 'code',
+          process_names: ['code'],
+          buttons: [
+            {
+              config: {},
+              definition: createDisplayDefinition(),
+              label: 'Dismiss',
+              position: 0,
+              type: 'overlay-toggle',
+            },
+          ],
+        },
+      },
+      activeAppProvider,
+      hostContext: {
+        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        session: { capability: 'unsupported', state: 'unlocked' },
+      },
+      subscribeKeyEvents: (listener) => {
+        emitEvent = listener
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)).toBeUndefined()
+    })
+
+    activeAppProvider.emit({ ownerName: 'Code' })
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)?.type).toBe('overlay-toggle')
+    })
+
+    emitEvent?.({ keyIndex: 0, type: 'down' })
+    emitEvent?.({ keyIndex: 0, type: 'up' })
+
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)).toBeUndefined()
+    })
+  })
+
+  it('clears overlay when active app snapshot becomes null', async () => {
+    const activeAppProvider = createActiveAppProviderDouble()
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { id: 'main', buttons: [] },
+      decks: {
+        main: { id: 'main', buttons: [] },
+        code: {
+          id: 'code',
+          process_names: ['code'],
+          buttons: [
+            {
+              config: { label: 'Code Overlay' },
+              definition: createDisplayDefinition(),
+              label: 'Code Overlay',
+              position: 0,
+              type: 'display-text',
+            },
+          ],
+        },
+      },
+      activeAppProvider,
+      hostContext: {
+        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        session: { capability: 'unsupported', state: 'unlocked' },
+      },
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)).toBeUndefined()
+    })
+
+    activeAppProvider.emit({ ownerName: 'Code' })
+
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)?.label).toBe('Code Overlay')
+    })
+
+    activeAppProvider.emit(null)
+
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)).toBeUndefined()
+    })
+  })
+
+  it('collision: warns and uses first match when two decks share process_names', async () => {
+    const warnSpy = vi.fn()
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { id: 'main', buttons: [] },
+      decks: {
+        main: { id: 'main', buttons: [] },
+        deckA: {
+          id: 'deckA',
+          process_names: ['same-process'],
+          buttons: [
+            {
+              config: { label: 'Deck A' },
+              definition: createDisplayDefinition(),
+              label: 'Deck A',
+              position: 0,
+              type: 'display-text',
+            },
+          ],
+        },
+        deckB: {
+          id: 'deckB',
+          process_names: ['same-process'],
+          buttons: [
+            {
+              config: { label: 'Deck B' },
+              definition: createDisplayDefinition(),
+              label: 'Deck B',
+              position: 0,
+              type: 'display-text',
+            },
+          ],
+        },
+      },
+      logger: { info: () => {}, warn: warnSpy, error: () => {} },
+      hostContext: {
+        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        session: { capability: 'unsupported', state: 'unlocked' },
+      },
+      subscribeKeyEvents: () => () => {},
+      theme: createTestTheme(),
+    })
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        process_name: 'same-process',
+        decks: expect.arrayContaining(['deckA', 'deckB']),
+      }),
+      expect.stringContaining('collision'),
+    )
   })
 })

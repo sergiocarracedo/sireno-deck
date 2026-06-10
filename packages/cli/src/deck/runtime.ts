@@ -365,6 +365,22 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     ...(options.decks ?? { [options.deck.id]: options.deck }),
     ...createInternalDecks(options.keyCount ?? 15),
   }
+  const processNameToDecks = new Map<string, string[]>()
+  for (const [deckId, deck] of Object.entries(runtimeDecks)) {
+    if (!deck.process_names) continue
+    for (const name of deck.process_names) {
+      const existing = processNameToDecks.get(name)
+      if (existing) {
+        existing.push(deckId)
+        runtimeLogger.warn(
+          { process_name: name, decks: [existing[0], deckId] },
+          'process_names collision: multiple decks match the same process name — first registered deck wins',
+        )
+      } else {
+        processNameToDecks.set(name, [deckId])
+      }
+    }
+  }
   const deckController = createDeckController({
     decks: runtimeDecks,
     mainDeckId: options.deck.id,

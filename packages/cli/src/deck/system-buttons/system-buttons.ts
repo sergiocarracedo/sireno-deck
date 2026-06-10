@@ -17,12 +17,19 @@ export interface SystemButtonContext {
   runtimeDecks: Readonly<Record<string, DeckConfig>>
 }
 
+function isOverlayOrPageOf(
+  deckId: string,
+  overlayDeckId: string,
+): boolean {
+  return deckId === overlayDeckId || deckId.startsWith(`${overlayDeckId}-p`)
+}
+
 export function getLastPositionSystemButton(
   lastPosition: number,
   deck: DeckConfig,
   ctx: SystemButtonContext,
 ): ButtonInstance | null {
-  if (ctx.overlayDeckId !== null && ctx.overlayDeckId === deck.id) {
+  if (ctx.overlayDeckId !== null && isOverlayOrPageOf(deck.id, ctx.overlayDeckId)) {
     return {
       config: {},
       id: OVERLAY_TOGGLE_TYPE,
