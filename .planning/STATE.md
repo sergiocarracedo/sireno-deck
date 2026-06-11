@@ -9,9 +9,9 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 57 — v1.6 planning
-Status: new-milestone workflow running — scoping requirements.
-Last activity: 2026-06-11 — new-milestone started. v1.6 begins after v1.5 shipped.
+Phase: 57 — Render pipeline & emoji research
+Status: CONTEXT captured — ready for plan-phase 57. RES-01 (instrumented pipeline profile), RES-02 (pasteText wired in runtime), RES-03 (data audit only — already clean), single RESEARCH.md output.
+Last activity: 2026-06-11 — Phase 57 CONTEXT.md + DISCUSSION-LOG.md committed.
 
 ### Quick Tasks Completed
 
