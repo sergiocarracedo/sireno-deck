@@ -1,0 +1,44 @@
+# Phase 57 RES-01 — pipeline profile (in-process)
+# generated: 2026-06-11T21:24:49.017Z
+
+## Methodology
+
+Standalone profile script driving `createDeckRuntime` directly.
+No changes to runtime.ts. The script builds a 3-deck scenario
+(main, apps, settings), fires synthetic key events through the
+runtime's public `subscribeKeyEvents` channel, and measures:
+
+1. **Wall-clock roundtrip** — from `emitEvent(down)` to the next
+   microtask drain (captures the full async hop chain through the
+   React reconciler and any `await` boundaries in onTap / activate).
+2. **Render callbacks** — `onRenderButton` and `onRenderDeck` fire
+   at the end of the render hop; their per-event timestamps reveal
+   when rendering actually completes vs when the roundtrip returns.
+
+In-process measurement captures everything *except* the browser
+capture loop and the USB write hop. Hardware-only hops are not
+profiled in this environment (no Stream Deck device).
+
+## Per-scenario results
+
+### forward-nav
+
+wall-clock roundtrip  avg=50.51ms  p95=51.83ms  max=51.83ms
+onRenderButton: count=91 avg=4.33ms max=23.00ms
+onRenderDeck:   count=30 avg=5.35ms max=23.00ms
+
+### system-back
+
+wall-clock roundtrip  avg=50.73ms  p95=52.52ms  max=52.52ms
+onRenderButton: count=75 avg=3.74ms max=12.31ms
+onRenderDeck:   count=25 avg=5.01ms max=12.31ms
+
+### forward-settings
+
+wall-clock roundtrip  avg=50.21ms  p95=50.28ms  max=50.28ms
+onRenderButton: count=0 avg=0.00ms max=0.00ms
+onRenderDeck:   count=0 avg=0.00ms max=0.00ms
+
+## Overall
+
+wall-clock roundtrip (all scenarios)  avg=50.49ms  p95=51.83ms  max=52.52ms
