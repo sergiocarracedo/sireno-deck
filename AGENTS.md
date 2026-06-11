@@ -164,10 +164,10 @@ This project uses **learnship**. Key facts:
 
 ## Current Phase
 
-**Milestone:** v1.5 — Addons & UX Polish II
-**Phase:** 56 — v1.5 verification sweep
-**Status:** planning — 2 plans created (56-01: overlay lifecycle tests, 56-02: coverage gaps + sweep doc). Phase 55 complete and shipped. Distribution work (Phases 40/47/48) remains deferred.
-**Last updated:** 2026-06-10
+**Milestone:** v1.6 — UX Speed & Overlay Extensions
+**Phase:** 57 — Render pipeline & emoji research
+**Status:** new-milestone workflow complete — requirements and roadmap created. Ready for Phase 57 (research).
+**Last updated:** 2026-06-11
 
 ---
 

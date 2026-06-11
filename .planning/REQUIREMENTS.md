@@ -1,21 +1,25 @@
 # Requirements — Sireno Deck
 
-**Version:** v1.5
-**Last updated:** 2026-06-08
+**Version:** v1.6
+**Last updated:** 2026-06-11
 
 ## Milestone Scope
 
-Milestone `v1.5 — Addons & UX Polish II` builds on the shipped v1.4 surface (system back button, weather addon, emoji selector, content helpers, system-status and media-player addons). This milestone pivots v1.5 away from the deferred distribution build pipeline (Phases 40/47/48) and toward a bundle of UX and addon-API improvements that close the most visible gaps in the current addon surface.
+Milestone `v1.6 — UX Speed & Overlay Extensions` builds on v1.5's shipped overlay, settings, and performance foundation. This milestone fixes the UX friction that emerged during real use — slow button transitions, broken emoji injection — and extends the overlay model with configurable auto-show, richer pagination, improved iconography, and a more complete built-in chrome overlay deck.
 
-The five feature groups, in priority order:
+The six feature groups, in priority order:
 
-1. **Weather location by city name + 2-day forecast page** — make the bundled weather addon easier to configure and more informative.
-2. **Bars content polish** — primary-color labels, in-bar rotated value text, auto-contrast for readability.
-3. **Settings deck** — brightness up/down controls, dedicated deck, logo+version relocated from main deck.
-4. **Lock deck access** — allow pre-warming before lock; suppress back injection when locked.
-5. **Addon active-app decks** — declarative `process_names` on addon decks; overlay semantics; toggle button; double-tap back to active-app.
+1. **Button response performance** — profile the render pipeline and fix the ~1s back button delay, slow weather page transitions, and any related bottlenecks.
+2. **Emoji fixes** — inject emoji into the active input via keystroke simulation (not just clipboard write); deduplicate categories (smiles/people sharing same set).
+3. **Pagination button redesign** — 3-line layout with Tap/2xTap/Page X/Y semantics and no overflow.
+4. **Icon updates** — system back `undo2`, overlay toggle `send-to-back` + deck icon.
+5. **Overlay auto-show config** — `autoShow` flag (default false); when false, a 2-line system back variant lets the user manually activate the overlay via double-tap.
+6. **Settings deck layout revamp** — brightness icon order (darker, brighter, percent), version at n-2, `iconTextSurface` for brightness, `<Label>` for percent.
+7. **Chrome overlay deck** — more keystroke actions (unclose tab, incognito, etc.).
 
-## v1.5 Requirements
+## v1.5 Requirements (shipped)
+
+*See `.planning/milestones/v1.5-REQUIREMENTS.md` for the shipped v1.5 requirements.*
 
 ### Weather — location by city name and geocoding (extends WX-*)
 
@@ -76,37 +80,88 @@ The five feature groups, in priority order:
 | ACTIVEAPP-05 | Active-app overlay decks support internal pagination like any other deck; pages advance with the same n-2 / reserved-slot conventions as the emoji selector and the toggle button remains on every page | Controller |
 | ACTIVEAPP-06 | The active-app foreground process is detected via the `active-win` package on all three supported OSes; the addon API version is **not** bumped (changes are additive and backwards compatible) | Addon API |
 
+## v1.6 Requirements
+
+### Research (new RES-*)
+
+| ID | Requirement | Category |
+|----|-------------|----------|
+| RES-01 | Profile the render/navigation pipeline to identify the root cause of the ~1s back button delay and slow weather/button page transitions | Performance |
+| RES-02 | Research cross-platform keystroke simulation approaches for emoji injection (xdotool on Linux, osascript on macOS, SendInput on Windows) and confirm which `methods` API extension is required | Research |
+| RES-03 | Verify the emoji category data source to identify why smiles and people share the same emoji set and how to deduplicate | Research |
+
+### Button response performance (new PERF-*)
+
+| ID | Requirement | Category |
+|----|-------------|----------|
+| PERF-01 | The back button transition completes in <200ms on Linux with a typical config (matching the settings-to-deck transition speed) | Performance |
+| PERF-02 | Weather page transitions between daily/hourly pages complete in <300ms | Performance |
+| PERF-03 | All gesture-to-render transitions use consistent fast paths; no button feels "sticky" compared to others | Performance |
+
+### Emoji — keystroke injection and category fix (new EMO-*)
+
+| ID | Requirement | Category |
+|----|-------------|----------|
+| EMO-15 | Tapping an emoji in the emoji selector writes the emoji character to the system clipboard AND simulates the OS paste keystroke (Ctrl+V / Cmd+V) so the emoji appears in the active input | Domain |
+| EMO-16 | Double-tapping an emoji copies the shortcode to clipboard AND performs the paste keystroke | Domain |
+| EMO-17 | The emoji category data is audited and deduplicated so smiles and people (and any other overlapping categories) show distinct emoji sets | Data |
+
+### Pagination button redesign (new PAG-*)
+
+| ID | Requirement | Category |
+|----|-------------|----------|
+| PAG-02 | The pagination button renders exactly 3 lines with no overflow: line 1 "Tap >" (tap action), line 2 "< 2xTap" (double-tap action), line 3 "Page X/Y" (current page indicator) | UI |
+| PAG-03 | The pagination button uses the shared `<Label>` component or equivalent to handle text fitting without overflow, replacing the current chip-based layout if needed | UI |
+
+### Icon updates
+
+| ID | Requirement | Category |
+|----|-------------|----------|
+| ICON-01 | The system back button uses `undo2` icon instead of the current `chevron-left` | UI |
+| ACTIVEAPP-08 | The overlay toggle button uses `send-to-back` icon plus the overlay deck's icon/name label, replacing the current `app-window` icon + "Toggle App" | UI |
+
+### Overlay auto-show mode (new ACTIVEAPP-*)
+
+| ID | Requirement | Category |
+|----|-------------|----------|
+| ACTIVEAPP-07 | The `DeckConfig` schema accepts a new `autoShow` boolean field (default `true`). When `autoShow` is `false` and the deck's `process_names` match the active app, the overlay is NOT automatically displayed | Config |
+| ACTIVEAPP-07a | When `autoShow: false` and the overlay deck's process matches, the system back button in the base deck's last position shows a 2-line variant: line 1 back icon + "Tap", line 2 overlay deck icon + "2xTap" | UI |
+| ACTIVEAPP-07b | In `autoShow: false` mode, double-tapping the back button activates the overlay (equivalent to `dismissOverlay()` but reversed — "summon overlay") | Controller |
+
+### Settings deck layout revamp (new SETTINGS-*)
+
+| ID | Requirement | Category |
+|----|-------------|----------|
+| SETTINGS-05 | The settings deck brightness buttons are in order: position n-3 = darker, position n-2 = brighter, position n-1 = current brightness percentage | UI |
+| SETTINGS-06 | Position n-1 (the last button) shows the project logo + version, rendered with no border or background | UI |
+| SETTINGS-07 | The brightness up/down buttons use `iconTextSurface` for rendering; the percentage button uses `<Label>` component instead of `iconTextSurface` | UI |
+
+### Chrome overlay deck extensions (new CHROME-*)
+
+| ID | Requirement | Category |
+|----|-------------|----------|
+| CHROME-01 | The config chrome overlay deck includes additional keystroke-action buttons: unclose tab (Ctrl+Shift+T), incognito (Ctrl+Shift+N), and other common Chrome keyboard shortcuts | Config |
+
 ### Verification
 
 | ID | Requirement | Category |
 |----|-------------|----------|
-| VERIFY-01 | Tests and fixtures cover: geocoder cache miss + hit + invalid city; daily forecast `timezone=auto`; Bars negative-color for known solid colors and near-gray fallback; brightness up/down with a mock device; lock-deck back-injection skip when locked; active-app overlay toggle and base-deck double-tap back | Verification |
+| VERIFY-02 | Tests and fixtures cover: render pipeline profiling results reproduced; back button <200ms; emoji keystroke injection on at least one OS; pagination 3-line rendering; icon changes; overlay autoShow behavior; settings deck layout; chrome deck keystrokes | Verification |
 
-**Total v1.5 requirements:** 25
+**Total v1.6 requirements:** 20
 
-## v2 Candidates
+## v2 Candidates / Deferred Items
 
 | Item | Why Deferred |
 |------|--------------|
-| Multi-day forecast beyond 2 days (3, 5, 7) | The 2-day page satisfies the current product need; extending to a weekly view is a small UI bump on top of the same daily endpoint and can be added without re-architecting |
-| Bars secondary axis / comparison bar | Out of scope for v1.5; the v1.4 Bars surface does not require this and the rendering model would need a new layout mode |
-| Settings deck: language / theme / addon toggles | The settings deck ships with brightness up/down only; broader settings would need config-edit and persistence work that is better scoped as its own milestone |
-| Active-app decks: declarative conditionals (window title regex, app state, multi-app composition) | v1.5 covers the process-name match only; richer conditions need their own design pass on the addon API |
-| Active-app decks: history preservation for overlay exits | v1.5 exits the overlay and returns to the base deck's current page (no separate "remember which overlay page" state) |
-| Distribution build pipeline (Phases 40/47/48 from v1.4) | Still deferred from v1.4; v1.5 pivots to UX. Distribution target decision is the prerequisite for any future distribution work |
-
-## Out of Scope For v1.5
-
-| Item | Reason |
-|------|--------|
-| Auto-brightness based on ambient light or time of day | Settings is manual only in v1.5; an automatic policy needs a different decision model |
-| Per-button theme overrides in the settings deck | The settings deck uses the active theme like any other deck; theme switching is owned by core |
-| Active-app decks on Wayland sessions that lack XWayland | The active-win package requires X11 or Win32 or Quartz; on pure Wayland we surface a clear "not supported" warning at startup and disable active-app decks |
-| 7-day or 14-day weather forecast | The user asked for 2-day daily; longer windows are easy to add later but the milestone scope is 2 |
-| Configurable back-button double-tap threshold | The double-tap detector uses a hardcoded 350ms threshold (consistent with the existing double-tap shim in the emoji selector); making it configurable would require exposing more of the controller |
-| Bumping `SIRENO_ADDON_API_VERSION` | All v1.5 changes to the addon surface are additive and backwards compatible; the version stays at 1 |
+| Distribution build pipeline (Phases 40/47/48) | Pending distribution target decision. Native dep constraints (node-hid, sharp, playwright chromium, dbus x11) rule out Node SEA |
+| CI matrix builds for Linux + Mac | Manual cross-platform testing only for v1.6 |
+| Auto-brightness based on ambient light or time of day | Settings is manual only; automatic policy needs a different decision model |
+| Active-app decks on pure Wayland sessions | Requires XWayland; on pure Wayland a "not supported" warning is surfaced |
+| Configurable back-button double-tap threshold | Existing hardcoded 350ms is consistent with emoji-selector's double-tap shim |
+| Bumping `SIRENO_ADDON_API_VERSION` | All v1.6 changes are additive and backwards compatible |
 
 ---
 
-*Requirements defined: 2026-06-08*
-*Total v1.5 requirements: 25*
+*Requirements defined: 2026-06-11*
+*Total v1.6 requirements: 20*
