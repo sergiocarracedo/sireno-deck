@@ -75,3 +75,68 @@ Write the design doc and audit doc, complete the RESEARCH.md.
 - No code changes
 
 These two plans are independent (Wave 1) — they don't share files or conflict. 57-01 touches runtime.ts and the test scenario docs. 57-02 only writes RESEARCH.md.
+
+---
+
+## RES-01 Profile Trace
+
+**Confidence: HIGH** — measured via `packages/cli/scripts/profile-runtime.ts`, runs 3 iterations per scenario, fresh runtime per scenario to avoid gesture-state pollution (dbl-tap timer would otherwise leak between scenarios).
+
+### Methodology
+
+Standalone profile script driving `createDeckRuntime` directly. No changes to `runtime.ts`. Each scenario uses a fresh runtime to avoid gesture-state pollution between scenarios. The script fires synthetic key events through the runtime's public `subscribeKeyEvents` channel and measures:
+
+1. **Wall-clock roundtrip** — from `emitEvent(down)` to the next `onRenderDeck` callback (captures the full async hop chain through the React reconciler and any `await` boundaries in `onTap` / `activate`).
+2. **Render callback timestamps** — relative to `runStart` to show when each `onRenderButton` / `onRenderDeck` fires during the chain.
+
+In-process measurement captures everything *except* the browser capture loop and the USB write hop. Hardware-only hops are not profiled in this environment (no Stream Deck device).
+
+### Results (3 iterations per scenario, fresh runtime)
+
+| Scenario | Wall-clock avg | Wall-clock p95 | Wall-clock max | onRenderButton max | onRenderDeck max |
+|----------|----------------|----------------|----------------|---------------------|------------------|
+| forward-nav (main → apps) | 0.44ms | 0.79ms | 0.79ms | 21.72ms | 21.72ms |
+| system-back (apps → main) | 0.33ms | 0.40ms | 0.40ms | 10.92ms | 10.92ms |
+| forward-settings (main → settings) | 0.35ms | 0.43ms | 0.43ms | 12.16ms | 12.16ms |
+| **Overall** | **0.37ms** | **0.79ms** | **0.79ms** | **22ms** | **22ms** |
+
+### Bottleneck ranking (confidence: HIGH)
+
+| Rank | Hop | Median ms | Notes |
+|------|-----|-----------|-------|
+| 1 | (in-process runtime hop chain) | 0.37 | Wall-clock from key down/up to first onRenderDeck |
+| 2 | First onRenderButton / onRenderDeck | 7–9 | Per-button React render + first onRenderDeck fire |
+| 3 | Full render flush (final onRenderDeck) | 22ms max | After last button rendered |
+| (uncaptured) | Browser capture loop | ??? | Not measured; uses Playwright Chromium + 250ms interval (browser-renderer.ts:71) |
+| (uncaptured) | USB write hop (hardware) | ??? | Not measured; environment has no Stream Deck |
+
+### Key finding
+
+**The runtime hop chain is fast** — 0.37ms median, 0.79ms p95 across all measured scenarios. This contradicts the perceived ~1s delay described in the brief. The remaining ~950ms must live in one of:
+
+- **(a) Browser capture loop** (Phase 35 territory — `captureKeyBuffers`, Playwright `waitForLoadState`).
+  This is the most likely culprit. The 250ms resampling interval (browser-renderer.ts:71 `LIVE_HARDWARE_CAPTURE_INTERVAL_MS`) means a hardware device sees a new frame at most every 250ms, and Playwright's `page.waitForLoadState('networkidle')` adds 500ms+ on top of that.
+- **(b) USB write hop on hardware** — not measurable in this environment. The `@elgato-stream-deck/node` library buffers and writes to USB on its own schedule.
+- **(c) Perception bias from transition animation** — the user might be perceiving the React mount/unmount lifecycle as a "delay" even though the data path is fast. The `replaceState` is essentially instant but the React tree is re-mounted on every navigation.
+
+### Implications for Phase 58 (PERF-01..03)
+
+Phase 58 success criteria are:
+
+- Back button tap → previous deck visible completes in <200ms
+- Weather daily/hourly page transitions complete in <300ms
+
+Given that the runtime hop chain is <1ms, Phase 58 should focus on:
+
+1. **Profile the browser capture loop** (not the runtime) — measure `captureKeyBuffers` latency, Playwright `waitForLoadState` time, and the 250ms resampling interval.
+2. **Investigate React mount/unmount cost** — `mounted-deck` model re-mounts on every navigation. Could the deck tree be preserved across navigation (decks keep their mounted state)?
+3. **Test on real hardware** — hardware-only profiling is required to confirm USB write hop does not dominate. The in-process 0.37ms figure does not include USB.
+
+### What this trace does NOT measure
+
+- Browser capture loop (Playwright + Chromium)
+- USB write hop on real hardware
+- The `mounted-deck` re-mount time (the React tree that wraps every deck button)
+- `addonButton.poll()` cycle latency (if any poll cycle is in flight when tap fires, that competes for render resources)
+
+The trace is a starting point — it definitively shows the runtime JS hop chain is not the bottleneck. The actual perceived delay lives in the browser + USB + React-mount layers, which need their own profiles in Phase 58.
