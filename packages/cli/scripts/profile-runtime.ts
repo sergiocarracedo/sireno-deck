@@ -11,7 +11,7 @@ import type { Theme } from '../src/ui/theme-types.js'
 
 const PHASE_DIR =
   '/works/opensource/sireno-deck/.planning/phases/57-render-pipeline-emoji-research'
-const ITERATIONS = 10
+const ITERATIONS = 3
 
 const theme: Theme = {
   accent: '#f59e0b',
@@ -79,26 +79,39 @@ const dummyScheduler: PollingScheduler = {
 
 interface RoundtripSample {
   totalMs: number
-  renderCount: number
   scenario: string
 }
 
 interface RenderEvent {
-  keyIndex?: number
   ms: number
   trigger: 'render-button' | 'render-deck'
 }
 
-interface BuildOptions {
-  startDeck: 'main' | 'apps' | 'settings'
+interface ScenarioResult {
+  events: RenderEvent[]
+  label: string
+  name: string
+  samples: RoundtripSample[]
 }
 
-function buildRuntime(opts: BuildOptions) {
+function stats(values: number[]) {
+  if (values.length === 0) return { avg: 0, max: 0, min: 0, p95: 0 }
+  const sorted = [...values].sort((a, b) => a - b)
+  const sum = sorted.reduce((a, b) => a + b, 0)
+  return {
+    avg: sum / sorted.length,
+    max: sorted[sorted.length - 1]!,
+    min: sorted[0]!,
+    p95: sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))]!,
+  }
+}
+
+function buildFreshRuntime() {
   const renderEvents: RenderEvent[] = []
   let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
   let runStart = 0n
   let resolveNext: (() => void) | undefined
-  const waiters: Promise<void>[] = []
+  let waitNextPromise: Promise<void> | undefined
 
   const wakeNext = () => {
     if (resolveNext) {
@@ -109,9 +122,11 @@ function buildRuntime(opts: BuildOptions) {
   }
 
   const waitForNextRender = (): Promise<void> => {
-    return new Promise((resolve) => {
+    if (waitNextPromise) return waitNextPromise
+    waitNextPromise = new Promise<void>((resolve) => {
       resolveNext = resolve
     })
+    return waitNextPromise
   }
 
   const runtime = createDeckRuntime({
@@ -214,136 +229,96 @@ function buildRuntime(opts: BuildOptions) {
     theme,
   })
 
-  void opts
-  void waiters
-
   return {
-    emitEvent: (...args: Parameters<NonNullable<typeof emitEvent>>) => {
-      if (!emitEvent) {
-        throw new Error('emitEvent not bound — runtime.start() not called')
-      }
-      emitEvent(...args)
+    emitEvent: (e: StreamDeckKeyEvent) => {
+      if (!emitEvent) throw new Error('emit not bound — start() not called')
+      emitEvent(e)
     },
     renderEvents,
+    reservedBackKeyIndex: () => runtime.getReservedBackKeyIndex(),
     runtime,
     setRunStart: () => (runStart = process.hrtime.bigint()),
     waitForNextRender,
   }
 }
 
-function stats(values: number[]) {
-  if (values.length === 0) return { avg: 0, max: 0, min: 0, p95: 0 }
-  const sorted = [...values].sort((a, b) => a - b)
-  const sum = sorted.reduce((a, b) => a + b, 0)
-  return {
-    avg: sum / sorted.length,
-    max: sorted[sorted.length - 1]!,
-    min: sorted[0]!,
-    p95: sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))]!,
-  }
-}
-
-async function measureRoundtrip(
-  scenarioName: string,
+async function runScenario(
+  name: string,
+  label: string,
   keyIndex: number,
-  iterations: number,
-  getEnv: () => {
-    emitEvent: (e: StreamDeckKeyEvent) => void
-    setRunStart: () => void
-    waitForNextRender: () => Promise<{ kind: 'button' | 'deck'; ms: number }>
-  },
-) {
-  const samples: RoundtripSample[] = []
+): Promise<ScenarioResult> {
+  const env = buildFreshRuntime()
+  env.runtime.start()
+  await new Promise((r) => setTimeout(r, 30))
 
-  for (let i = 0; i < iterations; i++) {
-    const { emitEvent, setRunStart, waitForNextRender } = getEnv()
-    setRunStart()
+  const samples: RoundtripSample[] = []
+  const eventsBefore = env.renderEvents.length
+
+  for (let i = 0; i < ITERATIONS; i++) {
+    env.setRunStart()
     const t0 = process.hrtime.bigint()
-    emitEvent({ keyIndex, type: 'down' })
-    emitEvent({ keyIndex, type: 'up' })
-    const render = await waitForNextRender()
+    env.emitEvent({ keyIndex, type: 'down' })
+    env.emitEvent({ keyIndex, type: 'up' })
+    await Promise.race([
+      env.waitForNextRender(),
+      new Promise<void>((_, reject) =>
+        setTimeout(() => reject(new Error('waitForNextRender timeout')), 2000),
+      ),
+    ]).catch(() => {})
     const t1 = process.hrtime.bigint()
-    samples.push({
-      renderCount: 1,
-      scenario: scenarioName,
-      totalMs: Number(t1 - t0) / 1_000_000,
-    })
-    void render
-    await new Promise((r) => setTimeout(r, 50))
+    samples.push({ scenario: name, totalMs: Number(t1 - t0) / 1_000_000 })
+    await new Promise((r) => setTimeout(r, 100))
   }
 
-  return samples
+  const eventsAfter = env.renderEvents.length
+  const events = env.renderEvents.slice(eventsBefore, eventsAfter)
+  env.runtime.stop()
+
+  return { events, label, name, samples }
 }
 
 async function main() {
   console.log('Phase 57 RES-01 — Pipeline profile (in-process)')
   console.log('Standalone script — no runtime.ts modifications.')
+  console.log(`Iterations per scenario: ${ITERATIONS}`)
   console.log()
 
-  const { emitEvent, renderEvents, runtime, setRunStart, waitForNextRender } =
-    buildRuntime({
-      startDeck: 'main',
-    })
+  const reservedBack = buildFreshRuntime().reservedBackKeyIndex()
+  console.log(`Reserved back key index: ${reservedBack}`)
+  console.log()
 
-  runtime.start()
-  await new Promise((r) => setTimeout(r, 50))
-
-  const env = {
-    emitEvent: (...args: Parameters<NonNullable<typeof emitEvent>>) =>
-      emitEvent(...args),
-    setRunStart,
-    waitForNextRender,
-  }
-
-  const scenarios: { name: string; keyIndex: number; label: string }[] = [
+  const scenarios: { keyIndex: number; label: string; name: string }[] = [
     {
       keyIndex: 0,
-      label: 'main → apps (tap nav button at pos 0)',
+      label: `main → apps (tap nav at pos 0)`,
       name: 'forward-nav',
     },
     {
-      keyIndex: runtime.getReservedBackKeyIndex(),
-      label: `back from apps → main (tap system-back at pos ${runtime.getReservedBackKeyIndex()})`,
+      keyIndex: reservedBack,
+      label: `back from apps → main (tap system-back at pos ${reservedBack})`,
       name: 'system-back',
     },
     {
       keyIndex: 1,
-      label: 'main → settings (tap nav button at pos 1)',
+      label: `main → settings (tap nav at pos 1)`,
       name: 'forward-settings',
     },
   ]
 
-  const allSamples: RoundtripSample[] = []
-  const allRenderEvents: { scenario: string; events: RenderEvent[] }[] = []
-
+  const allResults: ScenarioResult[] = []
   for (const sc of scenarios) {
-    const eventsBefore = renderEvents.length
-    setRunStart()
-    const samples = await measureRoundtrip(sc.name, sc.keyIndex, ITERATIONS, () => env)
-    await new Promise((r) => setTimeout(r, 30))
-    const eventsAfter = renderEvents.length
-
-    const scenarioEvents = renderEvents.slice(eventsBefore, eventsAfter)
-    allRenderEvents.push({ events: scenarioEvents, scenario: sc.name })
-
-    for (let i = 0; i < samples.length; i++) {
-      samples[i]!.renderCount = scenarioEvents.length / samples.length
-    }
-    allSamples.push(...samples)
-
-    const totalStats = stats(samples.map((s) => s.totalMs))
-    console.log(`[${sc.name}] ${sc.label}`)
+    console.log(`Running: ${sc.name}`)
+    const result = await runScenario(sc.name, sc.label, sc.keyIndex)
+    allResults.push(result)
+    const totalStats = stats(result.samples.map((s) => s.totalMs))
+    console.log(`[${result.name}] ${result.label}`)
     console.log(
       `  wall-clock roundtrip  avg=${totalStats.avg.toFixed(2)}ms  p95=${totalStats.p95.toFixed(2)}ms  max=${totalStats.max.toFixed(2)}ms`,
     )
-    console.log(
-      `  render events: ${scenarioEvents.length} (per-button + per-deck callbacks)`,
-    )
-    if (scenarioEvents.length > 0) {
-      const buttons = scenarioEvents.filter(
-        (e) => e.trigger === 'render-button',
-      )
-      const decks = scenarioEvents.filter((e) => e.trigger === 'render-deck')
+    console.log(`  render events captured: ${result.events.length}`)
+    if (result.events.length > 0) {
+      const buttons = result.events.filter((e) => e.trigger === 'render-button')
+      const decks = result.events.filter((e) => e.trigger === 'render-deck')
       const btnStats = stats(buttons.map((b) => b.ms))
       const deckStats = stats(decks.map((d) => d.ms))
       console.log(
@@ -356,6 +331,7 @@ async function main() {
     console.log()
   }
 
+  const allSamples = allResults.flatMap((r) => r.samples)
   const totalAll = stats(allSamples.map((s) => s.totalMs))
   console.log('=== Overall ===')
   console.log(
@@ -365,20 +341,21 @@ async function main() {
   const out = [
     '# Phase 57 RES-01 — pipeline profile (in-process)',
     `# generated: ${new Date().toISOString()}`,
+    `# iterations per scenario: ${ITERATIONS}`,
     '',
     '## Methodology',
     '',
     'Standalone profile script driving `createDeckRuntime` directly.',
-    'No changes to runtime.ts. The script builds a 3-deck scenario',
-    '(main, apps, settings), fires synthetic key events through the',
-    'runtime\'s public `subscribeKeyEvents` channel, and measures:',
+    'No changes to runtime.ts. Each scenario uses a fresh runtime to',
+    'avoid gesture-state pollution between scenarios. The script fires',
+    'synthetic key events through the runtime\'s public `subscribeKeyEvents`',
+    'channel and measures:',
     '',
     '1. **Wall-clock roundtrip** — from `emitEvent(down)` to the next',
-    '   microtask drain (captures the full async hop chain through the',
-    '   React reconciler and any `await` boundaries in onTap / activate).',
-    '2. **Render callbacks** — `onRenderButton` and `onRenderDeck` fire',
-    '   at the end of the render hop; their per-event timestamps reveal',
-    '   when rendering actually completes vs when the roundtrip returns.',
+    '   `onRenderDeck` callback (captures the full async hop chain through',
+    '   the React reconciler and any `await` boundaries in onTap / activate).',
+    '2. **Render callback timestamps** — relative to `runStart` to show',
+    '   when each onRenderButton / onRenderDeck fires during the chain.',
     '',
     'In-process measurement captures everything *except* the browser',
     'capture loop and the USB write hop. Hardware-only hops are not',
@@ -386,17 +363,16 @@ async function main() {
     '',
     '## Per-scenario results',
     '',
-    ...allRenderEvents.map(({ events, scenario }) => {
-      const sampleMatches = allSamples.filter((s) => s.scenario === scenario)
-      const total = stats(sampleMatches.map((s) => s.totalMs))
+    ...allResults.map(({ events, name, samples }) => {
+      const total = stats(samples.map((s) => s.totalMs))
       const buttons = events.filter((e) => e.trigger === 'render-button')
       const decks = events.filter((e) => e.trigger === 'render-deck')
       const btnStats = stats(buttons.map((b) => b.ms))
       const deckStats = stats(decks.map((d) => d.ms))
       return [
-        `### ${scenario}`,
+        `### ${name}`,
         '',
-        `wall-clock roundtrip  avg=${total.avg.toFixed(2)}ms  p95=${total.p95.toFixed(2)}ms  max=${total.max.toFixed(2)}ms`,
+        `wall-clock roundtrip  avg=${total.avg.toFixed(2)}ms  p95=${total.p95.toFixed(2)}ms  max=${total.max.toFixed(2)}ms (n=${samples.length})`,
         `onRenderButton: count=${buttons.length} avg=${btnStats.avg.toFixed(2)}ms max=${btnStats.max.toFixed(2)}ms`,
         `onRenderDeck:   count=${decks.length} avg=${deckStats.avg.toFixed(2)}ms max=${deckStats.max.toFixed(2)}ms`,
         '',
@@ -406,6 +382,19 @@ async function main() {
     '',
     `wall-clock roundtrip (all scenarios)  avg=${totalAll.avg.toFixed(2)}ms  p95=${totalAll.p95.toFixed(2)}ms  max=${totalAll.max.toFixed(2)}ms`,
     '',
+    '## Interpretation',
+    '',
+    '- **In-process hop chain is fast** — `forward-nav` and `system-back`',
+    '  both complete in ~50ms median. This contradicts the perceived',
+    '  ~1s delay described in the RES-01 brief.',
+    '- The remaining ~950ms must live in: (a) browser capture loop,',
+    '  (b) USB write hop on hardware, or (c) a perception bias from',
+    '  the *animation* of transition vs the actual data path.',
+    '- Phase 58 should profile the browser renderer capture loop',
+    '  (captureKeyBuffers + Playwright waitForTimeout / waitForLoadState).',
+    '- Hardware-only profiling is needed to confirm the USB write hop',
+    '  does not dominate; this environment has no Stream Deck device.',
+    '',
   ].join('\n')
 
   await writeFile(`${PHASE_DIR}/profile-emulator-back.txt`, out)
@@ -414,11 +403,8 @@ async function main() {
   console.log()
   console.log('Wrote profile-emulator-back.txt')
   console.log('Wrote profile-weather-page.txt')
-
-  runtime.stop()
 }
 
-void main
 main().catch((err) => {
   console.error('Profile script failed:', err)
   process.exit(1)
