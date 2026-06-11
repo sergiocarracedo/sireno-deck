@@ -12,17 +12,18 @@ The emoji injection path (`clipboard.ts:pasteText`) only writes to the clipboard
 
 ## Phases
 
-### Phase 57: Render pipeline & emoji research
+### Phase 57: Render pipeline & emoji research ✓
 
 **Goal:** Profile the full gesture-to-render pipeline to find the back button delay root cause; research cross-platform keystroke simulation; audit emoji category data.
 **Requirements:** `RES-01`, `RES-02`, `RES-03`
 **Depends on:** None
+**Status:** ✓ Complete (2026-06-11)
 **Success criteria:**
-- [ ] A profile trace identifies the slowest hop in `handleTap` → `onTap` → `navigateToDeck` / `goBack` → `activateDeckSurface` → `renderDeckSurface` → `renderMountedDeckButtons` → `emitRenderedDeck` → browser capture loop (if applicable)
-- [ ] The research identifies whether the bottleneck is in the runtime JS (await chains, button re-instantiation) or the browser renderer (capture cadence, timeout waits)
-- [ ] Keystroke simulation approaches are documented per platform: xdotool/wtype on Linux, osascript on macOS, SendInput on Windows
-- [ ] A recommended `methods` API extension is proposed (e.g. `sendKeystrokes(text: string)` that pairs clipboard write with simulated paste)
-- [ ] Emoji category data source is identified and the smiles/people overlap root cause is documented
+- [x] A profile trace identifies the slowest hop in `handleTap` → `onTap` → `navigateToDeck` / `goBack` → `activateDeckSurface` → `renderDeckSurface` → `renderMountedDeckButtons` → `emitRenderedDeck` → browser capture loop (if applicable)
+- [x] The research identifies whether the bottleneck is in the runtime JS (await chains, button re-instantiation) or the browser renderer (capture cadence, timeout waits)
+- [x] Keystroke simulation approaches are documented per platform: xdotool/wtype on Linux, osascript on macOS, SendInput on Windows
+- [x] A recommended `methods` API extension is proposed (e.g. `sendKeystrokes(text: string)` that pairs clipboard write with simulated paste)
+- [x] Emoji category data source is identified and the smiles/people overlap root cause is documented
 
 ### Phase 58: Performance fixes
 

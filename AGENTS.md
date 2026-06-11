@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.6 — UX Speed & Overlay Extensions
-**Phase:** 57 — Render pipeline & emoji research
-**Status:** planning complete — 2 plans in Wave 1 (RES-01 profile, RES-02/03 docs). Ready for execute-phase 57.
+**Phase:** 57 — Render pipeline & emoji research ✓ complete → Phase 58 — Performance fixes
+**Status:** research complete. RES-01 profile shows runtime hop chain avg=0.37ms (browser capture loop / USB write is the bottleneck). RES-02 pasteText wrapper design decided (runtime-owned, paste.keystroke opt-out). RES-03 category data is clean.
 **Last updated:** 2026-06-11
 
 ---
