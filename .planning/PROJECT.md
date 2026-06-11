@@ -8,18 +8,22 @@ Sireno Deck is a TypeScript CLI for controlling and managing Stream Deck devices
 
 Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
 
-## Current Milestone: v1.5 — Addons & UX Polish II
+## Current Milestone: v1.6 — UX Speed & Overlay Extensions
 
-**Goal:** Close the most visible UX gaps in the current addon surface and ship a richer settings + active-app overlay model, pivoting away from the deferred distribution build pipeline (Phases 40/47/48 from v1.4). Distribution work remains on the deferred list pending a distribution-target decision.
+**Goal:** Fix lingering UX friction — button response delays, broken emoji injection, overlay UX polish — and extend the overlay model with configurable auto-show, richer pagination buttons, improved iconography, and a more complete built-in chrome overlay deck.
 
 **Target features:**
-- Weather: location by city name (Open-Meteo Geocoding) + 2-day daily forecast page
-- Bars content polish: primary-color labels, in-bar rotated value text, auto-contrast fallback
-- Settings deck: brightness up/down controls, logo + version relocated from main deck
-- Lock deck: pre-warm access from unlocked sessions, no back injection when locked
-- Active-app addon decks: declarative `process_names` overlay, toggle button, double-tap back
+- Button response performance investigation and fix (back button ~1s delay, weather page transitions, others)
+- Emoji injection fix (paste text into active input via keystroke simulation, not just clipboard write)
+- Emoji category deduplication (smiles/people sharing same emoji set)
+- 3-line pagination button (Tap > / < 2xTap / Page X/Y)
+- System back button icon migration to `undo2`
+- Overlay `autoShow: false` mode — manual overlay activation via 2-line back button variant
+- Overlay toggle button icon update (`send-to-back` + overlay deck icon)
+- Settings brightness icon order (darker → brighter → percent), version icon at n-2, `iconTextSurface` for brightness, `<Label>` for percent
+- Built-in chrome overlay deck: more keystroke actions (unclose tab, incognito, etc.)
 
-## Latest Shipped Milestone: v1.4 Addons & UX Polish
+## Latest Shipped Milestone: v1.5 — Addons & UX Polish II
 
 **Completed:** 2026-06-07
 **Phases:** 7 (41-46, 49)
@@ -67,15 +71,9 @@ Make Stream Deck customization programmable and extensible through a fast TypeSc
 
 ### Active
 
-v1.5 — Addons & UX Polish II (25 requirements, see `.planning/REQUIREMENTS.md`):
-- WX-07..10 — Weather city-name + geocoding
-- WX2-01..03 — Weather 2-day daily forecast
-- BARS-01..03 — Bars content polish
-- SETTINGS-01..04 — Settings deck with brightness controls
-- LOCK-01..02 — Lock deck access and back-injection suppression
-- BR-01..02 — Brightness device control
-- ACTIVEAPP-01..06 — Addon active-app overlay decks
-- VERIFY-01 — Verification coverage
+v1.5 — Addons & UX Polish II (25 requirements, all shipped)
+
+see `.planning/ROADMAP.md` for the upcoming v1.6 requirements.
 
 ### Out of Scope
 
@@ -113,4 +111,4 @@ The domain includes fast refresh behavior for live widgets such as CPU, memory, 
 | Run addons as trusted in-process code in v1 | Keeps the initial addon API simpler and avoids early sandbox complexity | Landed |
 
 ---
-*Last updated: 2026-06-08 starting milestone v1.5 — Addons & UX Polish II*
+*Last updated: 2026-06-11 starting milestone v1.6 — UX Speed & Overlay Extensions*

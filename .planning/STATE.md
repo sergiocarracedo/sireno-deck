@@ -5,13 +5,13 @@
 See: .planning/PROJECT.md (updated 2026-06-08)
 
 **Core value:** Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
-**Current focus:** v1.5 — Addons & UX Polish II. v1.4 is complete — see Milestone History.
+**Current focus:** v1.6 — UX Speed & Overlay Extensions. v1.5 is complete — see Milestone History.
 
 ## Current Position
 
-Phase: 56 — v1.5 verification sweep ✓ complete (shipped 2026-06-10)
-Status: 56-01 and 56-02 both executed and shipped. All VERIFY-01 sub-criteria covered.
-Last activity: 2026-06-10 — Phase 57 (distribution pipeline) removed from roadmap per user decision. v1.5 scope finalized at 7 phases.
+Phase: 57 — v1.6 planning
+Status: new-milestone workflow running — scoping requirements.
+Last activity: 2026-06-11 — new-milestone started. v1.6 begins after v1.5 shipped.
 
 ### Quick Tasks Completed
 
