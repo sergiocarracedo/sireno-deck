@@ -166,7 +166,7 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.6 — UX Speed & Overlay Extensions
 **Phase:** 59 — Emoji keystroke injection + category fix
-**Status:** CONTEXT captured. Extend `methods.pasteText` in place. Opt-out via `paste.keystroke: false`. Mock keyMacroProvider in unit tests. EMO-17 = confirm only.
+**Status:** planning. 2 plans in 2 waves. 59-01 extends methods.pasteText + mocked tests (Wave 1). 59-02 wires `paste.keystroke` config field + EMO-17 audit doc (Wave 2, depends on 59-01).
 **Last updated:** 2026-06-11
 
 ---
