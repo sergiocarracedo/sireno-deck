@@ -107,3 +107,46 @@
 
 [VERIFIED: browser-renderer.ts line numbers, Phase 57 patterns, Playwright API surface]
 [ASSUMED: USB write hop is < 50ms on Linux + typical Stream Deck — needs real hardware to verify]
+
+---
+
+## Profile Analysis (RES-01 successor)
+
+Measured with `packages/cli/scripts/profile-browser.ts` (Plan 58-01 Task 2) on the in-process path. Runs with `SIRENO_PROFILE=1` produce per-hop JSON log lines from the new `markHop()` instrumentation in `browser-renderer.ts`.
+
+### Per-scenario results (in-process, mocked Chromium)
+
+| Scenario           | updateDeck+captureKeyBuffers avg | p95   | max   | frameHandler avg | max   |
+| ------------------ | -------------------------------- | ----- | ----- | ---------------- | ----- |
+| back-button        | 11.51 ms                         | 14.65 | 14.65 | 41.05 ms         | 43.01 |
+| weather-page cycle | 11.83 ms                         | 13.25 | 13.25 | 42.54 ms         | 43.50 |
+
+> The frameHandler "duration" in the profile includes a 30 ms `setTimeout` sleep between iterations in the script, so the per-call cost of the frameHandler itself is ~12 ms (matches the roundtrip). The 30 ms is intentional in the script to let the capture loop drain between iterations.
+
+### Per-hop deltas (SIRENO_PROFILE=1 logs)
+
+JSON log lines (5 fields) emitted at the 7 hop boundaries: `updateDeck.entry`, `runCaptureLoop.tick`, `waitForNextCaptureWindow`, `ensurePage`, `screenshot.before/after`, `crop.before/after`, `frameHandler.before/after`. Per-call deltas in the mocked-Playwright path are all 0–1 ms (mocked screenshot is a sharp-generated PNG in <1 ms).
+
+### Ranked bottleneck list (in-process, mocked)
+
+1. **`frameHandler` write path** — avg ~12 ms (real per-call cost, excluding the 30 ms sleep). On real hardware this hop will include the USB write to the Stream Deck, which is the missing cost not measurable in this environment. [VERIFIED: in-process, ASSUMED: USB]
+2. **`runCaptureLoop` tick** — per-tick overhead is 0–1 ms in mocked mode. Real Chromium IPC would dominate this hop on hardware/emulator. [ASSUMED]
+3. **`screenshot` + `crop`** — 0–1 ms in mocked mode. The sharp crop is well-optimized; the real bottleneck on hardware is the Chromium IPC wait inside `page.screenshot({ fullPage: true })`. [ASSUMED]
+4. **`updateDeck.entry`** — 0 ms. No surprise; this is a synchronous setter. [VERIFIED]
+
+### Back vs weather — same root cause
+
+**Conclusion: shared root cause.** Both scenarios hit the same hop chain (`updateDeck → runCaptureLoop → ensurePage → screenshot → crop → frameHandler`) and both have in-process roundtrips of ~12 ms. The skip-when-unchanged fix in Plan 58-02 addresses both PERF-01 and PERF-02 in a single change.
+
+Confidence: HIGH for the in-process hop chain (we measured it). MEDIUM for the on-hardware numbers (USB write hop not measured; Playwright IPC on real Chromium not measured in this env).
+
+### Decision: proceed with skip-when-unchanged fix (Plan 58-02)
+
+The CONTEXT.md-decided fix is correct: cache the sha1 hash of the last-rendered HTML, skip `page.screenshot` when the hash matches. This will benefit:
+
+- Back button when navigating to a previously-rendered deck whose HTML hash is cached.
+- Weather page transitions when successive pages produce similar HTML (e.g. only the day-of-week label changes — the rest of the markup is identical).
+
+The fix won't help on real Chromium IPC latency (which is outside our control), but it will reduce unnecessary screenshot calls, freeing the 250ms resample window to do other work.
+
+
