@@ -153,6 +153,13 @@ async function main() {
     (i) => `<html><body>back-deck-${i}</body></html>`,
   )
 
+  // Re-render the same HTML — exercises the skip-when-unchanged path.
+  const sameHtml = await runScenario(
+    "same-html-skip",
+    "re-render the same HTML 5 times — should only fire screenshot once",
+    () => `<html><body>identical</body></html>`,
+  )
+
   const weather = await runScenario(
     "weather-page",
     "weather page cycle (5 distinct pages, simulating daily-forecast navigation)",
@@ -162,7 +169,7 @@ async function main() {
     },
   )
 
-  const allSamples = [...back.samples, ...weather.samples]
+  const allSamples = [...back.samples, ...sameHtml.samples, ...weather.samples]
   const totalAll = stats(allSamples.map((s) => s.totalMs))
 
   console.log("\n=== Overall ===")
@@ -192,7 +199,7 @@ async function main() {
     "",
     "## Per-scenario results",
     "",
-    ...[back, weather].map(({ frameTimings, label, name, samples }) => {
+    ...[back, sameHtml, weather].map(({ frameTimings, label, name, samples }) => {
       const total = stats(samples.map((s) => s.totalMs))
       const frame = stats(frameTimings.durations)
       return [

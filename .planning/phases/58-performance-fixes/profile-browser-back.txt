@@ -1,5 +1,5 @@
 # Phase 58-01 — Browser capture loop profile
-# generated: 2026-06-12T07:56:09.815Z
+# generated: 2026-06-12T08:06:34.889Z
 # iterations per scenario: 5
 
 ## Methodology
@@ -23,19 +23,26 @@ the new `markHop()` calls in `browser-renderer.ts`.
 
 back button transition (render same deck twice; second should be fast)
 
-updateDeck+captureKeyBuffers  n=5  avg=12.45ms  p95=16.02ms  max=16.02ms
-frameHandler calls: 5  durations avg=41.84ms  max=43.49ms
+updateDeck+captureKeyBuffers  n=5  avg=12.35ms  p95=15.61ms  max=15.61ms
+frameHandler calls: 5  durations avg=41.85ms  max=43.65ms
+
+### same-html-skip
+
+re-render the same HTML 5 times — should only fire screenshot once
+
+updateDeck+captureKeyBuffers  n=5  avg=2.39ms  p95=9.66ms  max=9.66ms
+frameHandler calls: 5  durations avg=31.47ms  max=31.87ms
 
 ### weather-page
 
 weather page cycle (5 distinct pages, simulating daily-forecast navigation)
 
-updateDeck+captureKeyBuffers  n=5  avg=13.42ms  p95=19.87ms  max=19.87ms
-frameHandler calls: 5  durations avg=43.46ms  max=50.10ms
+updateDeck+captureKeyBuffers  n=5  avg=16.01ms  p95=24.79ms  max=24.79ms
+frameHandler calls: 5  durations avg=44.55ms  max=46.64ms
 
 ## Overall
 
-updateDeck+captureKeyBuffers (all)  n=10  avg=12.94ms  p95=19.87ms  max=19.87ms
+updateDeck+captureKeyBuffers (all)  n=15  avg=10.25ms  p95=24.79ms  max=24.79ms
 
 ## Notes
 
