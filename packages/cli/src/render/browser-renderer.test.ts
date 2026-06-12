@@ -485,4 +485,125 @@ describe("browser renderer", () => {
       { keyCount: 32, label: "Stream Deck XL" },
     ])
   })
+
+  // Phase 58-02 — skip-when-unchanged regression tests
+  it("fires the screenshot only once when the same HTML is rendered twice", async () => {
+    const screenshot = vi.fn(async () => createDeckScreenshot(["#ff0000", "#00ff00", "#0000ff"]))
+    const renderer = createBrowserRenderer({
+      keyCount: 3,
+      launcher: {
+        launch: async () => ({
+          close: async () => {},
+          newContext: async () => ({
+            close: async () => {},
+            newPage: async () => ({
+              screenshot,
+              setContent: async () => {},
+              setViewportSize: async () => {},
+            }),
+          }),
+        }),
+      },
+    })
+
+    await renderer.start()
+    await renderer.updateDeck("<html><body>same</body></html>")
+    await renderer.updateDeck("<html><body>same</body></html>")
+    await renderer.captureKeyBuffers()
+
+    expect(screenshot).toHaveBeenCalledTimes(1)
+  })
+
+  it("fires the screenshot twice when the HTML differs", async () => {
+    const screenshot = vi.fn(async () => createDeckScreenshot(["#ff0000", "#00ff00", "#0000ff"]))
+    const renderer = createBrowserRenderer({
+      keyCount: 3,
+      launcher: {
+        launch: async () => ({
+          close: async () => {},
+          newContext: async () => ({
+            close: async () => {},
+            newPage: async () => ({
+              screenshot,
+              setContent: async () => {},
+              setViewportSize: async () => {},
+            }),
+          }),
+        }),
+      },
+    })
+
+    await renderer.start()
+    await renderer.updateDeck("<html><body>a</body></html>")
+    await renderer.captureKeyBuffers()
+    await renderer.updateDeck("<html><body>b</body></html>")
+    await renderer.captureKeyBuffers()
+
+    expect(screenshot).toHaveBeenCalledTimes(2)
+  })
+
+  it("always fires the screenshot on the first render even when HTML is identical to a later re-render", async () => {
+    const screenshot = vi.fn(async () => createDeckScreenshot(["#ff0000", "#00ff00", "#0000ff"]))
+    const renderer = createBrowserRenderer({
+      keyCount: 3,
+      launcher: {
+        launch: async () => ({
+          close: async () => {},
+          newContext: async () => ({
+            close: async () => {},
+            newPage: async () => ({
+              screenshot,
+              setContent: async () => {},
+              setViewportSize: async () => {},
+            }),
+          }),
+        }),
+      },
+    })
+
+    await renderer.start()
+    await renderer.updateDeck("<html><body>one</body></html>")
+    await renderer.updateDeck("<html><body>one</body></html>")
+    await renderer.captureKeyBuffers()
+
+    // First render fires the screenshot, second identical render skips it.
+    expect(screenshot).toHaveBeenCalledTimes(1)
+  })
+
+  it("does not skip the screenshot in steady-state live hardware mode", async () => {
+    vi.useFakeTimers()
+    const now = vi.spyOn(Date, "now").mockReturnValue(0)
+    const screenshot = vi.fn(async () => createDeckScreenshot(["#ff0000", "#00ff00", "#0000ff"]))
+    const renderer = createBrowserRenderer({
+      keyCount: 3,
+      liveHardwareMode: true,
+      launcher: {
+        launch: async () => ({
+          close: async () => {},
+          newContext: async () => ({
+            close: async () => {},
+            newPage: async () => ({
+              screenshot,
+              setContent: async () => {},
+              setViewportSize: async () => {},
+            }),
+          }),
+        }),
+      },
+    })
+
+    await renderer.start()
+    await renderer.updateDeck("<html><body>steady</body></html>")
+    await renderer.captureKeyBuffers()
+
+    expect(screenshot).toHaveBeenCalledTimes(1)
+
+    // Advance time past the steady-state capture interval; a re-capture
+    // must happen even though the HTML hasn't changed (animated surfaces).
+    now.mockReturnValue(LIVE_HARDWARE_CAPTURE_INTERVAL_MS)
+    vi.advanceTimersToNextTimer()
+    await vi.waitFor(() => expect(screenshot).toHaveBeenCalledTimes(2))
+
+    await renderer.close()
+  })
 })
