@@ -71,6 +71,18 @@ export const MAX_MEDIA_SAMPLE_INTERVAL_MS = 2000
 export const LIVE_HARDWARE_CAPTURE_INTERVAL_MS = 250
 const CAPTURE_HTML_FILE_NAME = "deck.html"
 
+// INSTRUMENT: Phase 58-01 — opt-in capture-loop hop profiler. Default off.
+const SIRENO_PROFILE_ENABLED = process.env.SIRENO_PROFILE === "1"
+const profilePrevTimestamps = new Map<string, bigint>()
+function markHop(name: string): void {
+  if (!SIRENO_PROFILE_ENABLED) return
+  const now = process.hrtime.bigint()
+  const prev = profilePrevTimestamps.get(name) ?? now
+  profilePrevTimestamps.set(name, now)
+  const deltaMs = Number(now - prev) / 1_000_000
+  process.stdout.write(JSON.stringify({ hop: name, ms: deltaMs }) + "\n")
+}
+
 interface CaptureWaiter {
   reject: (reason?: unknown) => void
   requestedVersion: number
@@ -270,6 +282,8 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
   }
 
   async function waitForNextCaptureWindow(ms: number): Promise<void> {
+    // INSTRUMENT: Phase 58-01 — interval-wait start
+    markHop("waitForNextCaptureWindow")
     if (ms <= 0) {
       return
     }
@@ -297,6 +311,8 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
   async function runCaptureLoop(): Promise<void> {
     try {
       while (!closed) {
+        // INSTRUMENT: Phase 58-01 — capture-loop per-tick start
+        markHop("runCaptureLoop.tick")
         const hasPendingUpdate = renderedVersion < latestVersion
         const shouldSteadyStateCapture = liveHardwareMode && renderedVersion > 0 && renderedVersion === latestVersion
 
@@ -340,24 +356,35 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
         }
 
         const activePage = await ensurePage()
+        // INSTRUMENT: Phase 58-01 — page ready
+        markHop("ensurePage")
         if (captureReason === "update") {
           await renderPageHtml(activePage, requestedHtml, requestedVersion)
         }
+        // INSTRUMENT: Phase 58-01 — screenshot boundary
+        markHop("screenshot.before")
         const capture = await activePage.screenshot({ fullPage: true })
+        markHop("screenshot.after")
 
         if (requestedVersion !== latestVersion) {
           continue
         }
 
+        // INSTRUMENT: Phase 58-01 — crop boundary
+        markHop("crop.before")
         lastCapturedBuffers = await cropDeckCaptureToKeyBuffers(capture, layout, preset)
+        markHop("crop.after")
         lastCaptureAt = Date.now()
         renderedVersion = Math.max(renderedVersion, requestedVersion)
 
+        // INSTRUMENT: Phase 58-01 — frameHandler boundary
+        markHop("frameHandler.before")
         await frameHandler?.({
           buffers: lastCapturedBuffers,
           reason: captureReason,
           version: requestedVersion,
         })
+        markHop("frameHandler.after")
 
         resolveCaptureWaiters()
       }
@@ -389,6 +416,8 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
       await ensurePage()
     },
     async updateDeck(html) {
+      // INSTRUMENT: Phase 58-01 — updateDeck entry
+      markHop("updateDeck.entry")
       latestHtml = html
       latestMediaSampleIntervalMs = parseMediaSampleIntervalMs(html)
       latestVersion += 1
