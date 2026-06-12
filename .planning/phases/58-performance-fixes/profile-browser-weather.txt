@@ -1,0 +1,47 @@
+# Phase 58-01 — Browser capture loop profile
+# generated: 2026-06-12T07:56:09.815Z
+# iterations per scenario: 5
+
+## Methodology
+
+Standalone profile script that drives `createBrowserRenderer` with a
+mocked Playwright launcher (no real Chromium). The mocked `screenshot`
+returns a real sharp-generated PNG so the crop path is exercised.
+Each `updateDeck` is followed by a `captureKeyBuffers` await so we
+measure the full tap-to-key-buffer roundtrip.
+
+In-process measurement captures everything *except* the real
+Playwright Chromium IPC wait. The on-hardware USB write hop is not
+profiled in this environment (no Stream Deck device).
+
+Run with `SIRENO_PROFILE=1` to see the per-hop JSON log lines from
+the new `markHop()` calls in `browser-renderer.ts`.
+
+## Per-scenario results
+
+### back-button
+
+back button transition (render same deck twice; second should be fast)
+
+updateDeck+captureKeyBuffers  n=5  avg=12.45ms  p95=16.02ms  max=16.02ms
+frameHandler calls: 5  durations avg=41.84ms  max=43.49ms
+
+### weather-page
+
+weather page cycle (5 distinct pages, simulating daily-forecast navigation)
+
+updateDeck+captureKeyBuffers  n=5  avg=13.42ms  p95=19.87ms  max=19.87ms
+frameHandler calls: 5  durations avg=43.46ms  max=50.10ms
+
+## Overall
+
+updateDeck+captureKeyBuffers (all)  n=10  avg=12.94ms  p95=19.87ms  max=19.87ms
+
+## Notes
+
+- The mocked screenshot is fast (sharp-generated PNG in <1ms).
+  Real Chromium IPC is the missing cost.
+- `frameHandler` count > iterations is expected (capture loop may
+  fire multiple times for steady-state captures).
+- Run with `SIRENO_PROFILE=1` to capture per-hop deltas from the
+  browser-renderer instrumentation added in Plan 58-01 Task 1.
