@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto"
 import { mkdtemp, rm, writeFile } from "node:fs/promises"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
@@ -81,6 +82,11 @@ function markHop(name: string): void {
   profilePrevTimestamps.set(name, now)
   const deltaMs = Number(now - prev) / 1_000_000
   process.stdout.write(JSON.stringify({ hop: name, ms: deltaMs }) + "\n")
+}
+
+// Phase 58-02 — sha1 hash of HTML to detect unchanged renders and skip the screenshot.
+function computeHtmlHash(html: string): string {
+  return createHash("sha1").update(html).digest("hex")
 }
 
 interface CaptureWaiter {
@@ -224,6 +230,8 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
   let renderedVersion = 0
   let lastCapturedBuffers = new Map<number, Buffer>()
   let lastCaptureAt = 0
+  let lastRenderedHtmlLength = -1
+  let lastRenderedHtmlHash: string | null = null
   let captureLoopPromise: Promise<void> | null = null
   let wakeCaptureLoop: (() => void) | null = null
   const captureWaiters: CaptureWaiter[] = []
@@ -361,6 +369,41 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
         if (captureReason === "update") {
           await renderPageHtml(activePage, requestedHtml, requestedVersion)
         }
+
+        // Phase 58-02 — skip the screenshot if the HTML is provably the same as the
+        // last-rendered HTML and we have cached buffers to reuse. This is the core
+        // fix for PERF-01 / PERF-02: when the runtime re-renders the same deck
+        // (back-button to a previously-rendered deck, weather page cycle with small
+        // visual diffs), we save the Playwright IPC wait entirely.
+        //
+        // Important: only skip on "update" captures. Steady-state captures in
+        // liveHardwareMode exist specifically to re-sample animated surfaces
+        // (blink/marquee); skipping them would defeat the purpose.
+        const canSkipCapture =
+          captureReason === "update" &&
+          renderedVersion > 0 &&
+          requestedHtml.length === lastRenderedHtmlLength &&
+          computeHtmlHash(requestedHtml) === lastRenderedHtmlHash &&
+          lastCapturedBuffers.size > 0
+
+        if (canSkipCapture) {
+          markHop("screenshot.skipped")
+          if (requestedVersion !== latestVersion) {
+            continue
+          }
+          lastCaptureAt = Date.now()
+          renderedVersion = Math.max(renderedVersion, requestedVersion)
+          markHop("frameHandler.before")
+          await frameHandler?.({
+            buffers: lastCapturedBuffers,
+            reason: "update",
+            version: requestedVersion,
+          })
+          markHop("frameHandler.after")
+          resolveCaptureWaiters()
+          continue
+        }
+
         // INSTRUMENT: Phase 58-01 — screenshot boundary
         markHop("screenshot.before")
         const capture = await activePage.screenshot({ fullPage: true })
@@ -374,6 +417,8 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
         markHop("crop.before")
         lastCapturedBuffers = await cropDeckCaptureToKeyBuffers(capture, layout, preset)
         markHop("crop.after")
+        lastRenderedHtmlLength = requestedHtml.length
+        lastRenderedHtmlHash = computeHtmlHash(requestedHtml)
         lastCaptureAt = Date.now()
         renderedVersion = Math.max(renderedVersion, requestedVersion)
 
