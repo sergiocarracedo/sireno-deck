@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.6 — UX Speed & Overlay Extensions
-**Phase:** 57 — Render pipeline & emoji research ✓ complete → Phase 58 — Performance fixes
-**Status:** research complete. RES-01 profile shows runtime hop chain avg=0.37ms (browser capture loop / USB write is the bottleneck). RES-02 pasteText wrapper design decided (runtime-owned, paste.keystroke opt-out). RES-03 category data is clean.
+**Phase:** 58 — Performance fixes
+**Status:** CONTEXT captured. Profile approach: SIRENO_PROFILE=1 in browser-renderer.ts (no signature changes). Primary fix: skip capture when HTML unchanged. Profile back vs weather first, decide uniform vs split fix after measurement.
 **Last updated:** 2026-06-11
 
 ---
