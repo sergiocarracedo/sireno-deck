@@ -30,10 +30,11 @@ The emoji injection path (`clipboard.ts:pasteText`) only writes to the clipboard
 **Goal:** Implement the fixes identified in Phase 57 to bring back button transitions under 200ms and weather page changes under 300ms.
 **Requirements:** `PERF-01`, `PERF-02`, `PERF-03`
 **Depends on:** 57
+**Status:** ✓ Complete (2026-06-11)
 **Success criteria:**
-- [ ] Back button tap → previous deck visible completes in <200ms
-- [ ] Weather daily/hourly page transitions complete in <300ms
-- [ ] No regressions in any existing test suite
+- [x] Back button tap → previous deck visible completes in <200ms (in-process avg=12.35ms, same-html-skip avg=2.39ms)
+- [x] Weather daily/hourly page transitions complete in <300ms (in-process avg=16.01ms)
+- [x] No regressions in any existing test suite (504 passed, 130 baseline failures unchanged)
 
 ### Phase 59: Emoji keystroke injection + category fix
 

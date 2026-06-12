@@ -9,9 +9,9 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 58 — Performance fixes
-Status: CONTEXT captured (commit c4ad918). Decisions: (1) profile via SIRENO_PROFILE=1 instrumentation in browser-renderer.ts, (2) primary fix = skip capture when HTML unchanged, (3) profile first to determine if back/weather share root cause.
-Last activity: 2026-06-11 — Phase 58 discuss-phase complete. Phase 57 closed with 2 plans, VERIFICATION.md passed, 7 commits.
+Phase: 58 — Performance fixes ✓ complete → Phase 59 — Emoji keystroke injection + category fix
+Status: All PERF-01/02/03 satisfied. Skip-when-unchanged fix in browser-renderer.ts (4.95x speedup on same-html-skip). 504 passed / 130 baseline failures unchanged.
+Last activity: 2026-06-11 — Phase 58 complete. 11 commits. VERIFICATION.md status: passed.
 
 ### Quick Tasks Completed
 

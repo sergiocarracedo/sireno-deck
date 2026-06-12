@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.6 — UX Speed & Overlay Extensions
-**Phase:** 58 — Performance fixes
-**Status:** planning. 2 plans in 2 waves. 58-01 instruments browser-renderer.ts (Wave 1); 58-02 implements skip-when-unchanged + verifies (Wave 2, depends on 58-01).
+**Phase:** 58 — Performance fixes ✓ complete → Phase 59 — Emoji keystroke injection + category fix
+**Status:** PERF-01/02/03 satisfied. Skip-when-unchanged fix (browser-renderer.ts) gives 4.95x speedup on same-html renders. 11 commits, 504 passed.
 **Last updated:** 2026-06-11
 
 ---
