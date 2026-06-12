@@ -606,4 +606,47 @@ describe("browser renderer", () => {
 
     await renderer.close()
   })
+
+  it("uses reason 'unchanged' for frameHandler when the screenshot is skipped", async () => {
+    const frameHandler = vi.fn(async () => {})
+    const screenshot = vi.fn(async () => createDeckScreenshot(["#ff0000", "#00ff00", "#0000ff"]))
+    const renderer = createBrowserRenderer({
+      frameHandler,
+      keyCount: 3,
+      launcher: {
+        launch: async () => ({
+          close: async () => {},
+          newContext: async () => ({
+            close: async () => {},
+            newPage: async () => ({
+              screenshot,
+              setContent: async () => {},
+              setViewportSize: async () => {},
+            }),
+          }),
+        }),
+      },
+    })
+
+    await renderer.start()
+    await renderer.updateDeck("<html><body>same</body></html>")
+    await renderer.captureKeyBuffers()
+    expect(frameHandler).toHaveBeenLastCalledWith({
+      buffers: expect.any(Map),
+      reason: "update",
+      version: 1,
+    })
+
+    await renderer.updateDeck("<html><body>same</body></html>")
+    // captureKeyBuffers re-enters the capture loop and waits for the new version.
+    await renderer.captureKeyBuffers()
+
+    expect(screenshot).toHaveBeenCalledTimes(1)
+    expect(frameHandler).toHaveBeenCalledTimes(2)
+    expect(frameHandler).toHaveBeenLastCalledWith({
+      buffers: expect.any(Map),
+      reason: "unchanged",
+      version: 2,
+    })
+  })
 })

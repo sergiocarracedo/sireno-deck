@@ -52,7 +52,7 @@ export interface BrowserRendererOptions {
 
 export interface BrowserRendererFrame {
   buffers: Map<number, Buffer>
-  reason: "steady-state" | "update"
+  reason: "steady-state" | "unchanged" | "update"
   version: number
 }
 
@@ -74,15 +74,6 @@ const CAPTURE_HTML_FILE_NAME = "deck.html"
 
 // INSTRUMENT: Phase 58-01 — opt-in capture-loop hop profiler. Default off.
 const SIRENO_PROFILE_ENABLED = process.env.SIRENO_PROFILE === "1"
-const profilePrevTimestamps = new Map<string, bigint>()
-function markHop(name: string): void {
-  if (!SIRENO_PROFILE_ENABLED) return
-  const now = process.hrtime.bigint()
-  const prev = profilePrevTimestamps.get(name) ?? now
-  profilePrevTimestamps.set(name, now)
-  const deltaMs = Number(now - prev) / 1_000_000
-  process.stdout.write(JSON.stringify({ hop: name, ms: deltaMs }) + "\n")
-}
 
 // Phase 58-02 — sha1 hash of HTML to detect unchanged renders and skip the screenshot.
 function computeHtmlHash(html: string): string {
@@ -236,6 +227,18 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
   let wakeCaptureLoop: (() => void) | null = null
   const captureWaiters: CaptureWaiter[] = []
 
+  // INSTRUMENT: Phase 58-01 — per-renderer hop timestamp map so multiple renderer
+  // instances in the same process don't interleave hop deltas.
+  const profilePrevTimestamps = new Map<string, bigint>()
+  function markHop(name: string): void {
+    if (!SIRENO_PROFILE_ENABLED) return
+    const now = process.hrtime.bigint()
+    const prev = profilePrevTimestamps.get(name) ?? now
+    profilePrevTimestamps.set(name, now)
+    const deltaMs = Number(now - prev) / 1_000_000
+    process.stdout.write(JSON.stringify({ hop: name, ms: deltaMs }) + "\n")
+  }
+
   async function ensurePage(): Promise<BrowserPageLike> {
     if (page) {
       return page
@@ -379,11 +382,15 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
         // Important: only skip on "update" captures. Steady-state captures in
         // liveHardwareMode exist specifically to re-sample animated surfaces
         // (blink/marquee); skipping them would defeat the purpose.
+        //
+        // Compute the hash once and reuse it for the skip check + the cache update
+        // below (avoids recomputing the sha1 for the same string on the hot path).
+        const requestedHtmlHash = computeHtmlHash(requestedHtml)
         const canSkipCapture =
           captureReason === "update" &&
           renderedVersion > 0 &&
           requestedHtml.length === lastRenderedHtmlLength &&
-          computeHtmlHash(requestedHtml) === lastRenderedHtmlHash &&
+          requestedHtmlHash === lastRenderedHtmlHash &&
           lastCapturedBuffers.size > 0
 
         if (canSkipCapture) {
@@ -396,7 +403,7 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
           markHop("frameHandler.before")
           await frameHandler?.({
             buffers: lastCapturedBuffers,
-            reason: "update",
+            reason: "unchanged",
             version: requestedVersion,
           })
           markHop("frameHandler.after")
@@ -418,7 +425,7 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
         lastCapturedBuffers = await cropDeckCaptureToKeyBuffers(capture, layout, preset)
         markHop("crop.after")
         lastRenderedHtmlLength = requestedHtml.length
-        lastRenderedHtmlHash = computeHtmlHash(requestedHtml)
+        lastRenderedHtmlHash = requestedHtmlHash
         lastCaptureAt = Date.now()
         renderedVersion = Math.max(renderedVersion, requestedVersion)
 
