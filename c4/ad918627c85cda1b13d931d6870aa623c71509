@@ -1,0 +1,21 @@
+.planning/phases/58-performance-fixes/58-CONTEXT.md
+  s_0c62b680825d4a::t_71c97c36865342 1-110
+.planning/phases/58-performance-fixes/58-DISCUSSION-LOG.md
+  s_0c62b680825d4a::t_0b6f9d094567ff 1-60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c4ad918627c85cda1b13d931d6870aa623c71509",
+  "prompts": {},
+  "sessions": {
+    "s_0c62b680825d4a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14fa596feffedU17ZzovT65yl1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
