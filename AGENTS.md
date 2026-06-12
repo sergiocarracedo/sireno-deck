@@ -166,7 +166,7 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.6 — UX Speed & Overlay Extensions
 **Phase:** 58 — Performance fixes
-**Status:** CONTEXT captured. Profile approach: SIRENO_PROFILE=1 in browser-renderer.ts (no signature changes). Primary fix: skip capture when HTML unchanged. Profile back vs weather first, decide uniform vs split fix after measurement.
+**Status:** planning. 2 plans in 2 waves. 58-01 instruments browser-renderer.ts (Wave 1); 58-02 implements skip-when-unchanged + verifies (Wave 2, depends on 58-01).
 **Last updated:** 2026-06-11
 
 ---
