@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.6 — UX Speed & Overlay Extensions
-**Phase:** 58 — Performance fixes ✓ complete → Phase 59 — Emoji keystroke injection + category fix
-**Status:** PERF-01/02/03 satisfied. Skip-when-unchanged fix (browser-renderer.ts) gives 4.95x speedup on same-html renders. 11 commits, 504 passed.
+**Phase:** 59 — Emoji keystroke injection + category fix
+**Status:** CONTEXT captured. Extend `methods.pasteText` in place. Opt-out via `paste.keystroke: false`. Mock keyMacroProvider in unit tests. EMO-17 = confirm only.
 **Last updated:** 2026-06-11
 
 ---

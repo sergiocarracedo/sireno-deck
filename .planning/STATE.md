@@ -9,9 +9,9 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 58 — Performance fixes ✓ complete → Phase 59 — Emoji keystroke injection + category fix
-Status: All PERF-01/02/03 satisfied. Skip-when-unchanged fix in browser-renderer.ts (4.95x speedup on same-html-skip). 504 passed / 130 baseline failures unchanged.
-Last activity: 2026-06-11 — Phase 58 complete. 11 commits. VERIFICATION.md status: passed.
+Phase: 59 — Emoji keystroke injection + category fix
+Status: CONTEXT captured (commit 56529dc). Decisions: (1) extend `methods.pasteText` in place, (2) opt-out via `paste.keystroke: false`, (3) throw on keyMacroProvider error, (4) EMO-17 = confirm only, (5) all current callers get new behavior, (6) mock keyMacroProvider in unit tests.
+Last activity: 2026-06-11 — Phase 58 complete + Phase 59 discuss-phase complete. 14 commits for Phase 58.
 
 ### Quick Tasks Completed
 
