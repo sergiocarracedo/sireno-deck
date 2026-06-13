@@ -34,9 +34,11 @@ export interface AddonGeneratedButton
 }
 
 export interface AddonGeneratedDeck {
+  autoShow?: boolean
   background?: string
   buttons: AddonGeneratedButton[]
   id: string
+  keyCount?: number
   name?: string
   process_names?: readonly string[]
 }

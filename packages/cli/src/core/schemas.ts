@@ -482,6 +482,8 @@ function expandDecks(
         ...(deck.allow_reserved_slot_override !== undefined
           ? { allow_reserved_slot_override: deck.allow_reserved_slot_override }
           : {}),
+        ...(deck.autoShow !== undefined ? { autoShow: deck.autoShow } : {}),
+        ...(deck.keyCount !== undefined ? { keyCount: deck.keyCount } : {}),
         buttons: deck.buttons ?? [],
         id: deck.id,
         ...(deck.name !== undefined ? { name: deck.name } : {}),
@@ -641,7 +643,27 @@ export function validateConfig(
       ...(bootstrap.decks[deckKey]?.background !== undefined
         ? { background: bootstrap.decks[deckKey]?.background }
         : {}),
+      ...(bootstrap.decks[deckKey]?.allow_reserved_slot_override !== undefined
+        ? {
+            allow_reserved_slot_override:
+              bootstrap.decks[deckKey]?.allow_reserved_slot_override,
+          }
+        : {}),
+      ...(bootstrap.decks[deckKey]?.autoShow !== undefined
+        ? { autoShow: bootstrap.decks[deckKey]?.autoShow }
+        : {}),
+      ...(bootstrap.decks[deckKey]?.autoShow === undefined &&
+      deck.autoShow !== undefined
+        ? { autoShow: deck.autoShow }
+        : {}),
       id: deck.id,
+      ...(bootstrap.decks[deckKey]?.keyCount !== undefined
+        ? { keyCount: bootstrap.decks[deckKey]?.keyCount }
+        : {}),
+      ...(bootstrap.decks[deckKey]?.keyCount === undefined &&
+      deck.keyCount !== undefined
+        ? { keyCount: deck.keyCount }
+        : {}),
       ...(bootstrap.decks[deckKey]?.type !== undefined
         ? { deckType: bootstrap.decks[deckKey]?.type }
         : {}),
