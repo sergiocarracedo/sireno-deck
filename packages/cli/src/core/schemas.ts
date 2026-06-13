@@ -32,6 +32,12 @@ export const LoggingSchema = z.object({
   verbose: z.boolean().default(false),
 })
 
+export const PasteSchema = z
+  .object({
+    keystroke: z.boolean().default(true),
+  })
+  .strict()
+
 export const SessionSchema = z.object({
   /**
    * The deck rendered when the user's session is locked.
@@ -124,8 +130,11 @@ const RawButtonEnvelopeSchema = z
 
 const RawDeckSchema = z
   .object({
+    allow_reserved_slot_override: z.boolean().optional(),
+    autoShow: z.boolean().optional(),
     buttons: z.array(RawButtonEnvelopeSchema).optional(),
     id: z.string().min(1),
+    keyCount: z.number().int().min(1).optional(),
     name: z.string().optional(),
     process_names: z.array(z.string().min(1)).optional(),
     type: z.string().min(1).optional(),
@@ -134,6 +143,7 @@ const RawDeckSchema = z
 
 const BootstrapSirenoConfigSchema = z
   .object({
+    allow_reserved_slot_override: z.boolean().optional(),
     device: z
       .object({
         model: z.string().optional(),
@@ -146,6 +156,7 @@ const BootstrapSirenoConfigSchema = z
     decks: z.record(RawDeckSchema),
     addons: z.array(AddonSchema).default([]),
     logging: LoggingSchema.default({}),
+    paste: PasteSchema.optional(),
     session: SessionSchema.optional(),
   })
   .strict()
@@ -176,9 +187,12 @@ export interface ButtonInstance extends AddonButtonEnvelope {
 }
 
 export interface DeckConfig {
+  allow_reserved_slot_override?: boolean
+  autoShow?: boolean
   background?: string
   deckType?: string
   id: string
+  keyCount?: number
   name?: string
   process_names?: readonly string[]
   system?: boolean
@@ -197,6 +211,7 @@ const CoreButtonConfigSchema = z
 
 const CoreDeckConfigSchema = z
   .object({
+    autoShow: z.boolean().optional(),
     background: z.string().min(1).optional(),
     system: z.boolean().optional(),
   })
@@ -213,6 +228,7 @@ export interface SirenoConfig {
   decks: Record<string, DeckConfig>
   addons: z.infer<typeof AddonSchema>[]
   logging: z.infer<typeof LoggingSchema>
+  paste?: z.infer<typeof PasteSchema>
   session?: z.infer<typeof SessionSchema>
 }
 
@@ -333,7 +349,7 @@ export function validateBootstrapConfig(data: unknown): BootstrapSirenoConfig {
     for (const [deckKey, deck] of Object.entries(config.decks ?? {})) {
       if (deckKey === lockedDeckId) continue
       const reservedPosition =
-        (deck.buttons?.length ?? 0) > 0 ? deck.keyCount - 1 : -1
+        (deck.buttons?.length ?? 0) > 0 ? (deck.keyCount ?? 15) - 1 : -1
       if (reservedPosition < 0) continue
       const conflict = (deck.buttons ?? []).find(
         (b: { position?: number }) => b.position === reservedPosition,
@@ -650,6 +666,7 @@ export function validateConfig(
     ...(bootstrap.device !== undefined ? { device: bootstrap.device } : {}),
     logging: bootstrap.logging,
     main_deck: bootstrap.main_deck,
+    ...(bootstrap.paste !== undefined ? { paste: bootstrap.paste } : {}),
     ...(bootstrap.session !== undefined ? { session: bootstrap.session } : {}),
     theme: bootstrap.theme,
   }
