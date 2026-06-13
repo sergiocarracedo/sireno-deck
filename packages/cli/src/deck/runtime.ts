@@ -1422,6 +1422,19 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     const platform = process.platform
     for (const [deckId, deck] of Object.entries(runtimeDecks)) {
       if (!deck.process_names || deck.process_names.length === 0) continue
+      if (deck.autoShow === false) continue
+      if (processNamesMatch(deck.process_names, ownerName, platform)) {
+        return deckId
+      }
+    }
+    return null
+  }
+
+  function findSummonableActiveAppDeckFor(ownerName: string): string | null {
+    const platform = process.platform
+    for (const [deckId, deck] of Object.entries(runtimeDecks)) {
+      if (!deck.process_names || deck.process_names.length === 0) continue
+      if (deck.autoShow !== false) continue
       if (processNamesMatch(deck.process_names, ownerName, platform)) {
         return deckId
       }
