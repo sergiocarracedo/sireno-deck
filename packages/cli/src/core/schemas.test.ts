@@ -190,3 +190,72 @@ describe('system flag (55-01)', () => {
     expect(result.decks?.sneaky_deck?.system).toBeUndefined()
   })
 })
+
+describe('autoShow schema (62-01)', () => {
+  it('preserves autoShow: true on a deck', () => {
+    const registry = createBundledAddonRegistry()
+    const config = {
+      ...makeDeck(0),
+      decks: {
+        main: {
+          buttons: [],
+          id: 'main',
+          keyCount: KEY_COUNT,
+        },
+        auto_deck: {
+          buttons: [],
+          id: 'auto_deck',
+          keyCount: KEY_COUNT,
+          process_names: ['code'],
+          autoShow: true,
+        },
+      },
+    }
+    const result = validateConfig(config, registry)
+    expect(result.decks?.auto_deck?.autoShow).toBe(true)
+  })
+
+  it('preserves autoShow: false on a deck', () => {
+    const registry = createBundledAddonRegistry()
+    const config = {
+      ...makeDeck(0),
+      decks: {
+        main: {
+          buttons: [],
+          id: 'main',
+          keyCount: KEY_COUNT,
+        },
+        manual_deck: {
+          buttons: [],
+          id: 'manual_deck',
+          keyCount: KEY_COUNT,
+          process_names: ['code'],
+          autoShow: false,
+        },
+      },
+    }
+    const result = validateConfig(config, registry)
+    expect(result.decks?.manual_deck?.autoShow).toBe(false)
+  })
+
+  it('accepts a deck without autoShow (defaults to undefined, handled at runtime)', () => {
+    const registry = createBundledAddonRegistry()
+    const config = {
+      ...makeDeck(0),
+      decks: {
+        main: {
+          buttons: [],
+          id: 'main',
+          keyCount: KEY_COUNT,
+        },
+        plain_deck: {
+          buttons: [],
+          id: 'plain_deck',
+          keyCount: KEY_COUNT,
+        },
+      },
+    }
+    const result = validateConfig(config, registry)
+    expect(result.decks?.plain_deck?.autoShow).toBeUndefined()
+  })
+})
