@@ -1138,7 +1138,14 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         .pendingOverlayDeck
       return {
         ...createSystemBackHandlers(deckId, button, async () => {
-          // Placeholder: Task 9 will wire summonOverlay here.
+          const summonableDeckId =
+            activeAppOwnerName !== null
+              ? findSummonableActiveAppDeckFor(activeAppOwnerName)
+              : null
+          if (summonableDeckId !== null) {
+            summonOverlay(summonableDeckId)
+            return
+          }
           restoreLastDismissedOverlay()
         }),
         render: () =>
@@ -1519,6 +1526,19 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     if (overlayDeckId === null) return
     lastDismissedOverlayDeckId = overlayDeckId
     overlayDeckId = null
+    void renderDeckSurface(getDisplayDeckId(), activeActivationVersion).catch(
+      reportRuntimeError,
+    )
+  }
+
+  function summonOverlay(deckId: string): void {
+    if (overlayDeckId === deckId) return
+    runtimeLogger.info(
+      { summonedOverlay: deckId },
+      'active-app: summoning overlay',
+    )
+    lastDismissedOverlayDeckId = null
+    overlayDeckId = deckId
     void renderDeckSurface(getDisplayDeckId(), activeActivationVersion).catch(
       reportRuntimeError,
     )
