@@ -165,9 +165,9 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.6 — UX Speed & Overlay Extensions
-**Phase:** 59 — Emoji keystroke injection + category fix
-**Status:** planning. 2 plans in 2 waves. 59-01 extends methods.pasteText + mocked tests (Wave 1). 59-02 wires `paste.keystroke` config field + EMO-17 audit doc (Wave 2, depends on 59-01).
-**Last updated:** 2026-06-11
+**Phase:** 61 — Icon updates
+**Status:** planning (2026-06-12). 1 plan written. ICON-01 = one-line `chevron-left` → `undo2` swap in SystemBackButton. ACTIVEAPP-08 = rewrite OverlayToggleButton as overlay-state-aware (active deck name as label, `send-to-back` background + deck-icon badge foreground, neutral "Show App" fallback). 4 tasks across 4 files. Pending execution.
+**Last updated:** 2026-06-12
 
 ---
 
