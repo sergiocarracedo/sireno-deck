@@ -1023,6 +1023,11 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     }
 
     if (button.type === SYSTEM_SETTINGS_TYPE) {
+      const settingsConfig = button.config as {
+        pendingOverlayDeckId: string | null
+        pendingOverlayDeck: DeckConfig | null
+      }
+      const pendingOverlayDeck = settingsConfig.pendingOverlayDeck ?? null
       return {
         onTap: async () => {
           try {
@@ -1038,7 +1043,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
           }
           await activateDeckSurface(SETTINGS_DECK_ID, deckId)
         },
-        render: () => createElement(SystemSettingsEntryButton),
+        render: () =>
+          createElement(SystemSettingsEntryButton, { pendingOverlayDeck }),
       }
     }
 

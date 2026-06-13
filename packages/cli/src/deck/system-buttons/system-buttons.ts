@@ -44,7 +44,13 @@ export function getLastPositionSystemButton(
 
   if (deck.id === ctx.mainDeckId && 'settings' in ctx.runtimeDecks) {
     return {
-      config: {},
+      config: {
+        pendingOverlayDeckId: ctx.pendingOverlayDeckId,
+        pendingOverlayDeck:
+          ctx.pendingOverlayDeckId !== null
+            ? ctx.runtimeDecks[ctx.pendingOverlayDeckId]
+            : undefined,
+      },
       id: SYSTEM_SETTINGS_TYPE,
       position: lastPosition,
       type: SYSTEM_SETTINGS_TYPE,
