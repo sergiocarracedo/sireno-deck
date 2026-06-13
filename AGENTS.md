@@ -169,6 +169,10 @@ This project uses **learnship**. Key facts:
 **Status:** context captured (2026-06-12). Phase 61 plan 61-01 executed uncommitted (ICON-01 `undo2` swap + ACTIVEAPP-08 dual-icon overlay toggle + 5 unit tests); verification deferred per user. Phase 62 decisions: (1) `autoShow: false` default, two-stage plumbing (user + addons) — breaking change; (2) dbltap summons live-matching deck; (3) bespoke 2-line back button (icon 16, text xs, gap-0.5); (4) `summonOverlay` is a private runtime helper; (5) Phase 62 includes the fix for 5 pre-existing `system-back-injection.test.ts` failures.
 **Last updated:** 2026-06-12
 
+## Phase 62 Plan Status (planning)
+
+- Plan 62-01: 12 tasks across 13 files. Schema (Tasks 1-3, 11), runtime gate (Task 4), system-back-injection fix (Task 5), 2-line button component (Tasks 6-7), dispatcher wiring (Task 8), runtime integration (Task 9), new lifecycle tests (Task 10), docs (Task 12). Vertical slice: `autoShow: false` deck doesn't auto-show; dbltap back button summons it. Pending execution.
+
 ---
 
 ## Project Structure
