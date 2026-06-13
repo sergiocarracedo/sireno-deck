@@ -1,0 +1,19 @@
+.planning/phases/62-overlay-autoshow/62-01-PLAN.md
+  s_ce8dff3c35bfc4::t_6505bb5fcecac1 1-227
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "572d8a8a000e1926f32c27f43cff6b4b71367f9b",
+  "prompts": {},
+  "sessions": {
+    "s_ce8dff3c35bfc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1441b295dffeUD9xVe36d81tKr",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
