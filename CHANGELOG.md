@@ -1,5 +1,31 @@
 # CHANGELOG
 
+## 2026-06-13
+
+### Breaking Changes
+
+- **`DeckConfig.autoShow` now defaults to `false`** (previously defaulted to `true` at runtime for any deck with `process_names`). Existing configs that rely on auto-show behavior must now set `autoShow: true` explicitly on each overlay deck. This aligns with the user-facing `REQUIREMENTS.md` specification.
+
+### Features
+
+- Added `DeckConfig.autoShow?: boolean` field — when `false` and the deck's `process_names` match the active app, the overlay is NOT automatically displayed. Addons can also set `autoShow` via the `AddonGeneratedDeck` type.
+- Added `findSummonableActiveAppDeckFor(ownerName)` — returns the first deck with `autoShow: false` whose `process_names` match, enabling the summon workflow.
+- Added `summonOverlay(deckId)` private runtime helper — the inverse of `dismissOverlay()`, used by the 2-line system-back variant.
+- Added `SystemBackWithPendingOverlayButton` — a 2-line button variant showing "Tap / 2xTap" with the overlay deck's emoji icon in the bottom-right. Rendered when a `autoShow: false` deck matches the active app.
+- Added badge rendering to `SystemSettingsEntryButton` — when an `autoShow: false` deck matches, the settings button shows the matching deck's emoji as a badge.
+- Rewrote `shouldInjectSystemBack` to properly honor `allow_reserved_slot_override` (root-level and per-deck), locked-deck-on-locked-session, user-button-claims-slot, and main-deck behavior.
+
+### Fixes
+
+- `shouldInjectSystemBack` now correctly handles the main deck (returns `false` for main deck when no settings), per the original test intent.
+
+### Coverage
+
+- 5 new `runtime.test.ts` tests for `autoShow: false` behavior (no auto-activation, 2-line variant rendering, dbltap summon, reverts when match ends, settings badge).
+- 3 new `schemas.test.ts` tests for `autoShow` field preservation.
+- 4 new `SystemBackWithPendingOverlayButton.test.tsx` tests.
+- `system-back-injection.test.ts`: 10/10 pass (was 5/9 before fix).
+
 ## 2026-06-10
 
 ### Features
