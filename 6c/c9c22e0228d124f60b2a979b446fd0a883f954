@@ -1,0 +1,29 @@
+.planning/phases/61-icon-updates/61-DISCUSSION-LOG.md
+  s_ce8dff3c35bfc4::t_b94bdf2135a34e 1-45
+.planning/phases/61-icon-updates/61-RESEARCH.md
+  s_ce8dff3c35bfc4::t_7f49ab9fd23629 1-83
+.planning/phases/61-icon-updates/61-CONTEXT.md
+  s_ce8dff3c35bfc4::t_7b44b7038bf3a6 1-89
+.planning/phases/61-icon-updates/61-01-PLAN.md
+  s_ce8dff3c35bfc4::t_f73f2eee682858 1-43,46-74,77-114,117-175,225-274
+  s_ce8dff3c35bfc4::t_db65827a530b85 44-45
+  s_ce8dff3c35bfc4::t_40f9bc1d7249b3 75-76
+  s_ce8dff3c35bfc4::t_77b96e6820c2b8 176-224
+  s_ce8dff3c35bfc4::t_64209f0c8b7e72 115-116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "6cc9c22e0228d124f60b2a979b446fd0a883f954",
+  "prompts": {},
+  "sessions": {
+    "s_ce8dff3c35bfc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1441b295dffeUD9xVe36d81tKr",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
