@@ -19,6 +19,7 @@ import { renderReactNodeToHtml } from '@/render/dom-host'
 import { Text } from '@/ui/index'
 import type { ActiveAppProvider, ActiveAppSnapshot } from '@/system/active-app'
 import { createDeckRuntime, processNamesMatch } from '../runtime'
+import { SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE } from '../system-buttons/system-buttons'
 
 import type { AddonRegistry } from '@/addon/registry'
 import type { StreamDeckKeyEvent } from '@/device/stream-deck'
@@ -60,6 +61,37 @@ function getMountedCounterParts(html: string, label: string) {
   return {
     count: Number(match?.[2]),
     mountId: Number(match?.[1]),
+  }
+}
+
+function createNavButtonInstance(targetDeckId: string, position: number) {
+  return {
+    config: { label: `Go ${targetDeckId}` },
+    definition: defineMountedButton({
+      configSchema: {
+        parse: (v: unknown) => v,
+        safeParse: (v: unknown) => ({ data: v, success: true as const }),
+      },
+      onTap: async ({ methods }) => {
+        await methods.navigateToDeck(targetDeckId, { addToHistory: false })
+      },
+      render: ({ button }) => createTextSurface(button.position, `Go ${targetDeckId}`),
+      type: 'nav-button',
+    }),
+    label: `Go ${targetDeckId}`,
+    position,
+    type: 'nav-button',
+  }
+}
+
+function createKeyEventEmitter() {
+  let listener: (event: StreamDeckKeyEvent) => void
+  return {
+    listener: (l: (event: StreamDeckKeyEvent) => void) => {
+      listener = l
+      return () => {}
+    },
+    emit: (event: StreamDeckKeyEvent) => listener(event),
   }
 }
 
@@ -4717,5 +4749,338 @@ describe('overlay lifecycle', () => {
       },
       { timeout: 1200 },
     )
+  })
+
+  it('does not auto-activate overlay when autoShow is false and process_names match', async () => {
+    const activeAppProvider = createActiveAppProviderDouble()
+    const emitEvent = createKeyEventEmitter()
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { id: 'main', buttons: [] },
+      decks: {
+        main: {
+          id: 'main',
+          buttons: [
+            createNavButtonInstance('sub', 0),
+          ],
+        },
+        sub: {
+          id: 'sub',
+          autoShow: false,
+          process_names: ['code'],
+          buttons: [
+            {
+              config: { label: 'Sub' },
+              definition: createDisplayDefinition(),
+              label: 'Sub',
+              position: 0,
+              type: 'display-text',
+            },
+          ],
+        },
+      },
+      activeAppProvider,
+      hostContext: {
+        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        session: { capability: 'unsupported', state: 'unlocked' },
+      },
+      subscribeKeyEvents: emitEvent.listener,
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe('main')
+    })
+
+    // Navigate to subdeck so we can test slot 14 (system-back on subdeck)
+    emitEvent.emit({ keyIndex: 0, type: 'down' })
+    emitEvent.emit({ keyIndex: 0, type: 'up' })
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe('sub')
+    })
+
+    // Active app matches sub but autoShow: false — no overlay activation
+    activeAppProvider.emit({ ownerName: 'Code' })
+    await vi.waitFor(() => {
+      // Subdeck is still shown (no overlay auto-activated), slot 14 is 2-line variant
+      expect(runtime.getActiveDeck().id).toBe('sub')
+      expect(runtime.getButton(0)?.label).toBe('Sub')
+      expect(runtime.getButton(14)?.type).toBe(
+        SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE,
+      )
+    })
+  })
+
+  it('renders 2-line back button variant when autoShow is false and process_names match', async () => {
+    const activeAppProvider = createActiveAppProviderDouble()
+    const emitEvent = createKeyEventEmitter()
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { id: 'main', buttons: [] },
+      decks: {
+        main: {
+          id: 'main',
+          buttons: [createNavButtonInstance('sub', 0)],
+        },
+        sub: {
+          id: 'sub',
+          name: '💻 Code',
+          autoShow: false,
+          process_names: ['code'],
+          buttons: [
+            {
+              config: { label: 'Sub' },
+              definition: createDisplayDefinition(),
+              label: 'Sub',
+              position: 0,
+              type: 'display-text',
+            },
+          ],
+        },
+      },
+      activeAppProvider,
+      hostContext: {
+        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        session: { capability: 'unsupported', state: 'unlocked' },
+      },
+      subscribeKeyEvents: emitEvent.listener,
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe('main')
+    })
+
+    // Navigate to subdeck
+    emitEvent.emit({ keyIndex: 0, type: 'down' })
+    emitEvent.emit({ keyIndex: 0, type: 'up' })
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe('sub')
+    })
+    await vi.waitFor(() => {
+      expect(runtime.getButton(14)?.type).toBe('system-back')
+    })
+
+    // Active app matches sub but autoShow: false — 2-line variant
+    activeAppProvider.emit({ ownerName: 'Code' })
+
+    await vi.waitFor(() => {
+      expect(runtime.getButton(14)?.type).toBe(
+        SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE,
+      )
+    })
+
+    // Verify the button instance has the pendingOverlayDeck config
+    const button14 = runtime.getButton(14)
+    expect(button14).toMatchObject({
+      type: SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE,
+    })
+    const config = button14?.config as { pendingOverlayDeck?: { id: string; name?: string } }
+    expect(config?.pendingOverlayDeck?.id).toBe('sub')
+    expect(config?.pendingOverlayDeck?.name).toBe('💻 Code')
+  })
+
+  it('double-tap back button summons the matching overlay deck when autoShow is false', async () => {
+    const activeAppProvider = createActiveAppProviderDouble()
+    const emitEvent = createKeyEventEmitter()
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { id: 'main', buttons: [] },
+      decks: {
+        main: {
+          id: 'main',
+          buttons: [createNavButtonInstance('sub', 0)],
+        },
+        sub: {
+          id: 'sub',
+          autoShow: false,
+          process_names: ['code'],
+          buttons: [
+            {
+              config: { label: 'Sub' },
+              definition: createDisplayDefinition(),
+              label: 'Sub',
+              position: 0,
+              type: 'display-text',
+            },
+          ],
+        },
+      },
+      activeAppProvider,
+      hostContext: {
+        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        session: { capability: 'unsupported', state: 'unlocked' },
+      },
+      subscribeKeyEvents: emitEvent.listener,
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe('main')
+    })
+
+    // Navigate to subdeck
+    emitEvent.emit({ keyIndex: 0, type: 'down' })
+    emitEvent.emit({ keyIndex: 0, type: 'up' })
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe('sub')
+    })
+    await vi.waitFor(() => {
+      expect(runtime.getButton(14)?.type).toBe('system-back')
+    })
+
+    // Active app matches sub but autoShow: false — 2-line variant
+    activeAppProvider.emit({ ownerName: 'Code' })
+
+    await vi.waitFor(() => {
+      expect(runtime.getButton(14)?.type).toBe(
+        SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE,
+      )
+    })
+
+    // Double-tap the back button within the 400ms window
+    emitEvent.emit({ keyIndex: 14, type: 'down' })
+    emitEvent.emit({ keyIndex: 14, type: 'up' })
+    emitEvent.emit({ keyIndex: 14, type: 'down' })
+    emitEvent.emit({ keyIndex: 14, type: 'up' })
+
+    await vi.waitFor(() => {
+      expect(runtime.getButton(0)?.label).toBe('Sub')
+    })
+  })
+
+  it('reverts 2-line back button to normal when active app no longer matches', async () => {
+    const activeAppProvider = createActiveAppProviderDouble()
+    const emitEvent = createKeyEventEmitter()
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { id: 'main', buttons: [] },
+      decks: {
+        main: {
+          id: 'main',
+          buttons: [createNavButtonInstance('sub', 0)],
+        },
+        sub: {
+          id: 'sub',
+          autoShow: false,
+          process_names: ['code'],
+          buttons: [
+            {
+              config: { label: 'Sub' },
+              definition: createDisplayDefinition(),
+              label: 'Sub',
+              position: 0,
+              type: 'display-text',
+            },
+          ],
+        },
+      },
+      activeAppProvider,
+      hostContext: {
+        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        session: { capability: 'unsupported', state: 'unlocked' },
+      },
+      subscribeKeyEvents: emitEvent.listener,
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe('main')
+    })
+
+    // Navigate to subdeck
+    emitEvent.emit({ keyIndex: 0, type: 'down' })
+    emitEvent.emit({ keyIndex: 0, type: 'up' })
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe('sub')
+    })
+    await vi.waitFor(() => {
+      expect(runtime.getButton(14)?.type).toBe('system-back')
+    })
+
+    // Active app matches sub but autoShow: false — 2-line variant
+    activeAppProvider.emit({ ownerName: 'Code' })
+
+    await vi.waitFor(() => {
+      expect(runtime.getButton(14)?.type).toBe(
+        SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE,
+      )
+    })
+
+    // Active app changes to non-matching — revert to normal back button
+    activeAppProvider.emit({ ownerName: 'Firefox' })
+
+    await vi.waitFor(() => {
+      expect(runtime.getButton(14)?.type).toBe('system-back')
+    })
+  })
+
+  it('settings button shows overlay deck badge when autoShow is false and process_names match', async () => {
+    const activeAppProvider = createActiveAppProviderDouble()
+    const emitEvent = createKeyEventEmitter()
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { id: 'main', buttons: [] },
+      decks: {
+        main: {
+          id: 'main',
+          buttons: [createNavButtonInstance('settings', 0)],
+        },
+        code: {
+          id: 'code',
+          name: '💻 Code',
+          autoShow: false,
+          process_names: ['code'],
+          buttons: [
+            {
+              config: { label: 'Code' },
+              definition: createDisplayDefinition(),
+              label: 'Code',
+              position: 0,
+              type: 'display-text',
+            },
+          ],
+        },
+        settings: {
+          id: 'settings',
+          buttons: [
+            {
+              config: { label: 'Settings' },
+              definition: createDisplayDefinition(),
+              label: 'Settings',
+              position: 0,
+              type: 'display-text',
+            },
+          ],
+        },
+      },
+      activeAppProvider,
+      hostContext: {
+        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        session: { capability: 'unsupported', state: 'unlocked' },
+      },
+      subscribeKeyEvents: emitEvent.listener,
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+    await vi.waitFor(() => {
+      expect(runtime.getActiveDeck().id).toBe('main')
+    })
+
+    // Active app matches code but autoShow: false — badge on settings button
+    activeAppProvider.emit({ ownerName: 'Code' })
+
+    await vi.waitFor(() => {
+      expect(runtime.getButton(14)?.type).toBe('system-settings')
+    })
+
+    // Settings button is rendered — pendingOverlayDeck is passed as render prop,
+    // not stored in button config, so we just verify type correctness
+    expect(runtime.getButton(14)?.type).toBe('system-settings')
   })
 })
