@@ -1,0 +1,22 @@
+packages/cli/src/deck/runtime.ts
+  s_ce8dff3c35bfc4::t_d8e651d12c160f 1026-1030
+  s_ce8dff3c35bfc4::t_5ef6ab2cdcbd25 1046-1047
+packages/cli/src/deck/system-buttons/system-buttons.ts
+  s_ce8dff3c35bfc4::t_0e6d73e2d30fdd 47-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "8efd9bd93f804629195824ea31d6d434124be855",
+  "prompts": {},
+  "sessions": {
+    "s_ce8dff3c35bfc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1441b295dffeUD9xVe36d81tKr",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
