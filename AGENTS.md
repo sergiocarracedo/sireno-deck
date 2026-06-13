@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.6 — UX Speed & Overlay Extensions
-**Phase:** 61 — Icon updates
-**Status:** planning (2026-06-12). 1 plan written. ICON-01 = one-line `chevron-left` → `undo2` swap in SystemBackButton. ACTIVEAPP-08 = rewrite OverlayToggleButton as overlay-state-aware (active deck name as label, `send-to-back` background + deck-icon badge foreground, neutral "Show App" fallback). 4 tasks across 4 files. Pending execution.
+**Phase:** 62 — Overlay autoShow
+**Status:** context captured (2026-06-12). Phase 61 plan 61-01 executed uncommitted (ICON-01 `undo2` swap + ACTIVEAPP-08 dual-icon overlay toggle + 5 unit tests); verification deferred per user. Phase 62 decisions: (1) `autoShow: false` default, two-stage plumbing (user + addons) — breaking change; (2) dbltap summons live-matching deck; (3) bespoke 2-line back button (icon 16, text xs, gap-0.5); (4) `summonOverlay` is a private runtime helper; (5) Phase 62 includes the fix for 5 pre-existing `system-back-injection.test.ts` failures.
 **Last updated:** 2026-06-12
 
 ---
