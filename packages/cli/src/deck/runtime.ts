@@ -29,6 +29,7 @@ import { createDeckController } from './controller'
 import { handleSettingsButtonTap, renderSettingsButton } from './settings-deck'
 import { OverlayToggleButton } from './system-buttons/OverlayToggleButton'
 import { SystemBackButton } from './system-buttons/SystemBackButton'
+import { SystemBackWithPendingOverlayButton } from './system-buttons/SystemBackWithPendingOverlayButton'
 import { SystemSettingsEntryButton } from './system-buttons/SystemSettingsEntryButton'
 
 import type {
@@ -169,6 +170,7 @@ interface RootDomRenderProps {
 const INTERNAL_LOCKED_DECK_ID = '__sireno_locked_session__'
 const SETTINGS_DECK_ID = 'settings'
 const OVERLAY_TOGGLE_TYPE = 'overlay-toggle'
+const SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE = 'system-back-with-pending-overlay'
 
 export function processNamesMatch(
   declared: readonly string[],
@@ -422,6 +424,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   let requestReloadCallback: (() => void) | null = null
   let overlayDeckId: string | null = null
   let lastDismissedOverlayDeckId: string | null = null
+  let activeAppOwnerName: string | null = null
 
   function getLockedSurfaceDeckId(): string {
     return options.lockedDeckId ?? INTERNAL_LOCKED_DECK_ID
@@ -499,14 +502,21 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       },
     } as SirenoConfig
 
+    const pendingOverlayDeckId =
+      activeAppOwnerName !== null
+        ? findSummonableActiveAppDeckFor(activeAppOwnerName)
+        : null
+
     return [
       ...buttons,
       getLastPositionSystemButton(lastPosition, deck, {
+        activeOwnerName: activeAppOwnerName,
         config: systemConfig,
         hostContext,
         internalLockedDeckId: INTERNAL_LOCKED_DECK_ID,
         mainDeckId: options.deck.id,
         overlayDeckId,
+        pendingOverlayDeckId,
         runtimeDecks,
       }),
     ].filter((button): button is ButtonInstance => Boolean(button))
@@ -1032,8 +1042,13 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       }
     }
 
-    if (button.type === 'system-back') {
-      const currentDeck = runtimeDecks[deckId]
+    function resolveSystemBackCommands(
+      targetDeckId: string,
+    ): {
+      holdCommand: string | undefined
+      tapCommand: string | undefined
+    } {
+      const currentDeck = runtimeDecks[targetDeckId]
       const tapCommand =
         currentDeck && 'system_back_tap_command' in currentDeck
           ? currentDeck.system_back_tap_command
@@ -1042,6 +1057,18 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         currentDeck && 'system_back_hold_command' in currentDeck
           ? currentDeck.system_back_hold_command
           : undefined
+      return { holdCommand, tapCommand }
+    }
+
+    function createSystemBackHandlers(
+      targetDeckId: string,
+      targetButton: ButtonInstance,
+      onDblTapOverride?: () => Promise<void> | void,
+    ): Pick<
+      RuntimeButtonInstance,
+      'onDblTap' | 'onHold' | 'onTap'
+    > {
+      const { holdCommand, tapCommand } = resolveSystemBackCommands(targetDeckId)
 
       return {
         onHold: async () => {
@@ -1073,8 +1100,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
                 deckController.navigateTo(SETTINGS_DECK_ID, { push: true })
               } catch (error) {
                 await showRuntimeButtonError(
-                  button,
-                  deckId,
+                  targetButton,
+                  targetDeckId,
                   'navigateToDeck',
                   error,
                 )
@@ -1087,14 +1114,37 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
           deckController.goBack()
           await activateDeckSurface(undefined, previousDeckId)
         },
-        onDblTap: async () => {
-          if (overlayDeckId !== null) {
-            dismissOverlay()
-            return
-          }
-          restoreLastDismissedOverlay()
-        },
+        onDblTap:
+          onDblTapOverride ??
+          (async () => {
+            if (overlayDeckId !== null) {
+              dismissOverlay()
+              return
+            }
+            restoreLastDismissedOverlay()
+          }),
+      }
+    }
+
+    if (button.type === 'system-back') {
+      return {
+        ...createSystemBackHandlers(deckId, button),
         render: () => createElement(SystemBackButton),
+      }
+    }
+
+    if (button.type === SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE) {
+      const pendingOverlayDeck = (button.config as { pendingOverlayDeck: DeckConfig })
+        .pendingOverlayDeck
+      return {
+        ...createSystemBackHandlers(deckId, button, async () => {
+          // Placeholder: Task 9 will wire summonOverlay here.
+          restoreLastDismissedOverlay()
+        }),
+        render: () =>
+          createElement(SystemBackWithPendingOverlayButton, {
+            pendingOverlayDeck,
+          }),
       }
     }
 
@@ -1443,6 +1493,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
   }
 
   function handleActiveAppChange(snapshot: ActiveAppSnapshot): void {
+    activeAppOwnerName = snapshot?.ownerName ?? null
     const newOverlay = snapshot
       ? findActiveAppDeckFor(snapshot.ownerName)
       : null

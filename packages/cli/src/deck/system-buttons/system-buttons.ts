@@ -7,13 +7,17 @@ import {
 
 export const OVERLAY_TOGGLE_TYPE = 'overlay-toggle' as const
 export const SYSTEM_SETTINGS_TYPE = 'system-settings' as const
+export const SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE =
+  'system-back-with-pending-overlay' as const
 
 export interface SystemButtonContext {
+  activeOwnerName: string | null
   config: SirenoConfig
   hostContext: HostContext
   internalLockedDeckId: string
   mainDeckId: string
   overlayDeckId: string | null
+  pendingOverlayDeckId: string | null
   runtimeDecks: Readonly<Record<string, DeckConfig>>
 }
 
@@ -44,6 +48,20 @@ export function getLastPositionSystemButton(
       id: SYSTEM_SETTINGS_TYPE,
       position: lastPosition,
       type: SYSTEM_SETTINGS_TYPE,
+    } as unknown as ButtonInstance
+  }
+
+  if (
+    ctx.pendingOverlayDeckId !== null &&
+    ctx.pendingOverlayDeckId !== ctx.overlayDeckId
+  ) {
+    return {
+      config: {
+        pendingOverlayDeck: ctx.runtimeDecks[ctx.pendingOverlayDeckId],
+      },
+      id: SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE,
+      position: lastPosition,
+      type: SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE,
     } as unknown as ButtonInstance
   }
 
