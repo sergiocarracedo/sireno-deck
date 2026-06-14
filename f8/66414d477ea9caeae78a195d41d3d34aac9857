@@ -1,0 +1,49 @@
+packages/cli/fixtures/phase-17/config.button-shape-composition.yml
+  s_ce8dff3c35bfc4::t_18ef69b0636639 1-24
+packages/cli/src/core/schemas.ts
+  s_ce8dff3c35bfc4::t_1e38f7ca404141 393
+  s_ce8dff3c35bfc4::t_8d6774557f99ea 214
+  s_ce8dff3c35bfc4::t_b4350f96f6c2f7 134
+packages/cli/src/ui/surfaces/__tests__/MainLabelSurface.test.tsx
+  s_ce8dff3c35bfc4::t_ca7368d4c5c639 45
+packages/cli/src/core/schemas.test.ts
+  s_ce8dff3c35bfc4::t_39cf0466160cf9 259
+  s_ce8dff3c35bfc4::t_3d1fdf2e862971 241
+packages/cli/src/builtin-addons/emoji-selector/index.test.ts
+  s_ce8dff3c35bfc4::t_8e742f619f2922 214
+packages/cli/src/ui/surfaces/MainLabelSurface.tsx
+  s_ce8dff3c35bfc4::t_76ed985615d5bd 49
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck.tsx
+  s_ce8dff3c35bfc4::t_65d98f3f771585 84
+  s_ce8dff3c35bfc4::t_ac9c9a72038afc 19-20,28,30-32,35
+packages/cli/src/core/pagination.test.ts
+  s_ce8dff3c35bfc4::t_feab840ff24c0c 63,69
+  s_ce8dff3c35bfc4::t_13ef46ca0e1a39 161,166,169
+packages/cli/tailwind.browser.generated.css
+  s_ce8dff3c35bfc4::t_18ef69b0636639 217-218,223-224,298-300,316-318,614-615
+packages/cli/src/builtin-addons/emoji-selector/buttons/entry.tsx
+  s_ce8dff3c35bfc4::t_bb4d999b84c248 35
+packages/cli/src/deck/system-buttons/SystemSettingsEntryButton.tsx
+  h_f90ee31b03fc41 5,43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f866414d477ea9caeae78a195d41d3d34aac9857",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_ce8dff3c35bfc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1441b295dffeUD9xVe36d81tKr",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
