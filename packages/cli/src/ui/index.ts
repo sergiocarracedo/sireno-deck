@@ -5,4 +5,5 @@ export * from './Text'
 
 export * from './surfaces/BarsSurface'
 export * from './surfaces/IconLabelSurface'
+export * from './surfaces/MainLabelSurface'
 export * from './surfaces/LabelValueListSurface'

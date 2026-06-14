@@ -100,6 +100,16 @@ export function resolveIconSpec(icon: string | undefined): ResolvedIconSpec {
   return { src: icon }
 }
 
+export function iconConfigToProps(
+  source: string,
+  defaults?: { size?: number; tone?: IconTone },
+): IconProps {
+  if (source.startsWith('icon://')) {
+    return { name: source.slice('icon://'.length), ...defaults }
+  }
+  return { src: source, ...defaults }
+}
+
 export function Icon(props: IconProps): ReactElement {
   const themeUi = useThemeUiPresentation()
 

@@ -1,6 +1,6 @@
 import { BarsProps, ChipProps, IconProps, TextProps } from '@/ui'
 import { LabelProps } from '@/ui/Label'
-import { IconLabelSurfaceProps } from '@/ui/surfaces/IconLabelSurface'
+import { MainLabelSurfaceProps } from '@/ui/surfaces/MainLabelSurface'
 import { ReactElement, ReactNode } from 'react'
 import { z } from 'zod'
 
@@ -76,7 +76,7 @@ export type ThemeTextProps = TextProps
 export type ThemeIconProps = IconProps
 export type ThemeLabelProps = LabelProps
 
-export type ThemeIconLabelSurfaceProps = IconLabelSurfaceProps
+export type ThemeIconLabelSurfaceProps = MainLabelSurfaceProps
 export type ThemeBarsSurfaceProps = BarsProps
 
 export interface ThemeUiPresentation {

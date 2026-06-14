@@ -1,11 +1,14 @@
+import { MainLabelSurface } from '@/ui'
 import { definePagedCategoryButton } from '@/core/pagination'
 
-import { createButtonNode, EmojiCategoryButtonSchema } from '../support'
+import { EmojiCategoryButtonSchema } from '../support'
 
 const emojiCategoryButton = definePagedCategoryButton({
   configSchema: EmojiCategoryButtonSchema,
   getTargetDeckId: (config) => config.target_deck,
-  render: ({ config }) => createButtonNode(config.label, config.icon),
+  render: ({ config }) => (
+    <MainLabelSurface label={config.label} main={config.icon} />
+  ),
   type: 'emoji-category-button',
 })
 

@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 import { defineMountedButton } from '@/addon/api'
 import { PAGE_NAV_META } from '@/core/pagination'
-import { Chip, Icon, Text } from '@/ui/index'
+import { Icon, Label, Text } from '@/ui/index'
 import { resolveIconSpec } from '@/ui/Icon'
 
 function renderCenteredButtonContent(label: string, icon?: string) {
@@ -16,48 +16,32 @@ function renderCenteredButtonContent(label: string, icon?: string) {
 }
 
 function renderPageNavContent(
-  targetDeck: string,
-  isMainDeck = false,
-  tapNoop = false,
-  doubleTapNoop = false,
+  isFirstPage: boolean,
+  isLastPage: boolean,
 ) {
-  if (isMainDeck) {
-    return (
-      <div className="flex flex-col items-center justify-center w-full h-full">
-        <Icon name="chevron-right" size={20} />
-      </div>
-    )
-  }
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full relative">
-      {tapNoop ? null : (
-        <Chip
-          tone="muted"
-          className="absolute top-1 left-1 text-[10px] opacity-70"
-        >
-          Tap
-        </Chip>
-      )}
-      <Icon name="chevron-right" size={20} />
-      {doubleTapNoop ? null : (
-        <Chip
-          tone="muted"
-          className="absolute bottom-1 right-1 text-[10px] opacity-70"
-        >
-          Dbl Tap
-        </Chip>
-      )}
+    <div className="flex flex-col items-center justify-center gap-0.5 w-full h-full">
+      <div className="flex flex-col items-center">
+        <Icon name="chevron-right" size={16} />
+        <Text size="xs">{isFirstPage ? '—' : 'Tap'}</Text>
+      </div>
+      <div className="flex flex-col items-center">
+        <Icon name="chevron-right" size={16} />
+        <Text size="xs">{isLastPage ? '—' : 'Dbl Tap'}</Text>
+      </div>
     </div>
   )
 }
 
 const BuiltinChangeDeckButtonSchema = z
   .object({
+    currentPage: z.number().optional(),
     icon: z.string().min(1).optional(),
     label: z.string().min(1),
     meta: z.string().min(1).optional(),
     target_deck: z.string().min(1),
     target_deck_double_tap: z.string().min(1).optional(),
+    totalPages: z.number().optional(),
   })
   .strict()
 
@@ -86,18 +70,13 @@ const builtinChangeDeckButton = defineMountedButton({
       await methods.navigateToDeck(config.target_deck_double_tap)
     }
   },
-  render: ({ config, button }) => {
+  render: ({ config }) => {
     if (config.meta === 'page-nav') {
-      const doubleTapTarget = config.target_deck_double_tap
-      const tapNoop = config.target_deck === doubleTapTarget
-      const doubleTapNoop =
-        doubleTapTarget === undefined || doubleTapTarget === config.target_deck
-      return renderPageNavContent(
-        config.target_deck,
-        button.position === 14,
-        tapNoop,
-        doubleTapNoop,
-      )
+      const currentPage = config.currentPage ?? 1
+      const totalPages = config.totalPages ?? 1
+      const isFirstPage = currentPage === 1
+      const isLastPage = currentPage === totalPages
+      return renderPageNavContent(isFirstPage, isLastPage)
     }
     return renderCenteredButtonContent(config.label, config.icon)
   },

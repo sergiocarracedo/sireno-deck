@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react'
 
 import { ButtonSurface } from '@/addon/api'
-import { IconLabelSurface } from '@/ui'
+import { MainLabelSurface } from '@/ui'
 
 interface SystemBackButtonProps {
   backIconOverride?: string
@@ -11,12 +11,12 @@ export function SystemBackButton(props: SystemBackButtonProps): ReactElement {
   const { backIconOverride } = props
   return (
     <ButtonSurface>
-      <IconLabelSurface
-        icon={{
-          name: backIconOverride ?? 'chevron-left',
+      <MainLabelSurface
+        main={{
+          name: backIconOverride ?? 'undo2',
         }}
         label="Back"
-      ></IconLabelSurface>
+      ></MainLabelSurface>
     </ButtonSurface>
   )
 }

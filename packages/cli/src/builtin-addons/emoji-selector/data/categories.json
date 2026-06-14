@@ -59,7 +59,7 @@
   {
     "id": "people",
     "label": "People",
-    "icon": "addon://emoji-selector/smileys.svg",
+    "icon": "👤",
     "emojis": [
       { "char": "👶", "shortcode": "baby" },
       { "char": "🧒", "shortcode": "child" },
@@ -109,7 +109,7 @@
   {
     "id": "animals",
     "label": "Animals",
-    "icon": "addon://emoji-selector/nature.svg",
+    "icon": "🐾",
     "emojis": [
       { "char": "🐶", "shortcode": "dog" },
       { "char": "🐱", "shortcode": "cat" },
@@ -255,7 +255,7 @@
   {
     "id": "drink",
     "label": "Drink",
-    "icon": "addon://emoji-selector/food.svg",
+    "icon": "🥤",
     "emojis": [
       { "char": "☕", "shortcode": "coffee" },
       { "char": "🍵", "shortcode": "tea" },
@@ -317,7 +317,7 @@
   {
     "id": "travel",
     "label": "Travel",
-    "icon": "addon://emoji-selector/objects.svg",
+    "icon": "✈️",
     "emojis": [
       { "char": "🚗", "shortcode": "car" },
       { "char": "🚕", "shortcode": "taxi" },
@@ -430,7 +430,7 @@
   {
     "id": "flags",
     "label": "Flags",
-    "icon": "addon://emoji-selector/objects.svg",
+    "icon": "🚩",
     "emojis": [
       { "char": "🏁", "shortcode": "checkered_flag" },
       { "char": "🚩", "shortcode": "triangular_flag_on_post" },

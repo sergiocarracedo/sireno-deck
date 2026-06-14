@@ -12,11 +12,13 @@ const DEFAULT_KEY_COUNT = 15
 const PAGE_DECK_SUFFIX_PATTERN = /-p\d+$/
 
 export interface PageNavButtonConfig {
+  currentPage: number
   label: string
   meta: typeof PAGE_NAV_META
   position: number
   target_deck: string
   target_deck_double_tap: string
+  totalPages: number
   type: 'change-deck'
 }
 
@@ -70,11 +72,13 @@ export function buildPageNavButton(
     : (prevDeckId ?? nextDeckId ?? '')
 
   return {
+    currentPage,
     label: 'Page',
     meta: PAGE_NAV_META,
     position: keyCount - 2,
     target_deck: tapTarget,
     target_deck_double_tap: doubleTapTarget,
+    totalPages,
     type: 'change-deck',
   }
 }

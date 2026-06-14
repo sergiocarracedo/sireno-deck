@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url'
 
 import { z } from 'zod'
 
-import { Icon, Label, Text } from '@/ui/index'
+import { Label, Text } from '@/ui/index'
 
 import categoriesData from './data/categories.json' with { type: 'json' }
 
@@ -126,7 +126,6 @@ const EmojiEntryButtonSchema = z
   .object({
     emoji: z.string().min(1),
     label: z.string().min(1),
-    select_command: z.string().min(1),
   })
   .strict()
 
@@ -214,36 +213,8 @@ function getEmojiFallbackLabel(emoji: string): string {
   return codePoints[0] ? `U+${codePoints[0]}` : 'EMOJI'
 }
 
-function renderEmojiText(label: string) {
-  return <Label>{label}</Label>
-}
-
-function createButtonNode(label: string, icon?: string) {
-  return (
-    <div className="flex flex-col items-center justify-center w-full gap-1.5">
-      {icon ? <Icon src={icon} size={30} /> : null}
-      {renderEmojiText(label)}
-    </div>
-  )
-}
-
 export const EMOJI_FONT_STACK =
   "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Twemoji Mozilla', system-ui, sans-serif"
-
-export function renderEmojiGlyph(
-  char: string,
-  options?: { size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '5xl' },
-) {
-  return (
-    <Text
-      className="w-full h-full flex items-center justify-center leading-none"
-      fontStack={EMOJI_FONT_STACK}
-      size={options?.size ?? '2xl'}
-    >
-      {char}
-    </Text>
-  )
-}
 
 export const EMOJI_PAGE_SIZE = 13
 
@@ -301,7 +272,6 @@ export function generatePageLabel(
 export {
   assets,
   CATEGORY_DEFINITIONS,
-  createButtonNode,
   EMOJI_ICON_ASSETS,
   EMOJI_LAUNCHER_GRID,
   EmojiBackButtonSchema,
@@ -310,5 +280,4 @@ export {
   EmojiLauncherButtonSchema,
   EmojiSelectorDeckSchema,
   getEmojiFallbackLabel,
-  renderEmojiText,
 }
