@@ -108,6 +108,16 @@ The emoji injection path (`clipboard.ts:pasteText`) only writes to the clipboard
 - [ ] Chrome deck keystroke tests
 - [ ] All existing v1.5 tests still pass
 
+### Phase 66: DynamicActionsButton helper
+
+**Goal:** Replace the separate `SystemBackWithPendingOverlayButton` and `SystemSettingsEntryButton` badge pattern with a single `DynamicActionsButton` helper that renders primary/secondary surfaces split diagonally, with tap/dbl-tap dispatching to the correct action.
+**Requirements:** `ACTIVEAPP-08` (refined)
+**Depends on:** 62
+**Status:** [ ] Not started
+
+### Plans
+*Not yet planned — run `plan-phase 66`*
+
 ## Coverage Validation
 
 | Requirement | Phase | Status |
@@ -146,6 +156,7 @@ The emoji injection path (`clipboard.ts:pasteText`) only writes to the clipboard
 - **Phase 63 (settings deck revamp) depends on Phase 53/54** (brightness API and settings deck from v1.5).
 - **Phase 64 (chrome deck)** is a config-only extension, independent of all other v1.6 phases.
 - **Phase 65 (verification)** is the cross-cutting regression sweep at the end.
+- **Phase 66 (DynamicActionsButton)** depends on Phase 62's overlay autoShow and replaces the bespoke pending-overlay button variants with a reusable dual-surface helper.
 
 ## Phase Sizing
 
@@ -160,7 +171,8 @@ The emoji injection path (`clipboard.ts:pasteText`) only writes to the clipboard
 | 63 — Settings deck revamp | 1 | 1 | Layout reorder + icon swap |
 | 64 — Chrome overlay deck | 1 | 1 | Config-only, add button actions |
 | 65 — Verification | 1 | 1 | Regression sweep |
-**Total:** 9 phases, ~9-12 plans, ~9-12 sessions.
+| 66 — DynamicActionsButton | 1 | 1 | Dual-surface system button helper |
+**Total:** 10 phases, ~10-13 plans, ~10-13 sessions.
 
 ## Anti-Features Carried Forward (kept out of v1.6)
 
