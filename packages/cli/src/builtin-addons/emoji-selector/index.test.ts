@@ -211,7 +211,7 @@ describe('emoji-selector addon', () => {
 
     expect(html).toContain('<img')
     expect(html).toContain('emoji-grin.svg')
-    expect(html).toContain('GRIN')
+    expect(html).toContain('grinning')
   })
 
   it('keeps shipped deck icons on addon asset references that the shared resolver expands later', () => {

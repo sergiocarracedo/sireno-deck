@@ -60,11 +60,13 @@ function createProps<TConfig>(
 describe('buildPageNavButton', () => {
   it('returns a middle-page config with prev/next targets and position keyCount-2', () => {
     expect(buildPageNavButton(2, 5, 'cat-p1', 'cat-p3')).toEqual({
+      currentPage: 2,
       label: 'Page',
       meta: 'page-nav',
       position: 13,
       target_deck: 'cat-p3',
       target_deck_double_tap: 'cat-p1',
+      totalPages: 5,
       type: 'change-deck',
     })
   })
@@ -156,15 +158,14 @@ describe('paginateDecks', () => {
 })
 
 describe('change-deck page-nav render', () => {
-  it('emits the actual Chip element with the page-nav meta (not raw Tailwind divs)', () => {
+  it('emits the page counter and Tap/Dbl Tap labels (no Chip)', () => {
     const config = buildPageNavButton(2, 5, 'cat-p1', 'cat-p3')
     const methods = createMethodsDouble()
     const props = createProps(builtinChangeDeckButton, config, 13, methods)
     const html = renderReactNodeToHtml(builtinChangeDeckButton.render(props) as never)
-    expect(html).toContain('data-sireno-ui-chip="true"')
+    expect(html).not.toContain('data-sireno-ui-chip')
     expect(html).toContain('Tap')
     expect(html).toContain('Dbl Tap')
-    const chipMatches = html.match(/data-sireno-ui-chip="true"/g) ?? []
-    expect(chipMatches.length).toBe(2)
+    expect(html).toContain('2/5')
   })
 })

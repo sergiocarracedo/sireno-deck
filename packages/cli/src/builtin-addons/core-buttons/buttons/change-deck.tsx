@@ -16,6 +16,8 @@ function renderCenteredButtonContent(label: string, icon?: string) {
 }
 
 function renderPageNavContent(
+  currentPage: number,
+  totalPages: number,
   isFirstPage: boolean,
   isLastPage: boolean,
 ) {
@@ -23,11 +25,14 @@ function renderPageNavContent(
     <div className="flex flex-col items-center justify-center gap-0.5 w-full h-full">
       <div className="flex flex-col items-center">
         <Icon name="chevron-right" size={16} />
-        <Text size="xs">{isFirstPage ? '—' : 'Tap'}</Text>
+        <Text size="xs">{isLastPage ? '—' : 'Tap'}</Text>
       </div>
+      <Text size="xs" tone="muted">
+        {currentPage}/{totalPages}
+      </Text>
       <div className="flex flex-col items-center">
         <Icon name="chevron-right" size={16} />
-        <Text size="xs">{isLastPage ? '—' : 'Dbl Tap'}</Text>
+        <Text size="xs">{isFirstPage ? '—' : 'Dbl Tap'}</Text>
       </div>
     </div>
   )
@@ -76,7 +81,7 @@ const builtinChangeDeckButton = defineMountedButton({
       const totalPages = config.totalPages ?? 1
       const isFirstPage = currentPage === 1
       const isLastPage = currentPage === totalPages
-      return renderPageNavContent(isFirstPage, isLastPage)
+      return renderPageNavContent(currentPage, totalPages, isFirstPage, isLastPage)
     }
     return renderCenteredButtonContent(config.label, config.icon)
   },

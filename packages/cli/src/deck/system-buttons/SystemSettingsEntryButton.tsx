@@ -1,8 +1,8 @@
 import type { ReactElement } from 'react'
 
 import { ButtonSurface } from '@/addon/api'
-import { Icon, Text } from '@/ui/index'
 import type { DeckConfig } from '@/core/schemas'
+import { Icon, Label } from '@/ui/index'
 
 const EMOJI_FIRST_CHAR_REGEX = /^\p{Extended_Pictographic}/u
 
@@ -40,7 +40,7 @@ export function SystemSettingsEntryButton({
             </span>
           )}
         </div>
-        <Text size="xs">Settings</Text>
+        <Label>Settings</Label>
       </div>
     </ButtonSurface>
   )

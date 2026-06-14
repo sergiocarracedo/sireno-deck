@@ -1,0 +1,24 @@
+theme: dark
+main_deck: main
+decks:
+  main:
+    id: main
+    buttons:
+      - position: 0
+        type: action
+        label: Legacy Wrapper Compatibility
+      - position: 1
+        type: action
+        label: Explicit Full Surface
+        full_surface: true
+      - position: 2
+        type: change-deck
+        label: Contrast
+        target_deck: contrast
+  contrast:
+    id: contrast
+    buttons:
+      - position: 0
+        type: action
+        label: Plain Default Button
+addons: []

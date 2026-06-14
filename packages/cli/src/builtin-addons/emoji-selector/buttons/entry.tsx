@@ -32,7 +32,7 @@ const emojiEntryButton = defineMountedButton({
     const emojiAsset = EMOJI_ICON_ASSETS[config.emoji]
     return (
       <MainLabelSurface
-        label={getEmojiFallbackLabel(config.emoji)}
+        label={getEmojiShortcode(config.emoji) ?? getEmojiFallbackLabel(config.emoji)}
         main={emojiAsset ?? config.emoji}
       />
     )

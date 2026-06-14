@@ -42,7 +42,7 @@ describe('MainLabelSurface', () => {
     )
     expect(html).toContain('😀')
     expect(html).toContain('Grin')
-    expect(html).toContain('text-2xl')
+    expect(html).toContain('text-xl')
   })
 
   it('renders a multi-codepoint emoji (e.g. airplane + variation selector) as a text glyph', () => {

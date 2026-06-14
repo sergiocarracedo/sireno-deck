@@ -131,7 +131,7 @@ const RawButtonEnvelopeSchema = z
 const RawDeckSchema = z
   .object({
     allow_reserved_slot_override: z.boolean().optional(),
-    autoShow: z.boolean().optional(),
+    autoShow: z.boolean().default(false),
     buttons: z.array(RawButtonEnvelopeSchema).optional(),
     id: z.string().min(1),
     keyCount: z.number().int().min(1).optional(),
@@ -211,7 +211,7 @@ const CoreButtonConfigSchema = z
 
 const CoreDeckConfigSchema = z
   .object({
-    autoShow: z.boolean().optional(),
+    autoShow: z.boolean().default(false),
     background: z.string().min(1).optional(),
     system: z.boolean().optional(),
   })
@@ -390,6 +390,7 @@ function getDeckPayload(
   return Object.fromEntries(
     Object.entries(deck).filter(
       ([key]) =>
+        key !== 'autoShow' &&
         key !== 'background' &&
         key !== 'buttons' &&
         key !== 'id' &&

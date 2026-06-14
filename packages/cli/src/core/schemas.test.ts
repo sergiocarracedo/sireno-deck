@@ -238,7 +238,7 @@ describe('autoShow schema (62-01)', () => {
     expect(result.decks?.manual_deck?.autoShow).toBe(false)
   })
 
-  it('accepts a deck without autoShow (defaults to undefined, handled at runtime)', () => {
+  it('accepts a deck without autoShow (defaults to false)', () => {
     const registry = createBundledAddonRegistry()
     const config = {
       ...makeDeck(0),
@@ -256,6 +256,6 @@ describe('autoShow schema (62-01)', () => {
       },
     }
     const result = validateConfig(config, registry)
-    expect(result.decks?.plain_deck?.autoShow).toBeUndefined()
+    expect(result.decks?.plain_deck?.autoShow).toBe(false)
   })
 })

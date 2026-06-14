@@ -46,7 +46,7 @@ export function MainLabelSurface(props: MainLabelSurfaceProps): ReactElement {
   return (
     <div className="flex flex-col items-center justify-center gap-1">
       {isString && !isIconSource(main)
-        ? <span className="text-2xl leading-none">{main}</span>
+        ? <span className="text-xl leading-none">{main}</span>
         : <Icon {...iconProps} />}
       <Label>{props.label}</Label>
     </div>
