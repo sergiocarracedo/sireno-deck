@@ -9,9 +9,9 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 59 — Emoji keystroke injection + category fix
-Status: CONTEXT captured (commit 56529dc). Decisions: (1) extend `methods.pasteText` in place, (2) opt-out via `paste.keystroke: false`, (3) throw on keyMacroProvider error, (4) EMO-17 = confirm only, (5) all current callers get new behavior, (6) mock keyMacroProvider in unit tests.
-Last activity: 2026-06-11 — Phase 58 complete + Phase 59 discuss-phase complete. 14 commits for Phase 58.
+Phase: 66 — SplitActionSurface
+Status: CONTEXT captured (2026-06-14). Decisions: (1) new `SplitActionSurface` in `src/ui/surfaces/` (not a system-button helper), (2) props-based API with `primary` + optional `secondary`, (3) mode 1 dbl-tap is no-op, (4) `/`-style diagonal at 25% centered, (5) CSS `transform` scaling, (6) replaces SystemBackButton, SystemBackWithPendingOverlayButton, SystemSettingsEntryButton badge, (7) name is `SplitActionSurface` (not DynamicActionsButton).
+Last activity: 2026-06-14 — Phase 66 discuss-phase complete.
 
 ### Quick Tasks Completed
 
@@ -174,7 +174,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
-- Phase 66 added: DynamicActionsButton helper — replace SystemBackWithPendingOverlayButton and badge pattern with a reusable dual-surface button
+- Phase 66 added: SplitActionSurface — replace SystemBackButton, SystemBackWithPendingOverlayButton, and SystemSettingsEntryButton badge pattern with a reusable dual-action surface component
 - Phase 49 added: emoji-selector UX revamp as a v1.4 late addition — rewrite based on real-world feedback (real emoji glyphs not U+1Fxxx placeholders, bigger key art, HID keyboard-stroke output for tap=emoji / double-tap=shortcode, proper subcategory split using the piliapp.com catalog, n-2 page-nav button with Tap/Dbl-Tap chip hints, addon-provided entry button that renders a 2×3 grid of six emojis as a first-class button type).
 - Phase 39 added: let external themes override the `Surface` component used by the built-in media-player addon so they can render the button surface however they want.
 - Phase 48 added: document the build and install flow for the v1.4 standalone binary — README updates for end-user install of the prebuilt binary, plus developer quickstart for building from source.

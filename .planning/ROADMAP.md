@@ -108,12 +108,12 @@ The emoji injection path (`clipboard.ts:pasteText`) only writes to the clipboard
 - [ ] Chrome deck keystroke tests
 - [ ] All existing v1.5 tests still pass
 
-### Phase 66: DynamicActionsButton helper
+### Phase 66: SplitActionSurface
 
-**Goal:** Replace the separate `SystemBackWithPendingOverlayButton` and `SystemSettingsEntryButton` badge pattern with a single `DynamicActionsButton` helper that renders primary/secondary surfaces split diagonally, with tap/dbl-tap dispatching to the correct action.
+**Goal:** Replace `SystemBackButton`, `SystemBackWithPendingOverlayButton`, and the `SystemSettingsEntryButton` badge pattern with a single `SplitActionSurface` component that renders primary/secondary sub-surfaces in a diagonal `/` split, with tap/dbl-tap dispatching to the correct action.
 **Requirements:** `ACTIVEAPP-08` (refined)
 **Depends on:** 62
-**Status:** [ ] Not started
+**Status:** Context captured (2026-06-14)
 
 ### Plans
 *Not yet planned — run `plan-phase 66`*
