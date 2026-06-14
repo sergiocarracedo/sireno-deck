@@ -139,7 +139,7 @@ const EmojiBackButtonSchema = z
 const EmojiSelectorDeckSchema = z
   .object({
     favorites: z.array(z.string().min(1)).default([]),
-    select_command: z.string().min(1),
+    select_command: z.string().min(1).optional(),
     system_back_hold_command: z
       .string()
       .min(1)

@@ -95,7 +95,6 @@ const emojiSelectorDeck = {
             emoji,
             label: category.label,
             position: offset,
-            select_command: config.select_command,
             type: 'emoji-emoji-button',
           })
         })

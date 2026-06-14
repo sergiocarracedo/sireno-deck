@@ -71,7 +71,6 @@ decks:
       - 😀
       - 🔥
       - 🍕
-    select_command: "printf '%s' '{{emoji}}'"
     buttons:
       - position: 0
         type: change-deck
