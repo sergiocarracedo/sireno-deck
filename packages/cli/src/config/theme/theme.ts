@@ -701,6 +701,7 @@ export async function resolveTheme(
 
   return {
     ...manifest.colorTokens,
+    foregroundContrast: manifest.colorTokens['foreground-contrast'],
     colorTokens: Object.fromEntries(
       colorTokens.map((token) => [
         token,

@@ -252,6 +252,7 @@ export type AddonButtonDefinition<
 > = MountedAddonButtonDefinition<TConfig, TPayload>
 
 const ADDON_BUTTON_OWNER_NAME = Symbol('sireno.addon.buttonOwnerName')
+const ADDON_BUTTON_IS_SYSTEM = Symbol('sireno.addon.buttonIsSystem')
 
 export function getAddonButtonOwnerName(
   definition: AddonButtonDefinition,
@@ -268,6 +269,27 @@ export function setAddonButtonOwnerName<
     configurable: true,
     enumerable: false,
     value: addonName,
+    writable: false,
+  })
+
+  return definition
+}
+
+export function isAddonButtonSystem(
+  definition: AddonButtonDefinition,
+): boolean {
+  return Boolean(
+    (definition as AddonButtonDefinition & { [ADDON_BUTTON_IS_SYSTEM]?: boolean })[ADDON_BUTTON_IS_SYSTEM],
+  )
+}
+
+export function setAddonButtonIsSystem<
+  TDefinition extends AddonButtonDefinition,
+>(definition: TDefinition): TDefinition {
+  Object.defineProperty(definition, ADDON_BUTTON_IS_SYSTEM, {
+    configurable: true,
+    enumerable: false,
+    value: true,
     writable: false,
   })
 
@@ -353,4 +375,11 @@ export interface SirenoAddon {
   buttons: readonly AddonButtonDefinition[]
   decks?: readonly AddonDeckDefinition[]
   name: string
+  /**
+   * Marks every button/deck in this addon as reserved for the runtime.
+   * System addons are registered in the addon registry like any other,
+   * but their button types are rejected by config validation so user
+   * configs cannot claim them.
+   */
+  system?: boolean
 }

@@ -259,3 +259,27 @@ describe('autoShow schema (62-01)', () => {
     expect(result.decks?.plain_deck?.autoShow).toBe(false)
   })
 })
+
+describe('system buttons (66-01)', () => {
+  it('rejects a user-declared internal-settings button in a user deck', () => {
+    const registry = createBundledAddonRegistry()
+    const config = {
+      ...makeDeck(0),
+      decks: {
+        main: {
+          buttons: [
+            {
+              position: 0,
+              type: '__sireno_internal_settings_brightness_up',
+            },
+          ],
+          id: 'main',
+          keyCount: KEY_COUNT,
+        },
+      },
+    }
+    expect(() => validateConfig(config, registry)).toThrow(
+      /reserved for the runtime/i,
+    )
+  })
+})

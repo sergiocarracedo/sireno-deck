@@ -1,0 +1,41 @@
+# Phase 17 Research — Custom Wrapper Primitives + Addon-Authored Rendering Variants
+
+**Date:** 2026-05-20
+**Requirement:** Post-roadmap scope for Phase 17
+
+## Don't Hand-Roll
+
+- [VERIFIED: codebase] Do not invent a second render tree or a CSS-like styling DSL for button composition. `packages/cli/src/render/types.ts`, `packages/cli/src/render/reconciler.ts`, and `packages/cli/src/deck/runtime.ts` already move a narrow explicit `deck-button` description through the runtime, so Phase 17 should split that contract into shape-vs-content concerns without replacing the transport model.
+- [VERIFIED: codebase] Do not throw away the existing shared/default renderer and rewrite every variant. `packages/cli/src/render/text-image.ts` already contains one implicit base card seam that covers the default path, while `toggle`, `metric`, `fan`, `media`, `emoji`, `analog-clock`, `calendar-sheet`, and `error` are still bespoke branches. The lowest-risk path is to extract the shared/default chrome into an explicit base shape and leave bespoke branches alone for now.
+- [CITED: /reactjs/react.dev] Do not build the first composition API around deep `Children` manipulation or `cloneElement` tricks. The React docs still treat `children` as opaque and position `Children` utilities as legacy/fragile compared with straightforward composition and explicit props. Phase 17 should prefer an explicit shape/content slot contract over renderer magic that inspects arbitrary child structure.
+- [VERIFIED: codebase] Do not pretend `wrapper_id` never shipped. `packages/cli/src/core/schemas.ts`, `packages/cli/src/config/loader.test.ts`, `packages/cli/src/deck/runtime.ts`, and `packages/cli/src/render/reconciler.test.tsx` already expose `wrapper_id` as a validated public contract. Phase 17 planning must account for migration or compatibility explicitly instead of silently breaking config.
+
+## Common Pitfalls
+
+- [VERIFIED: codebase] Renaming everything to `buttonShape` at once can create false scope. The current registry only knows one wrapper kind, `shared`, and every valid wrapper id still collapses to the same shared-card behavior. That means Phase 17 can safely treat existing wrapper refs as compatibility aliases for the default base shape, but it should not widen the first rollout into a public shape catalog just because the terminology changes.
+- [VERIFIED: codebase] Letting addons return arbitrary nested render trees inside a shape wrapper would make the seam harder to validate and easier to drift. The current renderer expects one flattened button description, and the user explicitly chose a strict boundary where the shape owns chrome and the addon owns content only.
+- [VERIFIED: codebase] Putting the full-surface escape hatch behind missing config or an omitted shape id would blur the default contract. Phase 17 context explicitly says missing shape config still means “use the default base shape,” so the escape hatch must be one narrow explicit flag.
+- [VERIFIED: codebase] Migrating toggle and other bespoke variants onto the new model during the first rollout would turn a narrow contract improvement into a renderer rewrite. The current variant branches in `packages/cli/src/render/text-image.ts` are product-visible and already verified; Phase 17 should prove the new model on the shared/default text-oriented path first.
+- [VERIFIED: codebase] Hiding content helpers inside renderer heuristics would repeat the same implicitness this phase is trying to remove. The built-in `action` and `change-deck` buttons already just emit `icon`/`label` props, so explicit imported helpers are the cleanest proof path.
+- [VERIFIED: codebase] Preserving `wrapper_id` only in schema/runtime tests is not enough. `packages/cli/src/cli/commands/start.ts` still owns the real CLI/device rendering path into `renderTextImage()`, so Phase 17 must verify compatibility there too or it risks keeping validation while breaking the shipped surface.
+
+## Existing Patterns in This Codebase
+
+- [VERIFIED: codebase] `packages/cli/src/addon/api.ts` is the public addon contract seam and already defines the registry-backed primitive model. Any new shape/content helper exports or explicit full-surface opt-out contract should land there first so bundled and external addons stay aligned.
+- [VERIFIED: codebase] `packages/cli/src/core/schemas.ts` already preserves early, path-aware validation for config-authored core envelope fields. If Phase 17 adds a config-authored opt-out flag, this is the right place to validate it.
+- [VERIFIED: codebase] `packages/cli/src/render/reconciler.ts` is intentionally a narrow prop transport. It already preserves JSX/helper parity tests, so it is the correct place to carry any new shape/content metadata without introducing renderer-side guesswork.
+- [VERIFIED: codebase] `packages/cli/src/deck/runtime.ts` is the last safe addon-authored validation seam before image generation. That is where addon-authored shape/full-surface contracts should still fail before device writes if they become invalid.
+- [VERIFIED: codebase] `packages/cli/src/cli/commands/start.ts` is still the integration seam that translates runtime button descriptions into `renderTextImage()` inputs for the real device path. Any first-rollout `wrapper_id` compatibility or base-shape/full-surface visual split must stay honest there.
+- [VERIFIED: codebase] `packages/cli/src/builtin-addons/core-buttons/buttons/action.ts` and `change-deck.ts` are the cleanest first migration targets because they currently render ordinary `deck-button` output with `icon` and `label` only.
+- [VERIFIED: codebase] The repo already prefers compatibility-preserving narrowing over broad rewrites: Phase 12 kept bespoke render variants outside the first fitting pass, and Phase 13 added primitive transport without replacing the whole renderer contract.
+
+## Recommended Approach
+
+- [HIGH][VERIFIED: codebase] Reframe the public model around one default core-owned base shape plus an explicit full-surface opt-out flag. Keep missing shape config equivalent to “use the default base shape,” and do not introduce public `shape_id` indirection in the first rollout.
+- [HIGH][VERIFIED: codebase] Preserve shipped `wrapper_id` behavior as compatibility for the first rollout. Since all registered wrappers currently reduce to the shared/default path, Phase 17 can map valid wrapper refs onto the default base-shape contract instead of requiring immediate config migration.
+- [HIGH][VERIFIED: codebase][CITED: /reactjs/react.dev] Keep the composition boundary explicit: the shape renders chrome and exposes one content slot, while addons render content through explicit helpers such as `icon + label` and `text`. Avoid APIs that depend on inspecting or rewriting arbitrary child structure.
+- [HIGH][VERIFIED: codebase] Extract the shared/default card chrome in `packages/cli/src/render/text-image.ts` into an explicit base-shape implementation, then migrate the low-risk built-in text-oriented buttons first. Leave bespoke branches and full-surface custom buttons on their current seams until later phases justify moving them.
+- [HIGH][VERIFIED: codebase] Make the first rollout prove two real product-path behaviors: legacy `wrapper_id` still renders through the default base-shape path on the CLI/device seam, and the new full-surface opt-out can visibly bypass that chrome when requested.
+- [MEDIUM][VERIFIED: codebase] Thread the new contract through the existing narrow render transport instead of inventing a new scene model. The reconciler/runtime layer should carry just enough metadata to distinguish default base-shape content renders from explicit full-surface renders.
+- [MEDIUM][VERIFIED: codebase] Treat tap/hold interaction styling as a narrow first-rollout responsibility of the base shape. If the existing render path cannot surface those states yet, Phase 17 execution should pin that limitation and defer richer interaction-state rendering explicitly instead of hand-waving it.
+- [MEDIUM][VERIFIED: codebase] Prove the phase with focused reconciler/runtime/renderer tests plus a committed review path showing both behaviors: a default base-shaped button using explicit content helpers and a full-surface opt-out path that still reaches bespoke/custom visuals honestly.

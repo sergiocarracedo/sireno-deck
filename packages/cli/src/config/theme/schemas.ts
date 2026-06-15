@@ -1,6 +1,8 @@
 import { BarsProps, ChipProps, IconProps, TextProps } from '@/ui'
 import { LabelProps } from '@/ui/Label'
 import { MainLabelSurfaceProps } from '@/ui/surfaces/MainLabelSurface'
+import { SplitActionSurfaceProps } from '@/ui/surfaces/SplitActionSurface'
+import { TapIndicatorProps } from '@/ui/TapIndicator'
 import { ReactElement, ReactNode } from 'react'
 import { z } from 'zod'
 
@@ -78,15 +80,19 @@ export type ThemeLabelProps = LabelProps
 
 export type ThemeIconLabelSurfaceProps = MainLabelSurfaceProps
 export type ThemeBarsSurfaceProps = BarsProps
+export type ThemeSplitActionSurfaceProps = SplitActionSurfaceProps
+export type ThemeTapIndicatorProps = TapIndicatorProps
 
 export interface ThemeUiPresentation {
   chip?: (props: ThemeChipProps) => ReactElement
   icon?: (props: ThemeIconProps) => ReactElement
   text?: (props: ThemeTextProps) => ReactElement
   label?: (props: ThemeLabelProps) => ReactElement
+  tapIndicator?: (props: ThemeTapIndicatorProps) => ReactElement
   surfaces?: {
     iconLabel?: (props: ThemeIconLabelSurfaceProps) => ReactElement
     bars?: (props: ThemeBarsSurfaceProps) => ReactElement
+    splitAction?: (props: ThemeSplitActionSurfaceProps) => ReactElement
   }
 }
 
@@ -98,6 +104,8 @@ export interface Theme extends Omit<ThemeSchemaOutput, 'typography'> {
   buttonFrame: ThemeButtonFrame
   danger: string
   filePaths: string[]
+  foreground: string
+  foregroundContrast: string
   frame: string
   primary: string
   rootDir: string

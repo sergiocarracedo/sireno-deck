@@ -1,14 +1,12 @@
 import { ButtonInstance, DeckConfig, SirenoConfig } from '@/core/schemas'
 import type { HostContext } from '@/system/host-context'
-import {
-  getSystemBackButtonInstance,
-  shouldInjectSystemBack,
-} from '../system-back-injection'
+import { shouldInjectSystemBack } from '../system-back-injection'
 
 export const OVERLAY_TOGGLE_TYPE = 'overlay-toggle' as const
 export const SYSTEM_SETTINGS_TYPE = 'system-settings' as const
 export const SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE =
   'system-back-with-pending-overlay' as const
+export const SPLIT_ACTION_TYPE = 'split-action' as const
 
 export interface SystemButtonContext {
   activeOwnerName: string | null
@@ -42,40 +40,28 @@ export function getLastPositionSystemButton(
     } as unknown as ButtonInstance
   }
 
-  if (deck.id === ctx.mainDeckId && 'settings' in ctx.runtimeDecks) {
-    return {
-      config: {
-        pendingOverlayDeckId: ctx.pendingOverlayDeckId,
-        pendingOverlayDeck:
-          ctx.pendingOverlayDeckId !== null
-            ? ctx.runtimeDecks[ctx.pendingOverlayDeckId]
-            : undefined,
-      },
-      id: SYSTEM_SETTINGS_TYPE,
-      position: lastPosition,
-      type: SYSTEM_SETTINGS_TYPE,
-    } as unknown as ButtonInstance
+  const isSettingsContext =
+    deck.id === ctx.mainDeckId && 'settings' in ctx.runtimeDecks
+
+  if (!isSettingsContext) {
+    if (
+      !shouldInjectSystemBack(deck, ctx.config, ctx.hostContext.session.state)
+    ) {
+      return null
+    }
   }
 
-  if (
-    ctx.pendingOverlayDeckId !== null &&
-    ctx.pendingOverlayDeckId !== ctx.overlayDeckId
-  ) {
-    return {
-      config: {
-        pendingOverlayDeck: ctx.runtimeDecks[ctx.pendingOverlayDeckId],
-      },
-      id: SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE,
-      position: lastPosition,
-      type: SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE,
-    } as unknown as ButtonInstance
-  }
-
-  return shouldInjectSystemBack(
-    deck,
-    ctx.config,
-    ctx.hostContext.session.state,
-  )
-    ? getSystemBackButtonInstance(deck, lastPosition)
-    : null
+  return {
+    config: {
+      pendingOverlayDeck:
+        ctx.pendingOverlayDeckId !== null &&
+        ctx.pendingOverlayDeckId !== ctx.overlayDeckId
+          ? ctx.runtimeDecks[ctx.pendingOverlayDeckId]
+          : undefined,
+      role: isSettingsContext ? 'settings' : 'back',
+    },
+    id: SPLIT_ACTION_TYPE,
+    position: lastPosition,
+    type: SPLIT_ACTION_TYPE,
+  } as unknown as ButtonInstance
 }

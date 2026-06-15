@@ -19,7 +19,7 @@ import { renderReactNodeToHtml } from '@/render/dom-host'
 import { Text } from '@/ui/index'
 import type { ActiveAppProvider, ActiveAppSnapshot } from '@/system/active-app'
 import { createDeckRuntime, processNamesMatch } from '../runtime'
-import { SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE } from '../system-buttons/system-buttons'
+import { SPLIT_ACTION_TYPE } from '../system-buttons/system-buttons'
 
 import type { AddonRegistry } from '@/addon/registry'
 import type { StreamDeckKeyEvent } from '@/device/stream-deck'
@@ -1776,7 +1776,7 @@ describe('createDeckRuntime', () => {
     })
   })
 
-  it('renders the system-back button on the lock deck when the session is unlocked (LOCK-02)', async () => {
+  it('renders the split-action button on the lock deck when the session is unlocked (LOCK-02)', async () => {
     let emitEvent: ((event: StreamDeckKeyEvent) => void) | undefined
     const sessionMonitor = createSessionMonitorDouble({
       capability: 'supported',
@@ -1856,14 +1856,10 @@ describe('createDeckRuntime', () => {
       expect(runtime.getActiveDeck().id).toBe('locked')
       const reservedButton = runtime.getButton(14)
       expect(reservedButton).toMatchObject({
-        id: 'system-back',
+        id: SPLIT_ACTION_TYPE,
         position: 14,
-        type: 'system-back',
+        type: SPLIT_ACTION_TYPE,
       })
-      const renderedButton = getRenderedButton(runtime, 14)
-      expect(getRenderedButtonHtml(renderedButton)).toContain(
-        'data-sireno-system-back="true"',
-      )
     })
   })
 
@@ -2242,6 +2238,7 @@ describe('createDeckRuntime', () => {
         '9',
       )
     })
+    vi.useRealTimers()
   })
 
   it('keeps locked-mode navigation isolated from the saved pre-lock stack', async () => {
@@ -3880,7 +3877,7 @@ describe('createDeckRuntime', () => {
     })
   })
 
-  it('injects a system-back button at the reserved slot on a deck that has no button there', () => {
+  it('injects a split-action button at the reserved slot on a deck that has no button there', () => {
     const sessionMonitor = createSessionMonitorDouble({
       capability: 'supported',
       state: 'unlocked',
@@ -3901,13 +3898,13 @@ describe('createDeckRuntime', () => {
 
     const reservedButton = runtime.getButton(14)
     expect(reservedButton).toMatchObject({
-      id: 'system-back',
+      id: SPLIT_ACTION_TYPE,
       position: 14,
-      type: 'system-back',
+      type: SPLIT_ACTION_TYPE,
     })
   })
 
-  it('does not inject a system-back button on the locked deck', () => {
+  it('does not inject a split-action button on the locked deck', () => {
     const sessionMonitor = createSessionMonitorDouble({
       capability: 'supported',
       state: 'unlocked',
@@ -3931,7 +3928,7 @@ describe('createDeckRuntime', () => {
     expect(reservedButton).toBeUndefined()
   })
 
-  it('does not inject a system-back button on the implicit locked deck', async () => {
+  it('does not inject a split-action button on the implicit locked deck', async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date(2026, 5, 6, 12, 0, 0))
 
@@ -3960,9 +3957,10 @@ describe('createDeckRuntime', () => {
       const reservedButton = runtime.getButton(14)
       expect(reservedButton).toBeUndefined()
     })
+    vi.useRealTimers()
   })
 
-  it('routes the system-back tap through system_back_tap_command when set on the active deck', async () => {
+  it('routes the split-action tap through system_back_tap_command on a sub-deck', async () => {
     const executeAction = vi.fn(async () => ({
       code: 0,
       failed: false,
@@ -3980,10 +3978,14 @@ describe('createDeckRuntime', () => {
     > = []
     const runtime = createDeckRuntime({
       addonRegistry: createEmptyAddonRegistry(),
-      deck: {
-        buttons: [],
-        id: 'main',
-        system_back_tap_command: 'sireno-navigate --back',
+      deck: { buttons: [], id: 'main' },
+      decks: {
+        main: { buttons: [], id: 'main' },
+        sub: {
+          buttons: [],
+          id: 'sub',
+          system_back_tap_command: 'sireno-navigate --back',
+        },
       },
       executeAction,
       hostContext: {
@@ -3999,11 +4001,15 @@ describe('createDeckRuntime', () => {
     })
 
     runtime.start()
-    const reservedButton = runtime.getButton(14)
-    expect(reservedButton).toMatchObject({
-      id: 'system-back',
-      position: 14,
-      type: 'system-back',
+    await runtime.restoreStack(['sub'])
+
+    await vi.waitFor(() => {
+      const subButton = runtime.getButton(14)
+      expect(subButton).toMatchObject({
+        id: SPLIT_ACTION_TYPE,
+        position: 14,
+        type: SPLIT_ACTION_TYPE,
+      })
     })
     for (const listener of listeners) {
       listener({ keyIndex: 14, type: 'down' })
@@ -4014,7 +4020,7 @@ describe('createDeckRuntime', () => {
     })
   })
 
-  it('routes the system-back press through system_back_hold_command when set on the active deck', async () => {
+  it('routes the split-action press through system_back_hold_command when set on the active deck', async () => {
     const executeAction = vi.fn(async () => ({
       code: 0,
       failed: false,
@@ -4032,10 +4038,14 @@ describe('createDeckRuntime', () => {
     > = []
     const runtime = createDeckRuntime({
       addonRegistry: createEmptyAddonRegistry(),
-      deck: {
-        buttons: [],
-        id: 'main',
-        system_back_hold_command: 'sireno-navigate --home',
+      deck: { buttons: [], id: 'main' },
+      decks: {
+        main: { buttons: [], id: 'main' },
+        sub: {
+          buttons: [],
+          id: 'sub',
+          system_back_hold_command: 'sireno-navigate --home',
+        },
       },
       executeAction,
       hostContext: {
@@ -4051,6 +4061,16 @@ describe('createDeckRuntime', () => {
     })
 
     runtime.start()
+    await runtime.restoreStack(['sub'])
+
+    await vi.waitFor(() => {
+      const subButton = runtime.getButton(14)
+      expect(subButton).toMatchObject({
+        id: SPLIT_ACTION_TYPE,
+        position: 14,
+        type: SPLIT_ACTION_TYPE,
+      })
+    })
     for (const listener of listeners) {
       listener({ keyIndex: 14, type: 'down' })
     }
@@ -4803,12 +4823,13 @@ describe('overlay lifecycle', () => {
     // Active app matches sub but autoShow: false — no overlay activation
     activeAppProvider.emit({ ownerName: 'Code' })
     await vi.waitFor(() => {
-      // Subdeck is still shown (no overlay auto-activated), slot 14 is 2-line variant
+      // Subdeck is still shown (no overlay auto-activated), slot 14 is split-action variant
       expect(runtime.getActiveDeck().id).toBe('sub')
       expect(runtime.getButton(0)?.label).toBe('Sub')
-      expect(runtime.getButton(14)?.type).toBe(
-        SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE,
-      )
+      expect(runtime.getButton(14)?.type).toBe(SPLIT_ACTION_TYPE)
+      const config14 = runtime.getButton(14)?.config as { role?: string; pendingOverlayDeck?: unknown }
+      expect(config14?.role).toBe('back')
+      expect(config14?.pendingOverlayDeck).toBeDefined()
     })
   })
 
@@ -4860,24 +4881,26 @@ describe('overlay lifecycle', () => {
       expect(runtime.getActiveDeck().id).toBe('sub')
     })
     await vi.waitFor(() => {
-      expect(runtime.getButton(14)?.type).toBe('system-back')
+      expect(runtime.getButton(14)?.type).toBe(SPLIT_ACTION_TYPE)
     })
 
-    // Active app matches sub but autoShow: false — 2-line variant
+    // Active app matches sub but autoShow: false — split-action with pending overlay
     activeAppProvider.emit({ ownerName: 'Code' })
 
     await vi.waitFor(() => {
-      expect(runtime.getButton(14)?.type).toBe(
-        SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE,
-      )
+      expect(runtime.getButton(14)?.type).toBe(SPLIT_ACTION_TYPE)
     })
 
     // Verify the button instance has the pendingOverlayDeck config
     const button14 = runtime.getButton(14)
     expect(button14).toMatchObject({
-      type: SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE,
+      type: SPLIT_ACTION_TYPE,
     })
-    const config = button14?.config as { pendingOverlayDeck?: { id: string; name?: string } }
+    const config = button14?.config as {
+      pendingOverlayDeck?: { id: string; name?: string }
+      role?: string
+    }
+    expect(config?.role).toBe('back')
     expect(config?.pendingOverlayDeck?.id).toBe('sub')
     expect(config?.pendingOverlayDeck?.name).toBe('💻 Code')
   })
@@ -4929,16 +4952,14 @@ describe('overlay lifecycle', () => {
       expect(runtime.getActiveDeck().id).toBe('sub')
     })
     await vi.waitFor(() => {
-      expect(runtime.getButton(14)?.type).toBe('system-back')
+      expect(runtime.getButton(14)?.type).toBe(SPLIT_ACTION_TYPE)
     })
 
-    // Active app matches sub but autoShow: false — 2-line variant
+    // Active app matches sub but autoShow: false — split-action variant
     activeAppProvider.emit({ ownerName: 'Code' })
 
     await vi.waitFor(() => {
-      expect(runtime.getButton(14)?.type).toBe(
-        SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE,
-      )
+      expect(runtime.getButton(14)?.type).toBe(SPLIT_ACTION_TYPE)
     })
 
     // Double-tap the back button within the 400ms window
@@ -4952,7 +4973,7 @@ describe('overlay lifecycle', () => {
     })
   })
 
-  it('reverts 2-line back button to normal when active app no longer matches', async () => {
+  it('reverts split-action back button to normal when active app no longer matches', async () => {
     const activeAppProvider = createActiveAppProviderDouble()
     const emitEvent = createKeyEventEmitter()
     const runtime = createDeckRuntime({
@@ -4999,27 +5020,33 @@ describe('overlay lifecycle', () => {
       expect(runtime.getActiveDeck().id).toBe('sub')
     })
     await vi.waitFor(() => {
-      expect(runtime.getButton(14)?.type).toBe('system-back')
+      expect(runtime.getButton(14)?.type).toBe(SPLIT_ACTION_TYPE)
     })
 
-    // Active app matches sub but autoShow: false — 2-line variant
+    // Active app matches sub but autoShow: false — split-action with pending overlay
     activeAppProvider.emit({ ownerName: 'Code' })
 
     await vi.waitFor(() => {
-      expect(runtime.getButton(14)?.type).toBe(
-        SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE,
-      )
+      expect(runtime.getButton(14)?.type).toBe(SPLIT_ACTION_TYPE)
     })
 
-    // Active app changes to non-matching — revert to normal back button
+    // Verify config has pending overlay
+    let config14 = runtime.getButton(14)?.config as { role?: string; pendingOverlayDeck?: unknown }
+    expect(config14?.role).toBe('back')
+    expect(config14?.pendingOverlayDeck).toBeDefined()
+
+    // Active app changes to non-matching — no more pending overlay
     activeAppProvider.emit({ ownerName: 'Firefox' })
 
     await vi.waitFor(() => {
-      expect(runtime.getButton(14)?.type).toBe('system-back')
+      expect(runtime.getButton(14)?.type).toBe(SPLIT_ACTION_TYPE)
+      config14 = runtime.getButton(14)?.config as { role?: string; pendingOverlayDeck?: unknown }
+      expect(config14?.role).toBe('back')
+      expect(config14?.pendingOverlayDeck).toBeUndefined()
     })
   })
 
-  it('settings button shows overlay deck badge when autoShow is false and process_names match', async () => {
+  it('settings button shows split-action with role settings when autoShow is false and process_names match', async () => {
     const activeAppProvider = createActiveAppProviderDouble()
     const emitEvent = createKeyEventEmitter()
     const runtime = createDeckRuntime({
@@ -5072,15 +5099,19 @@ describe('overlay lifecycle', () => {
       expect(runtime.getActiveDeck().id).toBe('main')
     })
 
-    // Active app matches code but autoShow: false — badge on settings button
+    // Active app matches code but autoShow: false — split-action with role settings + pending overlay
     activeAppProvider.emit({ ownerName: 'Code' })
 
     await vi.waitFor(() => {
-      expect(runtime.getButton(14)?.type).toBe('system-settings')
+      expect(runtime.getButton(14)?.type).toBe(SPLIT_ACTION_TYPE)
     })
 
-    // Settings button is rendered — pendingOverlayDeck is passed as render prop,
-    // not stored in button config, so we just verify type correctness
-    expect(runtime.getButton(14)?.type).toBe('system-settings')
+    // Verify config has role 'settings' with pending overlay
+    const config14 = runtime.getButton(14)?.config as {
+      pendingOverlayDeck?: unknown
+      role?: string
+    }
+    expect(config14?.role).toBe('settings')
+    expect(config14?.pendingOverlayDeck).toBeDefined()
   })
 })

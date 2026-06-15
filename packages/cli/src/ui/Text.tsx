@@ -18,6 +18,7 @@ const TONE_CLASS = {
   accent: 'text-accent',
   danger: 'text-danger',
   foreground: 'text-foreground',
+  'foreground-contrast': 'text-foreground-contrast',
   primary: 'text-primary',
   success: 'text-success',
 } as const

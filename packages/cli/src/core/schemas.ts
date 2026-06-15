@@ -5,6 +5,7 @@ import type {
   AddonButtonEnvelope,
   AddonGeneratedDeck,
 } from '@/addon/api'
+import { isAddonButtonSystem } from '@/addon/api'
 import { AddonRegistryError } from '@/addon/registry'
 
 import type { AddonRegistry } from '@/addon/registry'
@@ -589,6 +590,16 @@ export function validateConfig(
           undefined,
           undefined,
           `Register '${parsedButton.data.type}' before using it in config.yml.`,
+          ['decks', deckKey, 'buttons', buttonIndex, 'type'],
+        )
+      }
+
+      if (isAddonButtonSystem(definition)) {
+        throw new ConfigValidationError(
+          `Button type '${parsedButton.data.type}' is reserved for the runtime and cannot be used in config.yml`,
+          undefined,
+          undefined,
+          `Remove this button or replace it with a non-reserved type.`,
           ['decks', deckKey, 'buttons', buttonIndex, 'type'],
         )
       }

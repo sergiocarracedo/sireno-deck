@@ -67,9 +67,11 @@ describe('INTERNAL_DECKS id-priority shadowing (55-01)', () => {
     expect(active.id).toBe('settings')
     expect(active.system).toBe(true)
     expect(active.buttons.length).toBe(4)
-    expect(active.buttons.every((b) => b.type === 'settings-placeholder')).toBe(
-      true,
-    )
+    expect(
+      active.buttons.every((b) =>
+        b.type.startsWith('__sireno_internal_settings_'),
+      ),
+    ).toBe(true)
   })
 
   it('user-defined locked_deck is preferred over the internal one when named via lockedDeckId', () => {

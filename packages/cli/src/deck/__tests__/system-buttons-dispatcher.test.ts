@@ -5,10 +5,8 @@ import { createAddonRegistry } from '@/addon/registry'
 import {
   getLastPositionSystemButton,
   OVERLAY_TOGGLE_TYPE,
-  SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE,
-  SYSTEM_SETTINGS_TYPE,
+  SPLIT_ACTION_TYPE,
 } from '../system-buttons/system-buttons'
-import { SYSTEM_BACK_TYPE } from '../system-back-injection'
 import type { DeckConfig } from '@/core/schemas'
 
 const KEY_COUNT = 15
@@ -89,21 +87,25 @@ function makeCtx(
 }
 
 describe('getLastPositionSystemButton dispatcher (55-02)', () => {
-  it('injects system-settings on the main-deck reserved slot', () => {
+  it('injects split-action with role settings on the main-deck reserved slot', () => {
     const runtime = makeRuntime()
     const button = getLastPositionSystemButton(KEY_COUNT - 1, makeDeck(), makeCtx(runtime))
     expect(button).not.toBeNull()
-    expect(button?.type).toBe(SYSTEM_SETTINGS_TYPE)
+    expect(button?.type).toBe(SPLIT_ACTION_TYPE)
+    const config = button?.config as { role?: string }
+    expect(config?.role).toBe('settings')
   })
 
-  it('injects system-back on a non-main deck when session is unlocked', () => {
+  it('injects split-action with role back on a non-main deck when session is unlocked', () => {
     const runtime = makeRuntime()
     const button = getLastPositionSystemButton(
       KEY_COUNT - 1,
       makeDeck({ id: 'sub' }),
       makeCtx(runtime),
     )
-    expect(button?.type).toBe(SYSTEM_BACK_TYPE)
+    expect(button?.type).toBe(SPLIT_ACTION_TYPE)
+    const config = button?.config as { role?: string }
+    expect(config?.role).toBe('back')
   })
 
   it('injects overlay-toggle when the active deck is the overlay', () => {
@@ -116,7 +118,7 @@ describe('getLastPositionSystemButton dispatcher (55-02)', () => {
     expect(button?.type).toBe(OVERLAY_TOGGLE_TYPE)
   })
 
-  it('injects system-back on the main deck when settings deck is missing', () => {
+  it('injects split-action with role back on the main deck when settings deck is missing', () => {
     const runtime = makeRuntime()
     const ctx = makeCtx(runtime)
     const button = getLastPositionSystemButton(
@@ -124,7 +126,9 @@ describe('getLastPositionSystemButton dispatcher (55-02)', () => {
       makeDeck(),
       { ...ctx, runtimeDecks: { main: makeDeck() } },
     )
-    expect(button?.type).toBe(SYSTEM_BACK_TYPE)
+    expect(button?.type).toBe(SPLIT_ACTION_TYPE)
+    const config = button?.config as { role?: string }
+    expect(config?.role).toBe('back')
   })
 
   it('injects overlay-toggle on paginated overlay page decks', () => {
@@ -155,7 +159,7 @@ describe('getLastPositionSystemButton dispatcher (55-02)', () => {
     expect(button?.type).not.toBe(OVERLAY_TOGGLE_TYPE)
   })
 
-  it('injects system-back-with-pending-overlay when a summonable deck matches', () => {
+  it('injects split-action with pending overlay config when a summonable deck matches', () => {
     const runtime = makeRuntime()
     const ctx = makeCtx(runtime, {
       pendingOverlayDeckId: 'overlay-target',
@@ -171,10 +175,9 @@ describe('getLastPositionSystemButton dispatcher (55-02)', () => {
       makeDeck({ id: 'sub' }),
       ctx,
     )
-    expect(button?.type).toBe(SYSTEM_BACK_WITH_PENDING_OVERLAY_TYPE)
-    expect(
-      (button?.config as { pendingOverlayDeck: DeckConfig }).pendingOverlayDeck
-        .id,
-    ).toBe('overlay-target')
+    expect(button?.type).toBe(SPLIT_ACTION_TYPE)
+    const config = button?.config as { pendingOverlayDeck?: { id: string }; role?: string }
+    expect(config?.role).toBe('back')
+    expect(config?.pendingOverlayDeck?.id).toBe('overlay-target')
   })
 })
