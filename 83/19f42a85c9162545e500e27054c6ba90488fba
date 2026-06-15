@@ -1,0 +1,97 @@
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-up.test.tsx
+  s_45914a004d1478::t_0e1d0bd9236c82 1-53
+packages/cli/src/render/theme-utilities.ts
+  s_45914a004d1478::t_00223e60aea007 51,59
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-down.tsx
+  s_45914a004d1478::t_09f88c2532c353 1-32
+packages/cli/tailwind.browser.css
+  s_45914a004d1478::t_00223e60aea007 10,26-27
+packages/cli/src/config/theme/schemas.ts
+  s_45914a004d1478::t_24698e02f0274c 107-108
+  h_f90ee31b03fc41 5,84
+  s_45914a004d1478::t_00223e60aea007 4,83,91,95
+packages/cli/src/addon/builtin.ts
+  s_45914a004d1478::t_00223e60aea007 5,21
+packages/cli/src/core/schemas.ts
+  s_45914a004d1478::t_00223e60aea007 8,597-602
+  s_45914a004d1478::t_7b97360ad0f306 603-606
+packages/cli/src/builtin-addons/internal-settings/buttons/current-brightness.tsx
+  s_45914a004d1478::t_bbc27c391756cb 1-25
+packages/cli/src/builtin-addons/internal-settings/index.test.ts
+  s_45914a004d1478::t_3a4954f6b06c04 1-17
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_45914a004d1478::t_03fd58047f3f35 1-19
+packages/cli/src/deck/system-buttons/system-buttons.ts
+  s_45914a004d1478::t_00223e60aea007 3,9,43-44,46-51,54-66
+packages/cli/src/addon/registry.ts
+  s_45914a004d1478::t_00223e60aea007 8,83-87
+packages/cli/src/deck/system-buttons/SystemSettingsEntryButton.tsx
+  s_45914a004d1478::t_00223e60aea007 7,11,19
+  h_f90ee31b03fc41 4
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-up.tsx
+  s_45914a004d1478::t_e17d68b69fac36 1-31
+packages/cli/src/addon/api.ts
+  s_45914a004d1478::t_00223e60aea007 255,278-298,378-384
+packages/cli/src/ui/surfaces/__tests__/SplitActionSurface.test.tsx
+  s_ce8dff3c35bfc4::t_937379011c6c65 26,33,37,44-45,48,55
+  s_ce8dff3c35bfc4::t_bcf68b1840bb62 1-25,27-32,34-36,38-43,46-47,49-54,56-58
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-down.test.tsx
+  s_45914a004d1478::t_ebfa43a6c9b366 1-53
+packages/cli/src/ui/index.ts
+  s_45914a004d1478::t_00223e60aea007 4,10-11
+packages/cli/src/builtin-addons/internal-settings/buttons/current-brightness.test.tsx
+  s_45914a004d1478::t_7dfce7eccc9df6 1-50
+packages/cli/src/deck/__tests__/internal-decks.test.ts
+  s_45914a004d1478::t_00223e60aea007 70-74
+packages/cli/src/core/schemas.test.ts
+  s_45914a004d1478::t_00223e60aea007 262-285
+packages/cli/src/ui/Text.tsx
+  h_f90ee31b03fc41 21
+packages/cli/src/deck/runtime.ts
+  s_45914a004d1478::t_00223e60aea007 12,23-24,59,61,262-265,271-291,1019-1054,1056-1074,1076,1078-1090,1094,1114-1116,1136,1139,1654-1665,1738-1741
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_45914a004d1478::t_00223e60aea007 22,1779,1859,1861,2241,3880,3901,3903,3907,3931,3960,3963,3981-3988,4004-4012,4023,4041-4048,4064-4073,4826,4829-4832,4884,4887,4891,4897,4899-4903,4955,4958,4962,4976,5023,5026,5030,5033-5038,5042-5045,5049,5102,5106,5109-5115
+packages/cli/src/ui/TapIndicator.tsx
+  h_f90ee31b03fc41 1-63
+packages/cli/src/builtin-addons/internal-settings/buttons/logo-version.test.tsx
+  s_45914a004d1478::t_c866973894cb2b 1-42
+packages/cli/src/deck/__tests__/system-buttons-dispatcher.test.ts
+  s_45914a004d1478::t_00223e60aea007 8,90,94-96,99,106-108,121,129-131,162,178-181
+packages/cli/src/ui/surfaces/SplitActionSurface.tsx
+  s_ce8dff3c35bfc4::t_a4ee4c402c1ca3 1-2,4-24,31,34-37,43,46-52
+  h_f90ee31b03fc41 3,26-30,32,38-42,44
+  s_ce8dff3c35bfc4::t_941b7c9afb289a 25,33,45
+packages/cli/src/builtin-addons/internal-settings/buttons/logo-version.tsx
+  s_45914a004d1478::t_84e56c5bcc5d34 1-3,5,7-9,11-17,19-21
+packages/cli/src/config/theme/theme.ts
+  s_45914a004d1478::t_37182a91bdcf53 704
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "8319f42a85c9162545e500e27054c6ba90488fba",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_45914a004d1478": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_135276c07ffeaw8I0JQ73R3zFt",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_ce8dff3c35bfc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1441b295dffeUD9xVe36d81tKr",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
