@@ -52,7 +52,7 @@ describe('SplitActionSurface', () => {
         secondary={<span>Secondary</span>}
       />,
     )
-    const scaleMatches = html.match(/scale-\[0\.85\]/g)
+    const scaleMatches = html.match(/scale-\[0\.65\]/g)
     expect(scaleMatches).toHaveLength(2)
   })
 })

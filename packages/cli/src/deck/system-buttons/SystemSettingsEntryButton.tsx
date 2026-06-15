@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react'
 
 import { ButtonSurface } from '@/addon/api'
-import { Icon, Label, TapIndicator } from '@/ui/index'
+import { Icon, Label } from '@/ui/index'
 
 export interface SystemSettingsEntryButtonProps {
   pendingOverlayDeck?: unknown
