@@ -10,8 +10,8 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 ## Current Position
 
 Phase: 66 — SplitActionSurface
-Status: CONTEXT captured (2026-06-14). Decisions: (1) new `SplitActionSurface` in `src/ui/surfaces/` (not a system-button helper), (2) props-based API with `primary` + optional `secondary`, (3) mode 1 dbl-tap is no-op, (4) `/`-style diagonal at 25% centered, (5) CSS `transform` scaling, (6) replaces SystemBackButton, SystemBackWithPendingOverlayButton, SystemSettingsEntryButton badge, (7) name is `SplitActionSurface` (not DynamicActionsButton).
-Last activity: 2026-06-14 — Phase 66 discuss-phase complete.
+Status: **EXECUTED (2026-06-15)**. Both plans complete with one documented implementation deviation. Decisions: (1) new `SplitActionSurface` in `src/ui/surfaces/` (not a system-button helper), (2) props-based API with `primary` + optional `secondary`, (3) mode 1 dbl-tap is no-op, (4) `/`-style diagonal at 25% centered, (5) CSS `transform` scaling, (6) replaces SystemBackButton, SystemBackWithPendingOverlayButton, SystemSettingsEntryButton badge, (7) name is `SplitActionSurface` (not DynamicActionsButton). **Deviation:** shipped implementation uses `flex-col` halves + decorative `<hr -rotate-45>` for the diagonal visual, not `clip-path: polygon()` for triangular regions (visual intent identical, mechanism different). All work landed in commit `8319f42 "My changes"` (bundled, not atomic per-task).
+Last activity: 2026-06-15 — Phase 66 execute-phase complete. Summaries at `.planning/phases/66-dynamic-actions-button/66-01-SUMMARY.md` and `66-02-SUMMARY.md`.
 
 ### Quick Tasks Completed
 

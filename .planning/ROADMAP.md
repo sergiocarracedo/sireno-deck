@@ -113,10 +113,11 @@ The emoji injection path (`clipboard.ts:pasteText`) only writes to the clipboard
 **Goal:** Replace `SystemBackButton`, `SystemBackWithPendingOverlayButton`, and the `SystemSettingsEntryButton` badge pattern with a single `SplitActionSurface` component that renders primary/secondary sub-surfaces in a diagonal `/` split, with tap/dbl-tap dispatching to the correct action.
 **Requirements:** `ACTIVEAPP-08` (refined)
 **Depends on:** 62
-**Status:** Context captured (2026-06-14)
+**Status:** ✓ Executed (2026-06-15) — both plans complete; one documented implementation deviation (`flex-col` + decorative `<hr -rotate-45>` instead of `clip-path: polygon()` for the diagonal visual). See `66-01-SUMMARY.md` and `66-02-SUMMARY.md`.
 
 ### Plans
-*Not yet planned — run `plan-phase 66`*
+- 66-01 — SplitActionSurface component (with theme override + tests) — shipped via commit 8319f42
+- 66-02 — System button migration (dispatcher + runtime + deletion of old components) — shipped via commit 8319f42
 
 ## Coverage Validation
 
