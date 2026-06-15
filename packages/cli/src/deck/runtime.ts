@@ -1133,10 +1133,8 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
           await activateDeckSurface(undefined, previousDeckId)
         },
         onTap: async () => {
-          console.log('onTap called, tapCommand:', tapCommand)
           temporaryErrorDeck = null
           if (tapCommand) {
-            console.log('executing tapCommand:', tapCommand)
             await executeAction(tapCommand)
             return
           }
@@ -1652,16 +1650,6 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
 
     try {
       const instance = getOrCreateInstance(handle.deckId, handle.button)
-      console.log(
-        'handleTap: calling onTap, instance keys:',
-        Object.keys(instance),
-      )
-      console.log(
-        'handleTap: onTap source:',
-        instance.onTap?.toString().slice(0, 100),
-      )
-      await instance.onTap?.()
-      console.log('handleTap: onTap completed')
       await instance.onTap?.()
       await renderRuntimeButton(handle.button, handle.deckId)
       await renderDeckSurface(handle.deckId)
@@ -1735,10 +1723,6 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       }
 
       if (instance.onDblTap) {
-        console.log(
-          'onDblTap defined, setting double-tap timer for key',
-          event.keyIndex,
-        )
         if (gs?.pendingDblTapTimer) {
           clearTimeout(gs.pendingDblTapTimer)
           gestureStates.delete(stateKey)

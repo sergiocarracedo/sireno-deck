@@ -55,4 +55,35 @@ describe('SplitActionSurface', () => {
     const scaleMatches = html.match(/scale-\[0\.65\]/g)
     expect(scaleMatches).toHaveLength(2)
   })
+
+  it('renders a -rotate-45 diagonal separator in mode 2', () => {
+    const html = renderToStaticMarkup(
+      <SplitActionSurface
+        primary={<span>Primary</span>}
+        secondary={<span>Secondary</span>}
+      />,
+    )
+    expect(html).toContain('<hr')
+    expect(html).toContain('-rotate-45')
+  })
+
+  it('renders TAP and TAPx2 labels in mode 2', () => {
+    const html = renderToStaticMarkup(
+      <SplitActionSurface
+        primary={<span>Primary</span>}
+        secondary={<span>Secondary</span>}
+      />,
+    )
+    expect(html).toContain('TAP')
+    expect(html).toContain('TAPx2')
+  })
+
+  it('omits the diagonal separator and TAPx2 label in mode 1', () => {
+    const html = renderToStaticMarkup(
+      <SplitActionSurface primary={<span>Primary</span>} />,
+    )
+    expect(html).not.toContain('<hr')
+    expect(html).not.toContain('-rotate-45')
+    expect(html).not.toContain('TAPx2')
+  })
 })
