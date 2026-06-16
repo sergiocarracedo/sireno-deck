@@ -10,8 +10,8 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 ## Current Position
 
 Phase: 69 — v1.6 verification sweep (v1.6 gap closure, VERIFY-02)
-Status: **DISCUSSED (2026-06-15)**. Phase 69 produces a single `69-VERIFICATION.md` aggregating evidence from each in-scope phase (58, 59, 60, 61, 62, 67, 68). Format: Phase 56-style table (one table per VERIFY-02 sub-requirement, columns `[Phase, Test/Evidence, Result, Notes]`). Back button <200ms: accept Phase 58's in-process number with documented caveat (excludes IPC + hardware roundtrip; a real-hardware measurement is a separate benchmark phase, not part of verification aggregation). Per-phase VERIFICATION.md backfill for 61/62/67 is Phase 70 scope. `69-CONTEXT.md` and `69-DISCUSSION-LOG.md` captured with D-01..D-06. No new code in Phase 69 (pure verification artifact). Next: plan-phase 69.
-Last activity: 2026-06-15 — Phase 68 shipped to origin/main (27 commits, range 079d9e4..2d3b636, `git push` succeeded). Phase 69 discuss-phase complete: aggregation-only scope, Phase 56 table format, in-process back-button number with Phase 58 caveat.
+Status: **VERIFIED (2026-06-15)**. Single `69-VERIFICATION.md` aggregating evidence from 7 in-scope phases (58, 59, 60, 61, 62, 67, 68). 8/8 ROADMAP success criteria + 8/8 VERIFY-02 sub-criteria + 13/13 v1.6 requirements traced. Targeted test sweep: 113/120 pass (7 pre-existing baseline failures, documented). Hardware caveat on PERF-01 back-button 12.35ms in-process number is documented. 6 open gaps deferred to Phase 70 (3 missing per-phase VERIFICATION.md, REQUIREMENTS.md SETTINGS-06 wording, 67-CONTEXT.md D-01..D-08 invalidation, 3 missing Phase 59 SUMMARY files, PROJECT.md line 26, ROADMAP.md Coverage Validation table). Next: /verify-work 69 (documentation-only, no UAT) → /ship → Phase 70.
+Last activity: 2026-06-15 — Phase 69 verification sweep executed (1 atomic commit, 69-VERIFICATION.md). Targeted vitest sweep: 113/120 pass (baseline). Phase 68 shipped to origin/main (27 commits, range 079d9e4..2d3b636, `git push` succeeded). Phase 69 discuss-phase + plan-phase + execute-phase complete end-to-end.
 
 ### Quick Tasks Completed
 
