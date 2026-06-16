@@ -264,28 +264,24 @@ const internalSettingsButtonDefinitions = new Map<
   ButtonInstance['definition']
 >(internalSettingsAddon.buttons.map((button) => [button.type, button]))
 
-export function createInternalSettingsDeck(keyCount: number): DeckConfig {
-  if (keyCount < 4) {
-    throw new Error(
-      `internal settings deck requires keyCount >= 4 (got ${keyCount})`,
-    )
-  }
+export function createInternalSettingsDeck(): DeckConfig {
   const buttonSpecs = [
     {
       position: 0,
-      type: '__sireno_internal_settings_logo_version',
-    },
-    {
-      position: keyCount - 3,
       type: '__sireno_internal_settings_brightness_down',
     },
     {
-      position: keyCount - 2,
+      position: 1,
       type: '__sireno_internal_settings_brightness_up',
     },
     {
-      position: keyCount - 1,
+      position: 2,
       type: '__sireno_internal_settings_current_brightness',
+    },
+    // position 3 intentionally left empty
+    {
+      position: 4,
+      type: '__sireno_internal_settings_logo_version',
     },
   ] as const
   return {
@@ -312,7 +308,7 @@ export function createInternalSettingsDeck(keyCount: number): DeckConfig {
 function createInternalDecks(keyCount: number): Record<string, DeckConfig> {
   return {
     [INTERNAL_LOCKED_DECK_ID]: createInternalLockedDeck(keyCount),
-    [SETTINGS_DECK_ID]: createInternalSettingsDeck(keyCount),
+    [SETTINGS_DECK_ID]: createInternalSettingsDeck(),
   }
 }
 
