@@ -9,9 +9,9 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 66 — SplitActionSurface
-Status: **EXECUTED (2026-06-15)**. Both plans complete with one documented implementation deviation. Decisions: (1) new `SplitActionSurface` in `src/ui/surfaces/` (not a system-button helper), (2) props-based API with `primary` + optional `secondary`, (3) mode 1 dbl-tap is no-op, (4) `/`-style diagonal at 25% centered, (5) CSS `transform` scaling, (6) replaces SystemBackButton, SystemBackWithPendingOverlayButton, SystemSettingsEntryButton badge, (7) name is `SplitActionSurface` (not DynamicActionsButton). **Deviation:** shipped implementation uses `flex-col` halves + decorative `<hr -rotate-45>` for the diagonal visual, not `clip-path: polygon()` for triangular regions (visual intent identical, mechanism different). All work landed in commit `8319f42 "My changes"` (bundled, not atomic per-task).
-Last activity: 2026-06-15 — Phase 66 execute-phase complete. Summaries at `.planning/phases/66-dynamic-actions-button/66-01-SUMMARY.md` and `66-02-SUMMARY.md`.
+Phase: 67 — Settings Deck Layout Revamp (v1.6 gap closure)
+Status: **DISCUSSED (2026-06-15)**. Context captured at `.planning/phases/67-settings-deck-layout-revamp/67-CONTEXT.md` (decisions D-01..D-08). Phase 66 fully shipped; P0+P1 review findings resolved in commit `079d9e4`. v1.6 audit (`.planning/v1.6-MILESTONE-AUDIT.md`) flagged phases 63/64/65 as never-planned; plan-milestone-gaps re-scoped them as 67/68/69/70 (commit `9179b26`).
+Last activity: 2026-06-15 — Phase 67 discuss-phase complete. CONTEXT.md + DISCUSSION-LOG.md written. Decisions: (1) position 0 = `__sireno_internal_settings_logo_version`, n-3/n-2/n-1 = darker/brighter/percent, (2) layout is dynamic per `keyCount` via `createInternalDecks(keyCount)`, (3) `iconTextSurface` resolves to existing `IconLabelSurface` (no new primitive), (4) `current_brightness` refactors to `<Label>` per SETTINGS-07, (5) `SETTINGS-06` requirement text rephrased from "n-1 = logo" to "position 0 = logo" (REQUIREMENTS.md + ROADMAP.md updates deferred to plan-phase / Phase 70 metadata backfill).
 
 ### Quick Tasks Completed
 
@@ -174,6 +174,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 67 added: settings deck layout revamp (v1.6 gap closure) — reorder brightness controls to n-3/n-2/n-1, pin logo+version at position 0, refactor brightness buttons to use `IconLabelSurface` (resolving the `iconTextSurface` misreference), and use `Label` for the percent display per SETTINGS-07.
 - Phase 66 added: SplitActionSurface — replace SystemBackButton, SystemBackWithPendingOverlayButton, and SystemSettingsEntryButton badge pattern with a reusable dual-action surface component
 - Phase 49 added: emoji-selector UX revamp as a v1.4 late addition — rewrite based on real-world feedback (real emoji glyphs not U+1Fxxx placeholders, bigger key art, HID keyboard-stroke output for tap=emoji / double-tap=shortcode, proper subcategory split using the piliapp.com catalog, n-2 page-nav button with Tap/Dbl-Tap chip hints, addon-provided entry button that renders a 2×3 grid of six emojis as a first-class button type).
 - Phase 39 added: let external themes override the `Surface` component used by the built-in media-player addon so they can render the button surface however they want.
@@ -206,6 +207,8 @@ Recent decisions affecting current work:
 - Phase 16 executed: deck-only `@path` references, watched config graph reloads, shared-wrapper footer removal, narrow `accent` overrides, and runtime-owned invalid-reload fallback are all implemented and verified.
 
 ### Progress Notes
+
+- **Phase 67 discussion:** Locked the settings deck revamp around a dynamic `keyCount`-aware layout: position 0 holds `__sireno_internal_settings_logo_version` (resolving the SETTINGS-05/SETTINGS-06 n-1 contradiction by rephrasing SETTINGS-06 to "position 0"), and n-3/n-2/n-1 hold `brightness_down`/`brightness_up`/`current_brightness`. The `iconTextSurface` reference in SETTINGS-05 is a misnamed pointer to the existing `IconLabelSurface` primitive (25 lines, theme-overridable via `useThemeUiPresentation().surfaces.iconLabel`, exported from `ui/index.ts`); brightness buttons refactor to `<IconLabelSurface icon="sun|moon" label="Brighter|Dimmer" />`. `current_brightness` refactors to `<Label>` for both `{N}%` and the "Brightness" subtitle per SETTINGS-07. `logo_version` keeps its hand-rolled text render (no icon, stays text-only). The static `INTERNAL_SETTINGS_DECK` constant in `runtime.ts:267-292` is replaced by a `createInternalDecks(keyCount)` call; test assertions and addon manifest button order updated. The standalone `brightness` user-installable addon (`packages/cli/src/builtin-addons/brightness/`) is out of scope. Canonical references: `67-CONTEXT.md`, `67-DISCUSSION-LOG.md`.
 
 - **Phase 31 discussion:** Kept the phase narrow to restoring the truthful root `cli:dev` contract: default `start --config config.yml` behavior plus real forwarded subcommand args on the external `tsx watch` seam, with docs/tests/script kept in sync.
 
