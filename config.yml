@@ -84,7 +84,38 @@ decks:
       - position: 0
         type: action
         label: 'New tab'
+        key_macro: 'ctrl+t'
         icon: 'icon://square-plus'
+      - position: 1
+        type: action
+        label: 'Close tab'
+        key_macro: 'ctrl+w'
+        icon: 'icon://x'
+      - position: 2
+        type: action
+        label: 'Unclose tab'
+        key_macro: 'ctrl+shift+t'
+        icon: 'icon://rotate-ccw'
+      - position: 3
+        type: action
+        label: 'Incognito'
+        key_macro: 'ctrl+shift+n'
+        icon: 'icon://eye-off'
+      - position: 4
+        type: action
+        label: 'Reload'
+        key_macro: 'ctrl+r'
+        icon: 'icon://rotate-cw'
+      - position: 5
+        type: action
+        label: 'Hard reload'
+        key_macro: 'ctrl+shift+r'
+        icon: 'icon://refresh-cw'
+      - position: 6
+        type: action
+        label: 'Dev tools'
+        key_macro: 'F12'
+        icon: 'icon://terminal'
 addons:
   # Illustrative addon declarations ship disabled on purpose.
   # They do not load and will not emit startup warnings until you set
