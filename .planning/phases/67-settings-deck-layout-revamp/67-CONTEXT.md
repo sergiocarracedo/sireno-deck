@@ -109,6 +109,43 @@ functions use existing primitives. No new components are built in this phase.
 None — discussion stayed within phase scope. The standalone `brightness` user-installable addon (cycles 0/25/50/75/100) was identified as out of scope; if it should be harmonized with the internal-settings brightness cluster, that's a separate decision for a future phase.
 </deferred>
 
+<correction>
+## Design correction (67-02, 2026-06-15)
+
+The 67-01 plan implemented a keyCount-aware settings deck
+(positions 0, keyCount-3, keyCount-2, keyCount-1). During UAT
+the user rejected that design in favor of a FIXED layout
+(positions 0, 1, 2, 4; position 3 empty; n-1 reserved for the
+runtime-injected system back button).
+
+- **Design-of-record:** `.planning/phases/67-settings-deck-layout-revamp/67-02-SUMMARY.md`
+- **Decisions SUPERSEDED by 67-02:**
+  - **D-01** (position 0 holds the logo+version) — original
+    intent inverted; logo+version moved to position 4
+  - **D-02** (SETTINGS-06 rephrased to "position 0 = project
+    logo + version") — superseded; REQUIREMENTS.md SETTINGS-06
+    realigned in Phase 70 Task 4 to "position 4 = project
+    logo + version"
+  - **D-03** (dynamic per keyCount layout) — superseded;
+    fixed positions used instead
+  - **D-08** (n-3 = brightness_down, n-2 = brightness_up,
+    n-1 = current_brightness) — superseded; 0/1/2 fixed
+    positions used instead
+
+- **Decisions UNAFFECTED** (durable 67-01 work): D-04
+  (`iconTextSurface` → `IconLabelSurface`), D-05
+  (brightness_up/down → `IconLabelSurface`), D-06
+  (current_brightness → `<Label>`), D-07 (logo_version keeps
+  hand-rolled text render — note: now applies to position 4
+  not position 0).
+
+- **Audit posture:** the original D-01..D-08 block above is
+  preserved intact so the discussion-of-record is traceable.
+  The shipped design lives in `67-02-SUMMARY.md` and the
+  production code in `runtime.ts::createInternalSettingsDeck`.
+</correction>
+
 ---
 *Phase: 67-settings-deck-layout-revamp*
 *Context gathered: 2026-06-15*
+*Correction appended: 2026-06-15 (Phase 70 Task 3)*

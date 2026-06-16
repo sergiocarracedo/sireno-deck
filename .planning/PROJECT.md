@@ -23,29 +23,25 @@ Make Stream Deck customization programmable and extensible through a fast TypeSc
 - Settings brightness icon order (darker → brighter → percent), version icon at n-2, `iconTextSurface` for brightness, `<Label>` for percent
 - Built-in chrome overlay deck: more keystroke actions (unclose tab, incognito, etc.)
 
-## Latest Shipped Milestone: v1.5 — Addons & UX Polish II
+## Latest Shipped Milestone: v1.6 — UX Speed & Overlay Extensions
 
-**Completed:** 2026-06-07
-**Phases:** 7 (41-46, 49)
-**Requirements delivered:** BD-03, BD-05, SRB-01 through SRB-05, CAL-01 through CAL-03, MV-01 through MV-07, WX-01 through WX-06, EMO-01 through EMO-14 (35 total)
+**Completed:** 2026-06-15
+**Phases:** 10 (57-62, 66-70, including 4 gap-closure phases 67-70)
+**Requirements delivered:** RES-01..03, PERF-01..03, EMO-15..17, PAG-02..03, ICON-01, ACTIVEAPP-07/07a/07b/08, SETTINGS-05..07, CHROME-01, VERIFY-02 (21 total)
 
 **Key achievements:**
-- First-run Chromium auto-install via Playwright
-- System-reserved back button in subdecks (tap → previous, hold → home)
-- Calendar date-time button (vertical month/day/weekday layout)
-- Media-volume buttons (mute toggle, volume up/down, real OS state)
-- Weather addon (Open-Meteo primary, wttr.in fallback, configurable location)
-- Emoji-selector revamp: real emoji rendering via native font stack, 11-category hand-curated catalog (383 emojis), paginated subdecks with noHistory page-to-page navigation, emoji-launcher 2×3 grid button, addon-decorated system back
+- Render pipeline profiled, performance bottlenecks identified and fixed (back button <200ms in-process, weather page transitions <300ms in-process)
+- Emoji keystroke injection: `methods.pasteText` now simulates the OS paste keystroke (Ctrl+V / Cmd+V) after clipboard write, fixing the "tap emoji does nothing" bug end-to-end
+- Emoji category deduplication: 11 visually distinct category icons, smileys/people no longer share
+- Pagination button redesign: 3-line layout (Tap > / < 2xTap / Page X/Y) using shared `<Label>` for fit
+- Icon updates: system back `undo2`, overlay toggle `send-to-back` + active deck badge
+- Overlay `autoShow: false` mode with 2-line back button variant (back tap / overlay summon dbl-tap)
+- SplitActionSurface component: unified dual-action surface replacing 3 bespoke system button variants
+- Settings deck layout revamp: fixed positions 0/1/2/4 (Dimmer/Brighter/Percent/Logo), n-1 reserved for back button
+- Chrome overlay deck extensions: 7 keyboard-shortcut buttons (New tab, Close tab, Unclose tab, Incognito, Reload, Hard reload, Dev tools)
+- v1.6 verification sweep + metadata backfill (3 missing per-phase VERIFICATIONs aggregated into 70-VERIFICATION, 3 missing Phase 59 SUMMARYs backfilled, 67-CONTEXT D-01..D-08 invalidation preserved, REQUIREMENTS.md SETTINGS-06 realigned, PROJECT/STATE/ROADMAP consistency set updated)
 
-**Goal:** Expand the render/runtime surface so addons and built-in buttons can react to richer session state, compose shared visual primitives, and handle background and lock-screen behavior coherently.
-
-**Target features:**
-- Layered background support with config, deck, and theme fallback precedence
-- OS/session context injection into render, execution, and config templating
-- Multiple text fitting modes with shrink-to-fit as the default and wrap support
-- Globally reusable addon-provided wrappers and styles
-- Richer built-in toggle buttons for internal and command-driven state models
-- Lock-screen awareness with a dedicated locked-session deck and clean unlock restore behavior
+See `.planning/v1.6-MILESTONE-AUDIT.md` and `.planning/REQUIREMENTS.md` for the canonical v1.6 artifact set.
 
 ## Requirements
 

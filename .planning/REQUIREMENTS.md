@@ -133,8 +133,10 @@ The six feature groups, in priority order:
 | ID | Requirement | Category |
 |----|-------------|----------|
 | SETTINGS-05 | The settings deck brightness buttons are in order: position n-3 = darker, position n-2 = brighter, position n-1 = current brightness percentage | UI |
-| SETTINGS-06 | Position n-1 (the last button) shows the project logo + version, rendered with no border or background | UI |
+| SETTINGS-06 | Position 4 shows the project logo + version, rendered with no border or background | UI |
 | SETTINGS-07 | The brightness up/down buttons use `iconTextSurface` for rendering; the percentage button uses `<Label>` component instead of `iconTextSurface` | UI |
+
+**Note:** 2026-06-15 realignment — SETTINGS-06 wording updated to reflect the shipped fixed-position design (position 4 = logo+version, position 3 empty, n-1 reserved for runtime-injected system back button). The original "n-1 = logo+version" wording was abandoned in `67-02-SUMMARY.md` and is preserved here for historical context.
 
 ### Chrome overlay deck extensions (new CHROME-*)
 

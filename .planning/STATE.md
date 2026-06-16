@@ -10,7 +10,7 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 ## Current Position
 
 Phase: 70 — v1.6 verification + metadata backfill (v1.6 gap closure, docs only)
-Status: **DISCUSSED (2026-06-15)**. 6 decisions captured (D-01..D-06) covering aggregation VERIFICATION for 61/62/66, 3 missing Phase 59 summaries, 67-CONTEXT invalidation preservation, REQUIREMENTS.md SETTINGS-06 realignment, project metadata bump to v1.6, single autonomous plan. No code, no tests, no new requirements. Next: plan-phase 70.
+Status: **EXECUTED (2026-06-15)**. 1 plan, 5 tasks, 2 atomic commits: `28633af` (70-VERIFICATION + 3 missing 59 SUMMARYs) and the second commit (Tasks 3-5: 67-CONTEXT correction + REQUIREMENTS SETTINGS-06 realignment + PROJECT/STATE/ROADMAP metadata bump). No code, no tests, no new requirements. Next: /verify-work 70 → /ship → /compound → complete-milestone v1.6 → discuss-phase 71 (v1.7).
 Status: **VERIFIED (2026-06-15)**. Single `69-VERIFICATION.md` aggregating evidence from 7 in-scope phases (58, 59, 60, 61, 62, 67, 68). 8/8 ROADMAP success criteria + 8/8 VERIFY-02 sub-criteria + 13/13 v1.6 requirements traced. Targeted test sweep: 113/120 pass (7 pre-existing baseline failures, documented). Hardware caveat on PERF-01 back-button 12.35ms in-process number is documented. 6 open gaps deferred to Phase 70 (3 missing per-phase VERIFICATION.md, REQUIREMENTS.md SETTINGS-06 wording, 67-CONTEXT.md D-01..D-08 invalidation, 3 missing Phase 59 SUMMARY files, PROJECT.md line 26, ROADMAP.md Coverage Validation table). Next: /verify-work 69 (documentation-only, no UAT) → /ship → Phase 70.
 Last activity: 2026-06-15 — Phase 69 verification sweep executed (1 atomic commit, 69-VERIFICATION.md). Targeted vitest sweep: 113/120 pass (baseline). Phase 68 shipped to origin/main (27 commits, range 079d9e4..2d3b636, `git push` succeeded). Phase 69 discuss-phase + plan-phase + execute-phase complete end-to-end.
 
@@ -55,6 +55,21 @@ Progress: [██████████] 100% (7 of 7 in-scope v1.4 phases com
 - User decision: cut from v1.4, defer to v1.5. v1.4 milestone renamed from "Build, Bundle & UX Polish" to "Addons & UX Polish".
 
 ## Milestone History
+
+### v1.6 — UX Speed & Overlay Extensions
+Completed: 2026-06-15
+Phases: 10 (57-62, 66, plus 4 gap-closure phases 67-70)
+Key achievements:
+- Resource (RES-01..03), Performance (PERF-01..03), Emoji (EMO-15..17), Pagination (PAG-02..03) phases shipped 2026-06-11
+- Icon updates (ICON-01) and Overlay autoShow (ACTIVEAPP-07/07a/07b/08) shipped 2026-06-11
+- SplitActionSurface dynamic actions button (Phase 66) shipped 2026-06-15
+- 4 gap-closure phases (67 settings layout, 68 chrome deck, 69 verification sweep, 70 metadata backfill) added after v1.6-MILESTONE-AUDIT found 3 original phases unbuilt
+- Final state: 13/21 v1.6 requirements satisfied, 4 deferred to verification backfill, 2 met-by-66, 2 not-started (SETTINGS-05..07 partially superseded by Phase 70 Task 4)
+
+### v1.5 — Addons & UX Polish II
+Completed: 2026-06-07
+Phases: 7 (41-46, 49)
+Key achievements: (one-line backfill — v1.5 was archived before Milestone History existed; full scope in CHANGELOG and PROJECT.md)
 
 ### v1.3 — Addon Extensibility & Live Hardware
 Completed: 2026-06-04

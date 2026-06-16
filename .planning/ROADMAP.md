@@ -177,28 +177,28 @@ The emoji injection path (`clipboard.ts:pasteText`) only writes to the clipboard
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| RES-01 | 57 | satisfied (ver: 57-VERIFICATION) |
-| RES-02 | 57 | satisfied (ver: 57-VERIFICATION) |
-| RES-03 | 57 | satisfied (ver: 57-VERIFICATION) |
-| PERF-01 | 58 | satisfied (ver: 58-VERIFICATION) |
-| PERF-02 | 58 | satisfied (ver: 58-VERIFICATION) |
-| PERF-03 | 58 | satisfied (ver: 58-VERIFICATION) |
-| EMO-15 | 59 | satisfied (ver: 59-VERIFICATION) |
-| EMO-16 | 59 | satisfied (ver: 59-VERIFICATION) |
-| EMO-17 | 59 | satisfied (ver: 59-VERIFICATION) |
-| PAG-02 | 60 | satisfied (ver: 60-VERIFICATION) |
-| PAG-03 | 60 | satisfied (ver: 60-VERIFICATION) |
-| ICON-01 | 61 | unverified — backfill in 70 |
-| ACTIVEAPP-08 | 66 | unverified — refined by 66; backfill VERIFICATION in 70 |
-| ACTIVEAPP-07 | 62 | unverified — backfill in 70 |
-| ACTIVEAPP-07a | 62 | satisfied (met by 66 SplitActionSurface) |
-| ACTIVEAPP-07b | 62 | satisfied (met by 66 SplitActionSurface) |
-| SETTINGS-05 | 67 | pending — gap closure |
-| SETTINGS-06 | 67 | pending — gap closure |
-| SETTINGS-07 | 67 | pending — gap closure |
-| CHROME-01 | 68 | pending — gap closure |
-| VERIFY-02 | 69 | pending — gap closure |
-**Total:** 21/21 v1.6 requirements mapped, 0 circular dependencies.
+| RES-01 | 57 | satisfied (ver: 57-VERIFICATION, 69-VERIFICATION §3) |
+| RES-02 | 57 | satisfied (ver: 57-VERIFICATION, 69-VERIFICATION §3) |
+| RES-03 | 57 | satisfied (ver: 57-VERIFICATION, 69-VERIFICATION §3) |
+| PERF-01 | 58 | satisfied (ver: 58-VERIFICATION, 69-VERIFICATION §3) |
+| PERF-02 | 58 | satisfied (ver: 58-VERIFICATION, 69-VERIFICATION §3) |
+| PERF-03 | 58 | satisfied (ver: 58-VERIFICATION, 69-VERIFICATION §3) |
+| EMO-15 | 59 | satisfied (ver: 59-VERIFICATION, 69-VERIFICATION §3) |
+| EMO-16 | 59 | satisfied (ver: 59-VERIFICATION, 69-VERIFICATION §3) |
+| EMO-17 | 59 | satisfied (ver: 59-VERIFICATION, 69-VERIFICATION §3) |
+| PAG-02 | 60 | satisfied (ver: 60-VERIFICATION, 69-VERIFICATION §3) |
+| PAG-03 | 60 | satisfied (ver: 60-VERIFICATION, 69-VERIFICATION §3) |
+| ICON-01 | 61 | satisfied (ver: 70-VERIFICATION §Sub-criteria) |
+| ACTIVEAPP-08 | 66 | satisfied (ver: 70-VERIFICATION §Sub-criteria — refined by 66 SplitActionSurface) |
+| ACTIVEAPP-07 | 62 | satisfied (ver: 70-VERIFICATION §Sub-criteria) |
+| ACTIVEAPP-07a | 62 | satisfied (ver: 70-VERIFICATION §Sub-criteria — met by 66 SplitActionSurface) |
+| ACTIVEAPP-07b | 62 | satisfied (ver: 70-VERIFICATION §Sub-criteria — met by 66 SplitActionSurface) |
+| SETTINGS-05 | 67 | satisfied (ver: 70-VERIFICATION §Sub-criteria — fixed positions 0/1/2) |
+| SETTINGS-06 | 67 | satisfied (ver: 70-VERIFICATION §Sub-criteria — position 4, realigned 2026-06-15) |
+| SETTINGS-07 | 67 | satisfied (ver: 70-VERIFICATION §Sub-criteria — `IconLabelSurface` + `<Label>`) |
+| CHROME-01 | 68 | satisfied (ver: 68-VERIFICATION, 69-VERIFICATION §3) |
+| VERIFY-02 | 69 | satisfied (ver: 69-VERIFICATION) |
+**Total:** 21/21 v1.6 requirements satisfied. 0 circular dependencies.
 
 ## Build Order Rationale
 
