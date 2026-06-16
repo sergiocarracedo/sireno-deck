@@ -9,7 +9,8 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 69 — v1.6 verification sweep (v1.6 gap closure, VERIFY-02)
+Phase: 70 — v1.6 verification + metadata backfill (v1.6 gap closure, docs only)
+Status: **DISCUSSED (2026-06-15)**. 6 decisions captured (D-01..D-06) covering aggregation VERIFICATION for 61/62/66, 3 missing Phase 59 summaries, 67-CONTEXT invalidation preservation, REQUIREMENTS.md SETTINGS-06 realignment, project metadata bump to v1.6, single autonomous plan. No code, no tests, no new requirements. Next: plan-phase 70.
 Status: **VERIFIED (2026-06-15)**. Single `69-VERIFICATION.md` aggregating evidence from 7 in-scope phases (58, 59, 60, 61, 62, 67, 68). 8/8 ROADMAP success criteria + 8/8 VERIFY-02 sub-criteria + 13/13 v1.6 requirements traced. Targeted test sweep: 113/120 pass (7 pre-existing baseline failures, documented). Hardware caveat on PERF-01 back-button 12.35ms in-process number is documented. 6 open gaps deferred to Phase 70 (3 missing per-phase VERIFICATION.md, REQUIREMENTS.md SETTINGS-06 wording, 67-CONTEXT.md D-01..D-08 invalidation, 3 missing Phase 59 SUMMARY files, PROJECT.md line 26, ROADMAP.md Coverage Validation table). Next: /verify-work 69 (documentation-only, no UAT) → /ship → Phase 70.
 Last activity: 2026-06-15 — Phase 69 verification sweep executed (1 atomic commit, 69-VERIFICATION.md). Targeted vitest sweep: 113/120 pass (baseline). Phase 68 shipped to origin/main (27 commits, range 079d9e4..2d3b636, `git push` succeeded). Phase 69 discuss-phase + plan-phase + execute-phase complete end-to-end.
 
