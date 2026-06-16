@@ -1288,4 +1288,93 @@ describe("loadConfig", () => {
 
     throw new Error("Expected toggle-status token list validation to fail")
   })
+
+  it("loads the Phase 68 chrome overlay deck fixture with 7 keystroke-action buttons", async () => {
+    writeFileSync(
+      join(tempDir, "config.yml"),
+      [
+        "theme: dark",
+        "main_deck: main",
+        "decks:",
+        "  main:",
+        "    id: main",
+        "    buttons:",
+        "      - position: 0",
+        "        type: action",
+        "        label: Clock",
+        "        key_macro: 'ctrl+alt+t'",
+        "  chrome:",
+        "    id: chrome",
+        "    process_names:",
+        "      - chrome",
+        "    buttons:",
+        "      - position: 0",
+        "        type: action",
+        "        label: 'New tab'",
+        "        key_macro: 'ctrl+t'",
+        "        icon: 'icon://square-plus'",
+        "      - position: 1",
+        "        type: action",
+        "        label: 'Close tab'",
+        "        key_macro: 'ctrl+w'",
+        "        icon: 'icon://x'",
+        "      - position: 2",
+        "        type: action",
+        "        label: 'Unclose tab'",
+        "        key_macro: 'ctrl+shift+t'",
+        "        icon: 'icon://rotate-ccw'",
+        "      - position: 3",
+        "        type: action",
+        "        label: 'Incognito'",
+        "        key_macro: 'ctrl+shift+n'",
+        "        icon: 'icon://eye-off'",
+        "      - position: 4",
+        "        type: action",
+        "        label: 'Reload'",
+        "        key_macro: 'ctrl+r'",
+        "        icon: 'icon://rotate-cw'",
+        "      - position: 5",
+        "        type: action",
+        "        label: 'Hard reload'",
+        "        key_macro: 'ctrl+shift+r'",
+        "        icon: 'icon://refresh-cw'",
+        "      - position: 6",
+        "        type: action",
+        "        label: 'Dev tools'",
+        "        key_macro: 'F12'",
+        "        icon: 'icon://terminal'",
+        "addons: []",
+      ].join("\n"),
+    )
+
+    const { loadConfig } = await loadConfigModule()
+    const config = loadConfig()
+
+    const chromeDeck = config.decks.chrome
+    expect(chromeDeck).toBeDefined()
+    expect(chromeDeck.process_names).toEqual(["chrome"])
+    expect(chromeDeck.buttons).toHaveLength(7)
+
+    const expected = [
+      { position: 0, type: "action", key_macro: "ctrl+t" },
+      { position: 1, type: "action", key_macro: "ctrl+w" },
+      { position: 2, type: "action", key_macro: "ctrl+shift+t" },
+      { position: 3, type: "action", key_macro: "ctrl+shift+n" },
+      { position: 4, type: "action", key_macro: "ctrl+r" },
+      { position: 5, type: "action", key_macro: "ctrl+shift+r" },
+      { position: 6, type: "action", key_macro: "F12" },
+    ]
+    for (let i = 0; i < expected.length; i += 1) {
+      expect(chromeDeck.buttons[i].position).toBe(expected[i].position)
+      expect(chromeDeck.buttons[i].type).toBe(expected[i].type)
+      expect(chromeDeck.buttons[i].key_macro).toBe(expected[i].key_macro)
+    }
+
+    for (const button of chromeDeck.buttons) {
+      expect(button.commands).toBeUndefined()
+    }
+
+    const positions = chromeDeck.buttons.map((b) => b.position)
+    expect(Math.max(...positions)).toBeLessThan(7)
+  })
 })
