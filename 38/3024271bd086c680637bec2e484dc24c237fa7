@@ -1,0 +1,24 @@
+.planning/phases/69-v16-verification-sweep/69-01-SUMMARY.md
+  s_51a5160d42324b::t_8798a8d5f36dfb 1-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "383024271bd086c680637bec2e484dc24c237fa7",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
