@@ -165,11 +165,11 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.6 — UX Speed & Overlay Extensions
-**Phase:** 66 — SplitActionSurface
+**Phase:** 67 — Settings Deck Layout Revamp
 **Status:** planning
-**Last updated:** 2026-06-14
+**Last updated:** 2026-06-15
 
-## Phase 66 Plan Status (planning)
+## Phase 67 Plan Status (planning)
 
 - Plan 66-01 (Wave 1): SplitActionSurface component — create the component with diagonal `clip-path` split, CSS `transform` scaling, theme override support. Exports from `ui/index.ts`. Unit tests.
 - Plan 66-02 (Wave 2, depends on 66-01): System button migration — wire `SPLIT_ACTION_TYPE` into dispatcher and runtime, replace `SystemBackButton`, `SystemBackWithPendingOverlayButton`, simplify `SystemSettingsEntryButton` badge. Remove old components. Update overlay lifecycle tests.
