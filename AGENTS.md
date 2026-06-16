@@ -166,7 +166,7 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.6 — UX Speed & Overlay Extensions
 **Phase:** 68 — Chrome Overlay Deck Extensions
-**Status:** planning (1 plan, 1 wave)
+**Status:** executed (awaiting verify-work)
 **Last updated:** 2026-06-15
 
 ## Phase 67 Plan Status (verified)
