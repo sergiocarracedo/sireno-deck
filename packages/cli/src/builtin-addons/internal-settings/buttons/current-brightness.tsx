@@ -1,6 +1,6 @@
 import { ButtonSurface, defineMountedButton } from '@/addon/api'
 import { getCurrentBrightness } from '@/device/registry'
-import { Text } from '@/ui/index'
+import { Label, Text } from '@/ui/index'
 import { z } from 'zod'
 
 const CURRENT_BRIGHTNESS_RENDER_INTERVAL_MS = 1_000
@@ -17,7 +17,7 @@ export const internalSettingsCurrentBrightnessButton = defineMountedButton({
         data-sireno-settings-button="current-brightness"
       >
         <Text size="xl" tone="primary">{`${getCurrentBrightness()}%`}</Text>
-        <Text size="xs">Brightness</Text>
+        <Label>Brightness</Label>
       </div>
     </ButtonSurface>
   ),

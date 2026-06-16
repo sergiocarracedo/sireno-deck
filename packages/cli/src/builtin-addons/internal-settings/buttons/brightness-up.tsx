@@ -1,6 +1,6 @@
 import { ButtonSurface, defineMountedButton } from '@/addon/api'
 import { getCurrentBrightness, setBrightnessAll } from '@/device/registry'
-import { Icon, Text } from '@/ui/index'
+import { IconLabelSurface } from '@/ui/index'
 import { z } from 'zod'
 
 const BRIGHTNESS_STEP = 10
@@ -18,13 +18,11 @@ export const internalSettingsBrightnessUpButton = defineMountedButton({
   },
   render: () => (
     <ButtonSurface>
-      <div
-        className="flex h-full w-full flex-col items-center justify-center gap-1"
+      <IconLabelSurface
+        icon={{ name: 'sun', size: 32 }}
+        label="Brighter"
         data-sireno-settings-button="brightness-up"
-      >
-        <Icon name="sun" size={32} />
-        <Text size="xs">Brighter</Text>
-      </div>
+      />
     </ButtonSurface>
   ),
   type: '__sireno_internal_settings_brightness_up',
