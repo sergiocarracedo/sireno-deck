@@ -1,0 +1,19 @@
+.planning/phases/67-settings-deck-layout-revamp/67-01-PLAN.md
+  s_51a5160d42324b::t_671d95cead5442 1-244
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "71913b318af8e3cb53bc860f6dce7d656b3acc4b",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
