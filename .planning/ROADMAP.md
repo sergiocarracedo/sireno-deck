@@ -124,11 +124,11 @@ The emoji injection path (`clipboard.ts:pasteText`) only writes to the clipboard
 **Goal:** Reorder the settings deck's brightness controls and add a version icon at the last position per the v1.6 layout spec.
 **Requirements:** `SETTINGS-05`, `SETTINGS-06`, `SETTINGS-07`
 **Depends on:** 53, 54
-**Status:** [ ] Not started
+**Status:** ✓ Executed (2026-06-15) — see `67-01-SUMMARY.md` and `67-CONTEXT.md` (D-01..D-08).
 **Success criteria:**
-- [ ] Brightness buttons in order: darker (n-3), brighter (n-2), percent (n-1)
-- [ ] Version icon with sireno logo at position n-1, no border or background
-- [ ] Brightness controls use `iconTextSurface`; percent button uses `<Label>`
+- [x] Brightness buttons in order: darker (n-3), brighter (n-2), percent (n-1) — implemented as keyCount-driven `createInternalSettingsDeck(keyCount)`
+- [x] Version icon with sireno logo at position 0 (rephrased from "position n-1" per D-02; see REQUIREMENTS.md update pending in Phase 70)
+- [x] Brightness controls use `IconLabelSurface` (resolving the misnamed `iconTextSurface` reference per D-04); percent subtitle uses `<Label>` (D-06)
 
 ### Phase 68: Chrome overlay deck extensions *(gap closure)*
 

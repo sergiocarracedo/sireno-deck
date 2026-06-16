@@ -10,8 +10,8 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 ## Current Position
 
 Phase: 67 — Settings Deck Layout Revamp (v1.6 gap closure)
-Status: **DISCUSSED (2026-06-15)**. Context captured at `.planning/phases/67-settings-deck-layout-revamp/67-CONTEXT.md` (decisions D-01..D-08). Phase 66 fully shipped; P0+P1 review findings resolved in commit `079d9e4`. v1.6 audit (`.planning/v1.6-MILESTONE-AUDIT.md`) flagged phases 63/64/65 as never-planned; plan-milestone-gaps re-scoped them as 67/68/69/70 (commit `9179b26`).
-Last activity: 2026-06-15 — Phase 67 discuss-phase complete. CONTEXT.md + DISCUSSION-LOG.md written. Decisions: (1) position 0 = `__sireno_internal_settings_logo_version`, n-3/n-2/n-1 = darker/brighter/percent, (2) layout is dynamic per `keyCount` via `createInternalDecks(keyCount)`, (3) `iconTextSurface` resolves to existing `IconLabelSurface` (no new primitive), (4) `current_brightness` refactors to `<Label>` per SETTINGS-07, (5) `SETTINGS-06` requirement text rephrased from "n-1 = logo" to "position 0 = logo" (REQUIREMENTS.md + ROADMAP.md updates deferred to plan-phase / Phase 70 metadata backfill).
+Status: **EXECUTED (2026-06-15)**. Settings deck now built dynamically per `keyCount`: position 0 = `__sireno_internal_settings_logo_version`, n-3/n-2/n-1 = darker/brighter/percent. Brightness buttons refactored to `IconLabelSurface` (data-* props flow through via `...rest` spread); `current_brightness` subtitle uses `<Label>`. `INTERNAL_SETTINGS_DECK` constant replaced with exported `createInternalSettingsDeck(keyCount)` (throws on `keyCount < 4`). 26/26 Phase 67 tests pass; 0 new TS errors, 0 new lint warnings. Commits: 16bf093 (research), 30f0156 (button migrations), 7398049 (deck builder + matrix test). Next: verify-work 67.
+Last activity: 2026-06-15 — Phase 67 execute-phase complete (3 atomic commits). Plan `67-01` shipped all 7 tasks: IconLabelSurface spread, brightness-up/down migration to IconLabelSurface, current-brightness subtitle to Label, keyCount-driven deck builder, table-driven position matrix test (7 cases), and final test/lint sweep. SUMMARY.md written.
 
 ### Quick Tasks Completed
 
