@@ -87,3 +87,25 @@ function throws for `keyCount < 4`.
 - TypeScript: 0 new errors introduced (existing 982 pre-existing errors
   unrelated to Phase 67).
 - Lint: 0 new warnings on touched files.
+
+## Design correction (recorded after 67-02)
+
+The 67-01 plan implemented a keyCount-aware settings deck (positions 0,
+keyCount-3, keyCount-2, keyCount-1). During UAT the user rejected that
+design in favor of a FIXED layout. The corrected design (implemented in
+67-02) is:
+
+| Position | Button                          |
+| -------- | ------------------------------- |
+| 0        | brightness_down (Dimmer)        |
+| 1        | brightness_up (Brighter)        |
+| 2        | current_brightness (N% + label) |
+| 3        | (intentionally empty)           |
+| 4        | logo_version (sireno v1)        |
+| n-1      | reserved for runtime-injected system back button |
+
+CONTEXT.md decisions D-01 (logo@0), D-02 (SETTINGS-06 rephrase),
+D-03 (keyCount-aware), and D-08 (n-3/n-2/n-1 brightness cluster)
+are SUPERSEDED. The IconLabelSurface / Label primitive work from
+67-01 is unaffected and remains the source of truth for the
+brightness button render and the current-brightness subtitle.
