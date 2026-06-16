@@ -166,7 +166,7 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.6 — UX Speed & Overlay Extensions
 **Phase:** 67 — Settings Deck Layout Revamp
-**Status:** executed (awaiting verify-work)
+**Status:** executed (awaiting verify-work resume)
 **Last updated:** 2026-06-15
 
 ## Phase 67 Plan Status (executed)
