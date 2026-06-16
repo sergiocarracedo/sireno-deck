@@ -9,9 +9,9 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 68 — Chrome overlay deck extensions (v1.6 gap closure, CHROME-01)
-Status: **VERIFIED (2026-06-15, 10/10 UAT pass)**. 7 buttons in root `config.yml` chrome deck at positions 0-6 (New tab Ctrl+T, Close tab Ctrl+W, Unclose tab Ctrl+Shift+T, Incognito Ctrl+Shift+N, Reload Ctrl+R, Hard reload Ctrl+Shift+R, Dev tools F12). System back button runtime-injected at n-1 (no collision). Fixture at `packages/cli/fixtures/phase-68/config.chrome-overlay-extensions.yml`. Loader test (`chrome-deck-shape`) passes 3ms. Commits: c05bfb8 (config.yml), 50f1d67 (fixture), 13f9e38 (loader test), adf22d1 (summary + state + roadmap), 571de82 (VERIFICATION + AGENTS), 7f77dc0 (verify-work UAT 10/10). Next: ship 68 to origin/main.
-Last activity: 2026-06-15 — Phase 68 verify-work complete (10/10 UAT pass, status `passed`).
+Phase: 69 — v1.6 verification sweep (v1.6 gap closure, VERIFY-02)
+Status: **DISCUSSED (2026-06-15)**. Phase 69 produces a single `69-VERIFICATION.md` aggregating evidence from each in-scope phase (58, 59, 60, 61, 62, 67, 68). Format: Phase 56-style table (one table per VERIFY-02 sub-requirement, columns `[Phase, Test/Evidence, Result, Notes]`). Back button <200ms: accept Phase 58's in-process number with documented caveat (excludes IPC + hardware roundtrip; a real-hardware measurement is a separate benchmark phase, not part of verification aggregation). Per-phase VERIFICATION.md backfill for 61/62/67 is Phase 70 scope. `69-CONTEXT.md` and `69-DISCUSSION-LOG.md` captured with D-01..D-06. No new code in Phase 69 (pure verification artifact). Next: plan-phase 69.
+Last activity: 2026-06-15 — Phase 68 shipped to origin/main (27 commits, range 079d9e4..2d3b636, `git push` succeeded). Phase 69 discuss-phase complete: aggregation-only scope, Phase 56 table format, in-process back-button number with Phase 58 caveat.
 
 ### Quick Tasks Completed
 
