@@ -1,0 +1,31 @@
+.planning/phases/67-settings-deck-layout-revamp/67-UAT.md
+  s_51a5160d42324b::t_a26c2d1b0d535f 102,104
+  s_51a5160d42324b::t_6be53279f23d6b 18-19,21-23
+  s_51a5160d42324b::t_27202c80e56b2e 68-69
+  s_51a5160d42324b::t_10d3d06c4667e3 8,11,29-33,40-45,50-63,67,71-72,75-76,79-80,83-84,86-88,95,103,107,110-114,122,125-130
+  s_51a5160d42324b::t_aacc25e15442e2 73,77
+  s_51a5160d42324b::t_a97e260e420dd5 93
+  s_51a5160d42324b::t_582c45efa53266 16-17,20
+  s_51a5160d42324b::t_a7bc8a42b405d0 10
+  s_51a5160d42324b::t_e1b814782510b2 64-65
+  s_51a5160d42324b::t_8abd46c73e77f7 2
+  s_51a5160d42324b::t_582331da32f803 85
+  s_51a5160d42324b::t_310ef3ec299c6f 89
+  s_51a5160d42324b::t_13e3a5215a72fb 97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "c7fc769dbce8bac6d99e90bf710964ae62fba9b5",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
