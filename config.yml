@@ -78,8 +78,10 @@ decks:
         target_deck: main
   chrome:
     id: chrome
+    icon: /works/opensource/sireno-deck/assets/chrome.svg
     process_names:
       - chrome
+    autoShow: true
     buttons:
       - position: 0
         type: action
