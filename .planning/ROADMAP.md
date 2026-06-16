@@ -124,11 +124,12 @@ The emoji injection path (`clipboard.ts:pasteText`) only writes to the clipboard
 **Goal:** Reorder the settings deck's brightness controls and add a version icon at the last position per the v1.6 layout spec.
 **Requirements:** `SETTINGS-05`, `SETTINGS-06`, `SETTINGS-07`
 **Depends on:** 53, 54
-**Status:** ✓ Executed (2026-06-15) — see `67-01-SUMMARY.md` and `67-CONTEXT.md` (D-01..D-08).
+**Status:** ✓ Executed (2026-06-15, gap-closed via 67-02) — see `67-01-SUMMARY.md`, `67-02-SUMMARY.md`, and `67-CONTEXT.md` (D-01..D-08; D-01/D-02/D-03/D-08 invalidated by 67-02 — fixed positions replaced n-aware math).
 **Success criteria:**
-- [x] Brightness buttons in order: darker (n-3), brighter (n-2), percent (n-1) — implemented as keyCount-driven `createInternalSettingsDeck(keyCount)`
-- [x] Version icon with sireno logo at position 0 (rephrased from "position n-1" per D-02; see REQUIREMENTS.md update pending in Phase 70)
+- [x] Brightness controls in order darker, brighter, percent — implemented at fixed positions 0/1/2 in `createInternalSettingsDeck()` (per 67-02 user correction; replaces the n-aware approach from 67-01)
+- [x] Version icon with sireno logo at position 4 (user correction during UAT; supersedes 67-01's position 0). Position 3 is intentionally empty. `REQUIREMENTS.md` SETTINGS-06 wording is stale and will be re-aligned in Phase 70
 - [x] Brightness controls use `IconLabelSurface` (resolving the misnamed `iconTextSurface` reference per D-04); percent subtitle uses `<Label>` (D-06)
+- [x] Runtime-injected system back button at n-1 is never collided with — the fixed-position design leaves n-1 free for any keyCount in {6, 9, 15, 32} (tested in `internal-settings-deck.test.ts`)
 
 ### Phase 68: Chrome overlay deck extensions *(gap closure)*
 
