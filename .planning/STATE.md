@@ -10,8 +10,8 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 ## Current Position
 
 Phase: 68 — Chrome overlay deck extensions (v1.6 gap closure, CHROME-01)
-Status: **DISCUSSED (2026-06-15)**. Chrome deck is config-only — 7 buttons (replacing the existing dead "New tab" placeholder with a real `key_macro: "ctrl+t"` action, plus 6 new: close tab, unclose tab, incognito, reload, hard reload, dev tools). Decision: edit root `config.yml` chrome deck directly (no new addon), add a fixture at `packages/cli/fixtures/phase-68/config.chrome-overlay-extensions.yml` asserting the deck shape. System back button is runtime-injected at n-1 (no collision; chrome deck occupies 0-6). `68-CONTEXT.md` and `68-DISCUSSION-LOG.md` captured with D-01..D-08. Next: plan-phase 68.
-Last activity: 2026-06-15 — Phase 67 verify-work complete (9/9 UAT pass, status `passed`). Phase 68 discuss-phase complete: scoped to config-only change with 7 buttons + loader-shape fixture. Phase 67 was shipped end-to-end through gap closure 67-02 (fixed-position design replacing n-aware math; back button at n-1 unblocked).
+Status: **EXECUTED (2026-06-15)**. 3 atomic commits (c05bfb8, 50f1d67, 13f9e38). Chrome deck in `config.yml` now has 7 keystroke-action buttons at positions 0-6 (replaces dead "New tab" placeholder; adds close tab, unclose tab, incognito, reload, hard reload, dev tools). Fixture at `packages/cli/fixtures/phase-68/config.chrome-overlay-extensions.yml`. New loader test asserts deck shape (process_names, positions 0-6, key_macro values, no commands/key_macro conflict, no button at position 7+). System back button runtime-injected at n-1 — no collision. Next: verify-work 68 (real-hardware UAT of chrome deck).
+Last activity: 2026-06-15 — Phase 68 execute-phase complete. Plan 68-01 (4 tasks: config edit + fixture + loader test + targeted sweep). 37/37 new test logic passes; 26/26 core-buttons tests pass; 0 new lint warnings. SUMMARY.md written.
 
 ### Quick Tasks Completed
 

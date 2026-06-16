@@ -136,10 +136,11 @@ The emoji injection path (`clipboard.ts:pasteText`) only writes to the clipboard
 **Goal:** Add more keystroke actions to the chrome overlay deck (unclose tab, incognito, etc.).
 **Requirements:** `CHROME-01`
 **Depends on:** None
-**Status:** [ ] Not started
+**Status:** ✓ Executed (2026-06-15) — see `68-01-SUMMARY.md` and `68-CONTEXT.md` (D-01..D-08).
 **Success criteria:**
-- [ ] Chrome overlay deck has buttons for: unclose tab (Ctrl+Shift+T), incognito (Ctrl+Shift+N)
-- [ ] All chrome deck buttons use the `action` button type with `key_macro` or command-based keystroke execution
+- [x] Chrome overlay deck has buttons for: unclose tab (Ctrl+Shift+T), incognito (Ctrl+Shift+N) — and 5 more (close tab Ctrl+W, reload Ctrl+R, hard reload Ctrl+Shift+R, dev tools F12, plus new tab Ctrl+T replacing the dead placeholder)
+- [x] All chrome deck buttons use the `action` button type with `key_macro: "string"` — no dead buttons, no `commands` field
+- [x] Loader test (`packages/cli/src/config/loader.test.ts`) asserts deck shape: process_names: ['chrome'], 7 buttons at positions 0-6, each with the expected `key_macro` + `type`, no button at position 7+ (n-1 free for the runtime-injected back button)
 
 ### Phase 69: v1.6 verification sweep *(gap closure)*
 
