@@ -1,0 +1,25 @@
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-up.tsx
+  s_51a5160d42324b::t_29f0c1d6431d7c 3,21-23,25
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-down.tsx
+  s_51a5160d42324b::t_3b207d2fc42814 3,22-24,26
+packages/cli/src/builtin-addons/internal-settings/buttons/current-brightness.tsx
+  s_51a5160d42324b::t_d8ea7ee9bff002 3,20
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  s_51a5160d42324b::t_949596da400bce 1,7-8,20-25,27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "30f0156f07509b02d791740a67254b99b9dda11e",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
