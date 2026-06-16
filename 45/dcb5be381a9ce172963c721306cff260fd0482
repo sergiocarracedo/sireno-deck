@@ -1,0 +1,28 @@
+.planning/phases/69-v16-verification-sweep/69-CONTEXT.md
+  s_51a5160d42324b::t_3f29dae561632b 1-42
+.planning/STATE.md
+  s_51a5160d42324b::t_d4a7afdb4e0222 12-14
+.planning/phases/69-v16-verification-sweep/69-DISCUSSION-LOG.md
+  s_51a5160d42324b::t_88671b15a1a23c 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "45dcb5be381a9ce172963c721306cff260fd0482",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
