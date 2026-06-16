@@ -264,37 +264,55 @@ const internalSettingsButtonDefinitions = new Map<
   ButtonInstance['definition']
 >(internalSettingsAddon.buttons.map((button) => [button.type, button]))
 
-const INTERNAL_SETTINGS_DECK: DeckConfig = {
-  id: SETTINGS_DECK_ID,
-  name: 'Settings',
-  system: true,
-  buttons: (
-    [
-      { position: 0, type: '__sireno_internal_settings_brightness_up' },
-      { position: 1, type: '__sireno_internal_settings_brightness_down' },
-      { position: 2, type: '__sireno_internal_settings_current_brightness' },
-      { position: 3, type: '__sireno_internal_settings_logo_version' },
-    ] as const
-  ).map(({ position, type }) => {
-    const definition = internalSettingsButtonDefinitions.get(type)
-    if (!definition) {
-      throw new Error(
-        `Bundled internal-settings button definition is missing for type '${type}'`,
-      )
-    }
-    return {
-      config: {},
-      definition,
-      position,
-      type,
-    }
-  }),
+export function createInternalSettingsDeck(keyCount: number): DeckConfig {
+  if (keyCount < 4) {
+    throw new Error(
+      `internal settings deck requires keyCount >= 4 (got ${keyCount})`,
+    )
+  }
+  const buttonSpecs = [
+    {
+      position: 0,
+      type: '__sireno_internal_settings_logo_version',
+    },
+    {
+      position: keyCount - 3,
+      type: '__sireno_internal_settings_brightness_down',
+    },
+    {
+      position: keyCount - 2,
+      type: '__sireno_internal_settings_brightness_up',
+    },
+    {
+      position: keyCount - 1,
+      type: '__sireno_internal_settings_current_brightness',
+    },
+  ] as const
+  return {
+    id: SETTINGS_DECK_ID,
+    name: 'Settings',
+    system: true,
+    buttons: buttonSpecs.map(({ position, type }) => {
+      const definition = internalSettingsButtonDefinitions.get(type)
+      if (!definition) {
+        throw new Error(
+          `Bundled internal-settings button definition is missing for type '${type}'`,
+        )
+      }
+      return {
+        config: {},
+        definition,
+        position,
+        type,
+      }
+    }),
+  }
 }
 
 function createInternalDecks(keyCount: number): Record<string, DeckConfig> {
   return {
     [INTERNAL_LOCKED_DECK_ID]: createInternalLockedDeck(keyCount),
-    [SETTINGS_DECK_ID]: INTERNAL_SETTINGS_DECK,
+    [SETTINGS_DECK_ID]: createInternalSettingsDeck(keyCount),
   }
 }
 
