@@ -1,0 +1,19 @@
+.planning/phases/70-verification-metadata-backfill/70-01-SUMMARY.md
+  s_51a5160d42324b::t_a47bd4e9cc6c6a 1-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "e65935a07ee3b8b9cfb386daaa58d0321e8f6888",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
