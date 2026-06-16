@@ -2,7 +2,7 @@
 phase: 70
 created: 2026-06-15
 workflow: discuss-phase
-status: Ready for planning
+status: Executed (awaiting verify-work)
 ---
 
 # Phase 70 Context: Verification + Metadata Backfill
@@ -52,8 +52,8 @@ measurements for any of the three. Match the 8-section template used by
 ### D-02 — Phase 59 missing summaries
 Write three SUMMARY files from plan + git history:
 - `59-01-SUMMARY.md` (primary emoji injection, pasteText + keyMacro)
-- `59-02-SUMMARY.md` (category deduplication)
-- `59-GC3-SUMMARY.md` (gap-closure 3)
+- `59-02-SUMMARY.md` (paste config field `paste.keystroke` + EMO-17 audit)
+- `59-GC3-SUMMARY.md` (category deduplication, gap-closure 3)
 
 Follow the standard SUMMARY format used by the four existing Phase 59
 summaries (GC1, GC2, GC4, GC5). Each must be draftable from the plan file

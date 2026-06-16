@@ -48,7 +48,7 @@ ROADMAP Phase 70 lists 7 success criteria. Each row below traces the criterion t
 
 ## Sub-criteria Traceability
 
-The 8 v1.6 requirements in scope for the backfilled phases (ICON-01, ACTIVEAPP-07, ACTIVEAPP-07a, ACTIVEAPP-07b, ACTIVEAPP-08, SETTINGS-05, SETTINGS-06, SETTINGS-07) plus the 4 ICON-01/ACTIVEAPP-08 obligations carried by Phase 66. Each is traced to the in-scope phase artifact that establishes satisfaction.
+The 8 v1.6 requirements in scope for the backfilled phases (ICON-01, ACTIVEAPP-07, ACTIVEAPP-07a, ACTIVEAPP-07b, ACTIVEAPP-08, SETTINGS-05, SETTINGS-06, SETTINGS-07) plus the 1 ACTIVEAPP-08 obligation carried by Phase 66 (the dispatcher-split refinement). Each is traced to the in-scope phase artifact that establishes satisfaction.
 
 | Req | Phase | Status | Evidence | Source |
 |-----|-------|--------|----------|--------|

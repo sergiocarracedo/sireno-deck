@@ -29,7 +29,7 @@ Closed all 6 metadata gaps from the v1.6 audit. Phase 70 is documentation-only �
 ## Notes for downstream
 
 - **No code, no tests, no new requirements.** Phase 70 is the v1.6 milestone closure work; subsequent phases start fresh (e.g. Phase 71 = first v1.7 phase).
-- **70-VERIFICATION.md is the single source of truth for the 6 phases it covers** (58, 59, 60, 61, 62, 66, 67, 68 via the per-phase sub-criteria tables). Future verification or audit work can start from this file rather than reading 8 per-phase docs.
+- **70-VERIFICATION.md is the single source of truth for the 8 phases it covers** (58, 59, 60, 61, 62, 66, 67, 68 via the per-phase sub-criteria tables). Future verification or audit work can start from this file rather than reading 8 per-phase docs.
 - **The 3 backfilled 59 SUMMARYs are derivable from 59-VERIFICATION.md.** They are focused per-plan context, not a duplicate of the verification doc.
 - **AGENTS.md Current Phase block was NOT updated by this plan** (per Step 7b of execute-phase — the block is updated when the phase transitions to "complete" after verify-work, not during execute-phase).
 - **The phase is ready for `/verify-work 70`** (no UAT — documentation-only phase) → `/ship` → `/compound` → `complete-milestone v1.6` → `discuss-phase 71 (v1.7)`.

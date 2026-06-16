@@ -10,7 +10,7 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 ## Current Position
 
 Phase: 70 — v1.6 verification + metadata backfill (v1.6 gap closure, docs only)
-Status: **EXECUTED (2026-06-15)**. 1 plan, 5 tasks, 2 atomic commits: `28633af` (70-VERIFICATION + 3 missing 59 SUMMARYs) and the second commit (Tasks 3-5: 67-CONTEXT correction + REQUIREMENTS SETTINGS-06 realignment + PROJECT/STATE/ROADMAP metadata bump). No code, no tests, no new requirements. Next: /verify-work 70 → /ship → /compound → complete-milestone v1.6 → discuss-phase 71 (v1.7).
+Status: **EXECUTED (2026-06-15)**. 1 plan, 5 tasks, 4 atomic commits: `28633af` (70-VERIFICATION + 3 missing 59 SUMMARYs = Tasks 1-2), `5fd6b3a` (Tasks 3-5: 67-CONTEXT correction + REQUIREMENTS SETTINGS-06 realignment + PROJECT/STATE/ROADMAP metadata bump), `e65935a` (70-01-SUMMARY), `01b0471` (AGENTS.md status flip). No code, no tests, no new requirements. Next: /verify-work 70 → /ship → /compound → complete-milestone v1.6 → discuss-phase 71 (v1.7).
 Status: **VERIFIED (2026-06-15)**. Single `69-VERIFICATION.md` aggregating evidence from 7 in-scope phases (58, 59, 60, 61, 62, 67, 68). 8/8 ROADMAP success criteria + 8/8 VERIFY-02 sub-criteria + 13/13 v1.6 requirements traced. Targeted test sweep: 113/120 pass (7 pre-existing baseline failures, documented). Hardware caveat on PERF-01 back-button 12.35ms in-process number is documented. 6 open gaps deferred to Phase 70 (3 missing per-phase VERIFICATION.md, REQUIREMENTS.md SETTINGS-06 wording, 67-CONTEXT.md D-01..D-08 invalidation, 3 missing Phase 59 SUMMARY files, PROJECT.md line 26, ROADMAP.md Coverage Validation table). Next: /verify-work 69 (documentation-only, no UAT) → /ship → Phase 70.
 Last activity: 2026-06-15 — Phase 69 verification sweep executed (1 atomic commit, 69-VERIFICATION.md). Targeted vitest sweep: 113/120 pass (baseline). Phase 68 shipped to origin/main (27 commits, range 079d9e4..2d3b636, `git push` succeeded). Phase 69 discuss-phase + plan-phase + execute-phase complete end-to-end.
 
@@ -84,6 +84,18 @@ Key achievements:
 - Partial rerender on config/addon source changes
 - Startup image fills 100% of device surface on warm beige
 - Themable media-player Surface via manifest declaration
+
+### v1.4 — Addons & UX Polish
+Completed: 2026-06-07
+Phases: 7 (41-46, 49)
+Requirements delivered: BD-03, BD-05, SRB-01, SRB-02, SRB-03, SRB-03a, SRB-03b, SRB-04, SRB-05, CAL-01, CAL-02, CAL-03, MV-01 through MV-07, WX-01 through WX-06, EMO-01 through EMO-14
+Key achievements: v1.4 shipped 7 phases expanding the bundled addon surface and adding the system-reserved back button. Features include first-run Chromium auto-install, system-reserved back button in subdecks, calendar date-time button, media-volume (mute + up/down), weather addon (Open-Meteo + wttr.in fallback), and emoji-selector with real emoji rendering, paginated categories, emoji-launcher button, and noHistory page-to-page navigation. All 35 requirements satisfied, milestone audit passed.
+
+### v1.2 — Session Context and Surface Composition
+Completed: 2026-05-28
+Phases: 19 tracked phase directories executed or truthfully closed
+Requirements delivered: SCS-01, SCS-02, SCS-03, SCS-04, SCS-05, SCS-06, SCS-07, SCS-08, SCS-09
+Key achievements: v1.2 delivered the session-aware runtime/render contract, layered backgrounds, text fitting, reusable wrapper/style primitives, richer built-in toggles, and lock-deck substitution with unlock restore. The shipped follow-on hardening phases then carried the browser theme/font pipeline, emulator, mounted addon rendering, TSX-first built-ins, and final legacy-seam cleanup across the product surface.
 
 ## Performance Metrics
 
@@ -362,20 +374,6 @@ Recent decisions affecting current work:
 - **Phase 5 (Addon System):** Addon API contract must be versioned from day one; design decisions here are hard to reverse.
 - **Phase 5 (Addon System):** The addon-first architecture pivot is intentionally not backward-compatible with the current button config surface, so planning must account for schema, docs, examples, and migration fallout together.
 - **Phase 11:** `session-monitor.ts` is currently a narrow seam with honest supported/unsupported classification and simulated event handling, but it still needs a real supported-host event source to close the live lock-detection promise completely.
-
-## Milestone History
-
-### v1.4 — Addons & UX Polish
-Completed: 2026-06-07
-Phases: 7 (41-46, 49)
-Requirements delivered: BD-03, BD-05, SRB-01, SRB-02, SRB-03, SRB-03a, SRB-03b, SRB-04, SRB-05, CAL-01, CAL-02, CAL-03, MV-01 through MV-07, WX-01 through WX-06, EMO-01 through EMO-14
-Key achievements: v1.4 shipped 7 phases expanding the bundled addon surface and adding the system-reserved back button. Features include first-run Chromium auto-install, system-reserved back button in subdecks, calendar date-time button, media-volume (mute + up/down), weather addon (Open-Meteo + wttr.in fallback), and emoji-selector with real emoji rendering, paginated categories, emoji-launcher button, and noHistory page-to-page navigation. All 35 requirements satisfied, milestone audit passed.
-
-### v1.2 — Session Context and Surface Composition
-Completed: 2026-05-28
-Phases: 19 tracked phase directories executed or truthfully closed
-Requirements delivered: SCS-01, SCS-02, SCS-03, SCS-04, SCS-05, SCS-06, SCS-07, SCS-08, SCS-09
-Key achievements: v1.2 delivered the session-aware runtime/render contract, layered backgrounds, text fitting, reusable wrapper/style primitives, richer built-in toggles, and lock-deck substitution with unlock restore. The shipped follow-on hardening phases then carried the browser theme/font pipeline, emulator, mounted addon rendering, TSX-first built-ins, and final legacy-seam cleanup across the product surface.
 
 ## Session Continuity
 
