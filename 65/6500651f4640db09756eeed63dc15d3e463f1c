@@ -1,0 +1,19 @@
+packages/cli/src/deck/__tests__/internal-settings-deck.test.ts
+  s_51a5160d42324b::t_2c2c91476f9430 31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "656500651f4640db09756eeed63dc15d3e463f1c",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
