@@ -28,7 +28,7 @@ describe('createInternalSettingsDeck (fixed layout)', () => {
 
   it('has the expected system deck metadata', () => {
     const deck = createInternalSettingsDeck()
-    expect(deck.id).toBe('__sireno_internal_settings')
+    expect(deck.id).toBe('settings')
     expect(deck.name).toBe('Settings')
     expect(deck.system).toBe(true)
   })
