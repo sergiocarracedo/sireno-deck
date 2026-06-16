@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.6 — UX Speed & Overlay Extensions
-**Phase:** 69 — v1.6 Verification Sweep ✓ complete → Phase 70 — Verification + metadata backfill
-**Status:** verified
+**Phase:** 70 — Verification + metadata backfill
+**Status:** planning
 **Last updated:** 2026-06-15
 
 ## Phase 67 Plan Status (verified)
