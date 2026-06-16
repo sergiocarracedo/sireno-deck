@@ -2,7 +2,7 @@
 
 **Version:** v1.6 — UX Speed & Overlay Extensions
 **Milestone goal:** Fix UX friction from real use (slow button transitions, broken emoji injection), overhaul overlay UX with configurable auto-show and refined components, and extend the chrome overlay deck.
-**Last updated:** 2026-06-11
+**Last updated:** 2026-06-15
 
 ## Milestone Summary
 
@@ -119,31 +119,83 @@ The emoji injection path (`clipboard.ts:pasteText`) only writes to the clipboard
 - 66-01 — SplitActionSurface component (with theme override + tests) — shipped via commit 8319f42
 - 66-02 — System button migration (dispatcher + runtime + deletion of old components) — shipped via commit 8319f42
 
+### Phase 67: Settings deck layout revamp *(gap closure)*
+
+**Goal:** Reorder the settings deck's brightness controls and add a version icon at the last position per the v1.6 layout spec.
+**Requirements:** `SETTINGS-05`, `SETTINGS-06`, `SETTINGS-07`
+**Depends on:** 53, 54
+**Status:** [ ] Not started
+**Success criteria:**
+- [ ] Brightness buttons in order: darker (n-3), brighter (n-2), percent (n-1)
+- [ ] Version icon with sireno logo at position n-1, no border or background
+- [ ] Brightness controls use `iconTextSurface`; percent button uses `<Label>`
+
+### Phase 68: Chrome overlay deck extensions *(gap closure)*
+
+**Goal:** Add more keystroke actions to the chrome overlay deck (unclose tab, incognito, etc.).
+**Requirements:** `CHROME-01`
+**Depends on:** None
+**Status:** [ ] Not started
+**Success criteria:**
+- [ ] Chrome overlay deck has buttons for: unclose tab (Ctrl+Shift+T), incognito (Ctrl+Shift+N)
+- [ ] All chrome deck buttons use the `action` button type with `key_macro` or command-based keystroke execution
+
+### Phase 69: v1.6 verification sweep *(gap closure)*
+
+**Goal:** A single focused verification phase proving all v1.6 features work together end-to-end.
+**Requirements:** `VERIFY-02`
+**Depends on:** 58, 59, 60, 61, 62, 67, 68
+**Status:** [ ] Not started
+**Success criteria:**
+- [ ] Back button <200ms test evidence
+- [ ] Emoji keystroke injection test on at least one OS
+- [ ] Pagination 3-line rendering test
+- [ ] Icon change assertions
+- [ ] Overlay autoShow behavior tests
+- [ ] Settings deck layout tests
+- [ ] Chrome deck keystroke tests
+- [ ] All existing v1.5 tests still pass
+
+### Phase 70: Verification + metadata backfill *(gap closure)*
+
+**Goal:** Backfill the verification artifacts and metadata that earlier phases missed, so the milestone is consistently traceable end-to-end. Closes the documentation/process gaps that audit-milestone flagged, with no user-visible behavior change.
+**Requirements:** *(no new requirements — pure metadata)*
+**Depends on:** 66
+**Status:** [ ] Not started
+**Success criteria:**
+- [ ] `61-VERIFICATION.md` exists and reports `passed`
+- [ ] `62-VERIFICATION.md` exists and reports `passed`
+- [ ] `66-VERIFICATION.md` exists and reports `passed`
+- [ ] Phase 59 missing summaries written: `59-01-SUMMARY.md`, `59-02-SUMMARY.md`, `59-GC3-SUMMARY.md`
+- [ ] `PROJECT.md` "Latest Shipped Milestone" updated to `v1.6 — UX Speed & Overlay Extensions`
+- [ ] `STATE.md` Milestone History includes a v1.6 entry with shipped phase list
+- [ ] `ROADMAP.md` Coverage Validation status column updated to reflect actual satisfaction state
+
 ## Coverage Validation
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| RES-01 | 57 | pending |
-| RES-02 | 57 | pending |
-| RES-03 | 57 | pending |
-| PERF-01 | 58 | pending |
-| PERF-02 | 58 | pending |
-| PERF-03 | 58 | pending |
-| EMO-15 | 59 | pending |
-| EMO-16 | 59 | pending |
-| EMO-17 | 59 | pending |
-| PAG-02 | 60 | pending |
-| PAG-03 | 60 | pending |
-| ICON-01 | 61 | pending |
-| ACTIVEAPP-08 | 61 | pending |
-| ACTIVEAPP-07 | 62 | pending |
-| ACTIVEAPP-07a | 62 | pending |
-| ACTIVEAPP-07b | 62 | pending |
-| SETTINGS-05 | 63 | pending |
-| SETTINGS-06 | 63 | pending |
-| SETTINGS-07 | 63 | pending |
-| CHROME-01 | 64 | pending |
-| VERIFY-02 | 65 | pending |
+| RES-01 | 57 | satisfied (ver: 57-VERIFICATION) |
+| RES-02 | 57 | satisfied (ver: 57-VERIFICATION) |
+| RES-03 | 57 | satisfied (ver: 57-VERIFICATION) |
+| PERF-01 | 58 | satisfied (ver: 58-VERIFICATION) |
+| PERF-02 | 58 | satisfied (ver: 58-VERIFICATION) |
+| PERF-03 | 58 | satisfied (ver: 58-VERIFICATION) |
+| EMO-15 | 59 | satisfied (ver: 59-VERIFICATION) |
+| EMO-16 | 59 | satisfied (ver: 59-VERIFICATION) |
+| EMO-17 | 59 | satisfied (ver: 59-VERIFICATION) |
+| PAG-02 | 60 | satisfied (ver: 60-VERIFICATION) |
+| PAG-03 | 60 | satisfied (ver: 60-VERIFICATION) |
+| ICON-01 | 61 | unverified — backfill in 70 |
+| ACTIVEAPP-08 | 66 | unverified — refined by 66; backfill VERIFICATION in 70 |
+| ACTIVEAPP-07 | 62 | unverified — backfill in 70 |
+| ACTIVEAPP-07a | 62 | satisfied (met by 66 SplitActionSurface) |
+| ACTIVEAPP-07b | 62 | satisfied (met by 66 SplitActionSurface) |
+| SETTINGS-05 | 67 | pending — gap closure |
+| SETTINGS-06 | 67 | pending — gap closure |
+| SETTINGS-07 | 67 | pending — gap closure |
+| CHROME-01 | 68 | pending — gap closure |
+| VERIFY-02 | 69 | pending — gap closure |
 **Total:** 21/21 v1.6 requirements mapped, 0 circular dependencies.
 
 ## Build Order Rationale
@@ -154,10 +206,11 @@ The emoji injection path (`clipboard.ts:pasteText`) only writes to the clipboard
 - **Phase 60 (pagination button)** is independent and can run in parallel with 61-62 in theory, but is sequenced before icon/overlay work since the pagination button appears on overlay pages.
 - **Phase 61 (icon updates)** is pure cosmetic and independent of everything except existing icon availability.
 - **Phase 62 (overlay autoShow) depends on Phase 55** (the overlay system from v1.5) and on Phase 57 (understanding the back button timing for the 2xTap summon).
-- **Phase 63 (settings deck revamp) depends on Phase 53/54** (brightness API and settings deck from v1.5).
-- **Phase 64 (chrome deck)** is a config-only extension, independent of all other v1.6 phases.
-- **Phase 65 (verification)** is the cross-cutting regression sweep at the end.
 - **Phase 66 (DynamicActionsButton)** depends on Phase 62's overlay autoShow and replaces the bespoke pending-overlay button variants with a reusable dual-surface helper.
+- **Phase 67 (settings deck revamp, gap closure) depends on Phase 53/54** (brightness API and settings deck from v1.5).
+- **Phase 68 (chrome deck, gap closure)** is a config-only extension, independent of all other v1.6 phases.
+- **Phase 69 (verification sweep, gap closure) depends on 58, 59, 60, 61, 62, 67, 68** — the cross-cutting regression sweep at the end.
+- **Phase 70 (verification + metadata backfill, gap closure)** is documentation/process work; it depends on Phase 66 because that's the last "executed" phase whose VERIFICATION.md and metadata need to be backfilled. Closes the audit gaps without changing user-visible behavior.
 
 ## Phase Sizing
 
@@ -169,11 +222,12 @@ The emoji injection path (`clipboard.ts:pasteText`) only writes to the clipboard
 | 60 — Pagination button redesign | 1 | 1 | Small focused UI change |
 | 61 — Icon updates | 1 | 1 | Pure cosmetic, two icon swaps |
 | 62 — Overlay autoShow | 1-2 | 1-2 | New config + back button variant |
-| 63 — Settings deck revamp | 1 | 1 | Layout reorder + icon swap |
-| 64 — Chrome overlay deck | 1 | 1 | Config-only, add button actions |
-| 65 — Verification | 1 | 1 | Regression sweep |
 | 66 — DynamicActionsButton | 1 | 1 | Dual-surface system button helper |
-**Total:** 10 phases, ~10-13 plans, ~10-13 sessions.
+| 67 — Settings deck revamp (gap) | 1 | 1 | Layout reorder + icon swap |
+| 68 — Chrome overlay deck (gap) | 1 | 1 | Config-only, add button actions |
+| 69 — Verification (gap) | 1 | 1 | Regression sweep |
+| 70 — Backfill (gap) | 1 | 1 | Documentation/metadata only, no code |
+**Total:** 11 phases, ~11-14 plans, ~11-14 sessions.
 
 ## Anti-Features Carried Forward (kept out of v1.6)
 
@@ -187,4 +241,4 @@ The emoji injection path (`clipboard.ts:pasteText`) only writes to the clipboard
 ---
 
 *Roadmap created: 2026-06-11*
-*Total v1.6 phases: 9, total requirements: 21*
+*Total v1.6 phases: 11, total requirements: 21*
