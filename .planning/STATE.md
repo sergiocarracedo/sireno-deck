@@ -58,13 +58,15 @@ Progress: [██████████] 100% (7 of 7 in-scope v1.4 phases com
 
 ### v1.6 — UX Speed & Overlay Extensions
 Completed: 2026-06-15
-Phases: 10 (57-62, 66, plus 4 gap-closure phases 67-70)
+Phases: 11 (57-62, 66, plus 4 gap-closure phases 67-70)
+Requirements delivered: RES-01..03, PERF-01..03, EMO-15..17, PAG-02..03, ICON-01, ACTIVEAPP-07/07a/07b/08, SETTINGS-05..07, CHROME-01, VERIFY-02 (21/21 satisfied)
 Key achievements:
 - Resource (RES-01..03), Performance (PERF-01..03), Emoji (EMO-15..17), Pagination (PAG-02..03) phases shipped 2026-06-11
 - Icon updates (ICON-01) and Overlay autoShow (ACTIVEAPP-07/07a/07b/08) shipped 2026-06-11
 - SplitActionSurface dynamic actions button (Phase 66) shipped 2026-06-15
-- 4 gap-closure phases (67 settings layout, 68 chrome deck, 69 verification sweep, 70 metadata backfill) added after v1.6-MILESTONE-AUDIT found 3 original phases unbuilt
-- Final state: 13/21 v1.6 requirements satisfied, 4 deferred to verification backfill, 2 met-by-66, 2 not-started (SETTINGS-05..07 partially superseded by Phase 70 Task 4)
+- 4 gap-closure phases (67 settings layout, 68 chrome deck, 69 verification sweep, 70 metadata backfill) added after v1.6-MILESTONE-AUDIT found 3 original phases (63/64/65) unbuilt
+- Final state: 21/21 v1.6 requirements satisfied per `70-VERIFICATION.md` aggregation doc + 21-row ROADMAP Coverage Validation
+- 3 compounded solutions (chrome-deck-icon-path-typo, aggregation-only-verification-sweep, user-redesign-mid-uat-invalidate-context) captured from this milestone's arc
 
 ### v1.5 — Addons & UX Polish II
 Completed: 2026-06-07

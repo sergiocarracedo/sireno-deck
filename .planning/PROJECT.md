@@ -8,20 +8,9 @@ Sireno Deck is a TypeScript CLI for controlling and managing Stream Deck devices
 
 Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
 
-## Current Milestone: v1.6 — UX Speed & Overlay Extensions
+## Current Milestone: v1.7 (planning)
 
-**Goal:** Fix lingering UX friction — button response delays, broken emoji injection, overlay UX polish — and extend the overlay model with configurable auto-show, richer pagination buttons, improved iconography, and a more complete built-in chrome overlay deck.
-
-**Target features:**
-- Button response performance investigation and fix (back button ~1s delay, weather page transitions, others)
-- Emoji injection fix (paste text into active input via keystroke simulation, not just clipboard write)
-- Emoji category deduplication (smiles/people sharing same emoji set)
-- 3-line pagination button (Tap > / < 2xTap / Page X/Y)
-- System back button icon migration to `undo2`
-- Overlay `autoShow: false` mode — manual overlay activation via 2-line back button variant
-- Overlay toggle button icon update (`send-to-back` + overlay deck icon)
-- Settings brightness icon order (darker → brighter → percent), version icon at n-2, `iconTextSurface` for brightness, `<Label>` for percent
-- Built-in chrome overlay deck: more keystroke actions (unclose tab, incognito, etc.)
+Run `/new-milestone` to define v1.7 scope, requirements, and phases. The shipped v1.6 milestone (just below) is the reference for what v1.7 builds on.
 
 ## Latest Shipped Milestone: v1.6 — UX Speed & Overlay Extensions
 
@@ -48,6 +37,8 @@ See `.planning/v1.6-MILESTONE-AUDIT.md` and `.planning/REQUIREMENTS.md` for the 
 ### Validated
 
 - Background precedence, text fitting, wrapper/style primitives, richer built-in toggles, lock-deck substitution/restore behavior, browser-rendered theme/font delivery, mounted addon rendering, TSX-first built-ins, and emulator/browser verification all shipped across the v1.2 line and its follow-on hardening phases.
+- v1.5 — Addons & UX Polish II (25 requirements, all shipped; weather city name + 2-day forecast, bars content polish, settings deck, lock deck access — see `.planning/milestones/v1.5-ROADMAP.md` and `.planning/milestones/v1.5-REQUIREMENTS.md`).
+- v1.6 — UX Speed & Overlay Extensions (21 requirements, all shipped; render pipeline performance, emoji keystroke injection, pagination redesign, icon updates, overlay `autoShow` mode, `SplitActionSurface` system button, settings deck layout revamp, chrome overlay deck extensions — see `.planning/milestones/v1.6-ROADMAP.md` and `.planning/milestones/v1.6-REQUIREMENTS.md`).
 - [x] Ship a v1 CLI in TypeScript that can detect and control devices supported by `node-elgato-stream-deck`, with Linux as the minimum supported OS and a path to macOS and Windows support.
 - [x] Support a YAML-based `config.yml` that defines global settings, themes, the main deck, additional decks, button placement, and per-button configuration edited by users by hand.
 - [x] Implement core button and deck concepts: main deck, nested decks with back navigation, button types, and button instances.
@@ -67,9 +58,7 @@ See `.planning/v1.6-MILESTONE-AUDIT.md` and `.planning/REQUIREMENTS.md` for the 
 
 ### Active
 
-v1.5 — Addons & UX Polish II (25 requirements, all shipped)
-
-see `.planning/ROADMAP.md` for the upcoming v1.6 requirements.
+*(v1.6 was the most recent active milestone; it is now shipped — see "Latest Shipped Milestone" above. v1.7 requirements are pending `/new-milestone`.)*
 
 ### Out of Scope
 
@@ -107,4 +96,4 @@ The domain includes fast refresh behavior for live widgets such as CPU, memory, 
 | Run addons as trusted in-process code in v1 | Keeps the initial addon API simpler and avoids early sandbox complexity | Landed |
 
 ---
-*Last updated: 2026-06-11 starting milestone v1.6 — UX Speed & Overlay Extensions*
+*Last updated: 2026-06-15 shipping milestone v1.6 — UX Speed & Overlay Extensions*
