@@ -165,14 +165,14 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.6 — UX Speed & Overlay Extensions
-**Phase:** 67 — Settings Deck Layout Revamp
-**Status:** executed (awaiting verify-work resume)
+**Phase:** 68 — Chrome Overlay Deck Extensions
+**Status:** discussed (awaiting plan-phase)
 **Last updated:** 2026-06-15
 
-## Phase 67 Plan Status (executed)
+## Phase 67 Plan Status (verified)
 
-- Plan 66-01 (Wave 1): SplitActionSurface component — create the component with diagonal `clip-path` split, CSS `transform` scaling, theme override support. Exports from `ui/index.ts`. Unit tests.
-- Plan 66-02 (Wave 2, depends on 66-01): System button migration — wire `SPLIT_ACTION_TYPE` into dispatcher and runtime, replace `SystemBackButton`, `SystemBackWithPendingOverlayButton`, simplify `SystemSettingsEntryButton` badge. Remove old components. Update overlay lifecycle tests.
+- Plan 67-01 (Wave 1): Settings button migration — migrate `brightness_up`/`brightness_down` to `IconLabelSurface` (extended with `...rest` spread for data-* props), migrate `current_brightness` subtitle to `<Label>`. `logo_version` keeps hand-rolled render. Exports from `ui/index.ts`. Unit tests.
+- Plan 67-02 (Wave 2, gap closure after UAT test 2 surfaced back-button collision): Replaced keyCount-aware `createInternalSettingsDeck(keyCount)` with fixed-position `createInternalSettingsDeck()` (positions {0: dim, 1: bright, 2: percent, 4: logo}, position 3 empty, n-1 free for runtime-injected back button). Updated matrix test.
 
 ---
 
