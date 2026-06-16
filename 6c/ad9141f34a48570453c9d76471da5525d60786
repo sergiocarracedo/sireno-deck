@@ -1,0 +1,29 @@
+.planning/STATE.md
+  s_51a5160d42324b::t_129ef09ed3269e 13
+  s_51a5160d42324b::t_422e9f75abd4e6 88-99
+.planning/phases/59-emoji-keystroke-injection-and-category-fix/59-GC3-SUMMARY.md
+  s_51a5160d42324b::t_31f3f3abd73e16 28
+.planning/phases/70-verification-metadata-backfill/70-CONTEXT.md
+  s_51a5160d42324b::t_2a525ebcebf60a 5
+  s_51a5160d42324b::t_8fcfdeb9546f2d 55-56
+.planning/phases/70-verification-metadata-backfill/70-01-SUMMARY.md
+  s_51a5160d42324b::t_0aaae412f7393d 32
+.planning/phases/70-verification-metadata-backfill/70-VERIFICATION.md
+  s_51a5160d42324b::t_d8bf3842f2bded 51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "6cad9141f34a48570453c9d76471da5525d60786",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
