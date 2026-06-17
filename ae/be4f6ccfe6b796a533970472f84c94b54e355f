@@ -1,0 +1,27 @@
+packages/cli/src/util/profile.ts
+  s_1eb393451cb328::t_0ab1898beeaa45 1-47
+.planning/phases/71-gesture-state-machine-hardening/71-01-SUMMARY.md
+  s_1eb393451cb328::t_193b55b2da0708 1-59
+packages/cli/src/deck/runtime.ts
+  s_1eb393451cb328::t_aa7a8c03302c11 1342
+  s_1eb393451cb328::t_2bbeca3edb5ed1 1362,1367
+  s_1eb393451cb328::t_1ab1ae3a09a8e2 33
+  s_1eb393451cb328::t_949cac741ca006 1126-1133,1136-1177,1179-1192,1195-1197,1199
+  s_1eb393451cb328::t_f46e8c9ad50586 1134
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "aebe4f6ccfe6b796a533970472f84c94b54e355f",
+  "prompts": {},
+  "sessions": {
+    "s_1eb393451cb328": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_12da2f406ffecZQ7Y4h0yXu6ko",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
