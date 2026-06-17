@@ -1,0 +1,24 @@
+packages/cli/README.md
+  s_469c0c9aff79bb::t_958f77442eb457 1-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "1913be73133bf1645348df537b5412d282cd2ffd",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_469c0c9aff79bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_129126bf4ffeC1puCBqg5C7qzn",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
