@@ -28,6 +28,7 @@ import {
   type RuntimeButtonErrorKind,
 } from '@/util/errors'
 import { createDeckController } from './controller'
+import { dispatchGestureEnd } from './gesture-state'
 import { OverlayToggleButton } from './system-buttons/OverlayToggleButton'
 
 import type {
@@ -1736,25 +1737,19 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         return
       }
 
-      if (instance.onDblTap) {
-        if (gs?.pendingDblTapTimer) {
-          clearTimeout(gs.pendingDblTapTimer)
-          gestureStates.delete(stateKey)
-          await handleDblTap(event.keyIndex)
-        } else {
-          await new Promise<void>((resolve) => {
-            const timer = setTimeout(() => {
-              gestureStates.delete(stateKey)
-              void handleTap(event.keyIndex)
-                .then(resolve)
-                .catch(reportRuntimeError)
-            }, DOUBLE_TAP_DELAY_MS)
-            gestureStates.set(stateKey, { pendingDblTapTimer: timer })
-          })
-        }
-      } else {
-        await handleTap(event.keyIndex)
-      }
+      await dispatchGestureEnd(
+        gs,
+        {
+          onTap: () => handleTap(event.keyIndex),
+          onDblTap: instance.onDblTap
+            ? () => handleDblTap(event.keyIndex)
+            : undefined,
+          reportError: reportRuntimeError,
+          keyIndex: event.keyIndex,
+        },
+        stateKey,
+        gestureStates,
+      )
     })().catch(reportRuntimeError)
   }
 
