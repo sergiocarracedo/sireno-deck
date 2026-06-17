@@ -59,7 +59,7 @@ describe('OverlayToggleButton', () => {
     expect(html).toContain('📺')
   })
 
-  it('renders a generic layout-grid lucide icon in the badge when the deck name has no emoji', () => {
+  it('renders the uppercase first character of the deck name when no icon or emoji is configured', () => {
     const html = renderReactNodeToHtml(
       createElement(OverlayToggleButton, {
         activeOverlayDeck: makeDeck({ id: 'plain-deck', name: 'Plain Deck' }),
@@ -67,6 +67,22 @@ describe('OverlayToggleButton', () => {
     )
 
     expect(html).toContain('sireno-overlay-badge')
-    expect(html).toContain('lucide-layout-grid')
+    expect(html).toContain('>P<')
+    expect(html).not.toContain('lucide-layout-grid')
+  })
+
+  it('renders the configured icon as the badge glyph when deck.icon is set', () => {
+    const html = renderReactNodeToHtml(
+      createElement(OverlayToggleButton, {
+        activeOverlayDeck: makeDeck({
+          icon: 'icon://app-window',
+          name: 'My App',
+        }),
+      }),
+    )
+
+    expect(html).toContain('sireno-overlay-badge')
+    expect(html).toContain('lucide-app-window')
+    expect(html).not.toContain('lucide-layout-grid')
   })
 })

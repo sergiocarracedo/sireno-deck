@@ -260,6 +260,57 @@ describe('autoShow schema (62-01)', () => {
   })
 })
 
+describe('deck icon field (72-01)', () => {
+  it('preserves a configured icon string on a regular deck', () => {
+    const registry = createBundledAddonRegistry()
+    const config = {
+      ...makeDeck(0),
+      decks: {
+        main: {
+          buttons: [],
+          id: 'main',
+          icon: 'icon://app-window',
+          keyCount: KEY_COUNT,
+        },
+      },
+    }
+    const result = validateConfig(config, registry)
+    expect(result.decks?.main?.icon).toBe('icon://app-window')
+  })
+
+  it('accepts a deck without icon (backwards compatible)', () => {
+    const registry = createBundledAddonRegistry()
+    const config = {
+      ...makeDeck(0),
+      decks: {
+        main: {
+          buttons: [],
+          id: 'main',
+          keyCount: KEY_COUNT,
+        },
+      },
+    }
+    const result = validateConfig(config, registry)
+    expect(result.decks?.main?.icon).toBeUndefined()
+  })
+
+  it('rejects an empty icon string', () => {
+    const registry = createBundledAddonRegistry()
+    const config = {
+      ...makeDeck(0),
+      decks: {
+        main: {
+          buttons: [],
+          id: 'main',
+          icon: '',
+          keyCount: KEY_COUNT,
+        },
+      },
+    }
+    expect(() => validateConfig(config, registry)).toThrow()
+  })
+})
+
 describe('system buttons (66-01)', () => {
   it('rejects a user-declared internal-settings button in a user deck', () => {
     const registry = createBundledAddonRegistry()

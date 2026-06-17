@@ -3,6 +3,7 @@ import { type ReactElement } from 'react'
 import { ButtonSurface } from '@/addon/api'
 import type { DeckConfig } from '@/core/schemas'
 import { Icon } from '@/ui'
+import { iconConfigToProps } from '@/ui/Icon'
 import { Label } from '@/ui/Label'
 
 interface OverlayToggleButtonProps {
@@ -17,12 +18,22 @@ function extractFirstEmoji(value: string | undefined): string | null {
   return match ? match[0] : null
 }
 
+function extractNameInitial(value: string | undefined): string | null {
+  if (!value) return null
+  const first = value.charAt(0)
+  return first ? first.toUpperCase() : null
+}
+
 export function OverlayToggleButton(
   props: OverlayToggleButtonProps,
 ): ReactElement {
   const { activeOverlayDeck } = props
   const deckName = activeOverlayDeck?.name ?? activeOverlayDeck?.id
   const badgeEmoji = deckName ? extractFirstEmoji(deckName) : null
+  const nameInitial = deckName ? extractNameInitial(deckName) : null
+  const badgeIconSpec = activeOverlayDeck?.icon
+    ? iconConfigToProps(activeOverlayDeck.icon, { size: 10 })
+    : null
   const label = deckName ?? 'Show App'
 
   return (
@@ -38,8 +49,12 @@ export function OverlayToggleButton(
               data-testid="sireno-overlay-badge"
               className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-background leading-none"
             >
-              {badgeEmoji !== null ? (
+              {badgeIconSpec !== null ? (
+                <Icon {...badgeIconSpec} />
+              ) : badgeEmoji !== null ? (
                 <span className="text-[12px]">{badgeEmoji}</span>
+              ) : nameInitial !== null ? (
+                <span className="text-[12px]">{nameInitial}</span>
               ) : (
                 <Icon name="layout-grid" size={10} />
               )}

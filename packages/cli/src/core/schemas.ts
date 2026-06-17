@@ -192,6 +192,7 @@ export interface DeckConfig {
   autoShow?: boolean
   background?: string
   deckType?: string
+  icon?: string
   id: string
   keyCount?: number
   name?: string
@@ -214,6 +215,7 @@ const CoreDeckConfigSchema = z
   .object({
     autoShow: z.boolean().default(false),
     background: z.string().min(1).optional(),
+    icon: z.string().min(1).optional(),
     system: z.boolean().optional(),
   })
   .strict()
@@ -394,6 +396,7 @@ function getDeckPayload(
         key !== 'autoShow' &&
         key !== 'background' &&
         key !== 'buttons' &&
+        key !== 'icon' &&
         key !== 'id' &&
         key !== 'name' &&
         key !== 'type',
@@ -469,6 +472,7 @@ function expandDecks(
     if (!deckType) {
       const parsedCoreDeckConfig = CoreDeckConfigSchema.safeParse({
         background: deck.background,
+        icon: deck.icon,
       })
       if (!parsedCoreDeckConfig.success) {
         throw toConfigValidationError(parsedCoreDeckConfig.error.issues[0], [
@@ -480,6 +484,9 @@ function expandDecks(
       decks[deckKey] = {
         ...(parsedCoreDeckConfig.data.background !== undefined
           ? { background: parsedCoreDeckConfig.data.background }
+          : {}),
+        ...(parsedCoreDeckConfig.data.icon !== undefined
+          ? { icon: parsedCoreDeckConfig.data.icon }
           : {}),
         ...(deck.allow_reserved_slot_override !== undefined
           ? { allow_reserved_slot_override: deck.allow_reserved_slot_override }
@@ -508,6 +515,7 @@ function expandDecks(
 
     const parsedCoreDeckConfig = CoreDeckConfigSchema.safeParse({
       background: deck.background,
+      icon: deck.icon,
     })
     if (!parsedCoreDeckConfig.success) {
       throw toConfigValidationError(parsedCoreDeckConfig.error.issues[0], [
@@ -546,13 +554,17 @@ function expandDecks(
 
       decks[generatedDeckId] = generatedDeck
 
-      if (
-        generatedDeckId === deckKey &&
-        parsedCoreDeckConfig.data.background !== undefined
-      ) {
+      const coreOverlay: { background?: string; icon?: string } = {}
+      if (parsedCoreDeckConfig.data.background !== undefined) {
+        coreOverlay.background = parsedCoreDeckConfig.data.background
+      }
+      if (parsedCoreDeckConfig.data.icon !== undefined) {
+        coreOverlay.icon = parsedCoreDeckConfig.data.icon
+      }
+      if (generatedDeckId === deckKey && Object.keys(coreOverlay).length > 0) {
         decks[generatedDeckId] = {
           ...generatedDeck,
-          background: parsedCoreDeckConfig.data.background,
+          ...coreOverlay,
         }
       }
     }
@@ -654,6 +666,9 @@ export function validateConfig(
     decks[deckKey] = {
       ...(bootstrap.decks[deckKey]?.background !== undefined
         ? { background: bootstrap.decks[deckKey]?.background }
+        : {}),
+      ...(bootstrap.decks[deckKey]?.icon !== undefined
+        ? { icon: bootstrap.decks[deckKey]?.icon }
         : {}),
       ...(bootstrap.decks[deckKey]?.allow_reserved_slot_override !== undefined
         ? {
