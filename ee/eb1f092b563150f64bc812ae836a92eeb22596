@@ -1,0 +1,24 @@
+packages/cli/src/deck/runtime.ts
+  s_1eb393451cb328::t_be4bef4247eb98 1091
+  s_1eb393451cb328::t_dac4bea83967be 1166,1171-1173
+  s_1eb393451cb328::t_0ba80ff37f42cf 1096-1113,1118-1132
+  s_1eb393451cb328::t_5751e8ce390ac8 24
+.planning/phases/72-system-buttons-dispatcher-and-deck-icon/72-02-SUMMARY.md
+  s_1eb393451cb328::t_0dcb98603cc965 1-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "eeeb1f092b563150f64bc812ae836a92eeb22596",
+  "prompts": {},
+  "sessions": {
+    "s_1eb393451cb328": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_12da2f406ffecZQ7Y4h0yXu6ko",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
