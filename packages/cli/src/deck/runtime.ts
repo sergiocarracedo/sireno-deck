@@ -1056,6 +1056,13 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
             }
             await activateDeckSurface(SETTINGS_DECK_ID, deckId)
           },
+          onDblTap: async () => {
+            if (overlayDeckId !== null) {
+              dismissOverlay()
+              return
+            }
+            restoreLastDismissedOverlay()
+          },
           render: () =>
             createElement(SplitActionSurface, {
               primary: createElement(SystemSettingsEntryButton),
