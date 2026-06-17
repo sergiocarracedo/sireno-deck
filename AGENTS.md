@@ -166,8 +166,14 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.7 — Polish & 3rd-Party Fixtures
 **Phase:** 73 — Paste semantics + macro error surfacing
-**Status:** pending discuss-phase
+**Status:** plan-phase complete (2 plans ready, Wave 1)
 **Last updated:** 2026-06-17
+
+## v1.7 Phase 73 Plan Status (planned, ready for execute-phase)
+
+- Plan 73-01 (Wave 1, pending): BUG-05 — `pasteText` writes to clipboard (`clipboardy.writeSync`) AND sends Ctrl+V/Cmd+V paste keystroke via `keyMacroProvider.send(parseKeyMacro('ctrl+v'))`. `pasteText` function signature extended with optional `keyMacroProvider` parameter. Runtime pasteText handler wraps in try/catch and calls `showRuntimeButtonError(button, deckId, 'paste', error)`. New `"paste"` error kind at `util/errors.ts` with code `4111`.
+- Plan 73-02 (Wave 1, pending): BUG-06 — All 3 platform key-macro providers (`linux.ts`, `darwin.ts`, `windows.ts`) throw on failure instead of silently swallowing. New `"key-macro"` error kind at `util/errors.ts` with code `4110`. Runtime `keyMacro` handler wraps provider call in try/catch and calls `showRuntimeButtonError(button, deckId, 'key-macro', error)`.
+- Both plans are independent Wave-1 vertical slices touching different handlers in `runtime.ts`.
 
 ## v1.7 Phase 72 Plan Status (✓ complete)
 
