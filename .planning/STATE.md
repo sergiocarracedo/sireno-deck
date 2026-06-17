@@ -9,9 +9,9 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 71 — v1.7 Polish & 3rd-Party Fixtures (gesture state machine hardening)
-Status: **DISCUSSED (2026-06-17)**. Discuss-phase complete: 4 gray areas resolved (BUG-02 = strict, no visual indicator, 350ms consistent with deck-nav; BUG-01 = real-hardware profile, both directions, target from data; refactor = extract `dispatchGestureEnd` helper; tests = 4 minimum + multi-key + real-hardware integration). CONTEXT.md (`cc3c4d5`) captures all decisions. Next: /plan-phase 71 → /execute-phase 71 → /verify-work 71 → /review → /ship → /compound → repeat for 72-76 → /verify-work v1.7 → /ship → /compound → /complete-milestone v1.7.
-Last activity: 2026-06-17 — v1.7 Phase 71 discuss-phase complete (commit `cc3c4d5`). 4 user decisions captured. User insight: "Laggy is not related to this thing because for example deck navigation works nice" — strict-mode 350ms wait is consistent with normal system responsiveness, no visual indicator needed. BUG-01 and BUG-02 are independent bugs (different code paths in `runtime.ts`); BUG-01 is real pipeline delay, BUG-02 is gesture dispatch strictness.
+Phase: 72 — v1.7 Polish & 3rd-Party Fixtures (system-buttons dispatcher + deck icon)
+Status: **DISCUSSED (2026-06-17)**. Discuss-phase complete: 4 gray areas resolved (BUG-03 2xTap summons overlay + overlay back dismisses; BUG-03 visual = reuse existing SplitActionSurface; BUG-04 icon type = same as action button icon with `icon:` prefix; BUG-04 fallback = deck-name initial capital letter). CONTEXT.md (`7bd1829`) captures all decisions. Next: /plan-phase 72 → /execute-phase 72 → /verify-work 72 → /review → /ship → /compound → repeat for 73-76 → /verify-work v1.7 → /ship → /compound → /complete-milestone v1.7.
+Last activity: 2026-06-17 — v1.7 Phase 72 discuss-phase complete (commit `7bd1829`). 4 user decisions captured. Phase 71 closed: 2 plans executed (`c60ec37` BUG-02, `aebe4f6` BUG-01), UAT passed (`a142b04` 6/6), 3 P3 review fixes shipped (`6c93d01`). Phase 72 builds on Phase 71 P3-3 (settings role onDblTap wiring).
 
 ### Quick Tasks Completed
 
