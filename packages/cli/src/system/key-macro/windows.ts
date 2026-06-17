@@ -115,9 +115,8 @@ export function createWindowsKeyMacroProvider(
         `${ps} -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ${shellSingleQuote(script)}`,
       )
       if (result.failed) {
-        options.deps.logger.warn(
-          { script: script.slice(0, 200) },
-          'key-macro: powershell returned non-zero exit',
+        throw new Error(
+          `key-macro: powershell failed (exit code: ${result.code})`,
         )
       }
     },

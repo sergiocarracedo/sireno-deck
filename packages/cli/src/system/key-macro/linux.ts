@@ -89,6 +89,8 @@ async function runCommand(
     .join(' ')
   const result = await executor.run(program)
   if (result.failed) {
-    // Non-fatal: keep macro playing through unless the program is missing.
+    throw new Error(
+      `key-macro: xdotool command failed (exit code: ${result.code}): ${program}`,
+    )
   }
 }

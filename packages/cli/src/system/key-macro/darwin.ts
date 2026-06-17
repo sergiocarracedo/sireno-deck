@@ -114,9 +114,8 @@ export function createDarwinKeyMacroProvider(
         `/usr/bin/osascript -e ${shellSingleQuote(script)}`,
       )
       if (result.failed) {
-        options.deps.logger.warn(
-          { script },
-          'key-macro: osascript returned non-zero exit',
+        throw new Error(
+          `key-macro: osascript failed (exit code: ${result.code})`,
         )
       }
     },
