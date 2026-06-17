@@ -1,0 +1,21 @@
+.planning/phases/72-system-buttons-dispatcher-and-deck-icon/72-CONTEXT.md
+  s_1eb393451cb328::t_f80117c064cd38 1-70
+.planning/phases/72-system-buttons-dispatcher-and-deck-icon/72-DISCUSSION-LOG.md
+  s_1eb393451cb328::t_1b66a4b5e843d6 1-105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "7bd1829bf96ee6e6cfe3785f9fff34e0479b4ab9",
+  "prompts": {},
+  "sessions": {
+    "s_1eb393451cb328": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_12da2f406ffecZQ7Y4h0yXu6ko",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
