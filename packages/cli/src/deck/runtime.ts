@@ -1056,13 +1056,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
             }
             await activateDeckSurface(SETTINGS_DECK_ID, deckId)
           },
-          onDblTap: async () => {
-            if (overlayDeckId !== null) {
-              dismissOverlay()
-              return
-            }
-            restoreLastDismissedOverlay()
-          },
+          onDblTap: defaultSystemBackDblTap(),
           render: () =>
             createElement(SplitActionSurface, {
               primary: createElement(SystemSettingsEntryButton),
@@ -1130,6 +1124,16 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return { holdCommand, tapCommand }
     }
 
+    function defaultSystemBackDblTap() {
+      return async () => {
+        if (overlayDeckId !== null) {
+          dismissOverlay()
+          return
+        }
+        restoreLastDismissedOverlay()
+      }
+    }
+
   function createSystemBackHandlers(
     targetDeckId: string,
     targetButton: ButtonInstance,
@@ -1171,6 +1175,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
             try {
               deckController.navigateTo(SETTINGS_DECK_ID, { push: true })
               hop('navigateToDeck-invoke')
+              await activateDeckSurface(SETTINGS_DECK_ID, previousDeckId)
             } catch (error) {
               await showRuntimeButtonError(
                 targetButton,
@@ -1179,28 +1184,24 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
                 error,
               )
               return
+            } finally {
+              profileBackTransition('settings-deck-landing', 'end')
             }
-            await activateDeckSurface(SETTINGS_DECK_ID, previousDeckId)
-            profileBackTransition('settings-deck-landing', 'end')
           }
           return
         }
         profileBackTransition('back-from-settings', 'start')
         hop('onTap-fired')
-        deckController.goBack()
-        hop('goBack-invoke')
-        await activateDeckSurface(undefined, previousDeckId)
-        profileBackTransition('back-from-settings', 'end')
+        try {
+          deckController.goBack()
+          hop('goBack-invoke')
+          await activateDeckSurface(undefined, previousDeckId)
+        } finally {
+          profileBackTransition('back-from-settings', 'end')
+        }
       },
       onDblTap: hasOverlayContext
-        ? (onDblTapOverride ??
-            (async () => {
-              if (overlayDeckId !== null) {
-                dismissOverlay()
-                return
-              }
-              restoreLastDismissedOverlay()
-            }))
+        ? (onDblTapOverride ?? defaultSystemBackDblTap())
         : undefined,
     }
   }

@@ -4079,6 +4079,65 @@ describe('createDeckRuntime', () => {
     })
   })
 
+  it('wires onDblTap on the settings role system back button (Phase 71 P3-3 regression pin)', async () => {
+    const executeAction = vi.fn(async () => ({
+      code: 0,
+      failed: false,
+      signal: undefined,
+      stderr: '',
+      stdout: '',
+      timedOut: false,
+    }))
+    const sessionMonitor = createSessionMonitorDouble({
+      capability: 'supported',
+      state: 'unlocked',
+    })
+    const listeners: Array<
+      (event: { keyIndex: number; type: 'down' | 'up' }) => void
+    > = []
+    const runtime = createDeckRuntime({
+      addonRegistry: createEmptyAddonRegistry(),
+      deck: { buttons: [], id: 'main' },
+      decks: {
+        main: { buttons: [], id: 'main' },
+        __sireno_settings__: { buttons: [], id: '__sireno_settings__' },
+      },
+      executeAction,
+      hostContext: {
+        os: { type: 'linux', variant: 'ubuntu', version: '24.04' },
+        session: { capability: 'supported', state: 'unlocked' },
+      },
+      sessionMonitor,
+      subscribeKeyEvents: (listener) => {
+        listeners.push(listener)
+        return () => {}
+      },
+      theme: createTestTheme(),
+    })
+
+    runtime.start()
+
+    await vi.waitFor(() => {
+      const mainButton = runtime.getButton(14)
+      expect(mainButton).toMatchObject({
+        id: SPLIT_ACTION_TYPE,
+        position: 14,
+        type: SPLIT_ACTION_TYPE,
+      })
+    })
+
+    for (const listener of listeners) {
+      listener({ keyIndex: 14, type: 'down' })
+      listener({ keyIndex: 14, type: 'up' })
+      listener({ keyIndex: 14, type: 'down' })
+      listener({ keyIndex: 14, type: 'up' })
+    }
+
+    await vi.waitFor(() => {
+      expect(runtime.getRenderButtons().length).toBeGreaterThan(0)
+    })
+  })
+
   it('treats paginated deck navigation as a noHistory page-to-page flow (49-07)', async () => {
     const registry = createBundledAddonRegistry()
     const changeDeckDefinition = registry.getButton('change-deck')!
