@@ -31,6 +31,7 @@ import {
 import { createDeckController } from './controller'
 import { dispatchGestureEnd } from './gesture-state'
 import { OverlayToggleButton } from './system-buttons/OverlayToggleButton'
+import { pasteText as doPaste } from '@/util/clipboard'
 import { hop, profileBackTransition } from '@/util/profile'
 
 import type {
@@ -1006,7 +1007,6 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
         await activateDeckSurface(targetDeckId, previousDeckId)
       },
       pasteText: async (text: string) => {
-        const { pasteText: doPaste } = await import('../util/clipboard.js')
         try {
           await doPaste(text, keyMacroProvider)
         } catch (error) {
