@@ -30,6 +30,7 @@ import {
 import { createDeckController } from './controller'
 import { dispatchGestureEnd } from './gesture-state'
 import { OverlayToggleButton } from './system-buttons/OverlayToggleButton'
+import { hop, profileBackTransition } from '@/util/profile'
 
 import type {
   AddonButtonRenderState,
@@ -1122,69 +1123,80 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       return { holdCommand, tapCommand }
     }
 
-    function createSystemBackHandlers(
-      targetDeckId: string,
-      targetButton: ButtonInstance,
-      onDblTapOverride?: () => Promise<void> | void,
-    ): Pick<RuntimeButtonInstance, 'onDblTap' | 'onHold' | 'onTap'> {
-      const { holdCommand, tapCommand } =
-        resolveSystemBackCommands(targetDeckId)
+  function createSystemBackHandlers(
+    targetDeckId: string,
+    targetButton: ButtonInstance,
+    onDblTapOverride?: () => Promise<void> | void,
+  ): Pick<RuntimeButtonInstance, 'onDblTap' | 'onHold' | 'onTap'> {
+    const { holdCommand, tapCommand } =
+      resolveSystemBackCommands(targetDeckId)
+    const hasOverlayContext =
+      overlayDeckId !== null || lastDismissedOverlayDeckId !== null
 
-      return {
-        onHold: async () => {
-          if (holdCommand) {
-            await executeAction(holdCommand)
-            return
-          }
-          if (
-            overlayDeckId !== null &&
-            getDisplayDeckId() === SETTINGS_DECK_ID
-          ) {
-            dismissOverlay()
-            return
-          }
-          const previousDeckId = getDisplayDeckId()
-          deckController.restoreStack([])
-          await activateDeckSurface(undefined, previousDeckId)
-        },
-        onTap: async () => {
-          temporaryErrorDeck = null
-          if (tapCommand) {
-            await executeAction(tapCommand)
-            return
-          }
-          const previousDeckId = getDisplayDeckId()
-          if (previousDeckId === options.deck.id) {
-            if (SETTINGS_DECK_ID in runtimeDecks) {
-              try {
-                deckController.navigateTo(SETTINGS_DECK_ID, { push: true })
-              } catch (error) {
-                await showRuntimeButtonError(
-                  targetButton,
-                  targetDeckId,
-                  'navigateToDeck',
-                  error,
-                )
-                return
-              }
-              await activateDeckSurface(SETTINGS_DECK_ID, previousDeckId)
-            }
-            return
-          }
-          deckController.goBack()
-          await activateDeckSurface(undefined, previousDeckId)
-        },
-        onDblTap:
-          onDblTapOverride ??
-          (async () => {
-            if (overlayDeckId !== null) {
-              dismissOverlay()
+    return {
+      onHold: async () => {
+        if (holdCommand) {
+          await executeAction(holdCommand)
+          return
+        }
+        if (
+          overlayDeckId !== null &&
+          getDisplayDeckId() === SETTINGS_DECK_ID
+        ) {
+          dismissOverlay()
+          return
+        }
+        const previousDeckId = getDisplayDeckId()
+        deckController.restoreStack([])
+        await activateDeckSurface(undefined, previousDeckId)
+      },
+      onTap: async () => {
+        temporaryErrorDeck = null
+        if (tapCommand) {
+          await executeAction(tapCommand)
+          return
+        }
+        const previousDeckId = getDisplayDeckId()
+        if (previousDeckId === options.deck.id) {
+          if (SETTINGS_DECK_ID in runtimeDecks) {
+            profileBackTransition('settings-deck-landing', 'start')
+            hop('onTap-fired')
+            try {
+              deckController.navigateTo(SETTINGS_DECK_ID, { push: true })
+              hop('navigateToDeck-invoke')
+            } catch (error) {
+              await showRuntimeButtonError(
+                targetButton,
+                targetDeckId,
+                'navigateToDeck',
+                error,
+              )
               return
             }
-            restoreLastDismissedOverlay()
-          }),
-      }
+            await activateDeckSurface(SETTINGS_DECK_ID, previousDeckId)
+            profileBackTransition('settings-deck-landing', 'end')
+          }
+          return
+        }
+        profileBackTransition('back-from-settings', 'start')
+        hop('onTap-fired')
+        deckController.goBack()
+        hop('goBack-invoke')
+        await activateDeckSurface(undefined, previousDeckId)
+        profileBackTransition('back-from-settings', 'end')
+      },
+      onDblTap: hasOverlayContext
+        ? (onDblTapOverride ??
+            (async () => {
+              if (overlayDeckId !== null) {
+                dismissOverlay()
+                return
+              }
+              restoreLastDismissedOverlay()
+            }))
+        : undefined,
     }
+  }
 
     const runtimeProps = createMountedRuntimeProps(deckId, button)
     const store = createMountedButtonStore(
@@ -1327,6 +1339,7 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     activeDeckId = getDisplayDeckId(),
     previousDeckId = getDisplayDeckId(),
   ): Promise<void> {
+    hop('activateDeckSurface-invoke')
     const activationVersion = activeActivationVersion + 1
     activeActivationVersion = activationVersion
 
@@ -1346,10 +1359,12 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
 
     await renderDeckSurface(activeDeckId, activationVersion)
     if (!isActivationCurrent(activeDeckId, activationVersion)) {
+      hop('activateDeckSurface-stale')
       return
     }
 
     startActiveDeckPolling(activeDeckId, activationVersion)
+    hop('activateDeckSurface-return')
   }
 
   function stopActiveDeckPolling(): void {
