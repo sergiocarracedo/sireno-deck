@@ -165,19 +165,16 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.7 — Polish & 3rd-Party Fixtures
-**Phase:** 72 — System-buttons dispatcher + deck icon (BUG-03 2-line SplitActionSurface + BUG-04 deck icon field)
-**Status:** planning (gap-closure)
+**Phase:** 73 — Paste semantics + macro error surfacing
+**Status:** pending discuss-phase
 **Last updated:** 2026-06-17
 
-## v1.7 Phase 72 Plan Status (planning, gap-closure)
+## v1.7 Phase 72 Plan Status (✓ complete)
 
 - Plan 72-01 (Wave 1, executed, commit `381089e`): BUG-04 — `CoreDeckConfigSchema.icon` field added and carried through 5 loader seams (`DeckConfig` interface, `getDeckPayload` exclusion list, 2 `expandDecks` safeParse call sites, addon-generated deck overlay, final `decks[deckKey]` builder spread). `OverlayToggleButton` updated to use `iconConfigToProps` with a 4-tier fallback chain (configured icon → first emoji → name initial → layout-grid). 3 new schema tests (round-trip, backwards-compat, empty rejection). 2 new render tests + 1 updated existing test (the old "layout-grid for 'Plain Deck'" test now asserts the name-initial fallback). All 6/6 OverlayToggleButton + 14/14 schemas tests pass.
 - Plan 72-02 (Wave 2, executed, commit `eeeb1f0`): BUG-03 — `SplitActionSurface` render in `createSystemBackHandlers` (line 1094-1125) now shows the overlay deck's icon in the secondary slot using the same 4-tier fallback chain. `createSystemBackHandlers` signature extended with optional `hasPendingOverlay: boolean` parameter; `hasOverlayContext` check at line 1170-1173 now includes this signal so the 2xTap-summon action can fire when `pendingOverlayDeck` is set. The onDblTapOverride at line 1078-1090 (calls `findSummonableActiveAppDeckFor` + `summonOverlay`) was already correct — now reachable thanks to the gating fix.
 - Plan deviation in 72-02: did NOT add the planned base-deck summon test. Investigation showed `dispatchGestureEnd`'s strict path doesn't reliably fire `onDblTap` for synchronous `emitEvent.emit(...)` calls in test contexts. The existing test at `runtime.test.ts:4967` was in the 79-failure baseline before Phase 72, so this pre-dates the work. Flagged for future `/forensics`. Visual fix verified by inspection.
-- Plan 72-03 (Wave 1, created, commit `635354d`): Gap-closure plan for 3 UAT documentation gaps. All 3 gaps diagnosed as documentation-only (no code changes needed): Gaps 1-2 (user expected custom logo from `icon://app-window` when `icon://` prefix is Lucide icon names, not custom images), Gap 3 (2-line SplitActionSurface only triggers with overlay deck + matching `process_names` + `autoShow: false`). Plan tasks: document icon path prefix semantics (`icon://`, `./`, `addon://`, `brand://`) and 2-line trigger conditions in README, sync to `packages/cli/README.md`, update REQUIREMENTS.md and ROADMAP.md.
-- Wave ordering: 72-01 first (schema + resolver available), then 72-02 (reuses resolver for the 2-line visual), then 72-03 (doc-only gap closure).
-- Regression: 79 failed / 56 passed vs baseline 79 failed / 36 passed. Zero new failures.
-- Outstanding: UAT gap-closure execution (72-03 execute-phase) pending.
+- Plan 72-03 (Wave 1, executed, commits `bbc3f58` + `1913be7` + `c8f2687` + `6600a8e` + `7bdb080`): Gap-closure documentation for 3 UAT gaps. Documented icon path prefix semantics (`icon://` = Lucide name, `./`, `addon://`, `brand://` = custom images), 4-tier fallback chain, n-1 overlay deck icon rule, and 2-line SplitActionSurface trigger conditions (overlay deck + `process_names` + `autoShow: false`) in README.md and packages/cli/README.md. Updated REQUIREMENTS.md and ROADMAP.md with gap-closure status. Zero new failures (125 failed / 573 passed, all pre-existing).
 
 ## v1.7 Phase 71 Plan Status (executed, pending verify-work)
 
