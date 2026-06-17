@@ -9,9 +9,9 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 72 — v1.7 Polish & 3rd-Party Fixtures (system-buttons dispatcher + deck icon)
-Status: **DISCUSSED (2026-06-17)**. Discuss-phase complete: 4 gray areas resolved (BUG-03 2xTap summons overlay + overlay back dismisses; BUG-03 visual = reuse existing SplitActionSurface; BUG-04 icon type = same as action button icon with `icon:` prefix; BUG-04 fallback = deck-name initial capital letter). CONTEXT.md (`7bd1829`) captures all decisions. Next: /plan-phase 72 → /execute-phase 72 → /verify-work 72 → /review → /ship → /compound → repeat for 73-76 → /verify-work v1.7 → /ship → /compound → /complete-milestone v1.7.
-Last activity: 2026-06-17 — v1.7 Phase 72 discuss-phase complete (commit `7bd1829`). 4 user decisions captured. Phase 71 closed: 2 plans executed (`c60ec37` BUG-02, `aebe4f6` BUG-01), UAT passed (`a142b04` 6/6), 3 P3 review fixes shipped (`6c93d01`). Phase 72 builds on Phase 71 P3-3 (settings role onDblTap wiring).
+Phase: 73 — Paste semantics + macro error surfacing (BUG-05 `pasteText` not actually pasting, BUG-06 keyMacroProvider silent failures)
+Status: **DISCUSSED (2026-06-17)**. Discuss-phase complete: 3 gray areas resolved (paste keystroke via existing keyMacroProvider, both clipboard+keystroke failures surface via showRuntimeButtonError, providers throw instead of swallowing, new `"key-macro"` error kind added to RuntimeButtonErrorKind). 73-CONTEXT.md and 73-DISCUSSION-LOG.md written. Next: plan-phase 73 → execute-phase 73.
+Last activity: 2026-06-17 — v1.7 Phase 72 complete (3 plans executed; 7/7 success criteria; gap-closure docs for 3 UAT gaps). Phase 73 discuss-phase complete.
 
 ### Quick Tasks Completed
 
