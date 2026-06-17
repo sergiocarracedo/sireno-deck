@@ -166,12 +166,15 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.7 — Polish & 3rd-Party Fixtures
 **Phase:** 71 — Gesture state machine hardening (BUG-01 system back delay + BUG-02 double-tap strict semantics)
-**Status:** planned (pending discuss-phase)
+**Status:** planned (plan-checker approved, pending execute-phase)
 **Last updated:** 2026-06-17
 
-## v1.7 Phase Plan Status (in planning)
+## v1.7 Phase 71 Plan Status (pending execute-phase)
 
-7 phases scoped (71–77), 11 requirements (BUG-01..07, FEAT-01..02, 3RD-01..02, VERIFY-03). Phase dependency graph: 71–74 independent, 75 → 74, 76 → 75, 77 → 71-76.
+- Plan 71-01 (Wave 2, depends_on 71-02): BUG-01 — Real-hardware profile + fix for system back button delay. Targets `createSystemBackHandlers` (runtime.ts:1124-1186) to omit `onDblTap` when no overlay context, removing the unconditional `DOUBLE_TAP_DELAY_MS` debounce. Uses `SIRENO_PROFILE` + `SIRENO_PROFILE_BACK_TRANSITIONS` sub-flag (mirrors browser-renderer.ts:76). Fixture at `packages/cli/fixtures/phase-71/`.
+- Plan 71-02 (Wave 1): BUG-02 — Strict double-tap semantics + dispatcher refactor. Extracts `dispatchGestureEnd(gs, callbacks, key, states)` helper to new `packages/cli/src/deck/gesture-state.ts`. 3 release cases (hold won / dbltap / strict no-dbltap). Strict: button with onTap-only, double-pressed within `DOUBLE_TAP_DELAY_MS`, fires `onTap` 0 times. Pins Phase 56 spread discipline via test.
+- Wave ordering: 71-02 first (extracts helper, rewires dispatcher at runtime.ts:1739-1757), then 71-01 (modifies `createSystemBackHandlers` on top of the rewired dispatcher).
+- Plan-checker verdict: "Fix minor issues + resolve wave conflict" — wave conflict resolved (71-01 wave 2), 7 minor fixes applied (line range accuracy, profile pattern alignment with opt-in-env-var-instrumentation-pattern solution, fixture directory convention, cross-plan interplay note, test target clarification, baseline terminology, DOUBLE_TAP_DELAY_MS constant reference).
 
 ## Phase 67 Plan Status (verified, v1.6 ship)
 
