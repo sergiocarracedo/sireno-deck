@@ -109,7 +109,7 @@ export const AddonButtonActionConfigSchema = z
   .strict()
 
 export const HOLD_ACTION_DELAY_MS = 600
-export const DOUBLE_TAP_DELAY_MS = 400
+export const DOUBLE_TAP_DELAY_MS = 200
 
 type ActionCommandResolver<TConfig, TPayload> =
   | AddonButtonActionCommands
