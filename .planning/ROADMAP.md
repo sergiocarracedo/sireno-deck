@@ -143,8 +143,8 @@ Phases 71–74 are independent and can be parallelized at the plan level. Phase 
 |-------------|-------|--------|
 | BUG-01 | 71 | satisfied (ver: 71-01) |
 | BUG-02 | 71 | satisfied (ver: 71-02) |
-| BUG-03 | 72 | pending |
-| BUG-04 | 72 | pending |
+| BUG-03 | 72 | satisfied (ver: 72-02) |
+| BUG-04 | 72 | satisfied (ver: 72-01) |
 | BUG-05 | 73 | pending |
 | BUG-06 | 73 | pending |
 | BUG-07 | 74 | pending |
