@@ -21,6 +21,7 @@ import {
   type PollingScheduler,
 } from '@/render/scheduler'
 import { Icon, MainLabelSurface, Text } from '@/ui/index'
+import { resolveIconSpec } from '@/ui/Icon'
 import { SplitActionSurface } from '@/ui/surfaces/SplitActionSurface'
 import {
   createRuntimeButtonErrorLogEntry,
@@ -1087,24 +1088,48 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
               restoreLastDismissedOverlay()
             }
           : undefined,
+        pendingOverlayDeck !== null,
       )
 
       return {
         ...backHandlers,
-        render: () =>
-          createElement(SplitActionSurface, {
+        render: () => {
+          const overlayDeckName =
+            pendingOverlayDeck?.label ?? pendingOverlayDeck?.name ?? ''
+          const overlayEmoji = overlayDeckName
+            ? (overlayDeckName.match(/^\p{Extended_Pictographic}/u)?.[0] ??
+              null)
+            : null
+          const overlayInitial = overlayDeckName
+            ? overlayDeckName.charAt(0).toUpperCase()
+            : null
+          const overlayIconSpec = pendingOverlayDeck?.icon
+            ? resolveIconSpec(pendingOverlayDeck.icon)
+            : null
+          const secondaryMain =
+            overlayIconSpec !== null && overlayIconSpec !== undefined
+              ? overlayIconSpec
+              : null
+          return createElement(SplitActionSurface, {
             primary: createElement(MainLabelSurface, {
               main: { name: 'undo2' },
               label: 'Back',
             }),
-            secondary: pendingOverlayDeck
-              ? createElement(MainLabelSurface, {
-                  main: { name: 'send-to-back' },
-                  label:
-                    pendingOverlayDeck.label ?? pendingOverlayDeck.name ?? '',
-                })
-              : undefined,
-          }),
+            secondary:
+              pendingOverlayDeck === null
+                ? undefined
+                : createElement(MainLabelSurface, {
+                    main:
+                      secondaryMain ??
+                      (overlayEmoji !== null
+                        ? { name: overlayEmoji }
+                        : overlayInitial !== null
+                          ? { name: overlayInitial }
+                          : { name: 'layout-grid' }),
+                    label: overlayDeckName,
+                  }),
+          })
+        },
       }
     }
 
@@ -1138,11 +1163,14 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
     targetDeckId: string,
     targetButton: ButtonInstance,
     onDblTapOverride?: () => Promise<void> | void,
+    hasPendingOverlay: boolean = false,
   ): Pick<RuntimeButtonInstance, 'onDblTap' | 'onHold' | 'onTap'> {
     const { holdCommand, tapCommand } =
       resolveSystemBackCommands(targetDeckId)
     const hasOverlayContext =
-      overlayDeckId !== null || lastDismissedOverlayDeckId !== null
+      overlayDeckId !== null ||
+      lastDismissedOverlayDeckId !== null ||
+      hasPendingOverlay
 
     return {
       onHold: async () => {
