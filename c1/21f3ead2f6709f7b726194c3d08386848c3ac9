@@ -1,0 +1,32 @@
+AGENTS.md
+  s_469c0c9aff79bb::t_ff7b95937c442a 168-169,172,174-175
+.planning/phases/73-paste-semantics-macro-error-surfacing/73-01-SUMMARY.md
+  s_469c0c9aff79bb::t_e027144f7d77fe 1-22
+.planning/phases/73-paste-semantics-macro-error-surfacing/73-02-SUMMARY.md
+  s_469c0c9aff79bb::t_47688866229327 1-23
+.planning/STATE.md
+  s_469c0c9aff79bb::t_ab128d7151ece6 13-14
+.planning/ROADMAP.md
+  s_469c0c9aff79bb::t_6470b96bb4ff32 57,59-60,62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "c121f3ead2f6709f7b726194c3d08386848c3ac9",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_469c0c9aff79bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_129126bf4ffeC1puCBqg5C7qzn",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
