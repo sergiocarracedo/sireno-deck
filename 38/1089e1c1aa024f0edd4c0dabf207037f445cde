@@ -1,0 +1,33 @@
+.planning/phases/72-system-buttons-dispatcher-and-deck-icon/72-01-SUMMARY.md
+  s_1eb393451cb328::t_2c8e2c320ce6f5 1-42
+packages/cli/src/core/schemas.ts
+  s_1eb393451cb328::t_fe1c0c4b499c4d 218
+  s_1eb393451cb328::t_7efa784f2c9540 195
+  s_1eb393451cb328::t_4143d5dcebf206 475,488-489
+  s_1eb393451cb328::t_96b472d06b1a68 518,557-564,567
+  s_1eb393451cb328::t_b88daa2ca0e93b 670-672
+  s_1eb393451cb328::t_e1d2035272b9eb 399
+packages/cli/src/core/schemas.test.ts
+  s_1eb393451cb328::t_9c5b3b885155b8 263-313
+packages/cli/src/deck/system-buttons/OverlayToggleButton.test.tsx
+  s_1eb393451cb328::t_d2cd266771c70d 79,86
+  s_1eb393451cb328::t_20646a46112934 62,70-78,80-85
+packages/cli/src/deck/system-buttons/OverlayToggleButton.tsx
+  s_1eb393451cb328::t_df83ad9cd977e6 6,21-26,33-36,52-54,56-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "381089e1c1aa024f0edd4c0dabf207037f445cde",
+  "prompts": {},
+  "sessions": {
+    "s_1eb393451cb328": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_12da2f406ffecZQ7Y4h0yXu6ko",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
