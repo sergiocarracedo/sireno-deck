@@ -165,16 +165,24 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.7 — Polish & 3rd-Party Fixtures
-**Phase:** 71 — Gesture state machine hardening (BUG-01 system back delay + BUG-02 double-tap strict semantics)
-**Status:** executed (pending verify-work)
+**Phase:** 72 — System-buttons dispatcher + deck icon (BUG-03 2-line SplitActionSurface + BUG-04 deck icon field)
+**Status:** planned (plan-checker approved, pending execute-phase)
 **Last updated:** 2026-06-17
+
+## v1.7 Phase 72 Plan Status (plan-checker approved, pending execute-phase)
+
+- Plan 72-01 (Wave 1, BUG-04): Add optional `icon?: string` to `CoreDeckConfigSchema` and carry it through 5 loader seams (schema field, `DeckConfig` interface, 2 `expandDecks` call sites, final `decks[deckKey]` builder). The plan-checker caught the under-scoped fix: the field is added at 1 site but dropped at 4 others if only the schema is touched. Update `OverlayToggleButton` to use `resolveIconSpec(deck.icon)` with a 4-tier fallback chain (configured icon → first emoji → name initial → layout-grid). Update the existing test at `OverlayToggleButton.test.tsx:62-71` to reflect the new fallback chain.
+- Plan 72-02 (Wave 2, depends_on [72-01], BUG-03): When a base deck has a `pendingOverlayDeck` and the overlay is not yet shown, the reserved back position renders the 2-line `SplitActionSurface` with primary=back icon ("Tap") and secondary=overlay deck icon ("2xTap"). 2xTap calls `summonOverlay(pendingOverlayDeck.id)`. The `onDblTapOverride` already exists at `runtime.ts:1078-1089` — only the visual needs updating. Extend the existing test at `runtime.test.ts:4967` with a stronger assertion, and add a new test for the base-deck summon-from-base case.
+- Wave ordering: 72-01 first (schema + resolver available), then 72-02 (reuses resolver for the 2-line visual).
+- Plan-checker verdict: "FIX MINOR" (1 MAJOR + 10 minors). MAJOR + all 10 minors applied via Edit batch.
 
 ## v1.7 Phase 71 Plan Status (executed, pending verify-work)
 
 - Plan 71-02 (Wave 1, executed, commit `c60ec37`): BUG-02 strict double-tap semantics + dispatcher refactor. Extracted `dispatchGestureEnd(gs, callbacks, key, states)` to new `packages/cli/src/deck/gesture-state.ts`. Cases 2+3 collapsed into single "second press" branch. `onHold` in callback type but not wired (handleHold signature is `(deckId, button)`, not `(keyIndex)`). 6/6 gesture-state tests pass (no-callback-dbltap, single-tap-on-no-dbltap, dbltap-on-dbltap, hold-during-tap-window, multi-key concurrent, Phase 56 spread pin). 0 regressions in `runtime.test.ts` vs baseline.
 - Plan 71-01 (Wave 2, executed, commit `aebe4f6`): BUG-01 fix — system back button now omits `onDblTap` when no overlay context (`overlayDeckId === null && lastDismissedOverlayDeckId === null`), removing the unconditional `DOUBLE_TAP_DELAY_MS` debounce. Profile instrumentation at new `packages/cli/src/util/profile.ts` (gated on `SIRENO_PROFILE=1` + `SIRENO_PROFILE_BACK_TRANSITIONS=1`, mirrors `browser-renderer.ts:76`). Initial implementation referenced `pendingOverlayDeck` which is not in `createSystemBackHandlers` closure scope — caught by running `runtime.test.ts` and reverted to `overlayDeckId + lastDismissedOverlayDeckId` only. 0 regressions vs baseline (79 failed / 29 passed in `runtime.test.ts`, identical to v1.6 + Phase 67).
-- Wave ordering: 71-02 first (helper extraction enables clean dispatcher refactor), then 71-01 (modifies `createSystemBackHandlers` on top of the rewired dispatcher).
+- Plan-checker fix commit `6c93d01`: P3-1 extract `defaultSystemBackDblTap()` helper, P3-2 try/finally around both profile blocks (end-marker can't dangle on throw), P3-3 regression test pinning settings-role onDblTap wiring.
 - Outstanding acceptance: real-hardware measurement of <200ms settings-deck → previous-deck transition (no Stream Deck device in this environment; deferred to manual UAT).
+- Outstanding known issue: 79 pre-existing failures in `runtime.test.ts` (system-back-injection from Phase 42/67 firing in test contexts where it shouldn't) — unrelated to Phase 71, flagged for future `/forensics`.
 - Outstanding known issue: 79 pre-existing failures in `runtime.test.ts` (system-back-injection from Phase 42/67 firing in test contexts where it shouldn't) — unrelated to Phase 71, flagged for future `/forensics`.
 
 ## Phase 67 Plan Status (verified, v1.6 ship)
