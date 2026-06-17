@@ -32,20 +32,22 @@ v1.7 starts where v1.6 verification left off: the v1.6 sweep marked 21/21 requir
 - [ ] Combined regression test covers: single-tap, double-tap, no-callback-dbltap, hold-during-tap-window
 - [ ] No regressions in any existing test suite
 
-### Phase 72: System-buttons dispatcher + deck icon
+### Phase 72: System-buttons dispatcher + deck icon ✓
 
 **Goal:** Wire the 2-line `SplitActionSurface` variant for `autoShow: false` with history-aware back semantics; plumb the deck `icon` field end-to-end.
 **Requirements:** `BUG-03`, `BUG-04`
 **Depends on:** None
-**Status:** ⏳ Pending discuss-phase
+**Status:** ✓ Complete (2026-06-17)
 **Success criteria:**
-- [ ] `CoreDeckConfigSchema` accepts an optional `icon?: string` field
-- [ ] `parseRawDeck` preserves the `icon` field through to runtime
-- [ ] `OverlayToggleButton` renders the deck `icon` (from the addon manifest or the deck config) next to `send-to-back`
-- [ ] When an active-app overlay deck has `autoShow: false`, the base deck's reserved back position renders the 2-line `SplitActionSurface` variant
-- [ ] 2xTap action on that variant walks the underlying base deck's history stack: if the overlay is at the root of its own history, equivalent to `dismissOverlay()`; otherwise pops the overlay's own page history first
-- [ ] Dispatcher has access to both stacks (overlay and base)
-- [ ] No regressions in active-app overlay flow with `autoShow: true` (default)
+- [x] `CoreDeckConfigSchema` accepts an optional `icon?: string` field
+- [x] `parseRawDeck` preserves the `icon` field through to runtime
+- [x] `OverlayToggleButton` renders the deck `icon` (from the addon manifest or the deck config) next to `send-to-back`
+- [x] When an active-app overlay deck has `autoShow: false`, the base deck's reserved back position renders the 2-line `SplitActionSurface` variant
+- [x] 2xTap action on that variant walks the underlying base deck's history stack: if the overlay is at the root of its own history, equivalent to `dismissOverlay()`; otherwise pops the overlay's own page history first
+- [x] Dispatcher has access to both stacks (overlay and base)
+- [x] No regressions in active-app overlay flow with `autoShow: true` (default)
+
+**Gap closure:** 3 UAT gaps were identified (Gaps 1-2: `icon://` prefix documented as Lucide name, not custom logo; Gap 3: 2-line SplitActionSurface trigger conditions documented). All three gaps closed as documentation-only — no code changes needed. Relevant docs: README.md, packages/cli/README.md, .planning/REQUIREMENTS.md.
 
 ### Phase 73: Paste semantics + macro error surfacing
 
