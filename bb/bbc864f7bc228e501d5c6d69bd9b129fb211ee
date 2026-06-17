@@ -1,0 +1,28 @@
+packages/cli/src/system/key-macro/darwin.ts
+  s_469c0c9aff79bb::t_a5b2f0426d3580 117-118
+packages/cli/src/system/key-macro/windows.ts
+  s_469c0c9aff79bb::t_b64f7ed4228087 118-119
+packages/cli/src/system/key-macro/linux.ts
+  s_469c0c9aff79bb::t_6922ad2fe17012 92-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "bbbbc864f7bc228e501d5c6d69bd9b129fb211ee",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_469c0c9aff79bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_129126bf4ffeC1puCBqg5C7qzn",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
