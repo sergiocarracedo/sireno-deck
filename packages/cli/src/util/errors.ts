@@ -6,7 +6,7 @@ const CYAN = "\x1b[36m"
 const RESET = "\x1b[0m"
 const BOLD = "\x1b[1m"
 
-export type RuntimeButtonErrorKind = "dbl-tap" | "hold" | "invalidate" | "navigateToDeck" | "press" | "refresh" | "release" | "render" | "tap"
+export type RuntimeButtonErrorKind = "dbl-tap" | "hold" | "invalidate" | "key-macro" | "navigateToDeck" | "paste" | "press" | "refresh" | "release" | "render" | "tap"
 
 export interface RuntimeButtonErrorLogContext {
   buttonPosition: number
@@ -20,7 +20,9 @@ const RUNTIME_BUTTON_ERROR_CODES: Record<RuntimeButtonErrorKind, string> = {
   "dbl-tap": "4107",
   hold: "4108",
   invalidate: "4102",
+  "key-macro": "4110",
   navigateToDeck: "4109",
+  paste: "4111",
   press: "4103",
   refresh: "4106",
   release: "4104",
