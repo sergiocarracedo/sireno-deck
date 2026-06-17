@@ -166,15 +166,16 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.7 — Polish & 3rd-Party Fixtures
 **Phase:** 71 — Gesture state machine hardening (BUG-01 system back delay + BUG-02 double-tap strict semantics)
-**Status:** planned (plan-checker approved, pending execute-phase)
+**Status:** executed (pending verify-work)
 **Last updated:** 2026-06-17
 
-## v1.7 Phase 71 Plan Status (pending execute-phase)
+## v1.7 Phase 71 Plan Status (executed, pending verify-work)
 
-- Plan 71-01 (Wave 2, depends_on 71-02): BUG-01 — Real-hardware profile + fix for system back button delay. Targets `createSystemBackHandlers` (runtime.ts:1124-1186) to omit `onDblTap` when no overlay context, removing the unconditional `DOUBLE_TAP_DELAY_MS` debounce. Uses `SIRENO_PROFILE` + `SIRENO_PROFILE_BACK_TRANSITIONS` sub-flag (mirrors browser-renderer.ts:76). Fixture at `packages/cli/fixtures/phase-71/`.
-- Plan 71-02 (Wave 1): BUG-02 — Strict double-tap semantics + dispatcher refactor. Extracts `dispatchGestureEnd(gs, callbacks, key, states)` helper to new `packages/cli/src/deck/gesture-state.ts`. 3 release cases (hold won / dbltap / strict no-dbltap). Strict: button with onTap-only, double-pressed within `DOUBLE_TAP_DELAY_MS`, fires `onTap` 0 times. Pins Phase 56 spread discipline via test.
-- Wave ordering: 71-02 first (extracts helper, rewires dispatcher at runtime.ts:1739-1757), then 71-01 (modifies `createSystemBackHandlers` on top of the rewired dispatcher).
-- Plan-checker verdict: "Fix minor issues + resolve wave conflict" — wave conflict resolved (71-01 wave 2), 7 minor fixes applied (line range accuracy, profile pattern alignment with opt-in-env-var-instrumentation-pattern solution, fixture directory convention, cross-plan interplay note, test target clarification, baseline terminology, DOUBLE_TAP_DELAY_MS constant reference).
+- Plan 71-02 (Wave 1, executed, commit `c60ec37`): BUG-02 strict double-tap semantics + dispatcher refactor. Extracted `dispatchGestureEnd(gs, callbacks, key, states)` to new `packages/cli/src/deck/gesture-state.ts`. Cases 2+3 collapsed into single "second press" branch. `onHold` in callback type but not wired (handleHold signature is `(deckId, button)`, not `(keyIndex)`). 6/6 gesture-state tests pass (no-callback-dbltap, single-tap-on-no-dbltap, dbltap-on-dbltap, hold-during-tap-window, multi-key concurrent, Phase 56 spread pin). 0 regressions in `runtime.test.ts` vs baseline.
+- Plan 71-01 (Wave 2, executed, commit `aebe4f6`): BUG-01 fix — system back button now omits `onDblTap` when no overlay context (`overlayDeckId === null && lastDismissedOverlayDeckId === null`), removing the unconditional `DOUBLE_TAP_DELAY_MS` debounce. Profile instrumentation at new `packages/cli/src/util/profile.ts` (gated on `SIRENO_PROFILE=1` + `SIRENO_PROFILE_BACK_TRANSITIONS=1`, mirrors `browser-renderer.ts:76`). Initial implementation referenced `pendingOverlayDeck` which is not in `createSystemBackHandlers` closure scope — caught by running `runtime.test.ts` and reverted to `overlayDeckId + lastDismissedOverlayDeckId` only. 0 regressions vs baseline (79 failed / 29 passed in `runtime.test.ts`, identical to v1.6 + Phase 67).
+- Wave ordering: 71-02 first (helper extraction enables clean dispatcher refactor), then 71-01 (modifies `createSystemBackHandlers` on top of the rewired dispatcher).
+- Outstanding acceptance: real-hardware measurement of <200ms settings-deck → previous-deck transition (no Stream Deck device in this environment; deferred to manual UAT).
+- Outstanding known issue: 79 pre-existing failures in `runtime.test.ts` (system-back-injection from Phase 42/67 firing in test contexts where it shouldn't) — unrelated to Phase 71, flagged for future `/forensics`.
 
 ## Phase 67 Plan Status (verified, v1.6 ship)
 
