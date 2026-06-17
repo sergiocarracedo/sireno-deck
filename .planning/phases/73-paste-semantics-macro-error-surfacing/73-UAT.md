@@ -1,21 +1,22 @@
 ---
-status: testing
+status: complete
 phase: 73-paste-semantics-macro-error-surfacing
 source:
   - .planning/phases/73-paste-semantics-macro-error-surfacing/73-01-SUMMARY.md
   - .planning/phases/73-paste-semantics-macro-error-surfacing/73-02-SUMMARY.md
 started: 2026-06-17T23:12:00Z
-updated: 2026-06-17T23:12:00Z
+updated: 2026-06-17T23:50:00Z
 ---
 
 ## Current Test
 
-number: 1
-name: pasteText code contract — clipboard write + keystroke
+number: 6
+name: All unit tests pass
 expected: |
-  pasteText(text) writes to clipboard via writeSync OR accepts optional keyMacroProvider
-  to send Ctrl+V. Check the source for both paths.
-awaiting: user response
+  Running `pnpm vitest run packages/cli/src/util/clipboard.test.ts` passes
+  (4 tests). Running `pnpm vitest run packages/cli/src/system/key-macro/`
+  passes (19 tests). No regressions in modified files.
+awaiting: pass
 
 ## Tests
 
@@ -43,7 +44,7 @@ expected: |
   Source file `packages/cli/src/deck/runtime.ts` shows the pasteText handler
   wrapping the clipboard call in try/catch and calling
   `showRuntimeButtonError(button, deckId, 'paste', error)` on failure.
-result: pending
+result: pass
 
 ### 3. All 3 platform providers throw on failure
 
@@ -51,7 +52,7 @@ expected: |
   Source files `linux.ts`, `darwin.ts`, `windows.ts` in
   `packages/cli/src/system/key-macro/` each throw an Error when the underlying
   command fails, instead of silently swallowing or warn-only.
-result: pending
+result: pass
 
 ### 4. keyMacro runtime handler error surfacing
 
@@ -59,14 +60,14 @@ expected: |
   Source file `packages/cli/src/deck/runtime.ts` shows the keyMacro handler
   wrapping `keyMacroProvider.send()` in try/catch and calling
   `showRuntimeButtonError(button, deckId, 'key-macro', error)` on failure.
-result: pending
+result: pass
 
 ### 5. Error kinds and stable codes
 
 expected: |
   `packages/cli/src/util/errors.ts` includes `"key-macro"` and `"paste"` in
   `RuntimeButtonErrorKind` with codes `'4110'` and `'4111'`.
-result: pending
+result: pass
 
 ### 6. All unit tests pass
 
@@ -74,16 +75,16 @@ expected: |
   Running `pnpm vitest run packages/cli/src/util/clipboard.test.ts` passes
   (4 tests). Running `pnpm vitest run packages/cli/src/system/key-macro/`
   passes (19 tests). No regressions in modified files.
-result: pending
+result: pass
 
 ## Summary
 
 total: 6
-passed: 0
+passed: 6
 issues: 0
-pending: 6
+pending: 0
 skipped: 0
 
 ## Gaps
 
-[none yet]
+[none — 1 gap found and fixed during UAT: dynamic `.js` import → static `@/util/clipboard` (commit `5020ace`)]
