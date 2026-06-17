@@ -2,15 +2,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { checkPasteAvailable, pasteText } from "./clipboard"
 
-const { writeMock } = vi.hoisted(() => ({
+const { writeMock, writeSyncMock } = vi.hoisted(() => ({
   writeMock: vi.fn(),
+  writeSyncMock: vi.fn(),
 }))
 
 vi.mock("clipboardy", () => ({
   default: {
     write: writeMock,
     read: vi.fn(),
-    writeSync: vi.fn(),
+    writeSync: writeSyncMock,
     readSync: vi.fn(),
   },
 }))
@@ -18,6 +19,7 @@ vi.mock("clipboardy", () => ({
 describe("clipboard", () => {
   beforeEach(() => {
     writeMock.mockReset()
+    writeSyncMock.mockReset()
     writeMock.mockResolvedValue(undefined)
   })
 
@@ -28,13 +30,15 @@ describe("clipboard", () => {
   it("writes the supplied text to the host clipboard via clipboardy", async () => {
     await pasteText("🦄")
 
-    expect(writeMock).toHaveBeenCalledTimes(1)
-    expect(writeMock).toHaveBeenCalledWith("🦄")
+    expect(writeSyncMock).toHaveBeenCalledTimes(1)
+    expect(writeSyncMock).toHaveBeenCalledWith("🦄")
   })
 
-  it("surfaces clipboardy.write errors instead of silently swallowing them", async () => {
+  it("surfaces clipboardy.writeSync errors instead of silently swallowing them", async () => {
     const clipboardError = new Error("clipboard not available")
-    writeMock.mockRejectedValue(clipboardError)
+    writeSyncMock.mockImplementation(() => {
+      throw clipboardError
+    })
 
     await expect(pasteText("text")).rejects.toBe(clipboardError)
   })
