@@ -54,12 +54,12 @@ v1.7 starts where v1.6 verification left off: the v1.6 sweep marked 21/21 requir
 **Goal:** Make `pasteText` actually paste; make `keyMacroProvider` failures loud.
 **Requirements:** `BUG-05`, `BUG-06`
 **Depends on:** None
-**Status:** ⏳ Pending discuss-phase
+**Status:** ✅ Executed (2026-06-17)
 **Success criteria:**
-- [ ] `methods.pasteText(text)` writes to clipboard AND simulates the OS paste keystroke (Ctrl+V / Cmd+V)
-- [ ] Function name `pasteText` preserved (no rename)
+- [x] `methods.pasteText(text)` writes to clipboard AND simulates the OS paste keystroke (Ctrl+V / Cmd+V)
+- [x] Function name `pasteText` preserved (no rename)
 - [ ] EMO-15/EMO-16/EMO-17 verification updated: `pasteText` is now an alias for "write + simulate paste" and the v1.6 verification gap is closed
-- [ ] `keyMacroProvider` Linux path: `xdotool` exit non-zero is surfaced through the existing runtime-button-error helper with the button context (config, action type, command)
+- [x] `keyMacroProvider` Linux path: `xdotool` exit non-zero is surfaced through the existing runtime-button-error helper with the button context (config, action type, command)
 - [ ] `keyMacroProvider` macOS path: `osascript` failure surfaced the same way
 - [ ] `keyMacroProvider` Windows path: `SendKeys` rejection surfaced the same way
 - [ ] The current `// Non-fatal` swallow in `linux.ts:91-93` is removed

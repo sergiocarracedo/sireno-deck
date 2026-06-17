@@ -10,8 +10,8 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 ## Current Position
 
 Phase: 73 — Paste semantics + macro error surfacing (BUG-05 `pasteText` not actually pasting, BUG-06 keyMacroProvider silent failures)
-Status: **PLANNED (2026-06-17)**. Discuss-phase complete: 3 gray areas resolved (paste keystroke via existing keyMacroProvider, both clipboard+keystroke failures surface via showRuntimeButtonError, providers throw instead of swallowing, new `"key-macro"` error kind added to RuntimeButtonErrorKind). Plan-phase complete: 2 plans created — 73-01 (pasteText actually pastes) and 73-02 (keyMacroProvider error surfacing), both Wave 1 vertical slices, independent and verification-ready. Next: execute-phase 73.
-Last activity: 2026-06-17 — v1.7 Phase 72 complete (3 plans executed; 7/7 success criteria; gap-closure docs for 3 UAT gaps). Phase 73 plan-phase complete.
+Status: **EXECUTED (2026-06-17)**. Both plans executed: pasteText now writes to clipboard (`clipboardy.writeSync`) then sends Ctrl+V/Cmd+V paste keystroke via `keyMacroProvider.send(parseKeyMacro('ctrl+v'))`; new `"paste"` (4111) and `"key-macro"` (4110) error kinds added to RuntimeButtonErrorKind; all 3 platform providers (linux/darwin/windows) throw on failure instead of silently swallowing; runtime pasteText and keyMacro handlers wrap in try/catch and call `showRuntimeButtonError`. 4 clipboard tests pass, 7 key-macro test files pass. Next: verify-work 73.
+Last activity: 2026-06-17 — Phase 73 executed (5 commits).
 
 ### Quick Tasks Completed
 
