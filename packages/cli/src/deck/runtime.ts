@@ -1007,12 +1007,20 @@ export function createDeckRuntime(options: DeckRuntimeOptions): DeckRuntime {
       },
       pasteText: async (text: string) => {
         const { pasteText: doPaste } = await import('../util/clipboard.js')
-        await doPaste(text)
+        try {
+          await doPaste(text, keyMacroProvider)
+        } catch (error) {
+          await showRuntimeButtonError(button, deckId, 'paste', error)
+        }
       },
       runCommand: async (command: string) => executeAction(command),
       keyMacro: async (sequence: string) => {
         const steps = parseKeyMacro(sequence)
-        await keyMacroProvider.send(steps)
+        try {
+          await keyMacroProvider.send(steps)
+        } catch (error) {
+          await showRuntimeButtonError(button, deckId, 'key-macro', error)
+        }
       },
     }
   }
