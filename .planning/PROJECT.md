@@ -8,9 +8,21 @@ Sireno Deck is a TypeScript CLI for controlling and managing Stream Deck devices
 
 Make Stream Deck customization programmable and extensible through a fast TypeScript CLI with real addon support and live-rendering buttons.
 
-## Current Milestone: v1.7 (planning)
+## Current Milestone: v1.7 — Polish & 3rd-Party Fixtures
 
-Run `/new-milestone` to define v1.7 scope, requirements, and phases. The shipped v1.6 milestone (just below) is the reference for what v1.7 builds on.
+**Goal:** Close the seam-level bugs that survived v1.6 verification (gesture timing, pasteText semantics, system-buttons dispatcher, deck icon plumbing, macro error surfacing, bars formatting) and ship a new multi-value builtin addon. Land the first real 3rd-party fixtures (addon + theme) that exercise the loader seams as a real external author would and document the trust model honestly.
+
+**Key features:**
+- 7 bug fixes covering gesture state machine hardening, system-buttons dispatcher, deck icon plumbing, paste semantics, keyMacro error surfacing, and shared value formatting
+- New `value-display` builtin addon for 1–3 live values per button with per-value shell commands, `SystemStatusFormatter` vocabulary, and `tap | dbltap | hold` actions
+- First real 3rd-party addon fixture at `/works/test/test-sireno-deck` (solid-color cycling button + 30+ color deck for pagination testing)
+- First real 3rd-party theme fixture at `/works/test/test-sireno-deck-theme` (yellow-based tokens, alternative UI components, honest trust-model documentation)
+
+**Theme:** Polish & 3rd-Party Fixtures
+**Phases:** 7 (71–77)
+**Requirements:** 11 (BUG-01..07, FEAT-01..02, 3RD-01..02, VERIFY-03)
+
+See `.planning/REQUIREMENTS.md` and `.planning/ROADMAP.md` for the canonical v1.7 artifact set.
 
 ## Latest Shipped Milestone: v1.6 — UX Speed & Overlay Extensions
 
@@ -58,7 +70,7 @@ See `.planning/v1.6-MILESTONE-AUDIT.md` and `.planning/REQUIREMENTS.md` for the 
 
 ### Active
 
-*(v1.6 was the most recent active milestone; it is now shipped — see "Latest Shipped Milestone" above. v1.7 requirements are pending `/new-milestone`.)*
+- v1.7 — Polish & 3rd-Party Fixtures (planning, 2026-06-17) — 7 bug fixes, 2 features, 2 3rd-party ecosystem fixtures across 7 phases (71-77). See `.planning/REQUIREMENTS.md` and `.planning/ROADMAP.md` for the canonical artifact set.
 
 ### Out of Scope
 
@@ -96,4 +108,4 @@ The domain includes fast refresh behavior for live widgets such as CPU, memory, 
 | Run addons as trusted in-process code in v1 | Keeps the initial addon API simpler and avoids early sandbox complexity | Landed |
 
 ---
-*Last updated: 2026-06-15 shipping milestone v1.6 — UX Speed & Overlay Extensions*
+*Last updated: 2026-06-17 planning milestone v1.7 — Polish & 3rd-Party Fixtures*

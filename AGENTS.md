@@ -164,12 +164,16 @@ This project uses **learnship**. Key facts:
 
 ## Current Phase
 
-**Milestone:** v1.6 — UX Speed & Overlay Extensions
-**Phase:** 70 — Verification + metadata backfill
-**Status:** executed (awaiting verify-work)
-**Last updated:** 2026-06-15
+**Milestone:** v1.7 — Polish & 3rd-Party Fixtures
+**Phase:** 71 — Gesture state machine hardening (BUG-01 system back delay + BUG-02 double-tap strict semantics)
+**Status:** planned (pending discuss-phase)
+**Last updated:** 2026-06-17
 
-## Phase 67 Plan Status (verified)
+## v1.7 Phase Plan Status (in planning)
+
+7 phases scoped (71–77), 11 requirements (BUG-01..07, FEAT-01..02, 3RD-01..02, VERIFY-03). Phase dependency graph: 71–74 independent, 75 → 74, 76 → 75, 77 → 71-76.
+
+## Phase 67 Plan Status (verified, v1.6 ship)
 
 - Plan 67-01 (Wave 1): Settings button migration — migrate `brightness_up`/`brightness_down` to `IconLabelSurface` (extended with `...rest` spread for data-* props), migrate `current_brightness` subtitle to `<Label>`. `logo_version` keeps hand-rolled render. Exports from `ui/index.ts`. Unit tests.
 - Plan 67-02 (Wave 2, gap closure after UAT test 2 surfaced back-button collision): Replaced keyCount-aware `createInternalSettingsDeck(keyCount)` with fixed-position `createInternalSettingsDeck()` (positions {0: dim, 1: bright, 2: percent, 4: logo}, position 3 empty, n-1 free for runtime-injected back button). Updated matrix test.
