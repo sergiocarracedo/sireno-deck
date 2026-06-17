@@ -1,0 +1,25 @@
+.planning/phases/73-paste-semantics-macro-error-surfacing/73-UAT.md
+  s_469c0c9aff79bb::t_3e40cd12d30f14 1-28,39-89
+  s_469c0c9aff79bb::t_7ad1791643e723 29-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "4714d373f7c229f72e88a7e3b848a8fbe467dc74",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_469c0c9aff79bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_129126bf4ffeC1puCBqg5C7qzn",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
