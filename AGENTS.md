@@ -166,7 +166,7 @@ This project uses **learnship**. Key facts:
 
 **Milestone:** v1.7 — Polish & 3rd-Party Fixtures
 **Phase:** 75 — value-display addon (FEAT-02)
-**Status:** discuss-phase complete (ready for plan-phase)
+**Status:** plan-phase complete (1 plan ready, Wave 1)
 **Last updated:** 2026-06-18
 
 ## v1.7 Phase 73 Plan Status (executed)
@@ -180,13 +180,10 @@ This project uses **learnship**. Key facts:
 - Plan 74-01 (executed, commit `e174979` + `5a4bfab`): `system-status-label-values` schema now caps `metrics` at 1-2 entries via `z.array(LabelValueMetricSchema).min(1).max(2, "system-status-label-values supports 1–2 metrics; for 3+ values use the value-display addon (FEAT-02)")`. New test asserts 3+ rejection with the value-display hint. Bars schema untouched (still 1-3). 7/7 system-status tests pass. BUG-07 (Bars formatter prop) marked `Deferred for v1.7` in REQUIREMENTS.md.
 - Used `.max(2, "msg")` directly (not `.superRefine()`) to avoid `ZodEffects` wrapper that breaks `.shape` consumers. See `.planning/solutions/best-practices/zod-refine-silently-breaks-shape-consumers-2026-06-09.md`.
 
-## v1.7 Phase 75 Plan Status (discussed, ready for plan-phase)
+## v1.7 Phase 75 Plan Status (planned, ready for execute-phase)
 
-- **Decision: Reuse `LabelValueList`** surface (1-3 lines pass through, layouts single/double/stack work). No new component.
-- **Decision: Add per-button `poll_interval_ms` / `render_interval_ms`** (1s default, like system-status). User added this for consistency even though success criteria didn't mention it.
-- **Decision: Parallel `Promise.all` for command execution**, 5s default timeout, "N/A" on error (matches system-status unavailable pattern).
-- **Decision: Import `SystemStatusFormatter` from `@/builtin-addons/system-status/schemas`** (direct, no shared module lift).
-- **Decision: Per-button `useButtonActionCommand`** (no per-value actions).
+- Plan 75-01 (Wave 1, ready): Create the new `value-display` addon at `packages/cli/src/builtin-addons/value-display/` with schemas.ts (1-3 values cap, .strict()), domain/format-command-output.ts helper (formatter + units + non-numeric passthrough), buttons/value-display.tsx (`defineMountedButton` with parallel `Promise.all` polling + `useButtonActionCommand`), index.ts (sirenoAddon export), index.test.ts (1/2/3 layouts, command-not-found, parallel execution, default timeout), and register in `addon/builtin.ts`.
+- Key risks: pre-existing `@/config/loader` alias issue in test imports (same issue as system-status). `SystemStatusFormatterSchema` may need `export` added in system-status/schemas.ts to import.
 
 ## v1.7 Phase 72 Plan Status (✓ complete)
 
