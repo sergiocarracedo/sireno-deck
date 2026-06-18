@@ -65,19 +65,18 @@ v1.7 starts where v1.6 verification left off: the v1.6 sweep marked 21/21 requir
 - [ ] The current `// Non-fatal` swallow in `linux.ts:91-93` is removed
 - [ ] At least one cross-platform test verified end-to-end (the runtime path, not the unit seam)
 
-### Phase 74: Shared formatter + label-values cap
+### Phase 74: Label-values cap (BUG-07 dropped via discussion)
 
-**Goal:** Add a shared `formatter` prop to `Bars` (default no-decimal) and cap `system-status-label-values` at 2 values (3+ → schema error).
-**Requirements:** `BUG-07`, `FEAT-01`
+**Goal:** Cap `system-status-label-values` at 2 values (3+ → schema error pointing to `value-display`). BUG-07 (Bars formatter) deferred — existing displayValue path covers the use case.
+**Requirements:** `FEAT-01` (BUG-07 deferred)
 **Depends on:** None
-**Status:** ⏳ Pending discuss-phase
+**Status:** ✓ Executed (2026-06-18)
 **Success criteria:**
-- [ ] `Bars` component accepts `formatter?: (value: number) => string`
-- [ ] Default formatter: `numbro` with `mantissa: 0, optionalMantissa: true` (no decimals, thousands separator)
-- [ ] In-bar rotated text uses the formatter output
-- [ ] `system-status-label-values` schema caps `metrics` array at 2 entries (`z.array(...).max(2)`)
-- [ ] 3+ value configs are rejected at config load with a clear error pointing to `value-display` (FEAT-02)
-- [ ] All existing `system-status-bars` / `system-status-label-values` configs in the test fixtures still pass
+- [x] `system-status-label-values` schema caps `metrics` at 1-2 entries (`z.array(...).min(1).max(2, "msg")`)
+- [x] 3+ value configs are rejected at config load with a clear error pointing to `value-display` (FEAT-02)
+- [x] All existing `system-status-label-values` configs (1-2 metrics) in tests still pass
+- [x] `system-status-bars` schema is unchanged (still allows 1-3 metrics)
+- [x] BUG-07 (Bars formatter prop) — deferred; existing displayValue + SystemStatusFormatter vocabulary covers the use case
 
 ### Phase 75: New `value-display` builtin addon
 
