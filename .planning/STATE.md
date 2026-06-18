@@ -9,9 +9,9 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 73 — Paste semantics + macro error surfacing (BUG-05 `pasteText` not actually pasting, BUG-06 keyMacroProvider silent failures)
-Status: **EXECUTED (2026-06-17)**. Both plans executed: pasteText now writes to clipboard (`clipboardy.writeSync`) then sends Ctrl+V/Cmd+V paste keystroke via `keyMacroProvider.send(parseKeyMacro('ctrl+v'))`; new `"paste"` (4111) and `"key-macro"` (4110) error kinds added to RuntimeButtonErrorKind; all 3 platform providers (linux/darwin/windows) throw on failure instead of silently swallowing; runtime pasteText and keyMacro handlers wrap in try/catch and call `showRuntimeButtonError`. 4 clipboard tests pass, 7 key-macro test files pass. Next: verify-work 73.
-Last activity: 2026-06-17 — Phase 73 executed (5 commits).
+Phase: 74 — Label-values cap (FEAT-01; BUG-07 dropped via discussion)
+Status: **DISCUSSED (2026-06-18)**. Discuss-phase complete: 4 gray areas explored in deep mode, BUG-07 dropped entirely (per-item displayValue path is enough — Bars formatter prop would force a system-status-bars refactor that loses per-metric formatting). Phase 74 scoped to: cap `system-status-label-values.metrics` at 1-2 entries via `z.array(...).min(1).max(2, "...")` with a brief error message pointing to `value-display` (FEAT-02). Next: plan-phase 74.
+Last activity: 2026-06-18 — Phase 74 discuss-phase complete (74-CONTEXT.md, 74-DISCUSSION-LOG.md).
 
 ### Quick Tasks Completed
 
