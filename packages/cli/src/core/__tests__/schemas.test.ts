@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { createBundledAddonRegistry } from '@/config/loader'
-import { validateConfig } from './schemas'
+import { validateConfig } from '../schemas'
 
 const KEY_COUNT = 15
 

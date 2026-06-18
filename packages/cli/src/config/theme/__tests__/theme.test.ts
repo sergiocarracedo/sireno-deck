@@ -14,15 +14,15 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { ConfigValidationError } from '@/core/schemas'
 
-const loadThemeModule = async () => import('./theme')
-const packageRoot = resolve(import.meta.dirname, '../..')
+const loadThemeModule = async () => import('../theme')
+const packageRoot = resolve(import.meta.dirname, '../../..')
 const phase25FixtureRoot = resolve(
   import.meta.dirname,
-  '../../../fixtures/phase-25',
+  '../../../../fixtures/phase-25',
 )
 const phase39FixtureRoot = resolve(
   import.meta.dirname,
-  '../../../fixtures/phase-39',
+  '../../../../fixtures/phase-39',
 )
 
 function listThemeRuntimeSnapshots(): string[] {

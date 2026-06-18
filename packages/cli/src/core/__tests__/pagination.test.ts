@@ -8,7 +8,7 @@ import {
   buildPageNavButton,
   definePagedCategoryButton,
   paginateDecks,
-} from './pagination'
+} from '../pagination'
 import { builtinChangeDeckButton } from '@/builtin-addons/core-buttons/buttons/change-deck'
 
 function createMethodsDouble() {

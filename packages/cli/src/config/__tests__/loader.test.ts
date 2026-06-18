@@ -9,8 +9,10 @@ import { z } from "zod"
 import { ConfigValidationError } from "@/core/schemas"
 import { createAddonRegistry } from "@/addon/registry"
 
-const loadConfigModule = async () => import("./loader")
-const FIXTURES_DIRECTORY = fileURLToPath(new URL("../../fixtures", import.meta.url))
+const loadConfigModule = async () => import("../loader")
+const FIXTURES_DIRECTORY = fileURLToPath(
+  new URL("../../../fixtures", import.meta.url),
+)
 
 describe("loadConfig", () => {
   const originalCwd = process.cwd()
