@@ -4,9 +4,9 @@ import { join, resolve } from "node:path"
 
 import { afterEach, describe, expect, it } from "vitest"
 
-import { AddonManifestError } from "./manifest"
-import { createAddonRegistry } from "./registry"
-import { loadConfiguredAddons } from "./loader"
+import { AddonManifestError } from "../manifest"
+import { createAddonRegistry } from "../registry"
+import { loadConfiguredAddons } from "../loader"
 
 function writeAddonFixture(rootDir: string, options: { apiVersion?: number; brokenImport?: boolean; missingManifest?: boolean; name: string }) {
   mkdirSync(rootDir, { recursive: true })

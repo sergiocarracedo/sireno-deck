@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
-import { createAddonRegistry } from "./registry"
+import { createAddonRegistry } from "../registry"
 
 describe("createAddonRegistry", () => {
   it("registers addon button definitions and looks them up by type", () => {

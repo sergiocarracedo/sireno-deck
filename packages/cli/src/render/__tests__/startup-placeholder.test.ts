@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { createStartupPlaceholderBuffers } from "./startup-placeholder"
+import { createStartupPlaceholderBuffers } from "../startup-placeholder"
 
 describe("startup placeholder", () => {
   it("creates one raw key buffer per requested key", async () => {

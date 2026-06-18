@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 
-import { createPollingScheduler } from "./scheduler"
+import { createPollingScheduler } from "../scheduler"
 
 describe("polling scheduler", () => {
   it("uses a 500ms default interval", () => {

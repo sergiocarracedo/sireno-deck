@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { validateAddonApiVersion, validateAddonManifest } from "./manifest"
+import { validateAddonApiVersion, validateAddonManifest } from "../manifest"
 
 describe("validateAddonManifest", () => {
   it("accepts addon package metadata with sireno entrypoint information", () => {
