@@ -7,7 +7,7 @@ import {
   MountedThemeUiPresentationProvider,
 } from '@/ui/theme-presentation'
 
-import type { HostedButton } from './dom-host'
+import type { HostedButton } from './index'
 
 function createHostedButtonElementWithProvider(
   button: HostedButton,

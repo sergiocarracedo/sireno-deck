@@ -11,7 +11,7 @@ import {
   renderDomDeck,
   renderMountedHostedButtons,
   renderReactNodeToHtml,
-} from './dom-host'
+} from './index'
 
 describe('dom host', () => {
   it('applies buttonFrame by default', () => {

@@ -2,8 +2,8 @@ import type { ReactNode } from 'react'
 
 import type { Theme } from '@/config/theme'
 
-import { createHostedButtonElement } from './dom-host-button'
-import type { HostedButton } from './dom-host'
+import { createHostedButtonElement } from './button'
+import type { HostedButton } from './index'
 
 export function HostedButtonContent(props: {
   button: HostedButton | undefined
