@@ -11,7 +11,7 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 Phase: 75 — value-display addon (FEAT-02)
 Status: **EXECUTED (2026-06-18)**. Phase 75 executed: new first-party `value-display` addon at `packages/cli/src/builtin-addons/value-display/`. Configures 1-3 per-value shell commands with parallel `Promise.all` execution, 5s default timeout, "N/A" on error. Renders via existing `LabelValueList` (single/double/stack layouts). Per-button tap/hold/dbltap via `useButtonActionCommand`. Registered in `getBundledAddons()`. 8/8 value-display tests pass; 7/7 system-status regression-free. `SystemStatusFormatterSchema` now exported from system-status/schemas.
-Last activity: 2026-06-18 — Phase 75 executed (7 commits, 1 plan, 1 wave).
+Last activity: 2026-06-18 — Quick 046 render cleanup (3 commits: dead theme-utilities exports, broken reconciler + phase-9 trio removal, dom-host files moved into render/dom-host/ folder with index.tsx orchestrator + README). Phase 75 execution followed by quick-046.
 
 ### Quick Tasks Completed
 
@@ -26,6 +26,7 @@ Last activity: 2026-06-18 — Phase 75 executed (7 commits, 1 plan, 1 wave).
 | 043 | wayland-gnome active-app provider via DBus (extension hint) | 2026-06-09 | (pending) | .planning/quick/043-gnome-wayland-extension-active-app/ |
 | 043 | Inline deck-render log to debug level (reduce per-frame noise) | 2026-06-09 | e2a7d4c | .planning/quick/043-reduce-deck-render-log-noise/ |
 | 044 | Add ellipsis to date button weekday text to prevent wrapping | 2026-06-10 | 088454b | .planning/quick/044-date-button-day-name-ellipsis/ |
+| 046 | Render/ dead-code sweep (broken reconciler + phase-9 trio) + dom-host folder restructure | 2026-06-18 | 26d0889 | .planning/quick/046-render-cleanup-dom-host-folder/ |
 
 Progress: [██████████] 100% (7 of 7 in-scope v1.4 phases complete)
 
