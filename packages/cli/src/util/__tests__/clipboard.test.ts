@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { checkPasteAvailable, pasteText } from "./clipboard"
+import { checkPasteAvailable, pasteText } from "../clipboard"
 
 const { writeMock, writeSyncMock } = vi.hoisted(() => ({
   writeMock: vi.fn(),

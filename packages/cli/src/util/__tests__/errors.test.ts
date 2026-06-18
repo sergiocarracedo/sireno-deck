@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { ConfigValidationError } from "@/core/schemas"
-import { formatConfigError } from "./errors"
+import { formatConfigError } from "../errors"
 
 describe("formatConfigError", () => {
   it("includes heading, file path, line number, suggestion, and problem message", () => {
