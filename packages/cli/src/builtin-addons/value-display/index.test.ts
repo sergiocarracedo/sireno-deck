@@ -221,8 +221,9 @@ describe('value-display addon', () => {
         { command: 'cmd-b', label: 'B' },
       ],
     })
+    const harness = createMountedHarness(def, config, 0)
 
-    await def.poll!(config as never)
+    await harness.activate()
 
     expect(callOrder[0]).toBe('start:cmd-a')
     expect(callOrder[1]).toBe('start:cmd-b')
@@ -241,8 +242,9 @@ describe('value-display addon', () => {
     const config = def.configSchema.parse({
       values: [{ command: 'slow-cmd', label: 'S', timeout_ms: 1234 }],
     })
+    const harness = createMountedHarness(def, config, 0)
 
-    await def.poll!(config as never)
+    await harness.activate()
 
     expect(executeCommandMock.mock.calls[0]?.[0]?.timeoutMs).toBe(1234)
   })
