@@ -1,0 +1,40 @@
+packages/cli/src/action/__tests__/executor.test.ts
+  s_6aed55125c6157::t_f2c9f72a2ba48c 3
+packages/cli/src/device/__tests__/registry.test.ts
+  s_6aed55125c6157::t_e551717614d3b6 3-11
+packages/cli/src/system/active-app/__tests__/get-provider.test.ts
+  s_6aed55125c6157::t_92b887829a8cc7 3-4
+packages/cli/src/device/__tests__/stream-deck.test.ts
+  s_6aed55125c6157::t_b654b0ca94dca6 17-18
+packages/cli/src/system/active-app/__tests__/active-app-monitor.test.ts
+  s_6aed55125c6157::t_f07168b423a8df 7
+  s_6aed55125c6157::t_ca17e6140cf39b 11
+packages/cli/src/system/key-macro/__tests__/parser.test.ts
+  s_6aed55125c6157::t_4e871133c1107c 3
+packages/cli/src/system/active-app/__tests__/wayland-gnome.test.ts
+  s_6aed55125c6157::t_ff6e22ce80c6e3 3-9
+packages/cli/src/system/key-macro/__tests__/get-provider.test.ts
+  s_6aed55125c6157::t_c475c735b095b3 3-4
+packages/cli/src/system/active-app/__tests__/linux.test.ts
+  s_6aed55125c6157::t_7a4389c967f3c0 3-4
+packages/cli/src/device/__tests__/linux-udev.test.ts
+  s_6aed55125c6157::t_395a3c013cef00 7
+packages/cli/src/system/__tests__/session-monitor.test.ts
+  s_6aed55125c6157::t_eb948dabfb1bfa 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "159c7fe420d2751303e56f8c611f3a00fd086ffd",
+  "prompts": {},
+  "sessions": {
+    "s_6aed55125c6157": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_123c07561ffe3AcviqYR9Sq2OQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
