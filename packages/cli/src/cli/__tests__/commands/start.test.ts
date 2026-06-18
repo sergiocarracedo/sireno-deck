@@ -99,14 +99,14 @@ vi.mock('@/util/daemon', () => ({
 }))
 
 describe('loadRuntimeConfig', () => {
-  const workspaceRoot = resolve(import.meta.dirname, '../../../../..')
+  const workspaceRoot = resolve(import.meta.dirname, '../../../../../../')
   const phase23FixtureConfigPath = resolve(
     import.meta.dirname,
-    '../../../fixtures/phase-23/config.yml',
+    '../../../../fixtures/phase-23/config.yml',
   )
   const phase23FixtureRoot = resolve(
     import.meta.dirname,
-    '../../../fixtures/phase-23/local-raw-addon',
+    '../../../../fixtures/phase-23/local-raw-addon',
   )
   const supportedSessionMonitor = {
     getSnapshot: vi.fn(() => ({ capability: 'supported', state: 'unknown' })),
@@ -187,7 +187,7 @@ describe('loadRuntimeConfig', () => {
       filePaths: ['/tmp/project/themes/default/index.ts'],
     })
 
-    const { loadRuntimeConfig } = await import('./start')
+    const { loadRuntimeConfig } = await import('../../commands/start')
     const logger = { warn: vi.fn() } as const
 
     await loadRuntimeConfig({
@@ -262,7 +262,7 @@ describe('loadRuntimeConfig', () => {
       ],
     })
 
-    const { loadRuntimeConfig } = await import('./start')
+    const { loadRuntimeConfig } = await import('../../commands/start')
     const logger = { warn: vi.fn() } as const
 
     const result = await loadRuntimeConfig({
@@ -338,7 +338,7 @@ describe('loadRuntimeConfig', () => {
       ],
     })
 
-    const { loadRuntimeConfig } = await import('./start')
+    const { loadRuntimeConfig } = await import('../../commands/start')
 
     const result = await loadRuntimeConfig({
       config: '/tmp/project/config.yml',
@@ -379,7 +379,7 @@ describe('loadRuntimeConfig', () => {
       filePaths: ['/tmp/project/themes/default/index.ts'],
     })
 
-    const { loadRuntimeConfig } = await import('./start')
+    const { loadRuntimeConfig } = await import('../../commands/start')
     const logger = { warn: vi.fn() } as const
 
     const result = await loadRuntimeConfig({
@@ -417,7 +417,7 @@ describe('loadRuntimeConfig', () => {
     })
     resolveTheme.mockRejectedValue(new Error('broken theme runtime'))
 
-    const { loadRuntimeConfig } = await import('./start')
+    const { loadRuntimeConfig } = await import('../../commands/start')
 
     await expect(
       loadRuntimeConfig({
@@ -465,7 +465,7 @@ describe('loadRuntimeConfig', () => {
       filePaths: ['/tmp/project/themes/default/index.ts'],
     })
 
-    const { loadRuntimeConfig } = await import('./start')
+    const { loadRuntimeConfig } = await import('../../commands/start')
 
     const result = await loadRuntimeConfig({
       config: '/tmp/project/config.yml',
@@ -522,7 +522,7 @@ describe('loadRuntimeConfig', () => {
       filePaths: ['/tmp/project/themes/default/index.ts'],
     })
 
-    const { loadRuntimeConfig } = await import('./start')
+    const { loadRuntimeConfig } = await import('../../commands/start')
 
     const result = await loadRuntimeConfig({
       config: phase23FixtureConfigPath,
@@ -587,7 +587,7 @@ describe('loadRuntimeConfig', () => {
       success: '#34d399',
     })
 
-    const { loadRuntimeConfig } = await import('./start')
+    const { loadRuntimeConfig } = await import('../../commands/start')
     const runtimeConfig = await loadRuntimeConfig({
       config: phase23FixtureConfigPath,
       logger: { warn: vi.fn() } as never,
@@ -705,7 +705,7 @@ describe('loadRuntimeConfig', () => {
 
   it('documents the workspace-root cli:dev script as the full-process raw-source restart seam', async () => {
     const { readFileSync } = await import('node:fs')
-    const { resolveDevWatchArgs } = await import('../dev-watch')
+    const { resolveDevWatchArgs } = await import('../../dev-watch')
     const rootPackageJson = JSON.parse(
       readFileSync(resolve(workspaceRoot, 'package.json'), 'utf8'),
     ) as {
@@ -814,7 +814,7 @@ describe('watchConfigFiles', () => {
       },
     )
 
-    const { watchConfigFiles } = await import('./start')
+    const { watchConfigFiles } = await import('../../commands/start')
     const onChange = vi.fn()
     const stopWatching = watchConfigFiles(
       [
@@ -855,7 +855,7 @@ describe('restoreReloadNavigation', () => {
     })
     const runtime = { restoreStack } as never
 
-    const { restoreReloadNavigation } = await import('./start')
+    const { restoreReloadNavigation } = await import('../../commands/start')
 
     await restoreReloadNavigation(
       runtime,
@@ -875,7 +875,7 @@ describe('restoreReloadNavigation', () => {
 describe('createTemporaryConfigErrorLines', () => {
   it('formats a compact runtime-owned error summary from config validation failures', async () => {
     const { ConfigValidationError } = await import('@/core/schemas')
-    const { createTemporaryConfigErrorLines } = await import('./start')
+    const { createTemporaryConfigErrorLines } = await import('../../commands/start')
 
     const lines = createTemporaryConfigErrorLines(
       new ConfigValidationError(
@@ -896,7 +896,7 @@ describe('createTemporaryConfigErrorLines', () => {
 
 describe('isDomRenderButton', () => {
   it('detects runtime render outputs that carry DOM content', async () => {
-    const { isDomRenderButton } = await import('./start')
+    const { isDomRenderButton } = await import('../../commands/start')
 
     expect(
       isDomRenderButton({ content: { type: 'div' }, keyIndex: 0 } as never),
@@ -913,7 +913,7 @@ describe('ensureBrowserRenderer', () => {
     const close = vi.fn(async () => {})
     createBrowserRenderer.mockReturnValue({ close, setFrameHandler: vi.fn(), start })
 
-    const { ensureBrowserRenderer } = await import('./start')
+    const { ensureBrowserRenderer } = await import('../../commands/start')
 
     await expect(ensureBrowserRenderer(null, 15)).rejects.toThrow(
       'missing chromium',
@@ -939,7 +939,7 @@ describe('renderRuntimeDeckSurface', () => {
     }
     const connection = { info: { keyCount: 3 } }
     const logger = { info: vi.fn() } as const
-    const { renderRuntimeDeckSurface } = await import('./start')
+    const { renderRuntimeDeckSurface } = await import('../../commands/start')
 
     await expect(
       renderRuntimeDeckSurface(
@@ -973,7 +973,7 @@ describe('renderRuntimeDeckSurface', () => {
     }
     const connection = { info: { keyCount: 1 } }
     const logger = { info: vi.fn() } as const
-    const { renderRuntimeDeckSurface } = await import('./start')
+    const { renderRuntimeDeckSurface } = await import('../../commands/start')
 
     await renderRuntimeDeckSurface(
       connection as never,
@@ -1069,7 +1069,7 @@ describe('startDaemon', () => {
       success: '#34d399',
     })
 
-    const { startDaemon } = await import('./start')
+    const { startDaemon } = await import('../../commands/start')
     const logger = { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as const
 
     await expect(startDaemon({ logger: logger as never })).rejects.toThrow(
@@ -1142,7 +1142,7 @@ describe('startDaemon', () => {
       }),
     })
 
-    const { startDaemon } = await import('./start')
+    const { startDaemon } = await import('../../commands/start')
     const logger = { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as const
 
     await expect(startDaemon({ logger: logger as never })).rejects.toThrow(
@@ -1249,7 +1249,7 @@ describe('startDaemon', () => {
       throw stopAfterFirstRender
     })
 
-    const { startDaemon } = await import('./start')
+    const { startDaemon } = await import('../../commands/start')
 
     await expect(
       startDaemon({
@@ -1359,7 +1359,7 @@ describe('startDaemon', () => {
       throw stopAfterSteadyFrame
     })
 
-    const { startDaemon } = await import('./start')
+    const { startDaemon } = await import('../../commands/start')
 
     await expect(
       startDaemon({
@@ -1474,7 +1474,7 @@ describe('startDaemon', () => {
       success: '#34d399',
     })
 
-    const { startDaemon } = await import('./start')
+    const { startDaemon } = await import('../../commands/start')
 
     await expect(
       startDaemon({
@@ -1572,7 +1572,7 @@ describe('startDaemon', () => {
     })
     writePid.mockImplementation(() => { throw stopAfterFirstFrame })
 
-    const { startDaemon } = await import('./start')
+    const { startDaemon } = await import('../../commands/start')
 
     await expect(startDaemon({ logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as never })).rejects.toThrow(stopAfterFirstFrame.message)
 
@@ -1671,7 +1671,7 @@ describe('startDaemon', () => {
     })
     writePid.mockImplementation(() => { throw stopAfterFirstFrame })
 
-    const { startDaemon } = await import('./start')
+    const { startDaemon } = await import('../../commands/start')
 
     await expect(startDaemon({ logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() } as never })).rejects.toThrow(stopAfterFirstFrame.message)
 
@@ -1780,7 +1780,7 @@ describe('startEmulatorSession', () => {
       success: '#34d399',
     })
 
-    const { startEmulatorSession } = await import('./start')
+    const { startEmulatorSession } = await import('../../commands/start')
     const session = await startEmulatorSession({
       logger: { info: vi.fn(), warn: vi.fn() } as never,
       port: 0,
@@ -1851,7 +1851,7 @@ describe('startEmulatorSession', () => {
     }
     const assetPath = resolve(
       import.meta.dirname,
-      '../../builtin-addons/emoji-selector/assets/smileys.svg',
+      '../../../builtin-addons/emoji-selector/assets/smileys.svg',
     )
     const registry = {
       resolveAssetPath: vi.fn((assetReference: string) =>
@@ -1932,7 +1932,7 @@ describe('startEmulatorSession', () => {
       success: '#34d399',
     })
 
-    const { startEmulatorSession } = await import('./start.js')
+    const { startEmulatorSession } = await import('../../commands/start.js')
     const session = await startEmulatorSession({
       logger: { info: vi.fn(), warn: vi.fn() } as never,
       port: 0,
@@ -1984,11 +1984,11 @@ describe('startEmulatorSession', () => {
     }
     const favoritesAssetPath = resolve(
       import.meta.dirname,
-      '../../builtin-addons/emoji-selector/assets/favorites.svg',
+      '../../../builtin-addons/emoji-selector/assets/favorites.svg',
     )
     const backAssetPath = resolve(
       import.meta.dirname,
-      '../../builtin-addons/emoji-selector/assets/back.svg',
+      '../../../builtin-addons/emoji-selector/assets/back.svg',
     )
     const registry = {
       resolveAssetPath: vi.fn((assetReference: string) => {
@@ -2121,7 +2121,7 @@ describe('startEmulatorSession', () => {
       success: '#34d399',
     })
 
-    const { startEmulatorSession } = await import('./start.js')
+    const { startEmulatorSession } = await import('../../commands/start.js')
     const session = await startEmulatorSession({
       logger: { info: vi.fn(), warn: vi.fn() } as never,
       port: 0,
@@ -2168,7 +2168,7 @@ describe('startEmulatorSession', () => {
     }
     const themeFontPath = resolve(
       import.meta.dirname,
-      '../../themes/default/assets/IBM_Plex_Mono/IBMPlexMono-Bold.ttf',
+      '../../../themes/default/assets/IBM_Plex_Mono/IBMPlexMono-Bold.ttf',
     )
 
     createVirtualStreamDeckLifecycle.mockReturnValue(lifecycle)
@@ -2240,7 +2240,7 @@ describe('startEmulatorSession', () => {
       success: '#34d399',
     })
 
-    const { startEmulatorSession } = await import('./start.js')
+    const { startEmulatorSession } = await import('../../commands/start.js')
     const session = await startEmulatorSession({
       logger: { info: vi.fn(), warn: vi.fn() } as never,
       port: 0,
@@ -2371,7 +2371,7 @@ describe('startEmulatorSession', () => {
       success: '#34d399',
     })
 
-    const { startEmulatorSession } = await import('./start.js')
+    const { startEmulatorSession } = await import('../../commands/start.js')
     const session = await startEmulatorSession({
       logger: { info: vi.fn(), warn: vi.fn() } as never,
       port: 0,
@@ -2424,12 +2424,12 @@ describe('startEmulatorSession', () => {
   })
 
   it('ships the emulator shell with keyed deck patching instead of whole mount replacement', async () => {
-    const { startEmulatorSession } = await import('./start.js')
+    const { startEmulatorSession } = await import('../../commands/start.js')
 
     expect(startEmulatorSession).toBeTypeOf('function')
 
     const moduleSource = await import('node:fs/promises').then(({ readFile }) =>
-      readFile(new URL('./start.ts', import.meta.url), 'utf8'),
+      readFile(new URL('../commands/start.ts', import.meta.url), 'utf8'),
     )
 
     expect(moduleSource).toContain('function patchThemeStyles(nextDocument)')
@@ -2454,7 +2454,7 @@ describe('startEmulatorSession', () => {
 
   it('passes emulator render intent only on emulator-served deck html', async () => {
     const moduleSource = await import('node:fs/promises').then(({ readFile }) =>
-      readFile(new URL('./start.ts', import.meta.url), 'utf8'),
+      readFile(new URL('../commands/start.ts', import.meta.url), 'utf8'),
     )
 
     expect(moduleSource).toContain(
@@ -2481,7 +2481,7 @@ describe('startEmulatorSession', () => {
 
   it('ships emulator deck patching that removes stale non-key children like inline warnings', async () => {
     const moduleSource = await import('node:fs/promises').then(({ readFile }) =>
-      readFile(new URL('./start.ts', import.meta.url), 'utf8'),
+      readFile(new URL('../commands/start.ts', import.meta.url), 'utf8'),
     )
 
     expect(moduleSource).toContain(
@@ -2614,7 +2614,7 @@ describe('startEmulatorSession', () => {
       success: '#34d399',
     })
 
-    const { startEmulatorSession } = await import('./start.js')
+    const { startEmulatorSession } = await import('../../commands/start.js')
     const session = await startEmulatorSession({
       logger: { info: vi.fn(), warn: vi.fn() } as never,
       port: 0,
@@ -2734,7 +2734,7 @@ describe('startEmulatorSession', () => {
       success: '#34d399',
     })
 
-    const { startEmulatorSession } = await import('./start.js')
+    const { startEmulatorSession } = await import('../../commands/start.js')
     const session = await startEmulatorSession({
       logger: { info: vi.fn(), warn: vi.fn() } as never,
       port: 0,
@@ -2846,7 +2846,7 @@ describe('startEmulatorSession', () => {
       success: '#34d399',
     })
 
-    const { startEmulatorSession } = await import('./start.js')
+    const { startEmulatorSession } = await import('../../commands/start.js')
     const session = await startEmulatorSession({
       logger: { info: vi.fn(), warn: vi.fn() } as never,
       port: 0,

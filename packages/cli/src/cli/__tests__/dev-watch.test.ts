@@ -8,20 +8,20 @@ import {
   resolveDevWatchArgs,
   resolveDevWatchConfigPath,
   prepareDevWatchRuntime,
-} from './dev-watch'
+} from '../dev-watch'
 import {
   resolveTailwindBrowserContract,
   serializeTailwindBrowserContract,
-} from './build-tailwind-browser'
+} from '../build-tailwind-browser'
 
 const tempDirs: string[] = []
 const phase23FixtureRoot = resolve(
   import.meta.dirname,
-  '../../fixtures/phase-23/local-raw-addon',
+  '../../../fixtures/phase-23/local-raw-addon',
 )
 const phase25FixtureRoot = resolve(
   import.meta.dirname,
-  '../../fixtures/phase-25/custom-tsx-theme',
+  '../../../fixtures/phase-25/custom-tsx-theme',
 )
 
 afterEach(() => {
@@ -78,8 +78,8 @@ describe('prepareDevWatchRuntime', () => {
 
 describe('dev-watch source entry seam', () => {
   it('calls the exported source cli runner instead of dynamically importing the entry module', () => {
-    const devWatchSource = readFileSync(resolve(import.meta.dirname, './dev-watch.ts'), 'utf8')
-    const indexSource = readFileSync(resolve(import.meta.dirname, './index.ts'), 'utf8')
+    const devWatchSource = readFileSync(resolve(import.meta.dirname, '../dev-watch.ts'), 'utf8')
+    const indexSource = readFileSync(resolve(import.meta.dirname, '../index.ts'), 'utf8')
 
     expect(devWatchSource).toContain("import { cli } from './index.ts'")
     expect(devWatchSource).toContain('await cli()')
