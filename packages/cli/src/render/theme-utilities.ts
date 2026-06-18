@@ -74,12 +74,6 @@ export function getThemeCssVariables(theme: Theme): ThemeCssVariable[] {
   return variables
 }
 
-export function renderThemeCssVariables(theme: Theme): string {
-  return getThemeCssVariables(theme)
-    .map((entry) => `${entry.name}:${entry.value};`)
-    .join('')
-}
-
 export function getTailwindBrowserStylesheet(): string {
   try {
     return readFileSync(TAILWIND_BROWSER_STYLESHEET_PATH, 'utf8')
@@ -103,6 +97,4 @@ export function getSirenoRuntimeStylesheet(): string {
   ].join('')
 }
 
-export function getThemeUtilityStylesheet(): string {
-  return `${getTailwindBrowserStylesheet()}${getSirenoRuntimeStylesheet()}`
-}
+
