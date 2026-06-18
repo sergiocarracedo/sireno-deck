@@ -165,15 +165,20 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.7 — Polish & 3rd-Party Fixtures
-**Phase:** 73 — Paste semantics + macro error surfacing ✓ complete
-**Status:** verifying
-**Last updated:** 2026-06-17
+**Phase:** 74 — Label-values cap (BUG-07 dropped via discussion)
+**Status:** discuss-phase complete (ready for plan-phase)
+**Last updated:** 2026-06-18
 
 ## v1.7 Phase 73 Plan Status (executed)
 
 - Plan 73-01 (executed): BUG-05 — `pasteText` writes to clipboard (`clipboardy.writeSync`) AND sends Ctrl+V/Cmd+V paste keystroke via `keyMacroProvider.send(parseKeyMacro('ctrl+v'))`. Runtime handler wraps in try/catch and calls `showRuntimeButtonError(button, deckId, 'paste', error)`. `"paste"` error kind added (code `4111`). 4/4 clipboard tests pass.
-- Plan 73-02 (executed): BUG-06 — All 3 platform key-macro providers (`linux.ts`, `darwin.ts`, `windows.ts`) throw on failure instead of silently swallowing. `"key-macro"` error kind added (code `4110`). Runtime `keyMacro` handler wraps provider call in try/catch and calls `showRuntimeButtonError(button, deckId, 'key-macro', error)`. 44 key-macro tests pass.
-- Both plans are independent Wave-1 vertical slices touching different handlers in `runtime.ts`.
+- Plan 73-02 (executed): BUG-06 — All 3 platform key-macro providers (`linux.ts`, `darwin.ts`, `windows.ts`) throw on failure instead of silently swallowing. `"key-macro"` error kind added (code `4110`). Runtime `keyMacro` handler wraps provider call in try/catch and calls `showRuntimeButtonError(button, deckId, 'key-macro', error)`. 19/19 key-macro tests pass.
+- Plan 73 UAT gap fixed: dynamic `import('../util/clipboard.js')` at runtime.ts:1009 → static `import { pasteText as doPaste } from '@/util/clipboard'`. tsx doesn't resolve `.js`→`.ts` for dynamic imports with literal `.js` paths.
+
+## v1.7 Phase 74 Plan Status (discussed, ready for plan-phase)
+
+- **Scope narrowed to label-values cap only.** BUG-07 (Bars formatter prop) explicitly dropped via discussion — the existing `displayValue` field + system-status addon's per-metric `SystemStatusFormatter` enum already handle the formatting need. Adding a component-level `formatter` prop would force a system-status-bars refactor that loses per-metric formatting.
+- **Decision:** Cap `system-status-label-values.metrics` at 1-2 entries via `z.array(LabelValueMetricSchema).min(1).max(2, "...")`. Custom error message points to `value-display` (FEAT-02 / Phase 75).
 
 ## v1.7 Phase 72 Plan Status (✓ complete)
 
