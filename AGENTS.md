@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.7 — Polish & 3rd-Party Fixtures
-**Phase:** 75 — value-display addon (FEAT-02)
-**Status:** plan-phase complete (1 plan ready, Wave 1)
+**Phase:** 75 — value-display addon (FEAT-02) ✓ complete
+**Status:** verifying
 **Last updated:** 2026-06-18
 
 ## v1.7 Phase 73 Plan Status (executed)
@@ -180,10 +180,10 @@ This project uses **learnship**. Key facts:
 - Plan 74-01 (executed, commit `e174979` + `5a4bfab`): `system-status-label-values` schema now caps `metrics` at 1-2 entries via `z.array(LabelValueMetricSchema).min(1).max(2, "system-status-label-values supports 1–2 metrics; for 3+ values use the value-display addon (FEAT-02)")`. New test asserts 3+ rejection with the value-display hint. Bars schema untouched (still 1-3). 7/7 system-status tests pass. BUG-07 (Bars formatter prop) marked `Deferred for v1.7` in REQUIREMENTS.md.
 - Used `.max(2, "msg")` directly (not `.superRefine()`) to avoid `ZodEffects` wrapper that breaks `.shape` consumers. See `.planning/solutions/best-practices/zod-refine-silently-breaks-shape-consumers-2026-06-09.md`.
 
-## v1.7 Phase 75 Plan Status (planned, ready for execute-phase)
+## v1.7 Phase 75 Plan Status (executed)
 
-- Plan 75-01 (Wave 1, ready): Create the new `value-display` addon at `packages/cli/src/builtin-addons/value-display/` with schemas.ts (1-3 values cap, .strict()), domain/format-command-output.ts helper (formatter + units + non-numeric passthrough), buttons/value-display.tsx (`defineMountedButton` with parallel `Promise.all` polling + `useButtonActionCommand`), index.ts (sirenoAddon export), index.test.ts (1/2/3 layouts, command-not-found, parallel execution, default timeout), and register in `addon/builtin.ts`.
-- Key risks: pre-existing `@/config/loader` alias issue in test imports (same issue as system-status). `SystemStatusFormatterSchema` may need `export` added in system-status/schemas.ts to import.
+- Plan 75-01 (executed, commits `679ff87`, `77cfac9`, `ebaabe9`, `8d84143`, `ecd0da0`, `a3712a8`, `87310a5`): New first-party `value-display` addon at `packages/cli/src/builtin-addons/value-display/`. Schemas (1-3 values cap), format-command-output helper (formatter + units + non-numeric passthrough), value-display button (`defineMountedButton` with parallel `Promise.all` polling + `useButtonActionCommand`), index addon export, registered in `getBundledAddons()`. 8/8 value-display tests pass; 7/7 system-status regression-free.
+- `SystemStatusFormatterSchema` now `export`ed from `system-status/schemas.ts` (was a local const) so value-display can import it. Lift to a shared module later if a 3rd consumer emerges.
 
 ## v1.7 Phase 72 Plan Status (✓ complete)
 

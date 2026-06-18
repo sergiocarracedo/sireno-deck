@@ -10,8 +10,8 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 ## Current Position
 
 Phase: 75 — value-display addon (FEAT-02)
-Status: **DISCUSSED (2026-06-18)**. Discuss-phase complete: 4 gray areas resolved in deep mode. Decisions: reuse `LabelValueList` (no new surface), per-button `poll_interval_ms`/`render_interval_ms` (1s default), parallel `Promise.all` command execution, 5s default timeout, "N/A" on error, import `SystemStatusFormatter` from system-status/schemas, per-button `useButtonActionCommand` (no per-value actions). Next: plan-phase 75.
-Last activity: 2026-06-18 — Phase 75 discuss-phase complete (75-CONTEXT.md, 75-DISCUSSION-LOG.md).
+Status: **EXECUTED (2026-06-18)**. Phase 75 executed: new first-party `value-display` addon at `packages/cli/src/builtin-addons/value-display/`. Configures 1-3 per-value shell commands with parallel `Promise.all` execution, 5s default timeout, "N/A" on error. Renders via existing `LabelValueList` (single/double/stack layouts). Per-button tap/hold/dbltap via `useButtonActionCommand`. Registered in `getBundledAddons()`. 8/8 value-display tests pass; 7/7 system-status regression-free. `SystemStatusFormatterSchema` now exported from system-status/schemas.
+Last activity: 2026-06-18 — Phase 75 executed (7 commits, 1 plan, 1 wave).
 
 ### Quick Tasks Completed
 
