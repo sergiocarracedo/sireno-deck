@@ -4,7 +4,7 @@ import { setDomAssetPathResolver } from '@/addon/api'
 import { createBundledAddonRegistry } from '@/config/loader'
 import { renderReactNodeToHtml } from '@/render/dom-host'
 import { UNKNOWN_HOST_CONTEXT } from '@/system/host-context'
-import emojiSelectorAddon from './index'
+import emojiSelectorAddon from '../index'
 
 const mountedButtonMethods = {
   getActiveDeckId: () => 'main',
@@ -432,7 +432,7 @@ describe('emoji-selector addon', () => {
   })
 
   it('exposes the conventional shortcode for emojis in the catalog', async () => {
-    const { getEmojiShortcode } = await import('./support.js')
+    const { getEmojiShortcode } = await import('../support.js')
     expect(getEmojiShortcode('🔥')).toBe('fire')
     expect(getEmojiShortcode('😀')).toBe('grinning')
     expect(getEmojiShortcode('not-in-catalog')).toBeUndefined()

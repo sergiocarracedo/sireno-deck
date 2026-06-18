@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import brightnessAddon from "."
+import brightnessAddon from ".."
 
 describe("brightness addon", () => {
   it("exports a SirenoAddon with the expected shape", () => {

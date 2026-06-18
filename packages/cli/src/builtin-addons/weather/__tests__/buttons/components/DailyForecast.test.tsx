@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest'
 
 import { renderReactNodeToHtml } from '@/render/dom-host'
 
-import type { DailyForecastEntry } from '../../domain/weather-controller'
-import { DailyForecast } from './DailyForecast'
+import type { DailyForecastEntry } from '../../../domain/weather-controller'
+import { DailyForecast } from '../../../buttons/components/DailyForecast'
 
 describe('DailyForecast', () => {
   it('renders the empty-state message when there are no entries', () => {

@@ -3,9 +3,9 @@ import { describe, expect, it } from "vitest"
 
 import { renderReactNodeToHtml } from "@/render/dom-host"
 
-import { builtinBrightnessButton } from "./brightness"
-import { BrightnessSurface, nextPercentage } from "./BrightnessSurface"
-import { BrightnessButtonSchema } from "./brightness"
+import { builtinBrightnessButton } from "../../buttons/brightness"
+import { BrightnessSurface, nextPercentage } from "../../buttons/BrightnessSurface"
+import { BrightnessButtonSchema } from "../../buttons/brightness"
 
 describe("BrightnessButtonSchema", () => {
   it("parses an empty config", () => {

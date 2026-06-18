@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest"
 
 import { renderReactNodeToHtml } from "@/render/dom-host"
 import { Text } from "@/ui/index"
-import { BrightnessSurface } from "./BrightnessSurface"
+import { BrightnessSurface } from "../../buttons/BrightnessSurface"
 
 describe("BrightnessSurface", () => {
   it("renders the current percentage as a text element", () => {

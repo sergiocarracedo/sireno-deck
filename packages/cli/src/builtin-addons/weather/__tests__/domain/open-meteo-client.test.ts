@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { fetchOpenMeteoSnapshot } from './open-meteo-client'
+import { fetchOpenMeteoSnapshot } from '../../domain/open-meteo-client'
 
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
 

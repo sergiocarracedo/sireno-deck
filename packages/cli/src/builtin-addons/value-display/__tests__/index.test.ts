@@ -18,7 +18,7 @@ vi.mock('@/action/executor', async () => {
 
 import { renderReactNodeToHtml } from '@/render/dom-host'
 import { UNKNOWN_HOST_CONTEXT } from '@/system/host-context'
-import valueDisplayAddon from './index'
+import valueDisplayAddon from '../index'
 
 const mountedButtonMethods = {
   getActiveDeckId: () => 'main',

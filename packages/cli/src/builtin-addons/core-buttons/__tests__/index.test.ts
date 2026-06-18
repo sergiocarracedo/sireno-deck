@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { Text } from '@/index'
 import { renderReactNodeToHtml } from '@/render/dom-host'
 import { UNKNOWN_HOST_CONTEXT } from '@/system/host-context'
-import coreButtonsAddon from './index'
+import coreButtonsAddon from '../index'
 
 const mountedButtonMethods = {
   getActiveDeckId: () => 'main',

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import internalSettingsAddon from '.'
+import internalSettingsAddon from '..'
 
 describe('internal-settings addon', () => {
   it('exports a SirenoAddon with the expected shape', () => {

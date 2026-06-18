@@ -5,7 +5,7 @@ import { renderReactNodeToHtml } from '@/render/dom-host'
 import {
   internalSettingsLogoVersionButton,
   InternalSettingsLogoVersionButtonSchema,
-} from './logo-version'
+} from '../../buttons/logo-version'
 
 describe('InternalSettingsLogoVersionButtonSchema', () => {
   it('parses an empty config', () => {

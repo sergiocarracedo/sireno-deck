@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { _resetForTests } from './geocoder'
+import { _resetForTests } from '../../domain/geocoder'
 import {
   createLocatingWeatherSnapshot,
   createUnavailableWeatherSnapshot,
   fetchWeatherSnapshot,
   resolveLocation,
-} from './weather-controller'
+} from '../../domain/weather-controller'
 
 const GEOCODING_URL = 'https://geocoding-api.open-meteo.com/v1/search'
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'

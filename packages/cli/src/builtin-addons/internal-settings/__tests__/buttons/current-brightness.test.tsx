@@ -6,7 +6,7 @@ import { renderReactNodeToHtml } from '@/render/dom-host'
 import {
   internalSettingsCurrentBrightnessButton,
   InternalSettingsCurrentBrightnessButtonSchema,
-} from './current-brightness'
+} from '../../buttons/current-brightness'
 
 describe('InternalSettingsCurrentBrightnessButtonSchema', () => {
   it('parses an empty config', () => {

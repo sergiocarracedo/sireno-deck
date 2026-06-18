@@ -7,7 +7,7 @@ import {
   internalSettingsBrightnessDownButton,
   InternalSettingsBrightnessDownButtonSchema,
   nextBrightnessDown,
-} from './brightness-down'
+} from '../../buttons/brightness-down'
 
 describe('InternalSettingsBrightnessDownButtonSchema', () => {
   it('parses an empty config', () => {

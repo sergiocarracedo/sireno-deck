@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { _resetForTests, searchCity } from './geocoder'
+import { _resetForTests, searchCity } from '../../domain/geocoder'
 
 function makeResult(overrides: Partial<{
 	id: number

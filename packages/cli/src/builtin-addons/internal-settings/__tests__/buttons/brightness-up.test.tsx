@@ -7,7 +7,7 @@ import {
   internalSettingsBrightnessUpButton,
   InternalSettingsBrightnessUpButtonSchema,
   nextBrightnessUp,
-} from './brightness-up'
+} from '../../buttons/brightness-up'
 
 describe('InternalSettingsBrightnessUpButtonSchema', () => {
   it('parses an empty config', () => {

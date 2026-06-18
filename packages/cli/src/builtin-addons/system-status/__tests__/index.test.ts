@@ -4,9 +4,9 @@ const { getCanonicalSystemMetricsMock } = vi.hoisted(() => ({
   getCanonicalSystemMetricsMock: vi.fn(),
 }))
 
-vi.mock('./domain/live-metrics', async () => {
-  const actual = await vi.importActual<typeof import('./domain/live-metrics')>(
-    './domain/live-metrics',
+vi.mock('../domain/live-metrics', async () => {
+  const actual = await vi.importActual<typeof import('../domain/live-metrics')>(
+    '../domain/live-metrics',
   )
 
   return {
@@ -19,7 +19,7 @@ import { createBundledAddonRegistry } from '@/config/loader'
 import { validateConfig } from '@/core/schemas'
 import { renderReactNodeToHtml } from '@/render/dom-host'
 import { UNKNOWN_HOST_CONTEXT } from '@/system/host-context'
-import systemStatusAddon from './index'
+import systemStatusAddon from '../index'
 
 const mountedButtonMethods = {
   getActiveDeckId: () => 'main',

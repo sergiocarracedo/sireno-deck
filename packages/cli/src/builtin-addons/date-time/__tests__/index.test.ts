@@ -9,7 +9,7 @@ import dateTimeAddon, {
   formatDigitalDateTimeLabel,
   formatLockedTimeCharacters,
   formatLockedTimeTileCharacter,
-} from './index'
+} from '../index'
 
 function createStoreScope(initialSnapshot?: unknown) {
   let snapshot = initialSnapshot

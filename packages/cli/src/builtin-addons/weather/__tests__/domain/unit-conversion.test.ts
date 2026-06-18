@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { convertTemperature, convertWindSpeed } from './unit-conversion'
+import { convertTemperature, convertWindSpeed } from '../../domain/unit-conversion'
 
 describe('convertTemperature', () => {
   it('returns celsius with °C when target is metric', () => {
