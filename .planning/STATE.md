@@ -10,8 +10,8 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 ## Current Position
 
 Phase: 74 — Label-values cap (FEAT-01; BUG-07 dropped via discussion)
-Status: **DISCUSSED (2026-06-18)**. Discuss-phase complete: 4 gray areas explored in deep mode, BUG-07 dropped entirely (per-item displayValue path is enough — Bars formatter prop would force a system-status-bars refactor that loses per-metric formatting). Phase 74 scoped to: cap `system-status-label-values.metrics` at 1-2 entries via `z.array(...).min(1).max(2, "...")` with a brief error message pointing to `value-display` (FEAT-02). Next: plan-phase 74.
-Last activity: 2026-06-18 — Phase 74 discuss-phase complete (74-CONTEXT.md, 74-DISCUSSION-LOG.md).
+Status: **EXECUTED (2026-06-18)**. Phase 74 executed: `system-status-label-values` schema now caps `metrics` at 1-2 entries via `z.array(LabelValueMetricSchema).min(1).max(2, "system-status-label-values supports 1–2 metrics; for 3+ values use the value-display addon (FEAT-02)")`. New test asserts 3+ rejection with value-display hint. Bars schema untouched (still 1-3). 7/7 system-status tests pass. BUG-07 (Bars formatter prop) marked deferred in REQUIREMENTS.md. Next: verify-work 74.
+Last activity: 2026-06-18 — Phase 74 executed (5 commits, 1 plan, 1 wave).
 
 ### Quick Tasks Completed
 

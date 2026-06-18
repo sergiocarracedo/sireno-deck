@@ -165,8 +165,8 @@ This project uses **learnship**. Key facts:
 ## Current Phase
 
 **Milestone:** v1.7 — Polish & 3rd-Party Fixtures
-**Phase:** 74 — Label-values cap (BUG-07 dropped via discussion)
-**Status:** plan-phase complete (1 plan ready, Wave 1)
+**Phase:** 74 — Label-values cap (BUG-07 dropped via discussion) ✓ complete
+**Status:** verifying
 **Last updated:** 2026-06-18
 
 ## v1.7 Phase 73 Plan Status (executed)
@@ -175,10 +175,10 @@ This project uses **learnship**. Key facts:
 - Plan 73-02 (executed): BUG-06 — All 3 platform key-macro providers (`linux.ts`, `darwin.ts`, `windows.ts`) throw on failure instead of silently swallowing. `"key-macro"` error kind added (code `4110`). Runtime `keyMacro` handler wraps provider call in try/catch and calls `showRuntimeButtonError(button, deckId, 'key-macro', error)`. 19/19 key-macro tests pass.
 - Plan 73 UAT gap fixed: dynamic `import('../util/clipboard.js')` at runtime.ts:1009 → static `import { pasteText as doPaste } from '@/util/clipboard'`. tsx doesn't resolve `.js`→`.ts` for dynamic imports with literal `.js` paths.
 
-## v1.7 Phase 74 Plan Status (planned, ready for execute-phase)
+## v1.7 Phase 74 Plan Status (executed)
 
-- Plan 74-01 (Wave 1, ready): Replace the 4-tuple union in `SystemStatusLabelValuesButtonSchema.metrics` with `z.array(LabelValueMetricSchema).min(1).max(2, "system-status-label-values supports 1–2 metrics; for 3+ values use the value-display addon (FEAT-02)")`. Add a test asserting 3+ rejection. Update ROADMAP.md (drop Bars-related success criteria) and REQUIREMENTS.md (mark BUG-07 deferred-for-v1.7). Bars schema untouched (still 1-3).
-- Key research finding: do NOT use `.superRefine()` — that wraps the schema in `ZodEffects` and breaks `.shape` consumers (see `.planning/solutions/best-practices/zod-refine-silently-breaks-shape-consumers-2026-06-09.md`). Use `.max(2, "msg")` directly which returns `ZodArray`.
+- Plan 74-01 (executed, commit `e174979` + `5a4bfab`): `system-status-label-values` schema now caps `metrics` at 1-2 entries via `z.array(LabelValueMetricSchema).min(1).max(2, "system-status-label-values supports 1–2 metrics; for 3+ values use the value-display addon (FEAT-02)")`. New test asserts 3+ rejection with the value-display hint. Bars schema untouched (still 1-3). 7/7 system-status tests pass. BUG-07 (Bars formatter prop) marked `Deferred for v1.7` in REQUIREMENTS.md.
+- Used `.max(2, "msg")` directly (not `.superRefine()`) to avoid `ZodEffects` wrapper that breaks `.shape` consumers. See `.planning/solutions/best-practices/zod-refine-silently-breaks-shape-consumers-2026-06-09.md`.
 
 ## v1.7 Phase 72 Plan Status (✓ complete)
 
