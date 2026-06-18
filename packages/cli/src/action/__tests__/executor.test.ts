@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { executeCommand } from "./executor"
+import { executeCommand } from "../executor"
 
 describe("executeCommand", () => {
   it("captures stdout for successful commands", async () => {

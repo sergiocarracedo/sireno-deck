@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 
-import type { StreamDeckDeviceHandle } from "./stream-deck"
+import type { StreamDeckDeviceHandle } from "../stream-deck"
 import {
   _resetDeviceRegistryForTests,
   getCurrentBrightness,
@@ -8,7 +8,7 @@ import {
   registerDeviceHandle,
   setBrightnessAll,
   unregisterDeviceHandle,
-} from "./registry"
+} from "../registry"
 
 function makeHandle(overrides: Partial<StreamDeckDeviceHandle> = {}): StreamDeckDeviceHandle {
   return {

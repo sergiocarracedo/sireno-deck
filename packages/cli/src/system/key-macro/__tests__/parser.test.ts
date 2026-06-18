@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { KeyMacroParseError, parseKeyMacro } from './parser'
+import { KeyMacroParseError, parseKeyMacro } from '../parser'
 
 describe('parseKeyMacro', () => {
   it('parses a single key', () => {

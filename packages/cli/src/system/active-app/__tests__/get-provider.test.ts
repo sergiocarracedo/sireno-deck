@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { getActiveAppProvider } from './index'
-import type { ActiveAppProbe, DbusClient, DbusBus } from './provider'
+import { getActiveAppProvider } from '../index'
+import type { ActiveAppProbe, DbusClient, DbusBus } from '../provider'
 
 function silentLogger() {
   return { warn: vi.fn(), error: vi.fn(), info: vi.fn() }

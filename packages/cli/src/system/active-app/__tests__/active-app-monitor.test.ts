@@ -4,11 +4,11 @@ import type {
   ActiveAppProvider,
   ActiveAppProviderDeps,
   ActiveAppSnapshot,
-} from './provider'
+} from '../provider'
 import {
   createActiveAppMonitor,
   createActiveAppMonitorDouble,
-} from './active-app-monitor'
+} from '../active-app-monitor'
 
 function makeMockProvider(): ActiveAppProvider & {
   emit: (s: ActiveAppSnapshot) => void

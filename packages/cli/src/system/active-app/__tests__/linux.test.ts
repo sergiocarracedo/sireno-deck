@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { createLinuxProvider } from './linux'
-import type { ActiveAppProbe } from './provider'
+import { createLinuxProvider } from '../linux'
+import type { ActiveAppProbe } from '../provider'
 
 function silentLogger() {
   return { warn: vi.fn(), error: vi.fn(), info: vi.fn() }

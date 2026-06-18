@@ -14,8 +14,8 @@ import {
   type StreamDeckApi,
   type StreamDeckDeviceHandle,
   writeKeyBuffer,
-} from "./stream-deck"
-import { registerDeviceHandle, setBrightnessAll, unregisterDeviceHandle } from "./registry"
+} from "../stream-deck"
+import { registerDeviceHandle, setBrightnessAll, unregisterDeviceHandle } from "../registry"
 
 class FakeStreamDeck extends EventEmitter {
   readonly CONTROLS

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 
-import { createSessionMonitor, type SessionMonitorClient } from "./session-monitor"
+import { createSessionMonitor, type SessionMonitorClient } from "../session-monitor"
 
 function createLinuxClientDouble(options: { active?: boolean; getActiveError?: Error } = {}): SessionMonitorClient & {
   bus: { disconnect: ReturnType<typeof vi.fn> }

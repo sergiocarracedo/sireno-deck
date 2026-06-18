@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { createWaylandGnomeProvider } from './wayland-gnome'
+import { createWaylandGnomeProvider } from '../wayland-gnome'
 import type {
   DbusBus,
   DbusClient,
   DbusProxyInterface,
   DbusProxyObject,
-} from './provider'
+} from '../provider'
 
 function silentLogger() {
   return {

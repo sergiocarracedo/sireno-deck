@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { getKeyMacroProvider } from './index'
-import type { KeyMacroExecutor } from './provider'
+import { getKeyMacroProvider } from '../index'
+import type { KeyMacroExecutor } from '../provider'
 
 function silentLogger() {
   return { warn: vi.fn(), error: vi.fn() }

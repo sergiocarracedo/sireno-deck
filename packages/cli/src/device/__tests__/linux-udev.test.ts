@@ -4,7 +4,7 @@ import {
   formatLinuxUdevAccessError,
   getLinuxUdevRuleHints,
   isLikelyLinuxUdevAccessError,
-} from "./linux-udev"
+} from "../linux-udev"
 
 describe("linux udev diagnostics", () => {
   it("detects Linux permission failures by errno code", () => {
