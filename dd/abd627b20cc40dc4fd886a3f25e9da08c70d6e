@@ -1,0 +1,24 @@
+packages/cli/src/render/theme-utilities.ts
+  s_a41bfc3092905d::t_b302ea024d5e81 100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "ddabd627b20cc40dc4fd886a3f25e9da08c70d6e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a41bfc3092905d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1247283b9ffezkIY11S9N7b5r9",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
