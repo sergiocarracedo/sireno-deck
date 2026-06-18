@@ -5,6 +5,7 @@ import emojiSelectorAddon from '@/builtin-addons/emoji-selector'
 import internalSettingsAddon from '@/builtin-addons/internal-settings'
 import mediaPlayerAddon from '@/builtin-addons/media-player'
 import systemStatusAddon from '@/builtin-addons/system-status'
+import valueDisplayAddon from '@/builtin-addons/value-display'
 import weatherAddon from '@/builtin-addons/weather'
 
 import type { SirenoAddon } from './api'
@@ -15,6 +16,7 @@ export function getBundledAddons(): readonly SirenoAddon[] {
     emojiSelectorAddon,
     datetimeButtonsAddon,
     systemStatusAddon,
+    valueDisplayAddon,
     mediaPlayerAddon,
     weatherAddon,
     brightnessAddon,
