@@ -119,6 +119,23 @@ describe('system-status addon', () => {
     })
   })
 
+  it('rejects label-value configs with 3+ metrics and points to value-display', () => {
+    const labelValuesDefinition = systemStatusAddon.buttons[1]
+    expect(labelValuesDefinition).toBeDefined()
+
+    const result = labelValuesDefinition?.configSchema.safeParse({
+      metrics: [
+        { metric: 'cpu_usage' },
+        { metric: 'fan_speed' },
+        { metric: 'memory_usage' },
+      ],
+    })
+
+    expect(result?.success).toBe(false)
+    const errorMessage = JSON.stringify(result?.error)
+    expect(errorMessage).toContain('value-display')
+  })
+
   it('loads bundled label-value buttons through the real registry and config path with explicit unavailable slots', async () => {
     getCanonicalSystemMetricsMock.mockResolvedValue([
       {
