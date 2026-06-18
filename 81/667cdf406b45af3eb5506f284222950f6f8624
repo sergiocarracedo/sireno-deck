@@ -1,0 +1,35 @@
+.planning/STATE.md
+  s_a41bfc3092905d::t_c9acf5e1c82745 29
+  s_a41bfc3092905d::t_e362c419959104 14
+.planning/quick/046-render-cleanup-dom-host-folder/046-PLAN.md
+  s_6aed55125c6157::t_3e3f71147c9431 149-155
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "81667cdf406b45af3eb5506f284222950f6f8624",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_6aed55125c6157": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_123c07561ffe3AcviqYR9Sq2OQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_a41bfc3092905d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1247283b9ffezkIY11S9N7b5r9",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
