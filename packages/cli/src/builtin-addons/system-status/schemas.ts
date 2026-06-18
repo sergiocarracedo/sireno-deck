@@ -48,21 +48,13 @@ export const SystemStatusBarsButtonSchema = z
 export const SystemStatusLabelValuesButtonSchema = z
   .object({
     ...AddonButtonActionConfigSchema.shape,
-    metrics: z.union([
-      z.tuple([LabelValueMetricSchema]),
-      z.tuple([LabelValueMetricSchema, LabelValueMetricSchema]),
-      z.tuple([
-        LabelValueMetricSchema,
-        LabelValueMetricSchema,
-        LabelValueMetricSchema,
-      ]),
-      z.tuple([
-        LabelValueMetricSchema,
-        LabelValueMetricSchema,
-        LabelValueMetricSchema,
-        LabelValueMetricSchema,
-      ]),
-      ]),
+    metrics: z
+      .array(LabelValueMetricSchema)
+      .min(1)
+      .max(
+        2,
+        'system-status-label-values supports 1–2 metrics; for 3+ values use the value-display addon (FEAT-02)',
+      ),
     poll_interval_ms: z.number().int().min(500).default(1_000),
     render_interval_ms: z.number().int().min(500).default(1_000),
   })
