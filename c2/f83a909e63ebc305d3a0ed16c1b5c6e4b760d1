@@ -1,0 +1,25 @@
+.planning/STATE.md
+  s_344b68134ff779::t_61c78ffb8ade47 18
+  s_344b68134ff779::t_6b1d502b6a8897 24
+.planning/milestones/v1.8-ROADMAP.md
+  s_344b68134ff779::t_803cf404a75985 30
+  s_344b68134ff779::t_81e7329fbc4cf7 196-197
+.planning/phases/78-dev-server-scaffold/78-VERIFICATION.md
+  s_344b68134ff779::t_550f0a25c75de2 1-67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "c2f83a909e63ebc305d3a0ed16c1b5c6e4b760d1",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
