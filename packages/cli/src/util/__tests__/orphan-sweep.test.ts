@@ -4,7 +4,7 @@ import { join } from "node:path"
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 
-import { sweepOrphanedTempDirs } from "./orphan-sweep"
+import { sweepOrphanedTempDirs } from "../orphan-sweep"
 
 describe("sweepOrphanedTempDirs", () => {
   let fakeTmpRoot: string
