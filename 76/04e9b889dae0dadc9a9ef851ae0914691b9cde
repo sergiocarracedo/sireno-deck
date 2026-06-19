@@ -1,0 +1,19 @@
+.planning/phases/80-date-time-port/80-01-SUMMARY.md
+  s_344b68134ff779::t_7993d6ad8d84e3 1-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "7604e9b889dae0dadc9a9ef851ae0914691b9cde",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
