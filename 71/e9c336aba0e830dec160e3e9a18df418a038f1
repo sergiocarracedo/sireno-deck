@@ -1,0 +1,19 @@
+.planning/phases/79-ws-protocol/79-01-PLAN.md
+  s_344b68134ff779::t_ba2f86ebe0f479 5,9,19-28,31-32,49,52-55,58,65,67,71-75,77,79-89,91,93,97-115,119-125,127-135,141,145-146,151-158,161,163,166-167,169-171,174-182,184-185,189-193,199,201,205
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "71e9c336aba0e830dec160e3e9a18df418a038f1",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
