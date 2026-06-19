@@ -1,11 +1,12 @@
-import type { CSSProperties, ReactElement, ReactNode } from 'react'
+import type { CSSProperties, ReactElement } from 'react'
 
 import { cn } from '@/themes/utils/cn'
+import { Icon, resolveIconSpec } from '../Icon'
 import { Text } from '../Text'
 
 export interface LabelValueListLine {
   color?: string
-  icon?: ReactNode
+  icon?: string
   label: string
   units?: string
   value: string
@@ -101,6 +102,7 @@ export function LabelValueList(props: LabelValueListProps): ReactElement {
       style={props.style}
     >
       {props.lines.map((line, index) => {
+        const icon = resolveIconSpec(line.icon)
         const label = (
           <div
             className={cn(
@@ -109,9 +111,9 @@ export function LabelValueList(props: LabelValueListProps): ReactElement {
               layout !== 'single' && 'flex-1',
             )}
           >
-            {line.icon ? (
+            {icon ? (
               <span className="inline-flex shrink-0 items-center justify-center">
-                {line.icon}
+                <Icon size={16} {...icon} />
               </span>
             ) : null}
             <Text

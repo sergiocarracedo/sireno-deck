@@ -33,7 +33,8 @@ decks:
         icon: addon://emoji-selector/nature.svg
 
       - position: 0
-        type: system-status-bars
+        type: system-status
+        variant: bars
         metrics:
           - metric: cpu_usage
             label: CPU
@@ -44,7 +45,7 @@ decks:
             unavailable_label: N/A
 
       - position: 5
-        type: system-status-label-values
+        type: system-status
         metrics:
           - metric: cpu_usage
             label: CPU

@@ -12,7 +12,7 @@ export const SystemStatusFormatterSchema = z.enum([
   'uptime',
 ])
 
-const SystemStatusMetricOverrideSchema = z
+const MetricSchema = z
   .object({
     color: z.string().min(1).optional(),
     formatter: SystemStatusFormatterSchema.optional(),
@@ -20,56 +20,22 @@ const SystemStatusMetricOverrideSchema = z
     label: z.string().min(1).optional(),
     unavailable_label: z.string().min(1).optional(),
     units: z.string().min(1).optional(),
+    max_value: z.number().positive().optional(),
+    metric: SystemMetricIdSchema,
   })
   .strict()
 
-const BarsMetricSchema = SystemStatusMetricOverrideSchema.extend({
-  max_value: z.number().positive().optional(),
-  metric: SystemMetricIdSchema,
-}).strict()
-
-const LabelValueMetricSchema = SystemStatusMetricOverrideSchema.extend({
-  metric: SystemMetricIdSchema,
-}).strict()
-
-export const SystemStatusBarsButtonSchema = z
+export const SystemStatusButtonSchema = z
   .object({
     ...AddonButtonActionConfigSchema.shape,
-    metrics: z.union([
-      z.tuple([BarsMetricSchema]),
-      z.tuple([BarsMetricSchema, BarsMetricSchema]),
-      z.tuple([BarsMetricSchema, BarsMetricSchema, BarsMetricSchema]),
-    ]),
+    variant: z.enum(['bars', 'text']).default('text'),
+    metrics: z.array(MetricSchema).max(3),
     poll_interval_ms: z.number().int().min(500).default(1_000),
     render_interval_ms: z.number().int().min(500).default(1_000),
   })
   .strict()
 
-export const SystemStatusLabelValuesButtonSchema = z
-  .object({
-    ...AddonButtonActionConfigSchema.shape,
-    metrics: z
-      .array(LabelValueMetricSchema)
-      .min(1)
-      .max(
-        2,
-        'system-status-label-values supports 1–2 metrics; for 3+ values use the value-display addon (FEAT-02)',
-      ),
-    poll_interval_ms: z.number().int().min(500).default(1_000),
-    render_interval_ms: z.number().int().min(500).default(1_000),
-  })
-  .strict()
+export type SystemStatusButtonConfig = z.infer<typeof SystemStatusButtonSchema>
 
-export type SystemStatusBarsButtonConfig = z.infer<
-  typeof SystemStatusBarsButtonSchema
->
-
-export type SystemStatusLabelValuesButtonConfig = z.infer<
-  typeof SystemStatusLabelValuesButtonSchema
->
-
-export type SystemStatusBarsMetricConfig =
-  SystemStatusBarsButtonConfig['metrics'][number]
-
-export type SystemStatusLabelValueMetricConfig =
-  SystemStatusLabelValuesButtonConfig['metrics'][number]
+export type SystemStatusMetricConfig =
+  SystemStatusButtonConfig['metrics'][number]
