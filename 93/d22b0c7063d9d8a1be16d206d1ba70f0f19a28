@@ -1,0 +1,27 @@
+packages/cli/src/builtin-addons/system-status/schemas.ts
+  s_23d3699a1089ad::t_d150f30e445308 15,23-24,28,31-32,38,40-41
+packages/cli/src/deck/runtime.ts
+  s_23d3699a1089ad::t_d150f30e445308 20,22,28,62-63,1052-1063,1065-1069,1071-1079,1081-1124
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_23d3699a1089ad::t_d150f30e445308 1,4,9,105,114,116
+config.yml
+  s_23d3699a1089ad::t_5005e63d86edbe 36-37,48
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_23d3699a1089ad::t_d150f30e445308 2,6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "93d22b0c7063d9d8a1be16d206d1ba70f0f19a28",
+  "prompts": {},
+  "sessions": {
+    "s_23d3699a1089ad": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_123bbfc63ffeaNp0Y6I42E8ACU",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
