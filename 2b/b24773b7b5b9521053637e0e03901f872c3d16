@@ -1,0 +1,39 @@
+packages/cli/src/util/orphan-sweep.test.ts
+  s_23d3699a1089ad::t_df661bf1057a3f 1-99
+packages/cli/src/util/orphan-sweep.ts
+  s_23d3699a1089ad::t_df661bf1057a3f 1-104
+packages/cli/src/builtin-addons/system-status/buttons/builtinSystemStatusButton.tsx
+  s_23d3699a1089ad::t_e84bb5f4ff374b 1-5,8,14-15,17-35,45,54,60,69,77-78,84-85,99,101-102,105,121-134,138-141,148-149,159,162,165-169
+  s_23d3699a1089ad::t_df661bf1057a3f 6-7,9-13,16,36-44,46-53,55-59,61-68,70-76,79-83,86-98,100,103-104,106-120,135-137,142-147,150-158,160-161,163-164
+packages/cli/src/deck/system-decks/consts.ts
+  s_23d3699a1089ad::t_df661bf1057a3f 2
+  s_23d3699a1089ad::t_c17a11bbcf0618 1
+packages/cli/src/deck/system-decks/settings-deck.tsx
+  s_23d3699a1089ad::t_4dc51bfa855001 1,4-30,32-49
+  s_23d3699a1089ad::t_df661bf1057a3f 2-3,31
+packages/cli/src/deck/system-decks/index.ts
+  s_23d3699a1089ad::t_df661bf1057a3f 1-2,6,8-10,13
+  s_23d3699a1089ad::t_68717328930a32 3-5,7,11-12,14-15
+packages/cli/src/deck/system-decks/locked-deck.tsx
+  s_23d3699a1089ad::t_df661bf1057a3f 1-2,5-9,24-25
+  s_23d3699a1089ad::t_732dc68a8824ad 3-4,10-23
+packages/cli/src/deck/system-buttons/TemporaryErrorButton.tsx
+  s_23d3699a1089ad::t_df661bf1057a3f 1-3,19-33,37
+  s_23d3699a1089ad::t_7c4c661003893b 4-18,34-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "2bb24773b7b5b9521053637e0e03901f872c3d16",
+  "prompts": {},
+  "sessions": {
+    "s_23d3699a1089ad": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_123bbfc63ffeaNp0Y6I42E8ACU",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
