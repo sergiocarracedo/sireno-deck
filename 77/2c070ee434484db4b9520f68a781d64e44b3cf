@@ -1,0 +1,19 @@
+packages/cli/src/util/__tests__/orphan-sweep.test.ts
+  s_6aed55125c6157::t_e4410fb158a904 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "772c070ee434484db4b9520f68a781d64e44b3cf",
+  "prompts": {},
+  "sessions": {
+    "s_6aed55125c6157": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_123c07561ffe3AcviqYR9Sq2OQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    }
+  }
+}
