@@ -1,0 +1,50 @@
+.planning/phases/84-delete-dom-host/84-01-PLAN.md
+  s_344b68134ff779::t_d09fdd2381a0bb 1-147
+.planning/phases/82-routing-and-overlays/82-01-PLAN.md
+  s_344b68134ff779::t_304cfea69a6838 1-88
+.planning/STATE.md
+  s_344b68134ff779::t_f59d31442e0e71 17
+  s_344b68134ff779::t_7ee8d1b9809f39 23
+  s_344b68134ff779::t_84f3b4fcc3db8e 8-9
+  s_344b68134ff779::t_2d6c7c5103143d 33
+  s_344b68134ff779::t_9ac4ee7bceb710 16,18-22,24-32,34-40
+.planning/milestones/v1.8-REQUIREMENTS.md
+  s_344b68134ff779::t_096ea0d01a9938 1-98
+.planning/phases/78-dev-server-scaffold/78-CONTEXT.md
+  s_344b68134ff779::t_cd76f55172b0a1 1-2,4,6-165
+  s_344b68134ff779::t_68092bd3f090bd 3,5
+.planning/phases/80-date-time-port/80-01-PLAN.md
+  s_344b68134ff779::t_70eefb79a4a15c 1-96
+.planning/phases/79-ws-protocol/79-01-PLAN.md
+  s_344b68134ff779::t_d4eba53ce3ef24 1-129
+.planning/milestones/v1.8-ROADMAP.md
+  s_344b68134ff779::t_74edf37a060d44 1-216
+.planning/phases/78-dev-server-scaffold/78-01-PLAN.md
+  s_344b68134ff779::t_be69870520a483 1-84
+.planning/phases/83-hmr-and-all-builtins/83-01-PLAN.md
+  s_344b68134ff779::t_cbc4b0d808f2ed 1-112
+.planning/phases/78-dev-server-scaffold/78-DISCUSSION-LOG.md
+  s_344b68134ff779::t_5101124256e48d 1-140
+.planning/PROJECT.md
+  s_344b68134ff779::t_279560f3795368 24,28-47
+  s_344b68134ff779::t_033df821b798e5 131-137
+  s_344b68134ff779::t_6b0f4bc5b46fe0 140
+.planning/phases/81-gesture-and-actions/81-01-PLAN.md
+  s_344b68134ff779::t_a4f1d995c7e9e8 1-102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "00f1cb3c11b4466a0204641f83b69e9bd9052378",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
