@@ -1,0 +1,21 @@
+.planning/phases/73-paste-semantics-macro-error-surfacing/73-RESEARCH.md
+  s_6aed55125c6157::t_e4410fb158a904 1-54
+.planning/quick/047-reorganize-tests-into-__tests__/047-PLAN.md
+  s_6aed55125c6157::t_e4410fb158a904 1-307
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "89498b9ea47a248d6583fb8fdb4e4021aa5798e8",
+  "prompts": {},
+  "sessions": {
+    "s_6aed55125c6157": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_123c07561ffe3AcviqYR9Sq2OQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    }
+  }
+}
