@@ -90,53 +90,55 @@ describe('system-status addon', () => {
     vi.useRealTimers()
   })
 
-  it('exports bundled bars and label-value definitions with bounded schemas', () => {
+  it('exports a single system-status definition with a variant discriminator and bounded schemas', () => {
     expect(systemStatusAddon.name).toBe('system-status')
     expect(systemStatusAddon.apiVersion).toBe(1)
     expect(systemStatusAddon.buttons.map((button) => button.type)).toEqual([
-      'system-status-bars',
-      'system-status-label-values',
+      'system-status',
     ])
 
-    const barsDefinition = systemStatusAddon.buttons[0]
-    const labelValuesDefinition = systemStatusAddon.buttons[1]
+    const definition = systemStatusAddon.buttons[0]
+    expect(definition).toBeDefined()
 
-    expect(barsDefinition?.configSchema.parse({
+    // Default variant is 'text' when omitted; bare config parses with defaults
+    expect(definition?.configSchema.parse({
       metrics: [{ metric: 'cpu_usage' }],
     })).toEqual({
       metrics: [{ metric: 'cpu_usage' }],
       poll_interval_ms: 1_000,
       render_interval_ms: 1_000,
+      variant: 'text',
     })
-    expect(labelValuesDefinition?.configSchema.parse({
-      commands: { tap: 'date' },
+
+    // variant: 'bars' is accepted explicitly with 1-3 metrics
+    expect(definition?.configSchema.parse({
       metrics: [{ label: 'CPU', metric: 'cpu_usage' }, { metric: 'fan_speed' }],
+      variant: 'bars',
     })).toEqual({
-      commands: { tap: 'date' },
       metrics: [{ label: 'CPU', metric: 'cpu_usage' }, { metric: 'fan_speed' }],
       poll_interval_ms: 1_000,
       render_interval_ms: 1_000,
+      variant: 'bars',
     })
   })
 
-  it('rejects label-value configs with 3+ metrics and points to value-display', () => {
-    const labelValuesDefinition = systemStatusAddon.buttons[1]
-    expect(labelValuesDefinition).toBeDefined()
+  it('rejects configs with 4+ metrics (variant-agnostic upper bound)', () => {
+    const definition = systemStatusAddon.buttons[0]
+    expect(definition).toBeDefined()
 
-    const result = labelValuesDefinition?.configSchema.safeParse({
+    const result = definition?.configSchema.safeParse({
       metrics: [
         { metric: 'cpu_usage' },
         { metric: 'fan_speed' },
         { metric: 'memory_usage' },
+        { metric: 'uptime' },
       ],
     })
 
     expect(result?.success).toBe(false)
-    const errorMessage = JSON.stringify(result?.error)
-    expect(errorMessage).toContain('value-display')
   })
 
-  it('loads bundled label-value buttons through the real registry and config path with explicit unavailable slots', async () => {
+  it('loads bundled text-variant buttons through the real registry and config path with explicit unavailable slots', async () => {
     getCanonicalSystemMetricsMock.mockResolvedValue([
       {
         available: true,
@@ -167,7 +169,8 @@ describe('system-status addon', () => {
                 { label: 'Fan', metric: 'fan_speed', unavailable_label: 'N/A' },
               ],
               position: 0,
-              type: 'system-status-label-values',
+              type: 'system-status',
+              variant: 'text',
             },
           ],
           id: 'main',
@@ -178,7 +181,7 @@ describe('system-status addon', () => {
     }, registry)
 
     const button = config.decks.main?.buttons[0]
-    const definition = registry.getButton('system-status-label-values')
+    const definition = systemStatusAddon.buttons[0]
     const harness = createMountedHarness(definition!, button?.config, 0)
 
     await harness.activate()
@@ -196,7 +199,7 @@ describe('system-status addon', () => {
     expect(html).toContain('N/A')
   })
 
-  it('renders bars buttons with explicit unavailable footer slots instead of hiding them', async () => {
+  it('renders bars-variant buttons with explicit unavailable footer slots instead of hiding them', async () => {
     getCanonicalSystemMetricsMock.mockResolvedValue([
       {
         available: true,
@@ -215,14 +218,13 @@ describe('system-status addon', () => {
       },
     ])
 
-    const definition = systemStatusAddon.buttons.find(
-      (button) => button.type === 'system-status-bars',
-    )
+    const definition = systemStatusAddon.buttons[0]
     const harness = createMountedHarness(definition!, {
       metrics: [
         { label: 'CPU', metric: 'cpu_usage' },
         { label: 'Swap', metric: 'swap_usage', unavailable_label: 'N/A' },
       ],
+      variant: 'bars',
     }, 1)
 
     await harness.activate()
@@ -257,14 +259,13 @@ describe('system-status addon', () => {
       },
     ])
 
-    const definition = systemStatusAddon.buttons.find(
-      (button) => button.type === 'system-status-bars',
-    )
+    const definition = systemStatusAddon.buttons[0]
     const harness = createMountedHarness(definition!, {
       metrics: [
         { label: 'CPU', metric: 'cpu_usage' },
         { label: 'MEM', metric: 'mem_usage' },
       ],
+      variant: 'bars',
     }, 2)
 
     await harness.activate()
@@ -292,13 +293,12 @@ describe('system-status addon', () => {
       },
     ])
 
-    const definition = systemStatusAddon.buttons.find(
-      (button) => button.type === 'system-status-label-values',
-    )
+    const definition = systemStatusAddon.buttons[0]
     const runCommand = vi.fn(async () => ({ code: 0, failed: false, signal: undefined, stderr: '', stdout: '', timedOut: false }))
     const harness = createMountedHarness(definition!, {
       commands: { hold: 'hold-cpu', tap: 'tap-cpu' },
       metrics: [{ metric: 'cpu_usage' }],
+      variant: 'text',
     }, 2, { runCommand })
 
     await harness.activate()
@@ -326,13 +326,12 @@ describe('system-status addon', () => {
       },
     ])
 
-    const definition = systemStatusAddon.buttons.find(
-      (button) => button.type === 'system-status-bars',
-    )
+    const definition = systemStatusAddon.buttons[0]
     const runCommand = vi.fn(async () => ({ code: 0, failed: false, signal: undefined, stderr: '', stdout: '', timedOut: false }))
     const harness = createMountedHarness(definition!, {
       commands: { 'double-tap': 'double-cpu', tap: 'tap-cpu' },
       metrics: [{ metric: 'cpu_usage' }],
+      variant: 'bars',
     }, 3, { runCommand })
 
     await harness.activate()
