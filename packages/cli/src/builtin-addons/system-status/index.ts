@@ -1,13 +1,9 @@
 import type { SirenoAddon } from '@/addon/api'
-import { builtinSystemStatusBarsButton } from './buttons/bars'
-import { builtinSystemStatusLabelValuesButton } from './buttons/label-values'
+import { builtinSystemStatusButton } from './buttons/builtinSystemStatusButton'
 
 const systemStatusAddon: SirenoAddon = {
   apiVersion: 1,
-  buttons: [
-    builtinSystemStatusBarsButton,
-    builtinSystemStatusLabelValuesButton,
-  ] as SirenoAddon['buttons'],
+  buttons: [builtinSystemStatusButton] as SirenoAddon['buttons'],
   name: 'system-status',
 }
 
