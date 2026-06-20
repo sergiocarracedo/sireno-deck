@@ -1,0 +1,27 @@
+.planning/phases/80-date-time-port/80-UAT.md
+  s_344b68134ff779::t_ccda2c5fcc83e5 13,23-24,30,49-51,53,57-62,64,68-70,75-76,82
+  s_344b68134ff779::t_b5263a026620e7 22,31-32,34,78,81,88,121-133
+  s_344b68134ff779::t_8c6d6c8ae45641 40,52
+  s_344b68134ff779::t_bc7efbf62f2cb7 91
+  s_344b68134ff779::t_c5c0a2231b9167 7,63,83,134-159
+  s_344b68134ff779::t_2262f68ec278ce 11-12,14-16
+  s_344b68134ff779::t_8ed636ff183bcb 1-6,8-10,17-21,25-29,33,35-37,39,46-48,54-56,65-67,71-74,77,79-80,84-87,92-93,120
+  s_344b68134ff779::t_99c31398e83c49 38,41-45
+  s_344b68134ff779::t_481d5eed3176a9 89-90,94-119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "1e338d7798ab02dd4fcf0249a10f452e5ca9c7a7",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
