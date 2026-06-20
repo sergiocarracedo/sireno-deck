@@ -1,0 +1,40 @@
+packages/cli/src/builtin-addons/date-time/surfaces/AnalogClockSurface.tsx
+  s_344b68134ff779::t_dd3309dcc7e29c 1-83
+packages/cli/src/builtin-addons/date-time/surfaces/index.ts
+  s_344b68134ff779::t_c433e4e7b4e37c 1-4
+packages/cli/src/builtin-addons/date-time/formatters.ts
+  s_344b68134ff779::t_01fe57c84852e0 1-70
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile.tsx
+  s_344b68134ff779::t_50d5c4a4e1432a 2,49
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_344b68134ff779::t_c65c07d28c8f75 50-53
+  s_344b68134ff779::t_51e40c319519cb 24,54
+  s_344b68134ff779::t_874d8e8e5db2ff 14-18
+packages/cli/src/builtin-addons/date-time/surfaces/DateSurface.tsx
+  s_344b68134ff779::t_182e19cb837852 1-30
+packages/cli/src/builtin-addons/date-time/buttons/date-time.tsx
+  s_344b68134ff779::t_ab9a3982805d2d 2,13,15,24,30,41
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock.tsx
+  s_344b68134ff779::t_4ab51319d9eb03 1-2,13-16
+packages/cli/src/builtin-addons/date-time/surfaces/DateTimeSurface.tsx
+  s_344b68134ff779::t_b59eb534658f6e 1-2,4-25
+  s_344b68134ff779::t_a7225645b8a48d 3
+packages/cli/src/builtin-addons/date-time/surfaces/LockedTimeTileSurface.tsx
+  s_344b68134ff779::t_b2ba39886ae125 1-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "8a3ff1ed3e8018328b58d73448d82e594bf25b35",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
