@@ -1,5 +1,6 @@
 import { watch } from 'node:fs'
 import { readFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
 import {
   createServer,
   type IncomingMessage,
@@ -7,7 +8,7 @@ import {
   type ServerResponse,
 } from 'node:http'
 import type { AddressInfo } from 'node:net'
-import { basename, dirname, extname, join } from 'node:path'
+import { basename, dirname, extname, join, resolve as pathResolve } from 'node:path'
 
 import type pino from 'pino'
 
@@ -44,6 +45,13 @@ import { renderDomDeck } from '@/render/dom-host'
 import { getShrinkFitBrowserScript } from '@/render/shrink-fit-browser-script'
 import { createStartupPlaceholderBuffers } from '@/render/startup-placeholder'
 import { spawnFrontendServer, type FrontendServerHandle } from '@/render/frontend-server'
+import { createWsBridge, type WsBridgeHandle } from '@/render/ws-bridge'
+import {
+  PROTOCOL_VERSION,
+  type DeckConfigMessage,
+  type ButtonActionMessage,
+  type Message,
+} from '@/render/protocol'
 
 import { getActiveAppProvider } from '@/system/active-app'
 import { resolveHostContext } from '@/system/host-context'
@@ -415,8 +423,12 @@ async function writePlaceholderDeckSurface(
 
 export interface ViteDeckRenderer {
   frontend: FrontendServerHandle
+  wsBridge: WsBridgeHandle
   browser: BrowserRenderer
+  pageUrl: string
   captureKeyBuffers: () => Promise<Map<number, Buffer>>
+  sendDeckConfig: (deckConfig: Omit<DeckConfigMessage, 'protocolVersion' | 'type'>) => void
+  onButtonAction: (handler: (msg: ButtonActionMessage) => void) => () => void
   close: () => Promise<void>
 }
 
@@ -429,19 +441,37 @@ export async function startViteDeckRenderer(opts: {
     process.env.SIRENO_SKIP_BROWSER_INSTALL = '1'
   }
   const frontend = await spawnFrontendServer({ logger: opts.logger })
+  const wsBridge = await createWsBridge({ logger: opts.logger })
+  const wsUrl = `ws://127.0.0.1:${wsBridge.port}`
+  const pageUrl = `${frontend.url}?ws=${encodeURIComponent(wsUrl)}`
+  opts.logger.info({ wsUrl, pageUrl }, 'WS bridge ready')
   const browser = createBrowserRenderer({
     keyCount: opts.keyCount,
     liveHardwareMode: true,
   })
   await browser.start()
-  const page = await browser.newPage()
-  await page.goto(frontend.url)
+  await browser.gotoUrl(pageUrl)
   return {
     frontend,
+    wsBridge,
     browser,
+    pageUrl,
     captureKeyBuffers: () => browser.captureKeyBuffers(),
+    sendDeckConfig: (deckConfig) => {
+      wsBridge.send({
+        protocolVersion: PROTOCOL_VERSION,
+        type: 'deck-config',
+        ...deckConfig,
+      })
+    },
+    onButtonAction: (handler) => {
+      return wsBridge.onMessage((msg: Message) => {
+        if (msg.type === 'button-action') handler(msg)
+      })
+    },
     close: async () => {
       await browser.close().catch(() => {})
+      await wsBridge.close().catch(() => {})
       await frontend.close().catch(() => {})
     },
   }
@@ -1073,16 +1103,44 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     process.env.SIRENO_SKIP_BROWSER_INSTALL = '1'
   }
 
-  logger.info('booting Vite-served React frontend (Phase 75.1-01 placeholder)')
+  logger.info('booting Vite-served React frontend (Phase 75.1-02 WS bridge)')
   const viteRenderer = await startViteDeckRenderer({
     logger,
     skipBrowserInstall,
     keyCount: 15,
   })
   logger.info(
-    { url: viteRenderer.frontend.url, keyCount: 15 },
-    'Vite frontend ready; press Ctrl+C to exit',
+    {
+      url: viteRenderer.frontend.url,
+      wsUrl: `ws://127.0.0.1:${viteRenderer.wsBridge.port}`,
+      keyCount: 15,
+    },
+    'Vite frontend + WS bridge ready; press Ctrl+C to exit',
   )
+
+  const dateTimeFrontendAbsolute = pathResolve(
+    dirname(fileURLToPath(import.meta.url)),
+    '../../src/builtin-addons/date-time/frontend.tsx',
+  )
+  viteRenderer.sendDeckConfig({
+    deckId: 'placeholder-date-time',
+    surfaces: {
+      'key-0': {
+        addonName: 'date-time',
+        buttonType: 'date-time',
+        frontendEntry: dateTimeFrontendAbsolute,
+        config: { format: 'HH:mm' },
+      },
+    },
+    navMode: 'push',
+  })
+  viteRenderer.onButtonAction((msg) => {
+    logger.info(
+      { keyIndex: msg.keyIndex, action: msg.action, at: msg.at },
+      'button-action received via WS bridge',
+    )
+  })
+
   await new Promise<void>((resolve) => {
     process.once('SIGINT', () => resolve())
     process.once('SIGTERM', () => resolve())

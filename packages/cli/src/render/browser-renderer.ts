@@ -61,6 +61,7 @@ export type BrowserRendererFrameHandler = (frame: BrowserRendererFrame) => Promi
 export interface BrowserRenderer {
   captureKeyBuffers: () => Promise<Map<number, Buffer>>
   close: () => Promise<void>
+  gotoUrl: (url: string) => Promise<void>
   keyCount: number
   setFrameHandler: (handler?: BrowserRendererFrameHandler) => void
   start: () => Promise<void>
@@ -466,6 +467,15 @@ export function createBrowserRenderer(options: BrowserRendererOptions): BrowserR
     },
     async start() {
       await ensurePage()
+    },
+    async gotoUrl(url) {
+      const activePage = await ensurePage()
+      if (!activePage.goto) {
+        throw new Error(
+          'BrowserRenderer.gotoUrl requires a Playwright page with goto support',
+        )
+      }
+      await activePage.goto(url, { waitUntil: 'load' })
     },
     async updateDeck(html) {
       // INSTRUMENT: Phase 58-01 — updateDeck entry
