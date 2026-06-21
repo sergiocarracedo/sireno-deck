@@ -440,7 +440,16 @@ export async function startViteDeckRenderer(opts: {
   if (opts.skipBrowserInstall) {
     process.env.SIRENO_SKIP_BROWSER_INSTALL = '1'
   }
-  const frontend = await spawnFrontendServer({ logger: opts.logger })
+  const dateTimeFrontendAbsolute = pathResolve(
+    dirname(fileURLToPath(import.meta.url)),
+    '../../builtin-addons/date-time/frontend.tsx',
+  )
+  const frontend = await spawnFrontendServer({
+    logger: opts.logger,
+    env: {
+      SIRENO_ADDON_FRONTENDS: JSON.stringify([dateTimeFrontendAbsolute]),
+    },
+  })
   const wsBridge = await createWsBridge({ logger: opts.logger })
   const wsUrl = `ws://127.0.0.1:${wsBridge.port}`
   const pageUrl = `${frontend.url}?ws=${encodeURIComponent(wsUrl)}`
@@ -1139,6 +1148,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     dirname(fileURLToPath(import.meta.url)),
     '../../builtin-addons/date-time/frontend.tsx',
   )
+
   viteRenderer.sendDeckConfig({
     deckId: 'placeholder-date-time',
     surfaces: {

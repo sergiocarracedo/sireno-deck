@@ -2,6 +2,19 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
 
+const addonFrontendEntries = (() => {
+  const raw = process.env.SIRENO_ADDON_FRONTENDS;
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed)
+      ? parsed.filter((p) => typeof p === 'string')
+      : [];
+  } catch {
+    return [];
+  }
+})();
+
 const cliRoot = path.resolve(__dirname, '..');
 const repoRoot = path.resolve(__dirname, '../..');
 
@@ -13,11 +26,17 @@ export default defineConfig({
     strictPort: false,
     cors: true,
     fs: {
-      // Allow serving addon/theme runtime files that live outside the
+      // Allow Vite to read addon/theme runtime files outside the
       // frontend root (e.g. packages/cli/src/builtin-addons/.../frontend.tsx
-      // is referenced by absolute path from the CLI's WS bridge payload).
+      // referenced by absolute path from the CLI's WS bridge payload).
       allow: [cliRoot, repoRoot],
     },
+  },
+  optimizeDeps: {
+    // Pre-bundle addon frontend modules so dynamic import() from the
+    // React app goes through Vite's optimized deps cache instead of the
+    // import-analysis plugin (which 500s on files outside the root).
+    include: addonFrontendEntries,
   },
   resolve: {
     alias: {
