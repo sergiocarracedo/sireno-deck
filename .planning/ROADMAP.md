@@ -92,51 +92,15 @@ v1.7 starts where v1.6 verification left off: the v1.6 sweep marked 21/21 requir
 - [ ] Bundled in the CLI as a first-party addon (no extra install step)
 - [ ] Unit tests for: 1/2/3 value layouts, command-not-found, action commands fire on tap/dbltap/hold
 
-### Phase 76: 3rd-party addon + theme fixtures
-
-**Goal:** Land the first real 3rd-party addon and theme that exercise the loader seams as a real external author would.
-**Requirements:** `3RD-01`, `3RD-02`
-**Depends on:** 75 (so the 3rd-party addon can use `value-display` or other new builtins)
-**Status:** ⏳ Pending discuss-phase
-**Success criteria:**
-- [ ] `/works/test/test-sireno-deck/` exists as a 3rd-party addon with its own `package.json`, `sirenoAddon` export, button type(s), and deck(s)
-- [ ] The addon declares `apiVersion: 1`
-- [ ] Includes a custom button type (e.g. solid-color cycling button — cycles through 30+ named colors once per second)
-- [ ] Includes a deck of 30+ action buttons, each rendering a color swatch + name and pasting the corresponding `#rrggbb` hex code on tap
-- [ ] Configured in `config.yml` and renders correctly with the active theme
-- [ ] `/works/test/test-sireno-deck-theme/` exists as a 3rd-party theme with yellow-based color tokens
-- [ ] Theme replaces all UI components (background, accent, text, button frame, surface) with alternative token set
-- [ ] Theme README documents the v1 trust model honestly (trusted in-process, no sandbox)
-- [ ] Addon README documents the same trust model
-- [ ] Tests verify both load via the existing loader seams (`importRawSourceAddon`, `importThemeRuntime`)
-
-### Phase 77: v1.7 verification sweep
-
-**Goal:** Aggregate evidence from all v1.7 phases, run the full targeted test sweep, write `77-VERIFICATION.md`, realign requirements/roadmap metadata.
-**Requirements:** `VERIFY-03`
-**Depends on:** 71, 72, 73, 74, 75, 76
-**Status:** ⏳ Pending discuss-phase
-**Success criteria:**
-- [ ] Single `77-VERIFICATION.md` aggregates evidence from 7 in-scope phases (71-76 + 77)
-- [ ] 7/7 ROADMAP success criteria + 7/7 VERIFY-03 sub-criteria + 11/11 v1.7 requirements traced
-- [ ] Targeted vitest sweep with documented baseline failures
-- [ ] Hardware caveat documented for any real-hardware-only requirement (BUG-01)
-- [ ] REQUIREMENTS.md and ROADMAP.md Coverage Validation table updated
-- [ ] PROJECT.md "Latest Shipped Milestone" field set to v1.7 with achievements list
-
 ## Phase Dependency Graph
 
 ```
-71 (gestures) ──────────────────────┐
-72 (system-buttons) ────────────────┤
-73 (paste/macro) ───────────────────┤
-74 (formatter) ──┐                  │
-75 (value-display) ←── 74 ──────────┤
-76 (3rd-party) ←── 75 ──────────────┤
-77 (verification) ←── 71,72,73,74,75,76
+71 (gestures)
+72 (system-buttons)
+73 (paste/macro)
+74 (formatter)
+75 (value-display)
 ```
-
-Phases 71–74 are independent and can be parallelized at the plan level. Phase 75 depends on 74 (`SystemStatusFormatter` vocabulary). Phase 76 depends on 75 (so the 3rd-party addon can use new builtins). Phase 77 depends on all six.
 
 ## Coverage Validation
 
@@ -146,17 +110,12 @@ Phases 71–74 are independent and can be parallelized at the plan level. Phase 
 | BUG-02 | 71 | satisfied (ver: 71-02) |
 | BUG-03 | 72 | satisfied (ver: 72-02) |
 | BUG-04 | 72 | satisfied (ver: 72-01) |
-| BUG-05 | 73 | pending |
-| BUG-06 | 73 | pending |
-| BUG-07 | 74 | pending |
-| FEAT-01 | 74 | pending |
-| FEAT-02 | 75 | pending |
-| 3RD-01 | 76 | pending |
-| 3RD-02 | 76 | pending |
-| VERIFY-03 | 77 | pending |
+| BUG-05 | 73 | satisfied |
+| BUG-06 | 73 | satisfied |
+| FEAT-01 | 74 | satisfied |
+| FEAT-02 | 75 | satisfied |
 
 ---
 
 *Roadmap defined: 2026-06-17*
-*Total v1.7 phases: 7 (71-77)*
-*Total v1.7 requirements: 11*
+*Forgotten: 2026-06-21 — phases 76-77 (3rd-party fixtures, v1.7 verification sweep) discarded as incomplete; orphan phase 83 removed.*
