@@ -28,6 +28,7 @@ const datetimeButtonsAddon: SirenoAddon = {
     builtinDateButton,
     builtinTimeButton,
   ] as SirenoAddon['buttons'],
+  frontend: './frontend',
   name: 'date-time',
 }
 

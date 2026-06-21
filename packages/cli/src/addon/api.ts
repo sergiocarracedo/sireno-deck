@@ -374,6 +374,14 @@ export interface SirenoAddon {
   assets?: Record<string, string>
   buttons: readonly AddonButtonDefinition[]
   decks?: readonly AddonDeckDefinition[]
+  /**
+   * Optional path (relative to the addon package root) of a module
+   * exporting a React component used as the browser-side renderer for
+   * this addon's buttons when running under the Vite-served frontend
+   * (Phase 75.1). The module's default export receives a `deck-config`
+   * SurfaceSpec and returns React elements.
+   */
+  frontend?: string
   name: string
   /**
    * Marks every button/deck in this addon as reserved for the runtime.

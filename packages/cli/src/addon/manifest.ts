@@ -11,6 +11,7 @@ const AddonPackageSchema = z.object({
   sirenoAddon: z.object({
     apiVersion: z.number().int().positive(),
     main: z.string().min(1),
+    frontend: z.string().min(1).optional(),
   })
     .strict(),
   tailwind: TailwindManifestSchema.optional(),
@@ -20,6 +21,7 @@ const AddonPackageSchema = z.object({
 export interface AddonManifest {
   apiVersion: number
   main: string
+  frontend?: string
   name: string
   tailwindSafelist: string[]
 }
@@ -45,6 +47,7 @@ export function validateAddonManifest(data: unknown): AddonManifest {
   return {
     apiVersion: result.data.sirenoAddon.apiVersion,
     main: result.data.sirenoAddon.main,
+    frontend: result.data.sirenoAddon.frontend,
     name: result.data.name,
     tailwindSafelist: result.data.tailwind?.safelist ?? [],
   }
