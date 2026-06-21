@@ -1137,7 +1137,7 @@ export async function startDaemon(options: StartOptions): Promise<void> {
 
   const dateTimeFrontendAbsolute = pathResolve(
     dirname(fileURLToPath(import.meta.url)),
-    '../../src/builtin-addons/date-time/frontend.tsx',
+    '../../builtin-addons/date-time/frontend.tsx',
   )
   viteRenderer.sendDeckConfig({
     deckId: 'placeholder-date-time',

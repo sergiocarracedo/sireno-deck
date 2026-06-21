@@ -1,5 +1,5 @@
-import type { SurfaceSpec } from '@/render/protocol';
-import { Text } from '@/ui';
+import type { SurfaceSpec } from '../../render/protocol';
+import { Text } from '../../ui';
 
 export interface DateTimeSurfacePayload {
   buttonType: string;
