@@ -29,7 +29,7 @@ export function spawnFrontendServer(
 ): Promise<FrontendServerHandle> {
   const logger = opts.logger.child({ module: 'frontend-server' });
   const frontendDir =
-    opts.frontendDir ?? path.resolve(__dirname, '../../../frontend');
+    opts.frontendDir ?? path.resolve(__dirname, '../../frontend');
   const entry = opts.viteEntry ?? path.join(frontendDir, 'vite-dev-entry.ts');
 
   const handle = new EventEmitter() as FrontendServerHandle;
