@@ -5,7 +5,7 @@ import {
   type ReactElement,
 } from 'react'
 
-import type { ThemeUiPresentation } from '@/config/theme'
+import type { ThemeUiPresentation } from '@/config/theme/schemas'
 
 const DomThemeUiPresentationContext = createContext<
   ThemeUiPresentation | undefined
