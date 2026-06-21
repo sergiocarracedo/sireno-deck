@@ -19,7 +19,11 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      // The `@/` alias maps to the CLI package's src/ directory so the
+      // addon frontend modules (which live in src/builtin-addons/... and
+      // are statically imported from the React app) can resolve their
+      // own internal imports like `@/ui` and `@/themes/utils/cn`.
+      '@': cliRoot + '/src',
     },
   },
   build: {
