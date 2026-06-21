@@ -1,0 +1,32 @@
+packages/cli/src/render/__tests__/ws-bridge.test.ts
+  s_f5622df155228a::t_254ef1788b004f 1-105
+packages/cli/src/render/frontend-server.ts
+  s_f5622df155228a::t_14d773c2bd764c 76-77,80
+  s_f5622df155228a::t_0048c2a33d1d22 167-173
+packages/cli/src/cli/index.ts
+  s_f5622df155228a::t_aaf04b0620eb71 32-36
+packages/cli/src/render/ws-bridge.ts
+  s_f5622df155228a::t_4823462c3bed55 1-127
+packages/cli/src/cli/commands/start.ts
+  s_f5622df155228a::t_23b0a9177284d2 1071,1076-1091
+packages/cli/src/render/protocol.ts
+  s_f5622df155228a::t_46fb3cc7f97d5c 73
+packages/cli/package.json
+  s_f5622df155228a::t_4703f1e27ec67b 52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "83718b1a03be0aadb65627ca9eda2b69faf7cbe4",
+  "prompts": {},
+  "sessions": {
+    "s_f5622df155228a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_114ecc375ffehJL8FVEupdUruf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
