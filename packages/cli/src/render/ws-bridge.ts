@@ -23,11 +23,22 @@ export interface CreateWsBridgeOptions {
   host?: string;
 }
 
+// Stable default port for the WS bridge so that hot-reload via
+// `tsx watch` doesn't reassign a new ephemeral port on every restart
+// (which would invalidate the page URL the browser is currently open
+// to). Override via opts.port or SIRENO_WS_PORT env var.
+const DEFAULT_WS_PORT = 52937;
+
 export function createWsBridge(
   opts: CreateWsBridgeOptions,
 ): Promise<WsBridgeHandle> {
   const logger = opts.logger.child({ module: 'ws-bridge' });
   const host = opts.host ?? '127.0.0.1';
+  const portFromEnv = process.env.SIRENO_WS_PORT
+    ? Number(process.env.SIRENO_WS_PORT)
+    : undefined;
+  const requestedPort =
+    opts.port ?? portFromEnv ?? DEFAULT_WS_PORT;
 
   const handle = new EventEmitter() as WsBridgeHandle;
   handle.port = 0;
@@ -39,7 +50,7 @@ export function createWsBridge(
     (connected: boolean, clientCount: number) => void
   >();
 
-  const server = new WebSocketServer({ port: opts.port ?? 0, host });
+  const server = new WebSocketServer({ port: requestedPort, host });
   const ready = new Promise<void>((resolve) => server.once('listening', () => resolve()));
 
   server.on('connection', (ws) => {

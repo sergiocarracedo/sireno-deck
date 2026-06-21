@@ -28,13 +28,13 @@ describe('createWsBridge', () => {
   });
 
   it('resolves with an auto-selected port and localhost URL', async () => {
-    bridge = await createWsBridge({ logger: silentLogger() as any });
+    bridge = await createWsBridge({ logger: silentLogger() as any, port: 0 });
     expect(bridge.port).toBeGreaterThan(0);
     expect(bridge.url).toMatch(/^ws:\/\/127\.0\.0\.1:\d+$/);
   });
 
   it('receives button-action messages from a connected client', async () => {
-    bridge = await createWsBridge({ logger: silentLogger() as any });
+    bridge = await createWsBridge({ logger: silentLogger() as any, port: 0 });
     const received: ButtonActionMessage[] = [];
     bridge.onMessage((m) => {
       if (m.type === 'button-action') received.push(m);
@@ -58,7 +58,7 @@ describe('createWsBridge', () => {
   });
 
   it('broadcast sends to all connected clients', async () => {
-    bridge = await createWsBridge({ logger: silentLogger() as any });
+    bridge = await createWsBridge({ logger: silentLogger() as any, port: 0 });
     const c1 = new WebSocket(bridge.url);
     const c2 = new WebSocket(bridge.url);
     await Promise.all([
@@ -89,7 +89,7 @@ describe('createWsBridge', () => {
   });
 
   it('drops malformed messages without crashing', async () => {
-    bridge = await createWsBridge({ logger: silentLogger() as any });
+    bridge = await createWsBridge({ logger: silentLogger() as any, port: 0 });
     const received: unknown[] = [];
     bridge.onMessage((m) => received.push(m));
 
