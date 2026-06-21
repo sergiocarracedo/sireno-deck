@@ -1,0 +1,42 @@
+packages/cli/src/render/__tests__/addon-paths.test.ts
+  s_f5622df155228a::t_0494ec4ce7e3f3 1-18,20-91
+  s_f5622df155228a::t_b52d15cf6e6001 19
+packages/cli/frontend/src/ws-client.ts
+  s_f5622df155228a::t_b63ab7db521a75 1-8,10-127
+  s_f5622df155228a::t_f785277ac7fb4d 9
+packages/cli/src/addon/api.ts
+  s_f5622df155228a::t_31238bb10893f5 377-384
+packages/cli/frontend/src/Deck.tsx
+  s_f5622df155228a::t_8b2a056ae56c0a 2
+  s_f5622df155228a::t_2b585d0fd10c32 1,3-129
+packages/cli/frontend/src/App.tsx
+  s_f5622df155228a::t_6d0dabf95dd4e0 2
+  s_f5622df155228a::t_9785723da6bd01 1,3-5,7-57
+packages/cli/src/builtin-addons/date-time/frontend.tsx
+  s_f5622df155228a::t_553070e4ea46e0 1-49
+packages/cli/src/render/addon-paths.ts
+  s_f5622df155228a::t_c828ecb2087bc1 1-78
+packages/cli/frontend/tsconfig.json
+  s_f5622df155228a::t_7a51a87974f30b 15-19
+  s_f5622df155228a::t_9e9d602312af1b 2
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_f5622df155228a::t_327a1e88ce90eb 31
+packages/cli/src/addon/manifest.ts
+  s_f5622df155228a::t_57832ffd29b0c3 14,24,50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "46337ebe00ff6a4ab2cab9134d5ff6b81811452e",
+  "prompts": {},
+  "sessions": {
+    "s_f5622df155228a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_114ecc375ffehJL8FVEupdUruf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
