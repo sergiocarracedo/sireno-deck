@@ -1147,6 +1147,24 @@ export async function startDaemon(options: StartOptions): Promise<void> {
     },
     navMode: 'push',
   })
+
+  let overlayToggle = false
+  setInterval(() => {
+    overlayToggle = !overlayToggle
+    viteRenderer.sendDeckConfig({
+      deckId: overlayToggle ? 'overlay-deck' : 'placeholder-date-time',
+      surfaces: {
+        'key-0': {
+          addonName: 'date-time',
+          buttonType: 'date-time',
+          frontendEntry: 'builtin:date-time/frontend',
+          config: { format: overlayToggle ? 'OVERLAY' : 'HH:mm' },
+        },
+      },
+      navMode: overlayToggle ? 'replace' : 'push',
+    })
+  }, 5000)
+
   viteRenderer.onButtonAction((msg) => {
     logger.info(
       { keyIndex: msg.keyIndex, action: msg.action, at: msg.at },

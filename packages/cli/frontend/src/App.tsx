@@ -1,56 +1,55 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import { useWsClient } from './hooks/useWsClient';
 import type { DeckConfigMessage, Message } from '../../src/render/protocol';
-import { Deck } from './Deck';
-import { openWsClient, readWsUrlFromLocation, type WsConnectionState, type WsClient } from './ws-client';
 
 export function App() {
-  const wsUrl = useMemo(() => readWsUrlFromLocation(), []);
-  const [client, setClient] = useState<WsClient | null>(null);
-  const [conn, setConn] = useState<WsConnectionState>('connecting');
+  const wsUrl = readWsUrlFromLocation();
+  const { connection, client } = useWsClient(wsUrl);
   const [deck, setDeck] = useState<DeckConfigMessage | null>(null);
 
   useEffect(() => {
-    if (!wsUrl) {
-      // eslint-disable-next-line no-console
-      console.warn('[app] no ws query param (?ws=...) — running offline');
-      setConn('closed');
-      return;
-    }
-    const c = openWsClient({ url: wsUrl });
-    setClient(c);
-    const offConn = c.onConnection(setConn);
-    const offMsg = c.onMessage((msg: Message) => {
-      if (msg.type === 'deck-config') setDeck(msg);
+    if (!client) return;
+    const off = client.onMessage((msg: Message) => {
+      if (msg.type === 'deck-config') {
+        const cfg = msg;
+        setDeck(cfg);
+        const isOverlay =
+          cfg.navMode === 'replace';
+        const path = `/decks/${encodeURIComponent(cfg.deckId)}`;
+        if (isOverlay) window.history.replaceState(null, '', path);
+        else if (window.location.pathname !== path) {
+          window.history.pushState(null, '', path);
+        }
+      }
     });
-    return () => {
-      offConn();
-      offMsg();
-      c.close();
-    };
-  }, [wsUrl]);
+    return off;
+  }, [client]);
 
-  if (!wsUrl) {
-    return <div style={offlineStyle}>offline — no WS URL in query string</div>;
-  }
-  if (conn === 'connecting') {
-    return <div style={offlineStyle}>connecting to {wsUrl}…</div>;
-  }
-  if (conn === 'closed') {
-    return <div style={offlineStyle}>disconnected — retrying…</div>;
-  }
-  if (!deck) {
-    return <div style={offlineStyle}>awaiting deck-config…</div>;
-  }
-  return <Deck deckConfig={deck} />;
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--sireno-surface, #1a1a1a)' }}>
+      {connection === 'connecting' && (
+        <div style={offlineStyle}>connecting to {wsUrl}…</div>
+      )}
+      {connection === 'closed' && (
+        <div style={offlineStyle}>disconnected — retrying…</div>
+      )}
+      {connection === 'open' && !deck && (
+        <div style={offlineStyle}>awaiting deck-config…</div>
+      )}
+      <Outlet context={{ deck }} />
+    </div>
+  );
+}
+
+function readWsUrlFromLocation(): string | null {
+  if (typeof window === 'undefined') return null;
+  const params = new URLSearchParams(window.location.search);
+  return params.get('ws');
 }
 
 const offlineStyle: React.CSSProperties = {
-  width: '100vw',
-  height: '100vh',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  background: 'var(--sireno-surface, #1a1a1a)',
+  padding: 24,
   color: 'var(--sireno-text, #f5f5f5)',
   fontFamily: 'system-ui, sans-serif',
   fontSize: 16,
