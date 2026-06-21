@@ -92,6 +92,46 @@ v1.7 starts where v1.6 verification left off: the v1.6 sweep marked 21/21 requir
 - [ ] Bundled in the CLI as a first-party addon (no extra install step)
 - [ ] Unit tests for: 1/2/3 value layouts, command-not-found, action commands fire on tap/dbltap/hold
 
+## Phase 75.1: Architecture split — CLI / Frontend Server / Frontend + WebSocket bridge *(INSERTED — urgent)*
+
+**Goal:** Refactor the runtime into three cleanly separated layers — a Node CLI (Backend) that owns OS interaction, command execution, hardware lifecycle, and global state; a Vite-powered Frontend Server that serves the React frontend, themes, addon components, builtin addons, and provides HMR (and in emulator mode renders the deck placeholder + emulator panels); and a React Frontend that renders decks and buttons with router navigation (history for regular decks, no history for overlay decks). In real mode the CLI spawns a headless browser (Playwright) that renders decks and returns snapshots to push to hardware. Hardware button presses and snapshots flow through the WebSocket bridge; method calls (e.g. command execution loops, addon backends like system-status) and config/deck/state push flow through the same bridge.
+**Status:** [ ] Not started
+**Depends on:** Phase 75
+**Note:** Inserted after Phase 75 — re-architectural foundation that touches the entire runtime.
+
+### Component Boundaries
+
+- **CLI / Backend (`packages/cli/src/`, except `render/`):** Owns OS process management, hardware lifecycle (Stream Deck connect/reconnect/write cache), command execution loop, global state store. Spawns the Frontend Server and (in real mode) the headless browser. Owns the WebSocket bridge server side.
+- **Frontend Server (`packages/cli/src/render/dev-server.ts` + `packages/cli/frontend/`):** Vite dev server. Loads React entry, themes, addon frontend components, builtin addon UIs. Provides HMR for all of the above. In emulator mode also serves the deck placeholder + emulator control panels (device selection, virtual button emulation via mouse). Speaks WebSocket to the headless browser / user browser.
+- **Frontend (`packages/cli/frontend/src/`):** React app. Receives `deck-config` / `state` messages from the bridge. Router-based navigation: regular decks push history; overlay decks replace without history. Mounts addon surfaces, receives `button-action` events from the bridge.
+- **WebSocket Bridge (`packages/cli/src/render/ws-bridge.ts`):** Bidirectional channel between runner (headless browser in real mode, user browser in emulation mode) and CLI. CLI → runner: `deck-config`, `state`, `button-config`. Runner → CLI: `button-action` (real hardware or emulated), `snapshot` (real mode only), `method-call` (command execution / addon backend calls like system-status).
+
+### Real Mode vs Emulation Mode
+
+- **Real mode:** CLI spawns headless Playwright browser → connects to Frontend Server → loads React app → renders active deck → returns snapshot → CLI pushes to Stream Deck. Hardware button presses flow back through the WS bridge.
+- **Emulation mode:** User opens the Frontend Server URL in their own browser → loads React app → renders decks inside an iframe (kept distinct from the real-mode runner so the iframe page has zero state and serves as a pure canvas) → user clicks/drags over the deck render to emulate button presses → emulated actions flow through the WS bridge exactly as hardware presses would.
+
+### Open Design Questions
+
+- Router library choice (React Router vs TanStack Router vs hand-rolled). Worth `/discuss-phase 75.1` decision.
+- WS message schema versioning (same `apiVersion` model as addons, or its own bump cycle).
+- Whether the headless browser is reused across deck changes or respawned per session.
+- Snapshot diffing strategy — full vs delta (current is full per Phase 35).
+- Bridge auth/localhost-binding — required for headless browser, optional for user browser.
+
+### Success criteria:
+- [ ] Three-layer boundary enforced (no cross-imports between CLI and Frontend source; only the WS bridge mediates)
+- [ ] Vite Frontend Server serves the React app with HMR for themes, addon components, builtin addons
+- [ ] Emulator mode renders the deck placeholder + emulator panels in the Frontend Server, not the iframe
+- [ ] Real mode: CLI spawns headless Playwright, captures snapshots, pushes to Stream Deck
+- [ ] WebSocket bridge protocol documented with message schemas + directionality
+- [ ] React frontend uses router navigation; regular decks push history, overlay decks do not
+- [ ] Snapshot pipeline end-to-end on real hardware with one builtin addon (tracer bullet)
+- [ ] No regressions in existing addon registry / system-status / date-time / brightness flows
+
+### Plans
+*Not yet planned — run `plan-phase 75.1`*
+
 ## Phase Dependency Graph
 
 ```
@@ -100,6 +140,7 @@ v1.7 starts where v1.6 verification left off: the v1.6 sweep marked 21/21 requir
 73 (paste/macro)
 74 (formatter)
 75 (value-display)
+75.1 (architecture split — CLI/FE Server/Frontend + WS bridge) ←── 75
 ```
 
 ## Coverage Validation

@@ -9,9 +9,8 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 75 — value-display addon (FEAT-02)
-Status: **EXECUTED (2026-06-18)**. Phase 75 executed: new first-party `value-display` addon at `packages/cli/src/builtin-addons/value-display/`. Configures 1-3 per-value shell commands with parallel `Promise.all` execution, 5s default timeout, "N/A" on error. Renders via existing `LabelValueList` (single/double/stack layouts). Per-button tap/hold/dbltap via `useButtonActionCommand`. Registered in `getBundledAddons()`. 8/8 value-display tests pass; 7/7 system-status regression-free. `SystemStatusFormatterSchema` now exported from system-status/schemas.
-Last activity: 2026-06-21 — Cleanup: forgotten incomplete plans (quick-047, phase-83, pending roadmap phases 76-77).
+Phase: 75 — value-display addon (FEAT-02) ✓ EXECUTED (2026-06-18). Phase 75.1 inserted (2026-06-21): Architecture split — CLI / Frontend Server / Frontend + WebSocket bridge. Status: pending plan-phase.
+Last activity: 2026-06-21 — Cleanup pass (forgot quick-047, phase-83, pending phases 76-77) + inserted Phase 75.1 architecture refactor.
 
 ### Quick Tasks Completed
 
@@ -204,6 +203,7 @@ Recent decisions affecting current work:
 
 ### Roadmap Evolution
 
+- Phase 75.1 inserted after Phase 75: Architecture split — CLI / Frontend Server / Frontend + WebSocket bridge (URGENT — re-architectural foundation that touches the entire runtime; see inserted phase entry for component boundaries, real vs emulation mode, and open design questions).
 - Phase 67 added: settings deck layout revamp (v1.6 gap closure) — reorder brightness controls to n-3/n-2/n-1, pin logo+version at position 0, refactor brightness buttons to use `IconLabelSurface` (resolving the `iconTextSurface` misreference), and use `Label` for the percent display per SETTINGS-07.
 - Phase 66 added: SplitActionSurface — replace SystemBackButton, SystemBackWithPendingOverlayButton, and SystemSettingsEntryButton badge pattern with a reusable dual-action surface component
 - Phase 49 added: emoji-selector UX revamp as a v1.4 late addition — rewrite based on real-world feedback (real emoji glyphs not U+1Fxxx placeholders, bigger key art, HID keyboard-stroke output for tap=emoji / double-tap=shortcode, proper subcategory split using the piliapp.com catalog, n-2 page-nav button with Tap/Dbl-Tap chip hints, addon-provided entry button that renders a 2×3 grid of six emojis as a first-class button type).
