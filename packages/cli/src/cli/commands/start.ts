@@ -445,6 +445,17 @@ export async function startViteDeckRenderer(opts: {
   const wsUrl = `ws://127.0.0.1:${wsBridge.port}`
   const pageUrl = `${frontend.url}?ws=${encodeURIComponent(wsUrl)}`
   opts.logger.info({ wsUrl, pageUrl }, 'WS bridge ready')
+
+  let cachedDeckConfig: DeckConfigMessage | null = null
+  wsBridge.onConnection((connected) => {
+    if (connected && cachedDeckConfig) {
+      opts.logger.debug(
+        'renderer connected; broadcasting cached deck-config',
+      )
+      wsBridge.broadcast(cachedDeckConfig)
+    }
+  })
+
   const browser = createBrowserRenderer({
     keyCount: opts.keyCount,
     liveHardwareMode: true,
@@ -458,11 +469,17 @@ export async function startViteDeckRenderer(opts: {
     pageUrl,
     captureKeyBuffers: () => browser.captureKeyBuffers(),
     sendDeckConfig: (deckConfig) => {
-      wsBridge.send({
+      cachedDeckConfig = {
         protocolVersion: PROTOCOL_VERSION,
         type: 'deck-config',
         ...deckConfig,
-      })
+      }
+      const sent = wsBridge.send(cachedDeckConfig)
+      if (!sent) {
+        opts.logger.debug(
+          'no WS client connected; cached deck-config will be sent on connect',
+        )
+      }
     },
     onButtonAction: (handler) => {
       return wsBridge.onMessage((msg: Message) => {
