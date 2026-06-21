@@ -1,33 +1,24 @@
 import { useEffect, useMemo, useState, type ComponentType } from 'react';
 import type { DeckConfigMessage, SurfaceSpec } from '../../src/render/protocol';
+import DateTimeFrontend from '../../src/builtin-addons/date-time/frontend';
 
 type AddonFrontendMap = Record<string, ComponentType<{ spec: SurfaceSpec }>>;
+
+const BUILTIN_ADDON_FRONTENDS: AddonFrontendMap = {
+  'date-time': DateTimeFrontend,
+};
 
 async function loadAddonFrontends(
   surfaces: Record<string, SurfaceSpec>,
 ): Promise<AddonFrontendMap> {
-  const entries = await Promise.all(
-    Object.values(surfaces).map(async (spec) => {
-      try {
-        // The CLI builds a Vite resolve.alias map (`sireno-addon:<name>`
-        // → absolute path) at Vite startup. We use the alias name here so
-        // Vite resolves it through its normal module pipeline instead of
-        // the import-analysis plugin path that 500s on /@fs/ URLs.
-        const aliasName = `sireno-addon:${spec.addonName}`;
-        const mod = (await import(/* @vite-ignore */ aliasName)) as {
-          default?: ComponentType<{ spec: SurfaceSpec }>;
-        };
-        if (!mod.default) return null;
-        return [spec.addonName, mod.default] as const;
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.warn(`[deck] failed to load addon frontend for ${spec.addonName}:`, err);
-        return null;
-      }
-    }),
-  );
   const map: AddonFrontendMap = {};
-  for (const e of entries) if (e) map[e[0]] = e[1];
+  for (const spec of Object.values(surfaces)) {
+    const Component = BUILTIN_ADDON_FRONTENDS[spec.addonName];
+    if (Component) map[spec.addonName] = Component;
+    else
+      // eslint-disable-next-line no-console
+      console.warn(`[deck] no builtin frontend registered for addon '${spec.addonName}'`);
+  }
   return map;
 }
 
