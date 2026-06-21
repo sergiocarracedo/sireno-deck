@@ -379,9 +379,9 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-05-30
-Stopped at: Phase 5 gap-closure pass verified and synced; next run `/review` before shipping.
-Resume file: .planning/phases/05-hot-refresh-and-button-error-helper/05-VERIFICATION.md
+Last session: 2026-06-21
+Stopped at: Phase 75.1 context captured (4 decisions locked, 7 deferred to planner, 3 ideas deferred to other phases). Branch `feature/architecture-split-cli-fe-fs-wsbridge`. Next: `plan-phase 75.1`.
+Resume file: .planning/phases/75.1-arch-split-cli-fe-fs-ws-bridge/75.1-CONTEXT.md
 
 ### Quick Tasks Completed
 
