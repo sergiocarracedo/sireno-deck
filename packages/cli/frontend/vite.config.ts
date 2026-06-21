@@ -15,8 +15,17 @@ const addonFrontendEntries = (() => {
   }
 })();
 
-const cliRoot = path.resolve(__dirname, '..');
-const repoRoot = path.resolve(__dirname, '../..');
+// Map `sireno-addon:<name>` to the addon's absolute frontend path so the
+// React app can do `import('sireno-addon:date-time')` and Vite resolves
+// it via its normal module pipeline (which works for in-root files but
+// fails on /@fs/ or absolute paths in dynamic import()).
+const addonAlias: Record<string, string> = {};
+for (const entry of addonFrontendEntries) {
+  const match = /builtin-addons\/([^/]+)\//.exec(entry);
+  if (match) {
+    addonAlias[`sireno-addon:${match[1]}`] = entry;
+  }
+}
 
 export default defineConfig({
   plugins: [react()],
@@ -41,6 +50,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      ...addonAlias,
     },
   },
   build: {

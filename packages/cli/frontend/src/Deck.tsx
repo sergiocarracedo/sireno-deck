@@ -9,7 +9,12 @@ async function loadAddonFrontends(
   const entries = await Promise.all(
     Object.values(surfaces).map(async (spec) => {
       try {
-        const mod = (await import(/* @vite-ignore */ spec.frontendEntry)) as {
+        // The CLI builds a Vite resolve.alias map (`sireno-addon:<name>`
+        // → absolute path) at Vite startup. We use the alias name here so
+        // Vite resolves it through its normal module pipeline instead of
+        // the import-analysis plugin path that 500s on /@fs/ URLs.
+        const aliasName = `sireno-addon:${spec.addonName}`;
+        const mod = (await import(/* @vite-ignore */ aliasName)) as {
           default?: ComponentType<{ spec: SurfaceSpec }>;
         };
         if (!mod.default) return null;
