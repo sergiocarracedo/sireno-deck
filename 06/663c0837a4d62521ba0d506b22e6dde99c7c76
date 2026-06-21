@@ -1,0 +1,25 @@
+.planning/STATE.md
+  s_f5622df155228a::t_c011e9dd5891c6 206
+  s_f5622df155228a::t_0212aa392854f9 12-13
+.planning/phases/75.1-arch-split-cli-fe-fs-ws-bridge/README.md
+  s_f5622df155228a::t_1ddb85efc96556 1-7
+.planning/ROADMAP.md
+  s_f5622df155228a::t_4c76aba22297f4 95-134
+  s_f5622df155228a::t_85a6dd2d2bf9a7 143
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "06663c0837a4d62521ba0d506b22e6dde99c7c76",
+  "prompts": {},
+  "sessions": {
+    "s_f5622df155228a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_114ecc375ffehJL8FVEupdUruf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
