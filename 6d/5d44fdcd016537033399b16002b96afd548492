@@ -1,0 +1,29 @@
+packages/cli/frontend/src/App.tsx
+  s_f5622df155228a::t_01033ffd204d23 1-32
+packages/cli/frontend/tsconfig.json
+  s_f5622df155228a::t_eb01365f945f85 1-16
+packages/cli/frontend/vite.config.ts
+  s_f5622df155228a::t_402d7d62647044 1-22
+packages/cli/frontend/src/main.tsx
+  s_f5622df155228a::t_31f7f0c6e55e9a 1-9
+packages/cli/package.json
+  s_f5622df155228a::t_87fb8a3dd5ffad 50,53,61-63
+packages/cli/frontend/index.html
+  s_f5622df155228a::t_e9edc932747b82 1-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "6d5d44fdcd016537033399b16002b96afd548492",
+  "prompts": {},
+  "sessions": {
+    "s_f5622df155228a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_114ecc375ffehJL8FVEupdUruf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
