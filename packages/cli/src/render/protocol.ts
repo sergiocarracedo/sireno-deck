@@ -70,7 +70,7 @@ export const MethodCallResultMessageSchema = z.object({
 export type MethodCallResultMessage = z.infer<typeof MethodCallResultMessageSchema>;
 
 export const MessageSchema = z.discriminatedUnion('type', [
-  ButtonActionMessageSchema,
+  ButtonActionSchema,
   DeckConfigMessageSchema,
   StateMessageSchema,
   ButtonConfigMessageSchema,

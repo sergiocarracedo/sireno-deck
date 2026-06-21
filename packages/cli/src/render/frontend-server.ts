@@ -73,9 +73,11 @@ export function spawnFrontendServer(
       { entry, attempt: handle.restartCount },
       'spawning Vite child process',
     );
+    const isTs = /\.(ts|tsx|cts|mts)$/.test(entry);
+    const nodeArgs = isTs ? ['--import', 'tsx/esm', entry] : [entry];
     child = spawn(
       'node',
-      ['--import', 'tsx/esm', entry],
+      nodeArgs,
       {
         stdio: ['ignore', 'pipe', 'pipe'],
         env: { ...process.env, ...opts.env },
@@ -150,8 +152,6 @@ export function spawnFrontendServer(
   };
 
   return new Promise<FrontendServerHandle>((resolve, reject) => {
-    resolveReady = resolve;
-    rejectReady = reject;
     const timeout = setTimeout(() => {
       if (handle.port === 0 && !closed) {
         logger.fatal('Vite child did not become ready within 30s');
@@ -164,12 +164,13 @@ export function spawnFrontendServer(
         reject(new Error('Vite child did not become ready within 30s'));
       }
     }, 30_000);
-    const clearTimer = () => clearTimeout(timeout);
-    handle.once('close', clearTimer);
-    const origResolve = resolve;
-    resolve = (v) => {
-      clearTimer();
-      origResolve(v);
+    resolveReady = (v) => {
+      clearTimeout(timeout);
+      resolve(v);
+    };
+    rejectReady = (err) => {
+      clearTimeout(timeout);
+      reject(err);
     };
     spawnChild();
   });

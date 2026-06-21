@@ -65,7 +65,6 @@ export interface StartOptions {
   config?: string
   logger: pino.Logger
   skipBrowserInstall?: boolean
-  renderer?: 'dom' | 'vite'
 }
 
 export interface EmulatorStartOptions extends StartOptions {
@@ -1069,36 +1068,27 @@ export async function startEmulator(
 }
 
 export async function startDaemon(options: StartOptions): Promise<void> {
-  const { logger, skipBrowserInstall, renderer = 'dom' } = options
+  const { logger, skipBrowserInstall } = options
   if (skipBrowserInstall) {
     process.env.SIRENO_SKIP_BROWSER_INSTALL = '1'
   }
 
-  if (renderer === 'vite') {
-    if (options.config) {
-      logger.warn(
-        { config: options.config },
-        '--renderer=vite ignores --config in Phase 75.1-01 (placeholder deck only); real deck wiring lands in Plan 75.1-02',
-      )
-    }
-    logger.info('booting Vite-served React frontend (Phase 75.1-01 placeholder)')
-    const viteRenderer = await startViteDeckRenderer({
-      logger,
-      skipBrowserInstall,
-      keyCount: 15,
-    })
-    logger.info(
-      { url: viteRenderer.frontend.url, keyCount: 15 },
-      'Vite frontend ready; press Ctrl+C to exit',
-    )
-    await new Promise<void>((resolve) => {
-      process.once('SIGINT', () => resolve())
-      process.once('SIGTERM', () => resolve())
-    })
-    await viteRenderer.close()
-    return
-  }
-  await ensureChromium()
+  logger.info('booting Vite-served React frontend (Phase 75.1-01 placeholder)')
+  const viteRenderer = await startViteDeckRenderer({
+    logger,
+    skipBrowserInstall,
+    keyCount: 15,
+  })
+  logger.info(
+    { url: viteRenderer.frontend.url, keyCount: 15 },
+    'Vite frontend ready; press Ctrl+C to exit',
+  )
+  await new Promise<void>((resolve) => {
+    process.once('SIGINT', () => resolve())
+    process.once('SIGTERM', () => resolve())
+  })
+  await viteRenderer.close()
+  return
   const existingPid = readPid()
   let cleanupSignals = () => {}
   let runtime: ReturnType<typeof createDeckRuntime> | null = null

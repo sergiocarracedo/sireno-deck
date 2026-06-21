@@ -49,6 +49,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.0",
     "@types/react-reconciler": "^0.33.0",
+    "@types/ws": "^8.5.13",
     "@types/yargs": "^17.0.35",
     "@vitejs/plugin-react": "^4.3.4",
     "oxfmt": "latest",
