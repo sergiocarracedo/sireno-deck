@@ -29,16 +29,25 @@ export const cli = async () => {
       'start',
       'Start the sireno-deck daemon',
       (command) =>
-        command.option('skip-browser-install', {
-          type: 'boolean',
-          default: false,
-          description: 'Skip the check and auto-install of Playwright Chromium',
-        }),
+        command
+          .option('skip-browser-install', {
+            type: 'boolean',
+            default: false,
+            description: 'Skip the check and auto-install of Playwright Chromium',
+          })
+          .option('renderer', {
+            type: 'string',
+            choices: ['dom', 'vite'] as const,
+            default: 'dom',
+            description:
+              'Render pipeline: "dom" (legacy in-process reconciler) or "vite" (Vite-served React app — Phase 75.1)',
+          }),
       async (argv) =>
         startDaemon({
           config: argv.config,
           logger,
           skipBrowserInstall: argv.skipBrowserInstall,
+          renderer: argv.renderer as 'dom' | 'vite',
         }),
     )
     .command(
