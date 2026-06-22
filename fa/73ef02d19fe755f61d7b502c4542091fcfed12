@@ -1,0 +1,19 @@
+packages/cli/frontend/vite-dev-entry.ts
+  s_f5622df155228a::t_c2817ec19f3b09 1-5,10-31,34,40-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "fa73ef02d19fe755f61d7b502c4542091fcfed12",
+  "prompts": {},
+  "sessions": {
+    "s_f5622df155228a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_114ecc375ffehJL8FVEupdUruf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
