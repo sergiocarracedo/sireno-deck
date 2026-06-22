@@ -379,9 +379,9 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-06-21
-Stopped at: Phase 75.1 context captured (4 decisions locked, 7 deferred to planner, 3 ideas deferred to other phases). Branch `feature/architecture-split-cli-fe-fs-wsbridge`. Next: `plan-phase 75.1`.
-Resume file: .planning/phases/75.1-arch-split-cli-fe-fs-ws-bridge/75.1-CONTEXT.md
+Last session: 2026-06-22
+Stopped at: Phase 75.1 closed (6 plans + 3 solutions + branch pushed at b228275). User asked /next → indicated Phase 76 scope = "continue with architecture migration: show decks and buttons with the correct theme in the frontend server, and ensure button actions (both real or emulated, works). Deck routing should work, overlay decks change, etc." Lean CONTEXT.md drafted for Phase 76; deep gray-area walk deferred to a freer-context session. Branch `feature/architecture-split-cli-fe-fs-wsbridge`. Next: `plan-phase 76` (or `discuss-phase 76 --deep` first if more scoping needed).
+Resume file: .planning/phases/76-arch-migration-runtime-and-theme/76-CONTEXT.md
 
 ### Quick Tasks Completed
 
