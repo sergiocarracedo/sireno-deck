@@ -1097,24 +1097,45 @@ export async function startEmulator(
   if (options.skipBrowserInstall) {
     process.env.SIRENO_SKIP_BROWSER_INSTALL = '1'
   }
-  await ensureChromium()
-  const session = await startEmulatorSession(options)
-  let cleanupSignals = () => {}
-
-  cleanupSignals = setupSignalHandlers(options.logger, async () => {
-    await session.close()
+  const keyCount = options.keyCount ?? 15
+  const viteRenderer = await startViteDeckRenderer({
+    logger: options.logger,
+    skipBrowserInstall: options.skipBrowserInstall,
+    keyCount,
+    emulate: true,
   })
-
-  options.logger.info({ url: session.url }, 'browser deck emulator started')
-  options.logger.info('open the local emulator page in your browser')
+  const wsUrl = `ws://127.0.0.1:${viteRenderer.wsBridge.port}`
+  const pageUrl = `${viteRenderer.frontend.url}?ws=${encodeURIComponent(wsUrl)}`
+  options.logger.info({ url: pageUrl, wsUrl, keyCount }, 'emulator ready')
+  options.logger.info('open the URL above in your browser')
   options.logger.info('press Ctrl+C to stop')
 
+  viteRenderer.sendDeckConfig({
+    deckId: 'placeholder-date-time',
+    surfaces: {
+      'key-0': {
+        addonName: 'date-time',
+        buttonType: 'date-time',
+        frontendEntry: 'builtin:date-time/frontend',
+        config: { format: 'HH:mm' },
+      },
+    },
+    navMode: 'push',
+  })
+  viteRenderer.onButtonAction((msg) => {
+    options.logger.info(
+      { keyIndex: msg.keyIndex, action: msg.action, at: msg.at },
+      'emulator button-action received via WS bridge',
+    )
+  })
+
   try {
-    await new Promise(() => {
-      setInterval(() => {}, 1000)
+    await new Promise<void>((resolve) => {
+      process.once('SIGINT', () => resolve())
+      process.once('SIGTERM', () => resolve())
     })
   } finally {
-    cleanupSignals()
+    await viteRenderer.close()
   }
 }
 
