@@ -1,0 +1,21 @@
+.planning/phases/75.1-arch-split-cli-fe-fs-ws-bridge/75.1-VERIFICATION.md
+  s_f5622df155228a::t_879ccf2c98dccc 1-115
+.planning/STATE.md
+  s_f5622df155228a::t_4429be40a8eaca 12-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "f2569211c1bdf506de93972b29424a93d551f1e1",
+  "prompts": {},
+  "sessions": {
+    "s_f5622df155228a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_114ecc375ffehJL8FVEupdUruf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
