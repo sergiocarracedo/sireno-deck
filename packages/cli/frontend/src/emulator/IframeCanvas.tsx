@@ -1,16 +1,17 @@
 import { useEffect, useState, type CSSProperties } from 'react';
-import { SUPPORTED_DEVICES, type DeviceLayout, deviceByName, deviceSize } from './devices';
+import { SUPPORTED_DEVICES, type DeviceLayout, deviceSize } from './devices';
 import { attachMouseEmulation } from './mouse-to-button';
 import type { Message } from '../../../src/render/protocol';
 
 export interface IframeCanvasProps {
+  deckUrl: string;
   wsUrl: string;
   device: DeviceLayout;
   send: (msg: Message) => void;
   onAction?: (msg: Message) => void;
 }
 
-export function IframeCanvas({ wsUrl, device, send, onAction }: IframeCanvasProps) {
+export function IframeCanvas({ deckUrl, wsUrl, device, send, onAction }: IframeCanvasProps) {
   const size = deviceSize(device);
   const [overlayRef, setOverlayRef] = useState<HTMLDivElement | null>(null);
   const [iframeRef, setIframeRef] = useState<HTMLIFrameElement | null>(null);
@@ -26,7 +27,7 @@ export function IframeCanvas({ wsUrl, device, send, onAction }: IframeCanvasProp
     });
   }, [overlayRef, iframeRef, device, send, onAction]);
 
-  const iframeSrc = `${wsUrl.replace(/^ws/, 'http').replace(/\/$/, '')}/decks/placeholder?ws=${encodeURIComponent(wsUrl)}&mode=emulate&device=${encodeURIComponent(device.name)}`;
+  const iframeSrc = `${deckUrl.replace(/\/$/, '')}/?ws=${encodeURIComponent(wsUrl)}&mode=emulate&device=${encodeURIComponent(device.name)}`;
 
   return (
     <div style={{ ...frameStyle, width: size.width + 16, height: size.height + 16 }}>
@@ -65,4 +66,4 @@ const overlayStyle: CSSProperties = {
   borderRadius: 4,
 };
 
-export { SUPPORTED_DEVICES, deviceByName };
+export { SUPPORTED_DEVICES };

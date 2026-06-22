@@ -7,11 +7,24 @@ import type { Message } from '../../../src/render/protocol';
 
 const STORAGE_KEY = 'sireno-emulator-device';
 
+function readParams(): { deckUrl: string; wsUrl: string; keyCount: number } {
+  if (typeof window === 'undefined') {
+    return { deckUrl: '', wsUrl: '', keyCount: 15 };
+  }
+  const params = new URLSearchParams(window.location.search);
+  return {
+    deckUrl: params.get('deck') ?? '',
+    wsUrl: params.get('ws') ?? '',
+    keyCount: Number(params.get('keyCount') ?? '15'),
+  };
+}
+
 export function EmulatorShell() {
   const initialDevice =
     typeof window !== 'undefined'
       ? deviceByName(window.localStorage.getItem(STORAGE_KEY))
       : SUPPORTED_DEVICES[2];
+  const { deckUrl, wsUrl } = readParams();
   const [device, setDevice] = useState<DeviceLayout>(initialDevice);
   const [client, setClient] = useState<WsClient | null>(null);
   const [conn, setConn] = useState<'connecting' | 'open' | 'closed'>('connecting');
@@ -25,14 +38,11 @@ export function EmulatorShell() {
   }, [device]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    const ws = params.get('ws');
-    if (!ws) {
+    if (!wsUrl) {
       setConn('closed');
       return;
     }
-    const c = openWsClient({ url: ws });
+    const c = openWsClient({ url: wsUrl });
     setClient(c);
     const offConn = c.onConnection(setConn);
     const offMsg = c.onMessage((msg: Message) => {
@@ -43,7 +53,7 @@ export function EmulatorShell() {
       offMsg();
       c.close();
     };
-  }, []);
+  }, [wsUrl]);
 
   const onAction = (msg: Message) => {
     if (msg.type !== 'button-action') return;
@@ -53,30 +63,32 @@ export function EmulatorShell() {
     ]);
   };
 
-  const wsUrl =
-    typeof window !== 'undefined'
-      ? new URLSearchParams(window.location.search).get('ws') ?? ''
-      : '';
-
   return (
     <div style={shellStyle}>
       <header style={headerStyle}>
-        <DeviceSelector
-          current={device}
-          onChange={setDevice}
-        />
+        <DeviceSelector current={device} onChange={setDevice} />
         <div style={statusStyle}>
           <span style={pillStyle(pillColor(conn))}>{conn}</span>
           <span style={{ marginLeft: 8 }}>deck: {currentDeck}</span>
+          <span style={{ marginLeft: 8, color: 'var(--sireno-text-muted, #888)' }}>
+            server: <a href={deckUrl} style={linkStyle}>{deckUrl || '(none)'}</a>
+          </span>
         </div>
       </header>
       <main style={mainStyle}>
-        <IframeCanvas
-          wsUrl={wsUrl}
-          device={device}
-          send={(msg) => client?.send(msg) ?? console.warn('no ws client', msg)}
-          onAction={onAction}
-        />
+        {deckUrl ? (
+          <IframeCanvas
+            deckUrl={deckUrl}
+            wsUrl={wsUrl}
+            device={device}
+            send={(msg) => client?.send(msg) ?? console.warn('no ws client', msg)}
+            onAction={onAction}
+          />
+        ) : (
+          <em style={{ color: 'var(--sireno-text-muted, #888)' }}>
+            no deck URL passed — emulator not connected to a deck server
+          </em>
+        )}
       </main>
       <footer style={footerStyle}>
         <strong style={{ marginRight: 8 }}>action log:</strong>
@@ -125,6 +137,7 @@ const statusStyle = {
   fontSize: 13,
   display: 'flex',
   alignItems: 'center',
+  flexWrap: 'wrap' as const,
 };
 
 function pillStyle(color: string): React.CSSProperties {
@@ -138,6 +151,11 @@ function pillStyle(color: string): React.CSSProperties {
     textTransform: 'uppercase' as const,
   };
 }
+
+const linkStyle: React.CSSProperties = {
+  color: 'var(--sireno-accent, #4a9eff)',
+  textDecoration: 'underline',
+};
 
 const mainStyle = {
   flex: 1,

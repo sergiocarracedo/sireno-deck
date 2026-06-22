@@ -45,6 +45,7 @@ import { renderDomDeck } from '@/render/dom-host'
 import { getShrinkFitBrowserScript } from '@/render/shrink-fit-browser-script'
 import { createStartupPlaceholderBuffers } from '@/render/startup-placeholder'
 import { spawnFrontendServer, type FrontendServerHandle } from '@/render/frontend-server'
+import { spawnEmulatorServer, type EmulatorServerHandle } from '@/render/emulator-server'
 import { createWsBridge, type WsBridgeHandle } from '@/render/ws-bridge'
 import {
   PROTOCOL_VERSION,
@@ -436,14 +437,12 @@ export async function startViteDeckRenderer(opts: {
   logger: pino.Logger
   skipBrowserInstall?: boolean
   keyCount: number
-  emulate?: boolean
 }): Promise<ViteDeckRenderer> {
   if (opts.skipBrowserInstall) {
     process.env.SIRENO_SKIP_BROWSER_INSTALL = '1'
   }
   const frontend = await spawnFrontendServer({
     logger: opts.logger,
-    env: opts.emulate ? { SIRENO_EMULATE: '1' } : undefined,
   })
   const wsBridge = await createWsBridge({ logger: opts.logger })
   const wsUrl = `ws://127.0.0.1:${wsBridge.port}`
@@ -1102,11 +1101,22 @@ export async function startEmulator(
     logger: options.logger,
     skipBrowserInstall: options.skipBrowserInstall,
     keyCount,
-    emulate: true,
   })
   const wsUrl = `ws://127.0.0.1:${viteRenderer.wsBridge.port}`
-  const pageUrl = `${viteRenderer.frontend.url}?ws=${encodeURIComponent(wsUrl)}`
-  options.logger.info({ url: pageUrl, wsUrl, keyCount }, 'emulator ready')
+  const deckUrl = viteRenderer.frontend.url
+  const emulatorServer = await spawnEmulatorServer({
+    logger: options.logger,
+    queryString: `?deck=${encodeURIComponent(deckUrl)}&ws=${encodeURIComponent(wsUrl)}&keyCount=${keyCount}`,
+  })
+  options.logger.info(
+    {
+      url: emulatorServer.url,
+      deckUrl,
+      wsUrl,
+      keyCount,
+    },
+    'emulator ready (separate server, deck iframe inside)',
+  )
   options.logger.info('open the URL above in your browser')
   options.logger.info('press Ctrl+C to stop')
 
@@ -1135,7 +1145,7 @@ export async function startEmulator(
       process.once('SIGTERM', () => resolve())
     })
   } finally {
-    await viteRenderer.close()
+    await Promise.allSettled([viteRenderer.close(), emulatorServer.close()])
   }
 }
 
