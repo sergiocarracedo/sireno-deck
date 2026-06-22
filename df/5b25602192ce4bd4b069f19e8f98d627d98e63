@@ -1,0 +1,35 @@
+packages/cli/frontend/src/main-emulator.tsx
+  s_f5622df155228a::t_c60871ac7d7350 1-9
+packages/cli/frontend/src/emulator/devices.ts
+  s_f5622df155228a::t_a66fb4043c88aa 1-25
+package.json
+  s_f5622df155228a::t_2ae6ecfcf25340 17
+packages/cli/frontend/emulator.html
+  s_f5622df155228a::t_dd0ab65159e702 1-12
+packages/cli/frontend/vite-dev-entry.ts
+  s_f5622df155228a::t_7c99b36734b67d 7,13-48
+packages/cli/frontend/src/emulator/IframeCanvas.tsx
+  s_f5622df155228a::t_221841f927fafa 1-68
+packages/cli/frontend/src/emulator/DeviceSelector.tsx
+  s_f5622df155228a::t_ce67f25347ed0a 1-50
+packages/cli/frontend/src/emulator/EmulatorShell.tsx
+  s_f5622df155228a::t_af6407dfc466a8 1-157
+packages/cli/frontend/src/emulator/mouse-to-button.ts
+  s_f5622df155228a::t_0140403c92b824 1-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "df5b25602192ce4bd4b069f19e8f98d627d98e63",
+  "prompts": {},
+  "sessions": {
+    "s_f5622df155228a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_114ecc375ffehJL8FVEupdUruf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
