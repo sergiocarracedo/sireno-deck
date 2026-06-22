@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useWsClient } from './hooks/useWsClient';
 import type { DeckConfigMessage, Message } from '../../src/render/protocol';
 
@@ -7,6 +7,7 @@ export function App() {
   const wsUrl = readWsUrlFromLocation();
   const { connection, client } = useWsClient(wsUrl);
   const [deck, setDeck] = useState<DeckConfigMessage | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!client) return;
@@ -14,17 +15,14 @@ export function App() {
       if (msg.type === 'deck-config') {
         const cfg = msg;
         setDeck(cfg);
-        const isOverlay =
-          cfg.navMode === 'replace';
+        const isOverlay = cfg.navMode === 'replace';
         const path = `/decks/${encodeURIComponent(cfg.deckId)}`;
-        if (isOverlay) window.history.replaceState(null, '', path);
-        else if (window.location.pathname !== path) {
-          window.history.pushState(null, '', path);
-        }
+        if (isOverlay) navigate(path, { replace: true });
+        else if (window.location.pathname !== path) navigate(path);
       }
     });
     return off;
-  }, [client]);
+  }, [client, navigate]);
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--sireno-surface, #1a1a1a)' }}>
