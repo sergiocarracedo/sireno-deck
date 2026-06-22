@@ -436,11 +436,15 @@ export async function startViteDeckRenderer(opts: {
   logger: pino.Logger
   skipBrowserInstall?: boolean
   keyCount: number
+  emulate?: boolean
 }): Promise<ViteDeckRenderer> {
   if (opts.skipBrowserInstall) {
     process.env.SIRENO_SKIP_BROWSER_INSTALL = '1'
   }
-  const frontend = await spawnFrontendServer({ logger: opts.logger })
+  const frontend = await spawnFrontendServer({
+    logger: opts.logger,
+    env: opts.emulate ? { SIRENO_EMULATE: '1' } : undefined,
+  })
   const wsBridge = await createWsBridge({ logger: opts.logger })
   const wsUrl = `ws://127.0.0.1:${wsBridge.port}`
   const pageUrl = `${frontend.url}?ws=${encodeURIComponent(wsUrl)}`
