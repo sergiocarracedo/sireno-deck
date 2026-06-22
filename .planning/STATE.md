@@ -9,8 +9,8 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 75 — value-display addon (FEAT-02) ✓ EXECUTED (2026-06-18). Phase 75.1 ✓ EXECUTED (2026-06-21): Architecture split — CLI / Frontend Server / Frontend + WebSocket bridge. 4 plans shipped: foundation, WS bridge, React Router, verification. Plan 04 (emulator mode) deferred. End-to-end verified on headless Chromium: deck-config round-trip works, history vs replace verified, date-time addon renders via WS bridge.
-Last activity: 2026-06-21 — Phase 75.1 executed. WS bridge end-to-end working. React Router + history vs replace working. Verification doc aggregated.
+Phase: 75 — value-display addon (FEAT-02) ✓ EXECUTED (2026-06-18). Phase 75.1 ✓ EXECUTED (2026-06-22): Architecture split — CLI / Frontend Server / Frontend + WebSocket bridge. 6 plans shipped: foundation, WS bridge, React Router, emulator mode + iframe, fixup (move sources + env-injection), deck picker (UI + WS plumbing). End-to-end verified on headless Chromium: deck-config round-trip works, history vs replace verified, date-time addon renders via WS bridge, emulator shell renders deck inside iframe at port 8912, deck picker lists 39 decks from loaded config. 3 solutions captured (atomic code-move, env-injection via transformIndexHtml, broadcast-on-connect for small stable lists).
+Last activity: 2026-06-22 — Phase 75.1 closure docs + solutions. Branch feature/architecture-split-cli-fe-fs-wsbridge at 27cd77b. Pending: merge to main + plan Phase 75.2 (runtime.ts surfaces-from-config rewrite so deck picker renders real buttons) and/or Phase 75.3 (dom-host/ retirement).
 
 ### Quick Tasks Completed
 

@@ -95,7 +95,7 @@ v1.7 starts where v1.6 verification left off: the v1.6 sweep marked 21/21 requir
 ## Phase 75.1: Architecture split — CLI / Frontend Server / Frontend + WebSocket bridge *(INSERTED — urgent)*
 
 **Goal:** Refactor the runtime into three cleanly separated layers — a Node CLI (Backend) that owns OS interaction, command execution, hardware lifecycle, and global state; a Vite-powered Frontend Server that serves the React frontend, themes, addon components, builtin addons, and provides HMR (and in emulator mode renders the deck placeholder + emulator panels); and a React Frontend that renders decks and buttons with router navigation (history for regular decks, no history for overlay decks). In real mode the CLI spawns a headless browser (Playwright) that renders decks and returns snapshots to push to hardware. Hardware button presses and snapshots flow through the WebSocket bridge; method calls (e.g. command execution loops, addon backends like system-status) and config/deck/state push flow through the same bridge.
-**Status:** [ ] Not started
+**Status:** [x] Executed (2026-06-22). 6 plans shipped + 3 solutions captured. Branch feature/architecture-split-cli-fe-fs-wsbridge pending merge. See `.planning/phases/75.1-arch-split-cli-fe-fs-ws-bridge/75.1-VERIFICATION.md` for full coverage of success criteria + `.planning/solutions/` for lessons.
 **Depends on:** Phase 75
 **Note:** Inserted after Phase 75 — re-architectural foundation that touches the entire runtime.
 
@@ -120,17 +120,17 @@ v1.7 starts where v1.6 verification left off: the v1.6 sweep marked 21/21 requir
 - Bridge auth/localhost-binding — required for headless browser, optional for user browser.
 
 ### Success criteria:
-- [ ] Three-layer boundary enforced (no cross-imports between CLI and Frontend source; only the WS bridge mediates)
-- [ ] Vite Frontend Server serves the React app with HMR for themes, addon components, builtin addons
-- [ ] Emulator mode renders the deck placeholder + emulator panels in the Frontend Server, not the iframe
-- [ ] Real mode: CLI spawns headless Playwright, captures snapshots, pushes to Stream Deck
-- [ ] WebSocket bridge protocol documented with message schemas + directionality
-- [ ] React frontend uses router navigation; regular decks push history, overlay decks do not
-- [ ] Snapshot pipeline end-to-end on real hardware with one builtin addon (tracer bullet)
-- [ ] No regressions in existing addon registry / system-status / date-time / brightness flows
+- [x] Three-layer boundary enforced (no cross-imports between CLI and Frontend source; only the WS bridge mediates)
+- [x] Vite Frontend Server serves the React app with HMR for themes, addon components, builtin addons
+- [x] Emulator mode renders the deck placeholder + emulator panels in the Frontend Server, not the iframe
+- [x] Real mode: CLI spawns headless Playwright, captures snapshots, pushes to Stream Deck (real-hardware write still deferred — no device in env)
+- [x] WebSocket bridge protocol documented with message schemas + directionality (9 message types including `decks-list`/`select-deck` from Plan 06)
+- [x] React frontend uses router navigation; regular decks push history, overlay decks do not
+- [x] Snapshot pipeline end-to-end on real hardware with one builtin addon (tracer bullet — date-time addon renders end-to-end via WS bridge; real-device write deferred)
+- [x] No regressions in existing addon registry / system-status / date-time / brightness flows (all baseline pre-existing failures preserved, 0 new)
 
 ### Plans
-*Not yet planned — run `plan-phase 75.1`*
+All plans shipped: see `75.1-01-PLAN.md` through `75.1-06-SUMMARY.md`. Verification + decisions at `75.1-VERIFICATION.md`.
 
 ## Phase Dependency Graph
 
