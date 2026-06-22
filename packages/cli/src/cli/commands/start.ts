@@ -1097,6 +1097,7 @@ export async function startEmulator(
     process.env.SIRENO_SKIP_BROWSER_INSTALL = '1'
   }
   const keyCount = options.keyCount ?? 15
+  const emulatorPort = options.port && options.port > 0 ? options.port : undefined
   const viteRenderer = await startViteDeckRenderer({
     logger: options.logger,
     skipBrowserInstall: options.skipBrowserInstall,
@@ -1106,6 +1107,7 @@ export async function startEmulator(
   const deckUrl = viteRenderer.frontend.url
   const emulatorServer = await spawnEmulatorServer({
     logger: options.logger,
+    port: emulatorPort,
     queryString: `?deck=${encodeURIComponent(deckUrl)}&ws=${encodeURIComponent(wsUrl)}&keyCount=${keyCount}`,
   })
   options.logger.info(
