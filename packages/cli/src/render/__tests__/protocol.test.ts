@@ -5,7 +5,9 @@ import {
   serializeMessage,
   type ButtonActionMessage,
   type DeckConfigMessage,
+  type DecksListMessage,
   type MethodCallMessage,
+  type SelectDeckMessage,
 } from '../protocol.js';
 
 describe('protocol', () => {
@@ -69,6 +71,52 @@ describe('protocol', () => {
         JSON.stringify({
           protocolVersion: PROTOCOL_VERSION,
           type: 'unknown',
+        }),
+      ),
+    ).toThrow();
+  });
+
+  it('round-trips a decks-list message (CLI → emulator)', () => {
+    const msg: DecksListMessage = {
+      protocolVersion: PROTOCOL_VERSION,
+      type: 'decks-list',
+      decks: [
+        { id: 'main', name: 'Main Deck' },
+        { id: 'emoji', name: 'Emoji' },
+        { id: 'chrome', name: 'Chrome' },
+      ],
+    };
+    expect(parseMessage(serializeMessage(msg))).toEqual(msg);
+  });
+
+  it('rejects decks-list with empty decks array', () => {
+    expect(() =>
+      parseMessage(
+        JSON.stringify({
+          protocolVersion: PROTOCOL_VERSION,
+          type: 'decks-list',
+          decks: [],
+        }),
+      ),
+    ).toThrow();
+  });
+
+  it('round-trips a select-deck message (emulator → CLI)', () => {
+    const msg: SelectDeckMessage = {
+      protocolVersion: PROTOCOL_VERSION,
+      type: 'select-deck',
+      deckId: 'emoji',
+    };
+    expect(parseMessage(serializeMessage(msg))).toEqual(msg);
+  });
+
+  it('rejects select-deck with empty deckId', () => {
+    expect(() =>
+      parseMessage(
+        JSON.stringify({
+          protocolVersion: PROTOCOL_VERSION,
+          type: 'select-deck',
+          deckId: '',
         }),
       ),
     ).toThrow();

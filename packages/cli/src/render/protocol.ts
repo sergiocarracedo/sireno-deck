@@ -69,6 +69,32 @@ export const MethodCallResultMessageSchema = z.object({
 });
 export type MethodCallResultMessage = z.infer<typeof MethodCallResultMessageSchema>;
 
+// CLI → renderer (emulator shell only). Broadcast by the CLI on emulator
+// startup and whenever the config reloads. Drives the deck-picker panel.
+export const DecksListMessageSchema = z.object({
+  protocolVersion: z.literal(PROTOCOL_VERSION),
+  type: z.literal('decks-list'),
+  decks: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        name: z.string().min(1),
+      }),
+    )
+    .min(1),
+});
+export type DecksListMessage = z.infer<typeof DecksListMessageSchema>;
+
+// Renderer (emulator shell) → CLI. Emulator user picked a different deck
+// from the picker panel. CLI responds by broadcasting a fresh deck-config
+// for that deckId.
+export const SelectDeckMessageSchema = z.object({
+  protocolVersion: z.literal(PROTOCOL_VERSION),
+  type: z.literal('select-deck'),
+  deckId: z.string().min(1),
+});
+export type SelectDeckMessage = z.infer<typeof SelectDeckMessageSchema>;
+
 export const MessageSchema = z.discriminatedUnion('type', [
   ButtonActionSchema,
   DeckConfigMessageSchema,
@@ -77,6 +103,8 @@ export const MessageSchema = z.discriminatedUnion('type', [
   SnapshotMessageSchema,
   MethodCallMessageSchema,
   MethodCallResultMessageSchema,
+  DecksListMessageSchema,
+  SelectDeckMessageSchema,
 ]);
 export type Message = z.infer<typeof MessageSchema>;
 

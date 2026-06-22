@@ -6,6 +6,8 @@ import {
   ButtonConfigMessageSchema,
   SnapshotMessageSchema,
   MethodCallResultMessageSchema,
+  DecksListMessageSchema,
+  SelectDeckMessageSchema,
 } from '../../src/render/protocol';
 
 export type WsConnectionState = 'connecting' | 'open' | 'closed';
@@ -47,6 +49,14 @@ function parseIncoming(raw: string): Message | null {
         : null;
     case 'method-call-result':
       return MethodCallResultMessageSchema.safeParse(obj).success
+        ? (parsed as Message)
+        : null;
+    case 'decks-list':
+      return DecksListMessageSchema.safeParse(obj).success
+        ? (parsed as Message)
+        : null;
+    case 'select-deck':
+      return SelectDeckMessageSchema.safeParse(obj).success
         ? (parsed as Message)
         : null;
     default:
