@@ -51,7 +51,9 @@ import {
   PROTOCOL_VERSION,
   type DeckConfigMessage,
   type ButtonActionMessage,
+  type DecksListMessage,
   type Message,
+  type SelectDeckMessage,
 } from '@/render/protocol'
 
 import { getActiveAppProvider } from '@/system/active-app'
@@ -429,6 +431,8 @@ export interface ViteDeckRenderer {
   pageUrl: string
   captureKeyBuffers: () => Promise<Map<number, Buffer>>
   sendDeckConfig: (deckConfig: Omit<DeckConfigMessage, 'protocolVersion' | 'type'>) => void
+  sendDecksList: (decks: Array<{ id: string; name: string }>) => void
+  onSelectDeck: (handler: (msg: SelectDeckMessage) => void) => () => void
   onButtonAction: (handler: (msg: ButtonActionMessage) => void) => () => void
   close: () => Promise<void>
 }
@@ -450,8 +454,14 @@ export async function startViteDeckRenderer(opts: {
   opts.logger.info({ wsUrl, pageUrl }, 'WS bridge ready')
 
   let cachedDeckConfig: DeckConfigMessage | null = null
+  let cachedDecksList: DecksListMessage | null = null
   wsBridge.onConnection((connected) => {
-    if (connected && cachedDeckConfig) {
+    if (!connected) return
+    if (cachedDecksList) {
+      opts.logger.debug('renderer connected; broadcasting cached decks-list')
+      wsBridge.broadcast(cachedDecksList)
+    }
+    if (cachedDeckConfig) {
       opts.logger.debug(
         'renderer connected; broadcasting cached deck-config',
       )
@@ -483,6 +493,24 @@ export async function startViteDeckRenderer(opts: {
           'no WS client connected; cached deck-config will be sent on connect',
         )
       }
+    },
+    sendDecksList: (decks) => {
+      cachedDecksList = {
+        protocolVersion: PROTOCOL_VERSION,
+        type: 'decks-list',
+        decks,
+      }
+      const reached = wsBridge.broadcast(cachedDecksList)
+      if (reached === 0) {
+        opts.logger.debug(
+          'no WS client connected; cached decks-list will be sent on connect',
+        )
+      }
+    },
+    onSelectDeck: (handler) => {
+      return wsBridge.onMessage((msg: Message) => {
+        if (msg.type === 'select-deck') handler(msg)
+      })
     },
     onButtonAction: (handler) => {
       return wsBridge.onMessage((msg: Message) => {
@@ -1098,6 +1126,11 @@ export async function startEmulator(
   }
   const keyCount = options.keyCount ?? 15
   const emulatorPort = options.port && options.port > 0 ? options.port : undefined
+  const loadedConfig = await loadRuntimeConfig(options)
+  const decksForPicker = Object.values(loadedConfig.config.decks).map((deck) => ({
+    id: deck.id,
+    name: deck.name ?? deck.id,
+  }))
   const viteRenderer = await startViteDeckRenderer({
     logger: options.logger,
     skipBrowserInstall: options.skipBrowserInstall,
@@ -1108,7 +1141,9 @@ export async function startEmulator(
   const emulatorServer = await spawnEmulatorServer({
     logger: options.logger,
     port: emulatorPort,
-    queryString: `?deck=${encodeURIComponent(deckUrl)}&ws=${encodeURIComponent(wsUrl)}&keyCount=${keyCount}`,
+    deckUrl,
+    wsUrl,
+    keyCount,
   })
   options.logger.info(
     {
@@ -1116,17 +1151,21 @@ export async function startEmulator(
       deckUrl,
       wsUrl,
       keyCount,
+      decks: decksForPicker.map((d) => d.id),
     },
     'emulator ready (separate server, deck iframe inside)',
   )
   options.logger.info(`emulator url: ${emulatorServer.url}`)
   options.logger.info(`deck server:  ${deckUrl}`)
   options.logger.info(`ws bridge:    ${wsUrl}`)
+  options.logger.info(`decks:        ${decksForPicker.map((d) => d.id).join(', ')}`)
   options.logger.info('open the emulator url in your browser')
   options.logger.info('press Ctrl+C to stop')
 
+  viteRenderer.sendDecksList(decksForPicker)
+
   viteRenderer.sendDeckConfig({
-    deckId: 'placeholder-date-time',
+    deckId: decksForPicker[0]?.id ?? 'placeholder-date-time',
     surfaces: {
       'key-0': {
         addonName: 'date-time',
@@ -1137,6 +1176,26 @@ export async function startEmulator(
     },
     navMode: 'push',
   })
+
+  viteRenderer.onSelectDeck((msg) => {
+    options.logger.info(
+      { deckId: msg.deckId },
+      'emulator select-deck received; broadcasting placeholder surfaces',
+    )
+    viteRenderer.sendDeckConfig({
+      deckId: msg.deckId,
+      surfaces: {
+        'key-0': {
+          addonName: 'date-time',
+          buttonType: 'date-time',
+          frontendEntry: 'builtin:date-time/frontend',
+          config: { format: 'HH:mm' },
+        },
+      },
+      navMode: 'push',
+    })
+  })
+
   viteRenderer.onButtonAction((msg) => {
     options.logger.info(
       { keyIndex: msg.keyIndex, action: msg.action, at: msg.at },
@@ -1151,6 +1210,7 @@ export async function startEmulator(
     })
   } finally {
     await Promise.allSettled([viteRenderer.close(), emulatorServer.close()])
+    await Promise.resolve(loadedConfig.sessionMonitor.stop()).catch(() => {})
   }
 }
 

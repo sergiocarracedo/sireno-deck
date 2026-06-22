@@ -34,6 +34,7 @@ export function IframeCanvas({ deckUrl, wsUrl, device, send, onAction }: IframeC
       <iframe
         ref={setIframeRef}
         src={iframeSrc}
+        scrolling="no"
         style={iframeStyle}
         title="emulated deck"
       />
@@ -48,6 +49,7 @@ const frameStyle: CSSProperties = {
   background: 'var(--sireno-card, #222)',
   borderRadius: 8,
   border: '1px solid var(--sireno-border, #444)',
+  overflow: 'hidden',
 };
 
 const iframeStyle: CSSProperties = {
@@ -57,6 +59,7 @@ const iframeStyle: CSSProperties = {
   borderRadius: 4,
   pointerEvents: 'none',
   display: 'block',
+  overflow: 'hidden',
 };
 
 const overlayStyle: CSSProperties = {

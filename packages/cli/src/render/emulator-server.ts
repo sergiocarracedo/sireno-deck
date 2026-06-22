@@ -14,10 +14,12 @@ export interface SpawnEmulatorServerOptions {
   emulatorDir?: string;
   port?: number;
   /**
-   * Query string appended to the emulator URL so the emulator chrome
-   * can find the WS bridge and the deck iframe URL.
+   * URLs injected into the emulator shell via Vite's `transformIndexHtml`
+   * plugin (exposed on `window.__SIRENO__`). The page URL itself stays clean.
    */
-  queryString?: string;
+  deckUrl: string;
+  wsUrl: string;
+  keyCount: number;
 }
 
 export function spawnEmulatorServer(
@@ -27,19 +29,17 @@ export function spawnEmulatorServer(
     opts.emulatorDir ?? path.resolve(__dirname, '../../frontend-emulator');
   const entry =
     opts.viteEntry ?? path.join(emulatorDir, 'vite-dev-entry.ts');
-  const env: NodeJS.ProcessEnv = {};
+  const env: NodeJS.ProcessEnv = {
+    SIRENO_DECK_URL: opts.deckUrl,
+    SIRENO_WS_URL: opts.wsUrl,
+    SIRENO_KEY_COUNT: String(opts.keyCount),
+  };
   if (opts.port) env.SIRENO_VITE_PORT = String(opts.port);
-  if (opts.queryString) env.SIRENO_EMULATOR_QUERY = opts.queryString;
   return spawnViteServer({
     logger: opts.logger,
     moduleName: 'emulator-server',
     entry,
     cwd: emulatorDir,
     env,
-  }).then((handle) => {
-    if (opts.queryString) {
-      handle.url = `${handle.url}${opts.queryString}`;
-    }
-    return handle;
   });
 }

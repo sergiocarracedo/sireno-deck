@@ -1,22 +1,29 @@
 import { useEffect, useState } from 'react';
 import { DeviceSelector } from './DeviceSelector';
+import { DeckSelector, type DeckSummary } from './DeckSelector';
 import { IframeCanvas } from './IframeCanvas';
 import { SUPPORTED_DEVICES, deviceByName, type DeviceLayout } from './devices';
-import { openWsClient, type WsClient } from '../ws-client';
+import { openWsClient, type WsClient } from '@/ws-client';
 import type { Message } from '../../../src/render/protocol';
 
 const STORAGE_KEY = 'sireno-emulator-device';
 
-function readParams(): { deckUrl: string; wsUrl: string; keyCount: number } {
-  if (typeof window === 'undefined') {
-    return { deckUrl: '', wsUrl: '', keyCount: 15 };
+interface SirenoConfig {
+  deckUrl: string;
+  wsUrl: string;
+  keyCount: number;
+}
+
+declare global {
+  interface Window {
+    __SIRENO__?: SirenoConfig;
   }
-  const params = new URLSearchParams(window.location.search);
-  return {
-    deckUrl: params.get('deck') ?? '',
-    wsUrl: params.get('ws') ?? '',
-    keyCount: Number(params.get('keyCount') ?? '15'),
-  };
+}
+
+function readSirenoConfig(): SirenoConfig {
+  const fallback: SirenoConfig = { deckUrl: '', wsUrl: '', keyCount: 15 };
+  if (typeof window === 'undefined') return fallback;
+  return window.__SIRENO__ ?? fallback;
 }
 
 export function EmulatorShell() {
@@ -24,11 +31,12 @@ export function EmulatorShell() {
     typeof window !== 'undefined'
       ? deviceByName(window.localStorage.getItem(STORAGE_KEY))
       : SUPPORTED_DEVICES[2];
-  const { deckUrl, wsUrl } = readParams();
+  const { deckUrl, wsUrl } = readSirenoConfig();
   const [device, setDevice] = useState<DeviceLayout>(initialDevice);
   const [client, setClient] = useState<WsClient | null>(null);
   const [conn, setConn] = useState<'connecting' | 'open' | 'closed'>('connecting');
   const [currentDeck, setCurrentDeck] = useState<string>('(awaiting)');
+  const [decks, setDecks] = useState<DeckSummary[]>([]);
   const [actionLog, setActionLog] = useState<string[]>([]);
 
   useEffect(() => {
@@ -47,6 +55,7 @@ export function EmulatorShell() {
     const offConn = c.onConnection(setConn);
     const offMsg = c.onMessage((msg: Message) => {
       if (msg.type === 'deck-config') setCurrentDeck(msg.deckId);
+      else if (msg.type === 'decks-list') setDecks(msg.decks);
     });
     return () => {
       offConn();
@@ -54,6 +63,18 @@ export function EmulatorShell() {
       c.close();
     };
   }, [wsUrl]);
+
+  const onSelectDeck = (deckId: string) => {
+    if (!client) {
+      console.warn('no ws client; cannot send select-deck', deckId);
+      return;
+    }
+    client.send({
+      protocolVersion: 1,
+      type: 'select-deck',
+      deckId,
+    });
+  };
 
   const onAction = (msg: Message) => {
     if (msg.type !== 'button-action') return;
@@ -66,7 +87,10 @@ export function EmulatorShell() {
   return (
     <div style={shellStyle}>
       <header style={headerStyle}>
-        <DeviceSelector current={device} onChange={setDevice} />
+        <div style={controlsRowStyle}>
+          <DeviceSelector current={device} onChange={setDevice} />
+          <DeckSelector decks={decks} current={currentDeck} onChange={onSelectDeck} />
+        </div>
         <div style={statusStyle}>
           <span style={pillStyle(pillColor(conn))}>{conn}</span>
           <span style={{ marginLeft: 8 }}>deck: {currentDeck}</span>
@@ -129,7 +153,14 @@ const headerStyle = {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
+  flexWrap: 'wrap' as const,
   borderBottom: '1px solid var(--sireno-border, #444)',
+};
+
+const controlsRowStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap' as const,
 };
 
 const statusStyle = {

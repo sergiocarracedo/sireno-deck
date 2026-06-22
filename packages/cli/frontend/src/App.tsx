@@ -17,8 +17,14 @@ export function App() {
         setDeck(cfg);
         const isOverlay = cfg.navMode === 'replace';
         const path = `/decks/${encodeURIComponent(cfg.deckId)}`;
-        if (isOverlay) navigate(path, { replace: true });
-        else if (window.location.pathname !== path) navigate(path);
+        // Preserve the current query string (?ws=...) so the WS bridge
+        // URL survives navigation. Without this the React app disconnects
+        // immediately after the first deck-config arrives.
+        const target = path + window.location.search;
+        if (isOverlay) navigate(target, { replace: true });
+        else if (window.location.pathname + window.location.search !== target) {
+          navigate(target);
+        }
       }
     });
     return off;
