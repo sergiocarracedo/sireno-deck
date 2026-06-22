@@ -9,8 +9,8 @@ See: .planning/PROJECT.md (updated 2026-06-08)
 
 ## Current Position
 
-Phase: 75 — value-display addon (FEAT-02) ✓ EXECUTED (2026-06-18). Phase 75.1 inserted (2026-06-21): Architecture split — CLI / Frontend Server / Frontend + WebSocket bridge. Status: pending plan-phase.
-Last activity: 2026-06-21 — Cleanup pass (forgot quick-047, phase-83, pending phases 76-77) + inserted Phase 75.1 architecture refactor.
+Phase: 75 — value-display addon (FEAT-02) ✓ EXECUTED (2026-06-18). Phase 75.1 ✓ EXECUTED (2026-06-21): Architecture split — CLI / Frontend Server / Frontend + WebSocket bridge. 4 plans shipped: foundation, WS bridge, React Router, verification. Plan 04 (emulator mode) deferred. End-to-end verified on headless Chromium: deck-config round-trip works, history vs replace verified, date-time addon renders via WS bridge.
+Last activity: 2026-06-21 — Phase 75.1 executed. WS bridge end-to-end working. React Router + history vs replace working. Verification doc aggregated.
 
 ### Quick Tasks Completed
 
