@@ -1,5 +1,4 @@
 import { createServer, type Plugin } from 'vite';
-import { default as sirv } from 'sirv';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -8,25 +7,20 @@ const args = process.argv.slice(2);
 const strictPort = args.includes('--strict-port');
 const mode = process.env.SIRENO_EMULATE === '1' ? 'emulate' : 'deck';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const emulatorHtml = fs.readFileSync(
+  path.join(__dirname, 'emulator.html'),
+  'utf8',
+);
 
-const emulatorHtmlPlugin: Plugin = {
-  name: 'sireno-emulator-html',
+const emulatorRootPlugin: Plugin = {
+  name: 'sireno-emulator-root',
   apply: 'serve',
-  configureServer(server) {
-    return () => {
-      server.middlewares.use((req, res, next) => {
-        if (req.url === '/' || req.url === '/index.html') {
-          res.setHeader('Content-Type', 'text/html');
-          res.end(fs.readFileSync(path.join(__dirname, 'emulator.html'), 'utf8'));
-          return;
-        }
-        next();
-      });
-      server.middlewares.use(
-        '/__emulator',
-        sirv(path.join(__dirname, 'src'), { dev: true, single: false }),
-      );
-    };
+  transformIndexHtml: {
+    order: 'pre',
+    handler() {
+      if (mode === 'emulate') return emulatorHtml;
+      return undefined;
+    },
   },
 };
 
@@ -38,7 +32,7 @@ const config: Parameters<typeof createServer>[0] = {
   },
   mode: 'development',
   root: __dirname,
-  plugins: mode === 'emulate' ? [emulatorHtmlPlugin] : [],
+  plugins: mode === 'emulate' ? [emulatorRootPlugin] : [],
 };
 
 const server = await createServer(config);
