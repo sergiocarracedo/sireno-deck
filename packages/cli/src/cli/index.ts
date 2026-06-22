@@ -55,7 +55,7 @@ export const cli = async () => {
             type: 'number',
             description:
               'Port for the local emulator page (0 chooses a free port)',
-            default: 0,
+            default: 8912,
           })
           .option('skip-browser-install', {
             type: 'boolean',

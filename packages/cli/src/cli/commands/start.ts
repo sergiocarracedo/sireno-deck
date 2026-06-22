@@ -1119,7 +1119,10 @@ export async function startEmulator(
     },
     'emulator ready (separate server, deck iframe inside)',
   )
-  options.logger.info('open the URL above in your browser')
+  options.logger.info(`emulator url: ${emulatorServer.url}`)
+  options.logger.info(`deck server:  ${deckUrl}`)
+  options.logger.info(`ws bridge:    ${wsUrl}`)
+  options.logger.info('open the emulator url in your browser')
   options.logger.info('press Ctrl+C to stop')
 
   viteRenderer.sendDeckConfig({
