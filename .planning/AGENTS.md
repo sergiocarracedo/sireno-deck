@@ -92,3 +92,11 @@ When working on a phase:
 - After completing a plan, write a `*-SUMMARY.md` to that phase directory
 - After completing a phase, run `/verify-work [N]`
 - Never modify another phase's directory
+
+## Current Phase
+
+**Milestone:** v0.1.0
+**Phase:** 03 — deck-runtime
+**Status:** planning complete (3 plans ready, none executed)
+**Plans:** 03-01 (Wave 1) · 03-02 (Wave 1) · 03-03 (Wave 2)
+**Last updated:** 2026-06-23
