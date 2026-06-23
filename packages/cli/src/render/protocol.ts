@@ -1,0 +1,32 @@
+export {
+  helloMessageSchema,
+  helloAckMessageSchema,
+  deckConfigMessageSchema,
+  stateMessageSchema,
+  decksListMessageSchema,
+  showOverlayMessageSchema,
+  buttonActionMessageSchema,
+  methodCallMessageSchema,
+  methodCallResultMessageSchema,
+  selectDeckMessageSchema,
+  deckActiveMessageSchema,
+  dismissOverlayMessageSchema,
+  wsMessageSchema,
+  PROTOCOL_VERSION,
+} from "../api/protocol-internal.ts";
+
+export type {
+  HelloMessage,
+  HelloAckMessage,
+  DeckConfigMessage,
+  StateMessage,
+  DecksListMessage,
+  ShowOverlayMessage,
+  ButtonActionMessage,
+  MethodCallMessage,
+  MethodCallResultMessage,
+  SelectDeckMessage,
+  DeckActiveMessage,
+  DismissOverlayMessage,
+  WsMessage,
+} from "../api/protocol-internal.ts";
