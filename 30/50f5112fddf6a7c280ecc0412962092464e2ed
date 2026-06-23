@@ -1,0 +1,23 @@
+.planning/phases/06-hardware/06-02-PLAN.md
+  s_9fabccd2e25c5b::t_29629010936576 1-139
+.planning/phases/06-hardware/06-01-PLAN.md
+  s_9fabccd2e25c5b::t_a3b9ba3411f4f9 1-175
+.planning/phases/06-hardware/06-03-PLAN.md
+  s_9fabccd2e25c5b::t_0369138be35e1a 1-146
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "3050f5112fddf6a7c280ecc0412962092464e2ed",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
