@@ -1,4 +1,10 @@
-import type { AddonButtonTypeDefinition, AddonDeckDefinition, ResolvedSirenoAddon } from "./api.ts";
+import type {
+  AddonButtonTypeDefinition,
+  AddonDeckDefinition,
+  ResolvedSirenoAddon,
+  SirenoAddon,
+} from "./api.ts";
+import { isSirenoAddon } from "./api-types.ts";
 
 export class AddonRegistry {
   private readonly addonsByName = new Map<string, ResolvedSirenoAddon>();
@@ -8,19 +14,28 @@ export class AddonRegistry {
   >();
   private readonly decksByType = new Map<string, { addonName: string; def: AddonDeckDefinition }>();
 
-  load(addon: ResolvedSirenoAddon): void {
-    const name = addon.module.name;
+  load(addon: ResolvedSirenoAddon | SirenoAddon): void {
+    const module = "module" in addon ? addon.module : addon;
+    if (!isSirenoAddon(module)) {
+      throw new Error("Registry.load: not a valid SirenoAddon");
+    }
+    const name = module.name;
     if (this.addonsByName.has(name)) {
       throw new Error(`Duplicate addon name: ${name}`);
     }
-    this.addonsByName.set(name, addon);
-    for (const button of addon.module.buttons ?? []) {
+    const resolved: ResolvedSirenoAddon = {
+      module,
+      manifest: { apiVersion: module.apiVersion, main: "<inline>", name },
+      source: { kind: "local", specifier: `<inline:${name}>`, resolvedPath: "<inline>" },
+    };
+    this.addonsByName.set(name, resolved);
+    for (const button of module.buttons ?? []) {
       if (this.buttonsByType.has(button.type)) {
         throw new Error(`Duplicate button type '${button.type}' in addon ${name}`);
       }
       this.buttonsByType.set(button.type, { addonName: name, def: button });
     }
-    for (const deck of addon.module.decks ?? []) {
+    for (const deck of module.decks ?? []) {
       if (this.decksByType.has(deck.type)) {
         throw new Error(`Duplicate deck type '${deck.type}' in addon ${name}`);
       }

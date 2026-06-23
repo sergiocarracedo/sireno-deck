@@ -1,12 +1,4 @@
 packages:
-  - "packages/*"
-  - "packages/cli/frontend"
-
-onlyBuiltDependencies:
-  - esbuild
-  - better-sqlite3
-  - core-js
-  - esbuild
-  - fsevents
-  - sharp
-  - vue-demi
+  - packages/*
+  - packages/cli/frontend
+  - packages/cli/frontend-emulator
