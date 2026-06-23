@@ -97,6 +97,7 @@ When working on a phase:
 ## Current Phase
 
 **Milestone:** v0.1.0
-**Phase:** 04 — ws-frontend ✓ complete → Phase 05 — emulator
-**Status:** verified (200 tests passing)
+**Phase:** 05 — emulator (planning complete, ready to execute)
+**Status:** 3 plans ready, none executed
+**Plans:** 05-01 (Wave 1) · 05-02 (Wave 1) · 05-03 (Wave 2)
 **Last updated:** 2026-06-23
