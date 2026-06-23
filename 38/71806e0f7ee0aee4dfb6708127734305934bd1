@@ -1,0 +1,78 @@
+packages/cli/src/builtin-addons/session/time-button.tsx
+  s_9fabccd2e25c5b::t_79b646bf8a56f1 1-14
+packages/cli/src/builtin-addons/session/index.ts
+  s_9fabccd2e25c5b::t_ea5499cbdb8ece 1-15
+packages/cli/src/config/validation.ts
+  s_9fabccd2e25c5b::t_d6a94119b04074 88-89
+  s_9fabccd2e25c5b::t_05e0b890a1cf4d 95
+  s_9fabccd2e25c5b::t_4e45edd42e6e53 1-2,15-24,73,75-80,86-87,90-94,96,105,110-120
+  s_9fabccd2e25c5b::t_d3f6bf51a336b4 74,81-85,107-109
+  s_9fabccd2e25c5b::t_66adf4398d186e 97-104
+  s_9fabccd2e25c5b::t_028dca7dbfac78 106
+packages/cli/src/builtin-addons/core-buttons/toggle.ts
+  s_9fabccd2e25c5b::t_b6dc7c8279ccda 1-30
+packages/cli/src/builtin-addons/session/index.test.ts
+  s_9fabccd2e25c5b::t_e88ed69ca07311 23
+  s_9fabccd2e25c5b::t_d186aa5dd6748a 13-15,18-20,24-26,32
+  s_9fabccd2e25c5b::t_66adf4398d186e 27-31
+  s_9fabccd2e25c5b::t_fd3da5a5e99660 1-12,16-17,21-22,33-35
+packages/cli/src/builtin-addons/core-buttons/media-sample.ts
+  s_9fabccd2e25c5b::t_1ab26ea216c82c 1-18
+packages/cli/src/builtin-addons/session/locked-deck.ts
+  s_9fabccd2e25c5b::t_91b54c057aaf1a 14-27
+  s_9fabccd2e25c5b::t_645951d04e58f6 1-13,28
+packages/cli/src/builtin-addons/core-buttons/change-deck.ts
+  s_9fabccd2e25c5b::t_1ddd62bd378611 1-25
+packages/cli/src/builtin-addons/internal-settings/brightness.ts
+  s_9fabccd2e25c5b::t_57328749c67883 1-15
+packages/cli/src/builtin-addons/index.ts
+  s_9fabccd2e25c5b::t_194ed59793690b 1-5
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  s_9fabccd2e25c5b::t_69e24741efcf56 1,12-17
+  s_9fabccd2e25c5b::t_e1320e05ce41e4 2-11,18-23
+packages/cli/src/builtin-addons/session/session-info.ts
+  s_9fabccd2e25c5b::t_7c048815c0b1ae 1-15
+packages/cli/src/builtin-addons/internal-settings/theme.ts
+  s_9fabccd2e25c5b::t_af7ee5caffdc77 1-15
+packages/cli/src/config/validation.test.ts
+  s_9fabccd2e25c5b::t_e0e749882532bc 1-96
+packages/cli/src/builtin-addons/register-builtins.ts
+  s_9fabccd2e25c5b::t_7cd0e46fb8ae65 1-11
+packages/cli/src/builtin-addons/internal-settings/index.test.ts
+  s_9fabccd2e25c5b::t_bcc6f34b5f627a 1-12,17-20,24,27-31
+  s_9fabccd2e25c5b::t_d4ee2150aae49d 25-26
+  s_9fabccd2e25c5b::t_12f9237be04776 13-16,21-23
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_9fabccd2e25c5b::t_95f4fa516e3878 1-29,35-41
+  s_9fabccd2e25c5b::t_66adf4398d186e 30-34
+.planning/phases/03-deck-runtime/03-03-SUMMARY.md
+  s_9fabccd2e25c5b::t_efdb5b77d46d02 1-72
+packages/cli/src/builtin-addons/core-buttons/action.ts
+  s_9fabccd2e25c5b::t_a68957514a9415 1-29
+packages/cli/src/__tests__/integration.test.ts
+  s_9fabccd2e25c5b::t_843649cfae0287 108
+  s_9fabccd2e25c5b::t_d3f6bf51a336b4 62-64
+  s_9fabccd2e25c5b::t_3243bbdc8b3cf1 71,74
+  s_9fabccd2e25c5b::t_908dfc69a98eb8 1-61,65-70,72-73,75-107,109-110
+packages/cli/src/builtin-addons/core-buttons/index.test.ts
+  s_9fabccd2e25c5b::t_ed2d9943c2b12c 1-4,6,9-15,17-20,22-25,27-30
+  s_9fabccd2e25c5b::t_dca0c70172ed56 5,7-8,16,21,26
+packages/cli/src/builtin-addons/internal-settings/about.ts
+  s_9fabccd2e25c5b::t_db23d9ce042add 1-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "3871806e0f7ee0aee4dfb6708127734305934bd1",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
