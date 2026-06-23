@@ -1,0 +1,45 @@
+packages/cli/src/system/device-selection.ts
+  s_9fabccd2e25c5b::t_af3aef2a094625 1-71
+packages/cli/src/device/stream-deck.test.ts
+  s_9fabccd2e25c5b::t_90b7fda183595d 1-72
+packages/cli/src/device/registry.ts
+  s_9fabccd2e25c5b::t_de04bcd3eda8d7 1-31
+packages/cli/src/system/device-selection.test.ts
+  s_9fabccd2e25c5b::t_5e93d151b2c1f9 1-51,53-61,65-75
+  s_9fabccd2e25c5b::t_28d9bbe5f40050 52,62-64
+.planning/phases/06-hardware/06-01-SUMMARY.md
+  s_9fabccd2e25c5b::t_e1e82de2ffdc31 1-55
+packages/cli/src/device/registry.test.ts
+  s_9fabccd2e25c5b::t_433cae7dbf3f1b 1-41
+packages/cli/src/util/device-config.ts
+  s_9fabccd2e25c5b::t_58d66d6c7e7da2 1-46
+packages/cli/src/device/index.ts
+  s_9fabccd2e25c5b::t_abd0dfb3f44983 2-8
+packages/cli/package.json
+  s_9fabccd2e25c5b::t_36ce2e63666c44 45
+  s_9fabccd2e25c5b::t_80636a52c8410c 44,46
+packages/cli/src/device/stream-deck.ts
+  s_9fabccd2e25c5b::t_8f163cac6e5cc7 1-97
+packages/cli/src/device/linux-udev.test.ts
+  s_9fabccd2e25c5b::t_d1e2c779128e6f 1-21
+packages/cli/src/device/linux-udev.ts
+  s_9fabccd2e25c5b::t_674a4576fbd0dd 1-36
+packages/cli/src/util/device-config.test.ts
+  s_9fabccd2e25c5b::t_5f42cdecb831f0 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "c472fb65202c421c2f6a7b08feaa62cdef9fb969",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
