@@ -1,5 +1,5 @@
 ---
-current_phase: 03-deck-runtime
+current_phase: 05-emulator
 phase_status: complete
 plans_total: 3
 plans_complete: 3
@@ -10,66 +10,68 @@ last_updated: 2026-06-23
 
 ## Current phase
 
-**Phase 03: deck-runtime** — complete. All 3 plans executed, 155 tests passing, verification passed.
+**Phase 05: emulator** — complete. All 3 plans executed, 239 tests passing (224 cli + 15 frontend-emulator), verification passed.
 
-Next phase: **04-ws-frontend** (WS bridge v3 + vite plugin + frontend React app + api/react/vite sub-path exports).
+Next phase: **06-hardware** (real device enumeration, Playwright headless render, sharp crop, `@elgato-stream-deck/node` write, Linux udev helper).
 
 ## Plan progress
 
 - Plans total: 3
 - Plans complete: 3
 - UAT: not done (deferred to /verify-work)
-- Phase verified: yes (`03-VERIFICATION.md` → passed)
+- Phase verified: yes (`05-VERIFICATION.md` → passed)
 
 ## Completed phases
 
 ### ✅ Phase 01 — scaffold
-
 - pnpm workspace, TS 7.0.1-rc, oxlint 1.71, oxfmt, vitest 4.x, yargs 17, pino 9
 - Daemon helpers (PID file in `$XDG_RUNTIME_DIR`, `start/stop/status`)
 - 8 vitest tests passing (cli.test.ts)
 
 ### ✅ Phase 02 — config-addons
+- zod schemas, `resolveIconRef` (4 schemes), YAML loader w/ line info
+- `@file.yml` expander, bootstrap validation, addon loader/registry
+- 38 config + 23 addon = 61 new tests
+- Total: 69 tests
 
-- 38 config tests + 23 addon tests = 69/69 passing
-- zod schemas with `.strict()`: top-level, decks, buttons, addons, logging, session, triggers
-- Icon resolver: `icon://<id>` (CLI builtin), `builtin://<addon>/<path>`, `addon://<addon>/<path>`, relative path
-- 45 CLI-builtin icon ids
-- YAML loader via `yaml` package with line/col info
-- `@file.yml` recursive expander
-- Config discovery: `--config > $SIRENO_CONFIG > cwd/config.yml > $XDG_CONFIG_HOME/sireno-deck-2/config.yml`
-- Bootstrap validation (main exists, no duplicate positions)
-- Addon manifest reader (apiVersion, main, frontend)
-- Addon entry normalization (string-or-`{ source, enabled? }`)
-- Addon loader (local via dynamic import; npm deferred with explicit error)
-- `AddonRegistry` with name + button-type + deck-type indexes
-- `ConfigWatcher` (chokidar v5)
-- `pnpm typecheck` clean. `pnpm --filter sireno-deck-2 lint` clean. `pnpm format:check` clean.
+### ✅ Phase 03 — deck-runtime
+- core primitives (pub-sub, gesture-state, store, pagination)
+- action executor + deck runtime + methods + system back injection
+- 3 built-in addons (core-buttons, internal-settings, session) + full validation
+- Integration test (tracer bullet): load → validate → register → dispatch → execute
+- 38 + 30 + 18 = 86 new tests
+- Total: 155 tests
 
-## Deferred items (kept for tracking)
+### ✅ Phase 04 — ws-frontend
+- WS bridge v3 with token handshake (handshake `hello` / `hello-ack`, token rejection → 4001)
+- WS protocol v3 (12 message types, no `snapshot` message)
+- Vite spawn manager (READY port line, restart on crash)
+- Vite plugin (`sirenoDeck2()`) — virtual modules `virtual:sireno/token`, `virtual:sireno/addons`
+- React 19 + Tailwind 4 frontend (Deck, ButtonFrame, ButtonRenderer)
+- React hooks (useAddonChannel, useDeck, useButtonAction) + WS client
+- Exponential backoff (1s → 2s → 4s → 8s → 16s → 30s, max 10 attempts → failed)
+- 45 new tests
+- Total: 200 tests
 
-- npm addon loader — Phase 10
-- Per-button `configSchema` validation against registry — Phase 03
-- Reject `internal: true` buttons in user config — Phase 03
-- `./api`, `./react`, `./vite` sub-path exports actual files — Phase 04
-- `frontend/` directory — Phase 04
+### ✅ Phase 05 — emulator
+- Device models (mk2=15, plus=32, mini=6, xl=32) + emulator server
+- VirtualStreamDeckLifecycle with `injectKeyEvent`
+- frontend-emulator workspace pkg (Vite + React 19 + Tailwind 4, jsdom test env)
+- Side panel + center iframe approach replaced with direct DeckFrame grid in Shell
+- Mouse → gesture via cli `nextGesture` (tap/dbl-tap/hold)
+- WS client with exponential backoff
+- 39 new tests (24 from Plan 01 + 15 from Plan 03; Plan 02 used existing shell-render tests)
+- Total: 239 tests
 
 ## Active subagent tasks
 
 None.
 
-## How to continue
+## Deferred items
 
-From this directory, run:
-
-```
-/next
-```
-
-or more explicitly:
-
-```
-/plan-phase 03
-```
-
-to begin planning Phase 03 (deck-runtime).
+- npm addon loader — Phase 10
+- Per-button `configSchema` validation against registry — Phase 03 (done)
+- Reject `internal: true` buttons in user config — Phase 03 (done)
+- Real CLI run/start wiring — Phase 09
+- Emulator shell (originally centered iframe) — replaced with direct DeckFrame grid; design decision in Phase 05
+- frontend-emulator lint script — still missing (typecheck + format cover surface)
