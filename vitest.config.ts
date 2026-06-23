@@ -6,6 +6,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./packages/cli/src", import.meta.url)),
+      "virtual:sireno/token": fileURLToPath(
+        new URL("./packages/cli/frontend/src/__mocks__/token.ts", import.meta.url),
+      ),
     },
   },
   test: {
