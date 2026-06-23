@@ -19,6 +19,7 @@ Four pure, deterministic modules under `packages/cli/src/core/`:
 4. **pagination** (`paginate`) — splits a list into pages of `keyCount - 2` with `__nextPageMarker` insertion and null-padding for short final pages.
 
 Also fixed four pre-existing typecheck errors uncovered during this plan's smoke:
+
 - `addon/api.ts`: removed duplicate `AddonRegistry` interface (collided with `class AddonRegistry` in `registry.ts`); added `"info"` to `AddonLoadIssue.level` union.
 - `addon/loader.ts`: the `info` level was already in use; the type narrowing now accepts it.
 - `config/loader.ts`: dropped obsolete `{ maxAliasCount: 100 }` arg from `doc.toJSON()` (yaml v2 signature).

@@ -1,8 +1,8 @@
 ---
 current_phase: 03-deck-runtime
-phase_status: ready-to-plan
-plans_total: 0
-plans_complete: 0
+phase_status: complete
+plans_total: 3
+plans_complete: 3
 last_updated: 2026-06-23
 ---
 
@@ -10,23 +10,16 @@ last_updated: 2026-06-23
 
 ## Current phase
 
-**Phase 03: deck-runtime** — ready to plan.
+**Phase 03: deck-runtime** — complete. All 3 plans executed, 155 tests passing, verification passed.
 
-This phase will deliver:
-- `src/core/` — pub-sub bus, gesture state machine (tap / dbl-tap / hold), store, pagination helpers
-- `src/deck/` — runtime, system-decks/, system-buttons/
-- `src/action/` — executor (execa + host.* interpolation)
-- `src/builtin-addons/` — `core-buttons`, `internal-settings`, `session`
-- Tests for runtime, gesture state machine, pagination, store
-- Wire `core-buttons` to use the registry to validate button configs at load time
-- Reject `internal: true` buttons when found in user config
+Next phase: **04-ws-frontend** (WS bridge v3 + vite plugin + frontend React app + api/react/vite sub-path exports).
 
 ## Plan progress
 
-- Plans total: 0
-- Plans complete: 0
-- UAT done: no
-- Phase verified: no
+- Plans total: 3
+- Plans complete: 3
+- UAT: not done (deferred to /verify-work)
+- Phase verified: yes (`03-VERIFICATION.md` → passed)
 
 ## Completed phases
 

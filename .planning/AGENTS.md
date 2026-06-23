@@ -14,17 +14,17 @@
 
 From repo root:
 
-| Command                          | Purpose                                                              |
-| -------------------------------- | -------------------------------------------------------------------- |
-| `pnpm test`                      | Run all vitest tests once (`vitest run`)                              |
-| `pnpm test:watch`                | Run vitest in watch mode                                              |
-| `pnpm typecheck`                 | Run `tsc --noEmit` across all packages                                |
-| `pnpm lint`                      | Run `oxlint packages` (may OOM in some envs — fallback below)         |
-| `pnpm --filter sireno-deck-2 lint` | Per-package lint (more reliable than root-level)                     |
-| `pnpm format`                    | Run `oxfmt .` to write formatting                                    |
-| `pnpm format:check`              | Run `oxfmt --check .` (CI-safe)                                       |
-| `pnpm build`                     | Run `pnpm -r build`                                                   |
-| `pnpm dev`                       | Run `pnpm --filter sireno-deck-2 run dev` (CLI in foreground dev)      |
+| Command                            | Purpose                                                           |
+| ---------------------------------- | ----------------------------------------------------------------- |
+| `pnpm test`                        | Run all vitest tests once (`vitest run`)                          |
+| `pnpm test:watch`                  | Run vitest in watch mode                                          |
+| `pnpm typecheck`                   | Run `tsc --noEmit` across all packages                            |
+| `pnpm lint`                        | Run `oxlint packages` (may OOM in some envs — fallback below)     |
+| `pnpm --filter sireno-deck-2 lint` | Per-package lint (more reliable than root-level)                  |
+| `pnpm format`                      | Run `oxfmt .` to write formatting                                 |
+| `pnpm format:check`                | Run `oxfmt --check .` (CI-safe)                                   |
+| `pnpm build`                       | Run `pnpm -r build`                                               |
+| `pnpm dev`                         | Run `pnpm --filter sireno-deck-2 run dev` (CLI in foreground dev) |
 
 Run the CLI in dev:
 
@@ -88,6 +88,7 @@ pnpm --filter sireno-deck-2 exec sireno <command>
 - `.planning/phases/` — per-phase PHASE.md + SUMMARY.md + CONTEXT.md
 
 When working on a phase:
+
 - Before doing work, read `.planning/phases/[NN-slug]/PHASE.md`
 - After completing a plan, write a `*-SUMMARY.md` to that phase directory
 - After completing a phase, run `/verify-work [N]`
@@ -96,7 +97,6 @@ When working on a phase:
 ## Current Phase
 
 **Milestone:** v0.1.0
-**Phase:** 03 — deck-runtime
-**Status:** planning complete (3 plans ready, none executed)
-**Plans:** 03-01 (Wave 1) · 03-02 (Wave 1) · 03-03 (Wave 2)
+**Phase:** 03 — deck-runtime ✓ complete → Phase 04 — ws-frontend
+**Status:** verified (155 tests passing)
 **Last updated:** 2026-06-23

@@ -54,7 +54,10 @@ Phase 03 implements the runtime side of `methods.*`. The TypeScript types come f
 
 ```ts
 interface Methods {
-  runCommand(command: string, options?: { cwd?: string }): Promise<{ stdout: string; stderr: string; exitCode: number }>;
+  runCommand(
+    command: string,
+    options?: { cwd?: string },
+  ): Promise<{ stdout: string; stderr: string; exitCode: number }>;
   keyMacro(action: KeyMacroAction): Promise<void>;
   pasteText(text: string): Promise<void>;
   navigateToDeck(args: { id: string; addToHistory?: boolean }): void;
@@ -70,11 +73,11 @@ interface Methods {
 
 ## Built-in addon catalog (Phase 03)
 
-| Addon             | Buttons                                                       | Decks (via `createDecks`) |
-| ----------------- | ------------------------------------------------------------- | ------------------------- |
-| `core-buttons`      | `core:action`, `core:change-deck`, `core:toggle`, `core:media-sample` | —                         |
+| Addon               | Buttons                                                                  | Decks (via `createDecks`) |
+| ------------------- | ------------------------------------------------------------------------ | ------------------------- |
+| `core-buttons`      | `core:action`, `core:change-deck`, `core:toggle`, `core:media-sample`    | —                         |
 | `internal-settings` | `core:settings-brightness`, `core:settings-theme`, `core:settings-about` | `settings`                |
-| `session`           | `core:session-info`                                             | `session:locked`          |
+| `session`           | `core:session-info`                                                      | `session:locked`          |
 
 For Phase 03 the `core:settings-*` buttons can be stubs that only resolve their `configSchema`; the actual OS-backed implementations land in Phase 07.
 
@@ -86,9 +89,9 @@ The `session:locked` deck renders current time on multiple buttons. Implementati
 // src/core/pub-sub.ts
 export interface PubSub {
   publish<T>(channel: string, payload: T): void;
-  subscribe<T>(channel: string, cb: (payload: T) => void): () => void;  // returns unsubscribe
-  last<T>(channel: string): T | undefined;                              // for new subscribers
-  snapshot(): Record<string, unknown>;                                   // for WS bridge
+  subscribe<T>(channel: string, cb: (payload: T) => void): () => void; // returns unsubscribe
+  last<T>(channel: string): T | undefined; // for new subscribers
+  snapshot(): Record<string, unknown>; // for WS bridge
 }
 ```
 
