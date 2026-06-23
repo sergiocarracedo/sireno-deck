@@ -1,0 +1,45 @@
+packages/cli/src/__tests__/config.test.ts
+  s_9fabccd2e25c5b::t_a0927c885b0e49 361-366,370-377,381-385
+  s_9fabccd2e25c5b::t_fcb2dc1894a56c 367-369,378-380
+packages/cli/src/cli/commands/emulator-mode.test.ts
+  s_9fabccd2e25c5b::t_16ce6315d47e49 1-21,24,26-27,32-34,39,50,53,66-67,74,84-123,125-142,144-157,159-160,164-178,180-204,206-209,214-227
+  s_9fabccd2e25c5b::t_3cf4c7fa1fed05 161-163
+  s_9fabccd2e25c5b::t_266058bdd57b27 22-23,28-30,35-38,40-49,51-52,68-73
+  s_9fabccd2e25c5b::t_2d668fd38e1050 25,31,54-65,75-83
+  s_9fabccd2e25c5b::t_fcb2dc1894a56c 210-213
+  s_9fabccd2e25c5b::t_d94ef70df2b2f4 124,143,158,179,205
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_9fabccd2e25c5b::t_fd69aa0b7248c9 1-13,15-60,70-78,85-121,125-142,144-160
+  s_9fabccd2e25c5b::t_fda32fee77716f 14
+  s_9fabccd2e25c5b::t_daa9f6451d9087 143
+  s_9fabccd2e25c5b::t_fcb2dc1894a56c 61-69,79-84,122-124
+packages/cli/src/config/discovery.ts
+  s_9fabccd2e25c5b::t_1b1dd22640cb24 2
+  s_9fabccd2e25c5b::t_81f0959c74302d 10,17-28,39-41
+packages/cli/src/util/logger.ts
+  s_9fabccd2e25c5b::t_36587196b6fed5 12,16,18-20
+  s_9fabccd2e25c5b::t_897a69f58a574a 1,11,14,17,21-22,26-28
+  s_9fabccd2e25c5b::t_aa087fc4f22107 15
+  s_9fabccd2e25c5b::t_bc8bb974effb2d 29-32
+  s_9fabccd2e25c5b::t_26abb119d9851a 13
+packages/cli/src/cli/commands/run.ts
+  s_9fabccd2e25c5b::t_dfab7ad7dc0780 20
+  s_9fabccd2e25c5b::t_3c2ba715035983 73,75-78
+  s_9fabccd2e25c5b::t_5a6253354b0fa2 149-154,184-206,214-215
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "2f8cc768fb6a3a415d7b790743128f44cf6f88b4",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
