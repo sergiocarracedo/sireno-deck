@@ -40,7 +40,9 @@ export class ConfigWatcher {
     watcher.on("add", (p) => this.handlers.onChange?.(p));
     watcher.on("change", (p) => this.handlers.onChange?.(p));
     watcher.on("unlink", (p) => this.handlers.onUnlink?.(p));
-    watcher.on("error", (err) => this.handlers.onError?.(err));
+    watcher.on("error", (err: unknown) =>
+      this.handlers.onError?.(err instanceof Error ? err : new Error(String(err))),
+    );
     await new Promise<void>((resolve) => {
       watcher.once("ready", () => {
         this.handlers.onReady?.();

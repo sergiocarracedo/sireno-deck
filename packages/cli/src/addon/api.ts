@@ -77,14 +77,9 @@ export interface AddonManifest {
 }
 
 export interface AddonLoadIssue {
-  level: "error" | "warning";
+  level: "error" | "warning" | "info";
   source: string;
   message: string;
-}
-
-export interface AddonRegistry {
-  addons: Map<string, ResolvedSirenoAddon>;
-  issues: AddonLoadIssue[];
 }
 
 export type { SirenoAddon } from "./api-types.ts";

@@ -71,7 +71,7 @@ export const loadConfigFile = (configPath: string): unknown => {
       convertYamlErrors(errors),
     );
   }
-  return doc.toJSON({ maxAliasCount: 100 });
+  return doc.toJSON();
 };
 
 const reportZodIssues = (issues: ConfigError[]): string =>
