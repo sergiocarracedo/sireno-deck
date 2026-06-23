@@ -1,3 +1,5 @@
+import type { ReactElement } from "react";
+
 import { DEVICE_MODELS, type DeviceModelSpec } from "@sireno-deck-2/cli";
 
 export interface SidePanelProps {
@@ -20,7 +22,7 @@ export const SidePanel = ({
   onDeviceModelChange,
   activeDeckId,
   onSelectDeck,
-}: SidePanelProps): React.ReactElement => {
+}: SidePanelProps): ReactElement => {
   return (
     <div className="flex flex-col gap-6 text-sm">
       <section>

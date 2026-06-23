@@ -1,24 +1,48 @@
+import { useRef, useState } from "react";
+
 import type { DeviceModelSpec } from "@sireno-deck-2/cli";
 
+import { dispatchMouseEvent, gestureKindToWsMessage, type GestureMouseEvent } from "./gesture.ts";
+
 export interface DeckFrameProps {
-  readonly deviceModel: DeviceModelSpec;
-  readonly activeDeckId: string;
-  readonly onKeyPress?: (keyIndex: number, type: "down" | "up") => void;
+  readonly device: DeviceModelSpec;
+  readonly deckId: string;
+  readonly onGesture?: (msg: {
+    deckId: string;
+    position: number;
+    gesture: "tap" | "dbl-tap" | "hold";
+  }) => void;
 }
 
-export const DeckFrame = ({
-  deviceModel,
-  activeDeckId,
-  onKeyPress,
-}: DeckFrameProps): React.ReactElement => {
-  const { columns, rows, keyCount } = deviceModel;
+export const DeckFrame = ({ device, deckId, onGesture }: DeckFrameProps): React.ReactElement => {
+  const { columns, keyCount } = device;
+  const bufferRef = useRef<GestureMouseEvent[]>([]);
+  const [pressedIndex, setPressedIndex] = useState<number | null>(null);
+
+  const handleDown = (keyIndex: number): void => {
+    bufferRef.current = [...bufferRef.current, { kind: "down", keyIndex, timestamp: Date.now() }];
+    setPressedIndex(keyIndex);
+  };
+
+  const handleUp = (keyIndex: number): void => {
+    const { buffer, result } = dispatchMouseEvent(bufferRef.current, {
+      kind: "up",
+      keyIndex,
+      timestamp: Date.now(),
+    });
+    bufferRef.current = buffer;
+    setPressedIndex(null);
+    if (result !== null && onGesture !== undefined) {
+      onGesture(gestureKindToWsMessage(result, deckId));
+    }
+  };
+
   return (
     <div
       data-testid="deck-frame"
-      data-deck={activeDeckId}
+      data-deck={deckId}
       data-key-count={keyCount}
       data-columns={columns}
-      data-rows={rows}
       className="grid gap-2 rounded-xl border border-neutral-800 bg-neutral-900 p-4 shadow-lg"
       style={{ gridTemplateColumns: `repeat(${columns}, minmax(64px, 96px))` }}
     >
@@ -28,12 +52,19 @@ export const DeckFrame = ({
           type="button"
           data-testid={`deck-key-${i}`}
           data-key-index={i}
-          onMouseDown={() => onKeyPress?.(i, "down")}
-          onMouseUp={() => onKeyPress?.(i, "up")}
+          aria-label={`Key ${i}`}
+          aria-pressed={pressedIndex === i}
+          onMouseDown={() => handleDown(i)}
+          onMouseUp={() => handleUp(i)}
           onMouseLeave={(e) => {
-            if (e.buttons === 1) onKeyPress?.(i, "up");
+            if (e.buttons === 1) handleUp(i);
           }}
-          className="aspect-square rounded border border-neutral-700 bg-neutral-800 text-xs text-neutral-500 transition hover:border-blue-500 hover:bg-neutral-700"
+          className={
+            "aspect-square rounded border text-xs transition " +
+            (pressedIndex === i
+              ? "border-blue-400 bg-blue-900/40 text-blue-100"
+              : "border-neutral-700 bg-neutral-800 text-neutral-500 hover:border-blue-500 hover:bg-neutral-700")
+          }
         >
           {i}
         </button>

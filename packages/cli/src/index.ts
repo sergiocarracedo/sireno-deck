@@ -9,5 +9,14 @@ export {
   resolveKeyCount,
   type DeviceModelSpec,
 } from "./device/models.ts";
+export {
+  DOUBLE_TAP_DELAY_MS,
+  HOLD_ACTION_DELAY_MS,
+  nextGesture,
+  type GestureEvent,
+  type GestureKind,
+  type GestureResult,
+  type GestureType,
+} from "./core/gesture-state.ts";
 
 export const cliVersion = "0.1.0";

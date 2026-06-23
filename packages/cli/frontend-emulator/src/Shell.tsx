@@ -1,21 +1,50 @@
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { DEVICE_MODELS, type DeviceModelSpec } from "@sireno-deck-2/cli";
 
+import { createWsClient, serializeHello, type WsClient } from "./bridge.ts";
 import { DeckFrame } from "./DeckFrame.tsx";
 import { SidePanel } from "./SidePanel.tsx";
 
 export interface ShellProps {
   readonly wsUrl: string;
   readonly initialDeviceModel: string;
+  readonly token?: string;
 }
 
-export const Shell = ({ wsUrl, initialDeviceModel }: ShellProps): React.ReactElement => {
+export const Shell = ({ wsUrl, initialDeviceModel, token }: ShellProps): React.ReactElement => {
   const initialSpec: DeviceModelSpec =
     DEVICE_MODELS.find((m) => m.id === initialDeviceModel) ?? DEVICE_MODELS[0]!;
 
   const [activeDeckId, setActiveDeckId] = useState<string>("main");
   const [deviceModel, setDeviceModel] = useState<DeviceModelSpec>(initialSpec);
+  const clientRef = useRef<WsClient | null>(null);
+
+  const sendJson = (data: unknown): void => {
+    clientRef.current?.send(JSON.stringify(data));
+  };
+
+  const handleGesture = (msg: {
+    deckId: string;
+    position: number;
+    gesture: "tap" | "dbl-tap" | "hold";
+  }): void => {
+    sendJson(msg);
+  };
+
+  useMemo(() => {
+    const client = createWsClient({
+      url: wsUrl,
+      ...(token !== undefined ? { token } : {}),
+      wsFactory: (url: string) => {
+        const ws = new WebSocket(url);
+        ws.addEventListener("open", () => ws.send(serializeHello(token)));
+        return ws as unknown as { send: (d: string) => void; close: () => void };
+      },
+    });
+    clientRef.current = client;
+    return () => client.close();
+  }, [wsUrl, token]);
 
   return (
     <div
@@ -32,7 +61,7 @@ export const Shell = ({ wsUrl, initialDeviceModel }: ShellProps): React.ReactEle
         />
       </aside>
       <main className="flex items-center justify-center bg-neutral-950 p-8">
-        <DeckFrame deviceModel={deviceModel} activeDeckId={activeDeckId} />
+        <DeckFrame device={deviceModel} deckId={activeDeckId} onGesture={handleGesture} />
       </main>
     </div>
   );
