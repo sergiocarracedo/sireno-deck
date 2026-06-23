@@ -97,7 +97,6 @@ When working on a phase:
 ## Current Phase
 
 **Milestone:** v0.1.0
-**Phase:** 05 — emulator (planning complete, ready to execute)
-**Status:** 3 plans ready, none executed
-**Plans:** 05-01 (Wave 1) · 05-02 (Wave 1) · 05-03 (Wave 2)
+**Phase:** 05 — emulator ✓ complete → Phase 06 — hardware
+**Status:** verified (239 tests passing: 224 cli + 15 frontend-emulator)
 **Last updated:** 2026-06-23
