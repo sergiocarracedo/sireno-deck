@@ -1,0 +1,37 @@
+packages/cli/src/__tests__/config.test.ts
+  s_9fabccd2e25c5b::t_4f2a9e40152693 315-327
+.planning/phases/06-hardware/06-VERIFICATION.md
+  s_9fabccd2e25c5b::t_ae07113cb6374f 16-32
+packages/cli/src/config/loader.ts
+  s_9fabccd2e25c5b::t_4c7c8647a4d222 65-73
+packages/cli/src/cli/main.ts
+  s_9fabccd2e25c5b::t_ab0d3bfef80abc 47
+  s_9fabccd2e25c5b::t_7d1e4991e55aff 41,46
+  s_9fabccd2e25c5b::t_12c7ee7426e7a1 42-45
+  s_9fabccd2e25c5b::t_d80e234ca04f13 48-50
+.planning/phases/06-hardware/06-UAT.md
+  s_9fabccd2e25c5b::t_c503cc05a94369 1,3-5,7-10,12-17,19-22,24-27,29-32,34-36,39-41,44-46,49-52,54-57,59-62,64-67,69,71-72,90-91
+  s_9fabccd2e25c5b::t_a97b21f0598a30 2,6,11,18,23,28,33,37-38,42-43,47-48,53,58,63,68,70,73-89,92
+.planning/ROADMAP.md
+  s_9fabccd2e25c5b::t_ae07113cb6374f 29
+packages/cli/src/cli/index.ts
+  s_9fabccd2e25c5b::t_419b56468ef679 108-111,116-118
+  s_9fabccd2e25c5b::t_12c7ee7426e7a1 74-77,112-115
+  s_9fabccd2e25c5b::t_5a396320af6cf1 70-73,78-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "846551b7808c5007be8114878f41e27c7c0cd89c",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
