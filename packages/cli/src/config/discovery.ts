@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { isAbsolute, resolve as resolvePath } from "node:path";
+import { dirname, isAbsolute, resolve as resolvePath } from "node:path";
 
 export interface FindConfigOptions {
   cwd?: string;
@@ -7,11 +7,24 @@ export interface FindConfigOptions {
   envVar?: string;
   homeDir: string;
   xdgConfigHome?: string;
+  maxDepth?: number;
 }
 
 export const DEFAULT_CONFIG_FILENAME = "config.yml";
 
 const resolvePath_ = (p: string, cwd: string): string => (isAbsolute(p) ? p : resolvePath(cwd, p));
+
+const walkUpForConfig = (startDir: string, maxDepth: number): string | null => {
+  let current = startDir;
+  for (let depth = 0; depth <= maxDepth; depth += 1) {
+    const candidate = resolvePath(current, DEFAULT_CONFIG_FILENAME);
+    if (existsSync(candidate)) return candidate;
+    const parent = dirname(current);
+    if (parent === current) return null;
+    current = parent;
+  }
+  return null;
+};
 
 export const findConfigPath = (options: FindConfigOptions): string | null => {
   const cwd = options.cwd ?? process.cwd();
@@ -23,8 +36,9 @@ export const findConfigPath = (options: FindConfigOptions): string | null => {
     const abs = resolvePath_(options.envVar as string, cwd);
     if (existsSync(abs)) return abs;
   }
-  const cwdConfig = resolvePath(cwd, DEFAULT_CONFIG_FILENAME);
-  if (existsSync(cwdConfig)) return cwdConfig;
+  const maxDepth = options.maxDepth ?? 10;
+  const walked = walkUpForConfig(cwd, maxDepth);
+  if (walked !== null) return walked;
   const xdg = options.xdgConfigHome ?? resolvePath(options.homeDir, ".config");
   const xdgConfig = resolvePath(xdg, "sireno-deck-2", DEFAULT_CONFIG_FILENAME);
   if (existsSync(xdgConfig)) return xdgConfig;

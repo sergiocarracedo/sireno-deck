@@ -17,6 +17,7 @@ import { selectDevice, NoStreamDeckFoundError } from "@/system/device-selection"
 import { loadDeviceConfig, saveDeviceConfig } from "@/util/device-config";
 
 import { runRealMode } from "./real-mode";
+import { runEmulatorMode } from "./emulator-mode";
 
 export interface SignalProvider {
   onSignal(handler: () => void): () => void;
@@ -69,8 +70,12 @@ const resolveConfigPath = (options: RunOptions): string => {
     ...(options.xdgConfigHome !== undefined ? { xdgConfigHome: options.xdgConfigHome } : {}),
   });
   if (found === null) {
+    const cwd = process.cwd();
     throw new Error(
-      "Could not find config.yml. Pass --config <path> or set SIRENO_CONFIG. Searched cwd, $XDG_CONFIG_HOME/sireno-deck-2/config.yml.",
+      `Could not find config.yml.\n` +
+        `  Looked in: ${cwd}/config.yml (and walked up 10 parent directories)\n` +
+        `  Also: $XDG_CONFIG_HOME/sireno-deck-2/config.yml (default: ~/.config/sireno-deck-2/config.yml)\n` +
+        `  Fix: pass --config <path> or create one of the above.`,
     );
   }
   return found;
@@ -141,6 +146,12 @@ export const preflight = async (options: RunOptions): Promise<PreflightResult> =
 
 export const runRealModePipeline = async (options: RunOptions): Promise<void> => {
   const { logger } = options;
+
+  if (options.emulator === true) {
+    await runEmulatorPipeline(options);
+    return;
+  }
+
   const { device, frontendUrl } = await preflight(options);
 
   let resolveDone: () => void = () => undefined;
@@ -160,6 +171,39 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
     logger,
     ...(options.intervalMs !== undefined ? { intervalMs: options.intervalMs } : {}),
   });
+
+  try {
+    await done;
+  } finally {
+    unregister();
+    await handle.stop();
+    logger.info("shutdown complete");
+  }
+};
+
+export const runEmulatorPipeline = async (options: RunOptions): Promise<void> => {
+  await runEmulatorLifecycle(options);
+};
+
+const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
+  const { logger } = options;
+  let resolveDone: () => void = () => undefined;
+  const done = new Promise<void>((resolve) => {
+    resolveDone = resolve;
+  });
+
+  const signals = options.signals ?? defaultSignals;
+  const unregister = signals.onSignal(() => {
+    logger.info("received signal, shutting down");
+    resolveDone();
+  });
+
+  const handle = await runEmulatorMode({ logger });
+
+  logger.info(
+    { frontendUrl: handle.frontendUrl, wsUrl: handle.wsUrl },
+    "emulator mode ready — open the frontend URL in your browser",
+  );
 
   try {
     await done;
