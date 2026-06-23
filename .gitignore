@@ -1,1 +1,17 @@
+node_modules/
+dist/
+.tsdown/
+.cache/
+coverage/
+
+*.log
+.DS_Store
+.env
+.env.local
+
 .opencode/
+
+packages/cli/src/themes/light/index.js
+
+runtime/
+*.pid

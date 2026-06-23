@@ -1,0 +1,27 @@
+{
+  "plugins": ["import", "typescript"],
+  "ignorePatterns": ["**/node_modules/**", "**/dist/**", "**/.tsdown/**", "**/coverage/**"],
+  "rules": {
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "ts": "never",
+        "tsx": "never",
+        "js": "never",
+        "jsx": "never"
+      }
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["../../../../*"],
+            "message": "Cross-folder imports beyond 3 levels up must use the @/ alias."
+          }
+        ]
+      }
+    ]
+  }
+}

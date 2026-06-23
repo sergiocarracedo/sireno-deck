@@ -1,0 +1,11 @@
+packages:
+  - "packages/*"
+
+onlyBuiltDependencies:
+  - esbuild
+  - better-sqlite3
+  - core-js
+  - esbuild
+  - fsevents
+  - sharp
+  - vue-demi
