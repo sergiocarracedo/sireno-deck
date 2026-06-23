@@ -1,0 +1,49 @@
+packages/cli/frontend/vite.config.ts
+  s_9fabccd2e25c5b::t_93d01c1d01ca2d 1-9
+packages/cli/frontend/src/index.css
+  s_9fabccd2e25c5b::t_9ae3b826226dc1 1-5
+packages/cli/frontend/src/components/Deck.tsx
+  s_9fabccd2e25c5b::t_91815eb136a269 1-45
+packages/cli/src/vite/index.ts
+  s_9fabccd2e25c5b::t_46b93364a23357 1-6
+packages/cli/frontend/src/main.tsx
+  s_9fabccd2e25c5b::t_529754dbb22233 1-12
+packages/cli/src/vite/index.test.ts
+  s_9fabccd2e25c5b::t_43202d8ec88107 20-21
+  s_9fabccd2e25c5b::t_46b93364a23357 15-18,22,34
+  s_9fabccd2e25c5b::t_13f45562a86976 1-14,19,23-33,36-37
+  s_9fabccd2e25c5b::t_7f5cc43d33f372 35
+packages/cli/frontend/src/components/ButtonRenderer.tsx
+  s_9fabccd2e25c5b::t_46b93364a23357 18-23
+  s_9fabccd2e25c5b::t_0e99e938e43974 1-17,24-37
+packages/cli/src/vite/virtual-modules.ts
+  s_9fabccd2e25c5b::t_0542c921f96f49 1-61
+packages/cli/frontend/index.html
+  s_9fabccd2e25c5b::t_7435daca2d11e5 1-11
+packages/cli/frontend/src/components/ButtonFrame.tsx
+  s_9fabccd2e25c5b::t_782804258c6c8e 1-48
+packages/cli/frontend/src/__tests__/deck-render.test.tsx
+  s_9fabccd2e25c5b::t_eb2b7cf0f39c7e 2,16-20,23,29-30,36-37
+  s_9fabccd2e25c5b::t_46b93364a23357 24
+  s_9fabccd2e25c5b::t_f3a9d7eca15c45 1,3-15,21-22,25-28,31-35,38-40
+.planning/phases/04-ws-frontend/04-02-SUMMARY.md
+  s_9fabccd2e25c5b::t_019cfbb0f5d7f3 1-69
+packages/cli/frontend/src/App.tsx
+  s_9fabccd2e25c5b::t_fa203e3a7eef58 1-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "5ac7beeea8af0b9cd1f463a23c784584f3abdabe",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
