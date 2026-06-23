@@ -1,3 +1,5 @@
+import type { AddonRegistry } from "@/addon/registry.ts";
+import { isSystemButtonType } from "@/deck/system-buttons/types.ts";
 import type { RawConfig } from "./schemas.ts";
 
 export interface BootstrapIssue {
@@ -8,6 +10,16 @@ export interface BootstrapIssue {
 
 export interface BootstrapResult {
   issues: BootstrapIssue[];
+}
+
+export interface FullValidationIssue {
+  level: "error" | "warning";
+  path: string;
+  message: string;
+}
+
+export interface FullValidationResult {
+  issues: FullValidationIssue[];
 }
 
 const reportDuplicatePositions = (
@@ -52,6 +64,60 @@ export const isBootstrapValid = (result: BootstrapResult): boolean =>
   result.issues.every((i) => i.level !== "error");
 
 export const formatBootstrapIssues = (issues: BootstrapIssue[]): string =>
+  issues
+    .map((issue) => {
+      const tag = issue.level === "error" ? "error" : "warning";
+      return `[${tag}] ${issue.path}: ${issue.message}`;
+    })
+    .join("\n");
+
+export const validateFull = (config: RawConfig, registry: AddonRegistry): FullValidationResult => {
+  const issues: FullValidationIssue[] = [];
+  for (const [deckId, deck] of Object.entries(config.decks)) {
+    deck.buttons.forEach((btn, index) => {
+      if (typeof btn === "string") return;
+      const path = `decks.${deckId}.buttons[${index}]`;
+      if (!registry.hasButtonType(btn.type)) {
+        issues.push({
+          level: "error",
+          path: `${path}.type`,
+          message: `Unknown button type: ${btn.type}`,
+        });
+        return;
+      }
+      const def = registry.getButtonType(btn.type)!;
+      if (isSystemButtonType(btn.type) || def.def.internal === true) {
+        issues.push({
+          level: "error",
+          path: `${path}.type`,
+          message: `Internal button type ${btn.type} cannot be used in user config`,
+        });
+        return;
+      }
+      const parseResult = (
+        def.def.configSchema as {
+          safeParse: (input: unknown) => {
+            success: boolean;
+            error?: { issues: Array<{ path: Array<string | number>; message: string }> };
+          };
+        }
+      ).safeParse(btn.config ?? {});
+      if (!parseResult.success) {
+        const first = parseResult.error?.issues[0];
+        const msg = first
+          ? `${first.path.join(".") || "(root)"}: ${first.message}`
+          : "zod parse error";
+        issues.push({ level: "error", path: `${path}.config`, message: msg });
+      }
+    });
+  }
+  return { issues };
+};
+
+export const isFullValid = (result: FullValidationResult): boolean =>
+  result.issues.every((i) => i.level !== "error");
+
+export const formatFullIssues = (issues: FullValidationIssue[]): string =>
   issues
     .map((issue) => {
       const tag = issue.level === "error" ? "error" : "warning";
