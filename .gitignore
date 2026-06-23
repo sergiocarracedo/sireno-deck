@@ -3,6 +3,7 @@ dist/
 .tsdown/
 .cache/
 coverage/
+*.tsbuildinfo
 
 *.log
 .DS_Store

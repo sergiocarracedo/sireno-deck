@@ -1,4 +1,10 @@
-import { listOpenStreamDecks, openStreamDeck, type StreamDeck as SdkDevice } from "@elgato-stream-deck/node";
+import {
+  getStreamDeckModelName,
+  listStreamDecks,
+  openStreamDeck,
+  type StreamDeck as SdkDevice,
+  type StreamDeckDeviceInfo,
+} from "@elgato-stream-deck/node";
 
 export class StreamDeckSelectionError extends Error {
   constructor(message: string) {
@@ -23,43 +29,36 @@ export interface ConnectStreamDeckOptions {
   readonly model?: string;
 }
 
-interface SdkControl {
-  readonly type: string;
-}
-
-interface SdkHandle {
-  readonly serialNumber?: string;
-  readonly path?: string;
-  readonly MODEL?: string;
-  readonly CONTROLS?: ReadonlyArray<SdkControl>;
-  setBrightness?(value: number): Promise<void>;
-  fillKeyBuffer?(keyIndex: number, buffer: Buffer): Promise<void>;
-  close?(): Promise<void>;
-}
-
-const toDescriptor = (handle: SdkHandle): { serial: string; path: string; model: string; keyCount: number } => ({
-  serial: handle.serialNumber ?? "",
-  path: handle.path ?? "",
-  model: handle.MODEL ?? "unknown",
-  keyCount: (handle.CONTROLS ?? []).filter((c) => c.type === "button").length,
+const buildDescriptor = (
+  info: StreamDeckDeviceInfo,
+  controls: ReadonlyArray<SdkDevice["CONTROLS"][number]>,
+) => ({
+  serial: info.serialNumber ?? "",
+  path: info.path,
+  model: getStreamDeckModelName(info.model),
+  keyCount: controls.filter((c) => c.type === "button").length,
 });
 
 export const connectStreamDeck = async (
   options: ConnectStreamDeckOptions = {},
 ): Promise<StreamDeckDevice> => {
-  const devices = (await listOpenStreamDecks()) as ReadonlyArray<SdkDevice>;
-  let candidates: SdkDevice[];
-  if (devices.length === 0) {
+  const infos = await listStreamDecks();
+  let candidates: StreamDeckDeviceInfo[];
+  if (infos.length === 0) {
     candidates = [];
-  } else if (options.serial !== undefined || options.path !== undefined || options.model !== undefined) {
-    candidates = devices.filter((d) => {
-      if (options.serial !== undefined && d.serialNumber !== options.serial) return false;
-      if (options.path !== undefined && d.path !== options.path) return false;
-      if (options.model !== undefined && d.MODEL !== options.model) return false;
+  } else if (
+    options.serial !== undefined ||
+    options.path !== undefined ||
+    options.model !== undefined
+  ) {
+    candidates = infos.filter((info) => {
+      if (options.serial !== undefined && info.serialNumber !== options.serial) return false;
+      if (options.path !== undefined && info.path !== options.path) return false;
+      if (options.model !== undefined && info.model !== options.model) return false;
       return true;
     });
   } else {
-    candidates = [...devices];
+    candidates = [...infos];
   }
 
   if (candidates.length === 0) {
@@ -69,15 +68,15 @@ export const connectStreamDeck = async (
         : "No Stream Deck devices found",
     );
   }
-  if (candidates.length > 1 && (options.serial === undefined && options.path === undefined)) {
+  if (candidates.length > 1 && options.serial === undefined && options.path === undefined) {
     throw new StreamDeckSelectionError(
       `Multiple Stream Deck devices found (${candidates.length}); pass --serial or --path`,
     );
   }
 
-  const target = candidates[0]!;
-  const handle = (await openStreamDeck(target.path, {})) as unknown as SdkHandle;
-  const descriptor = toDescriptor(handle);
+  const targetInfo = candidates[0]!;
+  const handle = await openStreamDeck(targetInfo.path, {});
+  const descriptor = buildDescriptor(targetInfo, handle.CONTROLS);
 
   return {
     serial: descriptor.serial,
@@ -85,13 +84,13 @@ export const connectStreamDeck = async (
     model: descriptor.model,
     getKeyCount: () => descriptor.keyCount,
     async setBrightness(value: number): Promise<void> {
-      if (handle.setBrightness) await handle.setBrightness(value);
+      await handle.setBrightness(value);
     },
     async fillKeyBuffer(keyIndex: number, buffer: Buffer): Promise<void> {
-      if (handle.fillKeyBuffer) await handle.fillKeyBuffer(keyIndex, buffer);
+      await handle.fillKeyBuffer(keyIndex, buffer);
     },
     async close(): Promise<void> {
-      if (handle.close) await handle.close();
+      await handle.close();
     },
   };
 };

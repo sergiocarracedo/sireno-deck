@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { UDEV_RULES, UdevPermissionError, formatInstallInstructions, installUdevRules } from "./linux-udev.ts";
+import {
+  UDEV_RULES,
+  UdevPermissionError,
+  formatInstallInstructions,
+  installUdevRules,
+} from "./linux-udev.ts";
 
 describe("linux-udev", () => {
   it("UDEV_RULES contains the expected Elgato vendor id 0fd9", () => {

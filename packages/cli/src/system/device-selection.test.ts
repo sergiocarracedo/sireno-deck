@@ -22,7 +22,9 @@ const devices = (n: number) =>
 
 describe("selectDevice", () => {
   it("throws NoStreamDeckFoundError when devices is empty", async () => {
-    await expect(selectDevice({ devices: [], logger: silentLogger() })).rejects.toBeInstanceOf(NoStreamDeckFoundError);
+    await expect(selectDevice({ devices: [], logger: silentLogger() })).rejects.toBeInstanceOf(
+      NoStreamDeckFoundError,
+    );
   });
 
   it("returns the only device when length is 1", async () => {
@@ -59,7 +61,9 @@ describe("selectDevice", () => {
     expect(result.savedButStale).toBe(true);
     expect(result.descriptor.serial).toBe("SN2");
     expect(selectMock).toHaveBeenCalled();
-    const call = selectMock.mock.calls[0]![0] as { choices: Array<{ name: string; value: string }> };
+    const call = selectMock.mock.calls[0]![0] as {
+      choices: Array<{ name: string; value: string }>;
+    };
     expect(call.choices).toHaveLength(3);
     expect(call.choices.map((c) => c.value).sort()).toEqual(["SN0", "SN1", "SN2"]);
   });

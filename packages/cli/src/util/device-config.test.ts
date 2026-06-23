@@ -19,8 +19,15 @@ describe("device-config", () => {
   });
 
   it("roundtrip save -> load returns the same config", () => {
-    saveDeviceConfig({ xdgConfigHome: dir, config: { serial: "ABC", path: "/dev/hidraw0", model: "MK.2" } });
-    expect(loadDeviceConfig({ xdgConfigHome: dir })).toEqual({ serial: "ABC", path: "/dev/hidraw0", model: "MK.2" });
+    saveDeviceConfig({
+      xdgConfigHome: dir,
+      config: { serial: "ABC", path: "/dev/hidraw0", model: "MK.2" },
+    });
+    expect(loadDeviceConfig({ xdgConfigHome: dir })).toEqual({
+      serial: "ABC",
+      path: "/dev/hidraw0",
+      model: "MK.2",
+    });
   });
 
   it("atomic write doesn't leave .tmp behind on success", () => {

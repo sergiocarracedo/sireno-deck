@@ -1,4 +1,11 @@
-import { writeFileSync, renameSync, existsSync, readFileSync, unlinkSync, mkdirSync } from "node:fs";
+import {
+  writeFileSync,
+  renameSync,
+  existsSync,
+  readFileSync,
+  unlinkSync,
+  mkdirSync,
+} from "node:fs";
 import { dirname } from "node:path";
 
 export interface DeviceConfig {
@@ -15,7 +22,8 @@ export interface SaveDeviceConfigOptions extends LoadDeviceConfigOptions {
   readonly config: DeviceConfig;
 }
 
-const configPathFor = (xdgConfigHome: string): string => `${xdgConfigHome}/sireno-deck-2/device.json`;
+const configPathFor = (xdgConfigHome: string): string =>
+  `${xdgConfigHome}/sireno-deck-2/device.json`;
 
 export const loadDeviceConfig = (options: LoadDeviceConfigOptions): DeviceConfig | null => {
   const path = configPathFor(options.xdgConfigHome);

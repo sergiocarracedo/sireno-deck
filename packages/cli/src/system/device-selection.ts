@@ -48,9 +48,13 @@ export const selectDevice = async (options: SelectDeviceOptions): Promise<Select
     return { descriptor: match, savedButStale: false };
   }
 
-  const savedButStale = options.current !== null && options.current !== undefined && !currentMatches;
+  const savedButStale =
+    options.current !== null && options.current !== undefined && !currentMatches;
   const choices = options.devices.map((d) =>
-    formatChoice(d, savedButStale && d.serial === options.current!.serial ? "(saved, disconnected)" : undefined),
+    formatChoice(
+      d,
+      savedButStale && d.serial === options.current!.serial ? "(saved, disconnected)" : undefined,
+    ),
   );
   choices.sort((a, b) => {
     const aStale = a.hint === "(saved, disconnected)";
