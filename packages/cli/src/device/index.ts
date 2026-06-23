@@ -1,10 +1,8 @@
 export {
-  DEFAULT_DEVICE_MODEL_ID,
-  DEFAULT_KEY_COUNT,
-  DEVICE_MODELS,
-  getDeviceModel,
-  gridForKeyCount,
-  isKnownDeviceModel,
-  resolveKeyCount,
-  type DeviceModelSpec,
-} from "./models.ts";
+  connectStreamDeck,
+  StreamDeckSelectionError,
+  type ConnectStreamDeckOptions,
+  type StreamDeckDevice,
+} from "./stream-deck.ts";
+export { listDevices, type DeviceDescriptor } from "./registry.ts";
+export { UDEV_RULES, UdevPermissionError, formatInstallInstructions, installUdevRules } from "./linux-udev.ts";
