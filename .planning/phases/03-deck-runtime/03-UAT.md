@@ -13,34 +13,42 @@ updated: 2026-06-23T20:07:00Z
 ## Tests
 
 ### 1. Cold-start smoke — CLI still boots
+
 expected: `node packages/cli/bin/sireno.js --help` prints help with run/start/stop/status commands.
 result: pass
 
 ### 2. Test suite passes
+
 expected: `pnpm exec vitest run` reports **155 tests passing** across 16 test files (was 69 before Phase 03; Phase 03 added 86).
 result: pass
 
 ### 3. Typecheck clean
+
 expected: `pnpm typecheck` exits 0 with no errors.
 result: pass
 
 ### 4. Lint clean
+
 expected: `pnpm --filter sireno-deck-2 lint` reports 0 warnings, 0 errors.
 result: pass
 
 ### 5. Format clean
+
 expected: `pnpm format:check` reports "All matched files use the correct format".
 result: pass
 
 ### 6. Integration test demonstrates the full pipeline
+
 expected: `pnpm exec vitest run packages/cli/src/__tests__/integration.test.ts` reports 3 tests passing — load config → validateFull → registerBuiltins → createDeckRuntime → dispatchGesture → navigate + run command.
 result: pass
 
 ### 7. Gesture machine outputs only tap / dbl-tap / hold
+
 expected: `pnpm exec vitest run packages/cli/src/core/gesture-state.test.ts` reports 11 tests passing — covers all 3 gesture kinds + edge cases (down-only, up-only, etc.).
 result: pass
 
 ### 8. Pub-sub debounce emits a single flush within 100ms
+
 expected: `pnpm exec vitest run packages/cli/src/core/pub-sub.test.ts` reports 7 tests passing — including "5 publishes in 50ms → flush callback fires once".
 result: pass
 

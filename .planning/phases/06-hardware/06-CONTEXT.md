@@ -22,15 +22,19 @@ The real-device pipeline: enumerate Stream Deck devices, let the user pick one (
 ## Implementation Decisions
 
 ### Write strategy
+
 - **Delta only.** Hash each cropped per-key buffer (sha1 truncated to 16 hex chars). Skip the write if the hash matches the last cycle's hash for that key. Saves SPI bus bandwidth on the 32-key `+` model when nothing changes. Write count = 1 when static, write count = N when N keys change.
 
 ### Screenshot trigger
+
 - **Hybrid: timer + event debounce.** Pure timer at `intervalMs` (default 500ms) keeps animations smooth. Plus subscribe to `runtime:activeDeck` and `runtime:invalidate` from the cli pub-sub bus (Phase 03); on event, schedule an immediate re-render with a 50ms debounce so a flurry of invalidates doesn't cause a screenshot storm. Idle CPU drops when nothing is changing.
 
 ### Device-selection UX
+
 - **Prompt.** When `device.json` has a saved selection but it doesn't match any currently-connected device, prompt with all connected devices (the stale one shown first as a hint marker, but selectable). After the user picks, save the new `device.json`. If no `device.json` exists, prompt on first run. Same prompt if multiple devices are connected even with a valid saved selection.
 
 ### Carrying forward from earlier phases
+
 - **sha1-truncated-to-16** buffer hash (Phase 06 Plan 02 default; confirmed above).
 - **Atomic write** for `device.json` (write `.tmp`, rename).
 - **`@inquirer/prompts` `select()`** with arrow-key UI (Phase 06 Plan 01).
@@ -38,6 +42,7 @@ The real-device pipeline: enumerate Stream Deck devices, let the user pick one (
 - **Device model layouts**: Phase 05's `gridForKeyCount(keyCount)` for sharp crop layout.
 
 ### Agent's Discretion
+
 - Exact Playwright browser launch args (Chromium flags for headless).
 - CadenceTimer warning threshold for slow callbacks.
 - Linux udev rule content wording (must include `idVendor=0x0fd9`).
@@ -55,6 +60,7 @@ The real-device pipeline: enumerate Stream Deck devices, let the user pick one (
 </specifics>
 
 <canonical_refs>
+
 ## Canonical References
 
 **Downstream agents MUST read these before planning or implementing.**
@@ -68,9 +74,11 @@ The real-device pipeline: enumerate Stream Deck devices, let the user pick one (
 </canonical_refs>
 
 <code_context>
+
 ## Existing Code Insights
 
 ### Reusable Assets
+
 - **`@/core/pub-sub`** — Phase 03; renderer subscribes to `runtime:activeDeck` + `runtime:invalidate` channels from this.
 - **`@/device/models`** — Phase 05; `gridForKeyCount(keyCount)` for crop layout.
 - **`@/render/vite-server`** — Phase 04; consumer for the spawned vite URL.
@@ -78,12 +86,14 @@ The real-device pipeline: enumerate Stream Deck devices, let the user pick one (
 - **`@/action/executor`** — Phase 03; not used here but pattern for exec/shell-out.
 
 ### Established Patterns
+
 - Wrapper + interface pattern: device layer wraps `@elgato-stream-deck/node` behind our own `StreamDeckDevice` interface (no SDK leakage).
 - vi.mock pattern for native modules: device + inquirer + playwright all mocked at module boundary.
 - Atomic write pattern: `.tmp` + rename, already used for daemon PID.
 - Config-pipeline pattern: load → validate → execute (extends to device selection).
 
 ### Integration Points
+
 - CLI `run` command (`packages/cli/src/cli/commands/run.ts`) — currently a Phase 0 placeholder; will be replaced.
 - CLI `start` command — same.
 - `sireno-deck-2/vite` plugin's spawned vite URL flows into renderer.
@@ -100,5 +110,5 @@ None — discussion stayed within phase scope. User originally raised the questi
 
 ---
 
-*Phase: 06-hardware*
-*Context gathered: 2026-06-23*
+_Phase: 06-hardware_
+_Context gathered: 2026-06-23_

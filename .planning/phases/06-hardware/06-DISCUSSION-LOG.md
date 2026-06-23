@@ -9,6 +9,7 @@ Standard (4-question per area max, single-option recommendations).
 ### 1. Write strategy
 
 Options considered:
+
 - (A) Delta only — hash each cropped key buffer; skip write if unchanged (Recommended)
 - (B) Always write all keyCount buffers every cycle
 - (C) Hybrid — full write on startup, delta after
@@ -20,6 +21,7 @@ Rationale: User cares about SPI bus bandwidth on 32-key devices. Delta writes ar
 ### 2. Screenshot trigger
 
 Options considered:
+
 - (A) Pure timer (Recommended in proposal)
 - (B) Event-driven only — subscribe to runtime:activeDeck + runtime:invalidate
 - (C) Hybrid — timer + event debounce 50ms
@@ -31,6 +33,7 @@ Rationale: User wants smooth animations (timer cadence) but also low idle CPU wh
 ### 3. Device-selection UX (stale saved selection)
 
 Options considered:
+
 - (A) Prompt with all connected devices (Recommended in proposal)
 - (B) Fail with helpful error message
 - (C) Auto-detect single new device and use it without prompting

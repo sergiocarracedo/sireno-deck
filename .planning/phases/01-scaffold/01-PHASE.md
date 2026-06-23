@@ -11,6 +11,7 @@ Goal: establish a pnpm workspace with TypeScript 7.0 RC, oxlint + oxfmt, vitest,
 ## Files created
 
 ### Root
+
 - `package.json` — workspace root, scripts, dev deps
 - `pnpm-workspace.yaml` — `packages: ['packages/*']`, `onlyBuiltDependencies: [esbuild]`
 - `.npmrc` — shamefully-hoist, strict-peer-deps=false, auto-install-peers
@@ -21,12 +22,14 @@ Goal: establish a pnpm workspace with TypeScript 7.0 RC, oxlint + oxfmt, vitest,
 - `vitest.config.ts` — node env, `@` alias → `packages/cli/src`
 
 ### packages/cli
+
 - `package.json` — name `sireno-deck-2`, version 0.1.0, bin `sireno` → `./bin/sireno.js`, exports `.` `./api` `./react` `./vite`
 - `tsconfig.json` — extends base, `paths: { "@/*": ["./src/*"] }`, types node
 - `bin/sireno.js` — spawns `node_modules/.bin/tsx` with `TSX_TSCONFIG_PATH` + cwd=packages/cli/
 - `.gitignore`
 
 ### packages/cli/src
+
 - `version.ts` — `PACKAGE_NAME`, `SIRENO_ADDON_API_VERSION = 3`, `PROTOCOL_VERSION = 3`
 - `index.ts` — public exports
 - `util/logger.ts` — `createLogger({ level?, verbose? })`

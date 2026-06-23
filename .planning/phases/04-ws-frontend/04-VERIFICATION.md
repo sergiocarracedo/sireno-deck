@@ -13,31 +13,31 @@ WS bridge v3 with token handshake + vite plugin + frontend React app + react hoo
 
 ## Must-haves verification
 
-| Must-have | Status | Evidence |
-| --- | --- | --- |
-| API types: AddonButtonRenderContext, AddonButtonActionContext, UseAddonChannelReturn | ✅ | src/api/addon.ts |
-| WS messages: hello, hello-ack, deck-config, state, decks-list, show-overlay, button-action, method-call, method-call-result, select-deck, deck-active, dismiss-overlay | ✅ | src/api/protocol-internal.ts + src/render/protocol.ts |
-| Bridge: ws server on 127.0.0.1, handshake with token (4001 on mismatch), broadcast, onMessage, onConnection, close | ✅ | src/render/ws-bridge.ts (8 tests) |
-| Vite spawn: child process, READY port line, restart with backoff | ✅ | src/render/vite-server.ts (5 tests) |
-| sirenoDeck2() plugin: virtual:sireno/token, virtual:sireno/addons | ✅ | src/vite/virtual-modules.ts (4 tests) |
-| Frontend React 19 + Tailwind 4 | ✅ | packages/cli/frontend/ |
-| Deck + ButtonFrame + ButtonRenderer | ✅ | 3 components in packages/cli/frontend/src/components/ |
-| Deck render tests under jsdom | ✅ | 3 tests in deck-render.test.tsx |
-| ChannelRegistry (singleton) | ✅ | src/react/registry.ts |
-| useAddonChannel / useDeck / useButtonAction | ✅ | 3 hooks in src/react/ + 5 tests |
-| WS client: hello on open + reconnect with backoff + state→ChannelRegistry | ✅ | frontend/src/bridge/client.ts (4 tests) |
-| Frontend integration: App wires WS + ChannelRegistry, deck renders | ✅ | ws-integration.test.tsx (2 tests) |
-| Total ≥ 195 tests | ✅ | **200 passing** |
-| Typecheck clean | ✅ | yes |
-| Per-package lint clean | ✅ | 0 warnings, 0 errors |
-| Format clean | ✅ | 151 files conform |
-| `./api`, `./react`, `./vite` sub-path exports from `sireno-deck-2` | ✅ | package.json exports |
-| Token handshake in dev (no token in dev mode) | ✅ | helloMessageSchema.token is optional |
-| Token injection via `virtual:sireno/token` (dev) | ✅ | sirenoDeck2() plugin exposes env var |
-| Production `window.__SIRENO_TOKEN__` injection (Phase 10) | ⏳ | Deferred (prod server not built yet) |
-| `button-action` carries gesture (not raw down/up) | ✅ | buttonActionMessageSchema requires `gesture: 'tap' \| 'dbl-tap' \| 'hold'` |
-| No `snapshot` message | ✅ | wsMessageSchema rejects `type: 'snapshot'` |
-| Vite plugin registers addon/theme folders | ✅ | sirenoDeck2() takes addons[] option |
+| Must-have                                                                                                                                                              | Status | Evidence                                                                   |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | -------------------------------------------------------------------------- |
+| API types: AddonButtonRenderContext, AddonButtonActionContext, UseAddonChannelReturn                                                                                   | ✅     | src/api/addon.ts                                                           |
+| WS messages: hello, hello-ack, deck-config, state, decks-list, show-overlay, button-action, method-call, method-call-result, select-deck, deck-active, dismiss-overlay | ✅     | src/api/protocol-internal.ts + src/render/protocol.ts                      |
+| Bridge: ws server on 127.0.0.1, handshake with token (4001 on mismatch), broadcast, onMessage, onConnection, close                                                     | ✅     | src/render/ws-bridge.ts (8 tests)                                          |
+| Vite spawn: child process, READY port line, restart with backoff                                                                                                       | ✅     | src/render/vite-server.ts (5 tests)                                        |
+| sirenoDeck2() plugin: virtual:sireno/token, virtual:sireno/addons                                                                                                      | ✅     | src/vite/virtual-modules.ts (4 tests)                                      |
+| Frontend React 19 + Tailwind 4                                                                                                                                         | ✅     | packages/cli/frontend/                                                     |
+| Deck + ButtonFrame + ButtonRenderer                                                                                                                                    | ✅     | 3 components in packages/cli/frontend/src/components/                      |
+| Deck render tests under jsdom                                                                                                                                          | ✅     | 3 tests in deck-render.test.tsx                                            |
+| ChannelRegistry (singleton)                                                                                                                                            | ✅     | src/react/registry.ts                                                      |
+| useAddonChannel / useDeck / useButtonAction                                                                                                                            | ✅     | 3 hooks in src/react/ + 5 tests                                            |
+| WS client: hello on open + reconnect with backoff + state→ChannelRegistry                                                                                              | ✅     | frontend/src/bridge/client.ts (4 tests)                                    |
+| Frontend integration: App wires WS + ChannelRegistry, deck renders                                                                                                     | ✅     | ws-integration.test.tsx (2 tests)                                          |
+| Total ≥ 195 tests                                                                                                                                                      | ✅     | **200 passing**                                                            |
+| Typecheck clean                                                                                                                                                        | ✅     | yes                                                                        |
+| Per-package lint clean                                                                                                                                                 | ✅     | 0 warnings, 0 errors                                                       |
+| Format clean                                                                                                                                                           | ✅     | 151 files conform                                                          |
+| `./api`, `./react`, `./vite` sub-path exports from `sireno-deck-2`                                                                                                     | ✅     | package.json exports                                                       |
+| Token handshake in dev (no token in dev mode)                                                                                                                          | ✅     | helloMessageSchema.token is optional                                       |
+| Token injection via `virtual:sireno/token` (dev)                                                                                                                       | ✅     | sirenoDeck2() plugin exposes env var                                       |
+| Production `window.__SIRENO_TOKEN__` injection (Phase 10)                                                                                                              | ⏳     | Deferred (prod server not built yet)                                       |
+| `button-action` carries gesture (not raw down/up)                                                                                                                      | ✅     | buttonActionMessageSchema requires `gesture: 'tap' \| 'dbl-tap' \| 'hold'` |
+| No `snapshot` message                                                                                                                                                  | ✅     | wsMessageSchema rejects `type: 'snapshot'`                                 |
+| Vite plugin registers addon/theme folders                                                                                                                              | ✅     | sirenoDeck2() takes addons[] option                                        |
 
 ## Requirements traceability
 
@@ -66,6 +66,7 @@ pnpm format:check
 ## Tracer bullet
 
 Plan 04-03's `ws-integration.test.tsx`:
+
 - Renders `<App />` under jsdom.
 - Verifies 2 buttons appear (mock deck).
 - Simulates a click on the `core:action` button.

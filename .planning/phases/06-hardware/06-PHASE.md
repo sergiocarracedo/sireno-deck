@@ -1,6 +1,6 @@
 ---
 phase: 06-hardware
-status: not-started
+status: complete
 depends_on: [04-ws-frontend, 05-emulator]
 ---
 

@@ -17,25 +17,25 @@ A small ecosystem — **CLI** (primary), website (later), desktop app (later) �
 
 ## 2. Stack
 
-| Concern       | Choice                                                                                  |
-| ------------- | --------------------------------------------------------------------------------------- |
-| Language      | TypeScript 7.0 RC (ES2022, ES2023 lib + DOM)                                            |
-| Bundler       | rolldown (CLI + frontend); esbuild as fallback                                          |
-| Dev HMR       | vite for frontend, `tsx --watch` for CLI                                                |
-| Test          | vitest                                                                                  |
-| Lint / format | oxlint + oxfmt                                                                          |
-| UI            | React 19 + Tailwind 4 (CSS variables, `@theme` directive)                               |
-| WS            | `ws` server + client                                                                    |
-| Config        | `js-yaml` + `zod`                                                                      |
-| Logger        | `pino`                                                                                  |
-| Shell exec    | `execa`                                                                                 |
-| Screenshots   | `playwright` + `sharp`                                                                  |
-| Hardware      | `@elgato-stream-deck/node`                                                              |
+| Concern       | Choice                                                                                              |
+| ------------- | --------------------------------------------------------------------------------------------------- |
+| Language      | TypeScript 7.0 RC (ES2022, ES2023 lib + DOM)                                                        |
+| Bundler       | rolldown (CLI + frontend); esbuild as fallback                                                      |
+| Dev HMR       | vite for frontend, `tsx --watch` for CLI                                                            |
+| Test          | vitest                                                                                              |
+| Lint / format | oxlint + oxfmt                                                                                      |
+| UI            | React 19 + Tailwind 4 (CSS variables, `@theme` directive)                                           |
+| WS            | `ws` server + client                                                                                |
+| Config        | `js-yaml` + `zod`                                                                                   |
+| Logger        | `pino`                                                                                              |
+| Shell exec    | `execa`                                                                                             |
+| Screenshots   | `playwright` + `sharp`                                                                              |
+| Hardware      | `@elgato-stream-deck/node`                                                                          |
 | OS providers  | Linux: `dbus-next`, `systeminformation`, `playerctl`; macOS: `osascript`; Windows: PowerShell + UIA |
-| Daemon        | PID file in `$XDG_RUNTIME_DIR`; `@inquirer/prompts` for interactive selection           |
-| Packaging     | pnpm workspaces, single `packages/cli`                                                  |
-| Hot-reload    | `chokidar` v5                                                                           |
-| YAML parsing  | `yaml` (eemeli) — line-number aware                                                     |
+| Daemon        | PID file in `$XDG_RUNTIME_DIR`; `@inquirer/prompts` for interactive selection                       |
+| Packaging     | pnpm workspaces, single `packages/cli`                                                              |
+| Hot-reload    | `chokidar` v5                                                                                       |
+| YAML parsing  | `yaml` (eemeli) — line-number aware                                                                 |
 
 ---
 
@@ -77,6 +77,7 @@ sireno-deck-2/
 ```
 
 All cross-package code lives in `packages/cli`. Sub-path exports from CLI:
+
 - `sireno-deck-2` — main
 - `sireno-deck-2/api` — types + addon contract (Phase 3)
 - `sireno-deck-2/react` — react hooks/components for addons (Phase 3)
@@ -158,59 +159,59 @@ sireno --version
 ## 6. Config (`config.yml`)
 
 ```yaml
-theme: default                       # string (resolved from themes/)
+theme: default # string (resolved from themes/)
 logging:
   level: info
 decks:
   main:
     name: Home
-    background: ./bg/main.png       # relative to config file
+    background: ./bg/main.png # relative to config file
     buttons:
       - position: 0
-        type: 'core:change-deck'
+        type: "core:change-deck"
         config:
           deck: media
-          icon: icon://play         # resolved by resolveIconRef()
+          icon: icon://play # resolved by resolveIconRef()
       # ...
   media:
     name: Media
-    paginated: true                 # optional (default false); chunks by keyCount-2
+    paginated: true # optional (default false); chunks by keyCount-2
     buttons:
-      - type: 'core:media-play-pause'
-      - type: 'core:media-next'
+      - type: "core:media-play-pause"
+      - type: "core:media-next"
       # ...
   spotify-overlay:
     icon: icon://spotify
     autoShow: true
     trigger:
-      process_name: [spotify]       # or window_name:
+      process_name: [spotify] # or window_name:
     buttons:
       - position: 0
-        type: 'core:media-play-pause'
+        type: "core:media-play-pause"
 addons:
-  - ./addons/local-clock            # string → local
-  - core-buttons                    # string → npm
-  - '@me/extra@1.2.0'               # string → npm pinned
-  - source: ./addons/special        # object → local, optional enabled
+  - ./addons/local-clock # string → local
+  - core-buttons # string → npm
+  - "@me/extra@1.2.0" # string → npm pinned
+  - source: ./addons/special # object → local, optional enabled
     enabled: false
 session:
-  locked_deck: session:locked       # lock deck supplied by session built-in addon
+  locked_deck: session:locked # lock deck supplied by session built-in addon
 ```
 
 ### Resolved rules
 
-| Item                         | Rule                                                                                                                                                           |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `decks.main`                   | **required**, always the main deck. No `main_deck` property.                                                                                                         |
-| `keyCount`                     | NOT in config. From hardware (or emulator via `--device-model`).                                                                                                 |
-| `paginated`                    | Optional per deck (default `false`). CLI chunks list into pages of `keyCount-2`.                                                                                   |
-| Slot `n-1`                     | Reserved system button: `main` deck → settings entry; regular → back; overlay → deck icon.                                                                       |
-| Slot `n-2`                     | In paginated decks only → next-page system button.                                                                                                             |
+| Item                           | Rule                                                                                                                                                                     |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `decks.main`                   | **required**, always the main deck. No `main_deck` property.                                                                                                             |
+| `keyCount`                     | NOT in config. From hardware (or emulator via `--device-model`).                                                                                                         |
+| `paginated`                    | Optional per deck (default `false`). CLI chunks list into pages of `keyCount-2`.                                                                                         |
+| Slot `n-1`                     | Reserved system button: `main` deck → settings entry; regular → back; overlay → deck icon.                                                                               |
+| Slot `n-2`                     | In paginated decks only → next-page system button.                                                                                                                       |
 | `addons[]` entry               | string-or-`{ source, enabled? }`. No `name` in config. Detection: starts with `.`, `/`, `~`, or contains path separator → local; else npm (npm-version spec if present). |
-| `@file.yml`                    | Inline import of another deck buttons file.                                                                                                                     |
-| `background` / `icon`            | Path relative to config file's directory. Also `icon://<id>`, `builtin://<addon>/<path>`, `addon://<addon>/<path>`. Resolved by `resolveIconRef(ref, ctx)`.            |
-| `paste` block                  | REMOVED. CLI auto-detects OS keystroke capability; `pasteText` method uses OS provider.                                                                          |
-| `allow_reserved_slot_override` | REMOVED. Slot `n-1` always reserved.                                                                                                                             |
+| `@file.yml`                    | Inline import of another deck buttons file.                                                                                                                              |
+| `background` / `icon`          | Path relative to config file's directory. Also `icon://<id>`, `builtin://<addon>/<path>`, `addon://<addon>/<path>`. Resolved by `resolveIconRef(ref, ctx)`.              |
+| `paste` block                  | REMOVED. CLI auto-detects OS keystroke capability; `pasteText` method uses OS provider.                                                                                  |
+| `allow_reserved_slot_override` | REMOVED. Slot `n-1` always reserved.                                                                                                                                     |
 
 ### Validation
 
@@ -243,27 +244,29 @@ resolveIconRef(ref: string, ctx: { configDir: string; builtinIconIds: string[] }
 
 ## 7. Decks
 
-| Type          | Where defined                                                                                                                       | Reserved slots                                              |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `main`          | User config (required: `decks.main`)                                                                                                  | `n-1`: settings entry                                         |
-| Regular       | User config                                                                                                                         | `n-1`: back                                                   |
-| Paginated     | User config with `paginated: true`                                                                                                    | `n-1`: back; `n-2`: next-page                                   |
-| Overlay       | User config with `trigger` + `icon`                                                                                                     | `n-1`: deck's own icon (toggle)                               |
+| Type          | Where defined                                                                                                                           | Reserved slots                                              |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `main`        | User config (required: `decks.main`)                                                                                                    | `n-1`: settings entry                                       |
+| Regular       | User config                                                                                                                             | `n-1`: back                                                 |
+| Paginated     | User config with `paginated: true`                                                                                                      | `n-1`: back; `n-2`: next-page                               |
+| Overlay       | User config with `trigger` + `icon`                                                                                                     | `n-1`: deck's own icon (toggle)                             |
 | Programmatic  | Addon (incl. core built-ins) via `createDecks({ config, deck })` returning config-shape objects (with `internal: true` buttons allowed) | Per deck type rules above                                   |
 | Lock deck     | `session` built-in addon via `createDecks`                                                                                              | Renders current time on multiple buttons (no reserved slot) |
-| Settings deck | `internal-settings` built-in addon via `createDecks`                                                                                    | Standard slot `n-1`: back                                     |
-| Emoji deck    | `emoji-selector` built-in addon via `createDecks`                                                                                       | Standard slot `n-1`: back                                     |
+| Settings deck | `internal-settings` built-in addon via `createDecks`                                                                                    | Standard slot `n-1`: back                                   |
+| Emoji deck    | `emoji-selector` built-in addon via `createDecks`                                                                                       | Standard slot `n-1`: back                                   |
 
 `createDecks` shape:
 
 ```ts
 defineAddonDeck({
-  type: 'session-locked',
-  configSchema: z.object({ timeFormat: z.string().default('HH:mm') }),
+  type: "session-locked",
+  configSchema: z.object({ timeFormat: z.string().default("HH:mm") }),
   createDecks: ({ config }) => ({
-    'session:locked': {
-      name: 'Locked',
-      buttons: [/* internal-typed buttons */],
+    "session:locked": {
+      name: "Locked",
+      buttons: [
+        /* internal-typed buttons */
+      ],
     },
   }),
 });
@@ -292,6 +295,7 @@ defineAddonButton({
 **Gesture state machine outputs only:** `tap | dbl-tap | hold`. No `press-then-release`. Raw down/up are inferred into gestures by the hardware manager (real mode) or emulator shell (emulator mode). The frontend never sees raw down/up.
 
 **System buttons** (`internal: true`):
+
 - `core:back` — previous deck in nav stack
 - `core:settings-entry` — only on main deck
 - `core:overlay-toggle` — only on overlay decks (renders deck's own icon)
@@ -319,12 +323,12 @@ themes/default/
 ```yaml
 name: default
 colorTokens:
-  bg: '#0a0a0a'
-  fg: '#ffffff'
-  accent: '#3b82f6'
+  bg: "#0a0a0a"
+  fg: "#ffffff"
+  accent: "#3b82f6"
   # ... 8 tokens
 typography:
-  label: 'Inter, system-ui, sans-serif'
+  label: "Inter, system-ui, sans-serif"
   # ... 3 roles
 main: index.tsx
 buttonFrame: ButtonFrame.tsx
@@ -351,6 +355,7 @@ tailwind:
 ## 10. Addons
 
 ### Distribution modes
+
 - **Local**: folder path (`./addons/my-addon` or `/abs/path`). Reads `package.json` + `sirenoAddon` manifest.
 - **npm**: package name (with optional `@version`). Loader uses `require.resolve` (deferred — Phase 9).
 
@@ -376,7 +381,7 @@ export const SIRENO_ADDON_API_VERSION = 3;
 
 export interface SirenoAddon {
   apiVersion: 3;
-  name: string;                                     // from manifest
+  name: string; // from manifest
   buttons: AddonButtonTypeDefinition[];
   decks?: AddonDeckDefinition[];
   assets?: { styles?: string[] };
@@ -384,8 +389,8 @@ export interface SirenoAddon {
 }
 
 export interface AddonButtonTypeDefinition {
-  type: string;                                     // namespaced, e.g. 'core:change-deck'
-  internal?: boolean;                               // true = not usable in user config
+  type: string; // namespaced, e.g. 'core:change-deck'
+  internal?: boolean; // true = not usable in user config
   configSchema: z.ZodTypeAny;
   render: (ctx: ButtonRenderCtx) => React.ReactNode;
   onTap?: (ctx: ButtonActionCtx) => void | Promise<void>;
@@ -393,30 +398,33 @@ export interface AddonButtonTypeDefinition {
   onHold?: (ctx: ButtonActionCtx) => void | Promise<void>;
   defaultRenderIntervalMs?: number;
   dispose?: () => void | Promise<void>;
-  full?: boolean;                                   // opt out of ButtonFrame
+  full?: boolean; // opt out of ButtonFrame
 }
 
 export interface AddonDeckDefinition {
   type: string;
   configSchema?: z.ZodTypeAny;
-  createDecks: (ctx: { config: ResolvedConfig; deck?: AddonDeckInstance }) => Record<string, AddonGeneratedDeck>;
+  createDecks: (ctx: {
+    config: ResolvedConfig;
+    deck?: AddonDeckInstance;
+  }) => Record<string, AddonGeneratedDeck>;
 }
 ```
 
 ### Built-in addons (bundled with CLI)
 
-| Addon             | Buttons                                                       | Decks (via `createDecks`) |
-| ----------------- | ------------------------------------------------------------- | ------------------------- |
+| Addon               | Buttons                                                               | Decks (via `createDecks`) |
+| ------------------- | --------------------------------------------------------------------- | ------------------------- |
 | `core-buttons`      | `core:action`, `core:change-deck`, `core:toggle`, `core:media-sample` | —                         |
-| `date-time`         | `core:date-time`                                                | —                         |
-| `emoji-selector`    | `core:emoji-selector` (on tap, navigates to `emoji` deck)         | `emoji`                   |
-| `media-player`      | `core:media-*`                                                  | —                         |
-| `system-status`     | `core:cpu`, `core:memory`, `core:battery` (via pub-sub)             | —                         |
-| `value-display`     | `core:value`                                                    | —                         |
-| `weather`           | `core:weather`                                                  | —                         |
-| `brightness`        | `core:brightness`                                               | —                         |
-| `internal-settings` | `core:settings-*`                                               | `settings`                |
-| `session`           | `core:session-info`                                             | `session:locked`          |
+| `date-time`         | `core:date-time`                                                      | —                         |
+| `emoji-selector`    | `core:emoji-selector` (on tap, navigates to `emoji` deck)             | `emoji`                   |
+| `media-player`      | `core:media-*`                                                        | —                         |
+| `system-status`     | `core:cpu`, `core:memory`, `core:battery` (via pub-sub)               | —                         |
+| `value-display`     | `core:value`                                                          | —                         |
+| `weather`           | `core:weather`                                                        | —                         |
+| `brightness`        | `core:brightness`                                                     | —                         |
+| `internal-settings` | `core:settings-*`                                                     | `settings`                |
+| `session`           | `core:session-info`                                                   | `session:locked`          |
 
 ### Icon resolution for addons
 
@@ -433,10 +441,10 @@ Addons publish typed channels; buttons subscribe via `useAddonChannel`.
 
 ```ts
 // In an addon (system-status):
-methods.publish('system:cpu', { usage: 0.42, timestamp: Date.now() });
+methods.publish("system:cpu", { usage: 0.42, timestamp: Date.now() });
 
 // In a button render:
-const cpu = useAddonChannel<{ usage: number; timestamp: number }>('system:cpu');
+const cpu = useAddonChannel<{ usage: number; timestamp: number }>("system:cpu");
 ```
 
 - Channel registry lives in CLI; not exposed on WS as raw pub/sub.
@@ -459,20 +467,20 @@ server → client:  { type: 'hello-ack', version: 3, keyCount: number, config: <
 
 ### Messages
 
-| Direction          | `type`               | Payload                                                                              |
-| ------------------ | -------------------- | ------------------------------------------------------------------------------------ |
-| CLI → client       | `hello-ack`          | `{ version, keyCount, config }`                                                      |
-| CLI → client       | `deck-config`        | `{ deckId, surfaces, navMode }`                                                      |
-| CLI → client       | `state`              | `{ channels: Record<string, unknown> }`                                              |
-| CLI → client       | `decks-list`         | `{ decks: Array<{ id, name, icon }> }`                                               |
-| CLI → client       | `show-overlay`       | `{ deckId } | null }`                                                                  |
-| client → CLI       | `hello`              | `{ version, token? }`                                                                |
-| client → CLI       | `button-action`      | `{ deckId, position, gesture: 'tap' | 'dbl-tap' | 'hold' }`                           |
-| client → CLI       | `method-call`        | `{ callId, name, args }`                                                             |
-| client → CLI       | `select-deck`        | `{ deckId }`                                                                         |
-| client → CLI       | `deck-active`        | `{ deckId, mode: 'navigation' | 'overlay', history: 'push' | 'replace' }`           |
-| client → CLI       | `dismiss-overlay`    | `{}`                                                                                  |
-| both               | `method-call-result` | `{ callId, result | error }`                                                         |
+| Direction    | `type`               | Payload                                 |
+| ------------ | -------------------- | --------------------------------------- | -------------------------- | ------------ |
+| CLI → client | `hello-ack`          | `{ version, keyCount, config }`         |
+| CLI → client | `deck-config`        | `{ deckId, surfaces, navMode }`         |
+| CLI → client | `state`              | `{ channels: Record<string, unknown> }` |
+| CLI → client | `decks-list`         | `{ decks: Array<{ id, name, icon }> }`  |
+| CLI → client | `show-overlay`       | `{ deckId }                             | null }`                    |
+| client → CLI | `hello`              | `{ version, token? }`                   |
+| client → CLI | `button-action`      | `{ deckId, position, gesture: 'tap'     | 'dbl-tap'                  | 'hold' }`    |
+| client → CLI | `method-call`        | `{ callId, name, args }`                |
+| client → CLI | `select-deck`        | `{ deckId }`                            |
+| client → CLI | `deck-active`        | `{ deckId, mode: 'navigation'           | 'overlay', history: 'push' | 'replace' }` |
+| client → CLI | `dismiss-overlay`    | `{}`                                    |
+| both         | `method-call-result` | `{ callId, result                       | error }`                   |
 
 **Removed vs legacy v2:** `snapshot` message (Playwright captures screenshots locally in real mode; emulator iframes frontend vite).
 
@@ -482,7 +490,7 @@ server → client:  { type: 'hello-ack', version: 3, keyCount: number, config: <
 - CLI spawns vite as child process with `SIRENO_TOKEN=<token>` env var.
 - CLI vite plugin (`sireno-deck-2/vite`) exposes token via virtual module:
   ```ts
-  import { token } from 'virtual:sireno/token';
+  import { token } from "virtual:sireno/token";
   ```
 - Frontend imports the virtual module, sends token in `hello` handshake.
 - For prod (`dist/frontend/`), CLI serves via a small Node HTTP server that injects `<script>window.__SIRENO_TOKEN__='…'</script>` into `index.html`.
@@ -526,13 +534,13 @@ server → client:  { type: 'hello-ack', version: 3, keyCount: number, config: <
 
 ## 16. OS-specific
 
-| Concern        | Linux                                     | macOS                                      | Windows                     |
-| -------------- | ----------------------------------------- | ------------------------------------------ | --------------------------- |
-| Session lock   | `dbus-next` (screensaver interface)         | `osascript`                                  | PowerShell session API      |
-| Active app     | gnome-shell D-Bus + Wayland gnome variant | AppleScript `System Events`                  | UIA `GetForegroundWindow`     |
-| Key macro      | `xdotool` / `ydotool` / `dotool` (probe)        | AppleScript `keystroke`                      | PowerShell `SendKeys`         |
-| Media player   | `playerctl` (MPRIS)                         | `osascript` (Spotify/etc.)                   | PowerShell SMTC             |
-| Daemon PID dir | `$XDG_RUNTIME_DIR` then `/tmp`                | `~/Library/Application Support/sireno-deck-2/` | `%LOCALAPPDATA%\sireno-deck-2\` |
+| Concern        | Linux                                     | macOS                                          | Windows                         |
+| -------------- | ----------------------------------------- | ---------------------------------------------- | ------------------------------- |
+| Session lock   | `dbus-next` (screensaver interface)       | `osascript`                                    | PowerShell session API          |
+| Active app     | gnome-shell D-Bus + Wayland gnome variant | AppleScript `System Events`                    | UIA `GetForegroundWindow`       |
+| Key macro      | `xdotool` / `ydotool` / `dotool` (probe)  | AppleScript `keystroke`                        | PowerShell `SendKeys`           |
+| Media player   | `playerctl` (MPRIS)                       | `osascript` (Spotify/etc.)                     | PowerShell SMTC                 |
+| Daemon PID dir | `$XDG_RUNTIME_DIR` then `/tmp`            | `~/Library/Application Support/sireno-deck-2/` | `%LOCALAPPDATA%\sireno-deck-2\` |
 
 ---
 
@@ -565,19 +573,19 @@ server → client:  { type: 'hello-ack', version: 3, keyCount: number, config: <
 
 ## 19. Implementation Phases
 
-| #   | Phase                              | Status     | Key outputs                                                                 |
-| --- | ---------------------------------- | ---------- | --------------------------------------------------------------------------- |
-| 0   | Scaffold                            | ✅ done    | pnpm workspace, TS 7.0 RC, oxlint/oxfmt/vitest, yargs CLI shell, pino, daemon helpers |
-| 1   | Config + Addon Loader              | ✅ done    | zod schemas, `resolveIconRef`, line-aware YAML loader, `@file.yml` expander, addon manifest + loader + registry, `ConfigWatcher` (chokidar) |
-| 2   | Deck Runtime + Built-ins            | 🔜 next   | pub-sub bus, gesture state machine (tap/dbl-tap/hold), store, pagination, deck runtime (nav/overlay/reserved slots), `core-buttons`, `internal-settings`, `session` built-in addons |
-| 3   | WS Bridge v3 + Frontend Skeleton   | pending   | WS bridge with token handshake, vite plugin (`./vite`), virtual module, frontend React app (`./react`), `useAddonChannel` hook, `<Deck>` + `<ButtonFrame>` |
-| 4   | Emulator                            | pending   | Emulator vite shell, side panel, iframe to frontend vite, mouse-to-gesture mapping, `--device-model` grid |
-| 5   | Hardware                            | pending   | Device enumeration + interactive prompt, Playwright render → screenshot → sharp crop → device write, Linux udev helper |
-| 6   | OS Providers                        | pending   | Linux (dbus-next, gnome-shell D-Bus, xdotool/ydotool probe, playerctl), macOS (osascript), Windows (PowerShell + UIA) |
-| 7   | Built-in Themes                     | pending   | `themes/default` + `themes/light` manifests, Tailwind 4 tokens, `ButtonFrame` + surfaces |
-| 8   | Remaining Built-in Addons           | pending   | `date-time`, `emoji-selector` (+ emoji deck), `media-player`, `system-status` (pub-sub), `value-display`, `weather`, `brightness` |
-| 9   | Daemon + Polish                     | pending   | `start`/`stop`/`status` real implementation, PID + token files, prod HTTP server (token injection into `index.html`), graceful shutdown, npm addon loader via `require.resolve` |
-| 10  | Docs + Release                       | pending   | README + per-addon docs, `pnpm package` script, v0.1.0 release                |
+| #   | Phase                            | Status  | Key outputs                                                                                                                                                                         |
+| --- | -------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0   | Scaffold                         | ✅ done | pnpm workspace, TS 7.0 RC, oxlint/oxfmt/vitest, yargs CLI shell, pino, daemon helpers                                                                                               |
+| 1   | Config + Addon Loader            | ✅ done | zod schemas, `resolveIconRef`, line-aware YAML loader, `@file.yml` expander, addon manifest + loader + registry, `ConfigWatcher` (chokidar)                                         |
+| 2   | Deck Runtime + Built-ins         | 🔜 next | pub-sub bus, gesture state machine (tap/dbl-tap/hold), store, pagination, deck runtime (nav/overlay/reserved slots), `core-buttons`, `internal-settings`, `session` built-in addons |
+| 3   | WS Bridge v3 + Frontend Skeleton | pending | WS bridge with token handshake, vite plugin (`./vite`), virtual module, frontend React app (`./react`), `useAddonChannel` hook, `<Deck>` + `<ButtonFrame>`                          |
+| 4   | Emulator                         | pending | Emulator vite shell, side panel, iframe to frontend vite, mouse-to-gesture mapping, `--device-model` grid                                                                           |
+| 5   | Hardware                         | pending | Device enumeration + interactive prompt, Playwright render → screenshot → sharp crop → device write, Linux udev helper                                                              |
+| 6   | OS Providers                     | pending | Linux (dbus-next, gnome-shell D-Bus, xdotool/ydotool probe, playerctl), macOS (osascript), Windows (PowerShell + UIA)                                                               |
+| 7   | Built-in Themes                  | pending | `themes/default` + `themes/light` manifests, Tailwind 4 tokens, `ButtonFrame` + surfaces                                                                                            |
+| 8   | Remaining Built-in Addons        | pending | `date-time`, `emoji-selector` (+ emoji deck), `media-player`, `system-status` (pub-sub), `value-display`, `weather`, `brightness`                                                   |
+| 9   | Daemon + Polish                  | pending | `start`/`stop`/`status` real implementation, PID + token files, prod HTTP server (token injection into `index.html`), graceful shutdown, npm addon loader via `require.resolve`     |
+| 10  | Docs + Release                   | pending | README + per-addon docs, `pnpm package` script, v0.1.0 release                                                                                                                      |
 
 ---
 
@@ -645,10 +653,12 @@ Recorded here for posterity; each was explicitly confirmed by the user.
 ## 22. Current Progress
 
 ### Phase 0 — Scaffold ✅
+
 - pnpm workspace, TS 7.0.1-rc, oxlint 1.71, oxfmt, vitest, yargs, pino, daemon helpers.
 - 8/8 vitest tests passing.
 
 ### Phase 1 — Config + Addon Loader ✅
+
 - 38 config tests + 23 addon tests passing (69/69 total).
 - Config schemas, icon resolver (4 schemes), YAML loader with line numbers, `@file.yml` expander, config discovery, bootstrap validation.
 - Addon manifest reader, entry normalization (string-or-object), local loader via dynamic `import()`, registry.
@@ -656,6 +666,7 @@ Recorded here for posterity; each was explicitly confirmed by the user.
 - `pnpm typecheck` clean. `pnpm --filter sireno-deck-2 lint` clean. `pnpm format:check` clean.
 
 ### Deferred items (kept for tracking)
+
 - npm addon loader (Phase 9)
 - Per-button `configSchema` validation (Phase 2 — uses registry)
 - Reject `internal: true` buttons in user config (Phase 2)
@@ -667,9 +678,10 @@ Recorded here for posterity; each was explicitly confirmed by the user.
 ## 23. Phase 2 entry criteria
 
 Start Phase 2 when ready. Phase 2 deliverables:
+
 - `src/core/` directory: pub-sub bus, gesture state machine, store, pagination helpers
 - `src/deck/` directory: runtime, system-decks/, system-buttons/
-- `src/action/` directory: executor (execa + host.* interpolation)
+- `src/action/` directory: executor (execa + host.\* interpolation)
 - `src/builtin-addons/` directory: `core-buttons`, `internal-settings`, `session`
 - Tests for runtime, gesture state machine, pagination, store
 - Wire `core-buttons` to use the registry to validate button configs at load time

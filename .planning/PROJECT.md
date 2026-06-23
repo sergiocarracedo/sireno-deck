@@ -27,28 +27,28 @@ Legacy `/works/opensource/sireno-deck` does most of this, but is React 18 + Tail
 
 ## Core requirements
 
-| ID  | Requirement                                                                                     | Phase |
-| --- | ----------------------------------------------------------------------------------------------- | ----- |
-| R1  | Single `config.yml` drives decks, buttons, themes, addons                                       | 02    |
-| R2  | `decks.main` is required and is the main deck (no `main_deck` property)                          | 02    |
-| R3  | Reserved slot `n-1` (back / settings / overlay icon) is always injected; no override flag       | 02    |
-| R4  | Addons registered via string-or-`{ source, enabled? }`; name/id from manifest                    | 02    |
-| R5  | Icon refs resolve through one function: relative path, `icon://`, `builtin://`, `addon://`     | 02    |
-| R6  | Decks can be defined programmatically by addons via `createDecks({ config, deck })`             | 03    |
-| R7  | Built-in addons: `core-buttons`, `internal-settings`, `session`, `date-time`, `emoji-selector`, `media-player`, `system-status`, `value-display`, `weather`, `brightness` | 03, 09 |
-| R8  | Gesture state machine outputs only `tap | dbl-tap | hold` (no `press-then-release`)                | 03    |
-| R9  | WS bridge v3 with handshake (`hello` / `hello-ack`), `button-action` carrying `gesture`, no `snapshot` message | 04 |
-| R10 | WS token generated on `start`, not on `run`; injected via `SIRENO_TOKEN` env + `virtual:sireno/token` module (dev) or `<script>` injection (prod) | 04, 10 |
-| R11 | Vite plugin (`sireno-deck-2/vite`) registers addon/theme folders                                | 04    |
-| R12 | Emulator renders the frontend vite in an iframe; mouse events become gestures via shell gesture state machine | 05 |
-| R13 | Real hardware mode uses Playwright `page.screenshot()` + `sharp` crop + `@elgato-stream-deck/node` | 06 |
-| R14 | Multi-device interactive prompt with arrow keys; selection persisted to `$XDG_CONFIG_HOME/sireno-deck-2/device.json` | 06 |
-| R15 | Linux active-app via gnome-shell D-Bus + Wayland gnome variant; Linux media via `playerctl`     | 07    |
-| R16 | macOS via osascript; Windows via PowerShell + UIA                                              | 07    |
-| R17 | Tailwind 4 themes via CSS variables + `@theme` directive; two built-ins (`default`, `light`)    | 08    |
-| R18 | Daemon: `start`/`stop`/`status` write/read PID + token to `$XDG_RUNTIME_DIR`; graceful shutdown | 10 |
-| R19 | npm addon loader via `require.resolve`                                                         | 10    |
-| R20 | Production HTTP server injects `window.__SIRENO_TOKEN__` into `dist/frontend/index.html`        | 10    |
+| ID  | Requirement                                                                                                                                                               | Phase   |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ----------------------------- | --- |
+| R1  | Single `config.yml` drives decks, buttons, themes, addons                                                                                                                 | 02      |
+| R2  | `decks.main` is required and is the main deck (no `main_deck` property)                                                                                                   | 02      |
+| R3  | Reserved slot `n-1` (back / settings / overlay icon) is always injected; no override flag                                                                                 | 02      |
+| R4  | Addons registered via string-or-`{ source, enabled? }`; name/id from manifest                                                                                             | 02      |
+| R5  | Icon refs resolve through one function: relative path, `icon://`, `builtin://`, `addon://`                                                                                | 02      |
+| R6  | Decks can be defined programmatically by addons via `createDecks({ config, deck })`                                                                                       | 03      |
+| R7  | Built-in addons: `core-buttons`, `internal-settings`, `session`, `date-time`, `emoji-selector`, `media-player`, `system-status`, `value-display`, `weather`, `brightness` | 03, 09  |
+| R8  | Gesture state machine outputs only `tap                                                                                                                                   | dbl-tap | hold`(no`press-then-release`) | 03  |
+| R9  | WS bridge v3 with handshake (`hello` / `hello-ack`), `button-action` carrying `gesture`, no `snapshot` message                                                            | 04      |
+| R10 | WS token generated on `start`, not on `run`; injected via `SIRENO_TOKEN` env + `virtual:sireno/token` module (dev) or `<script>` injection (prod)                         | 04, 10  |
+| R11 | Vite plugin (`sireno-deck-2/vite`) registers addon/theme folders                                                                                                          | 04      |
+| R12 | Emulator renders the frontend vite in an iframe; mouse events become gestures via shell gesture state machine                                                             | 05      |
+| R13 | Real hardware mode uses Playwright `page.screenshot()` + `sharp` crop + `@elgato-stream-deck/node`                                                                        | 06      |
+| R14 | Multi-device interactive prompt with arrow keys; selection persisted to `$XDG_CONFIG_HOME/sireno-deck-2/device.json`                                                      | 06      |
+| R15 | Linux active-app via gnome-shell D-Bus + Wayland gnome variant; Linux media via `playerctl`                                                                               | 07      |
+| R16 | macOS via osascript; Windows via PowerShell + UIA                                                                                                                         | 07      |
+| R17 | Tailwind 4 themes via CSS variables + `@theme` directive; two built-ins (`default`, `light`)                                                                              | 08      |
+| R18 | Daemon: `start`/`stop`/`status` write/read PID + token to `$XDG_RUNTIME_DIR`; graceful shutdown                                                                           | 10      |
+| R19 | npm addon loader via `require.resolve`                                                                                                                                    | 10      |
+| R20 | Production HTTP server injects `window.__SIRENO_TOKEN__` into `dist/frontend/index.html`                                                                                  | 10      |
 
 ## Non-goals (v0.1)
 

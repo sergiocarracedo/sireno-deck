@@ -13,31 +13,31 @@ The deck runtime that holds navigation state, overlay state, gesture machine, an
 
 ## Must-haves verification
 
-| Must-have | Status | Evidence |
-| --- | --- | --- |
-| `pub-sub.ts`, `gesture-state.ts`, `store.ts`, `pagination.ts` compile | ✅ | `tsc --noEmit` clean |
-| `pub-sub.test.ts` ≥ 6 tests | ✅ | 7 tests |
-| `gesture-state.test.ts` ≥ 10 tests | ✅ | 11 tests |
-| `store.test.ts` ≥ 7 tests | ✅ | 10 tests |
-| `pagination.test.ts` ≥ 8 tests | ✅ | 10 tests |
-| Plan 02: `executor.test.ts` ≥ 7 tests | ✅ | 7 tests |
-| Plan 02: `system-back-injection.test.ts` ≥ 6 tests | ✅ | 6 tests |
-| Plan 02: `methods.test.ts` ≥ 5 tests | ✅ | 6 tests |
-| Plan 02: `runtime.test.ts` ≥ 10 tests | ✅ | 11 tests |
-| Plan 03: `core-buttons/index.test.ts` ≥ 4 tests | ✅ | 4 tests |
-| Plan 03: `internal-settings/index.test.ts` ≥ 3 tests | ✅ | 3 tests |
-| Plan 03: `session/index.test.ts` ≥ 3 tests | ✅ | 3 tests |
-| Plan 03: `config/validation.test.ts` ≥ 5 tests | ✅ | 5 tests |
-| Plan 03: `integration.test.ts` ≥ 3 tests | ✅ | 3 tests |
-| Total Phase 0+1+2+3 tests ≥ 150 | ✅ | **155 passing** |
-| `pnpm typecheck` clean | ✅ | yes |
-| `pnpm --filter sireno-deck-2 lint` clean | ✅ | 0 warnings, 0 errors |
-| `pnpm format:check` clean | ✅ | all 106 files conform |
-| No new runtime deps beyond execa | ✅ | only execa ^9.6.0 added |
-| No imports from `@/deck`, `@/action`, `@/addon` in core | ✅ | core stays decoupled |
-| `execa` added as runtime dep | ✅ | yes |
-| `NotImplementedError` exported from `@/util/errors.ts` | ✅ | yes |
-| End-to-end tracer bullet verifiable | ✅ | integration.test.ts asserts nav + command execution |
+| Must-have                                                             | Status | Evidence                                            |
+| --------------------------------------------------------------------- | ------ | --------------------------------------------------- |
+| `pub-sub.ts`, `gesture-state.ts`, `store.ts`, `pagination.ts` compile | ✅     | `tsc --noEmit` clean                                |
+| `pub-sub.test.ts` ≥ 6 tests                                           | ✅     | 7 tests                                             |
+| `gesture-state.test.ts` ≥ 10 tests                                    | ✅     | 11 tests                                            |
+| `store.test.ts` ≥ 7 tests                                             | ✅     | 10 tests                                            |
+| `pagination.test.ts` ≥ 8 tests                                        | ✅     | 10 tests                                            |
+| Plan 02: `executor.test.ts` ≥ 7 tests                                 | ✅     | 7 tests                                             |
+| Plan 02: `system-back-injection.test.ts` ≥ 6 tests                    | ✅     | 6 tests                                             |
+| Plan 02: `methods.test.ts` ≥ 5 tests                                  | ✅     | 6 tests                                             |
+| Plan 02: `runtime.test.ts` ≥ 10 tests                                 | ✅     | 11 tests                                            |
+| Plan 03: `core-buttons/index.test.ts` ≥ 4 tests                       | ✅     | 4 tests                                             |
+| Plan 03: `internal-settings/index.test.ts` ≥ 3 tests                  | ✅     | 3 tests                                             |
+| Plan 03: `session/index.test.ts` ≥ 3 tests                            | ✅     | 3 tests                                             |
+| Plan 03: `config/validation.test.ts` ≥ 5 tests                        | ✅     | 5 tests                                             |
+| Plan 03: `integration.test.ts` ≥ 3 tests                              | ✅     | 3 tests                                             |
+| Total Phase 0+1+2+3 tests ≥ 150                                       | ✅     | **155 passing**                                     |
+| `pnpm typecheck` clean                                                | ✅     | yes                                                 |
+| `pnpm --filter sireno-deck-2 lint` clean                              | ✅     | 0 warnings, 0 errors                                |
+| `pnpm format:check` clean                                             | ✅     | all 106 files conform                               |
+| No new runtime deps beyond execa                                      | ✅     | only execa ^9.6.0 added                             |
+| No imports from `@/deck`, `@/action`, `@/addon` in core               | ✅     | core stays decoupled                                |
+| `execa` added as runtime dep                                          | ✅     | yes                                                 |
+| `NotImplementedError` exported from `@/util/errors.ts`                | ✅     | yes                                                 |
+| End-to-end tracer bullet verifiable                                   | ✅     | integration.test.ts asserts nav + command execution |
 
 ## Requirements traceability
 

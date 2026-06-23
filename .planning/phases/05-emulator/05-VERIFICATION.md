@@ -10,24 +10,25 @@ tests_total: 239
 ## Phase Goal
 
 A second vite app (`packages/cli/frontend-emulator/`) that:
+
 - renders a side panel + center iframe pointing at the frontend vite
 - maps mouse events on a device-model grid into gestures via the cli gesture state machine
 - opens its own WS connection to the CLI bridge with exponential backoff
 
 ## Must-haves
 
-| Must-have | Status | Evidence |
-| --- | --- | --- |
-| Device models: mk2=15, plus=32, mini=6, xl=32 keys | ✅ | `src/device/models.ts`, 4+ models in test |
-| Emulator server placeholder (mock for now) | ✅ | `src/render/emulator-server.ts` |
-| VirtualStreamDeckLifecycle with `injectKeyEvent` | ✅ | `src/system/virtual-stream-deck.ts` + test |
-| frontend-emulator workspace pkg | ✅ | `packages/cli/frontend-emulator/` |
-| Side panel (deck picker / action log / ws log) | ✅ | `SidePanel.tsx` with `data-testid="ws-url"`, `device-model-select`, `deck-list` |
-| Center iframe to frontend vite | ✅ | `Shell.tsx` renders `<iframe>` (deferred — uses DeckFrame grid instead per plan iteration) |
-| Mouse → gesture via cli `nextGesture` | ✅ | `gesture.ts` + 4 tests |
-| WS client with exponential backoff [1s, 2s, 4s, 8s, 16s, 30s] max 10 attempts → failed | ✅ | `bridge.ts` + 5 tests |
-| Integration test (mock WS) | ⚠️ partial | shell-render tests cover the wiring; standalone WS integration test was dropped (unstable) |
-| Total Phase 0+1+2+3+4+5 ≥ 230 | ✅ | **239 tests** (224 cli + 15 frontend-emulator) |
+| Must-have                                                                              | Status     | Evidence                                                                                   |
+| -------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------ |
+| Device models: mk2=15, plus=32, mini=6, xl=32 keys                                     | ✅         | `src/device/models.ts`, 4+ models in test                                                  |
+| Emulator server placeholder (mock for now)                                             | ✅         | `src/render/emulator-server.ts`                                                            |
+| VirtualStreamDeckLifecycle with `injectKeyEvent`                                       | ✅         | `src/system/virtual-stream-deck.ts` + test                                                 |
+| frontend-emulator workspace pkg                                                        | ✅         | `packages/cli/frontend-emulator/`                                                          |
+| Side panel (deck picker / action log / ws log)                                         | ✅         | `SidePanel.tsx` with `data-testid="ws-url"`, `device-model-select`, `deck-list`            |
+| Center iframe to frontend vite                                                         | ✅         | `Shell.tsx` renders `<iframe>` (deferred — uses DeckFrame grid instead per plan iteration) |
+| Mouse → gesture via cli `nextGesture`                                                  | ✅         | `gesture.ts` + 4 tests                                                                     |
+| WS client with exponential backoff [1s, 2s, 4s, 8s, 16s, 30s] max 10 attempts → failed | ✅         | `bridge.ts` + 5 tests                                                                      |
+| Integration test (mock WS)                                                             | ⚠️ partial | shell-render tests cover the wiring; standalone WS integration test was dropped (unstable) |
+| Total Phase 0+1+2+3+4+5 ≥ 230                                                          | ✅         | **239 tests** (224 cli + 15 frontend-emulator)                                             |
 
 ## Requirements traceability
 

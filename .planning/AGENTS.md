@@ -97,7 +97,7 @@ When working on a phase:
 ## Current Phase
 
 **Milestone:** v0.1.0
-**Phase:** 06 — hardware (planning complete, ready to execute)
-**Status:** 3 plans ready, none executed
-**Plans:** 06-01 (Wave 1) · 06-02 (Wave 1) · 06-03 (Wave 2)
+**Phase:** 07 — os-providers (planning pending)
+**Status:** 06 complete (3/3 plans executed, 288 tests passing, VERIFICATION passed)
+**Next:** Plan 07 — Linux/macOS/Windows OS automation providers
 **Last updated:** 2026-06-23
