@@ -16,11 +16,11 @@ CONTEXT.md did not exist prior to this session (only `04-PHASE.md`). The user se
 
 **Question:** How does the frontend vite app discover and load an addon's React render modules?
 
-| Option | Description |
-| --- | --- |
-| Build-time (vite plugin imports each addon's main statically) — RECOMMENDED | Bundle grows with addon count; simplest mental model; HMR per addon |
-| Runtime dynamic import via virtual module | Smaller initial bundle; HMR works; better for large addon ecosystems |
-| Runtime fetch + eval over WS | Maximum flexibility; lowest performance; biggest security surface |
+| Option                                                                      | Description                                                          |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Build-time (vite plugin imports each addon's main statically) — RECOMMENDED | Bundle grows with addon count; simplest mental model; HMR per addon  |
+| Runtime dynamic import via virtual module                                   | Smaller initial bundle; HMR works; better for large addon ecosystems |
+| Runtime fetch + eval over WS                                                | Maximum flexibility; lowest performance; biggest security surface    |
 
 **User choice:** "Build-time (vite plugin imports each addon's main statically) (Recommended)"
 
@@ -30,11 +30,11 @@ CONTEXT.md did not exist prior to this session (only `04-PHASE.md`). The user se
 
 **Question:** How does the bridge push state updates to the frontend?
 
-| Option | Description |
-| --- | --- |
-| Per-channel pub-sub — RECOMMENDED | Matches Phase 03 architecture; granular; scales with subscription count |
-| Per-deck snapshot on every change | Simpler frontend; more bytes on wire |
-| Delta-only updates with sequence numbers | Most efficient; most complex |
+| Option                                   | Description                                                             |
+| ---------------------------------------- | ----------------------------------------------------------------------- |
+| Per-channel pub-sub — RECOMMENDED        | Matches Phase 03 architecture; granular; scales with subscription count |
+| Per-deck snapshot on every change        | Simpler frontend; more bytes on wire                                    |
+| Delta-only updates with sequence numbers | Most efficient; most complex                                            |
 
 **User choice:** "Per-channel pub-sub (Recommended)"
 
@@ -44,11 +44,11 @@ CONTEXT.md did not exist prior to this session (only `04-PHASE.md`). The user se
 
 **Question:** When the WS disconnects, what does the frontend do?
 
-| Option | Description |
-| --- | --- |
+| Option                                                | Description                                                |
+| ----------------------------------------------------- | ---------------------------------------------------------- |
 | Auto-reconnect with exponential backoff — RECOMMENDED | Resilient to daemon restarts; visual status badge possible |
-| Auto-reconnect immediate | Simpler but hammers bridge if daemon down |
-| Fail-hard | Simplest; worst UX for long sessions |
+| Auto-reconnect immediate                              | Simpler but hammers bridge if daemon down                  |
+| Fail-hard                                             | Simplest; worst UX for long sessions                       |
 
 **User choice:** "Auto-reconnect with exponential backoff (Recommended)"
 

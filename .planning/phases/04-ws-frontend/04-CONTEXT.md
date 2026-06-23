@@ -119,5 +119,5 @@ Frontend auto-reconnects on WS close with exponential backoff: 1s → 2s → 4s 
 
 ---
 
-*Phase: 04-ws-frontend*
-*Context gathered: 2026-06-23 (standard mode)*
+_Phase: 04-ws-frontend_
+_Context gathered: 2026-06-23 (standard mode)_
