@@ -11,6 +11,8 @@ import { startWsBridge, type WsBridge } from "@/render/ws-bridge";
 const EMULATOR_PACKAGE = "@sireno-deck-2/frontend-emulator";
 const DEFAULT_EMULATOR_PORT = 52938;
 const DEFAULT_TIMEOUT_MS = 30_000;
+// eslint-disable-next-line no-control-regex
+const ANSI_REGEX = /\u001b\[[0-9;]*m/g;
 const READY_REGEX = /Local:[^\n]*?https?:\/\/127\.0\.0\.1:(\d+)/;
 
 export interface RunEmulatorModeOptions {
@@ -76,12 +78,8 @@ const spawnEmulatorVite = (options: {
     const onData = (chunk: Buffer): void => {
       const text = chunk.toString();
       logger.debug({ chunk: text }, "emulator vite stdout");
-      const match =
-        text.match(READY_REGEX) ??
-        (() => {
-          const combined = text;
-          return combined.match(READY_REGEX);
-        })();
+      const stripped = text.replace(ANSI_REGEX, "");
+      const match = stripped.match(READY_REGEX);
       if (match && match[1]) {
         clearTimeout(timer);
         const url = `http://127.0.0.1:${match[1]}`;
