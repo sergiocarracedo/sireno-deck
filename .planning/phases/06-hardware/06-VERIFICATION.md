@@ -13,23 +13,23 @@ Drive real Elgato Stream Deck hardware from the CLI: enumerate devices, prompt i
 
 ## Must-haves
 
-| Must-have                                                                           | Status | Evidence                                                  |
-| ----------------------------------------------------------------------------------- | ------ | --------------------------------------------------------- |
-| `src/device/stream-deck.ts` — `connectStreamDeck(selector)`                        | ✅     | `stream-deck.ts` + 12 tests                               |
-| `src/device/registry.ts` — `listDevices()` sorted by serial                         | ✅     | `registry.ts` + 5 tests                                    |
-| `src/device/linux-udev.ts` — udev rules + `installUdevRules()` w/ `UdevPermissionError` | ✅  | `linux-udev.ts` + 3 tests                                 |
-| `src/util/device-config.ts` — atomic write of selected device                       | ✅     | `device-config.ts` + 4 tests                               |
-| `src/system/device-selection.ts` — interactive prompt w/ `savedButStale` flag        | ✅     | `device-selection.ts` + 6 tests                            |
-| `src/render/browser-renderer.ts` — Playwright + sharp hybrid trigger pipeline        | ✅     | `browser-renderer.ts` + 6 tests                            |
-| `src/render/buffer-hash.ts` — sha1[:16] skip-or-write tracker                        | ✅     | `buffer-hash.ts` + 5 tests                                 |
-| `src/render/screenshot-cadence.ts` — CadenceTimer + EventDebouncer                   | ✅     | `screenshot-cadence.ts` + 6 tests                          |
-| `src/cli/commands/real-mode.ts` — `runRealMode({...}) → { stop }`                    | ✅     | `real-mode.ts` + 6 tests                                   |
-| `src/cli/commands/run.ts` — full pipeline (load → validate → list → select → connect → run) | ✅ | `run.ts` + 7 tests                                         |
-| `src/cli/commands/start.ts` — detach + writePid + removePidFile                      | ✅     | `start.ts` + 4 tests                                       |
-| Total Phase 0+1+2+3+4+5+6 ≥ 280                                                     | ✅     | **288 tests** (cli)                                        |
-| typecheck clean                                                                     | ✅     | `pnpm --filter sireno-deck-2 typecheck`                   |
-| lint clean (0 warnings)                                                              | ✅     | `pnpm --filter sireno-deck-2 lint`                        |
-| format clean                                                                        | ✅     | `pnpm format:check`                                        |
+| Must-have                                                                                   | Status | Evidence                                |
+| ------------------------------------------------------------------------------------------- | ------ | --------------------------------------- |
+| `src/device/stream-deck.ts` — `connectStreamDeck(selector)`                                 | ✅     | `stream-deck.ts` + 12 tests             |
+| `src/device/registry.ts` — `listDevices()` sorted by serial                                 | ✅     | `registry.ts` + 5 tests                 |
+| `src/device/linux-udev.ts` — udev rules + `installUdevRules()` w/ `UdevPermissionError`     | ✅     | `linux-udev.ts` + 3 tests               |
+| `src/util/device-config.ts` — atomic write of selected device                               | ✅     | `device-config.ts` + 4 tests            |
+| `src/system/device-selection.ts` — interactive prompt w/ `savedButStale` flag               | ✅     | `device-selection.ts` + 6 tests         |
+| `src/render/browser-renderer.ts` — Playwright + sharp hybrid trigger pipeline               | ✅     | `browser-renderer.ts` + 6 tests         |
+| `src/render/buffer-hash.ts` — sha1[:16] skip-or-write tracker                               | ✅     | `buffer-hash.ts` + 5 tests              |
+| `src/render/screenshot-cadence.ts` — CadenceTimer + EventDebouncer                          | ✅     | `screenshot-cadence.ts` + 6 tests       |
+| `src/cli/commands/real-mode.ts` — `runRealMode({...}) → { stop }`                           | ✅     | `real-mode.ts` + 6 tests                |
+| `src/cli/commands/run.ts` — full pipeline (load → validate → list → select → connect → run) | ✅     | `run.ts` + 7 tests                      |
+| `src/cli/commands/start.ts` — detach + writePid + removePidFile                             | ✅     | `start.ts` + 4 tests                    |
+| Total Phase 0+1+2+3+4+5+6 ≥ 280                                                             | ✅     | **288 tests** (cli)                     |
+| typecheck clean                                                                             | ✅     | `pnpm --filter sireno-deck-2 typecheck` |
+| lint clean (0 warnings)                                                                     | ✅     | `pnpm --filter sireno-deck-2 lint`      |
+| format clean                                                                                | ✅     | `pnpm format:check`                     |
 
 ## Requirements traceability
 

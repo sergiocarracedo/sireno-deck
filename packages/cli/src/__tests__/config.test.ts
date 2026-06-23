@@ -312,6 +312,19 @@ describe("loadConfig", () => {
       expect(ce.issues[0]?.location).toBeDefined();
     }
   });
+
+  it("wraps ENOENT in a friendly ConfigLoadError", () => {
+    const dir = makeTempDir();
+    const path = join(dir, "does-not-exist.yml");
+    try {
+      loadConfig({ configPath: path });
+      throw new Error("should have thrown");
+    } catch (err) {
+      expect(err).toBeInstanceOf(ConfigLoadError);
+      expect((err as Error).message).toContain("Config file not found");
+      expect((err as Error).message).toContain(path);
+    }
+  });
 });
 
 describe("findConfigPath", () => {

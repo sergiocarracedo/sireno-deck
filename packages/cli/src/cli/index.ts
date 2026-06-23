@@ -67,7 +67,17 @@ const runCommand: CommandModule<object, RunArgs> = {
       ...(argv.dev !== undefined ? { dev: argv.dev } : {}),
       ...(argv.deviceModel !== undefined ? { deviceModel: argv.deviceModel } : {}),
     };
-    await run(options);
+    try {
+      await run(options);
+    } catch (err) {
+      const e = err as { issues?: unknown; message?: string };
+      const message =
+        e && typeof e === "object" && "message" in e && typeof e.message === "string"
+          ? e.message
+          : "command failed";
+      logger.error({ err }, message);
+      process.exitCode = 1;
+    }
   },
 };
 
@@ -95,7 +105,17 @@ const startCommand: CommandModule<object, StartArgs> = {
       ...(argv.emulator !== undefined ? { emulator: argv.emulator } : {}),
       ...(argv.deviceModel !== undefined ? { deviceModel: argv.deviceModel } : {}),
     };
-    await start(options);
+    try {
+      await start(options);
+    } catch (err) {
+      const e = err as { issues?: unknown; message?: string };
+      const message =
+        e && typeof e === "object" && "message" in e && typeof e.message === "string"
+          ? e.message
+          : "command failed";
+      logger.error({ err }, message);
+      process.exitCode = 1;
+    }
   },
 };
 

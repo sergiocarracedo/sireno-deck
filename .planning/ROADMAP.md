@@ -26,7 +26,7 @@ CLI runs, loads `config.yml`, registers addons, drives an emulator or real hardw
 | 03  | deck-runtime   | 🔜 next | Pub-sub bus, gesture state machine (tap/dbl-tap/hold), store, pagination, deck runtime, core-buttons + internal-settings + session built-in addons |
 | 04  | ws-frontend    | pending | WS bridge v3 with token handshake, vite plugin (`./vite`), frontend React app (`./react`), `useAddonChannel` hook, `<Deck>` + `<ButtonFrame>`      |
 | 05  | emulator       | ✅ done | Emulator vite shell, side panel, iframe to frontend vite, mouse-to-gesture mapping, `--device-model` grid                                          |
-| 06  | hardware       | ✅ done | Device enumeration + interactive prompt, Playwright render → screenshot → sharp crop → device write, Linux udev helper, real-mode CLI integration    |
+| 06  | hardware       | ✅ done | Device enumeration + interactive prompt, Playwright render → screenshot → sharp crop → device write, Linux udev helper, real-mode CLI integration  |
 | 07  | os-providers   | 🔜 next | Linux (dbus-next, gnome-shell D-Bus, xdotool/ydotool probe, playerctl), macOS (osascript), Windows (PowerShell + UIA)                              |
 | 08  | builtin-themes | pending | `themes/default` + `themes/light` manifests, Tailwind 4 tokens, `ButtonFrame` + surfaces                                                           |
 | 09  | builtin-addons | pending | `date-time`, `emoji-selector` (+ emoji deck), `media-player`, `system-status` (pub-sub), `value-display`, `weather`, `brightness`                  |

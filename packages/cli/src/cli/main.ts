@@ -38,7 +38,16 @@ const main = async (): Promise<void> => {
   try {
     await parser.parseAsync();
   } catch (error) {
-    logger.error({ err: error }, "command failed");
+    const e = error as { issues?: unknown; message?: string };
+    const message =
+      e && typeof e === "object" && "message" in e && typeof e.message === "string"
+        ? e.message
+        : "command failed";
+    if (e && Array.isArray(e.issues)) {
+      logger.error({ err: error }, message);
+    } else {
+      logger.error({ err: error }, "command failed");
+    }
     process.exitCode = 1;
   }
 };

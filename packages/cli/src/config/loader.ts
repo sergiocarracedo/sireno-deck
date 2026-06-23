@@ -62,7 +62,15 @@ const convertYamlErrors = (err: unknown): ConfigError[] => {
 
 export const loadConfigFile = (configPath: string): unknown => {
   const absolutePath = isAbsolute(configPath) ? configPath : resolvePath(process.cwd(), configPath);
-  const raw = readFileSync(absolutePath, "utf8");
+  let raw: string;
+  try {
+    raw = readFileSync(absolutePath, "utf8");
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+      throw new ConfigLoadError(`Config file not found: ${absolutePath}`);
+    }
+    throw err;
+  }
   const doc = parseDocument(raw, { keepSourceTokens: true });
   const errors = doc.errors;
   if (errors.length > 0) {
