@@ -97,6 +97,7 @@ When working on a phase:
 ## Current Phase
 
 **Milestone:** v0.1.0
-**Phase:** 03 — deck-runtime ✓ complete → Phase 04 — ws-frontend
-**Status:** verified (155 tests passing)
+**Phase:** 04 — ws-frontend
+**Status:** planning complete (3 plans ready, none executed)
+**Plans:** 04-01 (Wave 1) · 04-02 (Wave 1) · 04-03 (Wave 2)
 **Last updated:** 2026-06-23
