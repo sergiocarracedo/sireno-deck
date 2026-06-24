@@ -1,0 +1,19 @@
+.planning/phases/07-os-providers/07-02-SUMMARY.md
+  s_9fabccd2e25c5b::t_682cf4eb0d9933 1-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "a62efc280d91fecfdac2df46380c1ab62c24caa2",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
