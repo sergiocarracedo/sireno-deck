@@ -1,6 +1,8 @@
 import { existsSync } from "node:fs";
 import { dirname, isAbsolute, resolve as resolvePath } from "node:path";
 
+import { getOriginalCwd } from "@/cli/cwd.ts";
+
 export interface FindConfigOptions {
   cwd?: string;
   explicitPath?: string;
@@ -27,7 +29,7 @@ const walkUpForConfig = (startDir: string, maxDepth: number): string | null => {
 };
 
 export const findConfigPath = (options: FindConfigOptions): string | null => {
-  const cwd = options.cwd ?? process.cwd();
+  const cwd = options.cwd ?? getOriginalCwd();
   if (options.explicitPath) {
     const abs = resolvePath_(options.explicitPath, cwd);
     return existsSync(abs) ? abs : null;

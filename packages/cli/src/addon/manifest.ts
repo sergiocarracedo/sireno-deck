@@ -1,6 +1,8 @@
 import { readFileSync, statSync } from "node:fs";
 import { isAbsolute, resolve as resolvePath } from "node:path";
 
+import { getOriginalCwd } from "@/cli/cwd.ts";
+
 import type { AddonManifest } from "./api.ts";
 
 export interface ReadManifestOptions {
@@ -13,7 +15,7 @@ export interface ReadManifestResult {
 }
 
 export const readManifest = ({ addonRoot }: ReadManifestOptions): ReadManifestResult => {
-  const absoluteRoot = isAbsolute(addonRoot) ? addonRoot : resolvePath(process.cwd(), addonRoot);
+  const absoluteRoot = isAbsolute(addonRoot) ? addonRoot : resolvePath(getOriginalCwd(), addonRoot);
   if (!statSync(absoluteRoot, { throwIfNoEntry: false })?.isDirectory()) {
     throw new Error(`Addon root is not a directory: ${absoluteRoot}`);
   }

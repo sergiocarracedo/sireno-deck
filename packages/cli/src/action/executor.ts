@@ -1,5 +1,6 @@
 import { execa } from "execa";
 
+import { getOriginalCwd } from "@/cli/cwd.ts";
 import type { HostContext } from "@/deck/host-context.ts";
 
 export interface ActionResult {
@@ -67,7 +68,7 @@ export const createActionExecutor = (options: CreateActionExecutorOptions): Acti
     runOptions: ActionExecutorOptions = {},
   ): Promise<ActionResult> => {
     const interpolated = interpolate(command, options.host);
-    const cwd = runOptions.cwd ?? process.cwd();
+    const cwd = runOptions.cwd ?? getOriginalCwd();
     const env = runOptions.env ? { ...process.env, ...runOptions.env } : process.env;
     const started = Date.now();
     const result = await execa("/bin/sh", ["-c", interpolated], {

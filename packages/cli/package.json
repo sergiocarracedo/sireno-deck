@@ -26,7 +26,7 @@
     }
   },
   "scripts": {
-    "dev": "tsx --watch src/cli/main.ts",
+    "dev": "node bin/dev.js",
     "start": "node --import tsx src/cli/main.ts",
     "build": "echo 'no bundler in phase 0' && exit 0",
     "test": "vitest run",

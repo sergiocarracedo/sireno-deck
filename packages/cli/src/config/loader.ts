@@ -3,6 +3,8 @@ import { dirname, isAbsolute, resolve as resolvePath } from "node:path";
 
 import { parseDocument, YAMLParseError } from "yaml";
 
+import { getOriginalCwd } from "@/cli/cwd.ts";
+
 import { RawConfigSchema, type RawConfig } from "./schemas.ts";
 import { expandButtonReferences } from "./reference-expander.ts";
 
@@ -61,7 +63,7 @@ const convertYamlErrors = (err: unknown): ConfigError[] => {
 };
 
 export const loadConfigFile = (configPath: string): unknown => {
-  const absolutePath = isAbsolute(configPath) ? configPath : resolvePath(process.cwd(), configPath);
+  const absolutePath = isAbsolute(configPath) ? configPath : resolvePath(getOriginalCwd(), configPath);
   let raw: string;
   try {
     raw = readFileSync(absolutePath, "utf8");

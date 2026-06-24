@@ -5,11 +5,13 @@ import { dirname, resolve } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const cliRoot = resolve(__dirname, "..");
-const cliEntry = resolve(__dirname, "../src/cli/main.ts");
+const cliEntry = resolve(cliRoot, "src/cli/main.ts");
 
 const tsxBin = resolve(cliRoot, "node_modules", ".bin", "tsx");
 
-const child = spawn(tsxBin, [cliEntry, ...process.argv.slice(2)], {
+const args = ["--watch", cliEntry, ...process.argv.slice(2)];
+
+const child = spawn(tsxBin, args, {
   stdio: "inherit",
   env: {
     ...process.env,
