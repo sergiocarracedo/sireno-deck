@@ -125,7 +125,7 @@ export const createNullKeyMacroProvider = (logger?: pino.Logger): KeyMacroProvid
     );
   }
   return {
-    async sendKey(_comboOrText: string) {
+    async sendKey(_comboOrText: string): Promise<void> {
       throw new ProviderError("NOT_AVAILABLE", "Key-macro provider not available on this platform");
     },
     async stop() {
@@ -138,7 +138,7 @@ export const createNullMediaProvider = (logger?: pino.Logger): MediaProvider => 
   if (logger) {
     logger.warn({ provider: "media" }, "OS media provider unavailable, using null provider");
   }
-  const notAvailable = (): Promise<void> => {
+  const notAvailable = async (): Promise<void> => {
     throw new ProviderError("NOT_AVAILABLE", "Media provider not available on this platform");
   };
   return {
