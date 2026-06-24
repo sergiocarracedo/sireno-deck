@@ -121,7 +121,9 @@ describe("runEmulatorMode", () => {
     const promise = runEmulatorMode({ logger: silentLogger() });
 
     await new Promise((r) => setTimeout(r, 10));
-    child.emitStdout("  \u001b[32mLocal:\u001b[39m   http://127.0.0.1:52938/\n");
+    child.emitStdout(
+      "  \u001b[32m\u001b[1mLocal\u001b[22m:   \u001b[36mhttp://127.0.0.1:\u001b[1m52938\u001b[22m/\u001b[39m\n",
+    );
 
     const handle = await promise;
     expect(spawnMock).toHaveBeenCalledWith(
