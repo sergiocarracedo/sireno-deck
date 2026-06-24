@@ -1,0 +1,26 @@
+packages/cli/src/deck/runtime.test.ts
+  s_9fabccd2e25c5b::t_58fb4bf0daefa0 1,6
+  s_9fabccd2e25c5b::t_0ed391ef83556c 120-216
+packages/cli/src/deck/runtime.ts
+  s_9fabccd2e25c5b::t_f7bb2de654b527 62-63
+  s_9fabccd2e25c5b::t_2c6d35803ed777 6-9
+  s_9fabccd2e25c5b::t_1b28c5078f3501 20
+  s_9fabccd2e25c5b::t_6a3e0281c0f2da 191-228,232-276,288-289
+  s_9fabccd2e25c5b::t_3c636039fef57a 229-231
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "fd6d5d93311dbefd952e3db89ab7b329be10e0a0",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
