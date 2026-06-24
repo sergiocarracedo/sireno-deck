@@ -59,12 +59,12 @@ sources:
 
 ### Library choices (locked from CONTEXT + verified)
 
-| Capability | Linux | macOS | Windows |
-|---|---|---|---|
-| Active app | `dbus-next` + `/proc/$PID/comm` fallback | `osascript -e 'tell app "System Events" to ...'` | PowerShell `System.Windows.Automation` |
-| Session | `dbus-next` (gnome ScreenSaver + Mutter.IdleMonitor) | `osascript` (loginwindow idle / screen lock) | PowerShell session events |
-| Key macro | `xdotool key` (X11) / `ydotool` (Wayland) / `dotool` (fallback) via `execa` | `osascript keystroke` | PowerShell `SendKeys` |
-| Media | `playerctl` (MPRIS) via `execa` | `osascript` (Spotify, Music) | PowerShell SMTC |
+| Capability | Linux                                                                       | macOS                                            | Windows                                |
+| ---------- | --------------------------------------------------------------------------- | ------------------------------------------------ | -------------------------------------- |
+| Active app | `dbus-next` + `/proc/$PID/comm` fallback                                    | `osascript -e 'tell app "System Events" to ...'` | PowerShell `System.Windows.Automation` |
+| Session    | `dbus-next` (gnome ScreenSaver + Mutter.IdleMonitor)                        | `osascript` (loginwindow idle / screen lock)     | PowerShell session events              |
+| Key macro  | `xdotool key` (X11) / `ydotool` (Wayland) / `dotool` (fallback) via `execa` | `osascript keystroke`                            | PowerShell `SendKeys`                  |
+| Media      | `playerctl` (MPRIS) via `execa`                                             | `osascript` (Spotify, Music)                     | PowerShell SMTC                        |
 
 ### Files to create
 

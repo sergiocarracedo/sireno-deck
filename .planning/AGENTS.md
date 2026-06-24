@@ -97,7 +97,7 @@ When working on a phase:
 ## Current Phase
 
 **Milestone:** v0.1.0
-**Phase:** 07 — os-providers (planning complete, ready to execute)
-**Status:** 4 plans ready, 0 executed
-**Plans:** 07-01 (Wave 1) · 07-02 (Wave 1) · 07-03 (Wave 2) · 07-04 (Wave 2)
+**Phase:** 08 — builtin-themes (pending)
+**Status:** 07 complete (4/4 plans executed, 389 tests passing, VERIFICATION passed)
+**Next:** `/discuss-phase 08` — Tailwind 4 themes via CSS variables + `@theme` directive; `default` + `light` manifests
 **Last updated:** 2026-06-24

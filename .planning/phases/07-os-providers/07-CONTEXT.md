@@ -16,7 +16,7 @@ gathered: 2026-06-24
 
 Cross-platform OS integration: per-platform implementations of active-app, session-monitor, key-macro, and media providers, behind common interfaces so addons stay cross-platform. Linux uses D-Bus (`dbus-next`) + `xdotool`/`ydotool`/`dotool` + `playerctl`; macOS uses `osascript`; Windows uses PowerShell + UIA. Pure-Wayland without gnome-shell remains unsupported (locked from PROJECT.md).
 
-Out of scope (deferred to later phases): service-manager integration, the media-player *addon* itself (Phase 09), npm-published providers. This phase delivers the provider *interfaces* + per-platform implementations; addons consume them in Phase 09.
+Out of scope (deferred to later phases): service-manager integration, the media-player _addon_ itself (Phase 09), npm-published providers. This phase delivers the provider _interfaces_ + per-platform implementations; addons consume them in Phase 09.
 
 </domain>
 
@@ -38,7 +38,7 @@ Out of scope (deferred to later phases): service-manager integration, the media-
 
 ### C. Failure mode
 
-- **Init failure** (no key-macro tool, D-Bus unreachable, no media service): provider factory logs a single `WARN` line naming the missing capability and returns a *null provider* — same interface, methods resolve with no effect (or return `null` for `getCurrent`). Addons see clear warnings; nothing crashes. The CLI startup does not block.
+- **Init failure** (no key-macro tool, D-Bus unreachable, no media service): provider factory logs a single `WARN` line naming the missing capability and returns a _null provider_ — same interface, methods resolve with no effect (or return `null` for `getCurrent`). Addons see clear warnings; nothing crashes. The CLI startup does not block.
 - **Per-call failure** (e.g. `sendKey` times out, `getCurrent` returns `null` while a player is restarting): provider **throws** a typed `ProviderError` with `.code: 'NOT_AVAILABLE' | 'TIMEOUT' | 'EXEC_FAILED' | 'PARSE_ERROR'`. The action executor (Phase 03) catches and logs `'action failed'`. No silent swallowing.
 
 ### D. process_names matching for overlay decks
@@ -71,12 +71,13 @@ Out of scope (deferred to later phases): service-manager integration, the media-
 - User wants glob patterns on `process_names` (not just substrings or exact match) — power-user friendly without exotic config syntax.
 - "If a tool is missing, warn but don't crash" — preferred over hard fail at startup. The user often runs sireno-deck on machines where not every addon is fully wired; partial functionality is fine.
 - Provider interfaces are intentionally narrow: most calls return a single object (not callbacks) so addons can use them with simple `await provider.getActive()` patterns. Exception: `onChange(handler)` is event-style because the runtime needs to react to media-player changes.
-- The session-monitor is the *only* provider that emits events; active-app and key-macro are pull-based. This keeps the runtime loop simple (one timer per provider type).
+- The session-monitor is the _only_ provider that emits events; active-app and key-macro are pull-based. This keeps the runtime loop simple (one timer per provider type).
 - Idle event useful for the `system-status` addon (turn off LEDs to save power) — explicit user requirement.
 
 </specifics>
 
 <canonical_refs>
+
 ## Canonical References
 
 **Downstream agents MUST read these before planning or implementing.**
@@ -91,6 +92,7 @@ Out of scope (deferred to later phases): service-manager integration, the media-
 </canonical_refs>
 
 <code_context>
+
 ## Existing Code Insights
 
 ### Reusable Assets
@@ -111,7 +113,7 @@ Out of scope (deferred to later phases): service-manager integration, the media-
 
 - **CLI `preflight` in `run.ts`** (Phase 06) is where providers get instantiated: `preflight` loads config → instantiates `AddonRegistry` → instantiates the runtime → passes the active-app provider to the runtime.
 - **Runtime `createRuntime`** (Phase 03) needs new methods: `setActiveAppProvider(provider)`, internal polling loop for active-app + session + media.
-- **Frontend WS protocol v3** (Phase 04) already carries `runtime:activeDeck`. New state events (`session:locked`, `idle`, `media:track-changed`) are *optional* additions — defer to a later phase if out of scope. Phase 07 just needs the provider interfaces; wiring to WS can land in Phase 09 (builtin-addons).
+- **Frontend WS protocol v3** (Phase 04) already carries `runtime:activeDeck`. New state events (`session:locked`, `idle`, `media:track-changed`) are _optional_ additions — defer to a later phase if out of scope. Phase 07 just needs the provider interfaces; wiring to WS can land in Phase 09 (builtin-addons).
 - **`@inquirer/prompts`** for any user-facing prompts (e.g. "missing key-macro tool, continue?"). Standard usage.
 
 </code_context>
@@ -128,5 +130,6 @@ Out of scope (deferred to later phases): service-manager integration, the media-
 </deferred>
 
 ---
+
 _Phase: 07-os-providers_
 _Context gathered: 2026-06-24_

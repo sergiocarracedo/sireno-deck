@@ -16,6 +16,7 @@ Audit log of decisions made during discuss-phase. Read by humans only; downstrea
 ### A.1 Active-app shape
 
 **Options considered:**
+
 1. (Recommended) `{ name, windowTitle, processId }` — matches legacy provider, all platforms expose it
 2. `{ name }` only — minimal, but too thin for window-title-based matching
 3. `{ name, pid, windowTitle, icon }` — adds platform-specific icon code
@@ -27,6 +28,7 @@ Audit log of decisions made during discuss-phase. Read by humans only; downstrea
 ### A.2 Session-monitor events
 
 **Options considered:**
+
 1. (Recommended) `locked + unlocked + idle` — idle useful for system-status addon (LED off)
 2. `locked + unlocked` only — minimal
 3. `locked + unlocked + idle + suspend/resume` — suspend detection flaky on D-Bus
@@ -38,17 +40,19 @@ Audit log of decisions made during discuss-phase. Read by humans only; downstrea
 ### A.3 Key-macro interface
 
 **Options considered:**
+
 1. (Recommended) `sendKey(comboOrText)` — combo format for modifiers+keys, literal text (including emojis) for plain input
 2. `sendKey(combo) + typeText + sendMouse` — mouse is hairy on Wayland
 3. `sendKey(combo[]) batch + chain` — complex parser, mostly unused
 
-**User choice:** Option 1, with explicit clarification: *"but if you confirm i can send emojis"*.
+**User choice:** Option 1, with explicit clarification: _"but if you confirm i can send emojis"_.
 
 **Rationale captured:** User wants emoji payloads to be sendable through `sendKey` (passthrough, not parsed). This matches `xdotool key` / `osascript keystroke` natural behavior. Confirmed in CONTEXT.md A.3.
 
 ### A.4 Media player scope
 
 **Options considered:**
+
 1. (Recommended) Transport only — `play/pause/toggle/next/previous`. No metadata.
 2. Transport + `getCurrent()` metadata
 3. Transport + metadata + `onChange(handler)` events
@@ -64,6 +68,7 @@ Audit log of decisions made during discuss-phase. Read by humans only; downstrea
 ### B.1 Probe order
 
 **Options considered:**
+
 1. (Recommended) Probe `xdotool → ydotool → dotool` once at init, use first found
 2. Hard-code `xdotool` only — breaks on Wayland
 3. Run all three in parallel — overkill
@@ -75,6 +80,7 @@ Audit log of decisions made during discuss-phase. Read by humans only; downstrea
 ### B.2 Active-app D-Bus strategy
 
 **Options considered:**
+
 1. (Recommended) D-Bus first, `/proc` fallback — single code path covers X11 and gnome-Wayland
 2. D-Bus only — fails for pure X11
 3. Separate X11 vs Wayland impls — more files, more tests
@@ -90,6 +96,7 @@ Audit log of decisions made during discuss-phase. Read by humans only; downstrea
 ### C.1 Init failure
 
 **Options considered:**
+
 1. (Recommended) Log warn + null provider — clear log, no crash, addon sees warning
 2. Hard fail at startup — blocks working installs
 3. Silent no-op — masks config issues
@@ -101,6 +108,7 @@ Audit log of decisions made during discuss-phase. Read by humans only; downstrea
 ### C.2 Per-call failure
 
 **Options considered:**
+
 1. (Recommended) Reject with typed `ProviderError` (`.code`)
 2. Resolve to `{ ok: false, error }`
 3. Log and swallow
@@ -116,6 +124,7 @@ Audit log of decisions made during discuss-phase. Read by humans only; downstrea
 ### D.1 Match language
 
 **Options considered:**
+
 1. (Recommended) Substring, case-insensitive — user's `'chrome'` works out of the box
 2. Exact match — user must write `'Google Chrome'`
 3. Glob patterns — powerful, more parser
@@ -127,6 +136,7 @@ Audit log of decisions made during discuss-phase. Read by humans only; downstrea
 ### D.2 Where matching lives
 
 **Options considered:**
+
 1. (Recommended) Runtime layer (Phase 03)
 2. Provider layer
 3. Addon-side
@@ -138,6 +148,7 @@ Audit log of decisions made during discuss-phase. Read by humans only; downstrea
 ### D.3 Poll cadence
 
 **Options considered:**
+
 1. (Recommended) Poll every 1s, 200ms debounce
 2. Event-driven D-Bus signals (Linux only, more complex)
 3. Poll every 5s (saves CPU but sluggish)
@@ -157,5 +168,6 @@ Audit log of decisions made during discuss-phase. Read by humans only; downstrea
 - One deferred idea: WS broadcast of provider state (session:locked, media:track-changed). Captured in `07-CONTEXT.md` `<deferred>` section; lands in Phase 09.
 
 ---
+
 _Phase: 07-os-providers_
 _Discussion captured: 2026-06-24_
