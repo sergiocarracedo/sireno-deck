@@ -9,6 +9,7 @@
 ## What shipped
 
 ### Theme contract (addon-as-theme)
+
 - `AddonManifest.kind?: 'runtime' | 'theme'` discriminator in `packages/cli/src/addon/api.ts`
 - Manifest parser (`packages/cli/src/addon/manifest.ts`) now:
   - Defaults `kind` to `'runtime'` for backward compatibility
@@ -21,6 +22,7 @@
 - `loadAddons()` now returns `{ addons, themes, issues }` (themes field added)
 
 ### Built-in default theme (`packages/cli/src/themes/default/`)
+
 - `theme.css` — two `@theme` blocks (dark default + `prefers-color-scheme: light` override) with the 8 shared tokens (`--color-bg`, `--color-fg`, `--color-accent`, `--color-ring`, `--color-tap`, `--color-muted`, `--color-bar`, `--color-bar-accent`, `--font-mono`) + `@keyframes tap-pulse` (150ms opacity) + `@keyframes hold-fill` (stroke-dashoffset)
 - `ButtonFrame.tsx` — theme's visual frame (bg-bar, ring-fg/10, hover, focus-visible), tap pulse animation, hold ring SVG overlay that fills 0%→100% via `stroke-dashoffset`
 - 5 primitives: `Icon`, `Label`, `Text`, `TapIndicator`, `Chip`
@@ -28,12 +30,14 @@
 - `index.tsx` — exports `manifest`, `ButtonFrame`, `components`, `surfaces`, `primitives`
 
 ### Themes module (`packages/cli/src/themes/`)
+
 - `loader.ts` — `registerBuiltInThemes(registry)` + `resolveActiveTheme(registry, { theme })`
 - `use-resolved-theme.tsx` — React `ThemeProvider`, `useTheme()` hook, exported `ThemeContext`
 - `index.ts` — barrel re-exporting everything
 - Built-in registration is wired into `packages/cli/src/builtin-addons/register-builtins.ts` so it runs at CLI startup
 
 ### Vite plugin extension (`packages/cli/src/vite/virtual-modules.ts`)
+
 - New virtual modules:
   - `virtual:sireno/theme` → returns active theme's CSS as a string
   - `virtual:sireno/themes/manifest` → returns `{ activeTheme, components, surfaces, primitives, default }` JS module
@@ -41,10 +45,12 @@
 - `packages/cli/frontend/vite.config.ts` reads theme info from `SIRENO_THEME` env var
 
 ### CLI wiring (`packages/cli/src/cli/commands/run.ts`)
+
 - `preflight()` calls `resolveActiveTheme(registry, { theme: config.theme })` and sets `process.env.SIRENO_THEME` so spawned Vite inherits it
 - Defaults to `default` theme if `config.theme` is unset
 
 ### Frontend wiring
+
 - `packages/cli/frontend/src/index.css` now `@import "virtual:sireno/theme"` and sets `color-scheme: dark light` on `:root`
 - `packages/cli/frontend/src/components/ButtonFrame.tsx` rewired:
   - Gesture logic (pointer events, hold progress timer, tap pulse) stays in this wrapper
@@ -53,38 +59,41 @@
 - `packages/cli/frontend/src/App.tsx` builds a `ThemeContextValue` from `activeTheme` and wraps `<Deck />` in `<ThemeProvider>`
 
 ### Test mocks (`packages/cli/frontend/src/__mocks__/`)
+
 - `theme.ts` — stub for `virtual:sireno/theme`
 - `themes-manifest.tsx` — stub for `virtual:sireno/themes/manifest` (with a mock `ButtonFrame` primitive that renders a real `<button>` with data attributes)
 - `vitest.config.ts` aliases both virtual modules to these mocks
 
 ## Test results
 
-| Metric              | Before | After |
-| ------------------- | ------ | ----- |
-| Tests passing       | 389    | 397   |
-| Test files          | 56     | 56    |
-| New tests added     | —      | 8     |
-| Lint warnings       | 0      | 0     |
-| Typecheck errors    | 0      | 0     |
+| Metric           | Before | After |
+| ---------------- | ------ | ----- |
+| Tests passing    | 389    | 397   |
+| Test files       | 56     | 56    |
+| New tests added  | —      | 8     |
+| Lint warnings    | 0      | 0     |
+| Typecheck errors | 0      | 0     |
 
 New tests:
+
 - `packages/cli/src/themes/__tests__/loader.test.ts` — 5 tests covering `registerBuiltInThemes`, `resolveActiveTheme` defaults, missing theme errors, and listing
 - `packages/cli/src/themes/default/__tests__/ButtonFrame.test.tsx` — 3 tests covering default rendering, hold ring SVG, tap animation class
 
 Existing tests updated:
+
 - `packages/cli/src/cli/commands/run.test.ts` and `start.test.ts` mock `AddonRegistry` to include `resolveActiveTheme`
 
 ## Must-haves status
 
-| Requirement                                                              | Status |
-| ------------------------------------------------------------------------ | ------ |
-| `theme: default` works; addon can use any of 4 surfaces                  | ✅     |
-| Tap pulse visible when button is clicked                                 | ✅     |
-| Hold ring grows 0%→100% over 500ms                                       | ✅     |
-| Tokens drive colors via Tailwind utility classes                         | ✅     |
-| Zero regressions                                                         | ✅     |
-| All 4 surfaces export + have tests                                       | ⚠️     |
-| All 5 primitives export + have tests                                     | ⚠️     |
+| Requirement                                             | Status |
+| ------------------------------------------------------- | ------ |
+| `theme: default` works; addon can use any of 4 surfaces | ✅     |
+| Tap pulse visible when button is clicked                | ✅     |
+| Hold ring grows 0%→100% over 500ms                      | ✅     |
+| Tokens drive colors via Tailwind utility classes        | ✅     |
+| Zero regressions                                        | ✅     |
+| All 4 surfaces export + have tests                      | ⚠️     |
+| All 5 primitives export + have tests                    | ⚠️     |
 
 `⚠️` notes: Component tests for surfaces/primitives are present in `themes/default/` but are not yet unit-tested in isolation (covered indirectly via the ButtonFrame test and the integration smoke). Plan 02 may add surface-level snapshot tests.
 

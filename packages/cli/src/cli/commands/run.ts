@@ -66,6 +66,7 @@ export interface PreflightResult {
   readonly xdgConfigHome: string;
   readonly frontendUrl: string;
   readonly runtime: Runtime;
+  readonly theme: { name: string; apiVersion: number };
   readonly providers: {
     readonly activeApp: ActiveAppProvider;
     readonly session: SessionProvider;
@@ -123,6 +124,7 @@ export const preflight = async (options: RunOptions): Promise<PreflightResult> =
     cssPath: theme.cssPath,
     frontendPath: theme.frontendPath,
   });
+  process.env["SIRENO_THEME_NAME"] = theme.name;
 
   const devices = await listDevices();
   const savedDevice = loadDeviceConfig({ xdgConfigHome });
@@ -214,6 +216,7 @@ export const preflight = async (options: RunOptions): Promise<PreflightResult> =
     xdgConfigHome,
     frontendUrl: resolveFrontendUrl(options),
     runtime,
+    theme: { name: theme.name, apiVersion: theme.apiVersion },
     providers: { activeApp, session, keyMacro, media },
   };
 };
@@ -279,7 +282,10 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     resolveDone();
   });
 
-  const handle = await runEmulatorMode({ logger });
+  const handle = await runEmulatorMode({
+    logger,
+    activeTheme: { name: process.env["SIRENO_THEME_NAME"] ?? "default" },
+  });
 
   logger.info(
     { frontendUrl: handle.frontendUrl, wsUrl: handle.wsUrl },

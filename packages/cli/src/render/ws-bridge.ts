@@ -14,6 +14,7 @@ const TOKEN_MISMATCH_CLOSE_CODE = 4001;
 export interface WsBridgeOptions {
   expectedToken?: string;
   handshakeTimeoutMs?: number;
+  activeTheme?: { name: string; version?: number };
 }
 
 export interface WsBridge {
@@ -27,7 +28,7 @@ export interface WsBridge {
 }
 
 export const startWsBridge = (options: WsBridgeOptions = {}): Promise<WsBridge> => {
-  const { expectedToken, handshakeTimeoutMs = HANDSHAKE_TIMEOUT_MS } = options;
+  const { expectedToken, handshakeTimeoutMs = HANDSHAKE_TIMEOUT_MS, activeTheme } = options;
 
   return new Promise((resolve, reject) => {
     const wss = new WebSocketServer({ port: 0, host: "127.0.0.1" });
@@ -76,7 +77,7 @@ export const startWsBridge = (options: WsBridgeOptions = {}): Promise<WsBridge> 
             type: "hello-ack",
             version: 3,
             keyCount: 15,
-            config: {},
+            config: activeTheme !== undefined ? { theme: activeTheme.name } : {},
           });
           socket.send(JSON.stringify(ack));
           for (const handler of connectionHandlers) handler(socket);

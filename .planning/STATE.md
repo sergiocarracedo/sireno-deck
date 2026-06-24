@@ -1,8 +1,8 @@
 ---
 current_phase: 08-builtin-themes
-phase_status: executing
+phase_status: complete
 plans_total: 2
-plans_complete: 1
+plans_complete: 2
 last_updated: 2026-06-24
 ---
 
@@ -10,10 +10,12 @@ last_updated: 2026-06-24
 
 ## Current phase
 
-**Phase 08: builtin-themes** — Plan 01 complete, Plan 02 pending.
+**Phase 08: builtin-themes** — complete. Both plans executed, 401 tests passing, lint + typecheck clean.
 
-**Plan 01** (Wave 1) ✅: Theme contract + Vite plugin + `default` theme end-to-end (commit 8204fe4, 397 tests passing).
-**Plan 02** (Wave 2): `light` theme as thin override + WS `deck-config` theme wiring.
+**Plan 01** (Wave 1) ✅: Theme contract + Vite plugin + `default` theme end-to-end (commit 8204fe4).
+**Plan 02** (Wave 2) ✅: `light` theme as thin override + WS `hello-ack` theme wiring.
+
+Next phase: **09** (per ROADMAP).
 
 ## Plan progress
 

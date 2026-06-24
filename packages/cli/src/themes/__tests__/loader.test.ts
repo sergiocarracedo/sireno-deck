@@ -57,6 +57,6 @@ describe("themes/loader", () => {
         .listThemes()
         .map((t) => t.name)
         .sort(),
-    ).toEqual(["custom", "default"]);
+    ).toEqual(["custom", "default", "light"]);
   });
 });

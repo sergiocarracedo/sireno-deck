@@ -1,0 +1,59 @@
+@theme {
+  --color-bg: #fafafa;
+  --color-fg: #0a0a0a;
+  --color-accent: #0284c7;
+  --color-ring: #0a0a0a;
+  --color-tap: #0284c7;
+  --color-muted: #525252;
+  --color-bar: #e5e5e5;
+  --color-bar-accent: #0284c7;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-bg: #0a0a0a;
+    --color-fg: #fafafa;
+    --color-accent: #38bdf8;
+    --color-ring: #fafafa;
+    --color-tap: #38bdf8;
+    --color-muted: #737373;
+    --color-bar: #262626;
+    --color-bar-accent: #38bdf8;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+}
+
+@keyframes tap-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes hold-fill {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.sireno-tap {
+  animation: tap-pulse 150ms ease-out;
+}
+
+.sireno-holding {
+  position: relative;
+}
+
+.sireno-holding::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}

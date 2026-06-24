@@ -14,6 +14,7 @@ export interface BuiltInThemeSpec {
 
 const BUILT_IN_THEMES: ReadonlyArray<BuiltInThemeSpec> = [
   { name: "default", dir: resolvePath(here, "default") },
+  { name: "light", dir: resolvePath(here, "light") },
 ];
 
 export const registerBuiltInThemes = (registry: AddonRegistry): void => {

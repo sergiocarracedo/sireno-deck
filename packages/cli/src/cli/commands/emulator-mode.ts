@@ -20,6 +20,7 @@ export interface RunEmulatorModeOptions {
   readonly emulatorCwd?: string;
   readonly pnpmCommand?: string;
   readonly readyTimeoutMs?: number;
+  readonly activeTheme?: { name: string; version?: number };
   readonly logger: pino.Logger;
 }
 
@@ -133,7 +134,9 @@ export const runEmulatorMode = async (
     logger: options.logger,
   });
 
-  const bridge: WsBridge = await startWsBridge();
+  const bridge: WsBridge = await startWsBridge(
+    options.activeTheme !== undefined ? { activeTheme: options.activeTheme } : {},
+  );
 
   bridge.onMessage((message) => {
     if (isButtonAction(message)) {
