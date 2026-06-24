@@ -1,8 +1,8 @@
 ---
-current_phase: 08-builtin-themes
-phase_status: complete
-plans_total: 2
-plans_complete: 2
+current_phase: 09-builtin-addons
+phase_status: planning
+plans_total: 0
+plans_complete: 0
 last_updated: 2026-06-24
 ---
 
@@ -10,12 +10,11 @@ last_updated: 2026-06-24
 
 ## Current phase
 
-**Phase 08: builtin-themes** — complete. Both plans executed, 401 tests passing, lint + typecheck clean.
+**Phase 09: builtin-addons** — context captured, ready for planning.
 
-**Plan 01** (Wave 1) ✅: Theme contract + Vite plugin + `default` theme end-to-end (commit 8204fe4).
-**Plan 02** (Wave 2) ✅: `light` theme as thin override + WS `hello-ack` theme wiring.
+Phase 08 (builtin-themes) complete (commit fe9a658, 401 tests passing, 7/9 UAT passed, 2 blocked by Phase 09).
 
-Next phase: **09** (per ROADMAP).
+**Phase 09 scope:** port 7 built-in addons from legacy (`date-time`, `emoji-selector`, `media-player`, `system-status`, `value-display`, `weather`, `brightness`).
 
 ## Plan progress
 
