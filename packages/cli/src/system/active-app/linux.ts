@@ -1,7 +1,6 @@
 import type pino from "pino";
 
 import {
-  createNullActiveAppProvider,
   type ActiveAppProvider,
   type ActiveAppSnapshot,
 } from "@/system/provider";

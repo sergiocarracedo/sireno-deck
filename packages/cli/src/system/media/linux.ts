@@ -22,7 +22,6 @@ export interface LinuxMediaDeps {
   readonly timeoutMs?: number;
 }
 
-const PROBE_TIMEOUT_MS = 2_000;
 const TRANSPORT_TIMEOUT_MS = 5_000;
 const ONCHANGE_POLL_MS = 2_000;
 

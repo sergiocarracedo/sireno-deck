@@ -49,9 +49,11 @@ const makeExecutor = (
   return { executor, calls };
 };
 
-const baseEnv = (sessionType?: string): Readonly<Record<string, string>> => ({
-  ...(sessionType !== undefined ? { XDG_SESSION_TYPE: sessionType } : {}),
-});
+const baseEnv = (sessionType?: string): Readonly<Record<string, string>> => {
+  const env: Record<string, string> = {};
+  if (sessionType !== undefined) env["XDG_SESSION_TYPE"] = sessionType;
+  return env;
+};
 
 describe("createLinuxKeyMacroProvider", () => {
   beforeEach(() => vi.clearAllMocks());
