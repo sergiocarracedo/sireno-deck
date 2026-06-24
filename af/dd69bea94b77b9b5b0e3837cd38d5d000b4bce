@@ -1,0 +1,35 @@
+.planning/phases/07-os-providers/07-VERIFICATION.md
+  s_9fabccd2e25c5b::t_ce0562b805b4b3 1-71
+.planning/phases/07-os-providers/07-DISCUSSION-LOG.md
+  s_9fabccd2e25c5b::t_4db7472e594a09 19,31,43,48,55,71,83,99,111,127,139,151,171
+.planning/AGENTS.md
+  s_9fabccd2e25c5b::t_2561dcadece4aa 100-102
+.planning/phases/07-os-providers/07-CONTEXT.md
+  s_9fabccd2e25c5b::t_4db7472e594a09 19,41,74,80,95,116,133
+.planning/STATE.md
+  s_9fabccd2e25c5b::t_e1df5da6af11b1 3-5,13,15
+.planning/phases/07-os-providers/07-03-SUMMARY.md
+  s_9fabccd2e25c5b::t_a303ff6a09c4cf 1-51
+.planning/phases/07-os-providers/07-RESEARCH.md
+  s_9fabccd2e25c5b::t_4db7472e594a09 62-67
+.planning/ROADMAP.md
+  s_9fabccd2e25c5b::t_9993b52ad00700 30-31
+.planning/phases/07-os-providers/07-04-SUMMARY.md
+  s_9fabccd2e25c5b::t_7f7afdb20fde66 1-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "afdd69bea94b77b9b5b0e3837cd38d5d000b4bce",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
