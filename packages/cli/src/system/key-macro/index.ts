@@ -11,6 +11,8 @@ import {
   type CommandExecutor,
 } from "@/system/key-macro/linux";
 
+import { createDarwinKeyMacroProvider } from "@/system/key-macro/darwin";
+
 export { isValidKey, knownKeys, parseCombo } from "./parser.ts";
 export type { ParsedCombo } from "./parser.ts";
 
@@ -29,6 +31,12 @@ export const createKeyMacroProvider = async (
     return createLinuxKeyMacroProvider({
       executor: options.executor,
       env: options.env,
+      logger: options.logger,
+    });
+  }
+  if (platform === "darwin") {
+    return createDarwinKeyMacroProvider({
+      executor: options.executor,
       logger: options.logger,
     });
   }

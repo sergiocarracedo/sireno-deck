@@ -10,6 +10,8 @@ import {
   type CommandExecutor,
 } from "@/system/active-app/linux";
 
+import { createDarwinActiveAppProvider } from "@/system/active-app/darwin";
+
 export interface CreateActiveAppProviderOptions {
   readonly platform?: NodeJS.Platform;
   readonly executor?: CommandExecutor;
@@ -28,6 +30,15 @@ export const createActiveAppProvider = async (
     return createLinuxActiveAppProvider({
       executor: options.executor,
       ...(options.dbus !== undefined ? { dbus: options.dbus as never } : {}),
+      logger: options.logger,
+    });
+  }
+  if (platform === "darwin") {
+    if (options.executor === undefined) {
+      return createNullActiveAppProvider("executor-not-injected", options.logger);
+    }
+    return createDarwinActiveAppProvider({
+      executor: options.executor,
       logger: options.logger,
     });
   }

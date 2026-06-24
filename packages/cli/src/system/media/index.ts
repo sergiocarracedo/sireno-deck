@@ -7,6 +7,8 @@ import {
   type CommandExecutor,
 } from "@/system/media/linux";
 
+import { createDarwinMediaProvider } from "@/system/media/darwin";
+
 export interface CreateMediaProviderOptions {
   readonly platform?: NodeJS.Platform;
   readonly executor?: CommandExecutor;
@@ -26,6 +28,15 @@ export const createMediaProvider = async (
       executor: options.executor,
       logger: options.logger,
       ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
+    });
+  }
+  if (platform === "darwin") {
+    if (options.executor === undefined) {
+      return createNullMediaProvider(options.logger);
+    }
+    return createDarwinMediaProvider({
+      executor: options.executor,
+      logger: options.logger,
     });
   }
   return createNullMediaProvider(options.logger);
