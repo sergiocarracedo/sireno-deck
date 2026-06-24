@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createPubSub } from "@/core/pub-sub.ts";
 import { createStore } from "@/core/store.ts";
 import { createLogger } from "@/util/logger.ts";
+import type { ActiveAppProvider, ActiveAppSnapshot } from "@/system/provider";
 
 import { createRuntime, type RuntimeDeck } from "./runtime.ts";
 
@@ -114,5 +115,102 @@ describe("createRuntime", () => {
     expect(runtime.navStackDepth()).toBe(1);
     runtime.goBack();
     expect(runtime.getActiveDeckId()).toBe("main");
+  });
+});
+
+interface FakeProvider extends Pick<ActiveAppProvider, "getActive" | "stop"> {
+  snapshot: ActiveAppSnapshot | null;
+  getActive: () => Promise<ActiveAppSnapshot | null>;
+  stop: () => Promise<void>;
+  calls: { getActive: number; stop: number };
+}
+
+const makeFakeProvider = (initial: ActiveAppSnapshot | null): FakeProvider => {
+  const provider: FakeProvider = {
+    snapshot: initial,
+    calls: { getActive: 0, stop: 0 },
+    async getActive() {
+      provider.calls.getActive += 1;
+      return provider.snapshot;
+    },
+    async stop() {
+      provider.calls.stop += 1;
+    },
+  };
+  return provider;
+};
+
+const flush = async (ms = 5): Promise<void> => {
+  await vi.advanceTimersByTimeAsync(ms);
+  await Promise.resolve();
+};
+
+describe("createRuntime with active-app provider", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"] });
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("setActiveAppProvider starts the poll loop", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "chrome", processNames: ["chrome"] }),
+    ]);
+    const provider = makeFakeProvider({ name: "Google Chrome", windowTitle: null, processId: 1 });
+    runtime.setActiveAppProvider(provider);
+    await flush(1_200);
+    expect(provider.calls.getActive).toBeGreaterThan(0);
+    await runtime.stopActiveAppPolling();
+  });
+
+  it("overlay switches to deck whose processNames match", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "chrome-deck", processNames: ["chrome"] }),
+    ]);
+    const provider = makeFakeProvider({ name: "Google Chrome", windowTitle: null, processId: 1 });
+    runtime.setActiveAppProvider(provider);
+    await flush(1_200);
+    expect(runtime.getOverlay()?.id).toBe("chrome-deck");
+    await runtime.stopActiveAppPolling();
+  });
+
+  it("overlay clears when active-app no longer matches", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "chrome-deck", processNames: ["chrome"] }),
+    ]);
+    const provider = makeFakeProvider({ name: "Google Chrome", windowTitle: null, processId: 1 });
+    runtime.setActiveAppProvider(provider);
+    await flush(1_200);
+    expect(runtime.getOverlay()?.id).toBe("chrome-deck");
+    provider.snapshot = { name: "Firefox", windowTitle: null, processId: 2 };
+    await flush(1_500);
+    expect(runtime.getOverlay()).toBeNull();
+    await runtime.stopActiveAppPolling();
+  });
+
+  it("first matching deck wins when multiple match", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "first-match", processNames: ["chrome", "*firefox*"] }),
+      makeDeck({ id: "second-match", processNames: ["*chrome*"] }),
+    ]);
+    const provider = makeFakeProvider({ name: "Google Chrome", windowTitle: null, processId: 1 });
+    runtime.setActiveAppProvider(provider);
+    await flush(1_200);
+    expect(runtime.getOverlay()?.id).toBe("first-match");
+    await runtime.stopActiveAppPolling();
+  });
+
+  it("stopActiveAppPolling stops the provider", async () => {
+    const { runtime } = setup([makeDeck({ id: "main", isMain: true })]);
+    const provider = makeFakeProvider(null);
+    runtime.setActiveAppProvider(provider);
+    await flush(100);
+    await runtime.stopActiveAppPolling();
+    expect(provider.calls.stop).toBe(1);
   });
 });

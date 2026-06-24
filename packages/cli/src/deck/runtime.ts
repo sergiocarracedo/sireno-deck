@@ -3,6 +3,10 @@ import type pino from "pino";
 import type { PubSub } from "@/core/pub-sub.ts";
 import type { Store } from "@/core/store.ts";
 import type { GestureKind } from "@/core/gesture-state.ts";
+import type { ActiveAppProvider, ActiveAppSnapshot } from "@/system/provider";
+import { compileDeckMatcher } from "@/system/glob-match";
+
+type ActiveAppProviderLike = Pick<ActiveAppProvider, "getActive" | "stop">;
 
 export interface RuntimeDeck {
   id: string;
@@ -13,6 +17,7 @@ export interface RuntimeDeck {
   processNames?: ReadonlyArray<string>;
   windowNames?: ReadonlyArray<string>;
   autoShow?: boolean;
+  isOverlayDeck?: boolean;
 }
 
 export interface RuntimeButtonHandler {
@@ -54,6 +59,8 @@ export interface Runtime {
   mountAddonButtons(addonName: string, buttons: ReadonlyArray<MountedButton>): void;
   dispatchGesture(buttonId: string, gesture: GestureKind): Promise<void>;
   invalidate(): void;
+  setActiveAppProvider(provider: ActiveAppProviderLike): void;
+  stopActiveAppPolling(): Promise<void>;
   navStackDepth(): number;
 }
 
@@ -181,6 +188,92 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
 
   void store;
 
+  const overlayDecks = (): Array<{ deck: RuntimeDeck; matcher: ReturnType<typeof compileDeckMatcher> }> => {
+    const result: Array<{ deck: RuntimeDeck; matcher: ReturnType<typeof compileDeckMatcher> }> = [];
+    for (const deck of decks) {
+      if (!deck.processNames || deck.processNames.length === 0) continue;
+      result.push({ deck, matcher: compileDeckMatcher(deck.processNames) });
+    }
+    return result;
+  };
+
+  let activeAppPoll: ReturnType<typeof setInterval> | null = null;
+  let activeAppProvider: ActiveAppProviderLike | null = null;
+  let lastOverlayDeckId: string | null = overlayDeckId;
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+  let pendingOverlayDeckId: string | null = null;
+
+  const applyOverlay = (deckId: string | null): void => {
+    if (deckId === lastOverlayDeckId) return;
+    if (deckId !== null && deckById(deckId) === undefined) {
+      logger.warn({ deckId }, "active-app: overlay deck not found");
+      return;
+    }
+    lastOverlayDeckId = deckId;
+    overlayDeckId = deckId;
+    pubSub.publish("runtime:overlay", { deckId });
+  };
+
+  const computeOverlayFor = (snapshot: { name: string; windowTitle: string | null; processId: number | null }): string | null => {
+    for (const { deck, matcher } of overlayDecks()) {
+      if (matcher(snapshot)) return deck.id;
+    }
+    return null;
+  };
+
+  const scheduleOverlay = (deckId: string | null): void => {
+    pendingOverlayDeckId = deckId;
+    if (debounceTimer !== null) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      debounceTimer = null;
+      const next = pendingOverlayDeckId;
+      pendingOverlayDeckId = null;
+      applyOverlay(next);
+    }, 200);
+  };
+
+  const startActiveAppLoop = (provider: ActiveAppProviderLike): void => {
+    if (activeAppPoll !== null) return;
+    activeAppPoll = setInterval(() => {
+      void provider.getActive().then((snapshot) => {
+        if (snapshot === null) {
+          scheduleOverlay(null);
+          return;
+        }
+        scheduleOverlay(computeOverlayFor(snapshot));
+      });
+    }, 1000);
+  };
+
+  const stopActiveAppLoop = (): void => {
+    if (debounceTimer !== null) {
+      clearTimeout(debounceTimer);
+      debounceTimer = null;
+    }
+    pendingOverlayDeckId = null;
+    if (activeAppPoll !== null) {
+      clearInterval(activeAppPoll);
+      activeAppPoll = null;
+    }
+  };
+
+  const setActiveAppProvider = (provider: ActiveAppProviderLike): void => {
+    activeAppProvider = provider;
+    startActiveAppLoop(provider);
+  };
+
+  const stopActiveAppPolling = async (): Promise<void> => {
+    stopActiveAppLoop();
+    if (activeAppProvider !== null) {
+      try {
+        await activeAppProvider.stop();
+      } catch (err) {
+        logger.warn({ err }, "active-app: provider stop() failed");
+      }
+      activeAppProvider = null;
+    }
+  };
+
   const runtime: Runtime = {
     getActiveDeck,
     getActiveDeckId,
@@ -192,6 +285,8 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     mountAddonButtons,
     dispatchGesture,
     invalidate,
+    setActiveAppProvider,
+    stopActiveAppPolling,
     navStackDepth: () => navStack.length,
   };
 
