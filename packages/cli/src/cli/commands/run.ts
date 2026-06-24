@@ -7,6 +7,11 @@ import { AddonRegistry } from "@/addon/registry";
 import { findConfigPath } from "@/config/discovery";
 import { loadConfig } from "@/config/loader";
 import { formatFullIssues, isFullValid, validateFull } from "@/config/validation";
+import { createDeckRuntime, type Runtime } from "@/deck";
+import { createActiveAppProvider } from "@/system/active-app";
+import { createKeyMacroProvider } from "@/system/key-macro";
+import { createMediaProvider } from "@/system/media";
+import { createSessionProvider } from "@/system/session-monitor";
 import {
   connectStreamDeck,
   type StreamDeckDevice,
@@ -15,6 +20,12 @@ import {
 import { listDevices, type DeviceDescriptor } from "@/device/registry";
 import { selectDevice, NoStreamDeckFoundError } from "@/system/device-selection";
 import { loadDeviceConfig, saveDeviceConfig } from "@/util/device-config";
+import {
+  type ActiveAppProvider,
+  type KeyMacroProvider,
+  type MediaProvider,
+  type SessionProvider,
+} from "@/system/provider";
 
 import { runRealMode } from "./real-mode";
 import { runEmulatorMode } from "./emulator-mode";
@@ -53,6 +64,13 @@ export interface PreflightResult {
   readonly descriptor: DeviceDescriptor;
   readonly xdgConfigHome: string;
   readonly frontendUrl: string;
+  readonly runtime: Runtime;
+  readonly providers: {
+    readonly activeApp: ActiveAppProvider;
+    readonly session: SessionProvider;
+    readonly keyMacro: KeyMacroProvider;
+    readonly media: MediaProvider;
+  };
 }
 
 const resolveXdgConfigHome = (options: RunOptions): string =>
@@ -136,11 +154,54 @@ export const preflight = async (options: RunOptions): Promise<PreflightResult> =
     throw err;
   }
 
+  const decks = Object.entries(config.decks).map(([id, d]) => ({
+    id,
+    name: d.name ?? id,
+    buttons: d.buttons.flatMap((b, idx) => {
+      if (typeof b === "string") return [];
+      return [{
+        id: b.position?.toString() ?? `b${idx}`,
+        type: b.type,
+        config: b,
+      }];
+    }),
+    processNames: d.trigger?.process_name !== undefined
+      ? Array.isArray(d.trigger.process_name) ? d.trigger.process_name : [d.trigger.process_name]
+      : undefined,
+  }));
+  const { runtime } = createDeckRuntime({ decks, logger });
+
+  const { execa } = await import("execa");
+  const executor = {
+    async run(command: string, args: ReadonlyArray<string>, options?: { timeoutMs?: number }) {
+      const proc = await execa(command, [...args], { reject: false, timeout: options?.timeoutMs });
+      return {
+        exitCode: proc.exitCode ?? -1,
+        stdout: proc.stdout ?? "",
+        stderr: proc.stderr ?? "",
+      };
+    },
+  };
+
+  const env = { ...process.env } as Readonly<Record<string, string>>;
+  const platform = process.platform;
+
+  const [activeApp, session, keyMacro, media] = await Promise.all([
+    createActiveAppProvider({ platform, executor, logger }),
+    createSessionProvider({ platform, logger }),
+    createKeyMacroProvider({ platform, executor, env, logger }),
+    createMediaProvider({ platform, executor, logger }),
+  ]);
+
+  runtime.setActiveAppProvider(activeApp);
+
   return {
     device,
     descriptor,
     xdgConfigHome,
     frontendUrl: resolveFrontendUrl(options),
+    runtime,
+    providers: { activeApp, session, keyMacro, media },
   };
 };
 
@@ -152,7 +213,7 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
     return;
   }
 
-  const { device, frontendUrl } = await preflight(options);
+  const { device, frontendUrl, runtime, providers } = await preflight(options);
 
   let resolveDone: () => void = () => undefined;
   const done = new Promise<void>((resolve) => {
@@ -177,6 +238,13 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
   } finally {
     unregister();
     await handle.stop();
+    await runtime.stopActiveAppPolling();
+    await Promise.allSettled([
+      providers.activeApp.stop(),
+      providers.session.stop(),
+      providers.keyMacro.stop(),
+      providers.media.stop(),
+    ]);
     logger.info("shutdown complete");
   }
 };

@@ -32,6 +32,21 @@ vi.mock("@/util/device-config", () => ({
 vi.mock("@/cli/commands/real-mode", () => ({
   runRealMode: vi.fn(),
 }));
+vi.mock("@/deck", () => ({
+  createDeckRuntime: vi.fn(),
+}));
+vi.mock("@/system/active-app", () => ({
+  createActiveAppProvider: vi.fn(),
+}));
+vi.mock("@/system/session-monitor", () => ({
+  createSessionProvider: vi.fn(),
+}));
+vi.mock("@/system/key-macro", () => ({
+  createKeyMacroProvider: vi.fn(),
+}));
+vi.mock("@/system/media", () => ({
+  createMediaProvider: vi.fn(),
+}));
 
 const loaderMod = await import("@/config/loader");
 const registryMod = await import("@/addon/registry");
@@ -42,6 +57,11 @@ const deviceMod = await import("@/device/stream-deck");
 const selMod = await import("@/system/device-selection");
 const cfgMod = await import("@/util/device-config");
 const realMod = await import("@/cli/commands/real-mode");
+const deckMod = await import("@/deck");
+const activeAppMod = await import("@/system/active-app");
+const sessionMod = await import("@/system/session-monitor");
+const keyMacroMod = await import("@/system/key-macro");
+const mediaMod = await import("@/system/media");
 
 const loaderMock = loaderMod.loadConfig as unknown as ReturnType<typeof vi.fn>;
 const registryCtorMock = registryMod.AddonRegistry as unknown as ReturnType<typeof vi.fn>;
@@ -115,6 +135,35 @@ const setHappyPath = (
   selectDeviceMock.mockResolvedValue({ descriptor: devices[0]!, savedButStale: false });
   saveDeviceConfigMock.mockReturnValue(undefined);
   connectMock.mockResolvedValue(mockDevice());
+
+  const nullProvider = () => ({
+    async getActive() { return null; },
+    subscribe() { return () => undefined; },
+    async stop() { return; },
+    async sendKey() { return; },
+    async play() { return; },
+    async pause() { return; },
+    async toggle() { return; },
+    async next() { return; },
+    async previous() { return; },
+    async getCurrent() { return null; },
+    onChange() { return () => undefined; },
+    getState() { return "unknown" as const; },
+  });
+  const fakeRuntime = {
+    setActiveAppProvider: vi.fn(),
+    stopActiveAppPolling: vi.fn(async () => undefined),
+  };
+  (deckMod as unknown as { createDeckRuntime: ReturnType<typeof vi.fn> }).createDeckRuntime.mockReturnValue({
+    runtime: fakeRuntime,
+    methods: {},
+    pubSub: { publish: () => undefined, subscribe: () => () => undefined, clear: () => undefined },
+    store: { get: () => undefined, set: () => undefined, delete: () => undefined },
+  });
+  (activeAppMod as unknown as { createActiveAppProvider: ReturnType<typeof vi.fn> }).createActiveAppProvider.mockResolvedValue(nullProvider());
+  (sessionMod as unknown as { createSessionProvider: ReturnType<typeof vi.fn> }).createSessionProvider.mockResolvedValue(nullProvider());
+  (keyMacroMod as unknown as { createKeyMacroProvider: ReturnType<typeof vi.fn> }).createKeyMacroProvider.mockResolvedValue(nullProvider());
+  (mediaMod as unknown as { createMediaProvider: ReturnType<typeof vi.fn> }).createMediaProvider.mockResolvedValue(nullProvider());
 };
 
 describe("run", () => {
