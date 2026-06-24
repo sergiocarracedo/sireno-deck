@@ -1,0 +1,21 @@
+packages/cli/src/system/key-macro/index.ts
+  s_9fabccd2e25c5b::t_4064bc2cd9bedc 1-40
+packages/cli/src/system/key-macro/linux.ts
+  s_9fabccd2e25c5b::t_93df8bfe62835a 1-140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "46857c62bc7dad27561069eb945835c5ebafb82c",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
