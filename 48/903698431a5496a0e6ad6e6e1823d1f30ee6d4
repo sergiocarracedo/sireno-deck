@@ -1,0 +1,78 @@
+packages/cli/src/themes/light/surfaces/LabelValueList.tsx
+  s_9fabccd2e25c5b::t_dc6d007ec4d3e4 5
+  s_9fabccd2e25c5b::t_6956c79299f4da 1-4
+.planning/phases/08-builtin-themes/08-01-SUMMARY.md
+  s_9fabccd2e25c5b::t_dc6d007ec4d3e4 12,25,33,40,48,53,62,69-75,78,83,88-96,118
+.planning/STATE.md
+  s_9fabccd2e25c5b::t_3ffd1bc98615ea 3,5,13,15-18
+.planning/phases/08-builtin-themes/08-02-SUMMARY.md
+  s_9fabccd2e25c5b::t_6470818e2d15a5 1-61
+packages/cli/src/themes/light/components/TapIndicator.tsx
+  s_9fabccd2e25c5b::t_969e32b73c44ee 1
+  s_9fabccd2e25c5b::t_dc6d007ec4d3e4 2
+packages/cli/src/themes/light/surfaces/SplitAction.tsx
+  s_9fabccd2e25c5b::t_dc6d007ec4d3e4 1-2
+packages/cli/src/render/ws-bridge.ts
+  s_9fabccd2e25c5b::t_8feeba0e7aa1b1 17
+  s_9fabccd2e25c5b::t_f7aec23b8f77f5 31
+  s_9fabccd2e25c5b::t_ef3574d5dc2252 80
+packages/cli/src/themes/loader.ts
+  s_9fabccd2e25c5b::t_4cfb188edaffa4 17
+packages/cli/src/themes/light/__tests__/light.test.ts
+  s_9fabccd2e25c5b::t_dc6d007ec4d3e4 13-18,49
+  s_9fabccd2e25c5b::t_3db50135045812 5
+  s_9fabccd2e25c5b::t_abb11f3e9b1437 1-4,6-12,19-48
+packages/cli/src/cli/commands/run.ts
+  s_9fabccd2e25c5b::t_ee89c3858d953e 285-288
+  s_9fabccd2e25c5b::t_7d1ac789fb50bb 69
+  s_9fabccd2e25c5b::t_e00a71023d0f7d 127
+packages/cli/src/themes/light/components/Label.tsx
+  s_9fabccd2e25c5b::t_dc6d007ec4d3e4 2
+  s_9fabccd2e25c5b::t_bd1b0212dc28ba 1
+packages/cli/src/themes/light/theme.css
+  s_9fabccd2e25c5b::t_70fc818ca4befb 1-58
+  s_9fabccd2e25c5b::t_dc6d007ec4d3e4 59
+packages/cli/src/themes/light/index.tsx
+  s_9fabccd2e25c5b::t_44f3e79e437c0b 1-40
+  s_9fabccd2e25c5b::t_dc6d007ec4d3e4 41
+packages/cli/src/themes/light/ButtonFrame.tsx
+  s_9fabccd2e25c5b::t_f62b5d365286f1 1-2
+  s_9fabccd2e25c5b::t_dc6d007ec4d3e4 3
+packages/cli/src/themes/light/components/Icon.tsx
+  s_9fabccd2e25c5b::t_c6a3714e31ab91 1
+  s_9fabccd2e25c5b::t_dc6d007ec4d3e4 2
+packages/cli/src/themes/light/components/Chip.tsx
+  s_9fabccd2e25c5b::t_dc6d007ec4d3e4 2
+  s_9fabccd2e25c5b::t_d5c91980fead07 1
+packages/cli/src/themes/light/surfaces/Bars.tsx
+  s_9fabccd2e25c5b::t_dc6d007ec4d3e4 2
+  s_9fabccd2e25c5b::t_0c0d571e84d79b 1
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_9fabccd2e25c5b::t_a083d809a2e9bf 137
+  s_9fabccd2e25c5b::t_68508bbd546662 23
+  s_9fabccd2e25c5b::t_dc6d007ec4d3e4 138-139
+packages/cli/src/themes/__tests__/loader.test.ts
+  s_9fabccd2e25c5b::t_780930b72ead1b 60
+packages/cli/src/themes/light/surfaces/IconLabel.tsx
+  s_9fabccd2e25c5b::t_dc6d007ec4d3e4 2
+  s_9fabccd2e25c5b::t_ab52ba3d189d3f 1
+packages/cli/src/themes/light/components/Text.tsx
+  s_9fabccd2e25c5b::t_941cd2ffacff7b 1
+  s_9fabccd2e25c5b::t_dc6d007ec4d3e4 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "48903698431a5496a0e6ad6e6e1823d1f30ee6d4",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
