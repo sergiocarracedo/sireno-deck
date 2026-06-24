@@ -12,7 +12,7 @@ export interface BuiltInThemeSpec {
   dir: string;
 }
 
-const BUILT_IN_THEMES: ReadonlyArray<BuiltInThemeSpec> = [
+export const BUILT_IN_THEMES: ReadonlyArray<BuiltInThemeSpec> = [
   { name: "default", dir: resolvePath(here, "default") },
   { name: "light", dir: resolvePath(here, "light") },
 ];
