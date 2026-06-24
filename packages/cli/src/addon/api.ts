@@ -4,6 +4,8 @@ import type { SirenoAddon } from "./api-types.ts";
 
 export { SIRENO_ADDON_API_VERSION } from "./api-types.ts";
 
+export type AddonKind = "runtime" | "theme";
+
 export interface AddonButtonTypeRenderContext {
   config: unknown;
   pressed: boolean;
@@ -69,11 +71,21 @@ export interface ResolvedSirenoAddon {
 
 export interface AddonManifest {
   apiVersion: number;
-  main: string;
+  kind?: AddonKind;
+  main?: string;
   frontend?: AddonFrontend;
+  css?: string;
   name?: string;
   version?: string;
   description?: string;
+}
+
+export interface LoadedTheme {
+  name: string;
+  apiVersion: number;
+  source: { kind: "builtin" | "local" | "npm"; resolvedPath: string };
+  cssPath: string;
+  frontendPath: string;
 }
 
 export interface AddonLoadIssue {

@@ -2,7 +2,12 @@ import { pathToFileURL } from "node:url";
 import { resolve as resolvePath } from "node:path";
 
 import { isSirenoAddon, type SirenoAddon } from "./api-types.ts";
-import { type AddonLoadIssue, type AddonManifest, type ResolvedSirenoAddon } from "./api.ts";
+import {
+  type AddonLoadIssue,
+  type AddonManifest,
+  type LoadedTheme,
+  type ResolvedSirenoAddon,
+} from "./api.ts";
 import { readManifest } from "./manifest.ts";
 import {
   addonRootExists,
@@ -21,6 +26,7 @@ export interface LoadAddonsOptions {
 
 export interface LoadAddonsResult {
   addons: ResolvedSirenoAddon[];
+  themes: LoadedTheme[];
   issues: AddonLoadIssue[];
 }
 
@@ -61,6 +67,23 @@ const validateModule = (
   return { module: candidate };
 };
 
+const readManifestSafe = (
+  root: string,
+  source: string,
+  issues: AddonLoadIssue[],
+): AddonManifest | null => {
+  try {
+    return readManifest({ addonRoot: root }).manifest;
+  } catch (err) {
+    recordIssue(issues, {
+      level: "error",
+      source,
+      message: `Failed to read manifest: ${err instanceof Error ? err.message : String(err)}`,
+    });
+    return null;
+  }
+};
+
 const loadLocalAddon = async (
   source: string,
   configDir: string,
@@ -85,14 +108,13 @@ const loadLocalAddon = async (
     });
     return null;
   }
-  let manifest: AddonManifest;
-  try {
-    manifest = readManifest({ addonRoot: root }).manifest;
-  } catch (err) {
+  const manifest = readManifestSafe(root, source, issues);
+  if (!manifest) return null;
+  if (manifest.kind === "theme") {
     recordIssue(issues, {
-      level: "error",
+      level: "warning",
       source,
-      message: `Failed to read manifest: ${err instanceof Error ? err.message : String(err)}`,
+      message: `Theme addon '${manifest.name ?? source}' declared via addons[] — themes must be loaded via registerBuiltInThemes()`,
     });
     return null;
   }
@@ -103,7 +125,7 @@ const loadLocalAddon = async (
       message: `Addon apiVersion mismatch: expected ${currentApi}, got ${manifest.apiVersion}`,
     });
   }
-  const mainPath = resolvePath(root, manifest.main);
+  const mainPath = resolvePath(root, manifest.main as string);
   let mod: unknown;
   try {
     mod = await importAddonModule(mainPath);
@@ -135,6 +157,7 @@ export const loadAddons = async ({
 }: LoadAddonsOptions): Promise<LoadAddonsResult> => {
   const issues: AddonLoadIssue[] = [];
   const addons: ResolvedSirenoAddon[] = [];
+  const themes: LoadedTheme[] = [];
   for (const rawEntry of entries) {
     const entry = normalizeAddonEntry(rawEntry);
     if (!entry.enabled) {
@@ -162,5 +185,5 @@ export const loadAddons = async ({
       message: "npm addon loading is not yet implemented (planned for later phase)",
     });
   }
-  return { addons, issues };
+  return { addons, themes, issues };
 };

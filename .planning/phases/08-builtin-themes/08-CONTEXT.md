@@ -79,7 +79,7 @@ The user picks the active theme through `RawConfigSchema.theme`; the CLI resolve
 
 ### Agent's Discretion
 
-- Exact pixel values for tokens (dark vs light, what shade of grey, what accent hue); the *names* are locked.
+- Exact pixel values for tokens (dark vs light, what shade of grey, what accent hue); the _names_ are locked.
 - Hold lifetime and tap pulse duration (defaults: 500 ms and 150 ms).
 - Whether `SplitAction` is selected via a "surface" prop on the button config or via a 2-element renderer (the latter; keeps the addon contract simple).
 - The error message format when `config.theme` is set to a name that doesn't exist.
@@ -90,8 +90,8 @@ The user picks the active theme through `RawConfigSchema.theme`; the CLI resolve
 ## Specific Ideas
 
 - "Default theme should be the dark one; light theme is the user-facing flip." — User said this explicitly during discussion.
-- "Built-in themes are *built-in* — they live in the CLI package, not in user space. The user is never expected to install `default` or `light` from npm." — User said this explicitly.
-- "User themes (third-party ones) should still go through the addon loader. Only the *built-in* registration path is special." — User said this explicitly.
+- "Built-in themes are _built-in_ — they live in the CLI package, not in user space. The user is never expected to install `default` or `light` from npm." — User said this explicitly.
+- "User themes (third-party ones) should still go through the addon loader. Only the _built-in_ registration path is special." — User said this explicitly.
 - "A theme is just an addon that the registry treats differently. Same `sirenoAddon.apiVersion`, same `frontend` import. The only thing the registry does is keep a separate `themesByName` map." — User's framing.
 - "Tokens are CSS variables, not Tailwind config. Tailwind 4 reads `@theme` at build time and creates the utilities. We don't run a Vite plugin that scans source for token names." — User's framing.
 - "The `@theme` block in `index.css` is going away. The theme's CSS owns the tokens." — User said this explicitly.
@@ -101,6 +101,7 @@ The user picks the active theme through `RawConfigSchema.theme`; the CLI resolve
 </specifics>
 
 <canonical_refs>
+
 ## Canonical References
 
 **Downstream agents MUST read these before planning or implementing.**
@@ -120,6 +121,7 @@ The user picks the active theme through `RawConfigSchema.theme`; the CLI resolve
 </canonical_refs>
 
 <code_context>
+
 ## Existing Code Insights
 
 ### Reusable Assets
@@ -146,7 +148,7 @@ The user picks the active theme through `RawConfigSchema.theme`; the CLI resolve
 <deferred>
 ## Deferred Ideas
 
-- **User-facing theme picker**: a CLI flag or config option to *preview* both themes side-by-side. — Future phase (user UI).
+- **User-facing theme picker**: a CLI flag or config option to _preview_ both themes side-by-side. — Future phase (user UI).
 - **Per-button theming**: each button config could carry its own `surface: 'IconLabel' | 'Bars' | ...` hint. — Already covered by the addon contract; the addon chooses the surface from its renderer, no config knob needed.
 - **Theme inheritance**: a "high-contrast" theme that extends `default` and only overrides `--color-fg` and `--color-bg`. — Future phase if a user asks for it. The `@theme inline` directive in Tailwind 4 supports this pattern when we get there.
 - **Animated theme transitions**: cross-fade between themes on swap. — Defer to a UX pass; the simple swap is enough for the MVP.
@@ -156,5 +158,5 @@ The user picks the active theme through `RawConfigSchema.theme`; the CLI resolve
 
 ---
 
-*Phase: 08-builtin-themes*
-*Context gathered: 2026-06-24*
+_Phase: 08-builtin-themes_
+_Context gathered: 2026-06-24_

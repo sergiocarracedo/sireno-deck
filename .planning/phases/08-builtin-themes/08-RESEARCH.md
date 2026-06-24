@@ -10,7 +10,7 @@
 ### Key findings
 
 - `@theme { --color-X: value; }` defines a token AND auto-generates utility classes (`bg-X`, `text-X`, `ring-X`, `border-X`, `fill-X`, `stroke-X`).
-- `@theme inline { --font-sans: var(--font-inter); }` declares a *reference* to another variable; resolved at use site (not definition site). Useful for indirection.
+- `@theme inline { --font-sans: var(--font-inter); }` declares a _reference_ to another variable; resolved at use site (not definition site). Useful for indirection.
 - `@theme static { … }` declares tokens that should not be overridden by later `@theme` blocks.
 - `:root { --color-X: value; }` outside `@theme` is a plain CSS variable — no utility classes created.
 - Namespaces: `--color-*` (colors), `--font-*` (font-family), `--text-*` (font-size), `--font-weight-*` (font-weight), `--radius-*` (border-radius), `--shadow-*`, `--ease-*`, `--animate-*`, `--spacing`.
@@ -117,6 +117,7 @@ class AddonRegistry {
 ```
 
 The `loadAddons()` orchestrator dispatches on `manifest.kind`:
+
 - `'runtime'` (or undefined) → existing `loadAddon()` path.
 - `'theme'` → new `loadTheme()` path that reads only the `frontend` import and registers in `themesByName`.
 
@@ -145,7 +146,7 @@ The `loadAddons()` orchestrator dispatches on `manifest.kind`:
 
 **Source:** `packages/cli/src/config/icon-resolver.ts`
 
-The theme's `Icon` primitive wraps `resolveIconRef(ref, ctx)`. No new logic; the theme is a *consumer* of icon resolution, not a producer.
+The theme's `Icon` primitive wraps `resolveIconRef(ref, ctx)`. No new logic; the theme is a _consumer_ of icon resolution, not a producer.
 
 ## Project conventions (from .planning/AGENTS.md)
 
@@ -159,7 +160,7 @@ Linting: `pnpm --filter sireno-deck-2 lint` (root lint OOMs).
 
 ## Open questions / risks
 
-- **Tailwind 4 scanner and virtual modules**: does Tailwind 4's scanner read CSS imported through a Vite virtual module? Need to verify. If it doesn't, the theme's `@theme` block won't be picked up. *Mitigation*: if the scanner misses the virtual import, fall back to importing the theme's CSS directly from disk in `index.css` and rely on Vite's CSS handling. (This is the easier path; the virtual module is for *user* themes, not built-in ones.)
+- **Tailwind 4 scanner and virtual modules**: does Tailwind 4's scanner read CSS imported through a Vite virtual module? Need to verify. If it doesn't, the theme's `@theme` block won't be picked up. _Mitigation_: if the scanner misses the virtual import, fall back to importing the theme's CSS directly from disk in `index.css` and rely on Vite's CSS handling. (This is the easier path; the virtual module is for _user_ themes, not built-in ones.)
 
 - **Two `@theme` blocks for OS auto-switch**: the user's spec has the `default` theme owning both `:root` (dark) and `@media (prefers-color-scheme: light) :root` (light override). This is supported in Tailwind 4 — `@theme` blocks are valid inside media queries. Need to confirm with a tiny test in Plan 01.
 

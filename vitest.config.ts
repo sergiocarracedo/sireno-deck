@@ -9,6 +9,12 @@ export default defineConfig({
       "virtual:sireno/token": fileURLToPath(
         new URL("./packages/cli/frontend/src/__mocks__/token.ts", import.meta.url),
       ),
+      "virtual:sireno/theme": fileURLToPath(
+        new URL("./packages/cli/frontend/src/__mocks__/theme.ts", import.meta.url),
+      ),
+      "virtual:sireno/themes/manifest": fileURLToPath(
+        new URL("./packages/cli/frontend/src/__mocks__/themes-manifest.tsx", import.meta.url),
+      ),
     },
   },
   test: {

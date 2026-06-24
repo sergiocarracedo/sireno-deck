@@ -20,6 +20,7 @@ import {
 import { listDevices, type DeviceDescriptor } from "@/device/registry";
 import { selectDevice, NoStreamDeckFoundError } from "@/system/device-selection";
 import { loadDeviceConfig, saveDeviceConfig } from "@/util/device-config";
+import { resolveActiveTheme } from "@/themes/index.ts";
 import {
   type ActiveAppProvider,
   type KeyMacroProvider,
@@ -115,6 +116,13 @@ export const preflight = async (options: RunOptions): Promise<PreflightResult> =
   if (!isFullValid(validation)) {
     throw new Error(`Config validation failed:\n${formatFullIssues(validation.issues)}`);
   }
+
+  const { theme } = resolveActiveTheme(registry, { theme: config.theme });
+  process.env["SIRENO_THEME"] = JSON.stringify({
+    name: theme.name,
+    cssPath: theme.cssPath,
+    frontendPath: theme.frontendPath,
+  });
 
   const devices = await listDevices();
   const savedDevice = loadDeviceConfig({ xdgConfigHome });

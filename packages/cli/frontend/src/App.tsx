@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { token } from "virtual:sireno/token";
+import { activeTheme } from "virtual:sireno/themes/manifest";
 
 import { ChannelRegistry } from "sireno-deck-2/react";
+import { ThemeProvider, type ThemeContextValue } from "@/themes/index.ts";
 import { createWsClient } from "./bridge/client.ts";
 import { Deck } from "./components/Deck.tsx";
 
@@ -27,8 +29,25 @@ const wsUrl = (): string => {
   return port !== undefined ? `ws://127.0.0.1:${port}` : "ws://127.0.0.1:0";
 };
 
+const buildThemeContext = (): ThemeContextValue | null => {
+  if (!activeTheme) return null;
+  return {
+    name: activeTheme.name,
+    cssPath: "",
+    frontendPath: activeTheme.frontendPath,
+    theme: {
+      name: activeTheme.name,
+      apiVersion: 3,
+      source: { kind: "builtin", resolvedPath: activeTheme.frontendPath },
+      cssPath: "",
+      frontendPath: activeTheme.frontendPath,
+    },
+  };
+};
+
 export const App = () => {
   const [deck, setDeck] = useState(MOCK_DECK);
+  const [theme, setTheme] = useState<ThemeContextValue | null>(() => buildThemeContext());
 
   useEffect(() => {
     const url = wsUrl();
@@ -54,20 +73,30 @@ export const App = () => {
     return () => client.close();
   }, []);
 
+  if (!theme) {
+    return (
+      <main className="bg-bg text-fg flex min-h-screen items-center justify-center font-mono text-xs uppercase tracking-widest text-muted">
+        No theme configured
+      </main>
+    );
+  }
+
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-8 gap-6">
-      <header className="text-sm uppercase tracking-widest text-neutral-500">
-        {deck.name} · ws: {token === "" ? "dev" : "authed"}
-      </header>
-      <Deck
-        deck={deck}
-        onNavigate={() => {
-          /* wired via deck-config */
-        }}
-        onAction={(buttonId) => {
-          ChannelRegistry.instance().publish("runtime:button-tap", { buttonId });
-        }}
-      />
-    </main>
+    <ThemeProvider value={theme}>
+      <main className="bg-bg text-fg flex min-h-screen flex-col items-center justify-center gap-6 p-8">
+        <header className="font-mono text-xs uppercase tracking-widest text-muted">
+          {deck.name} · ws: {token === "" ? "dev" : "authed"} · theme: {theme.name}
+        </header>
+        <Deck
+          deck={deck}
+          onNavigate={() => {
+            /* wired via deck-config */
+          }}
+          onAction={(buttonId) => {
+            ChannelRegistry.instance().publish("runtime:button-tap", { buttonId });
+          }}
+        />
+      </main>
+    </ThemeProvider>
   );
 };

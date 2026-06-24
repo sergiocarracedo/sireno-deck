@@ -1,6 +1,7 @@
 import type {
   AddonButtonTypeDefinition,
   AddonDeckDefinition,
+  LoadedTheme,
   ResolvedSirenoAddon,
   SirenoAddon,
 } from "./api.ts";
@@ -13,6 +14,7 @@ export class AddonRegistry {
     { addonName: string; def: AddonButtonTypeDefinition }
   >();
   private readonly decksByType = new Map<string, { addonName: string; def: AddonDeckDefinition }>();
+  private readonly themesByName = new Map<string, LoadedTheme>();
 
   load(addon: ResolvedSirenoAddon | SirenoAddon): void {
     const module = "module" in addon ? addon.module : addon;
@@ -67,9 +69,44 @@ export class AddonRegistry {
     return this.decksByType.has(type);
   }
 
+  loadTheme(theme: LoadedTheme): void {
+    if (this.themesByName.has(theme.name)) {
+      throw new Error(`Duplicate theme name: ${theme.name}`);
+    }
+    this.themesByName.set(theme.name, theme);
+  }
+
+  getTheme(name: string): LoadedTheme | undefined {
+    return this.themesByName.get(name);
+  }
+
+  listThemes(): LoadedTheme[] {
+    return Array.from(this.themesByName.values());
+  }
+
+  hasTheme(name: string): boolean {
+    return this.themesByName.has(name);
+  }
+
+  resolveActiveTheme(name: string | undefined): LoadedTheme {
+    const target = name ?? "default";
+    const theme = this.themesByName.get(target);
+    if (!theme) {
+      const available = this.listThemes()
+        .map((t) => t.name)
+        .sort()
+        .join(", ");
+      throw new Error(
+        `Theme '${target}' is not registered. Available themes: ${available || "(none)"}`,
+      );
+    }
+    return theme;
+  }
+
   reset(): void {
     this.addonsByName.clear();
     this.buttonsByType.clear();
     this.decksByType.clear();
+    this.themesByName.clear();
   }
 }

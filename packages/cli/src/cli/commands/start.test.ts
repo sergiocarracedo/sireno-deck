@@ -111,7 +111,15 @@ const silentLogger = () => createLogger({ level: "silent" });
 const setHappyPath = (): void => {
   loaderMock.mockReturnValue({ config: { decks: {} }, configDir: "/d" });
   registryCtorMock.mockImplementation(function FakeRegistry() {
-    return { hasButtonType: () => true, getButtonType: () => ({ def: { internal: false } }) };
+    return {
+      hasButtonType: () => true,
+      getButtonType: () => ({ def: { internal: false } }),
+      resolveActiveTheme: () => ({
+        name: "default",
+        cssPath: "/theme.css",
+        frontendPath: "/index.tsx",
+      }),
+    };
   });
   builtinsMock.mockReturnValue(undefined);
   validateFullMock.mockReturnValue({ issues: [] });
@@ -259,7 +267,15 @@ describe("start", () => {
   it("rejects with a clear error if preflight fails before the pipeline starts", async () => {
     loaderMock.mockReturnValue({ config: { decks: {} }, configDir: "/d" });
     registryCtorMock.mockImplementation(function FakeRegistry() {
-      return { hasButtonType: () => true, getButtonType: () => ({ def: { internal: false } }) };
+      return {
+        hasButtonType: () => true,
+        getButtonType: () => ({ def: { internal: false } }),
+        resolveActiveTheme: () => ({
+          name: "default",
+          cssPath: "/theme.css",
+          frontendPath: "/index.tsx",
+        }),
+      };
     });
     builtinsMock.mockReturnValue(undefined);
     validateFullMock.mockReturnValue({ issues: [{ level: "error", path: "x", message: "bad" }] });

@@ -33,12 +33,23 @@ export const readManifest = ({ addonRoot }: ReadManifestOptions): ReadManifestRe
   }
   const sa = sirenoAddon as Record<string, unknown>;
   const apiVersion = sa["apiVersion"];
-  const main = sa["main"];
   if (typeof apiVersion !== "number") {
     throw new Error(`Addon 'sirenoAddon.apiVersion' must be a number: ${packageJsonPath}`);
   }
-  if (typeof main !== "string" || main.length === 0) {
+  const kindRaw = sa["kind"];
+  const kind: AddonManifest["kind"] =
+    kindRaw === "theme" ? "theme" : kindRaw === "runtime" ? "runtime" : "runtime";
+  const mainRaw = sa["main"];
+  const main: AddonManifest["main"] =
+    typeof mainRaw === "string" && mainRaw.length > 0 ? mainRaw : undefined;
+  if (kind === "runtime" && main === undefined) {
     throw new Error(`Addon 'sirenoAddon.main' must be a non-empty string: ${packageJsonPath}`);
+  }
+  const cssRaw = sa["css"];
+  const css: AddonManifest["css"] =
+    typeof cssRaw === "string" && cssRaw.length > 0 ? cssRaw : undefined;
+  if (kind === "theme" && css === undefined) {
+    throw new Error(`Theme addon 'sirenoAddon.css' must be a non-empty string: ${packageJsonPath}`);
   }
   const name = typeof obj["name"] === "string" ? obj["name"] : undefined;
   const version = typeof obj["version"] === "string" ? obj["version"] : undefined;
@@ -63,10 +74,15 @@ export const readManifest = ({ addonRoot }: ReadManifestOptions): ReadManifestRe
         : {}),
     };
   }
+  if (kind === "theme" && frontend === undefined) {
+    throw new Error(`Theme addon 'sirenoAddon.frontend' is required: ${packageJsonPath}`);
+  }
   return {
     manifest: {
       apiVersion,
-      main,
+      kind,
+      ...(main !== undefined ? { main } : {}),
+      ...(css !== undefined ? { css } : {}),
       ...(name !== undefined ? { name } : {}),
       ...(version !== undefined ? { version } : {}),
       ...(description !== undefined ? { description } : {}),

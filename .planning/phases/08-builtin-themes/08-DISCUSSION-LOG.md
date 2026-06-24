@@ -22,7 +22,7 @@
 ### 3. Rendering architecture — one wrapper or two
 
 - **Considered**: Replace `ButtonFrame.tsx` entirely with a theme-owned gesture wrapper.
-- **Considered**: Keep `ButtonFrame.tsx` as the gesture wrapper; have the theme own a separate *outer* ButtonFrame that handles visuals; the gesture wrapper renders the outer one.
+- **Considered**: Keep `ButtonFrame.tsx` as the gesture wrapper; have the theme own a separate _outer_ ButtonFrame that handles visuals; the gesture wrapper renders the outer one.
 - **Decision**: Two layers. The gesture wrapper stays (pointer events are the same regardless of theme); the theme's ButtonFrame owns visuals (border, padding, tap-pulse, hold-ring).
 - **Rationale**: Pointer event handling is universal; visual styling is per-theme. Separating them keeps the gesture logic testable and theme-agnostic.
 

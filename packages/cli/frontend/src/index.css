@@ -1,5 +1,15 @@
 @import "tailwindcss";
+@import "virtual:sireno/theme";
 
 :root {
-  color-scheme: dark;
+  color-scheme: dark light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
 }

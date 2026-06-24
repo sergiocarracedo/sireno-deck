@@ -124,7 +124,15 @@ const setHappyPath = (
 ): void => {
   loaderMock.mockReturnValue({ config: { decks: {} }, configDir: "/dir" });
   registryCtorMock.mockImplementation(function FakeRegistry() {
-    return { hasButtonType: () => true, getButtonType: () => ({ def: { internal: false } }) };
+    return {
+      hasButtonType: () => true,
+      getButtonType: () => ({ def: { internal: false } }),
+      resolveActiveTheme: () => ({
+        name: "default",
+        cssPath: "/theme.css",
+        frontendPath: "/index.tsx",
+      }),
+    };
   });
   builtinsMock.mockReturnValue(undefined);
   validateFullMock.mockReturnValue({ issues: [] });
