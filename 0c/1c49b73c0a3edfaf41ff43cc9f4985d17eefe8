@@ -1,0 +1,27 @@
+.planning/phases/07-os-providers/07-04-PLAN.md
+  s_9fabccd2e25c5b::t_71ecebf8a93d46 1-188
+.planning/phases/07-os-providers/07-01-PLAN.md
+  s_9fabccd2e25c5b::t_0f906b28f726f9 1-255
+.planning/phases/07-os-providers/07-02-PLAN.md
+  s_9fabccd2e25c5b::t_8ec760fc9414d7 1-133
+.planning/phases/07-os-providers/07-RESEARCH.md
+  s_9fabccd2e25c5b::t_309395c1a557a1 1-109
+.planning/phases/07-os-providers/07-03-PLAN.md
+  s_9fabccd2e25c5b::t_256438b352e85c 1-188
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "0c1c49b73c0a3edfaf41ff43cc9f4985d17eefe8",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
