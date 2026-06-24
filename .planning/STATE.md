@@ -1,8 +1,8 @@
 ---
-current_phase: 07-os-providers
-phase_status: complete
-plans_total: 4
-plans_complete: 4
+current_phase: 08-builtin-themes
+phase_status: planning
+plans_total: 2
+plans_complete: 0
 last_updated: 2026-06-24
 ---
 
@@ -10,9 +10,10 @@ last_updated: 2026-06-24
 
 ## Current phase
 
-**Phase 07: os-providers** — complete. All 4 plans executed, 389 tests passing, verification passed.
+**Phase 08: builtin-themes** — planning complete (2 plans). Ready to execute.
 
-Next phase: **08-builtin-themes** (Tailwind 4 themes via CSS variables + `@theme` directive; two built-ins `default` and `light`).
+**Plan 01** (Wave 1): Theme contract + Vite plugin + `default` theme end-to-end.
+**Plan 02** (Wave 2): `light` theme as thin override + WS `deck-config` theme wiring.
 
 ## Plan progress
 
