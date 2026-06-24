@@ -1,12 +1,13 @@
 import type pino from "pino";
 
-import {
-  type ActiveAppProvider,
-  type ActiveAppSnapshot,
-} from "@/system/provider";
+import { type ActiveAppProvider, type ActiveAppSnapshot } from "@/system/provider";
 
 export interface CommandExecutor {
-  run(command: string, args: ReadonlyArray<string>, options?: { timeoutMs?: number }): Promise<{
+  run(
+    command: string,
+    args: ReadonlyArray<string>,
+    options?: { timeoutMs?: number },
+  ): Promise<{
     exitCode: number;
     stdout: string;
     stderr: string;
@@ -39,7 +40,9 @@ export interface LinuxActiveAppDeps {
 
 const DEFAULT_POLL_MS = 1_000;
 
-const parseDbusEvalResult = (raw: unknown): { wmClass: string; title: string; pid: number | null } | null => {
+const parseDbusEvalResult = (
+  raw: unknown,
+): { wmClass: string; title: string; pid: number | null } | null => {
   if (typeof raw !== "string" || raw.length === 0) return null;
   try {
     const parsed = JSON.parse(raw) as { wm_class?: string; title?: string; pid?: number };
@@ -59,7 +62,9 @@ const readProcName = async (executor: CommandExecutor): Promise<string | null> =
   return name.length > 0 ? name : null;
 };
 
-const readForegroundProc = async (executor: CommandExecutor): Promise<{ name: string; pid: number | null } | null> => {
+const readForegroundProc = async (
+  executor: CommandExecutor,
+): Promise<{ name: string; pid: number | null } | null> => {
   const winIdResult = await executor.run("sh", [
     "-c",
     "xdotool getactivewindow 2>/dev/null || xprop -root _NET_ACTIVE_WINDOW 2>/dev/null | awk '{print $5}' || true",
@@ -78,10 +83,7 @@ const readForegroundProc = async (executor: CommandExecutor): Promise<{ name: st
     const name = await readProcName(executor);
     return name === null ? null : { name, pid: null };
   }
-  const nameResult = await executor.run("sh", [
-    "-c",
-    `cat /proc/${pid}/comm 2>/dev/null || true`,
-  ]);
+  const nameResult = await executor.run("sh", ["-c", `cat /proc/${pid}/comm 2>/dev/null || true`]);
   const name = nameResult.stdout.trim();
   if (name.length === 0) {
     return { name: `pid:${pid}`, pid };
@@ -95,11 +97,17 @@ const D_BUS_GNOME_SHELL_PATH = "/org/gnome/Shell";
 const dbusSnapshot = async (bus: LinuxDbusBus): Promise<ActiveAppSnapshot | null> => {
   const proxy = await bus.getProxyObject(D_BUS_GNOME_SHELL, D_BUS_GNOME_SHELL_PATH);
   const iface = proxy.getInterface("org.gnome.Shell");
-  const result = await iface.Eval("global.display.focus_window && JSON.stringify({wm_class: global.display.focus_window.wm_class, title: global.display.focus_window.title, pid: global.display.focus_window.pid})");
+  const result = await iface.Eval(
+    "global.display.focus_window && JSON.stringify({wm_class: global.display.focus_window.wm_class, title: global.display.focus_window.title, pid: global.display.focus_window.pid})",
+  );
   return parseDbusEvalResult(result) === null
     ? null
     : (() => {
-        const parsed = parseDbusEvalResult(result) as { wmClass: string; title: string; pid: number | null };
+        const parsed = parseDbusEvalResult(result) as {
+          wmClass: string;
+          title: string;
+          pid: number | null;
+        };
         return {
           name: parsed.wmClass.length > 0 ? parsed.wmClass : parsed.title,
           windowTitle: parsed.title.length > 0 ? parsed.title : null,

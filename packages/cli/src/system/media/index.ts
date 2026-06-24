@@ -2,12 +2,11 @@ import type pino from "pino";
 
 import { createNullMediaProvider, type MediaProvider } from "@/system/provider";
 
-import {
-  createLinuxMediaProvider,
-  type CommandExecutor,
-} from "@/system/media/linux";
+import { createLinuxMediaProvider, type CommandExecutor } from "@/system/media/linux";
 
 import { createDarwinMediaProvider } from "@/system/media/darwin";
+
+import { createWindowsMediaProvider } from "@/system/media/windows";
 
 export interface CreateMediaProviderOptions {
   readonly platform?: NodeJS.Platform;
@@ -35,6 +34,15 @@ export const createMediaProvider = async (
       return createNullMediaProvider(options.logger);
     }
     return createDarwinMediaProvider({
+      executor: options.executor,
+      logger: options.logger,
+    });
+  }
+  if (platform === "win32") {
+    if (options.executor === undefined) {
+      return createNullMediaProvider(options.logger);
+    }
+    return createWindowsMediaProvider({
       executor: options.executor,
       logger: options.logger,
     });

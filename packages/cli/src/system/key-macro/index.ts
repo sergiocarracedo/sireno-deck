@@ -6,12 +6,11 @@ import {
   ProviderError,
 } from "@/system/provider";
 
-import {
-  createLinuxKeyMacroProvider,
-  type CommandExecutor,
-} from "@/system/key-macro/linux";
+import { createLinuxKeyMacroProvider, type CommandExecutor } from "@/system/key-macro/linux";
 
 import { createDarwinKeyMacroProvider } from "@/system/key-macro/darwin";
+
+import { createWindowsKeyMacroProvider } from "@/system/key-macro/windows";
 
 export { isValidKey, knownKeys, parseCombo } from "./parser.ts";
 export type { ParsedCombo } from "./parser.ts";
@@ -36,6 +35,12 @@ export const createKeyMacroProvider = async (
   }
   if (platform === "darwin") {
     return createDarwinKeyMacroProvider({
+      executor: options.executor,
+      logger: options.logger,
+    });
+  }
+  if (platform === "win32") {
+    return createWindowsKeyMacroProvider({
       executor: options.executor,
       logger: options.logger,
     });

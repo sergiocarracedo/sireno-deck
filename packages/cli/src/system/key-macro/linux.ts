@@ -4,7 +4,11 @@ import { ProviderError, type KeyMacroProvider, withTimeout } from "@/system/prov
 import { parseCombo } from "@/system/key-macro/parser";
 
 export interface CommandExecutor {
-  run(command: string, args: ReadonlyArray<string>, options?: { timeoutMs?: number }): Promise<{
+  run(
+    command: string,
+    args: ReadonlyArray<string>,
+    options?: { timeoutMs?: number },
+  ): Promise<{
     exitCode: number;
     stdout: string;
     stderr: string;
@@ -21,14 +25,12 @@ export interface LinuxKeyMacroDeps {
 type KeyTool = "xdotool" | "ydotool" | "dotool";
 
 const probeOrder = (sessionType: string | undefined): KeyTool[] => {
-  const order: KeyTool[] = sessionType === "wayland" ? ["ydotool", "xdotool", "dotool"] : ["xdotool", "ydotool", "dotool"];
+  const order: KeyTool[] =
+    sessionType === "wayland" ? ["ydotool", "xdotool", "dotool"] : ["xdotool", "ydotool", "dotool"];
   return order;
 };
 
-const probeTools = async (
-  executor: CommandExecutor,
-  order: KeyTool[],
-): Promise<KeyTool | null> => {
+const probeTools = async (executor: CommandExecutor, order: KeyTool[]): Promise<KeyTool | null> => {
   for (const tool of order) {
     const result = await executor.run("which", [tool]);
     if (result.exitCode === 0 && result.stdout.trim().length > 0) {
@@ -53,7 +55,10 @@ const toXdotoolKey = (parsed: { mods: string[]; key: string }): string => {
   return parts.join("+");
 };
 
-const buildXdotoolArgs = (parsed: { mods: string[]; key: string }): string[] => ["key", toXdotoolKey(parsed)];
+const buildXdotoolArgs = (parsed: { mods: string[]; key: string }): string[] => [
+  "key",
+  toXdotoolKey(parsed),
+];
 
 const buildLiteralArgs = (text: string): string[] => ["type", "--", text];
 
@@ -85,16 +90,9 @@ const buildArgs = (tool: KeyTool, input: string): string[] => {
   return ["type", input];
 };
 
-const runTool = async (
-  tool: KeyTool,
-  args: string[],
-  deps: LinuxKeyMacroDeps,
-): Promise<void> => {
+const runTool = async (tool: KeyTool, args: string[], deps: LinuxKeyMacroDeps): Promise<void> => {
   const timeoutMs = deps.timeoutMs ?? 5_000;
-  const result = await withTimeout(
-    deps.executor.run(tool, args, { timeoutMs }),
-    timeoutMs + 500,
-  );
+  const result = await withTimeout(deps.executor.run(tool, args, { timeoutMs }), timeoutMs + 500);
   if (result.exitCode !== 0) {
     throw new ProviderError(
       "EXEC_FAILED",

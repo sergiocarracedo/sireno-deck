@@ -42,7 +42,9 @@ describe("compileDeckMatcher", () => {
 
   it("matches on windowTitle", () => {
     const matcher = compileDeckMatcher(["GitHub"]);
-    expect(matcher({ name: "Google Chrome", windowTitle: "GitHub - Sireno", processId: 1 })).toBe(true);
+    expect(matcher({ name: "Google Chrome", windowTitle: "GitHub - Sireno", processId: 1 })).toBe(
+      true,
+    );
   });
 
   it("any pattern matching returns true", () => {

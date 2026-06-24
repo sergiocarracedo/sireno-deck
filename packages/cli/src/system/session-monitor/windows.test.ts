@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type pino from "pino";
 
-import { createDarwinSessionProvider, type CommandExecutor } from "./darwin.ts";
+import { createWindowsSessionProvider, type CommandExecutor } from "./windows.ts";
 
 const silentLogger = (): pino.Logger => {
   const noop = (): void => undefined;
@@ -19,31 +19,33 @@ const silentLogger = (): pino.Logger => {
 };
 
 const makeExecutor = (
-  responses: Map<string, { exitCode: number; stdout: string }>,
+  handler: (
+    cmd: string,
+    args: ReadonlyArray<string>,
+  ) => { exitCode: number; stdout: string; stderr: string },
 ): CommandExecutor => ({
-  async run(_cmd: string, _args: ReadonlyArray<string>) {
-    const r = responses.get("loginwindow") ?? { exitCode: 1, stdout: "" };
-    return { exitCode: r.exitCode, stdout: r.stdout, stderr: "" };
+  async run(cmd: string, args: ReadonlyArray<string>) {
+    return handler(cmd, [...args]);
   },
 });
 
-describe("createDarwinSessionProvider", () => {
+describe("createWindowsSessionProvider", () => {
   beforeEach(() => vi.useFakeTimers());
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
-  it("initial state reflects osascript loginwindow running=true → locked", async () => {
-    const executor = makeExecutor(new Map([["loginwindow", { exitCode: 0, stdout: "true" }]]));
-    const provider = await createDarwinSessionProvider({ executor, logger: silentLogger() });
+  it("initial state locked when logonui running", async () => {
+    const executor = makeExecutor(() => ({ exitCode: 0, stdout: "true", stderr: "" }));
+    const provider = await createWindowsSessionProvider({ executor, logger: silentLogger() });
     expect(provider.getState()).toBe("locked");
     await provider.stop();
   });
 
-  it("initial state unlocked when loginwindow not running", async () => {
-    const executor = makeExecutor(new Map([["loginwindow", { exitCode: 0, stdout: "false" }]]));
-    const provider = await createDarwinSessionProvider({ executor, logger: silentLogger() });
+  it("initial state unlocked when logonui not running", async () => {
+    const executor = makeExecutor(() => ({ exitCode: 0, stdout: "false", stderr: "" }));
+    const provider = await createWindowsSessionProvider({ executor, logger: silentLogger() });
     expect(provider.getState()).toBe("unlocked");
     await provider.stop();
   });
@@ -57,7 +59,7 @@ describe("createDarwinSessionProvider", () => {
         return { exitCode: 0, stdout: v, stderr: "" };
       },
     };
-    const provider = await createDarwinSessionProvider({
+    const provider = await createWindowsSessionProvider({
       executor,
       logger: silentLogger(),
       pollIntervalMs: 100,
@@ -69,9 +71,9 @@ describe("createDarwinSessionProvider", () => {
     await provider.stop();
   });
 
-  it("stop() halts the polling interval", async () => {
-    const executor = makeExecutor(new Map([["loginwindow", { exitCode: 0, stdout: "false" }]]));
-    const provider = await createDarwinSessionProvider({ executor, logger: silentLogger() });
+  it("stop halts polling", async () => {
+    const executor = makeExecutor(() => ({ exitCode: 0, stdout: "false", stderr: "" }));
+    const provider = await createWindowsSessionProvider({ executor, logger: silentLogger() });
     await provider.stop();
   });
 });

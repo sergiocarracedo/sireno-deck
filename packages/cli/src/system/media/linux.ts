@@ -9,7 +9,11 @@ import {
 } from "@/system/provider";
 
 export interface CommandExecutor {
-  run(command: string, args: ReadonlyArray<string>, options?: { timeoutMs?: number }): Promise<{
+  run(
+    command: string,
+    args: ReadonlyArray<string>,
+    options?: { timeoutMs?: number },
+  ): Promise<{
     exitCode: number;
     stdout: string;
     stderr: string;
@@ -49,7 +53,11 @@ const probe = async (executor: CommandExecutor, logger: pino.Logger): Promise<bo
   return true;
 };
 
-const run = async (deps: LinuxMediaDeps, args: ReadonlyArray<string>, timeoutMs: number): Promise<void> => {
+const run = async (
+  deps: LinuxMediaDeps,
+  args: ReadonlyArray<string>,
+  timeoutMs: number,
+): Promise<void> => {
   await withTimeout(
     (async () => {
       const result = await deps.executor.run("playerctl", [...args], { timeoutMs });
@@ -74,9 +82,7 @@ const readMetadata = async (deps: LinuxMediaDeps): Promise<MediaMetadata | null>
   return parseMetadata(result.stdout);
 };
 
-export const createLinuxMediaProvider = async (
-  deps: LinuxMediaDeps,
-): Promise<MediaProvider> => {
+export const createLinuxMediaProvider = async (deps: LinuxMediaDeps): Promise<MediaProvider> => {
   const has = await probe(deps.executor, deps.logger);
   if (!has) {
     return createNullMediaProvider(deps.logger);

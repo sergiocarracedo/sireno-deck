@@ -159,15 +159,20 @@ export const preflight = async (options: RunOptions): Promise<PreflightResult> =
     name: d.name ?? id,
     buttons: d.buttons.flatMap((b, idx) => {
       if (typeof b === "string") return [];
-      return [{
-        id: b.position?.toString() ?? `b${idx}`,
-        type: b.type,
-        config: b,
-      }];
+      return [
+        {
+          id: b.position?.toString() ?? `b${idx}`,
+          type: b.type,
+          config: b,
+        },
+      ];
     }),
-    processNames: d.trigger?.process_name !== undefined
-      ? Array.isArray(d.trigger.process_name) ? d.trigger.process_name : [d.trigger.process_name]
-      : undefined,
+    processNames:
+      d.trigger?.process_name !== undefined
+        ? Array.isArray(d.trigger.process_name)
+          ? d.trigger.process_name
+          : [d.trigger.process_name]
+        : undefined,
   }));
   const { runtime } = createDeckRuntime({ decks, logger });
 

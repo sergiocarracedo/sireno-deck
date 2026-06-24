@@ -87,11 +87,21 @@ const saveDeviceConfigMock = cfgMod.saveDeviceConfig as unknown as ReturnType<ty
 const runRealModeMock = realMod.runRealMode as unknown as ReturnType<typeof vi.fn>;
 const writePidMock = daemonMod.writePid as unknown as ReturnType<typeof vi.fn>;
 const removePidFileMock = daemonMod.removePidFile as unknown as ReturnType<typeof vi.fn>;
-const createDeckRuntimeMock = (deckMod as unknown as { createDeckRuntime: ReturnType<typeof vi.fn> }).createDeckRuntime;
-const createActiveAppProviderMock = (activeAppMod as unknown as { createActiveAppProvider: ReturnType<typeof vi.fn> }).createActiveAppProvider;
-const createSessionProviderMock = (sessionMod as unknown as { createSessionProvider: ReturnType<typeof vi.fn> }).createSessionProvider;
-const createKeyMacroProviderMock = (keyMacroMod as unknown as { createKeyMacroProvider: ReturnType<typeof vi.fn> }).createKeyMacroProvider;
-const createMediaProviderMock = (mediaMod as unknown as { createMediaProvider: ReturnType<typeof vi.fn> }).createMediaProvider;
+const createDeckRuntimeMock = (
+  deckMod as unknown as { createDeckRuntime: ReturnType<typeof vi.fn> }
+).createDeckRuntime;
+const createActiveAppProviderMock = (
+  activeAppMod as unknown as { createActiveAppProvider: ReturnType<typeof vi.fn> }
+).createActiveAppProvider;
+const createSessionProviderMock = (
+  sessionMod as unknown as { createSessionProvider: ReturnType<typeof vi.fn> }
+).createSessionProvider;
+const createKeyMacroProviderMock = (
+  keyMacroMod as unknown as { createKeyMacroProvider: ReturnType<typeof vi.fn> }
+).createKeyMacroProvider;
+const createMediaProviderMock = (
+  mediaMod as unknown as { createMediaProvider: ReturnType<typeof vi.fn> }
+).createMediaProvider;
 
 const { createLogger } = await import("@/util/logger");
 const start = (await import("./start.ts")).default;
@@ -125,18 +135,42 @@ const setHappyPath = (): void => {
   runRealModeMock.mockImplementation(() => new Promise(() => undefined));
 
   const nullProvider = () => ({
-    async getActive() { return null; },
-    subscribe() { return () => undefined; },
-    async stop() { return; },
-    async sendKey() { return; },
-    async play() { return; },
-    async pause() { return; },
-    async toggle() { return; },
-    async next() { return; },
-    async previous() { return; },
-    async getCurrent() { return null; },
-    onChange() { return () => undefined; },
-    getState() { return "unknown" as const; },
+    async getActive() {
+      return null;
+    },
+    subscribe() {
+      return () => undefined;
+    },
+    async stop() {
+      return;
+    },
+    async sendKey() {
+      return;
+    },
+    async play() {
+      return;
+    },
+    async pause() {
+      return;
+    },
+    async toggle() {
+      return;
+    },
+    async next() {
+      return;
+    },
+    async previous() {
+      return;
+    },
+    async getCurrent() {
+      return null;
+    },
+    onChange() {
+      return () => undefined;
+    },
+    getState() {
+      return "unknown" as const;
+    },
   });
   const fakeRuntime = {
     setActiveAppProvider: vi.fn(),

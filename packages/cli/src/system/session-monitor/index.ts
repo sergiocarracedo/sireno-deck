@@ -2,15 +2,11 @@ import type pino from "pino";
 
 import { createNullSessionProvider, type SessionProvider } from "@/system/provider";
 
-import {
-  createLinuxSessionProvider,
-  type LinuxDbusBus,
-} from "@/system/session-monitor/linux";
+import { createLinuxSessionProvider, type LinuxDbusBus } from "@/system/session-monitor/linux";
 
-import {
-  createDarwinSessionProvider,
-  type CommandExecutor,
-} from "@/system/session-monitor/darwin";
+import { createDarwinSessionProvider, type CommandExecutor } from "@/system/session-monitor/darwin";
+
+import { createWindowsSessionProvider } from "@/system/session-monitor/windows";
 
 export interface CreateSessionProviderOptions {
   readonly platform?: NodeJS.Platform;
@@ -39,6 +35,15 @@ export const createSessionProvider = async (
       return createNullSessionProvider(options.logger);
     }
     return createDarwinSessionProvider({
+      executor: options.executor,
+      logger: options.logger,
+    });
+  }
+  if (platform === "win32") {
+    if (options.executor === undefined) {
+      return createNullSessionProvider(options.logger);
+    }
+    return createWindowsSessionProvider({
       executor: options.executor,
       logger: options.logger,
     });

@@ -23,13 +23,19 @@ const silentLogger = (): pino.Logger => {
 const makeExecutor = (
   responses:
     | Record<string, { exitCode: number; stdout?: string; stderr?: string }>
-    | ((tool: string, args: ReadonlyArray<string>) => { exitCode: number; stdout?: string; stderr?: string }),
+    | ((
+        tool: string,
+        args: ReadonlyArray<string>,
+      ) => { exitCode: number; stdout?: string; stderr?: string }),
 ): {
   executor: CommandExecutor;
   calls: Array<{ tool: string; args: string[] }>;
 } => {
   const calls: Array<{ tool: string; args: string[] }> = [];
-  const resolve = (tool: string, args: ReadonlyArray<string>): { exitCode: number; stdout: string; stderr: string } => {
+  const resolve = (
+    tool: string,
+    args: ReadonlyArray<string>,
+  ): { exitCode: number; stdout: string; stderr: string } => {
     const resp =
       typeof responses === "function"
         ? responses(tool, args)
@@ -77,7 +83,8 @@ describe("createLinuxKeyMacroProvider", () => {
   it("falls back to ydotool on wayland when xdotool missing", async () => {
     const { executor, calls } = makeExecutor((tool, args) => {
       if (tool === "which" && args[0] === "xdotool") return { exitCode: 1, stdout: "" };
-      if (tool === "which" && args[0] === "ydotool") return { exitCode: 0, stdout: "/usr/bin/ydotool\n" };
+      if (tool === "which" && args[0] === "ydotool")
+        return { exitCode: 0, stdout: "/usr/bin/ydotool\n" };
       if (tool === "ydotool") return { exitCode: 0, stdout: "" };
       return { exitCode: 1, stdout: "" };
     });

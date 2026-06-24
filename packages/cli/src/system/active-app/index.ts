@@ -1,16 +1,11 @@
 import type pino from "pino";
 
-import {
-  createNullActiveAppProvider,
-  type ActiveAppProvider,
-} from "@/system/provider";
+import { createNullActiveAppProvider, type ActiveAppProvider } from "@/system/provider";
 
-import {
-  createLinuxActiveAppProvider,
-  type CommandExecutor,
-} from "@/system/active-app/linux";
+import { createLinuxActiveAppProvider, type CommandExecutor } from "@/system/active-app/linux";
 
 import { createDarwinActiveAppProvider } from "@/system/active-app/darwin";
+import { createWindowsActiveAppProvider } from "@/system/active-app/windows";
 
 export interface CreateActiveAppProviderOptions {
   readonly platform?: NodeJS.Platform;
@@ -38,6 +33,15 @@ export const createActiveAppProvider = async (
       return createNullActiveAppProvider("executor-not-injected", options.logger);
     }
     return createDarwinActiveAppProvider({
+      executor: options.executor,
+      logger: options.logger,
+    });
+  }
+  if (platform === "win32") {
+    if (options.executor === undefined) {
+      return createNullActiveAppProvider("executor-not-injected", options.logger);
+    }
+    return createWindowsActiveAppProvider({
       executor: options.executor,
       logger: options.logger,
     });

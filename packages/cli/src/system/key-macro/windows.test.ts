@@ -4,7 +4,7 @@ import type pino from "pino";
 
 import { ProviderError } from "@/system/provider";
 
-import { createDarwinKeyMacroProvider, type CommandExecutor } from "./darwin.ts";
+import { createWindowsKeyMacroProvider, type CommandExecutor } from "./windows.ts";
 
 const silentLogger = (): pino.Logger => {
   const noop = (): void => undefined;
@@ -24,73 +24,68 @@ const makeExecutor = (
   handler: (
     cmd: string,
     args: ReadonlyArray<string>,
-  ) => {
-    exitCode: number;
-    stdout: string;
-    stderr: string;
-  },
+  ) => { exitCode: number; stdout: string; stderr: string },
 ): CommandExecutor => ({
   async run(cmd: string, args: ReadonlyArray<string>) {
     return handler(cmd, [...args]);
   },
 });
 
-describe("createDarwinKeyMacroProvider", () => {
-  it("sendKey('ctrl+t') invokes osascript with command down", async () => {
+describe("createWindowsKeyMacroProvider", () => {
+  it("sendKey('ctrl+t') invokes PowerShell with ^t", async () => {
     let captured: string[] = [];
     const executor = makeExecutor((cmd, args) => {
-      if (cmd === "osascript") captured = [...args];
+      if (cmd === "powershell") captured = [...args];
       return { exitCode: 0, stdout: "", stderr: "" };
     });
-    const provider = await createDarwinKeyMacroProvider({ executor, logger: silentLogger() });
+    const provider = await createWindowsKeyMacroProvider({ executor, logger: silentLogger() });
     await provider.sendKey("ctrl+t");
-    expect(captured[0]).toBe("-e");
-    expect(captured[1]).toContain('keystroke "t"');
-    expect(captured[1]).toContain("command down");
+    expect(captured[0]).toBe("-NoProfile");
+    expect(captured[1]).toBe("-Command");
+    expect(captured[2]).toContain("^t");
+    expect(captured[2]).toContain("SendWait");
     await provider.stop();
   });
 
-  it("sendKey('alt+shift+F4') invokes osascript with multiple mods", async () => {
+  it("sendKey('alt+shift+F4') invokes PowerShell with %+{F4}", async () => {
     let captured: string[] = [];
     const executor = makeExecutor((cmd, args) => {
-      if (cmd === "osascript") captured = [...args];
+      if (cmd === "powershell") captured = [...args];
       return { exitCode: 0, stdout: "", stderr: "" };
     });
-    const provider = await createDarwinKeyMacroProvider({ executor, logger: silentLogger() });
+    const provider = await createWindowsKeyMacroProvider({ executor, logger: silentLogger() });
     await provider.sendKey("alt+shift+F4");
-    expect(captured[1]).toContain("option down");
-    expect(captured[1]).toContain("shift down");
-    expect(captured[1]).toContain('keystroke "F4"');
+    expect(captured[2]).toContain("%+{F4}");
     await provider.stop();
   });
 
-  it("sendKey('hello') invokes osascript as literal keystroke", async () => {
+  it("sendKey('Return') invokes PowerShell with {ENTER}", async () => {
     let captured: string[] = [];
     const executor = makeExecutor((cmd, args) => {
-      if (cmd === "osascript") captured = [...args];
+      if (cmd === "powershell") captured = [...args];
       return { exitCode: 0, stdout: "", stderr: "" };
     });
-    const provider = await createDarwinKeyMacroProvider({ executor, logger: silentLogger() });
+    const provider = await createWindowsKeyMacroProvider({ executor, logger: silentLogger() });
+    await provider.sendKey("Return");
+    expect(captured[2]).toContain("{ENTER}");
+    await provider.stop();
+  });
+
+  it("sendKey('hello') invokes PowerShell as literal text", async () => {
+    let captured: string[] = [];
+    const executor = makeExecutor((cmd, args) => {
+      if (cmd === "powershell") captured = [...args];
+      return { exitCode: 0, stdout: "", stderr: "" };
+    });
+    const provider = await createWindowsKeyMacroProvider({ executor, logger: silentLogger() });
     await provider.sendKey("hello");
-    expect(captured[1]).toContain('keystroke "hello"');
+    expect(captured[2]).toContain("hello");
     await provider.stop();
   });
 
-  it("sendKey('😀') invokes osascript with emoji", async () => {
-    let captured: string[] = [];
-    const executor = makeExecutor((cmd, args) => {
-      if (cmd === "osascript") captured = [...args];
-      return { exitCode: 0, stdout: "", stderr: "" };
-    });
-    const provider = await createDarwinKeyMacroProvider({ executor, logger: silentLogger() });
-    await provider.sendKey("😀");
-    expect(captured[1]).toContain('keystroke "😀"');
-    await provider.stop();
-  });
-
-  it("osascript non-zero throws ProviderError", async () => {
+  it("powershell non-zero throws ProviderError", async () => {
     const executor = makeExecutor(() => ({ exitCode: 1, stdout: "", stderr: "fail" }));
-    const provider = await createDarwinKeyMacroProvider({ executor, logger: silentLogger() });
+    const provider = await createWindowsKeyMacroProvider({ executor, logger: silentLogger() });
     await expect(provider.sendKey("ctrl+t")).rejects.toBeInstanceOf(ProviderError);
     await expect(provider.sendKey("ctrl+t")).rejects.toMatchObject({ code: "EXEC_FAILED" });
     await provider.stop();

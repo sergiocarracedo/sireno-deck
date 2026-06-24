@@ -4,7 +4,11 @@ import { ProviderError, type KeyMacroProvider, withTimeout } from "@/system/prov
 import { parseCombo } from "@/system/key-macro/parser";
 
 export interface CommandExecutor {
-  run(command: string, args: ReadonlyArray<string>, options?: { timeoutMs?: number }): Promise<{
+  run(
+    command: string,
+    args: ReadonlyArray<string>,
+    options?: { timeoutMs?: number },
+  ): Promise<{
     exitCode: number;
     stdout: string;
     stderr: string;
@@ -60,7 +64,10 @@ export const createDarwinKeyMacroProvider = async (
         }
       } catch (err) {
         if (err instanceof ProviderError) throw err;
-        throw new ProviderError("EXEC_FAILED", `osascript failed: ${(err as Error).message ?? "unknown"}`);
+        throw new ProviderError(
+          "EXEC_FAILED",
+          `osascript failed: ${(err as Error).message ?? "unknown"}`,
+        );
       }
     },
     async stop() {

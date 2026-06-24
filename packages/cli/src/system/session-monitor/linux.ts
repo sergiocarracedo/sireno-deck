@@ -78,7 +78,8 @@ export const createLinuxSessionProvider = async (
   if (idleSupported) {
     interval = setInterval(() => {
       if (stopped) return;
-      void deps.dbus!.getProxyObject(IDLE_MONITOR_SERVICE, IDLE_MONITOR_PATH)
+      void deps
+        .dbus!.getProxyObject(IDLE_MONITOR_SERVICE, IDLE_MONITOR_PATH)
         .then((p) => p.getInterface(IDLE_MONITOR_IFACE).GetIdletime?.())
         .then((idleMsRaw) => {
           if (typeof idleMsRaw === "number" && idleMsRaw > idleMs && state === "unlocked") {

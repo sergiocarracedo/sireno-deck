@@ -24,11 +24,16 @@ const silentLogger = (): pino.Logger => {
   } as unknown as pino.Logger;
 };
 
-const makeExecutor = (handler: (cmd: string, args: string[]) => {
-  exitCode: number;
-  stdout: string;
-  stderr: string;
-}): CommandExecutor => ({
+const makeExecutor = (
+  handler: (
+    cmd: string,
+    args: string[],
+  ) => {
+    exitCode: number;
+    stdout: string;
+    stderr: string;
+  },
+): CommandExecutor => ({
   async run(cmd, args) {
     return handler(cmd, [...args]);
   },

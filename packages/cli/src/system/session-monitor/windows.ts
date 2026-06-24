@@ -14,7 +14,7 @@ export interface CommandExecutor {
   }>;
 }
 
-export interface DarwinSessionDeps {
+export interface WindowsSessionDeps {
   readonly executor: CommandExecutor;
   readonly logger: pino.Logger;
   readonly pollIntervalMs?: number;
@@ -22,15 +22,12 @@ export interface DarwinSessionDeps {
 
 const toState = (locked: boolean): SessionState => (locked ? "locked" : "unlocked");
 
-const OSASCRIPT_LOGINWINDOW = `tell application "System Events" to get running of loginwindow process`;
+const PS_GET_LOGONUI = `if (Get-Process logonui -ErrorAction SilentlyContinue) { 'true' } else { 'false' }`;
 
-const parseLoginWindowResult = (raw: string): boolean => {
-  const trimmed = raw.trim().toLowerCase();
-  return trimmed === "true";
-};
+const parseLockResult = (raw: string): boolean => raw.trim().toLowerCase() === "true";
 
-export const createDarwinSessionProvider = async (
-  deps: DarwinSessionDeps,
+export const createWindowsSessionProvider = async (
+  deps: WindowsSessionDeps,
 ): Promise<SessionProvider> => {
   const listeners = new Set<(s: SessionState) => void>();
   let state: SessionState = "unknown";
@@ -39,13 +36,15 @@ export const createDarwinSessionProvider = async (
 
   const tick = async (): Promise<SessionState> => {
     try {
-      const result = await deps.executor.run("osascript", ["-e", OSASCRIPT_LOGINWINDOW], {
-        timeoutMs: 2_000,
-      });
+      const result = await deps.executor.run(
+        "powershell",
+        ["-NoProfile", "-Command", PS_GET_LOGONUI],
+        { timeoutMs: 2_000 },
+      );
       if (result.exitCode !== 0) return state;
-      return toState(parseLoginWindowResult(result.stdout));
+      return toState(parseLockResult(result.stdout));
     } catch (err) {
-      deps.logger.debug({ err }, "session: osascript failed");
+      deps.logger.debug({ err }, "session: powershell failed");
       return state;
     }
   };

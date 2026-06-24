@@ -21,7 +21,10 @@ const silentLogger = (): pino.Logger => {
 };
 
 const makeExecutor = (
-  handler: (cmd: string, args: ReadonlyArray<string>) => {
+  handler: (
+    cmd: string,
+    args: ReadonlyArray<string>,
+  ) => {
     exitCode: number;
     stdout: string;
     stderr: string;
@@ -51,7 +54,8 @@ describe("createLinuxMediaProvider", () => {
 
   it("play() invokes playerctl play", async () => {
     const executor = makeExecutor((cmd, args) => {
-      if (cmd === "which" && args[0] === "playerctl") return { exitCode: 0, stdout: "/usr/bin/playerctl", stderr: "" };
+      if (cmd === "which" && args[0] === "playerctl")
+        return { exitCode: 0, stdout: "/usr/bin/playerctl", stderr: "" };
       if (cmd === "playerctl" && args[0] === "play") return { exitCode: 0, stdout: "", stderr: "" };
       return { exitCode: 0, stdout: "", stderr: "" };
     });
@@ -62,7 +66,8 @@ describe("createLinuxMediaProvider", () => {
 
   it("getCurrent() parses playerctl metadata", async () => {
     const executor = makeExecutor((cmd, args) => {
-      if (cmd === "which" && args[0] === "playerctl") return { exitCode: 0, stdout: "/usr/bin/playerctl", stderr: "" };
+      if (cmd === "which" && args[0] === "playerctl")
+        return { exitCode: 0, stdout: "/usr/bin/playerctl", stderr: "" };
       if (cmd === "playerctl" && args[0] === "metadata") {
         return {
           exitCode: 0,
@@ -85,8 +90,10 @@ describe("createLinuxMediaProvider", () => {
 
   it("getCurrent() returns null on empty output", async () => {
     const executor = makeExecutor((cmd, args) => {
-      if (cmd === "which" && args[0] === "playerctl") return { exitCode: 0, stdout: "/usr/bin/playerctl", stderr: "" };
-      if (cmd === "playerctl" && args[0] === "metadata") return { exitCode: 1, stdout: "", stderr: "no player" };
+      if (cmd === "which" && args[0] === "playerctl")
+        return { exitCode: 0, stdout: "/usr/bin/playerctl", stderr: "" };
+      if (cmd === "playerctl" && args[0] === "metadata")
+        return { exitCode: 1, stdout: "", stderr: "no player" };
       return { exitCode: 0, stdout: "", stderr: "" };
     });
     const provider = await createLinuxMediaProvider({ executor, logger: silentLogger() });
@@ -98,7 +105,8 @@ describe("createLinuxMediaProvider", () => {
   it("onChange handler fires when metadata changes", async () => {
     let callCount = 0;
     const executor = makeExecutor((cmd, args) => {
-      if (cmd === "which" && args[0] === "playerctl") return { exitCode: 0, stdout: "/usr/bin/playerctl", stderr: "" };
+      if (cmd === "which" && args[0] === "playerctl")
+        return { exitCode: 0, stdout: "/usr/bin/playerctl", stderr: "" };
       if (cmd === "playerctl" && args[0] === "metadata") {
         callCount += 1;
         if (callCount === 1) return { exitCode: 0, stdout: "T1\tA1\tAl1\t", stderr: "" };

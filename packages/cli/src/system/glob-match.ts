@@ -43,7 +43,9 @@ export const matchesPattern = (name: string, pattern: string): boolean => {
   return compileOne(pattern).test(name);
 };
 
-export const compileDeckMatcher = (patterns: ReadonlyArray<string>): ((snapshot: ActiveAppSnapshot) => boolean) => {
+export const compileDeckMatcher = (
+  patterns: ReadonlyArray<string>,
+): ((snapshot: ActiveAppSnapshot) => boolean) => {
   if (patterns.length === 0) return () => false;
   const compiled = patterns.map(compileOne);
   return (snapshot: ActiveAppSnapshot): boolean => {

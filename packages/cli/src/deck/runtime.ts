@@ -188,7 +188,10 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
 
   void store;
 
-  const overlayDecks = (): Array<{ deck: RuntimeDeck; matcher: ReturnType<typeof compileDeckMatcher> }> => {
+  const overlayDecks = (): Array<{
+    deck: RuntimeDeck;
+    matcher: ReturnType<typeof compileDeckMatcher>;
+  }> => {
     const result: Array<{ deck: RuntimeDeck; matcher: ReturnType<typeof compileDeckMatcher> }> = [];
     for (const deck of decks) {
       if (!deck.processNames || deck.processNames.length === 0) continue;
@@ -214,7 +217,11 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     pubSub.publish("runtime:overlay", { deckId });
   };
 
-  const computeOverlayFor = (snapshot: { name: string; windowTitle: string | null; processId: number | null }): string | null => {
+  const computeOverlayFor = (snapshot: {
+    name: string;
+    windowTitle: string | null;
+    processId: number | null;
+  }): string | null => {
     for (const { deck, matcher } of overlayDecks()) {
       if (matcher(snapshot)) return deck.id;
     }

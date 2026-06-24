@@ -137,33 +137,67 @@ const setHappyPath = (
   connectMock.mockResolvedValue(mockDevice());
 
   const nullProvider = () => ({
-    async getActive() { return null; },
-    subscribe() { return () => undefined; },
-    async stop() { return; },
-    async sendKey() { return; },
-    async play() { return; },
-    async pause() { return; },
-    async toggle() { return; },
-    async next() { return; },
-    async previous() { return; },
-    async getCurrent() { return null; },
-    onChange() { return () => undefined; },
-    getState() { return "unknown" as const; },
+    async getActive() {
+      return null;
+    },
+    subscribe() {
+      return () => undefined;
+    },
+    async stop() {
+      return;
+    },
+    async sendKey() {
+      return;
+    },
+    async play() {
+      return;
+    },
+    async pause() {
+      return;
+    },
+    async toggle() {
+      return;
+    },
+    async next() {
+      return;
+    },
+    async previous() {
+      return;
+    },
+    async getCurrent() {
+      return null;
+    },
+    onChange() {
+      return () => undefined;
+    },
+    getState() {
+      return "unknown" as const;
+    },
   });
   const fakeRuntime = {
     setActiveAppProvider: vi.fn(),
     stopActiveAppPolling: vi.fn(async () => undefined),
   };
-  (deckMod as unknown as { createDeckRuntime: ReturnType<typeof vi.fn> }).createDeckRuntime.mockReturnValue({
+  (
+    deckMod as unknown as { createDeckRuntime: ReturnType<typeof vi.fn> }
+  ).createDeckRuntime.mockReturnValue({
     runtime: fakeRuntime,
     methods: {},
     pubSub: { publish: () => undefined, subscribe: () => () => undefined, clear: () => undefined },
     store: { get: () => undefined, set: () => undefined, delete: () => undefined },
   });
-  (activeAppMod as unknown as { createActiveAppProvider: ReturnType<typeof vi.fn> }).createActiveAppProvider.mockResolvedValue(nullProvider());
-  (sessionMod as unknown as { createSessionProvider: ReturnType<typeof vi.fn> }).createSessionProvider.mockResolvedValue(nullProvider());
-  (keyMacroMod as unknown as { createKeyMacroProvider: ReturnType<typeof vi.fn> }).createKeyMacroProvider.mockResolvedValue(nullProvider());
-  (mediaMod as unknown as { createMediaProvider: ReturnType<typeof vi.fn> }).createMediaProvider.mockResolvedValue(nullProvider());
+  (
+    activeAppMod as unknown as { createActiveAppProvider: ReturnType<typeof vi.fn> }
+  ).createActiveAppProvider.mockResolvedValue(nullProvider());
+  (
+    sessionMod as unknown as { createSessionProvider: ReturnType<typeof vi.fn> }
+  ).createSessionProvider.mockResolvedValue(nullProvider());
+  (
+    keyMacroMod as unknown as { createKeyMacroProvider: ReturnType<typeof vi.fn> }
+  ).createKeyMacroProvider.mockResolvedValue(nullProvider());
+  (
+    mediaMod as unknown as { createMediaProvider: ReturnType<typeof vi.fn> }
+  ).createMediaProvider.mockResolvedValue(nullProvider());
 };
 
 describe("run", () => {
