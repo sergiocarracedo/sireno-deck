@@ -1,0 +1,25 @@
+packages/cli/src/system/key-macro/linux.test.ts
+  s_9fabccd2e25c5b::t_cb3349403d8122 23-25,27,37-42
+  s_9fabccd2e25c5b::t_849fe73799e1b8 76-78,80
+  s_9fabccd2e25c5b::t_10e9b7c1b17366 61-63,81,88-91,96-98,109-111,118-121,126-128,135-138,143-146,152-153,169
+  s_9fabccd2e25c5b::t_2b520165a77f20 26,32-36,46
+  s_9fabccd2e25c5b::t_f1de655ee2e3bf 79
+  s_9fabccd2e25c5b::t_6236f8aa5dcc82 44-45
+  s_9fabccd2e25c5b::t_8fd215c3f9e381 1-22,28-31,43,47-60,64-75,82-87,92-95,99-108,112-117,122-125,129-134,139-142,147-151,154-168,170-172
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "419cbb1ad6a82ff0fa29200b9fb3e1f745ede7b5",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
