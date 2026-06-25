@@ -71,7 +71,7 @@ const textView = (
 };
 
 export const builtinSystemStatusButton: AddonButtonTypeDefinition = {
-  type: "system-status",
+  type: "core:system-status",
   configSchema: SystemStatusButtonSchema,
   defaultRenderIntervalMs: ({ config }) => config.poll_interval_ms,
   render: ({ config }) => {

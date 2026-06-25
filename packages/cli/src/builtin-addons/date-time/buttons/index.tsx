@@ -61,7 +61,7 @@ const formatDateParts = (config: BuiltinDateButtonConfig, date: Date) => {
 };
 
 export const builtinDateTimeButton: AddonButtonTypeDefinition = {
-  type: "date-time",
+  type: "core:date-time",
   configSchema: BuiltinDateTimeButtonSchema,
   defaultRenderIntervalMs: DIGITAL_DATE_TIME_INTERVAL_MS,
   render: ({ config }) => {
@@ -78,7 +78,7 @@ export const builtinDateTimeButton: AddonButtonTypeDefinition = {
 };
 
 export const builtinTimeButton: AddonButtonTypeDefinition = {
-  type: "time",
+  type: "core:time",
   configSchema: BuiltinTimePresetButtonSchema,
   defaultRenderIntervalMs: DIGITAL_DATE_TIME_INTERVAL_MS,
   render: ({ config }) => {
@@ -96,7 +96,7 @@ export const builtinTimeButton: AddonButtonTypeDefinition = {
 };
 
 export const builtinDateButton: AddonButtonTypeDefinition = {
-  type: "date",
+  type: "core:date",
   configSchema: BuiltinDateButtonSchema,
   defaultRenderIntervalMs: DATE_BUTTON_INTERVAL_MS,
   render: ({ config }) => {
@@ -115,7 +115,7 @@ export const builtinDateButton: AddonButtonTypeDefinition = {
 };
 
 export const builtinClockButton: AddonButtonTypeDefinition = {
-  type: "clock",
+  type: "core:clock",
   configSchema: BuiltinClockButtonSchema,
   defaultRenderIntervalMs: CLOCK_BUTTON_INTERVAL_MS,
   render: ({ config }) => {
@@ -137,7 +137,7 @@ const polar = (cx: number, cy: number, r: number, deg: number): { x: number; y: 
 };
 
 export const builtinAnalogClockButton: AddonButtonTypeDefinition = {
-  type: "analog-clock",
+  type: "core:analog-clock",
   configSchema: BuiltinAnalogClockButtonSchema,
   defaultRenderIntervalMs: ANALOG_CLOCK_INTERVAL_MS,
   render: () => {
@@ -229,7 +229,7 @@ const formatLockedCharacter = (
 };
 
 export const builtinLockedTimeTileButton: AddonButtonTypeDefinition = {
-  type: "locked-time-tile",
+  type: "core:locked-time-tile",
   configSchema: LockedTimeTileButtonSchema,
   defaultRenderIntervalMs: CLOCK_BUTTON_INTERVAL_MS,
   render: ({ config }) => {

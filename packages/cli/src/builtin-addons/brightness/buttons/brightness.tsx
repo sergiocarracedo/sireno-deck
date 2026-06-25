@@ -5,7 +5,7 @@ import { buildMacOSCommand, formatCommand, isMacOS } from "../domain/macos.ts";
 import { BrightnessButtonSchema } from "../schemas.ts";
 
 export const builtinBrightnessButton: AddonButtonTypeDefinition = {
-  type: "brightness",
+  type: "core:brightness",
   configSchema: BrightnessButtonSchema,
   render: ({ config }) => {
     const platform = (globalThis as { process?: { platform?: string } }).process?.platform as

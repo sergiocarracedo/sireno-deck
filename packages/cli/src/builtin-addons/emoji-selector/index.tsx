@@ -108,7 +108,7 @@ const generateDecks = (
 };
 
 export const emojiSelectorDeck: AddonDeckDefinition = {
-  type: "emoji-selector",
+  type: "core:emoji-selector",
   configSchema: EmojiSelectorDeckSchema,
   createDecks: ({
     config,
@@ -120,7 +120,7 @@ export const emojiSelectorDeck: AddonDeckDefinition = {
 };
 
 export const builtinEmojiCategoryButton: AddonButtonTypeDefinition = {
-  type: "emoji-category-button",
+  type: "core:emoji-category-button",
   configSchema: z.object({}).strict(),
   render: ({ config }) => {
     const iconRef = (config as { icon?: string }).icon ?? "🙂";
@@ -135,7 +135,7 @@ export const builtinEmojiCategoryButton: AddonButtonTypeDefinition = {
 };
 
 export const builtinEmojiEmojiButton: AddonButtonTypeDefinition = {
-  type: "emoji-emoji-button",
+  type: "core:emoji-emoji-button",
   configSchema: z.object({}).strict(),
   render: ({ config }) => {
     const emoji = (config as { emoji?: string }).emoji ?? "❓";
@@ -148,7 +148,7 @@ export const builtinEmojiEmojiButton: AddonButtonTypeDefinition = {
 };
 
 export const builtinEmojiLauncherButton: AddonButtonTypeDefinition = {
-  type: "emoji-launcher-button",
+  type: "core:emoji-launcher-button",
   configSchema: z.object({}).strict(),
   render: () => (
     <span className="flex h-full w-full items-center justify-center gap-1">
@@ -162,7 +162,7 @@ export const builtinEmojiLauncherButton: AddonButtonTypeDefinition = {
 };
 
 export const builtinEmojiBackButton: AddonButtonTypeDefinition = {
-  type: "emoji-back-button",
+  type: "core:emoji-back-button",
   configSchema: z.object({}).strict(),
   render: () => (
     <span className="flex h-full w-full items-center justify-center font-mono text-xs uppercase tracking-wider text-muted">
@@ -175,7 +175,7 @@ export const builtinEmojiBackButton: AddonButtonTypeDefinition = {
 };
 
 export const builtinEmojiPageNavButton: AddonButtonTypeDefinition = {
-  type: "emoji-page-nav",
+  type: "core:emoji-page-nav",
   configSchema: z.object({}).strict(),
   render: ({ config }) => {
     const prev = (config as { prev_deck_id?: string }).prev_deck_id;
@@ -231,3 +231,5 @@ export const emojiSelectorAddon = {
   ],
   decks: [emojiSelectorDeck],
 };
+
+export default emojiSelectorAddon;

@@ -1,0 +1,116 @@
+theme: default
+decks:
+  main:
+    name: Main Deck
+    buttons:
+      - position: 2
+        type: "core:time"
+        config:
+          variant: big
+
+      - position: 3
+        type: "core:date"
+
+      - position: 1
+        type: "core:action"
+        config:
+          command: "xdg-open https://example.com"
+
+      - position: 4
+        type: "core:weather"
+        config:
+          location:
+            latitude: 42.2304
+            longitude: -8.7256
+            name: Vigo
+
+      - position: 9
+        type: "core:change-deck"
+        config:
+          deck: emoji
+
+      - position: 10
+        type: "core:action"
+        config:
+          command: "google-chrome"
+
+      - position: 0
+        type: "core:system-status"
+        config:
+          variant: bars
+          metrics:
+            - metric: cpu_usage
+              label: CPU
+            - metric: memory_usage
+              label: RAM
+            - metric: swap_usage
+              label: Swap
+              unavailable_label: "N/A"
+
+      - position: 5
+        type: "core:system-status"
+        config:
+          metrics:
+            - metric: cpu_usage
+              label: CPU
+            - metric: fan_speed
+              label: Fan
+              unavailable_label: "N/A"
+            - metric: uptime
+              label: Uptime
+
+      - position: 12
+        type: "core:media-player"
+
+      - position: 11
+        type: "core:time"
+
+      - position: 13
+        type: "core:clock"
+
+  emoji:
+    name: Emoji
+    buttons:
+      - position: 0
+        type: "core:change-deck"
+        config:
+          deck: main
+
+  chrome:
+    name: Chrome
+    icon: /works/opensource/sireno-deck/assets/chrome.svg
+    trigger:
+      process_name: chrome
+    autoShow: true
+    buttons:
+      - position: 0
+        type: "core:action"
+        config:
+          command: "xdotool key ctrl+t"
+      - position: 1
+        type: "core:action"
+        config:
+          command: "xdotool key ctrl+w"
+      - position: 2
+        type: "core:action"
+        config:
+          command: "xdotool key ctrl+shift+t"
+      - position: 3
+        type: "core:action"
+        config:
+          command: "xdotool key ctrl+shift+n"
+      - position: 4
+        type: "core:action"
+        config:
+          command: "xdotool key ctrl+r"
+      - position: 5
+        type: "core:action"
+        config:
+          command: "xdotool key ctrl+shift+r"
+      - position: 6
+        type: "core:action"
+        config:
+          command: "xdotool key F12"
+
+logging:
+  level: info

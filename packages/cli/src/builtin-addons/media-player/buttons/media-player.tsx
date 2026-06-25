@@ -17,7 +17,7 @@ const PlayerGlyph = ({ state }: { state: "playing" | "paused" | "unknown" }) => 
 };
 
 export const builtinMediaPlayerButton: AddonButtonTypeDefinition = {
-  type: "media-player",
+  type: "core:media-player",
   configSchema: MediaPlayerButtonSchema,
   render: ({ methods }) => {
     const [state, setState] = useState<"playing" | "paused" | "unknown">("unknown");
@@ -118,7 +118,7 @@ export const builtinMediaPlayerButton: AddonButtonTypeDefinition = {
 };
 
 export const builtinMediaMuteButton: AddonButtonTypeDefinition = {
-  type: "media-mute",
+  type: "core:media-mute",
   configSchema: MediaMuteButtonSchema,
   render: () => (
     <span className="flex h-full w-full items-center justify-center text-2xl">🔇</span>
@@ -129,7 +129,7 @@ export const builtinMediaMuteButton: AddonButtonTypeDefinition = {
 };
 
 export const builtinMediaVolumeButton: AddonButtonTypeDefinition = {
-  type: "media-volume",
+  type: "core:media-volume",
   configSchema: MediaVolumeButtonSchema,
   render: ({ config }) => {
     const arrow = config.direction === "down" ? "🔉" : "🔊";

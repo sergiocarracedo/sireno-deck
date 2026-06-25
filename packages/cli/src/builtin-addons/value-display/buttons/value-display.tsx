@@ -35,7 +35,7 @@ const refreshValues = async (config: ValueDisplayButtonConfig): Promise<readonly
   Promise.all(config.values.map((entry) => runEntry(entry, config.timeout_ms)));
 
 export const builtinValueDisplayButton: AddonButtonTypeDefinition = {
-  type: "value-display",
+  type: "core:value-display",
   configSchema: ValueDisplayButtonSchema,
   defaultRenderIntervalMs: ({ config }) => config.poll_interval_ms,
   render: ({ config }) => {

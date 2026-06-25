@@ -9,7 +9,7 @@ import { fetchWeather } from "../domain/fetch.ts";
 import { WeatherButtonSchema, type WeatherSnapshot } from "../schemas.ts";
 
 export const builtinWeatherButton: AddonButtonTypeDefinition = {
-  type: "weather",
+  type: "core:weather",
   configSchema: WeatherButtonSchema,
   defaultRenderIntervalMs: ({ config }) => config.poll_interval_ms,
   render: ({ config }) => {
