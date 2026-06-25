@@ -8,7 +8,10 @@ import { buildCli } from "./index";
 import { createLogger } from "@/util/logger";
 
 const main = async (): Promise<void> => {
-  const logger = createLogger({ verbose: process.argv.includes("--verbose") });
+  const args = process.argv;
+  const isJson = args.indexOf("--json") !== -1;
+  const isVerbose = args.indexOf("--verbose") !== -1 || args.indexOf("-v") !== -1;
+  const logger = createLogger({ verbose: isVerbose, json: isJson });
   const { scriptName, commands, packageName } = await buildCli();
 
   const parser = yargs(hideBin(process.argv))
@@ -18,6 +21,11 @@ const main = async (): Promise<void> => {
       alias: "v",
       type: "boolean",
       description: "Enable verbose debug logging",
+      default: false,
+    })
+    .option("json", {
+      type: "boolean",
+      description: "Emit logs as JSON (default: human-friendly)",
       default: false,
     })
     .option("log-level", {

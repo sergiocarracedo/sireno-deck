@@ -34,6 +34,7 @@ interface StopArgs extends GlobalOptions {}
 const buildLogger = (argv: ArgumentsCamelCase<GlobalOptions>): ReturnType<typeof createLogger> =>
   createLogger({
     verbose: argv.verbose,
+    json: argv.json ?? false,
     ...(argv.logLevel !== undefined ? { level: argv.logLevel } : {}),
   });
 
