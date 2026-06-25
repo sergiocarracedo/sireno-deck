@@ -1,0 +1,60 @@
+config.yml
+  s_9fabccd2e25c5b::t_a00be3f0520f32 28-30
+  s_9fabccd2e25c5b::t_0e56b996069efa 7,12,15,20,33,38,51,63,66,69,75,87,91,95,99,103,107,111
+  s_9fabccd2e25c5b::t_acf46a7ef6b032 8-9,16,21-25,34,39-48,52-60,72,76,78,80,82-83,88,92,96,100,104,108,112,116
+  s_9fabccd2e25c5b::t_12c7ee7426e7a1 1-5,10-11,13-14,18-19,26-27,31-32,36-37,49-50,61-62,64-65,67-68,70-71,73-74,79,81,84-86,90,94,98,102,106,110,115
+  s_9fabccd2e25c5b::t_a92312b7905601 6,114
+  s_9fabccd2e25c5b::t_00de0b060c3682 17,35,77,89,93,97,101,105,109,113
+packages/cli/src/builtin-addons/value-display/buttons/value-display.tsx
+  s_9fabccd2e25c5b::t_84edec659f7b37 38
+packages/cli/src/builtin-addons/emoji-selector/index.tsx
+  s_9fabccd2e25c5b::t_f6d72b1a682fd3 138
+  s_9fabccd2e25c5b::t_ec03bdf82ce714 151
+  s_9fabccd2e25c5b::t_f052ad85456ac2 123
+  s_9fabccd2e25c5b::t_2904c9c956b804 178
+  s_9fabccd2e25c5b::t_122392d74c8f04 233-235
+  s_9fabccd2e25c5b::t_779ff2aa1c49dc 165
+  s_9fabccd2e25c5b::t_e3aef4b0d11d3b 111
+packages/cli/src/builtin-addons/media-player/buttons/media-player.tsx
+  s_9fabccd2e25c5b::t_07a0329396e166 20
+  s_9fabccd2e25c5b::t_639e237a1c5ad5 121
+  s_9fabccd2e25c5b::t_069c4515ac603c 132
+packages/cli/src/builtin-addons/weather/buttons/weather.tsx
+  s_9fabccd2e25c5b::t_5878e1fc5c1274 12
+packages/cli/src/builtin-addons/date-time/buttons/index.tsx
+  s_9fabccd2e25c5b::t_bb80f36f287108 64
+  s_9fabccd2e25c5b::t_438b9c28dd2d28 99
+  s_9fabccd2e25c5b::t_851a50e159e52a 232
+  s_9fabccd2e25c5b::t_c7ac35d22bcf8c 118
+  s_9fabccd2e25c5b::t_2ce3be17519046 140
+  s_9fabccd2e25c5b::t_75859dc70a47a2 81
+packages/cli/src/builtin-addons/system-status/buttons/system-status.tsx
+  s_9fabccd2e25c5b::t_22be776527f095 74
+packages/cli/src/builtin-addons/brightness/buttons/brightness.tsx
+  s_9fabccd2e25c5b::t_370dc42c9b2a5b 8
+packages/cli/src/builtin-addons/index.ts
+  s_9fabccd2e25c5b::t_75d7589e81be57 6-12
+packages/cli/src/builtin-addons/register-builtins.ts
+  s_9fabccd2e25c5b::t_3fbdcd362640ef 5,7-8,10,12-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "8f13187a8683157660a07174f7135c75da45b325",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
