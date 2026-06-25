@@ -1,0 +1,27 @@
+packages/cli/src/vite/index.test.ts
+  s_9fabccd2e25c5b::t_ab25756f56ed85 3,37-55
+packages/cli/src/vite/virtual-modules.ts
+  s_9fabccd2e25c5b::t_c71239f9378e70 65-66
+  s_9fabccd2e25c5b::t_f6f49052f97a9e 73-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "e5d5e0df2fdfcb395afea809225be9b2fa9eaee0",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
