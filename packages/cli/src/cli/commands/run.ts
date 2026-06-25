@@ -20,7 +20,7 @@ import {
 import { listDevices, type DeviceDescriptor } from "@/device/registry";
 import { selectDevice, NoStreamDeckFoundError } from "@/system/device-selection";
 import { loadDeviceConfig, saveDeviceConfig } from "@/util/device-config";
-import { resolveActiveTheme } from "@/themes/index.ts";
+import { resolveActiveTheme } from "@/themes/loader.ts";
 import {
   type ActiveAppProvider,
   type KeyMacroProvider,

@@ -1,6 +1,6 @@
 import type { AddonRegistry } from "@/addon/registry.ts";
 
-import { registerBuiltInThemes } from "@/themes/index.ts";
+import { registerBuiltInThemes } from "@/themes/loader.ts";
 
 import brightnessAddon from "./brightness/index.ts";
 import { coreButtonsAddon } from "./core-buttons/index.ts";
