@@ -77,7 +77,6 @@ export const App = ({ wsUrl = ENV_WS_URL }: AppProps = {}): React.ReactElement =
       },
     });
     clientRef.current = client;
-    client.connect();
     return () => client.close();
   }, [wsUrl]);
 
