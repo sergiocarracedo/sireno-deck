@@ -2,6 +2,7 @@ import { execa } from "execa";
 
 import { getOriginalCwd } from "@/cli/cwd.ts";
 import type { HostContext } from "@/deck/host-context.ts";
+import { getHostContext } from "@/deck/host-context.ts";
 
 export interface ActionResult {
   stdout: string;
@@ -86,4 +87,52 @@ export const createActionExecutor = (options: CreateActionExecutorOptions): Acti
   };
 
   return { run };
+};
+
+export interface ExecuteCommandOptions {
+  cwd?: string;
+  env?: Readonly<Record<string, string>>;
+  timeoutMs?: number;
+}
+
+export interface ExecuteCommandResult {
+  stdout: string;
+  stderr: string;
+  exitCode: number;
+  failed: boolean;
+  code: number;
+}
+
+export const executeCommand = async (
+  command: string,
+  options: ExecuteCommandOptions = {},
+): Promise<ExecuteCommandResult> => {
+  await getHostContext();
+  const cwd = options.cwd ?? getOriginalCwd();
+  const env = options.env ? { ...process.env, ...options.env } : process.env;
+  try {
+    const result = await execa("/bin/sh", ["-c", command], {
+      cwd,
+      env,
+      reject: false,
+      all: false,
+      ...(options.timeoutMs !== undefined ? { timeout: options.timeoutMs } : {}),
+    });
+    return {
+      stdout: result.stdout ?? "",
+      stderr: result.stderr ?? "",
+      exitCode: result.exitCode ?? -1,
+      failed: result.exitCode !== 0,
+      code: result.exitCode ?? -1,
+    };
+  } catch (err) {
+    const error = err as { stdout?: string; stderr?: string; exitCode?: number };
+    return {
+      stdout: error.stdout ?? "",
+      stderr: error.stderr ?? "",
+      exitCode: error.exitCode ?? -1,
+      failed: true,
+      code: error.exitCode ?? -1,
+    };
+  }
 };
