@@ -3,12 +3,11 @@ import {
   ChannelRegistry,
   Deck,
   ThemeProvider,
-  createWsClient,
   type ThemeContextValue,
   type DeckButton,
 } from "@sireno-deck-2/cli";
 
-import { serializeHello, type WsClient } from "./bridge.ts";
+import { createWsClient, serializeHello, type WsClient } from "./bridge.ts";
 
 interface DeckState {
   id: string;
