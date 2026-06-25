@@ -37,6 +37,32 @@ const LEVEL_LABEL: Record<number, string> = {
 const colorize = (color: string, text: string): string =>
   process.stdout.isTTY ? `${color}${text}${RESET}` : text;
 
+const CONTEXT_FIELDS = [
+  "frontendUrl",
+  "wsUrl",
+  "tool",
+  "sessionType",
+  "platform",
+  "executor",
+  "deckId",
+  "position",
+  "gesture",
+  "host",
+  "port",
+] as const;
+
+const formatContext = (entry: Record<string, unknown>): string[] => {
+  const lines: string[] = [];
+  for (const key of CONTEXT_FIELDS) {
+    const value = entry[key];
+    if (value === undefined || value === null) continue;
+    const display = typeof value === "string" ? value : JSON.stringify(value);
+    if (display.length === 0) continue;
+    lines.push(`  ${colorize(DIM, `${key}:`)} ${display}`);
+  }
+  return lines;
+};
+
 const formatHuman = (jsonLine: string): string | null => {
   let entry: Record<string, unknown>;
   try {
@@ -73,7 +99,9 @@ const formatHuman = (jsonLine: string): string | null => {
   const tag = colorize(MAGENTA, tool.length > 0 ? `(${tool})` : "");
   const head = colorize(levelColor, level.padEnd(5));
   const ts = colorize(DIM, time.length > 0 ? `${time} ` : "");
-  return `${ts}${head} ${tag} ${msg}${errLine}`.trimEnd();
+  const contextLines = formatContext(entry);
+  const contextBlock = contextLines.length > 0 ? `\n${contextLines.join("\n")}` : "";
+  return `${ts}${head} ${tag} ${msg}${errLine}${contextBlock}`.trimEnd();
 };
 
 class HumanWritable extends Writable {
