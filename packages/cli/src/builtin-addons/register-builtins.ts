@@ -5,7 +5,7 @@ import { registerBuiltInThemes } from "@/themes/index.ts";
 import { brightnessAddon } from "./brightness/index.ts";
 import { coreButtonsAddon } from "./core-buttons/index.ts";
 import { dateTimeAddon } from "./date-time/index.ts";
-import { emojiSelectorAddon } from "./emoji-selector/index.ts";
+import { emojiSelectorAddon } from "./emoji-selector/index.tsx";
 import { internalSettingsAddon } from "./internal-settings/index.ts";
 import { mediaPlayerAddon } from "./media-player/index.ts";
 import { sessionAddon } from "./session/index.ts";
