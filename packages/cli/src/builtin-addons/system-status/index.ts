@@ -1,7 +1,6 @@
-export {
-  systemStatusAddon,
-  builtinSystemStatusButton,
-} from "./buttons/system-status.tsx";
+import { systemStatusAddon } from "./buttons/system-status.tsx";
+
+export { builtinSystemStatusButton } from "./buttons/system-status.tsx";
 export {
   SystemStatusButtonSchema,
   SystemStatusMetricConfigSchema,

@@ -1,5 +1,6 @@
+import { mediaPlayerAddon } from "./buttons/media-player.tsx";
+
 export {
-  mediaPlayerAddon,
   builtinMediaPlayerButton,
   builtinMediaMuteButton,
   builtinMediaVolumeButton,

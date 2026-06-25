@@ -1,4 +1,6 @@
-export { brightnessAddon, builtinBrightnessButton } from "./buttons/brightness.tsx";
+import { brightnessAddon } from "./buttons/brightness.tsx";
+
+export { builtinBrightnessButton } from "./buttons/brightness.tsx";
 export { BrightnessButtonSchema } from "./schemas.ts";
 export { buildMacOSCommand, formatCommand, isMacOS, setBrightnessMacOS } from "./domain/macos.ts";
 export type { BrightnessButtonConfig } from "./schemas.ts";

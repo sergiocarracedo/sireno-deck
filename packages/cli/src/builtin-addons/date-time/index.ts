@@ -1,5 +1,6 @@
+import { dateTimeAddon } from "./buttons/index.tsx";
+
 export {
-  dateTimeAddon,
   builtinDateTimeButton,
   builtinTimeButton,
   builtinDateButton,

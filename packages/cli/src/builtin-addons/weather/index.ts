@@ -1,4 +1,6 @@
-export { weatherAddon, builtinWeatherButton } from "./buttons/weather.tsx";
+import { weatherAddon } from "./buttons/weather.tsx";
+
+export { builtinWeatherButton } from "./buttons/weather.tsx";
 export {
   WeatherButtonSchema,
   WeatherLocationSchema,

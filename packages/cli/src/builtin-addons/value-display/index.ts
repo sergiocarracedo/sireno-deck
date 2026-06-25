@@ -1,4 +1,6 @@
-export { valueDisplayAddon, builtinValueDisplayButton } from "./buttons/value-display.tsx";
+import { valueDisplayAddon } from "./buttons/value-display.tsx";
+
+export { builtinValueDisplayButton } from "./buttons/value-display.tsx";
 export {
   ValueDisplayButtonSchema,
   ValueEntrySchema,
