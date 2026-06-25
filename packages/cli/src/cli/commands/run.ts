@@ -7,7 +7,7 @@ import { AddonRegistry } from "@/addon/registry";
 import { findConfigPath } from "@/config/discovery";
 import { loadConfig } from "@/config/loader";
 import { formatFullIssues, isFullValid, validateFull } from "@/config/validation";
-import { createDeckRuntime, type Runtime } from "@/deck";
+import { createDeckRuntime, type Runtime, type RuntimeDeck } from "@/deck";
 import { createActiveAppProvider } from "@/system/active-app";
 import { createKeyMacroProvider } from "@/system/key-macro";
 import { createMediaProvider } from "@/system/media";
@@ -269,6 +269,52 @@ export const runEmulatorPipeline = async (options: RunOptions): Promise<void> =>
   await runEmulatorLifecycle(options);
 };
 
+interface EmulatorDecks {
+  runtime: Runtime;
+  decks: ReadonlyArray<RuntimeDeck>;
+}
+
+const buildEmulatorDecks = (options: RunOptions): EmulatorDecks => {
+  const { logger } = options;
+  const configPath = resolveConfigPath(options);
+  const { config } = loadConfig({ configPath });
+  const registry = new AddonRegistry();
+  registerBuiltins(registry);
+  const validation = validateFull(config, registry);
+  if (!isFullValid(validation)) {
+    throw new Error(`Config validation failed:\n${formatFullIssues(validation.issues)}`);
+  }
+  const decks: RuntimeDeck[] = Object.entries(config.decks).map(([id, d]) => ({
+    id,
+    name: d.name ?? id,
+    buttons: d.buttons.flatMap((b, idx) => {
+      if (typeof b === "string") return [];
+      return [
+        {
+          id: b.position?.toString() ?? `b${idx}`,
+          type: b.type,
+          ...(typeof b.config === "object" && b.config !== null ? { config: b.config } : {}),
+        },
+      ];
+    }),
+    ...(d.trigger?.process_name !== undefined
+      ? {
+          processNames: Array.isArray(d.trigger.process_name)
+            ? d.trigger.process_name
+            : [d.trigger.process_name],
+        }
+      : {}),
+    ...(d.autoShow !== undefined ? { autoShow: d.autoShow } : {}),
+  }));
+  const mainId = decks[0]?.id;
+  const runtimeDecks: RuntimeDeck[] = decks.map((d) => ({
+    ...d,
+    ...(mainId !== undefined && d.id === mainId ? { isMain: true } : {}),
+  }));
+  const { runtime } = createDeckRuntime({ decks: runtimeDecks, logger });
+  return { runtime, decks: runtimeDecks };
+};
+
 const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
   const { logger } = options;
   let resolveDone: () => void = () => undefined;
@@ -282,9 +328,14 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     resolveDone();
   });
 
+  const emulatorDecks = buildEmulatorDecks(options);
+  const runtime = emulatorDecks.runtime;
+
   const handle = await runEmulatorMode({
     logger,
     activeTheme: { name: process.env["SIRENO_THEME_NAME"] ?? "default" },
+    runtime,
+    decks: emulatorDecks.decks,
   });
 
   logger.info(

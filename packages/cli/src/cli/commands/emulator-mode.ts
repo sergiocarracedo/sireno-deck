@@ -5,7 +5,12 @@ import { fileURLToPath } from "node:url";
 
 import type pino from "pino";
 
-import type { ButtonActionMessage, WsMessage } from "@/api/protocol-internal";
+import type {
+  ButtonActionMessage,
+  DeckConfigMessage,
+  WsMessage,
+} from "@/api/protocol-internal";
+import type { Runtime, RuntimeDeck } from "@/deck";
 import { startWsBridge, type WsBridge } from "@/render/ws-bridge";
 
 const EMULATOR_PACKAGE = "@sireno-deck-2/frontend-emulator";
@@ -21,6 +26,8 @@ export interface RunEmulatorModeOptions {
   readonly pnpmCommand?: string;
   readonly readyTimeoutMs?: number;
   readonly activeTheme?: { name: string; version?: number };
+  readonly runtime?: Runtime;
+  readonly decks?: ReadonlyArray<RuntimeDeck>;
   readonly logger: pino.Logger;
 }
 
@@ -53,20 +60,25 @@ const spawnEmulatorVite = (options: {
   pnpmCommand: string;
   readyTimeoutMs: number;
   logger: pino.Logger;
+  wsUrl?: string;
 }): Promise<{ process: ChildProcess; url: string }> => {
-  const { port, cwd, pnpmCommand, readyTimeoutMs, logger } = options;
+  const { port, cwd, pnpmCommand, readyTimeoutMs, logger, wsUrl } = options;
 
   return new Promise((resolve, reject) => {
     if (!existsSync(cwd)) {
       reject(new Error(`frontend-emulator workspace not found at ${cwd}`));
       return;
     }
+    const env: Record<string, string> = { ...process.env, FORCE_COLOR: "0" };
+    if (wsUrl !== undefined) {
+      env["SIRENO_WS_URL"] = wsUrl;
+    }
     const child = spawn(
       pnpmCommand,
       ["--filter", EMULATOR_PACKAGE, "run", "dev", "--", "--port", String(port)],
       {
         cwd: findWorkspaceRoot(),
-        env: { ...process.env, FORCE_COLOR: "0" },
+        env,
         stdio: ["ignore", "pipe", "pipe"],
       },
     );
@@ -118,6 +130,23 @@ const killChild = (child: ChildProcess): Promise<void> =>
 
 const isButtonAction = (m: WsMessage): m is ButtonActionMessage => m.type === "button-action";
 
+const buildDeckConfigMessage = (deck: RuntimeDeck): DeckConfigMessage => ({
+  type: "deck-config",
+  deckId: deck.id,
+  surfaces: {
+    [deck.id]: {
+      id: deck.id,
+      name: deck.name ?? deck.id,
+      buttons: deck.buttons.map((b) => ({
+        id: b.id,
+        type: b.type,
+        config: (b.config ?? {}) as Record<string, unknown>,
+      })),
+    },
+  },
+  navMode: "regular",
+});
+
 export const runEmulatorMode = async (
   options: RunEmulatorModeOptions,
 ): Promise<EmulatorModeHandle> => {
@@ -126,17 +155,18 @@ export const runEmulatorMode = async (
   const cwd = resolveEmulatorCwd(options.emulatorCwd);
   const readyTimeoutMs = options.readyTimeoutMs ?? DEFAULT_TIMEOUT_MS;
 
+  const bridge: WsBridge = await startWsBridge(
+    options.activeTheme !== undefined ? { activeTheme: options.activeTheme } : {},
+  );
+
   const { process: vite, url: frontendUrl } = await spawnEmulatorVite({
     port,
     cwd,
     pnpmCommand,
     readyTimeoutMs,
     logger: options.logger,
+    wsUrl: bridge.url,
   });
-
-  const bridge: WsBridge = await startWsBridge(
-    options.activeTheme !== undefined ? { activeTheme: options.activeTheme } : {},
-  );
 
   bridge.onMessage((message) => {
     if (isButtonAction(message)) {
@@ -146,6 +176,17 @@ export const runEmulatorMode = async (
       );
     }
   });
+
+  if (options.runtime !== undefined && options.decks !== undefined && options.decks.length > 0) {
+    const mainDeck = options.decks.find((d) => d.isMain) ?? options.decks[0]!;
+    bridge.onConnection((socket) => {
+      socket.send(JSON.stringify(buildDeckConfigMessage(mainDeck)));
+      options.logger.info(
+        { deckId: mainDeck.id, buttons: mainDeck.buttons.length },
+        "emulator: deck-config sent to new client",
+      );
+    });
+  }
 
   return {
     frontendUrl,

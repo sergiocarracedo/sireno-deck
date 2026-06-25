@@ -18,5 +18,9 @@ export {
   type GestureResult,
   type GestureType,
 } from "./core/gesture-state.ts";
+export { Deck, type DeckButton, type Deck as DeckType, type DeckProps } from "./components/Deck.tsx";
+export { ButtonFrame, type ButtonFrameProps } from "./components/ButtonFrame.tsx";
+export { ThemeProvider, useTheme, ThemeContext, type ThemeContextValue } from "./themes/use-resolved-theme.tsx";
+export { ChannelRegistry } from "./react/registry.ts";
 
 export const cliVersion = "0.1.0";
