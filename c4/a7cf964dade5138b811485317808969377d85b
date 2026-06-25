@@ -1,0 +1,40 @@
+packages/cli/src/builtin-addons/weather/index.ts
+  s_9fabccd2e25c5b::t_dc208642283b52 1,3
+  s_9fabccd2e25c5b::t_e0d4af012525ee 2
+packages/cli/src/builtin-addons/media-player/index.ts
+  s_9fabccd2e25c5b::t_540fcf7921eb4a 1
+  s_9fabccd2e25c5b::t_c0db647f32ad0a 2
+packages/cli/src/builtin-addons/value-display/index.ts
+  s_9fabccd2e25c5b::t_9f66f92ecf7fe0 1,3
+  s_9fabccd2e25c5b::t_b9ef9f883708ff 2
+packages/cli/src/builtin-addons/brightness/index.ts
+  s_9fabccd2e25c5b::t_50e08f6d23dd88 1,3
+  s_9fabccd2e25c5b::t_71efcb11d07271 2
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_9fabccd2e25c5b::t_2b3df40f7efd34 2
+  s_9fabccd2e25c5b::t_fda6ce1dc96745 1,3
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_9fabccd2e25c5b::t_85c4a75be3e501 2
+  s_9fabccd2e25c5b::t_0ed71064d1da49 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "c4a7cf964dade5138b811485317808969377d85b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
