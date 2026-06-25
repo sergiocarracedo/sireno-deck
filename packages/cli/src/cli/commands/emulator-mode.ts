@@ -172,8 +172,20 @@ export const runEmulatorMode = async (
     if (isButtonAction(message)) {
       options.logger.info(
         { deckId: message.deckId, position: message.position, gesture: message.gesture },
-        "emulator: button-action received (runtime dispatch pending Phase 09)",
+        "emulator: button-action received",
       );
+      if (options.runtime !== undefined) {
+        const deck = options.decks?.find((d) => d.id === message.deckId);
+        const button = deck?.buttons[message.position];
+        if (button === undefined) {
+          options.logger.warn(
+            { deckId: message.deckId, position: message.position },
+            "emulator: button-action targets unknown button",
+          );
+          return;
+        }
+        void options.runtime.dispatchGesture(button.id, message.gesture);
+      }
     }
   });
 

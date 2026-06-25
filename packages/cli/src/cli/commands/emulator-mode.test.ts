@@ -15,6 +15,7 @@ const bridgeMock = startWsBridge as unknown as ReturnType<typeof vi.fn>;
 
 const { createLogger } = await import("@/util/logger");
 const { runEmulatorMode } = await import("./emulator-mode.ts");
+const { createRuntime } = await import("@/deck/runtime.ts");
 
 const silentLogger = () => createLogger({ level: "silent" });
 
@@ -191,6 +192,91 @@ describe("runEmulatorMode", () => {
     expect(infoSpy).toHaveBeenCalledWith(
       expect.objectContaining({ deckId: "main", position: 0, gesture: "tap" }),
       expect.stringContaining("button-action received"),
+    );
+  });
+
+  it("dispatches button-action through runtime when runtime is provided", async () => {
+    const child = makeFakeChild();
+    spawnMock.mockReturnValue(child);
+    const bridge = makeBridgeStub(12345, "ws://127.0.0.1:12345");
+    bridgeMock.mockResolvedValue(bridge);
+
+    const runtime = createRuntime({
+      decks: [
+        {
+          id: "main",
+          name: "Home",
+          isMain: true,
+          buttons: [
+            { id: "b1", type: "core:action", config: {} },
+            { id: "b2", type: "core:action", config: {} },
+          ],
+        },
+      ],
+      executor: { run: vi.fn() } as never,
+      pubSub: { publish: vi.fn(), subscribe: vi.fn(() => () => undefined) } as never,
+      store: { get: vi.fn(), set: vi.fn(), delete: vi.fn() } as never,
+      logger: silentLogger(),
+    });
+    const dispatchSpy = vi.spyOn(runtime, "dispatchGesture");
+
+    const promise = runEmulatorMode({
+      logger: silentLogger(),
+      runtime,
+      decks: [
+        {
+          id: "main",
+          name: "Home",
+          isMain: true,
+          buttons: [
+            { id: "b1", type: "core:action", config: {} },
+            { id: "b2", type: "core:action", config: {} },
+          ],
+        },
+      ],
+    });
+    await new Promise((r) => setTimeout(r, 10));
+    child.emitStdout("Local:   http://127.0.0.1:52938/\n");
+    await promise;
+
+    bridge.__trigger({ type: "button-action", deckId: "main", position: 1, gesture: "dbl-tap" });
+    await new Promise((r) => setTimeout(r, 10));
+    expect(dispatchSpy).toHaveBeenCalledWith("b2", "dbl-tap");
+  });
+
+  it("warns and skips dispatch when button position is unknown", async () => {
+    const child = makeFakeChild();
+    spawnMock.mockReturnValue(child);
+    const bridge = makeBridgeStub(12345, "ws://127.0.0.1:12345");
+    bridgeMock.mockResolvedValue(bridge);
+
+    const runtime = createRuntime({
+      decks: [{ id: "main", name: "Home", isMain: true, buttons: [{ id: "b1", type: "x", config: {} }] }],
+      executor: { run: vi.fn() } as never,
+      pubSub: { publish: vi.fn(), subscribe: vi.fn(() => () => undefined) } as never,
+      store: { get: vi.fn(), set: vi.fn(), delete: vi.fn() } as never,
+      logger: silentLogger(),
+    });
+    const dispatchSpy = vi.spyOn(runtime, "dispatchGesture");
+
+    const logger = silentLogger();
+    const warnSpy = vi.spyOn(logger, "warn");
+
+    const promise = runEmulatorMode({
+      logger,
+      runtime,
+      decks: [{ id: "main", name: "Home", isMain: true, buttons: [{ id: "b1", type: "x", config: {} }] }],
+    });
+    await new Promise((r) => setTimeout(r, 10));
+    child.emitStdout("Local:   http://127.0.0.1:52938/\n");
+    await promise;
+
+    bridge.__trigger({ type: "button-action", deckId: "main", position: 5, gesture: "tap" });
+    await new Promise((r) => setTimeout(r, 10));
+    expect(dispatchSpy).not.toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ deckId: "main", position: 5 }),
+      expect.stringContaining("unknown button"),
     );
   });
 

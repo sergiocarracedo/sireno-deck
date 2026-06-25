@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ChannelRegistry,
   Deck,
@@ -45,6 +45,7 @@ export interface AppProps {
 export const App = ({ wsUrl = ENV_WS_URL }: AppProps = {}): React.ReactElement => {
   const [deck, setDeck] = useState<DeckState>(MOCK_DECK);
   const theme = useState<ThemeContextValue>(() => buildThemeContext())[0];
+  const clientRef = useRef<WsClient | null>(null);
 
   useEffect(() => {
     const client: WsClient = createWsClient({
@@ -76,9 +77,24 @@ export const App = ({ wsUrl = ENV_WS_URL }: AppProps = {}): React.ReactElement =
         }
       },
     });
+    clientRef.current = client;
     client.connect();
     return () => client.close();
   }, [wsUrl]);
+
+  const sendButtonAction = (buttonId: string, gesture: "tap" | "dbl-tap" | "hold"): void => {
+    const position = deck.buttons.findIndex((b) => b.id === buttonId);
+    if (position < 0) return;
+    clientRef.current?.send(
+      JSON.stringify({ type: "button-action", deckId: deck.id, position, gesture }),
+    );
+    ChannelRegistry.instance().publish("runtime:button-tap", { buttonId, gesture });
+  };
+
+  const sendNavigate = (deckId: string): void => {
+    clientRef.current?.send(JSON.stringify({ type: "select-deck", deckId }));
+    ChannelRegistry.instance().publish("runtime:navigate", { deckId });
+  };
 
   return (
     <ThemeProvider value={theme}>
@@ -97,12 +113,8 @@ export const App = ({ wsUrl = ENV_WS_URL }: AppProps = {}): React.ReactElement =
               name: deck.name,
               buttons: deck.buttons,
             }}
-            onAction={(buttonId, gesture) => {
-              ChannelRegistry.instance().publish("runtime:button-tap", { buttonId, gesture });
-            }}
-            onNavigate={(deckId) => {
-              ChannelRegistry.instance().publish("runtime:navigate", { deckId });
-            }}
+            onAction={sendButtonAction}
+            onNavigate={sendNavigate}
           />
         )}
       </main>
