@@ -62,14 +62,16 @@ export const buildThemesManifestModule = (theme: SirenoVitePluginTheme | undefin
   if (!theme) {
     return `export const activeTheme = null;\nexport const components = {};\nexport const surfaces = {};\nexport const primitives = {};\n`;
   }
-  const importId = theme.name.replace(/[^a-zA-Z0-9_$]/g, "_");
+  const rawId = theme.name.replace(/[^a-zA-Z0-9_$]/g, "_");
+  const importId = /^[a-zA-Z_$]/.test(rawId) ? `_${rawId}` : rawId;
   return [
     `import * as ${importId} from ${JSON.stringify(theme.frontendPath)};`,
     `export const activeTheme = { name: ${JSON.stringify(theme.name)}, frontendPath: ${JSON.stringify(theme.frontendPath)} };`,
     `export const components = ${importId}.components ?? {};`,
     `export const surfaces = ${importId}.surfaces ?? {};`,
     `export const primitives = ${importId}.primitives ?? {};`,
-    `export default ${importId}.default ?? ${importId};`,
+    `const _themeDefault = ${importId}.default ?? ${importId};`,
+    `export { _themeDefault as default };`,
   ].join("\n");
 };
 
