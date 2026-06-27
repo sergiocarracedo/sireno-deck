@@ -78,6 +78,7 @@ export interface AddonManifest {
   name?: string;
   version?: string;
   description?: string;
+  publishIntervalMs?: number;
 }
 
 export interface LoadedTheme {
