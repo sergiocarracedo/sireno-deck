@@ -102,5 +102,6 @@ None.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 003 | Correct button size (72x72px) + render real buttons | 2026-06-27 | 6ab6fe4 | `.planning/quick/003-correct-button-size/` |
+| 004 | Emulator button fixes (cross-button dbl-tap + crystal visuals) | 2026-06-27 | 3b221c5 | `.planning/quick/004-emulator-button-fixes/` |
 
-Last activity: 2026-06-27 - Completed quick task 003: render real deck buttons at 72x72px (legacy Stream Deck size)
+Last activity: 2026-06-27 - Completed quick task 004: fix emulator dbl-tap cross-button bug + crystal button visuals
