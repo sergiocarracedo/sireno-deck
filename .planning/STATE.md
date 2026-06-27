@@ -96,3 +96,11 @@ None.
 - Emulator shell (originally centered iframe) — replaced with direct DeckFrame grid; design decision in Phase 05
 - frontend-emulator lint script — still missing (typecheck + format cover surface)
 - Udev rules auto-install via pkexec — manually copied by user; Phase 06 design decision
+
+## Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 003 | Correct button size (72x72px) + render real buttons | 2026-06-27 | 6ab6fe4 | `.planning/quick/003-correct-button-size/` |
+
+Last activity: 2026-06-27 - Completed quick task 003: render real deck buttons at 72x72px (legacy Stream Deck size)
