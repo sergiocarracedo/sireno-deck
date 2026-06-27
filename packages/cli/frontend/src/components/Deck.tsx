@@ -61,7 +61,7 @@ export const Deck = ({ deck, onNavigate, onAction, children }: DeckProps) => {
   const height = rows * BUTTON_SIZE + (rows - 1) * BUTTON_GAP_PX + DECK_PADDING_PX * 2;
   return (
     <div
-      className="grid p-4"
+      className="grid rounded-xl bg-neutral-950 p-4"
       style={
         {
           gridTemplateColumns: `repeat(${columns}, ${BUTTON_SIZE}px)`,
