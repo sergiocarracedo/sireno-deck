@@ -13,7 +13,6 @@ import {
   removeChildrenFile,
   removePidFile,
   removeTokenFile,
-  resolveDaemonPaths,
   writeChildren,
   writePid,
   writeToken,

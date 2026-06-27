@@ -96,6 +96,11 @@ const startCommand: CommandModule<object, StartArgs> = {
       .option("device-model", {
         type: "string",
         description: "Emulator device model (mk2, plus, mini, xl)",
+      })
+      .option("http-port", {
+        type: "number",
+        default: 3939,
+        description: "Port for the prod HTTP server that serves the bundled frontend with WS token injection",
       }),
   handler: async (argv) => {
     const logger = buildLogger(argv);
@@ -105,6 +110,7 @@ const startCommand: CommandModule<object, StartArgs> = {
       ...(argv.port !== undefined ? { port: argv.port } : {}),
       ...(argv.emulator !== undefined ? { emulator: argv.emulator } : {}),
       ...(argv.deviceModel !== undefined ? { deviceModel: argv.deviceModel } : {}),
+      ...(argv.httpPort !== undefined ? { httpPort: argv.httpPort } : {}),
     };
     try {
       await start(options);
