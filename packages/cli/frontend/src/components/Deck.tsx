@@ -6,6 +6,8 @@ import {
   type DeviceModelSpec,
 } from "@/device/models.ts";
 
+import { addonRegistry } from "virtual:sireno/addons/registry";
+
 import { ButtonFrame } from "./ButtonFrame.tsx";
 
 const BUTTON_SIZE = BUTTON_SIZE_PX;
@@ -18,6 +20,8 @@ export interface DeckButton {
   label?: string;
   position?: number;
   config?: Record<string, unknown>;
+  addonName?: string;
+  frontendEntry?: string;
 }
 
 export interface Deck {
@@ -54,6 +58,15 @@ const resolvePosition = (button: DeckButton, fallback: number): number => {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
 };
 
+interface AddonRegistryEntry {
+  readonly addonName: string;
+  readonly Component: React.ComponentType<{
+    readonly config: unknown;
+    readonly state: unknown;
+    readonly onAction?: (action: string) => void;
+  }>;
+}
+
 export const Deck = ({ deck, onNavigate, onAction, children }: DeckProps) => {
   const model = resolveDeviceModel();
   const { columns, rows } = gridForKeyCount(model.keyCount);
@@ -79,6 +92,11 @@ export const Deck = ({ deck, onNavigate, onAction, children }: DeckProps) => {
         const position = resolvePosition(button, idx);
         const col = (position % columns) + 1;
         const row = Math.floor(position / columns) + 1;
+        const registryEntry = addonRegistry[button.type];
+        const addonSurface =
+          registryEntry !== undefined ? (
+            <registryEntry.Component config={button.config ?? {}} state={null} />
+          ) : null;
         return (
           <div
             key={button.id}
@@ -95,7 +113,9 @@ export const Deck = ({ deck, onNavigate, onAction, children }: DeckProps) => {
                   ? () => onNavigate?.(button.config!.deck as string)
                   : undefined
               }
-            />
+            >
+              {addonSurface}
+            </ButtonFrame>
           </div>
         );
       })}
