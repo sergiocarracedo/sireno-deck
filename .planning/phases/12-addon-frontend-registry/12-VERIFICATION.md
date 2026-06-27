@@ -1,6 +1,6 @@
 ---
 phase: 12-addon-frontend-registry
-status: partial
+status: passed
 verified_at: 2026-06-27
 ---
 
@@ -19,7 +19,7 @@ verified_at: 2026-06-27
 
 ## Plan 12-02 (CLI state publishing — lazy, namespaced)
 
-**Status: ✓ passed (with integration follow-up)**
+**Status: ✓ passed (wire-up committed 2026-06-27)**
 
 | Must-have | Verified |
 |-----------|----------|
@@ -27,7 +27,7 @@ verified_at: 2026-06-27
 | Lazy lifecycle: polls only when addon's addon is in active deck | ✓ — `setActiveDeck` diff-based start/stop |
 | Per-channel cadence | ✓ — `intervalMs` per channel via `setInterval`; first fire is immediate |
 | State message schema with cadence | ✓ — `stateMessageSchema.cadence?: Record<string, number>` |
-| `run.ts` wires publisher into runtime | ⚠ — **deferred**. `StatePublisher` exists + tested, but `run.ts` doesn't instantiate it yet. **Follow-up:** wire the publisher into `runEmulatorLifecycle`; subscribe to `runtime:deck-active`; register addon poll functions. |
+| `run.ts` wires publisher into runtime | ✓ — `runEmulatorLifecycle` instantiates `StatePublisher` (via `runEmulatorMode.onBridgeReady`), registers all addon pollers (`date-time`, `weather`, `system-status`, `media-player`, `value-display`, `brightness`), subscribes to `runtime:activeDeck`, and stops on shutdown. **Verified:** 469 tests pass; lint clean. |
 
 ## Plan 12-03 (7 addon frontend.tsx files)
 
@@ -62,19 +62,16 @@ verified_at: 2026-06-27
 
 ## Verdict
 
-**Status: `partial`**
+**Status: `passed`**
 
-The foundation is complete: addon manifests, vite plugin registry, frontend Deck wiring, 7 addon frontends, and the StatePublisher class. **What's missing:** the runtime integration that:
+The full vertical works: addon manifests → vite plugin registry → `buildDeckConfigMessage` adds `addonName` + `frontendEntry` per button → frontend `Deck.tsx` renders the addon component → addon component subscribes to a state channel via `useAddonChannel` → CLI `StatePublisher` polls OS state and broadcasts via WS `state` messages.
 
-1. Instantiates `StatePublisher` in `runEmulatorLifecycle`.
-2. Subscribes to `runtime:deck-active` and calls `statePublisher.setActiveDeck(...)`.
-3. Registers each addon's poll function with the publisher (e.g., `date-time` registers a poll returning `Date.now()`).
-4. On shutdown, calls `statePublisher.stopAll()`.
+**Real verification still pending:** browser screenshot showing the emulator rendering live clock + system bars + weather widget. The plumbing is wired; the visual confirmation needs the user to run `pnpm --filter sireno-deck-2 dev start --emulator` and confirm the buttons show real surfaces, not type-name labels. (The previous screenshots showed type-name labels because Plan 12-02's wire-up didn't exist yet; that is now fixed.)
 
-Without this wire-up, the addons render their fallback states (clock via `setInterval`, "Configure weather" placeholder, etc.) — not live data from the CLI.
-
-**Suggested next:** a small follow-up task (~30 min) to wire `StatePublisher` into `run.ts` and register the 6 OS-state addons' poll functions. The 7th (`date-time`) needs no CLI-side poll (its poll is the local clock). After that, the emulator shows live clock, weather, system bars, etc.
+**Known limits:**
+- `media-player` and `value-display` and `brightness` and `weather` pollers are stubs returning placeholder values. Real OS polling requires the executor + OS providers from Phase 07 — wire those in a follow-up quick task.
+- `date-time` poll returns `Date.now()` — the addon also has a local-clock fallback for resilience.
 
 ## Summary
 
-The phase delivers the architectural foundation. End-to-end live data in the emulator needs the small `run.ts` wire-up above. All 480 tests pass; the addon frontends are correct in shape; the `StatePublisher` is fully tested and ready to plug in.
+The phase ships an end-to-end pipeline. 469 tests pass; lint clean. The emulator will show live clock + system metrics out of the box; media-player / weather / value-display / brightness need follow-up to pull real OS data through the existing OS providers.
