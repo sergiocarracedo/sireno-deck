@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { token } from "virtual:sireno/token";
 import { activeTheme } from "virtual:sireno/themes/manifest";
 
 import { ChannelRegistry } from "sireno-deck-2/react";
 import { ThemeProvider, type ThemeContextValue } from "@/themes/index.ts";
-import { createWsClient } from "./bridge/client.ts";
+import { createWsClient, type WsClient } from "./bridge/client.ts";
 import { Deck } from "./components/Deck.tsx";
 
 interface MockButton {
@@ -23,10 +23,17 @@ const MOCK_DECK = {
   ] as MockButton[],
 };
 
+const ENV_WS_URL = (import.meta.env.VITE_WS_URL ?? "ws://127.0.0.1:52937") as string;
+
+const resolvePortFromWindow = (): number | undefined => {
+  if (typeof window === "undefined") return undefined;
+  return (window as unknown as { __SIRENO_PORT__?: number }).__SIRENO_PORT__;
+};
+
 const wsUrl = (): string => {
-  if (typeof window === "undefined") return "ws://127.0.0.1:0";
-  const port = (window as unknown as { __SIRENO_PORT__?: number }).__SIRENO_PORT__;
-  return port !== undefined ? `ws://127.0.0.1:${port}` : "ws://127.0.0.1:0";
+  const port = resolvePortFromWindow();
+  if (port !== undefined) return `ws://127.0.0.1:${port}`;
+  return ENV_WS_URL;
 };
 
 const buildThemeContext = (): ThemeContextValue | null => {
@@ -45,21 +52,29 @@ const buildThemeContext = (): ThemeContextValue | null => {
   };
 };
 
+let _wsClientInitialized = false;
+
 export const App = () => {
   const [deck, setDeck] = useState(MOCK_DECK);
-  const [theme, setTheme] = useState<ThemeContextValue | null>(() => buildThemeContext());
+  const [theme] = useState<ThemeContextValue | null>(() => buildThemeContext());
+  const clientRef = useRef<WsClient | null>(null);
 
   useEffect(() => {
+    if (_wsClientInitialized) return;
+    _wsClientInitialized = true;
     const url = wsUrl();
     const client = createWsClient({
       url,
       ...(token !== "" ? { token } : {}),
       onMessage: (message) => {
         if (message.type === "deck-config") {
-          const surfaces = message.surfaces as Record<string, { buttons?: MockButton[] }>;
-          const buttons = surfaces["buttons"];
-          if (Array.isArray(buttons)) {
-            setDeck((prev) => ({ ...prev, buttons }));
+          const surface = (message.surfaces as Record<string, { buttons?: MockButton[] }>)[message.deckId];
+          if (surface && Array.isArray(surface.buttons)) {
+            setDeck({
+              id: message.deckId,
+              name: surface.name ?? message.deckId,
+              buttons: surface.buttons,
+            });
           }
         }
         if (message.type === "state") {
@@ -69,8 +84,12 @@ export const App = () => {
         }
       },
     });
+    clientRef.current = client;
     client.connect();
-    return () => client.close();
+    return () => {
+      _wsClientInitialized = false;
+      client.close();
+    };
   }, []);
 
   if (!theme) {

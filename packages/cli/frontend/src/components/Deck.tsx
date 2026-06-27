@@ -23,7 +23,11 @@ export interface DeckProps {
 
 export const Deck = ({ deck, onNavigate, onAction, children }: DeckProps) => {
   return (
-    <div className="grid grid-cols-5 gap-3" data-deck-id={deck.id}>
+    <div
+      className="grid gap-2 p-4"
+      style={{ gridTemplateColumns: "repeat(5, 72px)", gridTemplateRows: "repeat(3, 72px)" }}
+      data-deck-id={deck.id}
+    >
       {deck.buttons.map((button) => (
         <ButtonFrame
           key={button.id}
