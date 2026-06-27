@@ -190,7 +190,18 @@ const setHappyPath = (
     deckMod as unknown as { createDeckRuntime: ReturnType<typeof vi.fn> }
   ).createDeckRuntime.mockReturnValue({
     runtime: fakeRuntime,
-    methods: {},
+    methods: {
+      setKeyMacroProvider: () => undefined,
+      runCommand: () => undefined,
+      keyMacro: () => undefined,
+      pasteText: () => undefined,
+      navigateToDeck: () => undefined,
+      goBack: () => undefined,
+      getActiveDeckId: () => undefined,
+      invalidate: () => undefined,
+      publish: () => undefined,
+      subscribe: () => () => undefined,
+    },
     pubSub: { publish: () => undefined, subscribe: () => () => undefined, clear: () => undefined },
     store: { get: () => undefined, set: () => undefined, delete: () => undefined },
   });

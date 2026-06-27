@@ -340,6 +340,22 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     resolveDone = resolve;
   });
 
+  const env = { ...process.env } as Readonly<Record<string, string>>;
+  const platform = process.platform;
+  const emulatorExecutor = createActionExecutor({ host: getHostContext() });
+  const commandExecutor = {
+    async run(command: string, args: ReadonlyArray<string>) {
+      const fullCommand = args.length > 0 ? `${command} ${args.join(" ")}` : command;
+      return emulatorExecutor.run(fullCommand);
+    },
+  };
+  const emulatorMedia = await createMediaProvider({
+    platform,
+    executor: commandExecutor,
+    env,
+    logger,
+  });
+
   const signals = options.signals ?? defaultSignals;
   const unregister = signals.onSignal(() => {
     logger.info("received signal, shutting down");
@@ -359,12 +375,15 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     addonByType: registry.byType,
     onBridgeReady: (bridge) => {
       const realPublisher = new StatePublisher({ bridge, logger });
-      const pollers = resolveBuiltinAddonPollers({
-        scanned: registry.scanned.map((s) => ({
-          name: s.name,
-          manifest: { apiVersion: 3, name: s.name, publishIntervalMs: s.publishIntervalMs ?? undefined },
-        })),
-      });
+      const pollers = resolveBuiltinAddonPollers(
+        { executor: emulatorExecutor, mediaProvider: emulatorMedia },
+        {
+          scanned: registry.scanned.map((s) => ({
+            name: s.name,
+            manifest: { apiVersion: 3, name: s.name, publishIntervalMs: s.publishIntervalMs ?? undefined },
+          })),
+        },
+      );
       for (const poller of pollers) {
         for (const ch of poller.channels) {
           realPublisher.registerChannel({
