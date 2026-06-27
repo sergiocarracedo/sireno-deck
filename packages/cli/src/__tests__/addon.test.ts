@@ -239,7 +239,7 @@ describe("loadAddons", () => {
     expect(result.issues.some((i) => /apiVersion \+ name required/.test(i.message))).toBe(true);
   });
 
-  it("records error for npm addons (not yet implemented)", async () => {
+  it("records error for npm addons when no cacheDir is provided", async () => {
     const result = await loadAddons({
       entries: ["core-buttons"],
       configDir: "/tmp",
@@ -248,7 +248,7 @@ describe("loadAddons", () => {
     });
     expect(result.addons).toHaveLength(0);
     expect(
-      result.issues.some((i) => /npm addon loading is not yet implemented/.test(i.message)),
+      result.issues.some((i) => /Unknown addon spec/.test(i.message)),
     ).toBe(true);
   });
 });
