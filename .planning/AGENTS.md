@@ -97,9 +97,9 @@ When working on a phase:
 ## Current Phase
 
 **Milestone:** v0.1.0
-**Phase:** 10 — daemon-polish (ready to discuss)
+**Phase:** 11 — release (ready to discuss)
 **Status:** 0 plans, no CONTEXT.md
-**Next:** `/discuss-phase 10` — start/stop/status real implementation, PID + token files, prod HTTP server (token injection), graceful shutdown, npm addon loader
+**Next:** `/discuss-phase 11` — README + per-addon docs, `pnpm package` script, v0.1.0 release
 **Last updated:** 2026-06-27
 
-**Adjacent:** Phase 12 — addon-frontend-registry (planned, blocks real button surfaces in emulator/frontend). Phase 09 verification passed. Quick tasks 007-011 closed out emulator polish.
+**Adjacent:** Phase 12 — addon-frontend-registry (planned, blocks real button surfaces in emulator/frontend). Phase 09 + 10 verified (464 tests pass). R19 partial: npm loader shipped but CLI integration deferred.

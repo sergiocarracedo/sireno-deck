@@ -30,7 +30,7 @@ CLI runs, loads `config.yml`, registers addons, drives an emulator or real hardw
 | 07  | os-providers   | ✅ done | Linux (dbus-next, gnome-shell D-Bus, xdotool/ydotool probe, playerctl), macOS (osascript), Windows (PowerShell + UIA)                              |
 | 08  | builtin-themes | ✅ done | `themes/default` + `themes/light` manifests, Tailwind 4 tokens, `ButtonFrame` + surfaces                                                           |
 | 09  | builtin-addons | ✅ done | `date-time`, `emoji-selector` (+ emoji deck), `media-player`, `system-status` (pub-sub), `value-display`, `weather`, `brightness`                  |
-| 10  | daemon-polish  | pending | `start`/`stop`/`status` real implementation, PID + token files, prod HTTP server (token injection), graceful shutdown, npm addon loader            |
+| 10  | daemon-polish  | ✅ done | `start`/`stop`/`status` real implementation, PID + token files, prod HTTP server (token injection), graceful shutdown, npm addon loader            |
 | 11  | release        | pending | README + per-addon docs, `pnpm package` script, v0.1.0 release                                                                                     |
 | 12  | addon-frontend | pending | Frontend addon registry: each addon ships a `frontend.tsx` React component; backend adds `addonName` + `frontendEntry` to deck-config buttons; frontend Deck dynamically imports + renders the component inside `<ButtonFrame>`; surfaces subscribe to state channels via `ChannelRegistry`. Goal: emulator/frontend shows real button surfaces (clock, weather widget, system bars) — not just type-name labels. |
 

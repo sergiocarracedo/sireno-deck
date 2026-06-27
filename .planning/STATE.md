@@ -1,7 +1,7 @@
 ---
-current_phase: 10-daemon-polish
-phase_status: plans-ready
-plans_total: 2
+current_phase: 11-release
+phase_status: ready-to-discuss
+plans_total: 0
 plans_complete: 0
 last_updated: 2026-06-27
 ---
@@ -10,15 +10,11 @@ last_updated: 2026-06-27
 
 ## Current phase
 
-**Phase 10: daemon-polish** — context + research + 2 plans ready. Phase 09 (builtin-addons) complete.
+**Phase 11: release** — ready to discuss. Phase 10 (daemon-polish) complete.
 
-Phase 09 verification (`09-VERIFICATION.md`): passed. All 7 builtin addons registered, `config.yml` validates, emulator shows buttons in correct grid positions, 409/409 tests pass. Real button surfaces (clock, weather widget) are explicit scope of phase 12.
+Phase 10 verification (`10-VERIFICATION.md`): passed. 464/464 tests pass. R10 prod, R18, R20 closed. R19 partial: loader shipped + tested, but CLI integration deferred (loader not yet called by `run.ts:preflight`).
 
-**Phase 10 plans ready:**
-- `10-01-PLAN.md` (Wave 1): daemon lifecycle + prod HTTP server with token injection (R10 prod, R18, R20)
-- `10-02-PLAN.md` (Wave 2): npm addon loader via `~/.cache/sireno-deck-2/node_modules/` (R19)
-
-**Next:** `/execute-phase 10` — start with plan 10-01 (daemon + HTTP server), then plan 10-02 (npm loader).
+**Phase 11 scope:** README + per-addon docs, `pnpm package` script, v0.1.0 release.
 
 ## Plan progress
 
