@@ -97,8 +97,9 @@ When working on a phase:
 ## Current Phase
 
 **Milestone:** v0.1.0
-**Phase:** 08 — builtin-themes (planning)
-**Status:** 2 plans ready, 0 executed
-**Plans:** 08-01 (Wave 1) · 08-02 (Wave 2)
-**Next:** `/execute-phase 08` — theme contract + default theme (Plan 01) → light override + WS wiring (Plan 02)
-**Last updated:** 2026-06-24
+**Phase:** 10 — daemon-polish (ready to discuss)
+**Status:** 0 plans, no CONTEXT.md
+**Next:** `/discuss-phase 10` — start/stop/status real implementation, PID + token files, prod HTTP server (token injection), graceful shutdown, npm addon loader
+**Last updated:** 2026-06-27
+
+**Adjacent:** Phase 12 — addon-frontend-registry (planned, blocks real button surfaces in emulator/frontend). Phase 09 verification passed. Quick tasks 007-011 closed out emulator polish.

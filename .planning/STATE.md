@@ -1,27 +1,26 @@
 ---
-current_phase: 09-builtin-addons
-phase_status: planning
+current_phase: 10-daemon-polish
+phase_status: ready-to-discuss
 plans_total: 0
 plans_complete: 0
-last_updated: 2026-06-24
+last_updated: 2026-06-27
 ---
 
 # Project State
 
 ## Current phase
 
-**Phase 09: builtin-addons** — context captured, ready for planning.
+**Phase 10: daemon-polish** — ready to discuss. Phase 09 (builtin-addons) complete.
 
-Phase 08 (builtin-themes) complete (commit fe9a658, 401 tests passing, 7/9 UAT passed, 2 blocked by Phase 09).
+Phase 09 verification (`09-VERIFICATION.md`): passed. All 7 builtin addons registered, `config.yml` validates, emulator shows buttons in correct grid positions, 409/409 tests pass. Real button surfaces (clock, weather widget) are explicit scope of phase 12.
 
-**Phase 09 scope:** port 7 built-in addons from legacy (`date-time`, `emoji-selector`, `media-player`, `system-status`, `value-display`, `weather`, `brightness`).
+**Phase 10 scope:** `start`/`stop`/`status` real implementation, PID + token files, prod HTTP server (token injection), graceful shutdown, npm addon loader.
 
 ## Plan progress
 
-- Plans total: 3
-- Plans complete: 3
-- UAT: not done (deferred to /verify-work)
-- Phase verified: yes (`06-VERIFICATION.md` → passed)
+- Phase 09 plans total: 2
+- Phase 09 plans complete: 2 (09-01, 09-02)
+- Phase 09 UAT: not done formally; verification passed (`09-VERIFICATION.md`)
 
 ## Phase 12 — addon-frontend-registry (planned, not started)
 
@@ -124,5 +123,10 @@ None.
 | 004 | Emulator button fixes (cross-button dbl-tap + crystal visuals) | 2026-06-27 | 3b221c5 | `.planning/quick/004-emulator-button-fixes/` |
 | 005 | Gesture thresholds (500ms) + transparent emulator buttons + clean frontend | 2026-06-27 | 8a5fccf | `.planning/quick/005-gesture-and-cleanup/` |
 | 006 | Frontend forces deck dimensions based on device model | 2026-06-27 | 28ec043 | `.planning/quick/006-deck-dimensions/` |
+| 007 | Share BUTTON_SIZE_PX constant frontend↔emulator | 2026-06-27 | 70233d9 | (no quick dir) |
+| 008 | Respect button position + add gap + match emulator frame | 2026-06-27 | 583d849 | (no quick dir) |
+| 009 | Deck grid background is always black | 2026-06-27 | 8f40011 | (no quick dir) |
+| 010 | Show button type as label fallback (until addon frontend registry) | 2026-06-27 | 5a2c40f | (no quick dir) |
+| 011 | Add phase 12 (addon-frontend-registry) to roadmap | 2026-06-27 | 7de539c | (no quick dir) |
 
-Last activity: 2026-06-27 - Completed quick task 006: frontend forces its own deck dimensions based on device model
+Last activity: 2026-06-27 - Phase 09 executed and verified; phase 12 added to roadmap; quick tasks 007-011 committed (emulator polish + roadmap plan)
