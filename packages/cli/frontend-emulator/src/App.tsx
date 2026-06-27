@@ -9,6 +9,8 @@ import {
 
 import { createWsClient, serializeHello, type WsClient } from "./bridge.ts";
 
+let _wsClientInitialized = false;
+
 interface DeckState {
   id: string;
   name: string;
@@ -47,6 +49,8 @@ export const App = ({ wsUrl = ENV_WS_URL }: AppProps = {}): React.ReactElement =
   const clientRef = useRef<WsClient | null>(null);
 
   useEffect(() => {
+    if (_wsClientInitialized) return;
+    _wsClientInitialized = true;
     const client: WsClient = createWsClient({
       url: wsUrl,
       wsFactory: (url: string) => {
@@ -77,12 +81,19 @@ export const App = ({ wsUrl = ENV_WS_URL }: AppProps = {}): React.ReactElement =
       },
     });
     clientRef.current = client;
-    return () => client.close();
+    return () => {
+      _wsClientInitialized = false;
+      client.close();
+    };
   }, [wsUrl]);
 
   const sendButtonAction = (buttonId: string, gesture: "tap" | "dbl-tap" | "hold"): void => {
-    const position = deck.buttons.findIndex((b) => b.id === buttonId);
-    if (position < 0) return;
+    const button = deck.buttons.find((b) => b.id === buttonId);
+    if (button === undefined) return;
+    const position =
+      typeof button.position === "number" && Number.isFinite(button.position)
+        ? button.position
+        : deck.buttons.indexOf(button);
     clientRef.current?.send(
       JSON.stringify({ type: "button-action", deckId: deck.id, position, gesture }),
     );

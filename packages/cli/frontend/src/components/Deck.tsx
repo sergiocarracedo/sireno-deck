@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import {
   BUTTON_SIZE_PX,
   DEVICE_MODELS,
@@ -9,11 +9,14 @@ import {
 import { ButtonFrame } from "./ButtonFrame.tsx";
 
 const BUTTON_SIZE = BUTTON_SIZE_PX;
+const BUTTON_GAP_PX = 8;
+const DECK_PADDING_PX = 16;
 
 export interface DeckButton {
   id: string;
   type: string;
   label?: string;
+  position?: number;
   config?: Record<string, unknown>;
 }
 
@@ -43,37 +46,59 @@ const resolveDeviceModel = (): DeviceModelSpec => {
   return DEVICE_MODELS[0]!;
 };
 
+const resolvePosition = (button: DeckButton, fallback: number): number => {
+  if (typeof button.position === "number" && Number.isFinite(button.position) && button.position >= 0) {
+    return button.position;
+  }
+  const parsed = Number.parseInt(button.id, 10);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+};
+
 export const Deck = ({ deck, onNavigate, onAction, children }: DeckProps) => {
   const model = resolveDeviceModel();
   const { columns, rows } = gridForKeyCount(model.keyCount);
+  const width = columns * BUTTON_SIZE + (columns - 1) * BUTTON_GAP_PX + DECK_PADDING_PX * 2;
+  const height = rows * BUTTON_SIZE + (rows - 1) * BUTTON_GAP_PX + DECK_PADDING_PX * 2;
   return (
     <div
       className="grid p-4"
-      style={{
-        gridTemplateColumns: `repeat(${columns}, ${BUTTON_SIZE}px)`,
-        gridTemplateRows: `repeat(${rows}, ${BUTTON_SIZE}px)`,
-        width: columns * BUTTON_SIZE + 32,
-        height: rows * BUTTON_SIZE + 32,
-      }}
+      style={
+        {
+          gridTemplateColumns: `repeat(${columns}, ${BUTTON_SIZE}px)`,
+          gridTemplateRows: `repeat(${rows}, ${BUTTON_SIZE}px)`,
+          gap: `${BUTTON_GAP_PX}px`,
+          width,
+          height,
+        } as CSSProperties
+      }
       data-deck-id={deck.id}
       data-columns={columns}
       data-rows={rows}
     >
-      {deck.buttons.map((button) => (
-        <ButtonFrame
-          key={button.id}
-          label={button.label ?? button.id}
-          buttonType={button.type}
-          onPress={() => onAction?.(button.id, "tap")}
-          onDoublePress={() => onAction?.(button.id, "dbl-tap")}
-          onHold={() => onAction?.(button.id, "hold")}
-          onNavigate={
-            button.type === "core:change-deck" && typeof button.config?.["deck"] === "string"
-              ? () => onNavigate?.(button.config!.deck as string)
-              : undefined
-          }
-        />
-      ))}
+      {deck.buttons.map((button, idx) => {
+        const position = resolvePosition(button, idx);
+        const col = (position % columns) + 1;
+        const row = Math.floor(position / columns) + 1;
+        return (
+          <div
+            key={button.id}
+            style={{ gridColumn: col, gridRow: row, width: BUTTON_SIZE, height: BUTTON_SIZE }}
+          >
+            <ButtonFrame
+              label={button.label ?? button.id}
+              buttonType={button.type}
+              onPress={() => onAction?.(button.id, "tap")}
+              onDoublePress={() => onAction?.(button.id, "dbl-tap")}
+              onHold={() => onAction?.(button.id, "hold")}
+              onNavigate={
+                button.type === "core:change-deck" && typeof button.config?.["deck"] === "string"
+                  ? () => onNavigate?.(button.config!.deck as string)
+                  : undefined
+              }
+            />
+          </div>
+        );
+      })}
       {children}
     </div>
   );

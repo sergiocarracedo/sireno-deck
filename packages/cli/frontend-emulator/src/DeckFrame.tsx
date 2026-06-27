@@ -45,15 +45,28 @@ export const DeckFrame = ({
 
   const iframeUrl = `${frontendUrl}${frontendUrl.includes("?") ? "&" : "?"}device=${device.id}`;
 
+const BUTTON_GAP_PX = 8;
+const DECK_PADDING_PX = 16;
+
 return (
     <div
       className="relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 shadow-lg"
-      style={{ width: BUTTON_SIZE_PX * columns, height: BUTTON_SIZE_PX * Math.ceil(keyCount / columns) }}
+      style={{
+        width: columns * BUTTON_SIZE_PX + (columns - 1) * BUTTON_GAP_PX + DECK_PADDING_PX * 2,
+        height: Math.ceil(keyCount / columns) * BUTTON_SIZE_PX +
+          (Math.ceil(keyCount / columns) - 1) * BUTTON_GAP_PX +
+          DECK_PADDING_PX * 2,
+      }}
     >
       <iframe
         src={iframeUrl}
         className="block"
-        style={{ width: BUTTON_SIZE_PX * columns, height: BUTTON_SIZE_PX * Math.ceil(keyCount / columns) }}
+        style={{
+          width: columns * BUTTON_SIZE_PX + (columns - 1) * BUTTON_GAP_PX + DECK_PADDING_PX * 2,
+          height: Math.ceil(keyCount / columns) * BUTTON_SIZE_PX +
+            (Math.ceil(keyCount / columns) - 1) * BUTTON_GAP_PX +
+            DECK_PADDING_PX * 2,
+        }}
         title="Deck Preview"
       />
       <div
@@ -61,10 +74,11 @@ return (
         data-deck={deckId}
         data-key-count={keyCount}
         data-columns={columns}
-        className="absolute inset-0 grid"
+        className="absolute inset-0 grid p-4"
         style={{
           gridTemplateColumns: `repeat(${columns}, ${BUTTON_SIZE_PX}px)`,
           gridTemplateRows: `repeat(${Math.ceil(keyCount / columns)}, ${BUTTON_SIZE_PX}px)`,
+          gap: `${BUTTON_GAP_PX}px`,
         }}
       >
         {Array.from({ length: keyCount }, (_, i) => {

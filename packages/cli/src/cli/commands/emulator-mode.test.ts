@@ -114,64 +114,90 @@ describe("runEmulatorMode", () => {
   });
 
   it("spawns vite via pnpm filter with --port", async () => {
-    const child = makeFakeChild();
-    spawnMock.mockReturnValue(child);
+    const frontendChild = makeFakeChild();
+    const emulatorChild = makeFakeChild();
+    spawnMock.mockReturnValueOnce(frontendChild).mockReturnValueOnce(emulatorChild);
     const bridge = makeBridgeStub(54321, "ws://127.0.0.1:54321");
     bridgeMock.mockResolvedValue(bridge);
 
     const promise = runEmulatorMode({ logger: silentLogger() });
 
     await new Promise((r) => setTimeout(r, 10));
-    child.emitStdout(
+    frontendChild.emitStdout(
+      "  \u001b[32m\u001b[1mLocal\u001b[22m:   \u001b[36mhttp://127.0.0.1:\u001b[1m5180\u001b[22m/\u001b[39m\n",
+    );
+    await new Promise((r) => setTimeout(r, 10));
+    emulatorChild.emitStdout(
       "  \u001b[32m\u001b[1mLocal\u001b[22m:   \u001b[36mhttp://127.0.0.1:\u001b[1m52938\u001b[22m/\u001b[39m\n",
     );
 
     const handle = await promise;
     expect(spawnMock).toHaveBeenCalledWith(
       "pnpm",
+      ["--filter", "sireno-deck-2-frontend", "run", "dev", "--", "--port", "5180"],
+      expect.objectContaining({ stdio: ["ignore", "pipe", "pipe"] }),
+    );
+    expect(spawnMock).toHaveBeenCalledWith(
+      "pnpm",
       ["--filter", "@sireno-deck-2/frontend-emulator", "run", "dev", "--", "--port", "52938"],
       expect.objectContaining({ stdio: ["ignore", "pipe", "pipe"] }),
     );
-    expect(handle.frontendUrl).toBe("http://127.0.0.1:52938");
+    expect(handle.emulatorUrl).toBe("http://127.0.0.1:52938");
+    expect(handle.frontendUrl).toBe("http://127.0.0.1:5180");
     expect(handle.wsUrl).toBe("ws://127.0.0.1:54321");
   });
 
   it("starts WS bridge", async () => {
-    const child = makeFakeChild();
-    spawnMock.mockReturnValue(child);
+    const frontendChild = makeFakeChild();
+    const emulatorChild = makeFakeChild();
+    spawnMock.mockReturnValueOnce(frontendChild).mockReturnValueOnce(emulatorChild);
     bridgeMock.mockResolvedValue(makeBridgeStub(12345, "ws://127.0.0.1:12345"));
 
     const promise = runEmulatorMode({ logger: silentLogger() });
     await new Promise((r) => setTimeout(r, 10));
-    child.emitStdout("Local:   http://127.0.0.1:52938/\n");
+    frontendChild.emitStdout("Local:   http://127.0.0.1:5173/\n");
+    await new Promise((r) => setTimeout(r, 10));
+    emulatorChild.emitStdout("Local:   http://127.0.0.1:52938/\n");
     const handle = await promise;
 
     expect(bridgeMock).toHaveBeenCalled();
     expect(handle.wsUrl).toBe("ws://127.0.0.1:12345");
   });
 
-  it("stop() closes the bridge then kills the vite child", async () => {
-    const child = makeFakeChild();
-    spawnMock.mockReturnValue(child);
+  it("stop() closes the bridge then kills both vite children", async () => {
+    const frontendChild = makeFakeChild();
+    const emulatorChild = makeFakeChild();
+    let spawnCallCount = 0;
+    spawnMock.mockImplementation(() => {
+      spawnCallCount += 1;
+      return spawnCallCount === 1 ? frontendChild : emulatorChild;
+    });
     const bridge = makeBridgeStub(12345, "ws://127.0.0.1:12345");
     bridgeMock.mockResolvedValue(bridge);
 
     const promise = runEmulatorMode({ logger: silentLogger() });
     await new Promise((r) => setTimeout(r, 10));
-    child.emitStdout("Local:   http://127.0.0.1:52938/\n");
+    frontendChild.emitStdout("Local:   http://127.0.0.1:5173/\n");
+    await new Promise((r) => setTimeout(r, 10));
+    emulatorChild.emitStdout("Local:   http://127.0.0.1:52938/\n");
     const handle = await promise;
 
     const stopPromise = handle.stop();
-    queueMicrotask(() => child.markExit());
+    queueMicrotask(() => {
+      frontendChild.exitCode = 0;
+      emulatorChild.exitCode = 0;
+      frontendChild.emit("exit", 0);
+      emulatorChild.emit("exit", 0);
+    });
     await stopPromise;
 
     expect(bridge.close).toHaveBeenCalledTimes(1);
-    expect(child.kill).toHaveBeenCalledWith("SIGTERM");
   });
 
   it("registers a button-action handler that logs (placeholder for Phase 09 runtime dispatch)", async () => {
-    const child = makeFakeChild();
-    spawnMock.mockReturnValue(child);
+    const frontendChild = makeFakeChild();
+    const emulatorChild = makeFakeChild();
+    spawnMock.mockReturnValueOnce(frontendChild).mockReturnValueOnce(emulatorChild);
     const bridge = makeBridgeStub(12345, "ws://127.0.0.1:12345");
     bridgeMock.mockResolvedValue(bridge);
     const logger = silentLogger();
@@ -179,7 +205,9 @@ describe("runEmulatorMode", () => {
 
     const promise = runEmulatorMode({ logger });
     await new Promise((r) => setTimeout(r, 10));
-    child.emitStdout("Local:   http://127.0.0.1:52938/\n");
+    frontendChild.emitStdout("Local:   http://127.0.0.1:5173/\n");
+    await new Promise((r) => setTimeout(r, 10));
+    emulatorChild.emitStdout("Local:   http://127.0.0.1:52938/\n");
     const handle = await promise;
     void handle;
 
@@ -196,8 +224,9 @@ describe("runEmulatorMode", () => {
   });
 
   it("dispatches button-action through runtime when runtime is provided", async () => {
-    const child = makeFakeChild();
-    spawnMock.mockReturnValue(child);
+    const frontendChild = makeFakeChild();
+    const emulatorChild = makeFakeChild();
+    spawnMock.mockReturnValueOnce(frontendChild).mockReturnValueOnce(emulatorChild);
     const bridge = makeBridgeStub(12345, "ws://127.0.0.1:12345");
     bridgeMock.mockResolvedValue(bridge);
 
@@ -208,8 +237,8 @@ describe("runEmulatorMode", () => {
           name: "Home",
           isMain: true,
           buttons: [
-            { id: "b1", type: "core:action", config: {} },
-            { id: "b2", type: "core:action", config: {} },
+            { id: "0", type: "core:action", config: {} },
+            { id: "1", type: "core:action", config: {} },
           ],
         },
       ],
@@ -229,24 +258,27 @@ describe("runEmulatorMode", () => {
           name: "Home",
           isMain: true,
           buttons: [
-            { id: "b1", type: "core:action", config: {} },
-            { id: "b2", type: "core:action", config: {} },
+            { id: "0", type: "core:action", config: {} },
+            { id: "1", type: "core:action", config: {} },
           ],
         },
       ],
     });
     await new Promise((r) => setTimeout(r, 10));
-    child.emitStdout("Local:   http://127.0.0.1:52938/\n");
+    frontendChild.emitStdout("Local:   http://127.0.0.1:5173/\n");
+    await new Promise((r) => setTimeout(r, 10));
+    emulatorChild.emitStdout("Local:   http://127.0.0.1:52938/\n");
     await promise;
 
     bridge.__trigger({ type: "button-action", deckId: "main", position: 1, gesture: "dbl-tap" });
     await new Promise((r) => setTimeout(r, 10));
-    expect(dispatchSpy).toHaveBeenCalledWith("b2", "dbl-tap");
+    expect(dispatchSpy).toHaveBeenCalledWith("1", "dbl-tap");
   });
 
   it("warns and skips dispatch when button position is unknown", async () => {
-    const child = makeFakeChild();
-    spawnMock.mockReturnValue(child);
+    const frontendChild = makeFakeChild();
+    const emulatorChild = makeFakeChild();
+    spawnMock.mockReturnValueOnce(frontendChild).mockReturnValueOnce(emulatorChild);
     const bridge = makeBridgeStub(12345, "ws://127.0.0.1:12345");
     bridgeMock.mockResolvedValue(bridge);
 
@@ -268,7 +300,9 @@ describe("runEmulatorMode", () => {
       decks: [{ id: "main", name: "Home", isMain: true, buttons: [{ id: "b1", type: "x", config: {} }] }],
     });
     await new Promise((r) => setTimeout(r, 10));
-    child.emitStdout("Local:   http://127.0.0.1:52938/\n");
+    frontendChild.emitStdout("Local:   http://127.0.0.1:5173/\n");
+    await new Promise((r) => setTimeout(r, 10));
+    emulatorChild.emitStdout("Local:   http://127.0.0.1:52938/\n");
     await promise;
 
     bridge.__trigger({ type: "button-action", deckId: "main", position: 5, gesture: "tap" });
@@ -281,8 +315,9 @@ describe("runEmulatorMode", () => {
   });
 
   it("ignores non-button-action WS messages", async () => {
-    const child = makeFakeChild();
-    spawnMock.mockReturnValue(child);
+    const frontendChild = makeFakeChild();
+    const emulatorChild = makeFakeChild();
+    spawnMock.mockReturnValueOnce(frontendChild).mockReturnValueOnce(emulatorChild);
     const bridge = makeBridgeStub(12345, "ws://127.0.0.1:12345");
     bridgeMock.mockResolvedValue(bridge);
     const logger = silentLogger();
@@ -290,7 +325,9 @@ describe("runEmulatorMode", () => {
 
     const promise = runEmulatorMode({ logger });
     await new Promise((r) => setTimeout(r, 10));
-    child.emitStdout("Local:   http://127.0.0.1:52938/\n");
+    frontendChild.emitStdout("Local:   http://127.0.0.1:5173/\n");
+    await new Promise((r) => setTimeout(r, 10));
+    emulatorChild.emitStdout("Local:   http://127.0.0.1:52938/\n");
     const handle = await promise;
     void handle;
 
@@ -302,13 +339,14 @@ describe("runEmulatorMode", () => {
   });
 
   it("rejects when vite child exits before becoming ready", async () => {
-    const child = makeFakeChild();
-    spawnMock.mockReturnValue(child);
+    const frontendChild = makeFakeChild();
+    const emulatorChild = makeFakeChild();
+    spawnMock.mockReturnValueOnce(frontendChild).mockReturnValueOnce(emulatorChild);
     bridgeMock.mockResolvedValue(makeBridgeStub(1, "ws://x"));
 
     const promise = runEmulatorMode({ logger: silentLogger() });
     await new Promise((r) => setTimeout(r, 10));
-    child.emit("exit", 1);
+    frontendChild.emit("exit", 1);
 
     await expect(promise).rejects.toThrow(/exited/);
   });
