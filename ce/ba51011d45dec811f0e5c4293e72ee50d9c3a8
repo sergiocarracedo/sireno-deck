@@ -1,0 +1,29 @@
+.planning/phases/10-daemon-polish/10-RESEARCH.md
+  s_9fabccd2e25c5b::t_2bc6ff498f7adf 1-124
+.planning/phases/10-daemon-polish/10-01-PLAN.md
+  s_9fabccd2e25c5b::t_df7c367e1624b2 1-120
+.planning/phases/10-daemon-polish/10-02-PLAN.md
+  s_9fabccd2e25c5b::t_eebd310938ba0d 1-4,9-13,17-102
+  s_9fabccd2e25c5b::t_48b005828f7bf3 5-8,14-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "ceba51011d45dec811f0e5c4293e72ee50d9c3a8",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
