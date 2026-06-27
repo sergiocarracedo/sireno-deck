@@ -1,0 +1,28 @@
+.planning/phases/11-release/11-RESEARCH.md
+  s_9fabccd2e25c5b::t_bef7889fed2754 1-167
+.planning/phases/11-release/11-02-PLAN.md
+  s_9fabccd2e25c5b::t_79b18eb890a8bc 1-80
+.planning/phases/11-release/11-01-PLAN.md
+  s_9fabccd2e25c5b::t_23a3a6030f33b8 1-97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "0043ce7d1c30f11e8566671c8909151fdb4e2b37",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
