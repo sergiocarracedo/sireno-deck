@@ -1,5 +1,6 @@
-import { mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
-import { existsSync } from "node:fs";
+import { closeSync, fchmodSync, openSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import { mkdirSync, existsSync } from "node:fs";
+import { randomBytes } from "node:crypto";
 import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import { platform } from "node:process";
@@ -9,6 +10,8 @@ import type pino from "pino";
 export interface DaemonPaths {
   runtimeDir: string;
   pidFile: string;
+  tokenFile: string;
+  childrenFile: string;
 }
 
 const DAEMON_NAME = "sireno-deck-2";
@@ -35,6 +38,8 @@ export const resolveDaemonPaths = (): DaemonPaths => {
   return {
     runtimeDir,
     pidFile: join(runtimeDir, `${DAEMON_NAME}.pid`),
+    tokenFile: join(runtimeDir, `${DAEMON_NAME}.token`),
+    childrenFile: join(runtimeDir, `${DAEMON_NAME}.children.json`),
   };
 };
 
@@ -61,6 +66,63 @@ export const isRunning = (pid: number): boolean => {
   } catch (error) {
     return (error as NodeJS.ErrnoException).code === "EPERM";
   }
+};
+
+export const generateToken = (): string =>
+  randomBytes(32).toString("base64url");
+
+export const readToken = (paths = resolveDaemonPaths()): string | null => {
+  if (!existsSync(paths.tokenFile)) return null;
+  const raw = readFileSync(paths.tokenFile, "utf8").trim();
+  return raw.length > 0 ? raw : null;
+};
+
+export const writeToken = (token: string, paths = resolveDaemonPaths()): void => {
+  const fd = openSync(paths.tokenFile, "w", 0o600);
+  try {
+    writeFileSync(fd, `${token}\n`, { encoding: "utf8" });
+    fchmodSync(fd, 0o600);
+  } finally {
+    closeSync(fd);
+  }
+};
+
+export const removeTokenFile = (paths = resolveDaemonPaths()): void => {
+  if (existsSync(paths.tokenFile)) unlinkSync(paths.tokenFile);
+};
+
+export interface ChildrenState {
+  pids: number[];
+}
+
+export const readChildren = (paths = resolveDaemonPaths()): ChildrenState | null => {
+  if (!existsSync(paths.childrenFile)) return null;
+  try {
+    const raw = readFileSync(paths.childrenFile, "utf8");
+    const parsed = JSON.parse(raw) as unknown;
+    if (
+      parsed !== null &&
+      typeof parsed === "object" &&
+      "pids" in parsed &&
+      Array.isArray((parsed as { pids: unknown }).pids)
+    ) {
+      const pids = (parsed as { pids: unknown[] }).pids
+        .map((p) => Number.parseInt(String(p), 10))
+        .filter((p) => Number.isFinite(p) && p > 0);
+      return { pids };
+    }
+  } catch {
+    return null;
+  }
+  return null;
+};
+
+export const writeChildren = (state: ChildrenState, paths = resolveDaemonPaths()): void => {
+  writeFileSync(paths.childrenFile, JSON.stringify(state), { encoding: "utf8" });
+};
+
+export const removeChildrenFile = (paths = resolveDaemonPaths()): void => {
+  if (existsSync(paths.childrenFile)) unlinkSync(paths.childrenFile);
 };
 
 export interface StartDaemonOptions {
