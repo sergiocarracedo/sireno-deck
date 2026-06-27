@@ -23,6 +23,25 @@ Phase 08 (builtin-themes) complete (commit fe9a658, 401 tests passing, 7/9 UAT p
 - UAT: not done (deferred to /verify-work)
 - Phase verified: yes (`06-VERIFICATION.md` → passed)
 
+## Phase 12 — addon-frontend-registry (planned, not started)
+
+Captured 2026-06-27 after quick task 010 ("show button type as label fallback").
+
+**Goal:** each addon ships a React `frontend.tsx` that renders the button surface. The frontend dynamically imports it and renders the real surface (clock face, weather widget, system bars) instead of a type-name label.
+
+**Why now:** phase 09 shipped builtin addons with `render` functions for the CLI host (hardware key images), but the emulator/frontend has no way to call them. Buttons show `CORE:TIME` text instead of a live clock.
+
+**Scope (see `.planning/phases/12-addon-frontend-registry/12-PHASE.md`):**
+
+1. Extend `AddonManifest.frontend` to be a real path consumed by the vite plugin.
+2. Ship `frontend.tsx` for 6 builtin addons (date-time, weather, system-status, value-display, media-player, brightness).
+3. Vite plugin emits `virtual:sireno/addons/registry` for dynamic imports.
+4. Backend `buildDeckConfigMessage` includes `addonName` + `frontendEntry` per button.
+5. Frontend Deck does `import(frontendEntry)` and renders the component inside `<ButtonFrame>`.
+6. Components subscribe to state channels via `useAddonChannel` / `ChannelRegistry`.
+
+**Depends on:** 08 (themes — needs surface primitives), 09 (builtin addons — needs addon types).
+
 ## Completed phases
 
 ### ✅ Phase 01 — scaffold
