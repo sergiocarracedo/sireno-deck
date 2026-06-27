@@ -8,6 +8,7 @@ interface ScannedAddon {
   readonly name: string;
   readonly types: ReadonlyArray<string>;
   readonly frontendEntry: string | null;
+  readonly publishIntervalMs: number | null;
 }
 
 const scanBuiltinAddons = (): ReadonlyArray<ScannedAddon> => {
@@ -39,8 +40,12 @@ const scanBuiltinAddons = (): ReadonlyArray<ScannedAddon> => {
     const frontendEntry = frontendMatch?.[1] !== undefined
       ? resolvePath(addonDir, frontendMatch[1])
       : null;
+    const publishMatch = raw.match(/publishIntervalMs:\s*(\d+)/);
+    const publishIntervalMs = publishMatch?.[1] !== undefined
+      ? Number.parseInt(publishMatch[1], 10)
+      : null;
     if (frontendEntry === null && types.size === 0) continue;
-    out.push({ name: entry.name, types: [...types], frontendEntry });
+    out.push({ name: entry.name, types: [...types], frontendEntry, publishIntervalMs });
   }
   return out;
 };

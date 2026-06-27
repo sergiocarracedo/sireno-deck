@@ -32,6 +32,8 @@ import {
 import { runRealMode } from "./real-mode";
 import { runEmulatorMode } from "./emulator-mode";
 import { collectBuiltinAddonRegistry } from "./addon-registry.ts";
+import { resolveBuiltinAddonPollers } from "./addon-pollers.ts";
+import { StatePublisher } from "@/render/state-publisher.ts";
 
 export interface SignalProvider {
   onSignal(handler: () => void): () => void;
@@ -285,6 +287,7 @@ export const runEmulatorPipeline = async (options: RunOptions): Promise<void> =>
 
 interface EmulatorDecks {
   runtime: Runtime;
+  pubSub: { subscribe: (channel: string, handler: (payload: unknown) => void) => () => void };
   decks: ReadonlyArray<RuntimeDeck>;
 }
 
@@ -325,8 +328,8 @@ const buildEmulatorDecks = (options: RunOptions): EmulatorDecks => {
     ...d,
     ...(mainId !== undefined && d.id === mainId ? { isMain: true } : {}),
   }));
-  const { runtime } = createDeckRuntime({ decks: runtimeDecks, logger });
-  return { runtime, decks: runtimeDecks };
+  const { runtime, pubSub: emulatorPubSub } = createDeckRuntime({ decks: runtimeDecks, logger });
+  return { runtime, pubSub: emulatorPubSub, decks: runtimeDecks };
 };
 
 const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
@@ -344,13 +347,65 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
 
   const emulatorDecks = buildEmulatorDecks(options);
   const runtime = emulatorDecks.runtime;
+  const registry = collectBuiltinAddonRegistry();
+  const statePublisher = new StatePublisher({ bridge: { broadcast: () => undefined }, logger });
 
   const handle = await runEmulatorMode({
     logger,
     activeTheme: { name: process.env["SIRENO_THEME_NAME"] ?? "default" },
     runtime,
     decks: emulatorDecks.decks,
-    addonByType: collectBuiltinAddonRegistry().byType,
+    addonByType: registry.byType,
+    onBridgeReady: (bridge) => {
+      const realPublisher = new StatePublisher({ bridge, logger });
+      const pollers = resolveBuiltinAddonPollers({
+        scanned: registry.scanned.map((s) => ({
+          name: s.name,
+          manifest: { apiVersion: 3, name: s.name, publishIntervalMs: s.publishIntervalMs ?? undefined },
+        })),
+      });
+      for (const poller of pollers) {
+        for (const ch of poller.channels) {
+          realPublisher.registerChannel({
+            channel: ch.channel,
+            addonName: poller.addonName,
+            intervalMs: ch.intervalMs,
+            poll: ch.poll,
+          });
+        }
+      }
+      const unsubscribeDeck = emulatorDecks.pubSub.subscribe(
+        "runtime:activeDeck",
+        (payload) => {
+          const deckId =
+            typeof payload === "object" && payload !== null && "deckId" in payload
+              ? String((payload as { deckId: unknown }).deckId)
+              : undefined;
+          if (deckId === undefined) return;
+          const deck = emulatorDecks.decks.find((d) => d.id === deckId);
+          if (deck === undefined) return;
+          const addonNames = new Set<string>();
+          for (const button of deck.buttons) {
+            const entry = registry.byType.get(button.type);
+            if (entry !== undefined) addonNames.add(entry.name);
+          }
+          realPublisher.setActiveDeck({ addonNames: [...addonNames] });
+        },
+      );
+      const initialDeck = emulatorDecks.decks.find((d) => d.isMain) ?? emulatorDecks.decks[0];
+      if (initialDeck !== undefined) {
+        const addonNames = new Set<string>();
+        for (const button of initialDeck.buttons) {
+          const entry = registry.byType.get(button.type);
+          if (entry !== undefined) addonNames.add(entry.name);
+        }
+        realPublisher.setActiveDeck({ addonNames: [...addonNames] });
+      }
+      signals.onSignal(() => {
+        unsubscribeDeck();
+        realPublisher.stopAll();
+      });
+    },
   });
 
   if (options.onChildren !== undefined) {
@@ -370,6 +425,7 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     await done;
   } finally {
     unregister();
+    statePublisher.stopAll();
     await handle.stop();
     logger.info("shutdown complete");
   }

@@ -32,6 +32,7 @@ export interface RunEmulatorModeOptions {
   readonly runtime?: Runtime;
   readonly decks?: ReadonlyArray<RuntimeDeck>;
   readonly addonByType?: Map<string, AddonFrontendRef>;
+  readonly onBridgeReady?: (bridge: WsBridge) => void;
   readonly logger: pino.Logger;
 }
 
@@ -261,6 +262,9 @@ export const runEmulatorMode = async (
   const bridge: WsBridge = await startWsBridge(
     options.activeTheme !== undefined ? { activeTheme: options.activeTheme } : {},
   );
+  if (options.onBridgeReady !== undefined) {
+    options.onBridgeReady(bridge);
+  }
 
   const { process: frontendVite, url: frontendUrl } = await spawnFrontendVite({
     port: DEFAULT_FRONTEND_PORT,
