@@ -101,13 +101,17 @@ export const nextGesture = (events: ReadonlyArray<GestureEvent>): GestureResult 
 
       case "await-second":
         if (event.type === "down") {
-          state = {
-            name: "second-down",
-            firstUpAt: state.firstUpAt,
-            firstDownAt: state.firstDownAt,
-            secondDownAt: event.timestamp,
-            keyIndex: state.keyIndex,
-          };
+          if (event.keyIndex !== state.keyIndex) {
+            state = { name: "down", downAt: event.timestamp, keyIndex: event.keyIndex };
+          } else {
+            state = {
+              name: "second-down",
+              firstUpAt: state.firstUpAt,
+              firstDownAt: state.firstDownAt,
+              secondDownAt: event.timestamp,
+              keyIndex: state.keyIndex,
+            };
+          }
         }
         break;
 

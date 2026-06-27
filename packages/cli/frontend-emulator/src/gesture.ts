@@ -21,7 +21,9 @@ export const dispatchMouseEvent = (
   const core: GestureEvent = toCore(newEvent);
   const coreBuffer: GestureEvent[] = buffer.map(toCore);
   const result = nextGesture([...coreBuffer, core]);
-  return { buffer: [...buffer, newEvent], result };
+  const newBuffer =
+    result?.kind === "hold" || result?.kind === "dbl-tap" ? [] : [...buffer, newEvent];
+  return { buffer: newBuffer, result };
 };
 
 export const gestureKindToWsMessage = (
