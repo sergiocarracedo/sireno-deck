@@ -1,0 +1,118 @@
+packages/cli/frontend-emulator/src/Shell.tsx
+  s_9fabccd2e25c5b::t_1b6b26e611e15f 11
+  s_9fabccd2e25c5b::t_2e283175620f30 70-75
+  s_9fabccd2e25c5b::t_4001ac155c861a 16-21
+.planning/quick/002-open-emulator-url/002-PLAN.md
+  s_9fabccd2e25c5b::t_7731369d771c89 1-43
+packages/cli/src/builtin-addons/value-display/poller.ts
+  s_9fabccd2e25c5b::t_9ae18bd6cfa4b8 1-59
+packages/cli/src/cli/commands/addon-registry.test.ts
+  s_9fabccd2e25c5b::t_b237f5437068fe 3-7,9-12,15-21,24-27,29,31-34,37-42
+packages/cli/frontend-emulator/.sireno-deck-2/theme.css
+  s_9fabccd2e25c5b::t_b496fba31e792c 2-60
+  s_9fabccd2e25c5b::t_b4107f5d7ef5b5 1
+packages/cli/frontend/vite.config.ts
+  s_9fabccd2e25c5b::t_b8587fbc7bb30e 10
+  s_9fabccd2e25c5b::t_93c37a143f4652 8-9
+  s_9fabccd2e25c5b::t_c1304adb4180ce 54-56
+  s_9fabccd2e25c5b::t_0cdfec4a81f301 4-5
+  s_9fabccd2e25c5b::t_9ba5a62664d018 47
+  s_9fabccd2e25c5b::t_f1a13da46b1cc8 51
+  s_9fabccd2e25c5b::t_e926f42cad3b08 48-50,52-53
+  s_9fabccd2e25c5b::t_aa69c145bf0573 11
+packages/cli/src/builtin-addons/weather/index.ts
+  s_9fabccd2e25c5b::t_4acfa5a4d36be3 11
+packages/cli/src/addon/api-types.ts
+  s_9fabccd2e25c5b::t_4f9830b72cf999 10-19,27
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_9fabccd2e25c5b::t_2672ed0bdf764f 11
+packages/cli/frontend-emulator/src/__tests__/shell-render.test.tsx
+  s_9fabccd2e25c5b::t_1e63fb9b362841 39
+  s_9fabccd2e25c5b::t_feca431a4973f9 30
+  s_9fabccd2e25c5b::t_2ee24178e30998 23
+  s_9fabccd2e25c5b::t_8fc40cca85464a 13
+config2.yml
+  h_f90ee31b03fc41 1-8
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_9fabccd2e25c5b::t_88e0df65b47e9a 24
+packages/cli/frontend-emulator/vite.config.ts
+  s_9fabccd2e25c5b::t_7893b83b81df98 8
+  s_9fabccd2e25c5b::t_366d8640feffd3 63
+packages/cli/src/builtin-addons/brightness/poller.ts
+  s_9fabccd2e25c5b::t_85e546de6fa051 1-11
+packages/cli/src/builtin-addons/weather/poller.ts
+  s_9fabccd2e25c5b::t_75120a0d1b0fd2 1-3,7-10,12-14
+  s_9fabccd2e25c5b::t_19eb5819e08de8 4-6,11,15-66
+packages/cli/src/device/models.ts
+  s_9fabccd2e25c5b::t_4efd6d446e3289 20-21
+packages/cli/src/builtin-addons/value-display/index.ts
+  s_9fabccd2e25c5b::t_49a81cbdc74f0a 11,14
+config.yml
+  h_f90ee31b03fc41 7,12,15,17,20,28,33,35,38,48,51,58,63,66,69,75,87,89,91,93,95,97,99,101,103,105,107,109,111,113
+  s_9fabccd2e25c5b::t_d3fd6942f7d44c 116
+packages/cli/src/builtin-addons/media-player/poller.ts
+  s_9fabccd2e25c5b::t_aadd4954274e83 1-47
+packages/cli/frontend-emulator/src/main.tsx
+  s_9fabccd2e25c5b::t_4ca0a415fda33f 4,8-10,18
+.planning/v0.1.0-MILESTONE-AUDIT.md
+  s_9fabccd2e25c5b::t_3f241ecac06e22 8-9,11,13-14
+packages/cli/src/builtin-addons/system-status/poller.ts
+  s_9fabccd2e25c5b::t_c7d60005bbc996 1-43
+packages/cli/src/builtin-addons/media-player/index.ts
+  s_9fabccd2e25c5b::t_f65deadad1de01 13,15-17
+packages/cli/frontend/src/index.css
+  s_9fabccd2e25c5b::t_f67622a5b04902 2
+.gitignore
+  s_9fabccd2e25c5b::t_880f1b704673ee 19-20
+.planning/quick/001-fix-gesture-state-machine/001-CONTEXT.md
+  s_9fabccd2e25c5b::t_c525eb5bcb5c4e 1-59
+packages/cli/src/builtin-addons/brightness/index.ts
+  s_9fabccd2e25c5b::t_6c6cc5883cf620 6,9
+packages/cli/src/builtin-addons/date-time/poller.ts
+  s_9fabccd2e25c5b::t_3faf14dbec662d 1-11
+packages/cli/src/index.ts
+  s_9fabccd2e25c5b::t_ede8f6ecdf9173 3
+.planning/quick/001-fix-gesture-state-machine/001-PLAN.md
+  s_9fabccd2e25c5b::t_8465677a5d2f30 1-57
+packages/cli/frontend/src/bridge/client.ts
+  s_9fabccd2e25c5b::t_2415cd961af96b 95-98
+packages/cli/src/cli/commands/addon-registry.ts
+  s_9fabccd2e25c5b::t_b2bd28b3cb8058 57-59,61,64,66-79
+  s_9fabccd2e25c5b::t_3313220eab8d2e 1-2,6,8,13,43-45,118-130,137,140-153,155-156,158-167
+  s_9fabccd2e25c5b::t_b79f76330f267a 16-19
+  s_9fabccd2e25c5b::t_25c6021c2ff6db 46-56,60,62-63,65,80-89,92-117
+  s_9fabccd2e25c5b::t_b87b3175425ed8 90-91
+  s_9fabccd2e25c5b::t_20841fdae2b8c3 132-136,138,154,157
+  s_9fabccd2e25c5b::t_b2bf205ce58182 131
+  s_9fabccd2e25c5b::t_da017af9c348d9 139
+packages/cli/frontend-emulator/src/DeckFrame.test.tsx
+  s_9fabccd2e25c5b::t_c9338c6bb48238 13,21
+packages/cli/src/cli/commands/run.ts
+  s_9fabccd2e25c5b::t_844b01de457084 35
+  s_9fabccd2e25c5b::t_609f9e0a69828d 378,380
+  s_9fabccd2e25c5b::t_82d3e07c89ee86 376
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_9fabccd2e25c5b::t_d0a19cf8c21706 266
+  s_9fabccd2e25c5b::t_5678dc02258795 35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "f4c146bf376b99ba9de62aaaa799d139e0ac461f",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
