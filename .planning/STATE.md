@@ -1,7 +1,7 @@
 ---
-current_phase: shipped
-phase_status: complete
-plans_total: 0
+current_phase: 12-addon-frontend-registry
+phase_status: plans-ready
+plans_total: 3
 plans_complete: 0
 last_updated: 2026-06-27
 ---
@@ -12,7 +12,16 @@ last_updated: 2026-06-27
 
 All 11 phases complete. 464/464 tests pass. Documentation released (root README + 10 per-addon READMEs + CHANGELOG).
 
-**Next planned work**: phase 12 (addon-frontend-registry) — real button surfaces (clock face, weather widget, system bars) in the emulator/frontend. The current build shows type-name labels (`CORE:TIME`) instead of the actual addon render.
+## Phase 12 (addon-frontend-registry)
+
+Plans ready. Context + research + 3 plans committed. Goal: emulator/frontend shows real button surfaces (live clock, weather widget, system bars) instead of type-name labels.
+
+**Plans:**
+- 12-01 (Wave 1): vite plugin addon registry + Deck wiring — foundation
+- 12-02 (Wave 2): CLI state publishing (lazy, namespaced) — data source
+- 12-03 (Wave 2): 7 addon frontend.tsx files — surfaces
+
+**Next:** `/execute-phase 12` — start with 12-01 (vite plugin + Deck wiring), then 12-02 + 12-03 in parallel waves.
 
 ## Plan progress
 
