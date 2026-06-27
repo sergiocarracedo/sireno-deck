@@ -31,6 +31,7 @@ export interface RunEmulatorModeOptions {
   readonly activeTheme?: { name: string; version?: number };
   readonly runtime?: Runtime;
   readonly decks?: ReadonlyArray<RuntimeDeck>;
+  readonly addonByType?: Map<string, AddonFrontendRef>;
   readonly logger: pino.Logger;
 }
 
@@ -203,7 +204,15 @@ const killChild = (child: ChildProcess): Promise<void> =>
 
 const isButtonAction = (m: WsMessage): m is ButtonActionMessage => m.type === "button-action";
 
-const buildDeckConfigMessage = (deck: RuntimeDeck): DeckConfigMessage => ({
+export interface AddonFrontendRef {
+  readonly name: string;
+  readonly frontendEntry: string | null;
+}
+
+export const buildDeckConfigMessage = (
+  deck: RuntimeDeck,
+  addonByType: Map<string, AddonFrontendRef>,
+): DeckConfigMessage => ({
   type: "deck-config",
   deckId: deck.id,
   surfaces: {
@@ -212,11 +221,16 @@ const buildDeckConfigMessage = (deck: RuntimeDeck): DeckConfigMessage => ({
       name: deck.name ?? deck.id,
       buttons: deck.buttons.map((b) => {
         const position = Number.parseInt(b.id, 10);
+        const addon = addonByType.get(b.type);
         return {
           id: b.id,
           type: b.type,
           config: (b.config ?? {}) as Record<string, unknown>,
           ...(Number.isFinite(position) ? { position } : {}),
+          ...(addon !== undefined ? { addonName: addon.name } : {}),
+          ...(addon?.frontendEntry !== undefined && addon.frontendEntry !== null
+            ? { frontendEntry: addon.frontendEntry }
+            : {}),
         };
       }),
     },
@@ -293,8 +307,9 @@ export const runEmulatorMode = async (
 
   if (options.runtime !== undefined && options.decks !== undefined && options.decks.length > 0) {
     const mainDeck = options.decks.find((d) => d.isMain) ?? options.decks[0]!;
+    const addonByType = options.addonByType ?? new Map();
     bridge.onConnection((socket) => {
-      socket.send(JSON.stringify(buildDeckConfigMessage(mainDeck)));
+      socket.send(JSON.stringify(buildDeckConfigMessage(mainDeck, addonByType)));
       options.logger.info(
         { deckId: mainDeck.id, buttons: mainDeck.buttons.length },
         "emulator: deck-config sent to new client",
