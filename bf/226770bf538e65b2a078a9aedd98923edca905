@@ -1,0 +1,30 @@
+.planning/phases/12-addon-frontend-registry/12-01-PLAN.md
+  s_9fabccd2e25c5b::t_40423d60a8bfd9 1-90
+.planning/phases/12-addon-frontend-registry/12-02-PLAN.md
+  s_9fabccd2e25c5b::t_61e91f13b56feb 1-76
+.planning/phases/12-addon-frontend-registry/12-03-PLAN.md
+  s_9fabccd2e25c5b::t_c7e81fa55298c3 1-118
+.planning/phases/12-addon-frontend-registry/12-RESEARCH.md
+  s_9fabccd2e25c5b::t_8b8b3baf02a55d 1-84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "bf226770bf538e65b2a078a9aedd98923edca905",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
