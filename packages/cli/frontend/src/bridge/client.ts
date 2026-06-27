@@ -92,7 +92,10 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
   const close = (): void => {
     manuallyClosed = true;
     if (timer !== null) clearTimeout(timer);
-    socket?.close();
+    if (socket === null) return;
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.close();
+    }
   };
 
   const send = (message: WsMessage): void => {

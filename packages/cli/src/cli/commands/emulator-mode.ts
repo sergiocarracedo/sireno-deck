@@ -32,7 +32,7 @@ export interface RunEmulatorModeOptions {
   readonly runtime?: Runtime;
   readonly decks?: ReadonlyArray<RuntimeDeck>;
   readonly addonByType?: Map<string, AddonFrontendRef>;
-  readonly onBridgeReady?: (bridge: WsBridge) => void;
+  readonly onBridgeReady?: (bridge: WsBridge) => void | Promise<void>;
   readonly logger: pino.Logger;
 }
 
@@ -263,7 +263,7 @@ export const runEmulatorMode = async (
     options.activeTheme !== undefined ? { activeTheme: options.activeTheme } : {},
   );
   if (options.onBridgeReady !== undefined) {
-    options.onBridgeReady(bridge);
+    void Promise.resolve(options.onBridgeReady(bridge));
   }
 
   const { process: frontendVite, url: frontendUrl } = await spawnFrontendVite({

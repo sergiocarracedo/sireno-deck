@@ -21,6 +21,7 @@ export {
   CLOCK_BUTTON_INTERVAL_MS,
 } from "./schemas.ts";
 export { formatDigitalDateTimeLabel } from "./format.ts";
+export { createPoller } from "./poller.ts";
 export type {
   BuiltinDisplayDateTimeButtonConfig,
   BuiltinTimePresetButtonConfig,

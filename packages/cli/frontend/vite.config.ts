@@ -1,7 +1,13 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { sirenoDeck2 } from "sireno-deck-2/vite";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const wsUrl = process.env["SIRENO_WS_URL"] ?? "ws://127.0.0.1:52937";
 
 const themeFromEnv = (): { name: string; cssPath: string; frontendPath: string } | undefined => {
   const blob = process.env["SIRENO_THEME"];
@@ -38,5 +44,14 @@ export default defineConfig({
       ...(themeFromEnv() ? { theme: themeFromEnv()! } : {}),
     }),
   ],
-  server: { host: "127.0.0.1", port: 0, strictPort: false },
+  server: { host: "127.0.0.1", port: 5180, strictPort: true },
+  resolve: {
+    alias: [
+      { find: /^@\//, replacement: resolve(__dirname, "../src") + "/" },
+      { find: /^@sireno-deck-2\/cli$/, replacement: resolve(__dirname, "../src/index.ts") },
+    ],
+  },
+  define: {
+    "import.meta.env.VITE_WS_URL": JSON.stringify(wsUrl),
+  },
 });

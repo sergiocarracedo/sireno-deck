@@ -1,41 +1,44 @@
 import { describe, expect, it } from "vitest";
 
-import { buildAddonByType, type ScannedAddon } from "./addon-registry.ts";
+import {
+  collectBuiltinAddonRegistry,
+  discoverAddonPollers,
+  type ScannedAddon,
+} from "./addon-registry.ts";
 
-const scanned: ReadonlyArray<ScannedAddon> = [
-  { name: "date-time", types: ["core:time", "core:date"], frontendEntry: "/abs/date-time/frontend.tsx" },
-  { name: "weather", types: ["core:weather"], frontendEntry: "/abs/weather/frontend.tsx" },
-  { name: "no-frontend", types: ["core:custom"], frontendEntry: null },
+const scannedFixture: ReadonlyArray<ScannedAddon> = [
+  { name: "date-time", types: ["core:time", "core:date"], frontendEntry: "/abs/date-time/frontend.tsx", publishIntervalMs: 1000, pollerEntry: null },
+  { name: "weather", types: ["core:weather"], frontendEntry: "/abs/weather/frontend.tsx", publishIntervalMs: 600000, pollerEntry: null },
+  { name: "no-frontend", types: ["core:custom"], frontendEntry: null, publishIntervalMs: 1000, pollerEntry: null },
 ];
 
-describe("buildAddonByType", () => {
-  it("returns an empty map for no addons", () => {
-    expect(buildAddonByType([]).size).toBe(0);
+describe("collectBuiltinAddonRegistry", () => {
+  it("discovers the built-in addons", () => {
+    const registry = collectBuiltinAddonRegistry();
+    expect(registry.scanned.length).toBeGreaterThan(0);
+    const names = registry.scanned.map((a) => a.name);
+    expect(names).toContain("date-time");
+    expect(names).toContain("weather");
   });
 
-  it("maps each type to its addon name and frontend entry", () => {
-    const map = buildAddonByType(scanned);
-    expect(map.get("core:time")).toEqual({
-      name: "date-time",
-      frontendEntry: "/abs/date-time/frontend.tsx",
-    });
-    expect(map.get("core:date")).toMatchObject({ name: "date-time" });
-    expect(map.get("core:weather")).toMatchObject({ name: "weather" });
+  it("populates byType with the type → addon map", () => {
+    const registry = collectBuiltinAddonRegistry();
+    expect(registry.byType.get("core:time")?.name).toBe("date-time");
+    expect(registry.byType.get("core:weather")?.name).toBe("weather");
+  });
+});
+
+describe("discoverAddonPollers", () => {
+  it("returns an empty array when no addons have poller entries", async () => {
+    const discovered = await discoverAddonPollers({}, scannedFixture);
+    expect(discovered).toEqual([]);
   });
 
-  it("keeps the first addon when a type appears in multiple addons", () => {
-    const map = buildAddonByType([
-      { name: "first", types: ["core:foo"], frontendEntry: "/first/frontend.tsx" },
-      { name: "second", types: ["core:foo"], frontendEntry: "/second/frontend.tsx" },
-    ]);
-    expect(map.get("core:foo")?.name).toBe("first");
-  });
-
-  it("includes types with null frontend entry (addon exists but no surface)", () => {
-    const map = buildAddonByType(scanned);
-    expect(map.get("core:custom")).toMatchObject({
-      name: "no-frontend",
-      frontendEntry: null,
-    });
+  it("filters out addons without publishIntervalMs in the scanned manifest", async () => {
+    const without: ScannedAddon[] = [
+      { name: "no-cadence", types: ["core:nope"], frontendEntry: null, publishIntervalMs: null, pollerEntry: "/some/poller.ts" },
+    ];
+    const discovered = await discoverAddonPollers({}, without);
+    expect(discovered).toEqual([]);
   });
 });

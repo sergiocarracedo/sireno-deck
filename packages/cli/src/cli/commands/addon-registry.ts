@@ -1,54 +1,22 @@
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { dirname, join, resolve as resolvePath } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { AddonFrontendRef } from "./emulator-mode.ts";
+import type { AddonPoller, AddonPollerChannel, AddonManifest } from "@/addon/api-types.ts";
 
-interface ScannedAddon {
+export interface ScannedAddon {
   readonly name: string;
   readonly types: ReadonlyArray<string>;
   readonly frontendEntry: string | null;
   readonly publishIntervalMs: number | null;
+  readonly pollerEntry: string | null;
 }
 
-const scanBuiltinAddons = (): ReadonlyArray<ScannedAddon> => {
-  const here = dirname(fileURLToPath(import.meta.url));
-  const builtinDir = resolvePath(here, "..", "..", "builtin-addons");
-  if (!existsSync(builtinDir)) return [];
-  const { readdirSync } = require("node:fs") as typeof import("node:fs");
-  const entries = readdirSync(builtinDir, { withFileTypes: true });
-  const out: ScannedAddon[] = [];
-  for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-    const addonDir = join(builtinDir, entry.name);
-    const indexPath = join(addonDir, "index.ts");
-    const indexTsxPath = join(addonDir, "index.tsx");
-    const indexFile = existsSync(indexPath) ? indexPath : existsSync(indexTsxPath) ? indexTsxPath : null;
-    if (indexFile === null) continue;
-    let raw: string;
-    try {
-      raw = readFileSync(indexFile, "utf8");
-    } catch {
-      continue;
-    }
-    const typeMatches = raw.matchAll(/type:\s*["']([a-z0-9-]+:[a-z0-9-]+)["']/gi);
-    const types = new Set<string>();
-    for (const m of typeMatches) {
-      if (m[1] !== undefined) types.add(m[1]);
-    }
-    const frontendMatch = raw.match(/frontend:\s*\{\s*main:\s*["']([^"']+)["']/);
-    const frontendEntry = frontendMatch?.[1] !== undefined
-      ? resolvePath(addonDir, frontendMatch[1])
-      : null;
-    const publishMatch = raw.match(/publishIntervalMs:\s*(\d+)/);
-    const publishIntervalMs = publishMatch?.[1] !== undefined
-      ? Number.parseInt(publishMatch[1], 10)
-      : null;
-    if (frontendEntry === null && types.size === 0) continue;
-    out.push({ name: entry.name, types: [...types], frontendEntry, publishIntervalMs });
-  }
-  return out;
-};
+export interface AddonFrontendRef {
+  readonly name: string;
+  readonly frontendEntry: string | null;
+}
 
 const buildAddonByType = (
   scanned: ReadonlyArray<ScannedAddon>,
@@ -72,4 +40,128 @@ export const collectBuiltinAddonRegistry = (): {
   return { scanned, byType: buildAddonByType(scanned) };
 };
 
-export { scanBuiltinAddons, buildAddonByType };
+const here = dirname(fileURLToPath(import.meta.url));
+const builtinDir = resolvePath(here, "..", "..", "builtin-addons");
+
+const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null => {
+  const indexPath = join(addonDir, "index.ts");
+  const indexTsxPath = join(addonDir, "index.tsx");
+  const indexFile = existsSync(indexPath) ? indexPath : existsSync(indexTsxPath) ? indexTsxPath : null;
+  if (indexFile === null) return null;
+  let raw: string;
+  try {
+    raw = readFileSync(indexFile, "utf8");
+  } catch {
+    return null;
+  }
+  const buttonsDir = join(addonDir, "buttons");
+  const buttonsIndexPath = existsSync(join(buttonsDir, "index.tsx"))
+    ? join(buttonsDir, "index.tsx")
+    : null;
+  const buttonsSources: string[] = [];
+  if (buttonsIndexPath !== null) {
+    try {
+      buttonsSources.push(readFileSync(buttonsIndexPath, "utf8"));
+    } catch {
+      // ignore
+    }
+  }
+  if (existsSync(buttonsDir)) {
+    const { readdirSync } = require("node:fs") as typeof import("node:fs");
+    for (const f of readdirSync(buttonsDir, { withFileTypes: true })) {
+      if (!f.isFile()) continue;
+      if (!/\.tsx?$/.test(f.name)) continue;
+      if (f.name === "index.tsx") continue;
+      try {
+        buttonsSources.push(readFileSync(join(buttonsDir, f.name), "utf8"));
+      } catch {
+        // ignore
+      }
+    }
+  }
+  const scanFrom = (source: string): Set<string> => {
+    const out = new Set<string>();
+    for (const m of source.matchAll(/type:\s*["']([a-z0-9-]+:[a-z0-9-]+)["']/gi)) {
+      if (m[1] !== undefined) out.add(m[1]);
+    }
+    return out;
+  };
+  const types = scanFrom(raw);
+  for (const src of buttonsSources) {
+    for (const t of scanFrom(src)) types.add(t);
+  }
+  const frontendMatch = raw.match(/frontend:\s*\{\s*main:\s*["']([^"']+)["']/);
+  const frontendEntry = frontendMatch?.[1] !== undefined
+    ? resolvePath(addonDir, frontendMatch[1])
+    : null;
+  const publishMatch = raw.match(/publishIntervalMs:\s*(\d+)/);
+  const publishIntervalMs = publishMatch?.[1] !== undefined
+    ? Number.parseInt(publishMatch[1], 10)
+    : null;
+  const pollerEntry = existsSync(join(addonDir, "poller.ts"))
+    ? join(addonDir, "poller.ts")
+    : null;
+  if (frontendEntry === null && types.size === 0 && pollerEntry === null) return null;
+  return { name: addonName, types: [...types], frontendEntry, publishIntervalMs, pollerEntry };
+};
+
+const scanBuiltinAddons = (): ReadonlyArray<ScannedAddon> => {
+  if (!existsSync(builtinDir)) return [];
+  const { readdirSync } = require("node:fs") as typeof import("node:fs");
+  const entries = readdirSync(builtinDir, { withFileTypes: true });
+  const out: ScannedAddon[] = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const scanned = scanAddonDir(join(builtinDir, entry.name), entry.name);
+    if (scanned !== null) out.push(scanned);
+  }
+  return out;
+};
+
+const matchesManifest = (manifest: AddonManifest, addonName: string): boolean => {
+  if (manifest.name !== undefined && manifest.name !== addonName) return false;
+  if (manifest.publishIntervalMs === undefined) return false;
+  return true;
+};
+
+export interface DiscoveredAddonPoller {
+  readonly addonName: string;
+  readonly channels: ReadonlyArray<AddonPollerChannel>;
+}
+
+export interface AddonPollerDependencies {
+  readonly executor?: unknown;
+  readonly mediaProvider?: unknown;
+}
+
+export const discoverAddonPollers = async (
+  deps: AddonPollerDependencies,
+  scanned: ReadonlyArray<ScannedAddon>,
+): Promise<ReadonlyArray<DiscoveredAddonPoller>> => {
+  const out: DiscoveredAddonPoller[] = [];
+  for (const addon of scanned) {
+    if (addon.pollerEntry === null) continue;
+    const manifest: AddonManifest = {
+      apiVersion: 3,
+      name: addon.name,
+      ...(addon.publishIntervalMs !== null
+        ? { publishIntervalMs: addon.publishIntervalMs }
+        : {}),
+    };
+    if (!matchesManifest(manifest, addon.name)) continue;
+    try {
+      const mod = (await import(addon.pollerEntry)) as {
+        createPoller?: (deps: AddonPollerDependencies) => AddonPoller;
+      };
+      if (typeof mod.createPoller !== "function") continue;
+      const poller = mod.createPoller(deps);
+      if (poller.channels.length === 0) continue;
+      out.push({ addonName: addon.name, channels: poller.channels });
+    } catch {
+      // Poller failed to load; skip.
+    }
+  }
+  return out;
+};
+
+export { scanBuiltinAddons };

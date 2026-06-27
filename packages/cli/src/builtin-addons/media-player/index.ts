@@ -10,5 +10,8 @@ export {
   MediaMuteButtonSchema,
   MediaVolumeButtonSchema,
 } from "./schemas.ts";
+export { createPoller } from "./poller.ts";
+
+export type { MediaPlayerButtonConfig, MediaMuteButtonConfig, MediaVolumeButtonConfig } from "./schemas.ts";
 
 export default mediaPlayerAddon;

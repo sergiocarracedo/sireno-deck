@@ -32,7 +32,7 @@ import {
 import { runRealMode } from "./real-mode";
 import { runEmulatorMode } from "./emulator-mode";
 import { collectBuiltinAddonRegistry } from "./addon-registry.ts";
-import { resolveBuiltinAddonPollers } from "./addon-pollers.ts";
+import { discoverAddonPollers } from "./addon-registry.ts";
 import { StatePublisher } from "@/render/state-publisher.ts";
 
 export interface SignalProvider {
@@ -373,16 +373,11 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     runtime,
     decks: emulatorDecks.decks,
     addonByType: registry.byType,
-    onBridgeReady: (bridge) => {
+    onBridgeReady: async (bridge) => {
       const realPublisher = new StatePublisher({ bridge, logger });
-      const pollers = resolveBuiltinAddonPollers(
+      const pollers = await discoverAddonPollers(
         { executor: emulatorExecutor, mediaProvider: emulatorMedia },
-        {
-          scanned: registry.scanned.map((s) => ({
-            name: s.name,
-            manifest: { apiVersion: 3, name: s.name, publishIntervalMs: s.publishIntervalMs ?? undefined },
-          })),
-        },
+        registry.scanned,
       );
       for (const poller of pollers) {
         for (const ch of poller.channels) {

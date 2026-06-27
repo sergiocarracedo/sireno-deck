@@ -8,11 +8,17 @@ import { SidePanel } from "./SidePanel.tsx";
 
 export interface ShellProps {
   readonly wsUrl: string;
+  readonly frontendUrl: string;
   readonly initialDeviceModel: string;
   readonly token?: string;
 }
 
-export const Shell = ({ wsUrl, initialDeviceModel, token }: ShellProps): React.ReactElement => {
+export const Shell = ({
+  wsUrl,
+  frontendUrl,
+  initialDeviceModel,
+  token,
+}: ShellProps): React.ReactElement => {
   const initialSpec: DeviceModelSpec =
     DEVICE_MODELS.find((m) => m.id === initialDeviceModel) ?? DEVICE_MODELS[0]!;
 
@@ -61,7 +67,12 @@ export const Shell = ({ wsUrl, initialDeviceModel, token }: ShellProps): React.R
         />
       </aside>
       <main className="flex items-center justify-center bg-neutral-950 p-8">
-        <DeckFrame device={deviceModel} deckId={activeDeckId} onGesture={handleGesture} />
+        <DeckFrame
+          frontendUrl={frontendUrl}
+          device={deviceModel}
+          deckId={activeDeckId}
+          onGesture={handleGesture}
+        />
       </main>
     </div>
   );

@@ -17,6 +17,8 @@ export const DEFAULT_DEVICE_MODEL_ID = "mk2";
 
 export const DEFAULT_KEY_COUNT = 15;
 
+export const BUTTON_SIZE_PX = 96;
+
 export const isKnownDeviceModel = (id: string): id is DeviceModelSpec["id"] =>
   DEVICE_MODELS.some((m) => m.id === id);
 

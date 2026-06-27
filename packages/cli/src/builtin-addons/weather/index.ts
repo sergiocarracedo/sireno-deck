@@ -8,6 +8,7 @@ export {
 } from "./schemas.ts";
 export { fetchWeather } from "./domain/fetch.ts";
 export { describeWeatherCode, WMO_CODE_TO_DESCRIPTION } from "./domain/codes.ts";
+export { createPoller } from "./poller.ts";
 export type { WeatherButtonConfig, WeatherLocation, WeatherSnapshot } from "./schemas.ts";
 
 export default weatherAddon;

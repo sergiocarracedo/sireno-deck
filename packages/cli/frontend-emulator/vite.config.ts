@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 import { sirenoDeck2 } from "../src/vite/index.ts";
 
 const wsUrl = process.env["SIRENO_WS_URL"] ?? "ws://127.0.0.1:52937";
+const frontendUrl = process.env["SIRENO_FRONTEND_URL"] ?? "http://127.0.0.1:5173";
 
 const parseThemeFromEnv = ():
   | { name: string; cssPath: string; frontendPath: string }
@@ -59,6 +60,7 @@ export default defineConfig({
   },
   define: {
     "import.meta.env.VITE_WS_URL": JSON.stringify(wsUrl),
+    "import.meta.env.VITE_FRONTEND_URL": JSON.stringify(frontendUrl),
   },
   server: {
     port: Number(process.env.SIRENO_EMULATOR_PORT ?? 52938),

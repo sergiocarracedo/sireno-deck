@@ -7,6 +7,16 @@ import type {
 
 export const SIRENO_ADDON_API_VERSION = 3 as const;
 
+export interface AddonPollerChannel {
+  readonly channel: string;
+  readonly intervalMs: number;
+  readonly poll: () => unknown | Promise<unknown>;
+}
+
+export interface AddonPoller {
+  readonly channels: ReadonlyArray<AddonPollerChannel>;
+}
+
 export interface SirenoAddon {
   apiVersion: number;
   name: string;
@@ -14,6 +24,7 @@ export interface SirenoAddon {
   decks?: AddonDeckDefinition[];
   assets?: { styles?: string[] };
   frontend?: { main: string; styles?: string[] };
+  poller?: AddonPoller;
 }
 
 export type { AddonFrontend, AddonGeneratedDeck };
