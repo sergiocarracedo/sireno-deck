@@ -248,6 +248,8 @@ export const dateTimeAddon = {
   apiVersion: 3 as const,
   name: "date-time",
   kind: "runtime" as const,
+  frontend: { main: "./frontend.tsx" },
+  publishIntervalMs: 1000,
   buttons: [
     builtinDateTimeButton,
     builtinTimeButton,
