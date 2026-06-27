@@ -1,0 +1,26 @@
+packages/cli/src/util/cache-paths.test.ts
+  s_9fabccd2e25c5b::t_998f312d402adc 1-64
+packages/cli/src/util/cache-paths.ts
+  s_9fabccd2e25c5b::t_3f878aca88a714 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "639954df6d60fed96e094c0f832106b9d6eb9a5d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
