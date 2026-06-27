@@ -1,9 +1,14 @@
 import type { ReactNode } from "react";
-import { DEVICE_MODELS, gridForKeyCount, type DeviceModelSpec } from "@/device/models.ts";
+import {
+  BUTTON_SIZE_PX,
+  DEVICE_MODELS,
+  gridForKeyCount,
+  type DeviceModelSpec,
+} from "@/device/models.ts";
 
 import { ButtonFrame } from "./ButtonFrame.tsx";
 
-const BUTTON_SIZE = 72;
+const BUTTON_SIZE = BUTTON_SIZE_PX;
 
 export interface DeckButton {
   id: string;

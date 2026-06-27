@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-import type { DeviceModelSpec } from "@sireno-deck-2/cli";
+import { BUTTON_SIZE_PX, type DeviceModelSpec } from "@sireno-deck-2/cli";
 
 import { dispatchMouseEvent, gestureKindToWsMessage, type GestureMouseEvent } from "./gesture.ts";
 
@@ -48,12 +48,12 @@ export const DeckFrame = ({
 return (
     <div
       className="relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 shadow-lg"
-      style={{ width: 72 * columns, height: 72 * Math.ceil(keyCount / columns) }}
+      style={{ width: BUTTON_SIZE_PX * columns, height: BUTTON_SIZE_PX * Math.ceil(keyCount / columns) }}
     >
       <iframe
         src={iframeUrl}
         className="block"
-        style={{ width: 72 * columns, height: 72 * Math.ceil(keyCount / columns) }}
+        style={{ width: BUTTON_SIZE_PX * columns, height: BUTTON_SIZE_PX * Math.ceil(keyCount / columns) }}
         title="Deck Preview"
       />
       <div
@@ -63,8 +63,8 @@ return (
         data-columns={columns}
         className="absolute inset-0 grid"
         style={{
-          gridTemplateColumns: `repeat(${columns}, 72px)`,
-          gridTemplateRows: `repeat(${Math.ceil(keyCount / columns)}, 72px)`,
+          gridTemplateColumns: `repeat(${columns}, ${BUTTON_SIZE_PX}px)`,
+          gridTemplateRows: `repeat(${Math.ceil(keyCount / columns)}, ${BUTTON_SIZE_PX}px)`,
         }}
       >
         {Array.from({ length: keyCount }, (_, i) => {
