@@ -78,20 +78,12 @@ export const DeckFrame = ({
                 if (e.buttons === 1) handleUp(i);
               }}
               className={[
-                "relative overflow-hidden rounded-lg border border-neutral-700",
-                "bg-gradient-to-b from-neutral-700 to-neutral-900",
-                "shadow-[inset_0_2px_4px_rgba(255,255,255,0.15),inset_0_-2px_4px_rgba(0,0,0,0.4),0_2px_4px_rgba(0,0,0,0.5)]",
-                "transition-all duration-75",
-                "hover:border-neutral-500 hover:shadow-[inset_0_2px_4px_rgba(255,255,255,0.2),inset_0_-2px_4px_rgba(0,0,0,0.4),0_2px_6px_rgba(56,189,248,0.4)]",
-                "active:scale-[0.97] active:shadow-[inset_0_2px_6px_rgba(0,0,0,0.5),inset_0_-2px_2px_rgba(0,0,0,0.3),0_1px_2px_rgba(0,0,0,0.6)]",
-                isPressed
-                  ? "scale-[0.97] border-accent shadow-[inset_0_2px_6px_rgba(0,0,0,0.5),inset_0_-2px_2px_rgba(0,0,0,0.3),0_0_12px_rgba(56,189,248,0.6)]"
-                  : "",
+                "opacity-0 transition-opacity duration-75",
+                "hover:opacity-20",
+                isPressed ? "opacity-30" : "",
               ].join(" ")}
               style={{ aspectRatio: "1" }}
-            >
-              <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-transparent" />
-            </button>
+            />
           );
         })}
       </div>

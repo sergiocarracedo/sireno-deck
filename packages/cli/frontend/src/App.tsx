@@ -102,10 +102,7 @@ export const App = () => {
 
   return (
     <ThemeProvider value={theme}>
-      <main className="bg-bg text-fg flex min-h-screen flex-col items-center justify-center gap-6 p-8">
-        <header className="font-mono text-xs uppercase tracking-widest text-muted">
-          {deck.name} · ws: {token === "" ? "dev" : "authed"} · theme: {theme.name}
-        </header>
+      <main className="bg-bg text-fg flex min-h-screen items-center justify-center">
         <Deck
           deck={deck}
           onNavigate={() => {
