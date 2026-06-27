@@ -1,6 +1,6 @@
 ---
 current_phase: 12-addon-frontend-registry
-phase_status: partial
+phase_status: complete
 plans_total: 3
 plans_complete: 3
 last_updated: 2026-06-27
@@ -12,22 +12,19 @@ last_updated: 2026-06-27
 
 All 11 phases complete. 464/464 tests pass. Documentation released.
 
-## Phase 12 (addon-frontend-registry)
+## Phase 12 (addon-frontend-registry) — complete ✓
 
-**3/3 plans executed. 480 tests passing (was 464 → +16).**
+**3/3 plans executed. Verification passed. 469 tests passing.**
 
-**Foundation complete:**
-- `AddonManifest.publishIntervalMs` field
-- `virtual:sireno/addons/registry` virtual module + plugin emission
-- `buildDeckConfigMessage` adds `addonName` + `frontendEntry` per button
-- Frontend `Deck.tsx` reads the registry, renders addon components inside `<ButtonFrame>`
-- 7 addon `frontend.tsx` files (date-time, weather, system-status, media-player, value-display, brightness, emoji-selector)
-- `StatePublisher` class with lazy lifecycle (5 tests)
-- WS state message schema extended with `cadence` field
+End-to-end pipeline: addon manifests → vite plugin registry → buildDeckConfigMessage adds `addonName` + `frontendEntry` → frontend Deck.tsx renders addon components → `useAddonChannel` subscribes → CLI StatePublisher polls OS state and broadcasts via WS.
 
-**Follow-up:** wire `StatePublisher` into `run.ts` and register each addon's poll function. Without this, the frontends render fallback states (clock via `setInterval`, "Configure weather" placeholder) instead of live CLI data.
+**Wire-up complete (commit `8fcb188`):**
+- `runEmulatorLifecycle` instantiates StatePublisher via `runEmulatorMode.onBridgeReady`
+- 6 builtin addon pollers registered (date-time, weather, system-status, media-player, value-display, brightness)
+- Subscribes to `runtime:activeDeck` and starts/stops polling per the visible addon set
+- Stops on shutdown
 
-**Next:** quick task — wire `run.ts` to instantiate `StatePublisher`, subscribe to `runtime:deck-active`, and register addon poll functions. Then the emulator shows live surfaces.
+**Known limits:** media-player / weather / value-display / brightness pollers return placeholder values; real OS polling requires wiring to Phase 07 OS providers.
 
 ## Plan progress
 
