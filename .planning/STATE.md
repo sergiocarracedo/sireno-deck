@@ -1,8 +1,8 @@
 ---
 current_phase: 12-addon-frontend-registry
-phase_status: plans-ready
+phase_status: partial
 plans_total: 3
-plans_complete: 0
+plans_complete: 3
 last_updated: 2026-06-27
 ---
 
@@ -10,18 +10,24 @@ last_updated: 2026-06-27
 
 ## Milestone shipped: v0.1.0
 
-All 11 phases complete. 464/464 tests pass. Documentation released (root README + 10 per-addon READMEs + CHANGELOG).
+All 11 phases complete. 464/464 tests pass. Documentation released.
 
 ## Phase 12 (addon-frontend-registry)
 
-Plans ready. Context + research + 3 plans committed. Goal: emulator/frontend shows real button surfaces (live clock, weather widget, system bars) instead of type-name labels.
+**3/3 plans executed. 480 tests passing (was 464 → +16).**
 
-**Plans:**
-- 12-01 (Wave 1): vite plugin addon registry + Deck wiring — foundation
-- 12-02 (Wave 2): CLI state publishing (lazy, namespaced) — data source
-- 12-03 (Wave 2): 7 addon frontend.tsx files — surfaces
+**Foundation complete:**
+- `AddonManifest.publishIntervalMs` field
+- `virtual:sireno/addons/registry` virtual module + plugin emission
+- `buildDeckConfigMessage` adds `addonName` + `frontendEntry` per button
+- Frontend `Deck.tsx` reads the registry, renders addon components inside `<ButtonFrame>`
+- 7 addon `frontend.tsx` files (date-time, weather, system-status, media-player, value-display, brightness, emoji-selector)
+- `StatePublisher` class with lazy lifecycle (5 tests)
+- WS state message schema extended with `cadence` field
 
-**Next:** `/execute-phase 12` — start with 12-01 (vite plugin + Deck wiring), then 12-02 + 12-03 in parallel waves.
+**Follow-up:** wire `StatePublisher` into `run.ts` and register each addon's poll function. Without this, the frontends render fallback states (clock via `setInterval`, "Configure weather" placeholder) instead of live CLI data.
+
+**Next:** quick task — wire `run.ts` to instantiate `StatePublisher`, subscribe to `runtime:deck-active`, and register addon poll functions. Then the emulator shows live surfaces.
 
 ## Plan progress
 
