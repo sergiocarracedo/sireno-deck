@@ -85,7 +85,7 @@ export const Deck = ({ deck, onNavigate, onAction, children }: DeckProps) => {
             style={{ gridColumn: col, gridRow: row, width: BUTTON_SIZE, height: BUTTON_SIZE }}
           >
             <ButtonFrame
-              label={button.label ?? button.id}
+              label={button.label ?? button.type}
               buttonType={button.type}
               onPress={() => onAction?.(button.id, "tap")}
               onDoublePress={() => onAction?.(button.id, "dbl-tap")}
