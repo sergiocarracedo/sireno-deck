@@ -96,10 +96,9 @@ When working on a phase:
 
 ## Current Phase
 
-**Milestone:** v0.1.0
-**Phase:** 11 — release (ready to discuss)
-**Status:** 0 plans, no CONTEXT.md
-**Next:** `/discuss-phase 11` — README + per-addon docs, `pnpm package` script, v0.1.0 release
+**Milestone:** v0.1.0 ✅ shipped (2026-06-27)
+**Status:** complete — all 11 phases done, 464 tests passing, docs released
+**Next:** Phase 12 — addon-frontend-registry (real button surfaces in emulator)
 **Last updated:** 2026-06-27
 
-**Adjacent:** Phase 12 — addon-frontend-registry (planned, blocks real button surfaces in emulator/frontend). Phase 09 + 10 verified (464 tests pass). R19 partial: npm loader shipped but CLI integration deferred.
+**Adjacent:** Phase 12 is the next planned work. The current emulator/frontend shows `core:type` as the button label; phase 12 will ship a frontend addon registry so each addon can render its actual surface (clock face, weather widget, system bars).

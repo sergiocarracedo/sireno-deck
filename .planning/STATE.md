@@ -1,24 +1,18 @@
 ---
-current_phase: 11-release
-phase_status: plans-ready
-plans_total: 2
+current_phase: shipped
+phase_status: complete
+plans_total: 0
 plans_complete: 0
 last_updated: 2026-06-27
 ---
 
 # Project State
 
-## Current phase
+## Milestone shipped: v0.1.0
 
-**Phase 11: release** — context captured + 2 plans ready. Phase 10 (daemon-polish) complete.
+All 11 phases complete. 464/464 tests pass. Documentation released (root README + 10 per-addon READMEs + CHANGELOG).
 
-Phase 10 verification (`10-VERIFICATION.md`): passed. 464/464 tests pass. R10 prod, R18, R20 closed. R19 partial: loader shipped + tested, but CLI integration deferred (loader not yet called by `run.ts:preflight`).
-
-**Phase 11 plans ready:**
-- `11-01-PLAN.md` (Wave 1): root README + 10 per-addon READMEs
-- `11-02-PLAN.md` (Wave 2): CHANGELOG + ROADMAP/STATE marking v0.1.0 shipped
-
-**Next:** `/execute-phase 11` — write README + per-addon docs, then CHANGELOG + milestone-shipped ceremony.
+**Next planned work**: phase 12 (addon-frontend-registry) — real button surfaces (clock face, weather widget, system bars) in the emulator/frontend. The current build shows type-name labels (`CORE:TIME`) instead of the actual addon render.
 
 ## Plan progress
 
