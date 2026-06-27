@@ -1,0 +1,29 @@
+packages/cli/src/core/gesture-state.ts
+  s_9fabccd2e25c5b::t_5d708454c597f4 104-114
+packages/cli/frontend-emulator/src/gesture.ts
+  s_9fabccd2e25c5b::t_bc7a3905cb8e6f 24-26
+packages/cli/frontend-emulator/src/DeckFrame.tsx
+  s_9fabccd2e25c5b::t_de2c8f8383ed1e 8,18-23,47-64,97
+  s_9fabccd2e25c5b::t_de3de04735bbdc 65-96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "3b221c5666035d328be31417930c94e57bd947d7",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
