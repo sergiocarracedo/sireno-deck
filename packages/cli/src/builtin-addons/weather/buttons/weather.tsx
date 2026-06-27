@@ -88,5 +88,7 @@ export const weatherAddon = {
   apiVersion: 3 as const,
   name: "weather",
   kind: "runtime" as const,
+  frontend: { main: "./frontend.tsx" },
+  publishIntervalMs: 600000,
   buttons: [builtinWeatherButton],
 };

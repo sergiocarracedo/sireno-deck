@@ -145,6 +145,8 @@ export const mediaPlayerAddon = {
   apiVersion: 3 as const,
   name: "media-player",
   kind: "runtime" as const,
+  frontend: { main: "./frontend.tsx" },
+  publishIntervalMs: 2000,
   buttons: [builtinMediaPlayerButton, builtinMediaMuteButton, builtinMediaVolumeButton],
 };
 

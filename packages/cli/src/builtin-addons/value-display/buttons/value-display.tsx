@@ -80,5 +80,7 @@ export const valueDisplayAddon = {
   apiVersion: 3 as const,
   name: "value-display",
   kind: "runtime" as const,
+  frontend: { main: "./frontend.tsx" },
+  publishIntervalMs: 5000,
   buttons: [builtinValueDisplayButton],
 };

@@ -53,5 +53,7 @@ export const brightnessAddon = {
   apiVersion: 3 as const,
   name: "brightness",
   kind: "runtime" as const,
+  frontend: { main: "./frontend.tsx" },
+  publishIntervalMs: 2000,
   buttons: [builtinBrightnessButton],
 };

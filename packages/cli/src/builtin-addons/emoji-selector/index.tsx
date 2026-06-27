@@ -222,6 +222,7 @@ export const emojiSelectorAddon = {
   apiVersion: 3 as const,
   name: "emoji-selector",
   kind: "runtime" as const,
+  frontend: { main: "./frontend.tsx" },
   buttons: [
     builtinEmojiCategoryButton,
     builtinEmojiEmojiButton,

@@ -105,5 +105,7 @@ export const systemStatusAddon = {
   apiVersion: 3 as const,
   name: "system-status",
   kind: "runtime" as const,
+  frontend: { main: "./frontend.tsx" },
+  publishIntervalMs: 1000,
   buttons: [builtinSystemStatusButton],
 };
