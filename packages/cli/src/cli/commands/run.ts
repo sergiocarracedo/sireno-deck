@@ -31,6 +31,7 @@ import {
 
 import { runRealMode } from "./real-mode";
 import { runEmulatorMode } from "./emulator-mode";
+import { collectBuiltinAddonRegistry } from "./addon-registry.ts";
 
 export interface SignalProvider {
   onSignal(handler: () => void): () => void;
@@ -349,6 +350,7 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     activeTheme: { name: process.env["SIRENO_THEME_NAME"] ?? "default" },
     runtime,
     decks: emulatorDecks.decks,
+    addonByType: collectBuiltinAddonRegistry().byType,
   });
 
   if (options.onChildren !== undefined) {
