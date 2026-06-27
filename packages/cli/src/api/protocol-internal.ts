@@ -31,6 +31,7 @@ export const deckConfigMessageSchema = baseServerMessage.extend({
 export const stateMessageSchema = baseServerMessage.extend({
   type: z.literal("state"),
   channels: z.record(z.string(), z.unknown()),
+  cadence: z.record(z.string(), z.number().int().positive()).optional(),
 });
 
 export const decksListMessageSchema = baseServerMessage.extend({
