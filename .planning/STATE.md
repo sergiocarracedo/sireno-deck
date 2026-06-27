@@ -1,7 +1,7 @@
 ---
 current_phase: 11-release
-phase_status: ready-to-discuss
-plans_total: 0
+phase_status: plans-ready
+plans_total: 2
 plans_complete: 0
 last_updated: 2026-06-27
 ---
@@ -10,11 +10,15 @@ last_updated: 2026-06-27
 
 ## Current phase
 
-**Phase 11: release** — ready to discuss. Phase 10 (daemon-polish) complete.
+**Phase 11: release** — context captured + 2 plans ready. Phase 10 (daemon-polish) complete.
 
 Phase 10 verification (`10-VERIFICATION.md`): passed. 464/464 tests pass. R10 prod, R18, R20 closed. R19 partial: loader shipped + tested, but CLI integration deferred (loader not yet called by `run.ts:preflight`).
 
-**Phase 11 scope:** README + per-addon docs, `pnpm package` script, v0.1.0 release.
+**Phase 11 plans ready:**
+- `11-01-PLAN.md` (Wave 1): root README + 10 per-addon READMEs
+- `11-02-PLAN.md` (Wave 2): CHANGELOG + ROADMAP/STATE marking v0.1.0 shipped
+
+**Next:** `/execute-phase 11` — write README + per-addon docs, then CHANGELOG + milestone-shipped ceremony.
 
 ## Plan progress
 
