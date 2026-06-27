@@ -1,0 +1,27 @@
+packages/cli/src/cli/http-server.ts
+  s_9fabccd2e25c5b::t_6e6a034a610e6b 1-158
+packages/cli/src/cli/http-server.test.ts
+  s_9fabccd2e25c5b::t_8e6a25718ec5eb 1-6,8-9,12-192
+  s_9fabccd2e25c5b::t_972aa7fedbf522 7,10-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "db0b616bcf2f64e639a7796e752e80acb1be42a6",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
