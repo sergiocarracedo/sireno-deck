@@ -104,5 +104,6 @@ None.
 | 003 | Correct button size (72x72px) + render real buttons | 2026-06-27 | 6ab6fe4 | `.planning/quick/003-correct-button-size/` |
 | 004 | Emulator button fixes (cross-button dbl-tap + crystal visuals) | 2026-06-27 | 3b221c5 | `.planning/quick/004-emulator-button-fixes/` |
 | 005 | Gesture thresholds (500ms) + transparent emulator buttons + clean frontend | 2026-06-27 | 8a5fccf | `.planning/quick/005-gesture-and-cleanup/` |
+| 006 | Frontend forces deck dimensions based on device model | 2026-06-27 | 28ec043 | `.planning/quick/006-deck-dimensions/` |
 
-Last activity: 2026-06-27 - Completed quick task 005: gesture thresholds + transparent emulator buttons + clean frontend
+Last activity: 2026-06-27 - Completed quick task 006: frontend forces its own deck dimensions based on device model
