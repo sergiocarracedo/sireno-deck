@@ -43,12 +43,17 @@ export const DeckFrame = ({
     }
   };
 
-  return (
-    <div className="relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 shadow-lg">
+  const iframeUrl = `${frontendUrl}${frontendUrl.includes("?") ? "&" : "?"}device=${device.id}`;
+
+return (
+    <div
+      className="relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 shadow-lg"
+      style={{ width: 72 * columns, height: 72 * Math.ceil(keyCount / columns) }}
+    >
       <iframe
-        src={frontendUrl}
-        className="w-full"
-        style={{ aspectRatio: `${columns} / ${Math.ceil(keyCount / columns)}` }}
+        src={iframeUrl}
+        className="block"
+        style={{ width: 72 * columns, height: 72 * Math.ceil(keyCount / columns) }}
         title="Deck Preview"
       />
       <div
@@ -56,10 +61,10 @@ export const DeckFrame = ({
         data-deck={deckId}
         data-key-count={keyCount}
         data-columns={columns}
-        className="absolute inset-0 grid gap-3 p-4"
+        className="absolute inset-0 grid"
         style={{
-          gridTemplateColumns: `repeat(${columns}, 1fr)`,
-          gridTemplateRows: `repeat(${Math.ceil(keyCount / columns)}, 1fr)`,
+          gridTemplateColumns: `repeat(${columns}, 72px)`,
+          gridTemplateRows: `repeat(${Math.ceil(keyCount / columns)}, 72px)`,
         }}
       >
         {Array.from({ length: keyCount }, (_, i) => {
