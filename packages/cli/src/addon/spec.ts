@@ -4,9 +4,19 @@ import { isAbsolute, resolve as resolvePath } from "node:path";
 export const isLocalAddonSpec = (spec: string): boolean => {
   if (spec.startsWith("./") || spec.startsWith("../") || spec.startsWith("/")) return true;
   if (spec.startsWith("~/") || spec.startsWith("~\\")) return true;
-  if (spec.startsWith("@") && !spec.startsWith("@/") && !spec.startsWith("@\\")) return false;
+  if (spec.startsWith("@") && !spec.startsWith("@/") && !spec.startsWith("@\\")) {
+    return false;
+  }
   if (/[\\/]/.test(spec)) return true;
   return false;
+};
+
+const NPM_PACKAGE_NAME_RE =
+  /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*(@[\^~]?[a-z0-9.*_\-]+)?$/;
+
+export const isNpmAddonSpec = (spec: string): boolean => {
+  if (isLocalAddonSpec(spec)) return false;
+  return NPM_PACKAGE_NAME_RE.test(spec);
 };
 
 export const expandHome = (spec: string, homeDir: string): string => {
