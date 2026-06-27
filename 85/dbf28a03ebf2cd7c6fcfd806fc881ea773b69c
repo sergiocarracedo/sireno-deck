@@ -1,0 +1,38 @@
+packages/cli/src/deck/methods.ts
+  s_9fabccd2e25c5b::t_3c0e36ae13380d 40
+  s_9fabccd2e25c5b::t_6d2abd7617affc 6,9
+  s_9fabccd2e25c5b::t_2a6186ed3f5e37 44-48
+  s_9fabccd2e25c5b::t_82c54fe40badd2 120
+  s_9fabccd2e25c5b::t_08ebdd5c17c4a6 100-101
+  s_9fabccd2e25c5b::t_72fb058a8760b2 78-81,84,93
+  s_9fabccd2e25c5b::t_0d382251e95a4d 24
+  s_9fabccd2e25c5b::t_ca8405eab7841b 77,82-83,85-92,94-99,105-107
+packages/cli/src/deck/index.ts
+  s_9fabccd2e25c5b::t_869d2cc7a73ef7 7,40,56-65
+packages/cli/src/deck/methods.test.ts
+  s_9fabccd2e25c5b::t_97cd4303b67d33 56,61,63-79
+packages/cli/src/cli/commands/run.ts
+  s_9fabccd2e25c5b::t_ca9b05e5277048 203
+  s_9fabccd2e25c5b::t_bc04f36933ffb8 228
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "85dbf28a03ebf2cd7c6fcfd806fc881ea773b69c",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
