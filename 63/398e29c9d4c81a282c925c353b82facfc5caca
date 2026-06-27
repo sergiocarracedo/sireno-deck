@@ -1,0 +1,26 @@
+.planning/STATE.md
+  s_9fabccd2e25c5b::t_259ad3050e165b 105,107
+.planning/quick/004-emulator-button-fixes/004-SUMMARY.md
+  s_9fabccd2e25c5b::t_dbde2d45a05173 1-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "63398e29c9d4c81a282c925c353b82facfc5caca",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
