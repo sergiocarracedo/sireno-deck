@@ -1,0 +1,38 @@
+packages/cli/src/cli/commands/start.test.ts
+  s_9fabccd2e25c5b::t_ebd91aa0af4e5b 202-213
+packages/cli/src/cli/commands/run.test.ts
+  s_9fabccd2e25c5b::t_132a0bf951087a 193-204
+packages/cli/src/cli/commands/addon-pollers.ts
+  s_9fabccd2e25c5b::t_1e8c053138ee4a 1-3,5-7,9,20-22,45-51,54-159,197,203-232,235,248,261-266,268-269,271,274-280
+  s_9fabccd2e25c5b::t_d877c32ef72696 36,42
+  s_9fabccd2e25c5b::t_48df997f63b2e4 267
+  s_9fabccd2e25c5b::t_90502c79a18674 23-24
+packages/cli/src/cli/commands/run.ts
+  s_9fabccd2e25c5b::t_b57da39f6063ec 379
+  s_9fabccd2e25c5b::t_9a41ba02675a60 378,380-386
+  s_9fabccd2e25c5b::t_37399db7f01a59 346,348,350-351
+  s_9fabccd2e25c5b::t_f32795ee6bc90d 347,349
+  s_9fabccd2e25c5b::t_508fddecc3950d 343-345,358
+  s_9fabccd2e25c5b::t_bffec52c303fbd 352-357
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "372e9f617992027c99eaf4465bb5fa7cc8400abd",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
