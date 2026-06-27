@@ -4,6 +4,7 @@ import { createPubSub } from "@/core/pub-sub.ts";
 import { createStore } from "@/core/store.ts";
 import { NotImplementedError } from "@/util/errors.ts";
 import { createLogger } from "@/util/logger.ts";
+import type { KeyMacroProvider } from "@/system/provider";
 
 import { createActionExecutor } from "@/action/executor.ts";
 import { getHostContext } from "./host-context.ts";
@@ -36,6 +37,7 @@ export {
 export interface CreateDeckRuntimeOptions {
   decks: ReadonlyArray<RuntimeDeck>;
   logger?: pino.Logger;
+  keyMacroProvider?: KeyMacroProvider;
 }
 
 export const createDeckRuntime = (
@@ -51,7 +53,16 @@ export const createDeckRuntime = (
   const store = createStore();
   const runtime = createRuntime({ decks: options.decks, pubSub, store, logger });
   const executor = createActionExecutor({ host: getHostContext() });
-  const methods = createMethods({ runtime, pubSub, store, executor, logger });
+  const methods = createMethods({
+    runtime,
+    pubSub,
+    store,
+    executor,
+    logger,
+    ...(options.keyMacroProvider !== undefined
+      ? { keyMacroProvider: options.keyMacroProvider }
+      : {}),
+  });
   return { runtime, methods, pubSub, store };
 };
 

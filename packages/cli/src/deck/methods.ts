@@ -3,8 +3,10 @@ import type pino from "pino";
 import type { PubSub } from "@/core/pub-sub.ts";
 import type { Store } from "@/core/store.ts";
 import { NotImplementedError } from "@/util/errors.ts";
+import { isValidKey, knownKeys, parseCombo, type ParsedCombo } from "@/system/key-macro/parser.ts";
 
 import type { ActionExecutor, ActionExecutorOptions } from "@/action/executor.ts";
+import type { KeyMacroProvider } from "@/system/provider";
 import type { Runtime, RuntimeDeck } from "./runtime.ts";
 
 export interface KeyMacroAction {
@@ -19,6 +21,7 @@ export interface MethodsContext {
   store: Store;
   executor: ActionExecutor;
   logger: pino.Logger;
+  keyMacroProvider?: KeyMacroProvider;
 }
 
 export interface Methods {
@@ -34,9 +37,15 @@ export interface Methods {
   invalidate(): void;
   publish<T>(channel: string, payload: T): void;
   subscribe<T>(channel: string, cb: (payload: T) => void): () => void;
+  setKeyMacroProvider(provider: KeyMacroProvider): void;
 }
 
 export const createMethods = (ctx: MethodsContext): Methods => {
+  let keyMacroProvider: KeyMacroProvider | undefined = ctx.keyMacroProvider;
+  const setKeyMacroProvider: Methods["setKeyMacroProvider"] = (provider) => {
+    keyMacroProvider = provider;
+  };
+
   const navigateToDeck: Methods["navigateToDeck"] = (args) => {
     ctx.runtime.navigateToDeck(args.id, { addToHistory: args.addToHistory });
   };
@@ -65,12 +74,37 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     return await ctx.executor.run(command, options);
   };
 
-  const keyMacro: Methods["keyMacro"] = async () => {
-    throw new NotImplementedError("methods.keyMacro (Phase 07 OS providers)");
+  const keyMacro: Methods["keyMacro"] = async (action) => {
+    if (keyMacroProvider === undefined) {
+      throw new NotImplementedError(
+        "methods.keyMacro requires a keyMacroProvider (set via methods.setKeyMacroProvider)",
+      );
+    }
+    if (action.kind === "text") {
+      await keyMacroProvider.sendKey(action.value);
+      return;
+    }
+    if (action.kind === "key") {
+      if (!isValidKey(action.value)) {
+        throw new NotImplementedError(
+          `methods.keyMacro: unknown key '${action.value}'. Valid keys: ${knownKeys.join(", ")}`,
+        );
+      }
+      await keyMacroProvider.sendKey(action.value);
+      return;
+    }
+    const parsed: ParsedCombo | null = parseCombo(action.value);
+    if (parsed === null) {
+      throw new NotImplementedError(`methods.keyMacro: invalid combo '${action.value}'`);
+    }
+    const combo = parsed.mods.length > 0 ? `${parsed.mods.join("+")}+${parsed.key}` : parsed.key;
+    await keyMacroProvider.sendKey(combo);
   };
 
   const pasteText: Methods["pasteText"] = async () => {
-    throw new NotImplementedError("methods.pasteText (Phase 07 OS providers)");
+    throw new NotImplementedError(
+      "methods.pasteText requires a clipboard provider (planned for Phase 13)",
+    );
   };
 
   return {
@@ -83,6 +117,7 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     invalidate,
     publish,
     subscribe,
+    setKeyMacroProvider,
   };
 };
 

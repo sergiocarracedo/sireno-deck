@@ -200,7 +200,7 @@ export const preflight = async (options: RunOptions): Promise<PreflightResult> =
           : [d.trigger.process_name]
         : undefined,
   }));
-  const { runtime } = createDeckRuntime({ decks, logger });
+  const { runtime, methods } = createDeckRuntime({ decks, logger });
 
   const { execa } = await import("execa");
   const executor = {
@@ -225,6 +225,7 @@ export const preflight = async (options: RunOptions): Promise<PreflightResult> =
   ]);
 
   runtime.setActiveAppProvider(activeApp);
+  methods.setKeyMacroProvider(keyMacro);
 
   return {
     device,
