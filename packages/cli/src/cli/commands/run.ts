@@ -1,4 +1,5 @@
-import { homedir } from "node:os";
+import { exec } from "node:child_process";
+import { homedir, platform } from "node:os";
 
 import type pino from "pino";
 
@@ -57,6 +58,7 @@ export interface RunOptions {
   readonly xdgConfigHome?: string;
   readonly homeDir?: string;
   readonly signals?: SignalProvider;
+  readonly onChildren?: (pids: ReadonlyArray<number>) => void;
   readonly logger: pino.Logger;
 }
 
@@ -74,6 +76,17 @@ export interface PreflightResult {
     readonly media: MediaProvider;
   };
 }
+
+const openBrowser = (url: string, logger: pino.Logger): void => {
+  const os = platform();
+  const cmd = os === "win32" ? "cmd" : os === "darwin" ? "open" : "xdg-open";
+  const args = os === "win32" ? ["/c", "start", "", url] : [url];
+  exec(cmd, args, (err) => {
+    if (err !== null) {
+      logger.debug({ err: err.message }, "browser auto-open unavailable, open the URL manually");
+    }
+  });
+};
 
 const resolveXdgConfigHome = (options: RunOptions): string =>
   options.xdgConfigHome ??
@@ -338,10 +351,18 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     decks: emulatorDecks.decks,
   });
 
+  if (options.onChildren !== undefined) {
+    options.onChildren([...handle.childPids]);
+  }
+
   logger.info(
-    { frontendUrl: handle.frontendUrl, wsUrl: handle.wsUrl },
-    "emulator mode ready — open the frontend URL in your browser",
+    { emulatorUrl: handle.emulatorUrl, frontendUrl: handle.frontendUrl, wsUrl: handle.wsUrl },
+    "emulator mode ready",
   );
+
+  process.stdout.write(`\n  Emulator:  ${handle.emulatorUrl}\n  Frontend:  ${handle.frontendUrl}\n\n`);
+
+  openBrowser(handle.emulatorUrl, logger);
 
   try {
     await done;

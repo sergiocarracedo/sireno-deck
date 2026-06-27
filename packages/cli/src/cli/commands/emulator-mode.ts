@@ -38,6 +38,7 @@ export interface EmulatorModeHandle {
   readonly emulatorUrl: string;
   readonly frontendUrl: string;
   readonly wsUrl: string;
+  readonly childPids: ReadonlyArray<number>;
   stop(): Promise<void>;
 }
 
@@ -305,6 +306,7 @@ export const runEmulatorMode = async (
     emulatorUrl,
     frontendUrl,
     wsUrl: bridge.url,
+    childPids: [frontendVite.pid ?? 0, emulatorVite.pid ?? 0].filter((p) => p > 0),
     async stop(): Promise<void> {
       try {
         await bridge.close();

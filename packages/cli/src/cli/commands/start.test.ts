@@ -32,6 +32,12 @@ vi.mock("@/util/device-config", () => ({
 vi.mock("@/cli/commands/real-mode", () => ({
   runRealMode: vi.fn(),
 }));
+vi.mock("../http-server.ts", () => ({
+  startHttpServer: vi.fn(async () => ({
+    port: 3939,
+    stop: vi.fn(async () => undefined),
+  })),
+}));
 vi.mock("@/util/daemon", () => ({
   writePid: vi.fn(),
   removePidFile: vi.fn(),
@@ -41,6 +47,13 @@ vi.mock("@/util/daemon", () => ({
   checkStatus: vi.fn(),
   isRunning: vi.fn(),
   resolveDaemonPaths: vi.fn(),
+  generateToken: vi.fn(() => "test-token"),
+  readToken: vi.fn(() => null),
+  writeToken: vi.fn(),
+  removeTokenFile: vi.fn(),
+  readChildren: vi.fn(() => null),
+  writeChildren: vi.fn(),
+  removeChildrenFile: vi.fn(),
 }));
 vi.mock("@/deck", () => ({
   createDeckRuntime: vi.fn(),
