@@ -1,0 +1,57 @@
+packages/cli/src/themes/default/ButtonFrame.tsx
+  s_8ca911650149ee::t_8c4f7120229d31 20
+  s_9fabccd2e25c5b::t_77fa7da10f8838 18-19,21,23-24
+packages/cli/src/themes/default/components/Label.tsx
+  s_8ca911650149ee::t_6359e8de654035 12-27
+  s_8ca911650149ee::t_8504a34e3cc7ee 3-4
+packages/cli/src/themes/default/components/Chip.tsx
+  s_8ca911650149ee::t_5d176c48cbb71b 11,24,31
+packages/cli/src/themes/default/surfaces/LabelValueList.tsx
+  s_8ca911650149ee::t_e3ea7db98a437e 1-2,13-18,22,26,28-31,33
+packages/cli/src/themes/default/surfaces/IconLabel.tsx
+  s_8ca911650149ee::t_0a6ee78f4128bf 11
+packages/cli/src/themes/default/components/Icon.tsx
+  s_8ca911650149ee::t_b1866598919f5c 29,32,34
+.planning/phases/13-ui-alignment/13-01-SUMMARY.md
+  s_8ca911650149ee::t_9a6e19ff62f5cc 1-22
+packages/cli/src/themes/default/surfaces/SplitAction.tsx
+  s_8ca911650149ee::t_19b42ae5143fca 15
+packages/cli/src/themes/default/surfaces/Bars.tsx
+  s_8ca911650149ee::t_5b42fcf3a9b762 19-20,24,27,31,33,35,37
+packages/cli/src/themes/default/components/TapIndicator.tsx
+  s_8ca911650149ee::t_05947d402387d4 1-2,4,6-7,10-43
+packages/cli/src/themes/light/theme.css
+  s_8ca911650149ee::t_a26ec690aeadd1 4
+  s_8ca911650149ee::t_549813c4f75fa6 25
+packages/cli/emulator/.sireno-deck-2/theme.css
+  s_8ca911650149ee::t_a0bb740f256dc9 12-13,49-69
+packages/cli/src/themes/default/theme.css
+  s_8ca911650149ee::t_cca6c475d5224b 27
+packages/cli/src/themes/default/components/Text.tsx
+  s_8ca911650149ee::t_26efccfd4b1016 28,31-33
+  s_8ca911650149ee::t_713bc6cb6c58c3 209
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "c2e2c403e82371df0767cd1e5e18f31124ea6c36",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
