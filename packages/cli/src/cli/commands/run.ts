@@ -282,6 +282,8 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
     frontendUrl = frontendVite.url;
   }
 
+  logger.info({ frontendUrl }, "real mode: frontend URL");
+
   let resolveDone: () => void = () => undefined;
   const done = new Promise<void>((resolve) => {
     resolveDone = resolve;
