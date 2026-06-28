@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 import type { AddonButtonTypeDefinition } from "@/addon/api.ts";
-import { Bars } from "@/themes/default/surfaces/Bars.tsx";
-import { LabelValueList } from "@/themes/default/surfaces/LabelValueList.tsx";
+import { Bars } from "@/ui/index.ts";
+import { LabelValueList } from "@/ui/index.ts";
 
 import { getCanonicalSystemMetrics } from "../domain/live-metrics.ts";
 import {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import type { AddonButtonTypeDefinition } from "@/addon/api.ts";
 import { executeCommand } from "@/action/executor.ts";
-import { LabelValueList } from "@/themes/default/surfaces/LabelValueList.tsx";
+import { LabelValueList } from "@/ui/index.ts";
 
 import { formatCommandOutput } from "../domain/format-command-output.ts";
 import {

@@ -1,5 +1,5 @@
 import type { AddonButtonTypeDefinition } from "@/addon/api.ts";
-import { Text } from "@/themes/default/components/Text.tsx";
+import { Text } from "@/ui/index.ts";
 
 import { buildMacOSCommand, formatCommand, isMacOS } from "../domain/macos.ts";
 import { BrightnessButtonSchema } from "../schemas.ts";

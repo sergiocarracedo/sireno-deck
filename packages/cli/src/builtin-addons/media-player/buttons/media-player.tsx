@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import type { AddonButtonTypeDefinition } from "@/addon/api.ts";
-import { SplitAction } from "@/themes/default/surfaces/SplitAction.tsx";
+import { SplitActionSurface as SplitAction } from "@/ui/index.ts";
 
 import {
   MediaMuteButtonSchema,

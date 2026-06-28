@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import type { AddonButtonTypeDefinition } from "@/addon/api.ts";
-import { Text } from "@/themes/default/components/Text.tsx";
+import { Text } from "@/ui/index.ts";
 
 import { formatDigitalDateTimeLabel } from "../format.ts";
 import {

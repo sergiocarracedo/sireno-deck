@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 import type { AddonButtonTypeDefinition } from "@/addon/api.ts";
-import { LabelValueList } from "@/themes/default/surfaces/LabelValueList.tsx";
-import { Text } from "@/themes/default/components/Text.tsx";
+import { LabelValueList } from "@/ui/index.ts";
+import { Text } from "@/ui/index.ts";
 
 import { describeWeatherCode } from "../domain/codes.ts";
 import { fetchWeather } from "../domain/fetch.ts";
