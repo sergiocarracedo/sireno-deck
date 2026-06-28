@@ -1,0 +1,21 @@
+.planning/phases/15-theme-base-ui/15-CONTEXT.md
+  s_8ca911650149ee::t_49272c90641636 1-131
+.planning/phases/15-theme-base-ui/15-DISCUSSION-LOG.md
+  s_8ca911650149ee::t_1475180eb8c228 1-79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "50d99ccaace2ae49c2d96824b388568b7ddcf407",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
