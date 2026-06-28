@@ -1,4 +1,4 @@
-import { Text } from "../components/Text.tsx";
+import { Text, type TextTone } from "../components/Text.tsx";
 
 export interface LabelValueRow {
   label: string;
@@ -10,7 +10,7 @@ export interface LabelValueListProps {
   rows: LabelValueRow[];
 }
 
-const VALUE_TONE: Record<NonNullable<LabelValueRow["tone"]>, string> = {
+const VALUE_TONE: Record<NonNullable<LabelValueRow["tone"]>, TextTone> = {
   fg: "fg",
   muted: "muted",
   accent: "accent",

@@ -55,7 +55,7 @@ const RICH_TONE_TAGS = ["accent", "danger", "fg", "primary", "success"] as const
 const RICH_SIZE_TAGS = ["xs", "sm", "md", "lg", "xl", "2xl", "3xl", "5xl"] as const;
 type RichToneTag = (typeof RICH_TONE_TAGS)[number];
 type RichSizeTag = (typeof RICH_SIZE_TAGS)[number];
-type RichMarkupTag = "blink" | "highlight" | RichToneTag | RichSizeTag;
+type RichMarkupTag = "blink" | "highlight" | "dim" | RichToneTag | RichSizeTag;
 
 interface RichTextNode {
   type: "text" | "line-break" | "tag";
