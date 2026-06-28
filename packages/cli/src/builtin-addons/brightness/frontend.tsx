@@ -1,3 +1,4 @@
+import { Text } from "@sireno-deck-2/cli";
 import { useAddonChannel } from "sireno-deck-2/react";
 
 interface ComponentProps {
@@ -15,24 +16,24 @@ const Component = ({ config }: ComponentProps) => {
   const { data } = useAddonChannel<BrightnessState>("brightness:current");
   if (data === undefined) {
     return (
-      <span className="flex h-full w-full items-center justify-center font-mono text-xs text-muted">
+      <Text size="xs" tone="muted" typography="mono" className="flex h-full w-full items-center justify-center">
         —
-      </span>
+      </Text>
     );
   }
   const pct = Math.max(0, Math.min(100, (data.value / (data.max || 100)) * 100));
   return (
     <span className="flex h-full w-full flex-col items-stretch justify-center gap-1 p-2">
-      <span className="flex items-baseline justify-between font-mono text-[10px] text-muted">
-        <span>Brightness</span>
-        <span className="text-fg">{pct.toFixed(0)}%</span>
+      <span className="flex items-baseline justify-between">
+        <Text size="xs" tone="muted" fit="ellipsis">Brightness</Text>
+        <Text size="xs" tone="fg">{pct.toFixed(0)}%</Text>
       </span>
-      <span className="block h-2 w-full overflow-hidden rounded bg-bar">
+      <span className="block h-1.5 w-full overflow-hidden rounded bg-bar">
         <span className="block h-full bg-accent" style={{ width: `${pct}%` }} />
       </span>
-      <span className="text-center text-[9px] uppercase tracking-wider text-muted">
+      <Text size="xs" tone="muted" className="text-center" typography="aux">
         Tap: {action ?? "up"}
-      </span>
+      </Text>
     </span>
   );
 };

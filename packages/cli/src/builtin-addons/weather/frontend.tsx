@@ -1,3 +1,4 @@
+import { Text } from "@sireno-deck-2/cli";
 import { useAddonChannel } from "sireno-deck-2/react";
 
 interface ComponentProps {
@@ -18,27 +19,29 @@ const Component = ({ config }: ComponentProps) => {
   const { data } = useAddonChannel<WeatherSnapshot>("weather:current");
   if (data === undefined || data.available === false) {
     return (
-      <span className="flex h-full w-full items-center justify-center font-mono text-xs text-muted">
+      <Text size="xs" tone="muted" typography="mono" className="flex h-full w-full items-center justify-center">
         {name !== undefined ? `${name}: configure weather` : "Configure weather"}
-      </span>
+      </Text>
     );
   }
   const unitTemp = data.units === "imperial" ? "°F" : "°C";
   const unitWind = data.units === "imperial" ? "mph" : "km/h";
   return (
-    <span className="flex h-full w-full flex-col items-center justify-center gap-0.5 font-mono">
+    <span className="flex h-full w-full flex-col items-center justify-center gap-0.5">
       {name !== undefined && (
-        <span className="text-[10px] uppercase tracking-wider text-muted">{name}</span>
+        <Text size="xs" tone="muted" typography="aux" fit="ellipsis">
+          {name}
+        </Text>
       )}
-      <span className="text-2xl font-semibold leading-none text-fg">
+      <Text size="2xl" tone="fg" className="font-semibold leading-none">
         {data.temperature?.toFixed(0)}
         {unitTemp}
-      </span>
-      <span className="text-[10px] text-muted">{data.description ?? "—"}</span>
+      </Text>
+      <Text size="xs" tone="muted">{data.description ?? "—"}</Text>
       {data.windSpeed !== undefined && (
-        <span className="text-[10px] text-muted">
+        <Text size="xs" tone="muted">
           {data.windSpeed.toFixed(0)} {unitWind}
-        </span>
+        </Text>
       )}
     </span>
   );

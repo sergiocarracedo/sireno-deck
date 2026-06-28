@@ -1,3 +1,4 @@
+import { Text } from "@sireno-deck-2/cli";
 import { useAddonChannel } from "sireno-deck-2/react";
 
 interface ComponentProps {
@@ -30,9 +31,9 @@ const Component = ({ config }: ComponentProps) => {
               : null;
           return (
             <span key={m.id} className="flex flex-col gap-0.5">
-              <span className="flex items-baseline justify-between text-[9px] text-muted">
-                <span>{m.label}</span>
-                <span className="text-fg">{m.value ?? "—"}</span>
+              <span className="flex items-baseline justify-between">
+                <Text size="xs" tone="muted">{m.label}</Text>
+                <Text size="xs" tone="fg">{m.value ?? "—"}</Text>
               </span>
               {pct !== null && (
                 <span className="block h-1 w-full overflow-hidden rounded bg-bar">
@@ -49,11 +50,11 @@ const Component = ({ config }: ComponentProps) => {
     );
   }
   return (
-    <span className="flex h-full w-full flex-col items-stretch justify-center gap-0.5 p-1.5 font-mono text-[10px]">
+    <span className="flex h-full w-full flex-col items-stretch justify-center gap-0.5 p-1.5">
       {metrics.slice(0, 4).map((m) => (
         <span key={m.id} className="flex justify-between gap-2">
-          <span className="text-muted">{m.label}</span>
-          <span className="text-fg">{m.value ?? "—"}</span>
+          <Text size="xs" tone="muted">{m.label}</Text>
+          <Text size="xs" tone="fg">{m.value ?? "—"}</Text>
         </span>
       ))}
     </span>

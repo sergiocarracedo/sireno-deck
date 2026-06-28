@@ -1,3 +1,4 @@
+import { Text } from "@sireno-deck-2/cli";
 import { useAddonChannel } from "sireno-deck-2/react";
 
 interface ValueEntry {
@@ -15,20 +16,20 @@ const Component = () => {
   const values = data?.values ?? [];
   if (values.length === 0) {
     return (
-      <span className="flex h-full w-full items-center justify-center font-mono text-xs text-muted">
+      <Text size="xs" tone="muted" typography="mono" className="flex h-full w-full items-center justify-center">
         Loading…
-      </span>
+      </Text>
     );
   }
   return (
-    <span className="flex h-full w-full flex-col items-stretch justify-center gap-0.5 p-1.5 font-mono text-[10px]">
+    <span className="flex h-full w-full flex-col items-stretch justify-center gap-0.5 p-1.5">
       {values.slice(0, 4).map((v, i) => (
         <span key={`${v.label}-${i}`} className="flex justify-between gap-2">
-          <span className="text-muted">{v.label}</span>
-          <span className="text-fg">
+          <Text size="xs" tone="muted" fit="ellipsis">{v.label}</Text>
+          <Text size="xs" tone="fg" fit="ellipsis">
             {v.value}
             {v.units !== undefined && v.units.length > 0 ? v.units : ""}
-          </span>
+          </Text>
         </span>
       ))}
     </span>

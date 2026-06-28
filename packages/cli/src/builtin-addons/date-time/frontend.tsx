@@ -111,36 +111,38 @@ const CoreAnalogClock = () => (
       const mAngle = (m + s / 60) * 6;
       const sAngle = s * 6;
       return (
-        <svg viewBox="0 0 100 100" className="h-full w-full">
-          <circle cx="50" cy="50" r="46" fill="none" stroke="var(--color-fg)" strokeWidth="2" />
-          <line
-            x1="50"
-            y1="50"
-            x2={50 + 28 * Math.sin((hAngle * Math.PI) / 180)}
-            y2={50 - 28 * Math.cos((hAngle * Math.PI) / 180)}
-            stroke="var(--color-fg)"
-            strokeWidth="4"
-            strokeLinecap="round"
-          />
-          <line
-            x1="50"
-            y1="50"
-            x2={50 + 38 * Math.sin((mAngle * Math.PI) / 180)}
-            y2={50 - 38 * Math.cos((mAngle * Math.PI) / 180)}
-            stroke="var(--color-fg)"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-          <line
-            x1="50"
-            y1="50"
-            x2={50 + 42 * Math.sin((sAngle * Math.PI) / 180)}
-            y2={50 - 42 * Math.cos((sAngle * Math.PI) / 180)}
-            stroke="var(--color-accent)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-        </svg>
+        <span data-sireno-ui-text="true" className="block h-full w-full">
+          <svg viewBox="0 0 100 100" className="h-full w-full">
+            <circle cx="50" cy="50" r="46" fill="none" stroke="var(--color-fg)" strokeWidth="2" />
+            <line
+              x1="50"
+              y1="50"
+              x2={50 + 28 * Math.sin((hAngle * Math.PI) / 180)}
+              y2={50 - 28 * Math.cos((hAngle * Math.PI) / 180)}
+              stroke="var(--color-fg)"
+              strokeWidth="4"
+              strokeLinecap="round"
+            />
+            <line
+              x1="50"
+              y1="50"
+              x2={50 + 38 * Math.sin((mAngle * Math.PI) / 180)}
+              y2={50 - 38 * Math.cos((mAngle * Math.PI) / 180)}
+              stroke="var(--color-fg)"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+            <line
+              x1="50"
+              y1="50"
+              x2={50 + 42 * Math.sin((sAngle * Math.PI) / 180)}
+              y2={50 - 42 * Math.cos((sAngle * Math.PI) / 180)}
+              stroke="var(--color-accent)"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        </span>
       );
     }}
   </ChannelNow>
@@ -235,9 +237,9 @@ const CoreLockedTimeTile = ({ config }: ComponentProps) => {
           "minute-ones": mm[1] ?? "",
         };
         return (
-          <span className="flex h-full w-full items-center justify-center font-mono text-2xl text-fg">
+          <Text size="2xl" typography="mono" tone="fg" className="flex h-full w-full items-center justify-center">
             {map[slot ?? "hour"] ?? ""}
-          </span>
+          </Text>
         );
       }}
     </ChannelNow>
