@@ -12,20 +12,6 @@
   --font-aux: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: light) {
-  @theme {
-    --color-bg: #fafafa;
-    --color-fg: #0a0a0a;
-    --color-accent: #0284c7;
-    --color-ring: #0a0a0a;
-    --color-tap: #0284c7;
-    --color-muted: #525252;
-    --color-bar: #e5e5e5;
-    --color-bar-accent: #0284c7;
-    --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  }
-}
-
 @keyframes tap-pulse {
   0%,
   100% {
