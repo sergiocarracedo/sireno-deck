@@ -30,13 +30,14 @@ import {
 } from "@/system/provider";
 
 import { runRealMode } from "./real-mode";
-import { runEmulatorMode, spawnFrontendVite, resolveFrontendCwd } from "./emulator-mode";
+import { runEmulatorMode, spawnFrontendVite, resolveFrontendCwd, buildDeckConfigMessage } from "./emulator-mode";
 import { collectBuiltinAddonRegistry, discoverAddonPollers } from "./addon-registry.ts";
 import { createActionExecutor } from "@/action/executor.ts";
 import { getHostContext } from "@/deck/host-context.ts";
 import { createBrightnessProvider } from "@/system/brightness";
 import { createClipboardProvider, type ClipboardProvider } from "@/system/clipboard";
 import { StatePublisher } from "@/render/state-publisher.ts";
+import { startWsBridge, type WsBridge } from "@/render/ws-bridge.ts";
 
 export interface SignalProvider {
   onSignal(handler: () => void): () => void;
@@ -270,6 +271,23 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
     process.env["SIRENO_ADDONS"] = JSON.stringify(addonSpecs);
   }
 
+  const addonByType = new Map<string, { name: string; frontendEntry: string | null }>();
+  for (const s of registry.scanned) {
+    for (const t of s.types) {
+      addonByType.set(t, { name: s.name, frontendEntry: s.frontendEntry });
+    }
+  }
+
+  const wsPort = 52937;
+  const bridge = await startWsBridge({ port: wsPort });
+
+  bridge.onConnection((socket) => {
+    const mainDeck = runtime.decks[0];
+    if (mainDeck) {
+      socket.send(JSON.stringify(buildDeckConfigMessage(mainDeck, addonByType)));
+    }
+  });
+
   let frontendVite: Awaited<ReturnType<typeof spawnFrontendVite>> | undefined;
   if (options.frontendUrl === undefined) {
     frontendVite = await spawnFrontendVite({
@@ -277,6 +295,7 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
       cwd: resolveFrontendCwd(),
       pnpmCommand: "pnpm",
       readyTimeoutMs: 30_000,
+      wsUrl: `ws://127.0.0.1:${wsPort}`,
       logger,
     });
     frontendUrl = frontendVite.url;
@@ -307,13 +326,14 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
   } finally {
     unregister();
     frontendVite?.process.kill("SIGTERM");
-    await handle.stop();
-    await runtime.stopActiveAppPolling();
     await Promise.allSettled([
+      handle.stop(),
+      runtime.stopActiveAppPolling(),
       providers.activeApp.stop(),
       providers.session.stop(),
       providers.keyMacro.stop(),
       providers.media.stop(),
+      bridge.close(),
     ]);
     logger.info("shutdown complete");
   }
