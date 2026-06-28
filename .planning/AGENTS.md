@@ -96,9 +96,7 @@ When working on a phase:
 
 ## Current Phase
 
-**Milestone:** v0.1.0 ✅ shipped (2026-06-27)
-**Status:** complete — all 11 phases done, 464 tests passing, docs released
-**Next:** Phase 12 — addon-frontend-registry (real button surfaces in emulator)
-**Last updated:** 2026-06-27
-
-**Adjacent:** Phase 12 is the next planned work. The current emulator/frontend shows `core:type` as the button label; phase 12 will ship a frontend addon registry so each addon can render its actual surface (clock face, weather widget, system bars).
+**Milestone:** v0.2.0
+**Phase:** 15 — theme-base-ui (shared base UI layer)
+**Status:** planning
+**Last updated:** 2026-06-28
