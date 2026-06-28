@@ -1,0 +1,25 @@
+.planning/phases/15-theme-base-ui/15-02-PLAN.md
+  s_8ca911650149ee::t_bb21c56712602f 1-314
+.planning/phases/15-theme-base-ui/15-RESEARCH.md
+  s_8ca911650149ee::t_03893c0a9969c5 1-88
+.planning/phases/15-theme-base-ui/15-01-PLAN.md
+  s_8ca911650149ee::t_99376d25bcab1b 1-307
+.planning/phases/15-theme-base-ui/15-03-PLAN.md
+  s_8ca911650149ee::t_8d5cda89877387 1-182
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "885faadceb83b1be3974f11bbede789e37a36117",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
