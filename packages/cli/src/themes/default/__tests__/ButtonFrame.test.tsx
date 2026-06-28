@@ -37,7 +37,7 @@ describe("themes/default/ButtonFrame", () => {
     const button = root.querySelector("button");
     expect(button).not.toBeNull();
     expect(button?.getAttribute("data-button-type")).toBe("test:btn");
-    expect(button?.className).toContain("bg-bar");
+    expect(button?.className).toContain("bg-bg");
     expect(button?.className).toContain("text-fg");
     expect(button?.textContent).toContain("Hello");
   });

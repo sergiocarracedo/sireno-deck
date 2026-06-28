@@ -45,10 +45,10 @@ export const ButtonFrame = ({
     onDoubleClick={onDoubleClick}
     onContextMenu={onContextMenu}
     className={[
-      "group relative isolate aspect-square w-full overflow-hidden rounded-lg",
-      "bg-bar text-fg ring-1 ring-fg/10",
-      "hover:ring-fg/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-      "transition-shadow duration-150",
+      "group relative isolate aspect-square w-full overflow-hidden rounded-2xl",
+      "bg-bg text-fg border-2 border-fg/10",
+      "hover:border-fg/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+      "transition-colors duration-150",
       "select-none",
       isTapping ? "sireno-tap" : "",
       isHolding ? "sireno-holding" : "",
@@ -56,7 +56,7 @@ export const ButtonFrame = ({
       .filter(Boolean)
       .join(" ")}
   >
-    <span className="absolute inset-0 flex items-center justify-center p-2">{children}</span>
+    <span className="flex h-full w-full items-center justify-center p-1 overflow-hidden">{children}</span>
     {isHolding ? (
       <svg
         className="pointer-events-none absolute inset-1 z-10"
