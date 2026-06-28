@@ -1,5 +1,5 @@
 ---
-current_phase: 14-media-player-backend
+current_phase: 15-theme-base-ui
 phase_status: not-started
 plans_total: 0
 plans_complete: 0
@@ -131,6 +131,7 @@ None.
 ## Roadmap Evolution
 
 - Phase 14 added: Media player backend — wire poller to OS media provider (playerctl), publish real state, execute transport actions via backend
+- Phase 15 added: Theme base UI — migrate legacy `src/ui/` as shareable base layer so themes don't need to reimplement components/surfaces
 
 ## Deferred items
 
