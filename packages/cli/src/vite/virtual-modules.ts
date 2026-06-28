@@ -162,7 +162,9 @@ return {
       if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
       const filePath = join(dir, "theme.css");
       const themeDir = theme ? dirname(theme.frontendPath) : null;
-      const sourceDirective = themeDir !== null ? `@source "${themeDir}/**/*.{ts,tsx}";\n` : "";
+      const uiDir = themeDir ? join(themeDir, "..", "..", "ui") : null;
+      const sourceDirs = [themeDir, uiDir].filter(Boolean) as string[];
+      const sourceDirective = sourceDirs.map(d => `@source "${d}/**/*.{ts,tsx}";`).join("\n") + "\n";
       writeFileSync(filePath, sourceDirective + themeCss, "utf8");
     },
     config: (config) => {
