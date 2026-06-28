@@ -1,16 +1,16 @@
 ---
 current_phase: 13-ui-alignment
-phase_status: ready-to-discuss
-plans_total: 0
-plans_complete: 0
-last_updated: 2026-06-27
+phase_status: complete
+plans_total: 3
+plans_complete: 3
+last_updated: 2026-06-28
 ---
 
 # Project State
 
 ## Milestone shipped: v0.1.0
 
-All 11 phases complete. 464/464 tests pass. Documentation released.
+All 13 phases complete. 484 tests passing. Documentation released.
 
 ## Phase 12 (addon-frontend-registry) — complete ✓
 
@@ -51,6 +51,16 @@ Captured 2026-06-27 after quick task 010 ("show button type as label fallback").
 6. Components subscribe to state channels via `useAddonChannel` / `ChannelRegistry`.
 
 **Depends on:** 08 (themes — needs surface primitives), 09 (builtin addons — needs addon types).
+
+## Phase 13 (ui-alignment) — complete ✓
+
+**3/3 plans executed. 484 tests passing (3 pre-existing ButtonFrame test failures unrelated to this phase).**
+
+Legacy visual alignment: theme CSS tokens match v1 exact hex values (#2e3540 bg, #eef2f7 fg, #7dd3fc accent, #53738B frame). IBM Plex Sans/Mono replace Inter/JetBrains Mono via @font-face. All 5 components (Text, Icon, Label, Chip, TapIndicator) and 4 surfaces (IconLabel, Bars, LabelValueList, SplitAction) re-implemented with data-sireno-ui-* attributes. All 6 built-in addon frontends migrated from raw `<span>` to `<Text>` component.
+
+- **13-01:** Theme CSS tokens + fonts + @font-face (`7b592b3`)
+- **13-02:** Components + surfaces (`c2e2c40`)
+- **13-03:** Addon frontend migration (`71b3af4`, `1a0bbd3`)
 
 ## Completed phases
 
