@@ -18,6 +18,17 @@
   --font-aux: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
 }
 
+:root {
+  --sireno-color-background: #eef2f7;
+  --sireno-color-foreground: #2e3540;
+  --sireno-color-foreground-contrast: #000000;
+  --sireno-color-primary: #7dd3fc;
+  --sireno-color-accent: #C3F5FF;
+  --sireno-color-success: #34d399;
+  --sireno-color-danger: #FFB4AB;
+  --sireno-color-frame: #53738B;
+}
+
 @media (prefers-color-scheme: dark) {
   @theme {
     --color-bg: #2e3540;
@@ -38,6 +49,38 @@
     --font-main: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
     --font-aux: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
   }
+
+  :root {
+    --sireno-color-background: #2e3540;
+    --sireno-color-foreground: #eef2f7;
+    --sireno-color-foreground-contrast: #000000;
+    --sireno-color-primary: #7dd3fc;
+    --sireno-color-accent: #C3F5FF;
+    --sireno-color-success: #34d399;
+    --sireno-color-danger: #FFB4AB;
+    --sireno-color-frame: #53738B;
+  }
+}
+
+.sireno-default-chip[data-sireno-ui-chip='true'] {
+  background: color-mix(
+    in oklab,
+    var(--sireno-color-background) 78%,
+    transparent
+  );
+  box-shadow: inset 0 1px 0 color-mix(in oklab, white 18%, transparent);
+}
+
+.sireno-default-icon[data-sireno-ui-icon='true'] {
+  filter: drop-shadow(
+    0 1px 2px
+      color-mix(in oklab, var(--sireno-color-background) 68%, transparent)
+  );
+}
+
+.sireno-default-text[data-sireno-ui-text='true'] {
+  text-shadow: 0 1px 0
+    color-mix(in oklab, var(--sireno-color-background) 55%, transparent);
 }
 
 @keyframes tap-pulse {
