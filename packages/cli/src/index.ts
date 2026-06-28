@@ -22,6 +22,10 @@ export {
 export { Deck, type DeckButton, type Deck as DeckType, type DeckProps } from "./components/Deck.tsx";
 export { ButtonFrame, type ButtonFrameProps } from "./components/ButtonFrame.tsx";
 export { Text } from "./themes/default/components/Text.tsx";
+export { Chip } from "./themes/default/components/Chip.tsx";
+export { Label } from "./themes/default/components/Label.tsx";
+export { TapIndicator } from "./themes/default/components/TapIndicator.tsx";
+export { Icon } from "./themes/default/components/Icon.tsx";
 export { ThemeProvider, useTheme, ThemeContext, type ThemeContextValue } from "./themes/use-resolved-theme.tsx";
 export { ChannelRegistry } from "./react/registry.ts";
 

@@ -9,6 +9,7 @@ import { coreToggleButton } from "./toggle.ts";
 export const coreButtonsAddon: SirenoAddon = {
   apiVersion: 3,
   name: "core-buttons",
+  frontend: { main: "./frontend.tsx" },
   buttons: [
     coreActionButton,
     coreChangeDeckButton,

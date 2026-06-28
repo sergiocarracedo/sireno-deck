@@ -1,4 +1,4 @@
-import { Text } from "@sireno-deck-2/cli";
+import { Text, Chip } from "@sireno-deck-2/cli";
 import { useAddonChannel } from "sireno-deck-2/react";
 
 interface ComponentProps {
@@ -21,10 +21,20 @@ const Component = ({ config }: ComponentProps) => {
   const { variant } = (config as { variant?: "text" | "bars" }) ?? {};
   const { data } = useAddonChannel<MetricsState>("system-status:metrics");
   const metrics = data?.metrics ?? [];
+  const hasData = metrics.length > 0;
+
+  if (!hasData) {
+    return (
+      <span className="flex h-full w-full items-center justify-center">
+        <Text size="xs" tone="muted">...</Text>
+      </span>
+    );
+  }
+
   if (variant === "bars") {
     return (
       <span className="flex h-full w-full flex-col justify-center gap-1 p-1.5">
-        {metrics.slice(0, 4).map((m) => {
+        {metrics.slice(0, 3).map((m) => {
           const pct =
             typeof m.value === "number" && m.maxValue !== undefined && m.maxValue > 0
               ? Math.max(0, Math.min(100, (m.value / m.maxValue) * 100))
@@ -49,11 +59,12 @@ const Component = ({ config }: ComponentProps) => {
       </span>
     );
   }
+
   return (
     <span className="flex h-full w-full flex-col items-stretch justify-center gap-0.5 p-1.5">
       {metrics.slice(0, 4).map((m) => (
-        <span key={m.id} className="flex justify-between gap-2">
-          <Text size="xs" tone="muted">{m.label}</Text>
+        <span key={m.id} className="flex items-center justify-between gap-2">
+          <Chip tone="muted" size="sm">{m.label}</Chip>
           <Text size="xs" tone="fg">{m.value ?? "—"}</Text>
         </span>
       ))}

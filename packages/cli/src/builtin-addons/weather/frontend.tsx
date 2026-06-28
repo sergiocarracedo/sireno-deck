@@ -1,4 +1,4 @@
-import { Text } from "@sireno-deck-2/cli";
+import { Text, Chip } from "@sireno-deck-2/cli";
 import { useAddonChannel } from "sireno-deck-2/react";
 
 interface ComponentProps {
@@ -12,15 +12,32 @@ interface WeatherSnapshot {
   readonly windSpeed?: number;
   readonly description?: string;
   readonly units: "metric" | "imperial";
+  readonly wmoCode?: number;
 }
+
+const WMO_ICONS: Record<number, string> = {
+  0: "☀", 1: "🌤", 2: "⛅", 3: "☁",
+  45: "🌫", 48: "🌫",
+  51: "🌦", 53: "🌦", 55: "🌧", 56: "🌧", 57: "🌧",
+  61: "🌧", 63: "🌧", 65: "🌧", 66: "🌧", 67: "🌧",
+  71: "🌨", 73: "🌨", 75: "🌨", 77: "🌨",
+  80: "🌦", 81: "🌦", 82: "🌧",
+  85: "🌨", 86: "🌨",
+  95: "⛈", 96: "⛈", 99: "⛈",
+};
+
+const iconFor = (code?: number): string => {
+  if (code === undefined) return "🌍";
+  return WMO_ICONS[code] ?? "🌍";
+};
 
 const Component = ({ config }: ComponentProps) => {
   const { name } = (config as { location?: { name?: string } })?.location ?? {};
   const { data } = useAddonChannel<WeatherSnapshot>("weather:current");
-  if (data === undefined || data.available === false) {
+  if (!data?.available) {
     return (
-      <Text size="xs" tone="muted" typography="mono" className="flex h-full w-full items-center justify-center">
-        {name !== undefined ? `${name}: configure weather` : "Configure weather"}
+      <Text size="xs" tone="muted" className="flex h-full w-full items-center justify-center">
+        {name ?? "Weather"}
       </Text>
     );
   }
@@ -28,20 +45,18 @@ const Component = ({ config }: ComponentProps) => {
   const unitWind = data.units === "imperial" ? "mph" : "km/h";
   return (
     <span className="flex h-full w-full flex-col items-center justify-center gap-0.5">
-      {name !== undefined && (
-        <Text size="xs" tone="muted" typography="aux" fit="ellipsis">
-          {name}
-        </Text>
-      )}
-      <Text size="2xl" tone="fg" className="font-semibold leading-none">
-        {data.temperature?.toFixed(0)}
-        {unitTemp}
+      <Text size="3xl" tone="primary">{iconFor(data.wmoCode)}</Text>
+      <Text size="xl" tone="fg" className="font-semibold leading-none">
+        {data.temperature?.toFixed(0)}{unitTemp}
       </Text>
-      <Text size="xs" tone="muted">{data.description ?? "—"}</Text>
+      {data.description && (
+        <Text size="xs" tone="muted">{data.description}</Text>
+      )}
       {data.windSpeed !== undefined && (
-        <Text size="xs" tone="muted">
-          {data.windSpeed.toFixed(0)} {unitWind}
-        </Text>
+        <Chip tone="muted" size="sm">{data.windSpeed.toFixed(0)} {unitWind}</Chip>
+      )}
+      {name && (
+        <Text size="xs" tone="muted" fit="ellipsis">{name}</Text>
       )}
     </span>
   );

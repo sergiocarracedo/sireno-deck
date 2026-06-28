@@ -18,22 +18,24 @@ interface MediaState {
 const GLYPHS = {
   "core:media-mute": "🔇",
   "core:media-volume": "🔊",
-  "core:media-player": "🎵",
-} as const;
-
-const LABELS = {
-  "core:media-mute": "Mute",
-  "core:media-volume": "Volume",
-  "core:media-player": "Player",
 } as const;
 
 const Component = ({ buttonType }: { buttonType?: string }) => {
-  const bt = (buttonType ?? "core:media-player") as keyof typeof GLYPHS;
-  const glyph = GLYPHS[bt] ?? "🎵";
-  const label = LABELS[bt] ?? "Player";
+  const bt = buttonType ?? "core:media-player";
   const { data } = useAddonChannel<MediaState>("media-player:state");
 
-  if (bt === "core:media-player" && data !== null && data !== undefined) {
+  if (bt === "core:media-mute" || bt === "core:media-volume") {
+    const glyph = GLYPHS[bt] ?? "🔊";
+    const label = bt === "core:media-mute" ? "Mute" : "Volume";
+    return (
+      <span className="flex h-full w-full flex-col items-center justify-center gap-1">
+        <Text size="3xl" tone="primary" typography="main">{glyph}</Text>
+        <Text size="xs" tone="fg" typography="aux">{label}</Text>
+      </span>
+    );
+  }
+
+  if (data) {
     return (
       <MediaSurface
         title={data.title ?? ""}
@@ -46,19 +48,9 @@ const Component = ({ buttonType }: { buttonType?: string }) => {
     );
   }
 
-  if (bt === "core:media-player") {
-    return (
-      <span className="flex h-full w-full flex-col items-center justify-center gap-1">
-        <Text size="3xl" tone="primary">{glyph}</Text>
-        <Text size="xs" tone="fg" typography="aux">{label}</Text>
-      </span>
-    );
-  }
-
   return (
     <span className="flex h-full w-full flex-col items-center justify-center gap-1">
-      <Text size="3xl" tone="primary">{glyph}</Text>
-      <Text size="xs" tone="fg" typography="aux">{label}</Text>
+      <Text size="md" tone="muted" typography="main">No media</Text>
     </span>
   );
 };

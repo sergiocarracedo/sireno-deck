@@ -1,29 +1,12 @@
-import { useEffect, useState } from "react";
-
+import { useNow } from "./use-now";
 import { useAddonChannel } from "sireno-deck-2/react";
-import { Text } from "@sireno-deck-2/cli";
+import { Text, Chip } from "@sireno-deck-2/cli";
 
 interface ComponentProps {
   readonly config: unknown;
   readonly state: unknown;
   readonly buttonType?: string;
 }
-
-const useNow = (intervalMs: number): Date => {
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), intervalMs);
-    return () => clearInterval(id);
-  }, [intervalMs]);
-  return now;
-};
-
-const formatTime = (date: Date, showSeconds: boolean): string => {
-  const hh = String(date.getHours()).padStart(2, "0");
-  const mm = String(date.getMinutes()).padStart(2, "0");
-  const ss = String(date.getSeconds()).padStart(2, "0");
-  return showSeconds ? `${hh}:${mm}:${ss}` : `${hh}:${mm}`;
-};
 
 const formatDateParts = (date: Date) => {
   const monthFmt = new Intl.DateTimeFormat("en-US", { month: "short" });
@@ -39,9 +22,11 @@ const formatDateParts = (date: Date) => {
 const ChannelNow = ({ children }: { children: (now: Date) => React.ReactNode }) => {
   const { data } = useAddonChannel<{ now: number }>("date-time:now");
   const tickNow = useNow(1000);
-  const fallbackNow = data !== undefined && data.now ? new Date(data.now) : tickNow;
+  const fallbackNow = data?.now ? new Date(data.now) : tickNow;
   return <>{children(fallbackNow)}</>;
 };
+
+const NBSP = "\u00A0";
 
 const CoreTime = ({ config }: ComponentProps) => {
   const { variant } = (config as { variant?: "default" | "big" }) ?? {};
@@ -60,8 +45,8 @@ const CoreTime = ({ config }: ComponentProps) => {
             lineHeight={big ? 0.80 : 1}
           >
             {big
-              ? `<3xl> *${hh}*<blink>.</blink>| ${mm} </3xl>`
-              : `${hh}:${mm}`}
+              ? `<3xl>${NBSP}*${hh}*<blink>.</blink>|${NBSP}${mm}${NBSP}</3xl>`
+              : `*${hh}*<blink>:</blink>${mm}`}
           </Text>
         );
       }}
@@ -75,13 +60,11 @@ const CoreDate = () => (
       const { day, month, weekday } = formatDateParts(now);
       return (
         <span className="flex h-full w-full flex-col items-center justify-center gap-0.5">
-          <Text size="sm" tone="accent" typography="mono" fit="shrink">
-            {month}
-          </Text>
-          <Text size="2xl" tone="fg" typography="mono" fit="shrink" className="font-semibold leading-none">
+          <Chip tone="accent" size="sm">{month}</Chip>
+          <Text size="3xl" tone="fg" typography="main" fit="shrink" className="font-semibold leading-none">
             {day}
           </Text>
-          <Text size="xs" tone="muted" typography="mono" fit="shrink" className="uppercase tracking-wider">
+          <Text size="xs" tone="muted" typography="aux" fit="shrink" className="uppercase tracking-wider">
             {weekday}
           </Text>
         </span>
@@ -94,11 +77,16 @@ const CoreClock = ({ config }: ComponentProps) => {
   const { showSeconds } = (config as { showSeconds?: boolean }) ?? {};
   return (
     <ChannelNow>
-      {(now) => (
-        <Text size="lg" typography="mono" tone="fg" fit="shrink">
-          {formatTime(now, showSeconds === true)}
-        </Text>
-      )}
+      {(now) => {
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const ss = String(now.getSeconds()).padStart(2, "0");
+        return (
+          <Text size="lg" typography="mono" tone="fg" fit="shrink">
+            {showSeconds ? `${hh}:${mm}:${ss}` : `${hh}:${mm}`}
+          </Text>
+        );
+      }}
     </ChannelNow>
   );
 };
@@ -109,40 +97,36 @@ const CoreAnalogClock = () => (
       const h = now.getHours() % 12;
       const m = now.getMinutes();
       const s = now.getSeconds();
-      const hAngle = (h + m / 60) * 30;
-      const mAngle = (m + s / 60) * 6;
-      const sAngle = s * 6;
+      const hourAngle = (h + m / 60) * 30;
+      const minuteAngle = (m + s / 60) * 6;
       return (
-        <span data-sireno-ui-text="true" className="block h-full w-full">
-          <svg viewBox="0 0 100 100" className="h-full w-full">
-            <circle cx="50" cy="50" r="46" fill="none" stroke="var(--color-fg)" strokeWidth="2" />
-            <line
-              x1="50"
-              y1="50"
-              x2={50 + 28 * Math.sin((hAngle * Math.PI) / 180)}
-              y2={50 - 28 * Math.cos((hAngle * Math.PI) / 180)}
-              stroke="var(--color-fg)"
-              strokeWidth="4"
-              strokeLinecap="round"
+        <span className="block h-full w-full" data-sireno-ui-text="true">
+          <svg aria-label="Analog clock" className="h-full w-full" viewBox="0 0 100 100">
+            <circle
+              cx="50" cy="50" r="41" fill="none"
+              stroke="var(--color-fg)/24" strokeWidth="2"
             />
-            <line
-              x1="50"
-              y1="50"
-              x2={50 + 38 * Math.sin((mAngle * Math.PI) / 180)}
-              y2={50 - 38 * Math.cos((mAngle * Math.PI) / 180)}
-              stroke="var(--color-fg)"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
-            <line
-              x1="50"
-              y1="50"
-              x2={50 + 42 * Math.sin((sAngle * Math.PI) / 180)}
-              y2={50 - 42 * Math.cos((sAngle * Math.PI) / 180)}
-              stroke="var(--color-accent)"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            />
+            <g
+              data-sireno-clock-minute-hand="true"
+              style={{ transform: `rotate(${minuteAngle}deg)`, transformOrigin: "50% 50%" }}
+            >
+              <line
+                stroke="color-mix(in srgb, var(--color-fg) 68%, transparent)"
+                strokeLinecap="round" strokeWidth="3.4"
+                x1="50" x2="50" y1="50" y2="21"
+              />
+            </g>
+            <g
+              data-sireno-clock-hour-hand="true"
+              style={{ transform: `rotate(${hourAngle}deg)`, transformOrigin: "50% 50%" }}
+            >
+              <line
+                stroke="var(--color-primary)"
+                strokeLinecap="round" strokeWidth="3"
+                x1="50" x2="50" y1="50" y2="29"
+              />
+            </g>
+            <circle cx="50" cy="50" r="3.6" fill="var(--color-fg)" />
           </svg>
         </span>
       );
