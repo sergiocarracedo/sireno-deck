@@ -1,13 +1,6 @@
 import { ButtonFrame } from "./ButtonFrame.tsx";
-import { Icon } from "./components/Icon.tsx";
-import { Label } from "./components/Label.tsx";
-import { Text } from "./components/Text.tsx";
-import { TapIndicator } from "./components/TapIndicator.tsx";
-import { Chip } from "./components/Chip.tsx";
-import { IconLabel } from "./surfaces/IconLabel.tsx";
-import { Bars } from "./surfaces/Bars.tsx";
-import { LabelValueList } from "./surfaces/LabelValueList.tsx";
-import { SplitAction } from "./surfaces/SplitAction.tsx";
+import { Text, Icon, Label, Chip, TapIndicator } from "@/ui/index.ts";
+import { Bars as Barss, IconLabelSurface as IconLabels, LabelValueList as LabelValueLists, SplitActionSurface as SplitActions } from "@/ui/index.ts";
 
 export const manifest = {
   name: "default",
@@ -16,19 +9,14 @@ export const manifest = {
 } as const;
 
 export { ButtonFrame } from "./ButtonFrame.tsx";
-export { Icon } from "./components/Icon.tsx";
-export { Label } from "./components/Label.tsx";
-export { Text } from "./components/Text.tsx";
-export { TapIndicator } from "./components/TapIndicator.tsx";
-export { Chip } from "./components/Chip.tsx";
-export { IconLabel } from "./surfaces/IconLabel.tsx";
-export { Bars } from "./surfaces/Bars.tsx";
-export { LabelValueList } from "./surfaces/LabelValueList.tsx";
-export { SplitAction } from "./surfaces/SplitAction.tsx";
+export { Text, Icon, Label, Chip, TapIndicator } from "@/ui/index.ts";
+export { Bars as Barss, IconLabelSurface as IconLabels, LabelValueList as LabelValueLists, SplitActionSurface as SplitActions } from "@/ui/index.ts";
 
 export const components = { Icon, Label, Text, TapIndicator, Chip } as const;
-export const surfaces = { IconLabel, Bars, LabelValueList, SplitAction } as const;
+export const surfaces = { Bars: Barss, IconLabel: IconLabels, LabelValueList: LabelValueLists, SplitAction: SplitActions } as const;
 export const primitives = { ButtonFrame } as const;
+
+export const ui = {} as const;
 
 const Theme = {
   manifest,
@@ -36,6 +24,7 @@ const Theme = {
   components,
   surfaces,
   primitives,
+  ui,
 };
 
 export default Theme;
