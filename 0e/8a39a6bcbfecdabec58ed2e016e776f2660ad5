@@ -1,0 +1,29 @@
+packages/cli/src/render/browser-renderer.ts
+  s_8ca911650149ee::t_3b94f1154fa037 42
+  s_8ca911650149ee::t_2ced46fff55a76 85-86
+packages/cli/frontend/src/App.tsx
+  s_8ca911650149ee::t_03ca864b340f4c 7
+packages/cli/src/index.ts
+  s_8ca911650149ee::t_4afabb376281a8 24
+packages/cli/src/ui/Icon.tsx
+  s_8ca911650149ee::t_87917485214c75 4,10
+  s_8ca911650149ee::t_2cf947d1339c56 20
+packages/cli/package.json
+  s_8ca911650149ee::t_b5c918416543ee 26-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "0e8a39a6bcbfecdabec58ed2e016e776f2660ad5",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
