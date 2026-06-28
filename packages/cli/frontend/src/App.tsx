@@ -4,6 +4,7 @@ import { activeTheme } from "virtual:sireno/themes/manifest";
 
 import { ChannelRegistry } from "sireno-deck-2/react";
 import { ThemeProvider, type ThemeContextValue } from "@/themes/index.ts";
+import { DomThemeUiPresentationProvider as ThemeUiPresentationProvider } from "sireno-deck-2/cli";
 import { createWsClient, type WsClient } from "./bridge/client.ts";
 import { Deck } from "./components/Deck.tsx";
 
@@ -102,17 +103,19 @@ export const App = () => {
 
   return (
     <ThemeProvider value={theme}>
-      <main className="bg-bg text-fg flex min-h-screen items-center justify-center">
-        <Deck
-          deck={deck}
-          onNavigate={() => {
-            /* wired via deck-config */
-          }}
-          onAction={(buttonId) => {
-            ChannelRegistry.instance().publish("runtime:button-tap", { buttonId });
-          }}
-        />
-      </main>
+      <ThemeUiPresentationProvider value={{}}>
+        <main className="bg-bg text-fg flex min-h-screen items-center justify-center">
+          <Deck
+            deck={deck}
+            onNavigate={() => {
+              /* wired via deck-config */
+            }}
+            onAction={(buttonId) => {
+              ChannelRegistry.instance().publish("runtime:button-tap", { buttonId });
+            }}
+          />
+        </main>
+      </ThemeUiPresentationProvider>
     </ThemeProvider>
   );
 };
