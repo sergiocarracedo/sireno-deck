@@ -2,7 +2,7 @@
 @import "sireno-deck-2-theme";
 
 :root {
-  color-scheme: only dark;
+  color-scheme: dark light;
 }
 
 html,
