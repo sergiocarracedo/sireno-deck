@@ -63,6 +63,7 @@ interface AddonRegistryEntry {
   readonly Component: React.ComponentType<{
     readonly config: unknown;
     readonly state: unknown;
+    readonly buttonType?: string;
     readonly onAction?: (action: string) => void;
   }>;
 }
@@ -95,7 +96,7 @@ export const Deck = ({ deck, onNavigate, onAction, children }: DeckProps) => {
         const registryEntry = addonRegistry[button.type];
         const addonSurface =
           registryEntry !== undefined ? (
-            <registryEntry.Component config={button.config ?? {}} state={null} />
+            <registryEntry.Component config={button.config ?? {}} state={null} buttonType={button.type} />
           ) : null;
         return (
           <div

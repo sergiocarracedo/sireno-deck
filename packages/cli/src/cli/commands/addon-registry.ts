@@ -85,18 +85,27 @@ const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null 
     }
     return out;
   };
+  const allSources = [raw, ...buttonsSources];
   const types = scanFrom(raw);
   for (const src of buttonsSources) {
     for (const t of scanFrom(src)) types.add(t);
   }
-  const frontendMatch = raw.match(/frontend:\s*\{\s*main:\s*["']([^"']+)["']/);
-  const frontendEntry = frontendMatch?.[1] !== undefined
-    ? resolvePath(addonDir, frontendMatch[1])
-    : null;
-  const publishMatch = raw.match(/publishIntervalMs:\s*(\d+)/);
-  const publishIntervalMs = publishMatch?.[1] !== undefined
-    ? Number.parseInt(publishMatch[1], 10)
-    : null;
+  let frontendEntry: string | null = null;
+  for (const src of allSources) {
+    const match = src.match(/frontend:\s*\{\s*main:\s*["']([^"']+)["']/);
+    if (match !== null) {
+      frontendEntry = resolvePath(addonDir, match[1]!);
+      break;
+    }
+  }
+  let publishIntervalMs: number | null = null;
+  for (const src of allSources) {
+    const match = src.match(/publishIntervalMs:\s*(\d+)/);
+    if (match !== null) {
+      publishIntervalMs = Number.parseInt(match[1]!, 10);
+      break;
+    }
+  }
   const pollerEntry = existsSync(join(addonDir, "poller.ts"))
     ? join(addonDir, "poller.ts")
     : null;
