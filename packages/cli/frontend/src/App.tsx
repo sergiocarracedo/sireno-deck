@@ -4,7 +4,7 @@ import { activeTheme } from "virtual:sireno/themes/manifest";
 
 import { ChannelRegistry } from "sireno-deck-2/react";
 import { ThemeProvider, type ThemeContextValue } from "@/themes/index.ts";
-import { DomThemeUiPresentationProvider as ThemeUiPresentationProvider } from "@sireno-deck-2/cli";
+import { ThemeUiPresentationProvider } from "@sireno-deck-2/cli";
 import { createWsClient, type WsClient } from "./bridge/client.ts";
 import { Deck } from "./components/Deck.tsx";
 

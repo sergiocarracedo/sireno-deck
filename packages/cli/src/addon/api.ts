@@ -97,9 +97,6 @@ export interface AddonLoadIssue {
 
 export type { SirenoAddon } from "./api-types.ts";
 
-import { isAbsolute } from "node:path";
-import { pathToFileURL } from "node:url";
-
 let domAssetPathResolver: ((assetReference: string) => string | undefined) | undefined;
 
 export function setDomAssetPathResolver(
@@ -125,11 +122,12 @@ export function resolveDomAssetSrc(src: string): string {
       return src;
     }
 
-    return /^(?:data:|https?:\/\/|file:\/\/)/.test(resolvedAssetPath) ||
-      resolvedAssetPath.startsWith("/")
-      ? resolvedAssetPath
-      : pathToFileURL(resolvedAssetPath).href;
+    if (/^(?:data:|https?:\/\/|file:\/\/)/.test(resolvedAssetPath) || resolvedAssetPath.startsWith("/")) {
+      return resolvedAssetPath;
+    }
+
+    return `file://${resolvedAssetPath}`;
   }
 
-  return isAbsolute(src) ? pathToFileURL(src).href : src;
+  return src;
 }
