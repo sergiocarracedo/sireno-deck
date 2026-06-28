@@ -116,7 +116,7 @@ export const spawnFrontendVite = (options: {
       if (match && match[1]) {
         clearTimeout(timer)
         const url = `http://127.0.0.1:${match[1]}`
-        resolve({ process: child, url })
+        setTimeout(() => resolve({ process: child, url }), 1000)
       }
     }
 

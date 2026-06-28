@@ -271,7 +271,7 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
   }
 
   let frontendVite: Awaited<ReturnType<typeof spawnFrontendVite>> | undefined;
-  if (frontendUrl === undefined) {
+  if (options.frontendUrl === undefined) {
     frontendVite = await spawnFrontendVite({
       port: options.port ?? 5173,
       cwd: resolveFrontendCwd(),
