@@ -31,7 +31,9 @@ import {
 
 import { runRealMode } from "./real-mode";
 import { runEmulatorMode } from "./emulator-mode";
-import { discoverAddonPollers } from "./addon-registry.ts";
+import { collectBuiltinAddonRegistry, discoverAddonPollers } from "./addon-registry.ts";
+import { createActionExecutor } from "@/action/executor.ts";
+import { getHostContext } from "@/deck/host-context.ts";
 import { createBrightnessProvider } from "@/system/brightness";
 import { createClipboardProvider, type ClipboardProvider } from "@/system/clipboard";
 import { StatePublisher } from "@/render/state-publisher.ts";
