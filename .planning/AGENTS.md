@@ -98,5 +98,5 @@ When working on a phase:
 
 **Milestone:** v0.2.0
 **Phase:** 15 — theme-base-ui (shared base UI layer)
-**Status:** planning
+**Status:** complete
 **Last updated:** 2026-06-28

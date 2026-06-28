@@ -1,6 +1,6 @@
 ---
 current_phase: 15-theme-base-ui
-phase_status: not-started
+phase_status: done
 plans_total: 0
 plans_complete: 0
 last_updated: 2026-06-28
