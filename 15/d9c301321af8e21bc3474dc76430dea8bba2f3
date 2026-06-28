@@ -1,0 +1,36 @@
+packages/cli/src/themes/light/components/Label.tsx
+  s_8ca911650149ee::t_ca40184281a72c 1-2
+packages/cli/src/themes/light/components/Icon.tsx
+  s_8ca911650149ee::t_5f461fb5c46381 1-2
+packages/cli/src/themes/light/surfaces/IconLabel.tsx
+  s_8ca911650149ee::t_57fa6a2a6a2355 1-2
+packages/cli/src/themes/light/surfaces/Bars.tsx
+  s_8ca911650149ee::t_2e92eec8846179 1-2
+packages/cli/src/themes/light/components/TapIndicator.tsx
+  s_8ca911650149ee::t_e40eb7de0dbcc9 1-2
+packages/cli/src/themes/light/surfaces/LabelValueList.tsx
+  s_8ca911650149ee::t_8057fb855161e0 4-5
+packages/cli/src/themes/light/components/Text.tsx
+  s_8ca911650149ee::t_07032ac5dd274b 1-2
+packages/cli/src/themes/light/components/Chip.tsx
+  s_8ca911650149ee::t_ab7a01ff6fbe68 1-2
+packages/cli/src/themes/light/surfaces/SplitAction.tsx
+  s_8ca911650149ee::t_e2ff2d032ce8fc 2
+  s_8ca911650149ee::t_a27bd72d21c465 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "15d9c301321af8e21bc3474dc76430dea8bba2f3",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
