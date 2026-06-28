@@ -1,0 +1,42 @@
+packages/cli/src/themes/light/theme.css
+  s_8ca911650149ee::t_65b7db707437b2 120-128
+packages/cli/src/builtin-addons/media-player/frontend.tsx
+  s_8ca911650149ee::t_bd61b6896cac23 8,15
+  s_8ca911650149ee::t_bb72e9f88e91ec 3,13-14,38-53
+packages/cli/src/builtin-addons/media-player/components/status-meta.ts
+  s_8ca911650149ee::t_ca75aef7f7ef15 28-29
+  s_8ca911650149ee::t_310dfdf1a6d50d 1-27
+packages/cli/src/builtin-addons/media-player/components/MediaSurface.tsx
+  s_8ca911650149ee::t_d92c3ebc5f54e2 1-50
+packages/cli/src/builtin-addons/date-time/frontend.tsx
+  s_8ca911650149ee::t_f927f748c81b9d 53,56-57,59-60,62-63
+packages/cli/src/builtin-addons/media-player/components/ProgressBar.tsx
+  s_8ca911650149ee::t_1e5f5e60fa74f2 1,3-19
+  s_8ca911650149ee::t_4066786741d673 2
+packages/cli/src/builtin-addons/media-player/poller.ts
+  s_8ca911650149ee::t_a9947c404faa78 4-15,18,21-26,33-47,50-53,55-75,87-88,93-94,96-98,102-105,108
+  s_8ca911650149ee::t_56ca73f7a6d02a 54,76-86,89-92
+packages/cli/src/themes/default/components/Text.tsx
+  s_8ca911650149ee::t_6792355877827d 19
+  s_8ca911650149ee::t_83a12d2b8ed21d 148,157-158
+  s_8ca911650149ee::t_5945870c42424b 205
+  s_8ca911650149ee::t_2148c90c67e926 185
+packages/cli/src/themes/default/theme.css
+  s_8ca911650149ee::t_1904c16048be2c 156-164
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "62398d55bc1cf4731b8df820ddd981b7ef196cc3",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
