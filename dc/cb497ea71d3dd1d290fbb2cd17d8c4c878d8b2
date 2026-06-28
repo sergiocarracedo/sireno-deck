@@ -1,0 +1,21 @@
+packages/cli/src/index.ts
+  s_9fabccd2e25c5b::t_cbc23d4efa62f1 24
+packages/cli/src/builtin-addons/date-time/frontend.tsx
+  s_9fabccd2e25c5b::t_cd9fc1b36c3226 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "dccb497ea71d3dd1d290fbb2cd17d8c4c878d8b2",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
