@@ -1,6 +1,6 @@
 import sharp from "sharp";
 
-import { gridForKeyCount } from "@/device/models.ts";
+import { BUTTON_SIZE_PX, gridForKeyCount } from "@/device/models.ts";
 import type { PubSub } from "@/core/pub-sub.ts";
 import { createPubSub } from "@/core/pub-sub.ts";
 import type pino from "pino";
@@ -85,7 +85,10 @@ export class BrowserRenderer {
       (async (): Promise<PlaywrightLike> => (await import("playwright")) as PlaywrightLike);
     const playwright = await factory();
     this.browser = await playwright.chromium.launch({ headless: true });
-    this.context = await this.browser.newContext();
+    const { columns, rows } = gridForKeyCount(this.options.device.getKeyCount());
+    const vpWidth = columns * BUTTON_SIZE_PX;
+    const vpHeight = rows * BUTTON_SIZE_PX;
+    this.context = await this.browser.newContext({ viewport: { width: vpWidth, height: vpHeight } });
     this.page = await this.context.newPage();
     await this.page.goto(this.options.frontendUrl, { waitUntil: "networkidle" });
     if (this.pubSub) {
@@ -136,6 +139,9 @@ export class BrowserRenderer {
               width: cellWidth,
               height: cellHeight,
             })
+            .resize(72, 72, { fit: "fill" })
+            .removeAlpha()
+            .raw()
             .toBuffer();
           if (!this.tracker.update(keyIndex, cropped)) continue;
           writes.push(this.options.device.fillKeyBuffer(keyIndex, cropped));
