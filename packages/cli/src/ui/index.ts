@@ -17,4 +17,4 @@ export { cn } from './utils/cn.ts'
 export { computeNegativeColor } from './utils/negative-color.ts'
 
 export { Bars, IconLabelSurface, LabelValueList, SplitActionSurface } from './surfaces/index.ts'
-export type { BarsItem, BarsItems, BarsProps, IconLabelSurfaceProps, LabelValueListLine, LabelValueListLines, LabelValueListProps, SplitActionSurfaceProps } from './surfaces/index.ts'
+export type { BarsItem, BarsProps, IconLabelSurfaceProps, LabelValueListLine, LabelValueListProps, SplitActionSurfaceProps } from './surfaces/index.ts'
