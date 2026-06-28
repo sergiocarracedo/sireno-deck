@@ -1,8 +1,8 @@
 ---
-current_phase: 12-addon-frontend-registry
-phase_status: complete
-plans_total: 3
-plans_complete: 3
+current_phase: 13-ui-alignment
+phase_status: ready-to-discuss
+plans_total: 0
+plans_complete: 0
 last_updated: 2026-06-27
 ---
 

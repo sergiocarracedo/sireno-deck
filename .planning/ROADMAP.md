@@ -1,7 +1,7 @@
 ---
 milestone: v0.1.0
 title: Stream Deck CLI + addon system + emulator
-phases_total: 11
+phases_total: 13
 created: 2026-06-23
 ---
 
@@ -32,7 +32,8 @@ CLI runs, loads `config.yml`, registers addons, drives an emulator or real hardw
 | 09  | builtin-addons | ✅ done | `date-time`, `emoji-selector` (+ emoji deck), `media-player`, `system-status` (pub-sub), `value-display`, `weather`, `brightness`                  |
 | 10  | daemon-polish  | ✅ done | `start`/`stop`/`status` real implementation, PID + token files, prod HTTP server (token injection), graceful shutdown, npm addon loader            |
 | 11  | release        | ✅ done | README + per-addon docs, `pnpm package` script, v0.1.0 release                                                                                     |
-| 12  | addon-frontend | pending | Frontend addon registry: each addon ships a `frontend.tsx` React component; backend adds `addonName` + `frontendEntry` to deck-config buttons; frontend Deck dynamically imports + renders the component inside `<ButtonFrame>`; surfaces subscribe to state channels via `ChannelRegistry`. Goal: emulator/frontend shows real button surfaces (clock, weather widget, system bars) — not just type-name labels. |
+| 12  | addon-frontend | ✅ done | Frontend addon registry: each addon ships a `frontend.tsx` React component; backend adds `addonName` + `frontendEntry` to deck-config buttons; frontend Deck dynamically imports + renders the component inside `<ButtonFrame>`; surfaces subscribe to state channels via `ChannelRegistry`. Goal: emulator/frontend shows real button surfaces (clock, weather widget, system bars) — not just type-name labels. |
+| 13  | ui-alignment   | pending | Port the legacy default theme's ButtonFrame, Text component with rich markup (`<blink>`, `<dim>`, tones, sizes), Icon, Label, Chip, TapIndicator, and surfaces (IconLabel, Bars, LabelValueList, SplitAction) to match the legacy visual style exactly. The emulator/frontend should be visually indistinguishable from the legacy `sireno-deck` v1. |
 
 ## Traceability
 
@@ -50,6 +51,7 @@ CLI runs, loads `config.yml`, registers addons, drives an emulator or real hardw
 | 10    | R18, R19, R20                                                                                   |
 | 11  | (release)                                                                                       |
 | 12  | R17 (addon frontend registry), R7 (extends builtin addons with frontend components)            |
+| 13  | (visual alignment with legacy; no new capability requirements)                                 |
 
 ## Risk register
 
