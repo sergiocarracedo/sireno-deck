@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { existsSync } from "node:fs";
 import { dirname, join, resolve as resolvePath } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -67,7 +67,6 @@ const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null 
     }
   }
   if (existsSync(buttonsDir)) {
-    const { readdirSync } = require("node:fs") as typeof import("node:fs");
     for (const f of readdirSync(buttonsDir, { withFileTypes: true })) {
       if (!f.isFile()) continue;
       if (!/\.tsx?$/.test(f.name)) continue;
@@ -107,7 +106,6 @@ const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null 
 
 const scanBuiltinAddons = (): ReadonlyArray<ScannedAddon> => {
   if (!existsSync(builtinDir)) return [];
-  const { readdirSync } = require("node:fs") as typeof import("node:fs");
   const entries = readdirSync(builtinDir, { withFileTypes: true });
   const out: ScannedAddon[] = [];
   for (const entry of entries) {
