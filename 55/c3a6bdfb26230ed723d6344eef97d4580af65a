@@ -1,0 +1,21 @@
+packages/cli/src/themes/default/__tests__/ButtonFrame.test.tsx
+  s_9fabccd2e25c5b::t_cca260d8219edc 40
+packages/cli/src/themes/default/ButtonFrame.tsx
+  s_9fabccd2e25c5b::t_7fd7c036ec6cc2 48-51,59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "55c3a6bdfb26230ed723d6344eef97d4580af65a",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
