@@ -25,12 +25,12 @@ const ALIGN_CLASS: Record<TextAlign, string> = {
 };
 
 const TONE_CLASS: Record<TextTone, string> = {
-  fg: "text-fg",
+  fg: "text-foreground",
   muted: "text-muted",
   accent: "text-accent",
-  danger: "text-red-400",
-  primary: "text-accent",
-  success: "text-green-400",
+  danger: "text-danger",
+  primary: "text-primary",
+  success: "text-success",
 };
 
 const TYPOGRAPHY_CLASS: Record<TextTypography, string> = {
@@ -206,6 +206,7 @@ export const Text = ({
         .join(" ")}
       data-sireno-text-fit={fit}
       data-sireno-text-size={size}
+      data-sireno-ui-text="true"
       style={composedStyle}
     >
       {renderedChildren}

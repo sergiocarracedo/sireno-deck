@@ -8,7 +8,7 @@ export interface IconLabelProps {
 }
 
 export const IconLabel = ({ icon, label, iconSize = "md" }: IconLabelProps) => (
-  <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 p-2">
+  <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 p-2" data-sireno-ui-icon-label="true">
     <Icon ref={icon} size={iconSize} />
     <Label>{label}</Label>
   </div>

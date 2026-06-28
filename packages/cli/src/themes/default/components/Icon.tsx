@@ -26,12 +26,12 @@ const isLikelyImageRef = (ref: string): boolean =>
 export const Icon = ({ ref: refValue, size = "md", fallback, className }: IconProps) => {
   const cls = ["shrink-0", SIZE_CLASS[size], className ?? ""].filter(Boolean).join(" ");
   if (refValue.length === 0) {
-    return <span className={cls}>{fallback ?? ""}</span>;
+    return <span className={cls} data-sireno-ui-icon="true">{fallback ?? ""}</span>;
   }
   if (isLikelyImageRef(refValue)) {
-    return <img src={refValue} alt="" className={cls} draggable={false} />;
+    return <img src={refValue} alt="" className={cls} draggable={false} data-sireno-ui-icon="true" />;
   }
-  return <span className={cls}>{fallback ?? refValue.slice(0, 1).toUpperCase()}</span>;
+  return <span className={cls} data-sireno-ui-icon="true">{fallback ?? refValue.slice(0, 1).toUpperCase()}</span>;
 };
 
 export const IconDefaultExport = Icon;

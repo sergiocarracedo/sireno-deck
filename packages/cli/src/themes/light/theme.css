@@ -1,6 +1,7 @@
 @theme {
   --color-bg: #eef2f7;
   --color-fg: #2e3540;
+  --color-foreground: #2e3540;
   --color-accent: #7dd3fc;
   --color-ring: #2e3540;
   --color-tap: #7dd3fc;
@@ -21,6 +22,7 @@
   @theme {
     --color-bg: #2e3540;
     --color-fg: #eef2f7;
+    --color-foreground: #eef2f7;
     --color-accent: #7dd3fc;
     --color-ring: #eef2f7;
     --color-tap: #7dd3fc;

@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { Text } from "./Text.tsx";
+
 export interface LabelProps {
   children: ReactNode;
   className?: string;
@@ -7,19 +9,22 @@ export interface LabelProps {
   truncate?: boolean;
 }
 
-export const Label = ({ children, className, uppercase = true, truncate = true }: LabelProps) => (
-  <span
-    className={[
-      "font-mono tracking-wider text-muted",
-      uppercase ? "uppercase" : "",
-      truncate ? "truncate" : "",
-      "text-[10px] leading-none",
-      className ?? "",
-    ]
-      .filter(Boolean)
-      .join(" ")}
-  >
-    {children}
+export const Label = ({ children, className, uppercase = true }: LabelProps) => (
+  <span data-sireno-ui-label="true">
+    <Text
+      className={[
+        uppercase ? "uppercase" : "",
+        className ?? "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      fit="ellipsis"
+      size="md"
+      tone="primary"
+      typography="main"
+    >
+      {children}
+    </Text>
   </span>
 );
 

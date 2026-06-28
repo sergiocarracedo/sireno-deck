@@ -12,7 +12,7 @@ export interface SplitActionProps {
 export const SplitAction = ({ left, right }: SplitActionProps) => (
   <div className="grid h-full w-full grid-cols-2">
     <div className="flex h-full w-full items-center justify-center p-2">{left.content}</div>
-    <div className="flex h-full w-full items-center justify-center border-l border-fg/10 p-2">
+    <div className="flex h-full w-full items-center justify-center border-l border-frame p-2">
       {right.content}
     </div>
   </div>
