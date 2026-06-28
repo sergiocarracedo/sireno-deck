@@ -1,0 +1,25 @@
+.planning/phases/13-ui-alignment/13-PHASE.md
+  s_9fabccd2e25c5b::t_c27738e0a50606 1-36
+.planning/ROADMAP.md
+  s_9fabccd2e25c5b::t_6c5740be6c9268 35-36
+  s_9fabccd2e25c5b::t_c08318cf85a376 54
+  s_9fabccd2e25c5b::t_e3c941fcbcb8a6 4
+.planning/STATE.md
+  s_9fabccd2e25c5b::t_00bbba4aad4b65 2-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "7882deadfc45520c6d2b12b7bef81916935a986b",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
