@@ -12,16 +12,16 @@ afterEach(() => ChannelRegistry.resetForTests());
 describe("useAddonChannel", () => {
   it("returns undefined when no payload has been published", () => {
     const { result } = renderHook(() => useAddonChannel<number>("missing"));
-    expect(result.current.value).toBeUndefined();
+    expect(result.current.data).toBeUndefined();
   });
 
   it("updates when a payload is published", () => {
     const { result } = renderHook(() => useAddonChannel<number>("a"));
-    expect(result.current.value).toBeUndefined();
+    expect(result.current.data).toBeUndefined();
     act(() => {
       ChannelRegistry.instance().publish("a", 42);
     });
-    expect(result.current.value).toBe(42);
+    expect(result.current.data).toBe(42);
   });
 
   it("unsubscribes on unmount without throwing", () => {
