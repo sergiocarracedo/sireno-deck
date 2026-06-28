@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 
 import { useAddonChannel } from "sireno-deck-2/react";
+import { Text } from "@sireno-deck-2/cli/src/themes/default/components/Text.tsx";
 
 interface ComponentProps {
   readonly config: unknown;
   readonly state: unknown;
+  readonly buttonType?: string;
 }
 
 const useNow = (intervalMs: number): Date => {
@@ -45,17 +47,22 @@ const CoreTime = ({ config }: ComponentProps) => {
   const { variant } = (config as { variant?: "default" | "big" }) ?? {};
   return (
     <ChannelNow>
-      {(now) => (
-        <span
-          className={
-            variant === "big"
-              ? "flex h-full w-full items-center justify-center font-mono text-3xl text-fg"
-              : "flex h-full w-full items-center justify-center font-mono text-xl text-fg"
-          }
-        >
-          {formatTime(now, false)}
-        </span>
-      )}
+      {(now) => {
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        return (
+          <Text
+            size={variant === "big" ? "2xl" : "lg"}
+            typography="mono"
+            tone="fg"
+            fit="shrink"
+          >
+            {variant === "big"
+              ? `<2xl>${hh}</2xl><dim>.</dim><2xl>${mm}</2xl>`
+              : `${hh}:${mm}`}
+          </Text>
+        );
+      }}
     </ChannelNow>
   );
 };
@@ -66,11 +73,15 @@ const CoreDate = () => (
       const { day, month, weekday } = formatDateParts(now);
       return (
         <span className="flex h-full w-full flex-col items-center justify-center gap-0.5">
-          <span className="rounded-full bg-accent/20 px-1.5 py-0.5 text-[10px] uppercase leading-none text-accent">
+          <Text size="sm" tone="accent" typography="mono" fit="shrink">
             {month}
-          </span>
-          <span className="text-3xl font-semibold leading-none text-fg">{day}</span>
-          <span className="text-xs uppercase tracking-wider text-muted">{weekday}</span>
+          </Text>
+          <Text size="2xl" tone="fg" typography="mono" fit="shrink" className="font-semibold leading-none">
+            {day}
+          </Text>
+          <Text size="xs" tone="muted" typography="mono" fit="shrink" className="uppercase tracking-wider">
+            {weekday}
+          </Text>
         </span>
       );
     }}
@@ -82,9 +93,9 @@ const CoreClock = ({ config }: ComponentProps) => {
   return (
     <ChannelNow>
       {(now) => (
-        <span className="flex h-full w-full items-center justify-center font-mono text-lg text-fg">
+        <Text size="lg" typography="mono" tone="fg" fit="shrink">
           {formatTime(now, showSeconds === true)}
-        </span>
+        </Text>
       )}
     </ChannelNow>
   );
@@ -135,30 +146,74 @@ const CoreAnalogClock = () => (
   </ChannelNow>
 );
 
+const expandTokens = (source: string, now: Date): string => {
+  const map: Record<string, string> = {
+    YY: String(now.getFullYear() % 100).padStart(2, "0"),
+    YYYY: String(now.getFullYear()),
+    M: String(now.getMonth() + 1),
+    MM: String(now.getMonth() + 1).padStart(2, "0"),
+    MMM: now.toLocaleString("en-US", { month: "short" }),
+    D: String(now.getDate()),
+    DD: String(now.getDate()).padStart(2, "0"),
+    d: String(now.getDay()),
+    ddd: now.toLocaleString("en-US", { weekday: "short" }),
+    H: String(now.getHours()),
+    HH: String(now.getHours()).padStart(2, "0"),
+    m: String(now.getMinutes()),
+    mm: String(now.getMinutes()).padStart(2, "0"),
+    s: String(now.getSeconds()),
+    ss: String(now.getSeconds()).padStart(2, "0"),
+    A: now.getHours() < 12 ? "AM" : "PM",
+    a: now.getHours() < 12 ? "am" : "pm",
+  };
+  const sorted = Object.keys(map).sort((a, b) => b.length - a.length);
+  let result = "";
+  let i = 0;
+  while (i < source.length) {
+    if (source[i] === "<") {
+      const end = source.indexOf(">", i + 1);
+      const close = source.indexOf("</", i + 1);
+      if (end !== -1 && (close === -1 || end < close)) {
+        result += source.slice(i, end + 1);
+        i = end + 1;
+        continue;
+      }
+    }
+    if (source[i] === "<" && source.startsWith("</", i)) {
+      const end = source.indexOf(">", i + 2);
+      if (end !== -1) {
+        result += source.slice(i, end + 1);
+        i = end + 1;
+        continue;
+      }
+    }
+    let matched = false;
+    for (const token of sorted) {
+      if (source.startsWith(token, i)) {
+        result += map[token];
+        i += token.length;
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) {
+      result += source[i];
+      i += 1;
+    }
+  }
+  return result;
+};
+
 const CoreDateTime = ({ config }: ComponentProps) => {
   const { format } = (config as { format?: string }) ?? {};
   const pattern = format ?? "DD/MM/YYYY HH:mm:ss";
   return (
     <ChannelNow>
-      {(now) => {
-        const yy = String(now.getFullYear());
-        const MM = String(now.getMonth() + 1).padStart(2, "0");
-        const dd = String(now.getDate()).padStart(2, "0");
-        const hh = String(now.getHours()).padStart(2, "0");
-        const mm = String(now.getMinutes()).padStart(2, "0");
-        const ss = String(now.getSeconds()).padStart(2, "0");
-        return (
-          <span className="flex h-full w-full items-center justify-center font-mono text-xs text-fg">
-            {pattern
-              .replace(/YYYY/g, yy)
-              .replace(/MM/g, MM)
-              .replace(/DD/g, dd)
-              .replace(/HH/g, hh)
-              .replace(/mm/g, mm)
-              .replace(/ss/g, ss)}
-          </span>
-        );
-      }}
+      {(now) => (
+        <Text size="xs" typography="mono" tone="fg" fit="shrink" className="px-1">
+          {expandTokens(pattern, now)}
+        </Text>
+      )}
     </ChannelNow>
   );
 };
