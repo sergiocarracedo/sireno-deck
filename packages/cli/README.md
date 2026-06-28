@@ -4,15 +4,15 @@ Internal docs for the `sireno` CLI package. **User-facing docs** (quickstart, co
 
 ## Scripts
 
-| Command                            | Purpose                                                           |
-| ---------------------------------- | ----------------------------------------------------------------- |
-| `pnpm --filter sireno-deck-2 dev` | `node bin/dev.js` — dev CLI shim                                   |
-| `pnpm --filter sireno-deck-2 start` | `node --import tsx src/cli/main.ts` — production-style startup   |
-| `pnpm --filter sireno-deck-2 build` | bundles the frontend (`vite build`) and the CLI                   |
-| `pnpm --filter sireno-deck-2 test` | `vitest run`                                                       |
-| `pnpm --filter sireno-deck-2 typecheck` | `tsc --noEmit`                                               |
-| `pnpm --filter sireno-deck-2 lint` | `oxlint src`                                                      |
-| `pnpm --filter sireno-deck-2 format` | `oxfmt src`                                                      |
+| Command                                 | Purpose                                                        |
+| --------------------------------------- | -------------------------------------------------------------- |
+| `pnpm --filter sireno-deck-2 dev`       | `node bin/dev.js` — dev CLI shim                               |
+| `pnpm --filter sireno-deck-2 start`     | `node --import tsx src/cli/main.ts` — production-style startup |
+| `pnpm --filter sireno-deck-2 build`     | bundles the frontend (`vite build`) and the CLI                |
+| `pnpm --filter sireno-deck-2 test`      | `vitest run`                                                   |
+| `pnpm --filter sireno-deck-2 typecheck` | `tsc --noEmit`                                                 |
+| `pnpm --filter sireno-deck-2 lint`      | `oxlint src`                                                   |
+| `pnpm --filter sireno-deck-2 format`    | `oxfmt src`                                                    |
 
 ## Layout
 
@@ -47,7 +47,7 @@ packages/cli/
     util/                    # daemon, logger, cache-paths, device-config
     vite/                    # vite plugin (sirenoDeck2)
   frontend/                  # vite React 19 + Tailwind 4 frontend
-  frontend-emulator/         # vite emulator shell
+  emulator/         # vite emulator shell
 ```
 
 ## Conventions

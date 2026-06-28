@@ -15,14 +15,14 @@ The second vertical slice for Phase 05: the emulator shell's interactive behavio
 
 ## Key files
 
-- `packages/cli/frontend-emulator/src/gesture.ts` — `dispatchMouseEvent(buffer, event)` builds the gesture buffer, calls `nextGesture` from cli, returns `{ buffer, result }`. `gestureKindToWsMessage(result, deckId)` converts a gesture result to a `button-action` WS message.
-- `packages/cli/frontend-emulator/src/gesture.test.ts` — 4 tests: tap, hold, dbl-tap, message conversion.
-- `packages/cli/frontend-emulator/src/bridge.ts` — `WS_BACKOFF_DELAYS_MS = [1000, 2000, 4000, 8000, 16000, 30000]`, `WS_MAX_ATTEMPTS = 10`. `createWsClient({ url, token, wsFactory, onOpen, onMessage, onClose, onFailed })` returns a `WsClient` with `send/close/status/attemptCount`. Reconnect uses `computeNextBackoff(attempts - 1)` so the first failure waits the smallest delay.
-- `packages/cli/frontend-emulator/src/bridge.test.ts` — 5 tests: backoff schedule, hello serialization, initial open, reconnect after close, failure after max attempts.
-- `packages/cli/frontend-emulator/src/DeckFrame.tsx` — `device` + `deckId` + `onGesture` props; renders keyCount buttons in a `grid` layout with `data-key-count`, `data-columns`, `aria-label`, `aria-pressed`. Mouse events build a buffer via `dispatchMouseEvent` and call `onGesture` when a gesture resolves.
-- `packages/cli/frontend-emulator/src/DeckFrame.test.tsx` — 2 tests: renders keyCount cells, renders each key with aria-label.
-- `packages/cli/frontend-emulator/src/SidePanel.tsx` — connects to WS via `createWsClient` in `useEffect`; renders `ws-url`, `device-model-select`, `deck-list`, `action-log`. Now imports `type { ReactElement }` from react.
-- `packages/cli/frontend-emulator/src/Shell.tsx` — rewires `DeckFrame` to use `device` prop and pass `onGesture` callback that serializes `button-action` messages via `clientRef.current.send`.
+- `packages/cli/emulator/src/gesture.ts` — `dispatchMouseEvent(buffer, event)` builds the gesture buffer, calls `nextGesture` from cli, returns `{ buffer, result }`. `gestureKindToWsMessage(result, deckId)` converts a gesture result to a `button-action` WS message.
+- `packages/cli/emulator/src/gesture.test.ts` — 4 tests: tap, hold, dbl-tap, message conversion.
+- `packages/cli/emulator/src/bridge.ts` — `WS_BACKOFF_DELAYS_MS = [1000, 2000, 4000, 8000, 16000, 30000]`, `WS_MAX_ATTEMPTS = 10`. `createWsClient({ url, token, wsFactory, onOpen, onMessage, onClose, onFailed })` returns a `WsClient` with `send/close/status/attemptCount`. Reconnect uses `computeNextBackoff(attempts - 1)` so the first failure waits the smallest delay.
+- `packages/cli/emulator/src/bridge.test.ts` — 5 tests: backoff schedule, hello serialization, initial open, reconnect after close, failure after max attempts.
+- `packages/cli/emulator/src/DeckFrame.tsx` — `device` + `deckId` + `onGesture` props; renders keyCount buttons in a `grid` layout with `data-key-count`, `data-columns`, `aria-label`, `aria-pressed`. Mouse events build a buffer via `dispatchMouseEvent` and call `onGesture` when a gesture resolves.
+- `packages/cli/emulator/src/DeckFrame.test.tsx` — 2 tests: renders keyCount cells, renders each key with aria-label.
+- `packages/cli/emulator/src/SidePanel.tsx` — connects to WS via `createWsClient` in `useEffect`; renders `ws-url`, `device-model-select`, `deck-list`, `action-log`. Now imports `type { ReactElement }` from react.
+- `packages/cli/emulator/src/Shell.tsx` — rewires `DeckFrame` to use `device` prop and pass `onGesture` callback that serializes `button-action` messages via `clientRef.current.send`.
 
 ## Decisions made
 
@@ -50,8 +50,8 @@ The second vertical slice for Phase 05: the emulator shell's interactive behavio
 ## Smoke
 
 - `pnpm exec vitest run` (root, cli): 224/224 passing
-- `cd packages/cli/frontend-emulator && pnpm exec vitest run`: 15/15 passing
+- `cd packages/cli/emulator && pnpm exec vitest run`: 15/15 passing
 - `pnpm --filter sireno-deck-2 typecheck`: clean
-- `pnpm --filter @sireno-deck-2/frontend-emulator typecheck`: clean
+- `pnpm --filter @sireno-deck-2/emulator typecheck`: clean
 - `pnpm --filter sireno-deck-2 lint`: 0 warnings, 0 errors
 - `pnpm format:check`: clean

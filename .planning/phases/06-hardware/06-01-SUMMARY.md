@@ -29,7 +29,7 @@ The full device layer for Phase 06: enumerate Stream Deck devices, persist a sel
 
 ## Decisions made
 
-- **Phantom `@sireno-deck-2/cli` workspace dep removed**: the frontend-emulator's package.json had `"@sireno-deck-2/cli": "workspace:*"` which doesn't resolve (no such package exists; the alias is via vite config). Removed to unblock `pnpm install`.
+- **Phantom `@sireno-deck-2/cli` workspace dep removed**: the emulator's package.json had `"@sireno-deck-2/cli": "workspace:*"` which doesn't resolve (no such package exists; the alias is via vite config). Removed to unblock `pnpm install`.
 - **`@elgato-stream-deck/node@^9.0.0` → `^7.6.3`**: latest published is 7.6.3, not 9.
 - **`installUdevRules()` doesn't auto-install**: throws `UdevPermissionError` instead. Users run the snippet from `formatInstallInstructions()` (copy-paste-friendly, no `pkexec` flow, no elevation race). Simpler and more honest.
 - **Stale device not in choices list**: per CONTEXT, the saved-but-stale device is "shown as a hint marker" — but the stale device isn't connected, so it can't be selected. Implementation: prompt with only current devices, return `savedButStale: true` so the CLI can warn the user. (Original test expected an in-list hint; revised to assert choices count + values.)

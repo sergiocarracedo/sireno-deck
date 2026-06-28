@@ -12,7 +12,7 @@
    - Uses `gridForKeyCount(model.keyCount)` to determine columns/rows
    - Computes width/height from `buttonSize × cols/rows` (with 16px padding on each side)
 
-2. **Emulator shell sizes iframe to match** (`packages/cli/frontend-emulator/src/DeckFrame.tsx`):
+2. **Emulator shell sizes iframe to match** (`packages/cli/emulator/src/DeckFrame.tsx`):
    - Iframe now has explicit `width: 72 × columns` and `height: 72 × rows` to match the frontend
    - Added `?device=<id>` query param to the iframe URL so frontend knows the device model
    - No more scrollable deck — all buttons visible at correct size
@@ -27,7 +27,7 @@
 ## Files changed
 
 - `packages/cli/frontend/src/components/Deck.tsx`: Device model resolution + dynamic dimensions
-- `packages/cli/frontend-emulator/src/DeckFrame.tsx`: Iframe sized to device model + `?device` query param
+- `packages/cli/emulator/src/DeckFrame.tsx`: Iframe sized to device model + `?device` query param
 
 ## Commit
 

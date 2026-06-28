@@ -7,6 +7,7 @@ status: ready
 # Plan
 
 ## Task 1: Fix `nextGesture` to not emit tap prematurely
+
 - File: `packages/cli/src/core/gesture-state.ts`
 - Change the cleanup at the end of `nextGesture`: instead of emitting `tap` when
   the loop ends in `await-second` state, return `null` so the caller can
@@ -19,10 +20,11 @@ status: ready
   state is `down`/`second-down`).
 - Acceptance: `nextGesture([down, up])` returns `null` (caller must commit
   manually); `nextGesture([down, up, down])` returns `null`; `nextGesture([down,
-  up, down, up])` returns `dbl-tap`.
+up, down, up])` returns `dbl-tap`.
 
 ## Task 2: Fix `dispatchMouseEvent` to use the new contract
-- File: `packages/cli/frontend-emulator/src/gesture.ts`
+
+- File: `packages/cli/emulator/src/gesture.ts`
 - Change the buffer update: when `nextGesture` returns a non-null result, slice
   the buffer to `buffer.slice(result.timestamps.length)` so consumed events are
   dropped.
@@ -37,6 +39,7 @@ status: ready
   receives the final gesture result.
 
 ## Task 3: Verify end-to-end
+
 - Run `pnpm test` to ensure existing gesture + emulator tests still pass.
 - Boot `pnpm dev start --emulator` and verify (via CLI logs) that single
   clicks emit `tap`, double clicks emit `dbl-tap`, and long presses emit

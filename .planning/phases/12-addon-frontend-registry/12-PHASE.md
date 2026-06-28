@@ -28,7 +28,7 @@ Result: the emulator shows buttons labelled with their type name (`CORE:TIME`, `
    - `brightness/frontend.tsx` — `core:brightness` shows a brightness slider/gauge.
 3. **Vite plugin scans addon frontend entries** (`src/vite/virtual-modules.ts`):
    - New virtual module `virtual:sireno/addons/registry` exports `addons: Record<string, { addonName: string; frontendEntry: string; surface: ComponentType<{config, channels}> }>`.
-   - Resolved at frontend build time by the `sirenoDeck2` plugin (already used in both `packages/cli/frontend/vite.config.ts` and `packages/cli/frontend-emulator/vite.config.ts`).
+   - Resolved at frontend build time by the `sirenoDeck2` plugin (already used in both `packages/cli/frontend/vite.config.ts` and `packages/cli/emulator/vite.config.ts`).
 4. **Backend sends `addonName` and `frontendEntry` in deck-config** (`src/cli/commands/emulator-mode.ts:buildDeckConfigMessage`):
    - Each button object now carries: `{ id, type, addonName, frontendEntry, config, position }`.
    - `frontendEntry` is the absolute or Vite-resolvable path to the addon's `frontend.tsx` file.
@@ -73,7 +73,7 @@ packages/cli/frontend/
     __tests__/
       deck-render.test.tsx
 
-packages/cli/frontend-emulator/
+packages/cli/emulator/
   src/App.tsx             # pass addonName + frontendEntry through (Deck unchanged)
 
 src/builtin-addons/

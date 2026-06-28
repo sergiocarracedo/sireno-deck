@@ -19,7 +19,7 @@ The first public release of sireno-deck-2. A complete rewrite of the legacy `sir
 - **WS bridge v3** (`packages/cli/src/render/ws-bridge.ts`): `hello`/`hello-ack` handshake with optional token; 12 message types; `button-action` carries gesture.
 - **Vite plugin** (`packages/cli/src/vite/virtual-modules.ts`, `sirenoDeck2()`): exposes `virtual:sireno/token`, `virtual:sireno/themes/manifest`; writes theme CSS to disk for Tailwind v4 `@source` scanning.
 - **React 19 + Tailwind 4 frontend** (`packages/cli/frontend/`): `<Deck>`, `<ButtonFrame>`, `<ButtonRenderer>`, hooks (`useAddonChannel`, `useDeck`, `useButtonAction`); WS client with exponential backoff.
-- **Emulator shell** (`packages/cli/frontend-emulator/`): device models (mk2=15 keys, plus=32, mini=6, xl=32), mouse-to-gesture state machine, side panel + iframe to the frontend vite dev server.
+- **Emulator shell** (`packages/cli/emulator/`): device models (mk2=15 keys, plus=32, mini=6, xl=32), mouse-to-gesture state machine, side panel + iframe to the frontend vite dev server.
 - **Hardware mode** (`packages/cli/src/render/`): device enumeration + interactive prompt, Playwright `page.screenshot()` + sharp crop + `@elgato-stream-deck/node` write; udev rules helper for Linux.
 - **OS providers** (`packages/cli/src/os-providers/`): Linux (dbus-next, gnome-shell D-Bus, xdotool/ydotool probe, playerctl), macOS (osascript), Windows (PowerShell + UIA).
 - **Built-in themes** (`packages/cli/src/themes/`): `default` + `light`; Tailwind 4 `@theme` directive; ButtonFrame primitive; 4 surfaces (IconLabel, Bars, LabelValueList, SplitAction).

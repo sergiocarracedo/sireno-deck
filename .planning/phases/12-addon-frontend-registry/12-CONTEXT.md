@@ -84,6 +84,7 @@ Skip: `core-buttons`, `internal-settings`, `session` (internal-only, not user-fa
 </specifics>
 
 <canonical_refs>
+
 ## Canonical References
 
 **Downstream agents MUST read these before planning or implementing.**
@@ -101,6 +102,7 @@ Skip: `core-buttons`, `internal-settings`, `session` (internal-only, not user-fa
 </canonical_refs>
 
 <code_context>
+
 ## Existing Code Insights
 
 ### Reusable Assets
@@ -108,7 +110,7 @@ Skip: `core-buttons`, `internal-settings`, `session` (internal-only, not user-fa
 - **`virtual:sireno/addons` virtual module** — already emitted by the vite plugin with `addons: [{ name, main, styles }]`. Currently no frontend imports it. Extend it to emit `virtual:sireno/addons/registry` with `{ type → { addonName, Component } }` (the addon imports per type, mapped from each builtin's `buttons/index.tsx`).
 - **`useAddonChannel<T>(channel)`** — already exists, already tested. Returns the latest payload from `ChannelRegistry`.
 - **`useButtonAction(buttonId)`** — already exists. Returns `(action: string) => void` that publishes to `runtime:button-tap`.
-- **ChannelRegistry** — pub-sub bus in the frontend; subscribes from `WS state` messages, publishes from anywhere. Already used by `frontend/src/App.tsx` and `frontend-emulator/src/App.tsx`.
+- **ChannelRegistry** — pub-sub bus in the frontend; subscribes from `WS state` messages, publishes from anywhere. Already used by `frontend/src/App.tsx` and `emulator/src/App.tsx`.
 - **`buildAddonsImports`** in `virtual-modules.ts` — already builds the JS that imports each addon's frontend. Reuse for the registry.
 
 ### Established Patterns
@@ -137,5 +139,5 @@ Skip: `core-buttons`, `internal-settings`, `session` (internal-only, not user-fa
 
 ---
 
-*Phase: 12-addon-frontend-registry*
-*Context gathered: 2026-06-27*
+_Phase: 12-addon-frontend-registry_
+_Context gathered: 2026-06-27_

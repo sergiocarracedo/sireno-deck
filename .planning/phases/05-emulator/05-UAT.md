@@ -17,9 +17,9 @@ updated: 2026-06-23T22:16:00Z
 expected: `pnpm exec vitest run` reports 224/224 passing across 28 files (was 200 before Phase 05; Phase 05 added 24 in Plan 01).
 result: pass
 
-### 2. frontend-emulator tests pass
+### 2. emulator tests pass
 
-expected: `cd packages/cli/frontend-emulator && pnpm exec vitest run` reports 15/15 passing (Plan 02's 4 shell-render tests + Plan 03's 11 gesture/bridge/DeckFrame tests).
+expected: `cd packages/cli/emulator && pnpm exec vitest run` reports 15/15 passing (Plan 02's 4 shell-render tests + Plan 03's 11 gesture/bridge/DeckFrame tests).
 result: pass
 
 ### 3. cli typecheck clean
@@ -27,9 +27,9 @@ result: pass
 expected: `pnpm --filter sireno-deck-2 typecheck` exits 0.
 result: pass
 
-### 4. frontend-emulator typecheck clean
+### 4. emulator typecheck clean
 
-expected: `pnpm --filter @sireno-deck-2/frontend-emulator typecheck` exits 0.
+expected: `pnpm --filter @sireno-deck-2/emulator typecheck` exits 0.
 result: pass
 
 ### 5. cli lint clean
@@ -54,12 +54,12 @@ result: pass
 
 ### 9. Gesture state machine roundtrip
 
-expected: `pnpm exec vitest run packages/cli/frontend-emulator/src/gesture.test.ts` reports 4 tests passing: tap / hold / dbl-tap / message conversion.
+expected: `pnpm exec vitest run packages/cli/emulator/src/gesture.test.ts` reports 4 tests passing: tap / hold / dbl-tap / message conversion.
 result: pass
 
 ### 10. WS client exponential backoff
 
-expected: `pnpm exec vitest run packages/cli/frontend-emulator/src/bridge.test.ts` reports 5 tests passing including failure after max attempts.
+expected: `pnpm exec vitest run packages/cli/emulator/src/bridge.test.ts` reports 5 tests passing including failure after max attempts.
 result: pass
 
 ## Summary

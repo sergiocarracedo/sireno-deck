@@ -2,7 +2,7 @@
 title: Gesture state machine cross-button dbl-tap detection
 date: 2026-06-27
 category: ui-bugs
-module: frontend-emulator
+module: emulator
 problem_type: ui_bug
 severity: high
 tags: gesture, state-machine, stream-deck, emulator, dbl-tap
@@ -55,14 +55,16 @@ case "await-second":
   break;
 ```
 
-### 2. `packages/cli/frontend-emulator/src/gesture.ts` — buffer cleanup after final gestures
+### 2. `packages/cli/emulator/src/gesture.ts` — buffer cleanup after final gestures
 
 Clear the buffer after `hold` or `dbl-tap` results to prevent unbounded growth:
 
 ```ts
 const newBuffer =
-  result?.kind === "hold" || result?.kind === "dbl-tap" ? [] : [...buffer, newEvent];
-return { buffer: newBuffer, result };
+  result?.kind === 'hold' || result?.kind === 'dbl-tap'
+    ? []
+    : [...buffer, newEvent]
+return { buffer: newBuffer, result }
 ```
 
 ## Why This Works
@@ -70,6 +72,7 @@ return { buffer: newBuffer, result };
 The state machine's `await-second` state tracks a pending second tap. Without the keyIndex check, ANY incoming "down" was interpreted as the second tap, triggering `second-down` → `dbl-tap`. The buffer accumulated across clicks meant that two clicks on DIFFERENT buttons produced a `dbl-tap` result on the first button's keyIndex.
 
 Adding the keyIndex check makes the state machine correctly distinguish:
+
 - Same button, second tap → proceed to `second-down` → `dbl-tap`
 - Different button → reset state, start tracking new gesture
 
@@ -84,5 +87,5 @@ The buffer cleanup prevents unbounded growth across many clicks — the buffer o
 ## Related
 
 - `packages/cli/src/core/gesture-state.test.ts` — gesture state machine unit tests
-- `packages/cli/frontend-emulator/src/gesture.test.ts` — emulator gesture dispatch tests
+- `packages/cli/emulator/src/gesture.test.ts` — emulator gesture dispatch tests
 - Quick Task 005 (`005-gesture-and-cleanup/`) — related gesture threshold tuning (500ms hold, 500ms dbl-tap window)

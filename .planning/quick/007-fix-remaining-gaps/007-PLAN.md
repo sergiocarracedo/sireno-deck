@@ -5,20 +5,20 @@ autonomous: true
 must_haves:
   truths:
     - "The brightness addon's poller reads the real screen brightness via the new OS provider instead of returning 0"
-    - "methods.pasteText writes the given text to the OS clipboard via the new clipboard provider"
-    - "Both providers follow the existing OS provider pattern (createLinux/createDarwin/createWindows + index dispatch)"
-    - "Both providers return null on unsupported platforms instead of throwing"
+    - 'methods.pasteText writes the given text to the OS clipboard via the new clipboard provider'
+    - 'Both providers follow the existing OS provider pattern (createLinux/createDarwin/createWindows + index dispatch)'
+    - 'Both providers return null on unsupported platforms instead of throwing'
   artifacts:
-    - "packages/cli/src/system/brightness/{index,linux,darwin,windows}.ts + linux.test.ts"
-    - "packages/cli/src/system/clipboard/{index,linux,darwin,windows}.ts + linux.test.ts"
-    - "packages/cli/src/deck/methods.ts has setClipboardProvider + wired pasteText"
-    - "packages/cli/src/deck/methods.test.ts has pasteText test with a fake provider"
-    - "packages/cli/src/builtin-addons/brightness/poller.ts reads from the new provider"
-    - "packages/cli/src/cli/commands/run.ts wires both providers (setKeyMacroProvider, setClipboardProvider) and passes brightness to the addon poller"
-    - ".planning/v0.1.0-MILESTONE-AUDIT.md updated: gaps closed, status: passed"
+    - 'packages/cli/src/system/brightness/{index,linux,darwin,windows}.ts + linux.test.ts'
+    - 'packages/cli/src/system/clipboard/{index,linux,darwin,windows}.ts + linux.test.ts'
+    - 'packages/cli/src/deck/methods.ts has setClipboardProvider + wired pasteText'
+    - 'packages/cli/src/deck/methods.test.ts has pasteText test with a fake provider'
+    - 'packages/cli/src/builtin-addons/brightness/poller.ts reads from the new provider'
+    - 'packages/cli/src/cli/commands/run.ts wires both providers (setKeyMacroProvider, setClipboardProvider) and passes brightness to the addon poller'
+    - '.planning/v0.1.0-MILESTONE-AUDIT.md updated: gaps closed, status: passed'
   key_links:
-    - "AddonPoller deps: extend AddonPollerDependencies with brightnessProvider"
-    - "State-publisher cadence unchanged"
+    - 'AddonPoller deps: extend AddonPollerDependencies with brightnessProvider'
+    - 'State-publisher cadence unchanged'
 ---
 
 # Plan: Quick 007 — fix remaining gaps
@@ -56,7 +56,7 @@ must_haves:
   - Update `pasteText throws NotImplementedError` → "without a provider".
   - Add new test: `pasteText calls the provider's writeText when wired`.
 - File: `packages/cli/src/cli/commands/run.ts` — instantiate `createClipboardProvider`; pass to `createDeckRuntime`; `methods.setClipboardProvider(clipboard)`.
-- File: `packages/cli/frontend-emulator/src/App.tsx` — no change (we don't expose paste from the frontend).
+- File: `packages/cli/emulator/src/App.tsx` — no change (we don't expose paste from the frontend).
 - Tests: `pnpm test packages/cli/src/system/clipboard` (new), `pnpm test` (full suite).
 - Verify: emulator integration test (optional, can skip — manual).
 

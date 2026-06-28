@@ -10,7 +10,7 @@
    - **dbltap**: two press/release cycles within 500ms window
    - **hold**: press + release after 500ms
 
-2. **Transparent emulator buttons** (`packages/cli/frontend-emulator/src/DeckFrame.tsx`): removed all crystal styling (`bg-gradient-to-b`, `shadow-*`, etc.). Buttons are now `opacity-0` with subtle hover/press feedback so real frontend buttons show through.
+2. **Transparent emulator buttons** (`packages/cli/emulator/src/DeckFrame.tsx`): removed all crystal styling (`bg-gradient-to-b`, `shadow-*`, etc.). Buttons are now `opacity-0` with subtle hover/press feedback so real frontend buttons show through.
 
 3. **Clean frontend** (`packages/cli/frontend/src/App.tsx`): removed debug `<header>` showing "deck name · ws · theme". Frontend now renders ONLY the Deck component.
 
@@ -24,7 +24,7 @@
 ## Files changed
 
 - `packages/cli/src/core/gesture-state.ts`: Updated threshold constants
-- `packages/cli/frontend-emulator/src/DeckFrame.tsx`: Removed crystal styling
+- `packages/cli/emulator/src/DeckFrame.tsx`: Removed crystal styling
 - `packages/cli/frontend/src/App.tsx`: Removed debug header
 
 ## Commit

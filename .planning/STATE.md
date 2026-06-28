@@ -19,6 +19,7 @@ All 11 phases complete. 464/464 tests pass. Documentation released.
 End-to-end pipeline: addon manifests → vite plugin registry → buildDeckConfigMessage adds `addonName` + `frontendEntry` → frontend Deck.tsx renders addon components → `useAddonChannel` subscribes → CLI StatePublisher polls OS state and broadcasts via WS.
 
 **Wire-up complete (commit `8fcb188`):**
+
 - `runEmulatorLifecycle` instantiates StatePublisher via `runEmulatorMode.onBridgeReady`
 - 6 builtin addon pollers registered (date-time, weather, system-status, media-player, value-display, brightness)
 - Subscribes to `runtime:activeDeck` and starts/stops polling per the visible addon set
@@ -91,7 +92,7 @@ Captured 2026-06-27 after quick task 010 ("show button type as label fallback").
 
 - Device models (mk2=15, plus=32, mini=6, xl=32) + emulator server
 - VirtualStreamDeckLifecycle with `injectKeyEvent`
-- frontend-emulator workspace pkg (Vite + React 19 + Tailwind 4, jsdom test env)
+- emulator workspace pkg (Vite + React 19 + Tailwind 4, jsdom test env)
 - Side panel + center iframe approach replaced with direct DeckFrame grid in Shell
 - Mouse → gesture via cli `nextGesture` (tap/dbl-tap/hold)
 - WS client with exponential backoff
@@ -122,21 +123,21 @@ None.
 - npm addon loader — Phase 10
 - Real CLI run/start wiring — Phase 06 (done)
 - Emulator shell (originally centered iframe) — replaced with direct DeckFrame grid; design decision in Phase 05
-- frontend-emulator lint script — still missing (typecheck + format cover surface)
+- emulator lint script — still missing (typecheck + format cover surface)
 - Udev rules auto-install via pkexec — manually copied by user; Phase 06 design decision
 
 ## Quick Tasks Completed
 
-| # | Description | Date | Commit | Directory |
-|---|-------------|------|--------|-----------|
-| 003 | Correct button size (72x72px) + render real buttons | 2026-06-27 | 6ab6fe4 | `.planning/quick/003-correct-button-size/` |
-| 004 | Emulator button fixes (cross-button dbl-tap + crystal visuals) | 2026-06-27 | 3b221c5 | `.planning/quick/004-emulator-button-fixes/` |
-| 005 | Gesture thresholds (500ms) + transparent emulator buttons + clean frontend | 2026-06-27 | 8a5fccf | `.planning/quick/005-gesture-and-cleanup/` |
-| 006 | Frontend forces deck dimensions based on device model | 2026-06-27 | 28ec043 | `.planning/quick/006-deck-dimensions/` |
-| 007 | Share BUTTON_SIZE_PX constant frontend↔emulator | 2026-06-27 | 70233d9 | (no quick dir) |
-| 008 | Respect button position + add gap + match emulator frame | 2026-06-27 | 583d849 | (no quick dir) |
-| 009 | Deck grid background is always black | 2026-06-27 | 8f40011 | (no quick dir) |
-| 010 | Show button type as label fallback (until addon frontend registry) | 2026-06-27 | 5a2c40f | (no quick dir) |
-| 011 | Add phase 12 (addon-frontend-registry) to roadmap | 2026-06-27 | 7de539c | (no quick dir) |
+| #   | Description                                                                | Date       | Commit  | Directory                                    |
+| --- | -------------------------------------------------------------------------- | ---------- | ------- | -------------------------------------------- |
+| 003 | Correct button size (72x72px) + render real buttons                        | 2026-06-27 | 6ab6fe4 | `.planning/quick/003-correct-button-size/`   |
+| 004 | Emulator button fixes (cross-button dbl-tap + crystal visuals)             | 2026-06-27 | 3b221c5 | `.planning/quick/004-emulator-button-fixes/` |
+| 005 | Gesture thresholds (500ms) + transparent emulator buttons + clean frontend | 2026-06-27 | 8a5fccf | `.planning/quick/005-gesture-and-cleanup/`   |
+| 006 | Frontend forces deck dimensions based on device model                      | 2026-06-27 | 28ec043 | `.planning/quick/006-deck-dimensions/`       |
+| 007 | Share BUTTON_SIZE_PX constant frontend↔emulator                            | 2026-06-27 | 70233d9 | (no quick dir)                               |
+| 008 | Respect button position + add gap + match emulator frame                   | 2026-06-27 | 583d849 | (no quick dir)                               |
+| 009 | Deck grid background is always black                                       | 2026-06-27 | 8f40011 | (no quick dir)                               |
+| 010 | Show button type as label fallback (until addon frontend registry)         | 2026-06-27 | 5a2c40f | (no quick dir)                               |
+| 011 | Add phase 12 (addon-frontend-registry) to roadmap                          | 2026-06-27 | 7de539c | (no quick dir)                               |
 
 Last activity: 2026-06-27 - Phase 09 executed and verified; phase 12 added to roadmap; quick tasks 007-011 committed (emulator polish + roadmap plan)

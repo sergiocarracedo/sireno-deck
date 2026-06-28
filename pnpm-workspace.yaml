@@ -1,4 +1,4 @@
 packages:
   - packages/*
   - packages/cli/frontend
-  - packages/cli/frontend-emulator
+  - packages/cli/emulator

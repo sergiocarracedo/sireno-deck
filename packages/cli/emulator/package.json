@@ -1,5 +1,5 @@
 {
-  "name": "@sireno-deck-2/frontend-emulator",
+  "name": "@sireno-deck-2/emulator",
   "version": "0.1.0",
   "private": true,
   "type": "module",

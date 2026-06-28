@@ -15,7 +15,7 @@ Foundation for Phase 05 — three small modules:
 
 1. **device/models.ts** — Static catalog of supported Stream Deck models (mk2=15, plus=32, mini=6, xl=32) with `keyCount`, `columns`, `rows`. Helpers: `getDeviceModel(id)`, `isKnownDeviceModel(id)`, `resolveKeyCount(id | undefined)`, `gridForKeyCount(keyCount)` (also handles 1/2/3/8 + arbitrary counts via sqrt-based layout).
 2. **system/virtual-stream-deck.ts** — EventEmitter-based `VirtualStreamDeckLifecycle` for emulator mode. `injectKey(type, keyIndex)` (range-checked), `injectKeyEvent(event)`, `onKeyEvent(handler)` (returns unsubscribe), `clear()`. Optional `autoTimestamp` flag (default `true`) — auto uses `Date.now()`, manual uses `0` for deterministic testing.
-3. **render/emulator-server.ts** — Spawn manager for the frontend-emulator Vite dev server. Parses `READY <port>` line from stdout. `closeEmulator` does SIGTERM → 2-second wait → SIGKILL. `parseReadyLine` is exported for direct testing.
+3. **render/emulator-server.ts** — Spawn manager for the emulator Vite dev server. Parses `READY <port>` line from stdout. `closeEmulator` does SIGTERM → 2-second wait → SIGKILL. `parseReadyLine` is exported for direct testing.
 
 ## Key files
 

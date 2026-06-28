@@ -11,7 +11,7 @@ Goal: a second vite dev server that renders a side panel + iframe. The iframe em
 ## Outcomes
 
 1. `src/render/emulator-server.ts` — vite spawn manager for emulator mode.
-2. `packages/cli/frontend-emulator/` — separate Vite React app (the shell).
+2. `packages/cli/emulator/` — separate Vite React app (the shell).
    - Side panel: deck picker, action log, WS message log, state inspector.
    - Center: iframe pointing at frontend vite URL.
    - Gesture state machine: mouse down/up/timestamp → `tap | dbl-tap | hold` → `button-action` over WS.
@@ -35,7 +35,7 @@ src/device/
   models.ts       # --device-model → { keyCount, columns, rows }
   models.test.ts
 
-packages/cli/frontend-emulator/
+packages/cli/emulator/
   vite.config.ts
   index.html
   src/
