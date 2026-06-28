@@ -14,6 +14,8 @@ const BUTTON_SIZE = BUTTON_SIZE_PX;
 const BUTTON_GAP_PX = 8;
 const DECK_PADDING_PX = 16;
 
+const isCompact = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("compact");
+
 export interface DeckButton {
   id: string;
   type: string;
@@ -71,16 +73,18 @@ interface AddonRegistryEntry {
 export const Deck = ({ deck, onNavigate, onAction, children }: DeckProps) => {
   const model = resolveDeviceModel();
   const { columns, rows } = gridForKeyCount(model.keyCount);
-  const width = columns * BUTTON_SIZE + (columns - 1) * BUTTON_GAP_PX + DECK_PADDING_PX * 2;
-  const height = rows * BUTTON_SIZE + (rows - 1) * BUTTON_GAP_PX + DECK_PADDING_PX * 2;
+  const gap = isCompact ? 0 : BUTTON_GAP_PX;
+  const pad = isCompact ? 0 : DECK_PADDING_PX;
+  const width = columns * BUTTON_SIZE + (columns - 1) * gap + pad * 2;
+  const height = rows * BUTTON_SIZE + (rows - 1) * gap + pad * 2;
   return (
     <div
-      className="grid rounded-xl bg-neutral-950 p-4"
+      className={`grid rounded-xl bg-neutral-950 ${isCompact ? "p-0" : "p-4"}`}
       style={
         {
           gridTemplateColumns: `repeat(${columns}, ${BUTTON_SIZE}px)`,
           gridTemplateRows: `repeat(${rows}, ${BUTTON_SIZE}px)`,
-          gap: `${BUTTON_GAP_PX}px`,
+          gap: `${gap}px`,
           width,
           height,
         } as CSSProperties

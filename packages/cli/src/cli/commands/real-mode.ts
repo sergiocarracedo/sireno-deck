@@ -18,7 +18,7 @@ export interface RealModeHandle {
 
 export const runRealMode = async (options: RunRealModeOptions): Promise<RealModeHandle> => {
   const renderer = new BrowserRenderer({
-    frontendUrl: options.frontendUrl,
+    frontendUrl: `${options.frontendUrl}?compact=1`,
     device: options.device,
     logger: options.logger,
     ...(options.intervalMs !== undefined ? { intervalMs: options.intervalMs } : {}),
