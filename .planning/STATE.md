@@ -1,8 +1,8 @@
 ---
-current_phase: 13-ui-alignment
-phase_status: complete
-plans_total: 3
-plans_complete: 3
+current_phase: 14-media-player-backend
+phase_status: not-started
+plans_total: 0
+plans_complete: 0
 last_updated: 2026-06-28
 ---
 
@@ -127,6 +127,10 @@ Legacy visual alignment: theme CSS tokens match v1 exact hex values (#2e3540 bg,
 ## Active subagent tasks
 
 None.
+
+## Roadmap Evolution
+
+- Phase 14 added: Media player backend — wire poller to OS media provider (playerctl), publish real state, execute transport actions via backend
 
 ## Deferred items
 

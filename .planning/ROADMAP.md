@@ -1,7 +1,7 @@
 ---
 milestone: v0.1.0
 title: Stream Deck CLI + addon system + emulator
-phases_total: 13
+phases_total: 14
 created: 2026-06-23
 ---
 
@@ -33,7 +33,8 @@ CLI runs, loads `config.yml`, registers addons, drives an emulator or real hardw
 | 10  | daemon-polish  | ✅ done | `start`/`stop`/`status` real implementation, PID + token files, prod HTTP server (token injection), graceful shutdown, npm addon loader            |
 | 11  | release        | ✅ done | README + per-addon docs, `pnpm package` script, v0.1.0 release                                                                                     |
 | 12  | addon-frontend | ✅ done | Frontend addon registry: each addon ships a `frontend.tsx` React component; backend adds `addonName` + `frontendEntry` to deck-config buttons; frontend Deck dynamically imports + renders the component inside `<ButtonFrame>`; surfaces subscribe to state channels via `ChannelRegistry`. Goal: emulator/frontend shows real button surfaces (clock, weather widget, system bars) — not just type-name labels. |
-| 13  | ui-alignment   | ✅ done | Port the legacy default theme's ButtonFrame, Text component with rich markup (`<blink>`, `<dim>`, tones, sizes), Icon, Label, Chip, TapIndicator, and surfaces (IconLabel, Bars, LabelValueList, SplitAction) to match the legacy visual style exactly. The emulator/frontend should be visually indistinguishable from the legacy `sireno-deck` v1. |
+| 13  | ui-alignment        | ✅ done      | Port the legacy default theme's ButtonFrame, Text component with rich markup (`<blink>`, `<dim>`, tones, sizes), Icon, Label, Chip, TapIndicator, and surfaces (IconLabel, Bars, LabelValueList, SplitAction) to match the legacy visual style exactly. The emulator/frontend should be visually indistinguishable from the legacy `sireno-deck` v1. |
+| 14  | media-player-backend | 🔴 not started | Wire the media-player addon backend to the OS media provider abstraction (`playerctl` on Linux). Poller queries playerctl for status/position/length/title/artist/source and publishes real state via `media-player:state` channel. Frontend uses legacy Surface component (status glyph, progress bar, title/artist/time). Actions (play/pause/next/prev/vol up/down) dispatch through the OS provider. |
 
 ## Traceability
 
