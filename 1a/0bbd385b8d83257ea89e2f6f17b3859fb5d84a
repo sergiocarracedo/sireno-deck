@@ -1,0 +1,19 @@
+.planning/phases/13-ui-alignment/13-03-SUMMARY.md
+  s_8ca911650149ee::t_e7220bcd67b13d 1-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "1a0bbd385b8d83257ea89e2f6f17b3859fb5d84a",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
