@@ -50,15 +50,17 @@ const CoreTime = ({ config }: ComponentProps) => {
       {(now) => {
         const hh = String(now.getHours()).padStart(2, "0");
         const mm = String(now.getMinutes()).padStart(2, "0");
+        const big = variant === "big";
         return (
           <Text
-            size={variant === "big" ? "2xl" : "lg"}
-            typography="mono"
+            size={big ? "xl" : "lg"}
+            typography="main"
             tone="fg"
-            fit="shrink"
+            fit="wrap"
+            lineHeight={big ? 0.80 : 1}
           >
-            {variant === "big"
-              ? `<2xl>${hh}</2xl><dim>.</dim><2xl>${mm}</2xl>`
+            {big
+              ? `<3xl> *${hh}*<blink>.</blink>| ${mm} </3xl>`
               : `${hh}:${mm}`}
           </Text>
         );

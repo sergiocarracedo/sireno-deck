@@ -16,6 +16,7 @@ export interface TextProps {
   tone?: TextTone;
   typography?: TextTypography;
   size?: TextSize;
+  lineHeight?: number | string;
 }
 
 const ALIGN_CLASS: Record<TextAlign, string> = {
@@ -144,7 +145,7 @@ const renderRichTextNodes = (nodes: ReadonlyArray<RichTextNode>, keyPrefix: stri
     const key = `${keyPrefix}-${idx}`;
     if (node.type === "text") return node.value;
     if (node.type === "line-break") {
-      return <span key={key} data-sireno-rich-text-tag="line-break" />;
+      return <span key={key} className="sireno-rich-text-break" data-sireno-rich-text-tag="line-break" />;
     }
     if (node.tag === "blink") {
       return (
@@ -153,8 +154,8 @@ const renderRichTextNodes = (nodes: ReadonlyArray<RichTextNode>, keyPrefix: stri
         </span>
       );
     }
-    const classes: string[] = [];
-    if (node.tag === "highlight") classes.push("font-bold", TONE_CLASS.accent);
+    const classes: string[] = ["!leading-[inherit]"];
+    if (node.tag === "highlight") classes.push("sireno-rich-text-strong", TONE_CLASS.primary);
     else if (node.tag === "dim") classes.push("text-muted");
     else classes.push(TONE_CLASS[node.tag as TextTone] ?? SIZE_CLASS[node.tag as TextSize] ?? "");
     return (
@@ -181,6 +182,7 @@ export const Text = ({
   tone = "fg",
   typography = "main",
   size = "md",
+  lineHeight = 1,
 }: TextProps): ReactElement => {
   const renderedChildren = renderTextChildren(children);
   const fitClasses: Record<TextFit, string> = {
@@ -200,6 +202,7 @@ export const Text = ({
         ALIGN_CLASS[align],
         SIZE_CLASS[size],
         fitClasses[fit],
+        lineHeight !== 1 ? `!leading-[${lineHeight}]` : "",
         className ?? "",
       ]
         .filter(Boolean)

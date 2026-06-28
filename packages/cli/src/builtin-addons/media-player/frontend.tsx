@@ -1,13 +1,18 @@
 import { Text } from "@sireno-deck-2/cli";
 import { useAddonChannel } from "sireno-deck-2/react";
+import { MediaSurface } from "./components/MediaSurface";
 
 interface MediaState {
   readonly title: string | null;
   readonly artist: string | null;
+  readonly source?: string | null;
   readonly isPlaying: boolean;
   readonly volume: number;
   readonly canGoNext: boolean;
   readonly canGoPrev: boolean;
+  readonly progress?: number;
+  readonly time?: string;
+  readonly status?: "play" | "pause" | "stop" | null;
 }
 
 const GLYPHS = {
@@ -30,17 +35,22 @@ const Component = ({ buttonType }: { buttonType?: string }) => {
 
   if (bt === "core:media-player" && data !== null && data !== undefined) {
     return (
-      <span className="flex h-full w-full flex-col items-center justify-center gap-0.5">
-        <Text size="2xl" tone="primary">{glyph}</Text>
-        {data.title !== null && (
-          <Text size="xs" tone="fg" fit="ellipsis">{data.title}</Text>
-        )}
-        {data.artist !== null && (
-          <Text size="xs" tone="muted" fit="ellipsis">{data.artist}</Text>
-        )}
-        <Text size="xs" tone="accent">
-          {data.isPlaying ? "Playing" : "Paused"}
-        </Text>
+      <MediaSurface
+        title={data.title ?? ""}
+        artist={data.artist ?? ""}
+        source={data.source ?? ""}
+        progress={data.progress ?? 0}
+        time={data.time ?? ""}
+        status={data.status ?? (data.isPlaying ? "play" : "pause")}
+      />
+    );
+  }
+
+  if (bt === "core:media-player") {
+    return (
+      <span className="flex h-full w-full flex-col items-center justify-center gap-1">
+        <Text size="3xl" tone="primary">{glyph}</Text>
+        <Text size="xs" tone="fg" typography="aux">{label}</Text>
       </span>
     );
   }
