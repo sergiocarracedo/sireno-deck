@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { useAddonChannel } from "sireno-deck-2/react";
-import { Text } from "@sireno-deck-2/cli/src/themes/default/components/Text.tsx";
+import { Text } from "@sireno-deck-2/cli";
 
 interface ComponentProps {
   readonly config: unknown;
