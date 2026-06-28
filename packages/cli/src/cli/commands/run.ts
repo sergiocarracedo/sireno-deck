@@ -31,8 +31,8 @@ import {
 
 import { runRealMode } from "./real-mode";
 import { runEmulatorMode } from "./emulator-mode";
-import { collectBuiltinAddonRegistry } from "./addon-registry.ts";
 import { discoverAddonPollers } from "./addon-registry.ts";
+import { createBrightnessProvider } from "@/system/brightness";
 import { StatePublisher } from "@/render/state-publisher.ts";
 
 export interface SignalProvider {
@@ -355,6 +355,17 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     env,
     logger,
   });
+  let emulatorBrightness = null;
+  try {
+    emulatorBrightness = createBrightnessProvider({
+      executor: commandExecutor,
+      platform,
+      env,
+      logger,
+    });
+  } catch {
+    emulatorBrightness = null;
+  }
 
   const signals = options.signals ?? defaultSignals;
   const unregister = signals.onSignal(() => {
@@ -376,7 +387,11 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     onBridgeReady: async (bridge) => {
       const realPublisher = new StatePublisher({ bridge, logger });
       const pollers = await discoverAddonPollers(
-        { executor: emulatorExecutor, mediaProvider: emulatorMedia },
+        {
+          executor: emulatorExecutor,
+          mediaProvider: emulatorMedia,
+          brightnessProvider: emulatorBrightness,
+        },
         registry.scanned,
       );
       for (const poller of pollers) {

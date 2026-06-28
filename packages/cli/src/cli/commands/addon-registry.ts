@@ -132,6 +132,7 @@ export interface DiscoveredAddonPoller {
 export interface AddonPollerDependencies {
   readonly executor?: unknown;
   readonly mediaProvider?: unknown;
+  readonly brightnessProvider?: unknown;
 }
 
 export const discoverAddonPollers = async (

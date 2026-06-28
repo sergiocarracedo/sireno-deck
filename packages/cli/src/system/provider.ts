@@ -60,6 +60,23 @@ export interface MediaProvider {
   stop(): Promise<void>;
 }
 
+export interface BrightnessReading {
+  readonly value: number;
+  readonly max: number;
+}
+
+export interface BrightnessProvider {
+  getCurrent(): Promise<BrightnessReading>;
+  setBrightness(value: number): Promise<void>;
+  stop(): Promise<void>;
+}
+
+export interface ClipboardProvider {
+  writeText(text: string): Promise<void>;
+  readText(): Promise<string>;
+  stop(): Promise<void>;
+}
+
 export const withTimeout = async <T>(promise: Promise<T>, ms: number): Promise<T> => {
   let timer: ReturnType<typeof setTimeout> | null = null;
   const timeout = new Promise<never>((_resolve, reject) => {
@@ -127,6 +144,23 @@ export const createNullKeyMacroProvider = (logger?: pino.Logger): KeyMacroProvid
   return {
     async sendKey(_comboOrText: string): Promise<void> {
       throw new ProviderError("NOT_AVAILABLE", "Key-macro provider not available on this platform");
+    },
+    async stop() {
+      return;
+    },
+  };
+};
+
+export const createNullBrightnessProvider = (logger?: pino.Logger): BrightnessProvider => {
+  if (logger) {
+    logger.warn({ provider: "brightness" }, "OS brightness provider unavailable, using null provider");
+  }
+  return {
+    async getCurrent(): Promise<BrightnessReading> {
+      return { value: 0, max: 100 };
+    },
+    async setBrightness(_value: number): Promise<void> {
+      throw new ProviderError("NOT_AVAILABLE", "Brightness provider not available on this platform");
     },
     async stop() {
       return;
