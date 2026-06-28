@@ -37,18 +37,31 @@ const wsUrl = (): string => {
   return ENV_WS_URL;
 };
 
-const buildThemeContext = (): ThemeContextValue | null => {
-  if (!activeTheme) return null;
-  return {
-    name: activeTheme.name,
-    cssPath: "",
-    frontendPath: activeTheme.frontendPath,
-    theme: {
+const buildThemeContext = (): ThemeContextValue => {
+  if (activeTheme) {
+    return {
       name: activeTheme.name,
-      apiVersion: 3,
-      source: { kind: "builtin", resolvedPath: activeTheme.frontendPath },
       cssPath: "",
       frontendPath: activeTheme.frontendPath,
+      theme: {
+        name: activeTheme.name,
+        apiVersion: 3,
+        source: { kind: "builtin", resolvedPath: activeTheme.frontendPath },
+        cssPath: "",
+        frontendPath: activeTheme.frontendPath,
+      },
+    };
+  }
+  return {
+    name: "default",
+    cssPath: "",
+    frontendPath: "",
+    theme: {
+      name: "default",
+      apiVersion: 3,
+      source: { kind: "builtin", resolvedPath: "" },
+      cssPath: "",
+      frontendPath: "",
     },
   };
 };
@@ -57,7 +70,7 @@ let _wsClientInitialized = false;
 
 export const App = () => {
   const [deck, setDeck] = useState(MOCK_DECK);
-  const [theme] = useState<ThemeContextValue | null>(() => buildThemeContext());
+  const [theme] = useState<ThemeContextValue>(() => buildThemeContext());
   const clientRef = useRef<WsClient | null>(null);
 
   useEffect(() => {
@@ -92,14 +105,6 @@ export const App = () => {
       client.close();
     };
   }, []);
-
-  if (!theme) {
-    return (
-      <main className="bg-bg text-fg flex min-h-screen items-center justify-center font-mono text-xs uppercase tracking-widest text-muted">
-        No theme configured
-      </main>
-    );
-  }
 
   return (
     <ThemeProvider value={theme}>
