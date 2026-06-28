@@ -1,0 +1,31 @@
+packages/cli/src/builtin-addons/system-status/buttons/system-status.tsx
+  s_8ca911650149ee::t_bfb0de42857f34 4-5
+packages/cli/src/builtin-addons/value-display/buttons/value-display.tsx
+  s_8ca911650149ee::t_d9a0a5d6ff5467 5
+packages/cli/src/builtin-addons/weather/buttons/weather.tsx
+  s_8ca911650149ee::t_30b5b729cbd3a7 4-5
+packages/cli/src/builtin-addons/brightness/buttons/brightness.tsx
+  s_8ca911650149ee::t_fb2dc02624f186 2
+packages/cli/src/index.ts
+  s_8ca911650149ee::t_0fce8f6e8fb054 24
+packages/cli/src/builtin-addons/date-time/buttons/index.tsx
+  s_8ca911650149ee::t_55c80f44c11674 4
+packages/cli/src/builtin-addons/media-player/buttons/media-player.tsx
+  s_8ca911650149ee::t_2f68abf00d1da7 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "c55a3489c4d46523ef23b2c6bf80e0cbc6956b07",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
