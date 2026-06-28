@@ -388,6 +388,15 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
   const registry = collectBuiltinAddonRegistry();
   const statePublisher = new StatePublisher({ bridge: { broadcast: () => undefined }, logger });
 
+  if (process.env["SIRENO_ADDONS"] === undefined) {
+    const addonSpecs = registry.scanned.map((s) => ({
+      name: s.name,
+      frontend: s.frontendEntry !== null ? { main: s.frontendEntry } : undefined,
+      buttons: s.types.map((t) => ({ type: t })),
+    }));
+    process.env["SIRENO_ADDONS"] = JSON.stringify(addonSpecs);
+  }
+
   const handle = await runEmulatorMode({
     logger,
     activeTheme: { name: process.env["SIRENO_THEME_NAME"] ?? "default" },

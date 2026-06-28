@@ -43,6 +43,16 @@ const defaultTheme = {
 
 const theme = parseThemeFromEnv() ?? defaultTheme;
 
+const addonsFromEnv = () => {
+  const blob = process.env["SIRENO_ADDONS"];
+  if (blob === undefined || blob.length === 0) return undefined;
+  try {
+    return JSON.parse(blob) as Array<{ name: string; frontend?: { main: string; styles?: string[] }; buttons?: Array<{ type: string }> }>;
+  } catch {
+    return undefined;
+  }
+};
+
 export default defineConfig({
   plugins: [
     react(),
@@ -50,6 +60,7 @@ export default defineConfig({
     sirenoDeck2({
       token: process.env["SIRENO_TOKEN"] ?? "",
       theme,
+      ...(addonsFromEnv() !== undefined ? { addons: addonsFromEnv()! } : {}),
     }),
   ],
   resolve: {
