@@ -1,0 +1,34 @@
+packages/cli/src/builtin-addons/system-status/frontend.tsx
+  s_8ca911650149ee::t_5977734bc0e750 1,34-36,53,56-57
+packages/cli/emulator/.sireno-deck-2/theme.css
+  s_8ca911650149ee::t_7512a783606b5e 3-19
+packages/cli/src/builtin-addons/weather/frontend.tsx
+  s_8ca911650149ee::t_c83044ae9df4de 1,22,24,30,32-34,36,39-40,42,44
+packages/cli/src/builtin-addons/brightness/frontend.tsx
+  s_8ca911650149ee::t_44fb8d164bcfe0 1,19,21,27-29,31,34,36
+packages/cli/src/builtin-addons/date-time/frontend.tsx
+  s_8ca911650149ee::t_615335a4e04e6e 114-145
+  s_8ca911650149ee::t_e14aba66853b35 240,242
+packages/cli/src/builtin-addons/media-player/frontend.tsx
+  s_8ca911650149ee::t_8e76e859a49722 1,17,19,23,25-28,31,38
+packages/cli/src/builtin-addons/value-display/frontend.tsx
+  s_8ca911650149ee::t_1b2f4907f8aca0 1,19,21,25,28-29,32
+.planning/phases/13-ui-alignment/13-02-SUMMARY.md
+  s_8ca911650149ee::t_ddd8eb57295e1c 1-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "71b3af4bcff984b5494e9efc062579b93a69a065",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
