@@ -168,6 +168,23 @@ export const createNullBrightnessProvider = (logger?: pino.Logger): BrightnessPr
   };
 };
 
+export const createNullClipboardProvider = (logger?: pino.Logger): ClipboardProvider => {
+  if (logger) {
+    logger.warn({ provider: "clipboard" }, "OS clipboard provider unavailable, using null provider");
+  }
+  return {
+    async writeText(_text: string): Promise<void> {
+      throw new ProviderError("NOT_AVAILABLE", "Clipboard provider not available on this platform");
+    },
+    async readText(): Promise<string> {
+      throw new ProviderError("NOT_AVAILABLE", "Clipboard provider not available on this platform");
+    },
+    async stop() {
+      return;
+    },
+  };
+};
+
 export const createNullMediaProvider = (logger?: pino.Logger): MediaProvider => {
   if (logger) {
     logger.warn({ provider: "media" }, "OS media provider unavailable, using null provider");

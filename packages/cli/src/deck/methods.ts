@@ -6,7 +6,7 @@ import { NotImplementedError } from "@/util/errors.ts";
 import { isValidKey, knownKeys, parseCombo, type ParsedCombo } from "@/system/key-macro/parser.ts";
 
 import type { ActionExecutor, ActionExecutorOptions } from "@/action/executor.ts";
-import type { KeyMacroProvider } from "@/system/provider";
+import type { ClipboardProvider, KeyMacroProvider } from "@/system/provider";
 import type { Runtime, RuntimeDeck } from "./runtime.ts";
 
 export interface KeyMacroAction {
@@ -22,6 +22,7 @@ export interface MethodsContext {
   executor: ActionExecutor;
   logger: pino.Logger;
   keyMacroProvider?: KeyMacroProvider;
+  clipboardProvider?: ClipboardProvider;
 }
 
 export interface Methods {
@@ -38,12 +39,17 @@ export interface Methods {
   publish<T>(channel: string, payload: T): void;
   subscribe<T>(channel: string, cb: (payload: T) => void): () => void;
   setKeyMacroProvider(provider: KeyMacroProvider): void;
+  setClipboardProvider(provider: ClipboardProvider): void;
 }
 
 export const createMethods = (ctx: MethodsContext): Methods => {
   let keyMacroProvider: KeyMacroProvider | undefined = ctx.keyMacroProvider;
+  let clipboardProvider: ClipboardProvider | undefined = ctx.clipboardProvider;
   const setKeyMacroProvider: Methods["setKeyMacroProvider"] = (provider) => {
     keyMacroProvider = provider;
+  };
+  const setClipboardProvider: Methods["setClipboardProvider"] = (provider) => {
+    clipboardProvider = provider;
   };
 
   const navigateToDeck: Methods["navigateToDeck"] = (args) => {
@@ -101,10 +107,13 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     await keyMacroProvider.sendKey(combo);
   };
 
-  const pasteText: Methods["pasteText"] = async () => {
-    throw new NotImplementedError(
-      "methods.pasteText requires a clipboard provider (planned for Phase 13)",
-    );
+  const pasteText: Methods["pasteText"] = async (text) => {
+    if (clipboardProvider === undefined) {
+      throw new NotImplementedError(
+        "methods.pasteText requires a clipboardProvider (set via methods.setClipboardProvider)",
+      );
+    }
+    await clipboardProvider.writeText(text);
   };
 
   return {
@@ -118,6 +127,7 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     publish,
     subscribe,
     setKeyMacroProvider,
+    setClipboardProvider,
   };
 };
 

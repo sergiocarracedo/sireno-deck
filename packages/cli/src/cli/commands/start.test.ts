@@ -32,6 +32,20 @@ vi.mock("@/util/device-config", () => ({
 vi.mock("@/cli/commands/real-mode", () => ({
   runRealMode: vi.fn(),
 }));
+vi.mock("@/system/brightness", () => ({
+  createBrightnessProvider: vi.fn(() => ({
+    getCurrent: vi.fn(async () => ({ value: 50, max: 100 })),
+    setBrightness: vi.fn(async () => undefined),
+    stop: vi.fn(async () => undefined),
+  })),
+}));
+vi.mock("@/system/clipboard", () => ({
+  createClipboardProvider: vi.fn(() => ({
+    writeText: vi.fn(async () => undefined),
+    readText: vi.fn(async () => ""),
+    stop: vi.fn(async () => undefined),
+  })),
+}));
 vi.mock("../http-server.ts", () => ({
   startHttpServer: vi.fn(async () => ({
     port: 3939,
@@ -201,6 +215,7 @@ const setHappyPath = (): void => {
     runtime: fakeRuntime,
     methods: {
       setKeyMacroProvider: () => undefined,
+      setClipboardProvider: () => undefined,
       runCommand: () => undefined,
       keyMacro: () => undefined,
       pasteText: () => undefined,

@@ -33,6 +33,7 @@ import { runRealMode } from "./real-mode";
 import { runEmulatorMode } from "./emulator-mode";
 import { discoverAddonPollers } from "./addon-registry.ts";
 import { createBrightnessProvider } from "@/system/brightness";
+import { createClipboardProvider, type ClipboardProvider } from "@/system/clipboard";
 import { StatePublisher } from "@/render/state-publisher.ts";
 
 export interface SignalProvider {
@@ -226,6 +227,13 @@ export const preflight = async (options: RunOptions): Promise<PreflightResult> =
 
   runtime.setActiveAppProvider(activeApp);
   methods.setKeyMacroProvider(keyMacro);
+  let clipboard: ClipboardProvider | null = null;
+  try {
+    clipboard = createClipboardProvider({ executor, platform, env, logger });
+  } catch {
+    clipboard = null;
+  }
+  if (clipboard !== null) methods.setClipboardProvider(clipboard);
 
   return {
     device,

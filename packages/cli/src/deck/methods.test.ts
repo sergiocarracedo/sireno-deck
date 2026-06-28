@@ -76,6 +76,13 @@ describe("createMethods", () => {
 
   it("pasteText throws NotImplementedError (no clipboard provider)", async () => {
     const { methods } = setup([{ id: "main", name: "Main", buttons: [], isMain: true }]);
-    await expect(methods.pasteText("hi")).rejects.toThrow(/clipboard provider/);
+    await expect(methods.pasteText("hi")).rejects.toThrow(/clipboardProvider/);
+  });
+  it("pasteText calls the provider's writeText when wired", async () => {
+    const { methods } = setup([{ id: "main", name: "Main", buttons: [], isMain: true }]);
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    methods.setClipboardProvider({ writeText, readText: async () => "", stop: async () => undefined });
+    await methods.pasteText("hello");
+    expect(writeText).toHaveBeenCalledWith("hello");
   });
 });

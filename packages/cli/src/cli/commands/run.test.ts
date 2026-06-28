@@ -47,6 +47,20 @@ vi.mock("@/system/key-macro", () => ({
 vi.mock("@/system/media", () => ({
   createMediaProvider: vi.fn(),
 }));
+vi.mock("@/system/brightness", () => ({
+  createBrightnessProvider: vi.fn(() => ({
+    getCurrent: vi.fn(async () => ({ value: 50, max: 100 })),
+    setBrightness: vi.fn(async () => undefined),
+    stop: vi.fn(async () => undefined),
+  })),
+}));
+vi.mock("@/system/clipboard", () => ({
+  createClipboardProvider: vi.fn(() => ({
+    writeText: vi.fn(async () => undefined),
+    readText: vi.fn(async () => ""),
+    stop: vi.fn(async () => undefined),
+  })),
+}));
 
 const loaderMod = await import("@/config/loader");
 const registryMod = await import("@/addon/registry");
@@ -192,6 +206,7 @@ const setHappyPath = (
     runtime: fakeRuntime,
     methods: {
       setKeyMacroProvider: () => undefined,
+      setClipboardProvider: () => undefined,
       runCommand: () => undefined,
       keyMacro: () => undefined,
       pasteText: () => undefined,
