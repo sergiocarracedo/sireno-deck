@@ -39,7 +39,7 @@ export interface BrowserRendererOptions {
   readonly pubSub?: PubSub;
   readonly intervalMs?: number;
   readonly eventDebounceMs?: number;
-  readonly playwrightFactory?: () => PlaywrightLike;
+  readonly playwrightFactory?: () => PlaywrightLike | Promise<PlaywrightLike>;
 }
 
 const DEFAULT_INTERVAL_MS = 500;
@@ -82,8 +82,8 @@ export class BrowserRenderer {
     if (this.running) return;
     const factory =
       this.options.playwrightFactory ??
-      ((): PlaywrightLike => require("playwright") as PlaywrightLike);
-    const playwright = factory();
+      (async (): Promise<PlaywrightLike> => (await import("playwright")) as PlaywrightLike);
+    const playwright = await factory();
     this.browser = await playwright.chromium.launch({ headless: true });
     this.context = await this.browser.newContext();
     this.page = await this.context.newPage();

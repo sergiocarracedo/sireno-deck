@@ -1,15 +1,13 @@
 import type { ReactElement } from 'react'
 
 import * as lucideIcons from 'lucide-react'
-import { Github, type LucideIcon } from 'lucide-react'
+import { type LucideIcon } from 'lucide-react'
 
 import { resolveDomAssetSrc } from '@/addon/api'
 import { cn } from './utils/cn.ts'
 import { useThemeUiPresentation } from './theme-presentation.tsx'
 
-const BRAND_ICON_REGISTRY = {
-  github: Github,
-} as const satisfies Record<string, LucideIcon>
+const BRAND_ICON_REGISTRY = {} as const satisfies Record<string, LucideIcon>
 
 const TONE_CLASS = {
   accent: 'text-accent',
@@ -19,7 +17,7 @@ const TONE_CLASS = {
   success: 'text-success',
 } as const
 
-export type BrandIconName = keyof typeof BRAND_ICON_REGISTRY
+export type BrandIconName = string
 export type GenericIconName = string
 export type IconTone = keyof typeof TONE_CLASS
 

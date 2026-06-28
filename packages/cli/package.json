@@ -23,6 +23,10 @@
     "./vite": {
       "types": "./src/vite/index.ts",
       "default": "./src/vite/index.ts"
+    },
+    "./cli": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     }
   },
   "scripts": {

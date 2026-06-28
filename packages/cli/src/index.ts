@@ -21,7 +21,7 @@ export {
 } from "./core/gesture-state.ts";
 export { Deck, type DeckButton, type Deck as DeckType, type DeckProps } from "./components/Deck.tsx";
 export { ButtonFrame, type ButtonFrameProps } from "./components/ButtonFrame.tsx";
-export { Text, Chip, Label, TapIndicator, Icon } from "./ui/index.ts";
+export { Text, Chip, Label, TapIndicator, Icon, ThemeUiPresentationProvider } from "./ui/index.ts";
 export { ThemeProvider, useTheme, ThemeContext, type ThemeContextValue } from "./themes/use-resolved-theme.tsx";
 export { ChannelRegistry } from "./react/registry.ts";
 
