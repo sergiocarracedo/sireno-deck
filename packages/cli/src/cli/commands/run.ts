@@ -30,7 +30,7 @@ import {
 } from "@/system/provider";
 
 import { runRealMode } from "./real-mode";
-import { runEmulatorMode } from "./emulator-mode";
+import { runEmulatorMode, spawnFrontendVite, resolveFrontendCwd } from "./emulator-mode";
 import { collectBuiltinAddonRegistry, discoverAddonPollers } from "./addon-registry.ts";
 import { createActionExecutor } from "@/action/executor.ts";
 import { getHostContext } from "@/deck/host-context.ts";
@@ -256,7 +256,31 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
     return;
   }
 
-  const { device, frontendUrl, runtime, providers } = await preflight(options);
+  const { device, frontendUrl: configuredUrl, runtime, providers } = await preflight(options);
+
+  let frontendUrl = configuredUrl;
+
+  const registry = collectBuiltinAddonRegistry();
+  if (process.env["SIRENO_ADDONS"] === undefined) {
+    const addonSpecs = registry.scanned.map((s) => ({
+      name: s.name,
+      frontend: s.frontendEntry !== null ? { main: s.frontendEntry } : undefined,
+      buttons: s.types.map((t) => ({ type: t })),
+    }));
+    process.env["SIRENO_ADDONS"] = JSON.stringify(addonSpecs);
+  }
+
+  let frontendVite: Awaited<ReturnType<typeof spawnFrontendVite>> | undefined;
+  if (frontendUrl === undefined) {
+    frontendVite = await spawnFrontendVite({
+      port: options.port ?? 5173,
+      cwd: resolveFrontendCwd(),
+      pnpmCommand: "pnpm",
+      readyTimeoutMs: 30_000,
+      logger,
+    });
+    frontendUrl = frontendVite.url;
+  }
 
   let resolveDone: () => void = () => undefined;
   const done = new Promise<void>((resolve) => {
@@ -280,6 +304,7 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
     await done;
   } finally {
     unregister();
+    frontendVite?.process.kill("SIGTERM");
     await handle.stop();
     await runtime.stopActiveAppPolling();
     await Promise.allSettled([

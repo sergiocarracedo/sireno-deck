@@ -61,10 +61,10 @@ const resolveEmulatorCwd = (override?: string): string => {
   return resolvePath(findWorkspaceRoot(), 'packages', 'cli', 'emulator')
 }
 
-const resolveFrontendCwd = (): string =>
+export const resolveFrontendCwd = (): string =>
   resolvePath(findWorkspaceRoot(), 'packages', 'cli', 'frontend')
 
-const spawnFrontendVite = (options: {
+export const spawnFrontendVite = (options: {
   port: number
   cwd: string
   pnpmCommand: string
