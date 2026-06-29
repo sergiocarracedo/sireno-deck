@@ -232,6 +232,27 @@ export interface AddonFrontendRef {
   readonly frontendEntry: string | null
 }
 
+const deriveLabel = (type: string, config: Record<string, unknown>): string | undefined => {
+  switch (type) {
+    case 'core:action': {
+      const cmd = config['command']
+      if (typeof cmd === 'string' && cmd.length > 0) {
+        return cmd.length > 14 ? `${cmd.slice(0, 13)}…` : cmd
+      }
+      return undefined
+    }
+    case 'core:change-deck': {
+      const deck = config['deck']
+      if (typeof deck === 'string' && deck.length > 0) {
+        return `→ ${deck}`
+      }
+      return undefined
+    }
+    default:
+      return undefined
+  }
+}
+
 export const buildDeckConfigMessage = (
   deck: RuntimeDeck,
   addonByType: Map<string, AddonFrontendRef>,
@@ -245,11 +266,14 @@ export const buildDeckConfigMessage = (
       buttons: deck.buttons.map((b) => {
         const position = Number.parseInt(b.id, 10)
         const addon = addonByType.get(b.type)
+        const cfg = (b.config ?? {}) as Record<string, unknown>
+        const label = deriveLabel(b.type, cfg)
         return {
           id: b.id,
           type: b.type,
-          config: (b.config ?? {}) as Record<string, unknown>,
+          config: cfg,
           ...(Number.isFinite(position) ? { position } : {}),
+          ...(label !== undefined ? { label } : {}),
           ...(addon !== undefined ? { addonName: addon.name } : {}),
           ...(addon?.frontendEntry !== undefined && addon.frontendEntry !== null
             ? { frontendEntry: addon.frontendEntry }
