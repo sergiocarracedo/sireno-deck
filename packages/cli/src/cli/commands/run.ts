@@ -283,17 +283,29 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
   const wsPort = 52937;
   const bridge = await startWsBridge({ port: wsPort });
 
-  const mainDeck = decks.find((d) => d.isMain) ?? decks[0];
-  if (mainDeck) {
-    const configMessage = buildDeckConfigMessage(mainDeck, addonByType);
-    bridge.onConnection((socket) => {
-      socket.send(JSON.stringify(configMessage));
+  const mainDeck = runtime.getActiveDeck();
+  logger.info(
+    {
+      wsPort,
+      deckCount: decks.length,
+      mainDeckId: mainDeck?.id,
+      mainDeckButtonCount: mainDeck?.buttons.length,
+    },
+    "real mode: ws bridge + main deck ready",
+  );
+
+  bridge.onConnection((socket) => {
+    if (mainDeck) {
+      const msg = buildDeckConfigMessage(mainDeck, addonByType);
       logger.info(
-        { deckId: mainDeck.id, buttons: mainDeck.buttons.length },
-        "real mode: deck-config sent to new client",
+        { deckId: msg.deckId, buttonCount: msg.surfaces[msg.deckId]?.buttons.length },
+        "real mode: sending deck-config",
       );
-    });
-  }
+      socket.send(JSON.stringify(msg));
+    } else {
+      logger.warn("real mode: no main deck available to send");
+    }
+  });
 
   let frontendVite: Awaited<ReturnType<typeof spawnFrontendVite>> | undefined;
   if (options.frontendUrl === undefined) {
