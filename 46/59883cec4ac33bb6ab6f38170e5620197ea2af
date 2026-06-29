@@ -1,0 +1,164 @@
+packages/cli/frontend/src/bridge/__tests__/client.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-94
+packages/cli/src/action/__tests__/executor.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-46
+packages/cli/src/system/session-monitor/__tests__/windows.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-79
+packages/cli/emulator/src/__tests__/DeckFrame.test.tsx
+  s_a3758069631e84::t_917211ff0167a2 1-26
+packages/cli/src/system/media/__tests__/darwin.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-111
+packages/cli/src/render/__tests__/screenshot-cadence.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-85
+packages/cli/src/cli/__tests__/http-server.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-192
+packages/cli/src/util/__tests__/cache-paths.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-64
+packages/cli/src/system/__tests__/virtual-stream-deck.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-78
+packages/cli/src/system/active-app/__tests__/darwin.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-92
+packages/cli/src/addon/__tests__/spec.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-59
+packages/cli/src/render/__tests__/vite-server.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-114
+packages/cli/src/vite/__tests__/index.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-56
+packages/cli/src/vite/__tests__/virtual-modules.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-85
+packages/cli/emulator/src/bridge.ts
+  s_8ca911650149ee::t_b1c85e549c07f3 104,107-108
+  s_8ca911650149ee::t_b733489a723b85 127
+  s_8ca911650149ee::t_d146049015a82c 46
+  s_8ca911650149ee::t_36939375c93a93 75-82
+packages/cli/src/core/__tests__/store.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-86
+packages/cli/src/cli/commands/__tests__/emulator-mode-build-config.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-64
+packages/cli/src/system/session-monitor/__tests__/darwin.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-77
+packages/cli/src/system/active-app/__tests__/linux.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-169
+packages/cli/src/builtin-addons/internal-settings/__tests__/index.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-31
+packages/cli/src/cli/commands/__tests__/emulator-mode.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-417
+packages/cli/src/system/__tests__/glob-match.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-59
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-216
+packages/cli/src/system/key-macro/__tests__/linux.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-181
+packages/cli/src/core/__tests__/gesture-state.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-79
+packages/cli/package.json
+  s_a3758069631e84::t_b5ac3f83a42588 20-21
+packages/cli/src/device/__tests__/stream-deck.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-144
+packages/cli/src/cli/commands/__tests__/addon-registry.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-44
+packages/cli/src/system/media/__tests__/windows.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-105
+packages/cli/src/device/__tests__/linux-udev.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-26
+packages/cli/emulator/src/__tests__/bridge.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-100
+packages/cli/src/core/__tests__/pagination.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-100
+packages/cli/src/core/__tests__/pub-sub.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-83
+packages/cli/src/render/__tests__/state-publisher.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-115
+packages/cli/src/system/key-macro/__tests__/parser.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-88
+packages/cli/src/device/__tests__/registry.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-56
+packages/cli/src/render/__tests__/protocol.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-86
+vitest.config.ts
+  s_a3758069631e84::t_70ce2df144e462 24-25,30
+packages/cli/src/render/__tests__/emulator-server.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-30
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-451
+packages/cli/src/render/__tests__/buffer-hash.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-40
+packages/cli/src/index.ts
+  s_a3758069631e84::t_ded2d182d58b15 26
+packages/cli/src/render/__tests__/browser-renderer.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-166
+packages/cli/src/render/__tests__/ws-bridge.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-162
+packages/cli/src/system/key-macro/__tests__/darwin.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-98
+packages/cli/src/api/__tests__/index.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-46
+packages/cli/src/cli/commands/__tests__/stop.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-112
+packages/cli/src/device/__tests__/models.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-88
+packages/cli/emulator/src/Shell.tsx
+  s_8ca911650149ee::t_227af0891af687 9-10
+packages/cli/src/cli/commands/__tests__/real-mode.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-125
+packages/cli/src/system/__tests__/device-selection.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-79
+packages/cli/src/deck/__tests__/system-back-injection.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-53
+packages/cli/src/util/__tests__/daemon.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-141
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-336
+packages/cli/src/system/brightness/__tests__/linux.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-93
+packages/cli/src/builtin-addons/session/__tests__/index.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-35
+packages/cli/src/system/session-monitor/__tests__/linux.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-113
+packages/cli/src/system/key-macro/__tests__/windows.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-93
+packages/cli/src/util/__tests__/device-config.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-44
+packages/cli/src/deck/__tests__/methods.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-88
+packages/cli/src/system/media/__tests__/linux.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-124
+packages/cli/src/cli/commands/__tests__/status.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-94
+packages/cli/src/system/active-app/__tests__/windows.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-79
+packages/cli/emulator/src/__tests__/gesture.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-34
+packages/cli/src/builtin-addons/core-buttons/__tests__/index.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-30
+packages/cli/src/config/__tests__/validation.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-96
+packages/cli/src/addon/__tests__/loader.test.ts
+  s_a3758069631e84::t_917211ff0167a2 1-149
+packages/cli/src/api/react/__tests__/hooks.test.tsx
+  s_a3758069631e84::t_d9d414a6af5a68 5-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "4659883cec4ac33bb6ab6f38170e5620197ea2af",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_a3758069631e84": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eda3775cffewWz5hTtacrhw9o",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
