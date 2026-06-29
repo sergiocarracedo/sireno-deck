@@ -280,8 +280,8 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
     }
   }
 
-  const wsPort = 52937;
-  const bridge = await startWsBridge({ port: wsPort });
+  const bridge = await startWsBridge({ port: 52937 });
+  const wsPort = bridge.port;
 
   const mainDeck = runtime.getActiveDeck();
   logger.info(

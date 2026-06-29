@@ -12,6 +12,8 @@ const HANDSHAKE_TIMEOUT_MS = 5000;
 const TOKEN_MISMATCH_CLOSE_CODE = 4001;
 
 export interface WsBridgeOptions {
+  port?: number;
+  host?: string;
   expectedToken?: string;
   handshakeTimeoutMs?: number;
   activeTheme?: { name: string; version?: number };
@@ -28,10 +30,10 @@ export interface WsBridge {
 }
 
 export const startWsBridge = (options: WsBridgeOptions = {}): Promise<WsBridge> => {
-  const { expectedToken, handshakeTimeoutMs = HANDSHAKE_TIMEOUT_MS, activeTheme } = options;
+  const { port = 0, host = "127.0.0.1", expectedToken, handshakeTimeoutMs = HANDSHAKE_TIMEOUT_MS, activeTheme } = options;
 
   return new Promise((resolve, reject) => {
-    const wss = new WebSocketServer({ port: 0, host: "127.0.0.1" });
+    const wss = new WebSocketServer({ port, host });
 
     const messageHandlers: Array<(message: WsMessage, socket: WebSocket) => void> = [];
     const connectionHandlers: Array<(socket: WebSocket) => void> = [];
