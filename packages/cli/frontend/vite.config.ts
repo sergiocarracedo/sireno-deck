@@ -1,68 +1,77 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import { sirenoDeck2 } from "sireno-deck-2/vite";
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { sirenoDeck2 } from '../src/vite/index'
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
-const wsUrl = process.env["SIRENO_WS_URL"] ?? "ws://127.0.0.1:52937";
+const wsUrl = process.env['SIRENO_WS_URL'] ?? 'ws://127.0.0.1:52937'
 
 const addonsFromEnv = () => {
-  const blob = process.env["SIRENO_ADDONS"];
-  if (blob === undefined || blob.length === 0) return undefined;
+  const blob = process.env['SIRENO_ADDONS']
+  if (blob === undefined || blob.length === 0) return undefined
   try {
-    return JSON.parse(blob) as Array<{ name: string; frontend?: { main: string; styles?: string[] }; buttons?: Array<{ type: string }> }>;
+    return JSON.parse(blob) as Array<{
+      name: string
+      frontend?: { main: string; styles?: string[] }
+      buttons?: Array<{ type: string }>
+    }>
   } catch {
-    return undefined;
+    return undefined
   }
-};
+}
 
-const themeFromEnv = (): { name: string; cssPath: string; frontendPath: string } | undefined => {
-  const blob = process.env["SIRENO_THEME"];
-  if (blob === undefined || blob.length === 0) return undefined;
+const themeFromEnv = ():
+  | { name: string; cssPath: string; frontendPath: string }
+  | undefined => {
+  const blob = process.env['SIRENO_THEME']
+  if (blob === undefined || blob.length === 0) return undefined
   try {
     const parsed = JSON.parse(blob) as {
-      name?: unknown;
-      cssPath?: unknown;
-      frontendPath?: unknown;
-    };
+      name?: unknown
+      cssPath?: unknown
+      frontendPath?: unknown
+    }
     if (
-      typeof parsed.name === "string" &&
-      typeof parsed.cssPath === "string" &&
-      typeof parsed.frontendPath === "string"
+      typeof parsed.name === 'string' &&
+      typeof parsed.cssPath === 'string' &&
+      typeof parsed.frontendPath === 'string'
     ) {
       return {
         name: parsed.name,
         cssPath: parsed.cssPath,
         frontendPath: parsed.frontendPath,
-      };
+      }
     }
   } catch {
     /* ignore */
   }
-  return undefined;
-};
+  return undefined
+}
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
     sirenoDeck2({
-      token: process.env["SIRENO_TOKEN"] ?? "",
+      token: process.env['SIRENO_TOKEN'] ?? '',
       ...(themeFromEnv() ? { theme: themeFromEnv()! } : {}),
       ...(addonsFromEnv() !== undefined ? { addons: addonsFromEnv()! } : {}),
     }),
   ],
-  server: { host: "127.0.0.1", port: 5180, strictPort: true },
+  server: { host: '127.0.0.1', port: 5180, strictPort: true },
   resolve: {
     alias: [
-      { find: /^@\//, replacement: resolve(__dirname, "../src") + "/" },
-      { find: /^@sireno-deck-2\/cli$/, replacement: resolve(__dirname, "../src/index") },
+      { find: /^@\//, replacement: resolve(__dirname, '../src') + '/' },
+      {
+        find: /^@sireno-deck\/cli$/,
+        replacement: resolve(__dirname, '../src/index'),
+      },
     ],
   },
   define: {
-    "import.meta.env.VITE_WS_URL": JSON.stringify(wsUrl),
+    'import.meta.env.VITE_WS_URL': JSON.stringify(wsUrl),
   },
-});
+})
