@@ -194,7 +194,7 @@ export const preflight = async (options: RunOptions): Promise<PreflightResult> =
         {
           id: b.position?.toString() ?? `b${idx}`,
           type: b.type,
-          config: b,
+          ...(typeof b.config === "object" && b.config !== null ? { config: b.config } : {}),
         },
       ];
     }),
