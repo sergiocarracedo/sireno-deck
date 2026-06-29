@@ -12,7 +12,7 @@ import type {
 } from '@/api/protocol-internal'
 import type { Runtime, RuntimeDeck } from '@/deck'
 import { startWsBridge, type WsBridge } from '@/render/ws-bridge'
-import { BUILT_IN_THEMES } from '@/themes/loader.ts'
+import { BUILT_IN_THEMES } from '@/themes/loader'
 
 const FRONTEND_PACKAGE = 'sireno-deck-2-frontend'
 const EMULATOR_PACKAGE = '@sireno-deck-2/emulator'
@@ -101,10 +101,14 @@ export const spawnFrontendVite = (options: {
       },
     )
 
+    const stderrChunks: string[] = []
+
     const timer = setTimeout(() => {
       child.kill('SIGTERM')
+      const stderr = stderrChunks.join('').trim().slice(0, 2000)
+      const detail = stderr.length > 0 ? `\n  stderr:\n${stderr}` : ''
       reject(
-        new Error(`frontend did not become ready within ${readyTimeoutMs}ms`),
+        new Error(`frontend did not become ready within ${readyTimeoutMs}ms${detail}`),
       )
     }, readyTimeoutMs)
 
@@ -129,11 +133,15 @@ export const spawnFrontendVite = (options: {
 
     child.stdout?.on('data', onData)
     child.stderr?.on('data', (chunk: Buffer) => {
-      logger.debug({ chunk: chunk.toString() }, 'frontend vite stderr')
+      const text = chunk.toString()
+      stderrChunks.push(text)
+      logger.debug({ chunk: text }, 'frontend vite stderr')
     })
     child.on('exit', (code) => {
       clearTimeout(timer)
-      reject(new Error(`frontend exited (code=${code}) before becoming ready`))
+      const stderr = stderrChunks.join('').trim().slice(0, 2000)
+      const detail = stderr.length > 0 ? `\n  stderr:\n${stderr}` : ''
+      reject(new Error(`frontend exited (code=${code}) before becoming ready${detail}`))
     })
     child.on('error', (err) => {
       clearTimeout(timer)
@@ -184,10 +192,14 @@ const spawnEmulatorVite = (options: {
       },
     )
 
+    const stderrChunks: string[] = []
+
     const timer = setTimeout(() => {
       child.kill('SIGTERM')
+      const stderr = stderrChunks.join('').trim().slice(0, 2000)
+      const detail = stderr.length > 0 ? `\n  stderr:\n${stderr}` : ''
       reject(
-        new Error(`emulator did not become ready within ${readyTimeoutMs}ms`),
+        new Error(`emulator did not become ready within ${readyTimeoutMs}ms${detail}`),
       )
     }, readyTimeoutMs)
 
@@ -205,11 +217,15 @@ const spawnEmulatorVite = (options: {
 
     child.stdout?.on('data', onData)
     child.stderr?.on('data', (chunk: Buffer) => {
-      logger.debug({ chunk: chunk.toString() }, 'emulator vite stderr')
+      const text = chunk.toString()
+      stderrChunks.push(text)
+      logger.debug({ chunk: text }, 'emulator vite stderr')
     })
     child.on('exit', (code) => {
       clearTimeout(timer)
-      reject(new Error(`emulator exited (code=${code}) before becoming ready`))
+      const stderr = stderrChunks.join('').trim().slice(0, 2000)
+      const detail = stderr.length > 0 ? `\n  stderr:\n${stderr}` : ''
+      reject(new Error(`emulator exited (code=${code}) before becoming ready${detail}`))
     })
     child.on('error', (err) => {
       clearTimeout(timer)
@@ -310,7 +326,7 @@ export const runEmulatorMode = async (
       process.env['SIRENO_THEME'] = JSON.stringify({
         name: defaultSpec.name,
         cssPath: resolvePath(defaultSpec.dir, 'theme.css'),
-        frontendPath: resolvePath(defaultSpec.dir, 'index.tsx'),
+        frontendPath: resolvePath(defaultSpec.dir, 'index'),
       })
     }
   }
