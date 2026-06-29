@@ -8,7 +8,7 @@ import {
 
 import { addonRegistry } from "virtual:sireno/addons/registry";
 
-import { ButtonFrame } from "./ButtonFrame";
+import { ButtonFrame } from "@sireno-deck/cli";
 
 const BUTTON_SIZE = BUTTON_SIZE_PX;
 const BUTTON_GAP_PX = 8;
@@ -32,10 +32,18 @@ export interface Deck {
   buttons: DeckButton[];
 }
 
+export interface ButtonGestureState {
+  pressed: boolean;
+  isTapping: boolean;
+  isHolding: boolean;
+  holdProgress: number;
+}
+
+export type ButtonGestureMap = Readonly<Record<string, ButtonGestureState | undefined>>;
+
 export interface DeckProps {
   readonly deck: Deck;
-  readonly onNavigate?: (deckId: string) => void;
-  readonly onAction?: (buttonId: string, gesture: "tap" | "dbl-tap" | "hold") => void;
+  readonly gestures?: ButtonGestureMap;
   readonly children?: ReactNode;
 }
 
@@ -70,7 +78,16 @@ interface AddonRegistryEntry {
   }>;
 }
 
-export const Deck = ({ deck, onNavigate, onAction, children }: DeckProps) => {
+const EMPTY_GESTURE: ButtonGestureState = {
+  pressed: false,
+  isTapping: false,
+  isHolding: false,
+  holdProgress: 0,
+};
+
+const noop = (): void => {};
+
+export const Deck = ({ deck, gestures, children }: DeckProps) => {
   const model = resolveDeviceModel();
   const { columns, rows } = gridForKeyCount(model.keyCount);
   const gap = isCompact ? 0 : BUTTON_GAP_PX;
@@ -102,22 +119,24 @@ export const Deck = ({ deck, onNavigate, onAction, children }: DeckProps) => {
           registryEntry !== undefined ? (
             <registryEntry.Component config={button.config ?? {}} state={null} buttonType={button.type} />
           ) : null;
+        const gesture = gestures?.[button.id] ?? EMPTY_GESTURE;
         return (
           <div
             key={button.id}
             style={{ gridColumn: col, gridRow: row, width: BUTTON_SIZE, height: BUTTON_SIZE }}
           >
             <ButtonFrame
-              label={button.label ?? button.type}
+              pressed={gesture.pressed}
+              isTapping={gesture.isTapping}
+              isHolding={gesture.isHolding}
+              holdProgress={gesture.holdProgress}
               buttonType={button.type}
-              onPress={() => onAction?.(button.id, "tap")}
-              onDoublePress={() => onAction?.(button.id, "dbl-tap")}
-              onHold={() => onAction?.(button.id, "hold")}
-              onNavigate={
-                button.type === "core:change-deck" && typeof button.config?.["deck"] === "string"
-                  ? () => onNavigate?.(button.config!.deck as string)
-                  : undefined
-              }
+              onPointerDown={noop}
+              onPointerUp={noop}
+              onPointerLeave={noop}
+              onClick={noop}
+              onDoubleClick={noop}
+              onContextMenu={noop}
             >
               {addonSurface}
             </ButtonFrame>
