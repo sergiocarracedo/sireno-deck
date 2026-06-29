@@ -154,5 +154,6 @@ None.
 | 009 | Deck grid background is always black                                       | 2026-06-27 | 8f40011 | (no quick dir)                               |
 | 010 | Show button type as label fallback (until addon frontend registry)         | 2026-06-27 | 5a2c40f | (no quick dir)                               |
 | 011 | Add phase 12 (addon-frontend-registry) to roadmap                          | 2026-06-27 | 7de539c | (no quick dir)                               |
+| 012 | Capture frontend/emulator vite stderr in CLI errors                        | 2026-06-29 | 47d9e8f | `.planning/quick/009-capture-frontend-emulator-stderr/` |
 
-Last activity: 2026-06-27 - Phase 09 executed and verified; phase 12 added to roadmap; quick tasks 007-011 committed (emulator polish + roadmap plan)
+Last activity: 2026-06-29 - Completed quick task 012: capture frontend/emulator vite stderr in CLI
