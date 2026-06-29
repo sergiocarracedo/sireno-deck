@@ -21,13 +21,13 @@ export default defineConfig({
     globals: false,
     environment: "node",
     include: [
-      "packages/cli/src/**/*.test.{ts,tsx}",
-      "packages/cli/frontend/src/**/*.test.{ts,tsx}",
+      "packages/cli/src/**/__tests__/**/*.test.{ts,tsx}",
+      "packages/cli/frontend/src/**/__tests__/**/*.test.{ts,tsx}",
     ],
     coverage: {
       provider: "v8",
       include: ["packages/cli/src/**/*.ts"],
-      exclude: ["packages/cli/src/**/*.test.ts", "packages/cli/src/**/__tests__/**"],
+      exclude: ["packages/cli/src/**/__tests__/**"],
     },
   },
 });

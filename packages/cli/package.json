@@ -17,8 +17,8 @@
       "default": "./src/api/index.ts"
     },
     "./react": {
-      "types": "./src/react/index.ts",
-      "default": "./src/react/index.ts"
+      "types": "./src/api/react/index.ts",
+      "default": "./src/api/react/index.ts"
     },
     "./vite": {
       "types": "./src/vite/index.ts",

@@ -6,6 +6,8 @@ import { createWsClient, serializeHello, type WsClient } from "./bridge.ts";
 import { DeckFrame } from "./DeckFrame.tsx";
 import { SidePanel } from "./SidePanel.tsx";
 
+const FALLBACK_DECKS: ReadonlyArray<{ id: string; name: string }> = [{ id: "main", name: "Main" }];
+
 export interface ShellProps {
   readonly wsUrl: string;
   readonly frontendUrl: string;

@@ -43,6 +43,7 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
   let closedByUser = false;
   let openListener: ((event: unknown) => void) | null = null;
   let closeListener: ((event: unknown) => void) | null = null;
+  const messageListeners: Array<(event: unknown) => void> = [];
 
   const setStatus = (next: WsStatus): void => {
     status = next;
@@ -71,6 +72,14 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
     void event;
   };
 
+  const onWsMessage = (event: unknown): void => {
+    const data =
+      event instanceof MessageEvent
+        ? event.data
+        : (event as { data?: unknown })?.data ?? event;
+    options.onMessage?.(data);
+  };
+
   const open = (): void => {
     if (closedByUser) return;
     if (attempts >= WS_MAX_ATTEMPTS) {
@@ -92,8 +101,11 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
     if (typeof created.addEventListener === "function") {
       openListener = onWsOpen;
       closeListener = onWsClose;
+      const messageListener = onWsMessage;
       created.addEventListener("open", openListener);
       created.addEventListener("close", closeListener);
+      created.addEventListener("message", messageListener);
+      messageListeners.push(messageListener);
     }
   };
 
@@ -112,6 +124,7 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
       if (ws !== null && typeof ws.removeEventListener === "function") {
         if (openListener !== null) ws.removeEventListener("open", openListener);
         if (closeListener !== null) ws.removeEventListener("close", closeListener);
+        for (const ml of messageListeners) ws.removeEventListener("message", ml);
       }
       ws?.close();
       setStatus("closed");
