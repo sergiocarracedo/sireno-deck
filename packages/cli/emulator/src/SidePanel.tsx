@@ -6,20 +6,16 @@ export interface SidePanelProps {
   readonly wsUrl: string;
   readonly deviceModel: DeviceModelSpec;
   readonly onDeviceModelChange: (next: DeviceModelSpec) => void;
+  readonly decks: ReadonlyArray<{ id: string; name: string }>;
   readonly activeDeckId: string;
   readonly onSelectDeck: (id: string) => void;
 }
-
-const MOCK_DECKS: ReadonlyArray<{ id: string; name: string }> = [
-  { id: "main", name: "Main" },
-  { id: "media", name: "Media" },
-  { id: "settings", name: "Settings" },
-];
 
 export const SidePanel = ({
   wsUrl,
   deviceModel,
   onDeviceModelChange,
+  decks,
   activeDeckId,
   onSelectDeck,
 }: SidePanelProps): ReactElement => {
@@ -58,7 +54,7 @@ export const SidePanel = ({
       <section>
         <h2 className="text-xs font-medium uppercase tracking-wider text-neutral-400">Decks</h2>
         <ul className="mt-2 flex flex-col gap-1" data-testid="deck-list">
-          {MOCK_DECKS.map((d) => (
+          {decks.map((d) => (
             <li key={d.id}>
               <button
                 type="button"

@@ -23,6 +23,8 @@ export const Shell = ({
     DEVICE_MODELS.find((m) => m.id === initialDeviceModel) ?? DEVICE_MODELS[0]!;
 
   const [activeDeckId, setActiveDeckId] = useState<string>("main");
+
+  const sidePanelDecks = FALLBACK_DECKS;
   const [deviceModel, setDeviceModel] = useState<DeviceModelSpec>(initialSpec);
   const clientRef = useRef<WsClient | null>(null);
 
@@ -62,6 +64,7 @@ export const Shell = ({
           wsUrl={wsUrl}
           deviceModel={deviceModel}
           onDeviceModelChange={setDeviceModel}
+          decks={sidePanelDecks}
           activeDeckId={activeDeckId}
           onSelectDeck={setActiveDeckId}
         />

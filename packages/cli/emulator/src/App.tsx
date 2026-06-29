@@ -17,9 +17,9 @@ interface DeckState {
   buttons: DeckButton[];
 }
 
-const MOCK_DECK: DeckState = {
-  id: "main",
-  name: "Home",
+const EMPTY_DECK: DeckState = {
+  id: "",
+  name: "",
   buttons: [],
 };
 
@@ -44,7 +44,7 @@ export interface AppProps {
 }
 
 export const App = ({ wsUrl = ENV_WS_URL }: AppProps = {}): React.ReactElement => {
-  const [deck, setDeck] = useState<DeckState>(MOCK_DECK);
+  const [deck, setDeck] = useState<DeckState>(EMPTY_DECK);
   const theme = useState<ThemeContextValue>(() => buildThemeContext())[0];
   const clientRef = useRef<WsClient | null>(null);
 

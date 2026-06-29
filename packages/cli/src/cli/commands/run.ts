@@ -75,6 +75,7 @@ export interface PreflightResult {
   readonly xdgConfigHome: string;
   readonly frontendUrl: string;
   readonly runtime: Runtime;
+  readonly decks: ReadonlyArray<RuntimeDeck>;
   readonly theme: { name: string; apiVersion: number };
   readonly providers: {
     readonly activeApp: ActiveAppProvider;
@@ -244,6 +245,7 @@ export const preflight = async (options: RunOptions): Promise<PreflightResult> =
     xdgConfigHome,
     frontendUrl: resolveFrontendUrl(options),
     runtime,
+    decks,
     theme: { name: theme.name, apiVersion: theme.apiVersion },
     providers: { activeApp, session, keyMacro, media },
   };
@@ -257,7 +259,7 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
     return;
   }
 
-  const { device, frontendUrl: configuredUrl, runtime, providers } = await preflight(options);
+  const { device, frontendUrl: configuredUrl, runtime, decks, providers } = await preflight(options);
 
   let frontendUrl = configuredUrl;
 
@@ -281,12 +283,17 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
   const wsPort = 52937;
   const bridge = await startWsBridge({ port: wsPort });
 
-  bridge.onConnection((socket) => {
-    const mainDeck = runtime.decks[0];
-    if (mainDeck) {
-      socket.send(JSON.stringify(buildDeckConfigMessage(mainDeck, addonByType)));
-    }
-  });
+  const mainDeck = decks.find((d) => d.isMain) ?? decks[0];
+  if (mainDeck) {
+    const configMessage = buildDeckConfigMessage(mainDeck, addonByType);
+    bridge.onConnection((socket) => {
+      socket.send(JSON.stringify(configMessage));
+      logger.info(
+        { deckId: mainDeck.id, buttons: mainDeck.buttons.length },
+        "real mode: deck-config sent to new client",
+      );
+    });
+  }
 
   let frontendVite: Awaited<ReturnType<typeof spawnFrontendVite>> | undefined;
   if (options.frontendUrl === undefined) {

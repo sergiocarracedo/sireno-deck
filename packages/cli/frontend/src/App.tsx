@@ -8,20 +8,22 @@ import { ThemeUiPresentationProvider } from "@sireno-deck-2/cli";
 import { createWsClient, type WsClient } from "./bridge/client.ts";
 import { Deck } from "./components/Deck.tsx";
 
-interface MockButton {
+interface DeckButton {
   id: string;
   type: string;
-  label: string;
   config: Record<string, unknown>;
 }
 
-const MOCK_DECK = {
-  id: "main",
-  name: "Home",
-  buttons: [
-    { id: "b0", type: "core:change-deck", label: "Media", config: { deck: "media" } },
-    { id: "b1", type: "core:action", label: "Run", config: { command: "echo hi" } },
-  ] as MockButton[],
+interface DeckState {
+  id: string;
+  name: string;
+  buttons: DeckButton[];
+}
+
+const EMPTY_DECK: DeckState = {
+  id: "",
+  name: "",
+  buttons: [],
 };
 
 const ENV_WS_URL = (import.meta.env.VITE_WS_URL ?? "ws://127.0.0.1:52937") as string;
@@ -69,7 +71,7 @@ const buildThemeContext = (): ThemeContextValue => {
 let _wsClientInitialized = false;
 
 export const App = () => {
-  const [deck, setDeck] = useState(MOCK_DECK);
+  const [deck, setDeck] = useState<DeckState>(EMPTY_DECK);
   const [theme] = useState<ThemeContextValue>(() => buildThemeContext());
   const clientRef = useRef<WsClient | null>(null);
 
@@ -82,7 +84,7 @@ export const App = () => {
       ...(token !== "" ? { token } : {}),
       onMessage: (message) => {
         if (message.type === "deck-config") {
-          const surface = (message.surfaces as Record<string, { buttons?: MockButton[] }>)[message.deckId];
+          const surface = (message.surfaces as Record<string, { name?: string; buttons?: DeckButton[] }>)[message.deckId];
           if (surface && Array.isArray(surface.buttons)) {
             setDeck({
               id: message.deckId,
