@@ -1,0 +1,25 @@
+packages/cli/frontend/vite.config.ts
+  h_f90ee31b03fc41 1-5,8,10,13-14,17-18,20,22,24,27,29-30,33-36,38-40,46,51-52,59,64,67,69-70,75,77
+  s_32e9e58a6a363a::t_a22642a599293c 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "86b49d12770fc91786f5cde0d6b30b1aa6ed8bb7",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
