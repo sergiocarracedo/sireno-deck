@@ -140,28 +140,12 @@ describe('runEmulatorMode', () => {
     const handle = await promise
     expect(spawnMock).toHaveBeenCalledWith(
       'pnpm',
-      [
-        '--filter',
-        'sireno-deck-2-frontend',
-        'run',
-        'dev',
-        '--',
-        '--port',
-        '5180',
-      ],
+      ['run', 'dev', '--', '--port', '5180'],
       expect.objectContaining({ stdio: ['ignore', 'pipe', 'pipe'] }),
     )
     expect(spawnMock).toHaveBeenCalledWith(
       'pnpm',
-      [
-        '--filter',
-        '@sireno-deck-2/emulator',
-        'run',
-        'dev',
-        '--',
-        '--port',
-        '52938',
-      ],
+      ['run', 'dev', '--', '--port', '52938'],
       expect.objectContaining({ stdio: ['ignore', 'pipe', 'pipe'] }),
     )
     expect(handle.emulatorUrl).toBe('http://127.0.0.1:52938')

@@ -14,14 +14,15 @@ import type { Runtime, RuntimeDeck } from '@/deck'
 import { startWsBridge, type WsBridge } from '@/render/ws-bridge'
 import { BUILT_IN_THEMES } from '@/themes/loader'
 
-const FRONTEND_PACKAGE = 'sireno-deck-2-frontend'
-const EMULATOR_PACKAGE = '@sireno-deck-2/emulator'
+const FRONTEND_PACKAGE = 'sireno-deck-frontend'
+const EMULATOR_PACKAGE = '@sireno-deck/emulator'
 const DEFAULT_FRONTEND_PORT = 5180
 const DEFAULT_EMULATOR_PORT = 52938
 const DEFAULT_TIMEOUT_MS = 30_000
 // eslint-disable-next-line no-control-regex
 const ANSI_REGEX = /\u001b\[[0-9;]*m/g
-const READY_REGEX = /(?:Local|➜\s*Local|Network use --host)[^\n]*?https?:\/\/[^:\s]+(?::(\d+))?/
+const READY_REGEX =
+  /(?:Local|➜\s*Local|Network use --host)[^\n]*?https?:\/\/[^:\s]+(?::(\d+))?/
 
 export interface RunEmulatorModeOptions {
   readonly emulatorPort?: number
@@ -85,17 +86,9 @@ export const spawnFrontendVite = (options: {
     }
     const child = spawn(
       pnpmCommand,
-      [
-        '--filter',
-        FRONTEND_PACKAGE,
-        'run',
-        'dev',
-        '--',
-        '--port',
-        String(port),
-      ],
+      ['run', 'dev', '--', '--port', String(port)],
       {
-        cwd: findWorkspaceRoot(),
+        cwd,
         env,
         stdio: ['ignore', 'pipe', 'pipe'],
       },
@@ -119,24 +112,29 @@ export const spawnFrontendVite = (options: {
       if (formatted.length > 0) {
         if (label === 'stdout') stdoutChunks.push(formatted)
         else stderrChunks.push(formatted)
-        if (label === 'stderr') logger.warn(formatted.trimEnd(), 'frontend vite')
+        if (label === 'stderr')
+          logger.warn(formatted.trimEnd(), 'frontend vite')
         else logger.info(formatted.trimEnd(), 'frontend vite')
       }
     }
 
     const timer = setTimeout(() => {
       child.kill('SIGTERM')
-      const output =
-        stdoutChunks.join('') + stderrChunks.join('')
+      const output = stdoutChunks.join('') + stderrChunks.join('')
       const detail = output.length > 0 ? `\n  output:\n${output}` : ''
       reject(
-        new Error(`frontend did not become ready within ${readyTimeoutMs}ms${detail}`),
+        new Error(
+          `frontend did not become ready within ${readyTimeoutMs}ms${detail}`,
+        ),
       )
     }, readyTimeoutMs)
 
     const fallbackTimer = setTimeout(() => {
       const url = `http://127.0.0.1:${port}`
-      logger.warn({ url }, 'frontend vite: regex did not match, using fallback port')
+      logger.warn(
+        { url },
+        'frontend vite: regex did not match, using fallback port',
+      )
       clearTimeout(timer)
       resolve({ process: child, url })
     }, readyTimeoutMs - 1000)
@@ -159,10 +157,13 @@ export const spawnFrontendVite = (options: {
     })
     child.on('exit', (code) => {
       clearTimeout(timer)
-      const output =
-        stdoutChunks.join('') + stderrChunks.join('')
+      const output = stdoutChunks.join('') + stderrChunks.join('')
       const detail = output.length > 0 ? `\n  output:\n${output}` : ''
-      reject(new Error(`frontend exited (code=${code}) before becoming ready${detail}`))
+      reject(
+        new Error(
+          `frontend exited (code=${code}) before becoming ready${detail}`,
+        ),
+      )
     })
     child.on('error', (err) => {
       clearTimeout(timer)
@@ -197,17 +198,9 @@ const spawnEmulatorVite = (options: {
     }
     const child = spawn(
       pnpmCommand,
-      [
-        '--filter',
-        EMULATOR_PACKAGE,
-        'run',
-        'dev',
-        '--',
-        '--port',
-        String(port),
-      ],
+      ['run', 'dev', '--', '--port', String(port)],
       {
-        cwd: findWorkspaceRoot(),
+        cwd,
         env,
         stdio: ['ignore', 'pipe', 'pipe'],
       },
@@ -231,18 +224,20 @@ const spawnEmulatorVite = (options: {
       if (formatted.length > 0) {
         if (label === 'stdout') stdoutChunks.push(formatted)
         else stderrChunks.push(formatted)
-        if (label === 'stderr') logger.warn(formatted.trimEnd(), 'emulator vite')
+        if (label === 'stderr')
+          logger.warn(formatted.trimEnd(), 'emulator vite')
         else logger.info(formatted.trimEnd(), 'emulator vite')
       }
     }
 
     const timer = setTimeout(() => {
       child.kill('SIGTERM')
-      const output =
-        stdoutChunks.join('') + stderrChunks.join('')
+      const output = stdoutChunks.join('') + stderrChunks.join('')
       const detail = output.length > 0 ? `\n  output:\n${output}` : ''
       reject(
-        new Error(`emulator did not become ready within ${readyTimeoutMs}ms${detail}`),
+        new Error(
+          `emulator did not become ready within ${readyTimeoutMs}ms${detail}`,
+        ),
       )
     }, readyTimeoutMs)
 
@@ -264,10 +259,13 @@ const spawnEmulatorVite = (options: {
     })
     child.on('exit', (code) => {
       clearTimeout(timer)
-      const output =
-        stdoutChunks.join('') + stderrChunks.join('')
+      const output = stdoutChunks.join('') + stderrChunks.join('')
       const detail = output.length > 0 ? `\n  output:\n${output}` : ''
-      reject(new Error(`emulator exited (code=${code}) before becoming ready${detail}`))
+      reject(
+        new Error(
+          `emulator exited (code=${code}) before becoming ready${detail}`,
+        ),
+      )
     })
     child.on('error', (err) => {
       clearTimeout(timer)
@@ -297,7 +295,10 @@ export interface AddonFrontendRef {
   readonly frontendEntry: string | null
 }
 
-const deriveLabel = (type: string, config: Record<string, unknown>): string | undefined => {
+const deriveLabel = (
+  type: string,
+  config: Record<string, unknown>,
+): string | undefined => {
   switch (type) {
     case 'core:action': {
       const cmd = config['command']
