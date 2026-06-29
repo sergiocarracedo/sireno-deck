@@ -101,12 +101,34 @@ export const spawnFrontendVite = (options: {
       },
     )
 
+    const stdoutChunks: string[] = []
     const stderrChunks: string[] = []
+
+    const formatOutput = (text: string, label: 'stdout' | 'stderr'): string => {
+      const trimmed = text.trimEnd()
+      if (trimmed.length === 0) return ''
+      const lines = trimmed
+        .split('\n')
+        .map((line) => `  ${line}`)
+        .join('\n')
+      return `${label}:\n${lines}\n`
+    }
+
+    const collectOutput = (text: string, label: 'stdout' | 'stderr'): void => {
+      const formatted = formatOutput(text, label)
+      if (formatted.length > 0) {
+        if (label === 'stdout') stdoutChunks.push(formatted)
+        else stderrChunks.push(formatted)
+        if (label === 'stderr') logger.warn(formatted.trimEnd(), 'frontend vite')
+        else logger.info(formatted.trimEnd(), 'frontend vite')
+      }
+    }
 
     const timer = setTimeout(() => {
       child.kill('SIGTERM')
-      const stderr = stderrChunks.join('').trim().slice(0, 2000)
-      const detail = stderr.length > 0 ? `\n  stderr:\n${stderr}` : ''
+      const output =
+        stdoutChunks.join('') + stderrChunks.join('')
+      const detail = output.length > 0 ? `\n  output:\n${output}` : ''
       reject(
         new Error(`frontend did not become ready within ${readyTimeoutMs}ms${detail}`),
       )
@@ -121,7 +143,7 @@ export const spawnFrontendVite = (options: {
 
     const onData = (chunk: Buffer): void => {
       const text = chunk.toString()
-      logger.debug({ chunk: text }, 'frontend vite stdout')
+      collectOutput(text, 'stdout')
       const stripped = text.replace(ANSI_REGEX, '')
       const match = stripped.match(READY_REGEX)
       if (match && match[1]) {
@@ -133,14 +155,13 @@ export const spawnFrontendVite = (options: {
 
     child.stdout?.on('data', onData)
     child.stderr?.on('data', (chunk: Buffer) => {
-      const text = chunk.toString()
-      stderrChunks.push(text)
-      logger.debug({ chunk: text }, 'frontend vite stderr')
+      collectOutput(chunk.toString(), 'stderr')
     })
     child.on('exit', (code) => {
       clearTimeout(timer)
-      const stderr = stderrChunks.join('').trim().slice(0, 2000)
-      const detail = stderr.length > 0 ? `\n  stderr:\n${stderr}` : ''
+      const output =
+        stdoutChunks.join('') + stderrChunks.join('')
+      const detail = output.length > 0 ? `\n  output:\n${output}` : ''
       reject(new Error(`frontend exited (code=${code}) before becoming ready${detail}`))
     })
     child.on('error', (err) => {
@@ -192,12 +213,34 @@ const spawnEmulatorVite = (options: {
       },
     )
 
+    const stdoutChunks: string[] = []
     const stderrChunks: string[] = []
+
+    const formatOutput = (text: string, label: 'stdout' | 'stderr'): string => {
+      const trimmed = text.trimEnd()
+      if (trimmed.length === 0) return ''
+      const lines = trimmed
+        .split('\n')
+        .map((line) => `  ${line}`)
+        .join('\n')
+      return `${label}:\n${lines}\n`
+    }
+
+    const collectOutput = (text: string, label: 'stdout' | 'stderr'): void => {
+      const formatted = formatOutput(text, label)
+      if (formatted.length > 0) {
+        if (label === 'stdout') stdoutChunks.push(formatted)
+        else stderrChunks.push(formatted)
+        if (label === 'stderr') logger.warn(formatted.trimEnd(), 'emulator vite')
+        else logger.info(formatted.trimEnd(), 'emulator vite')
+      }
+    }
 
     const timer = setTimeout(() => {
       child.kill('SIGTERM')
-      const stderr = stderrChunks.join('').trim().slice(0, 2000)
-      const detail = stderr.length > 0 ? `\n  stderr:\n${stderr}` : ''
+      const output =
+        stdoutChunks.join('') + stderrChunks.join('')
+      const detail = output.length > 0 ? `\n  output:\n${output}` : ''
       reject(
         new Error(`emulator did not become ready within ${readyTimeoutMs}ms${detail}`),
       )
@@ -205,7 +248,7 @@ const spawnEmulatorVite = (options: {
 
     const onData = (chunk: Buffer): void => {
       const text = chunk.toString()
-      logger.debug({ chunk: text }, 'emulator vite stdout')
+      collectOutput(text, 'stdout')
       const stripped = text.replace(ANSI_REGEX, '')
       const match = stripped.match(READY_REGEX)
       if (match && match[1]) {
@@ -217,14 +260,13 @@ const spawnEmulatorVite = (options: {
 
     child.stdout?.on('data', onData)
     child.stderr?.on('data', (chunk: Buffer) => {
-      const text = chunk.toString()
-      stderrChunks.push(text)
-      logger.debug({ chunk: text }, 'emulator vite stderr')
+      collectOutput(chunk.toString(), 'stderr')
     })
     child.on('exit', (code) => {
       clearTimeout(timer)
-      const stderr = stderrChunks.join('').trim().slice(0, 2000)
-      const detail = stderr.length > 0 ? `\n  stderr:\n${stderr}` : ''
+      const output =
+        stdoutChunks.join('') + stderrChunks.join('')
+      const detail = output.length > 0 ? `\n  output:\n${output}` : ''
       reject(new Error(`emulator exited (code=${code}) before becoming ready${detail}`))
     })
     child.on('error', (err) => {
