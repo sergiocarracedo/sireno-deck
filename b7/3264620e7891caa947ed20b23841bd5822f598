@@ -1,0 +1,19 @@
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_8ca911650149ee::t_ea0c22264f0d41 235-255,269-270,274,276
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "b73264620e7891caa947ed20b23841bd5822f598",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
