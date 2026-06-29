@@ -119,14 +119,6 @@ export const App = () => {
             }
             return next
           })
-          setTimeout(() => {
-            setGestures((prev) => {
-              if (prev[buttonId] === undefined) return prev
-              const next: Record<string, ButtonGestureState> = { ...prev }
-              delete next[buttonId]
-              return next
-            })
-          }, 160)
         }
         if (message.type === 'state') {
           for (const [channel, payload] of Object.entries(message.channels)) {

@@ -8,7 +8,7 @@ import {
 
 import { addonRegistry } from "virtual:sireno/addons/registry";
 
-import { ButtonFrame } from "@sireno-deck/cli";
+import { ButtonFrame, Icon } from "@sireno-deck/cli";
 
 const BUTTON_SIZE = BUTTON_SIZE_PX;
 const BUTTON_GAP_PX = 8;
@@ -85,7 +85,12 @@ const EMPTY_GESTURE: ButtonGestureState = {
   holdProgress: 0,
 };
 
-const noop = (): void => {};
+const FallbackLabel = ({ text }: { text: string }): ReactNode => (
+  <div className="flex h-full w-full flex-col items-center justify-center gap-1 p-1">
+    <Icon name="alert-circle" size={20} tone="danger" />
+    <span className="truncate font-mono text-[10px] uppercase opacity-70">{text}</span>
+  </div>
+);
 
 export const Deck = ({ deck, gestures, children }: DeckProps) => {
   const model = resolveDeviceModel();
@@ -120,10 +125,12 @@ export const Deck = ({ deck, gestures, children }: DeckProps) => {
             <registryEntry.Component config={button.config ?? {}} state={null} buttonType={button.type} />
           ) : null;
         const gesture = gestures?.[button.id] ?? EMPTY_GESTURE;
+        const fallbackText = button.label ?? button.type;
         return (
           <div
             key={button.id}
             style={{ gridColumn: col, gridRow: row, width: BUTTON_SIZE, height: BUTTON_SIZE }}
+            data-button-type={button.type}
           >
             <ButtonFrame
               pressed={gesture.pressed}
@@ -131,14 +138,8 @@ export const Deck = ({ deck, gestures, children }: DeckProps) => {
               isHolding={gesture.isHolding}
               holdProgress={gesture.holdProgress}
               buttonType={button.type}
-              onPointerDown={noop}
-              onPointerUp={noop}
-              onPointerLeave={noop}
-              onClick={noop}
-              onDoubleClick={noop}
-              onContextMenu={noop}
             >
-              {addonSurface}
+              {addonSurface ?? <FallbackLabel text={fallbackText} />}
             </ButtonFrame>
           </div>
         );
