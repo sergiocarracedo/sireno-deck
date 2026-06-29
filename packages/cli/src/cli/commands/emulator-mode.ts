@@ -14,8 +14,6 @@ import type { Runtime, RuntimeDeck } from '@/deck'
 import { startWsBridge, type WsBridge } from '@/render/ws-bridge'
 import { BUILT_IN_THEMES } from '@/themes/loader'
 
-const FRONTEND_PACKAGE = 'sireno-deck-frontend'
-const EMULATOR_PACKAGE = '@sireno-deck/emulator'
 const DEFAULT_FRONTEND_PORT = 5180
 const DEFAULT_EMULATOR_PORT = 52938
 const DEFAULT_TIMEOUT_MS = 30_000
