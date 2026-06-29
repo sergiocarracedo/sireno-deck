@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { AddonDeckDefinition } from "@/addon/api.ts";
+import type { AddonDeckDefinition } from "@/addon/api";
 
 export const sessionLockedConfigSchema = z.object({
   timeFormat: z.string().default("HH:mm"),

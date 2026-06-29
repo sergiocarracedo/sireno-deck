@@ -2,9 +2,9 @@ import { useMemo, useRef, useState } from "react";
 
 import { DEVICE_MODELS, type DeviceModelSpec } from "@sireno-deck-2/cli";
 
-import { createWsClient, serializeHello, type WsClient } from "./bridge.ts";
-import { DeckFrame } from "./DeckFrame.tsx";
-import { SidePanel } from "./SidePanel.tsx";
+import { createWsClient, serializeHello, type WsClient } from "./bridge";
+import { DeckFrame } from "./DeckFrame";
+import { SidePanel } from "./SidePanel";
 
 const FALLBACK_DECKS: ReadonlyArray<{ id: string; name: string }> = [{ id: "main", name: "Main" }];
 

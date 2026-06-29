@@ -1,6 +1,6 @@
 import { createContext, useContext, type ReactNode } from "react";
 
-import type { LoadedTheme } from "@/addon/api.ts";
+import type { LoadedTheme } from "@/addon/api";
 
 export interface ThemeContextValue {
   name: string;

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import type { Methods } from "@/deck/methods.ts";
-import type { Store } from "@/core/store.ts";
+import type { Methods } from "@/deck/methods";
+import type { Store } from "@/core/store";
 
 export const toggleConfigSchema = z.object({
   key: z.string().min(1),

@@ -15,8 +15,8 @@ const { startWsBridge } = await import('@/render/ws-bridge')
 const bridgeMock = startWsBridge as unknown as ReturnType<typeof vi.fn>
 
 const { createLogger } = await import('@/util/logger')
-const { runEmulatorMode } = await import('../emulator-mode.ts')
-const { createRuntime } = await import('@/deck/runtime.ts')
+const { runEmulatorMode } = await import('../emulator-mode')
+const { createRuntime } = await import('@/deck/runtime')
 
 const silentLogger = () => createLogger({ level: 'silent' })
 

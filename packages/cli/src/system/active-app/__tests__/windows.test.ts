@@ -4,7 +4,7 @@ import type pino from "pino";
 
 import type { CommandExecutor } from "@/system/active-app/linux";
 
-import { createWindowsActiveAppProvider } from "../windows.ts";
+import { createWindowsActiveAppProvider } from "../windows";
 
 const silentLogger = (): pino.Logger => {
   const noop = (): void => undefined;

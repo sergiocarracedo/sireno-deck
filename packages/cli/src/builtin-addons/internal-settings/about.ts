@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { Store } from "@/core/store.ts";
+import type { Store } from "@/core/store";
 
 export const settingsAboutConfigSchema = z.object({});
 

@@ -1,14 +1,14 @@
 import { z } from "zod";
 
-import type { AddonButtonTypeDefinition, AddonDeckDefinition } from "@/addon/api.ts";
-import type { AddonGeneratedDeck } from "@/addon/api.ts";
+import type { AddonButtonTypeDefinition, AddonDeckDefinition } from "@/addon/api";
+import type { AddonGeneratedDeck } from "@/addon/api";
 
 import {
   CATEGORY_DEFINITIONS,
   EMOJI_PAGE_SIZE,
   EmojiSelectorDeckSchema,
   type EmojiSelectorDeckConfig,
-} from "./support.ts";
+} from "./support";
 
 interface PageButton {
   type: string;
@@ -222,7 +222,7 @@ export const emojiSelectorAddon = {
   apiVersion: 3 as const,
   name: "emoji-selector",
   kind: "runtime" as const,
-  frontend: { main: "./frontend.tsx" },
+  frontend: { main: "./frontend" },
   buttons: [
     builtinEmojiCategoryButton,
     builtinEmojiEmojiButton,

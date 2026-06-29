@@ -1,8 +1,8 @@
-import type { AddonButtonTypeDefinition } from "@/addon/api.ts";
-import { Text } from "@/ui/index.ts";
+import type { AddonButtonTypeDefinition } from "@/addon/api";
+import { Text } from "@/ui/index";
 
-import { buildMacOSCommand, formatCommand, isMacOS } from "../domain/macos.ts";
-import { BrightnessButtonSchema } from "../schemas.ts";
+import { buildMacOSCommand, formatCommand, isMacOS } from "../domain/macos";
+import { BrightnessButtonSchema } from "../schemas";
 
 export const builtinBrightnessButton: AddonButtonTypeDefinition = {
   type: "core:brightness",
@@ -53,7 +53,7 @@ export const brightnessAddon = {
   apiVersion: 3 as const,
   name: "brightness",
   kind: "runtime" as const,
-  frontend: { main: "./frontend.tsx" },
+  frontend: { main: "./frontend" },
   publishIntervalMs: 2000,
   buttons: [builtinBrightnessButton],
 };

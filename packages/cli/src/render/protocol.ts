@@ -13,7 +13,7 @@ export {
   dismissOverlayMessageSchema,
   wsMessageSchema,
   PROTOCOL_VERSION,
-} from "../api/protocol-internal.ts";
+} from "../api/protocol-internal";
 
 export type {
   HelloMessage,
@@ -29,4 +29,4 @@ export type {
   DeckActiveMessage,
   DismissOverlayMessage,
   WsMessage,
-} from "../api/protocol-internal.ts";
+} from "../api/protocol-internal";

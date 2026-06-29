@@ -1,8 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import type { ActionExecutor } from "@/action/executor.ts";
-import type { AddonPoller } from "@/addon/api-types.ts";
+import type { ActionExecutor } from "@/action/executor";
+import type { AddonPoller } from "@/addon/api-types";
 
 export interface ValueDisplayPollerDeps {
   readonly executor: ActionExecutor;

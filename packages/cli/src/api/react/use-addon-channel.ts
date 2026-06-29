@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { ChannelRegistry } from "./registry.ts";
-import type { ChannelPayload } from "@/api/addon.ts";
+import { ChannelRegistry } from "./registry";
+import type { ChannelPayload } from "@/api/addon";
 
 export interface UseAddonChannelReturn<T = unknown> {
   data: T | undefined;

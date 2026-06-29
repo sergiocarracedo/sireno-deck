@@ -1,19 +1,19 @@
-import { systemStatusAddon } from "./buttons/system-status.tsx";
+import { systemStatusAddon } from "./buttons/system-status";
 
-export { builtinSystemStatusButton } from "./buttons/system-status.tsx";
+export { builtinSystemStatusButton } from "./buttons/system-status";
 export {
   SystemStatusButtonSchema,
   SystemStatusMetricConfigSchema,
   SystemStatusMetricIdSchema,
   SYSTEM_STATUS_DEFAULT_POLL_MS,
-} from "./schemas.ts";
-export { getCanonicalSystemMetrics } from "./domain/live-metrics.ts";
-export { createPoller } from "./poller.ts";
+} from "./schemas";
+export { getCanonicalSystemMetrics } from "./domain/live-metrics";
+export { createPoller } from "./poller";
 export type {
   SystemStatusMetricId,
   SystemStatusMetricConfig,
   SystemStatusButtonConfig,
   CanonicalSystemMetricSnapshot,
-} from "./schemas.ts";
+} from "./schemas";
 
 export default systemStatusAddon;

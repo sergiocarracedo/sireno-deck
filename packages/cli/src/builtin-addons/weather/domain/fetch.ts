@@ -1,4 +1,4 @@
-import type { WeatherButtonConfig, WeatherLocation, WeatherSnapshot } from "../schemas.ts";
+import type { WeatherButtonConfig, WeatherLocation, WeatherSnapshot } from "../schemas";
 
 const OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast";
 

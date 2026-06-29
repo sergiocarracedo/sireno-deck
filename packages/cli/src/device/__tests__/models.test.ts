@@ -8,7 +8,7 @@ import {
   gridForKeyCount,
   isKnownDeviceModel,
   resolveKeyCount,
-} from "../models.ts";
+} from "../models";
 
 describe("DEVICE_MODELS", () => {
   it("includes mk2=15, plus=32, mini=6, xl=32", () => {

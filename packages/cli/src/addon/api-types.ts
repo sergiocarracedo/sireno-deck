@@ -3,7 +3,7 @@ import type {
   AddonDeckDefinition,
   AddonFrontend,
   AddonGeneratedDeck,
-} from "./api.ts";
+} from "./api";
 
 export const SIRENO_ADDON_API_VERSION = 3 as const;
 

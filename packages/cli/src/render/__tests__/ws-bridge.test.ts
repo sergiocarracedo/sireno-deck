@@ -6,8 +6,8 @@ import {
   buttonActionMessageSchema,
   helloAckMessageSchema,
   stateMessageSchema,
-} from "../protocol.ts";
-import { startWsBridge, type WsBridge } from "../ws-bridge.ts";
+} from "../protocol";
+import { startWsBridge, type WsBridge } from "../ws-bridge";
 
 let bridge: WsBridge | null = null;
 

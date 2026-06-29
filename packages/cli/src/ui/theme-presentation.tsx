@@ -15,7 +15,7 @@ import {
 import {
   BarsProps,
   IconLabelSurfaceProps,
-  LabelValueListProps,
+  LabelValueListSurfaceProps,
   SplitActionSurfaceProps,
 } from './surfaces'
 
@@ -32,7 +32,7 @@ export interface ThemeUiPresentation {
     iconLabel?: (props: IconLabelSurfaceProps) => ReactElement
     bars?: (props: BarsProps) => ReactElement
     splitAction?: (props: SplitActionSurfaceProps) => ReactElement
-    labelValueList?: (props: LabelValueListProps) => ReactElement
+    labelValueList?: (props: LabelValueListSurfaceProps) => ReactElement
   }
 }
 
@@ -40,7 +40,7 @@ const ThemeUiPresentationContext = createContext<
   ThemeUiPresentation | undefined
 >(undefined)
 
-export function MountedThemeUiPresentationProvider(props: {
+export function ThemeUiPresentationProvider(props: {
   children: ReactElement
   presentation?: ThemeUiPresentation
 }): ReactElement {

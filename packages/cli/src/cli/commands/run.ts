@@ -21,7 +21,7 @@ import {
 import { listDevices, type DeviceDescriptor } from "@/device/registry";
 import { selectDevice, NoStreamDeckFoundError } from "@/system/device-selection";
 import { loadDeviceConfig, saveDeviceConfig } from "@/util/device-config";
-import { resolveActiveTheme } from "@/themes/loader.ts";
+import { resolveActiveTheme } from "@/themes/loader";
 import {
   type ActiveAppProvider,
   type KeyMacroProvider,
@@ -31,13 +31,13 @@ import {
 
 import { runRealMode } from "./real-mode";
 import { runEmulatorMode, spawnFrontendVite, resolveFrontendCwd, buildDeckConfigMessage } from "./emulator-mode";
-import { collectBuiltinAddonRegistry, discoverAddonPollers } from "./addon-registry.ts";
-import { createActionExecutor } from "@/action/executor.ts";
-import { getHostContext } from "@/deck/host-context.ts";
+import { collectBuiltinAddonRegistry, discoverAddonPollers } from "./addon-registry";
+import { createActionExecutor } from "@/action/executor";
+import { getHostContext } from "@/deck/host-context";
 import { createBrightnessProvider } from "@/system/brightness";
 import { createClipboardProvider, type ClipboardProvider } from "@/system/clipboard";
-import { StatePublisher } from "@/render/state-publisher.ts";
-import { startWsBridge, type WsBridge } from "@/render/ws-bridge.ts";
+import { StatePublisher } from "@/render/state-publisher";
+import { startWsBridge, type WsBridge } from "@/render/ws-bridge";
 
 export interface SignalProvider {
   onSignal(handler: () => void): () => void;

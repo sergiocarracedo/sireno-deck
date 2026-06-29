@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { Methods } from "@/deck/methods.ts";
+import type { Methods } from "@/deck/methods";
 
 export const actionConfigSchema = z.object({
   command: z.string().min(1),

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type pino from "pino";
 
-import { createWindowsSessionProvider, type CommandExecutor } from "../windows.ts";
+import { createWindowsSessionProvider, type CommandExecutor } from "../windows";
 
 const silentLogger = (): pino.Logger => {
   const noop = (): void => undefined;

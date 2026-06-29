@@ -50,7 +50,7 @@ const MockButtonFrame = ({
 
 export const activeTheme = {
   name: "default",
-  frontendPath: "/__mocks__/themes/default/index.tsx",
+  frontendPath: "/__mocks__/themes/default/index",
 };
 
 export const components = {

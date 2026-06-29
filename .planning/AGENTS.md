@@ -45,7 +45,7 @@ pnpm --filter sireno-deck-2 exec sireno <command>
 - **Semicolons:** none
 - **Trailing commas:** all
 - **Print width:** 110
-- **Imports:** relative imports within a folder must include `.ts`/`.tsx` extension; cross-folder imports prefer the `@/` alias
+- **Imports:** no file extensions on relative imports; cross-folder imports prefer the `@/` alias
 - **No comments** unless the user explicitly asks
 - **File layout:** entrypoints are `index.ts`/`index.tsx`; large files split into a folder with sub-files
 - **Decoupling:** the React frontend cannot import from CLI or emulator code. Use `src/api/` (Phase 04) for shared types

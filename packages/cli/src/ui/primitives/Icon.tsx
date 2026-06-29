@@ -4,8 +4,8 @@ import * as lucideIcons from 'lucide-react'
 import { type LucideIcon } from 'lucide-react'
 
 import { resolveDomAssetSrc } from '@/addon/api'
-import { cn } from '../utils/cn.ts'
-import { useThemeUiPresentation } from '../theme-presentation.tsx'
+import { cn } from '../utils/cn'
+import { useThemeUiPresentation } from '../theme-presentation'
 
 const BRAND_ICON_REGISTRY = {} as const satisfies Record<string, LucideIcon>
 

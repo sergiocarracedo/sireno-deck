@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { getHostContext } from "@/deck/host-context.ts";
+import { getHostContext } from "@/deck/host-context";
 
-import { ActionError, createActionExecutor } from "../executor.ts";
+import { ActionError, createActionExecutor } from "../executor";
 
 const host = getHostContext();
 const executor = createActionExecutor({ host });

@@ -3,10 +3,10 @@ import { dirname, isAbsolute, resolve as resolvePath } from "node:path";
 
 import { parseDocument, YAMLParseError } from "yaml";
 
-import { getOriginalCwd } from "@/cli/cwd.ts";
+import { getOriginalCwd } from "@/cli/cwd";
 
-import { RawConfigSchema, type RawConfig } from "./schemas.ts";
-import { expandButtonReferences } from "./reference-expander.ts";
+import { RawConfigSchema, type RawConfig } from "./schemas";
+import { expandButtonReferences } from "./reference-expander";
 
 export interface LoadConfigOptions {
   configPath: string;

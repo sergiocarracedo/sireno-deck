@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { AddonRegistry } from "@/addon/registry.ts";
-import type { LoadedTheme } from "@/addon/api.ts";
+import { AddonRegistry } from "@/addon/registry";
+import type { LoadedTheme } from "@/addon/api";
 
-import { registerBuiltInThemes, resolveActiveTheme } from "../loader.ts";
+import { registerBuiltInThemes, resolveActiveTheme } from "../loader";
 
 const makeTheme = (name: string): LoadedTheme => ({
   name,
@@ -21,7 +21,7 @@ describe("themes/loader", () => {
     expect(theme).toBeDefined();
     expect(theme?.apiVersion).toBe(3);
     expect(theme?.source.kind).toBe("builtin");
-    expect(theme?.frontendPath.endsWith("index.tsx")).toBe(true);
+    expect(theme?.frontendPath.endsWith("index")).toBe(true);
     expect(theme?.cssPath.endsWith("theme.css")).toBe(true);
   });
 

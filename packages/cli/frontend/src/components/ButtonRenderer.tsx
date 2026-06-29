@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
 
-import { ButtonFrame } from "./ButtonFrame.tsx";
+import { ButtonFrame } from "./ButtonFrame";
 
 export type GestureHandler = () => void;
 

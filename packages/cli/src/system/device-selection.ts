@@ -1,8 +1,8 @@
 import { select as inquirerSelect } from "@inquirer/prompts";
 import type pino from "pino";
 
-import type { DeviceDescriptor } from "@/device/registry.ts";
-import type { DeviceConfig } from "@/util/device-config.ts";
+import type { DeviceDescriptor } from "@/device/registry";
+import type { DeviceConfig } from "@/util/device-config";
 
 export class NoStreamDeckFoundError extends Error {
   constructor() {

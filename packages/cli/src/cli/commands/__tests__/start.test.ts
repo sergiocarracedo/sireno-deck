@@ -46,7 +46,7 @@ vi.mock("@/system/clipboard", () => ({
     stop: vi.fn(async () => undefined),
   })),
 }));
-vi.mock("../http-server.ts", () => ({
+vi.mock("../http-server", () => ({
   startHttpServer: vi.fn(async () => ({
     port: 3939,
     stop: vi.fn(async () => undefined),
@@ -131,7 +131,7 @@ const createMediaProviderMock = (
 ).createMediaProvider;
 
 const { createLogger } = await import("@/util/logger");
-const start = (await import("../start.ts")).default;
+const start = (await import("../start")).default;
 
 const silentLogger = () => createLogger({ level: "silent" });
 
@@ -144,7 +144,7 @@ const setHappyPath = (): void => {
       resolveActiveTheme: () => ({
         name: "default",
         cssPath: "/theme.css",
-        frontendPath: "/index.tsx",
+        frontendPath: "/index",
       }),
     };
   });
@@ -312,7 +312,7 @@ describe("start", () => {
         resolveActiveTheme: () => ({
           name: "default",
           cssPath: "/theme.css",
-          frontendPath: "/index.tsx",
+          frontendPath: "/index",
         }),
       };
     });

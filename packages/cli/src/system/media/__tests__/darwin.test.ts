@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type pino from "pino";
 
-import { createDarwinMediaProvider, type CommandExecutor } from "../darwin.ts";
+import { createDarwinMediaProvider, type CommandExecutor } from "../darwin";
 
 const silentLogger = (): pino.Logger => {
   const noop = (): void => undefined;

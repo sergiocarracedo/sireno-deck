@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
-import type { SirenoAddon } from "./api-types.ts";
+import type { SirenoAddon } from "./api-types";
 
-export { SIRENO_ADDON_API_VERSION } from "./api-types.ts";
+export { SIRENO_ADDON_API_VERSION } from "./api-types";
 
 export type AddonKind = "runtime" | "theme";
 
@@ -95,7 +95,7 @@ export interface AddonLoadIssue {
   message: string;
 }
 
-export type { SirenoAddon } from "./api-types.ts";
+export type { SirenoAddon } from "./api-types";
 
 let domAssetPathResolver: ((assetReference: string) => string | undefined) | undefined;
 

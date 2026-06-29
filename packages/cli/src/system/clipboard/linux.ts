@@ -1,6 +1,6 @@
 import type pino from "pino";
 
-import { type ClipboardProvider } from "../provider.ts";
+import { type ClipboardProvider } from "../provider";
 
 import type { CommandExecutor } from "../media";
 

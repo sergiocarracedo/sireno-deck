@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { TOKEN_MODULE, buildAddonsImports, buildThemesManifestModule } from "../virtual-modules.ts";
+import { TOKEN_MODULE, buildAddonsImports, buildThemesManifestModule } from "../virtual-modules";
 
 describe("vite plugin helpers", () => {
   it("TOKEN_MODULE emits a token export", () => {
@@ -47,7 +47,7 @@ describe("vite plugin helpers", () => {
     const src = buildThemesManifestModule({
       name: "default",
       cssPath: "/theme.css",
-      frontendPath: "/theme/index.tsx",
+      frontendPath: "/theme/index",
     });
     expect(src).not.toMatch(/import \* as default\b/);
     expect(src).not.toMatch(/export default \w+\.default/);

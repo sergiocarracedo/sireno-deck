@@ -3,14 +3,14 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it, afterAll } from "vitest";
 
-import { AddonRegistry } from "@/addon/registry.ts";
-import { internalSettingsAddon } from "@/builtin-addons/internal-settings/index.ts";
-import { coreButtonsAddon } from "@/builtin-addons/core-buttons/index.ts";
-import { sessionAddon } from "@/builtin-addons/session/index.ts";
-import { createDeckRuntime, type RuntimeDeck } from "@/deck/index.ts";
-import { loadConfig } from "@/config/loader.ts";
-import { validateFull } from "@/config/validation.ts";
-import { createLogger } from "@/util/logger.ts";
+import { AddonRegistry } from "@/addon/registry";
+import { internalSettingsAddon } from "@/builtin-addons/internal-settings/index";
+import { coreButtonsAddon } from "@/builtin-addons/core-buttons/index";
+import { sessionAddon } from "@/builtin-addons/session/index";
+import { createDeckRuntime, type RuntimeDeck } from "@/deck/index";
+import { loadConfig } from "@/config/loader";
+import { validateFull } from "@/config/validation";
+import { createLogger } from "@/util/logger";
 
 const tmpDir = mkdtempSync(join(tmpdir(), "sireno-integration-"));
 afterAll(() => rmSync(tmpDir, { recursive: true, force: true }));

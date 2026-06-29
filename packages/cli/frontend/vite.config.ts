@@ -59,7 +59,7 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: /^@\//, replacement: resolve(__dirname, "../src") + "/" },
-      { find: /^@sireno-deck-2\/cli$/, replacement: resolve(__dirname, "../src/index.ts") },
+      { find: /^@sireno-deck-2\/cli$/, replacement: resolve(__dirname, "../src/index") },
     ],
   },
   define: {

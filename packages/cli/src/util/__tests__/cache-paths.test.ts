@@ -8,7 +8,7 @@ import {
   addonNpmInstallPath,
   addonNpmRoot,
   resolveAddonCacheDir,
-} from "../cache-paths.ts";
+} from "../cache-paths";
 
 const TEST_DIR = join(tmpdir(), `sireno-deck-2-cache-paths-${process.pid}`);
 

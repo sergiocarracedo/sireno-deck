@@ -1,6 +1,6 @@
-import type { AddonRegistry } from "@/addon/registry.ts";
-import { isSystemButtonType } from "@/deck/system-buttons/types.ts";
-import type { RawConfig } from "./schemas.ts";
+import type { AddonRegistry } from "@/addon/registry";
+import { isSystemButtonType } from "@/deck/system-buttons/types";
+import type { RawConfig } from "./schemas";
 
 export interface BootstrapIssue {
   level: "error" | "warning";

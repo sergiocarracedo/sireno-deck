@@ -4,7 +4,7 @@ import { DEVICE_MODELS } from "@sireno-deck-2/cli";
 
 import { render } from "@testing-library/react";
 
-import { DeckFrame } from "../DeckFrame.tsx";
+import { DeckFrame } from "../DeckFrame";
 
 const mk2 = DEVICE_MODELS.find((m) => m.id === "mk2")!;
 

@@ -1,9 +1,9 @@
 import type { CSSProperties, ReactElement } from 'react'
 
-import { Text } from '../primitives/Text.tsx'
-import { useThemeUiPresentation } from '../theme-presentation.tsx'
-import { cn } from '../utils/cn.ts'
-import { computeNegativeColor } from '../utils/negative-color.ts'
+import { Text } from '../primitives/Text'
+import { useThemeUiPresentation } from '../theme-presentation'
+import { cn } from '../utils/cn'
+import { computeNegativeColor } from '../utils/negative-color'
 
 export interface BarsItem {
   color?: string

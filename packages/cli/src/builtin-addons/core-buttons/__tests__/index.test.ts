@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { isSirenoAddon } from "@/addon/api-types.ts";
+import { isSirenoAddon } from "@/addon/api-types";
 
-import { coreActionButton } from "../action.ts";
-import { coreButtonsAddon } from "../index.ts";
-import { coreChangeDeckButton } from "../change-deck.ts";
-import { coreToggleButton } from "../toggle.ts";
+import { coreActionButton } from "../action";
+import { coreButtonsAddon } from "../index";
+import { coreChangeDeckButton } from "../change-deck";
+import { coreToggleButton } from "../toggle";
 
 describe("core-buttons addon", () => {
   it("addon object validates via isSirenoAddon", () => {

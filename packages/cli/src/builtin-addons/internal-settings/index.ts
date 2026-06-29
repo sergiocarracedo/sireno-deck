@@ -1,11 +1,11 @@
 import { z } from "zod";
 
-import type { SirenoAddon } from "@/addon/api-types.ts";
-import type { AddonDeckDefinition } from "@/addon/api.ts";
+import type { SirenoAddon } from "@/addon/api-types";
+import type { AddonDeckDefinition } from "@/addon/api";
 
-import { coreSettingsAboutButton } from "./about.ts";
-import { coreSettingsBrightnessButton } from "./brightness.ts";
-import { coreSettingsThemeButton } from "./theme.ts";
+import { coreSettingsAboutButton } from "./about";
+import { coreSettingsBrightnessButton } from "./brightness";
+import { coreSettingsThemeButton } from "./theme";
 
 const settingsDeckConfigSchema = z.object({});
 
@@ -35,7 +35,7 @@ export const internalSettingsAddon: SirenoAddon = {
   decks: [settingsDeckDef],
 };
 
-export { coreSettingsBrightnessButton } from "./brightness.ts";
-export { coreSettingsThemeButton } from "./theme.ts";
-export { coreSettingsAboutButton } from "./about.ts";
+export { coreSettingsBrightnessButton } from "./brightness";
+export { coreSettingsThemeButton } from "./theme";
+export { coreSettingsAboutButton } from "./about";
 export { settingsDeckDef };

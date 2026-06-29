@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { AddonRegistry } from "@/addon/registry.ts";
+import { AddonRegistry } from "@/addon/registry";
 
-import { registerBuiltInThemes, resolveActiveTheme } from "../../loader.ts";
+import { registerBuiltInThemes, resolveActiveTheme } from "../../loader";
 
 describe("themes/light override", () => {
   it("registerBuiltInThemes registers both default and light themes", () => {
@@ -23,7 +23,7 @@ describe("themes/light override", () => {
     registerBuiltInThemes(registry);
     const { theme } = resolveActiveTheme(registry, { theme: "light" });
     expect(theme.name).toBe("light");
-    expect(theme.frontendPath.endsWith("index.tsx")).toBe(true);
+    expect(theme.frontendPath.endsWith("index")).toBe(true);
     expect(theme.cssPath.endsWith("theme.css")).toBe(true);
   });
 

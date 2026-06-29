@@ -1,7 +1,7 @@
 import { type ReactElement } from 'react'
 
-import { TapIndicator } from '../primitives/TapIndicator.tsx'
-import { useThemeUiPresentation } from '../theme-presentation.tsx'
+import { TapIndicator } from '../primitives/TapIndicator'
+import { useThemeUiPresentation } from '../theme-presentation'
 
 export interface SplitActionSurfaceProps {
   primary: ReactElement

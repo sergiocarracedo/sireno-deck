@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { DOUBLE_TAP_DELAY_MS, HOLD_ACTION_DELAY_MS, nextGesture } from "../gesture-state.ts";
+import { DOUBLE_TAP_DELAY_MS, HOLD_ACTION_DELAY_MS, nextGesture } from "../gesture-state";
 
 const down = (timestamp: number, keyIndex?: number) => ({
   type: "down" as const,

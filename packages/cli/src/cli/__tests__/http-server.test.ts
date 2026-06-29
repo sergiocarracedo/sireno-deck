@@ -4,9 +4,9 @@ import { tmpdir } from "node:os";
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { createLogger } from "@/util/logger.ts";
+import { createLogger } from "@/util/logger";
 
-import { startHttpServer } from "../http-server.ts";
+import { startHttpServer } from "../http-server";
 
 const silentLogger = () => createLogger({ level: "silent" });
 

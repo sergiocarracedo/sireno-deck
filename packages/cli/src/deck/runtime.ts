@@ -1,8 +1,8 @@
 import type pino from "pino";
 
-import type { PubSub } from "@/core/pub-sub.ts";
-import type { Store } from "@/core/store.ts";
-import type { GestureKind } from "@/core/gesture-state.ts";
+import type { PubSub } from "@/core/pub-sub";
+import type { Store } from "@/core/store";
+import type { GestureKind } from "@/core/gesture-state";
 import type { ActiveAppProvider } from "@/system/provider";
 import { compileDeckMatcher } from "@/system/glob-match";
 

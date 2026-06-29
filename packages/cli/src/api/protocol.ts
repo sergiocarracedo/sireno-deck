@@ -1,2 +1,2 @@
-export * from "./protocol-internal.ts";
-export type * from "./addon.ts";
+export * from "./protocol-internal";
+export type * from "./addon";

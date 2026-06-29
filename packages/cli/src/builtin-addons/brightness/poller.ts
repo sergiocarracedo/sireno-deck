@@ -1,5 +1,5 @@
 import type { BrightnessProvider } from "@/system/provider";
-import type { AddonPoller } from "@/addon/api-types.ts";
+import type { AddonPoller } from "@/addon/api-types";
 
 export interface BrightnessPollerDeps {
   readonly brightnessProvider: BrightnessProvider | null;

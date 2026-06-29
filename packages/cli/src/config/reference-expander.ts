@@ -3,7 +3,7 @@ import { dirname, isAbsolute, resolve as resolvePath } from "node:path";
 
 import { parseAllDocuments } from "yaml";
 
-import type { RawButtonEntry } from "./schemas.ts";
+import type { RawButtonEntry } from "./schemas";
 
 const FILE_REF_PATTERN = /^@(.+)$/;
 

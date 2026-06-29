@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { NEXT_PAGE_MARKER, paginate } from "../pagination.ts";
+import { NEXT_PAGE_MARKER, paginate } from "../pagination";
 
 describe("paginate", () => {
   it("empty list returns 0 pages", () => {

@@ -1,4 +1,4 @@
-import type { SystemButtonType } from "./system-buttons/types.ts";
+import type { SystemButtonType } from "./system-buttons/types";
 
 export interface RuntimeDeck {
   id: string;

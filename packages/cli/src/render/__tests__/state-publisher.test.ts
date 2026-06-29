@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { StatePublisher } from "../state-publisher.ts";
+import { StatePublisher } from "../state-publisher";
 
 const silentLogger = (): ReturnType<typeof Object> => ({
   info: () => undefined,

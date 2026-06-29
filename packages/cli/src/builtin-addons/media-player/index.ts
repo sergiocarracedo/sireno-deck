@@ -1,17 +1,17 @@
-import { mediaPlayerAddon } from "./buttons/media-player.tsx";
+import { mediaPlayerAddon } from "./buttons/media-player";
 
 export {
   builtinMediaPlayerButton,
   builtinMediaMuteButton,
   builtinMediaVolumeButton,
-} from "./buttons/media-player.tsx";
+} from "./buttons/media-player";
 export {
   MediaPlayerButtonSchema,
   MediaMuteButtonSchema,
   MediaVolumeButtonSchema,
-} from "./schemas.ts";
-export { createPoller } from "./poller.ts";
+} from "./schemas";
+export { createPoller } from "./poller";
 
-export type { MediaPlayerButtonConfig, MediaMuteButtonConfig, MediaVolumeButtonConfig } from "./schemas.ts";
+export type { MediaPlayerButtonConfig, MediaMuteButtonConfig, MediaVolumeButtonConfig } from "./schemas";
 
 export default mediaPlayerAddon;

@@ -3,10 +3,10 @@ import { token } from "virtual:sireno/token";
 import { activeTheme } from "virtual:sireno/themes/manifest";
 
 import { ChannelRegistry } from "sireno-deck-2/react";
-import { ThemeProvider, type ThemeContextValue } from "@/themes/index.ts";
+import { ThemeProvider, type ThemeContextValue } from "@/themes/index";
 import { ThemeUiPresentationProvider } from "@sireno-deck-2/cli";
-import { createWsClient, type WsClient } from "./bridge/client.ts";
-import { Deck } from "./components/Deck.tsx";
+import { createWsClient, type WsClient } from "./bridge/client";
+import { Deck } from "./components/Deck";
 
 interface DeckButton {
   id: string;

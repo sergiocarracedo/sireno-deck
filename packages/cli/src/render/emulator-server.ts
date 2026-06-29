@@ -33,7 +33,7 @@ export const startEmulatorServer = async (
   const { port, frontendEmulatorDir } = options;
   const log = options.logger ?? ((): void => {});
   const viteBin = resolve(frontendEmulatorDir, "node_modules", ".bin", "vite");
-  const cliEntry = resolve(frontendEmulatorDir, "src", "main.tsx");
+  const cliEntry = resolve(frontendEmulatorDir, "src", "main");
 
   const env: Record<string, string> = {
     ...(process.env as Record<string, string>),
@@ -105,14 +105,14 @@ const closeEmulator = (child: ChildProcess): Promise<void> =>
   });
 
 export const emulatorServerEntryExists = (frontendEmulatorDir: string): boolean => {
-  const main = resolve(frontendEmulatorDir, "src", "main.tsx");
+  const main = resolve(frontendEmulatorDir, "src", "main");
   const pkg = resolve(frontendEmulatorDir, "package.json");
   return existsSync(main) && existsSync(pkg);
 };
 
 export const __test_internals = {
   resolveEntry: (frontendEmulatorDir: string): string =>
-    resolve(frontendEmulatorDir, "src", "main.tsx"),
+    resolve(frontendEmulatorDir, "src", "main"),
 };
 
 const _internalDirname = dirname(fileURLToPath(import.meta.url));

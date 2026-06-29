@@ -58,7 +58,7 @@ packages/cli/
 - **Semicolons:** none.
 - **Trailing commas:** all.
 - **Print width:** 110.
-- **Imports:** `.ts` / `.tsx` extensions on relative imports.
+- **Imports:** no file extensions on relative imports.
 
 ## Architecture rules
 

@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { resolve } from "node:path";
-import { sirenoDeck2 } from "../src/vite/index.ts";
+import { sirenoDeck2 } from "../src/vite/index";
 
 const wsUrl = process.env["SIRENO_WS_URL"] ?? "ws://127.0.0.1:52937";
 const frontendUrl = process.env["SIRENO_FRONTEND_URL"] ?? "http://127.0.0.1:5173";
@@ -38,7 +38,7 @@ const parseThemeFromEnv = ():
 const defaultTheme = {
   name: "default",
   cssPath: resolve(__dirname, "../src/themes/default/theme.css"),
-  frontendPath: resolve(__dirname, "../src/themes/default/index.tsx"),
+  frontendPath: resolve(__dirname, "../src/themes/default/index"),
 };
 
 const theme = parseThemeFromEnv() ?? defaultTheme;
@@ -65,7 +65,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: [
-      { find: /^@sireno-deck-2\/cli$/, replacement: resolve(__dirname, "../src/index.ts") },
+      { find: /^@sireno-deck-2\/cli$/, replacement: resolve(__dirname, "../src/index") },
       { find: /^@\//, replacement: resolve(__dirname, "../src") + "/" },
     ],
   },

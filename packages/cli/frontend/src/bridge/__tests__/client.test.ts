@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ChannelRegistry } from "sireno-deck-2/react";
-import { createWsClient } from "../client.ts";
+import { createWsClient } from "../client";
 
 class FakeWebSocket {
   static OPEN = 1;

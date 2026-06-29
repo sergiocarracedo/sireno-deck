@@ -2,7 +2,7 @@
 import { render, fireEvent } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { Deck } from "../components/Deck.tsx";
+import { Deck } from "../components/Deck";
 
 const DECK = {
   id: "main",

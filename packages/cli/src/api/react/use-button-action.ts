@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { ChannelRegistry } from "./registry.ts";
+import { ChannelRegistry } from "./registry";
 
 export interface UseButtonActionReturn {
   tap: (buttonId: string) => void;

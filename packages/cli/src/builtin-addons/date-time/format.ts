@@ -1,4 +1,4 @@
-import type { BuiltinDisplayDateTimeButtonConfig } from "./schemas.ts";
+import type { BuiltinDisplayDateTimeButtonConfig } from "./schemas";
 
 interface FormatSegment {
   kind: "markup" | "token";

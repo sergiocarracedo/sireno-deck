@@ -4,9 +4,9 @@ import { join } from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createLogger } from "@/util/logger.ts";
+import { createLogger } from "@/util/logger";
 
-import { status } from "../status.ts";
+import { status } from "../status";
 
 const silentLogger = () => createLogger({ level: "silent" });
 

@@ -1,5 +1,5 @@
 import type { MediaProvider } from "@/system/provider";
-import type { AddonPoller } from "@/addon/api-types.ts";
+import type { AddonPoller } from "@/addon/api-types";
 
 interface CommandExecutor {
   run(

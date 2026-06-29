@@ -4,7 +4,7 @@ import type pino from "pino";
 
 import { ProviderError } from "@/system/provider";
 
-import { createWindowsKeyMacroProvider, type CommandExecutor } from "../windows.ts";
+import { createWindowsKeyMacroProvider, type CommandExecutor } from "../windows";
 
 const silentLogger = (): pino.Logger => {
   const noop = (): void => undefined;

@@ -3,11 +3,11 @@ export {
   StreamDeckSelectionError,
   type ConnectStreamDeckOptions,
   type StreamDeckDevice,
-} from "./stream-deck.ts";
-export { listDevices, type DeviceDescriptor } from "./registry.ts";
+} from "./stream-deck";
+export { listDevices, type DeviceDescriptor } from "./registry";
 export {
   UDEV_RULES,
   UdevPermissionError,
   formatInstallInstructions,
   installUdevRules,
-} from "./linux-udev.ts";
+} from "./linux-udev";

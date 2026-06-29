@@ -4,24 +4,24 @@ import { pathToFileURL } from "node:url";
 
 import { execa } from "execa";
 
-import { addonNpmInstallPath } from "@/util/cache-paths.ts";
+import { addonNpmInstallPath } from "@/util/cache-paths";
 
-import { isSirenoAddon, type SirenoAddon } from "./api-types.ts";
+import { isSirenoAddon, type SirenoAddon } from "./api-types";
 import {
   type AddonLoadIssue,
   type AddonManifest,
   type LoadedTheme,
   type ResolvedSirenoAddon,
-} from "./api.ts";
-import { readManifest } from "./manifest.ts";
+} from "./api";
+import { readManifest } from "./manifest";
 import {
   addonRootExists,
   isLocalAddonSpec,
   isNpmAddonSpec,
   normalizeAddonEntry,
   resolveLocalAddonRoot,
-} from "./spec.ts";
-import type { RawAddonEntry } from "@/config/schemas.ts";
+} from "./spec";
+import type { RawAddonEntry } from "@/config/schemas";
 
 export interface LoadAddonsOptions {
   entries: RawAddonEntry[];

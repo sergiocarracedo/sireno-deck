@@ -11,7 +11,7 @@ import {
   resolveDaemonPaths,
   writeChildren,
   writeToken,
-} from "../daemon.ts";
+} from "../daemon";
 
 const TEST_DIR = join(tmpdir(), `sireno-deck-2-daemon-test-${process.pid}`);
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isLocalAddonSpec, isNpmAddonSpec } from "../spec.ts";
+import { isLocalAddonSpec, isNpmAddonSpec } from "../spec";
 
 describe("isLocalAddonSpec", () => {
   it("accepts ./relative paths", () => {

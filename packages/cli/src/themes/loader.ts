@@ -1,9 +1,9 @@
 import { fileURLToPath } from "node:url";
 import { dirname, resolve as resolvePath } from "node:path";
 
-import { SIRENO_ADDON_API_VERSION } from "@/addon/api-types.ts";
-import type { AddonRegistry } from "@/addon/registry.ts";
-import type { LoadedTheme } from "@/addon/api.ts";
+import { SIRENO_ADDON_API_VERSION } from "@/addon/api-types";
+import type { AddonRegistry } from "@/addon/registry";
+import type { LoadedTheme } from "@/addon/api";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -24,7 +24,7 @@ export const registerBuiltInThemes = (registry: AddonRegistry): void => {
       apiVersion: SIRENO_ADDON_API_VERSION,
       source: { kind: "builtin", resolvedPath: spec.dir },
       cssPath: resolvePath(spec.dir, "theme.css"),
-      frontendPath: resolvePath(spec.dir, "index.tsx"),
+      frontendPath: resolvePath(spec.dir, "index"),
     };
     registry.loadTheme(theme);
   }

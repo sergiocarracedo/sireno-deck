@@ -1,4 +1,4 @@
-import type { BrightnessButtonConfig } from "../schemas.ts";
+import type { BrightnessButtonConfig } from "../schemas";
 
 const escape = (s: string): string => `'${s.replaceAll("'", "'\\''")}'`;
 

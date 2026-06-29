@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { dirname, isAbsolute, resolve as resolvePath } from "node:path";
 
-import { getOriginalCwd } from "@/cli/cwd.ts";
+import { getOriginalCwd } from "@/cli/cwd";
 
 export interface FindConfigOptions {
   cwd?: string;

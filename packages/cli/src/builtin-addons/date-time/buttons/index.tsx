@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-import type { AddonButtonTypeDefinition } from "@/addon/api.ts";
-import { Text } from "@/ui/index.ts";
+import type { AddonButtonTypeDefinition } from "@/addon/api";
+import { Text } from "@/ui/index";
 
-import { formatDigitalDateTimeLabel } from "../format.ts";
+import { formatDigitalDateTimeLabel } from "../format";
 import {
   ANALOG_CLOCK_INTERVAL_MS,
   BuiltinAnalogClockButtonSchema,
@@ -16,7 +16,7 @@ import {
   DIGITAL_DATE_TIME_INTERVAL_MS,
   LockedTimeTileButtonSchema,
   type BuiltinDateButtonConfig,
-} from "../schemas.ts";
+} from "../schemas";
 
 const useNow = (intervalMs: number): Date => {
   const [now, setNow] = useState(() => new Date());
@@ -248,7 +248,7 @@ export const dateTimeAddon = {
   apiVersion: 3 as const,
   name: "date-time",
   kind: "runtime" as const,
-  frontend: { main: "./frontend.tsx" },
+  frontend: { main: "./frontend" },
   publishIntervalMs: 1000,
   buttons: [
     builtinDateTimeButton,

@@ -1,22 +1,10 @@
-export * from './primitives/index.ts'
+export * from './ButtonFrame'
+export * from './primitives'
+export * from './surfaces'
 export {
-  BarsSurface as Bars,
-  IconLabelSurface,
-  LabelValueListSurface as LabelValueList,
-  SplitActionSurface,
-} from './surfaces/index.ts'
-export type {
-  BarsItem,
-  BarsSurfaceProps as BarsProps,
-  IconLabelSurfaceProps,
-  LabelValueListLine,
-  LabelValueListSurfaceProps as LabelValueListProps,
-  SplitActionSurfaceProps,
-} from './surfaces/index.ts'
-export {
-  DomThemeUiPresentationProvider as ThemeUiPresentationProvider,
+  ThemeUiPresentationProvider,
   useThemeUiPresentation,
-} from './theme-presentation.tsx'
-export type { ThemeUiPresentation } from './theme-presentation.tsx'
-export { cn } from './utils/cn.ts'
-export { computeNegativeColor } from './utils/negative-color.ts'
+} from './theme-presentation'
+export type { ThemeUiPresentation } from './theme-presentation'
+export { cn } from './utils/cn'
+export { computeNegativeColor } from './utils/negative-color'

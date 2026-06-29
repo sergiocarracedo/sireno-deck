@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createLogger } from "@/util/logger.ts";
+import { createLogger } from "@/util/logger";
 
-import { CadenceTimer, EventDebouncer } from "../screenshot-cadence.ts";
+import { CadenceTimer, EventDebouncer } from "../screenshot-cadence";
 
 const silentLogger = () => createLogger({ level: "silent" });
 

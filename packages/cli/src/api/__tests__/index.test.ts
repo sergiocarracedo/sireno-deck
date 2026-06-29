@@ -5,7 +5,7 @@ import {
   buttonActionMessageSchema,
   helloMessageSchema,
   wsMessageSchema,
-} from "../protocol.ts";
+} from "../protocol";
 
 describe("public api re-exports", () => {
   it("exposes protocol version 3", () => {

@@ -5,7 +5,7 @@ import {
   UdevPermissionError,
   formatInstallInstructions,
   installUdevRules,
-} from "../linux-udev.ts";
+} from "../linux-udev";
 
 describe("linux-udev", () => {
   it("UDEV_RULES contains the expected Elgato vendor id 0fd9", () => {

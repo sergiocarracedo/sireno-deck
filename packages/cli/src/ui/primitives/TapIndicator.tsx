@@ -1,7 +1,7 @@
-import { cn } from '../utils/cn.ts'
+import { cn } from '../utils/cn'
 import { useMemo } from 'react'
-import { Text, TextTone } from './Text.tsx'
-import { useThemeUiPresentation } from '../theme-presentation.tsx'
+import { Text, TextTone } from './Text'
+import { useThemeUiPresentation } from '../theme-presentation'
 
 type TapIndicatorType = 'tap' | 'dbltap' | 'hold'
 

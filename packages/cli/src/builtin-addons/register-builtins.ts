@@ -1,17 +1,17 @@
-import type { AddonRegistry } from "@/addon/registry.ts";
+import type { AddonRegistry } from "@/addon/registry";
 
-import { registerBuiltInThemes } from "@/themes/loader.ts";
+import { registerBuiltInThemes } from "@/themes/loader";
 
-import brightnessAddon from "./brightness/index.ts";
-import { coreButtonsAddon } from "./core-buttons/index.ts";
-import dateTimeAddon from "./date-time/index.ts";
-import emojiSelectorAddon from "./emoji-selector/index.tsx";
-import { internalSettingsAddon } from "./internal-settings/index.ts";
-import mediaPlayerAddon from "./media-player/index.ts";
-import { sessionAddon } from "./session/index.ts";
-import systemStatusAddon from "./system-status/index.ts";
-import valueDisplayAddon from "./value-display/index.ts";
-import weatherAddon from "./weather/index.ts";
+import brightnessAddon from "./brightness/index";
+import { coreButtonsAddon } from "./core-buttons/index";
+import dateTimeAddon from "./date-time/index";
+import emojiSelectorAddon from "./emoji-selector/index";
+import { internalSettingsAddon } from "./internal-settings/index";
+import mediaPlayerAddon from "./media-player/index";
+import { sessionAddon } from "./session/index";
+import systemStatusAddon from "./system-status/index";
+import valueDisplayAddon from "./value-display/index";
+import weatherAddon from "./weather/index";
 
 export const registerBuiltins = (registry: AddonRegistry): void => {
   registerBuiltInThemes(registry);

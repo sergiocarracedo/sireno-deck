@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { isSirenoAddon } from "@/addon/api-types.ts";
+import { isSirenoAddon } from "@/addon/api-types";
 
-import { sessionAddon } from "../index.ts";
+import { sessionAddon } from "../index";
 
 describe("session addon", () => {
   it("addon object validates via isSirenoAddon", () => {

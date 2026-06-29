@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { primitives as themePrimitives, activeTheme } from "virtual:sireno/themes/manifest";
 
-import { ThemeContext, ThemeProvider, type ThemeContextValue } from "@/themes/index.ts";
+import { ThemeContext, ThemeProvider, type ThemeContextValue } from "@/themes/index";
 
 export interface ButtonFrameProps {
   label?: string;

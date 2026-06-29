@@ -1,5 +1,5 @@
 import { ChannelRegistry } from "sireno-deck-2/react";
-import { helloMessageSchema, wsMessageSchema, type WsMessage } from "@/api/protocol.ts";
+import { helloMessageSchema, wsMessageSchema, type WsMessage } from "@/api/protocol";
 
 export type ConnectionStatus = "connecting" | "open" | "closed" | "failed";
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import type { AddonButtonTypeDefinition } from "@/addon/api.ts";
-import { SplitActionSurface as SplitAction } from "@/ui/index.ts";
+import type { AddonButtonTypeDefinition } from "@/addon/api";
+import { SplitActionSurface as SplitAction } from "@/ui/index";
 
 import {
   MediaMuteButtonSchema,
@@ -9,7 +9,7 @@ import {
   MediaVolumeButtonSchema,
   type MediaMuteButtonConfig,
   type MediaVolumeButtonConfig,
-} from "../schemas.ts";
+} from "../schemas";
 
 const PlayerGlyph = ({ state }: { state: "playing" | "paused" | "unknown" }) => {
   const ch = state === "playing" ? "⏸" : state === "paused" ? "▶" : "•";
@@ -145,7 +145,7 @@ export const mediaPlayerAddon = {
   apiVersion: 3 as const,
   name: "media-player",
   kind: "runtime" as const,
-  frontend: { main: "./frontend.tsx" },
+  frontend: { main: "./frontend" },
   publishIntervalMs: 2000,
   buttons: [builtinMediaPlayerButton, builtinMediaMuteButton, builtinMediaVolumeButton],
 };

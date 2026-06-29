@@ -2,9 +2,9 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { ChannelRegistry } from "../registry.ts";
-import { useAddonChannel } from "../use-addon-channel.ts";
-import { useDeck } from "../use-deck.ts";
+import { ChannelRegistry } from "../registry";
+import { useAddonChannel } from "../use-addon-channel";
+import { useDeck } from "../use-deck";
 
 beforeEach(() => ChannelRegistry.resetForTests());
 afterEach(() => ChannelRegistry.resetForTests());

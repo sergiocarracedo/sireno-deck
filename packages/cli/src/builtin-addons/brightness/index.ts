@@ -1,9 +1,9 @@
-import { brightnessAddon } from "./buttons/brightness.tsx";
+import { brightnessAddon } from "./buttons/brightness";
 
-export { builtinBrightnessButton } from "./buttons/brightness.tsx";
-export { BrightnessButtonSchema } from "./schemas.ts";
-export { buildMacOSCommand, formatCommand, isMacOS, setBrightnessMacOS } from "./domain/macos.ts";
-export { createPoller } from "./poller.ts";
-export type { BrightnessButtonConfig } from "./schemas.ts";
+export { builtinBrightnessButton } from "./buttons/brightness";
+export { BrightnessButtonSchema } from "./schemas";
+export { buildMacOSCommand, formatCommand, isMacOS, setBrightnessMacOS } from "./domain/macos";
+export { createPoller } from "./poller";
+export type { BrightnessButtonConfig } from "./schemas";
 
 export default brightnessAddon;

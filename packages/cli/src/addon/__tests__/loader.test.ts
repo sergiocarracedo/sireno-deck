@@ -4,8 +4,8 @@ import { join } from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { addonNpmInstallPath } from "@/util/cache-paths.ts";
-import { SIRENO_ADDON_API_VERSION } from "@/addon/api-types.ts";
+import { addonNpmInstallPath } from "@/util/cache-paths";
+import { SIRENO_ADDON_API_VERSION } from "@/addon/api-types";
 
 vi.mock("execa", () => ({
   execa: vi.fn(),
@@ -63,7 +63,7 @@ afterEach(() => {
   if (existsSync(TEST_CACHE)) rmSync(TEST_CACHE, { recursive: true, force: true });
 });
 
-const loader = async () => (await import("../loader.ts")).loadAddons;
+const loader = async () => (await import("../loader")).loadAddons;
 
 describe("loadAddons — npm path", () => {
   it("loads a cached npm addon without calling npm install", async () => {

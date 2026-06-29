@@ -6,7 +6,7 @@ import {
   helloMessageSchema,
   wsMessageSchema,
   type WsMessage,
-} from "./protocol.ts";
+} from "./protocol";
 
 const HANDSHAKE_TIMEOUT_MS = 5000;
 const TOKEN_MISMATCH_CLOSE_CODE = 4001;

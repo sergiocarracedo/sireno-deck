@@ -1,14 +1,14 @@
-import { weatherAddon } from "./buttons/weather.tsx";
+import { weatherAddon } from "./buttons/weather";
 
-export { builtinWeatherButton } from "./buttons/weather.tsx";
+export { builtinWeatherButton } from "./buttons/weather";
 export {
   WeatherButtonSchema,
   WeatherLocationSchema,
   WEATHER_DEFAULT_POLL_MS,
-} from "./schemas.ts";
-export { fetchWeather } from "./domain/fetch.ts";
-export { describeWeatherCode, WMO_CODE_TO_DESCRIPTION } from "./domain/codes.ts";
-export { createPoller } from "./poller.ts";
-export type { WeatherButtonConfig, WeatherLocation, WeatherSnapshot } from "./schemas.ts";
+} from "./schemas";
+export { fetchWeather } from "./domain/fetch";
+export { describeWeatherCode, WMO_CODE_TO_DESCRIPTION } from "./domain/codes";
+export { createPoller } from "./poller";
+export type { WeatherButtonConfig, WeatherLocation, WeatherSnapshot } from "./schemas";
 
 export default weatherAddon;

@@ -4,11 +4,11 @@ import {
   collectBuiltinAddonRegistry,
   discoverAddonPollers,
   type ScannedAddon,
-} from "../addon-registry.ts";
+} from "../addon-registry";
 
 const scannedFixture: ReadonlyArray<ScannedAddon> = [
-  { name: "date-time", types: ["core:time", "core:date"], frontendEntry: "/abs/date-time/frontend.tsx", publishIntervalMs: 1000, pollerEntry: null },
-  { name: "weather", types: ["core:weather"], frontendEntry: "/abs/weather/frontend.tsx", publishIntervalMs: 600000, pollerEntry: null },
+  { name: "date-time", types: ["core:time", "core:date"], frontendEntry: "/abs/date-time/frontend", publishIntervalMs: 1000, pollerEntry: null },
+  { name: "weather", types: ["core:weather"], frontendEntry: "/abs/weather/frontend", publishIntervalMs: 600000, pollerEntry: null },
   { name: "no-frontend", types: ["core:custom"], frontendEntry: null, publishIntervalMs: 1000, pollerEntry: null },
 ];
 
@@ -36,7 +36,7 @@ describe("discoverAddonPollers", () => {
 
   it("filters out addons without publishIntervalMs in the scanned manifest", async () => {
     const without: ScannedAddon[] = [
-      { name: "no-cadence", types: ["core:nope"], frontendEntry: null, publishIntervalMs: null, pollerEntry: "/some/poller.ts" },
+      { name: "no-cadence", types: ["core:nope"], frontendEntry: null, publishIntervalMs: null, pollerEntry: "/some/poller" },
     ];
     const discovered = await discoverAddonPollers({}, without);
     expect(discovered).toEqual([]);

@@ -1,4 +1,4 @@
-import { dateTimeAddon } from "./buttons/index.tsx";
+import { dateTimeAddon } from "./buttons/index";
 
 export {
   builtinDateTimeButton,
@@ -7,7 +7,7 @@ export {
   builtinClockButton,
   builtinAnalogClockButton,
   builtinLockedTimeTileButton,
-} from "./buttons/index.tsx";
+} from "./buttons/index";
 export {
   BuiltinDateTimeButtonSchema,
   BuiltinTimePresetButtonSchema,
@@ -19,9 +19,9 @@ export {
   ANALOG_CLOCK_INTERVAL_MS,
   DATE_BUTTON_INTERVAL_MS,
   CLOCK_BUTTON_INTERVAL_MS,
-} from "./schemas.ts";
-export { formatDigitalDateTimeLabel } from "./format.ts";
-export { createPoller } from "./poller.ts";
+} from "./schemas";
+export { formatDigitalDateTimeLabel } from "./format";
+export { createPoller } from "./poller";
 export type {
   BuiltinDisplayDateTimeButtonConfig,
   BuiltinTimePresetButtonConfig,
@@ -29,6 +29,6 @@ export type {
   BuiltinDateButtonConfig,
   BuiltinClockButtonConfig,
   LockedTimeTileButtonConfig,
-} from "./schemas.ts";
+} from "./schemas";
 
 export default dateTimeAddon;

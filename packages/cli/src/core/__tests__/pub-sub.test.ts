@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { createPubSub } from "../pub-sub.ts";
+import { createPubSub } from "../pub-sub";
 
 describe("createPubSub", () => {
   it("subscribes and publishes", () => {

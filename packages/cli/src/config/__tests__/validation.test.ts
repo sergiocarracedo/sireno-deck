@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { AddonRegistry } from "@/addon/registry.ts";
-import { coreButtonsAddon } from "@/builtin-addons/core-buttons/index.ts";
-import { internalSettingsAddon } from "@/builtin-addons/internal-settings/index.ts";
-import { sessionAddon } from "@/builtin-addons/session/index.ts";
+import { AddonRegistry } from "@/addon/registry";
+import { coreButtonsAddon } from "@/builtin-addons/core-buttons/index";
+import { internalSettingsAddon } from "@/builtin-addons/internal-settings/index";
+import { sessionAddon } from "@/builtin-addons/session/index";
 
-import { validateFull } from "../validation.ts";
-import type { RawConfig } from "../schemas.ts";
+import { validateFull } from "../validation";
+import type { RawConfig } from "../schemas";
 
 const registry = (): AddonRegistry => {
   const r = new AddonRegistry();

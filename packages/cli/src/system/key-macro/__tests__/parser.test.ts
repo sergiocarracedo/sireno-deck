@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isValidKey, knownKeys, parseCombo } from "../parser.ts";
+import { isValidKey, knownKeys, parseCombo } from "../parser";
 
 describe("parseCombo", () => {
   it("parses simple ctrl+t", () => {

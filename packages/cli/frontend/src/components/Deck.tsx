@@ -4,11 +4,11 @@ import {
   DEVICE_MODELS,
   gridForKeyCount,
   type DeviceModelSpec,
-} from "@/device/models.ts";
+} from "@/device/models";
 
 import { addonRegistry } from "virtual:sireno/addons/registry";
 
-import { ButtonFrame } from "./ButtonFrame.tsx";
+import { ButtonFrame } from "./ButtonFrame";
 
 const BUTTON_SIZE = BUTTON_SIZE_PX;
 const BUTTON_GAP_PX = 8;

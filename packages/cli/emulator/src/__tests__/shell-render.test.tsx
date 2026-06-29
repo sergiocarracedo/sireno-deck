@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { DEVICE_MODELS } from "@sireno-deck-2/cli";
 
-import { Shell } from "../Shell.tsx";
+import { Shell } from "../Shell";
 
 const mk2 = DEVICE_MODELS.find((m) => m.id === "mk2")!;
 const plus = DEVICE_MODELS.find((m) => m.id === "plus")!;

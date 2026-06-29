@@ -3,7 +3,7 @@ import { render, fireEvent } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 
 import { ChannelRegistry } from "sireno-deck-2/react";
-import { App } from "../App.tsx";
+import { App } from "../App";
 
 beforeEach(() => {
   ChannelRegistry.resetForTests();

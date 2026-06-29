@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 
 import { BUTTON_SIZE_PX, type DeviceModelSpec } from "@sireno-deck-2/cli";
 
-import { dispatchMouseEvent, gestureKindToWsMessage, type GestureMouseEvent } from "./gesture.ts";
+import { dispatchMouseEvent, gestureKindToWsMessage, type GestureMouseEvent } from "./gesture";
 
 export interface DeckFrameProps {
   readonly frontendUrl: string;

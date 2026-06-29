@@ -7,7 +7,7 @@ import {
   type DeckButton,
 } from "@sireno-deck-2/cli";
 
-import { createWsClient, serializeHello, type WsClient } from "./bridge.ts";
+import { createWsClient, serializeHello, type WsClient } from "./bridge";
 
 let _wsClientInitialized = false;
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { BufferChangeTracker, hashBuffer } from "../buffer-hash.ts";
+import { BufferChangeTracker, hashBuffer } from "../buffer-hash";
 
 const buf = (s: string) => Buffer.from(s);
 

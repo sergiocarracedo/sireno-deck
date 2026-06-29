@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createStore } from "../store.ts";
+import { createStore } from "../store";
 
 describe("createStore", () => {
   it("get returns undefined for missing key", () => {

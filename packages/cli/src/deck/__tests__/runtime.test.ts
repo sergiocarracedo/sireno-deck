@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createPubSub } from "@/core/pub-sub.ts";
-import { createStore } from "@/core/store.ts";
-import { createLogger } from "@/util/logger.ts";
+import { createPubSub } from "@/core/pub-sub";
+import { createStore } from "@/core/store";
+import { createLogger } from "@/util/logger";
 import type { ActiveAppProvider, ActiveAppSnapshot } from "@/system/provider";
 
-import { createRuntime, type RuntimeDeck } from "../runtime.ts";
+import { createRuntime, type RuntimeDeck } from "../runtime";
 
 const silentLogger = () => createLogger({ level: "silent" });
 

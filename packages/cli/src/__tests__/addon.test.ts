@@ -164,12 +164,12 @@ describe("loadAddons", () => {
         name: "my-addon",
         sirenoAddon: {
           apiVersion: SIRENO_ADDON_API_VERSION,
-          main: "./index.ts",
+          main: "./index",
         },
       }),
     );
     writeFileSync(
-      join(addonDir, "index.ts"),
+      join(addonDir, "index"),
       [
         "import { z } from 'zod';",
         "export default {",
@@ -225,10 +225,10 @@ describe("loadAddons", () => {
     writeFileSync(
       join(addonDir, "package.json"),
       JSON.stringify({
-        sirenoAddon: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./index.ts" },
+        sirenoAddon: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./index" },
       }),
     );
-    writeFileSync(join(addonDir, "index.ts"), "export default { not: 'a valid addon' };\n");
+    writeFileSync(join(addonDir, "index"), "export default { not: 'a valid addon' };\n");
     const result = await loadAddons({
       entries: ["./broken-addon"],
       configDir,
@@ -257,7 +257,7 @@ describe("AddonRegistry", () => {
   it("indexes addons, button types, and deck types", () => {
     const registry = new AddonRegistry();
     registry.load({
-      manifest: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./index.ts" },
+      manifest: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./index" },
       module: {
         apiVersion: SIRENO_ADDON_API_VERSION,
         name: "test",
@@ -288,7 +288,7 @@ describe("AddonRegistry", () => {
   it("throws on duplicate addon name", () => {
     const registry = new AddonRegistry();
     const addon = {
-      manifest: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./index.ts" },
+      manifest: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./index" },
       module: { apiVersion: SIRENO_ADDON_API_VERSION, name: "dup" },
       source: { kind: "local" as const, specifier: "./x", resolvedPath: "/tmp/x" },
     };
@@ -299,7 +299,7 @@ describe("AddonRegistry", () => {
   it("throws on duplicate button type", () => {
     const registry = new AddonRegistry();
     registry.load({
-      manifest: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./x.ts" },
+      manifest: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./x" },
       module: {
         apiVersion: SIRENO_ADDON_API_VERSION,
         name: "first",
@@ -309,7 +309,7 @@ describe("AddonRegistry", () => {
     });
     expect(() =>
       registry.load({
-        manifest: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./y.ts" },
+        manifest: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./y" },
         module: {
           apiVersion: SIRENO_ADDON_API_VERSION,
           name: "second",
@@ -323,7 +323,7 @@ describe("AddonRegistry", () => {
   it("reset clears all state", () => {
     const registry = new AddonRegistry();
     registry.load({
-      manifest: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./x.ts" },
+      manifest: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./x" },
       module: { apiVersion: SIRENO_ADDON_API_VERSION, name: "x" },
       source: { kind: "local", specifier: "./x", resolvedPath: "/tmp/x" },
     });

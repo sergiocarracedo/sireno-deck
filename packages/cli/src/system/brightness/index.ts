@@ -2,14 +2,14 @@ import type pino from "pino";
 
 import type { CommandExecutor } from "@/system/media";
 
-import { createLinuxBrightnessProvider } from "./linux.ts";
-import { createDarwinBrightnessProvider } from "./darwin.ts";
-import { createWindowsBrightnessProvider } from "./windows.ts";
-import { createNullBrightnessProvider } from "../provider.ts";
-import { ProviderError, type BrightnessProvider } from "../provider.ts";
+import { createLinuxBrightnessProvider } from "./linux";
+import { createDarwinBrightnessProvider } from "./darwin";
+import { createWindowsBrightnessProvider } from "./windows";
+import { createNullBrightnessProvider } from "../provider";
+import { ProviderError, type BrightnessProvider } from "../provider";
 
 export { createNullBrightnessProvider };
-export type { BrightnessProvider, BrightnessReading } from "../provider.ts";
+export type { BrightnessProvider, BrightnessReading } from "../provider";
 
 export interface CreateBrightnessProviderOptions {
   readonly executor: CommandExecutor;

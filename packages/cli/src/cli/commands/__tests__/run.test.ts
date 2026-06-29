@@ -91,11 +91,11 @@ const saveDeviceConfigMock = cfgMod.saveDeviceConfig as unknown as ReturnType<ty
 const runRealModeMock = realMod.runRealMode as unknown as ReturnType<typeof vi.fn>;
 
 const { createLogger } = await import("@/util/logger");
-const { run } = await import("../run.ts");
+const { run } = await import("../run");
 
 const silentLogger = () => createLogger({ level: "silent" });
 
-type FakeSignal = import("../run.ts").SignalProvider & {
+type FakeSignal = import("../run").SignalProvider & {
   onSignalSpy: ReturnType<typeof vi.fn>;
   trigger: () => void;
 };
@@ -109,7 +109,7 @@ const makeFakeSignals = (): FakeSignal => {
       if (i >= 0) handlers.splice(i, 1);
     };
   });
-  const signalProvider: import("../run.ts").SignalProvider = {
+  const signalProvider: import("../run").SignalProvider = {
     onSignal(handler: () => void): () => void {
       return onSignalSpy(handler);
     },
@@ -144,7 +144,7 @@ const setHappyPath = (
       resolveActiveTheme: () => ({
         name: "default",
         cssPath: "/theme.css",
-        frontendPath: "/index.tsx",
+        frontendPath: "/index",
       }),
     };
   });

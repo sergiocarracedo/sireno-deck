@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { Methods } from "@/deck/methods.ts";
+import type { Methods } from "@/deck/methods";
 
 export const changeDeckConfigSchema = z.object({
   deck: z.string().min(1),

@@ -1,7 +1,7 @@
-import type { SirenoAddon } from "@/addon/api-types.ts";
+import type { SirenoAddon } from "@/addon/api-types";
 
-import { lockedDeckDef } from "./locked-deck.ts";
-import { coreSessionInfoButton } from "./session-info.ts";
+import { lockedDeckDef } from "./locked-deck";
+import { coreSessionInfoButton } from "./session-info";
 
 export const sessionAddon: SirenoAddon = {
   apiVersion: 3,
@@ -10,6 +10,6 @@ export const sessionAddon: SirenoAddon = {
   decks: [lockedDeckDef],
 };
 
-export { coreSessionInfoButton } from "./session-info.ts";
-export { sessionTimeButton } from "./time-button.tsx";
+export { coreSessionInfoButton } from "./session-info";
+export { sessionTimeButton } from "./time-button";
 export { lockedDeckDef };

@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import { dirname, join, resolve as resolvePath } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { AddonPoller, AddonPollerChannel, AddonManifest } from "@/addon/api-types.ts";
+import type { AddonPoller, AddonPollerChannel, AddonManifest } from "@/addon/api-types";
 
 export interface ScannedAddon {
   readonly name: string;
@@ -44,8 +44,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const builtinDir = resolvePath(here, "..", "..", "builtin-addons");
 
 const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null => {
-  const indexPath = join(addonDir, "index.ts");
-  const indexTsxPath = join(addonDir, "index.tsx");
+  const indexPath = join(addonDir, "index");
+  const indexTsxPath = join(addonDir, "index");
   const indexFile = existsSync(indexPath) ? indexPath : existsSync(indexTsxPath) ? indexTsxPath : null;
   if (indexFile === null) return null;
   let raw: string;
@@ -55,8 +55,8 @@ const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null 
     return null;
   }
   const buttonsDir = join(addonDir, "buttons");
-  const buttonsIndexPath = existsSync(join(buttonsDir, "index.tsx"))
-    ? join(buttonsDir, "index.tsx")
+  const buttonsIndexPath = existsSync(join(buttonsDir, "index"))
+    ? join(buttonsDir, "index")
     : null;
   const buttonsSources: string[] = [];
   if (buttonsIndexPath !== null) {
@@ -70,7 +70,7 @@ const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null 
     for (const f of readdirSync(buttonsDir, { withFileTypes: true })) {
       if (!f.isFile()) continue;
       if (!/\.tsx?$/.test(f.name)) continue;
-      if (f.name === "index.tsx") continue;
+      if (f.name === "index") continue;
       try {
         buttonsSources.push(readFileSync(join(buttonsDir, f.name), "utf8"));
       } catch {
@@ -106,8 +106,8 @@ const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null 
       break;
     }
   }
-  const pollerEntry = existsSync(join(addonDir, "poller.ts"))
-    ? join(addonDir, "poller.ts")
+  const pollerEntry = existsSync(join(addonDir, "poller"))
+    ? join(addonDir, "poller")
     : null;
   if (frontendEntry === null && types.size === 0 && pollerEntry === null) return null;
   return { name: addonName, types: [...types], frontendEntry, publishIntervalMs, pollerEntry };

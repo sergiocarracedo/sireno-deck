@@ -1,12 +1,12 @@
 import sharp from "sharp";
 
-import { BUTTON_SIZE_PX, gridForKeyCount } from "@/device/models.ts";
-import type { PubSub } from "@/core/pub-sub.ts";
-import { createPubSub } from "@/core/pub-sub.ts";
+import { BUTTON_SIZE_PX, gridForKeyCount } from "@/device/models";
+import type { PubSub } from "@/core/pub-sub";
+import { createPubSub } from "@/core/pub-sub";
 import type pino from "pino";
 
-import { BufferChangeTracker } from "./buffer-hash.ts";
-import { CadenceTimer, EventDebouncer } from "./screenshot-cadence.ts";
+import { BufferChangeTracker } from "./buffer-hash";
+import { CadenceTimer, EventDebouncer } from "./screenshot-cadence";
 
 export interface PlaywrightLike {
   chromium: {

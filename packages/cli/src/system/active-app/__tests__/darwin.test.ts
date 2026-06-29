@@ -4,7 +4,7 @@ import type pino from "pino";
 
 import type { CommandExecutor } from "@/system/active-app/linux";
 
-import * as darwin from "../darwin.ts";
+import * as darwin from "../darwin";
 
 const silentLogger = (): pino.Logger => {
   const noop = (): void => undefined;

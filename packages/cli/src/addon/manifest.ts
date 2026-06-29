@@ -1,9 +1,9 @@
 import { readFileSync, statSync } from "node:fs";
 import { isAbsolute, resolve as resolvePath } from "node:path";
 
-import { getOriginalCwd } from "@/cli/cwd.ts";
+import { getOriginalCwd } from "@/cli/cwd";
 
-import type { AddonManifest } from "./api.ts";
+import type { AddonManifest } from "./api";
 
 export interface ReadManifestOptions {
   addonRoot: string;

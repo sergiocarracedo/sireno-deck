@@ -4,8 +4,8 @@ import type {
   LoadedTheme,
   ResolvedSirenoAddon,
   SirenoAddon,
-} from "./api.ts";
-import { isSirenoAddon } from "./api-types.ts";
+} from "./api";
+import { isSirenoAddon } from "./api-types";
 
 export class AddonRegistry {
   private readonly addonsByName = new Map<string, ResolvedSirenoAddon>();

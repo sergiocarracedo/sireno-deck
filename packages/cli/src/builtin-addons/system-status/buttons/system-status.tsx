@@ -1,111 +1,116 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 
-import type { AddonButtonTypeDefinition } from "@/addon/api.ts";
-import { Bars } from "@/ui/index.ts";
-import { LabelValueList } from "@/ui/index.ts";
+import type { AddonButtonTypeDefinition } from '@/addon/api'
+import { BarsSurface, LabelValueListSurface } from '@/ui'
 
-import { getCanonicalSystemMetrics } from "../domain/live-metrics.ts";
+import { getCanonicalSystemMetrics } from '../domain/live-metrics'
 import {
   SystemStatusButtonSchema,
   type CanonicalSystemMetricSnapshot,
   type SystemStatusMetricConfig,
-} from "../schemas.ts";
+} from '../schemas'
 
 const getBarValue = (
   metric: CanonicalSystemMetricSnapshot,
   configuredMax?: number,
 ): { maxValue: number; value: number } => {
   if (!metric.available) {
-    return { maxValue: configuredMax ?? 100, value: 0 };
+    return { maxValue: configuredMax ?? 100, value: 0 }
   }
   if (configuredMax !== undefined && metric.value !== undefined) {
-    return { maxValue: configuredMax, value: Math.max(0, metric.value) };
+    return { maxValue: configuredMax, value: Math.max(0, metric.value) }
   }
   if (metric.max !== undefined && metric.value !== undefined) {
-    return { maxValue: metric.max, value: Math.max(0, metric.value) };
+    return { maxValue: metric.max, value: Math.max(0, metric.value) }
   }
   if (metric.percentage !== undefined) {
-    return { maxValue: 100, value: Math.max(0, metric.percentage) };
+    return { maxValue: 100, value: Math.max(0, metric.percentage) }
   }
-  return { maxValue: configuredMax ?? 100, value: 0 };
-};
+  return { maxValue: configuredMax ?? 100, value: 0 }
+}
 
 const barsView = (
   metrics: readonly SystemStatusMetricConfig[],
   snapshots: readonly CanonicalSystemMetricSnapshot[],
 ): React.ReactNode => {
   const items = metrics.map((metric, idx) => {
-    const snap = snapshots[idx] ?? { id: metric.metric, available: false, formattedValue: metric.unavailable_label ?? "N/A" };
-    const barValue = getBarValue(snap, metric.max_value);
+    const snap = snapshots[idx] ?? {
+      id: metric.metric,
+      available: false,
+      formattedValue: metric.unavailable_label ?? 'N/A',
+    }
+    const barValue = getBarValue(snap, metric.max_value)
     return {
       label: metric.label,
-      accent: metric.color === "accent",
+      accent: metric.color === 'accent',
       value: barValue.value,
       min: 0,
       max: barValue.maxValue,
-    };
-  });
-  return (
-    <div className="h-full w-full p-1">
-      <Bars rows={items.slice(0, 3)} />
-    </div>
-  );
-};
+    }
+  })
+  return <BarsSurface items={items.slice(0, 3)} />
+}
 
 const textView = (
   metrics: readonly SystemStatusMetricConfig[],
   snapshots: readonly CanonicalSystemMetricSnapshot[],
 ): React.ReactNode => {
   const rows = metrics.map((metric, idx) => {
-    const snap = snapshots[idx];
+    const snap = snapshots[idx]
     const value = snap?.available
       ? snap.formattedValue
-      : (metric.unavailable_label ?? "N/A");
-    return { label: metric.label, tone: snap?.available ? ("fg" as const) : ("muted" as const), value };
-  });
-  return (
-    <div className="h-full w-full">
-      <LabelValueList rows={rows} />
-    </div>
-  );
-};
+      : (metric.unavailable_label ?? 'N/A')
+    return {
+      label: metric.label,
+      tone: snap?.available ? ('fg' as const) : ('muted' as const),
+      value,
+    }
+  })
+  return <LabelValueListSurface rows={rows} />
+}
 
 export const builtinSystemStatusButton: AddonButtonTypeDefinition = {
-  type: "core:system-status",
+  type: 'core:system-status',
   configSchema: SystemStatusButtonSchema,
   defaultRenderIntervalMs: ({ config }) => config.poll_interval_ms,
   render: ({ config }) => {
-    const [snapshots, setSnapshots] = useState<readonly CanonicalSystemMetricSnapshot[]>(() =>
+    const [snapshots, setSnapshots] = useState<
+      readonly CanonicalSystemMetricSnapshot[]
+    >(() =>
       config.metrics.map((m) => ({
         id: m.metric,
         available: false,
-        formattedValue: m.unavailable_label ?? "N/A",
+        formattedValue: m.unavailable_label ?? 'N/A',
       })),
-    );
+    )
     useEffect(() => {
-      let cancelled = false;
+      let cancelled = false
       const tick = async () => {
-        const next = await getCanonicalSystemMetrics(config.metrics.map((m) => m.metric));
-        if (!cancelled) setSnapshots(next);
-      };
-      void tick();
-      const id = setInterval(() => void tick(), config.poll_interval_ms);
+        const next = await getCanonicalSystemMetrics(
+          config.metrics.map((m) => m.metric),
+        )
+        if (!cancelled) setSnapshots(next)
+      }
+      void tick()
+      const id = setInterval(() => void tick(), config.poll_interval_ms)
       return () => {
-        cancelled = true;
-        clearInterval(id);
-      };
-    }, [config]);
+        cancelled = true
+        clearInterval(id)
+      }
+    }, [config])
 
-    const variant = config.variant ?? "text";
-    return variant === "bars" ? barsView(config.metrics, snapshots) : textView(config.metrics, snapshots);
+    const variant = config.variant ?? 'text'
+    return variant === 'bars'
+      ? barsView(config.metrics, snapshots)
+      : textView(config.metrics, snapshots)
   },
-};
+}
 
 export const systemStatusAddon = {
   apiVersion: 3 as const,
-  name: "system-status",
-  kind: "runtime" as const,
-  frontend: { main: "./frontend.tsx" },
+  name: 'system-status',
+  kind: 'runtime' as const,
+  frontend: { main: './frontend' },
   publishIntervalMs: 1000,
   buttons: [builtinSystemStatusButton],
-};
+}

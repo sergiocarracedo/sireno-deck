@@ -1,23 +1,23 @@
 import type pino from "pino";
 
-import { createPubSub } from "@/core/pub-sub.ts";
-import { createStore } from "@/core/store.ts";
-import { NotImplementedError } from "@/util/errors.ts";
-import { createLogger } from "@/util/logger.ts";
+import { createPubSub } from "@/core/pub-sub";
+import { createStore } from "@/core/store";
+import { NotImplementedError } from "@/util/errors";
+import { createLogger } from "@/util/logger";
 import type { KeyMacroProvider } from "@/system/provider";
 
-import { createActionExecutor } from "@/action/executor.ts";
-import { getHostContext } from "./host-context.ts";
-import { createMethods } from "./methods.ts";
-import { createRuntime, type Runtime, type RuntimeDeck } from "./runtime.ts";
+import { createActionExecutor } from "@/action/executor";
+import { getHostContext } from "./host-context";
+import { createMethods } from "./methods";
+import { createRuntime, type Runtime, type RuntimeDeck } from "./runtime";
 
-export { createActionExecutor, type ActionExecutor } from "@/action/executor.ts";
+export { createActionExecutor, type ActionExecutor } from "@/action/executor";
 export {
   createMethods,
   type Methods,
   type MethodsContext,
   type KeyMacroAction,
-} from "./methods.ts";
+} from "./methods";
 export {
   createRuntime,
   type Runtime,
@@ -25,14 +25,14 @@ export {
   type RuntimeButtonHandler,
   type ButtonActionContext,
   type MountedButton,
-} from "./runtime.ts";
-export { getHostContext, type HostContext } from "./host-context.ts";
-export { computeSystemButtonForSlotN1 } from "./system-back-injection.ts";
+} from "./runtime";
+export { getHostContext, type HostContext } from "./host-context";
+export { computeSystemButtonForSlotN1 } from "./system-back-injection";
 export {
   isSystemButtonType,
   SYSTEM_BUTTON_TYPES,
   type SystemButtonType,
-} from "./system-buttons/types.ts";
+} from "./system-buttons/types";
 
 export interface CreateDeckRuntimeOptions {
   decks: ReadonlyArray<RuntimeDeck>;

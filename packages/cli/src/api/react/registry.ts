@@ -1,4 +1,4 @@
-import type { Unsubscribe } from "@/api/addon.ts";
+import type { Unsubscribe } from "@/api/addon";
 
 export type ChannelPayload = unknown;
 
