@@ -1,8 +1,8 @@
 import type { CSSProperties, ReactElement } from 'react'
 
-import { cn } from '../utils/cn.ts'
-import { Text } from '../Text.tsx'
+import { Text } from '../primitives/Text.tsx'
 import { useThemeUiPresentation } from '../theme-presentation.tsx'
+import { cn } from '../utils/cn.ts'
 import { computeNegativeColor } from '../utils/negative-color.ts'
 
 export interface BarsItem {
@@ -18,7 +18,7 @@ type BarsItems =
   | readonly [BarsItem, BarsItem]
   | readonly [BarsItem, BarsItem, BarsItem]
 
-export interface BarsProps {
+export interface BarsSurfaceProps {
   className?: string
   items: BarsItems
   style?: CSSProperties
@@ -35,7 +35,7 @@ function getBarFillHeight(item: BarsItem): string {
   return `${Math.round(ratio * 100)}%`
 }
 
-export function Bars(props: BarsProps): ReactElement {
+export function BarsSurface(props: BarsSurfaceProps): ReactElement {
   if (props.items.length < 1 || props.items.length > 3) {
     throw new Error(`Bars supports 1-3 items. Received ${props.items.length}.`)
   }

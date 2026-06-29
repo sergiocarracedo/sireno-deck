@@ -1,7 +1,7 @@
 import { type ReactElement, type ReactNode } from 'react'
 
 import { Text } from './Text.tsx'
-import { useThemeUiPresentation } from './theme-presentation.tsx'
+import { useThemeUiPresentation } from '../theme-presentation.tsx'
 
 export interface LabelProps {
   children: ReactNode

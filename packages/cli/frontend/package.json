@@ -1,5 +1,5 @@
 {
-  "name": "sireno-deck-2-frontend",
+  "name": "sirenodeck-frontend",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "sireno-deck-2": "workspace:*"
+    "sirenodeck": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",

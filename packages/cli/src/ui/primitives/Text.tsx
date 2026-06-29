@@ -1,7 +1,7 @@
 import { createElement, type CSSProperties, type ReactElement, type ReactNode } from 'react'
 
-import { cn } from './utils/cn.ts'
-import { useThemeUiPresentation } from './theme-presentation.tsx'
+import { cn } from '../utils/cn.ts'
+import { useThemeUiPresentation } from '../theme-presentation.tsx'
 
 const ALIGN_CLASS = {
   center: 'text-center',

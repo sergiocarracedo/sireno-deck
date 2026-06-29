@@ -1,8 +1,8 @@
 import type { CSSProperties, ReactElement } from 'react'
 
 import { cn } from '../utils/cn.ts'
-import { Icon, resolveIconSpec } from '../Icon.tsx'
-import { Text } from '../Text.tsx'
+import { Icon, resolveIconSpec } from '../primitives/Icon.tsx'
+import { Text } from '../primitives/Text.tsx'
 
 export interface LabelValueListLine {
   color?: string
@@ -79,7 +79,7 @@ function renderValue(
   )
 }
 
-export function LabelValueList(props: LabelValueListProps): ReactElement {
+export function LabelValueListSurface(props: LabelValueListProps): ReactElement {
   if (props.lines.length < 1 || props.lines.length > 4) {
     throw new Error(
       `LabelValueList supports 1-4 lines. Received ${props.lines.length}.`,

@@ -1,7 +1,7 @@
 import { type HTMLAttributes, type ReactElement } from 'react'
 
-import { Icon, IconProps } from '../Icon.tsx'
-import { Label } from '../Label.tsx'
+import { Icon, IconProps } from '../primitives/Icon.tsx'
+import { Label } from '../primitives/Label.tsx'
 import { useThemeUiPresentation } from '../theme-presentation.tsx'
 
 export interface IconLabelSurfaceProps

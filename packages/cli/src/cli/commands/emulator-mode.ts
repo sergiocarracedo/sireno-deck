@@ -21,7 +21,7 @@ const DEFAULT_EMULATOR_PORT = 52938
 const DEFAULT_TIMEOUT_MS = 30_000
 // eslint-disable-next-line no-control-regex
 const ANSI_REGEX = /\u001b\[[0-9;]*m/g
-const READY_REGEX = /Local:[^\n]*?https?:\/\/127\.0\.0\.1:(\d+)/
+const READY_REGEX = /(?:Local|➜\s*Local|Network use --host)[^\n]*?https?:\/\/[^:\s]+(?::(\d+))?/
 
 export interface RunEmulatorModeOptions {
   readonly emulatorPort?: number
@@ -107,6 +107,13 @@ export const spawnFrontendVite = (options: {
         new Error(`frontend did not become ready within ${readyTimeoutMs}ms`),
       )
     }, readyTimeoutMs)
+
+    const fallbackTimer = setTimeout(() => {
+      const url = `http://127.0.0.1:${port}`
+      logger.warn({ url }, 'frontend vite: regex did not match, using fallback port')
+      clearTimeout(timer)
+      resolve({ process: child, url })
+    }, readyTimeoutMs - 1000)
 
     const onData = (chunk: Buffer): void => {
       const text = chunk.toString()

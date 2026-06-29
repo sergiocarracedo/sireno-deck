@@ -1,11 +1,11 @@
 {
-  "name": "sireno-deck-2-workspace",
+  "name": "sirenodeck-workspace",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "pnpm -r build",
-    "dev": "pnpm --filter sireno-deck-2 run dev",
+    "dev": "pnpm --filter sirenodeck run dev",
     "lint": "oxlint packages",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
