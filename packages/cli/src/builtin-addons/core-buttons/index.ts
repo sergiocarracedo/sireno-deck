@@ -1,24 +1,41 @@
-import type { AddonButtonTypeDefinition } from "@/addon/api";
-import type { SirenoAddon } from "@/addon/api-types";
+import type { NewAddonManifest } from "@/addon/api";
 
-import { coreActionButton } from "./action";
-import { coreChangeDeckButton } from "./change-deck";
-import { coreMediaSampleButton } from "./media-sample";
-import { coreToggleButton } from "./toggle";
+import { ActionButtonFrontend } from "./buttons/action.frontend";
+import { ChangeDeckButtonFrontend } from "./buttons/change-deck.frontend";
+import { MediaSampleButtonFrontend } from "./buttons/media-sample.frontend";
+import { ToggleButtonFrontend } from "./buttons/toggle.frontend";
+import { actionButtonBackend } from "./buttons/action";
+import { changeDeckButtonBackend } from "./buttons/change-deck";
+import { mediaSampleButtonBackend } from "./buttons/media-sample";
+import { toggleButtonBackend } from "./buttons/toggle";
 
-export const coreButtonsAddon: SirenoAddon = {
+export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "core-buttons",
-  frontend: { main: "./frontend" },
-  buttons: [
-    coreActionButton,
-    coreChangeDeckButton,
-    coreToggleButton,
-    coreMediaSampleButton,
-  ] as unknown as AddonButtonTypeDefinition[],
+  frontend: { main: "./index" },
+  buttonTypes: {
+    "core:action": {
+      frontend: ActionButtonFrontend,
+      backend: actionButtonBackend,
+    },
+    "core:change-deck": {
+      frontend: ChangeDeckButtonFrontend,
+      backend: changeDeckButtonBackend,
+    },
+    "core:toggle": {
+      frontend: ToggleButtonFrontend,
+      backend: toggleButtonBackend,
+    },
+    "core:media-sample": {
+      frontend: MediaSampleButtonFrontend,
+      backend: mediaSampleButtonBackend,
+    },
+  },
 };
 
-export { coreActionButton } from "./action";
-export { coreChangeDeckButton } from "./change-deck";
-export { coreToggleButton } from "./toggle";
-export { coreMediaSampleButton } from "./media-sample";
+export const coreButtonsAddon = manifest;
+export default coreButtonsAddon;
+export const ActionButtonBackend = actionButtonBackend;
+export const ChangeDeckButtonBackend = changeDeckButtonBackend;
+export const ToggleButtonBackend = toggleButtonBackend;
+export const MediaSampleButtonBackend = mediaSampleButtonBackend;

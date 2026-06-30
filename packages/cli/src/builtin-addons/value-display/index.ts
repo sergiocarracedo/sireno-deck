@@ -1,14 +1,23 @@
-import { valueDisplayAddon } from "./buttons/value-display";
+import type { NewAddonManifest } from "@/addon/api";
 
-export { builtinValueDisplayButton } from "./buttons/value-display";
-export {
-  ValueDisplayButtonSchema,
-  ValueEntrySchema,
-  VALUE_DISPLAY_DEFAULT_POLL_MS,
-  VALUE_DISPLAY_DEFAULT_TIMEOUT_MS,
-} from "./schemas";
-export { formatCommandOutput } from "./domain/format-command-output";
-export { createPoller } from "./poller";
-export type { ValueEntry, ValueDisplayButtonConfig } from "./schemas";
+import { ValueDisplayButtonFrontend } from "./buttons/value-display.frontend";
+import { valueDisplayButtonBackend } from "./buttons/value-display";
 
+export const manifest: NewAddonManifest = {
+  apiVersion: 3,
+  name: "value-display",
+  frontend: { main: "./index" },
+  kind: "runtime",
+  buttonTypes: {
+    "core:value-display": {
+      frontend: ValueDisplayButtonFrontend,
+      backend: valueDisplayButtonBackend,
+    },
+  },
+  publishIntervalMs: 5000,
+};
+
+export const valueDisplayAddon = manifest;
 export default valueDisplayAddon;
+export const ValueDisplayButtonBackend = valueDisplayButtonBackend;
+export type { ValueEntry, ValueDisplayButtonConfig } from "./buttons/value-display";

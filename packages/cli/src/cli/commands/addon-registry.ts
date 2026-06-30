@@ -11,6 +11,7 @@ export interface ScannedAddon {
   readonly frontendEntry: string | null;
   readonly publishIntervalMs: number | null;
   readonly pollerEntry: string | null;
+  readonly buttonTypes: Readonly<Record<string, string>>;
 }
 
 export interface AddonFrontendRef {
@@ -44,8 +45,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const builtinDir = resolvePath(here, "..", "..", "builtin-addons");
 
 const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null => {
-  const indexPath = join(addonDir, "index");
-  const indexTsxPath = join(addonDir, "index");
+  const indexPath = join(addonDir, "index.ts");
+  const indexTsxPath = join(addonDir, "index.tsx");
   const indexFile = existsSync(indexPath) ? indexPath : existsSync(indexTsxPath) ? indexTsxPath : null;
   if (indexFile === null) return null;
   let raw: string;
@@ -55,8 +56,8 @@ const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null 
     return null;
   }
   const buttonsDir = join(addonDir, "buttons");
-  const buttonsIndexPath = existsSync(join(buttonsDir, "index"))
-    ? join(buttonsDir, "index")
+  const buttonsIndexPath = existsSync(join(buttonsDir, "index.ts"))
+    ? join(buttonsDir, "index.ts")
     : null;
   const buttonsSources: string[] = [];
   if (buttonsIndexPath !== null) {
@@ -70,7 +71,7 @@ const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null 
     for (const f of readdirSync(buttonsDir, { withFileTypes: true })) {
       if (!f.isFile()) continue;
       if (!/\.tsx?$/.test(f.name)) continue;
-      if (f.name === "index") continue;
+      if (f.name === "index.ts" || f.name === "index.tsx") continue;
       try {
         buttonsSources.push(readFileSync(join(buttonsDir, f.name), "utf8"));
       } catch {
@@ -81,6 +82,9 @@ const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null 
   const scanFrom = (source: string): Set<string> => {
     const out = new Set<string>();
     for (const m of source.matchAll(/type:\s*["']([a-z0-9-]+:[a-z0-9-]+)["']/gi)) {
+      if (m[1] !== undefined) out.add(m[1]);
+    }
+    for (const m of source.matchAll(/["']([a-z0-9-]+:[a-z0-9-]+)["']\s*:\s*\{/g)) {
       if (m[1] !== undefined) out.add(m[1]);
     }
     return out;
@@ -106,11 +110,29 @@ const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null 
       break;
     }
   }
-  const pollerEntry = existsSync(join(addonDir, "poller"))
-    ? join(addonDir, "poller")
+  const pollerEntry = existsSync(join(addonDir, "poller.ts"))
+    ? join(addonDir, "poller.ts")
     : null;
   if (frontendEntry === null && types.size === 0 && pollerEntry === null) return null;
-  return { name: addonName, types: [...types], frontendEntry, publishIntervalMs, pollerEntry };
+  const buttonTypes: Record<string, string> = {};
+  const entryMapRegex = /["']([a-z0-9-]+:[a-z0-9-]+)["']\s*:\s*\{\s*(?=[^}]*frontend\s*:\s*([A-Za-z_$][A-Za-z0-9_$]*))/g;
+  for (const src of allSources) {
+    for (const m of src.matchAll(entryMapRegex)) {
+      const type = m[1];
+      const exportName = m[2];
+      if (type !== undefined && exportName !== undefined && !buttonTypes[type]) {
+        buttonTypes[type] = exportName;
+      }
+    }
+  }
+  return {
+    name: addonName,
+    types: [...types],
+    frontendEntry,
+    publishIntervalMs,
+    pollerEntry,
+    buttonTypes,
+  };
 };
 
 const scanBuiltinAddons = (): ReadonlyArray<ScannedAddon> => {

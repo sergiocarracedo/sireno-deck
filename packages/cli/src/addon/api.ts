@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 
 import type { SirenoAddon } from "./api-types";
 
@@ -96,6 +96,51 @@ export interface AddonLoadIssue {
 }
 
 export type { SirenoAddon } from "./api-types";
+
+export interface AddonFrontendButtonProps {
+  readonly config: unknown;
+  readonly state: unknown;
+  readonly addonName: string;
+  readonly buttonType: string;
+  readonly buttonId: string;
+}
+
+export type AddonFrontendButton = ComponentType<AddonFrontendButtonProps>;
+
+export interface AddonButtonTypeBackend {
+  readonly configSchema: unknown;
+  readonly defaultRenderIntervalMs?: number;
+  readonly internal?: boolean;
+  readonly full?: boolean;
+  onTap?: (
+    ctx: AddonButtonTypeActionContext & { buttonId: string },
+  ) => void | Promise<void>;
+  onDblTap?: (
+    ctx: AddonButtonTypeActionContext & { buttonId: string },
+  ) => void | Promise<void>;
+  onHold?: (
+    ctx: AddonButtonTypeActionContext & { buttonId: string },
+  ) => void | Promise<void>;
+  dispose?: () => void | Promise<void>;
+}
+
+export interface AddonButtonTypeDef {
+  readonly frontend: AddonFrontendButton;
+  readonly backend: AddonButtonTypeBackend;
+}
+
+export type AddonDeckFactory = (page: number) => AddonGeneratedDeck;
+
+export interface NewAddonManifest {
+  readonly apiVersion: number;
+  readonly name: string;
+  readonly kind?: AddonKind;
+  readonly buttonTypes: Readonly<Record<string, AddonButtonTypeDef>>;
+  readonly decks?: Readonly<Record<string, AddonDeckFactory>>;
+  readonly frontend?: AddonFrontend;
+  readonly poller?: { readonly channels: ReadonlyArray<{ readonly channel: string; readonly intervalMs: number; readonly poll: () => unknown | Promise<unknown> }> };
+  readonly publishIntervalMs?: number;
+}
 
 let domAssetPathResolver: ((assetReference: string) => string | undefined) | undefined;
 

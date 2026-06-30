@@ -12,6 +12,7 @@ export interface SirenoVitePluginAddon {
   name: string
   frontend?: { main: string; styles?: string[] }
   buttons?: ReadonlyArray<{ type: string }>
+  buttonTypes?: Readonly<Record<string, string>>
 }
 
 export interface SirenoVitePluginOptions {
@@ -70,47 +71,34 @@ export const buildAddonsImports = (
 export const buildAddonsRegistryModule = (
   addons: ReadonlyArray<SirenoVitePluginAddon>,
 ): string => {
-  const entries: Array<{ type: string; addonName: string; varName: string }> =
-    []
+  const lines: string[] = []
   for (const addon of addons) {
     if (addon.frontend === undefined) continue
-    if (addon.buttons === undefined) continue
-    const varName = `${sanitizeIdentifier(addon.name)}_frontend`
-    for (const button of addon.buttons) {
-      entries.push({ type: button.type, addonName: addon.name, varName })
+    if (addon.buttonTypes === undefined) continue
+    const modName = sanitizeIdentifier(addon.name) + '_manifest'
+    lines.push(
+      `import * as ${modName} from ${JSON.stringify(addon.frontend.main)};`,
+    )
+  }
+  lines.push('/* eslint-disable */')
+  for (const addon of addons) {
+    if (addon.frontend === undefined) continue
+    if (addon.buttonTypes === undefined) continue
+    const modName = sanitizeIdentifier(addon.name) + '_manifest'
+    lines.push(`const ${modName}Obj = ${modName}.manifest ?? ${modName}.default;`)
+  }
+  lines.push('export const addonRegistry = {')
+  for (const addon of addons) {
+    if (addon.frontend === undefined) continue
+    if (addon.buttonTypes === undefined) continue
+    const modName = sanitizeIdentifier(addon.name) + '_manifest'
+    for (const [type, exportName] of Object.entries(addon.buttonTypes)) {
+      lines.push(
+        `  ${JSON.stringify(type)}: { addonName: ${JSON.stringify(addon.name)}, Component: ${modName}Obj.buttonTypes[${JSON.stringify(type)}].frontend ?? (${modName}.${exportName} ?? ${modName}.default?.buttonTypes?.[${JSON.stringify(type)}]?.frontend) },`,
+      )
     }
   }
-  const imports = addons
-    .filter((a) => a.frontend !== undefined && a.buttons !== undefined)
-    .map(
-      (a) =>
-        `import * as ${sanitizeIdentifier(a.name)}_frontend from ${JSON.stringify(a.frontend!.main)};`,
-    )
-    .join('\n')
-  const map: Record<string, string> = {}
-  for (const entry of entries) {
-    map[`${entry.type}|${entry.addonName}`] = entry.varName
-  }
-  const lines: string[] = []
-  if (imports.length > 0) lines.push(imports)
-  lines.push('/* eslint-disable */')
-  lines.push('const _components = {')
-  for (const addon of addons) {
-    if (addon.frontend === undefined) continue
-    const varName = sanitizeIdentifier(addon.name) + '_frontend'
-    lines.push(
-      `  ${varName}: { addonName: ${JSON.stringify(addon.name)}, Component: ${varName}.default ?? ${varName} },`,
-    )
-  }
   lines.push('};')
-  lines.push('export const addonRegistry = {')
-  for (const entry of entries) {
-    lines.push(
-      `  ${JSON.stringify(entry.type)}: { addonName: ${JSON.stringify(entry.addonName)}, Component: ${entry.varName}.default ?? ${entry.varName} },`,
-    )
-  }
-  lines.push('};')
-  void map
   return lines.join('\n')
 }
 

@@ -1,29 +1,32 @@
 import { describe, expect, it } from "vitest";
 
-import { isSirenoAddon } from "@/addon/api-types";
-
 import { internalSettingsAddon } from "../index";
 
 describe("internal-settings addon", () => {
-  it("addon object validates via isSirenoAddon", () => {
-    expect(isSirenoAddon(internalSettingsAddon)).toBe(true);
+  it("manifest declares apiVersion 3 and the expected name", () => {
+    expect(internalSettingsAddon.apiVersion).toBe(3);
+    expect(internalSettingsAddon.name).toBe("internal-settings");
   });
 
-  it("all three buttons have internal: true", () => {
-    const buttons = internalSettingsAddon.buttons ?? [];
-    expect(buttons.length).toBe(3);
-    for (const b of buttons) {
-      expect((b as { internal?: boolean }).internal).toBe(true);
+  it("all three buttons have internal: true backend", () => {
+    const types = Object.keys(internalSettingsAddon.buttonTypes);
+    expect(types).toHaveLength(3);
+    expect(types).toContain("core:settings-brightness");
+    expect(types).toContain("core:settings-theme");
+    expect(types).toContain("core:settings-about");
+    for (const def of Object.values(internalSettingsAddon.buttonTypes)) {
+      expect(def.backend.internal).toBe(true);
     }
   });
 
-  it("createDecks returns a settings deck with the three buttons", () => {
-    const def = internalSettingsAddon.decks?.[0];
-    expect(def).toBeDefined();
-    const result = def!.createDecks({ config: {} as never });
-    expect(result.settings).toBeDefined();
-    const buttons = (result.settings!.buttons ?? []) as Array<{ type: string }>;
-    const types = buttons.map((b) => b.type);
+  it("settings deck factory returns the three buttons", () => {
+    const factory = internalSettingsAddon.decks?.settings;
+    expect(factory).toBeDefined();
+    const deck = factory!(0);
+    expect(deck.name).toBe("Settings");
+    const types = (deck.buttons ?? []).map(
+      (b) => (b as { type: string }).type,
+    );
     expect(types).toContain("core:settings-brightness");
     expect(types).toContain("core:settings-theme");
     expect(types).toContain("core:settings-about");

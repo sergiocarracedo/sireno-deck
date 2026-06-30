@@ -1,41 +1,44 @@
-import { z } from "zod";
+import type { NewAddonManifest } from "@/addon/api";
 
-import type { SirenoAddon } from "@/addon/api-types";
-import type { AddonDeckDefinition } from "@/addon/api";
+import { AboutButtonFrontend } from "./buttons/about.frontend";
+import { BrightnessButtonFrontend } from "./buttons/brightness.frontend";
+import { ThemeButtonFrontend } from "./buttons/theme.frontend";
+import { aboutButtonBackend } from "./buttons/about";
+import { brightnessButtonBackend } from "./buttons/brightness";
+import { themeButtonBackend } from "./buttons/theme";
 
-import { coreSettingsAboutButton } from "./about";
-import { coreSettingsBrightnessButton } from "./brightness";
-import { coreSettingsThemeButton } from "./theme";
-
-const settingsDeckConfigSchema = z.object({});
-
-const settingsDeckDef: AddonDeckDefinition = {
-  type: "settings",
-  configSchema: settingsDeckConfigSchema,
-  createDecks: () => ({
-    settings: {
+export const manifest: NewAddonManifest = {
+  apiVersion: 3,
+  name: "internal-settings",
+  frontend: { main: "./index" },
+  buttonTypes: {
+    "core:settings-brightness": {
+      frontend: BrightnessButtonFrontend,
+      backend: brightnessButtonBackend,
+    },
+    "core:settings-theme": {
+      frontend: ThemeButtonFrontend,
+      backend: themeButtonBackend,
+    },
+    "core:settings-about": {
+      frontend: AboutButtonFrontend,
+      backend: aboutButtonBackend,
+    },
+  },
+  decks: {
+    settings: () => ({
       name: "Settings",
       buttons: [
         { id: "brightness", type: "core:settings-brightness", position: 0 },
         { id: "theme", type: "core:settings-theme", position: 1 },
         { id: "about", type: "core:settings-about", position: 2 },
       ],
-    },
-  }),
+    }),
+  },
 };
 
-export const internalSettingsAddon: SirenoAddon = {
-  apiVersion: 3,
-  name: "internal-settings",
-  buttons: [
-    coreSettingsBrightnessButton,
-    coreSettingsThemeButton,
-    coreSettingsAboutButton,
-  ] as never,
-  decks: [settingsDeckDef],
-};
-
-export { coreSettingsBrightnessButton } from "./brightness";
-export { coreSettingsThemeButton } from "./theme";
-export { coreSettingsAboutButton } from "./about";
-export { settingsDeckDef };
+export const internalSettingsAddon = manifest;
+export default internalSettingsAddon;
+export const AboutButtonBackend = aboutButtonBackend;
+export const BrightnessButtonBackend = brightnessButtonBackend;
+export const ThemeButtonBackend = themeButtonBackend;

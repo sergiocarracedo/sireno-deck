@@ -1,34 +1,56 @@
-import { dateTimeAddon } from "./buttons/index";
+import type { NewAddonManifest } from "@/addon/api";
 
-export {
-  builtinDateTimeButton,
-  builtinTimeButton,
-  builtinDateButton,
-  builtinClockButton,
-  builtinAnalogClockButton,
-  builtinLockedTimeTileButton,
-} from "./buttons/index";
-export {
-  BuiltinDateTimeButtonSchema,
-  BuiltinTimePresetButtonSchema,
-  BuiltinAnalogClockButtonSchema,
-  BuiltinDateButtonSchema,
-  BuiltinClockButtonSchema,
-  LockedTimeTileButtonSchema,
-  DIGITAL_DATE_TIME_INTERVAL_MS,
-  ANALOG_CLOCK_INTERVAL_MS,
-  DATE_BUTTON_INTERVAL_MS,
-  CLOCK_BUTTON_INTERVAL_MS,
-} from "./schemas";
-export { formatDigitalDateTimeLabel } from "./format";
-export { createPoller } from "./poller";
-export type {
-  BuiltinDisplayDateTimeButtonConfig,
-  BuiltinTimePresetButtonConfig,
-  BuiltinAnalogClockButtonConfig,
-  BuiltinDateButtonConfig,
-  BuiltinClockButtonConfig,
-  LockedTimeTileButtonConfig,
-} from "./schemas";
+import { dateTimeButtonBackend } from "./buttons/date-time";
+import { timeButtonBackend } from "./buttons/time";
+import { dateButtonBackend } from "./buttons/date";
+import { clockButtonBackend } from "./buttons/clock";
+import { analogClockButtonBackend } from "./buttons/analog-clock";
+import { lockedTimeTileButtonBackend } from "./buttons/locked-time-tile";
+import { DateTimeButtonFrontend } from "./buttons/date-time.frontend";
+import { TimeButtonFrontend } from "./buttons/time.frontend";
+import { DateButtonFrontend } from "./buttons/date.frontend";
+import { ClockButtonFrontend } from "./buttons/clock.frontend";
+import { AnalogClockButtonFrontend } from "./buttons/analog-clock.frontend";
+import { LockedTimeTileButtonFrontend } from "./buttons/locked-time-tile.frontend";
 
+export const manifest: NewAddonManifest = {
+  apiVersion: 3,
+  name: "date-time",
+  frontend: { main: "./index" },
+  buttonTypes: {
+    "core:date-time": {
+      frontend: DateTimeButtonFrontend,
+      backend: dateTimeButtonBackend,
+    },
+    "core:time": {
+      frontend: TimeButtonFrontend,
+      backend: timeButtonBackend,
+    },
+    "core:date": {
+      frontend: DateButtonFrontend,
+      backend: dateButtonBackend,
+    },
+    "core:clock": {
+      frontend: ClockButtonFrontend,
+      backend: clockButtonBackend,
+    },
+    "core:analog-clock": {
+      frontend: AnalogClockButtonFrontend,
+      backend: analogClockButtonBackend,
+    },
+    "core:locked-time-tile": {
+      frontend: LockedTimeTileButtonFrontend,
+      backend: lockedTimeTileButtonBackend,
+    },
+  },
+  publishIntervalMs: 1000,
+};
+
+export const dateTimeAddon = manifest;
 export default dateTimeAddon;
+export const DateTimeButtonBackend = dateTimeButtonBackend;
+export const TimeButtonBackend = timeButtonBackend;
+export const DateButtonBackend = dateButtonBackend;
+export const ClockButtonBackend = clockButtonBackend;
+export const AnalogClockButtonBackend = analogClockButtonBackend;
+export const LockedTimeTileButtonBackend = lockedTimeTileButtonBackend;

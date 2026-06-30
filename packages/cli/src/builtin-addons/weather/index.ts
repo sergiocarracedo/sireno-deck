@@ -1,14 +1,23 @@
-import { weatherAddon } from "./buttons/weather";
+import type { NewAddonManifest } from "@/addon/api";
 
-export { builtinWeatherButton } from "./buttons/weather";
-export {
-  WeatherButtonSchema,
-  WeatherLocationSchema,
-  WEATHER_DEFAULT_POLL_MS,
-} from "./schemas";
-export { fetchWeather } from "./domain/fetch";
-export { describeWeatherCode, WMO_CODE_TO_DESCRIPTION } from "./domain/codes";
-export { createPoller } from "./poller";
-export type { WeatherButtonConfig, WeatherLocation, WeatherSnapshot } from "./schemas";
+import { WeatherButtonFrontend } from "./buttons/weather.frontend";
+import { weatherButtonBackend } from "./buttons/weather";
 
+export const manifest: NewAddonManifest = {
+  apiVersion: 3,
+  name: "weather",
+  frontend: { main: "./index" },
+  kind: "runtime",
+  buttonTypes: {
+    "core:weather": {
+      frontend: WeatherButtonFrontend,
+      backend: weatherButtonBackend,
+    },
+  },
+  publishIntervalMs: 600_000,
+};
+
+export const weatherAddon = manifest;
 export default weatherAddon;
+export const WeatherButtonBackend = weatherButtonBackend;
+export type { WeatherButtonConfig, WeatherSnapshot } from "./buttons/weather";

@@ -1,7 +1,8 @@
 import type {
-  AddonButtonTypeDefinition,
+  AddonButtonTypeDef,
   AddonDeckDefinition,
   LoadedTheme,
+  NewAddonManifest,
   ResolvedSirenoAddon,
   SirenoAddon,
 } from "./api";
@@ -11,12 +12,21 @@ export class AddonRegistry {
   private readonly addonsByName = new Map<string, ResolvedSirenoAddon>();
   private readonly buttonsByType = new Map<
     string,
-    { addonName: string; def: AddonButtonTypeDefinition }
+    { addonName: string; def: AddonButtonTypeDef }
   >();
-  private readonly decksByType = new Map<string, { addonName: string; def: AddonDeckDefinition }>();
+  private readonly decksByType = new Map<
+    string,
+    { addonName: string; def: AddonDeckDefinition }
+  >();
   private readonly themesByName = new Map<string, LoadedTheme>();
 
-  load(addon: ResolvedSirenoAddon | SirenoAddon): void {
+  load(
+    addon: ResolvedSirenoAddon | SirenoAddon | NewAddonManifest,
+  ): void {
+    if ("apiVersion" in addon && "buttonTypes" in addon) {
+      this.loadNewAddon(addon);
+      return;
+    }
     const module = "module" in addon ? addon.module : addon;
     if (!isSirenoAddon(module)) {
       throw new Error("Registry.load: not a valid SirenoAddon");
@@ -28,20 +38,63 @@ export class AddonRegistry {
     const resolved: ResolvedSirenoAddon = {
       module,
       manifest: { apiVersion: module.apiVersion, main: "<inline>", name },
-      source: { kind: "local", specifier: `<inline:${name}>`, resolvedPath: "<inline>" },
+      source: {
+        kind: "local",
+        specifier: `<inline:${name}>`,
+        resolvedPath: "<inline>",
+      },
     };
     this.addonsByName.set(name, resolved);
-    for (const button of module.buttons ?? []) {
-      if (this.buttonsByType.has(button.type)) {
-        throw new Error(`Duplicate button type '${button.type}' in addon ${name}`);
-      }
-      this.buttonsByType.set(button.type, { addonName: name, def: button });
+  }
+
+  private loadNewAddon(manifest: NewAddonManifest): void {
+    const name = manifest.name;
+    if (this.addonsByName.has(name)) {
+      throw new Error(`Duplicate addon name: ${name}`);
     }
-    for (const deck of module.decks ?? []) {
-      if (this.decksByType.has(deck.type)) {
-        throw new Error(`Duplicate deck type '${deck.type}' in addon ${name}`);
+    const resolved: ResolvedSirenoAddon = {
+      module: {
+        apiVersion: manifest.apiVersion,
+        name,
+        ...(manifest.publishIntervalMs !== undefined
+          ? { publishIntervalMs: manifest.publishIntervalMs }
+          : {}),
+      },
+      manifest: {
+        apiVersion: manifest.apiVersion,
+        main: "<inline>",
+        name,
+        ...(manifest.frontend !== undefined
+          ? { frontend: manifest.frontend }
+          : {}),
+      },
+      source: {
+        kind: "local",
+        specifier: `<inline:${name}>`,
+        resolvedPath: "<inline>",
+      },
+    };
+    this.addonsByName.set(name, resolved);
+    for (const [buttonType, def] of Object.entries(manifest.buttonTypes)) {
+      if (this.buttonsByType.has(buttonType)) {
+        throw new Error(
+          `Duplicate button type '${buttonType}' in addon ${name}`,
+        );
       }
-      this.decksByType.set(deck.type, { addonName: name, def: deck });
+      this.buttonsByType.set(buttonType, { addonName: name, def });
+    }
+    for (const [deckName, factory] of Object.entries(manifest.decks ?? {})) {
+      if (this.decksByType.has(deckName)) {
+        throw new Error(`Duplicate deck '${deckName}' in addon ${name}`);
+      }
+      const def: AddonDeckDefinition = {
+        type: deckName,
+        createDecks: () => {
+          const deck = factory(0);
+          return { [deckName]: deck };
+        },
+      };
+      this.decksByType.set(deckName, { addonName: name, def });
     }
   }
 
@@ -53,11 +106,15 @@ export class AddonRegistry {
     return Array.from(this.addonsByName.values());
   }
 
-  getButtonType(type: string): { addonName: string; def: AddonButtonTypeDefinition } | undefined {
+  getButtonType(
+    type: string,
+  ): { addonName: string; def: AddonButtonTypeDef } | undefined {
     return this.buttonsByType.get(type);
   }
 
-  getDeckType(type: string): { addonName: string; def: AddonDeckDefinition } | undefined {
+  getDeckType(
+    type: string,
+  ): { addonName: string; def: AddonDeckDefinition } | undefined {
     return this.decksByType.get(type);
   }
 

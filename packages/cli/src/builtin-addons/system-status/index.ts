@@ -1,19 +1,23 @@
-import { systemStatusAddon } from "./buttons/system-status";
+import type { NewAddonManifest } from "@/addon/api";
 
-export { builtinSystemStatusButton } from "./buttons/system-status";
-export {
-  SystemStatusButtonSchema,
-  SystemStatusMetricConfigSchema,
-  SystemStatusMetricIdSchema,
-  SYSTEM_STATUS_DEFAULT_POLL_MS,
-} from "./schemas";
-export { getCanonicalSystemMetrics } from "./domain/live-metrics";
-export { createPoller } from "./poller";
-export type {
-  SystemStatusMetricId,
-  SystemStatusMetricConfig,
-  SystemStatusButtonConfig,
-  CanonicalSystemMetricSnapshot,
-} from "./schemas";
+import { SystemStatusButtonFrontend } from "./buttons/system-status.frontend";
+import { systemStatusButtonBackend } from "./buttons/system-status";
 
+export const manifest: NewAddonManifest = {
+  apiVersion: 3,
+  name: "system-status",
+  frontend: { main: "./index" },
+  kind: "runtime",
+  buttonTypes: {
+    "core:system-status": {
+      frontend: SystemStatusButtonFrontend,
+      backend: systemStatusButtonBackend,
+    },
+  },
+  publishIntervalMs: 1000,
+};
+
+export const systemStatusAddon = manifest;
 export default systemStatusAddon;
+export const SystemStatusButtonBackend = systemStatusButtonBackend;
+export type { CanonicalSystemMetricSnapshot, SystemStatusButtonConfig } from "./buttons/system-status";
