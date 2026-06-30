@@ -11,7 +11,10 @@ export interface ScannedAddon {
   readonly frontendEntry: string | null;
   readonly publishIntervalMs: number | null;
   readonly pollerEntry: string | null;
+  readonly backendEntry: string | null;
   readonly buttonTypes: Readonly<Record<string, string>>;
+  readonly deckTypes: Readonly<Record<string, string>>;
+  readonly source: "json" | "regex";
 }
 
 export interface AddonFrontendRef {
@@ -45,6 +48,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const builtinDir = resolvePath(here, "..", "..", "builtin-addons");
 
 const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null => {
+  const jsonScanned = scanAddonJsonManifest(addonDir, addonName);
+  if (jsonScanned !== null) return jsonScanned;
   const indexPath = join(addonDir, "index.ts");
   const indexTsxPath = join(addonDir, "index.tsx");
   const indexFile = existsSync(indexPath) ? indexPath : existsSync(indexTsxPath) ? indexTsxPath : null;
@@ -131,7 +136,78 @@ const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null 
     frontendEntry,
     publishIntervalMs,
     pollerEntry,
+    backendEntry: null,
     buttonTypes,
+    deckTypes: {},
+    source: "regex",
+  };
+};
+
+const scanAddonJsonManifest = (
+  addonDir: string,
+  addonName: string,
+): ScannedAddon | null => {
+  const jsonPath = join(addonDir, "sirenodeck.json");
+  if (!existsSync(jsonPath)) return null;
+  let raw: unknown;
+  try {
+    raw = JSON.parse(readFileSync(jsonPath, "utf8")) as unknown;
+  } catch {
+    return null;
+  }
+  if (raw === null || typeof raw !== "object") return null;
+  const obj = raw as Record<string, unknown>;
+  if (obj["kind"] !== "addon") return null;
+  const apiVersion = obj["apiVersion"];
+  const name = obj["name"];
+  if (typeof apiVersion !== "number" || typeof name !== "string") return null;
+  if (name !== addonName) return null;
+
+  const buttonTypes: Record<string, string> = {};
+  const internalByType: Record<string, boolean> = {};
+  const rawButtons = Array.isArray(obj["buttons"]) ? obj["buttons"] : [];
+  for (const b of rawButtons) {
+    if (b === null || typeof b !== "object") continue;
+    const btn = b as Record<string, unknown>;
+    if (typeof btn["type"] !== "string") continue;
+    if (typeof btn["path"] !== "string") continue;
+    buttonTypes[btn["type"]] = "default";
+    if (btn["internal"] === true) internalByType[btn["type"]] = true;
+  }
+
+  const deckTypes: Record<string, string> = {};
+  const rawDecks = Array.isArray(obj["decks"]) ? obj["decks"] : [];
+  for (const d of rawDecks) {
+    if (d === null || typeof d !== "object") continue;
+    const deck = d as Record<string, unknown>;
+    if (typeof deck["type"] !== "string") continue;
+    if (typeof deck["path"] !== "string") continue;
+    deckTypes[deck["type"]] = deck["path"];
+  }
+
+  const backendField = typeof obj["backend"] === "string" ? obj["backend"] : null;
+  let backendEntry: string | null = null;
+  if (backendField !== null) {
+    const backendPath = resolvePath(addonDir, backendField);
+    if (
+      existsSync(`${backendPath}.ts`) ||
+      existsSync(`${backendPath}/index.ts`) ||
+      existsSync(`${backendPath}/index.tsx`)
+    ) {
+      backendEntry = backendPath;
+    }
+  }
+
+  return {
+    name: addonName,
+    types: Object.keys(buttonTypes),
+    frontendEntry: null,
+    publishIntervalMs: null,
+    pollerEntry: null,
+    backendEntry,
+    buttonTypes,
+    deckTypes,
+    source: "json",
   };
 };
 

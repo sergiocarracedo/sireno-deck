@@ -1,0 +1,14 @@
+{
+  "kind": "addon",
+  "apiVersion": 1,
+  "name": "internal-settings",
+  "types": "./index.d.ts",
+  "decks": [
+    { "type": "settings", "path": "decks/settings" }
+  ],
+  "buttons": [
+    { "type": "core:settings-about",      "path": "buttons/about",      "internal": true },
+    { "type": "core:settings-brightness", "path": "buttons/brightness", "internal": true },
+    { "type": "core:settings-theme",      "path": "buttons/theme",      "internal": true }
+  ]
+}

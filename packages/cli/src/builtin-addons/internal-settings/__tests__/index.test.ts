@@ -1,34 +1,58 @@
 import { describe, expect, it } from "vitest";
 
-import { internalSettingsAddon } from "../index";
+import manifestJson from "../sirenodeck.json" with { type: "json" };
+import type ManifestType from "../index.d.ts";
 
-describe("internal-settings addon", () => {
-  it("manifest declares apiVersion 3 and the expected name", () => {
-    expect(internalSettingsAddon.apiVersion).toBe(3);
-    expect(internalSettingsAddon.name).toBe("internal-settings");
+import settingsDeck from "../decks/settings";
+
+describe("internal-settings sirenodeck.json", () => {
+  it("declares kind=addon, apiVersion 1, and the expected name", () => {
+    expect(manifestJson.kind).toBe("addon");
+    expect(manifestJson.apiVersion).toBe(1);
+    expect(manifestJson.name).toBe("internal-settings");
   });
 
-  it("all three buttons have internal: true backend", () => {
-    const types = Object.keys(internalSettingsAddon.buttonTypes);
-    expect(types).toHaveLength(3);
+  it("references a types file path", () => {
+    expect(manifestJson.types).toBe("./index.d.ts");
+  });
+
+  it("declares three internal buttons", () => {
+    expect(manifestJson.buttons).toHaveLength(3);
+    const types = manifestJson.buttons.map((b) => b.type);
+    expect(types).toContain("core:settings-about");
     expect(types).toContain("core:settings-brightness");
     expect(types).toContain("core:settings-theme");
-    expect(types).toContain("core:settings-about");
-    for (const def of Object.values(internalSettingsAddon.buttonTypes)) {
-      expect(def.backend.internal).toBe(true);
+    for (const b of manifestJson.buttons) {
+      expect(b.internal).toBe(true);
     }
   });
 
-  it("settings deck factory returns the three buttons", () => {
-    const factory = internalSettingsAddon.decks?.settings;
-    expect(factory).toBeDefined();
-    const deck = factory!(0);
+  it("declares one deck (settings)", () => {
+    expect(manifestJson.decks).toHaveLength(1);
+    expect(manifestJson.decks?.[0]?.type).toBe("settings");
+    expect(manifestJson.decks?.[0]?.path).toBe("decks/settings");
+  });
+});
+
+describe("internal-settings typed manifest", () => {
+  it("typed re-export matches the JSON", () => {
+    const expected: ManifestType = manifestJson as ManifestType;
+    expect(expected).toBe(manifestJson);
+    expect(expected.name).toBe("internal-settings");
+  });
+});
+
+describe("internal-settings settings deck", () => {
+  it("returns the three buttons in order", () => {
+    const deck = settingsDeck(0);
     expect(deck.name).toBe("Settings");
     const types = (deck.buttons ?? []).map(
       (b) => (b as { type: string }).type,
     );
-    expect(types).toContain("core:settings-brightness");
-    expect(types).toContain("core:settings-theme");
-    expect(types).toContain("core:settings-about");
+    expect(types).toEqual([
+      "core:settings-brightness",
+      "core:settings-theme",
+      "core:settings-about",
+    ]);
   });
 });
