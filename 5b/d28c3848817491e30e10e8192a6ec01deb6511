@@ -1,0 +1,60 @@
+packages/cli/src/builtin-addons/internal-settings/sirenodeck.json
+  s_32e9e58a6a363a::t_7a80fe22d3a345 1-14
+packages/cli/src/builtin-addons/internal-settings/decks/settings.ts
+  s_32e9e58a6a363a::t_fe48ce39fd47b2 1-12
+packages/cli/src/builtin-addons/internal-settings/__tests__/index.test.ts
+  s_32e9e58a6a363a::t_765747079f2ea5 3-4,6-16,19-22,25-26,30-47,52-56,58
+packages/cli/src/cli/commands/addon-registry.ts
+  s_32e9e58a6a363a::t_ac6d3e8a662cde 51-52
+  s_32e9e58a6a363a::t_ad6b6ac06b770a 139,141-210
+  s_32e9e58a6a363a::t_e4e823a18dea69 14,16-17
+packages/cli/src/builtin-addons/internal-settings/buttons/about/config.ts
+  s_32e9e58a6a363a::t_d0cd04142aabbb 1-3
+packages/cli/src/builtin-addons/internal-settings/buttons/about/backend.ts
+  s_32e9e58a6a363a::t_bee4b0b13d9de6 1-13
+packages/cli/src/builtin-addons/internal-settings/buttons/theme/backend.ts
+  s_32e9e58a6a363a::t_d63d3abb3a07b9 1-5
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness/config.ts
+  s_32e9e58a6a363a::t_1e0b1f1ab407a9 1-3
+packages/cli/src/builtin-addons/internal-settings/buttons/about/frontend.tsx
+  s_32e9e58a6a363a::t_0306d6af67cd72 1-3
+packages/cli/src/builtin-addons/internal-settings/buttons/theme/config.ts
+  s_32e9e58a6a363a::t_7906fe9e184be0 1-3
+packages/cli/src/builtin-addons/internal-settings/buttons/theme/frontend.tsx
+  s_32e9e58a6a363a::t_425f0c1e8808c6 1-3
+packages/cli/src/addon/api.ts
+  s_32e9e58a6a363a::t_8767bd29dee974 198-316
+  s_32e9e58a6a363a::t_a3d3089e0d6787 3-5,11
+packages/cli/src/builtin-addons/internal-settings/index.d.ts
+  s_32e9e58a6a363a::t_8479c291cb15ef 1-4
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness/frontend.tsx
+  s_32e9e58a6a363a::t_2d7f048b3d3e76 1-3
+packages/cli/src/cli/commands/__tests__/addon-registry.test.ts
+  s_32e9e58a6a363a::t_45158a42131e9c 1-4,9,14-46,73-83,89-130
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_32e9e58a6a363a::t_9267304d65627e 2,4
+  s_32e9e58a6a363a::t_5155fc7d0aca0a 1,5-6
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness/backend.ts
+  s_32e9e58a6a363a::t_1f1b26cbd162bb 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "5bd28c3848817491e30e10e8192a6ec01deb6511",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
