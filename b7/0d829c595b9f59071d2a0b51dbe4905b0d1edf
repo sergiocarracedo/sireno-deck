@@ -1,0 +1,29 @@
+packages/cli/emulator/vite.config.ts
+  s_32e9e58a6a363a::t_a5d2aeab62c896 90
+  s_32e9e58a6a363a::t_a0a560aab34de3 55
+  h_f90ee31b03fc41 1-5,7,9,14-15,18-21,23-25,31,36-37,40-43,45,48-49,52-53,56,58,60,67,75-76,78,82-83,88,91
+packages/cli/frontend/vite.config.ts
+  s_32e9e58a6a363a::t_9ca3f794fa7e04 20
+  s_32e9e58a6a363a::t_ee39ee9de8c2f7 82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "b70d829c595b9f59071d2a0b51dbe4905b0d1edf",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
