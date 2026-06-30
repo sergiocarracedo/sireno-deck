@@ -229,6 +229,82 @@ const scanBuiltinAddons = (): ReadonlyArray<ScannedAddon> => {
   return out;
 };
 
+export interface ButtonValidationIssue {
+  readonly addon: string;
+  readonly button: string;
+  readonly message: string;
+}
+
+const validateButtonConfigExport = (
+  addonName: string,
+  buttonDir: string,
+  buttonName: string,
+): ButtonValidationIssue | null => {
+  const backendPath = join(buttonDir, "backend.ts");
+  const configPath = join(buttonDir, "config.ts");
+
+  if (!existsSync(backendPath)) {
+    return { addon: addonName, button: buttonName, message: "missing backend.ts" };
+  }
+  if (!existsSync(configPath)) {
+    return { addon: addonName, button: buttonName, message: "missing config.ts" };
+  }
+
+  let backendSrc: string;
+  try {
+    backendSrc = readFileSync(backendPath, "utf8");
+  } catch {
+    return { addon: addonName, button: buttonName, message: "could not read backend.ts" };
+  }
+
+  const usesAddonButtonBackend = /import\s+type\s+\{[^}]*AddonButtonBackend[^}]*\}\s+from\s+["']@\/addon\/api["']/.test(backendSrc);
+  if (usesAddonButtonBackend) return null;
+
+  if (!/import\s+\{\s*configSchema\s*}\s+from\s+["']\.\/config["']/.test(backendSrc)) {
+    return {
+      addon: addonName,
+      button: buttonName,
+      message: 'backend.ts does not import { configSchema } from "./config"',
+    };
+  }
+
+  let configSrc: string;
+  try {
+    configSrc = readFileSync(configPath, "utf8");
+  } catch {
+    return { addon: addonName, button: buttonName, message: "could not read config.ts" };
+  }
+
+  if (!/export\s+const\s+configSchema\b/.test(configSrc)) {
+    return {
+      addon: addonName,
+      button: buttonName,
+      message: 'config.ts does not export "configSchema" as a named const',
+    };
+  }
+
+  return null;
+};
+
+export const validateBuiltinButtonConfigs = (): ReadonlyArray<ButtonValidationIssue> => {
+  if (!existsSync(builtinDir)) return [];
+  const issues: ButtonValidationIssue[] = [];
+  for (const addonEntry of readdirSync(builtinDir, { withFileTypes: true })) {
+    if (!addonEntry.isDirectory()) continue;
+    const addonName = addonEntry.name;
+    const addonDir = join(builtinDir, addonName);
+    const buttonsDir = join(addonDir, "buttons");
+    if (!existsSync(buttonsDir)) continue;
+    for (const btnEntry of readdirSync(buttonsDir, { withFileTypes: true })) {
+      if (!btnEntry.isDirectory()) continue;
+      const btnDir = join(buttonsDir, btnEntry.name);
+      const issue = validateButtonConfigExport(addonName, btnDir, btnEntry.name);
+      if (issue !== null) issues.push(issue);
+    }
+  }
+  return issues;
+};
+
 const matchesManifest = (manifest: AddonManifest, addonName: string): boolean => {
   if (manifest.name !== undefined && manifest.name !== addonName) return false;
   if (manifest.publishIntervalMs === undefined) return false;

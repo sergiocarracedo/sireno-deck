@@ -23,4 +23,5 @@ const WeatherButtonSchema = z
   })
   .strict();
 
-export default WeatherButtonSchema;
+export const configSchema = WeatherButtonSchema;
+export type ConfigSchema = z.infer<typeof configSchema>;

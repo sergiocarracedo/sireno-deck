@@ -36,4 +36,5 @@ const SystemStatusButtonSchema = z
   })
   .strict();
 
-export default SystemStatusButtonSchema;
+export const configSchema = SystemStatusButtonSchema;
+export type ConfigSchema = z.infer<typeof configSchema>;

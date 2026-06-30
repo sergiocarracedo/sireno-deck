@@ -1,6 +1,6 @@
 import type { AddonButtonTypeBackend } from "@/addon/api";
 
-import configSchema from "./config";
+import { configSchema } from "./config";
 
 export const WEATHER_DEFAULT_POLL_MS = 600_000;
 

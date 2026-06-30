@@ -1,3 +1,4 @@
 import { z } from "zod";
 
-export default z.object({});
+export const configSchema = z.object({});
+export type ConfigSchema = z.infer<typeof configSchema>

@@ -32,4 +32,5 @@ const ValueDisplayButtonSchema = z
   })
   .strict();
 
-export default ValueDisplayButtonSchema;
+export const configSchema = ValueDisplayButtonSchema;
+export type ConfigSchema = z.infer<typeof configSchema>;

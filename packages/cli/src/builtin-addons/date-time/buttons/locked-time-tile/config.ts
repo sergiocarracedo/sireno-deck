@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export default z
+export const configSchema = z
   .object({
     slot: z.enum([
       "hour",
@@ -13,3 +13,5 @@ export default z
     ]),
   })
   .strict();
+
+export type ConfigSchema = z.infer<typeof configSchema>;

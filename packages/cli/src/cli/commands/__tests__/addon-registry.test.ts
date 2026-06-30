@@ -7,6 +7,7 @@ import {
   collectBuiltinAddonRegistry,
   discoverAddonPollers,
   scanBuiltinAddons,
+  validateBuiltinButtonConfigs,
   type ScannedAddon,
 } from "../addon-registry";
 
@@ -84,6 +85,13 @@ describe("discoverAddonPollers", () => {
     ];
     const discovered = await discoverAddonPollers({}, without);
     expect(discovered).toEqual([]);
+  });
+});
+
+describe("validateBuiltinButtonConfigs", () => {
+  it("finds no issues with builtin button configs", () => {
+    const issues = validateBuiltinButtonConfigs();
+    expect(issues).toHaveLength(0);
   });
 });
 

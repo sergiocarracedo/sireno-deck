@@ -5,7 +5,7 @@ import {
   formatCommand,
   isMacOS,
 } from "../../domain/macos";
-import configSchema from "./config";
+import { configSchema } from "./config";
 
 export default {
   configSchema,

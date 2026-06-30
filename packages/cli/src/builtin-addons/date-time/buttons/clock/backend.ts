@@ -1,6 +1,6 @@
 import type { AddonButtonTypeBackend } from "@/addon/api";
 
-import configSchema from "./config";
+import { configSchema } from "./config";
 
 export const CLOCK_BUTTON_INTERVAL_MS = 1000;
 

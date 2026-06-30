@@ -1,7 +1,8 @@
+import { z } from "zod";
 import type { Methods } from "@/deck/methods";
 import type { AddonButtonTypeBackend } from "@/addon/api";
 
-import configSchema from "./config";
+import { configSchema } from "./config";
 
 type Config = z.infer<typeof configSchema>;
 
