@@ -12,6 +12,7 @@ const ALIGN_CLASS = {
 const TONE_CLASS = {
   accent: 'text-accent',
   danger: 'text-danger',
+  fg: 'text-fg',
   foreground: 'text-foreground',
   'foreground-contrast': 'text-foreground-contrast',
   primary: 'text-primary',
@@ -195,7 +196,7 @@ function renderRichTextNodes(
     } else if (isRichToneTag(node.tag)) {
       classNames.push(TONE_CLASS[node.tag])
     } else if (isRichSizeTag(node.tag)) {
-      classNames.push(SIZE_CLASS[node.tag])
+      classNames.push(SIZE_CLASS[node.tag], 'font-bold')
     }
 
     return (
