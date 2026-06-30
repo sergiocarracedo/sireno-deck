@@ -92,9 +92,8 @@ export interface LoadedTheme {
   apiVersion: number
   source: { kind: 'builtin' | 'local' | 'npm'; resolvedPath: string }
   manifestPath: string
+  uiOverridesPath: string | null
   cssPath: string
-  frontendPath: string
-  assetsStyles: ReadonlyArray<string>
 }
 
 export interface AddonLoadIssue {

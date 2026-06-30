@@ -1,6 +1,6 @@
 import { fileURLToPath } from "node:url";
 import { dirname, resolve as resolvePath, join } from "node:path";
-import { existsSync, readFileSync, readdirSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 
 import type { AddonRegistry } from "@/addon/registry";
 import type { LoadedTheme } from "@/addon/api";
@@ -8,7 +8,7 @@ import {
   ThemeJsonManifestSchema,
   type ThemeJsonManifest,
 } from "./manifest";
-import { buildThemeCssBundle } from "./css";
+import { buildThemeCss } from "./css";
 import type { ThemeEntry } from "@/config/schemas";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -63,14 +63,13 @@ function readAndValidateManifest(
   return result.data;
 }
 
-function projectAndWriteThemeCss(
+export function buildThemeCssFromManifest(
   manifest: ThemeJsonManifest,
   themeDir: string,
-): { cssPath: string; assetsStyles: string[] } {
-  const assetsStyles = (
-    manifest.assets?.styles ?? ["./tokens.css", "./components.css"]
-  ).map((s) => resolvePath(themeDir, s));
-  const cssPath = resolvePath(themeDir, "theme.generated.css");
+): string {
+  const assetsStyles = (manifest.assets?.styles ?? ["./components.css"]).map(
+    (s) => resolvePath(themeDir, s),
+  );
   const stylesheetContents = assetsStyles.map((p) => {
     try {
       return readFileSync(p, "utf8");
@@ -78,38 +77,33 @@ function projectAndWriteThemeCss(
       return `/* stylesheet not found: ${p} */`;
     }
   });
-  const generatedCss = buildThemeCssBundle(manifest, stylesheetContents);
-  try {
-    const cssDir = dirname(cssPath);
-    if (!existsSync(cssDir)) mkdirSync(cssDir, { recursive: true });
-    writeFileSync(cssPath, generatedCss, "utf8");
-  } catch {
-    // Non-fatal in test environments where fs is mocked
-  }
-  return { cssPath, assetsStyles };
+  return buildThemeCss(manifest, stylesheetContents);
 }
 
 function buildLoadedTheme(
   manifest: ThemeJsonManifest,
   themeDir: string,
   source: { kind: "builtin"; resolvedPath: string } | { kind: "local"; resolvedPath: string },
-): LoadedTheme {
-  const { cssPath, assetsStyles } = projectAndWriteThemeCss(manifest, themeDir);
-  const frontendPath = manifest.entry
-    ? resolvePath(themeDir, manifest.entry)
-    : resolvePath(themeDir, "index");
-  return {
+): { theme: LoadedTheme; getCss: () => string } {
+  const uiOverridesPath = manifest["ui-overrides"]
+    ? resolvePath(themeDir, manifest["ui-overrides"])
+    : null;
+
+  const theme: LoadedTheme = {
     name: manifest.name,
     apiVersion: manifest.apiVersion,
     source,
     manifestPath: join(themeDir, "sirenodeck.json"),
-    cssPath,
-    frontendPath,
-    assetsStyles,
+    uiOverridesPath,
+    cssPath: "",
   };
+
+  const getCss = (): string => buildThemeCssFromManifest(manifest, themeDir);
+
+  return { theme, getCss };
 }
 
-export function loadBuiltInThemes(): LoadedTheme[] {
+export function loadBuiltInThemes(): Array<{ theme: LoadedTheme; getCss: () => string }> {
   const discovered = discoverThemeManifests();
   return discovered.map(({ dir, name }) => {
     const manifest = readAndValidateManifest(join(dir, "sirenodeck.json"), name);
@@ -118,8 +112,8 @@ export function loadBuiltInThemes(): LoadedTheme[] {
 }
 
 export const registerBuiltInThemes = (registry: AddonRegistry): void => {
-  const themes = loadBuiltInThemes();
-  for (const theme of themes) {
+  const builtIns = loadBuiltInThemes();
+  for (const { theme } of builtIns) {
     registry.loadTheme(theme);
   }
 };
@@ -128,11 +122,11 @@ export function loadThemeFromPath(
   registry: AddonRegistry,
   themePath: string,
   aliasName?: string,
-): LoadedTheme {
+): { theme: LoadedTheme; getCss: () => string } {
   const resolvedPath = resolvePath(themePath);
   const manifestPath = join(resolvedPath, "sirenodeck.json");
   const manifest = readAndValidateManifest(manifestPath);
-  const theme = buildLoadedTheme(manifest, resolvedPath, {
+  const { theme, getCss } = buildLoadedTheme(manifest, resolvedPath, {
     kind: "local",
     resolvedPath,
   });
@@ -140,7 +134,7 @@ export function loadThemeFromPath(
   if (aliasName !== undefined && aliasName !== manifest.name) {
     registry.loadTheme({ ...theme, name: aliasName });
   }
-  return theme;
+  return { theme, getCss };
 }
 
 export type ResolveThemeOptions = {
@@ -149,6 +143,7 @@ export type ResolveThemeOptions = {
 
 export interface ResolveThemeResult {
   theme: LoadedTheme;
+  getCss: () => string;
 }
 
 export const resolveActiveTheme = (
@@ -157,12 +152,33 @@ export const resolveActiveTheme = (
 ): ResolveThemeResult => {
   const { theme: themeEntry } = options;
   if (themeEntry === undefined) {
-    return { theme: registry.resolveActiveTheme(undefined) };
+    const theme = registry.resolveActiveTheme(undefined);
+    if (theme.source.kind === 'builtin') {
+      const themeDir = dirname(theme.manifestPath);
+      const manifest = readAndValidateManifest(theme.manifestPath, theme.name);
+      return {
+        theme,
+        getCss: () => buildThemeCssFromManifest(manifest, themeDir),
+      };
+    }
+    return { theme, getCss: () => '' };
   }
-  if (typeof themeEntry === "string") {
-    return { theme: registry.resolveActiveTheme(themeEntry) };
+  if (typeof themeEntry === 'string') {
+    const theme = registry.resolveActiveTheme(themeEntry);
+    if (theme.source.kind === 'builtin') {
+      const themeDir = dirname(theme.manifestPath);
+      const manifest = readAndValidateManifest(theme.manifestPath, theme.name);
+      return {
+        theme,
+        getCss: () => buildThemeCssFromManifest(manifest, themeDir),
+      };
+    }
+    return { theme, getCss: () => '' };
   }
   const { name: aliasName, path } = themeEntry;
-  const loaded = loadThemeFromPath(registry, path, aliasName);
-  return { theme: aliasName ? registry.getTheme(aliasName) ?? loaded : loaded };
+  const { theme, getCss } = loadThemeFromPath(registry, path, aliasName);
+  return {
+    theme: aliasName ? registry.getTheme(aliasName) ?? theme : theme,
+    getCss,
+  };
 };

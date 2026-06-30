@@ -24,6 +24,13 @@ export const ThemeTypographySchema = z.object({
   monospace: ThemeTypographyRoleSchema,
 }).strict();
 
+export const ThemeFontFaceSchema = z.object({
+  fontFamily: z.string().min(1),
+  fontWeight: z.number().int().positive(),
+  fontStyle: z.enum(["normal", "italic", "oblique"]).default("normal"),
+  src: z.string().min(1),
+}).strict();
+
 export const ThemeAssetsSchema = z.object({
   styles: z.array(z.string().min(1)).default([]),
 }).strict();
@@ -36,8 +43,9 @@ export const ThemeJsonManifestSchema = z.object({
   description: z.string().min(1).optional(),
   colorTokens: ThemeColorTokenSchema,
   typography: ThemeTypographySchema,
+  fonts: z.array(ThemeFontFaceSchema).default([]),
   assets: ThemeAssetsSchema.optional(),
-  entry: z.string().min(1).optional(),
+  "ui-overrides": z.string().min(1).optional(),
 }).strict();
 
 export type ThemeJsonManifest = z.infer<typeof ThemeJsonManifestSchema>;

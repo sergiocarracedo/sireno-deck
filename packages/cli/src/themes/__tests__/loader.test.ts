@@ -10,9 +10,8 @@ const makeTheme = (name: string): LoadedTheme => ({
   apiVersion: 1,
   source: { kind: "local", resolvedPath: `/tmp/themes/${name}` },
   manifestPath: `/tmp/themes/${name}/sirenodeck.json`,
-  cssPath: `/tmp/themes/${name}/theme.generated.css`,
-  frontendPath: `/tmp/themes/${name}/index.tsx`,
-  assetsStyles: [],
+  uiOverridesPath: null,
+  cssPath: "",
 });
 
 describe("themes/loader", () => {
@@ -23,8 +22,6 @@ describe("themes/loader", () => {
     expect(theme).toBeDefined();
     expect(theme?.apiVersion).toBe(1);
     expect(theme?.source.kind).toBe("builtin");
-    expect(theme?.frontendPath.endsWith("index")).toBe(true);
-    expect(theme?.cssPath.endsWith("theme.generated.css")).toBe(true);
   });
 
   it("resolveActiveTheme returns the default theme when name is undefined", () => {
@@ -59,6 +56,6 @@ describe("themes/loader", () => {
         .listThemes()
         .map((t) => t.name)
         .sort(),
-    ).toEqual(["custom", "default", "light"]);
+    ).toEqual(["custom", "default"]);
   });
 });

@@ -2,7 +2,7 @@
 
 import { describe, expect, it } from "vitest";
 
-import { ButtonFrame } from "../ButtonFrame";
+import { ButtonFrame } from "@/ui";
 
 describe("themes/default/ButtonFrame", () => {
   it("renders children inside a div with default frame tokens", () => {

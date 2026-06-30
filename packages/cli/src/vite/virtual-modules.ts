@@ -1,13 +1,11 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
 import type { Plugin, ViteDevServer } from 'vite'
 
 export interface SirenoVitePluginTheme {
   name: string
-  cssPath: string
-  frontendPath: string
   manifestPath: string
-  assetsStyles: ReadonlyArray<string>
+  uiOverridesPath: string | null
 }
 
 export interface SirenoVitePluginAddon {
@@ -105,14 +103,14 @@ export const buildAddonsRegistryModule = (
 }
 
 export const readThemeCss = (
-  theme: SirenoVitePluginTheme | undefined,
+  themeDir: string | undefined,
 ): string => {
-  if (!theme) return ''
+  if (!themeDir) return ''
+  const cssPath = join(themeDir, '.sireno-deck', 'theme.css')
   try {
-    const css = readFileSync(theme.cssPath, 'utf8')
-    return css
+    return readFileSync(cssPath, 'utf8')
   } catch {
-    return `/* theme css not found at ${theme.cssPath} */\n`
+    return ''
   }
 }
 
@@ -120,7 +118,7 @@ export const buildThemesManifestModule = (
   theme: SirenoVitePluginTheme | undefined,
 ): string => {
   if (!theme) {
-    return `export const activeTheme = null;\nexport const components = {};\nexport const surfaces = {};\nexport const primitives = {};\nexport const colorTokens = null;\nexport const typography = null;\n`
+    return `export const activeTheme = null;\nexport const colorTokens = null;\nexport const typography = null;\n`
   }
 
   let manifestData = '{}'
@@ -130,27 +128,32 @@ export const buildThemesManifestModule = (
     // ignore — manifest may not exist in all setups
   }
 
-  const rawId = theme.name.replace(/[^a-zA-Z0-9_$]/g, '_')
-  const importId = /^[a-zA-Z_$]/.test(rawId) ? `_${rawId}` : rawId
+  const uiOverrides = theme.uiOverridesPath
+    ? `import * as _uiOverrides from ${JSON.stringify(theme.uiOverridesPath)};`
+    : null
+
   return [
-    `import * as ${importId} from ${JSON.stringify(theme.frontendPath)};`,
+    uiOverrides,
     `const _manifest = JSON.parse(${JSON.stringify(manifestData)})`,
-    `export const activeTheme = { name: ${JSON.stringify(theme.name)}, frontendPath: ${JSON.stringify(theme.frontendPath)} };`,
+    `export const activeTheme = { name: ${JSON.stringify(theme.name)}, manifestPath: ${JSON.stringify(theme.manifestPath)}, uiOverridesPath: ${JSON.stringify(theme.uiOverridesPath)} };`,
     `export const colorTokens = _manifest.colorTokens ?? null;`,
     `export const typography = _manifest.typography ?? null;`,
-    `export const components = ${importId}.components ?? {};`,
-    `export const surfaces = ${importId}.surfaces ?? {};`,
-    `export const primitives = ${importId}.primitives ?? {};`,
-    `const _themeDefault = ${importId}.default ?? ${importId};`,
-    `export { _themeDefault as default };`,
-  ].join('\n')
+    `const _components = _uiOverrides?.components ?? {};`,
+    `const _surfaces = _uiOverrides?.surfaces ?? {};`,
+    `const _primitives = _uiOverrides?.primitives ?? {};`,
+    `export const components = _components;`,
+    `export const surfaces = _surfaces;`,
+    `export const primitives = _primitives;`,
+    `export { _uiOverrides as uiOverrides };`,
+  ].filter(Boolean).join('\n')
 }
 
 export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
   const token = options.token ?? ''
   const addons = options.addons ?? []
   const theme = options.theme
-  const themeCss = readThemeCss(theme)
+  const themeDir = process.env['SIRENO_THEME_DIR']
+  const themeCss = readThemeCss(themeDir)
 
   return {
     name: 'sireno-deck',
@@ -168,7 +171,7 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
       if (id === ADDONS_REGISTRY_RESOLVED_ID)
         return buildAddonsRegistryModule(addons)
       if (id === THEME_RESOLVED_ID) return themeCss
-      if (id === THEMES_MANIFEST_RESOLVED_ID)
+      if (id === THEMES_MANIFEST_VIRTUAL_ID)
         return buildThemesManifestModule(theme)
       return null
     },
@@ -178,11 +181,8 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
       const dir = join(root, '.sireno-deck')
       if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
       const filePath = join(dir, 'theme.css')
-      const themeDir = theme ? dirname(theme.manifestPath) : null
-      const uiDir = themeDir ? join(themeDir, '..', '..', 'ui') : null
-      const sourceDirs = [themeDir, uiDir].filter(Boolean) as string[]
-      const sourceDirective =
-        sourceDirs.map((d) => `@source "${d}/**/*.{ts,tsx}";`).join('\n') + '\n'
+      const uiDir = join(root, '..', '..', 'src', 'ui')
+      const sourceDirective = `@source "${root}/**/*.{ts,tsx}";\n@source "${uiDir}/**/*.{ts,tsx}";\n`
       writeFileSync(filePath, sourceDirective + themeCss, 'utf8')
     },
     config: (config) => {

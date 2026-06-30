@@ -1,5 +1,7 @@
 import { exec } from 'node:child_process'
 import { homedir, platform } from 'node:os'
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { resolve as resolvePath, join } from 'node:path'
 
 import type pino from 'pino'
 
@@ -39,6 +41,7 @@ import {
   spawnFrontendVite,
   resolveFrontendCwd,
   buildDeckConfigMessage,
+  findWorkspaceRoot,
 } from './emulator-mode'
 import {
   collectBuiltinAddonRegistry,
@@ -92,6 +95,7 @@ export interface PreflightResult {
   readonly runtime: Runtime
   readonly decks: ReadonlyArray<RuntimeDeck>
   readonly theme: { name: string; apiVersion: number }
+  readonly themeDir: string
   readonly providers: {
     readonly activeApp: ActiveAppProvider
     readonly session: SessionProvider
@@ -163,13 +167,19 @@ export const preflight = async (
     )
   }
 
-  const { theme } = resolveActiveTheme(registry, { theme: config.theme })
+  const { theme, getCss } = resolveActiveTheme(registry, { theme: config.theme })
+  const themeDir: string = resolvePath(findWorkspaceRoot(), 'packages', 'cli', 'frontend')
+  const cssContent: string = getCss()
+  if (cssContent.length > 0) {
+    const cssDir = join(themeDir, '.sireno-deck')
+    if (!existsSync(cssDir)) mkdirSync(cssDir, { recursive: true })
+    writeFileSync(join(cssDir, 'theme.css'), cssContent, 'utf8')
+  }
+  process.env['SIRENO_THEME_DIR'] = themeDir
   process.env['SIRENO_THEME'] = JSON.stringify({
     name: theme.name,
-    cssPath: theme.cssPath,
-    frontendPath: theme.frontendPath,
     manifestPath: theme.manifestPath,
-    assetsStyles: theme.assetsStyles,
+    uiOverridesPath: theme.uiOverridesPath,
   })
   process.env['SIRENO_THEME_NAME'] = theme.name
 
@@ -286,6 +296,7 @@ export const preflight = async (
     runtime,
     decks,
     theme: { name: theme.name, apiVersion: theme.apiVersion },
+    themeDir,
     providers: { activeApp, session, keyMacro, media },
   }
 }
@@ -371,6 +382,7 @@ export const runRealModePipeline = async (
       readyTimeoutMs: 30_000,
       wsUrl: `ws://127.0.0.1:${wsPort}`,
       logger,
+      themeDir: preflightResult.themeDir,
     })
     frontendUrl = frontendVite.url
   }

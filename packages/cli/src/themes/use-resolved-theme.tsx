@@ -5,7 +5,6 @@ import type { LoadedTheme } from "@/addon/api";
 export interface ThemeContextValue {
   name: string;
   cssPath: string;
-  frontendPath: string;
   theme: LoadedTheme;
   colorTokens: Record<string, string> | null;
   typography: Record<string, unknown> | null;

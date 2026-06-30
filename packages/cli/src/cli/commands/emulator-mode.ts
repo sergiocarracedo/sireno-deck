@@ -43,7 +43,7 @@ export interface EmulatorModeHandle {
   stop(): Promise<void>
 }
 
-const findWorkspaceRoot = (): string => {
+export const findWorkspaceRoot = (): string => {
   const here = dirname(fileURLToPath(import.meta.url))
   let dir = here
   for (let i = 0; i < 8; i += 1) {
@@ -70,8 +70,9 @@ export const spawnFrontendVite = (options: {
   readyTimeoutMs: number
   logger: pino.Logger
   wsUrl?: string
+  themeDir?: string
 }): Promise<{ process: ChildProcess; url: string }> => {
-  const { port, cwd, pnpmCommand, readyTimeoutMs, logger, wsUrl } = options
+  const { port, cwd, pnpmCommand, readyTimeoutMs, logger, wsUrl, themeDir } = options
 
   return new Promise((resolve, reject) => {
     if (!existsSync(cwd)) {
@@ -81,6 +82,9 @@ export const spawnFrontendVite = (options: {
     const env: Record<string, string> = { ...process.env, FORCE_COLOR: '0' }
     if (wsUrl !== undefined) {
       env['SIRENO_WS_URL'] = wsUrl
+    }
+    if (themeDir !== undefined) {
+      env['SIRENO_THEME_DIR'] = themeDir
     }
     const viteBin = findWorkspaceRoot() + '/node_modules/.bin/vite'
     const child = spawn(
