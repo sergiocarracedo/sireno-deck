@@ -198,10 +198,16 @@ const scanAddonJsonManifest = (
     }
   }
 
+  const frontendEntry = existsSync(join(addonDir, "index.ts"))
+    ? join(addonDir, "index.ts")
+    : existsSync(join(addonDir, "index.tsx"))
+      ? join(addonDir, "index.tsx")
+      : null;
+
   return {
     name: addonName,
     types: Object.keys(buttonTypes),
-    frontendEntry: null,
+    frontendEntry,
     publishIntervalMs: null,
     pollerEntry: null,
     backendEntry,
