@@ -50,9 +50,9 @@ describe("buildAddonsRegistryModule", () => {
         buttons: [{ type: "core:weather" }],
       },
     ]);
-    expect(out).toContain('"core:time": { addonName: "date-time"');
-    expect(out).toContain('"core:date": { addonName: "date-time"');
-    expect(out).toContain('"core:weather": { addonName: "weather"');
+    expect(out).toContain('"date-time:time": { addonName: "date-time"');
+    expect(out).toContain('"date-time:date": { addonName: "date-time"');
+    expect(out).toContain('"weather:weather": { addonName: "weather"');
     expect(out).toContain("import * as date_time_frontend");
     expect(out).toContain("import * as weather_frontend");
   });
@@ -80,6 +80,6 @@ describe("buildAddonsRegistryModule", () => {
       },
     ]);
     expect(out).toContain("import * as _scope_my_addon_frontend");
-    expect(out).toContain('"core:foo": { addonName: "@scope/my-addon"');
+    expect(out).toContain('"@scope/my-addon:foo": { addonName: "@scope/my-addon"');
   });
 });

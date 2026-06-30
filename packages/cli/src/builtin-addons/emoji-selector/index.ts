@@ -18,17 +18,17 @@ export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: manifestJson.name,
   buttonTypes: {
-    "core:emoji-category-button": {
+    "emoji-selector:category": {
       frontend: categoryFrontend,
       backend: categoryBackend,
     },
-    "core:emoji-emoji-button": { frontend: emojiFrontend, backend: emojiBackend },
-    "core:emoji-launcher-button": {
+    "emoji-selector:emoji": { frontend: emojiFrontend, backend: emojiBackend },
+    "emoji-selector:launcher": {
       frontend: launcherFrontend,
       backend: launcherBackend,
     },
-    "core:emoji-back-button": { frontend: backFrontend, backend: backBackend },
-    "core:emoji-page-nav": { frontend: pageNavFrontend, backend: pageNavBackend },
+    "emoji-selector:back": { frontend: backFrontend, backend: backBackend },
+    "emoji-selector:page-nav": { frontend: pageNavFrontend, backend: pageNavBackend },
   },
   decks: {
     "emoji-selector": emojiSelectorDeckFactory,

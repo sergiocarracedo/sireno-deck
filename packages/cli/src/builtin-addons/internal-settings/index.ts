@@ -24,21 +24,21 @@ export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: manifestJson.name,
   buttonTypes: {
-    "core:settings-about": {
+    "internal-settings:about": {
       frontend: aboutFrontend,
       backend: buildBackend(aboutBackend, manifestJson.buttons[0]!),
     },
-    "core:settings-brightness": {
+    "internal-settings:brightness": {
       frontend: brightnessFrontend,
       backend: buildBackend(brightnessBackend, manifestJson.buttons[1]!),
     },
-    "core:settings-theme": {
+    "internal-settings:theme": {
       frontend: themeFrontend,
       backend: buildBackend(themeBackend, manifestJson.buttons[2]!),
     },
   },
   decks: {
-    settings: settingsDeck,
+    "internal-settings:settings": settingsDeck,
   },
 };
 

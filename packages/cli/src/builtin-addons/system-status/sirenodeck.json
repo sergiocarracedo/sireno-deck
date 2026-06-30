@@ -4,6 +4,6 @@
   "name": "system-status",
   "types": "./index.d.ts",
   "buttons": [
-    { "type": "core:system-status", "path": "buttons/system-status" }
+    { "type": "system-status:status", "path": "buttons/system-status" }
   ]
 }

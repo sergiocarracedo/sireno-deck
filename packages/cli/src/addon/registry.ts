@@ -81,11 +81,21 @@ export class AddonRegistry {
           `Duplicate button type '${buttonType}' in addon ${name}`,
         );
       }
+      if (!buttonType.startsWith(`${name}:`)) {
+        throw new Error(
+          `Button type '${buttonType}' in addon '${name}' must be prefixed with '${name}:'`,
+        );
+      }
       this.buttonsByType.set(buttonType, { addonName: name, def });
     }
     for (const [deckName, factory] of Object.entries(manifest.decks ?? {})) {
       if (this.decksByType.has(deckName)) {
         throw new Error(`Duplicate deck '${deckName}' in addon ${name}`);
+      }
+      if (!deckName.startsWith(`${name}:`)) {
+        throw new Error(
+          `Deck '${deckName}' in addon '${name}' must be prefixed with '${name}:'`,
+        );
       }
       const def: AddonDeckDefinition = {
         type: deckName,

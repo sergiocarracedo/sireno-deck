@@ -7,7 +7,7 @@
     { "type": "session:locked", "path": "decks/locked" }
   ],
   "buttons": [
-    { "type": "core:session-info", "path": "buttons/session-info" },
-    { "type": "session:time",      "path": "buttons/time", "internal": true }
+    { "type": "session:info",   "path": "buttons/session-info" },
+    { "type": "session:time",  "path": "buttons/time", "internal": true }
   ]
 }

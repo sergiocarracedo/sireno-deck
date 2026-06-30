@@ -4,6 +4,6 @@
   "name": "weather",
   "types": "./index.d.ts",
   "buttons": [
-    { "type": "core:weather", "path": "buttons/weather" }
+    { "type": "weather:weather", "path": "buttons/weather" }
   ]
 }

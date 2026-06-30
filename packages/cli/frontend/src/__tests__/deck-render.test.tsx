@@ -8,8 +8,8 @@ const DECK = {
   id: "main",
   name: "Home",
   buttons: [
-    { id: "b0", type: "core:change-deck", label: "Media", config: { deck: "media" } },
-    { id: "b1", type: "core:action", label: "Run", config: { command: "echo" } },
+    { id: "b0", type: "core-buttons:change-deck", label: "Media", config: { deck: "media" } },
+    { id: "b1", type: "core-buttons:action", label: "Run", config: { command: "echo" } },
   ],
 };
 
@@ -28,7 +28,7 @@ describe("Deck", () => {
         }}
       />,
     );
-    const frame = container.querySelector('[data-button-type="core:action"] [data-sireno-button-frame="true"]');
+    const frame = container.querySelector('[data-button-type="core-buttons:action"] [data-sireno-button-frame="true"]');
     expect(frame).not.toBeNull();
   });
 });

@@ -19,15 +19,15 @@ export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: manifestJson.name,
   buttonTypes: {
-    'core:date-time': { frontend: dateTimeFrontend, backend: dateTimeBackend },
-    'core:time': { frontend: timeFrontend, backend: timeBackend },
-    'core:date': { frontend: dateFrontend, backend: dateBackend },
-    'core:clock': { frontend: clockFrontend, backend: clockBackend },
-    'core:analog-clock': {
+    'date-time:date-time': { frontend: dateTimeFrontend, backend: dateTimeBackend },
+    'date-time:time': { frontend: timeFrontend, backend: timeBackend },
+    'date-time:date': { frontend: dateFrontend, backend: dateBackend },
+    'date-time:clock': { frontend: clockFrontend, backend: clockBackend },
+    'date-time:analog-clock': {
       frontend: analogClockFrontend,
       backend: analogClockBackend,
     },
-    'core:locked-time-tile': {
+    'date-time:locked-time-tile': {
       frontend: lockedTimeTileFrontend,
       backend: lockedTimeTileBackend,
     },

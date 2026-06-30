@@ -9,7 +9,7 @@ export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: manifestJson.name,
   buttonTypes: {
-    "core:value-display": {
+    "value-display:display": {
       frontend: valueDisplayFrontend,
       backend: valueDisplayBackend,
     },

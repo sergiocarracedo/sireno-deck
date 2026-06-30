@@ -13,15 +13,15 @@ export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: manifestJson.name,
   buttonTypes: {
-    "core:media-player": {
+    "media-player:player": {
       frontend: mediaPlayerFrontend,
       backend: mediaPlayerBackend,
     },
-    "core:media-mute": {
+    "media-player:mute": {
       frontend: mediaMuteFrontend,
       backend: mediaMuteBackend,
     },
-    "core:media-volume": {
+    "media-player:volume": {
       frontend: mediaVolumeFrontend,
       backend: mediaVolumeBackend,
     },

@@ -15,10 +15,10 @@ export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: manifestJson.name,
   buttonTypes: {
-    "core:action": { frontend: actionFrontend, backend: actionBackend },
-    "core:change-deck": { frontend: changeDeckFrontend, backend: changeDeckBackend },
-    "core:toggle": { frontend: toggleFrontend, backend: toggleBackend },
-    "core:media-sample": {
+    "core-buttons:action": { frontend: actionFrontend, backend: actionBackend },
+    "core-buttons:change-deck": { frontend: changeDeckFrontend, backend: changeDeckBackend },
+    "core-buttons:toggle": { frontend: toggleFrontend, backend: toggleBackend },
+    "core-buttons:media-sample": {
       frontend: mediaSampleFrontend,
       backend: mediaSampleBackend,
     },

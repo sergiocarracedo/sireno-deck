@@ -22,7 +22,7 @@ export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: manifestJson.name,
   buttonTypes: {
-    "core:session-info": {
+    "session:info": {
       frontend: sessionInfoFrontend,
       backend: sessionInfoBackend,
     },

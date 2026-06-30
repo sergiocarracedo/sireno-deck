@@ -33,10 +33,10 @@ describe("core-buttons addon", () => {
     })).default as { buttons: Array<{ type: string }> };
     const types = manifestJson.buttons.map((b) => b.type).sort();
     expect(types).toEqual([
-      "core:action",
-      "core:change-deck",
-      "core:media-sample",
-      "core:toggle",
+      "core-buttons:action",
+      "core-buttons:change-deck",
+      "core-buttons:media-sample",
+      "core-buttons:toggle",
     ]);
   });
 });

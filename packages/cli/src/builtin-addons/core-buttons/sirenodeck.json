@@ -4,9 +4,9 @@
   "name": "core-buttons",
   "types": "./index.d.ts",
   "buttons": [
-    { "type": "core:action",       "path": "buttons/action" },
-    { "type": "core:change-deck",  "path": "buttons/change-deck" },
-    { "type": "core:toggle",       "path": "buttons/toggle" },
-    { "type": "core:media-sample", "path": "buttons/media-sample" }
+    { "type": "core-buttons:action",       "path": "buttons/action" },
+    { "type": "core-buttons:change-deck",  "path": "buttons/change-deck" },
+    { "type": "core-buttons:toggle",       "path": "buttons/toggle" },
+    { "type": "core-buttons:media-sample", "path": "buttons/media-sample" }
   ]
 }

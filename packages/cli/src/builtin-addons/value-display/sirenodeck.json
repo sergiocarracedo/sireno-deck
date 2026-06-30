@@ -4,6 +4,6 @@
   "name": "value-display",
   "types": "./index.d.ts",
   "buttons": [
-    { "type": "core:value-display", "path": "buttons/value-display" }
+    { "type": "value-display:display", "path": "buttons/value-display" }
   ]
 }

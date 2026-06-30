@@ -12,23 +12,23 @@ export const manifest: NewAddonManifest = {
   name: "emoji-selector",
   frontend: { main: "./index" },
   buttonTypes: {
-    "core:emoji-category-button": {
+    "emoji-selector:category": {
       frontend: CategoryButtonFrontend,
       backend: categoryButtonBackend,
     },
-    "core:emoji-emoji-button": {
+    "emoji-selector:emoji": {
       frontend: EmojiButtonFrontend,
       backend: emojiButtonBackend,
     },
-    "core:emoji-launcher-button": {
+    "emoji-selector:launcher": {
       frontend: LauncherButtonFrontend,
       backend: launcherButtonBackend,
     },
-    "core:emoji-back-button": {
+    "emoji-selector:back": {
       frontend: BackButtonFrontend,
       backend: backButtonBackend,
     },
-    "core:emoji-page-nav": {
+    "emoji-selector:page-nav": {
       frontend: PageNavButtonFrontend,
       backend: pageNavButtonBackend,
     },

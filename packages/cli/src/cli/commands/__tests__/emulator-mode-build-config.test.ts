@@ -9,8 +9,8 @@ const deck: RuntimeDeck = {
   name: "Main",
   isMain: true,
   buttons: [
-    { id: "2", type: "core:time", config: { variant: "big" } },
-    { id: "3", type: "core:date" },
+    { id: "2", type: "date-time:time", config: { variant: "big" } },
+    { id: "3", type: "date-time:date" },
     { id: "unknown", type: "core:custom" },
   ],
 };
@@ -18,20 +18,20 @@ const deck: RuntimeDeck = {
 describe("buildDeckConfigMessage", () => {
   it("includes addonName and frontendEntry when the type is registered", () => {
     const addonByType: Map<string, AddonFrontendRef> = new Map([
-      ["core:time", { name: "date-time", frontendEntry: "/abs/date-time/frontend" }],
-      ["core:date", { name: "date-time", frontendEntry: "/abs/date-time/frontend" }],
+      ["date-time:time", { name: "date-time", frontendEntry: "/abs/date-time/frontend" }],
+      ["date-time:date", { name: "date-time", frontendEntry: "/abs/date-time/frontend" }],
     ]);
     const msg = buildDeckConfigMessage(deck, addonByType);
     const buttons = msg.surfaces["main"]!.buttons;
     expect(buttons[0]).toMatchObject({
       id: "2",
-      type: "core:time",
+      type: "date-time:time",
       addonName: "date-time",
       frontendEntry: "/abs/date-time/frontend",
     });
     expect(buttons[1]).toMatchObject({
       id: "3",
-      type: "core:date",
+      type: "date-time:date",
       addonName: "date-time",
       frontendEntry: "/abs/date-time/frontend",
     });
@@ -46,7 +46,7 @@ describe("buildDeckConfigMessage", () => {
 
   it("omits frontendEntry when the addon has no frontend", () => {
     const addonByType: Map<string, AddonFrontendRef> = new Map([
-      ["core:custom", { name: "custom-addon", frontendEntry: null }],
+      ["custom-addon:custom", { name: "custom-addon", frontendEntry: null }],
     ]);
     const msg = buildDeckConfigMessage(deck, addonByType);
     const buttons = msg.surfaces["main"]!.buttons;

@@ -9,7 +9,7 @@ export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: manifestJson.name,
   buttonTypes: {
-    "core:system-status": {
+    "system-status:status": {
       frontend: systemStatusFrontend,
       backend: systemStatusBackend,
     },

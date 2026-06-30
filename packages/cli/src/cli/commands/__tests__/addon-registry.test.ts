@@ -14,7 +14,7 @@ import {
 const scannedFixture: ReadonlyArray<ScannedAddon> = [
   {
     name: "date-time",
-    types: ["core:time", "core:date"],
+    types: ["date-time:time", "date-time:date"],
     frontendEntry: "/abs/date-time/frontend",
     publishIntervalMs: 1000,
     pollerEntry: null,

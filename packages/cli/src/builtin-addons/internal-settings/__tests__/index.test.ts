@@ -50,9 +50,9 @@ describe("internal-settings settings deck", () => {
       (b) => (b as { type: string }).type,
     );
     expect(types).toEqual([
-      "core:settings-brightness",
-      "core:settings-theme",
-      "core:settings-about",
+      "internal-settings:brightness",
+      "internal-settings:theme",
+      "internal-settings:about",
     ]);
   });
 });

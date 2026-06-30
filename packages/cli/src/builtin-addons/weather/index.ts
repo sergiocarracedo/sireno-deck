@@ -9,7 +9,7 @@ export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: manifestJson.name,
   buttonTypes: {
-    "core:weather": {
+    "weather:weather": {
       frontend: weatherFrontend,
       backend: weatherBackend,
     },

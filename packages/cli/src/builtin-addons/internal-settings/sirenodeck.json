@@ -4,11 +4,11 @@
   "name": "internal-settings",
   "types": "./index.d.ts",
   "decks": [
-    { "type": "settings", "path": "decks/settings" }
+    { "type": "internal-settings:settings", "path": "decks/settings" }
   ],
   "buttons": [
-    { "type": "core:settings-about",      "path": "buttons/about",      "internal": true },
-    { "type": "core:settings-brightness", "path": "buttons/brightness", "internal": true },
-    { "type": "core:settings-theme",      "path": "buttons/theme",      "internal": true }
+    { "type": "internal-settings:about",      "path": "buttons/about",      "internal": true },
+    { "type": "internal-settings:brightness", "path": "buttons/brightness", "internal": true },
+    { "type": "internal-settings:theme",      "path": "buttons/theme",      "internal": true }
   ]
 }

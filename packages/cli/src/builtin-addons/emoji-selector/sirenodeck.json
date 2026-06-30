@@ -7,10 +7,10 @@
     { "type": "emoji-selector", "path": "decks" }
   ],
   "buttons": [
-    { "type": "core:emoji-category-button", "path": "buttons/category" },
-    { "type": "core:emoji-emoji-button",     "path": "buttons/emoji" },
-    { "type": "core:emoji-launcher-button",  "path": "buttons/launcher" },
-    { "type": "core:emoji-back-button",      "path": "buttons/back" },
-    { "type": "core:emoji-page-nav",         "path": "buttons/page-nav" }
+    { "type": "emoji-selector:category",  "path": "buttons/category" },
+    { "type": "emoji-selector:emoji",     "path": "buttons/emoji" },
+    { "type": "emoji-selector:launcher",  "path": "buttons/launcher" },
+    { "type": "emoji-selector:back",      "path": "buttons/back" },
+    { "type": "emoji-selector:page-nav",  "path": "buttons/page-nav" }
   ]
 }

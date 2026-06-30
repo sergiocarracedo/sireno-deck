@@ -25,7 +25,7 @@ const buildPage = (
       emoji,
       label: emoji,
       position: offset,
-      type: "core:emoji-emoji-button",
+      type: "emoji-selector:emoji",
     });
   });
   if (totalPages > 1) {
@@ -34,7 +34,7 @@ const buildPage = (
     const nextDeckId =
       pageNumber < totalPages ? `${baseDeckId}-p${pageNumber + 1}` : null;
     buttons.push({
-      type: "core:emoji-page-nav",
+      type: "emoji-selector:page-nav",
       position: buttons.length,
       page: pageNumber,
       total_pages: totalPages,
@@ -84,7 +84,7 @@ const generateDecks = (
       label: category.label,
       position: idx,
       target_deck: firstDeckId,
-      type: "core:emoji-category-button",
+      type: "emoji-selector:category",
     });
     for (let pageNumber = 1; pageNumber <= totalPages; pageNumber += 1) {
       const start = (pageNumber - 1) * EMOJI_PAGE_SIZE;

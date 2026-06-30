@@ -4,6 +4,6 @@
   "name": "brightness",
   "types": "./index.d.ts",
   "buttons": [
-    { "type": "core:brightness", "path": "buttons/brightness" }
+    { "type": "brightness:brightness", "path": "buttons/brightness" }
   ]
 }

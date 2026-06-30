@@ -37,7 +37,7 @@ describe("validateFull", () => {
       decks: {
         main: {
           name: "Main",
-          buttons: [{ position: 0, type: "core:change-deck", config: { deck: "media" } }],
+          buttons: [{ position: 0, type: "core-buttons:change-deck", config: { deck: "media" } }],
         },
       },
     });
@@ -65,7 +65,7 @@ describe("validateFull", () => {
       decks: {
         main: {
           name: "Main",
-          buttons: [{ position: 0, type: "core:settings-brightness", config: {} }],
+          buttons: [{ position: 0, type: "internal-settings:brightness", config: {} }],
         },
       },
     });
@@ -79,7 +79,7 @@ describe("validateFull", () => {
       decks: {
         main: {
           name: "Main",
-          buttons: [{ position: 0, type: "core:action", config: { command: "" } }],
+          buttons: [{ position: 0, type: "core-buttons:action", config: { command: "" } }],
         },
       },
     });
