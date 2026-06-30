@@ -1,0 +1,26 @@
+packages/cli/src/cli/commands/__tests__/emulator-mode.test.ts
+  s_32e9e58a6a363a::t_f824a41a500f20 142-143,147-148
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_32e9e58a6a363a::t_12f440027945fe 85,87-93,203,205-211
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "bd75af894c02506b3fc403ecd4107f4e5953af69",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
