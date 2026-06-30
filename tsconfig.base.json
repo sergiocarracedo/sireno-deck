@@ -5,7 +5,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "types": ["node"],
+    "types": ["node", "vite/client"],
 
     "strict": true,
     "noUncheckedIndexedAccess": true,
@@ -21,7 +21,16 @@
     "noUncheckedSideEffectImports": false,
 
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+
+    "paths": {
+      "@/*": ["./packages/cli/src/*", "./packages/cli/frontend/src/*", "./packages/cli/emulator/src/*"]
+    }
   },
-  "include": ["packages/*/src", "packages/*/frontend/src", "vitest.config.ts"]
+  "include": [
+    "packages/*/src",
+    "packages/*/frontend/src",
+    "packages/*/emulator/src",
+    "vitest.config.ts"
+  ]
 }
