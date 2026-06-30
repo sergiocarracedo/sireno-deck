@@ -1,0 +1,93 @@
+packages/cli/src/vite/__tests__/virtual-modules.test.ts
+  s_32e9e58a6a363a::t_04112446c02220 53-55
+  s_32e9e58a6a363a::t_22999429b00956 83
+packages/cli/src/builtin-addons/brightness/sirenodeck.json
+  s_32e9e58a6a363a::t_ba5d252537535c 7
+packages/cli/src/builtin-addons/internal-settings/sirenodeck.json
+  s_32e9e58a6a363a::t_4fe740c3499f4d 7,10-12,14
+packages/cli/src/builtin-addons/core-buttons/__tests__/index.test.ts
+  s_32e9e58a6a363a::t_c864347fbecc54 36-39
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_32e9e58a6a363a::t_b2ea0f695c033d 22-26,30
+packages/cli/src/builtin-addons/internal-settings/__tests__/index.test.ts
+  s_32e9e58a6a363a::t_62db9ea42bfa9b 53-55
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  s_32e9e58a6a363a::t_5dcee06806f2e4 18-21
+packages/cli/src/builtin-addons/emoji-selector/decks/index.ts
+  s_32e9e58a6a363a::t_fe5040acec2826 87
+  s_32e9e58a6a363a::t_175bbe60141c9c 28
+  s_32e9e58a6a363a::t_0085fec416087e 37
+packages/cli/src/builtin-addons/brightness/index.ts
+  s_32e9e58a6a363a::t_1d927a81c59e72 12
+packages/cli/src/builtin-addons/session/sirenodeck.json
+  s_32e9e58a6a363a::t_9685e274a8a46a 10-11,13
+packages/cli/src/config/__tests__/validation.test.ts
+  s_32e9e58a6a363a::t_58c518a20b4eb2 68
+  s_32e9e58a6a363a::t_58b1f0a0d88d14 40
+  s_32e9e58a6a363a::t_6386990cf6f787 82
+packages/cli/src/builtin-addons/weather/index.ts
+  s_32e9e58a6a363a::t_6974e3acc424d2 12
+packages/cli/src/builtin-addons/core-buttons/sirenodeck.json
+  s_32e9e58a6a363a::t_4d0fb0534b0e4a 7-10,12
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_32e9e58a6a363a::t_40d9d81623e7bd 27,31,35,41
+packages/cli/src/builtin-addons/emoji-selector/sirenodeck.json
+  s_32e9e58a6a363a::t_fd5e14aa1f9e77 10-14,16
+packages/cli/src/builtin-addons/media-player/index.ts
+  s_32e9e58a6a363a::t_342ffc085127ca 16,20,24
+packages/cli/src/cli/commands/__tests__/emulator-mode-build-config.test.ts
+  s_32e9e58a6a363a::t_6400d222431b8b 12-13
+  s_32e9e58a6a363a::t_f67675787108c5 34
+  s_32e9e58a6a363a::t_d0ea0618cfb1db 21-22
+  s_32e9e58a6a363a::t_0bca49f75c97d4 28
+  s_32e9e58a6a363a::t_b6e936c1a06496 49
+packages/cli/src/builtin-addons/value-display/sirenodeck.json
+  s_32e9e58a6a363a::t_a39052e8f2c249 7
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_32e9e58a6a363a::t_800f32f9ba5ba9 21,25-26,30-31
+packages/cli/src/cli/commands/__tests__/addon-registry.test.ts
+  s_32e9e58a6a363a::t_e7b896d34deab1 17
+packages/cli/frontend/src/__tests__/deck-render.test.tsx
+  s_32e9e58a6a363a::t_5e9ce42dcb0148 11-12
+  s_32e9e58a6a363a::t_f1c8602f6886d5 31
+packages/cli/src/builtin-addons/media-player/sirenodeck.json
+  s_32e9e58a6a363a::t_0358782fe44b56 7-9,11
+packages/cli/src/builtin-addons/system-status/sirenodeck.json
+  s_32e9e58a6a363a::t_46e3a1fdc384a5 7,9
+packages/cli/src/builtin-addons/value-display/index.ts
+  s_32e9e58a6a363a::t_856827b0210ecc 12
+packages/cli/src/builtin-addons/emoji-selector/index.tsx
+  s_32e9e58a6a363a::t_11228bd932846e 15,19,23,27,31
+packages/cli/src/builtin-addons/session/index.ts
+  s_32e9e58a6a363a::t_07448b12c65344 25
+packages/cli/src/builtin-addons/weather/sirenodeck.json
+  s_32e9e58a6a363a::t_4b87306dd4bc35 7
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_32e9e58a6a363a::t_8a28bd7d12f027 12
+packages/cli/src/builtin-addons/internal-settings/decks/settings.ts
+  s_32e9e58a6a363a::t_5975fa7cd75579 6-8
+packages/cli/src/addon/registry.ts
+  s_32e9e58a6a363a::t_b1afb0347d13a2 95-99
+  s_32e9e58a6a363a::t_f8398ce7c672e3 84-88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "d014511e10747a0e1a7aa0ef21b6b0b66f2cf701",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
