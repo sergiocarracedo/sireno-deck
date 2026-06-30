@@ -1,0 +1,228 @@
+packages/cli/src/builtin-addons/weather/index.ts
+  s_32e9e58a6a363a::t_2a963b97cbd6e2 3-7,10,13-14,21
+packages/cli/src/builtin-addons/weather/buttons/weather/config.ts
+  s_32e9e58a6a363a::t_642180f824e70c 1-26
+packages/cli/src/builtin-addons/weather/buttons/weather/backend.ts
+  s_32e9e58a6a363a::t_a2db0174a9c224 1-10
+packages/cli/src/builtin-addons/emoji-selector/decks/index.ts
+  s_32e9e58a6a363a::t_d57e330b02d4c4 1-123
+packages/cli/src/builtin-addons/session/buttons/session-info/config.ts
+  s_32e9e58a6a363a::t_9379eebe0bf728 1-3
+packages/cli/src/builtin-addons/media-player/buttons/media-player/frontend.tsx
+  s_32e9e58a6a363a::t_1cb6097498e15b 1-37
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck/backend.ts
+  s_32e9e58a6a363a::t_9a2f88250528b3 1-19
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/backend.ts
+  s_32e9e58a6a363a::t_ef89f538e1c25d 1-8
+packages/cli/src/builtin-addons/session/buttons/session-info/frontend.tsx
+  s_32e9e58a6a363a::t_1611d22615c53b 1-2
+packages/cli/src/builtin-addons/weather/index.d.ts
+  s_32e9e58a6a363a::t_53c09efab54e19 1-5
+packages/cli/src/builtin-addons/value-display/sirenodeck.json
+  s_32e9e58a6a363a::t_50af35953cc1db 1-9
+packages/cli/src/builtin-addons/media-player/buttons/media-player/config.ts
+  s_32e9e58a6a363a::t_f130faf296919a 1-3
+packages/cli/src/builtin-addons/emoji-selector/buttons/page-nav/backend.ts
+  s_32e9e58a6a363a::t_87b5b3a1e54cf7 1-8
+packages/cli/src/builtin-addons/brightness/index.d.ts
+  s_32e9e58a6a363a::t_e53d67c6d4810f 1-5
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock/frontend.tsx
+  s_32e9e58a6a363a::t_e67b3836968989 1-87
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_32e9e58a6a363a::t_8d3a985c191bca 3-17,20,22-25,27-28,31-32,39
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/frontend.tsx
+  s_32e9e58a6a363a::t_6505a53bea955b 1-12
+packages/cli/src/builtin-addons/media-player/buttons/media-mute/backend.ts
+  s_32e9e58a6a363a::t_42544e04d41555 1-11
+packages/cli/src/builtin-addons/media-player/buttons/media-volume/config.ts
+  s_32e9e58a6a363a::t_dfddda2b6e85ea 1-8
+packages/cli/src/builtin-addons/emoji-selector/index.d.ts
+  s_32e9e58a6a363a::t_658ef11ffd948a 1-5
+packages/cli/src/builtin-addons/media-player/buttons/media-volume/backend.ts
+  s_32e9e58a6a363a::t_a180feb449e37c 1-15
+packages/cli/src/builtin-addons/date-time/buttons/clock/config.ts
+  s_32e9e58a6a363a::t_a2ba38bf718867 1-8
+packages/cli/src/builtin-addons/date-time/buttons/time/config.ts
+  s_32e9e58a6a363a::t_e74e8333372a6f 1-7
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/frontend.tsx
+  s_32e9e58a6a363a::t_cec76ad032a16d 1-12
+packages/cli/src/builtin-addons/session/buttons/time/frontend.tsx
+  s_32e9e58a6a363a::t_6d44df7211539d 1-2
+packages/cli/src/builtin-addons/date-time/index.d.ts
+  s_32e9e58a6a363a::t_07ba67e05480ec 1-5
+packages/cli/src/builtin-addons/session/buttons/session-info/backend.ts
+  s_32e9e58a6a363a::t_07768a9d01f5df 1-8
+packages/cli/src/builtin-addons/date-time/buttons/date-time/frontend.tsx
+  s_32e9e58a6a363a::t_eb9d6a0d493440 1-22
+packages/cli/src/builtin-addons/date-time/buttons/date/backend.ts
+  s_32e9e58a6a363a::t_146cc2bbbbde88 1-10
+packages/cli/src/builtin-addons/core-buttons/index.d.ts
+  s_32e9e58a6a363a::t_025149b9e7d26c 1-5
+packages/cli/src/builtin-addons/weather/buttons/weather/frontend.tsx
+  s_32e9e58a6a363a::t_820709cfb317b2 1-94
+packages/cli/src/builtin-addons/date-time/sirenodeck.json
+  s_32e9e58a6a363a::t_24c1f4b99b17c1 1-14
+packages/cli/src/builtin-addons/emoji-selector/buttons/page-nav/config.ts
+  s_32e9e58a6a363a::t_76edc5f922ec9f 1-3
+packages/cli/src/builtin-addons/system-status/index.d.ts
+  s_32e9e58a6a363a::t_a4c09182cf5980 1-5
+packages/cli/src/builtin-addons/core-buttons/sirenodeck.json
+  s_32e9e58a6a363a::t_d2d9fa10fad208 1-12
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile/backend.ts
+  s_32e9e58a6a363a::t_7e057939cfad86 1-10
+packages/cli/src/builtin-addons/system-status/sirenodeck.json
+  s_32e9e58a6a363a::t_2fceadbe4de622 1-9
+packages/cli/src/builtin-addons/weather/sirenodeck.json
+  s_32e9e58a6a363a::t_5370d072217ad4 1-9
+packages/cli/src/builtin-addons/session/sirenodeck.json
+  s_32e9e58a6a363a::t_eb87d004174e6e 1-13
+packages/cli/src/builtin-addons/date-time/buttons/time/frontend.tsx
+  s_32e9e58a6a363a::t_7f6c6908d45f18 1-24
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle/config.ts
+  s_32e9e58a6a363a::t_f31813b46b4358 1-6
+packages/cli/src/builtin-addons/emoji-selector/buttons/back/frontend.tsx
+  s_32e9e58a6a363a::t_35204ca176077b 1-9
+packages/cli/src/builtin-addons/date-time/buttons/clock/backend.ts
+  s_32e9e58a6a363a::t_debc6ac0d360c3 1-10
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle/frontend.tsx
+  s_32e9e58a6a363a::t_8a231e6b3c64fd 1-2
+packages/cli/src/builtin-addons/emoji-selector/buttons/back/config.ts
+  s_32e9e58a6a363a::t_c43aedc8efc1bd 1-3
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  s_32e9e58a6a363a::t_37894bdce5ec12 1-83
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck/config.ts
+  s_32e9e58a6a363a::t_14299cd44cf44e 1-6
+packages/cli/src/builtin-addons/date-time/buttons/date/frontend.tsx
+  s_32e9e58a6a363a::t_12f6afd0769a30 1-51
+packages/cli/src/builtin-addons/media-player/buttons/media-player/backend.ts
+  s_32e9e58a6a363a::t_2ac2fae10f8183 1-9
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  s_32e9e58a6a363a::t_0abf60db13bd34 3-12,16,18-20,22-23,29-39
+packages/cli/src/builtin-addons/core-buttons/buttons/action/backend.ts
+  s_32e9e58a6a363a::t_efce283eeb4821 1-22
+packages/cli/src/builtin-addons/core-buttons/buttons/action/config.ts
+  s_32e9e58a6a363a::t_cdba45791c6b2b 1-7
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile/config.ts
+  s_32e9e58a6a363a::t_d5829b4a7a0611 1-15
+packages/cli/src/builtin-addons/value-display/index.ts
+  s_32e9e58a6a363a::t_d55bc27a141cdd 3-7,10,13-14,21
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_32e9e58a6a363a::t_80348583326eee 1-39
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock/config.ts
+  s_32e9e58a6a363a::t_819239364a48d2 1-3
+packages/cli/src/builtin-addons/core-buttons/buttons/action/frontend.tsx
+  s_32e9e58a6a363a::t_23248796753e58 1-2
+packages/cli/src/builtin-addons/date-time/buttons/clock/frontend.tsx
+  s_32e9e58a6a363a::t_f849128055bcac 1-39
+packages/cli/src/builtin-addons/media-player/index.d.ts
+  s_32e9e58a6a363a::t_522d1ab9761c1a 1-5
+packages/cli/src/builtin-addons/system-status/buttons/system-status/config.ts
+  s_32e9e58a6a363a::t_6e77fd90e02f49 1-39
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck/frontend.tsx
+  s_32e9e58a6a363a::t_a087e9e6dd037e 1-2
+packages/cli/src/builtin-addons/date-time/buttons/date/config.ts
+  s_32e9e58a6a363a::t_7a461138d4342e 1-8
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/frontend.tsx
+  s_32e9e58a6a363a::t_eab748b2cd8612 1-16
+packages/cli/src/builtin-addons/session/decks/locked.ts
+  s_32e9e58a6a363a::t_b9a57aa266cd36 1-14
+packages/cli/src/builtin-addons/core-buttons/__tests__/index.test.ts
+  s_32e9e58a6a363a::t_c14cd224d8cdd0 29-42
+  s_32e9e58a6a363a::t_a984de532d36a6 3-5
+packages/cli/src/builtin-addons/session/buttons/time/config.ts
+  s_32e9e58a6a363a::t_f4f2a39cc5cfd5 1-5
+packages/cli/src/builtin-addons/brightness/index.ts
+  s_32e9e58a6a363a::t_ac44b18117b0d3 3-7,10,13-14,21-22
+packages/cli/src/builtin-addons/brightness/buttons/brightness/config.ts
+  s_32e9e58a6a363a::t_a98740de2533e2 1-8
+packages/cli/src/builtin-addons/media-player/index.ts
+  s_32e9e58a6a363a::t_cafc7d9db058d6 3-11,14,17-18,21-22,25-26,33
+packages/cli/src/builtin-addons/system-status/buttons/system-status/backend.ts
+  s_32e9e58a6a363a::t_330b12805b1225 1-8
+packages/cli/src/builtin-addons/value-display/buttons/value-display/backend.ts
+  s_32e9e58a6a363a::t_6fbeef0e2958b5 1-8
+packages/cli/src/builtin-addons/emoji-selector/buttons/page-nav/frontend.tsx
+  s_32e9e58a6a363a::t_a3fef85a3dae6b 1-47
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/config.ts
+  s_32e9e58a6a363a::t_1f0f5973950edf 1-3
+packages/cli/src/builtin-addons/core-buttons/buttons/media-sample/config.ts
+  s_32e9e58a6a363a::t_70f61a5eaa5ce8 1-6
+packages/cli/src/builtin-addons/emoji-selector/buttons/back/backend.ts
+  s_32e9e58a6a363a::t_2ee20e1185d5fa 1-10
+packages/cli/src/builtin-addons/core-buttons/buttons/media-sample/backend.ts
+  s_32e9e58a6a363a::t_3b55a115780132 1-8
+packages/cli/src/builtin-addons/media-player/sirenodeck.json
+  s_32e9e58a6a363a::t_075865f70760b4 1-11
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/backend.ts
+  s_32e9e58a6a363a::t_d80e92dc0b283a 1-7
+packages/cli/src/builtin-addons/emoji-selector/sirenodeck.json
+  s_32e9e58a6a363a::t_1dd03563ae4ed1 1-16
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_32e9e58a6a363a::t_b4e3f2fed53483 3-7,10,13-14,21
+packages/cli/src/builtin-addons/brightness/buttons/brightness/backend.ts
+  s_32e9e58a6a363a::t_8af37b08f41eee 1-7,9-10,12-33
+  s_32e9e58a6a363a::t_3f9c1b92058118 8,11
+packages/cli/src/builtin-addons/value-display/buttons/value-display/config.ts
+  s_32e9e58a6a363a::t_31a4c73a83ec3c 1-35
+packages/cli/src/builtin-addons/date-time/buttons/date-time/backend.ts
+  s_32e9e58a6a363a::t_46cbd02015b53e 1-10
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/config.ts
+  s_32e9e58a6a363a::t_ab61954f417be8 1-3
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/config.ts
+  s_32e9e58a6a363a::t_86b50a54c83875 1-3
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile/frontend.tsx
+  s_32e9e58a6a363a::t_1aa0f3d5d6357b 1-50
+packages/cli/src/builtin-addons/session/index.ts
+  s_32e9e58a6a363a::t_d844d739a5f6f1 1,3,5-9,11,13-19,23,26-27,30-31,35,40
+packages/cli/src/builtin-addons/media-player/buttons/media-volume/frontend.tsx
+  s_32e9e58a6a363a::t_e2f4a28ba1bd1a 1-16
+packages/cli/src/builtin-addons/date-time/buttons/time/backend.ts
+  s_32e9e58a6a363a::t_582ffdcc043584 1-10
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle/backend.ts
+  s_32e9e58a6a363a::t_d0629128e48408 1-25
+packages/cli/src/builtin-addons/brightness/sirenodeck.json
+  s_32e9e58a6a363a::t_474f3f225ae1ae 1-9
+packages/cli/src/builtin-addons/media-player/buttons/media-mute/config.ts
+  s_32e9e58a6a363a::t_56ea1e633f41ae 1-3
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock/backend.ts
+  s_32e9e58a6a363a::t_82d738a0156218 1-10
+packages/cli/src/builtin-addons/core-buttons/buttons/media-sample/frontend.tsx
+  s_32e9e58a6a363a::t_3892842c42a11b 1-2
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/backend.ts
+  s_32e9e58a6a363a::t_677e7668139601 1-10
+packages/cli/src/builtin-addons/session/buttons/time/backend.ts
+  s_32e9e58a6a363a::t_5b1e63ae2de2db 1-7
+packages/cli/src/builtin-addons/media-player/buttons/media-mute/frontend.tsx
+  s_32e9e58a6a363a::t_dfb481ad3aead0 1-10
+packages/cli/src/builtin-addons/value-display/buttons/value-display/frontend.tsx
+  s_32e9e58a6a363a::t_5e42a506f4f266 1-47
+packages/cli/src/builtin-addons/session/index.d.ts
+  s_32e9e58a6a363a::t_b2135491da29c2 1-5
+packages/cli/src/builtin-addons/date-time/buttons/date-time/config.ts
+  s_32e9e58a6a363a::t_7b95c9334f20fd 1-7
+packages/cli/src/builtin-addons/value-display/index.d.ts
+  s_32e9e58a6a363a::t_fe08b6f0129a29 1-5
+packages/cli/src/builtin-addons/brightness/buttons/brightness/frontend.tsx
+  s_32e9e58a6a363a::t_dc3f3f8a86b72c 1-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "8a7a56ff7de33e66d041a0a865d1dd75e7a821a1",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
