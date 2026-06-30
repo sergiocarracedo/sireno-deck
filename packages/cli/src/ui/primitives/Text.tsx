@@ -196,7 +196,7 @@ function renderRichTextNodes(
     } else if (isRichToneTag(node.tag)) {
       classNames.push(TONE_CLASS[node.tag])
     } else if (isRichSizeTag(node.tag)) {
-      classNames.push(SIZE_CLASS[node.tag], 'font-bold')
+      classNames.push(SIZE_CLASS[node.tag])
     }
 
     return (
