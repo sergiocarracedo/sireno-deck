@@ -1,0 +1,225 @@
+packages/cli/src/builtin-addons/date-time/buttons/date.frontend.tsx
+  s_32e9e58a6a363a::t_6403303f0d1bd7 1-50
+packages/cli/src/builtin-addons/emoji-selector/buttons/back.ts
+  s_32e9e58a6a363a::t_b1c1412100b547 1-12
+packages/cli/src/builtin-addons/session/__tests__/index.test.ts
+  s_32e9e58a6a363a::t_79028b9afb0ce6 6-8,12-16
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck.ts
+  s_32e9e58a6a363a::t_f316a0d3b4cecd 1-19
+packages/cli/src/builtin-addons/date-time/buttons/time.frontend.tsx
+  s_32e9e58a6a363a::t_d02c83284beb5e 3
+  s_32e9e58a6a363a::t_a7e8ee56646903 6
+  s_32e9e58a6a363a::t_9f4f3b03dd745b 1-2,4-5,7-30
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness.frontend.tsx
+  s_32e9e58a6a363a::t_1b8d7b4d268cc9 2-4
+  s_32e9e58a6a363a::t_81149831c951d9 1
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle.ts
+  s_32e9e58a6a363a::t_82e67f05dfef3d 1-23
+packages/cli/src/builtin-addons/emoji-selector/decks.ts
+  s_32e9e58a6a363a::t_e45e156a7aa670 1-116
+packages/cli/src/builtin-addons/brightness/buttons/brightness.ts
+  s_32e9e58a6a363a::t_fd36b7f3d72ee5 1-37
+packages/cli/src/builtin-addons/session/buttons/time.frontend.tsx
+  s_32e9e58a6a363a::t_7a594251f4797b 2-4
+  s_32e9e58a6a363a::t_81149831c951d9 1
+packages/cli/src/builtin-addons/value-display/buttons/value-display.ts
+  s_32e9e58a6a363a::t_fcda5d033ee588 1-33
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_32e9e58a6a363a::t_3068a9c0f4848e 13
+  s_32e9e58a6a363a::t_01afc32b53c7a4 41
+  s_32e9e58a6a363a::t_7d0784f11523af 1,3-8,10-12,14-29,36-37,40,42-44
+packages/cli/src/builtin-addons/core-buttons/buttons/media-sample.ts
+  s_32e9e58a6a363a::t_16f09807db9681 1-15
+packages/cli/src/builtin-addons/weather/buttons/weather.frontend.tsx
+  s_32e9e58a6a363a::t_d6c9a9eb453c78 3,15-42,50,55-59,68-70,72-73,76-78,81-83,86-88
+  s_32e9e58a6a363a::t_d02c83284beb5e 1
+  s_32e9e58a6a363a::t_8db63b551611b8 2
+packages/cli/src/builtin-addons/date-time/buttons/clock.ts
+  s_32e9e58a6a363a::t_4f411f899ceb59 1-19
+packages/cli/src/builtin-addons/media-player/components/MediaSurface.tsx
+  h_f90ee31b03fc41 1,3-4,7-12,16-21,33,56
+  s_32e9e58a6a363a::t_6c2a2153fe9117 2
+  s_32e9e58a6a363a::t_b5db31d124128f 40-46
+packages/cli/src/vite/virtual-modules.ts
+  s_32e9e58a6a363a::t_66d91c7e56764f 15
+  s_32e9e58a6a363a::t_2944726e09e0be 74,77-80,86-88,91-99
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_32e9e58a6a363a::t_885a95b6d5a044 1,3-14,16-18,20-49,51-56
+  s_32e9e58a6a363a::t_3068a9c0f4848e 19
+  s_32e9e58a6a363a::t_4309c78d7694bb 50
+packages/cli/src/builtin-addons/emoji-selector/buttons/all.frontend.tsx
+  s_32e9e58a6a363a::t_eb634ac6acef28 1-74
+packages/cli/src/builtin-addons/system-status/buttons/system-status.frontend.tsx
+  s_32e9e58a6a363a::t_8165fa8ed9e8ce 3,16,25-27,37-39,45-50,71-76
+  s_32e9e58a6a363a::t_d02c83284beb5e 1
+  s_32e9e58a6a363a::t_8db63b551611b8 2
+packages/cli/src/builtin-addons/weather/index.ts
+  s_32e9e58a6a363a::t_3068a9c0f4848e 9
+  s_32e9e58a6a363a::t_3bd924a5a9e477 21
+  s_32e9e58a6a363a::t_5243890812958e 1,3-4,6-8,10-20,22-23
+packages/cli/src/builtin-addons/emoji-selector/buttons/page-nav.ts
+  s_32e9e58a6a363a::t_f697cd46e957e4 1-10
+packages/cli/src/builtin-addons/emoji-selector/index.tsx
+  s_32e9e58a6a363a::t_32192f2226ec06 1,3,5-10,16-19,21-42,44-45,49,51
+  s_32e9e58a6a363a::t_00904b7226e2ea 50
+  s_32e9e58a6a363a::t_d56d62bc7409e7 11-15
+  s_32e9e58a6a363a::t_3068a9c0f4848e 20
+packages/cli/src/builtin-addons/core-buttons/buttons/action.frontend.tsx
+  s_32e9e58a6a363a::t_81149831c951d9 1
+  s_32e9e58a6a363a::t_e71e34ddaee318 2-4
+packages/cli/src/builtin-addons/core-buttons/buttons/action.ts
+  s_32e9e58a6a363a::t_d2a64d409daa1d 1-23
+packages/cli/src/api/react/use-button-state.tsx
+  s_32e9e58a6a363a::t_d8fad9dcccdb75 1-19
+packages/cli/src/builtin-addons/internal-settings/buttons/about.ts
+  s_32e9e58a6a363a::t_555c89483f5c26 1-24
+packages/cli/src/builtin-addons/system-status/buttons/system-status.ts
+  s_32e9e58a6a363a::t_e816d0aef0ec04 1-52
+packages/cli/src/builtin-addons/date-time/buttons/time.ts
+  s_32e9e58a6a363a::t_ebb0c79e248481 1-18
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile.ts
+  s_32e9e58a6a363a::t_ab9386dc9e46fa 1-26
+packages/cli/src/builtin-addons/session/buttons/time.ts
+  s_32e9e58a6a363a::t_1fe536d6bc169d 1-14
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji.ts
+  s_32e9e58a6a363a::t_28948b4cb6884f 1-9
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck.frontend.tsx
+  s_32e9e58a6a363a::t_81149831c951d9 1
+  s_32e9e58a6a363a::t_7f9a53140eb7f0 2-4
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher.ts
+  s_32e9e58a6a363a::t_2e5672254dba75 1-12
+packages/cli/src/builtin-addons/date-time/buttons/date-time.ts
+  s_32e9e58a6a363a::t_e9a2ad396e517b 1-18
+packages/cli/src/builtin-addons/internal-settings/buttons/about.frontend.tsx
+  s_32e9e58a6a363a::t_81149831c951d9 1
+  s_32e9e58a6a363a::t_585a846f282ba9 2-4
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock.ts
+  s_32e9e58a6a363a::t_f8c664733784b0 1-14
+packages/cli/src/builtin-addons/brightness/index.ts
+  s_32e9e58a6a363a::t_c01d65ba0d2556 1,3-8,10-18,20,22-24
+  s_32e9e58a6a363a::t_3068a9c0f4848e 9
+  s_32e9e58a6a363a::t_38577023f2aa92 25
+packages/cli/src/builtin-addons/weather/buttons/weather.ts
+  s_32e9e58a6a363a::t_240d7f30a5dd86 1-37
+packages/cli/src/builtin-addons/internal-settings/__tests__/index.test.ts
+  s_32e9e58a6a363a::t_07ee0ed491ccb6 6-8,11-18,22-29
+packages/cli/src/builtin-addons/value-display/buttons/value-display.frontend.tsx
+  s_32e9e58a6a363a::t_15392a3e4ded4b 3,15-16,20-25,34-36,39
+  s_32e9e58a6a363a::t_8db63b551611b8 2
+  s_32e9e58a6a363a::t_6c2a2153fe9117 1
+packages/cli/src/builtin-addons/date-time/frontend.tsx
+  s_32e9e58a6a363a::t_6c2a2153fe9117 3
+  h_f90ee31b03fc41 1-2,6-8,12-14,19-20,23,27-31,33,36,40-42,45,49,55,58-59,64,89,92,95,99-101,106,109-110,115-119,139,156,172,175,179,182-183,185,187,189,191,193-199,201-203,205-207,210-211,213-215,218,221-224,228-229,232-233,236-237,252-253,256,260-261,263-270,278,280,283-284,287-295,297
+  s_32e9e58a6a363a::t_65d7754019a3e6 22,24-26,67-76,79-85,122-126,128-133,137-138,140,144-149,154-155,157,161-166,241-247,272-277
+packages/cli/src/builtin-addons/internal-settings/buttons/theme.frontend.tsx
+  s_32e9e58a6a363a::t_81149831c951d9 1
+  s_32e9e58a6a363a::t_70f3caa5739f69 2-4
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness.ts
+  s_32e9e58a6a363a::t_a26e41b5063b4c 1-13
+packages/cli/src/addon/registry.ts
+  s_32e9e58a6a363a::t_0f6428d5d5497d 2,5,15-19,23-29,41-75,78-82,84,86-88,90-97,109-111,115-117
+packages/cli/src/builtin-addons/date-time/buttons/date.ts
+  s_32e9e58a6a363a::t_dbaa3cd575ec75 1-19
+packages/cli/src/builtin-addons/media-player/index.ts
+  s_32e9e58a6a363a::t_37e021f959f2ec 1,3-11,14-16,18-34,36,38-41
+  s_32e9e58a6a363a::t_3068a9c0f4848e 17
+packages/cli/src/addon/api.ts
+  s_32e9e58a6a363a::t_350624ec4d53a9 1,100-143
+  s_32e9e58a6a363a::t_c812a69c9b522a 144
+packages/cli/src/builtin-addons/core-buttons/frontend.tsx
+  s_32e9e58a6a363a::t_6c2a2153fe9117 1
+  h_f90ee31b03fc41 4-5,9,11,13,20,27-28,30
+  s_32e9e58a6a363a::t_9d33398d749f07 10,16-18
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  s_32e9e58a6a363a::t_19f17734bff75a 1,3-10,12,16-33,36,38-41
+  s_32e9e58a6a363a::t_3068a9c0f4848e 15
+  s_32e9e58a6a363a::t_b7e975bd6d30af 37
+packages/cli/src/builtin-addons/date-time/buttons/date-time.frontend.tsx
+  s_32e9e58a6a363a::t_d02c83284beb5e 3
+  s_32e9e58a6a363a::t_a7e8ee56646903 6
+  s_32e9e58a6a363a::t_c0e00f96d2d2ee 1-2,4-5,7-29
+packages/cli/src/builtin-addons/internal-settings/buttons/theme.ts
+  s_32e9e58a6a363a::t_ccca089a84ff1d 1-13
+packages/cli/src/builtin-addons/core-buttons/__tests__/index.test.ts
+  s_32e9e58a6a363a::t_5cf449b5afd656 4-6
+  s_32e9e58a6a363a::t_34947aaa0bc8e6 9-11,15,20,25
+packages/cli/src/config/validation.ts
+  s_32e9e58a6a363a::t_fd99b6ff568b88 89,98
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock.frontend.tsx
+  s_32e9e58a6a363a::t_5f42d6dc4af94d 1-82
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile.frontend.tsx
+  s_32e9e58a6a363a::t_d02c83284beb5e 3
+  s_32e9e58a6a363a::t_b7a2fcb9136e3b 1-2,4-50
+packages/cli/src/builtin-addons/date-time/buttons/clock.frontend.tsx
+  s_32e9e58a6a363a::t_dbac99282dfb1c 1-2,4-39
+  s_32e9e58a6a363a::t_d02c83284beb5e 3
+packages/cli/src/builtin-addons/brightness/buttons/brightness.frontend.tsx
+  s_32e9e58a6a363a::t_04bc3c83ddd1f2 3,10-12,15-20,29-34,40
+  s_32e9e58a6a363a::t_6c2a2153fe9117 1
+  s_32e9e58a6a363a::t_8db63b551611b8 2
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_32e9e58a6a363a::t_3068a9c0f4848e 9
+  s_32e9e58a6a363a::t_72cf7c698050b4 1,3-4,6-8,10-20,22-23
+  s_32e9e58a6a363a::t_1a23dbcefb5dc8 21
+packages/cli/src/cli/commands/run.ts
+  h_f90ee31b03fc41 1-9,11-19,24-28,34-36,41-42,45-49,52-55,58,63-64,66-68,70,73-84,88-94,96-100,104-106,111-112,114-115,119-120,124,126,132,134,138,140,142-143,146,149,151-153,155,157-159,162-163,166-167,171-172,174-177,182-185,189-190,192,202,204,206,210-211,213,220,225,229,237-238,240,245,249-250,253-255,257,259-260,267,269-271,273,275,277,288-289,292,294,297-298,306-307,309,311-312,319-320,326,329,333-334,336,344-345,349,353,355-357,359,361,363,368,372-373,376,378,380-381,383,385-387,396,399,401-402,411-412,414,417,419-420,423,427,429-430,434-439,442-443,449,454,458,468-469,473,476-479,482-483,485-486,488-490,494-495,497,503-504,511,513,516,518-524,527-528,530,537-538,543,548,556,564,568,571,573,575-579,581-582,584,586,588,590,592-593,595,598-600,602,605,612,614-615,618-619,621,624,626-629,631,633
+  s_32e9e58a6a363a::t_d675ccb4b90a1b 318
+  s_32e9e58a6a363a::t_fb27ca44537313 536
+packages/cli/src/builtin-addons/session/index.ts
+  s_32e9e58a6a363a::t_022c9a1324bd29 1,3,5-26,30-42,45,47-49
+  s_32e9e58a6a363a::t_3068a9c0f4848e 29
+  s_32e9e58a6a363a::t_db7a8c64fc8370 46
+packages/cli/src/builtin-addons/value-display/index.ts
+  s_32e9e58a6a363a::t_3068a9c0f4848e 9
+  s_32e9e58a6a363a::t_96ae9753b06746 1,3-4,6-8,10-20,22-23
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle.frontend.tsx
+  s_32e9e58a6a363a::t_a5eda1fab54a3a 2-4
+  s_32e9e58a6a363a::t_81149831c951d9 1
+packages/cli/src/cli/commands/addon-registry.ts
+  s_32e9e58a6a363a::t_b58c598963f1a5 59-60
+  s_32e9e58a6a363a::t_7cd1ac0e8e98f3 87-89
+  s_32e9e58a6a363a::t_a2329208745aff 113-114
+  s_32e9e58a6a363a::t_17582d2ab2a504 74
+  s_32e9e58a6a363a::t_50c979170e0985 48-49
+  s_32e9e58a6a363a::t_dd07d4754cb298 14
+  s_32e9e58a6a363a::t_e55cbb91e5e1ca 117-135
+packages/cli/src/builtin-addons/media-player/buttons/media-player.ts
+  s_32e9e58a6a363a::t_870fd26e730db0 1-40
+packages/cli/src/builtin-addons/media-player/buttons/media-player.frontend.tsx
+  s_32e9e58a6a363a::t_8db63b551611b8 2
+  s_32e9e58a6a363a::t_8e57cf96a56312 3-5,17,20-21,25-27,29-30,36-38,43-68
+  s_32e9e58a6a363a::t_6c2a2153fe9117 1
+packages/cli/src/builtin-addons/session/buttons/session-info.frontend.tsx
+  s_32e9e58a6a363a::t_81149831c951d9 1
+  s_32e9e58a6a363a::t_0c7f6530de07b1 2-4
+packages/cli/src/builtin-addons/core-buttons/buttons/media-sample.frontend.tsx
+  s_32e9e58a6a363a::t_81149831c951d9 1
+  s_32e9e58a6a363a::t_3073f001999953 2-4
+packages/cli/src/builtin-addons/emoji-selector/buttons/category.ts
+  s_32e9e58a6a363a::t_64772e919d3d8b 1-10
+packages/cli/src/builtin-addons/session/buttons/session-info.ts
+  s_32e9e58a6a363a::t_ca8c9256f04fd9 1-12
+packages/cli/src/api/react/index.ts
+  s_32e9e58a6a363a::t_49bcbbbfe6e7a7 3-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "cc869495c801e77b5d9064593c40aefd2df1bcd8",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
