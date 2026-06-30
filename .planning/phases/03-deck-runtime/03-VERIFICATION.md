@@ -31,7 +31,7 @@ The deck runtime that holds navigation state, overlay state, gesture machine, an
 | Plan 03: `integration.test.ts` ≥ 3 tests                              | ✅     | 3 tests                                             |
 | Total Phase 0+1+2+3 tests ≥ 150                                       | ✅     | **155 passing**                                     |
 | `pnpm typecheck` clean                                                | ✅     | yes                                                 |
-| `pnpm --filter sireno-deck-2 lint` clean                              | ✅     | 0 warnings, 0 errors                                |
+| `pnpm --filter sireno-deck lint` clean                                | ✅     | 0 warnings, 0 errors                                |
 | `pnpm format:check` clean                                             | ✅     | all 106 files conform                               |
 | No new runtime deps beyond execa                                      | ✅     | only execa ^9.6.0 added                             |
 | No imports from `@/deck`, `@/action`, `@/addon` in core               | ✅     | core stays decoupled                                |
@@ -56,7 +56,7 @@ pnpm exec vitest run
 pnpm typecheck
   (clean)
 
-pnpm --filter sireno-deck-2 lint
+pnpm --filter sireno-deck lint
   Found 0 warnings and 0 errors
 
 pnpm format:check

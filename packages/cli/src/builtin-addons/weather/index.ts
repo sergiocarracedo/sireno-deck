@@ -1,8 +1,6 @@
 import type { NewAddonManifest } from "@/addon/api";
 
-import { WeatherButtonFrontend } from "./buttons/weather.frontend";
-import { weatherButtonBackend } from "./buttons/weather";
-
+import { WeatherButtonFrontend, weatherButtonBackend } from "./buttons/weather";
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "weather",

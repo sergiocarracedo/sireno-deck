@@ -17,7 +17,7 @@ Goal: `config.yml` schema, loader with line-aware errors, `@file.yml` inline imp
 - `builtin-icons.ts` — `BUILTIN_CLI_ICONS: ReadonlySet<string>` (45 ids) + `defaultResolveHome`
 - `loader.ts` — `loadConfigFile`, `loadConfig`; YAML via `yaml.parseDocument` w/ `keepSourceTokens`; `ConfigLoadError` with `ConfigError[]` formatted via `formatLineCol`
 - `reference-expander.ts` — `expandButtonReferences(raw, configDir)`: walks `decks.*.buttons`, expands `^@(.+)$` entries recursively
-- `discovery.ts` — `findConfigPath`: `--config > $SIRENO_CONFIG > cwd/config.yml > $XDG_CONFIG_HOME/sireno-deck-2/config.yml`
+- `discovery.ts` — `findConfigPath`: `--config > $SIRENO_CONFIG > cwd/config.yml > $XDG_CONFIG_HOME/sireno-deck/config.yml`
 - `validation.ts` — `validateBootstrap(config)`: checks `decks.main` exists + scans duplicate positions. `BootstrapIssue[]` with `level: 'error' | 'warning'`
 - `index.ts` — barrel
 
@@ -59,7 +59,7 @@ Key:
 
 - `pnpm typecheck` → clean
 - `pnpm exec vitest run` → **69/69 passing** (8 cli + 38 config + 23 addon)
-- `pnpm --filter sireno-deck-2 lint` → 0 warnings, 0 errors
+- `pnpm --filter sireno-deck lint` → 0 warnings, 0 errors
 - `pnpm format:check` → all 41 files conform
 
 ## Bugs fixed during build
@@ -69,7 +69,7 @@ Key:
 - Zod schemas needed `.strict()` on every level to reject unknown keys (config validation tests required this).
 - Loader `validateModule` needed to unwrap `moduleValue.default ?? moduleValue` for `export default {...}` ESM addons.
 - `isLocalAddonSpec` initially treated `@scope/pkg` as local (contains `/`) → added early `@` check that only allows `@/` or `@\`.
-- Test `falls back to $XDG_CONFIG_HOME` needed `mkdirSync(join(xdg, "sireno-deck-2"), {recursive: true})` before writing config.
+- Test `falls back to $XDG_CONFIG_HOME` needed `mkdirSync(join(xdg, "sireno-deck"), {recursive: true})` before writing config.
 
 ## Traceability
 

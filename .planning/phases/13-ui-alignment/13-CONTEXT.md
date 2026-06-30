@@ -16,17 +16,17 @@ Replace the default theme's color palette, fonts, and component styling with the
 
 ### R-tokens — Color palette (value replacement)
 
-- **Replace all current --color-* values with the exact legacy values** from `/works/opensource/sireno-deck/packages/cli/frontend/public/__sireno/theme.css`:
+- **Replace all current --color-\* values with the exact legacy values** from `/works/opensource/sireno-deck/packages/cli/frontend/public/__sireno/theme.css`:
 
-  | Token            | Current (ours) | Legacy value  |
-  |-----------------|----------------|---------------|
-  | --color-bg      | #0a0a0a        | #2e3540       |
-  | --color-fg      | #fafafa        | #eef2f7       |
-  | --color-accent  | #38bdf8        | #7dd3fc (primary) |
-  | --color-muted   | #737373        | (keep or adjust)  |
-  | --color-bar     | #262626        | (keep or adjust)  |
-  | --color-ring    | #fafafa        | #eef2f7       |
-  | --color-tap     | #38bdf8        | #7dd3fc       |
+  | Token          | Current (ours) | Legacy value      |
+  | -------------- | -------------- | ----------------- |
+  | --color-bg     | #0a0a0a        | #2e3540           |
+  | --color-fg     | #fafafa        | #eef2f7           |
+  | --color-accent | #38bdf8        | #7dd3fc (primary) |
+  | --color-muted  | #737373        | (keep or adjust)  |
+  | --color-bar    | #262626        | (keep or adjust)  |
+  | --color-ring   | #fafafa        | #eef2f7           |
+  | --color-tap    | #38bdf8        | #7dd3fc           |
 
 - **Add new tokens** matching the legacy: `--color-frame: #53738B`, `--color-foreground-contrast: #000000`, `--color-success: #34d399`, `--color-danger: #FFB4AB`, `--color-primary: #7dd3fc`.
 - **Replace font families** with legacy values: `--font-mono: "IBM Plex Mono", ui-monospace, monospace`, `--font-main: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif`, `--font-aux: "IBM Plex Sans", ui-sans-serif, sans-serif`.
@@ -78,6 +78,7 @@ Replace the default theme's color palette, fonts, and component styling with the
 </specifics>
 
 <canonical_refs>
+
 ## Canonical References
 
 **Downstream agents MUST read these before planning or implementing.**
@@ -96,6 +97,7 @@ Replace the default theme's color palette, fonts, and component styling with the
 </canonical_refs>
 
 <code_context>
+
 ## Existing Code Insights
 
 ### Reusable Assets
@@ -109,7 +111,7 @@ Replace the default theme's color palette, fonts, and component styling with the
 - **Tailwind v4 `@theme`** for CSS custom properties. The theme CSS files are at `themes/default/theme.css` and `themes/light/theme.css`.
 - **Components export** from theme's `index.tsx` as `export const components = { Icon, Label, Text, TapIndicator, Chip }`.
 - **Surfaces export** from theme's `index.tsx` as `export const surfaces = { IconLabel, Bars, LabelValueList, SplitAction }`.
-- **Addon frontends** import from the theme: `import { Text } from "@sireno-deck-2/cli"` or directly from theme components.
+- **Addon frontends** import from the theme: `import { Text } from "@sireno-deck/cli"` or directly from theme components.
 
 ### Integration Points
 
@@ -129,5 +131,5 @@ Replace the default theme's color palette, fonts, and component styling with the
 
 ---
 
-*Phase: 13-ui-alignment*
-*Context gathered: 2026-06-27*
+_Phase: 13-ui-alignment_
+_Context gathered: 2026-06-27_

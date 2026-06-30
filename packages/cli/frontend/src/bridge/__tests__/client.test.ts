@@ -1,94 +1,102 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ChannelRegistry } from "sireno-deck-2/react";
-import { createWsClient } from "../client";
+import { ChannelRegistry } from 'sireno-deck/react'
+import { createWsClient } from '../client'
 
 class FakeWebSocket {
-  static OPEN = 1;
-  static CLOSED = 3;
-  static instances: FakeWebSocket[] = [];
-  url: string;
-  readyState = 0;
-  sentFrames: string[] = [];
-  messageListeners: Array<(event: MessageEvent) => void> = [];
-  closeListeners: Array<() => void> = [];
-  openListeners: Array<() => void> = [];
-  errorListeners: Array<() => void> = [];
+  static OPEN = 1
+  static CLOSED = 3
+  static instances: FakeWebSocket[] = []
+  url: string
+  readyState = 0
+  sentFrames: string[] = []
+  messageListeners: Array<(event: MessageEvent) => void> = []
+  closeListeners: Array<() => void> = []
+  openListeners: Array<() => void> = []
+  errorListeners: Array<() => void> = []
 
   constructor(url: string) {
-    this.url = url;
-    FakeWebSocket.instances.push(this);
+    this.url = url
+    FakeWebSocket.instances.push(this)
   }
   send(frame: string): void {
-    this.sentFrames.push(frame);
+    this.sentFrames.push(frame)
   }
   close(): void {
-    this.readyState = FakeWebSocket.CLOSED;
-    for (const l of this.closeListeners) l();
+    this.readyState = FakeWebSocket.CLOSED
+    for (const l of this.closeListeners) l()
   }
   addEventListener(name: string, cb: unknown): void {
-    if (name === "open") this.openListeners.push(cb as () => void);
-    if (name === "close") this.closeListeners.push(cb as () => void);
-    if (name === "error") this.errorListeners.push(cb as () => void);
-    if (name === "message") this.messageListeners.push(cb as (event: MessageEvent) => void);
+    if (name === 'open') this.openListeners.push(cb as () => void)
+    if (name === 'close') this.closeListeners.push(cb as () => void)
+    if (name === 'error') this.errorListeners.push(cb as () => void)
+    if (name === 'message')
+      this.messageListeners.push(cb as (event: MessageEvent) => void)
   }
   emitOpen(): void {
-    this.readyState = FakeWebSocket.OPEN;
-    for (const l of this.openListeners) l();
+    this.readyState = FakeWebSocket.OPEN
+    for (const l of this.openListeners) l()
   }
   emitMessage(data: string): void {
-    for (const l of this.messageListeners) l({ data } as MessageEvent);
+    for (const l of this.messageListeners) l({ data } as MessageEvent)
   }
   emitClose(): void {
-    this.readyState = FakeWebSocket.CLOSED;
-    for (const l of this.closeListeners) l();
+    this.readyState = FakeWebSocket.CLOSED
+    for (const l of this.closeListeners) l()
   }
 }
 
 beforeEach(() => {
-  ChannelRegistry.resetForTests();
-  FakeWebSocket.instances = [];
-  (globalThis as unknown as { WebSocket: typeof FakeWebSocket }).WebSocket =
-    FakeWebSocket as unknown as typeof WebSocket;
-});
+  ChannelRegistry.resetForTests()
+  FakeWebSocket.instances = []
+  ;(globalThis as unknown as { WebSocket: typeof FakeWebSocket }).WebSocket =
+    FakeWebSocket as unknown as typeof WebSocket
+})
 afterEach(() => {
-  ChannelRegistry.resetForTests();
-  vi.useRealTimers();
-});
+  ChannelRegistry.resetForTests()
+  vi.useRealTimers()
+})
 
-describe("createWsClient", () => {
-  it("sends a hello on open", () => {
-    const client = createWsClient({ url: "ws://test" });
-    client.connect();
-    FakeWebSocket.instances[0]!.emitOpen();
-    expect(FakeWebSocket.instances[0]!.sentFrames[0]).toContain('"type":"hello"');
-  });
+describe('createWsClient', () => {
+  it('sends a hello on open', () => {
+    const client = createWsClient({ url: 'ws://test' })
+    client.connect()
+    FakeWebSocket.instances[0]!.emitOpen()
+    expect(FakeWebSocket.instances[0]!.sentFrames[0]).toContain(
+      '"type":"hello"',
+    )
+  })
 
-  it("publishes incoming state messages to the channel registry", () => {
-    const client = createWsClient({ url: "ws://test" });
-    client.connect();
-    const ws = FakeWebSocket.instances[0]!;
-    ws.emitOpen();
-    ws.emitMessage(JSON.stringify({ type: "state", channels: { cpu: { usage: 0.5 } } }));
-    expect(ChannelRegistry.instance().last("cpu")).toEqual({ usage: 0.5 });
-  });
+  it('publishes incoming state messages to the channel registry', () => {
+    const client = createWsClient({ url: 'ws://test' })
+    client.connect()
+    const ws = FakeWebSocket.instances[0]!
+    ws.emitOpen()
+    ws.emitMessage(
+      JSON.stringify({ type: 'state', channels: { cpu: { usage: 0.5 } } }),
+    )
+    expect(ChannelRegistry.instance().last('cpu')).toEqual({ usage: 0.5 })
+  })
 
-  it("emits open status via onStatus", () => {
-    const statuses: string[] = [];
-    const client = createWsClient({ url: "ws://test", onStatus: (s) => statuses.push(s) });
-    client.connect();
-    expect(statuses.at(-1)).toBe("connecting");
-    FakeWebSocket.instances[0]!.emitOpen();
-    expect(statuses).toContain("open");
-  });
+  it('emits open status via onStatus', () => {
+    const statuses: string[] = []
+    const client = createWsClient({
+      url: 'ws://test',
+      onStatus: (s) => statuses.push(s),
+    })
+    client.connect()
+    expect(statuses.at(-1)).toBe('connecting')
+    FakeWebSocket.instances[0]!.emitOpen()
+    expect(statuses).toContain('open')
+  })
 
-  it("close prevents reconnect", () => {
-    vi.useFakeTimers();
-    const client = createWsClient({ url: "ws://test", backoffMs: [10] });
-    client.connect();
-    FakeWebSocket.instances[0]!.emitClose();
-    client.close();
-    vi.advanceTimersByTime(100);
-    expect(FakeWebSocket.instances.length).toBe(1);
-  });
-});
+  it('close prevents reconnect', () => {
+    vi.useFakeTimers()
+    const client = createWsClient({ url: 'ws://test', backoffMs: [10] })
+    client.connect()
+    FakeWebSocket.instances[0]!.emitClose()
+    client.close()
+    vi.advanceTimersByTime(100)
+    expect(FakeWebSocket.instances.length).toBe(1)
+  })
+})

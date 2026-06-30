@@ -23,7 +23,7 @@ Goal: establish a pnpm workspace with TypeScript 7.0 RC, oxlint + oxfmt, vitest,
 
 ### packages/cli
 
-- `package.json` — name `sireno-deck-2`, version 0.1.0, bin `sireno` → `./bin/sireno.js`, exports `.` `./api` `./react` `./vite`
+- `package.json` — name `sireno-deck`, version 0.1.0, bin `sireno` → `./bin/sireno.js`, exports `.` `./api` `./react` `./vite`
 - `tsconfig.json` — extends base, `paths: { "@/*": ["./src/*"] }`, types node
 - `bin/sireno.js` — spawns `node_modules/.bin/tsx` with `TSX_TSCONFIG_PATH` + cwd=packages/cli/
 - `.gitignore`
@@ -53,8 +53,8 @@ Goal: establish a pnpm workspace with TypeScript 7.0 RC, oxlint + oxfmt, vitest,
 
 - `pnpm typecheck` → clean
 - `pnpm exec vitest run` → 8/8 passing
-- `pnpm --filter sireno-deck-2 lint` → 0 warnings, 0 errors
-- `node bin/sireno.js --version` → `sireno-deck-2`
+- `pnpm --filter sireno-deck lint` → 0 warnings, 0 errors
+- `node bin/sireno.js --version` → `sireno-deck`
 - `node bin/sireno.js --help` → shows all 4 commands
 - `node bin/sireno.js status` → JSON log `daemon is not running`
 

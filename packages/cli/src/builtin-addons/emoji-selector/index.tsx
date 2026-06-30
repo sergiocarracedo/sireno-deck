@@ -1,18 +1,11 @@
 import type { NewAddonManifest } from "@/addon/api";
 
+import { BackButtonFrontend, backButtonBackend } from "./buttons/back";
+import { CategoryButtonFrontend, categoryButtonBackend } from "./buttons/category";
 import { emojiSelectorDeckFactory } from "./decks";
-import {
-  BackButtonFrontend,
-  CategoryButtonFrontend,
-  EmojiButtonFrontend,
-  LauncherButtonFrontend,
-  PageNavButtonFrontend,
-} from "./buttons/all.frontend";
-import { backButtonBackend } from "./buttons/back";
-import { categoryButtonBackend } from "./buttons/category";
-import { emojiButtonBackend } from "./buttons/emoji";
-import { launcherButtonBackend } from "./buttons/launcher";
-import { pageNavButtonBackend } from "./buttons/page-nav";
+import { EmojiButtonFrontend, emojiButtonBackend } from "./buttons/emoji";
+import { LauncherButtonFrontend, launcherButtonBackend } from "./buttons/launcher";
+import { PageNavButtonFrontend, pageNavButtonBackend } from "./buttons/page-nav";
 
 export const manifest: NewAddonManifest = {
   apiVersion: 3,

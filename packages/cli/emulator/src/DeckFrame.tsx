@@ -114,7 +114,6 @@ export const DeckFrame = ({
               className={[
                 'rounded-lg border border-white/10',
                 'bg-gradient-to-br from-black/40 via-black/20 to-white/5',
-                'backdrop-blur-[1px]',
                 'transition-all duration-75',
                 'hover:from-black/30 hover:via-black/10 hover:to-white/10',
                 isPressed

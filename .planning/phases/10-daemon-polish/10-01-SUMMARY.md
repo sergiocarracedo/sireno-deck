@@ -41,5 +41,5 @@ None. All 10 tasks implemented as planned.
 ## Notes for downstream
 
 - Plan 10-02 (npm addon loader) needs `cacheDir` passed to `loadAddons`. The `main.ts` flag `--local-node-modules` (planned for 10-02 Task 7) will pass that through.
-- The HTTP server reads `index.html` from `<cli>/frontend/dist/`. To enable the prod server in dev, the user must run `pnpm --filter sireno-deck-2-frontend build` once. The current dev path (vite dev on port 5180) is unchanged.
-- The `opencode.ai` plugin pattern (used as a reference for 10-02) caches to `~/.cache/opencode/node_modules/`. We mirror that to `~/.cache/sireno-deck-2/node_modules/`.
+- The HTTP server reads `index.html` from `<cli>/frontend/dist/`. To enable the prod server in dev, the user must run `pnpm --filter sireno-deck-frontend build` once. The current dev path (vite dev on port 5180) is unchanged.
+- The `opencode.ai` plugin pattern (used as a reference for 10-02) caches to `~/.cache/opencode/node_modules/`. We mirror that to `~/.cache/sireno-deck/node_modules/`.

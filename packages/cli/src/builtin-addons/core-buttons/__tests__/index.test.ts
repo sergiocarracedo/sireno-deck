@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import { coreButtonsAddon } from "../index";
-import { actionButtonBackend as ActionButtonBackend } from "../buttons/action";
-import { changeDeckButtonBackend as ChangeDeckButtonBackend } from "../buttons/change-deck";
-import { toggleButtonBackend as ToggleButtonBackend } from "../buttons/toggle";
+import { actionButtonBackend as ActionButtonBackend } from "../buttons/action/action";
+import { changeDeckButtonBackend as ChangeDeckButtonBackend } from "../buttons/change-deck/change-deck";
+import { toggleButtonBackend as ToggleButtonBackend } from "../buttons/toggle/toggle";
 
 describe("core-buttons addon", () => {
   it("manifest declares apiVersion 3 and the expected name", () => {

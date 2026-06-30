@@ -101,7 +101,7 @@ Existing tests updated:
 
 1. `pnpm test` — 397 passing.
 2. `pnpm typecheck` — clean.
-3. `pnpm --filter sireno-deck-2 lint` — clean.
+3. `pnpm --filter sireno-deck lint` — clean.
 4. Manual smoke: `node packages/cli/bin/sireno.js run --emulator --config /dev/null` (when emulator launches) → Vite starts with `SIRENO_THEME` env var → frontend renders the dark default theme + tokens.
 
 ## Decisions made

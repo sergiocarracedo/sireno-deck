@@ -48,7 +48,7 @@ Ship the v0.1.0 documentation release: a real, working README at the repo root t
 ### Agent's Discretion
 
 - The exact README sections + length (use whatever feels balanced; don't pad).
-- Whether to put a "Why sireno-deck-2?" intro at the top (probably yes, 2-3 sentences).
+- Whether to put a "Why sireno-deck?" intro at the top (probably yes, 2-3 sentences).
 - Whether to include a small `assets/` directory with a screenshot (skip unless trivial; agent's call).
 - The exact date format in CHANGELOG (ISO `YYYY-MM-DD` is conventional).
 
@@ -69,6 +69,7 @@ Ship the v0.1.0 documentation release: a real, working README at the repo root t
 </specifics>
 
 <canonical_refs>
+
 ## Canonical References
 
 **Downstream agents MUST read these before planning or implementing.**
@@ -83,6 +84,7 @@ Ship the v0.1.0 documentation release: a real, working README at the repo root t
 </canonical_refs>
 
 <code_context>
+
 ## Existing Code Insights
 
 ### Reusable Assets
@@ -95,7 +97,7 @@ Ship the v0.1.0 documentation release: a real, working README at the repo root t
 
 - **No `dist/` artifacts in the repo** — the README doesn't need a "Published on npm" section since the package is private.
 - **The CLI uses yargs for `--help` output** — the README's `sireno run --help` example can show the actual flags (`--emulator`, `--dev`, `--config`, `--device-model`, `--port`).
-- **The daemon's runtime dir is `$XDG_RUNTIME_DIR/sireno-deck-2/`** — document this in the README's "How it works" section so users can find the pid/token files for debugging.
+- **The daemon's runtime dir is `$XDG_RUNTIME_DIR/sireno-deck/`** — document this in the README's "How it works" section so users can find the pid/token files for debugging.
 
 ### Integration Points
 
@@ -120,5 +122,5 @@ Ship the v0.1.0 documentation release: a real, working README at the repo root t
 
 ---
 
-*Phase: 11-release*
-*Context gathered: 2026-06-27*
+_Phase: 11-release_
+_Context gathered: 2026-06-27_

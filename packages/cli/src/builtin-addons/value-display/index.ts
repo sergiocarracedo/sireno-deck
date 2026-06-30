@@ -1,8 +1,6 @@
 import type { NewAddonManifest } from "@/addon/api";
 
-import { ValueDisplayButtonFrontend } from "./buttons/value-display.frontend";
-import { valueDisplayButtonBackend } from "./buttons/value-display";
-
+import { ValueDisplayButtonFrontend, valueDisplayButtonBackend } from "./buttons/value-display";
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "value-display",

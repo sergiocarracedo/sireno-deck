@@ -1,13 +1,9 @@
 import type { NewAddonManifest } from "@/addon/api";
 
-import { ActionButtonFrontend } from "./buttons/action.frontend";
-import { ChangeDeckButtonFrontend } from "./buttons/change-deck.frontend";
-import { MediaSampleButtonFrontend } from "./buttons/media-sample.frontend";
-import { ToggleButtonFrontend } from "./buttons/toggle.frontend";
-import { actionButtonBackend } from "./buttons/action";
-import { changeDeckButtonBackend } from "./buttons/change-deck";
-import { mediaSampleButtonBackend } from "./buttons/media-sample";
-import { toggleButtonBackend } from "./buttons/toggle";
+import { ActionButtonFrontend, actionButtonBackend } from "./buttons/action";
+import { ChangeDeckButtonFrontend, changeDeckButtonBackend } from "./buttons/change-deck";
+import { MediaSampleButtonFrontend, mediaSampleButtonBackend } from "./buttons/media-sample";
+import { ToggleButtonFrontend, toggleButtonBackend } from "./buttons/toggle";
 
 export const manifest: NewAddonManifest = {
   apiVersion: 3,

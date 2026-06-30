@@ -2,10 +2,8 @@ import { z } from "zod";
 
 import type { AddonDeckFactory, NewAddonManifest } from "@/addon/api";
 
-import { SessionInfoButtonFrontend } from "./buttons/session-info.frontend";
-import { SessionTimeButtonFrontend } from "./buttons/time.frontend";
-import { sessionInfoButtonBackend } from "./buttons/session-info";
-import { sessionTimeButtonBackend } from "./buttons/time";
+import { SessionInfoButtonFrontend, sessionInfoButtonBackend } from "./buttons/session-info";
+import { SessionTimeButtonFrontend, sessionTimeButtonBackend } from "./buttons/time";
 
 const sessionLockedConfigSchema = z.object({
   timeFormat: z.string().default("HH:mm"),

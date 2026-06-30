@@ -24,17 +24,17 @@ result: pass
 
 ### 3. cli typecheck clean
 
-expected: `pnpm --filter sireno-deck-2 typecheck` exits 0.
+expected: `pnpm --filter sireno-deck typecheck` exits 0.
 result: pass
 
 ### 4. emulator typecheck clean
 
-expected: `pnpm --filter @sireno-deck-2/emulator typecheck` exits 0.
+expected: `pnpm --filter @sireno-deck/emulator typecheck` exits 0.
 result: pass
 
 ### 5. cli lint clean
 
-expected: `pnpm --filter sireno-deck-2 lint` reports 0 warnings, 0 errors.
+expected: `pnpm --filter sireno-deck lint` reports 0 warnings, 0 errors.
 result: pass
 
 ### 6. format clean

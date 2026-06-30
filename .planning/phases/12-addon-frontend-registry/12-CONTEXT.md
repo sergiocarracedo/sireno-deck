@@ -39,8 +39,8 @@ Closed: the gap between v0.1.0 (typed labels) and v0.2 (real surfaces).
   - `config` — the button's static config from `config.yml`.
   - `state` — the current payload from the addon's channel, or `null` until the first publish.
   - `onAction` — optional. Invokes a button action; the Deck wraps it in a `button-action` WS message. (For read-only surfaces, omit.)
-- **State hook**: addon uses `useAddonChannel<T>("<addon>:<key>")` from `sireno-deck-2/react`. Returns the latest payload.
-- **Action handler**: addon uses `useButtonAction(buttonId)` from `sireno-deck-2/react`. Returns `(action: string) => void`.
+- **State hook**: addon uses `useAddonChannel<T>("<addon>:<key>")` from `sireno-deck/react`. Returns the latest payload.
+- **Action handler**: addon uses `useButtonAction(buttonId)` from `sireno-deck/react`. Returns `(action: string) => void`.
 - **Shared theme tokens**: addon uses the same Tailwind classes (`bg-bar`, `text-fg`, etc.) the theme uses. The theme's CSS variables (`--color-bg`, `--color-fg`, `--color-bar`, `--color-accent`) are available globally.
 - **Shared theme components**: addon may import `<Text>`, `<Icon>`, `<Label>` from the active theme's manifest (`virtual:sireno/themes/manifest`). These are the same components the theme's primitives use.
 - **Style isolation**: addon styles must not leak outside the button. Use Tailwind utility classes; no global selectors.

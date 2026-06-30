@@ -156,7 +156,7 @@ Path aliases: tsc 7.0.1-rc forbids `baseUrl`; use relative paths or `@/` alias.
 
 Tests: colocated in `__tests__/`; cover behavior not implementation.
 
-Linting: `pnpm --filter sireno-deck-2 lint` (root lint OOMs).
+Linting: `pnpm --filter sireno-deck lint` (root lint OOMs).
 
 ## Open questions / risks
 

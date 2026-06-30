@@ -17,4 +17,4 @@ packages/cli/src/themes/light/index.js
 runtime/
 *.pid
 
-packages/cli/frontend/.sireno-deck-2/
+packages/cli/frontend/.sireno-deck/

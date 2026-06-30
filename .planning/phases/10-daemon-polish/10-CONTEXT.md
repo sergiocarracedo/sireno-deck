@@ -18,28 +18,28 @@ Closes R10 (prod side), R18, R19, R20.
 
 ### R18 — Daemon lifecycle
 
-- **Child tracking**: track WS bridge + vite child PIDs in `sireno-deck-2.children.json` alongside the PID + token files. `stop` SIGTERMs each tracked child, waits 5s, then SIGKILL.
-- **Token storage**: single `sireno-deck-2.token` file in `$XDG_RUNTIME_DIR` (or platform equivalent), 32 random bytes base64url-encoded, file mode `0600`. The daemon writes it at `start`; the HTTP server reads it per request.
+- **Child tracking**: track WS bridge + vite child PIDs in `sireno-deck.children.json` alongside the PID + token files. `stop` SIGTERMs each tracked child, waits 5s, then SIGKILL.
+- **Token storage**: single `sireno-deck.token` file in `$XDG_RUNTIME_DIR` (or platform equivalent), 32 random bytes base64url-encoded, file mode `0600`. The daemon writes it at `start`; the HTTP server reads it per request.
 - **Concurrent start**: `start` detects an already-running daemon (PID file + process alive) and prompts the user via `@inquirer/prompts`: "Daemon already running with pid X. [Stop and restart] [Cancel]?". No silent force-kill.
 - **Stop timeout**: SIGTERM, wait 5s, then SIGKILL. Applies to daemon and to all tracked children.
 
 ### R19 — npm addon loader
 
-- **Install location**: addons are installed to `~/.cache/sireno-deck-2/node_modules/` (primary), with a fallback to `<config-dir>/node_modules/` if the user opts in. Pattern follows opencode.ai plugins.
+- **Install location**: addons are installed to `~/.cache/sireno-deck/node_modules/` (primary), with a fallback to `<config-dir>/node_modules/` if the user opts in. Pattern follows opencode.ai plugins.
 - **Config syntax**: bare specifier → latest version; specifier with `@<range>` → pinned version. Examples:
   ```yaml
   addons:
-    - sireno-deck-2-addon-emoji        # latest
-    - sireno-deck-2-addon-weather@^1.0.0  # pinned
+    - sireno-deck-addon-emoji # latest
+    - sireno-deck-addon-weather@^1.0.0 # pinned
   ```
 - **Addon detection**: any npm package with a `sirenoAddonApiVersion` field in its `package.json` is treated as an addon. No naming convention enforced. Backward compatible with the existing local-folder addons.
-- **Install timing**: auto-install on first `start` or `run`. Idempotent. Cache the result in `~/.cache/sireno-deck-2/node_modules/` so subsequent runs are fast.
+- **Install timing**: auto-install on first `start` or `run`. Idempotent. Cache the result in `~/.cache/sireno-deck/node_modules/` so subsequent runs are fast.
 
 ### R20 + R10 prod — Production build + HTTP server
 
 - **Bundler**: rolldown. `pnpm build` bundles the CLI + the frontend (the existing `packages/cli/frontend/` vite app) into a single `dist/` directory.
 - **HTTP server**: Node's built-in `http` module. Serves `dist/frontend/` as static files. Adds a `/health` endpoint. No HTTPS, no compression (the user can put a reverse proxy in front).
-- **Token injection**: at request time, the server reads the current token from `$XDG_RUNTIME_DIR/sireno-deck-2.token` and injects `<script>window.__SIRENO_TOKEN__ = "..."</script>` before the bundle's `<script>` tag in `index.html`. This is a runtime mutation (in-memory copy served on each request), so the token rotates freely per `start` without rebuilding.
+- **Token injection**: at request time, the server reads the current token from `$XDG_RUNTIME_DIR/sireno-deck.token` and injects `<script>window.__SIRENO_TOKEN__ = "..."</script>` before the bundle's `<script>` tag in `index.html`. This is a runtime mutation (in-memory copy served on each request), so the token rotates freely per `start` without rebuilding.
 - **Server lifecycle**: `start` runs the daemon (WS bridge + children) AND the HTTP server in the same process. `stop` kills both. No separate `serve` subcommand in v0.1.
 
 ### Agent's Discretion
@@ -67,13 +67,14 @@ Closes R10 (prod side), R18, R19, R20.
 </specifics>
 
 <canonical_refs>
+
 ## Canonical References
 
 **Downstream agents MUST read these before planning or implementing.**
 
 - `packages/cli/src/util/daemon.ts` — existing `resolveDaemonPaths`, `writePid`, `readPid`, `isRunning`, `removePidFile`. Will be extended (not replaced) with `writeToken`, `readToken`, `writeChildren`, `readChildren`, `removeChildren`.
 - `packages/cli/src/cli/commands/start.ts`, `stop.ts`, `status.ts` — existing daemon command stubs. Will be rewritten to track children, prompt on conflict, and use the new daemon util functions.
-- `packages/cli/src/addon/loader.ts` — currently has a stub at line 186: `"npm addon loading is not yet implemented"`. Will be replaced with a real loader that uses `npm install` (or `pnpm add`) child-process to install to `~/.cache/sireno-deck-2/node_modules/`.
+- `packages/cli/src/addon/loader.ts` — currently has a stub at line 186: `"npm addon loading is not yet implemented"`. Will be replaced with a real loader that uses `npm install` (or `pnpm add`) child-process to install to `~/.cache/sireno-deck/node_modules/`.
 - `packages/cli/src/vite/virtual-modules.ts` — currently emits `virtual:sireno/token` from `SIRENO_TOKEN` env (dev path). Will be kept as the dev path; the prod path is the HTTP server's runtime HTML injection.
 - `packages/cli/package.json` — current `"build": "echo 'no bundler in phase 0' && exit 0"`. Will be replaced with a real rolldown build.
 - `.planning/PROJECT.md` R10, R18, R19, R20 — the four requirements this phase closes.
@@ -81,20 +82,24 @@ Closes R10 (prod side), R18, R19, R20.
 </canonical_refs>
 
 <code_context>
+
 ## Existing Code Insights
 
 ### Reusable Assets
+
 - `packages/cli/src/util/daemon.ts` — `resolveDaemonPaths()` (cross-platform XDG / Library / LocalAppData), `writePid`, `readPid`, `isRunning`, `removePidFile`. Extend, don't replace.
 - `@inquirer/prompts` — already a dep. Use for the conflict-confirmation prompt.
 - `node:http` — built-in. Use for the prod server.
 - `node:crypto` — built-in. Use for the 32-byte random token.
 
 ### Established Patterns
-- **Sub-path exports** (`.`, `./api`, `./react`, `./vite`): the bundler must produce a `sireno-deck-2/react` entry for the frontend bundle.
+
+- **Sub-path exports** (`.`, `./api`, `./react`, `./vite`): the bundler must produce a `sireno-deck/react` entry for the frontend bundle.
 - **WS protocol v3 with token handshake**: the `hello`/`hello-ack` is already implemented in `ws-bridge.ts`. The prod path reuses it; the only change is where the token comes from.
 - **Vite plugin (`sirenoDeck2`)**: the dev path uses it; the prod path doesn't. The plugin's `configResolved` hook writes the theme CSS to a file. The prod build needs to also bundle the addon frontends (phase 12 work, not this phase).
 
 ### Integration Points
+
 - `start` command → spawn WS bridge child + vite child → write pid/token/children files → start HTTP server.
 - `stop` command → read children file → SIGTERM each → wait 5s → SIGKILL → remove files.
 - `status` command → read pid file + token file + children file → show all three.
@@ -116,5 +121,5 @@ Closes R10 (prod side), R18, R19, R20.
 
 ---
 
-*Phase: 10-daemon-polish*
-*Context gathered: 2026-06-27*
+_Phase: 10-daemon-polish_
+_Context gathered: 2026-06-27_

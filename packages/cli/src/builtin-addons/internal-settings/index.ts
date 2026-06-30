@@ -1,11 +1,8 @@
 import type { NewAddonManifest } from "@/addon/api";
 
-import { AboutButtonFrontend } from "./buttons/about.frontend";
-import { BrightnessButtonFrontend } from "./buttons/brightness.frontend";
-import { ThemeButtonFrontend } from "./buttons/theme.frontend";
-import { aboutButtonBackend } from "./buttons/about";
-import { brightnessButtonBackend } from "./buttons/brightness";
-import { themeButtonBackend } from "./buttons/theme";
+import { AboutButtonFrontend, aboutButtonBackend } from "./buttons/about";
+import { BrightnessButtonFrontend, brightnessButtonBackend } from "./buttons/brightness";
+import { ThemeButtonFrontend, themeButtonBackend } from "./buttons/theme";
 
 export const manifest: NewAddonManifest = {
   apiVersion: 3,

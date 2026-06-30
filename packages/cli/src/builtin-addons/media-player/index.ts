@@ -1,16 +1,8 @@
 import type { NewAddonManifest } from "@/addon/api";
 
-import {
-  MediaMuteButtonFrontend,
-  MediaPlayerButtonFrontend,
-  MediaVolumeButtonFrontend,
-} from "./buttons/media-player.frontend";
-import {
-  mediaMuteButtonBackend,
-  mediaPlayerButtonBackend,
-  mediaVolumeButtonBackend,
-} from "./buttons/media-player";
-
+import { MediaMuteButtonFrontend, mediaMuteButtonBackend } from "./buttons/media-mute";
+import { MediaPlayerButtonFrontend, mediaPlayerButtonBackend } from "./buttons/media-player";
+import { MediaVolumeButtonFrontend, mediaVolumeButtonBackend } from "./buttons/media-volume";
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "media-player",
@@ -38,4 +30,8 @@ export default mediaPlayerAddon;
 export const MediaPlayerButtonBackend = mediaPlayerButtonBackend;
 export const MediaMuteButtonBackend = mediaMuteButtonBackend;
 export const MediaVolumeButtonBackend = mediaVolumeButtonBackend;
-export type { MediaPlayerButtonConfig, MediaMuteButtonConfig, MediaVolumeButtonConfig } from "./buttons/media-player";
+export type {
+  MediaPlayerButtonConfig,
+  MediaMuteButtonConfig,
+  MediaVolumeButtonConfig,
+} from "./buttons/media-player";

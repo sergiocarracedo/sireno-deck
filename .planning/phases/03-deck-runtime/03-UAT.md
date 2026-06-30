@@ -29,7 +29,7 @@ result: pass
 
 ### 4. Lint clean
 
-expected: `pnpm --filter sireno-deck-2 lint` reports 0 warnings, 0 errors.
+expected: `pnpm --filter sireno-deck lint` reports 0 warnings, 0 errors.
 result: pass
 
 ### 5. Format clean

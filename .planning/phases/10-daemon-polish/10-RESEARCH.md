@@ -13,6 +13,7 @@ date: 2026-06-27
 **Confidence: HIGH** — vite 6 is already installed (^6.0.0 in `frontend/package.json`); the `build` script is `vite build` (already exists at `packages/cli/frontend/package.json:6`). Rolldown is the default bundler.
 
 **How it works for us:**
+
 - `pnpm build` runs `vite build` in `packages/cli/frontend/`
 - Output: `packages/cli/frontend/dist/index.html` + `dist/assets/*.js,*.css`
 - The dev path (vite dev on port 5180) is unchanged
@@ -25,8 +26,9 @@ date: 2026-06-27
 **Confidence: HIGH** — `node:http` is built-in. No new deps.
 
 **Key behaviors:**
+
 - Read `index.html` once at startup (or on first request) → cache in memory
-- For each request to `/`: read the current token from `$XDG_RUNTIME_DIR/sireno-deck-2.token`; if found, inject `<script>window.__SIRENO_TOKEN__ = "..."</script>` before the `<script type="module" src="/assets/...">` tag
+- For each request to `/`: read the current token from `$XDG_RUNTIME_DIR/sireno-deck.token`; if found, inject `<script>window.__SIRENO_TOKEN__ = "..."</script>` before the `<script type="module" src="/assets/...">` tag
 - For requests to `/assets/*`: stream from `dist/assets/` with correct content-type
 - `/health` endpoint returns `{ "status": "ok" }` with HTTP 200
 - Bind to `127.0.0.1:<port>` (configurable; default `3939`)
@@ -53,13 +55,14 @@ date: 2026-06-27
 
 ## npm addon loader
 
-**Decision:** Replace the stub at `packages/cli/src/addon/loader.ts:186` with a real loader. Use `npm install <name>[@version] --prefix ~/.cache/sireno-deck-2/`.
+**Decision:** Replace the stub at `packages/cli/src/addon/loader.ts:186` with a real loader. Use `npm install <name>[@version] --prefix ~/.cache/sireno-deck/`.
 
 **Confidence: HIGH** — `execa` is already a dep (^9.6.0). `npm` is available on all target platforms.
 
 **Pattern (mirrors opencode.ai plugins):**
+
 1. CLI reads `config.yml`. For each addon entry that isn't a local path (no `/`, no `./`, no `~`), treat it as an npm specifier.
-2. Compute the install dir: `~/.cache/sireno-deck-2/node_modules/<name>/`. Check if the package's `package.json` exists there.
+2. Compute the install dir: `~/.cache/sireno-deck/node_modules/<name>/`. Check if the package's `package.json` exists there.
 3. If not, run `npm install <specifier> --prefix <cache-dir> --no-save --silent` via `execa`. The `--prefix` flag installs into the cache dir; `--no-save` because there's no `package.json` there yet; `--silent` for quiet output.
 4. After install, the package is at `<cache-dir>/node_modules/<name>/`. Resolve its `main` field from `package.json` (or `sirenoAddonMain` field if defined) and `import()` it.
 5. Validate the addon manifest (apiVersion, name, buttons/decks).
@@ -87,6 +90,7 @@ If "Cancel": exit 0.
 ## Graceful shutdown
 
 **Decision:** When the daemon receives SIGTERM (or `stop` is run), it:
+
 1. SIGTERM each tracked child PID (from children.json).
 2. Waits up to 5s for each child to exit. Poll every 100ms.
 3. SIGKILL any child still alive after 5s.
@@ -105,20 +109,20 @@ packages/cli/src/cli/commands/start.ts      # rewritten: tracks children, writes
 packages/cli/src/cli/commands/stop.ts       # rewritten: reads children, SIGTERMs each, waits 5s, SIGKILLs
 packages/cli/src/cli/commands/status.ts     # extended: shows token (truncated) + children
 packages/cli/src/cli/http-server.ts         # NEW: node:http static server + token injection + /health
-packages/cli/src/addon/loader.ts            # npm loading: install to ~/.cache/sireno-deck-2/node_modules/ via npm install --prefix
+packages/cli/src/addon/loader.ts            # npm loading: install to ~/.cache/sireno-deck/node_modules/ via npm install --prefix
 packages/cli/frontend/package.json          # verify "build": "vite build"
 ```
 
-## Tests (colocated in __tests__)
+## Tests (colocated in **tests**)
 
 - `packages/cli/src/util/daemon.test.ts` — token + children file read/write/remove; mode 0600
-- `packages/cli/src/cli/http-server.test.ts` — serves index.html with token injected; serves /assets/* with correct content-type; /health
+- `packages/cli/src/cli/http-server.test.ts` — serves index.html with token injected; serves /assets/\* with correct content-type; /health
 - `packages/cli/src/cli/commands/stop.test.ts` — SIGTERMs each child PID; SIGKILL after timeout
 - `packages/cli/src/addon/loader.test.ts` — npm specifier detection; mock `execa` for install; cached path skip
 
 ## Risks
 
-1. **`vite build` may fail on the `sirenoDeck2` plugin** — the plugin writes `.sireno-deck-2/theme.css` via `configResolved`. In build mode, the cwd is different. Mitigation: pass `outDir` and adjust the plugin's path resolution. Verify with a real `pnpm build`.
+1. **`vite build` may fail on the `sirenoDeck2` plugin** — the plugin writes `.sireno-deck/theme.css` via `configResolved`. In build mode, the cwd is different. Mitigation: pass `outDir` and adjust the plugin's path resolution. Verify with a real `pnpm build`.
 2. **`npm install` in `~/.cache` requires network access** — if offline, the install fails. Mitigation: surface the error in `start`'s preflight with a clear message; suggest the local-folder fallback.
 3. **Token rotation while running** — out of scope per CONTEXT. Users must restart to rotate.
 4. **HTTP server is single-process, single-port** — no clustering. For v0.1 this is fine.

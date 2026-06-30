@@ -1,4 +1,4 @@
-# sireno-deck-2 — Canonical Plan
+# sireno-deck — Canonical Plan
 
 > Single source of truth for the project. All decisions in this document are locked.
 > Reference legacy: `/works/opensource/sireno-deck` (used only for behavior reference, not as code base).
@@ -42,7 +42,7 @@ A small ecosystem — **CLI** (primary), website (later), desktop app (later) �
 ## 3. Repo Layout
 
 ```
-sireno-deck-2/
+sireno-deck/
 ├── package.json                  # root workspace
 ├── pnpm-workspace.yaml           # packages: ['packages/*']
 ├── tsconfig.base.json
@@ -54,7 +54,7 @@ sireno-deck-2/
 │   └── PLAN.md                   # this file
 └── packages/
     └── cli/
-        ├── package.json          # name: sireno-deck-2, bin: sireno
+        ├── package.json          # name: sireno-deck, bin: sireno
         ├── tsconfig.json
         ├── bin/sireno.js         # spawns tsx + cli/main.ts
         └── src/
@@ -78,10 +78,10 @@ sireno-deck-2/
 
 All cross-package code lives in `packages/cli`. Sub-path exports from CLI:
 
-- `sireno-deck-2` — main
-- `sireno-deck-2/api` — types + addon contract (Phase 3)
-- `sireno-deck-2/react` — react hooks/components for addons (Phase 3)
-- `sireno-deck-2/vite` — vite plugin for addon/theme injection (Phase 3)
+- `sireno-deck` — main
+- `sireno-deck/api` — types + addon contract (Phase 3)
+- `sireno-deck/react` — react hooks/components for addons (Phase 3)
+- `sireno-deck/vite` — vite plugin for addon/theme injection (Phase 3)
 
 ---
 
@@ -168,7 +168,7 @@ decks:
     background: ./bg/main.png # relative to config file
     buttons:
       - position: 0
-        type: "core:change-deck"
+        type: 'core:change-deck'
         config:
           deck: media
           icon: icon://play # resolved by resolveIconRef()
@@ -177,8 +177,8 @@ decks:
     name: Media
     paginated: true # optional (default false); chunks by keyCount-2
     buttons:
-      - type: "core:media-play-pause"
-      - type: "core:media-next"
+      - type: 'core:media-play-pause'
+      - type: 'core:media-next'
       # ...
   spotify-overlay:
     icon: icon://spotify
@@ -187,11 +187,11 @@ decks:
       process_name: [spotify] # or window_name:
     buttons:
       - position: 0
-        type: "core:media-play-pause"
+        type: 'core:media-play-pause'
 addons:
   - ./addons/local-clock # string → local
   - core-buttons # string → npm
-  - "@me/extra@1.2.0" # string → npm pinned
+  - '@me/extra@1.2.0' # string → npm pinned
   - source: ./addons/special # object → local, optional enabled
     enabled: false
 session:
@@ -234,11 +234,11 @@ resolveIconRef(ref: string, ctx: { configDir: string; builtinIconIds: string[] }
 // - 'addon://<addon>/<path>'    → resolve through third-party addon manifest
 ```
 
-45 CLI-builtin icon ids (stable library shipped with sireno-deck-2 core): `play, pause, stop, next, prev, settings, back, home, menu, wifi, bluetooth, volume-up, volume-down, volume-mute, battery-full, battery-half, battery-low, battery-charging, cpu, memory, clock, calendar, spotify, chrome, firefox, discord, slack, terminal, code, file, folder, download, upload, link, refresh, search, plus, minus, check, x, info, warning, error, help, more`.
+45 CLI-builtin icon ids (stable library shipped with sireno-deck core): `play, pause, stop, next, prev, settings, back, home, menu, wifi, bluetooth, volume-up, volume-down, volume-mute, battery-full, battery-half, battery-low, battery-charging, cpu, memory, clock, calendar, spotify, chrome, firefox, discord, slack, terminal, code, file, folder, download, upload, link, refresh, search, plus, minus, check, x, info, warning, error, help, more`.
 
 ### Config discovery order
 
-`--config` flag → `$SIRENO_CONFIG` env → `<cwd>/config.yml` → `$XDG_CONFIG_HOME/sireno-deck-2/config.yml` → null.
+`--config` flag → `$SIRENO_CONFIG` env → `<cwd>/config.yml` → `$XDG_CONFIG_HOME/sireno-deck/config.yml` → null.
 
 ---
 
@@ -259,17 +259,17 @@ resolveIconRef(ref: string, ctx: { configDir: string; builtinIconIds: string[] }
 
 ```ts
 defineAddonDeck({
-  type: "session-locked",
-  configSchema: z.object({ timeFormat: z.string().default("HH:mm") }),
+  type: 'session-locked',
+  configSchema: z.object({ timeFormat: z.string().default('HH:mm') }),
   createDecks: ({ config }) => ({
-    "session:locked": {
-      name: "Locked",
+    'session:locked': {
+      name: 'Locked',
       buttons: [
         /* internal-typed buttons */
       ],
     },
   }),
-});
+})
 ```
 
 ---
@@ -323,12 +323,12 @@ themes/default/
 ```yaml
 name: default
 colorTokens:
-  bg: "#0a0a0a"
-  fg: "#ffffff"
-  accent: "#3b82f6"
+  bg: '#0a0a0a'
+  fg: '#ffffff'
+  accent: '#3b82f6'
   # ... 8 tokens
 typography:
-  label: "Inter, system-ui, sans-serif"
+  label: 'Inter, system-ui, sans-serif'
   # ... 3 roles
 main: index.tsx
 buttonFrame: ButtonFrame.tsx
@@ -369,45 +369,45 @@ tailwind:
     "apiVersion": 3,
     "main": "./dist/index.js",
     "frontend": "./dist/frontend.js",
-    "peerDep": "sireno-deck-2 ^1.0.0"
+    "peerDep": "sireno-deck ^1.0.0"
   }
 }
 ```
 
-### Contract (`sireno-deck-2/api`)
+### Contract (`sireno-deck/api`)
 
 ```ts
-export const SIRENO_ADDON_API_VERSION = 3;
+export const SIRENO_ADDON_API_VERSION = 3
 
 export interface SirenoAddon {
-  apiVersion: 3;
-  name: string; // from manifest
-  buttons: AddonButtonTypeDefinition[];
-  decks?: AddonDeckDefinition[];
-  assets?: { styles?: string[] };
-  frontend?: { main: string; styles?: string[] };
+  apiVersion: 3
+  name: string // from manifest
+  buttons: AddonButtonTypeDefinition[]
+  decks?: AddonDeckDefinition[]
+  assets?: { styles?: string[] }
+  frontend?: { main: string; styles?: string[] }
 }
 
 export interface AddonButtonTypeDefinition {
-  type: string; // namespaced, e.g. 'core:change-deck'
-  internal?: boolean; // true = not usable in user config
-  configSchema: z.ZodTypeAny;
-  render: (ctx: ButtonRenderCtx) => React.ReactNode;
-  onTap?: (ctx: ButtonActionCtx) => void | Promise<void>;
-  onDblTap?: (ctx: ButtonActionCtx) => void | Promise<void>;
-  onHold?: (ctx: ButtonActionCtx) => void | Promise<void>;
-  defaultRenderIntervalMs?: number;
-  dispose?: () => void | Promise<void>;
-  full?: boolean; // opt out of ButtonFrame
+  type: string // namespaced, e.g. 'core:change-deck'
+  internal?: boolean // true = not usable in user config
+  configSchema: z.ZodTypeAny
+  render: (ctx: ButtonRenderCtx) => React.ReactNode
+  onTap?: (ctx: ButtonActionCtx) => void | Promise<void>
+  onDblTap?: (ctx: ButtonActionCtx) => void | Promise<void>
+  onHold?: (ctx: ButtonActionCtx) => void | Promise<void>
+  defaultRenderIntervalMs?: number
+  dispose?: () => void | Promise<void>
+  full?: boolean // opt out of ButtonFrame
 }
 
 export interface AddonDeckDefinition {
-  type: string;
-  configSchema?: z.ZodTypeAny;
+  type: string
+  configSchema?: z.ZodTypeAny
   createDecks: (ctx: {
-    config: ResolvedConfig;
-    deck?: AddonDeckInstance;
-  }) => Record<string, AddonGeneratedDeck>;
+    config: ResolvedConfig
+    deck?: AddonDeckInstance
+  }) => Record<string, AddonGeneratedDeck>
 }
 ```
 
@@ -441,10 +441,10 @@ Addons publish typed channels; buttons subscribe via `useAddonChannel`.
 
 ```ts
 // In an addon (system-status):
-methods.publish("system:cpu", { usage: 0.42, timestamp: Date.now() });
+methods.publish('system:cpu', { usage: 0.42, timestamp: Date.now() })
 
 // In a button render:
-const cpu = useAddonChannel<{ usage: number; timestamp: number }>("system:cpu");
+const cpu = useAddonChannel<{ usage: number; timestamp: number }>('system:cpu')
 ```
 
 - Channel registry lives in CLI; not exposed on WS as raw pub/sub.
@@ -488,9 +488,9 @@ server → client:  { type: 'hello-ack', version: 3, keyCount: number, config: <
 
 - Auto-generated on `start` (daemon); no token in `run` (dev).
 - CLI spawns vite as child process with `SIRENO_TOKEN=<token>` env var.
-- CLI vite plugin (`sireno-deck-2/vite`) exposes token via virtual module:
+- CLI vite plugin (`sireno-deck/vite`) exposes token via virtual module:
   ```ts
-  import { token } from "virtual:sireno/token";
+  import { token } from 'virtual:sireno/token'
   ```
 - Frontend imports the virtual module, sends token in `hello` handshake.
 - For prod (`dist/frontend/`), CLI serves via a small Node HTTP server that injects `<script>window.__SIRENO_TOKEN__='…'</script>` into `index.html`.
@@ -500,11 +500,11 @@ server → client:  { type: 'hello-ack', version: 3, keyCount: number, config: <
 ## 13. Frontend
 
 - Single React 19 app in `packages/cli/frontend/`.
-- Vite plugin (`sireno-deck-2/vite`) registers addon/theme folders via `vite.config.ts` virtual modules.
+- Vite plugin (`sireno-deck/vite`) registers addon/theme folders via `vite.config.ts` virtual modules.
 - WS client (`bridge/`) handles handshake, state subscriptions, method calls.
 - Per-deck render: `<Deck>` → `<ButtonFrame>` (unless button sets `full: true`) → button's `render(ctx)`.
 - HMR in dev mode; prebuilt `dist/frontend/` for prod.
-- Decoupled from CLI/emulator: shares only `bridge/` types via `sireno-deck-2/api`.
+- Decoupled from CLI/emulator: shares only `bridge/` types via `sireno-deck/api`.
 
 **Bundle contract for addons:** addon exports `frontend?: { main: string; styles?: string[] }` which the CLI vite plugin dynamically imports.
 
@@ -524,7 +524,7 @@ server → client:  { type: 'hello-ack', version: 3, keyCount: number, config: <
 ## 15. Hardware
 
 - CLI hardware controller: `@elgato-stream-deck/node` wrapper.
-- On start: enumerate devices. If zero → error. If one → use it. If multiple → interactive prompt (arrow keys via `@inquirer/prompts`), save selection to `$XDG_CONFIG_HOME/sireno-deck-2/device.json`.
+- On start: enumerate devices. If zero → error. If one → use it. If multiple → interactive prompt (arrow keys via `@inquirer/prompts`), save selection to `$XDG_CONFIG_HOME/sireno-deck/device.json`.
 - Playwright runs the frontend vite URL, calls `page.screenshot()` every 500 ms (configurable), crops with `sharp` into per-key buffers, writes via `fillKeyBuffer`.
 - Skip when buffer hash unchanged.
 - Gesture inference (tap / dbl-tap / hold) happens locally; only the inferred gesture is sent to WS bridge.
@@ -534,13 +534,13 @@ server → client:  { type: 'hello-ack', version: 3, keyCount: number, config: <
 
 ## 16. OS-specific
 
-| Concern        | Linux                                     | macOS                                          | Windows                         |
-| -------------- | ----------------------------------------- | ---------------------------------------------- | ------------------------------- |
-| Session lock   | `dbus-next` (screensaver interface)       | `osascript`                                    | PowerShell session API          |
-| Active app     | gnome-shell D-Bus + Wayland gnome variant | AppleScript `System Events`                    | UIA `GetForegroundWindow`       |
-| Key macro      | `xdotool` / `ydotool` / `dotool` (probe)  | AppleScript `keystroke`                        | PowerShell `SendKeys`           |
-| Media player   | `playerctl` (MPRIS)                       | `osascript` (Spotify/etc.)                     | PowerShell SMTC                 |
-| Daemon PID dir | `$XDG_RUNTIME_DIR` then `/tmp`            | `~/Library/Application Support/sireno-deck-2/` | `%LOCALAPPDATA%\sireno-deck-2\` |
+| Concern        | Linux                                     | macOS                                        | Windows                       |
+| -------------- | ----------------------------------------- | -------------------------------------------- | ----------------------------- |
+| Session lock   | `dbus-next` (screensaver interface)       | `osascript`                                  | PowerShell session API        |
+| Active app     | gnome-shell D-Bus + Wayland gnome variant | AppleScript `System Events`                  | UIA `GetForegroundWindow`     |
+| Key macro      | `xdotool` / `ydotool` / `dotool` (probe)  | AppleScript `keystroke`                      | PowerShell `SendKeys`         |
+| Media player   | `playerctl` (MPRIS)                       | `osascript` (Spotify/etc.)                   | PowerShell SMTC               |
+| Daemon PID dir | `$XDG_RUNTIME_DIR` then `/tmp`            | `~/Library/Application Support/sireno-deck/` | `%LOCALAPPDATA%\sireno-deck\` |
 
 ---
 
@@ -621,12 +621,12 @@ Recorded here for posterity; each was explicitly confirmed by the user.
 26. **Decks defined programmatically**: addons and core can define decks via `createDecks({ config, deck })` returning config-shape objects, with `internal: true` buttons allowed.
 27. **Emoji selector**: built-in button type that, on tap, navigates to the `emoji` deck provided by the emoji built-in addon via `createDecks`.
 28. **Gesture state machine outputs**: only `tap | dbl-tap | hold`. No `press-then-release`.
-29. **Device selection**: if multiple devices, interactive prompt with arrow keys, save to `$XDG_CONFIG_HOME/sireno-deck-2/device.json`.
+29. **Device selection**: if multiple devices, interactive prompt with arrow keys, save to `$XDG_CONFIG_HOME/sireno-deck/device.json`.
 30. **Linux active-app**: gnome-shell D-Bus + Wayland gnome variant (same as legacy).
 31. **Linux media-player**: `playerctl` (MPRIS).
 32. **Emulator `keyCount`**: auto from `--device-model` flag (mk2=15, plus=32, mini=6, xl=32).
 33. **WS token**: env var + virtual module. CLI spawns vite with `SIRENO_TOKEN` env var; vite plugin exposes via `virtual:sireno/token`. Prod CLI HTTP server injects `<script>window.__SIRENO_TOKEN__=…</script>` into `index.html`.
-34. **Addon peer-dep**: `sireno-deck-2 ^1.0.0`.
+34. **Addon peer-dep**: `sireno-deck ^1.0.0`.
 35. **Addon versioning**: `apiVersion` mismatch → warn but still load.
 36. **Multiple decks of same type**: merge by id.
 37. **Theme scoping**: global only, no per-deck override.
@@ -646,7 +646,7 @@ Recorded here for posterity; each was explicitly confirmed by the user.
 3. **WS bridge token injection in prod** — needs care; injected `<script>` must come before app bundle.
 4. **Pure Wayland (no gnome-shell)** — explicitly unsupported in v1.
 5. **Multi-device parallel** — v1 supports one device at a time; multi-device is a future phase.
-6. **oxlint OOM in this dev env** — root-level `oxlint packages` OOMs when scanning `node_modules` containing large config schemas. Workaround: per-package lint works fine (`pnpm --filter sireno-deck-2 lint`). May be host-specific.
+6. **oxlint OOM in this dev env** — root-level `oxlint packages` OOMs when scanning `node_modules` containing large config schemas. Workaround: per-package lint works fine (`pnpm --filter sireno-deck lint`). May be host-specific.
 
 ---
 
@@ -663,7 +663,7 @@ Recorded here for posterity; each was explicitly confirmed by the user.
 - Config schemas, icon resolver (4 schemes), YAML loader with line numbers, `@file.yml` expander, config discovery, bootstrap validation.
 - Addon manifest reader, entry normalization (string-or-object), local loader via dynamic `import()`, registry.
 - `ConfigWatcher` (chokidar v5) for hot-reload.
-- `pnpm typecheck` clean. `pnpm --filter sireno-deck-2 lint` clean. `pnpm format:check` clean.
+- `pnpm typecheck` clean. `pnpm --filter sireno-deck lint` clean. `pnpm format:check` clean.
 
 ### Deferred items (kept for tracking)
 

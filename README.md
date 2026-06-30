@@ -1,4 +1,4 @@
-# sireno-deck-2
+# sireno-deck
 
 CLI for managing Elgato Stream Deck devices via a config-driven deck system. Write a `config.yml`, register addons, and the same UI runs in the emulator, on real hardware, or behind a `pnpm build` HTTP server.
 
@@ -9,13 +9,13 @@ CLI for managing Elgato Stream Deck devices via a config-driven deck system. Wri
 pnpm install
 
 # Run the emulator (browser auto-opens)
-pnpm --filter sireno-deck-2 dev start --emulator
+pnpm --filter sireno-deck dev start --emulator
 
 # Stop it
-pnpm --filter sireno-deck-2 dev stop
+pnpm --filter sireno-deck dev stop
 
 # Or, run foreground (Ctrl-C to exit)
-pnpm --filter sireno-deck-2 dev run --emulator
+pnpm --filter sireno-deck dev run --emulator
 ```
 
 On first run, `dev` spawns the WS bridge + a vite dev server for the React 19 + Tailwind 4 frontend. The emulator shell opens at `http://127.0.0.1:52938/` and forwards button clicks to the runtime via WS.
@@ -39,7 +39,7 @@ decks:
       - position: 1
         type: core:action
         config:
-          command: "xdg-open https://example.com"
+          command: 'xdg-open https://example.com'
 
       - position: 4
         type: core:weather
@@ -87,10 +87,10 @@ sireno --version
 ```
 
 - `run` — foreground. Ctrl-C stops everything.
-- `start` — daemon. Writes PID + token + children files to `$XDG_RUNTIME_DIR/sireno-deck-2/`. Stop with `sireno stop`.
+- `start` — daemon. Writes PID + token + children files to `$XDG_RUNTIME_DIR/sireno-deck/`. Stop with `sireno stop`.
 - `--emulator` — render in browser instead of writing to real hardware.
 - `--dev` — use the vite dev server (faster iteration, no build needed).
-- `--http-port <N>` — port for the prod HTTP server (default 3939). Only starts when `pnpm --filter sireno-deck-2-frontend build` has been run.
+- `--http-port <N>` — port for the prod HTTP server (default 3939). Only starts when `pnpm --filter sireno-deck-frontend build` has been run.
 - `--device-model <mk2|plus|mini|xl>` — change the device layout. `mk2` is the default (15 keys, 5×3).
 
 ## How it works
@@ -136,7 +136,7 @@ Each builtin addon ships its own README with button types, config schema, and an
 - [`weather`](packages/cli/src/builtin-addons/weather/README.md) — `core:weather`
 - [`brightness`](packages/cli/src/builtin-addons/brightness/README.md) — `core:brightness`
 
-The addon API is at [`packages/cli/src/addon/api.ts`](packages/cli/src/addon/api.ts). To write a 3rd-party addon, package it as `npm`, set `sirenoAddonApiVersion` in `package.json`, and add its name to `config.yml`'s `addons:` list. The loader installs it to `~/.cache/sireno-deck-2/node_modules/` on first run.
+The addon API is at [`packages/cli/src/addon/api.ts`](packages/cli/src/addon/api.ts). To write a 3rd-party addon, package it as `npm`, set `sirenoAddonApiVersion` in `package.json`, and add its name to `config.yml`'s `addons:` list. The loader installs it to `~/.cache/sireno-deck/node_modules/` on first run.
 
 ## License
 

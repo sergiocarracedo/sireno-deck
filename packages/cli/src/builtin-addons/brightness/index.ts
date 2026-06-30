@@ -1,8 +1,6 @@
 import type { NewAddonManifest } from "@/addon/api";
 
-import { BrightnessButtonFrontend } from "./buttons/brightness.frontend";
-import { brightnessButtonBackend } from "./buttons/brightness";
-
+import { BrightnessButtonFrontend, brightnessButtonBackend } from "./buttons/brightness";
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "brightness",

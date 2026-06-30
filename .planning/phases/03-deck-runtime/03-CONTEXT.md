@@ -46,7 +46,7 @@ From `.planning/PLAN.md` §20 and §8:
 - `packages/cli/src/core/pagination.ts`
 - `packages/cli/src/action/executor.ts` (execa + `{{ host.* }}` interpolation)
 
-**Do not copy code directly.** Port the algorithms and timings; rewrite to fit sireno-deck-2's shape (smaller files, fewer lines, stricter types).
+**Do not copy code directly.** Port the algorithms and timings; rewrite to fit sireno-deck's shape (smaller files, fewer lines, stricter types).
 
 ## Methods surface (for buttons)
 
@@ -57,15 +57,15 @@ interface Methods {
   runCommand(
     command: string,
     options?: { cwd?: string },
-  ): Promise<{ stdout: string; stderr: string; exitCode: number }>;
-  keyMacro(action: KeyMacroAction): Promise<void>;
-  pasteText(text: string): Promise<void>;
-  navigateToDeck(args: { id: string; addToHistory?: boolean }): void;
-  goBack(): void;
-  getActiveDeckId(): string;
-  invalidate(): void;
-  publish<T>(channel: string, payload: T): void;
-  subscribe<T>(channel: string, cb: (payload: T) => void): () => void;
+  ): Promise<{ stdout: string; stderr: string; exitCode: number }>
+  keyMacro(action: KeyMacroAction): Promise<void>
+  pasteText(text: string): Promise<void>
+  navigateToDeck(args: { id: string; addToHistory?: boolean }): void
+  goBack(): void
+  getActiveDeckId(): string
+  invalidate(): void
+  publish<T>(channel: string, payload: T): void
+  subscribe<T>(channel: string, cb: (payload: T) => void): () => void
 }
 ```
 
@@ -88,10 +88,10 @@ The `session:locked` deck renders current time on multiple buttons. Implementati
 ```ts
 // src/core/pub-sub.ts
 export interface PubSub {
-  publish<T>(channel: string, payload: T): void;
-  subscribe<T>(channel: string, cb: (payload: T) => void): () => void; // returns unsubscribe
-  last<T>(channel: string): T | undefined; // for new subscribers
-  snapshot(): Record<string, unknown>; // for WS bridge
+  publish<T>(channel: string, payload: T): void
+  subscribe<T>(channel: string, cb: (payload: T) => void): () => void // returns unsubscribe
+  last<T>(channel: string): T | undefined // for new subscribers
+  snapshot(): Record<string, unknown> // for WS bridge
 }
 ```
 
@@ -102,14 +102,17 @@ The bus debounces state emission (100ms) so that a flurry of `publish` calls res
 ```ts
 // src/action/executor.ts
 export interface ActionExecutor {
-  run(command: string, ctx: { host: HostContext; logger: Logger }): Promise<ActionResult>;
+  run(
+    command: string,
+    ctx: { host: HostContext; logger: Logger },
+  ): Promise<ActionResult>
 }
 
 export interface ActionResult {
-  stdout: string;
-  stderr: string;
-  exitCode: number;
-  durationMs: number;
+  stdout: string
+  stderr: string
+  exitCode: number
+  durationMs: number
 }
 ```
 

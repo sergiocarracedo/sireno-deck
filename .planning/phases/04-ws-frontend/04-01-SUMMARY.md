@@ -17,7 +17,7 @@ The foundation for Phase 04: a typed public API surface for addons, zod schemas 
 
 - `addon.ts` — re-exports `Methods`, `GestureKind`, plus `AddonButtonRenderContext`, `AddonButtonActionContext`, `UseAddonChannelReturn`, `ChannelPayload`, `Unsubscribe`.
 - `protocol-internal.ts` — zod schemas + types for all 12 WS messages + `PROTOCOL_VERSION = 3`.
-- `index.ts` — barrel re-exporting both as `sireno-deck-2/api`.
+- `index.ts` — barrel re-exporting both as `sireno-deck/api`.
 
 ### WS protocol (`src/render/protocol.ts`)
 
@@ -80,13 +80,13 @@ Discriminated union via `wsMessageSchema` rejects unknown types. `gestureKindSch
 
 ## Notes for downstream
 
-- `WsBridge` has no token-rotation logic yet. Phase 10 will wire token persistence to `$XDG_RUNTIME_DIR/sireno-deck-2.token`.
+- `WsBridge` has no token-rotation logic yet. Phase 10 will wire token persistence to `$XDG_RUNTIME_DIR/sireno-deck.token`.
 - `spawnViteServer` doesn't yet spawn a real vite process — it's a generic child-process spawner. Phase 04-02 wires it to actual `vite` invocations with the `sirenoDeck2()` plugin.
 - `hello-ack.keyCount` is currently a fixed `15`. Phase 04-02/05 will read it from the device (real mode) or `--device-model` (emulator).
 
 ## Smoke
 
 - `pnpm exec vitest run` → 182/182 passing (was 155; Plan 01 added 27)
-- `pnpm --filter sireno-deck-2 typecheck` → clean
-- `pnpm --filter sireno-deck-2 lint` → 0 warnings, 0 errors
+- `pnpm --filter sireno-deck typecheck` → clean
+- `pnpm --filter sireno-deck lint` → 0 warnings, 0 errors
 - `pnpm format:check` → all 127 files conform

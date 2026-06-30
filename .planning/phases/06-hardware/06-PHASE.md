@@ -14,7 +14,7 @@ Goal: enumerate devices, prompt for selection if multiple, drive real hardware v
 2. `src/device/registry.ts` — enumerate connected devices.
 3. `src/device/linux-udev.ts` — udev rules helper script + installer command.
 4. `src/render/browser-renderer.ts` — Playwright + sharp pipeline. Spawn Playwright → render frontend vite → `page.screenshot()` every 500ms (configurable) → sharp crop per key → `fillKeyBuffer`. Skip when buffer hash unchanged.
-5. `src/system/device-selection.ts` — interactive prompt with arrow keys via `@inquirer/prompts`. Save selection to `$XDG_CONFIG_HOME/sireno-deck-2/device.json`.
+5. `src/system/device-selection.ts` — interactive prompt with arrow keys via `@inquirer/prompts`. Save selection to `$XDG_CONFIG_HOME/sireno-deck/device.json`.
 6. `src/cli/commands/run.ts` integration — wire device selection + browser renderer in real mode.
 7. Tests: device enumeration mock, browser renderer with mocked Playwright, buffer hash skip logic.
 

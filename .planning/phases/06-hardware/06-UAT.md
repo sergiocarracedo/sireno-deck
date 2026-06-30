@@ -19,12 +19,12 @@ result: pass
 
 ### 2. CLI typecheck clean
 
-expected: `pnpm --filter sireno-deck-2 typecheck` exits 0 with no errors.
+expected: `pnpm --filter sireno-deck typecheck` exits 0 with no errors.
 result: pass
 
 ### 3. CLI lint clean (0 warnings)
 
-expected: `pnpm --filter sireno-deck-2 lint` reports 0 warnings, 0 errors.
+expected: `pnpm --filter sireno-deck lint` reports 0 warnings, 0 errors.
 result: pass
 
 ### 4. Format clean

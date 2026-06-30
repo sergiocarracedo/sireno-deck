@@ -1,8 +1,6 @@
 import type { NewAddonManifest } from "@/addon/api";
 
-import { SystemStatusButtonFrontend } from "./buttons/system-status.frontend";
-import { systemStatusButtonBackend } from "./buttons/system-status";
-
+import { SystemStatusButtonFrontend, systemStatusButtonBackend } from "./buttons/system-status";
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "system-status",

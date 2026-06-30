@@ -18,7 +18,7 @@ The shell connects independently to the CLI WS bridge (token handshake) and prov
 ## Key files
 
 - `packages/cli/emulator/package.json` — workspace package, React 19 + Vite 6 + Tailwind 4 + jsdom test env
-- `packages/cli/emulator/vite.config.ts` — plugins (react + tailwind), `resolve.alias` for `@sireno-deck-2/cli` and `@/*`
+- `packages/cli/emulator/vite.config.ts` — plugins (react + tailwind), `resolve.alias` for `@sireno-deck/cli` and `@/*`
 - `packages/cli/emulator/tsconfig.json` — extends base, `paths` map for cross-package alias, `rootDir: "../.."` to allow `../src/index.ts` resolution
 - `packages/cli/emulator/vitest.config.ts` — jsdom env, same aliases as vite
 - `packages/cli/emulator/index.html` — root HTML with `<div id="root">`
@@ -35,7 +35,7 @@ The shell connects independently to the CLI WS bridge (token handshake) and prov
 
 ## Decisions made
 
-- **`@sireno-deck-2/cli` cross-package alias**: the emulator imports `{ DEVICE_MODELS, type DeviceModel }` from `@sireno-deck-2/cli`. This required (1) adding those exports to the cli barrel, and (2) configuring vite **and** vitest to alias the package name to `../src/index.ts`. Both configs use the array form (`{ find: /^@sireno-deck-2\/cli$/, replacement: ... }`).
+- **`@sireno-deck/cli` cross-package alias**: the emulator imports `{ DEVICE_MODELS, type DeviceModel }` from `@sireno-deck/cli`. This required (1) adding those exports to the cli barrel, and (2) configuring vite **and** vitest to alias the package name to `../src/index.ts`. Both configs use the array form (`{ find: /^@sireno-deck\/cli$/, replacement: ... }`).
 - **tsconfig `rootDir: "../.."`**: the alias path resolves to `../src/index.ts` (one level up from emulator). TypeScript's `rootDir` is inferred from `include` paths; without explicit override, TS infers it as the package root and complains that `../src/index.ts` is outside. Setting `rootDir: "../.."` includes both emulator and cli sources under the program root.
 - **`afterEach(cleanup)` in setup.ts**: with `globals: false`, vitest doesn't auto-cleanup the jsdom between tests. Without it, tests bleed DOM state.
 
@@ -44,7 +44,7 @@ The shell connects independently to the CLI WS bridge (token handshake) and prov
 1. **vite.config.ts had a stray `},`** — closing brace count was off by one after the alias array.
 2. **vitest did not pick up vite's `resolve.alias`** — vitest uses its own config. Added the same alias to `vitest.config.ts` explicitly.
 3. **tsconfig rootDir inherited or inferred incorrectly** — multiple attempts before settling on `rootDir: "../.."` with explicit `noEmit: true` so vitest can still run.
-4. **`@sireno-deck-2/cli` resolved to dist (built JS) but dist didn't exist** — would have required a full build step. Resolved by aliasing directly to source (`../src/index.ts`), avoiding the build dependency.
+4. **`@sireno-deck/cli` resolved to dist (built JS) but dist didn't exist** — would have required a full build step. Resolved by aliasing directly to source (`../src/index.ts`), avoiding the build dependency.
 5. **Project composite references broke cli build** — `composite: true` + `noEmit: false` conflicts with `allowImportingTsExtensions`. Rolled back the composite experiment; the alias approach works.
 
 ## Notes for downstream
@@ -56,7 +56,7 @@ The shell connects independently to the CLI WS bridge (token handshake) and prov
 
 - `pnpm exec vitest run` (root, cli only): 224/224 passing
 - `cd packages/cli/emulator && pnpm exec vitest run`: 4/4 passing
-- `pnpm --filter sireno-deck-2 typecheck`: clean
-- `pnpm --filter @sireno-deck-2/emulator typecheck`: clean
-- `pnpm --filter sireno-deck-2 lint`: 0 warnings, 0 errors
+- `pnpm --filter sireno-deck typecheck`: clean
+- `pnpm --filter @sireno-deck/emulator typecheck`: clean
+- `pnpm --filter sireno-deck lint`: 0 warnings, 0 errors
 - `pnpm format:check`: clean (178 files)

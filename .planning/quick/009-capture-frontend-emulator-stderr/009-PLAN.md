@@ -11,6 +11,6 @@ In both `spawnFrontendVite` and `spawnEmulatorVite`:
 2. In the `exit` handler, accumulate stderr into the error message (truncated to 2000 chars) so users see why the process failed
 3. In the `timeout` handler, also include accumulated stderr so the timeout error is actionable
 
-**Verify:** `pnpm typecheck && pnpm --filter sireno-deck-2 lint && pnpm test`
+**Verify:** `pnpm typecheck && pnpm --filter sireno-deck lint && pnpm test`
 
 **Done:** Both spawn functions include captured stderr in their error messages when a vite process exits before becoming ready or times out.

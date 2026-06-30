@@ -10,12 +10,12 @@ Goal: WS bridge v3 with token handshake, vite plugin (`./vite`), frontend React 
 
 ## Outcomes
 
-1. **`src/api/`** — public types: `AddonButtonRenderCtx`, `AddonButtonActionCtx`, `Methods`, pub-sub types. Re-exported as `sireno-deck-2/api`.
+1. **`src/api/`** — public types: `AddonButtonRenderCtx`, `AddonButtonActionCtx`, `Methods`, pub-sub types. Re-exported as `sireno-deck/api`.
 2. **`src/render/protocol.ts`** — zod schemas for every WS message (v3). Discriminated union by `type`.
 3. **`src/render/ws-bridge.ts`** — `ws` server; handshake with token; methods: `broadcast`, `sendToCaller`, `onMessage`, `onConnection`, `close`.
 4. **`src/render/vite-server.ts`** — spawn vite as child process with `SIRENO_TOKEN` env var; restart on crash (3 retries).
-5. **`src/vite/`** — vite plugin `sirenoDeck2()`. Registers addon/theme folders; exposes `virtual:sireno/token`. Re-exported as `sireno-deck-2/vite`.
-6. **`src/react/`** — React hooks: `useAddonChannel`, `useDeck`, `useButtonAction`. Re-exported as `sireno-deck-2/react`.
+5. **`src/vite/`** — vite plugin `sirenoDeck2()`. Registers addon/theme folders; exposes `virtual:sireno/token`. Re-exported as `sireno-deck/vite`.
+6. **`src/react/`** — React hooks: `useAddonChannel`, `useDeck`, `useButtonAction`. Re-exported as `sireno-deck/react`.
 7. **`packages/cli/frontend/`** — Vite React app. Pages: `<Deck>`, `<ButtonFrame>`, addon button renders. WS client subscribes to bridge.
 8. **`packages/cli/src/__tests__/ws-protocol.test.ts`** — roundtrip every message type.
 

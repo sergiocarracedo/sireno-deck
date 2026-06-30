@@ -11,7 +11,7 @@ Goal: real `start/stop/status` implementation, prod HTTP server with token injec
 ## Outcomes
 
 1. Real `start` command:
-   - Generate random token, write to `$XDG_RUNTIME_DIR/sireno-deck-2/token`.
+   - Generate random token, write to `$XDG_RUNTIME_DIR/sireno-deck/token`.
    - Write PID file.
    - Spawn frontend vite (with `SIRENO_TOKEN`) and emulator vite (if `--emulator`).
    - Trap SIGINT/SIGTERM, gracefully shutdown.

@@ -1,18 +1,11 @@
 import type { NewAddonManifest } from "@/addon/api";
 
-import { dateTimeButtonBackend } from "./buttons/date-time";
-import { timeButtonBackend } from "./buttons/time";
-import { dateButtonBackend } from "./buttons/date";
-import { clockButtonBackend } from "./buttons/clock";
-import { analogClockButtonBackend } from "./buttons/analog-clock";
-import { lockedTimeTileButtonBackend } from "./buttons/locked-time-tile";
-import { DateTimeButtonFrontend } from "./buttons/date-time.frontend";
-import { TimeButtonFrontend } from "./buttons/time.frontend";
-import { DateButtonFrontend } from "./buttons/date.frontend";
-import { ClockButtonFrontend } from "./buttons/clock.frontend";
-import { AnalogClockButtonFrontend } from "./buttons/analog-clock.frontend";
-import { LockedTimeTileButtonFrontend } from "./buttons/locked-time-tile.frontend";
-
+import { AnalogClockButtonFrontend, analogClockButtonBackend } from "./buttons/analog-clock";
+import { ClockButtonFrontend, clockButtonBackend } from "./buttons/clock";
+import { DateButtonFrontend, dateButtonBackend } from "./buttons/date";
+import { DateTimeButtonFrontend, dateTimeButtonBackend } from "./buttons/date-time";
+import { LockedTimeTileButtonFrontend, lockedTimeTileButtonBackend } from "./buttons/locked-time-tile";
+import { TimeButtonFrontend, timeButtonBackend } from "./buttons/time";
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "date-time",

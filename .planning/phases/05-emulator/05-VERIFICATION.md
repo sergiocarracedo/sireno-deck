@@ -51,7 +51,7 @@ pnpm typecheck
   cli: clean
   emulator: clean
 
-pnpm --filter sireno-deck-2 lint
+pnpm --filter sireno-deck lint
   0 warnings, 0 errors
 
 pnpm format:check

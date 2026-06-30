@@ -31,7 +31,7 @@ WS bridge v3 with token handshake + vite plugin + frontend React app + react hoo
 | Typecheck clean                                                                                                                                                        | ✅     | yes                                                                        |
 | Per-package lint clean                                                                                                                                                 | ✅     | 0 warnings, 0 errors                                                       |
 | Format clean                                                                                                                                                           | ✅     | 151 files conform                                                          |
-| `./api`, `./react`, `./vite` sub-path exports from `sireno-deck-2`                                                                                                     | ✅     | package.json exports                                                       |
+| `./api`, `./react`, `./vite` sub-path exports from `sireno-deck`                                                                                                       | ✅     | package.json exports                                                       |
 | Token handshake in dev (no token in dev mode)                                                                                                                          | ✅     | helloMessageSchema.token is optional                                       |
 | Token injection via `virtual:sireno/token` (dev)                                                                                                                       | ✅     | sirenoDeck2() plugin exposes env var                                       |
 | Production `window.__SIRENO_TOKEN__` injection (Phase 10)                                                                                                              | ⏳     | Deferred (prod server not built yet)                                       |
@@ -53,10 +53,10 @@ pnpm exec vitest run
   Tests:       200 passed (200)
   Duration:    ~1.8s
 
-pnpm --filter sireno-deck-2 typecheck
+pnpm --filter sireno-deck typecheck
   (clean)
 
-pnpm --filter sireno-deck-2 lint
+pnpm --filter sireno-deck lint
   Found 0 warnings and 0 errors
 
 pnpm format:check

@@ -70,8 +70,8 @@ must_haves:
 ## Acceptance
 
 - `pnpm test` passes (483+ tests after adding 8-12 new ones).
-- `pnpm --filter sireno-deck-2 lint` clean.
-- `pnpm --filter sireno-deck-2 typecheck` clean.
+- `pnpm --filter sireno-deck lint` clean.
+- `pnpm --filter sireno-deck typecheck` clean.
 - The brightness addon's poller returns real values (verifiable in the emulator at runtime).
 - `methods.pasteText` writes to the OS clipboard (verifiable via a unit test with a mock executor).
 - Audit doc updated to `status: passed`.

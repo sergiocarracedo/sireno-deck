@@ -26,7 +26,7 @@ See `02-PHASE.md` for full list.
 
 - `pnpm typecheck` clean
 - `pnpm exec vitest run` 69/69 passing
-- `pnpm --filter sireno-deck-2 lint` clean
+- `pnpm --filter sireno-deck lint` clean
 - `pnpm format:check` clean
 
 ## Bugs / adjustments
