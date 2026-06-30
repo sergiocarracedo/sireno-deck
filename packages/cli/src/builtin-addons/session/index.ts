@@ -24,7 +24,6 @@ const sessionLockedDeckFactory: AddonDeckFactory = (page: number) => ({
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "session",
-  frontend: { main: "./index" },
   buttonTypes: {
     "core:session-info": {
       frontend: SessionInfoButtonFrontend,

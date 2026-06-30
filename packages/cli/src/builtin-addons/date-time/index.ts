@@ -9,7 +9,6 @@ import { TimeButtonFrontend, timeButtonBackend } from "./buttons/time";
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "date-time",
-  frontend: { main: "./index" },
   buttonTypes: {
     "core:date-time": {
       frontend: DateTimeButtonFrontend,

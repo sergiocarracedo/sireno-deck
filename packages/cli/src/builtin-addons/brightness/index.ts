@@ -4,8 +4,6 @@ import { BrightnessButtonFrontend, brightnessButtonBackend } from "./buttons/bri
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "brightness",
-  frontend: { main: "./index" },
-  kind: "runtime",
   buttonTypes: {
     "core:brightness": {
       frontend: BrightnessButtonFrontend,

@@ -8,7 +8,6 @@ import { ToggleButtonFrontend, toggleButtonBackend } from "./buttons/toggle";
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "core-buttons",
-  frontend: { main: "./index" },
   buttonTypes: {
     "core:action": {
       frontend: ActionButtonFrontend,
