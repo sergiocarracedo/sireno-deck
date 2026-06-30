@@ -6,6 +6,8 @@ export interface SirenoVitePluginTheme {
   name: string
   cssPath: string
   frontendPath: string
+  manifestPath: string
+  assetsStyles: ReadonlyArray<string>
 }
 
 export interface SirenoVitePluginAddon {
@@ -118,13 +120,24 @@ export const buildThemesManifestModule = (
   theme: SirenoVitePluginTheme | undefined,
 ): string => {
   if (!theme) {
-    return `export const activeTheme = null;\nexport const components = {};\nexport const surfaces = {};\nexport const primitives = {};\n`
+    return `export const activeTheme = null;\nexport const components = {};\nexport const surfaces = {};\nexport const primitives = {};\nexport const colorTokens = null;\nexport const typography = null;\n`
   }
+
+  let manifestData = '{}'
+  try {
+    manifestData = readFileSync(theme.manifestPath, 'utf8')
+  } catch {
+    // ignore — manifest may not exist in all setups
+  }
+
   const rawId = theme.name.replace(/[^a-zA-Z0-9_$]/g, '_')
   const importId = /^[a-zA-Z_$]/.test(rawId) ? `_${rawId}` : rawId
   return [
     `import * as ${importId} from ${JSON.stringify(theme.frontendPath)};`,
+    `const _manifest = JSON.parse(${JSON.stringify(manifestData)})`,
     `export const activeTheme = { name: ${JSON.stringify(theme.name)}, frontendPath: ${JSON.stringify(theme.frontendPath)} };`,
+    `export const colorTokens = _manifest.colorTokens ?? null;`,
+    `export const typography = _manifest.typography ?? null;`,
     `export const components = ${importId}.components ?? {};`,
     `export const surfaces = ${importId}.surfaces ?? {};`,
     `export const primitives = ${importId}.primitives ?? {};`,
@@ -165,7 +178,7 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
       const dir = join(root, '.sireno-deck')
       if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
       const filePath = join(dir, 'theme.css')
-      const themeDir = theme ? dirname(theme.frontendPath) : null
+      const themeDir = theme ? dirname(theme.manifestPath) : null
       const uiDir = themeDir ? join(themeDir, '..', '..', 'ui') : null
       const sourceDirs = [themeDir, uiDir].filter(Boolean) as string[]
       const sourceDirective =

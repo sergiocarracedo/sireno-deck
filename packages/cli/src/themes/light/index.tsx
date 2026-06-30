@@ -1,6 +1,6 @@
 import { ButtonFrame } from "./ButtonFrame";
 import { Text, Icon, Label, Chip, TapIndicator } from "@/ui/index";
-import { Bars as Barss, IconLabelSurface as IconLabels, LabelValueList as LabelValueLists, SplitActionSurface as SplitActions } from "@/ui/index";
+import { BarsSurface as Barss, IconLabelSurface as IconLabels, LabelValueListSurface as LabelValueLists, SplitActionSurface as SplitActions } from "@/ui/index";
 
 export const manifest = {
   name: "light",
@@ -10,7 +10,7 @@ export const manifest = {
 
 export { ButtonFrame } from "./ButtonFrame";
 export { Text, Icon, Label, Chip, TapIndicator } from "@/ui/index";
-export { Bars as Barss, IconLabelSurface as IconLabels, LabelValueList as LabelValueLists, SplitActionSurface as SplitActions } from "@/ui/index";
+export { BarsSurface as Barss, IconLabelSurface as IconLabels, LabelValueListSurface as LabelValueLists, SplitActionSurface as SplitActions } from "@/ui/index";
 
 export const components = { Icon, Label, Text, TapIndicator, Chip } as const;
 export const surfaces = { Bars: Barss, IconLabel: IconLabels, LabelValueList: LabelValueLists, SplitAction: SplitActions } as const;

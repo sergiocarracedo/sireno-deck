@@ -46,8 +46,10 @@ describe("vite plugin helpers", () => {
   it("buildThemesManifestModule re-exports theme default via valid identifier", () => {
     const src = buildThemesManifestModule({
       name: "default",
-      cssPath: "/theme.css",
+      cssPath: "/theme.generated.css",
       frontendPath: "/theme/index",
+      manifestPath: "/theme/sirenodeck.json",
+      assetsStyles: ["/theme/tokens.css", "/theme/components.css"],
     });
     expect(src).not.toMatch(/import \* as default\b/);
     expect(src).not.toMatch(/export default \w+\.default/);

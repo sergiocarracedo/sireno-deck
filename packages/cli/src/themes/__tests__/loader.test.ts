@@ -7,10 +7,12 @@ import { registerBuiltInThemes, resolveActiveTheme } from "../loader";
 
 const makeTheme = (name: string): LoadedTheme => ({
   name,
-  apiVersion: 3,
+  apiVersion: 1,
   source: { kind: "local", resolvedPath: `/tmp/themes/${name}` },
-  cssPath: `/tmp/themes/${name}/theme.css`,
+  manifestPath: `/tmp/themes/${name}/sirenodeck.json`,
+  cssPath: `/tmp/themes/${name}/theme.generated.css`,
   frontendPath: `/tmp/themes/${name}/index.tsx`,
+  assetsStyles: [],
 });
 
 describe("themes/loader", () => {
@@ -19,10 +21,10 @@ describe("themes/loader", () => {
     registerBuiltInThemes(registry);
     const theme = registry.getTheme("default");
     expect(theme).toBeDefined();
-    expect(theme?.apiVersion).toBe(3);
+    expect(theme?.apiVersion).toBe(1);
     expect(theme?.source.kind).toBe("builtin");
     expect(theme?.frontendPath.endsWith("index")).toBe(true);
-    expect(theme?.cssPath.endsWith("theme.css")).toBe(true);
+    expect(theme?.cssPath.endsWith("theme.generated.css")).toBe(true);
   });
 
   it("resolveActiveTheme returns the default theme when name is undefined", () => {

@@ -1,0 +1,40 @@
+{
+  "kind": "theme",
+  "apiVersion": 1,
+  "name": "default",
+  "version": "0.1.0",
+  "description": "The default dark theme for Sireno Deck.",
+  "colorTokens": {
+    "background": "#2e3540",
+    "frame": "#53738B",
+    "foreground": "#eef2f7",
+    "foreground-contrast": "#000000",
+    "primary": "#7dd3fc",
+    "accent": "#C3F5FF",
+    "success": "#34d399",
+    "danger": "#FFB4AB"
+  },
+  "typography": {
+    "main_text": {
+      "fontFamily": "IBM Plex Sans",
+      "fontSize": 12,
+      "fontWeight": 100
+    },
+    "auxiliary_text": {
+      "fontFamily": "IBM Plex Sans",
+      "fontSize": 8,
+      "fontWeight": 300,
+      "letterSpacing": 1.2
+    },
+    "monospace": {
+      "fontFamily": "IBM Plex Mono",
+      "fontSize": 10,
+      "fontWeight": 300,
+      "letterSpacing": 0.4
+    }
+  },
+  "assets": {
+    "styles": ["./tokens.css", "./components.css"]
+  },
+  "entry": "./index"
+}

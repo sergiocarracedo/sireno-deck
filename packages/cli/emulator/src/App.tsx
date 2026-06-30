@@ -36,7 +36,11 @@ const buildThemeContext = (): ThemeContextValue => ({
     source: { kind: 'builtin', resolvedPath: '' },
     cssPath: '',
     frontendPath: '',
+    manifestPath: '',
+    assetsStyles: [],
   },
+  colorTokens: null,
+  typography: null,
 })
 
 export interface AppProps {

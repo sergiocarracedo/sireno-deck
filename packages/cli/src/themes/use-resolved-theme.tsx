@@ -7,6 +7,8 @@ export interface ThemeContextValue {
   cssPath: string;
   frontendPath: string;
   theme: LoadedTheme;
+  colorTokens: Record<string, string> | null;
+  typography: Record<string, unknown> | null;
 }
 
 export const ThemeContext = createContext<ThemeContextValue | null>(null);

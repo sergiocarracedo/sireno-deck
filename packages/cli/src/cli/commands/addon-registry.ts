@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import { dirname, join, resolve as resolvePath } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { AddonPoller, AddonPollerChannel, AddonManifest } from "@/addon/api-types";
+import type { AddonPoller, AddonPollerChannel, AddonManifest } from "@/addon/api";
 
 export interface ScannedAddon {
   readonly name: string;

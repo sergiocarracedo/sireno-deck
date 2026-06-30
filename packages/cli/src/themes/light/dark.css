@@ -1,0 +1,21 @@
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-bg: #2e3540;
+    --color-fg: #eef2f7;
+    --color-foreground: #eef2f7;
+    --color-accent: #7dd3fc;
+    --color-ring: #eef2f7;
+    --color-tap: #7dd3fc;
+    --color-muted: #8a9bb5;
+    --color-bar: #1a1f28;
+    --color-bar-accent: #7dd3fc;
+    --color-frame: #53738B;
+    --color-primary: #7dd3fc;
+    --color-success: #34d399;
+    --color-danger: #FFB4AB;
+    --color-foreground-contrast: #000000;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+    --font-main: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-aux: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  }
+}

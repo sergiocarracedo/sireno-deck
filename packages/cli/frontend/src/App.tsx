@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { token } from 'virtual:sireno/token'
-import { activeTheme } from 'virtual:sireno/themes/manifest'
+import { activeTheme, colorTokens, typography } from 'virtual:sireno/themes/manifest'
 
 import { ChannelRegistry } from 'sireno-deck/react'
 import { ThemeProvider, type ThemeContextValue } from '@/themes/index'
@@ -59,7 +59,11 @@ const buildThemeContext = (): ThemeContextValue => {
         source: { kind: 'builtin', resolvedPath: activeTheme.frontendPath },
         cssPath: '',
         frontendPath: activeTheme.frontendPath,
+        manifestPath: '',
+        assetsStyles: [],
       },
+      colorTokens,
+      typography,
     }
   }
   return {
@@ -72,7 +76,11 @@ const buildThemeContext = (): ThemeContextValue => {
       source: { kind: 'builtin', resolvedPath: '' },
       cssPath: '',
       frontendPath: '',
+      manifestPath: '',
+      assetsStyles: [],
     },
+    colorTokens: null,
+    typography: null,
   }
 }
 

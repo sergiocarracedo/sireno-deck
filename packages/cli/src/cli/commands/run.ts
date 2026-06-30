@@ -168,6 +168,8 @@ export const preflight = async (
     name: theme.name,
     cssPath: theme.cssPath,
     frontendPath: theme.frontendPath,
+    manifestPath: theme.manifestPath,
+    assetsStyles: theme.assetsStyles,
   })
   process.env['SIRENO_THEME_NAME'] = theme.name
 

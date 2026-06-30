@@ -25,7 +25,7 @@ const addonsFromEnv = () => {
 }
 
 const themeFromEnv = ():
-  | { name: string; cssPath: string; frontendPath: string }
+  | { name: string; cssPath: string; frontendPath: string; manifestPath: string; assetsStyles: ReadonlyArray<string> }
   | undefined => {
   const blob = process.env['SIRENO_THEME']
   if (blob === undefined || blob.length === 0) return undefined
@@ -34,16 +34,22 @@ const themeFromEnv = ():
       name?: unknown
       cssPath?: unknown
       frontendPath?: unknown
+      manifestPath?: unknown
+      assetsStyles?: unknown
     }
     if (
       typeof parsed.name === 'string' &&
       typeof parsed.cssPath === 'string' &&
-      typeof parsed.frontendPath === 'string'
+      typeof parsed.frontendPath === 'string' &&
+      typeof parsed.manifestPath === 'string' &&
+      Array.isArray(parsed.assetsStyles)
     ) {
       return {
         name: parsed.name,
         cssPath: parsed.cssPath,
         frontendPath: parsed.frontendPath,
+        manifestPath: parsed.manifestPath,
+        assetsStyles: parsed.assetsStyles as ReadonlyArray<string>,
       }
     }
   } catch {
