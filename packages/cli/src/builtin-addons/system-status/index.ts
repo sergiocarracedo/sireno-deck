@@ -4,6 +4,7 @@ import { SystemStatusButtonFrontend, systemStatusButtonBackend } from "./buttons
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "system-status",
+  frontend: { main: "./index" },
   buttonTypes: {
     "core:system-status": {
       frontend: SystemStatusButtonFrontend,

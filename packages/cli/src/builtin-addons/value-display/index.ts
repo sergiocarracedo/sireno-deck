@@ -4,6 +4,7 @@ import { ValueDisplayButtonFrontend, valueDisplayButtonBackend } from "./buttons
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "value-display",
+  frontend: { main: "./index" },
   buttonTypes: {
     "core:value-display": {
       frontend: ValueDisplayButtonFrontend,

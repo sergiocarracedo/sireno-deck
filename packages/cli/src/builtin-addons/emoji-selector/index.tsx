@@ -10,6 +10,7 @@ import { PageNavButtonFrontend, pageNavButtonBackend } from "./buttons/page-nav"
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "emoji-selector",
+  frontend: { main: "./index" },
   buttonTypes: {
     "core:emoji-category-button": {
       frontend: CategoryButtonFrontend,

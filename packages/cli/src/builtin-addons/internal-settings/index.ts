@@ -7,6 +7,7 @@ import { ThemeButtonFrontend, themeButtonBackend } from "./buttons/theme";
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "internal-settings",
+  frontend: { main: "./index" },
   buttonTypes: {
     "core:settings-brightness": {
       frontend: BrightnessButtonFrontend,

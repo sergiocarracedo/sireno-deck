@@ -4,6 +4,7 @@ import { WeatherButtonFrontend, weatherButtonBackend } from "./buttons/weather";
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "weather",
+  frontend: { main: "./index" },
   buttonTypes: {
     "core:weather": {
       frontend: WeatherButtonFrontend,

@@ -6,6 +6,7 @@ import { MediaVolumeButtonFrontend, mediaVolumeButtonBackend } from "./buttons/m
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
   name: "media-player",
+  frontend: { main: "./index" },
   buttonTypes: {
     "core:media-player": {
       frontend: MediaPlayerButtonFrontend,
