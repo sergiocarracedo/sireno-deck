@@ -17,6 +17,7 @@ const addonsFromEnv = () => {
       name: string
       frontend?: { main: string; styles?: string[] }
       buttons?: Array<{ type: string }>
+      buttonTypes?: Record<string, string>
     }>
   } catch {
     return undefined
@@ -78,4 +79,5 @@ export default defineConfig({
   define: {
     'import.meta.env.VITE_WS_URL': JSON.stringify(wsUrl),
   },
+  assetsInclude: ['**/*.html'],
 })
