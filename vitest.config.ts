@@ -36,10 +36,7 @@ export default defineConfig({
       ["packages/cli/frontend/**", "jsdom"],
       ["packages/cli/emulator/**", "jsdom"],
     ],
-    setupFiles: [
-      "./packages/cli/emulator/src/__tests__/setup.ts",
-      "./packages/cli/frontend/src/__tests__/setup.ts",
-    ],
+    setupFiles: ["./packages/cli/emulator/src/__tests__/setup.ts"],
     coverage: {
       provider: "v8",
       include: ["packages/cli/src/**/*.ts"],
