@@ -1,20 +1,21 @@
 import type { NewAddonManifest } from "@/addon/api";
 
-import { SystemStatusButtonFrontend, systemStatusButtonBackend } from "./buttons/system-status";
+import manifestJson from "./sirenodeck.json" with { type: "json" };
+
+import systemStatusBackend from "./buttons/system-status/backend";
+import systemStatusFrontend from "./buttons/system-status/frontend";
+
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
-  name: "system-status",
-  frontend: { main: "./index" },
+  name: manifestJson.name,
   buttonTypes: {
     "core:system-status": {
-      frontend: SystemStatusButtonFrontend,
-      backend: systemStatusButtonBackend,
+      frontend: systemStatusFrontend,
+      backend: systemStatusBackend,
     },
   },
   publishIntervalMs: 1000,
 };
 
 export const systemStatusAddon = manifest;
-export default systemStatusAddon;
-export const SystemStatusButtonBackend = systemStatusButtonBackend;
-export type { CanonicalSystemMetricSnapshot, SystemStatusButtonConfig } from "./buttons/system-status";
+export default manifest;

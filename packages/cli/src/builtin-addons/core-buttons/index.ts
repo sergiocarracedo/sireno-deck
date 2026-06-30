@@ -1,37 +1,39 @@
 import type { NewAddonManifest } from "@/addon/api";
 
-import { ActionButtonFrontend, actionButtonBackend } from "./buttons/action";
-import { ChangeDeckButtonFrontend, changeDeckButtonBackend } from "./buttons/change-deck";
-import { MediaSampleButtonFrontend, mediaSampleButtonBackend } from "./buttons/media-sample";
-import { ToggleButtonFrontend, toggleButtonBackend } from "./buttons/toggle";
+import manifestJson from "./sirenodeck.json" with { type: "json" };
+
+import actionBackend from "./buttons/action/backend";
+import actionFrontend from "./buttons/action/frontend";
+import changeDeckBackend from "./buttons/change-deck/backend";
+import changeDeckFrontend from "./buttons/change-deck/frontend";
+import mediaSampleBackend from "./buttons/media-sample/backend";
+import mediaSampleFrontend from "./buttons/media-sample/frontend";
+import toggleBackend from "./buttons/toggle/backend";
+import toggleFrontend from "./buttons/toggle/frontend";
 
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
-  name: "core-buttons",
-  frontend: { main: "./index" },
+  name: manifestJson.name,
   buttonTypes: {
-    "core:action": {
-      frontend: ActionButtonFrontend,
-      backend: actionButtonBackend,
-    },
-    "core:change-deck": {
-      frontend: ChangeDeckButtonFrontend,
-      backend: changeDeckButtonBackend,
-    },
-    "core:toggle": {
-      frontend: ToggleButtonFrontend,
-      backend: toggleButtonBackend,
-    },
+    "core:action": { frontend: actionFrontend, backend: actionBackend },
+    "core:change-deck": { frontend: changeDeckFrontend, backend: changeDeckBackend },
+    "core:toggle": { frontend: toggleFrontend, backend: toggleBackend },
     "core:media-sample": {
-      frontend: MediaSampleButtonFrontend,
-      backend: mediaSampleButtonBackend,
+      frontend: mediaSampleFrontend,
+      backend: mediaSampleBackend,
     },
   },
 };
 
 export const coreButtonsAddon = manifest;
-export default coreButtonsAddon;
-export const ActionButtonBackend = actionButtonBackend;
-export const ChangeDeckButtonBackend = changeDeckButtonBackend;
-export const ToggleButtonBackend = toggleButtonBackend;
-export const MediaSampleButtonBackend = mediaSampleButtonBackend;
+export default manifest;
+export {
+  actionBackend as actionButtonBackend,
+  actionFrontend as ActionButtonFrontend,
+  changeDeckBackend as changeDeckButtonBackend,
+  changeDeckFrontend as ChangeDeckButtonFrontend,
+  toggleBackend as toggleButtonBackend,
+  toggleFrontend as ToggleButtonFrontend,
+  mediaSampleBackend as mediaSampleButtonBackend,
+  mediaSampleFrontend as MediaSampleButtonFrontend,
+};

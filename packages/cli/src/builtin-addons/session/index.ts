@@ -1,47 +1,40 @@
-import { z } from "zod";
+import type { NewAddonManifest } from "@/addon/api";
 
-import type { AddonDeckFactory, NewAddonManifest } from "@/addon/api";
+import manifestJson from "./sirenodeck.json" with { type: "json" };
 
-import { SessionInfoButtonFrontend, sessionInfoButtonBackend } from "./buttons/session-info";
-import { SessionTimeButtonFrontend, sessionTimeButtonBackend } from "./buttons/time";
+import sessionInfoBackend from "./buttons/session-info/backend";
+import sessionInfoFrontend from "./buttons/session-info/frontend";
+import sessionLockedDeck from "./decks/locked";
+import sessionTimeBackend from "./buttons/time/backend";
+import sessionTimeFrontend from "./buttons/time/frontend";
 
-const sessionLockedConfigSchema = z.object({
-  timeFormat: z.string().default("HH:mm"),
-});
+type JsonButton = (typeof manifestJson.buttons)[number];
 
-export type SessionLockedConfig = z.infer<typeof sessionLockedConfigSchema>;
-
-const sessionLockedDeckFactory: AddonDeckFactory = (page: number) => ({
-  name: "Locked",
-  buttons: Array.from({ length: 5 }, (_, i) => ({
-    id: `time-${i}`,
-    type: "session:time",
-    config: { format: "HH:mm" },
-    position: i + page * 5,
-  })),
-});
+const applyInternalFlag = (
+  impl: typeof sessionInfoBackend,
+  json: JsonButton,
+): typeof sessionInfoBackend => {
+  if (json.internal !== true) return impl;
+  return { ...impl, internal: true };
+};
 
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
-  name: "session",
-  frontend: { main: "./index" },
+  name: manifestJson.name,
   buttonTypes: {
     "core:session-info": {
-      frontend: SessionInfoButtonFrontend,
-      backend: sessionInfoButtonBackend,
+      frontend: sessionInfoFrontend,
+      backend: sessionInfoBackend,
     },
     "session:time": {
-      frontend: SessionTimeButtonFrontend,
-      backend: sessionTimeButtonBackend,
+      frontend: sessionTimeFrontend,
+      backend: applyInternalFlag(sessionTimeBackend, manifestJson.buttons[1]!),
     },
   },
   decks: {
-    "session:locked": sessionLockedDeckFactory,
+    "session:locked": sessionLockedDeck,
   },
 };
 
 export const sessionAddon = manifest;
-export default sessionAddon;
-export const SessionInfoButtonBackend = sessionInfoButtonBackend;
-export const SessionTimeButtonBackend = sessionTimeButtonBackend;
-export { sessionLockedConfigSchema, type SessionLockedConfig };
+export default manifest;

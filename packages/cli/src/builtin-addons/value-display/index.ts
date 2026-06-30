@@ -1,20 +1,21 @@
 import type { NewAddonManifest } from "@/addon/api";
 
-import { ValueDisplayButtonFrontend, valueDisplayButtonBackend } from "./buttons/value-display";
+import manifestJson from "./sirenodeck.json" with { type: "json" };
+
+import valueDisplayBackend from "./buttons/value-display/backend";
+import valueDisplayFrontend from "./buttons/value-display/frontend";
+
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
-  name: "value-display",
-  frontend: { main: "./index" },
+  name: manifestJson.name,
   buttonTypes: {
     "core:value-display": {
-      frontend: ValueDisplayButtonFrontend,
-      backend: valueDisplayButtonBackend,
+      frontend: valueDisplayFrontend,
+      backend: valueDisplayBackend,
     },
   },
   publishIntervalMs: 5000,
 };
 
 export const valueDisplayAddon = manifest;
-export default valueDisplayAddon;
-export const ValueDisplayButtonBackend = valueDisplayButtonBackend;
-export type { ValueEntry, ValueDisplayButtonConfig } from "./buttons/value-display";
+export default manifest;

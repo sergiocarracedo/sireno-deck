@@ -1,0 +1,16 @@
+{
+  "kind": "addon",
+  "apiVersion": 1,
+  "name": "emoji-selector",
+  "types": "./index.d.ts",
+  "decks": [
+    { "type": "emoji-selector", "path": "decks" }
+  ],
+  "buttons": [
+    { "type": "core:emoji-category-button", "path": "buttons/category" },
+    { "type": "core:emoji-emoji-button",     "path": "buttons/emoji" },
+    { "type": "core:emoji-launcher-button",  "path": "buttons/launcher" },
+    { "type": "core:emoji-back-button",      "path": "buttons/back" },
+    { "type": "core:emoji-page-nav",         "path": "buttons/page-nav" }
+  ]
+}

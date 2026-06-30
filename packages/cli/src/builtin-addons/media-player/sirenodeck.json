@@ -1,0 +1,11 @@
+{
+  "kind": "addon",
+  "apiVersion": 1,
+  "name": "media-player",
+  "types": "./index.d.ts",
+  "buttons": [
+    { "type": "core:media-player", "path": "buttons/media-player" },
+    { "type": "core:media-mute",   "path": "buttons/media-mute" },
+    { "type": "core:media-volume", "path": "buttons/media-volume" }
+  ]
+}

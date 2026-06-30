@@ -1,22 +1,22 @@
 import type { NewAddonManifest } from "@/addon/api";
 
-import { BrightnessButtonFrontend, brightnessButtonBackend } from "./buttons/brightness";
+import manifestJson from "./sirenodeck.json" with { type: "json" };
+
+import brightnessBackend from "./buttons/brightness/backend";
+import brightnessFrontend from "./buttons/brightness/frontend";
+
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
-  name: "brightness",
-  frontend: { main: "./index" },
+  name: manifestJson.name,
   buttonTypes: {
     "core:brightness": {
-      frontend: BrightnessButtonFrontend,
-      backend: brightnessButtonBackend,
+      frontend: brightnessFrontend,
+      backend: brightnessBackend,
     },
   },
   publishIntervalMs: 2000,
 };
 
 export const brightnessAddon = manifest;
-export default brightnessAddon;
-export const BrightnessButtonBackend = brightnessButtonBackend;
-export const BrightnessButtonSchema = brightnessButtonBackend.configSchema;
-export type { BrightnessButtonConfig } from "./buttons/brightness";
-export { buildMacOSCommand, formatCommand, isMacOS, setBrightnessMacOS } from "./domain/macos";
+export default manifest;
+export { brightnessBackend, brightnessFrontend };

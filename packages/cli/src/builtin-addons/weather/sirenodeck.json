@@ -1,0 +1,9 @@
+{
+  "kind": "addon",
+  "apiVersion": 1,
+  "name": "weather",
+  "types": "./index.d.ts",
+  "buttons": [
+    { "type": "core:weather", "path": "buttons/weather" }
+  ]
+}
