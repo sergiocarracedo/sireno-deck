@@ -31,7 +31,7 @@ export const manifest: NewAddonManifest = {
     "emoji-selector:page-nav": { frontend: pageNavFrontend, backend: pageNavBackend },
   },
   decks: {
-    "emoji-selector": emojiSelectorDeckFactory,
+    "emoji-selector:emoji-selector": emojiSelectorDeckFactory,
   },
 };
 
