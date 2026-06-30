@@ -82,9 +82,15 @@ export const spawnFrontendVite = (options: {
     if (wsUrl !== undefined) {
       env['SIRENO_WS_URL'] = wsUrl
     }
+    const viteBin = findWorkspaceRoot() + '/node_modules/.bin/vite'
     const child = spawn(
-      pnpmCommand,
-      ['run', 'dev', '--', '--port', String(port)],
+      viteBin,
+      [
+        '--config',
+        resolvePath(cwd, 'vite.config.ts'),
+        '--port',
+        String(port),
+      ],
       {
         cwd,
         env,
@@ -194,9 +200,15 @@ const spawnEmulatorVite = (options: {
     if (frontendUrl !== undefined) {
       env['SIRENO_FRONTEND_URL'] = frontendUrl
     }
+    const viteBin = findWorkspaceRoot() + '/node_modules/.bin/vite'
     const child = spawn(
-      pnpmCommand,
-      ['run', 'dev', '--', '--port', String(port)],
+      viteBin,
+      [
+        '--config',
+        resolvePath(cwd, 'vite.config.ts'),
+        '--port',
+        String(port),
+      ],
       {
         cwd,
         env,

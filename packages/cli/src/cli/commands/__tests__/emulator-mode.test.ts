@@ -139,13 +139,13 @@ describe('runEmulatorMode', () => {
 
     const handle = await promise
     expect(spawnMock).toHaveBeenCalledWith(
-      'pnpm',
-      ['run', 'dev', '--', '--port', '5180'],
+      expect.stringContaining('node_modules/.bin/vite'),
+      ['--config', expect.stringContaining('frontend/vite.config.ts'), '--port', '5180'],
       expect.objectContaining({ stdio: ['ignore', 'pipe', 'pipe'] }),
     )
     expect(spawnMock).toHaveBeenCalledWith(
-      'pnpm',
-      ['run', 'dev', '--', '--port', '52938'],
+      expect.stringContaining('node_modules/.bin/vite'),
+      ['--config', expect.stringContaining('emulator/vite.config.ts'), '--port', '52938'],
       expect.objectContaining({ stdio: ['ignore', 'pipe', 'pipe'] }),
     )
     expect(handle.emulatorUrl).toBe('http://127.0.0.1:52938')
