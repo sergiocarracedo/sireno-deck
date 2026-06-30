@@ -1,6 +1,7 @@
-import type { AddonFrontendButton } from "@/addon/api";
+import type { AddonFrontendButton } from '@/addon/api'
 
-import { useNow } from "../../shared/use-now";
+import { useNow } from '../../shared/use-now'
+import { ConfigSchema } from './config'
 
 const polar = (
   cx: number,
@@ -8,27 +9,27 @@ const polar = (
   r: number,
   deg: number,
 ): { x: number; y: number } => {
-  const rad = ((deg - 90) * Math.PI) / 180;
-  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-};
+  const rad = ((deg - 90) * Math.PI) / 180
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) }
+}
 
-const INTERVAL_MS = 1000;
+const INTERVAL_MS = 1000
 
-const AnalogClockButtonFrontend: AddonFrontendButton = () => {
-  const now = useNow(INTERVAL_MS);
-  const h = now.getHours() % 12;
-  const m = now.getMinutes();
-  const s = now.getSeconds();
-  const hourAngle = (h + m / 60) * 30;
-  const minuteAngle = (m + s / 60) * 6;
-  const secondAngle = s * 6;
-  const hourEnd = polar(50, 50, 22, hourAngle);
-  const minEnd = polar(50, 50, 32, minuteAngle);
-  const secEnd = polar(50, 50, 36, secondAngle);
+const AnalogClockButtonFrontend: AddonFrontendButton<ConfigSchema> = () => {
+  const now = useNow(INTERVAL_MS)
+  const h = now.getHours() % 12
+  const m = now.getMinutes()
+  const s = now.getSeconds()
+  const hourAngle = (h + m / 60) * 30
+  const minuteAngle = (m + s / 60) * 6
+  const secondAngle = s * 6
+  const hourEnd = polar(50, 50, 22, hourAngle)
+  const minEnd = polar(50, 50, 32, minuteAngle)
+  const secEnd = polar(50, 50, 36, secondAngle)
   const ticks = Array.from({ length: 12 }, (_, i) => {
-    const angle = i * 30;
-    const outer = polar(50, 50, 40, angle);
-    const inner = polar(50, 50, i % 3 === 0 ? 34 : 37, angle);
+    const angle = i * 30
+    const outer = polar(50, 50, 40, angle)
+    const inner = polar(50, 50, i % 3 === 0 ? 34 : 37, angle)
     return (
       <line
         key={i}
@@ -39,8 +40,8 @@ const AnalogClockButtonFrontend: AddonFrontendButton = () => {
         stroke="var(--color-muted)"
         strokeWidth={i % 3 === 0 ? 1.5 : 0.75}
       />
-    );
-  });
+    )
+  })
   return (
     <svg viewBox="0 0 100 100" className="h-full w-full">
       <circle
@@ -81,7 +82,7 @@ const AnalogClockButtonFrontend: AddonFrontendButton = () => {
       />
       <circle cx="50" cy="50" r="2" fill="var(--color-fg)" />
     </svg>
-  );
-};
+  )
+}
 
-export default AnalogClockButtonFrontend;
+export default AnalogClockButtonFrontend

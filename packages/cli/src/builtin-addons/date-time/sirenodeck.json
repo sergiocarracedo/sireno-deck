@@ -4,11 +4,14 @@
   "name": "date-time",
   "types": "./index.d.ts",
   "buttons": [
-    { "type": "core:date-time",        "path": "buttons/date-time" },
-    { "type": "core:time",             "path": "buttons/time" },
-    { "type": "core:date",             "path": "buttons/date" },
-    { "type": "core:clock",            "path": "buttons/clock" },
-    { "type": "core:analog-clock",     "path": "buttons/analog-clock" },
-    { "type": "core:locked-time-tile", "path": "buttons/locked-time-tile" }
+    { "type": "date-time:custom", "path": "buttons/custom" },
+    { "type": "date-time:time", "path": "buttons/time" },
+    { "type": "date-time:date", "path": "buttons/date" },
+    { "type": "date-time:clock", "path": "buttons/analog-clock" },
+    {
+      "type": "date-time:locked-time-tile",
+      "path": "buttons/locked-time-tile",
+      "internal": true
+    }
   ]
 }
