@@ -132,6 +132,7 @@ None.
 
 - Phase 14 added: Media player backend — wire poller to OS media provider (playerctl), publish real state, execute transport actions via backend
 - Phase 15 added: Theme base UI — migrate legacy `src/ui/` as shareable base layer so themes don't need to reimplement components/surfaces
+- Phase 16 added: Migrate weather addon — fix type errors, broken imports, invalid tone values, and manifest type reference in weather addon
 
 ## Deferred items
 
