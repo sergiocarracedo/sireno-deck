@@ -9,6 +9,7 @@ import {
 import { addonRegistry } from "virtual:sireno/addons/registry";
 
 import { ButtonFrame, Icon } from "@sireno-deck/cli";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 const BUTTON_SIZE = BUTTON_SIZE_PX;
 const BUTTON_GAP_PX = 8;
@@ -139,7 +140,9 @@ export const Deck = ({ deck, gestures, children }: DeckProps) => {
               holdProgress={gesture.holdProgress}
               buttonType={button.type}
             >
-              {addonSurface ?? <FallbackLabel text={fallbackText} />}
+              <ErrorBoundary resetKey={button.id}>
+                {addonSurface ?? <FallbackLabel text={fallbackText} />}
+              </ErrorBoundary>
             </ButtonFrame>
           </div>
         );

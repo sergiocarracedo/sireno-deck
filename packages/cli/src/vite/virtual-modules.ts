@@ -36,6 +36,43 @@ const THEME_RESOLVED_ID = '\0virtual:sireno/theme.css'
 const THEMES_MANIFEST_VIRTUAL_ID = 'virtual:sireno/themes/manifest'
 const THEMES_MANIFEST_RESOLVED_ID = '\0virtual:sireno/themes/manifest'
 
+/**
+ * Invalidate hooks registered by addon frontends. When a TSX file changes,
+ * the addon can register a cleanup that runs before HMR swaps the module,
+ * clearing intervals, animation frames, and event listeners that would
+ * otherwise fire on stale state.
+ *
+ * Addon code calls:
+ *   `__SIRENO_ADDON_CLEANUP__(addonName, () => clearInterval(id))`
+ *
+ * The plugin collects these per addon and invokes them whenever the
+ * addon's main module is updated.
+ */
+const cleanupRegistry = new Map<string, Set<() => void>>()
+
+export const __SIRENO_ADDON_CLEANUP__ = (
+  addonName: string,
+  cleanup: () => void,
+): void => {
+  const set = cleanupRegistry.get(addonName) ?? new Set<() => void>()
+  set.add(cleanup)
+  cleanupRegistry.set(addonName, set)
+}
+
+export const __SIRENO_RUN_ADDON_CLEANUPS__ = (addonName: string): number => {
+  const set = cleanupRegistry.get(addonName)
+  if (set === undefined || set.size === 0) return 0
+  for (const cleanup of set) {
+    try {
+      cleanup()
+    } catch {
+      // cleanup may throw if the addon is in an intermediate state — ignore
+    }
+  }
+  set.clear()
+  return set.size
+}
+
 export const TOKEN_MODULE = (token: string): string =>
   `export const token = ${JSON.stringify(token)};\n`
 
@@ -244,6 +281,32 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
         }
         void warmup()
       })
+    },
+    handleHotUpdate: ({ file, server }) => {
+      // When an addon frontend file changes, run any registered cleanup
+      // hooks BEFORE Vite swaps in the new module. This lets setInterval,
+      // requestAnimationFrame, and event listeners be cleared in time to
+      // prevent the old instance from calling state setters on the new
+      // (or unmounted) React tree.
+      let totalCleanups = 0
+      for (const addon of addons) {
+        if (addon.frontend === undefined) continue
+        const frontendPath = addon.frontend.main
+        const normalizedFile = file.replace(/\\/g, '/')
+        const normalizedFrontend = frontendPath.replace(/\\/g, '/')
+        if (!normalizedFile.endsWith(normalizedFrontend) && !normalizedFile.includes(normalizedFrontend)) continue
+        const cleared = __SIRENO_RUN_ADDON_CLEANUPS__(addon.name)
+        if (cleared > 0) {
+          server.config.logger.info(
+            `[sireno-deck] cleared ${cleared} cleanup(s) for addon "${addon.name}" before HMR of ${normalizedFile}`,
+          )
+        }
+        totalCleanups += cleared
+      }
+      // Always return undefined so Vite handles the HMR normally; the
+      // cleanups are side effects, not module replacements.
+      void totalCleanups
+      return undefined
     },
   }
 }

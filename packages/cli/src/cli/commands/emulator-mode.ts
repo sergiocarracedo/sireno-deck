@@ -104,6 +104,12 @@ export const spawnFrontendVite = (options: {
 
     const stdoutChunks: string[] = []
     const stderrChunks: string[] = []
+    // Track whether the promise has settled (ready resolved or rejected).
+    // Once settled, any subsequent `exit` event is unexpected: Vite crashed
+    // or restarted after being usable. We log a fatal warning so operators
+    // see the failure even though the spawn promise cannot reject anymore.
+    let settled = false
+    let settledUrl: string | null = null
 
     const formatOutput = (text: string, label: 'stdout' | 'stderr'): string => {
       const trimmed = text.trimEnd()
@@ -144,6 +150,8 @@ export const spawnFrontendVite = (options: {
         'frontend vite: regex did not match, using fallback port',
       )
       clearTimeout(timer)
+      settled = true
+      settledUrl = url
       resolve({ process: child, url })
     }, readyTimeoutMs - 1000)
 
@@ -155,7 +163,11 @@ export const spawnFrontendVite = (options: {
       if (match && match[1]) {
         clearTimeout(timer)
         const url = `http://127.0.0.1:${match[1]}`
-        setTimeout(() => resolve({ process: child, url }), 1000)
+        setTimeout(() => {
+          settled = true
+          settledUrl = url
+          resolve({ process: child, url })
+        }, 1000)
       }
     }
 
@@ -165,6 +177,16 @@ export const spawnFrontendVite = (options: {
     })
     child.on('exit', (code) => {
       clearTimeout(timer)
+      if (settled) {
+        // The frontend was usable but is now gone — Vite likely crashed
+        // during HMR. Surface this with a fatal log so the blank-page
+        // detection downstream has company rather than going silent.
+        logger.fatal(
+          { code, url: settledUrl },
+          'frontend vite exited after becoming ready — emulator will show a blank deck until the frontend is restarted',
+        )
+        return
+      }
       const output = stdoutChunks.join('') + stderrChunks.join('')
       const detail = output.length > 0 ? `\n  output:\n${output}` : ''
       reject(
@@ -222,6 +244,8 @@ const spawnEmulatorVite = (options: {
 
     const stdoutChunks: string[] = []
     const stderrChunks: string[] = []
+    let settled = false
+    let settledUrl: string | null = null
 
     const formatOutput = (text: string, label: 'stdout' | 'stderr'): string => {
       const trimmed = text.trimEnd()
@@ -263,6 +287,8 @@ const spawnEmulatorVite = (options: {
       if (match && match[1]) {
         clearTimeout(timer)
         const url = `http://127.0.0.1:${match[1]}`
+        settled = true
+        settledUrl = url
         resolve({ process: child, url })
       }
     }
@@ -273,6 +299,13 @@ const spawnEmulatorVite = (options: {
     })
     child.on('exit', (code) => {
       clearTimeout(timer)
+      if (settled) {
+        logger.fatal(
+          { code, url: settledUrl },
+          'emulator vite exited after becoming ready — commands from buttons will no longer be received',
+        )
+        return
+      }
       const output = stdoutChunks.join('') + stderrChunks.join('')
       const detail = output.length > 0 ? `\n  output:\n${output}` : ''
       reject(
