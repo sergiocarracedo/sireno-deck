@@ -1,0 +1,36 @@
+packages/cli/src/cli/commands/run.ts
+  s_32e9e58a6a363a::t_e2ce4c73da5c82 538
+  s_32e9e58a6a363a::t_4d8559605f6a93 324
+packages/cli/src/cli/commands/addon-registry.ts
+  s_32e9e58a6a363a::t_ccb2d788fc496d 6,57-61,69,131,133-134,137,176,224,269-274,295
+  s_32e9e58a6a363a::t_69debf1ef11c0a 49-54,62,67,92
+  s_32e9e58a6a363a::t_9a7fab46f098b2 181,187
+  s_32e9e58a6a363a::t_aa2f5324c9fe34 138,140-163,165-166,171,173
+  s_32e9e58a6a363a::t_e798b5189ae0bf 172
+  s_32e9e58a6a363a::t_d57bbfeeab000a 38,41-42
+  s_32e9e58a6a363a::t_bb993d584bdeca 107
+  s_32e9e58a6a363a::t_f2f60f25e9598d 116,119
+packages/cli/src/cli/commands/__tests__/addon-registry.test.ts
+  s_32e9e58a6a363a::t_c204d16b39592a 1,45-46,53-56,66,92-97,99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.6",
+  "base_commit_sha": "1cd7284cc136601bb98958fdc000ebd1bc9426a1",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
