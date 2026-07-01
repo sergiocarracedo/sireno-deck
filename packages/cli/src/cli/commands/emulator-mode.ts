@@ -382,9 +382,10 @@ export const runEmulatorMode = async (
     if (defaultSpec !== undefined) {
       process.env['SIRENO_THEME'] = JSON.stringify({
         name: defaultSpec.name,
-        cssPath: resolvePath(defaultSpec.dir, 'theme.css'),
-        frontendPath: resolvePath(defaultSpec.dir, 'index'),
+        manifestPath: resolvePath(defaultSpec.dir, 'sirenodeck.json'),
+        uiOverridesPath: null,
       })
+      process.env['SIRENO_THEME_DIR'] = defaultSpec.dir
     }
   }
 
@@ -404,6 +405,7 @@ export const runEmulatorMode = async (
     readyTimeoutMs,
     logger: options.logger,
     wsUrl: bridge.url,
+    themeDir: process.env['SIRENO_THEME_DIR'],
   })
 
   const { process: emulatorVite, url: emulatorUrl } = await spawnEmulatorVite({
