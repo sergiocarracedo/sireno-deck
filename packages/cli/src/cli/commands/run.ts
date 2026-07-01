@@ -321,7 +321,7 @@ export const runRealModePipeline = async (
 
   let frontendUrl = configuredUrl
 
-  const registry = collectBuiltinAddonRegistry()
+  const registry = await collectBuiltinAddonRegistry()
   if (process.env['SIRENO_ADDONS'] === undefined) {
     const addonSpecs = registry.scanned.map((s) => ({
       name: s.name,
@@ -535,7 +535,7 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
 
   const emulatorDecks = buildEmulatorDecks(options)
   const runtime = emulatorDecks.runtime
-  const registry = collectBuiltinAddonRegistry()
+  const registry = await collectBuiltinAddonRegistry()
   const statePublisher = new StatePublisher({
     bridge: { broadcast: () => undefined },
     logger,

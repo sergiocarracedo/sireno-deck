@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import { dirname, join, resolve as resolvePath } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { AddonPoller, AddonPollerChannel, AddonManifest } from "@/addon/api";
+import type { AddonPoller, AddonPollerChannel } from "@/addon/api";
 
 export interface ScannedAddon {
   readonly name: string;
@@ -11,7 +11,6 @@ export interface ScannedAddon {
   readonly frontendEntry: string | null;
   readonly publishIntervalMs: number | null;
   readonly pollerEntry: string | null;
-  readonly backendEntry: string | null;
   readonly buttonTypes: Readonly<Record<string, string>>;
   readonly deckTypes: Readonly<Record<string, string>>;
   readonly source: "json" | "regex";
@@ -36,54 +35,38 @@ const buildAddonByType = (
   return map;
 };
 
-export const collectBuiltinAddonRegistry = (): {
+export const collectBuiltinAddonRegistry = async (): Promise<{
   scanned: ReadonlyArray<ScannedAddon>;
   byType: Map<string, AddonFrontendRef>;
-} => {
-  const scanned = scanBuiltinAddons();
+}> => {
+  const scanned = await scanBuiltinAddons();
   return { scanned, byType: buildAddonByType(scanned) };
 };
 
 const here = dirname(fileURLToPath(import.meta.url));
 const builtinDir = resolvePath(here, "..", "..", "builtin-addons");
 
-const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null => {
-  const jsonScanned = scanAddonJsonManifest(addonDir, addonName);
-  if (jsonScanned !== null) return jsonScanned;
+const scanAddonDir = async (
+  addonDir: string,
+  addonName: string,
+): Promise<ScannedAddon | null> => {
+  const jsonScanned = await scanAddonJsonManifest(addonDir, addonName);
+  if (jsonScanned !== null && jsonScanned.types.length > 0) return jsonScanned;
   const indexPath = join(addonDir, "index.ts");
   const indexTsxPath = join(addonDir, "index.tsx");
-  const indexFile = existsSync(indexPath) ? indexPath : existsSync(indexTsxPath) ? indexTsxPath : null;
-  if (indexFile === null) return null;
+  const indexFile = existsSync(indexPath)
+    ? indexPath
+    : existsSync(indexTsxPath)
+      ? indexTsxPath
+      : null;
+  if (indexFile === null) return jsonScanned;
   let raw: string;
   try {
     raw = readFileSync(indexFile, "utf8");
   } catch {
-    return null;
+    return jsonScanned;
   }
-  const buttonsDir = join(addonDir, "buttons");
-  const buttonsIndexPath = existsSync(join(buttonsDir, "index.ts"))
-    ? join(buttonsDir, "index.ts")
-    : null;
-  const buttonsSources: string[] = [];
-  if (buttonsIndexPath !== null) {
-    try {
-      buttonsSources.push(readFileSync(buttonsIndexPath, "utf8"));
-    } catch {
-      // ignore
-    }
-  }
-  if (existsSync(buttonsDir)) {
-    for (const f of readdirSync(buttonsDir, { withFileTypes: true })) {
-      if (!f.isFile()) continue;
-      if (!/\.tsx?$/.test(f.name)) continue;
-      if (f.name === "index.ts" || f.name === "index.tsx") continue;
-      try {
-        buttonsSources.push(readFileSync(join(buttonsDir, f.name), "utf8"));
-      } catch {
-        // ignore
-      }
-    }
-  }
+  const allSources = [raw];
   const scanFrom = (source: string): Set<string> => {
     const out = new Set<string>();
     for (const m of source.matchAll(/type:\s*["']([a-z0-9-]+:[a-z0-9-]+)["']/gi)) {
@@ -94,19 +77,7 @@ const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null 
     }
     return out;
   };
-  const allSources = [raw, ...buttonsSources];
   const types = scanFrom(raw);
-  for (const src of buttonsSources) {
-    for (const t of scanFrom(src)) types.add(t);
-  }
-  let frontendEntry: string | null = null;
-  for (const src of allSources) {
-    const match = src.match(/frontend:\s*\{\s*main:\s*["']([^"']+)["']/);
-    if (match !== null) {
-      frontendEntry = resolvePath(addonDir, match[1]!);
-      break;
-    }
-  }
   let publishIntervalMs: number | null = null;
   for (const src of allSources) {
     const match = src.match(/publishIntervalMs:\s*(\d+)/);
@@ -118,7 +89,7 @@ const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null 
   const pollerEntry = existsSync(join(addonDir, "poller.ts"))
     ? join(addonDir, "poller.ts")
     : null;
-  if (frontendEntry === null && types.size === 0 && pollerEntry === null) return null;
+  if (types.size === 0 && pollerEntry === null) return jsonScanned;
   const buttonTypes: Record<string, string> = {};
   const entryMapRegex = /["']([a-z0-9-]+:[a-z0-9-]+)["']\s*:\s*\{\s*(?=[^}]*frontend\s*:\s*([A-Za-z_$][A-Za-z0-9_$]*))/g;
   for (const src of allSources) {
@@ -133,20 +104,19 @@ const scanAddonDir = (addonDir: string, addonName: string): ScannedAddon | null 
   return {
     name: addonName,
     types: [...types],
-    frontendEntry,
+    frontendEntry: existsSync(indexPath) ? indexPath : indexTsxPath,
     publishIntervalMs,
     pollerEntry,
-    backendEntry: null,
     buttonTypes,
     deckTypes: {},
     source: "regex",
   };
 };
 
-const scanAddonJsonManifest = (
+const scanAddonJsonManifest = async (
   addonDir: string,
   addonName: string,
-): ScannedAddon | null => {
+): Promise<ScannedAddon | null> => {
   const jsonPath = join(addonDir, "sirenodeck.json");
   if (!existsSync(jsonPath)) return null;
   let raw: unknown;
@@ -158,72 +128,63 @@ const scanAddonJsonManifest = (
   if (raw === null || typeof raw !== "object") return null;
   const obj = raw as Record<string, unknown>;
   if (obj["kind"] !== "addon") return null;
-  const apiVersion = obj["apiVersion"];
+  if (obj["apiVersion"] !== 1) return null;
   const name = obj["name"];
-  if (typeof apiVersion !== "number" || typeof name !== "string") return null;
+  const entry = obj["entry"];
+  if (typeof name !== "string" || typeof entry !== "string") return null;
   if (name !== addonName) return null;
 
+  const entryPath = resolvePath(addonDir, entry);
+  const types = new Set<string>();
   const buttonTypes: Record<string, string> = {};
-  const internalByType: Record<string, boolean> = {};
-  const rawButtons = Array.isArray(obj["buttons"]) ? obj["buttons"] : [];
-  for (const b of rawButtons) {
-    if (b === null || typeof b !== "object") continue;
-    const btn = b as Record<string, unknown>;
-    if (typeof btn["type"] !== "string") continue;
-    if (typeof btn["path"] !== "string") continue;
-    buttonTypes[btn["type"]] = "default";
-    if (btn["internal"] === true) internalByType[btn["type"]] = true;
-  }
-
-  const deckTypes: Record<string, string> = {};
-  const rawDecks = Array.isArray(obj["decks"]) ? obj["decks"] : [];
-  for (const d of rawDecks) {
-    if (d === null || typeof d !== "object") continue;
-    const deck = d as Record<string, unknown>;
-    if (typeof deck["type"] !== "string") continue;
-    if (typeof deck["path"] !== "string") continue;
-    deckTypes[deck["type"]] = deck["path"];
-  }
-
-  const backendField = typeof obj["backend"] === "string" ? obj["backend"] : null;
-  let backendEntry: string | null = null;
-  if (backendField !== null) {
-    const backendPath = resolvePath(addonDir, backendField);
-    if (
-      existsSync(`${backendPath}.ts`) ||
-      existsSync(`${backendPath}/index.ts`) ||
-      existsSync(`${backendPath}/index.tsx`)
-    ) {
-      backendEntry = backendPath;
+  let publishIntervalMs: number | null = null;
+  try {
+    const mod = (await import(entryPath)) as {
+      default?: { buttonTypes?: Record<string, unknown>; decks?: unknown; publishIntervalMs?: number };
+    };
+    const exported =
+      mod !== null &&
+      typeof mod === "object" &&
+      "default" in mod &&
+      mod.default !== undefined
+        ? mod.default
+        : mod;
+    const candidate =
+      exported !== null && typeof exported === "object"
+        ? (exported as { buttonTypes?: Record<string, unknown>; decks?: unknown; publishIntervalMs?: number })
+        : null;
+    if (candidate !== null) {
+      for (const [type] of Object.entries(candidate.buttonTypes ?? {})) {
+        types.add(type);
+        buttonTypes[type] = "default";
+      }
+      if (typeof candidate.publishIntervalMs === "number") {
+        publishIntervalMs = candidate.publishIntervalMs;
+      }
     }
+  } catch {
+    // Fall through with empty types — caller will fall back to regex scan.
   }
-
-  const frontendEntry = existsSync(join(addonDir, "index.ts"))
-    ? join(addonDir, "index.ts")
-    : existsSync(join(addonDir, "index.tsx"))
-      ? join(addonDir, "index.tsx")
-      : null;
 
   return {
     name: addonName,
-    types: Object.keys(buttonTypes),
-    frontendEntry,
-    publishIntervalMs: null,
+    types: [...types],
+    frontendEntry: entryPath,
+    publishIntervalMs,
     pollerEntry: null,
-    backendEntry,
     buttonTypes,
-    deckTypes,
+    deckTypes: {},
     source: "json",
   };
 };
 
-const scanBuiltinAddons = (): ReadonlyArray<ScannedAddon> => {
+const scanBuiltinAddons = async (): Promise<ReadonlyArray<ScannedAddon>> => {
   if (!existsSync(builtinDir)) return [];
   const entries = readdirSync(builtinDir, { withFileTypes: true });
   const out: ScannedAddon[] = [];
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
-    const scanned = scanAddonDir(join(builtinDir, entry.name), entry.name);
+    const scanned = await scanAddonDir(join(builtinDir, entry.name), entry.name);
     if (scanned !== null) out.push(scanned);
   }
   return out;
@@ -260,7 +221,7 @@ const validateButtonConfigExport = (
   const usesAddonButtonBackend = /import\s+type\s+\{[^}]*AddonButtonBackend[^}]*\}\s+from\s+["']@\/addon\/api["']/.test(backendSrc);
   if (usesAddonButtonBackend) return null;
 
-  if (!/import\s+\{\s*configSchema\s*}\s+from\s+["']\.\/config["']/.test(backendSrc)) {
+  if (!/import\s+\{\s*configSchema\s*}\s+from\s*["']\.\/config["']/.test(backendSrc)) {
     return {
       addon: addonName,
       button: buttonName,
@@ -305,10 +266,12 @@ export const validateBuiltinButtonConfigs = (): ReadonlyArray<ButtonValidationIs
   return issues;
 };
 
-const matchesManifest = (manifest: AddonManifest, addonName: string): boolean => {
-  if (manifest.name !== undefined && manifest.name !== addonName) return false;
-  if (manifest.publishIntervalMs === undefined) return false;
-  return true;
+const matchesManifest = (
+  publishIntervalMs: number | null,
+  addonName: string,
+): boolean => {
+  if (publishIntervalMs === null) return false;
+  return Boolean(addonName);
 };
 
 export interface DiscoveredAddonPoller {
@@ -329,14 +292,7 @@ export const discoverAddonPollers = async (
   const out: DiscoveredAddonPoller[] = [];
   for (const addon of scanned) {
     if (addon.pollerEntry === null) continue;
-    const manifest: AddonManifest = {
-      apiVersion: 3,
-      name: addon.name,
-      ...(addon.publishIntervalMs !== null
-        ? { publishIntervalMs: addon.publishIntervalMs }
-        : {}),
-    };
-    if (!matchesManifest(manifest, addon.name)) continue;
+    if (!matchesManifest(addon.publishIntervalMs, addon.name)) continue;
     try {
       const mod = (await import(addon.pollerEntry)) as {
         createPoller?: (deps: AddonPollerDependencies) => AddonPoller;

@@ -1,7 +1,4 @@
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
-
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import {
   collectBuiltinAddonRegistry,
@@ -18,7 +15,6 @@ const scannedFixture: ReadonlyArray<ScannedAddon> = [
     frontendEntry: "/abs/date-time/frontend",
     publishIntervalMs: 1000,
     pollerEntry: null,
-    backendEntry: null,
     buttonTypes: {},
     deckTypes: {},
     source: "regex",
@@ -29,7 +25,6 @@ const scannedFixture: ReadonlyArray<ScannedAddon> = [
     frontendEntry: "/abs/weather/frontend",
     publishIntervalMs: 600000,
     pollerEntry: null,
-    backendEntry: null,
     buttonTypes: {},
     deckTypes: {},
     source: "regex",
@@ -40,7 +35,6 @@ const scannedFixture: ReadonlyArray<ScannedAddon> = [
     frontendEntry: null,
     publishIntervalMs: 1000,
     pollerEntry: null,
-    backendEntry: null,
     buttonTypes: {},
     deckTypes: {},
     source: "regex",
@@ -48,18 +42,18 @@ const scannedFixture: ReadonlyArray<ScannedAddon> = [
 ];
 
 describe("collectBuiltinAddonRegistry", () => {
-  it("discovers the built-in addons", () => {
-    const registry = collectBuiltinAddonRegistry();
+  it("discovers the built-in addons", async () => {
+    const registry = await collectBuiltinAddonRegistry();
     expect(registry.scanned.length).toBeGreaterThan(0);
     const names = registry.scanned.map((a) => a.name);
     expect(names).toContain("date-time");
     expect(names).toContain("weather");
   });
 
-  it("populates byType with the type → addon map", () => {
-    const registry = collectBuiltinAddonRegistry();
-    expect(registry.byType.get("core:time")?.name).toBe("date-time");
-    expect(registry.byType.get("core:weather")?.name).toBe("weather");
+  it("populates byType with the type → addon map", async () => {
+    const registry = await collectBuiltinAddonRegistry();
+    expect(registry.byType.get("date-time:time")?.name).toBe("date-time");
+    expect(registry.byType.get("weather:weather")?.name).toBe("weather");
   });
 });
 
@@ -69,7 +63,7 @@ describe("discoverAddonPollers", () => {
     expect(discovered).toEqual([]);
   });
 
-  it("filters out addons without publishIntervalMs in the scanned manifest", async () => {
+  it("filters out addons without publishIntervalMs", async () => {
     const without: ScannedAddon[] = [
       {
         name: "no-cadence",
@@ -77,7 +71,6 @@ describe("discoverAddonPollers", () => {
         frontendEntry: null,
         publishIntervalMs: null,
         pollerEntry: "/some/poller",
-        backendEntry: null,
         buttonTypes: {},
         deckTypes: {},
         source: "regex",
@@ -96,43 +89,11 @@ describe("validateBuiltinButtonConfigs", () => {
 });
 
 describe("JSON manifest scan path", () => {
-  let tmpDir: string;
-
-  beforeEach(() => {
-    tmpDir = `/tmp/sireno-test-addons-${Date.now()}`;
-    mkdirSync(tmpDir, { recursive: true });
-  });
-
-  afterEach(() => {
-    rmSync(tmpDir, { recursive: true, force: true });
-  });
-
-  it("reads a valid sirenodeck.json with kind=addon", () => {
-    const addonDir = join(tmpDir, "json-addon");
-    mkdirSync(addonDir, { recursive: true });
-    mkdirSync(join(addonDir, "buttons", "alpha"), { recursive: true });
-    writeFileSync(
-      join(addonDir, "sirenodeck.json"),
-      JSON.stringify({
-        kind: "addon",
-        apiVersion: 1,
-        name: "json-addon",
-        buttons: [{ type: "test:alpha", path: "buttons/alpha", internal: true }],
-        decks: [{ type: "main-deck", path: "decks/main" }],
-      }),
-    );
-    const scanned = scanBuiltinAddons.call(null as never) as never;
-    const builtinScanned = scanBuiltinAddons();
-    expect(builtinScanned.find((s) => s.name === "internal-settings")?.source).toBe(
-      "json",
-    );
-    expect(builtinScanned.find((s) => s.name === "internal-settings")?.deckTypes).toEqual({
-      settings: "decks/settings",
-    });
-    void scanned;
-  });
-
-  it("ignores sirenodeck.json with kind != 'addon'", () => {
-    expect(true).toBe(true);
+  it("discovers builtin addons via their sirenodeck.json", async () => {
+    const builtinScanned = await scanBuiltinAddons();
+    const dateTime = builtinScanned.find((s) => s.name === "date-time");
+    expect(dateTime?.source).toBe("json");
+    expect(dateTime?.frontendEntry).toContain("date-time/index.ts");
+    expect(dateTime?.types.length).toBeGreaterThan(0);
   });
 });
