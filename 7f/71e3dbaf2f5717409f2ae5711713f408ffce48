@@ -1,0 +1,31 @@
+packages/cli/src/themes/loader.ts
+  s_32e9e58a6a363a::t_12ded2dba126b2 42
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_32e9e58a6a363a::t_1de4270cca20f3 383,386,389-394
+  s_32e9e58a6a363a::t_6d20b6adc11deb 2-3,15
+packages/cli/src/themes/css.ts
+  s_32e9e58a6a363a::t_365a9e8b0615d0 31
+packages/cli/emulator/.sireno-deck/theme.css
+  s_32e9e58a6a363a::t_7dd9e6b90f8d8f 1-4,9,16,21-23,50-51,53,58,62-67,69,71,73,75,77-89
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.6",
+  "base_commit_sha": "7f71e3dbaf2f5717409f2ae5711713f408ffce48",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
