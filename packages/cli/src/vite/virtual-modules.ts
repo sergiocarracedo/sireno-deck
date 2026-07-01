@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import type { Plugin, ViteDevServer } from 'vite'
 
 export interface SirenoVitePluginTheme {
@@ -233,13 +233,23 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
       // Sireno-deck serves a local Stream Deck UI over loopback — every
       // byte ships through localhost, so Tailwind's "purge unused
       // utilities" optimization costs nothing to undo. Scan the entire
-      // CLI package (frontend, emulator, shared ui, all builtin addons,
-      // and any third-party addons discoverable under ~/.config/sireno-deck)
-      // so addon authors can use any utility class without coordinating
-      // with the Vite plugin. Add classes used in `.tsx` literal
-      // className and template string interpolations alike.
+      // CLI package (frontend, emulator, shared ui, builtin addons)
+      // plus each third-party addon's frontend directory so addon
+      // authors can use any utility class without coordinating with
+      // the Vite plugin.
       const cliPackage = join(root, '..')
-      const sourceDirective = `@source "${cliPackage}/**/*.{ts,tsx}";\n`
+      const sourceLines = [`@source "${cliPackage}/**/*.{ts,tsx}";\n`]
+      const seenFrontendDirs = new Set<string>()
+      for (const addon of addons) {
+        const mainPath = addon.frontend?.main
+        if (typeof mainPath !== 'string' || mainPath.length === 0) continue
+        const frontendDir = dirname(mainPath)
+        if (seenFrontendDirs.has(frontendDir)) continue
+        if (frontendDir.startsWith(cliPackage)) continue
+        seenFrontendDirs.add(frontendDir)
+        sourceLines.push(`@source "${frontendDir}/**/*.{ts,tsx}";\n`)
+      }
+      const sourceDirective = sourceLines.join('')
       writeFileSync(filePath, sourceDirective + themeCss, 'utf8')
     },
     config: (config) => {
