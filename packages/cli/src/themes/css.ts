@@ -45,6 +45,23 @@ export function buildThemeCss(
 
   const parts: string[] = [];
 
+  // Tailwind @theme block — emitted last so the @theme block is the
+  // final block the Tailwind v4 PostCSS plugin sees. Empirically the
+  // vite plugin truncates a leading @theme block to only the first
+  // few entries; emitting it after @font-face / :root makes the full
+  // set of variables land in @layer theme and produce utilities like
+  // bg-frame, text-accent, font-mono, etc.
+  const themeLines = ["@theme {"];
+  for (const [token, value] of Object.entries(colorTokens)) {
+    const cssToken = MANIFEST_TO_CSS_TOKEN[token] ?? token.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+    themeLines.push(`  --color-${cssToken}: ${value};`);
+  }
+  for (const [roleName, role] of Object.entries(typography)) {
+    const cssRoleName = formatRoleName(roleName);
+    themeLines.push(`  --font-${cssRoleName}: ${toFontFamilyValue(role.fontFamily)}, ui-sans-serif, system-ui, sans-serif;`);
+  }
+  themeLines.push("}");
+
   // @font-face declarations
   if (fonts.length > 0) {
     const fontFaces = fonts.map((f) => {
@@ -57,25 +74,17 @@ export function buildThemeCss(
     parts.push(fontFaces.join("\n\n"));
   }
 
-  // Tailwind @theme block
-  const themeLines = ["@theme {"];
-  for (const [token, value] of Object.entries(colorTokens)) {
-    const cssToken = MANIFEST_TO_CSS_TOKEN[token] ?? token.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
-    themeLines.push(`  --color-${cssToken}: ${value};`);
-  }
-  for (const [roleName, role] of Object.entries(typography)) {
-    const cssRoleName = formatRoleName(roleName);
-    themeLines.push(`  --font-${cssRoleName}: ${toFontFamilyValue(role.fontFamily)}, ui-sans-serif, system-ui, sans-serif;`);
-  }
-  themeLines.push("}");
-  parts.push(themeLines.join("\n"));
-
-  // :root CSS variables (runtime)
+  // :root CSS variables (runtime) — emit only the --sireno-color-* prefixed
+  // runtime values. We deliberately avoid also setting the plain --color-*
+  // names here, because Tailwind v4 will only keep a @theme variable in
+  // @layer theme when it is the unique declaration of that name. If we
+  // duplicate --color-frame in :root, Tailwind considers the @theme entry
+  // redundant and silently drops it, leaving bg-frame / text-frame / etc.
+  // utilities un-generated.
   const rootLines = [":root {"];
   for (const [token, value] of Object.entries(colorTokens)) {
     const cssToken = MANIFEST_TO_CSS_TOKEN[token] ?? token.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
     rootLines.push(`  --sireno-color-${cssToken}: ${value};`);
-    rootLines.push(`  --color-${cssToken}: ${value};`);
   }
   for (const [roleName, role] of Object.entries(typography)) {
     rootLines.push(...formatTypographyRoleVariables(roleName, role));
@@ -87,6 +96,9 @@ export function buildThemeCss(
   if (stylesheetContents.length > 0) {
     parts.push(stylesheetContents.join("\n\n"));
   }
+
+  // @theme block emitted last — see comment above the @theme block.
+  parts.push(themeLines.join("\n"));
 
   return parts.join("\n\n");
 }
