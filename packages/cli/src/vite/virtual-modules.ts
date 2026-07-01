@@ -94,7 +94,7 @@ export const buildAddonsRegistryModule = (
     const modName = sanitizeIdentifier(addon.name) + '_manifest'
     for (const [type, exportName] of Object.entries(addon.buttonTypes)) {
       lines.push(
-        `  ${JSON.stringify(type)}: { addonName: ${JSON.stringify(addon.name)}, Component: ${modName}Obj.buttonTypes[${JSON.stringify(type)}].frontend ?? (${modName}.${exportName} ?? ${modName}.default?.buttonTypes?.[${JSON.stringify(type)}]?.frontend) },`,
+        `  ${JSON.stringify(type)}: { addonName: ${JSON.stringify(addon.name)}, Component: (${modName}Obj.buttonTypes[${JSON.stringify(type)}] ?? ${modName}[${JSON.stringify(exportName)}] ?? ${modName}.default?.buttonTypes?.[${JSON.stringify(type)}])?.frontend },`,
       )
     }
   }
