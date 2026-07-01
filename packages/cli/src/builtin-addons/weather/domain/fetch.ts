@@ -1,4 +1,6 @@
-import type { WeatherButtonConfig, WeatherLocation, WeatherSnapshot } from "../schemas";
+import type { WeatherButtonConfig, WeatherLocation, WeatherSnapshot } from "../buttons/weather/config";
+
+import { describeWeatherCode } from "./codes";
 
 const OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast";
 
@@ -29,8 +31,9 @@ export const fetchWeather = async (
     windSpeed: current.wind_speed_10m,
     description:
       current.weather_code !== undefined
-        ? `${current.weather_code}`
+        ? describeWeatherCode(current.weather_code)
         : undefined,
+    wmoCode: current.weather_code,
     units,
   };
 };

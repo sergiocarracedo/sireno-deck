@@ -50,8 +50,8 @@ export const createPoller = (): AddonPoller => ({
             temperature: snapshot.temperature,
             windSpeed: snapshot.windSpeed,
             description: snapshot.description,
+            wmoCode: snapshot.wmoCode,
             units: cfg.units,
-            ...(cfg.location.name !== undefined ? { locationName: cfg.location.name } : {}),
           };
         } catch (err) {
           return {

@@ -1,13 +1,11 @@
-import type { NewAddonManifest } from "@/addon/api";
-
-import manifestJson from "./sirenodeck.json" with { type: "json" };
+import type { AddonManifestV1 } from "@/addon/api";
 
 import weatherBackend from "./buttons/weather/backend";
 import weatherFrontend from "./buttons/weather/frontend";
 
-export const manifest: NewAddonManifest = {
-  apiVersion: 3,
-  name: manifestJson.name,
+export const manifest: AddonManifestV1 = {
+  apiVersion: 1,
+  name: "weather",
   buttonTypes: {
     "weather:weather": {
       frontend: weatherFrontend,

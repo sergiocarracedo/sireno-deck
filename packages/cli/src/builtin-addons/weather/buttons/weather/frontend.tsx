@@ -1,15 +1,7 @@
 import { Text, Chip } from "@/ui/index";
 import { useAddonChannel } from "@/api/react";
 import type { AddonFrontendButton } from "@/addon/api";
-
-interface WeatherSnapshot {
-  readonly available: boolean;
-  readonly temperature?: number;
-  readonly windSpeed?: number;
-  readonly description?: string;
-  readonly units: "metric" | "imperial";
-  readonly wmoCode?: number;
-}
+import type { ConfigSchema, WeatherSnapshot } from "./config";
 
 const WMO_ICONS: Record<number, string> = {
   0: "☀",
@@ -47,14 +39,14 @@ const iconFor = (code?: number): string => {
   return WMO_ICONS[code] ?? "🌍";
 };
 
-const WeatherButtonFrontend: AddonFrontendButton = ({ config }) => {
-  const { name } = (config as { location?: { name?: string } })?.location ?? {};
+const WeatherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({ config }) => {
+  const name = (config as { location?: { name?: string } })?.location?.name;
   const { data } = useAddonChannel<WeatherSnapshot>("weather:current");
   if (!data?.available) {
     return (
       <Text
         size="xs"
-        tone="muted"
+        tone="fg"
         className="flex h-full w-full items-center justify-center"
       >
         {name ?? "Weather"}
@@ -73,17 +65,17 @@ const WeatherButtonFrontend: AddonFrontendButton = ({ config }) => {
         {unitTemp}
       </Text>
       {data.description && (
-        <Text size="xs" tone="muted">
+        <Text size="xs" tone="fg">
           {data.description}
         </Text>
       )}
       {data.windSpeed !== undefined && (
-        <Chip tone="muted" size="sm">
+        <Chip tone="foreground" size="sm">
           {data.windSpeed.toFixed(0)} {unitWind}
         </Chip>
       )}
       {name && (
-        <Text size="xs" tone="muted" fit="ellipsis">
+        <Text size="xs" tone="fg" fit="ellipsis">
           {name}
         </Text>
       )}

@@ -25,3 +25,14 @@ const WeatherButtonSchema = z
 
 export const configSchema = WeatherButtonSchema;
 export type ConfigSchema = z.infer<typeof configSchema>;
+export type WeatherLocation = z.infer<typeof WeatherLocationSchema>;
+export type WeatherButtonConfig = z.infer<typeof WeatherButtonSchema>;
+
+export interface WeatherSnapshot {
+  readonly available: boolean;
+  readonly temperature?: number;
+  readonly windSpeed?: number;
+  readonly description?: string;
+  readonly units: "metric" | "imperial";
+  readonly wmoCode?: number;
+}
