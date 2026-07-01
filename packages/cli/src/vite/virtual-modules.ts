@@ -193,7 +193,10 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
       const dir = join(root, '.sireno-deck')
       if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
       const filePath = join(dir, 'theme.css')
-      const uiDir = join(root, '..', '..', 'src', 'ui')
+      // `root` is the frontend dir (packages/cli/frontend); the shared UI
+      // primitives live one level up in packages/cli/src/ui, so we need
+      // to climb exactly one directory to reach them.
+      const uiDir = join(root, '..', 'src', 'ui')
       const sourceDirective = `@source "${root}/**/*.{ts,tsx}";\n@source "${uiDir}/**/*.{ts,tsx}";\n`
       writeFileSync(filePath, sourceDirective + themeCss, 'utf8')
     },
