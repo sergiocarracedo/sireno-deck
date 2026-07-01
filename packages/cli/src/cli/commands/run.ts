@@ -317,6 +317,7 @@ export const runRealModePipeline = async (
     runtime,
     decks,
     providers,
+    themeDir,
   } = await preflight(options)
 
   let frontendUrl = configuredUrl
@@ -382,7 +383,7 @@ export const runRealModePipeline = async (
       readyTimeoutMs: 30_000,
       wsUrl: `ws://127.0.0.1:${wsPort}`,
       logger,
-      themeDir: preflightResult.themeDir,
+      themeDir,
     })
     frontendUrl = frontendVite.url
   }
