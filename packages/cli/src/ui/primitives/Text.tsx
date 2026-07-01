@@ -207,7 +207,7 @@ function renderRichTextNodes(
   })
 }
 
-function renderTextChildren(children: ReactNode, lineHeight: number | string): ReactNode {
+function renderTextChildren(children: ReactNode, _lineHeight: number | string): ReactNode {
   if (typeof children !== 'string') {
     return children
   }
@@ -266,10 +266,21 @@ export function Text(props: TextProps): ReactElement {
     shrink: 'sireno-text-fit-shrink whitespace-normal break-words',
     hidden: 'overflow-hidden whitespace-nowrap',
   }
-
-  const composedStyle =
-    props.fontStack !== undefined ? { ...props.style, fontFamily: props.fontStack } : props.style
-
+  const composedStyle: CSSProperties =
+    props.fontStack !== undefined
+      ? { ...props.style, fontFamily: props.fontStack }
+      : (props.style ?? {})
+  // Apply arbitrary line-height via inline style so Tailwind's static
+  // class scanner doesn't have to predict runtime values like
+  // "1.2em" — anything not matching a known preset lands here and is
+  // applied directly to the element. Numeric values get suffixed with
+  // `em` so they behave like the legacy Tailwind multiplier API.
+  if (lineHeight !== 1) {
+    composedStyle.lineHeight =
+      typeof lineHeight === 'number' && Number.isFinite(lineHeight)
+        ? `${lineHeight}em`
+        : (lineHeight as string)
+  }
   return (
     <div
       className={cn([
@@ -280,7 +291,6 @@ export function Text(props: TextProps): ReactElement {
         SIZE_CLASS[size],
         fitModesClasses[fit],
         props.className,
-        lineHeight !== 1 ? `!leading-[${lineHeight}]` : null,
       ])}
       data-sireno-text-fit={fit}
       data-sireno-text-shrink-state={fit === 'shrink' ? 'pending' : undefined}
