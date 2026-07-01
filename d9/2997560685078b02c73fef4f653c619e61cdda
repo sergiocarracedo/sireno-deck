@@ -1,0 +1,53 @@
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_32e9e58a6a363a::t_73fd3879e009e0 290-291,302-308
+  s_32e9e58a6a363a::t_7c38e9f006ada4 107-112,153-154,166-170,180-189
+  s_32e9e58a6a363a::t_3ef12011744e0f 247-248
+packages/cli/frontend/src/main.tsx
+  s_32e9e58a6a363a::t_460a15060888f1 1,7
+  s_32e9e58a6a363a::t_44d336dd167391 4,8-17,20
+packages/cli/frontend/src/components/Deck.tsx
+  s_32e9e58a6a363a::t_71df357d5d2572 143-145
+  s_32e9e58a6a363a::t_0b0b2694c05945 12
+packages/cli/frontend/src/components/ErrorBoundary.tsx
+  s_32e9e58a6a363a::t_64c20cc57a8dad 1-25,27-59,61-78,85
+  s_32e9e58a6a363a::t_6d4ab189c69814 60
+  s_32e9e58a6a363a::t_7dadc0cac4be9d 79-84
+  s_32e9e58a6a363a::t_fa9055f730be0d 26
+packages/cli/bin/dev.js
+  s_32e9e58a6a363a::t_4fb90e76d9dc53 28-36
+  s_32e9e58a6a363a::t_8cbd661669c92a 48
+  s_32e9e58a6a363a::t_4a50d7d38a7060 18-21,23,37,39-44
+  s_32e9e58a6a363a::t_7c899084ea014f 12-17,22,24-27,38
+packages/cli/src/cli/main.ts
+  s_32e9e58a6a363a::t_362f1893a5b39d 52
+  s_32e9e58a6a363a::t_62411455181443 10-46
+packages/cli/src/vite/virtual-modules.ts
+  s_32e9e58a6a363a::t_897b83ccd8004b 285-310
+  s_32e9e58a6a363a::t_7339818e0e16c6 39-74
+  s_32e9e58a6a363a::t_b5edd2f6868fed 75
+packages/cli/src/render/browser-renderer.ts
+  s_32e9e58a6a363a::t_407129e2168451 131-132,167
+  s_32e9e58a6a363a::t_cf47323f3cd410 60-67
+  s_32e9e58a6a363a::t_e1d9f18e65fabb 162,165,168-175
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.6",
+  "base_commit_sha": "d92997560685078b02c73fef4f653c619e61cdda",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
