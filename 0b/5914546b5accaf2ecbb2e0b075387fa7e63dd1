@@ -1,0 +1,38 @@
+packages/cli/src/builtin-addons/weather/index.ts
+  s_32e9e58a6a363a::t_e76e3ae668e499 8
+  s_32e9e58a6a363a::t_b241b00c6886ff 1,6-7
+packages/cli/src/builtin-addons/weather/sirenodeck.json
+  s_32e9e58a6a363a::t_8e1ade5e25f1fa 5-6
+packages/cli/src/builtin-addons/weather/domain/fetch.ts
+  s_32e9e58a6a363a::t_47812e7ebd28a9 1-3,34,36
+packages/cli/src/builtin-addons/weather/index.d.ts
+  s_32e9e58a6a363a::t_de36f9b93a2737 1,3
+packages/cli/src/builtin-addons/weather/poller.ts
+  s_32e9e58a6a363a::t_1b6f523d4f0226 53
+packages/cli/src/builtin-addons/weather/buttons/weather/config.ts
+  s_32e9e58a6a363a::t_6e08fec3eb0fc3 27-38
+packages/cli/src/builtin-addons/weather/buttons/weather/frontend.tsx
+  s_32e9e58a6a363a::t_8dc819e47ad9ed 4,42-43,49,68,78
+  s_32e9e58a6a363a::t_abd5ef0c2aa361 73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.6",
+  "base_commit_sha": "0b5914546b5accaf2ecbb2e0b075387fa7e63dd1",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
