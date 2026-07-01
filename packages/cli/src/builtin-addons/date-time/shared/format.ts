@@ -58,10 +58,15 @@ const splitFormat = (pattern: string): FormatSegment[] => {
 };
 
 const expandTokens = (tokenString: string, date: Date): string => {
-  let result = "";
-  let i = 0;
+  let result = ""
+  let i = 0
   while (i < tokenString.length) {
-    let matched = false;
+    if (tokenString.slice(i, i + 6) === "&nbsp;") {
+      result += "\u00A0"
+      i += 6
+      continue
+    }
+    let matched = false
     for (const len of [4, 3, 2, 1]) {
       const slice = tokenString.slice(i, i + len);
       const handler = TOKEN_MAP[slice];
