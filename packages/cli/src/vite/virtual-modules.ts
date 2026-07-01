@@ -231,10 +231,17 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
       if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
       const filePath = join(dir, 'theme.css')
       // `root` is the frontend dir (packages/cli/frontend); the shared UI
-      // primitives live one level up in packages/cli/src/ui, so we need
-      // to climb exactly one directory to reach them.
+      // primitives live one level up in packages/cli/src/ui, and addon
+      // frontends live under packages/cli/src/builtin-addons. Tailwind v4
+      // must scan all three so utility classes used in addon JSX
+      // (e.g. `leading-none` in emoji-selector/category) are emitted
+      // instead of getting purged at build time.
       const uiDir = join(root, '..', 'src', 'ui')
-      const sourceDirective = `@source "${root}/**/*.{ts,tsx}";\n@source "${uiDir}/**/*.{ts,tsx}";\n`
+      const addonsDir = join(root, '..', 'src', 'builtin-addons')
+      const sourceDirective =
+        `@source "${root}/**/*.{ts,tsx}";\n` +
+        `@source "${uiDir}/**/*.{ts,tsx}";\n` +
+        `@source "${addonsDir}/**/*.{ts,tsx}";\n`
       writeFileSync(filePath, sourceDirective + themeCss, 'utf8')
     },
     config: (config) => {

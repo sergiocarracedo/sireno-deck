@@ -1,7 +1,9 @@
 @source "/works/opensource/sireno-deck-2/packages/cli/emulator/**/*.{ts,tsx}";
-@source "/works/opensource/sireno-deck-2/packages/src/ui/**/*.{ts,tsx}";
+@source "/works/opensource/sireno-deck-2/packages/cli/src/ui/**/*.{ts,tsx}";
+@source "/works/opensource/sireno-deck-2/packages/cli/src/builtin-addons/**/*.{ts,tsx}";
 @source "/works/opensource/sireno-deck-2/packages/cli/frontend/**/*.{ts,tsx}";
-@source "/works/opensource/sireno-deck-2/packages/src/ui/**/*.{ts,tsx}";
+@source "/works/opensource/sireno-deck-2/packages/cli/src/ui/**/*.{ts,tsx}";
+@source "/works/opensource/sireno-deck-2/packages/cli/src/builtin-addons/**/*.{ts,tsx}";
 @font-face {
   font-family: 'IBM Plex Sans';
   font-style: normal;
@@ -44,37 +46,15 @@
   src: url('./assets/IBM_Plex_Mono/IBMPlexMono-Bold.ttf') format('truetype');
 }
 
-@theme {
-  --color-bg: #2e3540;
-  --color-frame: #53738B;
-  --color-fg: #eef2f7;
-  --color-foreground-contrast: #000000;
-  --color-primary: #7dd3fc;
-  --color-accent: #C3F5FF;
-  --color-success: #34d399;
-  --color-danger: #FFB4AB;
-  --font-main: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-aux: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-sans-serif, system-ui, sans-serif;
-}
-
 :root {
   --sireno-color-bg: #2e3540;
-  --color-bg: #2e3540;
   --sireno-color-frame: #53738B;
-  --color-frame: #53738B;
   --sireno-color-fg: #eef2f7;
-  --color-fg: #eef2f7;
   --sireno-color-foreground-contrast: #000000;
-  --color-foreground-contrast: #000000;
   --sireno-color-primary: #7dd3fc;
-  --color-primary: #7dd3fc;
   --sireno-color-accent: #C3F5FF;
-  --color-accent: #C3F5FF;
   --sireno-color-success: #34d399;
-  --color-success: #34d399;
   --sireno-color-danger: #FFB4AB;
-  --color-danger: #FFB4AB;
   --sireno-font-main-family: 'IBM Plex Sans';
   --sireno-font-main-size: 12px;
   --sireno-font-main-weight: 100;
@@ -172,4 +152,19 @@
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+
+@theme {
+  --color-bg: #2e3540;
+  --color-frame: #53738B;
+  --color-fg: #eef2f7;
+  --color-foreground-contrast: #000000;
+  --color-primary: #7dd3fc;
+  --color-accent: #C3F5FF;
+  --color-success: #34d399;
+  --color-danger: #FFB4AB;
+  --font-main: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-aux: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-sans-serif, system-ui, sans-serif;
 }
