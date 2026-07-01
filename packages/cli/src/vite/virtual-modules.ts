@@ -171,7 +171,7 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
       if (id === ADDONS_REGISTRY_RESOLVED_ID)
         return buildAddonsRegistryModule(addons)
       if (id === THEME_RESOLVED_ID) return themeCss
-      if (id === THEMES_MANIFEST_VIRTUAL_ID)
+      if (id === THEMES_MANIFEST_RESOLVED_ID)
         return buildThemesManifestModule(theme)
       return null
     },
