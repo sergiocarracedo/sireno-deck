@@ -39,7 +39,7 @@ function discoverThemeManifests(): ReadonlyArray<{ dir: string; name: string }> 
   return _discoverThemesDir();
 }
 
-function readAndValidateManifest(
+export function readAndValidateManifest(
   manifestPath: string,
   expectedName?: string,
 ): ThemeJsonManifest {

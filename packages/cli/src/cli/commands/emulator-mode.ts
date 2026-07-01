@@ -1,6 +1,6 @@
 import { spawn, type ChildProcess } from 'node:child_process'
-import { existsSync } from 'node:fs'
-import { dirname, resolve as resolvePath } from 'node:path'
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { dirname, join, resolve as resolvePath } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import type pino from 'pino'
@@ -12,7 +12,7 @@ import type {
 } from '@/api/protocol-internal'
 import type { Runtime, RuntimeDeck } from '@/deck'
 import { startWsBridge, type WsBridge } from '@/render/ws-bridge'
-import { BUILT_IN_THEMES } from '@/themes/loader'
+import { BUILT_IN_THEMES, buildThemeCssFromManifest, readAndValidateManifest } from '@/themes/loader'
 
 const DEFAULT_FRONTEND_PORT = 5180
 const DEFAULT_EMULATOR_PORT = 52938
@@ -380,12 +380,18 @@ export const runEmulatorMode = async (
   ) {
     const defaultSpec = BUILT_IN_THEMES[0]
     if (defaultSpec !== undefined) {
+      const manifestPath = resolvePath(defaultSpec.dir, 'sirenodeck.json')
       process.env['SIRENO_THEME'] = JSON.stringify({
         name: defaultSpec.name,
-        manifestPath: resolvePath(defaultSpec.dir, 'sirenodeck.json'),
+        manifestPath,
         uiOverridesPath: null,
       })
-      process.env['SIRENO_THEME_DIR'] = defaultSpec.dir
+      process.env['SIRENO_THEME_DIR'] = frontendCwd
+      const cssDir = join(frontendCwd, '.sireno-deck')
+      if (!existsSync(cssDir)) mkdirSync(cssDir, { recursive: true })
+      const manifest = readAndValidateManifest(manifestPath, defaultSpec.name)
+      const cssContent = buildThemeCssFromManifest(manifest, defaultSpec.dir)
+      writeFileSync(join(cssDir, 'theme.css'), cssContent, 'utf8')
     }
   }
 

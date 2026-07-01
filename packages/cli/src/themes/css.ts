@@ -28,7 +28,7 @@ function formatTypographyRoleVariables(
 
 const MANIFEST_TO_CSS_TOKEN: Record<string, string> = {
   background: "bg",
-  foreground: "foreground",
+  foreground: "fg",
   "foreground-contrast": "foreground-contrast",
   frame: "frame",
   primary: "primary",
