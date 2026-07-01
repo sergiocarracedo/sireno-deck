@@ -128,23 +128,35 @@ export const buildThemesManifestModule = (
     // ignore — manifest may not exist in all setups
   }
 
-  const uiOverrides = theme.uiOverridesPath
+  const uiOverridesImport = theme.uiOverridesPath
     ? `import * as _uiOverrides from ${JSON.stringify(theme.uiOverridesPath)};`
     : null
 
+  const uiOverridesBody =
+    theme.uiOverridesPath !== null
+      ? [
+          `const _components = _uiOverrides?.components ?? {};`,
+          `const _surfaces = _uiOverrides?.surfaces ?? {};`,
+          `const _primitives = _uiOverrides?.primitives ?? {};`,
+          `export const components = _components;`,
+          `export const surfaces = _surfaces;`,
+          `export const primitives = _primitives;`,
+          `export { _uiOverrides as uiOverrides };`,
+        ].join('\n')
+      : [
+          `export const components = null;`,
+          `export const surfaces = null;`,
+          `export const primitives = null;`,
+          `export const uiOverrides = null;`,
+        ].join('\n')
+
   return [
-    uiOverrides,
+    uiOverridesImport,
     `const _manifest = JSON.parse(${JSON.stringify(manifestData)})`,
     `export const activeTheme = { name: ${JSON.stringify(theme.name)}, manifestPath: ${JSON.stringify(theme.manifestPath)}, uiOverridesPath: ${JSON.stringify(theme.uiOverridesPath)} };`,
     `export const colorTokens = _manifest.colorTokens ?? null;`,
     `export const typography = _manifest.typography ?? null;`,
-    `const _components = _uiOverrides?.components ?? {};`,
-    `const _surfaces = _uiOverrides?.surfaces ?? {};`,
-    `const _primitives = _uiOverrides?.primitives ?? {};`,
-    `export const components = _components;`,
-    `export const surfaces = _surfaces;`,
-    `export const primitives = _primitives;`,
-    `export { _uiOverrides as uiOverrides };`,
+    uiOverridesBody,
   ].filter(Boolean).join('\n')
 }
 
