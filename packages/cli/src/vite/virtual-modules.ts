@@ -230,18 +230,16 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
       const dir = join(root, '.sireno-deck')
       if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
       const filePath = join(dir, 'theme.css')
-      // `root` is the frontend dir (packages/cli/frontend); the shared UI
-      // primitives live one level up in packages/cli/src/ui, and addon
-      // frontends live under packages/cli/src/builtin-addons. Tailwind v4
-      // must scan all three so utility classes used in addon JSX
-      // (e.g. `leading-none` in emoji-selector/category) are emitted
-      // instead of getting purged at build time.
-      const uiDir = join(root, '..', 'src', 'ui')
-      const addonsDir = join(root, '..', 'src', 'builtin-addons')
-      const sourceDirective =
-        `@source "${root}/**/*.{ts,tsx}";\n` +
-        `@source "${uiDir}/**/*.{ts,tsx}";\n` +
-        `@source "${addonsDir}/**/*.{ts,tsx}";\n`
+      // Sireno-deck serves a local Stream Deck UI over loopback — every
+      // byte ships through localhost, so Tailwind's "purge unused
+      // utilities" optimization costs nothing to undo. Scan the entire
+      // CLI package (frontend, emulator, shared ui, all builtin addons,
+      // and any third-party addons discoverable under ~/.config/sireno-deck)
+      // so addon authors can use any utility class without coordinating
+      // with the Vite plugin. Add classes used in `.tsx` literal
+      // className and template string interpolations alike.
+      const cliPackage = join(root, '..')
+      const sourceDirective = `@source "${cliPackage}/**/*.{ts,tsx}";\n`
       writeFileSync(filePath, sourceDirective + themeCss, 'utf8')
     },
     config: (config) => {
