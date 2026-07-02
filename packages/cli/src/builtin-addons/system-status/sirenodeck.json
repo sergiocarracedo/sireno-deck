@@ -2,8 +2,5 @@
   "kind": "addon",
   "apiVersion": 1,
   "name": "system-status",
-  "types": "./index.d.ts",
-  "buttons": [
-    { "type": "system-status:status", "path": "buttons/system-status" }
-  ]
+  "entry": "index.ts"
 }

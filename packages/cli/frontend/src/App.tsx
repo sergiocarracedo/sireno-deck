@@ -49,18 +49,18 @@ const wsUrl = (): string => {
 
 const buildThemeContext = (): ThemeContextValue => {
   if (activeTheme) {
+    const manifestPath = activeTheme.manifestPath ?? ''
+    const themeDir = manifestPath.replace(/\/sirenodeck\.json$/, '')
     return {
       name: activeTheme.name,
       cssPath: '',
-      frontendPath: activeTheme.frontendPath,
       theme: {
         name: activeTheme.name,
         apiVersion: 3,
-        source: { kind: 'builtin', resolvedPath: activeTheme.frontendPath },
+        source: { kind: 'builtin' as const, resolvedPath: themeDir },
+        manifestPath,
+        uiOverridesPath: activeTheme.uiOverridesPath ?? null,
         cssPath: '',
-        frontendPath: activeTheme.frontendPath,
-        manifestPath: '',
-        assetsStyles: [],
       },
       colorTokens,
       typography,
@@ -69,15 +69,13 @@ const buildThemeContext = (): ThemeContextValue => {
   return {
     name: 'default',
     cssPath: '',
-    frontendPath: '',
     theme: {
       name: 'default',
       apiVersion: 3,
-      source: { kind: 'builtin', resolvedPath: '' },
-      cssPath: '',
-      frontendPath: '',
+      source: { kind: 'builtin' as const, resolvedPath: '' },
       manifestPath: '',
-      assetsStyles: [],
+      uiOverridesPath: null,
+      cssPath: '',
     },
     colorTokens: null,
     typography: null,

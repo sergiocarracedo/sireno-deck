@@ -1,9 +1,5 @@
-@source "/works/opensource/sireno-deck-2/packages/cli/emulator/**/*.{ts,tsx}";
-@source "/works/opensource/sireno-deck-2/packages/cli/src/ui/**/*.{ts,tsx}";
-@source "/works/opensource/sireno-deck-2/packages/cli/src/builtin-addons/**/*.{ts,tsx}";
-@source "/works/opensource/sireno-deck-2/packages/cli/frontend/**/*.{ts,tsx}";
-@source "/works/opensource/sireno-deck-2/packages/cli/src/ui/**/*.{ts,tsx}";
-@source "/works/opensource/sireno-deck-2/packages/cli/src/builtin-addons/**/*.{ts,tsx}";
+@source "/works/opensource/sireno-deck-2/packages/cli/**/*.{ts,tsx}";
+@source "/works/opensource/sireno-deck-2/packages/cli/**/*.{ts,tsx}";
 @font-face {
   font-family: 'IBM Plex Sans';
   font-style: normal;

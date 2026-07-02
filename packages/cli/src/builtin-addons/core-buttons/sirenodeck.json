@@ -2,11 +2,5 @@
   "kind": "addon",
   "apiVersion": 1,
   "name": "core-buttons",
-  "types": "./index.d.ts",
-  "buttons": [
-    { "type": "core-buttons:action",       "path": "buttons/action" },
-    { "type": "core-buttons:change-deck",  "path": "buttons/change-deck" },
-    { "type": "core-buttons:toggle",       "path": "buttons/toggle" },
-    { "type": "core-buttons:media-sample", "path": "buttons/media-sample" }
-  ]
+  "entry": "index.ts"
 }

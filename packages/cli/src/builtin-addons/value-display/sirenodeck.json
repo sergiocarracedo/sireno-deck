@@ -2,8 +2,5 @@
   "kind": "addon",
   "apiVersion": 1,
   "name": "value-display",
-  "types": "./index.d.ts",
-  "buttons": [
-    { "type": "value-display:display", "path": "buttons/value-display" }
-  ]
+  "entry": "index.ts"
 }

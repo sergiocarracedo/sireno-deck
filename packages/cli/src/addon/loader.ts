@@ -1,19 +1,19 @@
 import { existsSync, readFileSync } from "node:fs";
-import { resolve as resolvePath } from "node:path";
+import { resolve as resolvePath, join } from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { execa } from "execa";
 
 import { addonNpmInstallPath } from "@/util/cache-paths";
 
-import { isSirenoAddon, type SirenoAddon } from "./api-types";
-import {
-  type AddonLoadIssue,
-  type AddonManifest,
-  type LoadedTheme,
-  type ResolvedSirenoAddon,
+import type {
+  AddonJsonManifest,
+  AddonLoadIssue,
+  AddonManifest,
+  AddonManifestV1,
+  LoadedTheme,
 } from "./api";
-import { readManifest } from "./manifest";
+import type { RawAddonEntry } from "@/config/schemas";
 import {
   addonRootExists,
   isLocalAddonSpec,
@@ -21,7 +21,6 @@ import {
   normalizeAddonEntry,
   resolveLocalAddonRoot,
 } from "./spec";
-import type { RawAddonEntry } from "@/config/schemas";
 
 export interface LoadAddonsOptions {
   entries: RawAddonEntry[];
@@ -31,8 +30,13 @@ export interface LoadAddonsOptions {
   cacheDir?: string;
 }
 
+export interface ResolvedExternalAddon {
+  manifest: AddonManifestV1;
+  source: { kind: "local" | "npm"; specifier: string; resolvedPath: string };
+}
+
 export interface LoadAddonsResult {
-  addons: ResolvedSirenoAddon[];
+  addons: ResolvedExternalAddon[];
   themes: LoadedTheme[];
   issues: AddonLoadIssue[];
 }
@@ -46,46 +50,94 @@ const importAddonModule = async (resolvedPath: string): Promise<unknown> => {
   return import(url);
 };
 
-const validateModule = (
-  source: string,
-  moduleValue: unknown,
-  expectedApi: number,
-): { module: SirenoAddon; apiMismatch?: boolean } | { error: string } => {
-  const candidate =
-    moduleValue !== null &&
-    typeof moduleValue === "object" &&
-    "default" in (moduleValue as Record<string, unknown>) &&
-    (moduleValue as { default: unknown }).default !== undefined
-      ? (moduleValue as { default: unknown }).default
-      : moduleValue;
-  if (!isSirenoAddon(candidate)) {
-    return {
-      error: `Module at ${source} did not export a valid SirenoAddon (apiVersion + name required)`,
-    };
+const readJsonManifest = (root: string): AddonJsonManifest | null => {
+  const manifestPath = join(root, "sirenodeck.json");
+  if (!existsSync(manifestPath)) return null;
+  let raw: unknown;
+  try {
+    raw = JSON.parse(readFileSync(manifestPath, "utf8")) as unknown;
+  } catch {
+    return null;
   }
-  if (candidate.buttons === undefined && candidate.decks === undefined) {
-    return { error: `Addon ${source} defines no buttons or decks` };
-  }
-  return candidate.apiVersion !== expectedApi
-    ? { module: candidate, apiMismatch: true }
-    : { module: candidate };
+  if (raw === null || typeof raw !== "object") return null;
+  const obj = raw as Record<string, unknown>;
+  if (obj["apiVersion"] !== 1) return null;
+  const kind = obj["kind"];
+  if (kind !== "addon" && kind !== "theme") return null;
+  const name = obj["name"];
+  const entry = obj["entry"];
+  if (typeof name !== "string" || typeof entry !== "string") return null;
+  return { kind, apiVersion: 1, name, entry };
 };
 
-const readManifestSafe = (
+const resolveEntryPaths = (
   root: string,
+  json: AddonJsonManifest,
+): { ts: string; js: string } => {
+  const entryExt = json.entry;
+  const extTs = entryExt.endsWith(".ts")
+    ? join(root, entryExt)
+    : join(root, `${entryExt}.ts`);
+  const extJs = join(root, entryExt);
+  return { ts: extTs, js: extJs };
+};
+
+const validateAndLoadEntry = async (
   source: string,
+  tsPath: string,
+  jsPath: string,
   issues: AddonLoadIssue[],
-): AddonManifest | null => {
+): Promise<AddonManifestV1 | null> => {
+  const candidatePath = existsSync(tsPath) ? tsPath : jsPath;
+  if (!existsSync(candidatePath)) {
+    recordIssue(issues, {
+      level: "error",
+      source,
+      message: `Entry file not found: tried ${tsPath} and ${jsPath}`,
+    });
+    return null;
+  }
+  let mod: unknown;
   try {
-    return readManifest({ addonRoot: root }).manifest;
+    mod = await importAddonModule(candidatePath);
   } catch (err) {
     recordIssue(issues, {
       level: "error",
       source,
-      message: `Failed to read manifest: ${err instanceof Error ? err.message : String(err)}`,
+      message: `Failed to import addon entry: ${err instanceof Error ? err.message : String(err)}`,
     });
     return null;
   }
+  const exported =
+    mod !== null &&
+    typeof mod === "object" &&
+    "default" in (mod as Record<string, unknown>) &&
+    (mod as { default: unknown }).default !== undefined
+      ? (mod as { default: unknown }).default
+      : mod;
+  if (
+    exported === null ||
+    typeof exported !== "object" ||
+    typeof (exported as Record<string, unknown>)["apiVersion"] !== "number" ||
+    typeof (exported as Record<string, unknown>)["name"] !== "string"
+  ) {
+    recordIssue(issues, {
+      level: "error",
+      source,
+      message: `Entry at ${candidatePath} did not export a valid AddonManifestV1 (apiVersion + name required)`,
+    });
+    return null;
+  }
+  const manifest = exported as AddonManifestV1;
+  if (Object.keys(manifest.buttonTypes ?? {}).length === 0 && !manifest.decks) {
+    recordIssue(issues, {
+      level: "error",
+      source,
+      message: `Addon ${source} defines no buttons or decks`,
+    });
+    return null;
+  }
+  return manifest;
 };
 
 const loadLocalAddon = async (
@@ -94,7 +146,7 @@ const loadLocalAddon = async (
   homeDir: string,
   issues: AddonLoadIssue[],
   currentApi: number,
-): Promise<ResolvedSirenoAddon | null> => {
+): Promise<ResolvedExternalAddon | null> => {
   const root = resolveLocalAddonRoot(source, configDir, homeDir);
   if (!isLocalAddonSpec(source)) {
     recordIssue(issues, {
@@ -112,50 +164,35 @@ const loadLocalAddon = async (
     });
     return null;
   }
-  const manifest = readManifestSafe(root, source, issues);
-  if (!manifest) return null;
-  if (manifest.kind === "theme") {
-    recordIssue(issues, {
-      level: "warning",
-      source,
-      message: `Theme addon '${manifest.name ?? source}' declared via addons[] — themes must be loaded via registerBuiltInThemes()`,
-    });
-    return null;
-  }
-  if (manifest.apiVersion !== currentApi) {
-    recordIssue(issues, {
-      level: "warning",
-      source,
-      message: `Addon apiVersion mismatch: expected ${currentApi}, got ${manifest.apiVersion}`,
-    });
-  }
-  const mainPath = resolvePath(root, manifest.main as string);
-  let mod: unknown;
-  try {
-    mod = await importAddonModule(mainPath);
-  } catch (err) {
+  const json = readJsonManifest(root);
+  if (json === null) {
     recordIssue(issues, {
       level: "error",
       source,
-      message: `Failed to import addon main: ${err instanceof Error ? err.message : String(err)}`,
+      message: `Missing or invalid sirenodeck.json at ${root}`,
     });
     return null;
   }
-  const validated = validateModule(source, mod, currentApi);
-  if ("error" in validated) {
-    recordIssue(issues, { level: "error", source, message: validated.error });
-    return null;
-  }
-  if (validated.apiMismatch === true) {
+  if (json.kind === "theme") {
     recordIssue(issues, {
       level: "warning",
       source,
-      message: `Addon apiVersion mismatch: expected ${currentApi}, got ${validated.module.apiVersion}`,
+      message: `Theme addon '${json.name}' declared via addons[] — themes must be loaded via registerBuiltInThemes()`,
+    });
+    return null;
+  }
+  if (json.apiVersion !== currentApi) {
+    recordIssue(issues, {
+      level: "warning",
+      source,
+      message: `Addon apiVersion mismatch: expected ${currentApi}, got ${json.apiVersion}`,
     });
   }
+  const { ts, js } = resolveEntryPaths(root, json);
+  const manifest = await validateAndLoadEntry(source, ts, js, issues);
+  if (!manifest) return null;
   return {
     manifest,
-    module: validated.module,
     source: { kind: "local", specifier: source, resolvedPath: root },
   };
 };
@@ -176,9 +213,11 @@ const parseNpmSpecifier = (spec: string): ParsedSpecifier | null => {
   return { packageName, version };
 };
 
-const installedPackageJson = (
-  installPath: string,
-): { name: string; version: string; main: string; addonManifest: AddonManifest } | null => {
+const readInstalledPackageJson = (installPath: string): {
+  name: string;
+  version: string;
+  apiVersion: number;
+} | null => {
   const pkgPath = resolvePath(installPath, "package.json");
   if (!existsSync(pkgPath)) return null;
   let raw: unknown;
@@ -190,21 +229,12 @@ const installedPackageJson = (
   if (raw === null || typeof raw !== "object") return null;
   const obj = raw as Record<string, unknown>;
   const name = typeof obj["name"] === "string" ? (obj["name"] as string) : null;
-  const version = typeof obj["version"] === "string" ? (obj["version"] as string) : null;
-  const main = typeof obj["main"] === "string" ? (obj["main"] as string) : "index.js";
+  const version =
+    typeof obj["version"] === "string" ? (obj["version"] as string) : null;
   const apiVersion = obj["sirenoAddonApiVersion"];
   if (name === null || version === null) return null;
   if (typeof apiVersion !== "number") return null;
-  return {
-    name,
-    version,
-    main,
-    addonManifest: {
-      apiVersion,
-      kind: "addon",
-      ...(typeof obj["name"] === "string" ? { name: obj["name"] as string } : {}),
-    },
-  };
+  return { name, version, apiVersion };
 };
 
 export interface InstallNpmAddonResult {
@@ -218,9 +248,20 @@ export const installNpmAddon = async (
   issues: AddonLoadIssue[],
 ): Promise<InstallNpmAddonResult> => {
   try {
-    await execa("npm", ["install", specifier, "--prefix", cacheDir, "--no-save", "--silent", "--no-audit", "--no-fund"], {
-      timeout: 60_000,
-    });
+    await execa(
+      "npm",
+      [
+        "install",
+        specifier,
+        "--prefix",
+        cacheDir,
+        "--no-save",
+        "--silent",
+        "--no-audit",
+        "--no-fund",
+      ],
+      { timeout: 60_000 },
+    );
     return { ok: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -238,7 +279,7 @@ const loadNpmAddon = async (
   cacheDir: string,
   issues: AddonLoadIssue[],
   currentApi: number,
-): Promise<ResolvedSirenoAddon | null> => {
+): Promise<ResolvedExternalAddon | null> => {
   const parsed = parseNpmSpecifier(source);
   if (parsed === null) {
     recordIssue(issues, {
@@ -250,12 +291,12 @@ const loadNpmAddon = async (
   }
 
   const installPath = addonNpmInstallPath(parsed.packageName, cacheDir);
-  let pkg = installedPackageJson(installPath);
+  let pkg = readInstalledPackageJson(installPath);
 
   if (pkg === null || (parsed.version !== null && pkg.version !== parsed.version)) {
     const installResult = await installNpmAddon(source, cacheDir, issues);
     if (!installResult.ok) return null;
-    pkg = installedPackageJson(installPath);
+    pkg = readInstalledPackageJson(installPath);
   }
 
   if (pkg === null) {
@@ -267,34 +308,28 @@ const loadNpmAddon = async (
     return null;
   }
 
-  const mainPath = resolvePath(installPath, pkg.main);
-  let mod: unknown;
-  try {
-    mod = await importAddonModule(mainPath);
-  } catch (err) {
+  const json = readJsonManifest(installPath);
+  if (json === null) {
     recordIssue(issues, {
       level: "error",
       source,
-      message: `Failed to import addon main: ${err instanceof Error ? err.message : String(err)}`,
+      message: `Missing or invalid sirenodeck.json at ${installPath}`,
     });
     return null;
   }
-  const validated = validateModule(source, mod, currentApi);
-  if ("error" in validated) {
-    recordIssue(issues, { level: "error", source, message: validated.error });
-    return null;
-  }
-  if (validated.apiMismatch === true) {
+  if (json.apiVersion !== currentApi) {
     recordIssue(issues, {
       level: "warning",
       source,
-      message: `Addon apiVersion mismatch: expected ${currentApi}, got ${validated.module.apiVersion}`,
+      message: `Addon apiVersion mismatch: expected ${currentApi}, got ${json.apiVersion}`,
     });
   }
 
+  const { ts, js } = resolveEntryPaths(installPath, json);
+  const manifest = await validateAndLoadEntry(source, ts, js, issues);
+  if (!manifest) return null;
   return {
-    manifest: pkg.addonManifest,
-    module: validated.module,
+    manifest,
     source: { kind: "npm", specifier: source, resolvedPath: installPath },
   };
 };
@@ -307,7 +342,7 @@ export const loadAddons = async ({
   cacheDir,
 }: LoadAddonsOptions): Promise<LoadAddonsResult> => {
   const issues: AddonLoadIssue[] = [];
-  const addons: ResolvedSirenoAddon[] = [];
+  const addons: ResolvedExternalAddon[] = [];
   const themes: LoadedTheme[] = [];
   for (const rawEntry of entries) {
     const entry = normalizeAddonEntry(rawEntry);
@@ -331,7 +366,12 @@ export const loadAddons = async ({
       continue;
     }
     if (isNpmAddonSpec(entry.source) && cacheDir !== undefined) {
-      const loaded = await loadNpmAddon(entry.source, cacheDir, issues, currentApiVersion);
+      const loaded = await loadNpmAddon(
+        entry.source,
+        cacheDir,
+        issues,
+        currentApiVersion,
+      );
       if (loaded) addons.push(loaded);
       continue;
     }

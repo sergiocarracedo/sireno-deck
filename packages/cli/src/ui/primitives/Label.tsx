@@ -1,7 +1,7 @@
 import { type ReactElement, type ReactNode } from 'react'
 
-import { Text } from './Text'
 import { useThemeUiPresentation } from '../theme-presentation'
+import { Text } from './Text'
 
 export interface LabelProps {
   children: ReactNode
@@ -10,8 +10,8 @@ export interface LabelProps {
 export function Label(props: LabelProps): ReactElement {
   const themeUi = useThemeUiPresentation()
 
-  if (themeUi?.label) {
-    return themeUi.label(props)
+  if (themeUi?.primitives?.label) {
+    return themeUi.primitives.label(props)
   }
 
   return (

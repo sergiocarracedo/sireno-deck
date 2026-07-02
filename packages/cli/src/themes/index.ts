@@ -1,8 +1,8 @@
 export type {
   LoadedTheme,
   AddonManifest,
+  AddonManifestV1,
   AddonKind,
-  ResolvedSirenoAddon,
   AddonLoadIssue,
 } from "@/addon/api";
 export { AddonRegistry } from "@/addon/registry";

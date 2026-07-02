@@ -49,7 +49,7 @@ const AnalogClockButtonFrontend: AddonFrontendButton<ConfigSchema> = () => {
         cy="50"
         r="42"
         fill="none"
-        stroke="var(--color-muted)"
+        stroke="var(--color-primary)"
         strokeWidth={1}
       />
       {ticks}

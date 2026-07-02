@@ -19,118 +19,249 @@ export interface GestureResult {
   readonly timestamps?: ReadonlyArray<number>;
 }
 
-type State =
-  | { name: "idle" }
-  | { name: "down"; downAt: number; keyIndex?: number }
-  | { name: "await-second"; firstUpAt: number; firstDownAt: number; keyIndex?: number }
-  | {
-      name: "second-down";
-      secondDownAt: number;
-      firstUpAt: number;
-      firstDownAt: number;
-      keyIndex?: number;
-    };
+type KeyState =
+  | { name: "idle"; keyIndex?: number }
+  | { name: "holding"; downAt: number; timer: ReturnType<typeof setTimeout>; keyIndex?: number; emittedHold?: boolean }
+  | { name: "waiting-second"; firstUpAt: number; firstDownAt: number; timer: ReturnType<typeof setTimeout>; keyIndex?: number }
+  | { name: "second-down"; secondDownAt: number; firstUpAt: number; firstDownAt: number; keyIndex?: number };
 
-const tap = (event: GestureEvent, downAt: number, keyIndex?: number): GestureResult => {
-  const result: GestureResult = {
+const tap = (
+  upEvent: GestureEvent,
+  downAt: number,
+  keyIndex?: number,
+): GestureResult =>
+  Object.freeze({
     kind: "tap",
-    timestamp: event.timestamp,
-    durationMs: event.timestamp - downAt,
-    timestamps: Object.freeze([downAt, event.timestamp]),
+    timestamp: upEvent.timestamp,
+    durationMs: upEvent.timestamp - downAt,
+    timestamps: Object.freeze([downAt, upEvent.timestamp]),
     ...(keyIndex !== undefined ? { keyIndex } : {}),
-  };
-  return Object.freeze(result);
-};
+  });
 
 const dblTap = (
-  event: GestureEvent,
+  upEvent: GestureEvent,
   firstDownAt: number,
   firstUpAt: number,
   secondDownAt: number,
-  secondUpAt: number,
   keyIndex?: number,
-): GestureResult => {
-  const result: GestureResult = {
+): GestureResult =>
+  Object.freeze({
     kind: "dbl-tap",
-    timestamp: secondUpAt,
-    durationMs: secondUpAt - firstDownAt,
-    timestamps: Object.freeze([firstDownAt, firstUpAt, secondDownAt, secondUpAt]),
+    timestamp: upEvent.timestamp,
+    durationMs: upEvent.timestamp - firstDownAt,
+    timestamps: Object.freeze([firstDownAt, firstUpAt, secondDownAt, upEvent.timestamp]),
     ...(keyIndex !== undefined ? { keyIndex } : {}),
-  };
-  return Object.freeze(result);
+  });
+
+const hold = (timestamp: number, downAt: number, keyIndex?: number): GestureResult =>
+  Object.freeze({
+    kind: "hold",
+    timestamp,
+    durationMs: timestamp - downAt,
+    timestamps: Object.freeze([downAt, timestamp]),
+    ...(keyIndex !== undefined ? { keyIndex } : {}),
+  });
+
+const clearTimer = (timer: ReturnType<typeof setTimeout> | undefined): void => {
+  if (timer !== undefined) clearTimeout(timer);
 };
 
-const hold = (event: GestureEvent, downAt: number, keyIndex?: number): GestureResult => {
-  const result: GestureResult = {
-    kind: "hold",
-    timestamp: event.timestamp,
-    durationMs: event.timestamp - downAt,
-    timestamps: Object.freeze([downAt, event.timestamp]),
-    ...(keyIndex !== undefined ? { keyIndex } : {}),
+export interface GestureDetectorOptions {
+  readonly onGesture?: (result: GestureResult) => void;
+}
+
+export interface GestureDetector {
+  detect(event: GestureEvent): GestureResult | null;
+  reset(): void;
+}
+
+const createKeyState = (keyIndex: number | undefined): KeyState => ({ name: "idle", keyIndex });
+
+export const createGestureDetector = (options: GestureDetectorOptions = {}): GestureDetector => {
+  const states = new Map<number, KeyState>();
+  const { onGesture } = options;
+
+  const getOrCreateState = (keyIndex: number | undefined): KeyState => {
+    const k = keyIndex ?? -1;
+    const existing = states.get(k);
+    if (existing !== undefined) return existing;
+    const s = createKeyState(keyIndex);
+    if (keyIndex !== undefined) states.set(k, s);
+    return s;
   };
-  return Object.freeze(result);
+
+  const setState = (keyIndex: number | undefined, next: KeyState): void => {
+    const k = keyIndex ?? -1;
+    if (k !== undefined) states.set(k, next);
+  };
+
+  const detect = (event: GestureEvent): GestureResult | null => {
+    const key = event.keyIndex;
+    const state = getOrCreateState(key);
+    const k = key ?? -1;
+
+    switch (state.name) {
+      case "idle":
+        if (event.type === "down") {
+          for (const [otherK, otherState] of states) {
+            if (otherState.name === "waiting-second") {
+              clearTimer(otherState.timer);
+              states.set(otherK, { name: "idle", keyIndex: otherState.keyIndex });
+            }
+          }
+          const downAt = event.timestamp;
+          const newState: KeyState = {
+            name: "holding",
+            downAt,
+            timer: setTimeout(() => {
+              const s = states.get(k);
+              if (s?.name === "holding") {
+                s.emittedHold = true;
+                onGesture?.(hold(downAt + HOLD_ACTION_DELAY_MS, downAt, key));
+              }
+            }, HOLD_ACTION_DELAY_MS),
+            keyIndex: key,
+          };
+          setState(key, newState);
+          return null;
+        }
+        break;
+
+      case "holding": {
+        if (event.type === "up") {
+          const duration = event.timestamp - state.downAt;
+          clearTimer(state.timer);
+          if (duration >= HOLD_ACTION_DELAY_MS) {
+            setState(key, { name: "idle", keyIndex: key });
+            return hold(event.timestamp, state.downAt, key);
+          }
+          const newState: KeyState = {
+            name: "waiting-second",
+            firstUpAt: event.timestamp,
+            firstDownAt: state.downAt,
+            timer: setTimeout(() => {
+              const s = states.get(k);
+              if (s?.name === "waiting-second") {
+                onGesture?.(tap({ type: "up", timestamp: s.firstUpAt, keyIndex: key }, s.firstDownAt, key));
+                states.delete(k);
+              }
+            }, DOUBLE_TAP_DELAY_MS),
+            keyIndex: key,
+          };
+          setState(key, newState);
+          return null;
+        }
+        break;
+      }
+
+      case "waiting-second": {
+        clearTimer(state.timer);
+        if (event.type === "down") {
+          if (event.keyIndex !== key) {
+            const t = tap({ type: "up", timestamp: state.firstUpAt, keyIndex: key }, state.firstDownAt, key);
+            onGesture?.(t);
+            setState(key, { name: "idle", keyIndex: key });
+            return null;
+          }
+          const newState: KeyState = {
+            name: "second-down",
+            firstUpAt: state.firstUpAt,
+            firstDownAt: state.firstDownAt,
+            secondDownAt: event.timestamp,
+            keyIndex: key,
+          };
+          setState(key, newState);
+          return null;
+        }
+        if (event.type === "up") {
+          const t = tap(event, state.firstDownAt, key);
+          setState(key, { name: "idle", keyIndex: key });
+          return t;
+        }
+        break;
+      }
+
+      case "second-down":
+        if (event.type === "up") {
+          const d = dblTap(event, state.firstDownAt, state.firstUpAt, state.secondDownAt, key);
+          setState(key, { name: "idle", keyIndex: key });
+          return d;
+        }
+        break;
+
+    }
+
+    return null;
+  };
+
+  const reset = (): void => {
+    for (const s of states.values()) {
+      if (s.name === "holding") clearTimer(s.timer);
+      if (s.name === "waiting-second") clearTimer(s.timer);
+    }
+    states.clear();
+  };
+
+  return Object.freeze({ detect, reset });
 };
 
 export const nextGesture = (events: ReadonlyArray<GestureEvent>): GestureResult | null => {
-  if (events.length === 0) return null;
-
-  let state: State = { name: "idle" };
+  let state: KeyState = { name: "idle" };
 
   for (const event of events) {
     switch (state.name) {
       case "idle":
         if (event.type === "down") {
-          state = { name: "down", downAt: event.timestamp, keyIndex: event.keyIndex };
+          state = { name: "holding", downAt: event.timestamp, timer: undefined, keyIndex: event.keyIndex };
         }
         break;
 
-      case "down":
+      case "holding":
         if (event.type === "up") {
           const duration = event.timestamp - state.downAt;
           if (duration >= HOLD_ACTION_DELAY_MS) {
-            return hold(event, state.downAt, state.keyIndex);
+            return hold(event.timestamp, state.downAt, state.keyIndex);
           }
           state = {
-            name: "await-second",
+            name: "waiting-second",
             firstUpAt: event.timestamp,
             firstDownAt: state.downAt,
+            timer: undefined,
             keyIndex: state.keyIndex,
           };
         }
         break;
 
-      case "await-second":
+      case "waiting-second":
         if (event.type === "down") {
           if (event.keyIndex !== state.keyIndex) {
-            state = { name: "down", downAt: event.timestamp, keyIndex: event.keyIndex };
-          } else {
-            state = {
-              name: "second-down",
-              firstUpAt: state.firstUpAt,
-              firstDownAt: state.firstDownAt,
-              secondDownAt: event.timestamp,
-              keyIndex: state.keyIndex,
-            };
+            return tap(
+              { type: "up", timestamp: state.firstUpAt, keyIndex: state.keyIndex },
+              state.firstDownAt,
+              state.keyIndex,
+            );
           }
+          state = {
+            name: "second-down",
+            firstUpAt: state.firstUpAt,
+            firstDownAt: state.firstDownAt,
+            secondDownAt: event.timestamp,
+            keyIndex: state.keyIndex,
+          };
+        } else if (event.type === "up") {
+          return tap(event, state.firstDownAt, state.keyIndex);
         }
         break;
 
       case "second-down":
         if (event.type === "up") {
-          return dblTap(
-            event,
-            state.firstDownAt,
-            state.firstUpAt,
-            state.secondDownAt,
-            event.timestamp,
-            state.keyIndex,
-          );
+          return dblTap(event, state.firstDownAt, state.firstUpAt, state.secondDownAt, state.keyIndex);
         }
         break;
     }
   }
 
-  if (state.name === "await-second") {
+  if (state.name === "waiting-second") {
     return tap(
       { type: "up", timestamp: state.firstUpAt, keyIndex: state.keyIndex },
       state.firstDownAt,

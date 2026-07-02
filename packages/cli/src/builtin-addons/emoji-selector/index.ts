@@ -1,6 +1,4 @@
-import type { NewAddonManifest } from "@/addon/api";
-
-import manifestJson from "./sirenodeck.json" with { type: "json" };
+import type { AddonManifestV1 } from "@/addon/api";
 
 import backBackend from "./buttons/back/backend";
 import backFrontend from "./buttons/back/frontend";
@@ -14,9 +12,9 @@ import launcherFrontend from "./buttons/launcher/frontend";
 import pageNavBackend from "./buttons/page-nav/backend";
 import pageNavFrontend from "./buttons/page-nav/frontend";
 
-export const manifest: NewAddonManifest = {
-  apiVersion: 3,
-  name: manifestJson.name,
+export const manifest: AddonManifestV1 = {
+  apiVersion: 1,
+  name: "emoji-selector",
   buttonTypes: {
     "emoji-selector:category": {
       frontend: categoryFrontend,

@@ -1,6 +1,4 @@
-import type { NewAddonManifest } from "@/addon/api";
-
-import manifestJson from "./sirenodeck.json" with { type: "json" };
+import type { AddonManifestV1 } from "@/addon/api";
 
 import actionBackend from "./buttons/action/backend";
 import actionFrontend from "./buttons/action/frontend";
@@ -11,9 +9,9 @@ import mediaSampleFrontend from "./buttons/media-sample/frontend";
 import toggleBackend from "./buttons/toggle/backend";
 import toggleFrontend from "./buttons/toggle/frontend";
 
-export const manifest: NewAddonManifest = {
-  apiVersion: 3,
-  name: manifestJson.name,
+export const manifest: AddonManifestV1 = {
+  apiVersion: 1,
+  name: "core-buttons",
   buttonTypes: {
     "core-buttons:action": { frontend: actionFrontend, backend: actionBackend },
     "core-buttons:change-deck": { frontend: changeDeckFrontend, backend: changeDeckBackend },

@@ -13,6 +13,14 @@ export class StreamDeckSelectionError extends Error {
   }
 }
 
+export type StreamDeckKeyEventType = "down" | "up";
+
+export interface StreamDeckKeyEvent {
+  readonly type: StreamDeckKeyEventType;
+  readonly keyIndex: number;
+  readonly timestamp: number;
+}
+
 export interface StreamDeckDevice {
   readonly serial: string;
   readonly path: string;
@@ -20,6 +28,7 @@ export interface StreamDeckDevice {
   getKeyCount(): number;
   setBrightness(value: number): Promise<void>;
   fillKeyBuffer(keyIndex: number, buffer: Buffer): Promise<void>;
+  onKeyEvent(handler: (event: StreamDeckKeyEvent) => void): () => void;
   close(): Promise<void>;
 }
 
@@ -88,6 +97,22 @@ export const connectStreamDeck = async (
     },
     async fillKeyBuffer(keyIndex: number, buffer: Buffer): Promise<void> {
       await handle.fillKeyBuffer(keyIndex, buffer);
+    },
+    onKeyEvent(handler: (event: StreamDeckKeyEvent) => void): () => void {
+      const onDown = (control: { type: string; index: number }): void => {
+        if (control.type !== "button") return;
+        handler({ type: "down", keyIndex: control.index, timestamp: Date.now() });
+      };
+      const onUp = (control: { type: string; index: number }): void => {
+        if (control.type !== "button") return;
+        handler({ type: "up", keyIndex: control.index, timestamp: Date.now() });
+      };
+      handle.on("down", onDown);
+      handle.on("up", onUp);
+      return () => {
+        handle.off("down", onDown);
+        handle.off("up", onUp);
+      };
     },
     async close(): Promise<void> {
       await handle.close();

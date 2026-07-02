@@ -14,7 +14,8 @@ import {
   isFullValid,
   validateFull,
 } from '@/config/validation'
-import { createDeckRuntime, type Runtime, type RuntimeDeck } from '@/deck'
+import { createDeckRuntime, type Runtime, type RuntimeDeck, type PubSub, type Store } from '@/deck'
+import { createGestureDetector } from '@/core/gesture-state'
 import { createActiveAppProvider } from '@/system/active-app'
 import { createKeyMacroProvider } from '@/system/key-macro'
 import { createMediaProvider } from '@/system/media'
@@ -44,12 +45,13 @@ import {
   findWorkspaceRoot,
 } from './emulator-mode'
 import {
+  type AddonFrontendRef,
+  type ScannedAddon,
   collectBuiltinAddonRegistry,
-  discoverAddonPollers,
 } from './addon-registry'
 import { createActionExecutor } from '@/action/executor'
 import { getHostContext } from '@/deck/host-context'
-import { createBrightnessProvider } from '@/system/brightness'
+import { bridgeAddonBackends } from '@/deck/addon-handler-bridge'
 import {
   createClipboardProvider,
   type ClipboardProvider,
@@ -93,6 +95,8 @@ export interface PreflightResult {
   readonly xdgConfigHome: string
   readonly frontendUrl: string
   readonly runtime: Runtime
+  readonly pubSub: PubSub
+  readonly store: Store
   readonly decks: ReadonlyArray<RuntimeDeck>
   readonly theme: { name: string; apiVersion: number }
   readonly themeDir: string
@@ -148,6 +152,96 @@ const resolveConfigPath = (options: RunOptions): string => {
 
 const resolveFrontendUrl = (options: RunOptions): string =>
   options.frontendUrl ?? `http://127.0.0.1:${options.port ?? 5173}`
+
+export interface SetupAddonBackendsOptions {
+  readonly runtime: Runtime
+  readonly decks: ReadonlyArray<RuntimeDeck>
+  readonly pubSub: PubSub
+  readonly scanned: ReadonlyArray<ScannedAddon>
+  readonly addonByType: Map<string, AddonFrontendRef>
+  readonly executor: ReturnType<typeof createActionExecutor>
+  readonly statePublisher: Pick<
+    StatePublisher,
+    "registerChannel" | "setActiveDeck"
+  >
+  readonly bridge: Pick<WsBridge, "broadcast">
+  readonly initialDeck?: RuntimeDeck
+  readonly signal: AbortSignal
+}
+
+export interface SetupAddonBackendsResult {
+  readonly dispose: () => void
+}
+
+const collectActiveDeckAddonNames = (
+  deck: RuntimeDeck,
+  addonByType: Map<string, AddonFrontendRef>,
+): string[] => {
+  const addonNames = new Set<string>()
+  for (const button of deck.buttons) {
+    const entry = addonByType.get(button.type)
+    if (entry !== undefined) addonNames.add(entry.name)
+  }
+  return [...addonNames]
+}
+
+export const setupAddonBackends = (
+  options: SetupAddonBackendsOptions,
+): SetupAddonBackendsResult => {
+  const {
+    runtime,
+    decks,
+    pubSub,
+    scanned,
+    addonByType,
+    executor,
+    statePublisher,
+    bridge,
+    initialDeck,
+    signal,
+  } = options
+
+  void bridgeAddonBackends({
+    runtime,
+    decks,
+    scanned,
+    executor,
+    pubSub,
+    signal,
+    statePublisher,
+    bridge,
+  })
+
+  const unsubscribeDeck = pubSub.subscribe(
+    "runtime:activeDeck",
+    (payload: unknown) => {
+      const deckId =
+        typeof payload === "object" &&
+        payload !== null &&
+        "deckId" in payload
+          ? String((payload as { deckId: unknown }).deckId)
+          : undefined
+      if (deckId === undefined) return
+      const deck = decks.find((d) => d.id === deckId)
+      if (deck === undefined) return
+      statePublisher.setActiveDeck({
+        addonNames: collectActiveDeckAddonNames(deck, addonByType),
+      })
+    },
+  )
+
+  if (initialDeck !== undefined) {
+    statePublisher.setActiveDeck({
+      addonNames: collectActiveDeckAddonNames(initialDeck, addonByType),
+    })
+  }
+
+  return {
+    dispose: () => {
+      unsubscribeDeck()
+    },
+  }
+}
 
 export const preflight = async (
   options: RunOptions,
@@ -247,7 +341,7 @@ export const preflight = async (
           : [d.trigger.process_name]
         : undefined,
   }))
-  const { runtime, methods } = createDeckRuntime({ decks, logger })
+  const { runtime, methods, pubSub, store } = createDeckRuntime({ decks, logger })
 
   const { execa } = await import('execa')
   const executor = {
@@ -294,6 +388,8 @@ export const preflight = async (
     xdgConfigHome,
     frontendUrl: resolveFrontendUrl(options),
     runtime,
+    pubSub,
+    store,
     decks,
     theme: { name: theme.name, apiVersion: theme.apiVersion },
     themeDir,
@@ -315,6 +411,8 @@ export const runRealModePipeline = async (
     device,
     frontendUrl: configuredUrl,
     runtime,
+    pubSub,
+    store,
     decks,
     providers,
     themeDir,
@@ -323,6 +421,8 @@ export const runRealModePipeline = async (
   let frontendUrl = configuredUrl
 
   const registry = await collectBuiltinAddonRegistry()
+  const bridgeExecutor = createActionExecutor({ host: getHostContext() })
+
   if (process.env['SIRENO_ADDONS'] === undefined) {
     const addonSpecs = registry.scanned.map((s) => ({
       name: s.name,
@@ -358,6 +458,21 @@ export const runRealModePipeline = async (
     'real mode: ws bridge + main deck ready',
   )
 
+  const bridgeSignal = new AbortController()
+  const statePublisher = new StatePublisher({ bridge, logger })
+  const addonBackends = setupAddonBackends({
+    runtime,
+    decks,
+    pubSub,
+    scanned: registry.scanned,
+    addonByType,
+    executor: bridgeExecutor,
+    statePublisher,
+    bridge,
+    ...(mainDeck !== undefined ? { initialDeck: mainDeck } : {}),
+    signal: bridgeSignal.signal,
+  })
+
   bridge.onConnection((socket) => {
     if (mainDeck) {
       const msg = buildDeckConfigMessage(mainDeck, addonByType)
@@ -372,6 +487,49 @@ export const runRealModePipeline = async (
     } else {
       logger.warn('real mode: no main deck available to send')
     }
+  })
+
+  const keyIndexToButtonId = new Map<number, string>()
+  if (mainDeck) {
+    for (const button of mainDeck.buttons) {
+      const index = Number.parseInt(button.id, 10)
+      if (Number.isFinite(index)) {
+        keyIndexToButtonId.set(index, button.id)
+      }
+    }
+  }
+  logger.info(
+    { mappedKeys: Array.from(keyIndexToButtonId.entries()) },
+    'real mode: keyIndex -> buttonId mapping',
+  )
+
+  const gestureDetector = createGestureDetector({
+    onGesture: (result) => {
+      const buttonId = keyIndexToButtonId.get(result.keyIndex ?? -1)
+      if (buttonId === undefined) return
+      logger.info(
+        { buttonId, gesture: result.kind, keyIndex: result.keyIndex },
+        'real mode: gesture detected, dispatching',
+      )
+      void runtime.dispatchGesture(buttonId, result.kind)
+    },
+  })
+
+  const gestureUnsubscribe = device.onKeyEvent((event) => {
+    logger.info(
+      { keyIndex: event.keyIndex, type: event.type },
+      'real mode: key event received',
+    )
+    const buttonId = keyIndexToButtonId.get(event.keyIndex)
+    if (buttonId === undefined) {
+      logger.warn({ keyIndex: event.keyIndex }, 'real mode: keyIndex not mapped to any button')
+      return
+    }
+    gestureDetector.detect({
+      type: event.type,
+      timestamp: event.timestamp,
+      keyIndex: event.keyIndex,
+    })
   })
 
   let frontendVite: Awaited<ReturnType<typeof spawnFrontendVite>> | undefined
@@ -414,7 +572,11 @@ export const runRealModePipeline = async (
     await done
   } finally {
     unregister()
+    gestureUnsubscribe()
     frontendVite?.process.kill('SIGTERM')
+    bridgeSignal.abort()
+    addonBackends.dispose()
+    statePublisher.stopAll()
     await Promise.allSettled([
       handle.stop(),
       runtime.stopActiveAppPolling(),
@@ -436,12 +598,7 @@ export const runEmulatorPipeline = async (
 
 interface EmulatorDecks {
   runtime: Runtime
-  pubSub: {
-    subscribe: (
-      channel: string,
-      handler: (payload: unknown) => void,
-    ) => () => void
-  }
+  pubSub: PubSub
   decks: ReadonlyArray<RuntimeDeck>
 }
 
@@ -500,33 +657,7 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     resolveDone = resolve
   })
 
-  const env = { ...process.env } as Readonly<Record<string, string>>
-  const platform = process.platform
   const emulatorExecutor = createActionExecutor({ host: getHostContext() })
-  const commandExecutor = {
-    async run(command: string, args: ReadonlyArray<string>) {
-      const fullCommand =
-        args.length > 0 ? `${command} ${args.join(' ')}` : command
-      return emulatorExecutor.run(fullCommand)
-    },
-  }
-  const emulatorMedia = await createMediaProvider({
-    platform,
-    executor: commandExecutor,
-    env,
-    logger,
-  })
-  let emulatorBrightness = null
-  try {
-    emulatorBrightness = createBrightnessProvider({
-      executor: commandExecutor,
-      platform,
-      env,
-      logger,
-    })
-  } catch {
-    emulatorBrightness = null
-  }
 
   const signals = options.signals ?? defaultSignals
   const unregister = signals.onSignal(() => {
@@ -537,10 +668,7 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
   const emulatorDecks = buildEmulatorDecks(options)
   const runtime = emulatorDecks.runtime
   const registry = await collectBuiltinAddonRegistry()
-  const statePublisher = new StatePublisher({
-    bridge: { broadcast: () => undefined },
-    logger,
-  })
+  const bridgeSignal = new AbortController()
 
   if (process.env['SIRENO_ADDONS'] === undefined) {
     const addonSpecs = registry.scanned.map((s) => ({
@@ -553,6 +681,8 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     process.env['SIRENO_ADDONS'] = JSON.stringify(addonSpecs)
   }
 
+  const publisherTeardown: { fn: () => void } = { fn: () => undefined }
+
   const handle = await runEmulatorMode({
     logger,
     activeTheme: { name: process.env['SIRENO_THEME_NAME'] ?? 'default' },
@@ -560,59 +690,26 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     decks: emulatorDecks.decks,
     addonByType: registry.byType,
     onBridgeReady: async (bridge) => {
-      const realPublisher = new StatePublisher({ bridge, logger })
-      const pollers = await discoverAddonPollers(
-        {
-          executor: emulatorExecutor,
-          mediaProvider: emulatorMedia,
-          brightnessProvider: emulatorBrightness,
-        },
-        registry.scanned,
-      )
-      for (const poller of pollers) {
-        for (const ch of poller.channels) {
-          realPublisher.registerChannel({
-            channel: ch.channel,
-            addonName: poller.addonName,
-            intervalMs: ch.intervalMs,
-            poll: ch.poll,
-          })
-        }
-      }
-      const unsubscribeDeck = emulatorDecks.pubSub.subscribe(
-        'runtime:activeDeck',
-        (payload) => {
-          const deckId =
-            typeof payload === 'object' &&
-            payload !== null &&
-            'deckId' in payload
-              ? String((payload as { deckId: unknown }).deckId)
-              : undefined
-          if (deckId === undefined) return
-          const deck = emulatorDecks.decks.find((d) => d.id === deckId)
-          if (deck === undefined) return
-          const addonNames = new Set<string>()
-          for (const button of deck.buttons) {
-            const entry = registry.byType.get(button.type)
-            if (entry !== undefined) addonNames.add(entry.name)
-          }
-          realPublisher.setActiveDeck({ addonNames: [...addonNames] })
-        },
-      )
+      const statePublisher = new StatePublisher({ bridge, logger })
       const initialDeck =
         emulatorDecks.decks.find((d) => d.isMain) ?? emulatorDecks.decks[0]
-      if (initialDeck !== undefined) {
-        const addonNames = new Set<string>()
-        for (const button of initialDeck.buttons) {
-          const entry = registry.byType.get(button.type)
-          if (entry !== undefined) addonNames.add(entry.name)
-        }
-        realPublisher.setActiveDeck({ addonNames: [...addonNames] })
-      }
-      signals.onSignal(() => {
-        unsubscribeDeck()
-        realPublisher.stopAll()
+      const addonBackends = setupAddonBackends({
+        runtime,
+        decks: emulatorDecks.decks,
+        pubSub: emulatorDecks.pubSub,
+        scanned: registry.scanned,
+        addonByType: registry.byType,
+        executor: emulatorExecutor,
+        statePublisher,
+        bridge,
+        ...(initialDeck !== undefined ? { initialDeck } : {}),
+        signal: bridgeSignal.signal,
       })
+      publisherTeardown.fn = () => {
+        bridgeSignal.abort()
+        addonBackends.dispose()
+        statePublisher.stopAll()
+      }
     },
   })
 
@@ -639,7 +736,7 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     await done
   } finally {
     unregister()
-    statePublisher.stopAll()
+    publisherTeardown.fn()
     await handle.stop()
     logger.info('shutdown complete')
   }

@@ -29,15 +29,13 @@ const ENV_WS_URL = (import.meta.env.VITE_WS_URL ??
 const buildThemeContext = (): ThemeContextValue => ({
   name: 'default',
   cssPath: '',
-  frontendPath: '',
   theme: {
     name: 'default',
     apiVersion: 3,
-    source: { kind: 'builtin', resolvedPath: '' },
-    cssPath: '',
-    frontendPath: '',
+    source: { kind: 'builtin' as const, resolvedPath: '' },
     manifestPath: '',
-    assetsStyles: [],
+    uiOverridesPath: null,
+    cssPath: '',
   },
   colorTokens: null,
   typography: null,

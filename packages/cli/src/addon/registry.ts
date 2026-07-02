@@ -1,15 +1,13 @@
 import type {
   AddonButtonTypeDef,
   AddonDeckDefinition,
+  AddonGeneratedDeck,
+  AddonManifestV1,
   LoadedTheme,
-  NewAddonManifest,
-  ResolvedSirenoAddon,
-  SirenoAddon,
 } from "./api";
-import { isSirenoAddon } from "./api-types";
 
 export class AddonRegistry {
-  private readonly addonsByName = new Map<string, ResolvedSirenoAddon>();
+  private readonly addonsByName = new Map<string, AddonManifestV1>();
   private readonly buttonsByType = new Map<
     string,
     { addonName: string; def: AddonButtonTypeDef }
@@ -20,70 +18,33 @@ export class AddonRegistry {
   >();
   private readonly themesByName = new Map<string, LoadedTheme>();
 
-  load(
-    addon: ResolvedSirenoAddon | SirenoAddon | NewAddonManifest,
-  ): void {
-    if ("apiVersion" in addon && "buttonTypes" in addon) {
-      this.loadNewAddon(addon);
-      return;
-    }
-    const module = "module" in addon ? addon.module : addon;
-    if (!isSirenoAddon(module)) {
-      throw new Error("Registry.load: not a valid SirenoAddon");
-    }
-    const name = module.name;
-    if (this.addonsByName.has(name)) {
-      throw new Error(`Duplicate addon name: ${name}`);
-    }
-    const resolved: ResolvedSirenoAddon = {
-      module,
-      manifest: { apiVersion: module.apiVersion, main: "<inline>", name },
-      source: {
-        kind: "local",
-        specifier: `<inline:${name}>`,
-        resolvedPath: "<inline>",
-      },
-    };
-    this.addonsByName.set(name, resolved);
-  }
-
-  private loadNewAddon(manifest: NewAddonManifest): void {
+  load(manifest: AddonManifestV1): void {
     const name = manifest.name;
     if (this.addonsByName.has(name)) {
       throw new Error(`Duplicate addon name: ${name}`);
     }
-    const resolved: ResolvedSirenoAddon = {
-      module: {
-        apiVersion: manifest.apiVersion,
-        name,
-        ...(manifest.publishIntervalMs !== undefined
-          ? { publishIntervalMs: manifest.publishIntervalMs }
-          : {}),
-      },
-      manifest: {
-        apiVersion: manifest.apiVersion,
-        main: "<inline>",
-        name,
-        ...(manifest.frontend !== undefined
-          ? { frontend: manifest.frontend }
-          : {}),
-      },
-      source: {
-        kind: "local",
-        specifier: `<inline:${name}>`,
-        resolvedPath: "<inline>",
-      },
-    };
-    this.addonsByName.set(name, resolved);
+
+    for (const buttonType of Object.keys(manifest.buttonTypes)) {
+      if (!buttonType.startsWith(`${name}:`)) {
+        throw new Error(
+          `Button type '${buttonType}' in addon '${name}' must be prefixed with '${name}:'`,
+        );
+      }
+    }
+
+    for (const deckName of Object.keys(manifest.decks ?? {})) {
+      if (!deckName.startsWith(`${name}:`)) {
+        throw new Error(
+          `Deck '${deckName}' in addon '${name}' must be prefixed with '${name}:'`,
+        );
+      }
+    }
+
+    this.addonsByName.set(name, manifest);
     for (const [buttonType, def] of Object.entries(manifest.buttonTypes)) {
       if (this.buttonsByType.has(buttonType)) {
         throw new Error(
           `Duplicate button type '${buttonType}' in addon ${name}`,
-        );
-      }
-      if (!buttonType.startsWith(`${name}:`)) {
-        throw new Error(
-          `Button type '${buttonType}' in addon '${name}' must be prefixed with '${name}:'`,
         );
       }
       this.buttonsByType.set(buttonType, { addonName: name, def });
@@ -92,14 +53,9 @@ export class AddonRegistry {
       if (this.decksByType.has(deckName)) {
         throw new Error(`Duplicate deck '${deckName}' in addon ${name}`);
       }
-      if (!deckName.startsWith(`${name}:`)) {
-        throw new Error(
-          `Deck '${deckName}' in addon '${name}' must be prefixed with '${name}:'`,
-        );
-      }
       const def: AddonDeckDefinition = {
         type: deckName,
-        createDecks: () => {
+        createDecks: (): Record<string, AddonGeneratedDeck> => {
           const deck = factory(0);
           return { [deckName]: deck };
         },
@@ -108,11 +64,11 @@ export class AddonRegistry {
     }
   }
 
-  getAddon(name: string): ResolvedSirenoAddon | undefined {
+  getAddon(name: string): AddonManifestV1 | undefined {
     return this.addonsByName.get(name);
   }
 
-  listAddons(): ResolvedSirenoAddon[] {
+  listAddons(): AddonManifestV1[] {
     return Array.from(this.addonsByName.values());
   }
 

@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import manifestJson from "../sirenodeck.json" with { type: "json" };
-import type ManifestType from "../index.d.ts";
 
 import settingsDeck from "../decks/settings";
 
@@ -12,33 +11,8 @@ describe("internal-settings sirenodeck.json", () => {
     expect(manifestJson.name).toBe("internal-settings");
   });
 
-  it("references a types file path", () => {
-    expect(manifestJson.types).toBe("./index.d.ts");
-  });
-
-  it("declares three internal buttons", () => {
-    expect(manifestJson.buttons).toHaveLength(3);
-    const types = manifestJson.buttons.map((b) => b.type);
-    expect(types).toContain("core:settings-about");
-    expect(types).toContain("core:settings-brightness");
-    expect(types).toContain("core:settings-theme");
-    for (const b of manifestJson.buttons) {
-      expect(b.internal).toBe(true);
-    }
-  });
-
-  it("declares one deck (settings)", () => {
-    expect(manifestJson.decks).toHaveLength(1);
-    expect(manifestJson.decks?.[0]?.type).toBe("settings");
-    expect(manifestJson.decks?.[0]?.path).toBe("decks/settings");
-  });
-});
-
-describe("internal-settings typed manifest", () => {
-  it("typed re-export matches the JSON", () => {
-    const expected: ManifestType = manifestJson as ManifestType;
-    expect(expected).toBe(manifestJson);
-    expect(expected.name).toBe("internal-settings");
+  it("points at the entry file", () => {
+    expect(manifestJson.entry).toBe("index.ts");
   });
 });
 

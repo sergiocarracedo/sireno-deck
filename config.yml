@@ -59,14 +59,18 @@ decks:
             - metric: uptime
               label: Uptime
 
+      - position: 7
+        type: 'media:volume'
+      - position: 8
+        type: 'media:mute'
       - position: 12
-        type: 'media-player:player'
+        type: 'media:player'
 
       - position: 11
         type: 'date-time:time'
 
       - position: 13
-        type: 'date-time:clock'
+        type: 'date-time:analog-clock'
 
   emoji:
     name: Emoji

@@ -101,10 +101,10 @@ decks:
     expect(full.issues.some((i) => i.message.includes("Internal button"))).toBe(true);
   });
 
-  it("internal-settings createDecks returns a settings deck", () => {
-    const def = internalSettingsAddon.decks![0]!;
-    const result = def.createDecks({ config: {} as never });
-    expect(result.settings).toBeDefined();
-    expect((result.settings!.buttons ?? []).length).toBeGreaterThan(0);
+  it("internal-settings deck factory returns a settings deck", () => {
+    const factory = internalSettingsAddon.decks!["internal-settings:settings"]!;
+    const deck = factory(0);
+    expect(deck).toBeDefined();
+    expect((deck.buttons ?? []).length).toBeGreaterThan(0);
   });
 });

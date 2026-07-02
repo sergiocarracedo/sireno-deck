@@ -1,11 +1,11 @@
-import type { ComponentType, ReactNode } from 'react'
+import type { ComponentType } from 'react'
 
 import type { z } from 'zod'
 
 import type { ActionExecutor } from '@/action/executor'
-import type { SirenoAddon } from './api-types'
 
-export { SIRENO_ADDON_API_VERSION } from './api-types'
+/** The runtime manifest API version (`AddonManifestV1`). */
+export const SIRENO_ADDON_API_VERSION = 1 as const
 
 export type AddonKind = 'runtime' | 'theme'
 export type AddonManifestKind = 'addon' | 'theme'
@@ -25,41 +25,6 @@ export interface AddonButtonTypeActionContext {
   methods: Record<string, (...args: unknown[]) => unknown>
 }
 
-export interface AddonButtonTypeDefinition {
-  type: string
-  internal?: boolean
-  configSchema: unknown
-  render: (ctx: AddonButtonTypeRenderContext) => ReactNode
-  onTap?: (ctx: AddonButtonTypeActionContext) => void | Promise<void>
-  onDblTap?: (ctx: AddonButtonTypeActionContext) => void | Promise<void>
-  onHold?: (ctx: AddonButtonTypeActionContext) => void | Promise<void>
-  defaultRenderIntervalMs?: number
-  dispose?: () => void | Promise<void>
-  full?: boolean
-}
-
-export interface AddonDeckCreateContext {
-  config: unknown
-}
-
-export interface AddonDeckDefinition {
-  type: string
-  configSchema?: unknown
-  createDecks: (
-    ctx: AddonDeckCreateContext,
-  ) => Record<string, AddonGeneratedDeck>
-}
-
-export interface AddonGeneratedDeck {
-  name?: string
-  icon?: string
-  background?: string
-  buttons?: unknown[]
-  paginated?: boolean
-  trigger?: unknown
-  autoShow?: boolean
-}
-
 export interface AddonAssets {
   styles?: string[]
 }
@@ -67,12 +32,6 @@ export interface AddonAssets {
 export interface AddonFrontend {
   main: string
   styles?: string[]
-}
-
-export interface ResolvedSirenoAddon {
-  manifest: AddonManifest
-  module: SirenoAddon
-  source: { kind: 'local' | 'npm'; specifier: string; resolvedPath: string }
 }
 
 export interface AddonManifest {
@@ -101,8 +60,6 @@ export interface AddonLoadIssue {
   source: string
   message: string
 }
-
-export type { SirenoAddon } from './api-types'
 
 export interface AddonFrontendButtonProps<Config> {
   readonly config: Config
@@ -133,18 +90,46 @@ export interface AddonButtonTypeBackend {
   dispose?: () => void | Promise<void>
 }
 
-export interface AddonButtonTypeDef<Config> {
+export interface AddonButtonTypeDef<Config = unknown> {
   readonly frontend: AddonFrontendButton<Config>
+  readonly backend: AddonButtonTypeBackend
+}
+
+export interface AddonButtonTypeDefAny {
+  readonly frontend: AddonFrontendButton<any>
   readonly backend: AddonButtonTypeBackend
 }
 
 export type AddonDeckFactory = (page: number) => AddonGeneratedDeck
 
-export interface NewAddonManifest {
-  readonly apiVersion: number
+export interface AddonDeckDefinition {
+  type: string
+  configSchema?: unknown
+  createDecks: (ctx: { config: unknown }) => Record<string, AddonGeneratedDeck>
+}
+
+export interface AddonGeneratedDeck {
+  name?: string
+  icon?: string
+  background?: string
+  buttons?: unknown[]
+  paginated?: boolean
+  trigger?: unknown
+  autoShow?: boolean
+}
+
+/**
+ * Runtime addon manifest. Both builtin and third-party addons export this from
+ * their entry file (`index.ts` in dev, `index.js` in prod).
+ *
+ * The `entry` field on `AddonJsonManifest` points at the file that exports this;
+ * the runtime loads it via dynamic `import()` and passes it to `AddonRegistry.load()`.
+ */
+export interface AddonManifestV1 {
+  readonly apiVersion: 1
   readonly name: string
   readonly kind?: AddonKind
-  readonly buttonTypes: Readonly<Record<string, AddonButtonTypeDef>>
+  readonly buttonTypes: Readonly<Record<string, AddonButtonTypeDefAny>>
   readonly decks?: Readonly<Record<string, AddonDeckFactory>>
   readonly frontend?: AddonFrontend
   readonly poller?: {
@@ -155,6 +140,7 @@ export interface NewAddonManifest {
     }>
   }
   readonly publishIntervalMs?: number
+  readonly globalBackend?: AddonGlobalBackend
 }
 
 let domAssetPathResolver:
@@ -224,6 +210,7 @@ export type AddonBackendMethod = (
 ) => unknown | Promise<unknown>
 
 export interface AddonGlobalPoller {
+  readonly id: string
   readonly channel: string
   readonly intervalMs: number
   readonly poll: (ctx: AddonBackendContext) => unknown | Promise<unknown>
@@ -239,6 +226,13 @@ export interface AddonGlobalSubscription {
 export interface AddonBackendContext {
   /** Push data to the channel this poller/subscription is bound to. */
   publish: (data: unknown) => void
+  /**
+   * Trigger the poller with the given id (within this addon) immediately and
+   * broadcast its result. Useful after a `methods` call to reflect the new
+   * state without waiting for the next polling tick. Unknown ids are no-ops;
+   * poller errors are logged and swallowed.
+   */
+  poll: (id: string) => Promise<void>
   /** Aborted when the addon unloads. */
   signal: AbortSignal
   /** Run host commands (e.g. `brightness set 80`). */
@@ -276,38 +270,23 @@ export interface AddonButtonBackendContext<Config = unknown> {
 }
 
 /**
- * JSON shape of `sirenodeck.json` for addon manifests.
+ * JSON metadata manifest. Both builtin and third-party addons ship this file
+ * for discovery. Runtime metadata (button types, decks, etc.) lives in the
+ * entry file (see `entry`) which exports an `AddonManifestV1` at runtime.
  *
  * Convention:
- * - `kind: "addon"` selects runtime registration.
- * - `kind: "theme"` selects the theme loader (out of scope for now).
- * - `buttons[i].path` resolves to `<path>/frontend.tsx` + `<path>/config.ts`
- *   (+ optional `<path>/backend.ts`) relative to the JSON file.
- * - `decks[i].path` resolves to `<path>.ts` exporting an `AddonDeckFactory`.
- * - `backend` resolves to `<backend>.ts` or `<backend>/index.ts` exporting
- *   an `AddonGlobalBackend` as default.
- * - `types` is the path to the `.d.ts` that types the manifest for tooling
- *   and inter-addon references.
+ * - `name`: unique addon identifier (e.g. `date-time`).
+ * - `kind`: `"addon"` selects runtime registration; `"theme"` selects the theme loader.
+ * - `apiVersion`: the JSON manifest schema version (currently 1).
+ * - `entry`: path (relative to the JSON file) to the runtime entry that exports
+ *   an `AddonManifestV1`. In dev this is `index.ts`; in prod this is `index.js`.
+ *   The CLI dynamically imports it at startup.
  */
 export interface AddonJsonManifest {
   readonly kind: AddonManifestKind
-  readonly apiVersion: number
+  readonly apiVersion: 1
   readonly name: string
-  readonly types?: string
-  readonly backend?: string
-  readonly buttons: ReadonlyArray<AddonJsonButton>
-  readonly decks?: ReadonlyArray<AddonJsonDeck>
-}
-
-export interface AddonJsonButton {
-  readonly type: string
-  readonly path: string
-  readonly internal?: boolean
-}
-
-export interface AddonJsonDeck {
-  readonly type: string
-  readonly path: string
+  readonly entry: string
 }
 
 /** Validation schema for `AddonJsonManifest`; usable at scan time. */

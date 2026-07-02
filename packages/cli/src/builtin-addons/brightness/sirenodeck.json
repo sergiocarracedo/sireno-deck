@@ -2,8 +2,5 @@
   "kind": "addon",
   "apiVersion": 1,
   "name": "brightness",
-  "types": "./index.d.ts",
-  "buttons": [
-    { "type": "brightness:brightness", "path": "buttons/brightness" }
-  ]
+  "entry": "index.ts"
 }

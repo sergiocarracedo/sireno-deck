@@ -1,13 +1,11 @@
-import type { NewAddonManifest } from "@/addon/api";
-
-import manifestJson from "./sirenodeck.json" with { type: "json" };
+import type { AddonManifestV1 } from "@/addon/api";
 
 import systemStatusBackend from "./buttons/system-status/backend";
 import systemStatusFrontend from "./buttons/system-status/frontend";
 
-export const manifest: NewAddonManifest = {
-  apiVersion: 3,
-  name: manifestJson.name,
+export const manifest: AddonManifestV1 = {
+  apiVersion: 1,
+  name: "system-status",
   buttonTypes: {
     "system-status:status": {
       frontend: systemStatusFrontend,

@@ -2,16 +2,5 @@
   "kind": "addon",
   "apiVersion": 1,
   "name": "date-time",
-  "types": "./index.d.ts",
-  "buttons": [
-    { "type": "date-time:custom", "path": "buttons/custom" },
-    { "type": "date-time:time", "path": "buttons/time" },
-    { "type": "date-time:date", "path": "buttons/date" },
-    { "type": "date-time:clock", "path": "buttons/analog-clock" },
-    {
-      "type": "date-time:locked-time-tile",
-      "path": "buttons/locked-time-tile",
-      "internal": true
-    }
-  ]
+  "entry": "index.ts"
 }

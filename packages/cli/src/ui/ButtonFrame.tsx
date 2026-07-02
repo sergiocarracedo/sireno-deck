@@ -6,12 +6,6 @@ export interface ButtonFrameProps {
   isHolding: boolean
   holdProgress: number
   buttonType: string
-  onPointerDown: () => void
-  onPointerUp: () => void
-  onPointerLeave: () => void
-  onClick: () => void
-  onDoubleClick: () => void
-  onContextMenu: (e: React.MouseEvent) => void
   children: ReactNode
 }
 

@@ -8,7 +8,7 @@
     "background": "#2e3540",
     "frame": "#53738B",
     "foreground": "#eef2f7",
-    "foreground-contrast": "#000000",
+    "foreground-contrast": "#333",
     "primary": "#7dd3fc",
     "accent": "#C3F5FF",
     "success": "#34d399",

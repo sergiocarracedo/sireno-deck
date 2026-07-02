@@ -14,6 +14,7 @@ export interface ScannedAddon {
   readonly buttonTypes: Readonly<Record<string, string>>;
   readonly deckTypes: Readonly<Record<string, string>>;
   readonly source: "json" | "regex";
+  readonly globalBackendEntry: string | null;
 }
 
 export interface AddonFrontendRef {
@@ -89,7 +90,8 @@ const scanAddonDir = async (
   const pollerEntry = existsSync(join(addonDir, "poller.ts"))
     ? join(addonDir, "poller.ts")
     : null;
-  if (types.size === 0 && pollerEntry === null) return jsonScanned;
+  const hasGlobalBackend = /\bglobalBackend\b/.test(raw);
+  if (types.size === 0 && pollerEntry === null && !hasGlobalBackend) return jsonScanned;
   const buttonTypes: Record<string, string> = {};
   const entryMapRegex = /["']([a-z0-9-]+:[a-z0-9-]+)["']\s*:\s*\{\s*(?=[^}]*frontend\s*:\s*([A-Za-z_$][A-Za-z0-9_$]*))/g;
   for (const src of allSources) {
@@ -110,6 +112,7 @@ const scanAddonDir = async (
     buttonTypes,
     deckTypes: {},
     source: "regex",
+    globalBackendEntry: hasGlobalBackend && indexFile !== null ? indexFile : null,
   };
 };
 
@@ -138,9 +141,10 @@ const scanAddonJsonManifest = async (
   const types = new Set<string>();
   const buttonTypes: Record<string, string> = {};
   let publishIntervalMs: number | null = null;
+  let hasGlobalBackend = false;
   try {
     const mod = (await import(entryPath)) as {
-      default?: { buttonTypes?: Record<string, unknown>; decks?: unknown; publishIntervalMs?: number };
+      default?: { buttonTypes?: Record<string, unknown>; decks?: unknown; publishIntervalMs?: number; globalBackend?: unknown };
     };
     const exported =
       mod !== null &&
@@ -151,7 +155,7 @@ const scanAddonJsonManifest = async (
         : mod;
     const candidate =
       exported !== null && typeof exported === "object"
-        ? (exported as { buttonTypes?: Record<string, unknown>; decks?: unknown; publishIntervalMs?: number })
+        ? (exported as { buttonTypes?: Record<string, unknown>; decks?: unknown; publishIntervalMs?: number; globalBackend?: unknown })
         : null;
     if (candidate !== null) {
       for (const [type] of Object.entries(candidate.buttonTypes ?? {})) {
@@ -160,6 +164,9 @@ const scanAddonJsonManifest = async (
       }
       if (typeof candidate.publishIntervalMs === "number") {
         publishIntervalMs = candidate.publishIntervalMs;
+      }
+      if (candidate.globalBackend !== undefined) {
+        hasGlobalBackend = true;
       }
     }
   } catch {
@@ -175,6 +182,7 @@ const scanAddonJsonManifest = async (
     buttonTypes,
     deckTypes: {},
     source: "json",
+    globalBackendEntry: hasGlobalBackend ? entryPath : null,
   };
 };
 

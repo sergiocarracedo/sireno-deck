@@ -12,6 +12,8 @@ import { createMethods } from "./methods";
 import { createRuntime, type Runtime, type RuntimeDeck } from "./runtime";
 
 export { createActionExecutor, type ActionExecutor } from "@/action/executor";
+export type { PubSub } from "@/core/pub-sub";
+export type { Store } from "@/core/store";
 export {
   createMethods,
   type Methods,

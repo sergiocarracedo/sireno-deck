@@ -6,8 +6,8 @@ import ToggleButtonBackend from "../buttons/toggle/backend";
 import { coreButtonsAddon } from "../index";
 
 describe("core-buttons addon", () => {
-  it("manifest declares apiVersion 3 and the expected name", () => {
-    expect(coreButtonsAddon.apiVersion).toBe(3);
+  it("manifest declares apiVersion 1 and the expected name", () => {
+    expect(coreButtonsAddon.apiVersion).toBe(1);
     expect(coreButtonsAddon.name).toBe("core-buttons");
   });
 
@@ -27,16 +27,13 @@ describe("core-buttons addon", () => {
     if (result.success) expect(result.data.default).toBe(false);
   });
 
-  it("sirenodeck.json lists all 4 button types", async () => {
+  it("sirenodeck.json points at the entry", async () => {
     const manifestJson = (await import("../sirenodeck.json", {
       with: { type: "json" },
-    })).default as { buttons: Array<{ type: string }> };
-    const types = manifestJson.buttons.map((b) => b.type).sort();
-    expect(types).toEqual([
-      "core-buttons:action",
-      "core-buttons:change-deck",
-      "core-buttons:media-sample",
-      "core-buttons:toggle",
-    ]);
+    })).default as { kind: string; apiVersion: number; name: string; entry: string };
+    expect(manifestJson.kind).toBe("addon");
+    expect(manifestJson.apiVersion).toBe(1);
+    expect(manifestJson.name).toBe("core-buttons");
+    expect(manifestJson.entry).toBe("index.ts");
   });
 });

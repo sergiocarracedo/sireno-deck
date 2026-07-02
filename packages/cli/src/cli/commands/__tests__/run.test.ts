@@ -47,18 +47,39 @@ vi.mock("@/system/key-macro", () => ({
 vi.mock("@/system/media", () => ({
   createMediaProvider: vi.fn(),
 }));
-vi.mock("@/system/brightness", () => ({
-  createBrightnessProvider: vi.fn(() => ({
-    getCurrent: vi.fn(async () => ({ value: 50, max: 100 })),
-    setBrightness: vi.fn(async () => undefined),
-    stop: vi.fn(async () => undefined),
-  })),
-}));
 vi.mock("@/system/clipboard", () => ({
   createClipboardProvider: vi.fn(() => ({
     writeText: vi.fn(async () => undefined),
     readText: vi.fn(async () => ""),
     stop: vi.fn(async () => undefined),
+  })),
+}));
+vi.mock("@/render/ws-bridge", () => ({
+  startWsBridge: vi.fn(async () => ({
+    port: 52937,
+    broadcast: vi.fn(),
+    sendToCaller: vi.fn(),
+    onMessage: () => () => undefined,
+    onConnection: () => () => undefined,
+    close: async () => undefined,
+  })),
+}));
+vi.mock("@/render/state-publisher", () => ({
+  StatePublisher: vi.fn(function FakeStatePublisher() {
+    return {
+      registerChannel: vi.fn(),
+      setActiveDeck: vi.fn(),
+      stopAll: vi.fn(),
+    };
+  }),
+}));
+vi.mock("@/deck/addon-handler-bridge", () => ({
+  bridgeAddonBackends: vi.fn(async () => undefined),
+}));
+vi.mock("@/cli/commands/addon-registry", () => ({
+  collectBuiltinAddonRegistry: vi.fn(async () => ({
+    scanned: [],
+    byType: new Map(),
   })),
 }));
 

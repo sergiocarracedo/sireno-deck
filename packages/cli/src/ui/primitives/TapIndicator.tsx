@@ -1,7 +1,7 @@
-import { cn } from '../utils/cn'
 import { useMemo } from 'react'
-import { Text, TextTone } from './Text'
 import { useThemeUiPresentation } from '../theme-presentation'
+import { cn } from '../utils/cn'
+import { Text, TextTone } from './Text'
 
 type TapIndicatorType = 'tap' | 'dbltap' | 'hold'
 
@@ -14,8 +14,8 @@ export const TapIndicator = (props: TapIndicatorProps) => {
   const tapType = props.type || 'tap'
   const themeUi = useThemeUiPresentation()
 
-  if (themeUi?.tapIndicator) {
-    return themeUi.tapIndicator(props)
+  if (themeUi?.primitives?.tapIndicator) {
+    return themeUi.primitives.tapIndicator(props)
   }
 
   const label = useMemo(() => {
@@ -28,7 +28,10 @@ export const TapIndicator = (props: TapIndicatorProps) => {
     return labelMap[tapType]
   }, [tapType])
 
-  const themeTypes: Record<TapIndicatorType, { textTone: TextTone; bg: string }> = {
+  const themeTypes: Record<
+    TapIndicatorType,
+    { textTone: TextTone; bg: string }
+  > = {
     tap: {
       textTone: 'foreground',
       bg: '',

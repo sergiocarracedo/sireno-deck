@@ -1,13 +1,11 @@
-import type { NewAddonManifest } from "@/addon/api";
-
-import manifestJson from "./sirenodeck.json" with { type: "json" };
+import type { AddonManifestV1 } from "@/addon/api";
 
 import brightnessBackend from "./buttons/brightness/backend";
 import brightnessFrontend from "./buttons/brightness/frontend";
 
-export const manifest: NewAddonManifest = {
-  apiVersion: 3,
-  name: manifestJson.name,
+export const manifest: AddonManifestV1 = {
+  apiVersion: 1,
+  name: "brightness",
   buttonTypes: {
     "brightness:brightness": {
       frontend: brightnessFrontend,

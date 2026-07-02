@@ -4,8 +4,8 @@ import * as lucideIcons from 'lucide-react'
 import { type LucideIcon } from 'lucide-react'
 
 import { resolveDomAssetSrc } from '@/addon/api'
-import { cn } from '../utils/cn'
 import { useThemeUiPresentation } from '../theme-presentation'
+import { cn } from '../utils/cn'
 
 const BRAND_ICON_REGISTRY = {} as const satisfies Record<string, LucideIcon>
 
@@ -15,6 +15,8 @@ const TONE_CLASS = {
   foreground: 'text-foreground',
   primary: 'text-primary',
   success: 'text-success',
+  background: 'text-background',
+  'foreground-contrast': 'text-foreground-contrast',
 } as const
 
 export type BrandIconName = string
@@ -23,18 +25,20 @@ export type IconTone = keyof typeof TONE_CLASS
 
 interface IconCommonProps {
   size?: number
-  tone?: IconTone
 }
 
-export type IconProps = IconCommonProps &
-  (
-    | { brand: BrandIconName; name?: never; src?: never }
-    | { brand?: never; name: string; src?: never }
-    | { brand?: never; name?: never; src: string }
-  )
+interface IconSvgProps extends IconCommonProps {
+  tone?: IconTone
+  fill?: boolean
+}
+
+export type IconProps =
+  | ({ brand: BrandIconName; name?: never; src?: never } & IconSvgProps)
+  | ({ brand?: never; name: string; src?: never } & IconSvgProps)
+  | ({ brand?: never; name?: never; src: string } & IconCommonProps)
 
 function renderLucide(
-  props: IconCommonProps,
+  props: IconSvgProps,
   LucideComponent: LucideIcon,
   source: 'brand' | 'generic',
 ): ReactElement {
@@ -42,12 +46,16 @@ function renderLucide(
 
   return (
     <LucideComponent
-      className={cn(['inline-block shrink-0', TONE_CLASS[props.tone ?? 'foreground']])}
+      className={cn([
+        'inline-block shrink-0',
+        TONE_CLASS[props.tone ?? 'foreground'],
+      ])}
       data-sireno-icon-source={source}
       data-sireno-ui-icon="true"
       focusable="false"
       size={size}
       strokeWidth={1.8}
+      fill={props.fill ? 'currentColor' : 'none'}
     />
   )
 }
@@ -55,7 +63,10 @@ function renderLucide(
 const LUCIDE_ICON_EXPORTS = Object.fromEntries(
   Object.entries(lucideIcons).filter((entry): entry is [string, LucideIcon] => {
     const [exportName, value] = entry
-    return typeof value === 'object' && exportName[0] === exportName[0]?.toUpperCase()
+    return (
+      typeof value === 'object' &&
+      exportName[0] === exportName[0]?.toUpperCase()
+    )
   }),
 ) satisfies Record<string, LucideIcon>
 
@@ -65,7 +76,9 @@ function toLucideExportName(name: string): string {
     .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
     .split(/[^a-zA-Z0-9]+/)
     .filter(Boolean)
-    .map((segment) => segment[0]!.toUpperCase() + segment.slice(1).toLowerCase())
+    .map(
+      (segment) => segment[0]!.toUpperCase() + segment.slice(1).toLowerCase(),
+    )
     .join('')
 }
 
@@ -103,8 +116,8 @@ export function iconConfigToProps(
 export function Icon(props: IconProps): ReactElement {
   const themeUi = useThemeUiPresentation()
 
-  if (themeUi?.icon) {
-    return themeUi.icon(props)
+  if (themeUi?.primitives?.icon) {
+    return themeUi.primitives.icon(props)
   }
 
   if ('src' in props && props.src) {

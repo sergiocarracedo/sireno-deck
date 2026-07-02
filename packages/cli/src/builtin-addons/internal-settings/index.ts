@@ -1,6 +1,4 @@
-import type { NewAddonManifest } from "@/addon/api";
-
-import manifestJson from "./sirenodeck.json" with { type: "json" };
+import type { AddonManifestV1 } from "@/addon/api";
 
 import aboutBackend from "./buttons/about/backend";
 import aboutFrontend from "./buttons/about/frontend";
@@ -10,31 +8,26 @@ import themeBackend from "./buttons/theme/backend";
 import themeFrontend from "./buttons/theme/frontend";
 import settingsDeck from "./decks/settings";
 
-type JsonButton = (typeof manifestJson.buttons)[number];
+const withInternal = <T extends object>(impl: T): T & { internal: true } => ({
+  ...impl,
+  internal: true,
+});
 
-const buildBackend = (
-  impl: (typeof aboutBackend),
-  json: JsonButton,
-) => {
-  if (json.internal !== true) return impl;
-  return { ...impl, internal: true };
-};
-
-export const manifest: NewAddonManifest = {
-  apiVersion: 3,
-  name: manifestJson.name,
+export const manifest: AddonManifestV1 = {
+  apiVersion: 1,
+  name: "internal-settings",
   buttonTypes: {
     "internal-settings:about": {
       frontend: aboutFrontend,
-      backend: buildBackend(aboutBackend, manifestJson.buttons[0]!),
+      backend: withInternal(aboutBackend),
     },
     "internal-settings:brightness": {
       frontend: brightnessFrontend,
-      backend: buildBackend(brightnessBackend, manifestJson.buttons[1]!),
+      backend: withInternal(brightnessBackend),
     },
     "internal-settings:theme": {
       frontend: themeFrontend,
-      backend: buildBackend(themeBackend, manifestJson.buttons[2]!),
+      backend: withInternal(themeBackend),
     },
   },
   decks: {

@@ -9,31 +9,28 @@ const frontendUrl =
   process.env['SIRENO_FRONTEND_URL'] ?? 'http://127.0.0.1:5173'
 
 const parseThemeFromEnv = ():
-  | { name: string; cssPath: string; frontendPath: string; manifestPath: string; assetsStyles: ReadonlyArray<string> }
+  | { name: string; manifestPath: string; uiOverridesPath: string | null }
   | undefined => {
   const blob = process.env['SIRENO_THEME']
   if (blob === undefined || blob.length === 0) return undefined
   try {
     const parsed = JSON.parse(blob) as {
       name?: unknown
-      cssPath?: unknown
-      frontendPath?: unknown
       manifestPath?: unknown
-      assetsStyles?: unknown
+      uiOverridesPath?: unknown
     }
     if (
       typeof parsed.name === 'string' &&
-      typeof parsed.cssPath === 'string' &&
-      typeof parsed.frontendPath === 'string' &&
-      typeof parsed.manifestPath === 'string' &&
-      Array.isArray(parsed.assetsStyles)
+      typeof parsed.manifestPath === 'string'
     ) {
       return {
         name: parsed.name,
-        cssPath: parsed.cssPath,
-        frontendPath: parsed.frontendPath,
         manifestPath: parsed.manifestPath,
-        assetsStyles: parsed.assetsStyles as ReadonlyArray<string>,
+        uiOverridesPath:
+          parsed.uiOverridesPath === null ||
+          typeof parsed.uiOverridesPath === 'string'
+            ? (parsed.uiOverridesPath as string | null)
+            : null,
       }
     }
   } catch {
@@ -44,13 +41,8 @@ const parseThemeFromEnv = ():
 
 const defaultTheme = {
   name: 'default',
-  cssPath: resolve(__dirname, '../src/themes/default/theme.generated.css'),
-  frontendPath: resolve(__dirname, '../src/themes/default/index'),
   manifestPath: resolve(__dirname, '../src/themes/default/sirenodeck.json'),
-  assetsStyles: [
-    resolve(__dirname, '../src/themes/default/tokens.css'),
-    resolve(__dirname, '../src/themes/default/components.css'),
-  ] as ReadonlyArray<string>,
+  uiOverridesPath: null as string | null,
 }
 
 const theme = parseThemeFromEnv() ?? defaultTheme

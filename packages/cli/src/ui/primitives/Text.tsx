@@ -1,7 +1,12 @@
-import { createElement, type CSSProperties, type ReactElement, type ReactNode } from 'react'
+import {
+  createElement,
+  type CSSProperties,
+  type ReactElement,
+  type ReactNode,
+} from 'react'
 
-import { cn } from '../utils/cn'
 import { useThemeUiPresentation } from '../theme-presentation'
+import { cn } from '../utils/cn'
 
 const ALIGN_CLASS = {
   center: 'text-center',
@@ -17,12 +22,23 @@ const TONE_CLASS = {
   'foreground-contrast': 'text-foreground-contrast',
   primary: 'text-primary',
   success: 'text-success',
+  muted: 'text-muted',
 } as const
 
 const TYPOGRAPHY_CLASS = {
   aux: 'font-aux',
   main: 'font-main',
   mono: 'font-mono',
+} as const
+
+const WEIGHT_CLASS = {
+  normal: 'font-normal',
+  semibold: 'font-semibold',
+  bold: 'font-bold',
+  light: 'font-light',
+  thin: 'font-thin',
+  extralight: 'font-extralight',
+  black: 'font-black',
 } as const
 
 const SIZE_CLASS = {
@@ -33,11 +49,29 @@ const SIZE_CLASS = {
   xl: 'text-xl',
   '2xl': 'text-2xl',
   '3xl': 'text-3xl',
+  '4xl': 'text-4xl',
   '5xl': 'text-5xl',
 } as const
 
-const RICH_TONE_TAGS = ['accent', 'danger', 'foreground', 'primary', 'success'] as const
-const RICH_SIZE_TAGS = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '5xl'] as const
+const RICH_TONE_TAGS = [
+  'accent',
+  'danger',
+  'foreground',
+  'primary',
+  'success',
+] as const
+
+const RICH_SIZE_TAGS = [
+  'xs',
+  'sm',
+  'md',
+  'lg',
+  'xl',
+  '2xl',
+  '3xl',
+  '4xl',
+  '5xl',
+] as const
 
 type RichToneTag = (typeof RICH_TONE_TAGS)[number]
 type RichSizeTag = (typeof RICH_SIZE_TAGS)[number]
@@ -45,14 +79,25 @@ type RichMarkupTag = 'blink' | 'dim' | 'highlight' | RichToneTag | RichSizeTag
 
 type RichTextNode =
   | { type: 'line-break' }
-  | { type: 'tag'; tag: RichMarkupTag; children: RichTextNode[] }
+  | { type: 'nbsp' }
+  | {
+      type: 'tag'
+      tag: string
+      extraClasses?: string[]
+      children: RichTextNode[]
+    }
   | { type: 'text'; value: string }
 
 type ParseStop =
   | { kind: 'highlight' }
   | { kind: 'tag'; tag: Exclude<RichMarkupTag, 'highlight'> }
 
-const RICH_TAG_NAMES = new Set<string>([...RICH_TONE_TAGS, ...RICH_SIZE_TAGS, 'blink', 'dim'])
+const RICH_TAG_NAMES = new Set<string>([
+  ...RICH_TONE_TAGS,
+  ...RICH_SIZE_TAGS,
+  'blink',
+  'dim',
+])
 
 function isRichToneTag(tag: string): tag is RichToneTag {
   return RICH_TONE_TAGS.includes(tag as RichToneTag)
@@ -98,6 +143,14 @@ function parseRichText(input: string): RichTextNode[] | null {
         continue
       }
 
+      if (current === '&' && input.slice(index, index + 6) === '&nbsp;') {
+        flushText()
+        nodes.push({ type: 'nbsp' })
+        index += 6
+        textStart = index
+        continue
+      }
+
       if (current === '*') {
         flushText()
         index += 1
@@ -122,7 +175,8 @@ function parseRichText(input: string): RichTextNode[] | null {
         }
 
         const tagName = input.slice(index + 1, closeIndex)
-        if (!RICH_TAG_NAMES.has(tagName)) {
+        const [baseTag, ...rest] = tagName.split(/\s+/)
+        if (!baseTag || !RICH_TAG_NAMES.has(baseTag)) {
           return null
         }
 
@@ -132,7 +186,7 @@ function parseRichText(input: string): RichTextNode[] | null {
 
         const children = parseSequence({
           kind: 'tag',
-          tag: tagName as Exclude<RichMarkupTag, 'highlight'>,
+          tag: baseTag as Exclude<RichMarkupTag, 'highlight'>,
         })
         if (children === null) {
           return null
@@ -140,7 +194,8 @@ function parseRichText(input: string): RichTextNode[] | null {
 
         nodes.push({
           type: 'tag',
-          tag: tagName as Exclude<RichMarkupTag, 'highlight'>,
+          tag: baseTag,
+          extraClasses: rest.length > 0 ? rest : undefined,
           children,
         })
         textStart = index
@@ -181,6 +236,10 @@ function renderRichTextNodes(
       })
     }
 
+    if (node.type === 'nbsp') {
+      return createElement('span', { key, 'aria-hidden': 'true' }, '\u00A0')
+    }
+
     const classNames = ['sireno-rich-text-node', className]
 
     if (node.tag === 'blink') {
@@ -199,15 +258,26 @@ function renderRichTextNodes(
       classNames.push(SIZE_CLASS[node.tag])
     }
 
+    if (node.extraClasses) {
+      classNames.push(...node.extraClasses)
+    }
+
     return (
-      <span className={cn(classNames)} data-sireno-rich-text-tag={node.tag} key={key}>
+      <span
+        className={cn(classNames)}
+        data-sireno-rich-text-tag={node.tag}
+        key={key}
+      >
         {renderRichTextNodes(node.children, key, className)}
       </span>
     )
   })
 }
 
-function renderTextChildren(children: ReactNode, _lineHeight: number | string): ReactNode {
+function renderTextChildren(
+  children: ReactNode,
+  _lineHeight: number | string,
+): ReactNode {
   if (typeof children !== 'string') {
     return children
   }
@@ -237,6 +307,14 @@ export interface TextProps {
   typography?: TextTypography
   size?: TextSize
   lineHeight?: number | string
+  weight?:
+    | 'normal'
+    | 'semibold'
+    | 'bold'
+    | 'light'
+    | 'thin'
+    | 'extralight'
+    | 'black'
 }
 
 export function Text(props: TextProps): ReactElement {
@@ -246,17 +324,19 @@ export function Text(props: TextProps): ReactElement {
   const typography = props.typography ?? 'main'
   const size = props.size ?? 'md'
   const lineHeight = props.lineHeight ?? 1
+  const weight = props.weight ?? 'normal'
   const themeUi = useThemeUiPresentation()
   const renderedChildren = renderTextChildren(props.children, lineHeight)
 
-  if (themeUi?.text) {
-    return themeUi.text({
+  if (themeUi?.primitives?.text) {
+    return themeUi.primitives.text({
       align,
       children: renderedChildren,
       fit,
       tone,
       typography,
       size: size,
+      lineHeight,
     })
   }
 
@@ -270,11 +350,6 @@ export function Text(props: TextProps): ReactElement {
     props.fontStack !== undefined
       ? { ...props.style, fontFamily: props.fontStack }
       : (props.style ?? {})
-  // Apply arbitrary line-height via inline style so Tailwind's static
-  // class scanner doesn't have to predict runtime values like
-  // "1.2em" — anything not matching a known preset lands here and is
-  // applied directly to the element. Numeric values get suffixed with
-  // `em` so they behave like the legacy Tailwind multiplier API.
   if (lineHeight !== 1) {
     composedStyle.lineHeight =
       typeof lineHeight === 'number' && Number.isFinite(lineHeight)
@@ -289,6 +364,7 @@ export function Text(props: TextProps): ReactElement {
         TONE_CLASS[tone],
         ALIGN_CLASS[align],
         SIZE_CLASS[size],
+        WEIGHT_CLASS[weight],
         fitModesClasses[fit],
         props.className,
       ])}
