@@ -81,11 +81,34 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   const findButton = (
     id: string,
   ): { deckId: string; button: RuntimeDeck["buttons"][number] } | null => {
-    for (const deck of decks) {
-      const button = deck.buttons.find((b) => b.id === id);
-      if (button !== undefined) return { deckId: deck.id, button };
+    const colonIdx = id.indexOf(':');
+    if (colonIdx === -1) {
+      console.log('[findButton] no colon in id, searching all decks for', id);
+      for (const deck of decks) {
+        const button = deck.buttons.find((b) => b.id === id);
+        if (button !== undefined) {
+          console.log('[findButton] found in deck', deck.id);
+          return { deckId: deck.id, button };
+        }
+      }
+      console.log('[findButton] not found');
+      return null;
     }
-    return null;
+    const deckId = id.slice(0, colonIdx);
+    const buttonId = id.slice(colonIdx + 1);
+    console.log('[findButton] looking for deck', deckId, 'button', buttonId);
+    const deck = deckById(deckId);
+    if (deck === undefined) {
+      console.log('[findButton] deck not found');
+      return null;
+    }
+    const button = deck.buttons.find((b) => b.id === buttonId);
+    if (button === undefined) {
+      console.log('[findButton] button not found in deck');
+      return null;
+    }
+    console.log('[findButton] found');
+    return { deckId: deck.id, button };
   };
 
   const getActiveDeck = (): RuntimeDeck => {
@@ -157,16 +180,20 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   };
 
   const dispatchGesture = async (buttonId: string, gesture: GestureKind): Promise<void> => {
+    console.log('[dispatchGesture] handlers map keys:', Array.from(handlers.keys()));
     const found = findButton(buttonId);
     if (found === null) {
       logger.warn({ buttonId }, "dispatchGesture: button not found");
       return;
     }
+    console.log('[dispatchGesture] found button, checking handler for', buttonId);
     const handler = handlers.get(buttonId);
     if (handler === undefined) {
+      console.log('[dispatchGesture] no handler for', buttonId);
       logger.warn({ buttonId }, "dispatchGesture: no handler registered");
       return;
     }
+    console.log('[dispatchGesture] handler found');
     const ctx: ButtonActionContext = {
       buttonId,
       deckId: found.deckId,

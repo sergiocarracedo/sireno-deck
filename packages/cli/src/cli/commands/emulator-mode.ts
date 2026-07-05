@@ -1,5 +1,6 @@
 import { spawn, type ChildProcess } from 'node:child_process'
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { homedir } from 'node:os'
 import { dirname, join, resolve as resolvePath } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -11,6 +12,9 @@ import type {
   WsMessage,
 } from '@/api/protocol-internal'
 import type { Runtime, RuntimeDeck } from '@/deck'
+import { getAllAssets, registerIconForDeck } from '@/core/icon-asset-registry'
+import { findConfigPath } from '@/config/discovery'
+import { resolveIconPath, type ResolveIconPathOptions } from '@/render/icon-resolver'
 import { startWsBridge, type WsBridge } from '@/render/ws-bridge'
 import { BUILT_IN_THEMES, buildThemeCssFromManifest, readAndValidateManifest } from '@/themes/loader'
 
@@ -31,6 +35,7 @@ export interface RunEmulatorModeOptions {
   readonly runtime?: Runtime
   readonly decks?: ReadonlyArray<RuntimeDeck>
   readonly addonByType?: Map<string, AddonFrontendRef>
+  readonly config?: string
   readonly onBridgeReady?: (bridge: WsBridge) => void | Promise<void>
   readonly logger: pino.Logger
 }
@@ -369,6 +374,7 @@ const deriveLabel = (
 export const buildDeckConfigMessage = (
   deck: RuntimeDeck,
   addonByType: Map<string, AddonFrontendRef>,
+  resolverOptions: ResolveIconPathOptions = {},
 ): DeckConfigMessage => ({
   type: 'deck-config',
   deckId: deck.id,
@@ -381,10 +387,11 @@ export const buildDeckConfigMessage = (
         const addon = addonByType.get(b.type)
         const cfg = (b.config ?? {}) as Record<string, unknown>
         const label = deriveLabel(b.type, cfg)
+        const resolvedConfig = resolveConfigIcon(cfg, resolverOptions)
         return {
           id: b.id,
           type: b.type,
-          config: cfg,
+          config: resolvedConfig,
           ...(Number.isFinite(position) ? { position } : {}),
           ...(label !== undefined ? { label } : {}),
           ...(addon !== undefined ? { addonName: addon.name } : {}),
@@ -397,6 +404,17 @@ export const buildDeckConfigMessage = (
   },
   navMode: 'regular',
 })
+
+const resolveConfigIcon = (
+  cfg: Record<string, unknown>,
+  resolverOptions: ResolveIconPathOptions,
+): Record<string, unknown> => {
+  const raw = cfg.icon
+  if (typeof raw !== "string") return cfg
+  const resolved = resolveIconPath(raw, resolverOptions)
+  if (resolved === undefined || resolved === raw) return cfg
+  return { ...cfg, icon: resolved }
+}
 
 export const runEmulatorMode = async (
   options: RunEmulatorModeOptions,
@@ -480,7 +498,8 @@ export const runEmulatorMode = async (
           )
           return
         }
-        void options.runtime.dispatchGesture(button.id, message.gesture)
+        console.log('[emulator] dispatching gesture', { buttonId: `${message.deckId}:${button.id}`, gesture: message.gesture });
+        void options.runtime.dispatchGesture(`${message.deckId}:${button.id}`, message.gesture)
       }
     }
   })
@@ -492,8 +511,41 @@ export const runEmulatorMode = async (
   ) {
     const mainDeck = options.decks.find((d) => d.isMain) ?? options.decks[0]!
     const addonByType = options.addonByType ?? new Map()
+    const baseDirs: string[] = []
+    if (options.config !== undefined) {
+      baseDirs.push(dirname(options.config))
+    } else {
+      const discovered = findConfigPath({ homeDir: homedir() })
+      if (discovered !== null) {
+        baseDirs.push(dirname(discovered))
+      }
+    }
+    const resolverOptions: ResolveIconPathOptions = {
+      addonDirs: new Map(
+        Array.from(addonByType.values())
+          .filter((ref) => ref.frontendEntry !== null)
+          .map((ref) => [ref.name, dirname(ref.frontendEntry as string)] as const),
+      ),
+      baseDirs,
+    }
     bridge.onConnection((socket) => {
-      socket.send(JSON.stringify(buildDeckConfigMessage(mainDeck, addonByType)))
+      registerIconForDeck(mainDeck.buttons, resolverOptions)
+      const assets = getAllAssets()
+      if (assets.length > 0) {
+        const assetsMsg = {
+          type: "assets" as const,
+          deckId: mainDeck.id,
+          assets: assets.map((a) => ({
+            id: a.id,
+            filename: a.filename,
+            data: a.data,
+          })),
+        }
+        socket.send(JSON.stringify(assetsMsg))
+      }
+      socket.send(
+        JSON.stringify(buildDeckConfigMessage(mainDeck, addonByType, resolverOptions)),
+      )
       options.logger.info(
         { deckId: mainDeck.id, buttons: mainDeck.buttons.length },
         'emulator: deck-config sent to new client',

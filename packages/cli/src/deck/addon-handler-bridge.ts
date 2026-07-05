@@ -20,10 +20,11 @@ export interface BridgeAddonBackendsParams {
   readonly scanned: ReadonlyArray<ScannedAddon>;
   readonly executor: ActionExecutor;
   readonly pubSub: PubSub;
-  readonly store?: Store;
+  readonly store: Store;
   readonly signal: AbortSignal;
   readonly statePublisher: Pick<StatePublisher, "registerChannel">;
   readonly bridge: Pick<WsBridge, "broadcast">;
+  readonly setClipboardProvider: (provider: unknown) => void;
 }
 
 type AddonModule = {
@@ -37,7 +38,7 @@ const namespacedKey = (addonName: string, methodName: string): string =>
 export const bridgeAddonBackends = async (
   params: BridgeAddonBackendsParams,
 ): Promise<void> => {
-  const { runtime, decks, scanned, executor, pubSub, store, signal, statePublisher, bridge } =
+  const { runtime, decks, scanned, executor, pubSub, store, signal, statePublisher, bridge, setClipboardProvider } =
     params;
 
   const abortController = new AbortController();
@@ -53,20 +54,21 @@ export const bridgeAddonBackends = async (
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mod = (await import(addon.globalBackendEntry)) as AddonModule;
-      const exported =
-        mod.manifest ??
-        (mod.default && typeof mod.default === "object" ? mod.default : null);
-      if (exported === null) continue;
-
-      const manifest = exported as {
-        readonly name?: string;
-        readonly globalBackend?: AddonGlobalBackend;
-      };
-
-      if (manifest.globalBackend === undefined) continue;
+      let globalBackend: AddonGlobalBackend | undefined;
+      if (typeof (mod as unknown as { globalBackend?: AddonGlobalBackend }).globalBackend === "object") {
+        globalBackend = (mod as unknown as { globalBackend: AddonGlobalBackend }).globalBackend;
+      } else {
+        const exported =
+          mod.manifest ??
+          (mod.default && typeof mod.default === "object" ? mod.default : null);
+        if (exported === null) continue;
+        const manifest = exported as { readonly name?: string; readonly globalBackend?: AddonGlobalBackend };
+        globalBackend = manifest.globalBackend;
+      }
+      if (globalBackend === undefined) continue;
 
       addonModules.set(addon.name, mod);
-      addonGlobalBackends.set(addon.name, manifest.globalBackend);
+      addonGlobalBackends.set(addon.name, globalBackend);
     } catch {
       // Skip addons whose global backend fails to load.
     }
@@ -105,6 +107,7 @@ export const bridgeAddonBackends = async (
       },
       signal: abortController.signal,
       executor,
+      setClipboardProvider,
     };
 
     if (globalBackend.pollers !== undefined) {
@@ -193,6 +196,7 @@ export const bridgeAddonBackends = async (
         publish: (channel: string, data: unknown) => pubSub.publish(channel, data),
         executor,
         signal: abortController.signal,
+        store,
       };
 
       const buttonAbort = new AbortController();
@@ -211,6 +215,7 @@ export const bridgeAddonBackends = async (
 
       const handler = {
         async onTap(ctx: { buttonId: string; config: unknown; gesture: string }) {
+          console.log(`[handler] ${addonName}:${buttonType} onTap called, buttonBackend.onTap=`, typeof buttonBackend.onTap);
           try {
             await buttonBackend.onTap?.(wrappedCtx);
           } catch (err) {
@@ -241,7 +246,7 @@ export const bridgeAddonBackends = async (
         },
       };
 
-      runtime.registerButtonHandler(button.id, handler);
+      runtime.registerButtonHandler(`${deck.id}:${button.id}`, handler);
     }
   }
 
@@ -253,6 +258,7 @@ export const bridgeAddonBackends = async (
           poll: async () => {},
           signal: abortController.signal,
           executor,
+          setClipboardProvider,
         };
         globalBackend.onUnload?.(ctx);
       } catch (err) {
