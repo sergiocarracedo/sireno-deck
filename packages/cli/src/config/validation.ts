@@ -94,14 +94,14 @@ export const validateFull = (config: RawConfig, registry: AddonRegistry): FullVa
         });
         return;
       }
-      const parseResult = (
-        def.def.backend.configSchema as {
-          safeParse: (input: unknown) => {
-            success: boolean;
-            error?: { issues: Array<{ path: Array<string | number>; message: string }> };
-          };
-        }
-      ).safeParse(btn.config ?? {});
+      const schema = def.def.backend.configSchema as {
+        safeParse: (input: unknown) => {
+          success: boolean;
+          error?: { issues: Array<{ path: Array<string | number>; message: string }> };
+        };
+      } | undefined;
+      if (schema === undefined) return;
+      const parseResult = schema.safeParse(btn.config ?? {});
       if (!parseResult.success) {
         const first = parseResult.error?.issues[0];
         const msg = first
