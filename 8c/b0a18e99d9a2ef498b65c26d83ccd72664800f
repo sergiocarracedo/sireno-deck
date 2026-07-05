@@ -1,0 +1,474 @@
+packages/cli/src/builtin-addons/media/buttons/media-player/components/ProgressBar.tsx
+  s_392f8e24ab8686::t_a98f8fed5a4e41 1,14-19
+packages/cli/src/ui/primitives/Icon.tsx
+  s_9a2d1b18848cc4::t_5d80fa51fa2fd3 11
+  s_9a2d1b18848cc4::t_d01bcc3a33bf1d 119-121,125-127,133,141,143-160
+  s_9a2d1b18848cc4::t_c2c3cffbd56798 161-179,201
+  s_9a2d1b18848cc4::t_0ef7e1cbf148ae 122-124,128-130,139-140
+  s_9a2d1b18848cc4::t_8bba40c68ba829 7
+  s_9a2d1b18848cc4::t_85e5ffcd60fe49 26,38-41
+  s_9a2d1b18848cc4::t_78c62cc6c61d45 142
+  s_b592366f7c5007::t_aafddc27eaa93b 180-181
+packages/cli/src/builtin-addons/media/buttons/mute/frontend.tsx
+  s_b592366f7c5007::t_c7200cd648c806 2-16
+packages/cli/src/core/icon-asset-registry.ts
+  s_9a2d1b18848cc4::t_1dafa577899f33 1-103,107-134,136-158
+  s_9a2d1b18848cc4::t_f3865192c40bd0 135
+  s_9a2d1b18848cc4::t_f57c220b02a020 104-106
+packages/cli/src/builtin-addons/emoji-selector/buttons/page-nav/frontend.tsx
+  s_79a4941cb04acb::t_d8079f299c5b7d 3
+packages/cli/src/builtin-addons/emoji-selector/buttons/back/frontend.tsx
+  s_79a4941cb04acb::t_d8079f299c5b7d 4
+  s_79a4941cb04acb::t_258b7829c054cf 2,5
+packages/cli/src/builtin-addons/weather/__tests__/frontend.test.tsx
+  s_3a6f2d3254c993::t_496b75fe525683 133,137-139
+  s_b592366f7c5007::t_cc622ba46847b7 1-4,8-11,18-19,21-59,61-64,68-132,134-136,140-142
+  s_3a6f2d3254c993::t_4d7d50e83f35c2 60,65-67
+  s_b592366f7c5007::t_e4c659ebb81522 12-17,20
+  s_b592366f7c5007::t_d0e8b94d77d7c5 7
+  s_b592366f7c5007::t_ce7f734d774e52 5-6
+packages/cli/src/builtin-addons/media/buttons/volume-down/frontend.tsx
+  s_392f8e24ab8686::t_4be7cf3f99295e 12,15-22,37
+  s_392f8e24ab8686::t_1212e4659bdcc1 1-3,5,7-11,13,23-30,32-36,38-49
+  h_f90ee31b03fc41 4,31
+  s_79a4941cb04acb::t_e602788594bb95 6,14
+packages/cli/src/render/protocol.ts
+  s_9a2d1b18848cc4::t_4ea4d24cd8b357 14,32
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle/config.ts
+  s_79a4941cb04acb::t_e5a51f1632df41 7-8,10
+  s_79a4941cb04acb::t_cb0523349fb909 6
+packages/cli/src/deck/paginate-deck.ts
+  s_d84a33f8da744f::t_1d277a97d34735 1-29,31-47,49-50,52-54,56-60,62-70,73-83
+  s_d84a33f8da744f::t_98435d8999e5ba 30,48,51,55,61,71-72
+packages/cli/src/cli/commands/run.ts
+  s_d84a33f8da744f::t_f8694c627edf6d 779
+  s_d84a33f8da744f::t_aa929b1f8e1cf6 471
+  s_d84a33f8da744f::t_80b4727cb34ecd 673
+  s_79a4941cb04acb::t_dbaeeae4444eb2 6
+  s_79a4941cb04acb::t_fdf7d83e493a08 159-168,170-171,177-180
+  s_9a2d1b18848cc4::t_e225fe6f418586 169,172-176
+  s_d84a33f8da744f::t_b1144a91f67545 195
+  s_79a4941cb04acb::t_1554bd416fceca 264-282,292
+  s_79a4941cb04acb::t_6eebb2bfbc94f0 4
+  s_d84a33f8da744f::t_dcd9741e7b99f6 527
+  s_d84a33f8da744f::t_83ea5526eb6ec0 780
+  s_d84a33f8da744f::t_12fe72959d831e 528
+  s_d84a33f8da744f::t_7160d39ea3548f 717,721
+  s_d84a33f8da744f::t_30aa2c43715af8 196
+  s_d84a33f8da744f::t_7e0dc5672ece5f 448
+  s_9a2d1b18848cc4::t_7578931ea855be 533-548
+  s_79a4941cb04acb::t_5f44d6fd465130 763
+  s_9a2d1b18848cc4::t_621be192310d35 20
+  s_d84a33f8da744f::t_aae55d1317bb9f 111
+  s_d84a33f8da744f::t_de9b8b99708d5d 229-230,242-243
+packages/cli/src/builtin-addons/date-time/buttons/date/frontend.tsx
+  h_f90ee31b03fc41 30
+packages/cli/emulator/src/DeckFrame.tsx
+  s_9a2d1b18848cc4::t_db9033ced2f503 1,4-10,32,35-50,53-61,66-71
+  s_9a2d1b18848cc4::t_6adaac6916f144 11-12
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/frontend.tsx
+  s_79a4941cb04acb::t_d8079f299c5b7d 3
+packages/cli/src/action/__tests__/executor.test.ts
+  s_79a4941cb04acb::t_2f36b20e7b5047 10-11,14,20,25,30,35,39,45,48-52,54
+  s_b592366f7c5007::t_aafddc27eaa93b 53
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck/frontend.tsx
+  s_79a4941cb04acb::t_d21cc1069b5ca2 1-7,9-12,14-18
+  s_79a4941cb04acb::t_d8079f299c5b7d 8
+  s_9a2d1b18848cc4::t_7cbe03cfe6a2b2 13
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/backend.ts
+  s_d84a33f8da744f::t_c1ca085a87f3ed 1,6-7,11-17
+packages/cli/src/ui/primitives/index.ts
+  s_392f8e24ab8686::t_d1e8cf9183a61a 4
+packages/cli/src/builtin-addons/media/buttons/volume-up/frontend.tsx
+  s_79a4941cb04acb::t_bc35d0f4691e8d 6,14
+  h_f90ee31b03fc41 4,31
+  s_392f8e24ab8686::t_7fb1a3f8dd1a33 1-3,5,7-11,13,23-30,32-36,38-49
+  s_392f8e24ab8686::t_5168a4e7fff41d 12,15-22,37
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-down/backend.ts
+  s_79a4941cb04acb::t_39b7b572dfccf0 1,3,6,10,12
+  s_79a4941cb04acb::t_c232983c74a4c2 2,14
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck/config.ts
+  s_79a4941cb04acb::t_29fea2f5c84d3d 6-7,9
+packages/cli/src/render/__tests__/icon-resolver.test.ts
+  s_79a4941cb04acb::t_2ca66e5f609409 78-79,93-96
+  s_79a4941cb04acb::t_b6dcce084a6283 1-77,80-92,97-155
+packages/cli/src/builtin-addons/weather/backend.ts
+  s_3a6f2d3254c993::t_2f76b2df99c0cf 2-5,13-14,35-38,42-44,83-89,92,96-100,106-107,118,120,122
+  s_3a6f2d3254c993::t_a75a4e24da5fc2 15,17-21,23-31,33-34
+  s_3a6f2d3254c993::t_6966a145e557b2 121
+  s_3a6f2d3254c993::t_89ed6f937e221b 53,55,57,59-63,65-68
+  s_b592366f7c5007::t_3a8769bc438ddc 11-12,45-48,51-52,58,70,72-73,75-78,80-82,101-102,105,108-110,112-114,123
+  s_3a6f2d3254c993::t_0d5a6ea844ee33 39,41
+  s_3a6f2d3254c993::t_85e2d138b2a4a0 115,117
+  s_3a6f2d3254c993::t_d7540ec94e715d 56,69,71
+  s_3a6f2d3254c993::t_af6d1372985747 116,119
+  s_3a6f2d3254c993::t_a32ea3ef299116 49-50,79
+  s_3a6f2d3254c993::t_81a66d523b977a 93-94
+  h_f90ee31b03fc41 1,6-10,22,32,40,54,64,74,90-91,103-104
+  s_3a6f2d3254c993::t_8ff58d14b46619 95
+  s_3a6f2d3254c993::t_230ec40f6e6dbe 111
+  s_3a6f2d3254c993::t_6f0baacc5b410f 16
+packages/cli/frontend/src/App.tsx
+  s_b592366f7c5007::t_8ca36a9748592d 167-189
+  s_9a2d1b18848cc4::t_fd6c70689b19fb 7-11
+  s_b592366f7c5007::t_d27b51db0bb3fa 197
+  s_9a2d1b18848cc4::t_4c5c4fab745131 119-120,122-123
+  s_b592366f7c5007::t_aafddc27eaa93b 166
+  s_9a2d1b18848cc4::t_f22b5cf642d4c1 92-105,109,121,165,196,198
+packages/cli/src/builtin-addons/core-buttons/buttons/action/config.ts
+  s_79a4941cb04acb::t_4f8f9a5ad91891 7,10
+  s_79a4941cb04acb::t_1c37dc05f00aed 8
+packages/cli/src/builtin-addons/media/providers/linux.ts
+  s_392f8e24ab8686::t_b007d617cac15d 34-47,122
+  s_392f8e24ab8686::t_8f84fcb09aff38 119-121
+  s_392f8e24ab8686::t_bfd0e82d65e541 100
+  s_392f8e24ab8686::t_27a9cf13c3d902 125,127
+  s_392f8e24ab8686::t_cd5f94b5a35e6a 49,62-65
+  s_b592366f7c5007::t_8c52d8ff6dbcb6 181
+  s_392f8e24ab8686::t_c36b662b886862 175-180
+  s_392f8e24ab8686::t_6af2c8af9992d4 157-160,163-166,169-172
+  s_392f8e24ab8686::t_a9ce454f0cea1a 123
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness/frontend.tsx
+  s_79a4941cb04acb::t_d8079f299c5b7d 4
+  s_79a4941cb04acb::t_c50e5faf494d2b 1-2,5-8
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle/backend.ts
+  s_79a4941cb04acb::t_c67207552e2816 10,16
+  s_79a4941cb04acb::t_769ee600d757ee 18
+  s_79a4941cb04acb::t_02a021bed4741d 13-15
+packages/cli/src/render/icon-resolver.ts
+  s_79a4941cb04acb::t_a224b19e380dbc 1-3,10-23,25-28,30-39,42,47-65,72-73,90-96,105-121,123-127,129,131-138,175-176,191-193,197-198,201
+  s_9a2d1b18848cc4::t_edc60d18866de2 4-9,24,29,40-41,43-46,66-71,74-89,97-104,122,128,130,139-174,177-190,194-196,199-200
+packages/cli/src/builtin-addons/weather/buttons/weather/frontend.tsx
+  s_3a6f2d3254c993::t_cff05fa9fb3e92 150-153,157-165
+  s_3a6f2d3254c993::t_3e79e3f1037f78 126-130,139,143-146,149,168-171,173,175,200
+  s_3a6f2d3254c993::t_962336f12a0b4e 148
+  s_3a6f2d3254c993::t_1de57bb334f837 154-155,166-167
+  s_3a6f2d3254c993::t_74beb792931be7 69,71-72,78
+  s_3a6f2d3254c993::t_7eee8a0d727b54 121
+  s_3a6f2d3254c993::t_1c58395b0abc97 1
+  s_3a6f2d3254c993::t_c89d431befb831 90-99
+  h_f90ee31b03fc41 2-3,5-22,24,27-54,58-59,61,65,68,70,73-74,80,82,85,104,118,122,124,131,147,172,174
+  s_3a6f2d3254c993::t_3d5da131268747 4
+  s_3a6f2d3254c993::t_a35172b347543c 156,185
+  s_3a6f2d3254c993::t_7f82355543b62f 176-179,186-190
+  s_3a6f2d3254c993::t_f3e1441b96a3b1 191-199
+  s_3a6f2d3254c993::t_4ea56c3d57cffe 67
+  s_3a6f2d3254c993::t_ca6140b6a09500 109-111,113-117
+  s_3a6f2d3254c993::t_bc0177dadc5420 62-64,66,81,83-84,86-89,100-103,105-106,123,125,132-138,140-142,203-206,208-211,224
+  s_3a6f2d3254c993::t_acdf7e8472d69e 23
+  s_3a6f2d3254c993::t_4e2263476d26ba 180-184,201-202
+  s_b592366f7c5007::t_d99a17abe696be 75-77,79,107,120,213,216
+  s_b592366f7c5007::t_aafddc27eaa93b 55,60,225-226,228
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/config.ts
+  s_d84a33f8da744f::t_02a6c14ec7bf3f 3-6
+packages/cli/src/builtin-addons/media/providers/__tests__/linux.test.ts
+  s_392f8e24ab8686::t_5449de89c86117 34,46,56,68,81,102-103
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  s_79a4941cb04acb::t_b361c51b396c7a 16
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile/frontend.tsx
+  s_79a4941cb04acb::t_b361c51b396c7a 38
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/frontend.tsx
+  s_79a4941cb04acb::t_a5d5d639083e8a 2,5
+  s_79a4941cb04acb::t_d8079f299c5b7d 4
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_3a6f2d3254c993::t_64b69ce85452ca 249
+  s_d84a33f8da744f::t_5e92dcbca97ac9 23
+  s_d84a33f8da744f::t_ed1c851f49d9e1 110
+  s_d84a33f8da744f::t_d8f440fdcf0650 41
+  s_d84a33f8da744f::t_f8cfa36b707d7f 199
+  s_3a6f2d3254c993::t_d4e29902e43108 218
+  s_d84a33f8da744f::t_6ad3ed89acf3fb 27
+  s_b592366f7c5007::t_d79f4de0cf4c81 57-68,71
+  s_d84a33f8da744f::t_75c9b914278ed0 261
+packages/cli/src/builtin-addons/weather/buttons/weather/config.ts
+  s_3a6f2d3254c993::t_a29b1aa5263009 5-14
+  s_3a6f2d3254c993::t_7093258861859b 34-48,56-57
+  s_b592366f7c5007::t_3546035cb8f454 58-61
+packages/cli/src/ui/index.ts
+  s_9a2d1b18848cc4::t_d15bef65215047 8,12-17
+packages/cli/src/core/__tests__/gesture-state.test.ts
+  s_79a4941cb04acb::t_5388c776f8d231 10
+  s_79a4941cb04acb::t_811e2d1a71f7b1 217-273
+  s_9a2d1b18848cc4::t_a638d6604de111 210
+packages/cli/src/addon/api.ts
+  s_79a4941cb04acb::t_a558786781448a 77-78,82-85,91,96
+  s_3a6f2d3254c993::t_c4a6edcd633715 86
+  s_d84a33f8da744f::t_89095d0519b164 236-237
+  s_79a4941cb04acb::t_56af0485919be8 268-272
+  s_d84a33f8da744f::t_e26d0584968a76 104
+  s_d84a33f8da744f::t_6557fb25e3d7db 129
+  s_79a4941cb04acb::t_4367360cfab02e 6
+packages/cli/frontend/src/bridge/client.ts
+  s_b592366f7c5007::t_d3f54aa917bbe2 44-45,49-55,73,81,101,112-113,122,124-126
+packages/cli/src/builtin-addons/core-buttons/buttons/page-nav/backend.ts
+  s_d84a33f8da744f::t_ee38feba6224b0 1-18
+packages/cli/src/builtin-addons/weather/buttons/weather/backend.ts
+  s_3a6f2d3254c993::t_2a3716a32a6858 1-4,6,8-25,34,36-37
+  s_3a6f2d3254c993::t_4d1dce50da0896 26-30,35
+packages/cli/src/builtin-addons/media/buttons/volume-down/backend.ts
+  s_79a4941cb04acb::t_cfbe398eb55e80 1,3-13
+  s_79a4941cb04acb::t_02e2c3673c9abe 2,14
+packages/cli/src/builtin-addons/emoji-selector/support.ts
+  s_d84a33f8da744f::t_fda90c6021ecdf 3,101
+packages/cli/src/builtin-addons/internal-settings/buttons/theme/frontend.tsx
+  s_79a4941cb04acb::t_d8079f299c5b7d 4
+  s_79a4941cb04acb::t_a96691832bcf10 1-2,5-8
+packages/cli/src/builtin-addons/emoji-selector/decks/index.ts
+  s_d84a33f8da744f::t_2478fb4994c9f3 1-2,11,14-15,26-32,34-39,41-58,61-108,110-111,114
+  s_d84a33f8da744f::t_a797f72933bfb6 18-24
+  s_d84a33f8da744f::t_9f5ded65974a0d 60
+packages/cli/src/action/executor.ts
+  s_79a4941cb04acb::t_6f75576b994a2a 12,25,29-33,48,72-74,77,83-85,92-94,96-104,162
+  s_79a4941cb04acb::t_d07d345b73d605 80-81,87
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/config.ts
+  s_79a4941cb04acb::t_0360b96ee5ec10 3-5,7
+  s_d84a33f8da744f::t_788db66c4f8128 6,8
+packages/cli/frontend/src/components/Deck.tsx
+  s_b592366f7c5007::t_6cf8129b7fea1b 48
+  s_b592366f7c5007::t_8a5fc5317fecdf 136
+  s_b592366f7c5007::t_d8662549eeff47 137
+  s_b592366f7c5007::t_691f0bae3cd63d 97
+packages/cli/src/deck/runtime.ts
+  s_3a6f2d3254c993::t_6527809556a7ac 84-85,87-88,93,95,97-98,100,105,111
+  s_3a6f2d3254c993::t_d1ecec139a21b0 183,189,192,196
+  s_3a6f2d3254c993::t_29c3f678f71051 86,89-92,94,99,101-104,106-110
+packages/cli/src/cli/commands/addon-registry.ts
+  s_b592366f7c5007::t_7ff88776ffe980 145,147-148,152-155
+  s_b592366f7c5007::t_42338dd7371c61 146
+  s_b592366f7c5007::t_82226b279cc998 96
+  s_b592366f7c5007::t_aac38d70500eab 161-164,174
+packages/cli/src/builtin-addons/session/buttons/session-info/frontend.tsx
+  s_79a4941cb04acb::t_d8079f299c5b7d 4
+  s_79a4941cb04acb::t_445a28229f6e2a 1-3,5-8
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-up/frontend.tsx
+  s_79a4941cb04acb::t_d8079f299c5b7d 4
+  s_79a4941cb04acb::t_f3807e29cda929 1-3,5-8
+config.yml
+  h_f90ee31b03fc41 35-36,64-65,67,89
+packages/cli/src/builtin-addons/internal-settings/buttons/about/frontend.tsx
+  s_79a4941cb04acb::t_fe4992c48cef6e 1-2,5-8
+  s_79a4941cb04acb::t_d8079f299c5b7d 4
+packages/cli/src/builtin-addons/core-buttons/buttons/action/frontend.tsx
+  s_79a4941cb04acb::t_d1acf4630e520d 6,8-10,12-16,18-19
+  s_9a2d1b18848cc4::t_31c2adda1152da 17
+  s_79a4941cb04acb::t_d8079f299c5b7d 11
+  s_79a4941cb04acb::t_35c9808d303e25 1-5,7,20-22
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/backend.ts
+  s_79a4941cb04acb::t_0a5f83250920ed 4-5
+packages/cli/src/builtin-addons/session/buttons/time/frontend.tsx
+  s_79a4941cb04acb::t_d8079f299c5b7d 4
+  s_79a4941cb04acb::t_598f227501ceaa 1-3,5-8
+packages/cli/src/builtin-addons/core-buttons/buttons/page-nav/frontend.tsx
+  s_d84a33f8da744f::t_0369cab9795269 1-27
+packages/cli/src/ui/contexts/AssetCacheContext.tsx
+  s_9a2d1b18848cc4::t_4dd42001915cdd 1-43
+packages/cli/emulator/src/Shell.tsx
+  s_b592366f7c5007::t_a355b9df8e2750 1
+  s_b592366f7c5007::t_4003575dabc3a2 36-41
+  s_b592366f7c5007::t_4d1c9d2618b884 52-54,60-68
+packages/cli/src/builtin-addons/weather/index.ts
+  s_b592366f7c5007::t_d6475d618107ed 19
+  s_3a6f2d3254c993::t_7df0ffcf145ada 3,16
+packages/cli/src/builtin-addons/weather/README.md
+  s_b592366f7c5007::t_dfa9af9b1d2220 3-5,9-11,15-16,18-36,39,41,43,45-59,62,64,66
+  s_b592366f7c5007::t_aafddc27eaa93b 63,65
+packages/cli/src/builtin-addons/core-buttons/buttons/media-sample/frontend.tsx
+  s_79a4941cb04acb::t_d8079f299c5b7d 4
+  s_79a4941cb04acb::t_9803bc2600ddcf 1-3,5-8
+packages/cli/src/builtin-addons/media/__tests__/backend.test.ts
+  s_d84a33f8da744f::t_111aee9bd33aff 63
+packages/cli/src/ui/primitives/ProgressBar.tsx
+  s_392f8e24ab8686::t_08807e6fc895ab 1-23
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  s_9a2d1b18848cc4::t_1a1f056a42f276 3,26,30
+  s_9a2d1b18848cc4::t_7763d45fe508fd 33
+  s_9a2d1b18848cc4::t_d28ae9b98dee05 9,27-29
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-up/config.ts
+  s_79a4941cb04acb::t_bb300001c6fe73 1-6
+packages/cli/src/builtin-addons/media/buttons/volume-down/config.ts
+  s_79a4941cb04acb::t_4b824bfb8d47eb 1-6
+packages/cli/src/builtin-addons/weather/provider/geocode.ts
+  s_3a6f2d3254c993::t_4a92e02f0ea50b 8
+  s_3a6f2d3254c993::t_029e1d8f23a831 65
+  s_3a6f2d3254c993::t_59ea4e1649643e 5-7
+  s_3a6f2d3254c993::t_936812d34ef2e7 9-11,62-64
+  s_3a6f2d3254c993::t_e5574f2dcbba70 66-67
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-down/frontend.tsx
+  s_79a4941cb04acb::t_d8079f299c5b7d 4
+  s_79a4941cb04acb::t_7f194aa85610ac 1-3,5-8
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  s_d84a33f8da744f::t_e2ba69f00ac110 9-10
+  s_d84a33f8da744f::t_71b9e1fe0975a3 25
+  s_d84a33f8da744f::t_5a9d89702f7cfe 40-41
+packages/cli/src/core/index.ts
+  s_9a2d1b18848cc4::t_36011d53f98c0b 11-12
+packages/cli/src/builtin-addons/emoji-selector/buttons/back/backend.ts
+  s_79a4941cb04acb::t_aa253fc9222223 4-5
+packages/cli/src/builtin-addons/media/buttons/volume-up/backend.ts
+  s_79a4941cb04acb::t_2c1b162b207b36 2,14
+  s_79a4941cb04acb::t_5a313558d16b68 1,3-13
+packages/cli/src/ui/primitives/Chip.tsx
+  h_f90ee31b03fc41 8
+packages/cli/src/builtin-addons/brightness/buttons/brightness/frontend.tsx
+  s_79a4941cb04acb::t_b361c51b396c7a 10
+packages/cli/src/builtin-addons/internal-settings/backend.ts
+  s_d84a33f8da744f::t_b080972dc2e59f 11-14,16-17,24-25,29,31-32,35,37-43,47-52,55-56,60-61
+  s_79a4941cb04acb::t_eae7a795a39672 1-10,15,18-23,26-28,30,33-34,36,44-46,53-54,57-59,62-63
+packages/cli/src/builtin-addons/core-buttons/buttons/action/backend.ts
+  s_79a4941cb04acb::t_df7f8a42d4bf03 2,11-15
+  s_79a4941cb04acb::t_23b964abd0cca9 17
+packages/cli/src/builtin-addons/media/buttons/volume-up/config.ts
+  s_79a4941cb04acb::t_7252f0208d522f 1-6
+packages/cli/src/builtin-addons/weather/__tests__/backend.test.ts
+  s_b592366f7c5007::t_2fb767f4ef48c6 2
+  s_3a6f2d3254c993::t_a6aa9f66dccbbb 15,69,71,76,86,90,92,95-97,100-102,106,118,143,145,148,166,176,180,182,200,204,208,210-214,216,218-221,223
+  s_d84a33f8da744f::t_40dcf56a8dab70 39
+  s_3a6f2d3254c993::t_5b2d241da0ac6a 45,48-52,54
+  h_f90ee31b03fc41 1,3,9,35-36,38,43-44,47,53,60-62,64-68,70,78-79,83-85,87-89,91,93-94,99,103-105,107-117,123,125,132,136-138,140-142,144,146-147,152,159,161-163,165,170,173-175,177-179,181,187,189,197,201-203,205-207,209,215,217,222
+  s_3a6f2d3254c993::t_402ad07c533090 5
+  s_b592366f7c5007::t_44522e759e2d4b 4,14,16-25,27-34,37,40-42,55-56,63,72-75,77,80-82,119-122,124,126-131,133-135,139,149-151,153,160,164,167-169,171-172,183-186,188,190-196,198-199,224-225
+  s_b592366f7c5007::t_b4c1d6729c5610 6,10-12,154-158
+  s_b592366f7c5007::t_00ab57ef756367 7-8,46,57-59,98
+  s_b592366f7c5007::t_6ad8a1d622035b 13,26
+packages/cli/src/addon/registry.ts
+  s_d84a33f8da744f::t_1e1e3e8ffc5494 52,58-64
+packages/cli/src/builtin-addons/media/backend.ts
+  s_79a4941cb04acb::t_7c85b82f6fff7a 129,131
+  s_392f8e24ab8686::t_fc824e304b98f9 53-59
+packages/cli/src/builtin-addons/media/index.ts
+  s_79a4941cb04acb::t_96224dfb52dcc3 8-11,25-31
+  h_f90ee31b03fc41 6-7
+packages/cli/src/builtin-addons/core-buttons/__tests__/index.test.ts
+  s_b592366f7c5007::t_aafddc27eaa93b 173
+  s_79a4941cb04acb::t_571c4bfc40ad12 1,12-42,89-172
+  s_79a4941cb04acb::t_637a56bfc3e350 6-9
+  s_79a4941cb04acb::t_3ac9a6eb8a3bac 54-68
+packages/cli/src/deck/__tests__/addon-handler-bridge.test.ts
+  s_d84a33f8da744f::t_f6899379bf1546 63,78
+  s_d84a33f8da744f::t_2292eaf8fa6aed 215,230
+  s_d84a33f8da744f::t_e042ad9a454312 57-58
+  s_d84a33f8da744f::t_9b7a2df280397f 124,142
+  s_d84a33f8da744f::t_0ac09f11d5ca09 176
+  s_d84a33f8da744f::t_bb00ce490ebd30 99,114
+  s_d84a33f8da744f::t_280d5f02283bf8 252,267
+  s_d84a33f8da744f::t_37900ef5c5f20b 149
+  s_d84a33f8da744f::t_d00140b43823b0 185,202
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck/backend.ts
+  s_79a4941cb04acb::t_cab800198855d3 16
+  s_79a4941cb04acb::t_eeb973cd6a3d8c 10-14
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/frontend.tsx
+  s_9a2d1b18848cc4::t_16750a732273b4 13
+  s_79a4941cb04acb::t_5179d663f59d68 2,4-7,9,11-12,14
+  s_79a4941cb04acb::t_d8079f299c5b7d 8
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_79a4941cb04acb::t_7ef7a74db8fd12 3,8-11,33-40,49
+packages/cli/src/deck/methods.ts
+  s_79a4941cb04acb::t_4ab77c1711de8e 80
+packages/cli/src/api/protocol-internal.ts
+  s_9a2d1b18848cc4::t_f862e29fb8940f 84-95,109
+  s_9a2d1b18848cc4::t_438704f161561f 124
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_79a4941cb04acb::t_90444d24dd3923 377,394,408,410,417
+  s_3a6f2d3254c993::t_42df7ec8f54225 501
+  s_9a2d1b18848cc4::t_db3fa11aeee9a5 514-522,529
+  s_9a2d1b18848cc4::t_883f1693e057d1 15
+  s_79a4941cb04acb::t_ba986e2e0586bf 523-528,530,546-548
+  s_79a4941cb04acb::t_79e4d60a6dfe90 17
+  s_79a4941cb04acb::t_e4fc243d59b8e0 38
+  s_79a4941cb04acb::t_8fbef86ab4a55c 390,409,411-416
+  s_9a2d1b18848cc4::t_2b4aa750ba06cc 3,16
+  s_3a6f2d3254c993::t_255878dabb879a 502
+  s_9a2d1b18848cc4::t_12186785a771e0 532-545
+  s_79a4941cb04acb::t_2d803e2abc4e8d 418
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-up/backend.ts
+  s_79a4941cb04acb::t_0aa97660539e2a 2,14
+  s_79a4941cb04acb::t_17e77addd8b937 1,3-13
+packages/cli/src/core/gesture-state.ts
+  s_9a2d1b18848cc4::t_1df3fc96d2d64a 2
+  s_79a4941cb04acb::t_118e38df078736 80-157,284-285,288-292,295-303,306-307
+packages/cli/src/index.ts
+  s_9a2d1b18848cc4::t_89c51aab967689 39
+  s_9a2d1b18848cc4::t_7f5c49611609be 40-42
+  s_9a2d1b18848cc4::t_815fac2c00c5d2 26-27
+packages/cli/src/builtin-addons/date-time/buttons/custom/frontend.tsx
+  s_79a4941cb04acb::t_b361c51b396c7a 9
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle/frontend.tsx
+  s_79a4941cb04acb::t_04484b3b9f072d 1-13,15-23,25-29
+  s_9a2d1b18848cc4::t_60232d7f34893e 24
+  s_79a4941cb04acb::t_d8079f299c5b7d 14
+packages/cli/src/builtin-addons/value-display/poller.ts
+  s_79a4941cb04acb::t_0c74af0e7753a4 48
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/backend.ts
+  s_d84a33f8da744f::t_e48513ab7a9ebf 1,6-7,10-18
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_d84a33f8da744f::t_d279739df56c3b 7,29,34
+packages/cli/src/builtin-addons/core-buttons/buttons/page-nav/config.ts
+  s_d84a33f8da744f::t_67a7c8b50f1417 1-9
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-down/config.ts
+  s_79a4941cb04acb::t_f9bfc3dbd196a7 1-6
+packages/cli/src/builtin-addons/value-display/buttons/value-display/frontend.tsx
+  s_79a4941cb04acb::t_b361c51b396c7a 15
+packages/cli/src/builtin-addons/weather/provider/fetch.ts
+  s_392f8e24ab8686::t_f20cdbb9e2015e 1-6,8,14,24-25,28-29,36-48,51-76,87-88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8cb0a18e99d9a2ef498b65c26d83ccd72664800f",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_392f8e24ab8686": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d0eeadbaffe0fdweqkCUP6E4H",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_3a6f2d3254c993": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d152d771ffeA6RrRIu7zbZgXB",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_79a4941cb04acb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0dd21a4dfffeare0Qkz7bvNkVT",
+        "model": "big-pickle"
+      },
+      "human_author": null
+    },
+    "s_9a2d1b18848cc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d8b34718ffeOnNV8Yiyod7ALi",
+        "model": "big-pickle"
+      },
+      "human_author": null
+    },
+    "s_b592366f7c5007": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d3d430cdffeZs179lWeNIvtOD",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    },
+    "s_d84a33f8da744f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d0ea11c2ffetuXe67wwWOAm2h",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
