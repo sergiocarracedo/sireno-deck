@@ -1,0 +1,19 @@
+packages/cli/src/builtin-addons/date-time/frontend.tsx
+  s_f5622df155228a::t_b13afdeaff7293 1-2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "bc9077dbc418a3a0735b7f4691b63f75f5def18e",
+  "prompts": {},
+  "sessions": {
+    "s_f5622df155228a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_114ecc375ffehJL8FVEupdUruf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+.planning/phases/67-settings-deck-layout-revamp/67-CONTEXT.md
+  s_51a5160d42324b::t_100cf89715ba40 112-147,151
+.planning/STATE.md
+  s_51a5160d42324b::t_c71f77330c75be 13
+  s_51a5160d42324b::t_4ceb8b151fba1c 59-73
+.planning/REQUIREMENTS.md
+  s_51a5160d42324b::t_ea94a400834130 136,139
+.planning/PROJECT.md
+  s_51a5160d42324b::t_32363111591c68 26,28-30,33-44
+.planning/ROADMAP.md
+  s_51a5160d42324b::t_9d6810249190ac 180-201
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "5fd6b3a33331576011f61402e6a1cbc9325a027d",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

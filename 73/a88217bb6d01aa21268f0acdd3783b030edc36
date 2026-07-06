@@ -1,0 +1,26 @@
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-03-PLAN.md
+  s_70eeb05163558f::t_53027df19d7c8d 1-71
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-04-PLAN.md
+  s_70eeb05163558f::t_53027df19d7c8d 1-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "73a88217bb6d01aa21268f0acdd3783b030edc36",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_70eeb05163558f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_18597e378ffevCYrDZtni4nuEZ",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

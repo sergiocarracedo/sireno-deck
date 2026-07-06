@@ -1,0 +1,30 @@
+packages/cli/src/system/active-app/linux.test.ts
+  s_b5888af49640de::t_de5c7f691c10ab 1-3,5-21,31,33-49,55,57-70,91-94
+  s_b5888af49640de::t_deedf2de71b339 4,22-30,32,50-54,56,71-90
+packages/cli/src/system/active-app/provider.ts
+  s_b5888af49640de::t_95a7bffdbd1ee7 8-11,20
+packages/cli/src/system/active-app/linux.ts
+  s_b5888af49640de::t_e27bf02a6560da 23-29,49
+  s_b5888af49640de::t_fdfc2734e5f81b 9,32-33,47,50,53-65,70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "206c4a28cde1b9c00b74cfa5a5cba37d5e57d47d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b5888af49640de": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15438c969ffeR54heuHaj7FhxV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

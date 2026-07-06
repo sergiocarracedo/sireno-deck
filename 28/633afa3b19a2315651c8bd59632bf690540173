@@ -1,0 +1,25 @@
+.planning/phases/59-emoji-keystroke-injection-and-category-fix/59-01-SUMMARY.md
+  s_51a5160d42324b::t_4fc1244a74c132 1-26
+.planning/phases/59-emoji-keystroke-injection-and-category-fix/59-02-SUMMARY.md
+  s_51a5160d42324b::t_7ee5841db7271a 1-27
+.planning/phases/59-emoji-keystroke-injection-and-category-fix/59-GC3-SUMMARY.md
+  s_51a5160d42324b::t_b44038892301d7 1-29
+.planning/phases/70-verification-metadata-backfill/70-VERIFICATION.md
+  s_51a5160d42324b::t_663bf9edcf01f3 1-123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "28633afa3b19a2315651c8bd59632bf690540173",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

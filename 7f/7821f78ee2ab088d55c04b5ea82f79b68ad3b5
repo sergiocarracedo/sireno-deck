@@ -1,0 +1,28 @@
+packages/cli/src/addon/builtin.test.ts
+  s_26099f9ddf91b0::t_fe8c45289dc96b 9,15-19
+builtin-addons/emoji-selector/src/index.test.ts
+  s_26099f9ddf91b0::t_fe8c45289dc96b 1-41
+packages/cli/src/deck/runtime.test.ts
+  s_26099f9ddf91b0::t_553ab59019eef7 4-5,112-206
+builtin-addons/core-buttons/src/index.test.ts
+  s_26099f9ddf91b0::t_553ab59019eef7 9,34-46
+  s_26099f9ddf91b0::t_fe8c45289dc96b 1
+packages/cli/src/config/loader.test.ts
+  s_26099f9ddf91b0::t_fe8c45289dc96b 298-331
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "7f7821f78ee2ab088d55c04b5ea82f79b68ad3b5",
+  "prompts": {},
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

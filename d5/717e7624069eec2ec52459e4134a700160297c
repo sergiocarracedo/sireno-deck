@@ -1,0 +1,31 @@
+packages/cli/src/core/schemas.ts
+  s_26099f9ddf91b0::t_550ac3c7a634cb 1-4,28-41,52,58-71,73-77,79-90,92,115,126,130,137,139,145-158,160-166,168,171-172,176-245
+packages/cli/src/deck/runtime.ts
+  s_26099f9ddf91b0::t_b06efd7a5a4d93 148
+  s_26099f9ddf91b0::t_550ac3c7a634cb 3-4,6-7,20,34-36,39-47,58-61,71,78-81,84,87,91,93,96-105,108,116-118,120,123-137,141-145,149-161,163-166,168,170-172,176-177,180-181,185,189,192-193,203-204,208-210,213,215-217,224-226,230-231,233-235,239-240,242-245,248,252-255,261,270,310-311,314-315
+packages/cli/src/config/loader.ts
+  s_26099f9ddf91b0::t_b06efd7a5a4d93 157
+  s_26099f9ddf91b0::t_550ac3c7a634cb 11-12,118-128,158
+packages/cli/src/cli/commands/start.ts
+  s_26099f9ddf91b0::t_550ac3c7a634cb 3,79-80,102,173
+config.yml
+  s_26099f9ddf91b0::t_550ac3c7a634cb 8-9,11-14
+packages/cli/src/render/reconciler.test.ts
+  s_26099f9ddf91b0::t_6f4ad0afd1f426 86,88,90-91,93-95,98-99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "d5717e7624069eec2ec52459e4134a700160297c",
+  "prompts": {},
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

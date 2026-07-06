@@ -1,0 +1,25 @@
+packages/cli/src/ui/Text.tsx
+  s_43a1f95302eacf::t_e19d07a26a99c9 290
+  s_43a1f95302eacf::t_0bce3c15b2f4aa 239
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "c95c52896aba631a2114ed95a72002d7de81691f",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_43a1f95302eacf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1713bb85cffeuUVJXNOTOl6k4H",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

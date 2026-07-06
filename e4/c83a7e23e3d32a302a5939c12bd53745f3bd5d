@@ -1,0 +1,27 @@
+packages/cli/src/builtin-addons/weather/buttons/weather.tsx
+  s_0580d7c7a41764::t_125dc93170ba76 45
+packages/cli/src/builtin-addons/weather/components/Surface.tsx
+  s_0580d7c7a41764::t_40afd8a9c1e30a 6-9,18,23,27-29,35-38,44,54
+  h_f90ee31b03fc41 12-14,17,22,34,39-40,47-52,57-60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e4c83a7e23e3d32a302a5939c12bd53745f3bd5d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_0580d7c7a41764": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_166a141a1ffeuVB57GbHYAshIa",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

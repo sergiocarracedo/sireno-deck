@@ -1,0 +1,29 @@
+.planning/phases/32-addon-owned-data-polling-contract/32-UAT.md
+  s_70eeb05163558f::t_bdeccb14738711 24
+  s_70eeb05163558f::t_dbf795f0e95b8f 2,10,14-15,17-18,40,45,47
+  s_70eeb05163558f::t_f806c824805a23 1,3-9,11-13,16,19-23,25-27,29-31,33-35,37-39,41-44,46,48-52
+  s_70eeb05163558f::t_aaacb011afc532 32
+  s_70eeb05163558f::t_3cbb95d176d9dc 28
+  s_70eeb05163558f::t_7d45c41cd3a631 36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "a6415fe53746a7a155c9100375fbe109eedc1832",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_70eeb05163558f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_18597e378ffevCYrDZtni4nuEZ",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

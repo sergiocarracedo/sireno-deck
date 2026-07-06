@@ -1,0 +1,19 @@
+.planning/phases/57-render-pipeline-emoji-research/57-01-SUMMARY.md
+  s_0c62b680825d4a::t_ed36647b69e331 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "28c331791f7f0130979fcd2a1b3dcfd153712dab",
+  "prompts": {},
+  "sessions": {
+    "s_0c62b680825d4a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14fa596feffedU17ZzovT65yl1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+packages/cli/src/render/shrink-fit-browser-script.ts
+  s_bd261d9d2ee90a::t_2df86b7a9efce2 7,12-15,17,19-23,33,38,129-146,149
+packages/cli/src/render/dom-host.test.tsx
+  s_bd261d9d2ee90a::t_78c83c3f3b8334 120
+  s_bd261d9d2ee90a::t_c992f6002efb2f 271-285
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "c00a32fc2931268d5511b62d19ab83a6085c232c",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_bd261d9d2ee90a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_191f2cdb0ffeLEC0tibNQY6g6z",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

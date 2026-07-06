@@ -1,0 +1,28 @@
+packages/cli/src/ui/utils/__tests__/negative-color.test.ts
+  s_bf2fdf7a5e1d62::t_bc45e777733cd9 8
+  s_bf2fdf7a5e1d62::t_c3626bec17283e 121-126
+packages/cli/src/ui/surfaces/__tests__/Bars.test.tsx
+  s_bf2fdf7a5e1d62::t_a0ae1504f8ab0c 94-109
+  s_bf2fdf7a5e1d62::t_3bcaf82f990f9d 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a59ec46c191a08977fdbc41ad32f02dce209eb4c",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_bf2fdf7a5e1d62": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14f63cde6ffeixFCbEaouv6G40",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

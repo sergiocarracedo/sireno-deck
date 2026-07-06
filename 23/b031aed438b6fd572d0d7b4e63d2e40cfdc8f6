@@ -1,0 +1,28 @@
+.planning/phases/74-shared-formatter-label-values-cap/74-VERIFICATION.md
+  s_469c0c9aff79bb::t_a5a51297d9f871 1-26
+.planning/STATE.md
+  s_469c0c9aff79bb::t_d0a4070bec0d63 13-14
+AGENTS.md
+  s_469c0c9aff79bb::t_d0de8233200cde 168-169,178,180-181
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "23b031aed438b6fd572d0d7b4e63d2e40cfdc8f6",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_469c0c9aff79bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_129126bf4ffeC1puCBqg5C7qzn",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

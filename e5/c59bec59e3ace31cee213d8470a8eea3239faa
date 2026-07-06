@@ -1,0 +1,32 @@
+packages/cli/frontend/src/hooks/useWsClient.ts
+  s_f5622df155228a::t_9ccf422b21ed30 1-26
+packages/cli/frontend/src/router.tsx
+  s_f5622df155228a::t_8dc920bd80fede 1-20
+packages/cli/frontend/src/main.tsx
+  s_f5622df155228a::t_5cf432b95fb5f1 3,7
+packages/cli/frontend/src/App.tsx
+  s_f5622df155228a::t_e0001d4d2a7135 1-3,7-8,12-24,26-27,29-48,52
+packages/cli/frontend/src/pages/DeckPage.tsx
+  s_f5622df155228a::t_093f27568a5834 1,3-26
+  s_f5622df155228a::t_05c09530d0e5cd 2
+packages/cli/src/cli/commands/start.ts
+  s_f5622df155228a::t_26091eb37e29f0 1150-1167
+packages/cli/package.json
+  s_f5622df155228a::t_0dd5a7df9c0694 38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "e5c59bec59e3ace31cee213d8470a8eea3239faa",
+  "prompts": {},
+  "sessions": {
+    "s_f5622df155228a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_114ecc375ffehJL8FVEupdUruf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

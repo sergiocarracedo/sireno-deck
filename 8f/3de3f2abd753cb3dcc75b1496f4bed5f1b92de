@@ -1,0 +1,31 @@
+.planning/phases/55-active-app-overlay-decks/55-01-PLAN.md
+  s_a44d509d67bdce::t_bc0f98b146a93f 1-22,25-30,32,34-181,183-221,223-264,266-310,312,314-342
+  s_a44d509d67bdce::t_77e30cd061edd0 23-24,31,33,182,222,265,311,313,343-500
+.planning/phases/55-active-app-overlay-decks/55-RESEARCH.md
+  s_a44d509d67bdce::t_3c35f63521da9d 1-142
+.planning/phases/55-active-app-overlay-decks/55-02-PLAN.md
+  s_a44d509d67bdce::t_b2b47a7905b1a9 1-343
+.planning/phases/55-active-app-overlay-decks/55-03-PLAN.md
+  s_a44d509d67bdce::t_b50c88e56c8ece 1-195
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "8f3de3f2abd753cb3dcc75b1496f4bed5f1b92de",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

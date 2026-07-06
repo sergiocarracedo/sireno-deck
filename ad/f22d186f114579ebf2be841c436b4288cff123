@@ -1,0 +1,23 @@
+.planning/ROADMAP.md
+  s_51a5160d42324b::t_f56e3e1c2e8a2c 139,141-143
+.planning/phases/68-chrome-overlay-deck-extensions/68-01-SUMMARY.md
+  s_51a5160d42324b::t_dee9a4a167bbbe 1-40
+.planning/STATE.md
+  s_51a5160d42324b::t_f55bc4cef15216 13-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "adf22d186f114579ebf2be841c436b4288cff123",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

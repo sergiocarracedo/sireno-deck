@@ -1,0 +1,46 @@
+packages/cli/src/render/text-image.test.ts
+  s_50714901791ebe::t_25c028e141165f 132,143-159,195-199
+packages/cli/fixtures/phase-7/phase-7-review-addon/src/index.js
+  s_50714901791ebe::t_25c028e141165f 20
+packages/cli/fixtures/phase-12/phase-12-fit-review-addon/src/index.js
+  s_50714901791ebe::t_3cd8fca440116a 1-34
+packages/cli/src/cli/commands/start.ts
+  s_50714901791ebe::t_25c028e141165f 82,151
+packages/cli/src/render/reconciler.ts
+  s_50714901791ebe::t_25c028e141165f 22,38,136,151,159-164,166,168-169,250,263,275,343,357
+.planning/phases/12-backgrounds-text-fitting/12-UAT.md
+  s_50714901791ebe::t_3cd8fca440116a 6,8,12-13,15,34-47,50,53,58
+packages/cli/fixtures/phase-12/config.text-fit.yml
+  s_50714901791ebe::t_3cd8fca440116a 1-21
+packages/cli/src/render/text-image.ts
+  s_50714901791ebe::t_25c028e141165f 12,43,57,60-61,118-162,164-179,182,296,343,349-350
+packages/cli/src/render/reconciler.test.tsx
+  s_50714901791ebe::t_25c028e141165f 19,166,181,188,195,202,208-213
+packages/cli/fixtures/phase-12/phase-12-fit-review-addon/package.json
+  s_50714901791ebe::t_3cd8fca440116a 1-5
+.planning/phases/12-backgrounds-text-fitting/12-02-SUMMARY.md
+  s_50714901791ebe::t_3cd8fca440116a 1-19
+packages/cli/src/render/types.ts
+  s_50714901791ebe::t_25c028e141165f 1,7,16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "338e9cc07d7892279973a4378a024643b79ffdfd",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_50714901791ebe": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cad490d1ffe7qtGxWMYgUngfy",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

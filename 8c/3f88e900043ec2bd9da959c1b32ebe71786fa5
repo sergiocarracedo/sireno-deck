@@ -1,0 +1,31 @@
+.planning/phases/20-theme-packages-and-locked-time-layout/20-UAT.md
+  s_df3509a167c487::t_54711bf16b3dab 6,8,11,36-51,54,57
+packages/cli/fixtures/phase-20/config.asset-pipeline.yml
+  s_df3509a167c487::t_54711bf16b3dab 1-28
+.planning/phases/20-theme-packages-and-locked-time-layout/20-VERIFICATION.md
+  s_df3509a167c487::t_54711bf16b3dab 1-39
+packages/cli/src/builtin-addons/emoji-selector/index.test.ts
+  s_df3509a167c487::t_54711bf16b3dab 4,10,71-78,80-89
+  s_df3509a167c487::t_61969706ba4558 3,67-70,107-110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "8c3f88e900043ec2bd9da959c1b32ebe71786fa5",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

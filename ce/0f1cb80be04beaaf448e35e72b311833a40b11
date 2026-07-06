@@ -1,0 +1,19 @@
+.planning/phases/10-public-authoring-exports/10-DISCOVERY.md
+  s_07525a126d5ed9::t_8c7c40b1abe411 1-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "ce0f1cb80be04beaaf448e35e72b311833a40b11",
+  "prompts": {},
+  "sessions": {
+    "s_07525a126d5ed9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d02b34d4ffefwtui9X14TkpRF",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

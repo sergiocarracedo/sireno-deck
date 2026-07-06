@@ -1,0 +1,29 @@
+.planning/STATE.md
+  s_228741f14b70e9::t_cbc0b9e1775985 332-334
+  s_228741f14b70e9::t_8c96756e4746bb 13-14
+  s_228741f14b70e9::t_6cf30686dc8773 16-21,23-31,33-34
+  s_228741f14b70e9::t_f3915201ce6e44 8
+  s_228741f14b70e9::t_bc6ddd14ff345e 22
+  s_228741f14b70e9::t_4c4582312d7c9f 32,35-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "fa9362c92b599aabe31f6ef611d84500a93658cd",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_228741f14b70e9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_167162d7affejXF6Te6G05qTh8",
+        "model": "minimax-m3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

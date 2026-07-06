@@ -1,0 +1,21 @@
+packages/cli/src/render/ws-client-hooks.ts
+  s_344b68134ff779::t_5b1ae0944902d8 42-44
+packages/cli/src/render/app/App.tsx
+  s_344b68134ff779::t_502baef100bd98 211-214
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "39edc3f9309e363d76745b936b80cae5ab9ffc63",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

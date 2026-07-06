@@ -1,0 +1,26 @@
+config.yml
+  h_f90ee31b03fc41 17-21,30-34,42
+  s_26099f9ddf91b0::t_adb7dccc0bc3f6 36-38
+  s_26099f9ddf91b0::t_76bdd4ccb5cdf5 40,44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "c005a3139869208e3adaad9fdb65b964ae2103f2",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

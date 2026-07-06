@@ -1,0 +1,21 @@
+config.yml
+  s_136b450bea3e1f::t_d525ec8cd6d4f6 19,21-27,42-52
+packages/cli/src/core/schemas.ts
+  s_136b450bea3e1f::t_1d1e4e9855e8bb 58-102,182-183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "073660b11a67ce70eec43f52aa9721dbd352d8cd",
+  "prompts": {},
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+packages/cli/src/builtin-addons/date-time/buttons/date.tsx
+  s_8eaa4083520faf::t_bd9690bb810b6e 52
+packages/cli/src/builtin-addons/date-time/buttons/date.test.tsx
+  s_8eaa4083520faf::t_f4a81bec9ea7f1 43
+  s_8eaa4083520faf::t_bb34d222651e75 4
+.planning/quick/044-date-button-day-name-ellipsis/044-PLAN.md
+  s_8eaa4083520faf::t_0fdd529bb57b62 1-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "088454bd6be5807ebee2c915f263db181b4fdc0e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_8eaa4083520faf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_151dd58eeffeFt0TLJhZBrtyC3",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

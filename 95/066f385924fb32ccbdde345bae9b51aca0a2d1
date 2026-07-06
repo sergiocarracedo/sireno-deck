@@ -1,0 +1,25 @@
+.planning/phases/79-ws-protocol/79-DISCUSSION-LOG.md
+  s_344b68134ff779::t_b9f342fc00a642 1-127
+.planning/milestones/v1.8-ROADMAP.md
+  s_344b68134ff779::t_ae1477819b9747 48
+.planning/STATE.md
+  s_344b68134ff779::t_894dc9a70c9a31 25
+.planning/phases/79-ws-protocol/79-CONTEXT.md
+  s_344b68134ff779::t_6fbd4a5b621760 1-172
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "95066f385924fb32ccbdde345bae9b51aca0a2d1",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+packages/cli/src/builtin-addons/emoji-selector/index.test.ts
+  s_bab938378ab377::t_1f4f856a10eb2a 398-402,418-419
+  s_bab938378ab377::t_985d331f6fe373 423-431,435-440
+  s_bab938378ab377::t_1e61f033bf5ece 184
+  s_bab938378ab377::t_c1e7f95c5fe1b3 403-405
+  s_bab938378ab377::t_8f3d223f1ec402 47-50,52
+  s_bab938378ab377::t_14234f1aff6184 95
+  s_bab938378ab377::t_3543accf1a0c17 40-45,51,53-54,59
+  s_bab938378ab377::t_d6c011eb91aa73 406-417
+  s_bab938378ab377::t_fc131ab39abd41 433
+packages/cli/src/builtin-addons/emoji-selector/os-shims.ts
+  s_bab938378ab377::t_72d357629e95e9 123-130,133,146-147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5eef885c93add487e731ff4f742370687c08f2bc",
+  "prompts": {},
+  "sessions": {
+    "s_bab938378ab377": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16388a05dffeQ84UIVBVOB9XaV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

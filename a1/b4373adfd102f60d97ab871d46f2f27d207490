@@ -1,0 +1,26 @@
+packages/cli/src/builtin-addons/weather/domain/wttr-in-fallback.ts
+  s_4e4ee307096ddc::t_1531951cabfb3a 1-126
+packages/cli/src/builtin-addons/weather/domain/ip-geolocation.ts
+  s_4e4ee307096ddc::t_2333b1ed3f28a8 1-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a1b4373adfd102f60d97ab871d46f2f27d207490",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

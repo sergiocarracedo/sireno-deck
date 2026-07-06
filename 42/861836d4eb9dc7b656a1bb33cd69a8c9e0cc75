@@ -1,0 +1,28 @@
+.planning/REQUIREMENTS.md
+  s_4a24c7997d2c84::t_b9503949291336 30
+.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-VERIFICATION.md
+  s_4a24c7997d2c84::t_92c6c4a19f58de 51,62
+.planning/ROADMAP.md
+  s_4a24c7997d2c84::t_b9503949291336 256,258
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "42861836d4eb9dc7b656a1bb33cd69a8c9e0cc75",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4a24c7997d2c84": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a091daeaffeKrjgERsZBqFExO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

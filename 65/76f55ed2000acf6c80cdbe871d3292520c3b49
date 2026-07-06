@@ -1,0 +1,32 @@
+.planning/quick/021-align-phase-3-markup-scope/021-PLAN.md
+  s_bd261d9d2ee90a::t_b711717ec91954 1-37
+.planning/STATE.md
+  s_bd261d9d2ee90a::t_4c0d4cbc835e44 15,72
+.planning/REQUIREMENTS.md
+  s_bd261d9d2ee90a::t_bb40b7f604f2cd 4,20,27
+  s_bd261d9d2ee90a::t_1d2e2096129990 8,18-19,26,37-38,45-46,55,57
+.planning/ROADMAP.md
+  s_bd261d9d2ee90a::t_cb1571e669df56 9,11,38,42-45,75
+  s_bd261d9d2ee90a::t_6ce9d6e4fb3c64 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6576f55ed2000acf6c80cdbe871d3292520c3b49",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_bd261d9d2ee90a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_191f2cdb0ffeLEC0tibNQY6g6z",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

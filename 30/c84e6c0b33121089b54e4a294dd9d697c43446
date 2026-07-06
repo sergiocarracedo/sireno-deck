@@ -1,0 +1,28 @@
+.planning/phases/38-startup-image-full-deck-coverage/38-UAT.md
+  s_4e4ee307096ddc::t_bc0fcc0457d6fb 28-29,49,51,55
+  s_4e4ee307096ddc::t_b0289ed72945be 11-12,14-16
+  s_4e4ee307096ddc::t_8091d690f2f6a7 36
+  s_4e4ee307096ddc::t_2d6c689189a639 43,48,50
+  s_4e4ee307096ddc::t_f4af48a5b599ae 1-10,13,17-27,30-35,37-42,44-47,52-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "30c84e6c0b33121089b54e4a294dd9d697c43446",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

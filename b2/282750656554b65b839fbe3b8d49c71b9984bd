@@ -1,0 +1,40 @@
+.planning/solutions/best-practices/env-injection-via-vite-transformindexhtml-2026-06-22.md
+  s_f5622df155228a::t_9edeeea94efcd7 1-121
+.planning/STATE.md
+  s_f5622df155228a::t_d8ba72938e4f7f 12-13
+.planning/phases/75.1-arch-split-cli-fe-fs-ws-bridge/75.1-06-SUMMARY.md
+  s_f5622df155228a::t_ba831c9f80f2ae 1-93
+.planning/solutions/workflow-issues/split-vite-root-move-config-and-source-atomically-2026-06-22.md
+  s_f5622df155228a::t_67c8257fdc7253 1-78
+.planning/solutions/best-practices/ws-broadcast-small-stable-lists-on-connect-2026-06-22.md
+  s_f5622df155228a::t_4a33f86666978b 1-159
+.planning/ROADMAP.md
+  s_f5622df155228a::t_49aa9cf55ba660 123-130,133
+  s_f5622df155228a::t_625bfd3bda4768 98
+.planning/phases/75.1-arch-split-cli-fe-fs-ws-bridge/75.1-VERIFICATION.md
+  s_f5622df155228a::t_548e1458cc72ce 46-58
+  s_f5622df155228a::t_1a6e2f31fd7789 106-107,111-112,116-118
+  s_f5622df155228a::t_6becdfa3fd7758 131-132
+  s_f5622df155228a::t_09bbbeecf89d08 15
+  s_f5622df155228a::t_2da37b138a319d 13
+  s_f5622df155228a::t_8e89953306febd 28-29
+  s_f5622df155228a::t_af04bc9a4e4da5 81
+  s_f5622df155228a::t_47f25ba897c2c2 102-103
+  s_f5622df155228a::t_e3119033daa812 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "b2282750656554b65b839fbe3b8d49c71b9984bd",
+  "prompts": {},
+  "sessions": {
+    "s_f5622df155228a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_114ecc375ffehJL8FVEupdUruf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

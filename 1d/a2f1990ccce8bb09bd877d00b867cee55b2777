@@ -1,0 +1,28 @@
+.planning/phases/07-typography-text-behavior/07-02-PLAN.md
+  s_26099f9ddf91b0::t_978aee0ab5ab85 1-86
+.planning/phases/07-typography-text-behavior/07-01-PLAN.md
+  s_26099f9ddf91b0::t_978aee0ab5ab85 1-88
+.planning/phases/07-typography-text-behavior/07-RESEARCH.md
+  s_26099f9ddf91b0::t_24d65fcdde2155 1-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "1da2f1990ccce8bb09bd877d00b867cee55b2777",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+.planning/phases/79-ws-protocol/79-01-SUMMARY.md
+  s_344b68134ff779::t_f4f612d3ddff7a 1-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "86d570f456b765393e89d9ecc165d3740c6ff802",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

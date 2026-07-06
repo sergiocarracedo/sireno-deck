@@ -1,0 +1,28 @@
+.planning/quick/031-date-time-clock-minute-needle-position/031-SUMMARY.md
+  s_d8a76f591c3baf::t_5198bad217fbaa 18
+  s_d8a76f591c3baf::t_87ba6e2e99a17a 1-17
+.planning/STATE.md
+  s_d8a76f591c3baf::t_bbfd579ac974c1 15
+  s_d8a76f591c3baf::t_3f2d896458b816 321
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b1886585abfdf953ee373d25aec4656e45643e6c",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_d8a76f591c3baf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_175cd27c2ffeW4mFN1ilBeYzMI",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

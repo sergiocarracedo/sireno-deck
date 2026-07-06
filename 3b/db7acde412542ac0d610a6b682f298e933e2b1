@@ -1,0 +1,44 @@
+builtin-addons/emoji-selector/assets/emoji-cool.svg
+  s_26099f9ddf91b0::t_0e18ceb944cd56 1-7
+builtin-addons/emoji-selector/assets/emoji-pizza.svg
+  s_26099f9ddf91b0::t_0e18ceb944cd56 1-7
+builtin-addons/emoji-selector/assets/emoji-rainbow.svg
+  s_26099f9ddf91b0::t_0e18ceb944cd56 1-6
+builtin-addons/emoji-selector/assets/emoji-berry.svg
+  s_26099f9ddf91b0::t_0e18ceb944cd56 1-5
+builtin-addons/emoji-selector/assets/emoji-leaf.svg
+  s_26099f9ddf91b0::t_0e18ceb944cd56 1-6
+builtin-addons/emoji-selector/assets/emoji-joy.svg
+  s_26099f9ddf91b0::t_0e18ceb944cd56 1-8
+builtin-addons/emoji-selector/assets/emoji-fire.svg
+  s_26099f9ddf91b0::t_0e18ceb944cd56 1-4
+builtin-addons/emoji-selector/assets/emoji-sushi.svg
+  s_26099f9ddf91b0::t_0e18ceb944cd56 1-5
+builtin-addons/emoji-selector/assets/emoji-grin.svg
+  s_26099f9ddf91b0::t_0e18ceb944cd56 1-6
+builtin-addons/emoji-selector/assets/emoji-party.svg
+  s_26099f9ddf91b0::t_0e18ceb944cd56 1-7
+builtin-addons/emoji-selector/assets/emoji-wave.svg
+  s_26099f9ddf91b0::t_0e18ceb944cd56 1-5
+builtin-addons/emoji-selector/src/index.ts
+  s_26099f9ddf91b0::t_0e18ceb944cd56 31-42,75-87,90-104,153,155,157
+  s_26099f9ddf91b0::t_76bdd4ccb5cdf5 88-89,105-114
+builtin-addons/emoji-selector/assets/emoji-coffee.svg
+  s_26099f9ddf91b0::t_0e18ceb944cd56 1-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "3bdb7acde412542ac0d610a6b682f298e933e2b1",
+  "prompts": {},
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

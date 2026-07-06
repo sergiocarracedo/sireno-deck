@@ -1,0 +1,22 @@
+packages/cli/src/deck/system-buttons/SystemBackWithPendingOverlayButton.tsx
+  s_ce8dff3c35bfc4::t_626c29fc3f4c9d 1-31,36,38-59
+  s_ce8dff3c35bfc4::t_d4b91f32bcf64b 32-35,37
+packages/cli/src/deck/system-buttons/SystemBackWithPendingOverlayButton.test.tsx
+  s_ce8dff3c35bfc4::t_dd242701d989ef 1-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "337bb34fefe97f8938ffd99bcffe44b3da25d466",
+  "prompts": {},
+  "sessions": {
+    "s_ce8dff3c35bfc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1441b295dffeUD9xVe36d81tKr",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

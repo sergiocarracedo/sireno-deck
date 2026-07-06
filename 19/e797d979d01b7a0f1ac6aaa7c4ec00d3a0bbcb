@@ -1,0 +1,32 @@
+.planning/STATE.md
+  s_70eeb05163558f::t_c9071513727a4c 8,13,15,95,126
+.planning/REQUIREMENTS.md
+  s_70eeb05163558f::t_c9071513727a4c 47-48
+.planning/ROADMAP.md
+  s_70eeb05163558f::t_c9071513727a4c 89,91,95-96
+AGENTS.md
+  s_70eeb05163558f::t_c9071513727a4c 168-169
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-VERIFICATION.md
+  s_70eeb05163558f::t_c9071513727a4c 1-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "19e797d979d01b7a0f1ac6aaa7c4ec00d3a0bbcb",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_70eeb05163558f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_18597e378ffevCYrDZtni4nuEZ",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

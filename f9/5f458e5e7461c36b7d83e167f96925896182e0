@@ -1,0 +1,26 @@
+packages/cli/src/deck/runtime.ts
+  s_df3509a167c487::t_4c8b5659e4b30d 434-437
+packages/cli/src/deck/runtime.test.ts
+  s_df3509a167c487::t_4eda20f31c8e6d 730-785
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "f95f458e5e7461c36b7d83e167f96925896182e0",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

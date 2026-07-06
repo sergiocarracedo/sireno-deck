@@ -1,0 +1,31 @@
+.planning/v1.6-MILESTONE-AUDIT.md
+  s_51a5160d42324b::t_84b8a3fb2c16d0 1-154
+.planning/phases/68-chrome-overlay-deck-extensions/CONTEXT.md
+  s_51a5160d42324b::t_5167f81c6f07b8 1-3
+.planning/phases/69-v16-verification-sweep/CONTEXT.md
+  s_51a5160d42324b::t_5167f81c6f07b8 1-3
+.planning/ROADMAP.md
+  s_51a5160d42324b::t_a5ca79bee76157 5
+  s_51a5160d42324b::t_4f98297fe1f8f0 122-173
+  s_51a5160d42324b::t_df7165f543a0ef 178-198,210-213,226-230,244
+.planning/phases/67-settings-deck-layout-revamp/CONTEXT.md
+  s_51a5160d42324b::t_5167f81c6f07b8 1-3
+.planning/phases/70-verification-metadata-backfill/CONTEXT.md
+  s_51a5160d42324b::t_5167f81c6f07b8 1-3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "9179b264c98ca2b1c0caae9d5eca7ca9682a6d9b",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+packages/cli/src/builtin-addons/weather/buttons/weather.test.tsx
+  s_a44d509d67bdce::t_32d9e03f69948c 206
+  s_a44d509d67bdce::t_da7a6bbc1ca320 162
+  s_a44d509d67bdce::t_c7819677e1dba9 41
+  s_a44d509d67bdce::t_0eea37067be4a0 184
+packages/cli/src/builtin-addons/weather/buttons/components/Surface.tsx
+  s_a44d509d67bdce::t_e7f171a1bfce91 46-55
+packages/cli/src/builtin-addons/weather/domain/weather-controller.ts
+  s_a44d509d67bdce::t_189fe530777ce7 87
+  s_a44d509d67bdce::t_c57776d3b100f7 114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0c9090d9d24ea750a307eaf77ea1386d13588784",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

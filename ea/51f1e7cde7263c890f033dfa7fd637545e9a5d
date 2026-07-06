@@ -1,0 +1,28 @@
+.planning/phases/57-render-pipeline-emoji-research/57-RESEARCH.md
+  s_0c62b680825d4a::t_45480e87d115c2 1-77
+.planning/phases/57-render-pipeline-emoji-research/57-01-PLAN.md
+  s_0c62b680825d4a::t_d03e8370688544 1-109
+.planning/phases/57-render-pipeline-emoji-research/57-02-PLAN.md
+  s_0c62b680825d4a::t_37b65d0c83e2f2 1-85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "ea51f1e7cde7263c890f033dfa7fd637545e9a5d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_0c62b680825d4a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14fa596feffedU17ZzovT65yl1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

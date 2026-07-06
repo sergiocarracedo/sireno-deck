@@ -1,0 +1,20 @@
+packages/cli/src/render/ws-server.ts
+  s_344b68134ff779::t_178269d3b65dfc 56-58
+  s_344b68134ff779::t_c6f97e473c2a4d 209-210
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "6e0f42211e8ce50dc84bb03f9c21fd9ca071b8df",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

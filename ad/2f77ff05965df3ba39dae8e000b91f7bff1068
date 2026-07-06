@@ -1,0 +1,30 @@
+packages/cli/src/builtin-addons/media-player/domain/linux-media-volume-controller.ts
+  s_4e4ee307096ddc::t_f10b38ef97411f 1-72
+packages/cli/src/builtin-addons/media-player/domain/windows-media-volume-controller.ts
+  s_4e4ee307096ddc::t_3348fa03c768e1 1-25
+packages/cli/src/builtin-addons/media-player/domain/unsupported-media-volume-controller.ts
+  s_4e4ee307096ddc::t_3c0e65447add06 1-27
+packages/cli/src/builtin-addons/media-player/domain/macos-media-volume-controller.ts
+  s_4e4ee307096ddc::t_984ecf0266afb6 1-75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ad2f77ff05965df3ba39dae8e000b91f7bff1068",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+packages/cli/src/util/process-secret.test.ts
+  s_344b68134ff779::t_ae4c1a29bd5b8c 1-20
+packages/cli/src/render/ws-protocol.test.ts
+  s_344b68134ff779::t_68971c557f500e 46-52
+  s_344b68134ff779::t_9472e4854a6321 1-45,53-88
+packages/cli/src/render/app/App.test.tsx
+  s_344b68134ff779::t_7bb45446e7ae7c 26
+  s_344b68134ff779::t_c2b95f08399579 31-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "abb730ac33d562bb6deabea0e3ec971a95e22fad",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

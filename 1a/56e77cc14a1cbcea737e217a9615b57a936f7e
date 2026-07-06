@@ -1,0 +1,25 @@
+packages/cli/src/deck/runtime.ts
+  s_344b68134ff779::t_b96d942f7b8bed 1911,1930-1939,1943-1944,1948-1949
+  s_344b68134ff779::t_8e617681ee9237 360-382
+  s_344b68134ff779::t_145a94e68aacf5 348-359
+  s_344b68134ff779::t_4578116752bdd7 117-121,125,129-137,140
+  s_344b68134ff779::t_956ba815a6c850 876-885
+  s_344b68134ff779::t_57b505d401ffd9 1355-1371
+  s_344b68134ff779::t_5cf3f674b23b93 1888-1910,1912-1929,1940-1942,1945-1947,1950-1957
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "1a56e77cc14a1cbcea737e217a9615b57a936f7e",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

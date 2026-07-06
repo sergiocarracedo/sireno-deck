@@ -1,0 +1,52 @@
+packages/cli/src/addon/api.ts
+  s_cdd484e59b7475::t_47211aa03b3e43 108,239-242,265
+  s_cdd484e59b7475::t_e61235a81a16f6 158-190,227-229
+packages/cli/src/builtin-addons/date-time/buttons/date-time.tsx
+  h_f90ee31b03fc41 2-13,15-16,22
+  s_cdd484e59b7475::t_1ef95274e6f683 1,14,17-21,23
+  s_4a24c7997d2c84::t_d7427e45db898e 24-60
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle.ts
+  s_cdd484e59b7475::t_6d590692b9b071 227,245
+  s_cdd484e59b7475::t_432d322a9c370d 23-54,56-68,72-74,80-84,123,128,177,188,211,222,242-244
+  s_cdd484e59b7475::t_1ef95274e6f683 5,9-21,70-71,75,77,131-137,140-142,145-148,150-173,175-176,178,180-187,189-210,212-221,223-226,228-241,246-262,265
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck.ts
+  s_cdd484e59b7475::t_1ef95274e6f683 4,14,16-25,27
+packages/cli/src/builtin-addons/core-buttons/buttons/action.ts
+  s_cdd484e59b7475::t_1ef95274e6f683 4,20,22-25,27-41,43-59,61
+packages/cli/src/builtin-addons/date-time/index.ts
+  h_f90ee31b03fc41 10,32,54,78,107,231,234
+  s_cdd484e59b7475::t_1ef95274e6f683 8,109,112-123,125,127,130-148,150-174,176,178,181-199,201-224,226
+packages/cli/src/builtin-addons/core-buttons/buttons/media-sample.ts
+  s_cdd484e59b7475::t_1ef95274e6f683 4,28,30,64
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_cdd484e59b7475::t_1ef95274e6f683 6,158,160-163,165,167,169-186,188,190,192-195,197
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "f364f1f8e948ad3cdf3978c5508185ea094501dc",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4a24c7997d2c84": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a091daeaffeKrjgERsZBqFExO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_cdd484e59b7475": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19ce55eccffegkew6zlTjaidfE",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

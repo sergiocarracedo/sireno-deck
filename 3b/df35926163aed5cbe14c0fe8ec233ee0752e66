@@ -1,0 +1,19 @@
+.planning/solutions/best-practices/package-exports-must-match-emitted-build-artifacts-2026-05-16.md
+  s_07525a126d5ed9::t_7bdd60d06e26d8 1-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "3bdf35926163aed5cbe14c0fe8ec233ee0752e66",
+  "prompts": {},
+  "sessions": {
+    "s_07525a126d5ed9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d02b34d4ffefwtui9X14TkpRF",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

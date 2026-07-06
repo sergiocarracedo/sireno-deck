@@ -1,0 +1,21 @@
+.planning/phases/71-gesture-state-machine-hardening/71-CONTEXT.md
+  s_1eb393451cb328::t_aa44c5a1310c31 1-132
+.planning/phases/71-gesture-state-machine-hardening/71-DISCUSSION-LOG.md
+  s_1eb393451cb328::t_d4a928bacd0ae7 1-133
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "cc3c4d5fc7c3695253df1765f0dd50afd8418803",
+  "prompts": {},
+  "sessions": {
+    "s_1eb393451cb328": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_12da2f406ffecZQ7Y4h0yXu6ko",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

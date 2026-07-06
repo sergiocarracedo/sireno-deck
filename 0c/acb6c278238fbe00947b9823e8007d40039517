@@ -1,0 +1,9 @@
+AGENTS.md
+  ai_agent 168
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "0cacb6c278238fbe00947b9823e8007d40039517",
+  "prompts": {}
+}

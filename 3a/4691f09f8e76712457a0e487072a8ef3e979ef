@@ -1,0 +1,26 @@
+.planning/phases/75-value-display-addon/75-CONTEXT.md
+  s_469c0c9aff79bb::t_53085e2592b3ef 1-87
+.planning/phases/75-value-display-addon/75-DISCUSSION-LOG.md
+  s_469c0c9aff79bb::t_2a2f648ed1ffb8 1-120
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "3a4691f09f8e76712457a0e487072a8ef3e979ef",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_469c0c9aff79bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_129126bf4ffeC1puCBqg5C7qzn",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

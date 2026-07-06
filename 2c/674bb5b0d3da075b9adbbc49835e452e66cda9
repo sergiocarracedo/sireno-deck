@@ -1,0 +1,24 @@
+.planning/phases/72-system-buttons-dispatcher-and-deck-icon/72-UAT.md
+  s_1eb393451cb328::t_333d7fe406ec4b 8,12-14,19,22,50,52,54,57-80,82,85-98,100,103-122
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "2c674bb5b0d3da075b9adbbc49835e452e66cda9",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_1eb393451cb328": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_12da2f406ffecZQ7Y4h0yXu6ko",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

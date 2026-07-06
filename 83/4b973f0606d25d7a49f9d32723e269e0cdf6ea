@@ -1,0 +1,26 @@
+.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-04-SUMMARY.md
+  s_4a24c7997d2c84::t_b9503949291336 1-22
+.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-04-PLAN.md
+  s_4a24c7997d2c84::t_6554de6e3f2c79 1-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "834b973f0606d25d7a49f9d32723e269e0cdf6ea",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4a24c7997d2c84": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a091daeaffeKrjgERsZBqFExO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

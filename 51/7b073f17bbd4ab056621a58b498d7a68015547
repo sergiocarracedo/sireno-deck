@@ -1,0 +1,19 @@
+.planning/phases/09-calendar-authoring-clarity/09-01-SUMMARY.md
+  s_07525a126d5ed9::t_042ba7c7998b92 1-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "517b073f17bbd4ab056621a58b498d7a68015547",
+  "prompts": {},
+  "sessions": {
+    "s_07525a126d5ed9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d02b34d4ffefwtui9X14TkpRF",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

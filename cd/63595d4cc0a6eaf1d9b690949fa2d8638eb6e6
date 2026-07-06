@@ -1,0 +1,21 @@
+.planning/solutions/performance-issues/skip-screenshot-when-html-unchanged-2026-06-11.md
+  s_0c62b680825d4a::t_724535db02cadd 1-87
+.planning/solutions/best-practices/opt-in-env-var-instrumentation-pattern-2026-06-11.md
+  s_0c62b680825d4a::t_30f31a82c24d87 1-108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "cd63595d4cc0a6eaf1d9b690949fa2d8638eb6e6",
+  "prompts": {},
+  "sessions": {
+    "s_0c62b680825d4a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14fa596feffedU17ZzovT65yl1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

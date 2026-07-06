@@ -1,0 +1,32 @@
+packages/cli/src/cli/commands/start.ts
+  s_df3509a167c487::t_bd09ffcc703458 267,273,283
+  s_df3509a167c487::t_a0f19b7d19f7a4 42-56
+  s_df3509a167c487::t_f2e574b2321797 228
+.planning/phases/17-custom-wrapper-primitives-with-addon/17-UAT.md
+  s_df3509a167c487::t_4eb17219901d9f 1-42
+packages/cli/src/cli/commands/start.test.ts
+  s_df3509a167c487::t_4eb17219901d9f 259-295
+packages/cli/fixtures/phase-17/config.wrapper-compatibility.yml
+  s_df3509a167c487::t_4eb17219901d9f 1-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "be064db59928f7a7d138e905f1446a55a9391914",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

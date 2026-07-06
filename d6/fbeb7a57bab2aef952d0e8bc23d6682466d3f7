@@ -1,0 +1,48 @@
+packages/cli/tailwind.browser.css
+  s_14408a12eaea31::t_3d0d7d612e0107 2
+  s_14408a12eaea31::t_8300c702aa42c0 5
+packages/cli/fixtures/phase-25/out-of-root-theme/manifest.yml
+  s_14408a12eaea31::t_136b5a7f596a54 4
+packages/cli/src/cli/build-tailwind-browser.ts
+  s_14408a12eaea31::t_3d0d7d612e0107 1-165
+packages/cli/src/config/theme.test.ts
+  s_14408a12eaea31::t_d1e4249edcb691 107,179,227,343,391,453,484
+  s_14408a12eaea31::t_8300c702aa42c0 298-301
+  s_14408a12eaea31::t_136b5a7f596a54 122-124,127,130,133,240,255
+packages/cli/src/addon/manifest.ts
+  s_14408a12eaea31::t_8300c702aa42c0 5-8,16,24,49
+packages/cli/src/addon/manifest.test.ts
+  s_14408a12eaea31::t_8300c702aa42c0 19,23-38
+packages/cli/fixtures/phase-23/local-raw-addon/package.json
+  s_14408a12eaea31::t_8300c702aa42c0 7-12
+packages/cli/src/config/theme.ts
+  s_14408a12eaea31::t_8300c702aa42c0 41-46,74,122,734
+packages/cli/fixtures/phase-25/custom-tsx-theme/manifest.yml
+  s_14408a12eaea31::t_8300c702aa42c0 10-13
+  s_14408a12eaea31::t_09ee5c5fe07ae9 4
+packages/cli/package.json
+  s_14408a12eaea31::t_61da688d5243b0 17
+packages/cli/src/addon/loader.test.ts
+  s_14408a12eaea31::t_8300c702aa42c0 150-153
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "d6fbeb7a57bab2aef952d0e8bc23d6682466d3f7",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_14408a12eaea31": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_178b344dbffea2AyCo2mQv0JQx",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

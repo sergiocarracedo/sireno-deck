@@ -1,0 +1,19 @@
+.planning/solutions/integration-issues/dom-renderer-fallback-must-stay-compatible-with-legacy-and-browserless-paths-2026-05-22.md
+  s_df3509a167c487::t_add21435b4f8d6 1-109
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "830bbe032742c5be84c75dcfef1f0ff21a31090f",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

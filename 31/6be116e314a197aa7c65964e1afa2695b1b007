@@ -1,0 +1,27 @@
+packages/cli/src/ui/Bars.test.tsx
+  s_a44d509d67bdce::t_482d98e062b5c5 63,76,99
+  s_a44d509d67bdce::t_d1fdd088aabc22 55-62,64-75,77-98,100-137
+packages/cli/src/ui/Bars.tsx
+  s_a44d509d67bdce::t_860db0e2f42854 91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "316be116e314a197aa7c65964e1afa2695b1b007",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

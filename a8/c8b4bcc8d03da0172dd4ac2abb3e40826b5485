@@ -1,0 +1,27 @@
+.planning/phases/58-performance-fixes/profile-browser-back.txt
+  s_0c62b680825d4a::t_bcb901d6562630 29-32
+  s_0c62b680825d4a::t_7abdd8339bf46a 2,26-27,33-34,40-41,45
+.planning/phases/58-performance-fixes/profile-browser-weather.txt
+  s_0c62b680825d4a::t_7abdd8339bf46a 2,26-27,33-34,40-41,45
+  s_0c62b680825d4a::t_bcb901d6562630 29-32
+packages/cli/scripts/profile-browser.ts
+  s_0c62b680825d4a::t_772130d2139d6b 172
+  s_0c62b680825d4a::t_9f9b55346b3b46 202
+  s_0c62b680825d4a::t_facd60ba5f5ad7 156-162
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a8c8b4bcc8d03da0172dd4ac2abb3e40826b5485",
+  "prompts": {},
+  "sessions": {
+    "s_0c62b680825d4a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14fa596feffedU17ZzovT65yl1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

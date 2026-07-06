@@ -1,0 +1,26 @@
+.planning/phases/45-weather-addon/45-DISCUSSION-LOG.md
+  s_4e4ee307096ddc::t_d2aee791bcfdbe 1-74
+.planning/phases/45-weather-addon/45-CONTEXT.md
+  s_4e4ee307096ddc::t_e3393126dab4ee 1-135
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "95d51af6ab320e748e52b6d19c1be262263564d9",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

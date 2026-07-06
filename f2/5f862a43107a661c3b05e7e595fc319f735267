@@ -1,0 +1,20 @@
+packages/cli/src/render/app/App.tsx
+  s_344b68134ff779::t_6018754b6811b4 1,5-7,26-30,39-43,75,77,80-82,85-94,96,129,208-211,214-220,228,231-234
+  s_344b68134ff779::t_900588322546c3 3-4,8-12,16,19-24,44,76,78,83-84,95,97-128,130-160,162-166,168-169,175-207,212-213,225-227
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "f25f862a43107a661c3b05e7e595fc319f735267",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

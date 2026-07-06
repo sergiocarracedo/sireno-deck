@@ -1,0 +1,31 @@
+.planning/phases/71-gesture-state-machine-hardening/71-01-PLAN.md
+  s_1eb393451cb328::t_93fdde0b5facb7 89,94
+  s_1eb393451cb328::t_8b604f6a7f2133 16-21
+  s_1eb393451cb328::t_3636f3af37bc9a 1,5-6,8,10-15,22-23,25-26,28-30,34-35,37,39,41-54,57,61-78,81-88,90-93,95-109,111,113-127,129,131
+  s_1eb393451cb328::t_63fd0fd3fa1bd6 24,27,31-33
+  s_1eb393451cb328::t_6fcf261100aa68 110,112,128,130
+  s_1eb393451cb328::t_c1f8618533704a 55-56,58-60
+  s_1eb393451cb328::t_da693c7a399c22 36,38,40
+  s_1eb393451cb328::t_c231d9efc89bc8 2-4,7,9
+  s_1eb393451cb328::t_d0d402dab42127 79-80
+.planning/phases/71-gesture-state-machine-hardening/71-02-PLAN.md
+  s_1eb393451cb328::t_50b75e2bd5a31e 1-74,76-101,103,105,112-116,118,120
+  s_1eb393451cb328::t_8cdbc00673bbfb 75
+  s_1eb393451cb328::t_582d72924c26b3 102,104,106-111,117,119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "883bef50171f51a3c390876c31092b944794539b",
+  "prompts": {},
+  "sessions": {
+    "s_1eb393451cb328": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_12da2f406ffecZQ7Y4h0yXu6ko",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

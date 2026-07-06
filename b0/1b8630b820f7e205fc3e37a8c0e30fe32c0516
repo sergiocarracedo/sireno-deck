@@ -1,0 +1,21 @@
+AGENTS.md
+  s_0c62b680825d4a::t_01607adb16ecda 168-169
+.planning/STATE.md
+  s_0c62b680825d4a::t_751ac4c809e060 12-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b01b8630b820f7e205fc3e37a8c0e30fe32c0516",
+  "prompts": {},
+  "sessions": {
+    "s_0c62b680825d4a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14fa596feffedU17ZzovT65yl1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

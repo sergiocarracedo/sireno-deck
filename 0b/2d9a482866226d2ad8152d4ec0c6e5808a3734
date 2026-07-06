@@ -1,0 +1,26 @@
+.planning/codebase/ARCHITECTURE.md
+  s_cdd484e59b7475::t_f68b4a1109dd8e 17-18,27,34,36,41,47-48
+AGENTS.md
+  s_cdd484e59b7475::t_f68b4a1109dd8e 169
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "0b2d9a482866226d2ad8152d4ec0c6e5808a3734",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_cdd484e59b7475": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19ce55eccffegkew6zlTjaidfE",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

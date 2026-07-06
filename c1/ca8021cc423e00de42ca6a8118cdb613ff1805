@@ -1,0 +1,25 @@
+packages/cli/src/render/app/App.tsx
+  s_344b68134ff779::t_1774a4e6fb4228 31,35,39,41,44
+.planning/phases/78-dev-server-scaffold/78-UAT.md
+  s_344b68134ff779::t_98739bc525da67 69,71-81
+  s_344b68134ff779::t_bbd4fa3a8db0ab 25
+  s_344b68134ff779::t_4ccb74da9a6464 21
+  s_344b68134ff779::t_69cd54a209ce70 14-15,22,26,29-30,33-34,37-38,41-42,45-46,49-50,53-54,57-58,61-62,65-66,70,85,89,94,96
+  s_344b68134ff779::t_d9c45e7cc50693 1-13,16-20,23-24,27-28,31-32,35-36,39-40,43-44,47-48,51-52,55-56,59-60,63-64,67-68,82-84,86-88,90-93,95,97-101
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "c1ca8021cc423e00de42ca6a8118cdb613ff1805",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

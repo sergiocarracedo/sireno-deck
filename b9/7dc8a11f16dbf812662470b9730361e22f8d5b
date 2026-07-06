@@ -1,0 +1,26 @@
+.planning/STATE.md
+  s_6594eef402867c::t_0095657e640136 8,13-15,84,226-227
+.planning/phases/05-hot-refresh-and-button-error-helper/05-04-SUMMARY.md
+  s_6594eef402867c::t_0095657e640136 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b97dc8a11f16dbf812662470b9730361e22f8d5b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_6594eef402867c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_189d742cdffeZcbRHUHZ6X53l2",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

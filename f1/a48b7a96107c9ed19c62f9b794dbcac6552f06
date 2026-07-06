@@ -1,0 +1,26 @@
+.planning/phases/38-startup-image-full-deck-coverage/38-DISCUSSION-LOG.md
+  s_4e4ee307096ddc::t_0a50557f92db82 1-74
+.planning/phases/38-startup-image-full-deck-coverage/38-CONTEXT.md
+  s_4e4ee307096ddc::t_7638e85a6fde24 1-84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f1a48b7a96107c9ed19c62f9b794dbcac6552f06",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+.planning/phases/12-backgrounds-text-fitting/12-01-SUMMARY.md
+  s_50714901791ebe::t_53ec7984aa3e4a 1-19
+packages/cli/src/render/text-image.test.ts
+  s_50714901791ebe::t_54ed580e095d73 161-177
+packages/cli/src/render/text-image.ts
+  s_50714901791ebe::t_3667305dbf6cd4 9,238-244,247-248,250-251,819-820
+packages/cli/src/addon/api.ts
+  s_50714901791ebe::t_3667305dbf6cd4 25
+packages/cli/src/render/reconciler.test.tsx
+  s_50714901791ebe::t_54ed580e095d73 120-144
+.planning/phases/12-backgrounds-text-fitting/12-UAT.md
+  s_50714901791ebe::t_53ec7984aa3e4a 1-43
+packages/cli/src/core/schemas.ts
+  s_50714901791ebe::t_f515bfef4a9e3d 379
+  s_50714901791ebe::t_3667305dbf6cd4 66,82,89-98,224,230,268-272,274,287-291,319-325,358-362,369
+packages/cli/src/deck/runtime.ts
+  s_50714901791ebe::t_3667305dbf6cd4 129-132,158-159
+packages/cli/src/cli/commands/start.ts
+  s_50714901791ebe::t_3667305dbf6cd4 79,148
+packages/cli/src/render/types.ts
+  s_50714901791ebe::t_3667305dbf6cd4 6,13,27
+packages/cli/src/render/reconciler.ts
+  s_50714901791ebe::t_3667305dbf6cd4 18,35,132,150,159-165,247,262,271,340,356,383
+packages/cli/fixtures/phase-12/config.background-precedence.yml
+  s_50714901791ebe::t_53ec7984aa3e4a 1-33
+packages/cli/src/deck/runtime.test.ts
+  s_50714901791ebe::t_54ed580e095d73 216-283
+  s_50714901791ebe::t_f515bfef4a9e3d 97-98,151,494,738,852,859,866,1026,1071,1078,1085
+packages/cli/src/config/loader.test.ts
+  s_50714901791ebe::t_54ed580e095d73 227-283
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "a9a2092d40eecbe3a6d82aa4635fa24d32fc5ecb",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_50714901791ebe": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cad490d1ffe7qtGxWMYgUngfy",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

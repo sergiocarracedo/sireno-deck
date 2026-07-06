@@ -1,0 +1,28 @@
+packages/cli/src/addon/api.ts
+  s_50714901791ebe::t_4954e1959d1ce3 76-99,106-107
+packages/cli/src/addon/registry.ts
+  s_50714901791ebe::t_4954e1959d1ce3 3-9,17-20,47-48,59-66,84-101,109-114,127-140
+packages/cli/src/addon/registry.test.ts
+  s_50714901791ebe::t_4954e1959d1ce3 39-116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "55e309cd1832b063e32c64aaa4192c150e7846b8",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_50714901791ebe": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cad490d1ffe7qtGxWMYgUngfy",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

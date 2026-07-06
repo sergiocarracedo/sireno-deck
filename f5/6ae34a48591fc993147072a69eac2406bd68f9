@@ -1,0 +1,38 @@
+packages/cli/src/themes/default/manifest.yml
+  h_f90ee31b03fc41 11-12
+config.yml
+  h_f90ee31b03fc41 9,20-37
+packages/cli/src/themes/default/ButtonFrame.tsx
+  h_f90ee31b03fc41 33,37
+packages/cli/tsdown.config.ts
+  h_f90ee31b03fc41 1,5-6,8-9
+packages/cli/package.json
+  s_59d030c8de308d::t_25614713a4b558 18
+packages/cli/fixtures/phase-14/config.toggle-internal.yml
+  h_f90ee31b03fc41 29
+packages/cli/src/render/theme-utilities.ts
+  h_f90ee31b03fc41 1,8,11,18,23,27,31,35,43,53-55,65,70-89,91-98,100,102-106,108-140
+packages/cli/src/render/dom-host-deck-document.tsx
+  h_f90ee31b03fc41 8,60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f56ae34a48591fc993147072a69eac2406bd68f9",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_59d030c8de308d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19694ac2dffeX8MJU78d98rSIi",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

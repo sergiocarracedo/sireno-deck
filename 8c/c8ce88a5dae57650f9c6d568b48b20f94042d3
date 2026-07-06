@@ -1,0 +1,40 @@
+packages/cli/src/config/theme.ts
+  s_62d8b999b52dbd::t_4349b47a54b7dd 2,433-438,458,468-477,487-501,525-526
+packages/cli/fixtures/phase-25/custom-tsx-theme/index.tsx
+  s_62d8b999b52dbd::t_f15cf9405675a9 1-7
+packages/cli/fixtures/phase-25/out-of-root-theme/index.tsx
+  s_62d8b999b52dbd::t_f15cf9405675a9 1-3
+packages/cli/fixtures/phase-25/out-of-root-theme/manifest.yml
+  s_62d8b999b52dbd::t_f15cf9405675a9 1-23
+packages/cli/fixtures/phase-25/shared/escaped-frame.tsx
+  s_62d8b999b52dbd::t_f62a7982c398f4 1,4
+  s_62d8b999b52dbd::t_f15cf9405675a9 2-3,5
+packages/cli/src/config/theme.test.ts
+  s_62d8b999b52dbd::t_4914f06eeaa365 3,10-11,156-180
+packages/cli/fixtures/phase-25/custom-tsx-theme/frame.tsx
+  s_62d8b999b52dbd::t_f15cf9405675a9 2-3,8-9
+  s_62d8b999b52dbd::t_f62a7982c398f4 1,4-7
+packages/cli/fixtures/phase-25/custom-tsx-theme/manifest.yml
+  s_62d8b999b52dbd::t_f15cf9405675a9 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "8cc8ce88a5dae57650f9c6d568b48b20f94042d3",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_62d8b999b52dbd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19a95ab2cffelx1Pw48Hq6DfWk",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

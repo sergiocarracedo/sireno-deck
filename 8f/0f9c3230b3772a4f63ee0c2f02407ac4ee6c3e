@@ -1,0 +1,26 @@
+.planning/phases/18-react-dom-based-renderer-with-htmlcss/18-CONTEXT.md
+  s_df3509a167c487::t_895e8ce85152ea 1-92
+.planning/phases/18-react-dom-based-renderer-with-htmlcss/18-DISCUSSION-LOG.md
+  s_df3509a167c487::t_895e8ce85152ea 1-154
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "8f0f9c3230b3772a4f63ee0c2f02407ac4ee6c3e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

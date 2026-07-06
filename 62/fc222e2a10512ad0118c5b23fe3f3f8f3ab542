@@ -1,0 +1,27 @@
+package.json
+  s_70eeb05163558f::t_91d6d06fa410e1 8
+packages/cli/src/cli/dev-watch.ts
+  s_70eeb05163558f::t_3ff8057dd2c2d1 1-3
+  s_70eeb05163558f::t_91d6d06fa410e1 4-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "62fc222e2a10512ad0118c5b23fe3f3f8f3ab542",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_70eeb05163558f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_18597e378ffevCYrDZtni4nuEZ",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+packages/cli/src/themes/default/manifest.yml
+  s_43a1f95302eacf::t_c594e9d6217484 22,24,26,28-29,31,33-34
+packages/cli/fixtures/phase-25/custom-tsx-theme/manifest.yml
+  s_43a1f95302eacf::t_46dd85452c755e 17-19,21-24,26-29
+packages/cli/src/themes/light/manifest.yml
+  s_43a1f95302eacf::t_9d9508fb904f0f 13-21,23-26
+packages/cli/fixtures/phase-25/out-of-root-theme/manifest.yml
+  s_43a1f95302eacf::t_ddf88974e61eb6 13-15,17-20,22-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "2b5099d08ad88344735bd928f55e776f64028cfe",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_43a1f95302eacf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1713bb85cffeuUVJXNOTOl6k4H",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

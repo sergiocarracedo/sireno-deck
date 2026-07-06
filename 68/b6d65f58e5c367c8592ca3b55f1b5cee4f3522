@@ -1,0 +1,30 @@
+.planning/phases/14-richer-built-in-toggles/14-02-PLAN.md
+  s_50714901791ebe::t_a60f7a98f8bfdc 1-112
+.planning/phases/14-richer-built-in-toggles/14-03-PLAN.md
+  s_50714901791ebe::t_a60f7a98f8bfdc 1-104
+.planning/phases/14-richer-built-in-toggles/14-01-PLAN.md
+  s_50714901791ebe::t_a60f7a98f8bfdc 1-114
+.planning/phases/14-richer-built-in-toggles/14-RESEARCH.md
+  s_50714901791ebe::t_a60f7a98f8bfdc 1-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "68b6d65f58e5c367c8592ca3b55f1b5cee4f3522",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_50714901791ebe": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cad490d1ffe7qtGxWMYgUngfy",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

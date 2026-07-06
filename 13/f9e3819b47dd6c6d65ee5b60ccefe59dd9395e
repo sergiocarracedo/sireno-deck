@@ -1,0 +1,19 @@
+packages/cli/src/config/loader.test.ts
+  s_51a5160d42324b::t_db9bdd6eb98dc5 1291-1379
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "13f9e3819b47dd6c6d65ee5b60ccefe59dd9395e",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

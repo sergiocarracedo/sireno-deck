@@ -1,0 +1,28 @@
+packages/cli/src/builtin-addons/weather/schemas.ts
+  s_0580d7c7a41764::t_f735c10dcc071e 12
+packages/cli/src/builtin-addons/weather/buttons/weather.tsx
+  s_0580d7c7a41764::t_6a9c8e5857ac17 22
+packages/cli/src/builtin-addons/weather/index.test.ts
+  s_0580d7c7a41764::t_7fb6b4bbf40110 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c9e12053f5b115ae74ab43ab5247e82eed6f5386",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_0580d7c7a41764": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_166a141a1ffeuVB57GbHYAshIa",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

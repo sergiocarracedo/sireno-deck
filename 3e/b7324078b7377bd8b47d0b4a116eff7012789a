@@ -1,0 +1,30 @@
+packages/cli/src/util/__tests__/errors.test.ts
+  s_6aed55125c6157::t_2875751c2b197c 4
+packages/cli/src/util/__tests__/daemon.test.ts
+  s_6aed55125c6157::t_dc281c9362b9ca 14
+packages/cli/src/util/__tests__/clipboard.test.ts
+  s_6aed55125c6157::t_981b81a76ec4da 3
+packages/cli/src/util/__tests__/chromium-detect.test.ts
+  s_6aed55125c6157::t_77184d7e3a585c 15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "3eb7324078b7377bd8b47d0b4a116eff7012789a",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_6aed55125c6157": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_123c07561ffe3AcviqYR9Sq2OQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

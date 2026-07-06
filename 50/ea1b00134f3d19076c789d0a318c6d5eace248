@@ -1,0 +1,26 @@
+packages/cli/src/builtin-addons/media-player/index.ts
+  s_4e4ee307096ddc::t_465a7e1f3547d2 3,7
+packages/cli/src/builtin-addons/media-player/media-player-button.tsx
+  s_4e4ee307096ddc::t_465a7e1f3547d2 1-3,10,69-72,74-103,105-109,111-140,142-181,183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "50ea1b00134f3d19076c789d0a318c6d5eace248",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

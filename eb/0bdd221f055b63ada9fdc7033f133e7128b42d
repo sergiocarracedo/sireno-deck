@@ -1,0 +1,37 @@
+packages/cli/src/config/theme/theme.ts
+  s_4e4ee307096ddc::t_ea837f9add4670 715-717
+packages/cli/fixtures/phase-39/theme-with-media-player-surface/index.ts
+  s_4e4ee307096ddc::t_e433b8de3e4cad 1-6
+  s_4e4ee307096ddc::t_7bfdc2c602b51f 7
+packages/cli/src/config/theme/theme.test.ts
+  s_4e4ee307096ddc::t_3b9cea75c19134 516
+  s_4e4ee307096ddc::t_a42087b9d9ea8b 23-26,495-515,517-545
+  s_4e4ee307096ddc::t_20ead11be34260 546
+packages/cli/fixtures/phase-39/theme-with-media-player-surface/frame.tsx
+  s_4e4ee307096ddc::t_9f4130a1108042 1-6
+packages/cli/fixtures/phase-39/theme-with-media-player-surface/surface.tsx
+  s_4e4ee307096ddc::t_63996dbdd01d20 26-27
+packages/cli/fixtures/phase-39/theme-with-media-player-surface/manifest.yml
+  s_4e4ee307096ddc::t_e340af56fd8117 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "eb0bdd221f055b63ada9fdc7033f133e7128b42d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

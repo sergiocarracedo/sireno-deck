@@ -1,0 +1,32 @@
+.planning/STATE.md
+  s_26099f9ddf91b0::t_a2cbe3afa089d3 15,91
+.planning/quick/011-commit-learnings/011-SUMMARY.md
+  s_26099f9ddf91b0::t_90c81d57358155 1-13
+.planning/quick/011-commit-learnings/011-PLAN.md
+  s_26099f9ddf91b0::t_9b5efdd22ceef9 1-41
+.planning/quick/011-commit-learnings/011-VERIFICATION.md
+  s_26099f9ddf91b0::t_c964f9bcb312f6 1-24
+.planning/quick/011-commit-learnings/011-RESEARCH.md
+  s_26099f9ddf91b0::t_5037438a34551a 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "013e7ab5d12386c2e600ca6063fd73566913e8ea",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

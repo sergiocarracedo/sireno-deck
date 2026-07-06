@@ -1,0 +1,25 @@
+packages/cli/src/deck/runtime.ts
+  s_469c0c9aff79bb::t_eaf3e2849e3f65 1010-1014
+  s_469c0c9aff79bb::t_238fdf71e8ebd7 1019-1023
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "547a3591c1cf0163cf17048de2ffba4b4301c2f5",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_469c0c9aff79bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_129126bf4ffeC1puCBqg5C7qzn",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

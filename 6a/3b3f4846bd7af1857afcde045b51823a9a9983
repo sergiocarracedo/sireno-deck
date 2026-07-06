@@ -1,0 +1,28 @@
+packages/cli/src/ui/negative-color.test.ts
+  s_a44d509d67bdce::t_4ece3123450e22 103
+  s_a44d509d67bdce::t_ce0dc32667a382 1-59,62-102,104-114
+  s_a44d509d67bdce::t_93315053a25c64 60-61
+packages/cli/src/ui/negative-color.ts
+  s_a44d509d67bdce::t_540e2ccacf9853 1-60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "6a3b3f4846bd7af1857afcde045b51823a9a9983",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

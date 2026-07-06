@@ -1,0 +1,28 @@
+packages/cli/src/cli/commands/start.test.ts
+  s_4a24c7997d2c84::t_d403a9a1733143 353
+  s_4a24c7997d2c84::t_e37dbed8c8aebb 349-352,354-403
+packages/cli/fixtures/phase-23/local-raw-addon/src/index.tsx
+  h_f90ee31b03fc41 5,8
+  s_4a24c7997d2c84::t_e37dbed8c8aebb 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "80aa3bd88ce78718abeed90eb4de33f51be75007",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4a24c7997d2c84": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a091daeaffeKrjgERsZBqFExO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

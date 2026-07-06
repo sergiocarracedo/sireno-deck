@@ -1,0 +1,24 @@
+.planning/research/SUMMARY.md
+  s_136b450bea3e1f::t_d5f600f2eb96c8 35
+  s_136b450bea3e1f::t_7a81e823594e7d 26-27
+.planning/research/STACK.md
+  s_136b450bea3e1f::t_39f7875233c79f 64
+  s_136b450bea3e1f::t_0630a417054374 40
+  s_136b450bea3e1f::t_823323093f8228 88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "2febe16414b6feb551ca5a12e167765a9d0f2a5d",
+  "prompts": {},
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

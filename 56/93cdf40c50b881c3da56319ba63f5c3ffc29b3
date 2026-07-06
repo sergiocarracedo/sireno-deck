@@ -1,0 +1,31 @@
+.planning/phases/49-emoji-selector-ux-revamp/49-08-PLAN.md
+  s_908d014142bc69::t_300bc46a743030 1-50
+packages/cli/src/util/clipboard.test.ts
+  s_908d014142bc69::t_bfad97f394555b 52
+  s_908d014142bc69::t_5507089ebc144e 5,42-45,47,50-51,55,57
+packages/cli/src/util/clipboard.ts
+  s_908d014142bc69::t_fe1304fe16b9fe 3,7,9,14
+.planning/phases/49-emoji-selector-ux-revamp/49-UAT.md
+  s_908d014142bc69::t_74245eda6c4e79 82,84,88,90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5693cdf40c50b881c3da56319ba63f5c3ffc29b3",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_908d014142bc69": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15e0e3cfbffe6xh6RWjPEUvQJN",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

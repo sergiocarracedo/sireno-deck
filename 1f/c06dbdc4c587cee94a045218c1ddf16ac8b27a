@@ -1,0 +1,28 @@
+packages/cli/src/render/text-image.test.ts
+  s_df3509a167c487::t_ef44fd24d41590 158
+packages/cli/src/render/text-image.ts
+  s_df3509a167c487::t_3d1e779955845c 314-326,415-437,445,447-448,455-460,1023
+.planning/phases/17-custom-wrapper-primitives-with-addon/17-UAT.md
+  s_df3509a167c487::t_3d1e779955845c 42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "1fc06dbdc4c587cee94a045218c1ddf16ac8b27a",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

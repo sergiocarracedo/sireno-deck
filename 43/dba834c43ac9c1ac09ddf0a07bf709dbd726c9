@@ -1,0 +1,23 @@
+.planning/STATE.md
+  s_8d74af9d4bfed8::t_9c879b396b7d07 15,172
+.planning/quick/014-theme-font-face-test-failures/014-PLAN.md
+  s_8d74af9d4bfed8::t_745944a77722ba 1-56
+.planning/quick/014-theme-font-face-test-failures/014-SUMMARY.md
+  s_8d74af9d4bfed8::t_d8767b9be2d5b6 1-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "43dba834c43ac9c1ac09ddf0a07bf709dbd726c9",
+  "prompts": {},
+  "sessions": {
+    "s_8d74af9d4bfed8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a4269384ffeN1puLn8w7RzN1B",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+.planning/phases/05-addon-system/05-DISCUSSION-LOG.md
+  s_26099f9ddf91b0::t_6304dc226bdb3c 1-145,149-151,155,158,160
+.planning/phases/05-addon-system/05-CONTEXT.md
+  s_26099f9ddf91b0::t_33ecacba4860c6 3,10,17-51,54-56,63-66,75-84,92-95,98-100,103-106,113,119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "92e3c647e3a2b908d0f03053c94fba9a269bded9",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

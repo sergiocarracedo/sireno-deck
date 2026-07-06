@@ -1,0 +1,46 @@
+.planning/phases/24-mounted-addon-render-contract/24-RESEARCH.md
+  s_cdd484e59b7475::t_bdc7703ba2b890 1-78
+.planning/phases/24-mounted-addon-render-contract/24-04-PLAN.md
+  s_cdd484e59b7475::t_a6b3da009e915f 63-68
+  s_cdd484e59b7475::t_b424a8bda396d7 1-62,69-103
+.planning/phases/24-mounted-addon-render-contract/24-03-PLAN.md
+  s_cdd484e59b7475::t_b424a8bda396d7 1-56,63-95
+  s_cdd484e59b7475::t_a6b3da009e915f 57-62
+.planning/phases/24-mounted-addon-render-contract/24-CONTEXT.md
+  s_cdd484e59b7475::t_5b01598b69ba45 1-97
+.planning/phases/24-mounted-addon-render-contract/24-DISCUSSION-LOG.md
+  s_cdd484e59b7475::t_5b01598b69ba45 1-156
+.planning/phases/24-mounted-addon-render-contract/24-02-PLAN.md
+  s_cdd484e59b7475::t_b424a8bda396d7 1-54,61-93
+  s_cdd484e59b7475::t_a6b3da009e915f 55-60
+.planning/phases/24-mounted-addon-render-contract/24-01-PLAN.md
+  s_cdd484e59b7475::t_b424a8bda396d7 1-52,59-91
+  s_cdd484e59b7475::t_a6b3da009e915f 53-58
+.planning/ROADMAP.md
+  s_cdd484e59b7475::t_5b01598b69ba45 262,264,270-273
+  s_cdd484e59b7475::t_a6b3da009e915f 265,267
+.planning/STATE.md
+  s_cdd484e59b7475::t_5b01598b69ba45 76,89
+  s_cdd484e59b7475::t_a6b3da009e915f 8,12-15,90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "a12db5de78df3e9c463bc98a11162af268588e07",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_cdd484e59b7475": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19ce55eccffegkew6zlTjaidfE",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

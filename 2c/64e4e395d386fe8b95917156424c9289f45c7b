@@ -1,0 +1,26 @@
+.planning/phases/49-emoji-selector-ux-revamp/49-VERIFICATION.md
+  s_908d014142bc69::t_867227e6fa12aa 44-65
+  s_908d014142bc69::t_f2d134f1769e05 68-70
+  s_908d014142bc69::t_2798494bfd8a78 94,99-101
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2c64e4e395d386fe8b95917156424c9289f45c7b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_908d014142bc69": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15e0e3cfbffe6xh6RWjPEUvQJN",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

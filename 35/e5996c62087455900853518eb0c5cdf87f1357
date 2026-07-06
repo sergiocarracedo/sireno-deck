@@ -1,0 +1,28 @@
+.planning/phases/40-distribution-build-pipeline/40-RESEARCH.md
+  s_4e4ee307096ddc::t_00c3c8aa73e929 1-104
+.planning/phases/40-distribution-build-pipeline/40-01-PLAN.md
+  s_4e4ee307096ddc::t_52b62bc4378c9a 1-160
+.planning/phases/40-distribution-build-pipeline/40-02-PLAN.md
+  s_4e4ee307096ddc::t_09d3002528aa9a 1-195
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "35e5996c62087455900853518eb0c5cdf87f1357",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

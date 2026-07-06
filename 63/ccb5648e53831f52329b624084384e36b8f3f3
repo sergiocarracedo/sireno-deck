@@ -1,0 +1,29 @@
+packages/cli/fixtures/phase-39/theme-with-media-player-surface/manifest.yml
+  s_4e4ee307096ddc::t_c7ddff030a87a4 1-27
+packages/cli/fixtures/phase-39/theme-with-media-player-surface/surface.tsx
+  s_4e4ee307096ddc::t_cc7cad0de024ca 3-26
+  s_4e4ee307096ddc::t_186c6ca6202959 1-2
+packages/cli/fixtures/phase-39/theme-with-media-player-surface/index.ts
+  s_4e4ee307096ddc::t_3942f3f217883b 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "63ccb5648e53831f52329b624084384e36b8f3f3",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

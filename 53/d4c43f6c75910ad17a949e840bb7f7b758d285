@@ -1,0 +1,31 @@
+.planning/REQUIREMENTS.md
+  s_0c62b680825d4a::t_146671486b7dc4 83-144,149,151,153,157-162,166-167
+  s_0c62b680825d4a::t_8b4206e4ce152d 3-4,8,10,12-18,20-22
+.planning/ROADMAP.md
+  s_0c62b680825d4a::t_d7b68d6e01a02a 3-5,9,11,15,17-18,21-31,33-49,52-54,56,58-59,62-69,71-89,91-98,100-107,113-134,138-146,152-166,174-175
+AGENTS.md
+  s_0c62b680825d4a::t_e760207fc9b3e8 167-170
+.planning/milestones/v1.5-REQUIREMENTS.md
+  s_0c62b680825d4a::t_2dff02b916727a 1-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "53d4c43f6c75910ad17a949e840bb7f7b758d285",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_0c62b680825d4a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14fa596feffedU17ZzovT65yl1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+.planning/phases/26-browser-deck-react-shell-polish/26-01-SUMMARY.md
+  s_62d8b999b52dbd::t_f7efc8895343fe 1-22
+.planning/phases/26-browser-deck-react-shell-polish/26-02-SUMMARY.md
+  s_62d8b999b52dbd::t_f7efc8895343fe 1-23
+.planning/phases/26-browser-deck-react-shell-polish/26-03-SUMMARY.md
+  s_62d8b999b52dbd::t_f7efc8895343fe 1-22
+.planning/phases/26-browser-deck-react-shell-polish/26-VERIFICATION.md
+  s_62d8b999b52dbd::t_f7efc8895343fe 1-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "1dbf53c4bd8630c7a349995a428c88eae27e4950",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_62d8b999b52dbd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19a95ab2cffelx1Pw48Hq6DfWk",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

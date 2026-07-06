@@ -1,0 +1,31 @@
+.planning/phases/05-addon-system/05-UAT.md
+  s_26099f9ddf91b0::t_83cea5221ef71d 10,61,89,91,93
+  s_26099f9ddf91b0::t_d39d6d44bd62c9 34-35
+  s_26099f9ddf91b0::t_1da12329d4d23e 30
+  s_26099f9ddf91b0::t_adf2e3b01a20cb 51,84,86,88
+  s_26099f9ddf91b0::t_d3d63ae71985d0 7-9,22-23,28-29,31-33,36-38,43-44,48-49,54,58-59,66
+  s_26099f9ddf91b0::t_bb06a4853e326e 40,79,81,83
+  s_26099f9ddf91b0::t_d202615b7410f8 46,70
+  s_26099f9ddf91b0::t_f020977b3adfa6 25,74,76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "476d234aba2652fe22315e5c12c28be50e9c4be8",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

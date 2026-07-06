@@ -1,0 +1,30 @@
+packages/cli/fixtures/phase-24/config.local-mounted-addon.yml
+  s_cdd484e59b7475::t_6834022f97b677 19-21,32-34
+packages/cli/src/addon/loader.test.ts
+  s_cdd484e59b7475::t_ec59165cdaf1a9 165
+packages/cli/src/deck/runtime.test.ts
+  s_cdd484e59b7475::t_28b0ba991e29a5 49-58,1609-1610,1706-1777
+packages/cli/fixtures/phase-24/local-mounted-addon/src/index.tsx
+  s_cdd484e59b7475::t_95038f279b8913 1,22-29,63-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "aa7142ee188db9cb8f650187858b5c238679197b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_cdd484e59b7475": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19ce55eccffegkew6zlTjaidfE",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+packages/cli/src/addon/builtin.ts
+  s_26099f9ddf91b0::t_bcc0093427b9a3 2,7
+builtin-addons/core-buttons/src/index.ts
+  s_26099f9ddf91b0::t_bcc0093427b9a3 1-2,6-7,15-26,39-58,60-61
+builtin-addons/core-buttons/assets/clock.svg
+  s_26099f9ddf91b0::t_bcc0093427b9a3 1-5
+config.yml
+  s_26099f9ddf91b0::t_bcc0093427b9a3 11,13-24
+builtin-addons/emoji-selector/assets/smileys.svg
+  s_26099f9ddf91b0::t_bcc0093427b9a3 1-7
+builtin-addons/emoji-selector/assets/food.svg
+  s_26099f9ddf91b0::t_bcc0093427b9a3 1-8
+builtin-addons/emoji-selector/assets/back.svg
+  s_26099f9ddf91b0::t_bcc0093427b9a3 1-4
+builtin-addons/emoji-selector/assets/favorites.svg
+  s_26099f9ddf91b0::t_bcc0093427b9a3 1-4
+builtin-addons/emoji-selector/package.json
+  s_26099f9ddf91b0::t_bcc0093427b9a3 1-17
+builtin-addons/emoji-selector/assets/nature.svg
+  s_26099f9ddf91b0::t_bcc0093427b9a3 1-7
+builtin-addons/emoji-selector/src/index.ts
+  s_26099f9ddf91b0::t_bcc0093427b9a3 1-191
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "93e01fc9c09693e2b7011ac51e47bdeeda9ff654",
+  "prompts": {},
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

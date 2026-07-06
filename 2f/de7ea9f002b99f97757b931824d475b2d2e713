@@ -1,0 +1,33 @@
+packages/cli/src/cli/commands/start.ts
+  s_33de7f93c0a086::t_997b4e4d39609b 47
+  s_33de7f93c0a086::t_6c9f3e19335ec8 912
+  s_33de7f93c0a086::t_269bb3891b8481 1116
+packages/cli/src/deck/runtime.ts
+  s_33de7f93c0a086::t_34e5d1e3c12b98 1619-1623
+  s_33de7f93c0a086::t_ed2d3aecd3f7f5 44
+  s_33de7f93c0a086::t_7e0c92c801b33b 74
+  s_33de7f93c0a086::t_0ef4fe59a0fca0 443,449
+packages/cli/src/system/active-app/index.ts
+  s_33de7f93c0a086::t_448152bf9c61e2 1,11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "2fde7ea9f002b99f97757b931824d475b2d2e713",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_33de7f93c0a086": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15494d94fffeRoQ0W9Y1D67dM2",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

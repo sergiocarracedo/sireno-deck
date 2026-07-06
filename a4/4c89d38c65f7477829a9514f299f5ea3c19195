@@ -1,0 +1,26 @@
+packages/cli/src/config/theme/theme.ts
+  s_4e4ee307096ddc::t_ea85d4af3f599e 294-359,377-383,411-417,420
+  s_4e4ee307096ddc::t_c02a67f8dd0ca5 27
+  s_4e4ee307096ddc::t_f34d4e893cdf6f 52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a44c89d38c65f7477829a9514f299f5ea3c19195",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

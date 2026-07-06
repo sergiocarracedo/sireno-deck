@@ -1,0 +1,21 @@
+packages/cli/src/ui/surfaces/__tests__/SplitActionSurface.test.tsx
+  s_51a5160d42324b::t_5d5b57d98c4ed7 55
+packages/cli/src/deck/system-buttons/SystemSettingsEntryButton.tsx
+  s_51a5160d42324b::t_ba68fe7b8851fd 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "303485df4c83491a8422f996458e687af44dde6c",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

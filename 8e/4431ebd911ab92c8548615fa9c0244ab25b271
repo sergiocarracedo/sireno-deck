@@ -1,0 +1,30 @@
+.planning/phases/06-base-contracts/06-VERIFICATION.md
+  s_26099f9ddf91b0::t_6d4555543b9a3e 1-40
+.planning/ROADMAP.md
+  s_26099f9ddf91b0::t_bc72f5eac0c085 22-23,31-35
+.planning/REQUIREMENTS.md
+  s_26099f9ddf91b0::t_bc72f5eac0c085 41
+.planning/STATE.md
+  s_26099f9ddf91b0::t_bc72f5eac0c085 8,12,14-15,75-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "8e4431ebd911ab92c8548615fa9c0244ab25b271",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+packages/cli/src/builtin-addons/core-buttons/index.test.ts
+  s_df3509a167c487::t_ea92aac8ca7649 50-51,82-83
+  s_df3509a167c487::t_9203d0a3f88563 10,38
+packages/cli/src/render/dom-host.test.tsx
+  s_df3509a167c487::t_711b455ad10329 4,51-61
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck.ts
+  s_df3509a167c487::t_711b455ad10329 7,54,62
+packages/cli/src/addon/api.ts
+  s_df3509a167c487::t_711b455ad10329 74-77,103-114,148-161,169
+packages/cli/src/render/dom-host.tsx
+  s_df3509a167c487::t_711b455ad10329 1-2,4,17-18,49
+  s_df3509a167c487::t_a7b30070d6d271 6,22-26,28,31
+packages/cli/src/builtin-addons/core-buttons/buttons/action.ts
+  s_df3509a167c487::t_711b455ad10329 7,59,67
+packages/cli/src/deck/runtime.ts
+  s_df3509a167c487::t_ea92aac8ca7649 1,5,309-319
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "39089baf6b131df97246cd633a7ebacd71b33838",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

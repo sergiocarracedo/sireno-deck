@@ -1,0 +1,69 @@
+packages/cli/package.json
+  s_50714901791ebe::t_38140c5842d0df 28
+packages/cli/src/system/session-monitor.test.ts
+  s_50714901791ebe::t_ad1d74a868fe69 1-99
+.planning/phases/11-session-config-contracts/11-UAT.md
+  s_50714901791ebe::t_f5617d933a296e 33,38,52
+  s_50714901791ebe::t_dcf2eeab650e11 1-32,34-37,39-51
+packages/cli/src/action/executor.test.ts
+  s_50714901791ebe::t_30e064f0f9c7db 32,49-87
+packages/cli/fixtures/phase-11/config.locked-session.yml
+  s_50714901791ebe::t_dcf2eeab650e11 1-35,43-45
+  s_50714901791ebe::t_f5617d933a296e 36-42
+packages/cli/src/deck/runtime.test.ts
+  s_50714901791ebe::t_3123238f85d7d4 1-2,6,364-390,392-407,409-425
+  s_50714901791ebe::t_823602d1c0fcfa 212
+  s_50714901791ebe::t_30e064f0f9c7db 285,363,447
+  s_50714901791ebe::t_ed34563b5ba151 426
+  s_50714901791ebe::t_6aef503af0bb8e 12,29-66,675-829,838-959
+  s_50714901791ebe::t_80803636b53f3e 391,408,427-430,443-446
+  s_50714901791ebe::t_08eddd5a763cd7 431-442
+  s_50714901791ebe::t_dcf2eeab650e11 961-1019
+  s_50714901791ebe::t_474ae4eda21d74 830-837
+packages/cli/src/config/loader.test.ts
+  s_50714901791ebe::t_3123238f85d7d4 497-518,520
+  s_50714901791ebe::t_3ca9f27c74123e 170-226
+  s_50714901791ebe::t_fb32a7da2e7ed0 463,494,519
+.planning/phases/11-session-config-contracts/11-SECURITY.md
+  s_50714901791ebe::t_7dae67d858b6f8 1-3,6-29,31,33,35-49,51-57,60
+  s_50714901791ebe::t_f5617d933a296e 4-5,30,32,34,50,58-59,61
+packages/cli/src/deck/runtime.ts
+  s_50714901791ebe::t_c8bf5eac1b6d6b 12,20,23,56,62-79,81-86,89-94,96,106,108-109,112-119,212,284-324,400-410,412-414,421,423
+  s_50714901791ebe::t_474ae4eda21d74 2,57-61,80,231
+  s_50714901791ebe::t_80ae04d7740a3a 99,194
+packages/cli/src/system/session-monitor.ts
+  s_50714901791ebe::t_ad1d74a868fe69 1-2,17,19-46,57-110,121-122,126-133
+  s_50714901791ebe::t_3ca9f27c74123e 3-16,18,47-56,111-120,123-125,134-140
+packages/cli/src/config/loader.ts
+  s_50714901791ebe::t_fb32a7da2e7ed0 19,175-179,181-185,190,195
+packages/cli/src/cli/commands/start.test.ts
+  s_50714901791ebe::t_3ca9f27c74123e 7-8,20-27,29-39,45-48,53,75-79,88-90,97,124-127,130-131,133-158
+  s_50714901791ebe::t_ad1d74a868fe69 52,96,132
+packages/cli/src/action/executor.ts
+  s_50714901791ebe::t_30e064f0f9c7db 24-27,54-60,64
+packages/cli/src/cli/commands/start.ts
+  s_50714901791ebe::t_3ca9f27c74123e 21-22,39-40,52-58,60-61,63,115,136,187
+  s_50714901791ebe::t_cdd16fd64d36e6 138,168
+  s_50714901791ebe::t_ad1d74a868fe69 38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "d21be99b8545c3903b6351b3bb9802bded4922f9",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_50714901791ebe": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cad490d1ffe7qtGxWMYgUngfy",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

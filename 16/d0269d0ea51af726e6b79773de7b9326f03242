@@ -1,0 +1,19 @@
+packages/cli/src/deck/system-back-injection.ts
+  s_ce8dff3c35bfc4::t_b1bf66fcbb6fce 11-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "16d0269d0ea51af726e6b79773de7b9326f03242",
+  "prompts": {},
+  "sessions": {
+    "s_ce8dff3c35bfc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1441b295dffeUD9xVe36d81tKr",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+packages/cli/src/ui/Icon.tsx
+  s_ce8dff3c35bfc4::t_f90ed60cce8593 103-112
+packages/cli/src/ui/index.ts
+  s_ce8dff3c35bfc4::t_f90ed60cce8593 8
+packages/cli/src/config/theme/schemas.ts
+  s_ce8dff3c35bfc4::t_f90ed60cce8593 3,79
+packages/cli/src/deck/system-buttons/SystemBackButton.tsx
+  s_ce8dff3c35bfc4::t_f90ed60cce8593 4,14-16,19
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck.tsx
+  s_ce8dff3c35bfc4::t_f90ed60cce8593 5,19-20,23-31,38,44,73,75-79
+packages/cli/src/builtin-addons/emoji-selector/buttons/back.tsx
+  s_ce8dff3c35bfc4::t_f90ed60cce8593 1,4,11-13
+packages/cli/src/builtin-addons/emoji-selector/support.tsx
+  s_ce8dff3c35bfc4::t_f90ed60cce8593 5
+packages/cli/src/builtin-addons/emoji-selector/buttons/entry.tsx
+  s_ce8dff3c35bfc4::t_f90ed60cce8593 1-2,7,29-38
+packages/cli/src/deck/system-buttons/SystemSettingsButton.tsx
+  s_ce8dff3c35bfc4::t_f90ed60cce8593 4,9-10,14
+packages/cli/src/builtin-addons/emoji-selector/data/categories.json
+  s_ce8dff3c35bfc4::t_f90ed60cce8593 62,112,258,320,433
+packages/cli/src/builtin-addons/emoji-selector/buttons/category.tsx
+  s_ce8dff3c35bfc4::t_f90ed60cce8593 1,4,9-11
+packages/cli/src/core/pagination.ts
+  s_ce8dff3c35bfc4::t_f90ed60cce8593 15,21,75,81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "e5bcbf80799ff07b0ae843c75e08c3b49638baec",
+  "prompts": {},
+  "sessions": {
+    "s_ce8dff3c35bfc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1441b295dffeUD9xVe36d81tKr",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

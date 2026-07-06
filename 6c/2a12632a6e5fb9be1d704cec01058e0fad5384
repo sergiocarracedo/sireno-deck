@@ -1,0 +1,30 @@
+packages/cli/fixtures/phase-14/config.toggle-toggle-status.yml
+  s_738f8c54e2a345::t_4cb4712874ec66 1-39
+packages/cli/src/render/text-image.ts
+  s_738f8c54e2a345::t_1f961867308839 317-319,411-419
+.planning/phases/14-richer-built-in-toggles/14-UAT.md
+  s_738f8c54e2a345::t_4cb4712874ec66 7,9,47-59,62,65
+packages/cli/src/render/text-image.test.ts
+  s_738f8c54e2a345::t_05fd3efb0b181c 194-201
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "6c2a12632a6e5fb9be1d704cec01058e0fad5384",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_738f8c54e2a345": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1c0aabbd0ffeKQeuqUsBJr26pO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

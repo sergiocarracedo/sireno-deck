@@ -1,0 +1,25 @@
+packages/cli/src/themes/default/manifest.yml
+  h_f90ee31b03fc41 15,22,24,26,28-29,31,33-34
+  s_43a1f95302eacf::t_11555e2358039d 23,27,32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "133cd3962d4bd28908a8b1c8b6529a48199ad6a2",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_43a1f95302eacf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1713bb85cffeuUVJXNOTOl6k4H",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

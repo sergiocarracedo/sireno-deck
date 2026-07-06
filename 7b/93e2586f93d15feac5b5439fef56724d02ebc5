@@ -1,0 +1,29 @@
+.planning/phases/14-richer-built-in-toggles/14-UAT.md
+  s_738f8c54e2a345::t_d30080c2cd33ae 78-83
+  s_738f8c54e2a345::t_5c23cae3fccb2c 13-14,16,37-39,67,73-77
+  s_738f8c54e2a345::t_97ff9f79f65673 24
+  s_738f8c54e2a345::t_1a9dfa840779ff 2,9,17,53,66,68
+.planning/phases/14-richer-built-in-toggles/14-04-PLAN.md
+  s_738f8c54e2a345::t_9c89dafda88770 1-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "7b93e2586f93d15feac5b5439fef56724d02ebc5",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_738f8c54e2a345": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1c0aabbd0ffeKQeuqUsBJr26pO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

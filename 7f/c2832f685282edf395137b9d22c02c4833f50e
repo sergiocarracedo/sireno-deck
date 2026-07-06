@@ -1,0 +1,21 @@
+.planning/phases/22-browser-deck-emulator/22-DISCUSSION-LOG.md
+  s_8d74af9d4bfed8::t_7c2057c1c5ac96 1-166
+.planning/phases/22-browser-deck-emulator/22-CONTEXT.md
+  s_8d74af9d4bfed8::t_7c2057c1c5ac96 1-92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "7fc2832f685282edf395137b9d22c02c4833f50e",
+  "prompts": {},
+  "sessions": {
+    "s_8d74af9d4bfed8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a4269384ffeN1puLn8w7RzN1B",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

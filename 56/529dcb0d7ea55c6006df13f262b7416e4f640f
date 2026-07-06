@@ -1,0 +1,21 @@
+.planning/phases/59-emoji-keystroke-injection-and-category-fix/59-CONTEXT.md
+  s_0c62b680825d4a::t_2c37520ca4e09f 1-92
+.planning/phases/59-emoji-keystroke-injection-and-category-fix/59-DISCUSSION-LOG.md
+  s_0c62b680825d4a::t_f8bf04990d893b 1-78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "56529dcb0d7ea55c6006df13f262b7416e4f640f",
+  "prompts": {},
+  "sessions": {
+    "s_0c62b680825d4a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14fa596feffedU17ZzovT65yl1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

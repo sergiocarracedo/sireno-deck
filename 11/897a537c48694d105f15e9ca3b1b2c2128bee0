@@ -1,0 +1,24 @@
+.planning/config.json
+  s_e1e25e0140c04d::t_5a8ffd092eaa3c 35-36,38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "11897a537c48694d105f15e9ca3b1b2c2128bee0",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_e1e25e0140c04d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16b8c1ad6ffexv10QOJl62Qfo8",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

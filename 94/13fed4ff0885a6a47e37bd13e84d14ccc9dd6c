@@ -1,0 +1,30 @@
+.planning/quick/035-weather-hourly-forecast/035-PLAN.md
+  ai_agent 1-126
+.planning/STATE.md
+  s_3261d8b10ef836::t_f4f9c1424a6613 378
+.planning/quick/035-weather-hourly-forecast/SUMMARY.md
+  ai_agent 1-74
+.planning/quick/035-weather-hourly-forecast/CONTEXT.md
+  ai_agent 1-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "9413fed4ff0885a6a47e37bd13e84d14ccc9dd6c",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_3261d8b10ef836": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1667395a0fferl43AlHc5lyRrf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

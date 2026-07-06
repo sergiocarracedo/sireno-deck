@@ -1,0 +1,25 @@
+packages/cli/src/render/startup-placeholder.ts
+  s_4e4ee307096ddc::t_30e3f7672b9b7e 24-25,30-31
+  s_4e4ee307096ddc::t_b906464d44a465 37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "bd7cf1b43598276f7e5f7f2286a7b2f90c7fc57e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+.planning/phases/58-performance-fixes/58-01-SUMMARY.md
+  s_0c62b680825d4a::t_c6b623597d63b7 1-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "aada59bc05fb0ec1efc5691ab5f9c4a435e8d5c7",
+  "prompts": {},
+  "sessions": {
+    "s_0c62b680825d4a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14fa596feffedU17ZzovT65yl1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

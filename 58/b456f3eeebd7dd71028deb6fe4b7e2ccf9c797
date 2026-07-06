@@ -1,0 +1,14 @@
+packages/cli/src/ui/Icon.tsx
+  h_f90ee31b03fc41 49-51,85,116,120
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "58b456f3eeebd7dd71028deb6fe4b7e2ccf9c797",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

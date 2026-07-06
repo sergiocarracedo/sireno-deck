@@ -1,0 +1,27 @@
+.planning/phases/34-button-action-command-interface/34-UAT.md
+  s_d8a76f591c3baf::t_2c3bba4ccbf9af 13-14,16,31
+  s_d8a76f591c3baf::t_4b55e1c3277754 27
+  s_d8a76f591c3baf::t_a051cefe8bf90d 23
+  s_d8a76f591c3baf::t_7d86db45045a87 2,9,17,35,40,42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "e56785e6f7f9f24c6f67df017c2bc03a853491d5",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_d8a76f591c3baf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_175cd27c2ffeW4mFN1ilBeYzMI",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

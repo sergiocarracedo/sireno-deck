@@ -1,0 +1,46 @@
+packages/cli/src/config/theme.test.ts
+  s_df3509a167c487::t_3ab00ebaf14886 48-49
+  s_df3509a167c487::t_d32fec2153cf00 120,122,134,136,144-145
+  s_df3509a167c487::t_7fcfc09187a500 92-95,99-119,121,123-133,135,137-143
+  s_df3509a167c487::t_f0a5f915f52f87 146-149
+packages/cli/fixtures/phase-20/config.locked-time-layout.yml
+  s_df3509a167c487::t_a5f621af0269bb 1-32
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_df3509a167c487::t_8881d7858f295f 27,69-95,124-132,253-254
+  s_df3509a167c487::t_46f1490dbc5ea4 25-26,28-30,114-123,133-136,242
+.planning/phases/20-theme-packages-and-locked-time-layout/20-05-PLAN.md
+  s_df3509a167c487::t_b2fa0a6ea6b7d6 1-74
+.planning/phases/20-theme-packages-and-locked-time-layout/20-01-SUMMARY.md
+  s_df3509a167c487::t_fff6d3481c8773 1-25
+packages/cli/src/config/theme.ts
+  s_df3509a167c487::t_0e0128bd1f02ac 96-112,270
+  s_df3509a167c487::t_3a7ce0a1df776a 1-2,63,92-95,271-272,274-277,307-308,312-315,342,345-349,352-356,358,360,373-375,377-450,461,469-470,477,482
+.planning/phases/20-theme-packages-and-locked-time-layout/20-02-SUMMARY.md
+  s_df3509a167c487::t_fff6d3481c8773 1-25
+.planning/phases/20-theme-packages-and-locked-time-layout/20-03-SUMMARY.md
+  s_df3509a167c487::t_a5f621af0269bb 1-27
+packages/cli/src/config/loader.test.ts
+  s_df3509a167c487::t_4ee7f4c3fc4351 4,13,881
+.planning/phases/20-theme-packages-and-locked-time-layout/20-06-PLAN.md
+  s_df3509a167c487::t_dc42c38675b55c 1-75
+packages/cli/src/builtin-addons/date-time/index.test.ts
+  s_df3509a167c487::t_6f8b8b8b954a39 1
+  s_df3509a167c487::t_46f1490dbc5ea4 24-26,38,52-55,124,128-132,134-136,138-146
+  s_df3509a167c487::t_8881d7858f295f 9-10,56-57,125-127,133,137,147-159
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "f9ba5da44907d0958ffb69c0a7ca93de1c616ea1",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

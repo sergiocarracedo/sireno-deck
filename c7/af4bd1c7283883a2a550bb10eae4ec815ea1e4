@@ -1,0 +1,23 @@
+packages/cli/package.json
+  s_136b450bea3e1f::t_a97adc33906340 21-23
+packages/cli/src/render/text-image.test.ts
+  s_136b450bea3e1f::t_a97adc33906340 1-20
+packages/cli/src/render/text-image.ts
+  s_136b450bea3e1f::t_a97adc33906340 1-81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "c7af4bd1c7283883a2a550bb10eae4ec815ea1e4",
+  "prompts": {},
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

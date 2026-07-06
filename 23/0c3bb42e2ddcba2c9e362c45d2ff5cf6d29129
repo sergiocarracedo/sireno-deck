@@ -1,0 +1,27 @@
+.planning/phases/75-value-display-addon/75-RESEARCH.md
+  s_469c0c9aff79bb::t_0819550d866496 1-93
+.planning/phases/75-value-display-addon/75-01-PLAN.md
+  s_469c0c9aff79bb::t_13fa76d50a8087 31-36,38-42,48,96-100,103-105,108,113-602
+  s_469c0c9aff79bb::t_df1a88e0ea5bdd 1-30,37,43-47,49-95,101-102,106-107,109-112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "230c3bb42e2ddcba2c9e362c45d2ff5cf6d29129",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_469c0c9aff79bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_129126bf4ffeC1puCBqg5C7qzn",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

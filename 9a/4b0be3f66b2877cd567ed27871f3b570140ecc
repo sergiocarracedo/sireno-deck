@@ -1,0 +1,29 @@
+builtin-addons/emoji-selector/assets/back.svg
+  s_26099f9ddf91b0::t_860eff2161d107 2-3
+builtin-addons/emoji-selector/assets/smileys.svg
+  s_26099f9ddf91b0::t_860eff2161d107 2-5
+builtin-addons/core-buttons/assets/clock.svg
+  s_26099f9ddf91b0::t_860eff2161d107 2-4
+builtin-addons/emoji-selector/assets/favorites.svg
+  s_26099f9ddf91b0::t_860eff2161d107 2
+builtin-addons/emoji-selector/assets/food.svg
+  s_26099f9ddf91b0::t_860eff2161d107 2-7
+builtin-addons/emoji-selector/assets/nature.svg
+  s_26099f9ddf91b0::t_860eff2161d107 2-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "9a4b0be3f66b2877cd567ed27871f3b570140ecc",
+  "prompts": {},
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

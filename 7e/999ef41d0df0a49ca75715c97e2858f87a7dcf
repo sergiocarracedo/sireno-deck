@@ -1,0 +1,26 @@
+.planning/phases/30-content-helpers-system-status-and-media/30-01-SUMMARY.md
+  s_70eeb05163558f::t_cf7a5c2c149f8e 1-27
+.planning/STATE.md
+  s_70eeb05163558f::t_cf7a5c2c149f8e 8,12-15,17,22,83,89,115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "7e999ef41d0df0a49ca75715c97e2858f87a7dcf",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_70eeb05163558f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_18597e378ffevCYrDZtni4nuEZ",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

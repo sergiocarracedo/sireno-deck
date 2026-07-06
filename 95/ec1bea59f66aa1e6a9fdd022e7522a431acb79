@@ -1,0 +1,26 @@
+.planning/phases/02-device-rendering/02-CONTEXT.md
+  s_136b450bea3e1f::t_c97de1fafff118 1-101
+.planning/phases/02-device-rendering/02-DISCUSSION-LOG.md
+  s_136b450bea3e1f::t_c97de1fafff118 1-96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "95ec1bea59f66aa1e6a9fdd022e7522a431acb79",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+.planning/quick/030-diagnose-why-blinking-marquee-text-updat/030-DIAGNOSIS.md
+  s_d8a76f591c3baf::t_b1792d160d19dd 1-77
+.planning/quick/030-diagnose-why-blinking-marquee-text-updat/030-PLAN.md
+  s_d8a76f591c3baf::t_b1792d160d19dd 1-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "3ec2aac095f146b5f4d18e94561d8f72db6d0ac4",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_d8a76f591c3baf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_175cd27c2ffeW4mFN1ilBeYzMI",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

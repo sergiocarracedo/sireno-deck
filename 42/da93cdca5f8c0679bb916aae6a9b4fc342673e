@@ -1,0 +1,26 @@
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher.tsx
+  h_f90ee31b03fc41 7
+packages/cli/src/builtin-addons/emoji-selector/support.tsx
+  s_bab938378ab377::t_c552615b105c66 248
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "42da93cdca5f8c0679bb916aae6a9b4fc342673e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_bab938378ab377": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16388a05dffeQ84UIVBVOB9XaV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

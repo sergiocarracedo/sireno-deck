@@ -1,0 +1,26 @@
+CHANGELOG.md
+  s_3261d8b10ef836::t_af0af0e6c857ff 3-17
+.planning/quick/035-weather-hourly-forecast/SUMMARY.md
+  s_3261d8b10ef836::t_294c1185c09b86 68-78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c5858b681cb03bd34bc5357baa5f94d318465d71",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_3261d8b10ef836": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1667395a0fferl43AlHc5lyRrf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

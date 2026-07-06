@@ -1,0 +1,33 @@
+packages/cli/src/render/dom-host.test.tsx
+  s_59d030c8de308d::t_1f847fb33b524a 6,8-9
+  s_59d030c8de308d::t_baab06d6a83dbf 10
+packages/cli/fixtures/phase-9/jsx-addon-authoring-example.tsx
+  s_59d030c8de308d::t_1f847fb33b524a 3-5,8-13,15-21,24
+packages/cli/fixtures/phase-23/README.md
+  s_59d030c8de308d::t_1f847fb33b524a 9-16
+README.md
+  s_59d030c8de308d::t_1f847fb33b524a 7,9,12-28,32,34
+packages/cli/fixtures/phase-23/local-raw-addon/src/content.tsx
+  s_59d030c8de308d::t_1f847fb33b524a 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f77c352393e99e31ecc9c6e930981cc8df61aca3",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_59d030c8de308d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19694ac2dffeX8MJU78d98rSIi",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

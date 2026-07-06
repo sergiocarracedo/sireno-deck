@@ -1,0 +1,29 @@
+.planning/STATE.md
+  s_33de7f93c0a086::t_d8eb5fba02b016 394
+  s_33de7f93c0a086::t_e7f6907b646b7e 15
+.planning/quick/005-icon-protocol-lucide/005-PLAN.md
+  s_33de7f93c0a086::t_402db88577955e 1-91
+.planning/quick/005-icon-protocol-lucide/005-SUMMARY.md
+  s_33de7f93c0a086::t_8ca42b67b1646d 1-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "4b0bc0271f18495689e14cbbe3cc361879c6d7ca",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_33de7f93c0a086": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15494d94fffeRoQ0W9Y1D67dM2",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

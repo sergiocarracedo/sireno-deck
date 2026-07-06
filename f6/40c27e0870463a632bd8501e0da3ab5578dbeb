@@ -1,0 +1,30 @@
+.planning/STATE.md
+  s_b21ef815cd71c9::t_28e0f0d819866f 15,209
+.planning/quick/017-fix-phase-29-review-findings/017-VERIFICATION.md
+  s_b21ef815cd71c9::t_f938b3ac7c46ad 1-22
+.planning/quick/017-fix-phase-29-review-findings/017-SUMMARY.md
+  s_b21ef815cd71c9::t_f938b3ac7c46ad 1-16
+.planning/quick/017-fix-phase-29-review-findings/017-PLAN.md
+  s_b21ef815cd71c9::t_99d37f4ac97af5 1-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f640c27e0870463a632bd8501e0da3ab5578dbeb",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b21ef815cd71c9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_194c6ab8dffeZgB4hXir7Qu8T0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

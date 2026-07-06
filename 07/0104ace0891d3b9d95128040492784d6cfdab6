@@ -1,0 +1,27 @@
+.planning/phases/25-theme-tsx-button-frame-support/25-UAT.md
+  s_62d8b999b52dbd::t_1fd4dff8e70694 22
+  s_62d8b999b52dbd::t_37545fa1eae70d 23
+  s_62d8b999b52dbd::t_e2db42097ace8e 2,9,13-16,28,37,39
+  s_62d8b999b52dbd::t_c11655e64bbdde 1,3-8,10-12,17-21,24-27,29-36,38,40-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "070104ace0891d3b9d95128040492784d6cfdab6",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_62d8b999b52dbd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19a95ab2cffelx1Pw48Hq6DfWk",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

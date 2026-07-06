@@ -1,0 +1,34 @@
+.planning/phases/27-theme-fallback-and-emulator-shell/27-01-PLAN.md
+  s_cbeacf4b04c860::t_b23b24cc20516b 1-81
+.planning/ROADMAP.md
+  s_cbeacf4b04c860::t_b23b24cc20516b 315-318
+.planning/phases/27-theme-fallback-and-emulator-shell/27-RESEARCH.md
+  s_cbeacf4b04c860::t_dcfb66fd4ee265 1-58
+.planning/phases/27-theme-fallback-and-emulator-shell/27-02-PLAN.md
+  s_cbeacf4b04c860::t_b23b24cc20516b 1-78
+AGENTS.md
+  s_cbeacf4b04c860::t_b23b24cc20516b 168
+.planning/STATE.md
+  s_cbeacf4b04c860::t_b23b24cc20516b 8,92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "fc0edb49b97eced3c6efb8f59069f3b0c2eb1f81",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_cbeacf4b04c860": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19782c979ffeq8kNd4sXHfiLTr",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

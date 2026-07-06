@@ -1,0 +1,43 @@
+packages/cli/src/deck/runtime.test.ts
+  s_908d014142bc69::t_cad947f07f77bb 3033-3034,3037,3039-3040,3042-3044,3056-3061,3063-3065,3070-3081,3084,3087,3089,3091-3093,3095-3097,3099-3101,3103-3105,3107-3108,3113-3117,3159
+  s_908d014142bc69::t_bb6c744ac564fe 3085
+  s_908d014142bc69::t_bbb8c8492ad4a5 3083,3086,3088
+  s_908d014142bc69::t_b55c4436c86013 12
+  s_908d014142bc69::t_17415efc4c43f7 3035-3036,3038,3041,3045-3055,3062,3066-3069,3082,3090,3094,3098,3102,3106,3109-3112,3118-3158
+packages/cli/src/core/pagination.test.ts
+  s_908d014142bc69::t_030e267a900a2d 1-166,169-170
+  s_908d014142bc69::t_a2bbe10c7e9b0a 167-168
+packages/cli/src/core/pagination.ts
+  s_908d014142bc69::t_4f7475024c0702 1-116
+packages/cli/src/builtin-addons/emoji-selector/buttons/category.tsx
+  s_908d014142bc69::t_bee50c03e57adf 1,5,7
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_908d014142bc69::t_501f8452b2ba50 4,72-77,79-85,93,104-107,110-111,121
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck.tsx
+  s_908d014142bc69::t_193cb3d108db46 65-69,72-77
+  s_908d014142bc69::t_63c48d58ae6308 4-5,32-34,38,40
+CHANGELOG.md
+  s_908d014142bc69::t_6722c3933ac371 3-10
+  s_908d014142bc69::t_16573f554c35bf 11-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4b27d382401f69dfdbeced646ff980ec7fda715d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_908d014142bc69": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15e0e3cfbffe6xh6RWjPEUvQJN",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

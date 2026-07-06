@@ -1,0 +1,47 @@
+.planning/phases/49-emoji-selector-ux-revamp/49-DISCUSSION-LOG.md
+  s_23f1376bf0bcd5::t_4fffdef655dfdd 141-241
+packages/cli/src/builtin-addons/emoji-selector/buttons/entry.tsx
+  s_9cf475898910a4::t_c18fcf122ee2b0 13,19-26,28-39,41,43-56,58
+packages/cli/src/addon/api.ts
+  s_9cf475898910a4::t_a68244e1e9487d 48
+packages/cli/src/util/clipboard.ts
+  s_9cf475898910a4::t_061a2de2ef4944 1,7-10,13-14,17-32,36-50,54-62,64-65,68-69,71,75-77,80-81,83-84
+packages/cli/src/builtin-addons/emoji-selector/index.test.ts
+  s_9cf475898910a4::t_04d1776ba35860 398,405,411-414
+.planning/phases/49-emoji-selector-ux-revamp/49-CONTEXT.md
+  s_23f1376bf0bcd5::t_e20b9c784d14eb 148-218,223
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher.tsx
+  h_f90ee31b03fc41 33-34
+  s_9cf475898910a4::t_e7c220fbcce451 12-25,27,29-32
+packages/cli/src/deck/runtime.ts
+  s_9cf475898910a4::t_104f5dba0398ee 861-864
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5593c954fdb9df6f45f253c4285193bfb976724a",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_23f1376bf0bcd5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1611af187ffe8aBh1kgeeye5Wx",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_9cf475898910a4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1615cf768ffex1cCTduGin1Nwp",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

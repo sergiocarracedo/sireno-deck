@@ -1,0 +1,28 @@
+packages/cli/src/builtin-addons/weather/domain/weather-controller.ts
+  h_f90ee31b03fc41 2,7,13,15
+packages/cli/src/builtin-addons/weather/domain/open-meteo-client.ts
+  s_0580d7c7a41764::t_0fd642e1691409 12
+packages/cli/src/builtin-addons/weather/domain/wttr-in-fallback.ts
+  s_0580d7c7a41764::t_59802ca55b955f 110-111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a1ee8e817c0dd347f7dd923ca4892b634e70dcd0",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_0580d7c7a41764": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_166a141a1ffeuVB57GbHYAshIa",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+packages/cli/src/deck/__tests__/system-buttons-dispatcher.test.ts
+  s_33de7f93c0a086::t_7e3381e0c0ffce 1-118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "9e37eab73fe2698e487d73ddcfd9d79732aaad06",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_33de7f93c0a086": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15494d94fffeRoQ0W9Y1D67dM2",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

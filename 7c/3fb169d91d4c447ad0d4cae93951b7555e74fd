@@ -1,0 +1,21 @@
+.planning/phases/16-config-reload-wrapper-polish/16-CONTEXT.md
+  s_df3509a167c487::t_77ada027c39f1c 1-127
+.planning/phases/16-config-reload-wrapper-polish/16-DISCUSSION-LOG.md
+  s_df3509a167c487::t_77ada027c39f1c 1-130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "7c3fb169d91d4c447ad0d4cae93951b7555e74fd",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

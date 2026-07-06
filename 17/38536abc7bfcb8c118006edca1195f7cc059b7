@@ -1,0 +1,26 @@
+packages/cli/src/builtin-addons/weather/domain/open-meteo-client.ts
+  s_3261d8b10ef836::t_dc0717d2618563 1-37,48-50,63,77
+packages/cli/src/builtin-addons/weather/domain/weather-controller.ts
+  s_3261d8b10ef836::t_95c23878acc6d2 7-14,23,37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1738536abc7bfcb8c118006edca1195f7cc059b7",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_3261d8b10ef836": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1667395a0fferl43AlHc5lyRrf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

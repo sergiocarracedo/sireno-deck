@@ -1,0 +1,24 @@
+.planning/quick/046-render-cleanup-dom-host-folder/046-SUMMARY.md
+  s_a41bfc3092905d::t_7b4a071d1a94c1 1-86
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "26d08897c25afa6bc16687de644e0d12f8ef18b5",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a41bfc3092905d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1247283b9ffezkIY11S9N7b5r9",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

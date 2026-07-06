@@ -1,0 +1,27 @@
+packages/cli/src/render/app/App.tsx
+  s_344b68134ff779::t_7fd650e54f6d59 5
+  s_344b68134ff779::t_ff071b68441a8a 240-246
+packages/cli/src/render/ws-client-hooks.ts
+  s_344b68134ff779::t_c71e56ca07f530 212,217,221,223
+  s_344b68134ff779::t_c9ef15e29c356e 1,13-29,31-38
+  s_344b68134ff779::t_95703aae4d8f44 30
+  s_344b68134ff779::t_a8fd8de56098a9 76
+  s_344b68134ff779::t_5ca8ddf39cccb2 207-211,213-216,218-220,222,224-231
+  s_344b68134ff779::t_ed7f8937256d5e 12,97-104
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "cd11de7e78620342e9d3bf0f33aceaa0e96cc354",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

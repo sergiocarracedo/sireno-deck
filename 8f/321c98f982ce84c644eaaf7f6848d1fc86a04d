@@ -1,0 +1,37 @@
+.planning/STATE.md
+  s_1d4a2f3e388f16::t_04703e23b6a658 15,94
+.planning/phases/07-typography-text-behavior/07-UAT.md
+  s_cdc8bb48277132::t_11923a595707d3 1-22,27-29,32-34,37-49
+  s_1d4a2f3e388f16::t_04703e23b6a658 23-26,30-31,35-36
+CHANGELOG.md
+  s_1d4a2f3e388f16::t_04703e23b6a658 8,15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "8f321c98f982ce84c644eaaf7f6848d1fc86a04d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_1d4a2f3e388f16": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d51b22c2ffeqVnSciUWHxQ273",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_cdc8bb48277132": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d51d3591ffe7NnkIKC2RcC7Cy",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

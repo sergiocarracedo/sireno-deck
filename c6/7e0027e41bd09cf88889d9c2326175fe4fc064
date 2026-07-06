@@ -1,0 +1,32 @@
+.planning/research/v1.4/STACK.md
+  s_95e2b8c79bc533::t_1dcbf9956991a3 1-130
+.planning/research/v1.4/ARCHITECTURE.md
+  s_95e2b8c79bc533::t_4443e7ae658376 1-279
+.planning/research/v1.4/SUMMARY.md
+  s_95e2b8c79bc533::t_fd0b8cd24e0909 1-116
+.planning/research/v1.4/FEATURES.md
+  s_95e2b8c79bc533::t_3214718e998371 1-63
+.planning/research/v1.4/PITFALLS.md
+  s_95e2b8c79bc533::t_9aa64c2c1c0fd0 1-88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c67e0027e41bd09cf88889d9c2326175fe4fc064",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_95e2b8c79bc533": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16c59cc51ffewM8ANwv4iabPEC",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

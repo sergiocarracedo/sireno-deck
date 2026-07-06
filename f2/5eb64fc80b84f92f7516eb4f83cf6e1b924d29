@@ -1,0 +1,33 @@
+.planning/STATE.md
+  s_664bddbe890036::t_8c4aec1c5d9e29 12
+  s_664bddbe890036::t_b560bda83ba9c9 14
+  s_664bddbe890036::t_4e48bed32ecc88 167
+.planning/ROADMAP.md
+  s_664bddbe890036::t_ca801aec2af80b 181
+  s_664bddbe890036::t_441306e30f37f5 108-124
+  s_664bddbe890036::t_105c614ba293c4 207-208
+  s_664bddbe890036::t_959b7edb2800b2 195,197
+  s_664bddbe890036::t_e861be90c60bd1 213
+  s_664bddbe890036::t_81e87ca5797add 169-171,173
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f25eb64fc80b84f92f7516eb4f83cf6e1b924d29",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_664bddbe890036": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1587cd9feffexAJ3SY9IiWhR3R",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

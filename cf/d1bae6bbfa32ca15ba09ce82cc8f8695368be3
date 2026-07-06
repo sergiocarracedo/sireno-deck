@@ -1,0 +1,27 @@
+packages/cli/src/system/live-metrics.ts
+  s_136b450bea3e1f::t_c7e1d4b4edd2b7 1-46
+packages/cli/src/system/live-metrics.test.ts
+  s_136b450bea3e1f::t_c7e1d4b4edd2b7 1-23
+packages/cli/src/core/schemas.ts
+  s_136b450bea3e1f::t_c7e1d4b4edd2b7 97-118,124-125,208-209
+packages/cli/package.json
+  s_136b450bea3e1f::t_c7e1d4b4edd2b7 25
+config.yml
+  s_136b450bea3e1f::t_c7e1d4b4edd2b7 28-32,58-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "cfd1bae6bbfa32ca15ba09ce82cc8f8695368be3",
+  "prompts": {},
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
