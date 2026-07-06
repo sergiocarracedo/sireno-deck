@@ -4,7 +4,11 @@ import { activeTheme, colorTokens, typography } from 'virtual:sireno/themes/mani
 
 import { ChannelRegistry } from 'sireno-deck/react'
 import { ThemeProvider, type ThemeContextValue } from '@/themes/index'
-import { ThemeUiPresentationProvider } from '@sireno-deck/cli'
+import {
+  AssetCacheProvider,
+  ThemeUiPresentationProvider,
+  useAssetCacheMutations,
+} from '@sireno-deck/cli'
 import { createWsClient, type WsClient } from './bridge/client'
 import { Deck, type ButtonGestureMap, type ButtonGestureState } from './components/Deck'
 
@@ -85,10 +89,24 @@ const buildThemeContext = (): ThemeContextValue => {
 let _wsClientInitialized = false
 
 export const App = () => {
+  const [theme] = useState<ThemeContextValue>(() => buildThemeContext())
+
+  return (
+    <AssetCacheProvider>
+      <ThemeProvider value={theme}>
+        <ThemeUiPresentationProvider value={{}}>
+          <AppContent />
+        </ThemeUiPresentationProvider>
+      </ThemeProvider>
+    </AssetCacheProvider>
+  )
+}
+
+const AppContent = () => {
   const [deck, setDeck] = useState<DeckState>(EMPTY_DECK)
   const [gestures, setGestures] = useState<ButtonGestureMap>({})
-  const [theme] = useState<ThemeContextValue>(() => buildThemeContext())
   const clientRef = useRef<WsClient | null>(null)
+  const { setAsset } = useAssetCacheMutations()
 
   useEffect(() => {
     if (_wsClientInitialized) return
@@ -98,6 +116,11 @@ export const App = () => {
       url,
       ...(token !== '' ? { token } : {}),
       onMessage: (message) => {
+        if (message.type === 'assets') {
+          for (const asset of message.assets) {
+            setAsset(asset.id, asset.data)
+          }
+        }
         if (message.type === 'deck-config') {
           const surface = (
             message.surfaces as Record<
@@ -135,23 +158,45 @@ export const App = () => {
     })
     clientRef.current = client
     client.connect()
+    ChannelRegistry.setAnnounceSubscribe((channels) => client.subscribeChannels(channels))
     return () => {
       _wsClientInitialized = false
+      ChannelRegistry.setAnnounceSubscribe(null)
       client.close()
     }
-  }, [])
+  }, [setAsset])
+
+  const sendButtonAction = (
+    buttonId: string,
+    gesture: 'tap' | 'dbl-tap' | 'hold',
+  ): void => {
+    const button = deck.buttons.find((b) => b.id === buttonId)
+    if (button === undefined) return
+    const position =
+      typeof button.position === 'number' && Number.isFinite(button.position)
+        ? button.position
+        : deck.buttons.indexOf(button)
+    clientRef.current?.send(
+      JSON.stringify({
+        type: 'button-action',
+        deckId: deck.id,
+        position,
+        gesture,
+      }),
+    )
+    ChannelRegistry.instance().publish('runtime:button-tap', {
+      buttonId,
+      gesture,
+    })
+  }
 
   const gestureMap: ButtonGestureMap = Object.fromEntries(
     deck.buttons.map((b) => [b.id, gestures[b.id] ?? EMPTY_GESTURE]),
   )
 
   return (
-    <ThemeProvider value={theme}>
-      <ThemeUiPresentationProvider value={{}}>
-        <main className="bg-bg text-fg flex min-h-screen items-center justify-center">
-          <Deck deck={deck} gestures={gestureMap} />
-        </main>
-      </ThemeUiPresentationProvider>
-    </ThemeProvider>
+    <main className="bg-bg text-fg flex min-h-screen items-center justify-center">
+      <Deck deck={deck} gestures={gestureMap} onAction={sendButtonAction} />
+    </main>
   )
 }

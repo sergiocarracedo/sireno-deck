@@ -100,3 +100,62 @@ describe('createWsClient', () => {
     expect(FakeWebSocket.instances.length).toBe(1)
   })
 })
+
+describe('createWsClient.subscribeChannels', () => {
+  it('sends subscribe-channels message when socket is open', () => {
+    const client = createWsClient({ url: 'ws://test' })
+    client.connect()
+    const ws = FakeWebSocket.instances[0]!
+    ws.emitOpen()
+    const before = ws.sentFrames.length
+    client.subscribeChannels(['weather:current'])
+    expect(ws.sentFrames.length).toBe(before + 1)
+    const sent = JSON.parse(ws.sentFrames[ws.sentFrames.length - 1]!)
+    expect(sent.type).toBe('subscribe-channels')
+    expect(sent.channels).toEqual(['weather:current'])
+  })
+
+  it('dedupes already-subscribed channels', () => {
+    const client = createWsClient({ url: 'ws://test' })
+    client.connect()
+    const ws = FakeWebSocket.instances[0]!
+    ws.emitOpen()
+    client.subscribeChannels(['a'])
+    const afterFirst = ws.sentFrames.length
+    client.subscribeChannels(['a'])
+    expect(ws.sentFrames.length).toBe(afterFirst)
+  })
+
+  it('queues subscriptions before open and flushes on connect', () => {
+    const client = createWsClient({ url: 'ws://test' })
+    client.connect()
+    const ws = FakeWebSocket.instances[0]!
+    expect(ws.readyState).toBe(0)
+    client.subscribeChannels(['weather:current'])
+    expect(ws.sentFrames.filter((f) => f.includes('subscribe-channels'))).toHaveLength(0)
+    ws.emitOpen()
+    const subscribeFrames = ws.sentFrames.filter((f) => f.includes('subscribe-channels'))
+    expect(subscribeFrames).toHaveLength(1)
+    const sent = JSON.parse(subscribeFrames[0]!)
+    expect(sent.channels).toEqual(['weather:current'])
+  })
+
+  it('re-announces subscriptions after reconnect', () => {
+    vi.useFakeTimers()
+    const client = createWsClient({ url: 'ws://test', backoffMs: [10] })
+    client.connect()
+    const ws1 = FakeWebSocket.instances[0]!
+    ws1.emitOpen()
+    client.subscribeChannels(['weather:current'])
+    ws1.emitClose()
+    vi.advanceTimersByTime(20)
+    const ws2 = FakeWebSocket.instances[1]!
+    ws2.emitOpen()
+    const subscribeFrames = ws2.sentFrames.filter((f) => f.includes('subscribe-channels'))
+    expect(subscribeFrames).toHaveLength(1)
+    const sent = JSON.parse(subscribeFrames[0]!)
+    expect(sent.channels).toEqual(['weather:current'])
+    client.close()
+    vi.useRealTimers()
+  })
+})

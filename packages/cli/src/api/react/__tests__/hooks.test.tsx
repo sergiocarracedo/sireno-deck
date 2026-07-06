@@ -52,3 +52,78 @@ describe("useDeck", () => {
     expect(result.current.activeDeckId).toBe("main");
   });
 });
+
+describe("ChannelRegistry announceSubscribe", () => {
+  it("announces channel on first subscriber (0→1)", async () => {
+    const announced: string[] = [];
+    ChannelRegistry.setAnnounceSubscribe((channels) => {
+      announced.push(...channels);
+    });
+    const { unmount } = renderHook(() => useAddonChannel<number>("weather:current"));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(announced).toEqual(["weather:current"]);
+    unmount();
+    ChannelRegistry.setAnnounceSubscribe(null);
+  });
+
+  it("does not re-announce on second subscriber (1→2)", async () => {
+    const announced: string[] = [];
+    ChannelRegistry.setAnnounceSubscribe((channels) => {
+      announced.push(...channels);
+    });
+    const { unmount: u1 } = renderHook(() => useAddonChannel<number>("shared"));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(announced).toEqual(["shared"]);
+    const { unmount: u2 } = renderHook(() => useAddonChannel<number>("shared"));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(announced).toEqual(["shared"]);
+    u1();
+    u2();
+    ChannelRegistry.setAnnounceSubscribe(null);
+  });
+
+  it("re-announces after all listeners unmount and a new one mounts", async () => {
+    const announced: string[] = [];
+    ChannelRegistry.setAnnounceSubscribe((channels) => {
+      announced.push(...channels);
+    });
+    const { unmount } = renderHook(() => useAddonChannel<number>("cycle"));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(announced).toEqual(["cycle"]);
+    unmount();
+    const { unmount: u2 } = renderHook(() => useAddonChannel<number>("cycle"));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(announced).toEqual(["cycle", "cycle"]);
+    u2();
+    ChannelRegistry.setAnnounceSubscribe(null);
+  });
+
+  it("batches multiple channels via microtask flush", async () => {
+    const announced: string[][] = [];
+    ChannelRegistry.setAnnounceSubscribe((channels) => {
+      announced.push(channels);
+    });
+    const { unmount: u1 } = renderHook(() => useAddonChannel<number>("a"));
+    const { unmount: u2 } = renderHook(() => useAddonChannel<number>("b"));
+    const { unmount: u3 } = renderHook(() => useAddonChannel<number>("c"));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(announced).toHaveLength(1);
+    expect(announced[0]).toEqual(expect.arrayContaining(["a", "b", "c"]));
+    u1();
+    u2();
+    u3();
+    ChannelRegistry.setAnnounceSubscribe(null);
+  });
+});

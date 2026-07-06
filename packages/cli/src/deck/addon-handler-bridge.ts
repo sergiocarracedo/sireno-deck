@@ -23,7 +23,7 @@ export interface BridgeAddonBackendsParams {
   readonly store: Store;
   readonly signal: AbortSignal;
   readonly statePublisher: Pick<StatePublisher, "registerChannel">;
-  readonly bridge: Pick<WsBridge, "broadcast">;
+  readonly bridge: Pick<WsBridge, "broadcast" | "registerCacheablePoller">;
   readonly setClipboardProvider: (provider: unknown) => void;
 }
 
@@ -118,6 +118,7 @@ export const bridgeAddonBackends = async (
           intervalMs: poller.intervalMs,
           poll: () => poller.poll(ctx),
         });
+        bridge.registerCacheablePoller(poller.channel, () => poller.poll(ctx));
       }
     }
 
@@ -142,14 +143,21 @@ export const bridgeAddonBackends = async (
       const buttonType = button.type;
 
       let addonName: string | null = null;
+      let resolvedButtonType: string | null = null;
       for (const addon of scanned) {
         if (addon.types.includes(buttonType)) {
           addonName = addon.name;
+          resolvedButtonType = buttonType;
+          break;
+        }
+        if (addon.defaultButton !== null && addon.name === buttonType) {
+          addonName = addon.name;
+          resolvedButtonType = addon.defaultButton;
           break;
         }
       }
 
-      if (addonName === null) continue;
+      if (addonName === null || resolvedButtonType === null) continue;
 
       const globalMethods = addonMethods.get(addonName) ?? {};
       const buttonMethods: Record<string, AddonBackendMethod> = {};
@@ -184,7 +192,7 @@ export const bridgeAddonBackends = async (
         readonly buttonTypes?: Record<string, { readonly backend?: AddonButtonBackend }>;
       };
 
-      const buttonTypeEntry = manifest.buttonTypes?.[buttonType];
+      const buttonTypeEntry = manifest.buttonTypes?.[resolvedButtonType];
       if (buttonTypeEntry?.backend === undefined) continue;
 
       const buttonBackend = buttonTypeEntry.backend;
@@ -215,25 +223,25 @@ export const bridgeAddonBackends = async (
 
       const handler = {
         async onTap(ctx: { buttonId: string; config: unknown; gesture: string }) {
-          console.log(`[handler] ${addonName}:${buttonType} onTap called, buttonBackend.onTap=`, typeof buttonBackend.onTap);
+          console.log(`[handler] ${addonName}:${resolvedButtonType} onTap called, buttonBackend.onTap=`, typeof buttonBackend.onTap);
           try {
             await buttonBackend.onTap?.(wrappedCtx);
           } catch (err) {
-            console.error(`[${addonName}] ${buttonType} onTap failed:`, err);
+            console.error(`[${addonName}] ${resolvedButtonType} onTap failed:`, err);
           }
         },
         async onDblTap(ctx: { buttonId: string; config: unknown; gesture: string }) {
           try {
             await buttonBackend.onDblTap?.(wrappedCtx);
           } catch (err) {
-            console.error(`[${addonName}] ${buttonType} onDblTap failed:`, err);
+            console.error(`[${addonName}] ${resolvedButtonType} onDblTap failed:`, err);
           }
         },
         async onHold(ctx: { buttonId: string; config: unknown; gesture: string }) {
           try {
             await buttonBackend.onHold?.(wrappedCtx);
           } catch (err) {
-            console.error(`[${addonName}] ${buttonType} onHold failed:`, err);
+            console.error(`[${addonName}] ${resolvedButtonType} onHold failed:`, err);
           }
         },
         dispose() {

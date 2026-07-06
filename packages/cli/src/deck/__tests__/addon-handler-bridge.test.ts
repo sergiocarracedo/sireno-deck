@@ -31,6 +31,7 @@ const baseScanned: ReadonlyArray<ScannedAddon> = [
 
 const makeBridge = () => ({
   broadcast: vi.fn(),
+  registerCacheablePoller: vi.fn(),
   sendToCaller: vi.fn(),
   onMessage: () => () => undefined,
   onConnection: () => () => undefined,
@@ -54,12 +55,13 @@ const setup = () => {
     logger: silentLogger(),
   });
   const executor = createActionExecutor({ host: getHostContext() });
-  return { runtime, pubSub, store, executor, decks };
+  const setClipboardProvider = vi.fn();
+  return { runtime, pubSub, store, executor, decks, setClipboardProvider };
 };
 
 describe("bridgeAddonBackends", () => {
   it("registers each globalBackend poller with the state publisher", async () => {
-    const { runtime, pubSub, store, executor, decks } = setup();
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider } = setup();
     const bridge = makeBridge();
     const statePublisher = makeStatePublisher();
     const signal = new AbortController().signal;
@@ -74,6 +76,7 @@ describe("bridgeAddonBackends", () => {
       signal,
       statePublisher,
       bridge,
+      setClipboardProvider,
     });
 
     expect(statePublisher.registerChannel).toHaveBeenCalledTimes(1);
@@ -94,7 +97,7 @@ describe("bridgeAddonBackends", () => {
   });
 
   it("routes ctx.publish from onLoad to the WS bridge on the primary channel", async () => {
-    const { runtime, pubSub, store, executor, decks } = setup();
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider } = setup();
     const bridge = makeBridge();
     const statePublisher = makeStatePublisher();
     const signal = new AbortController().signal;
@@ -109,6 +112,7 @@ describe("bridgeAddonBackends", () => {
       signal,
       statePublisher,
       bridge,
+      setClipboardProvider,
     });
 
     expect(bridge.broadcast).toHaveBeenCalledWith({
@@ -118,7 +122,7 @@ describe("bridgeAddonBackends", () => {
   });
 
   it("does not call pubSub for ctx.publish when a poller is registered", async () => {
-    const { runtime, pubSub, store, executor, decks } = setup();
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider } = setup();
     const bridge = makeBridge();
     const statePublisher = makeStatePublisher();
     const signal = new AbortController().signal;
@@ -136,13 +140,14 @@ describe("bridgeAddonBackends", () => {
       signal,
       statePublisher,
       bridge,
+      setClipboardProvider,
     });
 
     expect(subSpy).not.toHaveBeenCalled();
   });
 
   it("falls back to pubSub for ctx.publish when no poller is defined", async () => {
-    const { runtime, pubSub, store, executor, decks } = setup();
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider } = setup();
     const bridge = makeBridge();
     const statePublisher = makeStatePublisher();
     const subSpy = vi.fn();
@@ -169,6 +174,7 @@ describe("bridgeAddonBackends", () => {
       signal,
       statePublisher,
       bridge,
+      setClipboardProvider,
     });
 
     expect(subSpy).toHaveBeenCalledWith({ initial: true });
@@ -177,7 +183,7 @@ describe("bridgeAddonBackends", () => {
   });
 
   it("ignores addons without globalBackendEntry", async () => {
-    const { runtime, pubSub, store, executor, decks } = setup();
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider } = setup();
     const bridge = makeBridge();
     const statePublisher = makeStatePublisher();
     const signal = new AbortController().signal;
@@ -194,6 +200,7 @@ describe("bridgeAddonBackends", () => {
       signal,
       statePublisher,
       bridge,
+      setClipboardProvider,
     });
 
     expect(statePublisher.registerChannel).not.toHaveBeenCalled();
@@ -206,7 +213,7 @@ describe("bridgeAddonBackends", () => {
     );
     __resetCapturedCtx();
 
-    const { runtime, pubSub, store, executor, decks } = setup();
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider } = setup();
     const bridge = makeBridge();
     const statePublisher = makeStatePublisher();
     const signal = new AbortController().signal;
@@ -221,6 +228,7 @@ describe("bridgeAddonBackends", () => {
       signal,
       statePublisher,
       bridge,
+      setClipboardProvider,
     });
 
     const ctx = __getCapturedCtx();
@@ -242,7 +250,7 @@ describe("bridgeAddonBackends", () => {
     );
     __resetCapturedCtx();
 
-    const { runtime, pubSub, store, executor, decks } = setup();
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider } = setup();
     const bridge = makeBridge();
     const statePublisher = makeStatePublisher();
     const signal = new AbortController().signal;
@@ -257,6 +265,7 @@ describe("bridgeAddonBackends", () => {
       signal,
       statePublisher,
       bridge,
+      setClipboardProvider,
     });
 
     const ctx = __getCapturedCtx();

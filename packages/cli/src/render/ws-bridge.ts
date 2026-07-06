@@ -2,6 +2,7 @@ import type { Server as HttpServer } from "node:http";
 import { WebSocketServer, type WebSocket } from "ws";
 
 import {
+  PROTOCOL_VERSION,
   helloAckMessageSchema,
   helloMessageSchema,
   wsMessageSchema,
@@ -10,6 +11,7 @@ import {
 
 const HANDSHAKE_TIMEOUT_MS = 5000;
 const TOKEN_MISMATCH_CLOSE_CODE = 4001;
+const DEFAULT_KEY_COUNT = 15;
 
 export interface WsBridgeOptions {
   port?: number;
@@ -17,6 +19,7 @@ export interface WsBridgeOptions {
   expectedToken?: string;
   handshakeTimeoutMs?: number;
   activeTheme?: { name: string; version?: number };
+  keyCount?: number;
 }
 
 export interface WsBridge {
@@ -24,19 +27,28 @@ export interface WsBridge {
   readonly url: string;
   broadcast(message: WsMessage): void;
   sendToCaller(message: WsMessage): void;
+  registerCacheablePoller(channel: string, pollFn: () => unknown | Promise<unknown>): void;
   onMessage(handler: (message: WsMessage, socket: WebSocket) => void): void;
   onConnection(handler: (socket: WebSocket) => void): void;
   close(): Promise<void>;
 }
 
 export const startWsBridge = (options: WsBridgeOptions = {}): Promise<WsBridge> => {
-  const { port = 0, host = "127.0.0.1", expectedToken, handshakeTimeoutMs = HANDSHAKE_TIMEOUT_MS, activeTheme } = options;
+  const { port = 0, host = "127.0.0.1", expectedToken, handshakeTimeoutMs = HANDSHAKE_TIMEOUT_MS, activeTheme, keyCount = DEFAULT_KEY_COUNT } = options;
 
   return new Promise((resolve, reject) => {
     const wss = new WebSocketServer({ port, host });
 
     const messageHandlers: Array<(message: WsMessage, socket: WebSocket) => void> = [];
     const connectionHandlers: Array<(socket: WebSocket) => void> = [];
+    const lastChannels: Record<string, unknown> = {};
+    const cacheablePollers = new Map<string, () => unknown | Promise<unknown>>();
+
+    const sendToSocket = (socket: WebSocket, message: WsMessage): void => {
+      if (socket.readyState === socket.OPEN) {
+        socket.send(JSON.stringify(message));
+      }
+    };
 
     wss.on("connection", (socket: WebSocket) => {
       let handshakeDone = false;
@@ -77,14 +89,46 @@ export const startWsBridge = (options: WsBridgeOptions = {}): Promise<WsBridge> 
           clearTimeout(handshakeTimer);
           const ack = helloAckMessageSchema.parse({
             type: "hello-ack",
-            version: 3,
-            keyCount: 15,
+            version: PROTOCOL_VERSION,
+            keyCount,
             config: activeTheme !== undefined ? { theme: activeTheme.name } : {},
           });
           socket.send(JSON.stringify(ack));
           for (const handler of connectionHandlers) handler(socket);
           return;
         }
+
+        if (message.type === "subscribe-channels") {
+          const cached: Record<string, unknown> = {};
+          const uncached: string[] = [];
+          for (const channel of message.channels) {
+            if (channel in lastChannels) {
+              cached[channel] = lastChannels[channel];
+            } else if (cacheablePollers.has(channel) && !(channel in lastChannels)) {
+              uncached.push(channel);
+            }
+          }
+          if (Object.keys(cached).length > 0) {
+            sendToSocket(socket, { type: "state", channels: cached });
+          }
+          for (const channel of uncached) {
+            const pollFn = cacheablePollers.get(channel);
+            if (pollFn === undefined) continue;
+            void Promise.resolve(pollFn())
+              .then((value) => {
+                const msg: WsMessage = { type: "state", channels: { [channel]: value } };
+                const payload = JSON.stringify(msg);
+                for (const client of wss.clients) {
+                  if (client.readyState === client.OPEN) client.send(payload);
+                }
+              })
+              .catch(() => {
+                // poll on demand failed — ignore, next interval will retry
+              });
+          }
+          return;
+        }
+
         for (const handler of messageHandlers) handler(message, socket);
       });
 
@@ -105,6 +149,9 @@ export const startWsBridge = (options: WsBridgeOptions = {}): Promise<WsBridge> 
         port,
         url,
         broadcast: (message) => {
+          if (message.type === "state") {
+            Object.assign(lastChannels, message.channels);
+          }
           const payload = JSON.stringify(message);
           for (const client of wss.clients) {
             if (client.readyState === client.OPEN) client.send(payload);
@@ -114,6 +161,9 @@ export const startWsBridge = (options: WsBridgeOptions = {}): Promise<WsBridge> 
           for (const client of wss.clients) {
             if (client.readyState === client.OPEN) client.send(JSON.stringify(message));
           }
+        },
+        registerCacheablePoller: (channel, pollFn) => {
+          cacheablePollers.set(channel, pollFn);
         },
         onMessage: (handler) => messageHandlers.push(handler),
         onConnection: (handler) => connectionHandlers.push(handler),

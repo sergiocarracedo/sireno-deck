@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import WebSocket from "ws";
 
 import {
@@ -150,6 +150,148 @@ describe("ws bridge", () => {
       setTimeout(() => resolve(false), 200);
     });
     expect(stillUp).toBe(false);
+  });
+});
+
+describe("ws bridge channel cache", () => {
+  it("broadcast of state message caches channels for new clients", async () => {
+    bridge = await startWsBridge();
+    bridge.broadcast({ type: "state", channels: { cpu: { usage: 0.5 } } });
+    const socket = await openClient(bridge.port);
+    await new Promise((r) => setTimeout(r, 30));
+    socket.send(
+      JSON.stringify({ type: "subscribe-channels", channels: ["cpu"] }),
+    );
+    const reply = await new Promise<unknown>((resolve) => {
+      socket.on("message", (raw) => {
+        const parsed = JSON.parse(raw.toString());
+        if (parsed.type === "state") resolve(parsed);
+      });
+      setTimeout(() => resolve(null), 200);
+    });
+    expect(reply).toEqual({ type: "state", channels: { cpu: { usage: 0.5 } } });
+    socket.close();
+  });
+
+  it("consecutive broadcasts merge channels without dropping others", async () => {
+    bridge = await startWsBridge();
+    bridge.broadcast({ type: "state", channels: { a: 1, b: 2 } });
+    bridge.broadcast({ type: "state", channels: { a: 2 } });
+    const socket = await openClient(bridge.port);
+    await new Promise((r) => setTimeout(r, 30));
+    socket.send(
+      JSON.stringify({ type: "subscribe-channels", channels: ["a", "b"] }),
+    );
+    const reply = await new Promise<Record<string, unknown>>((resolve) => {
+      socket.on("message", (raw) => {
+        const parsed = JSON.parse(raw.toString());
+        if (parsed.type === "state") resolve(parsed as Record<string, unknown>);
+      });
+      setTimeout(() => resolve({}), 200);
+    });
+    expect(reply.channels).toEqual({ a: 2, b: 2 });
+    socket.close();
+  });
+
+  it("non-state broadcasts do not touch channel cache", async () => {
+    bridge = await startWsBridge();
+    bridge.broadcast({ type: "state", channels: { cpu: 1 } });
+    bridge.broadcast({ type: "deck-config", deckId: "main", surfaces: {} } as unknown as Parameters<typeof bridge.broadcast>[0]);
+    const socket = await openClient(bridge.port);
+    await new Promise((r) => setTimeout(r, 30));
+    socket.send(
+      JSON.stringify({ type: "subscribe-channels", channels: ["cpu"] }),
+    );
+    const reply = await new Promise<unknown>((resolve) => {
+      socket.on("message", (raw) => {
+        const parsed = JSON.parse(raw.toString());
+        if (parsed.type === "state") resolve(parsed);
+      });
+      setTimeout(() => resolve(null), 200);
+    });
+    expect(reply).toEqual({ type: "state", channels: { cpu: 1 } });
+    socket.close();
+  });
+
+  it("subscribe-channels replies only to the requesting socket", async () => {
+    bridge = await startWsBridge();
+    bridge.broadcast({ type: "state", channels: { shared: 1 } });
+    const a = await openClient(bridge.port);
+    const b = await openClient(bridge.port);
+    await new Promise((r) => setTimeout(r, 30));
+    let bReceived = false;
+    b.on("message", (raw) => {
+      const parsed = JSON.parse(raw.toString());
+      if (parsed.type === "state") bReceived = true;
+    });
+    a.send(
+      JSON.stringify({ type: "subscribe-channels", channels: ["shared"] }),
+    );
+    await new Promise((r) => setTimeout(r, 50));
+    expect(bReceived).toBe(false);
+    a.close();
+    b.close();
+  });
+
+  it("subscribe-channels with no cached or registered channels sends nothing", async () => {
+    bridge = await startWsBridge();
+    const socket = await openClient(bridge.port);
+    await new Promise((r) => setTimeout(r, 30));
+    socket.send(
+      JSON.stringify({ type: "subscribe-channels", channels: ["unknown"] }),
+    );
+    const reply = await new Promise<unknown>((resolve) => {
+      socket.on("message", (raw) => {
+        const parsed = JSON.parse(raw.toString());
+        if (parsed.type === "state") resolve(parsed);
+      });
+      setTimeout(() => resolve(null), 100);
+    });
+    expect(reply).toBeNull();
+    socket.close();
+  });
+
+  it("subscribe-channels invokes registered pollFn for uncached channels", async () => {
+    bridge = await startWsBridge();
+    const pollFn = vi.fn(() => ({ temp: 22 }));
+    bridge.registerCacheablePoller("weather:current", pollFn);
+    const socket = await openClient(bridge.port);
+    await new Promise((r) => setTimeout(r, 30));
+    socket.send(
+      JSON.stringify({ type: "subscribe-channels", channels: ["weather:current"] }),
+    );
+    const reply = await new Promise<unknown>((resolve) => {
+      socket.on("message", (raw) => {
+        const parsed = JSON.parse(raw.toString());
+        if (parsed.type === "state") resolve(parsed);
+      });
+      setTimeout(() => resolve(null), 200);
+    });
+    expect(pollFn).toHaveBeenCalledTimes(1);
+    expect(reply).toEqual({ type: "state", channels: { "weather:current": { temp: 22 } } });
+    socket.close();
+  });
+
+  it("subscribe-channels serves cached values without invoking pollFn", async () => {
+    bridge = await startWsBridge();
+    const pollFn = vi.fn(() => ({ temp: 22 }));
+    bridge.registerCacheablePoller("weather:current", pollFn);
+    bridge.broadcast({ type: "state", channels: { "weather:current": { temp: 20 } } });
+    const socket = await openClient(bridge.port);
+    await new Promise((r) => setTimeout(r, 30));
+    socket.send(
+      JSON.stringify({ type: "subscribe-channels", channels: ["weather:current"] }),
+    );
+    const reply = await new Promise<unknown>((resolve) => {
+      socket.on("message", (raw) => {
+        const parsed = JSON.parse(raw.toString());
+        if (parsed.type === "state") resolve(parsed);
+      });
+      setTimeout(() => resolve(null), 200);
+    });
+    expect(pollFn).not.toHaveBeenCalled();
+    expect(reply).toEqual({ type: "state", channels: { "weather:current": { temp: 20 } } });
+    socket.close();
   });
 });
 

@@ -1,8 +1,9 @@
 import { exec } from 'node:child_process'
 import { homedir, platform } from 'node:os'
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
-import { resolve as resolvePath, join } from 'node:path'
+import { dirname, resolve as resolvePath, join } from 'node:path'
 
+import type { ResolveIconPathOptions } from '@/render/icon-resolver'
 import type pino from 'pino'
 
 import { registerBuiltins } from '@/builtin-addons'
@@ -16,6 +17,7 @@ import {
 } from '@/config/validation'
 import { createDeckRuntime, type Runtime, type RuntimeDeck, type PubSub, type Store } from '@/deck'
 import { createGestureDetector } from '@/core/gesture-state'
+import { getAllAssets, registerIconForDeck } from '@/core/icon-asset-registry'
 import { createActiveAppProvider } from '@/system/active-app'
 import { createKeyMacroProvider } from '@/system/key-macro'
 import { createMediaProvider } from '@/system/media'
@@ -26,6 +28,7 @@ import {
   StreamDeckSelectionError,
 } from '@/device/stream-deck'
 import { listDevices, type DeviceDescriptor } from '@/device/registry'
+import { resolveKeyCount } from '@/device/models'
 import { selectDevice, NoStreamDeckFoundError } from '@/system/device-selection'
 import { loadDeviceConfig, saveDeviceConfig } from '@/util/device-config'
 import { resolveActiveTheme } from '@/themes/loader'
@@ -106,6 +109,7 @@ export interface PreflightResult {
     readonly keyMacro: KeyMacroProvider
     readonly media: MediaProvider
   }
+  readonly setClipboardProvider: (provider: ClipboardProvider) => void
 }
 
 const openBrowser = (url: string, logger: pino.Logger): void => {
@@ -153,6 +157,28 @@ const resolveConfigPath = (options: RunOptions): string => {
 const resolveFrontendUrl = (options: RunOptions): string =>
   options.frontendUrl ?? `http://127.0.0.1:${options.port ?? 5173}`
 
+const buildIconResolverOptions = (
+  addonByType: Map<string, AddonFrontendRef>,
+  configPath: string | undefined,
+): ResolveIconPathOptions => {
+  const addonDirs = new Map<string, string>()
+  for (const ref of addonByType.values()) {
+    if (ref.frontendEntry !== null) {
+      addonDirs.set(ref.name, dirname(ref.frontendEntry))
+    }
+  }
+  const baseDirs: string[] = []
+  if (configPath !== undefined) {
+    baseDirs.push(dirname(configPath))
+  } else {
+    const discovered = findConfigPath({ homeDir: homedir() })
+    if (discovered !== null) {
+      baseDirs.push(dirname(discovered))
+    }
+  }
+  return { addonDirs, baseDirs }
+}
+
 export interface SetupAddonBackendsOptions {
   readonly runtime: Runtime
   readonly decks: ReadonlyArray<RuntimeDeck>
@@ -164,9 +190,11 @@ export interface SetupAddonBackendsOptions {
     StatePublisher,
     "registerChannel" | "setActiveDeck"
   >
-  readonly bridge: Pick<WsBridge, "broadcast">
+  readonly bridge: Pick<WsBridge, "broadcast" | "registerCacheablePoller">
   readonly initialDeck?: RuntimeDeck
   readonly signal: AbortSignal
+  readonly setClipboardProvider: (provider: unknown) => void
+  readonly store: Store
 }
 
 export interface SetupAddonBackendsResult {
@@ -199,6 +227,8 @@ export const setupAddonBackends = (
     bridge,
     initialDeck,
     signal,
+    setClipboardProvider,
+    store,
   } = options
 
   void bridgeAddonBackends({
@@ -210,6 +240,8 @@ export const setupAddonBackends = (
     signal,
     statePublisher,
     bridge,
+    setClipboardProvider,
+    store,
   })
 
   const unsubscribeDeck = pubSub.subscribe(
@@ -230,6 +262,25 @@ export const setupAddonBackends = (
     },
   )
 
+  const unsubscribeNavigate = pubSub.subscribe(
+    "runtime:navigate-deck",
+    (payload: unknown) => {
+      if (
+        typeof payload !== "object" ||
+        payload === null ||
+        !("deckId" in payload)
+      ) {
+        return
+      }
+      const deckId = String((payload as { deckId: unknown }).deckId)
+      const addToHistory =
+        "addToHistory" in payload
+          ? Boolean((payload as { addToHistory: unknown }).addToHistory)
+          : true
+      runtime.navigateToDeck(deckId, { addToHistory })
+    },
+  )
+
   if (initialDeck !== undefined) {
     statePublisher.setActiveDeck({
       addonNames: collectActiveDeckAddonNames(initialDeck, addonByType),
@@ -239,6 +290,7 @@ export const setupAddonBackends = (
   return {
     dispose: () => {
       unsubscribeDeck()
+      unsubscribeNavigate()
     },
   }
 }
@@ -394,6 +446,7 @@ export const preflight = async (
     theme: { name: theme.name, apiVersion: theme.apiVersion },
     themeDir,
     providers: { activeApp, session, keyMacro, media },
+    setClipboardProvider: methods.setClipboardProvider,
   }
 }
 
@@ -409,6 +462,7 @@ export const runRealModePipeline = async (
 
   const {
     device,
+    descriptor,
     frontendUrl: configuredUrl,
     runtime,
     pubSub,
@@ -416,6 +470,7 @@ export const runRealModePipeline = async (
     decks,
     providers,
     themeDir,
+    setClipboardProvider,
   } = await preflight(options)
 
   let frontendUrl = configuredUrl
@@ -430,6 +485,7 @@ export const runRealModePipeline = async (
         s.frontendEntry !== null ? { main: s.frontendEntry } : undefined,
       buttons: s.types.map((t) => ({ type: t })),
       buttonTypes: s.buttonTypes,
+      defaultButton: s.defaultButton,
     }))
     process.env['SIRENO_ADDONS'] = JSON.stringify(addonSpecs)
   }
@@ -444,7 +500,7 @@ export const runRealModePipeline = async (
     }
   }
 
-  const bridge = await startWsBridge({ port: 52937 })
+  const bridge = await startWsBridge({ port: 52937, keyCount: resolveKeyCount(descriptor.model) })
   const wsPort = bridge.port
 
   const mainDeck = runtime.getActiveDeck()
@@ -471,11 +527,28 @@ export const runRealModePipeline = async (
     bridge,
     ...(mainDeck !== undefined ? { initialDeck: mainDeck } : {}),
     signal: bridgeSignal.signal,
+    setClipboardProvider,
+    store,
   })
 
   bridge.onConnection((socket) => {
     if (mainDeck) {
-      const msg = buildDeckConfigMessage(mainDeck, addonByType)
+      const resolverOptions = buildIconResolverOptions(addonByType, options.config)
+      registerIconForDeck(mainDeck.buttons, resolverOptions)
+      const assets = getAllAssets()
+      if (assets.length > 0) {
+        const assetsMsg = {
+          type: "assets" as const,
+          deckId: mainDeck.id,
+          assets: assets.map((a) => ({
+            id: a.id,
+            filename: a.filename,
+            data: a.data,
+          })),
+        }
+        socket.send(JSON.stringify(assetsMsg))
+      }
+      const msg = buildDeckConfigMessage(mainDeck, addonByType, resolverOptions)
       logger.info(
         {
           deckId: msg.deckId,
@@ -600,6 +673,7 @@ interface EmulatorDecks {
   runtime: Runtime
   pubSub: PubSub
   decks: ReadonlyArray<RuntimeDeck>
+  store: Store
 }
 
 const buildEmulatorDecks = (options: RunOptions): EmulatorDecks => {
@@ -643,11 +717,11 @@ const buildEmulatorDecks = (options: RunOptions): EmulatorDecks => {
     ...d,
     ...(mainId !== undefined && d.id === mainId ? { isMain: true } : {}),
   }))
-  const { runtime, pubSub: emulatorPubSub } = createDeckRuntime({
+  const { runtime, pubSub: emulatorPubSub, store } = createDeckRuntime({
     decks: runtimeDecks,
     logger,
   })
-  return { runtime, pubSub: emulatorPubSub, decks: runtimeDecks }
+  return { runtime, pubSub: emulatorPubSub, decks: runtimeDecks, store }
 }
 
 const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
@@ -677,6 +751,7 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
         s.frontendEntry !== null ? { main: s.frontendEntry } : undefined,
       buttons: s.types.map((t) => ({ type: t })),
       buttonTypes: s.buttonTypes,
+      defaultButton: s.defaultButton,
     }))
     process.env['SIRENO_ADDONS'] = JSON.stringify(addonSpecs)
   }
@@ -689,6 +764,7 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     runtime,
     decks: emulatorDecks.decks,
     addonByType: registry.byType,
+    ...(options.config !== undefined ? { config: options.config } : {}),
     onBridgeReady: async (bridge) => {
       const statePublisher = new StatePublisher({ bridge, logger })
       const initialDeck =
@@ -704,6 +780,8 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
         bridge,
         ...(initialDeck !== undefined ? { initialDeck } : {}),
         signal: bridgeSignal.signal,
+        setClipboardProvider: () => {},
+        store: emulatorDecks.store,
       })
       publisherTeardown.fn = () => {
         bridgeSignal.abort()

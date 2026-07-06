@@ -24,13 +24,14 @@ export interface WsClient {
   connect(): void
   close(): void
   send(message: WsMessage): void
+  subscribeChannels(channels: string[]): void
 }
 
 export const createWsClient = (options: WsClientOptions): WsClient => {
   const {
     url,
     token,
-    protocolVersion = 3,
+    protocolVersion = 1,
     onMessage,
     onStatus,
     backoffMs = DEFAULT_BACKOFF,
@@ -41,8 +42,18 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
   let attempt = 0
   let manuallyClosed = false
   let timer: ReturnType<typeof setTimeout> | null = null
+  let connected = false
+  const pendingMessages: WsMessage[] = []
+  const subscribedChannels = new Set<string>()
 
   const setStatus = (status: ConnectionStatus): void => onStatus?.(status)
+
+  const flushPending = (): void => {
+    while (pendingMessages.length > 0 && socket?.readyState === WebSocket.OPEN) {
+      const msg = pendingMessages.shift()!
+      socket.send(JSON.stringify(msg))
+    }
+  }
 
   const scheduleReconnect = (): void => {
     if (manuallyClosed) return
@@ -61,6 +72,7 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
     socket = new WebSocket(url)
     socket.addEventListener('open', () => {
       attempt = 0
+      connected = true
       setStatus('open')
       const hello = helloMessageSchema.parse({
         type: 'hello',
@@ -68,6 +80,14 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
         ...(token !== undefined ? { token } : {}),
       })
       socket?.send(JSON.stringify(hello))
+      flushPending()
+      if (subscribedChannels.size > 0) {
+        const msg: WsMessage = {
+          type: 'subscribe-channels',
+          channels: [...subscribedChannels],
+        }
+        socket?.send(JSON.stringify(msg))
+      }
     })
     socket.addEventListener('message', (event: MessageEvent) => {
       try {
@@ -87,6 +107,7 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
       }
     })
     socket.addEventListener('close', () => {
+      connected = false
       setStatus('closed')
       scheduleReconnect()
     })
@@ -97,6 +118,9 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
 
   const close = (): void => {
     manuallyClosed = true
+    connected = false
+    pendingMessages.length = 0
+    subscribedChannels.clear()
     if (timer !== null) clearTimeout(timer)
     if (socket === null) return
     if (socket.readyState === WebSocket.OPEN) {
@@ -105,9 +129,25 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
   }
 
   const send = (message: WsMessage): void => {
-    if (socket?.readyState === WebSocket.OPEN)
+    if (socket?.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify(message))
+    } else {
+      pendingMessages.push(message)
+    }
   }
 
-  return { connect, close, send }
+  const subscribeChannels = (channels: string[]): void => {
+    const newChannels = channels.filter((ch) => !subscribedChannels.has(ch))
+    if (newChannels.length === 0) return
+    for (const ch of newChannels) subscribedChannels.add(ch)
+    if (socket?.readyState === WebSocket.OPEN) {
+      const msg: WsMessage = {
+        type: 'subscribe-channels',
+        channels: newChannels,
+      }
+      socket.send(JSON.stringify(msg))
+    }
+  }
+
+  return { connect, close, send, subscribeChannels }
 }

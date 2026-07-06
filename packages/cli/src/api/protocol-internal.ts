@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const PROTOCOL_VERSION = 3;
+export const PROTOCOL_VERSION = 1;
 
 export const gestureKindSchema = z.enum(["tap", "dbl-tap", "hold"]);
 
@@ -81,6 +81,23 @@ export const dismissOverlayMessageSchema = baseClientMessage.extend({
   type: z.literal("dismiss-overlay"),
 });
 
+export const assetsMessageSchema = baseServerMessage.extend({
+  type: z.literal("assets"),
+  deckId: z.string(),
+  assets: z.array(
+    z.object({
+      id: z.string(),
+      filename: z.string(),
+      data: z.string(),
+    }),
+  ),
+});
+
+export const subscribeChannelsMessageSchema = baseClientMessage.extend({
+  type: z.literal("subscribe-channels"),
+  channels: z.array(z.string()).min(1),
+});
+
 export const wsMessageSchema = z.discriminatedUnion("type", [
   helloMessageSchema,
   helloAckMessageSchema,
@@ -94,6 +111,8 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
   selectDeckMessageSchema,
   deckActiveMessageSchema,
   dismissOverlayMessageSchema,
+  assetsMessageSchema,
+  subscribeChannelsMessageSchema,
 ]);
 
 export type HelloMessage = z.infer<typeof helloMessageSchema>;
@@ -108,4 +127,6 @@ export type MethodCallResultMessage = z.infer<typeof methodCallResultMessageSche
 export type SelectDeckMessage = z.infer<typeof selectDeckMessageSchema>;
 export type DeckActiveMessage = z.infer<typeof deckActiveMessageSchema>;
 export type DismissOverlayMessage = z.infer<typeof dismissOverlayMessageSchema>;
+export type AssetsMessage = z.infer<typeof assetsMessageSchema>;
+export type SubscribeChannelsMessage = z.infer<typeof subscribeChannelsMessageSchema>;
 export type WsMessage = z.infer<typeof wsMessageSchema>;
