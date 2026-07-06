@@ -275,4 +275,99 @@ describe("bridgeAddonBackends", () => {
 
     expect(bridge.broadcast).not.toHaveBeenCalled();
   });
+
+  it("forwards runtime gestures to the bridge as a state message on runtime:gesture:<id>", async () => {
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider } = setup();
+    const decksWithButton = [
+      {
+        id: "main",
+        name: "Main",
+        isMain: true,
+        buttons: [{ id: "b1", type: "fake-media:player", config: {} }],
+      },
+    ];
+    const freshRuntime = createRuntime({
+      decks: decksWithButton,
+      pubSub,
+      store,
+      logger: silentLogger(),
+    });
+    freshRuntime.registerButtonHandler("main:b1", { onTap: vi.fn() });
+
+    const bridge = makeBridge();
+    const statePublisher = makeStatePublisher();
+    const signal = new AbortController().signal;
+
+    await bridgeAddonBackends({
+      runtime: freshRuntime,
+      decks: decksWithButton,
+      scanned: baseScanned,
+      executor,
+      pubSub,
+      store,
+      signal,
+      statePublisher,
+      bridge,
+      setClipboardProvider,
+    });
+
+    bridge.broadcast.mockClear();
+
+    await freshRuntime.dispatchGesture("b1", "tap");
+
+    expect(bridge.broadcast).toHaveBeenCalledTimes(1);
+    const payload = bridge.broadcast.mock.calls[0]![0] as {
+      type: string;
+      channels: Record<string, { kind: string; at: number }>;
+    };
+    expect(payload.type).toBe("state");
+    expect(payload.channels["runtime:gesture:b1"]).toBeDefined();
+    expect(payload.channels["runtime:gesture:b1"].gesture).toBe("tap");
+    expect(typeof payload.channels["runtime:gesture:b1"].at).toBe("number");
+  });
+
+  it("does not forward gestures when invokeAction is called", async () => {
+    const decksWithButton = [
+      {
+        id: "main",
+        name: "Main",
+        isMain: true,
+        buttons: [{ id: "b1", type: "fake-media:player", config: {} }],
+      },
+    ];
+    const pubSub = createPubSub();
+    const store = createStore();
+    const freshRuntime = createRuntime({
+      decks: decksWithButton,
+      pubSub,
+      store,
+      logger: silentLogger(),
+    });
+    freshRuntime.registerButtonHandler("main:b1", { onTap: vi.fn() });
+
+    const bridge = makeBridge();
+    const statePublisher = makeStatePublisher();
+    const signal = new AbortController().signal;
+    const executor = createActionExecutor({ host: getHostContext() });
+    const setClipboardProvider = vi.fn();
+
+    await bridgeAddonBackends({
+      runtime: freshRuntime,
+      decks: decksWithButton,
+      scanned: baseScanned,
+      executor,
+      pubSub,
+      store,
+      signal,
+      statePublisher,
+      bridge,
+      setClipboardProvider,
+    });
+
+    bridge.broadcast.mockClear();
+
+    await freshRuntime.invokeAction("b1", "tap");
+
+    expect(bridge.broadcast).not.toHaveBeenCalled();
+  });
 });

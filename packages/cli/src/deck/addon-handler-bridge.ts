@@ -41,6 +41,13 @@ export const bridgeAddonBackends = async (
   const { runtime, decks, scanned, executor, pubSub, store, signal, statePublisher, bridge, setClipboardProvider } =
     params;
 
+  runtime.setGestureListener((buttonId, event) => {
+    bridge.broadcast({
+      type: "state",
+      channels: { [`runtime:gesture:${buttonId}`]: event },
+    });
+  });
+
   const abortController = new AbortController();
   signal.addEventListener("abort", () => abortController.abort());
 

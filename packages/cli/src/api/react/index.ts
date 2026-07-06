@@ -6,4 +6,3 @@ export {
   NullButton,
 } from "./use-button-state";
 export { useDeck, type UseDeckReturn } from "./use-deck";
-export { useButtonAction, type UseButtonActionReturn } from "./use-button-action";

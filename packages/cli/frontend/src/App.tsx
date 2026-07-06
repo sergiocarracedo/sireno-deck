@@ -184,10 +184,6 @@ const AppContent = () => {
         gesture,
       }),
     )
-    ChannelRegistry.instance().publish('runtime:button-tap', {
-      buttonId,
-      gesture,
-    })
   }
 
   const gestureMap: ButtonGestureMap = Object.fromEntries(

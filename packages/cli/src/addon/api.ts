@@ -3,12 +3,23 @@ import type { ComponentType } from 'react'
 import type { z } from 'zod'
 
 import type { ActionExecutor } from '@/action/executor'
+import type { Store } from '@/core/store'
+import type { GestureKind } from '@/core/gesture-state'
 
 /** The runtime manifest API version (`AddonManifestV1`). */
 export const SIRENO_ADDON_API_VERSION = 1 as const
 
 export type AddonKind = 'runtime' | 'theme'
 export type AddonManifestKind = 'addon' | 'theme'
+
+/**
+ * Per-button gesture stream delivered to addon renderers. `null` when no
+ * gesture has fired since the last handoff. See `AddonFrontendButtonProps.gesture`.
+ */
+export interface AddonGestureEvent {
+  readonly gesture: GestureKind
+  readonly at: number
+}
 
 export interface AddonButtonTypeRenderContext {
   config: unknown
@@ -67,37 +78,43 @@ export interface AddonFrontendButtonProps<Config> {
   readonly addonName: string
   readonly buttonType: string
   readonly buttonId: string
+  /**
+   * Latest gesture delivered to this specific button since the previous
+   * commit. `null` when no gesture is pending. The renderer is expected to
+   * react in a `useEffect([gesture])` and the parent (Deck) will clear the
+   * value in a post-commit pass so unrelated re-renders do not re-fire it.
+   *
+   * Source: hardware + emulator only — never emitted for frontend-emulated
+   * clicks (those arrive via the WS `button-action` path which calls
+   * `runtime.invokeAction`, bypassing the gesture listener).
+   */
+  readonly gesture: AddonGestureEvent | null
 }
 
 export type AddonFrontendButton<Config> = ComponentType<
   AddonFrontendButtonProps<Config>
 >
 
-export interface AddonButtonTypeBackend {
-  readonly configSchema: unknown
+export interface AddonButtonTypeBackend<Config = unknown> {
+  readonly configSchema?: unknown
   readonly defaultRenderIntervalMs?: number
   readonly internal?: boolean
   readonly full?: boolean
-  onTap?: (
-    ctx: AddonButtonTypeActionContext & { buttonId: string },
-  ) => void | Promise<void>
-  onDblTap?: (
-    ctx: AddonButtonTypeActionContext & { buttonId: string },
-  ) => void | Promise<void>
-  onHold?: (
-    ctx: AddonButtonTypeActionContext & { buttonId: string },
-  ) => void | Promise<void>
-  dispose?: () => void | Promise<void>
+  readonly onMount?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
+  readonly onTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
+  readonly onDblTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
+  readonly onHold?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
+  readonly dispose?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
 }
 
 export interface AddonButtonTypeDef<Config = unknown> {
   readonly frontend: AddonFrontendButton<Config>
-  readonly backend: AddonButtonTypeBackend
+  readonly backend: AddonButtonTypeBackend<Config>
 }
 
 export interface AddonButtonTypeDefAny {
   readonly frontend: AddonFrontendButton<any>
-  readonly backend: AddonButtonTypeBackend
+  readonly backend: AddonButtonTypeBackend<any>
 }
 
 export type AddonDeckFactory = (page: number) => AddonGeneratedDeck
@@ -105,7 +122,7 @@ export type AddonDeckFactory = (page: number) => AddonGeneratedDeck
 export interface AddonDeckDefinition {
   type: string
   configSchema?: unknown
-  createDecks: (ctx: { config: unknown }) => Record<string, AddonGeneratedDeck>
+  createDecks: (ctx: { config: unknown; deck: { id: string } }) => Record<string, AddonGeneratedDeck>
 }
 
 export interface AddonGeneratedDeck {
@@ -124,13 +141,19 @@ export interface AddonGeneratedDeck {
  *
  * The `entry` field on `AddonJsonManifest` points at the file that exports this;
  * the runtime loads it via dynamic `import()` and passes it to `AddonRegistry.load()`.
+ *
+ * `defaultButton` declares one of this addon's button types as the default. When
+ * set, users may write `type: <addonName>` in `config.yml` as a shorthand for
+ * `<defaultButton>` (e.g. `type: emoji-selector` resolves to
+ * `emoji-selector:launcher`). The value must be a key of `buttonTypes`.
  */
 export interface AddonManifestV1 {
   readonly apiVersion: 1
   readonly name: string
   readonly kind?: AddonKind
   readonly buttonTypes: Readonly<Record<string, AddonButtonTypeDefAny>>
-  readonly decks?: Readonly<Record<string, AddonDeckFactory>>
+  readonly defaultButton?: string
+  readonly decks?: Readonly<Record<string, AddonDeckFactory | AddonDeckDefinition>>
   readonly frontend?: AddonFrontend
   readonly poller?: {
     readonly channels: ReadonlyArray<{
@@ -237,6 +260,8 @@ export interface AddonBackendContext {
   signal: AbortSignal
   /** Run host commands (e.g. `brightness set 80`). */
   executor: ActionExecutor
+  /** Set the clipboard provider for pasteText method. */
+  setClipboardProvider: (provider: unknown) => void
 }
 
 /**
@@ -267,6 +292,11 @@ export interface AddonButtonBackendContext<Config = unknown> {
   readonly executor: ActionExecutor
   /** Aborted when the button instance unmounts. */
   readonly signal: AbortSignal
+  /**
+   * Per-addon persisted state. Use `store.buttonScope(addonName, key)` to
+   * scope reads/writes to this addon.
+   */
+  readonly store: Store
 }
 
 /**

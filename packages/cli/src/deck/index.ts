@@ -26,6 +26,8 @@ export {
   type RuntimeDeck,
   type RuntimeButtonHandler,
   type ButtonActionContext,
+  type GestureEvent,
+  type GestureListener,
   type MountedButton,
 } from "./runtime";
 export { getHostContext, type HostContext } from "./host-context";

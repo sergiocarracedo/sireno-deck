@@ -125,10 +125,6 @@ export const App = ({
         gesture,
       }),
     )
-    ChannelRegistry.instance().publish('runtime:button-tap', {
-      buttonId,
-      gesture,
-    })
   }
 
   const sendNavigate = (deckId: string): void => {

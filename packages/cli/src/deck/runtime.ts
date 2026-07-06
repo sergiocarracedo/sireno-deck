@@ -34,6 +34,13 @@ export interface ButtonActionContext {
   gesture: GestureKind;
 }
 
+export interface GestureEvent {
+  readonly gesture: GestureKind;
+  readonly at: number;
+}
+
+export type GestureListener = (buttonId: string, event: GestureEvent) => void;
+
 export interface MountedButton {
   addonName: string;
   buttonId: string;
@@ -58,6 +65,8 @@ export interface Runtime {
   registerButtonHandler(buttonId: string, handler: RuntimeButtonHandler): void;
   mountAddonButtons(addonName: string, buttons: ReadonlyArray<MountedButton>): void;
   dispatchGesture(buttonId: string, gesture: GestureKind): Promise<void>;
+  invokeAction(buttonId: string, gesture: GestureKind): Promise<void>;
+  setGestureListener(listener: GestureListener | null): void;
   invalidate(): void;
   setActiveAppProvider(provider: ActiveAppProviderLike): void;
   stopActiveAppPolling(): Promise<void>;
@@ -66,6 +75,7 @@ export interface Runtime {
 
 export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   const { decks, pubSub, store, logger } = options;
+  let gestureListener: GestureListener | null = null;
   const mainDeck = decks.find((d) => d.isMain) ?? decks[0];
   if (mainDeck === undefined) {
     throw new Error("createRuntime: at least one deck is required");
@@ -179,21 +189,18 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     }
   };
 
-  const dispatchGesture = async (buttonId: string, gesture: GestureKind): Promise<void> => {
-    console.log('[dispatchGesture] handlers map keys:', Array.from(handlers.keys()));
+  const invokeAction = async (buttonId: string, gesture: GestureKind): Promise<void> => {
     const found = findButton(buttonId);
     if (found === null) {
-      logger.warn({ buttonId }, "dispatchGesture: button not found");
+      logger.warn({ buttonId }, "invokeAction: button not found");
       return;
     }
-    console.log('[dispatchGesture] found button, checking handler for', buttonId);
-    const handler = handlers.get(buttonId);
+    const handlerKey = `${found.deckId}:${found.button.id}`;
+    const handler = handlers.get(handlerKey);
     if (handler === undefined) {
-      console.log('[dispatchGesture] no handler for', buttonId);
-      logger.warn({ buttonId }, "dispatchGesture: no handler registered");
+      logger.warn({ buttonId, handlerKey }, "invokeAction: no handler registered");
       return;
     }
-    console.log('[dispatchGesture] handler found');
     const ctx: ButtonActionContext = {
       buttonId,
       deckId: found.deckId,
@@ -203,10 +210,24 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     const fn =
       gesture === "tap" ? handler.onTap : gesture === "dbl-tap" ? handler.onDblTap : handler.onHold;
     if (fn === undefined) {
-      logger.warn({ buttonId, gesture }, "dispatchGesture: handler missing for gesture");
+      logger.warn({ buttonId, gesture }, "invokeAction: handler missing for gesture");
       return;
     }
     await fn(ctx);
+  };
+
+  const dispatchGesture = async (buttonId: string, gesture: GestureKind): Promise<void> => {
+    const found = findButton(buttonId);
+    if (found === null) {
+      logger.warn({ buttonId }, "dispatchGesture: button not found");
+      return;
+    }
+    gestureListener?.(found.button.id, { gesture, at: Date.now() });
+    await invokeAction(buttonId, gesture);
+  };
+
+  const setGestureListener = (listener: GestureListener | null): void => {
+    gestureListener = listener;
   };
 
   const invalidate = (): void => {
@@ -318,6 +339,8 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     registerButtonHandler,
     mountAddonButtons,
     dispatchGesture,
+    invokeAction,
+    setGestureListener,
     invalidate,
     setActiveAppProvider,
     stopActiveAppPolling,

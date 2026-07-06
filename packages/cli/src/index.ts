@@ -23,9 +23,14 @@ export {
   type GestureKind,
   type GestureResult,
   type GestureType,
+  createGestureDetector,
+  type GestureDetector,
 } from './core/gesture-state'
 
+export type { AddonGestureEvent } from './addon/api'
+
 export { ChannelRegistry } from './api/react/registry'
+export { useAddonChannel, type UseAddonChannelReturn } from './api/react/use-addon-channel'
 export {
   ThemeContext,
   ThemeProvider,
@@ -34,6 +39,10 @@ export {
 } from './themes/use-resolved-theme'
 
 export {
+  AssetCacheProvider,
+  useAssetCache,
+  useAssetCacheMutations,
+  type AssetCache,
   ButtonFrame,
   Chip,
   Icon,

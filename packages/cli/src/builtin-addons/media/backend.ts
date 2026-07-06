@@ -50,9 +50,15 @@ const buildState = (
   muted: status.muted,
 })
 
-const wrap = (action: () => Promise<void>): AddonBackendMethod => {
-  return async () => {
-    await action()
+const wrap = (
+  action: (...args: readonly unknown[]) => Promise<void>,
+): AddonBackendMethod => {
+  return async (...args) => {
+    try {
+      await action(...args)
+    } catch (err) {
+      console.error('[media] action failed:', err)
+    }
     await ctxRef?.poll('state')
   }
 }
@@ -90,27 +96,18 @@ export const globalBackend: AddonGlobalBackend = {
     previous: wrap(async () => {
       await provider?.previous()
     }),
-    setVolume: (() => {
-      const fn = wrap(async (...args: readonly unknown[]) => {
-        const value = typeof args[0] === 'number' ? args[0] : 1
-        await provider?.setVolume(value)
-      })
-      return fn
-    })(),
-    volumeUp: (() => {
-      const fn = wrap(async (...args: readonly unknown[]) => {
-        const step = typeof args[0] === 'number' ? args[0] : 0.05
-        await provider?.volumeUp(step)
-      })
-      return fn
-    })(),
-    volumeDown: (() => {
-      const fn = wrap(async (...args: readonly unknown[]) => {
-        const step = typeof args[0] === 'number' ? args[0] : 0.05
-        await provider?.volumeDown(step)
-      })
-      return fn
-    })(),
+    setVolume: wrap(async (...args: readonly unknown[]) => {
+      const value = typeof args[0] === 'number' ? args[0] : 1
+      await provider?.setVolume(value)
+    }),
+    volumeUp: wrap(async (...args: readonly unknown[]) => {
+      const step = typeof args[0] === 'number' ? args[0] : 0.05
+      await provider?.volumeUp(step)
+    }),
+    volumeDown: wrap(async (...args: readonly unknown[]) => {
+      const step = typeof args[0] === 'number' ? args[0] : 0.05
+      await provider?.volumeDown(step)
+    }),
     toggleMute: wrap(async () => {
       await provider?.toggleMute()
     }),
@@ -122,19 +119,15 @@ export const globalBackend: AddonGlobalBackend = {
       async run(
         command: string,
         args: readonly string[],
-        _options?: { timeoutMs?: number },
+        options?: { timeoutMs?: number },
       ) {
-        const fullCommand =
-          args.length > 0
-            ? `${command} ${args.map((a) => `"${a}"`).join(' ')}`
-            : command
-        return ctx.executor.run(fullCommand)
+        return ctx.executor.run(command, [...args], options)
       },
     })
   },
 
-onUnload: () => {
-    ctxRef = null;
-    provider = null;
+  onUnload: () => {
+    ctxRef = null
+    provider = null
   },
 }
