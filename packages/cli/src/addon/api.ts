@@ -277,7 +277,7 @@ export interface AddonButtonBackend<Config = unknown> {
   readonly onTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
   readonly onDblTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
   readonly onHold?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
-  readonly dispose?: () => void | Promise<void>
+  readonly dispose?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
 }
 
 export interface AddonButtonBackendContext<Config = unknown> {

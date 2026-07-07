@@ -254,7 +254,7 @@ export const bridgeAddonBackends = async (
         dispose() {
           buttonAbort.abort();
           try {
-            buttonBackend.dispose?.();
+            buttonBackend.dispose?.(wrappedCtx);
           } catch (err) {
             console.error(`[${addonName}] ${buttonType} dispose failed:`, err);
           }
