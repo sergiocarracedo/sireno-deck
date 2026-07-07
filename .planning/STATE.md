@@ -31,7 +31,7 @@ $ git status --short | wc -l
 
 ## Next
 
-The user is about to start **P1 (React Router in frontend)** — but hasn't kicked off planning yet. First step is `/quick "P1 — React Router"` or `/discuss-phase P1` depending on size.
+P1 (React Router in frontend) shipped at `74d9dc59`. Next item per ROADMAP.md: **P2 — `gestureHandlers` enforced (default-deny)** + the 9-of-10 built-in audit.
 
 ## Pre-existing known issues (do NOT touch without forensics)
 

@@ -11,12 +11,15 @@
 
 ## Phases
 
-### P1 — React Router in frontend
+### P1 — React Router in frontend `[x]` shipped at `74d9dc59`
 
-- `[ ]` Add `react-router-dom` to `packages/cli/frontend/`.
-- `[ ]` Per-deck route under `/decks/:deckId`. Service still picks the active deck; the route is the read-only URL form of `getActiveDeckId()`.
-- `[ ]` The emulator SPA consumes the same routes (no separate router).
-- **[?]** Should the URL be the source of truth (user-driven nav) or a projection (service-driven nav)? Decision: **service-driven** — URL updates when `deck-active` arrives, never the reverse.
+- `[x]` `react-router-dom ^7.18.1` (workspace root dep, hoisted for Vite).
+- `[x]` `BrowserRouter` + `/decks/:deckId` route in `main.tsx`; catch-all → `/decks/main`.
+- `[x]` `App.tsx`: `navigate(\`/decks/${deckId}\`, { replace: true })` on `deck-config`.
+- `[x]` Service-driven nav — `deck-config` is the source of truth; URL is the read-only projection.
+- `[x]` Emulator: no router needed (DeckFrame hosts the frontend in an iframe; iframe handles internal nav).
+- `[x]` 2 vitest cases in `app-navigation.test.tsx` (URL updates + no-op on unknown surface).
+- Skipped: per-button routes (out of scope); URL-driven nav (spec says service-driven).
 
 ### P2 — `gestureHandlers` enforced (default-deny)
 
