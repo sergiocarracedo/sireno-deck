@@ -1,4 +1,4 @@
-import type { ValueEntry } from "../schemas.ts";
+import type { ValueEntry } from "../schemas";
 
 export interface FormattedValue {
   available: boolean;

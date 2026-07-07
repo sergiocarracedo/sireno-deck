@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { createVirtualStreamDeckLifecycle } from "../virtual-stream-deck.ts";
+import { createVirtualStreamDeckLifecycle } from "../virtual-stream-deck";
 
 describe("createVirtualStreamDeckLifecycle", () => {
   it("getKeyCount returns configured count", () => {

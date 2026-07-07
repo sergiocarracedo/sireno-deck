@@ -60,9 +60,19 @@ export const SessionSchema = z
   .strict()
   .optional();
 
+export const ThemeEntrySchema = z.union([
+  z.string().min(1),
+  z
+    .object({
+      name: z.string().min(1).optional(),
+      path: z.string().min(1),
+    })
+    .strict(),
+]);
+
 export const RawConfigSchema = z
   .object({
-    theme: z.string().min(1).optional(),
+    theme: ThemeEntrySchema.optional(),
     logging: LoggingSchema,
     decks: z.record(z.string(), DeckDefSchema),
     addons: z.array(AddonEntrySchema).optional(),
@@ -76,3 +86,4 @@ export type RawDeckDef = z.infer<typeof DeckDefSchema>;
 export type RawAddonEntry = z.infer<typeof AddonEntrySchema>;
 export type RawConfig = z.infer<typeof RawConfigSchema>;
 export type TriggerDef = z.infer<typeof TriggerSchema>;
+export type ThemeEntry = z.infer<typeof ThemeEntrySchema>;

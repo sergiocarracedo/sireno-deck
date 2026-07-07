@@ -1,12 +1,12 @@
 import sharp from "sharp";
 
-import { BUTTON_SIZE_PX, gridForKeyCount } from "@/device/models.ts";
-import type { PubSub } from "@/core/pub-sub.ts";
-import { createPubSub } from "@/core/pub-sub.ts";
+import { BUTTON_SIZE_PX, gridForKeyCount } from "@/device/models";
+import type { PubSub } from "@/core/pub-sub";
+import { createPubSub } from "@/core/pub-sub";
 import type pino from "pino";
 
-import { BufferChangeTracker } from "./buffer-hash.ts";
-import { CadenceTimer, EventDebouncer } from "./screenshot-cadence.ts";
+import { BufferChangeTracker } from "./buffer-hash";
+import { CadenceTimer, EventDebouncer } from "./screenshot-cadence";
 
 export interface PlaywrightLike {
   chromium: {
@@ -57,6 +57,14 @@ export class BrowserRenderer {
   private readonly debouncer: EventDebouncer;
   private readonly tracker = new BufferChangeTracker();
   private readonly subscriptions: Subscription[] = [];
+  /**
+   * Number of consecutive ticks where every key buffer was unchanged.
+   * Once it crosses `BLANK_THRESHOLD`, we suspect the React tree has been
+   * unmounted (typically by an HMR error that escaped the ErrorBoundary)
+   * and warn the user via the logger. The renderer does not abort —
+   * screenshots still flow — but the operator gets a visible signal.
+   */
+  private staticBlankTickCount = 0;
   private browser: BrowserLike | null = null;
   private context: ContextLike | null = null;
   private page: PageLike | null = null;
@@ -120,6 +128,8 @@ export class BrowserRenderer {
     this.browser = null;
   }
 
+  private static readonly BLANK_THRESHOLD = 20;
+
   private async tick(source: "timer" | "event"): Promise<void> {
     if (!this.page) return;
     try {
@@ -149,9 +159,20 @@ export class BrowserRenderer {
       }
       if (writes.length > 0) {
         await Promise.all(writes);
+        this.staticBlankTickCount = 0;
         this.options.logger.debug({ source, writes: writes.length }, "renderer tick wrote keys");
       } else {
+        this.staticBlankTickCount += 1;
         this.options.logger.debug({ source }, "renderer tick no changes");
+        if (this.staticBlankTickCount === BrowserRenderer.BLANK_THRESHOLD) {
+          this.options.logger.warn(
+            {
+              consecutiveTicks: this.staticBlankTickCount,
+              source,
+            },
+            "frontend appears blank — React tree may have crashed (check the browser console or HMR errors)",
+          );
+        }
       }
     } catch (err) {
       this.options.logger.warn({ err, source }, "renderer tick failed");

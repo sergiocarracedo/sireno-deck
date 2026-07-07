@@ -56,5 +56,5 @@ Also fixed four pre-existing typecheck errors uncovered during this plan's smoke
 
 - `pnpm exec vitest run` → 107/107 passing (8 cli + 38 config + 23 addon + 7 pub-sub + 11 gesture + 10 store + 10 pagination)
 - `pnpm typecheck` → clean
-- `pnpm --filter sireno-deck-2 lint` → 0 warnings, 0 errors
+- `pnpm --filter sireno-deck lint` → 0 warnings, 0 errors
 - `pnpm format:check` → all 71 files conform

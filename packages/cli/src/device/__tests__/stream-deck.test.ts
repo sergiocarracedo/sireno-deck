@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { connectStreamDeck, StreamDeckSelectionError } from "../stream-deck.ts";
+import { connectStreamDeck, StreamDeckSelectionError } from "../stream-deck";
 
 vi.mock("@elgato-stream-deck/node", () => {
   return {

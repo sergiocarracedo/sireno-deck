@@ -68,5 +68,5 @@ Also asserts internal button rejection and that `internal-settings.createDecks` 
 
 - `pnpm exec vitest run` → 155/155 passing
 - `pnpm typecheck` → clean
-- `pnpm --filter sireno-deck-2 lint` → 0 warnings, 0 errors
+- `pnpm --filter sireno-deck lint` → 0 warnings, 0 errors
 - `pnpm format:check` → all 106 files conform

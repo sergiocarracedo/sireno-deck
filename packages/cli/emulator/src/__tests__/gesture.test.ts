@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { dispatchMouseEvent, gestureKindToWsMessage } from "../gesture.ts";
+import { dispatchMouseEvent, gestureKindToWsMessage } from "../gesture";
 
 describe("gesture (emulator)", () => {
   it("returns tap on quick down-up", () => {

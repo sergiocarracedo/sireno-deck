@@ -4,20 +4,20 @@ decks:
     name: Main Deck
     buttons:
       - position: 2
-        type: 'core:time'
+        type: 'date-time:time'
         config:
           variant: big
 
       - position: 3
-        type: 'core:date'
+        type: 'date-time:date'
 
       - position: 1
-        type: 'core:action'
+        type: 'core-buttons:action'
         config:
           command: 'xdg-open https://example.com'
 
       - position: 4
-        type: 'core:weather'
+        type: 'weather:weather'
         config:
           location:
             latitude: 42.2304
@@ -25,17 +25,17 @@ decks:
             name: Vigo
 
       - position: 9
-        type: 'core:change-deck'
+        type: 'core-buttons:change-deck'
         config:
           deck: emoji
 
       - position: 10
-        type: 'core:action'
+        type: 'core-buttons:action'
         config:
           command: 'google-chrome'
 
       - position: 0
-        type: 'core:system-status'
+        type: 'system-status:status'
         config:
           variant: bars
           metrics:
@@ -48,7 +48,7 @@ decks:
               unavailable_label: 'N/A'
 
       - position: 5
-        type: 'core:system-status'
+        type: 'system-status:status'
         config:
           metrics:
             - metric: cpu_usage
@@ -59,20 +59,24 @@ decks:
             - metric: uptime
               label: Uptime
 
+      - position: 7
+        type: 'media:volume'
+      - position: 8
+        type: 'media:mute'
       - position: 12
-        type: 'core:media-player'
+        type: 'media:player'
 
       - position: 11
-        type: 'core:time'
+        type: 'date-time:time'
 
       - position: 13
-        type: 'core:clock'
+        type: 'date-time:analog-clock'
 
   emoji:
     name: Emoji
     buttons:
       - position: 0
-        type: 'core:change-deck'
+        type: 'core-buttons:change-deck'
         config:
           deck: main
 
@@ -84,31 +88,31 @@ decks:
     autoShow: true
     buttons:
       - position: 0
-        type: 'core:action'
+        type: 'core-buttons:action'
         config:
           command: 'xdotool key ctrl+t'
       - position: 1
-        type: 'core:action'
+        type: 'core-buttons:action'
         config:
           command: 'xdotool key ctrl+w'
       - position: 2
-        type: 'core:action'
+        type: 'core-buttons:action'
         config:
           command: 'xdotool key ctrl+shift+t'
       - position: 3
-        type: 'core:action'
+        type: 'core-buttons:action'
         config:
           command: 'xdotool key ctrl+shift+n'
       - position: 4
-        type: 'core:action'
+        type: 'core-buttons:action'
         config:
           command: 'xdotool key ctrl+r'
       - position: 5
-        type: 'core:action'
+        type: 'core-buttons:action'
         config:
           command: 'xdotool key ctrl+shift+r'
       - position: 6
-        type: 'core:action'
+        type: 'core-buttons:action'
         config:
           command: 'xdotool key F12'
 

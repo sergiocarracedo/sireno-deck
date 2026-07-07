@@ -4,7 +4,7 @@ import {
   createNullBrightnessProvider,
   type BrightnessProvider,
   type BrightnessReading,
-} from "../provider.ts";
+} from "../provider";
 
 import type { CommandExecutor } from "../media";
 

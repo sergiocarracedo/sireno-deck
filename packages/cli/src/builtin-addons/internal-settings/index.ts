@@ -1,41 +1,39 @@
-import { z } from "zod";
+import type { AddonManifestV1 } from "@/addon/api";
 
-import type { SirenoAddon } from "@/addon/api-types.ts";
-import type { AddonDeckDefinition } from "@/addon/api.ts";
+import aboutBackend from "./buttons/about/backend";
+import aboutFrontend from "./buttons/about/frontend";
+import brightnessBackend from "./buttons/brightness/backend";
+import brightnessFrontend from "./buttons/brightness/frontend";
+import themeBackend from "./buttons/theme/backend";
+import themeFrontend from "./buttons/theme/frontend";
+import settingsDeck from "./decks/settings";
 
-import { coreSettingsAboutButton } from "./about.ts";
-import { coreSettingsBrightnessButton } from "./brightness.ts";
-import { coreSettingsThemeButton } from "./theme.ts";
+const withInternal = <T extends object>(impl: T): T & { internal: true } => ({
+  ...impl,
+  internal: true,
+});
 
-const settingsDeckConfigSchema = z.object({});
-
-const settingsDeckDef: AddonDeckDefinition = {
-  type: "settings",
-  configSchema: settingsDeckConfigSchema,
-  createDecks: () => ({
-    settings: {
-      name: "Settings",
-      buttons: [
-        { id: "brightness", type: "core:settings-brightness", position: 0 },
-        { id: "theme", type: "core:settings-theme", position: 1 },
-        { id: "about", type: "core:settings-about", position: 2 },
-      ],
-    },
-  }),
-};
-
-export const internalSettingsAddon: SirenoAddon = {
-  apiVersion: 3,
+export const manifest: AddonManifestV1 = {
+  apiVersion: 1,
   name: "internal-settings",
-  buttons: [
-    coreSettingsBrightnessButton,
-    coreSettingsThemeButton,
-    coreSettingsAboutButton,
-  ] as never,
-  decks: [settingsDeckDef],
+  buttonTypes: {
+    "internal-settings:about": {
+      frontend: aboutFrontend,
+      backend: withInternal(aboutBackend),
+    },
+    "internal-settings:brightness": {
+      frontend: brightnessFrontend,
+      backend: withInternal(brightnessBackend),
+    },
+    "internal-settings:theme": {
+      frontend: themeFrontend,
+      backend: withInternal(themeBackend),
+    },
+  },
+  decks: {
+    "internal-settings:settings": settingsDeck,
+  },
 };
 
-export { coreSettingsBrightnessButton } from "./brightness.ts";
-export { coreSettingsThemeButton } from "./theme.ts";
-export { coreSettingsAboutButton } from "./about.ts";
-export { settingsDeckDef };
+export const internalSettingsAddon = manifest;
+export default manifest;

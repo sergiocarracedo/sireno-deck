@@ -1,16 +1,17 @@
 import { describe, expect, it } from "vitest";
 
-import { AddonRegistry } from "@/addon/registry.ts";
-import type { LoadedTheme } from "@/addon/api.ts";
+import { AddonRegistry } from "@/addon/registry";
+import type { LoadedTheme } from "@/addon/api";
 
-import { registerBuiltInThemes, resolveActiveTheme } from "../loader.ts";
+import { registerBuiltInThemes, resolveActiveTheme } from "../loader";
 
 const makeTheme = (name: string): LoadedTheme => ({
   name,
-  apiVersion: 3,
+  apiVersion: 1,
   source: { kind: "local", resolvedPath: `/tmp/themes/${name}` },
-  cssPath: `/tmp/themes/${name}/theme.css`,
-  frontendPath: `/tmp/themes/${name}/index.tsx`,
+  manifestPath: `/tmp/themes/${name}/sirenodeck.json`,
+  uiOverridesPath: null,
+  cssPath: "",
 });
 
 describe("themes/loader", () => {
@@ -19,10 +20,8 @@ describe("themes/loader", () => {
     registerBuiltInThemes(registry);
     const theme = registry.getTheme("default");
     expect(theme).toBeDefined();
-    expect(theme?.apiVersion).toBe(3);
+    expect(theme?.apiVersion).toBe(1);
     expect(theme?.source.kind).toBe("builtin");
-    expect(theme?.frontendPath.endsWith("index.tsx")).toBe(true);
-    expect(theme?.cssPath.endsWith("theme.css")).toBe(true);
   });
 
   it("resolveActiveTheme returns the default theme when name is undefined", () => {
@@ -57,6 +56,6 @@ describe("themes/loader", () => {
         .listThemes()
         .map((t) => t.name)
         .sort(),
-    ).toEqual(["custom", "default", "light"]);
+    ).toEqual(["custom", "default"]);
   });
 });

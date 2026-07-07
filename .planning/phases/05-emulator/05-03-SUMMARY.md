@@ -35,7 +35,7 @@ The second vertical slice for Phase 05: the emulator shell's interactive behavio
 
 ## Bugs / adjustments
 
-1. **`@sireno-deck-2/cli` barrel missing `nextGesture` et al** — added `DOUBLE_TAP_DELAY_MS`, `HOLD_ACTION_DELAY_MS`, `nextGesture`, and gesture types to the cli barrel so `import { nextGesture } from "@sireno-deck-2/cli"` works.
+1. **`@sireno-deck/cli` barrel missing `nextGesture` et al** — added `DOUBLE_TAP_DELAY_MS`, `HOLD_ACTION_DELAY_MS`, `nextGesture`, and gesture types to the cli barrel so `import { nextGesture } from "@sireno-deck/cli"` works.
 2. **`gestureKindToWsMessage` type incompatibility** — fixed by mapping mouse event → core event before passing to `nextGesture`.
 3. **`SidePanel` ReactElement** — needed `import type { ReactElement } from "react"` for the return type (with `jsx: "react-jsx"`, runtime is auto-imported, but TS needs the type).
 4. **Bridge reconnect timing** — the first failure's backoff should be the smallest (1000ms), but my code used `attempts` (which is 1 after first open). Changed to `attempts - 1`.
@@ -51,7 +51,7 @@ The second vertical slice for Phase 05: the emulator shell's interactive behavio
 
 - `pnpm exec vitest run` (root, cli): 224/224 passing
 - `cd packages/cli/emulator && pnpm exec vitest run`: 15/15 passing
-- `pnpm --filter sireno-deck-2 typecheck`: clean
-- `pnpm --filter @sireno-deck-2/emulator typecheck`: clean
-- `pnpm --filter sireno-deck-2 lint`: 0 warnings, 0 errors
+- `pnpm --filter sireno-deck typecheck`: clean
+- `pnpm --filter @sireno-deck/emulator typecheck`: clean
+- `pnpm --filter sireno-deck lint`: 0 warnings, 0 errors
 - `pnpm format:check`: clean

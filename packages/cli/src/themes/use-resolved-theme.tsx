@@ -1,12 +1,13 @@
 import { createContext, useContext, type ReactNode } from "react";
 
-import type { LoadedTheme } from "@/addon/api.ts";
+import type { LoadedTheme } from "@/addon/api";
 
 export interface ThemeContextValue {
   name: string;
   cssPath: string;
-  frontendPath: string;
   theme: LoadedTheme;
+  colorTokens: Record<string, string> | null;
+  typography: Record<string, unknown> | null;
 }
 
 export const ThemeContext = createContext<ThemeContextValue | null>(null);

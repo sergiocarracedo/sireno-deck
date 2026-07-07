@@ -1,8 +1,8 @@
 import { type HTMLAttributes, type ReactElement } from 'react'
 
-import { Icon, IconProps } from '../Icon.tsx'
-import { Label } from '../Label.tsx'
-import { useThemeUiPresentation } from '../theme-presentation.tsx'
+import { Icon, IconProps } from '../primitives/Icon'
+import { Label } from '../primitives/Label'
+import { useThemeUiPresentation } from '../theme-presentation'
 
 export interface IconLabelSurfaceProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {

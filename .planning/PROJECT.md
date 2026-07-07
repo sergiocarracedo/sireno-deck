@@ -1,12 +1,12 @@
 ---
-project: sireno-deck-2
+project: sireno-deck
 type: greenfield-tooling
 milestone: v0.1.0 — CLI + addon system + emulator
 status: active
 created: 2026-06-23
 ---
 
-# sireno-deck-2
+# sireno-deck
 
 A small ecosystem to manage Elgato Stream Deck devices. The first deliverable is a CLI that loads a `config.yml`, registers addons, runs a Vite frontend, exposes a WS bridge, and either drives real hardware or renders an emulator.
 
@@ -23,7 +23,7 @@ A TypeScript monorepo (`pnpm` workspace, single `packages/cli`) that builds a CL
 
 ## Why this exists
 
-Legacy `/works/opensource/sireno-deck` does most of this, but is React 18 + Tailwind 3 with a server-side HTML renderer for hardware. sireno-deck-2 unifies the render path: the same Vite frontend is rendered in real mode (Playwright), in emulator mode (iframe), and in dev mode (HMR).
+Legacy `/works/opensource/sireno-deck` does most of this, but is React 18 + Tailwind 3 with a server-side HTML renderer for hardware. sireno-deck unifies the render path: the same Vite frontend is rendered in real mode (Playwright), in emulator mode (iframe), and in dev mode (HMR).
 
 ## Core requirements
 
@@ -39,10 +39,10 @@ Legacy `/works/opensource/sireno-deck` does most of this, but is React 18 + Tail
 | R8  | Gesture state machine outputs only `tap                                                                                                                                   | dbl-tap | hold`(no`press-then-release`) | 03  |
 | R9  | WS bridge v3 with handshake (`hello` / `hello-ack`), `button-action` carrying `gesture`, no `snapshot` message                                                            | 04      |
 | R10 | WS token generated on `start`, not on `run`; injected via `SIRENO_TOKEN` env + `virtual:sireno/token` module (dev) or `<script>` injection (prod)                         | 04, 10  |
-| R11 | Vite plugin (`sireno-deck-2/vite`) registers addon/theme folders                                                                                                          | 04      |
+| R11 | Vite plugin (`sireno-deck/vite`) registers addon/theme folders                                                                                                            | 04      |
 | R12 | Emulator renders the frontend vite in an iframe; mouse events become gestures via shell gesture state machine                                                             | 05      |
 | R13 | Real hardware mode uses Playwright `page.screenshot()` + `sharp` crop + `@elgato-stream-deck/node`                                                                        | 06      |
-| R14 | Multi-device interactive prompt with arrow keys; selection persisted to `$XDG_CONFIG_HOME/sireno-deck-2/device.json`                                                      | 06      |
+| R14 | Multi-device interactive prompt with arrow keys; selection persisted to `$XDG_CONFIG_HOME/sireno-deck/device.json`                                                        | 06      |
 | R15 | Linux active-app via gnome-shell D-Bus + Wayland gnome variant; Linux media via `playerctl`                                                                               | 07      |
 | R16 | macOS via osascript; Windows via PowerShell + UIA                                                                                                                         | 07      |
 | R17 | Tailwind 4 themes via CSS variables + `@theme` directive; two built-ins (`default`, `light`)                                                                              | 08      |
@@ -79,7 +79,7 @@ Legacy `/works/opensource/sireno-deck` does most of this, but is React 18 + Tail
 ## Repo shape
 
 ```
-sireno-deck-2/
+sireno-deck/
 ├── package.json          # workspace root
 ├── pnpm-workspace.yaml
 ├── tsconfig.base.json

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { ChannelRegistry } from "./registry.ts";
+import { ChannelRegistry } from "./registry";
 
 export interface UseDeckReturn {
   activeDeckId: string | null;

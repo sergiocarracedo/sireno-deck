@@ -9,8 +9,8 @@ import {
   isLocalAddonSpec,
   loadAddons,
   normalizeAddonEntry,
-  readManifest,
   resolveLocalAddonRoot,
+  type AddonManifestV1,
 } from "@/addon";
 import { SIRENO_ADDON_API_VERSION } from "@/addon";
 
@@ -101,86 +101,33 @@ describe("resolveLocalAddonRoot", () => {
   });
 });
 
-describe("readManifest", () => {
-  it("reads a valid addon manifest", () => {
-    const dir = makeTempDir();
-    writeFileSync(
-      join(dir, "package.json"),
-      JSON.stringify({
-        name: "@me/test-addon",
-        version: "1.2.3",
-        description: "Test addon",
-        sirenoAddon: {
-          apiVersion: SIRENO_ADDON_API_VERSION,
-          main: "./dist/index.js",
-          frontend: { main: "./dist/frontend.js", styles: ["./style.css"] },
-        },
-      }),
-    );
-    const result = readManifest({ addonRoot: dir });
-    expect(result.manifest.apiVersion).toBe(SIRENO_ADDON_API_VERSION);
-    expect(result.manifest.main).toBe("./dist/index.js");
-    expect(result.manifest.name).toBe("@me/test-addon");
-    expect(result.manifest.version).toBe("1.2.3");
-    expect(result.manifest.frontend).toEqual({
-      main: "./dist/frontend.js",
-      styles: ["./style.css"],
-    });
-  });
-
-  it("throws when sirenoAddon field is missing", () => {
-    const dir = makeTempDir();
-    writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "x" }));
-    expect(() => readManifest({ addonRoot: dir })).toThrow(/sirenoAddon/);
-  });
-
-  it("throws when apiVersion is not a number", () => {
-    const dir = makeTempDir();
-    writeFileSync(
-      join(dir, "package.json"),
-      JSON.stringify({ sirenoAddon: { apiVersion: "3", main: "./index.js" } }),
-    );
-    expect(() => readManifest({ addonRoot: dir })).toThrow(/apiVersion/);
-  });
-
-  it("throws when main is missing", () => {
-    const dir = makeTempDir();
-    writeFileSync(
-      join(dir, "package.json"),
-      JSON.stringify({ sirenoAddon: { apiVersion: SIRENO_ADDON_API_VERSION } }),
-    );
-    expect(() => readManifest({ addonRoot: dir })).toThrow(/main/);
-  });
-});
-
 describe("loadAddons", () => {
-  it("loads a local addon by relative path", async () => {
+  it("loads a local addon via sirenodeck.json + entry", async () => {
     const configDir = makeTempDir();
     const addonDir = join(configDir, "my-addon");
     mkdirSync(addonDir, { recursive: true });
     writeFileSync(
-      join(addonDir, "package.json"),
+      join(addonDir, "sirenodeck.json"),
       JSON.stringify({
+        kind: "addon",
+        apiVersion: 1,
         name: "my-addon",
-        sirenoAddon: {
-          apiVersion: SIRENO_ADDON_API_VERSION,
-          main: "./index.ts",
-        },
+        entry: "index.ts",
       }),
     );
     writeFileSync(
       join(addonDir, "index.ts"),
       [
         "import { z } from 'zod';",
+        "const configSchema = z.object({ name: z.string() });",
+        "const frontend = () => null;",
         "export default {",
-        "  apiVersion: 3,",
+        "  apiVersion: 1,",
         "  name: 'my-addon',",
-        "  buttons: [{",
-        "    type: 'my-addon:hello',",
-        "    configSchema: z.object({ name: z.string() }),",
-        "    render: () => null,",
-        "  }],",
-        "};",
+        "  buttonTypes: {",
+        "    'my-addon:hello': { frontend, backend: { configSchema } },",
+        "  },",
+        "} satisfies import('@/addon/api').AddonManifestV1;",
         "",
       ].join("\n"),
     );
@@ -191,8 +138,8 @@ describe("loadAddons", () => {
       currentApiVersion: SIRENO_ADDON_API_VERSION,
     });
     expect(result.addons).toHaveLength(1);
-    expect(result.addons[0]?.module.name).toBe("my-addon");
-    expect(result.addons[0]?.module.buttons?.[0]?.type).toBe("my-addon:hello");
+    expect(result.addons[0]?.manifest.name).toBe("my-addon");
+    expect(result.addons[0]?.manifest.buttonTypes["my-addon:hello"]).toBeDefined();
     expect(result.issues).toHaveLength(0);
   });
 
@@ -218,17 +165,10 @@ describe("loadAddons", () => {
     expect(result.issues.some((i) => /does not exist/.test(i.message))).toBe(true);
   });
 
-  it("records error when addon module export is invalid", async () => {
+  it("records error when sirenodeck.json is missing", async () => {
     const configDir = makeTempDir();
     const addonDir = join(configDir, "broken-addon");
     mkdirSync(addonDir, { recursive: true });
-    writeFileSync(
-      join(addonDir, "package.json"),
-      JSON.stringify({
-        sirenoAddon: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./index.ts" },
-      }),
-    );
-    writeFileSync(join(addonDir, "index.ts"), "export default { not: 'a valid addon' };\n");
     const result = await loadAddons({
       entries: ["./broken-addon"],
       configDir,
@@ -236,7 +176,7 @@ describe("loadAddons", () => {
       currentApiVersion: SIRENO_ADDON_API_VERSION,
     });
     expect(result.addons).toHaveLength(0);
-    expect(result.issues.some((i) => /apiVersion \+ name required/.test(i.message))).toBe(true);
+    expect(result.issues.some((i) => /sirenodeck.json/.test(i.message))).toBe(true);
   });
 
   it("records error for npm addons when no cacheDir is provided", async () => {
@@ -256,76 +196,61 @@ describe("loadAddons", () => {
 describe("AddonRegistry", () => {
   it("indexes addons, button types, and deck types", () => {
     const registry = new AddonRegistry();
-    registry.load({
-      manifest: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./index.ts" },
-      module: {
-        apiVersion: SIRENO_ADDON_API_VERSION,
-        name: "test",
-        buttons: [
-          {
-            type: "test:a",
-            configSchema: {},
-            render: () => null,
-          },
-        ],
-        decks: [
-          {
-            type: "test-deck",
-            createDecks: () => ({}),
-          },
-        ],
-      },
-      source: { kind: "local", specifier: "./test", resolvedPath: "/tmp/test" },
-    });
+    const frontend = () => null;
+    const backend = { configSchema: {} };
+    const deckFactory = () => ({});
+    const manifest: AddonManifestV1 = {
+      apiVersion: 1,
+      name: "test",
+      buttonTypes: { "test:a": { frontend, backend } },
+      decks: { "test-deck": deckFactory },
+    };
+    registry.load(manifest);
     expect(registry.listAddons()).toHaveLength(1);
     expect(registry.hasButtonType("test:a")).toBe(true);
     expect(registry.hasDeckType("test-deck")).toBe(true);
-    expect(registry.getAddon("test")?.module.name).toBe("test");
+    expect(registry.getAddon("test")?.name).toBe("test");
     expect(registry.getButtonType("test:a")?.addonName).toBe("test");
     expect(registry.getDeckType("test-deck")?.addonName).toBe("test");
   });
 
   it("throws on duplicate addon name", () => {
     const registry = new AddonRegistry();
-    const addon = {
-      manifest: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./index.ts" },
-      module: { apiVersion: SIRENO_ADDON_API_VERSION, name: "dup" },
-      source: { kind: "local" as const, specifier: "./x", resolvedPath: "/tmp/x" },
+    const frontend = () => null;
+    const manifest: AddonManifestV1 = {
+      apiVersion: 1,
+      name: "dup",
+      buttonTypes: { "dup:a": { frontend, backend: { configSchema: {} } } },
     };
-    registry.load(addon);
-    expect(() => registry.load(addon)).toThrow(/Duplicate addon name: dup/);
+    registry.load(manifest);
+    expect(() => registry.load(manifest)).toThrow(/Duplicate addon name: dup/);
   });
 
   it("throws on duplicate button type", () => {
     const registry = new AddonRegistry();
+    const frontend = () => null;
+    const backend = { configSchema: {} };
     registry.load({
-      manifest: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./x.ts" },
-      module: {
-        apiVersion: SIRENO_ADDON_API_VERSION,
-        name: "first",
-        buttons: [{ type: "shared:type", configSchema: {}, render: () => null }],
-      },
-      source: { kind: "local", specifier: "./first", resolvedPath: "/tmp/first" },
+      apiVersion: 1,
+      name: "first",
+      buttonTypes: { "shared:type": { frontend, backend } },
     });
     expect(() =>
       registry.load({
-        manifest: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./y.ts" },
-        module: {
-          apiVersion: SIRENO_ADDON_API_VERSION,
-          name: "second",
-          buttons: [{ type: "shared:type", configSchema: {}, render: () => null }],
-        },
-        source: { kind: "local", specifier: "./second", resolvedPath: "/tmp/second" },
+        apiVersion: 1,
+        name: "second",
+        buttonTypes: { "shared:type": { frontend, backend } },
       }),
     ).toThrow(/Duplicate button type/);
   });
 
   it("reset clears all state", () => {
     const registry = new AddonRegistry();
+    const frontend = () => null;
     registry.load({
-      manifest: { apiVersion: SIRENO_ADDON_API_VERSION, main: "./x.ts" },
-      module: { apiVersion: SIRENO_ADDON_API_VERSION, name: "x" },
-      source: { kind: "local", specifier: "./x", resolvedPath: "/tmp/x" },
+      apiVersion: 1,
+      name: "x",
+      buttonTypes: { "x:a": { frontend, backend: { configSchema: {} } } },
     });
     expect(registry.listAddons()).toHaveLength(1);
     registry.reset();

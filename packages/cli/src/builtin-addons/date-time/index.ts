@@ -1,34 +1,36 @@
-import { dateTimeAddon } from "./buttons/index.tsx";
+import type { AddonManifestV1 } from '@/addon/api'
 
-export {
-  builtinDateTimeButton,
-  builtinTimeButton,
-  builtinDateButton,
-  builtinClockButton,
-  builtinAnalogClockButton,
-  builtinLockedTimeTileButton,
-} from "./buttons/index.tsx";
-export {
-  BuiltinDateTimeButtonSchema,
-  BuiltinTimePresetButtonSchema,
-  BuiltinAnalogClockButtonSchema,
-  BuiltinDateButtonSchema,
-  BuiltinClockButtonSchema,
-  LockedTimeTileButtonSchema,
-  DIGITAL_DATE_TIME_INTERVAL_MS,
-  ANALOG_CLOCK_INTERVAL_MS,
-  DATE_BUTTON_INTERVAL_MS,
-  CLOCK_BUTTON_INTERVAL_MS,
-} from "./schemas.ts";
-export { formatDigitalDateTimeLabel } from "./format.ts";
-export { createPoller } from "./poller.ts";
-export type {
-  BuiltinDisplayDateTimeButtonConfig,
-  BuiltinTimePresetButtonConfig,
-  BuiltinAnalogClockButtonConfig,
-  BuiltinDateButtonConfig,
-  BuiltinClockButtonConfig,
-  LockedTimeTileButtonConfig,
-} from "./schemas.ts";
+import analogClockBackend from './buttons/analog-clock/backend'
+import analogClockFrontend from './buttons/analog-clock/frontend'
+import dateTimeBackend from './buttons/custom/backend'
+import dateTimeFrontend from './buttons/custom/frontend'
+import dateBackend from './buttons/date/backend'
+import dateFrontend from './buttons/date/frontend'
+import lockedTimeTileBackend from './buttons/locked-time-tile/backend'
+import lockedTimeTileFrontend from './buttons/locked-time-tile/frontend'
+import timeBackend from './buttons/time/backend'
+import timeFrontend from './buttons/time/frontend'
 
-export default dateTimeAddon;
+export const manifest: AddonManifestV1 = {
+  apiVersion: 1,
+  name: 'date-time',
+  buttonTypes: {
+    'date-time:date-time': {
+      frontend: dateTimeFrontend,
+      backend: dateTimeBackend,
+    },
+    'date-time:time': { frontend: timeFrontend, backend: timeBackend },
+    'date-time:date': { frontend: dateFrontend, backend: dateBackend },
+    'date-time:analog-clock': {
+      frontend: analogClockFrontend,
+      backend: analogClockBackend,
+    },
+    'date-time:locked-time-tile': {
+      frontend: lockedTimeTileFrontend,
+      backend: lockedTimeTileBackend,
+    },
+  },
+  publishIntervalMs: 1000,
+}
+
+export default manifest

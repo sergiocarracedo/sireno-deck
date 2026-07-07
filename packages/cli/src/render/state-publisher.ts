@@ -1,6 +1,6 @@
 import type pino from "pino";
 
-import type { WsBridge } from "./ws-bridge.ts";
+import type { WsBridge } from "./ws-bridge";
 
 export interface StatePublisherChannel {
   readonly channel: string;

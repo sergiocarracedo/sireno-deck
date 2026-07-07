@@ -6,7 +6,7 @@ import {
   readPid,
   readToken,
   resolveDaemonPaths,
-} from "@/util/daemon.ts";
+} from "@/util/daemon";
 
 export interface StatusOptions {
   logger: pino.Logger;

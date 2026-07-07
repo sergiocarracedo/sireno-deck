@@ -1,15 +1,28 @@
-import type { SirenoAddon } from "@/addon/api-types.ts";
+import type { AddonManifestV1 } from "@/addon/api";
 
-import { lockedDeckDef } from "./locked-deck.ts";
-import { coreSessionInfoButton } from "./session-info.ts";
+import sessionInfoBackend from "./buttons/session-info/backend";
+import sessionInfoFrontend from "./buttons/session-info/frontend";
+import sessionLockedDeck from "./decks/locked";
+import sessionTimeBackend from "./buttons/time/backend";
+import sessionTimeFrontend from "./buttons/time/frontend";
 
-export const sessionAddon: SirenoAddon = {
-  apiVersion: 3,
+export const manifest: AddonManifestV1 = {
+  apiVersion: 1,
   name: "session",
-  buttons: [coreSessionInfoButton],
-  decks: [lockedDeckDef],
+  buttonTypes: {
+    "session:info": {
+      frontend: sessionInfoFrontend,
+      backend: sessionInfoBackend,
+    },
+    "session:time": {
+      frontend: sessionTimeFrontend,
+      backend: { ...sessionTimeBackend, internal: true },
+    },
+  },
+  decks: {
+    "session:locked": sessionLockedDeck,
+  },
 };
 
-export { coreSessionInfoButton } from "./session-info.ts";
-export { sessionTimeButton } from "./time-button.tsx";
-export { lockedDeckDef };
+export const sessionAddon = manifest;
+export default manifest;

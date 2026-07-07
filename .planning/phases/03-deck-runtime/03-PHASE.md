@@ -116,7 +116,7 @@ Estimated test count after Phase 03: **~110-130** (adding ~40-60 new tests).
 - [ ] All Phase 02 tests still pass (69/69)
 - [ ] New tests: gesture machine (≥10), pagination (≥5), pub-sub (≥5), store (≥5), deck runtime (≥10), action executor (≥5), config full validation (≥5) — target total ≥110
 - [ ] `pnpm typecheck` clean
-- [ ] `pnpm --filter sireno-deck-2 lint` clean
+- [ ] `pnpm --filter sireno-deck lint` clean
 - [ ] `pnpm format:check` clean
 - [ ] `validateFull` rejects unknown `config` keys, rejects `internal: true` buttons in user config
 - [ ] `session` addon publishes `session.locked` channel when session monitor fires (mock the monitor in tests)

@@ -4,7 +4,7 @@ import type pino from "pino";
 
 import { ProviderError } from "@/system/provider";
 
-import { createLinuxMediaProvider, type CommandExecutor } from "../linux.ts";
+import { createLinuxMediaProvider, type CommandExecutor } from "../linux";
 
 const silentLogger = (): pino.Logger => {
   const noop = (): void => undefined;

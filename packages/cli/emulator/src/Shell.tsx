@@ -1,18 +1,20 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from 'react'
 
-import { DEVICE_MODELS, type DeviceModelSpec } from "@sireno-deck-2/cli";
+import { DEVICE_MODELS, type DeviceModelSpec } from '@sireno-deck/cli'
 
-import { createWsClient, serializeHello, type WsClient } from "./bridge.ts";
-import { DeckFrame } from "./DeckFrame.tsx";
-import { SidePanel } from "./SidePanel.tsx";
+import { createWsClient, serializeHello, type WsClient } from './bridge'
+import { DeckFrame } from './DeckFrame'
+import { SidePanel } from './SidePanel'
 
-const FALLBACK_DECKS: ReadonlyArray<{ id: string; name: string }> = [{ id: "main", name: "Main" }];
+const FALLBACK_DECKS: ReadonlyArray<{ id: string; name: string }> = [
+  { id: 'main', name: 'Main' },
+]
 
 export interface ShellProps {
-  readonly wsUrl: string;
-  readonly frontendUrl: string;
-  readonly initialDeviceModel: string;
-  readonly token?: string;
+  readonly wsUrl: string
+  readonly frontendUrl: string
+  readonly initialDeviceModel: string
+  readonly token?: string
 }
 
 export const Shell = ({
@@ -22,39 +24,39 @@ export const Shell = ({
   token,
 }: ShellProps): React.ReactElement => {
   const initialSpec: DeviceModelSpec =
-    DEVICE_MODELS.find((m) => m.id === initialDeviceModel) ?? DEVICE_MODELS[0]!;
+    DEVICE_MODELS.find((m) => m.id === initialDeviceModel) ?? DEVICE_MODELS[0]!
 
-  const [activeDeckId, setActiveDeckId] = useState<string>("main");
+  const [activeDeckId, setActiveDeckId] = useState<string>('main')
 
-  const sidePanelDecks = FALLBACK_DECKS;
-  const [deviceModel, setDeviceModel] = useState<DeviceModelSpec>(initialSpec);
-  const clientRef = useRef<WsClient | null>(null);
+  const sidePanelDecks = FALLBACK_DECKS
+  const [deviceModel, setDeviceModel] = useState<DeviceModelSpec>(initialSpec)
+  const clientRef = useRef<WsClient | null>(null)
 
   const sendJson = (data: unknown): void => {
-    clientRef.current?.send(JSON.stringify(data));
-  };
+    clientRef.current?.send(JSON.stringify(data))
+  }
 
   const handleGesture = (msg: {
-    deckId: string;
-    position: number;
-    gesture: "tap" | "dbl-tap" | "hold";
+    deckId: string
+    position: number
+    gesture: 'tap' | 'dbl-tap' | 'hold'
   }): void => {
-    sendJson(msg);
-  };
+    sendJson(msg)
+  }
 
   useMemo(() => {
     const client = createWsClient({
       url: wsUrl,
       ...(token !== undefined ? { token } : {}),
       wsFactory: (url: string) => {
-        const ws = new WebSocket(url);
-        ws.addEventListener("open", () => ws.send(serializeHello(token)));
-        return ws as unknown as { send: (d: string) => void; close: () => void };
+        const ws = new WebSocket(url)
+        ws.addEventListener('open', () => ws.send(serializeHello(token)))
+        return ws as unknown as { send: (d: string) => void; close: () => void }
       },
-    });
-    clientRef.current = client;
-    return () => client.close();
-  }, [wsUrl, token]);
+    })
+    clientRef.current = client
+    return () => client.close()
+  }, [wsUrl, token])
 
   return (
     <div
@@ -80,5 +82,5 @@ export const Shell = ({
         />
       </main>
     </div>
-  );
-};
+  )
+}

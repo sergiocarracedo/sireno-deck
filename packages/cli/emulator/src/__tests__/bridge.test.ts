@@ -6,8 +6,8 @@ import {
   computeNextBackoff,
   createWsClient,
   serializeHello,
-} from "../bridge.ts";
-import type { WebSocketLike } from "../bridge.ts";
+} from "../bridge";
+import type { WebSocketLike } from "../bridge";
 
 class MockWebSocket implements WebSocketLike {
   public static instances: MockWebSocket[] = [];

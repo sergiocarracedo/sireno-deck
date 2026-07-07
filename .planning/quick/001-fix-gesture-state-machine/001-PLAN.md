@@ -55,6 +55,6 @@ up, down, up])` returns `dbl-tap`.
 
 ## Verification
 
-- `pnpm --filter sireno-deck-2 typecheck` clean
-- `pnpm --filter sireno-deck-2 lint` clean
+- `pnpm --filter sireno-deck typecheck` clean
+- `pnpm --filter sireno-deck lint` clean
 - `pnpm test` all passing

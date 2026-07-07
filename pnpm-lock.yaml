@@ -50,6 +50,12 @@ importers:
       playwright:
         specifier: ^1.50.0
         version: 1.61.1
+      react:
+        specifier: ^19.0.0
+        version: 19.2.7
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.7(react@19.2.7)
       sharp:
         specifier: ^0.34.0
         version: 0.34.5
@@ -66,49 +72,6 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
-      '@types/node':
-        specifier: ^22.10.0
-        version: 22.20.0
-      '@types/react':
-        specifier: ^19.0.0
-        version: 19.2.17
-      '@types/ws':
-        specifier: ^8.5.13
-        version: 8.18.1
-      '@types/yargs':
-        specifier: ^17.0.35
-        version: 17.0.35
-      lucide-react:
-        specifier: ^1.22.0
-        version: 1.22.0(react@19.2.7)
-      oxfmt:
-        specifier: latest
-        version: 0.56.0
-      oxlint:
-        specifier: latest
-        version: 1.71.0
-      pino-pretty:
-        specifier: ^13.0.0
-        version: 13.1.3
-      tsx:
-        specifier: ^4.22.4
-        version: 4.22.4
-      typescript:
-        specifier: 7.0.1-rc
-        version: 7.0.1-rc
-      vitest:
-        specifier: latest
-        version: 4.1.9(@types/node@22.20.0)(jsdom@25.0.1)(vite@8.1.0(@types/node@22.20.0)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))
-
-  packages/cli/emulator:
-    dependencies:
-      react:
-        specifier: ^19.0.0
-        version: 19.2.7
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.2.7(react@19.2.7)
-    devDependencies:
       '@tailwindcss/vite':
         specifier: ^4.0.0
         version: 4.3.1(vite@6.4.3(@types/node@22.20.0)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)(yaml@2.9.0))
@@ -121,67 +84,48 @@ importers:
       '@testing-library/react':
         specifier: ^16.1.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@types/node':
+        specifier: ^22.10.0
+        version: 22.20.0
       '@types/react':
         specifier: ^19.0.0
         version: 19.2.17
       '@types/react-dom':
         specifier: ^19.0.0
         version: 19.2.3(@types/react@19.2.17)
+      '@types/ws':
+        specifier: ^8.5.13
+        version: 8.18.1
+      '@types/yargs':
+        specifier: ^17.0.35
+        version: 17.0.35
       '@vitejs/plugin-react':
         specifier: ^4.3.4
         version: 4.7.0(vite@6.4.3(@types/node@22.20.0)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)(yaml@2.9.0))
       jsdom:
         specifier: ^25.0.1
         version: 25.0.1
+      lucide-react:
+        specifier: ^1.22.0
+        version: 1.22.0(react@19.2.7)
+      oxfmt:
+        specifier: latest
+        version: 0.56.0
+      oxlint:
+        specifier: latest
+        version: 1.71.0
+      pino-pretty:
+        specifier: ^13.0.0
+        version: 13.1.3
       tailwindcss:
         specifier: ^4.0.0
         version: 4.3.1
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
       typescript:
         specifier: 7.0.1-rc
         version: 7.0.1-rc
-      vite:
-        specifier: ^6.0.0
-        version: 6.4.3(@types/node@22.20.0)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)(yaml@2.9.0)
-      vitest:
-        specifier: ^4.1.9
-        version: 4.1.9(@types/node@22.20.0)(jsdom@25.0.1)(vite@6.4.3(@types/node@22.20.0)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)(yaml@2.9.0))
-
-  packages/cli/frontend:
-    dependencies:
-      react:
-        specifier: ^19.0.0
-        version: 19.2.7
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.2.7(react@19.2.7)
-      sireno-deck-2:
-        specifier: workspace:*
-        version: link:..
-    devDependencies:
-      '@tailwindcss/vite':
-        specifier: ^4.0.0
-        version: 4.3.1(vite@6.4.3(@types/node@22.20.0)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)(yaml@2.9.0))
-      '@testing-library/jest-dom':
-        specifier: ^6.6.0
-        version: 6.9.1
-      '@testing-library/react':
-        specifier: ^16.1.0
-        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@types/react':
-        specifier: ^19.0.0
-        version: 19.2.17
-      '@types/react-dom':
-        specifier: ^19.0.0
-        version: 19.2.3(@types/react@19.2.17)
-      '@vitejs/plugin-react':
-        specifier: ^4.3.0
-        version: 4.7.0(vite@6.4.3(@types/node@22.20.0)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)(yaml@2.9.0))
-      jsdom:
-        specifier: ^25.0.0
-        version: 25.0.1
-      tailwindcss:
-        specifier: ^4.0.0
-        version: 4.3.1
       vite:
         specifier: ^6.0.0
         version: 6.4.3(@types/node@22.20.0)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)(yaml@2.9.0)

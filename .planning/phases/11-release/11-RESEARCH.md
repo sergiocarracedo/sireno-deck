@@ -13,6 +13,7 @@ date: 2026-06-27
 **Confidence: HIGH** — standard format, well-known.
 
 **Structure:**
+
 ```
 # Changelog
 
@@ -41,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Conventional Commits grouping
 
 **Decision:** Group commits by `type:` prefix:
+
 - `feat:` → "Added" (or "Changed" if significant enough)
 - `fix:` → "Fixed"
 - `refactor:` → "Changed"
@@ -57,7 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 **Decision:** Match the legacy `sireno-deck` README structure roughly, but rewrite for v2:
 
 ```
-# sireno-deck-2
+# sireno-deck
 
 [1-paragraph why]
 
@@ -156,6 +158,7 @@ packages/cli/src/builtin-addons/brightness/README.md            # NEW
 ## Tests / verification
 
 No code tests (it's docs). Verification:
+
 - Every per-addon README references the button types exported by its `index.ts` (cross-check via `grep`).
 - The root README's `config.yml` example actually parses against the schema (run `pnpm exec tsx -e "loadConfig({ configPath: '...' })"` on the example).
 - The CHANGELOG renders correctly on GitHub.

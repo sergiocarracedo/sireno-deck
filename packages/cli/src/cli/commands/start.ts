@@ -16,9 +16,9 @@ import {
   writeChildren,
   writePid,
   writeToken,
-} from "@/util/daemon.ts";
+} from "@/util/daemon";
 
-import { startHttpServer, type RunningHttpServer } from "../http-server.ts";
+import { startHttpServer, type RunningHttpServer } from "../http-server";
 
 import {
   preflight,

@@ -1,6 +1,6 @@
 import { cpus, loadavg, totalmem, freemem, uptime } from "node:os";
 
-import type { AddonPoller } from "@/addon/api-types.ts";
+import type { AddonPoller } from "@/addon/api-types";
 
 export const createPoller = (): AddonPoller => ({
   channels: [

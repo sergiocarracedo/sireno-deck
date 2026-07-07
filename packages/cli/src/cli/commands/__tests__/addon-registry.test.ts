@@ -3,28 +3,60 @@ import { describe, expect, it } from "vitest";
 import {
   collectBuiltinAddonRegistry,
   discoverAddonPollers,
+  scanBuiltinAddons,
+  validateBuiltinButtonConfigs,
   type ScannedAddon,
-} from "../addon-registry.ts";
+} from "../addon-registry";
 
 const scannedFixture: ReadonlyArray<ScannedAddon> = [
-  { name: "date-time", types: ["core:time", "core:date"], frontendEntry: "/abs/date-time/frontend.tsx", publishIntervalMs: 1000, pollerEntry: null },
-  { name: "weather", types: ["core:weather"], frontendEntry: "/abs/weather/frontend.tsx", publishIntervalMs: 600000, pollerEntry: null },
-  { name: "no-frontend", types: ["core:custom"], frontendEntry: null, publishIntervalMs: 1000, pollerEntry: null },
+  {
+    name: "date-time",
+    types: ["date-time:time", "date-time:date"],
+    frontendEntry: "/abs/date-time/frontend",
+    publishIntervalMs: 1000,
+    pollerEntry: null,
+    buttonTypes: {},
+    deckTypes: {},
+    source: "regex",
+    globalBackendEntry: null,
+  },
+  {
+    name: "weather",
+    types: ["core:weather"],
+    frontendEntry: "/abs/weather/frontend",
+    publishIntervalMs: 600000,
+    pollerEntry: null,
+    buttonTypes: {},
+    deckTypes: {},
+    source: "regex",
+    globalBackendEntry: null,
+  },
+  {
+    name: "no-frontend",
+    types: ["core:custom"],
+    frontendEntry: null,
+    publishIntervalMs: 1000,
+    pollerEntry: null,
+    buttonTypes: {},
+    deckTypes: {},
+    source: "regex",
+    globalBackendEntry: null,
+  },
 ];
 
 describe("collectBuiltinAddonRegistry", () => {
-  it("discovers the built-in addons", () => {
-    const registry = collectBuiltinAddonRegistry();
+  it("discovers the built-in addons", async () => {
+    const registry = await collectBuiltinAddonRegistry();
     expect(registry.scanned.length).toBeGreaterThan(0);
     const names = registry.scanned.map((a) => a.name);
     expect(names).toContain("date-time");
     expect(names).toContain("weather");
   });
 
-  it("populates byType with the type → addon map", () => {
-    const registry = collectBuiltinAddonRegistry();
-    expect(registry.byType.get("core:time")?.name).toBe("date-time");
-    expect(registry.byType.get("core:weather")?.name).toBe("weather");
+  it("populates byType with the type → addon map", async () => {
+    const registry = await collectBuiltinAddonRegistry();
+    expect(registry.byType.get("date-time:time")?.name).toBe("date-time");
+    expect(registry.byType.get("weather:weather")?.name).toBe("weather");
   });
 });
 
@@ -34,11 +66,38 @@ describe("discoverAddonPollers", () => {
     expect(discovered).toEqual([]);
   });
 
-  it("filters out addons without publishIntervalMs in the scanned manifest", async () => {
+  it("filters out addons without publishIntervalMs", async () => {
     const without: ScannedAddon[] = [
-      { name: "no-cadence", types: ["core:nope"], frontendEntry: null, publishIntervalMs: null, pollerEntry: "/some/poller.ts" },
+      {
+        name: "no-cadence",
+        types: ["core:nope"],
+        frontendEntry: null,
+        publishIntervalMs: null,
+        pollerEntry: "/some/poller",
+        buttonTypes: {},
+        deckTypes: {},
+        source: "regex",
+        globalBackendEntry: null,
+      },
     ];
     const discovered = await discoverAddonPollers({}, without);
     expect(discovered).toEqual([]);
+  });
+});
+
+describe("validateBuiltinButtonConfigs", () => {
+  it("finds no issues with builtin button configs", () => {
+    const issues = validateBuiltinButtonConfigs();
+    expect(issues).toHaveLength(0);
+  });
+});
+
+describe("JSON manifest scan path", () => {
+  it("discovers builtin addons via their sirenodeck.json", async () => {
+    const builtinScanned = await scanBuiltinAddons();
+    const dateTime = builtinScanned.find((s) => s.name === "date-time");
+    expect(dateTime?.source).toBe("json");
+    expect(dateTime?.frontendEntry).toContain("date-time/index.ts");
+    expect(dateTime?.types.length).toBeGreaterThan(0);
   });
 });

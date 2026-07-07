@@ -15,8 +15,8 @@ const { startWsBridge } = await import('@/render/ws-bridge')
 const bridgeMock = startWsBridge as unknown as ReturnType<typeof vi.fn>
 
 const { createLogger } = await import('@/util/logger')
-const { runEmulatorMode } = await import('../emulator-mode.ts')
-const { createRuntime } = await import('@/deck/runtime.ts')
+const { runEmulatorMode } = await import('../emulator-mode')
+const { createRuntime } = await import('@/deck/runtime')
 
 const silentLogger = () => createLogger({ level: 'silent' })
 
@@ -139,29 +139,13 @@ describe('runEmulatorMode', () => {
 
     const handle = await promise
     expect(spawnMock).toHaveBeenCalledWith(
-      'pnpm',
-      [
-        '--filter',
-        'sireno-deck-2-frontend',
-        'run',
-        'dev',
-        '--',
-        '--port',
-        '5180',
-      ],
+      expect.stringContaining('node_modules/.bin/vite'),
+      ['--config', expect.stringContaining('frontend/vite.config.ts'), '--port', '5180'],
       expect.objectContaining({ stdio: ['ignore', 'pipe', 'pipe'] }),
     )
     expect(spawnMock).toHaveBeenCalledWith(
-      'pnpm',
-      [
-        '--filter',
-        '@sireno-deck-2/emulator',
-        'run',
-        'dev',
-        '--',
-        '--port',
-        '52938',
-      ],
+      expect.stringContaining('node_modules/.bin/vite'),
+      ['--config', expect.stringContaining('emulator/vite.config.ts'), '--port', '52938'],
       expect.objectContaining({ stdio: ['ignore', 'pipe', 'pipe'] }),
     )
     expect(handle.emulatorUrl).toBe('http://127.0.0.1:52938')

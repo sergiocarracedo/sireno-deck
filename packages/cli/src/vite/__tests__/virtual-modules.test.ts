@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildAddonsImports,
   buildAddonsRegistryModule,
-} from "../virtual-modules.ts";
+} from "../virtual-modules";
 
 describe("buildAddonsImports", () => {
   it("emits no imports for empty addons", () => {
@@ -20,8 +20,8 @@ describe("buildAddonsImports", () => {
 
   it("emits one import + one entry per addon with a frontend", () => {
     const out = buildAddonsImports([
-      { name: "date-time", frontend: { main: "./frontend.tsx" } },
-      { name: "weather", frontend: { main: "./frontend.tsx" } },
+      { name: "date-time", frontend: { main: "./frontend" } },
+      { name: "weather", frontend: { main: "./frontend" } },
     ]);
     expect(out).toContain("import * as date_time_frontend");
     expect(out).toContain("import * as weather_frontend");
@@ -41,18 +41,18 @@ describe("buildAddonsRegistryModule", () => {
     const out = buildAddonsRegistryModule([
       {
         name: "date-time",
-        frontend: { main: "./frontend.tsx" },
+        frontend: { main: "./frontend" },
         buttons: [{ type: "core:time" }, { type: "core:date" }],
       },
       {
         name: "weather",
-        frontend: { main: "./frontend.tsx" },
+        frontend: { main: "./frontend" },
         buttons: [{ type: "core:weather" }],
       },
     ]);
-    expect(out).toContain('"core:time": { addonName: "date-time"');
-    expect(out).toContain('"core:date": { addonName: "date-time"');
-    expect(out).toContain('"core:weather": { addonName: "weather"');
+    expect(out).toContain('"date-time:time": { addonName: "date-time"');
+    expect(out).toContain('"date-time:date": { addonName: "date-time"');
+    expect(out).toContain('"weather:weather": { addonName: "weather"');
     expect(out).toContain("import * as date_time_frontend");
     expect(out).toContain("import * as weather_frontend");
   });
@@ -66,7 +66,7 @@ describe("buildAddonsRegistryModule", () => {
 
   it("skips addons without buttons", () => {
     const out = buildAddonsRegistryModule([
-      { name: "no-buttons", frontend: { main: "./frontend.tsx" } },
+      { name: "no-buttons", frontend: { main: "./frontend" } },
     ]);
     expect(out).not.toContain("import");
   });
@@ -75,11 +75,11 @@ describe("buildAddonsRegistryModule", () => {
     const out = buildAddonsRegistryModule([
       {
         name: "@scope/my-addon",
-        frontend: { main: "./frontend.tsx" },
+        frontend: { main: "./frontend" },
         buttons: [{ type: "core:foo" }],
       },
     ]);
     expect(out).toContain("import * as _scope_my_addon_frontend");
-    expect(out).toContain('"core:foo": { addonName: "@scope/my-addon"');
+    expect(out).toContain('"@scope/my-addon:foo": { addonName: "@scope/my-addon"');
   });
 });

@@ -62,5 +62,5 @@ The orchestration layer between core primitives (Plan 01) and built-in addons (P
 
 - `pnpm exec vitest run` → 137/137 passing
 - `pnpm typecheck` → clean
-- `pnpm --filter sireno-deck-2 lint` → 0 warnings, 0 errors
+- `pnpm --filter sireno-deck lint` → 0 warnings, 0 errors
 - `pnpm format:check` → all 85 files conform

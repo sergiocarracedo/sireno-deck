@@ -1,8 +1,8 @@
-import type { Methods } from "@/deck/methods.ts";
-import type { GestureKind } from "@/core/gesture-state.ts";
+import type { Methods } from "@/deck/methods";
+import type { GestureKind } from "@/core/gesture-state";
 
-export type { Methods } from "@/deck/methods.ts";
-export type { GestureKind } from "@/core/gesture-state.ts";
+export type { Methods } from "@/deck/methods";
+export type { GestureKind } from "@/core/gesture-state";
 
 export interface ChannelPayload {
   [key: string]: unknown;

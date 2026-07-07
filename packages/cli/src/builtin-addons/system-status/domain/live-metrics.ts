@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 
-import type { SystemStatusMetricId, CanonicalSystemMetricSnapshot } from "../schemas.ts";
+import type { SystemStatusMetricId, CanonicalSystemMetricSnapshot } from "../schemas";
 
 const formatBytes = (bytes: number): string => {
   if (bytes < 1024) return `${bytes} B`;

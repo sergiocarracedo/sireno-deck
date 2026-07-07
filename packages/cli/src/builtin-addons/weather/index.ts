@@ -1,14 +1,19 @@
-import { weatherAddon } from "./buttons/weather.tsx";
+import type { AddonManifestV1 } from "@/addon/api";
 
-export { builtinWeatherButton } from "./buttons/weather.tsx";
-export {
-  WeatherButtonSchema,
-  WeatherLocationSchema,
-  WEATHER_DEFAULT_POLL_MS,
-} from "./schemas.ts";
-export { fetchWeather } from "./domain/fetch.ts";
-export { describeWeatherCode, WMO_CODE_TO_DESCRIPTION } from "./domain/codes.ts";
-export { createPoller } from "./poller.ts";
-export type { WeatherButtonConfig, WeatherLocation, WeatherSnapshot } from "./schemas.ts";
+import weatherBackend from "./buttons/weather/backend";
+import weatherFrontend from "./buttons/weather/frontend";
 
-export default weatherAddon;
+export const manifest: AddonManifestV1 = {
+  apiVersion: 1,
+  name: "weather",
+  buttonTypes: {
+    "weather:weather": {
+      frontend: weatherFrontend,
+      backend: weatherBackend,
+    },
+  },
+  publishIntervalMs: 600_000,
+};
+
+export const weatherAddon = manifest;
+export default manifest;

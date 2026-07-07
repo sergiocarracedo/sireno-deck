@@ -1,8 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { fetchWeather } from "./domain/fetch.ts";
-import type { AddonPoller } from "@/addon/api-types.ts";
+import { fetchWeather } from "./domain/fetch";
+import type { AddonPoller } from "@/addon/api-types";
 
 const readWeatherConfig = (): {
   location?: { latitude: number; longitude: number; name?: string };
@@ -50,8 +50,8 @@ export const createPoller = (): AddonPoller => ({
             temperature: snapshot.temperature,
             windSpeed: snapshot.windSpeed,
             description: snapshot.description,
+            wmoCode: snapshot.wmoCode,
             units: cfg.units,
-            ...(cfg.location.name !== undefined ? { locationName: cfg.location.name } : {}),
           };
         } catch (err) {
           return {

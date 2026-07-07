@@ -12,8 +12,8 @@ import { createDarwinKeyMacroProvider } from "@/system/key-macro/darwin";
 
 import { createWindowsKeyMacroProvider } from "@/system/key-macro/windows";
 
-export { isValidKey, knownKeys, parseCombo } from "./parser.ts";
-export type { ParsedCombo } from "./parser.ts";
+export { isValidKey, knownKeys, parseCombo } from "./parser";
+export type { ParsedCombo } from "./parser";
 
 export interface CreateKeyMacroProviderOptions {
   readonly platform?: NodeJS.Platform;

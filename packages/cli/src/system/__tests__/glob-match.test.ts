@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { compileDeckMatcher, matchesPattern } from "../glob-match.ts";
+import { compileDeckMatcher, matchesPattern } from "../glob-match";
 
 describe("matchesPattern", () => {
   it("literal substring matches case-insensitively", () => {

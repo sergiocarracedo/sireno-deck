@@ -48,5 +48,5 @@ Foundation for Phase 05 — three small modules:
 
 - `pnpm exec vitest run` → 224/224 passing (was 200; added 24)
 - `pnpm typecheck` → clean
-- `pnpm --filter sireno-deck-2 lint` → 0 warnings, 0 errors
+- `pnpm --filter sireno-deck lint` → 0 warnings, 0 errors
 - `pnpm format:check` → all 164 files conform

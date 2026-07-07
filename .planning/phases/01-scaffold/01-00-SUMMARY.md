@@ -28,7 +28,7 @@ Created the pnpm monorepo skeleton: TS 7.0.1-rc + oxlint + oxfmt + vitest + yarg
 
 - `pnpm typecheck` clean
 - `pnpm exec vitest run` 8/8 passing
-- `pnpm --filter sireno-deck-2 lint` clean
+- `pnpm --filter sireno-deck lint` clean
 - `node bin/sireno.js --version` works
 - `node bin/sireno.js status` works
 

@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import { describe, expect, it } from "vitest";
 
-import { formatDigitalDateTimeLabel } from "../format.ts";
+import { formatDigitalDateTimeLabel } from "../shared/format";
 
 describe("formatDigitalDateTimeLabel", () => {
   const fixed = new Date("2026-06-24T14:35:07.123Z");

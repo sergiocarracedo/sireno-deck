@@ -1,31 +1,32 @@
 import { describe, expect, it } from "vitest";
 
-import { isSirenoAddon } from "@/addon/api-types.ts";
+import manifestJson from "../sirenodeck.json" with { type: "json" };
 
-import { internalSettingsAddon } from "../index.ts";
+import settingsDeck from "../decks/settings";
 
-describe("internal-settings addon", () => {
-  it("addon object validates via isSirenoAddon", () => {
-    expect(isSirenoAddon(internalSettingsAddon)).toBe(true);
+describe("internal-settings sirenodeck.json", () => {
+  it("declares kind=addon, apiVersion 1, and the expected name", () => {
+    expect(manifestJson.kind).toBe("addon");
+    expect(manifestJson.apiVersion).toBe(1);
+    expect(manifestJson.name).toBe("internal-settings");
   });
 
-  it("all three buttons have internal: true", () => {
-    const buttons = internalSettingsAddon.buttons ?? [];
-    expect(buttons.length).toBe(3);
-    for (const b of buttons) {
-      expect((b as { internal?: boolean }).internal).toBe(true);
-    }
+  it("points at the entry file", () => {
+    expect(manifestJson.entry).toBe("index.ts");
   });
+});
 
-  it("createDecks returns a settings deck with the three buttons", () => {
-    const def = internalSettingsAddon.decks?.[0];
-    expect(def).toBeDefined();
-    const result = def!.createDecks({ config: {} as never });
-    expect(result.settings).toBeDefined();
-    const buttons = (result.settings!.buttons ?? []) as Array<{ type: string }>;
-    const types = buttons.map((b) => b.type);
-    expect(types).toContain("core:settings-brightness");
-    expect(types).toContain("core:settings-theme");
-    expect(types).toContain("core:settings-about");
+describe("internal-settings settings deck", () => {
+  it("returns the three buttons in order", () => {
+    const deck = settingsDeck(0);
+    expect(deck.name).toBe("Settings");
+    const types = (deck.buttons ?? []).map(
+      (b) => (b as { type: string }).type,
+    );
+    expect(types).toEqual([
+      "internal-settings:brightness",
+      "internal-settings:theme",
+      "internal-settings:about",
+    ]);
   });
 });

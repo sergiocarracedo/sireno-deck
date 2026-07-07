@@ -13,7 +13,7 @@ vi.mock("@/render/browser-renderer", () => ({
   }),
 }));
 
-import { runRealMode } from "../real-mode.ts";
+import { runRealMode } from "../real-mode";
 
 const silentLogger = {
   info: vi.fn(),

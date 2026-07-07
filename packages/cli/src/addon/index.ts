@@ -1,6 +1,6 @@
-export * from "./api.ts";
-export * from "./api-types.ts";
-export * from "./loader.ts";
-export * from "./manifest.ts";
-export * from "./registry.ts";
-export * from "./spec.ts";
+export * from "./api";
+export { SIRENO_ADDON_API_VERSION } from "./api-types";
+export * from "./loader";
+export * from "./manifest";
+export * from "./registry";
+export * from "./spec";

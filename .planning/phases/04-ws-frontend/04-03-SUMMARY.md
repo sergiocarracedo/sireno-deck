@@ -19,7 +19,7 @@ The wire-up layer between the React frontend and the WS bridge. The frontend now
 - **`use-addon-channel.ts`** — `useAddonChannel<T>(channel)` returns `{ value }`; subscribes on mount, unsubscribes on unmount.
 - **`use-deck.ts`** — `useDeck()` returns `{ activeDeckId }`; subscribes to `runtime:activeDeck`.
 - **`use-button-action.ts`** — `useButtonAction()` returns `{ tap, dblTap, hold }` callbacks that publish to `runtime:button-{tap,dblTap,hold}`.
-- **`index.ts`** — barrel re-exported as `sireno-deck-2/react`.
+- **`index.ts`** — barrel re-exported as `sireno-deck/react`.
 
 ### WS client (`packages/cli/frontend/src/bridge/`)
 
@@ -61,7 +61,7 @@ The wire-up layer between the React frontend and the WS bridge. The frontend now
 ## Bugs / adjustments during execution
 
 - `use-addon-channel.ts` initially imported `ChannelRegistry` as `type` (erased at runtime). Changed to value import.
-- Cross-package imports from frontend to cli needed to use the `sireno-deck-2/react` sub-path; relative paths across packages don't resolve.
+- Cross-package imports from frontend to cli needed to use the `sireno-deck/react` sub-path; relative paths across packages don't resolve.
 - Test file path bug: `hooks.test.tsx` was at `src/react/hooks.test.tsx` but imported `../registry.ts` (sibling-of-parent) — fixed to `./registry.ts`.
 - Initial hooks test rendered a function-returning-the-value (not a hook), so `result.current` never updated after `act(publish)`. Rewrote test to use the actual `useAddonChannel` hook.
 - `virtual:sireno/token` couldn't resolve in vitest (only the vite plugin provides it). Added a mock file + alias.
@@ -76,6 +76,6 @@ The wire-up layer between the React frontend and the WS bridge. The frontend now
 ## Smoke
 
 - `pnpm exec vitest run` → 200/200 passing (was 189; Plan 03 added 11)
-- `pnpm --filter sireno-deck-2 typecheck` → clean
-- `pnpm --filter sireno-deck-2 lint` → 0 warnings, 0 errors
+- `pnpm --filter sireno-deck typecheck` → clean
+- `pnpm --filter sireno-deck lint` → 0 warnings, 0 errors
 - `pnpm format:check` → all 151 files conform

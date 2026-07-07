@@ -1,6 +1,6 @@
-import type { AddonRegistry } from "@/addon/registry.ts";
-import { isSystemButtonType } from "@/deck/system-buttons/types.ts";
-import type { RawConfig } from "./schemas.ts";
+import type { AddonRegistry } from "@/addon/registry";
+import { isSystemButtonType } from "@/deck/system-buttons/types";
+import type { RawConfig } from "./schemas";
 
 export interface BootstrapIssue {
   level: "error" | "warning";
@@ -86,7 +86,7 @@ export const validateFull = (config: RawConfig, registry: AddonRegistry): FullVa
         return;
       }
       const def = registry.getButtonType(btn.type)!;
-      if (isSystemButtonType(btn.type) || def.def.internal === true) {
+      if (isSystemButtonType(btn.type) || def.def.backend.internal === true) {
         issues.push({
           level: "error",
           path: `${path}.type`,
@@ -94,14 +94,14 @@ export const validateFull = (config: RawConfig, registry: AddonRegistry): FullVa
         });
         return;
       }
-      const parseResult = (
-        def.def.configSchema as {
-          safeParse: (input: unknown) => {
-            success: boolean;
-            error?: { issues: Array<{ path: Array<string | number>; message: string }> };
-          };
-        }
-      ).safeParse(btn.config ?? {});
+      const schema = def.def.backend.configSchema as {
+        safeParse: (input: unknown) => {
+          success: boolean;
+          error?: { issues: Array<{ path: Array<string | number>; message: string }> };
+        };
+      } | undefined;
+      if (schema === undefined) return;
+      const parseResult = schema.safeParse(btn.config ?? {});
       if (!parseResult.success) {
         const first = parseResult.error?.issues[0];
         const msg = first

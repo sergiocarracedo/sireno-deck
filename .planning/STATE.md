@@ -56,7 +56,7 @@ Captured 2026-06-27 after quick task 010 ("show button type as label fallback").
 
 **3/3 plans executed. 484 tests passing (3 pre-existing ButtonFrame test failures unrelated to this phase).**
 
-Legacy visual alignment: theme CSS tokens match v1 exact hex values (#2e3540 bg, #eef2f7 fg, #7dd3fc accent, #53738B frame). IBM Plex Sans/Mono replace Inter/JetBrains Mono via @font-face. All 5 components (Text, Icon, Label, Chip, TapIndicator) and 4 surfaces (IconLabel, Bars, LabelValueList, SplitAction) re-implemented with data-sireno-ui-* attributes. All 6 built-in addon frontends migrated from raw `<span>` to `<Text>` component.
+Legacy visual alignment: theme CSS tokens match v1 exact hex values (#2e3540 bg, #eef2f7 fg, #7dd3fc accent, #53738B frame). IBM Plex Sans/Mono replace Inter/JetBrains Mono via @font-face. All 5 components (Text, Icon, Label, Chip, TapIndicator) and 4 surfaces (IconLabel, Bars, LabelValueList, SplitAction) re-implemented with data-sireno-ui-\* attributes. All 6 built-in addon frontends migrated from raw `<span>` to `<Text>` component.
 
 - **13-01:** Theme CSS tokens + fonts + @font-face (`7b592b3`)
 - **13-02:** Components + surfaces (`c2e2c40`)
@@ -114,7 +114,7 @@ Legacy visual alignment: theme CSS tokens match v1 exact hex values (#2e3540 bg,
 - Device enumeration: `listStreamDecks()` (SDK v7 API) returns `StreamDeckDeviceInfo[]` w/ model/path/serialNumber
 - `connectStreamDeck(selector)` opens + returns `StreamDeck` handle (MODEL/CONTROLS/methods)
 - Udev rules helper (Linux): literal rules + `formatInstallInstructions()` + `installUdevRules()` throws `UdevPermissionError`
-- `device-config.ts` atomic write to `$XDG_CONFIG_HOME/sireno-deck-2/device.json`
+- `device-config.ts` atomic write to `$XDG_CONFIG_HOME/sireno-deck/device.json`
 - `device-selection.ts` interactive prompt w/ `savedButStale` flag (via `@inquirer/prompts`)
 - Browser renderer pipeline: Playwright + sharp, hybrid trigger (timer 500ms + pub-sub debounce 50ms), per-key BufferChangeTracker (sha1[:16]) skip-or-write
 - `runRealMode({frontendUrl, device, logger})` → `{ stop }` with try/finally device.close
@@ -132,6 +132,7 @@ None.
 
 - Phase 14 added: Media player backend — wire poller to OS media provider (playerctl), publish real state, execute transport actions via backend
 - Phase 15 added: Theme base UI — migrate legacy `src/ui/` as shareable base layer so themes don't need to reimplement components/surfaces
+- Phase 16 added: Migrate weather addon — fix type errors, broken imports, invalid tone values, and manifest type reference in weather addon
 
 ## Deferred items
 
@@ -143,16 +144,17 @@ None.
 
 ## Quick Tasks Completed
 
-| #   | Description                                                                | Date       | Commit  | Directory                                    |
-| --- | -------------------------------------------------------------------------- | ---------- | ------- | -------------------------------------------- |
-| 003 | Correct button size (72x72px) + render real buttons                        | 2026-06-27 | 6ab6fe4 | `.planning/quick/003-correct-button-size/`   |
-| 004 | Emulator button fixes (cross-button dbl-tap + crystal visuals)             | 2026-06-27 | 3b221c5 | `.planning/quick/004-emulator-button-fixes/` |
-| 005 | Gesture thresholds (500ms) + transparent emulator buttons + clean frontend | 2026-06-27 | 8a5fccf | `.planning/quick/005-gesture-and-cleanup/`   |
-| 006 | Frontend forces deck dimensions based on device model                      | 2026-06-27 | 28ec043 | `.planning/quick/006-deck-dimensions/`       |
-| 007 | Share BUTTON_SIZE_PX constant frontend↔emulator                            | 2026-06-27 | 70233d9 | (no quick dir)                               |
-| 008 | Respect button position + add gap + match emulator frame                   | 2026-06-27 | 583d849 | (no quick dir)                               |
-| 009 | Deck grid background is always black                                       | 2026-06-27 | 8f40011 | (no quick dir)                               |
-| 010 | Show button type as label fallback (until addon frontend registry)         | 2026-06-27 | 5a2c40f | (no quick dir)                               |
-| 011 | Add phase 12 (addon-frontend-registry) to roadmap                          | 2026-06-27 | 7de539c | (no quick dir)                               |
+| #   | Description                                                                | Date       | Commit  | Directory                                               |
+| --- | -------------------------------------------------------------------------- | ---------- | ------- | ------------------------------------------------------- |
+| 003 | Correct button size (72x72px) + render real buttons                        | 2026-06-27 | 6ab6fe4 | `.planning/quick/003-correct-button-size/`              |
+| 004 | Emulator button fixes (cross-button dbl-tap + crystal visuals)             | 2026-06-27 | 3b221c5 | `.planning/quick/004-emulator-button-fixes/`            |
+| 005 | Gesture thresholds (500ms) + transparent emulator buttons + clean frontend | 2026-06-27 | 8a5fccf | `.planning/quick/005-gesture-and-cleanup/`              |
+| 006 | Frontend forces deck dimensions based on device model                      | 2026-06-27 | 28ec043 | `.planning/quick/006-deck-dimensions/`                  |
+| 007 | Share BUTTON_SIZE_PX constant frontend↔emulator                            | 2026-06-27 | 70233d9 | (no quick dir)                                          |
+| 008 | Respect button position + add gap + match emulator frame                   | 2026-06-27 | 583d849 | (no quick dir)                                          |
+| 009 | Deck grid background is always black                                       | 2026-06-27 | 8f40011 | (no quick dir)                                          |
+| 010 | Show button type as label fallback (until addon frontend registry)         | 2026-06-27 | 5a2c40f | (no quick dir)                                          |
+| 011 | Add phase 12 (addon-frontend-registry) to roadmap                          | 2026-06-27 | 7de539c | (no quick dir)                                          |
+| 012 | Capture frontend/emulator vite stderr in CLI errors                        | 2026-06-29 | 47d9e8f | `.planning/quick/009-capture-frontend-emulator-stderr/` |
 
-Last activity: 2026-06-27 - Phase 09 executed and verified; phase 12 added to roadmap; quick tasks 007-011 committed (emulator polish + roadmap plan)
+Last activity: 2026-06-29 - Completed quick task 012: capture frontend/emulator vite stderr in CLI

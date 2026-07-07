@@ -96,7 +96,7 @@ The real-device pipeline: enumerate Stream Deck devices, let the user pick one (
 
 - CLI `run` command (`packages/cli/src/cli/commands/run.ts`) — currently a Phase 0 placeholder; will be replaced.
 - CLI `start` command — same.
-- `sireno-deck-2/vite` plugin's spawned vite URL flows into renderer.
+- `sireno-deck/vite` plugin's spawned vite URL flows into renderer.
 - `@/deck/runtime` (Phase 03) emits `runtime:activeDeck` events via pub-sub that the renderer will subscribe to.
 
 </code_context>

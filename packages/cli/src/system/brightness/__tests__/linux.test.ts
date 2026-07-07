@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { createLinuxBrightnessProvider } from "../linux.ts";
+import { createLinuxBrightnessProvider } from "../linux";
 
 const silentLogger = () => ({
   info: () => undefined,

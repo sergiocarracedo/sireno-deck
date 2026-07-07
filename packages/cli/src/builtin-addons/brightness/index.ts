@@ -1,9 +1,20 @@
-import { brightnessAddon } from "./buttons/brightness.tsx";
+import type { AddonManifestV1 } from "@/addon/api";
 
-export { builtinBrightnessButton } from "./buttons/brightness.tsx";
-export { BrightnessButtonSchema } from "./schemas.ts";
-export { buildMacOSCommand, formatCommand, isMacOS, setBrightnessMacOS } from "./domain/macos.ts";
-export { createPoller } from "./poller.ts";
-export type { BrightnessButtonConfig } from "./schemas.ts";
+import brightnessBackend from "./buttons/brightness/backend";
+import brightnessFrontend from "./buttons/brightness/frontend";
 
-export default brightnessAddon;
+export const manifest: AddonManifestV1 = {
+  apiVersion: 1,
+  name: "brightness",
+  buttonTypes: {
+    "brightness:brightness": {
+      frontend: brightnessFrontend,
+      backend: brightnessBackend,
+    },
+  },
+  publishIntervalMs: 2000,
+};
+
+export const brightnessAddon = manifest;
+export default manifest;
+export { brightnessBackend, brightnessFrontend };

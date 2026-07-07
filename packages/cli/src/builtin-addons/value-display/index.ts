@@ -1,14 +1,19 @@
-import { valueDisplayAddon } from "./buttons/value-display.tsx";
+import type { AddonManifestV1 } from "@/addon/api";
 
-export { builtinValueDisplayButton } from "./buttons/value-display.tsx";
-export {
-  ValueDisplayButtonSchema,
-  ValueEntrySchema,
-  VALUE_DISPLAY_DEFAULT_POLL_MS,
-  VALUE_DISPLAY_DEFAULT_TIMEOUT_MS,
-} from "./schemas.ts";
-export { formatCommandOutput } from "./domain/format-command-output.ts";
-export { createPoller } from "./poller.ts";
-export type { ValueEntry, ValueDisplayButtonConfig } from "./schemas.ts";
+import valueDisplayBackend from "./buttons/value-display/backend";
+import valueDisplayFrontend from "./buttons/value-display/frontend";
 
-export default valueDisplayAddon;
+export const manifest: AddonManifestV1 = {
+  apiVersion: 1,
+  name: "value-display",
+  buttonTypes: {
+    "value-display:display": {
+      frontend: valueDisplayFrontend,
+      backend: valueDisplayBackend,
+    },
+  },
+  publishIntervalMs: 5000,
+};
+
+export const valueDisplayAddon = manifest;
+export default manifest;

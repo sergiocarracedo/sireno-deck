@@ -19,7 +19,7 @@ Seven `frontend.tsx` files — one per user-facing built-in addon — that rende
 
 ## Decisions made
 
-- **`useAddonChannel<T>(channel)`** — each addon uses this hook from `sireno-deck-2/react`. Returns `{ data, status }`. The frontend's `ChannelRegistry` already publishes payloads from the WS bridge's `state` messages, so addons just subscribe.
+- **`useAddonChannel<T>(channel)`** — each addon uses this hook from `sireno-deck/react`. Returns `{ data, status }`. The frontend's `ChannelRegistry` already publishes payloads from the WS bridge's `state` messages, so addons just subscribe.
 - **Fallback to local clock** — for `date-time`, if the channel hasn't published yet (CLI startup race), the addon renders a local `setInterval`-based clock. Avoids a blank button for the first second.
 - **Configurable per-channel cadence** — `publishIntervalMs` is per-addon. `date-time:now` = 1000ms (1s clock). `weather:current` = 600000ms (10min, matches Open-Meteo's update cycle). `media-player:state` = 2000ms. `brightness:current` = 2000ms. `system-status:metrics` = 1000ms. `value-display:values` = 5000ms.
 - **Theme tokens** — every addon uses `var(--color-bg)`, `var(--color-fg)`, `var(--color-muted)`, `var(--color-accent)`, `var(--color-bar)` (via Tailwind classes `bg-bar`, `text-fg`, etc.). No CSS-in-JS, no inline styles beyond positioning.

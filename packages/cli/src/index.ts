@@ -1,4 +1,3 @@
-export { PACKAGE_NAME, PROTOCOL_VERSION, SIRENO_ADDON_API_VERSION } from "./version";
 export {
   BUTTON_SIZE_PX,
   DEFAULT_DEVICE_MODEL_ID,
@@ -9,7 +8,13 @@ export {
   isKnownDeviceModel,
   resolveKeyCount,
   type DeviceModelSpec,
-} from "./device/models.ts";
+} from './device/models'
+export {
+  PACKAGE_NAME,
+  PROTOCOL_VERSION,
+  SIRENO_ADDON_API_VERSION,
+} from './version'
+
 export {
   DOUBLE_TAP_DELAY_MS,
   HOLD_ACTION_DELAY_MS,
@@ -18,11 +23,34 @@ export {
   type GestureKind,
   type GestureResult,
   type GestureType,
-} from "./core/gesture-state.ts";
-export { Deck, type DeckButton, type Deck as DeckType, type DeckProps } from "./components/Deck.tsx";
-export { ButtonFrame, type ButtonFrameProps } from "./components/ButtonFrame.tsx";
-export { Text, Chip, Label, TapIndicator, Icon, ThemeUiPresentationProvider } from "./ui/index.ts";
-export { ThemeProvider, useTheme, ThemeContext, type ThemeContextValue } from "./themes/use-resolved-theme.tsx";
-export { ChannelRegistry } from "./api/react/registry.ts";
+  createGestureDetector,
+  type GestureDetector,
+} from './core/gesture-state'
 
-export const cliVersion = "0.1.0";
+export type { AddonGestureEvent } from './addon/api'
+
+export { ChannelRegistry } from './api/react/registry'
+export { useAddonChannel, type UseAddonChannelReturn } from './api/react/use-addon-channel'
+export {
+  ThemeContext,
+  ThemeProvider,
+  useTheme,
+  type ThemeContextValue,
+} from './themes/use-resolved-theme'
+
+export {
+  AssetCacheProvider,
+  useAssetCache,
+  useAssetCacheMutations,
+  type AssetCache,
+  ButtonFrame,
+  Chip,
+  Icon,
+  Label,
+  TapIndicator,
+  Text,
+  ThemeUiPresentationProvider,
+  type ButtonFrameProps,
+} from './ui'
+
+export const cliVersion = '0.1.0'

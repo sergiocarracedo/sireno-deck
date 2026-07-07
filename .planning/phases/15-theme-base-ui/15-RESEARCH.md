@@ -21,7 +21,7 @@
 
 4. **TypeScript path aliases must resolve** — `@/ui/` must map to `packages/cli/src/ui/` in `tsconfig.json` paths. If `tsx` or `vite` can't resolve the alias at runtime, components will fail to load. Our current tsconfig already has `@/` aliases; adding `@/ui/` as a sub-path requires no config change since `@/` already covers it. [VERIFIED: tsconfig.json inspection]
 
-5. **Addon frontend imports break** — 6 addon frontends currently import from `@sireno-deck-2/cli`. These import paths must resolve to the new base components. The `@sireno-deck-2/cli` alias already maps to the package root in the Vite config; the `src/index.ts` barrel must re-export the base UI components. No import statement changes needed in addon frontends. [VERIFIED: vite config + src/index.ts inspection]
+5. **Addon frontend imports break** — 6 addon frontends currently import from `@sireno-deck/cli`. These import paths must resolve to the new base components. The `@sireno-deck/cli` alias already maps to the package root in the Vite config; the `src/index.ts` barrel must re-export the base UI components. No import statement changes needed in addon frontends. [VERIFIED: vite config + src/index.ts inspection]
 
 6. **Theme component/surface file deletion breaks existing imports** — when we delete `themes/default/components/Text.tsx` etc., any stale imports to those files (not through the barrel) will fail. Must search for all direct imports of these files before deletion. [ASSUMED: standard cleanup]
 
@@ -37,6 +37,7 @@
 ## Recommended Approach
 
 1. **Create `src/ui/` directory** with the following structure mirroring legacy:
+
    ```
    src/ui/
      index.ts                  # barrel re-exporting everything
@@ -64,7 +65,7 @@
    - Keep `data-sireno-ui-*` attributes unchanged (CSS rules reference them)
    - Keep `useThemeUiPresentation()` checks in all components
 
-3. **Update `src/index.ts`** — re-export all base components from the package barrel so `import { Text } from "@sireno-deck-2/cli"` resolves.
+3. **Update `src/index.ts`** — re-export all base components from the package barrel so `import { Text } from "@sireno-deck/cli"` resolves.
 
 4. **Update themes** — both `default/index.tsx` and `light/index.tsx`:
    - Stop importing from `./components/*` and `./surfaces/*`

@@ -1,14 +1,14 @@
-import type { ReactElement } from "react";
+import type { ReactElement } from 'react'
 
-import { DEVICE_MODELS, type DeviceModelSpec } from "@sireno-deck-2/cli";
+import { DEVICE_MODELS, type DeviceModelSpec } from '@sireno-deck/cli'
 
 export interface SidePanelProps {
-  readonly wsUrl: string;
-  readonly deviceModel: DeviceModelSpec;
-  readonly onDeviceModelChange: (next: DeviceModelSpec) => void;
-  readonly decks: ReadonlyArray<{ id: string; name: string }>;
-  readonly activeDeckId: string;
-  readonly onSelectDeck: (id: string) => void;
+  readonly wsUrl: string
+  readonly deviceModel: DeviceModelSpec
+  readonly onDeviceModelChange: (next: DeviceModelSpec) => void
+  readonly decks: ReadonlyArray<{ id: string; name: string }>
+  readonly activeDeckId: string
+  readonly onSelectDeck: (id: string) => void
 }
 
 export const SidePanel = ({
@@ -25,7 +25,10 @@ export const SidePanel = ({
         <h2 className="text-xs font-medium uppercase tracking-wider text-neutral-400">
           Connection
         </h2>
-        <p className="mt-2 font-mono text-xs text-neutral-300" data-testid="ws-url">
+        <p
+          className="mt-2 font-mono text-xs text-neutral-300"
+          data-testid="ws-url"
+        >
           {wsUrl}
         </p>
       </section>
@@ -38,8 +41,8 @@ export const SidePanel = ({
           className="mt-2 w-full rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-sm"
           value={deviceModel.id}
           onChange={(e) => {
-            const next = DEVICE_MODELS.find((m) => m.id === e.target.value);
-            if (next !== undefined) onDeviceModelChange(next);
+            const next = DEVICE_MODELS.find((m) => m.id === e.target.value)
+            if (next !== undefined) onDeviceModelChange(next)
           }}
           data-testid="device-model-select"
         >
@@ -52,7 +55,9 @@ export const SidePanel = ({
       </section>
 
       <section>
-        <h2 className="text-xs font-medium uppercase tracking-wider text-neutral-400">Decks</h2>
+        <h2 className="text-xs font-medium uppercase tracking-wider text-neutral-400">
+          Decks
+        </h2>
         <ul className="mt-2 flex flex-col gap-1" data-testid="deck-list">
           {decks.map((d) => (
             <li key={d.id}>
@@ -61,8 +66,8 @@ export const SidePanel = ({
                 onClick={() => onSelectDeck(d.id)}
                 className={`w-full rounded px-2 py-1 text-left transition ${
                   d.id === activeDeckId
-                    ? "bg-blue-600 text-white"
-                    : "bg-neutral-800 text-neutral-200 hover:bg-neutral-700"
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-neutral-800 text-neutral-200 hover:bg-neutral-700'
                 }`}
                 data-active={d.id === activeDeckId}
               >
@@ -85,5 +90,5 @@ export const SidePanel = ({
         </ul>
       </section>
     </div>
-  );
-};
+  )
+}

@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createPubSub } from "@/core/pub-sub.ts";
-import { createStore } from "@/core/store.ts";
-import { createLogger } from "@/util/logger.ts";
+import { createPubSub } from "@/core/pub-sub";
+import { createStore } from "@/core/store";
+import { createLogger } from "@/util/logger";
 import type { ActiveAppProvider, ActiveAppSnapshot } from "@/system/provider";
 
-import { createRuntime, type RuntimeDeck } from "../runtime.ts";
+import { createRuntime, type RuntimeDeck } from "../runtime";
 
 const silentLogger = () => createLogger({ level: "silent" });
 
@@ -69,7 +69,7 @@ describe("createRuntime", () => {
       makeDeck({ id: "main", isMain: true, buttons: [{ id: "b1", type: "x" }] }),
     ]);
     const onTap = vi.fn();
-    runtime.registerButtonHandler("b1", { onTap });
+    runtime.registerButtonHandler("main:b1", { onTap });
     await runtime.dispatchGesture("b1", "tap");
     expect(onTap).toHaveBeenCalledWith(
       expect.objectContaining({ buttonId: "b1", deckId: "main", gesture: "tap" }),
@@ -81,7 +81,7 @@ describe("createRuntime", () => {
       makeDeck({ id: "main", isMain: true, buttons: [{ id: "b1", type: "x" }] }),
     ]);
     const onDblTap = vi.fn();
-    runtime.registerButtonHandler("b1", { onDblTap });
+    runtime.registerButtonHandler("main:b1", { onDblTap });
     await runtime.dispatchGesture("b1", "dbl-tap");
     expect(onDblTap).toHaveBeenCalledOnce();
   });
@@ -91,7 +91,7 @@ describe("createRuntime", () => {
       makeDeck({ id: "main", isMain: true, buttons: [{ id: "b1", type: "x" }] }),
     ]);
     const onHold = vi.fn();
-    runtime.registerButtonHandler("b1", { onHold });
+    runtime.registerButtonHandler("main:b1", { onHold });
     await runtime.dispatchGesture("b1", "hold");
     expect(onHold).toHaveBeenCalledOnce();
   });
@@ -106,6 +106,57 @@ describe("createRuntime", () => {
   it("dispatchGesture missing button is a no-op", async () => {
     const { runtime } = setup([makeDeck({ id: "main", isMain: true })]);
     await expect(runtime.dispatchGesture("missing", "tap")).resolves.toBeUndefined();
+  });
+
+  it("dispatchGesture fires gestureListener with the short button id and timestamp", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true, buttons: [{ id: "b1", type: "x" }] }),
+    ]);
+    runtime.registerButtonHandler("main:b1", { onTap: vi.fn() });
+    const listener = vi.fn();
+    runtime.setGestureListener(listener);
+    const before = Date.now();
+    await runtime.dispatchGesture("main:b1", "tap");
+    const after = Date.now();
+    expect(listener).toHaveBeenCalledOnce();
+    const [buttonId, event] = listener.mock.calls[0]!;
+    expect(buttonId).toBe("b1");
+    expect(event.gesture).toBe("tap");
+    expect(event.at).toBeGreaterThanOrEqual(before);
+    expect(event.at).toBeLessThanOrEqual(after);
+  });
+
+  it("dispatchGesture does not fire gestureListener when button is missing", async () => {
+    const { runtime } = setup([makeDeck({ id: "main", isMain: true })]);
+    const listener = vi.fn();
+    runtime.setGestureListener(listener);
+    await runtime.dispatchGesture("missing", "tap");
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it("invokeAction runs the handler but does not fire the gestureListener", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true, buttons: [{ id: "b1", type: "x" }] }),
+    ]);
+    const onTap = vi.fn();
+    runtime.registerButtonHandler("main:b1", { onTap });
+    const listener = vi.fn();
+    runtime.setGestureListener(listener);
+    await runtime.invokeAction("b1", "tap");
+    expect(onTap).toHaveBeenCalledOnce();
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it("setGestureListener(null) detaches the listener", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true, buttons: [{ id: "b1", type: "x" }] }),
+    ]);
+    runtime.registerButtonHandler("main:b1", { onTap: vi.fn() });
+    const listener = vi.fn();
+    runtime.setGestureListener(listener);
+    runtime.setGestureListener(null);
+    await runtime.dispatchGesture("b1", "tap");
+    expect(listener).not.toHaveBeenCalled();
   });
 
   it("navigateToDeck with addToHistory=false doesn't push", () => {

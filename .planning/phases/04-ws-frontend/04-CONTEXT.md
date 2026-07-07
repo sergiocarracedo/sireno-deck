@@ -78,10 +78,10 @@ Frontend auto-reconnects on WS close with exponential backoff: 1s → 2s → 4s 
 
 ## Specific Ideas
 
-- **WS bridge lifecycle**: spawn as part of CLI `run`/`start`. In `run` (dev), no token. In `start` (daemon), token generated and written to `$XDG_RUNTIME_DIR/sireno-deck-2.token`.
+- **WS bridge lifecycle**: spawn as part of CLI `run`/`start`. In `run` (dev), no token. In `start` (daemon), token generated and written to `$XDG_RUNTIME_DIR/sireno-deck.token`.
 - **Vite child process**: CLI spawns `vite` with `SIRENO_TOKEN` env var, reads `READY <port>` from stdout, restarts on crash (max 3 with exponential backoff).
 - **Initial frontend bundle**: shipped in `packages/cli/dist/frontend/` for prod. In dev, vite serves from `packages/cli/frontend/src/`.
-- **Public API surface**: `sireno-deck-2` (main), `./api` (addon types), `./react` (hooks), `./vite` (plugin). The latter three are placeholders in `package.json` exports — Phase 04 fills them.
+- **Public API surface**: `sireno-deck` (main), `./api` (addon types), `./react` (hooks), `./vite` (plugin). The latter three are placeholders in `package.json` exports — Phase 04 fills them.
 
 ## Specific Questions Resolved (vs open)
 

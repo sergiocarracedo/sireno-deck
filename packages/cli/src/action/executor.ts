@@ -1,8 +1,8 @@
 import { execa } from "execa";
 
-import { getOriginalCwd } from "@/cli/cwd.ts";
-import type { HostContext } from "@/deck/host-context.ts";
-import { getHostContext } from "@/deck/host-context.ts";
+import { getOriginalCwd } from "@/cli/cwd";
+import type { HostContext } from "@/deck/host-context";
+import { getHostContext } from "@/deck/host-context";
 
 export interface ActionResult {
   stdout: string;

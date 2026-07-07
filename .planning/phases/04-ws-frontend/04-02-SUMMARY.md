@@ -64,6 +64,6 @@ The frontend half of Phase 04:
 ## Smoke
 
 - `pnpm exec vitest run` → 189/189 passing (was 182; Plan 02 added 7)
-- `pnpm --filter sireno-deck-2 typecheck` → clean
-- `pnpm --filter sireno-deck-2 lint` → 0 warnings, 0 errors
+- `pnpm --filter sireno-deck typecheck` → clean
+- `pnpm --filter sireno-deck lint` → 0 warnings, 0 errors
 - `pnpm format:check` → all 140 files conform

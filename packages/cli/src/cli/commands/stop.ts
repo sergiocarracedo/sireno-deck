@@ -7,7 +7,7 @@ import {
   removeChildrenFile,
   removePidFile,
   removeTokenFile,
-} from "@/util/daemon.ts";
+} from "@/util/daemon";
 
 export interface StopOptions {
   logger: pino.Logger;

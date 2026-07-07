@@ -8,7 +8,7 @@ import {
   helloMessageSchema,
   methodCallMessageSchema,
   wsMessageSchema,
-} from "../protocol.ts";
+} from "../protocol";
 
 describe("ws protocol v3", () => {
   it("hello requires version 3", () => {

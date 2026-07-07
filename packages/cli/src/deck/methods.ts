@@ -1,13 +1,13 @@
 import type pino from "pino";
 
-import type { PubSub } from "@/core/pub-sub.ts";
-import type { Store } from "@/core/store.ts";
-import { NotImplementedError } from "@/util/errors.ts";
-import { isValidKey, knownKeys, parseCombo, type ParsedCombo } from "@/system/key-macro/parser.ts";
+import type { PubSub } from "@/core/pub-sub";
+import type { Store } from "@/core/store";
+import { NotImplementedError } from "@/util/errors";
+import { isValidKey, knownKeys, parseCombo, type ParsedCombo } from "@/system/key-macro/parser";
 
-import type { ActionExecutor, ActionExecutorOptions } from "@/action/executor.ts";
+import type { ActionExecutor, ActionExecutorOptions } from "@/action/executor";
 import type { ClipboardProvider, KeyMacroProvider } from "@/system/provider";
-import type { Runtime, RuntimeDeck } from "./runtime.ts";
+import type { Runtime, RuntimeDeck } from "./runtime";
 
 export interface KeyMacroAction {
   kind: "key" | "combo" | "text";

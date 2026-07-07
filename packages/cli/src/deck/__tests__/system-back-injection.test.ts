@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { computeSystemButtonForSlotN1 } from "../system-back-injection.ts";
+import { computeSystemButtonForSlotN1 } from "../system-back-injection";
 
 const deck = (overrides: Partial<Parameters<typeof computeSystemButtonForSlotN1>[0]> = {}) => ({
   id: "d1",

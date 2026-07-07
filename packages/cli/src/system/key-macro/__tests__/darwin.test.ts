@@ -4,7 +4,7 @@ import type pino from "pino";
 
 import { ProviderError } from "@/system/provider";
 
-import { createDarwinKeyMacroProvider, type CommandExecutor } from "../darwin.ts";
+import { createDarwinKeyMacroProvider, type CommandExecutor } from "../darwin";
 
 const silentLogger = (): pino.Logger => {
   const noop = (): void => undefined;

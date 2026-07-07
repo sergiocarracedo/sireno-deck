@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createPubSub } from "@/core/pub-sub.ts";
-import { createLogger } from "@/util/logger.ts";
+import { createPubSub } from "@/core/pub-sub";
+import { createLogger } from "@/util/logger";
 
 import {
   BrowserRenderer,
@@ -9,7 +9,7 @@ import {
   type ContextLike,
   type PageLike,
   type PlaywrightLike,
-} from "../browser-renderer.ts";
+} from "../browser-renderer";
 
 const silentLogger = () => createLogger({ level: "silent" });
 

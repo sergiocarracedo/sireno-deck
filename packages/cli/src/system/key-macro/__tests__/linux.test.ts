@@ -4,7 +4,7 @@ import type pino from "pino";
 
 import { ProviderError } from "@/system/provider";
 
-import { createLinuxKeyMacroProvider, type CommandExecutor } from "../linux.ts";
+import { createLinuxKeyMacroProvider, type CommandExecutor } from "../linux";
 
 const silentLogger = (): pino.Logger => {
   const noop = (): void => undefined;

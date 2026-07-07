@@ -3,10 +3,10 @@ import type { ArgumentsCamelCase, CommandModule } from "yargs";
 import { createLogger } from "@/util/logger";
 import { PACKAGE_NAME } from "@/version";
 
-import { run, type RunOptions } from "./commands/run.ts";
-import start, { type StartOptions } from "./commands/start.ts";
-import { status, type StatusOptions } from "./commands/status.ts";
-import { stop, type StopOptions } from "./commands/stop.ts";
+import { run, type RunOptions } from "./commands/run";
+import start, { type StartOptions } from "./commands/start";
+import { status, type StatusOptions } from "./commands/status";
+import { stop, type StopOptions } from "./commands/stop";
 
 export interface GlobalOptions {
   verbose?: boolean;

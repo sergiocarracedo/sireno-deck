@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { listDevices } from "../registry.ts";
+import { listDevices } from "../registry";
 
 vi.mock("@elgato-stream-deck/node", () => ({
   listStreamDecks: vi.fn(),

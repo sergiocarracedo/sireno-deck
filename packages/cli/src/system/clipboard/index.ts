@@ -2,13 +2,13 @@ import type pino from "pino";
 
 import type { CommandExecutor } from "../media";
 
-import { createLinuxClipboardProvider } from "./linux.ts";
-import { createDarwinClipboardProvider } from "./darwin.ts";
-import { createWindowsClipboardProvider } from "./windows.ts";
-import { createNullClipboardProvider, type ClipboardProvider, ProviderError } from "../provider.ts";
+import { createLinuxClipboardProvider } from "./linux";
+import { createDarwinClipboardProvider } from "./darwin";
+import { createWindowsClipboardProvider } from "./windows";
+import { createNullClipboardProvider, type ClipboardProvider, ProviderError } from "../provider";
 
 export { createNullClipboardProvider };
-export type { ClipboardProvider } from "../provider.ts";
+export type { ClipboardProvider } from "../provider";
 
 export interface CreateClipboardProviderOptions {
   readonly executor: CommandExecutor;

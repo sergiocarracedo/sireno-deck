@@ -1,18 +1,18 @@
-# sireno-deck-2 (CLI internals)
+# sireno-deck (CLI internals)
 
 Internal docs for the `sireno` CLI package. **User-facing docs** (quickstart, config.yml example, addon list) live at the [repo-root README](../../README.md).
 
 ## Scripts
 
-| Command                                 | Purpose                                                        |
-| --------------------------------------- | -------------------------------------------------------------- |
-| `pnpm --filter sireno-deck-2 dev`       | `node bin/dev.js` — dev CLI shim                               |
-| `pnpm --filter sireno-deck-2 start`     | `node --import tsx src/cli/main.ts` — production-style startup |
-| `pnpm --filter sireno-deck-2 build`     | bundles the frontend (`vite build`) and the CLI                |
-| `pnpm --filter sireno-deck-2 test`      | `vitest run`                                                   |
-| `pnpm --filter sireno-deck-2 typecheck` | `tsc --noEmit`                                                 |
-| `pnpm --filter sireno-deck-2 lint`      | `oxlint src`                                                   |
-| `pnpm --filter sireno-deck-2 format`    | `oxfmt src`                                                    |
+| Command                               | Purpose                                                        |
+| ------------------------------------- | -------------------------------------------------------------- |
+| `pnpm --filter sireno-deck dev`       | `node bin/dev.js` — dev CLI shim                               |
+| `pnpm --filter sireno-deck start`     | `node --import tsx src/cli/main.ts` — production-style startup |
+| `pnpm --filter sireno-deck build`     | bundles the frontend (`vite build`) and the CLI                |
+| `pnpm --filter sireno-deck test`      | `vitest run`                                                   |
+| `pnpm --filter sireno-deck typecheck` | `tsc --noEmit`                                                 |
+| `pnpm --filter sireno-deck lint`      | `oxlint src`                                                   |
+| `pnpm --filter sireno-deck format`    | `oxfmt src`                                                    |
 
 ## Layout
 
@@ -58,7 +58,7 @@ packages/cli/
 - **Semicolons:** none.
 - **Trailing commas:** all.
 - **Print width:** 110.
-- **Imports:** `.ts` / `.tsx` extensions on relative imports.
+- **Imports:** no file extensions on relative imports.
 
 ## Architecture rules
 

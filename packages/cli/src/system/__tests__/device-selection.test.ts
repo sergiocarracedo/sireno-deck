@@ -7,8 +7,8 @@ vi.mock("@inquirer/prompts", () => ({
 const { select } = await import("@inquirer/prompts");
 const selectMock = select as unknown as ReturnType<typeof vi.fn>;
 
-const { selectDevice, NoStreamDeckFoundError } = await import("../device-selection.ts");
-const { createLogger } = await import("@/util/logger.ts");
+const { selectDevice, NoStreamDeckFoundError } = await import("../device-selection");
+const { createLogger } = await import("@/util/logger");
 
 const silentLogger = () => createLogger({ level: "silent" });
 

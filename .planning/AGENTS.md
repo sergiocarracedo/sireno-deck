@@ -1,6 +1,6 @@
 # AGENTS.md
 
-> Project-level rules for AI agents working on sireno-deck-2.
+> Project-level rules for AI agents working on sireno-deck.
 > Generated as part of learnship /new-project bootstrap.
 
 ## Project at a glance
@@ -14,17 +14,17 @@
 
 From repo root:
 
-| Command                            | Purpose                                                           |
-| ---------------------------------- | ----------------------------------------------------------------- |
-| `pnpm test`                        | Run all vitest tests once (`vitest run`)                          |
-| `pnpm test:watch`                  | Run vitest in watch mode                                          |
-| `pnpm typecheck`                   | Run `tsc --noEmit` across all packages                            |
-| `pnpm lint`                        | Run `oxlint packages` (may OOM in some envs — fallback below)     |
-| `pnpm --filter sireno-deck-2 lint` | Per-package lint (more reliable than root-level)                  |
-| `pnpm format`                      | Run `oxfmt .` to write formatting                                 |
-| `pnpm format:check`                | Run `oxfmt --check .` (CI-safe)                                   |
-| `pnpm build`                       | Run `pnpm -r build`                                               |
-| `pnpm dev`                         | Run `pnpm --filter sireno-deck-2 run dev` (CLI in foreground dev) |
+| Command                          | Purpose                                                         |
+| -------------------------------- | --------------------------------------------------------------- |
+| `pnpm test`                      | Run all vitest tests once (`vitest run`)                        |
+| `pnpm test:watch`                | Run vitest in watch mode                                        |
+| `pnpm typecheck`                 | Run `tsc --noEmit` across all packages                          |
+| `pnpm lint`                      | Run `oxlint packages` (may OOM in some envs — fallback below)   |
+| `pnpm --filter sireno-deck lint` | Per-package lint (more reliable than root-level)                |
+| `pnpm format`                    | Run `oxfmt .` to write formatting                               |
+| `pnpm format:check`              | Run `oxfmt --check .` (CI-safe)                                 |
+| `pnpm build`                     | Run `pnpm -r build`                                             |
+| `pnpm dev`                       | Run `pnpm --filter sireno-deck run dev` (CLI in foreground dev) |
 
 Run the CLI in dev:
 
@@ -35,7 +35,7 @@ node packages/cli/bin/sireno.js <command>
 Or via the workspace package:
 
 ```
-pnpm --filter sireno-deck-2 exec sireno <command>
+pnpm --filter sireno-deck exec sireno <command>
 ```
 
 ## Code conventions
@@ -45,7 +45,7 @@ pnpm --filter sireno-deck-2 exec sireno <command>
 - **Semicolons:** none
 - **Trailing commas:** all
 - **Print width:** 110
-- **Imports:** relative imports within a folder must include `.ts`/`.tsx` extension; cross-folder imports prefer the `@/` alias
+- **Imports:** no file extensions on relative imports; cross-folder imports prefer the `@/` alias
 - **No comments** unless the user explicitly asks
 - **File layout:** entrypoints are `index.ts`/`index.tsx`; large files split into a folder with sub-files
 - **Decoupling:** the React frontend cannot import from CLI or emulator code. Use `src/api/` (Phase 04) for shared types
@@ -66,13 +66,13 @@ pnpm --filter sireno-deck-2 exec sireno <command>
 1. Create the file under the right `src/` subfolder.
 2. Add tests colocated in `__tests__/` (same parent folder).
 3. Update the relevant `index.ts` barrel if one exists for the folder.
-4. Run `pnpm typecheck && pnpm --filter sireno-deck-2 lint && pnpm format:check && pnpm test`.
+4. Run `pnpm typecheck && pnpm --filter sireno-deck lint && pnpm format:check && pnpm test`.
 5. Update `.planning/PLAN.md` if the change is structural (new module = new section).
 6. Update `.planning/STATE.md` if a phase boundary is crossed.
 
 ## Known dev-env quirks
 
-- `pnpm lint` (root) may OOM in this environment due to a 697KB `configuration_schema.json` somewhere in `node_modules`. The per-package variant (`pnpm --filter sireno-deck-2 lint`) works fine.
+- `pnpm lint` (root) may OOM in this environment due to a 697KB `configuration_schema.json` somewhere in `node_modules`. The per-package variant (`pnpm --filter sireno-deck lint`) works fine.
 - `tsc` 7.0.1-rc does not allow `baseUrl` in tsconfig — use paths relative to the tsconfig file itself.
 - `verbatimModuleSyntax: true` is OFF because extensionless imports are needed for tsx and yargs.
 - `exactOptionalPropertyTypes: false` because yargs types conflict.

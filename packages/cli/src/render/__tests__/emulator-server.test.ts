@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { emulatorServerEntryExists, parseReadyLine } from "../emulator-server.ts";
+import { emulatorServerEntryExists, parseReadyLine } from "../emulator-server";
 
 describe("emulatorServerEntryExists", () => {
   it("returns false when package.json is missing", () => {

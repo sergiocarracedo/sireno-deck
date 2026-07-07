@@ -12,8 +12,9 @@ export {
   deckActiveMessageSchema,
   dismissOverlayMessageSchema,
   wsMessageSchema,
+  subscribeChannelsMessageSchema,
   PROTOCOL_VERSION,
-} from "./protocol-internal.ts";
+} from "./protocol-internal";
 
 export type {
   HelloMessage,
@@ -29,4 +30,5 @@ export type {
   DeckActiveMessage,
   DismissOverlayMessage,
   WsMessage,
-} from "./protocol-internal.ts";
+  SubscribeChannelsMessage,
+} from "./protocol-internal";

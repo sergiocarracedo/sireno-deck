@@ -4,7 +4,7 @@
 
 ## What was built
 
-Updated 6 built-in addon frontend TSX files to use the `<Text>` component from `@sireno-deck-2/cli` instead of raw `<span>` elements with Tailwind classes. Also updated emulator theme.css with matching legacy tokens.
+Updated 6 built-in addon frontend TSX files to use the `<Text>` component from `@sireno-deck/cli` instead of raw `<span>` elements with Tailwind classes. Also updated emulator theme.css with matching legacy tokens.
 
 ### Changes per addon
 
@@ -18,15 +18,17 @@ Updated 6 built-in addon frontend TSX files to use the `<Text>` component from `
 - **emulator theme.css**: updated to match legacy color tokens + IBM Plex fonts
 
 ## Key files
+
 - `builtin-addons/weather/frontend.tsx`
 - `builtin-addons/system-status/frontend.tsx`
 - `builtin-addons/media-player/frontend.tsx`
 - `builtin-addons/value-display/frontend.tsx`
 - `builtin-addons/brightness/frontend.tsx`
 - `builtin-addons/date-time/frontend.tsx`
-- `emulator/.sireno-deck-2/theme.css`
+- `emulator/.sireno-deck/theme.css`
 
 ## Notes for verification
+
 - Run `pnpm dev start --emulator` and visually inspect addon buttons
 - All colors should match legacy (#2e3540 bg, #7dd3fc accent, #53738B frame)
 - Fonts should render as IBM Plex Sans/Mono

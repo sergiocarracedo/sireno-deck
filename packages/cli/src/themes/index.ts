@@ -1,14 +1,14 @@
 export type {
   LoadedTheme,
   AddonManifest,
+  AddonManifestV1,
   AddonKind,
-  ResolvedSirenoAddon,
   AddonLoadIssue,
-} from "@/addon/api.ts";
-export { AddonRegistry } from "@/addon/registry.ts";
+} from "@/addon/api";
+export { AddonRegistry } from "@/addon/registry";
 export {
   ThemeProvider,
   useTheme,
   ThemeContext,
   type ThemeContextValue,
-} from "./use-resolved-theme.tsx";
+} from "./use-resolved-theme";

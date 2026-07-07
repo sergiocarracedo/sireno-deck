@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type pino from "pino";
 
-import { createDarwinSessionProvider, type CommandExecutor } from "../darwin.ts";
+import { createDarwinSessionProvider, type CommandExecutor } from "../darwin";
 
 const silentLogger = (): pino.Logger => {
   const noop = (): void => undefined;

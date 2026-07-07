@@ -7,7 +7,7 @@ import {
   type LinuxDbusBus,
   type LinuxDbusInterface,
   type LinuxDbusProxyObject,
-} from "../linux.ts";
+} from "../linux";
 
 const silentLogger = (): pino.Logger => {
   const noop = (): void => undefined;

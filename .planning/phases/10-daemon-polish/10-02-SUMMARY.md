@@ -4,7 +4,7 @@
 
 ## What was built
 
-Real npm addon loader: any package in `config.yml` `addons:` that matches the npm package-name regex (bare or scoped, optional `@version`) gets installed via `npm install <specifier> --prefix <cacheDir> --no-save --silent --no-audit --no-fund` to `~/.cache/sireno-deck-2/node_modules/<name>/` (cross-platform: `Library/Caches/` on macOS, `%LOCALAPPDATA%` on Windows, `$XDG_CACHE_HOME` on Linux). The cached `package.json`'s `sirenoAddonApiVersion` field gates compatibility; the cached `main` entry is dynamically imported. Auto-installs on first `start`; cached for subsequent runs. The previous "npm addon loading is not yet implemented" stub is gone.
+Real npm addon loader: any package in `config.yml` `addons:` that matches the npm package-name regex (bare or scoped, optional `@version`) gets installed via `npm install <specifier> --prefix <cacheDir> --no-save --silent --no-audit --no-fund` to `~/.cache/sireno-deck/node_modules/<name>/` (cross-platform: `Library/Caches/` on macOS, `%LOCALAPPDATA%` on Windows, `$XDG_CACHE_HOME` on Linux). The cached `package.json`'s `sirenoAddonApiVersion` field gates compatibility; the cached `main` entry is dynamically imported. Auto-installs on first `start`; cached for subsequent runs. The previous "npm addon loading is not yet implemented" stub is gone.
 
 ## Key files
 
@@ -33,7 +33,7 @@ Real npm addon loader: any package in `config.yml` `addons:` that matches the np
 
 - The npm loader supports any package whose `package.json` has `sirenoAddonApiVersion: 3`. No naming convention enforced (per CONTEXT decision).
 - Install is synchronous (execa blocks the daemon startup for up to 60s per addon). For multi-addon configs, total startup time = sum of install times. Users with many npm addons should expect longer `start` times on first run.
-- The cache layout matches opencode.ai's plugin pattern (`~/.cache/<app>/node_modules/`), so any tooling/scripts the user has for inspecting/managing opencode plugins will work analogously for sireno-deck-2.
+- The cache layout matches opencode.ai's plugin pattern (`~/.cache/<app>/node_modules/`), so any tooling/scripts the user has for inspecting/managing opencode plugins will work analogously for sireno-deck.
 - The `cacheDir` parameter is OPTIONAL for backward compatibility. If a caller (e.g., a test) doesn't pass it, npm specs get the "Unknown addon spec" message instead of an install attempt. Production callers should always pass `cacheDir`.
 
 ## Tests added
@@ -48,6 +48,6 @@ Total: **21 new tests** (from 443 → 464).
 ## Final state
 
 - `pnpm test`: 464/464 passing
-- `pnpm --filter sireno-deck-2 lint`: clean
-- `pnpm --filter sireno-deck-2 typecheck`: clean
+- `pnpm --filter sireno-deck lint`: clean
+- `pnpm --filter sireno-deck typecheck`: clean
 - 5 commits in this plan: `639954d`, `5d16823`, `7122be7`, `5979d07`

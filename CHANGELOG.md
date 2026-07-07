@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [0.1.0] - 2026-06-27
 
-The first public release of sireno-deck-2. A complete rewrite of the legacy `sireno-deck` on TypeScript 7 RC + React 19 + Tailwind 4, with a unified Vite frontend that renders in the emulator, on real Stream Deck hardware, or behind a built-in HTTP server.
+The first public release of sireno-deck. A complete rewrite of the legacy `sireno-deck` on TypeScript 7 RC + React 19 + Tailwind 4, with a unified Vite frontend that renders in the emulator, on real Stream Deck hardware, or behind a built-in HTTP server.
 
 ### Added
 
@@ -31,9 +31,9 @@ The first public release of sireno-deck-2. A complete rewrite of the legacy `sir
   - `value-display` — `core:value-display` (run shell commands, show output)
   - `weather` — `core:weather` (Open-Meteo, no API key)
   - `brightness` — `core:brightness` (OS-native screen brightness control)
-- **Daemon lifecycle**: `start` writes PID + token + children files to `$XDG_RUNTIME_DIR/sireno-deck-2/`; `stop` sends SIGTERM to each tracked child with 5s timeout then SIGKILL; concurrent-start conflict resolved via `@inquirer/prompts` ("Stop and restart" / "Cancel"); token file mode 0600 (32 random bytes base64url).
+- **Daemon lifecycle**: `start` writes PID + token + children files to `$XDG_RUNTIME_DIR/sireno-deck/`; `stop` sends SIGTERM to each tracked child with 5s timeout then SIGKILL; concurrent-start conflict resolved via `@inquirer/prompts` ("Stop and restart" / "Cancel"); token file mode 0600 (32 random bytes base64url).
 - **Production HTTP server** (`packages/cli/src/cli/http-server.ts`): Node `http` static server; serves `frontend/dist/`; per-request WS token injection (`<script>window.__SIRENO_TOKEN__ = "..."</script>`); `/health` endpoint; `start` runs the daemon + HTTP server in one process.
-- **npm addon loader** (`packages/cli/src/addon/loader.ts`): detects npm specifiers (bare + scoped + `@version`); auto-installs to `~/.cache/sireno-deck-2/node_modules/` via `npm install --prefix`; matches the opencode.ai plugin pattern.
+- **npm addon loader** (`packages/cli/src/addon/loader.ts`): detects npm specifiers (bare + scoped + `@version`); auto-installs to `~/.cache/sireno-deck/node_modules/` via `npm install --prefix`; matches the opencode.ai plugin pattern.
 - **Documentation**: repo-root [README](../README.md), per-addon [READMEs](../packages/cli/src/builtin-addons/) for all 10 built-in addons.
 
 ### Changed
@@ -55,4 +55,4 @@ The first public release of sireno-deck-2. A complete rewrite of the legacy `sir
 
 - The legacy `onPress` / `onRelease` / `onActivate` / `onDeactivate` / `poll` / `refresh` lifecycle hooks. Use pub-sub channels + the gesture state machine instead.
 - The legacy `vue-sirendeck` `sirendeck-deck-config` message type. Use `deck-config` (the new v3 message).
-- The legacy `npm` registry code path was never wired into the v2 CLI; it ships in v0.1.0 via the new `~/.cache/sireno-deck-2/` loader.
+- The legacy `npm` registry code path was never wired into the v2 CLI; it ships in v0.1.0 via the new `~/.cache/sireno-deck/` loader.

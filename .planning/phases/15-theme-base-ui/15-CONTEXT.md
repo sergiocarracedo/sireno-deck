@@ -72,6 +72,7 @@ Migrate the legacy `packages/cli/src/ui/` components (Text, Icon, Label, Chip, T
 </specifics>
 
 <canonical_refs>
+
 ## Canonical References
 
 **Downstream agents MUST read these before planning or implementing.**
@@ -93,6 +94,7 @@ Migrate the legacy `packages/cli/src/ui/` components (Text, Icon, Label, Chip, T
 </canonical_refs>
 
 <code_context>
+
 ## Existing Code Insights
 
 ### Reusable Assets
@@ -105,7 +107,7 @@ Migrate the legacy `packages/cli/src/ui/` components (Text, Icon, Label, Chip, T
 ### Established Patterns
 
 - **Tailwind v4 CSS tokens** — `@theme` block in `theme.css` defines `--color-*` and `--font-*`. Base components reference these tokens.
-- **Addon frontend imports** — currently `import { Text } from "@sireno-deck-2/cli"`. After migration, this aliases to `@/ui/Text.tsx`.
+- **Addon frontend imports** — currently `import { Text } from "@sireno-deck/cli"`. After migration, this aliases to `@/ui/Text.tsx`.
 - **Theme export shape** — `{ manifest, ButtonFrame, components, surfaces, primitives }`. Adding `ui` is additive.
 
 ### Integration Points
@@ -113,7 +115,7 @@ Migrate the legacy `packages/cli/src/ui/` components (Text, Icon, Label, Chip, T
 - **`src/ui/index.ts`** — new barrel that re-exports all base components/surfaces. Becomes the single import source for addon frontends and themes.
 - **`themes/default/index.tsx`** — remove component/surface source files, import from `@/ui/`, export them (possibly with theme overrides).
 - **`themes/light/index.tsx`** — same; currently re-exports from `../default/`, will import from `@/ui/` instead.
-- **6 addon frontends** — update imports from `@sireno-deck-2/cli` to `@/ui/` (or the alias stays the same, mapped to `@/ui/`).
+- **6 addon frontends** — update imports from `@sireno-deck/cli` to `@/ui/` (or the alias stays the same, mapped to `@/ui/`).
 - **`ThemeUiPresentationProvider`** — must wrap the Deck grid in the frontend so `useThemeUiPresentation()` resolves correctly.
 
 </code_context>
@@ -127,5 +129,6 @@ Migrate the legacy `packages/cli/src/ui/` components (Text, Icon, Label, Chip, T
 </deferred>
 
 ---
-*Phase: 15-theme-base-ui*
-*Context gathered: 2026-06-28*
+
+_Phase: 15-theme-base-ui_
+_Context gathered: 2026-06-28_
