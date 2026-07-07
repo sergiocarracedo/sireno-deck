@@ -6,6 +6,7 @@ import type {
   AddonManifestV1,
   LoadedTheme,
 } from "./api";
+import type { GestureKind } from "@/core/gesture-state";
 
 export class AddonRegistry {
   private readonly addonsByName = new Map<string, AddonManifestV1>();
@@ -13,10 +14,7 @@ export class AddonRegistry {
     string,
     { addonName: string; def: AddonButtonTypeDef }
   >();
-  private readonly decksByType = new Map<
-    string,
-    { addonName: string; def: AddonDeckDefinition }
-  >();
+  private readonly decksByType = new Map<string, { addonName: string; def: AddonDeckDefinition }>();
   private readonly themesByName = new Map<string, LoadedTheme>();
 
   load(manifest: AddonManifestV1): void {
@@ -33,20 +31,37 @@ export class AddonRegistry {
       }
     }
 
+    for (const [buttonType, def] of Object.entries(manifest.buttonTypes)) {
+      const backend = def.backend;
+      if (!backend) continue;
+      const hasOnTap = typeof backend.onTap === "function";
+      const hasOnDblTap = typeof backend.onDblTap === "function";
+      const hasOnHold = typeof backend.onHold === "function";
+      if (!hasOnTap && !hasOnDblTap && !hasOnHold) continue;
+      const allowed = backend.gestureHandlers ?? [];
+      const toStrip: string[] = [];
+      if (hasOnTap && !allowed.includes("tap" as GestureKind)) toStrip.push("onTap");
+      if (hasOnDblTap && !allowed.includes("dbl-tap" as GestureKind)) toStrip.push("onDblTap");
+      if (hasOnHold && !allowed.includes("hold" as GestureKind)) toStrip.push("onHold");
+      if (toStrip.length > 0) {
+        console.warn(
+          `[sireno-deck] addon "${name}" button "${buttonType}" declares [${toStrip.join(", ")}] ` +
+            `but not in gestureHandlers (default-deny). Stripping undeclared handlers. ` +
+            `Add gestureHandlers: [${toStrip.map((h) => `'${h.replace("on", "").toLowerCase()}'`).join(", ")}] to silence this.`,
+        );
+      }
+    }
+
     for (const deckName of Object.keys(manifest.decks ?? {})) {
       if (!deckName.startsWith(`${name}:`)) {
-        throw new Error(
-          `Deck '${deckName}' in addon '${name}' must be prefixed with '${name}:'`,
-        );
+        throw new Error(`Deck '${deckName}' in addon '${name}' must be prefixed with '${name}:'`);
       }
     }
 
     this.addonsByName.set(name, manifest);
     for (const [buttonType, def] of Object.entries(manifest.buttonTypes)) {
       if (this.buttonsByType.has(buttonType)) {
-        throw new Error(
-          `Duplicate button type '${buttonType}' in addon ${name}`,
-        );
+        throw new Error(`Duplicate button type '${buttonType}' in addon ${name}`);
       }
       this.buttonsByType.set(buttonType, { addonName: name, def });
     }
@@ -76,15 +91,11 @@ export class AddonRegistry {
     return Array.from(this.addonsByName.values());
   }
 
-  getButtonType(
-    type: string,
-  ): { addonName: string; def: AddonButtonTypeDef } | undefined {
+  getButtonType(type: string): { addonName: string; def: AddonButtonTypeDef } | undefined {
     return this.buttonsByType.get(type);
   }
 
-  getDeckType(
-    type: string,
-  ): { addonName: string; def: AddonDeckDefinition } | undefined {
+  getDeckType(type: string): { addonName: string; def: AddonDeckDefinition } | undefined {
     return this.decksByType.get(type);
   }
 

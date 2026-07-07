@@ -20,14 +20,17 @@ export const manifest: AddonManifestV1 = {
     "internal-settings:about": {
       frontend: aboutFrontend,
       backend: withInternal(aboutBackend),
+      gestureHandlers: ["tap"],
     },
     "internal-settings:brightness": {
       frontend: brightnessFrontend,
       backend: withInternal(brightnessBackend),
+      gestureHandlers: ["tap"],
     },
     "internal-settings:theme": {
       frontend: themeFrontend,
       backend: withInternal(themeBackend),
+      gestureHandlers: ["tap"],
     },
   },
   decks: {

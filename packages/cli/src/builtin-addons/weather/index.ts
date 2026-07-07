@@ -10,6 +10,7 @@ export const manifest: AddonManifestV1 = {
     "weather:weather": {
       frontend: weatherFrontend,
       backend: weatherBackend,
+      gestureHandlers: ["tap"],
     },
   },
   publishIntervalMs: 600_000,

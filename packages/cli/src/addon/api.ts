@@ -1,83 +1,83 @@
-import type { ComponentType } from 'react'
+import type { ComponentType } from "react";
 
-import type { z } from 'zod'
+import type { z } from "zod";
 
-import type { ActionExecutor } from '@/action/executor'
-import type { Store } from '@/core/store'
-import type { GestureKind } from '@/core/gesture-state'
+import type { ActionExecutor } from "@/action/executor";
+import type { Store } from "@/core/store";
+import type { GestureKind } from "@/core/gesture-state";
 
 /** The runtime manifest API version (`AddonManifestV1`). */
-export const SIRENO_ADDON_API_VERSION = 1 as const
+export const SIRENO_ADDON_API_VERSION = 1 as const;
 
-export type AddonKind = 'runtime' | 'theme'
-export type AddonManifestKind = 'addon' | 'theme'
+export type AddonKind = "runtime" | "theme";
+export type AddonManifestKind = "addon" | "theme";
 
 /**
  * Per-button gesture stream delivered to addon renderers. `null` when no
  * gesture has fired since the last handoff. See `AddonFrontendButtonProps.gesture`.
  */
 export interface AddonGestureEvent {
-  readonly gesture: GestureKind
-  readonly at: number
+  readonly gesture: GestureKind;
+  readonly at: number;
 }
 
 export interface AddonButtonTypeRenderContext {
-  config: unknown
-  pressed: boolean
-  addonName: string
-  frameState: unknown
+  config: unknown;
+  pressed: boolean;
+  addonName: string;
+  frameState: unknown;
 }
 
 export interface AddonButtonTypeActionContext {
-  config: unknown
-  pressed: boolean
-  addonName: string
-  hostContext: Record<string, unknown>
-  methods: Record<string, (...args: unknown[]) => unknown>
+  config: unknown;
+  pressed: boolean;
+  addonName: string;
+  hostContext: Record<string, unknown>;
+  methods: Record<string, (...args: unknown[]) => unknown>;
 }
 
 export interface AddonAssets {
-  styles?: string[]
+  styles?: string[];
 }
 
 export interface AddonFrontend {
-  main: string
-  styles?: string[]
+  main: string;
+  styles?: string[];
 }
 
 export interface AddonManifest {
-  apiVersion: number
-  kind?: AddonKind
-  main?: string
-  frontend?: AddonFrontend
-  css?: string
-  name?: string
-  version?: string
-  description?: string
-  publishIntervalMs?: number
+  apiVersion: number;
+  kind?: AddonKind;
+  main?: string;
+  frontend?: AddonFrontend;
+  css?: string;
+  name?: string;
+  version?: string;
+  description?: string;
+  publishIntervalMs?: number;
 }
 
 export interface LoadedTheme {
-  name: string
-  apiVersion: number
-  source: { kind: 'builtin' | 'local' | 'npm'; resolvedPath: string }
-  manifestPath: string
-  uiOverridesPath: string | null
-  cssPath: string
+  name: string;
+  apiVersion: number;
+  source: { kind: "builtin" | "local" | "npm"; resolvedPath: string };
+  manifestPath: string;
+  uiOverridesPath: string | null;
+  cssPath: string;
 }
 
 export interface AddonLoadIssue {
-  level: 'error' | 'warning' | 'info'
-  source: string
-  message: string
+  level: "error" | "warning" | "info";
+  source: string;
+  message: string;
 }
 
 export interface AddonFrontendButtonProps<Config> {
-  readonly config: Config
-  readonly state: unknown
-  readonly addonName: string
-  readonly buttonType: string
-  readonly buttonId: string
+  readonly config: Config;
+  readonly state: unknown;
+  readonly addonName: string;
+  readonly buttonType: string;
+  readonly buttonId: string;
   /**
    * Latest gesture delivered to this specific button since the previous
    * commit. `null` when no gesture is pending. The renderer is expected to
@@ -88,51 +88,58 @@ export interface AddonFrontendButtonProps<Config> {
    * clicks (those arrive via the WS `button-action` path which calls
    * `runtime.invokeAction`, bypassing the gesture listener).
    */
-  readonly gesture: AddonGestureEvent | null
+  readonly gesture: AddonGestureEvent | null;
 }
 
-export type AddonFrontendButton<Config> = ComponentType<
-  AddonFrontendButtonProps<Config>
->
+export type AddonFrontendButton<Config> = ComponentType<AddonFrontendButtonProps<Config>>;
 
 export interface AddonButtonTypeBackend<Config = unknown> {
-  readonly configSchema?: unknown
-  readonly defaultRenderIntervalMs?: number
-  readonly internal?: boolean
-  readonly full?: boolean
-  readonly onMount?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
-  readonly onTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
-  readonly onDblTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
-  readonly onHold?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
-  readonly dispose?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
+  readonly configSchema?: unknown;
+  readonly defaultRenderIntervalMs?: number;
+  readonly internal?: boolean;
+  readonly full?: boolean;
+  /**
+   * Opt-in gesture allowlist. If the backend declares onTap/onDblTap/onHold
+   * but this field is missing, the runtime logs a warning and strips the
+   * undeclared handlers (default-deny). If present, only listed gestures fire.
+   */
+  readonly gestureHandlers?: ReadonlyArray<GestureKind>;
+  readonly onMount?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
+  readonly onTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
+  readonly onDblTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
+  readonly onHold?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
+  readonly dispose?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
 }
 
 export interface AddonButtonTypeDef<Config = unknown> {
-  readonly frontend: AddonFrontendButton<Config>
-  readonly backend: AddonButtonTypeBackend<Config>
+  readonly frontend: AddonFrontendButton<Config>;
+  readonly backend: AddonButtonTypeBackend<Config>;
 }
 
 export interface AddonButtonTypeDefAny {
-  readonly frontend: AddonFrontendButton<any>
-  readonly backend: AddonButtonTypeBackend<any>
+  readonly frontend: AddonFrontendButton<any>;
+  readonly backend: AddonButtonTypeBackend<any>;
 }
 
-export type AddonDeckFactory = (page: number) => AddonGeneratedDeck
+export type AddonDeckFactory = (page: number) => AddonGeneratedDeck;
 
 export interface AddonDeckDefinition {
-  type: string
-  configSchema?: unknown
-  createDecks: (ctx: { config: unknown; deck: { id: string } }) => Record<string, AddonGeneratedDeck>
+  type: string;
+  configSchema?: unknown;
+  createDecks: (ctx: {
+    config: unknown;
+    deck: { id: string };
+  }) => Record<string, AddonGeneratedDeck>;
 }
 
 export interface AddonGeneratedDeck {
-  name?: string
-  icon?: string
-  background?: string
-  buttons?: unknown[]
-  paginated?: boolean
-  trigger?: unknown
-  autoShow?: boolean
+  name?: string;
+  icon?: string;
+  background?: string;
+  buttons?: unknown[];
+  paginated?: boolean;
+  trigger?: unknown;
+  autoShow?: boolean;
 }
 
 /**
@@ -148,62 +155,60 @@ export interface AddonGeneratedDeck {
  * `emoji-selector:launcher`). The value must be a key of `buttonTypes`.
  */
 export interface AddonManifestV1 {
-  readonly apiVersion: 1
-  readonly name: string
-  readonly kind?: AddonKind
-  readonly buttonTypes: Readonly<Record<string, AddonButtonTypeDefAny>>
-  readonly defaultButton?: string
-  readonly decks?: Readonly<Record<string, AddonDeckFactory | AddonDeckDefinition>>
-  readonly frontend?: AddonFrontend
+  readonly apiVersion: 1;
+  readonly name: string;
+  readonly kind?: AddonKind;
+  readonly buttonTypes: Readonly<Record<string, AddonButtonTypeDefAny>>;
+  readonly defaultButton?: string;
+  readonly decks?: Readonly<Record<string, AddonDeckFactory | AddonDeckDefinition>>;
+  readonly frontend?: AddonFrontend;
   readonly poller?: {
     readonly channels: ReadonlyArray<{
-      readonly channel: string
-      readonly intervalMs: number
-      readonly poll: () => unknown | Promise<unknown>
-    }>
-  }
-  readonly publishIntervalMs?: number
-  readonly globalBackend?: AddonGlobalBackend
+      readonly channel: string;
+      readonly intervalMs: number;
+      readonly poll: () => unknown | Promise<unknown>;
+    }>;
+  };
+  readonly publishIntervalMs?: number;
+  readonly globalBackend?: AddonGlobalBackend;
 }
 
-let domAssetPathResolver:
-  | ((assetReference: string) => string | undefined)
-  | undefined
+let domAssetPathResolver: ((assetReference: string) => string | undefined) | undefined;
 
 export function setDomAssetPathResolver(
   resolver?: (assetReference: string) => string | undefined,
 ): void {
-  domAssetPathResolver = resolver
+  domAssetPathResolver = resolver;
 }
 
 export function resolveDomAssetSrc(src: string): string {
   if (
-    src.startsWith('data:') ||
-    src.startsWith('http://') ||
-    src.startsWith('https://') ||
-    src.startsWith('file://') ||
-    src.startsWith('/')
+    src.startsWith("data:") ||
+    src.startsWith("http://") ||
+    src.startsWith("https://") ||
+    src.startsWith("file://") ||
+    src.startsWith("/")
   ) {
-    return src
+    return src;
   }
 
   if (/^(?:addon|builtin):\/\//.test(src)) {
-    const resolvedAssetPath = domAssetPathResolver?.(src)
+    const resolvedAssetPath = domAssetPathResolver?.(src);
     if (!resolvedAssetPath) {
-      return src
+      return src;
     }
 
     if (
       /^(?:data:|https?:\/\/|file:\/\/)/.test(resolvedAssetPath) ||
-      resolvedAssetPath.startsWith('/')
+      resolvedAssetPath.startsWith("/")
     ) {
-      return resolvedAssetPath
+      return resolvedAssetPath;
     }
 
-    return `file://${resolvedAssetPath}`
+    return `file://${resolvedAssetPath}`;
   }
 
-  return src
+  return src;
 }
 
 /**
@@ -221,47 +226,43 @@ export function resolveDomAssetSrc(src: string): string {
  *   passes an `AbortSignal` so cleanup is automatic.
  */
 export interface AddonGlobalBackend {
-  readonly pollers?: ReadonlyArray<AddonGlobalPoller>
-  readonly subscriptions?: ReadonlyArray<AddonGlobalSubscription>
-  readonly methods?: Readonly<Record<string, AddonBackendMethod>>
-  readonly onLoad?: (ctx: AddonBackendContext) => void | Promise<void>
-  readonly onUnload?: (ctx: AddonBackendContext) => void | Promise<void>
+  readonly pollers?: ReadonlyArray<AddonGlobalPoller>;
+  readonly subscriptions?: ReadonlyArray<AddonGlobalSubscription>;
+  readonly methods?: Readonly<Record<string, AddonBackendMethod>>;
+  readonly onLoad?: (ctx: AddonBackendContext) => void | Promise<void>;
+  readonly onUnload?: (ctx: AddonBackendContext) => void | Promise<void>;
 }
 
-export type AddonBackendMethod = (
-  ...args: readonly unknown[]
-) => unknown | Promise<unknown>
+export type AddonBackendMethod = (...args: readonly unknown[]) => unknown | Promise<unknown>;
 
 export interface AddonGlobalPoller {
-  readonly id: string
-  readonly channel: string
-  readonly intervalMs: number
-  readonly poll: (ctx: AddonBackendContext) => unknown | Promise<unknown>
+  readonly id: string;
+  readonly channel: string;
+  readonly intervalMs: number;
+  readonly poll: (ctx: AddonBackendContext) => unknown | Promise<unknown>;
 }
 
 export interface AddonGlobalSubscription {
-  readonly channel: string
-  readonly subscribe: (
-    ctx: AddonBackendContext,
-  ) => { unsubscribe: () => void }
+  readonly channel: string;
+  readonly subscribe: (ctx: AddonBackendContext) => { unsubscribe: () => void };
 }
 
 export interface AddonBackendContext {
   /** Push data to the channel this poller/subscription is bound to. */
-  publish: (data: unknown) => void
+  publish: (data: unknown) => void;
   /**
    * Trigger the poller with the given id (within this addon) immediately and
    * broadcast its result. Useful after a `methods` call to reflect the new
    * state without waiting for the next polling tick. Unknown ids are no-ops;
    * poller errors are logged and swallowed.
    */
-  poll: (id: string) => Promise<void>
+  poll: (id: string) => Promise<void>;
   /** Aborted when the addon unloads. */
-  signal: AbortSignal
+  signal: AbortSignal;
   /** Run host commands (e.g. `brightness set 80`). */
-  executor: ActionExecutor
+  executor: ActionExecutor;
   /** Set the clipboard provider for pasteText method. */
-  setClipboardProvider: (provider: unknown) => void
+  setClipboardProvider: (provider: unknown) => void;
 }
 
 /**
@@ -273,30 +274,30 @@ export interface AddonBackendContext {
  * the addon's internals.
  */
 export interface AddonButtonBackend<Config = unknown> {
-  readonly onMount?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
-  readonly onTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
-  readonly onDblTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
-  readonly onHold?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
-  readonly dispose?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>
+  readonly onMount?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
+  readonly onTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
+  readonly onDblTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
+  readonly onHold?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
+  readonly dispose?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
 }
 
 export interface AddonButtonBackendContext<Config = unknown> {
-  readonly config: Config
-  readonly buttonId: string
-  readonly addonName: string
+  readonly config: Config;
+  readonly buttonId: string;
+  readonly addonName: string;
   /** Namespaced addon-global methods (`<addonName>:<methodName>` keys). */
-  readonly methods: Readonly<Record<string, AddonBackendMethod>>
+  readonly methods: Readonly<Record<string, AddonBackendMethod>>;
   /** Publish on a channel. */
-  readonly publish: (channel: string, data: unknown) => void
+  readonly publish: (channel: string, data: unknown) => void;
   /** Run host commands. */
-  readonly executor: ActionExecutor
+  readonly executor: ActionExecutor;
   /** Aborted when the button instance unmounts. */
-  readonly signal: AbortSignal
+  readonly signal: AbortSignal;
   /**
    * Per-addon persisted state. Use `store.buttonScope(addonName, key)` to
    * scope reads/writes to this addon.
    */
-  readonly store: Store
+  readonly store: Store;
 }
 
 /**
@@ -313,14 +314,14 @@ export interface AddonButtonBackendContext<Config = unknown> {
  *   The CLI dynamically imports it at startup.
  */
 export interface AddonJsonManifest {
-  readonly kind: AddonManifestKind
-  readonly apiVersion: 1
-  readonly name: string
-  readonly entry: string
+  readonly kind: AddonManifestKind;
+  readonly apiVersion: 1;
+  readonly name: string;
+  readonly entry: string;
 }
 
 /** Validation schema for `AddonJsonManifest`; usable at scan time. */
-export type AddonJsonManifestSchema = z.ZodType<AddonJsonManifest>
+export type AddonJsonManifestSchema = z.ZodType<AddonJsonManifest>;
 
 /** The current JSON manifest schema version. */
-export const SIRENO_ADDON_JSON_API_VERSION = 1 as const
+export const SIRENO_ADDON_JSON_API_VERSION = 1 as const;

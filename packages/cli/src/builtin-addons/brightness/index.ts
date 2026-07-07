@@ -10,6 +10,7 @@ export const manifest: AddonManifestV1 = {
     "brightness:brightness": {
       frontend: brightnessFrontend,
       backend: brightnessBackend,
+      gestureHandlers: ["tap"],
     },
   },
   publishIntervalMs: 2000,

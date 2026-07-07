@@ -35,11 +35,19 @@ type AddonModule = {
 const namespacedKey = (addonName: string, methodName: string): string =>
   `${addonName}:${methodName}`;
 
-export const bridgeAddonBackends = async (
-  params: BridgeAddonBackendsParams,
-): Promise<void> => {
-  const { runtime, decks, scanned, executor, pubSub, store, signal, statePublisher, bridge, setClipboardProvider } =
-    params;
+export const bridgeAddonBackends = async (params: BridgeAddonBackendsParams): Promise<void> => {
+  const {
+    runtime,
+    decks,
+    scanned,
+    executor,
+    pubSub,
+    store,
+    signal,
+    statePublisher,
+    bridge,
+    setClipboardProvider,
+  } = params;
 
   runtime.setGestureListener((buttonId, event) => {
     bridge.broadcast({
@@ -62,14 +70,18 @@ export const bridgeAddonBackends = async (
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mod = (await import(addon.globalBackendEntry)) as AddonModule;
       let globalBackend: AddonGlobalBackend | undefined;
-      if (typeof (mod as unknown as { globalBackend?: AddonGlobalBackend }).globalBackend === "object") {
+      if (
+        typeof (mod as unknown as { globalBackend?: AddonGlobalBackend }).globalBackend === "object"
+      ) {
         globalBackend = (mod as unknown as { globalBackend: AddonGlobalBackend }).globalBackend;
       } else {
         const exported =
-          mod.manifest ??
-          (mod.default && typeof mod.default === "object" ? mod.default : null);
+          mod.manifest ?? (mod.default && typeof mod.default === "object" ? mod.default : null);
         if (exported === null) continue;
-        const manifest = exported as { readonly name?: string; readonly globalBackend?: AddonGlobalBackend };
+        const manifest = exported as {
+          readonly name?: string;
+          readonly globalBackend?: AddonGlobalBackend;
+        };
         globalBackend = manifest.globalBackend;
       }
       if (globalBackend === undefined) continue;
@@ -186,10 +198,8 @@ export const bridgeAddonBackends = async (
       }
 
       const exported = addonMod
-        ? addonMod.manifest ??
-          (addonMod.default && typeof addonMod.default === "object"
-            ? addonMod.default
-            : null)
+        ? (addonMod.manifest ??
+          (addonMod.default && typeof addonMod.default === "object" ? addonMod.default : null))
         : null;
 
       if (exported === null) continue;
@@ -228,9 +238,10 @@ export const bridgeAddonBackends = async (
         console.error(`[${addonName}] ${buttonType} onMount threw:`, err);
       }
 
+      const allowedGestures = buttonBackend.gestureHandlers;
       const handler = {
         async onTap(ctx: { buttonId: string; config: unknown; gesture: string }) {
-          console.log(`[handler] ${addonName}:${resolvedButtonType} onTap called, buttonBackend.onTap=`, typeof buttonBackend.onTap);
+          if (allowedGestures !== undefined && !allowedGestures.includes("tap")) return;
           try {
             await buttonBackend.onTap?.(wrappedCtx);
           } catch (err) {
@@ -238,6 +249,7 @@ export const bridgeAddonBackends = async (
           }
         },
         async onDblTap(ctx: { buttonId: string; config: unknown; gesture: string }) {
+          if (allowedGestures !== undefined && !allowedGestures.includes("dbl-tap")) return;
           try {
             await buttonBackend.onDblTap?.(wrappedCtx);
           } catch (err) {
@@ -245,6 +257,7 @@ export const bridgeAddonBackends = async (
           }
         },
         async onHold(ctx: { buttonId: string; config: unknown; gesture: string }) {
+          if (allowedGestures !== undefined && !allowedGestures.includes("hold")) return;
           try {
             await buttonBackend.onHold?.(wrappedCtx);
           } catch (err) {

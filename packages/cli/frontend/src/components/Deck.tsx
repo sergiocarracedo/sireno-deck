@@ -15,7 +15,8 @@ const BUTTON_SIZE = BUTTON_SIZE_PX;
 const BUTTON_GAP_PX = 8;
 const DECK_PADDING_PX = 16;
 
-const isCompact = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("compact");
+const isCompact =
+  typeof window !== "undefined" && new URLSearchParams(window.location.search).has("compact");
 
 export interface DeckButton {
   id: string;
@@ -45,7 +46,7 @@ export type ButtonGestureMap = Readonly<Record<string, ButtonGestureState | unde
 export interface DeckProps {
   readonly deck: Deck;
   readonly gestures?: ButtonGestureMap;
-  readonly onAction?: (buttonId: string, gesture: 'tap' | 'dbl-tap' | 'hold') => void;
+  readonly onAction?: (buttonId: string, gesture: "tap" | "dbl-tap" | "hold") => void;
   readonly children?: ReactNode;
 }
 
@@ -63,7 +64,11 @@ const resolveDeviceModel = (): DeviceModelSpec => {
 };
 
 const resolvePosition = (button: DeckButton, fallback: number): number => {
-  if (typeof button.position === "number" && Number.isFinite(button.position) && button.position >= 0) {
+  if (
+    typeof button.position === "number" &&
+    Number.isFinite(button.position) &&
+    button.position >= 0
+  ) {
     return button.position;
   }
   const parsed = Number.parseInt(button.id, 10);
@@ -72,6 +77,7 @@ const resolvePosition = (button: DeckButton, fallback: number): number => {
 
 interface AddonRegistryEntry {
   readonly addonName: string;
+  readonly gestures?: readonly string[];
   readonly Component: React.ComponentType<{
     readonly config: unknown;
     readonly state: unknown;
@@ -167,13 +173,17 @@ export const Deck = ({ deck, gestures, onAction, children }: DeckProps) => {
         const row = Math.floor(position / columns) + 1;
         const gesture = gestures?.[button.id] ?? EMPTY_GESTURE;
         const fallbackText = button.label ?? button.type;
+        const entryGestures = addonRegistry[button.type]?.gestures;
+        const tapAllowed = entryGestures === undefined || entryGestures.includes("tap");
         return (
           <div
             key={button.id}
             style={{ gridColumn: col, gridRow: row, width: BUTTON_SIZE, height: BUTTON_SIZE }}
             data-button-type={button.type}
             className="cursor-pointer"
-            onClick={() => onAction?.(button.id, 'tap')}
+            onClick={() => {
+              if (tapAllowed) onAction?.(button.id, "tap");
+            }}
           >
             <ButtonFrame
               pressed={gesture.pressed}
