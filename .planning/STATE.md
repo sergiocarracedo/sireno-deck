@@ -4,10 +4,12 @@
 
 ## Branch
 
-`refactor/architecture-doc` @ `e4fd7b7c` — "docs: replace .planning/ with single ARCHITECTURE.md"
+`refactor/architecture-doc` @ `38dc601b` — "feat(addon): gestureHandlers opt-in filter with default-deny (P2)"
 
 ## What just landed
 
+- **Commit `38dc601b`** P2 shipped — `gestureHandlers` opt-in with default-deny. `AddonButtonTypeBackend.gestureHandlers?: readonly GestureKind[]` enforced at invoke time in `addon-handler-bridge.ts`. Registry warns at load. Frontend filters in `Deck.tsx`. Vite plugin exposes to `addonRegistry`. Audit: 9 button types across 6 addons annotated.
+- **Commit `a1b62bd3`** P1 shipped — React Router + BrowserRouter, service-driven nav. 2 vitest cases added. P1 docs (STATE/ROADMAP) updated.
 - **Commit `e4fd7b7c`** replaced `.planning/` (158 files) with a single `ARCHITECTURE.md` at the repo root.
 - 284 unrelated dirty files left in the working tree (pre-existing in-progress work from `feat/human-changes` merge `74b342fd`). **Don't touch them** unless explicitly asked.
 
@@ -31,7 +33,7 @@ $ git status --short | wc -l
 
 ## Next
 
-P1 (React Router in frontend) shipped at `74d9dc59`. Next item per ROADMAP.md: **P2 — `gestureHandlers` enforced (default-deny)** + the 9-of-10 built-in audit.
+P2 (gestureHandlers default-deny) shipped at `38dc601b`. Next item per ROADMAP.md: **P4 — Auto-register addon decks on load**.
 
 ## Pre-existing known issues (do NOT touch without forensics)
 
@@ -40,7 +42,8 @@ P1 (React Router in frontend) shipped at `74d9dc59`. Next item per ROADMAP.md: *
 
 ## Recently shipped (for context, not for editing)
 
-- **Phase 76 plan set (planned, not executed)** — superseded by the architecture-doc refactor. The 7 plan files (76-01 through 76-07) were never run; their content is folded into `ROADMAP.md`.
+- **P2 — gestureHandlers default-deny** (`38dc601b`) — api.ts + registry.ts + addon-handler-bridge.ts + virtual-modules.ts + Deck.tsx. 9 builtins audited. 9/9 + 13/13 tests pass. 0 lint errors.
+- **P1 — React Router in frontend** (`74d9dc59`) — service-driven nav, BrowserRouter, URL projection. 2 vitest cases added.
 - **Phase 75-01** — `value-display` first-party addon (1-3 values cap, parallel `Promise.all` polling). 8/8 tests pass.
 - **Phase 74-01** — `system-status-label-values` metrics capped at 1-2; 3+ rejected with hint to use `value-display`. 7/7 tests pass.
 - **Phase 73-01/02** — pasteText now writes to clipboard AND sends Ctrl+V/Cmd+V; key-macro providers throw on failure (caught + shown as runtime button error). 4/4 + 19/19 tests pass.

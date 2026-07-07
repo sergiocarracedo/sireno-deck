@@ -21,22 +21,14 @@
 - `[x]` 2 vitest cases in `app-navigation.test.tsx` (URL updates + no-op on unknown surface).
 - Skipped: per-button routes (out of scope); URL-driven nav (spec says service-driven).
 
-### P2 — `gestureHandlers` enforced (default-deny)
+### P2 — `gestureHandlers` enforced (default-deny) `[x]` shipped at `38dc601b`
 
-- `[ ]` At addon load, walk every `buttonTypes` entry. If a backend has `onTap / onDblTap / onHold` and no `gestureHandlers` declared, **log warning and ignore the undeclared handlers** (silently strip).
-- `[ ]` WS `deck-config` payload gains a per-button `gestureHandlers: GestureKind[]` field.
-- `[ ]` Frontend's `ButtonSurface` reads `gestureHandlers` from the deck config and only forwards declared gestures.
-- **Audit (must ship in this phase):**
-  - `brightness` — declares no `gestureHandlers`; has `onTap` → add `['tap']`
-  - `core-buttons` — audit each button type
-  - `emoji-selector` — has `onTap` → add `['tap']`
-  - `internal-settings` — back/dismiss/toggle use `onTap` → add `['tap']`
-  - `media` — already declares `['tap']`; verify
-  - `session` — has `onTap` → add `['tap']`
-  - `system-status` — no backend gestures; no change
-  - `value-display` — has `onTap` → add `['tap']`
-  - `weather` — has `onTap` → add `['tap']`
-  - `date-time` — no backend gestures; no change
+- `[x]` api.ts: `gestureHandlers?: readonly GestureKind[]` on `AddonButtonTypeBackend`.
+- `[x]` registry.ts: warn at load time if onTap/onDblTap/onHold without `gestureHandlers`.
+- `[x]` addon-handler-bridge.ts: filter at invoke time — skip if gesture not in `gestureHandlers`.
+- `[x]` virtual-modules.ts: expose `gestureHandlers` per button type in frontend registry.
+- `[x]` Deck.tsx: only fire `onAction("tap")` if `"tap"` in `gestures` (undefined = legacy allow).
+- `[x]` Audit — 9 button types across 6 addons: brightness:brightness, core-buttons:action/change-deck/toggle/media-sample, internal-settings:about/brightness/theme, media:volume:down, session:info, weather:weather. No changes needed: emoji-selector (already had it), media:player/mute/volume:up (already had it), date-time (no backend gestures), system-status (no backend gestures), value-display (no backend gestures).
 - **[?]** Compatibility shim for 3rd-party addons? See `PROJECT.md` scope guardrails. Decision deferred.
 
 ### P4 — Auto-register addon decks on load
