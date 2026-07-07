@@ -135,5 +135,5 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
 };
 
 export const serializeHello = (token?: string): string => {
-  return JSON.stringify({ type: "hello", version: 3, ...(token !== undefined ? { token } : {}) });
+  return JSON.stringify({ type: "hello", version: 1, ...(token !== undefined ? { token } : {}) });
 };

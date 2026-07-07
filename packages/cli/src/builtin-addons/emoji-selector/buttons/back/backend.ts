@@ -4,7 +4,7 @@ import { configSchema } from "./config";
 
 export default {
   configSchema,
-  onTap: ({ methods }) => {
-    void methods["navigate-deck"]?.("main");
+  onTap: ({ publish }) => {
+    publish("runtime:navigate-deck", { deckId: "main", addToHistory: true });
   },
 } satisfies AddonButtonTypeBackend;

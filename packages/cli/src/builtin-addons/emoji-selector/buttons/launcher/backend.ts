@@ -4,7 +4,7 @@ import { configSchema } from "./config";
 
 export default {
   configSchema,
-  onTap: ({ methods }) => {
-    void methods["navigate-deck"]?.("emoji");
+  onTap: ({ publish }) => {
+    publish("runtime:navigate-deck", { deckId: "emoji-selector", addToHistory: true });
   },
 } satisfies AddonButtonTypeBackend;

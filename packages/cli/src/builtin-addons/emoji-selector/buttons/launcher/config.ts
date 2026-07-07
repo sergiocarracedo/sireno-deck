@@ -1,4 +1,6 @@
 import { z } from "zod";
 
-export const configSchema = z.object({});
-export type ConfigSchema = z.infer<typeof configSchema>
+import { EmojiLauncherButtonSchema } from "../../support.ts";
+
+export const configSchema = EmojiLauncherButtonSchema;
+export type ConfigSchema = z.infer<typeof configSchema>;

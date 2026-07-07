@@ -1,6 +1,7 @@
 import type {
   AddonButtonTypeDef,
   AddonDeckDefinition,
+  AddonDeckFactory,
   AddonGeneratedDeck,
   AddonManifestV1,
   LoadedTheme,
@@ -49,17 +50,20 @@ export class AddonRegistry {
       }
       this.buttonsByType.set(buttonType, { addonName: name, def });
     }
-    for (const [deckName, factory] of Object.entries(manifest.decks ?? {})) {
+    for (const [deckName, entry] of Object.entries(manifest.decks ?? {})) {
       if (this.decksByType.has(deckName)) {
         throw new Error(`Duplicate deck '${deckName}' in addon ${name}`);
       }
-      const def: AddonDeckDefinition = {
-        type: deckName,
-        createDecks: (): Record<string, AddonGeneratedDeck> => {
-          const deck = factory(0);
-          return { [deckName]: deck };
-        },
-      };
+      const def: AddonDeckDefinition =
+        typeof entry === "function"
+          ? {
+              type: deckName,
+              createDecks: (): Record<string, AddonGeneratedDeck> => {
+                const deck = (entry as AddonDeckFactory)(0);
+                return { [deckName]: deck };
+              },
+            }
+          : (entry as AddonDeckDefinition);
       this.decksByType.set(deckName, { addonName: name, def });
     }
   }

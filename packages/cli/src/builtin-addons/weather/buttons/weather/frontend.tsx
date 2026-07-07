@@ -4,11 +4,7 @@ import type { AddonFrontendButton } from '@/addon/api'
 import { useAddonChannel } from '@/api/react'
 import { Chip, Icon, Text } from '@/ui/index'
 import { cityKey } from '../../provider/city-key'
-import type {
-  ConfigSchema,
-  WeatherSnapshot,
-  WeatherStateSnapshot,
-} from './config'
+import type { ConfigSchema, WeatherStateSnapshot } from './config'
 
 type SurfacePage = 'main' | 'data' | 'hourly-forecast' | 'daily-forecast'
 
@@ -64,16 +60,16 @@ const WeatherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
 }) => {
   const [page, setPage] = useState<SurfacePage>('main')
   const [pageChangedAt, setPageChangedAt] = useState<number | undefined>()
-  const lastDataRef = useRef(data)
 
   const name =
     typeof config?.location === 'object'
       ? config.location.name
       : config?.location
   const { data } = useAddonChannel<WeatherStateSnapshot>('weather:current')
+  const lastDataRef = useRef(data)
 
   const loc = config?.location
-  const snapshot: WeatherSnapshot | undefined =
+  const snapshot: WeatherStateSnapshot | undefined =
     loc !== undefined && data?.byCity !== undefined
       ? data.byCity[lookupKey(loc)]
       : undefined
@@ -110,9 +106,8 @@ const WeatherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
         className="flex h-full w-full flex-col items-center justify-center gap-2"
         onClick={handleTap}
       >
-        <Icon name="hourglass" tone="danger" />
-        <Text tone="danger" size="sm">
-          Unavailable
+        <Text size="sm" tone="fg">
+          {name ?? 'Weather'}
         </Text>
       </button>
     )

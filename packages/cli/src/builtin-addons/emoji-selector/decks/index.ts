@@ -1,4 +1,4 @@
-import type { AddonGeneratedDeck, AddonDeckFactory } from "@/addon/api";
+import type { AddonGeneratedDeck, AddonDeckDefinition } from "@/addon/api";
 
 import {
   CATEGORY_DEFINITIONS,
@@ -112,12 +112,21 @@ const generateDecks = (
   return decks;
 };
 
-const emojiSelectorDeckFactory: AddonDeckFactory = (_page: number) => {
-  const def = generateDecks({ id: "emoji-selector" }, {
-    favorites: [],
-  });
-  return def["emoji-selector"] ?? { name: "Emoji Selector", buttons: [] };
+const emojiSelectorDeckDefinition: AddonDeckDefinition = {
+  type: "emoji-selector",
+  createDecks: ({
+    config,
+  }: {
+    config: unknown;
+    deck: { id: string };
+  }): Record<string, AddonGeneratedDeck> => {
+    const cfg =
+      config && typeof config === "object" && "favorites" in config
+        ? (config as EmojiSelectorDeckConfig)
+        : { favorites: [] };
+    return generateDecks({ id: "emoji-selector" }, cfg);
+  },
 };
 
-export default emojiSelectorDeckFactory;
-export { emojiSelectorDeckFactory, EmojiSelectorDeckSchema };
+export default emojiSelectorDeckDefinition;
+export { emojiSelectorDeckDefinition as emojiSelectorDeckFactory, EmojiSelectorDeckSchema };
