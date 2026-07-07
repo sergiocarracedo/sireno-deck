@@ -1,0 +1,26 @@
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_6e29ffb546c304::t_ac497e3438eb58 257
+packages/cli/src/addon/api.ts
+  s_6e29ffb546c304::t_801b5b33cb8670 280
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "9daa681e474b6d3847634b20a338326e9f3870e1",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_6e29ffb546c304": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0c69967f6ffekKNO4bWynqg6lP",
+        "model": "z-ai/glm-5.2"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
