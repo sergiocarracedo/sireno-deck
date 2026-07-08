@@ -12,6 +12,7 @@ import { findConfigPath } from "@/config/discovery";
 import { loadConfig } from "@/config/loader";
 import { formatFullIssues, isFullValid, validateFull } from "@/config/validation";
 import { createDeckRuntime, type Runtime, type RuntimeDeck, type PubSub, type Store } from "@/deck";
+import { materializeAddonDecks } from "./addon-decks";
 import { createGestureDetector } from "@/core/gesture-state";
 import { getAllAssets, registerIconForDeck } from "@/core/icon-asset-registry";
 import { createActiveAppProvider } from "@/system/active-app";
@@ -362,7 +363,8 @@ export const preflight = async (options: RunOptions): Promise<PreflightResult> =
   }));
   const effectiveDecks: RuntimeDeck[] =
     decks.length > 0 ? decks : [{ id: "main", name: "Main", isMain: true, buttons: [] }];
-  const { runtime, methods, pubSub, store } = createDeckRuntime({ decks: effectiveDecks, logger });
+  const allDecks = materializeAddonDecks(registry, effectiveDecks, logger);
+  const { runtime, methods, pubSub, store } = createDeckRuntime({ decks: allDecks, logger });
 
   const { execa } = await import("execa");
   const executor = {
@@ -407,7 +409,7 @@ export const preflight = async (options: RunOptions): Promise<PreflightResult> =
     runtime,
     pubSub,
     store,
-    decks,
+    decks: allDecks,
     theme: { name: theme.name, apiVersion: theme.apiVersion },
     themeDir,
     providers: { activeApp, session, keyMacro, media },
@@ -674,15 +676,16 @@ const buildEmulatorDecks = (options: RunOptions): EmulatorDecks => {
           ...(mainId !== undefined && d.id === mainId ? { isMain: true } : {}),
         }))
       : [{ id: "main", name: "Main", isMain: true, buttons: [] }];
+  const allDecks = materializeAddonDecks(registry, runtimeDecks, logger);
   const {
     runtime,
     pubSub: emulatorPubSub,
     store,
   } = createDeckRuntime({
-    decks: runtimeDecks,
+    decks: allDecks,
     logger,
   });
-  return { runtime, pubSub: emulatorPubSub, decks: runtimeDecks, store };
+  return { runtime, pubSub: emulatorPubSub, decks: allDecks, store };
 };
 
 const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
