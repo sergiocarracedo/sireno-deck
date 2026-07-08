@@ -78,7 +78,17 @@ export class AddonRegistry {
                 return { [deckName]: deck };
               },
             }
-          : (entry as AddonDeckDefinition);
+          : "deck" in (entry as Record<string, unknown>) && typeof (entry as { deck: unknown }).deck === "function"
+            ? {
+                type: deckName,
+                createDecks: (): Record<string, AddonGeneratedDeck> => {
+                  const factory = (entry as { deck: AddonDeckFactory }).deck;
+                  const deck = factory(0);
+                  return { [deckName]: deck };
+                },
+                internal: (entry as { internal?: boolean }).internal,
+              }
+            : (entry as AddonDeckDefinition);
       this.decksByType.set(deckName, { addonName: name, def });
     }
   }

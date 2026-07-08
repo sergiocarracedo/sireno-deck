@@ -31,7 +31,7 @@ export const manifest: AddonManifestV1 = {
     },
   },
   decks: {
-    "internal-settings:settings": settingsDeck,
+    "internal-settings:settings": { deck: settingsDeck, internal: true },
   },
 };
 

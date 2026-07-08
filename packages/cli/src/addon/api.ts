@@ -130,6 +130,7 @@ export interface AddonDeckDefinition {
     config: unknown;
     deck: { id: string };
   }) => Record<string, AddonGeneratedDeck>;
+  internal?: boolean;
 }
 
 export interface AddonGeneratedDeck {
