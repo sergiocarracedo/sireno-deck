@@ -56,3 +56,17 @@ The first public release of sireno-deck. A complete rewrite of the legacy `siren
 - The legacy `onPress` / `onRelease` / `onActivate` / `onDeactivate` / `poll` / `refresh` lifecycle hooks. Use pub-sub channels + the gesture state machine instead.
 - The legacy `vue-sirendeck` `sirendeck-deck-config` message type. Use `deck-config` (the new v3 message).
 - The legacy `npm` registry code path was never wired into the v2 CLI; it ships in v0.1.0 via the new `~/.cache/sireno-deck/` loader.
+
+## [Unreleased]
+
+### Changed
+
+- **`runPipeline` unifies real + emulator pipelines.** `runRealModePipeline` and `runEmulatorLifecycle` collapsed into a single `runPipeline(options)` that uses `selectOutputClient({emulator, device, intervalMs?})`. New module `packages/cli/src/cli/commands/output-client/{types,real,emulator,index}.ts` owns the per-mode divergence. `runRealMode` and `runEmulatorMode` deleted; `real-mode.ts` removed; `emulator-mode.ts` slimmed to pure helpers (`buildDeckConfigMessage`, `spawnFrontendVite`, `spawnEmulatorVite`, `killChild`, `resolveFrontendCwd`, `resolveEmulatorCwd`, `findWorkspaceRoot`, `AddonFrontendRef`).
+
+### Fixed
+
+- **Emulator mode now starts system providers** (latent gap). Clipboard paste, media keys, session monitor, active-app, and key-macro providers were only initialized in real mode. `runPipeline` starts them once for both modes; emulator-mode gained access via the shared wiring.
+
+### Learnings
+
+- Two pipelines that share 80% of their body and diverge only in the finalizer are an OutputClient-shaped problem. The shape made the divergence local, the shared logic local, and exposed the missing-emulator-providers bug as a one-line fix.

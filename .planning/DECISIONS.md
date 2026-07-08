@@ -27,7 +27,7 @@
 
 ## 2026-07-07 — P4+P5 auto-register addon decks + `internal?: boolean`
 
-**Decision:** Every deck an addon declares in `manifest.decks` registers at load time. User config can still *reference* an addon deck by `${addonName}:${deckKey}`. The `internal?: boolean` flag on `AddonDeckDefinition` opts a deck out of user-config discovery surfaces (CLI listing, schema completions).
+**Decision:** Every deck an addon declares in `manifest.decks` registers at load time. User config can still _reference_ an addon deck by `${addonName}:${deckKey}`. The `internal?: boolean` flag on `AddonDeckDefinition` opts a deck out of user-config discovery surfaces (CLI listing, schema completions).
 
 **Rationale:** Today users must list addon decks in `config.yml` to use them — friction. Auto-register fixes that. The `internal` flag prevents the settings deck from polluting the user's deck list.
 
@@ -59,3 +59,11 @@ These were captured during Phases 67–75 and remain valid. See git history `e4f
 - **Phase 73** — pasteText writes to clipboard + sends paste keystroke; key-macro providers throw on failure (caught by runtime + shown via `showRuntimeButtonError`).
 - **Phase 74** — `system-status-label-values` metrics capped at 1-2 (3+ rejected with hint to use `value-display`).
 - **Phase 75** — `value-display` first-party addon; `SystemStatusFormatterSchema` exported from `system-status/schemas.ts`.
+
+## 2026-07-08 — OutputClient abstraction over real-vs-emulator pipeline
+
+**Context:** `runRealModePipeline` (473-702) and `runEmulatorLifecycle` (773-867) shared ~80% of their logic — config/theme load, runtime + providers + ws-bridge + addon services — but had divergent finalizers. Emulator mode silently skipped system providers (latent gap: clipboard paste, media keys, session monitor, active-app, key-macro unavailable).
+
+**Decision:** Introduce `OutputClient` (`packages/cli/src/cli/commands/output-client/{types,real,emulator,index}.ts`). A single `runPipeline(options)` calls `selectOutputClient({emulator, device, intervalMs?})` and runs `.start(ctx)`. `RealOutputClient` wraps `BrowserRenderer`; `EmulatorOutputClient` wraps vite spawn + ws-bridge dispatch. `runRealMode` and `runEmulatorMode` are deleted; `real-mode.ts` removed; `emulator-mode.ts` slimmed to helpers (`buildDeckConfigMessage`, `spawnFrontendVite`, `spawnEmulatorVite`, `killChild`, `resolveFrontendCwd`, `resolveEmulatorCwd`, `findWorkspaceRoot`, `AddonFrontendRef`).
+
+**Rationale:** The two pipelines were a 2x maintenance burden with no real test coverage on the divergent tail. OutputClient makes the divergence local and explicit (each subclass owns its start/stop), reuses the same providers + addon services wiring, and closes the emulator provider gap as a side effect.

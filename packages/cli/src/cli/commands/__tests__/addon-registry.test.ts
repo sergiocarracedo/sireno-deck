@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest"
 
 import {
   collectBuiltinAddonRegistry,
@@ -6,7 +6,7 @@ import {
   scanBuiltinAddons,
   validateBuiltinButtonConfigs,
   type ScannedAddon,
-} from "../addon-registry";
+} from "../addon-registry"
 
 const scannedFixture: ReadonlyArray<ScannedAddon> = [
   {
@@ -42,29 +42,29 @@ const scannedFixture: ReadonlyArray<ScannedAddon> = [
     source: "regex",
     globalServiceEntry: null,
   },
-];
+]
 
 describe("collectBuiltinAddonRegistry", () => {
   it("discovers the built-in addons", async () => {
-    const registry = await collectBuiltinAddonRegistry();
-    expect(registry.scanned.length).toBeGreaterThan(0);
-    const names = registry.scanned.map((a) => a.name);
-    expect(names).toContain("date-time");
-    expect(names).toContain("weather");
-  });
+    const registry = await collectBuiltinAddonRegistry()
+    expect(registry.scanned.length).toBeGreaterThan(0)
+    const names = registry.scanned.map((a) => a.name)
+    expect(names).toContain("date-time")
+    expect(names).toContain("weather")
+  })
 
   it("populates byType with the type → addon map", async () => {
-    const registry = await collectBuiltinAddonRegistry();
-    expect(registry.byType.get("date-time:time")?.name).toBe("date-time");
-    expect(registry.byType.get("weather:weather")?.name).toBe("weather");
-  });
-});
+    const registry = await collectBuiltinAddonRegistry()
+    expect(registry.byType.get("date-time:time")?.name).toBe("date-time")
+    expect(registry.byType.get("weather:weather")?.name).toBe("weather")
+  })
+})
 
 describe("discoverAddonPollers", () => {
   it("returns an empty array when no addons have poller entries", async () => {
-    const discovered = await discoverAddonPollers({}, scannedFixture);
-    expect(discovered).toEqual([]);
-  });
+    const discovered = await discoverAddonPollers({}, scannedFixture)
+    expect(discovered).toEqual([])
+  })
 
   it("filters out addons without publishIntervalMs", async () => {
     const without: ScannedAddon[] = [
@@ -79,25 +79,25 @@ describe("discoverAddonPollers", () => {
         source: "regex",
         globalServiceEntry: null,
       },
-    ];
-    const discovered = await discoverAddonPollers({}, without);
-    expect(discovered).toEqual([]);
-  });
-});
+    ]
+    const discovered = await discoverAddonPollers({}, without)
+    expect(discovered).toEqual([])
+  })
+})
 
 describe("validateBuiltinButtonConfigs", () => {
   it("finds no issues with builtin button configs", () => {
-    const issues = validateBuiltinButtonConfigs();
-    expect(issues).toHaveLength(0);
-  });
-});
+    const issues = validateBuiltinButtonConfigs()
+    expect(issues).toHaveLength(0)
+  })
+})
 
 describe("JSON manifest scan path", () => {
   it("discovers builtin addons via their sirenodeck.json", async () => {
-    const builtinScanned = await scanBuiltinAddons();
-    const dateTime = builtinScanned.find((s) => s.name === "date-time");
-    expect(dateTime?.source).toBe("json");
-    expect(dateTime?.frontendEntry).toContain("date-time/index.ts");
-    expect(dateTime?.types.length).toBeGreaterThan(0);
-  });
-});
+    const builtinScanned = await scanBuiltinAddons()
+    const dateTime = builtinScanned.find((s) => s.name === "date-time")
+    expect(dateTime?.source).toBe("json")
+    expect(dateTime?.frontendEntry).toContain("date-time/index.ts")
+    expect(dateTime?.types.length).toBeGreaterThan(0)
+  })
+})

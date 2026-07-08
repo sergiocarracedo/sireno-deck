@@ -9,12 +9,7 @@
 ## What just landed
 
 - **P8 — Backend→Service rename** — all types/fields/imports renamed. 60+ files.
-- **P6 — SplitActionSurface on n-1** — already delivered by P4's computeSystemButtonForSlotN1.
-- **P5 — internal? on AddonDeckDefinition** — registry skips internal decks from discovery.
-- **P4 — default main deck + n-1 injection** — synthetic deck when config empty, n-1 button via computeSystemButtonForSlotN1, addon decks materialized into runtime.
-- **Commit `38dc601b`** P2 shipped — `gestureHandlers` opt-in with default-deny. 9 builtins audited.
-- **Commit `a1b62bd3`** P1 shipped — React Router + BrowserRouter, service-driven nav. 2 vitest cases added.
-- **Commit `e4fd7b7c`** replaced `.planning/` (158 files) with a single `ARCHITECTURE.md` at the repo root.
+- **OutputClient unification** — `runRealModePipeline` + `runEmulatorLifecycle` collapsed into a single `runPipeline` that uses `selectOutputClient({emulator, device, intervalMs?})`. New `packages/cli/src/cli/commands/output-client/{types,real,emulator,index}.ts`. `emulator-mode.ts` slimmed to helpers only (`buildDeckConfigMessage`, `spawnFrontendVite`, `spawnEmulatorVite`, `killChild`, `resolveFrontendCwd`, `resolveEmulatorCwd`, `findWorkspaceRoot`, `AddonFrontendRef`). `real-mode.ts` deleted. Emulator mode now starts system providers too (latent gap closed).
 - 284 unrelated dirty files left in the working tree (pre-existing in-progress work from `feat/human-changes` merge `74b342fd`). **Don't touch them** unless explicitly asked.
 
 ## What just landed (this commit)
@@ -42,6 +37,7 @@ v1.7 complete. Next: user decides v1.8 scope.
 ## Milestone History
 
 ### v1.7 — Polish & 3rd-Party Fixtures
+
 Completed: 2026-07-08
 P-items: P1 (React Router), P2 (gestureHandlers), P4 (default main deck + n-1 injection), P5 (internal? flag), P6 (SplitActionSurface), P8 (Backend→Service rename)
 Key achievements: All v1.7 P-items shipped and verified. Milestone audit passed. Zero new stubs or integration gaps.
