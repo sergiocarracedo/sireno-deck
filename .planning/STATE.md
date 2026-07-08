@@ -4,12 +4,16 @@
 
 ## Branch
 
-`refactor/architecture-doc` @ `38dc601b` — "feat(addon): gestureHandlers opt-in filter with default-deny (P2)"
+`refactor/architecture-doc` @ HEAD — v1.7 P-list shipped (P1-P8)
 
 ## What just landed
 
-- **Commit `38dc601b`** P2 shipped — `gestureHandlers` opt-in with default-deny. `AddonButtonTypeBackend.gestureHandlers?: readonly GestureKind[]` enforced at invoke time in `addon-handler-bridge.ts`. Registry warns at load. Frontend filters in `Deck.tsx`. Vite plugin exposes to `addonRegistry`. Audit: 9 button types across 6 addons annotated.
-- **Commit `a1b62bd3`** P1 shipped — React Router + BrowserRouter, service-driven nav. 2 vitest cases added. P1 docs (STATE/ROADMAP) updated.
+- **P8 — Backend→Service rename** — all types/fields/imports renamed. 60+ files.
+- **P6 — SplitActionSurface on n-1** — already delivered by P4's computeSystemButtonForSlotN1.
+- **P5 — internal? on AddonDeckDefinition** — registry skips internal decks from discovery.
+- **P4 — default main deck + n-1 injection** — synthetic deck when config empty, n-1 button via computeSystemButtonForSlotN1, addon decks materialized into runtime.
+- **Commit `38dc601b`** P2 shipped — `gestureHandlers` opt-in with default-deny. 9 builtins audited.
+- **Commit `a1b62bd3`** P1 shipped — React Router + BrowserRouter, service-driven nav. 2 vitest cases added.
 - **Commit `e4fd7b7c`** replaced `.planning/` (158 files) with a single `ARCHITECTURE.md` at the repo root.
 - 284 unrelated dirty files left in the working tree (pre-existing in-progress work from `feat/human-changes` merge `74b342fd`). **Don't touch them** unless explicitly asked.
 
@@ -33,7 +37,7 @@ $ git status --short | wc -l
 
 ## Next
 
-P2 (gestureHandlers default-deny) shipped at `38dc601b`. Next item per ROADMAP.md: **P4 — Auto-register addon decks on load**.
+v1.7 P-list fully shipped (P1-P8). Next: user decides what v1.8 scope is.
 
 ## Pre-existing known issues (do NOT touch without forensics)
 
@@ -42,6 +46,10 @@ P2 (gestureHandlers default-deny) shipped at `38dc601b`. Next item per ROADMAP.m
 
 ## Recently shipped (for context, not for editing)
 
+- **P8 — Backend→Service rename** — all types/fields/imports. 60+ files. 28/28 tests pass.
+- **P6 — SplitActionSurface on n-1** — already delivered by P4 (computeSystemButtonForSlotN1).
+- **P5 — internal? on AddonDeckDefinition** — registry skips internal decks. 88/88 tests pass.
+- **P4 — default main deck, n-1 injection, addon auto-register** — 3 commits. 69/69 tests pass.
 - **P2 — gestureHandlers default-deny** (`38dc601b`) — api.ts + registry.ts + addon-handler-bridge.ts + virtual-modules.ts + Deck.tsx. 9 builtins audited. 9/9 + 13/13 tests pass. 0 lint errors.
 - **P1 — React Router in frontend** (`74d9dc59`) — service-driven nav, BrowserRouter, URL projection. 2 vitest cases added.
 - **Phase 75-01** — `value-display` first-party addon (1-3 values cap, parallel `Promise.all` polling). 8/8 tests pass.
