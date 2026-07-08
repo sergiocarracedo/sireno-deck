@@ -70,3 +70,18 @@ The first public release of sireno-deck. A complete rewrite of the legacy `siren
 ### Learnings
 
 - Two pipelines that share 80% of their body and diverge only in the finalizer are an OutputClient-shaped problem. The shape made the divergence local, the shared logic local, and exposed the missing-emulator-providers bug as a one-line fix.
+
+## [Unreleased]
+
+### Changed
+
+- **SOLID OutputClient refactor.** OutputClient is now a class interface (`kind`, `listDevices`, `selectDevice`, `storeSelection`, `init`). Each implementation owns its full device + UX layer. Runner has zero mode-branching after `selectOutputClient()`.
+- **DeviceDescriptor extended in-place.** `{serial, path, model}` → `{id, model, keyCount, label, transport}`. `serial` becomes `id`, `path` removed, `keyCount` resolved from `resolveKeyCount(model)`, `transport: 'real' | 'emulated'`.
+- **Bridge hello-ack carries device.** `WsBridge.setDevice(descriptor)` updates `currentDevice`; hello-ack includes `device`; on `setDevice` the bridge broadcasts `device-info` to connected clients (mid-session device switching wired but no frontend UI ships yet).
+- **OutputClient relocated.** `packages/cli/src/cli/commands/output-client/` → `packages/cli/src/outputClient/` (camelCase, top-level under src/).
+- **`preflight` returns `void`.** Real-only device check calls `RealOutputClient.listDevices()` directly.
+
+### Learnings
+
+- The bridge's hello-ack schema had to make `device` optional — clients connecting before the OutputClient calls `setDevice()` (e.g. tests, early handshakes) shouldn't fail the handshake. New clients after `setDevice` get the device in hello-ack; existing clients receive it via the device-info broadcast.
+- A factory function with `{emulator, device, intervalMs}` is the wrong seam for SOLID. Once the runner knows everything, the OutputClient should own its own device discovery, selection, and persistence — the runner just plumbs the bridge and waits for `init()`.

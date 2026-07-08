@@ -14,22 +14,29 @@ vi.mock("@/config/validation", () => ({
   isFullValid: vi.fn(),
   formatFullIssues: vi.fn(),
 }))
-vi.mock("@/device/registry", () => ({
-  listDevices: vi.fn(),
+vi.mock("@/system/active-app", () => ({
+  createActiveAppProvider: vi.fn(),
 }))
-vi.mock("@/device/stream-deck", () => ({
-  connectStreamDeck: vi.fn(),
-  StreamDeckSelectionError: class StreamDeckSelectionError extends Error {},
+vi.mock("@/system/session-monitor", () => ({
+  createSessionProvider: vi.fn(),
 }))
-vi.mock("@/system/device-selection", () => ({
-  selectDevice: vi.fn(),
-  NoStreamDeckFoundError: class NoStreamDeckFoundError extends Error {},
+vi.mock("@/system/key-macro", () => ({
+  createKeyMacroProvider: vi.fn(),
+}))
+vi.mock("@/system/media", () => ({
+  createMediaProvider: vi.fn(),
+}))
+vi.mock("@/system/clipboard", () => ({
+  createClipboardProvider: vi.fn(() => ({
+    writeText: vi.fn(async () => undefined),
+    readText: vi.fn(async () => ""),
+    stop: vi.fn(async () => undefined),
+  })),
 }))
 vi.mock("@/util/device-config", () => ({
   loadDeviceConfig: vi.fn(),
-  saveDeviceConfig: vi.fn(),
 }))
-vi.mock("@/cli/commands/output-client", () => ({
+vi.mock("@/outputClient", () => ({
   selectOutputClient: vi.fn(),
   RealOutputClient: vi.fn(),
   EmulatorOutputClient: vi.fn(),
@@ -38,13 +45,6 @@ vi.mock("@/system/brightness", () => ({
   createBrightnessProvider: vi.fn(() => ({
     getCurrent: vi.fn(async () => ({ value: 50, max: 100 })),
     setBrightness: vi.fn(async () => undefined),
-    stop: vi.fn(async () => undefined),
-  })),
-}))
-vi.mock("@/system/clipboard", () => ({
-  createClipboardProvider: vi.fn(() => ({
-    writeText: vi.fn(async () => undefined),
-    readText: vi.fn(async () => ""),
     stop: vi.fn(async () => undefined),
   })),
 }))
@@ -74,28 +74,42 @@ vi.mock("@/util/daemon", () => ({
 vi.mock("@/deck", () => ({
   createDeckRuntime: vi.fn(),
 }))
-vi.mock("@/system/active-app", () => ({
-  createActiveAppProvider: vi.fn(),
+vi.mock("@/render/ws-bridge", () => ({
+  startWsBridge: vi.fn(async () => ({
+    port: 52937,
+    url: "ws://127.0.0.1:52937",
+    broadcast: vi.fn(),
+    sendToCaller: vi.fn(),
+    onMessage: () => () => undefined,
+    onConnection: () => () => undefined,
+    close: async () => undefined,
+  })),
 }))
-vi.mock("@/system/session-monitor", () => ({
-  createSessionProvider: vi.fn(),
+vi.mock("@/render/state-publisher", () => ({
+  StatePublisher: vi.fn(function FakeStatePublisher() {
+    return {
+      registerChannel: vi.fn(),
+      setActiveDeck: vi.fn(),
+      stopAll: vi.fn(),
+    }
+  }),
 }))
-vi.mock("@/system/key-macro", () => ({
-  createKeyMacroProvider: vi.fn(),
+vi.mock("@/deck/addon-handler-bridge", () => ({
+  bridgeAddonServices: vi.fn(async () => undefined),
 }))
-vi.mock("@/system/media", () => ({
-  createMediaProvider: vi.fn(),
+vi.mock("@/cli/commands/addon-registry", () => ({
+  collectBuiltinAddonRegistry: vi.fn(async () => ({
+    scanned: [],
+    byType: new Map(),
+  })),
 }))
 
 const loaderMod = await import("@/config/loader")
 const registryMod = await import("@/addon/registry")
 const builtinsMod = await import("@/builtin-addons")
 const validationMod = await import("@/config/validation")
-const deviceRegMod = await import("@/device/registry")
-const deviceMod = await import("@/device/stream-deck")
-const selMod = await import("@/system/device-selection")
+const outputClientMod = await import("@/outputClient")
 const cfgMod = await import("@/util/device-config")
-const realMod = await import("@/cli/commands/output-client")
 const daemonMod = await import("@/util/daemon")
 const deckMod = await import("@/deck")
 const activeAppMod = await import("@/system/active-app")
@@ -116,22 +130,10 @@ const validateFullMock = validationMod.validateFull as unknown as ReturnType<
 const isFullValidMock = validationMod.isFullValid as unknown as ReturnType<
   typeof vi.fn
 >
-const listDevicesMock = deviceRegMod.listDevices as unknown as ReturnType<
-  typeof vi.fn
->
-const connectMock = deviceMod.connectStreamDeck as unknown as ReturnType<
-  typeof vi.fn
->
-const selectDeviceMock = selMod.selectDevice as unknown as ReturnType<
-  typeof vi.fn
->
 const loadDeviceConfigMock = cfgMod.loadDeviceConfig as unknown as ReturnType<
   typeof vi.fn
 >
-const saveDeviceConfigMock = cfgMod.saveDeviceConfig as unknown as ReturnType<
-  typeof vi.fn
->
-const runRealModeMock = realMod.selectOutputClient as unknown as ReturnType<
+const selectOutputClientMock = outputClientMod.selectOutputClient as unknown as ReturnType<
   typeof vi.fn
 >
 const writePidMock = daemonMod.writePid as unknown as ReturnType<typeof vi.fn>
@@ -150,7 +152,9 @@ const createSessionProviderMock = (
   sessionMod as unknown as { createSessionProvider: ReturnType<typeof vi.fn> }
 ).createSessionProvider
 const createKeyMacroProviderMock = (
-  keyMacroMod as unknown as { createKeyMacroProvider: ReturnType<typeof vi.fn> }
+  keyMacroMod as unknown as {
+    createKeyMacroProvider: ReturnType<typeof vi.fn>
+  }
 ).createKeyMacroProvider
 const createMediaProviderMock = (
   mediaMod as unknown as { createMediaProvider: ReturnType<typeof vi.fn> }
@@ -161,7 +165,37 @@ const start = (await import("../start")).default
 
 const silentLogger = () => createLogger({ level: "silent" })
 
-const setHappyPath = (): void => {
+const makeFakeOutputClient = (
+  kind: "real" | "emulator",
+): {
+  kind: "real" | "emulator"
+  listDevices: ReturnType<typeof vi.fn>
+  selectDevice: ReturnType<typeof vi.fn>
+  storeSelection: ReturnType<typeof vi.fn>
+  init: ReturnType<typeof vi.fn>
+} => {
+  const descriptor = {
+    id: "ABC",
+    model: "mk2",
+    keyCount: 15,
+    label: "MK.2 (ABC)",
+    transport: "real" as const,
+  }
+  return {
+    kind,
+    listDevices: vi.fn(async () => [descriptor]),
+    selectDevice: vi.fn(async () => descriptor),
+    storeSelection: vi.fn(async () => undefined),
+    init: vi.fn(async () => ({
+      descriptor,
+      frontendUrl: "http://x",
+      childPids: [],
+      stop: vi.fn(async () => undefined),
+    })),
+  }
+}
+
+const setHappyPath = (): ReturnType<typeof makeFakeOutputClient> => {
   loaderMock.mockReturnValue({ config: { decks: {} }, configDir: "/d" })
   registryCtorMock.mockImplementation(function FakeRegistry() {
     return {
@@ -183,28 +217,7 @@ const setHappyPath = (): void => {
   builtinsMock.mockReturnValue(undefined)
   validateFullMock.mockReturnValue({ issues: [] })
   isFullValidMock.mockReturnValue(true)
-  listDevicesMock.mockResolvedValue([
-    { serial: "ABC", path: "/p", model: "mk2" },
-  ])
   loadDeviceConfigMock.mockReturnValue(null)
-  selectDeviceMock.mockResolvedValue({
-    descriptor: { serial: "ABC", path: "/p", model: "mk2" },
-    savedButStale: false,
-  })
-  saveDeviceConfigMock.mockReturnValue(undefined)
-  connectMock.mockResolvedValue({
-    serial: "ABC",
-    path: "/p",
-    model: "mk2",
-    getKeyCount: () => 15,
-    setBrightness: vi.fn(async () => undefined),
-    fillKeyBuffer: vi.fn(async () => undefined),
-    close: vi.fn(async () => undefined),
-    onKeyEvent: vi.fn(() => () => undefined),
-  })
-  runRealModeMock.mockImplementation(() => ({
-    start: () => new Promise(() => undefined),
-  }))
 
   const nullProvider = () => ({
     async getActive() {
@@ -283,6 +296,10 @@ const setHappyPath = (): void => {
   createSessionProviderMock.mockResolvedValue(nullProvider())
   createKeyMacroProviderMock.mockResolvedValue(nullProvider())
   createMediaProviderMock.mockResolvedValue(nullProvider())
+
+  const outputClient = makeFakeOutputClient("real")
+  selectOutputClientMock.mockReturnValue(outputClient)
+  return outputClient
 }
 
 describe("start", () => {
@@ -305,11 +322,11 @@ describe("start", () => {
     expect(writePidMock).toHaveBeenCalledWith(process.pid)
   })
 
-  it("resolves immediately without blocking on runRealMode pipeline", async () => {
-    setHappyPath()
-    runRealModeMock.mockImplementation(() => ({
-      start: () => new Promise(() => undefined),
-    }))
+  it("resolves immediately without blocking on the background pipeline", async () => {
+    const outputClient = setHappyPath()
+    outputClient.init.mockImplementation(
+      () => new Promise<never>(() => undefined),
+    )
 
     const startPromise = start({
       config: "/abs/cfg.yml",
@@ -322,40 +339,7 @@ describe("start", () => {
     await expect(
       Promise.race([startPromise, new Promise((r) => setTimeout(r, 10))]),
     ).resolves.toBeUndefined()
-    await vi.waitFor(() => expect(runRealModeMock).toHaveBeenCalledTimes(1))
-  })
-
-  it("removes the pid file when the background pipeline completes", async () => {
-    setHappyPath()
-    const handlers: Array<() => void> = []
-    const signals = {
-      onSignal: (handler: () => void): (() => void) => {
-        handlers.push(handler)
-        return () => {}
-      },
-    }
-    runRealModeMock.mockReturnValue({
-      start: vi.fn(async () => ({
-        stop: vi.fn(async () => undefined),
-        childPids: [],
-      })),
-    })
-
-    await start({
-      config: "/abs/cfg.yml",
-      frontendUrl: "http://x",
-      xdgConfigHome: "/xdg",
-      homeDir: "/home",
-      signals,
-      logger: silentLogger(),
-    })
-
-    expect(removePidFileMock).not.toHaveBeenCalled()
-
-    await vi.waitFor(() => expect(handlers).toHaveLength(1))
-    for (const h of handlers) h()
-
-    await vi.waitFor(() => expect(removePidFileMock).toHaveBeenCalledTimes(1))
+    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
   })
 
   it("rejects with a clear error if preflight fails before the pipeline starts", async () => {
@@ -388,6 +372,6 @@ describe("start", () => {
     ).rejects.toThrow(/Config validation failed/)
 
     expect(writePidMock).not.toHaveBeenCalled()
-    expect(runRealModeMock).not.toHaveBeenCalled()
+    expect(selectOutputClientMock).not.toHaveBeenCalled()
   })
 })

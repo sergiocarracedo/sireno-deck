@@ -14,29 +14,6 @@ vi.mock("@/config/validation", () => ({
   isFullValid: vi.fn(),
   formatFullIssues: vi.fn(),
 }))
-vi.mock("@/device/registry", () => ({
-  listDevices: vi.fn(),
-}))
-vi.mock("@/device/stream-deck", () => ({
-  connectStreamDeck: vi.fn(),
-  StreamDeckSelectionError: class StreamDeckSelectionError extends Error {},
-}))
-vi.mock("@/system/device-selection", () => ({
-  selectDevice: vi.fn(),
-  NoStreamDeckFoundError: class NoStreamDeckFoundError extends Error {},
-}))
-vi.mock("@/util/device-config", () => ({
-  loadDeviceConfig: vi.fn(),
-  saveDeviceConfig: vi.fn(),
-}))
-vi.mock("@/cli/commands/output-client", () => ({
-  selectOutputClient: vi.fn(),
-  RealOutputClient: vi.fn(),
-  EmulatorOutputClient: vi.fn(),
-}))
-vi.mock("@/deck", () => ({
-  createDeckRuntime: vi.fn(),
-}))
 vi.mock("@/system/active-app", () => ({
   createActiveAppProvider: vi.fn(),
 }))
@@ -59,6 +36,7 @@ vi.mock("@/system/clipboard", () => ({
 vi.mock("@/render/ws-bridge", () => ({
   startWsBridge: vi.fn(async () => ({
     port: 52937,
+    url: "ws://127.0.0.1:52937",
     broadcast: vi.fn(),
     sendToCaller: vi.fn(),
     onMessage: () => () => undefined,
@@ -84,16 +62,24 @@ vi.mock("@/cli/commands/addon-registry", () => ({
     byType: new Map(),
   })),
 }))
+vi.mock("@/outputClient", () => ({
+  selectOutputClient: vi.fn(),
+  RealOutputClient: vi.fn(),
+  EmulatorOutputClient: vi.fn(),
+}))
+vi.mock("@/util/device-config", () => ({
+  loadDeviceConfig: vi.fn(),
+}))
+vi.mock("@/deck", () => ({
+  createDeckRuntime: vi.fn(),
+}))
 
 const loaderMod = await import("@/config/loader")
 const registryMod = await import("@/addon/registry")
 const builtinsMod = await import("@/builtin-addons")
 const validationMod = await import("@/config/validation")
-const deviceRegMod = await import("@/device/registry")
-const deviceMod = await import("@/device/stream-deck")
-const selMod = await import("@/system/device-selection")
+const outputClientMod = await import("@/outputClient")
 const cfgMod = await import("@/util/device-config")
-const realMod = await import("@/cli/commands/output-client")
 const deckMod = await import("@/deck")
 const activeAppMod = await import("@/system/active-app")
 const sessionMod = await import("@/system/session-monitor")
@@ -115,27 +101,15 @@ const isFullValidMock = validationMod.isFullValid as unknown as ReturnType<
 >
 const formatFullIssuesMock =
   validationMod.formatFullIssues as unknown as ReturnType<typeof vi.fn>
-const listDevicesMock = deviceRegMod.listDevices as unknown as ReturnType<
-  typeof vi.fn
->
-const connectMock = deviceMod.connectStreamDeck as unknown as ReturnType<
-  typeof vi.fn
->
-const selectDeviceMock = selMod.selectDevice as unknown as ReturnType<
+const selectOutputClientMock = outputClientMod.selectOutputClient as unknown as ReturnType<
   typeof vi.fn
 >
 const loadDeviceConfigMock = cfgMod.loadDeviceConfig as unknown as ReturnType<
   typeof vi.fn
 >
-const saveDeviceConfigMock = cfgMod.saveDeviceConfig as unknown as ReturnType<
-  typeof vi.fn
->
-const runRealModeMock = realMod.selectOutputClient as unknown as ReturnType<
-  typeof vi.fn
->
 
 const { createLogger } = await import("@/util/logger")
-const { run } = await import("../run")
+const { run, preflight } = await import("../run")
 
 const silentLogger = () => createLogger({ level: "silent" })
 
@@ -167,22 +141,53 @@ const makeFakeSignals = (): FakeSignal => {
   }
 }
 
-const mockDevice = () => ({
-  serial: "ABC",
-  path: "/p",
-  model: "mk2",
-  getKeyCount: () => 15,
-  setBrightness: vi.fn(async () => undefined),
-  fillKeyBuffer: vi.fn(async () => undefined),
-  close: vi.fn(async () => undefined),
-  onKeyEvent: vi.fn(() => () => undefined),
-})
+const makeFakeOutputClient = (
+  kind: "real" | "emulator",
+  devices: ReadonlyArray<{
+    id: string
+    model: string
+    keyCount: number
+    label: string
+    transport: "real" | "emulated"
+  }>,
+  descriptorOverride?: {
+    id: string
+    model: string
+    keyCount: number
+    label: string
+    transport: "real" | "emulated"
+  },
+): {
+  kind: "real" | "emulator"
+  listDevices: ReturnType<typeof vi.fn>
+  selectDevice: ReturnType<typeof vi.fn>
+  storeSelection: ReturnType<typeof vi.fn>
+  init: ReturnType<typeof vi.fn>
+} => {
+  const listDevices = vi.fn(async () => devices)
+  const descriptor =
+    descriptorOverride ?? (devices[0] as (typeof devices)[number] | undefined) ?? {
+      id: "default",
+      model: "mk2",
+      keyCount: 15,
+      label: "Default",
+      transport: "real",
+    }
+  const selectDevice = vi.fn(async () => descriptor)
+  const storeSelection = vi.fn(async () => undefined)
+  const init = vi.fn(async () => ({
+    descriptor,
+    frontendUrl: "http://x",
+    wsUrl: "ws://x",
+    childPids: [],
+    stop: vi.fn(async () => undefined),
+  }))
+  return { kind, listDevices, selectDevice, storeSelection, init }
+}
 
 const setHappyPath = (
-  overrides: {
-    devices?: Array<{ serial: string; path: string; model: string }>
-  } = {},
-): void => {
+  overrides: { outputClient?: ReturnType<typeof makeFakeOutputClient> } = {},
+): ReturnType<typeof makeFakeOutputClient> => {
   loaderMock.mockReturnValue({ config: { decks: {} }, configDir: "/dir" })
   registryCtorMock.mockImplementation(function FakeRegistry() {
     return {
@@ -204,17 +209,7 @@ const setHappyPath = (
   builtinsMock.mockReturnValue(undefined)
   validateFullMock.mockReturnValue({ issues: [] })
   isFullValidMock.mockReturnValue(true)
-  const devices = overrides.devices ?? [
-    { serial: "ABC", path: "/p", model: "mk2" },
-  ]
-  listDevicesMock.mockResolvedValue(devices)
   loadDeviceConfigMock.mockReturnValue(null)
-  selectDeviceMock.mockResolvedValue({
-    descriptor: devices[0]!,
-    savedButStale: false,
-  })
-  saveDeviceConfigMock.mockReturnValue(undefined)
-  connectMock.mockResolvedValue(mockDevice())
 
   const nullProvider = () => ({
     async getActive() {
@@ -307,6 +302,14 @@ const setHappyPath = (
   ;(
     mediaMod as unknown as { createMediaProvider: ReturnType<typeof vi.fn> }
   ).createMediaProvider.mockResolvedValue(nullProvider())
+
+  const outputClient =
+    overrides.outputClient ??
+    makeFakeOutputClient("real", [
+      { id: "ABC", model: "mk2", keyCount: 15, label: "MK.2 (ABC)", transport: "real" },
+    ])
+  selectOutputClientMock.mockReturnValue(outputClient)
+  return outputClient
 }
 
 describe("run", () => {
@@ -317,12 +320,8 @@ describe("run", () => {
     vi.restoreAllMocks()
   })
 
-  it("runs full pipeline end-to-end with a single connected device", async () => {
-    setHappyPath()
-    const stop = vi.fn(async () => undefined)
-    const startMock = vi.fn(async () => ({ stop, childPids: [] }))
-    runRealModeMock.mockReturnValue({ start: startMock })
-
+  it("runs full pipeline end-to-end with single connected device", async () => {
+    const outputClient = setHappyPath()
     const signals = makeFakeSignals()
     const runPromise = run({
       config: "/abs/cfg.yml",
@@ -333,161 +332,31 @@ describe("run", () => {
       logger: silentLogger(),
     })
 
-    await vi.waitFor(() => expect(startMock).toHaveBeenCalledTimes(1))
+    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
     signals.trigger()
-
     await runPromise
 
     expect(loaderMock).toHaveBeenCalledWith({ configPath: "/abs/cfg.yml" })
     expect(builtinsMock).toHaveBeenCalled()
     expect(validateFullMock).toHaveBeenCalled()
-    expect(listDevicesMock).toHaveBeenCalled()
-    expect(selectDeviceMock).toHaveBeenCalled()
-    expect(saveDeviceConfigMock).toHaveBeenCalled()
-    expect(connectMock).toHaveBeenCalledWith({ serial: "ABC" })
-    expect(runRealModeMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        emulator: false,
-        device: expect.objectContaining({ serial: "ABC" }),
-      }),
+    expect(outputClient.listDevices).toHaveBeenCalled()
+    expect(outputClient.selectDevice).toHaveBeenCalledWith(
+      expect.any(Array),
+      null,
+      expect.anything(),
     )
-    expect(startMock).toHaveBeenCalledWith(
+    expect(outputClient.storeSelection).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "ABC" }),
+    )
+    expect(outputClient.init).toHaveBeenCalledWith(
       expect.objectContaining({
         frontendUrl: "http://x",
       }),
     )
-    expect(stop).toHaveBeenCalled()
   })
 
-  it("prompts via selectDevice when multiple devices and no saved config", async () => {
-    setHappyPath({
-      devices: [
-        { serial: "A", path: "/p0", model: "mk2" },
-        { serial: "B", path: "/p1", model: "xl" },
-      ],
-    })
-    selectDeviceMock.mockResolvedValue({
-      descriptor: { serial: "B", path: "/p1", model: "xl" },
-      savedButStale: false,
-    })
-    const startMock = vi.fn(async () => ({
-      stop: vi.fn(async () => undefined),
-      childPids: [],
-    }))
-    runRealModeMock.mockReturnValue({ start: startMock })
-
-    const signals = makeFakeSignals()
-    const runPromise = run({
-      config: "/abs/cfg.yml",
-      frontendUrl: "http://x",
-      xdgConfigHome: "/xdg",
-      homeDir: "/home",
-      signals,
-      logger: silentLogger(),
-    })
-    await vi.waitFor(() => expect(startMock).toHaveBeenCalled())
-    signals.trigger()
-    await runPromise
-
-    expect(selectDeviceMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        devices: expect.arrayContaining([
-          expect.objectContaining({ serial: "A" }),
-          expect.objectContaining({ serial: "B" }),
-        ]),
-        current: null,
-      }),
-    )
-  })
-
-  it("uses saved device.json when present and matches a connected device", async () => {
-    setHappyPath({
-      devices: [
-        { serial: "A", path: "/p0", model: "mk2" },
-        { serial: "B", path: "/p1", model: "xl" },
-      ],
-    })
-    loadDeviceConfigMock.mockReturnValue({
-      serial: "B",
-      path: "/p1",
-      model: "xl",
-    })
-    selectDeviceMock.mockResolvedValue({
-      descriptor: { serial: "B", path: "/p1", model: "xl" },
-      savedButStale: false,
-    })
-    const startMock = vi.fn(async () => ({
-      stop: vi.fn(async () => undefined),
-      childPids: [],
-    }))
-    runRealModeMock.mockReturnValue({ start: startMock })
-
-    const signals = makeFakeSignals()
-    const runPromise = run({
-      config: "/abs/cfg.yml",
-      frontendUrl: "http://x",
-      xdgConfigHome: "/xdg",
-      homeDir: "/home",
-      signals,
-      logger: silentLogger(),
-    })
-    await vi.waitFor(() => expect(startMock).toHaveBeenCalled())
-    signals.trigger()
-    await runPromise
-
-    expect(loadDeviceConfigMock).toHaveBeenCalledWith({ xdgConfigHome: "/xdg" })
-    expect(selectDeviceMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        current: { serial: "B", path: "/p1", model: "xl" },
-      }),
-    )
-    expect(connectMock).toHaveBeenCalledWith({ serial: "B" })
-  })
-
-  it("saves new selection to device.json after picking", async () => {
-    setHappyPath({
-      devices: [
-        { serial: "A", path: "/p0", model: "mk2" },
-        { serial: "B", path: "/p1", model: "xl" },
-      ],
-    })
-    selectDeviceMock.mockResolvedValue({
-      descriptor: { serial: "B", path: "/p1", model: "xl" },
-      savedButStale: false,
-    })
-    runRealModeMock.mockReturnValue({
-      start: vi.fn(async () => ({
-        stop: vi.fn(async () => undefined),
-        childPids: [],
-      })),
-    })
-
-    const signals = makeFakeSignals()
-    const runPromise = run({
-      config: "/abs/cfg.yml",
-      frontendUrl: "http://x",
-      xdgConfigHome: "/xdg",
-      homeDir: "/home",
-      signals,
-      logger: silentLogger(),
-    })
-    await vi.waitFor(() => expect(runRealModeMock).toHaveBeenCalled())
-    signals.trigger()
-    await runPromise
-
-    expect(saveDeviceConfigMock).toHaveBeenCalledWith({
-      xdgConfigHome: "/xdg",
-      config: { serial: "B", path: "/p1", model: "xl" },
-    })
-  })
-
-  it("SIGINT during runRealMode triggers stop() via the signals provider", async () => {
-    setHappyPath()
-    const stop = vi.fn(async () => undefined)
-    runRealModeMock.mockReturnValue({
-      start: vi.fn(async () => ({ stop, childPids: [] })),
-    })
-
+  it("SIGINT triggers stop() on the output handle", async () => {
+    const outputClient = setHappyPath()
     const signals = makeFakeSignals()
     const runPromise = run({
       config: "/abs/cfg.yml",
@@ -498,15 +367,16 @@ describe("run", () => {
       logger: silentLogger(),
     })
 
-    await vi.waitFor(() => expect(runRealModeMock).toHaveBeenCalled())
+    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    const handle = await outputClient.init.mock.results[0]!.value
     expect(signals.onSignalSpy).toHaveBeenCalledTimes(1)
     signals.trigger()
     await runPromise
 
-    expect(stop).toHaveBeenCalledTimes(1)
+    expect(handle.stop).toHaveBeenCalledTimes(1)
   })
 
-  it("rejects when config validation fails (does not start renderer)", async () => {
+  it("rejects when config validation fails (does not call outputClient)", async () => {
     loaderMock.mockReturnValue({ config: { decks: {} }, configDir: "/d" })
     registryCtorMock.mockImplementation(function FakeRegistry() {
       return {
@@ -532,25 +402,66 @@ describe("run", () => {
       }),
     ).rejects.toThrow(/Config validation failed/)
 
-    expect(listDevicesMock).not.toHaveBeenCalled()
-    expect(runRealModeMock).not.toHaveBeenCalled()
+    expect(selectOutputClientMock).not.toHaveBeenCalled()
   })
 
-  it("rejects with friendly error when no Stream Deck found", async () => {
-    setHappyPath()
-    listDevicesMock.mockResolvedValue([])
-    const { NoStreamDeckFoundError } = await import("@/system/device-selection")
-    selectDeviceMock.mockRejectedValue(new NoStreamDeckFoundError())
+  it("emulator mode: no devices and no friendly error needed", async () => {
+    const emulatorClient = makeFakeOutputClient("emulator", [])
+    setHappyPath({ outputClient: emulatorClient })
+    const signals = makeFakeSignals()
+    const runPromise = run({
+      config: "/abs/cfg.yml",
+      frontendUrl: "http://x",
+      emulator: true,
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      signals,
+      logger: silentLogger(),
+    })
 
+    await vi.waitFor(() => expect(emulatorClient.init).toHaveBeenCalledTimes(1))
+    signals.trigger()
+    await runPromise
+
+    expect(selectOutputClientMock).toHaveBeenCalledWith(
+      expect.objectContaining({ emulator: true }),
+    )
+  })
+})
+
+describe("preflight", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it("rejects with friendly error when real mode finds no devices", async () => {
+    const realClient = makeFakeOutputClient("real", [])
+    setHappyPath({ outputClient: realClient })
     await expect(
-      run({
+      preflight({
         config: "/abs/cfg.yml",
-        frontendUrl: "http://x",
         xdgConfigHome: "/xdg",
         homeDir: "/home",
-        signals: makeFakeSignals(),
         logger: silentLogger(),
       }),
     ).rejects.toThrow(/No Stream Deck devices found/)
+  })
+
+  it("passes for emulator mode without listing devices", async () => {
+    const emulatorClient = makeFakeOutputClient("emulator", [])
+    setHappyPath({ outputClient: emulatorClient })
+    await expect(
+      preflight({
+        config: "/abs/cfg.yml",
+        emulator: true,
+        xdgConfigHome: "/xdg",
+        homeDir: "/home",
+        logger: silentLogger(),
+      }),
+    ).resolves.toBeUndefined()
+    expect(emulatorClient.listDevices).not.toHaveBeenCalled()
   })
 })

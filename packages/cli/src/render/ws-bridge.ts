@@ -1,183 +1,216 @@
-import type { Server as HttpServer } from "node:http";
-import { WebSocketServer, type WebSocket } from "ws";
+import type { Server as HttpServer } from "node:http"
+import { WebSocketServer, type WebSocket } from "ws"
 
+import type { DeviceDescriptor } from "@/device/registry"
 import {
   PROTOCOL_VERSION,
   helloAckMessageSchema,
   helloMessageSchema,
   wsMessageSchema,
   type WsMessage,
-} from "./protocol";
+} from "./protocol"
 
-const HANDSHAKE_TIMEOUT_MS = 5000;
-const TOKEN_MISMATCH_CLOSE_CODE = 4001;
-const DEFAULT_KEY_COUNT = 15;
+const HANDSHAKE_TIMEOUT_MS = 5000
+const TOKEN_MISMATCH_CLOSE_CODE = 4001
 
 export interface WsBridgeOptions {
-  port?: number;
-  host?: string;
-  expectedToken?: string;
-  handshakeTimeoutMs?: number;
-  activeTheme?: { name: string; version?: number };
-  keyCount?: number;
+  port?: number
+  host?: string
+  expectedToken?: string
+  handshakeTimeoutMs?: number
+  activeTheme?: { name: string; version?: number }
 }
 
 export interface WsBridge {
-  readonly port: number;
-  readonly url: string;
-  broadcast(message: WsMessage): void;
-  sendToCaller(message: WsMessage): void;
-  registerCacheablePoller(channel: string, pollFn: () => unknown | Promise<unknown>): void;
-  onMessage(handler: (message: WsMessage, socket: WebSocket) => void): void;
-  onConnection(handler: (socket: WebSocket) => void): void;
-  close(): Promise<void>;
+  readonly port: number
+  readonly url: string
+  setDevice(device: DeviceDescriptor): void
+  broadcast(message: WsMessage): void
+  sendToCaller(message: WsMessage): void
+  registerCacheablePoller(
+    channel: string,
+    pollFn: () => unknown | Promise<unknown>,
+  ): void
+  onMessage(handler: (message: WsMessage, socket: WebSocket) => void): void
+  onConnection(handler: (socket: WebSocket) => void): void
+  close(): Promise<void>
 }
 
-export const startWsBridge = (options: WsBridgeOptions = {}): Promise<WsBridge> => {
-  const { port = 0, host = "127.0.0.1", expectedToken, handshakeTimeoutMs = HANDSHAKE_TIMEOUT_MS, activeTheme, keyCount = DEFAULT_KEY_COUNT } = options;
+export const startWsBridge = (
+  options: WsBridgeOptions = {},
+): Promise<WsBridge> => {
+  const {
+    port = 0,
+    host = "127.0.0.1",
+    expectedToken,
+    handshakeTimeoutMs = HANDSHAKE_TIMEOUT_MS,
+    activeTheme,
+  } = options
 
   return new Promise((resolve, reject) => {
-    const wss = new WebSocketServer({ port, host });
+    const wss = new WebSocketServer({ port, host })
 
-    const messageHandlers: Array<(message: WsMessage, socket: WebSocket) => void> = [];
-    const connectionHandlers: Array<(socket: WebSocket) => void> = [];
-    const lastChannels: Record<string, unknown> = {};
-    const cacheablePollers = new Map<string, () => unknown | Promise<unknown>>();
+    const messageHandlers: Array<
+      (message: WsMessage, socket: WebSocket) => void
+    > = []
+    const connectionHandlers: Array<(socket: WebSocket) => void> = []
+    const lastChannels: Record<string, unknown> = {}
+    const cacheablePollers = new Map<string, () => unknown | Promise<unknown>>()
+    let currentDevice: DeviceDescriptor | null = null
 
     const sendToSocket = (socket: WebSocket, message: WsMessage): void => {
       if (socket.readyState === socket.OPEN) {
-        socket.send(JSON.stringify(message));
+        socket.send(JSON.stringify(message))
       }
-    };
+    }
 
     wss.on("connection", (socket: WebSocket) => {
-      let handshakeDone = false;
+      let handshakeDone = false
 
       const handshakeTimer = setTimeout(() => {
-        if (!handshakeDone) socket.close(4000, "handshake timeout");
-      }, handshakeTimeoutMs);
+        if (!handshakeDone) socket.close(4000, "handshake timeout")
+      }, handshakeTimeoutMs)
 
       socket.on("message", (raw) => {
-        let parsed: unknown;
+        let parsed: unknown
         try {
-          parsed = JSON.parse(raw.toString());
+          parsed = JSON.parse(raw.toString())
         } catch {
-          socket.close(4002, "invalid json");
-          return;
+          socket.close(4002, "invalid json")
+          return
         }
-        const result = wsMessageSchema.safeParse(parsed);
+        const result = wsMessageSchema.safeParse(parsed)
         if (!result.success) {
-          socket.close(4003, "invalid message");
-          return;
+          socket.close(4003, "invalid message")
+          return
         }
-        const message = result.data;
+        const message = result.data
         if (!handshakeDone) {
           if (message.type !== "hello") {
-            socket.close(4004, "expected hello");
-            return;
+            socket.close(4004, "expected hello")
+            return
           }
-          const helloResult = helloMessageSchema.safeParse(message);
+          const helloResult = helloMessageSchema.safeParse(message)
           if (!helloResult.success) {
-            socket.close(4001, "invalid hello");
-            return;
+            socket.close(4001, "invalid hello")
+            return
           }
-          if (expectedToken !== undefined && helloResult.data.token !== expectedToken) {
-            socket.close(TOKEN_MISMATCH_CLOSE_CODE, "token mismatch");
-            return;
+          if (
+            expectedToken !== undefined &&
+            helloResult.data.token !== expectedToken
+          ) {
+            socket.close(TOKEN_MISMATCH_CLOSE_CODE, "token mismatch")
+            return
           }
-          handshakeDone = true;
-          clearTimeout(handshakeTimer);
+          handshakeDone = true
+          clearTimeout(handshakeTimer)
           const ack = helloAckMessageSchema.parse({
             type: "hello-ack",
             version: PROTOCOL_VERSION,
-            keyCount,
-            config: activeTheme !== undefined ? { theme: activeTheme.name } : {},
-          });
-          socket.send(JSON.stringify(ack));
-          for (const handler of connectionHandlers) handler(socket);
-          return;
+            ...(currentDevice !== null ? { device: currentDevice } : {}),
+            config:
+              activeTheme !== undefined ? { theme: activeTheme.name } : {},
+          })
+          socket.send(JSON.stringify(ack))
+          for (const handler of connectionHandlers) handler(socket)
+          return
         }
 
         if (message.type === "subscribe-channels") {
-          const cached: Record<string, unknown> = {};
-          const uncached: string[] = [];
+          const cached: Record<string, unknown> = {}
+          const uncached: string[] = []
           for (const channel of message.channels) {
             if (channel in lastChannels) {
-              cached[channel] = lastChannels[channel];
-            } else if (cacheablePollers.has(channel) && !(channel in lastChannels)) {
-              uncached.push(channel);
+              cached[channel] = lastChannels[channel]
+            } else if (
+              cacheablePollers.has(channel) &&
+              !(channel in lastChannels)
+            ) {
+              uncached.push(channel)
             }
           }
           if (Object.keys(cached).length > 0) {
-            sendToSocket(socket, { type: "state", channels: cached });
+            sendToSocket(socket, { type: "state", channels: cached })
           }
           for (const channel of uncached) {
-            const pollFn = cacheablePollers.get(channel);
-            if (pollFn === undefined) continue;
+            const pollFn = cacheablePollers.get(channel)
+            if (pollFn === undefined) continue
             void Promise.resolve(pollFn())
               .then((value) => {
-                const msg: WsMessage = { type: "state", channels: { [channel]: value } };
-                const payload = JSON.stringify(msg);
+                const msg: WsMessage = {
+                  type: "state",
+                  channels: { [channel]: value },
+                }
+                const payload = JSON.stringify(msg)
                 for (const client of wss.clients) {
-                  if (client.readyState === client.OPEN) client.send(payload);
+                  if (client.readyState === client.OPEN) client.send(payload)
                 }
               })
               .catch(() => {
                 // poll on demand failed — ignore, next interval will retry
-              });
+              })
           }
-          return;
+          return
         }
 
-        for (const handler of messageHandlers) handler(message, socket);
-      });
+        for (const handler of messageHandlers) handler(message, socket)
+      })
 
       socket.on("error", () => {
-        clearTimeout(handshakeTimer);
-      });
-    });
+        clearTimeout(handshakeTimer)
+      })
+    })
 
     wss.on("listening", () => {
-      const addr = wss.address();
+      const addr = wss.address()
       if (addr === null || typeof addr === "string") {
-        reject(new Error("ws bridge: invalid address"));
-        return;
+        reject(new Error("ws bridge: invalid address"))
+        return
       }
-      const port = addr.port;
-      const url = `ws://127.0.0.1:${port}`;
+      const port = addr.port
+      const url = `ws://127.0.0.1:${port}`
       const bridge: WsBridge = {
         port,
         url,
+        setDevice: (device) => {
+          currentDevice = device
+          const msg: WsMessage = { type: "device-info", device }
+          const payload = JSON.stringify(msg)
+          for (const client of wss.clients) {
+            if (client.readyState === client.OPEN) client.send(payload)
+          }
+        },
         broadcast: (message) => {
           if (message.type === "state") {
-            Object.assign(lastChannels, message.channels);
+            Object.assign(lastChannels, message.channels)
           }
-          const payload = JSON.stringify(message);
+          const payload = JSON.stringify(message)
           for (const client of wss.clients) {
-            if (client.readyState === client.OPEN) client.send(payload);
+            if (client.readyState === client.OPEN) client.send(payload)
           }
         },
         sendToCaller: (message) => {
           for (const client of wss.clients) {
-            if (client.readyState === client.OPEN) client.send(JSON.stringify(message));
+            if (client.readyState === client.OPEN)
+              client.send(JSON.stringify(message))
           }
         },
         registerCacheablePoller: (channel, pollFn) => {
-          cacheablePollers.set(channel, pollFn);
+          cacheablePollers.set(channel, pollFn)
         },
         onMessage: (handler) => messageHandlers.push(handler),
         onConnection: (handler) => connectionHandlers.push(handler),
         close: () =>
           new Promise<void>((res) => {
-            for (const client of wss.clients) client.close(1000);
-            wss.close(() => res());
+            for (const client of wss.clients) client.close(1000)
+            wss.close(() => res())
           }),
-      };
-      resolve(bridge);
-    });
+      }
+      resolve(bridge)
+    })
 
-    wss.on("error", (err) => reject(err));
-  });
-};
+    wss.on("error", (err) => reject(err))
+  })
+}
 
-export type WsBridgeHttpServer = HttpServer;
+export type WsBridgeHttpServer = HttpServer
