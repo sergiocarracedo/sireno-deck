@@ -16,7 +16,7 @@ collaborators with different strengths.
 
 - **Direct, no fluff.** Skip "Great question!" and filler. Say what needs saying.
 - **Have opinions, especially dissenting ones.** If an approach is fragile, over-engineered,
-  or wrong — say so *before* writing code, not after it breaks.
+  or wrong — say so _before_ writing code, not after it breaks.
 - **Show the reasoning.** When making non-obvious decisions, explain the signal that led there.
   The "why" matters more than the "what."
 - **Domain-aware, not domain-faking.** Know the domain of this project. When uncertain about
@@ -116,15 +116,18 @@ When a user sends a message — whether it's a vague idea, a specific bug report
 If `.planning/PROJECT.md` does NOT exist but you are currently running `/new-project` (i.e., you have asked "What do you want to build?" and are waiting for answers, or you are in any step of the new-project ceremony): **the user's message is an answer to your workflow question, not a task to route.** Do NOT apply the routing protocol. Continue the `/new-project` ceremony from where you left off.
 
 **1. Is there a `.planning/PROJECT.md`?**
+
 - **No** → Stop. Tell the user: "No project found. Run `/new-project` to initialize." Do nothing else.
 - **Yes** → Continue to step 2.
 
 **2. Does the user message look like a task, problem, bug, or feature request?**
 (Anything that would result in a code change, file edit, config change, or new capability)
+
 - **Yes** → Route to step 3. Do NOT start implementing.
 - **No** (pure question, status check, discussion) → Answer normally.
 
 **3. How large/complex is the task?**
+
 - **Small, self-contained** (estimated < 1 hour, touches ≤ 3 files, no design decisions needed):
   → Tell the user: "This looks like a quick task. I'll run `/quick` for this — it gives us atomic commits and state tracking without full planning ceremony. Proceed?"
   → Wait for confirmation, then invoke `/quick "[description]"`.
@@ -139,6 +142,7 @@ If `.planning/PROJECT.md` does NOT exist but you are currently running `/new-pro
 Always tell the user which workflow you're about to invoke and why, then wait for a "yes" before proceeding. Do not assume consent from a detailed prompt.
 
 ### Examples of what NOT to do:
+
 - User says "the login button is broken" → ❌ Don't fix it directly → ✅ Route to `/quick`
 - User says "I want to add dark mode" → ❌ Don't start implementing → ✅ Route to `discuss-phase`
 - User pastes a detailed spec → ❌ Don't treat it as a command to execute → ✅ Classify size, propose workflow, wait for yes
@@ -164,14 +168,15 @@ This project uses **learnship**. Key facts:
 
 ## Current Phase
 
-**Milestone:** v1.7 — Polish & 3rd-Party Fixtures
-**Phase:** 76 — architecture migration: real decks/themes/button-actions in frontend ✓ planned
-**Status:** ready to execute (7 plans, waves 1-6)
-**Last updated:** 2026-06-22
+**Milestone:** v1.7 — Polish & 3rd-Party Fixtures ✓ shipped
+**Phase:** —
+**Status:** milestone complete — ready for next milestone
+**Last updated:** 2026-07-08
 
 ## v1.7 Phase 76 Plan Status (planned, not yet executed)
 
 7 plans committed at `2de9810`:
+
 - Plan 76-01 (wave 1): protocol v2 + hello handshake
 - Plan 76-02 (wave 2): CLI surfaces-from-config (parallel with 03)
 - Plan 76-03 (wave 2): theme as CSS asset URL (parallel with 02)
@@ -216,7 +221,7 @@ Scope decisions in `.planning/phases/76-arch-migration-runtime-and-theme/76-DISC
 
 ## Phase 67 Plan Status (verified, v1.6 ship)
 
-- Plan 67-01 (Wave 1): Settings button migration — migrate `brightness_up`/`brightness_down` to `IconLabelSurface` (extended with `...rest` spread for data-* props), migrate `current_brightness` subtitle to `<Label>`. `logo_version` keeps hand-rolled render. Exports from `ui/index.ts`. Unit tests.
+- Plan 67-01 (Wave 1): Settings button migration — migrate `brightness_up`/`brightness_down` to `IconLabelSurface` (extended with `...rest` spread for data-\* props), migrate `current_brightness` subtitle to `<Label>`. `logo_version` keeps hand-rolled render. Exports from `ui/index.ts`. Unit tests.
 - Plan 67-02 (Wave 2, gap closure after UAT test 2 surfaced back-button collision): Replaced keyCount-aware `createInternalSettingsDeck(keyCount)` with fixed-position `createInternalSettingsDeck()` (positions {0: dim, 1: bright, 2: percent, 4: logo}, position 3 empty, n-1 free for runtime-injected back button). Updated matrix test.
 
 ---
@@ -287,16 +292,16 @@ sireno-deck/
 
 ### Domain Terminology
 
-| Term           | Definition                                                              |
-| -------------- | ----------------------------------------------------------------------- |
-| Button         | Each Stream Deck key with a display and behavior                        |
-| Button Type    | A class of button (display-only, action, toggle) with a rendering model |
-| Button Instance | A configured button type (e.g., "Open Chrome" action button)           |
-| Deck           | A set of button instances displayed together                            |
-| Main Deck      | The default/root deck with no back button                               |
-| Sub-deck       | A nested deck navigable from another deck; includes a back button       |
-| Addon          | A TypeScript module providing button types, deck types, and assets      |
-| Theme          | A YAML file defining global visual tokens                               |
+| Term            | Definition                                                              |
+| --------------- | ----------------------------------------------------------------------- |
+| Button          | Each Stream Deck key with a display and behavior                        |
+| Button Type     | A class of button (display-only, action, toggle) with a rendering model |
+| Button Instance | A configured button type (e.g., "Open Chrome" action button)            |
+| Deck            | A set of button instances displayed together                            |
+| Main Deck       | The default/root deck with no back button                               |
+| Sub-deck        | A nested deck navigable from another deck; includes a back button       |
+| Addon           | A TypeScript module providing button types, deck types, and assets      |
+| Theme           | A YAML file defining global visual tokens                               |
 
 ---
 
@@ -329,6 +334,7 @@ Available actions: `adapt`, `animate`, `arrange`, `audit`, `bolder`, `clarify`, 
 ### CHANGELOG Discipline
 
 Every significant change gets a dated entry in `CHANGELOG.md` with:
+
 - **Features** — What was added
 - **Fixes** — What broke and how it was fixed (include root cause)
 - **Learnings** — What we learned (the most important section)
@@ -344,6 +350,7 @@ When a new decision is made during a session, capture it with `/decision-log`.
 Compounded solutions live in `.planning/solutions/` — organized by category (build-errors, runtime-errors, best-practices, etc.) with YAML frontmatter for searchability. The `/plan-phase` workflow automatically searches these before planning.
 
 **Run `/compound` after any of these events — do not skip:**
+
 - Fixing a bug (especially root-cause discoveries)
 - Completing a phase (`execute-phase` → `verify-work` → `/compound`)
 - Shipping a feature (`/ship` → `/compound`)
