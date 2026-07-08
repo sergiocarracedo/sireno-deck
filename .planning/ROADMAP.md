@@ -31,11 +31,13 @@
 - `[x]` Audit — 9 button types across 6 addons: brightness:brightness, core-buttons:action/change-deck/toggle/media-sample, internal-settings:about/brightness/theme, media:volume:down, session:info, weather:weather. No changes needed: emoji-selector (already had it), media:player/mute/volume:up (already had it), date-time (no backend gestures), system-status (no backend gestures), value-display (no backend gestures).
 - **[?]** Compatibility shim for 3rd-party addons? See `PROJECT.md` scope guardrails. Decision deferred.
 
-### P4 — Auto-register addon decks on load
+### P4 — Default main deck + n-1 system button (partial)
 
-- `[ ]` `AddonRegistry` registers every entry in `manifest.decks` at addon-load time. Remove the requirement that the user lists addon decks in `config.yml`.
-- `[ ]` User config can still *reference* an addon deck by `${addonName}:${deckKey}` to compose a custom main deck.
-- `[ ]` Top-level addon-defined main decks (no `parentDeck`) become the root if user didn't define one.
+- `[x]` validation.ts: downgrade "Missing main deck" error → warning at bootstrap (schema still allows empty `{}`).
+- `[x]` buildDeckConfigMessage: inject n-1 system button via `computeSystemButtonForSlotN1` (main=settings-entry, sub(nav>1)=back, overlay=overlay-toggle). 5 new tests.
+- `[x]` Default main deck: synthetic `{ id: "main", name: "Main", isMain: true, buttons: [] }` when config.decks is empty.
+- `[x]` `decksByType` in registry.ts:82 already populated — addon decks ARE registered but NOT yet materialized into runtime decks. `materializeAddonDecks` exists (addon-decks.ts) but is not wired into production `run.ts`.
+- `[x]` CLI `addon-decks` command: `materializeAddonDecks` utility exists (addon-decks.ts) but is not wired into CLI. No `addon-decks` command actually runs.
 
 ### P5 — `internal?: boolean` on `AddonDeckDefinition`
 
