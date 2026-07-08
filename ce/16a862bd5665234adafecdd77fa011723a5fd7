@@ -1,0 +1,19 @@
+packages/cli/src/config/validation.ts
+  s_55abdbe20bc1a9::t_70aa7e2ed4ef7b 89,97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "ce16a862bd5665234adafecdd77fa011723a5fd7",
+  "prompts": {},
+  "sessions": {
+    "s_55abdbe20bc1a9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0c2dcb067ffeT2vd4CebpVh5lf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
