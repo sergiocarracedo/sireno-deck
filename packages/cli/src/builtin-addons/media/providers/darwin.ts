@@ -1,8 +1,4 @@
-import type {
-  MediaStatus,
-  MediaStatusProvider,
-  ProviderExecutor,
-} from "./types";
+import type { MediaStatus, MediaStatusProvider, ProviderExecutor } from "./types";
 
 interface DarwinDeps {
   readonly executor: ProviderExecutor;
@@ -14,10 +10,7 @@ const STATUS_MAP = {
   stopped: "stop",
 } as const satisfies Record<string, MediaStatus["playStatus"]>;
 
-const runOsascript = async (
-  deps: DarwinDeps,
-  script: string,
-): Promise<void> => {
+const runOsascript = async (deps: DarwinDeps, script: string): Promise<void> => {
   const result = await deps.executor.run("osascript", ["-e", script], {
     timeoutMs: 5_000,
   });
@@ -34,8 +27,7 @@ const SCRIPT_PREVIOUS = `tell application "Spotify" to previous track`;
 const SCRIPT_GET_STATE = `tell application "Spotify" to player state as string`;
 const SCRIPT_GET_TRACK = `tell application "Spotify" to get {name, artist, album} of current track as list`;
 const SCRIPT_GET_VOLUME = `tell application "Spotify" to sound volume as integer`;
-const SCRIPT_SET_VOLUME = (v: number) =>
-  `tell application "Spotify" to set sound volume to ${v}`;
+const SCRIPT_SET_VOLUME = (v: number) => `tell application "Spotify" to set sound volume to ${v}`;
 
 const parseVolume = (raw: string): number => {
   const n = Number.parseInt(raw.trim(), 10);
@@ -53,9 +45,8 @@ const readStatus = async (deps: DarwinDeps): Promise<MediaStatus> => {
   if (stateResult.exitCode === 0) {
     const s = stateResult.stdout.trim().toLowerCase();
     playStatus =
-      (STATUS_MAP[s as keyof typeof STATUS_MAP] as
-        | MediaStatus["playStatus"]
-        | undefined) ?? "unavailable";
+      (STATUS_MAP[s as keyof typeof STATUS_MAP] as MediaStatus["playStatus"] | undefined) ??
+      "unavailable";
   }
 
   const track =
@@ -69,7 +60,10 @@ const readStatus = async (deps: DarwinDeps): Promise<MediaStatus> => {
           if (name.length === 0 || name === "missing value") return null;
           return {
             name,
-            artist: parts[1] !== undefined && parts[1].length > 0 && parts[1] !== "missing value" ? parts[1] : "",
+            artist:
+              parts[1] !== undefined && parts[1].length > 0 && parts[1] !== "missing value"
+                ? parts[1]
+                : "",
             album:
               parts[2] !== undefined && parts[2].length > 0 && parts[2] !== "missing value"
                 ? parts[2]
@@ -88,9 +82,7 @@ const readStatus = async (deps: DarwinDeps): Promise<MediaStatus> => {
   };
 };
 
-export const createDarwinProvider = (
-  deps: DarwinDeps,
-): MediaStatusProvider => {
+export const createDarwinProvider = (deps: DarwinDeps): MediaStatusProvider => {
   return {
     async getStatus() {
       return readStatus(deps);
@@ -123,10 +115,7 @@ export const createDarwinProvider = (
           })
         ).stdout,
       );
-      await runOsascript(
-        deps,
-        SCRIPT_SET_VOLUME(Math.min(100, current + Math.round(step * 100))),
-      );
+      await runOsascript(deps, SCRIPT_SET_VOLUME(Math.min(100, current + Math.round(step * 100))));
     },
     async volumeDown(step) {
       const current = parseVolume(
@@ -136,10 +125,7 @@ export const createDarwinProvider = (
           })
         ).stdout,
       );
-      await runOsascript(
-        deps,
-        SCRIPT_SET_VOLUME(Math.max(0, current - Math.round(step * 100))),
-      );
+      await runOsascript(deps, SCRIPT_SET_VOLUME(Math.max(0, current - Math.round(step * 100))));
     },
     async toggleMute() {
       const current = parseVolume(

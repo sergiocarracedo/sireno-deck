@@ -55,11 +55,11 @@
 - `[x]` Gesture channel — tapping the n-1 button fires the correct runtime action via existing addon-handler-bridge (same as any other button). Acceptance: manual UAT for <200ms transition (no device in dev).
 - `[?]` Acceptance criterion: settings-deck → previous-deck transition <200ms (requires real hardware; no Stream Deck in dev).
 
-### P8 — `backend` → `service` rename (terminology)
+### P8 — `backend` → `service` rename (terminology) `[x]` shipped
 
-- `[ ]` Rename `*Backend` types/methods/fields where they read as "the long-lived Node process" to `*Service` (e.g., `AddonGlobalBackend` → `AddonGlobalService`, `AddonButtonBackendContext` → `AddonButtonServiceContext`).
-- `[ ]]` Update internal field names + addon API in one commit (no behavior change).
-- `[?]` Rename `SIRENO_ADDON_API_VERSION` if v2 is implied; otherwise keep at 1 and document the cosmetic rename.
+- `[x]` Rename all `*Backend` types/methods/fields to `*Service` in api.ts, registry.ts, addon-handler-bridge.ts, all manifests, tests. 60+ files.
+- `[x]` Field rename: `backend:`→`service:`, `globalBackend`→`globalService`.
+- `[x]` No file renames (backend.ts stays).`
 
 ## Out of v1.7
 

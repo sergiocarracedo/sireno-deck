@@ -1,26 +1,15 @@
-import type {
-  MediaStatus,
-  MediaStatusProvider,
-  ProviderExecutor,
-} from "./types";
+import type { MediaStatus, MediaStatusProvider, ProviderExecutor } from "./types";
 
 interface WindowsDeps {
   readonly executor: ProviderExecutor;
 }
 
-const runPowerShell = async (
-  deps: WindowsDeps,
-  script: string,
-): Promise<void> => {
-  const result = await deps.executor.run(
-    "powershell",
-    ["-NoProfile", "-Command", script],
-    { timeoutMs: 5_000 },
-  );
+const runPowerShell = async (deps: WindowsDeps, script: string): Promise<void> => {
+  const result = await deps.executor.run("powershell", ["-NoProfile", "-Command", script], {
+    timeoutMs: 5_000,
+  });
   if (result.exitCode !== 0) {
-    throw new Error(
-      `powershell failed: ${result.stderr.trim() || "exit " + result.exitCode}`,
-    );
+    throw new Error(`powershell failed: ${result.stderr.trim() || "exit " + result.exitCode}`);
   }
 };
 
@@ -45,9 +34,7 @@ const readStatus = async (deps: WindowsDeps): Promise<MediaStatus> => {
   // session manager would expose PlaybackStatus but the underlying Windows
   // Media Control API does not surface it through PowerShell here.
   const playStatus: MediaStatus["playStatus"] =
-    stateResult.exitCode === 0 && stateResult.stdout.trim().length > 0
-      ? "play"
-      : "stop";
+    stateResult.exitCode === 0 && stateResult.stdout.trim().length > 0 ? "play" : "stop";
 
   const track =
     trackResult.exitCode === 0 && trackResult.stdout.trim().length > 0
@@ -74,9 +61,7 @@ const readStatus = async (deps: WindowsDeps): Promise<MediaStatus> => {
   };
 };
 
-export const createWindowsProvider = (
-  deps: WindowsDeps,
-): MediaStatusProvider => {
+export const createWindowsProvider = (deps: WindowsDeps): MediaStatusProvider => {
   return {
     async getStatus() {
       return readStatus(deps);

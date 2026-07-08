@@ -1,10 +1,10 @@
-import type { AddonGlobalBackend } from "@/addon/api";
+import type { AddonGlobalService } from "@/addon/api";
 
 export const manifest = {
   name: "fake-media",
-  globalBackend: {
+  globalService: {
     onLoad: (ctx: { publish: (data: unknown) => void }) => {
       ctx.publish({ initial: true });
     },
-  } satisfies AddonGlobalBackend,
+  } satisfies AddonGlobalService,
 };

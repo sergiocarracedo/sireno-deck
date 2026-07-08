@@ -9,7 +9,7 @@ export const manifest: AddonManifestV1 = {
   buttonTypes: {
     "system-status:status": {
       frontend: systemStatusFrontend,
-      backend: systemStatusBackend,
+      service: systemStatusBackend,
     },
   },
   publishIntervalMs: 1000,

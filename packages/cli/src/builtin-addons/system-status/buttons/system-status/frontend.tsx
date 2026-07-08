@@ -34,9 +34,7 @@ const SystemStatusButtonFrontend: AddonFrontendButton = ({ config }) => {
       <span className="flex h-full w-full flex-col justify-center gap-1 p-1.5">
         {metrics.slice(0, 3).map((m) => {
           const pct =
-            typeof m.value === "number" &&
-            m.maxValue !== undefined &&
-            m.maxValue > 0
+            typeof m.value === "number" && m.maxValue !== undefined && m.maxValue > 0
               ? Math.max(0, Math.min(100, (m.value / m.maxValue) * 100))
               : null;
           return (
@@ -51,10 +49,7 @@ const SystemStatusButtonFrontend: AddonFrontendButton = ({ config }) => {
               </span>
               {pct !== null && (
                 <span className="block h-1 w-full overflow-hidden rounded bg-bar">
-                  <span
-                    className="block h-full bg-accent"
-                    style={{ width: `${pct}%` }}
-                  />
+                  <span className="block h-full bg-accent" style={{ width: `${pct}%` }} />
                 </span>
               )}
             </span>

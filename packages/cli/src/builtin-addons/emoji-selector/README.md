@@ -12,10 +12,10 @@ Deck ids follow the pattern `emoji:{category}` (e.g., `emoji:smileys`, `emoji:na
 
 ## Buttons
 
-| Type                          | Description                                  |
-| ----------------------------- | -------------------------------------------- |
-| `core:emoji-emoji-button`     | Renders one emoji; on tap, copies to clipboard |
-| `core:emoji-page-nav`         | Internal: prev/next page navigation          |
+| Type                      | Description                                    |
+| ------------------------- | ---------------------------------------------- |
+| `core:emoji-emoji-button` | Renders one emoji; on tap, copies to clipboard |
+| `core:emoji-page-nav`     | Internal: prev/next page navigation            |
 
 ## Config
 

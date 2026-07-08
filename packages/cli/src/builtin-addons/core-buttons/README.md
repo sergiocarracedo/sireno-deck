@@ -6,12 +6,12 @@ If you're writing user-facing config, you only need `core:action` and `core:chan
 
 ## Buttons
 
-| Type                | Description                                                |
-| ------------------- | ---------------------------------------------------------- |
+| Type                | Description                                                  |
+| ------------------- | ------------------------------------------------------------ |
 | `core:change-deck`  | Navigate to another deck. Internal: the reserved `n-1` slot. |
-| `core:action`       | Run a shell command (`xdg-open`, `google-chrome`, etc.)     |
-| `core:toggle`       | Internal: toggle a boolean state in the runtime             |
-| `core:media-sample` | Internal: a sample media-player button used in tests       |
+| `core:action`       | Run a shell command (`xdg-open`, `google-chrome`, etc.)      |
+| `core:toggle`       | Internal: toggle a boolean state in the runtime              |
+| `core:media-sample` | Internal: a sample media-player button used in tests         |
 
 ## Config
 

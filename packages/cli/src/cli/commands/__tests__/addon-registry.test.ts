@@ -18,7 +18,7 @@ const scannedFixture: ReadonlyArray<ScannedAddon> = [
     buttonTypes: {},
     deckTypes: {},
     source: "regex",
-    globalBackendEntry: null,
+    globalServiceEntry: null,
   },
   {
     name: "weather",
@@ -29,7 +29,7 @@ const scannedFixture: ReadonlyArray<ScannedAddon> = [
     buttonTypes: {},
     deckTypes: {},
     source: "regex",
-    globalBackendEntry: null,
+    globalServiceEntry: null,
   },
   {
     name: "no-frontend",
@@ -40,7 +40,7 @@ const scannedFixture: ReadonlyArray<ScannedAddon> = [
     buttonTypes: {},
     deckTypes: {},
     source: "regex",
-    globalBackendEntry: null,
+    globalServiceEntry: null,
   },
 ];
 
@@ -77,7 +77,7 @@ describe("discoverAddonPollers", () => {
         buttonTypes: {},
         deckTypes: {},
         source: "regex",
-        globalBackendEntry: null,
+        globalServiceEntry: null,
       },
     ];
     const discovered = await discoverAddonPollers({}, without);

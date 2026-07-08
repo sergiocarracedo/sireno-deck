@@ -1,7 +1,7 @@
 import type { AddonFrontendButton } from '@/addon/api'
 import { useAddonChannel } from '@/api/react'
 import { IconLabelSurface } from '@/ui/index'
-import type { MediaPlayerState } from '../../state'
+import type { MediaPlayerState } from '../../../state'
 
 const MuteButtonFrontend: AddonFrontendButton<Record<string, never>> = () => {
   const { data } = useAddonChannel<MediaPlayerState>('media:state')

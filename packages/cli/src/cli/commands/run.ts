@@ -51,7 +51,7 @@ import {
 } from "./addon-registry";
 import { createActionExecutor } from "@/action/executor";
 import { getHostContext } from "@/deck/host-context";
-import { bridgeAddonBackends } from "@/deck/addon-handler-bridge";
+import { bridgeAddonServices } from "@/deck/addon-handler-bridge";
 import { createClipboardProvider, type ClipboardProvider } from "@/system/clipboard";
 import { StatePublisher } from "@/render/state-publisher";
 import { startWsBridge, type WsBridge } from "@/render/ws-bridge";
@@ -168,7 +168,7 @@ const buildIconResolverOptions = (
   return { addonDirs, baseDirs };
 };
 
-export interface SetupAddonBackendsOptions {
+export interface SetupAddonServicesOptions {
   readonly runtime: Runtime;
   readonly decks: ReadonlyArray<RuntimeDeck>;
   readonly pubSub: PubSub;
@@ -183,7 +183,7 @@ export interface SetupAddonBackendsOptions {
   readonly store: Store;
 }
 
-export interface SetupAddonBackendsResult {
+export interface SetupAddonServicesResult {
   readonly dispose: () => void;
 }
 
@@ -199,9 +199,9 @@ const collectActiveDeckAddonNames = (
   return [...addonNames];
 };
 
-export const setupAddonBackends = (
-  options: SetupAddonBackendsOptions,
-): SetupAddonBackendsResult => {
+export const setupAddonServices = (
+  options: SetupAddonServicesOptions,
+): SetupAddonServicesResult => {
   const {
     runtime,
     decks,
@@ -217,7 +217,7 @@ export const setupAddonBackends = (
     store,
   } = options;
 
-  void bridgeAddonBackends({
+  void bridgeAddonServices({
     runtime,
     decks,
     scanned,
@@ -477,7 +477,7 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
 
   const bridgeSignal = new AbortController();
   const statePublisher = new StatePublisher({ bridge, logger });
-  const addonBackends = setupAddonBackends({
+  const addonServices = setupAddonServices({
     runtime,
     decks,
     pubSub,
@@ -610,7 +610,7 @@ export const runRealModePipeline = async (options: RunOptions): Promise<void> =>
     gestureUnsubscribe();
     frontendVite?.process.kill("SIGTERM");
     bridgeSignal.abort();
-    addonBackends.dispose();
+    addonServices.dispose();
     statePublisher.stopAll();
     await Promise.allSettled([
       handle.stop(),
@@ -731,7 +731,7 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
     onBridgeReady: async (bridge) => {
       const statePublisher = new StatePublisher({ bridge, logger });
       const initialDeck = emulatorDecks.decks.find((d) => d.isMain) ?? emulatorDecks.decks[0];
-      const addonBackends = setupAddonBackends({
+      const addonServices = setupAddonServices({
         runtime,
         decks: emulatorDecks.decks,
         pubSub: emulatorDecks.pubSub,
@@ -747,7 +747,7 @@ const runEmulatorLifecycle = async (options: RunOptions): Promise<void> => {
       });
       publisherTeardown.fn = () => {
         bridgeSignal.abort();
-        addonBackends.dispose();
+        addonServices.dispose();
         statePublisher.stopAll();
       };
     },

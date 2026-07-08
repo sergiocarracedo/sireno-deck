@@ -13,12 +13,7 @@ const WeatherLocationSchema = z
 const WeatherButtonSchema = z
   .object({
     location: WeatherLocationSchema.optional(),
-    poll_interval_ms: z
-      .number()
-      .int()
-      .positive()
-      .optional()
-      .default(WEATHER_DEFAULT_POLL_MS),
+    poll_interval_ms: z.number().int().positive().optional().default(WEATHER_DEFAULT_POLL_MS),
     units: z.enum(["metric", "imperial"]).optional().default("metric"),
   })
   .strict();

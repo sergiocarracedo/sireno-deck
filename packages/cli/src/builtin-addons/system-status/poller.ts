@@ -12,13 +12,15 @@ export const createPoller = (): AddonPoller => ({
         const free = freemem();
         const used = total - free;
         const cpusList = cpus();
-        const cpuUsage = cpusList.length > 0
-          ? cpusList.reduce((acc, cpu) => {
-              const cpuTotal = cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq;
-              const idle = cpu.times.idle;
-              return acc + (cpuTotal > 0 ? ((cpuTotal - idle) / cpuTotal) * 100 : 0);
-            }, 0) / cpusList.length
-          : 0;
+        const cpuUsage =
+          cpusList.length > 0
+            ? cpusList.reduce((acc, cpu) => {
+                const cpuTotal =
+                  cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq;
+                const idle = cpu.times.idle;
+                return acc + (cpuTotal > 0 ? ((cpuTotal - idle) / cpuTotal) * 100 : 0);
+              }, 0) / cpusList.length
+            : 0;
         const uptimeSec = uptime();
         const days = Math.floor(uptimeSec / 86400);
         const hours = Math.floor((uptimeSec % 86400) / 3600);

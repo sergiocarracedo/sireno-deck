@@ -28,9 +28,11 @@ describe("core-buttons addon", () => {
   });
 
   it("sirenodeck.json points at the entry", async () => {
-    const manifestJson = (await import("../sirenodeck.json", {
-      with: { type: "json" },
-    })).default as { kind: string; apiVersion: number; name: string; entry: string };
+    const manifestJson = (
+      await import("../sirenodeck.json", {
+        with: { type: "json" },
+      })
+    ).default as { kind: string; apiVersion: number; name: string; entry: string };
     expect(manifestJson.kind).toBe("addon");
     expect(manifestJson.apiVersion).toBe(1);
     expect(manifestJson.name).toBe("core-buttons");

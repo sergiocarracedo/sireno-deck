@@ -6,8 +6,8 @@ You don't reference this addon directly in `config.yml`. The session overlay app
 
 ## Decks
 
-| Deck id         | Buttons                                            |
-| --------------- | -------------------------------------------------- |
+| Deck id          | Buttons                                              |
+| ---------------- | ---------------------------------------------------- |
 | `session:locked` | Single button: session-info (shows unlock countdown) |
 
 ## See also

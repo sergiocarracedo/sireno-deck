@@ -6,17 +6,17 @@ You don't reference this addon directly in `config.yml`. The settings overlay is
 
 ## Buttons
 
-| Type                          | Description                                       |
-| ----------------------------- | ------------------------------------------------- |
-| `core:settings-brightness`    | Opens a brightness slider in the settings overlay  |
-| `core:settings-theme`         | Opens a theme picker in the settings overlay       |
-| `core:settings-about`         | Shows the about panel                             |
+| Type                       | Description                                       |
+| -------------------------- | ------------------------------------------------- |
+| `core:settings-brightness` | Opens a brightness slider in the settings overlay |
+| `core:settings-theme`      | Opens a theme picker in the settings overlay      |
+| `core:settings-about`      | Shows the about panel                             |
 
 ## Decks
 
-| Deck id     | Buttons                                            |
-| ----------- | -------------------------------------------------- |
-| `settings`  | brightness (0), theme (1), about (2)               |
+| Deck id    | Buttons                              |
+| ---------- | ------------------------------------ |
+| `settings` | brightness (0), theme (1), about (2) |
 
 The `settings` deck is auto-generated. To customize the brightness slider's metric, edit the `system-status` addon's settings (see [system-status](../system-status/README.md)).
 

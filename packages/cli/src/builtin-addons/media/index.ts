@@ -1,6 +1,6 @@
 import type { AddonManifestV1 } from "@/addon/api";
 
-import { globalBackend } from "./backend";
+import { globalService } from "./backend";
 import mediaPlayerBackend from "./buttons/media-player/backend";
 import mediaPlayerFrontend from "./buttons/media-player/frontend";
 import mediaMuteBackend from "./buttons/volume/mute/backend";
@@ -16,22 +16,22 @@ export const manifest: AddonManifestV1 = {
   buttonTypes: {
     "media:player": {
       frontend: mediaPlayerFrontend,
-      backend: { ...mediaPlayerBackend, gestureHandlers: ["tap"] as const },
+      service: { ...mediaPlayerBackend, gestureHandlers: ["tap"] as const },
     },
     "media:mute": {
       frontend: mediaMuteFrontend,
-      backend: { ...mediaMuteBackend, gestureHandlers: ["tap"] as const },
+      service: { ...mediaMuteBackend, gestureHandlers: ["tap"] as const },
     },
     "media:volume:up": {
       frontend: volumeUpFrontend,
-      backend: { ...volumeUpBackend, gestureHandlers: ["tap"] as const },
+      service: { ...volumeUpBackend, gestureHandlers: ["tap"] as const },
     },
     "media:volume:down": {
       frontend: volumeDownFrontend,
-      backend: { ...volumeDownBackend, gestureHandlers: ["tap"] as const },
+      service: { ...volumeDownBackend, gestureHandlers: ["tap"] as const },
     },
   },
-  globalBackend,
+  globalService,
 };
 
 export default manifest;

@@ -1,4 +1,4 @@
-import type { AddonButtonTypeBackend } from "@/addon/api";
+import type { AddonButtonTypeService } from "@/addon/api";
 
 import { configSchema } from "./config";
 
@@ -7,4 +7,4 @@ export default {
   onTap: ({ publish }) => {
     publish("runtime:navigate-deck", { deckId: "main", addToHistory: true });
   },
-} satisfies AddonButtonTypeBackend;
+} satisfies AddonButtonTypeService;

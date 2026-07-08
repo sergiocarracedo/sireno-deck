@@ -9,7 +9,7 @@ import { createActionExecutor } from "@/action/executor";
 import type { ScannedAddon } from "@/cli/commands/addon-registry";
 import { getHostContext } from "../host-context";
 import { createRuntime } from "../runtime";
-import { bridgeAddonBackends } from "../addon-handler-bridge";
+import { bridgeAddonServices } from "../addon-handler-bridge";
 
 const silentLogger = () => createLogger({ level: "silent" });
 
@@ -25,7 +25,7 @@ const baseScanned: ReadonlyArray<ScannedAddon> = [
     buttonTypes: {},
     deckTypes: {},
     source: "json",
-    globalBackendEntry: fixturePath,
+    globalServiceEntry: fixturePath,
   },
 ];
 
@@ -59,14 +59,14 @@ const setup = () => {
   return { runtime, pubSub, store, executor, decks, setClipboardProvider };
 };
 
-describe("bridgeAddonBackends", () => {
-  it("registers each globalBackend poller with the state publisher", async () => {
+describe("bridgeAddonServices", () => {
+  it("registers each globalService poller with the state publisher", async () => {
     const { runtime, pubSub, store, executor, decks, setClipboardProvider } = setup();
     const bridge = makeBridge();
     const statePublisher = makeStatePublisher();
     const signal = new AbortController().signal;
 
-    await bridgeAddonBackends({
+    await bridgeAddonServices({
       runtime,
       decks,
       scanned: baseScanned,
@@ -102,7 +102,7 @@ describe("bridgeAddonBackends", () => {
     const statePublisher = makeStatePublisher();
     const signal = new AbortController().signal;
 
-    await bridgeAddonBackends({
+    await bridgeAddonServices({
       runtime,
       decks,
       scanned: baseScanned,
@@ -130,7 +130,7 @@ describe("bridgeAddonBackends", () => {
     const subSpy = vi.fn();
     pubSub.subscribe("addon:fake-media", subSpy);
 
-    await bridgeAddonBackends({
+    await bridgeAddonServices({
       runtime,
       decks,
       scanned: baseScanned,
@@ -154,18 +154,15 @@ describe("bridgeAddonBackends", () => {
     pubSub.subscribe("addon:fake-media", subSpy);
     const signal = new AbortController().signal;
 
-    const fixtureNoPoller = resolvePath(
-      __dirname,
-      "__fixtures__/fake-backend-no-poller.ts",
-    );
+    const fixtureNoPoller = resolvePath(__dirname, "__fixtures__/fake-backend-no-poller.ts");
 
-    await bridgeAddonBackends({
+    await bridgeAddonServices({
       runtime,
       decks,
       scanned: [
         {
           ...baseScanned[0]!,
-          globalBackendEntry: fixtureNoPoller,
+          globalServiceEntry: fixtureNoPoller,
         },
       ],
       executor,
@@ -182,18 +179,16 @@ describe("bridgeAddonBackends", () => {
     expect(bridge.broadcast).not.toHaveBeenCalled();
   });
 
-  it("ignores addons without globalBackendEntry", async () => {
+  it("ignores addons without globalServiceEntry", async () => {
     const { runtime, pubSub, store, executor, decks, setClipboardProvider } = setup();
     const bridge = makeBridge();
     const statePublisher = makeStatePublisher();
     const signal = new AbortController().signal;
 
-    await bridgeAddonBackends({
+    await bridgeAddonServices({
       runtime,
       decks,
-      scanned: [
-        { ...baseScanned[0]!, globalBackendEntry: null },
-      ],
+      scanned: [{ ...baseScanned[0]!, globalServiceEntry: null }],
       executor,
       pubSub,
       store,
@@ -208,9 +203,8 @@ describe("bridgeAddonBackends", () => {
   });
 
   it("ctx.poll(id) runs the matching poller and broadcasts the result", async () => {
-    const { __resetCapturedCtx, __getCapturedCtx } = await import(
-      "./__fixtures__/fake-media-backend"
-    );
+    const { __resetCapturedCtx, __getCapturedCtx } =
+      await import("./__fixtures__/fake-media-backend");
     __resetCapturedCtx();
 
     const { runtime, pubSub, store, executor, decks, setClipboardProvider } = setup();
@@ -218,7 +212,7 @@ describe("bridgeAddonBackends", () => {
     const statePublisher = makeStatePublisher();
     const signal = new AbortController().signal;
 
-    await bridgeAddonBackends({
+    await bridgeAddonServices({
       runtime,
       decks,
       scanned: baseScanned,
@@ -245,9 +239,8 @@ describe("bridgeAddonBackends", () => {
   });
 
   it("ctx.poll with an unknown id is a silent no-op", async () => {
-    const { __resetCapturedCtx, __getCapturedCtx } = await import(
-      "./__fixtures__/fake-media-backend"
-    );
+    const { __resetCapturedCtx, __getCapturedCtx } =
+      await import("./__fixtures__/fake-media-backend");
     __resetCapturedCtx();
 
     const { runtime, pubSub, store, executor, decks, setClipboardProvider } = setup();
@@ -255,7 +248,7 @@ describe("bridgeAddonBackends", () => {
     const statePublisher = makeStatePublisher();
     const signal = new AbortController().signal;
 
-    await bridgeAddonBackends({
+    await bridgeAddonServices({
       runtime,
       decks,
       scanned: baseScanned,
@@ -298,7 +291,7 @@ describe("bridgeAddonBackends", () => {
     const statePublisher = makeStatePublisher();
     const signal = new AbortController().signal;
 
-    await bridgeAddonBackends({
+    await bridgeAddonServices({
       runtime: freshRuntime,
       decks: decksWithButton,
       scanned: baseScanned,
@@ -351,7 +344,7 @@ describe("bridgeAddonBackends", () => {
     const executor = createActionExecutor({ host: getHostContext() });
     const setClipboardProvider = vi.fn();
 
-    await bridgeAddonBackends({
+    await bridgeAddonServices({
       runtime: freshRuntime,
       decks: decksWithButton,
       scanned: baseScanned,

@@ -4,9 +4,9 @@ One button per metric configuration. Renders OS metrics (CPU, RAM, swap, fan, up
 
 ## Buttons
 
-| Type                  | Description                                       |
-| --------------------- | ------------------------------------------------- |
-| `core:system-status`  | Single button: shows N metrics in text or bars layout |
+| Type                 | Description                                           |
+| -------------------- | ----------------------------------------------------- |
+| `core:system-status` | Single button: shows N metrics in text or bars layout |
 
 ## Config
 
@@ -14,19 +14,19 @@ One button per metric configuration. Renders OS metrics (CPU, RAM, swap, fan, up
 - position: 0
   type: core:system-status
   config:
-    variant: bars                    # "text" (default) or "bars"
-    poll_interval_ms: 1000          # optional, default 1000
+    variant: bars # "text" (default) or "bars"
+    poll_interval_ms: 1000 # optional, default 1000
     metrics:
       - metric: cpu_usage
         label: CPU
-        max_value: 100                # optional, for bars
-        color: "#38bdf8"              # optional, for bars
+        max_value: 100 # optional, for bars
+        color: "#38bdf8" # optional, for bars
       - metric: memory_usage
         label: RAM
       - metric: swap_usage
         label: Swap
         unavailable_label: "N/A"
-      - metric: battery                # Linux only; graceful fallback
+      - metric: battery # Linux only; graceful fallback
         label: Battery
       - metric: uptime
         label: Uptime
@@ -34,15 +34,15 @@ One button per metric configuration. Renders OS metrics (CPU, RAM, swap, fan, up
 
 Available metrics:
 
-| Metric id          | Source                                       |
-| ------------------ | -------------------------------------------- |
-| `cpu_usage`        | `os.cpus()` delta over poll interval        |
-| `memory_usage`     | `os.totalmem()` − `os.freemem()`             |
-| `swap_usage`       | `/proc/meminfo` (Linux)                      |
-| `fan_speed`        | `/sys/class/hwmon` (Linux best-effort)        |
-| `uptime`           | `os.uptime()` formatted as days/hours/mins   |
-| `battery`          | `/sys/class/power_supply/BAT0` (Linux)       |
-| `load_average_1m`  | `os.loadavg()[0]`                            |
+| Metric id         | Source                                     |
+| ----------------- | ------------------------------------------ |
+| `cpu_usage`       | `os.cpus()` delta over poll interval       |
+| `memory_usage`    | `os.totalmem()` − `os.freemem()`           |
+| `swap_usage`      | `/proc/meminfo` (Linux)                    |
+| `fan_speed`       | `/sys/class/hwmon` (Linux best-effort)     |
+| `uptime`          | `os.uptime()` formatted as days/hours/mins |
+| `battery`         | `/sys/class/power_supply/BAT0` (Linux)     |
+| `load_average_1m` | `os.loadavg()[0]`                          |
 
 ## Example
 

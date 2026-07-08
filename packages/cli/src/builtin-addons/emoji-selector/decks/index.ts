@@ -29,10 +29,8 @@ const buildPage = (
     });
   });
   if (totalPages > 1) {
-    const prevDeckId =
-      pageNumber > 1 ? `${baseDeckId}-p${pageNumber - 1}` : null;
-    const nextDeckId =
-      pageNumber < totalPages ? `${baseDeckId}-p${pageNumber + 1}` : null;
+    const prevDeckId = pageNumber > 1 ? `${baseDeckId}-p${pageNumber - 1}` : null;
+    const nextDeckId = pageNumber < totalPages ? `${baseDeckId}-p${pageNumber + 1}` : null;
     buttons.push({
       type: "emoji-selector:page-nav",
       position: buttons.length,
@@ -71,14 +69,9 @@ const generateDecks = (
 
   const topButtons: PageButton[] = [];
   categories.forEach((category, idx) => {
-    const totalPages = Math.max(
-      1,
-      Math.ceil(category.emojis.length / EMOJI_PAGE_SIZE),
-    );
+    const totalPages = Math.max(1, Math.ceil(category.emojis.length / EMOJI_PAGE_SIZE));
     const firstDeckId =
-      totalPages > 1
-        ? `${deck.id}-${category.id}-p1`
-        : `${deck.id}-${category.id}`;
+      totalPages > 1 ? `${deck.id}-${category.id}-p1` : `${deck.id}-${category.id}`;
     topButtons.push({
       icon: category.icon,
       label: category.label,
@@ -91,12 +84,9 @@ const generateDecks = (
       const end = Math.min(start + EMOJI_PAGE_SIZE, category.emojis.length);
       const pageEmojis = category.emojis.slice(start, end);
       const baseDeckId = `${deck.id}-${category.id}`;
-      const deckId =
-        totalPages > 1 ? `${baseDeckId}-p${pageNumber}` : baseDeckId;
+      const deckId = totalPages > 1 ? `${baseDeckId}-p${pageNumber}` : baseDeckId;
       const name =
-        totalPages > 1
-          ? `${category.label} ${pageNumber}/${totalPages}`
-          : category.label;
+        totalPages > 1 ? `${category.label} ${pageNumber}/${totalPages}` : category.label;
       decks[deckId] = {
         name,
         buttons: buildPage(baseDeckId, pageNumber, totalPages, pageEmojis),

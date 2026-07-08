@@ -33,7 +33,9 @@ const collectMetric = (id: SystemStatusMetricId): CanonicalSystemMetricSnapshot 
       }
       const usage =
         cpus.reduce((sum, cpu) => {
-          const c = cpu as { times: { user: number; nice: number; sys: number; idle: number; irq: number } };
+          const c = cpu as {
+            times: { user: number; nice: number; sys: number; idle: number; irq: number };
+          };
           const total = c.times.user + c.times.nice + c.times.sys + c.times.idle + c.times.irq;
           const idle = c.times.idle;
           return sum + (total > 0 ? ((total - idle) / total) * 100 : 0);

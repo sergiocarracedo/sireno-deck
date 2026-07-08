@@ -6,9 +6,7 @@ const CategoryButtonFrontend: AddonFrontendButton = ({ config }) => {
   return (
     <span className="flex h-full w-full flex-col items-center justify-center gap-1">
       <span className="text-3xl leading-none">{iconRef}</span>
-      <span className="text-xs uppercase tracking-wider text-muted">
-        {labelRef}
-      </span>
+      <span className="text-xs uppercase tracking-wider text-muted">{labelRef}</span>
     </span>
   );
 };

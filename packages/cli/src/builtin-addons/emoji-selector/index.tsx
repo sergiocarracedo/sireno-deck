@@ -12,17 +12,17 @@ export const manifest: NewAddonManifest = {
   buttonTypes: {
     "emoji-selector:category": {
       frontend: CategoryButtonFrontend,
-      backend: { ...categoryButtonBackend, gestureHandlers: ["tap"] as const },
+      service: { ...categoryButtonBackend, gestureHandlers: ["tap"] as const },
       internal: true,
     },
     "emoji-selector:emoji": {
       frontend: EmojiButtonFrontend,
-      backend: { ...emojiButtonBackend, gestureHandlers: ["tap"] as const },
+      service: { ...emojiButtonBackend, gestureHandlers: ["tap"] as const },
       internal: true,
     },
     "emoji-selector:launcher": {
       frontend: LauncherButtonFrontend,
-      backend: { ...launcherButtonBackend, gestureHandlers: ["tap"] as const },
+      service: { ...launcherButtonBackend, gestureHandlers: ["tap"] as const },
       internal: true,
     },
   },

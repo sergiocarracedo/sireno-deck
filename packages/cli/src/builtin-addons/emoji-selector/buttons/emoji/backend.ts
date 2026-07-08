@@ -1,7 +1,7 @@
-import type { AddonButtonTypeBackend } from "@/addon/api";
+import type { AddonButtonTypeService } from "@/addon/api";
 
 import { configSchema } from "./config";
 
 export default {
   configSchema,
-} satisfies AddonButtonTypeBackend;
+} satisfies AddonButtonTypeService;

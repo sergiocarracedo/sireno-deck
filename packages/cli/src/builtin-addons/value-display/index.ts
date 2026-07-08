@@ -9,7 +9,7 @@ export const manifest: AddonManifestV1 = {
   buttonTypes: {
     "value-display:display": {
       frontend: valueDisplayFrontend,
-      backend: valueDisplayBackend,
+      service: valueDisplayBackend,
     },
   },
   publishIntervalMs: 5000,

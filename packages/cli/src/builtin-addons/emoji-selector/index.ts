@@ -18,15 +18,15 @@ export const manifest: AddonManifestV1 = {
   buttonTypes: {
     "emoji-selector:category": {
       frontend: categoryFrontend,
-      backend: categoryBackend,
+      service: categoryBackend,
     },
-    "emoji-selector:emoji": { frontend: emojiFrontend, backend: emojiBackend },
+    "emoji-selector:emoji": { frontend: emojiFrontend, service: emojiBackend },
     "emoji-selector:launcher": {
       frontend: launcherFrontend,
-      backend: launcherBackend,
+      service: launcherBackend,
     },
-    "emoji-selector:back": { frontend: backFrontend, backend: backBackend },
-    "emoji-selector:page-nav": { frontend: pageNavFrontend, backend: pageNavBackend },
+    "emoji-selector:back": { frontend: backFrontend, service: backBackend },
+    "emoji-selector:page-nav": { frontend: pageNavFrontend, service: pageNavBackend },
   },
   decks: {
     "emoji-selector:emoji-selector": emojiSelectorDeckFactory,

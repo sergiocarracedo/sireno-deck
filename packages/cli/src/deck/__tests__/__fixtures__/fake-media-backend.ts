@@ -1,11 +1,8 @@
-import type {
-  AddonBackendContext,
-  AddonGlobalBackend,
-} from "@/addon/api";
+import type { AddonServiceContext, AddonGlobalService } from "@/addon/api";
 
-let capturedCtx: AddonBackendContext | null = null;
+let capturedCtx: AddonServiceContext | null = null;
 
-export const __getCapturedCtx = (): AddonBackendContext | null => capturedCtx;
+export const __getCapturedCtx = (): AddonServiceContext | null => capturedCtx;
 
 export const __resetCapturedCtx = (): void => {
   capturedCtx = null;
@@ -13,7 +10,7 @@ export const __resetCapturedCtx = (): void => {
 
 export const manifest = {
   name: "fake-media",
-  globalBackend: {
+  globalService: {
     pollers: [
       {
         id: "state",
@@ -27,9 +24,9 @@ export const manifest = {
         await capturedCtx?.poll("state");
       },
     },
-    onLoad: (ctx: AddonBackendContext) => {
+    onLoad: (ctx: AddonServiceContext) => {
       capturedCtx = ctx;
       ctx.publish({ initial: true });
     },
-  } satisfies AddonGlobalBackend,
+  } satisfies AddonGlobalService,
 };

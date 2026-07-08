@@ -32,13 +32,13 @@ export class AddonRegistry {
     }
 
     for (const [buttonType, def] of Object.entries(manifest.buttonTypes)) {
-      const backend = def.backend;
-      if (!backend) continue;
-      const hasOnTap = typeof backend.onTap === "function";
-      const hasOnDblTap = typeof backend.onDblTap === "function";
-      const hasOnHold = typeof backend.onHold === "function";
+      const service = def.service;
+      if (!service) continue;
+      const hasOnTap = typeof service.onTap === "function";
+      const hasOnDblTap = typeof service.onDblTap === "function";
+      const hasOnHold = typeof service.onHold === "function";
       if (!hasOnTap && !hasOnDblTap && !hasOnHold) continue;
-      const allowed = backend.gestureHandlers ?? [];
+      const allowed = service.gestureHandlers ?? [];
       const toStrip: string[] = [];
       if (hasOnTap && !allowed.includes("tap" as GestureKind)) toStrip.push("onTap");
       if (hasOnDblTap && !allowed.includes("dbl-tap" as GestureKind)) toStrip.push("onDblTap");

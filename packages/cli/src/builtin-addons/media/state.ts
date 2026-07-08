@@ -1,9 +1,4 @@
-export type MediaButtonStatus =
-  | "play"
-  | "pause"
-  | "stop"
-  | "unsupported"
-  | "notAvailable";
+export type MediaButtonStatus = "play" | "pause" | "stop" | "unsupported" | "notAvailable";
 
 export interface MediaPlayerState {
   title: string | null;

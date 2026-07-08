@@ -4,9 +4,9 @@ Current weather for a fixed location. Hits Open-Meteo (https://open-meteo.com/) 
 
 ## Buttons
 
-| Type           | Description                                            |
-| -------------- | ------------------------------------------------------ |
-| `core:weather` | Single button: temperature, wind speed, conditions     |
+| Type           | Description                                        |
+| -------------- | -------------------------------------------------- |
+| `core:weather` | Single button: temperature, wind speed, conditions |
 
 ## Config
 
@@ -17,9 +17,9 @@ Current weather for a fixed location. Hits Open-Meteo (https://open-meteo.com/) 
     location:
       latitude: 42.2304
       longitude: -8.7256
-      name: Vigo        # optional, shown in the button label
-    units: metric        # "metric" (default) or "imperial"
-    poll_interval_ms: 600000   # optional, default 10 min
+      name: Vigo # optional, shown in the button label
+    units: metric # "metric" (default) or "imperial"
+    poll_interval_ms: 600000 # optional, default 10 min
 ```
 
 If `location` is omitted, the button renders a "Configure weather" placeholder.

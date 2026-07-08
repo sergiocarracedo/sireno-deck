@@ -27,12 +27,7 @@ const SystemStatusButtonSchema = z
   .object({
     variant: z.enum(["text", "bars"]).optional().default("text"),
     metrics: z.array(SystemStatusMetricConfigSchema).min(1).max(6),
-    poll_interval_ms: z
-      .number()
-      .int()
-      .positive()
-      .optional()
-      .default(SYSTEM_STATUS_DEFAULT_POLL_MS),
+    poll_interval_ms: z.number().int().positive().optional().default(SYSTEM_STATUS_DEFAULT_POLL_MS),
   })
   .strict();
 

@@ -74,7 +74,7 @@ vi.mock("@/render/state-publisher", () => ({
   }),
 }));
 vi.mock("@/deck/addon-handler-bridge", () => ({
-  bridgeAddonBackends: vi.fn(async () => undefined),
+  bridgeAddonServices: vi.fn(async () => undefined),
 }));
 vi.mock("@/cli/commands/addon-registry", () => ({
   collectBuiltinAddonRegistry: vi.fn(async () => ({
@@ -164,8 +164,11 @@ const setHappyPath = (
       getButtonType: () => ({ def: { internal: false } }),
       resolveActiveTheme: () => ({
         name: "default",
+        apiVersion: 1,
+        source: { kind: "local" as const, resolvedPath: "/theme" },
+        manifestPath: "/theme/sirenodeck.json",
+        uiOverridesPath: null,
         cssPath: "/theme.css",
-        frontendPath: "/index",
       }),
     };
   });

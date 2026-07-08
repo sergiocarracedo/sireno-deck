@@ -15,19 +15,19 @@ export const manifest: AddonManifestV1 = {
   buttonTypes: {
     "core-buttons:action": {
       frontend: actionFrontend,
-      backend: { ...actionBackend, gestureHandlers: ["tap"] as const },
+      service: { ...actionBackend, gestureHandlers: ["tap"] as const },
     },
     "core-buttons:change-deck": {
       frontend: changeDeckFrontend,
-      backend: { ...changeDeckBackend, gestureHandlers: ["tap"] as const },
+      service: { ...changeDeckBackend, gestureHandlers: ["tap"] as const },
     },
     "core-buttons:toggle": {
       frontend: toggleFrontend,
-      backend: { ...toggleBackend, gestureHandlers: ["tap"] as const },
+      service: { ...toggleBackend, gestureHandlers: ["tap"] as const },
     },
     "core-buttons:media-sample": {
       frontend: mediaSampleFrontend,
-      backend: { ...mediaSampleBackend, gestureHandlers: ["tap"] as const },
+      service: { ...mediaSampleBackend, gestureHandlers: ["tap"] as const },
     },
   },
 };

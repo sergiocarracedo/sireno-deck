@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72" width="72" height="72">
+  <rect x="2" y="2" width="32" height="32" rx="6" fill="#fde68a"/>
+  <rect x="38" y="2" width="32" height="32" rx="6" fill="#fca5a5"/>
+  <rect x="2" y="38" width="32" height="32" rx="6" fill="#86efac"/>
+  <rect x="38" y="38" width="32" height="32" rx="6" fill="#93c5fd"/>
+  <text x="18" y="26" font-size="18" text-anchor="middle">😂</text>
+  <text x="54" y="26" font-size="18" text-anchor="middle">🔥</text>
+  <text x="18" y="62" font-size="18" text-anchor="middle">⭐</text>
+  <text x="54" y="62" font-size="18" text-anchor="middle">🎵</text>
+</svg>

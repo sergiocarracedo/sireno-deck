@@ -46,7 +46,10 @@ export const createPoller = (deps: ValueDisplayPollerDeps): AddonPoller => {
           for (const e of entries) {
             try {
               const res = await deps.executor.run(e.command, { timeoutMs: 5_000 });
-              values.push({ label: e.label, value: (res.stdout ?? "").trim().split("\n")[0] ?? "" });
+              values.push({
+                label: e.label,
+                value: (res.stdout ?? "").trim().split("\n")[0] ?? "",
+              });
             } catch {
               values.push({ label: e.label, value: "err" });
             }

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { AddonBackendContext } from "@/addon/api";
+import type { AddonServiceContext } from "@/addon/api";
 import type { MediaStatus, MediaStatusProvider } from "../providers";
 import type { MediaPlayerState } from "../state";
 
@@ -9,11 +9,11 @@ interface BackendGlobalBackend {
     readonly id: string;
     readonly channel: string;
     readonly intervalMs: number;
-    readonly poll: (ctx: AddonBackendContext) => Promise<unknown>;
+    readonly poll: (ctx: AddonServiceContext) => Promise<unknown>;
   }>;
   readonly methods?: Readonly<Record<string, (...args: readonly unknown[]) => unknown>>;
-  readonly onLoad?: (ctx: AddonBackendContext) => void | Promise<void>;
-  readonly onUnload?: (ctx: AddonBackendContext) => void | Promise<void>;
+  readonly onLoad?: (ctx: AddonServiceContext) => void | Promise<void>;
+  readonly onUnload?: (ctx: AddonServiceContext) => void | Promise<void>;
 }
 
 vi.mock("../providers", () => ({
@@ -43,13 +43,13 @@ const makeProvider = (
 });
 
 const makeCtx = (): {
-  ctx: AddonBackendContext;
+  ctx: AddonServiceContext;
   publishSpy: ReturnType<typeof vi.fn>;
   pollSpy: ReturnType<typeof vi.fn>;
 } => {
   const publishSpy = vi.fn();
   const pollSpy = vi.fn(async () => undefined);
-  const ctx: AddonBackendContext = {
+  const ctx: AddonServiceContext = {
     publish: publishSpy,
     poll: pollSpy,
     signal: new AbortController().signal,
@@ -58,16 +58,13 @@ const makeCtx = (): {
         exitCode: 0,
         stdout: "",
         stderr: "",
-      })) as unknown as AddonBackendContext["executor"]["run"],
+      })) as unknown as AddonServiceContext["executor"]["run"],
     },
   };
   return { ctx, publishSpy, pollSpy };
 };
 
-const playing = (
-  currentTime: number,
-  totalTime: number,
-): MediaStatus => ({
+const playing = (currentTime: number, totalTime: number): MediaStatus => ({
   track: { name: "Track", artist: "Artist", album: "Album" },
   totalTime,
   currentTime,
@@ -95,8 +92,8 @@ describe("media backend", () => {
     const provider = makeProvider(async () => playing(30, 200));
     createMediaProviderMock.mockReturnValue(provider);
 
-    const { globalBackend } = await import("../backend");
-    const backend = globalBackend as unknown as BackendGlobalBackend;
+    const { globalService } = await import("../backend");
+    const backend = globalService as unknown as BackendGlobalBackend;
     const { ctx } = makeCtx();
     backend.onLoad!(ctx);
 
@@ -114,8 +111,8 @@ describe("media backend", () => {
     const provider = makeProvider(async () => playing(0, 0));
     createMediaProviderMock.mockReturnValue(provider);
 
-    const { globalBackend } = await import("../backend");
-    const backend = globalBackend as unknown as BackendGlobalBackend;
+    const { globalService } = await import("../backend");
+    const backend = globalService as unknown as BackendGlobalBackend;
     const { ctx, pollSpy } = makeCtx();
     backend.onLoad!(ctx);
 
@@ -129,12 +126,10 @@ describe("media backend", () => {
   });
 
   it("poller returns FALLBACK_STATE when provider is null", async () => {
-    createMediaProviderMock.mockReturnValue(
-      makeProvider(async () => playing(0, 0)),
-    );
+    createMediaProviderMock.mockReturnValue(makeProvider(async () => playing(0, 0)));
 
-    const { globalBackend } = await import("../backend");
-    const backend = globalBackend as unknown as BackendGlobalBackend;
+    const { globalService } = await import("../backend");
+    const backend = globalService as unknown as BackendGlobalBackend;
     const { ctx } = makeCtx();
     // Intentionally do not call onLoad so provider stays null.
     const result = (await backend.pollers![0]!.poll(ctx)) as MediaPlayerState;
@@ -158,8 +153,8 @@ describe("media backend", () => {
     });
     createMediaProviderMock.mockReturnValue(provider);
 
-    const { globalBackend } = await import("../backend");
-    const backend = globalBackend as unknown as BackendGlobalBackend;
+    const { globalService } = await import("../backend");
+    const backend = globalService as unknown as BackendGlobalBackend;
     const { ctx } = makeCtx();
     backend.onLoad!(ctx);
 
@@ -182,8 +177,8 @@ describe("media backend", () => {
     const provider = makeProvider(async () => unavailableStatus);
     createMediaProviderMock.mockReturnValue(provider);
 
-    const { globalBackend } = await import("../backend");
-    const backend = globalBackend as unknown as BackendGlobalBackend;
+    const { globalService } = await import("../backend");
+    const backend = globalService as unknown as BackendGlobalBackend;
     const { ctx } = makeCtx();
     backend.onLoad!(ctx);
 

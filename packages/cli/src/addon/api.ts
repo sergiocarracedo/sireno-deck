@@ -93,32 +93,32 @@ export interface AddonFrontendButtonProps<Config> {
 
 export type AddonFrontendButton<Config> = ComponentType<AddonFrontendButtonProps<Config>>;
 
-export interface AddonButtonTypeBackend<Config = unknown> {
+export interface AddonButtonTypeService<Config = unknown> {
   readonly configSchema?: unknown;
   readonly defaultRenderIntervalMs?: number;
   readonly internal?: boolean;
   readonly full?: boolean;
   /**
-   * Opt-in gesture allowlist. If the backend declares onTap/onDblTap/onHold
+   * Opt-in gesture allowlist. If the service declares onTap/onDblTap/onHold
    * but this field is missing, the runtime logs a warning and strips the
    * undeclared handlers (default-deny). If present, only listed gestures fire.
    */
   readonly gestureHandlers?: ReadonlyArray<GestureKind>;
-  readonly onMount?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
-  readonly onTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
-  readonly onDblTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
-  readonly onHold?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
-  readonly dispose?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
+  readonly onMount?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>;
+  readonly onTap?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>;
+  readonly onDblTap?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>;
+  readonly onHold?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>;
+  readonly dispose?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>;
 }
 
 export interface AddonButtonTypeDef<Config = unknown> {
   readonly frontend: AddonFrontendButton<Config>;
-  readonly backend: AddonButtonTypeBackend<Config>;
+  readonly service: AddonButtonTypeService<Config>;
 }
 
 export interface AddonButtonTypeDefAny {
   readonly frontend: AddonFrontendButton<any>;
-  readonly backend: AddonButtonTypeBackend<any>;
+  readonly service: AddonButtonTypeService<any>;
 }
 
 export type AddonDeckFactory = (page: number) => AddonGeneratedDeck;
@@ -171,7 +171,7 @@ export interface AddonManifestV1 {
     }>;
   };
   readonly publishIntervalMs?: number;
-  readonly globalBackend?: AddonGlobalBackend;
+  readonly globalService?: AddonGlobalService;
 }
 
 let domAssetPathResolver: ((assetReference: string) => string | undefined) | undefined;
@@ -213,7 +213,7 @@ export function resolveDomAssetSrc(src: string): string {
 }
 
 /**
- * Addon-global backend. Runs for the lifetime of the addon (while the addon
+ * Addon-global service. Runs for the lifetime of the addon (while the addon
  * is loaded). Multiple instances of the same button type share this state.
  *
  * - `pollers` are started when the addon activates and stopped when it
@@ -222,33 +222,33 @@ export function resolveDomAssetSrc(src: string): string {
  * - `subscriptions` are push-based sources (file watchers, sockets); they
  *   publish on the same channels.
  * - `methods` is the namespaced API surface available to per-button
- *   backends via `ctx.methods.<name>`.
+ *   services via `ctx.methods.<name>`.
  * - `onLoad`/`onUnload` are the explicit lifecycle hooks; the runtime
  *   passes an `AbortSignal` so cleanup is automatic.
  */
-export interface AddonGlobalBackend {
+export interface AddonGlobalService {
   readonly pollers?: ReadonlyArray<AddonGlobalPoller>;
   readonly subscriptions?: ReadonlyArray<AddonGlobalSubscription>;
-  readonly methods?: Readonly<Record<string, AddonBackendMethod>>;
-  readonly onLoad?: (ctx: AddonBackendContext) => void | Promise<void>;
-  readonly onUnload?: (ctx: AddonBackendContext) => void | Promise<void>;
+  readonly methods?: Readonly<Record<string, AddonServiceMethod>>;
+  readonly onLoad?: (ctx: AddonServiceContext) => void | Promise<void>;
+  readonly onUnload?: (ctx: AddonServiceContext) => void | Promise<void>;
 }
 
-export type AddonBackendMethod = (...args: readonly unknown[]) => unknown | Promise<unknown>;
+export type AddonServiceMethod = (...args: readonly unknown[]) => unknown | Promise<unknown>;
 
 export interface AddonGlobalPoller {
   readonly id: string;
   readonly channel: string;
   readonly intervalMs: number;
-  readonly poll: (ctx: AddonBackendContext) => unknown | Promise<unknown>;
+  readonly poll: (ctx: AddonServiceContext) => unknown | Promise<unknown>;
 }
 
 export interface AddonGlobalSubscription {
   readonly channel: string;
-  readonly subscribe: (ctx: AddonBackendContext) => { unsubscribe: () => void };
+  readonly subscribe: (ctx: AddonServiceContext) => { unsubscribe: () => void };
 }
 
-export interface AddonBackendContext {
+export interface AddonServiceContext {
   /** Push data to the channel this poller/subscription is bound to. */
   publish: (data: unknown) => void;
   /**
@@ -267,27 +267,27 @@ export interface AddonBackendContext {
 }
 
 /**
- * Per-button backend. One instance is created per rendered button of this
+ * Per-button service. One instance is created per rendered button of this
  * type; the instance is disposed when the last instance unmounts.
  *
- * The runtime merges the addon-global backend's `methods` into the action
- * context so per-button backends can call shared APIs without importing
+ * The runtime merges the addon-global service's `methods` into the action
+ * context so per-button services can call shared APIs without importing
  * the addon's internals.
  */
-export interface AddonButtonBackend<Config = unknown> {
-  readonly onMount?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
-  readonly onTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
-  readonly onDblTap?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
-  readonly onHold?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
-  readonly dispose?: (ctx: AddonButtonBackendContext<Config>) => void | Promise<void>;
+export interface AddonButtonService<Config = unknown> {
+  readonly onMount?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>;
+  readonly onTap?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>;
+  readonly onDblTap?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>;
+  readonly onHold?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>;
+  readonly dispose?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>;
 }
 
-export interface AddonButtonBackendContext<Config = unknown> {
+export interface AddonButtonServiceContext<Config = unknown> {
   readonly config: Config;
   readonly buttonId: string;
   readonly addonName: string;
   /** Namespaced addon-global methods (`<addonName>:<methodName>` keys). */
-  readonly methods: Readonly<Record<string, AddonBackendMethod>>;
+  readonly methods: Readonly<Record<string, AddonServiceMethod>>;
   /** Publish on a channel. */
   readonly publish: (channel: string, data: unknown) => void;
   /** Run host commands. */

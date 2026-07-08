@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { AddonButtonTypeBackend } from "@/addon/api";
+import type { AddonButtonTypeService } from "@/addon/api";
 
 import { configSchema } from "./config";
 
@@ -11,4 +11,4 @@ export default {
     const step = (config.step ?? 5) / 100;
     await (methods["media:volumeUp"] as (s: number) => Promise<void>)?.(step);
   },
-} satisfies AddonButtonTypeBackend<Config>;
+} satisfies AddonButtonTypeService<Config>;

@@ -22,10 +22,7 @@ const BrightnessButtonFrontend: AddonFrontendButton = ({ config }) => {
       </Text>
     );
   }
-  const pct = Math.max(
-    0,
-    Math.min(100, (data.value / (data.max || 100)) * 100),
-  );
+  const pct = Math.max(0, Math.min(100, (data.value / (data.max || 100)) * 100));
   return (
     <span className="flex h-full w-full flex-col items-stretch justify-center gap-1 p-2">
       <span className="flex items-baseline justify-between">
@@ -37,10 +34,7 @@ const BrightnessButtonFrontend: AddonFrontendButton = ({ config }) => {
         </Text>
       </span>
       <span className="block h-1.5 w-full overflow-hidden rounded bg-bar">
-        <span
-          className="block h-full bg-accent"
-          style={{ width: `${pct}%` }}
-        />
+        <span className="block h-full bg-accent" style={{ width: `${pct}%` }} />
       </span>
       <Text size="xs" tone="muted" className="text-center" typography="aux">
         Tap: {action ?? "up"}

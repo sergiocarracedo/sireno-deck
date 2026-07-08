@@ -5,4 +5,4 @@ export const configSchema = z.object({
   cwd: z.string().optional(),
   env: z.record(z.string(), z.string()).optional(),
 });
-export type ConfigSchema = z.infer<typeof configSchema>
+export type ConfigSchema = z.infer<typeof configSchema>;

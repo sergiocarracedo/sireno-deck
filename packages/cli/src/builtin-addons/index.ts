@@ -1,12 +1,12 @@
-export { SYSTEM_BUTTON_TYPES } from '@/deck/system-buttons/types'
-export { default as brightnessAddon } from './brightness/index'
-export { coreButtonsAddon } from './core-buttons/index'
-export { default as dateTimeAddon } from './date-time/index'
-export { default as emojiSelectorAddon } from './emoji-selector/index'
-export { internalSettingsAddon } from './internal-settings/index'
-export { default as mediaPlayerAddon } from './media/index'
-export { registerBuiltins } from './register-builtins'
-export { sessionAddon } from './session/index'
-export { default as systemStatusAddon } from './system-status/index'
-export { default as valueDisplayAddon } from './value-display/index'
-export { default as weatherAddon } from './weather/index'
+export { SYSTEM_BUTTON_TYPES } from "@/deck/system-buttons/types";
+export { default as brightnessAddon } from "./brightness/index";
+export { coreButtonsAddon } from "./core-buttons/index";
+export { default as dateTimeAddon } from "./date-time/index";
+export { default as emojiSelectorAddon } from "./emoji-selector/index";
+export { internalSettingsAddon } from "./internal-settings/index";
+export { default as mediaPlayerAddon } from "./media/index";
+export { registerBuiltins } from "./register-builtins";
+export { sessionAddon } from "./session/index";
+export { default as systemStatusAddon } from "./system-status/index";
+export { default as valueDisplayAddon } from "./value-display/index";
+export { default as weatherAddon } from "./weather/index";

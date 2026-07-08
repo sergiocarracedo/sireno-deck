@@ -1,4 +1,8 @@
-import type { WeatherButtonConfig, WeatherLocation, WeatherSnapshot } from "../buttons/weather/config";
+import type {
+  WeatherButtonConfig,
+  WeatherLocation,
+  WeatherSnapshot,
+} from "../buttons/weather/config";
 
 import { describeWeatherCode } from "./codes";
 
@@ -30,9 +34,7 @@ export const fetchWeather = async (
     temperature: current.temperature_2m,
     windSpeed: current.wind_speed_10m,
     description:
-      current.weather_code !== undefined
-        ? describeWeatherCode(current.weather_code)
-        : undefined,
+      current.weather_code !== undefined ? describeWeatherCode(current.weather_code) : undefined,
     wmoCode: current.weather_code,
     units,
   };

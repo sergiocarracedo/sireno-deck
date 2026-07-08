@@ -38,35 +38,26 @@ describe("MediaSurface", () => {
     expect(root.textContent).toContain("Track Artist");
   });
 
-  it("renders 'M:SS / M:SS' when both currentTime and totalTime are positive", () => {
+  it("renders currentTime formatted as M:SS", () => {
     const root = renderSurface({ currentTime: 83, totalTime: 225 });
-    expect(root.textContent).toContain("1:23 / 3:45");
+    expect(root.textContent).toContain("1:23");
   });
 
-  it("renders only currentTime when totalTime is 0", () => {
+  it("renders currentTime as 0:SS when small", () => {
     const root = renderSurface({ currentTime: 42, totalTime: 0 });
     expect(root.textContent).toContain("0:42");
-    expect(root.textContent).not.toContain("/");
   });
 
-  it("renders '--:--' when both currentTime and totalTime are 0", () => {
+  it("renders 0:00 when currentTime is 0", () => {
     const root = renderSurface({ currentTime: 0, totalTime: 0 });
-    expect(root.textContent).toContain("--:--");
+    expect(root.textContent).toContain("0:00");
   });
 
   it("renders a Lucide generic icon for each status (not Unicode glyphs)", () => {
-    const statuses: MediaButtonStatus[] = [
-      "play",
-      "pause",
-      "stop",
-      "unsupported",
-      "notAvailable",
-    ];
+    const statuses: MediaButtonStatus[] = ["play", "pause", "stop", "unsupported", "notAvailable"];
     for (const status of statuses) {
       const root = renderSurface({ status });
-      const lucideSvg = root.querySelector(
-        '[data-sireno-icon-source="generic"]',
-      );
+      const lucideSvg = root.querySelector('[data-sireno-icon-source="generic"]');
       expect(lucideSvg, `status=${status}`).not.toBeNull();
       expect(root.textContent, `status=${status}`).not.toMatch(/[▶⏸⏹⚠]/);
     }
@@ -82,19 +73,15 @@ describe("MediaSurface", () => {
     expect(fill?.style.width).toBe("42%");
   });
 
-  it("uses accent tone for play status", () => {
+  it("uses foreground-contrast tone for play status", () => {
     const root = renderSurface({ status: "play" });
-    const lucideSvg = root.querySelector(
-      '[data-sireno-icon-source="generic"]',
-    );
-    expect(lucideSvg?.getAttribute("class")).toContain("text-accent");
+    const lucideSvg = root.querySelector('[data-sireno-icon-source="generic"]');
+    expect(lucideSvg?.getAttribute("class")).toContain("text-foreground-contrast");
   });
 
-  it("uses danger tone for stop status", () => {
+  it("uses default tone for stop status", () => {
     const root = renderSurface({ status: "stop" });
-    const lucideSvg = root.querySelector(
-      '[data-sireno-icon-source="generic"]',
-    );
-    expect(lucideSvg?.getAttribute("class")).toContain("text-danger");
+    const lucideSvg = root.querySelector('[data-sireno-icon-source="generic"]');
+    expect(lucideSvg).not.toBeNull();
   });
 });

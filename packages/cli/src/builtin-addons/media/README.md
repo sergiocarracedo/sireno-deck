@@ -10,9 +10,9 @@ Uses the OS media provider from `os-providers/`:
 
 ## Buttons
 
-| Type                | Description                                                          |
-| ------------------- | -------------------------------------------------------------------- |
-| `core:media-player` | Single button: prev / play-pause / next + volume (split action)      |
+| Type                | Description                                                     |
+| ------------------- | --------------------------------------------------------------- |
+| `core:media-player` | Single button: prev / play-pause / next + volume (split action) |
 
 ## Config
 

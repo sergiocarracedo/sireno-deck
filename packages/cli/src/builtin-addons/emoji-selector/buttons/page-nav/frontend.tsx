@@ -12,9 +12,11 @@ const PageNavButtonFrontend: AddonFrontendButton = ({ config }) => {
           className="cursor-pointer text-fg hover:text-accent"
           onClick={(e) => {
             e.stopPropagation();
-            void (window as unknown as {
-              __SIRENO_NAV__?: (id: string) => void;
-            }).__SIRENO_NAV__?.(prev);
+            void (
+              window as unknown as {
+                __SIRENO_NAV__?: (id: string) => void;
+              }
+            ).__SIRENO_NAV__?.(prev);
           }}
         >
           ‹
@@ -30,9 +32,11 @@ const PageNavButtonFrontend: AddonFrontendButton = ({ config }) => {
           className="cursor-pointer text-fg hover:text-accent"
           onClick={(e) => {
             e.stopPropagation();
-            void (window as unknown as {
-              __SIRENO_NAV__?: (id: string) => void;
-            }).__SIRENO_NAV__?.(next);
+            void (
+              window as unknown as {
+                __SIRENO_NAV__?: (id: string) => void;
+              }
+            ).__SIRENO_NAV__?.(next);
           }}
         >
           ›

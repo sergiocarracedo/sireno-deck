@@ -20,9 +20,7 @@ describe("internal-settings settings deck", () => {
   it("returns the three buttons in order", () => {
     const deck = settingsDeck(0);
     expect(deck.name).toBe("Settings");
-    const types = (deck.buttons ?? []).map(
-      (b) => (b as { type: string }).type,
-    );
+    const types = (deck.buttons ?? []).map((b) => (b as { type: string }).type);
     expect(types).toEqual([
       "internal-settings:brightness",
       "internal-settings:theme",

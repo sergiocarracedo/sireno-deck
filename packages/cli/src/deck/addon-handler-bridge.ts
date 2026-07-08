@@ -1,10 +1,10 @@
 import type { ActionExecutor } from "@/action/executor";
 import type {
-  AddonBackendContext,
-  AddonBackendMethod,
-  AddonButtonBackend,
-  AddonButtonBackendContext,
-  AddonGlobalBackend,
+  AddonServiceContext,
+  AddonServiceMethod,
+  AddonButtonService,
+  AddonButtonServiceContext,
+  AddonGlobalService,
   AddonGlobalPoller,
 } from "@/addon/api";
 import type { ScannedAddon } from "@/cli/commands/addon-registry";
@@ -14,7 +14,7 @@ import type { Runtime, RuntimeDeck } from "@/deck/runtime";
 import type { StatePublisher } from "@/render/state-publisher";
 import type { WsBridge } from "@/render/ws-bridge";
 
-export interface BridgeAddonBackendsParams {
+export interface BridgeAddonServicesParams {
   readonly runtime: Runtime;
   readonly decks: ReadonlyArray<RuntimeDeck>;
   readonly scanned: ReadonlyArray<ScannedAddon>;
@@ -35,7 +35,7 @@ type AddonModule = {
 const namespacedKey = (addonName: string, methodName: string): string =>
   `${addonName}:${methodName}`;
 
-export const bridgeAddonBackends = async (params: BridgeAddonBackendsParams): Promise<void> => {
+export const bridgeAddonServices = async (params: BridgeAddonServicesParams): Promise<void> => {
   const {
     runtime,
     decks,
@@ -60,47 +60,47 @@ export const bridgeAddonBackends = async (params: BridgeAddonBackendsParams): Pr
   signal.addEventListener("abort", () => abortController.abort());
 
   const addonModules = new Map<string, AddonModule>();
-  const addonGlobalBackends = new Map<string, AddonGlobalBackend>();
-  const addonMethods = new Map<string, Readonly<Record<string, AddonBackendMethod>>>();
+  const addonGlobalServices = new Map<string, AddonGlobalService>();
+  const addonMethods = new Map<string, Readonly<Record<string, AddonServiceMethod>>>();
 
   for (const addon of scanned) {
-    if (addon.globalBackendEntry === null) continue;
+    if (addon.globalServiceEntry === null) continue;
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const mod = (await import(addon.globalBackendEntry)) as AddonModule;
-      let globalBackend: AddonGlobalBackend | undefined;
+      const mod = (await import(addon.globalServiceEntry)) as AddonModule;
+      let globalService: AddonGlobalService | undefined;
       if (
-        typeof (mod as unknown as { globalBackend?: AddonGlobalBackend }).globalBackend === "object"
+        typeof (mod as unknown as { globalService?: AddonGlobalService }).globalService === "object"
       ) {
-        globalBackend = (mod as unknown as { globalBackend: AddonGlobalBackend }).globalBackend;
+        globalService = (mod as unknown as { globalService: AddonGlobalService }).globalService;
       } else {
         const exported =
           mod.manifest ?? (mod.default && typeof mod.default === "object" ? mod.default : null);
         if (exported === null) continue;
         const manifest = exported as {
           readonly name?: string;
-          readonly globalBackend?: AddonGlobalBackend;
+          readonly globalService?: AddonGlobalService;
         };
-        globalBackend = manifest.globalBackend;
+        globalService = manifest.globalService;
       }
-      if (globalBackend === undefined) continue;
+      if (globalService === undefined) continue;
 
       addonModules.set(addon.name, mod);
-      addonGlobalBackends.set(addon.name, globalBackend);
+      addonGlobalServices.set(addon.name, globalService);
     } catch {
       // Skip addons whose global backend fails to load.
     }
   }
 
-  for (const [addonName, globalBackend] of addonGlobalBackends) {
-    const primaryChannel = globalBackend.pollers?.[0]?.channel;
+  for (const [addonName, globalService] of addonGlobalServices) {
+    const primaryChannel = globalService.pollers?.[0]?.channel;
     const pollersById = new Map<string, AddonGlobalPoller>();
-    for (const poller of globalBackend.pollers ?? []) {
+    for (const poller of globalService.pollers ?? []) {
       pollersById.set(poller.id, poller);
     }
 
-    const ctx: AddonBackendContext = {
+    const ctx: AddonServiceContext = {
       publish: (data: unknown) => {
         if (primaryChannel !== undefined) {
           bridge.broadcast({
@@ -129,8 +129,8 @@ export const bridgeAddonBackends = async (params: BridgeAddonBackendsParams): Pr
       setClipboardProvider,
     };
 
-    if (globalBackend.pollers !== undefined) {
-      for (const poller of globalBackend.pollers) {
+    if (globalService.pollers !== undefined) {
+      for (const poller of globalService.pollers) {
         statePublisher.registerChannel({
           channel: poller.channel,
           addonName,
@@ -142,15 +142,15 @@ export const bridgeAddonBackends = async (params: BridgeAddonBackendsParams): Pr
     }
 
     try {
-      const result = globalBackend.onLoad?.(ctx);
+      const result = globalService.onLoad?.(ctx);
       if (result instanceof Promise) {
         result.catch((err) => {
           console.error(`[${addonName}] onLoad failed:`, err);
         });
       }
 
-      if (globalBackend.methods !== undefined) {
-        addonMethods.set(addonName, globalBackend.methods);
+      if (globalService.methods !== undefined) {
+        addonMethods.set(addonName, globalService.methods);
       }
     } catch (err) {
       console.error(`[${addonName}] onLoad threw:`, err);
@@ -179,7 +179,7 @@ export const bridgeAddonBackends = async (params: BridgeAddonBackendsParams): Pr
       if (addonName === null || resolvedButtonType === null) continue;
 
       const globalMethods = addonMethods.get(addonName) ?? {};
-      const buttonMethods: Record<string, AddonBackendMethod> = {};
+      const buttonMethods: Record<string, AddonServiceMethod> = {};
       for (const [methodName, method] of Object.entries(globalMethods)) {
         buttonMethods[namespacedKey(addonName, methodName)] = method;
       }
@@ -206,14 +206,14 @@ export const bridgeAddonBackends = async (params: BridgeAddonBackendsParams): Pr
 
       const manifest = exported as {
         readonly name?: string;
-        readonly buttonTypes?: Record<string, { readonly backend?: AddonButtonBackend }>;
+        readonly buttonTypes?: Record<string, { readonly service?: AddonButtonService }>;
       };
 
       const buttonTypeEntry = manifest.buttonTypes?.[resolvedButtonType];
-      if (buttonTypeEntry?.backend === undefined) continue;
+      if (buttonTypeEntry?.service === undefined) continue;
 
-      const buttonBackend = buttonTypeEntry.backend;
-      const buttonCtx: AddonButtonBackendContext<unknown> = {
+      const buttonService = buttonTypeEntry.service;
+      const buttonCtx: AddonButtonServiceContext<unknown> = {
         config: button.config ?? {},
         buttonId: button.id,
         addonName,
@@ -233,17 +233,17 @@ export const bridgeAddonBackends = async (params: BridgeAddonBackendsParams): Pr
       };
 
       try {
-        buttonBackend.onMount?.(wrappedCtx);
+        buttonService.onMount?.(wrappedCtx);
       } catch (err) {
         console.error(`[${addonName}] ${buttonType} onMount threw:`, err);
       }
 
-      const allowedGestures = buttonBackend.gestureHandlers;
+      const allowedGestures = buttonService.gestureHandlers;
       const handler = {
         async onTap(ctx: { buttonId: string; config: unknown; gesture: string }) {
           if (allowedGestures !== undefined && !allowedGestures.includes("tap")) return;
           try {
-            await buttonBackend.onTap?.(wrappedCtx);
+            await buttonService.onTap?.(wrappedCtx);
           } catch (err) {
             console.error(`[${addonName}] ${resolvedButtonType} onTap failed:`, err);
           }
@@ -251,7 +251,7 @@ export const bridgeAddonBackends = async (params: BridgeAddonBackendsParams): Pr
         async onDblTap(ctx: { buttonId: string; config: unknown; gesture: string }) {
           if (allowedGestures !== undefined && !allowedGestures.includes("dbl-tap")) return;
           try {
-            await buttonBackend.onDblTap?.(wrappedCtx);
+            await buttonService.onDblTap?.(wrappedCtx);
           } catch (err) {
             console.error(`[${addonName}] ${resolvedButtonType} onDblTap failed:`, err);
           }
@@ -259,7 +259,7 @@ export const bridgeAddonBackends = async (params: BridgeAddonBackendsParams): Pr
         async onHold(ctx: { buttonId: string; config: unknown; gesture: string }) {
           if (allowedGestures !== undefined && !allowedGestures.includes("hold")) return;
           try {
-            await buttonBackend.onHold?.(wrappedCtx);
+            await buttonService.onHold?.(wrappedCtx);
           } catch (err) {
             console.error(`[${addonName}] ${resolvedButtonType} onHold failed:`, err);
           }
@@ -267,7 +267,7 @@ export const bridgeAddonBackends = async (params: BridgeAddonBackendsParams): Pr
         dispose() {
           buttonAbort.abort();
           try {
-            buttonBackend.dispose?.(wrappedCtx);
+            buttonService.dispose?.(wrappedCtx);
           } catch (err) {
             console.error(`[${addonName}] ${buttonType} dispose failed:`, err);
           }
@@ -279,16 +279,16 @@ export const bridgeAddonBackends = async (params: BridgeAddonBackendsParams): Pr
   }
 
   abortController.signal.addEventListener("abort", () => {
-    for (const [addonName, globalBackend] of addonGlobalBackends) {
+    for (const [addonName, globalService] of addonGlobalServices) {
       try {
-        const ctx: AddonBackendContext = {
+        const ctx: AddonServiceContext = {
           publish: () => {},
           poll: async () => {},
           signal: abortController.signal,
           executor,
           setClipboardProvider,
         };
-        globalBackend.onUnload?.(ctx);
+        globalService.onUnload?.(ctx);
       } catch (err) {
         console.error(`[${addonName}] onUnload failed:`, err);
       }

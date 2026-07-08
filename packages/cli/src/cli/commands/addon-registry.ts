@@ -14,7 +14,7 @@ export interface ScannedAddon {
   readonly buttonTypes: Readonly<Record<string, string>>;
   readonly deckTypes: Readonly<Record<string, string>>;
   readonly source: "json" | "regex";
-  readonly globalBackendEntry: string | null;
+  readonly globalServiceEntry: string | null;
 }
 
 export interface AddonFrontendRef {
@@ -22,9 +22,7 @@ export interface AddonFrontendRef {
   readonly frontendEntry: string | null;
 }
 
-const buildAddonByType = (
-  scanned: ReadonlyArray<ScannedAddon>,
-): Map<string, AddonFrontendRef> => {
+const buildAddonByType = (scanned: ReadonlyArray<ScannedAddon>): Map<string, AddonFrontendRef> => {
   const map = new Map<string, AddonFrontendRef>();
   for (const addon of scanned) {
     for (const type of addon.types) {
@@ -47,10 +45,7 @@ export const collectBuiltinAddonRegistry = async (): Promise<{
 const here = dirname(fileURLToPath(import.meta.url));
 const builtinDir = resolvePath(here, "..", "..", "builtin-addons");
 
-const scanAddonDir = async (
-  addonDir: string,
-  addonName: string,
-): Promise<ScannedAddon | null> => {
+const scanAddonDir = async (addonDir: string, addonName: string): Promise<ScannedAddon | null> => {
   const jsonScanned = await scanAddonJsonManifest(addonDir, addonName);
   if (jsonScanned !== null && jsonScanned.types.length > 0) return jsonScanned;
   const indexPath = join(addonDir, "index.ts");
@@ -87,13 +82,12 @@ const scanAddonDir = async (
       break;
     }
   }
-  const pollerEntry = existsSync(join(addonDir, "poller.ts"))
-    ? join(addonDir, "poller.ts")
-    : null;
-  const hasGlobalBackend = /\bglobalBackend\b/.test(raw);
-  if (types.size === 0 && pollerEntry === null && !hasGlobalBackend) return jsonScanned;
+  const pollerEntry = existsSync(join(addonDir, "poller.ts")) ? join(addonDir, "poller.ts") : null;
+  const hasGlobalService = /\bglobalService\b/.test(raw);
+  if (types.size === 0 && pollerEntry === null && !hasGlobalService) return jsonScanned;
   const buttonTypes: Record<string, string> = {};
-  const entryMapRegex = /["']([a-z0-9-]+:[a-z0-9-]+)["']\s*:\s*\{\s*(?=[^}]*frontend\s*:\s*([A-Za-z_$][A-Za-z0-9_$]*))/g;
+  const entryMapRegex =
+    /["']([a-z0-9-]+:[a-z0-9-]+)["']\s*:\s*\{\s*(?=[^}]*frontend\s*:\s*([A-Za-z_$][A-Za-z0-9_$]*))/g;
   for (const src of allSources) {
     for (const m of src.matchAll(entryMapRegex)) {
       const type = m[1];
@@ -112,7 +106,7 @@ const scanAddonDir = async (
     buttonTypes,
     deckTypes: {},
     source: "regex",
-    globalBackendEntry: hasGlobalBackend && indexFile !== null ? indexFile : null,
+    globalServiceEntry: hasGlobalService && indexFile !== null ? indexFile : null,
   };
 };
 
@@ -141,21 +135,28 @@ const scanAddonJsonManifest = async (
   const types = new Set<string>();
   const buttonTypes: Record<string, string> = {};
   let publishIntervalMs: number | null = null;
-  let hasGlobalBackend = false;
+  let hasGlobalService = false;
   try {
     const mod = (await import(entryPath)) as {
-      default?: { buttonTypes?: Record<string, unknown>; decks?: unknown; publishIntervalMs?: number; globalBackend?: unknown };
+      default?: {
+        buttonTypes?: Record<string, unknown>;
+        decks?: unknown;
+        publishIntervalMs?: number;
+        globalService?: unknown;
+      };
     };
     const exported =
-      mod !== null &&
-      typeof mod === "object" &&
-      "default" in mod &&
-      mod.default !== undefined
+      mod !== null && typeof mod === "object" && "default" in mod && mod.default !== undefined
         ? mod.default
         : mod;
     const candidate =
       exported !== null && typeof exported === "object"
-        ? (exported as { buttonTypes?: Record<string, unknown>; decks?: unknown; publishIntervalMs?: number; globalBackend?: unknown })
+        ? (exported as {
+            buttonTypes?: Record<string, unknown>;
+            decks?: unknown;
+            publishIntervalMs?: number;
+            globalService?: unknown;
+          })
         : null;
     if (candidate !== null) {
       for (const [type] of Object.entries(candidate.buttonTypes ?? {})) {
@@ -165,8 +166,8 @@ const scanAddonJsonManifest = async (
       if (typeof candidate.publishIntervalMs === "number") {
         publishIntervalMs = candidate.publishIntervalMs;
       }
-      if (candidate.globalBackend !== undefined) {
-        hasGlobalBackend = true;
+      if (candidate.globalService !== undefined) {
+        hasGlobalService = true;
       }
     }
   } catch {
@@ -182,7 +183,7 @@ const scanAddonJsonManifest = async (
     buttonTypes,
     deckTypes: {},
     source: "json",
-    globalBackendEntry: hasGlobalBackend ? entryPath : null,
+    globalServiceEntry: hasGlobalService ? entryPath : null,
   };
 };
 
@@ -226,8 +227,11 @@ const validateButtonConfigExport = (
     return { addon: addonName, button: buttonName, message: "could not read backend.ts" };
   }
 
-  const usesAddonButtonBackend = /import\s+type\s+\{[^}]*AddonButtonBackend[^}]*\}\s+from\s+["']@\/addon\/api["']/.test(backendSrc);
-  if (usesAddonButtonBackend) return null;
+  const usesAddonButtonService =
+    /import\s+type\s+\{[^}]*AddonButtonService[^}]*\}\s+from\s+["']@\/addon\/api["']/.test(
+      backendSrc,
+    );
+  if (usesAddonButtonService) return null;
 
   if (!/import\s+\{\s*configSchema\s*}\s+from\s*["']\.\/config["']/.test(backendSrc)) {
     return {
@@ -267,6 +271,7 @@ export const validateBuiltinButtonConfigs = (): ReadonlyArray<ButtonValidationIs
     for (const btnEntry of readdirSync(buttonsDir, { withFileTypes: true })) {
       if (!btnEntry.isDirectory()) continue;
       const btnDir = join(buttonsDir, btnEntry.name);
+      if (!existsSync(join(btnDir, "backend.ts"))) continue;
       const issue = validateButtonConfigExport(addonName, btnDir, btnEntry.name);
       if (issue !== null) issues.push(issue);
     }
@@ -274,10 +279,7 @@ export const validateBuiltinButtonConfigs = (): ReadonlyArray<ButtonValidationIs
   return issues;
 };
 
-const matchesManifest = (
-  publishIntervalMs: number | null,
-  addonName: string,
-): boolean => {
+const matchesManifest = (publishIntervalMs: number | null, addonName: string): boolean => {
   if (publishIntervalMs === null) return false;
   return Boolean(addonName);
 };

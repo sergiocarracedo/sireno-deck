@@ -6,9 +6,9 @@ Each button has up to 4 `values` entries; each entry runs a command via the acti
 
 ## Buttons
 
-| Type                 | Description                                              |
-| -------------------- | -------------------------------------------------------- |
-| `core:value-display` | Single button: shows N values (label + command output)    |
+| Type                 | Description                                            |
+| -------------------- | ------------------------------------------------------ |
+| `core:value-display` | Single button: shows N values (label + command output) |
 
 ## Config
 
@@ -16,12 +16,12 @@ Each button has up to 4 `values` entries; each entry runs a command via the acti
 - position: 6
   type: core:value-display
   config:
-    poll_interval_ms: 5000        # optional, default 5000
-    timeout_ms: 5000              # optional, default 5000 (per command)
+    poll_interval_ms: 5000 # optional, default 5000
+    timeout_ms: 5000 # optional, default 5000 (per command)
     values:
       - label: Disk
         command: "df -h / | tail -1 | awk '{print $5}'"
-        formatter: strip            # "raw" (default), "strip", or "line"
+        formatter: strip # "raw" (default), "strip", or "line"
         units: "%"
       - label: Uptime
         command: "uptime -p"
@@ -33,11 +33,11 @@ Each button has up to 4 `values` entries; each entry runs a command via the acti
 
 ### Formatters
 
-| Formatter | Behavior                                                  |
-| --------- | --------------------------------------------------------- |
-| `raw`     | Output the command's stdout verbatim                      |
-| `strip`   | Trim leading/trailing whitespace                           |
-| `line`    | Take only the first non-empty line, trim whitespace       |
+| Formatter | Behavior                                            |
+| --------- | --------------------------------------------------- |
+| `raw`     | Output the command's stdout verbatim                |
+| `strip`   | Trim leading/trailing whitespace                    |
+| `line`    | Take only the first non-empty line, trim whitespace |
 
 ## Example
 

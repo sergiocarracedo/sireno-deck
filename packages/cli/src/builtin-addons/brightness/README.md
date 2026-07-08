@@ -10,9 +10,9 @@ Uses the OS provider from `os-providers/`:
 
 ## Buttons
 
-| Type              | Description                                       |
-| ----------------- | ------------------------------------------------- |
-| `core:brightness` | Single button: shows + adjusts screen brightness   |
+| Type              | Description                                      |
+| ----------------- | ------------------------------------------------ |
+| `core:brightness` | Single button: shows + adjusts screen brightness |
 
 ## Config
 
@@ -20,8 +20,8 @@ Uses the OS provider from `os-providers/`:
 - position: 5
   type: core:brightness
   config:
-    action: up        # "up" (default), "down", or "set"
-    value: 75         # required for "set" (0-100); ignored for up/down
+    action: up # "up" (default), "down", or "set"
+    value: 75 # required for "set" (0-100); ignored for up/down
 ```
 
 ### Gesture semantics

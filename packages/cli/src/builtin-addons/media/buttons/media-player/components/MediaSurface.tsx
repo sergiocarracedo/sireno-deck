@@ -1,18 +1,18 @@
-import { formatTime } from '@/builtin-addons/media/progress'
-import { Text } from '@/ui/index'
-import type { ReactElement } from 'react'
-import { MediaStatusIcon } from './MediaStatus'
-import { ProgressBar } from './ProgressBar'
-import { type MediaButtonStatus } from './status-meta'
+import { formatTime } from "@/builtin-addons/media/progress";
+import { Text } from "@/ui/index";
+import type { ReactElement } from "react";
+import { MediaStatusIcon } from "./MediaStatus";
+import { ProgressBar } from "./ProgressBar";
+import { type MediaButtonStatus } from "./status-meta";
 
 interface MediaSurfaceProps {
-  title: string
-  artist: string
-  source: string
-  progress: number
-  status: MediaButtonStatus
-  currentTime: number
-  totalTime: number
+  title: string;
+  artist: string;
+  source: string;
+  progress: number;
+  status: MediaButtonStatus;
+  currentTime: number;
+  totalTime: number;
 }
 
 export const MediaSurface = ({
@@ -41,5 +41,5 @@ export const MediaSurface = ({
       <div className="flex-1"></div>
       <ProgressBar status={status} value={progress} className="mb-1" />
     </div>
-  )
-}
+  );
+};

@@ -12,11 +12,11 @@ export const manifest: AddonManifestV1 = {
   buttonTypes: {
     "session:info": {
       frontend: sessionInfoFrontend,
-      backend: { ...sessionInfoBackend, gestureHandlers: ["tap"] as const },
+      service: { ...sessionInfoBackend, gestureHandlers: ["tap"] as const },
     },
     "session:time": {
       frontend: sessionTimeFrontend,
-      backend: { ...sessionTimeBackend, internal: true },
+      service: { ...sessionTimeBackend, internal: true },
     },
   },
   decks: {

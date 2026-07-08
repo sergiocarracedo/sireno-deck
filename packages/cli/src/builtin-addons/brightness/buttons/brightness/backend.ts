@@ -1,10 +1,6 @@
-import type { AddonButtonTypeBackend } from "@/addon/api";
+import type { AddonButtonTypeService } from "@/addon/api";
 
-import {
-  buildMacOSCommand,
-  formatCommand,
-  isMacOS,
-} from "../../domain/macos";
+import { buildMacOSCommand, formatCommand, isMacOS } from "../../domain/macos";
 import { configSchema } from "./config";
 
 export default {
@@ -12,8 +8,9 @@ export default {
   defaultRenderIntervalMs: 2000,
   onTap: ({ config, hostContext, buttonId: _buttonId }) => {
     void _buttonId;
-    const platform = (globalThis as { process?: { platform?: string } }).process
-      ?.platform as NodeJS.Platform | undefined;
+    const platform = (globalThis as { process?: { platform?: string } }).process?.platform as
+      | NodeJS.Platform
+      | undefined;
     if (platform === undefined || !isMacOS(platform)) return;
     const cfg = config as {
       action?: "up" | "down" | "set";
@@ -30,4 +27,4 @@ export default {
       void formatCommand(cmd);
     });
   },
-} satisfies AddonButtonTypeBackend;
+} satisfies AddonButtonTypeService;
