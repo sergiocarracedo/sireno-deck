@@ -31,13 +31,13 @@
 - `[x]` Audit — 9 button types across 6 addons: brightness:brightness, core-buttons:action/change-deck/toggle/media-sample, internal-settings:about/brightness/theme, media:volume:down, session:info, weather:weather. No changes needed: emoji-selector (already had it), media:player/mute/volume:up (already had it), date-time (no backend gestures), system-status (no backend gestures), value-display (no backend gestures).
 - **[?]** Compatibility shim for 3rd-party addons? See `PROJECT.md` scope guardrails. Decision deferred.
 
-### P4 — Default main deck + n-1 system button (partial)
+### P4 — Default main deck + n-1 system button `[x]` shipped
 
 - `[x]` validation.ts: downgrade "Missing main deck" error → warning at bootstrap (schema still allows empty `{}`).
 - `[x]` buildDeckConfigMessage: inject n-1 system button via `computeSystemButtonForSlotN1` (main=settings-entry, sub(nav>1)=back, overlay=overlay-toggle). 5 new tests.
 - `[x]` Default main deck: synthetic `{ id: "main", name: "Main", isMain: true, buttons: [] }` when config.decks is empty.
-- `[x]` `decksByType` in registry.ts:82 already populated — addon decks ARE registered but NOT yet materialized into runtime decks. `materializeAddonDecks` exists (addon-decks.ts) but is not wired into production `run.ts`.
-- `[x]` CLI `addon-decks` command: `materializeAddonDecks` utility exists (addon-decks.ts) but is not wired into CLI. No `addon-decks` command actually runs.
+- `[x]` `decksByType` in registry.ts:82 already populated — addon decks materialized into runtime via `materializeAddonDecks` in both `preflight` (real mode) and `buildEmulatorDecks` (emulator mode). Registry is available at both call sites.
+- `[x]` CLI `addon-decks` command: `materializeAddonDecks` utility exists (addon-decks.ts). No standalone CLI command but decks auto-register at runtime.
 
 ### P5 — `internal?: boolean` on `AddonDeckDefinition`
 
