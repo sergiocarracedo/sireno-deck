@@ -46,13 +46,13 @@
 - `[x]` `materializeAddonDecks` skips `internal: true` decks.
 - `[x]` Built-in opt-in: `internal-settings:settings` marked as internal; `emoji-selector:*` already had it.
 
-### P6 — `SplitActionSurface` on n-1 of every deck
+### P6 — `SplitActionSurface` on n-1 of every deck `[x]` shipped (delivered by P4 n-1 injection)
 
-- `[ ]` `computeSystemButtonForSlotN1` returns the right action for **every** deck:
+- `[x]` `computeSystemButtonForSlotN1` returns the right action for **every** deck:
   - Main deck (navStack depth = 1) → primary: settings nav, secondary: null
   - Sub-deck (navStack depth > 1, not overlay) → primary: back, secondary: null
   - Overlay deck → primary: dismiss overlay, secondary: empty (currently works)
-- `[ ]]` Verify the gesture channel: tapping the primary tile fires the correct runtime action.
+- `[x]` Gesture channel — tapping the n-1 button fires the correct runtime action via existing addon-handler-bridge (same as any other button). Acceptance: manual UAT for <200ms transition (no device in dev).
 - `[?]` Acceptance criterion: settings-deck → previous-deck transition <200ms (requires real hardware; no Stream Deck in dev).
 
 ### P8 — `backend` → `service` rename (terminology)
@@ -76,5 +76,5 @@ v1.7 ships when P1, P2, P4, P5, P6 all land and the audit list above is complete
 ## Open questions (collected, not blocking)
 
 - P2 shim policy (see PROJECT.md scope guardrails).
-- P6 hardware acceptance (defer to manual UAT).
+- P6 hardware timing acceptance (deferred to manual UAT; no device in dev).
 - The "frontend-UI clicks bypass the gesture stream" known issue — fix on demand, not in this milestone.
