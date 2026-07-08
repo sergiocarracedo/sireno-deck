@@ -1,11 +1,9 @@
 import type { NewAddonManifest } from "@/addon/api";
 
-import { BackButtonFrontend, backButtonBackend } from "./buttons/back";
 import { CategoryButtonFrontend, categoryButtonBackend } from "./buttons/category";
-import { emojiSelectorDeckFactory } from "./decks";
 import { EmojiButtonFrontend, emojiButtonBackend } from "./buttons/emoji";
 import { LauncherButtonFrontend, launcherButtonBackend } from "./buttons/launcher";
-import { PageNavButtonFrontend, pageNavButtonBackend } from "./buttons/page-nav";
+import { emojiSelectorDeckFactory } from "./decks";
 
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
@@ -14,27 +12,25 @@ export const manifest: NewAddonManifest = {
   buttonTypes: {
     "emoji-selector:category": {
       frontend: CategoryButtonFrontend,
-      backend: categoryButtonBackend,
+      backend: { ...categoryButtonBackend, gestureHandlers: ["tap"] as const },
+      internal: true,
     },
     "emoji-selector:emoji": {
       frontend: EmojiButtonFrontend,
-      backend: emojiButtonBackend,
+      backend: { ...emojiButtonBackend, gestureHandlers: ["tap"] as const },
+      internal: true,
     },
     "emoji-selector:launcher": {
       frontend: LauncherButtonFrontend,
-      backend: launcherButtonBackend,
-    },
-    "emoji-selector:back": {
-      frontend: BackButtonFrontend,
-      backend: backButtonBackend,
-    },
-    "emoji-selector:page-nav": {
-      frontend: PageNavButtonFrontend,
-      backend: pageNavButtonBackend,
+      backend: { ...launcherButtonBackend, gestureHandlers: ["tap"] as const },
+      internal: true,
     },
   },
   decks: {
-    "emoji-selector": emojiSelectorDeckFactory,
+    "emoji-selector": {
+      deck: emojiSelectorDeckFactory,
+      internal: true,
+    },
   },
 };
 

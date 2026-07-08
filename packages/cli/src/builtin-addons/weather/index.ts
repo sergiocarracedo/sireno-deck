@@ -9,8 +9,7 @@ export const manifest: AddonManifestV1 = {
   buttonTypes: {
     "weather:weather": {
       frontend: weatherFrontend,
-      backend: weatherBackend,
-      gestureHandlers: ["tap"],
+      backend: { ...weatherBackend, gestureHandlers: ["tap"] as const },
     },
   },
   publishIntervalMs: 600_000,

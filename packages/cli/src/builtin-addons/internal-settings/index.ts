@@ -19,18 +19,15 @@ export const manifest: AddonManifestV1 = {
   buttonTypes: {
     "internal-settings:about": {
       frontend: aboutFrontend,
-      backend: withInternal(aboutBackend),
-      gestureHandlers: ["tap"],
+      backend: { ...withInternal(aboutBackend), gestureHandlers: ["tap"] as const },
     },
     "internal-settings:brightness": {
       frontend: brightnessFrontend,
-      backend: withInternal(brightnessBackend),
-      gestureHandlers: ["tap"],
+      backend: { ...withInternal(brightnessBackend), gestureHandlers: ["tap"] as const },
     },
     "internal-settings:theme": {
       frontend: themeFrontend,
-      backend: withInternal(themeBackend),
-      gestureHandlers: ["tap"],
+      backend: { ...withInternal(themeBackend), gestureHandlers: ["tap"] as const },
     },
   },
   decks: {

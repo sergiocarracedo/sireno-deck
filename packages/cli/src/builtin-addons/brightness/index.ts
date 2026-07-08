@@ -9,8 +9,7 @@ export const manifest: AddonManifestV1 = {
   buttonTypes: {
     "brightness:brightness": {
       frontend: brightnessFrontend,
-      backend: brightnessBackend,
-      gestureHandlers: ["tap"],
+      backend: { ...brightnessBackend, gestureHandlers: ["tap"] as const },
     },
   },
   publishIntervalMs: 2000,

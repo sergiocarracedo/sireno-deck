@@ -49,9 +49,9 @@ export const validateBootstrap = (config: RawConfig): BootstrapResult => {
   const issues: BootstrapIssue[] = [];
   if (!("main" in config.decks)) {
     issues.push({
-      level: "error",
+      level: "warning",
       path: "decks",
-      message: "Missing required `main` deck",
+      message: "Missing required `main` deck — synthetic main deck will be created",
     });
   }
   for (const [id, deck] of Object.entries(config.decks)) {
@@ -94,12 +94,14 @@ export const validateFull = (config: RawConfig, registry: AddonRegistry): FullVa
         });
         return;
       }
-      const schema = def.def.backend.configSchema as {
-        safeParse: (input: unknown) => {
-          success: boolean;
-          error?: { issues: Array<{ path: Array<string | number>; message: string }> };
-        };
-      } | undefined;
+      const schema = def.def.backend.configSchema as
+        | {
+            safeParse: (input: unknown) => {
+              success: boolean;
+              error?: { issues: Array<{ path: Array<string | number>; message: string }> };
+            };
+          }
+        | undefined;
       if (schema === undefined) return;
       const parseResult = schema.safeParse(btn.config ?? {});
       if (!parseResult.success) {

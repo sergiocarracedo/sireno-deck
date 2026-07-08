@@ -15,23 +15,19 @@ export const manifest: AddonManifestV1 = {
   buttonTypes: {
     "core-buttons:action": {
       frontend: actionFrontend,
-      backend: actionBackend,
-      gestureHandlers: ["tap"],
+      backend: { ...actionBackend, gestureHandlers: ["tap"] as const },
     },
     "core-buttons:change-deck": {
       frontend: changeDeckFrontend,
-      backend: changeDeckBackend,
-      gestureHandlers: ["tap"],
+      backend: { ...changeDeckBackend, gestureHandlers: ["tap"] as const },
     },
     "core-buttons:toggle": {
       frontend: toggleFrontend,
-      backend: toggleBackend,
-      gestureHandlers: ["tap"],
+      backend: { ...toggleBackend, gestureHandlers: ["tap"] as const },
     },
     "core-buttons:media-sample": {
       frontend: mediaSampleFrontend,
-      backend: mediaSampleBackend,
-      gestureHandlers: ["tap"],
+      backend: { ...mediaSampleBackend, gestureHandlers: ["tap"] as const },
     },
   },
 };
@@ -42,9 +38,9 @@ export {
   actionBackend as actionButtonBackend,
   actionFrontend as ActionButtonFrontend,
   changeDeckBackend as changeDeckButtonBackend,
-  changeDeckFrontend as ChangeDeckButtonFrontend,
+  changeDeckFrontend as ChangeDeckFrontend,
   toggleBackend as toggleButtonBackend,
-  toggleFrontend as ToggleButtonFrontend,
+  toggleFrontend as ToggleFrontend,
   mediaSampleBackend as mediaSampleButtonBackend,
-  mediaSampleFrontend as MediaSampleButtonFrontend,
+  mediaSampleFrontend as MediaSampleFrontend,
 };

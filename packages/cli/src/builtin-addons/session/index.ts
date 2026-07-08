@@ -12,8 +12,7 @@ export const manifest: AddonManifestV1 = {
   buttonTypes: {
     "session:info": {
       frontend: sessionInfoFrontend,
-      backend: sessionInfoBackend,
-      gestureHandlers: ["tap"],
+      backend: { ...sessionInfoBackend, gestureHandlers: ["tap"] as const },
     },
     "session:time": {
       frontend: sessionTimeFrontend,

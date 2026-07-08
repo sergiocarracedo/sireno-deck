@@ -16,23 +16,19 @@ export const manifest: AddonManifestV1 = {
   buttonTypes: {
     "media:player": {
       frontend: mediaPlayerFrontend,
-      backend: mediaPlayerBackend,
-      gestureHandlers: ["tap"],
+      backend: { ...mediaPlayerBackend, gestureHandlers: ["tap"] as const },
     },
     "media:mute": {
       frontend: mediaMuteFrontend,
-      backend: mediaMuteBackend,
-      gestureHandlers: ["tap"],
+      backend: { ...mediaMuteBackend, gestureHandlers: ["tap"] as const },
     },
     "media:volume:up": {
       frontend: volumeUpFrontend,
-      backend: volumeUpBackend,
-      gestureHandlers: ["tap"],
+      backend: { ...volumeUpBackend, gestureHandlers: ["tap"] as const },
     },
     "media:volume:down": {
       frontend: volumeDownFrontend,
-      backend: volumeDownBackend,
-      gestureHandlers: ["tap"],
+      backend: { ...volumeDownBackend, gestureHandlers: ["tap"] as const },
     },
   },
   globalBackend,
