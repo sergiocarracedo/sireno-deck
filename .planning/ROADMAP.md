@@ -39,11 +39,12 @@
 - `[x]` `decksByType` in registry.ts:82 already populated — addon decks materialized into runtime via `materializeAddonDecks` in both `preflight` (real mode) and `buildEmulatorDecks` (emulator mode). Registry is available at both call sites.
 - `[x]` CLI `addon-decks` command: `materializeAddonDecks` utility exists (addon-decks.ts). No standalone CLI command but decks auto-register at runtime.
 
-### P5 — `internal?: boolean` on `AddonDeckDefinition`
+### P5 — `internal?: boolean` on `AddonDeckDefinition` `[x]` shipped at `be49def9`
 
-- `[ ]` Add `internal?: boolean` to `AddonDeckDefinition` in `packages/cli/src/addon/api.ts`.
-- `[ ]` `AddonRegistry` excludes `internal: true` decks from user-config discovery surfaces (CLI listing, schema completions, docs).
-- `[ ]] Built-in addon decks opt in: `internal-settings:*`, `emoji-selector:*`.
+- `[x]` Add `internal?: boolean` to `AddonDeckDefinition` in `api.ts`.
+- `[x]` Registry handles 3 entry shapes (factory, `{deck, internal}`, `AddonDeckDefinition`) + propagates `internal` to stored def.
+- `[x]` `materializeAddonDecks` skips `internal: true` decks.
+- `[x]` Built-in opt-in: `internal-settings:settings` marked as internal; `emoji-selector:*` already had it.
 
 ### P6 — `SplitActionSurface` on n-1 of every deck
 
