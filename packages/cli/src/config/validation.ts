@@ -86,7 +86,7 @@ export const validateFull = (config: RawConfig, registry: AddonRegistry): FullVa
         return;
       }
       const def = registry.getButtonType(btn.type)!;
-      if (isSystemButtonType(btn.type) || def.def.backend.internal === true) {
+      if (isSystemButtonType(btn.type) || def.def.service.internal === true) {
         issues.push({
           level: "error",
           path: `${path}.type`,
@@ -94,7 +94,7 @@ export const validateFull = (config: RawConfig, registry: AddonRegistry): FullVa
         });
         return;
       }
-      const schema = def.def.backend.configSchema as
+      const schema = def.def.service.configSchema as
         | {
             safeParse: (input: unknown) => {
               success: boolean;
