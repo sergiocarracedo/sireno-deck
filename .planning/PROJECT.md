@@ -10,13 +10,13 @@
 
 Power users who want to script their Stream Deck — actions, key macros, paste, system-overlay decks — without Elgato's official software. Addon authors who want to ship button types and decks without forking the runtime.
 
-## What ships today (v1.6)
+## What ships today (v1.7)
 
-See `research/FEATURES.md` — the TL;DR is YAML-declared decks, 10 built-in addons, 3rd-party addon scanning, themes, real + emulator modes, gesture detection with WS broadcast, channel pub/sub, system-back injection.
+Completed 2026-07-08. 6 P-items delivered: React Router frontend nav, gestureHandlers default-deny, default main deck + n-1 injection + addon auto-register, internal? flag on decks, SplitActionSurface on n-1, Backend→Service rename. See `.planning/milestones/v1.7-ROADMAP.md` for full details.
 
-## What's planned (v1.7)
+## What's planned (v1.8)
 
-See `ROADMAP.md` — five changes (P1, P2, P4, P5, P6) close the gap between the architecture doc's intent and the code. P8 is a follow-up rename.
+Scope TBD.
 
 ## Architecture
 
@@ -26,14 +26,9 @@ Source of truth: `ARCHITECTURE.md`. Lean mirrors in `research/{STACK,FEATURES,PI
 
 This repo uses **learnship** (`.planning/AGENTS.md`) but **no phases / quick / discuss-phase ceremony.** The architecture doc + this roadmap are the plan. A change gets one commit per concern. Capture gotchas to `.planning/solutions/<category>/<slug>.md` with YAML frontmatter.
 
-## Success criteria for v1.7
+## Success criteria for v1.7 (✓ complete)
 
-1. Frontend has React Router; per-deck URLs reflect the active deck.
-2. `gestureHandlers` is enforced — addons must opt in to receive gestures.
-3. Every addon-defined deck auto-registers; `internal?: true` keeps user-internal decks out of config surfaces.
-4. Every deck (main, sub, overlay) shows `SplitActionSurface` on the n-1 slot with the correct primary action.
-5. All 10 built-in addons updated to declare `gestureHandlers` where they expose backend gesture handlers.
-6. All existing tests still pass; no new failures introduced (the 79 pre-existing failures are out of scope).
+All 6 criteria met. See `.planning/milestones/v1.7-ROADMAP.md`.
 
 ## Scope guardrails
 

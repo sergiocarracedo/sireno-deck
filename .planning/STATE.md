@@ -37,7 +37,14 @@ $ git status --short | wc -l
 
 ## Next
 
-v1.7 P-list fully shipped (P1-P8). Next: user decides what v1.8 scope is.
+v1.7 complete. Next: user decides v1.8 scope.
+
+## Milestone History
+
+### v1.7 — Polish & 3rd-Party Fixtures
+Completed: 2026-07-08
+P-items: P1 (React Router), P2 (gestureHandlers), P4 (default main deck + n-1 injection), P5 (internal? flag), P6 (SplitActionSurface), P8 (Backend→Service rename)
+Key achievements: All v1.7 P-items shipped and verified. Milestone audit passed. Zero new stubs or integration gaps.
 
 ## Pre-existing known issues (do NOT touch without forensics)
 
