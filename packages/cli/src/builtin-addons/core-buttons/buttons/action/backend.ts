@@ -1,6 +1,5 @@
 import { z } from "zod"
-import type { Methods } from "@/deck/methods"
-import type { AddonButtonTypeService } from "@/addon/api"
+import type { AddonButtonTypeService, AddonButtonServiceContext } from "@/addon/api"
 
 import { configSchema } from "./config"
 
@@ -8,10 +7,10 @@ type Config = z.infer<typeof configSchema>
 
 export default {
   configSchema,
-  onTap: async ({ config, methods }: { config: Config; methods: Methods }) => {
-    await methods.runCommand(config.command, {
-      ...(config.cwd !== undefined ? { cwd: config.cwd } : {}),
-      ...(config.env !== undefined ? { env: config.env } : {}),
-    })
+  onTap: async (
+    ctx: AddonButtonServiceContext<unknown>,
+  ) => {
+    const { command } = ctx.config as Config
+    await (ctx.methods["dispatch"] as (...args: unknown[]) => Promise<void>)(command)
   },
 } satisfies AddonButtonTypeService

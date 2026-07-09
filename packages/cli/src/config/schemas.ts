@@ -10,6 +10,16 @@ export const TriggerSchema = z
     message: "trigger requires at least one of `process_name` or `window_name`",
   })
 
+export const ButtonActionsSchema = z
+  .object({
+    tap: z.string().min(1).optional(),
+    dbltap: z.string().min(1).optional(),
+    hold: z.string().min(1).optional(),
+  })
+  .strict()
+
+export type ButtonActions = z.infer<typeof ButtonActionsSchema>
+
 export const ButtonDefSchema = z
   .object({
     position: z.number().int().nonnegative().optional(),
@@ -18,6 +28,7 @@ export const ButtonDefSchema = z
     accent: z.string().optional(),
     background: z.string().optional(),
     full: z.boolean().optional(),
+    actions: ButtonActionsSchema.optional(),
   })
   .strict()
 
