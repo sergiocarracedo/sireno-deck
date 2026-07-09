@@ -256,18 +256,19 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
   const decks: RuntimeDeck[] = Object.entries(config.decks).map(([id, d]) => ({
     id,
     name: d.name ?? id,
-    buttons: d.buttons.flatMap((b, idx) => {
-      if (typeof b === "string") return []
-      return [
-        {
-          id: b.position?.toString() ?? `b${idx}`,
-          type: b.type,
-          ...(typeof b.config === "object" && b.config !== null
-            ? { config: b.config }
-            : {}),
-        },
-      ]
-    }),
+      buttons: d.buttons.flatMap((b, idx) => {
+        if (typeof b === "string") return []
+        return [
+          {
+            id: b.position?.toString() ?? `b${idx}`,
+            type: b.type,
+            ...(typeof b.config === "object" && b.config !== null
+              ? { config: b.config }
+              : {}),
+            ...(b.actions !== undefined ? { actions: b.actions } : {}),
+          },
+        ]
+      }),
     processNames:
       d.trigger?.process_name !== undefined
         ? Array.isArray(d.trigger.process_name)

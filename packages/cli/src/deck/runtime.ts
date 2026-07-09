@@ -5,13 +5,25 @@ import type { Store } from "@/core/store"
 import type { GestureKind } from "@/core/gesture-state"
 import type { ActiveAppProvider } from "@/system/providers/active-app"
 import { compileDeckMatcher } from "@/system/glob-match"
+import type { Methods } from "./methods"
 
 type ActiveAppProviderLike = Pick<ActiveAppProvider, "getActive" | "stop">
+
+export interface RuntimeButton {
+  id: string
+  type: string
+  config?: unknown
+  actions?: {
+    tap?: string
+    dbltap?: string
+    hold?: string
+  }
+}
 
 export interface RuntimeDeck {
   id: string
   name: string
-  buttons: ReadonlyArray<{ id: string; type: string; config?: unknown }>
+  buttons: ReadonlyArray<RuntimeButton>
   isMain?: boolean
   isOverlay?: boolean
   processNames?: ReadonlyArray<string>
@@ -53,6 +65,7 @@ export interface CreateRuntimeOptions {
   pubSub: PubSub
   store: Store
   logger: pino.Logger
+  getMethods: () => Methods
 }
 
 export interface Runtime {
@@ -77,7 +90,7 @@ export interface Runtime {
 }
 
 export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
-  const { decks, pubSub, store, logger } = options
+  const { decks, pubSub, store, logger, getMethods } = options
   let gestureListener: GestureListener | null = null
   const mainDeck = decks.find((d) => d.isMain) ?? decks[0]
   if (mainDeck === undefined) {
@@ -201,13 +214,33 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       logger.warn({ buttonId }, "invokeAction: button not found")
       return
     }
+
+    const userAction =
+      gesture === "tap"
+        ? found.button.actions?.tap
+        : gesture === "dbl-tap"
+          ? found.button.actions?.dbltap
+          : found.button.actions?.hold
+
+    if (userAction !== undefined) {
+      logger.info(
+        { buttonId, gesture, action: userAction },
+        "[addon:sireno-deck] user action",
+      )
+      try {
+        await getMethods().dispatch(userAction)
+      } catch (err) {
+        logger.error(
+          { buttonId, gesture, err },
+          "[addon:sireno-deck] user action failed",
+        )
+      }
+      return
+    }
+
     const handlerKey = `${found.deckId}:${found.button.id}`
     const handler = handlers.get(handlerKey)
     if (handler === undefined) {
-      logger.warn(
-        { buttonId, handlerKey },
-        "invokeAction: no handler registered",
-      )
       return
     }
     const ctx: ButtonActionContext = {
@@ -223,10 +256,6 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
           ? handler.onDblTap
           : handler.onHold
     if (fn === undefined) {
-      logger.warn(
-        { buttonId, gesture },
-        "invokeAction: handler missing for gesture",
-      )
       return
     }
     await fn(ctx)

@@ -262,7 +262,7 @@ export const bridgeAddonServices = async (
           config: unknown
           gesture: string
         }) {
-          if (allowedGestures !== undefined && !allowedGestures.includes("tap"))
+          if (allowedGestures === undefined || !allowedGestures.includes("tap"))
             return
           try {
             await buttonService.onTap?.(wrappedCtx)
@@ -279,7 +279,7 @@ export const bridgeAddonServices = async (
           gesture: string
         }) {
           if (
-            allowedGestures !== undefined &&
+            allowedGestures === undefined ||
             !allowedGestures.includes("dbl-tap")
           )
             return
@@ -297,10 +297,7 @@ export const bridgeAddonServices = async (
           config: unknown
           gesture: string
         }) {
-          if (
-            allowedGestures !== undefined &&
-            !allowedGestures.includes("hold")
-          )
+          if (allowedGestures === undefined || !allowedGestures.includes("hold"))
             return
           try {
             await buttonService.onHold?.(wrappedCtx)
