@@ -15,11 +15,7 @@ import {
   useAssetCacheMutations,
 } from "@sireno-deck/cli"
 import { createWsClient, type WsClient } from "./bridge/client"
-import {
-  Deck,
-  type ButtonGestureMap,
-  type ButtonGestureState,
-} from "./components/Deck"
+import { Deck } from "./components/Deck"
 
 interface DeckButton {
   id: string
@@ -37,13 +33,6 @@ const EMPTY_DECK: DeckState = {
   id: "",
   name: "",
   buttons: [],
-}
-
-const EMPTY_GESTURE: ButtonGestureState = {
-  pressed: false,
-  isTapping: false,
-  isHolding: false,
-  holdProgress: 0,
 }
 
 const ENV_WS_URL = (import.meta.env.VITE_WS_URL ??
@@ -72,7 +61,7 @@ const buildThemeContext = (): ThemeContextValue => {
         apiVersion: 3,
         source: { kind: "builtin" as const, resolvedPath: themeDir },
         manifestPath,
-        uiOverridesPath: activeTheme.uiOverridesPath ?? null,
+uiOverridesPath: activeTheme.uiOverridesPath ?? null,
         cssPath: "",
       },
       colorTokens,
@@ -113,7 +102,6 @@ export const App = () => {
 
 const AppContent = () => {
   const [deck, setDeck] = useState<DeckState>(EMPTY_DECK)
-  const [gestures, setGestures] = useState<ButtonGestureMap>({})
   const clientRef = useRef<WsClient | null>(null)
   const { setAsset } = useAssetCacheMutations()
   const navigate = useNavigate()
@@ -147,29 +135,6 @@ const AppContent = () => {
             })
           }
         }
-        if (message.type === "button-action") {
-          const buttonId = String(message.position)
-          const gesture = message.gesture
-          setGestures((prev) => {
-            const next: Record<string, ButtonGestureState> = { ...prev }
-            if (gesture === "hold") {
-              next[buttonId] = {
-                pressed: true,
-                isTapping: false,
-                isHolding: true,
-                holdProgress: 1,
-              }
-            } else {
-              next[buttonId] = {
-                pressed: true,
-                isTapping: true,
-                isHolding: false,
-                holdProgress: 0,
-              }
-            }
-            return next
-          })
-        }
         if (message.type === "state") {
           for (const [channel, payload] of Object.entries(message.channels)) {
             ChannelRegistry.instance().publish(channel, payload)
@@ -187,35 +152,11 @@ const AppContent = () => {
       ChannelRegistry.setAnnounceSubscribe(null)
       client.close()
     }
-  }, [setAsset])
-
-  const sendButtonAction = (
-    buttonId: string,
-    gesture: "tap" | "dbl-tap" | "hold",
-  ): void => {
-    const button = deck.buttons.find((b) => b.id === buttonId)
-    if (button === undefined) return
-    const position =
-      typeof button.position === "number" && Number.isFinite(button.position)
-        ? button.position
-        : deck.buttons.indexOf(button)
-    clientRef.current?.send(
-      JSON.stringify({
-        type: "button-action",
-        deckId: deck.id,
-        position,
-        gesture,
-      }),
-    )
-  }
-
-  const gestureMap: ButtonGestureMap = Object.fromEntries(
-    deck.buttons.map((b) => [b.id, gestures[b.id] ?? EMPTY_GESTURE]),
-  )
+  }, [setAsset, navigate])
 
   return (
     <main className="bg-bg text-fg flex min-h-screen items-center justify-center">
-      <Deck deck={deck} gestures={gestureMap} onAction={sendButtonAction} />
+      <Deck deck={deck} />
     </main>
   )
 }

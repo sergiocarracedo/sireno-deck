@@ -1,10 +1,10 @@
 import type { ReactNode } from "react"
 
 export interface ButtonFrameProps {
-  pressed: boolean
-  isTapping: boolean
-  isHolding: boolean
-  holdProgress: number
+  pressed?: boolean
+  isTapping?: boolean
+  isHolding?: boolean
+  holdProgress?: number
   buttonType: string
   children: ReactNode
 }

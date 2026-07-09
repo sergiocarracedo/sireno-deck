@@ -23,6 +23,38 @@
 - `.planning/AGENTS.md` — lean learnship-aware workflow rules.
 - `.planning/solutions/` — empty skeleton for `/compound` outputs.
 
+## What just landed (uniform gesture stream)
+
+- `key-event` WS message replaces `button-action` for the client→server path.
+  Frontend uses `onPointerDown` / `onPointerUp` (+ `setPointerCapture`); emulator
+  and frontend share the same wire format.
+- `EmulatorOutputClient` runs `createGestureDetector` (mirrors `RealOutputClient`).
+  Both forward the resulting gesture to `runtime.dispatchGesture`.
+- `HOLD_ACTION_DELAY_MS` and `DOUBLE_TAP_DELAY_MS` collapse to 200ms.
+- Latent dbl-tap callback bug in `core/gesture-state.ts` fixed (drove the
+  pre-existing test gap that was masked by 500ms constants).
+- `PROTOCOL_VERSION` stays at 1; `key-event` is additive, no version bump.
+- Outer `ButtonFrame` flash dropped for emulator (intentional — see §7.2).
+
+## What just landed (per-transport gesture detectors — supersedes the prior entry)
+
+- **Reverted** the prior `key-event` model. The wire format is now gesture-only
+  (`button-action`); raw `down`/`up` events never cross the bridge.
+- **Emulator SPA** (`packages/cli/emulator/src/gesture.ts`) owns its own
+  per-key gesture detector, importing the shared constants from
+  `core/gesture-state.ts`. Final gestures are sent as `button-action`.
+- **Real hardware** — `RealOutputClient` runs `createGestureDetector` on
+  `device.onKeyEvent(...)` and dispatches directly. No WS involvement.
+- **Backend `EmulatorOutputClient`** is now a thin pass-through: looks up the
+  button by position and calls `runtime.dispatchGesture`. No detection logic.
+- **Chrome SPA** (`packages/cli/frontend/`) cleaned: no `sendButtonAction`, no
+  `onClick → tap`, no `gestures` prop, no `button-action` incoming handler. It
+  only subscribes to `runtime:gesture:*` via `useAddonChannel`. Pure display.
+- **Constants stay** at `HOLD_ACTION_DELAY_MS = 200`, `DOUBLE_TAP_DELAY_MS = 200`,
+  imported by both transports. The dbl-tap `onGesture` callback fix from the
+  prior entry stays (real bug, still applies).
+- **Decoupling rule** added to `ARCHITECTURE.md §7.4`.
+
 ## Working tree
 
 ```
@@ -45,7 +77,6 @@ Key achievements: All v1.7 P-items shipped and verified. Milestone audit passed.
 ## Pre-existing known issues (do NOT touch without forensics)
 
 - **79 failures in `packages/cli/src/deck/runtime.test.ts`** — Phase 42/67 system-back-injection firing in test contexts. Pre-dates Phase 71. Flagged for future forensics.
-- **Frontend-UI clicks bypass the gesture stream** — known small issue in `ARCHITECTURE.md §9`. Frontend `sendButtonAction` calls `runtime.invokeAction` directly. Fix on demand.
 
 ## Recently shipped (for context, not for editing)
 

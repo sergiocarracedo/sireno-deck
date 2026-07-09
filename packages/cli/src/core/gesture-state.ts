@@ -1,5 +1,5 @@
-export const HOLD_ACTION_DELAY_MS = 500
-export const DOUBLE_TAP_DELAY_MS = 500
+export const HOLD_ACTION_DELAY_MS = 200
+export const DOUBLE_TAP_DELAY_MS = 200
 
 export type GestureType = "down" | "up"
 
@@ -236,6 +236,7 @@ export const createGestureDetector = (
             key,
           )
           setState(key, { name: "idle", keyIndex: key })
+          onGesture?.(d)
           return d
         }
         break

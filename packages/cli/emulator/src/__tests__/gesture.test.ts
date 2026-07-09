@@ -1,74 +1,105 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
-import { dispatchMouseEvent, gestureKindToWsMessage } from "../gesture"
+import {
+  DOUBLE_TAP_DELAY_MS,
+  HOLD_ACTION_DELAY_MS,
+} from "@sireno-deck/cli"
+
+import {
+  createEmulatorGestureDetector,
+  dispatchMouseEvent,
+  gestureKindToWsMessage,
+} from "../gesture"
+
+const advance = (ms: number): void => {
+  vi.advanceTimersByTime(ms)
+}
 
 describe("gesture (emulator)", () => {
-  it("returns tap on quick down-up", () => {
-    const r1 = dispatchMouseEvent([], {
-      kind: "down",
-      keyIndex: 0,
-      timestamp: 0,
-    })
-    expect(r1.result).toBeNull()
-    const r2 = dispatchMouseEvent(r1.buffer, {
-      kind: "up",
-      keyIndex: 0,
-      timestamp: 50,
-    })
-    expect(r2.result?.kind).toBe("tap")
+  it("emits tap after the 200ms window closes on a fast press+release", () => {
+    vi.useFakeTimers()
+    const onGesture = vi.fn()
+    const detector = createEmulatorGestureDetector(onGesture)
+
+    dispatchMouseEvent(detector, { kind: "down", keyIndex: 0, timestamp: 0 })
+    dispatchMouseEvent(detector, { kind: "up", keyIndex: 0, timestamp: 50 })
+    expect(onGesture).not.toHaveBeenCalled()
+
+    advance(DOUBLE_TAP_DELAY_MS + 1)
+    expect(onGesture).toHaveBeenCalledTimes(1)
+    expect(onGesture.mock.calls[0]![0]!.kind).toBe("tap")
+    expect(onGesture.mock.calls[0]![0]!.keyIndex).toBe(0)
   })
 
-  it("returns hold on long down-up", () => {
-    const r1 = dispatchMouseEvent([], {
-      kind: "down",
-      keyIndex: 3,
-      timestamp: 0,
-    })
-    const r2 = dispatchMouseEvent(r1.buffer, {
-      kind: "up",
-      keyIndex: 3,
-      timestamp: 800,
-    })
-    expect(r2.result?.kind).toBe("hold")
+  it("emits hold at the 200ms threshold when release is after", () => {
+    vi.useFakeTimers()
+    const onGesture = vi.fn()
+    const detector = createEmulatorGestureDetector(onGesture)
+
+    dispatchMouseEvent(detector, { kind: "down", keyIndex: 3, timestamp: 0 })
+    expect(onGesture).not.toHaveBeenCalled()
+    advance(HOLD_ACTION_DELAY_MS + 1)
+    expect(onGesture).toHaveBeenCalledTimes(1)
+    expect(onGesture.mock.calls[0]![0]!.kind).toBe("hold")
+
+    dispatchMouseEvent(detector, { kind: "up", keyIndex: 3, timestamp: 1000 })
+    expect(onGesture).toHaveBeenCalledTimes(1)
   })
 
-  it("returns dbl-tap on two quick sequences", () => {
-    const r1 = dispatchMouseEvent([], {
-      kind: "down",
-      keyIndex: 1,
-      timestamp: 0,
-    })
-    const r2 = dispatchMouseEvent(r1.buffer, {
-      kind: "up",
-      keyIndex: 1,
-      timestamp: 50,
-    })
-    expect(r2.result?.kind).toBe("tap")
-    const r3 = dispatchMouseEvent(r2.buffer, {
-      kind: "down",
-      keyIndex: 1,
-      timestamp: 200,
-    })
-    const r4 = dispatchMouseEvent(r3.buffer, {
-      kind: "up",
-      keyIndex: 1,
-      timestamp: 250,
-    })
-    expect(r4.result?.kind).toBe("dbl-tap")
+  it("emits dbl-tap only when the second release is within 200ms of the first", () => {
+    vi.useFakeTimers()
+    const onGesture = vi.fn()
+    const detector = createEmulatorGestureDetector(onGesture)
+
+    dispatchMouseEvent(detector, { kind: "down", keyIndex: 1, timestamp: 0 })
+    dispatchMouseEvent(detector, { kind: "up", keyIndex: 1, timestamp: 50 })
+    expect(onGesture).not.toHaveBeenCalled()
+
+    advance(DOUBLE_TAP_DELAY_MS + 10)
+    dispatchMouseEvent(detector, { kind: "down", keyIndex: 1, timestamp: 300 })
+    dispatchMouseEvent(detector, { kind: "up", keyIndex: 1, timestamp: 350 })
+    expect(onGesture).toHaveBeenCalledTimes(1)
+    expect(onGesture.mock.calls[0]![0]!.kind).toBe("tap")
+  })
+
+  it("emits dbl-tap when second release lands inside the 200ms window", () => {
+    vi.useFakeTimers()
+    const onGesture = vi.fn()
+    const detector = createEmulatorGestureDetector(onGesture)
+
+    dispatchMouseEvent(detector, { kind: "down", keyIndex: 2, timestamp: 0 })
+    dispatchMouseEvent(detector, { kind: "up", keyIndex: 2, timestamp: 50 })
+    dispatchMouseEvent(detector, { kind: "down", keyIndex: 2, timestamp: 100 })
+    dispatchMouseEvent(detector, { kind: "up", keyIndex: 2, timestamp: 150 })
+    expect(onGesture).toHaveBeenCalledTimes(1)
+    expect(onGesture.mock.calls[0]![0]!.kind).toBe("dbl-tap")
+    expect(onGesture.mock.calls[0]![0]!.keyIndex).toBe(2)
+  })
+
+  it("isolates per-key state — clicking key B after key A is not dbl-tap on A", () => {
+    vi.useFakeTimers()
+    const onGesture = vi.fn()
+    const detector = createEmulatorGestureDetector(onGesture)
+
+    dispatchMouseEvent(detector, { kind: "down", keyIndex: 0, timestamp: 0 })
+    dispatchMouseEvent(detector, { kind: "up", keyIndex: 0, timestamp: 50 })
+    advance(DOUBLE_TAP_DELAY_MS + 10)
+    dispatchMouseEvent(detector, { kind: "down", keyIndex: 5, timestamp: 300 })
+    dispatchMouseEvent(detector, { kind: "up", keyIndex: 5, timestamp: 320 })
+    expect(onGesture).toHaveBeenCalledTimes(1)
+    expect(onGesture.mock.calls[0]![0]!.kind).toBe("tap")
+    expect(onGesture.mock.calls[0]![0]!.keyIndex).toBe(0)
   })
 
   it("gestureKindToWsMessage carries deckId, position, gesture", () => {
-    const r1 = dispatchMouseEvent([], {
-      kind: "down",
+    const r = {
+      kind: "tap" as const,
       keyIndex: 7,
       timestamp: 0,
-    })
-    const r2 = dispatchMouseEvent(r1.buffer, {
-      kind: "up",
-      keyIndex: 7,
-      timestamp: 50,
-    })
-    const msg = gestureKindToWsMessage(r2.result!, "media")
+      durationMs: 50,
+      timestamps: [0, 50],
+    }
+    const msg = gestureKindToWsMessage(r, "media")
     expect(msg).toEqual({
       type: "button-action",
       deckId: "media",

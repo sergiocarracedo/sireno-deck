@@ -1,6 +1,6 @@
 import {
-  nextGesture,
-  type GestureEvent,
+  createGestureDetector,
+  type GestureDetector,
   type GestureResult,
 } from "@sireno-deck/cli"
 
@@ -12,25 +12,20 @@ export interface GestureMouseEvent {
   readonly timestamp: number
 }
 
-const toCore = (event: GestureMouseEvent): GestureEvent => ({
-  type: event.kind,
-  timestamp: event.timestamp,
-  keyIndex: event.keyIndex,
-})
-
 export const dispatchMouseEvent = (
-  buffer: ReadonlyArray<GestureMouseEvent>,
-  newEvent: GestureMouseEvent,
-): { buffer: GestureMouseEvent[]; result: GestureResult | null } => {
-  const core: GestureEvent = toCore(newEvent)
-  const coreBuffer: GestureEvent[] = buffer.map(toCore)
-  const result = nextGesture([...coreBuffer, core])
-  const newBuffer =
-    result?.kind === "hold" || result?.kind === "dbl-tap"
-      ? []
-      : [...buffer, newEvent]
-  return { buffer: newBuffer, result }
+  detector: GestureDetector,
+  event: GestureMouseEvent,
+): void => {
+  detector.detect({
+    type: event.kind,
+    timestamp: event.timestamp,
+    keyIndex: event.keyIndex,
+  })
 }
+
+export const createEmulatorGestureDetector = (
+  onGesture: (result: GestureResult) => void,
+): GestureDetector => createGestureDetector({ onGesture })
 
 export const gestureKindToWsMessage = (
   result: GestureResult,

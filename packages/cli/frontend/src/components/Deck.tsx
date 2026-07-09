@@ -10,7 +10,6 @@ import { addonRegistry } from "virtual:sireno/addons/registry"
 
 import {
   ButtonFrame,
-  Icon,
   useAddonChannel,
   type AddonGestureEvent,
 } from "@sireno-deck/cli"
@@ -40,24 +39,8 @@ export interface Deck {
   buttons: DeckButton[]
 }
 
-export interface ButtonGestureState {
-  pressed: boolean
-  isTapping: boolean
-  isHolding: boolean
-  holdProgress: number
-}
-
-export type ButtonGestureMap = Readonly<
-  Record<string, ButtonGestureState | undefined>
->
-
 export interface DeckProps {
   readonly deck: Deck
-  readonly gestures?: ButtonGestureMap
-  readonly onAction?: (
-    buttonId: string,
-    gesture: "tap" | "dbl-tap" | "hold",
-  ) => void
   readonly children?: ReactNode
 }
 
@@ -86,35 +69,6 @@ const resolvePosition = (button: DeckButton, fallback: number): number => {
   const parsed = Number.parseInt(button.id, 10)
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback
 }
-
-interface AddonRegistryEntry {
-  readonly addonName: string
-  readonly gestures?: readonly string[]
-  readonly Component: React.ComponentType<{
-    readonly config: unknown
-    readonly state: unknown
-    readonly buttonType?: string
-    readonly buttonId?: string
-    readonly gesture?: AddonGestureEvent | null
-    readonly onAction?: (action: string) => void
-  }>
-}
-
-const EMPTY_GESTURE: ButtonGestureState = {
-  pressed: false,
-  isTapping: false,
-  isHolding: false,
-  holdProgress: 0,
-}
-
-const FallbackLabel = ({ text }: { text: string }): ReactNode => (
-  <div className="flex h-full w-full flex-col items-center justify-center gap-1 p-1">
-    <Icon name="alert-circle" size={20} tone="danger" />
-    <span className="truncate font-mono text-[10px] uppercase opacity-70">
-      {text}
-    </span>
-  </div>
-)
 
 interface ButtonSurfaceProps {
   readonly button: DeckButton
@@ -158,7 +112,7 @@ const ButtonSurface = ({ button }: ButtonSurfaceProps) => {
   )
 }
 
-export const Deck = ({ deck, gestures, onAction, children }: DeckProps) => {
+export const Deck = ({ deck, children }: DeckProps) => {
   const model = resolveDeviceModel()
   const { columns, rows } = gridForKeyCount(model.keyCount)
   const gap = isCompact ? 0 : BUTTON_GAP_PX
@@ -185,11 +139,6 @@ export const Deck = ({ deck, gestures, onAction, children }: DeckProps) => {
         const position = resolvePosition(button, idx)
         const col = (position % columns) + 1
         const row = Math.floor(position / columns) + 1
-        const gesture = gestures?.[button.id] ?? EMPTY_GESTURE
-        const fallbackText = button.label ?? button.type
-        const entryGestures = addonRegistry[button.type]?.gestures
-        const tapAllowed =
-          entryGestures === undefined || entryGestures.includes("tap")
         return (
           <div
             key={button.id}
@@ -200,18 +149,8 @@ export const Deck = ({ deck, gestures, onAction, children }: DeckProps) => {
               height: BUTTON_SIZE,
             }}
             data-button-type={button.type}
-            className="cursor-pointer"
-            onClick={() => {
-              if (tapAllowed) onAction?.(button.id, "tap")
-            }}
           >
-            <ButtonFrame
-              pressed={gesture.pressed}
-              isTapping={gesture.isTapping}
-              isHolding={gesture.isHolding}
-              holdProgress={gesture.holdProgress}
-              buttonType={button.type}
-            >
+            <ButtonFrame buttonType={button.type}>
               <ErrorBoundary resetKey={button.id}>
                 <ButtonSurface button={button} />
               </ErrorBoundary>

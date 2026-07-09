@@ -1,11 +1,12 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { BUTTON_SIZE_PX, type DeviceModelSpec } from "@sireno-deck/cli"
 
 import {
+  createEmulatorGestureDetector,
   dispatchMouseEvent,
   gestureKindToWsMessage,
-  type GestureMouseEvent,
+  type GestureDetector,
 } from "./gesture"
 
 export interface DeckFrameProps {
@@ -26,28 +27,36 @@ export const DeckFrame = ({
   onGesture,
 }: DeckFrameProps): React.ReactElement => {
   const { columns, keyCount } = device
-  const bufferRef = useRef<GestureMouseEvent[]>([])
+  const detectorRef = useRef<GestureDetector | null>(null)
   const [pressedIndex, setPressedIndex] = useState<number | null>(null)
 
+  useEffect(() => {
+    const detector = createEmulatorGestureDetector((result) => {
+      onGesture?.(gestureKindToWsMessage(result, deckId))
+    })
+    detectorRef.current = detector
+    return () => {
+      detector.reset()
+      detectorRef.current = null
+    }
+  }, [deckId, onGesture])
+
   const handleDown = (keyIndex: number): void => {
-    bufferRef.current = [
-      ...bufferRef.current,
-      { kind: "down", keyIndex, timestamp: Date.now() },
-    ]
     setPressedIndex(keyIndex)
+    dispatchMouseEvent(detectorRef.current!, {
+      kind: "down",
+      keyIndex,
+      timestamp: Date.now(),
+    })
   }
 
   const handleUp = (keyIndex: number): void => {
-    const { buffer, result } = dispatchMouseEvent(bufferRef.current, {
+    setPressedIndex(null)
+    dispatchMouseEvent(detectorRef.current!, {
       kind: "up",
       keyIndex,
       timestamp: Date.now(),
     })
-    bufferRef.current = buffer
-    setPressedIndex(null)
-    if (result !== null && onGesture !== undefined) {
-      onGesture(gestureKindToWsMessage(result, deckId))
-    }
   }
 
   const iframeUrl = `${frontendUrl}${frontendUrl.includes("?") ? "&" : "?"}device=${device.id}`

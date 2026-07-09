@@ -218,7 +218,7 @@ from `render/protocol.ts`.
 | server → client | `dismiss-overlay`    | `{}`                                                      |
 | server → client | `deck-active`        | `{ deckId, mode, history }`                               |
 | server → client | `assets`             | `{ assets: {id, data}[] }`                                |
-| client → server | `button-action`      | `{ deckId, position, gesture }`                           |
+| client → server | `button-action`      | `{ deckId, position, gesture: "tap" \| "dbl-tap" \| "hold" }` |
 | client → server | `select-deck`        | `{ deckId }`                                              |
 | client → server | `method-call`        | `{ callId, name, args }`                                  |
 | server → client | `method-call-result` | `{ callId, ok, value?, error? }`                          |
@@ -232,10 +232,12 @@ headless instance that screenshots the frontend URL with `?compact=1`. The
 resulting image is sliced and written to the device key-by-key.
 
 **Emulator mode** (`cli/commands/emulator-mode.ts`): spawns two Vite dev
-servers (frontend + emulator), then wires `bridge.onMessage` to dispatch
-`button-action` messages to `runtime.dispatchGesture`. `buildDeckConfigMessage()`
-builds the per-deck payload (including `addonName` and `frontendEntry`) and
-sends it to both SPAs.
+servers (frontend + emulator). The emulator SPA owns gesture detection; it
+sends final-gesture `button-action` messages over the bridge. The backend
+`EmulatorOutputClient` looks up the button by position and calls
+`runtime.dispatchGesture`. `buildDeckConfigMessage()` builds the per-deck
+payload (including `addonName` and `frontendEntry`) and sends it to both
+SPAs.
 
 `findWorkspaceRoot()` and `resolveFrontendCwd()` are local helpers used to
 locate the Vite projects from the monorepo.
@@ -301,7 +303,7 @@ service's HTTP server in real mode.
     up from `virtual:sireno/addons/registry`).
 - `src/components/ErrorBoundary.tsx` — per-button crash isolation.
 - `src/bridge/client.ts` — typed WS client. Handles `hello`, `deck-config`,
-  `state`, `assets`, `button-action` (echo), `runtime:gesture:*` (per-button).
+  `state`, `assets`, `runtime:gesture:*` (per-button).
 - `virtual:sireno/*` — virtual modules: `themes/manifest`, `addons/registry`,
   `token`.
 
@@ -312,9 +314,13 @@ driven entirely by the runtime.
 ## 5. Emulator — `packages/cli/emulator/`
 
 Vite SPA. Embeds the frontend in an iframe (so the same code path runs) and
-overlays clickable button regions on top. Sends `button-action` WS messages
-on click. Renders a side panel with the current deck tree and lets you
-toggle the active deck manually.
+overlays clickable button regions on top. The overlay captures pointerdown /
+pointerup / leave and runs its own gesture detector
+(`packages/cli/emulator/src/gesture.ts`, wrapping the shared constants from
+`core/gesture-state.ts`). It sends the final gesture to the backend as a
+`button-action` WS message; the backend's `EmulatorOutputClient` is a thin
+pass-through that calls `runtime.dispatchGesture`. Renders a side panel
+with the current deck tree and lets you toggle the active deck manually.
 
 `App.tsx` wires to the same WS bridge as the frontend.
 
@@ -345,50 +351,83 @@ emoji-selector, media, system-status, value-display, weather, brightness.
 
 ## 7. Data flows
 
-### 7.1 Hardware key → action
+### 7.1 Gesture → action (after detection)
+
+The runtime is gesture-source-agnostic. Whichever transport produced the
+gesture (real hardware, emulator overlay), it calls
+`runtime.dispatchGesture(buttonId, gesture)` and the runtime fan-outs from
+there.
 
 ```
-device key down/up
-  → device manager event
+runtime.dispatchGesture(buttonId, gesture)
+  → gestureListener (set by addon-handler-bridge)
+    → addon-handler-bridge listener
+      → addon onTap / onDblTap / onHold (per button)
+        → optional methods.* / executor.run
+          → runtime.invalidate (asks state publisher to re-emit)
+            → state message (only the active deck's channels)
+              → frontend ChannelRegistry.publish(channel, payload)
+                → useAddonChannel(channel) re-renders
+  → bridge.broadcast("runtime:gesture:<buttonId>", {gesture, at})
+    → frontend ButtonSurface receives the gesture event
+```
+
+### 7.2 Emulator overlay (no hardware)
+
+The emulator SPA in `packages/cli/emulator/` captures pointer events on the
+visible tiles. It runs its own gesture state machine — `dispatchMouseEvent`
+in `packages/cli/emulator/src/gesture.ts`, wrapping the shared
+`createGestureDetector` constants from `core/gesture-state.ts`. Only the
+final gesture (`tap` / `dbl-tap` / `hold`) is sent over the wire as a
+`button-action` message.
+
+```
+emulator SPA pointerdown / pointerup / leave (DeckFrame.tsx)
+  → gesture buffer (per key)
+    → createGestureDetector / dispatchMouseEvent → {kind, position, ...}
+      → WS "button-action" {deckId, position, gesture}
+        → EmulatorOutputClient.onMessage
+          → runtime.dispatchGesture(buttonId, gesture)
+            → (same path as 7.1 from here)
+```
+
+The `EmulatorOutputClient` does no gesture detection. It is a thin
+pass-through that looks up the button by position and calls
+`runtime.dispatchGesture`. All detection lives in the emulator SPA.
+
+### 7.3 Real hardware
+
+```
+device.onKeyEvent({type: "down" | "up", keyIndex, timestamp})
+  → RealOutputClient: createGestureDetector({onGesture}) per key
     → runtime.dispatchGesture(buttonId, gesture)
-      → gesture state machine (core/gesture-state.ts)
-        → addon-handler-bridge listener
-          → addon onTap / onDblTap / onHold (per button)
-            → optional methods.* / executor.run
-              → runtime.invalidate (asks state publisher to re-emit)
-                → state message (only the active deck's channels)
-                  → frontend ChannelRegistry.publish(channel, payload)
-                    → useAddonChannel(channel) re-renders
-      → bridge.broadcast("runtime:gesture:<buttonId>", {gesture, at})
-        → frontend ButtonSurface receives the gesture event
+      → (same path as 7.1 from here)
 ```
 
-### 7.2 Emulator click → action
+RealOutputClient runs `createGestureDetector` directly on the hardware
+events. Nothing crosses the WS for this path — the device is a USB peripheral
+on the host. The backend dispatches the gesture; the runtime broadcasts
+`runtime:gesture:<buttonId>` over WS.
 
-```
-emulator SPA click
-  → WS "button-action" {deckId, position, gesture}
-    → bridge.onMessage
-      → runtime.dispatchGesture(buttonId, gesture)
-        → (same path as 7.1 from here)
-```
+### 7.4 Decoupling rule
 
-### 7.3 Frontend-UI click (testing without hardware)
+Each transport owns its own gesture detection. The wire format on the
+emulator path is the **final gesture** (`button-action` with
+`gesture: 'tap' | 'dbl-tap' | 'hold'`); raw `down` / `up` events never
+cross the bridge. The chrome SPA in `packages/cli/frontend/` is pure
+display: it subscribes to `runtime:gesture:*` (per button) and the generic
+`state` channels. **It never emits any button event.**
 
-```
-frontend App.sendButtonAction(buttonId, gesture)
-  → WS "button-action" {deckId, position, gesture}    (same wire format)
-    → runtime.invokeAction                             (NOT dispatchGesture)
-      → addon onTap / onDblTap / onHold
-        → action runs
-```
+Shared logic lives in `packages/cli/src/core/gesture-state.ts` — the
+constants `HOLD_ACTION_DELAY_MS = 200` and `DOUBLE_TAP_DELAY_MS = 200` are
+imported by both transports (RealOutputClient directly, the emulator SPA
+via `@sireno-deck/cli`) so any future change applies to both at once.
 
-This path **bypasses the gesture state machine and the per-button gesture
-channel**. The action runs, but the addon's frontend `gesture` prop is never
-set and no `runtime:gesture:*` event is broadcast. See §9 for the small
-inconsistency this causes in visual feedback.
+Neither the backend nor the chrome knows how each transport derives
+gestures. A change in tap-detection semantics is local to the transport
+that owns it.
 
-### 7.4 Poller → render
+### 7.5 Poller → render
 
 ```
 addon global backend
@@ -403,7 +442,7 @@ addon global backend
 State messages are only sent for channels owned by the addons of the
 **active** deck (`setActiveDeck({addonNames})` is the gate).
 
-### 7.5 Active-app overlay
+### 7.6 Active-app overlay
 
 ```
 ActiveAppProvider tick (1 s, 200 ms debounce)
@@ -512,13 +551,11 @@ the resolved button is a system slot, render `SplitActionSurface` instead of
 
 ## 9. Known small issues
 
-- **Frontend-UI clicks don't emit a per-button gesture event.** §7.3
-  bypasses `runtime.dispatchGesture`, so the addon's `gesture` prop is never
-  set. The visual frame state is set locally in `App.tsx` (so the tile
-  flashes), but addons that depend on `useEffect([gesture])` will not react
-  to a click on the frontend UI itself. Fix is local: have
-  `sendButtonAction` go through the same `bridge.broadcast("runtime:gesture:*")`
-  path that the hardware / emulator paths use. Not architectural.
+- **Emulator outer `ButtonFrame` no longer flashes on press.** Intentional.
+  The chrome SPA no longer tracks per-tile gesture state from server echoes;
+  it only subscribes to `runtime:gesture:*` for the inner `ButtonSurface`.
+  The outer frame's pressed/isHolding/holdProgress props are accepted but
+  not driven. See §7.4.
 
 - **Two shapes for addon decks.** `AddonDeckFactory` (no config) and
   `AddonDeckDefinition` (config-aware) coexist on `manifest.decks`. The

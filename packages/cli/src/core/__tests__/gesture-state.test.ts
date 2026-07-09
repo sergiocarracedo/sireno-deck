@@ -122,7 +122,7 @@ describe("createGestureDetector", () => {
       expect(result?.timestamps).toEqual([0, 50, 100, 200])
     })
 
-    it("first tap callback is cancelled by second down", () => {
+    it("first tap callback is cancelled by second down; dbl-tap callback fires", () => {
       detect(down(0))
       advance(49)
       detect(up(50))
@@ -130,8 +130,10 @@ describe("createGestureDetector", () => {
       detect(down(150))
       advance(50)
       detect(up(200))
+      expect(cb).toHaveBeenCalledTimes(1)
+      expect(cb.mock.calls[0]![0]!.kind).toBe("dbl-tap")
       advance(DOUBLE_TAP_DELAY_MS + 1)
-      expect(cb).not.toHaveBeenCalled()
+      expect(cb).toHaveBeenCalledTimes(1)
     })
 
     it("two taps separated by > DOUBLE_TAP_DELAY_MS: first tap via callback, second tap via callback", () => {
@@ -206,7 +208,7 @@ describe("createGestureDetector", () => {
       detect(down(0))
       advance(49)
       detect(up(50))
-      advance(200)
+      advance(100)
       detector.reset()
       advance(DOUBLE_TAP_DELAY_MS + 1)
       expect(cb).not.toHaveBeenCalled()
