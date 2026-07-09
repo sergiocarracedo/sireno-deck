@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-import { spawn } from "node:child_process";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve } from "node:path";
+import { spawn } from "node:child_process"
+import { fileURLToPath } from "node:url"
+import { dirname, resolve } from "node:path"
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const cliRoot = resolve(__dirname, "..");
-const cliEntry = resolve(cliRoot, "src/cli/main.ts");
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const cliRoot = resolve(__dirname, "..")
+const cliEntry = resolve(cliRoot, "src/cli/main.ts")
 
-const tsxBin = resolve(cliRoot, "node_modules", ".bin", "tsx");
+const tsxBin = resolve(cliRoot, "node_modules", ".bin", "tsx")
 
 /**
  * Tell tsx --watch to ignore the frontend workspace and theme assets. Those
@@ -34,14 +34,14 @@ const excludePatterns = [
   "**/vite.config.ts",
   "**/vite.config.cts",
   "**/vite.config.mts",
-];
+]
 
 const args = [
   "watch",
   ...excludePatterns.flatMap((p) => ["--exclude", p]),
   cliEntry,
   ...process.argv.slice(2),
-];
+]
 
 const child = spawn(tsxBin, args, {
   stdio: "inherit",
@@ -51,8 +51,8 @@ const child = spawn(tsxBin, args, {
     SIRENO_CWD: process.cwd(),
     TSX_TSCONFIG_PATH: resolve(cliRoot, "tsconfig.json"),
   },
-});
+})
 
 child.on("exit", (code) => {
-  process.exit(code ?? 0);
-});
+  process.exit(code ?? 0)
+})

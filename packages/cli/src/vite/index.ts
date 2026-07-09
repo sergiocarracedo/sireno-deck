@@ -3,4 +3,4 @@ export {
   buildAddonsImports,
   TOKEN_MODULE,
   type SirenoVitePluginOptions,
-} from "./virtual-modules";
+} from "./virtual-modules"

@@ -6,11 +6,11 @@ export {
   type BrowserLike,
   type ContextLike,
   type PageLike,
-} from "./browser-renderer";
+} from "./browser-renderer"
 export {
   CadenceTimer,
   EventDebouncer,
   type CadenceTimerOptions,
   type EventDebouncerOptions,
-} from "./screenshot-cadence";
-export { BufferChangeTracker, hashBuffer } from "./buffer-hash";
+} from "./screenshot-cadence"
+export { BufferChangeTracker, hashBuffer } from "./buffer-hash"

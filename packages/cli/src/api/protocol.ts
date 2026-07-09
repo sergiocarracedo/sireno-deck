@@ -1,2 +1,2 @@
-export * from "./protocol-internal";
-export type * from "./addon";
+export * from "./protocol-internal"
+export type * from "./addon"

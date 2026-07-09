@@ -1,8 +1,0 @@
-decks:
-  main:
-    name: Main Deck
-    buttons:
-      - position: 0
-
-logging:
-  level: info

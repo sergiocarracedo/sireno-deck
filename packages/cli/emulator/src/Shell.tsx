@@ -1,13 +1,13 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from "react"
 
-import { DEVICE_MODELS, type DeviceModelSpec } from '@sireno-deck/cli'
+import { DEVICE_MODELS, type DeviceModelSpec } from "@sireno-deck/cli"
 
-import { createWsClient, serializeHello, type WsClient } from './bridge'
-import { DeckFrame } from './DeckFrame'
-import { SidePanel } from './SidePanel'
+import { createWsClient, serializeHello, type WsClient } from "./bridge"
+import { DeckFrame } from "./DeckFrame"
+import { SidePanel } from "./SidePanel"
 
 const FALLBACK_DECKS: ReadonlyArray<{ id: string; name: string }> = [
-  { id: 'main', name: 'Main' },
+  { id: "main", name: "Main" },
 ]
 
 export interface ShellProps {
@@ -26,7 +26,7 @@ export const Shell = ({
   const initialSpec: DeviceModelSpec =
     DEVICE_MODELS.find((m) => m.id === initialDeviceModel) ?? DEVICE_MODELS[0]!
 
-  const [activeDeckId, setActiveDeckId] = useState<string>('main')
+  const [activeDeckId, setActiveDeckId] = useState<string>("main")
 
   const sidePanelDecks = FALLBACK_DECKS
   const [deviceModel, setDeviceModel] = useState<DeviceModelSpec>(initialSpec)
@@ -39,7 +39,7 @@ export const Shell = ({
   const handleGesture = (msg: {
     deckId: string
     position: number
-    gesture: 'tap' | 'dbl-tap' | 'hold'
+    gesture: "tap" | "dbl-tap" | "hold"
   }): void => {
     sendJson(msg)
   }
@@ -50,7 +50,7 @@ export const Shell = ({
       ...(token !== undefined ? { token } : {}),
       wsFactory: (url: string) => {
         const ws = new WebSocket(url)
-        ws.addEventListener('open', () => ws.send(serializeHello(token)))
+        ws.addEventListener("open", () => ws.send(serializeHello(token)))
         return ws as unknown as { send: (d: string) => void; close: () => void }
       },
     })

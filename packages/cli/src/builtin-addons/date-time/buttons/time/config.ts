@@ -1,9 +1,9 @@
-import { z } from "zod";
+import { z } from "zod"
 
 export const configSchema = z
   .object({
     variant: z.enum(["default", "big"]).optional().default("default"),
   })
-  .strict();
+  .strict()
 
-export type ConfigSchema = z.infer<typeof configSchema>;
+export type ConfigSchema = z.infer<typeof configSchema>

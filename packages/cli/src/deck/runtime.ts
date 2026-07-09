@@ -1,333 +1,355 @@
-import type pino from "pino";
+import type pino from "pino"
 
-import type { PubSub } from "@/core/pub-sub";
-import type { Store } from "@/core/store";
-import type { GestureKind } from "@/core/gesture-state";
-import type { ActiveAppProvider } from "@/system/provider";
-import { compileDeckMatcher } from "@/system/glob-match";
+import type { PubSub } from "@/core/pub-sub"
+import type { Store } from "@/core/store"
+import type { GestureKind } from "@/core/gesture-state"
+import type { ActiveAppProvider } from "@/system/provider"
+import { compileDeckMatcher } from "@/system/glob-match"
 
-type ActiveAppProviderLike = Pick<ActiveAppProvider, "getActive" | "stop">;
+type ActiveAppProviderLike = Pick<ActiveAppProvider, "getActive" | "stop">
 
 export interface RuntimeDeck {
-  id: string;
-  name: string;
-  buttons: ReadonlyArray<{ id: string; type: string; config?: unknown }>;
-  isMain?: boolean;
-  isOverlay?: boolean;
-  processNames?: ReadonlyArray<string>;
-  windowNames?: ReadonlyArray<string>;
-  autoShow?: boolean;
-  isOverlayDeck?: boolean;
+  id: string
+  name: string
+  buttons: ReadonlyArray<{ id: string; type: string; config?: unknown }>
+  isMain?: boolean
+  isOverlay?: boolean
+  processNames?: ReadonlyArray<string>
+  windowNames?: ReadonlyArray<string>
+  autoShow?: boolean
+  isOverlayDeck?: boolean
 }
 
 export interface RuntimeButtonHandler {
-  onTap?: (ctx: ButtonActionContext) => void | Promise<void>;
-  onDblTap?: (ctx: ButtonActionContext) => void | Promise<void>;
-  onHold?: (ctx: ButtonActionContext) => void | Promise<void>;
-  dispose?: () => void | Promise<void>;
+  onTap?: (ctx: ButtonActionContext) => void | Promise<void>
+  onDblTap?: (ctx: ButtonActionContext) => void | Promise<void>
+  onHold?: (ctx: ButtonActionContext) => void | Promise<void>
+  dispose?: () => void | Promise<void>
 }
 
 export interface ButtonActionContext {
-  buttonId: string;
-  deckId: string;
-  config: unknown;
-  gesture: GestureKind;
+  buttonId: string
+  deckId: string
+  config: unknown
+  gesture: GestureKind
 }
 
 export interface GestureEvent {
-  readonly gesture: GestureKind;
-  readonly at: number;
+  readonly gesture: GestureKind
+  readonly at: number
 }
 
-export type GestureListener = (buttonId: string, event: GestureEvent) => void;
+export type GestureListener = (buttonId: string, event: GestureEvent) => void
 
 export interface MountedButton {
-  addonName: string;
-  buttonId: string;
-  type: string;
-  config: unknown;
+  addonName: string
+  buttonId: string
+  type: string
+  config: unknown
 }
 
 export interface CreateRuntimeOptions {
-  decks: ReadonlyArray<RuntimeDeck>;
-  pubSub: PubSub;
-  store: Store;
-  logger: pino.Logger;
+  decks: ReadonlyArray<RuntimeDeck>
+  pubSub: PubSub
+  store: Store
+  logger: pino.Logger
 }
 
 export interface Runtime {
-  getActiveDeck(): RuntimeDeck;
-  getActiveDeckId(): string;
-  navigateToDeck(id: string, options?: { addToHistory?: boolean }): void;
-  goBack(): void;
-  setOverlay(deckId: string | null): void;
-  getOverlay(): RuntimeDeck | null;
-  registerButtonHandler(buttonId: string, handler: RuntimeButtonHandler): void;
-  mountAddonButtons(addonName: string, buttons: ReadonlyArray<MountedButton>): void;
-  dispatchGesture(buttonId: string, gesture: GestureKind): Promise<void>;
-  invokeAction(buttonId: string, gesture: GestureKind): Promise<void>;
-  setGestureListener(listener: GestureListener | null): void;
-  invalidate(): void;
-  setActiveAppProvider(provider: ActiveAppProviderLike): void;
-  stopActiveAppPolling(): Promise<void>;
-  navStackDepth(): number;
+  getActiveDeck(): RuntimeDeck
+  getActiveDeckId(): string
+  navigateToDeck(id: string, options?: { addToHistory?: boolean }): void
+  goBack(): void
+  setOverlay(deckId: string | null): void
+  getOverlay(): RuntimeDeck | null
+  registerButtonHandler(buttonId: string, handler: RuntimeButtonHandler): void
+  mountAddonButtons(
+    addonName: string,
+    buttons: ReadonlyArray<MountedButton>,
+  ): void
+  dispatchGesture(buttonId: string, gesture: GestureKind): Promise<void>
+  invokeAction(buttonId: string, gesture: GestureKind): Promise<void>
+  setGestureListener(listener: GestureListener | null): void
+  invalidate(): void
+  setActiveAppProvider(provider: ActiveAppProviderLike): void
+  stopActiveAppPolling(): Promise<void>
+  navStackDepth(): number
 }
 
 export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
-  const { decks, pubSub, store, logger } = options;
-  let gestureListener: GestureListener | null = null;
-  const mainDeck = decks.find((d) => d.isMain) ?? decks[0];
+  const { decks, pubSub, store, logger } = options
+  let gestureListener: GestureListener | null = null
+  const mainDeck = decks.find((d) => d.isMain) ?? decks[0]
   if (mainDeck === undefined) {
-    throw new Error("createRuntime: at least one deck is required");
+    throw new Error("createRuntime: at least one deck is required")
   }
 
-  const handlers = new Map<string, RuntimeButtonHandler>();
-  const navStack: string[] = [mainDeck.id];
-  let transientDeckId: string | null = null;
-  let overlayDeckId: string | null = null;
+  const handlers = new Map<string, RuntimeButtonHandler>()
+  const navStack: string[] = [mainDeck.id]
+  let transientDeckId: string | null = null
+  let overlayDeckId: string | null = null
 
-  const deckById = (id: string): RuntimeDeck | undefined => decks.find((d) => d.id === id);
+  const deckById = (id: string): RuntimeDeck | undefined =>
+    decks.find((d) => d.id === id)
 
   const findButton = (
     id: string,
   ): { deckId: string; button: RuntimeDeck["buttons"][number] } | null => {
-    const colonIdx = id.indexOf(':');
+    const colonIdx = id.indexOf(":")
     if (colonIdx === -1) {
-      console.log('[findButton] no colon in id, searching all decks for', id);
       for (const deck of decks) {
-        const button = deck.buttons.find((b) => b.id === id);
-        if (button !== undefined) {
-          console.log('[findButton] found in deck', deck.id);
-          return { deckId: deck.id, button };
-        }
+        const button = deck.buttons.find((b) => b.id === id)
+        if (button !== undefined) return { deckId: deck.id, button }
       }
-      console.log('[findButton] not found');
-      return null;
+      return null
     }
-    const deckId = id.slice(0, colonIdx);
-    const buttonId = id.slice(colonIdx + 1);
-    console.log('[findButton] looking for deck', deckId, 'button', buttonId);
-    const deck = deckById(deckId);
-    if (deck === undefined) {
-      console.log('[findButton] deck not found');
-      return null;
-    }
-    const button = deck.buttons.find((b) => b.id === buttonId);
-    if (button === undefined) {
-      console.log('[findButton] button not found in deck');
-      return null;
-    }
-    console.log('[findButton] found');
-    return { deckId: deck.id, button };
-  };
+    const deckId = id.slice(0, colonIdx)
+    const buttonId = id.slice(colonIdx + 1)
+    const deck = deckById(deckId)
+    if (deck === undefined) return null
+    const button = deck.buttons.find((b) => b.id === buttonId)
+    if (button === undefined) return null
+    return { deckId: deck.id, button }
+  }
 
   const getActiveDeck = (): RuntimeDeck => {
-    const id = transientDeckId ?? navStack[navStack.length - 1] ?? mainDeck.id;
-    const deck = deckById(id);
-    if (deck === undefined) throw new Error(`Active deck '${id}' not found`);
-    return deck;
-  };
+    const id = transientDeckId ?? navStack[navStack.length - 1] ?? mainDeck.id
+    const deck = deckById(id)
+    if (deck === undefined) throw new Error(`Active deck '${id}' not found`)
+    return deck
+  }
 
   const getActiveDeckId = (): string => {
-    return transientDeckId ?? navStack[navStack.length - 1] ?? mainDeck.id;
-  };
+    return transientDeckId ?? navStack[navStack.length - 1] ?? mainDeck.id
+  }
 
-  const navigateToDeck = (id: string, navOptions?: { addToHistory?: boolean }): void => {
-    if (id === getActiveDeckId()) return;
-    const target = deckById(id);
+  const navigateToDeck = (
+    id: string,
+    navOptions?: { addToHistory?: boolean },
+  ): void => {
+    if (id === getActiveDeckId()) return
+    const target = deckById(id)
     if (target === undefined) {
-      logger.warn({ deckId: id }, "navigateToDeck: deck not found");
-      return;
+      logger.warn({ deckId: id }, "navigateToDeck: deck not found")
+      return
     }
     if (navOptions?.addToHistory === false) {
-      transientDeckId = id;
+      transientDeckId = id
     } else {
-      navStack.push(id);
-      transientDeckId = null;
+      navStack.push(id)
+      transientDeckId = null
     }
-    pubSub.publish("runtime:activeDeck", { deckId: id });
-  };
+    pubSub.publish("runtime:activeDeck", { deckId: id })
+  }
 
   const goBack = (): void => {
     if (transientDeckId !== null) {
-      transientDeckId = null;
-      const prev = navStack[navStack.length - 1] ?? mainDeck.id;
-      pubSub.publish("runtime:activeDeck", { deckId: prev });
-      return;
+      transientDeckId = null
+      const prev = navStack[navStack.length - 1] ?? mainDeck.id
+      pubSub.publish("runtime:activeDeck", { deckId: prev })
+      return
     }
     if (navStack.length <= 1) {
-      logger.warn("goBack: at root deck; nothing to pop");
-      return;
+      logger.warn("goBack: at root deck; nothing to pop")
+      return
     }
-    navStack.pop();
-    const prev = navStack[navStack.length - 1];
-    if (prev === undefined) return;
-    pubSub.publish("runtime:activeDeck", { deckId: prev });
-  };
+    navStack.pop()
+    const prev = navStack[navStack.length - 1]
+    if (prev === undefined) return
+    pubSub.publish("runtime:activeDeck", { deckId: prev })
+  }
 
   const setOverlay = (deckId: string | null): void => {
     if (deckId !== null && deckById(deckId) === undefined) {
-      logger.warn({ deckId }, "setOverlay: deck not found");
-      return;
+      logger.warn({ deckId }, "setOverlay: deck not found")
+      return
     }
-    overlayDeckId = deckId;
-    pubSub.publish("runtime:overlay", { deckId });
-  };
+    overlayDeckId = deckId
+    pubSub.publish("runtime:overlay", { deckId })
+  }
 
   const getOverlay = (): RuntimeDeck | null => {
-    if (overlayDeckId === null) return null;
-    return deckById(overlayDeckId) ?? null;
-  };
+    if (overlayDeckId === null) return null
+    return deckById(overlayDeckId) ?? null
+  }
 
-  const registerButtonHandler = (buttonId: string, handler: RuntimeButtonHandler): void => {
-    handlers.set(buttonId, handler);
-  };
+  const registerButtonHandler = (
+    buttonId: string,
+    handler: RuntimeButtonHandler,
+  ): void => {
+    handlers.set(buttonId, handler)
+  }
 
-  const mountAddonButtons = (addonName: string, buttons: ReadonlyArray<MountedButton>): void => {
+  const mountAddonButtons = (
+    addonName: string,
+    buttons: ReadonlyArray<MountedButton>,
+  ): void => {
     for (const btn of buttons) {
-      logger.debug({ addonName, buttonId: btn.buttonId, type: btn.type }, "mounted addon button");
+      logger.debug(
+        { addonName, buttonId: btn.buttonId, type: btn.type },
+        "mounted addon button",
+      )
     }
-  };
+  }
 
-  const invokeAction = async (buttonId: string, gesture: GestureKind): Promise<void> => {
-    const found = findButton(buttonId);
+  const invokeAction = async (
+    buttonId: string,
+    gesture: GestureKind,
+  ): Promise<void> => {
+    const found = findButton(buttonId)
     if (found === null) {
-      logger.warn({ buttonId }, "invokeAction: button not found");
-      return;
+      logger.warn({ buttonId }, "invokeAction: button not found")
+      return
     }
-    const handlerKey = `${found.deckId}:${found.button.id}`;
-    const handler = handlers.get(handlerKey);
+    const handlerKey = `${found.deckId}:${found.button.id}`
+    const handler = handlers.get(handlerKey)
     if (handler === undefined) {
-      logger.warn({ buttonId, handlerKey }, "invokeAction: no handler registered");
-      return;
+      logger.warn(
+        { buttonId, handlerKey },
+        "invokeAction: no handler registered",
+      )
+      return
     }
     const ctx: ButtonActionContext = {
       buttonId,
       deckId: found.deckId,
       config: found.button.config,
       gesture,
-    };
+    }
     const fn =
-      gesture === "tap" ? handler.onTap : gesture === "dbl-tap" ? handler.onDblTap : handler.onHold;
+      gesture === "tap"
+        ? handler.onTap
+        : gesture === "dbl-tap"
+          ? handler.onDblTap
+          : handler.onHold
     if (fn === undefined) {
-      logger.warn({ buttonId, gesture }, "invokeAction: handler missing for gesture");
-      return;
+      logger.warn(
+        { buttonId, gesture },
+        "invokeAction: handler missing for gesture",
+      )
+      return
     }
-    await fn(ctx);
-  };
+    await fn(ctx)
+  }
 
-  const dispatchGesture = async (buttonId: string, gesture: GestureKind): Promise<void> => {
-    const found = findButton(buttonId);
+  const dispatchGesture = async (
+    buttonId: string,
+    gesture: GestureKind,
+  ): Promise<void> => {
+    const found = findButton(buttonId)
     if (found === null) {
-      logger.warn({ buttonId }, "dispatchGesture: button not found");
-      return;
+      logger.warn({ buttonId }, "dispatchGesture: button not found")
+      return
     }
-    gestureListener?.(found.button.id, { gesture, at: Date.now() });
-    await invokeAction(buttonId, gesture);
-  };
+    gestureListener?.(found.button.id, { gesture, at: Date.now() })
+    await invokeAction(buttonId, gesture)
+  }
 
   const setGestureListener = (listener: GestureListener | null): void => {
-    gestureListener = listener;
-  };
+    gestureListener = listener
+  }
 
   const invalidate = (): void => {
-    pubSub.publish("runtime:invalidate", { activeDeckId: getActiveDeckId() });
-  };
+    pubSub.publish("runtime:invalidate", { activeDeckId: getActiveDeckId() })
+  }
 
-  void store;
+  void store
 
   const overlayDecks = (): Array<{
-    deck: RuntimeDeck;
-    matcher: ReturnType<typeof compileDeckMatcher>;
+    deck: RuntimeDeck
+    matcher: ReturnType<typeof compileDeckMatcher>
   }> => {
-    const result: Array<{ deck: RuntimeDeck; matcher: ReturnType<typeof compileDeckMatcher> }> = [];
+    const result: Array<{
+      deck: RuntimeDeck
+      matcher: ReturnType<typeof compileDeckMatcher>
+    }> = []
     for (const deck of decks) {
-      if (!deck.processNames || deck.processNames.length === 0) continue;
-      result.push({ deck, matcher: compileDeckMatcher(deck.processNames) });
+      if (!deck.processNames || deck.processNames.length === 0) continue
+      result.push({ deck, matcher: compileDeckMatcher(deck.processNames) })
     }
-    return result;
-  };
+    return result
+  }
 
-  let activeAppPoll: ReturnType<typeof setInterval> | null = null;
-  let activeAppProvider: ActiveAppProviderLike | null = null;
-  let lastOverlayDeckId: string | null = overlayDeckId;
-  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-  let pendingOverlayDeckId: string | null = null;
+  let activeAppPoll: ReturnType<typeof setInterval> | null = null
+  let activeAppProvider: ActiveAppProviderLike | null = null
+  let lastOverlayDeckId: string | null = overlayDeckId
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null
+  let pendingOverlayDeckId: string | null = null
 
   const applyOverlay = (deckId: string | null): void => {
-    if (deckId === lastOverlayDeckId) return;
+    if (deckId === lastOverlayDeckId) return
     if (deckId !== null && deckById(deckId) === undefined) {
-      logger.warn({ deckId }, "active-app: overlay deck not found");
-      return;
+      logger.warn({ deckId }, "active-app: overlay deck not found")
+      return
     }
-    lastOverlayDeckId = deckId;
-    overlayDeckId = deckId;
-    pubSub.publish("runtime:overlay", { deckId });
-  };
+    lastOverlayDeckId = deckId
+    overlayDeckId = deckId
+    pubSub.publish("runtime:overlay", { deckId })
+  }
 
   const computeOverlayFor = (snapshot: {
-    name: string;
-    windowTitle: string | null;
-    processId: number | null;
+    name: string
+    windowTitle: string | null
+    processId: number | null
   }): string | null => {
     for (const { deck, matcher } of overlayDecks()) {
-      if (matcher(snapshot)) return deck.id;
+      if (matcher(snapshot)) return deck.id
     }
-    return null;
-  };
+    return null
+  }
 
   const scheduleOverlay = (deckId: string | null): void => {
-    pendingOverlayDeckId = deckId;
-    if (debounceTimer !== null) clearTimeout(debounceTimer);
+    pendingOverlayDeckId = deckId
+    if (debounceTimer !== null) clearTimeout(debounceTimer)
     debounceTimer = setTimeout(() => {
-      debounceTimer = null;
-      const next = pendingOverlayDeckId;
-      pendingOverlayDeckId = null;
-      applyOverlay(next);
-    }, 200);
-  };
+      debounceTimer = null
+      const next = pendingOverlayDeckId
+      pendingOverlayDeckId = null
+      applyOverlay(next)
+    }, 200)
+  }
 
   const startActiveAppLoop = (provider: ActiveAppProviderLike): void => {
-    if (activeAppPoll !== null) return;
+    if (activeAppPoll !== null) return
     activeAppPoll = setInterval(() => {
       void provider.getActive().then((snapshot) => {
         if (snapshot === null) {
-          scheduleOverlay(null);
-          return;
+          scheduleOverlay(null)
+          return
         }
-        scheduleOverlay(computeOverlayFor(snapshot));
-      });
-    }, 1000);
-  };
+        scheduleOverlay(computeOverlayFor(snapshot))
+      })
+    }, 1000)
+  }
 
   const stopActiveAppLoop = (): void => {
     if (debounceTimer !== null) {
-      clearTimeout(debounceTimer);
-      debounceTimer = null;
+      clearTimeout(debounceTimer)
+      debounceTimer = null
     }
-    pendingOverlayDeckId = null;
+    pendingOverlayDeckId = null
     if (activeAppPoll !== null) {
-      clearInterval(activeAppPoll);
-      activeAppPoll = null;
+      clearInterval(activeAppPoll)
+      activeAppPoll = null
     }
-  };
+  }
 
   const setActiveAppProvider = (provider: ActiveAppProviderLike): void => {
-    activeAppProvider = provider;
-    startActiveAppLoop(provider);
-  };
+    activeAppProvider = provider
+    startActiveAppLoop(provider)
+  }
 
   const stopActiveAppPolling = async (): Promise<void> => {
-    stopActiveAppLoop();
+    stopActiveAppLoop()
     if (activeAppProvider !== null) {
       try {
-        await activeAppProvider.stop();
+        await activeAppProvider.stop()
       } catch (err) {
-        logger.warn({ err }, "active-app: provider stop() failed");
+        logger.warn({ err }, "active-app: provider stop() failed")
       }
-      activeAppProvider = null;
+      activeAppProvider = null
     }
-  };
+  }
 
   const runtime: Runtime = {
     getActiveDeck,
@@ -345,7 +367,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     setActiveAppProvider,
     stopActiveAppPolling,
     navStackDepth: () => navStack.length,
-  };
+  }
 
-  return runtime;
-};
+  return runtime
+}

@@ -1,20 +1,20 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest"
 
-import { AddonRegistry } from "@/addon/registry";
-import { coreButtonsAddon } from "@/builtin-addons/core-buttons/index";
-import { internalSettingsAddon } from "@/builtin-addons/internal-settings/index";
-import { sessionAddon } from "@/builtin-addons/session/index";
+import { AddonRegistry } from "@/addon/registry"
+import { coreButtonsAddon } from "@/builtin-addons/core-buttons/index"
+import { internalSettingsAddon } from "@/builtin-addons/internal-settings/index"
+import { sessionAddon } from "@/builtin-addons/session/index"
 
-import { validateFull } from "../validation";
-import type { RawConfig } from "../schemas";
+import { validateFull } from "../validation"
+import type { RawConfig } from "../schemas"
 
 const registry = (): AddonRegistry => {
-  const r = new AddonRegistry();
-  r.load(coreButtonsAddon);
-  r.load(internalSettingsAddon);
-  r.load(sessionAddon);
-  return r;
-};
+  const r = new AddonRegistry()
+  r.load(coreButtonsAddon)
+  r.load(internalSettingsAddon)
+  r.load(sessionAddon)
+  return r
+}
 
 const baseConfig = (overrides: Partial<RawConfig> = {}): RawConfig => ({
   theme: "default",
@@ -28,25 +28,31 @@ const baseConfig = (overrides: Partial<RawConfig> = {}): RawConfig => ({
   addons: [],
   session: { locked_deck: "session:locked" },
   ...overrides,
-});
+})
 
 describe("validateFull", () => {
   it("clean config with valid core:change-deck button passes", () => {
-    const reg = registry();
+    const reg = registry()
     const config = baseConfig({
       decks: {
         main: {
           name: "Main",
-          buttons: [{ position: 0, type: "core-buttons:change-deck", config: { deck: "media" } }],
+          buttons: [
+            {
+              position: 0,
+              type: "core-buttons:change-deck",
+              config: { deck: "media" },
+            },
+          ],
         },
       },
-    });
-    const result = validateFull(config, reg);
-    expect(result.issues).toEqual([]);
-  });
+    })
+    const result = validateFull(config, reg)
+    expect(result.issues).toEqual([])
+  })
 
   it("unknown button type errors with path", () => {
-    const reg = registry();
+    const reg = registry()
     const config = baseConfig({
       decks: {
         main: {
@@ -54,43 +60,57 @@ describe("validateFull", () => {
           buttons: [{ position: 0, type: "made:up", config: {} }],
         },
       },
-    });
-    const result = validateFull(config, reg);
-    expect(result.issues.some((i) => i.message.includes("Unknown button type"))).toBe(true);
-  });
+    })
+    const result = validateFull(config, reg)
+    expect(
+      result.issues.some((i) => i.message.includes("Unknown button type")),
+    ).toBe(true)
+  })
 
   it("internal: true button (core:settings-brightness) used in user config errors", () => {
-    const reg = registry();
+    const reg = registry()
     const config = baseConfig({
       decks: {
         main: {
           name: "Main",
-          buttons: [{ position: 0, type: "internal-settings:brightness", config: {} }],
+          buttons: [
+            { position: 0, type: "internal-settings:brightness", config: {} },
+          ],
         },
       },
-    });
-    const result = validateFull(config, reg);
-    expect(result.issues.some((i) => i.message.includes("Internal button"))).toBe(true);
-  });
+    })
+    const result = validateFull(config, reg)
+    expect(
+      result.issues.some((i) => i.message.includes("Internal button")),
+    ).toBe(true)
+  })
 
   it("bad core:action config (empty command) errors", () => {
-    const reg = registry();
+    const reg = registry()
     const config = baseConfig({
       decks: {
         main: {
           name: "Main",
-          buttons: [{ position: 0, type: "core-buttons:action", config: { command: "" } }],
+          buttons: [
+            {
+              position: 0,
+              type: "core-buttons:action",
+              config: { command: "" },
+            },
+          ],
         },
       },
-    });
-    const result = validateFull(config, reg);
-    expect(result.issues.some((i) => i.message.toLowerCase().includes("command"))).toBe(true);
-  });
+    })
+    const result = validateFull(config, reg)
+    expect(
+      result.issues.some((i) => i.message.toLowerCase().includes("command")),
+    ).toBe(true)
+  })
 
   it("empty issues array returns no errors", () => {
-    const reg = registry();
-    const config = baseConfig();
-    const result = validateFull(config, reg);
-    expect(result.issues).toEqual([]);
-  });
-});
+    const reg = registry()
+    const config = baseConfig()
+    const result = validateFull(config, reg)
+    expect(result.issues).toEqual([])
+  })
+})

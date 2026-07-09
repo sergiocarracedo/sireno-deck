@@ -1,24 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 
-import { ChannelRegistry } from "./registry";
-import type { ChannelPayload } from "@/api/addon";
+import { ChannelRegistry } from "./registry"
+import type { ChannelPayload } from "@/api/addon"
 
 export interface UseAddonChannelReturn<T = unknown> {
-  data: T | undefined;
+  data: T | undefined
 }
 
-export const useAddonChannel = <T = unknown>(channel: string): UseAddonChannelReturn<T> => {
+export const useAddonChannel = <T = unknown>(
+  channel: string,
+): UseAddonChannelReturn<T> => {
   const [data, setData] = useState<T | undefined>(() =>
     ChannelRegistry.instance().last<T>(channel),
-  );
+  )
 
   useEffect(() => {
     return ChannelRegistry.instance().subscribe<T>(channel, (payload) => {
-      setData(payload);
-    });
-  }, [channel]);
+      setData(payload)
+    })
+  }, [channel])
 
-  return { data };
-};
+  return { data }
+}
 
-export type { ChannelRegistry, ChannelPayload };
+export type { ChannelRegistry, ChannelPayload }

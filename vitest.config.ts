@@ -1,11 +1,11 @@
-import { fileURLToPath } from "node:url";
-import { resolve } from "node:path";
+import { fileURLToPath } from "node:url"
+import { resolve } from "node:path"
 
-import { defineConfig } from "vitest/config";
-import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "vitest/config"
+import react from "@vitejs/plugin-react"
+import tailwindcss from "@tailwindcss/vite"
 
-const here = fileURLToPath(new URL(".", import.meta.url));
+const here = fileURLToPath(new URL(".", import.meta.url))
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
@@ -15,13 +15,28 @@ export default defineConfig({
       "@sireno-deck/cli": resolve(here, "packages/cli/src/index.ts"),
       "sireno-deck/react": resolve(here, "packages/cli/src/api/react/index.ts"),
       "virtual:sireno/token": fileURLToPath(
-        new URL("./packages/cli/frontend/src/__mocks__/token.ts", import.meta.url),
+        new URL(
+          "./packages/cli/frontend/src/__mocks__/token.ts",
+          import.meta.url,
+        ),
       ),
       "virtual:sireno/theme": fileURLToPath(
-        new URL("./packages/cli/frontend/src/__mocks__/theme.ts", import.meta.url),
+        new URL(
+          "./packages/cli/frontend/src/__mocks__/theme.ts",
+          import.meta.url,
+        ),
       ),
       "virtual:sireno/themes/manifest": fileURLToPath(
-        new URL("./packages/cli/frontend/src/__mocks__/themes-manifest.tsx", import.meta.url),
+        new URL(
+          "./packages/cli/frontend/src/__mocks__/themes-manifest.tsx",
+          import.meta.url,
+        ),
+      ),
+      "virtual:sireno/addons/registry": fileURLToPath(
+        new URL(
+          "./packages/cli/frontend/src/__mocks__/addons-registry.ts",
+          import.meta.url,
+        ),
       ),
     },
   },
@@ -44,4 +59,4 @@ export default defineConfig({
       exclude: ["packages/cli/src/**/__tests__/**"],
     },
   },
-});
+})

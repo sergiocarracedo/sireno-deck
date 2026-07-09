@@ -4,20 +4,20 @@ decks:
     name: Main Deck
     buttons:
       - position: 2
-        type: 'date-time:time'
+        type: "date-time:time"
         config:
           variant: big
 
       - position: 3
-        type: 'date-time:date'
+        type: "date-time:date"
 
       - position: 1
-        type: 'core-buttons:action'
+        type: "core-buttons:action"
         config:
-          command: 'xdg-open https://example.com'
+          command: "xdg-open https://example.com"
 
       - position: 4
-        type: 'weather:weather'
+        type: "weather:weather"
         config:
           location:
             latitude: 42.2304
@@ -25,17 +25,17 @@ decks:
             name: Vigo
 
       - position: 9
-        type: 'core-buttons:change-deck'
-        config:
-          deck: emoji
+        type: "emoji-selector:launcher"
 
       - position: 10
-        type: 'core-buttons:action'
+        type: "core-buttons:action"
         config:
-          command: 'google-chrome'
+          icon: ./assets/chrome.svg
+          label: Chrome
+          command: "google-chrome"
 
       - position: 0
-        type: 'system-status:status'
+        type: "system-status:status"
         config:
           variant: bars
           metrics:
@@ -45,76 +45,72 @@ decks:
               label: RAM
             - metric: swap_usage
               label: Swap
-              unavailable_label: 'N/A'
+              unavailable_label: "N/A"
 
       - position: 5
-        type: 'system-status:status'
+        type: "system-status:status"
         config:
           metrics:
             - metric: cpu_usage
               label: CPU
             - metric: fan_speed
               label: Fan
-              unavailable_label: 'N/A'
+              unavailable_label: "N/A"
             - metric: uptime
               label: Uptime
 
+      - position: 6
+        type: "media:volume:down"
       - position: 7
-        type: 'media:volume'
+        type: "media:volume:up"
       - position: 8
-        type: 'media:mute'
+        type: "media:mute"
       - position: 12
-        type: 'media:player'
+        type: "media:player"
 
       - position: 11
-        type: 'date-time:time'
+        type: "date-time:time"
 
       - position: 13
-        type: 'date-time:analog-clock'
-
-  emoji:
-    name: Emoji
-    buttons:
-      - position: 0
-        type: 'core-buttons:change-deck'
-        config:
-          deck: main
+        type: "date-time:analog-clock"
+        # actions:
+        #   tap: 'google-chrome https://calendar.google.com'
 
   chrome:
     name: Chrome
-    icon: /works/opensource/sireno-deck/assets/chrome.svg
+    icon: ./assets/chrome.svg
     trigger:
       process_name: chrome
     autoShow: true
     buttons:
       - position: 0
-        type: 'core-buttons:action'
+        type: "core-buttons:action"
         config:
-          command: 'xdotool key ctrl+t'
+          command: "xdotool key ctrl+t"
       - position: 1
-        type: 'core-buttons:action'
+        type: "core-buttons:action"
         config:
-          command: 'xdotool key ctrl+w'
+          command: "xdotool key ctrl+w"
       - position: 2
-        type: 'core-buttons:action'
+        type: "core-buttons:action"
         config:
-          command: 'xdotool key ctrl+shift+t'
+          command: "xdotool key ctrl+shift+t"
       - position: 3
-        type: 'core-buttons:action'
+        type: "core-buttons:action"
         config:
-          command: 'xdotool key ctrl+shift+n'
+          command: "xdotool key ctrl+shift+n"
       - position: 4
-        type: 'core-buttons:action'
+        type: "core-buttons:action"
         config:
-          command: 'xdotool key ctrl+r'
+          command: "xdotool key ctrl+r"
       - position: 5
-        type: 'core-buttons:action'
+        type: "core-buttons:action"
         config:
-          command: 'xdotool key ctrl+shift+r'
+          command: "xdotool key ctrl+shift+r"
       - position: 6
-        type: 'core-buttons:action'
+        type: "core-buttons:action"
         config:
-          command: 'xdotool key F12'
+          command: "xdotool key F12"
 
 logging:
   level: info

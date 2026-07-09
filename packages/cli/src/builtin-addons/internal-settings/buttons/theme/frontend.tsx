@@ -1,3 +1,3 @@
-import { NullButton } from "@/api/react";
+import { NullButton } from "@/api/react"
 
-export default NullButton;
+export default NullButton

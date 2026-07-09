@@ -1,12 +1,12 @@
-import type { AddonServiceContext, AddonGlobalService } from "@/addon/api";
+import type { AddonServiceContext, AddonGlobalService } from "@/addon/api"
 
-let capturedCtx: AddonServiceContext | null = null;
+let capturedCtx: AddonServiceContext | null = null
 
-export const __getCapturedCtx = (): AddonServiceContext | null => capturedCtx;
+export const __getCapturedCtx = (): AddonServiceContext | null => capturedCtx
 
 export const __resetCapturedCtx = (): void => {
-  capturedCtx = null;
-};
+  capturedCtx = null
+}
 
 export const manifest = {
   name: "fake-media",
@@ -21,12 +21,12 @@ export const manifest = {
     ],
     methods: {
       refresh: async () => {
-        await capturedCtx?.poll("state");
+        await capturedCtx?.poll("state")
       },
     },
     onLoad: (ctx: AddonServiceContext) => {
-      capturedCtx = ctx;
-      ctx.publish({ initial: true });
+      capturedCtx = ctx
+      ctx.publish({ initial: true })
     },
   } satisfies AddonGlobalService,
-};
+}

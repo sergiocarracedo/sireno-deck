@@ -1,78 +1,93 @@
-import type { MediaStatus, MediaStatusProvider, ProviderExecutor } from "./types";
+import type {
+  MediaStatus,
+  MediaStatusProvider,
+  ProviderExecutor,
+} from "./types"
 
-const METADATA_TIMEOUT_MS = 2_000;
+const METADATA_TIMEOUT_MS = 2_000
 
 interface LinuxDeps {
-  readonly executor: ProviderExecutor;
+  readonly executor: ProviderExecutor
 }
 
 const STATUS_MAP = {
   Playing: "play",
   Paused: "pause",
   Stopped: "stop",
-} as const satisfies Record<string, MediaStatus["playStatus"]>;
+} as const satisfies Record<string, MediaStatus["playStatus"]>
 
 const runWpctl = async (
   deps: LinuxDeps,
   args: ReadonlyArray<string>,
 ): Promise<{ exitCode: number; stdout: string; stderr: string }> => {
-  return deps.executor.run("wpctl", args, { timeoutMs: 5_000 });
-};
+  return deps.executor.run("wpctl", args, { timeoutMs: 5_000 })
+}
 
 const parseWpctlVolume = (stdout: string): number => {
-  const match = stdout.match(/Volume:\s*(\d+\.?\d*)/);
-  return match ? Math.max(0, Math.min(1, parseFloat(match[1]))) : 1;
-};
+  const match = stdout.match(/Volume:\s*(\d+\.?\d*)/)
+  return match ? Math.max(0, Math.min(1, parseFloat(match[1]))) : 1
+}
 
 const readStatus = async (deps: LinuxDeps): Promise<MediaStatus> => {
   const [metaResult, positionResult] = await Promise.all([
     deps.executor.run(
       "playerctl",
-      ["metadata", "--format", "{{ title }}\t{{ artist }}\t{{ album }}\t{{ mpris:length }}"],
+      [
+        "metadata",
+        "--format",
+        "{{ title }}\t{{ artist }}\t{{ album }}\t{{ mpris:length }}",
+      ],
       { timeoutMs: METADATA_TIMEOUT_MS },
     ),
-    deps.executor.run("playerctl", ["position"], { timeoutMs: METADATA_TIMEOUT_MS }),
-  ]);
+    deps.executor.run("playerctl", ["position"], {
+      timeoutMs: METADATA_TIMEOUT_MS,
+    }),
+  ])
 
   const [playStatusResult, volumeResult, statusResult] = await Promise.all([
-    deps.executor.run("playerctl", ["status"], { timeoutMs: METADATA_TIMEOUT_MS }),
+    deps.executor.run("playerctl", ["status"], {
+      timeoutMs: METADATA_TIMEOUT_MS,
+    }),
     runWpctl(deps, ["get-volume", "@DEFAULT_AUDIO_SINK@"]),
     deps.executor.run("wpctl", ["status"], { timeoutMs: 5_000 }),
-  ]);
+  ])
 
   const track =
     metaResult.exitCode === 0 && metaResult.stdout.trim().length > 0
       ? (() => {
-          const parts = metaResult.stdout.trim().split("\t");
-          const name = (parts[0] ?? "").trim();
-          if (name.length === 0) return null;
+          const parts = metaResult.stdout.trim().split("\t")
+          const name = (parts[0] ?? "").trim()
+          if (name.length === 0) return null
           return {
             name,
             artist: parts[1]?.trim() || "",
             album: parts[2]?.trim() || undefined,
-          };
+          }
         })()
-      : null;
+      : null
 
   const totalTime =
     metaResult.exitCode === 0
       ? (() => {
-          const parts = metaResult.stdout.trim().split("\t");
-          const lenStr = parts[3]?.trim();
-          if (!lenStr) return 0;
-          const us = Number.parseInt(lenStr, 10);
-          return Math.round(us / 1_000_000);
+          const parts = metaResult.stdout.trim().split("\t")
+          const lenStr = parts[3]?.trim()
+          if (!lenStr) return 0
+          const us = Number.parseInt(lenStr, 10)
+          return Math.round(us / 1_000_000)
         })()
-      : 0;
+      : 0
 
   const currentTime =
-    positionResult.exitCode === 0 ? Math.round(Number.parseFloat(positionResult.stdout.trim())) : 0;
+    positionResult.exitCode === 0
+      ? Math.round(Number.parseFloat(positionResult.stdout.trim()))
+      : 0
 
-  const volume = volumeResult.exitCode === 0 ? parseWpctlVolume(volumeResult.stdout) : 1;
+  const volume =
+    volumeResult.exitCode === 0 ? parseWpctlVolume(volumeResult.stdout) : 1
 
-  const statusStr = playStatusResult.stdout.trim();
+  const statusStr = playStatusResult.stdout.trim()
   const playStatus: MediaStatus["playStatus"] =
-    STATUS_MAP[statusStr as keyof typeof STATUS_MAP] ?? "unavailable";
+    STATUS_MAP[statusStr as keyof typeof STATUS_MAP] ?? "unavailable"
 
   return {
     track,
@@ -81,40 +96,50 @@ const readStatus = async (deps: LinuxDeps): Promise<MediaStatus> => {
     playStatus,
     volume,
     muted: parseWpctlStatusMuted(statusResult.stdout),
-  };
-};
+  }
+}
 
 // FIXED: Added │ (U+2502) to character class to match wpctl tree output
 const parseWpctlStatusMuted = (stdout: string): boolean => {
-  const lines = stdout.split("\n");
+  const lines = stdout.split("\n")
   for (const line of lines) {
-    const m = line.match(/^[\s│]*\*\s*\d+\.\s*[^[]+\[vol:\s*[\d.]+\s*(MUTED)?/i);
+    const m = line.match(/^[\s│]*\*\s*\d+\.\s*[^[]+\[vol:\s*[\d.]+\s*(MUTED)?/i)
     if (m !== null) {
-      return m[1] !== undefined;
+      return m[1] !== undefined
     }
   }
-  return false;
-};
+  return false
+}
 
 export const createLinuxProvider = (deps: LinuxDeps): MediaStatusProvider => ({
   async getStatus() {
-    return readStatus(deps);
+    return readStatus(deps)
   },
 
   async play() {
-    await deps.executor.run("playerctl", ["play"], { timeoutMs: METADATA_TIMEOUT_MS });
+    await deps.executor.run("playerctl", ["play"], {
+      timeoutMs: METADATA_TIMEOUT_MS,
+    })
   },
   async pause() {
-    await deps.executor.run("playerctl", ["pause"], { timeoutMs: METADATA_TIMEOUT_MS });
+    await deps.executor.run("playerctl", ["pause"], {
+      timeoutMs: METADATA_TIMEOUT_MS,
+    })
   },
   async toggle() {
-    await deps.executor.run("playerctl", ["play-pause"], { timeoutMs: METADATA_TIMEOUT_MS });
+    await deps.executor.run("playerctl", ["play-pause"], {
+      timeoutMs: METADATA_TIMEOUT_MS,
+    })
   },
   async next() {
-    await deps.executor.run("playerctl", ["next"], { timeoutMs: METADATA_TIMEOUT_MS });
+    await deps.executor.run("playerctl", ["next"], {
+      timeoutMs: METADATA_TIMEOUT_MS,
+    })
   },
   async previous() {
-    await deps.executor.run("playerctl", ["previous"], { timeoutMs: METADATA_TIMEOUT_MS });
+    await deps.executor.run("playerctl", ["previous"], {
+      timeoutMs: METADATA_TIMEOUT_MS,
+    })
   },
 
   async setVolume(value: number) {
@@ -122,23 +147,23 @@ export const createLinuxProvider = (deps: LinuxDeps): MediaStatusProvider => ({
       "set-volume",
       "@DEFAULT_AUDIO_SINK@",
       String(Math.round(value * 100)) + "%",
-    ]);
+    ])
   },
   async volumeUp(step: number) {
     await runWpctl(deps, [
       "set-volume",
       "@DEFAULT_AUDIO_SINK@",
       String(Math.round(step * 100)) + "%+",
-    ]);
+    ])
   },
   async volumeDown(step: number) {
     await runWpctl(deps, [
       "set-volume",
       "@DEFAULT_AUDIO_SINK@",
       String(Math.round(step * 100)) + "%-",
-    ]);
+    ])
   },
   async toggleMute() {
-    await runWpctl(deps, ["set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"]);
+    await runWpctl(deps, ["set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"])
   },
-});
+})

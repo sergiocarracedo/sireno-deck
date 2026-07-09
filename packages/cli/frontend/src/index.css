@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'sireno-deck-theme';
+@import "tailwindcss";
+@import "sireno-deck-theme";
 
 :root {
   color-scheme: dark light;

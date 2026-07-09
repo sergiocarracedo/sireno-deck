@@ -1,66 +1,66 @@
-import { fileURLToPath } from "node:url";
-import { dirname, resolve as resolvePath, join } from "node:path";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { fileURLToPath } from "node:url"
+import { dirname, resolve as resolvePath, join } from "node:path"
+import { existsSync, readFileSync, readdirSync } from "node:fs"
 
-import type { AddonRegistry } from "@/addon/registry";
-import type { LoadedTheme } from "@/addon/api";
-import {
-  ThemeJsonManifestSchema,
-  type ThemeJsonManifest,
-} from "./manifest";
-import { buildThemeCss } from "./css";
-import type { ThemeEntry } from "@/config/schemas";
+import type { AddonRegistry } from "@/addon/registry"
+import type { LoadedTheme } from "@/addon/api"
+import { ThemeJsonManifestSchema, type ThemeJsonManifest } from "./manifest"
+import { buildThemeCss } from "./css"
+import type { ThemeEntry } from "@/config/schemas"
 
-const here = dirname(fileURLToPath(import.meta.url));
-const themesRoot = here;
+const here = dirname(fileURLToPath(import.meta.url))
+const themesRoot = here
 
 export interface BuiltInThemeSpec {
-  name: string;
-  dir: string;
+  name: string
+  dir: string
 }
 
 function _discoverThemesDir(): ReadonlyArray<{ dir: string; name: string }> {
-  if (!existsSync(themesRoot)) return [];
-  const entries = readdirSync(themesRoot, { withFileTypes: true });
-  const themes: { dir: string; name: string }[] = [];
+  if (!existsSync(themesRoot)) return []
+  const entries = readdirSync(themesRoot, { withFileTypes: true })
+  const themes: { dir: string; name: string }[] = []
   for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-    const manifestPath = join(themesRoot, entry.name, "sirenodeck.json");
-    if (!existsSync(manifestPath)) continue;
-    themes.push({ dir: join(themesRoot, entry.name), name: entry.name });
+    if (!entry.isDirectory()) continue
+    const manifestPath = join(themesRoot, entry.name, "sirenodeck.json")
+    if (!existsSync(manifestPath)) continue
+    themes.push({ dir: join(themesRoot, entry.name), name: entry.name })
   }
-  return themes;
+  return themes
 }
 
 export const BUILT_IN_THEMES: ReadonlyArray<BuiltInThemeSpec> =
-  _discoverThemesDir().map(({ dir, name }) => ({ name, dir }));
+  _discoverThemesDir().map(({ dir, name }) => ({ name, dir }))
 
-function discoverThemeManifests(): ReadonlyArray<{ dir: string; name: string }> {
-  return _discoverThemesDir();
+function discoverThemeManifests(): ReadonlyArray<{
+  dir: string
+  name: string
+}> {
+  return _discoverThemesDir()
 }
 
 export function readAndValidateManifest(
   manifestPath: string,
   expectedName?: string,
 ): ThemeJsonManifest {
-  let raw: unknown;
+  let raw: unknown
   try {
-    raw = JSON.parse(readFileSync(manifestPath, "utf8"));
+    raw = JSON.parse(readFileSync(manifestPath, "utf8"))
   } catch {
-    throw new Error(`Failed to parse theme manifest: ${manifestPath}`);
+    throw new Error(`Failed to parse theme manifest: ${manifestPath}`)
   }
-  const result = ThemeJsonManifestSchema.safeParse(raw);
+  const result = ThemeJsonManifestSchema.safeParse(raw)
   if (!result.success) {
     throw new Error(
       `Invalid theme manifest in ${manifestPath}: ${result.error.message}`,
-    );
+    )
   }
   if (expectedName !== undefined && result.data.name !== expectedName) {
     throw new Error(
       `Theme name '${result.data.name}' in ${manifestPath} does not match expected '${expectedName}'`,
-    );
+    )
   }
-  return result.data;
+  return result.data
 }
 
 export function buildThemeCssFromManifest(
@@ -69,25 +69,27 @@ export function buildThemeCssFromManifest(
 ): string {
   const assetsStyles = (manifest.assets?.styles ?? ["./components.css"]).map(
     (s) => resolvePath(themeDir, s),
-  );
+  )
   const stylesheetContents = assetsStyles.map((p) => {
     try {
-      return readFileSync(p, "utf8");
+      return readFileSync(p, "utf8")
     } catch {
-      return `/* stylesheet not found: ${p} */`;
+      return `/* stylesheet not found: ${p} */`
     }
-  });
-  return buildThemeCss(manifest, stylesheetContents);
+  })
+  return buildThemeCss(manifest, stylesheetContents)
 }
 
 function buildLoadedTheme(
   manifest: ThemeJsonManifest,
   themeDir: string,
-  source: { kind: "builtin"; resolvedPath: string } | { kind: "local"; resolvedPath: string },
+  source:
+    | { kind: "builtin"; resolvedPath: string }
+    | { kind: "local"; resolvedPath: string },
 ): { theme: LoadedTheme; getCss: () => string } {
   const uiOverridesPath = manifest["ui-overrides"]
     ? resolvePath(themeDir, manifest["ui-overrides"])
-    : null;
+    : null
 
   const theme: LoadedTheme = {
     name: manifest.name,
@@ -96,89 +98,95 @@ function buildLoadedTheme(
     manifestPath: join(themeDir, "sirenodeck.json"),
     uiOverridesPath,
     cssPath: "",
-  };
+  }
 
-  const getCss = (): string => buildThemeCssFromManifest(manifest, themeDir);
+  const getCss = (): string => buildThemeCssFromManifest(manifest, themeDir)
 
-  return { theme, getCss };
+  return { theme, getCss }
 }
 
-export function loadBuiltInThemes(): Array<{ theme: LoadedTheme; getCss: () => string }> {
-  const discovered = discoverThemeManifests();
+export function loadBuiltInThemes(): Array<{
+  theme: LoadedTheme
+  getCss: () => string
+}> {
+  const discovered = discoverThemeManifests()
   return discovered.map(({ dir, name }) => {
-    const manifest = readAndValidateManifest(join(dir, "sirenodeck.json"), name);
-    return buildLoadedTheme(manifest, dir, { kind: "builtin", resolvedPath: dir });
-  });
+    const manifest = readAndValidateManifest(join(dir, "sirenodeck.json"), name)
+    return buildLoadedTheme(manifest, dir, {
+      kind: "builtin",
+      resolvedPath: dir,
+    })
+  })
 }
 
 export const registerBuiltInThemes = (registry: AddonRegistry): void => {
-  const builtIns = loadBuiltInThemes();
+  const builtIns = loadBuiltInThemes()
   for (const { theme } of builtIns) {
-    registry.loadTheme(theme);
+    registry.loadTheme(theme)
   }
-};
+}
 
 export function loadThemeFromPath(
   registry: AddonRegistry,
   themePath: string,
   aliasName?: string,
 ): { theme: LoadedTheme; getCss: () => string } {
-  const resolvedPath = resolvePath(themePath);
-  const manifestPath = join(resolvedPath, "sirenodeck.json");
-  const manifest = readAndValidateManifest(manifestPath);
+  const resolvedPath = resolvePath(themePath)
+  const manifestPath = join(resolvedPath, "sirenodeck.json")
+  const manifest = readAndValidateManifest(manifestPath)
   const { theme, getCss } = buildLoadedTheme(manifest, resolvedPath, {
     kind: "local",
     resolvedPath,
-  });
-  registry.loadTheme(theme);
+  })
+  registry.loadTheme(theme)
   if (aliasName !== undefined && aliasName !== manifest.name) {
-    registry.loadTheme({ ...theme, name: aliasName });
+    registry.loadTheme({ ...theme, name: aliasName })
   }
-  return { theme, getCss };
+  return { theme, getCss }
 }
 
 export type ResolveThemeOptions = {
-  theme: ThemeEntry | undefined;
-};
+  theme: ThemeEntry | undefined
+}
 
 export interface ResolveThemeResult {
-  theme: LoadedTheme;
-  getCss: () => string;
+  theme: LoadedTheme
+  getCss: () => string
 }
 
 export const resolveActiveTheme = (
   registry: AddonRegistry,
   options: ResolveThemeOptions,
 ): ResolveThemeResult => {
-  const { theme: themeEntry } = options;
+  const { theme: themeEntry } = options
   if (themeEntry === undefined) {
-    const theme = registry.resolveActiveTheme(undefined);
-    if (theme.source.kind === 'builtin') {
-      const themeDir = dirname(theme.manifestPath);
-      const manifest = readAndValidateManifest(theme.manifestPath, theme.name);
+    const theme = registry.resolveActiveTheme(undefined)
+    if (theme.source.kind === "builtin") {
+      const themeDir = dirname(theme.manifestPath)
+      const manifest = readAndValidateManifest(theme.manifestPath, theme.name)
       return {
         theme,
         getCss: () => buildThemeCssFromManifest(manifest, themeDir),
-      };
+      }
     }
-    return { theme, getCss: () => '' };
+    return { theme, getCss: () => "" }
   }
-  if (typeof themeEntry === 'string') {
-    const theme = registry.resolveActiveTheme(themeEntry);
-    if (theme.source.kind === 'builtin') {
-      const themeDir = dirname(theme.manifestPath);
-      const manifest = readAndValidateManifest(theme.manifestPath, theme.name);
+  if (typeof themeEntry === "string") {
+    const theme = registry.resolveActiveTheme(themeEntry)
+    if (theme.source.kind === "builtin") {
+      const themeDir = dirname(theme.manifestPath)
+      const manifest = readAndValidateManifest(theme.manifestPath, theme.name)
       return {
         theme,
         getCss: () => buildThemeCssFromManifest(manifest, themeDir),
-      };
+      }
     }
-    return { theme, getCss: () => '' };
+    return { theme, getCss: () => "" }
   }
-  const { name: aliasName, path } = themeEntry;
-  const { theme, getCss } = loadThemeFromPath(registry, path, aliasName);
+  const { name: aliasName, path } = themeEntry
+  const { theme, getCss } = loadThemeFromPath(registry, path, aliasName)
   return {
-    theme: aliasName ? registry.getTheme(aliasName) ?? theme : theme,
+    theme: aliasName ? (registry.getTheme(aliasName) ?? theme) : theme,
     getCss,
-  };
-};
+  }
+}

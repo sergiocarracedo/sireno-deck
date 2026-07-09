@@ -1,4 +1,4 @@
-import type { NewAddonManifest } from "@/addon/api";
+import type { NewAddonManifest } from "@/addon/api"
 
-declare const manifest: NewAddonManifest;
-export default manifest;
+declare const manifest: NewAddonManifest
+export default manifest

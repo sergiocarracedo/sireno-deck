@@ -2,17 +2,17 @@ import type {
   AddonButtonService,
   AddonButtonServiceContext,
   AddonGlobalService,
-} from "@/addon/api";
+} from "@/addon/api"
 
 export interface ButtonCalls {
-  onMount: number;
-  onTap: number;
-  onDblTap: number;
-  onHold: number;
-  onDispose: number;
-  onSuspend: number;
-  onResume: number;
-  onMountSignals: Array<{ aborted: boolean }>;
+  onMount: number
+  onTap: number
+  onDblTap: number
+  onHold: number
+  onDispose: number
+  onSuspend: number
+  onResume: number
+  onMountSignals: Array<{ aborted: boolean }>
 }
 
 const makeCalls = (): ButtonCalls => ({
@@ -24,58 +24,59 @@ const makeCalls = (): ButtonCalls => ({
   onSuspend: 0,
   onResume: 0,
   onMountSignals: [],
-});
+})
 
-let calls: ButtonCalls = makeCalls();
-let lastButtonCtx: AddonButtonServiceContext<unknown> | null = null;
+let calls: ButtonCalls = makeCalls()
+let lastButtonCtx: AddonButtonServiceContext<unknown> | null = null
 
-export const __getCalls = (): ButtonCalls => calls;
+export const __getCalls = (): ButtonCalls => calls
 export const __resetCalls = (): void => {
-  calls = makeCalls();
-  lastButtonCtx = null;
-};
+  calls = makeCalls()
+  lastButtonCtx = null
+}
 
 const serviceWithoutLifecycle: AddonButtonService<unknown> = {
   onMount: (ctx) => {
-    calls.onMount += 1;
-    calls.onMountSignals.push({ aborted: ctx.signal.aborted });
-    lastButtonCtx = ctx;
+    calls.onMount += 1
+    calls.onMountSignals.push({ aborted: ctx.signal.aborted })
+    lastButtonCtx = ctx
   },
   onTap: () => {
-    calls.onTap += 1;
+    calls.onTap += 1
   },
   onDblTap: () => {
-    calls.onDblTap += 1;
+    calls.onDblTap += 1
   },
   onHold: () => {
-    calls.onHold += 1;
+    calls.onHold += 1
   },
   dispose: () => {
-    calls.onDispose += 1;
+    calls.onDispose += 1
   },
-};
+}
 
 const serviceWithLifecycle: AddonButtonService<unknown> = {
   onMount: (ctx) => {
-    calls.onMount += 1;
-    calls.onMountSignals.push({ aborted: ctx.signal.aborted });
-    lastButtonCtx = ctx;
+    calls.onMount += 1
+    calls.onMountSignals.push({ aborted: ctx.signal.aborted })
+    lastButtonCtx = ctx
   },
   onTap: () => {
-    calls.onTap += 1;
+    calls.onTap += 1
   },
   suspend: () => {
-    calls.onSuspend += 1;
+    calls.onSuspend += 1
   },
   resume: () => {
-    calls.onResume += 1;
+    calls.onResume += 1
   },
   dispose: () => {
-    calls.onDispose += 1;
+    calls.onDispose += 1
   },
-};
+}
 
-export const __getLastButtonCtx = (): AddonButtonServiceContext<unknown> | null => lastButtonCtx;
+export const __getLastButtonCtx =
+  (): AddonButtonServiceContext<unknown> | null => lastButtonCtx
 
 export const manifest = {
   name: "fake-buttons",
@@ -86,4 +87,4 @@ export const manifest = {
     "player-no-lifecycle": { service: serviceWithoutLifecycle },
     "player-with-lifecycle": { service: serviceWithLifecycle },
   },
-};
+}

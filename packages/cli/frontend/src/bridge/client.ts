@@ -1,11 +1,11 @@
-import { ChannelRegistry } from 'sireno-deck/react'
+import { ChannelRegistry } from "sireno-deck/react"
 import {
   helloMessageSchema,
   wsMessageSchema,
   type WsMessage,
-} from '@/api/protocol'
+} from "@/api/protocol"
 
-export type ConnectionStatus = 'connecting' | 'open' | 'closed' | 'failed'
+export type ConnectionStatus = "connecting" | "open" | "closed" | "failed"
 
 export interface WsClientOptions {
   url: string
@@ -49,7 +49,10 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
   const setStatus = (status: ConnectionStatus): void => onStatus?.(status)
 
   const flushPending = (): void => {
-    while (pendingMessages.length > 0 && socket?.readyState === WebSocket.OPEN) {
+    while (
+      pendingMessages.length > 0 &&
+      socket?.readyState === WebSocket.OPEN
+    ) {
       const msg = pendingMessages.shift()!
       socket.send(JSON.stringify(msg))
     }
@@ -58,7 +61,7 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
   const scheduleReconnect = (): void => {
     if (manuallyClosed) return
     if (attempt >= maxAttempts) {
-      setStatus('failed')
+      setStatus("failed")
       return
     }
     const delay = backoffMs[Math.min(attempt, backoffMs.length - 1)] ?? 30000
@@ -68,14 +71,14 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
 
   const connect = (): void => {
     if (manuallyClosed) return
-    setStatus('connecting')
+    setStatus("connecting")
     socket = new WebSocket(url)
-    socket.addEventListener('open', () => {
+    socket.addEventListener("open", () => {
       attempt = 0
       connected = true
-      setStatus('open')
+      setStatus("open")
       const hello = helloMessageSchema.parse({
-        type: 'hello',
+        type: "hello",
         version: protocolVersion,
         ...(token !== undefined ? { token } : {}),
       })
@@ -83,18 +86,18 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
       flushPending()
       if (subscribedChannels.size > 0) {
         const msg: WsMessage = {
-          type: 'subscribe-channels',
+          type: "subscribe-channels",
           channels: [...subscribedChannels],
         }
         socket?.send(JSON.stringify(msg))
       }
     })
-    socket.addEventListener('message', (event: MessageEvent) => {
+    socket.addEventListener("message", (event: MessageEvent) => {
       try {
         const parsed = wsMessageSchema.safeParse(JSON.parse(String(event.data)))
         if (parsed.success) {
           onMessage?.(parsed.data)
-          if (parsed.data.type === 'state') {
+          if (parsed.data.type === "state") {
             for (const [channel, payload] of Object.entries(
               parsed.data.channels,
             )) {
@@ -106,12 +109,12 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
         // ignore invalid frames
       }
     })
-    socket.addEventListener('close', () => {
+    socket.addEventListener("close", () => {
       connected = false
-      setStatus('closed')
+      setStatus("closed")
       scheduleReconnect()
     })
-    socket.addEventListener('error', () => {
+    socket.addEventListener("error", () => {
       socket?.close()
     })
   }
@@ -142,7 +145,7 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
     for (const ch of newChannels) subscribedChannels.add(ch)
     if (socket?.readyState === WebSocket.OPEN) {
       const msg: WsMessage = {
-        type: 'subscribe-channels',
+        type: "subscribe-channels",
         channels: newChannels,
       }
       socket.send(JSON.stringify(msg))

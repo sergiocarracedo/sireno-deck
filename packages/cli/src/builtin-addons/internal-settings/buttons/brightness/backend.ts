@@ -1,5 +1,5 @@
-import type { AddonButtonService } from "@/addon/api";
+import type { AddonButtonService } from "@/addon/api"
 
 export default {
   onTap: async () => {},
-} satisfies AddonButtonService;
+} satisfies AddonButtonService

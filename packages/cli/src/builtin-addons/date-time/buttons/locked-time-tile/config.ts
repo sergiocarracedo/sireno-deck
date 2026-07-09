@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod"
 
 export const configSchema = z
   .object({
@@ -12,6 +12,6 @@ export const configSchema = z
       "minute-ones",
     ]),
   })
-  .strict();
+  .strict()
 
-export type ConfigSchema = z.infer<typeof configSchema>;
+export type ConfigSchema = z.infer<typeof configSchema>

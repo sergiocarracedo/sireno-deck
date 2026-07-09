@@ -1,15 +1,15 @@
-import { Component, type ErrorInfo, type ReactNode } from "react";
-import { Icon } from "@sireno-deck/cli";
+import { Component, type ErrorInfo, type ReactNode } from "react"
+import { Icon } from "@sireno-deck/cli"
 
 interface ErrorBoundaryProps {
-  readonly children: ReactNode;
-  readonly onError?: (error: Error, info: ErrorInfo) => void;
-  readonly resetKey?: string | number;
+  readonly children: ReactNode
+  readonly onError?: (error: Error, info: ErrorInfo) => void
+  readonly resetKey?: string | number
 }
 
 interface ErrorBoundaryState {
-  readonly error: Error | null;
-  readonly info: ErrorInfo | null;
+  readonly error: Error | null
+  readonly info: ErrorInfo | null
 }
 
 /**
@@ -22,30 +22,37 @@ interface ErrorBoundaryState {
  * developer fixes the broken module, HMR updates the parent and the boundary
  * resets itself without a full page reload.
  */
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  override state: ErrorBoundaryState = { error: null, info: null };
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
+  override state: ErrorBoundaryState = { error: null, info: null }
 
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
-    return { error };
+    return { error }
   }
 
   override componentDidCatch(error: Error, info: ErrorInfo): void {
-    this.setState({ error, info });
-    this.props.onError?.(error, info);
+    this.setState({ error, info })
+    this.props.onError?.(error, info)
     if (typeof console !== "undefined") {
-      console.error("[ErrorBoundary] React render error:", error, info.componentStack);
+      console.error(
+        "[ErrorBoundary] React render error:",
+        error,
+        info.componentStack,
+      )
     }
   }
 
   override componentDidUpdate(prev: ErrorBoundaryProps): void {
     if (this.state.error !== null && prev.resetKey !== this.props.resetKey) {
-      this.setState({ error: null, info: null });
+      this.setState({ error: null, info: null })
     }
   }
 
   override render(): ReactNode {
-    const { error } = this.state;
-    if (error === null) return this.props.children;
+    const { error } = this.state
+    if (error === null) return this.props.children
 
     return (
       <div
@@ -60,7 +67,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           {String(error.message)}
         </span>
       </div>
-    );
+    )
   }
 }
 
@@ -73,13 +80,13 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
  * re-evaluated.
  */
 export const useHmrResetKey = (): string => {
-  if (typeof import.meta === "undefined") return "stable";
-  const hot = (import.meta as { hot?: { data?: Record<string, unknown> } }).hot;
-  if (hot === undefined) return "stable";
-  const data = (hot.data ?? (hot.data = {})) as Record<string, unknown>;
-  const existing = data["resetKey"];
-  if (typeof existing === "string") return existing;
-  const generated: string = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  data["resetKey"] = generated;
-  return generated;
-};
+  if (typeof import.meta === "undefined") return "stable"
+  const hot = (import.meta as { hot?: { data?: Record<string, unknown> } }).hot
+  if (hot === undefined) return "stable"
+  const data = (hot.data ?? (hot.data = {})) as Record<string, unknown>
+  const existing = data["resetKey"]
+  if (typeof existing === "string") return existing
+  const generated: string = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+  data["resetKey"] = generated
+  return generated
+}

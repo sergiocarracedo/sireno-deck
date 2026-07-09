@@ -15,7 +15,7 @@ export {
   subscribeChannelsMessageSchema,
   wsMessageSchema,
   PROTOCOL_VERSION,
-} from "../api/protocol-internal";
+} from "../api/protocol-internal"
 
 export type {
   HelloMessage,
@@ -33,4 +33,4 @@ export type {
   AssetsMessage,
   SubscribeChannelsMessage,
   WsMessage,
-} from "../api/protocol-internal";
+} from "../api/protocol-internal"

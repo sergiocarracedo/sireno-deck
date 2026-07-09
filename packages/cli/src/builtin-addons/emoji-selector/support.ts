@@ -1,6 +1,6 @@
-import { z } from "zod";
+import { z } from "zod"
 
-export const EMOJI_PAGE_SIZE = 32;
+export const EMOJI_PAGE_SIZE = 32
 
 export const EMOJI_LAUNCHER_GRID: readonly string[] = [
   "\u{1F602}",
@@ -9,30 +9,30 @@ export const EMOJI_LAUNCHER_GRID: readonly string[] = [
   "\u2B50",
   "\u{1F355}",
   "\u{1F3B5}",
-];
+]
 
 export const EMOJI_FONT_STACK =
-  "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Twemoji Mozilla', system-ui, sans-serif";
+  "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Twemoji Mozilla', system-ui, sans-serif"
 
 export const EmojiLauncherButtonSchema = z
   .object({
     label: z.string().min(1).default("Emoji"),
   })
-  .strict();
+  .strict()
 
 export const EmojiSelectorDeckSchema = z
   .object({
     favorites: z.array(z.string().min(1)).default([]),
   })
-  .strict();
+  .strict()
 
-export type EmojiSelectorDeckConfig = z.infer<typeof EmojiSelectorDeckSchema>;
+export type EmojiSelectorDeckConfig = z.infer<typeof EmojiSelectorDeckSchema>
 
 export interface EmojiCategorySpec {
-  readonly id: string;
-  readonly label: string;
-  readonly icon: string;
-  readonly emojis: readonly string[];
+  readonly id: string
+  readonly label: string
+  readonly icon: string
+  readonly emojis: readonly string[]
 }
 
 export const CATEGORY_DEFINITIONS: ReadonlyArray<EmojiCategorySpec> = [
@@ -380,4 +380,4 @@ export const CATEGORY_DEFINITIONS: ReadonlyArray<EmojiCategorySpec> = [
       "🇧🇲",
     ],
   },
-];
+]

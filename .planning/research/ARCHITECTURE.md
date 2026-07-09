@@ -12,7 +12,7 @@
 
 Sireno Deck is a Node CLI that drives an Elgato Stream Deck from a YAML config.
 The service runs locally, renders the active deck to a Vite-built SPA, and
-pushes the result to the device key-by-key. A second Vite SPA (the *emulator*)
+pushes the result to the device key-by-key. A second Vite SPA (the _emulator_)
 wraps the frontend in a clickable shell so the same code path runs without
 hardware.
 
@@ -117,16 +117,16 @@ type; `AddonJsonManifest` is the on-disk discovery file
 
 ```ts
 interface AddonManifestV1 {
-  readonly apiVersion: 1;
-  readonly name: string;
-  readonly kind?: "runtime" | "theme";
-  readonly buttonTypes: Record<string, AddonButtonTypeDefAny>;
-  readonly defaultButton?: string;
-  readonly decks?: Record<string, AddonDeckFactory | AddonDeckDefinition>;
-  readonly frontend?: { main: string; styles?: string[] };
-  readonly poller?: { channels: ReadonlyArray<{channel, intervalMs, poll}> };
-  readonly publishIntervalMs?: number;
-  readonly globalBackend?: AddonGlobalBackend;
+  readonly apiVersion: 1
+  readonly name: string
+  readonly kind?: "runtime" | "theme"
+  readonly buttonTypes: Record<string, AddonButtonTypeDefAny>
+  readonly defaultButton?: string
+  readonly decks?: Record<string, AddonDeckFactory | AddonDeckDefinition>
+  readonly frontend?: { main: string; styles?: string[] }
+  readonly poller?: { channels: ReadonlyArray<{ channel; intervalMs; poll }> }
+  readonly publishIntervalMs?: number
+  readonly globalBackend?: AddonGlobalBackend
 }
 ```
 
@@ -207,23 +207,23 @@ One connection per frontend / emulator surface.
 `PROTOCOL_VERSION = 1`. Zod schemas in `api/protocol-internal.ts`; re-exported
 from `render/protocol.ts`.
 
-| Direction           | Message              | Shape                                                      |
-| ------------------- | -------------------- | ---------------------------------------------------------- |
-| client → server     | `hello`              | `{ token }`                                                |
-| server → client     | `hello-ack`          | `{ ok, protocolVersion, channels? }`                       |
-| server → client     | `deck-config`        | `{ deckId, surfaces: Record<deckId, {name, buttons[]}> }`  |
-| server → client     | `state`              | `{ channels: Record<channel, payload>, cadence }`          |
-| server → client     | `decks-list`         | `{ decks: AddonDeck[] }`                                   |
-| server → client     | `show-overlay`       | `{ deckId }`                                               |
-| server → client     | `dismiss-overlay`    | `{}`                                                       |
-| server → client     | `deck-active`        | `{ deckId, mode, history }`                                |
-| server → client     | `assets`             | `{ assets: {id, data}[] }`                                 |
-| client → server     | `button-action`      | `{ deckId, position, gesture }`                            |
-| client → server     | `select-deck`        | `{ deckId }`                                               |
-| client → server     | `method-call`        | `{ callId, name, args }`                                   |
-| server → client     | `method-call-result` | `{ callId, ok, value?, error? }`                           |
-| client → server     | `subscribe-channels` | `{ channels: string[] }`                                   |
-| server → client     | `runtime:gesture:*`  | per-button gesture event (separate stream)                 |
+| Direction       | Message              | Shape                                                     |
+| --------------- | -------------------- | --------------------------------------------------------- |
+| client → server | `hello`              | `{ token }`                                               |
+| server → client | `hello-ack`          | `{ ok, protocolVersion, channels? }`                      |
+| server → client | `deck-config`        | `{ deckId, surfaces: Record<deckId, {name, buttons[]}> }` |
+| server → client | `state`              | `{ channels: Record<channel, payload>, cadence }`         |
+| server → client | `decks-list`         | `{ decks: AddonDeck[] }`                                  |
+| server → client | `show-overlay`       | `{ deckId }`                                              |
+| server → client | `dismiss-overlay`    | `{}`                                                      |
+| server → client | `deck-active`        | `{ deckId, mode, history }`                               |
+| server → client | `assets`             | `{ assets: {id, data}[] }`                                |
+| client → server | `button-action`      | `{ deckId, position, gesture }`                           |
+| client → server | `select-deck`        | `{ deckId }`                                              |
+| client → server | `method-call`        | `{ callId, name, args }`                                  |
+| server → client | `method-call-result` | `{ callId, ok, value?, error? }`                          |
+| client → server | `subscribe-channels` | `{ channels: string[] }`                                  |
+| server → client | `runtime:gesture:*`  | per-button gesture event (separate stream)                |
 
 ### 3.11 Real mode vs emulator mode
 
@@ -297,8 +297,8 @@ service's HTTP server in real mode.
 - `src/App.tsx` — top-level. Resolves theme, opens the WS client, holds the
   active deck in state, renders `<Deck />`.
 - `src/components/Deck.tsx` — visual grid. For each button: `ButtonFrame`
-  + `ErrorBoundary` + `ButtonSurface` (the addon's React component, looked
-  up from `virtual:sireno/addons/registry`).
+  - `ErrorBoundary` + `ButtonSurface` (the addon's React component, looked
+    up from `virtual:sireno/addons/registry`).
 - `src/components/ErrorBoundary.tsx` — per-button crash isolation.
 - `src/bridge/client.ts` — typed WS client. Handles `hello`, `deck-config`,
   `state`, `assets`, `button-action` (echo), `runtime:gesture:*` (per-button).
@@ -326,18 +326,18 @@ All shipped from `packages/cli/src/builtin-addons/`. Each ships a
 order: themes, core-buttons, internal-settings, session, date-time,
 emoji-selector, media, system-status, value-display, weather, brightness.
 
-| Addon              | Button types                                                           | Publish / poll    | Notes                                                              |
-| ------------------ | ---------------------------------------------------------------------- | ----------------- | ------------------------------------------------------------------ |
-| `core-buttons`     | `action`, `change-deck`, `toggle`, `media-sample`                      | —                 | The generic button types every deck is built from.                 |
-| `internal-settings`| `about`, `brightness`, `theme`                                         | —                 | All three types are `internal: true`. Hosts the `settings` deck.   |
-| `session`          | `info`, `time`                                                         | —                 | `time` is `internal: true`. Hosts the `locked` deck.               |
-| `date-time`        | `time`, `date`, `analog-clock`, `locked-time-tile`, `custom`           | `1000 ms`         | Frontend-driven (no backend polling).                              |
-| `emoji-selector`   | `launcher`, `category`, `emoji`, `back`, `page-nav`                    | —                 | Hosts its own per-category / per-page decks.                       |
-| `media`            | `player`, `mute`, `volume:up`, `volume:down`                           | `1000 ms`         | Global backend with `methods` (play/pause/next/prev/volume).       |
-| `system-status`    | `status`                                                               | `1000 ms`         | 1–2 metrics per tile.                                              |
-| `value-display`    | `display`                                                              | `5000 ms`         | 1–3 values per tile.                                               |
-| `weather`          | `weather`                                                              | `600_000 ms`      | Uses `subscriptions` (push) + an explicit `poll(id)` trigger.       |
-| `brightness`       | `brightness`                                                           | `2000 ms`         | Frontend reads brightness, backends trigger `executor`.            |
+| Addon               | Button types                                                 | Publish / poll | Notes                                                            |
+| ------------------- | ------------------------------------------------------------ | -------------- | ---------------------------------------------------------------- |
+| `core-buttons`      | `action`, `change-deck`, `toggle`, `media-sample`            | —              | The generic button types every deck is built from.               |
+| `internal-settings` | `about`, `brightness`, `theme`                               | —              | All three types are `internal: true`. Hosts the `settings` deck. |
+| `session`           | `info`, `time`                                               | —              | `time` is `internal: true`. Hosts the `locked` deck.             |
+| `date-time`         | `time`, `date`, `analog-clock`, `locked-time-tile`, `custom` | `1000 ms`      | Frontend-driven (no backend polling).                            |
+| `emoji-selector`    | `launcher`, `category`, `emoji`, `back`, `page-nav`          | —              | Hosts its own per-category / per-page decks.                     |
+| `media`             | `player`, `mute`, `volume:up`, `volume:down`                 | `1000 ms`      | Global backend with `methods` (play/pause/next/prev/volume).     |
+| `system-status`     | `status`                                                     | `1000 ms`      | 1–2 metrics per tile.                                            |
+| `value-display`     | `display`                                                    | `5000 ms`      | 1–3 values per tile.                                             |
+| `weather`           | `weather`                                                    | `600_000 ms`   | Uses `subscriptions` (push) + an explicit `poll(id)` trigger.    |
+| `brightness`        | `brightness`                                                 | `2000 ms`      | Frontend reads brightness, backends trigger `executor`.          |
 
 > **`gestureHandlers` today:** only `media` and `emoji-selector` declare it on
 > their manifests. The runtime currently does **not** enforce it as a filter
@@ -452,18 +452,18 @@ clicks (relevant once P1 is in and routes can deep-link into addon pages).
 **Required audit before ship:** every `builtin-addons/*/index.ts` must declare
 its `gestureHandlers`. Concretely:
 
-| Addon            | Backend handlers currently declared                       | Needs manifest addition                         |
-| ---------------- | --------------------------------------------------------- | ----------------------------------------------- |
-| `core-buttons`   | `action.onTap`, `change-deck.onTap`, `toggle.onTap`       | `gestureHandlers: ['tap']`                      |
-| `internal-settings` | `about.onTap`, `brightness.onTap`, `theme.onTap`        | `gestureHandlers: ['tap']`                      |
-| `session`        | `info.onTap`, `time.onTap`                                | `gestureHandlers: ['tap']`                      |
-| `date-time`      | `time` is read-only (no backend handler)                  | none                                            |
-| `emoji-selector` | `launcher.onTap`, `category.onTap`, `emoji.onTap`, `back.onTap`, `page-nav.onTap` | already declared — confirm it includes `'tap'` |
-| `media`          | `player.onTap`, `mute.onTap`                              | already declared                                |
-| `system-status`  | `status.onTap`                                            | `gestureHandlers: ['tap']`                      |
-| `value-display`  | `display.onTap`                                           | `gestureHandlers: ['tap']`                      |
-| `weather`        | `weather.onTap`                                           | `gestureHandlers: ['tap']`                      |
-| `brightness`     | `brightness.onTap`                                        | `gestureHandlers: ['tap']`                      |
+| Addon               | Backend handlers currently declared                                               | Needs manifest addition                        |
+| ------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `core-buttons`      | `action.onTap`, `change-deck.onTap`, `toggle.onTap`                               | `gestureHandlers: ['tap']`                     |
+| `internal-settings` | `about.onTap`, `brightness.onTap`, `theme.onTap`                                  | `gestureHandlers: ['tap']`                     |
+| `session`           | `info.onTap`, `time.onTap`                                                        | `gestureHandlers: ['tap']`                     |
+| `date-time`         | `time` is read-only (no backend handler)                                          | none                                           |
+| `emoji-selector`    | `launcher.onTap`, `category.onTap`, `emoji.onTap`, `back.onTap`, `page-nav.onTap` | already declared — confirm it includes `'tap'` |
+| `media`             | `player.onTap`, `mute.onTap`                                                      | already declared                               |
+| `system-status`     | `status.onTap`                                                                    | `gestureHandlers: ['tap']`                     |
+| `value-display`     | `display.onTap`                                                                   | `gestureHandlers: ['tap']`                     |
+| `weather`           | `weather.onTap`                                                                   | `gestureHandlers: ['tap']`                     |
+| `brightness`        | `brightness.onTap`                                                                | `gestureHandlers: ['tap']`                     |
 
 **Surface:** `deck/runtime.ts` (filter in `dispatchGesture` /
 `invokeAction`), `deck/addon-handler-bridge.ts` (warn on mismatch), and the
@@ -530,24 +530,24 @@ the resolved button is a system slot, render `SplitActionSurface` instead of
 
 ## 10. Glossary
 
-| Term                   | Definition                                                                                                |
-| ---------------------- | --------------------------------------------------------------------------------------------------------- |
-| **Button**             | A single Stream Deck key with a display and behavior.                                                     |
-| **Button Type**        | A class of button (display-only, action, toggle) with a rendering model. Defined by an addon.            |
-| **Button Instance**    | A configured button of a type — the row in `config.yml`.                                                  |
-| **Deck**               | A set of button instances displayed together.                                                             |
-| **Main Deck**          | The default / root deck. Has no back button.                                                              |
-| **Sub-deck**           | A nested deck navigable from another deck. Includes a back button.                                       |
-| **Overlay Deck**       | A deck shown *above* the active deck when an active-app match fires. Dismissed by the overlay toggle.    |
-| **Addon**              | A TypeScript module providing button types, deck types, and (optionally) a global backend + theme.        |
-| **Theme**              | A YAML file defining global visual tokens.                                                                |
-| **Gesture**            | A key event: `tap`, `dbl-tap`, or `hold`.                                                                 |
-| **Poller**             | A periodic publish in an addon global backend.                                                            |
-| **Subscription**       | A push-based publish (file watcher, socket).                                                              |
-| **Channel**            | A named pub/sub topic. Frontends subscribe via `useAddonChannel`.                                        |
-| **System Slot**        | The n-1 (last) position on a deck, reserved for a back / settings / overlay-toggle button.                |
+| Term                     | Definition                                                                                                                                |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Button**               | A single Stream Deck key with a display and behavior.                                                                                     |
+| **Button Type**          | A class of button (display-only, action, toggle) with a rendering model. Defined by an addon.                                             |
+| **Button Instance**      | A configured button of a type — the row in `config.yml`.                                                                                  |
+| **Deck**                 | A set of button instances displayed together.                                                                                             |
+| **Main Deck**            | The default / root deck. Has no back button.                                                                                              |
+| **Sub-deck**             | A nested deck navigable from another deck. Includes a back button.                                                                        |
+| **Overlay Deck**         | A deck shown _above_ the active deck when an active-app match fires. Dismissed by the overlay toggle.                                     |
+| **Addon**                | A TypeScript module providing button types, deck types, and (optionally) a global backend + theme.                                        |
+| **Theme**                | A YAML file defining global visual tokens.                                                                                                |
+| **Gesture**              | A key event: `tap`, `dbl-tap`, or `hold`.                                                                                                 |
+| **Poller**               | A periodic publish in an addon global backend.                                                                                            |
+| **Subscription**         | A push-based publish (file watcher, socket).                                                                                              |
+| **Channel**              | A named pub/sub topic. Frontends subscribe via `useAddonChannel`.                                                                         |
+| **System Slot**          | The n-1 (last) position on a deck, reserved for a back / settings / overlay-toggle button.                                                |
 | **Split Action Surface** | A two-tile surface for the system slot, divided by a diagonal line. Primary takes the action; secondary is decorative until further work. |
-| **Internal Addon**     | An addon (or a button / deck inside one) marked `internal: true` — hidden from user-facing config surfaces. |
+| **Internal Addon**       | An addon (or a button / deck inside one) marked `internal: true` — hidden from user-facing config surfaces.                               |
 
 ---
 

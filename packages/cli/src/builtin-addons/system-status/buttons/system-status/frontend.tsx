@@ -1,23 +1,23 @@
-import { Text, Chip } from "@/ui/index";
-import { useAddonChannel } from "@/api/react";
-import type { AddonFrontendButton } from "@/addon/api";
+import { Text, Chip } from "@/ui/index"
+import { useAddonChannel } from "@/api/react"
+import type { AddonFrontendButton } from "@/addon/api"
 
 interface MetricEntry {
-  readonly id: string;
-  readonly label: string;
-  readonly value: number | string | undefined;
-  readonly maxValue?: number;
+  readonly id: string
+  readonly label: string
+  readonly value: number | string | undefined
+  readonly maxValue?: number
 }
 
 interface MetricsState {
-  readonly metrics: ReadonlyArray<MetricEntry>;
+  readonly metrics: ReadonlyArray<MetricEntry>
 }
 
 const SystemStatusButtonFrontend: AddonFrontendButton = ({ config }) => {
-  const { variant } = (config as { variant?: "text" | "bars" }) ?? {};
-  const { data } = useAddonChannel<MetricsState>("system-status:metrics");
-  const metrics = data?.metrics ?? [];
-  const hasData = metrics.length > 0;
+  const { variant } = (config as { variant?: "text" | "bars" }) ?? {}
+  const { data } = useAddonChannel<MetricsState>("system-status:metrics")
+  const metrics = data?.metrics ?? []
+  const hasData = metrics.length > 0
 
   if (!hasData) {
     return (
@@ -26,7 +26,7 @@ const SystemStatusButtonFrontend: AddonFrontendButton = ({ config }) => {
           ...
         </Text>
       </span>
-    );
+    )
   }
 
   if (variant === "bars") {
@@ -34,9 +34,11 @@ const SystemStatusButtonFrontend: AddonFrontendButton = ({ config }) => {
       <span className="flex h-full w-full flex-col justify-center gap-1 p-1.5">
         {metrics.slice(0, 3).map((m) => {
           const pct =
-            typeof m.value === "number" && m.maxValue !== undefined && m.maxValue > 0
+            typeof m.value === "number" &&
+            m.maxValue !== undefined &&
+            m.maxValue > 0
               ? Math.max(0, Math.min(100, (m.value / m.maxValue) * 100))
-              : null;
+              : null
           return (
             <span key={m.id} className="flex flex-col gap-0.5">
               <span className="flex items-baseline justify-between">
@@ -49,14 +51,17 @@ const SystemStatusButtonFrontend: AddonFrontendButton = ({ config }) => {
               </span>
               {pct !== null && (
                 <span className="block h-1 w-full overflow-hidden rounded bg-bar">
-                  <span className="block h-full bg-accent" style={{ width: `${pct}%` }} />
+                  <span
+                    className="block h-full bg-accent"
+                    style={{ width: `${pct}%` }}
+                  />
                 </span>
               )}
             </span>
-          );
+          )
         })}
       </span>
-    );
+    )
   }
 
   return (
@@ -72,7 +77,7 @@ const SystemStatusButtonFrontend: AddonFrontendButton = ({ config }) => {
         </span>
       ))}
     </span>
-  );
-};
+  )
+}
 
-export default SystemStatusButtonFrontend;
+export default SystemStatusButtonFrontend

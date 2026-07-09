@@ -1,10 +1,10 @@
-import { existsSync, mkdirSync, renameSync } from 'node:fs'
+import { existsSync, mkdirSync, renameSync } from "node:fs"
 
-const LEGACY_NAME = 'sireno-deck'
+const LEGACY_NAME = "sireno-deck"
 
 const legacyHomeDir = (subpath: string): string => {
-  const home = process.env['HOME'] ?? ''
-  if (home.length === 0) return ''
+  const home = process.env["HOME"] ?? ""
+  if (home.length === 0) return ""
   return `${home}/${subpath}`
 }
 
@@ -20,10 +20,10 @@ const migrateIfPresent = (currentDir: string, legacyDir: string): void => {
 }
 
 export const migrateLegacyPaths = (): void => {
-  const xdgConfig = process.env['XDG_CONFIG_HOME']
-  const xdgData = process.env['XDG_DATA_HOME']
-  const xdgCache = process.env['XDG_CACHE_HOME']
-  const home = process.env['HOME'] ?? ''
+  const xdgConfig = process.env["XDG_CONFIG_HOME"]
+  const xdgData = process.env["XDG_DATA_HOME"]
+  const xdgCache = process.env["XDG_CACHE_HOME"]
+  const home = process.env["HOME"] ?? ""
 
   if (xdgConfig && xdgConfig.length > 0) {
     migrateIfPresent(`${xdgConfig}/sirenodeck`, `${xdgConfig}/${LEGACY_NAME}`)
@@ -52,7 +52,7 @@ export const migrateLegacyPaths = (): void => {
     )
   }
 
-  const xdgRuntime = process.env['XDG_RUNTIME_DIR']
+  const xdgRuntime = process.env["XDG_RUNTIME_DIR"]
   if (xdgRuntime && xdgRuntime.length > 0) {
     const legacyPidFile = `${xdgRuntime}/${LEGACY_NAME}.pid`
     const legacyTokenFile = `${xdgRuntime}/${LEGACY_NAME}.token`

@@ -1,9 +1,15 @@
-import type { NewAddonManifest } from "@/addon/api";
+import type { NewAddonManifest } from "@/addon/api"
 
-import { CategoryButtonFrontend, categoryButtonBackend } from "./buttons/category";
-import { EmojiButtonFrontend, emojiButtonBackend } from "./buttons/emoji";
-import { LauncherButtonFrontend, launcherButtonBackend } from "./buttons/launcher";
-import { emojiSelectorDeckFactory } from "./decks";
+import {
+  CategoryButtonFrontend,
+  categoryButtonBackend,
+} from "./buttons/category"
+import { EmojiButtonFrontend, emojiButtonBackend } from "./buttons/emoji"
+import {
+  LauncherButtonFrontend,
+  launcherButtonBackend,
+} from "./buttons/launcher"
+import { emojiSelectorDeckFactory } from "./decks"
 
 export const manifest: NewAddonManifest = {
   apiVersion: 3,
@@ -32,8 +38,8 @@ export const manifest: NewAddonManifest = {
       internal: true,
     },
   },
-};
+}
 
-export const emojiSelectorAddon = manifest;
-export default emojiSelectorAddon;
-export { EmojiSelectorDeckSchema } from "./support";
+export const emojiSelectorAddon = manifest
+export default emojiSelectorAddon
+export { EmojiSelectorDeckSchema } from "./support"

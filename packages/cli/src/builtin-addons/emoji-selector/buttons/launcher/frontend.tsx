@@ -1,11 +1,13 @@
-import { Label } from "@/ui";
+import { Label } from "@/ui"
 
-import { EMOJI_FONT_STACK, EMOJI_LAUNCHER_GRID } from "../../support.ts";
+import { EMOJI_FONT_STACK, EMOJI_LAUNCHER_GRID } from "../../support.ts"
 
-import type { AddonFrontendButton } from "@/addon/api";
-import type { ConfigSchema } from "./config.ts";
+import type { AddonFrontendButton } from "@/addon/api"
+import type { ConfigSchema } from "./config.ts"
 
-const LauncherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({ config }) => (
+const LauncherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
+  config,
+}) => (
   <div>
     <div
       className="grid grid-cols-3 grid-rows-2 w-full h-full gap-0 p-1"
@@ -24,6 +26,6 @@ const LauncherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({ config }) =
     </div>
     <Label>{config.label}</Label>
   </div>
-);
+)
 
-export default LauncherButtonFrontend;
+export default LauncherButtonFrontend

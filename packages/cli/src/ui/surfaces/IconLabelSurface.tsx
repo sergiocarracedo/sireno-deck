@@ -1,11 +1,13 @@
-import { type HTMLAttributes, type ReactElement } from 'react'
+import { type HTMLAttributes, type ReactElement } from "react"
 
-import { Icon, IconProps } from '../primitives/Icon'
-import { Label } from '../primitives/Label'
-import { useThemeUiPresentation } from '../theme-presentation'
+import { Icon, IconProps } from "../primitives/Icon"
+import { Label } from "../primitives/Label"
+import { useThemeUiPresentation } from "../theme-presentation"
 
-export interface IconLabelSurfaceProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
+export interface IconLabelSurfaceProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "children"
+> {
   icon?: IconProps
   label: string
 }
@@ -18,7 +20,7 @@ export function IconLabelSurface(props: IconLabelSurfaceProps): ReactElement {
   }
 
   const { className: consumerClassName, ...rest } = props
-  const layoutClassName = 'flex flex-col items-center justify-center gap-1'
+  const layoutClassName = "flex flex-col items-center justify-center gap-1"
   const mergedClassName = consumerClassName
     ? `${layoutClassName} ${consumerClassName}`
     : layoutClassName

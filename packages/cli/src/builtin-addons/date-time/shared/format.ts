@@ -1,11 +1,12 @@
-import type { BuiltinDisplayDateTimeButtonConfig } from "./schemas";
+import type { BuiltinDisplayDateTimeButtonConfig } from "./schemas"
 
 interface FormatSegment {
-  kind: "markup" | "token";
-  value: string;
+  kind: "markup" | "token"
+  value: string
 }
 
-const escapeLiteral = (value: string): string => `[${value.replaceAll("]", "\\]")}]`;
+const escapeLiteral = (value: string): string =>
+  `[${value.replaceAll("]", "\\]")}]`
 
 const TOKEN_MAP: Record<string, (d: Date) => string> = {
   YY: (d) => String(d.getFullYear() % 100).padStart(2, "0"),
@@ -30,60 +31,66 @@ const TOKEN_MAP: Record<string, (d: Date) => string> = {
   SSS: (d) => String(d.getMilliseconds()).padStart(3, "0"),
   A: (d) => (d.getHours() < 12 ? "AM" : "PM"),
   a: (d) => (d.getHours() < 12 ? "am" : "pm"),
-};
+}
 
 const splitFormat = (pattern: string): FormatSegment[] => {
-  const segments: FormatSegment[] = [];
-  let cursor = 0;
+  const segments: FormatSegment[] = []
+  let cursor = 0
   while (cursor < pattern.length) {
-    const tagStart = pattern.indexOf("<", cursor);
+    const tagStart = pattern.indexOf("<", cursor)
     if (tagStart === -1) {
       if (cursor < pattern.length) {
-        segments.push({ kind: "token", value: pattern.slice(cursor) });
+        segments.push({ kind: "token", value: pattern.slice(cursor) })
       }
-      break;
+      break
     }
     if (tagStart > cursor) {
-      segments.push({ kind: "token", value: pattern.slice(cursor, tagStart) });
+      segments.push({ kind: "token", value: pattern.slice(cursor, tagStart) })
     }
-    const tagEnd = pattern.indexOf(">", tagStart + 1);
+    const tagEnd = pattern.indexOf(">", tagStart + 1)
     if (tagEnd === -1) {
-      segments.push({ kind: "token", value: escapeLiteral(pattern.slice(tagStart)) });
-      break;
+      segments.push({
+        kind: "token",
+        value: escapeLiteral(pattern.slice(tagStart)),
+      })
+      break
     }
-    segments.push({ kind: "markup", value: pattern.slice(tagStart, tagEnd + 1) });
-    cursor = tagEnd + 1;
+    segments.push({
+      kind: "markup",
+      value: pattern.slice(tagStart, tagEnd + 1),
+    })
+    cursor = tagEnd + 1
   }
-  return segments;
-};
+  return segments
+}
 
 const expandTokens = (tokenString: string, date: Date): string => {
-  let result = "";
-  let i = 0;
+  let result = ""
+  let i = 0
   while (i < tokenString.length) {
     if (tokenString.slice(i, i + 6) === "&nbsp;") {
-      result += "\u00A0";
-      i += 6;
-      continue;
+      result += "\u00A0"
+      i += 6
+      continue
     }
-    let matched = false;
+    let matched = false
     for (const len of [4, 3, 2, 1]) {
-      const slice = tokenString.slice(i, i + len);
-      const handler = TOKEN_MAP[slice];
+      const slice = tokenString.slice(i, i + len)
+      const handler = TOKEN_MAP[slice]
       if (handler) {
-        result += handler(date);
-        i += len;
-        matched = true;
-        break;
+        result += handler(date)
+        i += len
+        matched = true
+        break
       }
     }
     if (!matched) {
-      result += tokenString[i];
-      i += 1;
+      result += tokenString[i]
+      i += 1
     }
   }
-  return result;
-};
+  return result
+}
 
 export const formatDigitalDateTimeLabel = (
   format: BuiltinDisplayDateTimeButtonConfig["format"],
@@ -91,6 +98,8 @@ export const formatDigitalDateTimeLabel = (
 ): string =>
   splitFormat(format)
     .map((segment) =>
-      segment.kind === "markup" ? segment.value : expandTokens(segment.value, date),
+      segment.kind === "markup"
+        ? segment.value
+        : expandTokens(segment.value, date),
     )
-    .join("");
+    .join("")

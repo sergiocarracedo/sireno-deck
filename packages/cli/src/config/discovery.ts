@@ -1,7 +1,7 @@
-import { existsSync } from 'node:fs'
-import { dirname, isAbsolute, resolve as resolvePath } from 'node:path'
+import { existsSync } from "node:fs"
+import { dirname, isAbsolute, resolve as resolvePath } from "node:path"
 
-import { getOriginalCwd } from '@/cli/cwd'
+import { getOriginalCwd } from "@/cli/cwd"
 
 export interface FindConfigOptions {
   cwd?: string
@@ -12,7 +12,7 @@ export interface FindConfigOptions {
   maxDepth?: number
 }
 
-export const DEFAULT_CONFIG_FILENAME = 'config.yml'
+export const DEFAULT_CONFIG_FILENAME = "config.yml"
 
 const resolvePath_ = (p: string, cwd: string): string =>
   isAbsolute(p) ? p : resolvePath(cwd, p)
@@ -42,8 +42,8 @@ export const findConfigPath = (options: FindConfigOptions): string | null => {
   const maxDepth = options.maxDepth ?? 10
   const walked = walkUpForConfig(cwd, maxDepth)
   if (walked !== null) return walked
-  const xdg = options.xdgConfigHome ?? resolvePath(options.homeDir, '.config')
-  const xdgConfig = resolvePath(xdg, 'sireno-deck', DEFAULT_CONFIG_FILENAME)
+  const xdg = options.xdgConfigHome ?? resolvePath(options.homeDir, ".config")
+  const xdgConfig = resolvePath(xdg, "sireno-deck", DEFAULT_CONFIG_FILENAME)
   if (existsSync(xdgConfig)) return xdgConfig
   return null
 }

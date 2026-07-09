@@ -30,14 +30,14 @@
 
 ## Planned (v1.7 P-list — see ARCHITECTURE.md §8)
 
-| ID | Title | Scope |
-|----|-------|-------|
-| **P1** | Add React Router to frontend | Routing layer; service stays authoritative on active deck |
-| **P2** | `gestureHandlers` opt-in filter, default-deny | Breaking change; WS payload carries per-button opt-in |
-| **P4** | Auto-register all addon decks on load | No manual user config registration |
-| **P5** | `internal?: boolean` on `AddonDeckDefinition` | Opt-out of user config surfaces |
-| **P6** | `SplitActionSurface` on n-1 for every deck | Main + sub + overlay |
-| **P8** | `backend` → `service` rename | Terminology cleanup |
+| ID     | Title                                         | Scope                                                     |
+| ------ | --------------------------------------------- | --------------------------------------------------------- |
+| **P1** | Add React Router to frontend                  | Routing layer; service stays authoritative on active deck |
+| **P2** | `gestureHandlers` opt-in filter, default-deny | Breaking change; WS payload carries per-button opt-in     |
+| **P4** | Auto-register all addon decks on load         | No manual user config registration                        |
+| **P5** | `internal?: boolean` on `AddonDeckDefinition` | Opt-out of user config surfaces                           |
+| **P6** | `SplitActionSurface` on n-1 for every deck    | Main + sub + overlay                                      |
+| **P8** | `backend` → `service` rename                  | Terminology cleanup                                       |
 
 ## Out of Scope (this milestone)
 

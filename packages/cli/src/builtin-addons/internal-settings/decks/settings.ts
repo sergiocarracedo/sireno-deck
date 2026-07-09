@@ -1,4 +1,4 @@
-import type { AddonDeckFactory } from "@/addon/api";
+import type { AddonDeckFactory } from "@/addon/api"
 
 const settingsDeck: AddonDeckFactory = () => ({
   name: "Settings",
@@ -7,6 +7,6 @@ const settingsDeck: AddonDeckFactory = () => ({
     { id: "theme", type: "internal-settings:theme", position: 1 },
     { id: "about", type: "internal-settings:about", position: 2 },
   ],
-});
+})
 
-export default settingsDeck;
+export default settingsDeck

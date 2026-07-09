@@ -1,7 +1,7 @@
-import { type ReactElement, type ReactNode } from 'react'
+import { type ReactElement, type ReactNode } from "react"
 
-import { useThemeUiPresentation } from '../theme-presentation'
-import { Text } from './Text'
+import { useThemeUiPresentation } from "../theme-presentation"
+import { Text } from "./Text"
 
 export interface LabelProps {
   children: ReactNode

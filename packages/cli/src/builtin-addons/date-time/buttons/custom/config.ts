@@ -1,9 +1,9 @@
-import { z } from "zod";
+import { z } from "zod"
 
 export const configSchema = z
   .object({
     format: z.string().min(1).optional().default("DD/MM/YYYY HH:mm:ss"),
   })
-  .strict();
+  .strict()
 
-export type ConfigSchema = z.infer<typeof configSchema>;
+export type ConfigSchema = z.infer<typeof configSchema>

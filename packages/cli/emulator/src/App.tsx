@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from "react"
 import {
   ChannelRegistry,
   Deck,
   ThemeProvider,
   type ThemeContextValue,
   type DeckButton,
-} from '@sireno-deck/cli'
+} from "@sireno-deck/cli"
 
-import { createWsClient, serializeHello, type WsClient } from './bridge'
+import { createWsClient, serializeHello, type WsClient } from "./bridge"
 
 let _wsClientInitialized = false
 
@@ -18,24 +18,24 @@ interface DeckState {
 }
 
 const EMPTY_DECK: DeckState = {
-  id: '',
-  name: '',
+  id: "",
+  name: "",
   buttons: [],
 }
 
 const ENV_WS_URL = (import.meta.env.VITE_WS_URL ??
-  'ws://127.0.0.1:52937') as string
+  "ws://127.0.0.1:52937") as string
 
 const buildThemeContext = (): ThemeContextValue => ({
-  name: 'default',
-  cssPath: '',
+  name: "default",
+  cssPath: "",
   theme: {
-    name: 'default',
+    name: "default",
     apiVersion: 3,
-    source: { kind: 'builtin' as const, resolvedPath: '' },
-    manifestPath: '',
+    source: { kind: "builtin" as const, resolvedPath: "" },
+    manifestPath: "",
     uiOverridesPath: null,
-    cssPath: '',
+    cssPath: "",
   },
   colorTokens: null,
   typography: null,
@@ -60,7 +60,7 @@ export const App = ({
       url: wsUrl,
       wsFactory: (url: string) => {
         const ws = new WebSocket(url)
-        ws.addEventListener('open', () => {
+        ws.addEventListener("open", () => {
           ws.send(serializeHello())
         })
         return ws as unknown as { send: (d: string) => void; close: () => void }
@@ -72,26 +72,26 @@ export const App = ({
           channels?: unknown
         }
         if (
-          m.type === 'deck-config' &&
-          typeof m.surfaces === 'object' &&
+          m.type === "deck-config" &&
+          typeof m.surfaces === "object" &&
           m.surfaces !== null
         ) {
           const surfaces = m.surfaces as Record<
             string,
             { buttons?: unknown; id?: string; name?: string }
           >
-          const surface = surfaces['buttons'] ?? surfaces['main']
+          const surface = surfaces["buttons"] ?? surfaces["main"]
           if (surface && Array.isArray(surface.buttons)) {
             setDeck({
-              id: surface.id ?? 'main',
-              name: surface.name ?? 'Home',
+              id: surface.id ?? "main",
+              name: surface.name ?? "Home",
               buttons: surface.buttons as DeckButton[],
             })
           }
         }
         if (
-          m.type === 'state' &&
-          typeof m.channels === 'object' &&
+          m.type === "state" &&
+          typeof m.channels === "object" &&
           m.channels !== null
         ) {
           for (const [channel, payload] of Object.entries(m.channels)) {
@@ -109,17 +109,17 @@ export const App = ({
 
   const sendButtonAction = (
     buttonId: string,
-    gesture: 'tap' | 'dbl-tap' | 'hold',
+    gesture: "tap" | "dbl-tap" | "hold",
   ): void => {
     const button = deck.buttons.find((b) => b.id === buttonId)
     if (button === undefined) return
     const position =
-      typeof button.position === 'number' && Number.isFinite(button.position)
+      typeof button.position === "number" && Number.isFinite(button.position)
         ? button.position
         : deck.buttons.indexOf(button)
     clientRef.current?.send(
       JSON.stringify({
-        type: 'button-action',
+        type: "button-action",
         deckId: deck.id,
         position,
         gesture,
@@ -128,8 +128,8 @@ export const App = ({
   }
 
   const sendNavigate = (deckId: string): void => {
-    clientRef.current?.send(JSON.stringify({ type: 'select-deck', deckId }))
-    ChannelRegistry.instance().publish('runtime:navigate', { deckId })
+    clientRef.current?.send(JSON.stringify({ type: "select-deck", deckId }))
+    ChannelRegistry.instance().publish("runtime:navigate", { deckId })
   }
 
   return (

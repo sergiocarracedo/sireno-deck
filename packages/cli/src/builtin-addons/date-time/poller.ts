@@ -1,4 +1,4 @@
-import type { AddonPoller } from "@/addon/api-types";
+import type { AddonPoller } from "@/addon/api-types"
 
 export const createPoller = (): AddonPoller => ({
   channels: [
@@ -8,4 +8,4 @@ export const createPoller = (): AddonPoller => ({
       poll: () => ({ now: Date.now() }),
     },
   ],
-});
+})

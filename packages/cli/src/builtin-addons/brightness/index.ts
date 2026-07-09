@@ -1,7 +1,7 @@
-import type { AddonManifestV1 } from "@/addon/api";
+import type { AddonManifestV1 } from "@/addon/api"
 
-import brightnessBackend from "./buttons/brightness/backend";
-import brightnessFrontend from "./buttons/brightness/frontend";
+import brightnessBackend from "./buttons/brightness/backend"
+import brightnessFrontend from "./buttons/brightness/frontend"
 
 export const manifest: AddonManifestV1 = {
   apiVersion: 1,
@@ -13,8 +13,8 @@ export const manifest: AddonManifestV1 = {
     },
   },
   publishIntervalMs: 2000,
-};
+}
 
-export const brightnessAddon = manifest;
-export default manifest;
-export { brightnessBackend, brightnessFrontend };
+export const brightnessAddon = manifest
+export default manifest
+export { brightnessBackend, brightnessFrontend }

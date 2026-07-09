@@ -1,33 +1,33 @@
-import { execa } from "execa";
+import { execa } from "execa"
 
-import { getOriginalCwd } from "@/cli/cwd";
-import type { HostContext } from "@/deck/host-context";
-import { getHostContext } from "@/deck/host-context";
+import { getOriginalCwd } from "@/cli/cwd"
+import type { HostContext } from "@/deck/host-context"
+import { getHostContext } from "@/deck/host-context"
 
 export interface ActionResult {
-  stdout: string;
-  stderr: string;
-  exitCode: number;
-  durationMs: number;
+  stdout: string
+  stderr: string
+  exitCode: number
+  durationMs: number
 }
 
 export class ActionError extends Error {
   constructor(message: string) {
-    super(message);
-    this.name = "ActionError";
+    super(message)
+    this.name = "ActionError"
   }
 }
 
 export interface ActionExecutorOptions {
-  cwd?: string;
-  env?: Readonly<Record<string, string>>;
+  cwd?: string
+  env?: Readonly<Record<string, string>>
 }
 
 export interface ActionExecutor {
-  run(command: string, options?: ActionExecutorOptions): Promise<ActionResult>;
+  run(command: string, options?: ActionExecutorOptions): Promise<ActionResult>
 }
 
-const PLACEHOLDER_RE = /\{\{\s*host\.([a-zA-Z]+)\s*\}\}/g;
+const PLACEHOLDER_RE = /\{\{\s*host\.([a-zA-Z]+)\s*\}\}/g
 
 const KNOWN_HOST_KEYS: ReadonlySet<keyof HostContext | string> = new Set([
   "hostname",
@@ -35,104 +35,110 @@ const KNOWN_HOST_KEYS: ReadonlySet<keyof HostContext | string> = new Set([
   "username",
   "homedir",
   "arch",
-]);
+])
 
 const interpolate = (command: string, host: HostContext): string => {
-  const remaining = new Set<string>();
+  const remaining = new Set<string>()
   const replaced = command.replace(PLACEHOLDER_RE, (_match, key: string) => {
     if (!KNOWN_HOST_KEYS.has(key)) {
-      remaining.add(key);
-      return `{{ host.${key} }}`;
+      remaining.add(key)
+      return `{{ host.${key} }}`
     }
-    if (key === "hostname") return host.hostname;
-    if (key === "platform") return host.platform;
-    if (key === "arch") return host.arch;
-    if (key === "username") return host.userInfo.username;
-    if (key === "homedir") return host.userInfo.homedir;
-    return `{{ host.${key} }}`;
-  });
+    if (key === "hostname") return host.hostname
+    if (key === "platform") return host.platform
+    if (key === "arch") return host.arch
+    if (key === "username") return host.userInfo.username
+    if (key === "homedir") return host.userInfo.homedir
+    return `{{ host.${key} }}`
+  })
   if (remaining.size > 0) {
     throw new ActionError(
       `Unknown host placeholder(s): ${[...remaining].map((k) => `{{ host.${k} }}`).join(", ")}`,
-    );
+    )
   }
-  return replaced;
-};
-
-export interface CreateActionExecutorOptions {
-  host: HostContext;
+  return replaced
 }
 
-export const createActionExecutor = (options: CreateActionExecutorOptions): ActionExecutor => {
+export interface CreateActionExecutorOptions {
+  host: HostContext
+}
+
+export const createActionExecutor = (
+  options: CreateActionExecutorOptions,
+): ActionExecutor => {
   const run = async (
     command: string,
     runOptions: ActionExecutorOptions = {},
   ): Promise<ActionResult> => {
-    const interpolated = interpolate(command, options.host);
-    const cwd = runOptions.cwd ?? getOriginalCwd();
-    const env = runOptions.env ? { ...process.env, ...runOptions.env } : process.env;
-    const started = Date.now();
+    const interpolated = interpolate(command, options.host)
+    const cwd = runOptions.cwd ?? getOriginalCwd()
+    const env = runOptions.env
+      ? { ...process.env, ...runOptions.env }
+      : process.env
+    const started = Date.now()
     const result = await execa("/bin/sh", ["-c", interpolated], {
       cwd,
       env,
       reject: false,
       all: false,
-    });
+    })
     return {
       stdout: result.stdout ?? "",
       stderr: result.stderr ?? "",
       exitCode: result.exitCode ?? -1,
       durationMs: Date.now() - started,
-    };
-  };
+    }
+  }
 
-  return { run };
-};
+  return { run }
+}
 
 export interface ExecuteCommandOptions {
-  cwd?: string;
-  env?: Readonly<Record<string, string>>;
-  timeoutMs?: number;
+  cwd?: string
+  env?: Readonly<Record<string, string>>
+  timeoutMs?: number
 }
 
 export interface ExecuteCommandResult {
-  stdout: string;
-  stderr: string;
-  exitCode: number;
-  failed: boolean;
-  code: number;
+  stdout: string
+  stderr: string
+  exitCode: number
+  failed: boolean
+  code: number
 }
 
 export const executeCommand = async (
   command: string,
   options: ExecuteCommandOptions = {},
 ): Promise<ExecuteCommandResult> => {
-  await getHostContext();
-  const cwd = options.cwd ?? getOriginalCwd();
-  const env = options.env ? { ...process.env, ...options.env } : process.env;
+  await getHostContext()
+  const cwd = options.cwd ?? getOriginalCwd()
+  const env = options.env ? { ...process.env, ...options.env } : process.env
   try {
     const result = await execa("/bin/sh", ["-c", command], {
       cwd,
       env,
       reject: false,
       all: false,
-      ...(options.timeoutMs !== undefined ? { timeout: options.timeoutMs } : {}),
-    });
+      ...(options.timeoutMs !== undefined
+        ? { timeout: options.timeoutMs }
+        : {}),
+    })
     return {
       stdout: result.stdout ?? "",
       stderr: result.stderr ?? "",
       exitCode: result.exitCode ?? -1,
       failed: result.exitCode !== 0,
       code: result.exitCode ?? -1,
-    };
+    }
   } catch (err) {
-    const error = err as { stdout?: string; stderr?: string; exitCode?: number };
+    const error = err as { stdout?: string; stderr?: string; exitCode?: number }
     return {
       stdout: error.stdout ?? "",
       stderr: error.stderr ?? "",
       exitCode: error.exitCode ?? -1,
       failed: true,
       code: error.exitCode ?? -1,
-    };
+    }
   }
-};
+}

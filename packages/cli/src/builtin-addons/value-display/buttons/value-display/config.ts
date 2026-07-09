@@ -1,7 +1,7 @@
-import { z } from "zod";
+import { z } from "zod"
 
-export const VALUE_DISPLAY_DEFAULT_POLL_MS = 5000;
-export const VALUE_DISPLAY_DEFAULT_TIMEOUT_MS = 5000;
+export const VALUE_DISPLAY_DEFAULT_POLL_MS = 5000
+export const VALUE_DISPLAY_DEFAULT_TIMEOUT_MS = 5000
 
 const ValueEntrySchema = z
   .object({
@@ -12,15 +12,25 @@ const ValueEntrySchema = z
     timeout_ms: z.number().int().positive().optional(),
     icon: z.string().optional(),
   })
-  .strict();
+  .strict()
 
 const ValueDisplayButtonSchema = z
   .object({
     values: z.array(ValueEntrySchema).min(1).max(4),
-    poll_interval_ms: z.number().int().positive().optional().default(VALUE_DISPLAY_DEFAULT_POLL_MS),
-    timeout_ms: z.number().int().positive().optional().default(VALUE_DISPLAY_DEFAULT_TIMEOUT_MS),
+    poll_interval_ms: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .default(VALUE_DISPLAY_DEFAULT_POLL_MS),
+    timeout_ms: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .default(VALUE_DISPLAY_DEFAULT_TIMEOUT_MS),
   })
-  .strict();
+  .strict()
 
-export const configSchema = ValueDisplayButtonSchema;
-export type ConfigSchema = z.infer<typeof configSchema>;
+export const configSchema = ValueDisplayButtonSchema
+export type ConfigSchema = z.infer<typeof configSchema>

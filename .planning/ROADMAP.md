@@ -3,6 +3,7 @@
 ## Completed Milestones
 
 ### v1.7 — Polish & 3rd-Party Fixtures
+
 Completed 2026-07-08. 6 P-items delivered (P1-P8). See `.planning/milestones/v1.7-ROADMAP.md` for full details.
 
 - P1: React Router (service-driven nav)

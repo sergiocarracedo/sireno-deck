@@ -1,1 +1,2 @@
-export const getOriginalCwd = (): string => process.env["SIRENO_CWD"] ?? process.cwd();
+export const getOriginalCwd = (): string =>
+  process.env["SIRENO_CWD"] ?? process.cwd()

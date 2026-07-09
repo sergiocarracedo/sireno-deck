@@ -1,7 +1,7 @@
-import type { AddonManifestV1 } from "@/addon/api";
+import type { AddonManifestV1 } from "@/addon/api"
 
-import systemStatusBackend from "./buttons/system-status/backend";
-import systemStatusFrontend from "./buttons/system-status/frontend";
+import systemStatusBackend from "./buttons/system-status/backend"
+import systemStatusFrontend from "./buttons/system-status/frontend"
 
 export const manifest: AddonManifestV1 = {
   apiVersion: 1,
@@ -13,7 +13,7 @@ export const manifest: AddonManifestV1 = {
     },
   },
   publishIntervalMs: 1000,
-};
+}
 
-export const systemStatusAddon = manifest;
-export default manifest;
+export const systemStatusAddon = manifest
+export default manifest

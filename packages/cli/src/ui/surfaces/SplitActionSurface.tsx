@@ -1,7 +1,7 @@
-import { type ReactElement } from 'react'
+import { type ReactElement } from "react"
 
-import { TapIndicator } from '../primitives/TapIndicator'
-import { useThemeUiPresentation } from '../theme-presentation'
+import { TapIndicator } from "../primitives/TapIndicator"
+import { useThemeUiPresentation } from "../theme-presentation"
 
 export interface SplitActionSurfaceProps {
   primary: ReactElement
@@ -30,7 +30,7 @@ export function SplitActionSurface(
       <div className="flex-1 overflow-hidden flex items-start justify-center absolute top-0 left-0">
         <div
           className="scale-[0.65] origin-top"
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: "100%", height: "100%" }}
         >
           {props.primary}
         </div>
@@ -42,7 +42,7 @@ export function SplitActionSurface(
       <div className="flex-1 overflow-hidden flex items-end justify-center absolute bottom-0 right-0">
         <div
           className="scale-[0.65] origin-bottom"
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: "100%", height: "100%" }}
         >
           {props.secondary}
         </div>

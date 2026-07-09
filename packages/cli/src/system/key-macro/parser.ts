@@ -1,6 +1,6 @@
 export interface ParsedCombo {
-  mods: string[];
-  key: string;
+  mods: string[]
+  key: string
 }
 
 const MODIFIER_ALIASES: ReadonlyMap<string, string> = new Map([
@@ -18,7 +18,7 @@ const MODIFIER_ALIASES: ReadonlyMap<string, string> = new Map([
   ["super", "super"],
   ["hyper", "hyper"],
   ["win", "super"],
-]);
+])
 
 export const knownKeys: ReadonlySet<string> = new Set([
   "BackSpace",
@@ -102,67 +102,67 @@ export const knownKeys: ReadonlySet<string> = new Set([
   "Caps_Lock",
   "Print",
   "Menu",
-]);
+])
 
 const addIfMissing = (set: Set<string>, value: string): void => {
-  if (!set.has(value)) set.add(value);
-};
+  if (!set.has(value)) set.add(value)
+}
 
 const seedAlphaKeys = (): Set<string> => {
-  const set = new Set<string>(knownKeys);
+  const set = new Set<string>(knownKeys)
   for (let code = 0; code < 26; code += 1) {
-    addIfMissing(set, String.fromCharCode(0x61 + code));
+    addIfMissing(set, String.fromCharCode(0x61 + code))
   }
   for (let code = 0; code < 10; code += 1) {
-    addIfMissing(set, String.fromCharCode(0x30 + code));
+    addIfMissing(set, String.fromCharCode(0x30 + code))
   }
-  return set;
-};
+  return set
+}
 
-const allKnownKeys: ReadonlySet<string> = seedAlphaKeys();
+const allKnownKeys: ReadonlySet<string> = seedAlphaKeys()
 
-export const isValidKey = (name: string): boolean => allKnownKeys.has(name);
+export const isValidKey = (name: string): boolean => allKnownKeys.has(name)
 
 const normalizeKey = (raw: string): string => {
-  if (raw.length === 1) return raw.toLowerCase();
-  if (/^[a-zA-Z]$/.test(raw)) return raw.toLowerCase();
-  if (/^\d$/.test(raw)) return raw;
-  if (/^F\d+$/.test(raw)) return raw.toUpperCase();
-  if (raw === "Esc" || raw === "ESC") return "Escape";
-  if (raw === "Esc") return "Escape";
-  if (raw === "Space" || raw === " ") return "space";
-  if (raw === "Enter" || raw === "CR" || raw === "Return") return "Return";
-  if (raw === "Backspace" || raw === "BS") return "BackSpace";
-  if (raw === "PgUp") return "Page_Up";
-  if (raw === "PgDn") return "Page_Down";
-  if (raw === "Ins") return "Insert";
-  return raw;
-};
+  if (raw.length === 1) return raw.toLowerCase()
+  if (/^[a-zA-Z]$/.test(raw)) return raw.toLowerCase()
+  if (/^\d$/.test(raw)) return raw
+  if (/^F\d+$/.test(raw)) return raw.toUpperCase()
+  if (raw === "Esc" || raw === "ESC") return "Escape"
+  if (raw === "Esc") return "Escape"
+  if (raw === "Space" || raw === " ") return "space"
+  if (raw === "Enter" || raw === "CR" || raw === "Return") return "Return"
+  if (raw === "Backspace" || raw === "BS") return "BackSpace"
+  if (raw === "PgUp") return "Page_Up"
+  if (raw === "PgDn") return "Page_Down"
+  if (raw === "Ins") return "Insert"
+  return raw
+}
 
 export const parseCombo = (input: string): ParsedCombo | null => {
-  if (input.length === 0) return null;
+  if (input.length === 0) return null
   const segments = input
     .split("+")
     .map((s) => s.trim())
-    .filter((s) => s.length > 0);
-  if (segments.length === 0) return null;
+    .filter((s) => s.length > 0)
+  if (segments.length === 0) return null
 
-  const last = segments[segments.length - 1]!;
-  const key = normalizeKey(last);
-  if (!isValidKey(key)) return null;
+  const last = segments[segments.length - 1]!
+  const key = normalizeKey(last)
+  if (!isValidKey(key)) return null
 
-  const mods: string[] = [];
+  const mods: string[] = []
   for (let i = 0; i < segments.length - 1; i += 1) {
-    const seg = segments[i]!.toLowerCase();
-    const mod = MODIFIER_ALIASES.get(seg);
-    if (mod === undefined) return null;
-    if (!mods.includes(mod)) mods.push(mod);
+    const seg = segments[i]!.toLowerCase()
+    const mod = MODIFIER_ALIASES.get(seg)
+    if (mod === undefined) return null
+    if (!mods.includes(mod)) mods.push(mod)
   }
 
   if (segments.length === 1 && key.length === 1) {
-    const lower = key.toLowerCase();
-    if (MODIFIER_ALIASES.has(lower)) return null;
+    const lower = key.toLowerCase()
+    if (MODIFIER_ALIASES.has(lower)) return null
   }
 
-  return { mods, key };
-};
+  return { mods, key }
+}

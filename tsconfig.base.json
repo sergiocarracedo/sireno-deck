@@ -24,7 +24,11 @@
     "noEmit": true,
 
     "paths": {
-      "@/*": ["./packages/cli/src/*", "./packages/cli/frontend/src/*", "./packages/cli/emulator/src/*"]
+      "@/*": [
+        "./packages/cli/src/*",
+        "./packages/cli/frontend/src/*",
+        "./packages/cli/emulator/src/*"
+      ]
     }
   },
   "include": [

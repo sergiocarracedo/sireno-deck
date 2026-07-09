@@ -1,6 +1,11 @@
 {
   "plugins": ["import", "typescript"],
-  "ignorePatterns": ["**/node_modules/**", "**/dist/**", "**/.tsdown/**", "**/coverage/**"],
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/.tsdown/**",
+    "**/coverage/**"
+  ],
   "rules": {
     "import/extensions": [
       "error",

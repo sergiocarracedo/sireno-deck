@@ -14,7 +14,7 @@ export {
   wsMessageSchema,
   subscribeChannelsMessageSchema,
   PROTOCOL_VERSION,
-} from "./protocol-internal";
+} from "./protocol-internal"
 
 export type {
   HelloMessage,
@@ -31,4 +31,4 @@ export type {
   DismissOverlayMessage,
   WsMessage,
   SubscribeChannelsMessage,
-} from "./protocol-internal";
+} from "./protocol-internal"

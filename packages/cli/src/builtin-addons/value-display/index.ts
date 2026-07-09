@@ -1,7 +1,7 @@
-import type { AddonManifestV1 } from "@/addon/api";
+import type { AddonManifestV1 } from "@/addon/api"
 
-import valueDisplayBackend from "./buttons/value-display/backend";
-import valueDisplayFrontend from "./buttons/value-display/frontend";
+import valueDisplayBackend from "./buttons/value-display/backend"
+import valueDisplayFrontend from "./buttons/value-display/frontend"
 
 export const manifest: AddonManifestV1 = {
   apiVersion: 1,
@@ -13,7 +13,7 @@ export const manifest: AddonManifestV1 = {
     },
   },
   publishIntervalMs: 5000,
-};
+}
 
-export const valueDisplayAddon = manifest;
-export default manifest;
+export const valueDisplayAddon = manifest
+export default manifest

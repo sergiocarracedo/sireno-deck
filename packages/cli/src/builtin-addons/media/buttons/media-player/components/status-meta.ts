@@ -1,5 +1,5 @@
-import { IconTone } from "@/ui";
-import type { MediaButtonStatus } from "../../../state";
+import { IconTone } from "@/ui"
+import type { MediaButtonStatus } from "../../../state"
 
 export const statusesMeta: Record<
   MediaButtonStatus,
@@ -31,6 +31,6 @@ export const statusesMeta: Record<
     bgColor: "bg-background/30",
     bgColorAlt: "bg-background/10",
   },
-};
+}
 
-export type { MediaButtonStatus };
+export type { MediaButtonStatus }

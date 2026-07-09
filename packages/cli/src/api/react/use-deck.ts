@@ -1,24 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 
-import { ChannelRegistry } from "./registry";
+import { ChannelRegistry } from "./registry"
 
 export interface UseDeckReturn {
-  activeDeckId: string | null;
+  activeDeckId: string | null
 }
 
 export const useDeck = (): UseDeckReturn => {
   const [activeDeckId, setActiveDeckId] = useState<string | null>(
     () => ChannelRegistry.instance().last<string>("runtime:activeDeck") ?? null,
-  );
+  )
 
   useEffect(() => {
     return ChannelRegistry.instance().subscribe<{ deckId: string }>(
       "runtime:activeDeck",
       (payload) => {
-        setActiveDeckId(payload.deckId);
+        setActiveDeckId(payload.deckId)
       },
-    );
-  }, []);
+    )
+  }, [])
 
-  return { activeDeckId };
-};
+  return { activeDeckId }
+}

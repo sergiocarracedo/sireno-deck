@@ -39,7 +39,7 @@ decks:
       - position: 1
         type: core:action
         config:
-          command: 'xdg-open https://example.com'
+          command: "xdg-open https://example.com"
 
       - position: 4
         type: core:weather

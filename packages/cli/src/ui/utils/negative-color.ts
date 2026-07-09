@@ -5,7 +5,7 @@ export interface Rgb {
 }
 
 export function parseHex(hex: string): Rgb | null {
-  if (typeof hex !== 'string') return null
+  if (typeof hex !== "string") return null
   const trimmed = hex.trim()
   const match = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.exec(trimmed)
   if (!match) return null
@@ -31,9 +31,9 @@ function clampChannel(value: number): number {
 }
 
 export function toHex(rgb: Rgb): string {
-  const r = clampChannel(rgb.r).toString(16).padStart(2, '0')
-  const g = clampChannel(rgb.g).toString(16).padStart(2, '0')
-  const b = clampChannel(rgb.b).toString(16).padStart(2, '0')
+  const r = clampChannel(rgb.r).toString(16).padStart(2, "0")
+  const g = clampChannel(rgb.g).toString(16).padStart(2, "0")
+  const b = clampChannel(rgb.b).toString(16).padStart(2, "0")
   return `#${r}${g}${b}`
 }
 
@@ -41,16 +41,22 @@ export function luma(rgb: Rgb): number {
   return 0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b
 }
 
-export function computeNegativeColor(barColor: string, themePrimaryHex: string | null): string {
-  const barParsed = typeof barColor === 'string' && barColor.length > 0 ? parseHex(barColor) : null
+export function computeNegativeColor(
+  barColor: string,
+  themePrimaryHex: string | null,
+): string {
+  const barParsed =
+    typeof barColor === "string" && barColor.length > 0
+      ? parseHex(barColor)
+      : null
   const themeParsed = themePrimaryHex ? parseHex(themePrimaryHex) : null
   const effective = barParsed ?? themeParsed
   if (!effective) {
-    return '#ffffff'
+    return "#ffffff"
   }
   const lum = luma(effective)
   if (Math.abs(lum - 128) < 32) {
-    return lum < 128 ? '#ffffff' : '#000000'
+    return lum < 128 ? "#ffffff" : "#000000"
   }
   return toHex({
     r: 255 - effective.r,

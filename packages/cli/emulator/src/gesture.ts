@@ -2,9 +2,9 @@ import {
   nextGesture,
   type GestureEvent,
   type GestureResult,
-} from '@sireno-deck/cli'
+} from "@sireno-deck/cli"
 
-export type MouseEventKind = 'down' | 'up'
+export type MouseEventKind = "down" | "up"
 
 export interface GestureMouseEvent {
   readonly kind: MouseEventKind
@@ -26,7 +26,7 @@ export const dispatchMouseEvent = (
   const coreBuffer: GestureEvent[] = buffer.map(toCore)
   const result = nextGesture([...coreBuffer, core])
   const newBuffer =
-    result?.kind === 'hold' || result?.kind === 'dbl-tap'
+    result?.kind === "hold" || result?.kind === "dbl-tap"
       ? []
       : [...buffer, newEvent]
   return { buffer: newBuffer, result }
@@ -36,13 +36,13 @@ export const gestureKindToWsMessage = (
   result: GestureResult,
   deckId: string,
 ): {
-  type: 'button-action'
+  type: "button-action"
   deckId: string
   position: number
-  gesture: 'tap' | 'dbl-tap' | 'hold'
+  gesture: "tap" | "dbl-tap" | "hold"
 } => {
   return {
-    type: 'button-action',
+    type: "button-action",
     deckId,
     position: result.keyIndex ?? 0,
     gesture: result.kind,

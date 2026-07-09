@@ -24,7 +24,7 @@ Five planned changes, sized for a single milestone:
 - **P1** Add React Router so per-deck URLs reflect the active deck (service still picks it).
 - **P2** Make `gestureHandlers` an enforced opt-in filter (default-deny; breaking change for 9/10 addons that need to declare `['tap']`).
 - **P4+P5** Auto-register addon decks + `internal?: boolean` on `AddonDeckDefinition`.
-- **P6** Show `SplitActionSurface` on the n-1 slot of *every* deck — main, sub, overlay (with the right primary action for each: settings / back / dismiss).
+- **P6** Show `SplitActionSurface` on the n-1 slot of _every_ deck — main, sub, overlay (with the right primary action for each: settings / back / dismiss).
 - **P8** Rename `backend` → `service` (terminology only, separate PR).
 
 ## Why these are the right next changes

@@ -1,6 +1,6 @@
-import { z } from "zod";
+import { z } from "zod"
 
-export const SYSTEM_STATUS_DEFAULT_POLL_MS = 1000;
+export const SYSTEM_STATUS_DEFAULT_POLL_MS = 1000
 
 const SystemStatusMetricIdSchema = z.enum([
   "cpu_usage",
@@ -10,7 +10,7 @@ const SystemStatusMetricIdSchema = z.enum([
   "uptime",
   "battery",
   "load_average_1m",
-]);
+])
 
 const SystemStatusMetricConfigSchema = z
   .object({
@@ -21,15 +21,20 @@ const SystemStatusMetricConfigSchema = z
     color: z.string().optional(),
     unavailable_label: z.string().optional(),
   })
-  .strict();
+  .strict()
 
 const SystemStatusButtonSchema = z
   .object({
     variant: z.enum(["text", "bars"]).optional().default("text"),
     metrics: z.array(SystemStatusMetricConfigSchema).min(1).max(6),
-    poll_interval_ms: z.number().int().positive().optional().default(SYSTEM_STATUS_DEFAULT_POLL_MS),
+    poll_interval_ms: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .default(SYSTEM_STATUS_DEFAULT_POLL_MS),
   })
-  .strict();
+  .strict()
 
-export const configSchema = SystemStatusButtonSchema;
-export type ConfigSchema = z.infer<typeof configSchema>;
+export const configSchema = SystemStatusButtonSchema
+export type ConfigSchema = z.infer<typeof configSchema>

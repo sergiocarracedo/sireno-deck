@@ -1,4 +1,4 @@
-import type { AddonDeckFactory } from "@/addon/api";
+import type { AddonDeckFactory } from "@/addon/api"
 
 const sessionLockedDeckFactory: AddonDeckFactory = (page: number) => ({
   name: "Locked",
@@ -8,7 +8,7 @@ const sessionLockedDeckFactory: AddonDeckFactory = (page: number) => ({
     config: { format: "HH:mm" },
     position: i + page * 5,
   })),
-});
+})
 
-export default sessionLockedDeckFactory;
-export { sessionLockedDeckFactory };
+export default sessionLockedDeckFactory
+export { sessionLockedDeckFactory }

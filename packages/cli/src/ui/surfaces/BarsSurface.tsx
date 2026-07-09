@@ -1,9 +1,9 @@
-import type { CSSProperties, ReactElement } from 'react'
+import type { CSSProperties, ReactElement } from "react"
 
-import { Text } from '../primitives/Text'
-import { useThemeUiPresentation } from '../theme-presentation'
-import { cn } from '../utils/cn'
-import { computeNegativeColor } from '../utils/negative-color'
+import { Text } from "../primitives/Text"
+import { useThemeUiPresentation } from "../theme-presentation"
+import { cn } from "../utils/cn"
+import { computeNegativeColor } from "../utils/negative-color"
 
 export interface BarsItem {
   color?: string
@@ -28,7 +28,7 @@ export interface BarsSurfaceProps {
 
 function getBarFillHeight(item: BarsItem): string {
   if (item.maxValue <= 0) {
-    return '0%'
+    return "0%"
   }
 
   const ratio = Math.max(0, Math.min(item.value / item.maxValue, 1))
@@ -49,7 +49,7 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
   return (
     <div
       className={cn(
-        'flex h-full min-h-0 w-full items-stretch justify-between gap-1',
+        "flex h-full min-h-0 w-full items-stretch justify-between gap-1",
         props.className,
       )}
       data-sireno-bars-count={props.items.length}
@@ -57,21 +57,21 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
       style={props.style}
     >
       {props.items.map((item, index) => {
-        const color = item.color ?? 'var(--sireno-color-primary)'
+        const color = item.color ?? "var(--sireno-color-primary)"
         const valueText = item.displayValue ?? String(Math.round(item.value))
         const valueTextStyle: CSSProperties = props.useSharpPath
           ? {
-              transform: 'rotate(-90deg)',
-              transformOrigin: 'center',
+              transform: "rotate(-90deg)",
+              transformOrigin: "center",
               color: computeNegativeColor(
-                item.color ?? '',
+                item.color ?? "",
                 props.themePrimaryHex ?? null,
               ),
             }
           : {
-              transform: 'rotate(-90deg)',
-              transformOrigin: 'center',
-              mixBlendMode: 'difference',
+              transform: "rotate(-90deg)",
+              transformOrigin: "center",
+              mixBlendMode: "difference",
             }
 
         return (
@@ -93,8 +93,8 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
               className="relative flex-1 overflow-hidden rounded-xs"
               style={{
                 backgroundColor:
-                  'color-mix(in oklab, currentColor 12%, transparent)',
-                minHeight: '24px',
+                  "color-mix(in oklab, currentColor 12%, transparent)",
+                minHeight: "24px",
               }}
             >
               <div
@@ -103,7 +103,7 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
                 style={{
                   backgroundColor: color,
                   height: getBarFillHeight(item),
-                  minHeight: item.value > 0 ? '4px' : undefined,
+                  minHeight: item.value > 0 ? "4px" : undefined,
                 }}
               />
               <Text
@@ -111,7 +111,7 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
                 className="sireno-bars-value pointer-events-none absolute inset-0 flex items-center justify-center whitespace-nowrap"
                 size="md"
                 style={valueTextStyle}
-                tone={props.useSharpPath ? undefined : 'foreground'}
+                tone={props.useSharpPath ? undefined : "foreground"}
                 typography="mono"
               >
                 {valueText}

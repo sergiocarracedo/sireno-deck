@@ -1,8 +1,8 @@
-import type { AddonButtonTypeService } from "@/addon/api";
+import type { AddonButtonTypeService } from "@/addon/api"
 
-import { configSchema } from "./config";
+import { configSchema } from "./config"
 
 export default {
   configSchema,
   onTap: async () => {},
-} satisfies AddonButtonTypeService;
+} satisfies AddonButtonTypeService

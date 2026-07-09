@@ -14,7 +14,7 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="0090", TAG+="uacce
 export class UdevPermissionError extends Error {
   constructor(message: string) {
     super(message)
-    this.name = 'UdevPermissionError'
+    this.name = "UdevPermissionError"
   }
 }
 
@@ -31,6 +31,6 @@ Then unplug and replug your Stream Deck.
 
 export const installUdevRules = async (): Promise<void> => {
   throw new UdevPermissionError(
-    'installUdevRules() requires running with elevated privileges; use the manual instructions from formatInstallInstructions()',
+    "installUdevRules() requires running with elevated privileges; use the manual instructions from formatInstallInstructions()",
   )
 }

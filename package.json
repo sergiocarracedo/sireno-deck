@@ -13,6 +13,9 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
+  "dependencies": {
+    "react-router-dom": "^7.18.1"
+  },
   "devDependencies": {
     "@types/node": "^22.10.0",
     "oxfmt": "latest",
@@ -23,8 +26,5 @@
   "engines": {
     "node": ">=20"
   },
-  "packageManager": "pnpm@10.26.1",
-  "dependencies": {
-    "react-router-dom": "^7.18.1"
-  }
+  "packageManager": "pnpm@10.26.1"
 }

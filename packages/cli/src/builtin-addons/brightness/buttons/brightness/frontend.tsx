@@ -1,15 +1,15 @@
-import { Text } from "@/ui/index";
-import { useAddonChannel } from "@/api/react";
-import type { AddonFrontendButton } from "@/addon/api";
+import { Text } from "@/ui/index"
+import { useAddonChannel } from "@/api/react"
+import type { AddonFrontendButton } from "@/addon/api"
 
 interface BrightnessState {
-  readonly value: number;
-  readonly max: number;
+  readonly value: number
+  readonly max: number
 }
 
 const BrightnessButtonFrontend: AddonFrontendButton = ({ config }) => {
-  const { action } = (config as { action?: "up" | "down" | "set" }) ?? {};
-  const { data } = useAddonChannel<BrightnessState>("brightness:current");
+  const { action } = (config as { action?: "up" | "down" | "set" }) ?? {}
+  const { data } = useAddonChannel<BrightnessState>("brightness:current")
   if (data === undefined) {
     return (
       <Text
@@ -20,9 +20,9 @@ const BrightnessButtonFrontend: AddonFrontendButton = ({ config }) => {
       >
         —
       </Text>
-    );
+    )
   }
-  const pct = Math.max(0, Math.min(100, (data.value / (data.max || 100)) * 100));
+  const pct = Math.max(0, Math.min(100, (data.value / (data.max || 100)) * 100))
   return (
     <span className="flex h-full w-full flex-col items-stretch justify-center gap-1 p-2">
       <span className="flex items-baseline justify-between">
@@ -40,8 +40,8 @@ const BrightnessButtonFrontend: AddonFrontendButton = ({ config }) => {
         Tap: {action ?? "up"}
       </Text>
     </span>
-  );
-};
+  )
+}
 
-export default BrightnessButtonFrontend;
-export { BrightnessButtonFrontend };
+export default BrightnessButtonFrontend
+export { BrightnessButtonFrontend }

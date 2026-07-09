@@ -1,12 +1,12 @@
-import { homedir } from "node:os";
+import { homedir } from "node:os"
 
 export const defaultResolveHome = (p: string): string => {
-  if (p === "~") return homedir();
+  if (p === "~") return homedir()
   if (p.startsWith("~/") || p.startsWith("~\\")) {
-    return homedir() + p.slice(1);
+    return homedir() + p.slice(1)
   }
-  return p;
-};
+  return p
+}
 
 export const BUILTIN_CLI_ICONS: ReadonlySet<string> = new Set<string>([
   "play",
@@ -54,4 +54,4 @@ export const BUILTIN_CLI_ICONS: ReadonlySet<string> = new Set<string>([
   "add",
   "remove",
   "menu",
-]);
+])

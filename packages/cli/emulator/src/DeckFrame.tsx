@@ -1,12 +1,12 @@
-import { useRef, useState } from 'react'
+import { useRef, useState } from "react"
 
-import { BUTTON_SIZE_PX, type DeviceModelSpec } from '@sireno-deck/cli'
+import { BUTTON_SIZE_PX, type DeviceModelSpec } from "@sireno-deck/cli"
 
 import {
   dispatchMouseEvent,
   gestureKindToWsMessage,
   type GestureMouseEvent,
-} from './gesture'
+} from "./gesture"
 
 export interface DeckFrameProps {
   readonly frontendUrl: string
@@ -15,7 +15,7 @@ export interface DeckFrameProps {
   readonly onGesture?: (msg: {
     deckId: string
     position: number
-    gesture: 'tap' | 'dbl-tap' | 'hold'
+    gesture: "tap" | "dbl-tap" | "hold"
   }) => void
 }
 
@@ -32,14 +32,14 @@ export const DeckFrame = ({
   const handleDown = (keyIndex: number): void => {
     bufferRef.current = [
       ...bufferRef.current,
-      { kind: 'down', keyIndex, timestamp: Date.now() },
+      { kind: "down", keyIndex, timestamp: Date.now() },
     ]
     setPressedIndex(keyIndex)
   }
 
   const handleUp = (keyIndex: number): void => {
     const { buffer, result } = dispatchMouseEvent(bufferRef.current, {
-      kind: 'up',
+      kind: "up",
       keyIndex,
       timestamp: Date.now(),
     })
@@ -50,7 +50,7 @@ export const DeckFrame = ({
     }
   }
 
-  const iframeUrl = `${frontendUrl}${frontendUrl.includes('?') ? '&' : '?'}device=${device.id}`
+  const iframeUrl = `${frontendUrl}${frontendUrl.includes("?") ? "&" : "?"}device=${device.id}`
 
   const BUTTON_GAP_PX = 8
   const DECK_PADDING_PX = 16
@@ -112,15 +112,15 @@ export const DeckFrame = ({
                 if (e.buttons === 1) handleUp(i)
               }}
               className={[
-                'rounded-lg border border-white/10',
-                'bg-gradient-to-br from-black/40 via-black/20 to-white/5',
-                'transition-all duration-75',
-                'hover:from-black/30 hover:via-black/10 hover:to-white/10',
+                "rounded-lg border border-white/10",
+                "bg-gradient-to-br from-black/40 via-black/20 to-white/5",
+                "transition-all duration-75",
+                "hover:from-black/30 hover:via-black/10 hover:to-white/10",
                 isPressed
-                  ? 'from-white/30 via-white/15 to-white/5 border-white/30'
-                  : '',
-              ].join(' ')}
-              style={{ aspectRatio: '1' }}
+                  ? "from-white/30 via-white/15 to-white/5 border-white/30"
+                  : "",
+              ].join(" ")}
+              style={{ aspectRatio: "1" }}
             />
           )
         })}

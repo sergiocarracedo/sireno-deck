@@ -1,6 +1,6 @@
-import type { ReactElement } from 'react'
+import type { ReactElement } from "react"
 
-import { DEVICE_MODELS, type DeviceModelSpec } from '@sireno-deck/cli'
+import { DEVICE_MODELS, type DeviceModelSpec } from "@sireno-deck/cli"
 
 export interface SidePanelProps {
   readonly wsUrl: string
@@ -66,8 +66,8 @@ export const SidePanel = ({
                 onClick={() => onSelectDeck(d.id)}
                 className={`w-full rounded px-2 py-1 text-left transition ${
                   d.id === activeDeckId
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-neutral-800 text-neutral-200 hover:bg-neutral-700'
+                    ? "bg-blue-600 text-white"
+                    : "bg-neutral-800 text-neutral-200 hover:bg-neutral-700"
                 }`}
                 data-active={d.id === activeDeckId}
               >

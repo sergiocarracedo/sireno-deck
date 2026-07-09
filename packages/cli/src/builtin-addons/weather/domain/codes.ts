@@ -27,9 +27,9 @@ export const WMO_CODE_TO_DESCRIPTION: Record<number, string> = {
   95: "Thunderstorm",
   96: "Thunderstorm + hail",
   99: "Severe thunderstorm",
-};
+}
 
 export const describeWeatherCode = (code: number | undefined): string => {
-  if (code === undefined) return "Unknown";
-  return WMO_CODE_TO_DESCRIPTION[code] ?? "Unknown";
-};
+  if (code === undefined) return "Unknown"
+  return WMO_CODE_TO_DESCRIPTION[code] ?? "Unknown"
+}

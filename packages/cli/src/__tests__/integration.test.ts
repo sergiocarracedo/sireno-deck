@@ -1,35 +1,35 @@
-import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { describe, expect, it, afterAll } from "vitest";
+import { mkdtempSync, writeFileSync, rmSync } from "node:fs"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
+import { describe, expect, it, afterAll } from "vitest"
 
-import { AddonRegistry } from "@/addon/registry";
-import { internalSettingsAddon } from "@/builtin-addons/internal-settings/index";
-import { coreButtonsAddon } from "@/builtin-addons/core-buttons/index";
-import { sessionAddon } from "@/builtin-addons/session/index";
-import { createDeckRuntime, type RuntimeDeck } from "@/deck/index";
-import { loadConfig } from "@/config/loader";
-import { validateFull } from "@/config/validation";
-import { createLogger } from "@/util/logger";
+import { AddonRegistry } from "@/addon/registry"
+import { internalSettingsAddon } from "@/builtin-addons/internal-settings/index"
+import { coreButtonsAddon } from "@/builtin-addons/core-buttons/index"
+import { sessionAddon } from "@/builtin-addons/session/index"
+import { createDeckRuntime, type RuntimeDeck } from "@/deck/index"
+import { loadConfig } from "@/config/loader"
+import { validateFull } from "@/config/validation"
+import { createLogger } from "@/util/logger"
 
-const tmpDir = mkdtempSync(join(tmpdir(), "sireno-integration-"));
-afterAll(() => rmSync(tmpDir, { recursive: true, force: true }));
+const tmpDir = mkdtempSync(join(tmpdir(), "sireno-integration-"))
+afterAll(() => rmSync(tmpDir, { recursive: true, force: true }))
 
 const writeConfig = (yaml: string): string => {
-  const path = join(tmpDir, "config.yml");
-  writeFileSync(path, yaml, "utf8");
-  return path;
-};
+  const path = join(tmpDir, "config.yml")
+  writeFileSync(path, yaml, "utf8")
+  return path
+}
 
 const registryWithBuiltins = (): AddonRegistry => {
-  const reg = new AddonRegistry();
-  reg.load(coreButtonsAddon);
-  reg.load(internalSettingsAddon);
-  reg.load(sessionAddon);
-  return reg;
-};
+  const reg = new AddonRegistry()
+  reg.load(coreButtonsAddon)
+  reg.load(internalSettingsAddon)
+  reg.load(sessionAddon)
+  return reg
+}
 
-const silentLogger = () => createLogger({ level: "silent" });
+const silentLogger = () => createLogger({ level: "silent" })
 
 describe("integration: full pipeline", () => {
   it("loads config, validates, registers addons, navigates, runs command", async () => {
@@ -39,51 +39,65 @@ decks:
     name: Home
     buttons:
       - position: 0
-        type: core:change-deck
+        type: core-buttons:change-deck
         config:
           deck: media
       - position: 1
-        type: core:action
+        type: core-buttons:action
         config:
           command: 'echo integration'
   media:
     name: Media
     buttons: []
-`);
-    const result = loadConfig({ configPath: path });
-    expect(result.config.decks.main).toBeDefined();
-    const reg = registryWithBuiltins();
-    const full = validateFull(result.config, reg);
-    expect(full.issues).toEqual([]);
+`)
+    const result = loadConfig({ configPath: path })
+    expect(result.config.decks.main).toBeDefined()
+    const reg = registryWithBuiltins()
+    const full = validateFull(result.config, reg)
+    expect(full.issues).toEqual([])
 
-    const decks: RuntimeDeck[] = Object.entries(result.config.decks).map(([id, deck]) => ({
-      id,
-      name: deck.name ?? id,
-      buttons: (
-        deck.buttons as Array<{ position?: number; id?: string; type: string; config?: unknown }>
-      ).map((b, i) => ({ id: b.id ?? `btn-${i}`, type: b.type, config: b.config })),
-      isMain: id === "main",
-    }));
+    const decks: RuntimeDeck[] = Object.entries(result.config.decks).map(
+      ([id, deck]) => ({
+        id,
+        name: deck.name ?? id,
+        buttons: (
+          deck.buttons as Array<{
+            position?: number
+            id?: string
+            type: string
+            config?: unknown
+          }>
+        ).map((b, i) => ({
+          id: b.id ?? `btn-${i}`,
+          type: b.type,
+          config: b.config,
+        })),
+        isMain: id === "main",
+      }),
+    )
 
-    const { runtime, methods } = createDeckRuntime({ decks, logger: silentLogger() });
+    const { runtime, methods } = createDeckRuntime({
+      decks,
+      logger: silentLogger(),
+    })
 
-    runtime.registerButtonHandler("btn-0", {
+    runtime.registerButtonHandler("main:btn-0", {
       onTap: () => methods.navigateToDeck({ id: "media" }),
-    });
-    runtime.registerButtonHandler("btn-1", {
+    })
+    runtime.registerButtonHandler("main:btn-1", {
       onTap: async ({ config }) => {
-        const cmd = (config as { command: string }).command;
-        await methods.runCommand(cmd);
+        const cmd = (config as { command: string }).command
+        await methods.runCommand(cmd)
       },
-    });
+    })
 
-    expect(runtime.getActiveDeckId()).toBe("main");
-    await runtime.dispatchGesture("btn-0", "tap");
-    expect(runtime.getActiveDeckId()).toBe("media");
+    expect(runtime.getActiveDeckId()).toBe("main")
+    await runtime.dispatchGesture("btn-0", "tap")
+    expect(runtime.getActiveDeckId()).toBe("media")
 
-    await runtime.dispatchGesture("btn-1", "tap");
-    void runtime.getActiveDeckId();
-  });
+    await runtime.dispatchGesture("btn-1", "tap")
+    void runtime.getActiveDeckId()
+  })
 
   it("rejects internal: true buttons in user config", () => {
     const path = writeConfig(`
@@ -92,19 +106,21 @@ decks:
     name: Home
     buttons:
       - position: 0
-        type: core:settings-brightness
+        type: internal-settings:brightness
         config: {}
-`);
-    const result = loadConfig({ configPath: path });
-    const reg = registryWithBuiltins();
-    const full = validateFull(result.config, reg);
-    expect(full.issues.some((i) => i.message.includes("Internal button"))).toBe(true);
-  });
+`)
+    const result = loadConfig({ configPath: path })
+    const reg = registryWithBuiltins()
+    const full = validateFull(result.config, reg)
+    expect(full.issues.some((i) => i.message.includes("Internal button"))).toBe(
+      true,
+    )
+  })
 
   it("internal-settings deck factory returns a settings deck", () => {
-    const factory = internalSettingsAddon.decks!["internal-settings:settings"]!;
-    const deck = factory(0);
-    expect(deck).toBeDefined();
-    expect((deck.buttons ?? []).length).toBeGreaterThan(0);
-  });
-});
+    const factory = internalSettingsAddon.decks!["internal-settings:settings"]!
+    const deck = factory(0)
+    expect(deck).toBeDefined()
+    expect((deck.buttons ?? []).length).toBeGreaterThan(0)
+  })
+})
