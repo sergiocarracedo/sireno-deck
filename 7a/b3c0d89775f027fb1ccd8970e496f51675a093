@@ -1,0 +1,28 @@
+packages/cli/src/builtin-addons/core-buttons/buttons/action/backend.ts
+  s_109ed2a38ffa15::t_a1b8c7d8dbd674 2
+  s_109ed2a38ffa15::t_78989a66f8242b 10-13
+  s_109ed2a38ffa15::t_097c1eca033933 14
+packages/cli/src/config/schemas.ts
+  s_109ed2a38ffa15::t_9bad1f3ca22c07 13-22,31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7ab3c0d89775f027fb1ccd8970e496f51675a093",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_109ed2a38ffa15": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b92c6633ffeYltxJGdSdu0GKD",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
