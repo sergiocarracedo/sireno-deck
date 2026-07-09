@@ -1,0 +1,64 @@
+.planning/DECISIONS.md
+  s_57074738ccb43f::t_93b9ee5dd164fd 67,70-78
+  s_c645d5379f76f9::t_5e99b87265fdcc 79-93
+.planning/STATE.md
+  s_c645d5379f76f9::t_53b490d372551c 39-57
+  s_57074738ccb43f::t_93b9ee5dd164fd 26-38
+ARCHITECTURE.md
+  s_c645d5379f76f9::t_d6f0fe72dae092 317-322
+  s_c645d5379f76f9::t_c9a5d4a04024c7 430
+  s_c645d5379f76f9::t_caf6deb3980372 354-359,362-372
+  s_c645d5379f76f9::t_0c55bf88689840 555-558
+  s_c645d5379f76f9::t_bd0e4e3bff2175 235-240
+  s_c645d5379f76f9::t_805233fd7d98ec 221
+  s_57074738ccb43f::t_93b9ee5dd164fd 306,323,554
+  s_c645d5379f76f9::t_fd0685e939dc6e 445
+  s_c645d5379f76f9::t_0b42cccf11e720 375-382,385-391,394-398,401-404,407-428
+packages/cli/frontend/src/App.tsx
+  s_c645d5379f76f9::t_43afe1917d15d6 64
+  s_c645d5379f76f9::t_0ac9dd6e7c833a 155,159
+  s_c645d5379f76f9::t_edb5790f921a4d 18
+packages/cli/src/core/__tests__/gesture-state.test.ts
+  s_57074738ccb43f::t_93b9ee5dd164fd 125,133-134,136,211
+packages/cli/emulator/src/gesture.ts
+  s_c645d5379f76f9::t_e2277797e274f6 2-3,16-23,26-29,45
+packages/cli/src/ui/ButtonFrame.tsx
+  s_c645d5379f76f9::t_9cc254d065b030 4-7
+packages/cli/frontend/src/components/Deck.tsx
+  s_c645d5379f76f9::t_91329502cf4847 115,153,164
+packages/cli/src/core/gesture-state.ts
+  s_57074738ccb43f::t_93b9ee5dd164fd 1-2,239
+packages/cli/emulator/src/DeckFrame.tsx
+  s_c645d5379f76f9::t_a50f64b6ea6d22 1,6,9,30,33-43,46-50,54-55
+packages/cli/emulator/src/__tests__/gesture.test.ts
+  s_c645d5379f76f9::t_e053b072621830 1,3-16,19-31,34-46,49-91,95-96,99-102,110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "19f3285db5a69b21175a341aabb698737d256918",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_57074738ccb43f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b9cec603ffenuk5QmVn76TBiS",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    },
+    "s_c645d5379f76f9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0ba0de1b9fferg9OA1LR7NwDph",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    }
+  }
+}
