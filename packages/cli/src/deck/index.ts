@@ -32,6 +32,7 @@ export {
 } from "./runtime"
 export { getHostContext, type HostContext } from "./host-context"
 export { computeSystemButtonForSlotN1 } from "./system-back-injection"
+export { parseMacro } from "./macro-parse"
 export {
   isSystemButtonType,
   SYSTEM_BUTTON_TYPES,
@@ -55,8 +56,20 @@ export const createDeckRuntime = (
   const logger = options.logger ?? createLogger({ level: "silent" })
   const pubSub = createPubSub()
   const store = createStore()
-  const runtime = createRuntime({ decks: options.decks, pubSub, store, logger })
   const executor = createActionExecutor({ host: getHostContext() })
+
+  const methodsRef: { current: ReturnType<typeof createMethods> | undefined } = {
+    current: undefined,
+  }
+
+  const runtime = createRuntime({
+    decks: options.decks,
+    pubSub,
+    store,
+    logger,
+    getMethods: () => methodsRef.current!,
+  })
+
   const methods = createMethods({
     runtime,
     pubSub,
@@ -67,6 +80,9 @@ export const createDeckRuntime = (
       ? { keyMacroProvider: options.keyMacroProvider }
       : {}),
   })
+
+  methodsRef.current = methods
+
   return { runtime, methods, pubSub, store }
 }
 

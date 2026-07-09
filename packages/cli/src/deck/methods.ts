@@ -14,6 +14,7 @@ import { NotImplementedError } from "@/util/errors"
 
 import type { ActionExecutor, ActionExecutorOptions } from "@/action/executor"
 import type { Runtime, RuntimeDeck } from "./runtime"
+import { dispatchMacro } from "./macro-parse"
 
 export interface KeyMacroAction {
   kind: "key" | "combo" | "text"
@@ -51,6 +52,7 @@ export interface Methods {
   subscribe<T>(channel: string, cb: (payload: T) => void): () => void
   setKeyMacroProvider(provider: KeyMacroProvider): void
   setClipboardProvider(provider: ClipboardProvider): void
+  dispatch(value: string): Promise<void>
 }
 
 export const createMethods = (ctx: MethodsContext): Methods => {
@@ -135,10 +137,28 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     await clipboardProvider.writeText(text)
   }
 
+  const dispatch: Methods["dispatch"] = async (value) => {
+    if (value.startsWith("macro://")) {
+      const inner = value.slice("macro://".length)
+      if (inner.length === 0) {
+        throw new NotImplementedError("dispatch: macro:// requires a value, e.g. macro://ctrl+c")
+      }
+      await dispatchMacro(inner, { runCommand, keyMacro })
+      return
+    }
+    if (value.startsWith("paste://")) {
+      const inner = value.slice("paste://".length)
+      await pasteText(inner)
+      return
+    }
+    await runCommand(value)
+  }
+
   return {
     runCommand,
     keyMacro,
     pasteText,
+    dispatch,
     navigateToDeck,
     goBack,
     getActiveDeckId,
