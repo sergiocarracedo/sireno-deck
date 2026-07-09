@@ -47,7 +47,7 @@ export class RealOutputClient implements OutputClient {
     const devices = await this.listDevices()
     if (devices.length === 0) {
       throw new Error(
-        "No Stream Deck devices found. Connect a device and try again. On Linux, udev rules may be required — see sireno install-udev.",
+        "No Stream Deck devices found. Connect a device and try again. On Linux, udev rules for vendor 0fd9 may be required — see packages/cli/src/device/linux-udev.ts for the rule file template.",
       )
     }
   }
@@ -221,7 +221,7 @@ export class RealOutputClient implements OutputClient {
     logger.info({ frontendUrl }, "real mode: frontend URL")
 
     const renderer = new BrowserRenderer({
-      frontendUrl: `${frontendUrl}?compact=1`,
+      frontendUrl: `${frontendUrl}${frontendUrl.includes("?") ? "&" : "?"}compact=1`,
       device,
       logger,
       ...(opts.intervalMs !== undefined ? { intervalMs: opts.intervalMs } : {}),
