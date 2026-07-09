@@ -1,4 +1,4 @@
-import type { ActiveAppSnapshot } from "@/system/provider"
+import type { ActiveAppSnapshot } from "@/system/providers/active-app"
 
 const escapeRegex = (raw: string): string =>
   raw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")

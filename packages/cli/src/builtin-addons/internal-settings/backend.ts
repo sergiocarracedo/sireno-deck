@@ -2,13 +2,14 @@ import type pino from "pino"
 
 import { AddonServiceContext, AddonGlobalService } from "@/addon/api"
 import {
-  createBrightnessProvider,
-  type BrightnessProvider,
-} from "@/system/brightness"
-import {
   createClipboardProvider,
   type ClipboardProvider,
-} from "@/system/clipboard"
+} from "@/system/providers/clipboard"
+
+import {
+  createBrightnessProvider,
+  type BrightnessProvider,
+} from "@/builtin-addons/brightness/providers"
 
 let brightnessProvider: BrightnessProvider | null = null
 let clipboardProvider: ClipboardProvider | null = null

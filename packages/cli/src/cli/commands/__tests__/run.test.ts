@@ -14,19 +14,16 @@ vi.mock("@/config/validation", () => ({
   isFullValid: vi.fn(),
   formatFullIssues: vi.fn(),
 }))
-vi.mock("@/system/active-app", () => ({
+vi.mock("@/system/providers/active-app", () => ({
   createActiveAppProvider: vi.fn(),
 }))
-vi.mock("@/system/session-monitor", () => ({
+vi.mock("@/system/providers/session", () => ({
   createSessionProvider: vi.fn(),
 }))
-vi.mock("@/system/key-macro", () => ({
+vi.mock("@/system/providers/key-macro", () => ({
   createKeyMacroProvider: vi.fn(),
 }))
-vi.mock("@/system/media", () => ({
-  createMediaProvider: vi.fn(),
-}))
-vi.mock("@/system/clipboard", () => ({
+vi.mock("@/system/providers/clipboard", () => ({
   createClipboardProvider: vi.fn(() => ({
     writeText: vi.fn(async () => undefined),
     readText: vi.fn(async () => ""),
@@ -81,10 +78,9 @@ const validationMod = await import("@/config/validation")
 const outputClientMod = await import("@/outputClient")
 const cfgMod = await import("@/util/device-config")
 const deckMod = await import("@/deck")
-const activeAppMod = await import("@/system/active-app")
-const sessionMod = await import("@/system/session-monitor")
-const keyMacroMod = await import("@/system/key-macro")
-const mediaMod = await import("@/system/media")
+const activeAppMod = await import("@/system/providers/active-app")
+const sessionMod = await import("@/system/providers/session")
+const keyMacroMod = await import("@/system/providers/key-macro")
 
 const loaderMock = loaderMod.loadConfig as unknown as ReturnType<typeof vi.fn>
 const registryCtorMock = registryMod.AddonRegistry as unknown as ReturnType<
@@ -253,7 +249,6 @@ const setHappyPath = (
   })
   const fakeRuntime = {
     setActiveAppProvider: vi.fn(),
-    setClipboardProvider: vi.fn(),
     setGestureListener: vi.fn(),
     stopActiveAppPolling: vi.fn(async () => undefined),
     getActiveDeck: vi.fn(() => undefined),
@@ -301,9 +296,6 @@ const setHappyPath = (
       createKeyMacroProvider: ReturnType<typeof vi.fn>
     }
   ).createKeyMacroProvider.mockResolvedValue(nullProvider())
-  ;(
-    mediaMod as unknown as { createMediaProvider: ReturnType<typeof vi.fn> }
-  ).createMediaProvider.mockResolvedValue(nullProvider())
 
   const outputClient =
     overrides.outputClient ??

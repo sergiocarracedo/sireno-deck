@@ -16,21 +16,22 @@ import {
 } from "@/config/validation"
 import {
   createDeckRuntime,
+  type Methods,
   type PubSub,
   type Runtime,
   type RuntimeDeck,
   type Store,
 } from "@/deck"
-import { createActiveAppProvider } from "@/system/active-app"
-import { createKeyMacroProvider } from "@/system/key-macro"
-import { createMediaProvider } from "@/system/media"
 import {
+  createActiveAppProvider,
   type ActiveAppProvider,
-  type KeyMacroProvider,
-  type MediaProvider,
-  type SessionProvider,
-} from "@/system/provider"
-import { createSessionProvider } from "@/system/session-monitor"
+} from "@/system/providers/active-app"
+import {
+  createClipboardProvider,
+  type ClipboardProvider,
+} from "@/system/providers/clipboard"
+import { createKeyMacroProvider } from "@/system/providers/key-macro"
+import { createSessionProvider } from "@/system/providers/session"
 import { resolveActiveTheme } from "@/themes/loader"
 
 import { createActionExecutor } from "@/action/executor"
@@ -38,10 +39,6 @@ import { bridgeAddonServices } from "@/deck/addon-handler-bridge"
 import { getHostContext } from "@/deck/host-context"
 import { StatePublisher } from "@/render/state-publisher"
 import { startWsBridge } from "@/render/ws-bridge"
-import {
-  createClipboardProvider,
-  type ClipboardProvider,
-} from "@/system/clipboard"
 
 import { materializeAddonDecks } from "./addon-decks"
 import {
@@ -89,6 +86,7 @@ export interface RunOptions {
 
 export interface SetupAddonServicesOptions {
   readonly runtime: Runtime
+  readonly methods: Methods
   readonly decks: ReadonlyArray<RuntimeDeck>
   readonly pubSub: PubSub
   readonly scanned: ReadonlyArray<ScannedAddon>
@@ -213,6 +211,7 @@ interface LoadConfigAndThemeResult {
   readonly decks: ReadonlyArray<RuntimeDeck>
   readonly pubSub: PubSub
   readonly runtime: Runtime
+  readonly methods: Methods
   readonly store: Store
 }
 
@@ -286,8 +285,6 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
     logger,
   })
 
-  void methods
-
   return {
     configPath,
     theme: {
@@ -300,21 +297,21 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
     decks: allDecks,
     pubSub,
     runtime,
+    methods,
     store,
   }
 }
 
 interface SystemProviders {
   readonly activeApp: ActiveAppProvider
-  readonly session: SessionProvider
-  readonly keyMacro: KeyMacroProvider
-  readonly media: MediaProvider
-  readonly setClipboardProvider: (provider: ClipboardProvider) => void
+  readonly session: import("@/system/providers/session").SessionProvider
+  readonly keyMacro: import("@/system/providers/key-macro").KeyMacroProvider
 }
 
 const startSystemProviders = async (
   options: RunOptions,
   runtime: Runtime,
+  methods: Methods,
 ): Promise<SystemProviders> => {
   const { logger } = options
   const { execa } = await import("execa")
@@ -339,29 +336,28 @@ const startSystemProviders = async (
   const env = { ...process.env } as Readonly<Record<string, string>>
   const platform = process.platform
 
-  const [activeApp, session, keyMacro, media] = await Promise.all([
+  const [activeApp, session, keyMacro] = await Promise.all([
     createActiveAppProvider({ platform, executor, logger }),
     createSessionProvider({ platform, logger }),
     createKeyMacroProvider({ platform, executor, env, logger }),
-    createMediaProvider({ platform, executor, logger }),
   ])
 
   runtime.setActiveAppProvider(activeApp)
+  methods.setKeyMacroProvider(keyMacro)
 
-  let clipboard: ClipboardProvider | null = null
   try {
-    clipboard = createClipboardProvider({ executor, platform, env, logger })
+    const clipboard = createClipboardProvider({
+      executor,
+      platform,
+      env,
+      logger,
+    })
+    methods.setClipboardProvider(clipboard)
   } catch {
-    clipboard = null
+    // clipboard is optional on unsupported platforms
   }
 
-  const setClipboardProvider = (provider: ClipboardProvider): void => {
-    if (provider === null) return
-    runtime.setClipboardProvider(provider)
-  }
-  if (clipboard !== null) runtime.setClipboardProvider(clipboard)
-
-  return { activeApp, session, keyMacro, media, setClipboardProvider }
+  return { activeApp, session, keyMacro }
 }
 
 interface AddonRegistryBundle {
@@ -397,7 +393,7 @@ const buildAddonBundle = async (): Promise<AddonRegistryBundle> => {
 export const preflight = async (options: RunOptions): Promise<void> => {
   const { logger } = options
   const loaded = loadConfigAndTheme(options)
-  await startSystemProviders(options, loaded.runtime)
+  await startSystemProviders(options, loaded.runtime, loaded.methods)
 
   const xdgConfigHome = resolveXdgConfigHome(options)
   const outputClient = selectOutputClient({
@@ -413,9 +409,10 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   const { logger } = options
 
   const loaded = loadConfigAndTheme(options)
-  const { configPath, themeDir, decks, pubSub, runtime, store } = loaded
+  const { configPath, themeDir, decks, pubSub, runtime, methods, store } =
+    loaded
 
-  const providers = await startSystemProviders(options, runtime)
+  const providers = await startSystemProviders(options, runtime, methods)
 
   const xdgConfigHome = resolveXdgConfigHome(options)
   const outputClient: OutputClient = selectOutputClient({
@@ -433,6 +430,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   const mainDeck = runtime.getActiveDeck()
   const addonServices = setupAddonServices({
     runtime,
+    methods,
     decks,
     pubSub,
     scanned: addonBundle.scanned,
@@ -442,9 +440,8 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     bridge,
     ...(mainDeck !== undefined ? { initialDeck: mainDeck } : {}),
     signal: bridgeSignal.signal,
-    setClipboardProvider: providers.setClipboardProvider as (
-      p: unknown,
-    ) => void,
+    setClipboardProvider: (p) =>
+      methods.setClipboardProvider(p as ClipboardProvider),
     store,
   })
 
@@ -505,7 +502,6 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       providers.activeApp.stop(),
       providers.session.stop(),
       providers.keyMacro.stop(),
-      providers.media.stop(),
       bridge.close(),
     ])
     logger.info("shutdown complete")

@@ -14,19 +14,16 @@ vi.mock("@/config/validation", () => ({
   isFullValid: vi.fn(),
   formatFullIssues: vi.fn(),
 }))
-vi.mock("@/system/active-app", () => ({
+vi.mock("@/system/providers/active-app", () => ({
   createActiveAppProvider: vi.fn(),
 }))
-vi.mock("@/system/session-monitor", () => ({
+vi.mock("@/system/providers/session", () => ({
   createSessionProvider: vi.fn(),
 }))
-vi.mock("@/system/key-macro", () => ({
+vi.mock("@/system/providers/key-macro", () => ({
   createKeyMacroProvider: vi.fn(),
 }))
-vi.mock("@/system/media", () => ({
-  createMediaProvider: vi.fn(),
-}))
-vi.mock("@/system/clipboard", () => ({
+vi.mock("@/system/providers/clipboard", () => ({
   createClipboardProvider: vi.fn(() => ({
     writeText: vi.fn(async () => undefined),
     readText: vi.fn(async () => ""),
@@ -40,13 +37,6 @@ vi.mock("@/outputClient", () => ({
   selectOutputClient: vi.fn(),
   RealOutputClient: vi.fn(),
   EmulatorOutputClient: vi.fn(),
-}))
-vi.mock("@/system/brightness", () => ({
-  createBrightnessProvider: vi.fn(() => ({
-    getCurrent: vi.fn(async () => ({ value: 50, max: 100 })),
-    setBrightness: vi.fn(async () => undefined),
-    stop: vi.fn(async () => undefined),
-  })),
 }))
 vi.mock("../http-server", () => ({
   startHttpServer: vi.fn(async () => ({
@@ -112,10 +102,9 @@ const outputClientMod = await import("@/outputClient")
 const cfgMod = await import("@/util/device-config")
 const daemonMod = await import("@/util/daemon")
 const deckMod = await import("@/deck")
-const activeAppMod = await import("@/system/active-app")
-const sessionMod = await import("@/system/session-monitor")
-const keyMacroMod = await import("@/system/key-macro")
-const mediaMod = await import("@/system/media")
+const activeAppMod = await import("@/system/providers/active-app")
+const sessionMod = await import("@/system/providers/session")
+const keyMacroMod = await import("@/system/providers/key-macro")
 
 const loaderMock = loaderMod.loadConfig as unknown as ReturnType<typeof vi.fn>
 const registryCtorMock = registryMod.AddonRegistry as unknown as ReturnType<
@@ -156,9 +145,6 @@ const createKeyMacroProviderMock = (
     createKeyMacroProvider: ReturnType<typeof vi.fn>
   }
 ).createKeyMacroProvider
-const createMediaProviderMock = (
-  mediaMod as unknown as { createMediaProvider: ReturnType<typeof vi.fn> }
-).createMediaProvider
 
 const { createLogger } = await import("@/util/logger")
 const start = (await import("../start")).default
@@ -261,7 +247,6 @@ const setHappyPath = (): ReturnType<typeof makeFakeOutputClient> => {
   })
   const fakeRuntime = {
     setActiveAppProvider: vi.fn(),
-    setClipboardProvider: vi.fn(),
     setGestureListener: vi.fn(),
     stopActiveAppPolling: vi.fn(async () => undefined),
     getActiveDeck: vi.fn(() => undefined),
@@ -297,7 +282,6 @@ const setHappyPath = (): ReturnType<typeof makeFakeOutputClient> => {
   createActiveAppProviderMock.mockResolvedValue(nullProvider())
   createSessionProviderMock.mockResolvedValue(nullProvider())
   createKeyMacroProviderMock.mockResolvedValue(nullProvider())
-  createMediaProviderMock.mockResolvedValue(nullProvider())
 
   const outputClient = makeFakeOutputClient("real")
   selectOutputClientMock.mockReturnValue(outputClient)

@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { createPubSub } from "@/core/pub-sub"
 import { createStore } from "@/core/store"
 import { createLogger } from "@/util/logger"
-import type { ActiveAppProvider, ActiveAppSnapshot } from "@/system/provider"
+import type { ActiveAppProvider, ActiveAppSnapshot } from "@/system/providers/active-app"
 
 import { createRuntime, type RuntimeDeck } from "../runtime"
 

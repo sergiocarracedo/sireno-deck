@@ -4,7 +4,7 @@ import { createPubSub } from "@/core/pub-sub"
 import { createStore } from "@/core/store"
 import { NotImplementedError } from "@/util/errors"
 import { createLogger } from "@/util/logger"
-import type { KeyMacroProvider } from "@/system/provider"
+import type { KeyMacroProvider } from "@/system/providers/key-macro"
 
 import { createActionExecutor } from "@/action/executor"
 import { getHostContext } from "./host-context"

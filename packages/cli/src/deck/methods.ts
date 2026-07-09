@@ -2,16 +2,17 @@ import type pino from "pino"
 
 import type { PubSub } from "@/core/pub-sub"
 import type { Store } from "@/core/store"
-import { NotImplementedError } from "@/util/errors"
+import type { ClipboardProvider } from "@/system/providers/clipboard"
+import type { KeyMacroProvider } from "@/system/providers/key-macro"
 import {
   isValidKey,
   knownKeys,
   parseCombo,
   type ParsedCombo,
-} from "@/system/key-macro/parser"
+} from "@/system/providers/key-macro/parser"
+import { NotImplementedError } from "@/util/errors"
 
 import type { ActionExecutor, ActionExecutorOptions } from "@/action/executor"
-import type { ClipboardProvider, KeyMacroProvider } from "@/system/provider"
 import type { Runtime, RuntimeDeck } from "./runtime"
 
 export interface KeyMacroAction {

@@ -3,7 +3,7 @@ import type pino from "pino"
 import type { PubSub } from "@/core/pub-sub"
 import type { Store } from "@/core/store"
 import type { GestureKind } from "@/core/gesture-state"
-import type { ActiveAppProvider } from "@/system/provider"
+import type { ActiveAppProvider } from "@/system/providers/active-app"
 import { compileDeckMatcher } from "@/system/glob-match"
 
 type ActiveAppProviderLike = Pick<ActiveAppProvider, "getActive" | "stop">
