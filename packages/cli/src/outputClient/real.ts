@@ -43,6 +43,15 @@ export class RealOutputClient implements OutputClient {
     this.xdgConfigHome = options.xdgConfigHome
   }
 
+  async validateReady(): Promise<void> {
+    const devices = await this.listDevices()
+    if (devices.length === 0) {
+      throw new Error(
+        "No Stream Deck devices found. Connect a device and try again. On Linux, udev rules may be required — see sireno install-udev.",
+      )
+    }
+  }
+
   async listDevices(): Promise<ReadonlyArray<DeviceDescriptor>> {
     return (await import("@/device/registry")).listDevices()
   }

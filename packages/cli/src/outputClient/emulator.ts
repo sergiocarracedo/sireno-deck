@@ -51,6 +51,10 @@ export class EmulatorOutputClient implements OutputClient {
 
   private descriptor: DeviceDescriptor | null = null
 
+  async validateReady(): Promise<void> {
+    void this.kind
+  }
+
   async listDevices(): Promise<ReadonlyArray<DeviceDescriptor>> {
     return VIRTUAL_MODELS.map((model) => buildVirtualDescriptor(model))
   }

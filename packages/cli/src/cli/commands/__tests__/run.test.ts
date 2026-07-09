@@ -159,6 +159,7 @@ const makeFakeOutputClient = (
   },
 ): {
   kind: "real" | "emulator"
+  validateReady: ReturnType<typeof vi.fn>
   listDevices: ReturnType<typeof vi.fn>
   selectDevice: ReturnType<typeof vi.fn>
   storeSelection: ReturnType<typeof vi.fn>
@@ -173,6 +174,7 @@ const makeFakeOutputClient = (
       label: "Default",
       transport: "real",
     }
+  const validateReady = vi.fn(async () => undefined)
   const selectDevice = vi.fn(async () => descriptor)
   const storeSelection = vi.fn(async () => undefined)
   const init = vi.fn(async () => ({
@@ -182,7 +184,7 @@ const makeFakeOutputClient = (
     childPids: [],
     stop: vi.fn(async () => undefined),
   }))
-  return { kind, listDevices, selectDevice, storeSelection, init }
+  return { kind, validateReady, listDevices, selectDevice, storeSelection, init }
 }
 
 const setHappyPath = (
@@ -437,8 +439,22 @@ describe("preflight", () => {
     vi.restoreAllMocks()
   })
 
-  it("rejects with friendly error when real mode finds no devices", async () => {
+  it("calls outputClient.validateReady()", async () => {
+    const outputClient = setHappyPath()
+    await preflight({
+      config: "/abs/cfg.yml",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      logger: silentLogger(),
+    })
+    expect(outputClient.validateReady).toHaveBeenCalledTimes(1)
+  })
+
+  it("propagates the friendly error from outputClient.validateReady()", async () => {
     const realClient = makeFakeOutputClient("real", [])
+    realClient.validateReady.mockRejectedValueOnce(
+      new Error("No Stream Deck devices found. Connect a device and try again."),
+    )
     setHappyPath({ outputClient: realClient })
     await expect(
       preflight({
@@ -448,20 +464,5 @@ describe("preflight", () => {
         logger: silentLogger(),
       }),
     ).rejects.toThrow(/No Stream Deck devices found/)
-  })
-
-  it("passes for emulator mode without listing devices", async () => {
-    const emulatorClient = makeFakeOutputClient("emulator", [])
-    setHappyPath({ outputClient: emulatorClient })
-    await expect(
-      preflight({
-        config: "/abs/cfg.yml",
-        emulator: true,
-        xdgConfigHome: "/xdg",
-        homeDir: "/home",
-        logger: silentLogger(),
-      }),
-    ).resolves.toBeUndefined()
-    expect(emulatorClient.listDevices).not.toHaveBeenCalled()
   })
 })

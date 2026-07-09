@@ -54,6 +54,13 @@ describe("EmulatorOutputClient.selectDevice", () => {
   })
 })
 
+describe("EmulatorOutputClient.validateReady", () => {
+  it("resolves (emulator virtual devices always exist)", async () => {
+    const client = new EmulatorOutputClient()
+    await expect(client.validateReady()).resolves.toBeUndefined()
+  })
+})
+
 describe("EmulatorOutputClient.storeSelection", () => {
   it("is a no-op (no persistent config for emulator)", async () => {
     const client = new EmulatorOutputClient()

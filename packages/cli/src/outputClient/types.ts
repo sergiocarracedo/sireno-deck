@@ -8,6 +8,7 @@ export type OutputKind = "real" | "emulator"
 
 export interface OutputClient {
   readonly kind: OutputKind
+  validateReady(): Promise<void>
   listDevices(): Promise<ReadonlyArray<DeviceDescriptor>>
   selectDevice(
     devices: ReadonlyArray<DeviceDescriptor>,

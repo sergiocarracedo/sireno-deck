@@ -169,6 +169,7 @@ const makeFakeOutputClient = (
   kind: "real" | "emulator",
 ): {
   kind: "real" | "emulator"
+  validateReady: ReturnType<typeof vi.fn>
   listDevices: ReturnType<typeof vi.fn>
   selectDevice: ReturnType<typeof vi.fn>
   storeSelection: ReturnType<typeof vi.fn>
@@ -183,6 +184,7 @@ const makeFakeOutputClient = (
   }
   return {
     kind,
+    validateReady: vi.fn(async () => undefined),
     listDevices: vi.fn(async () => [descriptor]),
     selectDevice: vi.fn(async () => descriptor),
     storeSelection: vi.fn(async () => undefined),

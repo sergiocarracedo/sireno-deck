@@ -405,14 +405,7 @@ export const preflight = async (options: RunOptions): Promise<void> => {
     xdgConfigHome,
   })
 
-  if (outputClient.kind === "real") {
-    const devices = await outputClient.listDevices()
-    if (devices.length === 0) {
-      throw new Error(
-        "No Stream Deck devices found. Connect a device and try again. On Linux, udev rules may be required — see sireno install-udev.",
-      )
-    }
-  }
+  await outputClient.validateReady()
   void logger
 }
 

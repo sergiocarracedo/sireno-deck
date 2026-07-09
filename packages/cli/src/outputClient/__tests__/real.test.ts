@@ -1,7 +1,11 @@
 import type pino from "pino"
-import { describe, expect, it } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { RealOutputClient } from "../real"
+
+vi.mock("@/device/registry", () => ({
+  listDevices: vi.fn(),
+}))
 
 const silentLogger = (): pino.Logger =>
   ({
@@ -15,6 +19,39 @@ const silentLogger = (): pino.Logger =>
     level: "silent",
     silent: () => undefined,
   }) as unknown as pino.Logger
+
+describe("RealOutputClient.validateReady", () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+  })
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it("throws friendly error when no devices are available", async () => {
+    const { listDevices } = await import("@/device/registry")
+    vi.mocked(listDevices).mockResolvedValueOnce([])
+    const client = new RealOutputClient({ xdgConfigHome: "/tmp" })
+    await expect(client.validateReady()).rejects.toThrow(
+      /No Stream Deck devices found/,
+    )
+  })
+
+  it("resolves when at least one device is available", async () => {
+    const { listDevices } = await import("@/device/registry")
+    vi.mocked(listDevices).mockResolvedValueOnce([
+      {
+        id: "ABC",
+        model: "mk2",
+        keyCount: 15,
+        label: "MK.2 (ABC)",
+        transport: "real",
+      },
+    ])
+    const client = new RealOutputClient({ xdgConfigHome: "/tmp" })
+    await expect(client.validateReady()).resolves.toBeUndefined()
+  })
+})
 
 describe("RealOutputClient.selectDevice", () => {
   it("returns the only device when one is connected and no saved config", async () => {
