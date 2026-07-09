@@ -1,0 +1,21 @@
+packages/cli/src/outputClient/emulator.ts
+  s_f05890b34e6e21::t_1c7d8f6e3c2903 65,67,72-75,80
+packages/cli/src/outputClient/__tests__/emulator.test.ts
+  s_f05890b34e6e21::t_32d6bc0c80337e 77-116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "70e5d1434cb34d9e177c7f2ecdf5f816578c411a",
+  "prompts": {},
+  "sessions": {
+    "s_f05890b34e6e21": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0ba469a0bffe525IkPSqEHqna4",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
