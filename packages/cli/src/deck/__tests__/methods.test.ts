@@ -14,13 +14,15 @@ const silentLogger = () => createLogger({ level: "silent" })
 const setup = (decks: ReadonlyArray<RuntimeDeck>) => {
   const pubSub = createPubSub()
   const store = createStore()
+  const executor = createActionExecutor({ host: getHostContext() })
+  const methodsRef: { current: ReturnType<typeof createMethods> | undefined } = { current: undefined }
   const runtime = createRuntime({
     decks,
     pubSub,
     store,
     logger: silentLogger(),
+    getMethods: () => methodsRef.current!,
   })
-  const executor = createActionExecutor({ host: getHostContext() })
   const methods = createMethods({
     runtime,
     pubSub,
@@ -28,6 +30,7 @@ const setup = (decks: ReadonlyArray<RuntimeDeck>) => {
     executor,
     logger: silentLogger(),
   })
+  methodsRef.current = methods
   return { runtime, pubSub, store, methods }
 }
 
@@ -115,5 +118,46 @@ describe("createMethods", () => {
     })
     await methods.pasteText("hello")
     expect(writeText).toHaveBeenCalledWith("hello")
+  })
+
+  it("dispatch routes macro:// to keyMacro", async () => {
+    const { methods } = setup([{ id: "main", name: "Main", buttons: [], isMain: true }])
+    const sendKey = vi.fn().mockResolvedValue(undefined)
+    methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
+    await methods.dispatch("macro://ctrl+c")
+    expect(sendKey).toHaveBeenCalledWith("ctrl+c")
+  })
+
+  it("dispatch routes paste:// to pasteText", async () => {
+    const { methods } = setup([{ id: "main", name: "Main", buttons: [], isMain: true }])
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    methods.setClipboardProvider({
+      writeText,
+      readText: async () => "",
+      stop: async () => undefined,
+    })
+    await methods.dispatch("paste://🔥")
+    expect(writeText).toHaveBeenCalledWith("🔥")
+  })
+
+  it("runCommand returns stdout", async () => {
+    const { methods } = setup([{ id: "main", name: "Main", buttons: [], isMain: true }])
+    const result = await methods.runCommand("echo hello")
+    expect(result.stdout.trim()).toBe("hello")
+  })
+
+  it("dispatch throws for empty macro:// value", async () => {
+    const { methods } = setup([{ id: "main", name: "Main", buttons: [], isMain: true }])
+    await expect(methods.dispatch("macro://")).rejects.toThrow(new RegExp("macro:// requires a value"))
+  })
+
+  it("dispatch runs macro with delay", async () => {
+    const { methods } = setup([{ id: "main", name: "Main", buttons: [], isMain: true }])
+    const sendKey = vi.fn().mockResolvedValue(undefined)
+    methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
+    await methods.dispatch("macro://ctrl+t;delay(50ms);ctrl+v")
+    expect(sendKey).toHaveBeenCalledTimes(2)
+    expect(sendKey).toHaveBeenNthCalledWith(1, "ctrl+t")
+    expect(sendKey).toHaveBeenNthCalledWith(2, "ctrl+v")
   })
 })
