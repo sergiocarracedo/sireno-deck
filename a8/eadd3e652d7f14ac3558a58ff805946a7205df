@@ -1,0 +1,33 @@
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_109ed2a38ffa15::t_5f0297d1e26887 265,282,300
+packages/cli/src/cli/commands/run.ts
+  s_109ed2a38ffa15::t_4b08d2c93d1822 259-271
+packages/cli/src/deck/runtime.ts
+  s_109ed2a38ffa15::t_2bf5d8ced48acb 12-22,26
+  s_109ed2a38ffa15::t_30271cd334daeb 217-230,232-240
+  s_109ed2a38ffa15::t_255df5709aaca8 68
+  s_109ed2a38ffa15::t_191be7c950629b 231
+  s_109ed2a38ffa15::t_cc3423a285eea6 8
+  s_109ed2a38ffa15::t_af04665fc381ca 93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "a8eadd3e652d7f14ac3558a58ff805946a7205df",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_109ed2a38ffa15": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b92c6633ffeYltxJGdSdu0GKD",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
