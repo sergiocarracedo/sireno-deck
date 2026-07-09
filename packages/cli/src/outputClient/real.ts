@@ -21,6 +21,7 @@ import { saveDeviceConfig } from "@/util/device-config"
 
 import {
   buildDeckConfigMessage,
+  DEFAULT_FRONTEND_PORT,
   resolveFrontendCwd,
   spawnFrontendVite,
   type AddonFrontendRef,
@@ -204,11 +205,11 @@ export class RealOutputClient implements OutputClient {
       })
     })
 
-    let frontendUrl = opts.frontendUrl ?? `http://127.0.0.1:${opts.port ?? 5173}`
+    let frontendUrl = opts.frontendUrl ?? `http://127.0.0.1:${opts.port ?? DEFAULT_FRONTEND_PORT}`
     let frontendVite: Awaited<ReturnType<typeof spawnFrontendVite>> | undefined
     if (opts.frontendUrl === undefined) {
       frontendVite = await spawnFrontendVite({
-        port: opts.port ?? 5173,
+        port: opts.port ?? DEFAULT_FRONTEND_PORT,
         cwd: resolveFrontendCwd(),
         pnpmCommand: "pnpm",
         readyTimeoutMs: 30_000,

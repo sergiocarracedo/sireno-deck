@@ -56,6 +56,7 @@ export const startWsBridge = (
     const connectionHandlers: Array<(socket: WebSocket) => void> = []
     const lastChannels: Record<string, unknown> = {}
     const cacheablePollers = new Map<string, () => unknown | Promise<unknown>>()
+    const pendingChannelSubs = new Map<string, Set<WebSocket>>()
     let currentDevice: DeviceDescriptor | null = null
 
     const sendToSocket = (socket: WebSocket, message: WsMessage): void => {
@@ -122,11 +123,15 @@ export const startWsBridge = (
           for (const channel of message.channels) {
             if (channel in lastChannels) {
               cached[channel] = lastChannels[channel]
-            } else if (
-              cacheablePollers.has(channel) &&
-              !(channel in lastChannels)
-            ) {
+            } else if (cacheablePollers.has(channel)) {
               uncached.push(channel)
+            } else {
+              let waiting = pendingChannelSubs.get(channel)
+              if (waiting === undefined) {
+                waiting = new Set()
+                pendingChannelSubs.set(channel, waiting)
+              }
+              waiting.add(socket)
             }
           }
           if (Object.keys(cached).length > 0) {
@@ -158,6 +163,12 @@ export const startWsBridge = (
 
       socket.on("error", () => {
         clearTimeout(handshakeTimer)
+      })
+
+      socket.on("close", () => {
+        for (const subs of pendingChannelSubs.values()) {
+          subs.delete(socket)
+        }
       })
     })
 
@@ -197,11 +208,30 @@ export const startWsBridge = (
         },
         registerCacheablePoller: (channel, pollFn) => {
           cacheablePollers.set(channel, pollFn)
+          const waiting = pendingChannelSubs.get(channel)
+          if (waiting !== undefined) {
+            pendingChannelSubs.delete(channel)
+            for (const sock of waiting) {
+              void Promise.resolve(pollFn())
+                .then((value) => {
+                  const msg: WsMessage = {
+                    type: "state",
+                    channels: { [channel]: value },
+                  }
+                  sendToSocket(sock, msg)
+                  lastChannels[channel] = value
+                })
+                .catch(() => {
+                  // poll on demand failed — ignore, next interval will retry
+                })
+            }
+          }
         },
         onMessage: (handler) => messageHandlers.push(handler),
         onConnection: (handler) => connectionHandlers.push(handler),
         close: () =>
           new Promise<void>((res) => {
+            pendingChannelSubs.clear()
             for (const client of wss.clients) client.close(1000)
             wss.close(() => res())
           }),

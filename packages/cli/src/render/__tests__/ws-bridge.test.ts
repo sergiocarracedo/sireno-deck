@@ -16,6 +16,7 @@ afterEach(async () => {
     await bridge.close()
     bridge = null
   }
+  vi.useRealTimers()
 })
 
 const openClient = (port: number, token?: string): Promise<WebSocket> =>
@@ -284,21 +285,33 @@ describe("ws bridge channel cache", () => {
     b.close()
   })
 
-  it("subscribe-channels with no cached or registered channels sends nothing", async () => {
+  it("subscribe-channels queues pending until poller registers, then replies", async () => {
     bridge = await startWsBridge()
     const socket = await openClient(bridge.port)
     await new Promise((r) => setTimeout(r, 30))
     socket.send(
       JSON.stringify({ type: "subscribe-channels", channels: ["unknown"] }),
     )
+    const noReplyYet = await new Promise<unknown>((resolve) => {
+      socket.on("message", (raw) => {
+        const parsed = JSON.parse(raw.toString())
+        if (parsed.type === "state") resolve(parsed)
+      })
+      setTimeout(() => resolve(null), 80)
+    })
+    expect(noReplyYet).toBeNull()
+    bridge.registerCacheablePoller("unknown", () => ({ value: 42 }))
     const reply = await new Promise<unknown>((resolve) => {
       socket.on("message", (raw) => {
         const parsed = JSON.parse(raw.toString())
         if (parsed.type === "state") resolve(parsed)
       })
-      setTimeout(() => resolve(null), 100)
+      setTimeout(() => resolve(null), 200)
     })
-    expect(reply).toBeNull()
+    expect(reply).toEqual({
+      type: "state",
+      channels: { unknown: { value: 42 } },
+    })
     socket.close()
   })
 
@@ -358,6 +371,161 @@ describe("ws bridge channel cache", () => {
       channels: { "weather:current": { temp: 20 } },
     })
     socket.close()
+  })
+
+  it("pending reply populates lastChannels for a later subscriber", async () => {
+    bridge = await startWsBridge()
+    const pollFn = vi.fn(() => ({ temp: 22 }))
+    const socketA = await openClient(bridge.port)
+    const socketB = await openClient(bridge.port)
+    await new Promise((r) => setTimeout(r, 50))
+    socketA.send(
+      JSON.stringify({ type: "subscribe-channels", channels: ["pending:test"] }),
+    )
+    await new Promise((r) => setTimeout(r, 100))
+    const replyAPromise = new Promise<unknown>((resolve) => {
+      socketA.on("message", (raw) => {
+        const parsed = JSON.parse(raw.toString())
+        if (parsed.type === "state") resolve(parsed)
+      })
+      setTimeout(() => resolve(null), 500)
+    })
+    bridge.registerCacheablePoller("pending:test", pollFn)
+    const replyA = await replyAPromise
+    expect(replyA).toEqual({
+      type: "state",
+      channels: { "pending:test": { temp: 22 } },
+    })
+    expect(pollFn).toHaveBeenCalledTimes(1)
+    socketB.send(
+      JSON.stringify({ type: "subscribe-channels", channels: ["pending:test"] }),
+    )
+    const replyB = await new Promise<unknown>((resolve) => {
+      socketB.on("message", (raw) => {
+        const parsed = JSON.parse(raw.toString())
+        if (parsed.type === "state") resolve(parsed)
+      })
+      setTimeout(() => resolve(null), 300)
+    })
+    expect(replyB).toEqual({
+      type: "state",
+      channels: { "pending:test": { temp: 22 } },
+    })
+    expect(pollFn).toHaveBeenCalledTimes(1)
+    socketA.close()
+    socketB.close()
+  })
+
+  it("two sockets waiting for the same channel each get the reply", async () => {
+    bridge = await startWsBridge()
+    const socketA = await openClient(bridge.port)
+    const socketB = await openClient(bridge.port)
+    await new Promise((r) => setTimeout(r, 30))
+    socketA.send(
+      JSON.stringify({ type: "subscribe-channels", channels: ["dual:wait"] }),
+    )
+    socketB.send(
+      JSON.stringify({ type: "subscribe-channels", channels: ["dual:wait"] }),
+    )
+    await new Promise((r) => setTimeout(r, 30))
+    bridge.registerCacheablePoller("dual:wait", () => ({ ready: true }))
+    const [replyA, replyB] = await Promise.all([
+      new Promise<unknown>((resolve) => {
+        socketA.on("message", (raw) => {
+          const parsed = JSON.parse(raw.toString())
+          if (parsed.type === "state") resolve(parsed)
+        })
+        setTimeout(() => resolve(null), 200)
+      }),
+      new Promise<unknown>((resolve) => {
+        socketB.on("message", (raw) => {
+          const parsed = JSON.parse(raw.toString())
+          if (parsed.type === "state") resolve(parsed)
+        })
+        setTimeout(() => resolve(null), 200)
+      }),
+    ])
+    expect(replyA).toEqual({
+      type: "state",
+      channels: { "dual:wait": { ready: true } },
+    })
+    expect(replyB).toEqual({
+      type: "state",
+      channels: { "dual:wait": { ready: true } },
+    })
+    socketA.close()
+    socketB.close()
+  })
+
+  it("pending reply is targeted, not broadcast", async () => {
+    bridge = await startWsBridge()
+    const socketA = await openClient(bridge.port)
+    const socketB = await openClient(bridge.port)
+    const socketC = await openClient(bridge.port)
+    await new Promise((r) => setTimeout(r, 30))
+    socketA.send(
+      JSON.stringify({ type: "subscribe-channels", channels: ["targeted:chan"] }),
+    )
+    socketB.send(
+      JSON.stringify({ type: "subscribe-channels", channels: ["targeted:chan"] }),
+    )
+    await new Promise((r) => setTimeout(r, 30))
+    bridge.registerCacheablePoller("targeted:chan", () => ({ targeted: true }))
+    const [, , replyC] = await Promise.all([
+      new Promise<unknown>((resolve) => {
+        socketA.on("message", (raw) => {
+          const parsed = JSON.parse(raw.toString())
+          if (parsed.type === "state") resolve(parsed)
+        })
+        setTimeout(() => resolve(null), 200)
+      }),
+      new Promise<unknown>((resolve) => {
+        socketB.on("message", (raw) => {
+          const parsed = JSON.parse(raw.toString())
+          if (parsed.type === "state") resolve(parsed)
+        })
+        setTimeout(() => resolve(null), 200)
+      }),
+      new Promise<unknown>((resolve) => {
+        socketC.on("message", (raw) => {
+          const parsed = JSON.parse(raw.toString())
+          if (parsed.type === "state") resolve(parsed)
+        })
+        setTimeout(() => resolve(null), 200)
+      }),
+    ])
+    expect(replyC).toBeNull()
+    socketA.close()
+    socketB.close()
+    socketC.close()
+  })
+
+  it("closing the socket removes it from pending-subs", async () => {
+    bridge = await startWsBridge()
+    const socketA = await openClient(bridge.port)
+    const socketB = await openClient(bridge.port)
+    await new Promise((r) => setTimeout(r, 30))
+    socketA.send(
+      JSON.stringify({ type: "subscribe-channels", channels: ["dead:socket"] }),
+    )
+    await new Promise((r) => setTimeout(r, 30))
+    socketA.close()
+    let pollCallCount = 0
+    bridge.registerCacheablePoller("dead:socket", () => {
+      pollCallCount++
+      return { count: pollCallCount }
+    })
+    await new Promise((r) => setTimeout(r, 200))
+    expect(pollCallCount).toBe(1)
+    socketB.close()
+  })
+
+  it("registerCacheablePoller with no pending subs is a no-op", async () => {
+    bridge = await startWsBridge()
+    const pollFn = vi.fn(() => ({ solo: true }))
+    bridge.registerCacheablePoller("solo:chan", pollFn)
+    await new Promise((r) => setTimeout(r, 100))
+    expect(pollFn).not.toHaveBeenCalled()
   })
 })
 

@@ -14,7 +14,7 @@ describe("Shell", () => {
     render(
       <Shell
         wsUrl="ws://127.0.0.1:52937"
-        frontendUrl="http://127.0.0.1:5173"
+        frontendUrl="http://127.0.0.1:5180"
         initialDeviceModel="mk2"
       />,
     )
@@ -32,7 +32,7 @@ describe("Shell", () => {
     render(
       <Shell
         wsUrl="ws://127.0.0.1:52937"
-        frontendUrl="http://127.0.0.1:5173"
+        frontendUrl="http://127.0.0.1:5180"
         initialDeviceModel="mk2"
       />,
     )
@@ -45,7 +45,7 @@ describe("Shell", () => {
     render(
       <Shell
         wsUrl="ws://127.0.0.1:52937"
-        frontendUrl="http://127.0.0.1:5173"
+        frontendUrl="http://127.0.0.1:5180"
         initialDeviceModel="mk2"
       />,
     )
@@ -60,7 +60,7 @@ describe("Shell", () => {
     render(
       <Shell
         wsUrl="ws://127.0.0.1:52937"
-        frontendUrl="http://127.0.0.1:5173"
+        frontendUrl="http://127.0.0.1:5180"
         initialDeviceModel="mk2"
       />,
     )

@@ -32,7 +32,9 @@ export const listDevices = async (): Promise<DeviceDescriptor[]> => {
     return infos
       .map(toDescriptor)
       .sort((a, b) => a.id.localeCompare(b.id))
-  } catch {
+  } catch (err) {
+    // ponytail: log so real errors (missing model entry, HID I/O failure) aren't hidden as "no devices"
+    console.warn({ err }, "device enumeration failed")
     return []
   }
 }

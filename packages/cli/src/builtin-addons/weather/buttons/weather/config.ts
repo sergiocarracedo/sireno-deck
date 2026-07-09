@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from 'zod'
 
 export const WEATHER_DEFAULT_POLL_MS = 600_000
 
@@ -19,7 +19,7 @@ const WeatherButtonSchema = z
       .positive()
       .optional()
       .default(WEATHER_DEFAULT_POLL_MS),
-    units: z.enum(["metric", "imperial"]).optional().default("metric"),
+    units: z.enum(['metric', 'imperial']).optional().default('metric'),
   })
   .strict()
 
@@ -27,12 +27,3 @@ export const configSchema = WeatherButtonSchema
 export type ConfigSchema = z.infer<typeof configSchema>
 export type WeatherLocation = z.infer<typeof WeatherLocationSchema>
 export type WeatherButtonConfig = z.infer<typeof WeatherButtonSchema>
-
-export interface WeatherSnapshot {
-  readonly available: boolean
-  readonly temperature?: number
-  readonly windSpeed?: number
-  readonly description?: string
-  readonly units: "metric" | "imperial"
-  readonly wmoCode?: number
-}

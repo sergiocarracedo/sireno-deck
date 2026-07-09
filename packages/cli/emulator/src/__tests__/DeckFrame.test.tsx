@@ -13,7 +13,7 @@ describe("DeckFrame (emulator)", () => {
   it("renders keyCount cells with correct grid columns", () => {
     const { getByTestId } = render(
       <DeckFrame
-        frontendUrl="http://127.0.0.1:5173"
+        frontendUrl="http://127.0.0.1:5180"
         deckId="main"
         device={mk2}
       />,
@@ -29,7 +29,7 @@ describe("DeckFrame (emulator)", () => {
   it("renders each key with aria-label 'Key N'", () => {
     const { getByTestId } = render(
       <DeckFrame
-        frontendUrl="http://127.0.0.1:5173"
+        frontendUrl="http://127.0.0.1:5180"
         deckId="main"
         device={mk2}
       />,

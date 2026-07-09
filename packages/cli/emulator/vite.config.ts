@@ -6,7 +6,7 @@ import { sirenoDeck2 } from "../src/vite/index"
 
 const wsUrl = process.env["SIRENO_WS_URL"] ?? "ws://127.0.0.1:52937"
 const frontendUrl =
-  process.env["SIRENO_FRONTEND_URL"] ?? "http://127.0.0.1:5173"
+  process.env["SIRENO_FRONTEND_URL"] ?? "http://127.0.0.1:5180"
 
 const parseThemeFromEnv = ():
   | { name: string; manifestPath: string; uiOverridesPath: string | null }

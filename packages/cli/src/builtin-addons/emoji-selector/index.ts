@@ -25,7 +25,10 @@ export const manifest: AddonManifestV1 = {
       frontend: launcherFrontend,
       service: launcherBackend,
     },
-    "emoji-selector:back": { frontend: backFrontend, service: backBackend },
+    "emoji-selector:back": {
+      frontend: backFrontend,
+      service: { ...backBackend, gestureHandlers: ["tap"] as const },
+    },
     "emoji-selector:page-nav": {
       frontend: pageNavFrontend,
       service: pageNavBackend,

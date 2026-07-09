@@ -18,8 +18,8 @@ import {
 } from "@/themes/loader"
 import type { DeckConfigMessage } from "@/api/protocol-internal"
 
-const DEFAULT_FRONTEND_PORT = 5180
-const DEFAULT_EMULATOR_PORT = 52938
+export const DEFAULT_FRONTEND_PORT = 5180
+export const DEFAULT_EMULATOR_PORT = 52938
 const DEFAULT_TIMEOUT_MS = 30_000
 // eslint-disable-next-line no-control-regex
 const ANSI_REGEX = /\u001b\[[0-9;]*m/g
@@ -350,6 +350,3 @@ export const ensureDefaultThemeEnv = (frontendCwd: string): void => {
   const cssContent = buildThemeCssFromManifest(manifest, defaultSpec.dir)
   writeFileSync(join(cssDir, "theme.css"), cssContent, "utf8")
 }
-
-void DEFAULT_FRONTEND_PORT
-void DEFAULT_EMULATOR_PORT

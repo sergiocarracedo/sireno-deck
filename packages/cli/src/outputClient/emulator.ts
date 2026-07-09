@@ -13,6 +13,8 @@ import type { ResolveIconPathOptions } from "@/render/icon-resolver"
 
 import {
   buildDeckConfigMessage,
+  DEFAULT_EMULATOR_PORT,
+  DEFAULT_FRONTEND_PORT,
   killChild,
   resolveEmulatorCwd,
   resolveFrontendCwd,
@@ -23,8 +25,6 @@ import {
 
 import type { InitOptions, OutputClient, OutputHandle } from "./types"
 
-const DEFAULT_FRONTEND_PORT = 5180
-const DEFAULT_EMULATOR_PORT = 52938
 const DEFAULT_TIMEOUT_MS = 30_000
 
 const VIRTUAL_MODELS = ["mk2", "xl"] as const
