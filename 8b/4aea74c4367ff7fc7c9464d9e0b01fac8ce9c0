@@ -1,0 +1,28 @@
+packages/cli/src/render/__tests__/browser-renderer.test.ts
+  s_109ed2a38ffa15::t_3b9875af3aa190 31
+packages/cli/src/render/browser-renderer.ts
+  s_109ed2a38ffa15::t_1cda50a9008e8a 110,113-119
+  s_109ed2a38ffa15::t_29a24c7f268b35 111-112
+  s_109ed2a38ffa15::t_1eb1bf343da831 28-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8b4aea74c4367ff7fc7c9464d9e0b01fac8ce9c0",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_109ed2a38ffa15": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b92c6633ffeYltxJGdSdu0GKD",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
