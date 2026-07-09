@@ -27,12 +27,14 @@ interface DeckState {
   id: string
   name: string
   buttons: DeckButton[]
+  isCompact?: boolean
 }
 
 const EMPTY_DECK: DeckState = {
   id: "",
   name: "",
   buttons: [],
+  isCompact: undefined,
 }
 
 const ENV_WS_URL = (import.meta.env.VITE_WS_URL ??
@@ -132,6 +134,7 @@ const AppContent = () => {
               id: message.deckId,
               name: surface.name ?? message.deckId,
               buttons: surface.buttons,
+              isCompact: message.isCompact ?? false,
             })
           }
         }

@@ -192,6 +192,7 @@ export class EmulatorOutputClient implements OutputClient {
               resolverOptions,
               { navStackDepth: 1, hasOverlayDeckAvailable: false },
               descriptor.keyCount,
+              false,
             ),
           ),
         )

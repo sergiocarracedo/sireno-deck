@@ -143,6 +143,7 @@ export class RealOutputClient implements OutputClient {
             hasOverlayDeckAvailable: false,
           },
           descriptor.keyCount,
+          true,
         )
         logger.info(
           {

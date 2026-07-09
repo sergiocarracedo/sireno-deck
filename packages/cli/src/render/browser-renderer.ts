@@ -107,16 +107,7 @@ export class BrowserRenderer {
       viewport: { width: vpWidth, height: vpHeight },
     })
     this.page = await this.context.newPage()
-    const frontendUrl = this.options.frontendUrl
-    const frontendBase = frontendUrl.split("?")[0]!
-    await this.page.route(frontendBase + "/**", (route) => {
-      const url = new URL(route.request().url())
-      if (!url.searchParams.has("compact")) {
-        url.searchParams.set("compact", "1")
-      }
-      route.continue({ url: url.toString() })
-    })
-    await this.page.goto(frontendUrl, { waitUntil: "networkidle" })
+    await this.page.goto(this.options.frontendUrl, { waitUntil: "networkidle" })
     if (this.pubSub) {
       this.subscriptions.push(
         {
