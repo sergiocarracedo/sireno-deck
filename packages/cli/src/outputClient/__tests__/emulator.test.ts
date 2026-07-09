@@ -75,3 +75,43 @@ describe("EmulatorOutputClient.storeSelection", () => {
     ).resolves.toBeUndefined()
   })
 })
+
+describe("EmulatorOutputClient.init", () => {
+  it("does not throw 'selectDevice() must run first' after selectDevice runs", async () => {
+    const client = new EmulatorOutputClient()
+    const devices = await client.listDevices()
+    await client.selectDevice(devices, null, silentLogger())
+    // init() will reject downstream (spawnEmulatorVite can't run in unit test env);
+    // we only assert the descriptor guard from selectDevice has been removed.
+    await expect(
+      client.init({
+        bridge: {
+          port: 0,
+          url: "ws://x",
+          setDevice: () => undefined,
+          broadcast: () => undefined,
+          onMessage: () => () => undefined,
+          onConnection: () => undefined,
+          close: async () => undefined,
+          registerCacheablePoller: () => undefined,
+        },
+        runtime: {} as never,
+        pubSub: {
+          publish: () => undefined,
+          subscribe: () => () => undefined,
+          clear: () => undefined,
+        },
+        store: {
+          get: () => undefined,
+          set: () => undefined,
+          delete: () => undefined,
+        },
+        decks: [],
+        theme: { name: "x", apiVersion: 1 },
+        themeDir: "/x",
+        logger: silentLogger(),
+        addonByType: new Map(),
+      }),
+    ).rejects.not.toThrow(/selectDevice\(\) must run first/)
+  })
+})

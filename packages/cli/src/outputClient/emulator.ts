@@ -62,16 +62,22 @@ export class EmulatorOutputClient implements OutputClient {
   async selectDevice(
     devices: ReadonlyArray<DeviceDescriptor>,
     savedId: string | null,
+    logger: pino.Logger,
   ): Promise<DeviceDescriptor> {
+    void logger
     const match =
       savedId !== null
         ? devices.find((d) => d.id === savedId)
         : undefined
-    if (match !== undefined) return match
+    if (match !== undefined) {
+      this.descriptor = match
+      return match
+    }
     const fallback = devices.find((d) => d.model === "mk2") ?? devices[0]
     if (fallback === undefined) {
       throw new Error("EmulatorOutputClient: no virtual devices available")
     }
+    this.descriptor = fallback
     return fallback
   }
 
