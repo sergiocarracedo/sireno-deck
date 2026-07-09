@@ -25,6 +25,12 @@ export interface PageLike {
   goto(url: string, opts?: { waitUntil?: string }): Promise<unknown>
   screenshot(opts: { type: "png" }): Promise<Buffer>
   close(): Promise<void>
+  route(url: string, handler: (route: RouteLike) => void): void
+}
+
+export interface RouteLike {
+  request(): { url(): string }
+  continue(opts: { url: string }): void
 }
 
 export interface DeviceSink {
@@ -101,7 +107,16 @@ export class BrowserRenderer {
       viewport: { width: vpWidth, height: vpHeight },
     })
     this.page = await this.context.newPage()
-    await this.page.goto(this.options.frontendUrl, { waitUntil: "networkidle" })
+    const frontendUrl = this.options.frontendUrl
+    const frontendBase = frontendUrl.split("?")[0]!
+    await this.page.route(frontendBase + "/**", (route) => {
+      const url = new URL(route.request().url())
+      if (!url.searchParams.has("compact")) {
+        url.searchParams.set("compact", "1")
+      }
+      route.continue({ url: url.toString() })
+    })
+    await this.page.goto(frontendUrl, { waitUntil: "networkidle" })
     if (this.pubSub) {
       this.subscriptions.push(
         {

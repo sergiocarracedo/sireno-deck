@@ -28,6 +28,7 @@ const makeMockPlaywright = (): {
     goto: vi.fn(async () => undefined),
     screenshot: vi.fn(async () => ONE_HUNDRED_PNG),
     close: vi.fn(async () => undefined),
+    route: vi.fn(),
   }
   const context: ContextLike = {
     newPage: vi.fn(async () => page),
