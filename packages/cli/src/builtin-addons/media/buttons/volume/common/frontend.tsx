@@ -10,7 +10,7 @@ export type VolumeVariant = 'down' | 'up'
 
 interface VolumeButtonFrontendProps {
   readonly variant: VolumeVariant
-  readonly gesture?: AddonGesstureEvent | null
+  readonly gesture?: AddonGestureEvent | null
 }
 
 const VolumeButtonFrontend = ({
@@ -30,10 +30,7 @@ const VolumeButtonFrontend = ({
       () => setShowProgress(false),
       PROGRESS_VISIBLE_MS,
     )
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current)
-    }
-  }, [gesture])
+  }, [gesture?.at])
 
   useEffect(
     () => () => {

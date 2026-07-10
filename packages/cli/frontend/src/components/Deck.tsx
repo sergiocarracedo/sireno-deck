@@ -72,8 +72,9 @@ interface ButtonSurfaceProps {
 
 /**
  * Per-button addon surface. Subscribes to the per-button gesture channel and
- * clears the value after handing it off so unrelated re-renders do not re-fire
- * the addon's `useEffect([gesture])`.
+ * holds the latest gesture in state. The gesture value is replaced on each
+ * incoming event and never auto-cleared, so addons can compare against
+ * `gesture.at` in a `useEffect` without losing the hide-timer race.
  */
 const ButtonSurface = ({ button }: ButtonSurfaceProps) => {
   const registryEntry = addonRegistry[button.type]
@@ -84,16 +85,6 @@ const ButtonSurface = ({ button }: ButtonSurfaceProps) => {
   useEffect(() => {
     if (data !== undefined) setGesture(data)
   }, [data])
-
-  useEffect(() => {
-    if (gesture !== null) {
-      // Defer the clear past the current commit so addons see the non-null
-      // value once via `useEffect([gesture])` before it flips back to null.
-      const handle = setTimeout(() => setGesture(null), 0)
-      return () => clearTimeout(handle)
-    }
-    return undefined
-  }, [gesture])
 
   if (registryEntry === undefined) return null
   const Component = registryEntry.Component
