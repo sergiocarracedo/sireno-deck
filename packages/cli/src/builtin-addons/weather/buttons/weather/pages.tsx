@@ -15,16 +15,18 @@ export const pages: ReadonlyArray<{
     name: 'main',
     render: ({ snapshot, unitTemp, city }) => (
       <div className="flex h-full w-full flex-col items-center justify-center gap-1">
-        <WeatherIcon code={snapshot.wmoCode} className="h-12 w-12" />
-        <Text size="xl" tone="fg" className="font-semibold leading-none">
-          {snapshot.temperature?.toFixed(0)}
-          {unitTemp}
-        </Text>
-        {city && (
-          <Text size="xs" tone="fg" fit="ellipsis">
-            {city}
+        <WeatherIcon code={snapshot.wmoCode} className="h-10 w-10" />
+        <div className="-mt-1 flex flex-col gap-0.5">
+          <Text size="xl" tone="fg" className="font-semibold leading-none">
+            {snapshot.temperature?.toFixed(0)}
+            {unitTemp}
           </Text>
-        )}
+          {city && (
+            <Text size="sm" tone="fg" fit="ellipsis">
+              {city}
+            </Text>
+          )}
+        </div>
       </div>
     ),
   },
@@ -82,7 +84,7 @@ export const pages: ReadonlyArray<{
             const d = new Date(e.date)
             const dayName = weekDays[d.getDay()] ?? e.date.slice(5)
             return (
-<span key={e.date} className="flex flex-col items-center gap-0.5">
+              <span key={e.date} className="flex flex-col items-center gap-0.5">
                 <Text size="xs" tone="fg">
                   {dayName}
                 </Text>
