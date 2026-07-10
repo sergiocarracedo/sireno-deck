@@ -112,8 +112,9 @@ export function Icon(props: IconProps): ReactElement {
   }
 
   if (spec.kind === 'asset') {
+    const src = cache.get(spec.id)
+    if (!src) return <></>
     const size = props.size ?? 20
-    const src = cache.get(spec.id) ?? ''
     return (
       <img
         alt=""
