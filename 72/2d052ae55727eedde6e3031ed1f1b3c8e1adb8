@@ -1,0 +1,38 @@
+packages/cli/package.json
+  s_e45e71211989b5::t_ffb6b54db1b1d1 44
+packages/cli/src/builtin-addons/weather/buttons/weather/icons.tsx
+  s_e45e71211989b5::t_1ba4d85b554011 1-4,6-17,19-42
+  s_e45e71211989b5::t_b1ef39002362dc 5,18,43-84,87-90
+packages/cli/src/vite-env.d.ts
+  s_e45e71211989b5::t_3ec960b4ceb2d9 1
+packages/cli/src/builtin-addons/weather/buttons/weather/pages.tsx
+  s_e45e71211989b5::t_99d1ce8c7524bb 3
+  s_e45e71211989b5::t_ee77aedc92233c 85
+  h_f90ee31b03fc41 35
+  s_e45e71211989b5::t_6554a7fa430923 62
+  s_e45e71211989b5::t_063d0a48d0cad6 89
+  s_e45e71211989b5::t_ea7382c26f6bbe 18
+pnpm-lock.yaml
+  s_e45e71211989b5::t_0f60acc4dde9a4 39-41,904-906,4116-4117
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "722d052ae55727eedde6e3031ed1f1b3c8e1adb8",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_e45e71211989b5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b393d525ffeT2913WLdgAJjHX",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
