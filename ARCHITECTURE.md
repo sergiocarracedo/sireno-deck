@@ -329,12 +329,12 @@ with the current deck tree and lets you toggle the active deck manually.
 All shipped from `packages/cli/src/builtin-addons/`. Each ships a
 `sirenodeck.json` discovery file + an `index.ts` entry exporting
 `manifest: AddonManifestV1`. Registered in `register-builtins.ts` in this
-order: themes, core-buttons, internal-settings, session, date-time,
+order: themes, core, internal-settings, session, date-time,
 emoji-selector, media, system-status, value-display, weather, brightness.
 
 | Addon               | Button types                                                 | Publish / poll | Notes                                                            |
 | ------------------- | ------------------------------------------------------------ | -------------- | ---------------------------------------------------------------- |
-| `core-buttons`      | `action`, `change-deck`, `toggle`, `media-sample`            | —              | The generic button types every deck is built from.               |
+| `core`              | `action`, `change-deck`, `toggle`, `page-nav`, `media-sample` | —              | The generic button types every deck is built from.               |
 | `internal-settings` | `about`, `brightness`, `theme`                               | —              | All three types are `internal: true`. Hosts the `settings` deck. |
 | `session`           | `info`, `time`                                               | —              | `time` is `internal: true`. Hosts the `locked` deck.             |
 | `date-time`         | `time`, `date`, `analog-clock`, `locked-time-tile`, `custom` | `1000 ms`      | Frontend-driven (no backend polling).                            |
@@ -493,7 +493,7 @@ its `gestureHandlers`. Concretely:
 
 | Addon               | Backend handlers currently declared                                               | Needs manifest addition                        |
 | ------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `core-buttons`      | `action.onTap`, `change-deck.onTap`, `toggle.onTap`                               | `gestureHandlers: ['tap']`                     |
+| `core`              | `change-deck.onTap`, `toggle.onTap`                                                 | `gestureHandlers: ['tap']`                     |
 | `internal-settings` | `about.onTap`, `brightness.onTap`, `theme.onTap`                                  | `gestureHandlers: ['tap']`                     |
 | `session`           | `info.onTap`, `time.onTap`                                                        | `gestureHandlers: ['tap']`                     |
 | `date-time`         | `time` is read-only (no backend handler)                                          | none                                           |

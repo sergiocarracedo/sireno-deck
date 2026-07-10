@@ -247,7 +247,7 @@ sireno-deck/
 │       └── vitest.config.ts
 ├── addons/                  # User-installed addon folders
 ├── builtin-addons/          # First-party addons shipped with the CLI
-│   ├── core-buttons/
+│   ├── core/
 │   ├── date-time/
 │   ├── emoji-selector/
 │   ├── media-player/

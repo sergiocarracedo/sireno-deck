@@ -22,7 +22,7 @@ describe("isLocalAddonSpec", () => {
   })
 
   it("rejects bare names", () => {
-    expect(isLocalAddonSpec("core-buttons")).toBe(false)
+    expect(isLocalAddonSpec("core")).toBe(false)
   })
 
   it("rejects scoped npm packages", () => {
@@ -34,7 +34,7 @@ describe("isLocalAddonSpec", () => {
 describe("isNpmAddonSpec", () => {
   it("accepts bare names", () => {
     expect(isNpmAddonSpec("lodash")).toBe(true)
-    expect(isNpmAddonSpec("core-buttons")).toBe(true)
+    expect(isNpmAddonSpec("core")).toBe(true)
     expect(isNpmAddonSpec("my-addon@1.2.3")).toBe(true)
     expect(isNpmAddonSpec("my-addon@^1.0.0")).toBe(true)
   })

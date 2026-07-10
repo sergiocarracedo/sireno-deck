@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
+import { readFileSync } from "node:fs"
 import { sirenoDeck2 } from "../src/vite/index"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -64,6 +65,41 @@ export default defineConfig({
       ...(themeFromEnv() ? { theme: themeFromEnv()! } : {}),
       ...(addonsFromEnv() !== undefined ? { addons: addonsFromEnv()! } : {}),
     }),
+    {
+      name: "sireno-asset-proxy",
+      configureServer(server) {
+        const configDir =
+          process.env["SIRENO_CONFIG_DIR"] ?? resolve(__dirname, "../../..")
+        server.middlewares.use("/@sireno-asset", (req, res, next) => {
+          const url = req.url ?? ""
+          const safe = url.split("?")[0]!.replace(/^\/+/, "")
+          if (safe.includes("..")) {
+            next()
+            return
+          }
+          const filePath = resolve(configDir, safe)
+          try {
+            const body = readFileSync(filePath)
+            const ext = filePath.split(".").pop()?.toLowerCase() ?? ""
+            const mime =
+              ext === "svg"
+                ? "image/svg+xml"
+                : ext === "png"
+                  ? "image/png"
+                  : ext === "jpg" || ext === "jpeg"
+                    ? "image/jpeg"
+                    : ext === "webp"
+                      ? "image/webp"
+                      : "application/octet-stream"
+            res.setHeader("Content-Type", mime)
+            res.setHeader("Cache-Control", "no-cache")
+            res.end(body)
+          } catch {
+            next()
+          }
+        })
+      },
+    },
   ],
   server: { host: "127.0.0.1", port: 5180, strictPort: true },
   resolve: {
@@ -81,6 +117,9 @@ export default defineConfig({
   },
   define: {
     "import.meta.env.VITE_WS_URL": JSON.stringify(wsUrl),
+    "import.meta.env.SIRENO_CONFIG_DIR": JSON.stringify(
+      process.env["SIRENO_CONFIG_DIR"] ?? resolve(__dirname, "../../.."),
+    ),
   },
   assetsInclude: ["**/*.html"],
 })

@@ -125,7 +125,7 @@ Every button gets its own WS handshake. The frontend reads the deck-config + per
 
 Each builtin addon ships its own README with button types, config schema, and an example:
 
-- [`core-buttons`](packages/cli/src/builtin-addons/core-buttons/README.md) — internal: `core:change-deck`, `core:action`
+- [`core`](packages/cli/src/builtin-addons/core/README.md) — internal: `core:change-deck`, `core:action`
 - [`internal-settings`](packages/cli/src/builtin-addons/internal-settings/README.md) — internal: `core:settings-*`
 - [`session`](packages/cli/src/builtin-addons/session/README.md) — the `session:locked` deck
 - [`date-time`](packages/cli/src/builtin-addons/date-time/README.md) — `core:time`, `core:date`, `core:clock`, `core:analog-clock`, `core:date-time`, `core:locked-time-tile`

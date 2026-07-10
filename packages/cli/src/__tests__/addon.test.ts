@@ -49,7 +49,7 @@ describe("isLocalAddonSpec", () => {
   })
 
   it("treats bare names and @scoped as npm", () => {
-    expect(isLocalAddonSpec("core-buttons")).toBe(false)
+    expect(isLocalAddonSpec("core")).toBe(false)
     expect(isLocalAddonSpec("@me/my-addon")).toBe(false)
     expect(isLocalAddonSpec("@me/my-addon@1.2.3")).toBe(false)
   })
@@ -57,9 +57,9 @@ describe("isLocalAddonSpec", () => {
 
 describe("normalizeAddonEntry", () => {
   it("normalizes a string entry", () => {
-    expect(normalizeAddonEntry("core-buttons")).toEqual({
+    expect(normalizeAddonEntry("core")).toEqual({
       enabled: true,
-      source: "core-buttons",
+      source: "core",
       isLocal: false,
     })
     expect(normalizeAddonEntry("./local")).toEqual({
@@ -76,10 +76,10 @@ describe("normalizeAddonEntry", () => {
       isLocal: true,
     })
     expect(
-      normalizeAddonEntry({ source: "core-buttons", enabled: false }),
+      normalizeAddonEntry({ source: "core", enabled: false }),
     ).toEqual({
       enabled: false,
-      source: "core-buttons",
+      source: "core",
       isLocal: false,
     })
   })
@@ -191,7 +191,7 @@ describe("loadAddons", () => {
 
   it("records error for npm addons when no cacheDir is provided", async () => {
     const result = await loadAddons({
-      entries: ["core-buttons"],
+      entries: ["core"],
       configDir: "/tmp",
       homeDir: "/tmp",
       currentApiVersion: SIRENO_ADDON_API_VERSION,

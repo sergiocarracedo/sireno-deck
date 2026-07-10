@@ -18,7 +18,7 @@ export interface PaginateDeckOptions {
   readonly keyCount: number
 }
 
-const PAGE_NAV_BUTTON_TYPE = "core-buttons:page-nav"
+const PAGE_NAV_BUTTON_TYPE = "core:page-nav"
 
 const isNextPageMarker = (item: unknown): item is NextPageMarker =>
   item === NEXT_PAGE_MARKER

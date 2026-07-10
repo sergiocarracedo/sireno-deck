@@ -3,17 +3,21 @@ import { describe, expect, it } from "vitest"
 import ActionButtonBackend from "../buttons/action/backend"
 import ChangeDeckButtonBackend from "../buttons/change-deck/backend"
 import ToggleButtonBackend from "../buttons/toggle/backend"
-import { coreButtonsAddon } from "../index"
+import { coreAddon } from "../index"
 
-describe("core-buttons addon", () => {
+describe("core addon", () => {
   it("manifest declares apiVersion 1 and the expected name", () => {
-    expect(coreButtonsAddon.apiVersion).toBe(1)
-    expect(coreButtonsAddon.name).toBe("core-buttons")
+    expect(coreAddon.apiVersion).toBe(1)
+    expect(coreAddon.name).toBe("core")
   })
 
-  it("action button configSchema rejects empty command", () => {
-    const result = ActionButtonBackend.configSchema.safeParse({ command: "" })
-    expect(result.success).toBe(false)
+  it("action button configSchema requires at least icon or label", () => {
+    const empty = ActionButtonBackend.configSchema.safeParse({})
+    expect(empty.success).toBe(false)
+    const iconOnly = ActionButtonBackend.configSchema.safeParse({ icon: "icon://play" })
+    expect(iconOnly.success).toBe(true)
+    const labelOnly = ActionButtonBackend.configSchema.safeParse({ label: "Run" })
+    expect(labelOnly.success).toBe(true)
   })
 
   it("change-deck configSchema rejects empty deck", () => {
@@ -40,7 +44,7 @@ describe("core-buttons addon", () => {
     }
     expect(manifestJson.kind).toBe("addon")
     expect(manifestJson.apiVersion).toBe(1)
-    expect(manifestJson.name).toBe("core-buttons")
+    expect(manifestJson.name).toBe("core")
     expect(manifestJson.entry).toBe("index.ts")
   })
 })

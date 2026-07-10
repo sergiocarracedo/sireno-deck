@@ -18,7 +18,7 @@ export default {
     methods: Methods
     store: Store
   }) => {
-    const scope = store.buttonScope<boolean>("core-buttons", config.key)
+    const scope = store.buttonScope<boolean>("core", config.key)
     const current = scope.get("value") ?? config.default
     scope.set("value", !current)
     methods.invalidate()

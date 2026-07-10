@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { AddonRegistry } from "@/addon/registry"
-import { coreButtonsAddon } from "@/builtin-addons/core-buttons/index"
+import { coreAddon } from "@/builtin-addons/core/index"
 import { internalSettingsAddon } from "@/builtin-addons/internal-settings/index"
 import { sessionAddon } from "@/builtin-addons/session/index"
 
@@ -10,7 +10,7 @@ import type { RawConfig } from "../schemas"
 
 const registry = (): AddonRegistry => {
   const r = new AddonRegistry()
-  r.load(coreButtonsAddon)
+  r.load(coreAddon)
   r.load(internalSettingsAddon)
   r.load(sessionAddon)
   return r
@@ -40,7 +40,7 @@ describe("validateFull", () => {
           buttons: [
             {
               position: 0,
-              type: "core-buttons:change-deck",
+              type: "core:change-deck",
               config: { deck: "media" },
             },
           ],
@@ -85,7 +85,7 @@ describe("validateFull", () => {
     ).toBe(true)
   })
 
-  it("bad core:action config (empty command) errors", () => {
+  it("bad core:action config (missing icon and label) errors", () => {
     const reg = registry()
     const config = baseConfig({
       decks: {
@@ -94,8 +94,8 @@ describe("validateFull", () => {
           buttons: [
             {
               position: 0,
-              type: "core-buttons:action",
-              config: { command: "" },
+              type: "core:action",
+              config: {},
             },
           ],
         },
@@ -103,7 +103,7 @@ describe("validateFull", () => {
     })
     const result = validateFull(config, reg)
     expect(
-      result.issues.some((i) => i.message.toLowerCase().includes("command")),
+      result.issues.some((i) => /icon|label/.test(i.message)),
     ).toBe(true)
   })
 

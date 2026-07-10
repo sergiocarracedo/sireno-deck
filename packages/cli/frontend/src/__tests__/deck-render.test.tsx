@@ -13,15 +13,15 @@ const DECK = {
   buttons: [
     {
       id: "b0",
-      type: "core-buttons:change-deck",
+      type: "core:change-deck",
       label: "Media",
       config: { deck: "media" },
     },
     {
       id: "b1",
-      type: "core-buttons:action",
+      type: "core:action",
       label: "Run",
-      config: { command: "echo" },
+      config: { label: "Run" },
     },
   ],
 }
@@ -73,7 +73,7 @@ describe("Deck", () => {
       </WebSocketProvider>,
     )
     const cell = container.querySelector(
-      '[data-button-type="core-buttons:action"]',
+      '[data-button-type="core:action"]',
     )
     expect(cell).not.toBeNull()
     const frame = cell?.querySelector('[data-sireno-button-frame="true"]')

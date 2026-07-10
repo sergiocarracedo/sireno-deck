@@ -14,9 +14,12 @@ decks:
           tap: 'xdg-open https://calendar.google.com'
 
       - position: 1
-        type: 'core-buttons:action'
+        type: 'weather:weather'
         config:
-          command: 'xdg-open https://example.com'
+          location:
+            latitude: 41.390205
+            longitude: 2.154007
+            name: Warcelona
 
       - position: 4
         type: 'weather:weather'
@@ -30,11 +33,14 @@ decks:
         type: 'emoji-selector:launcher'
 
       - position: 10
-        type: 'core-buttons:action'
+        type: 'core:action'
+        actions:
+          tap: 'google-chrome'
+          hold: 'google-chrome --incognito'
+          dbltap: 'macro://ctrl+t'
         config:
           icon: ./assets/chrome.svg
           label: Chrome
-          command: 'google-chrome'
 
       - position: 0
         type: 'system-status:status'
@@ -86,33 +92,47 @@ decks:
     autoShow: true
     buttons:
       - position: 0
-        type: 'core-buttons:action'
+        type: 'core:action'
+        actions:
+          tap: 'xdotool key ctrl+t'
         config:
-          command: 'xdotool key ctrl+t'
+          label: New Tab
       - position: 1
-        type: 'core-buttons:action'
+        type: 'core:action'
+        actions:
+          tap: 'xdotool key ctrl+w'
         config:
-          command: 'xdotool key ctrl+w'
+          label: Close Tab
       - position: 2
-        type: 'core-buttons:action'
+        type: 'core:action'
+        actions:
+          tap: 'xdotool key ctrl+shift+t'
         config:
-          command: 'xdotool key ctrl+shift+t'
+          label: Reopen Tab
       - position: 3
-        type: 'core-buttons:action'
+        type: 'core:action'
+        actions:
+          tap: 'xdotool key ctrl+shift+n'
         config:
-          command: 'xdotool key ctrl+shift+n'
+          label: New Window
       - position: 4
-        type: 'core-buttons:action'
+        type: 'core:action'
+        actions:
+          tap: 'xdotool key ctrl+r'
         config:
-          command: 'xdotool key ctrl+r'
+          label: Reload
       - position: 5
-        type: 'core-buttons:action'
+        type: 'core:action'
+        actions:
+          tap: 'xdotool key ctrl+shift+r'
         config:
-          command: 'xdotool key ctrl+shift+r'
+          label: Hard Reload
       - position: 6
-        type: 'core-buttons:action'
+        type: 'core:action'
+        actions:
+          tap: 'xdotool key F12'
         config:
-          command: 'xdotool key F12'
+          label: Dev Tools
 
 logging:
   level: info

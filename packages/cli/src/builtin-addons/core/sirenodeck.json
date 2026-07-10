@@ -1,6 +1,6 @@
 {
   "kind": "addon",
   "apiVersion": 1,
-  "name": "core-buttons",
+  "name": "core",
   "entry": "index.ts"
 }

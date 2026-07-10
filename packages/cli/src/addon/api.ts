@@ -203,10 +203,18 @@ export function resolveDomAssetSrc(src: string): string {
     src.startsWith("data:") ||
     src.startsWith("http://") ||
     src.startsWith("https://") ||
-    src.startsWith("file://") ||
-    src.startsWith("/")
+    src.startsWith("file://")
   ) {
     return src
+  }
+  if (src.startsWith("/")) {
+    const configDir = (
+      import.meta.env?.["SIRENO_CONFIG_DIR"] as string | undefined
+    )?.replace(/\/+$/, "")
+    if (configDir !== undefined && src.startsWith(`${configDir}/`)) {
+      return `/@sireno-asset/${src.slice(configDir.length + 1)}`
+    }
+    return `file://${src}`
   }
 
   if (/^(?:addon|builtin):\/\//.test(src)) {

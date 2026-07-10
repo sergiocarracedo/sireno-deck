@@ -5,7 +5,7 @@ import { describe, expect, it, afterAll } from "vitest"
 
 import { AddonRegistry } from "@/addon/registry"
 import { internalSettingsAddon } from "@/builtin-addons/internal-settings/index"
-import { coreButtonsAddon } from "@/builtin-addons/core-buttons/index"
+import { coreAddon } from "@/builtin-addons/core/index"
 import { sessionAddon } from "@/builtin-addons/session/index"
 import { createDeckRuntime, type RuntimeDeck } from "@/deck/index"
 import { loadConfig } from "@/config/loader"
@@ -23,7 +23,7 @@ const writeConfig = (yaml: string): string => {
 
 const registryWithBuiltins = (): AddonRegistry => {
   const reg = new AddonRegistry()
-  reg.load(coreButtonsAddon)
+  reg.load(coreAddon)
   reg.load(internalSettingsAddon)
   reg.load(sessionAddon)
   return reg
@@ -39,13 +39,15 @@ decks:
     name: Home
     buttons:
       - position: 0
-        type: core-buttons:change-deck
+        type: core:change-deck
         config:
           deck: media
       - position: 1
-        type: core-buttons:action
+        type: core:action
+        actions:
+          tap: 'echo integration'
         config:
-          command: 'echo integration'
+          label: Integration
   media:
     name: Media
     buttons: []
@@ -85,9 +87,8 @@ decks:
       onTap: () => methods.navigateToDeck({ id: "media" }),
     })
     runtime.registerButtonHandler("main:btn-1", {
-      onTap: async ({ config }) => {
-        const cmd = (config as { command: string }).command
-        await methods.runCommand(cmd)
+      onTap: async () => {
+        await methods.dispatch("echo integration")
       },
     })
 

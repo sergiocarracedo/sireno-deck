@@ -1,6 +1,6 @@
 export { SYSTEM_BUTTON_TYPES } from "@/deck/system-buttons/types"
 export { default as brightnessAddon } from "./brightness/index"
-export { coreButtonsAddon } from "./core-buttons/index"
+export { coreAddon } from "./core/index"
 export { default as dateTimeAddon } from "./date-time/index"
 export { default as emojiSelectorAddon } from "./emoji-selector/index"
 export { internalSettingsAddon } from "./internal-settings/index"

@@ -1,6 +1,6 @@
-# core-buttons
+# core
 
-**Internal-only addon.** Provides the four foundational button types every deck depends on. The runtime injects `core:change-deck` automatically (the reserved `n-1` slot); `core:action` and `core:toggle` are user-facing but the runtime also uses them internally for things like the settings back button.
+**Internal-only addon.** Provides the foundational button types every deck depends on. The runtime injects `core:change-deck` automatically (the reserved `n-1` slot); `core:action` and `core:toggle` are user-facing but the runtime also uses them internally for things like the settings back button.
 
 If you're writing user-facing config, you only need `core:action` and `core:change-deck`. The other two are runtime-managed.
 
@@ -9,19 +9,26 @@ If you're writing user-facing config, you only need `core:action` and `core:chan
 | Type                | Description                                                  |
 | ------------------- | ------------------------------------------------------------ |
 | `core:change-deck`  | Navigate to another deck. Internal: the reserved `n-1` slot. |
-| `core:action`       | Run a shell command (`xdg-open`, `google-chrome`, etc.)      |
+| `core:action`       | Run a shell command (xdg-open, google-chrome, etc.)          |
 | `core:toggle`       | Internal: toggle a boolean state in the runtime              |
+| `core:page-nav`     | Internal: next/previous deck navigation                      |
 | `core:media-sample` | Internal: a sample media-player button used in tests         |
 
 ## Config
 
 ### `core:action`
 
+Requires at least one of `icon` or `label`. Command goes in `actions.tap`
+(also accepts `macro://` and `paste://` URIs for keystroke shortcuts).
+
 ```yaml
 - position: 1
   type: core:action
+  actions:
+    tap: "xdg-open https://example.com"
   config:
-    command: "xdg-open https://example.com"
+    label: Open
+    icon: icon://globe
 ```
 
 ### `core:change-deck`
@@ -34,22 +41,6 @@ If you're writing user-facing config, you only need `core:action` and `core:chan
 ```
 
 `deck` must reference a deck id defined in the same `config.yml` under `decks:`.
-
-## Example
-
-The `main` deck in the repo-root README's example uses both:
-
-```yaml
-- position: 1
-  type: core:action
-  config:
-    command: "xdg-open https://example.com"
-
-- position: 9
-  type: core:change-deck
-  config:
-    deck: emoji
-```
 
 ## See also
 

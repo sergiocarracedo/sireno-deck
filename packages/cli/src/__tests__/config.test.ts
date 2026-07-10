@@ -113,9 +113,9 @@ describe("resolveIconRef", () => {
   })
 
   it("resolves builtin://<addon>/<path>", () => {
-    expect(resolveIconRef("builtin://core-buttons/play.svg", ctx)).toEqual({
+    expect(resolveIconRef("builtin://core/play.svg", ctx)).toEqual({
       kind: "builtin-addon",
-      addonName: "core-buttons",
+      addonName: "core",
       subPath: "play.svg",
     })
   })
@@ -332,7 +332,7 @@ describe("loadConfig", () => {
         "  main:",
         "    buttons: []",
         "addons:",
-        "  - core-buttons",
+        "  - core",
         "  - source: './local-clock'",
         "    enabled: false",
         "",
@@ -340,7 +340,7 @@ describe("loadConfig", () => {
     )
     const result = loadConfig({ configPath: path })
     expect(result.config.addons).toHaveLength(2)
-    expect(result.config.addons?.[0]).toBe("core-buttons")
+    expect(result.config.addons?.[0]).toBe("core")
     expect(result.config.addons?.[1]).toEqual({
       source: "./local-clock",
       enabled: false,

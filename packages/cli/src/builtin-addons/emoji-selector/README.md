@@ -56,4 +56,4 @@ Press position 9 → opens the Smileys deck → tap an emoji → it's on your cl
 
 ## See also
 
-- [core-buttons](../core-buttons/README.md) — `core:change-deck` to open the emoji deck
+- [core](../core/README.md) — `core:change-deck` to open the emoji deck

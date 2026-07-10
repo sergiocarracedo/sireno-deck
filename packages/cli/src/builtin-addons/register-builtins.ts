@@ -3,7 +3,7 @@ import type { AddonRegistry } from "@/addon/registry"
 import { registerBuiltInThemes } from "@/themes/loader"
 
 import brightnessAddon from "./brightness/index"
-import { coreButtonsAddon } from "./core-buttons/index"
+import { coreAddon } from "./core/index"
 import dateTimeAddon from "./date-time/index"
 import emojiSelectorAddon from "./emoji-selector/index"
 import { internalSettingsAddon } from "./internal-settings/index"
@@ -15,7 +15,7 @@ import weatherAddon from "./weather/index"
 
 export const registerBuiltins = (registry: AddonRegistry): void => {
   registerBuiltInThemes(registry)
-  registry.load(coreButtonsAddon)
+  registry.load(coreAddon)
   registry.load(internalSettingsAddon)
   registry.load(sessionAddon)
   registry.load(dateTimeAddon)
