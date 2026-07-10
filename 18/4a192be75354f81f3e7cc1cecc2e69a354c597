@@ -1,0 +1,81 @@
+packages/cli/src/core/asset-id.ts
+  s_5b31e6ba334830::t_9b42f3438b7489 1-21
+packages/cli/src/deck/deck-config.ts
+  s_5b31e6ba334830::t_f27f9bf9e1d275 6,8
+  s_5b31e6ba334830::t_6fdeaf00b0a5a6 38-45
+  s_5b31e6ba334830::t_6f931f696edfa7 99
+  s_5b31e6ba334830::t_29d88fc7987120 1,19-23,25
+  s_5b31e6ba334830::t_4d30f14a78f665 2,5,7,9-16,18,24,26-27,50-52,54-55,57-61,63-98,100-107,109-150
+  s_5b31e6ba334830::t_4d0d38daebc511 28-29,33,36-37,46-47,53,56,62,108
+  s_5b31e6ba334830::t_3835c1be36d685 3-4,17,30-32,34-35,48-49,151
+packages/cli/src/builtin-addons/media/buttons/volume/common/frontend.tsx
+  s_5b31e6ba334830::t_41d990b6479a8e 46
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-down/frontend.tsx
+  s_5b31e6ba334830::t_2a203f1bd5b205 5
+packages/cli/src/builtin-addons/media/buttons/media-player/components/MediaStatus.tsx
+  s_5b31e6ba334830::t_404392d69553a5 22
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_5b31e6ba334830::t_9959e757996d16 3
+  s_5b31e6ba334830::t_c350a9cd04ebf9 115,117
+packages/cli/frontend/src/App.tsx
+  s_5b31e6ba334830::t_0122e1ed5fba83 126
+packages/cli/src/builtin-addons/media/buttons/media-player/frontend.tsx
+  s_5b31e6ba334830::t_61826bec2724b5 13
+packages/cli/src/outputClient/emulator.ts
+  s_5b31e6ba334830::t_252a68fb36c8fe 2
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  s_5b31e6ba334830::t_6062a6d483b969 3,11,22,30,34
+packages/cli/src/cli/commands/run.ts
+  s_5b31e6ba334830::t_82ecd803f19083 469
+  s_5b31e6ba334830::t_15753fe61ad4bd 503
+  s_5b31e6ba334830::t_1fdf352701129f 46
+  s_5b31e6ba334830::t_d7d28d4c9708aa 467-468,470-502,504-515
+  s_5b31e6ba334830::t_1fd5d1c10bacb0 39-43,45,47-49
+  s_5b31e6ba334830::t_e327e3a02e9780 422
+packages/cli/src/builtin-addons/media/buttons/volume/mute/frontend.tsx
+  s_5b31e6ba334830::t_25f77e45e1e32a 17
+packages/cli/src/render/icon-source-resolver.ts
+  s_5b31e6ba334830::t_81a70d5d4e9372 1-58
+packages/cli/src/builtin-addons/weather/buttons/weather/frontend.tsx
+  s_5b31e6ba334830::t_d8855fd69f2e0e 60
+packages/cli/frontend/src/components/ErrorBoundary.tsx
+  s_5b31e6ba334830::t_92022ed0b35a54 62
+packages/cli/src/api/protocol-internal.ts
+  s_5b31e6ba334830::t_e2e3d9dce1801b 107
+packages/cli/src/cli/commands/__tests__/emulator-mode-build-config.test.ts
+  s_5b31e6ba334830::t_a751e6c42e5cad 5-8
+packages/cli/src/builtin-addons/core/buttons/page-nav/frontend.tsx
+  s_5b31e6ba334830::t_252976fb2d9f58 21,30
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-up/frontend.tsx
+  s_5b31e6ba334830::t_c81af476bbdd1f 5
+packages/cli/src/core/icon-asset-registry.ts
+  s_5b31e6ba334830::t_3c3ef889fdf238 22,97-98
+  s_5b31e6ba334830::t_aa65f6730d02a6 109-110
+  s_5b31e6ba334830::t_3f4663456767b0 1-6,8-11,14-18,21,23-26,38-39,41,45-96,99-106
+  s_5b31e6ba334830::t_9f47d1f1456767 7,27-34,37,42-44
+packages/cli/src/ui/primitives/Icon.tsx
+  s_5b31e6ba334830::t_7ded95fdc43466 6,22-26,29-32,34-45,48,58,103,109-112,114-116,119,123,133-134
+packages/cli/src/core/mime.ts
+  s_5b31e6ba334830::t_55e117d3a91a2b 1-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "184a192be75354f81f3e7cc1cecc2e69a354c597",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_5b31e6ba334830": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b4f054ebffeRYRym25QQ23CuM",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
