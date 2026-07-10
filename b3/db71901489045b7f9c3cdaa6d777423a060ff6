@@ -1,0 +1,29 @@
+packages/cli/src/builtin-addons/weather/buttons/weather/icons.tsx
+  s_e45e71211989b5::t_9da0e3a31b6083 90
+packages/cli/src/builtin-addons/weather/buttons/weather/pages.tsx
+  s_e45e71211989b5::t_f25f528d20b558 18
+  s_e45e71211989b5::t_a7532579b49c9c 17
+  s_e45e71211989b5::t_5345b30fcabba9 89
+  s_e45e71211989b5::t_104e4d9c051f68 62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "b3db71901489045b7f9c3cdaa6d777423a060ff6",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_e45e71211989b5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b393d525ffeT2913WLdgAJjHX",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
