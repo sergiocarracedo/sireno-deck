@@ -87,5 +87,5 @@ export interface WeatherIconProps {
 export const WeatherIcon = ({ code, className }: WeatherIconProps) => {
   const url = iconUrlFor(code)
   if (url === undefined) return null
-  return <img src={url} alt="" className={className} />
+  return <img src={url} alt="" className={`block ${className ?? ''}`} />
 }

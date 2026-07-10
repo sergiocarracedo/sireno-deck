@@ -14,8 +14,8 @@ export const pages: ReadonlyArray<{
   {
     name: 'main',
     render: ({ snapshot, unitTemp, city }) => (
-      <div>
-        <WeatherIcon code={snapshot.wmoCode} className="h-8 w-8" />
+      <div className="flex h-full w-full flex-col items-center justify-center gap-1">
+        <WeatherIcon code={snapshot.wmoCode} className="h-12 w-12" />
         <Text size="xl" tone="fg" className="font-semibold leading-none">
           {snapshot.temperature?.toFixed(0)}
           {unitTemp}
@@ -59,7 +59,7 @@ export const pages: ReadonlyArray<{
               <Text size="xs" tone="fg">
                 {e.time}h
               </Text>
-              <WeatherIcon code={e.wmoCode} className="h-6 w-6" />
+              <WeatherIcon code={e.wmoCode} className="h-8 w-8" />
               <Text size="xs" tone="fg">
                 {e.temperature.toFixed(0)}
                 {unitTemp}
@@ -86,7 +86,7 @@ export const pages: ReadonlyArray<{
                 <Text size="xs" tone="fg">
                   {dayName}
                 </Text>
-                <WeatherIcon code={e.wmoCode} className="h-6 w-6" />
+                <WeatherIcon code={e.wmoCode} className="h-8 w-8" />
                 <Text size="xs" tone="primary">
                   {e.tempMin.toFixed(0)}
                   {unitTemp}
