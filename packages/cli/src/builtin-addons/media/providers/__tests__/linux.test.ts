@@ -22,8 +22,6 @@ const makeExecutor = (
   }),
 })
 
-const WPCTL_GET_MUTE_NO = "Muted: no"
-
 const WPCTL_GET_VOLUME_HALF = "Volume: 0.50"
 
 const baseResponses = (status: string) =>
@@ -35,7 +33,6 @@ const baseResponses = (status: string) =>
     ["playerctl position", "0"],
     ["playerctl status", status],
     ["wpctl get-volume @DEFAULT_AUDIO_SINK@", WPCTL_GET_VOLUME_HALF],
-    ["wpctl get-mute @DEFAULT_AUDIO_SINK@", WPCTL_GET_MUTE_NO],
   ])
 
 describe("createLinuxProvider", () => {
@@ -113,27 +110,27 @@ describe("createLinuxProvider", () => {
     expect((await provider.getStatus()).volume).toBe(1)
   })
 
-  it("detects muted from wpctl get-mute", async () => {
+  it("detects muted from the [MUTED] suffix on wpctl get-volume", async () => {
     const responses = baseResponses("Playing")
-    responses.set("wpctl get-mute @DEFAULT_AUDIO_SINK@", "Muted: yes")
+    responses.set("wpctl get-volume @DEFAULT_AUDIO_SINK@", "Volume: 0.50 [MUTED]")
     const provider = createLinuxProvider({ executor: makeExecutor(responses) })
     expect((await provider.getStatus()).muted).toBe(true)
   })
 
-  it("detects unmuted from wpctl get-mute", async () => {
+  it("detects unmuted when [MUTED] is absent from wpctl get-volume", async () => {
     const provider = createLinuxProvider({
       executor: makeExecutor(baseResponses("Playing")),
     })
     expect((await provider.getStatus()).muted).toBe(false)
   })
 
-  it("returns muted=false when wpctl get-mute fails", async () => {
+  it("returns muted=false when wpctl get-volume fails", async () => {
     const responses = baseResponses("Playing")
-    responses.delete("wpctl get-mute @DEFAULT_AUDIO_SINK@")
+    responses.delete("wpctl get-volume @DEFAULT_AUDIO_SINK@")
     const executor: ProviderExecutor = {
       run: vi.fn(async (cmd: string, args: ReadonlyArray<string>) => {
         const key = `${cmd} ${args.join(" ")}`
-        if (key === "wpctl get-mute @DEFAULT_AUDIO_SINK@")
+        if (key === "wpctl get-volume @DEFAULT_AUDIO_SINK@")
           return execResult("", 1)
         return execResult(responses.get(key) ?? "")
       }),
@@ -142,30 +139,33 @@ describe("createLinuxProvider", () => {
     expect((await provider.getStatus()).muted).toBe(false)
   })
 
-  it("parseGetMute is case-insensitive on the value", async () => {
+  it("parses [MUTED] case-insensitively", async () => {
     const responses = baseResponses("Playing")
-    responses.set("wpctl get-mute @DEFAULT_AUDIO_SINK@", "muted: YES")
+    responses.set("wpctl get-volume @DEFAULT_AUDIO_SINK@", "Volume: 0.50 [muted]")
     const provider = createLinuxProvider({ executor: makeExecutor(responses) })
     expect((await provider.getStatus()).muted).toBe(true)
   })
 
-  it("parseGetMute tolerates extra whitespace before yes/no", async () => {
+  it("parses [MUTED] with extra whitespace inside the brackets", async () => {
     const responses = baseResponses("Playing")
-    responses.set("wpctl get-mute @DEFAULT_AUDIO_SINK@", "Muted:   yes\n")
+    responses.set(
+      "wpctl get-volume @DEFAULT_AUDIO_SINK@",
+      "Volume: 0.50  [   MUTED  ]\n",
+    )
     const provider = createLinuxProvider({ executor: makeExecutor(responses) })
     expect((await provider.getStatus()).muted).toBe(true)
   })
 
-  it("parseGetMute returns false on empty stdout", async () => {
+  it("does not match MUTED text that is not in brackets", async () => {
     const responses = baseResponses("Playing")
-    responses.set("wpctl get-mute @DEFAULT_AUDIO_SINK@", "")
+    responses.set("wpctl get-volume @DEFAULT_AUDIO_SINK@", "Volume: 0.50 MUTED")
     const provider = createLinuxProvider({ executor: makeExecutor(responses) })
     expect((await provider.getStatus()).muted).toBe(false)
   })
 
-  it("parseGetMute returns false on unexpected tokens", async () => {
+  it("returns muted=false when the wpctl output is empty", async () => {
     const responses = baseResponses("Playing")
-    responses.set("wpctl get-mute @DEFAULT_AUDIO_SINK@", "Volume: 0.50")
+    responses.set("wpctl get-volume @DEFAULT_AUDIO_SINK@", "")
     const provider = createLinuxProvider({ executor: makeExecutor(responses) })
     expect((await provider.getStatus()).muted).toBe(false)
   })

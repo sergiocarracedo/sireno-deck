@@ -23,11 +23,6 @@ const runWpctl = async (
   return deps.executor.run("wpctl", args, { timeoutMs: 5_000 })
 }
 
-const parseWpctlVolume = (stdout: string): number => {
-  const match = stdout.match(/Volume:\s*(\d+\.?\d*)/)
-  return match ? Math.max(0, Math.min(1, parseFloat(match[1]))) : 1
-}
-
 const readStatus = async (deps: LinuxDeps): Promise<MediaStatus> => {
   const [metaResult, positionResult] = await Promise.all([
     deps.executor.run(
@@ -44,12 +39,11 @@ const readStatus = async (deps: LinuxDeps): Promise<MediaStatus> => {
     }),
   ])
 
-  const [playStatusResult, volumeResult, muteResult] = await Promise.all([
+  const [playStatusResult, volumeResult] = await Promise.all([
     deps.executor.run("playerctl", ["status"], {
       timeoutMs: METADATA_TIMEOUT_MS,
     }),
     runWpctl(deps, ["get-volume", "@DEFAULT_AUDIO_SINK@"]),
-    runWpctl(deps, ["get-mute", "@DEFAULT_AUDIO_SINK@"]),
   ])
 
   const track =
@@ -82,8 +76,10 @@ const readStatus = async (deps: LinuxDeps): Promise<MediaStatus> => {
       ? Math.round(Number.parseFloat(positionResult.stdout.trim()))
       : 0
 
-  const volume =
-    volumeResult.exitCode === 0 ? parseWpctlVolume(volumeResult.stdout) : 1
+  const wpctlState =
+    volumeResult.exitCode === 0
+      ? parseWpctlVolumeLine(volumeResult.stdout)
+      : { volume: 1, muted: false }
 
   const statusStr = playStatusResult.stdout.trim()
   const playStatus: MediaStatus["playStatus"] =
@@ -94,13 +90,24 @@ const readStatus = async (deps: LinuxDeps): Promise<MediaStatus> => {
     totalTime,
     currentTime,
     playStatus,
-    volume,
-    muted: parseGetMute(muteResult.stdout),
+    volume: wpctlState.volume,
+    muted: wpctlState.muted,
   }
 }
 
-const parseGetMute = (stdout: string): boolean =>
-  /^Muted:\s+yes$/im.test(stdout)
+interface WpctlVolumeLine {
+  readonly volume: number
+  readonly muted: boolean
+}
+
+const VOLUME_LINE_RE = /^Volume:\s*(\d+(?:\.\d+)?)(?:\s*\[\s*MUTED\s*\])?/im
+
+const parseWpctlVolumeLine = (stdout: string): WpctlVolumeLine => {
+  const match = stdout.match(VOLUME_LINE_RE)
+  if (match === null) return { volume: 1, muted: false }
+  const volume = Math.max(0, Math.min(1, parseFloat(match[1] ?? "")))
+  return { volume, muted: /\[\s*MUTED\s*\]/i.test(match[0]) }
+}
 
 export const createLinuxProvider = (deps: LinuxDeps): MediaStatusProvider => ({
   async getStatus() {
