@@ -15,6 +15,7 @@ import {
   useAssetCacheMutations,
 } from "@sireno-deck/cli"
 import { createWsClient, type WsClient } from "./bridge/client"
+import { WebSocketProvider } from "./bridge/ws-context"
 import { Deck } from "./components/Deck"
 
 interface DeckButton {
@@ -104,6 +105,7 @@ export const App = () => {
 
 const AppContent = () => {
   const [deck, setDeck] = useState<DeckState>(EMPTY_DECK)
+  const [send, setSend] = useState<((m: unknown) => void) | null>(null)
   const clientRef = useRef<WsClient | null>(null)
   const { setAsset } = useAssetCacheMutations()
   const navigate = useNavigate()
@@ -146,6 +148,7 @@ const AppContent = () => {
       },
     })
     clientRef.current = client
+    setSend((m) => client.send(m as never))
     client.connect()
     ChannelRegistry.setAnnounceSubscribe((channels) =>
       client.subscribeChannels(channels),
@@ -153,13 +156,16 @@ const AppContent = () => {
     return () => {
       _wsClientInitialized = false
       ChannelRegistry.setAnnounceSubscribe(null)
+      setSend(null)
       client.close()
     }
   }, [setAsset, navigate])
 
   return (
-    <main className="bg-bg text-fg flex min-h-screen items-center justify-center">
-      <Deck deck={deck} />
-    </main>
+    <WebSocketProvider value={send}>
+      <main className="bg-bg text-fg flex min-h-screen items-center justify-center">
+        <Deck deck={deck} />
+      </main>
+    </WebSocketProvider>
   )
 }

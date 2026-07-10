@@ -13,6 +13,7 @@ import {
   useAddonChannel,
   type AddonGestureEvent,
 } from "@sireno-deck/cli"
+import { useButtonAction } from "../bridge/use-button-action"
 import { ErrorBoundary } from "./ErrorBoundary"
 
 const BUTTON_SIZE = BUTTON_SIZE_PX
@@ -68,6 +69,41 @@ const resolvePosition = (button: DeckButton, fallback: number): number => {
 
 interface ButtonSurfaceProps {
   readonly button: DeckButton
+}
+
+interface DeckButtonCellProps {
+  readonly deckId: string
+  readonly position: number
+  readonly button: DeckButton
+  readonly col: number
+  readonly row: number
+}
+
+const DeckButtonCell = ({
+  deckId,
+  position,
+  button,
+  col,
+  row,
+}: DeckButtonCellProps) => {
+  const { fire } = useButtonAction(deckId, position)
+  return (
+    <div
+      style={{
+        gridColumn: col,
+        gridRow: row,
+        width: BUTTON_SIZE,
+        height: BUTTON_SIZE,
+      }}
+      data-button-type={button.type}
+    >
+      <ButtonFrame buttonType={button.type} onClick={() => fire("tap")}>
+        <ErrorBoundary resetKey={button.id}>
+          <ButtonSurface button={button} />
+        </ErrorBoundary>
+      </ButtonFrame>
+    </div>
+  )
 }
 
 /**
@@ -128,22 +164,14 @@ export const Deck = ({ deck, children }: DeckProps) => {
         const col = (position % columns) + 1
         const row = Math.floor(position / columns) + 1
         return (
-          <div
+          <DeckButtonCell
             key={button.id}
-            style={{
-              gridColumn: col,
-              gridRow: row,
-              width: BUTTON_SIZE,
-              height: BUTTON_SIZE,
-            }}
-            data-button-type={button.type}
-          >
-            <ButtonFrame buttonType={button.type}>
-              <ErrorBoundary resetKey={button.id}>
-                <ButtonSurface button={button} />
-              </ErrorBoundary>
-            </ButtonFrame>
-          </div>
+            deckId={deck.id}
+            position={position}
+            button={button}
+            col={col}
+            row={row}
+          />
         )
       })}
       {children}
