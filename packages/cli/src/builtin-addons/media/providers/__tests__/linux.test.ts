@@ -22,20 +22,7 @@ const makeExecutor = (
   }),
 })
 
-const WPCTL_STATUS_UNMUTED = [
-  "PipeWire 'pipewire-0' [0.3.85, user@host]",
-  "Audio",
-  " ├─ Sinks:",
-  " │    *   46. HyperX 7.1 Audio Analog Stereo      [vol: 0.50]",
-  " │        44. HyperX 7.1 Audio Analog Stereo      [vol: 0.50]",
-].join("\n")
-
-const WPCTL_STATUS_MUTED = [
-  "PipeWire 'pipewire-0' [0.3.85, user@host]",
-  "Audio",
-  " ├─ Sinks:",
-  " │    *   46. HyperX 7.1 Audio Analog Stereo      [vol: 0.50 MUTED]",
-].join("\n")
+const WPCTL_GET_MUTE_NO = "Muted: no"
 
 const WPCTL_GET_VOLUME_HALF = "Volume: 0.50"
 
@@ -48,7 +35,7 @@ const baseResponses = (status: string) =>
     ["playerctl position", "0"],
     ["playerctl status", status],
     ["wpctl get-volume @DEFAULT_AUDIO_SINK@", WPCTL_GET_VOLUME_HALF],
-    ["wpctl status", WPCTL_STATUS_UNMUTED],
+    ["wpctl get-mute @DEFAULT_AUDIO_SINK@", WPCTL_GET_MUTE_NO],
   ])
 
 describe("createLinuxProvider", () => {
@@ -126,31 +113,60 @@ describe("createLinuxProvider", () => {
     expect((await provider.getStatus()).volume).toBe(1)
   })
 
-  it("detects muted from wpctl status tree (with the │ U+2502 character)", async () => {
+  it("detects muted from wpctl get-mute", async () => {
     const responses = baseResponses("Playing")
-    responses.set("wpctl status", WPCTL_STATUS_MUTED)
+    responses.set("wpctl get-mute @DEFAULT_AUDIO_SINK@", "Muted: yes")
     const provider = createLinuxProvider({ executor: makeExecutor(responses) })
     expect((await provider.getStatus()).muted).toBe(true)
   })
 
-  it("detects unmuted from wpctl status tree", async () => {
+  it("detects unmuted from wpctl get-mute", async () => {
     const provider = createLinuxProvider({
       executor: makeExecutor(baseResponses("Playing")),
     })
     expect((await provider.getStatus()).muted).toBe(false)
   })
 
-  it("returns muted=false when wpctl status fails", async () => {
+  it("returns muted=false when wpctl get-mute fails", async () => {
     const responses = baseResponses("Playing")
-    responses.delete("wpctl status")
+    responses.delete("wpctl get-mute @DEFAULT_AUDIO_SINK@")
     const executor: ProviderExecutor = {
       run: vi.fn(async (cmd: string, args: ReadonlyArray<string>) => {
         const key = `${cmd} ${args.join(" ")}`
-        if (key === "wpctl status") return execResult("", 1)
+        if (key === "wpctl get-mute @DEFAULT_AUDIO_SINK@")
+          return execResult("", 1)
         return execResult(responses.get(key) ?? "")
       }),
     }
     const provider = createLinuxProvider({ executor })
+    expect((await provider.getStatus()).muted).toBe(false)
+  })
+
+  it("parseGetMute is case-insensitive on the value", async () => {
+    const responses = baseResponses("Playing")
+    responses.set("wpctl get-mute @DEFAULT_AUDIO_SINK@", "muted: YES")
+    const provider = createLinuxProvider({ executor: makeExecutor(responses) })
+    expect((await provider.getStatus()).muted).toBe(true)
+  })
+
+  it("parseGetMute tolerates extra whitespace before yes/no", async () => {
+    const responses = baseResponses("Playing")
+    responses.set("wpctl get-mute @DEFAULT_AUDIO_SINK@", "Muted:   yes\n")
+    const provider = createLinuxProvider({ executor: makeExecutor(responses) })
+    expect((await provider.getStatus()).muted).toBe(true)
+  })
+
+  it("parseGetMute returns false on empty stdout", async () => {
+    const responses = baseResponses("Playing")
+    responses.set("wpctl get-mute @DEFAULT_AUDIO_SINK@", "")
+    const provider = createLinuxProvider({ executor: makeExecutor(responses) })
+    expect((await provider.getStatus()).muted).toBe(false)
+  })
+
+  it("parseGetMute returns false on unexpected tokens", async () => {
+    const responses = baseResponses("Playing")
+    responses.set("wpctl get-mute @DEFAULT_AUDIO_SINK@", "Volume: 0.50")
+    const provider = createLinuxProvider({ executor: makeExecutor(responses) })
     expect((await provider.getStatus()).muted).toBe(false)
   })
 

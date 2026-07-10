@@ -44,12 +44,12 @@ const readStatus = async (deps: LinuxDeps): Promise<MediaStatus> => {
     }),
   ])
 
-  const [playStatusResult, volumeResult, statusResult] = await Promise.all([
+  const [playStatusResult, volumeResult, muteResult] = await Promise.all([
     deps.executor.run("playerctl", ["status"], {
       timeoutMs: METADATA_TIMEOUT_MS,
     }),
     runWpctl(deps, ["get-volume", "@DEFAULT_AUDIO_SINK@"]),
-    deps.executor.run("wpctl", ["status"], { timeoutMs: 5_000 }),
+    runWpctl(deps, ["get-mute", "@DEFAULT_AUDIO_SINK@"]),
   ])
 
   const track =
@@ -95,21 +95,12 @@ const readStatus = async (deps: LinuxDeps): Promise<MediaStatus> => {
     currentTime,
     playStatus,
     volume,
-    muted: parseWpctlStatusMuted(statusResult.stdout),
+    muted: parseGetMute(muteResult.stdout),
   }
 }
 
-// FIXED: Added │ (U+2502) to character class to match wpctl tree output
-const parseWpctlStatusMuted = (stdout: string): boolean => {
-  const lines = stdout.split("\n")
-  for (const line of lines) {
-    const m = line.match(/^[\s│]*\*\s*\d+\.\s*[^[]+\[vol:\s*[\d.]+\s*(MUTED)?/i)
-    if (m !== null) {
-      return m[1] !== undefined
-    }
-  }
-  return false
-}
+const parseGetMute = (stdout: string): boolean =>
+  /^Muted:\s+yes$/im.test(stdout)
 
 export const createLinuxProvider = (deps: LinuxDeps): MediaStatusProvider => ({
   async getStatus() {
