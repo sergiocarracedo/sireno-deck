@@ -1,0 +1,16 @@
+packages/cli/src/builtin-addons/weather/buttons/weather/icons.tsx
+  h_f90ee31b03fc41 7-17,20-38,42-69
+packages/cli/src/builtin-addons/weather/buttons/weather/pages.tsx
+  h_f90ee31b03fc41 18-20,25,27,29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "94cd2601008c50c229308ee4715d03155d8e6e83",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
