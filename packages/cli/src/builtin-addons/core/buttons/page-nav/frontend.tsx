@@ -18,7 +18,7 @@ const PageNavButtonFrontend: AddonFrontendButton<unknown> = ({ config }) => {
     <div className="flex h-full w-full flex-col items-center justify-center gap-0.5">
       <div className="flex flex-col items-center">
         <IconLabelSurface
-          icon="chevron-right"
+          source="icon://chevron-right"
           label={isLastPage ? "—" : "Tap"}
         />
       </div>
@@ -27,7 +27,7 @@ const PageNavButtonFrontend: AddonFrontendButton<unknown> = ({ config }) => {
       </span>
       <div className="flex flex-col items-center">
         <IconLabelSurface
-          icon="chevron-right"
+          source="icon://chevron-right"
           label={isFirstPage ? "—" : "Dbl"}
         />
       </div>

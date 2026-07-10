@@ -3,7 +3,7 @@ import type { ReactElement } from 'react'
 import * as lucideIcons from 'lucide-react'
 import { type LucideIcon } from 'lucide-react'
 
-import { resolveDomAssetSrc } from '@/addon/api'
+import { useAssetCache } from '../contexts/AssetCacheContext'
 import { useThemeUiPresentation } from '../theme-presentation'
 import { cn } from '../utils/cn'
 
@@ -17,38 +17,45 @@ const TONE_CLASS = {
   'foreground-contrast': 'text-foreground-contrast',
 } as const
 
-export type BrandIconName = string
-export type GenericIconName = string
 export type IconTone = keyof typeof TONE_CLASS
 
-interface IconCommonProps {
-  size?: number
+export interface IconProps {
+  readonly source?: string
+  readonly size?: number
+  readonly tone?: IconTone
+  readonly fill?: boolean
 }
 
-interface IconSvgProps extends IconCommonProps {
-  tone?: IconTone
-  fill?: boolean
-}
+export type IconSpec =
+  | { kind: 'generic'; name: string }
+  | { kind: 'asset'; id: string }
+  | undefined
 
-export type IconProps =
-  | ({ brand: BrandIconName; name?: never; src?: never } & IconSvgProps)
-  | ({ brand?: never; name: string; src?: never } & IconSvgProps)
-  | ({ brand?: never; name?: never; src: string } & IconCommonProps)
+export function resolveIconSpec(source: string | undefined): IconSpec {
+  if (source === undefined || source === '') return undefined
+  if (source.startsWith('icon://')) {
+    return { kind: 'generic', name: source.slice('icon://'.length) }
+  }
+  if (source.startsWith('asset://')) {
+    return { kind: 'asset', id: source.slice('asset://'.length) }
+  }
+  throw new Error(
+    `Icon: unknown source "${source}" (expected icon://<name> or asset://<id>)`,
+  )
+}
 
 function renderLucide(
-  props: IconSvgProps,
+  props: { size?: number; tone?: IconTone; fill?: boolean },
   LucideComponent: LucideIcon,
-  source: 'brand' | 'generic',
 ): ReactElement {
   const size = props.size ?? 20
-
   return (
     <LucideComponent
       className={cn([
         'inline-block shrink-0',
         TONE_CLASS[props.tone ?? 'foreground'],
       ])}
-      data-sireno-icon-source={source}
+      data-sireno-icon-source="generic"
       data-sireno-ui-icon="true"
       focusable="false"
       size={size}
@@ -91,42 +98,29 @@ function resolveLucideIcon(name: string): LucideIcon {
   return icon
 }
 
-export type ResolvedIconSpec = { name: string } | { src: string } | undefined
-
-export function resolveIconSpec(icon: string | undefined): ResolvedIconSpec {
-  if (!icon) return undefined
-  if (icon.startsWith('icon://')) {
-    return { name: icon.slice('icon://'.length) }
-  }
-  return { src: icon }
-}
-
-export function iconConfigToProps(
-  source: string,
-  defaults?: { size?: number; tone?: IconTone },
-): IconProps {
-  if (source.startsWith('icon://')) {
-    return { name: source.slice('icon://'.length), ...defaults }
-  }
-  return { src: source, ...defaults }
-}
-
 export function Icon(props: IconProps): ReactElement {
   const themeUi = useThemeUiPresentation()
+  const cache = useAssetCache()
 
   if (themeUi?.primitives?.icon) {
     return themeUi.primitives.icon(props)
   }
 
-  if ('src' in props && props.src) {
-    const size = props.size ?? 20
+  const spec = resolveIconSpec(props.source)
+  if (spec === undefined) {
+    return <></>
+  }
 
+  if (spec.kind === 'asset') {
+    const size = props.size ?? 20
+    const src = cache.get(spec.id) ?? ''
     return (
       <img
+        alt=""
         className={cn(['inline-block shrink-0'])}
         data-sireno-icon-source="asset"
         data-sireno-ui-icon="true"
-        src={resolveDomAssetSrc(props.src)}
+        src={src}
         style={{
           height: `${size}px`,
           objectFit: 'contain',
@@ -136,10 +130,5 @@ export function Icon(props: IconProps): ReactElement {
     )
   }
 
-  if (!props.name) {
-    console.error('Empty icon name')
-    return <></>
-  }
-
-  return renderLucide(props, resolveLucideIcon(props.name), 'generic')
+  return renderLucide(props, resolveLucideIcon(spec.name))
 }

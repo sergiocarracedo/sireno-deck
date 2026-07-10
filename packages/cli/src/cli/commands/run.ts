@@ -36,14 +36,23 @@ import { resolveActiveTheme } from "@/themes/loader"
 
 import { createActionExecutor } from "@/action/executor"
 import { bridgeAddonServices } from "@/deck/addon-handler-bridge"
+import {
+  buildDeckConfigMessage,
+  buildResolverOptions,
+  type AddonFrontendRef,
+} from "@/deck/deck-config"
 import { getHostContext } from "@/deck/host-context"
+import {
+  getAssetByPath,
+  getUnsentAssets,
+  registerIconForDeck,
+} from "@/core/icon-asset-registry"
 import { StatePublisher } from "@/render/state-publisher"
 import { startWsBridge } from "@/render/ws-bridge"
 
 import { materializeAddonDecks } from "./addon-decks"
 import {
   collectBuiltinAddonRegistry,
-  type AddonFrontendRef,
   type ScannedAddon,
 } from "./addon-registry"
 import {
@@ -410,7 +419,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   const { logger } = options
 
   const loaded = loadConfigAndTheme(options)
-  const { configPath, themeDir, decks, pubSub, runtime, methods, store } =
+  const { themeDir, decks, pubSub, runtime, methods, store } =
     loaded
 
   const providers = await startSystemProviders(options, runtime, methods)
@@ -455,6 +464,55 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   )
   await outputClient.storeSelection(descriptor)
 
+  const resolverOptions = buildResolverOptions(
+    addonBundle.addonByType,
+    [dirname(loaded.configPath)],
+  )
+  for (const deck of decks) {
+    registerIconForDeck(deck.buttons, resolverOptions, logger)
+  }
+
+  const sentAssetIds = new Set<string>()
+  bridge.onConnection((socket) => {
+    const unsent = getUnsentAssets(sentAssetIds)
+    if (unsent.length > 0) {
+      socket.send(
+        JSON.stringify({
+          type: "assets",
+          deckId: mainDeck?.id ?? "",
+          assets: unsent.map((a) => ({
+            id: a.id,
+            filename: a.fullPath,
+            src: a.src,
+          })),
+        }),
+      )
+      for (const a of unsent) sentAssetIds.add(a.id)
+    }
+    if (mainDeck !== undefined) {
+      const msg = buildDeckConfigMessage(
+        mainDeck,
+        addonBundle.addonByType,
+        resolverOptions,
+        {
+          navStackDepth: runtime.navStackDepth(),
+          hasOverlayDeckAvailable: false,
+        },
+        descriptor.keyCount,
+        outputClient.kind === "real",
+        (fullPath) => getAssetByPath(fullPath)?.id,
+      )
+      logger.info(
+        {
+          deckId: msg.deckId,
+          buttonCount: msg.surfaces[msg.deckId]?.buttons.length,
+        },
+        "orchestrator: sending deck-config",
+      )
+      socket.send(JSON.stringify(msg))
+    }
+  })
+
   const outputHandle: OutputHandle = await outputClient.init({
     bridge,
     runtime,
@@ -464,8 +522,6 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     theme: { name: loaded.theme.name, apiVersion: loaded.theme.apiVersion },
     themeDir,
     logger,
-    addonByType: addonBundle.addonByType,
-    ...(configPath !== undefined ? { configPath } : {}),
     ...(options.frontendUrl !== undefined
       ? { frontendUrl: options.frontendUrl }
       : {}),

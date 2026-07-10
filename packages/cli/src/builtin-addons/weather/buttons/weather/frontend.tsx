@@ -57,7 +57,7 @@ const WeatherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
   if (!snapshot?.available) {
     return (
       <IconLabelSurface
-        icon="icon://cloud-off"
+        source="icon://cloud-off"
         label="---"
         tone="primary"
       ></IconLabelSurface>

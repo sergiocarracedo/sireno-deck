@@ -188,54 +188,6 @@ export interface AddonManifestV1 {
   readonly globalService?: AddonGlobalService
 }
 
-let domAssetPathResolver:
-  | ((assetReference: string) => string | undefined)
-  | undefined
-
-export function setDomAssetPathResolver(
-  resolver?: (assetReference: string) => string | undefined,
-): void {
-  domAssetPathResolver = resolver
-}
-
-export function resolveDomAssetSrc(src: string): string {
-  if (
-    src.startsWith("data:") ||
-    src.startsWith("http://") ||
-    src.startsWith("https://") ||
-    src.startsWith("file://")
-  ) {
-    return src
-  }
-  if (src.startsWith("/")) {
-    const configDir = (
-      import.meta.env?.["SIRENO_CONFIG_DIR"] as string | undefined
-    )?.replace(/\/+$/, "")
-    if (configDir !== undefined && src.startsWith(`${configDir}/`)) {
-      return `/@sireno-asset/${src.slice(configDir.length + 1)}`
-    }
-    return `file://${src}`
-  }
-
-  if (/^(?:addon|builtin):\/\//.test(src)) {
-    const resolvedAssetPath = domAssetPathResolver?.(src)
-    if (!resolvedAssetPath) {
-      return src
-    }
-
-    if (
-      /^(?:data:|https?:\/\/|file:\/\/)/.test(resolvedAssetPath) ||
-      resolvedAssetPath.startsWith("/")
-    ) {
-      return resolvedAssetPath
-    }
-
-    return `file://${resolvedAssetPath}`
-  }
-
-  return src
-}
-
 /**
  * Addon-global service. Runs for the lifetime of the addon (while the addon
  * is loaded). Multiple instances of the same button type share this state.

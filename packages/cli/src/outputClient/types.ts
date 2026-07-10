@@ -28,11 +28,6 @@ export interface InitOptions {
   readonly theme: { name: string; apiVersion: number }
   readonly themeDir: string
   readonly logger: pino.Logger
-  readonly addonByType: Map<
-    string,
-    { name: string; frontendEntry: string | null }
-  >
-  readonly configPath?: string
   readonly frontendUrl?: string
   readonly port?: number
   readonly intervalMs?: number

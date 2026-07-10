@@ -1,18 +1,13 @@
 import { exec } from "node:child_process"
-import { dirname } from "node:path"
-import { homedir, platform } from "node:os"
+import { platform } from "node:os"
 
 import type pino from "pino"
 
 import type { ButtonActionMessage, WsMessage } from "@/api/protocol-internal"
-import { findConfigPath } from "@/config/discovery"
-import { getAllAssets, registerIconForDeck } from "@/core/icon-asset-registry"
 import { resolveKeyCount } from "@/device/models"
 import type { DeviceDescriptor } from "@/device/registry"
-import type { ResolveIconPathOptions } from "@/render/icon-resolver"
 
 import {
-  buildDeckConfigMessage,
   DEFAULT_EMULATOR_PORT,
   DEFAULT_FRONTEND_PORT,
   killChild,
@@ -20,7 +15,6 @@ import {
   resolveFrontendCwd,
   spawnEmulatorVite,
   spawnFrontendVite,
-  type AddonFrontendRef,
 } from "../cli/commands/emulator-mode"
 
 import type { InitOptions, OutputClient, OutputHandle } from "./types"
@@ -148,60 +142,6 @@ export class EmulatorOutputClient implements OutputClient {
         message.gesture,
       )
     })
-
-    const mainDeck = opts.decks.find((d) => d.isMain) ?? opts.decks[0]
-    if (mainDeck !== undefined) {
-      const baseDirs: string[] = []
-      if (opts.configPath !== undefined) {
-        baseDirs.push(dirname(opts.configPath))
-      } else {
-        const discovered = findConfigPath({ homeDir: homedir() })
-        if (discovered !== null) baseDirs.push(dirname(discovered))
-      }
-      const resolverOptions: ResolveIconPathOptions = {
-        addonDirs: new Map(
-          Array.from(opts.addonByType.values())
-            .filter((ref) => ref.frontendEntry !== null)
-            .map(
-              (ref) =>
-                [ref.name, dirname(ref.frontendEntry as string)] as const,
-            ),
-        ),
-        baseDirs,
-      }
-      opts.bridge.onConnection((socket) => {
-        registerIconForDeck(mainDeck.buttons, resolverOptions)
-        const assets = getAllAssets()
-        if (assets.length > 0) {
-          const assetsMsg = {
-            type: "assets" as const,
-            deckId: mainDeck.id,
-            assets: assets.map((a) => ({
-              id: a.id,
-              filename: a.filename,
-              data: a.data,
-            })),
-          }
-          socket.send(JSON.stringify(assetsMsg))
-        }
-        socket.send(
-          JSON.stringify(
-            buildDeckConfigMessage(
-              mainDeck,
-              opts.addonByType as unknown as Map<string, AddonFrontendRef>,
-              resolverOptions,
-              { navStackDepth: 1, hasOverlayDeckAvailable: false },
-              descriptor.keyCount,
-              false,
-            ),
-          ),
-        )
-        logger.info(
-          { deckId: mainDeck.id, buttons: mainDeck.buttons.length },
-          "emulator: deck-config sent to new client",
-        )
-      })
-    }
 
     const frontendPid = frontendVite.process.pid ?? 0
     const emulatorPid = emulatorVite.process.pid ?? 0

@@ -59,7 +59,7 @@ export class ErrorBoundary extends Component<
         className="flex h-full w-full flex-col items-center justify-center gap-1 p-1 text-center"
         data-sireno-error-boundary="true"
       >
-        <Icon name="alert-circle" size={18} tone="danger" />
+        <Icon source="icon://alert-circle" size={18} tone="danger" />
         <span className="truncate font-mono text-[9px] uppercase opacity-70">
           HMR error
         </span>

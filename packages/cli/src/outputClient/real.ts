@@ -1,17 +1,11 @@
-import { dirname } from "node:path"
-import { homedir } from "node:os"
-
 import type pino from "pino"
 
-import { findConfigPath } from "@/config/discovery"
 import { createGestureDetector } from "@/core/gesture-state"
-import { getAllAssets, registerIconForDeck } from "@/core/icon-asset-registry"
 import type { DeviceDescriptor } from "@/device/registry"
 import {
   connectStreamDeck,
   type StreamDeckDevice,
 } from "@/device/stream-deck"
-import type { ResolveIconPathOptions } from "@/render/icon-resolver"
 import { BrowserRenderer } from "@/render/browser-renderer"
 import {
   NoStreamDeckFoundError,
@@ -20,11 +14,9 @@ import {
 import { saveDeviceConfig } from "@/util/device-config"
 
 import {
-  buildDeckConfigMessage,
   DEFAULT_FRONTEND_PORT,
   resolveFrontendCwd,
   spawnFrontendVite,
-  type AddonFrontendRef,
 } from "../cli/commands/emulator-mode"
 
 import type { InitOptions, OutputClient, OutputHandle } from "./types"
@@ -117,47 +109,6 @@ export class RealOutputClient implements OutputClient {
     opts.bridge.setDevice(descriptor)
 
     const mainDeck = opts.decks.find((d) => d.isMain) ?? opts.decks[0]
-    const resolverOptions = buildResolverOptions(opts.addonByType, opts.configPath)
-
-    if (mainDeck !== undefined) {
-      opts.bridge.onConnection((socket) => {
-        registerIconForDeck(mainDeck.buttons, resolverOptions)
-        const assets = getAllAssets()
-        if (assets.length > 0) {
-          const assetsMsg = {
-            type: "assets" as const,
-            deckId: mainDeck.id,
-            assets: assets.map((a) => ({
-              id: a.id,
-              filename: a.filename,
-              data: a.data,
-            })),
-          }
-          socket.send(JSON.stringify(assetsMsg))
-        }
-        const msg = buildDeckConfigMessage(
-          mainDeck,
-          opts.addonByType as unknown as Map<string, AddonFrontendRef>,
-          resolverOptions,
-          {
-            navStackDepth: opts.runtime.navStackDepth(),
-            hasOverlayDeckAvailable: false,
-          },
-          descriptor.keyCount,
-          true,
-        )
-        logger.info(
-          {
-            deckId: msg.deckId,
-            buttonCount: msg.surfaces[msg.deckId]?.buttons.length,
-          },
-          "real mode: sending deck-config",
-        )
-        socket.send(JSON.stringify(msg))
-      })
-    } else {
-      logger.warn("real mode: no main deck available to send")
-    }
 
     const keyIndexToButtonId = new Map<number, string>()
     if (mainDeck !== undefined) {
@@ -256,26 +207,4 @@ export class RealOutputClient implements OutputClient {
       },
     }
   }
-}
-
-const buildResolverOptions = (
-  addonByType: InitOptions["addonByType"],
-  configPath: string | undefined,
-): ResolveIconPathOptions => {
-  const addonDirs = new Map<string, string>()
-  for (const ref of addonByType.values()) {
-    if (ref.frontendEntry !== null) {
-      addonDirs.set(ref.name, dirname(ref.frontendEntry))
-    }
-  }
-  const baseDirs: string[] = []
-  if (configPath !== undefined) {
-    baseDirs.push(dirname(configPath))
-  } else {
-    const discovered = findConfigPath({ homeDir: homedir() })
-    if (discovered !== null) {
-      baseDirs.push(dirname(discovered))
-    }
-  }
-  return { addonDirs, baseDirs }
 }

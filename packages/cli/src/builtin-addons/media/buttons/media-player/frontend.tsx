@@ -10,7 +10,7 @@ const MediaPlayerButtonFrontend: AddonFrontendButton<ConfigSchema> = () => {
   const { data } = useAddonChannel<MediaPlayerState>("media:state")
 
   if (!data) {
-    return <Icon name="hourglass" />
+    return <Icon source="icon://hourglass" />
   }
 
   return (

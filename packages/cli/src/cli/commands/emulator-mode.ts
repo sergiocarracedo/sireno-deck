@@ -5,18 +5,11 @@ import { fileURLToPath } from "node:url"
 
 import type pino from "pino"
 
-import type { RuntimeDeck } from "@/deck"
-import { computeSystemButtonForSlotN1 } from "@/deck"
-import {
-  resolveIconPath,
-  type ResolveIconPathOptions,
-} from "@/render/icon-resolver"
 import {
   BUILT_IN_THEMES,
   buildThemeCssFromManifest,
   readAndValidateManifest,
 } from "@/themes/loader"
-import type { DeckConfigMessage } from "@/api/protocol-internal"
 
 export const DEFAULT_FRONTEND_PORT = 5180
 export const DEFAULT_EMULATOR_PORT = 52938
@@ -25,11 +18,6 @@ const DEFAULT_TIMEOUT_MS = 30_000
 const ANSI_REGEX = /\u001b\[[0-9;]*m/g
 const READY_REGEX =
   /(?:Local|➜\s*Local|Network use --host)[^\n]*?https?:\/\/[^:\s]+(?::(\d+))?/
-
-export interface AddonFrontendRef {
-  readonly name: string
-  readonly frontendEntry: string | null
-}
 
 export const findWorkspaceRoot = (): string => {
   const here = dirname(fileURLToPath(import.meta.url))
@@ -232,101 +220,6 @@ export const killChild = (child: ChildProcess): Promise<void> =>
       if (child.exitCode === null) child.kill("SIGKILL")
     }, 2_000)
   })
-
-const deriveLabel = (
-  type: string,
-  config: Record<string, unknown>,
-): string | undefined => {
-  switch (type) {
-    case "core:action": {
-      const cmd = config["command"]
-      if (typeof cmd === "string" && cmd.length > 0) {
-        return cmd.length > 14 ? `${cmd.slice(0, 13)}…` : cmd
-      }
-      return undefined
-    }
-    case "core:change-deck": {
-      const deck = config["deck"]
-      if (typeof deck === "string" && deck.length > 0) {
-        return `→ ${deck}`
-      }
-      return undefined
-    }
-    default:
-      return undefined
-  }
-}
-
-const resolveConfigIcon = (
-  cfg: Record<string, unknown>,
-  resolverOptions: ResolveIconPathOptions,
-): Record<string, unknown> => {
-  const raw = cfg.icon
-  if (typeof raw !== "string") return cfg
-  const resolved = resolveIconPath(raw, resolverOptions)
-  if (resolved === undefined || resolved === raw) return cfg
-  return { ...cfg, icon: resolved }
-}
-
-export const buildDeckConfigMessage = (
-  deck: RuntimeDeck,
-  addonByType: Map<string, AddonFrontendRef>,
-  resolverOptions: ResolveIconPathOptions = {},
-  navState?: { navStackDepth: number; hasOverlayDeckAvailable: boolean },
-  keyCount?: number,
-  isCompact?: boolean,
-): DeckConfigMessage => {
-  const effectiveKeyCount = keyCount ?? 15
-  const n1Position = effectiveKeyCount - 1
-  const buttons = deck.buttons.map((b) => {
-    const position = Number.parseInt(b.id, 10)
-    const addon = addonByType.get(b.type)
-    const cfg = (b.config ?? {}) as Record<string, unknown>
-    const label = deriveLabel(b.type, cfg)
-    const resolvedConfig = resolveConfigIcon(cfg, resolverOptions)
-    return {
-      id: b.id,
-      type: b.type,
-      config: resolvedConfig,
-      ...(Number.isFinite(position) ? { position } : {}),
-      ...(label !== undefined ? { label } : {}),
-      ...(addon !== undefined ? { addonName: addon.name } : {}),
-      ...(addon?.frontendEntry !== undefined && addon.frontendEntry !== null
-        ? { frontendEntry: addon.frontendEntry }
-        : {}),
-    }
-  })
-  const systemButtonType = computeSystemButtonForSlotN1(
-    deck,
-    navState ?? { navStackDepth: 1, hasOverlayDeckAvailable: false },
-  )
-  if (systemButtonType !== null) {
-    const alreadyHasN1 = buttons.some(
-      (b) =>
-        Number.parseInt(b.id, 10) === n1Position || b.position === n1Position,
-    )
-    if (!alreadyHasN1) {
-      buttons.push({
-        id: String(n1Position),
-        type: systemButtonType,
-        config: {},
-      })
-    }
-  }
-  return {
-    type: "deck-config",
-    deckId: deck.id,
-    surfaces: {
-      [deck.id]: {
-        id: deck.id,
-        name: deck.name ?? deck.id,
-        buttons,
-      },
-    },
-    navMode: "regular",
-    isCompact: isCompact ?? false,
-  }
-}
 
 export const ensureDefaultThemeEnv = (frontendCwd: string): void => {
   if (

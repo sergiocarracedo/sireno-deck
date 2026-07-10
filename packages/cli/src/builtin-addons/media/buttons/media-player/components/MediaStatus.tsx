@@ -19,7 +19,7 @@ export function MediaStatusIcon(props: {
         bgColor,
       )}
     >
-      <Icon name={icon} size={14} fill tone={iconColor} />
+      <Icon source={`icon://${icon}`} size={14} fill tone={iconColor} />
     </div>
   )
 }

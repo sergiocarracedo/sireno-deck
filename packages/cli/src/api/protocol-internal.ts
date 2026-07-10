@@ -104,7 +104,7 @@ export const assetsMessageSchema = baseServerMessage.extend({
     z.object({
       id: z.string(),
       filename: z.string(),
-      data: z.string(),
+      src: z.string(),
     }),
   ),
 })

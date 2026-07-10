@@ -43,7 +43,7 @@ const VolumeButtonFrontend = ({
     <div className="flex h-full w-full flex-col items-center justify-center gap-1 relative">
       <IconLabelSurface
         label={variant === 'down' ? 'Vol -' : 'Vol +'}
-        icon={{ name: variant === 'down' ? 'volume' : 'volume-2' }}
+        source={`icon://${variant === 'down' ? 'volume' : 'volume-2'}`}
       />
       {showProgress && (
         <div className="absolute bottom-0 left-0 right-0 px-1 pb-1">

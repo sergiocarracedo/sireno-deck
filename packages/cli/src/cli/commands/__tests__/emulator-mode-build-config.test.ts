@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest"
 
 import type { RuntimeDeck } from "@/deck/runtime"
 
-import { buildDeckConfigMessage, type AddonFrontendRef } from "../emulator-mode"
+import {
+  buildDeckConfigMessage,
+  type AddonFrontendRef,
+} from "@/deck/deck-config"
 
 const deck: RuntimeDeck = {
   id: "main",

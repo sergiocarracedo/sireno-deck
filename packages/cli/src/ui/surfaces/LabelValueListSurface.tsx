@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactElement } from "react"
 
-import { Icon, resolveIconSpec } from "../primitives/Icon"
+import { Icon } from "../primitives/Icon"
 import { Text } from "../primitives/Text"
 import { cn } from "../utils/cn"
 
@@ -104,7 +104,6 @@ export function LabelValueListSurface(
       style={props.style}
     >
       {props.lines.map((line, index) => {
-        const icon = resolveIconSpec(line.icon)
         const label = (
           <div
             className={cn(
@@ -113,9 +112,9 @@ export function LabelValueListSurface(
               layout !== "single" && "flex-1",
             )}
           >
-            {icon ? (
+            {line.icon ? (
               <span className="inline-flex shrink-0 items-center justify-center">
-                <Icon size={16} {...icon} />
+                <Icon source={line.icon} size={16} />
               </span>
             ) : null}
             <Text

@@ -123,7 +123,7 @@ const AppContent = () => {
       onMessage: (message) => {
         if (message.type === "assets") {
           for (const asset of message.assets) {
-            setAsset(asset.id, asset.data)
+            setAsset(asset.id, asset.src)
           }
         }
         if (message.type === "deck-config") {
