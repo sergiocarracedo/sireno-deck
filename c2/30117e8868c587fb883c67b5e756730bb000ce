@@ -1,0 +1,35 @@
+packages/cli/frontend/src/App.tsx
+  s_1536f7656586f7::t_496261f16d7d45 18
+  s_1536f7656586f7::t_78cd0130f6384d 108,151,159,165-169
+packages/cli/frontend/src/bridge/ws-context.tsx
+  s_1536f7656586f7::t_0e8969498ad93f 1-26
+packages/cli/src/ui/ButtonFrame.tsx
+  s_1536f7656586f7::t_6172b0396fa94b 1,9,13-16,20-34
+packages/cli/frontend/src/components/Deck.tsx
+  s_1536f7656586f7::t_3954b871979aad 74-108
+  s_1536f7656586f7::t_df500ba2934b04 16
+  s_1536f7656586f7::t_b104278d68cf6d 167,169-174
+packages/cli/frontend/src/bridge/use-button-action.ts
+  s_1536f7656586f7::t_c1ba5f37603803 1-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "c230117e8868c587fb883c67b5e756730bb000ce",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_1536f7656586f7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b4ec28b6ffei6PluMvMMjTOGE",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
