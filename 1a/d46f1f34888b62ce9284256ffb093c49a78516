@@ -1,0 +1,24 @@
+packages/cli/src/builtin-addons/core/buttons/action/frontend.tsx
+  s_5b31e6ba334830::t_96ac2c6ce53b3f 10,16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "1ad46f1f34888b62ce9284256ffb093c49a78516",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_5b31e6ba334830": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b4f054ebffeRYRym25QQ23CuM",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
