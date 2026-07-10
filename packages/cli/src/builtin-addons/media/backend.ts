@@ -7,6 +7,8 @@ import { computeProgress } from "./progress"
 import { createMediaProvider, MediaStatusProvider } from "./providers"
 import type { MediaPlayerState } from "./state"
 
+const shellQuote = (arg: string): string => `'${arg.replace(/'/g, "'\\''")}'`
+
 const FALLBACK_STATE: MediaPlayerState = {
   title: null,
   artist: null,
@@ -123,9 +125,13 @@ export const globalService: AddonGlobalService = {
       async run(
         command: string,
         args: readonly string[],
-        options?: { timeoutMs?: number },
+        _options?: { timeoutMs?: number },
       ) {
-        return ctx.executor.run(command, [...args], options)
+        const shellCmd =
+          args.length === 0
+            ? command
+            : `${command} ${args.map(shellQuote).join(" ")}`
+        return ctx.executor.run(shellCmd)
       },
     })
   },
