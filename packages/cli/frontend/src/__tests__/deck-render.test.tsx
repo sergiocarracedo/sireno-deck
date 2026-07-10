@@ -1,9 +1,10 @@
 /** @vitest-environment jsdom */
-import { act, render } from "@testing-library/react"
+import { act, fireEvent, render } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
 import { ChannelRegistry } from "@sireno-deck/cli"
 
+import { WebSocketProvider, type WebSocketSend } from "../bridge/ws-context"
 import { Deck } from "../components/Deck"
 
 const DECK = {
@@ -58,5 +59,35 @@ describe("Deck", () => {
 
     unsub0()
     unsub1()
+  })
+
+  it("sends a button-action WS message when a rendered button is clicked", () => {
+    ChannelRegistry.resetForTests()
+    const sent: unknown[] = []
+    const send: WebSocketSend = (message) => {
+      sent.push(message)
+    }
+    const { container } = render(
+      <WebSocketProvider value={send}>
+        <Deck deck={DECK} />
+      </WebSocketProvider>,
+    )
+    const cell = container.querySelector(
+      '[data-button-type="core-buttons:action"]',
+    )
+    expect(cell).not.toBeNull()
+    const frame = cell?.querySelector('[data-sireno-button-frame="true"]')
+    expect(frame).not.toBeNull()
+    act(() => {
+      fireEvent.click(frame as Element)
+    })
+    expect(sent).toEqual([
+      {
+        type: "button-action",
+        deckId: "main",
+        position: 1,
+        gesture: "tap",
+      },
+    ])
   })
 })

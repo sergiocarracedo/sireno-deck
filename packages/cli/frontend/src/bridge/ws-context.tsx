@@ -2,9 +2,7 @@ import { createContext, useContext, type ReactNode } from "react"
 
 import type { WsMessage } from "@/api/protocol-internal"
 
-export interface WebSocketSend {
-  send(message: WsMessage): void
-}
+export type WebSocketSend = (message: WsMessage) => void
 
 const WebSocketContext = createContext<WebSocketSend | null>(null)
 
