@@ -1,0 +1,25 @@
+packages/cli/src/builtin-addons/media/backend.ts
+  s_1536f7656586f7::t_c378a917190b95 128,130-134
+  s_1536f7656586f7::t_8b1bf1e74b3004 10-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "d5ed11cbb691a7da06ed809f74c98e5dfc27c052",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_1536f7656586f7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b4ec28b6ffei6PluMvMMjTOGE",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
