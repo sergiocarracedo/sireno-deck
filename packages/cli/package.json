@@ -41,6 +41,7 @@
   "dependencies": {
     "@elgato-stream-deck/node": "^7.6.3",
     "@inquirer/prompts": "^7.0.0",
+    "@meteocons/svg-static": "^0.1.0",
     "chokidar": "^5.0.0",
     "dbus-next": "^0.10.2",
     "execa": "^9.6.0",

@@ -1,6 +1,6 @@
 import { Chip, Text } from '@/ui'
 import { type WeatherSnapshot } from '../../provider/types'
-import { iconFor } from './icons'
+import { WeatherIcon } from './icons'
 
 export const pages: ReadonlyArray<{
   name: string
@@ -15,9 +15,7 @@ export const pages: ReadonlyArray<{
     name: 'main',
     render: ({ snapshot, unitTemp, city }) => (
       <div>
-        <Text size="3xl" tone="primary">
-          {iconFor(snapshot.wmoCode)}
-        </Text>
+        <WeatherIcon code={snapshot.wmoCode} className="h-8 w-8" />
         <Text size="xl" tone="fg" className="font-semibold leading-none">
           {snapshot.temperature?.toFixed(0)}
           {unitTemp}
@@ -34,7 +32,7 @@ export const pages: ReadonlyArray<{
     name: 'data',
     render: ({ snapshot, unitWind, city }) => (
       <div>
-        <Text size="xs" tone="primary" fit="ellipsis">
+        <Text size="sm" tone="primary" fit="ellipsis">
           {city || '---'}
         </Text>
         {snapshot.windSpeed !== undefined && (
@@ -61,9 +59,7 @@ export const pages: ReadonlyArray<{
               <Text size="xs" tone="fg">
                 {e.time}h
               </Text>
-              <Text size="2xl" tone="primary">
-                {iconFor(e.wmoCode)}
-              </Text>
+              <WeatherIcon code={e.wmoCode} className="h-6 w-6" />
               <Text size="xs" tone="fg">
                 {e.temperature.toFixed(0)}
                 {unitTemp}
@@ -86,13 +82,11 @@ export const pages: ReadonlyArray<{
             const d = new Date(e.date)
             const dayName = weekDays[d.getDay()] ?? e.date.slice(5)
             return (
-              <span key={e.date} className="flex flex-col items-center gap-0.5">
+<span key={e.date} className="flex flex-col items-center gap-0.5">
                 <Text size="xs" tone="fg">
                   {dayName}
                 </Text>
-                <Text size="2xl" tone="primary">
-                  {iconFor(e.wmoCode)}
-                </Text>
+                <WeatherIcon code={e.wmoCode} className="h-6 w-6" />
                 <Text size="xs" tone="primary">
                   {e.tempMin.toFixed(0)}
                   {unitTemp}
