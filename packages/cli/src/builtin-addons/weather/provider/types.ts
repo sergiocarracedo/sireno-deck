@@ -34,5 +34,4 @@ export type WeatherSnapshot = {
   readonly wmoCode?: number
   readonly hourly?: ReadonlyArray<HourlyForecastEntry>
   readonly daily?: ReadonlyArray<DailyForecastEntry>
-  }>
 }
