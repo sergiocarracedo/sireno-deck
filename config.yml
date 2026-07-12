@@ -16,9 +16,9 @@ decks:
       - position: 1
         type: 'core:change-deck'
         config:
-          deck: 'test-deck'
-          icon: ./assets/chrome.svg
-          label: Test Deck
+          deck: 'action-buttons-test'
+          icon: 🧪
+          label: Icon Test
 
       - position: 4
         type: 'weather:weather'
