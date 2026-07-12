@@ -29,7 +29,7 @@ describe("emoji-selector launcher", () => {
     const { ctx, publish } = makeCtx()
     await LauncherBackend.onTap!(ctx)
     expect(publish).toHaveBeenCalledWith("runtime:navigate-deck", {
-      deckId: "emoji-selector:emoji-selector",
+      deckId: "emoji-selector",
       addToHistory: true,
     })
   })
@@ -38,7 +38,7 @@ describe("emoji-selector launcher", () => {
     const { ctx, publish } = makeCtx({ config: {} })
     await LauncherBackend.onTap!(ctx)
     expect(publish).toHaveBeenCalledWith("runtime:navigate-deck", {
-      deckId: "emoji-selector:emoji-selector",
+      deckId: "emoji-selector",
       addToHistory: true,
     })
   })
@@ -49,7 +49,7 @@ describe("emoji-selector launcher", () => {
     })
     await LauncherBackend.onTap!(ctx)
     expect(publish).toHaveBeenCalledWith("runtime:navigate-deck", {
-      deckId: "emoji-selector:emoji-selector",
+      deckId: "emoji-selector",
       addToHistory: true,
     })
   })

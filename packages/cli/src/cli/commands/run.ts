@@ -544,9 +544,10 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       )
       for (const a of unsent) sentAssetIds.add(a.id)
     }
-    if (mainDeck !== undefined) {
+    const activeDeck = runtime.getActiveDeck()
+    if (activeDeck !== undefined) {
       const msg = buildDeckConfigMessage(
-        mainDeck,
+        activeDeck,
         addonBundle.addonByType,
         resolverOptions,
         {

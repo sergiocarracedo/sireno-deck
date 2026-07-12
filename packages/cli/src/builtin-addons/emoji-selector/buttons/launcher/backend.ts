@@ -6,7 +6,7 @@ export default {
   configSchema,
   onTap: ({ publish }) => {
     publish("runtime:navigate-deck", {
-      deckId: "emoji-selector:emoji-selector",
+      deckId: "emoji-selector",
       addToHistory: true,
     })
   },
