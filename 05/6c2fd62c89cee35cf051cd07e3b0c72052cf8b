@@ -1,0 +1,21 @@
+packages/cli/src/ui/primitives/__tests__/Icon.test.tsx
+  s_0a5098cebd5351::t_7f062eeef558f8 71-73
+packages/cli/src/core/icon-source.ts
+  s_0a5098cebd5351::t_16f35d4caf6925 5-10,53-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "056c2fd62c89cee35cf051cd07e3b0c72052cf8b",
+  "prompts": {},
+  "sessions": {
+    "s_0a5098cebd5351": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0afd3478effeIJsDCif5EEO4Ft",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
