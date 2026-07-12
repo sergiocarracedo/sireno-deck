@@ -126,8 +126,13 @@ export class EmulatorOutputClient implements OutputClient {
         },
         "emulator: button-action received",
       )
-      const deck = opts.decks.find((d) => d.id === message.deckId)
-      const button = deck?.buttons.find((b) => {
+      // The runtime is the authority on the active deck. The client sends
+      // message.deckId for routing on the frontend (so React knows which
+      // cell fired), but the emulator backend uses runtime.getActiveDeck()
+      // to resolve the actual deck — this avoids relying on the client's
+      // sometimes-stale local view of the active deck.
+      const activeDeck = opts.runtime.getActiveDeck()
+      const button = activeDeck.buttons.find((b) => {
         const p = Number.parseInt(b.id, 10)
         return Number.isFinite(p) && p === message.position
       })
@@ -140,16 +145,12 @@ export class EmulatorOutputClient implements OutputClient {
           navStackDepth: opts.runtime.navStackDepth(),
           hasOverlayDeckAvailable: opts.runtime.hasOverlayDeckAvailable(),
         }
-        const deckForState = deck ?? opts.runtime.getActiveDeck()
         const n1Position = descriptor.keyCount - 1
-        if (
-          deckForState !== undefined &&
-          message.position === n1Position
-        ) {
-          const sysType = computeSystemButtonForSlotN1(deckForState, navState)
+        if (message.position === n1Position) {
+          const sysType = computeSystemButtonForSlotN1(activeDeck, navState)
           if (sysType === "core:back") {
             logger.info(
-              { deckId: message.deckId, position: message.position },
+              { activeDeckId: activeDeck.id, position: message.position },
               "emulator: dispatching runtime.goBack() for injected back button",
             )
             opts.runtime.goBack()
@@ -157,13 +158,13 @@ export class EmulatorOutputClient implements OutputClient {
           }
         }
         logger.warn(
-          { deckId: message.deckId, position: message.position },
+          { activeDeckId: activeDeck.id, position: message.position },
           "emulator: button-action targets unknown button",
         )
         return
       }
       void opts.runtime.dispatchGesture(
-        `${message.deckId}:${button.id}`,
+        `${activeDeck.id}:${button.id}`,
         message.gesture,
       )
     })

@@ -111,29 +111,44 @@ export class RealOutputClient implements OutputClient {
 
     const mainDeck = opts.decks.find((d) => d.isMain) ?? opts.decks[0]
 
-    const keyIndexToButtonId = new Map<number, string>()
-    if (mainDeck !== undefined) {
-      for (const button of mainDeck.buttons) {
-        const index = Number.parseInt(button.id, 10)
-        if (Number.isFinite(index)) {
-          keyIndexToButtonId.set(index, button.id)
-        }
-      }
-    }
-    logger.info(
-      { mappedKeys: Array.from(keyIndexToButtonId.entries()) },
-      "real mode: keyIndex -> buttonId mapping",
-    )
-
     const gestureDetector = createGestureDetector({
       onGesture: (result) => {
-        const buttonId = keyIndexToButtonId.get(result.keyIndex ?? -1)
-        if (buttonId === undefined) return
+        const keyIndex = result.keyIndex ?? -1
         logger.info(
-          { buttonId, gesture: result.kind, keyIndex: result.keyIndex },
-          "real mode: gesture detected, dispatching",
+          { keyIndex, gesture: result.kind },
+          "real mode: gesture detected, resolving against active deck",
         )
-        void opts.runtime.dispatchGesture(buttonId, result.kind)
+        const activeDeck = opts.runtime.getActiveDeck()
+        const button = activeDeck.buttons.find((b) => {
+          const p = Number.parseInt(b.id, 10)
+          return Number.isFinite(p) && p === keyIndex
+        })
+        if (button === undefined) {
+          const n1Position = descriptor.keyCount - 1
+          if (keyIndex === n1Position) {
+            const sysType = computeSystemButtonForSlotN1(activeDeck, {
+              navStackDepth: opts.runtime.navStackDepth(),
+              hasOverlayDeckAvailable: opts.runtime.hasOverlayDeckAvailable(),
+            })
+            if (sysType === "core:back") {
+              logger.info(
+                { keyIndex },
+                "real mode: dispatching runtime.goBack() for injected back button",
+              )
+              opts.runtime.goBack()
+              return
+            }
+          }
+          logger.warn(
+            { keyIndex, activeDeckId: activeDeck.id },
+            "real mode: keyIndex not mapped to any button on active deck",
+          )
+          return
+        }
+        void opts.runtime.dispatchGesture(
+          `${activeDeck.id}:${button.id}`,
+          result.kind,
+        )
       },
     })
 
@@ -142,41 +157,13 @@ export class RealOutputClient implements OutputClient {
         { keyIndex: event.keyIndex, type: event.type },
         "real mode: key event received",
       )
-      const buttonId = keyIndexToButtonId.get(event.keyIndex)
-      if (buttonId === undefined) {
-        // No user-defined button at this slot — check if the runtime is on a
-        // deck where the n-1 slot injects a system button (e.g. core:back on
-        // sub-decks, core:settings-entry on main). System buttons are added by
-        // buildDeckConfigMessage to the WS payload, not to the runtime deck,
-        // so the runtime button lookup misses them.
-        const activeDeck = opts.runtime.getActiveDeck()
-        const n1Position = descriptor.keyCount - 1
-        if (activeDeck !== undefined && event.keyIndex === n1Position) {
-          const sysType = computeSystemButtonForSlotN1(activeDeck, {
-            navStackDepth: opts.runtime.navStackDepth(),
-            hasOverlayDeckAvailable: opts.runtime.hasOverlayDeckAvailable(),
-          })
-          if (sysType === "core:back") {
-            logger.info(
-              { keyIndex: event.keyIndex },
-              "real mode: dispatching runtime.goBack() for injected back button",
-            )
-            opts.runtime.goBack()
-            return
-          }
-        }
-        logger.warn(
-          { keyIndex: event.keyIndex },
-          "real mode: keyIndex not mapped to any button",
-        )
-        return
-      }
       gestureDetector.detect({
         type: event.type,
         timestamp: event.timestamp,
         keyIndex: event.keyIndex,
       })
     })
+    void mainDeck
 
     let frontendUrl = opts.frontendUrl ?? `http://127.0.0.1:${opts.port ?? DEFAULT_FRONTEND_PORT}`
     let frontendVite: Awaited<ReturnType<typeof spawnFrontendVite>> | undefined
