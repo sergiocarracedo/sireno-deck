@@ -1,0 +1,35 @@
+packages/cli/src/builtin-addons/test-buildin/index.ts
+  s_0a5098cebd5351::t_b9ee6b8e989239 1-18
+config.yml
+  s_0a5098cebd5351::t_bbecd7f07f8dbe 19-21
+packages/cli/src/builtin-addons/register-builtins.ts
+  s_0a5098cebd5351::t_40da3425b3c627 13,29
+packages/cli/src/builtin-addons/test-buildin/__tests__/action-buttons-test.test.ts
+  s_0a5098cebd5351::t_f0f8f794fe6948 87
+  s_0a5098cebd5351::t_977f2154b3e761 1-27,30-69,72-86,88-89
+  s_0a5098cebd5351::t_f987bc5448bb30 70-71
+  s_0a5098cebd5351::t_4818c5529ac2c0 28-29
+packages/cli/src/builtin-addons/test-buildin/decks/action-buttons-test.ts
+  s_0a5098cebd5351::t_0a286d4e3ccc15 1-36,39-59
+  s_0a5098cebd5351::t_f83a143cf28634 37-38
+packages/cli/src/builtin-addons/test-buildin/index.d.ts
+  s_0a5098cebd5351::t_ba969d6addeafb 1-5
+packages/cli/src/builtin-addons/index.ts
+  s_0a5098cebd5351::t_adf1f995f423be 11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "31c389ca667442c6b7b98bcadc212c7102c6498f",
+  "prompts": {},
+  "sessions": {
+    "s_0a5098cebd5351": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0afd3478effeIJsDCif5EEO4Ft",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
