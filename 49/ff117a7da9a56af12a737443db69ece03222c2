@@ -1,0 +1,23 @@
+packages/cli/src/cli/commands/run.ts
+  s_0a5098cebd5351::t_c36ed6e44f8f17 547-548,550
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/backend.ts
+  s_0a5098cebd5351::t_6b23c795a65694 9
+packages/cli/src/builtin-addons/emoji-selector/__tests__/launcher.test.ts
+  s_0a5098cebd5351::t_9159d6ca0db4b4 32,41,52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "49ff117a7da9a56af12a737443db69ece03222c2",
+  "prompts": {},
+  "sessions": {
+    "s_0a5098cebd5351": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0afd3478effeIJsDCif5EEO4Ft",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
