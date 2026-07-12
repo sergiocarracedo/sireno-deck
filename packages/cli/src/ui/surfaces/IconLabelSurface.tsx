@@ -1,5 +1,6 @@
 import { type HTMLAttributes, type ReactElement } from 'react'
 
+import { EMOJI_RE } from '../../core/icon-source'
 import { Icon } from '../primitives/Icon'
 import { Label } from '../primitives/Label'
 import { useThemeUiPresentation } from '../theme-presentation'
@@ -11,8 +12,6 @@ export interface IconLabelSurfaceProps extends Omit<
   source?: string
   label: string
 }
-
-const EMOJI_RE = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u
 
 export function IconLabelSurface(props: IconLabelSurfaceProps): ReactElement {
   const themeUi = useThemeUiPresentation()

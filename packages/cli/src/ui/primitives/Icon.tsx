@@ -3,6 +3,7 @@ import type { ReactElement } from 'react'
 import * as lucideIcons from 'lucide-react'
 import { type LucideIcon } from 'lucide-react'
 
+import { EMOJI_RE, ICON_FALLBACK, isIconSource } from '../../core/icon-source'
 import { useAssetCache } from '../contexts/AssetCacheContext'
 import { useThemeUiPresentation } from '../theme-presentation'
 import { cn } from '../utils/cn'
@@ -26,23 +27,7 @@ export interface IconProps {
   readonly fill?: boolean
 }
 
-export type IconSpec =
-  | { kind: 'generic'; name: string }
-  | { kind: 'asset'; id: string }
-  | undefined
-
-export function resolveIconSpec(source: string | undefined): IconSpec {
-  if (source === undefined || source === '') return undefined
-  if (source.startsWith('icon://')) {
-    return { kind: 'generic', name: source.slice('icon://'.length) }
-  }
-  if (source.startsWith('asset://')) {
-    return { kind: 'asset', id: source.slice('asset://'.length) }
-  }
-  throw new Error(
-    `Icon: unknown source "${source}" (expected icon://<name> or asset://<id>)`,
-  )
-}
+const TONE_FALLBACK: IconTone = 'danger'
 
 function renderLucide(
   props: { size?: number; tone?: IconTone; fill?: boolean },
@@ -62,6 +47,23 @@ function renderLucide(
       strokeWidth={1.8}
       fill={props.fill ? 'currentColor' : 'none'}
     />
+  )
+}
+
+function renderEmoji(emoji: string, props: { size?: number; tone?: IconTone }): ReactElement {
+  const size = props.size ?? 20
+  return (
+    <span
+      className={cn([
+        'inline-block shrink-0 leading-none',
+        TONE_CLASS[props.tone ?? 'foreground'],
+      ])}
+      data-sireno-icon-source="emoji"
+      data-sireno-ui-icon="true"
+      style={{ fontSize: `${size}px` }}
+    >
+      {emoji}
+    </span>
   )
 }
 
@@ -87,34 +89,81 @@ function toLucideExportName(name: string): string {
     .join('')
 }
 
-function resolveLucideIcon(name: string): LucideIcon {
+function resolveLucideIcon(name: string): LucideIcon | undefined {
   const exportName = toLucideExportName(name)
-  const icon = LUCIDE_ICON_EXPORTS[exportName]
+  return LUCIDE_ICON_EXPORTS[exportName]
+}
 
-  if (!icon) {
-    throw new Error(`Unknown Lucide icon: ${name}`)
-  }
+/**
+ * Last-resort fallback. Renders the alert-circle Lucide icon with a
+ * danger tone so the user sees something went wrong. Never throws —
+ * even if the fallback icon name itself can't be resolved (it always
+ * can), we return an empty span.
+ */
+function renderFallbackIcon(
+  props: { size?: number; tone?: IconTone },
+): ReactElement {
+  const fallbackProps = { ...props, tone: props.tone ?? TONE_FALLBACK }
+  const icon = resolveLucideIcon('alert-circle')
+  if (icon !== undefined) return renderLucide(fallbackProps, icon)
+  return <></>
+}
 
-  return icon
+/**
+ * Warn once per offending source string about an invalid icon. This keeps
+ * the console quiet for legitimate icon:// / asset:// / emoji sources while
+ * still surfacing typos like icon://arrowleft that the user might miss.
+ */
+const warnedSources = new Set<string>()
+const warnInvalidIcon = (source: string): void => {
+  if (warnedSources.has(source)) return
+  warnedSources.add(source)
+  console.warn(
+    `[Icon] invalid icon source "${source}" — using fallback ${ICON_FALLBACK}. Expected icon://<name>, asset://<id>, or a single emoji.`,
+  )
 }
 
 export function Icon(props: IconProps): ReactElement {
   const themeUi = useThemeUiPresentation()
-  const cache = useAssetCache()
 
   if (themeUi?.primitives?.icon) {
     return themeUi.primitives.icon(props)
   }
 
-  const spec = resolveIconSpec(props.source)
-  if (spec === undefined) {
-    return <></>
+  const source = props.source
+  const size = props.size ?? 20
+
+  if (typeof source !== 'string' || source.length === 0) {
+    return renderFallbackIcon(props)
   }
 
-  if (spec.kind === 'asset') {
-    const src = cache.get(spec.id)
-    if (!src) return <></>
-    const size = props.size ?? 20
+  if (!isIconSource(source)) {
+    warnInvalidIcon(source)
+    return renderFallbackIcon(props)
+  }
+
+  if (EMOJI_RE.test(source)) {
+    return renderEmoji(source, props)
+  }
+
+  if (source.startsWith('icon://')) {
+    const name = source.slice('icon://'.length)
+    const LucideComponent = resolveLucideIcon(name)
+    if (LucideComponent === undefined) {
+      warnInvalidIcon(source)
+      return renderFallbackIcon(props)
+    }
+    return renderLucide(props, LucideComponent)
+  }
+
+  if (source.startsWith('asset://')) {
+    const id = source.slice('asset://'.length)
+    const cache = useAssetCache()
+    const src = cache.get(id)
+    if (src === undefined) {
+      warnInvalidIcon(source)
+      return renderFallbackIcon(props)
+    }
     return (
       <img
         alt=""
@@ -131,5 +180,15 @@ export function Icon(props: IconProps): ReactElement {
     )
   }
 
-  return renderLucide(props, resolveLucideIcon(spec.name))
+  return renderFallbackIcon(props)
+}
+
+/** @internal exposed for tests */
+export const _testHelpers = {
+  EMOJI_RE,
+  ICON_FALLBACK,
+  isIconSource,
+  resolveLucideIcon,
+  toLucideExportName,
+  renderFallbackIcon,
 }
