@@ -1,0 +1,29 @@
+packages/cli/src/deck/__tests__/deck-config-back-button.test.ts
+  s_0a5098cebd5351::t_f9166751439719 1-97
+packages/cli/src/builtin-addons/core/buttons/change-deck/backend.ts
+  s_0a5098cebd5351::t_8a8c9c2f5c3b68 13
+packages/cli/src/outputClient/emulator.ts
+  s_0a5098cebd5351::t_f4fefdb7fe3efd 9
+  s_0a5098cebd5351::t_318c5b97041f05 135-158
+packages/cli/src/outputClient/real.ts
+  s_0a5098cebd5351::t_c0013411485b35 10
+  s_0a5098cebd5351::t_254a7bab936866 147-167
+packages/cli/src/cli/commands/run.ts
+  s_0a5098cebd5351::t_126570c4a41df2 322-323
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "c7dada4ebf5ec5746e41ef5018fe3c71cac5b846",
+  "prompts": {},
+  "sessions": {
+    "s_0a5098cebd5351": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0afd3478effeIJsDCif5EEO4Ft",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
