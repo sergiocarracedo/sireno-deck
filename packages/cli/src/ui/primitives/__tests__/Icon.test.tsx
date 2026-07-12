@@ -52,11 +52,22 @@ describe("isIconSource", () => {
     expect(isIconSource("abc")).toBe(false)
     expect(isIconSource("icon://")).toBe(false) // empty name
     expect(isIconSource("asset://")).toBe(false) // empty id
-    expect(isIconSource("./foo.svg")).toBe(false)
-    expect(isIconSource("/abs/foo.svg")).toBe(false)
     expect(isIconSource("data:image/png;base64,AAAA")).toBe(false)
     expect(isIconSource("http://example.com/x.png")).toBe(false)
     expect(isIconSource("🔥🔥")).toBe(false) // multi-char
+  })
+
+  it("accepts runtime-resolvable paths", () => {
+    // The runtime's resolveIconSource handles these paths against
+    // baseDirs (relative) or as-is (absolute). The frontend Icon
+    // primitive renders them as fallback (since the frontend doesn't
+    // have file IO), but the validator accepts them so config-load
+    // doesn't reject valid runtime sources.
+    expect(isIconSource("./foo.svg")).toBe(true)
+    expect(isIconSource("../shared/icon.svg")).toBe(true)
+    expect(isIconSource("/abs/foo.svg")).toBe(true)
+    expect(isIconSource("addon://demo/icon.svg")).toBe(true)
+    expect(isIconSource("builtin://core/foo.png")).toBe(true)
   })
 })
 

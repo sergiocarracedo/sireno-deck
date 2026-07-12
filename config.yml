@@ -17,7 +17,7 @@ decks:
         type: 'core:change-deck'
         config:
           deck: 'test-deck'
-          icon: '🧪'
+          icon: ./assets/chrome.svg
           label: Test Deck
 
       - position: 4
@@ -38,7 +38,7 @@ decks:
           hold: 'google-chrome --incognito'
           dbltap: 'macro://ctrl+t'
         config:
-          icon: '🌐'
+          icon: ./assets/chrome.svg
           label: Chrome
 
       - position: 0
@@ -85,7 +85,7 @@ decks:
 
   chrome:
     name: Chrome
-    icon: '🌐'
+    icon: ./assets/chrome.svg
     trigger:
       process_name: chrome
     autoShow: true

@@ -4,15 +4,26 @@ import { IconSourceSchema, ButtonDefSchema, DeckDefSchema } from "../schemas"
 import { configSchema as ActionConfigSchema } from "@/builtin-addons/core/buttons/action/config"
 
 const VALID_ICONS = [
+  // Lucide icons
   "icon://arrow-left",
   "icon://settings",
   "icon://alert-circle",
+  // Asset references
   "asset://abc123def",
+  // Addon / builtin assets
+  "addon://demo/icon.svg",
+  "builtin://core/foo.png",
+  // Paths (resolved at runtime against baseDirs)
+  "./foo.svg",
+  "../shared/icon.svg",
+  "/abs/foo.svg",
+  "~/Pictures/x.png",
+  // Single emoji (Presentation or base+VS16)
   "🔥",
   "🎉",
-  "✈️", // base + VS16
-  "⌚", // \p{Emoji_Presentation}
-  "❤️", // variation selector
+  "✈️",
+  "⌚",
+  "❤️",
 ] as const
 
 const INVALID_ICONS = [
@@ -23,11 +34,14 @@ const INVALID_ICONS = [
   "🔥🔥", // two emojis
   "icon://", // empty name
   "asset://", // empty id
-  "./foo.svg", // raw path
-  "/abs/foo.svg",
+  "addon://", // missing addon and path
+  "addon://demo", // missing path
+  "addon://demo/", // empty path
+  "builtin://", // empty path
   "data:image/png;base64,AAAA",
   "http://example.com/x.png",
-  "addon://demo/icon.svg", // not allowed at runtime
+  "https://example.com/x.png",
+  "file:///foo.png",
 ] as const
 
 describe("IconSourceSchema", () => {
@@ -80,6 +94,24 @@ describe("DeckDefSchema — icon field", () => {
     expect(result.success).toBe(true)
   })
 
+  it("accepts a deck icon with a path", () => {
+    const result = DeckDefSchema.safeParse({
+      name: "Test",
+      icon: "./assets/foo.svg",
+      buttons: [],
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it("accepts a deck icon with icon://", () => {
+    const result = DeckDefSchema.safeParse({
+      name: "Test",
+      icon: "icon://globe",
+      buttons: [],
+    })
+    expect(result.success).toBe(true)
+  })
+
   it("rejects an invalid deck icon", () => {
     const result = DeckDefSchema.safeParse({
       name: "Test",
@@ -97,18 +129,43 @@ describe("core:action configSchema (uses IconSourceSchema)", () => {
     expect(r.success).toBe(true)
   })
 
+  it("accepts asset://", () => {
+    const r = ActionConfigSchema.safeParse({ icon: "asset://abc123" })
+    expect(r.success).toBe(true)
+  })
+
   it("accepts a single emoji", () => {
     const r = ActionConfigSchema.safeParse({ icon: "🔥" })
     expect(r.success).toBe(true)
   })
 
-  it("rejects a raw path", () => {
-    const r = ActionConfigSchema.safeParse({ icon: "./foo.svg" })
+  it("accepts a relative path", () => {
+    const r = ActionConfigSchema.safeParse({ icon: "./assets/foo.svg" })
+    expect(r.success).toBe(true)
+  })
+
+  it("accepts an absolute path", () => {
+    const r = ActionConfigSchema.safeParse({ icon: "/abs/foo.svg" })
+    expect(r.success).toBe(true)
+  })
+
+  it("accepts an addon:// asset", () => {
+    const r = ActionConfigSchema.safeParse({ icon: "addon://demo/icon.svg" })
+    expect(r.success).toBe(true)
+  })
+
+  it("rejects an inline URL", () => {
+    const r = ActionConfigSchema.safeParse({ icon: "data:image/png;base64,AAAA" })
     expect(r.success).toBe(false)
   })
 
-  it("rejects a multi-char string", () => {
+  it("rejects a multi-char non-path string", () => {
     const r = ActionConfigSchema.safeParse({ icon: "abc" })
+    expect(r.success).toBe(false)
+  })
+
+  it("rejects a single %", () => {
+    const r = ActionConfigSchema.safeParse({ icon: "%" })
     expect(r.success).toBe(false)
   })
 })
