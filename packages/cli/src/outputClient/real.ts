@@ -7,6 +7,7 @@ import {
   type StreamDeckDevice,
 } from "@/device/stream-deck"
 import { BrowserRenderer } from "@/render/browser-renderer"
+import { computeSystemButtonForSlotN1 } from "@/deck/system-back-injection"
 import {
   NoStreamDeckFoundError,
   selectDevice,
@@ -143,6 +144,27 @@ export class RealOutputClient implements OutputClient {
       )
       const buttonId = keyIndexToButtonId.get(event.keyIndex)
       if (buttonId === undefined) {
+        // No user-defined button at this slot — check if the runtime is on a
+        // deck where the n-1 slot injects a system button (e.g. core:back on
+        // sub-decks, core:settings-entry on main). System buttons are added by
+        // buildDeckConfigMessage to the WS payload, not to the runtime deck,
+        // so the runtime button lookup misses them.
+        const activeDeck = opts.runtime.getActiveDeck()
+        const n1Position = descriptor.keyCount - 1
+        if (activeDeck !== undefined && event.keyIndex === n1Position) {
+          const sysType = computeSystemButtonForSlotN1(activeDeck, {
+            navStackDepth: opts.runtime.navStackDepth(),
+            hasOverlayDeckAvailable: opts.runtime.hasOverlayDeckAvailable(),
+          })
+          if (sysType === "core:back") {
+            logger.info(
+              { keyIndex: event.keyIndex },
+              "real mode: dispatching runtime.goBack() for injected back button",
+            )
+            opts.runtime.goBack()
+            return
+          }
+        }
         logger.warn(
           { keyIndex: event.keyIndex },
           "real mode: keyIndex not mapped to any button",

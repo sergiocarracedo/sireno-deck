@@ -319,7 +319,8 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
   const decks: RuntimeDeck[] = Object.entries(config.decks).map(([id, d]) => ({
     id,
     name: d.name ?? id,
-      buttons: d.buttons.flatMap((b, idx) => {
+    isMain: id === "main",
+    buttons: d.buttons.flatMap((b, idx) => {
         if (typeof b === "string") return []
         return [
           {

@@ -10,7 +10,7 @@ export default {
   onTap: ({ config, publish }) => {
     publish("runtime:navigate-deck", {
       deckId: config.deck,
-      addToHistory: config.addToHistory,
+      addToHistory: config.addToHistory ?? true,
     })
   },
 } satisfies AddonButtonTypeService<Config>

@@ -6,6 +6,7 @@ import type pino from "pino"
 import type { ButtonActionMessage, WsMessage } from "@/api/protocol-internal"
 import { resolveKeyCount } from "@/device/models"
 import type { DeviceDescriptor } from "@/device/registry"
+import { computeSystemButtonForSlotN1 } from "@/deck/system-back-injection"
 
 import {
   DEFAULT_EMULATOR_PORT,
@@ -131,6 +132,30 @@ export class EmulatorOutputClient implements OutputClient {
         return Number.isFinite(p) && p === message.position
       })
       if (button === undefined) {
+        // No user-defined button at this position — check if the deck-config
+        // injected a system button at this slot (n-1). The injected system
+        // button lives in the WS message but not in the runtime deck, so we
+        // dispatch the corresponding runtime action directly.
+        const navState = {
+          navStackDepth: opts.runtime.navStackDepth(),
+          hasOverlayDeckAvailable: opts.runtime.hasOverlayDeckAvailable(),
+        }
+        const deckForState = deck ?? opts.runtime.getActiveDeck()
+        const n1Position = descriptor.keyCount - 1
+        if (
+          deckForState !== undefined &&
+          message.position === n1Position
+        ) {
+          const sysType = computeSystemButtonForSlotN1(deckForState, navState)
+          if (sysType === "core:back") {
+            logger.info(
+              { deckId: message.deckId, position: message.position },
+              "emulator: dispatching runtime.goBack() for injected back button",
+            )
+            opts.runtime.goBack()
+            return
+          }
+        }
         logger.warn(
           { deckId: message.deckId, position: message.position },
           "emulator: button-action targets unknown button",
