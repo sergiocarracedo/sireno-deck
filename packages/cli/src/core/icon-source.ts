@@ -1,8 +1,12 @@
-import { isAbsolute } from "node:path"
-
 export const EMOJI_RE = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u
 
 export const ICON_FALLBACK = "icon://alert-circle"
+
+// Runtime-safe absolute path detection (POSIX: leading '/'; Windows:
+// leading '\' or drive letter like 'C:\' or 'C:/'). Implemented as a
+// regex so this module is safe to import from both the Node runtime and
+// the browser bundle (which can't use `node:path.isAbsolute`).
+const ABSOLUTE_PATH_RE = /^(?:\/|\\|[A-Za-z]:[\\/])/
 
 /**
  * Validate that a runtime icon source is one of:
@@ -46,8 +50,8 @@ export const isIconSource = (s: unknown): s is string => {
   ) {
     return false
   }
-  // Absolute path.
-  if (isAbsolute(s)) return true
+  // Absolute path (POSIX '/' or Windows '\' or 'C:\').
+  if (ABSOLUTE_PATH_RE.test(s)) return true
   // Reject anything that looks like a scheme-prefixed URL the runtime
   // doesn't understand (e.g. "abc://x"). The runtime would treat it as a
   // path and produce a garbage absolute path. Recognized schemes

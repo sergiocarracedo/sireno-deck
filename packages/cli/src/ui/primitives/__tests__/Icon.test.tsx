@@ -68,6 +68,9 @@ describe("isIconSource", () => {
     expect(isIconSource("/abs/foo.svg")).toBe(true)
     expect(isIconSource("addon://demo/icon.svg")).toBe(true)
     expect(isIconSource("builtin://core/foo.png")).toBe(true)
+    // Windows-style absolute paths (drive letter).
+    expect(isIconSource("C:\\Windows\\foo.png")).toBe(true)
+    expect(isIconSource("C:/Windows/foo.png")).toBe(true)
   })
 })
 
