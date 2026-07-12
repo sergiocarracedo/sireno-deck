@@ -529,22 +529,27 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     registerIconForDeck(deck.buttons, resolverOptions, logger)
   }
 
-  const sentAssetIds = new Set<string>()
   bridge.onConnection((socket) => {
-    const unsent = getUnsentAssets(sentAssetIds)
-    if (unsent.length > 0) {
+    // Send the full asset bundle to every new connection. The previous
+    // dedupe-by-id approach caused the React frontend to render the
+    // fallback icon after a hot-reload or page refresh: the FIRST
+    // connection consumed the assets, every subsequent connection got
+    // an empty list, and the new client started with an empty cache.
+    // Assets are tiny (a 1.4KB chrome.svg), so re-sending them on
+    // reconnect is cheaper than the bug.
+    const allAssets = getUnsentAssets(new Set())
+    if (allAssets.length > 0) {
       socket.send(
         JSON.stringify({
           type: "assets",
           deckId: mainDeck?.id ?? "",
-          assets: unsent.map((a) => ({
+          assets: allAssets.map((a) => ({
             id: a.id,
             filename: a.fullPath,
             src: a.src,
           })),
         }),
       )
-      for (const a of unsent) sentAssetIds.add(a.id)
     }
     const activeDeck = runtime.getActiveDeck()
     if (activeDeck !== undefined) {
