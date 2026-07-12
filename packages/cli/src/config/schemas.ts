@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+import { isIconSource } from "@/core/icon-source"
+
 export const TriggerSchema = z
   .object({
     process_name: z.union([z.string(), z.array(z.string()).min(1)]).optional(),
@@ -20,11 +22,34 @@ export const ButtonActionsSchema = z
 
 export type ButtonActions = z.infer<typeof ButtonActionsSchema>
 
+/**
+ * Runtime icon source. Accepted shapes:
+ *   - `icon://<name>` — Lucide icon by name (resolved at render time)
+ *   - `asset://<id>`  — pre-resolved asset id from the registry
+ *   - a single emoji (Presentation or base+VS16 like ✈️)
+ *
+ * Anything else is rejected at config-load time so typos surface before
+ * the daemon starts. The runtime also has a fallback path (alert-circle
+ * Lucide icon) so an invalid source that's slipped through can't crash
+ * the render tree.
+ */
+export const IconSourceSchema = z
+  .string()
+  .min(1)
+  .refine(isIconSource, {
+    message:
+      "icon must be icon://<name>, asset://<id>, or a single emoji (one Presentation character or one base+VS16 like ✈️)",
+  })
+
+export const ButtonConfigSchema = z
+  .record(z.string(), z.unknown())
+  .optional()
+
 export const ButtonDefSchema = z
   .object({
     position: z.number().int().nonnegative().optional(),
     type: z.string().min(1),
-    config: z.record(z.string(), z.unknown()).optional(),
+    config: ButtonConfigSchema,
     accent: z.string().optional(),
     background: z.string().optional(),
     full: z.boolean().optional(),
@@ -37,7 +62,7 @@ export const ButtonEntrySchema = z.union([ButtonDefSchema, z.string()])
 export const DeckDefSchema = z
   .object({
     name: z.string().min(1).optional(),
-    icon: z.string().min(1).optional(),
+    icon: IconSourceSchema.optional(),
     background: z.string().min(1).optional(),
     paginated: z.boolean().optional(),
     trigger: TriggerSchema.optional(),

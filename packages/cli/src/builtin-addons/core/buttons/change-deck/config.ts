@@ -1,10 +1,12 @@
 import { z } from "zod"
 
+import { IconSourceSchema } from "@/config/schemas"
+
 export const configSchema = z
   .object({
     deck: z.string().min(1),
     addToHistory: z.boolean().default(true),
-    icon: z.string().optional(),
+    icon: IconSourceSchema.optional(),
     label: z.string().optional(),
   })
   .refine((c) => Boolean(c.icon) || Boolean(c.label), {

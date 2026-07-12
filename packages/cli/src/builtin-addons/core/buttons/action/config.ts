@@ -1,8 +1,10 @@
 import { z } from "zod"
 
+import { IconSourceSchema } from "@/config/schemas"
+
 export const configSchema = z
   .object({
-    icon: z.string().optional(),
+    icon: IconSourceSchema.optional(),
     label: z.string().optional(),
   })
   .refine((c) => Boolean(c.icon) || Boolean(c.label), {
