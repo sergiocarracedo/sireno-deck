@@ -490,6 +490,11 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   const bridge = await startWsBridge({ port: 52937 })
   const wsPort = bridge.port
 
+  const resolverOptions = buildResolverOptions(
+    addonBundle.addonByType,
+    [dirname(loaded.configPath)],
+  )
+
   const bridgeSignal = new AbortController()
   const statePublisher = new StatePublisher({ bridge, logger })
   const mainDeck = runtime.getActiveDeck()
@@ -503,6 +508,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     executor: createActionExecutor({ host: getHostContext() }),
     statePublisher,
     bridge,
+    resolverOptions,
     ...(mainDeck !== undefined ? { initialDeck: mainDeck } : {}),
     signal: bridgeSignal.signal,
     setClipboardProvider: (p) =>
@@ -519,11 +525,6 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     logger,
   )
   await outputClient.storeSelection(descriptor)
-
-  const resolverOptions = buildResolverOptions(
-    addonBundle.addonByType,
-    [dirname(loaded.configPath)],
-  )
   for (const deck of decks) {
     registerIconForDeck(deck.buttons, resolverOptions, logger)
   }
