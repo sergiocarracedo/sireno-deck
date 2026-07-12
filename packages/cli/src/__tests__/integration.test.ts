@@ -42,6 +42,7 @@ decks:
         type: core:change-deck
         config:
           deck: media
+          label: Media
       - position: 1
         type: core:action
         actions:

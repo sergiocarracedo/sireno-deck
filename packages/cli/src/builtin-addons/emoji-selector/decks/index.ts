@@ -2,48 +2,9 @@ import type { AddonGeneratedDeck, AddonDeckDefinition } from "@/addon/api"
 
 import {
   CATEGORY_DEFINITIONS,
-  EMOJI_PAGE_SIZE,
   EmojiSelectorDeckSchema,
   type EmojiSelectorDeckConfig,
 } from "../support"
-
-interface PageButton {
-  type: string
-  position: number
-  [key: string]: unknown
-}
-
-const buildPage = (
-  baseDeckId: string,
-  pageNumber: number,
-  totalPages: number,
-  emojis: readonly string[],
-): PageButton[] => {
-  const buttons: PageButton[] = []
-  emojis.forEach((emoji, offset) => {
-    buttons.push({
-      emoji,
-      label: emoji,
-      position: offset,
-      type: "emoji-selector:emoji",
-    })
-  })
-  if (totalPages > 1) {
-    const prevDeckId =
-      pageNumber > 1 ? `${baseDeckId}-p${pageNumber - 1}` : null
-    const nextDeckId =
-      pageNumber < totalPages ? `${baseDeckId}-p${pageNumber + 1}` : null
-    buttons.push({
-      type: "emoji-selector:page-nav",
-      position: buttons.length,
-      page: pageNumber,
-      total_pages: totalPages,
-      ...(prevDeckId ? { prev_deck_id: prevDeckId } : {}),
-      ...(nextDeckId ? { next_deck_id: nextDeckId } : {}),
-    })
-  }
-  return buttons
-}
 
 const generateDecks = (
   deck: { id: string },
@@ -69,38 +30,35 @@ const generateDecks = (
     })),
   ]
 
-  const topButtons: PageButton[] = []
+  const topButtons: {
+    type: string
+    icon: string
+    label: string
+    position: number
+    target_deck: string
+  }[] = []
+  const EMOJI_PAGE_SIZE = 13
   categories.forEach((category, idx) => {
-    const totalPages = Math.max(
-      1,
-      Math.ceil(category.emojis.length / EMOJI_PAGE_SIZE),
-    )
-    const firstDeckId =
-      totalPages > 1
-        ? `${deck.id}-${category.id}-p1`
-        : `${deck.id}-${category.id}`
+    const categoryDeckId = `${deck.id}-${category.id}`
+    const totalPages = Math.max(1, Math.ceil(category.emojis.length / EMOJI_PAGE_SIZE))
+    const targetDeck = totalPages > 1 ? `${categoryDeckId}-p1` : categoryDeckId
     topButtons.push({
       icon: category.icon,
       label: category.label,
       position: idx,
-      target_deck: firstDeckId,
+      target_deck: targetDeck,
       type: "emoji-selector:category",
     })
-    for (let pageNumber = 1; pageNumber <= totalPages; pageNumber += 1) {
-      const start = (pageNumber - 1) * EMOJI_PAGE_SIZE
-      const end = Math.min(start + EMOJI_PAGE_SIZE, category.emojis.length)
-      const pageEmojis = category.emojis.slice(start, end)
-      const baseDeckId = `${deck.id}-${category.id}`
-      const deckId =
-        totalPages > 1 ? `${baseDeckId}-p${pageNumber}` : baseDeckId
-      const name =
-        totalPages > 1
-          ? `${category.label} ${pageNumber}/${totalPages}`
-          : category.label
-      decks[deckId] = {
-        name,
-        buttons: buildPage(baseDeckId, pageNumber, totalPages, pageEmojis),
-      }
+    const buttons = category.emojis.map((emoji, offset) => ({
+      type: "emoji-selector:emoji",
+      emoji,
+      label: emoji,
+      position: offset,
+    }))
+    decks[categoryDeckId] = {
+      name: category.label,
+      buttons,
+      paginated: true,
     }
   })
 

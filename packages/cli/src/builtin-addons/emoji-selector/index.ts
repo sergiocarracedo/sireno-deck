@@ -9,8 +9,6 @@ import emojiBackend from "./buttons/emoji/backend"
 import emojiFrontend from "./buttons/emoji/frontend"
 import launcherBackend from "./buttons/launcher/backend"
 import launcherFrontend from "./buttons/launcher/frontend"
-import pageNavBackend from "./buttons/page-nav/backend"
-import pageNavFrontend from "./buttons/page-nav/frontend"
 
 export const manifest: AddonManifestV1 = {
   apiVersion: 1,
@@ -23,15 +21,11 @@ export const manifest: AddonManifestV1 = {
     "emoji-selector:emoji": { frontend: emojiFrontend, service: emojiBackend },
     "emoji-selector:launcher": {
       frontend: launcherFrontend,
-      service: launcherBackend,
+      service: { ...launcherBackend, gestureHandlers: ["tap"] as const },
     },
     "emoji-selector:back": {
       frontend: backFrontend,
       service: { ...backBackend, gestureHandlers: ["tap"] as const },
-    },
-    "emoji-selector:page-nav": {
-      frontend: pageNavFrontend,
-      service: pageNavBackend,
     },
   },
   decks: {

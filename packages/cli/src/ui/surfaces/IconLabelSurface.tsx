@@ -12,6 +12,8 @@ export interface IconLabelSurfaceProps extends Omit<
   label: string
 }
 
+const EMOJI_RE = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u
+
 export function IconLabelSurface(props: IconLabelSurfaceProps): ReactElement {
   const themeUi = useThemeUiPresentation()
 
@@ -25,9 +27,18 @@ export function IconLabelSurface(props: IconLabelSurfaceProps): ReactElement {
     ? `${layoutClassName} ${consumerClassName}`
     : layoutClassName
 
+  const iconContent =
+    source !== undefined && EMOJI_RE.test(source) ? (
+      <span className="inline-block shrink-0 leading-none" style={{ fontSize: 36 }}>
+        {source}
+      </span>
+    ) : (
+      <Icon source={source} size={36} />
+    )
+
   return (
     <div className={mergedClassName} {...rest}>
-      <Icon source={source} size={36} />
+      {iconContent}
       <Label>{props.label}</Label>
     </div>
   )

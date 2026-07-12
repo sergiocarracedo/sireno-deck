@@ -110,6 +110,7 @@ export interface SetupAddonServicesOptions {
   readonly signal: AbortSignal
   readonly setClipboardProvider: (provider: unknown) => void
   readonly store: Store
+  readonly logger: pino.Logger
 }
 
 export interface SetupAddonServicesResult {
@@ -144,6 +145,8 @@ export const setupAddonServices = (
     signal,
     setClipboardProvider,
     store,
+    methods,
+    logger,
   } = options
 
   void bridgeAddonServices({
@@ -175,6 +178,35 @@ export const setupAddonServices = (
     },
   )
 
+  let lastBroadcastedDeckId: string | undefined
+  const unsubscribeDeckBroadcast = pubSub.subscribe(
+    "runtime:activeDeck",
+    (payload: unknown) => {
+      const deckId =
+        typeof payload === "object" && payload !== null && "deckId" in payload
+          ? String((payload as { deckId: unknown }).deckId)
+          : undefined
+      if (deckId === undefined) return
+      if (deckId === lastBroadcastedDeckId) return
+      lastBroadcastedDeckId = deckId
+      const deck = decks.find((d) => d.id === deckId)
+      if (deck === undefined) return
+      const msg = buildDeckConfigMessage(
+        deck,
+        addonByType,
+        {},
+        {
+          navStackDepth: runtime.navStackDepth(),
+          hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+        },
+        undefined,
+        undefined,
+        (fullPath) => getAssetByPath(fullPath)?.id,
+      )
+      bridge.broadcast(msg)
+    },
+  )
+
   const unsubscribeNavigate = pubSub.subscribe(
     "runtime:navigate-deck",
     (payload: unknown) => {
@@ -194,6 +226,26 @@ export const setupAddonServices = (
     },
   )
 
+  const unsubscribeDispatch = pubSub.subscribe(
+    "runtime:dispatch",
+    async (payload: unknown) => {
+      if (
+        typeof payload !== "object" ||
+        payload === null ||
+        !("value" in payload)
+      ) {
+        return
+      }
+      const value = String((payload as { value: unknown }).value)
+      if (value.length === 0) return
+      try {
+        await methods.dispatch(value)
+      } catch (err) {
+        logger.error({ err }, "[runtime:dispatch] addon dispatch failed")
+      }
+    },
+  )
+
   if (initialDeck !== undefined) {
     statePublisher.setActiveDeck({
       addonNames: collectActiveDeckAddonNames(initialDeck, addonByType),
@@ -203,7 +255,9 @@ export const setupAddonServices = (
   return {
     dispose: () => {
       unsubscribeDeck()
+      unsubscribeDeckBroadcast()
       unsubscribeNavigate()
+      unsubscribeDispatch()
     },
   }
 }
@@ -453,6 +507,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     setClipboardProvider: (p) =>
       methods.setClipboardProvider(p as ClipboardProvider),
     store,
+    logger,
   })
 
   const devices = await outputClient.listDevices()
@@ -496,7 +551,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
         resolverOptions,
         {
           navStackDepth: runtime.navStackDepth(),
-          hasOverlayDeckAvailable: false,
+          hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
         },
         descriptor.keyCount,
         outputClient.kind === "real",

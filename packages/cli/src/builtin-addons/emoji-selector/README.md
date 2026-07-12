@@ -1,21 +1,24 @@
 # emoji-selector
 
-Adds an emoji deck to your config. Users open it via `core:change-deck` and pick from 8 categories (Smileys, Nature, Food, Activity, Travel, Objects, Symbols, Flags), each with up to 32 emojis paginated across multiple decks.
+Adds an emoji deck to your config. Users open it via the `emoji-selector:launcher` button (or any `core:change-deck` pointing to `emoji-selector`), pick from 8 categories (Smileys, Nature, Food, Activities, Travel, Objects, Symbols, Flags). Each category deck is paginated automatically using `core:page-nav` buttons.
 
-Selecting an emoji in the UI sends the emoji character to the system clipboard (via `xclip` / `pbcopy` / `clip.exe`).
+Tapping an emoji writes it to the system clipboard via the core `paste://` dispatch channel.
 
 ## Decks
 
-The addon auto-generates one deck per category. Each category deck has up to 32 emoji buttons (1 page), plus prev/next nav buttons if paginated.
-
-Deck ids follow the pattern `emoji:{category}` (e.g., `emoji:smileys`, `emoji:nature`).
+The addon produces:
+- `emoji-selector` — the top-level routing deck with one button per category
+- `emoji-selector-<categoryId>` — one deck per category (e.g., `emoji-selector-smileys`). Each is marked `paginated: true` so the core splits it into pages with `core:page-nav` buttons.
 
 ## Buttons
 
-| Type                      | Description                                    |
-| ------------------------- | ---------------------------------------------- |
-| `core:emoji-emoji-button` | Renders one emoji; on tap, copies to clipboard |
-| `core:emoji-page-nav`     | Internal: prev/next page navigation            |
+| Type                      | Gesture | Behavior                                        |
+| ------------------------- | ------ | ---------------------------------------------- |
+| `emoji-selector:launcher` | tap    | Navigate to the `emoji-selector` routing deck  |
+| `emoji-selector:category` | tap    | Navigate to the target category deck           |
+| `emoji-selector:emoji`    | tap    | Dispatch `paste://<emoji>` to clipboard        |
+| `emoji-selector:back`     | tap    | Navigate to previous deck                      |
+| `core:page-nav`           | tap/dbltap | Navigate to next/previous page (auto-injected) |
 
 ## Config
 
@@ -24,36 +27,17 @@ decks:
   main:
     name: Main
     buttons:
+      # Launcher button (type shortcut uses the addon name)
       - position: 9
-        type: core:change-deck
+        type: emoji-selector
         config:
-          deck: emoji:smileys
-
-      # Optional: favorite emojis that appear first
-  emoji:smileys:
-    name: Smileys
-    config:
-      favorites: ["😀", "😃", "😄"]
-    buttons:
-      - position: 0
-        type: core:change-deck
-        config:
-          deck: main
+          favorites: ["😀", "😃", "😄"]   # optional: shown first in the Smileys category
 ```
 
-## Example
+### How pagination works
 
-In your `main` deck:
-
-```yaml
-- position: 9
-  type: core:change-deck
-  config:
-    deck: emoji:smileys
-```
-
-Press position 9 → opens the Smileys deck → tap an emoji → it's on your clipboard.
+Each category deck is marked `paginated: true`. The core automatically splits decks containing more buttons than `keyCount - 2` (13 on a 15-key device) into multiple pages and injects `core:page-nav` buttons. You do not need to configure page navigation manually.
 
 ## See also
 
-- [core](../core/README.md) — `core:change-deck` to open the emoji deck
+- [../core/README.md](../core/README.md) — `core:page-nav` and the dispatch channel

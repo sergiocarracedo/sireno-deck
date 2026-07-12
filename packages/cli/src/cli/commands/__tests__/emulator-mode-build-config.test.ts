@@ -44,6 +44,7 @@ describe("buildDeckConfigMessage", () => {
       addonName: "date-time",
       frontendEntry: "/abs/date-time/frontend",
     })
+    expect(msg.hasOverlayDeckAvailable).toBe(false)
   })
 
   it("omits addon metadata when the type is unknown", () => {
@@ -83,6 +84,7 @@ describe("buildDeckConfigMessage", () => {
     const n1Button = buttons.find((b) => b.id === "14" || b.position === 14)
     expect(n1Button).toBeDefined()
     expect(n1Button?.type).toBe("core:settings-entry")
+    expect(msg.hasOverlayDeckAvailable).toBe(false)
   })
 
   it("injects n-1 system button for sub-deck with navStackDepth > 1 (back)", () => {
@@ -102,6 +104,7 @@ describe("buildDeckConfigMessage", () => {
     const n1Button = buttons.find((b) => b.id === "14" || b.position === 14)
     expect(n1Button).toBeDefined()
     expect(n1Button?.type).toBe("core:back")
+    expect(msg.hasOverlayDeckAvailable).toBe(false)
   })
 
   it("injects n-1 system button for overlay deck (overlay-toggle)", () => {
@@ -122,6 +125,7 @@ describe("buildDeckConfigMessage", () => {
     const n1Button = buttons.find((b) => b.id === "14" || b.position === 14)
     expect(n1Button).toBeDefined()
     expect(n1Button?.type).toBe("core:overlay-toggle")
+    expect(msg.hasOverlayDeckAvailable).toBe(true)
   })
 
   it("does not inject n-1 when computeSystemButtonForSlotN1 returns null", () => {

@@ -49,11 +49,15 @@ export {
   ButtonFrame,
   Chip,
   Icon,
+  IconLabelSurface,
   Label,
+  SplitActionSurface,
   TapIndicator,
   Text,
   ThemeUiPresentationProvider,
   type ButtonFrameProps,
+  type IconLabelSurfaceProps,
+  type SplitActionSurfaceProps,
 } from "./ui"
 
 export const cliVersion = "0.1.0"

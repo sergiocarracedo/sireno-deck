@@ -20,12 +20,13 @@ export interface PaginateDeckOptions {
 
 const PAGE_NAV_BUTTON_TYPE = "core:page-nav"
 
-const isNextPageMarker = (item: unknown): item is NextPageMarker =>
-  item === NEXT_PAGE_MARKER
+const isNextPageMarker = (
+  item: { id: string; value: unknown } | null,
+): item is { id: NextPageMarker; value: unknown } =>
+  item !== null && item.value === NEXT_PAGE_MARKER
 
 export const paginateDeck = (opts: PaginateDeckOptions): PageDeckResult[] => {
   const { baseDeckId, buttons, keyCount } = opts
-  const pageSize = keyCount - 2
 
   const result = paginate(buttons, { keyCount })
   if (result.pages.length === 0) {
@@ -61,7 +62,7 @@ export const paginateDeck = (opts: PaginateDeckOptions): PageDeckResult[] => {
         emojiCount++
       } else if (item !== null) {
         deckButtons.push({
-          ...item,
+          ...(item as { value: unknown }).value as Record<string, unknown>,
           position: emojiCount,
         })
         emojiCount++

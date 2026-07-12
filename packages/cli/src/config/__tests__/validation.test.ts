@@ -41,7 +41,7 @@ describe("validateFull", () => {
             {
               position: 0,
               type: "core:change-deck",
-              config: { deck: "media" },
+              config: { deck: "media", label: "Media" },
             },
           ],
         },

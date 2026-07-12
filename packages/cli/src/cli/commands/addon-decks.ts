@@ -1,4 +1,6 @@
+import { DEFAULT_KEY_COUNT } from "@/device/models"
 import type { AddonRegistry } from "@/addon/registry"
+import { paginateDeck } from "@/deck/paginate-deck"
 import type { RuntimeDeck } from "@/deck/runtime"
 import type pino from "pino"
 
@@ -28,7 +30,51 @@ const resolveTriggerProcessNames = (trigger: unknown): string[] | undefined => {
 const mapAddonDeckToRuntimeDeck = (
   id: string,
   gdeck: AddonGeneratedDeck,
-): RuntimeDeck => {
+): RuntimeDeck[] => {
+  if (gdeck.paginated === true && (gdeck.buttons ?? []).length > 0) {
+    const pages = paginateDeck({
+      baseDeckId: id,
+      buttons: gdeck.buttons ?? [],
+      keyCount: DEFAULT_KEY_COUNT,
+    })
+    return pages.map((p) => {
+      const mappedButtons: RuntimeDeck["buttons"] = (p.deck.buttons ?? []).map(
+        (b, i) => {
+          const { position, type, config, ...rest } = b as {
+            position?: number
+            type: string
+            config?: unknown
+          }
+          const mergedConfig = {
+            ...(typeof config === "object" && config !== null
+              ? (config as Record<string, unknown>)
+              : {}),
+            ...rest,
+          }
+          return {
+            id: position !== undefined ? String(position) : String(i),
+            type,
+            ...(Object.keys(mergedConfig).length > 0
+              ? { config: mergedConfig }
+              : {}),
+          }
+        },
+      )
+      return {
+        id: p.deckId,
+        name: gdeck.name ?? id,
+        buttons: mappedButtons,
+        ...(gdeck.autoShow !== undefined
+          ? { autoShow: gdeck.autoShow }
+          : {}),
+        ...(gdeck.isOverlay !== undefined
+          ? { isOverlay: gdeck.isOverlay }
+          : {}),
+        processNames: resolveTriggerProcessNames(gdeck.trigger),
+      }
+    })
+  }
+
   const buttons: RuntimeDeck["buttons"] = (gdeck.buttons ?? []).map((b, i) => {
     const { position, type, config, ...rest } = b as {
       position?: number
@@ -47,14 +93,16 @@ const mapAddonDeckToRuntimeDeck = (
       ...(Object.keys(mergedConfig).length > 0 ? { config: mergedConfig } : {}),
     }
   })
-  return {
-    id,
-    name: gdeck.name ?? id,
-    buttons,
-    ...(gdeck.autoShow !== undefined ? { autoShow: gdeck.autoShow } : {}),
-    ...(gdeck.isOverlay !== undefined ? { isOverlay: gdeck.isOverlay } : {}),
-    processNames: resolveTriggerProcessNames(gdeck.trigger),
-  }
+  return [
+    {
+      id,
+      name: gdeck.name ?? id,
+      buttons,
+      ...(gdeck.autoShow !== undefined ? { autoShow: gdeck.autoShow } : {}),
+      ...(gdeck.isOverlay !== undefined ? { isOverlay: gdeck.isOverlay } : {}),
+      processNames: resolveTriggerProcessNames(gdeck.trigger),
+    },
+  ]
 }
 
 const collectAddonDefaultButtonConfig = (
@@ -131,7 +179,7 @@ export const materializeAddonDecks = (
           )
           continue
         }
-        addonDecks.push(mapAddonDeckToRuntimeDeck(id, gdeck))
+        addonDecks.push(...mapAddonDeckToRuntimeDeck(id, gdeck))
       }
     }
   }

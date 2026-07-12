@@ -87,6 +87,7 @@ export interface Runtime {
   setActiveAppProvider(provider: ActiveAppProviderLike): void
   stopActiveAppPolling(): Promise<void>
   navStackDepth(): number
+  hasOverlayDeckAvailable(): boolean
 }
 
 export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
@@ -101,6 +102,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   const navStack: string[] = [mainDeck.id]
   let transientDeckId: string | null = null
   let overlayDeckId: string | null = null
+  let overlayPreviousActiveId: string | null = null
 
   const deckById = (id: string): RuntimeDeck | undefined =>
     decks.find((d) => d.id === id)
@@ -133,7 +135,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   }
 
   const getActiveDeckId = (): string => {
-    return transientDeckId ?? navStack[navStack.length - 1] ?? mainDeck.id
+    return overlayDeckId ?? transientDeckId ?? navStack[navStack.length - 1] ?? mainDeck.id
   }
 
   const navigateToDeck = (
@@ -146,17 +148,20 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       logger.warn({ deckId: id }, "navigateToDeck: deck not found")
       return
     }
+    const previousActiveId = getActiveDeckId()
     if (navOptions?.addToHistory === false) {
       transientDeckId = id
     } else {
       navStack.push(id)
       transientDeckId = null
     }
+    pubSub.publish("runtime:deck-inactive", { deckId: previousActiveId })
     pubSub.publish("runtime:activeDeck", { deckId: id })
   }
 
   const goBack = (): void => {
     if (transientDeckId !== null) {
+      pubSub.publish("runtime:deck-inactive", { deckId: transientDeckId })
       transientDeckId = null
       const prev = navStack[navStack.length - 1] ?? mainDeck.id
       pubSub.publish("runtime:activeDeck", { deckId: prev })
@@ -166,9 +171,13 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       logger.warn("goBack: at root deck; nothing to pop")
       return
     }
+    const popped = navStack[navStack.length - 1]
     navStack.pop()
     const prev = navStack[navStack.length - 1]
     if (prev === undefined) return
+    if (popped !== undefined) {
+      pubSub.publish("runtime:deck-inactive", { deckId: popped })
+    }
     pubSub.publish("runtime:activeDeck", { deckId: prev })
   }
 
@@ -177,8 +186,26 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       logger.warn({ deckId }, "setOverlay: deck not found")
       return
     }
+    const previousActiveId = getActiveDeckId()
+    const previousOverlayId = overlayDeckId
+    overlayPreviousActiveId = previousActiveId
     overlayDeckId = deckId
     pubSub.publish("runtime:overlay", { deckId })
+    if (deckId !== null) {
+      if (previousOverlayId !== null) {
+        pubSub.publish("runtime:deck-inactive", { deckId: previousOverlayId })
+      } else {
+        pubSub.publish("runtime:deck-inactive", { deckId: previousActiveId })
+      }
+      pubSub.publish("runtime:activeDeck", { deckId })
+    } else {
+      if (previousOverlayId !== null) {
+        pubSub.publish("runtime:deck-inactive", { deckId: previousOverlayId })
+      }
+      const restoreId = overlayPreviousActiveId ?? mainDeck.id
+      overlayPreviousActiveId = null
+      pubSub.publish("runtime:activeDeck", { deckId: restoreId })
+    }
   }
 
   const getOverlay = (): RuntimeDeck | null => {
@@ -212,6 +239,13 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     const found = findButton(buttonId)
     if (found === null) {
       logger.warn({ buttonId }, "invokeAction: button not found")
+      return
+    }
+    if (found.deckId !== getActiveDeckId()) {
+      logger.debug(
+        { buttonId, deckId: found.deckId, activeDeckId: getActiveDeckId() },
+        "invokeAction: gesture on inactive deck, dropping",
+      )
       return
     }
 
@@ -311,9 +345,19 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       logger.warn({ deckId }, "active-app: overlay deck not found")
       return
     }
+    const previousOverlayId = overlayDeckId
     lastOverlayDeckId = deckId
     overlayDeckId = deckId
     pubSub.publish("runtime:overlay", { deckId })
+    if (deckId !== null) {
+      pubSub.publish("runtime:deck-inactive", { deckId: previousOverlayId ?? mainDeck.id })
+      pubSub.publish("runtime:activeDeck", { deckId })
+    } else {
+      if (previousOverlayId !== null) {
+        pubSub.publish("runtime:deck-inactive", { deckId: previousOverlayId })
+      }
+      pubSub.publish("runtime:activeDeck", { deckId: mainDeck.id })
+    }
   }
 
   const computeOverlayFor = (snapshot: {
@@ -396,6 +440,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     setActiveAppProvider,
     stopActiveAppPolling,
     navStackDepth: () => navStack.length,
+    hasOverlayDeckAvailable: () => overlayDeckId !== null || pendingOverlayDeckId !== null,
   }
 
   return runtime

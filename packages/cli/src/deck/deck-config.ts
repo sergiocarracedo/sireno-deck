@@ -147,5 +147,6 @@ export const buildDeckConfigMessage = (
     },
     navMode: "regular",
     isCompact: isCompact ?? false,
+    hasOverlayDeckAvailable: navState?.hasOverlayDeckAvailable ?? false,
   }
 }

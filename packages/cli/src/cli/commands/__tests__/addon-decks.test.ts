@@ -369,6 +369,52 @@ describe("materializeAddonDecks", () => {
     expect(deck.name).toBe("no-config")
   })
 
+  it("paginated:true splits a large deck into multiple decks with core:page-nav buttons", () => {
+    const addon = fakeManifestWithDecks("test-addon", {
+      "test-addon:deck-a": () => ({
+        "emoji-deck": {
+          name: "Emoji Deck",
+          paginated: true,
+          buttons: Array.from({ length: 14 }, (_, i) => ({
+            type: "test-addon:emoji",
+            emoji: `e${i}`,
+            label: `e${i}`,
+            position: i,
+          })),
+        },
+      }),
+    })
+    const reg = mockRegistry([addon])
+    const userDecks: RuntimeDeck[] = []
+
+    const result = materializeAddonDecks(reg, userDecks, silentLogger())
+    expect(result.length).toBe(2)
+  })
+
+  it("paginated:true with <= 13 items returns 1 deck, no page-nav", () => {
+    const addon = fakeManifestWithDecks("test-addon", {
+      "test-addon:deck-a": () => ({
+        "small-deck": {
+          name: "Small",
+          paginated: true,
+          buttons: Array.from({ length: 5 }, (_, i) => ({
+            type: "test-addon:btn",
+            position: i,
+          })),
+        },
+      }),
+    })
+    const reg = mockRegistry([addon])
+    const userDecks: RuntimeDeck[] = []
+
+    const result = materializeAddonDecks(reg, userDecks, silentLogger())
+
+    expect(result.length).toBe(1)
+    const deck = result[0]!
+    expect(deck.id).toBe("small-deck")
+    expect(deck.buttons.find((b) => b.type === "core:page-nav")).toBeUndefined()
+  })
+
   it("skips addons without defaultButton decks when no user button matches", () => {
     const addon = fakeManifestWithDecks("test-addon", {
       "test-addon:deck-a": (ctx) => ({

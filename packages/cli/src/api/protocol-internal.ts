@@ -40,6 +40,7 @@ export const deckConfigMessageSchema = baseServerMessage.extend({
   surfaces: z.record(z.string(), z.unknown()),
   navMode: z.enum(["regular", "paginated", "overlay"]).default("regular"),
   isCompact: z.boolean().default(false),
+  hasOverlayDeckAvailable: z.boolean().default(false),
 })
 
 export const stateMessageSchema = baseServerMessage.extend({

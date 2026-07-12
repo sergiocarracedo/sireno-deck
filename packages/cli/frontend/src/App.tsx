@@ -32,6 +32,7 @@ interface DeckState {
   name: string
   buttons: DeckButton[]
   isCompact?: boolean
+  hasOverlayDeckAvailable?: boolean
 }
 
 const EMPTY_DECK: DeckState = {
@@ -39,6 +40,7 @@ const EMPTY_DECK: DeckState = {
   name: "",
   buttons: [],
   isCompact: undefined,
+  hasOverlayDeckAvailable: false,
 }
 
 const ENV_WS_URL = (import.meta.env.VITE_WS_URL ??
@@ -140,6 +142,7 @@ const AppContent = () => {
               name: surface.name ?? message.deckId,
               buttons: surface.buttons,
               isCompact: message.isCompact ?? false,
+              hasOverlayDeckAvailable: message.hasOverlayDeckAvailable ?? false,
             })
           }
         }

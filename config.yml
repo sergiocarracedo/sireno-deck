@@ -14,12 +14,11 @@ decks:
           tap: 'xdg-open https://calendar.google.com'
 
       - position: 1
-        type: 'weather:weather'
+        type: 'core:change-deck'
         config:
-          location:
-            latitude: 41.390205
-            longitude: 2.154007
-            name: Warcelona
+          deck: 'test-deck'
+          icon: 'icon://volume-off'
+          label: Test Deck
 
       - position: 4
         type: 'weather:weather'
@@ -133,6 +132,41 @@ decks:
           tap: 'xdotool key F12'
         config:
           label: Dev Tools
+
+  test-deck:
+    name: Test Deck
+    icon: 'icon://volume-off'
+    buttons:
+      - position: 0
+        type: 'core:change-deck'
+        config:
+          label: 'TEst'
+          deck: 'main'
+
+      - position: 1
+        type: 'core:action'
+        actions:
+          tap: 'macro://ctrl+shift+t'
+        config:
+          label: Macro
+
+      - position: 2
+        type: 'core:action'
+        actions:
+          tap: 'paste://hello from sireno'
+        config:
+          label: Paste
+
+      - position: 3
+        type: 'core:toggle'
+        config:
+          key: 'test-toggle'
+          default: false
+
+      - position: 4
+        type: 'brightness:brightness'
+        config:
+          action: up
 
 logging:
   level: info

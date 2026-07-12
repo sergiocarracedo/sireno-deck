@@ -256,6 +256,9 @@ export interface AddonButtonService<Config = unknown> {
   readonly onMount?: (
     ctx: AddonButtonServiceContext<Config>,
   ) => void | Promise<void>
+  readonly onUnmount?: (
+    ctx: AddonButtonServiceContext<Config>,
+  ) => void | Promise<void>
   readonly onTap?: (
     ctx: AddonButtonServiceContext<Config>,
   ) => void | Promise<void>

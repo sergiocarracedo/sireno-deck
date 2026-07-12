@@ -344,6 +344,49 @@ describe("createRuntime with active-app provider", () => {
     await runtime.stopActiveAppPolling()
     expect(provider.calls.stop).toBe(1)
   })
+
+  it("hasOverlayDeckAvailable is false before any active-app match", () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "chrome", processNames: ["chrome"] }),
+    ])
+    expect(runtime.hasOverlayDeckAvailable()).toBe(false)
+  })
+
+  it("hasOverlayDeckAvailable is true after overlay applies via poll", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "chrome-deck", processNames: ["chrome"] }),
+    ])
+    const provider = makeFakeProvider({
+      name: "Google Chrome",
+      windowTitle: null,
+      processId: 1,
+    })
+    runtime.setActiveAppProvider(provider)
+    await flush(1_200)
+    expect(runtime.hasOverlayDeckAvailable()).toBe(true)
+    await runtime.stopActiveAppPolling()
+  })
+
+  it("hasOverlayDeckAvailable transitions back to false when active-app no longer matches", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "chrome-deck", processNames: ["chrome"] }),
+    ])
+    const provider = makeFakeProvider({
+      name: "Google Chrome",
+      windowTitle: null,
+      processId: 1,
+    })
+    runtime.setActiveAppProvider(provider)
+    await flush(1_200)
+    expect(runtime.hasOverlayDeckAvailable()).toBe(true)
+    provider.snapshot = { name: "Firefox", windowTitle: null, processId: 2 }
+    await flush(1_300)
+    expect(runtime.hasOverlayDeckAvailable()).toBe(false)
+    await runtime.stopActiveAppPolling()
+  })
 })
 
 describe("invokeAction — user actions", () => {
@@ -455,5 +498,66 @@ describe("invokeAction — user actions", () => {
     expect(writeText).toHaveBeenCalledWith("🔥")
   })
 
+  describe("invokeAction guard — inactive deck", () => {
+    it("drops gesture when button belongs to non-active (main) deck while overlay is active", async () => {
+      const { runtime } = setup([
+        makeDeck({ id: "main", isMain: true, buttons: [{ id: "b1", type: "x" }] }),
+        makeDeck({ id: "overlay", buttons: [{ id: "b2", type: "y" }] }),
+      ])
+      const onTap = vi.fn()
+      runtime.registerButtonHandler("main:b1", { onTap })
+      runtime.setOverlay("overlay")
+      await runtime.invokeAction("main:b1", "tap")
+      expect(onTap).not.toHaveBeenCalled()
+    })
 
+    it("allows gesture when button belongs to active overlay deck", async () => {
+      const { runtime } = setup([
+        makeDeck({ id: "main", isMain: true, buttons: [{ id: "b1", type: "x" }] }),
+        makeDeck({ id: "overlay", buttons: [{ id: "b2", type: "y" }] }),
+      ])
+      const onTap = vi.fn()
+      runtime.registerButtonHandler("overlay:b2", { onTap })
+      runtime.setOverlay("overlay")
+      await runtime.invokeAction("overlay:b2", "tap")
+      expect(onTap).toHaveBeenCalledOnce()
+    })
+  })
+
+  describe("setOverlay — pub/sub", () => {
+    it("publishes runtime:deck-inactive for previous deck", () => {
+      const { runtime, pubSub } = setup([
+        makeDeck({ id: "main", isMain: true, buttons: [] }),
+        makeDeck({ id: "overlay", buttons: [] }),
+      ])
+      const inactive: unknown[] = []
+      pubSub.subscribe("runtime:deck-inactive", (p) => inactive.push(p))
+      runtime.setOverlay("overlay")
+      expect(inactive).toContainEqual({ deckId: "main" })
+    })
+
+    it("publishes runtime:activeDeck with overlay deckId", () => {
+      const { runtime, pubSub } = setup([
+        makeDeck({ id: "main", isMain: true, buttons: [] }),
+        makeDeck({ id: "overlay", buttons: [] }),
+      ])
+      const activeDeck: unknown[] = []
+      pubSub.subscribe("runtime:activeDeck", (p) => activeDeck.push(p))
+      runtime.setOverlay("overlay")
+      expect(activeDeck).toContainEqual({ deckId: "overlay" })
+    })
+
+    it("setOverlay replaces overlay-a with overlay-b: deck-inactive fires for overlay-a", () => {
+      const { runtime, pubSub } = setup([
+        makeDeck({ id: "main", isMain: true, buttons: [] }),
+        makeDeck({ id: "overlay-a", buttons: [] }),
+        makeDeck({ id: "overlay-b", buttons: [] }),
+      ])
+      const inactive: unknown[] = []
+      pubSub.subscribe("runtime:deck-inactive", (p) => inactive.push(p))
+      runtime.setOverlay("overlay-a")
+      runtime.setOverlay("overlay-b")
+      expect(inactive).toContainEqual({ deckId: "overlay-a" })
+    })
+  })
 })

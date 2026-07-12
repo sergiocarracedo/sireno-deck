@@ -10,9 +10,14 @@ import { addonRegistry } from "virtual:sireno/addons/registry"
 
 import {
   ButtonFrame,
+  SplitActionSurface,
   useAddonChannel,
   type AddonGestureEvent,
 } from "@sireno-deck/cli"
+import {
+  isSystemButton,
+  renderSystemButton,
+} from "@/deck/system-buttons/registry"
 import { useButtonAction } from "../bridge/use-button-action"
 import { ErrorBoundary } from "./ErrorBoundary"
 
@@ -34,6 +39,7 @@ export interface Deck {
   id: string
   name: string
   buttons: DeckButton[]
+  hasOverlayDeckAvailable?: boolean
 }
 
 export interface DeckProps {
@@ -77,6 +83,7 @@ interface DeckButtonCellProps {
   readonly button: DeckButton
   readonly col: number
   readonly row: number
+  readonly splitAction?: boolean
 }
 
 const DeckButtonCell = ({
@@ -85,8 +92,30 @@ const DeckButtonCell = ({
   button,
   col,
   row,
+  splitAction = false,
 }: DeckButtonCellProps) => {
   const { fire } = useButtonAction(deckId, position)
+  if (splitAction) {
+    return (
+      <div
+        style={{
+          gridColumn: col,
+          gridRow: row,
+          width: BUTTON_SIZE,
+          height: BUTTON_SIZE,
+        }}
+        data-button-type={button.type}
+        data-split-action="true"
+      >
+        <ButtonFrame buttonType={button.type} onClick={() => fire("tap")}>
+          <SplitActionSurface
+            primary={renderSystemButton("core:back")}
+            secondary={renderSystemButton("core:overlay-toggle")}
+          />
+        </ButtonFrame>
+      </div>
+    )
+  }
   return (
     <div
       style={{
@@ -122,6 +151,10 @@ const ButtonSurface = ({ button }: ButtonSurfaceProps) => {
     if (data !== undefined) setGesture(data)
   }, [data])
 
+  if (isSystemButton(button.type)) {
+    return renderSystemButton(button.type)
+  }
+
   if (registryEntry === undefined) return null
   const Component = registryEntry.Component
   return (
@@ -143,6 +176,8 @@ export const Deck = ({ deck, children }: DeckProps) => {
   const pad = compact ? 0 : DECK_PADDING_PX
   const width = columns * BUTTON_SIZE + (columns - 1) * gap + pad * 2
   const height = rows * BUTTON_SIZE + (rows - 1) * gap + pad * 2
+  const n1Position = model.keyCount - 1
+  const splitAtN1 = deck.hasOverlayDeckAvailable === true
   return (
     <div
       className={`grid rounded-xl bg-neutral-950 ${compact ? "p-0" : "p-4"}`}
@@ -163,6 +198,10 @@ export const Deck = ({ deck, children }: DeckProps) => {
         const position = resolvePosition(button, idx)
         const col = (position % columns) + 1
         const row = Math.floor(position / columns) + 1
+        const splitAction =
+          splitAtN1 &&
+          position === n1Position &&
+          button.type === "core:back"
         return (
           <DeckButtonCell
             key={button.id}
@@ -171,6 +210,7 @@ export const Deck = ({ deck, children }: DeckProps) => {
             button={button}
             col={col}
             row={row}
+            {...(splitAction ? { splitAction: true } : {})}
           />
         )
       })}

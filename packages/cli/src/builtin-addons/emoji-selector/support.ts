@@ -1,7 +1,5 @@
 import { z } from "zod"
 
-export const EMOJI_PAGE_SIZE = 32
-
 export const EMOJI_LAUNCHER_GRID: readonly string[] = [
   "\u{1F602}",
   "\u{1F525}",
