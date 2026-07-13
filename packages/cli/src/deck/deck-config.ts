@@ -123,17 +123,17 @@ export const buildDeckConfigMessage = (
     navState ?? { navStackDepth: 1, hasOverlayDeckAvailable: false },
   )
   if (systemButtonType !== null) {
-    const alreadyHasN1 = buttons.some(
-      (b) =>
-        Number.parseInt(b.id, 10) === n1Position || b.position === n1Position,
-    )
-    if (!alreadyHasN1) {
-      buttons.push({
-        id: String(n1Position),
-        type: systemButtonType,
-        config: {},
-      })
+    for (let i = buttons.length - 1; i >= 0; i--) {
+      const b = buttons[i]!
+      if (Number.parseInt(b.id, 10) === n1Position || b.position === n1Position) {
+        buttons.splice(i, 1)
+      }
     }
+    buttons.push({
+      id: String(n1Position),
+      type: systemButtonType,
+      config: {},
+    })
   }
   return {
     type: "deck-config",

@@ -73,12 +73,12 @@ describe("buildDeckConfigMessage — back button injection", () => {
     expect(n1).toBeUndefined()
   })
 
-  it("does NOT inject if user already has a button at n-1 position", () => {
+  it("overwrites user button at n-1 with system button", () => {
     const deck = {
       id: "sub",
       name: "Sub",
       buttons: [
-        { id: "14", type: "core:action", config: {} }, // user-defined button at n-1
+        { id: "14", type: "core:action", config: {} },
       ],
     }
     const msg = buildDeckConfigMessage(
@@ -91,7 +91,8 @@ describe("buildDeckConfigMessage — back button injection", () => {
       () => undefined,
     )
     const buttons = msg.surfaces[deck.id].buttons
-    expect(buttons.length).toBe(1) // original only, no injection
-    expect(buttons[0].type).toBe("core:action")
+    expect(buttons.length).toBe(1)
+    expect(buttons[0].id).toBe("14")
+    expect(buttons[0].type).toBe("core:back")
   })
 })

@@ -1,4 +1,3 @@
-import { DEFAULT_KEY_COUNT } from "@/device/models"
 import type { AddonRegistry } from "@/addon/registry"
 import { paginateDeck } from "@/deck/paginate-deck"
 import type { RuntimeDeck } from "@/deck/runtime"
@@ -30,12 +29,13 @@ const resolveTriggerProcessNames = (trigger: unknown): string[] | undefined => {
 const mapAddonDeckToRuntimeDeck = (
   id: string,
   gdeck: AddonGeneratedDeck,
+  keyCount: number,
 ): RuntimeDeck[] => {
   if (gdeck.paginated === true && (gdeck.buttons ?? []).length > 0) {
     const pages = paginateDeck({
       baseDeckId: id,
       buttons: gdeck.buttons ?? [],
-      keyCount: DEFAULT_KEY_COUNT,
+      keyCount,
     })
     return pages.map((p) => {
       const mappedButtons: RuntimeDeck["buttons"] = (p.deck.buttons ?? []).map(
@@ -142,6 +142,7 @@ export const materializeAddonDecks = (
   registry: AddonRegistry,
   userDecks: ReadonlyArray<RuntimeDeck>,
   logger: pino.Logger,
+  keyCount: number,
 ): RuntimeDeck[] => {
   const addonConfigs = collectAddonDefaultButtonConfig(
     registry,
@@ -179,7 +180,7 @@ export const materializeAddonDecks = (
           )
           continue
         }
-        addonDecks.push(...mapAddonDeckToRuntimeDeck(id, gdeck))
+        addonDecks.push(...mapAddonDeckToRuntimeDeck(id, gdeck, keyCount))
       }
     }
   }

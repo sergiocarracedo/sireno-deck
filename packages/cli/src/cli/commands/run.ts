@@ -22,6 +22,7 @@ import {
   type RuntimeDeck,
   type Store,
 } from "@/deck"
+import { paginateDeck } from "@/deck/paginate-deck"
 import {
   createActiveAppProvider,
   type ActiveAppProvider,
@@ -203,6 +204,11 @@ export const setupAddonServices = (
         undefined,
         (fullPath) => getAssetByPath(fullPath)?.id,
       )
+      deck.buttons = msg.surfaces[deck.id]!.buttons.map((b) => ({
+        id: b.id,
+        type: b.type,
+        config: b.config,
+      }))
       bridge.broadcast(msg)
     },
   )
@@ -316,35 +322,84 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
   })
   process.env["SIRENO_THEME_NAME"] = theme.name
 
-  const decks: RuntimeDeck[] = Object.entries(config.decks).map(([id, d]) => ({
-    id,
-    name: d.name ?? id,
-    isMain: id === "main",
-    buttons: d.buttons.flatMap((b, idx) => {
-        if (typeof b === "string") return []
-        return [
-          {
-            id: b.position?.toString() ?? `b${idx}`,
-            type: b.type,
-            ...(typeof b.config === "object" && b.config !== null
-              ? { config: b.config }
-              : {}),
-            ...(b.actions !== undefined ? { actions: b.actions } : {}),
-          },
-        ]
-      }),
-    processNames:
+  const decks: RuntimeDeck[] = Object.entries(config.decks).flatMap(([id, d]) => {
+    const runtimeButtons: RuntimeDeck["buttons"] = d.buttons.flatMap((b, idx) => {
+      if (typeof b === "string") return []
+      return [
+        {
+          id: b.position?.toString() ?? `b${idx}`,
+          type: b.type,
+          ...(typeof b.config === "object" && b.config !== null
+            ? { config: b.config }
+            : {}),
+          ...(b.actions !== undefined ? { actions: b.actions } : {}),
+        },
+      ]
+    })
+    const processNames =
       d.trigger?.process_name !== undefined
         ? Array.isArray(d.trigger.process_name)
           ? d.trigger.process_name
           : [d.trigger.process_name]
-        : undefined,
-  }))
+        : undefined
+    if (d.paginated === true && runtimeButtons.length > 0) {
+      const pages = paginateDeck({
+        baseDeckId: id,
+        buttons: runtimeButtons,
+        keyCount: 15,
+      })
+      return pages.map((p) => {
+        const mappedButtons: RuntimeDeck["buttons"] = (
+          p.deck.buttons ?? []
+        ).map((b, i) => {
+          const { position, type, config, ...rest } = b as {
+            position?: number
+            type: string
+            config?: unknown
+          }
+          const mergedConfig = {
+            ...(typeof config === "object" && config !== null
+              ? (config as Record<string, unknown>)
+              : {}),
+            ...rest,
+          }
+          return {
+            id: position !== undefined ? String(position) : String(i),
+            type,
+            ...(Object.keys(mergedConfig).length > 0
+              ? { config: mergedConfig }
+              : {}),
+          }
+        })
+        return {
+          id: p.deckId,
+          name: d.name ?? id,
+          isMain: id === "main",
+          buttons: mappedButtons,
+          processNames,
+        }
+      })
+    }
+    return [
+      {
+        id,
+        name: d.name ?? id,
+        isMain: id === "main",
+        buttons: runtimeButtons,
+        processNames,
+      },
+    ]
+  })
   const effectiveDecks: RuntimeDeck[] =
     decks.length > 0
       ? decks
       : [{ id: "main", name: "Main", isMain: true, buttons: [] }]
-  const allDecks = materializeAddonDecks(registry, effectiveDecks, logger)
+  const allDecks = materializeAddonDecks(
+    registry,
+    effectiveDecks,
+    logger,
+    15,
+  )
   const { runtime, methods, pubSub, store } = createDeckRuntime({
     decks: allDecks,
     logger,

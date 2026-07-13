@@ -137,10 +137,9 @@ export class EmulatorOutputClient implements OutputClient {
         return Number.isFinite(p) && p === message.position
       })
       if (button === undefined) {
-        // No user-defined button at this position — check if the deck-config
-        // injected a system button at this slot (n-1). The injected system
-        // button lives in the WS message but not in the runtime deck, so we
-        // dispatch the corresponding runtime action directly.
+        // No user-defined button at this position — could be an injected
+        // system button (n-1 slot) that lives in the broadcast but not the
+        // runtime deck; dispatch the corresponding runtime action directly.
         const navState = {
           navStackDepth: opts.runtime.navStackDepth(),
           hasOverlayDeckAvailable: opts.runtime.hasOverlayDeckAvailable(),
@@ -161,6 +160,14 @@ export class EmulatorOutputClient implements OutputClient {
           { activeDeckId: activeDeck.id, position: message.position },
           "emulator: button-action targets unknown button",
         )
+        return
+      }
+      if (button.type === "core:back") {
+        logger.info(
+          { activeDeckId: activeDeck.id, position: message.position },
+          "emulator: dispatching runtime.goBack() for core:back button",
+        )
+        opts.runtime.goBack()
         return
       }
       void opts.runtime.dispatchGesture(

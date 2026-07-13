@@ -146,7 +146,7 @@ describe("buildDeckConfigMessage", () => {
     expect(n1Button).toBeUndefined()
   })
 
-  it("does not inject n-1 when slot is already occupied", () => {
+  it("overwrites user button at n-1 with core:settings-entry on main deck", () => {
     const deckWithN1: RuntimeDeck = {
       id: "main",
       name: "Main",
@@ -162,6 +162,6 @@ describe("buildDeckConfigMessage", () => {
     )
     const buttons = msg.surfaces["main"]!.buttons
     const n1Button = buttons.find((b) => b.id === "14" || b.position === 14)
-    expect(n1Button?.type).toBe("user:custom")
+    expect(n1Button?.type).toBe("core:settings-entry")
   })
 })

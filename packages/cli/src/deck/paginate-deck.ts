@@ -49,9 +49,16 @@ export const paginateDeck = (opts: PaginateDeckOptions): PageDeckResult[] => {
         const nextDeckId = isLastPage
           ? baseDeckId
           : `${baseDeckId}-p${pageIndex + 2}`
+        const pageNavPosition = keyCount - 2
+        for (let i = deckButtons.length - 1; i >= 0; i--) {
+          const existing = deckButtons[i] as Record<string, unknown>
+          if (existing?.position === pageNavPosition) {
+            deckButtons.splice(i, 1)
+          }
+        }
         deckButtons.push({
           type: PAGE_NAV_BUTTON_TYPE,
-          position: keyCount - 2,
+          position: pageNavPosition,
           config: {
             currentPage: pageIndex + 1,
             totalPages,

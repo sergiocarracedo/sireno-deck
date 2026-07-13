@@ -54,7 +54,7 @@ describe("materializeAddonDecks", () => {
     const reg = mockRegistry([addon])
     const userDecks: RuntimeDeck[] = [{ id: "main", name: "Main", buttons: [] }]
 
-    const result = materializeAddonDecks(reg, userDecks, silentLogger())
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
 
     expect(result.length).toBe(2)
     const genDeck = result.find((d) => d.id === "generated-deck-a")
@@ -76,7 +76,7 @@ describe("materializeAddonDecks", () => {
     const warn = vi.fn()
     const logger = { warn } as ReturnType<typeof silentLogger>
 
-    const result = materializeAddonDecks(reg, userDecks, logger)
+    const result = materializeAddonDecks(reg, userDecks, logger, 15)
 
     expect(result.length).toBe(1)
     expect(result[0].id).toBe("main")
@@ -102,7 +102,7 @@ describe("materializeAddonDecks", () => {
     const reg = mockRegistry([addon])
     const userDecks: RuntimeDeck[] = [{ id: "main", name: "Main", buttons: [] }]
 
-    const result = materializeAddonDecks(reg, userDecks, silentLogger())
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
     const genDeck = result.find((d) => d.id === "gen-deck")!
 
     expect(genDeck.buttons).toEqual([
@@ -137,7 +137,7 @@ describe("materializeAddonDecks", () => {
     const reg = mockRegistry([addon])
     const userDecks: RuntimeDeck[] = []
 
-    const result = materializeAddonDecks(reg, userDecks, silentLogger())
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
     const deck = result.find((d) => d.id === "emoji-selector")!
 
     expect(deck.buttons).toEqual([
@@ -171,7 +171,7 @@ describe("materializeAddonDecks", () => {
     const reg = mockRegistry([addon])
     const userDecks: RuntimeDeck[] = [{ id: "main", name: "Main", buttons: [] }]
 
-    const result = materializeAddonDecks(reg, userDecks, silentLogger())
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
     const genDeck = result.find((d) => d.id === "gen-deck")!
 
     expect(genDeck.processNames).toEqual(["my-app"])
@@ -191,7 +191,7 @@ describe("materializeAddonDecks", () => {
     const reg = mockRegistry([addon])
     const userDecks: RuntimeDeck[] = [{ id: "main", name: "Main", buttons: [] }]
 
-    const result = materializeAddonDecks(reg, userDecks, silentLogger())
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
     const genDeck = result.find((d) => d.id === "gen-deck")!
 
     expect(genDeck.autoShow).toBe(true)
@@ -233,7 +233,7 @@ describe("materializeAddonDecks", () => {
       },
     ]
 
-    const result = materializeAddonDecks(reg, userDecks, silentLogger())
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
     const deck = result.find((d) => d.id === "emoji-selector")!
 
     expect(deck.name).toContain("favs: 2")
@@ -274,7 +274,7 @@ describe("materializeAddonDecks", () => {
       },
     ]
 
-    const result = materializeAddonDecks(reg, userDecks, silentLogger())
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
     const deck = result.find((d) => d.id === "emoji-selector")!
 
     expect(deck.name).toContain("favs: 1")
@@ -322,7 +322,7 @@ describe("materializeAddonDecks", () => {
     const warn = vi.fn()
     const logger = { warn } as ReturnType<typeof silentLogger>
 
-    const result = materializeAddonDecks(reg, userDecks, logger)
+    const result = materializeAddonDecks(reg, userDecks, logger, 15)
     const deck = result.find((d) => d.id === "emoji-selector")!
 
     expect(deck.name).toContain("favs: 1")
@@ -363,7 +363,7 @@ describe("materializeAddonDecks", () => {
       },
     ]
 
-    const result = materializeAddonDecks(reg, userDecks, silentLogger())
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
     const deck = result.find((d) => d.id === "emoji-selector")!
 
     expect(deck.name).toBe("no-config")
@@ -387,7 +387,7 @@ describe("materializeAddonDecks", () => {
     const reg = mockRegistry([addon])
     const userDecks: RuntimeDeck[] = []
 
-    const result = materializeAddonDecks(reg, userDecks, silentLogger())
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
     expect(result.length).toBe(2)
   })
 
@@ -407,11 +407,35 @@ describe("materializeAddonDecks", () => {
     const reg = mockRegistry([addon])
     const userDecks: RuntimeDeck[] = []
 
-    const result = materializeAddonDecks(reg, userDecks, silentLogger())
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
 
     expect(result.length).toBe(1)
     const deck = result[0]!
     expect(deck.id).toBe("small-deck")
+    expect(deck.buttons.find((b) => b.type === "core:page-nav")).toBeUndefined()
+  })
+
+  it("paginated:true with keyCount=32 produces 1 page for 20 items (no page-nav needed)", () => {
+    const addon = fakeManifestWithDecks("test-addon", {
+      "test-addon:deck-a": () => ({
+        "large-deck": {
+          name: "Large",
+          paginated: true,
+          buttons: Array.from({ length: 20 }, (_, i) => ({
+            type: "test-addon:btn",
+            position: i,
+          })),
+        },
+      }),
+    })
+    const reg = mockRegistry([addon])
+    const userDecks: RuntimeDeck[] = []
+
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 32)
+
+    expect(result.length).toBe(1)
+    const deck = result[0]!
+    expect(deck.buttons.length).toBe(20)
     expect(deck.buttons.find((b) => b.type === "core:page-nav")).toBeUndefined()
   })
 
@@ -440,7 +464,7 @@ describe("materializeAddonDecks", () => {
       },
     ]
 
-    const result = materializeAddonDecks(reg, userDecks, silentLogger())
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
     const deck = result.find((d) => d.id === "gen-deck")
 
     expect(deck).toBeDefined()
