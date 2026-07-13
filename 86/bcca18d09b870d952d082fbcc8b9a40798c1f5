@@ -1,0 +1,24 @@
+MIGRATION-NOTES.md
+  s_8b92319d3ebc7c::t_027558233d00fb 1-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "86bcca18d09b870d952d082fbcc8b9a40798c1f5",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_8b92319d3ebc7c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0a2aa3a7fffemE4TaprysaFsRk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
