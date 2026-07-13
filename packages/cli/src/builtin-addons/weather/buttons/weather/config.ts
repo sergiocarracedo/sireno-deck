@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from "zod"
 
 export const WEATHER_DEFAULT_POLL_MS = 600_000
 
@@ -19,7 +19,7 @@ const WeatherButtonSchema = z
       .positive()
       .optional()
       .default(WEATHER_DEFAULT_POLL_MS),
-    units: z.enum(['metric', 'imperial']).optional().default('metric'),
+    units: z.enum(["metric", "imperial"]).optional().default("metric"),
   })
   .strict()
 

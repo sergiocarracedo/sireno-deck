@@ -46,9 +46,7 @@ export const selectDevice = async (
       undefined
     : false
   if (options.current && currentMatches) {
-    const match = options.devices.find(
-      (d) => d.id === options.current!.serial,
-    )!
+    const match = options.devices.find((d) => d.id === options.current!.serial)!
     options.logger.debug({ id: match.id }, "using saved device selection")
     return { descriptor: match, savedButStale: false }
   }

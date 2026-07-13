@@ -34,7 +34,7 @@ logger) and waits for `init()`.
 ```ts
 // output-client/types.ts
 export interface OutputClient {
-  readonly kind: OutputKind  // kept for logging/debug, not control flow
+  readonly kind: OutputKind // kept for logging/debug, not control flow
   validateReady(): Promise<void>
   listDevices(): Promise<ReadonlyArray<DeviceDescriptor>>
   selectDevice(
@@ -48,6 +48,7 @@ export interface OutputClient {
 ```
 
 Each impl decides what "devices" means:
+
 - `RealOutputClient.listDevices()` enumerates `@elgato-stream-deck/node` hardware.
 - `EmulatorOutputClient.listDevices()` returns a static virtual list
   (`emulator:mk2`, `emulator:xl`) — same shape, no real enumeration.
@@ -106,6 +107,7 @@ blast radius is the cost; the alternative is a permanent translation layer
 that drifts.
 
 Pick names carefully:
+
 - `serial` → `id` (the field always was an identifier; `serial` was a
   leak of the real-only implementation).
 - `path` removed entirely (emulator has no path).

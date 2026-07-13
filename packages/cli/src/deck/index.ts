@@ -58,9 +58,10 @@ export const createDeckRuntime = (
   const store = createStore()
   const executor = createActionExecutor({ host: getHostContext() })
 
-  const methodsRef: { current: ReturnType<typeof createMethods> | undefined } = {
-    current: undefined,
-  }
+  const methodsRef: { current: ReturnType<typeof createMethods> | undefined } =
+    {
+      current: undefined,
+    }
 
   const runtime = createRuntime({
     decks: options.decks,

@@ -1,5 +1,5 @@
-import type { AddonFrontendButton } from '@/addon/api'
-import { IconLabelSurface } from '@/ui/index'
+import type { AddonFrontendButton } from "@/addon/api"
+import { IconLabelSurface } from "@/ui/index"
 
 type Config = { icon?: string; label?: string }
 
@@ -8,7 +8,7 @@ const CoreActionButtonFrontend: AddonFrontendButton<Config> = ({ config }) => {
   return (
     <IconLabelSurface
       {...(icon !== undefined ? { source: icon } : {})}
-      label={label ?? ''}
+      label={label ?? ""}
     />
   )
 }

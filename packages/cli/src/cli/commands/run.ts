@@ -106,7 +106,10 @@ export interface SetupAddonServicesOptions {
     StatePublisher,
     "registerChannel" | "setActiveDeck"
   >
-  readonly bridge: Pick<ReturnType<typeof startWsBridge>, "broadcast" | "registerCacheablePoller">
+  readonly bridge: Pick<
+    ReturnType<typeof startWsBridge>,
+    "broadcast" | "registerCacheablePoller"
+  >
   readonly initialDeck?: RuntimeDeck
   readonly signal: AbortSignal
   readonly setClipboardProvider: (provider: unknown) => void
@@ -322,84 +325,83 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
   })
   process.env["SIRENO_THEME_NAME"] = theme.name
 
-  const decks: RuntimeDeck[] = Object.entries(config.decks).flatMap(([id, d]) => {
-    const runtimeButtons: RuntimeDeck["buttons"] = d.buttons.flatMap((b, idx) => {
-      if (typeof b === "string") return []
-      return [
-        {
-          id: b.position?.toString() ?? `b${idx}`,
-          type: b.type,
-          ...(typeof b.config === "object" && b.config !== null
-            ? { config: b.config }
-            : {}),
-          ...(b.actions !== undefined ? { actions: b.actions } : {}),
+  const decks: RuntimeDeck[] = Object.entries(config.decks).flatMap(
+    ([id, d]) => {
+      const runtimeButtons: RuntimeDeck["buttons"] = d.buttons.flatMap(
+        (b, idx) => {
+          if (typeof b === "string") return []
+          return [
+            {
+              id: b.position?.toString() ?? `b${idx}`,
+              type: b.type,
+              ...(typeof b.config === "object" && b.config !== null
+                ? { config: b.config }
+                : {}),
+              ...(b.actions !== undefined ? { actions: b.actions } : {}),
+            },
+          ]
         },
-      ]
-    })
-    const processNames =
-      d.trigger?.process_name !== undefined
-        ? Array.isArray(d.trigger.process_name)
-          ? d.trigger.process_name
-          : [d.trigger.process_name]
-        : undefined
-    if (d.paginated === true && runtimeButtons.length > 0) {
-      const pages = paginateDeck({
-        baseDeckId: id,
-        buttons: runtimeButtons,
-        keyCount: 15,
-      })
-      return pages.map((p) => {
-        const mappedButtons: RuntimeDeck["buttons"] = (
-          p.deck.buttons ?? []
-        ).map((b, i) => {
-          const { position, type, config, ...rest } = b as {
-            position?: number
-            type: string
-            config?: unknown
-          }
-          const mergedConfig = {
-            ...(typeof config === "object" && config !== null
-              ? (config as Record<string, unknown>)
-              : {}),
-            ...rest,
-          }
+      )
+      const processNames =
+        d.trigger?.process_name !== undefined
+          ? Array.isArray(d.trigger.process_name)
+            ? d.trigger.process_name
+            : [d.trigger.process_name]
+          : undefined
+      if (d.paginated === true && runtimeButtons.length > 0) {
+        const pages = paginateDeck({
+          baseDeckId: id,
+          buttons: runtimeButtons,
+          keyCount: 15,
+        })
+        return pages.map((p) => {
+          const mappedButtons: RuntimeDeck["buttons"] = (
+            p.deck.buttons ?? []
+          ).map((b, i) => {
+            const { position, type, config, ...rest } = b as {
+              position?: number
+              type: string
+              config?: unknown
+            }
+            const mergedConfig = {
+              ...(typeof config === "object" && config !== null
+                ? (config as Record<string, unknown>)
+                : {}),
+              ...rest,
+            }
+            return {
+              id: position !== undefined ? String(position) : String(i),
+              type,
+              ...(Object.keys(mergedConfig).length > 0
+                ? { config: mergedConfig }
+                : {}),
+            }
+          })
           return {
-            id: position !== undefined ? String(position) : String(i),
-            type,
-            ...(Object.keys(mergedConfig).length > 0
-              ? { config: mergedConfig }
-              : {}),
+            id: p.deckId,
+            name: d.name ?? id,
+            isMain: id === "main",
+            buttons: mappedButtons,
+            processNames,
           }
         })
-        return {
-          id: p.deckId,
+      }
+      return [
+        {
+          id,
           name: d.name ?? id,
           isMain: id === "main",
-          buttons: mappedButtons,
+          buttons: runtimeButtons,
           processNames,
-        }
-      })
-    }
-    return [
-      {
-        id,
-        name: d.name ?? id,
-        isMain: id === "main",
-        buttons: runtimeButtons,
-        processNames,
-      },
-    ]
-  })
+        },
+      ]
+    },
+  )
   const effectiveDecks: RuntimeDeck[] =
     decks.length > 0
       ? decks
       : [{ id: "main", name: "Main", isMain: true, buttons: [] }]
-  const allDecks = materializeAddonDecks(
-    registry,
-    effectiveDecks,
-    logger,
-    15,
-  )
+  const allDecks = materializeAddonDecks(registry, effectiveDecks, logger, 15)
   const { runtime, methods, pubSub, store } = createDeckRuntime({
     decks: allDecks,
     logger,
@@ -529,8 +531,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   const { logger } = options
 
   const loaded = loadConfigAndTheme(options)
-  const { themeDir, decks, pubSub, runtime, methods, store } =
-    loaded
+  const { themeDir, decks, pubSub, runtime, methods, store } = loaded
 
   const providers = await startSystemProviders(options, runtime, methods)
 
@@ -545,10 +546,9 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   const bridge = await startWsBridge({ port: 52937 })
   const wsPort = bridge.port
 
-  const resolverOptions = buildResolverOptions(
-    addonBundle.addonByType,
-    [dirname(loaded.configPath)],
-  )
+  const resolverOptions = buildResolverOptions(addonBundle.addonByType, [
+    dirname(loaded.configPath),
+  ])
 
   const bridgeSignal = new AbortController()
   const statePublisher = new StatePublisher({ bridge, logger })

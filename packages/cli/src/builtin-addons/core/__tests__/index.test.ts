@@ -14,9 +14,13 @@ describe("core addon", () => {
   it("action button configSchema requires at least icon or label", () => {
     const empty = ActionButtonBackend.configSchema.safeParse({})
     expect(empty.success).toBe(false)
-    const iconOnly = ActionButtonBackend.configSchema.safeParse({ icon: "icon://play" })
+    const iconOnly = ActionButtonBackend.configSchema.safeParse({
+      icon: "icon://play",
+    })
     expect(iconOnly.success).toBe(true)
-    const labelOnly = ActionButtonBackend.configSchema.safeParse({ label: "Run" })
+    const labelOnly = ActionButtonBackend.configSchema.safeParse({
+      label: "Run",
+    })
     expect(labelOnly.success).toBe(true)
   })
 

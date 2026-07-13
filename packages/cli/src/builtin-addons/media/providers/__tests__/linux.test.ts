@@ -112,7 +112,10 @@ describe("createLinuxProvider", () => {
 
   it("detects muted from the [MUTED] suffix on wpctl get-volume", async () => {
     const responses = baseResponses("Playing")
-    responses.set("wpctl get-volume @DEFAULT_AUDIO_SINK@", "Volume: 0.50 [MUTED]")
+    responses.set(
+      "wpctl get-volume @DEFAULT_AUDIO_SINK@",
+      "Volume: 0.50 [MUTED]",
+    )
     const provider = createLinuxProvider({ executor: makeExecutor(responses) })
     expect((await provider.getStatus()).muted).toBe(true)
   })
@@ -141,7 +144,10 @@ describe("createLinuxProvider", () => {
 
   it("parses [MUTED] case-insensitively", async () => {
     const responses = baseResponses("Playing")
-    responses.set("wpctl get-volume @DEFAULT_AUDIO_SINK@", "Volume: 0.50 [muted]")
+    responses.set(
+      "wpctl get-volume @DEFAULT_AUDIO_SINK@",
+      "Volume: 0.50 [muted]",
+    )
     const provider = createLinuxProvider({ executor: makeExecutor(responses) })
     expect((await provider.getStatus()).muted).toBe(true)
   })

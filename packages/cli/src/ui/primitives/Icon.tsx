@@ -1,21 +1,21 @@
-import type { ReactElement } from 'react'
+import type { ReactElement } from "react"
 
-import * as lucideIcons from 'lucide-react'
-import { type LucideIcon } from 'lucide-react'
+import * as lucideIcons from "lucide-react"
+import { type LucideIcon } from "lucide-react"
 
-import { EMOJI_RE, ICON_FALLBACK, isIconSource } from '../../core/icon-source'
-import { useAssetCache } from '../contexts/AssetCacheContext'
-import { useThemeUiPresentation } from '../theme-presentation'
-import { cn } from '../utils/cn'
+import { EMOJI_RE, ICON_FALLBACK, isIconSource } from "../../core/icon-source"
+import { useAssetCache } from "../contexts/AssetCacheContext"
+import { useThemeUiPresentation } from "../theme-presentation"
+import { cn } from "../utils/cn"
 
 const TONE_CLASS = {
-  accent: 'text-accent',
-  danger: 'text-danger',
-  foreground: 'text-foreground',
-  primary: 'text-primary',
-  success: 'text-success',
-  background: 'text-background',
-  'foreground-contrast': 'text-foreground-contrast',
+  accent: "text-accent",
+  danger: "text-danger",
+  foreground: "text-foreground",
+  primary: "text-primary",
+  success: "text-success",
+  background: "text-background",
+  "foreground-contrast": "text-foreground-contrast",
 } as const
 
 export type IconTone = keyof typeof TONE_CLASS
@@ -27,7 +27,7 @@ export interface IconProps {
   readonly fill?: boolean
 }
 
-const TONE_FALLBACK: IconTone = 'danger'
+const TONE_FALLBACK: IconTone = "danger"
 
 function renderLucide(
   props: { size?: number; tone?: IconTone; fill?: boolean },
@@ -37,26 +37,29 @@ function renderLucide(
   return (
     <LucideComponent
       className={cn([
-        'inline-block shrink-0',
-        TONE_CLASS[props.tone ?? 'foreground'],
+        "inline-block shrink-0",
+        TONE_CLASS[props.tone ?? "foreground"],
       ])}
       data-sireno-icon-source="generic"
       data-sireno-ui-icon="true"
       focusable="false"
       size={size}
       strokeWidth={1.8}
-      fill={props.fill ? 'currentColor' : 'none'}
+      fill={props.fill ? "currentColor" : "none"}
     />
   )
 }
 
-function renderEmoji(emoji: string, props: { size?: number; tone?: IconTone }): ReactElement {
+function renderEmoji(
+  emoji: string,
+  props: { size?: number; tone?: IconTone },
+): ReactElement {
   const size = props.size ?? 20
   return (
     <span
       className={cn([
-        'inline-block shrink-0 leading-none',
-        TONE_CLASS[props.tone ?? 'foreground'],
+        "inline-block shrink-0 leading-none",
+        TONE_CLASS[props.tone ?? "foreground"],
       ])}
       data-sireno-icon-source="emoji"
       data-sireno-ui-icon="true"
@@ -71,7 +74,7 @@ const LUCIDE_ICON_EXPORTS = Object.fromEntries(
   Object.entries(lucideIcons).filter((entry): entry is [string, LucideIcon] => {
     const [exportName, value] = entry
     return (
-      typeof value === 'object' &&
+      typeof value === "object" &&
       exportName[0] === exportName[0]?.toUpperCase()
     )
   }),
@@ -80,13 +83,13 @@ const LUCIDE_ICON_EXPORTS = Object.fromEntries(
 function toLucideExportName(name: string): string {
   return name
     .trim()
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
     .split(/[^a-zA-Z0-9]+/)
     .filter(Boolean)
     .map(
       (segment) => segment[0]!.toUpperCase() + segment.slice(1).toLowerCase(),
     )
-    .join('')
+    .join("")
 }
 
 function resolveLucideIcon(name: string): LucideIcon | undefined {
@@ -100,11 +103,12 @@ function resolveLucideIcon(name: string): LucideIcon | undefined {
  * even if the fallback icon name itself can't be resolved (it always
  * can), we return an empty span.
  */
-function renderFallbackIcon(
-  props: { size?: number; tone?: IconTone },
-): ReactElement {
+function renderFallbackIcon(props: {
+  size?: number
+  tone?: IconTone
+}): ReactElement {
   const fallbackProps = { ...props, tone: props.tone ?? TONE_FALLBACK }
-  const icon = resolveLucideIcon('alert-circle')
+  const icon = resolveLucideIcon("alert-circle")
   if (icon !== undefined) return renderLucide(fallbackProps, icon)
   return <></>
 }
@@ -133,7 +137,7 @@ export function Icon(props: IconProps): ReactElement {
   const source = props.source
   const size = props.size ?? 20
 
-  if (typeof source !== 'string' || source.length === 0) {
+  if (typeof source !== "string" || source.length === 0) {
     return renderFallbackIcon(props)
   }
 
@@ -146,8 +150,8 @@ export function Icon(props: IconProps): ReactElement {
     return renderEmoji(source, props)
   }
 
-  if (source.startsWith('icon://')) {
-    const name = source.slice('icon://'.length)
+  if (source.startsWith("icon://")) {
+    const name = source.slice("icon://".length)
     const LucideComponent = resolveLucideIcon(name)
     if (LucideComponent === undefined) {
       warnInvalidIcon(source)
@@ -156,8 +160,8 @@ export function Icon(props: IconProps): ReactElement {
     return renderLucide(props, LucideComponent)
   }
 
-  if (source.startsWith('asset://')) {
-    const id = source.slice('asset://'.length)
+  if (source.startsWith("asset://")) {
+    const id = source.slice("asset://".length)
     const cache = useAssetCache()
     const src = cache.get(id)
     if (src === undefined) {
@@ -167,13 +171,13 @@ export function Icon(props: IconProps): ReactElement {
     return (
       <img
         alt=""
-        className={cn(['inline-block shrink-0'])}
+        className={cn(["inline-block shrink-0"])}
         data-sireno-icon-source="asset"
         data-sireno-ui-icon="true"
         src={src}
         style={{
           height: `${size}px`,
-          objectFit: 'contain',
+          objectFit: "contain",
           width: `${size}px`,
         }}
       />

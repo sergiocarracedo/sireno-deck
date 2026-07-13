@@ -1,6 +1,10 @@
 import type pino from "pino"
 
-import { createNullSessionProvider, type SessionProvider, type SessionState } from "../session"
+import {
+  createNullSessionProvider,
+  type SessionProvider,
+  type SessionState,
+} from "../session"
 import type { LinuxDbusBus } from "../shared"
 
 export interface LinuxSessionDeps {

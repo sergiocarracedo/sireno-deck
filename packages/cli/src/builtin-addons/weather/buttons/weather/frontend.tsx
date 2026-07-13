@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react"
 
-import type { AddonFrontendButton } from '@/addon/api'
-import { useAddonChannel } from '@/api/react'
-import { IconLabelSurface } from '@/ui/index'
-import { cityKey } from '../../provider/city-key'
-import type { WeatherSnapshot } from '../../provider/types'
-import type { ConfigSchema } from './config'
-import { pages } from './pages'
+import type { AddonFrontendButton } from "@/addon/api"
+import { useAddonChannel } from "@/api/react"
+import { IconLabelSurface } from "@/ui/index"
+import { cityKey } from "../../provider/city-key"
+import type { WeatherSnapshot } from "../../provider/types"
+import type { ConfigSchema } from "./config"
+import { pages } from "./pages"
 
 const AUTO_RETURN_MS = 10_000
 
-const lookupKey = (loc: NonNullable<ConfigSchema['location']>) =>
-  typeof loc === 'string' ? loc : cityKey(loc)
+const lookupKey = (loc: NonNullable<ConfigSchema["location"]>) =>
+  typeof loc === "string" ? loc : cityKey(loc)
 
 const WeatherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
   config,
@@ -21,10 +21,10 @@ const WeatherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
   const [pageChangedAt, setPageChangedAt] = useState<number | undefined>()
 
   const name =
-    typeof config?.location === 'object'
+    typeof config?.location === "object"
       ? config.location.name
       : config?.location
-  const { data } = useAddonChannel<WeatherSnapshot>('weather:current')
+  const { data } = useAddonChannel<WeatherSnapshot>("weather:current")
 
   const loc = config?.location
   const snapshot: WeatherSnapshot | undefined =
@@ -33,7 +33,7 @@ const WeatherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
       : undefined
 
   useEffect(() => {
-    if (gesture?.gesture !== 'tap') {
+    if (gesture?.gesture !== "tap") {
       return
     }
     const nextPage = (page + 1) % pages.length
@@ -64,8 +64,8 @@ const WeatherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
     )
   }
 
-  const unitTemp = snapshot.units === 'imperial' ? '°F' : '°C'
-  const unitWind = snapshot.units === 'imperial' ? 'mph' : 'km/h'
+  const unitTemp = snapshot.units === "imperial" ? "°F" : "°C"
+  const unitWind = snapshot.units === "imperial" ? "mph" : "km/h"
 
   return pages[page]!.render({
     snapshot,

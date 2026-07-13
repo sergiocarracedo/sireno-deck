@@ -61,9 +61,7 @@ export class EmulatorOutputClient implements OutputClient {
   ): Promise<DeviceDescriptor> {
     void logger
     const match =
-      savedId !== null
-        ? devices.find((d) => d.id === savedId)
-        : undefined
+      savedId !== null ? devices.find((d) => d.id === savedId) : undefined
     if (match !== undefined) {
       this.descriptor = match
       return match
@@ -82,7 +80,9 @@ export class EmulatorOutputClient implements OutputClient {
 
   async init(opts: InitOptions): Promise<OutputHandle> {
     if (this.descriptor === null) {
-      throw new Error("EmulatorOutputClient.init: selectDevice() must run first")
+      throw new Error(
+        "EmulatorOutputClient.init: selectDevice() must run first",
+      )
     }
     const descriptor = this.descriptor
     const logger = opts.logger
@@ -90,9 +90,11 @@ export class EmulatorOutputClient implements OutputClient {
     const frontendVite =
       opts.frontendUrl !== undefined
         ? {
-            process: { kill: (sig: string): void => {
-              void sig
-            } } as { pid?: number; kill(signal: string): void },
+            process: {
+              kill: (sig: string): void => {
+                void sig
+              },
+            } as { pid?: number; kill(signal: string): void },
             url: opts.frontendUrl,
           }
         : await spawnFrontendVite({

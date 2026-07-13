@@ -97,9 +97,8 @@ const isFullValidMock = validationMod.isFullValid as unknown as ReturnType<
 >
 const formatFullIssuesMock =
   validationMod.formatFullIssues as unknown as ReturnType<typeof vi.fn>
-const selectOutputClientMock = outputClientMod.selectOutputClient as unknown as ReturnType<
-  typeof vi.fn
->
+const selectOutputClientMock =
+  outputClientMod.selectOutputClient as unknown as ReturnType<typeof vi.fn>
 const loadDeviceConfigMock = cfgMod.loadDeviceConfig as unknown as ReturnType<
   typeof vi.fn
 >
@@ -162,8 +161,8 @@ const makeFakeOutputClient = (
   init: ReturnType<typeof vi.fn>
 } => {
   const listDevices = vi.fn(async () => devices)
-  const descriptor =
-    descriptorOverride ?? (devices[0] as (typeof devices)[number] | undefined) ?? {
+  const descriptor = descriptorOverride ??
+    (devices[0] as (typeof devices)[number] | undefined) ?? {
       id: "default",
       model: "mk2",
       keyCount: 15,
@@ -180,7 +179,14 @@ const makeFakeOutputClient = (
     childPids: [],
     stop: vi.fn(async () => undefined),
   }))
-  return { kind, validateReady, listDevices, selectDevice, storeSelection, init }
+  return {
+    kind,
+    validateReady,
+    listDevices,
+    selectDevice,
+    storeSelection,
+    init,
+  }
 }
 
 const setHappyPath = (
@@ -300,7 +306,13 @@ const setHappyPath = (
   const outputClient =
     overrides.outputClient ??
     makeFakeOutputClient("real", [
-      { id: "ABC", model: "mk2", keyCount: 15, label: "MK.2 (ABC)", transport: "real" },
+      {
+        id: "ABC",
+        model: "mk2",
+        keyCount: 15,
+        label: "MK.2 (ABC)",
+        transport: "real",
+      },
     ])
   selectOutputClientMock.mockReturnValue(outputClient)
   return outputClient
@@ -445,7 +457,9 @@ describe("preflight", () => {
   it("propagates the friendly error from outputClient.validateReady()", async () => {
     const realClient = makeFakeOutputClient("real", [])
     realClient.validateReady.mockRejectedValueOnce(
-      new Error("No Stream Deck devices found. Connect a device and try again."),
+      new Error(
+        "No Stream Deck devices found. Connect a device and try again.",
+      ),
     )
     setHappyPath({ outputClient: realClient })
     await expect(

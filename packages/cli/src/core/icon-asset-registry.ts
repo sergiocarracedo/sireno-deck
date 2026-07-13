@@ -24,9 +24,7 @@ export const clearAssets = (): void => {
   assets.clear()
 }
 
-const readButtonIcon = (
-  button: RuntimeButton,
-): string | undefined => {
+const readButtonIcon = (button: RuntimeButton): string | undefined => {
   const cfg = button.config
   if (typeof cfg !== "object" || cfg === null) return undefined
   const icon = (cfg as Record<string, unknown>).icon

@@ -53,13 +53,17 @@ export const resolveConfigIcons = (
   assetLookup: AssetLookup,
 ): Record<string, unknown> => {
   const next = { ...cfg }
-  if ("icon" in next) next.icon = resolveOne(next.icon, resolverOptions, assetLookup)
+  if ("icon" in next)
+    next.icon = resolveOne(next.icon, resolverOptions, assetLookup)
   if (Array.isArray(next.lines)) {
     next.lines = (next.lines as ReadonlyArray<unknown>).map((line) => {
       if (typeof line !== "object" || line === null) return line
       const lineObj = line as Record<string, unknown>
       if (!("icon" in lineObj)) return line
-      return { ...lineObj, icon: resolveOne(lineObj.icon, resolverOptions, assetLookup) }
+      return {
+        ...lineObj,
+        icon: resolveOne(lineObj.icon, resolverOptions, assetLookup),
+      }
     })
   }
   return next
@@ -125,7 +129,10 @@ export const buildDeckConfigMessage = (
   if (systemButtonType !== null) {
     for (let i = buttons.length - 1; i >= 0; i--) {
       const b = buttons[i]!
-      if (Number.parseInt(b.id, 10) === n1Position || b.position === n1Position) {
+      if (
+        Number.parseInt(b.id, 10) === n1Position ||
+        b.position === n1Position
+      ) {
         buttons.splice(i, 1)
       }
     }

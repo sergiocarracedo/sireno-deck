@@ -69,7 +69,7 @@ export const paginateDeck = (opts: PaginateDeckOptions): PageDeckResult[] => {
         emojiCount++
       } else if (item !== null) {
         deckButtons.push({
-          ...(item as { value: unknown }).value as Record<string, unknown>,
+          ...((item as { value: unknown }).value as Record<string, unknown>),
           position: emojiCount,
         })
         emojiCount++

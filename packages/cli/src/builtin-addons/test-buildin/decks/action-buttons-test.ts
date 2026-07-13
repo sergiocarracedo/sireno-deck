@@ -17,8 +17,14 @@ const ICON_CASES: ReadonlyArray<{ label: string; icon: string }> = [
   { label: "icon://settings", icon: "icon://settings" },
   { label: "icon://volume-x", icon: "icon://volume-x" },
   // Addon / builtin asset refs
-  { label: "addon://emoji-selector/assets/smileys.svg", icon: "addon://emoji-selector/assets/smileys.svg" },
-  { label: "builtin://core/foo.png (no builtin addon)", icon: "builtin://core/foo.png" },
+  {
+    label: "addon://emoji-selector/assets/smileys.svg",
+    icon: "addon://emoji-selector/assets/smileys.svg",
+  },
+  {
+    label: "builtin://core/foo.png (no builtin addon)",
+    icon: "builtin://core/foo.png",
+  },
   // Paths
   { label: "./assets/chrome.svg", icon: "./assets/chrome.svg" },
   { label: "../shared/x.png", icon: "../shared/x.png" },

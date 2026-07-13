@@ -1,11 +1,15 @@
 import { type ReactElement } from "react"
 
-import { TapIndicator } from "../primitives/TapIndicator"
+import {
+  TapIndicator,
+  type TapIndicatorProps,
+} from "../primitives/TapIndicator"
 import { useThemeUiPresentation } from "../theme-presentation"
 
 export interface SplitActionSurfaceProps {
   primary: ReactElement
   secondary?: ReactElement
+  secondaryIndicatorType?: NonNullable<TapIndicatorProps["type"]>
 }
 
 export function SplitActionSurface(
@@ -37,7 +41,10 @@ export function SplitActionSurface(
       </div>
 
       <div className="absolute -bottom-1 left-1 z-10">
-        <TapIndicator type="dbltap" size="xs" />
+        <TapIndicator
+          type={props.secondaryIndicatorType ?? "dbltap"}
+          size="xs"
+        />
       </div>
       <div className="flex-1 overflow-hidden flex items-end justify-center absolute bottom-0 right-0">
         <div

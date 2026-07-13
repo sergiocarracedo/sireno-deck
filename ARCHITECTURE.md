@@ -207,23 +207,23 @@ One connection per frontend / emulator surface.
 `PROTOCOL_VERSION = 1`. Zod schemas in `api/protocol-internal.ts`; re-exported
 from `render/protocol.ts`.
 
-| Direction       | Message              | Shape                                                     |
-| --------------- | -------------------- | --------------------------------------------------------- |
-| client → server | `hello`              | `{ token }`                                               |
-| server → client | `hello-ack`          | `{ ok, protocolVersion, channels? }`                      |
-| server → client | `deck-config`        | `{ deckId, surfaces: Record<deckId, {name, buttons[]}> }` |
-| server → client | `state`              | `{ channels: Record<channel, payload>, cadence }`         |
-| server → client | `decks-list`         | `{ decks: AddonDeck[] }`                                  |
-| server → client | `show-overlay`       | `{ deckId }`                                              |
-| server → client | `dismiss-overlay`    | `{}`                                                      |
-| server → client | `deck-active`        | `{ deckId, mode, history }`                               |
-| server → client | `assets`             | `{ assets: {id, data}[] }`                                |
+| Direction       | Message              | Shape                                                         |
+| --------------- | -------------------- | ------------------------------------------------------------- |
+| client → server | `hello`              | `{ token }`                                                   |
+| server → client | `hello-ack`          | `{ ok, protocolVersion, channels? }`                          |
+| server → client | `deck-config`        | `{ deckId, surfaces: Record<deckId, {name, buttons[]}> }`     |
+| server → client | `state`              | `{ channels: Record<channel, payload>, cadence }`             |
+| server → client | `decks-list`         | `{ decks: AddonDeck[] }`                                      |
+| server → client | `show-overlay`       | `{ deckId }`                                                  |
+| server → client | `dismiss-overlay`    | `{}`                                                          |
+| server → client | `deck-active`        | `{ deckId, mode, history }`                                   |
+| server → client | `assets`             | `{ assets: {id, data}[] }`                                    |
 | client → server | `button-action`      | `{ deckId, position, gesture: "tap" \| "dbl-tap" \| "hold" }` |
-| client → server | `select-deck`        | `{ deckId }`                                              |
-| client → server | `method-call`        | `{ callId, name, args }`                                  |
-| server → client | `method-call-result` | `{ callId, ok, value?, error? }`                          |
-| client → server | `subscribe-channels` | `{ channels: string[] }`                                  |
-| server → client | `runtime:gesture:*`  | per-button gesture event (separate stream)                |
+| client → server | `select-deck`        | `{ deckId }`                                                  |
+| client → server | `method-call`        | `{ callId, name, args }`                                      |
+| server → client | `method-call-result` | `{ callId, ok, value?, error? }`                              |
+| client → server | `subscribe-channels` | `{ channels: string[] }`                                      |
+| server → client | `runtime:gesture:*`  | per-button gesture event (separate stream)                    |
 
 ### 3.11 Real mode vs emulator mode
 
@@ -332,18 +332,18 @@ All shipped from `packages/cli/src/builtin-addons/`. Each ships a
 order: themes, core, internal-settings, session, date-time,
 emoji-selector, media, system-status, value-display, weather, brightness.
 
-| Addon               | Button types                                                 | Publish / poll | Notes                                                            |
-| ------------------- | ------------------------------------------------------------ | -------------- | ---------------------------------------------------------------- |
+| Addon               | Button types                                                  | Publish / poll | Notes                                                            |
+| ------------------- | ------------------------------------------------------------- | -------------- | ---------------------------------------------------------------- |
 | `core`              | `action`, `change-deck`, `toggle`, `page-nav`, `media-sample` | —              | The generic button types every deck is built from.               |
-| `internal-settings` | `about`, `brightness`, `theme`                               | —              | All three types are `internal: true`. Hosts the `settings` deck. |
-| `session`           | `info`, `time`                                               | —              | `time` is `internal: true`. Hosts the `locked` deck.             |
-| `date-time`         | `time`, `date`, `analog-clock`, `locked-time-tile`, `custom` | `1000 ms`      | Frontend-driven (no backend polling).                            |
-| `emoji-selector`    | `launcher`, `category`, `emoji`, `back`, `page-nav`          | —              | Hosts its own per-category / per-page decks.                     |
-| `media`             | `player`, `mute`, `volume:up`, `volume:down`                 | `1000 ms`      | Global backend with `methods` (play/pause/next/prev/volume).     |
-| `system-status`     | `status`                                                     | `1000 ms`      | 1–2 metrics per tile.                                            |
-| `value-display`     | `display`                                                    | `5000 ms`      | 1–3 values per tile.                                             |
-| `weather`           | `weather`                                                    | `600_000 ms`   | Uses `subscriptions` (push) + an explicit `poll(id)` trigger.    |
-| `brightness`        | `brightness`                                                 | `2000 ms`      | Frontend reads brightness, backends trigger `executor`.          |
+| `internal-settings` | `about`, `brightness`, `theme`                                | —              | All three types are `internal: true`. Hosts the `settings` deck. |
+| `session`           | `info`, `time`                                                | —              | `time` is `internal: true`. Hosts the `locked` deck.             |
+| `date-time`         | `time`, `date`, `analog-clock`, `locked-time-tile`, `custom`  | `1000 ms`      | Frontend-driven (no backend polling).                            |
+| `emoji-selector`    | `launcher`, `category`, `emoji`, `back`, `page-nav`           | —              | Hosts its own per-category / per-page decks.                     |
+| `media`             | `player`, `mute`, `volume:up`, `volume:down`                  | `1000 ms`      | Global backend with `methods` (play/pause/next/prev/volume).     |
+| `system-status`     | `status`                                                      | `1000 ms`      | 1–2 metrics per tile.                                            |
+| `value-display`     | `display`                                                     | `5000 ms`      | 1–3 values per tile.                                             |
+| `weather`           | `weather`                                                     | `600_000 ms`   | Uses `subscriptions` (push) + an explicit `poll(id)` trigger.    |
+| `brightness`        | `brightness`                                                  | `2000 ms`      | Frontend reads brightness, backends trigger `executor`.          |
 
 > **`gestureHandlers` today:** only `media` and `emoji-selector` declare it on
 > their manifests. The runtime currently does **not** enforce it as a filter
@@ -493,7 +493,7 @@ its `gestureHandlers`. Concretely:
 
 | Addon               | Backend handlers currently declared                                               | Needs manifest addition                        |
 | ------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `core`              | `change-deck.onTap`, `toggle.onTap`                                                 | `gestureHandlers: ['tap']`                     |
+| `core`              | `change-deck.onTap`, `toggle.onTap`                                               | `gestureHandlers: ['tap']`                     |
 | `internal-settings` | `about.onTap`, `brightness.onTap`, `theme.onTap`                                  | `gestureHandlers: ['tap']`                     |
 | `session`           | `info.onTap`, `time.onTap`                                                        | `gestureHandlers: ['tap']`                     |
 | `date-time`         | `time` is read-only (no backend handler)                                          | none                                           |

@@ -155,7 +155,9 @@ describe("core:action configSchema (uses IconSourceSchema)", () => {
   })
 
   it("rejects an inline URL", () => {
-    const r = ActionConfigSchema.safeParse({ icon: "data:image/png;base64,AAAA" })
+    const r = ActionConfigSchema.safeParse({
+      icon: "data:image/png;base64,AAAA",
+    })
     expect(r.success).toBe(false)
   })
 

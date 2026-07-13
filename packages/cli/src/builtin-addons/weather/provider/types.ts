@@ -1,6 +1,6 @@
-import type { WeatherLocation } from '../buttons/weather/config'
+import type { WeatherLocation } from "../buttons/weather/config"
 
-const units = ['metric', 'imperial'] as const
+const units = ["metric", "imperial"] as const
 type Units = (typeof units)[number]
 
 export interface CityEntry {

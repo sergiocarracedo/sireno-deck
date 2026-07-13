@@ -310,7 +310,10 @@ export const bridgeAddonServices = async (
           config: unknown
           gesture: string
         }) {
-          if (allowedGestures === undefined || !allowedGestures.includes("hold"))
+          if (
+            allowedGestures === undefined ||
+            !allowedGestures.includes("hold")
+          )
             return
           try {
             await buttonService.onHold?.(wrappedCtx)
@@ -335,32 +338,26 @@ export const bridgeAddonServices = async (
     }
   }
 
-  pubSub.subscribe(
-    "runtime:deck-inactive",
-    (payload: unknown) => {
-      if (
-        typeof payload !== "object" ||
-        payload === null ||
-        !("deckId" in payload)
-      ) {
-        return
+  pubSub.subscribe("runtime:deck-inactive", (payload: unknown) => {
+    if (
+      typeof payload !== "object" ||
+      payload === null ||
+      !("deckId" in payload)
+    ) {
+      return
+    }
+    const deckId = String((payload as { deckId: unknown }).deckId)
+    const tracked = deckButtonCleanup.get(deckId)
+    if (tracked === undefined) return
+    for (const { buttonAbort, buttonService, wrappedCtx } of tracked) {
+      try {
+        buttonService.onUnmount?.(wrappedCtx)
+      } catch (err) {
+        console.error(`[bridge] ${deckId} onUnmount failed:`, err)
       }
-      const deckId = String((payload as { deckId: unknown }).deckId)
-      const tracked = deckButtonCleanup.get(deckId)
-      if (tracked === undefined) return
-      for (const { buttonAbort, buttonService, wrappedCtx } of tracked) {
-        try {
-          buttonService.onUnmount?.(wrappedCtx)
-        } catch (err) {
-          console.error(
-            `[bridge] ${deckId} onUnmount failed:`,
-            err,
-          )
-        }
-        buttonAbort.abort()
-      }
-    },
-  )
+      buttonAbort.abort()
+    }
+  })
 
   abortController.signal.addEventListener("abort", () => {
     for (const [addonName, globalService] of addonGlobalServices) {

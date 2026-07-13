@@ -141,7 +141,9 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     if (value.startsWith("macro://")) {
       const inner = value.slice("macro://".length)
       if (inner.length === 0) {
-        throw new NotImplementedError("dispatch: macro:// requires a value, e.g. macro://ctrl+c")
+        throw new NotImplementedError(
+          "dispatch: macro:// requires a value, e.g. macro://ctrl+c",
+        )
       }
       await dispatchMacro(inner, { runCommand, keyMacro })
       return

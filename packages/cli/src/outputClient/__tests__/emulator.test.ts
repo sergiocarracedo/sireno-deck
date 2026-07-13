@@ -35,7 +35,11 @@ describe("EmulatorOutputClient.selectDevice", () => {
   it("returns the saved device when savedId matches a virtual id", async () => {
     const client = new EmulatorOutputClient()
     const devices = await client.listDevices()
-    const result = await client.selectDevice(devices, "emulator:xl", silentLogger())
+    const result = await client.selectDevice(
+      devices,
+      "emulator:xl",
+      silentLogger(),
+    )
     expect(result.id).toBe("emulator:xl")
   })
 

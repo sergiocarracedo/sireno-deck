@@ -29,9 +29,7 @@ const toDescriptor = (info: StreamDeckDeviceInfo): DeviceDescriptor => {
 export const listDevices = async (): Promise<DeviceDescriptor[]> => {
   try {
     const infos = await listStreamDecks()
-    return infos
-      .map(toDescriptor)
-      .sort((a, b) => a.id.localeCompare(b.id))
+    return infos.map(toDescriptor).sort((a, b) => a.id.localeCompare(b.id))
   } catch (err) {
     // ponytail: log so real errors (missing model entry, HID I/O failure) aren't hidden as "no devices"
     console.warn({ err }, "device enumeration failed")

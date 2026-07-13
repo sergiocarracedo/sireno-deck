@@ -5,7 +5,17 @@ category: logic-errors
 module: packages/cli/src/core/gesture-state.ts + packages/cli/emulator/src/gesture.ts
 problem_type: logic_error
 severity: high
-tags: [gesture-detection, per-transport-decoupling, create-gesture-detector, next-gesture, dbl-tap-callback, per-key-state, live-event-stream, 200ms-window]
+tags:
+  [
+    gesture-detection,
+    per-transport-decoupling,
+    create-gesture-detector,
+    next-gesture,
+    dbl-tap-callback,
+    per-key-state,
+    live-event-stream,
+    200ms-window,
+  ]
 ---
 
 # Gesture detection — createGestureDetector vs nextGesture, and the dbl-tap callback gap

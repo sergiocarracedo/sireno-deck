@@ -14,7 +14,11 @@ const MuteButtonFrontend: AddonFrontendButton<Record<string, never>> = () => {
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-1 relative">
-      <IconLabelSurface key={iconName} label="Mute" source={`icon://${iconName}`} />
+      <IconLabelSurface
+        key={iconName}
+        label="Mute"
+        source={`icon://${iconName}`}
+      />
     </div>
   )
 }

@@ -72,9 +72,7 @@ describe("Deck", () => {
         <Deck deck={DECK} />
       </WebSocketProvider>,
     )
-    const cell = container.querySelector(
-      '[data-button-type="core:action"]',
-    )
+    const cell = container.querySelector('[data-button-type="core:action"]')
     expect(cell).not.toBeNull()
     const frame = cell?.querySelector('[data-sireno-button-frame="true"]')
     expect(frame).not.toBeNull()

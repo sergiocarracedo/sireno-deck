@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  DEVICE_MODELS,
-  isKnownDeviceModel,
-  resolveKeyCount,
-} from "../models"
+import { DEVICE_MODELS, isKnownDeviceModel, resolveKeyCount } from "../models"
 
 describe("device/models", () => {
   it("recognizes Stream Deck Original V2 (productId 0x006d)", () => {

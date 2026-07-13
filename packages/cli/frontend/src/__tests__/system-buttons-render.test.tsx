@@ -120,8 +120,6 @@ describe("Deck with system buttons", () => {
       buttons: [{ id: "14", type: "core:back", config: {} }],
     }
     const { container } = render(<Deck deck={deck} />)
-    expect(
-      container.querySelector('[data-split-action="true"]'),
-    ).toBeNull()
+    expect(container.querySelector('[data-split-action="true"]')).toBeNull()
   })
 })

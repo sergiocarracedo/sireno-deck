@@ -90,4 +90,3 @@ These were captured during Phases 67–75 and remain valid. See git history `e4f
 - **Shared logic** — `core/gesture-state.ts` constants `HOLD_ACTION_DELAY_MS = 200`, `DOUBLE_TAP_DELAY_MS = 200`, and `createGestureDetector` / `nextGesture` are the single source of timing. Both transports import them, so any future tuning applies atomically. The 200ms constants and the dbl-tap `onGesture` callback fix from the earlier decision stay.
 
 **Rationale:** Decoupling. Neither the backend nor the chrome knows how the emulator SPA detects gestures; neither the backend nor the emulator knows how real hardware delivers them. The wire format is gesture-only, the runtime is gesture-source-agnostic. A change to emulator tap-detection timing is a local edit in `emulator/gesture.ts`; the backend never has to know. Symmetric to how real hardware already worked.
-

@@ -33,9 +33,7 @@ describe("buildDeckConfigMessage — back button injection", () => {
       id: "main",
       name: "Main",
       isMain: true,
-      buttons: [
-        { id: "0", type: "core:action", config: {} },
-      ],
+      buttons: [{ id: "0", type: "core:action", config: {} }],
     }
     const msg = buildDeckConfigMessage(
       deck,
@@ -55,9 +53,7 @@ describe("buildDeckConfigMessage — back button injection", () => {
     const deck = {
       id: "sub",
       name: "Sub",
-      buttons: [
-        { id: "0", type: "core:action", config: {} },
-      ],
+      buttons: [{ id: "0", type: "core:action", config: {} }],
     }
     const msg = buildDeckConfigMessage(
       deck,
@@ -77,9 +73,7 @@ describe("buildDeckConfigMessage — back button injection", () => {
     const deck = {
       id: "sub",
       name: "Sub",
-      buttons: [
-        { id: "14", type: "core:action", config: {} },
-      ],
+      buttons: [{ id: "14", type: "core:action", config: {} }],
     }
     const msg = buildDeckConfigMessage(
       deck,

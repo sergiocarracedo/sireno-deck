@@ -21,7 +21,10 @@ const parseDelay = (raw: string): number | null => {
 }
 
 export const parseMacro = (value: string): MacroStep[] => {
-  const segments = value.split(";").map((s) => s.trim()).filter((s) => s.length > 0)
+  const segments = value
+    .split(";")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
   const steps: MacroStep[] = []
   for (const seg of segments) {
     const lc = seg.toLowerCase()
@@ -51,7 +54,10 @@ export const dispatchMacro = async (
   value: string,
   handlers: {
     runCommand: (cmd: string) => Promise<unknown>
-    keyMacro: (action: { kind: "combo" | "key" | "text"; value: string }) => Promise<void>
+    keyMacro: (action: {
+      kind: "combo" | "key" | "text"
+      value: string
+    }) => Promise<void>
   },
 ): Promise<void> => {
   const steps = parseMacro(value)

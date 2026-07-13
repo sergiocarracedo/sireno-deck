@@ -14,7 +14,7 @@ export default {
       addToHistory: false,
     })
   },
-  onDblTap: ({ config, publish }) => {
+  onHold: ({ config, publish }) => {
     const { prevDeckId } = config as Config
     publish("runtime:navigate-deck", {
       deckId: prevDeckId,

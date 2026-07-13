@@ -3,7 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { createPubSub } from "@/core/pub-sub"
 import { createStore } from "@/core/store"
 import { createLogger } from "@/util/logger"
-import type { ActiveAppProvider, ActiveAppSnapshot } from "@/system/providers/active-app"
+import type {
+  ActiveAppProvider,
+  ActiveAppSnapshot,
+} from "@/system/providers/active-app"
 
 import { createRuntime, type RuntimeDeck } from "../runtime"
 import { createMethods } from "../methods"
@@ -23,7 +26,8 @@ const setup = (decks: ReadonlyArray<RuntimeDeck>) => {
   const pubSub = createPubSub()
   const store = createStore()
   const executor = createActionExecutor({ host: getHostContext() })
-  const methodsRef: { current: ReturnType<typeof createMethods> | undefined } = { current: undefined }
+  const methodsRef: { current: ReturnType<typeof createMethods> | undefined } =
+    { current: undefined }
   const runtime = createRuntime({
     decks,
     pubSub,
@@ -395,11 +399,15 @@ describe("invokeAction — user actions", () => {
       makeDeck({
         id: "main",
         isMain: true,
-        buttons: [{ id: "b1", type: "date-time:date", actions: { tap: "echo hello" } }],
+        buttons: [
+          { id: "b1", type: "date-time:date", actions: { tap: "echo hello" } },
+        ],
       }),
     ])
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const dispatch = vi.spyOn(methods as any, "dispatch").mockResolvedValue(undefined)
+    const dispatch = vi
+      .spyOn(methods as any, "dispatch")
+      .mockResolvedValue(undefined)
     await runtime.invokeAction("b1", "tap")
     expect(dispatch).toHaveBeenCalledWith("echo hello")
   })
@@ -409,11 +417,15 @@ describe("invokeAction — user actions", () => {
       makeDeck({
         id: "main",
         isMain: true,
-        buttons: [{ id: "b1", type: "date-time:date", actions: { dbltap: "echo dbl" } }],
+        buttons: [
+          { id: "b1", type: "date-time:date", actions: { dbltap: "echo dbl" } },
+        ],
       }),
     ])
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const dispatch = vi.spyOn(methods as any, "dispatch").mockResolvedValue(undefined)
+    const dispatch = vi
+      .spyOn(methods as any, "dispatch")
+      .mockResolvedValue(undefined)
     await runtime.invokeAction("b1", "dbl-tap")
     expect(dispatch).toHaveBeenCalledWith("echo dbl")
   })
@@ -423,11 +435,15 @@ describe("invokeAction — user actions", () => {
       makeDeck({
         id: "main",
         isMain: true,
-        buttons: [{ id: "b1", type: "date-time:date", actions: { hold: "echo hold" } }],
+        buttons: [
+          { id: "b1", type: "date-time:date", actions: { hold: "echo hold" } },
+        ],
       }),
     ])
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const dispatch = vi.spyOn(methods as any, "dispatch").mockResolvedValue(undefined)
+    const dispatch = vi
+      .spyOn(methods as any, "dispatch")
+      .mockResolvedValue(undefined)
     await runtime.invokeAction("b1", "hold")
     expect(dispatch).toHaveBeenCalledWith("echo hold")
   })
@@ -437,12 +453,16 @@ describe("invokeAction — user actions", () => {
       makeDeck({
         id: "main",
         isMain: true,
-        buttons: [{ id: "b1", type: "media:mute", actions: { tap: "echo user" } }],
+        buttons: [
+          { id: "b1", type: "media:mute", actions: { tap: "echo user" } },
+        ],
       }),
     ])
     const addonHandler = vi.fn()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const dispatch = vi.spyOn(methods as any, "dispatch").mockResolvedValue(undefined)
+    const dispatch = vi
+      .spyOn(methods as any, "dispatch")
+      .mockResolvedValue(undefined)
     runtime.registerButtonHandler("main:b1", { onTap: addonHandler })
     await runtime.invokeAction("b1", "tap")
     expect(dispatch).toHaveBeenCalledWith("echo user")
@@ -459,7 +479,9 @@ describe("invokeAction — user actions", () => {
     ])
     const addonHandler = vi.fn()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const dispatch = vi.spyOn(methods as any, "dispatch").mockResolvedValue(undefined)
+    const dispatch = vi
+      .spyOn(methods as any, "dispatch")
+      .mockResolvedValue(undefined)
     runtime.registerButtonHandler("main:b1", { onTap: addonHandler })
     await runtime.invokeAction("b1", "tap")
     expect(addonHandler).toHaveBeenCalled()
@@ -501,7 +523,11 @@ describe("invokeAction — user actions", () => {
   describe("invokeAction guard — inactive deck", () => {
     it("drops gesture when button belongs to non-active (main) deck while overlay is active", async () => {
       const { runtime } = setup([
-        makeDeck({ id: "main", isMain: true, buttons: [{ id: "b1", type: "x" }] }),
+        makeDeck({
+          id: "main",
+          isMain: true,
+          buttons: [{ id: "b1", type: "x" }],
+        }),
         makeDeck({ id: "overlay", buttons: [{ id: "b2", type: "y" }] }),
       ])
       const onTap = vi.fn()
@@ -513,7 +539,11 @@ describe("invokeAction — user actions", () => {
 
     it("allows gesture when button belongs to active overlay deck", async () => {
       const { runtime } = setup([
-        makeDeck({ id: "main", isMain: true, buttons: [{ id: "b1", type: "x" }] }),
+        makeDeck({
+          id: "main",
+          isMain: true,
+          buttons: [{ id: "b1", type: "x" }],
+        }),
         makeDeck({ id: "overlay", buttons: [{ id: "b2", type: "y" }] }),
       ])
       const onTap = vi.fn()

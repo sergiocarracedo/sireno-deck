@@ -69,9 +69,8 @@ export const createActiveAppProvider = async (
         options.logger,
       )
     }
-    const { createDarwinActiveAppProvider } = await import(
-      "./active-app/darwin"
-    )
+    const { createDarwinActiveAppProvider } =
+      await import("./active-app/darwin")
     return createDarwinActiveAppProvider({
       executor: options.executor,
       logger: options.logger,
@@ -84,9 +83,8 @@ export const createActiveAppProvider = async (
         options.logger,
       )
     }
-    const { createWindowsActiveAppProvider } = await import(
-      "./active-app/windows"
-    )
+    const { createWindowsActiveAppProvider } =
+      await import("./active-app/windows")
     return createWindowsActiveAppProvider({
       executor: options.executor,
       logger: options.logger,

@@ -102,9 +102,7 @@ describe("validateFull", () => {
       },
     })
     const result = validateFull(config, reg)
-    expect(
-      result.issues.some((i) => /icon|label/.test(i.message)),
-    ).toBe(true)
+    expect(result.issues.some((i) => /icon|label/.test(i.message))).toBe(true)
   })
 
   it("empty issues array returns no errors", () => {

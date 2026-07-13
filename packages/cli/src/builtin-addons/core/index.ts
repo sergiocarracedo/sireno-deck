@@ -29,7 +29,7 @@ export const manifest: AddonManifestV1 = {
     },
     "core:page-nav": {
       frontend: pageNavFrontend,
-      service: { ...pageNavBackend, gestureHandlers: ["tap", "dbl-tap"] as const },
+      service: { ...pageNavBackend, gestureHandlers: ["tap", "hold"] as const },
     },
     "core:media-sample": {
       frontend: mediaSampleFrontend,

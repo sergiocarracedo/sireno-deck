@@ -60,7 +60,8 @@ export const createKeyMacroProvider = async (
     })
   }
   if (platform === "win32") {
-    const { createWindowsKeyMacroProvider } = await import("./key-macro/windows")
+    const { createWindowsKeyMacroProvider } =
+      await import("./key-macro/windows")
     return createWindowsKeyMacroProvider({
       executor: options.executor,
       logger: options.logger,

@@ -5,7 +5,17 @@ category: best-practices
 module: packages/cli/src/deck/
 problem_type: best_practice
 severity: medium
-tags: [user-actions, button-actions, gesture-handlers, addon-precedence, macro-dispatch, paste-dispatch, uri-scheme, methods-dispatch]
+tags:
+  [
+    user-actions,
+    button-actions,
+    gesture-handlers,
+    addon-precedence,
+    macro-dispatch,
+    paste-dispatch,
+    uri-scheme,
+    methods-dispatch,
+  ]
 ---
 
 # User-action button dispatch — URI scheme routing and addon precedence
@@ -17,15 +27,15 @@ Users wanted a way to attach tap/dbltap/hold actions to **any** button from the 
 ```yaml
 buttons:
   - position: 2
-    type: 'date-time:time'
+    type: "date-time:time"
     config:
       variant: big
   - position: 3
-    type: 'date-time:date'
+    type: "date-time:date"
     actions:
-      tap: 'xdg-open https://calendar.google.com'
-      dbltap: 'macro://ctrl+t'
-      hold: 'paste://🔥'
+      tap: "xdg-open https://calendar.google.com"
+      dbltap: "macro://ctrl+t"
+      hold: "paste://🔥"
 ```
 
 The existing `core-buttons:action` button type ran commands but required swapping the button's type and had no URI scheme support (`macro://`, `paste://`). No mechanism existed for per-button actions on non-action buttons.
@@ -86,12 +96,15 @@ This means `invokeAction` receives no addon handler for unclaimed gestures → f
 ### 4. Add `actions` to `ButtonDefSchema` and carry it through to `RuntimeDeck`
 
 Schema (`packages/cli/src/config/schemas.ts`):
+
 ```ts
-export const ButtonActionsSchema = z.object({
-  tap: z.string().min(1).optional(),
-  dbltap: z.string().min(1).optional(),
-  hold: z.string().min(1).optional(),
-}).strict()
+export const ButtonActionsSchema = z
+  .object({
+    tap: z.string().min(1).optional(),
+    dbltap: z.string().min(1).optional(),
+    hold: z.string().min(1).optional(),
+  })
+  .strict()
 
 // Added to ButtonDefSchema:
 actions: ButtonActionsSchema.optional()
@@ -134,30 +147,36 @@ With this, any button can be enhanced with shell commands, macros, or paste — 
 ## Examples
 
 **`date-time:date` + tap action:**
+
 ```yaml
 - position: 3
-  type: 'date-time:date'
+  type: "date-time:date"
   actions:
-    tap: 'google-chrome'
+    tap: "google-chrome"
 ```
+
 → User action fires (addon has no `onTap`) → `dispatch('google-chrome')` → `runCommand('google-chrome')`
 
 **`core-buttons:action` with macro:**
+
 ```yaml
 - position: 5
-  type: 'core-buttons:action'
+  type: "core-buttons:action"
   config:
-    command: 'macro://ctrl+t;delay(1s);ctrl+v'
+    command: "macro://ctrl+t;delay(1s);ctrl+v"
 ```
+
 → `core-buttons:action onTap` calls `methods.dispatch(config.command)` → macro plays sequence
 
 **`media:mute` with conflicting tap action:**
+
 ```yaml
 - position: 0
-  type: 'media:mute'
+  type: "media:mute"
   actions:
     tap: 'notify-send "muted!"'
 ```
+
 → Addon claims tap via `gestureHandlers: ['tap']` → addon handler fires → user action ignored
 
 ## Related

@@ -1,6 +1,6 @@
-import { Chip, Text } from '@/ui'
-import { type WeatherSnapshot } from '../../provider/types'
-import { WeatherIcon } from './icons'
+import { Chip, Text } from "@/ui"
+import { type WeatherSnapshot } from "../../provider/types"
+import { WeatherIcon } from "./icons"
 
 export const pages: ReadonlyArray<{
   name: string
@@ -12,7 +12,7 @@ export const pages: ReadonlyArray<{
   }) => React.ReactNode
 }> = [
   {
-    name: 'main',
+    name: "main",
     render: ({ snapshot, unitTemp, city }) => (
       <div className="flex h-full w-full flex-col items-center justify-center gap-1">
         <WeatherIcon code={snapshot.wmoCode} className="h-10 w-10" />
@@ -31,11 +31,11 @@ export const pages: ReadonlyArray<{
     ),
   },
   {
-    name: 'data',
+    name: "data",
     render: ({ snapshot, unitWind, city }) => (
       <div>
         <Text size="sm" tone="primary" fit="ellipsis">
-          {city || '---'}
+          {city || "---"}
         </Text>
         {snapshot.windSpeed !== undefined && (
           <Chip tone="foreground" size="sm">
@@ -51,7 +51,7 @@ export const pages: ReadonlyArray<{
     ),
   },
   {
-    name: 'hourly-forecast',
+    name: "hourly-forecast",
     render: ({ snapshot, unitTemp }) => {
       const entries = snapshot.hourly?.slice(0, 2) ?? []
       return (
@@ -73,10 +73,10 @@ export const pages: ReadonlyArray<{
     },
   },
   {
-    name: 'daily-forecast',
+    name: "daily-forecast",
     render: ({ snapshot, unitTemp }) => {
       const entries = snapshot.daily?.slice(0, 2) ?? []
-      const weekDays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+      const weekDays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
       console.log(entries)
       return (
         <div className="flex items-center justify-center gap-2">

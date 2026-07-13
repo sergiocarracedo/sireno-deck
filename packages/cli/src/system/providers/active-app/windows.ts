@@ -1,9 +1,6 @@
 import type pino from "pino"
 
-import type {
-  ActiveAppProvider,
-  ActiveAppSnapshot,
-} from "../active-app"
+import type { ActiveAppProvider, ActiveAppSnapshot } from "../active-app"
 import type { CommandExecutor } from "../shared"
 
 export interface WindowsActiveAppDeps {

@@ -4,24 +4,24 @@ decks:
     name: Main Deck
     buttons:
       - position: 2
-        type: 'date-time:time'
+        type: "date-time:time"
         config:
           variant: big
 
       - position: 3
-        type: 'date-time:date'
+        type: "date-time:date"
         actions:
-          tap: 'xdg-open https://calendar.google.com'
+          tap: "xdg-open https://calendar.google.com"
 
       - position: 1
-        type: 'core:change-deck'
+        type: "core:change-deck"
         config:
-          deck: 'action-buttons-test'
+          deck: "action-buttons-test"
           icon: 🧪
           label: Icon Test
 
       - position: 4
-        type: 'weather:weather'
+        type: "weather:weather"
         config:
           location:
             latitude: 42.2304
@@ -29,20 +29,20 @@ decks:
             name: Vigo
 
       - position: 9
-        type: 'emoji-selector:launcher'
+        type: "emoji-selector:launcher"
 
       - position: 10
-        type: 'core:action'
+        type: "core:action"
         actions:
-          tap: 'google-chrome'
-          hold: 'google-chrome --incognito'
-          dbltap: 'macro://ctrl+t'
+          tap: "google-chrome"
+          hold: "google-chrome --incognito"
+          dbltap: "macro://ctrl+t"
         config:
           icon: ./assets/chrome.svg
           label: Chrome
 
       - position: 0
-        type: 'system-status:status'
+        type: "system-status:status"
         config:
           variant: bars
           metrics:
@@ -52,34 +52,34 @@ decks:
               label: RAM
             - metric: swap_usage
               label: Swap
-              unavailable_label: 'N/A'
+              unavailable_label: "N/A"
 
       - position: 5
-        type: 'system-status:status'
+        type: "system-status:status"
         config:
           metrics:
             - metric: cpu_usage
               label: CPU
             - metric: fan_speed
               label: Fan
-              unavailable_label: 'N/A'
+              unavailable_label: "N/A"
             - metric: uptime
               label: Uptime
 
       - position: 6
-        type: 'media:volume:down'
+        type: "media:volume:down"
       - position: 7
-        type: 'media:volume:up'
+        type: "media:volume:up"
       - position: 8
-        type: 'media:mute'
+        type: "media:mute"
       - position: 12
-        type: 'media:player'
+        type: "media:player"
 
       - position: 11
-        type: 'date-time:time'
+        type: "date-time:time"
 
       - position: 13
-        type: 'date-time:analog-clock'
+        type: "date-time:analog-clock"
         # actions:
         #   tap: 'google-chrome https://calendar.google.com'
 
@@ -91,80 +91,80 @@ decks:
     autoShow: true
     buttons:
       - position: 0
-        type: 'core:action'
+        type: "core:action"
         actions:
-          tap: 'xdotool key ctrl+t'
+          tap: "xdotool key ctrl+t"
         config:
           label: New Tab
       - position: 1
-        type: 'core:action'
+        type: "core:action"
         actions:
-          tap: 'xdotool key ctrl+w'
+          tap: "xdotool key ctrl+w"
         config:
           label: Close Tab
       - position: 2
-        type: 'core:action'
+        type: "core:action"
         actions:
-          tap: 'xdotool key ctrl+shift+t'
+          tap: "xdotool key ctrl+shift+t"
         config:
           label: Reopen Tab
       - position: 3
-        type: 'core:action'
+        type: "core:action"
         actions:
-          tap: 'xdotool key ctrl+shift+n'
+          tap: "xdotool key ctrl+shift+n"
         config:
           label: New Window
       - position: 4
-        type: 'core:action'
+        type: "core:action"
         actions:
-          tap: 'xdotool key ctrl+r'
+          tap: "xdotool key ctrl+r"
         config:
           label: Reload
       - position: 5
-        type: 'core:action'
+        type: "core:action"
         actions:
-          tap: 'xdotool key ctrl+shift+r'
+          tap: "xdotool key ctrl+shift+r"
         config:
           label: Hard Reload
       - position: 6
-        type: 'core:action'
+        type: "core:action"
         actions:
-          tap: 'xdotool key F12'
+          tap: "xdotool key F12"
         config:
           label: Dev Tools
 
   test-deck:
     name: Test Deck
-    icon: '🧪'
+    icon: "🧪"
     buttons:
       - position: 0
-        type: 'core:change-deck'
+        type: "core:change-deck"
         config:
-          label: 'TEst'
-          deck: 'main'
+          label: "TEst"
+          deck: "main"
 
       - position: 1
-        type: 'core:action'
+        type: "core:action"
         actions:
-          tap: 'macro://ctrl+shift+t'
+          tap: "macro://ctrl+shift+t"
         config:
           label: Macro
 
       - position: 2
-        type: 'core:action'
+        type: "core:action"
         actions:
-          tap: 'paste://hello from sireno'
+          tap: "paste://hello from sireno"
         config:
           label: Paste
 
       - position: 3
-        type: 'core:toggle'
+        type: "core:toggle"
         config:
-          key: 'test-toggle'
+          key: "test-toggle"
           default: false
 
       - position: 4
-        type: 'brightness:brightness'
+        type: "brightness:brightness"
         config:
           action: up
 

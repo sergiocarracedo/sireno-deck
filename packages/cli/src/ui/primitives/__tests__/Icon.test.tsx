@@ -3,7 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { cleanup, render } from "@testing-library/react"
 
 import { Icon, _testHelpers } from "../Icon"
-import { AssetCacheContext, type AssetCache } from "../../contexts/AssetCacheContext"
+import {
+  AssetCacheContext,
+  type AssetCache,
+} from "../../contexts/AssetCacheContext"
 
 const renderWithCache = (
   ui: React.ReactNode,
@@ -81,7 +84,9 @@ describe("resolveLucideIcon", () => {
   })
 
   it("returns undefined for unknown icons", () => {
-    expect(_testHelpers.resolveLucideIcon("not-a-real-icon-name")).toBeUndefined()
+    expect(
+      _testHelpers.resolveLucideIcon("not-a-real-icon-name"),
+    ).toBeUndefined()
   })
 
   it("returns undefined for empty / whitespace", () => {
@@ -107,7 +112,9 @@ describe("Icon render", () => {
   })
 
   it("renders asset:// as <img> when the asset is in the cache", () => {
-    const cache: AssetCache = new Map([["abc123", "data:image/svg+xml;base64,XYZ"]])
+    const cache: AssetCache = new Map([
+      ["abc123", "data:image/svg+xml;base64,XYZ"],
+    ])
     const { container } = renderWithCache(
       <Icon source="asset://abc123" size={48} />,
       cache,
@@ -120,24 +127,36 @@ describe("Icon render", () => {
   })
 
   it("renders fallback when asset:// id is missing from the cache", () => {
-    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined)
+    const warnSpy = vi
+      .spyOn(console, "warn")
+      .mockImplementation(() => undefined)
     const { container } = renderWithCache(<Icon source="asset://missing" />)
-    const fallback = container.querySelector('[data-sireno-icon-source="generic"]')
+    const fallback = container.querySelector(
+      '[data-sireno-icon-source="generic"]',
+    )
     expect(fallback).not.toBeNull()
     expect(warnSpy).toHaveBeenCalledOnce()
     expect(warnSpy.mock.calls[0]?.[0]).toContain("invalid icon source")
   })
 
   it("renders fallback for unknown icon:// name", () => {
-    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined)
-    const { container } = renderWithCache(<Icon source="icon://not-a-real-icon" />)
-    const fallback = container.querySelector('[data-sireno-icon-source="generic"]')
+    const warnSpy = vi
+      .spyOn(console, "warn")
+      .mockImplementation(() => undefined)
+    const { container } = renderWithCache(
+      <Icon source="icon://not-a-real-icon" />,
+    )
+    const fallback = container.querySelector(
+      '[data-sireno-icon-source="generic"]',
+    )
     expect(fallback).not.toBeNull()
     expect(warnSpy).toHaveBeenCalledOnce()
   })
 
   it("renders fallback (no throw) for invalid source", () => {
-    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined)
+    const warnSpy = vi
+      .spyOn(console, "warn")
+      .mockImplementation(() => undefined)
     for (const bad of ["%", "abc", "./foo.svg", ""]) {
       const { container } = renderWithCache(<Icon source={bad} />)
       const fallback = container.querySelector(
@@ -150,12 +169,16 @@ describe("Icon render", () => {
 
   it("renders fallback when source is undefined", () => {
     const { container } = renderWithCache(<Icon />)
-    const fallback = container.querySelector('[data-sireno-icon-source="generic"]')
+    const fallback = container.querySelector(
+      '[data-sireno-icon-source="generic"]',
+    )
     expect(fallback).not.toBeNull()
   })
 
   it("warns once per distinct invalid source", () => {
-    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined)
+    const warnSpy = vi
+      .spyOn(console, "warn")
+      .mockImplementation(() => undefined)
     // Use a unique source string that no other test used, to verify the
     // dedupe semantics in isolation.
     const unique = `__test_${Math.random().toString(36).slice(2)}__`

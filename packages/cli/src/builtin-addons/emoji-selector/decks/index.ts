@@ -6,29 +6,40 @@ import {
   type EmojiSelectorDeckConfig,
 } from "../support"
 
+const EMOJI_PAGE_SIZE = 13
+
+const FAVORITES = {
+  id: "favorites",
+  label: "Favorites",
+  icon: "⭐",
+} as const
+
+const buildCategoryDeckId = (baseDeckId: string, categoryId: string): string =>
+  `${baseDeckId}-${categoryId}`
+
+const buildEmojiDeck = (name: string, emojis: readonly string[]) => ({
+  name,
+  buttons: emojis.map((emoji, offset) => ({
+    type: "emoji-selector:emoji",
+    emoji,
+    label: emoji,
+    position: offset,
+    actions: { tap: `paste://${emoji}` },
+  })),
+  paginated: true,
+})
+
 const generateDecks = (
   deck: { id: string },
   config: EmojiSelectorDeckConfig,
 ): Record<string, AddonGeneratedDeck> => {
   const decks: Record<string, AddonGeneratedDeck> = {}
-  const categories = [
-    ...(config.favorites.length > 0
-      ? [
-          {
-            id: "favorites",
-            label: "Favorites",
-            icon: "⭐",
-            emojis: config.favorites,
-          },
-        ]
-      : []),
-    ...CATEGORY_DEFINITIONS.map((c) => ({
-      id: c.id,
-      label: c.label,
-      icon: c.icon,
-      emojis: c.emojis,
-    })),
-  ]
+  const hasFavorites = config.favorites.length > 0
+
+  if (hasFavorites) {
+    const favoritesDeckId = buildCategoryDeckId(deck.id, FAVORITES.id)
+    decks[favoritesDeckId] = buildEmojiDeck(FAVORITES.label, config.favorites)
+  }
 
   const topButtons: {
     type: string
@@ -37,29 +48,36 @@ const generateDecks = (
     position: number
     target_deck: string
   }[] = []
-  const EMOJI_PAGE_SIZE = 13
-  categories.forEach((category, idx) => {
-    const categoryDeckId = `${deck.id}-${category.id}`
-    const totalPages = Math.max(1, Math.ceil(category.emojis.length / EMOJI_PAGE_SIZE))
-    const targetDeck = totalPages > 1 ? `${categoryDeckId}-p1` : categoryDeckId
+
+  if (hasFavorites) {
+    const favoritesDeckId = buildCategoryDeckId(deck.id, FAVORITES.id)
+    const totalPages = Math.max(
+      1,
+      Math.ceil(config.favorites.length / EMOJI_PAGE_SIZE),
+    )
     topButtons.push({
+      type: "emoji-selector:category",
+      icon: FAVORITES.icon,
+      label: FAVORITES.label,
+      position: 0,
+      target_deck: totalPages > 1 ? `${favoritesDeckId}-p1` : favoritesDeckId,
+    })
+  }
+
+  CATEGORY_DEFINITIONS.forEach((category, idx) => {
+    const categoryDeckId = buildCategoryDeckId(deck.id, category.id)
+    const totalPages = Math.max(
+      1,
+      Math.ceil(category.emojis.length / EMOJI_PAGE_SIZE),
+    )
+    decks[categoryDeckId] = buildEmojiDeck(category.label, category.emojis)
+    topButtons.push({
+      type: "emoji-selector:category",
       icon: category.icon,
       label: category.label,
-      position: idx,
-      target_deck: targetDeck,
-      type: "emoji-selector:category",
+      position: hasFavorites ? idx + 1 : idx,
+      target_deck: totalPages > 1 ? `${categoryDeckId}-p1` : categoryDeckId,
     })
-    const buttons = category.emojis.map((emoji, offset) => ({
-      type: "emoji-selector:emoji",
-      emoji,
-      label: emoji,
-      position: offset,
-    }))
-    decks[categoryDeckId] = {
-      name: category.label,
-      buttons,
-      paginated: true,
-    }
   })
 
   decks[deck.id] = {

@@ -122,9 +122,8 @@ const isFullValidMock = validationMod.isFullValid as unknown as ReturnType<
 const loadDeviceConfigMock = cfgMod.loadDeviceConfig as unknown as ReturnType<
   typeof vi.fn
 >
-const selectOutputClientMock = outputClientMod.selectOutputClient as unknown as ReturnType<
-  typeof vi.fn
->
+const selectOutputClientMock =
+  outputClientMod.selectOutputClient as unknown as ReturnType<typeof vi.fn>
 const writePidMock = daemonMod.writePid as unknown as ReturnType<typeof vi.fn>
 const removePidFileMock = daemonMod.removePidFile as unknown as ReturnType<
   typeof vi.fn

@@ -1,0 +1,138 @@
+%%{ init: { "theme": "dark" } }%%
+
+graph TB
+    subgraph Config["Config Layer"]
+        YAML["config.yml"]
+        LOADER["config/loader.ts<br/>loadConfig()"]
+        SCHEMAS["config/schemas.ts<br/>Zod validation"]
+        EXPANDER["config/reference-expander.ts<br/>$ref resolution"]
+        VALIDATOR["config/validation.ts<br/>validateFull()"]
+    end
+
+    subgraph AddonSystem["Addon System"]
+        REGISTRY["addon/registry.ts<br/>AddonRegistry"]
+        ADDON_LOADER["addon/loader.ts<br/>loadAddons()"]
+        BUILTIN["builtin-addons/<br/>core · date-time · system-status<br/>value-display · media · session"]
+        ADDON_API["addon/api.ts<br/>AddonManifestV1"]
+    end
+
+    subgraph Runtime["Runtime Core"]
+        RUNTIME["deck/runtime.ts<br/>createRuntime()"]
+        METHODS["deck/methods.ts<br/>dispatch · navigate · keyMacro"]
+        DECK_CONFIG["deck/deck-config.ts<br/>buildDeckConfigMessage()"]
+        GESTURE["core/gesture-state.ts<br/>tap · dbl-tap · hold"]
+        PUBSUB["core/pub-sub.ts"]
+        STORE["core/store.ts"]
+    end
+
+    subgraph CLI["CLI Entry"]
+        MAIN["cli/main.ts"]
+        RUN_CMD["commands/run.ts<br/>main orchestrator"]
+    end
+
+    subgraph Output["Output Layer"]
+        REAL["outputClient/real.ts"]
+        EMULATOR["outputClient/emulator.ts"]
+    end
+
+    subgraph RenderPipeline["Rendering Pipeline"]
+        WS_BRIDGE["render/ws-bridge.ts<br/>WebSocket server"]
+        BROWSER_RENDERER["render/browser-renderer.ts<br/>Playwright screenshot → sharp crop"]
+    end
+
+    subgraph Frontend["Frontend (Vite React)"]
+        APP["App.tsx"]
+        DECK_UI["Deck.tsx<br/>grid layout"]
+        BUTTON_UI["ButtonSurface<br/>resolves addon component"]
+        BRIDGE["bridge/client.ts<br/>WS client"]
+    end
+
+    subgraph Device["Hardware"]
+        STREAM_DECK["device/stream-deck.ts<br/>@elgato-stream-deck/node"]
+        PHYSICAL["Stream Deck LCD"]
+    end
+
+    subgraph SystemProviders["System Providers"]
+        ACTIVE_APP["active-app/"]
+        KEY_MACRO["key-macro/"]
+        CLIPBOARD["clipboard/"]
+    end
+
+    subgraph UI["React UI Primitives (ui/)"]
+        ICON_LABEL["IconLabelSurface"]
+        SPLIT_ACTION["SplitActionSurface"]
+        BARS["BarsSurface"]
+        LABEL_VALUE["LabelValueListSurface"]
+    end
+
+    %% CLI → Config
+    RUN_CMD --> LOADER
+    LOADER --> EXPANDER
+    LOADER --> SCHEMAS
+    RUN_CMD --> VALIDATOR
+
+    %% CLI → Addons
+    RUN_CMD --> ADDON_LOADER
+    ADDON_LOADER --> REGISTRY
+    BUILTIN --> REGISTRY
+    REGISTRY --> ADDON_API
+
+    %% CLI → Runtime
+    RUN_CMD --> RUNTIME
+    RUNTIME --> METHODS
+    RUNTIME --> GESTURE
+    RUNTIME --> PUBSUB
+    RUNTIME --> STORE
+    RUNTIME --> DECK_CONFIG
+
+    %% Runtime → Output
+    RUNTIME --> REAL
+    RUNTIME --> EMULATOR
+
+    %% Real output path
+    REAL --> WS_BRIDGE
+    REAL --> BROWSER_RENDERER
+
+    %% WS Bridge → Frontend
+    WS_BRIDGE <-.->|"WebSocket"| BRIDGE
+    BRIDGE --> APP
+    APP --> DECK_UI
+    DECK_UI --> BUTTON_UI
+    BUTTON_UI --> REGISTRY
+    BUTTON_UI --> ICON_LABEL
+    BUTTON_UI --> SPLIT_ACTION
+    BUTTON_UI --> BARS
+    BUTTON_UI --> LABEL_VALUE
+
+    %% Browser → Device
+    BROWSER_RENDERER --> STREAM_DECK
+    STREAM_DECK --> PHYSICAL
+
+    %% Device → Gesture pipeline
+    PHYSICAL -->|"key event"| GESTURE
+    GESTURE --> RUNTIME
+
+    %% System providers
+    RUNTIME --> ACTIVE_APP
+    RUNTIME --> KEY_MACRO
+    RUNTIME --> CLIPBOARD
+
+    %% Addon → methods
+    REGISTRY --> METHODS
+
+    %% Styles
+    classDef entry fill:#1a1b26,stroke:#7aa2f7,stroke-width:2px,color:#c0caf5
+    classDef config fill:#1a1b26,stroke:#9ece6a,stroke-width:2px,color:#c0caf5
+    classDef runtime fill:#1a1b26,stroke:#ff9e64,stroke-width:2px,color:#c0caf5
+    classDef render fill:#1a1b26,stroke:#bb9af7,stroke-width:2px,color:#c0caf5
+    classDef device fill:#1a1b26,stroke:#f7768e,stroke-width:2px,color:#c0caf5
+    classDef addon fill:#1a1b26,stroke:#e0af68,stroke-width:2px,color:#c0caf5
+    classDef frontend fill:#1a1b26,stroke:#7dcfff,stroke-width:2px,color:#c0caf5
+
+    class MAIN,RUN_CMD entry
+    class YAML,LOADER,SCHEMAS,EXPANDER,VALIDATOR config
+    class RUNTIME,METHODS,DECK_CONFIG,GESTURE,PUBSUB,STORE runtime
+    class WS_BRIDGE,BROWSER_RENDERER render
+    class STREAM_DECK,PHYSICAL device
+    class REGISTRY,ADDON_LOADER,BUILTIN,ADDON_API addon
+    class APP,DECK_UI,BUTTON_UI,BRIDGE frontend

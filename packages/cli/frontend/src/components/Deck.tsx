@@ -199,9 +199,7 @@ export const Deck = ({ deck, children }: DeckProps) => {
         const col = (position % columns) + 1
         const row = Math.floor(position / columns) + 1
         const splitAction =
-          splitAtN1 &&
-          position === n1Position &&
-          button.type === "core:back"
+          splitAtN1 && position === n1Position && button.type === "core:back"
         return (
           <DeckButtonCell
             key={button.id}

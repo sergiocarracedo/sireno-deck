@@ -28,8 +28,12 @@ describe("test-buildin:action-buttons-test deck", () => {
     // 15 cases fill positions 0..14 on an mk2 (15 keys). The injected
     // core:back button is suppressed because position 14 is already taken.
     expect(buttons).toHaveLength(15)
-    const positions = buttons.map((b) => b.position).sort((a, b) => (a ?? 0) - (b ?? 0))
-    expect(positions).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+    const positions = buttons
+      .map((b) => b.position)
+      .sort((a, b) => (a ?? 0) - (b ?? 0))
+    expect(positions).toEqual([
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+    ])
   })
 
   it("uses core:action for every button (no custom backend needed)", () => {
@@ -38,7 +42,8 @@ describe("test-buildin:action-buttons-test deck", () => {
       config: {},
       deck: { id: "test-buildin:action-buttons-test" },
     })
-    const buttons = (result["action-buttons-test"]!.buttons ?? []) as ReadonlyArray<{
+    const buttons = (result["action-buttons-test"]!.buttons ??
+      []) as ReadonlyArray<{
       type: string
     }>
     for (const b of buttons) {
@@ -52,7 +57,8 @@ describe("test-buildin:action-buttons-test deck", () => {
       config: {},
       deck: { id: "test-buildin:action-buttons-test" },
     })
-    const buttons = (result["action-buttons-test"]!.buttons ?? []) as ReadonlyArray<{
+    const buttons = (result["action-buttons-test"]!.buttons ??
+      []) as ReadonlyArray<{
       config?: { icon?: string }
     }>
     const icons = buttons.map((b) => b.config?.icon)
@@ -77,7 +83,8 @@ describe("test-buildin:action-buttons-test deck", () => {
       config: {},
       deck: { id: "test-buildin:action-buttons-test" },
     })
-    const buttons = (result["action-buttons-test"]!.buttons ?? []) as ReadonlyArray<{
+    const buttons = (result["action-buttons-test"]!.buttons ??
+      []) as ReadonlyArray<{
       config?: { icon?: string }
     }>
     const icons = buttons.map((b) => b.config?.icon)

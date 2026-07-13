@@ -5,7 +5,15 @@ category: runtime-errors
 module: cli/commands/run.ts
 problem_type: runtime_error
 severity: critical
-tags: [provider-injection, methods-vs-runtime, discarded-destructure, test-fixture-mask, parallel-unwired-bug, esm]
+tags:
+  [
+    provider-injection,
+    methods-vs-runtime,
+    discarded-destructure,
+    test-fixture-mask,
+    parallel-unwired-bug,
+    esm,
+  ]
 ---
 
 # runtime.setClipboardProvider is not a function — dispose of methods before wiring providers
@@ -50,7 +58,10 @@ The fix has three parts.
    injectors can call the real API:
 
    ```ts
-   const { runtime, methods, pubSub, store } = createDeckRuntime({ decks, logger })
+   const { runtime, methods, pubSub, store } = createDeckRuntime({
+     decks,
+     logger,
+   })
    // pass methods into setup, don't discard
    ```
 

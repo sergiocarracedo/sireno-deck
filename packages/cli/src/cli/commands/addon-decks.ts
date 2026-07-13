@@ -64,9 +64,7 @@ const mapAddonDeckToRuntimeDeck = (
         id: p.deckId,
         name: gdeck.name ?? id,
         buttons: mappedButtons,
-        ...(gdeck.autoShow !== undefined
-          ? { autoShow: gdeck.autoShow }
-          : {}),
+        ...(gdeck.autoShow !== undefined ? { autoShow: gdeck.autoShow } : {}),
         ...(gdeck.isOverlay !== undefined
           ? { isOverlay: gdeck.isOverlay }
           : {}),

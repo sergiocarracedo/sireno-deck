@@ -380,7 +380,10 @@ describe("ws bridge channel cache", () => {
     const socketB = await openClient(bridge.port)
     await new Promise((r) => setTimeout(r, 50))
     socketA.send(
-      JSON.stringify({ type: "subscribe-channels", channels: ["pending:test"] }),
+      JSON.stringify({
+        type: "subscribe-channels",
+        channels: ["pending:test"],
+      }),
     )
     await new Promise((r) => setTimeout(r, 100))
     const replyAPromise = new Promise<unknown>((resolve) => {
@@ -398,7 +401,10 @@ describe("ws bridge channel cache", () => {
     })
     expect(pollFn).toHaveBeenCalledTimes(1)
     socketB.send(
-      JSON.stringify({ type: "subscribe-channels", channels: ["pending:test"] }),
+      JSON.stringify({
+        type: "subscribe-channels",
+        channels: ["pending:test"],
+      }),
     )
     const replyB = await new Promise<unknown>((resolve) => {
       socketB.on("message", (raw) => {
@@ -464,10 +470,16 @@ describe("ws bridge channel cache", () => {
     const socketC = await openClient(bridge.port)
     await new Promise((r) => setTimeout(r, 30))
     socketA.send(
-      JSON.stringify({ type: "subscribe-channels", channels: ["targeted:chan"] }),
+      JSON.stringify({
+        type: "subscribe-channels",
+        channels: ["targeted:chan"],
+      }),
     )
     socketB.send(
-      JSON.stringify({ type: "subscribe-channels", channels: ["targeted:chan"] }),
+      JSON.stringify({
+        type: "subscribe-channels",
+        channels: ["targeted:chan"],
+      }),
     )
     await new Promise((r) => setTimeout(r, 30))
     bridge.registerCacheablePoller("targeted:chan", () => ({ targeted: true }))

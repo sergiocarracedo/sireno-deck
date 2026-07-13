@@ -10,10 +10,7 @@ export interface ButtonFrameProps {
   children: ReactNode
 }
 
-export const ButtonFrame = ({
-  children,
-  onClick,
-}: ButtonFrameProps) => (
+export const ButtonFrame = ({ children, onClick }: ButtonFrameProps) => (
   <div
     className="flex h-full w-full items-center justify-center overflow-hidden rounded-2xl bg-bg p-1 border-2 border-solid border-frame"
     data-sireno-button-frame="true"
@@ -25,9 +22,7 @@ export const ButtonFrame = ({
         ? (event) => {
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault()
-              onClick(
-                event as unknown as MouseEvent<HTMLDivElement>,
-              )
+              onClick(event as unknown as MouseEvent<HTMLDivElement>)
             }
           }
         : undefined

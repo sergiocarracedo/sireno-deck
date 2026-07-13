@@ -15,10 +15,7 @@ import {
   useAssetCacheMutations,
 } from "@sireno-deck/cli"
 import { createWsClient, type WsClient } from "./bridge/client"
-import {
-  WebSocketProvider,
-  type WebSocketSend,
-} from "./bridge/ws-context"
+import { WebSocketProvider, type WebSocketSend } from "./bridge/ws-context"
 import { Deck } from "./components/Deck"
 
 interface DeckButton {
@@ -69,7 +66,7 @@ const buildThemeContext = (): ThemeContextValue => {
         apiVersion: 3,
         source: { kind: "builtin" as const, resolvedPath: themeDir },
         manifestPath,
-uiOverridesPath: activeTheme.uiOverridesPath ?? null,
+        uiOverridesPath: activeTheme.uiOverridesPath ?? null,
         cssPath: "",
       },
       colorTokens,

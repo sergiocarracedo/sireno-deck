@@ -31,9 +31,7 @@ export const resolveIconSource = (
         return { kind: "asset", fullPath: join(addonDir, assetPath) }
       }
     }
-    throw new Error(
-      `Cannot resolve addon icon "${source}": unknown addon dir`,
-    )
+    throw new Error(`Cannot resolve addon icon "${source}": unknown addon dir`)
   }
   if (source.startsWith("builtin://")) {
     const assetPath = source.slice("builtin://".length)
@@ -61,7 +59,5 @@ export const resolveIconSource = (
   for (const baseDir of options.baseDirs ?? []) {
     return { kind: "asset", fullPath: join(baseDir, source) }
   }
-  throw new Error(
-    `Cannot resolve icon "${source}": no base dirs configured`,
-  )
+  throw new Error(`Cannot resolve icon "${source}": no base dirs configured`)
 }

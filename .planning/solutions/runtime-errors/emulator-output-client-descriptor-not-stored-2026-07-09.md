@@ -5,7 +5,14 @@ category: runtime-errors
 module: packages/cli/src/outputClient
 problem_type: runtime_error
 severity: critical
-tags: [output-client, state-assignment, init-guard, regression-from-refactor, test-gap]
+tags:
+  [
+    output-client,
+    state-assignment,
+    init-guard,
+    regression-from-refactor,
+    test-gap,
+  ]
 ---
 
 # EmulatorOutputClient.init throws "selectDevice() must run first" despite runner calling selectDevice()
@@ -61,7 +68,15 @@ describe("EmulatorOutputClient.init", () => {
   it("does not throw descriptor-guard after selectDevice()", async () => {
     const client = new EmulatorOutputClient()
     await client.selectDevice(
-      [{ id: "emu", model: "mk2", keyCount: 15, label: "Emu", transport: "emulated" }],
+      [
+        {
+          id: "emu",
+          model: "mk2",
+          keyCount: 15,
+          label: "Emu",
+          transport: "emulated",
+        },
+      ],
       null,
       silentLogger(),
     )

@@ -2,16 +2,10 @@ import type pino from "pino"
 
 import { createGestureDetector } from "@/core/gesture-state"
 import type { DeviceDescriptor } from "@/device/registry"
-import {
-  connectStreamDeck,
-  type StreamDeckDevice,
-} from "@/device/stream-deck"
+import { connectStreamDeck, type StreamDeckDevice } from "@/device/stream-deck"
 import { BrowserRenderer } from "@/render/browser-renderer"
 import { computeSystemButtonForSlotN1 } from "@/deck/system-back-injection"
-import {
-  NoStreamDeckFoundError,
-  selectDevice,
-} from "@/system/device-selection"
+import { NoStreamDeckFoundError, selectDevice } from "@/system/device-selection"
 import { saveDeviceConfig } from "@/util/device-config"
 
 import {
@@ -165,7 +159,9 @@ export class RealOutputClient implements OutputClient {
     })
     void mainDeck
 
-    let frontendUrl = opts.frontendUrl ?? `http://127.0.0.1:${opts.port ?? DEFAULT_FRONTEND_PORT}`
+    let frontendUrl =
+      opts.frontendUrl ??
+      `http://127.0.0.1:${opts.port ?? DEFAULT_FRONTEND_PORT}`
     let frontendVite: Awaited<ReturnType<typeof spawnFrontendVite>> | undefined
     if (opts.frontendUrl === undefined) {
       frontendVite = await spawnFrontendVite({

@@ -75,9 +75,7 @@ describe("normalizeAddonEntry", () => {
       source: "./x",
       isLocal: true,
     })
-    expect(
-      normalizeAddonEntry({ source: "core", enabled: false }),
-    ).toEqual({
+    expect(normalizeAddonEntry({ source: "core", enabled: false })).toEqual({
       enabled: false,
       source: "core",
       isLocal: false,

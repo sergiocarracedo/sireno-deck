@@ -7,13 +7,25 @@ export interface DeviceModelSpec {
 }
 
 export const DEVICE_MODELS: ReadonlyArray<DeviceModelSpec> = [
-  { id: "original", name: "Stream Deck Original", keyCount: 15, columns: 5, rows: 3 },
-  { id: "originalv2", name: "Stream Deck Original V2", keyCount: 15, columns: 5, rows: 3 },
+  {
+    id: "original",
+    name: "Stream Deck Original",
+    keyCount: 15,
+    columns: 5,
+    rows: 3,
+  },
+  {
+    id: "originalv2",
+    name: "Stream Deck Original V2",
+    keyCount: 15,
+    columns: 5,
+    rows: 3,
+  },
   { id: "mk2", name: "Stream Deck MK.2", keyCount: 15, columns: 5, rows: 3 },
   { id: "plus", name: "Stream Deck +", keyCount: 32, columns: 8, rows: 4 },
   { id: "mini", name: "Stream Deck Mini", keyCount: 6, columns: 3, rows: 2 },
   { id: "xl", name: "Stream Deck XL", keyCount: 32, columns: 8, rows: 4 },
-]  
+]
 
 export const DEFAULT_DEVICE_MODEL_ID = "mk2"
 

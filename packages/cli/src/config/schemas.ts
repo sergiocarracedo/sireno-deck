@@ -33,17 +33,12 @@ export type ButtonActions = z.infer<typeof ButtonActionsSchema>
  * Lucide icon) so an invalid source that's slipped through can't crash
  * the render tree.
  */
-export const IconSourceSchema = z
-  .string()
-  .min(1)
-  .refine(isIconSource, {
-    message:
-      "icon must be icon://<name>, asset://<id>, or a single emoji (one Presentation character or one base+VS16 like ✈️)",
-  })
+export const IconSourceSchema = z.string().min(1).refine(isIconSource, {
+  message:
+    "icon must be icon://<name>, asset://<id>, or a single emoji (one Presentation character or one base+VS16 like ✈️)",
+})
 
-export const ButtonConfigSchema = z
-  .record(z.string(), z.unknown())
-  .optional()
+export const ButtonConfigSchema = z.record(z.string(), z.unknown()).optional()
 
 export const ButtonDefSchema = z
   .object({

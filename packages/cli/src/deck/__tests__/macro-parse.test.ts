@@ -43,7 +43,9 @@ describe("parseMacro", () => {
   })
 
   it("parses plain text as text step", () => {
-    expect(parseMacro("hello world")).toEqual([{ kind: "text", value: "hello world" }])
+    expect(parseMacro("hello world")).toEqual([
+      { kind: "text", value: "hello world" },
+    ])
   })
 
   it("parses text after delay", () => {
