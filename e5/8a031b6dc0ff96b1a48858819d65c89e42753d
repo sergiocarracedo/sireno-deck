@@ -1,0 +1,43 @@
+.planning/codebase/INTEGRATIONS.md
+  s_b2c5a8b3be6ddb::t_2918a69416bed8 7,9-10,12,14,16-31,35-37,39-45,47-52,56-58,60,62-65,69,71-74
+.planning/codebase/ARCHITECTURE.md
+  s_ef9b74c80f8c2c::t_4c7f2b91815a73 19,25,41-42,44-58,78-97,102,116-127
+.planning/codebase/STRUCTURE.md
+  s_ef9b74c80f8c2c::t_788a8e8a236c31 7-9,11-13,15-21,23,25-210,212-246,258-259,263-271
+.planning/codebase/CONCERNS.md
+  s_e5034616fd72a2::t_784f19413db8ff 3-4,6-7,9,11,13,15-27,29,31-32,34-42,44-47,49,51,53-301
+.planning/codebase/STACK.md
+  s_b2c5a8b3be6ddb::t_6ca4c65c5cff0e 7,14-17,19,21-35,39-53,68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "e58a031b6dc0ff96b1a48858819d65c89e42753d",
+  "prompts": {},
+  "sessions": {
+    "s_b2c5a8b3be6ddb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09fe776abffeFaP4g0GnHTu8u7",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_e5034616fd72a2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09fe76071ffexnjwRtwXbrqHqj",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_ef9b74c80f8c2c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09fe76e35ffeXpqbI5hHDwOVsx",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
