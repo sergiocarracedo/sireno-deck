@@ -1,0 +1,27 @@
+packages/cli/src/ui/primitives/text-format.ts
+  s_fd4c9efcb04c88::t_f81d9d408fbf4f 1-33
+packages/cli/src/builtin-addons/date-time/shared/format.ts
+  s_fd4c9efcb04c88::t_3bb97f3fe17a1c 2
+  s_fd4c9efcb04c88::t_ed77aa470117a1 76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "d8ee30215c20731b9268e9e8e8c97935f3ea77d6",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_fd4c9efcb04c88": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0a020801effeDxd0RkXpU8rWsJ",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
