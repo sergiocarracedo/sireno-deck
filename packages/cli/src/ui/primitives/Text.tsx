@@ -298,11 +298,12 @@ export type TextSize = keyof typeof SIZE_CLASS
 
 export interface TextProps {
   align?: TextAlign
-  children: ReactNode
+  children?: ReactNode
   className?: string
   fit?: TextFit
   fontStack?: string
   style?: CSSProperties
+  text?: string
   tone?: TextTone
   typography?: TextTypography
   size?: TextSize
@@ -326,7 +327,7 @@ export function Text(props: TextProps): ReactElement {
   const lineHeight = props.lineHeight ?? 1
   const weight = props.weight ?? "normal"
   const themeUi = useThemeUiPresentation()
-  const renderedChildren = renderTextChildren(props.children, lineHeight)
+  const renderedChildren = renderTextChildren(props.text ?? props.children, lineHeight)
 
   if (themeUi?.primitives?.text) {
     return themeUi.primitives.text({

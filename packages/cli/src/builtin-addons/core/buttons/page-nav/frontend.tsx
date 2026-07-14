@@ -46,7 +46,7 @@ const PageIndicator = ({
   current: number
   total: number
 }) => (
-  <Text size="sm" tone="muted">{`*${current}*/${total}`}</Text>
+  <Text size="sm" tone="muted" text={`*${current}*/${total}`} />
 )
 
 const PageNavButtonFrontend: AddonFrontendButton<Config> = ({ config }) => {
