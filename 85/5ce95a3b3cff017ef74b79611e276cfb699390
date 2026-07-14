@@ -1,0 +1,19 @@
+.planning/research/SUMMARY.md
+  s_b42b379756c8b7::t_a102a47bb9135d 1-247
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "855ce95a3b3cff017ef74b79611e276cfb699390",
+  "prompts": {},
+  "sessions": {
+    "s_b42b379756c8b7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09f2b1b91ffel5gF3kB4xS4IG4",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
