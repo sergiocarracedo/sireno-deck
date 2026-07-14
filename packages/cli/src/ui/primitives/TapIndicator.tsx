@@ -3,7 +3,7 @@ import { useThemeUiPresentation } from '../theme-presentation'
 import { cn } from '../utils/cn'
 import { Text, TextTone } from './Text'
 
-type TapIndicatorType = 'tap' | 'dbltap' | 'hold'
+export type TapIndicatorType = 'tap' | 'dbltap' | 'hold'
 
 export type TapIndicatorProps = {
   type?: TapIndicatorType
@@ -34,8 +34,8 @@ export const TapIndicator = (props: TapIndicatorProps) => {
   > = {
     tap: {
       textTone: 'foreground',
-      bg: '',
-      border: 'border-[#f00]',
+      bg: 'bg-frame',
+      border: 'border-frame',
     },
     dbltap: {
       textTone: 'foreground-contrast',
@@ -52,8 +52,9 @@ export const TapIndicator = (props: TapIndicatorProps) => {
   return (
     <span
       className={cn([
-        'border-px border-accent border-solid inline-block px-1 rounded-sm',
+        'inline-block px-1 rounded-sm',
         themeType.bg,
+        themeType.border && 'border border-solid',
         themeType.border,
       ])}
     >
