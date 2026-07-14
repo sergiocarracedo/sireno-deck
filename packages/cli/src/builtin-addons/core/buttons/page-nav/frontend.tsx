@@ -8,20 +8,6 @@ type Config = {
   nextDeckId: string
 }
 
-const NextAction = (
-  <div className="flex flex-row items-center gap-0.5">
-    <TapIndicator type="tap" size="xs" />
-    <Icon source="icon://chevron-right" />
-  </div>
-)
-
-const PrevAction = (
-  <div className="flex flex-row items-center gap-0.5">
-    <Icon source="icon://chevron-left" />
-    <TapIndicator type="hold" size="xs" />
-  </div>
-)
-
 type NavActionProps = {
   dir: 'next' | 'prev'
 }
@@ -60,9 +46,7 @@ const PageIndicator = ({
   current: number
   total: number
 }) => (
-  <Text size="sm" tone="muted">
-    *{current}*/{total}
-  </Text>
+  <Text size="sm" tone="muted">{`*${current}*/${total}`}</Text>
 )
 
 const PageNavButtonFrontend: AddonFrontendButton<Config> = ({ config }) => {
