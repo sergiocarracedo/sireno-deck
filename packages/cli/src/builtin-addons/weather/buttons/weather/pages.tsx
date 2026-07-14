@@ -17,14 +17,9 @@ export const pages: ReadonlyArray<{
       <div className="flex h-full w-full flex-col items-center justify-center gap-1">
         <WeatherIcon code={snapshot.wmoCode} className="h-10 w-10" />
         <div className="-mt-1 flex flex-col gap-0.5">
-          <Text size="xl" tone="fg" className="font-semibold leading-none">
-            {snapshot.temperature?.toFixed(0)}
-            {unitTemp}
-          </Text>
+          <Text size="xl" tone="fg" className="font-semibold leading-none" text={`${snapshot.temperature?.toFixed(0) ?? ""}${unitTemp}`} />
           {city && (
-            <Text size="sm" tone="fg" fit="ellipsis">
-              {city}
-            </Text>
+            <Text size="sm" tone="fg" fit="ellipsis" text={city} />
           )}
         </div>
       </div>
@@ -34,18 +29,12 @@ export const pages: ReadonlyArray<{
     name: "data",
     render: ({ snapshot, unitWind, city }) => (
       <div>
-        <Text size="sm" tone="primary" fit="ellipsis">
-          {city || "---"}
-        </Text>
+        <Text size="sm" tone="primary" fit="ellipsis" text={city || "---"} />
         {snapshot.windSpeed !== undefined && (
-          <Chip tone="foreground" size="sm">
-            {snapshot.windSpeed.toFixed(0)} {unitWind}
-          </Chip>
+          <Chip tone="foreground" size="sm" text={`${snapshot.windSpeed.toFixed(0)} ${unitWind}`} />
         )}
         {snapshot.description && (
-          <Text size="xs" tone="fg" fit="ellipsis">
-            {snapshot.description}
-          </Text>
+          <Text size="xs" tone="fg" fit="ellipsis" text={snapshot.description} />
         )}
       </div>
     ),
@@ -58,14 +47,9 @@ export const pages: ReadonlyArray<{
         <div className="flex items-center justify-center gap-2">
           {entries.map((e) => (
             <span key={e.time} className="flex flex-col items-center gap-0.5">
-              <Text size="xs" tone="fg">
-                {e.time}h
-              </Text>
+              <Text size="xs" tone="fg" text={`${e.time}h`} />
               <WeatherIcon code={e.wmoCode} className="h-8 w-8" />
-              <Text size="xs" tone="fg">
-                {e.temperature.toFixed(0)}
-                {unitTemp}
-              </Text>
+              <Text size="xs" tone="fg" text={`${e.temperature.toFixed(0)}${unitTemp}`} />
             </span>
           ))}
         </div>
@@ -85,18 +69,10 @@ export const pages: ReadonlyArray<{
             const dayName = weekDays[d.getDay()] ?? e.date.slice(5)
             return (
               <span key={e.date} className="flex flex-col items-center gap-0.5">
-                <Text size="xs" tone="fg">
-                  {dayName}
-                </Text>
+                <Text size="xs" tone="fg" text={dayName} />
                 <WeatherIcon code={e.wmoCode} className="h-8 w-8" />
-                <Text size="xs" tone="primary">
-                  {e.tempMin.toFixed(0)}
-                  {unitTemp}
-                </Text>
-                <Text size="xs" tone="fg">
-                  {e.tempMax.toFixed(0)}
-                  {unitTemp}
-                </Text>
+                <Text size="xs" tone="primary" text={`${e.tempMin.toFixed(0)}${unitTemp}`} />
+                <Text size="xs" tone="fg" text={`${e.tempMax.toFixed(0)}${unitTemp}`} />
               </span>
             )
           })}

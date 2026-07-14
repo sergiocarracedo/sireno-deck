@@ -22,9 +22,7 @@ const SystemStatusButtonFrontend: AddonFrontendButton = ({ config }) => {
   if (!hasData) {
     return (
       <span className="flex h-full w-full items-center justify-center">
-        <Text size="xs" tone="muted">
-          ...
-        </Text>
+        <Text size="xs" tone="muted" text="..." />
       </span>
     )
   }
@@ -42,12 +40,8 @@ const SystemStatusButtonFrontend: AddonFrontendButton = ({ config }) => {
           return (
             <span key={m.id} className="flex flex-col gap-0.5">
               <span className="flex items-baseline justify-between">
-                <Text size="xs" tone="muted">
-                  {m.label}
-                </Text>
-                <Text size="xs" tone="fg">
-                  {m.value ?? "—"}
-                </Text>
+                <Text size="xs" tone="muted" text={m.label} />
+                <Text size="xs" tone="fg" text={m.value ?? "—"} />
               </span>
               {pct !== null && (
                 <span className="block h-1 w-full overflow-hidden rounded bg-bar">
@@ -68,12 +62,8 @@ const SystemStatusButtonFrontend: AddonFrontendButton = ({ config }) => {
     <span className="flex h-full w-full flex-col items-stretch justify-center gap-0.5 p-1.5">
       {metrics.slice(0, 4).map((m) => (
         <span key={m.id} className="flex items-center justify-between gap-2">
-          <Chip tone="muted" size="sm">
-            {m.label}
-          </Chip>
-          <Text size="xs" tone="fg">
-            {m.value ?? "—"}
-          </Text>
+          <Chip tone="muted" size="sm" text={m.label} />
+          <Text size="xs" tone="fg" text={m.value ?? "—"} />
         </span>
       ))}
     </span>

@@ -41,7 +41,7 @@ export function IconLabelSurface(props: IconLabelSurfaceProps): ReactElement {
   return (
     <div className={mergedClassName} {...rest}>
       {iconContent}
-      <Label>{props.label}</Label>
+      <Label text={props.label} />
     </div>
   )
 }

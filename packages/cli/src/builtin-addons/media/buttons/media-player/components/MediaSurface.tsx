@@ -27,17 +27,11 @@ export const MediaSurface = ({
     <div className="flex h-full w-full flex-col relative gap-1">
       <div className="flex items-center justify-between gap-2 mb-1">
         <MediaStatusIcon status={status} />
-        <Text align="right" size="lg" tone="primary" weight="bold">
-          {formatTime(currentTime)}
-        </Text>
+        <Text align="right" size="lg" tone="primary" weight="bold" text={formatTime(currentTime)} />
       </div>
 
-      <Text align="left" fit="ellipsis" size="md" tone="fg" weight="bold">
-        {title}
-      </Text>
-      <Text align="left" fit="ellipsis" size="sm" tone="muted">
-        {artist}
-      </Text>
+      <Text align="left" fit="ellipsis" size="md" tone="fg" weight="bold" text={title} />
+      <Text align="left" fit="ellipsis" size="sm" tone="muted" text={artist} />
       <div className="flex-1"></div>
       <ProgressBar status={status} value={progress} className="mb-1" />
     </div>

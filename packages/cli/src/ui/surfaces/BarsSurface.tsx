@@ -85,9 +85,8 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
               tone="primary"
               typography="main"
               fit="hidden"
-            >
-              {item.title}
-            </Text>
+              text={item.title}
+            />
             <div
               aria-hidden="true"
               className="relative flex-1 overflow-hidden rounded-xs"
@@ -113,9 +112,8 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
                 style={valueTextStyle}
                 tone={props.useSharpPath ? undefined : "foreground"}
                 typography="mono"
-              >
-                {valueText}
-              </Text>
+                text={valueText}
+              />
             </div>
           </div>
         )

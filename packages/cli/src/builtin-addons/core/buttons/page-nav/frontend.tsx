@@ -34,7 +34,7 @@ const NavAction = ({ dir = 'prev' }: NavActionProps) => {
       )}
     >
       <Icon source={`icon://${icon}`} size={30} />
-      <TapIndicator type={tapType} size="sm" />
+      <TapIndicator type={tapType} size="xs" />
     </div>
   )
 }
@@ -45,9 +45,7 @@ const PageIndicator = ({
 }: {
   current: number
   total: number
-}) => (
-  <Text size="sm" tone="muted" text={`*${current}*/${total}`} />
-)
+}) => <Text size="md" tone="muted" text={`*${current}* / ${total}`} />
 
 const PageNavButtonFrontend: AddonFrontendButton<Config> = ({ config }) => {
   const { currentPage, totalPages } = config

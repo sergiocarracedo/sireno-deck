@@ -1,10 +1,10 @@
-import { type ReactElement, type ReactNode } from "react"
+import { type ReactElement } from "react"
 
 import { useThemeUiPresentation } from "../theme-presentation"
 import { Text } from "./Text"
 
 export interface LabelProps {
-  children: ReactNode
+  text: string
 }
 
 export function Label(props: LabelProps): ReactElement {
@@ -22,8 +22,7 @@ export function Label(props: LabelProps): ReactElement {
       fit="ellipsis"
       tone="primary"
       typography="main"
-    >
-      {props.children}
-    </Text>
+      text={props.text}
+    />
   )
 }

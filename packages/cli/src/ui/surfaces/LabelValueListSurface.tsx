@@ -59,9 +59,8 @@ function renderValue(
         size={layout === "single" ? "2xl" : layout === "double" ? "xl" : "md"}
         style={line.color ? { color: line.color } : undefined}
         tone={valueTone}
-      >
-        {line.value}
-      </Text>
+        text={line.value}
+      />
       {line.units ? (
         <Text
           align={layout === "single" ? "center" : "right"}
@@ -69,9 +68,8 @@ function renderValue(
           size={layout === "single" ? "sm" : "xs"}
           style={line.color ? { color: line.color } : undefined}
           typography="aux"
-        >
-          {line.units}
-        </Text>
+          text={line.units}
+        />
       ) : (
         <></>
       )}
@@ -123,9 +121,8 @@ export function LabelValueListSurface(
               size={layout === "single" ? "sm" : "xs"}
               style={line.color ? { color: line.color } : undefined}
               typography="aux"
-            >
-              {line.label}
-            </Text>
+              text={line.label}
+            />
           </div>
         )
 

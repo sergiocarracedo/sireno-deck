@@ -1,4 +1,4 @@
-import { type ReactElement, type ReactNode } from "react"
+import { type ReactElement } from "react"
 
 import { useThemeUiPresentation } from "../theme-presentation"
 import { cn } from "../utils/cn"
@@ -16,7 +16,7 @@ const TONE_CLASS = {
 export type ChipTone = keyof typeof TONE_CLASS
 
 export interface ChipProps {
-  children: ReactNode
+  text: string
   tone?: ChipTone
   size?: TextProps["size"]
 }
@@ -27,7 +27,7 @@ export function Chip(props: ChipProps): ReactElement {
 
   if (themeUi?.primitives?.chip) {
     return themeUi.primitives.chip({
-      children: props.children,
+      text: props.text,
       tone,
       size: props.size,
     })
@@ -41,8 +41,7 @@ export function Chip(props: ChipProps): ReactElement {
       ])}
       size={props.size ?? "sm"}
       data-sireno-ui-chip="true"
-    >
-      {props.children}
-    </Text>
+      text={props.text}
+    />
   )
 }

@@ -58,9 +58,7 @@ export const TapIndicator = (props: TapIndicatorProps) => {
         themeType.border,
       ])}
     >
-      <Text size={props.size} tone={themeType.textTone}>
-        {label}
-      </Text>
+      <Text size={props.size} tone={themeType.textTone} text={label} />
     </span>
   )
 }

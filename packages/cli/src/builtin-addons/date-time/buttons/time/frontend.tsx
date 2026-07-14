@@ -21,9 +21,8 @@ const TimeButtonFrontend: AddonFrontendButton<ConfigSchema> = ({ config }) => {
       tone="fg"
       lineHeight="1.6em"
       className="flex h-full w-full items-center justify-center"
-    >
-      {formatDigitalDateTimeLabel(format, now)}
-    </Text>
+      text={formatDigitalDateTimeLabel(format, now)}
+    />
   )
 }
 

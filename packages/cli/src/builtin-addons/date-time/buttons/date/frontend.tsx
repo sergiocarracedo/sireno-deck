@@ -19,21 +19,16 @@ const DateButtonFrontend: AddonFrontendButton<ConfigSchema> = ({ config }) => {
   )
   return (
     <span className="flex h-full w-full flex-col items-center justify-center gap-0.5">
-      <Chip tone="primary" size="md">
-        {month}
-      </Chip>
+      <Chip tone="primary" size="md" text={month} />
       <Text
         size="4xl"
         lineHeight="1em"
         tone="fg"
         typography="main"
         weight="bold"
-      >
-        {day}
-      </Text>
-      <Text tone="muted" size="md" typography="main" weight="semibold">
-        {weekday}
-      </Text>
+        text={day}
+      />
+      <Text tone="muted" size="md" typography="main" weight="semibold" text={weekday} />
     </span>
   )
 }

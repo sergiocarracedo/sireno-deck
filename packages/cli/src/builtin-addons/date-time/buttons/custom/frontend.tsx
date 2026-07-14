@@ -11,9 +11,7 @@ const DateTimeButtonFrontend: AddonFrontendButton = ({ config }) => {
   const format = (config as { format?: string }).format ?? "DD/MM/YYYY HH:mm:ss"
   return (
     <span className="flex h-full w-full items-center justify-center">
-      <Text size="lg" tone="fg">
-        {formatDigitalDateTimeLabel(format, now)}
-      </Text>
+      <Text size="lg" tone="fg" text={formatDigitalDateTimeLabel(format, now)} />
     </span>
   )
 }

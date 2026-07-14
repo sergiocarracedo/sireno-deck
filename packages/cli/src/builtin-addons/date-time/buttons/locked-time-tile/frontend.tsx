@@ -40,9 +40,7 @@ const LockedTimeTileButtonFrontend: AddonFrontendButton = ({ config }) => {
   const slot = (config as { slot: Slot }).slot
   return (
     <span className="flex h-full w-full items-center justify-center">
-      <Text size="lg" tone="fg" className="font-mono">
-        {formatLockedCharacter(slot, now)}
-      </Text>
+      <Text size="lg" tone="fg" className="font-mono" text={formatLockedCharacter(slot, now)} />
     </span>
   )
 }

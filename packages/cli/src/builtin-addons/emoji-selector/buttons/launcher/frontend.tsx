@@ -24,7 +24,7 @@ const LauncherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
         </div>
       ))}
     </div>
-    <Label>{config.label}</Label>
+    <Label text={config.label} />
   </div>
 )
 

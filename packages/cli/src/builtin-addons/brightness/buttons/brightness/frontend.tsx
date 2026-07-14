@@ -17,28 +17,21 @@ const BrightnessButtonFrontend: AddonFrontendButton = ({ config }) => {
         tone="muted"
         typography="mono"
         className="flex h-full w-full items-center justify-center"
-      >
-        —
-      </Text>
+        text="—"
+      />
     )
   }
   const pct = Math.max(0, Math.min(100, (data.value / (data.max || 100)) * 100))
   return (
     <span className="flex h-full w-full flex-col items-stretch justify-center gap-1 p-2">
       <span className="flex items-baseline justify-between">
-        <Text size="xs" tone="muted" fit="ellipsis">
-          Brightness
-        </Text>
-        <Text size="xs" tone="fg">
-          {pct.toFixed(0)}%
-        </Text>
+        <Text size="xs" tone="muted" fit="ellipsis" text="Brightness" />
+        <Text size="xs" tone="fg" text={`${pct.toFixed(0)}%`} />
       </span>
       <span className="block h-1.5 w-full overflow-hidden rounded bg-bar">
         <span className="block h-full bg-accent" style={{ width: `${pct}%` }} />
       </span>
-      <Text size="xs" tone="muted" className="text-center" typography="aux">
-        Tap: {action ?? "up"}
-      </Text>
+      <Text size="xs" tone="muted" className="text-center" typography="aux" text={`Tap: ${action ?? "up"}`} />
     </span>
   )
 }

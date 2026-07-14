@@ -22,22 +22,21 @@ const ValueDisplayButtonFrontend: AddonFrontendButton = () => {
         tone="muted"
         typography="mono"
         className="flex h-full w-full items-center justify-center"
-      >
-        Loading…
-      </Text>
+        text="Loading…"
+      />
     )
   }
   return (
     <span className="flex h-full w-full flex-col items-stretch justify-center gap-0.5 p-1.5">
       {values.slice(0, 4).map((v, i) => (
         <span key={`${v.label}-${i}`} className="flex justify-between gap-2">
-          <Text size="xs" tone="muted" fit="ellipsis">
-            {v.label}
-          </Text>
-          <Text size="xs" tone="fg" fit="ellipsis">
-            {v.value}
-            {v.units !== undefined && v.units.length > 0 ? v.units : ""}
-          </Text>
+          <Text size="xs" tone="muted" fit="ellipsis" text={v.label} />
+          <Text
+            size="xs"
+            tone="fg"
+            fit="ellipsis"
+            text={v.units !== undefined && v.units.length > 0 ? `${v.value}${v.units}` : v.value}
+          />
         </span>
       ))}
     </span>
