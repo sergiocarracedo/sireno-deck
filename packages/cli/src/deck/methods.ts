@@ -135,6 +135,7 @@ export const createMethods = (ctx: MethodsContext): Methods => {
       )
     }
     await clipboardProvider.writeText(text)
+    await keyMacroProvider?.sendKey("ctrl+v")
   }
 
   const dispatch: Methods["dispatch"] = async (value) => {

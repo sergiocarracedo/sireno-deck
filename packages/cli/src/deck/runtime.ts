@@ -167,6 +167,14 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   const goBack = (): void => {
     if (transientDeckId !== null) {
       pubSub.publish("runtime:deck-inactive", { deckId: transientDeckId })
+      const pageMatch = /^(.*)-p\d+$/.exec(transientDeckId)
+      if (pageMatch !== null) {
+        const basePageId = `${pageMatch[1]}-p1`
+        if (navStack[navStack.length - 1] === basePageId) {
+          navStack.pop()
+          pubSub.publish("runtime:deck-inactive", { deckId: basePageId })
+        }
+      }
       transientDeckId = null
       const prev = navStack[navStack.length - 1] ?? mainDeck.id
       pubSub.publish("runtime:activeDeck", { deckId: prev })

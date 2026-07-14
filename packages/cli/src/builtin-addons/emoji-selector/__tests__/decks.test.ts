@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import emojiSelectorDeckFactory from "../decks"
+import { loadCategories, DEFAULT_FAVORITES } from "../support"
 
 const createDeck = (config: unknown = { favorites: [] }) =>
   emojiSelectorDeckFactory.createDecks({
@@ -18,22 +19,24 @@ const topButtons = (config: unknown) =>
   }>
 
 describe("emoji-selector decks — favorites as a dedicated entry", () => {
-  it("does not emit a favorites deck when favorites is empty", () => {
+  it("emits a favorites deck with defaults when favorites is empty", () => {
     const decks = createDeck({ favorites: [] })
-    expect(decks["emoji-selector-favorites"]).toBeUndefined()
+    expect(decks["emoji-selector-favorites"]).toBeDefined()
+    expect(decks["emoji-selector-favorites"].paginated).toBe(true)
   })
 
-  it("does not include a Favorites entry on the top deck when favorites is empty", () => {
+  it("includes a Favorites entry on the top deck even when favorites is empty", () => {
     const buttons = topButtons({ favorites: [] })
-    expect(buttons.find((b) => b.label === "Favorites")).toBeUndefined()
+    expect(buttons[0]?.label).toBe("Favorites")
+    expect(buttons[0]?.icon).toBe("⭐")
   })
 
-  it("places category buttons at positions 0..7 when favorites is empty", () => {
+  it("places category buttons at positions 1..10 when favorites is empty (defaults used)", () => {
     const buttons = topButtons({ favorites: [] })
-    expect(buttons).toHaveLength(8)
-    expect(buttons.map((b) => b.position)).toEqual([0, 1, 2, 3, 4, 5, 6, 7])
-    expect(buttons[0]?.label).toBe("Smileys")
-    expect(buttons[1]?.label).toBe("Nature")
+    expect(buttons).toHaveLength(11)
+    expect(buttons.map((b) => b.position)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    expect(buttons[0]?.label).toBe("Favorites")
+    expect(buttons[1]?.label).toBe("Smileys")
   })
 
   it("emits a favorites deck only when favorites has entries", () => {
@@ -50,12 +53,12 @@ describe("emoji-selector decks — favorites as a dedicated entry", () => {
     expect(buttons[0]?.target_deck).toBe("emoji-selector-favorites")
   })
 
-  it("shifts category buttons to positions 1..8 when favorites is present", () => {
+  it("shifts category buttons to positions 1..10 when favorites is present", () => {
     const buttons = topButtons({ favorites: ["🦄"] })
-    expect(buttons).toHaveLength(9)
-    expect(buttons.map((b) => b.position)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8])
+    expect(buttons).toHaveLength(11)
+    expect(buttons.map((b) => b.position)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
     expect(buttons[1]?.label).toBe("Smileys")
-    expect(buttons[8]?.label).toBe("Flags")
+    expect(buttons[10]?.label).toBe("Flags")
   })
 
   it("routes favorites to first page when paginated, otherwise the base deck", () => {
@@ -75,8 +78,10 @@ describe("emoji-selector decks — category layout", () => {
       id.startsWith("emoji-selector-"),
     )
     expect(categoryDeckIds).toContain("emoji-selector-smileys")
+    expect(categoryDeckIds).toContain("emoji-selector-people")
     expect(categoryDeckIds).toContain("emoji-selector-nature")
     expect(categoryDeckIds).toContain("emoji-selector-food")
+    expect(categoryDeckIds).toContain("emoji-selector-drink")
     expect(categoryDeckIds).toContain("emoji-selector-activities")
     expect(categoryDeckIds).toContain("emoji-selector-travel")
     expect(categoryDeckIds).toContain("emoji-selector-objects")
@@ -87,6 +92,8 @@ describe("emoji-selector decks — category layout", () => {
   it("category decks are paginated: true so paginate-deck emits page-nav buttons", () => {
     const decks = createDeck({ favorites: [] })
     expect(decks["emoji-selector-smileys"].paginated).toBe(true)
+    expect(decks["emoji-selector-people"].paginated).toBe(true)
+    expect(decks["emoji-selector-drink"].paginated).toBe(true)
     expect(decks["emoji-selector-flags"].paginated).toBe(true)
   })
 
@@ -104,5 +111,22 @@ describe("emoji-selector decks — category layout", () => {
     const buttons = topButtons({ favorites: [] })
     const smileys = buttons.find((b) => b.label === "Smileys")
     expect(smileys?.target_deck).toBe("emoji-selector-smileys-p1")
+  })
+})
+
+describe("loadCategories", () => {
+  it("returns all 10 categories", () => {
+    const cats = loadCategories()
+    expect(cats).toHaveLength(10)
+    expect(cats.map((c) => c.id)).toEqual([
+      "smileys", "people", "nature", "food", "drink",
+      "activities", "travel", "objects", "symbols", "flags",
+    ])
+  })
+})
+
+describe("DEFAULT_FAVORITES", () => {
+  it("contains 10 globally popular emojis", () => {
+    expect(DEFAULT_FAVORITES).toHaveLength(10)
   })
 })

@@ -66,7 +66,6 @@ export const paginateDeck = (opts: PaginateDeckOptions): PageDeckResult[] => {
             nextDeckId,
           },
         })
-        emojiCount++
       } else if (item !== null) {
         deckButtons.push({
           ...((item as { value: unknown }).value as Record<string, unknown>),

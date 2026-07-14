@@ -30,31 +30,34 @@ describe("paginate", () => {
     expect(page.items).not.toContain(NEXT_PAGE_MARKER)
   })
 
-  it("list pageSize+1 returns 2 pages, marker on first", () => {
+  it("list pageSize+1 returns 2 pages, marker on every page", () => {
     const result = paginate<string>(
       Array.from({ length: 14 }, (_, i) => `i${i}`),
       { keyCount: 15 },
     )
     expect(result.pages).toHaveLength(2)
-    expect(result.pages[0]!.items).toContain(NEXT_PAGE_MARKER)
+    for (const page of result.pages) {
+      expect(
+        page.items.some((it) => it?.value === NEXT_PAGE_MARKER),
+      ).toBe(true)
+    }
     expect(result.pages[0]!.hasNext).toBe(true)
-    expect(result.pages[1]!.items).not.toContain(NEXT_PAGE_MARKER)
     expect(result.pages[1]!.hasNext).toBe(false)
     expect(result.pages[1]!.hasPrev).toBe(true)
   })
 
-  it("list 3×pageSize+2 returns 4 pages, markers on first 3", () => {
+  it("list 3×pageSize+2 returns 4 pages, marker on every page", () => {
     const result = paginate<string>(
       Array.from({ length: 41 }, (_, i) => `i${i}`),
       { keyCount: 15 },
     )
     expect(result.pages).toHaveLength(4)
-    for (let i = 0; i < 3; i++) {
-      expect(result.pages[i]!.items).toContain(NEXT_PAGE_MARKER)
-      expect(result.pages[i]!.hasNext).toBe(true)
+    for (let i = 0; i < 4; i++) {
+      expect(
+        result.pages[i]!.items.some((it) => it?.value === NEXT_PAGE_MARKER),
+      ).toBe(true)
+      expect(result.pages[i]!.hasNext).toBe(i < 3)
     }
-    expect(result.pages[3]!.items).not.toContain(NEXT_PAGE_MARKER)
-    expect(result.pages[3]!.hasNext).toBe(false)
   })
 
   it("final page shorter than pageSize is padded with nulls", () => {

@@ -1,5 +1,5 @@
-import type { AddonFrontendButton } from "@/addon/api"
-import { IconLabelSurface, SplitActionSurface, TapIndicator } from "@/ui/index"
+import type { AddonFrontendButton } from '@/addon/api'
+import { Icon, TapIndicator, Text } from '@/ui'
 
 type Config = {
   currentPage: number
@@ -9,15 +9,15 @@ type Config = {
 }
 
 const NextAction = (
-  <div className="flex flex-col items-center gap-0.5">
-    <IconLabelSurface source="icon://chevron-right" label="Tap" />
+  <div className="flex flex-row items-center gap-0.5">
     <TapIndicator type="tap" size="xs" />
+    <Icon source="icon://chevron-right" />
   </div>
 )
 
 const PrevAction = (
-  <div className="flex flex-col items-center gap-0.5">
-    <IconLabelSurface source="icon://chevron-left" label="Hold" />
+  <div className="flex flex-row items-center gap-0.5">
+    <Icon source="icon://chevron-left" />
     <TapIndicator type="hold" size="xs" />
   </div>
 )
@@ -29,52 +29,22 @@ const PageIndicator = ({
   current: number
   total: number
 }) => (
-  <span className="text-[10px] text-muted">
-    {current}/{total}
-  </span>
+  <Text size="sm" tone="muted">
+    *{current}*/{total}
+  </Text>
 )
 
 const PageNavButtonFrontend: AddonFrontendButton<Config> = ({ config }) => {
   const { currentPage, totalPages } = config
   const isFirstPage = currentPage === 1
   const isLastPage = currentPage === totalPages
+  //className={isFirstPage ? 'invisible' : 'visible'}
 
-  if (isFirstPage) {
-    return (
-      <div className="relative size-full">
-        <div className="absolute -top-1 right-1">{NextAction}</div>
-        <div className="flex h-full items-center justify-center">
-          <PageIndicator current={currentPage} total={totalPages} />
-        </div>
-      </div>
-    )
-  }
-  if (isLastPage) {
-    return (
-      <div className="relative size-full">
-        <div className="flex h-full items-center justify-center">
-          <PageIndicator current={currentPage} total={totalPages} />
-        </div>
-        <div className="absolute -bottom-1 left-1">{PrevAction}</div>
-      </div>
-    )
-  }
   return (
-    <div className="flex h-full w-full flex-col">
-      <div className="relative flex-1">
-        <SplitActionSurface
-          primary={
-            <IconLabelSurface source="icon://chevron-right" label="Tap" />
-          }
-          secondary={
-            <IconLabelSurface source="icon://chevron-left" label="Hold" />
-          }
-          secondaryIndicatorType="hold"
-        />
-      </div>
-      <div className="flex items-center justify-center pb-1">
-        <PageIndicator current={currentPage} total={totalPages} />
-      </div>
+    <div className="relative size-full flex flex-col gap-2">
+      <div>{PrevAction}</div>
+      <PageIndicator current={currentPage} total={totalPages} />
+      <div className={isLastPage ? 'invisible' : 'visible'}>{NextAction}</div>
     </div>
   )
 }

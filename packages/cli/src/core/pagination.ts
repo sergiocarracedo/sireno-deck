@@ -58,15 +58,14 @@ export const paginate = <T>(
       buildPageItem(`${pageIndex}-${i}`, value),
     )
 
-    const isLast = pageIndex === totalPages - 1
-    if (!isLast && pageItems.length >= pageSize) {
-      const markerIndex =
-        pageItems.length >= pageSize ? pageSize - 1 : pageItems.length
-      pageItems.splice(
-        markerIndex,
-        0,
-        NEXT_PAGE_MARKER as unknown as PaginatedItem<T>,
-      )
+    const hasMultiplePages = totalPages > 1
+    if (hasMultiplePages) {
+      const isFullPage = pageItems.length >= pageSize
+      const markerIndex = isFullPage ? pageSize - 1 : pageItems.length
+      pageItems.splice(markerIndex, 0, {
+        id: NEXT_PAGE_MARKER,
+        value: NEXT_PAGE_MARKER,
+      } as PaginatedItem<T>)
     }
 
     while (pageItems.length < pageSize) {

@@ -233,6 +233,35 @@ describe("createRuntime", () => {
     runtime.goBack()
     expect(runtime.getActiveDeckId()).toBe("main")
   })
+
+  it("goBack from transient -pN skips sibling -p1 and lands on parent", () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "parent" }),
+      makeDeck({ id: "deck-p1" }),
+      makeDeck({ id: "deck-p2" }),
+    ])
+    runtime.navigateToDeck("parent")
+    runtime.navigateToDeck("deck-p1")
+    expect(runtime.navStackDepth()).toBe(3)
+    runtime.navigateToDeck("deck-p2", { addToHistory: false })
+    expect(runtime.navStackDepth()).toBe(3)
+    runtime.goBack()
+    expect(runtime.getActiveDeckId()).toBe("parent")
+    expect(runtime.navStackDepth()).toBe(2)
+  })
+
+  it("goBack from transient non-paginated deck still restores navStack top", () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "parent" }),
+      makeDeck({ id: "transient" }),
+    ])
+    runtime.navigateToDeck("parent")
+    runtime.navigateToDeck("transient", { addToHistory: false })
+    runtime.goBack()
+    expect(runtime.getActiveDeckId()).toBe("parent")
+  })
 })
 
 interface FakeProvider extends Pick<ActiveAppProvider, "getActive" | "stop"> {

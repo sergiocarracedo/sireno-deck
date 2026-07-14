@@ -121,6 +121,54 @@ describe("createMethods", () => {
     expect(writeText).toHaveBeenCalledWith("hello")
   })
 
+  it("pasteText calls sendKey after writeText when both providers are wired", async () => {
+    const { methods } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    const sendKey = vi.fn().mockResolvedValue(undefined)
+    methods.setClipboardProvider({
+      writeText,
+      readText: async () => "",
+      stop: async () => undefined,
+    })
+    methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
+    await methods.pasteText("hello")
+    expect(writeText).toHaveBeenCalledWith("hello")
+    expect(sendKey).toHaveBeenCalledWith("ctrl+v")
+  })
+
+  it("pasteText skips sendKey when no keyMacroProvider is set", async () => {
+    const { methods } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    methods.setClipboardProvider({
+      writeText,
+      readText: async () => "",
+      stop: async () => undefined,
+    })
+    await methods.pasteText("hello")
+    expect(writeText).toHaveBeenCalledWith("hello")
+  })
+
+  it("dispatch paste:// calls both writeText and sendKey", async () => {
+    const { methods } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    const sendKey = vi.fn().mockResolvedValue(undefined)
+    methods.setClipboardProvider({
+      writeText,
+      readText: async () => "",
+      stop: async () => undefined,
+    })
+    methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
+    await methods.dispatch("paste://🔥")
+    expect(writeText).toHaveBeenCalledWith("🔥")
+    expect(sendKey).toHaveBeenCalledWith("ctrl+v")
+  })
+
   it("dispatch routes macro:// to keyMacro", async () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },

@@ -1,7 +1,8 @@
 import type { AddonGeneratedDeck, AddonDeckDefinition } from "@/addon/api"
 
 import {
-  CATEGORY_DEFINITIONS,
+  loadCategories,
+  DEFAULT_FAVORITES,
   EmojiSelectorDeckSchema,
   type EmojiSelectorDeckConfig,
 } from "../support"
@@ -34,12 +35,11 @@ const generateDecks = (
   config: EmojiSelectorDeckConfig,
 ): Record<string, AddonGeneratedDeck> => {
   const decks: Record<string, AddonGeneratedDeck> = {}
-  const hasFavorites = config.favorites.length > 0
+  const favorites =
+    config.favorites.length > 0 ? config.favorites : [...DEFAULT_FAVORITES]
 
-  if (hasFavorites) {
-    const favoritesDeckId = buildCategoryDeckId(deck.id, FAVORITES.id)
-    decks[favoritesDeckId] = buildEmojiDeck(FAVORITES.label, config.favorites)
-  }
+  const favoritesDeckId = buildCategoryDeckId(deck.id, FAVORITES.id)
+  decks[favoritesDeckId] = buildEmojiDeck(FAVORITES.label, favorites)
 
   const topButtons: {
     type: string
@@ -49,22 +49,17 @@ const generateDecks = (
     target_deck: string
   }[] = []
 
-  if (hasFavorites) {
-    const favoritesDeckId = buildCategoryDeckId(deck.id, FAVORITES.id)
-    const totalPages = Math.max(
-      1,
-      Math.ceil(config.favorites.length / EMOJI_PAGE_SIZE),
-    )
-    topButtons.push({
-      type: "emoji-selector:category",
-      icon: FAVORITES.icon,
-      label: FAVORITES.label,
-      position: 0,
-      target_deck: totalPages > 1 ? `${favoritesDeckId}-p1` : favoritesDeckId,
-    })
-  }
+  const favTotalPages = Math.max(1, Math.ceil(favorites.length / EMOJI_PAGE_SIZE))
+  topButtons.push({
+    type: "emoji-selector:category",
+    icon: FAVORITES.icon,
+    label: FAVORITES.label,
+    position: 0,
+    target_deck:
+      favTotalPages > 1 ? `${favoritesDeckId}-p1` : favoritesDeckId,
+  })
 
-  CATEGORY_DEFINITIONS.forEach((category, idx) => {
+  loadCategories().forEach((category, idx) => {
     const categoryDeckId = buildCategoryDeckId(deck.id, category.id)
     const totalPages = Math.max(
       1,
@@ -75,7 +70,7 @@ const generateDecks = (
       type: "emoji-selector:category",
       icon: category.icon,
       label: category.label,
-      position: hasFavorites ? idx + 1 : idx,
+      position: idx + 1,
       target_deck: totalPages > 1 ? `${categoryDeckId}-p1` : categoryDeckId,
     })
   })
@@ -83,6 +78,7 @@ const generateDecks = (
   decks[deck.id] = {
     name: "Emoji Selector",
     buttons: topButtons,
+    paginated: true,
   }
 
   return decks
