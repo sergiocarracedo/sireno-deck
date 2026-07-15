@@ -134,10 +134,9 @@ export class EmulatorOutputClient implements OutputClient {
       // to resolve the actual deck — this avoids relying on the client's
       // sometimes-stale local view of the active deck.
       const activeDeck = opts.runtime.getActiveDeck()
-      const button = activeDeck.buttons.find((b) => {
-        const p = Number.parseInt(b.id, 10)
-        return Number.isFinite(p) && p === message.position
-      })
+      const button = activeDeck.buttons.find(
+        (b) => b.position === message.position,
+      )
       if (button === undefined) {
         // No user-defined button at this position — could be an injected
         // system button (n-1 slot) that lives in the broadcast but not the

@@ -113,10 +113,9 @@ export class RealOutputClient implements OutputClient {
           "real mode: gesture detected, resolving against active deck",
         )
         const activeDeck = opts.runtime.getActiveDeck()
-        const button = activeDeck.buttons.find((b) => {
-          const p = Number.parseInt(b.id, 10)
-          return Number.isFinite(p) && p === keyIndex
-        })
+        const button = activeDeck.buttons.find(
+          (b) => b.position === keyIndex,
+        )
         if (button === undefined) {
           const n1Position = descriptor.keyCount - 1
           if (keyIndex === n1Position) {
