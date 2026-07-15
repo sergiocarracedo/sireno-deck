@@ -1,0 +1,26 @@
+packages/cli/src/outputClient/emulator.ts
+  s_fd4c9efcb04c88::t_a27a49d7d43239 137-139
+packages/cli/src/outputClient/real.ts
+  s_fd4c9efcb04c88::t_d66bfdcf1bfeb1 116-118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "bfcbf6b74dccd89cfabee84662f123873a31940f",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_fd4c9efcb04c88": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0a020801effeDxd0RkXpU8rWsJ",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
