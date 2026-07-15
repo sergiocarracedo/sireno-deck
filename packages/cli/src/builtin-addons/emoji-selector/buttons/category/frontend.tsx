@@ -1,14 +1,17 @@
-import { Label } from "@/ui"
+import { Label } from '@/ui'
 
-import type { AddonFrontendButton } from "@/addon/api"
+import { AddonFrontendButton } from '@/addon'
+import { ConfigSchema } from './config'
 
-const CategoryButtonFrontend: AddonFrontendButton = ({ config }) => {
-  const iconRef = (config as { icon?: string }).icon ?? "🙂"
-  const labelRef = (config as { label?: string }).label ?? "Category"
+const CategoryButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
+  config,
+}) => {
+  const iconRef = config.icon ?? '🙂'
+  const labelRef = config.label ?? 'Category'
   return (
     <span className="flex h-full w-full flex-col items-center justify-center gap-1">
       <span className="text-3xl leading-none">{iconRef}</span>
-      <Label text={labelRef} />
+      <Label text={labelRef} variant="secondary" />
     </span>
   )
 }

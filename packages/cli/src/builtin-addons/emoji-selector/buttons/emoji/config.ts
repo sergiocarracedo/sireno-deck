@@ -1,6 +1,7 @@
-import { z } from "zod"
+import { z } from 'zod'
 
 export const configSchema = z.object({
-  emoji: z.string().min(1),
+  emoji: z.string().length(1),
+  shortcode: z.string(),
 })
 export type ConfigSchema = z.infer<typeof configSchema>

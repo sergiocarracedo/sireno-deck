@@ -54,11 +54,11 @@ const PageNavButtonFrontend: AddonFrontendButton<Config> = ({ config }) => {
 
   return (
     <div className="size-full flex flex-col gap-0.5 justify-center items-center">
-      <div className={isFirstPage ? 'invisible' : 'visible'}>
+      <div className={cn(isFirstPage ? 'invisible' : 'visible', '-ml-7')}>
         <NavAction dir="prev" />
       </div>
       <PageIndicator current={currentPage} total={totalPages} />
-      <div className={isLastPage ? 'invisible' : 'visible'}>
+      <div className={cn(isLastPage ? 'invisible' : 'visible', 'ml-7')}>
         <NavAction dir="next" />
       </div>
     </div>
