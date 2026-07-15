@@ -8,7 +8,7 @@ import type { ConfigSchema } from "./config.ts"
 const LauncherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
   config,
 }) => (
-  <div>
+  <div className="relative w-full h-full">
     <div
       className="grid grid-cols-3 grid-rows-2 w-full h-full gap-0 p-1"
       data-sireno-launcher-grid="true"
@@ -24,7 +24,9 @@ const LauncherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
         </div>
       ))}
     </div>
-    <Label text={config.label} />
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-black/40 px-1 py-0.5">
+      <Label text={config.label} />
+    </div>
   </div>
 )
 

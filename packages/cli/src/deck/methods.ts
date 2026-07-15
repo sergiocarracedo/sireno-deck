@@ -58,6 +58,7 @@ export interface Methods {
 export const createMethods = (ctx: MethodsContext): Methods => {
   let keyMacroProvider: KeyMacroProvider | undefined = ctx.keyMacroProvider
   let clipboardProvider: ClipboardProvider | undefined = ctx.clipboardProvider
+  const logger = ctx.logger
   const setKeyMacroProvider: Methods["setKeyMacroProvider"] = (provider) => {
     keyMacroProvider = provider
   }
@@ -135,7 +136,18 @@ export const createMethods = (ctx: MethodsContext): Methods => {
       )
     }
     await clipboardProvider.writeText(text)
-    await keyMacroProvider?.sendKey("ctrl+v")
+    if (keyMacroProvider === undefined) {
+      logger.warn(
+        { text },
+        "paste:// fired but no keyMacroProvider — clipboard written, keystroke skipped. Focus a text field and tap again.",
+      )
+      return
+    }
+    logger.info(
+      { text, combo: "ctrl+v" },
+      "paste:// sending keystroke",
+    )
+    await keyMacroProvider.sendKey("ctrl+v")
   }
 
   const dispatch: Methods["dispatch"] = async (value) => {
