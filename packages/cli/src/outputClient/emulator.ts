@@ -139,6 +139,21 @@ export class EmulatorOutputClient implements OutputClient {
         const parsed = Number.parseInt(b.id, 10)
         return Number.isFinite(parsed) && parsed === message.position
       })
+      logger.info(
+        {
+          activeDeckId: activeDeck.id,
+          position: message.position,
+          buttonFound: button !== undefined,
+          buttonType: button?.type,
+          buttonActions: button?.actions,
+          buttonsInDeck: activeDeck.buttons.map((b) => ({
+            id: b.id,
+            position: b.position,
+            type: b.type,
+          })),
+        },
+        "[emulator] button lookup",
+      )
       if (button === undefined) {
         // No user-defined button at this position — could be an injected
         // system button (n-1 slot) that lives in the broadcast but not the

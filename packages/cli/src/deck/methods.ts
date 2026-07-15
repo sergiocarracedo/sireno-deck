@@ -130,6 +130,10 @@ export const createMethods = (ctx: MethodsContext): Methods => {
   }
 
   const pasteText: Methods["pasteText"] = async (text) => {
+    logger.info(
+      { text, hasClipboard: clipboardProvider !== undefined, hasKeyMacro: keyMacroProvider !== undefined },
+      "[methods] pasteText invoked",
+    )
     if (clipboardProvider === undefined) {
       throw new NotImplementedError(
         "methods.pasteText requires a clipboardProvider (set via methods.setClipboardProvider)",

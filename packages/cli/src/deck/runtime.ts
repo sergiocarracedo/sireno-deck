@@ -269,6 +269,18 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
           ? found.button.actions?.dbltap
           : found.button.actions?.hold
 
+    logger.info(
+      {
+        buttonId,
+        deckId: found.deckId,
+        gesture,
+        buttonType: found.button.type,
+        buttonActions: found.button.actions,
+        userAction,
+      },
+      "[runtime] invokeAction resolved",
+    )
+
     if (userAction !== undefined) {
       logger.info(
         { buttonId, gesture, action: userAction },
