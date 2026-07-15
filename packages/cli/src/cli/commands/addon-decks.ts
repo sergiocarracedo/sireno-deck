@@ -26,6 +26,17 @@ const resolveTriggerProcessNames = (trigger: unknown): string[] | undefined => {
   return undefined
 }
 
+const isActionMap = (
+  v: unknown,
+): v is { tap?: string; dbltap?: string; hold?: string } => {
+  if (typeof v !== "object" || v === null) return false
+  const a = v as Record<string, unknown>
+  for (const k of ["tap", "dbltap", "hold"] as const) {
+    if (a[k] !== undefined && typeof a[k] !== "string") return false
+  }
+  return true
+}
+
 const mapAddonDeckToRuntimeDeck = (
   id: string,
   gdeck: AddonGeneratedDeck,
@@ -40,10 +51,11 @@ const mapAddonDeckToRuntimeDeck = (
     return pages.map((p) => {
       const mappedButtons: RuntimeDeck["buttons"] = (p.deck.buttons ?? []).map(
         (b, i) => {
-          const { position, type, config, ...rest } = b as {
+          const { position, type, config, actions, ...rest } = b as {
             position?: number
             type: string
             config?: unknown
+            actions?: unknown
           }
           const mergedConfig = {
             ...(typeof config === "object" && config !== null
@@ -57,6 +69,7 @@ const mapAddonDeckToRuntimeDeck = (
             ...(Object.keys(mergedConfig).length > 0
               ? { config: mergedConfig }
               : {}),
+            ...(isActionMap(actions) ? { actions } : {}),
           }
         },
       )
@@ -74,10 +87,11 @@ const mapAddonDeckToRuntimeDeck = (
   }
 
   const buttons: RuntimeDeck["buttons"] = (gdeck.buttons ?? []).map((b, i) => {
-    const { position, type, config, ...rest } = b as {
+    const { position, type, config, actions, ...rest } = b as {
       position?: number
       type: string
       config?: unknown
+      actions?: unknown
     }
     const mergedConfig = {
       ...(typeof config === "object" && config !== null
@@ -89,6 +103,7 @@ const mapAddonDeckToRuntimeDeck = (
       id: position !== undefined ? String(position) : String(i),
       type,
       ...(Object.keys(mergedConfig).length > 0 ? { config: mergedConfig } : {}),
+      ...(isActionMap(actions) ? { actions } : {}),
     }
   })
   return [
