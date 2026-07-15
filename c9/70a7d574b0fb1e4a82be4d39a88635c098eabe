@@ -1,0 +1,22 @@
+packages/cli/src/deck/methods.ts
+  s_fd4c9efcb04c88::t_c13a2cf6b989dc 61
+  s_fd4c9efcb04c88::t_f04d622688ee74 139-150
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/frontend.tsx
+  s_fd4c9efcb04c88::t_923d856bf2d432 11,27-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "c970a7d574b0fb1e4a82be4d39a88635c098eabe",
+  "prompts": {},
+  "sessions": {
+    "s_fd4c9efcb04c88": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0a020801effeDxd0RkXpU8rWsJ",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
