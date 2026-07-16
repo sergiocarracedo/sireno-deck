@@ -1,0 +1,81 @@
+.planning/phases/04-settings-deck/PLAN-2-SUMMARY.md
+  s_7807e467fd6dc4::t_aae4c4a4d4645b 1-45
+packages/cli/src/outputClient/real.ts
+  s_7807e467fd6dc4::t_c60f5662c0679d 106-114,117-118,121,123-124,126-127
+  s_7807e467fd6dc4::t_8c9f8dd1115492 115-116,119-120,122,125
+  s_7807e467fd6dc4::t_b3838c5dcb6c0c 158-165
+packages/cli/src/ui/surfaces/IconLabelProgressSurface.tsx
+  s_7807e467fd6dc4::t_0d7f09e9ebee53 1-61,63-109
+  s_7807e467fd6dc4::t_2df2e998f3f357 62
+packages/cli/src/deck/methods.ts
+  s_7807e467fd6dc4::t_fb5f14b5226654 69
+  s_7807e467fd6dc4::t_61bc68bb1cf401 100-103,105,107-108
+  s_7807e467fd6dc4::t_2b497de9416d8e 104,106
+  s_7807e467fd6dc4::t_ad1dd13d1f1c04 243
+  s_7807e467fd6dc4::t_4f36f18bce959d 214-223
+packages/cli/src/__tests__/integration.test.ts
+  s_7807e467fd6dc4::t_a82e7eed9e9d45 111
+packages/cli/src/deck/runtime.ts
+  s_7807e467fd6dc4::t_e334dfd2c77eab 110
+  s_7807e467fd6dc4::t_24954b988d7efe 93-94
+  s_7807e467fd6dc4::t_5f91aada19d382 498-504
+packages/cli/src/ui/surfaces/index.ts
+  s_7807e467fd6dc4::t_3e47c29fd4c385 3,10-13
+packages/cli/src/outputClient/emulator.ts
+  s_7807e467fd6dc4::t_b0394f2eba5d27 176-183
+  s_7807e467fd6dc4::t_c3cafa0cd14b8d 222-223
+packages/cli/src/builtin-addons/internal-settings/decks/settings.ts
+  s_7807e467fd6dc4::t_dc6d89f8da4490 6-8
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-down/backend.ts
+  s_7807e467fd6dc4::t_acff9bd72a6cc6 10-11
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_7807e467fd6dc4::t_77d9a15c1663a0 728-733
+  s_7807e467fd6dc4::t_e3383f4b71d0d8 701-720,722-725,727,734-735
+  s_7807e467fd6dc4::t_26c8a5d9dc5395 721,726
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-down/frontend.tsx
+  s_7807e467fd6dc4::t_39b91b0a8c56c6 1,3-4,6-40
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-up/frontend.tsx
+  s_7807e467fd6dc4::t_7bb9dae0a63a2f 1,3-4,6-40
+packages/cli/src/builtin-addons/internal-settings/buttons/app-info/config.ts
+  s_7807e467fd6dc4::t_3fea02b23d28ab 1-4
+packages/cli/src/builtin-addons/internal-settings/buttons/app-info/frontend.tsx
+  s_7807e467fd6dc4::t_e41eba0d6eb07a 1-17
+packages/cli/src/deck/__tests__/methods.test.ts
+  s_7807e467fd6dc4::t_c7b310437273fd 265-292
+packages/cli/src/builtin-addons/internal-settings/buttons/app-info/backend.ts
+  s_7807e467fd6dc4::t_3fcf6cbf541ce9 1-7
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_7807e467fd6dc4::t_9e755d99a92288 5-10,29-30,32,36-37,39-46
+packages/cli/src/ui/surfaces/__tests__/IconLabelProgressSurface.test.tsx
+  s_7807e467fd6dc4::t_e5101b06eb2036 88,94
+  s_7807e467fd6dc4::t_d5cd234c6d1f45 2-27,30-44,46-50,52-87,89-93,95-97
+  s_7807e467fd6dc4::t_b38bcee125e966 1
+  s_7807e467fd6dc4::t_d2a61ae09945e7 45,51
+  s_7807e467fd6dc4::t_3b980888148a0d 28-29
+.planning/phases/04-settings-deck/PLAN-1-SUMMARY.md
+  s_7807e467fd6dc4::t_c6406e642caea0 1-48
+packages/cli/src/builtin-addons/internal-settings/__tests__/index.test.ts
+  s_7807e467fd6dc4::t_5d12a7df7e0986 25-27
+packages/cli/src/config/__tests__/validation.test.ts
+  s_7807e467fd6dc4::t_0791d7ff4c6f22 70,77
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-up/backend.ts
+  s_7807e467fd6dc4::t_bc94739faf57e9 10-11
+packages/cli/src/ui/theme-presentation.tsx
+  s_7807e467fd6dc4::t_ae8fb2dcda6278 17,34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "1a0b915336ba0a1c6da8d521fd61bfeb89c690e6",
+  "prompts": {},
+  "sessions": {
+    "s_7807e467fd6dc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09868b263ffe2OcxVWFlOvDqUq",
+        "model": "k2p7"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
