@@ -1,10 +1,11 @@
+import { useEffect, useRef, useState } from "react"
+
 import type { AddonGestureEvent } from "@/addon/api"
 import { useAddonChannel } from "@/api/react"
-import { IconLabelSurface, ProgressBar } from "@/ui/index"
-import { useEffect, useRef, useState } from "react"
+import { IconLabelProgressSurface } from "@/ui/index"
 import type { MediaPlayerState } from "../../../state"
 
-const PROGRESS_VISIBLE_MS = 10_000
+const PROGRESS_VISIBLE_MS = 2000
 
 export type VolumeVariant = "down" | "up"
 
@@ -40,21 +41,13 @@ const VolumeButtonFrontend = ({
   )
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-1 relative">
-      <IconLabelSurface
-        label={variant === "down" ? "Vol -" : "Vol +"}
-        source={`icon://${variant === "down" ? "volume" : "volume-2"}`}
-      />
-      {showProgress && (
-        <div className="absolute bottom-0 left-0 right-0 px-1 pb-1">
-          <ProgressBar
-            value={volume}
-            bgColor="bg-primary"
-            bgColorAlt="bg-primary/30"
-          />
-        </div>
-      )}
-    </div>
+    <IconLabelProgressSurface
+      source={`icon://${variant === "down" ? "volume" : "volume-2"}`}
+      label={variant === "down" ? "Vol -" : "Vol +"}
+      progress={volume}
+      visible={showProgress}
+      visibleMs={PROGRESS_VISIBLE_MS}
+    />
   )
 }
 

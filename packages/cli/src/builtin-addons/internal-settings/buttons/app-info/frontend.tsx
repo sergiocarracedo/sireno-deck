@@ -9,8 +9,8 @@ const version: string = typeof pkg.version === 'string' ? pkg.version : '0.0.0'
 const AppInfoButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
   config,
 }) => (
-  <div className="flex h-full w-full items-center justify-center gap-2 flex-col">
-    <Icon source={config.icon} size={52} />
+  <div className="flex h-full w-full items-center justify-center gap-1 flex-col">
+    <Icon source={config.icon} size={40} />
     <Text text={version} />
   </div>
 )
