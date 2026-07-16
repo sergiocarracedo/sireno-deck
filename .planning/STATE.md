@@ -10,3 +10,7 @@
 |---|-------------|------|--------|-----------|
 | 001 | Extract expandTokens to ui/primitives/text-format (REVERTED) | 2026-07-14 | — | .planning/quick/001-extract-expandcomponents/ |
 | 002 | Launcher label overlay + paste diagnostic logging | 2026-07-14 | c970a7d | .planning/quick/002-paste-launcher-debug/ |
+
+## Roadmap Evolution
+
+- Phase 4 added: Settings Deck

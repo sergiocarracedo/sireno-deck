@@ -121,6 +121,43 @@
 
 ---
 
+## Phase 4: Settings Deck
+
+**Goal:** Add an internal settings deck with brightness controls and app info, accessible from the main system settings button.
+
+**Depends on:** P3
+**Blocks:** None
+**Status:** [ ] Not started
+
+### Success Criteria
+
+- [ ] System settings button navigates to a new internal settings deck
+- [ ] A reusable progress surface exists with icon, label, and progress bar (progress value is provided externally; show/hide-on-tap behavior is built in)
+- [ ] Brightness darker button at position 0 decreases screen brightness and shows progress bar
+- [ ] Brightness lighter button at position 1 increases screen brightness and shows progress bar
+- [ ] App info button at position 2 shows the app logo and version
+- [ ] Emulator stores a brightness value and exposes it via state; real device uses wsBridge messages to change hardware brightness
+
+### Tasks
+
+- [ ] T4.1: Extract a reusable progress surface component (`IconLabelProgressSurface`) that accepts icon, label, progress value, and visibility; shows progress on tap and hides after a timeout — `packages/cli/src/ui/surfaces/IconLabelProgressSurface.tsx`
+- [ ] T4.2: Create internal settings deck factory with darker/lighter/app-info buttons — `packages/cli/src/builtin-addons/internal-settings/decks/index.ts` (or core deck system)
+- [ ] T4.3: Wire the system settings button in the main deck to navigate to the settings deck — `packages/cli/src/builtin-addons/core` deck generation
+- [ ] T4.4: Add brightness state mutation and wsBridge command in `OutputClient` (emulator stores value, real device sends hardware brightness command) — `packages/cli/src/outputClient/emulator.ts` and `packages/cli/src/outputClient/real.ts`
+- [ ] T4.5: Add tests for the progress surface and settings deck wiring
+
+### Must-Haves
+
+- Progress surface is a reusable UI component themes can override
+- Brightness controls work in both emulator and real mode
+- Settings deck is reachable from the main deck settings button
+
+### Nice-to-Haves
+
+- Progress bar auto-dismisses with a smooth transition
+
+---
+
 ## Verification Points
 
 | Phase | What to verify | How |
@@ -136,6 +173,9 @@
 | P3 | Launcher label | Launcher button shows "Emojis" text |
 | P3 | Page-nav visible | Emoji list decks show page-nav button at position 13 |
 | P3 | End-to-end paste | Tap emoji → clipboard has emoji + emoji appears in target app |
+| P4 | Settings deck opens | System settings button navigates to internal settings deck |
+| P4 | Brightness controls | Tap brighter/darker changes screen brightness value and shows progress bar |
+| P4 | App info button | Button shows app logo and version string |
 
 ## Dependencies Graph
 
