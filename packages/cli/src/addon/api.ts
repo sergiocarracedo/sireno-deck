@@ -5,6 +5,7 @@ import type { z } from "zod"
 import type { ActionExecutor } from "@/action/executor"
 import type { Store } from "@/core/store"
 import type { GestureKind } from "@/core/gesture-state"
+import type { Methods } from "@/deck/methods"
 
 /** The runtime manifest API version (`AddonManifestV1`). */
 export const SIRENO_ADDON_API_VERSION = 1 as const
@@ -279,6 +280,14 @@ export interface AddonButtonServiceContext<Config = unknown> {
   readonly addonName: string
   /** Namespaced addon-global methods (`<addonName>:<methodName>` keys). */
   readonly methods: Readonly<Record<string, AddonServiceMethod>>
+  /**
+   * Core runtime methods exposed to addons (e.g. `adjustBrightness`,
+   * `dispatch`, `runCommand`, `keyMacro`, `pasteText`, `navigateToDeck`,
+   * `goBack`, `showTemporaryError`, `getActiveDeckId`). Setter functions
+   * like `setKeyMacroProvider` are intentionally not exposed — they belong
+   * to host setup, not addon backends.
+   */
+  readonly coreMethods: Methods
   /** Publish on a channel. */
   readonly publish: (channel: string, data: unknown) => void
   /** Run host commands. */

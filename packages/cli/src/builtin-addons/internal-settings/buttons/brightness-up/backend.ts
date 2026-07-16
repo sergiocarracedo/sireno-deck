@@ -7,7 +7,7 @@ type Config = z.infer<typeof configSchema>
 
 export default {
   configSchema,
-  onTap: async ({ methods }) => {
-    await methods.adjustBrightness({ direction: "up" })
+  onTap: async ({ coreMethods }) => {
+    coreMethods.adjustBrightness({ direction: "up" })
   },
 } satisfies AddonButtonTypeService<Config>

@@ -10,6 +10,7 @@ import type {
 import type { ScannedAddon } from "@/cli/commands/addon-registry"
 import type { PubSub } from "@/core/pub-sub"
 import type { Store } from "@/core/store"
+import type { Methods } from "@/deck/methods"
 import type { Runtime, RuntimeDeck } from "@/deck/runtime"
 import type { StatePublisher } from "@/render/state-publisher"
 import type { WsBridge } from "@/render/ws-bridge"
@@ -25,6 +26,7 @@ export interface BridgeAddonServicesParams {
   readonly statePublisher: Pick<StatePublisher, "registerChannel">
   readonly bridge: Pick<WsBridge, "broadcast" | "registerCacheablePoller">
   readonly setClipboardProvider: (provider: unknown) => void
+  readonly methods: Methods
 }
 
 type AddonModule = {
@@ -49,6 +51,7 @@ export const bridgeAddonServices = async (
     statePublisher,
     bridge,
     setClipboardProvider,
+    methods,
   } = params
 
   runtime.setGestureListener((buttonId, event) => {
@@ -241,6 +244,7 @@ export const bridgeAddonServices = async (
         buttonId: button.id,
         addonName,
         methods: Object.freeze(buttonMethods),
+        coreMethods: methods,
         publish: (channel: string, data: unknown) =>
           pubSub.publish(channel, data),
         executor,

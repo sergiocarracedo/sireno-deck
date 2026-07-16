@@ -8,6 +8,7 @@ import { createActionExecutor } from "@/action/executor"
 
 import type { ScannedAddon } from "@/cli/commands/addon-registry"
 import { getHostContext } from "../host-context"
+import { createMethods } from "../methods"
 import { createRuntime } from "../runtime"
 import { bridgeAddonServices } from "../addon-handler-bridge"
 
@@ -56,12 +57,19 @@ const setup = () => {
   })
   const executor = createActionExecutor({ host: getHostContext() })
   const setClipboardProvider = vi.fn()
-  return { runtime, pubSub, store, executor, decks, setClipboardProvider }
+  const methods = createMethods({
+    runtime,
+    pubSub,
+    store,
+    executor,
+    logger: silentLogger(),
+  })
+  return { runtime, pubSub, store, executor, decks, setClipboardProvider, methods }
 }
 
 describe("bridgeAddonServices", () => {
   it("registers each globalService poller with the state publisher", async () => {
-    const { runtime, pubSub, store, executor, decks, setClipboardProvider } =
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider, methods } =
       setup()
     const bridge = makeBridge()
     const statePublisher = makeStatePublisher()
@@ -78,6 +86,7 @@ describe("bridgeAddonServices", () => {
       statePublisher,
       bridge,
       setClipboardProvider,
+      methods,
     })
 
     expect(statePublisher.registerChannel).toHaveBeenCalledTimes(1)
@@ -99,7 +108,7 @@ describe("bridgeAddonServices", () => {
   })
 
   it("routes ctx.publish from onLoad to the WS bridge on the primary channel", async () => {
-    const { runtime, pubSub, store, executor, decks, setClipboardProvider } =
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider, methods } =
       setup()
     const bridge = makeBridge()
     const statePublisher = makeStatePublisher()
@@ -116,6 +125,7 @@ describe("bridgeAddonServices", () => {
       statePublisher,
       bridge,
       setClipboardProvider,
+      methods,
     })
 
     expect(bridge.broadcast).toHaveBeenCalledWith({
@@ -125,7 +135,7 @@ describe("bridgeAddonServices", () => {
   })
 
   it("does not call pubSub for ctx.publish when a poller is registered", async () => {
-    const { runtime, pubSub, store, executor, decks, setClipboardProvider } =
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider, methods } =
       setup()
     const bridge = makeBridge()
     const statePublisher = makeStatePublisher()
@@ -145,13 +155,14 @@ describe("bridgeAddonServices", () => {
       statePublisher,
       bridge,
       setClipboardProvider,
+      methods,
     })
 
     expect(subSpy).not.toHaveBeenCalled()
   })
 
   it("falls back to pubSub for ctx.publish when no poller is defined", async () => {
-    const { runtime, pubSub, store, executor, decks, setClipboardProvider } =
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider, methods } =
       setup()
     const bridge = makeBridge()
     const statePublisher = makeStatePublisher()
@@ -180,6 +191,7 @@ describe("bridgeAddonServices", () => {
       statePublisher,
       bridge,
       setClipboardProvider,
+      methods,
     })
 
     expect(subSpy).toHaveBeenCalledWith({ initial: true })
@@ -188,7 +200,7 @@ describe("bridgeAddonServices", () => {
   })
 
   it("ignores addons without globalServiceEntry", async () => {
-    const { runtime, pubSub, store, executor, decks, setClipboardProvider } =
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider, methods } =
       setup()
     const bridge = makeBridge()
     const statePublisher = makeStatePublisher()
@@ -205,6 +217,7 @@ describe("bridgeAddonServices", () => {
       statePublisher,
       bridge,
       setClipboardProvider,
+      methods,
     })
 
     expect(statePublisher.registerChannel).not.toHaveBeenCalled()
@@ -216,7 +229,7 @@ describe("bridgeAddonServices", () => {
       await import("./__fixtures__/fake-media-backend")
     __resetCapturedCtx()
 
-    const { runtime, pubSub, store, executor, decks, setClipboardProvider } =
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider, methods } =
       setup()
     const bridge = makeBridge()
     const statePublisher = makeStatePublisher()
@@ -233,6 +246,7 @@ describe("bridgeAddonServices", () => {
       statePublisher,
       bridge,
       setClipboardProvider,
+      methods,
     })
 
     const ctx = __getCapturedCtx()
@@ -253,7 +267,7 @@ describe("bridgeAddonServices", () => {
       await import("./__fixtures__/fake-media-backend")
     __resetCapturedCtx()
 
-    const { runtime, pubSub, store, executor, decks, setClipboardProvider } =
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider, methods } =
       setup()
     const bridge = makeBridge()
     const statePublisher = makeStatePublisher()
@@ -270,6 +284,7 @@ describe("bridgeAddonServices", () => {
       statePublisher,
       bridge,
       setClipboardProvider,
+      methods,
     })
 
     const ctx = __getCapturedCtx()
@@ -281,7 +296,7 @@ describe("bridgeAddonServices", () => {
   })
 
   it("forwards runtime gestures to the bridge as a state message on runtime:gesture:<id>", async () => {
-    const { runtime, pubSub, store, executor, decks, setClipboardProvider } =
+    const { runtime, pubSub, store, executor, decks, setClipboardProvider, methods } =
       setup()
     const decksWithButton = [
       {
@@ -314,6 +329,7 @@ describe("bridgeAddonServices", () => {
       statePublisher,
       bridge,
       setClipboardProvider,
+      methods,
     })
 
     bridge.broadcast.mockClear()
@@ -355,6 +371,13 @@ describe("bridgeAddonServices", () => {
     const signal = new AbortController().signal
     const executor = createActionExecutor({ host: getHostContext() })
     const setClipboardProvider = vi.fn()
+    const methods = createMethods({
+      runtime: freshRuntime,
+      pubSub,
+      store,
+      executor,
+      logger: silentLogger(),
+    })
 
     await bridgeAddonServices({
       runtime: freshRuntime,
@@ -367,6 +390,7 @@ describe("bridgeAddonServices", () => {
       statePublisher,
       bridge,
       setClipboardProvider,
+      methods,
     })
 
     bridge.broadcast.mockClear()

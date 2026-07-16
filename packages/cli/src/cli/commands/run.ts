@@ -168,6 +168,7 @@ export const setupAddonServices = (
     bridge,
     setClipboardProvider,
     store,
+    methods,
   })
 
   const unsubscribeDeck = pubSub.subscribe(
