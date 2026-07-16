@@ -272,14 +272,15 @@ describe("createMethods", () => {
     expect(runtime.getBrightness()).toBe(80)
   })
 
-  it("adjustBrightness down clamps at 0", () => {
+  it("adjustBrightness down clamps at 10", () => {
     const { methods, runtime } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },
     ])
-    runtime.setBrightness(5)
+    runtime.setBrightness(15)
     methods.adjustBrightness({ direction: "down" })
+    expect(runtime.getBrightness()).toBe(10)
     methods.adjustBrightness({ direction: "down" })
-    expect(runtime.getBrightness()).toBe(0)
+    expect(runtime.getBrightness()).toBe(10)
   })
 
   it("dispatch routes brightness://up to adjustBrightness", () => {

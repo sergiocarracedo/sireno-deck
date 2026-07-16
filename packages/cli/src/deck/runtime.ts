@@ -108,7 +108,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   let transientDeckId: string | null = null
   let overlayDeckId: string | null = null
   let overlayPreviousActiveId: string | null = null
-  let brightness = 100
+  let brightness = 50
 
   const deckById = (id: string): RuntimeDeck | undefined =>
     decks.find((d) => d.id === id)

@@ -100,7 +100,8 @@ export const createMethods = (ctx: MethodsContext): Methods => {
   const adjustBrightness: Methods["adjustBrightness"] = ({ direction }) => {
     const step = 10
     const current = ctx.runtime.getBrightness()
-    const next = direction === "up" ? current + step : current - step
+    const raw = direction === "up" ? current + step : current - step
+    const next = Math.max(10, Math.min(100, Math.round(raw)))
     if (next === current) return
     ctx.runtime.setBrightness(next)
     ctx.pubSub.publish("methods:adjustBrightness", { direction, value: next })

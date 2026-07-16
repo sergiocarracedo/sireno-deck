@@ -700,9 +700,9 @@ describe("invokeAction — user actions", () => {
   })
 
   describe("brightness", () => {
-    it("defaults to 100", () => {
+    it("defaults to 50", () => {
       const { runtime } = setup([makeDeck({ id: "main", isMain: true })])
-      expect(runtime.getBrightness()).toBe(100)
+      expect(runtime.getBrightness()).toBe(50)
     })
 
     it("setBrightness publishes sireno:settings:brightness and returns new value", () => {
@@ -714,7 +714,7 @@ describe("invokeAction — user actions", () => {
       expect(events).toEqual([{ value: 60 }])
     })
 
-    it("setBrightness clamps to 0-100 and does not publish on unchanged value", () => {
+    it("setBrightness clamps to 10-100 and does not publish on unchanged value", () => {
       const { runtime, pubSub } = setup([makeDeck({ id: "main", isMain: true })])
       const events: unknown[] = []
       pubSub.subscribe("sireno:settings:brightness", (p) => events.push(p))
@@ -722,13 +722,13 @@ describe("invokeAction — user actions", () => {
       runtime.setBrightness(150)
       expect(runtime.getBrightness()).toBe(100)
       runtime.setBrightness(-10)
-      expect(runtime.getBrightness()).toBe(0)
+      expect(runtime.getBrightness()).toBe(10)
       runtime.setBrightness(50)
       runtime.setBrightness(50)
       expect(events).toEqual([
         { value: 80 },
         { value: 100 },
-        { value: 0 },
+        { value: 10 },
         { value: 50 },
       ])
     })
