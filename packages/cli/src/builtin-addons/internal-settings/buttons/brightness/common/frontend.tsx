@@ -15,13 +15,14 @@ export const BrightnessButtonFrontend = ({
 }: BrightnessButtonFrontendProps) => {
   const { data } = useAddonChannel<{ value: number }>(BRIGHTNESS_CHANNEL)
   const progress = typeof data?.value === "number" ? data.value : 0
+  const visible = data !== undefined
 
   return (
     <IconLabelProgressSurface
       source={`icon://${variant === "down" ? "sun-dim" : "sun"}`}
       label={variant === "down" ? "Darker" : "Lighter"}
       progress={progress}
-      visible={data !== undefined}
+      visible={visible}
     />
   )
 }

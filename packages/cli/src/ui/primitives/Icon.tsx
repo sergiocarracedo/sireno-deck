@@ -11,7 +11,7 @@ import { cn } from "../utils/cn"
 const TONE_CLASS = {
   accent: "text-accent",
   danger: "text-danger",
-  foreground: "text-foreground",
+  foreground: "text-fg",
   primary: "text-primary",
   success: "text-success",
   background: "text-background",

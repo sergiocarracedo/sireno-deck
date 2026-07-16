@@ -4,22 +4,27 @@ import {
   useEffect,
   useRef,
   useState,
-} from 'react'
+} from "react"
 
-import { EMOJI_RE } from '../../core/icon-source'
-import { Icon } from '../primitives/Icon'
-import { Label } from '../primitives/Label'
-import { useThemeUiPresentation } from '../theme-presentation'
+import { EMOJI_RE } from "../../core/icon-source"
+import { Icon } from "../primitives/Icon"
+import { Label, LabelVariant } from "../primitives/Label"
+import { ProgressBar } from "../primitives/ProgressBar"
+import { useThemeUiPresentation } from "../theme-presentation"
 
 const DEFAULT_VISIBLE_MS = 2000
 
 export interface IconLabelProgressSurfaceProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
+  extends Omit<HTMLAttributes<HTMLDivElement>, "children"> {
   source?: string
   label: string
   progress: number
   visible: boolean
   visibleMs?: number
+  variant?: LabelVariant
+  details?: string
+  bgColor?: string
+  bgColorAlt?: string
 }
 
 export function IconLabelProgressSurface(
@@ -33,8 +38,16 @@ export function IconLabelProgressSurface(
     progress,
     visible,
     visibleMs = DEFAULT_VISIBLE_MS,
+    variant,
+    details,
+    bgColor,
+    bgColorAlt,
     ...rest
   } = props
+
+  if (themeUi?.surfaces?.iconLabelProgress) {
+    return themeUi.surfaces.iconLabelProgress(props)
+  }
 
   const [shown, setShown] = useState(visible)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -61,12 +74,9 @@ export function IconLabelProgressSurface(
     }
   }, [visible, visibleMs, progress])
 
-  if (themeUi?.surfaces?.iconLabelProgress) {
-    return themeUi.surfaces.iconLabelProgress(props)
-  }
-
   const clampedProgress = Math.max(0, Math.min(100, progress))
-  const layoutClassName = 'flex flex-col items-center justify-center gap-1'
+  const layoutClassName =
+    "flex h-full w-full flex-col items-center justify-center gap-1 relative"
   const mergedClassName = consumerClassName
     ? `${layoutClassName} ${consumerClassName}`
     : layoutClassName
@@ -87,20 +97,21 @@ export function IconLabelProgressSurface(
     <div
       className={mergedClassName}
       data-sireno-surface="icon-label-progress"
-      data-visible={shown ? 'true' : 'false'}
+      data-visible={shown ? "true" : "false"}
       data-progress={clampedProgress}
       {...rest}
     >
       {iconContent}
-      <Label text={label} />
+      <Label text={label} variant={variant} />
+      {details !== undefined && details.length > 0 && (
+        <Label text={details} variant="small" />
+      )}
       {shown && (
-        <div
-          aria-hidden="true"
-          className="block h-1 w-3/4 overflow-hidden rounded-full bg-black/20"
-        >
-          <div
-            className="h-full bg-white transition-all duration-200"
-            style={{ width: `${clampedProgress}%` }}
+        <div className="absolute bottom-0 left-0 right-0 px-1 pb-1">
+          <ProgressBar
+            value={clampedProgress}
+            bgColor={bgColor}
+            bgColorAlt={bgColorAlt}
           />
         </div>
       )}

@@ -1,13 +1,12 @@
-import { useEffect, useRef, useState } from "react"
-
-import type { AddonGestureEvent } from "@/addon/api"
-import { useAddonChannel } from "@/api/react"
-import { IconLabelProgressSurface } from "@/ui/index"
-import type { MediaPlayerState } from "../../../state"
+import type { AddonGestureEvent } from '@/addon/api'
+import { useAddonChannel } from '@/api/react'
+import { IconLabelProgressSurface } from '@/ui/index'
+import { useEffect, useRef, useState } from 'react'
+import type { MediaPlayerState } from '../../../state'
 
 const PROGRESS_VISIBLE_MS = 2000
 
-export type VolumeVariant = "down" | "up"
+export type VolumeVariant = 'down' | 'up'
 
 interface VolumeButtonFrontendProps {
   readonly variant: VolumeVariant
@@ -18,13 +17,13 @@ const VolumeButtonFrontend = ({
   variant,
   gesture,
 }: VolumeButtonFrontendProps) => {
-  const { data } = useAddonChannel<MediaPlayerState>("media:state")
+  const { data } = useAddonChannel<MediaPlayerState>('media:state')
   const volume = data?.volume ?? 0
   const [showProgress, setShowProgress] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    if (gesture?.gesture !== "tap") return
+    if (gesture?.gesture !== 'tap') return
     setShowProgress(true)
     if (timerRef.current) clearTimeout(timerRef.current)
     timerRef.current = setTimeout(
@@ -42,11 +41,10 @@ const VolumeButtonFrontend = ({
 
   return (
     <IconLabelProgressSurface
-      source={`icon://${variant === "down" ? "volume" : "volume-2"}`}
-      label={variant === "down" ? "Vol -" : "Vol +"}
+      source={`icon://${variant === 'down' ? 'volume' : 'volume-2'}`}
+      label={variant === 'down' ? 'Vol -' : 'Vol +'}
       progress={volume}
       visible={showProgress}
-      visibleMs={PROGRESS_VISIBLE_MS}
     />
   )
 }
