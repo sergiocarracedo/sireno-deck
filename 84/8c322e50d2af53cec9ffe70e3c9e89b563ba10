@@ -1,0 +1,48 @@
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_fe3c83c8e2c33a::t_d5e14749e82635 48
+packages/cli/frontend/src/App.tsx
+  s_fe3c83c8e2c33a::t_acfcee174c50cd 25
+packages/cli/src/deck/runtime.ts
+  s_7807e467fd6dc4::t_a892ecb38cd12e 501
+  s_fe3c83c8e2c33a::t_b00360117a9800 23
+packages/cli/src/deck/deck-config.ts
+  s_fe3c83c8e2c33a::t_c614389eedc04b 123
+packages/cli/src/cli/commands/__tests__/addon-decks.test.ts
+  s_fe3c83c8e2c33a::t_6b2fb3445e6674 473-549
+packages/cli/frontend/src/components/Deck.tsx
+  s_fe3c83c8e2c33a::t_25467e05f9840d 140-157
+  s_fe3c83c8e2c33a::t_1daa909b58a6d9 36
+packages/cli/src/cli/commands/addon-decks.ts
+  s_fe3c83c8e2c33a::t_99b5b03bdbffa2 105
+  s_fe3c83c8e2c33a::t_d7f6a14fc1138b 67
+  s_fe3c83c8e2c33a::t_0a43f1458a3aa9 41,75,111
+  s_fe3c83c8e2c33a::t_5d7ca8540cd29d 200
+packages/cli/src/builtin-addons/internal-settings/buttons/app-info/frontend.tsx
+  s_fe3c83c8e2c33a::t_f08b81d37d4cf4 2,10-13
+packages/cli/src/deck/__tests__/deck-config-full-flag.test.ts
+  s_fe3c83c8e2c33a::t_b0c7094ed9654c 1-46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "848c322e50d2af53cec9ffe70e3c9e89b563ba10",
+  "prompts": {},
+  "sessions": {
+    "s_7807e467fd6dc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09868b263ffe2OcxVWFlOvDqUq",
+        "model": "k2p7"
+      },
+      "human_author": null
+    },
+    "s_fe3c83c8e2c33a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_094981c87ffeVD0KNs45tp1Fh6",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
