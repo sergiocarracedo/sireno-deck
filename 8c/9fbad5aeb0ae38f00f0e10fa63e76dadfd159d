@@ -1,0 +1,28 @@
+packages/cli/src/builtin-addons/internal-settings/buttons/app-info/frontend.tsx
+  h_f90ee31b03fc41 1-2,4-5,7,9-14
+packages/cli/src/builtin-addons/internal-settings/decks/settings.ts
+  s_fe3c83c8e2c33a::t_9c5b8b32131891 8
+packages/cli/src/builtin-addons/internal-settings/buttons/app-info/config.ts
+  s_fe3c83c8e2c33a::t_ac1614dd2552e8 3-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "8c9fbad5aeb0ae38f00f0e10fa63e76dadfd159d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_fe3c83c8e2c33a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_094981c87ffeVD0KNs45tp1Fh6",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
