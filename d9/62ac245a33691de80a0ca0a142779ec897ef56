@@ -1,0 +1,21 @@
+.planning/phases/04-settings-deck/CONTEXT.md
+  s_7807e467fd6dc4::t_a72c0027dc2b17 1-34
+.planning/phases/04-settings-deck/DISCUSSION-LOG.md
+  s_7807e467fd6dc4::t_b8a8fd8f589c32 1-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "d962ac245a33691de80a0ca0a142779ec897ef56",
+  "prompts": {},
+  "sessions": {
+    "s_7807e467fd6dc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09868b263ffe2OcxVWFlOvDqUq",
+        "model": "k2p7"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
