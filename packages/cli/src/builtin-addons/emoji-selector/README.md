@@ -2,7 +2,7 @@
 
 Adds an emoji deck to your config. Users open it via the `emoji-selector:launcher` button (or any `core:change-deck` pointing to `emoji-selector`), pick from 8 categories (Smileys, Nature, Food, Activities, Travel, Objects, Symbols, Flags). Each category deck is paginated automatically using `core:page-nav` buttons.
 
-Tapping an emoji writes it to the system clipboard via the core `paste://` dispatch channel.
+Tapping an emoji copies it to the system clipboard and sends `ctrl+v` via the core `paste://` dispatch channel. Double-tapping an emoji with a shortcode pastes `:shortcode:` instead.
 
 ## Decks
 
@@ -17,7 +17,8 @@ The addon produces:
 | ------------------------- | ---------- | ---------------------------------------------- |
 | `emoji-selector:launcher` | tap        | Navigate to the `emoji-selector` routing deck  |
 | `emoji-selector:category` | tap        | Navigate to the target category deck           |
-| `emoji-selector:emoji`    | tap        | Dispatch `paste://<emoji>` to clipboard        |
+| `emoji-selector:emoji`    | tap        | Dispatch `paste://<emoji>` to paste it          |
+| `emoji-selector:emoji`    | dblTap     | Dispatch `paste://:<shortcode>:` to paste it   |
 | `emoji-selector:back`     | tap        | Navigate to previous deck                      |
 | `core:page-nav`           | tap/dbltap | Navigate to next/previous page (auto-injected) |
 

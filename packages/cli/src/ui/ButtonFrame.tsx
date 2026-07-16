@@ -6,14 +6,20 @@ export interface ButtonFrameProps {
   isHolding?: boolean
   holdProgress?: number
   buttonType: string
+  variant?: "default" | "error"
   onClick?: (event: MouseEvent<HTMLDivElement>) => void
   children: ReactNode
 }
 
-export const ButtonFrame = ({ children, onClick }: ButtonFrameProps) => (
+export const ButtonFrame = ({ children, variant = "default", onClick }: ButtonFrameProps) => (
   <div
-    className="flex h-full w-full items-center justify-center overflow-hidden rounded-2xl bg-bg p-1 border-2 border-solid border-frame"
+    className={`flex h-full w-full items-center justify-center overflow-hidden rounded-2xl p-1 border-2 border-solid ${
+      variant === "error"
+        ? "bg-red-600 border-red-700 text-white"
+        : "bg-bg border-frame"
+    }`}
     data-sireno-button-frame="true"
+    data-variant={variant}
     onClick={onClick}
     role={onClick !== undefined ? "button" : undefined}
     tabIndex={onClick !== undefined ? 0 : undefined}

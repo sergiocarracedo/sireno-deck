@@ -158,6 +158,30 @@ describe("createLinuxKeyMacroProvider", () => {
     await provider.stop()
   })
 
+  it("sendKey with literal text uses `type` syntax with ydotool", async () => {
+    const { executor, calls } = makeExecutor((tool, args) => {
+      if (tool === "which" && args[0] === "xdotool")
+        return { exitCode: 1, stdout: "" }
+      if (tool === "which" && args[0] === "ydotool")
+        return { exitCode: 0, stdout: "/usr/bin/ydotool\n" }
+      if (tool === "ydotool") return { exitCode: 0, stdout: "" }
+      return { exitCode: 1, stdout: "" }
+    })
+    const provider = await createLinuxKeyMacroProvider({
+      executor,
+      env: baseEnv("wayland"),
+      logger: silentLogger(),
+    })
+    await provider.sendKey("hello")
+    expect(
+      calls.find((c) => c.tool === "ydotool" && c.args[0] === "type"),
+    ).toEqual({
+      tool: "ydotool",
+      args: ["type", "hello"],
+    })
+    await provider.stop()
+  })
+
   it("throws ProviderError with code EXEC_FAILED when tool exits non-zero", async () => {
     const { executor } = makeExecutor({
       which: { exitCode: 0, stdout: "/usr/bin/xdotool\n" },
@@ -180,7 +204,7 @@ describe("createLinuxKeyMacroProvider", () => {
   it("throws on TIMEOUT when tool takes too long", async () => {
     const slow: CommandExecutor = {
       async run(_tool, _args) {
-        await new Promise((r) => setTimeout(r, 1_000))
+        await new Promise((r) => setTimeout(r, 600))
         return { exitCode: 0, stdout: "", stderr: "" }
       },
     }

@@ -32,6 +32,10 @@ import {
   type ClipboardProvider,
 } from "@/system/providers/clipboard"
 import { createKeyMacroProvider } from "@/system/providers/key-macro"
+import {
+  checkRequirements,
+  formatCapabilityWarning,
+} from "@/system/requirements"
 import { createSessionProvider } from "@/system/providers/session"
 import { resolveActiveTheme } from "@/themes/loader"
 
@@ -207,11 +211,6 @@ export const setupAddonServices = (
         undefined,
         (fullPath) => getAssetByPath(fullPath)?.id,
       )
-      deck.buttons = msg.surfaces[deck.id]!.buttons.map((b) => ({
-        id: b.id,
-        type: b.type,
-        config: b.config,
-      }))
       bridge.broadcast(msg)
     },
   )
@@ -255,6 +254,33 @@ export const setupAddonServices = (
     },
   )
 
+  const unsubscribeButtonError = pubSub.subscribe(
+    "runtime:buttonError",
+    (payload: unknown) => {
+      if (
+        typeof payload !== "object" ||
+        payload === null ||
+        !("deckId" in payload) ||
+        !("position" in payload)
+      ) {
+        return
+      }
+      const deckId = String((payload as { deckId: unknown }).deckId)
+      const position = Number((payload as { position: unknown }).position)
+      const durationMs =
+        "durationMs" in payload
+          ? Number((payload as { durationMs: unknown }).durationMs)
+          : 5000
+      if (!Number.isFinite(position) || position < 0) return
+      bridge.broadcast({
+        type: "button-error",
+        deckId,
+        position,
+        durationMs: Number.isFinite(durationMs) ? durationMs : 5000,
+      })
+    },
+  )
+
   if (initialDeck !== undefined) {
     statePublisher.setActiveDeck({
       addonNames: collectActiveDeckAddonNames(initialDeck, addonByType),
@@ -267,6 +293,7 @@ export const setupAddonServices = (
       unsubscribeDeckBroadcast()
       unsubscribeNavigate()
       unsubscribeDispatch()
+      unsubscribeButtonError()
     },
   }
 }
@@ -457,6 +484,18 @@ const startSystemProviders = async (
 
   const env = { ...process.env } as Readonly<Record<string, string>>
   const platform = process.platform
+
+  const requirements = await checkRequirements({ platform, executor, env })
+  methods.setRequirements(requirements)
+  for (const [capability, status] of Object.entries(requirements)) {
+    const warning = formatCapabilityWarning(
+      capability as SystemCapability,
+      status,
+    )
+    if (warning.length > 0) {
+      logger.warn({ capability, status }, warning)
+    }
+  }
 
   const [activeApp, session, keyMacro] = await Promise.all([
     createActiveAppProvider({ platform, executor, logger }),

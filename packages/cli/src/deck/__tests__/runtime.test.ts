@@ -206,6 +206,85 @@ describe("createRuntime", () => {
     expect(listener).not.toHaveBeenCalled()
   })
 
+  it("invokeAction dispatches user action when capability is available", async () => {
+    const { runtime, methods } = setup([
+      makeDeck({
+        id: "main",
+        isMain: true,
+        buttons: [
+          {
+            id: "b0",
+            type: "custom",
+            position: 0,
+            actions: { tap: "paste://hello" },
+          },
+        ],
+      }),
+    ])
+    methods.setRequirements({
+      clipboard: { available: true, commands: ["wl-copy"], reason: "" },
+      keyMacro: { available: true, commands: ["ydotool"], reason: "" },
+    })
+    const dispatch = vi.spyOn(methods, "dispatch").mockResolvedValue(undefined)
+    const showTemporaryError = vi.spyOn(methods, "showTemporaryError")
+    await runtime.invokeAction("main:b0", "tap")
+    expect(dispatch).toHaveBeenCalledWith("paste://hello")
+    expect(showTemporaryError).not.toHaveBeenCalled()
+  })
+
+  it("invokeAction shows button error when capability is missing", async () => {
+    const { runtime, methods } = setup([
+      makeDeck({
+        id: "main",
+        isMain: true,
+        buttons: [
+          {
+            id: "b0",
+            type: "custom",
+            position: 0,
+            actions: { tap: "paste://hello" },
+          },
+        ],
+      }),
+    ])
+    methods.setRequirements({
+      clipboard: { available: false, commands: [], reason: "missing" },
+      keyMacro: { available: true, commands: ["ydotool"], reason: "" },
+    })
+    const dispatch = vi.spyOn(methods, "dispatch").mockResolvedValue(undefined)
+    const showTemporaryError = vi.spyOn(methods, "showTemporaryError")
+    await runtime.invokeAction("main:b0", "tap")
+    expect(dispatch).not.toHaveBeenCalled()
+    expect(showTemporaryError).toHaveBeenCalledWith("main", 0)
+  })
+
+  it("invokeAction shows button error on dispatch failure", async () => {
+    const { runtime, methods } = setup([
+      makeDeck({
+        id: "main",
+        isMain: true,
+        buttons: [
+          {
+            id: "b0",
+            type: "custom",
+            position: 0,
+            actions: { tap: "paste://hello" },
+          },
+        ],
+      }),
+    ])
+    methods.setRequirements({
+      clipboard: { available: true, commands: ["wl-copy"], reason: "" },
+      keyMacro: { available: true, commands: ["ydotool"], reason: "" },
+    })
+    const dispatch = vi
+      .spyOn(methods, "dispatch")
+      .mockRejectedValue(new Error("boom"))
+    const showTemporaryError = vi.spyOn(methods, "showTemporaryError")
+    await runtime.invokeAction("main:b0", "tap")
+    expect(showTemporaryError).toHaveBeenCalledWith("main", 0)
+  })
+
   it("setGestureListener(null) detaches the listener", async () => {
     const { runtime } = setup([
       makeDeck({

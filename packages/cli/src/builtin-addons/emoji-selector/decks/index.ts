@@ -28,7 +28,7 @@ const buildEmojiDeck = (name: string, emojis: readonly Emoji[]) => {
       position: offset,
       actions: {
         tap: `paste://${emoji.char}`,
-        ...(emoji.shortcode ? { dblTap: `paste://:${emoji.shortcode}:` } : {}),
+        ...(emoji.shortcode ? { dbltap: `paste://:${emoji.shortcode}:` } : {}),
       },
     })),
     paginated: true,

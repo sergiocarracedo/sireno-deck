@@ -5,6 +5,11 @@ import type { Store } from "@/core/store"
 import type { ClipboardProvider } from "@/system/providers/clipboard"
 import type { KeyMacroProvider } from "@/system/providers/key-macro"
 import {
+  getRequiredCapability,
+  type RequirementsCheckResult,
+  type SystemCapability,
+} from "@/system/requirements"
+import {
   isValidKey,
   knownKeys,
   parseCombo,
@@ -15,6 +20,8 @@ import { NotImplementedError } from "@/util/errors"
 import type { ActionExecutor, ActionExecutorOptions } from "@/action/executor"
 import type { Runtime, RuntimeDeck } from "./runtime"
 import { dispatchMacro } from "./macro-parse"
+
+const DEFAULT_BUTTON_ERROR_DURATION_MS = 5000
 
 export interface KeyMacroAction {
   kind: "key" | "combo" | "text"
@@ -52,6 +59,13 @@ export interface Methods {
   subscribe<T>(channel: string, cb: (payload: T) => void): () => void
   setKeyMacroProvider(provider: KeyMacroProvider): void
   setClipboardProvider(provider: ClipboardProvider): void
+  setRequirements(requirements: RequirementsCheckResult): void
+  checkRequirement(capability: SystemCapability): boolean
+  showTemporaryError(
+    deckId: string,
+    position: number,
+    durationMs?: number,
+  ): void
   dispatch(value: string): Promise<void>
 }
 
@@ -64,6 +78,22 @@ export const createMethods = (ctx: MethodsContext): Methods => {
   }
   const setClipboardProvider: Methods["setClipboardProvider"] = (provider) => {
     clipboardProvider = provider
+  }
+
+  let requirements: RequirementsCheckResult | undefined = undefined
+  const setRequirements: Methods["setRequirements"] = (value) => {
+    requirements = value
+  }
+  const checkRequirement: Methods["checkRequirement"] = (capability) => {
+    if (requirements === undefined) return true
+    return requirements[capability]?.available ?? true
+  }
+  const showTemporaryError: Methods["showTemporaryError"] = (
+    deckId,
+    position,
+    durationMs = DEFAULT_BUTTON_ERROR_DURATION_MS,
+  ) => {
+    ctx.pubSub.publish("runtime:buttonError", { deckId, position, durationMs })
   }
 
   const navigateToDeck: Methods["navigateToDeck"] = (args) => {
@@ -147,6 +177,7 @@ export const createMethods = (ctx: MethodsContext): Methods => {
       )
       return
     }
+    await new Promise((resolve) => setTimeout(resolve, 100))
     logger.info(
       { text, combo: "ctrl+v" },
       "paste:// sending keystroke",
@@ -186,6 +217,9 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     subscribe,
     setKeyMacroProvider,
     setClipboardProvider,
+    setRequirements,
+    checkRequirement,
+    showTemporaryError,
   }
 }
 

@@ -24,12 +24,18 @@ interface DeckButton {
   config: Record<string, unknown>
 }
 
+interface ButtonErrorState {
+  position: number
+  expiresAt: number
+}
+
 interface DeckState {
   id: string
   name: string
   buttons: DeckButton[]
   isCompact?: boolean
   hasOverlayDeckAvailable?: boolean
+  buttonErrors: ButtonErrorState[]
 }
 
 const EMPTY_DECK: DeckState = {
@@ -38,6 +44,7 @@ const EMPTY_DECK: DeckState = {
   buttons: [],
   isCompact: undefined,
   hasOverlayDeckAvailable: false,
+  buttonErrors: [],
 }
 
 const ENV_WS_URL = (import.meta.env.VITE_WS_URL ??
@@ -140,8 +147,20 @@ const AppContent = () => {
               buttons: surface.buttons,
               isCompact: message.isCompact ?? false,
               hasOverlayDeckAvailable: message.hasOverlayDeckAvailable ?? false,
+              buttonErrors: [],
             })
           }
+        }
+        if (message.type === "button-error") {
+          const position = message.position
+          const durationMs = message.durationMs ?? 5000
+          setDeck((previous) => ({
+            ...previous,
+            buttonErrors: [
+              ...previous.buttonErrors.filter((error) => error.position !== position),
+              { position, expiresAt: Date.now() + durationMs },
+            ],
+          }))
         }
         if (message.type === "state") {
           for (const [channel, payload] of Object.entries(message.channels)) {
@@ -156,11 +175,23 @@ const AppContent = () => {
     ChannelRegistry.setAnnounceSubscribe((channels) =>
       client.subscribeChannels(channels),
     )
+
+    const timer = setInterval(() => {
+      setDeck((previous) => {
+        const now = Date.now()
+        const remaining = previous.buttonErrors.filter((error) => error.expiresAt > now)
+        return remaining.length === previous.buttonErrors.length
+          ? previous
+          : { ...previous, buttonErrors: remaining }
+      })
+    }, 250)
+
     return () => {
       _wsClientInitialized = false
       ChannelRegistry.setAnnounceSubscribe(null)
       setSend(null)
       client.close()
+      clearInterval(timer)
     }
   }, [setAsset, navigate])
 

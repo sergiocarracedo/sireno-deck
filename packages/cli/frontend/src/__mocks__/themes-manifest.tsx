@@ -1,17 +1,18 @@
 import type { ReactNode } from "react"
 
 interface MockButtonFrameProps {
-  pressed: boolean
-  isTapping: boolean
-  isHolding: boolean
-  holdProgress: number
+  pressed?: boolean
+  isTapping?: boolean
+  isHolding?: boolean
+  holdProgress?: number
   buttonType: string
-  onPointerDown: () => void
-  onPointerUp: () => void
-  onPointerLeave: () => void
-  onClick: () => void
-  onDoubleClick: () => void
-  onContextMenu: (e: React.MouseEvent) => void
+  variant?: "default" | "error"
+  onPointerDown?: () => void
+  onPointerUp?: () => void
+  onPointerLeave?: () => void
+  onClick?: () => void
+  onDoubleClick?: () => void
+  onContextMenu?: (e: React.MouseEvent) => void
   children?: ReactNode
 }
 
@@ -21,6 +22,7 @@ const MockButtonFrame = ({
   isHolding,
   holdProgress,
   buttonType,
+  variant = "default",
   onPointerDown,
   onPointerUp,
   onPointerLeave,
@@ -32,6 +34,7 @@ const MockButtonFrame = ({
   <button
     type="button"
     data-button-type={buttonType}
+    data-variant={variant}
     data-pressed={pressed}
     data-tapping={isTapping}
     data-holding={isHolding}

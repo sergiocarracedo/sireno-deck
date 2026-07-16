@@ -55,7 +55,9 @@ const buildXdotoolArgs = (parsed: {
   key: string
 }): string[] => ["key", toXdotoolKey(parsed)]
 
-const buildLiteralArgs = (text: string): string[] => ["type", "--", text]
+const buildXdotoolLiteralArgs = (text: string): string[] => ["type", "--", text]
+
+const buildYdotoolLiteralArgs = (text: string): string[] => ["type", text]
 
 const buildYdotoolArgs = (parsed: {
   mods: string[]
@@ -84,7 +86,8 @@ const buildArgs = (tool: KeyTool, input: string): string[] => {
     if (tool === "ydotool") return buildYdotoolArgs(parsed)
     return buildDotoolArgs(parsed)
   }
-  if (tool === "xdotool" || tool === "ydotool") return buildLiteralArgs(input)
+  if (tool === "xdotool") return buildXdotoolLiteralArgs(input)
+  if (tool === "ydotool") return buildYdotoolLiteralArgs(input)
   return ["type", input]
 }
 
@@ -93,7 +96,7 @@ const runTool = async (
   args: string[],
   deps: LinuxKeyMacroDeps,
 ): Promise<void> => {
-  const timeoutMs = deps.timeoutMs ?? 5_000
+  const timeoutMs = deps.timeoutMs ?? 500
   const result = await withTimeout(
     deps.executor.run(tool, args, { timeoutMs }),
     timeoutMs + 500,

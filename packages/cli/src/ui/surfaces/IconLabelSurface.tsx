@@ -11,7 +11,8 @@ export interface IconLabelSurfaceProps extends Omit<
 > {
   source?: string
   label: string
-  variant: LabelVariant
+  variant?: LabelVariant
+  details?: string
 }
 
 export function IconLabelSurface(props: IconLabelSurfaceProps): ReactElement {
@@ -43,6 +44,9 @@ export function IconLabelSurface(props: IconLabelSurfaceProps): ReactElement {
     <div className={mergedClassName} {...rest}>
       {iconContent}
       <Label text={props.label} variant={props.variant} />
+      {props.details !== undefined && props.details.length > 0 && (
+        <Label text={props.details} variant="small" />
+      )}
     </div>
   )
 }

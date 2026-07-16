@@ -52,6 +52,7 @@ describe("emoji-selector emoji buttons carry actions.tap = paste://<emoji>", () 
     expect((firstButton as { emoji?: string }).emoji).toBe("😀")
     expect((firstButton as { actions?: unknown }).actions).toEqual({
       tap: "paste://😀",
+      dbltap: "paste://:grinning:",
     })
   })
 

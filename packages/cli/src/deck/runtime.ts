@@ -4,6 +4,7 @@ import type { PubSub } from "@/core/pub-sub"
 import type { Store } from "@/core/store"
 import type { GestureKind } from "@/core/gesture-state"
 import type { ActiveAppProvider } from "@/system/providers/active-app"
+import { getRequiredCapability } from "@/system/requirements"
 import { compileDeckMatcher } from "@/system/glob-match"
 import type { Methods } from "./methods"
 
@@ -12,6 +13,7 @@ type ActiveAppProviderLike = Pick<ActiveAppProvider, "getActive" | "stop">
 export interface RuntimeButton {
   id: string
   type: string
+  position?: number
   config?: unknown
   actions?: {
     tap?: string
@@ -281,11 +283,29 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       "[runtime] invokeAction resolved",
     )
 
+    const deck = deckById(found.deckId)
+    const position =
+      found.button.position ??
+      (deck !== undefined
+        ? deck.buttons.findIndex((b) => b.id === found.button.id)
+        : -1)
+
     if (userAction !== undefined) {
       logger.info(
         { buttonId, gesture, action: userAction },
         "[addon:sireno-deck] user action",
       )
+      const capability = getRequiredCapability(userAction)
+      if (capability !== null && !getMethods().checkRequirement(capability)) {
+        logger.warn(
+          { buttonId, gesture, action: userAction, capability },
+          "[runtime] action skipped: missing system requirement",
+        )
+        if (position >= 0) {
+          getMethods().showTemporaryError(found.deckId, position)
+        }
+        return
+      }
       try {
         await getMethods().dispatch(userAction)
       } catch (err) {
@@ -293,6 +313,9 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
           { buttonId, gesture, err },
           "[addon:sireno-deck] user action failed",
         )
+        if (position >= 0) {
+          getMethods().showTemporaryError(found.deckId, position)
+        }
       }
       return
     }

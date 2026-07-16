@@ -60,7 +60,7 @@ export const createWindowsKeyMacroProvider = async (
   deps.logger.info(
     "Windows key-macro provider initialised (PowerShell SendKeys)",
   )
-  const timeoutMs = deps.timeoutMs ?? 5_000
+  const timeoutMs = deps.timeoutMs ?? 500
   return {
     async sendKey(input: string) {
       const sendKeys = buildSendKeysString(input) ?? buildLiteralString(input)

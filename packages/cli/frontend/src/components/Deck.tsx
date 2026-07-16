@@ -40,6 +40,7 @@ export interface Deck {
   name: string
   buttons: DeckButton[]
   hasOverlayDeckAvailable?: boolean
+  buttonErrors?: Array<{ position: number; expiresAt: number }>
 }
 
 export interface DeckProps {
@@ -84,6 +85,7 @@ interface DeckButtonCellProps {
   readonly col: number
   readonly row: number
   readonly splitAction?: boolean
+  readonly isError?: boolean
 }
 
 const DeckButtonCell = ({
@@ -93,8 +95,26 @@ const DeckButtonCell = ({
   col,
   row,
   splitAction = false,
+  isError = false,
 }: DeckButtonCellProps) => {
   const { fire } = useButtonAction(deckId, position)
+  if (isError) {
+    return (
+      <div
+        style={{
+          gridColumn: col,
+          gridRow: row,
+          width: BUTTON_SIZE,
+          height: BUTTON_SIZE,
+        }}
+        data-button-type="core:temporary-error"
+      >
+        <ButtonFrame buttonType="core:temporary-error" variant="error" onClick={() => fire("tap")}>
+          {renderSystemButton("core:temporary-error")}
+        </ButtonFrame>
+      </div>
+    )
+  }
   if (splitAction) {
     return (
       <div
@@ -178,6 +198,9 @@ export const Deck = ({ deck, children }: DeckProps) => {
   const height = rows * BUTTON_SIZE + (rows - 1) * gap + pad * 2
   const n1Position = model.keyCount - 1
   const splitAtN1 = deck.hasOverlayDeckAvailable === true
+  const errorPositions = new Set(
+    (deck.buttonErrors ?? []).map((error) => error.position),
+  )
   return (
     <div
       className={`grid rounded-xl bg-neutral-950 ${compact ? "p-0" : "p-4"}`}
@@ -208,6 +231,7 @@ export const Deck = ({ deck, children }: DeckProps) => {
             button={button}
             col={col}
             row={row}
+            isError={errorPositions.has(position)}
             {...(splitAction ? { splitAction: true } : {})}
           />
         )

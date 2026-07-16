@@ -38,7 +38,7 @@ export const createDarwinKeyMacroProvider = async (
   deps: DarwinKeyMacroDeps,
 ): Promise<KeyMacroProvider> => {
   deps.logger.info("Darwin key-macro provider initialised (osascript)")
-  const timeoutMs = deps.timeoutMs ?? 5_000
+  const timeoutMs = deps.timeoutMs ?? 500
   return {
     async sendKey(input: string) {
       const args = buildComboArgs(input) ?? buildLiteralArgs(input)

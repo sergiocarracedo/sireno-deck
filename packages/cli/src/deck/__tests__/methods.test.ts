@@ -210,6 +210,47 @@ describe("createMethods", () => {
     )
   })
 
+  it("showTemporaryError publishes runtime:buttonError", () => {
+    const { methods, pubSub } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    const cb = vi.fn()
+    pubSub.subscribe("runtime:buttonError", cb)
+    methods.showTemporaryError("main", 3, 2000)
+    expect(cb).toHaveBeenCalledWith({
+      deckId: "main",
+      position: 3,
+      durationMs: 2000,
+    })
+  })
+
+  it("checkRequirement returns true when requirements are not set", () => {
+    const { methods } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    expect(methods.checkRequirement("clipboard")).toBe(true)
+  })
+
+  it("checkRequirement returns the stored availability", () => {
+    const { methods } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    methods.setRequirements({
+      clipboard: {
+        available: false,
+        commands: [],
+        reason: "missing",
+      },
+      keyMacro: {
+        available: true,
+        commands: ["ydotool"],
+        reason: "",
+      },
+    })
+    expect(methods.checkRequirement("clipboard")).toBe(false)
+    expect(methods.checkRequirement("keyMacro")).toBe(true)
+  })
+
   it("dispatch runs macro with delay", async () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },

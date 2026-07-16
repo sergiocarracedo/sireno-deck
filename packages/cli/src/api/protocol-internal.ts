@@ -61,6 +61,13 @@ export const showOverlayMessageSchema = baseServerMessage.extend({
   deckId: z.string().nullable(),
 })
 
+export const buttonErrorMessageSchema = baseServerMessage.extend({
+  type: z.literal("button-error"),
+  deckId: z.string(),
+  position: z.number().int().nonnegative(),
+  durationMs: z.number().int().positive().default(5000),
+})
+
 export const buttonActionMessageSchema = baseClientMessage.extend({
   type: z.literal("button-action"),
   deckId: z.string(),
@@ -123,6 +130,7 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
   stateMessageSchema,
   decksListMessageSchema,
   showOverlayMessageSchema,
+  buttonErrorMessageSchema,
   buttonActionMessageSchema,
   methodCallMessageSchema,
   methodCallResultMessageSchema,
@@ -141,6 +149,7 @@ export type DeckConfigMessage = z.infer<typeof deckConfigMessageSchema>
 export type StateMessage = z.infer<typeof stateMessageSchema>
 export type DecksListMessage = z.infer<typeof decksListMessageSchema>
 export type ShowOverlayMessage = z.infer<typeof showOverlayMessageSchema>
+export type ButtonErrorMessage = z.infer<typeof buttonErrorMessageSchema>
 export type ButtonActionMessage = z.infer<typeof buttonActionMessageSchema>
 export type MethodCallMessage = z.infer<typeof methodCallMessageSchema>
 export type MethodCallResultMessage = z.infer<

@@ -268,6 +268,9 @@ const setHappyPath = (
     methods: {
       setKeyMacroProvider: () => undefined,
       setClipboardProvider: () => undefined,
+      setRequirements: () => undefined,
+      checkRequirement: () => true,
+      showTemporaryError: () => undefined,
       runCommand: () => undefined,
       keyMacro: () => undefined,
       pasteText: () => undefined,
