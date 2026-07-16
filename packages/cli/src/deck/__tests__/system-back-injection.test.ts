@@ -32,10 +32,10 @@ describe("computeSystemButtonForSlotN1", () => {
     ).toBe("core:overlay-toggle")
   })
 
-  it("regular deck with navStackDepth=1 returns null", () => {
+  it("regular deck with navStackDepth=1 returns back", () => {
     expect(
       computeSystemButtonForSlotN1(deck(), state({ navStackDepth: 1 })),
-    ).toBeNull()
+    ).toBe("core:back")
   })
 
   it("regular deck with navStackDepth=2 returns back", () => {

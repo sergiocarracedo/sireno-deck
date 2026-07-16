@@ -135,35 +135,37 @@ export class RealOutputClient implements OutputClient {
           "real mode: gesture detected, resolving against active deck",
         )
         const activeDeck = opts.runtime.getActiveDeck()
+        // System buttons at n-1 always win over a user-defined button there —
+        // the deck-config splice hides them visually, so the runtime must too.
+        const n1Position = descriptor.keyCount - 1
+        if (keyIndex === n1Position) {
+          const sysType = computeSystemButtonForSlotN1(activeDeck, {
+            navStackDepth: opts.runtime.navStackDepth(),
+            hasOverlayDeckAvailable: opts.runtime.hasOverlayDeckAvailable(),
+          })
+          if (sysType === "core:back") {
+            logger.info(
+              { keyIndex },
+              "real mode: dispatching runtime.goBack() for injected back button",
+            )
+            opts.runtime.goBack()
+            return
+          }
+          if (sysType === "core:settings-entry") {
+            logger.info(
+              { keyIndex },
+              "real mode: navigating to internal-settings deck",
+            )
+            opts.runtime.navigateToDeck("internal-settings:settings")
+            return
+          }
+        }
         const button = activeDeck.buttons.find((b) => {
           if (b.position === keyIndex) return true
           const parsed = Number.parseInt(b.id, 10)
           return Number.isFinite(parsed) && parsed === keyIndex
         })
         if (button === undefined) {
-          const n1Position = descriptor.keyCount - 1
-          if (keyIndex === n1Position) {
-            const sysType = computeSystemButtonForSlotN1(activeDeck, {
-              navStackDepth: opts.runtime.navStackDepth(),
-              hasOverlayDeckAvailable: opts.runtime.hasOverlayDeckAvailable(),
-            })
-            if (sysType === "core:back") {
-              logger.info(
-                { keyIndex },
-                "real mode: dispatching runtime.goBack() for injected back button",
-              )
-              opts.runtime.goBack()
-              return
-            }
-            if (sysType === "core:settings-entry") {
-              logger.info(
-                { keyIndex },
-                "real mode: navigating to internal-settings deck",
-              )
-              opts.runtime.navigateToDeck("internal-settings:settings")
-              return
-            }
-          }
           logger.warn(
             { keyIndex, activeDeckId: activeDeck.id },
             "real mode: keyIndex not mapped to any button on active deck",

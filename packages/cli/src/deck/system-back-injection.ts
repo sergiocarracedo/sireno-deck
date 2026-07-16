@@ -22,6 +22,5 @@ export const computeSystemButtonForSlotN1 = (
 ): SystemButtonType | null => {
   if (deck.isMain) return "core:settings-entry"
   if (deck.isOverlay) return "core:overlay-toggle"
-  if (state.navStackDepth > 1) return "core:back"
-  return null
+  return "core:back"
 }

@@ -134,6 +134,32 @@ export class EmulatorOutputClient implements OutputClient {
       // to resolve the actual deck — this avoids relying on the client's
       // sometimes-stale local view of the active deck.
       const activeDeck = opts.runtime.getActiveDeck()
+      // System buttons at n-1 always win over a user-defined button there —
+      // the deck-config splice hides them visually, so the runtime must too.
+      const navState = {
+        navStackDepth: opts.runtime.navStackDepth(),
+        hasOverlayDeckAvailable: opts.runtime.hasOverlayDeckAvailable(),
+      }
+      const n1Position = descriptor.keyCount - 1
+      if (message.position === n1Position) {
+        const sysType = computeSystemButtonForSlotN1(activeDeck, navState)
+        if (sysType === "core:back") {
+          logger.info(
+            { activeDeckId: activeDeck.id, position: message.position },
+            "emulator: dispatching runtime.goBack() for injected back button",
+          )
+          opts.runtime.goBack()
+          return
+        }
+        if (sysType === "core:settings-entry") {
+          logger.info(
+            { activeDeckId: activeDeck.id, position: message.position },
+            "emulator: navigating to internal-settings deck",
+          )
+          opts.runtime.navigateToDeck("internal-settings:settings")
+          return
+        }
+      }
       const button = activeDeck.buttons.find((b) => {
         if (b.position === message.position) return true
         const parsed = Number.parseInt(b.id, 10)
@@ -155,45 +181,10 @@ export class EmulatorOutputClient implements OutputClient {
         "[emulator] button lookup",
       )
       if (button === undefined) {
-        // No user-defined button at this position — could be an injected
-        // system button (n-1 slot) that lives in the broadcast but not the
-        // runtime deck; dispatch the corresponding runtime action directly.
-        const navState = {
-          navStackDepth: opts.runtime.navStackDepth(),
-          hasOverlayDeckAvailable: opts.runtime.hasOverlayDeckAvailable(),
-        }
-        const n1Position = descriptor.keyCount - 1
-        if (message.position === n1Position) {
-          const sysType = computeSystemButtonForSlotN1(activeDeck, navState)
-          if (sysType === "core:back") {
-            logger.info(
-              { activeDeckId: activeDeck.id, position: message.position },
-              "emulator: dispatching runtime.goBack() for injected back button",
-            )
-            opts.runtime.goBack()
-            return
-          }
-          if (sysType === "core:settings-entry") {
-            logger.info(
-              { activeDeckId: activeDeck.id, position: message.position },
-              "emulator: navigating to internal-settings deck",
-            )
-            opts.runtime.navigateToDeck("internal-settings:settings")
-            return
-          }
-        }
         logger.warn(
           { activeDeckId: activeDeck.id, position: message.position },
           "emulator: button-action targets unknown button",
         )
-        return
-      }
-      if (button.type === "core:back") {
-        logger.info(
-          { activeDeckId: activeDeck.id, position: message.position },
-          "emulator: dispatching runtime.goBack() for core:back button",
-        )
-        opts.runtime.goBack()
         return
       }
       void opts.runtime.dispatchGesture(

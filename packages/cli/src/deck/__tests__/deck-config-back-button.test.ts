@@ -49,7 +49,7 @@ describe("buildDeckConfigMessage — back button injection", () => {
     expect(n1?.type).toBe("core:settings-entry")
   })
 
-  it("does NOT inject when sub-deck with navStackDepth=1 (root context)", () => {
+  it("injects core:back even at navStackDepth=1 (root sub-deck)", () => {
     const deck = {
       id: "sub",
       name: "Sub",
@@ -66,7 +66,7 @@ describe("buildDeckConfigMessage — back button injection", () => {
     )
     const buttons = msg.surfaces[deck.id].buttons
     const n1 = buttons.find((b) => Number.parseInt(b.id, 10) === 14)
-    expect(n1).toBeUndefined()
+    expect(n1?.type).toBe("core:back")
   })
 
   it("overwrites user button at n-1 with system button", () => {
