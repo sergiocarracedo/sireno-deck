@@ -170,7 +170,6 @@ export const materializeAddonDecks = (
     for (const deckName of Object.keys(addon.decks)) {
       const deckType = registry.getDeckType(deckName)
       if (deckType === undefined) continue
-      if (deckType.def.internal) continue
       const addonConfig = addonConfigs.get(addon.name) ?? {}
       let generated: Record<string, AddonGeneratedDeck>
       try {

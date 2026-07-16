@@ -115,7 +115,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   const findButton = (
     id: string,
   ): { deckId: string; button: RuntimeDeck["buttons"][number] } | null => {
-    const colonIdx = id.indexOf(":")
+    const colonIdx = id.lastIndexOf(":")
     if (colonIdx === -1) {
       for (const deck of decks) {
         const button = deck.buttons.find((b) => b.id === id)
