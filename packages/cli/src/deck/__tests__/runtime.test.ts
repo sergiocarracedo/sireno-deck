@@ -698,4 +698,39 @@ describe("invokeAction — user actions", () => {
       expect(inactive).toContainEqual({ deckId: "overlay-a" })
     })
   })
+
+  describe("brightness", () => {
+    it("defaults to 100", () => {
+      const { runtime } = setup([makeDeck({ id: "main", isMain: true })])
+      expect(runtime.getBrightness()).toBe(100)
+    })
+
+    it("setBrightness publishes sireno:settings:brightness and returns new value", () => {
+      const { runtime, pubSub } = setup([makeDeck({ id: "main", isMain: true })])
+      const events: unknown[] = []
+      pubSub.subscribe("sireno:settings:brightness", (p) => events.push(p))
+      runtime.setBrightness(60)
+      expect(runtime.getBrightness()).toBe(60)
+      expect(events).toEqual([{ value: 60 }])
+    })
+
+    it("setBrightness clamps to 0-100 and does not publish on unchanged value", () => {
+      const { runtime, pubSub } = setup([makeDeck({ id: "main", isMain: true })])
+      const events: unknown[] = []
+      pubSub.subscribe("sireno:settings:brightness", (p) => events.push(p))
+      runtime.setBrightness(80)
+      runtime.setBrightness(150)
+      expect(runtime.getBrightness()).toBe(100)
+      runtime.setBrightness(-10)
+      expect(runtime.getBrightness()).toBe(0)
+      runtime.setBrightness(50)
+      runtime.setBrightness(50)
+      expect(events).toEqual([
+        { value: 80 },
+        { value: 100 },
+        { value: 0 },
+        { value: 50 },
+      ])
+    })
+  })
 })

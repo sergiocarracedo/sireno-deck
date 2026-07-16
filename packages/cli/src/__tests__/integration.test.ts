@@ -108,7 +108,7 @@ decks:
     name: Home
     buttons:
       - position: 0
-        type: internal-settings:brightness
+        type: internal-settings:brightness-down
         config: {}
 `)
     const result = loadConfig({ configPath: path })

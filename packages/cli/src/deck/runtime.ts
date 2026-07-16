@@ -90,6 +90,8 @@ export interface Runtime {
   stopActiveAppPolling(): Promise<void>
   navStackDepth(): number
   hasOverlayDeckAvailable(): boolean
+  getBrightness(): number
+  setBrightness(value: number): void
 }
 
 export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
@@ -105,6 +107,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   let transientDeckId: string | null = null
   let overlayDeckId: string | null = null
   let overlayPreviousActiveId: string | null = null
+  let brightness = 100
 
   const deckById = (id: string): RuntimeDeck | undefined =>
     decks.find((d) => d.id === id)
@@ -492,6 +495,13 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     navStackDepth: () => navStack.length,
     hasOverlayDeckAvailable: () =>
       overlayDeckId !== null || pendingOverlayDeckId !== null,
+    getBrightness: () => brightness,
+    setBrightness: (value: number) => {
+      const clamped = Math.max(0, Math.min(100, Math.round(value)))
+      if (clamped === brightness) return
+      brightness = clamped
+      pubSub.publish("sireno:settings:brightness", { value: clamped })
+    },
   }
 
   return runtime

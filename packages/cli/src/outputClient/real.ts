@@ -103,6 +103,28 @@ export class RealOutputClient implements OutputClient {
 
     opts.bridge.setDevice(descriptor)
 
+    const unsubscribeBrightness = opts.pubSub.subscribe<{
+      deckId: string
+      position: number
+      durationMs: number
+    }>("runtime:buttonError", () => {})
+    void unsubscribeBrightness
+
+    const unsubAdjust = opts.pubSub.subscribe<{
+      direction: "up" | "down"
+      value: number
+    }>("methods:adjustBrightness", ({ value }) => {
+      if (this.device === null) return
+      const current = this.device.brightness
+      if (value === current) return
+      this.device.setBrightness(value)
+      logger.info(
+        { from: current, to: value },
+        "real mode: hardware brightness adjusted",
+      )
+      opts.pubSub.publish("sireno:settings:brightness", value)
+    })
+
     const mainDeck = opts.decks.find((d) => d.isMain) ?? opts.decks[0]
 
     const gestureDetector = createGestureDetector({
@@ -131,6 +153,14 @@ export class RealOutputClient implements OutputClient {
                 "real mode: dispatching runtime.goBack() for injected back button",
               )
               opts.runtime.goBack()
+              return
+            }
+            if (sysType === "core:settings-entry") {
+              logger.info(
+                { keyIndex },
+                "real mode: navigating to internal-settings deck",
+              )
+              opts.runtime.navigateToDeck("internal-settings:settings")
               return
             }
           }

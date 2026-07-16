@@ -67,14 +67,14 @@ describe("validateFull", () => {
     ).toBe(true)
   })
 
-  it("internal: true button (core:settings-brightness) used in user config errors", () => {
+  it("internal: true button (internal-settings:brightness-down) used in user config errors", () => {
     const reg = registry()
     const config = baseConfig({
       decks: {
         main: {
           name: "Main",
           buttons: [
-            { position: 0, type: "internal-settings:brightness", config: {} },
+            { position: 0, type: "internal-settings:brightness-down", config: {} },
           ],
         },
       },

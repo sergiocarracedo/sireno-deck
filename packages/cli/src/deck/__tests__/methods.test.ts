@@ -262,4 +262,32 @@ describe("createMethods", () => {
     expect(sendKey).toHaveBeenNthCalledWith(1, "ctrl+t")
     expect(sendKey).toHaveBeenNthCalledWith(2, "ctrl+v")
   })
+
+  it("adjustBrightness up steps by 10 from runtime", () => {
+    const { methods, runtime } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    runtime.setBrightness(70)
+    methods.adjustBrightness({ direction: "up" })
+    expect(runtime.getBrightness()).toBe(80)
+  })
+
+  it("adjustBrightness down clamps at 0", () => {
+    const { methods, runtime } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    runtime.setBrightness(5)
+    methods.adjustBrightness({ direction: "down" })
+    methods.adjustBrightness({ direction: "down" })
+    expect(runtime.getBrightness()).toBe(0)
+  })
+
+  it("dispatch routes brightness://up to adjustBrightness", () => {
+    const { methods, runtime } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    runtime.setBrightness(60)
+    void methods.dispatch("brightness://up")
+    expect(runtime.getBrightness()).toBe(70)
+  })
 })

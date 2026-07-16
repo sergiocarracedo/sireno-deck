@@ -3,9 +3,9 @@ import type { AddonDeckFactory } from "@/addon/api"
 const settingsDeck: AddonDeckFactory = () => ({
   name: "Settings",
   buttons: [
-    { id: "brightness", type: "internal-settings:brightness", position: 0 },
-    { id: "theme", type: "internal-settings:theme", position: 1 },
-    { id: "about", type: "internal-settings:about", position: 2 },
+    { id: "brightness-down", type: "internal-settings:brightness-down", position: 0 },
+    { id: "brightness-up", type: "internal-settings:brightness-up", position: 1 },
+    { id: "app-info", type: "internal-settings:app-info", position: 2 },
   ],
 })
 

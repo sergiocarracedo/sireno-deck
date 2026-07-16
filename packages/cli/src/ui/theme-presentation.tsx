@@ -14,6 +14,7 @@ import {
 } from "./primitives"
 import {
   BarsProps,
+  IconLabelProgressSurfaceProps,
   IconLabelSurfaceProps,
   LabelValueListSurfaceProps,
   SplitActionSurfaceProps,
@@ -30,6 +31,7 @@ export interface ThemeUiPresentation {
   }
   surfaces?: {
     iconLabel?: (props: IconLabelSurfaceProps) => ReactElement
+    iconLabelProgress?: (props: IconLabelProgressSurfaceProps) => ReactElement
     bars?: (props: BarsProps) => ReactElement
     splitAction?: (props: SplitActionSurfaceProps) => ReactElement
     labelValueList?: (props: LabelValueListSurfaceProps) => ReactElement

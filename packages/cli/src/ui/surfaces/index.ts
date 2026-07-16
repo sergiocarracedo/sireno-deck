@@ -1,11 +1,16 @@
 export * from "./BarsSurface"
 export * from "./IconLabelSurface"
+export * from "./IconLabelProgressSurface"
 export * from "./LabelValueListSurface"
 
 export { BarsSurface } from "./BarsSurface"
 export type { BarsItem, BarsSurfaceProps as BarsProps } from "./BarsSurface"
 export { IconLabelSurface } from "./IconLabelSurface"
 export type { IconLabelSurfaceProps } from "./IconLabelSurface"
+export { IconLabelProgressSurface } from "./IconLabelProgressSurface"
+export type {
+  IconLabelProgressSurfaceProps,
+} from "./IconLabelProgressSurface"
 export { LabelValueListSurface } from "./LabelValueListSurface"
 export type {
   LabelValueListLine,

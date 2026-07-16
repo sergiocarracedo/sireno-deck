@@ -66,6 +66,7 @@ export interface Methods {
     position: number,
     durationMs?: number,
   ): void
+  adjustBrightness(args: { direction: "up" | "down" }): void
   dispatch(value: string): Promise<void>
 }
 
@@ -94,6 +95,15 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     durationMs = DEFAULT_BUTTON_ERROR_DURATION_MS,
   ) => {
     ctx.pubSub.publish("runtime:buttonError", { deckId, position, durationMs })
+  }
+
+  const adjustBrightness: Methods["adjustBrightness"] = ({ direction }) => {
+    const step = 10
+    const current = ctx.runtime.getBrightness()
+    const next = direction === "up" ? current + step : current - step
+    if (next === current) return
+    ctx.runtime.setBrightness(next)
+    ctx.pubSub.publish("methods:adjustBrightness", { direction, value: next })
   }
 
   const navigateToDeck: Methods["navigateToDeck"] = (args) => {
@@ -201,6 +211,16 @@ export const createMethods = (ctx: MethodsContext): Methods => {
       await pasteText(inner)
       return
     }
+    if (value.startsWith("brightness://")) {
+      const inner = value.slice("brightness://".length)
+      if (inner === "up" || inner === "down") {
+        adjustBrightness({ direction: inner })
+        return
+      }
+      throw new NotImplementedError(
+        `dispatch: brightness:// requires up/down, got '${inner}'`,
+      )
+    }
     await runCommand(value)
   }
 
@@ -220,6 +240,7 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     setRequirements,
     checkRequirement,
     showTemporaryError,
+    adjustBrightness,
   }
 }
 

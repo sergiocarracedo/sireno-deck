@@ -173,6 +173,14 @@ export class EmulatorOutputClient implements OutputClient {
             opts.runtime.goBack()
             return
           }
+          if (sysType === "core:settings-entry") {
+            logger.info(
+              { activeDeckId: activeDeck.id, position: message.position },
+              "emulator: navigating to internal-settings deck",
+            )
+            opts.runtime.navigateToDeck("internal-settings:settings")
+            return
+          }
         }
         logger.warn(
           { activeDeckId: activeDeck.id, position: message.position },
@@ -210,6 +218,8 @@ export class EmulatorOutputClient implements OutputClient {
       `\n  Emulator:  ${emulatorVite.url}\n  Frontend:  ${frontendVite.url}\n\n`,
     )
     openBrowser(emulatorVite.url, logger)
+
+    opts.runtime.setBrightness(opts.runtime.getBrightness())
 
     return {
       descriptor,

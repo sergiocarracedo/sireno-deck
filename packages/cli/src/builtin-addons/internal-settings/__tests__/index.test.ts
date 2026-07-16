@@ -22,9 +22,9 @@ describe("internal-settings settings deck", () => {
     expect(deck.name).toBe("Settings")
     const types = (deck.buttons ?? []).map((b) => (b as { type: string }).type)
     expect(types).toEqual([
-      "internal-settings:brightness",
-      "internal-settings:theme",
-      "internal-settings:about",
+      "internal-settings:brightness-down",
+      "internal-settings:brightness-up",
+      "internal-settings:app-info",
     ])
   })
 })

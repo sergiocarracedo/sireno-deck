@@ -7,10 +7,7 @@ type Config = z.infer<typeof configSchema>
 
 export default {
   configSchema,
-  onTap: async ({ config, methods }) => {
-    const step = config.step ?? 5
-    await (
-      methods["internal-settings:brightnessUp"] as (s: number) => Promise<void>
-    )?.(step)
+  onTap: async ({ methods }) => {
+    await methods.adjustBrightness({ direction: "up" })
   },
 } satisfies AddonButtonTypeService<Config>
