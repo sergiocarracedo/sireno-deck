@@ -18,7 +18,7 @@ export interface RuntimeState {
 
 export const computeSystemButtonForSlotN1 = (
   deck: RuntimeDeck,
-  state: RuntimeState,
+  _state: RuntimeState,
 ): SystemButtonType | null => {
   if (deck.isMain) return "core:settings-entry"
   if (deck.isOverlay) return "core:overlay-toggle"

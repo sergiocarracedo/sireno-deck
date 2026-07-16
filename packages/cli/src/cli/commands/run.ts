@@ -187,6 +187,15 @@ export const setupAddonServices = (
     },
   )
 
+  const unsubscribeBrightnessBridge = pubSub.subscribe<{
+    value: number
+  }>("sireno:settings:brightness", (payload) => {
+    bridge.broadcast({
+      type: "state",
+      channels: { "sireno:settings:brightness": payload },
+    })
+  })
+
   let lastBroadcastedDeckId: string | undefined
   const unsubscribeDeckBroadcast = pubSub.subscribe(
     "runtime:activeDeck",
@@ -292,6 +301,7 @@ export const setupAddonServices = (
     dispose: () => {
       unsubscribeDeck()
       unsubscribeDeckBroadcast()
+      unsubscribeBrightnessBridge()
       unsubscribeNavigate()
       unsubscribeDispatch()
       unsubscribeButtonError()

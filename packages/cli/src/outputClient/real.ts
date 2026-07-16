@@ -122,7 +122,7 @@ export class RealOutputClient implements OutputClient {
         { from: current, to: value },
         "real mode: hardware brightness adjusted",
       )
-      opts.pubSub.publish("sireno:settings:brightness", value)
+      opts.pubSub.publish("sireno:settings:brightness", { value })
     })
 
     const mainDeck = opts.decks.find((d) => d.isMain) ?? opts.decks[0]

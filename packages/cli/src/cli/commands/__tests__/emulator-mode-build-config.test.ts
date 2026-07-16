@@ -128,7 +128,7 @@ describe("buildDeckConfigMessage", () => {
     expect(msg.hasOverlayDeckAvailable).toBe(true)
   })
 
-  it("does not inject n-1 when computeSystemButtonForSlotN1 returns null", () => {
+  it("injects n-1 system back button for sub-deck at root (navStackDepth=1)", () => {
     const subDeck: RuntimeDeck = {
       id: "media",
       name: "Media",
@@ -143,7 +143,8 @@ describe("buildDeckConfigMessage", () => {
     )
     const buttons = msg.surfaces["media"]!.buttons
     const n1Button = buttons.find((b) => b.id === "14" || b.position === 14)
-    expect(n1Button).toBeUndefined()
+    expect(n1Button).toBeDefined()
+    expect(n1Button?.type).toBe("core:back")
   })
 
   it("overwrites user button at n-1 with core:settings-entry on main deck", () => {
