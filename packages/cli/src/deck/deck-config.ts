@@ -120,6 +120,7 @@ export const buildDeckConfigMessage = (
       ...(addon?.frontendEntry !== undefined && addon.frontendEntry !== null
         ? { frontendEntry: addon.frontendEntry }
         : {}),
+      ...(b.full === true ? { full: true } : {}),
     }
   })
   const systemButtonType = computeSystemButtonForSlotN1(

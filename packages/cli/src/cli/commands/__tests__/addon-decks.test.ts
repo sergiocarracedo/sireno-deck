@@ -470,4 +470,81 @@ describe("materializeAddonDecks", () => {
     expect(deck).toBeDefined()
     expect(deck!.name).toBe("no-config")
   })
+
+  it("propagates service.full onto runtime buttons when true", () => {
+    const addon = makeFakeAddon({
+      apiVersion: 1,
+      name: "test-addon",
+      buttonTypes: {
+        "test-addon:full-btn": {
+          frontend: () => null,
+          service: { full: true },
+        },
+        "test-addon:plain-btn": {
+          frontend: () => null,
+          service: {},
+        },
+      },
+      decks: {
+        "test-addon:deck-a": {
+          createDecks: () => ({
+            "gen-deck": {
+              name: "Gen",
+              buttons: [
+                { type: "test-addon:full-btn", position: 0 },
+                { type: "test-addon:plain-btn", position: 1 },
+              ],
+            },
+          }),
+        },
+      },
+    })
+    const reg = mockRegistry([addon])
+    const userDecks: RuntimeDeck[] = []
+
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
+    const deck = result.find((d) => d.id === "gen-deck")!
+
+    expect(deck.buttons[0]!.full).toBe(true)
+    expect(deck.buttons[1]!.full).toBeUndefined()
+  })
+
+  it("propagates service.full onto paginated runtime buttons", () => {
+    const addon = makeFakeAddon({
+      apiVersion: 1,
+      name: "test-addon",
+      buttonTypes: {
+        "test-addon:full-btn": {
+          frontend: () => null,
+          service: { full: true },
+        },
+      },
+      decks: {
+        "test-addon:deck-a": {
+          createDecks: () => ({
+            "gen-deck": {
+              name: "Gen",
+              paginated: true,
+              buttons: Array.from({ length: 14 }, (_, i) => ({
+                type: "test-addon:full-btn",
+                position: i,
+              })),
+            },
+          }),
+        },
+      },
+    })
+    const reg = mockRegistry([addon])
+    const userDecks: RuntimeDeck[] = []
+
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
+
+    for (const deck of result) {
+      for (const btn of deck.buttons) {
+        if (btn.type === "test-addon:full-btn") {
+          expect(btn.full).toBe(true)
+        }
+      }
+    }
+  })
 })

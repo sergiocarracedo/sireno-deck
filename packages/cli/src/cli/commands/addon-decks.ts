@@ -38,6 +38,7 @@ const isActionMap = (
 }
 
 const mapAddonDeckToRuntimeDeck = (
+  registry: AddonRegistry,
   id: string,
   gdeck: AddonGeneratedDeck,
   keyCount: number,
@@ -63,6 +64,7 @@ const mapAddonDeckToRuntimeDeck = (
               : {}),
             ...rest,
           }
+          const full = registry.getButtonType(type)?.def.service.full === true
           return {
             id: position !== undefined ? String(position) : String(i),
             type,
@@ -70,6 +72,7 @@ const mapAddonDeckToRuntimeDeck = (
               ? { config: mergedConfig }
               : {}),
             ...(isActionMap(actions) ? { actions } : {}),
+            ...(full ? { full: true } : {}),
           }
         },
       )
@@ -99,11 +102,13 @@ const mapAddonDeckToRuntimeDeck = (
         : {}),
       ...rest,
     }
+    const full = registry.getButtonType(type)?.def.service.full === true
     return {
       id: position !== undefined ? String(position) : String(i),
       type,
       ...(Object.keys(mergedConfig).length > 0 ? { config: mergedConfig } : {}),
       ...(isActionMap(actions) ? { actions } : {}),
+      ...(full ? { full: true } : {}),
     }
   })
   return [
@@ -192,7 +197,7 @@ export const materializeAddonDecks = (
           )
           continue
         }
-        addonDecks.push(...mapAddonDeckToRuntimeDeck(id, gdeck, keyCount))
+        addonDecks.push(...mapAddonDeckToRuntimeDeck(registry, id, gdeck, keyCount))
       }
     }
   }

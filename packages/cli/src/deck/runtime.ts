@@ -20,6 +20,7 @@ export interface RuntimeButton {
     dbltap?: string
     hold?: string
   }
+  full?: boolean
 }
 
 export interface RuntimeDeck {
@@ -497,7 +498,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       overlayDeckId !== null || pendingOverlayDeckId !== null,
     getBrightness: () => brightness,
     setBrightness: (value: number) => {
-      const clamped = Math.max(0, Math.min(100, Math.round(value)))
+      const clamped = Math.max(10, Math.min(100, Math.round(value)))
       if (clamped === brightness) return
       brightness = clamped
       pubSub.publish("sireno:settings:brightness", { value: clamped })

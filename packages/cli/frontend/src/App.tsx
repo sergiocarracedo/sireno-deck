@@ -22,6 +22,7 @@ interface DeckButton {
   id: string
   type: string
   config: Record<string, unknown>
+  full?: boolean
 }
 
 interface ButtonErrorState {

@@ -33,6 +33,7 @@ export interface DeckButton {
   config?: Record<string, unknown>
   addonName?: string
   frontendEntry?: string
+  full?: boolean
 }
 
 export interface Deck {
@@ -133,6 +134,24 @@ const DeckButtonCell = ({
             secondary={renderSystemButton("core:overlay-toggle")}
           />
         </ButtonFrame>
+      </div>
+    )
+  }
+  if (button.full === true) {
+    return (
+      <div
+        style={{
+          gridColumn: col,
+          gridRow: row,
+          width: BUTTON_SIZE,
+          height: BUTTON_SIZE,
+        }}
+        data-button-type={button.type}
+        data-full="true"
+      >
+        <ErrorBoundary resetKey={button.id}>
+          <ButtonSurface button={button} />
+        </ErrorBoundary>
       </div>
     )
   }
