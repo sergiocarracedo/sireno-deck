@@ -1,7 +1,8 @@
+import type { AddonFrontendButton } from "@/addon/api"
 import { BrightnessButtonFrontend } from "../brightness/common/frontend"
 
-const BrightnessDownButtonFrontend = () => (
-  <BrightnessButtonFrontend variant="down" />
-)
+const BrightnessDownButtonFrontend: AddonFrontendButton<unknown> = ({
+  gesture,
+}) => <BrightnessButtonFrontend variant="down" gesture={gesture ?? null} />
 
 export default BrightnessDownButtonFrontend
