@@ -159,7 +159,13 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     return { deckId: deck.id, button }
   }
 
-  const buildDefaultLockDeck = (): RuntimeDeck => ({
+  // ponytail: lock-mode escape hatch — only these button types can navigate out of lock mode
+const LOCK_FOLDER_NAV_TYPES: ReadonlySet<string> = new Set([
+  "core:change-deck",
+  "core:page-nav",
+])
+
+const buildDefaultLockDeck = (): RuntimeDeck => ({
     id: "lock:deck",
     name: "Locked",
     buttons: [
@@ -411,6 +417,30 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
 
     if (handleSystemButton(found.button.type, gesture)) {
       return
+    }
+
+    if (lockActive && found.deckId === "lock:deck") {
+      if (LOCK_FOLDER_NAV_TYPES.has(found.button.type)) {
+        lockActive = false
+        preLockActiveDeckId = null
+        preLockOverlayDeckId = null
+        if (overlayDeckId !== null) setOverlay(null)
+        pubSub.publish("runtime:lock-mode", {
+          active: false,
+          reason: "escape",
+        })
+        pubSub.publish("runtime:invalidate", undefined)
+        logger.info(
+          { buttonId, gesture, buttonType: found.button.type },
+          "runtime: lock escaped via folder-nav button",
+        )
+      } else {
+        logger.debug(
+          { buttonId, gesture, buttonType: found.button.type },
+          "runtime: lock-mode gesture suppressed",
+        )
+        return
+      }
     }
 
     if (found.deckId !== getActiveDeckId()) {
