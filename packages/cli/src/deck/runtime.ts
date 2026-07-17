@@ -597,6 +597,11 @@ const buildDefaultLockDeck = (): RuntimeDeck => ({
   let lastOverlayDeckId: string | null = overlayDeckId
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
   let pendingOverlayDeckId: string | null = null
+  let latestActiveAppSnapshot: {
+    name: string
+    windowTitle: string | null
+    processId: number | null
+  } | null = null
 
   const applyOverlay = (deckId: string | null): void => {
     if (deckId !== null && deckById(deckId) === undefined) {
@@ -676,9 +681,11 @@ const buildDefaultLockDeck = (): RuntimeDeck => ({
     activeAppPoll = setInterval(() => {
       void provider.getActive().then((snapshot) => {
         if (snapshot === null) {
+          latestActiveAppSnapshot = null
           scheduleOverlay(null)
           return
         }
+        latestActiveAppSnapshot = snapshot
         logger.debug(
           { snapshot: { name: snapshot.name, windowTitle: snapshot.windowTitle } },
           "active-app: snapshot",
@@ -711,8 +718,14 @@ const buildDefaultLockDeck = (): RuntimeDeck => ({
       sessionUnsubscribe = null
     }
     const handle = (state: SessionState): void => {
-      if (state === "locked" && !lockActive) {
-        preLockActiveDeckId = getActiveDeckId()
+      const snapshotRegularActiveDeckId = (): string =>
+        overlayPreviousActiveId ??
+        transientDeckId ??
+        navStack[navStack.length - 1] ??
+        mainDeck.id
+
+if (state === "locked" && !lockActive) {
+        preLockActiveDeckId = snapshotRegularActiveDeckId()
         preLockOverlayDeckId = overlayDeckId
         lockActive = true
         logger.info({ preLockActiveDeckId, preLockOverlayDeckId }, "runtime: lock active")
@@ -721,19 +734,36 @@ const buildDefaultLockDeck = (): RuntimeDeck => ({
         return
       }
       if (state === "locked" && lockActive) {
-        preLockActiveDeckId = getActiveDeckId()
+        preLockActiveDeckId = snapshotRegularActiveDeckId()
         preLockOverlayDeckId = overlayDeckId
         logger.info("runtime: lock snapshot refreshed on re-lock")
         return
       }
       if (state === "unlocked" && lockActive) {
         lockActive = false
-        const restoreId = preLockActiveDeckId ?? mainDeck.id
+        const overlaySnapshot = preLockOverlayDeckId
+        const activeSnapshot = preLockActiveDeckId
         preLockActiveDeckId = null
         preLockOverlayDeckId = null
-        if (overlayDeckId !== null) setOverlay(null)
-        logger.info({ restoreId }, "runtime: lock cleared, restoring")
-        navigateToDeck(restoreId, { addToHistory: false })
+        if (
+          overlaySnapshot !== null &&
+          latestActiveAppSnapshot !== null &&
+          computeOverlayFor(latestActiveAppSnapshot) === overlaySnapshot
+        ) {
+          logger.info(
+            { overlayId: overlaySnapshot },
+            "runtime: overlay auto-resumed on unlock (trigger still matches)",
+          )
+          setOverlay(overlaySnapshot, { source: "autoShow" })
+        } else {
+          if (overlayDeckId !== null) setOverlay(null)
+          const restoreId = activeSnapshot ?? mainDeck.id
+          logger.info(
+            { restoreId, overlayWas: overlaySnapshot, triggerMatches: false },
+            "runtime: lock cleared, restoring previous deck",
+          )
+          navigateToDeck(restoreId, { addToHistory: false })
+        }
         pubSub.publish("runtime:lock-mode", { active: false, reason: "session-unlocked" })
         pubSub.publish("runtime:invalidate", undefined)
       }
