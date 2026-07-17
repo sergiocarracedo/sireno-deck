@@ -85,7 +85,6 @@ export interface Runtime {
     buttons: ReadonlyArray<MountedButton>,
   ): void
   dispatchGesture(buttonId: string, gesture: GestureKind): Promise<void>
-  dispatchSystemButton(type: string, gesture: GestureKind): Promise<void>
   invokeAction(buttonId: string, gesture: GestureKind): Promise<void>
   setGestureListener(listener: GestureListener | null): void
   invalidate(): void
@@ -336,13 +335,6 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       return true
     }
     return false
-  }
-
-  const dispatchSystemButton = async (
-    type: string,
-    gesture: GestureKind,
-  ): Promise<void> => {
-    handleSystemButton(type, gesture)
   }
 
   const invokeAction = async (
@@ -630,7 +622,6 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     mountAddonButtons,
     dispatchGesture,
     invokeAction,
-    dispatchSystemButton,
     setGestureListener,
     invalidate,
     setActiveAppProvider,

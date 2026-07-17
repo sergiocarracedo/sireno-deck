@@ -1,7 +1,7 @@
 import { dirname } from "node:path"
 
 import type { DeckConfigMessage } from "@/api/protocol-internal"
-import { computeSystemButtonForSlotN1, type RuntimeDeck } from "@/deck"
+import type { RuntimeDeck } from "@/deck"
 import {
   resolveIconSource,
   type ResolveIconPathOptions,
@@ -103,8 +103,7 @@ export const buildDeckConfigMessage = (
   assetLookup: AssetLookup = () => undefined,
   overlayDeckIcon: string | null = null,
 ): DeckConfigMessage => {
-  const effectiveKeyCount = keyCount ?? 15
-  const n1Position = effectiveKeyCount - 1
+  void keyCount
   const buttons = deck.buttons.map((b) => {
     const position = Number.parseInt(b.id, 10)
     const addon = addonByType.get(b.type)
@@ -124,26 +123,6 @@ export const buildDeckConfigMessage = (
       ...(b.full === true ? { full: true } : {}),
     }
   })
-  const systemButtonType = computeSystemButtonForSlotN1(
-    deck,
-    navState ?? { navStackDepth: 1, hasOverlayDeckAvailable: false },
-  )
-  if (systemButtonType !== null) {
-    for (let i = buttons.length - 1; i >= 0; i--) {
-      const b = buttons[i]!
-      if (
-        Number.parseInt(b.id, 10) === n1Position ||
-        b.position === n1Position
-      ) {
-        buttons.splice(i, 1)
-      }
-    }
-    buttons.push({
-      id: String(n1Position),
-      type: systemButtonType,
-      config: {},
-    })
-  }
   return {
     type: "deck-config",
     deckId: deck.id,

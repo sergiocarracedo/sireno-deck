@@ -69,6 +69,7 @@ vi.mock("@/util/device-config", () => ({
 }))
 vi.mock("@/deck", () => ({
   createDeckRuntime: vi.fn(),
+  injectSystemButtons: vi.fn((decks: ReadonlyArray<unknown>) => decks),
 }))
 
 const loaderMod = await import("@/config/loader")

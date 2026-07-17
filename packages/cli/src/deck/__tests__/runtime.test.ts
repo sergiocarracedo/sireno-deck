@@ -902,9 +902,13 @@ describe("createRuntime — system-button gestures", () => {
     expect(runtime.getActiveDeckId()).toBe("main")
   })
 
-  it("dispatchSystemButton core:settings-entry dbl-tap flips to available overlay", async () => {
+  it("dispatchGesture on injected core:settings-entry at n-1 dbl-tap flips to available overlay", async () => {
     const { runtime } = setup([
-      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "main",
+        isMain: true,
+        buttons: [{ id: "14", type: "core:settings-entry" }],
+      }),
       makeDeck({
         id: "spotify",
         isOverlay: true,
@@ -920,30 +924,45 @@ describe("createRuntime — system-button gestures", () => {
     await flush(1_200)
     expect(runtime.hasOverlayDeckAvailable()).toBe(true)
     expect(runtime.getActiveDeckId()).toBe("main")
-    await runtime.dispatchSystemButton("core:settings-entry", "dbl-tap")
+    await runtime.dispatchGesture("main:14", "dbl-tap")
     expect(runtime.getActiveDeckId()).toBe("spotify")
     await runtime.stopActiveAppPolling()
   })
 
-  it("dispatchSystemButton core:back tap does goBack", async () => {
+  it("dispatchGesture on injected core:back at n-1 tap does goBack", async () => {
     const { runtime } = setup([
-      makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "media" }),
+      makeDeck({
+        id: "main",
+        isMain: true,
+        buttons: [{ id: "14", type: "core:settings-entry" }],
+      }),
+      makeDeck({
+        id: "media",
+        buttons: [{ id: "14", type: "core:back" }],
+      }),
     ])
     runtime.navigateToDeck("media")
-    await runtime.dispatchSystemButton("core:back", "tap")
+    await runtime.dispatchGesture("media:14", "tap")
     expect(runtime.getActiveDeckId()).toBe("main")
   })
 
-  it("dispatchSystemButton core:back hold while overlay active jumps to main", async () => {
+  it("dispatchGesture on injected core:back at n-1 hold while overlay active jumps to main", async () => {
     const { runtime } = setup([
-      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "main",
+        isMain: true,
+        buttons: [{ id: "14", type: "core:settings-entry" }],
+      }),
       makeDeck({ id: "media" }),
-      makeDeck({ id: "spotify", isOverlay: true }),
+      makeDeck({
+        id: "spotify",
+        isOverlay: true,
+        buttons: [{ id: "14", type: "core:back" }],
+      }),
     ])
     runtime.navigateToDeck("media")
     runtime.setOverlay("spotify")
-    await runtime.dispatchSystemButton("core:back", "hold")
+    await runtime.dispatchGesture("spotify:14", "hold")
     expect(runtime.getOverlay()).toBeNull()
     expect(runtime.getActiveDeckId()).toBe("main")
     expect(runtime.navStackDepth()).toBe(1)

@@ -4,7 +4,6 @@ import { createGestureDetector } from "@/core/gesture-state"
 import type { DeviceDescriptor } from "@/device/registry"
 import { connectStreamDeck, type StreamDeckDevice } from "@/device/stream-deck"
 import { BrowserRenderer } from "@/render/browser-renderer"
-import { computeSystemButtonForSlotN1 } from "@/deck/system-back-injection"
 import { NoStreamDeckFoundError, selectDevice } from "@/system/device-selection"
 import { saveDeviceConfig } from "@/util/device-config"
 
@@ -135,29 +134,6 @@ export class RealOutputClient implements OutputClient {
           "real mode: gesture detected, resolving against active deck",
         )
         const activeDeck = opts.runtime.getActiveDeck()
-        // System buttons at n-1 always win over a user-defined button there —
-        // the deck-config splice hides them visually, so the runtime must too.
-        const navState = {
-          navStackDepth: opts.runtime.navStackDepth(),
-          hasOverlayDeckAvailable: opts.runtime.hasOverlayDeckAvailable(),
-        }
-        const n1Position = descriptor.keyCount - 1
-        if (keyIndex === n1Position) {
-          const sysType = computeSystemButtonForSlotN1(activeDeck, navState)
-          if (sysType !== null) {
-            logger.info(
-              {
-                activeDeckId: activeDeck.id,
-                keyIndex,
-                gesture: result.kind,
-                sysType,
-              },
-              "real mode: dispatching system button",
-            )
-            void opts.runtime.dispatchSystemButton(sysType, result.kind)
-            return
-          }
-        }
         const button = activeDeck.buttons.find((b) => {
           if (b.position === keyIndex) return true
           const parsed = Number.parseInt(b.id, 10)

@@ -31,7 +31,7 @@ export {
   type MountedButton,
 } from "./runtime"
 export { getHostContext, type HostContext } from "./host-context"
-export { computeSystemButtonForSlotN1 } from "./system-back-injection"
+export { computeSystemButtonForSlotN1, injectSystemButtons } from "./system-back-injection"
 export { parseMacro } from "./macro-parse"
 export {
   isSystemButtonType,

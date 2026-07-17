@@ -63,6 +63,7 @@ vi.mock("@/util/daemon", () => ({
 }))
 vi.mock("@/deck", () => ({
   createDeckRuntime: vi.fn(),
+  injectSystemButtons: vi.fn((decks: ReadonlyArray<unknown>) => decks),
 }))
 vi.mock("@/render/ws-bridge", () => ({
   startWsBridge: vi.fn(async () => ({

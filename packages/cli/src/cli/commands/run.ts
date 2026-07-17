@@ -16,6 +16,7 @@ import {
 } from "@/config/validation"
 import {
   createDeckRuntime,
+  injectSystemButtons,
   type Methods,
   type PubSub,
   type Runtime,
@@ -432,7 +433,10 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
     decks.length > 0
       ? decks
       : [{ id: "main", name: "Main", isMain: true, buttons: [] }]
-  const allDecks = materializeAddonDecks(registry, effectiveDecks, logger, 15)
+  const allDecks = injectSystemButtons(
+    materializeAddonDecks(registry, effectiveDecks, logger, 15),
+    15,
+  )
   const { runtime, methods, pubSub, store } = createDeckRuntime({
     decks: allDecks,
     logger,

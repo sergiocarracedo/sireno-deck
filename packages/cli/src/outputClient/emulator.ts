@@ -6,7 +6,6 @@ import type pino from "pino"
 import type { ButtonActionMessage, WsMessage } from "@/api/protocol-internal"
 import { resolveKeyCount } from "@/device/models"
 import type { DeviceDescriptor } from "@/device/registry"
-import { computeSystemButtonForSlotN1 } from "@/deck/system-back-injection"
 
 import {
   DEFAULT_EMULATOR_PORT,
@@ -134,29 +133,6 @@ export class EmulatorOutputClient implements OutputClient {
       // to resolve the actual deck — this avoids relying on the client's
       // sometimes-stale local view of the active deck.
       const activeDeck = opts.runtime.getActiveDeck()
-      // System buttons at n-1 always win over a user-defined button there —
-      // the deck-config splice hides them visually, so the runtime must too.
-      const navState = {
-        navStackDepth: opts.runtime.navStackDepth(),
-        hasOverlayDeckAvailable: opts.runtime.hasOverlayDeckAvailable(),
-      }
-      const n1Position = descriptor.keyCount - 1
-      if (message.position === n1Position) {
-        const sysType = computeSystemButtonForSlotN1(activeDeck, navState)
-        if (sysType !== null) {
-          logger.info(
-            {
-              activeDeckId: activeDeck.id,
-              position: message.position,
-              gesture: message.gesture,
-              sysType,
-            },
-            "emulator: dispatching system button",
-          )
-          void opts.runtime.dispatchSystemButton(sysType, message.gesture)
-          return
-        }
-      }
       const button = activeDeck.buttons.find((b) => {
         if (b.position === message.position) return true
         const parsed = Number.parseInt(b.id, 10)

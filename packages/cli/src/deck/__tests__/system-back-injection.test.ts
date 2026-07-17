@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest"
 
-import { computeSystemButtonForSlotN1 } from "../system-back-injection"
+import {
+  computeSystemButtonForSlotN1,
+  injectSystemButtons,
+} from "../system-back-injection"
 
 const deck = (
   overrides: Partial<Parameters<typeof computeSystemButtonForSlotN1>[0]> = {},
@@ -60,5 +63,62 @@ describe("computeSystemButtonForSlotN1", () => {
         state({ navStackDepth: 3 }),
       ),
     ).toBe("core:back")
+  })
+})
+
+describe("injectSystemButtons", () => {
+  it("injects core:settings-entry at n-1 on main deck", () => {
+    const main = { ...deck({ isMain: true }), buttons: [{ id: "0", type: "x" }] }
+    const [result] = injectSystemButtons([main], 15)
+    const n1 = result.buttons.find((b) => b.id === "14")
+    expect(n1?.type).toBe("core:settings-entry")
+  })
+
+  it("injects core:back at n-1 on non-main deck", () => {
+    const sub = {
+      ...deck({ id: "sub", name: "Sub" }),
+      buttons: [{ id: "0", type: "x" }],
+    }
+    const [result] = injectSystemButtons([sub], 15)
+    const n1 = result.buttons.find((b) => b.id === "14")
+    expect(n1?.type).toBe("core:back")
+  })
+
+  it("overwrites existing user button at n-1", () => {
+    const withN1 = {
+      ...deck({ id: "sub" }),
+      buttons: [{ id: "14", type: "user:custom" }],
+    }
+    const [result] = injectSystemButtons([withN1], 15)
+    expect(result.buttons).toHaveLength(1)
+    expect(result.buttons[0]?.type).toBe("core:back")
+  })
+
+  it("uses keyCount to determine n-1 position", () => {
+    const main = { ...deck({ isMain: true }), buttons: [] }
+    const [result] = injectSystemButtons([main], 6)
+    const n1 = result.buttons.find((b) => b.id === "5")
+    expect(n1?.type).toBe("core:settings-entry")
+  })
+
+  it("is idempotent when n-1 is already a system button", () => {
+    const alreadyInjected = {
+      ...deck({ isMain: true }),
+      buttons: [{ id: "14", type: "core:settings-entry" }],
+    }
+    const [result] = injectSystemButtons([alreadyInjected], 15)
+    const n1Count = result.buttons.filter((b) => b.id === "14").length
+    expect(n1Count).toBe(1)
+  })
+
+  it("preserves other deck properties", () => {
+    const sub = {
+      ...deck({ id: "media", name: "Media", isOverlay: false }),
+      buttons: [{ id: "0", type: "media:player" }],
+    }
+    const [result] = injectSystemButtons([sub], 15)
+    expect(result.id).toBe("media")
+    expect(result.name).toBe("Media")
+    expect(result.buttons).toHaveLength(2)
   })
 })
