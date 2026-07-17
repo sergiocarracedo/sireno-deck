@@ -1,17 +1,22 @@
 import type pino from "pino"
 
-import type { ActiveAppSnapshot } from "../active-app"
+import type { ActiveAppProvider, ActiveAppSnapshot } from "../active-app"
 import {
   type CommandExecutor,
   type LinuxDbusBus,
   type LinuxDbusProxyObject,
 } from "../shared"
+import {
+  createWaylandGnomeProvider,
+  shouldUseWaylandGnomeProvider,
+} from "./wayland-gnome"
 
 export interface LinuxActiveAppDeps {
   readonly dbus?: LinuxDbusBus
   readonly executor: CommandExecutor
   readonly logger: pino.Logger
   readonly pollIntervalMs?: number
+  readonly env?: NodeJS.ProcessEnv
 }
 
 const DEFAULT_POLL_MS = 1_000
@@ -140,7 +145,20 @@ const sameSnapshot = (
 
 export const createLinuxActiveAppProvider = async (
   deps: LinuxActiveAppDeps,
-): Promise<import("../active-app").ActiveAppProvider> => {
+): Promise<ActiveAppProvider> => {
+  if (shouldUseWaylandGnomeProvider(deps.env)) {
+    deps.logger.info(
+      "active-app: detected GNOME Wayland session, using 'Window Calls Extended' provider",
+    )
+    return createWaylandGnomeProvider({
+      ...(deps.dbus !== undefined ? { dbus: deps.dbus } : {}),
+      logger: deps.logger,
+      ...(deps.pollIntervalMs !== undefined
+        ? { pollIntervalMs: deps.pollIntervalMs }
+        : {}),
+    })
+  }
+
   const pollMs = deps.pollIntervalMs ?? DEFAULT_POLL_MS
   const subscribers = new Set<(s: ActiveAppSnapshot | null) => void>()
   let last: ActiveAppSnapshot | null = null

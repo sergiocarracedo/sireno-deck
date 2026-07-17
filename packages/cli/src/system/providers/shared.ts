@@ -26,6 +26,7 @@ export interface LinuxDbusInterface {
   Eval?(script: string): Promise<unknown>
   GetActive?(): Promise<boolean>
   GetIdletime?(): Promise<number>
+  FocusClass?(): Promise<string>
   on?(event: string, handler: (...args: unknown[]) => void): void
   off?(event: string, handler: (...args: unknown[]) => void): void
 }

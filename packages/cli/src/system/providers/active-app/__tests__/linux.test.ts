@@ -77,6 +77,7 @@ describe("createLinuxActiveAppProvider", () => {
       executor,
       logger: silentLogger(),
       pollIntervalMs: 100,
+      env: { XDG_SESSION_TYPE: "x11" },
     })
     const snap = await provider.getActive()
     expect(snap).toEqual({
@@ -123,6 +124,7 @@ describe("createLinuxActiveAppProvider", () => {
       executor,
       logger: silentLogger(),
       pollIntervalMs: 100,
+      env: { XDG_SESSION_TYPE: "x11" },
     })
     const snap = await provider.getActive()
     expect(snap).toEqual({
@@ -171,6 +173,7 @@ describe("createLinuxActiveAppProvider", () => {
       executor,
       logger: silentLogger(),
       pollIntervalMs: 50,
+      env: { XDG_SESSION_TYPE: "x11" },
     })
     provider.subscribe(handler)
     await vi.advanceTimersByTimeAsync(250)
@@ -199,6 +202,7 @@ describe("createLinuxActiveAppProvider", () => {
       executor,
       logger: silentLogger(),
       pollIntervalMs: 100,
+      env: { XDG_SESSION_TYPE: "x11" },
     })
     await provider.stop()
     expect(disconnect).toHaveBeenCalled()
