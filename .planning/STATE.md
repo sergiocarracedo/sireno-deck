@@ -2,7 +2,7 @@
 
 **Project:** sireno-deck-2
 **Active branch:** chore/nuke-planning-reinit
-**Last activity:** 2026-07-17 - Phase 5 UAT fix: n-1 system buttons forward dbl-tap/hold to runtime (commit ccc548f)
+**Last activity:** 2026-07-17 - Phase 6 CONTEXT captured: lock deck (mutex flag, session-driven, gestures suppressed with go-to-folder escape hatch, HH|:|MM default)
 
 ## Quick Tasks Completed
 
