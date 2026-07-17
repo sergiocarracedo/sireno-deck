@@ -1,0 +1,22 @@
+packages/cli/src/deck/__tests__/lock-deck.test.ts
+  s_586986ca02db2f::t_41f4c3a2c28965 1-313
+packages/cli/src/deck/runtime.ts
+  s_586986ca02db2f::t_182d9fc782c648 151-155,161-171
+  s_586986ca02db2f::t_48d37a402fa71b 457
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "4cc6a5bf9cfddea631f3d30fc2a48319cd15d277",
+  "prompts": {},
+  "sessions": {
+    "s_586986ca02db2f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08ee995cbffedn8iRvToXsQvlX",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
