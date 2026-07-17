@@ -144,7 +144,22 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     return { deckId: deck.id, button }
   }
 
+  const buildDefaultLockDeck = (): RuntimeDeck => ({
+    id: "lock:deck",
+    name: "Locked",
+    buttons: [
+      { id: "0", type: "date-time:locked-time-tile", config: { slot: "hour" } },
+      {
+        id: "1",
+        type: "date-time:locked-time-tile",
+        config: { slot: "separator" },
+      },
+      { id: "2", type: "date-time:locked-time-tile", config: { slot: "minute" } },
+    ],
+  })
+
   const getActiveDeck = (): RuntimeDeck => {
+    if (lockActive) return buildDefaultLockDeck()
     const id = getActiveDeckId()
     const deck = deckById(id)
     if (deck === undefined) throw new Error(`Active deck '${id}' not found`)
