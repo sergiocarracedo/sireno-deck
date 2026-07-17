@@ -1,0 +1,21 @@
+.planning/phases/05-overlay-decks/05-CONTEXT.md
+  s_76ace8e8cfb010::t_d7d0c1e380161c 1-125
+.planning/phases/05-overlay-decks/05-DISCUSSION-LOG.md
+  s_76ace8e8cfb010::t_52df764ac1e09b 1-127
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "0d9a47532da73b08ff472184a02da05690ebb38c",
+  "prompts": {},
+  "sessions": {
+    "s_76ace8e8cfb010": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_090b3e67cffeM1RGgjTp66fRBZ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
