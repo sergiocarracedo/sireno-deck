@@ -731,6 +731,266 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
   })
 })
 
+describe("createRuntime — system-button gestures", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({
+      toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+    })
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it("core:back tap on overlay deck pops overlay stack", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "spotify",
+        isOverlay: true,
+        buttons: [{ id: "14", type: "core:back" }],
+      }),
+      makeDeck({ id: "spotify-page", isOverlay: true }),
+    ])
+    runtime.setOverlay("spotify")
+    runtime.navigateToDeck("spotify-page")
+    await runtime.dispatchGesture("14", "tap")
+    expect(runtime.getActiveDeckId()).toBe("spotify")
+  })
+
+  it("core:back hold while overlay active jumps to main + dismisses overlay", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "media" }),
+      makeDeck({
+        id: "spotify",
+        isOverlay: true,
+        buttons: [{ id: "14", type: "core:back" }],
+      }),
+    ])
+    runtime.navigateToDeck("media")
+    runtime.setOverlay("spotify")
+    await runtime.dispatchGesture("14", "hold")
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("main")
+    expect(runtime.navStackDepth()).toBe(1)
+  })
+
+  it("core:back hold while overlay active when already on main is idempotent", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "spotify",
+        isOverlay: true,
+        buttons: [{ id: "14", type: "core:back" }],
+      }),
+    ])
+    runtime.setOverlay("spotify")
+    await runtime.dispatchGesture("14", "hold")
+    expect(runtime.getActiveDeckId()).toBe("main")
+    expect(runtime.navStackDepth()).toBe(1)
+  })
+
+  it("core:back hold while in regular layer is a no-op", async () => {
+    const { runtime } = setup([
+      makeDeck({
+        id: "main",
+        isMain: true,
+        buttons: [{ id: "14", type: "core:back" }],
+      }),
+      makeDeck({ id: "media" }),
+    ])
+    runtime.navigateToDeck("media")
+    await runtime.dispatchGesture("14", "hold")
+    expect(runtime.getActiveDeckId()).toBe("media")
+  })
+
+  it("core:back dbl-tap with overlay available flips to overlay", async () => {
+    const { runtime } = setup([
+      makeDeck({
+        id: "main",
+        isMain: true,
+        buttons: [{ id: "14", type: "core:back" }],
+      }),
+      makeDeck({
+        id: "spotify",
+        isOverlay: true,
+        processNames: ["spotify"],
+      }),
+    ])
+    const provider = makeFakeProvider({
+      name: "Spotify",
+      windowTitle: null,
+      processId: 1,
+    })
+    runtime.setActiveAppProvider(provider)
+    await flush(1_200)
+    expect(runtime.hasOverlayDeckAvailable()).toBe(true)
+    expect(runtime.getActiveDeckId()).toBe("main")
+    await runtime.dispatchGesture("14", "dbl-tap")
+    expect(runtime.getActiveDeckId()).toBe("spotify")
+    await runtime.stopActiveAppPolling()
+  })
+
+  it("core:back dbl-tap while overlay active dismisses overlay", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "spotify",
+        isOverlay: true,
+        buttons: [{ id: "14", type: "core:back" }],
+      }),
+    ])
+    runtime.setOverlay("spotify")
+    expect(runtime.getActiveDeckId()).toBe("spotify")
+    await runtime.dispatchGesture("14", "dbl-tap")
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("main")
+  })
+
+  it("core:back dbl-tap with no overlay available is a no-op", async () => {
+    const { runtime } = setup([
+      makeDeck({
+        id: "main",
+        isMain: true,
+        buttons: [{ id: "14", type: "core:back" }],
+      }),
+      makeDeck({ id: "media" }),
+    ])
+    runtime.navigateToDeck("media")
+    await runtime.dispatchGesture("14", "dbl-tap")
+    expect(runtime.getActiveDeckId()).toBe("media")
+  })
+
+  it("core:overlay-toggle dbl-tap flips layer (legacy type path)", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "spotify",
+        isOverlay: true,
+        buttons: [{ id: "14", type: "core:overlay-toggle" }],
+      }),
+    ])
+    runtime.setOverlay("spotify")
+    await runtime.dispatchGesture("14", "dbl-tap")
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("main")
+  })
+})
+
+describe("createRuntime — getAvailableOverlayDeckIcon", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({
+      toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+    })
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it("returns null before any match", () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "chrome",
+        processNames: ["chrome"],
+        icon: "icon://chrome",
+      }),
+    ])
+    expect(runtime.getAvailableOverlayDeckIcon()).toBeNull()
+  })
+
+  it("returns matched deck's icon after a match", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "chrome-deck",
+        processNames: ["chrome"],
+        icon: "icon://chrome",
+      }),
+    ])
+    const provider = makeFakeProvider({
+      name: "Google Chrome",
+      windowTitle: null,
+      processId: 1,
+    })
+    runtime.setActiveAppProvider(provider)
+    await flush(1_200)
+    expect(runtime.getAvailableOverlayDeckIcon()).toBe("icon://chrome")
+    provider.snapshot = { name: "Firefox", windowTitle: null, processId: 2 }
+    await flush(1_300)
+    expect(runtime.getAvailableOverlayDeckIcon()).toBeNull()
+    await runtime.stopActiveAppPolling()
+  })
+
+  it("returns null when matched deck has no icon", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "chrome-deck", processNames: ["chrome"] }),
+    ])
+    const provider = makeFakeProvider({
+      name: "Google Chrome",
+      windowTitle: null,
+      processId: 1,
+    })
+    runtime.setActiveAppProvider(provider)
+    await flush(1_200)
+    expect(runtime.getAvailableOverlayDeckIcon()).toBeNull()
+    await runtime.stopActiveAppPolling()
+  })
+})
+
+describe("createRuntime — overlay smoke (full chain with gestures)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({
+      toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+    })
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it("autoShow → navigate sub-deck → dbl-tap dismisses → hold back jumps to main → re-activate restores", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "chrome-deck",
+        isOverlay: true,
+        processNames: ["chrome"],
+        autoShow: true,
+        icon: "icon://chrome",
+        buttons: [{ id: "14", type: "core:back" }],
+      }),
+      makeDeck({ id: "chrome-page", isOverlay: true }),
+    ])
+    const provider = makeFakeProvider({
+      name: "Google Chrome",
+      windowTitle: null,
+      processId: 1,
+    })
+
+    runtime.setActiveAppProvider(provider)
+    await flush(1_200)
+
+    expect(runtime.getActiveDeckId()).toBe("chrome-deck")
+    expect(runtime.getAvailableOverlayDeckIcon()).toBe("icon://chrome")
+
+    runtime.navigateToDeck("chrome-page")
+    expect(runtime.getActiveDeckId()).toBe("chrome-page")
+
+    await runtime.dispatchGesture("14", "dbl-tap")
+    expect(runtime.getActiveDeckId()).toBe("main")
+
+    runtime.setOverlay("chrome-deck")
+    expect(runtime.getActiveDeckId()).toBe("chrome-page")
+
+    await runtime.dispatchGesture("14", "hold")
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("main")
+
+    await runtime.stopActiveAppPolling()
+  })
+})
+
 describe("createRuntime — overlay smoke (full chain)", () => {
   beforeEach(() => {
     vi.useFakeTimers({
