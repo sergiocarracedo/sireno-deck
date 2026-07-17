@@ -2,7 +2,7 @@
 
 **Project:** sireno-deck-2
 **Active branch:** chore/nuke-planning-reinit
-**Last activity:** 2026-07-17 - Phase 5 PLAN-1 executed (backend overlay deck runtime)
+**Last activity:** 2026-07-17 - Phase 5 PLAN-2 executed (frontend gestures + back-hold + icon plumbing)
 
 ## Quick Tasks Completed
 
@@ -16,3 +16,5 @@
 - Phase 4 added: Settings Deck
 - Phase 5 added: Overlay Decks
   - PLAN-1 (Wave 1) complete: backend runtime — matcher AND, autoShow gate, per-overlay nav stack, smoke test
+  - PLAN-2 (Wave 2) complete: frontend SplitSurface gestures (tap/dbl-tap/hold), icon override, back-hold → mainDeck
+  - All plans complete; pending verifier pass.
