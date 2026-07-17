@@ -19,3 +19,4 @@
   - PLAN-2 (Wave 2) complete: frontend SplitSurface gestures (tap/dbl-tap/hold), icon override, back-hold → mainDeck
   - UAT fixes committed: getActiveDeck overlay-aware, React hooks order, main deck n-1 SplitSurface, GNOME Wayland provider, n-1 dbl-tap/hold forwarding
   - Pending user UAT: restart daemon and verify main deck n-1 overlay-toggle dbl-tap switches to overlay deck
+- Phase 6 added: Lock Deck — `lock:` config block (custom buttons + folder passthrough), session-locked → global mode that overrides overlay layer, disables gestures, suppresses system buttons; default 3-button time deck (HH : MM); `go-to-folder` is the only escape hatch from user-defined lock decks. Existing `session:locked` deck in `session` addon becomes the default; needs to be reshaped from 5 buttons → 3.

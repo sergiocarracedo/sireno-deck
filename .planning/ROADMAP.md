@@ -14,6 +14,12 @@
 | REQ-008 | Launcher button renders "Emojis" text label | P3 | planned |
 | REQ-009 | Emoji list decks render `core:page-nav` pagination buttons | P3 | planned |
 | REQ-010 | Pagination nav buttons visually functional on emoji list decks | P3 | planned |
+| REQ-011 | `lock:` config block defines a custom lock deck (buttons + folder nav) | P6 | planned |
+| REQ-012 | When session state is `locked`, lock deck overrides the active deck | P6 | planned |
+| REQ-013 | In locked mode: gestures disabled and system buttons not injected | P6 | planned |
+| REQ-014 | Default lock deck shows current time across 3 buttons (HH : mm) | P6 | planned |
+| REQ-015 | User-configured button that navigates to a folder exits locked mode (per-folder passthrough) | P6 | planned |
+| REQ-016 | Buttons on a user-defined lock deck have actions disabled (no dispatch) | P6 | planned |
 
 ---
 
@@ -203,6 +209,52 @@
 
 ---
 
+## Phase 6: Lock Deck
+
+**Goal:** When the OS session is locked, the deck switches to a global lock-deck mode: the lock deck (user-defined or 3-button time fallback) overrides any other deck, gestures are disabled, and system buttons are not injected — except when the user navigates to a configured folder, which exits the locked mode for that flow.
+
+**Depends on:** P5
+**Blocks:** None
+**Status:** [ ] Not started
+
+### Success Criteria
+
+- [ ] Config schema accepts a `lock:` block at the root with `buttons:` (and optional `folder:`, `trigger:`)
+- [ ] When session provider state is `locked`, the lock deck replaces the active deck as a global overlay (overrides overlay-toggle behaviour, takes precedence over window-triggered overlays)
+- [ ] In locked mode: gesture handlers on all buttons are no-ops; no `n-1` / settings / overlay-toggle system buttons are injected
+- [ ] Default lock deck renders the current time on 3 buttons: HH (hours), `:` separator, MM (minutes) — refreshed each minute (reuses `core:locked-time-tile` from `date-time` addon)
+- [ ] A user-defined lock deck from `lock.buttons` is used in place of the default when present; the buttons render as configured but their action dispatch is suppressed
+- [ ] When a button on the user-defined lock deck has a `go-to-folder` action that navigates to a folder, the navigation proceeds and the runtime exits locked mode for that folder flow (system buttons re-injected, gestures re-enabled)
+- [ ] Unlock reverts to the previous active deck and previous navigation stack (or main deck if none)
+- [ ] All existing non-lock tests pass unchanged; new tests cover the schema, mode transition, gesture suppression, system-button hiding, folder passthrough, and time-tile rendering
+
+### Tasks
+
+- [ ] T6.1: Extend config schema with `lock:` block (`zod` `.strict()`); accepts `buttons: ButtonSpec[]` and optional `folder: string` — `packages/cli/src/config/schemas.ts`
+- [ ] T6.2: Add `LockMode` to runtime — introduce `lockDeckId`, `lockActive: boolean`, `preLockActiveDeckId`; subscribe to session provider state and toggle lock when state transitions — `packages/cli/src/deck/runtime.ts`
+- [ ] T6.3: Make lock mode global — when `lockActive`, `getActiveDeck()` returns the lock deck; takes precedence over overlay layer — `packages/cli/src/deck/runtime.ts`
+- [ ] T6.4: Disable gestures in locked mode — `dispatch()` / gesture handlers become no-ops for buttons on the lock deck; allow `go-to-folder` to escape (sets `lockActive = false`, navigates, re-injects system buttons) — `packages/cli/src/deck/methods.ts` or `runtime.ts`
+- [ ] T6.5: Suppress system-button injection in locked mode — skip `core:back` / `core:settings-entry` / `core:overlay-toggle` n-1 injection when lock active — `packages/cli/src/deck/system-back-injection.ts`
+- [ ] T6.6: Define default lock deck factory (3 time buttons + colon: HH | : | MM) — `packages/cli/src/builtin-addons/session/decks/locked.ts` (replace existing 5-button default) or new `packages/cli/src/builtin-addons/session/decks/locked-default.ts`
+- [ ] T6.7: Wire `lock.buttons` (user-defined) — at startup, build a deck from config buttons; suppress actions on dispatch; allow `go-to-folder` to escape lock — `packages/cli/src/deck/deck-config.ts`
+- [ ] T6.8: Tests — schema validation, mode toggle on session state change, gesture suppression, system-button hiding, time-tile render, folder passthrough, unlock reverts state — `packages/cli/src/deck/__tests__/`, `packages/cli/src/config/__tests__/`
+
+### Must-Haves
+
+- `lock:` is a first-class config surface (typed, validated, `.strict()`); defaults exist so empty config still works (3-button time fallback)
+- Lock mode takes precedence over both regular and overlay deck layers
+- The `go-to-folder` escape hatch is the only way a user-defined lock deck can produce non-trivial behaviour
+- Unlock restores the previous active deck and stack — not the main deck (unless that was previous)
+- No regression on non-locked flows (regular navigation, overlay decks, gestures, system buttons)
+
+### Nice-to-Haves
+
+- Show a small "🔒" indicator on the lock deck surface
+- Customizable lock deck icon / label in the user-defined `lock:` block
+- Smooth transition animation when entering/exiting locked mode
+
+---
+
 ## Verification Points
 
 | Phase | What to verify | How |
@@ -227,6 +279,16 @@
 | P5 | SplitSurface n-1 with overlay available | Build-config test: n-1 button is `core:split` with primary=settings/back + secondary=core:overlay-toggle |
 | P5 | OverlayToggle dbltap switches layer | Runtime test: dbltap on `core:overlay-toggle` while in regular layer activates overlay deck |
 | P5 | Back-button onhold jumps to main deck | Gesture test: long-press on overlay back button from overlay root dismisses overlay and shows regular layer's main deck |
+| P6 | Lock config parses | Unit test: `lock: { buttons: [...] }` and `lock: { folder: "..." }` both validate with `.strict()` |
+| P6 | Lock mode activates on session state change | Runtime test: feed `state: "locked"` into runtime, assert `getActiveDeck()` returns lock deck and `lockActive === true` |
+| P6 | Lock mode takes precedence over overlay | Runtime test: while overlay deck is active, session goes to `locked`, lock deck wins |
+| P6 | Gestures suppressed in lock mode | Runtime test: tap a lock-deck button, assert no dispatch / no state mutation |
+| P6 | System buttons not injected in lock mode | Build-config test: `injectSystemButtons(deck)` produces no n-1 / settings / overlay-toggle when lock active |
+| P6 | Default time deck renders HH : MM | Snapshot test: `formatLockedTimeTileCharacter` for the 3 slots yields HH / `:` / MM |
+| P6 | User-defined lock deck renders from config | Build-config test: `lock.buttons` produces the expected deck layout |
+| P6 | User button actions suppressed | Runtime test: tap user-defined lock button with `dispatch: "paste://…"`, assert no dispatch fired |
+| P6 | Folder navigation exits lock mode | Runtime test: tap `go-to-folder` on user lock deck, assert `lockActive === false` and folder deck is active with system buttons |
+| P6 | Unlock restores previous active deck | Runtime test: session goes `unlocked`, assert previous active deck is restored and `lockActive === false` |
 
 ## Dependencies Graph
 
@@ -242,6 +304,15 @@ P1 (paste:// fix)          P2 (categories.json)
                  independent of
                  each other; both
                  feed into P3
+                                │
+                                ▼
+                          P4 (settings deck)
+                                │
+                                ▼
+                          P5 (overlay decks)
+                                │
+                                ▼
+                          P6 (lock deck)
 ```
 
-P1 and P2 have **zero dependency** on each other — they can be worked in parallel or either first. P3 depends on P2 (favorites and pagination use the new data layer) but not on P1.
+P1 and P2 have **zero dependency** on each other — they can be worked in parallel or either first. P3 depends on P2 (favorites and pagination use the new data layer) but not on P1. P4-P6 form a linear chain: P4 (settings) → P5 (overlay) → P6 (lock — needs overlay precedence mechanics).
