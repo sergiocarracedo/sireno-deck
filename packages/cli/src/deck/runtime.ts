@@ -85,6 +85,7 @@ export interface Runtime {
     buttons: ReadonlyArray<MountedButton>,
   ): void
   dispatchGesture(buttonId: string, gesture: GestureKind): Promise<void>
+  dispatchSystemButton(type: string, gesture: GestureKind): Promise<void>
   invokeAction(buttonId: string, gesture: GestureKind): Promise<void>
   setGestureListener(listener: GestureListener | null): void
   invalidate(): void
@@ -298,6 +299,52 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     }
   }
 
+  const handleSystemButton = (
+    type: string,
+    gesture: GestureKind,
+  ): boolean => {
+    if (type === "core:back") {
+      if (gesture === "tap") {
+        goBack()
+        return true
+      }
+      if (gesture === "hold" && overlayDeckId !== null) {
+        navStack.length = 0
+        navStack.push(mainDeck.id)
+        setOverlay(null)
+        return true
+      }
+      if (gesture === "dbl-tap") {
+        if (overlayDeckId !== null) {
+          setOverlay(null)
+        } else if (availableOverlayDeckId !== null) {
+          setOverlay(availableOverlayDeckId)
+        }
+        return true
+      }
+      return true
+    }
+    if (
+      (type === "core:overlay-toggle" || type === "core:settings-entry") &&
+      gesture === "dbl-tap"
+    ) {
+      if (overlayDeckId !== null) {
+        setOverlay(null)
+      } else if (availableOverlayDeckId !== null) {
+        setOverlay(availableOverlayDeckId)
+      }
+      return true
+    }
+    return false
+  }
+
+  const dispatchSystemButton = async (
+    type: string,
+    gesture: GestureKind,
+  ): Promise<void> => {
+    handleSystemButton(type, gesture)
+  }
+
   const invokeAction = async (
     buttonId: string,
     gesture: GestureKind,
@@ -308,33 +355,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       return
     }
 
-    if (found.button.type === "core:back") {
-      if (gesture === "tap") {
-        goBack()
-        return
-      }
-      if (gesture === "hold" && overlayDeckId !== null) {
-        navStack.length = 0
-        navStack.push(mainDeck.id)
-        setOverlay(null)
-        return
-      }
-      if (gesture === "dbl-tap") {
-        if (overlayDeckId !== null) {
-          setOverlay(null)
-        } else if (availableOverlayDeckId !== null) {
-          setOverlay(availableOverlayDeckId)
-        }
-        return
-      }
-      return
-    }
-    if (found.button.type === "core:overlay-toggle" && gesture === "dbl-tap") {
-      if (overlayDeckId !== null) {
-        setOverlay(null)
-      } else if (availableOverlayDeckId !== null) {
-        setOverlay(availableOverlayDeckId)
-      }
+    if (handleSystemButton(found.button.type, gesture)) {
       return
     }
 
@@ -609,6 +630,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     mountAddonButtons,
     dispatchGesture,
     invokeAction,
+    dispatchSystemButton,
     setGestureListener,
     invalidate,
     setActiveAppProvider,

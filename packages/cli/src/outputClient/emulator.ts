@@ -143,20 +143,17 @@ export class EmulatorOutputClient implements OutputClient {
       const n1Position = descriptor.keyCount - 1
       if (message.position === n1Position) {
         const sysType = computeSystemButtonForSlotN1(activeDeck, navState)
-        if (sysType === "core:back") {
+        if (sysType !== null) {
           logger.info(
-            { activeDeckId: activeDeck.id, position: message.position },
-            "emulator: dispatching runtime.goBack() for injected back button",
+            {
+              activeDeckId: activeDeck.id,
+              position: message.position,
+              gesture: message.gesture,
+              sysType,
+            },
+            "emulator: dispatching system button",
           )
-          opts.runtime.goBack()
-          return
-        }
-        if (sysType === "core:settings-entry") {
-          logger.info(
-            { activeDeckId: activeDeck.id, position: message.position },
-            "emulator: navigating to internal-settings deck",
-          )
-          opts.runtime.navigateToDeck("internal-settings:settings")
+          void opts.runtime.dispatchSystemButton(sysType, message.gesture)
           return
         }
       }

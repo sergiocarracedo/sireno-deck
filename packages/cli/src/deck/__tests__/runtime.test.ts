@@ -901,6 +901,53 @@ describe("createRuntime — system-button gestures", () => {
     expect(runtime.getOverlay()).toBeNull()
     expect(runtime.getActiveDeckId()).toBe("main")
   })
+
+  it("dispatchSystemButton core:settings-entry dbl-tap flips to available overlay", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "spotify",
+        isOverlay: true,
+        processNames: ["spotify"],
+      }),
+    ])
+    const provider = makeFakeProvider({
+      name: "Spotify",
+      windowTitle: null,
+      processId: 1,
+    })
+    runtime.setActiveAppProvider(provider)
+    await flush(1_200)
+    expect(runtime.hasOverlayDeckAvailable()).toBe(true)
+    expect(runtime.getActiveDeckId()).toBe("main")
+    await runtime.dispatchSystemButton("core:settings-entry", "dbl-tap")
+    expect(runtime.getActiveDeckId()).toBe("spotify")
+    await runtime.stopActiveAppPolling()
+  })
+
+  it("dispatchSystemButton core:back tap does goBack", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "media" }),
+    ])
+    runtime.navigateToDeck("media")
+    await runtime.dispatchSystemButton("core:back", "tap")
+    expect(runtime.getActiveDeckId()).toBe("main")
+  })
+
+  it("dispatchSystemButton core:back hold while overlay active jumps to main", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "media" }),
+      makeDeck({ id: "spotify", isOverlay: true }),
+    ])
+    runtime.navigateToDeck("media")
+    runtime.setOverlay("spotify")
+    await runtime.dispatchSystemButton("core:back", "hold")
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("main")
+    expect(runtime.navStackDepth()).toBe(1)
+  })
 })
 
 describe("createRuntime — getAvailableOverlayDeckIcon", () => {

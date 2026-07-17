@@ -137,26 +137,24 @@ export class RealOutputClient implements OutputClient {
         const activeDeck = opts.runtime.getActiveDeck()
         // System buttons at n-1 always win over a user-defined button there —
         // the deck-config splice hides them visually, so the runtime must too.
+        const navState = {
+          navStackDepth: opts.runtime.navStackDepth(),
+          hasOverlayDeckAvailable: opts.runtime.hasOverlayDeckAvailable(),
+        }
         const n1Position = descriptor.keyCount - 1
         if (keyIndex === n1Position) {
-          const sysType = computeSystemButtonForSlotN1(activeDeck, {
-            navStackDepth: opts.runtime.navStackDepth(),
-            hasOverlayDeckAvailable: opts.runtime.hasOverlayDeckAvailable(),
-          })
-          if (sysType === "core:back") {
+          const sysType = computeSystemButtonForSlotN1(activeDeck, navState)
+          if (sysType !== null) {
             logger.info(
-              { keyIndex },
-              "real mode: dispatching runtime.goBack() for injected back button",
+              {
+                activeDeckId: activeDeck.id,
+                keyIndex,
+                gesture: result.kind,
+                sysType,
+              },
+              "real mode: dispatching system button",
             )
-            opts.runtime.goBack()
-            return
-          }
-          if (sysType === "core:settings-entry") {
-            logger.info(
-              { keyIndex },
-              "real mode: navigating to internal-settings deck",
-            )
-            opts.runtime.navigateToDeck("internal-settings:settings")
+            void opts.runtime.dispatchSystemButton(sysType, result.kind)
             return
           }
         }
