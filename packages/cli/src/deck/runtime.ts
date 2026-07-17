@@ -148,15 +148,27 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
         const button = deck.buttons.find((b) => b.id === id)
         if (button !== undefined) return { deckId: deck.id, button }
       }
+      if (lockActive) {
+        const lockDeck = getActiveDeck()
+        const button = lockDeck.buttons.find((b) => b.id === id)
+        if (button !== undefined) return { deckId: lockDeck.id, button }
+      }
       return null
     }
     const deckId = id.slice(0, colonIdx)
     const buttonId = id.slice(colonIdx + 1)
     const deck = deckById(deckId)
-    if (deck === undefined) return null
-    const button = deck.buttons.find((b) => b.id === buttonId)
-    if (button === undefined) return null
-    return { deckId: deck.id, button }
+    if (deck !== undefined) {
+      const button = deck.buttons.find((b) => b.id === buttonId)
+      if (button === undefined) return null
+      return { deckId: deck.id, button }
+    }
+    if (lockActive && deckId === "lock:deck") {
+      const lockDeck = getActiveDeck()
+      const button = lockDeck.buttons.find((b) => b.id === buttonId)
+      if (button !== undefined) return { deckId: lockDeck.id, button }
+    }
+    return null
   }
 
   // ponytail: lock-mode escape hatch — only these button types can navigate out of lock mode
@@ -429,7 +441,6 @@ const buildDefaultLockDeck = (): RuntimeDeck => ({
           active: false,
           reason: "escape",
         })
-        pubSub.publish("runtime:invalidate", undefined)
         logger.info(
           { buttonId, gesture, buttonType: found.button.type },
           "runtime: lock escaped via folder-nav button",
@@ -443,7 +454,7 @@ const buildDefaultLockDeck = (): RuntimeDeck => ({
       }
     }
 
-    if (found.deckId !== getActiveDeckId()) {
+    if (found.deckId !== getActiveDeckId() && found.deckId !== "lock:deck") {
       logger.debug(
         { buttonId, deckId: found.deckId, activeDeckId: getActiveDeckId() },
         "invokeAction: gesture on inactive deck, dropping",
