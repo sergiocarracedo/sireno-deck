@@ -705,7 +705,14 @@ const buildDefaultLockDeck = (): RuntimeDeck => ({
         preLockOverlayDeckId = overlayDeckId
         lockActive = true
         logger.info({ preLockActiveDeckId, preLockOverlayDeckId }, "runtime: lock active")
+        pubSub.publish("runtime:lock-mode", { active: true, reason: "session-locked" })
         pubSub.publish("runtime:invalidate", undefined)
+        return
+      }
+      if (state === "locked" && lockActive) {
+        preLockActiveDeckId = getActiveDeckId()
+        preLockOverlayDeckId = overlayDeckId
+        logger.info("runtime: lock snapshot refreshed on re-lock")
         return
       }
       if (state === "unlocked" && lockActive) {
@@ -716,6 +723,7 @@ const buildDefaultLockDeck = (): RuntimeDeck => ({
         if (overlayDeckId !== null) setOverlay(null)
         logger.info({ restoreId }, "runtime: lock cleared, restoring")
         navigateToDeck(restoreId, { addToHistory: false })
+        pubSub.publish("runtime:lock-mode", { active: false, reason: "session-unlocked" })
         pubSub.publish("runtime:invalidate", undefined)
       }
     }
