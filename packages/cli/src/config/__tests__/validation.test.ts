@@ -26,7 +26,6 @@ const baseConfig = (overrides: Partial<RawConfig> = {}): RawConfig => ({
     },
   },
   addons: [],
-  session: { locked_deck: "session:locked" },
   ...overrides,
 })
 

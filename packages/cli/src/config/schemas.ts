@@ -86,9 +86,9 @@ export const LoggingSchema = z
   .strict()
   .optional()
 
-export const SessionSchema = z
+export const LockSchema = z
   .object({
-    locked_deck: z.string().min(1).optional(),
+    buttons: z.array(ButtonDefSchema).optional(),
   })
   .strict()
   .optional()
@@ -109,7 +109,7 @@ export const RawConfigSchema = z
     logging: LoggingSchema,
     decks: z.record(z.string(), DeckDefSchema),
     addons: z.array(AddonEntrySchema).optional(),
-    session: SessionSchema,
+    lock: LockSchema,
   })
   .strict()
 
