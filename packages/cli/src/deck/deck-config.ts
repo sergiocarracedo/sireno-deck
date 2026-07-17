@@ -101,6 +101,7 @@ export const buildDeckConfigMessage = (
   keyCount?: number,
   isCompact?: boolean,
   assetLookup: AssetLookup = () => undefined,
+  overlayDeckIcon: string | null = null,
 ): DeckConfigMessage => {
   const effectiveKeyCount = keyCount ?? 15
   const n1Position = effectiveKeyCount - 1
@@ -156,5 +157,6 @@ export const buildDeckConfigMessage = (
     navMode: "regular",
     isCompact: isCompact ?? false,
     hasOverlayDeckAvailable: navState?.hasOverlayDeckAvailable ?? false,
+    overlayDeckIcon,
   }
 }

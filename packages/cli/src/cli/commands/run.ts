@@ -685,6 +685,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
         descriptor.keyCount,
         outputClient.kind === "real",
         (fullPath) => getAssetByPath(fullPath)?.id,
+        runtime.getAvailableOverlayDeckIcon(),
       )
       logger.info(
         {

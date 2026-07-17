@@ -9,6 +9,7 @@ export interface RuntimeDeck {
   processNames?: ReadonlyArray<string>
   windowNames?: ReadonlyArray<string>
   autoShow?: boolean
+  icon?: string
 }
 
 export interface RuntimeState {
@@ -21,6 +22,5 @@ export const computeSystemButtonForSlotN1 = (
   _state: RuntimeState,
 ): SystemButtonType | null => {
   if (deck.isMain) return "core:settings-entry"
-  if (deck.isOverlay) return "core:overlay-toggle"
   return "core:back"
 }

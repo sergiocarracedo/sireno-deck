@@ -26,10 +26,10 @@ describe("computeSystemButtonForSlotN1", () => {
     )
   })
 
-  it("overlay deck returns overlay-toggle", () => {
+  it("overlay deck returns back (so SplitSurface renders with overlay-toggle secondary)", () => {
     expect(
       computeSystemButtonForSlotN1(deck({ isOverlay: true }), state()),
-    ).toBe("core:overlay-toggle")
+    ).toBe("core:back")
   })
 
   it("regular deck with navStackDepth=1 returns back", () => {
@@ -53,12 +53,12 @@ describe("computeSystemButtonForSlotN1", () => {
     ).toBe("core:settings-entry")
   })
 
-  it("overlay deck with navStackDepth=3 returns overlay-toggle", () => {
+  it("overlay deck with navStackDepth=3 returns back", () => {
     expect(
       computeSystemButtonForSlotN1(
         deck({ isOverlay: true }),
         state({ navStackDepth: 3 }),
       ),
-    ).toBe("core:overlay-toggle")
+    ).toBe("core:back")
   })
 })

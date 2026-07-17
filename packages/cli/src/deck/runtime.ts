@@ -33,6 +33,7 @@ export interface RuntimeDeck {
   windowNames?: ReadonlyArray<string>
   autoShow?: boolean
   isOverlayDeck?: boolean
+  icon?: string
 }
 
 export interface RuntimeButtonHandler {
@@ -91,6 +92,7 @@ export interface Runtime {
   stopActiveAppPolling(): Promise<void>
   navStackDepth(): number
   hasOverlayDeckAvailable(): boolean
+  getAvailableOverlayDeckIcon(): string | null
   getBrightness(): number
   setBrightness(value: number): void
 }
@@ -562,6 +564,12 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     navStackDepth: () => navStack.length,
     hasOverlayDeckAvailable: () =>
       availableOverlayDeckId !== null || pendingOverlayDeckId !== null,
+    getAvailableOverlayDeckIcon: (): string | null => {
+      const id = availableOverlayDeckId ?? pendingOverlayDeckId
+      if (id === null) return null
+      const deck = deckById(id)
+      return deck?.icon ?? null
+    },
     getBrightness: () => brightness,
     setBrightness: (value: number) => {
       const clamped = Math.max(10, Math.min(100, Math.round(value)))
