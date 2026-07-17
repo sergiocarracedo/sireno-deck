@@ -158,6 +158,51 @@
 
 ---
 
+## Phase 5: Overlay Decks
+
+**Goal:** Decks can declare a `trigger` (process name + optional window-name regex) and surface as an overlay layer when the active window matches, with a toggle button to switch between regular and overlay layers, each with independent navigation history.
+
+**Depends on:** P4
+**Blocks:** None
+**Status:** [ ] Not started
+
+### Success Criteria
+
+- [ ] Deck `trigger` matches on process name **and** optional window-name regex (case-insensitive)
+- [ ] When trigger matches, overlay deck is available; `autoShow: true` switches to it automatically
+- [ ] When trigger stops matching, overlay is dismissed
+- [ ] Regular decks inject an `n-1` system button rendered via `SplitSurface` showing the conventional action (settings at home, back elsewhere) as primary and `core:overlay-toggle` (deck icon + dbltap affordance) as secondary
+- [ ] `core:overlay-toggle` dbltap switches from regular deck layer to overlay deck layer
+- [ ] Overlay decks have an independent navigation history (separate back stack from regular decks)
+- [ ] Overlay deck's `n-1` button shows only the toggle deck layer (back + overlay-toggle) — no settings button
+- [ ] Overlay deck's back button navigates within the overlay's own history
+- [ ] Overlay deck's back button **onhold** navigates to the regular deck layer's main deck
+- [ ] `core:overlay-toggle` surface renders the deck's icon with a dbltap hint
+
+### Tasks
+
+- [ ] T5.1: Extend `TriggerSchema` to accept window-name pattern with regex/case-insensitive matching — `packages/cli/src/config/schemas.ts`, `packages/cli/src/system/glob-match.ts`
+- [ ] T5.2: Wire `autoShow` semantics — when true and trigger matches, set overlay automatically without user toggle — `packages/cli/src/deck/runtime.ts`
+- [ ] T5.3: Implement per-deck navigation history stack (overlay decks have an isolated stack separate from the regular layer) — `packages/cli/src/deck/runtime.ts`
+- [ ] T5.4: Update system back injection to use `SplitSurface` for the `n-1` button when overlay is available, with conventional action primary + `core:overlay-toggle` secondary — `packages/cli/src/deck/system-back-injection.ts`
+- [ ] T5.5: Implement `core:overlay-toggle` button surface (deck icon + dbltap affordance) and wire dbltap to switch layers — `packages/frontend/...` (overlay-toggle surface)
+- [ ] T5.6: Implement overlay-deck back-button onhold gesture to jump to the regular layer's main deck — `packages/cli/src/deck/runtime.ts`, `packages/frontend/...`
+- [ ] T5.7: Add tests: trigger regex matching, autoShow behaviour, independent history, SplitSurface n-1 injection, onhold back-to-main, overlayToggle dbltap layer switch — `packages/cli/src/deck/__tests__/`
+
+### Must-Haves
+
+- Window-name matching uses a real regex (not glob), with `i` flag support
+- Overlay deck layer is fully isolated: history, back-button behaviour, n-1 injection
+- `core:overlay-toggle` is a first-class system surface (typed, themed, overridable)
+- No regression on non-overlay deck flows
+
+### Nice-to-Haves
+
+- Visual flash/animation when overlay layer activates/deactivates
+- Per-overlay-deck custom toggle icon (fall back to deck icon if absent)
+
+---
+
 ## Verification Points
 
 | Phase | What to verify | How |
@@ -176,6 +221,12 @@
 | P4 | Settings deck opens | System settings button navigates to internal settings deck |
 | P4 | Brightness controls | Tap brighter/darker changes screen brightness value and shows progress bar |
 | P4 | App info button | Button shows app logo and version string |
+| P5 | Trigger matches by process + window regex | Unit test: matcher returns true for matching process + matching window-name regex, false otherwise |
+| P5 | autoShow switches overlay automatically | Unit test: when autoShow=true and trigger matches, overlay activates without manual toggle |
+| P5 | Independent overlay history | Unit test: navigating inside overlay deck does not push onto regular layer history; back from overlay root dismisses overlay |
+| P5 | SplitSurface n-1 with overlay available | Build-config test: n-1 button is `core:split` with primary=settings/back + secondary=core:overlay-toggle |
+| P5 | OverlayToggle dbltap switches layer | Runtime test: dbltap on `core:overlay-toggle` while in regular layer activates overlay deck |
+| P5 | Back-button onhold jumps to main deck | Gesture test: long-press on overlay back button from overlay root dismisses overlay and shows regular layer's main deck |
 
 ## Dependencies Graph
 
