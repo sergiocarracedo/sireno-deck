@@ -689,7 +689,7 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
     expect(runtime.getActiveDeckId()).toBe("spotify-page")
   })
 
-  it("goBack at overlay root dismisses the overlay", () => {
+  it("goBack at overlay root is a noop (overlay stays active)", () => {
     const { runtime } = setup([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "spotify", isOverlay: true }),
@@ -697,8 +697,8 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
     runtime.setOverlay("spotify")
     expect(runtime.getActiveDeckId()).toBe("spotify")
     runtime.goBack()
-    expect(runtime.getOverlay()).toBeNull()
-    expect(runtime.getActiveDeckId()).toBe("main")
+    expect(runtime.getOverlay()?.id).toBe("spotify")
+    expect(runtime.getActiveDeckId()).toBe("spotify")
   })
 
   it("goBack within overlay pops the overlay stack", () => {

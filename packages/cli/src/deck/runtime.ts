@@ -202,8 +202,6 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
         if (prev !== undefined) {
           pubSub.publish("runtime:activeDeck", { deckId: prev })
         }
-      } else {
-        setOverlay(null)
       }
       return
     }

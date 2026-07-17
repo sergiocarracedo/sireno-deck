@@ -111,6 +111,7 @@ export interface SetupAddonServicesOptions {
     ReturnType<typeof startWsBridge>,
     "broadcast" | "registerCacheablePoller"
   >
+  readonly isCompact: boolean
   readonly initialDeck?: RuntimeDeck
   readonly signal: AbortSignal
   readonly store: Store
@@ -145,6 +146,7 @@ export const setupAddonServices = (
     executor,
     statePublisher,
     bridge,
+    isCompact,
     initialDeck,
     signal,
     store,
@@ -212,7 +214,7 @@ export const setupAddonServices = (
           hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
         },
         undefined,
-        undefined,
+        isCompact,
         (fullPath) => getAssetByPath(fullPath)?.id,
       )
       bridge.broadcast(msg)
@@ -233,7 +235,7 @@ export const setupAddonServices = (
           hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
         },
         undefined,
-        undefined,
+        isCompact,
         (fullPath) => getAssetByPath(fullPath)?.id,
         runtime.getAvailableOverlayDeckIcon(),
       )
@@ -411,6 +413,19 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
             ? d.trigger.process_name
             : [d.trigger.process_name]
           : undefined
+      const windowNames =
+        d.trigger?.window_name !== undefined
+          ? Array.isArray(d.trigger.window_name)
+            ? d.trigger.window_name
+            : [d.trigger.window_name]
+          : undefined
+      const sharedDeckFields = {
+        isMain: id === "main",
+        ...(processNames !== undefined ? { processNames } : {}),
+        ...(windowNames !== undefined ? { windowNames } : {}),
+        ...(d.autoShow === true ? { autoShow: true } : {}),
+        ...(d.icon !== undefined ? { icon: d.icon } : {}),
+      }
       if (d.paginated === true && runtimeButtons.length > 0) {
         const pages = paginateDeck({
           baseDeckId: id,
@@ -443,9 +458,8 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
           return {
             id: p.deckId,
             name: d.name ?? id,
-            isMain: id === "main",
             buttons: mappedButtons,
-            processNames,
+            ...sharedDeckFields,
           }
         })
       }
@@ -453,9 +467,8 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
         {
           id,
           name: d.name ?? id,
-          isMain: id === "main",
           buttons: runtimeButtons,
-          processNames,
+          ...sharedDeckFields,
         },
       ]
     },
@@ -643,6 +656,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     emulator: options.emulator === true,
     xdgConfigHome,
   })
+  const isCompact = outputClient.kind === "real"
 
   const addonBundle = await buildAddonBundle()
 
@@ -666,6 +680,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     executor: createActionExecutor({ host: getHostContext() }),
     statePublisher,
     bridge,
+    isCompact,
     resolverOptions,
     ...(mainDeck !== undefined ? { initialDeck: mainDeck } : {}),
     signal: bridgeSignal.signal,
