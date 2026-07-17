@@ -484,6 +484,9 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
   const { runtime, methods, pubSub, store } = createDeckRuntime({
     decks: allDecks,
     logger,
+    ...(config.lock?.buttons !== undefined && config.lock.buttons.length > 0
+      ? { lockConfig: { buttons: config.lock.buttons } }
+      : {}),
   })
 
   return {

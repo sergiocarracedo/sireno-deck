@@ -71,6 +71,21 @@ export interface CreateRuntimeOptions {
   store: Store
   logger: pino.Logger
   getMethods: () => Methods
+  lockConfig?: LockDeckConfig
+}
+
+export interface LockDeckButtonSpec {
+  type: string
+  position?: number
+  config?: unknown
+  actions?: { tap?: string; dbltap?: string; hold?: string }
+  accent?: string
+  background?: string
+  full?: boolean
+}
+
+export interface LockDeckConfig {
+  buttons?: ReadonlyArray<LockDeckButtonSpec>
 }
 
 export interface Runtime {
@@ -101,7 +116,7 @@ export interface Runtime {
 }
 
 export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
-  const { decks, pubSub, store, logger, getMethods } = options
+  const { decks, pubSub, store, logger, getMethods, lockConfig = null } = options
   let gestureListener: GestureListener | null = null
   const mainDeck = decks.find((d) => d.isMain) ?? decks[0]
   if (mainDeck === undefined) {
@@ -158,8 +173,34 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     ],
   })
 
+  const buildUserLockDeck = (
+    buttons: ReadonlyArray<LockDeckButtonSpec>,
+  ): RuntimeDeck => ({
+    id: "lock:deck",
+    name: "Locked",
+    buttons: buttons.map((b, i) => {
+      const button: RuntimeDeck["buttons"][number] = {
+        id: b.position !== undefined ? String(b.position) : `b${i}`,
+        type: b.type,
+        ...(b.config !== undefined ? { config: b.config } : {}),
+        ...(b.actions !== undefined ? { actions: b.actions } : {}),
+        ...(b.position !== undefined ? { position: b.position } : {}),
+        ...(b.accent !== undefined ? { accent: b.accent } : {}),
+        ...(b.background !== undefined ? { background: b.background } : {}),
+        ...(b.full === true ? { full: true } : {}),
+      }
+      return button
+    }),
+  })
+
   const getActiveDeck = (): RuntimeDeck => {
-    if (lockActive) return buildDefaultLockDeck()
+    if (lockActive) {
+      const userButtons = lockConfig?.buttons
+      if (userButtons !== undefined && userButtons.length > 0) {
+        return buildUserLockDeck(userButtons)
+      }
+      return buildDefaultLockDeck()
+    }
     const id = getActiveDeckId()
     const deck = deckById(id)
     if (deck === undefined) throw new Error(`Active deck '${id}' not found`)
