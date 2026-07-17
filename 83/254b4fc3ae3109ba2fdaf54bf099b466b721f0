@@ -1,0 +1,19 @@
+.planning/phases/06-lock-deck/06-03-PLAN-SUMMARY.md
+  s_586986ca02db2f::t_276a89e7e1c7d0 1-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "83254b4fc3ae3109ba2fdaf54bf099b466b721f0",
+  "prompts": {},
+  "sessions": {
+    "s_586986ca02db2f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08ee995cbffedn8iRvToXsQvlX",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
