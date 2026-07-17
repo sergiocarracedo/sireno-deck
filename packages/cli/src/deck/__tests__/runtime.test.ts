@@ -479,6 +479,64 @@ describe("createRuntime with active-app provider", () => {
     await runtime.stopActiveAppPolling()
   })
 
+  it("dismisses current overlay when trigger no longer applies (active-app switches to different overlay)", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "chrome-deck",
+        processNames: ["chrome"],
+        autoShow: true,
+      }),
+      makeDeck({
+        id: "spotify-deck",
+        processNames: ["spotify"],
+        autoShow: false,
+      }),
+    ])
+    const provider = makeFakeProvider({
+      name: "Google Chrome",
+      windowTitle: null,
+      processId: 1,
+    })
+    runtime.setActiveAppProvider(provider)
+    await flush(1_200)
+    expect(runtime.getOverlay()?.id).toBe("chrome-deck")
+    provider.snapshot = { name: "Spotify", windowTitle: null, processId: 2 }
+    await flush(1_500)
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("main")
+    await runtime.stopActiveAppPolling()
+  })
+
+  it("dismisses current overlay when active-app switches to non-matching app", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "chrome-deck",
+        processNames: ["chrome"],
+        autoShow: true,
+      }),
+      makeDeck({
+        id: "spotify-deck",
+        processNames: ["spotify"],
+        autoShow: true,
+      }),
+    ])
+    const provider = makeFakeProvider({
+      name: "Google Chrome",
+      windowTitle: null,
+      processId: 1,
+    })
+    runtime.setActiveAppProvider(provider)
+    await flush(1_200)
+    expect(runtime.getOverlay()?.id).toBe("chrome-deck")
+    provider.snapshot = { name: "Firefox", windowTitle: null, processId: 2 }
+    await flush(1_500)
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("main")
+    await runtime.stopActiveAppPolling()
+  })
+
   it("stopActiveAppPolling stops the provider", async () => {
     const { runtime } = setup([makeDeck({ id: "main", isMain: true })])
     const provider = makeFakeProvider(null)

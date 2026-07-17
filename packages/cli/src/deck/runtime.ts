@@ -494,31 +494,34 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   let pendingOverlayDeckId: string | null = null
 
   const applyOverlay = (deckId: string | null): void => {
-    if (deckId === lastOverlayDeckId) return
     if (deckId !== null && deckById(deckId) === undefined) {
       logger.warn({ deckId }, "active-app: overlay deck not found")
       return
     }
-    if (deckId !== null) {
-      const deck = deckById(deckId)
-      if (deck === undefined) return
+    if (overlayDeckId !== null && deckId !== overlayDeckId) {
       logger.info(
-        { deckId, autoShow: deck.autoShow === true },
-        "active-app: applying overlay",
+        { prevOverlayId: overlayDeckId, newMatch: deckId },
+        "active-app: dismissing previous overlay (trigger no longer applies)",
       )
-      if (deck.autoShow !== true) {
-        lastOverlayDeckId = deckId
-        return
-      }
-      lastOverlayDeckId = deckId
-      setOverlay(deckId, { source: "autoShow" })
-      return
-    }
-    logger.info({ prevOverlayId: overlayDeckId }, "active-app: clearing overlay")
-    lastOverlayDeckId = deckId
-    if (overlayDeckId !== null) {
       setOverlay(null, { source: "autoShow" })
     }
+    if (deckId === null) {
+      lastOverlayDeckId = null
+      return
+    }
+    if (deckId === lastOverlayDeckId) return
+    const deck = deckById(deckId)
+    if (deck === undefined) return
+    logger.info(
+      { deckId, autoShow: deck.autoShow === true },
+      "active-app: applying overlay",
+    )
+    if (deck.autoShow !== true) {
+      lastOverlayDeckId = deckId
+      return
+    }
+    lastOverlayDeckId = deckId
+    setOverlay(deckId, { source: "autoShow" })
   }
 
   const computeOverlayFor = (snapshot: {
