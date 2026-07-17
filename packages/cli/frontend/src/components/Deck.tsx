@@ -165,7 +165,7 @@ const DeckButtonCell = ({
           onPointerLeave={handlePointerLeave}
         >
           <SplitActionSurface
-            primary={renderSystemButton("core:back")}
+            primary={renderSystemButton(button.type)}
             secondary={renderSystemButton("core:overlay-toggle", overlayIcon)}
           />
         </ButtonFrame>
@@ -276,7 +276,9 @@ export const Deck = ({ deck, children }: DeckProps) => {
         const col = (position % columns) + 1
         const row = Math.floor(position / columns) + 1
         const splitAction =
-          splitAtN1 && position === n1Position && button.type === "core:back"
+          splitAtN1 &&
+          position === n1Position &&
+          (button.type === "core:back" || button.type === "core:settings-entry")
         return (
           <DeckButtonCell
             key={button.id}

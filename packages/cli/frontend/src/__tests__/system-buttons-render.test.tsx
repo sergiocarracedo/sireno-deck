@@ -98,7 +98,21 @@ describe("Deck with system buttons", () => {
     ])
   })
 
-  it("renders a SplitActionSurface at the n-1 slot when overlay is available", () => {
+  it("renders a SplitActionSurface at the n-1 slot for main deck when overlay is available", () => {
+    const deck = {
+      id: "main",
+      name: "Main",
+      hasOverlayDeckAvailable: true,
+      buttons: [{ id: "14", type: "core:settings-entry", config: {} }],
+    }
+    const { container } = render(<Deck deck={deck} />)
+    const cell = container.querySelector('[data-split-action="true"]')
+    expect(cell).not.toBeNull()
+    expect(screen.getByText("Settings")).toBeTruthy()
+    expect(screen.getByText("Overlay")).toBeTruthy()
+  })
+
+  it("renders a SplitActionSurface at the n-1 slot for sub-deck when overlay is available", () => {
     const deck = {
       id: "sub",
       name: "Sub",
