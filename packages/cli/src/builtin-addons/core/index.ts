@@ -37,26 +37,41 @@ export const manifest: AddonManifestV1 = {
     },
   },
   decks: {
-    "core:lock": ({ config }) => {
-      const userButtons = (config as { lockButtons?: ReadonlyArray<Record<string, unknown>> })
-        .lockButtons
-      if (userButtons !== undefined && userButtons.length > 0) {
-        return {
-          name: "Lock",
-          buttons: userButtons.map((b, i) => ({
-            id: b.position !== undefined ? String(b.position) : `b${i}`,
-            ...b,
-          })) as unknown[],
+    "core:lock": {
+      createDecks: ({ config }) => {
+        const userButtons = (
+          config as { lockButtons?: ReadonlyArray<Record<string, unknown>> }
+        ).lockButtons
+        if (userButtons !== undefined && userButtons.length > 0) {
+          return {
+            "core:lock": {
+              name: "Lock",
+              buttons: userButtons.map((b, i) => ({
+                id: b.position !== undefined ? String(b.position) : `b${i}`,
+                ...b,
+              })),
+            },
+          }
         }
-      }
-      return {
-        name: "Lock",
-        buttons: [
-          { id: "0", type: "date-time:locked-time-tile", config: { slot: "hour" } },
-          { id: "1", type: "date-time:locked-time-tile", config: { slot: "separator" } },
-          { id: "2", type: "date-time:locked-time-tile", config: { slot: "minute" } },
-        ],
-      }
+        return {
+          "core:lock": {
+            name: "Lock",
+            buttons: [
+              { id: "0", type: "date-time:locked-time-tile", config: { slot: "hour" } },
+              {
+                id: "1",
+                type: "date-time:locked-time-tile",
+                config: { slot: "separator" },
+              },
+              {
+                id: "2",
+                type: "date-time:locked-time-tile",
+                config: { slot: "minute" },
+              },
+            ],
+          },
+        }
+      },
     },
   },
 }
@@ -69,9 +84,9 @@ export {
   changeDeckBackend as changeDeckButtonBackend,
   changeDeckFrontend as ChangeDeckFrontend,
   toggleBackend as toggleButtonBackend,
-  toggleFrontend as ToggleFrontend,
+  toggleFrontend as ToggleButtonFrontend,
   pageNavBackend as pageNavButtonBackend,
   pageNavFrontend as PageNavFrontend,
   mediaSampleBackend as mediaSampleButtonBackend,
-  mediaSampleFrontend as MediaSampleFrontend,
+  mediaSampleFrontend as MediaSampleButtonFrontend,
 }
