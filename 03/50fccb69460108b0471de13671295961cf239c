@@ -1,0 +1,21 @@
+.planning/ROADMAP.md
+  s_76ace8e8cfb010::t_42ec97962286fe 167,171-180,184-190
+.planning/phases/05-overlay-decks/05-VERIFICATION.md
+  s_76ace8e8cfb010::t_fd11fbd58d7c70 1-85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "0350fccb69460108b0471de13671295961cf239c",
+  "prompts": {},
+  "sessions": {
+    "s_76ace8e8cfb010": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_090b3e67cffeM1RGgjTp66fRBZ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
