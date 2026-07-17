@@ -3,13 +3,13 @@ status: testing
 phase: 06-lock-deck
 source: 06-{01,02,03}-PLAN-SUMMARY.md
 started: 2026-07-17T20:35:00Z
-updated: 2026-07-17T20:35:00Z
+updated: 2026-07-17T23:21:00Z
 ---
 
 ## Current Test
 
-number: 1
-name: Lock config schema accepts the documented shape
+number: 2
+name: Default 3-button HH:MM deck on lock with no user config
 expected: |
   A config with `lock: { buttons: [...] }` validates without error against the new `LockSchema`. A config with `lock:` omitted validates (optional). A config with `lock.buttons: []` validates but falls back to default. An unknown field on `lock:` is rejected (.strict()).
 awaiting: user response
@@ -18,7 +18,7 @@ awaiting: user response
 
 ### 1. Lock config schema accepts the documented shape
 expected: Run `pnpm --filter @sireno-deck/cli exec vitest run config/__tests__/validation.test.ts` — fixtures with `lock: { buttons: [...] }` and `lock: {}` pass; `lock: { foo: 1 }` is rejected.
-result: pending
+result: pass
 
 ### 2. Default 3-button HH:MM deck on lock with no user config
 expected: With no `lock:` block, when the OS locks, the active deck is `lock:deck` with exactly 3 buttons of type `date-time:locked-time-tile` with slots `hour`, `separator`, `minute`. Test: `lock-deck.test.ts:uses default 3-button time deck when lockConfig.buttons is absent`.
@@ -79,9 +79,9 @@ result: pending
 ## Summary
 
 total: 15
-passed: 0
+passed: 1
 issues: 0
-pending: 15
+pending: 14
 skipped: 0
 
 ## Gaps
