@@ -2,7 +2,7 @@
 
 **Project:** sireno-deck-2
 **Active branch:** chore/nuke-planning-reinit
-**Last activity:** 2026-07-14 - Completed quick task 002: launcher label overlay + paste diagnostic logging
+**Last activity:** 2026-07-17 - Discussed phase 5 (overlay decks), CONTEXT.md captured
 
 ## Quick Tasks Completed
 
