@@ -2,7 +2,7 @@
 
 **Project:** sireno-deck-2
 **Active branch:** chore/nuke-planning-reinit
-**Last activity:** 2026-07-17 - Phase 5 PLAN-2 executed (frontend gestures + back-hold + icon plumbing)
+**Last activity:** 2026-07-17 - Phase 5 UAT fix: n-1 system buttons forward dbl-tap/hold to runtime (commit ccc548f)
 
 ## Quick Tasks Completed
 
@@ -17,4 +17,5 @@
 - Phase 5 added: Overlay Decks
   - PLAN-1 (Wave 1) complete: backend runtime — matcher AND, autoShow gate, per-overlay nav stack, smoke test
   - PLAN-2 (Wave 2) complete: frontend SplitSurface gestures (tap/dbl-tap/hold), icon override, back-hold → mainDeck
-  - All plans complete; pending verifier pass.
+  - UAT fixes committed: getActiveDeck overlay-aware, React hooks order, main deck n-1 SplitSurface, GNOME Wayland provider, n-1 dbl-tap/hold forwarding
+  - Pending user UAT: restart daemon and verify main deck n-1 overlay-toggle dbl-tap switches to overlay deck
