@@ -4,6 +4,7 @@ import type { PubSub } from "@/core/pub-sub"
 import type { Store } from "@/core/store"
 import type { GestureKind } from "@/core/gesture-state"
 import type { ActiveAppProvider } from "@/system/providers/active-app"
+import type { SessionProvider, SessionState } from "@/system/providers/session"
 import { getRequiredCapability } from "@/system/requirements"
 import { compileDeckMatcher } from "@/system/glob-match"
 import type { Methods } from "./methods"
@@ -89,6 +90,8 @@ export interface Runtime {
   setGestureListener(listener: GestureListener | null): void
   invalidate(): void
   setActiveAppProvider(provider: ActiveAppProviderLike): void
+  setSessionProvider(provider: SessionProvider): void
+  isLockActive(): boolean
   stopActiveAppPolling(): Promise<void>
   navStackDepth(): number
   hasOverlayDeckAvailable(): boolean
@@ -113,6 +116,10 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   let overlayPreviousActiveId: string | null = null
   const overlayNavStacks = new Map<string, string[]>()
   let brightness = 50
+  let lockActive = false
+  let preLockActiveDeckId: string | null = null
+  let preLockOverlayDeckId: string | null = null
+  let sessionUnsubscribe: (() => void) | null = null
 
   const deckById = (id: string): RuntimeDeck | undefined =>
     decks.find((d) => d.id === id)
@@ -145,6 +152,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   }
 
   const getActiveDeckId = (): string => {
+    if (lockActive) return "lock:deck"
     if (overlayDeckId !== null) {
       const stack = overlayNavStacks.get(overlayDeckId)
       if (stack !== undefined && stack.length > 0) {
@@ -600,6 +608,34 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     startActiveAppLoop(provider)
   }
 
+  const setSessionProvider = (provider: SessionProvider): void => {
+    if (sessionUnsubscribe !== null) {
+      sessionUnsubscribe()
+      sessionUnsubscribe = null
+    }
+    const handle = (state: SessionState): void => {
+      if (state === "locked" && !lockActive) {
+        preLockActiveDeckId = getActiveDeckId()
+        preLockOverlayDeckId = overlayDeckId
+        lockActive = true
+        logger.info({ preLockActiveDeckId, preLockOverlayDeckId }, "runtime: lock active")
+        pubSub.publish("runtime:invalidate", undefined)
+        return
+      }
+      if (state === "unlocked" && lockActive) {
+        lockActive = false
+        const restoreId = preLockActiveDeckId ?? mainDeck.id
+        preLockActiveDeckId = null
+        preLockOverlayDeckId = null
+        if (overlayDeckId !== null) setOverlay(null)
+        logger.info({ restoreId }, "runtime: lock cleared, restoring")
+        navigateToDeck(restoreId, { addToHistory: false })
+        pubSub.publish("runtime:invalidate", undefined)
+      }
+    }
+    sessionUnsubscribe = provider.subscribe(handle)
+  }
+
   const stopActiveAppPolling = async (): Promise<void> => {
     stopActiveAppLoop()
     if (activeAppProvider !== null) {
@@ -626,6 +662,8 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     setGestureListener,
     invalidate,
     setActiveAppProvider,
+    setSessionProvider,
+    isLockActive: () => lockActive,
     stopActiveAppPolling,
     navStackDepth: () => navStack.length,
     hasOverlayDeckAvailable: () =>
