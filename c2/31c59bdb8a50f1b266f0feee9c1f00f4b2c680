@@ -1,0 +1,36 @@
+packages/cli/src/system/providers/active-app/linux.ts
+  s_76ace8e8cfb010::t_08ded98ce1f270 3,9-12
+  s_76ace8e8cfb010::t_b704adc0b3f9b7 149
+  s_76ace8e8cfb010::t_1739e82d749c64 19
+  s_76ace8e8cfb010::t_fbf286fcbf8c45 148,150-161
+packages/cli/src/system/providers/shared.ts
+  s_76ace8e8cfb010::t_0c359627e10c90 29
+packages/cli/src/system/providers/active-app/__tests__/wayland-gnome.test.ts
+  s_76ace8e8cfb010::t_66f4f64c094ca0 1-169
+packages/cli/src/system/providers/active-app/wayland-gnome.ts
+  s_76ace8e8cfb010::t_313e14c2b50399 1-2
+  s_76ace8e8cfb010::t_c4528be7de6c25 192-196
+  s_76ace8e8cfb010::t_9c3705b9f3b638 64-77
+  s_76ace8e8cfb010::t_0196451b270392 3-63,78-191,197-210
+packages/cli/src/system/providers/active-app/__tests__/linux.test.ts
+  s_76ace8e8cfb010::t_b08c7262eda6f5 205
+  s_76ace8e8cfb010::t_4d2c0b2a5d7eba 176
+  s_76ace8e8cfb010::t_3d17d50da41211 80
+  s_76ace8e8cfb010::t_4480452474673f 127
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "c231c59bdb8a50f1b266f0feee9c1f00f4b2c680",
+  "prompts": {},
+  "sessions": {
+    "s_76ace8e8cfb010": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_090b3e67cffeM1RGgjTp66fRBZ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
