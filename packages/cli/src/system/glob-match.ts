@@ -44,22 +44,31 @@ export const matchesPattern = (name: string, pattern: string): boolean => {
   return compileOne(pattern).test(name)
 }
 
-export const compileDeckMatcher = (
-  patterns: ReadonlyArray<string>,
-): ((snapshot: ActiveAppSnapshot) => boolean) => {
-  if (patterns.length === 0) return () => false
-  const compiled = patterns.map(compileOne)
-  return (snapshot: ActiveAppSnapshot): boolean => {
-    const candidates: string[] = []
-    if (snapshot.name.length > 0) candidates.push(snapshot.name)
-    if (snapshot.windowTitle !== null && snapshot.windowTitle.length > 0) {
-      candidates.push(snapshot.windowTitle)
-    }
-    for (const re of compiled) {
-      for (const c of candidates) {
-        if (re.test(c)) return true
-      }
-    }
-    return false
+export interface DeckMatcherFields {
+  processNames?: ReadonlyArray<string>
+  windowNames?: ReadonlyArray<string>
+}
+
+const matchGroup = (
+  compiled: ReadonlyArray<RegExp>,
+  value: string,
+): boolean => {
+  if (compiled.length === 0) return true
+  for (const re of compiled) {
+    if (re.test(value)) return true
   }
+  return false
+}
+
+export const compileDeckMatcher = (
+  fields: DeckMatcherFields,
+): ((snapshot: ActiveAppSnapshot) => boolean) => {
+  const processCompiled = (fields.processNames ?? []).map(compileOne)
+  const windowCompiled = (fields.windowNames ?? []).map(compileOne)
+  if (processCompiled.length === 0 && windowCompiled.length === 0) {
+    return () => false
+  }
+  return (snapshot: ActiveAppSnapshot): boolean =>
+    matchGroup(processCompiled, snapshot.name) &&
+    matchGroup(windowCompiled, snapshot.windowTitle ?? "")
 }

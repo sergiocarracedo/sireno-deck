@@ -373,14 +373,27 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   const overlayDecks = (): Array<{
     deck: RuntimeDeck
     matcher: ReturnType<typeof compileDeckMatcher>
+    specificity: number
   }> => {
     const result: Array<{
       deck: RuntimeDeck
       matcher: ReturnType<typeof compileDeckMatcher>
+      specificity: number
     }> = []
     for (const deck of decks) {
-      if (!deck.processNames || deck.processNames.length === 0) continue
-      result.push({ deck, matcher: compileDeckMatcher(deck.processNames) })
+      const hasProcess =
+        deck.processNames !== undefined && deck.processNames.length > 0
+      const hasWindow =
+        deck.windowNames !== undefined && deck.windowNames.length > 0
+      if (!hasProcess && !hasWindow) continue
+      result.push({
+        deck,
+        matcher: compileDeckMatcher({
+          processNames: deck.processNames,
+          windowNames: deck.windowNames,
+        }),
+        specificity: (hasProcess ? 1 : 0) + (hasWindow ? 1 : 0),
+      })
     }
     return result
   }
@@ -419,10 +432,16 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     windowTitle: string | null
     processId: number | null
   }): string | null => {
-    for (const { deck, matcher } of overlayDecks()) {
-      if (matcher(snapshot)) return deck.id
+    let bestId: string | null = null
+    let bestSpecificity = -1
+    for (const { deck, matcher, specificity } of overlayDecks()) {
+      if (!matcher(snapshot)) continue
+      if (specificity > bestSpecificity) {
+        bestId = deck.id
+        bestSpecificity = specificity
+      }
     }
-    return null
+    return bestId
   }
 
   const scheduleOverlay = (deckId: string | null): void => {
