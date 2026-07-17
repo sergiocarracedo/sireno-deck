@@ -411,10 +411,14 @@ describe("createRuntime with active-app provider", () => {
     await runtime.stopActiveAppPolling()
   })
 
-  it("overlay switches to deck whose processNames match", async () => {
+  it("overlay switches to deck whose processNames match (autoShow=true)", async () => {
     const { runtime } = setup([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "chrome-deck", processNames: ["chrome"] }),
+      makeDeck({
+        id: "chrome-deck",
+        processNames: ["chrome"],
+        autoShow: true,
+      }),
     ])
     const provider = makeFakeProvider({
       name: "Google Chrome",
@@ -427,10 +431,14 @@ describe("createRuntime with active-app provider", () => {
     await runtime.stopActiveAppPolling()
   })
 
-  it("overlay clears when active-app no longer matches", async () => {
+  it("overlay clears when active-app no longer matches (autoShow=true)", async () => {
     const { runtime } = setup([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "chrome-deck", processNames: ["chrome"] }),
+      makeDeck({
+        id: "chrome-deck",
+        processNames: ["chrome"],
+        autoShow: true,
+      }),
     ])
     const provider = makeFakeProvider({
       name: "Google Chrome",
@@ -446,11 +454,19 @@ describe("createRuntime with active-app provider", () => {
     await runtime.stopActiveAppPolling()
   })
 
-  it("first matching deck wins when multiple match", async () => {
+  it("first matching deck wins when multiple match (autoShow=true)", async () => {
     const { runtime } = setup([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "first-match", processNames: ["chrome", "*firefox*"] }),
-      makeDeck({ id: "second-match", processNames: ["*chrome*"] }),
+      makeDeck({
+        id: "first-match",
+        processNames: ["chrome", "*firefox*"],
+        autoShow: true,
+      }),
+      makeDeck({
+        id: "second-match",
+        processNames: ["*chrome*"],
+        autoShow: true,
+      }),
     ])
     const provider = makeFakeProvider({
       name: "Google Chrome",
@@ -513,6 +529,108 @@ describe("createRuntime with active-app provider", () => {
     await flush(1_300)
     expect(runtime.hasOverlayDeckAvailable()).toBe(false)
     await runtime.stopActiveAppPolling()
+  })
+
+  it("autoShow=false does not flip the layer but marks the deck available", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "chrome-deck",
+        processNames: ["chrome"],
+        autoShow: false,
+      }),
+    ])
+    const provider = makeFakeProvider({
+      name: "Google Chrome",
+      windowTitle: null,
+      processId: 1,
+    })
+    runtime.setActiveAppProvider(provider)
+    await flush(1_200)
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.hasOverlayDeckAvailable()).toBe(true)
+    await runtime.stopActiveAppPolling()
+  })
+
+  it("autoShow=false: getActiveDeckId stays on main deck", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "chrome-deck",
+        processNames: ["chrome"],
+        autoShow: false,
+      }),
+    ])
+    const provider = makeFakeProvider({
+      name: "Google Chrome",
+      windowTitle: null,
+      processId: 1,
+    })
+    runtime.setActiveAppProvider(provider)
+    await flush(1_200)
+    expect(runtime.getActiveDeckId()).toBe("main")
+    await runtime.stopActiveAppPolling()
+  })
+
+  it("runtime:overlay event includes source=autoShow when autoShow=true flips the layer", async () => {
+    const { runtime, pubSub } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "chrome-deck",
+        processNames: ["chrome"],
+        autoShow: true,
+      }),
+    ])
+    const events: unknown[] = []
+    pubSub.subscribe("runtime:overlay", (p) => events.push(p))
+    const provider = makeFakeProvider({
+      name: "Google Chrome",
+      windowTitle: null,
+      processId: 1,
+    })
+    runtime.setActiveAppProvider(provider)
+    await flush(1_200)
+    expect(events).toContainEqual({
+      deckId: "chrome-deck",
+      source: "autoShow",
+    })
+    await runtime.stopActiveAppPolling()
+  })
+
+  it("runtime:overlay-available event fires when active-app match changes", async () => {
+    const { runtime, pubSub } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "chrome-deck",
+        processNames: ["chrome"],
+        autoShow: false,
+      }),
+    ])
+    const events: unknown[] = []
+    pubSub.subscribe("runtime:overlay-available", (p) => events.push(p))
+    const provider = makeFakeProvider({
+      name: "Google Chrome",
+      windowTitle: null,
+      processId: 1,
+    })
+    runtime.setActiveAppProvider(provider)
+    await flush(1_200)
+    expect(events).toContainEqual({ deckId: "chrome-deck" })
+    provider.snapshot = { name: "Firefox", windowTitle: null, processId: 2 }
+    await flush(1_300)
+    expect(events).toContainEqual({ deckId: null })
+    await runtime.stopActiveAppPolling()
+  })
+
+  it("setOverlay (manual) publishes runtime:overlay without source field", () => {
+    const { runtime, pubSub } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "spotify", isOverlay: true }),
+    ])
+    const events: unknown[] = []
+    pubSub.subscribe("runtime:overlay", (p) => events.push(p))
+    runtime.setOverlay("spotify")
+    expect(events).toContainEqual({ deckId: "spotify" })
   })
 })
 

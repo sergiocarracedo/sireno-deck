@@ -76,7 +76,7 @@ export interface Runtime {
   getActiveDeckId(): string
   navigateToDeck(id: string, options?: { addToHistory?: boolean }): void
   goBack(): void
-  setOverlay(deckId: string | null): void
+  setOverlay(deckId: string | null, opts?: { source?: "autoShow" | "manual" }): void
   getOverlay(): RuntimeDeck | null
   registerButtonHandler(buttonId: string, handler: RuntimeButtonHandler): void
   mountAddonButtons(
@@ -107,6 +107,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   const navStack: string[] = [mainDeck.id]
   let transientDeckId: string | null = null
   let overlayDeckId: string | null = null
+  let availableOverlayDeckId: string | null = null
   let overlayPreviousActiveId: string | null = null
   let brightness = 50
 
@@ -200,7 +201,10 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     pubSub.publish("runtime:activeDeck", { deckId: prev })
   }
 
-  const setOverlay = (deckId: string | null): void => {
+  const setOverlay = (
+    deckId: string | null,
+    opts?: { source?: "autoShow" | "manual" },
+  ): void => {
     if (deckId !== null && deckById(deckId) === undefined) {
       logger.warn({ deckId }, "setOverlay: deck not found")
       return
@@ -209,7 +213,10 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     const previousOverlayId = overlayDeckId
     overlayPreviousActiveId = previousActiveId
     overlayDeckId = deckId
-    pubSub.publish("runtime:overlay", { deckId })
+    pubSub.publish(
+      "runtime:overlay",
+      opts?.source !== undefined ? { deckId, source: opts.source } : { deckId },
+    )
     if (deckId !== null) {
       if (previousOverlayId !== null) {
         pubSub.publish("runtime:deck-inactive", { deckId: previousOverlayId })
@@ -410,20 +417,20 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       logger.warn({ deckId }, "active-app: overlay deck not found")
       return
     }
-    const previousOverlayId = overlayDeckId
-    lastOverlayDeckId = deckId
-    overlayDeckId = deckId
-    pubSub.publish("runtime:overlay", { deckId })
     if (deckId !== null) {
-      pubSub.publish("runtime:deck-inactive", {
-        deckId: previousOverlayId ?? mainDeck.id,
-      })
-      pubSub.publish("runtime:activeDeck", { deckId })
-    } else {
-      if (previousOverlayId !== null) {
-        pubSub.publish("runtime:deck-inactive", { deckId: previousOverlayId })
+      const deck = deckById(deckId)
+      if (deck === undefined) return
+      if (deck.autoShow !== true) {
+        lastOverlayDeckId = deckId
+        return
       }
-      pubSub.publish("runtime:activeDeck", { deckId: mainDeck.id })
+      lastOverlayDeckId = deckId
+      setOverlay(deckId, { source: "autoShow" })
+      return
+    }
+    lastOverlayDeckId = deckId
+    if (overlayDeckId !== null) {
+      setOverlay(null, { source: "autoShow" })
     }
   }
 
@@ -440,6 +447,10 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
         bestId = deck.id
         bestSpecificity = specificity
       }
+    }
+    if (availableOverlayDeckId !== bestId) {
+      availableOverlayDeckId = bestId
+      pubSub.publish("runtime:overlay-available", { deckId: bestId })
     }
     return bestId
   }
@@ -514,7 +525,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     stopActiveAppPolling,
     navStackDepth: () => navStack.length,
     hasOverlayDeckAvailable: () =>
-      overlayDeckId !== null || pendingOverlayDeckId !== null,
+      availableOverlayDeckId !== null || pendingOverlayDeckId !== null,
     getBrightness: () => brightness,
     setBrightness: (value: number) => {
       const clamped = Math.max(10, Math.min(100, Math.round(value)))
