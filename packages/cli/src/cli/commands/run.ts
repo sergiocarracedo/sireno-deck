@@ -478,15 +478,18 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
       ? decks
       : [{ id: "main", name: "Main", isMain: true, buttons: [] }]
   const allDecks = injectSystemButtons(
-    materializeAddonDecks(registry, effectiveDecks, logger, 15),
+    materializeAddonDecks(
+      registry,
+      effectiveDecks,
+      logger,
+      15,
+      config.lock?.buttons,
+    ),
     15,
   )
   const { runtime, methods, pubSub, store } = createDeckRuntime({
     decks: allDecks,
     logger,
-    ...(config.lock?.buttons !== undefined && config.lock.buttons.length > 0
-      ? { lockConfig: { buttons: config.lock.buttons } }
-      : {}),
   })
 
   return {

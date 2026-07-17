@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { createPubSub } from '@/core/pub-sub'
 import { createStore } from '@/core/store'
@@ -7,11 +7,7 @@ import { createLogger } from '@/util/logger'
 import { createActionExecutor } from '@/action/executor'
 import { getHostContext } from '../host-context'
 import { createMethods } from '../methods'
-import {
-  createRuntime,
-  type LockDeckConfig,
-  type RuntimeDeck,
-} from '../runtime'
+import { createRuntime, type RuntimeDeck } from '../runtime'
 
 const silentLogger = () => createLogger({ level: 'silent' })
 
@@ -22,10 +18,33 @@ const makeDeck = (overrides: Partial<RuntimeDeck> = {}): RuntimeDeck => ({
   ...overrides,
 })
 
-const setup = (
-  decks: ReadonlyArray<RuntimeDeck>,
-  lockConfig?: LockDeckConfig,
-) => {
+const coreLockDeckWith = (
+  buttons: ReadonlyArray<{
+    type: string
+    position?: number
+    config?: unknown
+    actions?: { tap?: string; dbltap?: string; hold?: string }
+  }>,
+): RuntimeDeck => ({
+  id: 'core:lock',
+  name: 'Lock',
+  buttons: buttons.map((b, i) => ({
+    id: b.position !== undefined ? String(b.position) : `b${i}`,
+    ...(b.position !== undefined ? { position: b.position } : {}),
+    type: b.type,
+    ...(b.config !== undefined ? { config: b.config } : {}),
+    ...(b.actions !== undefined ? { actions: b.actions } : {}),
+  })),
+})
+
+const defaultCoreLockDeck = (): RuntimeDeck =>
+  coreLockDeckWith([
+    { type: 'date-time:locked-time-tile', position: 0, config: { slot: 'hour' } },
+    { type: 'date-time:locked-time-tile', position: 1, config: { slot: 'separator' } },
+    { type: 'date-time:locked-time-tile', position: 2, config: { slot: 'minute' } },
+  ])
+
+const setup = (decks: ReadonlyArray<RuntimeDeck>) => {
   const pubSub = createPubSub()
   const store = createStore()
   const executor = createActionExecutor({ host: getHostContext() })
@@ -37,7 +56,6 @@ const setup = (
     store,
     logger: silentLogger(),
     getMethods: () => methodsRef.current!,
-    ...(lockConfig !== undefined ? { lockConfig } : {}),
   })
   const methods = createMethods({
     runtime,
@@ -70,11 +88,12 @@ const fakeSessionProvider = () => {
   }
 }
 
-describe('lock deck — user-defined buttons (Phase 6 Plan 2)', () => {
-  describe('getActiveDeck returns user-defined lock deck when configured', () => {
-    it('uses default 3-button time deck when lockConfig.buttons is absent', async () => {
-      const { runtime, pubSub, store } = setup([
+describe('lock deck — addon factory output (Phase 6)', () => {
+  describe('getActiveDeck returns the registered core:lock deck', () => {
+    it('uses the default 3-button deck when no user config', () => {
+      const { runtime } = setup([
         makeDeck({ id: 'main', isMain: true, buttons: [] }),
+        defaultCoreLockDeck(),
       ])
       const session = fakeSessionProvider()
       runtime.setSessionProvider(session)
@@ -82,84 +101,39 @@ describe('lock deck — user-defined buttons (Phase 6 Plan 2)', () => {
       const deck = runtime.getActiveDeck()
       expect(deck.id).toBe('core:lock')
       expect(deck.buttons).toHaveLength(3)
-      expect(
-        deck.buttons.every((b) => b.type === 'date-time:locked-time-tile'),
-      ).toBe(true)
-      session.emit('unlocked')
-      void pubSub
-      void store
+      expect(deck.buttons.every((b) => b.type === 'date-time:locked-time-tile')).toBe(
+        true,
+      )
     })
 
-    it('uses user-defined buttons when lockConfig.buttons is non-empty', () => {
-      const lockConfig: LockDeckConfig = {
-        buttons: [
-          {
-            type: 'core:change-deck',
-            position: 0,
-            config: { deck: 'main' },
-          },
-          {
-            type: 'core:action',
-            position: 1,
-            config: { command: 'xdotool key ctrl+l' },
-          },
-        ],
-      }
-      const { runtime } = setup(
-        [makeDeck({ id: 'main', isMain: true, buttons: [] })],
-        lockConfig,
-      )
+    it('uses user-defined buttons when core:lock was registered with them', () => {
+      const userLockDeck = coreLockDeckWith([
+        { type: 'core:change-deck', position: 0, config: { deck: 'main' } },
+        { type: 'core:action', position: 1, config: { command: 'xdotool key ctrl+l' } },
+      ])
+      const { runtime } = setup([
+        makeDeck({ id: 'main', isMain: true, buttons: [] }),
+        userLockDeck,
+      ])
       const session = fakeSessionProvider()
       runtime.setSessionProvider(session)
       session.emit('locked')
       const deck = runtime.getActiveDeck()
-      expect(deck.id).toBe('core:lock')
       expect(deck.buttons).toHaveLength(2)
       expect(deck.buttons[0]?.type).toBe('core:change-deck')
       expect(deck.buttons[1]?.type).toBe('core:action')
-    })
-
-    it('falls back to default deck when lockConfig.buttons is empty array', () => {
-      const { runtime } = setup(
-        [makeDeck({ id: 'main', isMain: true, buttons: [] })],
-        { buttons: [] },
-      )
-      const session = fakeSessionProvider()
-      runtime.setSessionProvider(session)
-      session.emit('locked')
-      const deck = runtime.getActiveDeck()
-      expect(deck.buttons).toHaveLength(3)
     })
   })
 
   describe('lock-mode gesture suppression in invokeAction', () => {
     it('suppresses non-folder actions on lock deck', async () => {
       const dispatch = vi.fn(async () => undefined)
-      const { runtime, methods } = setup(
-        [
-          makeDeck({
-            id: 'main',
-            isMain: true,
-            buttons: [
-              {
-                id: 'b1',
-                type: 'core:action',
-                actions: { tap: 'paste://test' },
-              },
-            ],
-          }),
-        ],
-        {
-          buttons: [
-            {
-              type: 'core:action',
-              position: 0,
-              actions: { tap: 'paste://test' },
-            },
-          ],
-        },
-      )
-      void methods
+      const { runtime, methods } = setup([
+        makeDeck({ id: 'main', isMain: true, buttons: [] }),
+        coreLockDeckWith([
+          { type: 'core:action', position: 0, actions: { tap: 'paste://test' } },
+        ]),
+      ])
       methods.dispatch = dispatch
       const session = fakeSessionProvider()
       runtime.setSessionProvider(session)
@@ -171,21 +145,13 @@ describe('lock deck — user-defined buttons (Phase 6 Plan 2)', () => {
 
     it('folder-nav button (core:change-deck) escapes lock and dispatches', async () => {
       const dispatch = vi.fn(async () => undefined)
-      const { runtime, methods } = setup(
-        [
-          makeDeck({ id: 'main', isMain: true, buttons: [] }),
-          makeDeck({ id: 'system', buttons: [] }),
-        ],
-        {
-          buttons: [
-            {
-              type: 'core:change-deck',
-              position: 0,
-              config: { deck: 'system' },
-            },
-          ],
-        },
-      )
+      const { runtime, methods } = setup([
+        makeDeck({ id: 'main', isMain: true, buttons: [] }),
+        makeDeck({ id: 'system', buttons: [] }),
+        coreLockDeckWith([
+          { type: 'core:change-deck', position: 0, config: { deck: 'system' } },
+        ]),
+      ])
       methods.dispatch = dispatch
       const session = fakeSessionProvider()
       runtime.setSessionProvider(session)
@@ -202,12 +168,10 @@ describe('lock deck — user-defined buttons (Phase 6 Plan 2)', () => {
 
     it('non-folder-nav button (core:toggle) does NOT escape lock', async () => {
       const dispatch = vi.fn(async () => undefined)
-      const { runtime, methods } = setup(
-        [makeDeck({ id: 'main', isMain: true, buttons: [] })],
-        {
-          buttons: [{ type: 'core:toggle', position: 0 }],
-        },
-      )
+      const { runtime, methods } = setup([
+        makeDeck({ id: 'main', isMain: true, buttons: [] }),
+        coreLockDeckWith([{ type: 'core:toggle', position: 0 }]),
+      ])
       methods.dispatch = dispatch
       const session = fakeSessionProvider()
       runtime.setSessionProvider(session)
@@ -220,21 +184,13 @@ describe('lock deck — user-defined buttons (Phase 6 Plan 2)', () => {
 
   describe('idempotent unlock handler', () => {
     it('OS unlock after folder-escape is a no-op', async () => {
-      const { runtime } = setup(
-        [
-          makeDeck({ id: 'main', isMain: true, buttons: [] }),
-          makeDeck({ id: 'system', buttons: [] }),
-        ],
-        {
-          buttons: [
-            {
-              type: 'core:change-deck',
-              position: 0,
-              config: { deck: 'system' },
-            },
-          ],
-        },
-      )
+      const { runtime } = setup([
+        makeDeck({ id: 'main', isMain: true, buttons: [] }),
+        makeDeck({ id: 'system', buttons: [] }),
+        coreLockDeckWith([
+          { type: 'core:change-deck', position: 0, config: { deck: 'system' } },
+        ]),
+      ])
       const session = fakeSessionProvider()
       runtime.setSessionProvider(session)
       session.emit('locked')
@@ -255,6 +211,7 @@ describe('lock deck — user-defined buttons (Phase 6 Plan 2)', () => {
     it('publishes on lock-entry with reason=session-locked', () => {
       const { runtime, pubSub } = setup([
         makeDeck({ id: 'main', isMain: true, buttons: [] }),
+        defaultCoreLockDeck(),
       ])
       const events: unknown[] = []
       pubSub.subscribe<{ active: boolean; reason: string }>(
@@ -273,6 +230,7 @@ describe('lock deck — user-defined buttons (Phase 6 Plan 2)', () => {
     it('publishes on unlock with reason=session-unlocked', () => {
       const { runtime, pubSub } = setup([
         makeDeck({ id: 'main', isMain: true, buttons: [] }),
+        defaultCoreLockDeck(),
       ])
       const events: unknown[] = []
       pubSub.subscribe<{ active: boolean; reason: string }>(
@@ -290,21 +248,13 @@ describe('lock deck — user-defined buttons (Phase 6 Plan 2)', () => {
     })
 
     it('publishes on folder-escape with reason=escape', async () => {
-      const { runtime, pubSub } = setup(
-        [
-          makeDeck({ id: 'main', isMain: true, buttons: [] }),
-          makeDeck({ id: 'system', buttons: [] }),
-        ],
-        {
-          buttons: [
-            {
-              type: 'core:change-deck',
-              position: 0,
-              config: { deck: 'system' },
-            },
-          ],
-        },
-      )
+      const { runtime, pubSub } = setup([
+        makeDeck({ id: 'main', isMain: true, buttons: [] }),
+        makeDeck({ id: 'system', buttons: [] }),
+        coreLockDeckWith([
+          { type: 'core:change-deck', position: 0, config: { deck: 'system' } },
+        ]),
+      ])
       const events: unknown[] = []
       pubSub.subscribe<{ active: boolean; reason: string }>(
         'runtime:lock-mode',
@@ -327,33 +277,18 @@ describe('lock deck — user-defined buttons (Phase 6 Plan 2)', () => {
     it('navigates to core:lock like any other deck (does not enter lock mode)', () => {
       const { runtime } = setup([
         makeDeck({ id: 'main', isMain: true, buttons: [] }),
-      ])
-      // The test setup doesn't include the core addon's deck factory, so core:lock
-      // is registered through the addon system in real runs. Here we simulate that
-      // by including core:lock as a regular deck.
-      const { runtime: r2 } = setup([
-        makeDeck({ id: 'main', isMain: true, buttons: [] }),
-        makeDeck({ id: 'core:lock', name: 'Lock', buttons: [] }),
+        defaultCoreLockDeck(),
       ])
       expect(runtime.isLockActive()).toBe(false)
-      r2.navigateToDeck('core:lock')
-      expect(r2.isLockActive()).toBe(false)
-      expect(r2.getActiveDeckId()).toBe('core:lock')
-    })
-
-    it('does not log "deck not found" warning for core:lock', () => {
-      const { runtime } = setup([
-        makeDeck({ id: 'main', isMain: true, buttons: [] }),
-        makeDeck({ id: 'core:lock', name: 'Lock', buttons: [] }),
-      ])
       runtime.navigateToDeck('core:lock')
       expect(runtime.isLockActive()).toBe(false)
+      expect(runtime.getActiveDeckId()).toBe('core:lock')
     })
 
     it('lock mode activates via session provider only — not via navigation', () => {
       const { runtime } = setup([
         makeDeck({ id: 'main', isMain: true, buttons: [] }),
-        makeDeck({ id: 'core:lock', name: 'Lock', buttons: [] }),
+        defaultCoreLockDeck(),
       ])
       const session = fakeSessionProvider()
       runtime.setSessionProvider(session)
@@ -368,7 +303,7 @@ describe('lock deck — user-defined buttons (Phase 6 Plan 2)', () => {
     it('navigating to core:lock without user config yields the 3 default time buttons', () => {
       const { runtime } = setup([
         makeDeck({ id: 'main', isMain: true, buttons: [] }),
-        makeDeck({ id: 'core:lock', name: 'Lock', buttons: [] }),
+        defaultCoreLockDeck(),
       ])
       runtime.navigateToDeck('core:lock')
       expect(runtime.isLockActive()).toBe(false)
@@ -384,17 +319,12 @@ describe('lock deck — user-defined buttons (Phase 6 Plan 2)', () => {
     })
 
     it('navigating to core:lock with user config yields the user buttons', () => {
-      const { runtime } = setup(
-        [
-          makeDeck({ id: 'main', isMain: true, buttons: [] }),
-          makeDeck({ id: 'core:lock', name: 'Lock', buttons: [] }),
-        ],
-        {
-          buttons: [
-            { type: 'core:change-deck', position: 0, config: { deck: 'system' } },
-          ],
-        },
-      )
+      const { runtime } = setup([
+        makeDeck({ id: 'main', isMain: true, buttons: [] }),
+        coreLockDeckWith([
+          { type: 'core:change-deck', position: 0, config: { deck: 'system' } },
+        ]),
+      ])
       runtime.navigateToDeck('core:lock')
       const deck = runtime.getActiveDeck()
       expect(deck.buttons).toHaveLength(1)

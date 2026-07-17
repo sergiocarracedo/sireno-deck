@@ -37,10 +37,27 @@ export const manifest: AddonManifestV1 = {
     },
   },
   decks: {
-    "core:lock": () => ({
-      name: "Lock",
-      buttons: [],
-    }),
+    "core:lock": ({ config }) => {
+      const userButtons = (config as { lockButtons?: ReadonlyArray<Record<string, unknown>> })
+        .lockButtons
+      if (userButtons !== undefined && userButtons.length > 0) {
+        return {
+          name: "Lock",
+          buttons: userButtons.map((b, i) => ({
+            id: b.position !== undefined ? String(b.position) : `b${i}`,
+            ...b,
+          })) as unknown[],
+        }
+      }
+      return {
+        name: "Lock",
+        buttons: [
+          { id: "0", type: "date-time:locked-time-tile", config: { slot: "hour" } },
+          { id: "1", type: "date-time:locked-time-tile", config: { slot: "separator" } },
+          { id: "2", type: "date-time:locked-time-tile", config: { slot: "minute" } },
+        ],
+      }
+    },
   },
 }
 

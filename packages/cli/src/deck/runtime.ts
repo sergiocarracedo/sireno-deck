@@ -71,21 +71,6 @@ export interface CreateRuntimeOptions {
   store: Store
   logger: pino.Logger
   getMethods: () => Methods
-  lockConfig?: LockDeckConfig
-}
-
-export interface LockDeckButtonSpec {
-  type: string
-  position?: number
-  config?: unknown
-  actions?: { tap?: string; dbltap?: string; hold?: string }
-  accent?: string
-  background?: string
-  full?: boolean
-}
-
-export interface LockDeckConfig {
-  buttons?: ReadonlyArray<LockDeckButtonSpec>
 }
 
 export interface Runtime {
@@ -116,7 +101,7 @@ export interface Runtime {
 }
 
 export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
-  const { decks, pubSub, store, logger, getMethods, lockConfig = null } = options
+  const { decks, pubSub, store, logger, getMethods } = options
   let gestureListener: GestureListener | null = null
   const mainDeck = decks.find((d) => d.isMain) ?? decks[0]
   if (mainDeck === undefined) {
@@ -148,27 +133,15 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
         const button = deck.buttons.find((b) => b.id === id)
         if (button !== undefined) return { deckId: deck.id, button }
       }
-      if (getActiveDeckId() === "core:lock") {
-        const lockDeck = getActiveDeck()
-        const button = lockDeck.buttons.find((b) => b.id === id)
-        if (button !== undefined) return { deckId: lockDeck.id, button }
-      }
       return null
     }
     const deckId = id.slice(0, colonIdx)
     const buttonId = id.slice(colonIdx + 1)
     const deck = deckById(deckId)
-    if (deck !== undefined) {
-      const button = deck.buttons.find((b) => b.id === buttonId)
-      if (button === undefined) return null
-      return { deckId: deck.id, button }
-    }
-    if (deckId === "core:lock") {
-      const lockDeck = getActiveDeck()
-      const button = lockDeck.buttons.find((b) => b.id === buttonId)
-      if (button !== undefined) return { deckId: lockDeck.id, button }
-    }
-    return null
+    if (deck === undefined) return null
+    const button = deck.buttons.find((b) => b.id === buttonId)
+    if (button === undefined) return null
+    return { deckId: deck.id, button }
   }
 
   // ponytail: lock-mode escape hatch — only these button types can navigate out of lock mode
@@ -177,49 +150,8 @@ const LOCK_FOLDER_NAV_TYPES: ReadonlySet<string> = new Set([
   "core:page-nav",
 ])
 
-const buildDefaultLockDeck = (): RuntimeDeck => ({
-    id: "core:lock",
-    name: "Locked",
-    buttons: [
-      { id: "0", type: "date-time:locked-time-tile", config: { slot: "hour" } },
-      {
-        id: "1",
-        type: "date-time:locked-time-tile",
-        config: { slot: "separator" },
-      },
-      { id: "2", type: "date-time:locked-time-tile", config: { slot: "minute" } },
-    ],
-  })
-
-  const buildUserLockDeck = (
-    buttons: ReadonlyArray<LockDeckButtonSpec>,
-  ): RuntimeDeck => ({
-    id: "core:lock",
-    name: "Locked",
-    buttons: buttons.map((b, i) => {
-      const button: RuntimeDeck["buttons"][number] = {
-        id: b.position !== undefined ? String(b.position) : `b${i}`,
-        type: b.type,
-        ...(b.config !== undefined ? { config: b.config } : {}),
-        ...(b.actions !== undefined ? { actions: b.actions } : {}),
-        ...(b.position !== undefined ? { position: b.position } : {}),
-        ...(b.accent !== undefined ? { accent: b.accent } : {}),
-        ...(b.background !== undefined ? { background: b.background } : {}),
-        ...(b.full === true ? { full: true } : {}),
-      }
-      return button
-    }),
-  })
-
   const getActiveDeck = (): RuntimeDeck => {
     const id = getActiveDeckId()
-    if (id === "core:lock") {
-      const userButtons = lockConfig?.buttons
-      if (userButtons !== undefined && userButtons.length > 0) {
-        return buildUserLockDeck(userButtons)
-      }
-      return buildDefaultLockDeck()
-    }
     const deck = deckById(id)
     if (deck === undefined) throw new Error(`Active deck '${id}' not found`)
     return deck

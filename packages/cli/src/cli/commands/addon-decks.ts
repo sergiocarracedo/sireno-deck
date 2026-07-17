@@ -161,12 +161,20 @@ export const materializeAddonDecks = (
   userDecks: ReadonlyArray<RuntimeDeck>,
   logger: pino.Logger,
   keyCount: number,
+  lockButtons?: ReadonlyArray<unknown>,
 ): RuntimeDeck[] => {
+  // ponytail: keep the signature explicit even though we don't accept varargs — clarity beats cleverness
   const addonConfigs = collectAddonDefaultButtonConfig(
     registry,
     userDecks,
     logger,
   )
+  if (lockButtons !== undefined && lockButtons.length > 0) {
+    addonConfigs.set("core", {
+      ...((addonConfigs.get("core") as object | undefined) ?? {}),
+      lockButtons,
+    })
+  }
   const userDeckIds = new Set(userDecks.map((d) => d.id))
   const addonDecks: RuntimeDeck[] = []
 

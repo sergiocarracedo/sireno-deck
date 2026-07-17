@@ -11,7 +11,6 @@ import { getHostContext } from "./host-context"
 import { createMethods } from "./methods"
 import {
   createRuntime,
-  type LockDeckConfig,
   type Runtime,
   type RuntimeDeck,
 } from "./runtime"
@@ -34,8 +33,6 @@ export {
   type GestureEvent,
   type GestureListener,
   type MountedButton,
-  type LockDeckConfig,
-  type LockDeckButtonSpec,
 } from "./runtime"
 export { getHostContext, type HostContext } from "./host-context"
 export { computeSystemButtonForSlotN1, injectSystemButtons } from "./system-back-injection"
@@ -50,7 +47,6 @@ export interface CreateDeckRuntimeOptions {
   decks: ReadonlyArray<RuntimeDeck>
   logger?: pino.Logger
   keyMacroProvider?: KeyMacroProvider
-  lockConfig?: LockDeckConfig
 }
 
 export const createDeckRuntime = (
@@ -77,7 +73,6 @@ export const createDeckRuntime = (
     store,
     logger,
     getMethods: () => methodsRef.current!,
-    ...(options.lockConfig !== undefined ? { lockConfig: options.lockConfig } : {}),
   })
 
   const methods = createMethods({

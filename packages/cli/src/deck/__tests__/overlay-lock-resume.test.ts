@@ -8,10 +8,36 @@ import type {
   ActiveAppSnapshot,
 } from "@/system/providers/active-app"
 
-import { createRuntime, type LockDeckConfig, type RuntimeDeck } from "../runtime"
+import { createRuntime, type RuntimeDeck } from "../runtime"
 import { createMethods } from "../methods"
 import { createActionExecutor } from "@/action/executor"
 import { getHostContext } from "../host-context"
+
+const coreLockDeckWith = (
+  buttons: ReadonlyArray<{
+    type: string
+    position?: number
+    config?: unknown
+    actions?: { tap?: string }
+  }>,
+): RuntimeDeck => ({
+  id: "core:lock",
+  name: "Lock",
+  buttons: buttons.map((b, i) => ({
+    id: b.position !== undefined ? String(b.position) : `b${i}`,
+    ...(b.position !== undefined ? { position: b.position } : {}),
+    type: b.type,
+    ...(b.config !== undefined ? { config: b.config } : {}),
+    ...(b.actions !== undefined ? { actions: b.actions } : {}),
+  })),
+})
+
+const defaultCoreLockDeck = (): RuntimeDeck =>
+  coreLockDeckWith([
+    { type: "date-time:locked-time-tile", position: 0, config: { slot: "hour" } },
+    { type: "date-time:locked-time-tile", position: 1, config: { slot: "separator" } },
+    { type: "date-time:locked-time-tile", position: 2, config: { slot: "minute" } },
+  ])
 
 const silentLogger = () => createLogger({ level: "silent" })
 
@@ -49,10 +75,7 @@ const fakeActiveAppProvider = (
   stop: async () => undefined,
 })
 
-const setup = (
-  decks: ReadonlyArray<RuntimeDeck>,
-  lockConfig?: LockDeckConfig,
-) => {
+const setup = (decks: ReadonlyArray<RuntimeDeck>) => {
   const pubSub = createPubSub()
   const store = createStore()
   const executor = createActionExecutor({ host: getHostContext() })
@@ -64,7 +87,6 @@ const setup = (
     store,
     logger: silentLogger(),
     getMethods: () => methodsRef.current!,
-    ...(lockConfig !== undefined ? { lockConfig } : {}),
   })
   const methods = createMethods({
     runtime,
@@ -85,6 +107,7 @@ describe("lock deck — overlay auto-resume (Phase 6 Plan 3)", () => {
     const { runtime } = setup([
       makeDeck({ id: "main", isMain: true, buttons: [] }),
       makeDeck({ id: "media", buttons: [] }),
+      defaultCoreLockDeck(),
     ])
     runtime.navigateToDeck("media")
     expect(runtime.getActiveDeckId()).toBe("media")
@@ -111,6 +134,7 @@ describe("lock deck — overlay auto-resume (Phase 6 Plan 3)", () => {
         autoShow: true,
         processNames: ["Spotify"],
       }),
+      defaultCoreLockDeck(),
     ])
 
     runtime.setActiveAppProvider(
@@ -145,6 +169,7 @@ describe("lock deck — overlay auto-resume (Phase 6 Plan 3)", () => {
         autoShow: true,
         processNames: ["Spotify"],
       }),
+      defaultCoreLockDeck(),
     ])
     runtime.navigateToDeck("media")
 
@@ -180,21 +205,13 @@ describe("lock deck — overlay auto-resume (Phase 6 Plan 3)", () => {
   })
 
   it("lock → folder-escape → OS unlock → no auto-restore (escape is sticky)", async () => {
-    const { runtime } = setup(
-      [
-        makeDeck({ id: "main", isMain: true, buttons: [] }),
-        makeDeck({ id: "system", buttons: [] }),
-      ],
-      {
-        buttons: [
-          {
-            type: "core:change-deck",
-            position: 0,
-            config: { deck: "system" },
-          },
-        ],
-      },
-    )
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true, buttons: [] }),
+      makeDeck({ id: "system", buttons: [] }),
+      coreLockDeckWith([
+        { type: "core:change-deck", position: 0, config: { deck: "system" } },
+      ]),
+    ])
     const session = fakeSessionProvider()
     runtime.setSessionProvider(session)
     runtime.setActiveAppProvider(fakeActiveAppProvider(null))
@@ -219,6 +236,7 @@ describe("lock deck — overlay auto-resume (Phase 6 Plan 3)", () => {
       makeDeck({ id: "main", isMain: true, buttons: [] }),
       makeDeck({ id: "media", buttons: [] }),
       makeDeck({ id: "settings", buttons: [] }),
+      defaultCoreLockDeck(),
     ])
     runtime.navigateToDeck("media")
     const session = fakeSessionProvider()
