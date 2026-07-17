@@ -102,6 +102,16 @@ const DeckButtonCell = ({
   overlayDeckIcon: deckOverlayIcon,
 }: DeckButtonCellProps) => {
   const { fire } = useButtonAction(deckId, position)
+  const lastClickAtRef = useRef(0)
+  const holdTimerRef = useRef<number | null>(null)
+  const clearHoldTimer = () => {
+    if (holdTimerRef.current !== null) {
+      window.clearTimeout(holdTimerRef.current)
+      holdTimerRef.current = null
+    }
+  }
+  useEffect(() => clearHoldTimer, [])
+
   if (isError) {
     return (
       <div
@@ -121,15 +131,6 @@ const DeckButtonCell = ({
   }
   if (splitAction) {
     const overlayIcon = deckOverlayIcon ?? undefined
-    const lastClickAtRef = useRef(0)
-    const holdTimerRef = useRef<number | null>(null)
-    const clearHoldTimer = () => {
-      if (holdTimerRef.current !== null) {
-        window.clearTimeout(holdTimerRef.current)
-        holdTimerRef.current = null
-      }
-    }
-    useEffect(() => clearHoldTimer, [])
     const handleClick = () => {
       const now = Date.now()
       const isDouble = now - lastClickAtRef.current < 300
