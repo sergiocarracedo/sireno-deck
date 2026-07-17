@@ -305,6 +305,37 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       logger.warn({ buttonId }, "invokeAction: button not found")
       return
     }
+
+    if (found.button.type === "core:back") {
+      if (gesture === "tap") {
+        goBack()
+        return
+      }
+      if (gesture === "hold" && overlayDeckId !== null) {
+        navStack.length = 0
+        navStack.push(mainDeck.id)
+        setOverlay(null)
+        return
+      }
+      if (gesture === "dbl-tap") {
+        if (overlayDeckId !== null) {
+          setOverlay(null)
+        } else if (availableOverlayDeckId !== null) {
+          setOverlay(availableOverlayDeckId)
+        }
+        return
+      }
+      return
+    }
+    if (found.button.type === "core:overlay-toggle" && gesture === "dbl-tap") {
+      if (overlayDeckId !== null) {
+        setOverlay(null)
+      } else if (availableOverlayDeckId !== null) {
+        setOverlay(availableOverlayDeckId)
+      }
+      return
+    }
+
     if (found.deckId !== getActiveDeckId()) {
       logger.debug(
         { buttonId, deckId: found.deckId, activeDeckId: getActiveDeckId() },
