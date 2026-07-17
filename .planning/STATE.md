@@ -2,7 +2,7 @@
 
 **Project:** sireno-deck-2
 **Active branch:** chore/nuke-planning-reinit
-**Last activity:** 2026-07-17 - Discussed phase 5 (overlay decks), CONTEXT.md captured
+**Last activity:** 2026-07-17 - Phase 5 PLAN-1 executed (backend overlay deck runtime)
 
 ## Quick Tasks Completed
 
@@ -15,3 +15,4 @@
 
 - Phase 4 added: Settings Deck
 - Phase 5 added: Overlay Decks
+  - PLAN-1 (Wave 1) complete: backend runtime — matcher AND, autoShow gate, per-overlay nav stack, smoke test
