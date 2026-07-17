@@ -109,6 +109,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   let overlayDeckId: string | null = null
   let availableOverlayDeckId: string | null = null
   let overlayPreviousActiveId: string | null = null
+  const overlayNavStacks = new Map<string, string[]>()
   let brightness = 50
 
   const deckById = (id: string): RuntimeDeck | undefined =>
@@ -142,12 +143,14 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   }
 
   const getActiveDeckId = (): string => {
-    return (
-      overlayDeckId ??
-      transientDeckId ??
-      navStack[navStack.length - 1] ??
-      mainDeck.id
-    )
+    if (overlayDeckId !== null) {
+      const stack = overlayNavStacks.get(overlayDeckId)
+      if (stack !== undefined && stack.length > 0) {
+        return stack[stack.length - 1] ?? overlayDeckId
+      }
+      return overlayDeckId
+    }
+    return transientDeckId ?? navStack[navStack.length - 1] ?? mainDeck.id
   }
 
   const navigateToDeck = (
@@ -161,7 +164,21 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       return
     }
     const previousActiveId = getActiveDeckId()
-    if (navOptions?.addToHistory === false) {
+    if (overlayDeckId !== null) {
+      if (navOptions?.addToHistory === false) {
+        transientDeckId = id
+      } else {
+        const stack = overlayNavStacks.get(overlayDeckId)
+        if (stack === undefined) {
+          overlayNavStacks.set(overlayDeckId, [overlayDeckId])
+        }
+        const current = overlayNavStacks.get(overlayDeckId)!
+        if (current[current.length - 1] !== id) {
+          current.push(id)
+        }
+        transientDeckId = null
+      }
+    } else if (navOptions?.addToHistory === false) {
       transientDeckId = id
     } else {
       navStack.push(id)
@@ -172,6 +189,22 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   }
 
   const goBack = (): void => {
+    if (overlayDeckId !== null) {
+      const stack = overlayNavStacks.get(overlayDeckId)
+      if (stack !== undefined && stack.length > 1) {
+        const popped = stack.pop()
+        const prev = stack[stack.length - 1]
+        if (popped !== undefined) {
+          pubSub.publish("runtime:deck-inactive", { deckId: popped })
+        }
+        if (prev !== undefined) {
+          pubSub.publish("runtime:activeDeck", { deckId: prev })
+        }
+      } else {
+        setOverlay(null)
+      }
+      return
+    }
     if (transientDeckId !== null) {
       pubSub.publish("runtime:deck-inactive", { deckId: transientDeckId })
       const pageMatch = /^(.*)-p\d+$/.exec(transientDeckId)
@@ -208,6 +241,9 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     if (deckId !== null && deckById(deckId) === undefined) {
       logger.warn({ deckId }, "setOverlay: deck not found")
       return
+    }
+    if (deckId !== null && !overlayNavStacks.has(deckId)) {
+      overlayNavStacks.set(deckId, [deckId])
     }
     const previousActiveId = getActiveDeckId()
     const previousOverlayId = overlayDeckId

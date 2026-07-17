@@ -634,6 +634,150 @@ describe("createRuntime with active-app provider", () => {
   })
 })
 
+describe("createRuntime — per-overlay-deck nav stack", () => {
+  it("overlay is its own active deck on activation", () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "spotify", isOverlay: true }),
+      makeDeck({ id: "spotify-page", isOverlay: true }),
+    ])
+    runtime.setOverlay("spotify")
+    expect(runtime.getActiveDeckId()).toBe("spotify")
+  })
+
+  it("navigating within overlay pushes onto overlay stack", () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "spotify", isOverlay: true }),
+      makeDeck({ id: "spotify-page", isOverlay: true }),
+    ])
+    runtime.setOverlay("spotify")
+    runtime.navigateToDeck("spotify-page")
+    expect(runtime.getActiveDeckId()).toBe("spotify-page")
+  })
+
+  it("per-overlay isolation: each overlay has its own stack", () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "spotify", isOverlay: true }),
+      makeDeck({ id: "spotify-page", isOverlay: true }),
+      makeDeck({ id: "browser", isOverlay: true }),
+      makeDeck({ id: "browser-page", isOverlay: true }),
+    ])
+    runtime.setOverlay("spotify")
+    runtime.navigateToDeck("spotify-page")
+    expect(runtime.getActiveDeckId()).toBe("spotify-page")
+    runtime.setOverlay(null)
+    runtime.setOverlay("browser")
+    expect(runtime.getActiveDeckId()).toBe("browser")
+    runtime.setOverlay(null)
+    runtime.setOverlay("spotify")
+    expect(runtime.getActiveDeckId()).toBe("spotify-page")
+  })
+
+  it("stack persists across dismiss/reactivate", () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "spotify", isOverlay: true }),
+      makeDeck({ id: "spotify-page", isOverlay: true }),
+    ])
+    runtime.setOverlay("spotify")
+    runtime.navigateToDeck("spotify-page")
+    runtime.setOverlay(null)
+    expect(runtime.getActiveDeckId()).toBe("main")
+    runtime.setOverlay("spotify")
+    expect(runtime.getActiveDeckId()).toBe("spotify-page")
+  })
+
+  it("goBack at overlay root dismisses the overlay", () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "spotify", isOverlay: true }),
+    ])
+    runtime.setOverlay("spotify")
+    expect(runtime.getActiveDeckId()).toBe("spotify")
+    runtime.goBack()
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("main")
+  })
+
+  it("goBack within overlay pops the overlay stack", () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "spotify", isOverlay: true }),
+      makeDeck({ id: "spotify-page", isOverlay: true }),
+    ])
+    runtime.setOverlay("spotify")
+    runtime.navigateToDeck("spotify-page")
+    expect(runtime.getActiveDeckId()).toBe("spotify-page")
+    runtime.goBack()
+    expect(runtime.getActiveDeckId()).toBe("spotify")
+    expect(runtime.getOverlay()?.id).toBe("spotify")
+  })
+
+  it("regular navStack is unaffected by overlay navigation", () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "media" }),
+      makeDeck({ id: "spotify", isOverlay: true }),
+    ])
+    runtime.navigateToDeck("media")
+    expect(runtime.navStackDepth()).toBe(2)
+    runtime.setOverlay("spotify")
+    expect(runtime.navStackDepth()).toBe(2)
+    runtime.setOverlay(null)
+    expect(runtime.navStackDepth()).toBe(2)
+    expect(runtime.getActiveDeckId()).toBe("media")
+  })
+})
+
+describe("createRuntime — overlay smoke (full chain)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({
+      toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"],
+    })
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it("autoShow flips layer → navigate sub-deck → toggle off → re-activate preserves stack", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "chrome-deck",
+        isOverlay: true,
+        processNames: ["chrome"],
+        autoShow: true,
+      }),
+      makeDeck({ id: "chrome-page", isOverlay: true }),
+    ])
+    const provider = makeFakeProvider({
+      name: "Google Chrome",
+      windowTitle: null,
+      processId: 1,
+    })
+
+    runtime.setActiveAppProvider(provider)
+    await flush(1_200)
+
+    expect(runtime.getOverlay()?.id).toBe("chrome-deck")
+    expect(runtime.getActiveDeckId()).toBe("chrome-deck")
+
+    runtime.navigateToDeck("chrome-page")
+    expect(runtime.getActiveDeckId()).toBe("chrome-page")
+
+    runtime.setOverlay(null)
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("main")
+
+    runtime.setOverlay("chrome-deck")
+    expect(runtime.getActiveDeckId()).toBe("chrome-page")
+
+    await runtime.stopActiveAppPolling()
+  })
+})
+
 describe("invokeAction — user actions", () => {
   it("user action fires when button has actions.tap and no handler registered", async () => {
     const { runtime, methods } = setup([
