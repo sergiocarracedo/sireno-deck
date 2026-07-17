@@ -36,6 +36,7 @@ interface DeckState {
   buttons: DeckButton[]
   isCompact?: boolean
   hasOverlayDeckAvailable?: boolean
+  overlayDeckIcon?: string | null
   buttonErrors: ButtonErrorState[]
 }
 
@@ -148,6 +149,7 @@ const AppContent = () => {
               buttons: surface.buttons,
               isCompact: message.isCompact ?? false,
               hasOverlayDeckAvailable: message.hasOverlayDeckAvailable ?? false,
+              overlayDeckIcon: message.overlayDeckIcon ?? null,
               buttonErrors: [],
             })
           }

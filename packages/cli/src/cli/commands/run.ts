@@ -219,6 +219,36 @@ export const setupAddonServices = (
     },
   )
 
+  const unsubscribeOverlayAvailableBroadcast = pubSub.subscribe(
+    "runtime:overlay-available",
+    () => {
+      const activeDeck = runtime.getActiveDeck()
+      if (activeDeck === undefined) return
+      const msg = buildDeckConfigMessage(
+        activeDeck,
+        addonByType,
+        {},
+        {
+          navStackDepth: runtime.navStackDepth(),
+          hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+        },
+        undefined,
+        undefined,
+        (fullPath) => getAssetByPath(fullPath)?.id,
+        runtime.getAvailableOverlayDeckIcon(),
+      )
+      logger.info(
+        {
+          deckId: msg.deckId,
+          hasOverlayDeckAvailable: msg.hasOverlayDeckAvailable,
+          overlayDeckIcon: msg.overlayDeckIcon,
+        },
+        "orchestrator: broadcasting overlay-available update",
+      )
+      bridge.broadcast(msg)
+    },
+  )
+
   const unsubscribeNavigate = pubSub.subscribe(
     "runtime:navigate-deck",
     (payload: unknown) => {
@@ -295,6 +325,7 @@ export const setupAddonServices = (
     dispose: () => {
       unsubscribeDeck()
       unsubscribeDeckBroadcast()
+      unsubscribeOverlayAvailableBroadcast()
       unsubscribeBrightnessBridge()
       unsubscribeNavigate()
       unsubscribeDispatch()
