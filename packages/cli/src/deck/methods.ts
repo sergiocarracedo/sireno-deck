@@ -2,10 +2,8 @@ import type pino from "pino"
 
 import type { PubSub } from "@/core/pub-sub"
 import type { Store } from "@/core/store"
-import type { ClipboardProvider } from "@/system/providers/clipboard"
 import type { KeyMacroProvider } from "@/system/providers/key-macro"
 import {
-  getRequiredCapability,
   type RequirementsCheckResult,
   type SystemCapability,
 } from "@/system/requirements"
@@ -36,7 +34,6 @@ export interface MethodsContext {
   executor: ActionExecutor
   logger: pino.Logger
   keyMacroProvider?: KeyMacroProvider
-  clipboardProvider?: ClipboardProvider
 }
 
 export interface Methods {
@@ -49,8 +46,21 @@ export interface Methods {
     exitCode: number
     durationMs: number
   }>
+  /**
+   * Send a key or combo via the key-macro provider. Equivalent to the OS-level
+   * keystroke — Linux uses `wtype`, macOS uses `osascript keystroke`, Windows
+   * uses Win32 `SendInput`. Accepts both combos (`ctrl+shift+t`) and plain
+   * UTF-8 text (including emoji).
+   */
   keyMacro(action: KeyMacroAction): Promise<void>
-  pasteText(text: string): Promise<void>
+  /**
+   * Convenience wrapper for addons that want to type literal text without
+   * constructing a `KeyMacroAction`. Passes straight through to the
+   * key-macro provider; the provider is responsible for the actual keystroke
+   * injection, so UTF-8 / emoji work everywhere a key-macro tool is
+   * available.
+   */
+  typeText(text: string): Promise<void>
   navigateToDeck(args: { id: string; addToHistory?: boolean }): void
   goBack(): void
   getActiveDeckId(): string
@@ -58,7 +68,6 @@ export interface Methods {
   publish<T>(channel: string, payload: T): void
   subscribe<T>(channel: string, cb: (payload: T) => void): () => void
   setKeyMacroProvider(provider: KeyMacroProvider): void
-  setClipboardProvider(provider: ClipboardProvider): void
   setRequirements(requirements: RequirementsCheckResult): void
   checkRequirement(capability: SystemCapability): boolean
   showTemporaryError(
@@ -72,13 +81,9 @@ export interface Methods {
 
 export const createMethods = (ctx: MethodsContext): Methods => {
   let keyMacroProvider: KeyMacroProvider | undefined = ctx.keyMacroProvider
-  let clipboardProvider: ClipboardProvider | undefined = ctx.clipboardProvider
   const logger = ctx.logger
   const setKeyMacroProvider: Methods["setKeyMacroProvider"] = (provider) => {
     keyMacroProvider = provider
-  }
-  const setClipboardProvider: Methods["setClipboardProvider"] = (provider) => {
-    clipboardProvider = provider
   }
 
   let requirements: RequirementsCheckResult | undefined = undefined
@@ -170,46 +175,24 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     await keyMacroProvider.sendKey(combo)
   }
 
-  const pasteText: Methods["pasteText"] = async (text) => {
-    logger.info(
-      { text, hasClipboard: clipboardProvider !== undefined, hasKeyMacro: keyMacroProvider !== undefined },
-      "[methods] pasteText invoked",
-    )
-    if (clipboardProvider === undefined) {
-      throw new NotImplementedError(
-        "methods.pasteText requires a clipboardProvider (set via methods.setClipboardProvider)",
-      )
-    }
-    await clipboardProvider.writeText(text)
+  const typeText: Methods["typeText"] = async (text) => {
     if (keyMacroProvider === undefined) {
-      logger.warn(
-        { text },
-        "paste:// fired but no keyMacroProvider — clipboard written, keystroke skipped. Focus a text field and tap again.",
+      throw new NotImplementedError(
+        "methods.typeText requires a keyMacroProvider (set via methods.setKeyMacroProvider)",
       )
-      return
     }
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    logger.info(
-      { text, combo: "ctrl+v" },
-      "paste:// sending keystroke",
-    )
-    await keyMacroProvider.sendKey("ctrl+v")
+    await keyMacroProvider.sendKey(text)
   }
 
   const dispatch: Methods["dispatch"] = async (value) => {
-    if (value.startsWith("macro://")) {
-      const inner = value.slice("macro://".length)
+    if (value.startsWith("type://")) {
+      const inner = value.slice("type://".length)
       if (inner.length === 0) {
         throw new NotImplementedError(
-          "dispatch: macro:// requires a value, e.g. macro://ctrl+c",
+          "dispatch: type:// requires a value, e.g. type://ctrl+c",
         )
       }
       await dispatchMacro(inner, { runCommand, keyMacro })
-      return
-    }
-    if (value.startsWith("paste://")) {
-      const inner = value.slice("paste://".length)
-      await pasteText(inner)
       return
     }
     if (value.startsWith("brightness://")) {
@@ -228,7 +211,7 @@ export const createMethods = (ctx: MethodsContext): Methods => {
   return {
     runCommand,
     keyMacro,
-    pasteText,
+    typeText,
     dispatch,
     navigateToDeck,
     goBack,
@@ -237,7 +220,6 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     publish,
     subscribe,
     setKeyMacroProvider,
-    setClipboardProvider,
     setRequirements,
     checkRequirement,
     showTemporaryError,

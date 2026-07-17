@@ -37,15 +37,17 @@ const buildLiteralArgs = (input: string): string[] => {
 export const createDarwinKeyMacroProvider = async (
   deps: DarwinKeyMacroDeps,
 ): Promise<KeyMacroProvider> => {
-  deps.logger.info("Darwin key-macro provider initialised (osascript)")
+  deps.logger.info(
+    "Darwin key-macro provider initialised (osascript; types any UTF-8 including emoji)",
+  )
   const timeoutMs = deps.timeoutMs ?? 500
   return {
     async sendKey(input: string) {
       const args = buildComboArgs(input) ?? buildLiteralArgs(input)
       try {
         const result = await withTimeout(
-          deps.executor.run("osascript", args, { timeoutMs }),
-          timeoutMs + 500,
+          deps.executor.run("osascript", args),
+          timeoutMs + 2500,
         )
         if (result.exitCode !== 0) {
           throw new ProviderError(

@@ -25,7 +25,6 @@ export interface BridgeAddonServicesParams {
   readonly signal: AbortSignal
   readonly statePublisher: Pick<StatePublisher, "registerChannel">
   readonly bridge: Pick<WsBridge, "broadcast" | "registerCacheablePoller">
-  readonly setClipboardProvider: (provider: unknown) => void
   readonly methods: Methods
 }
 
@@ -50,7 +49,6 @@ export const bridgeAddonServices = async (
     signal,
     statePublisher,
     bridge,
-    setClipboardProvider,
     methods,
   } = params
 
@@ -138,7 +136,6 @@ export const bridgeAddonServices = async (
       },
       signal: abortController.signal,
       executor,
-      setClipboardProvider,
     }
 
     if (globalService.pollers !== undefined) {
@@ -371,7 +368,6 @@ export const bridgeAddonServices = async (
           poll: async () => {},
           signal: abortController.signal,
           executor,
-          setClipboardProvider,
         }
         globalService.onUnload?.(ctx)
       } catch (err) {

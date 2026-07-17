@@ -23,43 +23,87 @@ const createExecutor = (
 })
 
 describe("checkRequirements", () => {
-  it("reports clipboard available when wl-copy is present", async () => {
-    const executor = createExecutor(["wl-copy"])
-    const result = await checkRequirements({
-      platform: "linux",
-      executor,
-      env: {},
-    })
-    expect(result.clipboard.available).toBe(true)
-    expect(result.clipboard.commands).toContain("wl-copy")
-    expect(result.keyMacro.available).toBe(false)
-    expect(result.keyMacro.missingCommands).toEqual([
-      "ydotool",
-      "xdotool",
-      "dotool",
-      "osascript",
-    ])
-  })
-
-  it("reports keyMacro available when xdotool is present", async () => {
-    const executor = createExecutor(["xdotool"])
+  it("reports keyMacro available when ydotool is present", async () => {
+    const executor = createExecutor(["ydotool"])
     const result = await checkRequirements({
       platform: "linux",
       executor,
       env: {},
     })
     expect(result.keyMacro.available).toBe(true)
-    expect(result.keyMacro.commands).toContain("xdotool")
-    expect(result.clipboard.available).toBe(false)
-    expect(result.clipboard.missingCommands).toEqual([
-      "wl-copy",
-      "xclip",
-      "xsel",
-      "pbcopy",
-    ])
+    expect(result.keyMacro.commands).toContain("ydotool")
+    expect(result.keyMacro.preferred).toBe("ydotool")
   })
 
-  it("reports all missing when no tools are present", async () => {
+  it("reports keyMacro available when wtype is present (wlroots fallback)", async () => {
+    const executor = createExecutor(["wtype"])
+    const result = await checkRequirements({
+      platform: "linux",
+      executor,
+      env: {},
+    })
+    expect(result.keyMacro.available).toBe(true)
+    expect(result.keyMacro.commands).toContain("wtype")
+  })
+
+  it("reports keyMacro available when osascript is present (macOS)", async () => {
+    const executor = createExecutor(["osascript"])
+    const result = await checkRequirements({
+      platform: "darwin",
+      executor,
+      env: {},
+    })
+    expect(result.keyMacro.available).toBe(true)
+    expect(result.keyMacro.commands).toContain("osascript")
+    expect(result.keyMacro.preferred).toBe("osascript")
+  })
+
+  it("reports keyMacro available when powershell is present (Windows)", async () => {
+    const executor = createExecutor(["powershell"])
+    const result = await checkRequirements({
+      platform: "win32",
+      executor,
+      env: {},
+    })
+    expect(result.keyMacro.available).toBe(true)
+    expect(result.keyMacro.commands).toContain("powershell")
+    expect(result.keyMacro.preferred).toBe("powershell")
+  })
+
+  it("reports keyMacro missing when no tools are present", async () => {
+    const executor = createExecutor([])
+    const result = await checkRequirements({
+      platform: "linux",
+      executor,
+      env: {},
+    })
+    expect(result.keyMacro.available).toBe(false)
+  })
+
+  it("reports clipboard available when wl-copy is present (Wayland)", async () => {
+    const executor = createExecutor(["wl-copy"])
+    const result = await checkRequirements({
+      platform: "linux",
+      executor,
+      env: { WAYLAND_DISPLAY: "wayland-1" },
+    })
+    expect(result.clipboard.available).toBe(true)
+    expect(result.clipboard.commands).toContain("wl-copy")
+    expect(result.clipboard.preferred).toBe("wl-copy")
+  })
+
+  it("reports clipboard available when xclip is present (X11)", async () => {
+    const executor = createExecutor(["xclip"])
+    const result = await checkRequirements({
+      platform: "linux",
+      executor,
+      env: {},
+    })
+    expect(result.clipboard.available).toBe(true)
+    expect(result.clipboard.preferred).toBe("xclip")
+  })
+
+  it("reports clipboard missing when no clipboard tools are present", async () => {
     const executor = createExecutor([])
     const result = await checkRequirements({
       platform: "linux",
@@ -67,44 +111,56 @@ describe("checkRequirements", () => {
       env: {},
     })
     expect(result.clipboard.available).toBe(false)
-    expect(result.keyMacro.available).toBe(false)
+    expect(result.clipboard.missingCommands).toEqual(
+      expect.arrayContaining(["wl-copy", "xclip", "xsel", "pbcopy"]),
+    )
   })
 
-  it("reports both available when all tools are present", async () => {
-    const executor = createExecutor(["wl-copy", "ydotool"])
+  it("formatCapabilityWarning returns empty when preferred tool is available", async () => {
+    const executor = createExecutor(["ydotool", "wl-copy"])
     const result = await checkRequirements({
       platform: "linux",
       executor,
-      env: {},
+      env: { WAYLAND_DISPLAY: "wayland-1" },
     })
-    expect(result.clipboard.available).toBe(true)
-    expect(result.keyMacro.available).toBe(true)
+    expect(formatCapabilityWarning("keyMacro", result.keyMacro)).toBe("")
+    expect(formatCapabilityWarning("clipboard", result.clipboard)).toBe("")
   })
 
-  it("warns when preferred clipboard tool is missing on Wayland", async () => {
+  it("formatCapabilityWarning flags missing preferred when fallback in place", async () => {
     const executor = createExecutor(["xclip"])
     const result = await checkRequirements({
       platform: "linux",
       executor,
       env: { WAYLAND_DISPLAY: "wayland-1" },
     })
-    expect(result.clipboard.available).toBe(true)
-    expect(result.clipboard.preferred).toBe("wl-copy")
     const warning = formatCapabilityWarning("clipboard", result.clipboard)
     expect(warning).toContain("wl-copy")
+  })
+
+  it("formatCapabilityWarning emits missing-tools line when nothing is available", async () => {
+    const executor = createExecutor([])
+    const result = await checkRequirements({
+      platform: "linux",
+      executor,
+      env: {},
+    })
+    expect(formatCapabilityWarning("clipboard", result.clipboard)).toContain(
+      "none of",
+    )
   })
 })
 
 describe("getRequiredCapability", () => {
-  it("maps paste:// to clipboard", () => {
-    expect(getRequiredCapability("paste://🔥")).toBe("clipboard")
+  it("maps type:// to keyMacro", () => {
+    expect(getRequiredCapability("type://🔥")).toBe("keyMacro")
   })
 
-  it("maps macro:// to keyMacro", () => {
-    expect(getRequiredCapability("macro://ctrl+c")).toBe("keyMacro")
+  it("maps type:// with combo to keyMacro", () => {
+    expect(getRequiredCapability("type://ctrl+c")).toBe("keyMacro")
   })
 
-  it("returns null for other actions", () => {
+  it("returns null for non-type actions", () => {
     expect(getRequiredCapability("echo hello")).toBeNull()
   })
 })

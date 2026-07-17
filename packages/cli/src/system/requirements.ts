@@ -1,6 +1,6 @@
 import type { CommandExecutor } from "./providers/shared"
 
-export type SystemCapability = "clipboard" | "keyMacro"
+export type SystemCapability = "keyMacro" | "clipboard"
 
 export interface CapabilityRequirement {
   readonly name: SystemCapability
@@ -36,28 +36,31 @@ const capabilityConfig: Readonly<
     }
   >
 > = {
+  keyMacro: {
+    commands: ["ydotool", "wtype", "xdotool", "dotool", "osascript", "powershell"],
+    reason:
+      "type:// keystrokes need a key input tool. Install ydotool (works on most compositors via uinput) or wtype (wlroots compositors only). macOS uses osascript; Windows uses PowerShell with Win32 SendInput.",
+    preferred: (platform) => {
+      if (platform === "darwin") return "osascript"
+      if (platform === "win32") return "powershell"
+      return "ydotool"
+    },
+  },
   clipboard: {
     commands: ["wl-copy", "xclip", "xsel", "pbcopy"],
     reason:
-      "paste:// actions require a clipboard tool (wl-copy, xclip, xsel, or pbcopy)",
+      "non-ASCII literal text (emoji, accented letters, CJK) needs a clipboard tool because ydotool's `type` does not handle non-BMP characters. Install the wl-clipboard package (provides wl-copy) on Wayland; xclip / xsel work on X11; macOS ships pbcopy.",
     preferred: (platform, env) => {
       if (platform === "darwin") return "pbcopy"
       const waylandDisplay = env["WAYLAND_DISPLAY"]
-      if (waylandDisplay !== undefined && waylandDisplay.length > 0 && waylandDisplay !== "0") {
+      if (
+        waylandDisplay !== undefined &&
+        waylandDisplay.length > 0 &&
+        waylandDisplay !== "0"
+      ) {
         return "wl-copy"
       }
       return "xclip"
-    },
-  },
-  keyMacro: {
-    commands: ["ydotool", "xdotool", "dotool", "osascript"],
-    reason:
-      "macro:// and paste:// keystrokes require a key-macro tool (ydotool, xdotool, dotool, or osascript)",
-    preferred: (platform, env) => {
-      if (platform === "darwin") return "osascript"
-      const sessionType = env["XDG_SESSION_TYPE"]
-      if (sessionType === "wayland") return "ydotool"
-      return "xdotool"
     },
   },
 }
@@ -114,7 +117,6 @@ export const formatCapabilityWarning = (
 }
 
 export const getRequiredCapability = (action: string): SystemCapability | null => {
-  if (action.startsWith("paste://")) return "clipboard"
-  if (action.startsWith("macro://")) return "keyMacro"
+  if (action.startsWith("type://")) return "keyMacro"
   return null
 }

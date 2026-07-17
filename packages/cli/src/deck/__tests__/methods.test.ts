@@ -101,96 +101,42 @@ describe("createMethods", () => {
     expect(sendKey).toHaveBeenCalledWith("ctrl+c")
   })
 
-  it("pasteText throws NotImplementedError (no clipboard provider)", async () => {
+  it("typeText throws NotImplementedError without a provider", async () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },
     ])
-    await expect(methods.pasteText("hi")).rejects.toThrow(/clipboardProvider/)
-  })
-  it("pasteText calls the provider's writeText when wired", async () => {
-    const { methods } = setup([
-      { id: "main", name: "Main", buttons: [], isMain: true },
-    ])
-    const writeText = vi.fn().mockResolvedValue(undefined)
-    methods.setClipboardProvider({
-      writeText,
-      readText: async () => "",
-      stop: async () => undefined,
-    })
-    await methods.pasteText("hello")
-    expect(writeText).toHaveBeenCalledWith("hello")
+    await expect(methods.typeText("hi")).rejects.toThrow(/keyMacroProvider/)
   })
 
-  it("pasteText calls sendKey after writeText when both providers are wired", async () => {
-    const { methods } = setup([
-      { id: "main", name: "Main", buttons: [], isMain: true },
-    ])
-    const writeText = vi.fn().mockResolvedValue(undefined)
-    const sendKey = vi.fn().mockResolvedValue(undefined)
-    methods.setClipboardProvider({
-      writeText,
-      readText: async () => "",
-      stop: async () => undefined,
-    })
-    methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
-    await methods.pasteText("hello")
-    expect(writeText).toHaveBeenCalledWith("hello")
-    expect(sendKey).toHaveBeenCalledWith("ctrl+v")
-  })
-
-  it("pasteText skips sendKey when no keyMacroProvider is set", async () => {
-    const { methods } = setup([
-      { id: "main", name: "Main", buttons: [], isMain: true },
-    ])
-    const writeText = vi.fn().mockResolvedValue(undefined)
-    methods.setClipboardProvider({
-      writeText,
-      readText: async () => "",
-      stop: async () => undefined,
-    })
-    await methods.pasteText("hello")
-    expect(writeText).toHaveBeenCalledWith("hello")
-  })
-
-  it("dispatch paste:// calls both writeText and sendKey", async () => {
-    const { methods } = setup([
-      { id: "main", name: "Main", buttons: [], isMain: true },
-    ])
-    const writeText = vi.fn().mockResolvedValue(undefined)
-    const sendKey = vi.fn().mockResolvedValue(undefined)
-    methods.setClipboardProvider({
-      writeText,
-      readText: async () => "",
-      stop: async () => undefined,
-    })
-    methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
-    await methods.dispatch("paste://🔥")
-    expect(writeText).toHaveBeenCalledWith("🔥")
-    expect(sendKey).toHaveBeenCalledWith("ctrl+v")
-  })
-
-  it("dispatch routes macro:// to keyMacro", async () => {
+  it("typeText calls the provider's sendKey once with the verbatim string", async () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },
     ])
     const sendKey = vi.fn().mockResolvedValue(undefined)
     methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
-    await methods.dispatch("macro://ctrl+c")
+    await methods.typeText("🔥")
+    expect(sendKey).toHaveBeenCalledTimes(1)
+    expect(sendKey).toHaveBeenCalledWith("🔥")
+  })
+
+  it("dispatch routes type:// to keyMacro with combos parsed", async () => {
+    const { methods } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    const sendKey = vi.fn().mockResolvedValue(undefined)
+    methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
+    await methods.dispatch("type://ctrl+c")
     expect(sendKey).toHaveBeenCalledWith("ctrl+c")
   })
 
-  it("dispatch routes paste:// to pasteText", async () => {
+  it("dispatch routes type:// plain text via keyMacro", async () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },
     ])
-    const writeText = vi.fn().mockResolvedValue(undefined)
-    methods.setClipboardProvider({
-      writeText,
-      readText: async () => "",
-      stop: async () => undefined,
-    })
-    await methods.dispatch("paste://🔥")
-    expect(writeText).toHaveBeenCalledWith("🔥")
+    const sendKey = vi.fn().mockResolvedValue(undefined)
+    methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
+    await methods.dispatch("type://hello")
+    expect(sendKey).toHaveBeenCalledWith("hello")
   })
 
   it("runCommand returns stdout", async () => {
@@ -201,12 +147,12 @@ describe("createMethods", () => {
     expect(result.stdout.trim()).toBe("hello")
   })
 
-  it("dispatch throws for empty macro:// value", async () => {
+  it("dispatch throws for empty type:// value", async () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },
     ])
-    await expect(methods.dispatch("macro://")).rejects.toThrow(
-      new RegExp("macro:// requires a value"),
+    await expect(methods.dispatch("type://")).rejects.toThrow(
+      /type:\/\/ requires a value/,
     )
   })
 
@@ -228,7 +174,7 @@ describe("createMethods", () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },
     ])
-    expect(methods.checkRequirement("clipboard")).toBe(true)
+    expect(methods.checkRequirement("keyMacro")).toBe(true)
   })
 
   it("checkRequirement returns the stored availability", () => {
@@ -236,28 +182,40 @@ describe("createMethods", () => {
       { id: "main", name: "Main", buttons: [], isMain: true },
     ])
     methods.setRequirements({
-      clipboard: {
-        available: false,
-        commands: [],
-        reason: "missing",
-      },
       keyMacro: {
         available: true,
-        commands: ["ydotool"],
+        commands: ["wtype"],
+        missingCommands: [],
         reason: "",
+        preferred: "wtype",
       },
     })
-    expect(methods.checkRequirement("clipboard")).toBe(false)
     expect(methods.checkRequirement("keyMacro")).toBe(true)
   })
 
-  it("dispatch runs macro with delay", async () => {
+  it("checkRequirement reflects unavailable state", () => {
+    const { methods } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    methods.setRequirements({
+      keyMacro: {
+        available: false,
+        commands: [],
+        missingCommands: ["wtype", "osascript", "powershell"],
+        reason: "no key input tool",
+        preferred: "wtype",
+      },
+    })
+    expect(methods.checkRequirement("keyMacro")).toBe(false)
+  })
+
+  it("dispatch runs type with delay", async () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },
     ])
     const sendKey = vi.fn().mockResolvedValue(undefined)
     methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
-    await methods.dispatch("macro://ctrl+t;delay(50ms);ctrl+v")
+    await methods.dispatch("type://ctrl+t;delay(50ms);ctrl+v")
     expect(sendKey).toHaveBeenCalledTimes(2)
     expect(sendKey).toHaveBeenNthCalledWith(1, "ctrl+t")
     expect(sendKey).toHaveBeenNthCalledWith(2, "ctrl+v")

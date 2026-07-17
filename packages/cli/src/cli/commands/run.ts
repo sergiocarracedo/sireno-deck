@@ -27,10 +27,6 @@ import {
   createActiveAppProvider,
   type ActiveAppProvider,
 } from "@/system/providers/active-app"
-import {
-  createClipboardProvider,
-  type ClipboardProvider,
-} from "@/system/providers/clipboard"
 import { createKeyMacroProvider } from "@/system/providers/key-macro"
 import {
   checkRequirements,
@@ -116,7 +112,6 @@ export interface SetupAddonServicesOptions {
   >
   readonly initialDeck?: RuntimeDeck
   readonly signal: AbortSignal
-  readonly setClipboardProvider: (provider: unknown) => void
   readonly store: Store
   readonly logger: pino.Logger
 }
@@ -151,7 +146,6 @@ export const setupAddonServices = (
     bridge,
     initialDeck,
     signal,
-    setClipboardProvider,
     store,
     methods,
     logger,
@@ -166,7 +160,6 @@ export const setupAddonServices = (
     signal,
     statePublisher,
     bridge,
-    setClipboardProvider,
     store,
     methods,
   })
@@ -474,22 +467,59 @@ const startSystemProviders = async (
   methods: Methods,
 ): Promise<SystemProviders> => {
   const { logger } = options
-  const { execa } = await import("execa")
+  const { spawn } = await import("node:child_process")
   const executor = {
     async run(
       command: string,
       args: ReadonlyArray<string>,
       execOptions?: { timeoutMs?: number },
     ) {
-      const proc = await execa(command, [...args], {
-        reject: false,
-        timeout: execOptions?.timeoutMs,
+      // Uses 'exit' (not 'close') so tools that keep stdio fds open after their
+      // main exits — notably wl-copy — don't hang the runtime. Streams are
+      // drained via 'data' events until 'exit' fires; once the process exits,
+      // no further writes are possible.
+      const timeoutMs = execOptions?.timeoutMs
+      const start = Date.now()
+      return await new Promise((resolve) => {
+        const proc = spawn(command, [...args], {
+          stdio: ["pipe", "pipe", "pipe"],
+        })
+        let stdout = ""
+        let stderr = ""
+        let timedOut = false
+        let killTimer: ReturnType<typeof setTimeout> | undefined
+        proc.stdout.on("data", (chunk: Buffer) => {
+          stdout += chunk.toString()
+        })
+        proc.stderr.on("data", (chunk: Buffer) => {
+          stderr += chunk.toString()
+        })
+        const onExit = (code: number | null): void => {
+          if (killTimer !== undefined) clearTimeout(killTimer)
+          resolve({
+            exitCode: timedOut ? -1 : code ?? -1,
+            stdout,
+            stderr,
+            elapsedMs: Date.now() - start,
+          })
+        }
+        proc.on("error", (err) => {
+          if (killTimer !== undefined) clearTimeout(killTimer)
+          resolve({
+            exitCode: -1,
+            stdout,
+            stderr: stderr ? `${stderr}\n${err.message}` : err.message,
+            elapsedMs: Date.now() - start,
+          })
+        })
+        proc.on("exit", onExit)
+        if (timeoutMs !== undefined && timeoutMs > 0) {
+          killTimer = setTimeout(() => {
+            timedOut = true
+            proc.kill("SIGKILL")
+          }, timeoutMs)
+        }
       })
-      return {
-        exitCode: proc.exitCode ?? -1,
-        stdout: proc.stdout ?? "",
-        stderr: proc.stderr ?? "",
-      }
     },
   }
 
@@ -516,18 +546,6 @@ const startSystemProviders = async (
 
   runtime.setActiveAppProvider(activeApp)
   methods.setKeyMacroProvider(keyMacro)
-
-  try {
-    const clipboard = createClipboardProvider({
-      executor,
-      platform,
-      env,
-      logger,
-    })
-    methods.setClipboardProvider(clipboard)
-  } catch {
-    // clipboard is optional on unsupported platforms
-  }
 
   return { activeApp, session, keyMacro }
 }
@@ -616,8 +634,6 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     resolverOptions,
     ...(mainDeck !== undefined ? { initialDeck: mainDeck } : {}),
     signal: bridgeSignal.signal,
-    setClipboardProvider: (p) =>
-      methods.setClipboardProvider(p as ClipboardProvider),
     store,
     logger,
   })

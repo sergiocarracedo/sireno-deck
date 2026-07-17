@@ -19,7 +19,7 @@ If you're writing user-facing config, you only need `core:action` and `core:chan
 ### `core:action`
 
 Requires at least one of `icon` or `label`. Command goes in `actions.tap`
-(also accepts `macro://` and `paste://` URIs for keystroke shortcuts).
+(also accepts `type://<combo-or-text>` URIs for keystroke shortcuts).
 
 ```yaml
 - position: 1

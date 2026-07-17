@@ -73,3 +73,4 @@ export const createKeyMacroProvider = async (
     `Key-macro provider not implemented for platform '${platform}' in this build`,
   )
 }
+

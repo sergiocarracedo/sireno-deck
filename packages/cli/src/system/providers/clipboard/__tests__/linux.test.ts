@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from "vitest"
 
 import type pino from "pino"
 
+import { ProviderError } from "@/system/providers/error"
+
 import { createLinuxClipboardProvider } from "../linux"
 import { type CommandExecutor } from "@/system/providers/shared"
 
@@ -20,118 +22,166 @@ const silentLogger = (): pino.Logger => {
 }
 
 const makeExecutor = (
-  responses: Record<string, { exitCode: number; stdout?: string; stderr?: string }>,
-): {
-  executor: CommandExecutor
-  calls: Array<{ tool: string; args: string[] }>
-} => {
-  const calls: Array<{ tool: string; args: string[] }> = []
-  const executor: CommandExecutor = {
-    async run(tool: string, args: ReadonlyArray<string>) {
-      calls.push({ tool, args: [...args] })
-      const resp = responses[tool] ?? { exitCode: 0, stdout: "", stderr: "" }
+  handler: (
+    tool: string,
+    args: ReadonlyArray<string>,
+  ) => { exitCode: number; stdout?: string; stderr?: string },
+): CommandExecutor => ({
+  async run(tool: string, args: ReadonlyArray<string>) {
+    if (tool === "which") {
       return {
-        exitCode: resp.exitCode,
-        stdout: resp.stdout ?? "",
-        stderr: resp.stderr ?? "",
+        exitCode: 0,
+        stdout: `/usr/bin/${args[0]}`,
+        stderr: "",
       }
-    },
-  }
-  return { executor, calls }
-}
-
-const shellCommand = (calls: Array<{ tool: string; args: string[] }>, idx: number): string | undefined =>
-  calls[idx]?.args[1]
+    }
+    return handler(tool, [...args])
+  },
+})
 
 describe("createLinuxClipboardProvider", () => {
-  it("writes to wl-copy on Wayland and returns early", async () => {
-    const { executor, calls } = makeExecutor({
-      sh: { exitCode: 0, stdout: "" },
-    })
-    const provider = createLinuxClipboardProvider({
-      executor,
-      env: { WAYLAND_DISPLAY: "wayland-1" },
-      logger: silentLogger(),
-    })
-    await provider.writeText("🔥")
-    expect(calls).toHaveLength(1)
-    expect(shellCommand(calls, 0)).toContain("wl-copy")
-  })
-
-  it("writes only to xclip on X11", async () => {
-    const { executor, calls } = makeExecutor({
-      sh: { exitCode: 0, stdout: "" },
-    })
-    const provider = createLinuxClipboardProvider({
-      executor,
-      env: {},
-      logger: silentLogger(),
-    })
-    await provider.writeText("🔥")
-    expect(calls).toHaveLength(1)
-    expect(shellCommand(calls, 0)).toContain("xclip")
-  })
-
-  it("falls back to xsel when xclip fails", async () => {
+  it("writeText pipes to wl-copy via sh -c", async () => {
     const calls: Array<{ tool: string; args: string[] }> = []
     const executor: CommandExecutor = {
-      async run(tool: string, args: ReadonlyArray<string>) {
+      async run(tool, args) {
         calls.push({ tool, args: [...args] })
-        const command = shellCommand(calls, calls.length - 1)
-        const isXclip = command?.includes("xclip") ?? false
-        return {
-          exitCode: isXclip ? 1 : 0,
-          stdout: "",
-          stderr: isXclip ? "xclip missing" : "",
+        if (tool === "which" && args[0] === "wl-copy") {
+          return {
+            exitCode: 0,
+            stdout: "/usr/bin/wl-copy",
+            stderr: "",
+          }
         }
+        if (tool === "sh" && args[0] === "-c") {
+          return { exitCode: 0, stdout: "", stderr: "" }
+        }
+        return { exitCode: 0, stdout: "", stderr: "" }
       },
     }
     const provider = createLinuxClipboardProvider({
       executor,
-      env: {},
+      logger: silentLogger(),
+    })
+    await provider.writeText("hello")
+    const shCall = calls.find((c) => c.tool === "sh")
+    expect(shCall).toBeDefined()
+    expect(shCall!.args[1]).toContain("wl-copy")
+    expect(shCall!.args[1]).toContain("'hello'")
+    await provider.stop()
+  })
+
+  it("writeText shell-escapes single quotes inside literal text", async () => {
+    const calls: Array<{ tool: string; args: string[] }> = []
+    const executor: CommandExecutor = {
+      async run(tool, args) {
+        if (tool === "which") {
+          return { exitCode: 0, stdout: "/usr/bin/wl-copy", stderr: "" }
+        }
+        calls.push({ tool, args: [...args] })
+        return { exitCode: 0, stdout: "", stderr: "" }
+      },
+    }
+    const provider = createLinuxClipboardProvider({
+      executor,
+      logger: silentLogger(),
+    })
+    await provider.writeText("it's")
+    const shCall = calls.find((c) => c.tool === "sh")
+    expect(shCall!.args[1]).toContain("'it'\\''s'")
+    await provider.stop()
+  })
+
+  it("writeText passes emoji through unchanged", async () => {
+    const calls: Array<{ tool: string; args: string[] }> = []
+    const executor: CommandExecutor = {
+      async run(tool, args) {
+        if (tool === "which") {
+          return { exitCode: 0, stdout: "/usr/bin/wl-copy", stderr: "" }
+        }
+        calls.push({ tool, args: [...args] })
+        return { exitCode: 0, stdout: "", stderr: "" }
+      },
+    }
+    const provider = createLinuxClipboardProvider({
+      executor,
       logger: silentLogger(),
     })
     await provider.writeText("🔥")
-    expect(calls).toHaveLength(2)
-    expect(shellCommand(calls, 0)).toContain("xclip")
-    expect(shellCommand(calls, 1)).toContain("xsel")
+    const shCall = calls.find((c) => c.tool === "sh")
+    expect(shCall!.args[1]).toContain("🔥")
+    await provider.stop()
   })
 
-  it("throws when all write methods fail", async () => {
-    const { executor, calls } = makeExecutor({
-      sh: { exitCode: 1, stderr: "not found" },
+  it("writeText throws ProviderError on non-zero exit", async () => {
+    const executor = makeExecutor((tool, args) => {
+      if (tool === "which" && args[0] === "wl-copy") {
+        return { exitCode: 0, stdout: "/usr/bin/wl-copy", stderr: "" }
+      }
+      return {
+        exitCode: 1,
+        stdout: "",
+        stderr: "wl-copy: no Wayland clipboard",
+      }
     })
     const provider = createLinuxClipboardProvider({
       executor,
-      env: {},
       logger: silentLogger(),
     })
-    await expect(provider.writeText("🔥")).rejects.toThrow(/clipboard write failed/)
-    expect(calls).toHaveLength(2)
-  })
-
-  it("reads from wl-paste on Wayland", async () => {
-    const { executor, calls } = makeExecutor({
-      sh: { exitCode: 0, stdout: "🔥" },
-    })
-    const provider = createLinuxClipboardProvider({
-      executor,
-      env: { WAYLAND_DISPLAY: "wayland-1" },
-      logger: silentLogger(),
-    })
-    const text = await provider.readText()
-    expect(text).toBe("🔥")
-    expect(calls[0]?.args[1]).toContain("wl-paste")
-  })
-
-  it("throws when disposed", async () => {
-    const { executor } = makeExecutor({})
-    const provider = createLinuxClipboardProvider({
-      executor,
-      env: {},
-      logger: silentLogger(),
+    await expect(provider.writeText("hello")).rejects.toMatchObject({
+      code: "EXEC_FAILED",
+      message: expect.stringContaining("wl-copy"),
     })
     await provider.stop()
-    await expect(provider.writeText("🔥")).rejects.toThrow("disposed")
+  })
+
+  it("writeText throws NOT_AVAILABLE when wl-copy is missing", async () => {
+    const executor: CommandExecutor = {
+      async run(tool, args) {
+        if (tool === "which" && args[0] === "wl-copy") {
+          return { exitCode: 1, stdout: "", stderr: "" }
+        }
+        return { exitCode: 0, stdout: "", stderr: "" }
+      },
+    }
+    const provider = createLinuxClipboardProvider({
+      executor,
+      logger: silentLogger(),
+    })
+    await expect(provider.writeText("hello")).rejects.toMatchObject({
+      code: "NOT_AVAILABLE",
+      message: expect.stringContaining("wl-clipboard"),
+    })
+    await provider.stop()
+  })
+
+  it("readText returns wl-paste stdout", async () => {
+    const executor = makeExecutor((tool) => {
+      if (tool === "wl-paste") {
+        return { exitCode: 0, stdout: "pasted text", stderr: "" }
+      }
+      return { exitCode: 0, stdout: "", stderr: "" }
+    })
+    const provider = createLinuxClipboardProvider({
+      executor,
+      logger: silentLogger(),
+    })
+    const result = await provider.readText()
+    expect(result).toBe("pasted text")
+    await provider.stop()
+  })
+
+  it("readText returns empty on non-zero exit (silent)", async () => {
+    const executor = makeExecutor(() => ({
+      exitCode: 1,
+      stdout: "",
+      stderr: "wl-paste failed",
+    }))
+    const provider = createLinuxClipboardProvider({
+      executor,
+      logger: silentLogger(),
+    })
+    const result = await provider.readText()
+    expect(result).toBe("")
+    await provider.stop()
   })
 })

@@ -216,19 +216,24 @@ describe("createRuntime", () => {
             id: "b0",
             type: "custom",
             position: 0,
-            actions: { tap: "paste://hello" },
+            actions: { tap: "type://hello" },
           },
         ],
       }),
     ])
     methods.setRequirements({
-      clipboard: { available: true, commands: ["wl-copy"], reason: "" },
-      keyMacro: { available: true, commands: ["ydotool"], reason: "" },
+      keyMacro: {
+        available: true,
+        commands: ["wtype"],
+        missingCommands: [],
+        reason: "",
+        preferred: "wtype",
+      },
     })
     const dispatch = vi.spyOn(methods, "dispatch").mockResolvedValue(undefined)
     const showTemporaryError = vi.spyOn(methods, "showTemporaryError")
     await runtime.invokeAction("main:b0", "tap")
-    expect(dispatch).toHaveBeenCalledWith("paste://hello")
+    expect(dispatch).toHaveBeenCalledWith("type://hello")
     expect(showTemporaryError).not.toHaveBeenCalled()
   })
 
@@ -242,14 +247,19 @@ describe("createRuntime", () => {
             id: "b0",
             type: "custom",
             position: 0,
-            actions: { tap: "paste://hello" },
+            actions: { tap: "type://hello" },
           },
         ],
       }),
     ])
     methods.setRequirements({
-      clipboard: { available: false, commands: [], reason: "missing" },
-      keyMacro: { available: true, commands: ["ydotool"], reason: "" },
+      keyMacro: {
+        available: false,
+        commands: [],
+        missingCommands: ["wtype", "osascript", "powershell"],
+        reason: "missing",
+        preferred: "wtype",
+      },
     })
     const dispatch = vi.spyOn(methods, "dispatch").mockResolvedValue(undefined)
     const showTemporaryError = vi.spyOn(methods, "showTemporaryError")
@@ -268,14 +278,19 @@ describe("createRuntime", () => {
             id: "b0",
             type: "custom",
             position: 0,
-            actions: { tap: "paste://hello" },
+            actions: { tap: "type://hello" },
           },
         ],
       }),
     ])
     methods.setRequirements({
-      clipboard: { available: true, commands: ["wl-copy"], reason: "" },
-      keyMacro: { available: true, commands: ["ydotool"], reason: "" },
+      keyMacro: {
+        available: true,
+        commands: ["wtype"],
+        missingCommands: [],
+        reason: "",
+        preferred: "wtype",
+      },
     })
     const dispatch = vi
       .spyOn(methods, "dispatch")
@@ -596,12 +611,12 @@ describe("invokeAction — user actions", () => {
     expect(dispatch).not.toHaveBeenCalled()
   })
 
-  it("dispatch routes macro:// to keyMacro", async () => {
+  it("dispatch routes type:// to keyMacro", async () => {
     const { runtime, methods } = setup([
       makeDeck({
         id: "main",
         isMain: true,
-        buttons: [{ id: "b1", type: "x", actions: { tap: "macro://ctrl+c" } }],
+        buttons: [{ id: "b1", type: "x", actions: { tap: "type://ctrl+c" } }],
       }),
     ])
     const sendKey = vi.fn().mockResolvedValue(undefined)
@@ -610,22 +625,18 @@ describe("invokeAction — user actions", () => {
     expect(sendKey).toHaveBeenCalledWith("ctrl+c")
   })
 
-  it("dispatch routes paste:// to pasteText", async () => {
+  it("dispatch routes type:// plain text through keyMacro", async () => {
     const { runtime, methods } = setup([
       makeDeck({
         id: "main",
         isMain: true,
-        buttons: [{ id: "b1", type: "x", actions: { tap: "paste://🔥" } }],
+        buttons: [{ id: "b1", type: "x", actions: { tap: "type://🔥" } }],
       }),
     ])
-    const writeText = vi.fn().mockResolvedValue(undefined)
-    methods.setClipboardProvider({
-      writeText,
-      readText: async () => "",
-      stop: async () => undefined,
-    })
+    const sendKey = vi.fn().mockResolvedValue(undefined)
+    methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
     await runtime.invokeAction("b1", "tap")
-    expect(writeText).toHaveBeenCalledWith("🔥")
+    expect(sendKey).toHaveBeenCalledWith("🔥")
   })
 
   describe("invokeAction guard — inactive deck", () => {

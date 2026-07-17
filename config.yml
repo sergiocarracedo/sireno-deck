@@ -36,7 +36,7 @@ decks:
         actions:
           tap: "google-chrome"
           hold: "google-chrome --incognito"
-          dbltap: "macro://ctrl+t"
+          dbltap: "type://ctrl+t"
         config:
           icon: ./assets/chrome.svg
           label: Chrome
@@ -146,16 +146,16 @@ decks:
       - position: 1
         type: "core:action"
         actions:
-          tap: "macro://ctrl+shift+t"
+          tap: "type://ctrl+shift+t"
         config:
           label: Macro
 
       - position: 2
         type: "core:action"
         actions:
-          tap: "paste://hello from sireno"
+          tap: "type://hello from sireno"
         config:
-          label: Paste
+          label: Type
 
       - position: 3
         type: "core:toggle"

@@ -30,7 +30,7 @@ describe("emoji-selector:emoji backend", () => {
   })
 })
 
-describe("emoji-selector emoji buttons carry actions.tap = paste://<emoji>", () => {
+describe("emoji-selector emoji buttons carry actions.tap = type://<emoji>", () => {
   it("emits actions.tap on every favorite when favorites has entries", () => {
     const decks = createDeck({ favorites: ["🦄", "🌈", "🐙"] })
     const favDeck = decks["emoji-selector-favorites"]!
@@ -39,7 +39,7 @@ describe("emoji-selector emoji buttons carry actions.tap = paste://<emoji>", () 
       expect(button.type).toBe("emoji-selector:emoji")
       const emoji = (button as { emoji: string }).emoji
       expect((button as { actions?: unknown }).actions).toEqual({
-        tap: `paste://${emoji}`,
+        tap: `type://${emoji}`,
       })
     }
   })
@@ -51,12 +51,12 @@ describe("emoji-selector emoji buttons carry actions.tap = paste://<emoji>", () 
     const firstButton = smileysDeck.buttons[0]
     expect((firstButton as { emoji?: string }).emoji).toBe("😀")
     expect((firstButton as { actions?: unknown }).actions).toEqual({
-      tap: "paste://😀",
-      dbltap: "paste://:grinning:",
+      tap: "type://😀",
+      dbltap: "type://:grinning:",
     })
   })
 
-  it("multiple category emoji buttons all carry their own paste://<emoji> actions", () => {
+  it("multiple category emoji buttons all carry their own type://<emoji> actions", () => {
     const decks = createDeck({ favorites: [] })
     const smileysDeck = decks["emoji-selector-smileys"]!
     const seen = new Map<string, string>()
@@ -64,7 +64,7 @@ describe("emoji-selector emoji buttons carry actions.tap = paste://<emoji>", () 
       const b = button as { emoji?: string; actions?: { tap?: string } }
       if (b.emoji === undefined) continue
       const tap = b.actions?.tap
-      expect(tap).toBe(`paste://${b.emoji}`)
+      expect(tap).toBe(`type://${b.emoji}`)
       seen.set(b.emoji, tap ?? "")
     }
     expect(seen.size).toBeGreaterThan(1)

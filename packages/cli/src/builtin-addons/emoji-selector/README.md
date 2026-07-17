@@ -2,7 +2,7 @@
 
 Adds an emoji deck to your config. Users open it via the `emoji-selector:launcher` button (or any `core:change-deck` pointing to `emoji-selector`), pick from 8 categories (Smileys, Nature, Food, Activities, Travel, Objects, Symbols, Flags). Each category deck is paginated automatically using `core:page-nav` buttons.
 
-Tapping an emoji copies it to the system clipboard and sends `ctrl+v` via the core `paste://` dispatch channel. Double-tapping an emoji with a shortcode pastes `:shortcode:` instead.
+Tapping an emoji sends it directly through the core `type://` dispatch channel — the OS key-input tool (ydotool on Linux with `wtype` as wlroots-only fallback, osascript on macOS, Win32 SendInput on Windows) types the character verbatim, including emoji. On Linux non-ASCII text routes through `wl-copy` + ctrl+v because `ydotool type` does not handle non-BMP characters; the `wl-clipboard` package and `ydotoold` daemon are both required. Double-tapping an emoji with a shortcode types `:shortcode:` as literal text instead.
 
 ## Decks
 
@@ -17,8 +17,8 @@ The addon produces:
 | ------------------------- | ---------- | ---------------------------------------------- |
 | `emoji-selector:launcher` | tap        | Navigate to the `emoji-selector` routing deck  |
 | `emoji-selector:category` | tap        | Navigate to the target category deck           |
-| `emoji-selector:emoji`    | tap        | Dispatch `paste://<emoji>` to paste it          |
-| `emoji-selector:emoji`    | dblTap     | Dispatch `paste://:<shortcode>:` to paste it   |
+| `emoji-selector:emoji`    | tap        | Dispatch `type://<emoji>` to type it             |
+| `emoji-selector:emoji`    | dblTap     | Dispatch `type://:<shortcode>:` to type it       |
 | `emoji-selector:back`     | tap        | Navigate to previous deck                      |
 | `core:page-nav`           | tap/dbltap | Navigate to next/previous page (auto-injected) |
 

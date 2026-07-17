@@ -241,8 +241,6 @@ export interface AddonServiceContext {
   signal: AbortSignal
   /** Run host commands (e.g. `brightness set 80`). */
   executor: ActionExecutor
-  /** Set the clipboard provider for pasteText method. */
-  setClipboardProvider: (provider: unknown) => void
 }
 
 /**
@@ -282,7 +280,7 @@ export interface AddonButtonServiceContext<Config = unknown> {
   readonly methods: Readonly<Record<string, AddonServiceMethod>>
   /**
    * Core runtime methods exposed to addons (e.g. `adjustBrightness`,
-   * `dispatch`, `runCommand`, `keyMacro`, `pasteText`, `navigateToDeck`,
+   * `dispatch`, `runCommand`, `keyMacro`, `typeText`, `navigateToDeck`,
    * `goBack`, `showTemporaryError`, `getActiveDeckId`). Setter functions
    * like `setKeyMacroProvider` are intentionally not exposed — they belong
    * to host setup, not addon backends.

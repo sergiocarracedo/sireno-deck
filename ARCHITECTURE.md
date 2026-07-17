@@ -59,7 +59,7 @@ emulator mode, `runEmulatorLifecycle`).
 `preflight()` runs once at startup: load config, register builtins, validate,
 load theme, pick a device, connect to the Stream Deck, create the runtime
 (`createDeckRuntime({decks, logger})`), and create the system providers
-(active-app, session, key-macro, media, clipboard).
+(active-app, session, key-macro, clipboard [linux], media).
 
 ### 3.2 Runtime — `deck/runtime.ts`
 
@@ -95,12 +95,12 @@ Per-button contexts (`AddonButtonBackendContext.methods`) carry keys shaped
 `<addonName>:<methodName>`. Built-in methods:
 
 - `runCommand` / `executor` — `execa("/bin/sh", ["-c", cmd])` with `{{ host.* }}` placeholders.
-- `keyMacro` — platform key-macro provider (`linux` / `darwin` / `windows`).
-- `pasteText` — write to clipboard, send Ctrl+V / Cmd+V.
+- `keyMacro` — platform key-macro provider (`linux` / `darwin` / `windows`); Linux uses `ydotool` (uinput — works on GNOME Wayland and others; `wtype` is wlroots-only fallback). Linux combos emit `ydotool key <scancode>:1` syntax (Linux `input-event-codes.h`); ASCII literal text goes through `ydotool type --`; non-ASCII literal text (emoji, CJK) routes through `wl-copy` + `ydotool` ctrl+v scancode because `ydotool type` does not handle non-BMP. macOS uses `osascript keystroke`, Windows uses Win32 `SendInput` via inline C# compiled at init.
+- `typeText` — addon ergonomic: type literal text (UTF-8, emoji OK) without building a `KeyMacroAction`.
 - `navigateToDeck` / `goBack` / `getActiveDeckId` — runtime facade.
 - `invalidate` — ask the runtime to re-emit `state` for the active deck.
 - `publish` / `subscribe` — channel pub/sub.
-- `setKeyMacroProvider` / `setClipboardProvider` — provider overrides for tests.
+- `setKeyMacroProvider` — provider overrides for tests.
 
 ### 3.4 Action executor — `action/executor.ts`
 
@@ -262,7 +262,7 @@ loaded theme if present.
 ### 3.13 System providers — `system/`
 
 Interfaces in `system/provider.ts`; per-platform implementations in
-`system/{active-app, key-macro, media, session-monitor, clipboard, brightness}/`.
+`system/{active-app, key-macro, clipboard, media, session-monitor, brightness}/`.
 Each is a small adapter that the runtime wires during preflight.
 
 `system/glob-match.ts` compiles overlay-deck matchers from the
