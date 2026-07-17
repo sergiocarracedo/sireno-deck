@@ -148,7 +148,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
         const button = deck.buttons.find((b) => b.id === id)
         if (button !== undefined) return { deckId: deck.id, button }
       }
-      if (lockActive) {
+      if (getActiveDeckId() === "core:lock") {
         const lockDeck = getActiveDeck()
         const button = lockDeck.buttons.find((b) => b.id === id)
         if (button !== undefined) return { deckId: lockDeck.id, button }
@@ -163,7 +163,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       if (button === undefined) return null
       return { deckId: deck.id, button }
     }
-    if (lockActive && deckId === "core:lock") {
+    if (deckId === "core:lock") {
       const lockDeck = getActiveDeck()
       const button = lockDeck.buttons.find((b) => b.id === buttonId)
       if (button !== undefined) return { deckId: lockDeck.id, button }
@@ -212,14 +212,14 @@ const buildDefaultLockDeck = (): RuntimeDeck => ({
   })
 
   const getActiveDeck = (): RuntimeDeck => {
-    if (lockActive) {
+    const id = getActiveDeckId()
+    if (id === "core:lock") {
       const userButtons = lockConfig?.buttons
       if (userButtons !== undefined && userButtons.length > 0) {
         return buildUserLockDeck(userButtons)
       }
       return buildDefaultLockDeck()
     }
-    const id = getActiveDeckId()
     const deck = deckById(id)
     if (deck === undefined) throw new Error(`Active deck '${id}' not found`)
     return deck

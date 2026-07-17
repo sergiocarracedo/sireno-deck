@@ -364,5 +364,41 @@ describe('lock deck — user-defined buttons (Phase 6 Plan 2)', () => {
       expect(runtime.isLockActive()).toBe(true)
       expect(runtime.getActiveDeckId()).toBe('core:lock')
     })
+
+    it('navigating to core:lock without user config yields the 3 default time buttons', () => {
+      const { runtime } = setup([
+        makeDeck({ id: 'main', isMain: true, buttons: [] }),
+        makeDeck({ id: 'core:lock', name: 'Lock', buttons: [] }),
+      ])
+      runtime.navigateToDeck('core:lock')
+      expect(runtime.isLockActive()).toBe(false)
+      const deck = runtime.getActiveDeck()
+      expect(deck.id).toBe('core:lock')
+      expect(deck.buttons).toHaveLength(3)
+      expect(deck.buttons.every((b) => b.type === 'date-time:locked-time-tile')).toBe(
+        true,
+      )
+      expect(deck.buttons[0]?.config).toEqual({ slot: 'hour' })
+      expect(deck.buttons[1]?.config).toEqual({ slot: 'separator' })
+      expect(deck.buttons[2]?.config).toEqual({ slot: 'minute' })
+    })
+
+    it('navigating to core:lock with user config yields the user buttons', () => {
+      const { runtime } = setup(
+        [
+          makeDeck({ id: 'main', isMain: true, buttons: [] }),
+          makeDeck({ id: 'core:lock', name: 'Lock', buttons: [] }),
+        ],
+        {
+          buttons: [
+            { type: 'core:change-deck', position: 0, config: { deck: 'system' } },
+          ],
+        },
+      )
+      runtime.navigateToDeck('core:lock')
+      const deck = runtime.getActiveDeck()
+      expect(deck.buttons).toHaveLength(1)
+      expect(deck.buttons[0]?.type).toBe('core:change-deck')
+    })
   })
 })
