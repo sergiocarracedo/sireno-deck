@@ -1,0 +1,45 @@
+packages/cli/src/deck/__tests__/system-back-injection.test.ts
+  s_76ace8e8cfb010::t_1ea78e91662596 3-6,68-124
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_76ace8e8cfb010::t_bb9e715fa0a6e2 66
+packages/cli/src/cli/commands/__tests__/emulator-mode-build-config.test.ts
+  s_76ace8e8cfb010::t_be5d318dc1b3b1 9,76-77,79,92,98,100,112,119,121,137,139-148,152,154-158,161,168-171,173-197
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_76ace8e8cfb010::t_0bb0b951966d9d 905,907-911,927,932,934-942,945,949,951-955,957-961,965
+packages/cli/src/cli/commands/run.ts
+  s_76ace8e8cfb010::t_1c5657ae290c10 19
+  s_76ace8e8cfb010::t_03c28344f80609 436-439
+packages/cli/src/deck/deck-config.ts
+  s_76ace8e8cfb010::t_e0c82b21ce153e 4
+  s_76ace8e8cfb010::t_bba40f4aaf827f 106
+packages/cli/src/deck/system-back-injection.ts
+  s_76ace8e8cfb010::t_592be151ca8761 27-51
+  s_76ace8e8cfb010::t_0ef6c4bc2a84fe 6
+packages/cli/src/deck/index.ts
+  s_76ace8e8cfb010::t_ee43687bf1ba86 34
+packages/cli/src/ui/surfaces/SplitActionSurface.tsx
+  s_76ace8e8cfb010::t_69d018c7cc4271 59
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_76ace8e8cfb010::t_b564c776ef2daf 72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "4027149fd8ef227dc075f4ebf3b91355d6b260a2",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_76ace8e8cfb010": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_090b3e67cffeM1RGgjTp66fRBZ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
