@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react"
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react"
 import {
   BUTTON_SIZE_PX,
   DEVICE_MODELS,
@@ -41,6 +41,7 @@ export interface Deck {
   name: string
   buttons: DeckButton[]
   hasOverlayDeckAvailable?: boolean
+  overlayDeckIcon?: string | null
   buttonErrors?: Array<{ position: number; expiresAt: number }>
 }
 
@@ -87,6 +88,7 @@ interface DeckButtonCellProps {
   readonly row: number
   readonly splitAction?: boolean
   readonly isError?: boolean
+  readonly overlayDeckIcon?: string | null
 }
 
 const DeckButtonCell = ({
@@ -97,6 +99,7 @@ const DeckButtonCell = ({
   row,
   splitAction = false,
   isError = false,
+  overlayDeckIcon: deckOverlayIcon,
 }: DeckButtonCellProps) => {
   const { fire } = useButtonAction(deckId, position)
   if (isError) {
@@ -117,6 +120,31 @@ const DeckButtonCell = ({
     )
   }
   if (splitAction) {
+    const overlayIcon = deckOverlayIcon ?? undefined
+    const lastClickAtRef = useRef(0)
+    const holdTimerRef = useRef<number | null>(null)
+    const clearHoldTimer = () => {
+      if (holdTimerRef.current !== null) {
+        window.clearTimeout(holdTimerRef.current)
+        holdTimerRef.current = null
+      }
+    }
+    useEffect(() => clearHoldTimer, [])
+    const handleClick = () => {
+      const now = Date.now()
+      const isDouble = now - lastClickAtRef.current < 300
+      lastClickAtRef.current = now
+      fire(isDouble ? "dbl-tap" : "tap")
+    }
+    const handlePointerDown = () => {
+      clearHoldTimer()
+      holdTimerRef.current = window.setTimeout(() => {
+        holdTimerRef.current = null
+        fire("hold")
+      }, 500)
+    }
+    const handlePointerUp = () => clearHoldTimer()
+    const handlePointerLeave = () => clearHoldTimer()
     return (
       <div
         style={{
@@ -128,10 +156,16 @@ const DeckButtonCell = ({
         data-button-type={button.type}
         data-split-action="true"
       >
-        <ButtonFrame buttonType={button.type} onClick={() => fire("tap")}>
+        <ButtonFrame
+          buttonType={button.type}
+          onClick={handleClick}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+          onPointerLeave={handlePointerLeave}
+        >
           <SplitActionSurface
             primary={renderSystemButton("core:back")}
-            secondary={renderSystemButton("core:overlay-toggle")}
+            secondary={renderSystemButton("core:overlay-toggle", overlayIcon)}
           />
         </ButtonFrame>
       </div>
@@ -251,6 +285,7 @@ export const Deck = ({ deck, children }: DeckProps) => {
             col={col}
             row={row}
             isError={errorPositions.has(position)}
+            overlayDeckIcon={deck.overlayDeckIcon ?? null}
             {...(splitAction ? { splitAction: true } : {})}
           />
         )

@@ -28,12 +28,15 @@ export const SYSTEM_BUTTON_LABELS: ReadonlyArray<string> = SYSTEM_BUTTON_TYPES
 export const isSystemButton = (type: string): type is SystemButtonType =>
   isSystemButtonType(type)
 
-export const renderSystemButton = (type: string): ReactElement | null => {
+export const renderSystemButton = (
+  type: string,
+  iconOverride?: string,
+): ReactElement | null => {
   if (!isSystemButtonType(type)) return null
   const layout = SYSTEM_BUTTON_LAYOUT[type]
   return (
     <IconLabelSurface
-      source={layout.source}
+      source={iconOverride ?? layout.source}
       label={layout.label}
       {...(layout.details !== undefined ? { details: layout.details } : {})}
     />
