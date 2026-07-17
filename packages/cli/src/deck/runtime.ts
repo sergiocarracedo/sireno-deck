@@ -491,6 +491,10 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     if (deckId !== null) {
       const deck = deckById(deckId)
       if (deck === undefined) return
+      logger.info(
+        { deckId, autoShow: deck.autoShow === true },
+        "active-app: applying overlay",
+      )
       if (deck.autoShow !== true) {
         lastOverlayDeckId = deckId
         return
@@ -499,6 +503,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       setOverlay(deckId, { source: "autoShow" })
       return
     }
+    logger.info({ prevOverlayId: overlayDeckId }, "active-app: clearing overlay")
     lastOverlayDeckId = deckId
     if (overlayDeckId !== null) {
       setOverlay(null, { source: "autoShow" })
@@ -520,7 +525,16 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       }
     }
     if (availableOverlayDeckId !== bestId) {
+      const prev = availableOverlayDeckId
       availableOverlayDeckId = bestId
+      if (bestId !== null) {
+        logger.info(
+          { from: prev, to: bestId, snapshot: { name: snapshot.name, windowTitle: snapshot.windowTitle } },
+          "active-app: overlay deck available",
+        )
+      } else if (prev !== null) {
+        logger.info({ from: prev }, "active-app: no overlay deck matches")
+      }
       pubSub.publish("runtime:overlay-available", { deckId: bestId })
     }
     return bestId
@@ -539,12 +553,17 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
 
   const startActiveAppLoop = (provider: ActiveAppProviderLike): void => {
     if (activeAppPoll !== null) return
+    logger.info("active-app: poll loop started")
     activeAppPoll = setInterval(() => {
       void provider.getActive().then((snapshot) => {
         if (snapshot === null) {
           scheduleOverlay(null)
           return
         }
+        logger.debug(
+          { snapshot: { name: snapshot.name, windowTitle: snapshot.windowTitle } },
+          "active-app: snapshot",
+        )
         scheduleOverlay(computeOverlayFor(snapshot))
       })
     }, 1000)
