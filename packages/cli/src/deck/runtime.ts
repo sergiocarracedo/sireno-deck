@@ -138,7 +138,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   }
 
   const getActiveDeck = (): RuntimeDeck => {
-    const id = transientDeckId ?? navStack[navStack.length - 1] ?? mainDeck.id
+    const id = getActiveDeckId()
     const deck = deckById(id)
     if (deck === undefined) throw new Error(`Active deck '${id}' not found`)
     return deck
