@@ -250,7 +250,7 @@ const enterLockMode = (): void => {
     lockActive = true
     logger.info(
       { preLockActiveDeckId, preLockOverlayDeckId },
-      "runtime: lock active (navigated)",
+      "runtime: lock active",
     )
     pubSub.publish("runtime:lock-mode", { active: true, reason: "session-locked" })
     pubSub.publish("runtime:invalidate", undefined)
@@ -260,10 +260,6 @@ const navigateToDeck = (
     id: string,
     navOptions?: { addToHistory?: boolean },
   ): void => {
-    if (id === "core:lock") {
-      enterLockMode()
-      return
-    }
     if (id === getActiveDeckId()) return
     const target = deckById(id)
     if (target === undefined) {

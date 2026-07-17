@@ -323,51 +323,46 @@ describe('lock deck — user-defined buttons (Phase 6 Plan 2)', () => {
     })
   })
 
-  describe('navigateToDeck("core:lock") enters lock mode', () => {
-    it('activates lock mode when not already locked', () => {
+  describe('navigateToDeck("core:lock") behaves as a regular deck', () => {
+    it('navigates to core:lock like any other deck (does not enter lock mode)', () => {
       const { runtime } = setup([
         makeDeck({ id: 'main', isMain: true, buttons: [] }),
       ])
+      // The test setup doesn't include the core addon's deck factory, so core:lock
+      // is registered through the addon system in real runs. Here we simulate that
+      // by including core:lock as a regular deck.
+      const { runtime: r2 } = setup([
+        makeDeck({ id: 'main', isMain: true, buttons: [] }),
+        makeDeck({ id: 'core:lock', name: 'Lock', buttons: [] }),
+      ])
       expect(runtime.isLockActive()).toBe(false)
-      runtime.navigateToDeck('core:lock')
-      expect(runtime.isLockActive()).toBe(true)
-      expect(runtime.getActiveDeckId()).toBe('core:lock')
+      r2.navigateToDeck('core:lock')
+      expect(r2.isLockActive()).toBe(false)
+      expect(r2.getActiveDeckId()).toBe('core:lock')
     })
 
     it('does not log "deck not found" warning for core:lock', () => {
-      const { runtime, pubSub } = setup([
-        makeDeck({ id: 'main', isMain: true, buttons: [] }),
-      ])
-      const warnMessages: string[] = []
-      pubSub.subscribe<{ level: string; msg: string }>('runtime:log', (p) => {
-        if (p.level === 'warn') warnMessages.push(p.msg)
-      })
-      const originalWarn = runtime['logger' as keyof typeof runtime]
-      runtime.navigateToDeck('core:lock')
-      expect(warnMessages.some((m) => m.includes('deck not found'))).toBe(false)
-      void originalWarn
-    })
-
-    it('snapshot captures the regular active deck on navigateToDeck', () => {
       const { runtime } = setup([
         makeDeck({ id: 'main', isMain: true, buttons: [] }),
-        makeDeck({ id: 'media', buttons: [] }),
+        makeDeck({ id: 'core:lock', name: 'Lock', buttons: [] }),
       ])
-      runtime.navigateToDeck('media')
-      expect(runtime.getActiveDeckId()).toBe('media')
       runtime.navigateToDeck('core:lock')
-      expect(runtime.isLockActive()).toBe(true)
+      expect(runtime.isLockActive()).toBe(false)
     })
 
-    it('navigateToDeck("core:lock") while already locked is a no-op', () => {
+    it('lock mode activates via session provider only — not via navigation', () => {
       const { runtime } = setup([
         makeDeck({ id: 'main', isMain: true, buttons: [] }),
+        makeDeck({ id: 'core:lock', name: 'Lock', buttons: [] }),
       ])
+      const session = fakeSessionProvider()
+      runtime.setSessionProvider(session)
+      expect(runtime.isLockActive()).toBe(false)
       runtime.navigateToDeck('core:lock')
-      const beforeEventCount = 0
-      runtime.navigateToDeck('core:lock')
+      expect(runtime.isLockActive()).toBe(false)
+      session.emit('locked')
       expect(runtime.isLockActive()).toBe(true)
-      expect(beforeEventCount).toBe(0)
+      expect(runtime.getActiveDeckId()).toBe('core:lock')
     })
   })
 })

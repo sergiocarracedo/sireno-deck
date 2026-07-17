@@ -36,6 +36,12 @@ export const manifest: AddonManifestV1 = {
       service: { ...mediaSampleBackend, gestureHandlers: ["tap"] as const },
     },
   },
+  decks: {
+    "core:lock": () => ({
+      name: "Lock",
+      buttons: [],
+    }),
+  },
 }
 
 export const coreAddon = manifest

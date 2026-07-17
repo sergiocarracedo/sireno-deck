@@ -78,7 +78,7 @@ decks:
       - position: 11
         type: 'core:change-deck'
         config:
-          deck: 'lock:deck'
+          deck: 'core:lock'
           icon: 'icon://lock'
           label: Lock deck
 
