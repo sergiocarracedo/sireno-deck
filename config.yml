@@ -87,7 +87,7 @@ decks:
     name: Chrome
     icon: ./assets/chrome.svg
     trigger:
-      process_name: chrome
+      process_name: "*chrome*"
     autoShow: true
     buttons:
       - position: 0
