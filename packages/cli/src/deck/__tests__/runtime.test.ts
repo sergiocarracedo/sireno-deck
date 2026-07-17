@@ -804,6 +804,32 @@ describe("createRuntime — system-button gestures", () => {
     expect(runtime.getActiveDeckId()).toBe("media")
   })
 
+  it("setOverlay(null) publishes runtime:activeDeck with the regular layer top, not the overlay top", () => {
+    const { runtime, pubSub } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({ id: "media" }),
+      makeDeck({
+        id: "spotify",
+        isOverlay: true,
+        buttons: [{ id: "14", type: "core:back" }],
+      }),
+      makeDeck({ id: "spotify-page", isOverlay: true }),
+    ])
+    runtime.navigateToDeck("media")
+    runtime.setOverlay("spotify")
+    runtime.navigateToDeck("spotify-page")
+    const activeDeckEvents: unknown[] = []
+    pubSub.subscribe("runtime:activeDeck", (p) => activeDeckEvents.push(p))
+    runtime.setOverlay(null)
+    expect(runtime.getActiveDeckId()).toBe("media")
+    const dismissEvents = activeDeckEvents.filter(
+      (e) => (e as { deckId: string }).deckId !== "spotify-page",
+    )
+    expect(dismissEvents).toContainEqual({ deckId: "media" })
+    expect(dismissEvents).not.toContainEqual({ deckId: "spotify-page" })
+    expect(runtime.getActiveDeckId()).toBe("media")
+  })
+
   it("core:back dbl-tap with overlay available flips to overlay", async () => {
     const { runtime } = setup([
       makeDeck({

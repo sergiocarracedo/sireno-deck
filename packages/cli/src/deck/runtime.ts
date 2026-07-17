@@ -249,7 +249,9 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     }
     const previousActiveId = getActiveDeckId()
     const previousOverlayId = overlayDeckId
-    overlayPreviousActiveId = previousActiveId
+    if (previousOverlayId === null && deckId !== null) {
+      overlayPreviousActiveId = previousActiveId
+    }
     overlayDeckId = deckId
     pubSub.publish(
       "runtime:overlay",
