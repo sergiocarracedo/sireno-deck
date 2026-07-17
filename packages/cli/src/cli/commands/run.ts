@@ -593,6 +593,7 @@ const startSystemProviders = async (
   ])
 
   runtime.setActiveAppProvider(activeApp)
+  runtime.setSessionProvider(session)
   methods.setKeyMacroProvider(keyMacro)
 
   return { activeApp, session, keyMacro }
