@@ -1,0 +1,30 @@
+config.yml
+  h_f90ee31b03fc41 81
+packages/cli/src/builtin-addons/core/index.ts
+  s_586986ca02db2f::t_eec94f455b126c 39-44
+packages/cli/src/deck/runtime.ts
+  s_586986ca02db2f::t_ac8b4bbae66341 253
+packages/cli/src/deck/__tests__/lock-deck.test.ts
+  s_586986ca02db2f::t_fc3a6c54c4d445 326-327,331-334,336,338-341,344,347,350,353,356,358-360,362-363,365
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "dfb439e068303f33bbc9c51dd49e105f412403b3",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_586986ca02db2f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08ee995cbffedn8iRvToXsQvlX",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
