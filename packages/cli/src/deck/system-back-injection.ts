@@ -15,12 +15,14 @@ export interface RuntimeDeck {
 export interface RuntimeState {
   navStackDepth: number
   hasOverlayDeckAvailable: boolean
+  lockActive?: boolean
 }
 
 export const computeSystemButtonForSlotN1 = (
   deck: RuntimeDeck,
-  _state: RuntimeState,
+  state: RuntimeState,
 ): SystemButtonType | null => {
+  if (state.lockActive === true) return null
   if (deck.isMain) return "core:settings-entry"
   return "core:back"
 }
@@ -28,12 +30,14 @@ export const computeSystemButtonForSlotN1 = (
 export const injectSystemButtons = <T extends RuntimeDeck>(
   decks: ReadonlyArray<T>,
   keyCount: number,
+  options?: { lockActive?: boolean },
 ): ReadonlyArray<T> => {
   const n1Position = keyCount - 1
   return decks.map((deck) => {
     const systemButtonType = computeSystemButtonForSlotN1(deck, {
       navStackDepth: 1,
       hasOverlayDeckAvailable: false,
+      lockActive: options?.lockActive === true,
     })
     if (systemButtonType === null) return deck
     const filtered = deck.buttons.filter((b) => {
