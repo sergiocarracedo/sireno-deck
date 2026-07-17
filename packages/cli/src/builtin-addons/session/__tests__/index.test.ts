@@ -8,13 +8,4 @@ describe("session addon", () => {
     expect(sessionAddon.name).toBe("session")
   })
 
-  it("createDecks returns a session:locked deck with 5 time buttons", () => {
-    const factory = sessionAddon.decks?.["session:locked"]
-    expect(factory).toBeDefined()
-    const deck = factory!(0)
-    expect(deck.name).toBe("Locked")
-    const buttons = (deck.buttons ?? []) as Array<{ type: string }>
-    expect(buttons).toHaveLength(5)
-    expect(buttons.every((b) => b.type === "session:time")).toBe(true)
   })
-})

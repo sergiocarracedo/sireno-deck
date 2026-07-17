@@ -1,15 +1,14 @@
 # session
 
-**Internal-only addon.** Provides the `session:locked` overlay deck that appears when the OS reports the screen is locked (via the OS session provider from `os-providers/`).
+**Internal-only addon.** Provides session-related info buttons. The locked deck itself is runtime-synthesized (see `packages/cli/src/deck/runtime.ts` → `buildDefaultLockDeck`); this addon does not register a deck factory.
 
-You don't reference this addon directly in `config.yml`. The session overlay appears automatically when the OS session is locked and disappears on unlock.
+## Buttons
 
-## Decks
-
-| Deck id          | Buttons                                              |
-| ---------------- | ---------------------------------------------------- |
-| `session:locked` | Single button: session-info (shows unlock countdown) |
+| Button id        | Purpose                                            |
+| ---------------- | -------------------------------------------------- |
+| `session:info`   | Shows current OS session state (locked/unlocked)   |
 
 ## See also
 
 - [Internal settings](../internal-settings/README.md) — settings overlay
+- `packages/cli/src/deck/runtime.ts` — runtime-synthesized lock deck

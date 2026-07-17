@@ -247,6 +247,7 @@ const setHappyPath = (): ReturnType<typeof makeFakeOutputClient> => {
   })
   const fakeRuntime = {
     setActiveAppProvider: vi.fn(),
+    setSessionProvider: vi.fn(),
     setGestureListener: vi.fn(),
     stopActiveAppPolling: vi.fn(async () => undefined),
     getActiveDeck: vi.fn(() => undefined),
