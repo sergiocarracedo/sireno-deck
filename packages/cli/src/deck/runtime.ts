@@ -163,7 +163,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       if (button === undefined) return null
       return { deckId: deck.id, button }
     }
-    if (lockActive && deckId === "lock:deck") {
+    if (lockActive && deckId === "core:lock") {
       const lockDeck = getActiveDeck()
       const button = lockDeck.buttons.find((b) => b.id === buttonId)
       if (button !== undefined) return { deckId: lockDeck.id, button }
@@ -178,7 +178,7 @@ const LOCK_FOLDER_NAV_TYPES: ReadonlySet<string> = new Set([
 ])
 
 const buildDefaultLockDeck = (): RuntimeDeck => ({
-    id: "lock:deck",
+    id: "core:lock",
     name: "Locked",
     buttons: [
       { id: "0", type: "date-time:locked-time-tile", config: { slot: "hour" } },
@@ -194,7 +194,7 @@ const buildDefaultLockDeck = (): RuntimeDeck => ({
   const buildUserLockDeck = (
     buttons: ReadonlyArray<LockDeckButtonSpec>,
   ): RuntimeDeck => ({
-    id: "lock:deck",
+    id: "core:lock",
     name: "Locked",
     buttons: buttons.map((b, i) => {
       const button: RuntimeDeck["buttons"][number] = {
@@ -226,7 +226,7 @@ const buildDefaultLockDeck = (): RuntimeDeck => ({
   }
 
   const getActiveDeckId = (): string => {
-    if (lockActive) return "lock:deck"
+    if (lockActive) return "core:lock"
     if (overlayDeckId !== null) {
       const stack = overlayNavStacks.get(overlayDeckId)
       if (stack !== undefined && stack.length > 0) {
@@ -237,10 +237,33 @@ const buildDefaultLockDeck = (): RuntimeDeck => ({
     return transientDeckId ?? navStack[navStack.length - 1] ?? mainDeck.id
   }
 
-  const navigateToDeck = (
+  const snapshotRegularActiveDeckId = (): string =>
+        overlayPreviousActiveId ??
+        transientDeckId ??
+        navStack[navStack.length - 1] ??
+        mainDeck.id
+
+const enterLockMode = (): void => {
+    if (lockActive) return
+    preLockActiveDeckId = snapshotRegularActiveDeckId()
+    preLockOverlayDeckId = overlayDeckId
+    lockActive = true
+    logger.info(
+      { preLockActiveDeckId, preLockOverlayDeckId },
+      "runtime: lock active (navigated)",
+    )
+    pubSub.publish("runtime:lock-mode", { active: true, reason: "session-locked" })
+    pubSub.publish("runtime:invalidate", undefined)
+  }
+
+const navigateToDeck = (
     id: string,
     navOptions?: { addToHistory?: boolean },
   ): void => {
+    if (id === "core:lock") {
+      enterLockMode()
+      return
+    }
     if (id === getActiveDeckId()) return
     const target = deckById(id)
     if (target === undefined) {
@@ -431,7 +454,7 @@ const buildDefaultLockDeck = (): RuntimeDeck => ({
       return
     }
 
-    if (lockActive && found.deckId === "lock:deck") {
+    if (lockActive && found.deckId === "core:lock") {
       if (LOCK_FOLDER_NAV_TYPES.has(found.button.type)) {
         lockActive = false
         preLockActiveDeckId = null
@@ -454,7 +477,7 @@ const buildDefaultLockDeck = (): RuntimeDeck => ({
       }
     }
 
-    if (found.deckId !== getActiveDeckId() && found.deckId !== "lock:deck") {
+    if (found.deckId !== getActiveDeckId() && found.deckId !== "core:lock") {
       logger.debug(
         { buttonId, deckId: found.deckId, activeDeckId: getActiveDeckId() },
         "invokeAction: gesture on inactive deck, dropping",
@@ -718,19 +741,8 @@ const buildDefaultLockDeck = (): RuntimeDeck => ({
       sessionUnsubscribe = null
     }
     const handle = (state: SessionState): void => {
-      const snapshotRegularActiveDeckId = (): string =>
-        overlayPreviousActiveId ??
-        transientDeckId ??
-        navStack[navStack.length - 1] ??
-        mainDeck.id
-
-if (state === "locked" && !lockActive) {
-        preLockActiveDeckId = snapshotRegularActiveDeckId()
-        preLockOverlayDeckId = overlayDeckId
-        lockActive = true
-        logger.info({ preLockActiveDeckId, preLockOverlayDeckId }, "runtime: lock active")
-        pubSub.publish("runtime:lock-mode", { active: true, reason: "session-locked" })
-        pubSub.publish("runtime:invalidate", undefined)
+      if (state === "locked" && !lockActive) {
+        enterLockMode()
         return
       }
       if (state === "locked" && lockActive) {

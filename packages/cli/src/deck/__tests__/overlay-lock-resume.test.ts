@@ -95,7 +95,7 @@ describe("lock deck — overlay auto-resume (Phase 6 Plan 3)", () => {
 
     session.emit("locked")
     expect(runtime.isLockActive()).toBe(true)
-    expect(runtime.getActiveDeckId()).toBe("lock:deck")
+    expect(runtime.getActiveDeckId()).toBe("core:lock")
 
     session.emit("unlocked")
     expect(runtime.isLockActive()).toBe(false)
@@ -126,7 +126,7 @@ describe("lock deck — overlay auto-resume (Phase 6 Plan 3)", () => {
     const session = fakeSessionProvider()
     runtime.setSessionProvider(session)
     session.emit("locked")
-    expect(runtime.getActiveDeckId()).toBe("lock:deck")
+    expect(runtime.getActiveDeckId()).toBe("core:lock")
     expect(runtime.getOverlay()?.id).toBe("spotify")
 
     session.emit("unlocked")
@@ -161,7 +161,7 @@ describe("lock deck — overlay auto-resume (Phase 6 Plan 3)", () => {
     const session = fakeSessionProvider()
     runtime.setSessionProvider(session)
     session.emit("locked")
-    expect(runtime.getActiveDeckId()).toBe("lock:deck")
+    expect(runtime.getActiveDeckId()).toBe("core:lock")
 
     runtime.stopActiveAppPolling()
     runtime.setActiveAppProvider(
@@ -200,12 +200,12 @@ describe("lock deck — overlay auto-resume (Phase 6 Plan 3)", () => {
     runtime.setActiveAppProvider(fakeActiveAppProvider(null))
 
     session.emit("locked")
-    runtime.registerButtonHandler("lock:deck:0", {
+    runtime.registerButtonHandler("core:lock:0", {
       onTap: async () => {
         runtime.navigateToDeck("system", { addToHistory: false })
       },
     })
-    await runtime.dispatchGesture("lock:deck:0", "tap")
+    await runtime.dispatchGesture("core:lock:0", "tap")
     expect(runtime.isLockActive()).toBe(false)
     expect(runtime.getActiveDeckId()).toBe("system")
 
