@@ -1,0 +1,25 @@
+.planning/phases/05-overlay-decks/05-RESEARCH.md
+  s_76ace8e8cfb010::t_b0c75d1e4d4d01 1-71
+.planning/phases/05-overlay-decks/PLAN-2.md
+  s_76ace8e8cfb010::t_3b05ba1707ec74 45,47
+  s_76ace8e8cfb010::t_788b6254d3f7d6 59
+  s_76ace8e8cfb010::t_e978357b574725 1-44,46,48-58,60-64
+.planning/phases/05-overlay-decks/PLAN-1.md
+  s_76ace8e8cfb010::t_a8f788dea13c05 1-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "099ea63fc057ff541d3d76a178112023c8527979",
+  "prompts": {},
+  "sessions": {
+    "s_76ace8e8cfb010": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_090b3e67cffeM1RGgjTp66fRBZ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
