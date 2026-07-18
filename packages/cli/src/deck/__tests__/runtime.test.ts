@@ -960,6 +960,39 @@ describe("createRuntime — system-button gestures", () => {
     expect(runtime.getActiveDeckId()).toBe("main")
   })
 
+  it("core:settings-entry tap navigates to the internal-settings regular deck", async () => {
+    const { runtime } = setup([
+      makeDeck({
+        id: "main",
+        isMain: true,
+        buttons: [{ id: "14", type: "core:settings-entry" }],
+      }),
+      makeDeck({ id: "internal-settings:settings" }),
+    ])
+    await runtime.dispatchGesture("main:14", "tap")
+    expect(runtime.getActiveDeckId()).toBe("internal-settings:settings")
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.navStackDepth()).toBe(2)
+  })
+
+  it("core:back tap from settings returns to main deck", async () => {
+    const { runtime } = setup([
+      makeDeck({
+        id: "main",
+        isMain: true,
+        buttons: [{ id: "14", type: "core:settings-entry" }],
+      }),
+      makeDeck({
+        id: "internal-settings:settings",
+        buttons: [{ id: "14", type: "core:back" }],
+      }),
+    ])
+    await runtime.dispatchGesture("main:14", "tap")
+    expect(runtime.getActiveDeckId()).toBe("internal-settings:settings")
+    await runtime.dispatchGesture("internal-settings:settings:14", "tap")
+    expect(runtime.getActiveDeckId()).toBe("main")
+  })
+
   it("dispatchGesture on injected core:settings-entry at n-1 dbl-tap flips to available overlay", async () => {
     const { runtime } = setup([
       makeDeck({

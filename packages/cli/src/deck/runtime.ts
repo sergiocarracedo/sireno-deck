@@ -354,6 +354,10 @@ const navigateToDeck = (
       }
       return true
     }
+    if (type === "core:settings-entry" && gesture === "tap") {
+      navigateToDeck("internal-settings:settings", { addToHistory: true })
+      return true
+    }
     if (
       (type === "core:overlay-toggle" || type === "core:settings-entry") &&
       gesture === "dbl-tap"

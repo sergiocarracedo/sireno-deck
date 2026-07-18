@@ -47,6 +47,7 @@ import { getHostContext } from "@/deck/host-context"
 import {
   getAssetByPath,
   getUnsentAssets,
+  registerDeckIcon,
   registerIconForDeck,
 } from "@/core/icon-asset-registry"
 import { StatePublisher } from "@/render/state-publisher"
@@ -216,6 +217,7 @@ export const setupAddonServices = (
         undefined,
         isCompact,
         (fullPath) => getAssetByPath(fullPath)?.id,
+        runtime.getAvailableOverlayDeckIcon(),
       )
       bridge.broadcast(msg)
     },
@@ -551,7 +553,7 @@ const startSystemProviders = async (
         const onExit = (code: number | null): void => {
           if (killTimer !== undefined) clearTimeout(killTimer)
           resolve({
-            exitCode: timedOut ? -1 : code ?? -1,
+            exitCode: timedOut ? -1 : (code ?? -1),
             stdout,
             stderr,
             elapsedMs: Date.now() - start,
@@ -704,6 +706,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   )
   await outputClient.storeSelection(descriptor)
   for (const deck of decks) {
+    registerDeckIcon(deck, resolverOptions, logger)
     registerIconForDeck(deck.buttons, resolverOptions, logger)
   }
 

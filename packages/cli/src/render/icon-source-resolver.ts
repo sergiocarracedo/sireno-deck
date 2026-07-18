@@ -56,6 +56,8 @@ export const resolveIconSource = (
   if (isAbsolute(source)) {
     return { kind: "asset", fullPath: source }
   }
+  // ponytail: returns on first baseDir; baseDirs is always 1 entry today (config dir).
+  // If multiple baseDirs ever get added, this needs a statSync existence check + iteration.
   for (const baseDir of options.baseDirs ?? []) {
     return { kind: "asset", fullPath: join(baseDir, source) }
   }

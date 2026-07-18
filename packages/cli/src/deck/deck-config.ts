@@ -123,6 +123,12 @@ export const buildDeckConfigMessage = (
       ...(b.full === true ? { full: true } : {}),
     }
   })
+  const resolvedOverlayIcon =
+    overlayDeckIcon === null
+      ? null
+      : (resolveOne(overlayDeckIcon, resolverOptions, assetLookup) as
+          | string
+          | null)
   return {
     type: "deck-config",
     deckId: deck.id,
@@ -136,6 +142,6 @@ export const buildDeckConfigMessage = (
     navMode: "regular",
     isCompact: isCompact ?? false,
     hasOverlayDeckAvailable: navState?.hasOverlayDeckAvailable ?? false,
-    overlayDeckIcon,
+    overlayDeckIcon: resolvedOverlayIcon,
   }
 }

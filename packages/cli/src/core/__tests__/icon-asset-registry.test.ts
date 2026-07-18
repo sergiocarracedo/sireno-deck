@@ -8,6 +8,7 @@ import {
   clearAssets,
   getAssetByPath,
   getUnsentAssets,
+  registerDeckIcon,
   registerIconForDeck,
 } from "../icon-asset-registry"
 
@@ -80,6 +81,43 @@ describe("registerIconForDeck", () => {
         [{ config: { icon: "addon://unknown/x.svg" }, id: "0", type: "x" }],
         { addonDirs: new Map() },
       ),
+    ).not.toThrow()
+    expect(getUnsentAssets(new Set())).toHaveLength(0)
+  })
+})
+
+describe("registerDeckIcon", () => {
+  it("registers deck.icon from an addon:// URI", () => {
+    const filePath = join(tmpDir, "deck.svg")
+    writeFileSync(filePath, "<svg/>", "utf8")
+    registerDeckIcon(
+      { icon: "addon://demo/deck.svg" },
+      { addonDirs: new Map([["demo", tmpDir]]) },
+    )
+    const asset = getAssetByPath(filePath)
+    expect(asset).toBeDefined()
+    expect(asset?.src).toMatch(/^data:image\/svg\+xml;base64,/)
+  })
+
+  it("registers a relative-path deck.icon using baseDirs", () => {
+    const filePath = join(tmpDir, "deck.png")
+    writeFileSync(filePath, "png", "utf8")
+    registerDeckIcon(
+      { icon: "./deck.png" },
+      { addonDirs: new Map(), baseDirs: [tmpDir] },
+    )
+    expect(getAssetByPath(filePath)).toBeDefined()
+  })
+
+  it("skips when deck.icon is missing or empty", () => {
+    expect(() => registerDeckIcon({}, {}, undefined)).not.toThrow()
+    expect(() => registerDeckIcon({ icon: "" }, {}, undefined)).not.toThrow()
+    expect(getUnsentAssets(new Set())).toHaveLength(0)
+  })
+
+  it("leaves icon:// deck icons alone (handled by frontend)", () => {
+    expect(() =>
+      registerDeckIcon({ icon: "icon://layers" }, {}, undefined),
     ).not.toThrow()
     expect(getUnsentAssets(new Set())).toHaveLength(0)
   })
