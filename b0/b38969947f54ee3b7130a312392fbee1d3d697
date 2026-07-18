@@ -1,0 +1,19 @@
+.planning/STATE.md
+  s_111fe324359655::t_536cdacee1cced 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "b0b38969947f54ee3b7130a312392fbee1d3d697",
+  "prompts": {},
+  "sessions": {
+    "s_111fe324359655": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08b16ea33ffeCuhlTuvIGIPPx1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
