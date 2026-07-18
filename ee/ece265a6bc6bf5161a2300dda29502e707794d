@@ -1,0 +1,23 @@
+.planning/phases/07-text-line-clamp/07-01-PLAN.md
+  s_111fe324359655::t_e76358c3cf3495 1-56
+.planning/phases/07-text-line-clamp/07-02-PLAN.md
+  s_111fe324359655::t_078fb1c312a875 1-57
+.planning/phases/07-text-line-clamp/07-RESEARCH.md
+  s_111fe324359655::t_8c6df7d1447844 1-90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "eeece265a6bc6bf5161a2300dda29502e707794d",
+  "prompts": {},
+  "sessions": {
+    "s_111fe324359655": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08b16ea33ffeCuhlTuvIGIPPx1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
