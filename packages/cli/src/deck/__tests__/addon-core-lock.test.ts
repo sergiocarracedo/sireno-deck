@@ -29,7 +29,7 @@ describe("materializeAddonDecks registers core:lock", () => {
     const coreLock = decks.find((d) => d.id === "core:lock")
     expect(coreLock).toBeDefined()
     expect(coreLock?.buttons.length).toBe(3)
-    expect(coreLock?.buttons.every((b) => b.type === "date-time:locked-time-tile")).toBe(
+    expect(coreLock?.buttons.every((b) => b.type === "date-time:date-time")).toBe(
       true,
     )
   })

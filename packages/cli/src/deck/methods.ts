@@ -192,7 +192,42 @@ export const createMethods = (ctx: MethodsContext): Methods => {
           "dispatch: type:// requires a value, e.g. type://ctrl+c",
         )
       }
-      await dispatchMacro(inner, { runCommand, keyMacro })
+      let macro = inner
+      if (inner.startsWith("{")) {
+        let parsed: unknown
+        try {
+          parsed = JSON.parse(inner)
+        } catch {
+          throw new NotImplementedError(
+            "dispatch: type://{...} payload is not valid JSON",
+          )
+        }
+        if (typeof parsed !== "object" || parsed === null) {
+          throw new NotImplementedError(
+            "dispatch: type://{...} payload must be a JSON object",
+          )
+        }
+        const variants = parsed as Record<string, unknown>
+        const platKey =
+          process.platform === "darwin"
+            ? "osx"
+            : process.platform === "win32"
+              ? "windows"
+              : "linux"
+        const pick =
+          typeof variants[platKey] === "string"
+            ? (variants[platKey] as string)
+            : typeof variants.all === "string"
+              ? (variants.all as string)
+              : undefined
+        if (pick === undefined || pick.length === 0) {
+          throw new NotImplementedError(
+            `dispatch: type://{...} has no value for platform '${process.platform}' and no 'all' fallback`,
+          )
+        }
+        macro = pick
+      }
+      await dispatchMacro(macro, { runCommand, keyMacro })
       return
     }
     if (value.startsWith("brightness://")) {

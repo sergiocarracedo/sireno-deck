@@ -179,6 +179,46 @@ describe("materializeAddonDecks", () => {
     expect(genDeck.processNames).toEqual(["my-app"])
   })
 
+  it("propagates windowNames from trigger.window_name", () => {
+    const addon = fakeManifestWithDecks("test-addon", {
+      "test-addon:deck-a": () => ({
+        "gen-deck": {
+          name: "Gen",
+          buttons: [],
+          trigger: { window_name: "*opencode*" },
+        },
+      }),
+    })
+    const reg = mockRegistry([addon])
+    const userDecks: RuntimeDeck[] = [{ id: "main", name: "Main", buttons: [] }]
+
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
+    const genDeck = result.find((d) => d.id === "gen-deck")!
+
+    expect(genDeck.windowNames).toEqual(["*opencode*"])
+  })
+
+  it("propagates icon and background from generated deck", () => {
+    const addon = fakeManifestWithDecks("test-addon", {
+      "test-addon:deck-a": () => ({
+        "gen-deck": {
+          name: "Gen",
+          buttons: [],
+          icon: "addon://test-addon/assets/icon.png",
+          background: "#000",
+        },
+      }),
+    })
+    const reg = mockRegistry([addon])
+    const userDecks: RuntimeDeck[] = [{ id: "main", name: "Main", buttons: [] }]
+
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
+    const genDeck = result.find((d) => d.id === "gen-deck")!
+
+    expect(genDeck.icon).toBe("addon://test-addon/assets/icon.png")
+    expect(genDeck.background).toBe("#000")
+  })
+
   it("propagates autoShow and isOverlay when set", () => {
     const addon = fakeManifestWithDecks("test-addon", {
       "test-addon:deck-a": () => ({

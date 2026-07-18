@@ -21,7 +21,7 @@ const Action = ({ tapType, children, className, position }: ActionProps) => {
       <div
         className={cn(
           'absolute z-10',
-          position === 'bottom-right' ? 'bottom-0 left-0' : 'top-0 right-0',
+          position === 'bottom-right' ? 'bottom-0 left-1' : 'top-1 right-1',
         )}
       >
         <TapIndicator type={tapType} size="xs" />
@@ -34,7 +34,7 @@ const Action = ({ tapType, children, className, position }: ActionProps) => {
       >
         <div
           className={cn([
-            'scale-[0.65]',
+            'scale-[0.62]',
             position === 'bottom-right'
               ? 'origin-bottom-right'
               : 'origin-top-left',
@@ -81,7 +81,7 @@ export function SplitActionSurface(
         tapType={props.secondaryIndicatorType ?? 'dbltap'}
         position="bottom-right"
       >
-        {props.primary}
+        {props.secondary}
       </Action>
     </div>
   )

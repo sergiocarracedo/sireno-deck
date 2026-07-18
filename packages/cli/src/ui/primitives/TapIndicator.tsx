@@ -21,7 +21,7 @@ export const TapIndicator = (props: TapIndicatorProps) => {
   const label = useMemo(() => {
     const labelMap: Record<NonNullable<TapIndicatorType>, string> = {
       tap: 'TAP',
-      dbltap: 'TAPx2',
+      dbltap: 'DBL',
       hold: 'HOLD',
     }
 

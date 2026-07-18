@@ -39,9 +39,9 @@ const coreLockDeckWith = (
 
 const defaultCoreLockDeck = (): RuntimeDeck =>
   coreLockDeckWith([
-    { type: 'date-time:locked-time-tile', position: 0, config: { slot: 'hour' } },
-    { type: 'date-time:locked-time-tile', position: 1, config: { slot: 'separator' } },
-    { type: 'date-time:locked-time-tile', position: 2, config: { slot: 'minute' } },
+    { type: 'date-time:date-time', position: 0, config: { format: 'HH' } },
+    { type: 'date-time:date-time', position: 1, config: { format: '<blink>:</blink>' } },
+    { type: 'date-time:date-time', position: 2, config: { format: 'mm' } },
   ])
 
 const setup = (decks: ReadonlyArray<RuntimeDeck>) => {
@@ -101,7 +101,7 @@ describe('lock deck — addon factory output (Phase 6)', () => {
       const deck = runtime.getActiveDeck()
       expect(deck.id).toBe('core:lock')
       expect(deck.buttons).toHaveLength(3)
-      expect(deck.buttons.every((b) => b.type === 'date-time:locked-time-tile')).toBe(
+      expect(deck.buttons.every((b) => b.type === 'date-time:date-time')).toBe(
         true,
       )
     })
@@ -310,12 +310,12 @@ describe('lock deck — addon factory output (Phase 6)', () => {
       const deck = runtime.getActiveDeck()
       expect(deck.id).toBe('core:lock')
       expect(deck.buttons).toHaveLength(3)
-      expect(deck.buttons.every((b) => b.type === 'date-time:locked-time-tile')).toBe(
+      expect(deck.buttons.every((b) => b.type === 'date-time:date-time')).toBe(
         true,
       )
-      expect(deck.buttons[0]?.config).toEqual({ slot: 'hour' })
-      expect(deck.buttons[1]?.config).toEqual({ slot: 'separator' })
-      expect(deck.buttons[2]?.config).toEqual({ slot: 'minute' })
+      expect(deck.buttons[0]?.config).toEqual({ format: 'HH' })
+      expect(deck.buttons[1]?.config).toEqual({ format: '<blink>:</blink>' })
+      expect(deck.buttons[2]?.config).toEqual({ format: 'mm' })
     })
 
     it('navigating to core:lock with user config yields the user buttons', () => {

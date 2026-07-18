@@ -155,6 +155,7 @@ export interface AddonGeneratedDeck {
   paginated?: boolean
   trigger?: unknown
   autoShow?: boolean
+  isOverlay?: boolean
 }
 
 /**

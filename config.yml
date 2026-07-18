@@ -1,4 +1,9 @@
 theme: default
+
+addons:
+  - ~/works/opensource/sireno-deck-addons/vscode-overlay
+  - ~/works/opensource/sireno-deck-addons/opencode-overlay
+
 # lock:
 #   buttons:
 #     - type: 'weather:weather'
@@ -96,6 +101,19 @@ decks:
         # actions:
         #   tap: 'google-chrome https://calendar.google.com'
 
+  vcdode:
+    name: Code
+    icon: ./assets/chrome.svg
+    trigger:
+      process_name: '*code*'
+    autoShow: false
+    buttons:
+      - position: 0
+        type: 'core:action'
+        actions:
+          tap: 'xdotool key ctrl+t'
+        config:
+          label: New Tab
   chrome:
     name: Chrome
     icon: ./assets/chrome.svg

@@ -34,9 +34,9 @@ const coreLockDeckWith = (
 
 const defaultCoreLockDeck = (): RuntimeDeck =>
   coreLockDeckWith([
-    { type: "date-time:locked-time-tile", position: 0, config: { slot: "hour" } },
-    { type: "date-time:locked-time-tile", position: 1, config: { slot: "separator" } },
-    { type: "date-time:locked-time-tile", position: 2, config: { slot: "minute" } },
+    { type: "date-time:date-time", position: 0, config: { format: "HH" } },
+    { type: "date-time:date-time", position: 1, config: { format: "<blink>:</blink>" } },
+    { type: "date-time:date-time", position: 2, config: { format: "mm" } },
   ])
 
 const silentLogger = () => createLogger({ level: "silent" })

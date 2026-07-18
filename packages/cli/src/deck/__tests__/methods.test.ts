@@ -249,4 +249,54 @@ describe("createMethods", () => {
     void methods.dispatch("brightness://up")
     expect(runtime.getBrightness()).toBe(70)
   })
+
+  it("dispatch resolves type://{...} per-OS variant for current platform", async () => {
+    const { methods } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    const sendKey = vi.fn().mockResolvedValue(undefined)
+    methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
+    const platKey =
+      process.platform === "darwin"
+        ? "osx"
+        : process.platform === "win32"
+          ? "windows"
+          : "linux"
+    const payload = JSON.stringify({
+      all: "ctrl+x",
+      osx: "cmd+x",
+      linux: "ctrl+x",
+      windows: "ctrl+x",
+    })
+    await methods.dispatch(`type://${payload}`)
+    expect(sendKey).toHaveBeenCalledWith(platKey === "osx" ? "cmd+x" : "ctrl+x")
+  })
+
+  it("dispatch falls back to type://{...} 'all' when no platform key matches", async () => {
+    const { methods } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    const sendKey = vi.fn().mockResolvedValue(undefined)
+    methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
+    await methods.dispatch(`type://${JSON.stringify({ all: "ctrl+k" })}`)
+    expect(sendKey).toHaveBeenCalledWith("ctrl+k")
+  })
+
+  it("dispatch throws when type://{...} has no platform match and no 'all'", async () => {
+    const { methods } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    await expect(
+      methods.dispatch(`type://${JSON.stringify({ osx: "cmd+k" })}`),
+    ).rejects.toThrow(/no value for platform/)
+  })
+
+  it("dispatch throws when type://{...} payload is not valid JSON", async () => {
+    const { methods } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    await expect(methods.dispatch("type://{not-json}")).rejects.toThrow(
+      /not valid JSON/,
+    )
+  })
 })

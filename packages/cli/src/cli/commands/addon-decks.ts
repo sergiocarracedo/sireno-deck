@@ -26,6 +26,18 @@ const resolveTriggerProcessNames = (trigger: unknown): string[] | undefined => {
   return undefined
 }
 
+const resolveTriggerWindowNames = (trigger: unknown): string[] | undefined => {
+  if (typeof trigger !== "object" || trigger === null) return undefined
+  const t = trigger as Record<string, unknown>
+  const wn = t["window_name"]
+  if (wn === undefined) return undefined
+  if (typeof wn === "string") return [wn]
+  if (Array.isArray(wn) && wn.length > 0 && typeof wn[0] === "string") {
+    return wn as string[]
+  }
+  return undefined
+}
+
 const isActionMap = (
   v: unknown,
 ): v is { tap?: string; dbltap?: string; hold?: string } => {
@@ -84,11 +96,14 @@ const mapAddonDeckToRuntimeDeck = (
         id: p.deckId,
         name: gdeck.name ?? id,
         buttons: mappedButtons,
+        ...(gdeck.icon !== undefined ? { icon: gdeck.icon } : {}),
+        ...(gdeck.background !== undefined ? { background: gdeck.background } : {}),
         ...(gdeck.autoShow !== undefined ? { autoShow: gdeck.autoShow } : {}),
         ...(gdeck.isOverlay !== undefined
           ? { isOverlay: gdeck.isOverlay }
           : {}),
         processNames: resolveTriggerProcessNames(gdeck.trigger),
+        windowNames: resolveTriggerWindowNames(gdeck.trigger),
       }
     })
   }
@@ -124,9 +139,12 @@ const mapAddonDeckToRuntimeDeck = (
       id,
       name: gdeck.name ?? id,
       buttons,
+      ...(gdeck.icon !== undefined ? { icon: gdeck.icon } : {}),
+      ...(gdeck.background !== undefined ? { background: gdeck.background } : {}),
       ...(gdeck.autoShow !== undefined ? { autoShow: gdeck.autoShow } : {}),
       ...(gdeck.isOverlay !== undefined ? { isOverlay: gdeck.isOverlay } : {}),
       processNames: resolveTriggerProcessNames(gdeck.trigger),
+      windowNames: resolveTriggerWindowNames(gdeck.trigger),
     },
   ]
 }

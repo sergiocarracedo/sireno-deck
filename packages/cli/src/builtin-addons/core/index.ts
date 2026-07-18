@@ -49,21 +49,24 @@ export const manifest: AddonManifestV1 = {
         const defaultButtons = [
           {
             id: '0',
-            type: 'date-time:custom',
-            config: { format: 'HH' },
+            type: 'date-time:date-time',
+            config: { format: '<4xl>HH</4xl>' },
             position: centerButton - 1,
+            full: true,
           },
           {
             id: '1',
-            type: 'date-time:custom',
-            config: { format: '<blink>:</blink>' },
+            type: 'date-time:date-time',
+            config: { format: '<4xl><blink>:</blink></4xl>' },
             position: centerButton,
+            full: true,
           },
           {
             id: '2',
-            type: 'date-time:locked-time-tile',
-            config: { slot: 'minute' },
+            type: 'date-time:date-time',
+            config: { format: '<4xl>mm</4xl>' },
             position: centerButton + 1,
+            full: true,
           },
         ]
 
