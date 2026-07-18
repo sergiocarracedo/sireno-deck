@@ -1,0 +1,21 @@
+.planning/ROADMAP.md
+  s_111fe324359655::t_78d25555f9e234 319-353
+.planning/STATE.md
+  s_111fe324359655::t_aae2c21c1d4b76 27-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "d11eac100e427a8ba4df2e1689d0ec5264bd9a8d",
+  "prompts": {},
+  "sessions": {
+    "s_111fe324359655": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08b16ea33ffeCuhlTuvIGIPPx1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
