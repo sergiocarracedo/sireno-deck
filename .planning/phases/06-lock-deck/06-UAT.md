@@ -3,13 +3,13 @@ status: testing
 phase: 06-lock-deck
 source: 06-{01,02,03}-PLAN-SUMMARY.md
 started: 2026-07-17T20:35:00Z
-updated: 2026-07-17T23:30:00Z
+updated: 2026-07-17T23:32:00Z
 ---
 
 ## Current Test
 
-number: 4
-name: Non-folder actions suppressed on lock deck
+number: 5
+name: Folder-nav escape (core:change-deck) clears lock + dispatches
 expected: |
   A config with `lock: { buttons: [...] }` validates without error against the new `LockSchema`. A config with `lock:` omitted validates (optional). A config with `lock.buttons: []` validates but falls back to default. An unknown field on `lock:` is rejected (.strict()).
 awaiting: user response
@@ -30,7 +30,7 @@ result: pass
 
 ### 4. Non-folder actions suppressed on lock deck
 expected: With `lock: { buttons: [{type: 'core:action', actions: {tap: 'paste://x'}}] }` and lock active, tapping that button does NOT call `dispatch` (no paste fires). Test: `lock-deck.test.ts:suppresses non-folder actions on lock deck`.
-result: pending
+result: pass
 
 ### 5. Folder-nav escape (core:change-deck) clears lock + dispatches
 expected: With `lock: { buttons: [{type: 'core:change-deck', config: {deck: 'system'}}] }` and lock active, tapping that button calls the addon's onTap handler (which publishes `runtime:navigate-deck`), clears `lockActive`, and the user ends up on the `system` deck. Test: `lock-deck.test.ts:folder-nav button (core:change-deck) escapes lock and dispatches`.
@@ -79,9 +79,9 @@ result: pending
 ## Summary
 
 total: 15
-passed: 3
+passed: 4
 issues: 0
-pending: 12
+pending: 11
 skipped: 0
 
 ## Gaps
