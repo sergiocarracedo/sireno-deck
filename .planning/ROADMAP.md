@@ -316,3 +316,38 @@ P1 (paste:// fix)          P2 (categories.json)
 ```
 
 P1 and P2 have **zero dependency** on each other — they can be worked in parallel or either first. P3 depends on P2 (favorites and pagination use the new data layer) but not on P1. P4-P6 form a linear chain: P4 (settings) → P5 (overlay) → P6 (lock — needs overlay precedence mechanics).
+
+---
+
+## Phase 7: Text Line-Clamp & Ellipsis
+
+**Goal:** Allow Text component to define line-clamp with ellipsis for long text, with optional space reservation even when empty.
+
+**Depends on:** None
+**Blocks:** None
+**Status:** [ ] Not started
+
+### Success Criteria
+
+- [ ] Text component accepts `fit` prop that can be either a string (`"ellipsis"`) or an object (`{ type: "line-clamp", lines: 2, reserveSpace: true }`)
+- [ ] When `fit` is set to `"ellipsis"`, it's treated as alias for `{ type: "ellipsis" }`
+- [ ] Line-clamp truncates text after specified number of lines with "..." appended
+- [ ] `reserveSpace: true` forces the component to use the line count even when content is empty
+- [ ] All existing Text component tests pass unchanged
+
+### Tasks
+
+- [ ] T7.1: Define `FitConfig` type (string | object union) and update Text component props — `packages/cli/src/ui/primitives/text.tsx`
+- [ ] T7.2: Implement line-clamp logic with ellipsis truncation — `packages/cli/src/ui/primitives/text.tsx`
+- [ ] T7.3: Add tests for fit prop variations, line-clamp behavior, and reserveSpace — `packages/cli/src/ui/__tests__/text.test.tsx`
+
+### Must-Haves
+
+- `fit` prop accepts both string and object forms
+- Line-clamp truncates at specified line count with "..."
+- `reserveSpace` respects empty content
+- No regression on existing Text component usage
+
+### Nice-to-Haves
+
+- Configurable ellipsis character (default "...")

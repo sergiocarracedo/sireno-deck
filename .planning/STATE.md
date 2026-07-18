@@ -25,3 +25,4 @@
   - PLAN-3 (Wave 3) complete: overlay auto-resume on unlock (trigger-still-matches) + regular-layer deck snapshot + escape stickiness
   - All 6 REQs (REQ-011..016) verified PASSED; 15 lock-deck tests + 5 overlay-resume tests added
   - Pre-existing test failures (12) unchanged — verified on trunk
+- Phase 7 added: Text Line-Clamp & Ellipsis — `fit` prop accepts string or object with line-clamp, ellipsis, and reserveSpace options
