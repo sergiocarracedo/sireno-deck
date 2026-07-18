@@ -9,6 +9,7 @@ export type LabelVariant = (typeof labelVariants)[number]
 
 export interface LabelProps {
   text: string
+  lines?: 1 | 2 | 3
   variant?: LabelVariant
 }
 
@@ -49,8 +50,16 @@ export function Label(props: LabelProps): ReactElement {
     <Text
       data-sireno-ui-label="true"
       size={variantStyle.size}
-      className={cn('leading-tight tracking-tight', variantStyle.className)}
-      fit="ellipsis"
+      className={cn(
+        'tracking-tight max-w-full wrap-anywhere',
+        variantStyle.className,
+      )}
+      lineHeight={1.25}
+      fit={{
+        type: 'ellipsis',
+        lines: props.lines || 1,
+        reserveSpace: false,
+      }}
       tone="primary"
       typography="main"
       text={props.text}

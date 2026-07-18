@@ -41,6 +41,16 @@ describe("ButtonActionsSchema", () => {
   })
 })
 
+describe("ButtonDefSchema — full field", () => {
+  it("rejects full in user config (internal addon config only)", () => {
+    const result = ButtonDefSchema.safeParse({
+      type: "core:action",
+      full: true,
+    })
+    expect(result.success).toBe(false)
+  })
+})
+
 describe("ButtonDefSchema — actions field", () => {
   it("accepts button with actions", () => {
     const result = ButtonDefSchema.safeParse({

@@ -301,39 +301,41 @@ function renderTextChildren(
 }
 
 export type TextAlign = keyof typeof ALIGN_CLASS
-export type TextFitMode = 'ellipsis' | 'shrink' | 'wrap' | 'hidden'
-export interface TextLineClampFit {
-  type: 'line-clamp'
-  lines: number
+
+export type TextFitType = 'ellipsis' | 'shrink' | 'hidden'
+
+export type TextFit = {
+  type: TextFitType
+  lines?: 1 | 2 | 3
   reserveSpace?: boolean
 }
-export type TextFit = TextFitMode | TextLineClampFit
+
 export type TextTone = keyof typeof TONE_CLASS
 export type TextTypography = keyof typeof TYPOGRAPHY_CLASS
 export type TextSize = keyof typeof SIZE_CLASS
 export type TextWeight = (typeof TEXT_WEIGHT)[number]
 
-export type ResolvedTextFit =
-  | { kind: 'mode'; mode: TextFitMode }
-  | {
-      kind: 'line-clamp'
-      lines: number
-      reserveSpace: boolean
-    }
-
 const MIN_LINE_CLAMP = 1
-const MAX_LINE_CLAMP = 6
+const MAX_LINE_CLAMP = 3
 
-export function resolveTextFit(fit: TextFit | undefined): ResolvedTextFit {
+export function resolveTextFit(
+  fit: TextFit | TextFitType | undefined,
+): Required<TextFit> {
   if (fit === undefined || typeof fit === 'string') {
-    return { kind: 'mode', mode: fit ?? 'wrap' }
+    return {
+      type: fit ?? 'hidden',
+      reserveSpace: false,
+      lines: 1,
+    }
   }
+
   const lines = Math.max(
     MIN_LINE_CLAMP,
-    Math.min(MAX_LINE_CLAMP, Math.floor(fit.lines)),
-  )
+    Math.min(MAX_LINE_CLAMP, Math.floor(fit.lines || 1)),
+  ) as Required<TextFit>['lines']
+
   return {
-    kind: 'line-clamp',
+    type: fit.type,
     lines,
     reserveSpace: fit.reserveSpace ?? false,
   }
@@ -342,7 +344,7 @@ export function resolveTextFit(fit: TextFit | undefined): ResolvedTextFit {
 export interface TextProps {
   align?: TextAlign
   className?: string
-  fit?: TextFit
+  fit?: TextFit | TextFitType
   fontStack?: string
   style?: CSSProperties
   text: string
@@ -361,7 +363,7 @@ export interface TextProps {
 }
 
 export function Text(props: TextProps): ReactElement {
-  const fit = props.fit ?? 'wrap'
+  const fit = props.fit ?? 'hidden'
   const align = props.align ?? 'center'
   const tone = props.tone ?? 'foreground'
   const typography = props.typography ?? 'main'
@@ -385,37 +387,47 @@ export function Text(props: TextProps): ReactElement {
 
   const resolvedFit = resolveTextFit(fit)
 
-  const fitModesClasses: Record<TextFitMode, string> = {
-    wrap: 'whitespace-normal break-words',
-    ellipsis: 'overflow-hidden whitespace-nowrap text-ellipsis',
+  const isMultiLineEllipsis =
+    resolvedFit.type === 'ellipsis' && resolvedFit.lines > 1
+
+  const fitModesClasses: Record<TextFitType, string> = {
+    ellipsis: isMultiLineEllipsis
+      ? 'overflow-hidden'
+      : 'overflow-hidden whitespace-nowrap text-ellipsis',
     shrink: 'sireno-text-fit-shrink whitespace-normal break-words',
-    hidden: 'overflow-hidden whitespace-nowrap',
+    hidden: 'overflow-hidden ',
   }
   const composedStyle: CSSProperties =
     props.fontStack !== undefined
       ? { ...props.style, fontFamily: props.fontStack }
       : (props.style ?? {})
+
+  if (isMultiLineEllipsis) {
+    composedStyle.display = '-webkit-box'
+    composedStyle.WebkitBoxOrient = 'vertical'
+    composedStyle.WebkitLineClamp = resolvedFit.lines
+    composedStyle.overflow = 'hidden'
+    composedStyle.textOverflow = 'ellipsis'
+  }
+
   if (lineHeight !== 1) {
     composedStyle.lineHeight =
       typeof lineHeight === 'number' && Number.isFinite(lineHeight)
         ? `${lineHeight}em`
         : (lineHeight as string)
   }
-  if (resolvedFit.kind === 'line-clamp' && resolvedFit.reserveSpace) {
+
+  if (resolvedFit.reserveSpace) {
     const lh =
       typeof lineHeight === 'number' && Number.isFinite(lineHeight)
         ? lineHeight
-        : 1
+        : 1.2
+
     composedStyle.minHeight = `${resolvedFit.lines * lh}em`
+    composedStyle.height = `${resolvedFit.lines * lh}em`
   }
-  const fitClass =
-    resolvedFit.kind === 'line-clamp'
-      ? `line-clamp-${resolvedFit.lines}`
-      : fitModesClasses[resolvedFit.mode]
-  const dataFit =
-    resolvedFit.kind === 'line-clamp'
-      ? `line-clamp-${resolvedFit.lines}`
-      : resolvedFit.mode
+
+  const dataFit = `${resolvedFit.type}-${resolvedFit.lines}`
   return (
     <div
       className={cn([
@@ -425,14 +437,12 @@ export function Text(props: TextProps): ReactElement {
         ALIGN_CLASS[align],
         SIZE_CLASS[size],
         WEIGHT_CLASS[weight],
-        fitClass,
+        fitModesClasses[resolvedFit.type],
         props.className,
       ])}
       data-sireno-text-fit={dataFit}
       data-sireno-text-shrink-state={
-        resolvedFit.kind === 'mode' && resolvedFit.mode === 'shrink'
-          ? 'pending'
-          : undefined
+        resolvedFit.type === 'shrink' ? 'pending' : undefined
       }
       data-sireno-text-size={size}
       data-sireno-ui-text="true"

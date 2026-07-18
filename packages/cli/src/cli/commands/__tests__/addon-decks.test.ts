@@ -551,4 +551,70 @@ describe("materializeAddonDecks", () => {
       }
     }
   })
+
+  it("propagates instance-level full onto runtime button when service.full is not set", () => {
+    const addon = makeFakeAddon({
+      apiVersion: 1,
+      name: "test-addon",
+      buttonTypes: {
+        "test-addon:plain-btn": {
+          frontend: () => null,
+          service: {},
+        },
+      },
+      decks: {
+        "test-addon:deck-a": {
+          type: "test-addon:deck-a",
+          createDecks: () => ({
+            "gen-deck": {
+              name: "Gen",
+              buttons: [
+                { type: "test-addon:plain-btn", position: 0, full: true },
+                { type: "test-addon:plain-btn", position: 1 },
+              ],
+            },
+          }),
+        },
+      },
+    })
+    const reg = mockRegistry([addon])
+    const userDecks: RuntimeDeck[] = []
+
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
+    const deck = result.find((d) => d.id === "gen-deck")!
+
+    expect(deck.buttons[0]!.full).toBe(true)
+    expect(deck.buttons[1]!.full).toBeUndefined()
+  })
+
+  it("does not propagate instance-level full=false onto runtime button", () => {
+    const addon = makeFakeAddon({
+      apiVersion: 1,
+      name: "test-addon",
+      buttonTypes: {
+        "test-addon:plain-btn": {
+          frontend: () => null,
+          service: {},
+        },
+      },
+      decks: {
+        "test-addon:deck-a": {
+          type: "test-addon:deck-a",
+          createDecks: () => ({
+            "gen-deck": {
+              name: "Gen",
+              buttons: [{ type: "test-addon:plain-btn", position: 0, full: false }],
+            },
+          }),
+        },
+      },
+    })
+    const reg = mockRegistry([addon])
+    const userDecks: RuntimeDeck[] = []
+
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
+    const deck = result.find((d) => d.id === "gen-deck")!
+
+    expect(deck.buttons[0]!.full).toBeUndefined()
+  })
 })

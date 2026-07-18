@@ -47,7 +47,6 @@ export const ButtonDefSchema = z
     config: ButtonConfigSchema,
     accent: z.string().optional(),
     background: z.string().optional(),
-    full: z.boolean().optional(),
     actions: ButtonActionsSchema.optional(),
   })
   .strict()

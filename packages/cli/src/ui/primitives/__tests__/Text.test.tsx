@@ -87,7 +87,30 @@ describe("Text render — backward-compat string fit", () => {
     const root = container.firstElementChild as HTMLElement
     expect(root.className).toContain("text-ellipsis")
     expect(root.className).toContain("overflow-hidden")
-    expect(getFitAttr(container)).toBe("ellipsis")
+    expect(root.className).toContain("whitespace-nowrap")
+    expect(getFitAttr(container)).toBe("ellipsis-1")
+  })
+
+  it("uses webkit-box multi-line clamp for ellipsis with lines>1", () => {
+    const { container } = render(
+      <Text
+        fit={{ type: "ellipsis", lines: 2, reserveSpace: true }}
+        text="hello"
+      />,
+    )
+    const root = container.firstElementChild as HTMLElement
+    expect(root.className).toContain("overflow-hidden")
+    expect(root.className).not.toContain("text-ellipsis")
+    expect(root.className).not.toContain("whitespace-nowrap")
+    const inlineStyle = root.style as CSSStyleDeclaration & {
+      WebkitBoxOrient?: string
+      WebkitLineClamp?: string
+    }
+    expect(inlineStyle.display).toBe("-webkit-box")
+    expect(inlineStyle.WebkitBoxOrient).toBe("vertical")
+    expect(inlineStyle.WebkitLineClamp).toBe("2")
+    expect(inlineStyle.overflow).toBe("hidden")
+    expect(inlineStyle.textOverflow).toBe("ellipsis")
   })
 
   it("defaults to wrap when fit is omitted", () => {

@@ -52,11 +52,12 @@ const mapAddonDeckToRuntimeDeck = (
     return pages.map((p) => {
       const mappedButtons: RuntimeDeck["buttons"] = (p.deck.buttons ?? []).map(
         (b, i) => {
-          const { position, type, config, actions, ...rest } = b as {
+          const { position, type, config, actions, full: buttonFull, ...rest } = b as {
             position?: number
             type: string
             config?: unknown
             actions?: unknown
+            full?: unknown
           }
           const mergedConfig = {
             ...(typeof config === "object" && config !== null
@@ -64,7 +65,9 @@ const mapAddonDeckToRuntimeDeck = (
               : {}),
             ...rest,
           }
-          const full = registry.getButtonType(type)?.def.service.full === true
+          const full =
+            registry.getButtonType(type)?.def.service.full === true ||
+            buttonFull === true
           return {
             id: position !== undefined ? String(position) : String(i),
             type,
@@ -91,11 +94,12 @@ const mapAddonDeckToRuntimeDeck = (
   }
 
   const buttons: RuntimeDeck["buttons"] = (gdeck.buttons ?? []).map((b, i) => {
-    const { position, type, config, actions, ...rest } = b as {
+    const { position, type, config, actions, full: buttonFull, ...rest } = b as {
       position?: number
       type: string
       config?: unknown
       actions?: unknown
+      full?: unknown
     }
     const mergedConfig = {
       ...(typeof config === "object" && config !== null
@@ -103,7 +107,9 @@ const mapAddonDeckToRuntimeDeck = (
         : {}),
       ...rest,
     }
-    const full = registry.getButtonType(type)?.def.service.full === true
+    const full =
+      registry.getButtonType(type)?.def.service.full === true ||
+      buttonFull === true
     return {
       id: position !== undefined ? String(position) : String(i),
       type,

@@ -1,15 +1,56 @@
-import { type ReactElement } from "react"
+import { ReactNode, type ReactElement } from 'react'
 
 import {
   TapIndicator,
+  TapIndicatorType,
   type TapIndicatorProps,
-} from "../primitives/TapIndicator"
-import { useThemeUiPresentation } from "../theme-presentation"
+} from '../primitives/TapIndicator'
+import { useThemeUiPresentation } from '../theme-presentation'
+import { cn } from '../utils/cn'
+
+type ActionProps = {
+  children: ReactNode
+  tapType: TapIndicatorType
+  className?: string
+  position: 'bottom-right' | 'top-left'
+}
+
+const Action = ({ tapType, children, className, position }: ActionProps) => {
+  return (
+    <div className={cn('w-full', className)}>
+      <div
+        className={cn(
+          'absolute z-10',
+          position === 'bottom-right' ? 'bottom-0 left-0' : 'top-0 right-0',
+        )}
+      >
+        <TapIndicator type={tapType} size="xs" />
+      </div>
+      <div
+        className={cn([
+          'flex',
+          position === 'bottom-right' ? 'justify-end' : 'justify-start',
+        ])}
+      >
+        <div
+          className={cn([
+            'scale-[0.65]',
+            position === 'bottom-right'
+              ? 'origin-bottom-right'
+              : 'origin-top-left',
+          ])}
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export interface SplitActionSurfaceProps {
   primary: ReactElement
   secondary?: ReactElement
-  secondaryIndicatorType?: NonNullable<TapIndicatorProps["type"]>
+  secondaryIndicatorType?: NonNullable<TapIndicatorProps['type']>
 }
 
 export function SplitActionSurface(
@@ -28,32 +69,20 @@ export function SplitActionSurface(
   return (
     <div className="relative size-full flex flex-col">
       <hr className="absolute w-10 border-none h-px background-accent top-1/2 left-1/2 bg-accent -ml-5 -rotate-45" />
-      <div className="absolute -top-1 right-1 z-10">
-        <TapIndicator type="tap" size="xs" />
-      </div>
-      <div className="flex-1 overflow-hidden flex items-start justify-center absolute top-0 left-0">
-        <div
-          className="scale-[0.65] origin-top"
-          style={{ width: "100%", height: "100%" }}
-        >
-          {props.primary}
-        </div>
-      </div>
-
-      <div className="absolute -bottom-1 left-1 z-10">
-        <TapIndicator
-          type={props.secondaryIndicatorType ?? "dbltap"}
-          size="xs"
-        />
-      </div>
-      <div className="flex-1 overflow-hidden flex items-end justify-center absolute bottom-0 right-0">
-        <div
-          className="scale-[0.65] origin-bottom"
-          style={{ width: "100%", height: "100%" }}
-        >
-          {props.secondary}
-        </div>
-      </div>
+      <Action
+        className="absolute top-0 left-0 z-10"
+        tapType="tap"
+        position="top-left"
+      >
+        {props.primary}
+      </Action>
+      <Action
+        className="absolute bottom-0 right-0 z-10"
+        tapType={props.secondaryIndicatorType ?? 'dbltap'}
+        position="bottom-right"
+      >
+        {props.primary}
+      </Action>
     </div>
   )
 }
