@@ -2,7 +2,7 @@
 
 **Project:** sireno-deck-2
 **Active branch:** chore/nuke-planning-reinit
-**Last activity:** 2026-07-17 - Phase 6 complete: lock deck (3 plans, 12 commits)
+**Last activity:** 2026-07-18 - Phase 7 context captured: text line-clamp & ellipsis (deep mode)
 
 ## Quick Tasks Completed
 
