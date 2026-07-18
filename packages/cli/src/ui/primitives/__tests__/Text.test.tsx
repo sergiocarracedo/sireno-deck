@@ -141,3 +141,64 @@ describe("Text render — line-clamp object fit", () => {
     expect(root.className).toContain("line-clamp-1")
   })
 })
+
+describe("Text render — reserveSpace", () => {
+  it("applies min-height for reserveSpace: true with default lineHeight=1", () => {
+    const { container } = render(
+      <Text
+        fit={{ type: "line-clamp", lines: 3, reserveSpace: true }}
+        text=""
+      />,
+    )
+    const root = container.firstElementChild as HTMLElement
+    expect(root.style.minHeight).toBe("3em")
+  })
+
+  it("scales min-height by custom lineHeight", () => {
+    const { container } = render(
+      <Text
+        fit={{ type: "line-clamp", lines: 2, reserveSpace: true }}
+        lineHeight={1.5}
+        text=""
+      />,
+    )
+    const root = container.firstElementChild as HTMLElement
+    expect(root.style.minHeight).toBe("3em")
+  })
+
+  it("reserves full height even when content is short", () => {
+    const { container } = render(
+      <Text
+        fit={{ type: "line-clamp", lines: 4, reserveSpace: true }}
+        text="hi"
+      />,
+    )
+    const root = container.firstElementChild as HTMLElement
+    expect(root.style.minHeight).toBe("4em")
+  })
+
+  it("does not apply min-height when reserveSpace is false", () => {
+    const { container } = render(
+      <Text
+        fit={{ type: "line-clamp", lines: 2, reserveSpace: false }}
+        text=""
+      />,
+    )
+    const root = container.firstElementChild as HTMLElement
+    expect(root.style.minHeight).toBe("")
+  })
+
+  it("does not apply min-height when reserveSpace is omitted", () => {
+    const { container } = render(
+      <Text fit={{ type: "line-clamp", lines: 2 }} text="" />,
+    )
+    const root = container.firstElementChild as HTMLElement
+    expect(root.style.minHeight).toBe("")
+  })
+
+  it("does not apply min-height for non-line-clamp modes", () => {
+    const { container } = render(<Text fit="ellipsis" text="" />)
+    const root = container.firstElementChild as HTMLElement
+    expect(root.style.minHeight).toBe("")
+  })
+})

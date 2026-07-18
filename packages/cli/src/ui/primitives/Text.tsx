@@ -401,6 +401,13 @@ export function Text(props: TextProps): ReactElement {
         ? `${lineHeight}em`
         : (lineHeight as string)
   }
+  if (resolvedFit.kind === 'line-clamp' && resolvedFit.reserveSpace) {
+    const lh =
+      typeof lineHeight === 'number' && Number.isFinite(lineHeight)
+        ? lineHeight
+        : 1
+    composedStyle.minHeight = `${resolvedFit.lines * lh}em`
+  }
   const fitClass =
     resolvedFit.kind === 'line-clamp'
       ? `line-clamp-${resolvedFit.lines}`
