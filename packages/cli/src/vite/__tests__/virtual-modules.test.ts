@@ -84,4 +84,20 @@ describe("buildAddonsRegistryModule", () => {
       '"@scope/my-addon:foo": { addonName: "@scope/my-addon"',
     )
   })
+
+  it("aliases `<addon>:<addon>` under the bare addon name", () => {
+    const out = buildAddonsRegistryModule([
+      {
+        name: "date-time",
+        frontend: { main: "./frontend" },
+        buttonTypes: {
+          "date-time:date-time": "DateTime",
+          "date-time:time": "Time",
+        },
+      },
+    ])
+    expect(out).toContain('"date-time:date-time": { addonName: "date-time"')
+    expect(out).toContain('"date-time": { addonName: "date-time"')
+    expect(out).toContain('"date-time:time": { addonName: "date-time"')
+  })
 })

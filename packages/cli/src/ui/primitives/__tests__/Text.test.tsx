@@ -225,3 +225,34 @@ describe("Text render — reserveSpace", () => {
     expect(root.style.minHeight).toBe("")
   })
 })
+
+describe("Text rich-text tags", () => {
+  it("renders <strong>...</strong> as a bold span", () => {
+    const { container } = render(<Text text="<strong>HH</strong>" />)
+    const span = container.querySelector("span.sireno-rich-text-node")
+    expect(span).not.toBeNull()
+    expect(span?.className).toContain("sireno-rich-text-strong")
+    expect(span?.getAttribute("data-sireno-rich-text-tag")).toBe("strong")
+    expect(span?.textContent).toBe("HH")
+  })
+
+  it("preserves nested tags inside <strong>", () => {
+    const { container } = render(<Text text="<strong><4xl>HH</4xl></strong>" />)
+    const strong = container.querySelector(
+      'span[data-sireno-rich-text-tag="strong"]',
+    )
+    expect(strong?.className).toContain("sireno-rich-text-strong")
+    const inner = strong?.querySelector('span[data-sireno-rich-text-tag="4xl"]')
+    expect(inner).not.toBeNull()
+  })
+
+  it("renders *text* highlight with the strong class and primary tone", () => {
+    const { container } = render(<Text text="*highlight*" />)
+    const span = container.querySelector(
+      'span[data-sireno-rich-text-tag="highlight"]',
+    )
+    expect(span?.className).toContain("sireno-rich-text-strong")
+    expect(span?.className).toContain("text-primary")
+    expect(span?.textContent).toBe("highlight")
+  })
+})

@@ -74,6 +74,9 @@ export class AddonRegistry {
         )
       }
       this.buttonsByType.set(buttonType, { addonName: name, def })
+      if (buttonType === `${name}:${name}`) {
+        this.buttonsByType.set(name, { addonName: name, def })
+      }
     }
     for (const [deckName, entry] of Object.entries(manifest.decks ?? {})) {
       if (this.decksByType.has(deckName)) {

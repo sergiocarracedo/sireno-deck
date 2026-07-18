@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import { AddonRegistry } from "@/addon/registry"
 import { coreAddon } from "@/builtin-addons/core/index"
+import dateTimeAddon from "@/builtin-addons/date-time/index"
 import { internalSettingsAddon } from "@/builtin-addons/internal-settings/index"
 import { sessionAddon } from "@/builtin-addons/session/index"
 
@@ -108,6 +109,25 @@ describe("validateFull", () => {
     const reg = registry()
     const config = baseConfig()
     const result = validateFull(config, reg)
+    expect(result.issues).toEqual([])
+  })
+
+  it("accepts the bare addon name as alias for `<addon>:<addon>`", () => {
+    const r = new AddonRegistry()
+    r.load(coreAddon)
+    r.load(dateTimeAddon)
+    const config: RawConfig = {
+      theme: "default",
+      logging: { level: "info" },
+      decks: {
+        main: {
+          name: "Main",
+          buttons: [{ position: 0, type: "date-time", config: {} }],
+        },
+      },
+      addons: [],
+    }
+    const result = validateFull(config, r)
     expect(result.issues).toEqual([])
   })
 })

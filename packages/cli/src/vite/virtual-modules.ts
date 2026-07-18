@@ -135,6 +135,11 @@ export const buildAddonsRegistryModule = (
       lines.push(
         `  ${JSON.stringify(type)}: { addonName: ${JSON.stringify(addon.name)}, Component: (${modName}Obj.buttonTypes[${JSON.stringify(type)}] ?? ${modName}[${JSON.stringify(exportName)}] ?? ${modName}.default?.buttonTypes?.[${JSON.stringify(type)}])?.frontend, gestures: (${modName}Obj.buttonTypes[${JSON.stringify(type)}] ?? ${modName}[${JSON.stringify(exportName)}] ?? ${modName}.default?.buttonTypes?.[${JSON.stringify(type)}])?.backend?.gestureHandlers },`,
       )
+      if (type === `${addon.name}:${addon.name}`) {
+        lines.push(
+          `  ${JSON.stringify(addon.name)}: { addonName: ${JSON.stringify(addon.name)}, Component: (${modName}Obj.buttonTypes[${JSON.stringify(type)}] ?? ${modName}[${JSON.stringify(exportName)}] ?? ${modName}.default?.buttonTypes?.[${JSON.stringify(type)}])?.frontend, gestures: (${modName}Obj.buttonTypes[${JSON.stringify(type)}] ?? ${modName}[${JSON.stringify(exportName)}] ?? ${modName}.default?.buttonTypes?.[${JSON.stringify(type)}])?.backend?.gestureHandlers },`,
+        )
+      }
     }
   }
   lines.push("};")

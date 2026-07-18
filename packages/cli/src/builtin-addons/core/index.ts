@@ -49,22 +49,22 @@ export const manifest: AddonManifestV1 = {
         const defaultButtons = [
           {
             id: '0',
-            type: 'date-time:date-time',
-            config: { format: '<4xl>HH</4xl>' },
+            type: 'date-time',
+            config: { format: '<strong><5xl>HH</5xl></strong>' },
             position: centerButton - 1,
             full: true,
           },
           {
             id: '1',
-            type: 'date-time:date-time',
-            config: { format: '<4xl><blink>:</blink></4xl>' },
+            type: 'date-time',
+            config: { format: '<strong><5xl><blink>:</blink></5xl></strong>' },
             position: centerButton,
             full: true,
           },
           {
             id: '2',
-            type: 'date-time:date-time',
-            config: { format: '<4xl>mm</4xl>' },
+            type: 'date-time',
+            config: { format: '<strong><5xl>mm</5xl></strong>' },
             position: centerButton + 1,
             full: true,
           },

@@ -264,4 +264,24 @@ describe("AddonRegistry", () => {
     registry.reset()
     expect(registry.listAddons()).toHaveLength(0)
   })
+
+  it("registers a `<addon>:<addon>` button type under the bare addon name", () => {
+    const registry = new AddonRegistry()
+    const frontend = () => null
+    const backend = { configSchema: {} }
+    registry.load({
+      apiVersion: 1,
+      name: "date-time",
+      buttonTypes: {
+        "date-time:date-time": { frontend, backend },
+        "date-time:time": { frontend, backend },
+      },
+    })
+    expect(registry.hasButtonType("date-time:date-time")).toBe(true)
+    expect(registry.hasButtonType("date-time")).toBe(true)
+    expect(registry.getButtonType("date-time")?.addonName).toBe("date-time")
+    expect(registry.getButtonType("date-time")?.def).toBe(
+      registry.getButtonType("date-time:date-time")?.def,
+    )
+  })
 })

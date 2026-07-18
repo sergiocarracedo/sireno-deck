@@ -100,4 +100,10 @@ describe("JSON manifest scan path", () => {
     expect(dateTime?.frontendEntry).toContain("date-time/index.ts")
     expect(dateTime?.types.length).toBeGreaterThan(0)
   })
+
+  it("registers `<addon>:<addon>` types under the bare addon name", async () => {
+    const registry = await collectBuiltinAddonRegistry()
+    expect(registry.byType.get("date-time:date-time")?.name).toBe("date-time")
+    expect(registry.byType.get("date-time")?.name).toBe("date-time")
+  })
 })

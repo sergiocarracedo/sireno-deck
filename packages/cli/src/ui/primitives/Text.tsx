@@ -85,7 +85,13 @@ const RICH_SIZE_TAGS = [
 
 type RichToneTag = (typeof RICH_TONE_TAGS)[number]
 type RichSizeTag = (typeof RICH_SIZE_TAGS)[number]
-type RichMarkupTag = 'blink' | 'dim' | 'highlight' | RichToneTag | RichSizeTag
+type RichMarkupTag =
+  | 'blink'
+  | 'dim'
+  | 'highlight'
+  | 'strong'
+  | RichToneTag
+  | RichSizeTag
 
 type RichTextNode =
   | { type: 'line-break' }
@@ -107,6 +113,7 @@ const RICH_TAG_NAMES = new Set<string>([
   ...RICH_SIZE_TAGS,
   'blink',
   'dim',
+  'strong',
 ])
 
 function isRichToneTag(tag: string): tag is RichToneTag {
@@ -260,8 +267,12 @@ function renderRichTextNodes(
       classNames.push('opacity-50')
     }
 
+    if (node.tag === 'strong' || node.tag === 'highlight') {
+      classNames.push('sireno-rich-text-strong')
+    }
+
     if (node.tag === 'highlight') {
-      classNames.push('sireno-rich-text-strong', TONE_CLASS.primary)
+      classNames.push(TONE_CLASS.primary)
     } else if (isRichToneTag(node.tag)) {
       classNames.push(TONE_CLASS[node.tag])
     } else if (isRichSizeTag(node.tag)) {

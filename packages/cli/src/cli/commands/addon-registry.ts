@@ -31,6 +31,12 @@ const buildAddonByType = (
       if (!map.has(type)) {
         map.set(type, { name: addon.name, frontendEntry: addon.frontendEntry })
       }
+      if (type === `${addon.name}:${addon.name}` && !map.has(addon.name)) {
+        map.set(addon.name, {
+          name: addon.name,
+          frontendEntry: addon.frontendEntry,
+        })
+      }
     }
   }
   return map
