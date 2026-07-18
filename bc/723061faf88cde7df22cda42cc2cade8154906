@@ -1,0 +1,20 @@
+.planning/phases/06-lock-deck/06-UAT.md
+  s_586986ca02db2f::t_0e78b23f27def6 82,84
+  s_586986ca02db2f::t_ba88157a2b513e 6,11-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "bc723061faf88cde7df22cda42cc2cade8154906",
+  "prompts": {},
+  "sessions": {
+    "s_586986ca02db2f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08ee995cbffedn8iRvToXsQvlX",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
