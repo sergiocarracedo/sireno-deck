@@ -15,6 +15,7 @@ describe("test-buildin:action-buttons-test deck", () => {
     const result = def.createDecks({
       config: {},
       deck: { id: "test-buildin:action-buttons-test" },
+      keyCount: 15,
     })
     expect(Object.keys(result)).toEqual(["action-buttons-test"])
     const deck = result["action-buttons-test"]!
@@ -41,6 +42,7 @@ describe("test-buildin:action-buttons-test deck", () => {
     const result = def.createDecks({
       config: {},
       deck: { id: "test-buildin:action-buttons-test" },
+      keyCount: 15,
     })
     const buttons = (result["action-buttons-test"]!.buttons ??
       []) as ReadonlyArray<{
@@ -56,6 +58,7 @@ describe("test-buildin:action-buttons-test deck", () => {
     const result = def.createDecks({
       config: {},
       deck: { id: "test-buildin:action-buttons-test" },
+      keyCount: 15,
     })
     const buttons = (result["action-buttons-test"]!.buttons ??
       []) as ReadonlyArray<{
@@ -82,6 +85,7 @@ describe("test-buildin:action-buttons-test deck", () => {
     const result = def.createDecks({
       config: {},
       deck: { id: "test-buildin:action-buttons-test" },
+      keyCount: 15,
     })
     const buttons = (result["action-buttons-test"]!.buttons ??
       []) as ReadonlyArray<{

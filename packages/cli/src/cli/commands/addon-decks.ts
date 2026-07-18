@@ -68,6 +68,7 @@ const mapAddonDeckToRuntimeDeck = (
           return {
             id: position !== undefined ? String(position) : String(i),
             type,
+            ...(position !== undefined ? { position } : {}),
             ...(Object.keys(mergedConfig).length > 0
               ? { config: mergedConfig }
               : {}),
@@ -106,6 +107,7 @@ const mapAddonDeckToRuntimeDeck = (
     return {
       id: position !== undefined ? String(position) : String(i),
       type,
+      ...(position !== undefined ? { position } : {}),
       ...(Object.keys(mergedConfig).length > 0 ? { config: mergedConfig } : {}),
       ...(isActionMap(actions) ? { actions } : {}),
       ...(full ? { full: true } : {}),
@@ -189,6 +191,7 @@ export const materializeAddonDecks = (
         generated = deckType.def.createDecks({
           config: addonConfig,
           deck: { id: deckName },
+          keyCount,
         })
       } catch (err) {
         logger.warn(

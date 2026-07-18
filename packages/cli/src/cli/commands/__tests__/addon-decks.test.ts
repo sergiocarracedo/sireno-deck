@@ -106,7 +106,7 @@ describe("materializeAddonDecks", () => {
     const genDeck = result.find((d) => d.id === "gen-deck")!
 
     expect(genDeck.buttons).toEqual([
-      { id: "3", type: "test-addon:btn", config: { label: "hi" } },
+      { id: "3", type: "test-addon:btn", position: 3, config: { label: "hi" } },
       { id: "1", type: "test-addon:btn2" },
     ])
   })
@@ -144,11 +144,13 @@ describe("materializeAddonDecks", () => {
       {
         id: "0",
         type: "emoji-selector:emoji",
+        position: 0,
         config: { emoji: "😀", label: "😀" },
       },
       {
         id: "1",
         type: "emoji-selector:category",
+        position: 1,
         config: {
           icon: "⭐",
           label: "Favs",
@@ -487,6 +489,7 @@ describe("materializeAddonDecks", () => {
       },
       decks: {
         "test-addon:deck-a": {
+          type: "test-addon:deck-a",
           createDecks: () => ({
             "gen-deck": {
               name: "Gen",
@@ -521,6 +524,7 @@ describe("materializeAddonDecks", () => {
       },
       decks: {
         "test-addon:deck-a": {
+          type: "test-addon:deck-a",
           createDecks: () => ({
             "gen-deck": {
               name: "Gen",

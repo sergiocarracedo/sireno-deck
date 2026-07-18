@@ -8,6 +8,7 @@ const createDeck = (config: unknown = { favorites: [] }) =>
   emojiSelectorDeckFactory.createDecks({
     config,
     deck: { id: "emoji-selector" },
+    keyCount: 15,
   })
 
 describe("emoji-selector:emoji backend", () => {

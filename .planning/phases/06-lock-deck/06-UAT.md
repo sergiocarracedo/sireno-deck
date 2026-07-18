@@ -3,13 +3,13 @@ status: testing
 phase: 06-lock-deck
 source: 06-{01,02,03}-PLAN-SUMMARY.md
 started: 2026-07-17T20:35:00Z
-updated: 2026-07-17T23:25:00Z
+updated: 2026-07-17T23:30:00Z
 ---
 
 ## Current Test
 
-number: 3
-name: User-defined `lock.buttons` synthesize into lock deck
+number: 4
+name: Non-folder actions suppressed on lock deck
 expected: |
   A config with `lock: { buttons: [...] }` validates without error against the new `LockSchema`. A config with `lock:` omitted validates (optional). A config with `lock.buttons: []` validates but falls back to default. An unknown field on `lock:` is rejected (.strict()).
 awaiting: user response
@@ -26,7 +26,7 @@ result: pass
 
 ### 3. User-defined `lock.buttons` synthesize into lock deck
 expected: With `lock: { buttons: [{type: 'core:change-deck', config: {deck: 'system'}, position: 0}] }`, the active lock deck has 1 button of type `core:change-deck` with that config. Test: `lock-deck.test.ts:uses user-defined buttons when lockConfig.buttons is non-empty`.
-result: pending
+result: pass
 
 ### 4. Non-folder actions suppressed on lock deck
 expected: With `lock: { buttons: [{type: 'core:action', actions: {tap: 'paste://x'}}] }` and lock active, tapping that button does NOT call `dispatch` (no paste fires). Test: `lock-deck.test.ts:suppresses non-folder actions on lock deck`.
@@ -79,9 +79,9 @@ result: pending
 ## Summary
 
 total: 15
-passed: 2
+passed: 3
 issues: 0
-pending: 13
+pending: 12
 skipped: 0
 
 ## Gaps

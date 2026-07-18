@@ -101,6 +101,7 @@ const emojiSelectorDeckDefinition: AddonDeckDefinition = {
   }: {
     config: unknown
     deck: { id: string }
+    keyCount: number
   }): Record<string, AddonGeneratedDeck> => {
     const cfg =
       config && typeof config === 'object' && 'favorites' in config

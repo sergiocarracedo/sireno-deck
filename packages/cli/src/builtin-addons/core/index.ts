@@ -1,74 +1,82 @@
-import type { AddonManifestV1 } from "@/addon/api"
+import type { AddonManifestV1 } from '@/addon/api'
 
-import actionBackend from "./buttons/action/backend"
-import actionFrontend from "./buttons/action/frontend"
-import changeDeckBackend from "./buttons/change-deck/backend"
-import changeDeckFrontend from "./buttons/change-deck/frontend"
-import mediaSampleBackend from "./buttons/media-sample/backend"
-import mediaSampleFrontend from "./buttons/media-sample/frontend"
-import pageNavBackend from "./buttons/page-nav/backend"
-import pageNavFrontend from "./buttons/page-nav/frontend"
-import toggleBackend from "./buttons/toggle/backend"
-import toggleFrontend from "./buttons/toggle/frontend"
+import actionBackend from './buttons/action/backend'
+import actionFrontend from './buttons/action/frontend'
+import changeDeckBackend from './buttons/change-deck/backend'
+import changeDeckFrontend from './buttons/change-deck/frontend'
+import mediaSampleBackend from './buttons/media-sample/backend'
+import mediaSampleFrontend from './buttons/media-sample/frontend'
+import pageNavBackend from './buttons/page-nav/backend'
+import pageNavFrontend from './buttons/page-nav/frontend'
+import toggleBackend from './buttons/toggle/backend'
+import toggleFrontend from './buttons/toggle/frontend'
 
 export const manifest: AddonManifestV1 = {
   apiVersion: 1,
-  name: "core",
+  name: 'core',
   buttonTypes: {
-    "core:action": {
+    'core:action': {
       frontend: actionFrontend,
       service: actionBackend,
     },
-    "core:change-deck": {
+    'core:change-deck': {
       frontend: changeDeckFrontend,
-      service: { ...changeDeckBackend, gestureHandlers: ["tap"] as const },
+      service: { ...changeDeckBackend, gestureHandlers: ['tap'] as const },
     },
-    "core:toggle": {
+    'core:toggle': {
       frontend: toggleFrontend,
-      service: { ...toggleBackend, gestureHandlers: ["tap"] as const },
+      service: { ...toggleBackend, gestureHandlers: ['tap'] as const },
     },
-    "core:page-nav": {
+    'core:page-nav': {
       frontend: pageNavFrontend,
-      service: { ...pageNavBackend, gestureHandlers: ["tap", "hold"] as const },
+      service: { ...pageNavBackend, gestureHandlers: ['tap', 'hold'] as const },
     },
-    "core:media-sample": {
+    'core:media-sample': {
       frontend: mediaSampleFrontend,
-      service: { ...mediaSampleBackend, gestureHandlers: ["tap"] as const },
+      service: { ...mediaSampleBackend, gestureHandlers: ['tap'] as const },
     },
   },
   decks: {
-    "core:lock": {
-      createDecks: ({ config }) => {
+    'core:lock': {
+      type: 'core:lock',
+      createDecks: ({ config, keyCount }) => {
         const userButtons = (
           config as { lockButtons?: ReadonlyArray<Record<string, unknown>> }
         ).lockButtons
-        if (userButtons !== undefined && userButtons.length > 0) {
-          return {
-            "core:lock": {
-              name: "Lock",
-              buttons: userButtons.map((b, i) => ({
-                id: b.position !== undefined ? String(b.position) : `b${i}`,
-                ...b,
-              })),
-            },
-          }
-        }
+
+        const centerButton = Math.floor(keyCount / 2)
+
+        const defaultButtons = [
+          {
+            id: '0',
+            type: 'date-time:custom',
+            config: { format: 'HH' },
+            position: centerButton - 1,
+          },
+          {
+            id: '1',
+            type: 'date-time:custom',
+            config: { format: '<blink>:</blink>' },
+            position: centerButton,
+          },
+          {
+            id: '2',
+            type: 'date-time:locked-time-tile',
+            config: { slot: 'minute' },
+            position: centerButton + 1,
+          },
+        ]
+
         return {
-          "core:lock": {
-            name: "Lock",
-            buttons: [
-              { id: "0", type: "date-time:locked-time-tile", config: { slot: "hour" } },
-              {
-                id: "1",
-                type: "date-time:locked-time-tile",
-                config: { slot: "separator" },
-              },
-              {
-                id: "2",
-                type: "date-time:locked-time-tile",
-                config: { slot: "minute" },
-              },
-            ],
+          'core:lock': {
+            name: 'Lock',
+            buttons:
+              userButtons !== undefined && userButtons.length > 0
+                ? userButtons.map((b, i) => ({
+                    id: b.position !== undefined ? String(b.position) : `b${i}`,
+                    ...b,
+                  }))
+                : defaultButtons,
           },
         }
       },
@@ -83,10 +91,10 @@ export {
   actionFrontend as ActionButtonFrontend,
   changeDeckBackend as changeDeckButtonBackend,
   changeDeckFrontend as ChangeDeckFrontend,
-  toggleBackend as toggleButtonBackend,
-  toggleFrontend as ToggleButtonFrontend,
-  pageNavBackend as pageNavButtonBackend,
-  pageNavFrontend as PageNavFrontend,
   mediaSampleBackend as mediaSampleButtonBackend,
   mediaSampleFrontend as MediaSampleButtonFrontend,
+  pageNavBackend as pageNavButtonBackend,
+  pageNavFrontend as PageNavFrontend,
+  toggleBackend as toggleButtonBackend,
+  toggleFrontend as ToggleButtonFrontend,
 }

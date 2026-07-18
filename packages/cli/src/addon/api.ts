@@ -142,6 +142,7 @@ export interface AddonDeckDefinition {
   createDecks: (ctx: {
     config: unknown
     deck: { id: string }
+    keyCount: number
   }) => Record<string, AddonGeneratedDeck>
   internal?: boolean
 }
