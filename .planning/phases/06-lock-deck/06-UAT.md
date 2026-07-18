@@ -3,13 +3,13 @@ status: testing
 phase: 06-lock-deck
 source: 06-{01,02,03}-PLAN-SUMMARY.md
 started: 2026-07-17T20:35:00Z
-updated: 2026-07-17T23:35:00Z
+updated: 2026-07-17T23:37:00Z
 ---
 
 ## Current Test
 
-number: 6
-name: core:page-nav is also a valid escape
+number: 7
+name: System buttons (n-1) not injected under lock mode
 expected: |
   A config with `lock: { buttons: [...] }` validates without error against the new `LockSchema`. A config with `lock:` omitted validates (optional). A config with `lock.buttons: []` validates but falls back to default. An unknown field on `lock:` is rejected (.strict()).
 awaiting: user response
@@ -38,7 +38,7 @@ result: pass
 
 ### 6. core:page-nav is also a valid escape
 expected: Both `core:change-deck` AND `core:page-nav` are recognized as folder-nav escape types. Test: covered by the same pre-check branch (whitelist `LOCK_FOLDER_NAV_TYPES`).
-result: pending
+result: pass
 
 ### 7. System buttons (n-1) not injected under lock mode
 expected: When `lockActive=true`, `injectSystemButtons(decks, keyCount, {lockActive: true})` produces no n-1 system button (no `core:back`, no `core:settings-entry`). Test: `system-back-injection.test.ts` (existing test extended).
@@ -79,9 +79,9 @@ result: pending
 ## Summary
 
 total: 15
-passed: 5
+passed: 6
 issues: 0
-pending: 10
+pending: 9
 skipped: 0
 
 ## Gaps
