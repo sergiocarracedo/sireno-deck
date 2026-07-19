@@ -1,0 +1,25 @@
+.planning/phases/08-runtime-resilience-state-persistence/04-PLAN-reconnect-states.md
+  s_2cb355494cf289::t_6cba20a636e645 1-94
+.planning/phases/08-runtime-resilience-state-persistence/02-PLAN-config-hot-reload.md
+  s_2cb355494cf289::t_fef2feb7f08bea 1-77,87
+  s_2cb355494cf289::t_4a323c1abf53b2 78-86
+.planning/phases/08-runtime-resilience-state-persistence/03-PLAN-button-errors.md
+  s_2cb355494cf289::t_f55c1a20d6a2be 1-40,105-113
+  s_2cb355494cf289::t_b75795a1e76b67 41-104
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "72a95bfd8d986758328bdfec3cb014d3fa21e697",
+  "prompts": {},
+  "sessions": {
+    "s_2cb355494cf289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_088ac798dffe8mKKPKhoYsGfiP",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
