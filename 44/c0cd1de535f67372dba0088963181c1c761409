@@ -1,0 +1,19 @@
+.planning/phases/08-runtime-resilience-state-persistence/02-SUMMARY.md
+  s_2cb355494cf289::t_60ddd16ac9eb3c 1-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "44c0cd1de535f67372dba0088963181c1c761409",
+  "prompts": {},
+  "sessions": {
+    "s_2cb355494cf289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_088ac798dffe8mKKPKhoYsGfiP",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
