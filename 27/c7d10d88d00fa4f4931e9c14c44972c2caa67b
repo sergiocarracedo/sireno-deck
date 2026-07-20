@@ -1,0 +1,28 @@
+packages/cli/emulator/src/bridge.ts
+  s_2cb355494cf289::t_9385e1fcc9fc64 148-151,155
+  s_2cb355494cf289::t_4db2d982f7fde8 219
+  s_2cb355494cf289::t_34a260e020645b 45
+packages/cli/emulator/src/App.tsx
+  s_2cb355494cf289::t_31cfc567480d55 239-252
+  s_2cb355494cf289::t_127c578e27783c 39-58
+  s_2cb355494cf289::t_c23cba0acd6dc8 17
+  s_2cb355494cf289::t_41dfc73fbe53f2 36-37
+  s_2cb355494cf289::t_35f904f454f509 197
+  s_2cb355494cf289::t_8c29b75a927264 38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "27c7d10d88d00fa4f4931e9c14c44972c2caa67b",
+  "prompts": {},
+  "sessions": {
+    "s_2cb355494cf289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_088ac798dffe8mKKPKhoYsGfiP",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
