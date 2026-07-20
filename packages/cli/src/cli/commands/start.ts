@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import { dirname, join, resolve as resolvePath } from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -17,6 +17,7 @@ import {
   writePid,
   writeToken,
 } from "@/util/daemon"
+import { findConfigPath } from "@/config/discovery"
 
 import { startHttpServer, type RunningHttpServer } from "../http-server"
 
@@ -26,6 +27,7 @@ import {
   type RunOptions,
   type SignalProvider,
 } from "./run"
+import { collectBuiltinAddonRegistry } from "./addon-registry"
 
 export interface StartOptions {
   readonly config?: string
@@ -119,6 +121,22 @@ const stopExisting = async (
 const start = async (options: StartOptions): Promise<void> => {
   const { logger } = options
 
+  const home = options.homeDir ?? process.env["HOME"] ?? ""
+  const xdgConfigHome =
+    options.xdgConfigHome ??
+    process.env["XDG_CONFIG_HOME"] ??
+    `${home}/.config`
+  const configPath =
+    options.config ??
+    findConfigPath({
+      homeDir: home,
+      ...(options.xdgConfigHome !== undefined
+        ? { xdgConfigHome: options.xdgConfigHome }
+        : {}),
+    }) ??
+    join(xdgConfigHome, "sireno-deck", "config.yml")
+  const scannedAddons = (await collectBuiltinAddonRegistry()).scanned
+
   const existing = readPid()
   if (existing !== null && isRunning(existing)) {
     const action = await promptConflict(existing)
@@ -157,6 +175,19 @@ const start = async (options: StartOptions): Promise<void> => {
         distDir,
         getToken: () => readToken(),
         logger,
+        getConfigContent: () => {
+          try {
+            return readFileSync(configPath, "utf8")
+          } catch {
+            return null
+          }
+        },
+        getAddons: () =>
+          scannedAddons.map((s) => ({
+            name: s.name,
+            buttonTypes: [...s.types],
+            defaultButton: null,
+          })),
       })
     } catch (err) {
       logger.warn(
