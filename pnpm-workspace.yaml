@@ -1,2 +1,10 @@
 packages:
   - packages/*
+
+onlyBuiltDependencies:
+  - '@julusian/jpeg-turbo'
+  - esbuild
+  - get-windows
+  - node-hid
+  - sharp
+  - usocket

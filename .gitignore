@@ -5,6 +5,8 @@ dist/
 coverage/
 *.tsbuildinfo
 
+.vscode/
+
 *.log
 .DS_Store
 .env
