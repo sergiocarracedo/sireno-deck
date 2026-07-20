@@ -1,0 +1,23 @@
+packages/cli/src/builtin-addons/system-status/manifest.ts
+  s_2cb355494cf289::t_6c2f6e5f25d7c8 1,8-17,25,29,33,37-41,52
+packages/cli/src/builtin-addons/system-status/buttons/generic/frontend.tsx
+  s_2cb355494cf289::t_1e0063f0c59d33 1-57
+config.yml
+  s_2cb355494cf289::t_f4460575f2c8ec 59-62,65-68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "7fb6f232545e1d2fed901c87a91980569a23c35a",
+  "prompts": {},
+  "sessions": {
+    "s_2cb355494cf289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_088ac798dffe8mKKPKhoYsGfiP",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
