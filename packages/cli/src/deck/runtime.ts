@@ -35,6 +35,11 @@ export interface RuntimeDeck {
   autoShow?: boolean
   isOverlayDeck?: boolean
   icon?: string
+  buttonErrors?: ReadonlyArray<{
+    position: number
+    buttonId?: string
+    details: string
+  }>
 }
 
 export interface RuntimeButtonHandler {

@@ -15,6 +15,7 @@ import {
   formatFullIssues,
   isFullValid,
   validateFull,
+  validatePerDeck,
 } from "@/config/validation"
 import {
   createDeckRuntime,
@@ -370,10 +371,19 @@ const validateAndLoadConfig = (options: RunOptions): LoadConfigResult => {
   const { config } = loadConfig({ configPath })
   const registry = new AddonRegistry()
   registerBuiltins(registry)
+  // Per-button config errors are non-fatal: each broken button is replaced
+  // with a `core:temporary-error` cell at its position and logged in full
+  // (the incorrect config + the schema issues) so the operator can see
+  // exactly what went wrong without restarting the daemon. We only fail
+  // startup on structural problems (missing main, duplicate positions,
+  // unknown/invalid button types in non-config ways).
   const validation = validateFull(config, registry)
-  if (!isFullValid(validation)) {
+  const structuralErrors = validation.issues.filter(
+    (i) => !i.path.includes(".config."),
+  )
+  if (structuralErrors.some((i) => i.level === "error")) {
     throw new Error(
-      `Config validation failed:\n${formatFullIssues(validation.issues)}`,
+      `Config validation failed:\n${formatFullIssues(structuralErrors)}`,
     )
   }
   const { theme, getCss } = resolveActiveTheme(registry, {
@@ -496,7 +506,7 @@ const buildRuntime = (
     decks.length > 0
       ? decks
       : [{ id: "main", name: "Main", isMain: true, buttons: [] }]
-  const allDecks = injectSystemButtons(
+  const allDecsWithSystemButtons = injectSystemButtons(
     materializeAddonDecks(
       registry,
       effectiveDecks,
@@ -505,6 +515,12 @@ const buildRuntime = (
       config.lock?.buttons,
     ),
     keyCount,
+  )
+  const { decks: allDecks, errorsByDeck } = applyConfigErrorReplacements(
+    allDecsWithSystemButtons,
+    config,
+    registry,
+    logger,
   )
   const { runtime, methods, pubSub, store } = createDeckRuntime({
     decks: allDecks,
@@ -526,6 +542,97 @@ const buildRuntime = (
     methods,
     store,
   }
+}
+
+interface DeckButtonError {
+  position: number
+  buttonId?: string
+  details: string
+}
+
+/**
+ * Walks each runtime deck and replaces any button whose (deckId, position)
+ * was flagged as a config error with a `core:temporary-error` cell. The
+ * full incorrect config and the full zod issues are logged once per
+ * broken button so the operator can fix the YAML without digging through
+ * a stack trace.
+ *
+ * Returns the patched decks plus a per-deck error map for downstream
+ * surfacing in `deck-config` messages.
+ */
+const applyConfigErrorReplacements = (
+  decks: ReadonlyArray<RuntimeDeck>,
+  config: import("@/config/schemas").RawConfig,
+  registry: AddonRegistry,
+  logger: pino.Logger,
+): {
+  decks: RuntimeDeck[]
+  errorsByDeck: Map<string, DeckButtonError[]>
+} => {
+  const perDeck = validatePerDeck(config, registry).perButton
+  const brokenByDeckPosition = new Map<
+    string,
+    Map<number, { buttonId?: string; details: string; button: unknown }>
+  >()
+  for (const entry of perDeck) {
+    if (entry.issues.length === 0) continue
+    if (entry.position === undefined) continue
+    const details = entry.schemaIssues
+      .map(
+        (i) =>
+          `${[...i.path].join(".") || "(root)"}: ${i.message}`,
+      )
+      .join("; ") || entry.issues.map((i) => i.message).join("; ")
+    logger.error(
+      {
+        deckId: entry.deckId,
+        position: entry.position,
+        buttonId: entry.buttonId,
+        path: entry.path,
+        config: entry.button,
+        schemaIssues: entry.schemaIssues,
+      },
+      `invalid button config at ${entry.path}: ${details}`,
+    )
+    let perDeckMap = brokenByDeckPosition.get(entry.deckId)
+    if (perDeckMap === undefined) {
+      perDeckMap = new Map()
+      brokenByDeckPosition.set(entry.deckId, perDeckMap)
+    }
+    perDeckMap.set(entry.position, {
+      ...(entry.buttonId !== undefined ? { buttonId: entry.buttonId } : {}),
+      details,
+      button: entry.button,
+    })
+  }
+
+  const errorsByDeck = new Map<string, DeckButtonError[]>()
+  const patched = decks.map((deck) => {
+    const brokenMap = brokenByDeckPosition.get(deck.id)
+    if (brokenMap === undefined || brokenMap.size === 0) return deck
+    const errors: DeckButtonError[] = []
+    const buttons = deck.buttons.map((btn) => {
+      const parsed = Number.parseInt(btn.id, 10)
+      const position = btn.position ?? (Number.isFinite(parsed) ? parsed : undefined)
+      if (position === undefined) return btn
+      const broken = brokenMap.get(position)
+      if (broken === undefined) return btn
+      errors.push({
+        position,
+        ...(broken.buttonId !== undefined ? { buttonId: broken.buttonId } : {}),
+        details: broken.details,
+      })
+      return {
+        id: String(position),
+        type: "core:temporary-error" as const,
+        position,
+        config: { details: broken.details },
+      }
+    })
+    errorsByDeck.set(deck.id, errors)
+    return { ...deck, buttons, buttonErrors: errors }
+  })
+  return { decks: patched, errorsByDeck }
 }
 
 const loadConfigAndTheme = (

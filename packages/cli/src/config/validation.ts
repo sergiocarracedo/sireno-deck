@@ -22,21 +22,6 @@ export interface FullValidationResult {
   issues: FullValidationIssue[]
 }
 
-export interface PerButtonValidation {
-  deckId: string
-  buttonIndex: number
-  button: RawButtonDef
-  buttonId: string
-  position: number | undefined
-  path: string
-  issues: FullValidationIssue[]
-}
-
-export interface PerDeckValidation {
-  issues: FullValidationIssue[]
-  perButton: PerButtonValidation[]
-}
-
 const reportDuplicatePositions = (
   deckId: string,
   deck: RawConfig["decks"][string],
@@ -87,11 +72,21 @@ export const formatBootstrapIssues = (issues: BootstrapIssue[]): string =>
     })
     .join("\n")
 
+export interface ConfigSchemaIssue {
+  readonly path: ReadonlyArray<string | number>
+  readonly message: string
+}
+
+export interface ButtonValidationResult {
+  readonly issues: FullValidationIssue[]
+  readonly schemaIssues: ConfigSchemaIssue[]
+}
+
 export const validateButton = (
   btn: RawButtonDef,
   registry: AddonRegistry,
   path: string,
-): FullValidationIssue[] => {
+): ButtonValidationResult => {
   const issues: FullValidationIssue[] = []
   if (!registry.hasButtonType(btn.type)) {
     issues.push({
@@ -99,7 +94,7 @@ export const validateButton = (
       path: `${path}.type`,
       message: `Unknown button type: ${btn.type}`,
     })
-    return issues
+    return { issues, schemaIssues: [] }
   }
   const def = registry.getButtonType(btn.type)!
   if (isSystemButtonType(btn.type) || def.def.service.internal === true) {
@@ -108,7 +103,7 @@ export const validateButton = (
       path: `${path}.type`,
       message: `Internal button type ${btn.type} cannot be used in user config`,
     })
-    return issues
+    return { issues, schemaIssues: [] }
   }
   const schema = def.def.service.configSchema as
     | {
@@ -120,16 +115,20 @@ export const validateButton = (
         }
       }
     | undefined
-  if (schema === undefined) return issues
+  if (schema === undefined) return { issues, schemaIssues: [] }
   const parseResult = schema.safeParse(btn.config ?? {})
   if (!parseResult.success) {
-    const first = parseResult.error?.issues[0]
-    const msg = first
-      ? `${first.path.join(".") || "(root)"}: ${first.message}`
-      : "zod parse error"
-    issues.push({ level: "error", path: `${path}.config`, message: msg })
+    const schemaIssues = parseResult.error?.issues ?? []
+    for (const issue of schemaIssues) {
+      issues.push({
+        level: "error",
+        path: `${path}.config.${[...issue.path].join(".")}`,
+        message: issue.message,
+      })
+    }
+    return { issues, schemaIssues }
   }
-  return issues
+  return { issues, schemaIssues: [] }
 }
 
 export const validateFull = (
@@ -141,23 +140,43 @@ export const validateFull = (
     deck.buttons.forEach((btn, index) => {
       if (typeof btn === "string") return
       const path = `decks.${deckId}.buttons[${index}]`
-      issues.push(...validateButton(btn, registry, path))
+      issues.push(...validateButton(btn, registry, path).issues)
     })
   }
   return { issues }
 }
 
+export interface PerButtonValidationV2 {
+  deckId: string
+  buttonIndex: number
+  button: RawButtonDef
+  buttonId: string
+  position: number | undefined
+  path: string
+  issues: FullValidationIssue[]
+  schemaIssues: ConfigSchemaIssue[]
+}
+
+export interface PerDeckValidationV2 {
+  issues: FullValidationIssue[]
+  perButton: PerButtonValidationV2[]
+}
+
 export const validatePerDeck = (
   config: RawConfig,
   registry: AddonRegistry,
-): PerDeckValidation => {
+): PerDeckValidationV2 => {
   const issues: FullValidationIssue[] = []
-  const perButton: PerButtonValidation[] = []
+  const perButton: PerButtonValidationV2[] = []
   for (const [deckId, deck] of Object.entries(config.decks)) {
     deck.buttons.forEach((btn, index) => {
       if (typeof btn === "string") return
       const path = `decks.${deckId}.buttons[${index}]`
-      const buttonIssues = validateButton(btn, registry, path)
+      const { issues: buttonIssues, schemaIssues } = validateButton(
+        btn,
+        registry,
+        path,
+      )
       const buttonId = btn.position?.toString() ?? `b${index}`
       perButton.push({
         deckId,
@@ -167,6 +186,7 @@ export const validatePerDeck = (
         position: btn.position,
         path,
         issues: buttonIssues,
+        schemaIssues,
       })
       issues.push(...buttonIssues)
     })

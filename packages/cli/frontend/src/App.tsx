@@ -180,7 +180,11 @@ const AppContent = () => {
           const surface = (
             message.surfaces as Record<
               string,
-              { name?: string; buttons?: DeckButton[] }
+              {
+                name?: string
+                buttons?: DeckButton[]
+                buttonErrors?: ButtonErrorState[]
+              }
             >
           )[message.deckId]
           if (surface && Array.isArray(surface.buttons)) {
@@ -192,7 +196,9 @@ const AppContent = () => {
               isCompact: message.isCompact ?? false,
               hasOverlayDeckAvailable: message.hasOverlayDeckAvailable ?? false,
               overlayDeckIcon: message.overlayDeckIcon ?? null,
-              buttonErrors: [],
+              buttonErrors: Array.isArray(surface.buttonErrors)
+                ? surface.buttonErrors
+                : [],
             })
           }
         }

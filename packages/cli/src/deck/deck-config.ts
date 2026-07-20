@@ -137,6 +137,16 @@ export const buildDeckConfigMessage = (
         id: deck.id,
         name: deck.name ?? deck.id,
         buttons,
+        ...(deck.buttonErrors !== undefined && deck.buttonErrors.length > 0
+          ? {
+              buttonErrors: deck.buttonErrors.map((e) => ({
+                position: e.position,
+                expiresAt: Number.MAX_SAFE_INTEGER,
+                ...(e.buttonId !== undefined ? { buttonId: e.buttonId } : {}),
+                details: e.details,
+              })),
+            }
+          : {}),
       },
     },
     navMode: "regular",
