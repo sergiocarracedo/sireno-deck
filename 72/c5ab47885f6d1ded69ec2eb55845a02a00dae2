@@ -1,0 +1,67 @@
+packages/cli/emulator/src/App.tsx
+  s_2cb355494cf289::t_bfa99c3e54f894 10-12,55-59,68-78,122,125,158-163,182-188
+packages/cli/emulator/src/bridge.ts
+  s_2cb355494cf289::t_bba32b504b8c75 28,53
+packages/cli/emulator/src/components/DisconnectedOverlay.tsx
+  s_2cb355494cf289::t_13947e7be501a5 1-76
+packages/cli/emulator/src/components/ReconnectingBanner.tsx
+  s_2cb355494cf289::t_0356d55615af42 1-33
+packages/cli/frontend/src/App.tsx
+  s_2cb355494cf289::t_09ef6d9343d296 17,20-21,33-34,124-129,141-152,186-195,214-215,217-219,238-243,245-251
+packages/cli/frontend/src/__tests__/disconnected-overlay.test.tsx
+  s_2cb355494cf289::t_037fc3d32e5afc 1-96
+packages/cli/frontend/src/__tests__/reconnecting-banner.test.tsx
+  s_2cb355494cf289::t_e6564c78877a4d 1-75
+packages/cli/frontend/src/bridge/client.ts
+  s_2cb355494cf289::t_825b8c21420bf4 28-29,48,121,159-166
+packages/cli/frontend/src/components/Deck.tsx
+  s_2cb355494cf289::t_4cfc1cf810ac3e 45-50,132-137
+packages/cli/frontend/src/components/DisconnectedOverlay.tsx
+  s_2cb355494cf289::t_fb72832fff4591 1-76
+packages/cli/frontend/src/components/ReconnectingBanner.tsx
+  s_2cb355494cf289::t_8c1712f97d0b4f 1-33
+packages/cli/src/api/protocol-internal.ts
+  s_2cb355494cf289::t_60dd58364baf1a 70-71
+packages/cli/src/cli/commands/run.ts
+  s_2cb355494cf289::t_aae15bfc33a19d 16,41,50-56,64-66,324-333,340-341,389-394,430,528-539,701-705,709-722,743-744,748-760,765-768,770,782-784,787-797,811,820,824-825,827-828,833,848-851,864-955,959-962,969,973-999,1007-1009,1011-1012,1014
+packages/cli/src/cli/commands/start.ts
+  s_2cb355494cf289::t_b229c89ea0f221 11,123-127
+packages/cli/src/config/validation.ts
+  s_2cb355494cf289::t_0263264ed69731 3,25-39,90-134,144,150-176
+packages/cli/src/core/__tests__/settings.test.ts
+  s_2cb355494cf289::t_0bb730889f0eaa 1-141
+packages/cli/src/core/settings.ts
+  s_2cb355494cf289::t_c0234f326ffbcb 1-153
+packages/cli/src/deck/__tests__/methods.test.ts
+  s_2cb355494cf289::t_b128685ef1ad89 173-187
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_2cb355494cf289::t_c465447534b06d 268,300
+packages/cli/src/deck/methods.ts
+  s_2cb355494cf289::t_acf26f0b761243 77,102,104-109
+packages/cli/src/deck/runtime.ts
+  s_2cb355494cf289::t_b5799a694e5e2e 458,470
+packages/cli/src/deck/system-buttons/registry.tsx
+  s_2cb355494cf289::t_eea4b93b3b0cbf 34,42-46
+packages/cli/src/util/__tests__/config-diff.test.ts
+  s_2cb355494cf289::t_b8e63f59a42fcc 1-70
+packages/cli/src/util/config-diff.ts
+  s_2cb355494cf289::t_40a7d29539717b 1-18
+packages/cli/src/util/daemon.ts
+  s_2cb355494cf289::t_5407ae10e1ce28 142-177
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "72c5ab47885f6d1ded69ec2eb55845a02a00dae2",
+  "prompts": {},
+  "sessions": {
+    "s_2cb355494cf289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_088ac798dffe8mKKPKhoYsGfiP",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
