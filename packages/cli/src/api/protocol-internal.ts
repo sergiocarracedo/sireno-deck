@@ -67,6 +67,8 @@ export const buttonErrorMessageSchema = baseServerMessage.extend({
   deckId: z.string(),
   position: z.number().int().nonnegative(),
   durationMs: z.number().int().positive().default(5000),
+  buttonId: z.string().optional(),
+  details: z.string().optional(),
 })
 
 export const buttonActionMessageSchema = baseClientMessage.extend({

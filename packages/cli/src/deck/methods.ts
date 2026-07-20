@@ -74,6 +74,7 @@ export interface Methods {
     deckId: string,
     position: number,
     durationMs?: number,
+    buttonId?: string,
   ): void
   adjustBrightness(args: { direction: "up" | "down" }): void
   dispatch(value: string): Promise<void>
@@ -98,8 +99,14 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     deckId,
     position,
     durationMs = DEFAULT_BUTTON_ERROR_DURATION_MS,
+    buttonId,
   ) => {
-    ctx.pubSub.publish("runtime:buttonError", { deckId, position, durationMs })
+    ctx.pubSub.publish("runtime:buttonError", {
+      deckId,
+      position,
+      durationMs,
+      ...(buttonId !== undefined ? { buttonId } : {}),
+    })
   }
 
   const adjustBrightness: Methods["adjustBrightness"] = ({ direction }) => {

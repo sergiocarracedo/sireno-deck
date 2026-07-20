@@ -265,7 +265,7 @@ describe("createRuntime", () => {
     const showTemporaryError = vi.spyOn(methods, "showTemporaryError")
     await runtime.invokeAction("main:b0", "tap")
     expect(dispatch).not.toHaveBeenCalled()
-    expect(showTemporaryError).toHaveBeenCalledWith("main", 0)
+    expect(showTemporaryError).toHaveBeenCalledWith("main", 0, undefined, expect.any(String))
   })
 
   it("invokeAction shows button error on dispatch failure", async () => {
@@ -297,7 +297,7 @@ describe("createRuntime", () => {
       .mockRejectedValue(new Error("boom"))
     const showTemporaryError = vi.spyOn(methods, "showTemporaryError")
     await runtime.invokeAction("main:b0", "tap")
-    expect(showTemporaryError).toHaveBeenCalledWith("main", 0)
+    expect(showTemporaryError).toHaveBeenCalledWith("main", 0, undefined, expect.any(String))
   })
 
   it("setGestureListener(null) detaches the listener", async () => {

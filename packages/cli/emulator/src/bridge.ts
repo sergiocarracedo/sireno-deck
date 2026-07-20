@@ -25,6 +25,7 @@ export interface WsClientOptions {
   readonly onMessage?: (data: unknown) => void
   readonly onClose?: () => void
   readonly onFailed?: () => void
+  readonly onStatus?: (status: WsStatus) => void
   readonly wsFactory?: (url: string) => WebSocketLike
 }
 
@@ -49,6 +50,7 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
 
   const setStatus = (next: WsStatus): void => {
     status = next
+    options.onStatus?.(next)
   }
 
   const scheduleReconnect = (): void => {

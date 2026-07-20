@@ -455,7 +455,7 @@ const navigateToDeck = (
           "[runtime] action skipped: missing system requirement",
         )
         if (position >= 0) {
-          getMethods().showTemporaryError(found.deckId, position)
+          getMethods().showTemporaryError(found.deckId, position, undefined, found.button.id)
         }
         return
       }
@@ -467,7 +467,7 @@ const navigateToDeck = (
           "[addon:sireno-deck] user action failed",
         )
         if (position >= 0) {
-          getMethods().showTemporaryError(found.deckId, position)
+          getMethods().showTemporaryError(found.deckId, position, undefined, found.button.id)
         }
       }
       return

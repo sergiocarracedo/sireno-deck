@@ -14,9 +14,11 @@ import {
   ThemeUiPresentationProvider,
   useAssetCacheMutations,
 } from "@sireno-deck/cli"
-import { createWsClient, type WsClient } from "./bridge/client"
+import { createWsClient, type WsClient, type ConnectionStatus } from "./bridge/client"
 import { WebSocketProvider, type WebSocketSend } from "./bridge/ws-context"
 import { Deck } from "./components/Deck"
+import { ReconnectingBanner } from "./components/ReconnectingBanner"
+import { DisconnectedOverlay } from "./components/DisconnectedOverlay"
 
 interface DeckButton {
   id: string
@@ -28,6 +30,8 @@ interface DeckButton {
 interface ButtonErrorState {
   position: number
   expiresAt: number
+  buttonId?: string
+  details?: string
 }
 
 interface DeckState {
@@ -117,6 +121,12 @@ export const App = () => {
 const AppContent = () => {
   const [deck, setDeck] = useState<DeckState>(EMPTY_DECK)
   const [send, setSend] = useState<WebSocketSend | null>(null)
+  const [connectionStatus, setConnectionStatus] =
+    useState<ConnectionStatus>("connecting")
+  const [disconnectedSince, setDisconnectedSince] = useState<number | null>(null)
+  const [attempt, setAttempt] = useState(0)
+  const [lastError, setLastError] = useState<string | null>(null)
+  const [now, setNow] = useState(() => Date.now())
   const clientRef = useRef<WsClient | null>(null)
   const { setAsset } = useAssetCacheMutations()
   const navigate = useNavigate()
@@ -128,6 +138,18 @@ const AppContent = () => {
     const client = createWsClient({
       url,
       ...(token !== "" ? { token } : {}),
+      onStatus: (status) => {
+        setConnectionStatus(status)
+        setAttempt(client.getAttempt())
+        setLastError(client.getLastError())
+        if (status === "open") {
+          setDisconnectedSince(null)
+        } else {
+          setDisconnectedSince((previous) =>
+            previous === null ? Date.now() : previous,
+          )
+        }
+      },
       onMessage: (message) => {
         if (message.type === "assets") {
           for (const asset of message.assets) {
@@ -161,7 +183,16 @@ const AppContent = () => {
             ...previous,
             buttonErrors: [
               ...previous.buttonErrors.filter((error) => error.position !== position),
-              { position, expiresAt: Date.now() + durationMs },
+              {
+                position,
+                expiresAt: Date.now() + durationMs,
+                ...(typeof message.buttonId === "string"
+                  ? { buttonId: message.buttonId }
+                  : {}),
+                ...(typeof message.details === "string"
+                  ? { details: message.details }
+                  : {}),
+              },
             ],
           }))
         }
@@ -180,9 +211,12 @@ const AppContent = () => {
     )
 
     const timer = setInterval(() => {
+      const tickNow = Date.now()
+      setNow(tickNow)
       setDeck((previous) => {
-        const now = Date.now()
-        const remaining = previous.buttonErrors.filter((error) => error.expiresAt > now)
+        const remaining = previous.buttonErrors.filter(
+          (error) => error.expiresAt > tickNow,
+        )
         return remaining.length === previous.buttonErrors.length
           ? previous
           : { ...previous, buttonErrors: remaining }
@@ -201,7 +235,20 @@ const AppContent = () => {
   return (
     <WebSocketProvider value={send}>
       <main className="bg-bg text-fg flex min-h-screen items-center justify-center">
+        <ReconnectingBanner
+          status={connectionStatus}
+          disconnectedSince={disconnectedSince}
+          attempt={attempt}
+          now={now}
+        />
         <Deck deck={deck} />
+        <DisconnectedOverlay
+          status={connectionStatus}
+          disconnectedSince={disconnectedSince}
+          attempt={attempt}
+          lastError={lastError}
+          now={now}
+        />
       </main>
     </WebSocketProvider>
   )

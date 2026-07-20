@@ -7,7 +7,9 @@ import {
   type DeckButton,
 } from "@sireno-deck/cli"
 
-import { createWsClient, serializeHello, type WsClient } from "./bridge"
+import { createWsClient, serializeHello, type WsClient, type WsStatus } from "./bridge"
+import { ReconnectingBanner } from "./components/ReconnectingBanner"
+import { DisconnectedOverlay } from "./components/DisconnectedOverlay"
 
 let _wsClientInitialized = false
 
@@ -50,6 +52,11 @@ export const App = ({
   wsUrl = ENV_WS_URL,
 }: AppProps = {}): React.ReactElement => {
   const [deck, setDeck] = useState<DeckState>(EMPTY_DECK)
+  const [connectionStatus, setConnectionStatus] = useState<WsStatus>("connecting")
+  const [disconnectedSince, setDisconnectedSince] = useState<number | null>(null)
+  const [attempt, setAttempt] = useState(0)
+  const [lastError, setLastError] = useState<string | null>(null)
+  const [now, setNow] = useState(() => Date.now())
   const theme = useState<ThemeContextValue>(() => buildThemeContext())[0]
   const clientRef = useRef<WsClient | null>(null)
 
@@ -58,6 +65,17 @@ export const App = ({
     _wsClientInitialized = true
     const client: WsClient = createWsClient({
       url: wsUrl,
+      onStatus: (status) => {
+        setConnectionStatus(status)
+        setAttempt(client.attemptCount())
+        if (status === "open") {
+          setDisconnectedSince(null)
+        } else {
+          setDisconnectedSince((previous) =>
+            previous === null ? Date.now() : previous,
+          )
+        }
+      },
       wsFactory: (url: string) => {
         const ws = new WebSocket(url)
         ws.addEventListener("open", () => {
@@ -101,8 +119,10 @@ export const App = ({
       },
     })
     clientRef.current = client
+    const timer = setInterval(() => setNow(Date.now()), 250)
     return () => {
       _wsClientInitialized = false
+      clearInterval(timer)
       client.close()
     }
   }, [wsUrl])
@@ -135,6 +155,12 @@ export const App = ({
   return (
     <ThemeProvider value={theme}>
       <main className="bg-bg text-fg flex min-h-screen flex-col items-center gap-4 p-6">
+        <ReconnectingBanner
+          status={connectionStatus}
+          disconnectedSince={disconnectedSince}
+          attempt={attempt}
+          now={now}
+        />
         <header className="font-mono text-xs uppercase tracking-widest text-muted">
           {deck.name} · ws: {wsUrl}
         </header>
@@ -153,6 +179,13 @@ export const App = ({
             onNavigate={sendNavigate}
           />
         )}
+        <DisconnectedOverlay
+          status={connectionStatus}
+          disconnectedSince={disconnectedSince}
+          attempt={attempt}
+          lastError={lastError}
+          now={now}
+        />
       </main>
     </ThemeProvider>
   )

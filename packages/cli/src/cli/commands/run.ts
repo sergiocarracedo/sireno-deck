@@ -13,6 +13,7 @@ import {
   formatFullIssues,
   isFullValid,
   validateFull,
+  validatePerDeck,
 } from "@/config/validation"
 import {
   createDeckRuntime,
@@ -37,6 +38,7 @@ import { createSessionProvider } from "@/system/providers/session"
 import { resolveActiveTheme } from "@/themes/loader"
 
 import { createActionExecutor } from "@/action/executor"
+import { createSettingsStore, resolveSettingsPath } from "@/core/settings"
 import { bridgeAddonServices } from "@/deck/addon-handler-bridge"
 import {
   buildDeckConfigMessage,
@@ -45,6 +47,13 @@ import {
 } from "@/deck/deck-config"
 import { getHostContext } from "@/deck/host-context"
 import {
+  appendChild as daemonAppendChild,
+  isRunning as daemonIsRunning,
+  readChildren,
+  removeChild as daemonRemoveChild,
+} from "@/util/daemon"
+import {
+  clearAssets,
   getAssetByPath,
   getUnsentAssets,
   registerDeckIcon,
@@ -52,6 +61,9 @@ import {
 } from "@/core/icon-asset-registry"
 import { StatePublisher } from "@/render/state-publisher"
 import { startWsBridge } from "@/render/ws-bridge"
+import { ConfigWatcher } from "@/core/watcher"
+import type { RawConfig } from "@/config/schemas"
+import { onlyDecksChanged } from "@/util/config-diff"
 
 import { materializeAddonDecks } from "./addon-decks"
 import {
@@ -309,12 +321,24 @@ export const setupAddonServices = (
         "durationMs" in payload
           ? Number((payload as { durationMs: unknown }).durationMs)
           : 5000
+      const buttonId =
+        "buttonId" in payload &&
+        typeof (payload as { buttonId: unknown }).buttonId === "string"
+          ? String((payload as { buttonId: unknown }).buttonId)
+          : undefined
+      const details =
+        "details" in payload &&
+        typeof (payload as { details: unknown }).details === "string"
+          ? String((payload as { details: unknown }).details)
+          : undefined
       if (!Number.isFinite(position) || position < 0) return
       bridge.broadcast({
         type: "button-error",
         deckId,
         position,
         durationMs: Number.isFinite(durationMs) ? durationMs : 5000,
+        ...(buttonId !== undefined ? { buttonId } : {}),
+        ...(details !== undefined ? { details } : {}),
       })
     },
   )
@@ -362,6 +386,12 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
 
   const registry = new AddonRegistry()
   registerBuiltins(registry)
+  const perDeck = validatePerDeck(config, registry)
+  const invalidButtonKeys = new Set(
+    perDeck.perButton
+      .filter((b) => b.issues.length > 0)
+      .map((b) => `${b.deckId}:${b.buttonIndex}`),
+  )
   const validation = validateFull(config, registry)
   if (!isFullValid(validation)) {
     throw new Error(
@@ -397,6 +427,7 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
       const runtimeButtons: RuntimeDeck["buttons"] = d.buttons.flatMap(
         (b, idx) => {
           if (typeof b === "string") return []
+          if (invalidButtonKeys.has(`${id}:${idx}`)) return []
           return [
             {
               id: b.position?.toString() ?? `b${idx}`,
@@ -493,6 +524,18 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
     decks: allDecks,
     logger,
   })
+
+  for (const b of perDeck.perButton) {
+    if (b.issues.length === 0) continue
+    if (b.position === undefined) continue
+    pubSub.publish("runtime:buttonError", {
+      deckId: b.deckId,
+      position: b.position,
+      durationMs: 8000,
+      buttonId: b.buttonId,
+      details: formatFullIssues(b.issues),
+    })
+  }
 
   return {
     configPath,
@@ -655,8 +698,27 @@ export const preflight = async (options: RunOptions): Promise<void> => {
 export const runPipeline = async (options: RunOptions): Promise<void> => {
   const { logger } = options
 
+  const settingsStore = createSettingsStore({
+    path: resolveSettingsPath(),
+    logger,
+  })
+
   const loaded = loadConfigAndTheme(options)
   const { themeDir, decks, pubSub, runtime, methods, store } = loaded
+
+  const savedActiveDeck = settingsStore.get().activeDeck
+  if (
+    savedActiveDeck !== "main" &&
+    !decks.some((d) => d.id === savedActiveDeck)
+  ) {
+    logger.warn(
+      { savedActiveDeck },
+      "saved active deck not found in config, falling back to main",
+    )
+    runtime.navigateToDeck("main")
+  } else if (savedActiveDeck !== "main") {
+    runtime.navigateToDeck(savedActiveDeck, { addToHistory: false })
+  }
 
   const providers = await startSystemProviders(options, runtime, methods)
 
@@ -678,22 +740,34 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
   const bridgeSignal = new AbortController()
   const statePublisher = new StatePublisher({ bridge, logger })
-  const mainDeck = runtime.getActiveDeck()
-  const addonServices = setupAddonServices({
+
+  const state = {
     runtime,
     methods,
-    decks,
     pubSub,
-    scanned: addonBundle.scanned,
-    addonByType: addonBundle.addonByType,
+    store,
+    decks,
+    addonBundle,
+    resolverOptions,
+  }
+
+  let addonServices = setupAddonServices({
+    runtime: state.runtime,
+    methods: state.methods,
+    decks: state.decks,
+    pubSub: state.pubSub,
+    scanned: state.addonBundle.scanned,
+    addonByType: state.addonBundle.addonByType,
     executor: createActionExecutor({ host: getHostContext() }),
     statePublisher,
     bridge,
     isCompact,
-    resolverOptions,
-    ...(mainDeck !== undefined ? { initialDeck: mainDeck } : {}),
+    resolverOptions: state.resolverOptions,
+    ...(state.runtime.getActiveDeck() !== undefined
+      ? { initialDeck: state.runtime.getActiveDeck() }
+      : {}),
     signal: bridgeSignal.signal,
-    store,
+    store: state.store,
     logger,
   })
 
@@ -705,10 +779,21 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     logger,
   )
   await outputClient.storeSelection(descriptor)
-  for (const deck of decks) {
-    registerDeckIcon(deck, resolverOptions, logger)
-    registerIconForDeck(deck.buttons, resolverOptions, logger)
+  for (const deck of state.decks) {
+    registerDeckIcon(deck, state.resolverOptions, logger)
+    registerIconForDeck(deck.buttons, state.resolverOptions, logger)
   }
+
+  const unsubscribeBrightnessPersist = state.pubSub.subscribe<{
+    value: number
+  }>("sireno:settings:brightness", ({ value }) => {
+    settingsStore.update({ brightness: value })
+  })
+  const unsubscribeActiveDeckPersist = state.pubSub.subscribe<{
+    deckId: string
+  }>("runtime:activeDeck", ({ deckId }) => {
+    settingsStore.update({ activeDeck: deckId })
+  })
 
   bridge.onConnection((socket) => {
     // Send the full asset bundle to every new connection. The previous
@@ -723,7 +808,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       socket.send(
         JSON.stringify({
           type: "assets",
-          deckId: mainDeck?.id ?? "",
+          deckId: state.runtime.getActiveDeck()?.id ?? "",
           assets: allAssets.map((a) => ({
             id: a.id,
             filename: a.fullPath,
@@ -732,20 +817,20 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
         }),
       )
     }
-    const activeDeck = runtime.getActiveDeck()
+    const activeDeck = state.runtime.getActiveDeck()
     if (activeDeck !== undefined) {
       const msg = buildDeckConfigMessage(
         activeDeck,
-        addonBundle.addonByType,
-        resolverOptions,
+        state.addonBundle.addonByType,
+        state.resolverOptions,
         {
-          navStackDepth: runtime.navStackDepth(),
-          hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+          navStackDepth: state.runtime.navStackDepth(),
+          hasOverlayDeckAvailable: state.runtime.hasOverlayDeckAvailable(),
         },
         descriptor.keyCount,
         outputClient.kind === "real",
         (fullPath) => getAssetByPath(fullPath)?.id,
-        runtime.getAvailableOverlayDeckIcon(),
+        state.runtime.getAvailableOverlayDeckIcon(),
       )
       logger.info(
         {
@@ -760,10 +845,10 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
   const outputHandle: OutputHandle = await outputClient.init({
     bridge,
-    runtime,
-    pubSub,
-    store,
-    decks,
+    runtime: state.runtime,
+    pubSub: state.pubSub,
+    store: state.store,
+    decks: state.decks,
     theme: { name: loaded.theme.name, apiVersion: loaded.theme.apiVersion },
     themeDir,
     logger,
@@ -776,8 +861,104 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       : {}),
   })
 
+  let prevConfig: RawConfig = loadConfig({ configPath: loaded.configPath })
+    .config
+  const configWatcher = new ConfigWatcher([loaded.configPath], {
+    onChange: () => {
+      void (async () => {
+        try {
+          const reloaded = loadConfig({ configPath: loaded.configPath })
+          const newConfig = reloaded.config
+          if (!onlyDecksChanged(prevConfig, newConfig)) {
+            logger.warn(
+              "config change outside decks: detected; restart required (no supervisor in this build)",
+            )
+            process.exit(0)
+            return
+          }
+          const savedActiveDeckId = state.runtime.getActiveDeckId()
+          const safeActiveDeckId =
+            savedActiveDeckId === "core:lock" ? null : savedActiveDeckId
+          addonServices.dispose()
+          const reloadedTheme = loadConfigAndTheme(options)
+          state.runtime = reloadedTheme.runtime
+          state.methods = reloadedTheme.methods
+          state.pubSub = reloadedTheme.pubSub
+          state.store = reloadedTheme.store
+          state.decks = reloadedTheme.decks
+          clearAssets()
+          for (const deck of state.decks) {
+            registerDeckIcon(deck, state.resolverOptions, logger)
+            registerIconForDeck(deck.buttons, state.resolverOptions, logger)
+          }
+          addonServices = setupAddonServices({
+            runtime: state.runtime,
+            methods: state.methods,
+            decks: state.decks,
+            pubSub: state.pubSub,
+            scanned: state.addonBundle.scanned,
+            addonByType: state.addonBundle.addonByType,
+            executor: createActionExecutor({ host: getHostContext() }),
+            statePublisher,
+            bridge,
+            isCompact,
+            resolverOptions: state.resolverOptions,
+            ...(state.runtime.getActiveDeck() !== undefined
+              ? { initialDeck: state.runtime.getActiveDeck() }
+              : {}),
+            signal: bridgeSignal.signal,
+            store: state.store,
+            logger,
+          })
+          prevConfig = newConfig
+          if (
+            safeActiveDeckId !== null &&
+            state.decks.some((d) => d.id === safeActiveDeckId)
+          ) {
+            state.runtime.navigateToDeck(safeActiveDeckId, {
+              addToHistory: false,
+            })
+          }
+          const newActive = state.runtime.getActiveDeck()
+          if (newActive !== undefined) {
+            const msg = buildDeckConfigMessage(
+              newActive,
+              state.addonBundle.addonByType,
+              state.resolverOptions,
+              {
+                navStackDepth: state.runtime.navStackDepth(),
+                hasOverlayDeckAvailable:
+                  state.runtime.hasOverlayDeckAvailable(),
+              },
+              descriptor.keyCount,
+              outputClient.kind === "real",
+              (fullPath) => getAssetByPath(fullPath)?.id,
+              state.runtime.getAvailableOverlayDeckIcon(),
+            )
+            bridge.broadcast(msg)
+            logger.info(
+              { deckId: msg.deckId },
+              "orchestrator: hot-reloaded deck config broadcast",
+            )
+          }
+        } catch (err) {
+          logger.error(
+            { err: (err as Error).message },
+            "config change: hot-reload failed",
+          )
+        }
+      })()
+    },
+  })
+  await configWatcher.start({ ignoreInitial: true })
+
+  const trackedChildPids = new Set<number>()
   if (options.onChildren !== undefined) {
     options.onChildren([...outputHandle.childPids])
+  }
+  for (const pid of outputHandle.childPids) {
+    trackedChildPids.add(pid)
+    daemonAppendChild(pid)
   }
 
   let resolveDone: () => void = () => undefined
@@ -785,9 +966,37 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     resolveDone = resolve
   })
 
+  const sigkillTimers = new Set<ReturnType<typeof setTimeout>>()
   const signals = options.signals ?? defaultSignals
   const unregister = signals.onSignal(() => {
     logger.info("received signal, shutting down")
+
+    const known = new Set<number>(trackedChildPids)
+    const persisted = readChildren()?.pids ?? []
+    for (const pid of persisted) known.add(pid)
+
+    for (const pid of known) {
+      try {
+        process.kill(pid, "SIGTERM")
+      } catch {
+        // already gone
+      }
+      sigkillTimers.add(
+        setTimeout(() => {
+          for (const t of sigkillTimers) clearTimeout(t)
+          sigkillTimers.clear()
+          if (daemonIsRunning(pid)) {
+            try {
+              process.kill(pid, "SIGKILL")
+            } catch {
+              // already gone
+            }
+          }
+          daemonRemoveChild(pid)
+        }, 1000),
+      )
+    }
+
     resolveDone()
   })
 
@@ -795,8 +1004,14 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     await done
   } finally {
     unregister()
+    for (const t of sigkillTimers) clearTimeout(t)
+    sigkillTimers.clear()
+    await configWatcher.close()
     bridgeSignal.abort()
+    unsubscribeBrightnessPersist()
+    unsubscribeActiveDeckPersist()
     addonServices.dispose()
+    settingsStore.close()
     statePublisher.stopAll()
     await Promise.allSettled([
       outputHandle.stop(),

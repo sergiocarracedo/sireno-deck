@@ -139,6 +139,42 @@ export const removeChildrenFile = (paths = resolveDaemonPaths()): void => {
   if (existsSync(paths.childrenFile)) unlinkSync(paths.childrenFile)
 }
 
+export const appendChild = (
+  pid: number,
+  paths = resolveDaemonPaths(),
+): void => {
+  const current = readChildren(paths) ?? { pids: [] }
+  if (current.pids.includes(pid)) return
+  writeChildren({ pids: [...current.pids, pid] }, paths)
+}
+
+export const removeChild = (
+  pid: number,
+  paths = resolveDaemonPaths(),
+): void => {
+  const current = readChildren(paths)
+  if (current === null) return
+  const next = current.pids.filter((p) => p !== pid)
+  if (next.length === current.pids.length) return
+  writeChildren({ pids: next }, paths)
+}
+
+export const pruneStaleChildren = (
+  paths = resolveDaemonPaths(),
+  logger?: pino.Logger,
+): number => {
+  const current = readChildren(paths)
+  if (current === null) return 0
+  const alive = current.pids.filter((p) => isRunning(p))
+  const pruned = current.pids.length - alive.length
+  if (pruned === 0) return 0
+  writeChildren({ pids: alive }, paths)
+  for (const dead of current.pids.filter((p) => !isRunning(p))) {
+    logger?.info({ pid: dead }, "daemon: pruned stale child pid")
+  }
+  return pruned
+}
+
 export interface StartDaemonOptions {
   logger: pino.Logger
   dryRun?: boolean

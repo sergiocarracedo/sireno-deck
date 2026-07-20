@@ -8,6 +8,7 @@ import type pino from "pino"
 import {
   generateToken,
   isRunning,
+  pruneStaleChildren,
   readPid,
   readToken,
   removeChildrenFile,
@@ -118,6 +119,11 @@ const stopExisting = async (
 
 const start = async (options: StartOptions): Promise<void> => {
   const { logger } = options
+
+  const prunedCount = pruneStaleChildren(undefined, logger)
+  if (prunedCount > 0) {
+    logger.info({ prunedCount }, "daemon: pruned stale child pids on startup")
+  }
 
   const existing = readPid()
   if (existing !== null && isRunning(existing)) {
