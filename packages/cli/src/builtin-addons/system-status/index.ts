@@ -1,19 +1,19 @@
-import type { AddonManifestV1 } from "@/addon/api"
+export {
+  systemStatusManifest,
+  systemStatusAddon,
+  systemStatusButtonTypes,
+} from "./manifest"
 
-import systemStatusBackend from "./buttons/system-status/backend"
-import systemStatusFrontend from "./buttons/system-status/frontend"
+import type { AddonRegistry } from "@/addon/registry"
+import type { PubSub } from "@/core/pub-sub"
+import { startSystemStatusPoller } from "./service"
+import { systemStatusManifest } from "./manifest"
 
-export const manifest: AddonManifestV1 = {
-  apiVersion: 1,
-  name: "system-status",
-  buttonTypes: {
-    "system-status:status": {
-      frontend: systemStatusFrontend,
-      service: systemStatusBackend,
-    },
-  },
-  publishIntervalMs: 1000,
+export const registerSystemStatusAddon = (
+  registry: AddonRegistry,
+  pubSub: PubSub,
+  signal: AbortSignal,
+): void => {
+  registry.load(systemStatusManifest)
+  startSystemStatusPoller(pubSub, signal)
 }
-
-export const systemStatusAddon = manifest
-export default manifest

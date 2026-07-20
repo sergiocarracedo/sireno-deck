@@ -7,6 +7,7 @@ import type pino from "pino"
 
 import { AddonRegistry } from "@/addon/registry"
 import { registerBuiltins } from "@/builtin-addons"
+import { registerSystemStatusAddon } from "@/builtin-addons/system-status"
 import { findConfigPath } from "@/config/discovery"
 import { loadConfig } from "@/config/loader"
 import {
@@ -678,6 +679,10 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
   const bridgeSignal = new AbortController()
   const statePublisher = new StatePublisher({ bridge, logger })
+
+  const addonRegistryForSystemStatus = new AddonRegistry()
+  registerSystemStatusAddon(addonRegistryForSystemStatus, pubSub, bridgeSignal.signal)
+
   const mainDeck = runtime.getActiveDeck()
   const addonServices = setupAddonServices({
     runtime,

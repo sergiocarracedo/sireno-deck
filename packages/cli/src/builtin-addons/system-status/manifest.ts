@@ -1,75 +1,32 @@
-import { z } from "zod"
 import type { AddonManifestV1 } from "@/addon/api"
 
-const emptyConfigSchema = z.object({}).strict()
+import cpuFrontend from "./buttons/cpu/frontend"
+import ramFrontend from "./buttons/ram/frontend"
+import diskFrontend from "./buttons/disk/frontend"
+import netFrontend from "./buttons/net/frontend"
 
 export const systemStatusManifest: AddonManifestV1 = {
-  name: "system-status",
   apiVersion: 1,
-  buttons: [
-    {
-      type: "system-status:cpu",
-      defaultButton: {
-        type: "system-status:cpu",
-        config: {},
-      },
+  name: "system-status",
+  buttonTypes: {
+    "system-status:cpu": {
+      frontend: cpuFrontend,
+      service: { configSchema: {}, internal: false },
     },
-    {
-      type: "system-status:ram",
-      defaultButton: {
-        type: "system-status:ram",
-        config: {},
-      },
+    "system-status:ram": {
+      frontend: ramFrontend,
+      service: { configSchema: {}, internal: false },
     },
-    {
-      type: "system-status:disk",
-      defaultButton: {
-        type: "system-status:disk",
-        config: {},
-      },
+    "system-status:disk": {
+      frontend: diskFrontend,
+      service: { configSchema: {}, internal: false },
     },
-    {
-      type: "system-status:net",
-      defaultButton: {
-        type: "system-status:net",
-        config: {},
-      },
+    "system-status:net": {
+      frontend: netFrontend,
+      service: { configSchema: {}, internal: false },
     },
-  ],
-  buttonTypes: [
-    {
-      type: "system-status:cpu",
-      service: {
-        configSchema: emptyConfigSchema,
-        internal: false,
-      },
-      frontend: { main: "./buttons/cpu/frontend.tsx" },
-    },
-    {
-      type: "system-status:ram",
-      service: {
-        configSchema: emptyConfigSchema,
-        internal: false,
-      },
-      frontend: { main: "./buttons/ram/frontend.tsx" },
-    },
-    {
-      type: "system-status:disk",
-      service: {
-        configSchema: emptyConfigSchema,
-        internal: false,
-      },
-      frontend: { main: "./buttons/disk/frontend.tsx" },
-    },
-    {
-      type: "system-status:net",
-      service: {
-        configSchema: emptyConfigSchema,
-        internal: false,
-      },
-      frontend: { main: "./buttons/net/frontend.tsx" },
-    },
-  ],
+  },
+  publishIntervalMs: 1000,
 }
 
 export const systemStatusButtonTypes = [
@@ -78,3 +35,6 @@ export const systemStatusButtonTypes = [
   "system-status:disk",
   "system-status:net",
 ] as const
+
+export const systemStatusAddon = systemStatusManifest
+export default systemStatusManifest
