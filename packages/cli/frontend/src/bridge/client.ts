@@ -25,6 +25,8 @@ export interface WsClient {
   close(): void
   send(message: WsMessage): void
   subscribeChannels(channels: string[]): void
+  getAttempt(): number
+  getLastError(): string | null
 }
 
 export const createWsClient = (options: WsClientOptions): WsClient => {
@@ -43,6 +45,7 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
   let manuallyClosed = false
   let timer: ReturnType<typeof setTimeout> | null = null
   let connected = false
+  let lastError: string | null = null
   const pendingMessages: WsMessage[] = []
   const subscribedChannels = new Set<string>()
 
@@ -115,6 +118,7 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
       scheduleReconnect()
     })
     socket.addEventListener("error", () => {
+      lastError = "WebSocket connection error"
       socket?.close()
     })
   }
@@ -152,5 +156,12 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
     }
   }
 
-  return { connect, close, send, subscribeChannels }
+  return {
+    connect,
+    close,
+    send,
+    subscribeChannels,
+    getAttempt: () => attempt,
+    getLastError: () => lastError,
+  }
 }

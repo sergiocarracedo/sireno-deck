@@ -42,7 +42,12 @@ export interface Deck {
   buttons: DeckButton[]
   hasOverlayDeckAvailable?: boolean
   overlayDeckIcon?: string | null
-  buttonErrors?: Array<{ position: number; expiresAt: number }>
+  buttonErrors?: Array<{
+    position: number
+    expiresAt: number
+    buttonId?: string
+    details?: string
+  }>
 }
 
 export interface DeckProps {
@@ -124,7 +129,12 @@ const DeckButtonCell = ({
         data-button-type="core:temporary-error"
       >
         <ButtonFrame buttonType="core:temporary-error" variant="error" onClick={() => fire("tap")}>
-          {renderSystemButton("core:temporary-error")}
+          {renderSystemButton(
+            "core:temporary-error",
+            undefined,
+            (deck.buttonErrors ?? []).find((e) => e.position === position)
+              ?.details,
+          )}
         </ButtonFrame>
       </div>
     )

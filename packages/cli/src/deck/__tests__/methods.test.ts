@@ -170,6 +170,21 @@ describe("createMethods", () => {
     })
   })
 
+  it("showTemporaryError forwards optional buttonId as 4th arg", () => {
+    const { methods, pubSub } = setup([
+      { id: "main", name: "Main", buttons: [], isMain: true },
+    ])
+    const cb = vi.fn()
+    pubSub.subscribe("runtime:buttonError", cb)
+    methods.showTemporaryError("main", 7, undefined, "button-7")
+    expect(cb).toHaveBeenCalledWith({
+      deckId: "main",
+      position: 7,
+      durationMs: 5000,
+      buttonId: "button-7",
+    })
+  })
+
   it("checkRequirement returns true when requirements are not set", () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },
