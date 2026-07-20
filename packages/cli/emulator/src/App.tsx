@@ -14,6 +14,7 @@ import { BridgeLogsPage } from "./pages/BridgeLogsPage"
 import { ServiceLogsPage } from "./pages/ServiceLogsPage"
 import { AddonsPage } from "./pages/AddonsPage"
 import { ConfigPage } from "./pages/ConfigPage"
+import { useSearchParams } from "react-router-dom"
 import { DevicePage } from "./pages/DevicePage"
 
 let _wsClientInitialized = false
@@ -32,6 +33,29 @@ const EMPTY_DECK: DeckState = {
 
 const ENV_WS_URL = (import.meta.env.VITE_WS_URL ??
   "ws://127.0.0.1:52937") as string
+const ENV_FRONTEND_URL = (import.meta.env.VITE_FRONTEND_URL ??
+  "http://127.0.0.1:5180") as string
+
+const Deviceselector = () => {
+  const [params, setParams] = useSearchParams()
+  const device = params.get("device") ?? "default"
+  return (
+    <label className="flex shrink-0 items-center gap-2">
+      <span className="text-neutral-500">device</span>
+      <select
+        value={device}
+        onChange={(e) => setParams({ device: e.target.value })}
+        data-testid="top-device-selector"
+        className="cursor-pointer rounded bg-neutral-800 px-2 py-1 text-[11px] text-neutral-100"
+      >
+        <option value="default">default</option>
+        <option value="xl">Stream Deck XL</option>
+        <option value="plus">Stream Deck +</option>
+        <option value="mini">Stream Deck Mini</option>
+      </select>
+    </label>
+  )
+}
 
 const buildThemeContext = (): ThemeContextValue => ({
   name: "default",
@@ -170,11 +194,7 @@ export const App = ({
     if (activeSection === "service-logs") return <ServiceLogsPage />
     if (activeSection === "addons") return <AddonsPage />
     if (activeSection === "config") return <ConfigPage />
-    return (
-      <DevicePage
-        wsUrl={wsUrl}
-      />
-    )
+    return <DevicePage wsUrl={wsUrl} />
   }
 
   const sendButtonAction = (
@@ -216,13 +236,22 @@ export const App = ({
         onSelect={onSelect}
         content={
           <div className="flex h-full flex-col">
-            <header className="border-b border-neutral-800 bg-neutral-950 px-4 py-2 font-mono text-xs uppercase tracking-widest text-neutral-400">
-              {deck.name} · ws: {wsUrl}
+            <header className="flex shrink-0 items-center gap-4 border-b border-neutral-800 bg-neutral-950 px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-neutral-400">
+              <span className="truncate text-neutral-500">
+                {deck.name || "Awaiting deck-config"}
+              </span>
+              <span className="text-neutral-500">·</span>
+              <span className="truncate" title={wsUrl}>
+                ws: {wsUrl}
+              </span>
+              <span className="text-neutral-500">·</span>
+              <span className="truncate" title={ENV_FRONTEND_URL}>
+                fe: {ENV_FRONTEND_URL}
+              </span>
+              <span className="flex-1" />
+              <DeviceSelector />
             </header>
             <div className="flex flex-1 overflow-hidden">
-              <aside className="w-44 shrink-0 border-r border-neutral-800 p-3 overflow-y-auto">
-                <DevicePage wsUrl={wsUrl} />
-              </aside>
               <section className="flex-1 overflow-auto p-4">
                 {activeSection === "device" ? (
                   deck.buttons.length === 0 ? (

@@ -42,6 +42,7 @@ export interface WsClient {
   close(): void
   status(): WsStatus
   attemptCount(): number
+  lastError(): string | null
 }
 
 export const createWsClient = (options: WsClientOptions): WsClient => {
@@ -144,9 +145,14 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
       openListener = onWsOpen
       closeListener = onWsClose
       const messageListener = onWsMessage
+      const errorListener = (): void => {
+        lastError = "WebSocket connection error"
+        if (attempts >= WS_MAX_ATTEMPTS) setStatus("failed")
+      }
       created.addEventListener("open", openListener)
       created.addEventListener("close", closeListener)
       created.addEventListener("message", messageListener)
+      created.addEventListener("error", errorListener)
       messageListeners.push(messageListener)
     }
   }
@@ -210,6 +216,7 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
     },
     status: () => status,
     attemptCount: () => attempts,
+    lastError: () => lastError,
   }
 }
 
