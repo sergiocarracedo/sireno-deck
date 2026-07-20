@@ -82,11 +82,11 @@ export const App = ({
   useEffect(() => {
     if (_wsClientInitialized) return
     _wsClientInitialized = true
-    const client: WsClient = createWsClient({
+    clientRef.current = createWsClient({
       url: wsUrl,
       onStatus: (status) => {
         setConnectionStatus(status)
-        setAttempt(client.attemptCount())
+        setAttempt(clientRef.current?.attemptCount() ?? 0)
         if (status === "open") {
           setDisconnectedSince(null)
         } else {
@@ -140,12 +140,12 @@ export const App = ({
         }
       },
     })
-    clientRef.current = client
     const timer = setInterval(() => setNow(Date.now()), 250)
     return () => {
       _wsClientInitialized = false
       clearInterval(timer)
-      client.close()
+      clientRef.current?.close()
+      clientRef.current = null
     }
   }, [wsUrl])
 
