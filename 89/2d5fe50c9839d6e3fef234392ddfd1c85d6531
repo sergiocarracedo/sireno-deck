@@ -1,0 +1,21 @@
+.planning/phases/09-post-v1-polish/09-CONTEXT.md
+  s_2cb355494cf289::t_b939fff4089344 1-116
+.planning/phases/09-post-v1-polish/09-DISCUSSION-LOG.md
+  s_2cb355494cf289::t_30de1329c9d830 1-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "892d5fe50c9839d6e3fef234392ddfd1c85d6531",
+  "prompts": {},
+  "sessions": {
+    "s_2cb355494cf289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_088ac798dffe8mKKPKhoYsGfiP",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
