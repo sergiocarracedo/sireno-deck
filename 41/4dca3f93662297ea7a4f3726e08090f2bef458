@@ -1,0 +1,65 @@
+packages/cli/src/builtin-addons/media/buttons/media-player/components/MediaSurface.tsx
+  s_fd4c9efcb04c88::t_c4cd0d21798c68 30,33-34
+packages/cli/src/ui/surfaces/BarsSurface.tsx
+  s_fd4c9efcb04c88::t_db932efe96f339 88-89,115-116
+packages/cli/src/builtin-addons/date-time/buttons/date/frontend.tsx
+  s_fd4c9efcb04c88::t_b166b0ddf665f9 22
+  s_fd4c9efcb04c88::t_c4cd0d21798c68 29-31
+packages/cli/src/builtin-addons/brightness/buttons/brightness/frontend.tsx
+  s_fd4c9efcb04c88::t_c4cd0d21798c68 20-21,28-29,34
+packages/cli/src/builtin-addons/date-time/buttons/time/frontend.tsx
+  s_fd4c9efcb04c88::t_c4cd0d21798c68 24-25
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  s_fd4c9efcb04c88::t_b166b0ddf665f9 65
+  s_fd4c9efcb04c88::t_c4cd0d21798c68 25,43-44,66
+packages/cli/src/ui/primitives/Text.tsx
+  s_fd4c9efcb04c88::t_68c4573047f57e 305
+  s_fd4c9efcb04c88::t_2ce43080137914 329
+  s_fd4c9efcb04c88::t_10321d80d528c8 334
+packages/cli/src/builtin-addons/value-display/buttons/value-display/frontend.tsx
+  s_fd4c9efcb04c88::t_c4cd0d21798c68 25-26,33-39
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_fd4c9efcb04c88::t_db932efe96f339 62-63,71-72,124-125
+packages/cli/src/ui/primitives/Chip.tsx
+  s_fd4c9efcb04c88::t_8fb5ded322362c 1,19,30,44-45,47
+packages/cli/src/builtin-addons/date-time/buttons/custom/frontend.tsx
+  s_fd4c9efcb04c88::t_c4cd0d21798c68 14
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/frontend.tsx
+  s_fd4c9efcb04c88::t_b166b0ddf665f9 27
+packages/cli/src/ui/primitives/Label.tsx
+  s_fd4c9efcb04c88::t_0fd42c78476f4c 1,7,25-26,28
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  s_fd4c9efcb04c88::t_b166b0ddf665f9 44
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile/frontend.tsx
+  s_fd4c9efcb04c88::t_c4cd0d21798c68 43
+packages/cli/src/builtin-addons/weather/buttons/weather/pages.tsx
+  s_fd4c9efcb04c88::t_b166b0ddf665f9 34
+  s_fd4c9efcb04c88::t_c4cd0d21798c68 20,22,32,37,50,52,72,74-75
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/frontend.tsx
+  s_fd4c9efcb04c88::t_b166b0ddf665f9 11
+packages/cli/src/builtin-addons/core/buttons/page-nav/frontend.tsx
+  h_f90ee31b03fc41 37,48
+packages/cli/src/ui/primitives/TapIndicator.tsx
+  s_fd4c9efcb04c88::t_db932efe96f339 61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "414dca3f93662297ea7a4f3726e08090f2bef458",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_fd4c9efcb04c88": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0a020801effeDxd0RkXpU8rWsJ",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+.planning/solutions/runtime-errors/emoji-paste-hangs-gnome-wayland-2026-07-17.md
+  s_e9a2aac700506f::t_682bd3e4f9650b 1-110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "06e2b8b1dc7df959628b0a63ea724f7116f3b691",
+  "prompts": {},
+  "sessions": {
+    "s_e9a2aac700506f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_093621374ffeAKtMQ3q1tUSdDi",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

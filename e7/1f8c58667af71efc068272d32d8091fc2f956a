@@ -1,0 +1,26 @@
+.planning/phases/33-add-full-tailwind-support/33-CONTEXT.md
+  s_14408a12eaea31::t_032f24c1ad008c 1-112
+.planning/phases/33-add-full-tailwind-support/33-DISCUSSION-LOG.md
+  s_14408a12eaea31::t_032f24c1ad008c 1-210
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "e71f8c58667af71efc068272d32d8091fc2f956a",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_14408a12eaea31": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_178b344dbffea2AyCo2mQv0JQx",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

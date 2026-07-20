@@ -1,0 +1,25 @@
+.planning/ROADMAP.md
+  s_4e4ee307096ddc::t_3ec0cf23e3cfe0 42,44,46-47
+AGENTS.md
+  s_4e4ee307096ddc::t_986583767c66da 168-169
+.planning/phases/43-date-time-calendar-button/43-VERIFICATION.md
+  s_4e4ee307096ddc::t_907d35fda99297 1-32
+.planning/phases/43-date-time-calendar-button/43-01-SUMMARY.md
+  s_4e4ee307096ddc::t_cd4e95d62fbd17 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "89c8af500bb0d78062f75c8e204f638b78cf33fd",
+  "prompts": {},
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

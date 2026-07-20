@@ -1,0 +1,26 @@
+packages/cli/src/builtin-addons/system-status/schemas.ts
+  s_469c0c9aff79bb::t_2da5d92ab08e14 7
+packages/cli/src/builtin-addons/value-display/schemas.ts
+  s_469c0c9aff79bb::t_6bc40a5ea05e95 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "679ff877d2922fddf9963a6e503236c60fadd71c",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_469c0c9aff79bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_129126bf4ffeC1puCBqg5C7qzn",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

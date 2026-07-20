@@ -1,0 +1,21 @@
+packages/cli/src/builtin-addons/date-time/schemas.ts
+  s_344b68134ff779::t_2e5621cec62108 13
+packages/cli/vite.config.ts
+  s_344b68134ff779::t_cbd095df9a4d09 20-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "2ef8d3c66e72c37ea38d59015e772355a95f3d9d",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

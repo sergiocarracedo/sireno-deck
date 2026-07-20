@@ -1,0 +1,24 @@
+packages/cli/src/util/clipboard.ts
+  s_469c0c9aff79bb::t_167e6bd5ef4b08 2-3,5-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "aaf4c0c3a9e15abe38d2aa020c022494cdf44620",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_469c0c9aff79bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_129126bf4ffeC1puCBqg5C7qzn",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

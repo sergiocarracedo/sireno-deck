@@ -1,0 +1,27 @@
+packages/cli/src/builtin-addons/core-buttons/index.test.ts
+  s_b21ef815cd71c9::t_de75982f2429fd 245-269
+packages/cli/src/builtin-addons/date-time/index.test.ts
+  s_b21ef815cd71c9::t_de75982f2429fd 151,159-161,163-164
+  s_b21ef815cd71c9::t_96682b85516dca 162
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b97fea542d097a9610d040de620dcc312816db9f",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b21ef815cd71c9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_194c6ab8dffeZgB4hXir7Qu8T0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

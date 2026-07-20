@@ -1,0 +1,22 @@
+packages/cli/src/deck/runtime.ts
+  s_7807e467fd6dc4::t_102729b01e2171 118
+.planning/phases/04-settings-deck/04-UAT.md
+  s_7807e467fd6dc4::t_48c77cb7ced9b3 14,25-26,31-43
+  s_7807e467fd6dc4::t_6ad8b407e9052f 1-13,15-24,27-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "e6d8dca74b666d7764dd2784682c567c891fce87",
+  "prompts": {},
+  "sessions": {
+    "s_7807e467fd6dc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09868b263ffe2OcxVWFlOvDqUq",
+        "model": "k2p7"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

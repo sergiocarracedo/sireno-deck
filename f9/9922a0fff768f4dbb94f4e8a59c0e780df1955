@@ -1,0 +1,21 @@
+packages/cli/src/react/hooks.test.tsx
+  s_8ca911650149ee::t_d408884c29b8f4 15,20,24
+packages/cli/src/themes/default/__tests__/ButtonFrame.test.tsx
+  s_8ca911650149ee::t_f6baa23b67f01c 8,37-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "f99922a0fff768f4dbb94f4e8a59c0e780df1955",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

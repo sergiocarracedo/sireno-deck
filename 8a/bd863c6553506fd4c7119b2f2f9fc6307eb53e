@@ -1,0 +1,42 @@
+packages/cli/src/builtin-addons/value-display/README.md
+  s_9fabccd2e25c5b::t_3e570537ab4b40 1-59
+packages/cli/src/builtin-addons/core-buttons/README.md
+  s_9fabccd2e25c5b::t_62c8a07f51e828 1-57
+packages/cli/src/builtin-addons/system-status/README.md
+  s_9fabccd2e25c5b::t_a1967e658faf83 1-62
+packages/cli/src/builtin-addons/weather/README.md
+  s_9fabccd2e25c5b::t_3e7495113afdfb 1-46
+packages/cli/src/builtin-addons/media-player/README.md
+  s_9fabccd2e25c5b::t_bf0801f2c19a40 1-42
+packages/cli/src/builtin-addons/brightness/README.md
+  s_9fabccd2e25c5b::t_d313fc02597ea8 1-51
+packages/cli/src/builtin-addons/emoji-selector/README.md
+  s_9fabccd2e25c5b::t_16be8898252e55 1-59
+packages/cli/src/builtin-addons/date-time/README.md
+  s_9fabccd2e25c5b::t_cb0e8e41649613 1-98
+packages/cli/src/builtin-addons/internal-settings/README.md
+  s_9fabccd2e25c5b::t_8c1225f76b99ef 1-26
+packages/cli/src/builtin-addons/session/README.md
+  s_9fabccd2e25c5b::t_6b6334b039daa3 1-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "8abd863c6553506fd4c7119b2f2f9fc6307eb53e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+packages/cli/src/cli/commands/stop.ts
+  s_9fabccd2e25c5b::t_069bf9ea8b6b40 3-11,16-45,47-65
+packages/cli/src/cli/commands/stop.test.ts
+  s_9fabccd2e25c5b::t_cf8df8be05f589 1-112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "c2347fbd31c8e18b8758690cc2e51a0f6c45feb9",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

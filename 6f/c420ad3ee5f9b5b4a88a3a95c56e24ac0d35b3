@@ -1,0 +1,23 @@
+.planning/solutions/workflow-issues/user-redesign-mid-uat-invalidate-context-2026-06-15.md
+  s_51a5160d42324b::t_8fe577a13dfed5 1-119
+.planning/solutions/ui-bugs/chrome-deck-icon-path-typo-missing-asset-2026-06-15.md
+  s_51a5160d42324b::t_7c6f6cc6a0a966 1-78
+.planning/solutions/best-practices/aggregation-only-verification-sweep-2026-06-15.md
+  s_51a5160d42324b::t_2fea91481af228 1-136
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "6fc420ad3ee5f9b5b4a88a3a95c56e24ac0d35b3",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+packages/cli/src/render/dom-host.tsx
+  s_62d8b999b52dbd::t_049f3d64c309d6 1
+packages/cli/src/render/button-frame.tsx
+  s_62d8b999b52dbd::t_049f3d64c309d6 1
+packages/cli/src/cli/commands/start.test.ts
+  s_62d8b999b52dbd::t_049f3d64c309d6 3,412-425
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "76686394904f7fd78e8793b1f0e6625d52a2c7d2",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_62d8b999b52dbd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19a95ab2cffelx1Pw48Hq6DfWk",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

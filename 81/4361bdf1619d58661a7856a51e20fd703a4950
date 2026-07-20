@@ -1,0 +1,21 @@
+.planning/phases/06-hardware/06-CONTEXT.md
+  s_9fabccd2e25c5b::t_1aa2a410718c65 1-104
+.planning/phases/06-hardware/06-DISCUSSION-LOG.md
+  s_9fabccd2e25c5b::t_b93839a1ff00e6 1-58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "814361bdf1619d58661a7856a51e20fd703a4950",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

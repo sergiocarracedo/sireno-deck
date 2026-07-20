@@ -1,0 +1,26 @@
+.planning/phases/54-settings-deck-with-brightness-controls/54-02-PLAN.md
+  s_a44d509d67bdce::t_ce107865b701f2 1-271
+.planning/phases/54-settings-deck-with-brightness-controls/54-01-PLAN.md
+  s_a44d509d67bdce::t_25786b5ab41f11 1-225
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a8a0e727d01b87cc01d440a16d84b20866f639b4",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

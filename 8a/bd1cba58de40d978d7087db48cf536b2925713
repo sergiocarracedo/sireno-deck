@@ -1,0 +1,29 @@
+packages/cli/src/themes/light/theme.css
+  s_8ca911650149ee::t_02803d244c652f 21-31,52-83
+packages/cli/emulator/.sireno-deck-2/theme.css
+  s_8ca911650149ee::t_6d054af7edcd12 2-71,92-122
+  s_8ca911650149ee::t_fc644a21cb1843 123
+packages/cli/src/themes/default/components/Text.tsx
+  s_8ca911650149ee::t_c59dc2c61f3e21 43-47
+packages/cli/src/builtin-addons/media-player/frontend.tsx
+  s_8ca911650149ee::t_be2183d56bd096 13-28,30-31,33-44,47,49-51
+packages/cli/src/themes/default/theme.css
+  s_8ca911650149ee::t_fdb1c97c0303b3 1-16,28-36,41-62,90-120
+  s_8ca911650149ee::t_01b09497452a86 121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "8abd1cba58de40d978d7087db48cf536b2925713",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

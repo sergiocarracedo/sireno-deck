@@ -1,0 +1,46 @@
+AGENTS.md
+  s_6e29ffb546c304::t_c1345113039297 1-372
+packages/cli/emulator/src/bridge.ts
+  s_6e29ffb546c304::t_938ca3cdd5bd52 138
+packages/cli/src/builtin-addons/emoji-selector/support.ts
+  s_6e29ffb546c304::t_fa9a951ec476ed 5-22
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/config.ts
+  s_6e29ffb546c304::t_8f384351238fb5 3-6
+packages/cli/src/builtin-addons/weather/buttons/weather/frontend.tsx
+  s_6e29ffb546c304::t_dbb97c4a89a3af 109-110
+  h_f90ee31b03fc41 7,72
+  s_6e29ffb546c304::t_211273fd4c279c 69
+packages/cli/src/builtin-addons/emoji-selector/buttons/back/backend.ts
+  s_6e29ffb546c304::t_51cf3024ded47f 7-8
+packages/cli/src/addon/registry.ts
+  s_6e29ffb546c304::t_26e999843d157c 4
+  s_6e29ffb546c304::t_297c3adf80f839 53,57-66
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/frontend.tsx
+  s_6e29ffb546c304::t_6437d968e4c5ac 1-7,9,11-31
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/backend.ts
+  s_6e29ffb546c304::t_7d079cd691dc8a 7-8
+packages/cli/src/builtin-addons/emoji-selector/decks/index.ts
+  s_6e29ffb546c304::t_6018e8c641f0de 115-128,131-132
+  s_6e29ffb546c304::t_2d6572d5fe92a8 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "246d1dd8396007d3a199234f2f21b8edd8bcd1a6",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_6e29ffb546c304": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0c69967f6ffekKNO4bWynqg6lP",
+        "model": "z-ai/glm-5.2"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

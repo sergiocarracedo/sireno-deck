@@ -1,0 +1,26 @@
+.oxlintrc.json
+  s_fed4f72d882f20::t_7c8f8e8389b2d7 1-17
+.planning/quick/039-ban-js-ext-adopt-at-alias/039-PLAN.md
+  s_fed4f72d882f20::t_05c9f26599f325 1-177
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c090e0a0281a62f70c223fff6045f7a707a03f05",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_fed4f72d882f20": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15e8e41edffehfs0Ej2cLFBDuK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

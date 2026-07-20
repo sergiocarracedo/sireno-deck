@@ -1,0 +1,68 @@
+packages/cli/src/device/linux-udev.test.ts
+  s_9fabccd2e25c5b::t_dd9665dbb800ee 3-8
+packages/cli/src/system/device-selection.ts
+  s_9fabccd2e25c5b::t_dd9665dbb800ee 51-52,54-57
+packages/cli/src/device/registry.test.ts
+  s_9fabccd2e25c5b::t_9e1d015f0c1cd0 6,10,13,15-16,21-22,24-25,30-32,38-43,49-55
+packages/cli/src/render/browser-renderer.ts
+  s_9fabccd2e25c5b::t_2f6777030b7fdc 1-82,86-92,99-156
+  s_9fabccd2e25c5b::t_dd9665dbb800ee 83-85,93-98
+packages/cli/src/render/screenshot-cadence.test.ts
+  s_9fabccd2e25c5b::t_22807f2f895d24 24,32
+  s_9fabccd2e25c5b::t_922cd58c4c044d 70,72
+  s_9fabccd2e25c5b::t_d9d1bcc66f5c03 1-23,25-31,33-69,71,73-85
+packages/cli/src/device/stream-deck.ts
+  s_9fabccd2e25c5b::t_1b98ff34990b17 1-7,36-39,45-47,54-57,61,71,77-79,87,90,93
+  s_9fabccd2e25c5b::t_dd9665dbb800ee 32-35,49-53
+packages/cli/src/device/index.ts
+  s_9fabccd2e25c5b::t_dd9665dbb800ee 8-13
+packages/cli/src/system/device-selection.test.ts
+  s_9fabccd2e25c5b::t_dd9665dbb800ee 25-27,64-66
+packages/cli/src/device/stream-deck.test.ts
+  s_9fabccd2e25c5b::t_985f5c72760fe5 7,9,14,16,23-26,29,32,34-39,47-48,52-59,68-71,76-80,86-107,111-136,138-139
+  s_9fabccd2e25c5b::t_dd9665dbb800ee 18-22,108-110
+packages/cli/package.json
+  s_9fabccd2e25c5b::t_dd9665dbb800ee 38-39,43-44,48
+packages/cli/src/render/buffer-hash.ts
+  s_9fabccd2e25c5b::t_cd7a6b9d567bf8 1-20
+.gitignore
+  s_9fabccd2e25c5b::t_bbe132db5f50c7 6
+packages/cli/src/render/index.ts
+  s_9fabccd2e25c5b::t_dd9665dbb800ee 1-15
+  s_9fabccd2e25c5b::t_d22f1c61df5c40 16
+packages/cli/src/util/device-config.ts
+  s_9fabccd2e25c5b::t_dd9665dbb800ee 1-8,25-26
+packages/cli/src/render/browser-renderer.test.ts
+  s_9fabccd2e25c5b::t_9c6cceb4c920de 63,81,85,90,92-93,97,100,104-106,127,135,147,155,161-163
+  s_9fabccd2e25c5b::t_a87b1aae8fd651 29
+  s_9fabccd2e25c5b::t_8838d5a87c8339 74
+  s_9fabccd2e25c5b::t_8d629c19a099b3 1-5,13-15,18-24,26-28,30-31,33-36,38-62,64-73,75-80,82-84,86-89,91,94-96,98-99,101-103,107-112,120-126,128-134,137-141,143-146,148-154,157-160,164-166
+  s_9fabccd2e25c5b::t_ea4a8269c9eed7 16-17
+  s_9fabccd2e25c5b::t_dd9665dbb800ee 6-12,113-119
+  s_9fabccd2e25c5b::t_6285dac1641fc5 25,32,37
+  s_9fabccd2e25c5b::t_f09384947b3641 136,142,156
+packages/cli/src/render/screenshot-cadence.ts
+  s_9fabccd2e25c5b::t_a2dcb55a3f90d8 1-87
+packages/cli/src/device/registry.ts
+  s_9fabccd2e25c5b::t_9ea02a8dc901c8 1,9-12,17-18
+packages/cli/src/render/buffer-hash.test.ts
+  s_9fabccd2e25c5b::t_0e944e909ff9f5 1-40
+packages/cli/src/util/device-config.test.ts
+  s_9fabccd2e25c5b::t_dd9665dbb800ee 22-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "4ee4f3fc91d47441a0446a397a1173eea9bb26c5",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

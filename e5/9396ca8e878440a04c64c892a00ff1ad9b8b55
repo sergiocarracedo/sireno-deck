@@ -1,0 +1,29 @@
+.planning/quick/043-reduce-deck-render-log-noise/043-PLAN.md
+  s_6afde45b651acd::t_83fefc8a7de59d 1-35
+.planning/quick/043-reduce-deck-render-log-noise/043-SUMMARY.md
+  s_6afde45b651acd::t_129e5a5d9dccca 1-22
+.planning/STATE.md
+  s_6afde45b651acd::t_189594b618069b 27
+  s_6afde45b651acd::t_ffad4895f4942b 15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "e59396ca8e878440a04c64c892a00ff1ad9b8b55",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_6afde45b651acd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15372ec2cffeskj5QykzWV3UZI",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

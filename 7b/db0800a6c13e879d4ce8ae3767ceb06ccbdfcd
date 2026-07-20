@@ -1,0 +1,24 @@
+.planning/phases/72-system-buttons-dispatcher-and-deck-icon/72-03-SUMMARY.md
+  s_469c0c9aff79bb::t_f08a0afc44553b 1-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "7bdb0800a6c13e879d4ce8ae3767ceb06ccbdfcd",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_469c0c9aff79bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_129126bf4ffeC1puCBqg5C7qzn",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

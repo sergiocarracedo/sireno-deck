@@ -1,0 +1,19 @@
+.planning/solutions/best-practices/deck-config-field-loader-seams-2026-06-17.md
+  s_6aed55125c6157::t_e4410fb158a904 1-140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "2b4d9471040fca0253cfc0fc31b1ed748b89689c",
+  "prompts": {},
+  "sessions": {
+    "s_6aed55125c6157": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_123c07561ffe3AcviqYR9Sq2OQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    }
+  }
+}

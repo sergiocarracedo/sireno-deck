@@ -1,0 +1,19 @@
+.planning/STATE.md
+  s_1eb393451cb328::t_e58b18ff13950d 12-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "a59aad3f29f35853bc091e092c77c7cb5df0a104",
+  "prompts": {},
+  "sessions": {
+    "s_1eb393451cb328": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_12da2f406ffecZQ7Y4h0yXu6ko",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

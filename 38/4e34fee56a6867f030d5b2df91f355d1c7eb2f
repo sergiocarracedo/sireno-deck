@@ -1,0 +1,24 @@
+packages/cli/src/builtin-addons/emoji-selector/support.tsx
+  s_5435879e916352::t_91e1b248262d22 279-331
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "384e34fee56a6867f030d5b2df91f355d1c7eb2f",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_5435879e916352": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1662feb4cffeE0yLzL3Illbyk2",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,48 @@
+packages/cli/src/util/__tests__/orphan-sweep.test.ts
+  s_6aed55125c6157::t_6e6889b25c5a32 7
+packages/cli/src/util/__tests__/errors.test.ts
+  s_6aed55125c6157::t_2875751c2b197c 4
+packages/cli/src/builtin-addons/system-status/schemas.ts
+  s_23d3699a1089ad::t_a760ca34709bad 15,23-24,28,31-32,38,40-41
+packages/cli/src/util/__tests__/daemon.test.ts
+  s_6aed55125c6157::t_dc281c9362b9ca 14
+packages/cli/src/deck/runtime.ts
+  s_23d3699a1089ad::t_a760ca34709bad 20,22,28,62-63,1052-1063,1065-1069,1071-1079,1081-1124
+packages/cli/src/util/__tests__/chromium-detect.test.ts
+  s_6aed55125c6157::t_77184d7e3a585c 15
+packages/cli/src/util/__tests__/clipboard.test.ts
+  s_6aed55125c6157::t_981b81a76ec4da 3
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_23d3699a1089ad::t_a760ca34709bad 1,4,9,105,114,116
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_23d3699a1089ad::t_a760ca34709bad 2,6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "d990caa2eaaafdc44e4202ff6f7fc56d1c174f64",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_23d3699a1089ad": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_123bbfc63ffeaNp0Y6I42E8ACU",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_6aed55125c6157": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_123c07561ffe3AcviqYR9Sq2OQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

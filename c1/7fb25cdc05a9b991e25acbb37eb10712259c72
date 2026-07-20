@@ -1,0 +1,47 @@
+builtin-addons/core-buttons/src/index.ts
+  s_50714901791ebe::t_e6a75073145c74 79,83,85-98,101-104,108-109
+packages/cli/src/render/text-image.ts
+  s_50714901791ebe::t_e6a75073145c74 19,315-317,319,322,409
+packages/cli/src/render/text-image.test.ts
+  s_50714901791ebe::t_e6a75073145c74 178-185
+builtin-addons/core-buttons/src/index.test.ts
+  s_50714901791ebe::t_e6a75073145c74 97,105,111-135
+packages/cli/src/render/reconciler.test.tsx
+  s_50714901791ebe::t_e6a75073145c74 53,56,324-356
+packages/cli/src/deck/runtime.test.ts
+  s_738f8c54e2a345::t_133c29140f29ff 1287,1321,1324
+  s_50714901791ebe::t_e6a75073145c74 1193-1286,1288-1320,1322-1323,1325-1326
+packages/cli/src/render/types.ts
+  s_50714901791ebe::t_e6a75073145c74 23
+packages/cli/src/render/reconciler.ts
+  s_50714901791ebe::t_e6a75073145c74 29,48,148,182,268,296,367
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "c17fb25cdc05a9b991e25acbb37eb10712259c72",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_50714901791ebe": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cad490d1ffe7qtGxWMYgUngfy",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_738f8c54e2a345": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1c0aabbd0ffeKQeuqUsBJr26pO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

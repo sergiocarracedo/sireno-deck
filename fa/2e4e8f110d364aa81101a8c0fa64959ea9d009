@@ -1,0 +1,26 @@
+packages/cli/src/deck/runtime.ts
+  s_586986ca02db2f::t_64fb33b7d7ade4 600-604
+  s_586986ca02db2f::t_7d8cc1abec8db4 744-745,748-766
+  s_586986ca02db2f::t_565b77c1c0fdf6 721-728,737
+  s_586986ca02db2f::t_110608b03446b7 684,688
+packages/cli/src/deck/__tests__/overlay-lock-resume.test.ts
+  s_586986ca02db2f::t_4b3ae39434f398 11,52-55,67,183-186,188-197
+  s_586986ca02db2f::t_52fef052278b83 123,158,174
+  s_586986ca02db2f::t_471a8bbbb814e7 1-10,12-51,56-66,68-122,124-157,159-173,175-182,187,198-234
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "fa2e4e8f110d364aa81101a8c0fa64959ea9d009",
+  "prompts": {},
+  "sessions": {
+    "s_586986ca02db2f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08ee995cbffedn8iRvToXsQvlX",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,144 @@
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_242b54b42ec0d9::t_3f30d95b28c48f 146,150-155,160,195
+  s_3a6f2d3254c993::t_ea73f02de16668 26
+  s_242b54b42ec0d9::t_da2707959414b5 226,230,237,244
+  s_3a6f2d3254c993::t_7f3cf34276eb33 121
+packages/cli/src/api/index.ts
+  s_3a6f2d3254c993::t_6f59c7f432c7d8 15,33
+packages/cli/src/api/react/registry.ts
+  s_3a6f2d3254c993::t_188e7ce5aa4b89 6,10,13-15,26-30,47-57,60-65,69-74,84-86
+  s_3a6f2d3254c993::t_30415e8497abc0 75-76
+packages/cli/src/render/protocol.ts
+  s_9a2d1b18848cc4::t_4ea4d24cd8b357 14,33
+  s_3a6f2d3254c993::t_9f637ec63effab 15,34
+packages/cli/src/api/react/__tests__/hooks.test.tsx
+  s_3a6f2d3254c993::t_2a6b0c641c604a 55-129
+packages/cli/frontend/src/bridge/client.ts
+  s_3a6f2d3254c993::t_66a5dbc5c392c5 27,34,47,84-90,123,136-142,152
+  s_3a6f2d3254c993::t_31a9cac3a3bcfd 143-148
+  s_b592366f7c5007::t_d3f54aa917bbe2 45-46,51-57,75,83,110,121-122,132,134-135,149
+packages/cli/frontend/src/bridge/__tests__/client.test.ts
+  s_3a6f2d3254c993::t_417a7b29e3a243 103-161
+packages/cli/src/render/ws-bridge.ts
+  s_3a6f2d3254c993::t_30415e8497abc0 167
+  s_3a6f2d3254c993::t_ecf9242cd451e8 5,14,22,30
+  s_3a6f2d3254c993::t_723b3f8acecd7a 37,44-51,92-93,100-131,152-154,165-166
+packages/cli/src/cli/commands/run.ts
+  s_d84a33f8da744f::t_aa929b1f8e1cf6 473
+  s_d84a33f8da744f::t_f8694c627edf6d 783
+  s_d84a33f8da744f::t_83ea5526eb6ec0 784
+  s_d84a33f8da744f::t_7e0dc5672ece5f 449
+  s_79a4941cb04acb::t_dbaeeae4444eb2 6
+  s_242b54b42ec0d9::t_4ba46731b9580e 754
+  s_9a2d1b18848cc4::t_621be192310d35 20
+  s_9a2d1b18848cc4::t_e225fe6f418586 170,173-177
+  s_d84a33f8da744f::t_30aa2c43715af8 197
+  s_d84a33f8da744f::t_12fe72959d831e 531
+  s_79a4941cb04acb::t_6eebb2bfbc94f0 4
+  s_242b54b42ec0d9::t_680c893c902ebf 488
+  s_79a4941cb04acb::t_fdf7d83e493a08 160-169,171-172,178-181
+  s_9a2d1b18848cc4::t_7578931ea855be 536-551
+  s_3a6f2d3254c993::t_d86585ee68d5d5 193
+  s_3a6f2d3254c993::t_8c32b499dccf04 31
+  s_d84a33f8da744f::t_de9b8b99708d5d 230-231,243-244
+  s_3a6f2d3254c993::t_81ffdac7e6429d 465
+  s_d84a33f8da744f::t_aae55d1317bb9f 112
+  s_79a4941cb04acb::t_1554bd416fceca 265-283,293
+  s_d84a33f8da744f::t_dcd9741e7b99f6 530
+  s_d84a33f8da744f::t_b1144a91f67545 196
+  s_3a6f2d3254c993::t_e0587b6d4d0eaf 503
+  s_d84a33f8da744f::t_80b4727cb34ecd 676
+  s_d84a33f8da744f::t_7160d39ea3548f 720,724
+  s_79a4941cb04acb::t_5f44d6fd465130 767
+packages/cli/src/render/__tests__/ws-bridge.test.ts
+  s_3a6f2d3254c993::t_a57749e004258a 156-297
+  s_3a6f2d3254c993::t_5840f9ea75104a 1
+packages/cli/src/api/protocol-internal.ts
+  s_9a2d1b18848cc4::t_438704f161561f 130
+  s_9a2d1b18848cc4::t_f862e29fb8940f 84-95,114
+  s_3a6f2d3254c993::t_9baae2eccdb016 96-100,115
+  s_3a6f2d3254c993::t_69344ca3b12ec1 131
+  s_3a6f2d3254c993::t_27b956d79b39be 3
+packages/cli/frontend/src/App.tsx
+  s_9a2d1b18848cc4::t_f22b5cf642d4c1 92-105,109,121,167,198,200
+  s_9a2d1b18848cc4::t_fd6c70689b19fb 7-11
+  s_3a6f2d3254c993::t_3cc49f048b4e02 161,164
+  s_b592366f7c5007::t_aafddc27eaa93b 168
+  s_b592366f7c5007::t_d27b51db0bb3fa 199
+  s_b592366f7c5007::t_8ca36a9748592d 169-191
+  s_9a2d1b18848cc4::t_4c5c4fab745131 119-120,122-123
+vitest.config.ts
+  s_3a6f2d3254c993::t_620645c5db38e6 16
+packages/cli/src/deck/__tests__/addon-handler-bridge.test.ts
+  s_d84a33f8da744f::t_d00140b43823b0 186,203
+  s_d84a33f8da744f::t_2292eaf8fa6aed 216,231
+  s_d84a33f8da744f::t_280d5f02283bf8 253,268
+  s_d84a33f8da744f::t_bb00ce490ebd30 100,115
+  s_d84a33f8da744f::t_e042ad9a454312 58-59
+  s_3a6f2d3254c993::t_6458d63b0acef5 34
+  s_d84a33f8da744f::t_0ac09f11d5ca09 177
+  s_d84a33f8da744f::t_37900ef5c5f20b 150
+  s_d84a33f8da744f::t_f6899379bf1546 64,79
+  s_d84a33f8da744f::t_9b7a2df280397f 125,143
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "d32d07c8504e4eabc20abd1d6df8071d367b58b5",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_242b54b42ec0d9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0cd70e9bbffenYxIyUaZaUpDgQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    },
+    "s_3a6f2d3254c993": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d152d771ffeA6RrRIu7zbZgXB",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_79a4941cb04acb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0dd21a4dfffeare0Qkz7bvNkVT",
+        "model": "big-pickle"
+      },
+      "human_author": null
+    },
+    "s_9a2d1b18848cc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d8b34718ffeOnNV8Yiyod7ALi",
+        "model": "big-pickle"
+      },
+      "human_author": null
+    },
+    "s_b592366f7c5007": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d3d430cdffeZs179lWeNIvtOD",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    },
+    "s_d84a33f8da744f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d0ea11c2ffetuXe67wwWOAm2h",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

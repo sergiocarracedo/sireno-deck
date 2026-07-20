@@ -1,0 +1,33 @@
+packages/cli/src/addon/loader.test.ts
+  s_cdd484e59b7475::t_8d8885c39de178 38,153-163
+packages/cli/src/deck/runtime.test.ts
+  s_cdd484e59b7475::t_2d5297bc2c5d9c 7
+  s_cdd484e59b7475::t_e3dc8c78978d14 1551-1598
+packages/cli/fixtures/phase-24/local-mounted-addon/src/index.tsx
+  s_cdd484e59b7475::t_95a52ff67285a8 18
+  s_cdd484e59b7475::t_611550d4449b4b 1
+  s_cdd484e59b7475::t_2d5297bc2c5d9c 2
+packages/cli/src/addon/api.ts
+  s_cdd484e59b7475::t_6d54a968661139 130-144
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "5e082a4718a433ea4d0f952d35c3f36127a753f2",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_cdd484e59b7475": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19ce55eccffegkew6zlTjaidfE",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

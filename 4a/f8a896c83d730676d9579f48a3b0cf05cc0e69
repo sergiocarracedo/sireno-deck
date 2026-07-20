@@ -1,0 +1,25 @@
+packages/cli/src/system/glob-match.test.ts
+  s_9fabccd2e25c5b::t_119f299b93c708 1-7,9-20,23-57
+  s_9fabccd2e25c5b::t_6206e0b3bddb85 8
+  s_9fabccd2e25c5b::t_f2206c776687a6 21
+  s_9fabccd2e25c5b::t_657675b8118b55 22
+packages/cli/src/system/glob-match.ts
+  s_9fabccd2e25c5b::t_fa142b7ad69d54 1-3,6-19,21-24,26,33-34,36-42,44-49,52-62
+  s_9fabccd2e25c5b::t_5939430aeeb24e 4-5,20,25,27-32,35,43,50-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "4af8a896c83d730676d9579f48a3b0cf05cc0e69",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

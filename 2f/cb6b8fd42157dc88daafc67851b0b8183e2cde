@@ -1,0 +1,95 @@
+packages/cli/src/core/__tests__/pagination.test.ts
+  s_fd4c9efcb04c88::t_58facddcb4272d 33,39-43,49,55,59
+  s_fd4c9efcb04c88::t_8fcfa6c493f9e0 56-58
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_fd4c9efcb04c88::t_483d0a8e0dfbcc 236-264
+packages/cli/src/builtin-addons/emoji-selector/support.ts
+  s_fd4c9efcb04c88::t_0a614735324eea 53-58
+  s_fd4c9efcb04c88::t_417012860fcfee 3-4
+  s_fd4c9efcb04c88::t_60d60f386e9ca6 17-29,32,38-40
+packages/cli/src/ui/primitives/TapIndicator.tsx
+  h_f90ee31b03fc41 1-4,6,10,14,23-25,33,36-38,41-42,45-46,55,57
+packages/cli/src/deck/__tests__/paginate-deck.test.ts
+  s_fd4c9efcb04c88::t_06a6d4a046f142 35-39,42-57,59
+  s_fd4c9efcb04c88::t_0c5135c4384032 40-41,58
+  s_fd4c9efcb04c88::t_d935980924bfee 60-92
+packages/cli/src/deck/methods.ts
+  s_fd4c9efcb04c88::t_8ec962fbf5c60e 138
+packages/cli/src/builtin-addons/emoji-selector/data/categories.json
+  s_fd4c9efcb04c88::t_c699bfbe4fbba1 1-121
+packages/cli/src/builtin-addons/emoji-selector/decks/index.ts
+  s_fd4c9efcb04c88::t_60d3d67e7e7867 81
+  s_fd4c9efcb04c88::t_b5580ba4930279 38-39,41-42,52-60,73
+  s_fd4c9efcb04c88::t_a8de29569f2fa2 5
+  s_fd4c9efcb04c88::t_8fb40fd3e46b68 4
+  s_fd4c9efcb04c88::t_1afcd47985b7c6 62
+.planning/P3-plan.md
+  s_44ec00cdfbfa6b::t_1272929771c7c9 1-71
+packages/cli/src/deck/__tests__/methods.test.ts
+  s_fd4c9efcb04c88::t_ee2f335a5af6f7 124-171
+.planning/P2-plan.md
+  s_d5c8c84917cef9::t_6849ae0b3f80e0 1-116
+packages/cli/src/builtin-addons/emoji-selector/__tests__/decks.test.ts
+  s_fd4c9efcb04c88::t_991e3547a06163 4
+  s_fd4c9efcb04c88::t_1a27201cb29cb3 81,84
+  s_fd4c9efcb04c88::t_0aa86bebc23f3f 95-96
+  s_fd4c9efcb04c88::t_7cabd8f9e42b5f 116-126
+  s_fd4c9efcb04c88::t_25139da50adc0d 56,58-59,61
+  s_fd4c9efcb04c88::t_e9d431d9235338 127-132
+  s_fd4c9efcb04c88::t_71f817cde8b274 22,24-25,28,30-31,34,36-39
+.planning/ROADMAP.md
+  s_f52ab50b95a89f::t_21275ef55b69d1 1-156
+packages/cli/src/core/pagination.ts
+  s_fd4c9efcb04c88::t_bec35fcc1ce3eb 62-64
+  s_fd4c9efcb04c88::t_f2a602c217cc41 65-68
+  s_fd4c9efcb04c88::t_c49860f9f1f1c3 61
+packages/cli/src/deck/runtime.ts
+  s_fd4c9efcb04c88::t_48fe0f24825928 170-177
+packages/cli/src/builtin-addons/core/buttons/page-nav/frontend.tsx
+  h_f90ee31b03fc41 1-2,12,14,19-20,32-34,41,44-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "2fcb6b8fd42157dc88daafc67851b0b8183e2cde",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_44ec00cdfbfa6b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09f196361ffeLMnn3fNVxZ90kp",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_d5c8c84917cef9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09f1a82d5ffejfr4FVu46oJnJL",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_f52ab50b95a89f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09f257553ffevKwsFT08rSadeP",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_fd4c9efcb04c88": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0a020801effeDxd0RkXpU8rWsJ",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

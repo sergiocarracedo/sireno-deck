@@ -1,0 +1,23 @@
+packages/cli/src/builtin-addons/date-time/frontend.tsx
+  s_f5622df155228a::t_1d0b7b6f11596f 1-2
+packages/cli/frontend/vite.config.ts
+  s_f5622df155228a::t_5107d834c066c2 5-7,15-20
+packages/cli/src/cli/commands/start.ts
+  s_f5622df155228a::t_4d20283abb16d8 1140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "f59d3568f8cadc70c7eec4ae7943bcc7cfa5c36d",
+  "prompts": {},
+  "sessions": {
+    "s_f5622df155228a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_114ecc375ffehJL8FVEupdUruf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

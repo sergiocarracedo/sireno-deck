@@ -1,0 +1,26 @@
+packages/cli/fixtures/phase-14/config.toggle-internal.yml
+  s_738f8c54e2a345::t_128b5aed0762a0 1-33
+.planning/phases/14-richer-built-in-toggles/14-UAT.md
+  s_738f8c54e2a345::t_128b5aed0762a0 1-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "b946ae967d81027ac0a6c4710ef3fd86c5800cc1",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_738f8c54e2a345": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1c0aabbd0ffeKQeuqUsBJr26pO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

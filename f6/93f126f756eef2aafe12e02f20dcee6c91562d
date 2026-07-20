@@ -1,0 +1,30 @@
+.planning/STATE.md
+  s_64b0a20264500f::t_31d407ac196654 311
+  s_64b0a20264500f::t_e8dcde41606a73 15
+.planning/quick/027-use-full-instead-of-full-surface/027-SUMMARY.md
+  s_64b0a20264500f::t_31d407ac196654 28
+  s_64b0a20264500f::t_e8dcde41606a73 1-27
+.planning/quick/027-use-full-instead-of-full-surface/027-PLAN.md
+  s_64b0a20264500f::t_5005a9ff406207 1-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f693f126f756eef2aafe12e02f20dcee6c91562d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_64b0a20264500f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_177461909ffeUmLmSRYWKcY35o",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

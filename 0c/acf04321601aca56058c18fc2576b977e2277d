@@ -1,0 +1,28 @@
+packages/cli/src/deck/runtime.ts
+  s_fd4c9efcb04c88::t_210f48c80a7611 272-283
+packages/cli/src/outputClient/emulator.ts
+  s_fd4c9efcb04c88::t_7fcc291ccd877a 142-156
+packages/cli/src/deck/methods.ts
+  s_fd4c9efcb04c88::t_b06d0bce390601 133-136
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "0cacf04321601aca56058c18fc2576b977e2277d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_fd4c9efcb04c88": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0a020801effeDxd0RkXpU8rWsJ",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

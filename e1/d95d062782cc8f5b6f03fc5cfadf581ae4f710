@@ -1,0 +1,26 @@
+.planning/phases/05-hot-refresh-and-button-error-helper/05-UAT.md
+  s_6594eef402867c::t_c1e7e06707069e 54
+packages/cli/src/deck/runtime.test.ts
+  s_6594eef402867c::t_c1e7e06707069e 293-295,915-917
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "e1d95d062782cc8f5b6f03fc5cfadf581ae4f710",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_6594eef402867c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_189d742cdffeZcbRHUHZ6X53l2",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

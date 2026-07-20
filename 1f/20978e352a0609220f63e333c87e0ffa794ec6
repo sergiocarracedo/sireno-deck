@@ -1,0 +1,284 @@
+packages/cli/emulator/src/App.tsx
+  s_79a4941cb04acb::t_8b5ff2054cc477 35,37-38
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 1,12-14
+packages/cli/src/themes/index.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 4
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 1,15-17
+packages/cli/src/__tests__/integration.test.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 104-108
+.planning/phases/17-addon-api-consolidation/17-09-orphaned-files.md
+  s_32e9e58a6a363a::t_50df71993d391a 1-66
+packages/cli/src/builtin-addons/register-builtins.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 1,3,5-14,17-28
+packages/cli/src/builtin-addons/media/__tests__/backend.test.ts
+  s_79a4941cb04acb::t_7dd75e65925e3f 107-108
+  s_79a4941cb04acb::t_727d7caaf9bdfd 1-4,6,19-60,62-98,100,102,104-106,109,111-117,119,121,123-127,129-136,138-139,141-143,146-148,151-161,163,165,168,193,195-196
+  s_79a4941cb04acb::t_3d94cf6fe9e23b 149-150
+  s_79a4941cb04acb::t_d9889f56a92ba6 5
+  s_79a4941cb04acb::t_febca92d77ba59 7-18
+  s_79a4941cb04acb::t_3f23d4c95d1c72 99,101,103,110,118,120,122,128,137,140,162,164,166,194
+  s_79a4941cb04acb::t_d6e04f45314461 61
+  s_79a4941cb04acb::t_dbae292a2109d4 144-145,167,169-192
+packages/cli/src/builtin-addons/index.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 1-12
+packages/cli/src/builtin-addons/media/providers/index.ts
+  h_f90ee31b03fc41 1-4,9-11,16,18,20,22,24-25
+  s_32e9e58a6a363a::t_1a4e653976c3ac 5-8,12-15,17,19,21,23,26-27
+.planning/phases/17-addon-api-consolidation/PHASE.md
+  s_32e9e58a6a363a::t_efc3dd062849a8 1-61
+.planning/phases/17-addon-api-consolidation/17-06-frontend-dead-code.md
+  s_32e9e58a6a363a::t_4a40ffcfb4a06f 1-82
+packages/cli/src/builtin-addons/brightness/index.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 1,6-8
+.planning/phases/17-addon-api-consolidation/17-07-version-constant.md
+  s_32e9e58a6a363a::t_1b876733e177da 1-110
+packages/cli/src/cli/commands/__tests__/addon-registry.test.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 21,32,43,80
+packages/cli/src/core/gesture-state.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 22-33,35-37,39,42,47-48,50-52,54,56-57,59-61,63-90,92-194,196-205,209,215,219,223,226,229,235,238-242,244-252,258,264
+  s_32e9e58a6a363a::t_6bb5cf0f16ba06 195
+packages/cli/src/deck/__tests__/addon-handler-bridge.test.ts
+  s_79a4941cb04acb::t_9223b5b750d557 202-204,206-240,242-268
+  s_79a4941cb04acb::t_95a55929ce22f4 62,69,97,104,121,131,145,159,180,187
+  s_79a4941cb04acb::t_b75f195ffef4e3 49,51,57
+  s_79a4941cb04acb::t_e2d27189ed46a8 148-149,174
+  s_79a4941cb04acb::t_bb8f4dd7e8d1ab 241
+  s_79a4941cb04acb::t_894c2dbe3ab05f 1-48,50,52-56,58-61,63-68,70-96,98-103,105-120,122-130,132-144,146-147,150-158,160-173,175-179,181-186,188-201,269
+  s_79a4941cb04acb::t_9dc0015d484b13 205
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_79a4941cb04acb::t_9327bab298b0c1 83-84
+  s_79a4941cb04acb::t_8b5ff2054cc477 57-82
+packages/cli/src/builtin-addons/media/buttons/media-player/components/__tests__/MediaSurface.test.tsx
+  s_79a4941cb04acb::t_36db23cf2e25f8 16,20-94,99
+  s_79a4941cb04acb::t_cf49785a93a1b9 5
+  s_79a4941cb04acb::t_031d504057917b 2-4
+  s_79a4941cb04acb::t_4553d3e57613cf 6-8,13-15
+  s_79a4941cb04acb::t_7d5c90afa4ea41 17-19
+  s_79a4941cb04acb::t_d5dd916c7bb952 95-98
+  s_79a4941cb04acb::t_c9aba28602721c 100
+packages/cli/src/cli/commands/run.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 17-18,48-49,54,98-99,156-245,344,391-392,414-415,424-425,461-475,492-498,500-532,575,577-579,671,685,693,696-706,712
+  s_79a4941cb04acb::t_1ffeee1c15bc72 684
+  s_79a4941cb04acb::t_d8dec442547336 708-711
+  s_79a4941cb04acb::t_e197dcb652ea7c 739
+  s_32e9e58a6a363a::t_61eaeaa7247e93 499,533-534
+  s_79a4941cb04acb::t_bbccc7ab1acf49 601
+.planning/phases/17-addon-api-consolidation/17-01-gesture-detector.md
+  s_32e9e58a6a363a::t_d7b8f4c3190f18 1-134
+packages/cli/src/deck/__tests__/__fixtures__/fake-backend-no-poller.ts
+  s_79a4941cb04acb::t_8f761ab66a754f 1-10
+packages/cli/src/builtin-addons/media/internal-types.ts
+  h_f90ee31b03fc41 1-6
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 1,6-8
+packages/cli/src/builtin-addons/value-display/index.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 1,6-8
+packages/cli/src/ui/primitives/Text.tsx
+  s_79a4941cb04acb::t_8b5ff2054cc477 1-6,9,25,34-41,52,56-74,82-88,95-100,146-149,178-179,189,197-198,239-242,261-264,266-270,277-280,310-317,327,331-332,339,367
+  s_32e9e58a6a363a::t_fa1e3b41829ae7 150-153
+  h_f90ee31b03fc41 42-43
+packages/cli/src/builtin-addons/media/buttons/media-volume/frontend.tsx
+  s_32e9e58a6a363a::t_81b1cf692425f9 2-16
+.planning/phases/17-addon-api-consolidation/17-08-media-poller-consolidation.md
+  s_32e9e58a6a363a::t_39b37a7d026e5f 1-118
+packages/cli/src/builtin-addons/media/providers/darwin.ts
+  s_32e9e58a6a363a::t_f213cf02d1c271 1-9,16-54,59-114,116-117,119-130,132-158
+  s_79a4941cb04acb::t_00a7adc137c4fe 10-15,55-58,115,118,131,159
+packages/cli/src/builtin-addons/core-buttons/sirenodeck.json
+  s_79a4941cb04acb::t_8b5ff2054cc477 5
+packages/cli/src/builtin-addons/media/buttons/media-player/components/ProgressBar.tsx
+  h_f90ee31b03fc41 1-21
+packages/cli/src/core/__tests__/gesture-state.test.ts
+  s_32e9e58a6a363a::t_1e1c223034e99e 124
+  s_79a4941cb04acb::t_8b5ff2054cc477 1,3-10,12-18,23,25-28,30-35,38-39,42-50,52-69,72-109,112-123,125-166,169-176,179-201,204-213
+packages/cli/src/builtin-addons/internal-settings/__tests__/index.test.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 14-15,32
+packages/cli/frontend/src/App.tsx
+  s_79a4941cb04acb::t_8b5ff2054cc477 52-53,60-62,75,77-78
+packages/cli/src/__tests__/addon.test.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 13,105,110,112-113,115,119,122-123,125,127-130,141-142,168,179,199-208,212,219-223,225-226,231-232,234-236,240-242,249,251-253
+packages/cli/src/builtin-addons/session/sirenodeck.json
+  s_79a4941cb04acb::t_8b5ff2054cc477 5
+packages/cli/src/ui/primitives/Icon.tsx
+  s_79a4941cb04acb::t_8b5ff2054cc477 8,49-52,66-69,79-81,119-120
+  h_f90ee31b03fc41 18-19,30,32,36-38,41,58
+packages/cli/frontend/vite.config.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 28,36,40,45-49
+packages/cli/src/cli/commands/addon-registry.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 17,93-94,115,144,147,158,168-170,185
+packages/cli/src/builtin-addons/media/buttons/media-player/components/MediaStatus.tsx
+  h_f90ee31b03fc41 1-25
+packages/cli/src/builtin-addons/media/providers/types.ts
+  s_79a4941cb04acb::t_aa5758236b8715 1
+  s_32e9e58a6a363a::t_0795a0ab1ab007 2-37,39-48
+  s_32e9e58a6a363a::t_d064b2cb2ff9ab 38
+.planning/phases/17-addon-api-consolidation/17-02-real-hardware-keys.md
+  s_32e9e58a6a363a::t_7ad68cae43b9c8 1-109
+packages/cli/src/ui/primitives/Chip.tsx
+  s_79a4941cb04acb::t_8b5ff2054cc477 4-5,8-13,21,28-33,37,39,42,46
+packages/cli/src/builtin-addons/media/buttons/media-player/backend.ts
+  s_32e9e58a6a363a::t_a166253994a75f 1,4-6,9
+  h_f90ee31b03fc41 3
+  s_32e9e58a6a363a::t_23bd2557436a8b 2,7-8
+packages/cli/src/builtin-addons/internal-settings/sirenodeck.json
+  s_79a4941cb04acb::t_8b5ff2054cc477 5
+packages/cli/src/builtin-addons/media/progress.ts
+  s_79a4941cb04acb::t_fe1bffab38dc22 1-16
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_79a4941cb04acb::t_970b7960e16df5 8
+  s_79a4941cb04acb::t_1479e7c7a10a05 14-15,25-26
+  s_79a4941cb04acb::t_0ac69c62dfcbee 40-41,76,81,83-90,104-105,109-119
+  s_79a4941cb04acb::t_59dd891e618d01 77-80,91-103
+  s_32e9e58a6a363a::t_b6cdf1028b321d 23
+  s_32e9e58a6a363a::t_4429246d749002 1-7,9,11-13,16-22,24,27-39,42-75,82,106-108,120-252,254-263
+  s_32e9e58a6a363a::t_742e775a17654d 10
+  s_79a4941cb04acb::t_5d7f36ed9cc6e0 253
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock/frontend.tsx
+  s_79a4941cb04acb::t_8b5ff2054cc477 52
+packages/cli/src/builtin-addons/session/index.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 1,9-11,19
+packages/cli/src/device/stream-deck.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 16-23,31,101-115
+  s_79a4941cb04acb::t_0eb0000927149d 116
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 1,7-8,14-16,18-21
+packages/cli/src/builtin-addons/emoji-selector/sirenodeck.json
+  s_79a4941cb04acb::t_8b5ff2054cc477 5
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 1,11-14,16-18,22,26,30
+packages/cli/src/builtin-addons/media/backend.ts
+  s_79a4941cb04acb::t_0bd8bbb01255b0 48-49
+  s_79a4941cb04acb::t_c07f1d8d786d7f 8,13-14,26-37
+  h_f90ee31b03fc41 1-5,7,9-12,15-17,20,39,52,56,59-66,68,70,72-77,95,99,102,106,109,113,117-119,123-124,127-129,132,135,139
+  s_79a4941cb04acb::t_9763437be99c8d 6,18-19
+  s_79a4941cb04acb::t_1860e6acba54bb 125,131
+  s_79a4941cb04acb::t_ae3a1c32c47591 21-25,38,53-55,57-58,67,69,71,78-94,96-98,100-101,103-105,107-108,110-112,114-116,120-122,126,130,133-134,140
+  s_79a4941cb04acb::t_a711a066a2cb9c 136-138
+  s_79a4941cb04acb::t_a91c0907313662 40-47,50-51
+packages/cli/src/builtin-addons/media/buttons/media-mute/frontend.tsx
+  s_32e9e58a6a363a::t_bbd29d13c64b56 3-10
+.planning/phases/17-addon-api-consolidation/17-03-method-namespacing.md
+  s_32e9e58a6a363a::t_6eaad30e4ea8cf 1-110
+packages/cli/src/builtin-addons/media/providers/linux.ts
+  s_79a4941cb04acb::t_e6b55e19f0cbc6 14-19,81,90-93,140,143-148,150-155,161
+  s_32e9e58a6a363a::t_ab957a3ce1a54d 1-13,20-80,82-89,94-139,141-142,149,156-160
+packages/cli/src/addon/api-types.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 1,3
+packages/cli/src/themes/default/sirenodeck.json
+  h_f90ee31b03fc41 11
+packages/cli/src/builtin-addons/media/providers/__tests__/linux.test.ts
+  s_79a4941cb04acb::t_70308c6f43499b 19-22
+  s_79a4941cb04acb::t_598aa883231cd7 1-18,23-30,36-43,49-54,60-67,73-81,87-98,116,119-123
+  s_79a4941cb04acb::t_ab1ac6c6566c57 99-115,117-118
+  s_79a4941cb04acb::t_97449a0fce8b1f 31-35,44-48,55-59,68-72,82-86
+packages/cli/src/ui/primitives/TapIndicator.tsx
+  s_79a4941cb04acb::t_8b5ff2054cc477 3-4,17-18,31-34
+packages/cli/src/builtin-addons/media/state.ts
+  s_79a4941cb04acb::t_6d3fd09b37ef0a 20-21
+  s_79a4941cb04acb::t_8c37b7775a14ef 1-19,22-24
+packages/cli/src/addon/loader.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 2,9-14,16,33-37,39,53-60,62-70,73,75-85,87-88,90-100,102,107-136,140,149,167-168,170,172,176,180,184,188,191-193,216-220,232-233,237,251-264,282,294,299,311-312,316,320,324,328-330,332,345,369-374
+packages/cli/src/ui/primitives/Label.tsx
+  s_79a4941cb04acb::t_8b5ff2054cc477 4,13-14
+packages/cli/src/deck/index.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 15-16
+packages/cli/src/deck/__tests__/__fixtures__/fake-media-backend.ts
+  s_79a4941cb04acb::t_8265332d7e210b 1-4,6-13,25-31
+  s_79a4941cb04acb::t_2a5dfe17436e46 5,14-18,20-24,32-35
+  s_79a4941cb04acb::t_78f0da38de96d0 19
+.planning/phases/17-addon-api-consolidation/17-10-bridge-context-fix.md
+  s_32e9e58a6a363a::t_27b9fe0c6c6b50 1-89
+packages/cli/src/builtin-addons/value-display/sirenodeck.json
+  s_79a4941cb04acb::t_8b5ff2054cc477 5-6
+packages/cli/src/builtin-addons/media/providers/windows.ts
+  s_32e9e58a6a363a::t_121b3dd6cf4b6a 1-42,51-94,96-97,99-100,103,106,109-110,112-113
+  s_79a4941cb04acb::t_ad1409eb1ecef5 43-50,95,98,101-102,104-105,107-108,111,114
+packages/cli/emulator/vite.config.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 12,20,24,29-33,45
+packages/cli/src/builtin-addons/media/sirenodeck.json
+  h_f90ee31b03fc41 4-5
+packages/cli/src/builtin-addons/media/buttons/media-mute/backend.ts
+  s_32e9e58a6a363a::t_627782bbe2fe8a 7
+  s_32e9e58a6a363a::t_e60d1016dcdf2d 1-6,9
+  s_32e9e58a6a363a::t_781479622aff5b 8
+packages/cli/src/addon/registry.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 4-5,10,21-22,27-32,34-36,38,41-45,47,58,67,71
+packages/cli/src/builtin-addons/date-time/shared/format-date.ts
+  h_f90ee31b03fc41 1-36
+packages/cli/src/builtin-addons/date-time/buttons/date/frontend.tsx
+  s_79a4941cb04acb::t_8b5ff2054cc477 1,3-6,8,10-17,19,22,24-34,36,38-39,41
+packages/cli/src/builtin-addons/media/buttons/media-player/components/MediaSurface.tsx
+  h_f90ee31b03fc41 1,3-5,7-44
+  s_79a4941cb04acb::t_3324deda5b9918 2,6,45
+packages/cli/src/addon/index.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 2
+packages/cli/src/builtin-addons/date-time/buttons/time/frontend.tsx
+  s_79a4941cb04acb::t_8b5ff2054cc477 16,19-26
+  h_f90ee31b03fc41 17
+.planning/phases/17-addon-api-consolidation/17-04-api-consolidation.md
+  s_32e9e58a6a363a::t_9371fde7670cc9 1-97
+packages/cli/src/builtin-addons/system-status/sirenodeck.json
+  s_79a4941cb04acb::t_8b5ff2054cc477 5
+packages/cli/src/builtin-addons/media/index.ts
+  s_32e9e58a6a363a::t_594ce6fff5c1e6 28-29,31
+  h_f90ee31b03fc41 1,3-9,11-13,15,19,23
+packages/cli/src/builtin-addons/core-buttons/__tests__/index.test.ts
+  s_79a4941cb04acb::t_8b5ff2054cc477 9-10,30,33-37
+packages/cli/src/addon/api.ts
+  s_79a4941cb04acb::t_0b17377fe4e2ee 229-235
+  s_79a4941cb04acb::t_0337dca3004034 213
+  s_79a4941cb04acb::t_8b5ff2054cc477 1,7-8,93,98-102,105-129,132,143,273-275,278-283,287,289
+packages/cli/src/builtin-addons/media/buttons/media-player/frontend.tsx
+  h_f90ee31b03fc41 1-9,11-21,25-28
+  s_79a4941cb04acb::t_5c1e0f02e06e2b 22-23
+  s_79a4941cb04acb::t_040becd15fd676 10,24,29
+packages/cli/src/builtin-addons/media/buttons/media-volume/backend.ts
+  s_32e9e58a6a363a::t_52fd7f248fac47 9-10,24
+  s_32e9e58a6a363a::t_f0e1050fdea92e 4-7,16-18,20,22
+  s_32e9e58a6a363a::t_6b275ca516d4de 1,11-15,19,21
+packages/cli/src/builtin-addons/media/buttons/media-player/components/status-meta.ts
+  h_f90ee31b03fc41 1,6,8-33,35
+  s_79a4941cb04acb::t_6127f5a08a5442 2-5,7,34,36
+config.yml
+  s_79a4941cb04acb::t_8b5ff2054cc477 62-65,67,73
+packages/cli/src/builtin-addons/media/__tests__/progress.test.ts
+  s_79a4941cb04acb::t_e0cdc76ccae4df 1-2,4-42
+  s_79a4941cb04acb::t_8980cac6ba92c2 3
+packages/cli/src/builtin-addons/date-time/sirenodeck.json
+  s_79a4941cb04acb::t_8b5ff2054cc477 5
+.planning/phases/17-addon-api-consolidation/17-05-dead-code-removal.md
+  s_32e9e58a6a363a::t_4601d18dd0cbff 1-59
+packages/cli/src/builtin-addons/brightness/sirenodeck.json
+  s_79a4941cb04acb::t_8b5ff2054cc477 5-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "1f20978e352a0609220f63e333c87e0ffa794ec6",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_79a4941cb04acb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0dd21a4dfffeare0Qkz7bvNkVT",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

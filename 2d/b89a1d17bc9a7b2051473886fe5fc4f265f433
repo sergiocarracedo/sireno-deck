@@ -1,0 +1,21 @@
+.planning/phases/04-ws-frontend/04-CONTEXT.md
+  s_9fabccd2e25c5b::t_a4b50340cc4e18 1-123
+.planning/phases/04-ws-frontend/04-DISCUSSION-LOG.md
+  s_9fabccd2e25c5b::t_03626d1614672d 1-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "2db89a1d17bc9a7b2051473886fe5fc4f265f433",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

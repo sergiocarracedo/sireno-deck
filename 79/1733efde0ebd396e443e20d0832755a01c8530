@@ -1,0 +1,28 @@
+.planning/quick/009-capture-frontend-emulator-stderr/009-PLAN.md
+  s_32e9e58a6a363a::t_0e20c15f2be6ad 1-16
+.planning/quick/009-capture-frontend-emulator-stderr/009-SUMMARY.md
+  s_32e9e58a6a363a::t_443b767331253a 1-17
+.planning/STATE.md
+  s_32e9e58a6a363a::t_0cfa604899f001 157,159
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "791733efde0ebd396e443e20d0832755a01c8530",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

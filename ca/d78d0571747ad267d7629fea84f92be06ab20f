@@ -1,0 +1,26 @@
+.planning/phases/74-shared-formatter-label-values-cap/74-DISCUSSION-LOG.md
+  s_469c0c9aff79bb::t_0992dd3bf33c9b 1-102
+.planning/phases/74-shared-formatter-label-values-cap/74-CONTEXT.md
+  s_469c0c9aff79bb::t_af5bd9dfa54389 1-127
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "cad78d0571747ad267d7629fea84f92be06ab20f",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_469c0c9aff79bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_129126bf4ffeC1puCBqg5C7qzn",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

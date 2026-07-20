@@ -1,0 +1,38 @@
+packages/cli/src/builtin-addons/emoji-selector/assets/launcher.svg
+  s_bab938378ab377::t_3bc6d15e778b3f 1-10
+packages/cli/src/builtin-addons/emoji-selector/index.test.ts
+  s_bab938378ab377::t_03e6159fcf858d 82
+  s_bab938378ab377::t_bcb6e58780339d 171,175-177
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_bab938378ab377::t_c62c639df25479 176-181
+  s_bab938378ab377::t_e893726e4499cf 7
+  s_bab938378ab377::t_9ef45d2ef6e03a 145-149,153
+packages/cli/src/builtin-addons/emoji-selector/support.tsx
+  s_bab938378ab377::t_93d340d49e1be4 59-61
+  s_bab938378ab377::t_007cc2a815c277 327-328
+  s_bab938378ab377::t_bfd6ea4b99fb61 169-182
+  s_bab938378ab377::t_195cd2a580497f 168
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher.tsx
+  s_bab938378ab377::t_2b32643a3b1809 1-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ffdb6978276a790b171a3c276b060a820aa7f3a4",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_bab938378ab377": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16388a05dffeQ84UIVBVOB9XaV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

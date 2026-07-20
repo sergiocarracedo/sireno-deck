@@ -1,0 +1,53 @@
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_9fabccd2e25c5b::t_df0b1023fd76ea 1-32
+packages/cli/src/builtin-addons/value-display/schemas.ts
+  s_9fabccd2e25c5b::t_49781ba4f6d89a 1-26
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_9fabccd2e25c5b::t_12956208497a45 1-19
+packages/cli/src/builtin-addons/system-status/buttons/system-status.tsx
+  s_9fabccd2e25c5b::t_bb3d2e22be77f4 1-109
+packages/cli/src/builtin-addons/value-display/domain/format-command-output.ts
+  s_9fabccd2e25c5b::t_ad593c58b326b0 1-39
+packages/cli/src/builtin-addons/date-time/__tests__/format.test.ts
+  s_9fabccd2e25c5b::t_2aa44f6a4fac65 1-3,5-28
+  s_9fabccd2e25c5b::t_7d4dd6a1d8b9a9 4
+packages/cli/src/builtin-addons/date-time/format.ts
+  s_9fabccd2e25c5b::t_8087700b18c736 1-89
+packages/cli/src/builtin-addons/system-status/domain/live-metrics.ts
+  s_9fabccd2e25c5b::t_87c4298705cb11 1-109
+packages/cli/src/builtin-addons/register-builtins.ts
+  s_9fabccd2e25c5b::t_2be90215338bdd 6,9-10,17-20
+packages/cli/src/builtin-addons/value-display/buttons/value-display.tsx
+  s_9fabccd2e25c5b::t_048e293e9d56c6 1-84
+packages/cli/src/builtin-addons/index.ts
+  s_9fabccd2e25c5b::t_c191950f744889 6-8
+packages/cli/src/builtin-addons/system-status/schemas.ts
+  s_9fabccd2e25c5b::t_9a71ece165c91d 1-45
+packages/cli/src/builtin-addons/date-time/schemas.ts
+  s_9fabccd2e25c5b::t_67be428dfaffbe 1-55
+packages/cli/src/builtin-addons/date-time/buttons/index.tsx
+  s_9fabccd2e25c5b::t_d648c935520730 1-259
+packages/cli/src/builtin-addons/value-display/index.ts
+  s_9fabccd2e25c5b::t_ec723f493c6f92 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "0a89189150168b4cb0157c3740cab408a8973b61",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+packages/cli/src/builtin-addons/date-time/frontend.tsx
+  s_9fabccd2e25c5b::t_8ff1eae1a814cb 1-202
+packages/cli/src/builtin-addons/date-time/buttons/index.tsx
+  s_9fabccd2e25c5b::t_4c00ea4a7bd1de 251-252
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "f48d820b99b13eb82d1249914d98ee5340f92b08",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

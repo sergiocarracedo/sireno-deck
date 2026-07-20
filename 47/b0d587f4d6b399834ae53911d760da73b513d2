@@ -1,0 +1,25 @@
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_8ca911650149ee::t_169838ee980a09 1-148
+packages/cli/src/ui/surfaces/SplitActionSurface.tsx
+  s_8ca911650149ee::t_1bcf8fd69e6034 1-52
+packages/cli/src/ui/surfaces/BarsSurface.tsx
+  s_8ca911650149ee::t_53700c1d21e289 1-125
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  s_8ca911650149ee::t_135252061da1f4 1-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "47b0d587f4d6b399834ae53911d760da73b513d2",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

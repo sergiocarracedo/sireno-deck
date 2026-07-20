@@ -1,0 +1,31 @@
+packages/cli/src/builtin-addons/emoji-selector/support.tsx
+  s_5435879e916352::t_799daeb01b6ae8 9-26,32,38-55,60-125
+  s_5435879e916352::t_4dac49a5face85 173-181
+packages/cli/src/builtin-addons/emoji-selector/assets/symbols.svg
+  s_5435879e916352::t_6e02b45ce62e24 1-4
+packages/cli/src/builtin-addons/emoji-selector/assets/activities.svg
+  s_5435879e916352::t_a8db7748bc55d0 1-7
+packages/cli/src/builtin-addons/emoji-selector/assets/objects.svg
+  s_5435879e916352::t_bd7714b7a15006 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e4e8ea50a5d0401b064107f3548cdec38c8ee4f5",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_5435879e916352": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1662feb4cffeE0yLzL3Illbyk2",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

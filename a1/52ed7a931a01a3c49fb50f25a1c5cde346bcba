@@ -1,0 +1,29 @@
+.planning/phases/06-base-contracts/06-UAT.md
+  s_26099f9ddf91b0::t_650c99032a32b5 27
+  s_26099f9ddf91b0::t_799b7fa29c1631 1,3-7,9-11,14,16-17,21-26,28-30,32-34,36-38,40-42,44-47,49,51-55
+  s_26099f9ddf91b0::t_0839c3dbac5729 35
+  s_26099f9ddf91b0::t_83126c97d7d15a 2,8,43,48,50
+  s_26099f9ddf91b0::t_4239b8c1af9e8d 12-13,15,18-20,39
+  s_26099f9ddf91b0::t_6093a5aeab3179 31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "a152ed7a931a01a3c49fb50f25a1c5cde346bcba",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+.planning/quick/003-correct-button-size/003-SUMMARY.md
+  s_9fabccd2e25c5b::t_f795934a744997 1-26
+.planning/STATE.md
+  s_9fabccd2e25c5b::t_6c95d385d56a18 99-106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "a70406035922b8afb87ce0d904a0dd34bbb982dc",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+.planning/phases/35-live-hardware-resampling-at-250ms/35-DISCUSSION-LOG.md
+  s_d8a76f591c3baf::t_cd759ff77e20f5 1-104
+.planning/phases/35-live-hardware-resampling-at-250ms/35-CONTEXT.md
+  s_d8a76f591c3baf::t_cd759ff77e20f5 1-117
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "32209377d9a0672ee0eaf681743d9e6aa4c0d3c7",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_d8a76f591c3baf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_175cd27c2ffeW4mFN1ilBeYzMI",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

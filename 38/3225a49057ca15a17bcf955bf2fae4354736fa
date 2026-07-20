@@ -1,0 +1,30 @@
+packages/cli/src/render/text-image.ts
+  s_df3509a167c487::t_3529457cdd0233 465-516,1051-1054
+packages/cli/fixtures/phase-17/config.wrapper-compatibility.yml
+  s_df3509a167c487::t_3529457cdd0233 16
+packages/cli/src/render/text-image.test.ts
+  s_df3509a167c487::t_3529457cdd0233 223-230
+packages/cli/src/deck/runtime.test.ts
+  s_df3509a167c487::t_3529457cdd0233 1569-1621
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "383225a49057ca15a17bcf955bf2fae4354736fa",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

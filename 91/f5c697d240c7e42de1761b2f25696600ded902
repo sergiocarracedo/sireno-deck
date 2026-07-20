@@ -1,0 +1,40 @@
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_109ed2a38ffa15::t_77efbdf7a94d98 327
+  s_109ed2a38ffa15::t_33c4c5fb3f0a5f 277
+packages/cli/src/outputClient/real.ts
+  s_109ed2a38ffa15::t_cfc724200ff242 146
+packages/cli/src/render/browser-renderer.ts
+  s_109ed2a38ffa15::t_f3a161bbded905 110
+packages/cli/frontend/src/App.tsx
+  s_109ed2a38ffa15::t_c2823a830eca1f 37
+  s_109ed2a38ffa15::t_94207ebab17a35 30
+  s_109ed2a38ffa15::t_a127316b12209d 137
+packages/cli/src/outputClient/emulator.ts
+  s_109ed2a38ffa15::t_7881df2aa56bd1 195
+packages/cli/src/api/protocol-internal.ts
+  s_109ed2a38ffa15::t_485301688b6ffe 42
+packages/cli/frontend/src/components/Deck.tsx
+  s_109ed2a38ffa15::t_773b3d6071489e 114-116,121
+  s_109ed2a38ffa15::t_a7ed0cbfa14416 39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "91f5c697d240c7e42de1761b2f25696600ded902",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_109ed2a38ffa15": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b92c6633ffeYltxJGdSdu0GKD",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

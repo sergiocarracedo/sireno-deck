@@ -1,0 +1,19 @@
+.planning/research/P3-research.md
+  s_771906db2db683::t_8bb6df7c7edcd7 1-125
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "63b1e9fcb16bafbc13d6de0a882fa90a0f413803",
+  "prompts": {},
+  "sessions": {
+    "s_771906db2db683": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09f1ef1afffeDdrvmFDZe1ZePc",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

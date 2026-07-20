@@ -1,0 +1,419 @@
+packages/cli/src/builtin-addons/date-time/buttons/index.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-4,6,19,251
+packages/cli/src/deck/methods.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-6,8,10
+packages/cli/src/cli/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 6-9
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1,10,22-24,32
+packages/cli/emulator/src/__tests__/gesture.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/config/discovery.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 4
+packages/cli/src/builtin-addons/brightness/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1,3-7
+packages/cli/src/themes/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7-8,14
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-4,6-8,38-40
+packages/cli/src/ui/primitives/Icon.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 7-8
+packages/cli/src/themes/use-resolved-theme.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/config/reference-expander.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 6
+packages/cli/src/system/clipboard/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 5-8,11
+packages/cli/src/builtin-addons/date-time/__tests__/format.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 4
+packages/cli/src/api/react/registry.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1
+packages/cli/src/util/__tests__/daemon.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 14
+packages/cli/src/system/key-macro/__tests__/windows.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7
+packages/cli/src/core/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 8,18,20,30
+packages/cli/src/builtin-addons/core-buttons/action.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/frontend/src/__tests__/ws-integration.test.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 6
+packages/cli/src/render/protocol.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 16,32
+packages/cli/src/builtin-addons/weather/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1,3,8-12
+packages/cli/src/core/__tests__/store.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/builtin-addons/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1-12
+packages/cli/src/builtin-addons/value-display/buttons/value-display.tsx
+  h_f90ee31b03fc41 1,3-5,7,12,21,29,33,38,43,48,65,70-71,75,80,86-88
+packages/cli/frontend/src/bridge/client.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 2
+.oxlintrc.json
+  s_23110a766376c0::t_60fbb797925eb2 1-21,23-27
+packages/cli/src/api/__tests__/index.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 8
+packages/cli/src/core/__tests__/pub-sub.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/cli/commands/__tests__/status.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7,9
+packages/cli/src/api/protocol.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1-2
+packages/cli/src/system/brightness/windows.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1,3,9-11,17
+packages/cli/frontend/src/__mocks__/themes-manifest.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 53
+packages/cli/src/cli/commands/run.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 24,34-36,39-40
+packages/cli/src/themes/light/index.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 1-3,11-13
+packages/cli/src/api/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 16,32
+packages/cli/src/cli/commands/__tests__/stop.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 8,10
+packages/cli/src/cli/commands/status.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 9
+packages/cli/src/system/key-macro/__tests__/darwin.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7
+packages/cli/src/deck/runtime.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-5
+packages/cli/src/render/__tests__/browser-renderer.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-4,12
+packages/cli/src/system/active-app/__tests__/windows.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7
+packages/cli/src/builtin-addons/media-player/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1,7,12-13,15
+packages/cli/src/deck/system-back-injection.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1
+packages/cli/src/system/clipboard/darwin.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/render/__tests__/state-publisher.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/builtin-addons/value-display/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1,3,9-12
+packages/cli/src/cli/__tests__/http-server.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7,9
+packages/cli/src/device/__tests__/linux-udev.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 8
+packages/cli/src/render/__tests__/vite-server.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 6
+packages/cli/src/core/__tests__/pagination.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/themes/light/__tests__/light.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3,5,26
+packages/cli/src/ui/surfaces/BarsSurface.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-6
+packages/cli/src/addon/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1-6
+packages/cli/src/cli/commands/stop.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 10
+packages/cli/src/cli/commands/start.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 19,21
+packages/cli/src/ui/primitives/Text.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-4
+packages/cli/src/action/executor.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-5
+packages/cli/src/system/session-monitor/__tests__/darwin.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 5
+packages/cli/src/cli/commands/__tests__/real-mode.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 16
+packages/cli/src/render/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 9,15-16
+packages/cli/frontend/src/App.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 6,8-9
+packages/cli/src/addon/api-types.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 6
+packages/cli/src/builtin-addons/core-buttons/toggle.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-4
+packages/cli/src/cli/commands/__tests__/emulator-mode-build-config.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3,5,21-22,30,36
+packages/cli/src/addon/__tests__/loader.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7-8,66
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  h_f90ee31b03fc41 26,83
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-5
+  s_32e9e58a6a363a::t_d74c9123bd51ae 82,84
+packages/cli/src/vite/__tests__/virtual-modules.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 6,23-24,44,49,69,78
+packages/cli/src/cli/commands/addon-registry.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 6,47-48,58-59,73,109-110
+packages/cli/frontend/src/bridge/__tests__/client.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 4
+packages/cli/src/builtin-addons/core-buttons/change-deck.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/builtin-addons/brightness/buttons/brightness.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 1-2,4-5,56
+packages/cli/src/util/__tests__/device-config.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 6
+packages/cli/src/api/react/__tests__/hooks.test.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 5-7
+packages/cli/src/ui/primitives/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1-5
+packages/cli/src/render/browser-renderer.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-5,8-9
+packages/cli/emulator/src/__tests__/bridge.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 9-10
+packages/cli/frontend/src/components/Deck.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 7,11
+packages/cli/src/system/key-macro/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 15-16
+packages/cli/src/system/media/__tests__/windows.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 5
+packages/cli/src/system/active-app/__tests__/darwin.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-5
+packages/cli/src/themes/light/ButtonFrame.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 1-3
+packages/cli/src/config/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1-7
+packages/cli/src/api/react/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1-4
+packages/cli/src/device/__tests__/stream-deck.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/api/react/use-addon-channel.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-4
+packages/cli/src/util/__tests__/cache-paths.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 11
+packages/cli/src/system/__tests__/virtual-stream-deck.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/api/react/use-button-action.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/ui/theme-presentation.tsx
+  h_f90ee31b03fc41 18,35,43
+packages/cli/src/addon/api.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3,5,98
+packages/cli/src/action/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1-3
+packages/cli/src/api/react/use-deck.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/builtin-addons/weather/domain/fetch.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1
+packages/cli/src/ui/primitives/TapIndicator.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 1,3-4
+packages/cli/src/system/brightness/linux.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7
+packages/cli/src/builtin-addons/system-status/poller.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/builtin-addons/value-display/domain/format-command-output.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1
+packages/cli/src/builtin-addons/system-status/domain/live-metrics.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/builtin-addons/internal-settings/about.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/cli/commands/__tests__/emulator-mode.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 18-19
+packages/cli/src/config/loader.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 6,8-9
+packages/cli/src/builtin-addons/register-builtins.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1,3,5-14
+packages/cli/src/ui/surfaces/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 5-9,13-15
+  h_f90ee31b03fc41 12
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-5,8
+packages/cli/src/api/addon.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1-2,4-5
+packages/cli/src/ui/index.ts
+  h_f90ee31b03fc41 1-3
+  s_23110a766376c0::t_b1a6e4d3ce9178 7-10
+packages/cli/src/builtin-addons/emoji-selector/index.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-4,11,225
+packages/cli/src/system/key-macro/__tests__/linux.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7
+packages/cli/emulator/src/Shell.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 5-7
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 49,134,147,315
+.planning/AGENTS.md
+  s_23110a766376c0::t_3bddea20c2f6b7 48
+packages/cli/src/builtin-addons/internal-settings/__tests__/index.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3,5
+packages/cli/src/system/__tests__/device-selection.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 10-11
+packages/cli/src/builtin-addons/brightness/poller.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 2
+packages/cli/src/builtin-addons/session/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1,3-4,13-14
+packages/cli/src/system/media/__tests__/linux.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7
+packages/cli/src/system/device-selection.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 4-5
+packages/cli/src/__tests__/integration.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 6-13
+packages/cli/emulator/src/App.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 10
+packages/cli/frontend/src/components/ButtonFrame.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 4
+packages/cli/src/themes/__tests__/loader.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-4,6,24
+packages/cli/src/system/active-app/__tests__/linux.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 11
+packages/cli/src/deck/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-6,9-12,14,20,28-30,35
+packages/cli/src/addon/__tests__/spec.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/device/__tests__/models.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 11
+packages/cli/src/vite/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 6
+packages/cli/src/builtin-addons/weather/poller.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 4-5
+packages/cli/frontend/src/main.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/__tests__/addon.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 167,172,228,231,260,291,302,312,326
+packages/cli/src/render/__tests__/emulator-server.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/render/__tests__/protocol.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 11
+packages/cli/src/deck/__tests__/methods.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-5,7-10
+packages/cli/src/system/brightness/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 5-9,12
+packages/cli/src/system/brightness/darwin.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7
+packages/cli/src/render/emulator-server.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 36,108,115
+packages/cli/src/addon/loader.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7,9,15-16,23-24
+packages/cli/emulator/src/__tests__/shell-render.test.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 6
+packages/cli/src/builtin-addons/value-display/poller.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 4-5
+packages/cli/src/system/media/__tests__/darwin.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 5
+packages/cli/frontend/src/components/ButtonRenderer.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/builtin-addons/session/locked-deck.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/system/brightness/__tests__/linux.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/emulator/src/main.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 4
+packages/cli/src/render/state-publisher.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/builtin-addons/media-player/buttons/media-player.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-4,12,148
+packages/cli/src/builtin-addons/media-player/poller.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 2
+packages/cli/README.md
+  s_23110a766376c0::t_6694c7593680e8 61
+packages/cli/src/builtin-addons/session/__tests__/index.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3,5
+packages/cli/src/system/__tests__/glob-match.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/system/session-monitor/__tests__/windows.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 5
+packages/cli/src/themes/default/__tests__/ButtonFrame.test.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 5
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 94,98,112,147
+packages/cli/src/vite/__tests__/index.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3,50
+packages/cli/src/builtin-addons/brightness/domain/macos.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1
+packages/cli/src/render/__tests__/buffer-hash.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/ui/surfaces/SplitActionSurface.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-4
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1-2,4-7,12,21-24
+packages/cli/src/system/session-monitor/__tests__/linux.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 10
+packages/cli/src/index.ts
+  h_f90ee31b03fc41 11,13-17,26-28,30-35,37-45,47
+  s_23110a766376c0::t_b1a6e4d3ce9178 12,29,36
+packages/cli/src/config/validation.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1-3
+packages/cli/src/system/clipboard/linux.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/themes/default/index.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 1-3,11-13
+packages/cli/src/builtin-addons/date-time/poller.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1
+packages/cli/src/action/__tests__/executor.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3,5
+packages/cli/frontend/src/__tests__/deck-render.test.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 5
+packages/cli/src/render/__tests__/screenshot-cadence.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3,5
+packages/cli/emulator/vite.config.ts
+  s_23110a766376c0::t_b7a439140c621d 5,41,68
+packages/cli/src/render/ws-bridge.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 9
+packages/cli/src/builtin-addons/system-status/buttons/system-status.tsx
+  h_f90ee31b03fc41 1,3-4,6,11,40,45,51,62,65-66,69,73,83,90,102-103,111-113
+packages/cli/src/config/__tests__/validation.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-6,8-9
+packages/cli/emulator/src/DeckFrame.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 5
+packages/cli/src/device/__tests__/registry.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/deck/__tests__/system-back-injection.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/system/clipboard/windows.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/builtin-addons/weather/buttons/weather.tsx
+  h_f90ee31b03fc41 1,3-5,7-9,12,59-60,64-66,69-71,74-75,82-96,102,110-112
+packages/cli/src/render/__tests__/ws-bridge.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 9-10
+packages/cli/src/ui/primitives/Chip.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-4
+packages/cli/emulator/src/__tests__/DeckFrame.test.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 7
+packages/cli/src/core/__tests__/gesture-state.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/system/key-macro/__tests__/parser.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3
+packages/cli/src/themes/loader.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 4-6,27
+packages/cli/src/builtin-addons/date-time/format.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 1
+packages/cli/src/addon/registry.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7-8
+packages/cli/frontend/vite.config.ts
+  s_23110a766376c0::t_b7a439140c621d 62
+packages/cli/src/addon/manifest.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 4,6
+packages/cli/src/builtin-addons/core-buttons/__tests__/index.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 3,5-8
+packages/cli/src/cli/commands/__tests__/addon-registry.test.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 7,10-11,39
+packages/cli/src/device/index.ts
+  s_23110a766376c0::t_b1a6e4d3ce9178 6-7,13
+packages/cli/src/ui/primitives/Label.tsx
+  s_23110a766376c0::t_b1a6e4d3ce9178 3-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "df6374c40e9c1eec3fdeb83e241c00f5addc1bcf",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_23110a766376c0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0ebeffb7effe9tUGn9p4vpolHJ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

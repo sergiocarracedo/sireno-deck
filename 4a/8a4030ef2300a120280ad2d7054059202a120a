@@ -1,0 +1,25 @@
+packages/cli/src/ui/primitives/Text.tsx
+  s_32e9e58a6a363a::t_8acefae9f7fa45 210
+  s_32e9e58a6a363a::t_55ab588d925f9b 269-283
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.6",
+  "base_commit_sha": "4a8a4030ef2300a120280ad2d7054059202a120a",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

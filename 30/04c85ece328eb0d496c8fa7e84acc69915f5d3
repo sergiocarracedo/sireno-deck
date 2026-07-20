@@ -1,0 +1,232 @@
+.planning/phases/03-themes-basic-buttons/03-01-PLAN.md
+  s_b8cfb58cffa436::t_0d231e8a34d3fc 1-102
+.planning/phases/03-themes-basic-buttons/03-DISCUSSION-LOG.md
+  s_b8cfb58cffa436::t_0d231e8a34d3fc 1-73
+.planning/quick/007-preserve-internal-toggle-state-across-deck-activation-and-reconnect/007-PLAN.md
+  s_58b2c13e8d9d12::t_d2d5cc48198c74 1-36
+.planning/quick/006-start-polling-immediately-zero-rpm-valid/006-SUMMARY.md
+  s_ee34d49efbf269::t_9ccbb5dc5e7420 1-21
+.planning/quick/003-fan-label-contract-text-only-display-mode/003-PLAN.md
+  s_98a08ce4d54a2f::t_03c5391e48d548 1-58
+.planning/phases/03-themes-basic-buttons/03-02-PLAN.md
+  s_b8cfb58cffa436::t_0d231e8a34d3fc 1-100
+.planning/phases/03-themes-basic-buttons/03-03-PLAN.md
+  s_b8cfb58cffa436::t_0d231e8a34d3fc 1-92
+.planning/quick/005-fix-independent-priming-priming-err/005-PLAN.md
+  s_fdf44300bc2a1f::t_bea5d6ee1be10e 1-52
+packages/cli/src/render/reconciler.ts
+  s_2e304184eb691a::t_97b428a44ee2f0 16,23,31,40,45,52,140,166,246,266,331
+  s_ce859953cc4edb::t_c8956347d607f0 364-405
+packages/cli/src/render/reconciler.test.ts
+  s_2e304184eb691a::t_97b428a44ee2f0 57-72
+  s_ce859953cc4edb::t_637b5e45e96f76 5,85-99,101-102
+  s_98a08ce4d54a2f::t_03c5391e48d548 100
+CHANGELOG.md
+  s_58b2c13e8d9d12::t_d2d5cc48198c74 10,25
+  s_e563fd4d598d97::t_527e67c2f6192e 19,31
+  s_fdf44300bc2a1f::t_4b1dc61d4ca70d 20-21,32
+  s_2e304184eb691a::t_97b428a44ee2f0 3-8,11-12,22-23,26,28,34
+  s_ce859953cc4edb::t_553cafe368c172 13,16,29
+  s_98a08ce4d54a2f::t_03c5391e48d548 17-18,30
+  s_14ca16defcd622::t_09ed8bf54ee171 9,24
+  s_ee34d49efbf269::t_9ccbb5dc5e7420 14-15,27,33
+.planning/phases/04-advanced-buttons/04-VERIFICATION.md
+  s_861119d6e83916::t_491762c6d1c966 63,69
+  s_86dcefc32a6698::t_fb24c1cb796100 1-62,64-68
+packages/cli/src/system/live-metrics.test.ts
+  s_04f84f6e05f6f8::t_374e6615a734c2 7-62,67-70,77-79,87-88,90-92,113,115,123,127
+  s_ee34d49efbf269::t_2d8612df44112c 89,95-107,114
+  s_04f84f6e05f6f8::t_04b5a03641823d 3-6,80,93,116,128
+  s_2e304184eb691a::t_97b428a44ee2f0 84-86,94,108-112,117-118
+  s_ce859953cc4edb::t_89059e3f9625b7 120-122,124-126,129-131
+.planning/quick/006-start-polling-immediately-zero-rpm-valid/006-PLAN.md
+  s_ee34d49efbf269::t_9ccbb5dc5e7420 1-56
+.planning/quick/009-align-fan-review-contract-finalize-phase-4-review/009-SUMMARY.md
+  s_861119d6e83916::t_491762c6d1c966 1-18
+.planning/phases/03-themes-basic-buttons/03-CONTEXT.md
+  s_b8cfb58cffa436::t_0d231e8a34d3fc 1-106
+packages/cli/src/render/text-image.test.ts
+  s_98a08ce4d54a2f::t_03c5391e48d548 88-94
+  s_2e304184eb691a::t_97b428a44ee2f0 87,95-112
+.planning/quick/002-phase-4-review-regressions/002-SUMMARY.md
+  s_1254c5bc0c1db5::t_efe6f049267ed5 1-29
+packages/cli/src/deck/runtime.ts
+  s_14ca16defcd622::t_09ed8bf54ee171 249-252
+  s_fdf44300bc2a1f::t_fb211e1687cb10 182-190,433-460,465,470
+  s_98a08ce4d54a2f::t_03c5391e48d548 335-343,348,350,352,369-377,382,384,386
+  s_2e304184eb691a::t_97b428a44ee2f0 4,6,12,39,48-79,89-90,92,106,143,147-155,209,317,351,385,391-397,402-424,426-432,461-464,466-469,471-486,551,587
+  s_d3ac8cac648b66::t_fd238ecb2e36d6 242,245,256-257,582,590,649,673
+  s_e563fd4d598d97::t_24ad6a5370d41c 114,161-170,175-179,219-224,231-235,243-244,246-248,292,299-302,322,330-332,356,364-366,390,398-401,425,489,500,518,528-531,543,558,572
+  s_ee34d49efbf269::t_2d8612df44112c 253-255
+  s_04f84f6e05f6f8::t_ef0a217dbef097 80-81,138-139,180-181,315
+  s_58b2c13e8d9d12::t_d2d5cc48198c74 171-174
+.planning/STATE.md
+  s_1254c5bc0c1db5::t_efe6f049267ed5 68
+  s_e563fd4d598d97::t_527e67c2f6192e 70
+  s_fdf44300bc2a1f::t_cce0e4967a3dfc 71
+  s_861119d6e83916::t_491762c6d1c966 14-15,60,75
+  s_14ca16defcd622::t_09ed8bf54ee171 74
+  s_2e304184eb691a::t_97b428a44ee2f0 13,59
+  s_98a08ce4d54a2f::t_03c5391e48d548 69
+  s_ee34d49efbf269::t_9ccbb5dc5e7420 72
+  s_58b2c13e8d9d12::t_6098ee9670c3a3 73
+packages/cli/src/cli/commands/start.ts
+  s_2e304184eb691a::t_97b428a44ee2f0 45,108
+.planning/REQUIREMENTS.md
+  s_86dcefc32a6698::t_fb24c1cb796100 96
+.planning/quick/002-phase-4-review-regressions/002-PLAN.md
+  s_1254c5bc0c1db5::t_efe6f049267ed5 1-66
+.planning/quick/008-guard-async-deck-activation-after-render-and-preserve-stop/008-PLAN.md
+  s_14ca16defcd622::t_09ed8bf54ee171 1-36
+packages/cli/src/deck/runtime.test.ts
+  s_14ca16defcd622::t_09ed8bf54ee171 169-256
+  s_58b2c13e8d9d12::t_d2d5cc48198c74 334-464
+  s_2e304184eb691a::t_76d616e2e0c031 777-778
+  s_ee34d49efbf269::t_2d8612df44112c 1007-1078
+  s_d3ac8cac648b66::t_059affdc3f3b0d 624-627
+  s_98a08ce4d54a2f::t_03c5391e48d548 655
+  s_2e304184eb691a::t_97b428a44ee2f0 678-776,779-794
+  s_e563fd4d598d97::t_4ce903b30c6126 855-857,859-894,896-903,908-918,920-923,1347-1453,1455-1461
+  s_d3ac8cac648b66::t_31ecc47d216c0c 854,1133-1174,1273-1274,1276-1277,1279-1317,1319-1330,1332-1339,1341-1342,1454,1462
+  s_d3ac8cac648b66::t_85027f4caf9864 142,148,159-163,616-619,1331
+  s_04f84f6e05f6f8::t_7f2b89d122890f 795,797,799-826,828-842,853
+  s_e563fd4d598d97::t_95347698676c29 796,798,827,843-852,858,895,904-907,919,1275,1278,1318,1340,1343-1346
+  s_fdf44300bc2a1f::t_89812826f52d7b 924-1006,1079-1132,1175-1272
+packages/cli/src/system/live-metrics.ts
+  s_ce859953cc4edb::t_89059e3f9625b7 67-74
+  s_2e304184eb691a::t_97b428a44ee2f0 8-23,26,32,65-66,75-77,79-91
+  s_ee34d49efbf269::t_2d8612df44112c 78
+.planning/quick/007-preserve-internal-toggle-state-across-deck-activation-and-reconnect/007-SUMMARY.md
+  s_58b2c13e8d9d12::t_6098ee9670c3a3 1-19
+.planning/quick/003-fan-label-contract-text-only-display-mode/003-SUMMARY.md
+  s_98a08ce4d54a2f::t_03c5391e48d548 1-22
+packages/cli/src/render/text-image.ts
+  s_2e304184eb691a::t_97b428a44ee2f0 9,16,116-123,170-230
+.planning/quick/009-align-fan-review-contract-finalize-phase-4-review/009-PLAN.md
+  s_861119d6e83916::t_491762c6d1c966 1-50
+.planning/phases/04-advanced-buttons/04-03-SUMMARY.md
+  s_2e304184eb691a::t_97b428a44ee2f0 1-16,18-23
+  s_861119d6e83916::t_491762c6d1c966 17
+.planning/quick/008-guard-async-deck-activation-after-render-and-preserve-stop/008-SUMMARY.md
+  s_14ca16defcd622::t_09ed8bf54ee171 1-19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "3004c85ece328eb0d496c8fa7e84acc69915f5d3",
+  "prompts": {},
+  "sessions": {
+    "s_04f84f6e05f6f8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1dfe0e181ffeMQ6T4Ravu29yWE",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_1254c5bc0c1db5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1dfe62356ffeMUGHO9sHV6e8HU",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_14ca16defcd622": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1dfaab56dffemyBu5Tkk4Qb4vY",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_2e304184eb691a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e1c4c928ffe2qqMBnwP2jeL5I",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_58b2c13e8d9d12": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1dfb01f74ffeQr7tTpuCfmh146",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_861119d6e83916": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1df9e47dfffeI5oG8ZH4N89YqQ",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_86dcefc32a6698": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e1c03fa7ffe4tRSP9JX3qQExD",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_98a08ce4d54a2f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1dfd3b61affeRjyZ1sdKJPO54K",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_b8cfb58cffa436": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e28f2c55ffewSvfYSYJMd0pkX",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_ce859953cc4edb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1dfec5dbcffeejJERnNvgLouOQ",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_d3ac8cac648b66": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1dfd8fb01ffeypwzGPfpUogHLf",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_e563fd4d598d97": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1dfccb1d8ffeiZULuI5QmTrWJY",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_ee34d49efbf269": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1dfb79c1affemgacKXKwNgtVde",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_fdf44300bc2a1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1dfc3a107ffeCMkjYSY1SD86HS",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

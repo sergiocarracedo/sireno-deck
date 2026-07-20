@@ -1,0 +1,19 @@
+.planning/solutions/best-practices/output-client-solid-no-mode-branching-2026-07-09.md
+  s_7939981290dd3c::t_5cea8bffbd0f31 1-218
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "89307bcdaceb6aee161cd783a4aabb7715d855ea",
+  "prompts": {},
+  "sessions": {
+    "s_7939981290dd3c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0bc910eb6ffe3hY7UqhVFOHi4V",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

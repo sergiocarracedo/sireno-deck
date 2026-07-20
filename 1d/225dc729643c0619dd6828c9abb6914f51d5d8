@@ -1,0 +1,29 @@
+.planning/quick/033-change-weather-poll-interval-minutes/033-PLAN.md
+  s_0580d7c7a41764::t_39a6ea1266707b 1-25
+.planning/quick/033-change-weather-poll-interval-minutes/033-SUMMARY.md
+  s_0580d7c7a41764::t_cb5bd60caacb9f 1-15
+.planning/STATE.md
+  s_0580d7c7a41764::t_ff57c964cf25fb 14
+  s_0580d7c7a41764::t_16b187ed5e8585 370
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1d225dc729643c0619dd6828c9abb6914f51d5d8",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_0580d7c7a41764": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_166a141a1ffeuVB57GbHYAshIa",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

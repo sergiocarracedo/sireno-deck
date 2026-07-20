@@ -1,0 +1,59 @@
+packages/cli/src/config/__tests__/validation.test.ts
+  s_af26f8f28d6753::t_348f93600f6386 5
+  s_af26f8f28d6753::t_ca62136c8841d3 114-130
+  s_dfb164a1050854::t_01f0a9df3a0f8b 131-132
+packages/cli/src/ui/primitives/__tests__/Text.test.tsx
+  s_af26f8f28d6753::t_6fa5322ffd4732 228-233,235-243,245-247,258
+  s_af26f8f28d6753::t_bc7f3eb2858247 248-257
+  s_af26f8f28d6753::t_4aeab4549b0fa7 234,244
+packages/cli/src/cli/commands/addon-registry.ts
+  s_af26f8f28d6753::t_8a0b641bdc84da 34-39
+packages/cli/src/builtin-addons/core/index.ts
+  h_f90ee31b03fc41 52-53,59-60,66-67
+packages/cli/src/ui/primitives/Text.tsx
+  s_af26f8f28d6753::t_20d31581afe889 272-273
+  s_af26f8f28d6753::t_4c5a9d51603c91 275
+  s_af26f8f28d6753::t_108d6d612adf35 270-271
+  s_af26f8f28d6753::t_44c51f4c8b429b 116
+  s_af26f8f28d6753::t_b0724778e63416 88-94
+packages/cli/src/vite/virtual-modules.ts
+  s_af26f8f28d6753::t_f79e531cbc346f 138-142
+packages/cli/src/__tests__/addon.test.ts
+  s_af26f8f28d6753::t_05aa3d8f282e98 267-286
+packages/cli/src/addon/registry.ts
+  s_af26f8f28d6753::t_002f3e1d88ebe1 77-79
+packages/cli/src/vite/__tests__/virtual-modules.test.ts
+  s_af26f8f28d6753::t_7c62a53c326197 87-102
+packages/cli/src/cli/commands/__tests__/addon-registry.test.ts
+  s_af26f8f28d6753::t_2f1e30a52ec908 104-107
+  s_af26f8f28d6753::t_bae7a3268d92fb 103,108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "3e8f20730c132c3a9423050b3903a6323fc1726b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_af26f8f28d6753": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08e033112ffei95jMDHjzPdezf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_dfb164a1050854": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_089e0b222ffe0N3qW6bmdFl9Rl",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

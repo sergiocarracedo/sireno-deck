@@ -1,0 +1,25 @@
+.planning/phases/06-lock-deck/06-RESEARCH.md
+  s_586986ca02db2f::t_6598429f229c6a 1-187
+.planning/phases/06-lock-deck/06-02-PLAN.md
+  s_586986ca02db2f::t_47bd1e0ee27b47 1-86
+.planning/phases/06-lock-deck/06-03-PLAN.md
+  s_586986ca02db2f::t_2fc4c4f3ac340d 1-83
+.planning/phases/06-lock-deck/06-01-PLAN.md
+  s_586986ca02db2f::t_4df7b9ef8c2ad6 1-90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "f0bcfd70319bc32fb1c1df72333b96e44c370a2c",
+  "prompts": {},
+  "sessions": {
+    "s_586986ca02db2f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08ee995cbffedn8iRvToXsQvlX",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

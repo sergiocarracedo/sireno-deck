@@ -1,0 +1,30 @@
+.planning/phases/45-weather-addon/45-01-SUMMARY.md
+  s_4e4ee307096ddc::t_055d69eb1e5c64 1-36
+.planning/phases/45-weather-addon/45-VERIFICATION.md
+  s_4e4ee307096ddc::t_f5424ffcf61b5c 1-43
+AGENTS.md
+  s_4e4ee307096ddc::t_d93ef807237440 168-169
+.planning/ROADMAP.md
+  s_4e4ee307096ddc::t_020e4502d10be2 56,58-59,61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "09691e08d692ab48f8f12187a4d2b131c7971b6b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

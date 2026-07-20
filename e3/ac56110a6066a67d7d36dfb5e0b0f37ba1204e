@@ -1,0 +1,29 @@
+builtin-addons/date-time/src/index.test.ts
+  s_26099f9ddf91b0::t_1cac002d248c6b 3-52
+packages/cli/vitest.config.ts
+  s_26099f9ddf91b0::t_64ff7ac8fbb69c 7
+builtin-addons/date-time/src/index.ts
+  h_f90ee31b03fc41 3,5,8-9,13-14,27,31-32,34-41,43,45-46,48-52,54-56
+  s_26099f9ddf91b0::t_1cac002d248c6b 1-2,4,6-7,10-12,15-26,28-30,33,42,44,47,53,57-61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "e3ac56110a6066a67d7d36dfb5e0b0f37ba1204e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

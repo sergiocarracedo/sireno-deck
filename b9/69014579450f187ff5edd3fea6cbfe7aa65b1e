@@ -1,0 +1,23 @@
+.planning/phases/05-emulator/05-01-PLAN.md
+  s_9fabccd2e25c5b::t_a397b6ae34d894 1-130
+.planning/phases/05-emulator/05-02-PLAN.md
+  s_9fabccd2e25c5b::t_299823eba0a0e6 1-156
+.planning/phases/05-emulator/05-03-PLAN.md
+  s_9fabccd2e25c5b::t_8436cc55a4250c 1-118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "b969014579450f187ff5edd3fea6cbfe7aa65b1e",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

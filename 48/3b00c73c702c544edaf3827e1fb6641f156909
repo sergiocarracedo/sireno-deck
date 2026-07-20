@@ -1,0 +1,26 @@
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_8ca911650149ee::t_4cf76164a4d617 64
+  s_8ca911650149ee::t_5fba201a600083 67
+packages/cli/src/cli/commands/run.ts
+  s_8ca911650149ee::t_638d38441548fe 33
+  s_8ca911650149ee::t_411f1b2d2c917d 261-262,273-283
+  s_8ca911650149ee::t_09046545e6a2be 307
+  s_8ca911650149ee::t_6b0e8a7de11d0e 259,263-272
+  s_8ca911650149ee::t_fd83781b969015 260
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "483b00c73c702c544edaf3827e1fb6641f156909",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

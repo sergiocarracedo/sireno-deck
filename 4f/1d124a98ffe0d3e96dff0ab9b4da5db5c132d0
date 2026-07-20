@@ -1,0 +1,27 @@
+.planning/phases/04-advanced-buttons/04-02-PLAN.md
+  s_136b450bea3e1f::t_c8691f4b2284ed 1-100
+.planning/phases/04-advanced-buttons/04-RESEARCH.md
+  s_136b450bea3e1f::t_93cd59e7af5060 1-59
+.planning/phases/04-advanced-buttons/04-03-PLAN.md
+  s_136b450bea3e1f::t_c8691f4b2284ed 1-97
+.planning/phases/04-advanced-buttons/04-DISCOVERY.md
+  ai_agent 1-237
+.planning/phases/04-advanced-buttons/04-01-PLAN.md
+  s_136b450bea3e1f::t_c8691f4b2284ed 1-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "4f1d124a98ffe0d3e96dff0ab9b4da5db5c132d0",
+  "prompts": {},
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

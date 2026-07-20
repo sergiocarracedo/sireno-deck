@@ -1,0 +1,24 @@
+.planning/phases/55-active-app-overlay-decks/55-03-PLAN.md
+  s_8eaa4083520faf::t_1e88c87aaacdfa 1-97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "51d1de50cd26663eb83d0fb2ef44939da2999379",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_8eaa4083520faf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_151dd58eeffeFt0TLJhZBrtyC3",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

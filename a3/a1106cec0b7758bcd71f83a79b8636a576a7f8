@@ -1,0 +1,33 @@
+.planning/phases/72-system-buttons-dispatcher-and-deck-icon/72-UAT.md
+  s_1eb393451cb328::t_dc50040c182023 56-58
+  s_1eb393451cb328::t_bd4baea4667e20 84,100-104
+  s_1eb393451cb328::t_232cebf68c00e7 78
+  s_1eb393451cb328::t_a71878afd6c5de 90-94
+  s_1eb393451cb328::t_3dd0f8379e85cd 67-69
+  s_1eb393451cb328::t_39fcdc90dfa817 95-99
+  s_1eb393451cb328::t_787a0b27aeea80 83,85
+  s_1eb393451cb328::t_fd9c0c4e22c1c1 1,3-7,9-44,48-55,59-66,70-77,79-82,86-89
+  s_1eb393451cb328::t_d4b20fe66380c4 45-47
+  s_1eb393451cb328::t_1370d80ef3d532 2,8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "a3a1106cec0b7758bcd71f83a79b8636a576a7f8",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_1eb393451cb328": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_12da2f406ffecZQ7Y4h0yXu6ko",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

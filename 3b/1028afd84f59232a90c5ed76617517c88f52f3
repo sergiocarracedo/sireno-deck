@@ -1,0 +1,28 @@
+.planning/ROADMAP.md
+  s_4e4ee307096ddc::t_0962c5747bdac3 35,40
+.planning/phases/42-system-reserved-back-button/42-01-SUMMARY.md
+  s_4e4ee307096ddc::t_342a97b7180681 1-28
+.planning/phases/42-system-reserved-back-button/42-VERIFICATION.md
+  s_4e4ee307096ddc::t_a108d40ddda76d 1-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3b1028afd84f59232a90c5ed76617517c88f52f3",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

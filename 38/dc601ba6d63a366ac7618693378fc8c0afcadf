@@ -1,0 +1,65 @@
+packages/cli/src/vite/virtual-modules.ts
+  s_55abdbe20bc1a9::t_7cad6840f6410e 125
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-3,6-8,12-15,19-21,24-25,27-28,30-31,33-34,36-37,51,53-57,60-61,64,69-71,74,77-79,81-82,84,87,99-101,103-104,106-109,111,113-116,118,120-122,126,129-131,133-135,137,139,141,143,145,148,150,157,169,175,184-187,190-194,197,199-204,207-212,215-219,227-229,231-237,239-240,243-244,246-248,251-252,259,263-267,273,278,282-285,293,295-304,308,310,314-315,317-318
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  s_55abdbe20bc1a9::t_129a8f5219775e 16-30
+  s_55abdbe20bc1a9::t_5c27e628357000 34
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 50
+packages/cli/frontend/src/components/Deck.tsx
+  s_55abdbe20bc1a9::t_503d8c09cffd6e 176-177
+  s_55abdbe20bc1a9::t_94d312d2c0d3ae 80
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 18-19,49,67-71
+  s_55abdbe20bc1a9::t_129a8f5219775e 184-186
+packages/cli/src/builtin-addons/session/index.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 29
+  s_55abdbe20bc1a9::t_204a01a1a903f4 16
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_55abdbe20bc1a9::t_81f0fc52789c3a 241,244,252,260
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 38-50,73-75,79,81-84,201-202
+packages/cli/src/addon/api.ts
+  s_55abdbe20bc1a9::t_e506f72e474eff 101-106
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,3,5-7,10,12-13,20-21,25-28,32-36,40,44-45,49-57,61-66,70-72,76-80,91,94,97-100,107-111,115-116,120-121,124,127-132,136-142,158-164,167-173,176,181,186-190,192,196,198,203,205,208,211,229-233,236,239-242,246-247,252,259,261,263,265,277-281,285-287,289,291,293,295,300,317-320,324,327
+packages/cli/src/builtin-addons/media/index.ts
+  s_55abdbe20bc1a9::t_129a8f5219775e 1,3-11,15,17,20,22,25,27,30,32,35,39,41
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 42
+packages/cli/src/addon/registry.ts
+  s_55abdbe20bc1a9::t_6517ef362773d2 9
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 17,57,64,94,98
+  s_55abdbe20bc1a9::t_3cb99a98cd3091 34-54
+packages/cli/src/builtin-addons/weather/index.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 20
+  s_55abdbe20bc1a9::t_d1088fbe3aec39 13
+packages/cli/src/builtin-addons/brightness/index.ts
+  s_55abdbe20bc1a9::t_ad5b6680305103 13
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "38dc601ba6d63a366ac7618693378fc8c0afcadf",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_2f9cf0bce2d3f2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0c34dca1dffeMWwXRmmOkm50oI",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_55abdbe20bc1a9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0c2dcb067ffeT2vd4CebpVh5lf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

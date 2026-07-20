@@ -1,0 +1,19 @@
+.planning/phases/67-settings-deck-layout-revamp/67-RESEARCH.md
+  s_51a5160d42324b::t_d046256dff35a9 1-184
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "16bf093e000e965a0eeb58bf2d6e2074cb2ccff1",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+packages/cli/src/cli/commands/addon-decks.ts
+  s_fd4c9efcb04c88::t_82da1e064e084c 54,58,72,90,94,106
+  s_fd4c9efcb04c88::t_58d646cdffa0fb 29-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "1a60ebded939419917150dfb7cd24ccdd23bb9f9",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_fd4c9efcb04c88": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0a020801effeDxd0RkXpU8rWsJ",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+packages/cli/src/vite/virtual-modules.ts
+  s_9fabccd2e25c5b::t_d1d6eaf7d18333 11-16,19,29-31,41-45,47,53,66-103
+  s_9fabccd2e25c5b::t_11f48ca29380ac 33
+  s_9fabccd2e25c5b::t_86f0f9bb70ecba 164-166
+  s_9fabccd2e25c5b::t_19ed68ea31eb5a 145
+  s_9fabccd2e25c5b::t_599a7a18ad6520 168-183
+  s_9fabccd2e25c5b::t_f49c1ecc75732b 32
+  s_9fabccd2e25c5b::t_b2b67c49abbbd7 153
+  s_9fabccd2e25c5b::t_92f9066c32a3a9 154
+  s_9fabccd2e25c5b::t_c469fb47c2bcaa 140,158-163,167
+  s_9fabccd2e25c5b::t_0434e2c9bd3ba9 1-2
+  s_9fabccd2e25c5b::t_d7bf3b6c2c32e6 105,107-108,138,192
+  s_9fabccd2e25c5b::t_c6b13d7a9d3649 104
+  s_9fabccd2e25c5b::t_f344d101dcda86 106
+packages/cli/src/vite/virtual-modules.test.ts
+  s_9fabccd2e25c5b::t_fdfb8963f2cb43 1-85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "a86d149aac60ee9691752158409c1b30410f0a26",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

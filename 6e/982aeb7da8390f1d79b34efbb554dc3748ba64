@@ -1,0 +1,19 @@
+packages/cli/frontend/src/components/Deck.tsx
+  s_76ace8e8cfb010::t_ad8f873691022a 105-114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "6e982aeb7da8390f1d79b34efbb554dc3748ba64",
+  "prompts": {},
+  "sessions": {
+    "s_76ace8e8cfb010": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_090b3e67cffeM1RGgjTp66fRBZ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

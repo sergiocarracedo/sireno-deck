@@ -1,0 +1,35 @@
+tsconfig.base.json
+  s_32e9e58a6a363a::t_fc62d80a1b7334 8,24-28,30-35
+packages/cli/emulator/.oxlintrc.json
+  s_32e9e58a6a363a::t_bf8602c766ac02 2
+.oxlintrc.json
+  s_32e9e58a6a363a::t_18aa18a8208660 20-22
+  s_32e9e58a6a363a::t_ea829ae1c0704b 19
+packages/cli/package.json
+  s_32e9e58a6a363a::t_c9093908655d5b 50-51,59-62,65,68-69,74,77-78
+vitest.config.ts
+  s_32e9e58a6a363a::t_6c4f6aa1044643 2,5-8,11,15,33-41
+packages/cli/frontend/.oxlintrc.json
+  s_32e9e58a6a363a::t_0b3306e256147f 1-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "b28e484cd4b4477a085827abbb63ee5c57485a5e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

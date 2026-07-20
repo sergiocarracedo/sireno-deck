@@ -1,0 +1,42 @@
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_32e9e58a6a363a::t_7c937de7ce7b10 12
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_32e9e58a6a363a::t_7c937de7ce7b10 10
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_32e9e58a6a363a::t_7c937de7ce7b10 7
+packages/cli/src/builtin-addons/brightness/index.ts
+  s_32e9e58a6a363a::t_7c937de7ce7b10 7
+packages/cli/src/builtin-addons/value-display/index.ts
+  s_32e9e58a6a363a::t_7c937de7ce7b10 7
+packages/cli/src/builtin-addons/media-player/index.ts
+  s_32e9e58a6a363a::t_7c937de7ce7b10 9
+packages/cli/src/builtin-addons/emoji-selector/index.tsx
+  s_32e9e58a6a363a::t_d7d90bee852857 13
+packages/cli/src/builtin-addons/weather/index.ts
+  s_32e9e58a6a363a::t_7c937de7ce7b10 7
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  s_32e9e58a6a363a::t_7c937de7ce7b10 11
+packages/cli/src/builtin-addons/session/index.ts
+  s_32e9e58a6a363a::t_c21d7c23c005ee 27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "77bd5f188090e526ffcadc2d36f2d841fb21a2f3",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

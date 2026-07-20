@@ -1,0 +1,28 @@
+packages/cli/src/render/types.ts
+  s_f5a17a5bb0cabc::t_554e1bffdfc6b3 20
+packages/cli/src/render/reconciler.test.tsx
+  s_f5a17a5bb0cabc::t_554e1bffdfc6b3 67-74,167-187
+packages/cli/src/render/reconciler.ts
+  s_f5a17a5bb0cabc::t_554e1bffdfc6b3 28,42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "0505be2b5c4f0b514af9abbdc44da522ad1c89ff",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_f5a17a5bb0cabc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d26026d7ffeiNMKuTj5pDN2G3",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

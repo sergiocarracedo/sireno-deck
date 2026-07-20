@@ -1,0 +1,34 @@
+packages/cli/frontend/src/App.tsx
+  s_32e9e58a6a363a::t_7cb9877c7f0194 9,27-33
+  h_f90ee31b03fc41 1-3,5-8,12-14,18-20,24-25,34,37,40-42,45-48,54,59-60,63,66-68,70,72-74,76-77,79,82,84-85,88-90,93,95,101,107,131,133,137-139,141-144,158-159
+  s_32e9e58a6a363a::t_3eceea9902d99e 83,110-130,145-148,154
+packages/cli/frontend/src/components/Deck.tsx
+  s_32e9e58a6a363a::t_39b8864452e02a 11,35-43,46,81-86,122,129-132
+  s_32e9e58a6a363a::t_fecc7698e9e1f5 88-90,134-139
+  s_32e9e58a6a363a::t_41b859be313d84 87
+packages/cli/frontend/src/__tests__/ws-integration.test.tsx
+  h_f90ee31b03fc41 2-3,5-6,11-12,14-15,17-22
+packages/cli/frontend/src/__tests__/deck-render.test.tsx
+  s_32e9e58a6a363a::t_f7fdafbea9c68c 2-3,22-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "74238b5f647ad7795aa6c2ef40452da978acfe27",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

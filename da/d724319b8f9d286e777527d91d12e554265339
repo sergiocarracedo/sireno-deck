@@ -1,0 +1,21 @@
+.planning/STATE.md
+  s_136b450bea3e1f::t_233122dbe02917 13-15,50-51,62-63
+.planning/phases/02-device-rendering/02-01-SUMMARY.md
+  s_136b450bea3e1f::t_233122dbe02917 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "dad724319b8f9d286e777527d91d12e554265339",
+  "prompts": {},
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

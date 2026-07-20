@@ -1,0 +1,19 @@
+.planning/phases/18-react-dom-based-renderer-with-htmlcss/18-UAT.md
+  s_df3509a167c487::t_99216fd76cf1eb 1-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "0f4f979b4b68b14f9972f66a59a45dca703f9d2c",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

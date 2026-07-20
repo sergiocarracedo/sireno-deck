@@ -1,0 +1,30 @@
+packages/cli/src/config/loader.test.ts
+  s_df3509a167c487::t_9ee2b110cdd9c5 772,779
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_df3509a167c487::t_9ee2b110cdd9c5 32,34,37,40,43,46,49,52,55,58,61,64,67,70,72-73,75
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  s_df3509a167c487::t_9ee2b110cdd9c5 10
+packages/cli/src/addon/registry.test.ts
+  s_df3509a167c487::t_9ee2b110cdd9c5 55-75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "fc9d435394239fa61ec4458f96b992b2b033de19",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

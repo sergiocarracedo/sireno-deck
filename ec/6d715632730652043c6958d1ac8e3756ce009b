@@ -1,0 +1,21 @@
+.planning/phases/79-ws-protocol/79-UAT.md
+  s_344b68134ff779::t_95d7c03fcb2531 104-113
+  s_344b68134ff779::t_24f6b4fb2220df 94
+  s_344b68134ff779::t_dd6355d6588991 138,143
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "ec6d715632730652043c6958d1ac8e3756ce009b",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

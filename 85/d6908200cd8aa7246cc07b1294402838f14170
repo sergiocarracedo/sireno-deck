@@ -1,0 +1,45 @@
+packages/cli/src/components/Deck.tsx
+  s_9fabccd2e25c5b::t_160696bdf6c803 1-45
+packages/cli/src/cli/commands/run.ts
+  s_9fabccd2e25c5b::t_5bfaa5b86c378b 10
+  s_9fabccd2e25c5b::t_a4ec7e73c5a165 331-333,338
+  s_9fabccd2e25c5b::t_3923bb837a0984 272-317
+  s_9fabccd2e25c5b::t_bc9dab99261dbe 337
+packages/cli/frontend-emulator/vite.config.ts
+  s_9fabccd2e25c5b::t_e1888febc406a1 6-7,16-18,24
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_9fabccd2e25c5b::t_f88bf0b0a13beb 63,65,72-75,81
+  s_9fabccd2e25c5b::t_a6330e24725233 158-161,168
+  s_9fabccd2e25c5b::t_22f8f6f66b87d0 8-13
+  s_9fabccd2e25c5b::t_abbe9584d0e87c 133-149
+  s_9fabccd2e25c5b::t_c2b54a7fdf1e17 180-190
+  s_9fabccd2e25c5b::t_dbb93f02d8fd6b 29-30
+packages/cli/frontend-emulator/src/App.tsx
+  s_9fabccd2e25c5b::t_281191fe06e9d3 1-24,26-38,45-111
+  s_9fabccd2e25c5b::t_4f01162f0070ac 25
+packages/cli/src/index.ts
+  s_9fabccd2e25c5b::t_04cf8b1e8da1a3 21-24
+packages/cli/src/components/ButtonFrame.tsx
+  s_9fabccd2e25c5b::t_160696bdf6c803 1-144
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "85d6908200cd8aa7246cc07b1294402838f14170",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

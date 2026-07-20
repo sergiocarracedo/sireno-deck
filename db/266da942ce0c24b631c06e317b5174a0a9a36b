@@ -1,0 +1,41 @@
+packages/cli/src/deck/deck-config.ts
+  s_7f73bc710d357f::t_0c9b2bcaf0fc85 126-130,132-136
+packages/cli/src/cli/commands/addon-decks.ts
+  s_7f73bc710d357f::t_6223fa90999b02 183
+  s_7f73bc710d357f::t_eda441e2b27ecb 145
+  s_7f73bc710d357f::t_8d91039568ad1c 32,38
+packages/cli/src/cli/commands/__tests__/emulator-mode-build-config.test.ts
+  s_7f73bc710d357f::t_05c1faec81ca33 149,165
+packages/cli/src/deck/paginate-deck.ts
+  s_7f73bc710d357f::t_4f1da61c84736d 52-58,61
+packages/cli/src/deck/__tests__/deck-config-back-button.test.ts
+  s_7f73bc710d357f::t_56f4216c00f6bb 76,81,94-96
+packages/cli/src/cli/commands/__tests__/addon-decks.test.ts
+  s_7f73bc710d357f::t_7208b65ff31fba 57,105,140,174,194,236,277,366,390,410,467
+  s_7f73bc710d357f::t_b9eba4f852bf90 79,325
+  s_7f73bc710d357f::t_2302c9ce3edd0a 418-441
+packages/cli/src/outputClient/emulator.ts
+  s_7f73bc710d357f::t_d57729ed863422 165-170
+  s_7f73bc710d357f::t_453736785ed947 140-142
+  s_7f73bc710d357f::t_ca6c36939862df 171-172
+packages/cli/src/cli/commands/run.ts
+  s_7f73bc710d357f::t_898ed35d9c5b0b 325-339,344-392,397-402
+  s_7f73bc710d357f::t_05b51a8788a6a1 25
+  s_7f73bc710d357f::t_d7dcb70b83570d 207-211
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "db266da942ce0c24b631c06e317b5174a0a9a36b",
+  "prompts": {},
+  "sessions": {
+    "s_7f73bc710d357f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0a5b9a288ffeO7k704yPu0Lc8p",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

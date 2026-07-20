@@ -1,0 +1,31 @@
+packages/cli/src/cli/commands/start.ts
+  s_8d74af9d4bfed8::t_9963e84b56a83d 23,57-59,61-63,68-71,294,296-297,306,308,316,319-326,341-344,363,409-430,433-439,482-483,485-487,489-491,496-497,499-519,521-530,533-574,576-581,587,592-593,601-602
+  s_8d74af9d4bfed8::t_6f78a2be0da452 213,217-218
+packages/cli/src/render/browser-renderer.test.ts
+  s_8d74af9d4bfed8::t_de0fe8d7415e12 9,314-324
+packages/cli/src/cli/commands/start.test.ts
+  s_8d74af9d4bfed8::t_0ef6b6470625d9 558
+  s_8d74af9d4bfed8::t_85e1e1bded0695 575-576
+  s_8d74af9d4bfed8::t_6ccceaffa6f554 702-861
+packages/cli/fixtures/phase-22/README.md
+  s_8d74af9d4bfed8::t_36a0422a82ec72 15-19
+packages/cli/src/render/browser-renderer.ts
+  s_8d74af9d4bfed8::t_0c1073ff2b8350 38-42,97-106
+  s_8d74af9d4bfed8::t_985c091458ef44 53,298
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "9693e440869bacad0ae5b8b8094a35d8d6300506",
+  "prompts": {},
+  "sessions": {
+    "s_8d74af9d4bfed8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a4269384ffeN1puLn8w7RzN1B",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

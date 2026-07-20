@@ -1,0 +1,24 @@
+.planning/phases/49-emoji-selector-ux-revamp/49-05-SUMMARY.md
+  s_23f1376bf0bcd5::t_9e5cdc932a4892 1-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e536a61bdbf728e73871bd883f1d7460a208d7ae",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_23f1376bf0bcd5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1611af187ffe8aBh1kgeeye5Wx",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

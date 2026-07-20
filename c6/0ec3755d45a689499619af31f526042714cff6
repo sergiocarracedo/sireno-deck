@@ -1,0 +1,26 @@
+packages/cli/src/deck/gesture-state.ts
+  s_1eb393451cb328::t_7787c9f94b7e94 1-29,31-32,39-42,50
+  s_1eb393451cb328::t_77c53837c1beeb 30,33-38,43-49
+packages/cli/src/deck/runtime.ts
+  s_1eb393451cb328::t_d94f004ee5f622 31,1740-1752
+packages/cli/src/deck/__tests__/gesture-state.test.ts
+  s_1eb393451cb328::t_efb1c81d64bbca 1-160
+.planning/phases/71-gesture-state-machine-hardening/71-02-SUMMARY.md
+  s_1eb393451cb328::t_c402fc6e20a0cb 1-100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "c60ec3755d45a689499619af31f526042714cff6",
+  "prompts": {},
+  "sessions": {
+    "s_1eb393451cb328": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_12da2f406ffecZQ7Y4h0yXu6ko",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

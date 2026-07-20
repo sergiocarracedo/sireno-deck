@@ -1,0 +1,28 @@
+packages/cli/fixtures/phase-23/config.yml
+  h_f90ee31b03fc41 1-9,11-33
+  s_4a24c7997d2c84::t_262d9d3df86082 10
+packages/cli/src/cli/commands/start.test.ts
+  s_4a24c7997d2c84::t_260397fd75cbd9 327
+  s_4a24c7997d2c84::t_262d9d3df86082 93,323-326,328-347
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "147ad8f01e342cd2442a950471579c748ceceaec",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4a24c7997d2c84": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a091daeaffeKrjgERsZBqFExO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

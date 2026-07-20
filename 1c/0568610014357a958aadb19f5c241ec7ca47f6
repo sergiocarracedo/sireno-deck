@@ -1,0 +1,21 @@
+packages/cli/src/ui/index.ts
+  s_8ca911650149ee::t_52995a19e135f5 14
+  s_8ca911650149ee::t_4e5ece9753a2b9 9-13
+  s_8ca911650149ee::t_8c1bd2fc43669e 1-8,15-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "1c0568610014357a958aadb19f5c241ec7ca47f6",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

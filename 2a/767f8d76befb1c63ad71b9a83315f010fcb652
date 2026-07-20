@@ -1,0 +1,19 @@
+.planning/phases/58-performance-fixes/58-VERIFICATION.md
+  s_0c62b680825d4a::t_e2020a8c2fed80 1-45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "2a767f8d76befb1c63ad71b9a83315f010fcb652",
+  "prompts": {},
+  "sessions": {
+    "s_0c62b680825d4a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14fa596feffedU17ZzovT65yl1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

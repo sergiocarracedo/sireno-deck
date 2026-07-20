@@ -1,0 +1,21 @@
+packages/cli/src/outputClient/emulator.ts
+  s_0a5098cebd5351::t_882f0a6bf37e18 129-135,149-150,153,161,167
+packages/cli/src/outputClient/real.ts
+  s_0a5098cebd5351::t_2678b1e89f40ee 116,118-150,166
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "5695269d9096b9be54e83a4bd7c459ee3c81bd63",
+  "prompts": {},
+  "sessions": {
+    "s_0a5098cebd5351": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0afd3478effeIJsDCif5EEO4Ft",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

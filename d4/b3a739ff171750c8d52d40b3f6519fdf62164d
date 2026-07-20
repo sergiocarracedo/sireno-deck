@@ -1,0 +1,25 @@
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-UAT.md
+  s_70eeb05163558f::t_b33b302e67ba8f 8,70
+  s_70eeb05163558f::t_afd84e98dfd103 32,86,130-133,139-142
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "d4b3a739ff171750c8d52d40b3f6519fdf62164d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_70eeb05163558f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_18597e378ffevCYrDZtni4nuEZ",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

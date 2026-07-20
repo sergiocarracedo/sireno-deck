@@ -1,0 +1,24 @@
+.planning/phases/05-hot-refresh-and-button-error-helper/05-VERIFICATION.md
+  s_6594eef402867c::t_f8271f22523426 37,45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "c9aeffb35431ff6ad11e49ff65f19d2458f4e535",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_6594eef402867c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_189d742cdffeZcbRHUHZ6X53l2",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

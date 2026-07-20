@@ -1,0 +1,136 @@
+.planning/research/PITFALLS.md
+  s_a44d509d67bdce::t_39d8d299a4670f 1,3-7,11-60,64-71,75-115
+README.md
+  h_f90ee31b03fc41 27-28,39,41,46
+packages/cli/src/deck/system-buttons/SystemOverlayToggleButton.tsx
+  h_f90ee31b03fc41 1-26
+packages/cli/src/deck/system-buttons/SystemSettingsButton.tsx
+  h_f90ee31b03fc41 1-17
+packages/cli/src/builtin-addons/weather/buttons/components/WmoIcon.tsx
+  h_f90ee31b03fc41 36
+packages/cli/src/deck/system-buttons/overlay-toggle-button.tsx
+  h_f90ee31b03fc41 1-21
+packages/cli/src/config/theme/schemas.ts
+  h_f90ee31b03fc41 1,3,74-76,79-80,83-85,87-90
+packages/cli/src/core/schemas.test.ts
+  h_f90ee31b03fc41 1,3-4,18,20-21,25,29-30,36,38,57,66,68-69,76,81-82,88,94,101-102,109,114,116,122-123,127,134,139,148,155,160,162
+.planning/phases/42-system-reserved-back-button/42-01-PLAN.md
+  h_f90ee31b03fc41 27,46,62,122,131,149,166,181,185
+packages/cli/src/builtin-addons/media-player/components/MediaStatusIcon.tsx
+  h_f90ee31b03fc41 24
+packages/cli/src/builtin-addons/system-status/buttons/bars.tsx
+  h_f90ee31b03fc41 6-7,122
+.planning/research/FEATURES.md
+  s_a44d509d67bdce::t_39d8d299a4670f 1,3-7,11-44,48-55,59-87
+packages/cli/src/ui/Chip.tsx
+  h_f90ee31b03fc41 12,26-32,35-39
+packages/cli/src/builtin-addons/weather/buttons/components/Surface.tsx
+  h_f90ee31b03fc41 78,85,93,95
+packages/cli/src/deck/__tests__/runtime.test.ts
+  h_f90ee31b03fc41 1-4185
+packages/cli/src/ui/surfaces/BarsSurface.tsx
+  h_f90ee31b03fc41 4-6,16-19,43-48,51-54,66-69,78-81,85-87,93,95-96,101,112
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  h_f90ee31b03fc41 1-25
+packages/cli/src/system/active-app/index.ts
+  s_a44d509d67bdce::t_2372abbae84bfd 11
+packages/cli/src/render/dom-host.test.tsx
+  h_f90ee31b03fc41 250
+packages/cli/fixtures/phase-9/jsx-addon-authoring-example.tsx
+  h_f90ee31b03fc41 5
+packages/cli/src/render/dom-host-deck-document.tsx
+  h_f90ee31b03fc41 8
+.planning/research/SUMMARY.md
+  s_a44d509d67bdce::t_45290aeb0b1795 119,124
+  s_a44d509d67bdce::t_39d8d299a4670f 1,3-5,9,11-14,16-18,20-21,23-29,31-33,35-38,40,42,44-97,101-118,120-123,125-128,130,132-141,145-155,158-161
+packages/cli/src/ui/__tests__/Icon.test.tsx
+  h_f90ee31b03fc41 1-2,4-5,7-8,10,13-15,18-23,26-27,30-32,34-35,38-39,42-47
+packages/cli/src/builtin-addons/media-player/components/MediaStatus.tsx
+  h_f90ee31b03fc41 24
+packages/cli/src/builtin-addons/media-player/media-player-button.tsx
+  s_a44d509d67bdce::t_39d8d299a4670f 68,79-82,97-100,106-109,120,122
+packages/cli/src/ui/index.ts
+  h_f90ee31b03fc41 1-8
+.planning/research/STACK.md
+  s_a44d509d67bdce::t_39d8d299a4670f 1,3-7,11-37,41-63,67-71,75-92,94,96-104
+.planning/phases/45-weather-addon/45-01-PLAN.md
+  h_f90ee31b03fc41 18,27,50,60,76,85,93,106,116,124,127,143,146-147,153,159,166,176,207,209,212,217,226,228,255-256,264,272,279,315,317,322,330,343,365,383
+packages/cli/src/builtin-addons/media-player/buttons/media-mute.tsx
+  h_f90ee31b03fc41 15
+packages/cli/src/builtin-addons/system-status/buttons/label-values.tsx
+  h_f90ee31b03fc41 6-7,23,52,54-56,81,86
+packages/cli/src/deck/__tests__/system-back-injection.test.ts
+  h_f90ee31b03fc41 1-124
+.planning/phases/42-system-reserved-back-button/42-RESEARCH.md
+  h_f90ee31b03fc41 79,99
+packages/cli/src/ui/Text.tsx
+  s_a44d509d67bdce::t_39d8d299a4670f 49-58,213,249,292
+  h_f90ee31b03fc41 277-280,286,300
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck.tsx
+  h_f90ee31b03fc41 5,25,39
+.planning/phases/55-active-app-overlay-decks/55-02-PLAN.md
+  h_f90ee31b03fc41 16-17,19,24-29,38-39,41,43,68,78,99,108,115,122,132,143,149,161,176,180,191,202,216,227,245,250,315-320,322-323,325-327,329-331,333-334,336-337,343,350,353-354,361,366
+packages/cli/src/deck/system-buttons/SystemBackButton.tsx
+  h_f90ee31b03fc41 1,3-4,11,14-19
+packages/cli/fixtures/phase-23/local-raw-addon/src/content.tsx
+  h_f90ee31b03fc41 1,11
+packages/cli/src/deck/system-back-injection.ts
+  h_f90ee31b03fc41 1-2,4,11,19
+packages/cli/src/deck/__tests__/controller.test.ts
+  h_f90ee31b03fc41 1-83
+packages/cli/src/ui/__tests__/Text.test.tsx
+  h_f90ee31b03fc41 1-31
+.planning/research/ARCHITECTURE.md
+  s_a44d509d67bdce::t_39d8d299a4670f 1,3-7,11-45,47,49-101,103,105-112,114-116,118,120,122,124-131,133,137,139-145,149-157,159,161,163-165,167,169,171-173,175-178,180,182
+  s_a44d509d67bdce::t_45290aeb0b1795 113,117,119,121,123,132
+  s_a44d509d67bdce::t_cf5ab90ffeaa9e 102,104
+  s_a44d509d67bdce::t_d558d1aa7f7b64 135,147
+.planning/phases/54-settings-deck-with-brightness-controls/54-01-PLAN.md
+  h_f90ee31b03fc41 15-19,21-22,24-25,33,37,56-58,60,63-64,68-69,99,102,148,169
+packages/cli/src/core/schemas.ts
+  s_a44d509d67bdce::t_eb2a31ca5dec65 634-637
+packages/cli/src/deck/system-buttons/system-buttons.ts
+  h_f90ee31b03fc41 1-48
+packages/cli/src/builtin-addons/core-buttons/buttons/action.tsx
+  h_f90ee31b03fc41 8,22
+packages/cli/src/deck/runtime.ts
+  s_a44d509d67bdce::t_fc464852e1713f 151-170
+  s_a44d509d67bdce::t_162733678568b9 74,88
+  s_a44d509d67bdce::t_c5c4df352ad9cd 1346-1375
+  s_a44d509d67bdce::t_57924b2165754e 44
+  s_a44d509d67bdce::t_d47269726281f9 945-953
+  s_a44d509d67bdce::t_5b8cbd6f97d379 1554-1556
+  h_f90ee31b03fc41 4,29-31,45,47-48,102,254,326,328,409-412,443-459,999,1010-1022,1390,1396,1427,1473,1548-1550,1621,1663,1666
+  s_a44d509d67bdce::t_e97f4636968c95 977-984
+  s_a44d509d67bdce::t_7ccbb2844752fd 386-387
+  s_a44d509d67bdce::t_5b50d3db28fab5 1617-1619
+packages/cli/src/ui/Label.tsx
+  h_f90ee31b03fc41 23
+packages/cli/src/ui/Icon.tsx
+  h_f90ee31b03fc41 33-35,96-99,103,119,122-125,127
+packages/cli/src/deck/settings-deck.tsx
+  h_f90ee31b03fc41 1-2,4,19,22,32,38,42,48,52
+packages/cli/src/builtin-addons/media-player/buttons/media-volume.tsx
+  h_f90ee31b03fc41 23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "4aa5f5ea0e76f71f94c6fef839bbd1611179c12a",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

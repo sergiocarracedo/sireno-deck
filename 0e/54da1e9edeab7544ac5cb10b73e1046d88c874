@@ -1,0 +1,89 @@
+packages/cli/src/themes/default/components.css
+  s_32e9e58a6a363a::t_417393ca09aeac 1-84
+packages/cli/src/themes/default/sirenodeck.json
+  s_32e9e58a6a363a::t_465266af2136fd 1-40
+packages/cli/src/themes/light/tokens.css
+  s_32e9e58a6a363a::t_afd66603c339ad 1-19
+packages/cli/src/addon/api.ts
+  s_32e9e58a6a363a::t_e22b33253999cb 94,97
+packages/cli/src/config/schemas.ts
+  s_32e9e58a6a363a::t_9bbb268cc8c589 63-72,75
+  s_32e9e58a6a363a::t_6f57108dda6b1f 89
+packages/cli/src/themes/use-resolved-theme.tsx
+  s_32e9e58a6a363a::t_7d1d73b560de55 10-11
+packages/cli/frontend/src/App.tsx
+  s_32e9e58a6a363a::t_5a24601eedeefa 3
+  s_32e9e58a6a363a::t_cf45fae14c7827 62-63,65-66,79-80,82-83
+packages/cli/emulator/src/App.tsx
+  s_32e9e58a6a363a::t_8881872c76eed5 39-40,42-43
+packages/cli/emulator/vite.config.ts
+  s_32e9e58a6a363a::t_d1385b4f6ede68 12,21-22,27-29,35-36,47,49-53
+packages/cli/src/themes/default/tokens.css
+  s_32e9e58a6a363a::t_75ecb38967e7c1 1-88
+packages/cli/src/themes/light/sirenodeck.json
+  s_32e9e58a6a363a::t_ee8fc1be71935f 1-40
+packages/cli/src/themes/loader.ts
+  s_32e9e58a6a363a::t_c62b75c6875bdc 2,7-11,15,38,40,45-49,51-57,59,61-64,67-68,73,98-100,110-114,117-118,121-122
+  s_32e9e58a6a363a::t_9ae0e84b2ba979 39
+  s_32e9e58a6a363a::t_dc06abef7705d3 22-34,36
+  s_32e9e58a6a363a::t_0ef0a1dcfc0a78 35,37
+  s_32e9e58a6a363a::t_1ca4b2df427b1f 3,12,42-44,50,58,60,66,69-72,74-97,101-109,115-116,127-143,146-149,158-167
+  s_32e9e58a6a363a::t_1342dee47d2ba2 41
+  s_32e9e58a6a363a::t_78412db2237994 65
+packages/cli/frontend/vite.config.ts
+  s_32e9e58a6a363a::t_0f7647fc3d8b31 28,37-38,43-45,51-52
+packages/cli/src/themes/__tests__/loader.test.ts
+  s_32e9e58a6a363a::t_e67d42e7bab554 10
+  s_32e9e58a6a363a::t_ce4db50c3b6f3f 27
+  s_32e9e58a6a363a::t_7a887890ee8fae 24
+  s_32e9e58a6a363a::t_1c450d4261ba3b 12-13,15
+packages/cli/src/themes/light/__tests__/light.test.ts
+  s_32e9e58a6a363a::t_c89edc3bb7afac 27
+  s_32e9e58a6a363a::t_217b84c2965696 36-37
+.gitignore
+  s_32e9e58a6a363a::t_46a18a8537fd33 21-22
+  s_32e9e58a6a363a::t_a0058d77aebe51 23-25
+packages/cli/src/cli/commands/run.ts
+  s_32e9e58a6a363a::t_2690c1649c604e 171-172
+packages/cli/src/vite/virtual-modules.ts
+  s_32e9e58a6a363a::t_21de7860b42c43 181
+  s_32e9e58a6a363a::t_d3d434c7ba9ab5 9-10
+  s_32e9e58a6a363a::t_01441cf5e9900f 123,125-132,137,139-140
+packages/cli/src/themes/manifest.ts
+  s_32e9e58a6a363a::t_a5756600fda9d2 1-47
+packages/cli/src/themes/css.ts
+  s_32e9e58a6a363a::t_72f96fc20d1e58 1-55
+packages/cli/src/themes/light/components.css
+  s_32e9e58a6a363a::t_d98b22ed453cd9 1-84
+packages/cli/src/cli/commands/addon-registry.ts
+  s_32e9e58a6a363a::t_db75b43212a8be 6
+packages/cli/src/vite/__tests__/index.test.ts
+  s_32e9e58a6a363a::t_f097576087d748 49,51-52
+packages/cli/src/themes/light/index.tsx
+  s_32e9e58a6a363a::t_85964a84b0a7ed 3,13
+packages/cli/src/themes/light/dark.css
+  s_32e9e58a6a363a::t_f221d24ab5a0fb 1-21
+packages/cli/src/themes/light/ButtonFrame.tsx
+  s_32e9e58a6a363a::t_604f68ff839eeb 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "0e54da1e9edeab7544ac5cb10b73e1046d88c874",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

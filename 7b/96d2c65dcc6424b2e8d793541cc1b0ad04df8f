@@ -1,0 +1,122 @@
+packages/cli/src/device/registry.ts
+  s_7939981290dd3c::t_309e0a4708c80d 1-4,11,31-33,36
+  s_7939981290dd3c::t_d18ed7a2cd18e9 5-7,10,12-14,17-27,34,38
+packages/cli/src/outputClient/__tests__/emulator.test.ts
+  s_7939981290dd3c::t_fe2a42b2adbf9f 1,6-18,20,23,25,38,45,52
+  s_7939981290dd3c::t_7f9d4f5479ae07 2-5,19,21-22,24,26-37,39-44,46-51,53-70
+packages/cli/src/api/protocol-internal.ts
+  s_7939981290dd3c::t_ab0d52167759c3 28
+  s_7939981290dd3c::t_ce32bbdf2e5673 119
+  s_7939981290dd3c::t_309e0a4708c80d 1,3,5,7,9,15,35,42,48,52-55,60,67,74,81,86,93,97,109,114,132-135,138-154
+  s_7939981290dd3c::t_61e63f390e5a12 136-137
+  s_7939981290dd3c::t_3d8e5b17e06011 17-23,30-34
+  s_7939981290dd3c::t_5eb871b17dacf2 16
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_7939981290dd3c::t_12d62802491ea0 39,65-75,81,104,112,144-186,189-190,305-312,323-324,335,342-346,348-349,351,353,358-359,370-371,376,379,405,408-420,422-442,444,452-467
+packages/cli/src/render/__tests__/ws-bridge.test.ts
+  s_7939981290dd3c::t_309e0a4708c80d 19,33,35,42,96,110,113,115,130,132,138,157-158,161,167,174,183,185,198,200,202-203,213,216-220,222-223,233,236,238,240,242-243,345-347,350-362,366-368,370
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 248-254,257,260-267,270-275,277-285,288-290,293,296-303,306-310,312-316,319-330,333-341,343-344
+  s_7939981290dd3c::t_d6947f79145d52 39,44-53,56-95,118,121,123,125,128,134,141,164,177,188,207,209-210,226,229-230,246
+  s_7939981290dd3c::t_59049be3f58eb9 31-32
+  s_7939981290dd3c::t_ec5fea54042810 34
+  s_7939981290dd3c::t_bbc65fe8cbb44a 40-41
+  s_7939981290dd3c::t_78b12838c876e6 107-109
+  s_7939981290dd3c::t_4765b693d16113 111-112
+  s_7939981290dd3c::t_eed98c6bd2a1d2 114
+  s_7939981290dd3c::t_6f42007e43efc2 119-120
+  s_7939981290dd3c::t_aba16b7b4da0e0 124
+  s_7939981290dd3c::t_24ab128b365754 126-127
+  s_7939981290dd3c::t_fb15764ac6d3ca 129
+  s_7939981290dd3c::t_3cbcba390ee65e 131
+  s_7939981290dd3c::t_c1659d2f3ab280 133
+  s_7939981290dd3c::t_2ca0866a3ebe60 135-137
+  s_7939981290dd3c::t_107c22c005eff1 155-156
+  s_7939981290dd3c::t_80f95e2028af88 159-160
+  s_7939981290dd3c::t_388412f41ff6ad 166
+  s_7939981290dd3c::t_77614346010fac 168
+  s_7939981290dd3c::t_ec397a49ca88ec 172-173
+  s_7939981290dd3c::t_73a0bc1fdbb36f 180-182
+  s_7939981290dd3c::t_ee4338d479147a 184
+  s_7939981290dd3c::t_e23032d61300ff 189-191
+  s_7939981290dd3c::t_30cb2dccf18f29 196-197
+  s_7939981290dd3c::t_c40f42823e15da 199
+  s_7939981290dd3c::t_2ec9e07ded7ea9 201
+  s_7939981290dd3c::t_1b3787dce386eb 208
+  s_7939981290dd3c::t_21af62b4c3a59b 221
+  s_7939981290dd3c::t_3120a877759d26 227-228
+  s_7939981290dd3c::t_79c91826f02b41 237
+  s_7939981290dd3c::t_d57ba134555cae 239
+  s_7939981290dd3c::t_63b8bdfc5e82ea 241
+packages/cli/src/outputClient/real.ts
+  s_7939981290dd3c::t_b1a51e40342318 1-5,7-8,10-13,16-19,22-29,36-37,39-41,46,48-52,54-65,67,69-79,90-99,101-109,111-252,254-270
+  s_7939981290dd3c::t_b5e79276fefe2a 68
+  s_7939981290dd3c::t_07798cdef51e40 6,9,14-15,20-21,30-33,38,42-45,47,53,66,80-89,100,110,253
+packages/cli/src/render/ws-bridge.ts
+  s_7939981290dd3c::t_232e1f5cad9044 110
+  s_7939981290dd3c::t_f1f530d76b7054 175-182,189
+  s_7939981290dd3c::t_309e0a4708c80d 162,194-195,199,205-206,208-210,212-214,216
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 42-47
+  s_7939981290dd3c::t_d40d3efad40c1c 4,11,13-14,17-21,25-27
+  s_7939981290dd3c::t_826ad6aa480f38 59
+  s_7939981290dd3c::t_3dbe6005195dc6 28-30
+  s_2f9cf0bce2d3f2::t_5f00455f0dda42 39-41
+  s_2f9cf0bce2d3f2::t_9f166109fbb93a 48
+  s_7939981290dd3c::t_9d72fe8c2a165b 56-58
+  s_7939981290dd3c::t_e0cdf973bdcb4c 111-113
+  s_7939981290dd3c::t_5dad300c46e2a9 160-161
+packages/cli/src/outputClient/emulator.ts
+  s_7939981290dd3c::t_1e29e39bf44e2b 30
+  s_7939981290dd3c::t_ed769c3b114ef5 1-24,31-234
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_7939981290dd3c::t_69b2c0816e2bbb 17-21,23-27,29-34,39,77-86,88-95,97-98,100-104,111,136,155-157,168-198,299-302,325-329,342,375,377
+CHANGELOG.md
+  s_7939981290dd3c::t_b305de45162f2a 73-87
+packages/cli/src/outputClient/types.ts
+  s_7939981290dd3c::t_ca6b9ccb58c9e5 15,17
+  s_7939981290dd3c::t_5ee1f092e7826c 4-14,16,18-47
+packages/cli/src/device/__tests__/registry.test.ts
+  s_7939981290dd3c::t_97b00d5af4e13a 20,22-25,27,30,37,46,55,58-60,62
+  s_7939981290dd3c::t_309e0a4708c80d 1,3,7,9-10,17-19,26,28,35-36,38,41-45,47,50-53,56-57,61
+  s_7939981290dd3c::t_634dd658264a52 16,21,32-34
+  s_7939981290dd3c::t_1cd3e8c9224813 29
+  s_7939981290dd3c::t_e2710f3109bf62 54
+packages/cli/src/outputClient/__tests__/real.test.ts
+  s_7939981290dd3c::t_240afe05259cf3 1,6-17,29,49
+  s_7939981290dd3c::t_4c896b4b3a75f7 2-5,18-28,30-48,50-74
+packages/cli/src/outputClient/index.ts
+  s_7939981290dd3c::t_68934bf109f0e6 7-26
+packages/cli/src/cli/commands/run.ts
+  s_7939981290dd3c::t_38ad2b68a2369f 40,45-46,56-57,101,397,400,402-404,408-410,412,416,427-431,435,458-465,467-468,473-474,478-479,481-485,520,523-551
+  s_7939981290dd3c::t_966d92284dddd3 552-553
+  s_7939981290dd3c::t_6a7b84b728813b 58
+  s_7939981290dd3c::t_73fecf16db7df9 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7b96d2c65dcc6424b2e8d793541cc1b0ad04df8f",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_2f9cf0bce2d3f2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0c34dca1dffeMWwXRmmOkm50oI",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_7939981290dd3c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0bc910eb6ffe3hY7UqhVFOHi4V",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+.planning/solutions/best-practices/user-action-button-dispatch-precedence-2026-07-09.md
+  s_109ed2a38ffa15::t_a71e20d883b81a 1-168
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "9c6172abd525e9b1990774a386b618392a164f24",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_109ed2a38ffa15": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b92c6633ffeYltxJGdSdu0GKD",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

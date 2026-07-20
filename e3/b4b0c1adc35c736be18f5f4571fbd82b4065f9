@@ -1,0 +1,19 @@
+.planning/research/STACK.md
+  s_c6ac1c2a538b06::t_200593021455bd 1,3-5,7,9-21,23-24,26,28,30,32-36,38,40,42,44,46,48-52,54,56,58,60-62,64,66,68-72,74,76,78,80-82,84,86-250
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "e3b4b0c1adc35c736be18f5f4571fbd82b4065f9",
+  "prompts": {},
+  "sessions": {
+    "s_c6ac1c2a538b06": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_12d11310bffe54RtZvy26OYeSE",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

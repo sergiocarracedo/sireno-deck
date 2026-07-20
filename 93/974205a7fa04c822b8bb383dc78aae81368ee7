@@ -1,0 +1,27 @@
+packages/cli/src/device/registry.test.ts
+  s_a44d509d67bdce::t_a80d13252d9069 124-138
+  s_a44d509d67bdce::t_31072a2abb608c 6
+packages/cli/src/device/registry.ts
+  s_a44d509d67bdce::t_d01b7e5c5ce551 5,19-22,25,50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "93974205a7fa04c822b8bb383dc78aae81368ee7",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

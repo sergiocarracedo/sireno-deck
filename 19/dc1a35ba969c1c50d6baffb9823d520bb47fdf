@@ -1,0 +1,22 @@
+packages/cli/src/cli/commands/addon-registry.ts
+  s_9fabccd2e25c5b::t_0144343f2d2e3a 88,93-108
+packages/cli/frontend/src/components/Deck.tsx
+  s_9fabccd2e25c5b::t_5a99d1d6ff7652 66
+  s_9fabccd2e25c5b::t_a272eb44e2773e 99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "19dc1a35ba969c1c50d6baffb9823d520bb47fdf",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

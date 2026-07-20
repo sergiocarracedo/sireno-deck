@@ -1,0 +1,108 @@
+packages/cli/frontend/src/components/Deck.tsx
+  s_7e4c8bbb0a013b::t_20f17708dd502a 1,11,48,79-80,99-141,175-176,186
+packages/cli/src/builtin-addons/media/buttons/volume/common/frontend.tsx
+  s_7e4c8bbb0a013b::t_28bcd5d4799bf6 29-30,32,64
+  s_7e4c8bbb0a013b::t_0b8deb9ba6bcd4 10,34,38-43,61
+  s_7e4c8bbb0a013b::t_ba14d5526d726d 8,27,36-37,54
+  h_f90ee31b03fc41 7,18,28,31
+  s_7e4c8bbb0a013b::t_3cdc9506388479 26
+  s_7e4c8bbb0a013b::t_aab32ce754cf1d 1,9,11-17,19,62
+  s_7e4c8bbb0a013b::t_e25a58003a2f62 20-25
+  s_7e4c8bbb0a013b::t_d22085b8f133cd 33
+  s_7e4c8bbb0a013b::t_550f1828e42e62 35
+  s_7e4c8bbb0a013b::t_3ae81dd9f0a611 44-46,51-53
+  s_7e4c8bbb0a013b::t_513e547e78b69a 55-60
+  s_7e4c8bbb0a013b::t_e503c760ffd6d0 63
+packages/cli/src/deck/__tests__/addon-handler-bridge.test.ts
+  s_7e4c8bbb0a013b::t_1638e26edc9ba3 278-324,326-372
+  s_7e4c8bbb0a013b::t_6408f8284817db 325
+packages/cli/src/index.ts
+  s_7e4c8bbb0a013b::t_20f17708dd502a 26-27,30-31,33,42-45
+packages/cli/src/builtin-addons/media/buttons/volume/volume-down/frontend.tsx
+  h_f90ee31b03fc41 1-3,6-7
+  s_7e4c8bbb0a013b::t_23900017cea4d5 4-5
+  s_7e4c8bbb0a013b::t_b13bff60927a1e 8
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_7e4c8bbb0a013b::t_a6d3364cc6ff02 112-118,120-123,125-161
+  s_7e4c8bbb0a013b::t_8163dde2cc9465 124
+  s_7e4c8bbb0a013b::t_20f17708dd502a 72,84,94
+  s_7e4c8bbb0a013b::t_baed8a03b0c777 111,119
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_7e4c8bbb0a013b::t_20f17708dd502a 44-50
+packages/cli/src/builtin-addons/media/buttons/volume/volume-up/frontend.tsx
+  s_7e4c8bbb0a013b::t_bbbc5ed750ace4 4-5
+  h_f90ee31b03fc41 1-3,6-7
+  s_7e4c8bbb0a013b::t_aa1cd88934e115 8
+packages/cli/src/deck/index.ts
+  s_7e4c8bbb0a013b::t_20f17708dd502a 29-30
+packages/cli/src/deck/runtime.ts
+  s_7e4c8bbb0a013b::t_7ff1bc267f6e6d 231-232
+  s_7e4c8bbb0a013b::t_20f17708dd502a 37,39-43,68-69,78,192,195,198-199,201,213,219-224,226-230,342-343
+  s_7e4c8bbb0a013b::t_de283c29750128 38
+  s_7e4c8bbb0a013b::t_87d9b118008a33 225
+packages/cli/src/addon/api.ts
+  s_7e4c8bbb0a013b::t_f22e4f358d3f28 20
+  s_7e4c8bbb0a013b::t_20f17708dd502a 6-7,15-19,21-23,81-91,98-99,103-107,112,117,125,144-148,155-156,263-264,295-299
+packages/cli/src/api/react/index.ts
+  s_7e4c8bbb0a013b::t_20f17708dd502a 8
+packages/cli/frontend/src/__tests__/deck-render.test.tsx
+  s_7e4c8bbb0a013b::t_aed81bea3ee4f7 2,5-6,36-50,52-58
+  s_7e4c8bbb0a013b::t_19c1860d82f403 51
+  s_7e4c8bbb0a013b::t_97da2530dda572 59
+packages/cli/src/builtin-addons/media/buttons/mute/frontend.tsx
+  s_392f8e24ab8686::t_a16d3d65e0954a 17
+  h_f90ee31b03fc41 11,13-14
+  s_b592366f7c5007::t_c7200cd648c806 5,15
+  s_392f8e24ab8686::t_35d1e34bf33625 1-4,6-10,12,16,18-22
+packages/cli/src/builtin-addons/media/index.ts
+  s_7e4c8bbb0a013b::t_20f17708dd502a 6-11,25-31
+packages/cli/src/builtin-addons/media/backend.ts
+  s_7e4c8bbb0a013b::t_20f17708dd502a 53-61,99-110,122,124,129-131,133
+packages/cli/src/builtin-addons/media/buttons/mute/config.ts
+  s_32e9e58a6a363a::t_1d53b1d2abac17 1-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "1cbb33bb341f2fb1db1bed39926915aa92b0a158",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_392f8e24ab8686": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d0eeadbaffe0fdweqkCUP6E4H",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_7e4c8bbb0a013b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0c82440d9ffeVQZynTi8KJWYZQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_b592366f7c5007": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d3d430cdffeZs179lWeNIvtOD",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    }
+  }
+}

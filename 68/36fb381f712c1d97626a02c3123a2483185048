@@ -1,0 +1,26 @@
+.planning/phases/32-addon-owned-data-polling-contract/32-DISCUSSION-LOG.md
+  s_70eeb05163558f::t_0b52814e23640b 1-94
+.planning/phases/32-addon-owned-data-polling-contract/32-CONTEXT.md
+  s_70eeb05163558f::t_0b52814e23640b 1-115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6836fb381f712c1d97626a02c3123a2483185048",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_70eeb05163558f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_18597e378ffevCYrDZtni4nuEZ",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

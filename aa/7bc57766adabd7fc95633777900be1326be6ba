@@ -1,0 +1,29 @@
+packages/cli/src/cli/commands/emulator-mode-build-config.test.ts
+  s_9fabccd2e25c5b::t_531b72d3e43bf5 1-64
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_9fabccd2e25c5b::t_ceb03aacefa4f9 207-211,213-215,224,230-233
+  s_9fabccd2e25c5b::t_98513945f7cb47 310,312
+  s_9fabccd2e25c5b::t_dd08c7b536f886 34
+  s_9fabccd2e25c5b::t_6767722bfd63a4 212
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "aa7bc57766adabd7fc95633777900be1326be6ba",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

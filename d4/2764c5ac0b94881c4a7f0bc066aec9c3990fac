@@ -1,0 +1,128 @@
+packages/cli/src/system/providers/clipboard/linux.ts
+  s_7807e467fd6dc4::t_ff37bdc3a1da53 82,84,86,91
+  s_7807e467fd6dc4::t_a30c5e59942776 19
+  s_7807e467fd6dc4::t_239f9b5379434d 41-43,53,68,81
+  s_7807e467fd6dc4::t_91ec59a2aae06b 83,85,87-90
+  s_7807e467fd6dc4::t_d60a0707ca58f4 47-48,62,75
+  s_7807e467fd6dc4::t_aba933d8286e24 4
+  s_7807e467fd6dc4::t_41b28950d2390c 6,12,18,25-31,45-46,49-52,55-61,63-67,69-74,76-80,103-123
+packages/cli/src/deck/system-buttons/registry.tsx
+  s_7807e467fd6dc4::t_337edca5d9a140 13,19-23,34-40
+packages/cli/src/deck/runtime.ts
+  s_7807e467fd6dc4::t_402cacedc3aef9 7
+  s_7807e467fd6dc4::t_36b8bbde592739 305,317
+  s_7807e467fd6dc4::t_129195795909bb 16
+  s_7807e467fd6dc4::t_630b8998121688 286-292,298-304,306-308,316,318
+packages/cli/src/deck/__tests__/methods.test.ts
+  s_7807e467fd6dc4::t_d5cd1848e2e062 213,219
+  s_7807e467fd6dc4::t_1527343fdcbb53 214-218,220-253
+packages/cli/src/builtin-addons/emoji-selector/__tests__/emoji.test.ts
+  s_7807e467fd6dc4::t_f24367695d123b 55
+packages/cli/src/api/index.ts
+  s_7807e467fd6dc4::t_a4bdc981e6af49 8,27
+packages/cli/frontend/src/__mocks__/themes-manifest.tsx
+  s_7807e467fd6dc4::t_1c9f03ee4d5f4f 4-7,9-15,25,37
+packages/cli/src/deck/methods.ts
+  s_7807e467fd6dc4::t_6cac7dc2d8c6b8 180
+  s_7807e467fd6dc4::t_af2ad644f63093 91
+  s_7807e467fd6dc4::t_e1c68c41df6b0f 222
+  s_7807e467fd6dc4::t_6afc1cb7035dd7 64
+  s_7807e467fd6dc4::t_7da62f69dd4405 62-63,65-68
+  s_7807e467fd6dc4::t_dec7c19929691e 8-11,24
+  s_7807e467fd6dc4::t_6c06f55e30f7bd 220-221
+  s_7807e467fd6dc4::t_a2dd5009510b2c 83-90,92-98
+  s_7807e467fd6dc4::t_c04782fa209b59 7
+  s_7807e467fd6dc4::t_28c1f2c1be6662 25
+packages/cli/src/system/providers/key-macro/__tests__/linux.test.ts
+  s_7807e467fd6dc4::t_8977894d190a6a 161-184
+  s_7807e467fd6dc4::t_9b3f5bff3773bc 207
+packages/cli/src/ui/ButtonFrame.tsx
+  s_7807e467fd6dc4::t_f223855b42dea8 9,14,16-20,22
+packages/cli/src/system/__tests__/requirements.test.ts
+  s_7807e467fd6dc4::t_36a4635315634a 31,36-41,49,54-59,67,78,82-94
+  s_7807e467fd6dc4::t_244a882f6aef56 1-2,8-30,32-35,42-48,50-53,60-66,68-77,79-81,95-110
+  s_7807e467fd6dc4::t_3fd26d51e58d69 3-7
+packages/cli/frontend/src/App.tsx
+  s_7807e467fd6dc4::t_0b8f8174647753 27-31,38,47
+  s_7807e467fd6dc4::t_b0b78e6bd3c0e7 150,154-164,178-188,194
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  s_7807e467fd6dc4::t_14b735245cba5b 47-49
+  s_7807e467fd6dc4::t_84b81b605634d4 14-15
+packages/cli/frontend/src/components/Deck.tsx
+  s_7807e467fd6dc4::t_10401f332d1830 43
+  s_7807e467fd6dc4::t_c26e7acad124ee 112
+  s_7807e467fd6dc4::t_dc1836f3101307 201-203,234
+  s_7807e467fd6dc4::t_4c4abdce7abfce 88,98,101-111,113-117
+packages/cli/src/api/protocol-internal.ts
+  s_7807e467fd6dc4::t_462d9e4ab19287 133
+  s_7807e467fd6dc4::t_1d11ff4d912d32 64-70
+  s_7807e467fd6dc4::t_8809e53326e7bc 152
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_7807e467fd6dc4::t_f3b2e3c4ca55b1 262
+  s_7807e467fd6dc4::t_71f3c10b5e5727 260-261
+packages/cli/src/themes/default/__tests__/ButtonFrame.test.tsx
+  s_7807e467fd6dc4::t_a22efac2150ad9 39,44-72
+  s_7807e467fd6dc4::t_76c35a39a0f688 73
+packages/cli/src/system/providers/key-macro/darwin.ts
+  s_7807e467fd6dc4::t_3046babb3bffe6 41
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_7807e467fd6dc4::t_b4888149feba41 271-272
+  s_7807e467fd6dc4::t_a53cae1f877275 273
+packages/cli/src/builtin-addons/emoji-selector/decks/index.ts
+  s_7807e467fd6dc4::t_32ef3e061bdb39 31
+packages/cli/src/cli/commands/run.ts
+  s_7807e467fd6dc4::t_a2e85a74fa89c0 35-38
+  s_7807e467fd6dc4::t_adf51034e01d49 488,491-496
+  s_7807e467fd6dc4::t_e325acc6e3fee5 257-283,296
+  s_7807e467fd6dc4::t_d677fc2b9cc109 489-490,497-499
+packages/cli/src/system/providers/clipboard/__tests__/linux.test.ts
+  s_7807e467fd6dc4::t_f6c733dbcc98cd 124
+  s_7807e467fd6dc4::t_ef352b1c708769 76-86,88-90,95
+  s_7807e467fd6dc4::t_1152d692052d74 100-112
+  s_7807e467fd6dc4::t_4727f21abcc5b7 47,57
+  s_7807e467fd6dc4::t_565d263f6c6042 1-43,45-46,48-56,58-60,62-70,72-75,87,91-94,96-99,113-123,125-137
+  s_7807e467fd6dc4::t_8a79dd62fb4d20 44
+  s_7807e467fd6dc4::t_a7e1b7789fc84f 61,71
+packages/cli/src/builtin-addons/emoji-selector/README.md
+  s_7807e467fd6dc4::t_2b149428632e4a 5
+  s_7807e467fd6dc4::t_f012fc90ea0920 20
+  s_7807e467fd6dc4::t_66d754821c9e93 21
+packages/cli/src/system/providers/key-macro/linux.ts
+  s_7807e467fd6dc4::t_3de532cf7b87ed 99
+  s_7807e467fd6dc4::t_e10aa3afa02e02 58-60
+  s_7807e467fd6dc4::t_2dbe30be951daa 89-90
+packages/cli/src/system/providers/key-macro/windows.ts
+  s_7807e467fd6dc4::t_3c9d7c4d375c1f 63
+packages/cli/src/render/protocol.ts
+  s_7807e467fd6dc4::t_bbafa13d0ae42d 8,28
+packages/cli/src/system/requirements.ts
+  s_7807e467fd6dc4::t_9883758e1ba86f 1-13,15,17-25,27-28,40,51,53,62,64-75,77-78,80,84,88-89,93-96,114-120
+  s_7807e467fd6dc4::t_920afbb7fb861b 14,16,26,29-39,41-50,52,54-61,63
+  s_7807e467fd6dc4::t_ab92346fd06cc3 76,79,81-83,85-87,90-92,97-113
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_7807e467fd6dc4::t_4d63cb0fd21499 229,255,283
+  s_7807e467fd6dc4::t_a6711b20ad4a3f 258,285
+  s_7807e467fd6dc4::t_76151a6edd1d94 209-228,230-231,233-254,256-257,259-282,284,286-287
+  s_7807e467fd6dc4::t_b40b6050dfc067 232
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "d42764c5ac0b94881c4a7f0bc066aec9c3990fac",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_7807e467fd6dc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09868b263ffe2OcxVWFlOvDqUq",
+        "model": "k2p7"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

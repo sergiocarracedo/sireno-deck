@@ -1,0 +1,19 @@
+.planning/v1.7-MILESTONE-AUDIT.md
+  s_55abdbe20bc1a9::t_6af7d3c889960f 1-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7e13bbb816c0704f1407f6459b97023a5da887b3",
+  "prompts": {},
+  "sessions": {
+    "s_55abdbe20bc1a9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0c2dcb067ffeT2vd4CebpVh5lf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

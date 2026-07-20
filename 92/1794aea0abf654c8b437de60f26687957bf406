@@ -1,0 +1,59 @@
+packages/sireno-deck/src/util/daemon.test.ts
+  s_136b450bea3e1f::t_054fc269b651a2 8,62
+  s_136b450bea3e1f::t_7a51a625f127e5 1-7,9-61,63-71
+packages/sireno-deck/src/cli/commands/status.ts
+  s_136b450bea3e1f::t_e17d9eaf71c7fe 1-25
+.planning/phases/01-foundation/01-01-SUMMARY.md
+  s_136b450bea3e1f::t_42510af0574331 1-30
+packages/sireno-deck/src/util/errors.test.ts
+  s_136b450bea3e1f::t_880f1f5d19ee2c 7-22
+packages/sireno-deck/src/cli/commands/start.ts
+  s_136b450bea3e1f::t_3f578977f43841 53-55
+packages/sireno-deck/src/cli/commands/stop.ts
+  s_136b450bea3e1f::t_0778eb57f86b6d 1-39
+packages/sireno-deck/src/config/loader.test.ts
+  s_136b450bea3e1f::t_fe3c29d8e98331 7-8,56-61,63-64,76-84
+  s_136b450bea3e1f::t_e1186a5e06f576 13,23-27,62,88-89,91,94,100
+packages/sireno-deck/src/util/logger.ts
+  s_136b450bea3e1f::t_d367727dc2f4ed 1-16
+packages/sireno-deck/src/cli/index.ts
+  s_136b450bea3e1f::t_010e4cbdb2ca39 10,13,40
+  s_136b450bea3e1f::t_fc77a19f29c6a5 8-9,11-12,16-20,22-24,26-29,31,37-39
+  s_136b450bea3e1f::t_ba5ff5170c70e9 5-7,30,32-33
+  s_136b450bea3e1f::t_03256553f481f8 43-46
+packages/sireno-deck/tsdown.config.ts
+  s_136b450bea3e1f::t_e47b7df0a771bd 4-6,11-12
+packages/sireno-deck/src/util/daemon.ts
+  s_136b450bea3e1f::t_2c4316783d786e 1-77
+.planning/phases/01-foundation/01-02-SUMMARY.md
+  s_136b450bea3e1f::t_42510af0574331 1-28
+packages/sireno-deck/src/util/errors.ts
+  s_136b450bea3e1f::t_22eb2ebd3c99ea 21-26
+.planning/STATE.md
+  s_136b450bea3e1f::t_42510af0574331 8,12,14-15,17,22-24,30,33,44-46,50-51,61-62
+packages/sireno-deck/src/config/loader.ts
+  s_136b450bea3e1f::t_78b472ba6c4929 19-35,69-72,74-79,82-96
+  s_136b450bea3e1f::t_d8ebf36589f087 14-18,46
+packages/sireno-deck/package.json
+  s_136b450bea3e1f::t_00503ba5107dde 25
+CHANGELOG.md
+  s_136b450bea3e1f::t_42510af0574331 1-18
+packages/sireno-deck/src/core/schemas.ts
+  s_136b450bea3e1f::t_52553f03ac1b82 3-4,60-61,68-105,111-112,114-115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "921794aea0abf654c8b437de60f26687957bf406",
+  "prompts": {},
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+.planning/ROADMAP.md
+  s_b21ef815cd71c9::t_086e80fb085f2b 3,341,349
+.planning/phases/29-built-in-addon-tsx-hard-cut-tailwind-cleanup/29-VERIFICATION.md
+  s_b21ef815cd71c9::t_5ed7cc3c68e80a 1-57
+.planning/STATE.md
+  s_b21ef815cd71c9::t_086e80fb085f2b 8,12,15,93
+.planning/REQUIREMENTS.md
+  s_b21ef815cd71c9::t_086e80fb085f2b 32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "bb53254e00d8ab636a2d7edc021ba15c86429646",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b21ef815cd71c9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_194c6ab8dffeZgB4hXir7Qu8T0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

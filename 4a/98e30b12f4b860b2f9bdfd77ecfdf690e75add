@@ -1,0 +1,19 @@
+.planning/solutions/logic-errors/active-deck-media-sampling-must-use-lowest-interval-2026-05-22.md
+  s_df3509a167c487::t_71b162f7f2662c 1-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "4a98e30b12f4b860b2f9bdfd77ecfdf690e75add",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

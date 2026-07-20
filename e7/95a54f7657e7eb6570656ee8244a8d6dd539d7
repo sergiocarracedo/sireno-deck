@@ -1,0 +1,105 @@
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_d84a33f8da744f::t_ed1c851f49d9e1 110
+  s_d84a33f8da744f::t_5e92dcbca97ac9 23
+  s_b592366f7c5007::t_d79f4de0cf4c81 57-68,71
+  s_d84a33f8da744f::t_75c9b914278ed0 261
+  s_d84a33f8da744f::t_f8cfa36b707d7f 199
+  s_3a6f2d3254c993::t_d4e29902e43108 218
+  s_d84a33f8da744f::t_d8f440fdcf0650 41
+  s_d84a33f8da744f::t_6ad3ed89acf3fb 27
+  s_3a6f2d3254c993::t_64b69ce85452ca 249
+packages/cli/src/builtin-addons/weather/buttons/weather/frontend.tsx
+  s_3a6f2d3254c993::t_ca6140b6a09500 109-111,113-117
+  s_3a6f2d3254c993::t_1de57bb334f837 154-155,166-167
+  s_b592366f7c5007::t_aafddc27eaa93b 55,60,225-226,228
+  s_3a6f2d3254c993::t_1c58395b0abc97 1
+  s_3a6f2d3254c993::t_bc0177dadc5420 62-64,66,81,83-84,86-89,100-103,105-106,123,125,132-138,140-142,203-206,208-211,224
+  s_3a6f2d3254c993::t_4e2263476d26ba 180-184,201-202
+  s_3a6f2d3254c993::t_f3e1441b96a3b1 191-199
+  s_b592366f7c5007::t_d99a17abe696be 75-77,79,107,120,213,216
+  s_3a6f2d3254c993::t_7eee8a0d727b54 121
+  s_3a6f2d3254c993::t_cff05fa9fb3e92 150-153,157-165
+  s_3a6f2d3254c993::t_3d5da131268747 4
+  s_3a6f2d3254c993::t_acdf7e8472d69e 23
+  s_3a6f2d3254c993::t_7f82355543b62f 176-179,186-190
+  s_3a6f2d3254c993::t_c89d431befb831 90-99
+  s_3a6f2d3254c993::t_962336f12a0b4e 148
+  s_3a6f2d3254c993::t_3e79e3f1037f78 126-130,139,143-146,149,168-171,173,175,200
+  s_3a6f2d3254c993::t_4ea56c3d57cffe 67
+  s_3a6f2d3254c993::t_a35172b347543c 156,185
+  s_3a6f2d3254c993::t_74beb792931be7 69,71-72,78
+  h_f90ee31b03fc41 2-3,5-22,24,27-54,58-59,61,65,68,70,73-74,80,82,85,104,118,122,124,131,147,172,174
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_79a4941cb04acb::t_8fbef86ab4a55c 390,409,411-416
+  s_9a2d1b18848cc4::t_db3fa11aeee9a5 514-522,529
+  s_79a4941cb04acb::t_ba986e2e0586bf 523-528,530,546-548
+  s_79a4941cb04acb::t_90444d24dd3923 377,394,408,410,417
+  s_9a2d1b18848cc4::t_2b4aa750ba06cc 3,16
+  s_79a4941cb04acb::t_2d803e2abc4e8d 418
+  s_79a4941cb04acb::t_e4fc243d59b8e0 38
+  s_9a2d1b18848cc4::t_883f1693e057d1 15
+  s_3a6f2d3254c993::t_42df7ec8f54225 501
+  s_3a6f2d3254c993::t_255878dabb879a 502
+  s_9a2d1b18848cc4::t_12186785a771e0 532-545
+  s_79a4941cb04acb::t_79e4d60a6dfe90 17
+packages/cli/src/builtin-addons/weather/buttons/weather/backend.ts
+  s_3a6f2d3254c993::t_4d1dce50da0896 26-30,35
+  s_3a6f2d3254c993::t_2a3716a32a6858 1-4,6,8-25,34,36-37
+packages/cli/src/deck/runtime.ts
+  s_3a6f2d3254c993::t_6527809556a7ac 84-85,87-88,93,95,97-98,100,105,111
+  s_3a6f2d3254c993::t_d1ecec139a21b0 183,189,192,196
+  s_3a6f2d3254c993::t_29c3f678f71051 86,89-92,94,99,101-104,106-110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "e795a54f7657e7eb6570656ee8244a8d6dd539d7",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_3a6f2d3254c993": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d152d771ffeA6RrRIu7zbZgXB",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_79a4941cb04acb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0dd21a4dfffeare0Qkz7bvNkVT",
+        "model": "big-pickle"
+      },
+      "human_author": null
+    },
+    "s_9a2d1b18848cc4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d8b34718ffeOnNV8Yiyod7ALi",
+        "model": "big-pickle"
+      },
+      "human_author": null
+    },
+    "s_b592366f7c5007": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d3d430cdffeZs179lWeNIvtOD",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    },
+    "s_d84a33f8da744f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d0ea11c2ffetuXe67wwWOAm2h",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

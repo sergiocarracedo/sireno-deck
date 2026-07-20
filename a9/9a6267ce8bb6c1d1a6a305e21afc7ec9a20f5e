@@ -1,0 +1,39 @@
+.planning/phases/46-emoji-selector-multi-page/46-RESEARCH.md
+  s_5435879e916352::t_d0a97d2cc3926b 1-33
+.planning/phases/46-emoji-selector-multi-page/46-02-PLAN.md
+  s_5435879e916352::t_5154f392ef6673 1,3-72
+  s_5435879e916352::t_233818448040a4 2
+.planning/STATE.md
+  s_5435879e916352::t_dbb51ffcf48ca7 8
+  s_5435879e916352::t_0db664d5e5af3b 34
+  s_5435879e916352::t_f04550f8d23679 14
+.planning/phases/46-emoji-selector-multi-page/46-01-PLAN.md
+  s_5435879e916352::t_87c89792e8e33c 119
+  s_5435879e916352::t_4308dfb0ac9069 101-105,107-115
+  s_5435879e916352::t_40c712323f791a 138
+  s_5435879e916352::t_1c660cc6ba73a1 1-100,106,116-118,120-137,139-154,156-159
+  s_5435879e916352::t_c9a39e599bf0a4 155
+AGENTS.md
+  s_5435879e916352::t_55995005654c4b 168-170
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a99a6267ce8bb6c1d1a6a305e21afc7ec9a20f5e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_5435879e916352": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1662feb4cffeE0yLzL3Illbyk2",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

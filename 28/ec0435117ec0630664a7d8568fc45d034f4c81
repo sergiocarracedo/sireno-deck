@@ -1,0 +1,30 @@
+packages/cli/frontend/src/components/Deck.tsx
+  s_9fabccd2e25c5b::t_4c92e2132547ff 2
+  s_9fabccd2e25c5b::t_988130a2bfe318 3,6-7,22-25,28-29,34-40,42-43,46-52,54-55
+  s_9fabccd2e25c5b::t_0d7dd82b4d895e 30-33
+packages/cli/frontend-emulator/src/DeckFrame.tsx
+  s_9fabccd2e25c5b::t_dc660644150558 49,51-52,55-56,64,66-67
+  s_9fabccd2e25c5b::t_0130a42ece13c6 50
+  s_9fabccd2e25c5b::t_6cd118d97744b7 46-48,54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "28ec0435117ec0630664a7d8568fc45d034f4c81",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

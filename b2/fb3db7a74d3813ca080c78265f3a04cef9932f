@@ -1,0 +1,19 @@
+packages/cli/src/builtin-addons/core/buttons/page-nav/frontend.tsx
+  s_fd4c9efcb04c88::t_ed154a4d0a29e1 49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "b2fb3db7a74d3813ca080c78265f3a04cef9932f",
+  "prompts": {},
+  "sessions": {
+    "s_fd4c9efcb04c88": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0a020801effeDxd0RkXpU8rWsJ",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

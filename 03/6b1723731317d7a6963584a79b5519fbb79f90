@@ -1,0 +1,28 @@
+packages/cli/src/cli/commands/start.test.ts
+  s_cdd484e59b7475::t_d3e69434cc661e 1162-1177
+.planning/phases/24-mounted-addon-render-contract/24-06-PLAN.md
+  s_cdd484e59b7475::t_980dd613d4a4a6 1-70
+packages/cli/src/cli/commands/start.ts
+  s_cdd484e59b7475::t_5eae957cce17fe 323-352,373
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "036b1723731317d7a6963584a79b5519fbb79f90",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_cdd484e59b7475": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19ce55eccffegkew6zlTjaidfE",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

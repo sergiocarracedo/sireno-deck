@@ -1,0 +1,42 @@
+packages/cli/src/system/media-controller.ts
+  s_70eeb05163558f::t_8467479957e6bb 1-63
+packages/cli/src/builtin-addons/media-player/schemas.ts
+  s_70eeb05163558f::t_8467479957e6bb 1-10
+packages/cli/src/builtin-addons/media-player/index.ts
+  s_70eeb05163558f::t_8467479957e6bb 1-11
+packages/cli/src/addon/builtin.ts
+  s_70eeb05163558f::t_8467479957e6bb 4,10-16
+packages/cli/src/system/windows-media-controller.ts
+  s_70eeb05163558f::t_8467479957e6bb 1-17
+packages/cli/src/system/linux-media-controller.ts
+  s_70eeb05163558f::t_8467479957e6bb 1-143
+packages/cli/src/system/macos-media-controller.ts
+  s_70eeb05163558f::t_8467479957e6bb 1-17
+packages/cli/src/builtin-addons/media-player/index.test.ts
+  s_70eeb05163558f::t_8467479957e6bb 1-212
+packages/cli/src/builtin-addons/media-player/button.tsx
+  s_70eeb05163558f::t_8467479957e6bb 1-281
+packages/cli/src/addon/builtin.test.ts
+  s_70eeb05163558f::t_8467479957e6bb 9,32-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "08164e3d402357f5932576347fe8ab3e3706c156",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_70eeb05163558f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_18597e378ffevCYrDZtni4nuEZ",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

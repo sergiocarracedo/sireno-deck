@@ -1,0 +1,26 @@
+packages/cli/src/cli/commands/status.test.ts
+  s_9fabccd2e25c5b::t_dd2c0317446f41 1-94
+packages/cli/src/cli/commands/status.ts
+  s_9fabccd2e25c5b::t_985d47c4f40706 3-10,15-17,19-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "c6e5f20a97724c885db1bc6286a319dcb5764fb8",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

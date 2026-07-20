@@ -1,0 +1,26 @@
+packages/cli/src/builtin-addons/weather/components/WmoIcon.tsx
+  s_4e4ee307096ddc::t_e3269a1b5ac423 1-37
+packages/cli/src/builtin-addons/weather/components/Surface.tsx
+  s_4e4ee307096ddc::t_7cca509e3c5958 1-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "eb291b0e88a9e8a3999aee4714cfb3558f06fad5",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

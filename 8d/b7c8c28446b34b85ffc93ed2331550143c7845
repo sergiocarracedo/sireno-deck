@@ -1,0 +1,23 @@
+.planning/STATE.md
+  s_8ca911650149ee::t_269f80d9bfaf94 3-6
+  s_8ca911650149ee::t_5310b566c59b6e 13
+  s_8ca911650149ee::t_e0919edeed3254 55-64
+.planning/ROADMAP.md
+  s_8ca911650149ee::t_c1f9e3b772361b 36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "8db7c8c28446b34b85ffc93ed2331550143c7845",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

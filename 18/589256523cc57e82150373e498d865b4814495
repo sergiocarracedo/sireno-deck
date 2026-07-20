@@ -1,0 +1,30 @@
+.planning/phases/41-first-run-chromium-auto-install/41-VERIFICATION.md
+  s_4e4ee307096ddc::t_294dc9f3107a1e 1-40
+.planning/ROADMAP.md
+  s_4e4ee307096ddc::t_2a81a23257cd6d 28,33
+.planning/phases/41-first-run-chromium-auto-install/41-01-SUMMARY.md
+  s_4e4ee307096ddc::t_ad56df4c941bfa 1-26
+AGENTS.md
+  s_4e4ee307096ddc::t_87c8e47bcc0e3a 168-169
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "18589256523cc57e82150373e498d865b4814495",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

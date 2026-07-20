@@ -1,0 +1,82 @@
+packages/cli/src/builtin-addons/weather/__tests__/domain/open-meteo-client.test.ts
+  s_6aed55125c6157::t_8fda9b3445868e 1-2,4-137
+  s_6aed55125c6157::t_54208547778bd8 3
+packages/cli/src/builtin-addons/media-player/__tests__/index.test.ts
+  s_6aed55125c6157::t_8d003a55895e99 1-12,16-209
+  s_6aed55125c6157::t_7541133bea5c83 13-15
+packages/cli/src/builtin-addons/internal-settings/__tests__/buttons/brightness-down.test.tsx
+  s_6aed55125c6157::t_ccf34fa39cd9ed 1-9,11-53
+  s_6aed55125c6157::t_233e3591bfa5eb 10
+packages/cli/src/builtin-addons/internal-settings/__tests__/buttons/brightness-up.test.tsx
+  s_6aed55125c6157::t_ccf34fa39cd9ed 1-9,11-53
+  s_6aed55125c6157::t_3abbaa3425a677 10
+packages/cli/src/builtin-addons/brightness/__tests__/buttons/brightness.test.ts
+  s_6aed55125c6157::t_0afe788152ae8f 1-5,9-58
+  s_6aed55125c6157::t_06d4ca3b26b7cc 6-8
+packages/cli/src/builtin-addons/weather/__tests__/domain/weather-controller.test.ts
+  s_6aed55125c6157::t_d6065c09a95c19 3,9
+  s_6aed55125c6157::t_8fda9b3445868e 1-2,4-8,10-208
+packages/cli/src/builtin-addons/weather/__tests__/index.test.ts
+  s_6aed55125c6157::t_8d003a55895e99 1-20
+packages/cli/src/builtin-addons/system-status/__tests__/index.test.ts
+  s_6aed55125c6157::t_8d003a55895e99 1-6,10-344
+  s_6aed55125c6157::t_6b0687b3478cad 7-9
+packages/cli/src/builtin-addons/weather/__tests__/domain/unit-conversion.test.ts
+  s_6aed55125c6157::t_d4f2f086fbd72a 3
+  s_6aed55125c6157::t_8fda9b3445868e 1-2,4-32
+packages/cli/src/builtin-addons/date-time/__tests__/index.test.ts
+  s_6aed55125c6157::t_8d003a55895e99 1-410
+packages/cli/src/builtin-addons/date-time/__tests__/buttons/date.test.tsx
+  s_6aed55125c6157::t_0afe788152ae8f 1-3,5-52
+  s_6aed55125c6157::t_0c3b2d99528f91 4
+packages/cli/src/builtin-addons/core-buttons/__tests__/index.test.ts
+  s_6aed55125c6157::t_8d003a55895e99 1-599
+packages/cli/src/builtin-addons/value-display/__tests__/index.test.ts
+  s_6aed55125c6157::t_8d003a55895e99 1-280
+packages/cli/src/builtin-addons/brightness/__tests__/buttons/BrightnessSurface.test.tsx
+  s_6aed55125c6157::t_0afe788152ae8f 1-5,7-37
+  s_6aed55125c6157::t_ed5cd7142772d5 6
+packages/cli/src/builtin-addons/internal-settings/__tests__/buttons/current-brightness.test.tsx
+  s_6aed55125c6157::t_ccf34fa39cd9ed 1-8,10-50
+  s_6aed55125c6157::t_b49635c7539f71 9
+packages/cli/src/builtin-addons/media-player/__tests__/buttons/media-volume.test.tsx
+  s_6aed55125c6157::t_0afe788152ae8f 1-3,6-106
+  s_6aed55125c6157::t_a9d7eaa345c3a7 4-5
+packages/cli/src/builtin-addons/weather/__tests__/buttons/weather.test.tsx
+  s_6aed55125c6157::t_0afe788152ae8f 1-3,6-251
+  s_6aed55125c6157::t_1b5dfcccd4b01c 4-5
+packages/cli/src/builtin-addons/internal-settings/__tests__/index.test.ts
+  s_6aed55125c6157::t_00f7ccce318cbb 1-2,4-17
+  s_6aed55125c6157::t_a64afcd0707fdf 3
+packages/cli/src/builtin-addons/weather/__tests__/buttons/components/DailyForecast.test.tsx
+  s_6aed55125c6157::t_0afe788152ae8f 1-4,7-110
+  s_6aed55125c6157::t_640cf439930c9f 5-6
+packages/cli/src/builtin-addons/brightness/__tests__/index.test.ts
+  s_6aed55125c6157::t_8d003a55895e99 1-2,4-13
+  s_6aed55125c6157::t_02a4e316003813 3
+packages/cli/src/builtin-addons/weather/__tests__/domain/geocoder.test.ts
+  s_6aed55125c6157::t_8fda9b3445868e 1-2,4-200
+  s_6aed55125c6157::t_7551fe6ffd0aa4 3
+packages/cli/src/builtin-addons/emoji-selector/__tests__/index.test.ts
+  s_6aed55125c6157::t_8d003a55895e99 1-434,436-459
+  s_6aed55125c6157::t_90c3621b90ed08 435
+packages/cli/src/builtin-addons/internal-settings/__tests__/buttons/logo-version.test.tsx
+  s_6aed55125c6157::t_ccf34fa39cd9ed 1-7,9-42
+  s_6aed55125c6157::t_71c3b15977dc32 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "74a5676cee5e867f876ca9169ae375e9fa484bc5",
+  "prompts": {},
+  "sessions": {
+    "s_6aed55125c6157": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_123c07561ffe3AcviqYR9Sq2OQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

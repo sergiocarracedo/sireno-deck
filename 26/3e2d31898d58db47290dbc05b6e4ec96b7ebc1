@@ -1,0 +1,24 @@
+.planning/STATE.md
+  s_59d030c8de308d::t_e16a9d75cfb4e7 92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "263e2d31898d58db47290dbc05b6e4ec96b7ebc1",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_59d030c8de308d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19694ac2dffeX8MJU78d98rSIi",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

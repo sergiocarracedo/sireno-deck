@@ -1,0 +1,38 @@
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck.tsx
+  s_33de7f93c0a086::t_6e6e51650cf30c 6,9,12
+packages/cli/src/builtin-addons/core-buttons/buttons/action.tsx
+  s_33de7f93c0a086::t_966ea1db9bfc28 9,23
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle.tsx
+  s_33de7f93c0a086::t_c95dc78bdee45f 6
+  s_33de7f93c0a086::t_2de3a47c0040b5 57,63
+.planning/milestones/v1.2-phases/17-custom-wrapper-primitives-with-addon/17-01-SUMMARY.md
+  s_33de7f93c0a086::t_5a55c68a2fe5bd 16
+.planning/milestones/v1.2-phases/17-custom-wrapper-primitives-with-addon/17-03-SUMMARY.md
+  s_33de7f93c0a086::t_5a55c68a2fe5bd 14
+packages/cli/src/ui/Icon.tsx
+  s_33de7f93c0a086::t_2766e3dc419450 93-102
+packages/cli/src/ui/__tests__/Icon.test.tsx
+  s_33de7f93c0a086::t_9da83d0e7771ab 5
+  s_33de7f93c0a086::t_16e439ca73f005 50-71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3b889df202d8613537825e272a6621b754507d8b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_33de7f93c0a086": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15494d94fffeRoQ0W9Y1D67dM2",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

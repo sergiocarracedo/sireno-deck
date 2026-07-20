@@ -1,0 +1,26 @@
+.planning/STATE.md
+  s_62d8b999b52dbd::t_57ce7909a2f41a 8,15,89,193
+.planning/quick/016-fix-ship-blockers-from-full-branch-test/016-SUMMARY.md
+  s_62d8b999b52dbd::t_57ce7909a2f41a 1-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "41ae661f5cb21e9400faf2a00f2cfc6392ef18d9",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_62d8b999b52dbd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19a95ab2cffelx1Pw48Hq6DfWk",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

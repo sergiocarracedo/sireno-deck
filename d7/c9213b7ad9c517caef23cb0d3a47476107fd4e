@@ -1,0 +1,28 @@
+packages/cli/src/deck/runtime.ts
+  s_df3509a167c487::t_18183e33b3b14f 422-427
+packages/cli/src/cli/commands/start.test.ts
+  s_df3509a167c487::t_d438495208294a 1,464
+  s_df3509a167c487::t_f27ec5786d69f8 21-28,48-55
+  s_df3509a167c487::t_18183e33b3b14f 4-9,11,19-20,40-47,56-61,83-85,87-90,363-463,465-474
+  s_df3509a167c487::t_bda91ed67d9800 477-519
+.planning/phases/18-react-dom-based-renderer-with-htmlcss/18-UAT.md
+  s_df3509a167c487::t_18183e33b3b14f 1-44
+packages/cli/src/cli/commands/start.ts
+  s_df3509a167c487::t_18183e33b3b14f 20-22,39-40,219-300,322,340-342,347-358,360-364,448
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "d7c9213b7ad9c517caef23cb0d3a47476107fd4e",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

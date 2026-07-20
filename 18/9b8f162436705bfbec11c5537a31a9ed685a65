@@ -1,0 +1,36 @@
+.planning/REQUIREMENTS.md
+  s_50714901791ebe::t_ac47e00481478b 28
+.planning/ROADMAP.md
+  s_50714901791ebe::t_1922bf3da0dce2 23
+  s_50714901791ebe::t_ac47e00481478b 67,76-81
+.planning/phases/13-global-wrapper-style-primitives/13-01-SUMMARY.md
+  s_50714901791ebe::t_78ab5d8eff42f4 1-24
+.planning/STATE.md
+  s_50714901791ebe::t_c16bacac608a2d 59-61,98
+  s_50714901791ebe::t_ac47e00481478b 8,12,15,62-64,99-101,112
+.planning/phases/13-global-wrapper-style-primitives/13-02-SUMMARY.md
+  s_50714901791ebe::t_0fa803c25f5662 1-25
+.planning/phases/13-global-wrapper-style-primitives/13-VERIFICATION.md
+  s_50714901791ebe::t_741b9dc2cbaddd 1-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "189b8f162436705bfbec11c5537a31a9ed685a65",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_50714901791ebe": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cad490d1ffe7qtGxWMYgUngfy",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+packages/cli/src/deck/__tests__/system-back-injection.test.ts
+  s_76ace8e8cfb010::t_e1a5ad19a2ffa2 29,32
+  s_76ace8e8cfb010::t_8925b1e806b9b0 56,62
+packages/cli/src/deck/deck-config.ts
+  s_76ace8e8cfb010::t_53540739d5b5ef 160
+  s_76ace8e8cfb010::t_295429c17771e9 104
+packages/cli/src/deck/system-back-injection.ts
+  s_76ace8e8cfb010::t_ef3203231929b3 12
+packages/cli/src/deck/runtime.ts
+  s_76ace8e8cfb010::t_754e21b2b28fe2 95,567-572
+  s_76ace8e8cfb010::t_e378e7d05eadf1 36
+packages/cli/src/cli/commands/run.ts
+  s_76ace8e8cfb010::t_27d9b074740e5c 688
+packages/cli/src/api/protocol-internal.ts
+  s_76ace8e8cfb010::t_25449689944cf3 44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "5d49b94bce541d03182701238752439a467088c4",
+  "prompts": {},
+  "sessions": {
+    "s_76ace8e8cfb010": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_090b3e67cffeM1RGgjTp66fRBZ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

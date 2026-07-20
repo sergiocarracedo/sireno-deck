@@ -1,0 +1,28 @@
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_32e9e58a6a363a::t_ddc9935d759165 34
+config.yml
+  s_32e9e58a6a363a::t_8c525d3bf54242 7,12,15,20,28,33,38,51,63,66,69,75,87,91,95,99,103,107,111
+packages/cli/src/builtin-addons/emoji-selector/sirenodeck.json
+  s_32e9e58a6a363a::t_3def20d16c4490 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "418922a95248797fb2495d7f8d6937aa82440275",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

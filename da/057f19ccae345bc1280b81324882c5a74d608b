@@ -1,0 +1,30 @@
+AGENTS.md
+  s_4e4ee307096ddc::t_abd539b21b1022 168-169
+.planning/ROADMAP.md
+  s_4e4ee307096ddc::t_a480f42b547c6c 172,175
+.planning/phases/39-themable-media-player-surface/39-VERIFICATION.md
+  s_4e4ee307096ddc::t_42e092045bba89 1-41
+.planning/phases/39-themable-media-player-surface/39-01-SUMMARY.md
+  s_4e4ee307096ddc::t_eba564440c82b5 1-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "da057f19ccae345bc1280b81324882c5a74d608b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

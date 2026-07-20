@@ -1,0 +1,27 @@
+assets/chrome.svg
+  s_51a5160d42324b::t_7b6386abe23d85 1
+config.yml
+  s_51a5160d42324b::t_45ab3512155917 81
+  h_f90ee31b03fc41 84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "b2b689d365fccc26a4193e58f2c5297046996cfd",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+packages/cli/src/render/dom-host.test.tsx
+  s_cbeacf4b04c860::t_baa5345b53051a 80
+  s_cbeacf4b04c860::t_60d6302fe5f22a 74-79,81-97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f92fca0ffa3bcb1c5e30206f150d2c1963463667",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_cbeacf4b04c860": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19782c979ffeq8kNd4sXHfiLTr",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

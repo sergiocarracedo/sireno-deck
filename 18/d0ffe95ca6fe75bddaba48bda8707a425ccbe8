@@ -1,0 +1,31 @@
+.planning/phases/03-deck-runtime/03-CONTEXT.md
+  s_9fabccd2e25c5b::t_b6c1901b9dcff8 57-60,76-78,80,92-94
+.planning/phases/03-deck-runtime/03-01-SUMMARY.md
+  s_9fabccd2e25c5b::t_54be3412ee7657 22
+.planning/ROADMAP.md
+  s_9fabccd2e25c5b::t_b6c1901b9dcff8 22-34,44,47-50
+.planning/STATE.md
+  s_9fabccd2e25c5b::t_1e8eecd53972d9 3-5
+  s_9fabccd2e25c5b::t_635cc20f0d4124 13,15,19-22
+.planning/AGENTS.md
+  s_9fabccd2e25c5b::t_b6c1901b9dcff8 17-27,91
+  s_9fabccd2e25c5b::t_ebda2639793201 100-101
+.planning/phases/03-deck-runtime/03-VERIFICATION.md
+  s_9fabccd2e25c5b::t_2257cb3faa0ac8 1-85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "18d0ffe95ca6fe75bddaba48bda8707a425ccbe8",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

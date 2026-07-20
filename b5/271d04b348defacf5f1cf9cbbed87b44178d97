@@ -1,0 +1,26 @@
+.planning/phases/53-brightness-device-control/53-02-PLAN.md
+  s_a44d509d67bdce::t_deebe6f579238d 1-47
+.planning/phases/53-brightness-device-control/53-01-PLAN.md
+  s_a44d509d67bdce::t_2da27a5da3749e 1-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b5271d04b348defacf5f1cf9cbbed87b44178d97",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

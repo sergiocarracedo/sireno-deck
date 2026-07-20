@@ -1,0 +1,30 @@
+.planning/phases/29-built-in-addon-tsx-hard-cut-tailwind-cleanup/29-UAT.md
+  s_b21ef815cd71c9::t_1493d4f12ceecc 13-14,16-23,46
+  s_b21ef815cd71c9::t_8f3f13e2532e4f 38
+  s_b21ef815cd71c9::t_11305b8460e0c9 1,3-8,10-12,15,24-29,31-33,35-37,39-41,43-45,47-49,51-54,56,58-62
+  s_b21ef815cd71c9::t_5b89beb99b9e55 2,9,50,55,57
+  s_b21ef815cd71c9::t_f238b72daa0fa6 34
+  s_b21ef815cd71c9::t_6a03ff108dc2b8 42
+  s_b21ef815cd71c9::t_9a9a2b550106a4 30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "af352eaf0e23d639b4ee04ef6ab3905be25314f1",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b21ef815cd71c9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_194c6ab8dffeZgB4hXir7Qu8T0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

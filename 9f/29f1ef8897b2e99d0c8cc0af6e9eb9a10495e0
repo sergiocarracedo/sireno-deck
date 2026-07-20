@@ -1,0 +1,35 @@
+.planning/phases/43-date-time-calendar-button/43-UAT.md
+  s_4e4ee307096ddc::t_fed7015585107c 2
+  s_4e4ee307096ddc::t_161a43dc5f78c3 22
+  s_4e4ee307096ddc::t_2d45f53d2d27e2 10-11,13,43
+  s_4e4ee307096ddc::t_73d3448f53d4ae 31
+  s_4e4ee307096ddc::t_13b859014f8507 46,51,53
+  s_4e4ee307096ddc::t_a76617583c8a25 25
+  s_4e4ee307096ddc::t_355e72e70f0326 37
+  s_4e4ee307096ddc::t_aef6d0b72b3827 40
+  s_4e4ee307096ddc::t_f47903b6460332 1,3-9,12,14-18,20-21,23-24,26-27,29-30,32-33,35-36,38-39,41-42,44-45,47-50,52,54-58
+  s_4e4ee307096ddc::t_cc9cf884c6fa8a 28
+  s_4e4ee307096ddc::t_150ecfcc55e23f 34
+  s_4e4ee307096ddc::t_e9b73f4db29e0e 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "9f29f1ef8897b2e99d0c8cc0af6e9eb9a10495e0",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

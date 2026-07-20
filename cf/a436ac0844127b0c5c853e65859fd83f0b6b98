@@ -1,0 +1,257 @@
+packages/cli/src/config/loader.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 9-10,12
+packages/cli/src/builtin-addons/weather/index.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/builtin-addons/weather/domain/wttr-in-fallback.ts
+  s_fed4f72d882f20::t_faf0415e671625 4
+packages/cli/src/deck/system-back-button.test.tsx
+  s_fed4f72d882f20::t_faf0415e671625 3-4
+packages/cli/src/render/dom-host.tsx
+  s_fed4f72d882f20::t_faf0415e671625 12,16-18,22
+packages/cli/src/cli/commands/start.ts
+  s_fed4f72d882f20::t_faf0415e671625 19-22,27-31,38,42-45,47-48,55-57,59-60
+packages/cli/src/builtin-addons/weather/domain/unit-conversion.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/util/daemon.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 14
+packages/cli/src/render/dom-host-hosted-button-content.tsx
+  s_fed4f72d882f20::t_faf0415e671625 5-6
+packages/cli/src/builtin-addons/media-player/buttons/media-mute.tsx
+  s_fed4f72d882f20::t_faf0415e671625 1-2,7-8
+packages/cli/src/builtin-addons/media-player/domain/macos-media-controller.ts
+  s_fed4f72d882f20::t_faf0415e671625 4
+packages/cli/src/render/startup-placeholder.ts
+  s_fed4f72d882f20::t_faf0415e671625 5-6
+packages/cli/src/builtin-addons/media-player/media-player-button.tsx
+  s_fed4f72d882f20::t_faf0415e671625 1-3,9-11
+packages/cli/src/builtin-addons/weather/domain/weather-controller.ts
+  s_fed4f72d882f20::t_faf0415e671625 1-5
+packages/cli/src/builtin-addons/date-time/index.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 3-4,12
+packages/cli/src/builtin-addons/core-buttons/index.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 4-7
+packages/cli/src/render/dom-host.test.tsx
+  s_fed4f72d882f20::t_faf0415e671625 11-13,20
+packages/cli/src/themes/default/index.ts
+  s_fed4f72d882f20::t_faf0415e671625 6
+packages/cli/src/builtin-addons/system-status/buttons/label-values.tsx
+  s_fed4f72d882f20::t_faf0415e671625 5,9-11,15
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck.tsx
+  s_fed4f72d882f20::t_faf0415e671625 3-4
+packages/cli/src/ui/LabelValueList.test.tsx
+  s_fed4f72d882f20::t_faf0415e671625 4-6
+packages/cli/src/system/session-monitor.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/builtin-addons/media-player/domain/macos-media-volume-controller.ts
+  s_fed4f72d882f20::t_faf0415e671625 7
+packages/cli/src/builtin-addons/core-buttons/buttons/media-sample.tsx
+  s_fed4f72d882f20::t_faf0415e671625 3-4
+packages/cli/src/ui/Icon.test.tsx
+  s_fed4f72d882f20::t_faf0415e671625 4-5
+packages/cli/src/builtin-addons/media-player/domain/media-controller.ts
+  s_fed4f72d882f20::t_faf0415e671625 1,6-8
+.oxlintrc.json
+  s_fed4f72d882f20::t_082496960af7b3 20-21
+  s_fed4f72d882f20::t_43df3349cc66c2 3,5-6,8,13-14
+  s_fed4f72d882f20::t_db604e66495777 9-11
+  s_fed4f72d882f20::t_7bccb10c4953bd 7,12
+packages/cli/src/builtin-addons/system-status/buttons/bars.tsx
+  s_fed4f72d882f20::t_faf0415e671625 5,9-11,15
+packages/cli/src/cli/index.ts
+  s_fed4f72d882f20::t_faf0415e671625 7
+packages/cli/src/util/errors.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 3-4
+packages/cli/src/render/dom-host-button.tsx
+  s_fed4f72d882f20::t_faf0415e671625 3-4,8,10
+packages/cli/src/builtin-addons/media-player/index.ts
+  s_fed4f72d882f20::t_faf0415e671625 1,3-5
+packages/cli/src/deck/system-back-button.tsx
+  s_fed4f72d882f20::t_faf0415e671625 5-6
+packages/cli/src/builtin-addons/weather/buttons/weather.test.tsx
+  s_fed4f72d882f20::t_faf0415e671625 3-5
+packages/cli/src/core/schemas.ts
+  s_fed4f72d882f20::t_faf0415e671625 7-8,10
+packages/cli/src/deck/controller.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/config/loader.ts
+  s_fed4f72d882f20::t_faf0415e671625 6,13-16
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  s_fed4f72d882f20::t_faf0415e671625 3-7
+packages/cli/src/ui/Text.tsx
+  s_fed4f72d882f20::t_faf0415e671625 8-9
+packages/cli/src/device/linux-udev.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 7
+packages/cli/src/device/stream-deck.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 14
+packages/cli/src/addon/loader.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 7-9
+packages/cli/src/builtin-addons/media-player/domain/windows-media-controller.ts
+  s_fed4f72d882f20::t_faf0415e671625 4
+packages/cli/src/builtin-addons/system-status/schemas.ts
+  s_fed4f72d882f20::t_faf0415e671625 3-4
+packages/cli/src/addon/manifest.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/render/scheduler.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/system/session-monitor.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/builtin-addons/date-time/buttons/date.test.tsx
+  s_fed4f72d882f20::t_faf0415e671625 3-4
+packages/cli/src/index.ts
+  s_fed4f72d882f20::t_faf0415e671625 7,9,18,35
+packages/cli/src/cli/dev-watch.ts
+  s_fed4f72d882f20::t_faf0415e671625 1-2
+packages/cli/src/ui/LabelValueList.tsx
+  s_fed4f72d882f20::t_faf0415e671625 3-4
+packages/cli/src/action/executor.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/ui/Text.test.tsx
+  s_fed4f72d882f20::t_faf0415e671625 4-5
+packages/cli/src/builtin-addons/weather/domain/open-meteo-client.ts
+  s_fed4f72d882f20::t_faf0415e671625 4
+packages/cli/src/config/theme/theme.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 15,17
+packages/cli/src/render/browser-renderer.ts
+  s_fed4f72d882f20::t_faf0415e671625 8
+packages/cli/src/builtin-addons/media-player/buttons/media-volume.test.tsx
+  s_fed4f72d882f20::t_faf0415e671625 3-5
+packages/cli/src/cli/dev-watch.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 11,15
+packages/cli/src/builtin-addons/media-player/domain/media-volume-controller.ts
+  s_fed4f72d882f20::t_faf0415e671625 1-5
+packages/cli/src/builtin-addons/system-status/domain/display-metrics.ts
+  s_fed4f72d882f20::t_faf0415e671625 6
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle.tsx
+  s_fed4f72d882f20::t_faf0415e671625 2,4-5
+packages/cli/src/ui/Bars.test.tsx
+  s_fed4f72d882f20::t_faf0415e671625 4-5
+scripts/quick-039-rewrite-imports.mjs
+  s_fed4f72d882f20::t_df7a789cc5e787 15-22
+  s_fed4f72d882f20::t_0038a333f4f151 67
+  s_fed4f72d882f20::t_be05ec09ca57e0 81,83-86
+  s_fed4f72d882f20::t_afc88c2f47ee3b 2,13-14,23-24,62,72-73,201-206,234,236-237,240,245-247,255-263,265-266
+  s_fed4f72d882f20::t_fa05b145599737 1,3-12,25-61,63-66,68-71,74-80,82,87-91,207-232,248-254,264,267-282
+  s_fed4f72d882f20::t_a030e0e2bf4d75 92-200,233,235,238-239,241-242
+  s_fed4f72d882f20::t_40e15c46319f31 243-244
+packages/cli/src/builtin-addons/system-status/index.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 7-9,18-22
+packages/cli/src/cli/commands/stop.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/builtin-addons/media-player/domain/windows-media-volume-controller.ts
+  s_fed4f72d882f20::t_faf0415e671625 5
+packages/cli/src/ui/Bars.tsx
+  s_fed4f72d882f20::t_faf0415e671625 3-4
+packages/cli/src/builtin-addons/date-time/schemas.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/ui/Chip.tsx
+  s_fed4f72d882f20::t_faf0415e671625 3-4
+packages/cli/src/deck/runtime.ts
+  s_fed4f72d882f20::t_faf0415e671625 7,13-14,20,24-25,30-32,36,45-49,53,57
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_fed4f72d882f20::t_faf0415e671625 3-7,15
+packages/cli/src/addon/builtin.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/cli/build-tailwind-browser.ts
+  s_fed4f72d882f20::t_faf0415e671625 7-10
+packages/cli/src/action/executor.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/addon/api.ts
+  s_fed4f72d882f20::t_faf0415e671625 10-12
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock.tsx
+  s_fed4f72d882f20::t_faf0415e671625 5,9
+packages/cli/src/deck/system-back-injection.ts
+  s_fed4f72d882f20::t_faf0415e671625 5
+packages/cli/src/addon/manifest.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/builtin-addons/weather/index.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/ui/index.ts
+  s_fed4f72d882f20::t_faf0415e671625 9,15,24
+packages/cli/src/builtin-addons/emoji-selector/buttons/category.tsx
+  s_fed4f72d882f20::t_faf0415e671625 1,3
+packages/cli/src/builtin-addons/emoji-selector/buttons/back.tsx
+  s_fed4f72d882f20::t_faf0415e671625 1,3
+packages/cli/src/ui/Icon.tsx
+  s_fed4f72d882f20::t_faf0415e671625 6-8
+packages/cli/src/deck/system-back-injection.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 3,7
+packages/cli/.tailwind.browser.contract.generated.css
+  ai_agent 1
+packages/cli/src/builtin-addons/media-player/buttons/media-volume.tsx
+  s_fed4f72d882f20::t_faf0415e671625 1-2,7-8
+packages/cli/src/cli/commands/start.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 8-9,43,49-50,58,62,71,73,81,85,89,93,190,265,341,382,420,433-434,468,494-495,497-498,525,547-548,550-552,590,708,817,858,877-878,899,916,942,976,1072,1145,1252,1362,1477,1575,1674,1783
+packages/cli/src/util/chromium-detect.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 15
+packages/cli/src/util/errors.ts
+  s_fed4f72d882f20::t_faf0415e671625 1
+packages/cli/src/addon/loader.ts
+  s_fed4f72d882f20::t_faf0415e671625 7,9-11
+  s_fed4f72d882f20::t_9e513921f4f774 19
+  s_fed4f72d882f20::t_37cd6728ddcb6d 214
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile.tsx
+  s_fed4f72d882f20::t_faf0415e671625 1-2,7
+packages/cli/src/builtin-addons/media-player/domain/linux-media-volume-controller.ts
+  s_fed4f72d882f20::t_faf0415e671625 7
+packages/cli/src/builtin-addons/media-player/domain/linux-media-controller.ts
+  s_fed4f72d882f20::t_faf0415e671625 8
+packages/cli/src/deck/runtime.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 7-8,10-15,17-20
+packages/cli/src/builtin-addons/date-time/buttons/date.tsx
+  s_fed4f72d882f20::t_faf0415e671625 1-2,7
+packages/cli/src/deck/controller.ts
+  s_fed4f72d882f20::t_faf0415e671625 1
+packages/cli/src/core/schemas.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 3-4
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_fed4f72d882f20::t_faf0415e671625 1-3
+packages/cli/src/render/dom-host-deck-document.tsx
+  s_fed4f72d882f20::t_faf0415e671625 6-11
+packages/cli/fixtures/phase-23/local-raw-addon/tsconfig.json
+  s_fed4f72d882f20::t_2d397d26e4658c 12-14,26
+packages/cli/src/cli/commands/status.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/render/dom-host-deck-key-slot.tsx
+  s_fed4f72d882f20::t_faf0415e671625 4,6-8
+packages/cli/src/builtin-addons/core-buttons/buttons/action.tsx
+  s_fed4f72d882f20::t_faf0415e671625 7-8
+packages/cli/src/addon/registry.ts
+  s_fed4f72d882f20::t_faf0415e671625 7-8
+packages/cli/src/builtin-addons/date-time/format.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/addon/registry.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 4
+packages/cli/src/render/browser-renderer.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 15-16
+packages/cli/src/builtin-addons/media-player/domain/unsupported-media-volume-controller.ts
+  s_fed4f72d882f20::t_faf0415e671625 5
+packages/cli/src/builtin-addons/media-player/index.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 13-15,24-27
+packages/cli/src/render/startup-placeholder.test.ts
+  s_fed4f72d882f20::t_faf0415e671625 3
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher.tsx
+  s_fed4f72d882f20::t_faf0415e671625 2
+packages/cli/src/addon/builtin.ts
+  s_fed4f72d882f20::t_faf0415e671625 1-6,8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "cfa436ac0844127b0c5c853e65859fd83f0b6b98",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_fed4f72d882f20": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15e8e41edffehfs0Ej2cLFBDuK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

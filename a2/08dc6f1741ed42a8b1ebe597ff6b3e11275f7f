@@ -1,0 +1,29 @@
+packages/cli/src/builtin-addons/core-buttons/index.test.ts
+  s_df3509a167c487::t_5b9300df703017 420-421,441,444,447
+.planning/phases/18-react-dom-based-renderer-with-htmlcss/18-VERIFICATION.md
+  s_df3509a167c487::t_6d22362a09adc1 8,13,15-17,24,26,28,32,41,45
+.planning/phases/18-react-dom-based-renderer-with-htmlcss/18-04-SUMMARY.md
+  s_df3509a167c487::t_f718f58b4b5069 7,9,12,15,17-18,23,29
+packages/cli/fixtures/phase-18/config.media-sampling.yml
+  s_df3509a167c487::t_85b0c816d42ee9 6,31,40
+packages/cli/src/builtin-addons/core-buttons/buttons/media-demo.ts
+  s_df3509a167c487::t_5b9300df703017 4-9,103-104
+.planning/phases/18-react-dom-based-renderer-with-htmlcss/18-UAT.md
+  s_df3509a167c487::t_f3a2833cf75931 19,73,76,80,91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "a208dc6f1741ed42a8b1ebe597ff6b3e11275f7f",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

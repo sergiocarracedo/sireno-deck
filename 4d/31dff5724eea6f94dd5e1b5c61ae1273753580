@@ -1,0 +1,26 @@
+.planning/ROADMAP.md
+  s_62d8b999b52dbd::t_9ecbb119747007 293-303
+.planning/STATE.md
+  s_62d8b999b52dbd::t_9ecbb119747007 75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "4d31dff5724eea6f94dd5e1b5c61ae1273753580",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_62d8b999b52dbd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19a95ab2cffelx1Pw48Hq6DfWk",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

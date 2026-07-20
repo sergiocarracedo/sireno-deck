@@ -1,0 +1,26 @@
+.planning/STATE.md
+  s_586986ca02db2f::t_ca0507fe67477a 21-22
+.planning/ROADMAP.md
+  s_586986ca02db2f::t_a14c32b90e0552 212-257
+  s_586986ca02db2f::t_a998bcb00f1832 282-291
+  s_586986ca02db2f::t_00a5273320464b 17-22
+  s_586986ca02db2f::t_1da9824feabc4d 307-315,318
+.planning/phases/06-lock-deck/README.md
+  s_586986ca02db2f::t_abb06e2bf45705 1-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "acd176d0c4fe8445f16efe7342b8235c186da7ce",
+  "prompts": {},
+  "sessions": {
+    "s_586986ca02db2f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08ee995cbffedn8iRvToXsQvlX",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

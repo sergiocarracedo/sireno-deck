@@ -1,0 +1,45 @@
+packages/cli/src/cli/commands/addon-registry.ts
+  s_9fabccd2e25c5b::t_f91b9307d5759f 135
+packages/cli/src/system/brightness/linux.ts
+  s_9fabccd2e25c5b::t_d6323b7389c8e4 18,20-23
+  s_9fabccd2e25c5b::t_d663a2c7f237af 35
+  s_9fabccd2e25c5b::t_f9503f7428a9c6 45-46
+  s_9fabccd2e25c5b::t_b68f10366391ec 75-76
+  s_9fabccd2e25c5b::t_08af80671bfb28 1-17,19,24-34,36-44,47-74,77-90
+packages/cli/src/cli/commands/run.ts
+  s_9fabccd2e25c5b::t_f680d3c4bc5cc1 390-394
+  s_9fabccd2e25c5b::t_006c037c1911d7 358-368
+  s_9fabccd2e25c5b::t_2369d4aaf4d866 35
+packages/cli/src/system/provider.ts
+  s_9fabccd2e25c5b::t_0cad0341559cde 154-170
+  s_9fabccd2e25c5b::t_ce3adae94d67fa 63-79
+packages/cli/src/system/brightness/darwin.ts
+  s_9fabccd2e25c5b::t_df7790615da230 1-61
+packages/cli/src/system/brightness/index.ts
+  s_9fabccd2e25c5b::t_f03a3554398301 1-49
+packages/cli/src/builtin-addons/brightness/poller.ts
+  s_9fabccd2e25c5b::t_1c2a23bd979ebb 1,4-8,13-23
+packages/cli/src/system/brightness/linux.test.ts
+  s_9fabccd2e25c5b::t_7c7f74eefb104d 31-33,45,59,67,74,87
+  s_9fabccd2e25c5b::t_101655f996b35d 39
+  s_9fabccd2e25c5b::t_3de4861f9d697a 19,28,36,44,54,58,68,73,81-82,86
+  s_9fabccd2e25c5b::t_a4cce73e942ae2 1-18,20-27,29-30,34-35,37-38,40-43,46-53,55-57,60-66,69-72,75-80,83-85,88-93
+packages/cli/src/system/brightness/windows.ts
+  s_9fabccd2e25c5b::t_47551acacc8c37 1-67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "6661f81599d41f7169367261b380a6f439ff86ae",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

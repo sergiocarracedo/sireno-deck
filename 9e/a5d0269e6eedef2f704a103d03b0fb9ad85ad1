@@ -1,0 +1,23 @@
+.planning/phases/70-verification-metadata-backfill/70-DISCUSSION-LOG.md
+  s_51a5160d42324b::t_013b4f1cd844ef 1-162
+.planning/phases/70-verification-metadata-backfill/70-CONTEXT.md
+  s_51a5160d42324b::t_d86dc09251e511 1-200
+.planning/STATE.md
+  s_51a5160d42324b::t_f9b04df002386e 12-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "9ea5d0269e6eedef2f704a103d03b0fb9ad85ad1",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

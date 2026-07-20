@@ -1,0 +1,386 @@
+packages/cli/frontend/src/bridge/__tests__/client.test.ts
+  h_f90ee31b03fc41 1,3-4,7-16,19-20,23,26-27,30-34,37-38,41,44-45,50,53-54,56-58,60-64,66-68,70-74,76-79,81-82,84-91,93-102
+.planning/phases/10-daemon-polish/10-01-PLAN.md
+  h_f90ee31b03fc41 108-109,116
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  s_32e9e58a6a363a::t_e54f7f6585cc46 3-6
+packages/cli/src/builtin-addons/media-player/index.ts
+  s_32e9e58a6a363a::t_e54f7f6585cc46 3-5,33-37
+.planning/phases/04-ws-frontend/04-01-PLAN.md
+  h_f90ee31b03fc41 42,49,56,70,84,98,112,131,143
+packages/cli/src/themes/default/index.tsx
+  h_f90ee31b03fc41 2-3
+packages/cli/src/util/migrate-paths.ts
+  h_f90ee31b03fc41 1,3,6-9,12-14,16,18,20,23-26,29,33-34,38,42-43,47,51-52,55,57-62,65,72,79,85
+packages/cli/src/builtin-addons/weather/index.ts
+  s_32e9e58a6a363a::t_e54f7f6585cc46 3
+.planning/phases/04-ws-frontend/04-02-SUMMARY.md
+  h_f90ee31b03fc41 67-68
+packages/cli/src/builtin-addons/emoji-selector/buttons/page-nav/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-2
+.planning/phases/12-addon-frontend-registry/12-03-PLAN.md
+  h_f90ee31b03fc41 101,110-111
+packages/cli/src/util/__tests__/daemon.test.ts
+  h_f90ee31b03fc41 6-9,11,20,22,25-27,30-33,36-147
+.planning/quick/007-fix-remaining-gaps/007-PLAN.md
+  h_f90ee31b03fc41 73-74
+.planning/quick/001-fix-gesture-state-machine/001-PLAN.md
+  h_f90ee31b03fc41 58-59
+.planning/phases/09-builtin-addons/09-01-PLAN.md
+  h_f90ee31b03fc41 25,39,47,56,59,62-64
+.planning/phases/01-scaffold/01-PHASE.md
+  h_f90ee31b03fc41 26,56-57
+packages/cli/src/builtin-addons/date-time/buttons/time/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_32e9e58a6a363a::t_e54f7f6585cc46 3-5
+packages/cli/src/builtin-addons/date-time/buttons/date-time/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+packages/cli/src/builtin-addons/core-buttons/__tests__/index.test.ts
+  s_32e9e58a6a363a::t_3b2f7aa3021c82 4-6
+.planning/phases/12-addon-frontend-registry/12-03-SUMMARY.md
+  h_f90ee31b03fc41 22
+packages/cli/src/builtin-addons/media-player/buttons/media-volume/media-volume.frontend.tsx
+  s_32e9e58a6a363a::t_380a83593677f2 4
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3,5-19
+packages/cli/src/builtin-addons/brightness/buttons/brightness/brightness.ts
+  h_f90ee31b03fc41 1-39
+packages/cli/src/builtin-addons/core-buttons/buttons/action/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+.planning/phases/02-config-addons/02-PHASE.md
+  h_f90ee31b03fc41 20,62,72
+.planning/phases/06-hardware/06-03-PLAN.md
+  h_f90ee31b03fc41 138
+.planning/phases/07-os-providers/07-02-PLAN.md
+  h_f90ee31b03fc41 124-125
+.planning/phases/03-deck-runtime/03-VERIFICATION.md
+  h_f90ee31b03fc41 34,59
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+.planning/phases/05-emulator/05-VERIFICATION.md
+  h_f90ee31b03fc41 54
+.planning/phases/03-deck-runtime/03-01-PLAN.md
+  h_f90ee31b03fc41 26,40,54,68,82,96,115,126
+.planning/phases/03-deck-runtime/03-03-PLAN.md
+  h_f90ee31b03fc41 54,61,68,75,82,96,103,110,117,131,138,145,152,166,173,180,207,217
+packages/cli/src/util/__tests__/device-config.test.ts
+  h_f90ee31b03fc41 1-4,6,8,10-11,13-14,16-19,21,24-25,27-31,36-39,41-47
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-2
+packages/cli/src/builtin-addons/media-player/buttons/media-mute/media-mute.frontend.tsx
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3,5-14
+  s_32e9e58a6a363a::t_a6013c97e446e2 4
+packages/cli/src/addon/__tests__/loader.test.ts
+  h_f90ee31b03fc41 1-3,5,7-8,10,12,14,24-25,27,34-35,37,40-41,44-45,48-50,54-59,62-63,65-73,75-77,80-84,86,88-90,92,94-96,99-112,114-116,119-120,122-127,129-131,133-134,136-142,144-146,149-150,152-157
+packages/cli/src/builtin-addons/media-player/buttons/media-player/media-player.frontend.tsx
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3,5-26
+  s_32e9e58a6a363a::t_dae9eb8fcd0495 4
+.planning/phases/13-ui-alignment/13-CONTEXT.md
+  h_f90ee31b03fc41 19,22,81,100,114,134-135
+.planning/phases/05-emulator/05-01-SUMMARY.md
+  h_f90ee31b03fc41 51
+.planning/phases/03-deck-runtime/03-UAT.md
+  h_f90ee31b03fc41 32
+packages/cli/emulator/src/App.tsx
+  h_f90ee31b03fc41 1,8,10,12,15-17,21-22,24,27,30-32,34,36-38,40,43-44,48,50-52,55-56,60-64,68-69,71,73-74,80-81,84-85,87,91-92,96,100-101,103-106,110,112-113,115,117,120,123,125-126,128-130,133-135,160-161
+.planning/phases/08-builtin-themes/08-02-PLAN.md
+  h_f90ee31b03fc41 29-30,75,96-97
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_32e9e58a6a363a::t_e54f7f6585cc46 3-8
+.planning/PROJECT.md
+  h_f90ee31b03fc41 2,9,26,42,45,82
+packages/cli/src/builtin-addons/internal-settings/buttons/theme/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+packages/cli/src/builtin-addons/date-time/buttons/time/time.frontend.tsx
+  s_32e9e58a6a363a::t_7b37ee346e712d 4,21
+  s_32e9e58a6a363a::t_a4355f6b215a19 12-13
+  s_32e9e58a6a363a::t_2a93984550f840 1-3,5-11,14-20
+.planning/phases/10-daemon-polish/10-VERIFICATION.md
+  h_f90ee31b03fc41 16,28,33-34,42,48
+.planning/phases/03-deck-runtime/03-03-SUMMARY.md
+  h_f90ee31b03fc41 71
+README.md
+  h_f90ee31b03fc41 1,12,15,18,42,90,93,139
+.planning/phases/06-hardware/06-02-PLAN.md
+  h_f90ee31b03fc41 146
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock/analog-clock.frontend.tsx
+  s_32e9e58a6a363a::t_7b37ee346e712d 1-69
+packages/cli/emulator/src/Shell.tsx
+  h_f90ee31b03fc41 1,3,5-7,10-11,14-17,27,29,31-33,36-37,40-42,44-45,52-54,56-59,85-86
+packages/cli/frontend/index.html
+  h_f90ee31b03fc41 5
+.planning/phases/01-scaffold/01-00-SUMMARY.md
+  h_f90ee31b03fc41 31
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+packages/cli/src/builtin-addons/media-player/buttons/media-mute/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1
+  s_32e9e58a6a363a::t_e1293a2e2091c4 2-3
+.planning/AGENTS.md
+  h_f90ee31b03fc41 3,18,23,27,38,69,75
+.planning/phases/10-daemon-polish/10-02-PLAN.md
+  h_f90ee31b03fc41 11-12,28,31,75-78,97-98
+.planning/phases/06-hardware/06-VERIFICATION.md
+  h_f90ee31b03fc41 17,30-31,47,50
+.planning/phases/10-daemon-polish/10-CONTEXT.md
+  h_f90ee31b03fc41 21-22,28,32-33,36,42,70,77,85,89,96-97,102,124-125
+packages/cli/src/builtin-addons/date-time/__tests__/format.test.ts
+  s_32e9e58a6a363a::t_2a93984550f840 4
+packages/cli/src/cli/__tests__/http-server.test.ts
+  h_f90ee31b03fc41 1-3,5,7,9,11,13,16-17,20-24,27-28,30-33,36-38,40,42-43,46-48,50-53,55-56,62,64-67,69,71,73,77,79,81-87,89,91,93,99,102-106,108,110,112,118,120-123,125,127,129,135,137-138,140,142,144,150,153-155,157,159,161-162,170-171,173,179-180,183-184,186-187,193,195-199,201,203-204
+.planning/phases/08-builtin-themes/08-01-PLAN.md
+  h_f90ee31b03fc41 123-124,129,145,167-168
+.planning/phases/12-addon-frontend-registry/12-02-PLAN.md
+  h_f90ee31b03fc41 68-69
+packages/cli/src/cli/commands/__tests__/stop.test.ts
+  h_f90ee31b03fc41 1-4,6,8,10,12,14,17-20,23-25,28-33,37,40,42-43,45,47,49-52,55-56,58,60-104,106,108-112
+packages/cli/src/builtin-addons/emoji-selector/buttons/back/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-2
+.planning/phases/07-os-providers/07-04-PLAN.md
+  h_f90ee31b03fc41 19,177-178
+.planning/v0.1.0-MILESTONE-AUDIT.md
+  h_f90ee31b03fc41 13,24,40,75,78-82,103
+packages/cli/src/builtin-addons/session/buttons/session-info/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+packages/cli/src/builtin-addons/media-player/buttons/media-mute/media-mute.ts
+  s_32e9e58a6a363a::t_2bc1e3671eb1d5 1-15
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/launcher.frontend.tsx
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-7
+.planning/phases/11-release/11-RESEARCH.md
+  h_f90ee31b03fc41 16,45,62,161
+packages/cli/src/builtin-addons/internal-settings/buttons/about/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+.planning/v0.2.0-MILESTONE-AUDIT.md
+  h_f90ee31b03fc41 15,26,35,77
+.planning/phases/11-release/11-02-PLAN.md
+  h_f90ee31b03fc41 26,28,37,52
+packages/cli/src/builtin-addons/brightness/buttons/brightness/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+packages/cli/src/builtin-addons/date-time/buttons/date-time/date-time.frontend.tsx
+  s_32e9e58a6a363a::t_7b37ee346e712d 4,16
+  s_32e9e58a6a363a::t_2a93984550f840 3,6,8,11
+.planning/phases/12-addon-frontend-registry/12-CONTEXT.md
+  h_f90ee31b03fc41 42-43
+.planning/phases/03-deck-runtime/03-02-PLAN.md
+  h_f90ee31b03fc41 42,49,63,70,77,91,105,119,131,142
+packages/cli/src/builtin-addons/value-display/index.ts
+  s_32e9e58a6a363a::t_e54f7f6585cc46 3
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/emoji.frontend.tsx
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-9
+packages/cli/src/builtin-addons/brightness/index.ts
+  s_32e9e58a6a363a::t_e54f7f6585cc46 3
+packages/cli/src/builtin-addons/core-buttons/buttons/media-sample/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+packages/cli/src/builtin-addons/date-time/buttons/date/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+.planning/phases/12-addon-frontend-registry/12-01-PLAN.md
+  h_f90ee31b03fc41 82-83
+.planning/phases/05-emulator/05-02-PLAN.md
+  h_f90ee31b03fc41 47,55,118,125,134,139,145,147
+.planning/phases/03-deck-runtime/03-01-SUMMARY.md
+  h_f90ee31b03fc41 59
+.planning/phases/09-builtin-addons/09-02-PLAN.md
+  h_f90ee31b03fc41 26,36,48,59,68,71,74-76
+.planning/phases/03-deck-runtime/03-02-SUMMARY.md
+  h_f90ee31b03fc41 65
+.planning/phases/06-hardware/06-01-SUMMARY.md
+  h_f90ee31b03fc41 25,32,46,54
+.planning/phases/08-builtin-themes/08-02-SUMMARY.md
+  h_f90ee31b03fc41 11,18,25,35,45,63-64
+packages/cli/src/util/device-config.ts
+  h_f90ee31b03fc41 8-9,12-14,18,22,26,29,31-32,34-35,37-39,41,43,45,47,50-56
+.planning/PLAN.md
+  h_f90ee31b03fc41 1,45,57,81-84,171,180-181,190,194,237,241,262-263,265-266,272,326-328,331,372,377,380,383-388,392-401,405-406,408-410,444,447,491,493,503,507,527,538,543,624,629,649,666
+.planning/phases/15-theme-base-ui/15-CONTEXT.md
+  h_f90ee31b03fc41 75,97,110,118,132-134
+.planning/phases/08-builtin-themes/08-RESEARCH.md
+  h_f90ee31b03fc41 159
+packages/cli/src/cli/commands/__tests__/status.test.ts
+  h_f90ee31b03fc41 1-3,5,7,9,11,13,16-19,22-38,41-47,49-54,56-57,59-60,62,66-67,71,73-74,77-79,81-83,85-86,88,90-91,93-95,97-98,100,102-104
+.planning/phases/15-theme-base-ui/15-03-SUMMARY.md
+  h_f90ee31b03fc41 12-13
+CHANGELOG.md
+  h_f90ee31b03fc41 10,34,36,58
+packages/cli/src/builtin-addons/session/index.ts
+  s_32e9e58a6a363a::t_e54f7f6585cc46 5-6
+packages/cli/src/device/linux-udev.ts
+  h_f90ee31b03fc41 1,12,16-17,30,34-36
+.planning/phases/03-deck-runtime/03-PHASE.md
+  h_f90ee31b03fc41 119
+packages/cli/src/builtin-addons/emoji-selector/index.tsx
+  s_32e9e58a6a363a::t_e54f7f6585cc46 3-4,6-8
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile/locked-time-tile.frontend.tsx
+  s_32e9e58a6a363a::t_7b37ee346e712d 1-36
+.planning/phases/04-ws-frontend/04-VERIFICATION.md
+  h_f90ee31b03fc41 34,56,59
+.planning/phases/15-theme-base-ui/15-03-PLAN.md
+  h_f90ee31b03fc41 3,19-24,28,48,53,78,82,103,125,170
+packages/cli/src/util/daemon.ts
+  h_f90ee31b03fc41 7-15,18-21,24,27-28,31-34,36,38,41,43,50-51,54-58,61-62,65-66,69,71-72,74,76,78,81-84,88,90,92-93,95,97,100-101,104,108,110,112-113,116-117,122-123,126,128-129,133,135-136,139-140,143-144,151-152,154,157-158,160-164,167,171-172,174-175,178-180,182-184,187,191-192,194-195,198-199,201-203
+.gitignore
+  h_f90ee31b03fc41 20
+.planning/phases/05-emulator/05-UAT.md
+  h_f90ee31b03fc41 27,32,37
+.planning/phases/15-theme-base-ui/15-RESEARCH.md
+  h_f90ee31b03fc41 24,40,68
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/category.frontend.tsx
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-11
+.planning/phases/04-ws-frontend/04-02-PLAN.md
+  h_f90ee31b03fc41 40,46-47,53,60,68,82,141,144,155
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-2
+packages/cli/src/builtin-addons/media-player/buttons/media-player/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+.planning/phases/05-emulator/05-03-PLAN.md
+  h_f90ee31b03fc41 36,44,58,64,72,86,98,108,115,117
+.planning/phases/07-os-providers/07-03-PLAN.md
+  h_f90ee31b03fc41 19,178-179
+packages/cli/src/util/cache-paths.ts
+  h_f90ee31b03fc41 1-5,7,10-11,14-17,19,21,24,26,28-29,32-33,38
+.planning/phases/04-ws-frontend/04-CONTEXT.md
+  h_f90ee31b03fc41 81,84
+.planning/phases/04-ws-frontend/04-03-SUMMARY.md
+  h_f90ee31b03fc41 22,64,79-80
+packages/cli/src/util/__tests__/cache-paths.test.ts
+  h_f90ee31b03fc41 1-3,5,11,13,16-20,23-26,28-33,35-40,42-45,47-50,52-57,59-64
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+packages/cli/README.md
+  h_f90ee31b03fc41 1,8-15
+.planning/phases/13-ui-alignment/13-03-SUMMARY.md
+  h_f90ee31b03fc41 7,21,28,31
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-2
+.planning/phases/08-builtin-themes/08-01-SUMMARY.md
+  h_f90ee31b03fc41 104
+packages/cli/src/builtin-addons/emoji-selector/buttons/back/back.frontend.tsx
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-6
+packages/cli/src/builtin-addons/weather/buttons/weather/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+packages/cli/src/builtin-addons/media-player/buttons/media-volume/media-volume.ts
+  s_32e9e58a6a363a::t_8958a03b547367 1-22
+.planning/phases/11-release/11-DISCUSSION-LOG.md
+  h_f90ee31b03fc41 12,20,28,36,46,54,62,70,80,88,96,104,117
+packages/cli/src/builtin-addons/date-time/buttons/clock/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+packages/cli/src/__tests__/config.test.ts
+  h_f90ee31b03fc41 1-3,5,20-21,23,26-29,33-34,36-91,93,96-158,160-174,177-181,184-204,209,211-214,218,221,224-225,227-229,231-241,244,247-255,259-264,266,268-275,277-278,280-282,286-298,301-302,304-310,314,316-327,331-335,337-343,345-353,355-356,358-361,363,365-367,369-370,372-374,376-390,393-423,426-428,430-436,439-444,446-447,449-452,454,459,461-463,465-467,469,474-475,479-480,482-491,495,498-501
+packages/cli/emulator/src/gesture.ts
+  h_f90ee31b03fc41 4-5,7,10-12,19,25-27,29,31-33,39-42,45,49-50
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_32e9e58a6a363a::t_e54f7f6585cc46 3
+packages/cli/frontend/src/bridge/client.ts
+  h_f90ee31b03fc41 1,5-6,8,11-17,20-21,24-26,38,40-43,45,48,50-51,53-56,59-64,66,69-72,74,76-77,79,81,88-96,99-101,103,105,109-110,112-113
+packages/cli/src/builtin-addons/date-time/buttons/clock/clock.frontend.tsx
+  s_32e9e58a6a363a::t_7b37ee346e712d 1-26
+packages/cli/src/builtin-addons/system-status/buttons/system-status/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+.planning/phases/10-daemon-polish/10-RESEARCH.md
+  h_f90ee31b03fc41 16,29,31,58,63,65,93,112,116,119,125
+.planning/phases/12-addon-frontend-registry/12-VERIFICATION.md
+  h_f90ee31b03fc41 14,17-18,25,27-30,37,69,72
+packages/cli/src/builtin-addons/date-time/buttons/date/date.frontend.tsx
+  s_32e9e58a6a363a::t_7b37ee346e712d 1-37
+packages/cli/src/builtin-addons/emoji-selector/buttons/page-nav/page-nav.frontend.tsx
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-40
+.planning/phases/04-ws-frontend/04-03-PLAN.md
+  h_f90ee31b03fc41 42,49,56,63,91,105,126,132,146,159
+.planning/phases/10-daemon-polish/10-02-SUMMARY.md
+  h_f90ee31b03fc41 7,36,51-52
+.planning/phases/10-daemon-polish/10-DISCUSSION-LOG.md
+  h_f90ee31b03fc41 13,22-23,31,40,51-52,56,60,69-71,78,89,98,107,116
+.planning/phases/06-hardware/06-01-PLAN.md
+  h_f90ee31b03fc41 31,82,165
+.planning/phases/06-hardware/06-UAT.md
+  h_f90ee31b03fc41 22,27
+packages/cli/emulator/src/__tests__/DeckFrame.test.tsx
+  h_f90ee31b03fc41 1,3,5,7,9,11-12,18-26,34-35,37-39,41-42
+.planning/phases/04-ws-frontend/04-01-SUMMARY.md
+  h_f90ee31b03fc41 20,83,90-91
+.planning/phases/07-os-providers/07-01-PLAN.md
+  h_f90ee31b03fc41 23,244-245
+packages/cli/src/addon/api.ts
+  h_f90ee31b03fc41 1,3,5,7,45,71,89,95,100,102-103,110-111,131-132,156,167-171,184
+.planning/phases/05-emulator/05-01-PLAN.md
+  h_f90ee31b03fc41 35,109,120
+.planning/phases/05-emulator/05-03-SUMMARY.md
+  h_f90ee31b03fc41 38,54-56
+.planning/phases/06-hardware/06-PHASE.md
+  h_f90ee31b03fc41 17
+.planning/phases/11-release/11-CONTEXT.md
+  h_f90ee31b03fc41 51,72,87,100,125-126
+.planning/phases/10-daemon-polish/10-PHASE.md
+  h_f90ee31b03fc41 14
+.planning/phases/06-hardware/06-CONTEXT.md
+  h_f90ee31b03fc41 99
+packages/cli/src/builtin-addons/media-player/buttons/media-volume/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1
+  s_32e9e58a6a363a::t_190198d88dc680 2-3
+packages/cli/src/builtin-addons/session/buttons/time/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+packages/cli/src/util/logger.ts
+  h_f90ee31b03fc41 1,6-7,10-12,15-21,30,33-39,42,45-56,59,61-65,67-68,71,73,75,77-80,82-84,86-98,100,103-106,108-110,118-119,121-122,124,127,132,135,137,139-140,142-144,147,149-150,153-154,159-160,162,165,168-169
+.planning/phases/05-emulator/05-02-SUMMARY.md
+  h_f90ee31b03fc41 21,38,47,59-61
+packages/cli/src/__tests__/cli.test.ts
+  h_f90ee31b03fc41 1,3-4,12-61
+packages/cli/src/builtin-addons/value-display/buttons/value-display/index.ts
+  s_32e9e58a6a363a::t_adbe8746535bd1 1-3
+.planning/phases/04-ws-frontend/04-UAT.md
+  h_f90ee31b03fc41 32,37
+.planning/phases/07-os-providers/07-VERIFICATION.md
+  h_f90ee31b03fc41 17,33,52,55
+.planning/phases/02-config-addons/02-00-SUMMARY.md
+  h_f90ee31b03fc41 29
+packages/cli/emulator/src/__tests__/shell-render.test.tsx
+  h_f90ee31b03fc41 1-2,4,6,8-9,11-12,18-25,27-28,30,36-37,39,41,43,49-56,58,64-65,67-73
+packages/cli/emulator/index.html
+  h_f90ee31b03fc41 6
+.planning/phases/10-daemon-polish/10-01-SUMMARY.md
+  h_f90ee31b03fc41 44-45
+.planning/phases/04-ws-frontend/04-PHASE.md
+  h_f90ee31b03fc41 13,17-18
+.planning/phases/11-release/11-01-PLAN.md
+  h_f90ee31b03fc41 35,37-38,50,58,66
+.planning/STATE.md
+  h_f90ee31b03fc41 59,117,147
+.planning/phases/13-ui-alignment/13-02-PLAN.md
+  h_f90ee31b03fc41 30,36,42,48,54,60,66,72,78,84,90
+packages/cli/src/config/discovery.ts
+  h_f90ee31b03fc41 1-2,4,7-12,15,17-18,21,23-27,29-30,33,35-36,39-40,42-49
+packages/cli/frontend/src/index.css
+  h_f90ee31b03fc41 1-2
+.planning/quick/009-capture-frontend-emulator-stderr/009-PLAN.md
+  h_f90ee31b03fc41 14
+packages/cli/emulator/src/SidePanel.tsx
+  h_f90ee31b03fc41 1,3,6-11,44-45,69-70,93-94
+.planning/phases/03-deck-runtime/03-CONTEXT.md
+  h_f90ee31b03fc41 49,60-68,91-94,107-108,112-115
+pnpm-lock.yaml
+  s_32e9e58a6a363a::t_151561cf34942c 53-58,87-89,96-101,108-119,123-125
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "e170964ac5123c3dea71425717b5fa61e44fed1e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,548 @@
+packages/cli/src/builtin-addons/media/progress.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 9,13
+packages/cli/src/builtin-addons/value-display/README.md
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 9-11,19-20,24,36-40
+packages/cli/src/builtin-addons/media/internal-types.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,3
+packages/cli/src/builtin-addons/media/buttons/volume/volume-up/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-2,5-6,8
+packages/cli/src/builtin-addons/brightness/index.d.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 5
+packages/cli/src/builtin-addons/core-buttons/README.md
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 9-10,12-14
+packages/cli/src/builtin-addons/media/buttons/volume/volume-up/backend.ts
+  s_dd1f18c8fed287::t_ca43a4e034d95d 14
+  s_dd1f18c8fed287::t_e419dd14a60119 2
+packages/cli/src/deck/__tests__/__fixtures__/fake-backend-no-poller.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 10
+  s_85af0c7e6b15dd::t_7a0d34cc92f891 1,5,9
+packages/cli/src/builtin-addons/emoji-selector/buttons/back/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 9
+packages/cli/src/builtin-addons/value-display/index.d.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 5
+packages/cli/src/builtin-addons/media/__tests__/backend.test.ts
+  s_dd1f18c8fed287::t_5be4616092889c 3,12,15-16,46,52,61
+  s_dd1f18c8fed287::t_1d09a991d6788f 96,115,132,157,181
+  s_dd1f18c8fed287::t_9d140025f2d86e 95,114,131,156,180
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 67,129,191
+packages/cli/src/builtin-addons/emoji-selector/index.tsx
+  s_85af0c7e6b15dd::t_d7d1a756b82870 15,20,25
+packages/cli/src/builtin-addons/internal-settings/__tests__/index.test.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 23
+packages/cli/src/builtin-addons/emoji-selector/buttons/page-nav/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 15-19,35-39,51
+packages/cli/src/builtin-addons/weather/__tests__/backend.test.ts
+  s_dd1f18c8fed287::t_09919fc513227b 47,62,85,105,138,156,168,196
+  s_dd1f18c8fed287::t_a29b3a6ccc5b80 3,19,21-22,25,27,37,53,208
+  s_dd1f18c8fed287::t_4fd3a38c924ef3 46,61,84,104,137,155,167,195
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-2,4-18,20,23-24,26,28-36,38-45,48-52,54-60,63-83,86-103,106-136,139-154,157-166,169-194,197-207,209-217
+packages/cli/src/builtin-addons/value-display/buttons/value-display/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 20-21,26
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness/backend.ts
+  s_dd1f18c8fed287::t_ed5d6052d81e3a 1
+  s_dd1f18c8fed287::t_f03bdacb63e344 5
+packages/cli/src/builtin-addons/internal-settings/README.md
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 9-13,17-19
+packages/cli/src/builtin-addons/media/buttons/media-player/components/status-meta.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-2,9-11,14-17,20-22,25-27,30-32,34,36
+packages/cli/src/builtin-addons/system-status/README.md
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 7-9,17-18,22-23,29,37-45
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 50
+packages/cli/src/builtin-addons/media/buttons/media-player/components/MediaSurface.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-6,9-15,44-45
+packages/cli/src/builtin-addons/brightness/README.md
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 13-15,23-24
+packages/cli/src/builtin-addons/emoji-selector/__tests__/launcher.test.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-56
+packages/cli/src/builtin-addons/emoji-selector/assets/emoji-pizza.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-7
+packages/cli/src/builtin-addons/emoji-selector/assets/back.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-4
+packages/cli/src/builtin-addons/brightness/buttons/brightness/backend.ts
+  s_dd1f18c8fed287::t_306eac0b9fc598 30
+  s_dd1f18c8fed287::t_8570a5ad8bafa6 1
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 3,11-13
+packages/cli/src/builtin-addons/date-time/buttons/custom/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 9
+packages/cli/src/builtin-addons/emoji-selector/assets/activities.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-7
+packages/cli/src/builtin-addons/weather/provider/types.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-6
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 3
+packages/cli/src/builtin-addons/media/buttons/media-player/components/ProgressBar.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-4,7-9,11-12,14,16,20-21
+packages/cli/src/builtin-addons/system-status/domain/live-metrics.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 36-38,111
+packages/cli/src/builtin-addons/media/buttons/volume/common/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-5,7,9,12-13,16-20,23-26,28-30,34,37,42-43,47,51-52,54
+packages/cli/src/builtin-addons/emoji-selector/buttons/page-nav/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 4
+packages/cli/src/builtin-addons/core-buttons/buttons/media-sample/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 7
+packages/cli/src/builtin-addons/internal-settings/buttons/theme/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 4
+packages/cli/src/builtin-addons/internal-settings/buttons/about/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 3
+packages/cli/src/builtin-addons/media/backend.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 2-4,10,17,19,23-26,29-30,33,39,45,50,52,54-56,61-62,65,67,69,77,80,83,86,89,92-93,96-97,100-101,104,109,111-112,114,118-119,121
+  s_85af0c7e6b15dd::t_971c9c414ed3fe 1,20,47,58,64,108
+packages/cli/src/builtin-addons/weather/backend.ts
+  s_85af0c7e6b15dd::t_66c349dad158f8 77,98,107
+  s_85af0c7e6b15dd::t_ee75c1750fb8cf 13
+  s_85af0c7e6b15dd::t_08849a1a8b8488 1
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 3-7,9,11-12,19-24,29-31,34,36-38,40-41,47,51-52,54,59-61,64,69-70,73-75,79,81-84,87,90,95-96,99,101,103,108,111-113,115
+packages/cli/src/builtin-addons/date-time/__tests__/format.test.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 28
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_85af0c7e6b15dd::t_8dabda03f70bbe 22,26,30
+packages/cli/src/builtin-addons/core-buttons/buttons/action/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 8
+packages/cli/src/builtin-addons/brightness/buttons/brightness/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 10
+packages/cli/src/builtin-addons/media/buttons/media-player/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-2,4-7,10,13,18-20,24,26-27,29
+packages/cli/src/builtin-addons/date-time/buttons/custom/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 11,21
+packages/cli/src/addon/registry.ts
+  s_55abdbe20bc1a9::t_55f1aa8122b4b3 35-39,41
+packages/cli/src/builtin-addons/weather/domain/fetch.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-5,37,41
+packages/cli/src/builtin-addons/media/buttons/volume/volume-down/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-2,5-6,8
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  s_85af0c7e6b15dd::t_80f12f664ccdf3 18,22,26,30
+packages/cli/src/builtin-addons/session/README.md
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 9-10
+packages/cli/src/builtin-addons/media/index.d.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 5
+packages/cli/src/builtin-addons/session/__tests__/index.test.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 6-7
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_85af0c7e6b15dd::t_6641ff775632c7 20,22-23,26,30
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,3-12,16,18,24,28,34,36
+packages/cli/src/builtin-addons/media/providers/__tests__/linux.test.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 15,17-18,23-51,54-61,65,70-73,75-76,83-84,87-89,93-99,101-115,117-197
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 37
+  s_85af0c7e6b15dd::t_a05384375ef69d 21,23,26,28-29
+packages/cli/src/builtin-addons/emoji-selector/assets/favorites.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-3
+packages/cli/src/builtin-addons/session/buttons/session-info/backend.ts
+  s_dd1f18c8fed287::t_41f25398fadd85 1
+  s_dd1f18c8fed287::t_5d2f2820b56274 8
+packages/cli/src/builtin-addons/internal-settings/buttons/about/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 4
+packages/cli/src/builtin-addons/emoji-selector/assets/emoji-coffee.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-6
+packages/cli/src/builtin-addons/media/buttons/volume/mute/frontend.tsx
+  h_f90ee31b03fc41 4
+packages/cli/src/builtin-addons/date-time/buttons/date/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,3-6,8,11,15-16,19,25,32-33,35
+packages/cli/src/builtin-addons/media/buttons/volume/volume-down/backend.ts
+  s_dd1f18c8fed287::t_d9c12df8088405 2
+  s_dd1f18c8fed287::t_dbb05cea810847 14
+packages/cli/src/builtin-addons/emoji-selector/assets/emoji-berry.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-5
+packages/cli/src/builtin-addons/emoji-selector/assets/emoji-sushi.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-5
+packages/cli/src/builtin-addons/media/buttons/media-player/backend.ts
+  s_dd1f18c8fed287::t_1d82c723d5323a 1
+  s_dd1f18c8fed287::t_c95b2633a53d19 9
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 19
+  s_85af0c7e6b15dd::t_299cfad97d65af 12
+packages/cli/src/builtin-addons/session/buttons/session-info/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 2
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 2
+packages/cli/src/builtin-addons/value-display/index.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 19
+  s_85af0c7e6b15dd::t_179eec2e4eca3d 12
+packages/cli/src/builtin-addons/register-builtins.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,3,5-14,17-28
+packages/cli/src/cli/commands/__tests__/addon-registry.test.ts
+  s_85af0c7e6b15dd::t_05e01db3a0b68c 21,32,43,80
+packages/cli/src/builtin-addons/media/buttons/volume/mute/backend.ts
+  s_dd1f18c8fed287::t_ea28c36f8145b7 9
+  s_dd1f18c8fed287::t_d0acef96ee0170 1
+packages/cli/src/builtin-addons/session/index.d.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 5
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 2
+packages/cli/src/builtin-addons/weather/__tests__/frontend.test.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-142
+packages/cli/src/builtin-addons/session/buttons/session-info/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 4
+packages/cli/src/builtin-addons/core-buttons/buttons/page-nav/backend.ts
+  s_dd1f18c8fed287::t_b391e54d2c0f9f 2
+  s_dd1f18c8fed287::t_c5c59317787834 18
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,3-17
+packages/cli/src/builtin-addons/weather/provider/fetch.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-91
+packages/cli/src/builtin-addons/brightness/domain/macos.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 33
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 4
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/backend.ts
+  s_dd1f18c8fed287::t_ae6078e8cafa32 1
+  s_dd1f18c8fed287::t_656ebd28404838 7
+packages/cli/src/builtin-addons/date-time/shared/format.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 61-62,65-67,69,93-96
+packages/cli/src/builtin-addons/media/state.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,14
+packages/cli/src/builtin-addons/date-time/buttons/time/backend.ts
+  s_dd1f18c8fed287::t_a4550f06865a57 1
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 3,5
+  s_dd1f18c8fed287::t_c4a3ca713aefd2 10
+packages/cli/src/builtin-addons/value-display/domain/format-command-output.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 39
+packages/cli/src/builtin-addons/media/buttons/media-player/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 4
+packages/cli/src/builtin-addons/emoji-selector/index.d.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 5
+packages/cli/src/builtin-addons/date-time/buttons/custom/backend.ts
+  s_dd1f18c8fed287::t_64439d099e6203 1
+  s_dd1f18c8fed287::t_ef57792f52562f 10
+packages/cli/src/builtin-addons/emoji-selector/assets/emoji-wave.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-5
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck/backend.ts
+  s_dd1f18c8fed287::t_646cf4322b782e 3
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 11
+  s_dd1f18c8fed287::t_69704be9d51704 14
+packages/cli/src/builtin-addons/core-buttons/buttons/media-sample/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 2
+packages/cli/src/deck/__tests__/__fixtures__/fake-button-backend.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,5-29,31-37,39-57,59-77,79-81,83,85,88-89
+  s_85af0c7e6b15dd::t_0e0315c64f11f9 78,82,84,86-87
+  s_85af0c7e6b15dd::t_1c88604696b515 58
+  s_85af0c7e6b15dd::t_11161aaa7e898f 2-4
+  s_85af0c7e6b15dd::t_6553e46c70e5c6 38
+  s_85af0c7e6b15dd::t_1207a28b023c09 30
+packages/cli/src/builtin-addons/session/buttons/time/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 6
+packages/cli/src/builtin-addons/core-buttons/buttons/action/backend.ts
+  s_dd1f18c8fed287::t_0ec1f08cf324c9 3
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 11
+  s_dd1f18c8fed287::t_8627d600affffc 17
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 4
+packages/cli/src/builtin-addons/date-time/index.d.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 5
+packages/cli/src/builtin-addons/media/buttons/volume/volume-down/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 6
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-up/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-6
+packages/cli/src/builtin-addons/session/decks/locked.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 14
+packages/cli/src/builtin-addons/core-buttons/__tests__/index.test.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 31-35,41
+packages/cli/src/builtin-addons/date-time/shared/format-date.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 3-8,12-13,15,17,19,21,23,25,27,29,35-36
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 12
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 4
+packages/cli/src/builtin-addons/value-display/poller.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 49-52
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-up/backend.ts
+  s_dd1f18c8fed287::t_e4c93a2e389424 14
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,3-13
+  s_dd1f18c8fed287::t_ed605d40032456 2
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 9,14
+packages/cli/src/builtin-addons/media/README.md
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 13-15
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock/backend.ts
+  s_dd1f18c8fed287::t_5bf68d8c4ff6a3 10
+  s_dd1f18c8fed287::t_98c9da46da062f 1
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 6
+packages/cli/src/builtin-addons/emoji-selector/assets/emoji-joy.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-8
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,3-4,6-9,11,14-23,25-27,38-39,42,73-74,76
+packages/cli/src/builtin-addons/weather/provider/city-key.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-9
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-down/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 3-6
+packages/cli/src/builtin-addons/brightness/buttons/brightness/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 25,37,47
+packages/cli/src/builtin-addons/internal-settings/decks/settings.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 12
+packages/cli/src/builtin-addons/emoji-selector/assets/food.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-8
+packages/cli/src/builtin-addons/internal-settings/index.d.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 4
+packages/cli/src/builtin-addons/media/providers/darwin.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,13,30,48-49,63-66,85,118,128,145
+packages/cli/src/builtin-addons/emoji-selector/assets/launcher.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-10
+packages/cli/src/builtin-addons/emoji-selector/support.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 44-79,87-122,130-165,173-208,216-251,259-294,302-337,345-380,383
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 7
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile/backend.ts
+  s_dd1f18c8fed287::t_ad4a6339fa315f 10
+  s_dd1f18c8fed287::t_65c6a4b60b1f1b 1
+packages/cli/src/builtin-addons/media/buttons/media-player/components/MediaStatus.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-3,5-6,8-10,15,21
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 3,8,29
+packages/cli/src/builtin-addons/core-buttons/buttons/action/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 2
+packages/cli/src/builtin-addons/emoji-selector/assets/emoji-party.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-7
+packages/cli/src/builtin-addons/emoji-selector/assets/smileys.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-6
+packages/cli/src/builtin-addons/weather/provider/codes.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-35
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-down/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-8
+packages/cli/src/cli/commands/addon-registry.ts
+  s_85af0c7e6b15dd::t_747205ffc53886 230-231,234
+  s_85af0c7e6b15dd::t_8f4407f1e9818e 17
+  s_85af0c7e6b15dd::t_48e4e34f20f570 86-87
+  s_85af0c7e6b15dd::t_d55b31ba64fa55 138,145,158,169-170
+  s_85af0c7e6b15dd::t_2c9c6a93d7fc7f 186
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 25,48,85,89-90,141-144,146,149,154-157,159,232-233,274,282
+  s_85af0c7e6b15dd::t_926ad423b87f3c 109
+packages/cli/src/builtin-addons/emoji-selector/decks/index.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 32-33,72,74,87,89,122
+packages/cli/src/builtin-addons/weather/buttons/weather/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 16,33
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 17
+packages/cli/src/builtin-addons/media/providers/linux.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,15,18-24,28,31,37-41,51-52,58,62,69,71,73,75,83,87-96,99-144
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 167-170
+  s_85af0c7e6b15dd::t_6c473005604918 77
+packages/cli/src/deck/__tests__/__fixtures__/fake-media-backend.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 32
+  s_85af0c7e6b15dd::t_933d253cb38417 1,3,5,13,27,31
+packages/cli/src/deck/__tests__/addon-handler-bridge.test.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 157,206-207,242-243,366
+  s_85af0c7e6b15dd::t_ba4d7fc7870888 165
+  s_85af0c7e6b15dd::t_3db5c9140f9569 191
+  s_85af0c7e6b15dd::t_bdc31ae2b13f98 62-63
+  s_85af0c7e6b15dd::t_e47fbbdd976997 12
+  s_85af0c7e6b15dd::t_d2b88172f510bb 182
+  s_85af0c7e6b15dd::t_c263f6207d683a 28
+  s_85af0c7e6b15dd::t_289ae4825cce4c 69,105,133,159,188,215,251,294,347
+packages/cli/src/builtin-addons/internal-settings/buttons/about/backend.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 8
+  s_dd1f18c8fed287::t_f746e93f589d92 2
+  s_dd1f18c8fed287::t_18e4468a98a451 11
+packages/cli/src/builtin-addons/weather/provider/geocode.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-67
+packages/cli/src/builtin-addons/session/buttons/time/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 2
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-up/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-8
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_85af0c7e6b15dd::t_aa5395e47cec6e 209,213,215-216
+  s_85af0c7e6b15dd::t_d40202c6905097 67,71-72,74,76,83,85,87,90
+  s_85af0c7e6b15dd::t_a930b7ff832231 17
+  s_85af0c7e6b15dd::t_9bb4f301fd1f18 282,284,291
+  s_85af0c7e6b15dd::t_0bb461c9290b43 96-97,99,103
+  s_85af0c7e6b15dd::t_09518e8622abba 3-7
+  s_85af0c7e6b15dd::t_6c08e6f624557f 236,241,246,254,262,270
+  s_85af0c7e6b15dd::t_f568df538fd5c4 38
+  s_85af0c7e6b15dd::t_715d046291da16 63-64
+  s_85af0c7e6b15dd::t_ae59ee035f9a86 132-133
+  s_85af0c7e6b15dd::t_6d70bb7e070bb7 145,152-153
+  s_85af0c7e6b15dd::t_0669fb4dc6aa3b 182
+packages/cli/src/builtin-addons/emoji-selector/buttons/page-nav/backend.ts
+  s_dd1f18c8fed287::t_647041a55669fd 1
+  s_dd1f18c8fed287::t_7f7ccbe15cf5e0 8
+packages/cli/src/builtin-addons/core-buttons/buttons/page-nav/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-9
+packages/cli/src/builtin-addons/value-display/buttons/value-display/backend.ts
+  s_dd1f18c8fed287::t_c6b0f0c6b7a11e 1
+  s_dd1f18c8fed287::t_b9b3b7626b23fc 8
+packages/cli/src/builtin-addons/emoji-selector/buttons/back/backend.ts
+  s_dd1f18c8fed287::t_f616d560dcb9cd 1
+  s_dd1f18c8fed287::t_46d5e27b888f25 10
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 7
+packages/cli/src/builtin-addons/emoji-selector/assets/emoji-grin.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-6
+packages/cli/src/builtin-addons/weather/buttons/weather/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,3-7,9,11-12,14-15,18-46,49-61,63,66-67,69-70,72,76-79,81-82,85-89,98,101,104-105,107,114,127,130-131,152,155-157,164-165,184,187,208-209,211
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/backend.ts
+  s_dd1f18c8fed287::t_7b896c059e4657 10
+  s_dd1f18c8fed287::t_57e4e98b83f4f8 1
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 37,52,78
+packages/cli/src/builtin-addons/weather/domain/codes.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 35
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle/backend.ts
+  s_dd1f18c8fed287::t_8396d41c0f6fcb 4
+  s_dd1f18c8fed287::t_b8055540526bcf 18
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 12
+packages/cli/src/builtin-addons/media/buttons/volume/volume-up/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 6
+packages/cli/src/builtin-addons/session/buttons/time/backend.ts
+  s_dd1f18c8fed287::t_ea6c3efa0f4b8f 1
+  s_dd1f18c8fed287::t_e19a3586f17c2c 7
+packages/cli/src/builtin-addons/emoji-selector/buttons/back/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 4
+.planning/ROADMAP.md
+  s_55abdbe20bc1a9::t_4959e4824aa46e 58,60-62
+packages/cli/src/builtin-addons/weather/index.d.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 5
+packages/cli/src/builtin-addons/media/providers/index.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-4,6,13-18,20,22
+packages/cli/src/builtin-addons/emoji-selector/assets/emoji-rainbow.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-6
+packages/cli/src/builtin-addons/date-time/buttons/time/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-3,5-6,8,11-12,14-16,19,26-27,29
+packages/cli/src/builtin-addons/system-status/buttons/system-status/backend.ts
+  s_dd1f18c8fed287::t_1ab002f246cd55 1
+  s_dd1f18c8fed287::t_73830cf5c8d02f 8
+packages/cli/src/builtin-addons/internal-settings/buttons/theme/backend.ts
+  s_dd1f18c8fed287::t_52e7f29713774e 1
+  s_dd1f18c8fed287::t_860a13ddcf6a22 5
+packages/cli/src/builtin-addons/core-buttons/buttons/page-nav/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-27
+packages/cli/src/builtin-addons/date-time/buttons/date/backend.ts
+  s_dd1f18c8fed287::t_401890ad75845f 1
+  s_dd1f18c8fed287::t_609d8d518c9d4d 10
+packages/cli/src/builtin-addons/weather/README.md
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 7-9,20-22
+packages/cli/src/builtin-addons/media/buttons/media-player/components/__tests__/MediaSurface.test.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 41,43,46,51,53,57,60,76,78-79,82,84-85,87
+packages/cli/src/builtin-addons/media/__tests__/progress.test.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 42
+packages/cli/src/builtin-addons/date-time/buttons/date/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 10
+packages/cli/src/builtin-addons/index.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-12
+packages/cli/src/builtin-addons/session/index.ts
+  s_85af0c7e6b15dd::t_45b0c3785d454f 15,19
+packages/cli/src/builtin-addons/media/providers/windows.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,7-10,12,37,64,99
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 4
+packages/cli/src/builtin-addons/emoji-selector/assets/objects.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-5
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/backend.ts
+  s_dd1f18c8fed287::t_28bf9817abda12 1
+  s_dd1f18c8fed287::t_61f580907b541f 8
+packages/cli/src/builtin-addons/emoji-selector/assets/emoji-fire.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-4
+packages/cli/src/builtin-addons/date-time/buttons/time/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,5,7,9
+packages/cli/src/builtin-addons/system-status/poller.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 15-23
+packages/cli/src/builtin-addons/internal-settings/backend.ts
+  s_85af0c7e6b15dd::t_4c95aa054352f0 3,17,37
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-2,4-16,18-36,38-54
+packages/cli/src/builtin-addons/media/index.ts
+  s_85af0c7e6b15dd::t_da907d34e13d55 19,23,27,31,34
+  s_85af0c7e6b15dd::t_2a12e0e8665f59 3
+packages/cli/src/builtin-addons/emoji-selector/README.md
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 15-18
+packages/cli/src/builtin-addons/emoji-selector/assets/symbols.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-4
+packages/cli/src/builtin-addons/internal-settings/buttons/theme/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 3
+packages/cli/src/builtin-addons/value-display/buttons/value-display/frontend.tsx
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 47
+packages/cli/src/builtin-addons/brightness/index.ts
+  s_85af0c7e6b15dd::t_bce4e4dbd89b44 12
+packages/cli/src/cli/commands/run.ts
+  s_85af0c7e6b15dd::t_b024bfff3a001d 220
+  s_85af0c7e6b15dd::t_664a3ac7d6d99e 171
+  s_85af0c7e6b15dd::t_4b376b66219077 613
+  s_85af0c7e6b15dd::t_f06c0d7b11b688 54
+  s_85af0c7e6b15dd::t_2fb2d42f992011 734,750
+  s_85af0c7e6b15dd::t_83f273da54f59f 480
+  s_85af0c7e6b15dd::t_7179f77d818913 186
+  s_85af0c7e6b15dd::t_6b7d238f3c8993 202-204
+packages/cli/src/builtin-addons/emoji-selector/assets/emoji-leaf.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-6
+packages/cli/src/builtin-addons/weather/buttons/weather/backend.ts
+  s_85af0c7e6b15dd::t_8e7af19a499f3d 1,5,11,15,24
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 8
+packages/cli/src/builtin-addons/core-buttons/buttons/media-sample/backend.ts
+  s_dd1f18c8fed287::t_eafde63830851f 8
+  s_dd1f18c8fed287::t_c0942450b51c66 1
+packages/cli/src/builtin-addons/core-buttons/index.d.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 5
+packages/cli/src/addon/api.ts
+  s_55abdbe20bc1a9::t_73d674d3a0526d 270,273-274,277-282,285,290
+  s_55abdbe20bc1a9::t_0450f910b01006 174
+  s_55abdbe20bc1a9::t_ed3a6353bbfb1c 96,102,107-111,116,121
+  s_55abdbe20bc1a9::t_862cd54569c0cd 232-234
+  s_55abdbe20bc1a9::t_9de031f39bdd0e 248
+  s_55abdbe20bc1a9::t_3362f797b0f542 216,225,229
+  s_55abdbe20bc1a9::t_0e4d68085b0fb3 237
+  s_55abdbe20bc1a9::t_d60686080b6d18 251
+  s_55abdbe20bc1a9::t_5c819153a367d3 243
+packages/cli/src/builtin-addons/emoji-selector/assets/emoji-cool.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-7
+packages/cli/src/builtin-addons/weather/index.ts
+  s_85af0c7e6b15dd::t_98b3dd4b53c371 12
+packages/cli/src/builtin-addons/system-status/index.d.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 5
+packages/cli/src/builtin-addons/system-status/buttons/system-status/config.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 30,35
+packages/cli/src/builtin-addons/date-time/README.md
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 7-14,24,33-34,43-44,53,60,69
+packages/cli/src/builtin-addons/emoji-selector/assets/nature.svg
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-6
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-down/backend.ts
+  s_dd1f18c8fed287::t_8a43489a8d4c73 14
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1,3-13
+  s_dd1f18c8fed287::t_9af932718e60ca 2
+packages/cli/src/builtin-addons/media/buttons/volume/mute/config.ts
+  s_2f9cf0bce2d3f2::t_650b4b06b96d45 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "1435870327a8ad5d2d61f4a7bf7fa11a40db5415",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_2f9cf0bce2d3f2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0c34dca1dffeMWwXRmmOkm50oI",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_55abdbe20bc1a9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0c2dcb067ffeT2vd4CebpVh5lf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_85af0c7e6b15dd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0bd7e03f8ffeSMGK5SS68pmSq0",
+        "model": "MiniMax-M2.7"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_dd1f18c8fed287": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0bd70878effe4IlunG7JXcWh5l",
+        "model": "MiniMax-M2.7"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

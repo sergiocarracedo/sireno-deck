@@ -1,0 +1,32 @@
+packages/cli/emulator/src/Shell.tsx
+  s_8ca911650149ee::t_8bd8d8975681e5 67
+  s_8ca911650149ee::t_299096ba3c3a34 26-27
+packages/cli/emulator/src/SidePanel.tsx
+  s_8ca911650149ee::t_2de3609fc7f0d1 9,18
+  s_8ca911650149ee::t_944ee80c8c8cc1 57
+packages/cli/emulator/src/App.tsx
+  s_8ca911650149ee::t_11f535488b42e7 20-22
+  s_8ca911650149ee::t_5df222fb788682 47
+packages/cli/src/cli/commands/run.ts
+  s_8ca911650149ee::t_7d65a6f4cc3761 262,286-296
+  s_8ca911650149ee::t_9b6b996a5884d0 78
+  s_8ca911650149ee::t_08b5be97f5726b 248
+packages/cli/frontend/src/App.tsx
+  s_8ca911650149ee::t_94e773227a139f 11,17-26,74,87,128
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "3e32c66e6490db075afefce187cc066cec9e8708",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

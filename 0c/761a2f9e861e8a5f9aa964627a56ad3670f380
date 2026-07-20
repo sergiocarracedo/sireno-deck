@@ -1,0 +1,24 @@
+.planning/phases/28-component-first-tsx-theme-ui-kit-cli/28-VERIFICATION.md
+  s_59d030c8de308d::t_dd823b1b0bcd06 1-60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "0c761a2f9e861e8a5f9aa964627a56ad3670f380",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_59d030c8de308d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19694ac2dffeX8MJU78d98rSIi",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+packages/cli/src/cli/commands/start.ts
+  s_f5622df155228a::t_b7d12eed7e4050 1106-1119,1148
+  s_f5622df155228a::t_ff770ce914aff3 48
+packages/cli/frontend-emulator/vite.config.ts
+  s_f5622df155228a::t_b486c11efdc226 1-23
+packages/cli/frontend/src/emulator/EmulatorShell.tsx
+  s_f5622df155228a::t_0677df725526fa 10-21,27,41,45,56,69,73-75,79-91,140,155-158
+packages/cli/src/render/frontend-server.ts
+  s_f5622df155228a::t_55426ef1fef0db 4,9,24-29
+packages/cli/frontend-emulator/vite-dev-entry.ts
+  s_f5622df155228a::t_523ed0550609ed 1-24
+packages/cli/frontend/vite-dev-entry.ts
+  s_f5622df155228a::t_2b781cbe265165 1,8,10,18
+packages/cli/src/render/emulator-server.ts
+  s_f5622df155228a::t_ea8d5a9b82bd24 1-43
+packages/cli/frontend-emulator/index.html
+  s_f5622df155228a::t_be58c3a1cd392e 1-12
+packages/cli/frontend/src/emulator/IframeCanvas.tsx
+  s_f5622df155228a::t_faf14ac18f07cc 2,7,14,30,69
+packages/cli/src/render/vite-server.ts
+  s_f5622df155228a::t_b3a76c6a2277be 1-168
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "2a4c60817cf7ed997cd1a0eb5b89ae0429259d80",
+  "prompts": {},
+  "sessions": {
+    "s_f5622df155228a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_114ecc375ffehJL8FVEupdUruf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

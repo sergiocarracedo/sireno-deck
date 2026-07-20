@@ -1,0 +1,32 @@
+packages/cli/src/builtin-addons/media/buttons/volume/common/frontend.tsx
+  h_f90ee31b03fc41 1-5,9,20,26,44-45
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness/common/frontend.tsx
+  s_fe3c83c8e2c33a::t_ceccfdfbae55a9 18,25
+packages/cli/src/ui/surfaces/IconLabelProgressSurface.tsx
+  s_fe3c83c8e2c33a::t_f278d03d01a457 7,9-13,18,24-27,41-44,48-51,78-79,100,105-108,110-114
+packages/cli/src/ui/primitives/Icon.tsx
+  s_fe3c83c8e2c33a::t_8f5a36eed58127 14
+packages/cli/src/ui/primitives/Text.tsx
+  s_fe3c83c8e2c33a::t_b87d5224f9f77d 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "23c1077cfe150498caf5a6ec4f8080f4a0824ffb",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_fe3c83c8e2c33a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_094981c87ffeVD0KNs45tp1Fh6",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

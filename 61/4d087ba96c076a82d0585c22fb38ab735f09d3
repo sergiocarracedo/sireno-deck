@@ -1,0 +1,19 @@
+builtin-addons/core-buttons/package.json
+  s_26099f9ddf91b0::t_9f3129515ecd33 9-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "614d087ba96c076a82d0585c22fb38ab735f09d3",
+  "prompts": {},
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

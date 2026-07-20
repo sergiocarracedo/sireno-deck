@@ -1,0 +1,41 @@
+packages/cli/src/themes/default/manifest.yml
+  h_f90ee31b03fc41 2
+.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-05-PLAN.md
+  s_4a24c7997d2c84::t_d51f35e5631ab0 1-69
+.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-UAT.md
+  s_4a24c7997d2c84::t_7d7f0a16321064 47
+  s_4a24c7997d2c84::t_a2ff861c95e85b 8,23,46
+.planning/quick/016-fix-ship-blockers-from-full-branch-test/016-PLAN.md
+  s_62d8b999b52dbd::t_c667fa1e73d4e1 1-84
+packages/cli/src/render/jsx.ts
+  s_4a24c7997d2c84::t_ef88e458636bf2 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "adf93d042c95e05efe2b4265cf4dd91b99fe1d2f",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4a24c7997d2c84": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a091daeaffeKrjgERsZBqFExO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_62d8b999b52dbd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19a95ab2cffelx1Pw48Hq6DfWk",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

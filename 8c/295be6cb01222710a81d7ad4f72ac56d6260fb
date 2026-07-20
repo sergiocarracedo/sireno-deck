@@ -1,0 +1,58 @@
+packages/cli/frontend-emulator/src/DeckFrame.test.tsx
+  s_9fabccd2e25c5b::t_a6a2bc959e0e0a 2-4,6-14,16-19,26
+  s_9fabccd2e25c5b::t_e18cef75f5e62e 25
+  s_9fabccd2e25c5b::t_c458986a541749 1,5,20-24
+  s_9fabccd2e25c5b::t_8196b06066da29 15
+packages/cli/frontend-emulator/src/Shell.tsx
+  s_9fabccd2e25c5b::t_b7c369315db433 1,5,12,15,21-26,32-47
+  s_9fabccd2e25c5b::t_1dae21d25bff60 64
+  s_9fabccd2e25c5b::t_a3330704a99d75 27-31
+packages/cli/frontend-emulator/src/DeckFrame.tsx
+  s_9fabccd2e25c5b::t_a3330704a99d75 5,17,23
+  s_9fabccd2e25c5b::t_c118cf2cd264d3 1-2,19-21,25-26,28-29,31-35,37-38,57-58
+  s_9fabccd2e25c5b::t_12c227163c9f56 8-9,18,36,43,55
+  s_9fabccd2e25c5b::t_1d9ad9ee4b8a71 10-14,22,24,27,30,56,60,62-67
+packages/cli/src/index.ts
+  s_9fabccd2e25c5b::t_b23fdc80feacbe 12-20
+packages/cli/frontend-emulator/src/gesture.ts
+  s_9fabccd2e25c5b::t_b9a1f644e39482 11-16,21-24
+  s_9fabccd2e25c5b::t_bfbc9086f5e75e 1-10,17-20,25-42
+packages/cli/frontend-emulator/src/bridge.ts
+  s_9fabccd2e25c5b::t_463df328f60d13 68
+  s_9fabccd2e25c5b::t_78c5af4c3eedef 54
+  s_9fabccd2e25c5b::t_589be8507d2333 12-18,29,34,39,44-53,55-67,69-72,77,84-86,90-97,111-114,117
+  s_9fabccd2e25c5b::t_eef6fb5418c88f 1-6,9-11,19-28,30-33,35-38,40-43,73-76,78-81,87-89,98-110,115-116,118-126
+  s_9fabccd2e25c5b::t_a3330704a99d75 7-8,82-83
+.planning/phases/05-emulator/05-03-SUMMARY.md
+  s_9fabccd2e25c5b::t_46b861d03d8d6a 1-57
+.planning/phases/05-emulator/05-VERIFICATION.md
+  s_9fabccd2e25c5b::t_a500933db36866 1-66
+packages/cli/frontend-emulator/src/gesture.test.ts
+  s_9fabccd2e25c5b::t_1d26847ff3ee66 1-34
+packages/cli/frontend-emulator/src/bridge.test.ts
+  s_9fabccd2e25c5b::t_a3330704a99d75 3-9
+  s_9fabccd2e25c5b::t_f678f607e342db 31-42,82,87,89,93-95
+  s_9fabccd2e25c5b::t_3be45ff0c5b374 77-80,90-92
+  s_9fabccd2e25c5b::t_8036122f943d21 16,28
+  s_9fabccd2e25c5b::t_e8189b8ef717ec 1
+  s_9fabccd2e25c5b::t_8b202fe8f578dd 2,10-15,17-27,29-30,43-76,81,83-86,88,96-100
+packages/cli/frontend-emulator/src/SidePanel.tsx
+  s_9fabccd2e25c5b::t_87377774857f97 1-2
+  s_9fabccd2e25c5b::t_fc63e7a677a187 25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "8c295be6cb01222710a81d7ad4f72ac56d6260fb",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

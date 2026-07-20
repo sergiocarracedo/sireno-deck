@@ -1,0 +1,20 @@
+packages/cli/src/config/schemas.ts
+  s_586986ca02db2f::t_6507eda2167cee 89,91
+  s_586986ca02db2f::t_5240fd0f705337 112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "8bdd594d1f72718ff1bc5ce96e912d4d0ba0e439",
+  "prompts": {},
+  "sessions": {
+    "s_586986ca02db2f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08ee995cbffedn8iRvToXsQvlX",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

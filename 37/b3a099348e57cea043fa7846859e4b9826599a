@@ -1,0 +1,25 @@
+packages/cli/src/addon/loader.ts
+  s_4a24c7997d2c84::t_cb81b0061ff5d7 3,5,14,16,86-90,92-93,103-172
+  s_4a24c7997d2c84::t_57f88d146de2de 15,85,91,188
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "37b3a099348e57cea043fa7846859e4b9826599a",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4a24c7997d2c84": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a091daeaffeKrjgERsZBqFExO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

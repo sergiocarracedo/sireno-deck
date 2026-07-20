@@ -1,0 +1,47 @@
+packages/cli/bin/sireno.js
+  s_9fabccd2e25c5b::t_3c1c3babc7508e 3,14-18,23
+.planning/phases/08-builtin-themes/08-UAT.md
+  s_9fabccd2e25c5b::t_209ef446dfad21 1,3-16,27-31,35-38,44-47,54-56,61-62,69-70,76-77,84-85,90-93,96,98-101
+  s_9fabccd2e25c5b::t_7e7f72eae16f87 2,17-26,32-34,39-43,48-53,57-60,63-68,71-75,78-83,86-89,94-95,97,102-113
+packages/cli/package.json
+  s_9fabccd2e25c5b::t_ccdc32c1a9ab54 29
+.planning/phases/08-builtin-themes/08-VERIFICATION.md
+  s_9fabccd2e25c5b::t_2077191a220f81 1-74
+packages/cli/bin/dev.js
+  s_9fabccd2e25c5b::t_e57f7ef60b345b 1-25
+packages/cli/src/action/executor.ts
+  s_9fabccd2e25c5b::t_19b2f803768612 3
+  s_9fabccd2e25c5b::t_30cc655e40ae07 71
+packages/cli/src/cli/cwd.ts
+  s_9fabccd2e25c5b::t_541e0290aeeac0 1
+packages/cli/src/config/loader.ts
+  s_9fabccd2e25c5b::t_f937bb040daf3d 66
+  s_9fabccd2e25c5b::t_4e888dad393ee9 6-7
+packages/cli/src/addon/manifest.ts
+  s_9fabccd2e25c5b::t_369471895145e7 4-5
+  s_9fabccd2e25c5b::t_b4860cd099aaf6 18
+packages/cli/src/config/discovery.ts
+  s_9fabccd2e25c5b::t_56c1018ebda610 32
+  s_9fabccd2e25c5b::t_cb35cf01591c47 4-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "fe9a658622fddb89b3b630c07b9dd5a620158997",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

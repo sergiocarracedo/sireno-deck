@@ -1,0 +1,26 @@
+.planning/phases/12-addon-frontend-registry/12-VERIFICATION.md
+  s_9fabccd2e25c5b::t_c2783662915dec 65,67,69,71-73,77
+  s_9fabccd2e25c5b::t_39d4686a1e0560 3
+  s_9fabccd2e25c5b::t_068b9fb184228f 22,30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "23a4be1a60009d2c2bfbe88df3e74c1fecb40eea",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

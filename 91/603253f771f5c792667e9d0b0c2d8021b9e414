@@ -1,0 +1,28 @@
+.planning/phases/02-live-shrink-fit-measurement/02-VERIFICATION.md
+  s_bd261d9d2ee90a::t_81e2079ff46042 1-51
+.planning/phases/02-live-shrink-fit-measurement/02-02-SUMMARY.md
+  s_bd261d9d2ee90a::t_81e2079ff46042 1-23
+.planning/phases/02-live-shrink-fit-measurement/02-01-SUMMARY.md
+  s_bd261d9d2ee90a::t_81e2079ff46042 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "91603253f771f5c792667e9d0b0c2d8021b9e414",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_bd261d9d2ee90a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_191f2cdb0ffeLEC0tibNQY6g6z",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

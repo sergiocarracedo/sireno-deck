@@ -1,0 +1,27 @@
+packages/cli/frontend/src/components/Deck.tsx
+  s_1536f7656586f7::t_acb1b51cffb23f 75-77
+packages/cli/src/builtin-addons/media/buttons/volume/common/frontend.tsx
+  s_1536f7656586f7::t_2a77bd39cc9f11 33
+  s_1536f7656586f7::t_8a7c4abed1d8ce 13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "41c4a6e455d602329abc22355cdbed5cda17e379",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_1536f7656586f7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b4ec28b6ffei6PluMvMMjTOGE",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

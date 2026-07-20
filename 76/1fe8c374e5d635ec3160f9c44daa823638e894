@@ -1,0 +1,31 @@
+packages/cli/src/cli/commands/start.test.ts
+  s_d8a76f591c3baf::t_e9eef0651b75ff 2262-2274
+  s_d8a76f591c3baf::t_d1eeb520108d40 971,1181,1272-1389,1411
+  s_d8a76f591c3baf::t_beb69ccc2d842b 914,936,1053,1139,1521,1668,1811,1978,2469,2573,2580
+  s_d8a76f591c3baf::t_36f86611dc8c9c 2276,2278,2280
+packages/cli/src/cli/commands/start.ts
+  s_d8a76f591c3baf::t_a8533ee61b52d3 284
+  s_d8a76f591c3baf::t_70356546bc5a46 58,278-281,292-296,346-356,1028-1035,1041-1044
+  s_d8a76f591c3baf::t_b7f8580fed11fa 297
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "761fe8c374e5d635ec3160f9c44daa823638e894",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_d8a76f591c3baf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_175cd27c2ffeW4mFN1ilBeYzMI",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

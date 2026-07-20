@@ -1,0 +1,34 @@
+packages/cli/src/render/browser-renderer.test.ts
+  s_d8a76f591c3baf::t_ea4007494ff3f5 426-476
+packages/cli/src/cli/commands/start.ts
+  s_d8a76f591c3baf::t_3aa180ef9180e2 1034-1038
+.planning/phases/35-live-hardware-resampling-at-250ms/35-01-SUMMARY.md
+  s_d8a76f591c3baf::t_9e7e591b190849 1-25
+packages/cli/src/cli/commands/start.test.ts
+  s_d8a76f591c3baf::t_0ba9a16f34eb31 1506-1510
+  s_d8a76f591c3baf::t_e6b39a6983f5c5 1491-1505,1511-1519,1521-1604,1610-1618,1620-1689
+  s_d8a76f591c3baf::t_3419f4aa1f092e 1605-1609
+  s_d8a76f591c3baf::t_5086e5998c06b4 1619
+  s_d8a76f591c3baf::t_610ad080cfb91c 1520
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ef26c2c80b895c600d0bf3bef8eb3edd105a2048",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_d8a76f591c3baf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_175cd27c2ffeW4mFN1ilBeYzMI",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

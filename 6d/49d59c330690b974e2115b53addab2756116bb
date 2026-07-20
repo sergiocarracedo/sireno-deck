@@ -1,0 +1,26 @@
+.planning/phases/11-session-config-contracts/11-CONTEXT.md
+  s_50714901791ebe::t_6ec09521c20868 1-130
+.planning/phases/11-session-config-contracts/11-DISCUSSION-LOG.md
+  s_50714901791ebe::t_6ec09521c20868 1-240
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "6d49d59c330690b974e2115b53addab2756116bb",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_50714901791ebe": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cad490d1ffe7qtGxWMYgUngfy",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

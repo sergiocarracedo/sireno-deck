@@ -1,0 +1,27 @@
+packages/cli/src/builtin-addons/core/buttons/page-nav/frontend.tsx
+  s_fd4c9efcb04c88::t_25c6b8eef66792 49
+packages/cli/src/ui/primitives/Text.tsx
+  s_fd4c9efcb04c88::t_53ad5c33f3eb51 330
+  s_fd4c9efcb04c88::t_d66871bfc15c6f 301,306
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "8a6be59fe976306fb95cf346db9b021e2a86b1d4",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_fd4c9efcb04c88": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0a020801effeDxd0RkXpU8rWsJ",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+packages/cli/src/system/active-app/active-app-monitor.test.ts
+  s_a44d509d67bdce::t_fff4960b91b721 1-128
+packages/cli/src/system/active-app/active-app-monitor.ts
+  s_a44d509d67bdce::t_11acb0e8cdf382 1-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0efd4765eb36b88a584efc2025dcbaa30e4be774",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

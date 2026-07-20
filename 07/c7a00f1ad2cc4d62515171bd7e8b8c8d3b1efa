@@ -1,0 +1,30 @@
+.planning/quick/013-add-uat-review-config-fixtures/013-VERIFICATION.md
+  s_1d4a2f3e388f16::t_0e3242a13d63c3 1-23
+.planning/quick/013-add-uat-review-config-fixtures/013-PLAN.md
+  s_1d4a2f3e388f16::t_b6685f4dc3e92c 1-79
+.planning/quick/013-add-uat-review-config-fixtures/013-SUMMARY.md
+  s_1d4a2f3e388f16::t_0e3242a13d63c3 1-28
+.planning/STATE.md
+  s_1d4a2f3e388f16::t_b7042beb60b08d 94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "07c7a00f1ad2cc4d62515171bd7e8b8c8d3b1efa",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_1d4a2f3e388f16": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d51b22c2ffeqVnSciUWHxQ273",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

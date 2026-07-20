@@ -1,0 +1,46 @@
+packages/cli/src/builtin-addons/media-player/buttons/media-player.tsx
+  s_9fabccd2e25c5b::t_c2f58e5cdbea7d 148-149
+packages/cli/src/builtin-addons/brightness/frontend.tsx
+  s_9fabccd2e25c5b::t_4b5dd555424a75 1-40
+packages/cli/src/builtin-addons/weather/buttons/weather.tsx
+  s_9fabccd2e25c5b::t_5a6a12ae6d9b54 91-92
+packages/cli/src/builtin-addons/value-display/frontend.tsx
+  s_9fabccd2e25c5b::t_15944aa4ef5823 1-38
+packages/cli/src/builtin-addons/emoji-selector/index.tsx
+  s_9fabccd2e25c5b::t_70a271bef62984 225
+packages/cli/src/builtin-addons/weather/frontend.tsx
+  s_9fabccd2e25c5b::t_9f3a1d74d91f0b 1-47
+packages/cli/src/builtin-addons/media-player/frontend.tsx
+  s_9fabccd2e25c5b::t_829ad875aeb550 1-43
+packages/cli/src/builtin-addons/value-display/buttons/value-display.tsx
+  s_9fabccd2e25c5b::t_d962c35a2f7898 83-84
+packages/cli/src/builtin-addons/system-status/buttons/system-status.tsx
+  s_9fabccd2e25c5b::t_b7bd384679cfcc 108-109
+packages/cli/src/builtin-addons/emoji-selector/frontend.tsx
+  s_9fabccd2e25c5b::t_5a4c2dfa470324 1-15
+packages/cli/src/builtin-addons/brightness/buttons/brightness.tsx
+  s_9fabccd2e25c5b::t_a3a801861adb3c 56-57
+packages/cli/src/builtin-addons/system-status/frontend.tsx
+  s_9fabccd2e25c5b::t_d12bcc5f9b411e 1-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "383982928930c13ff0cb89ceea3c37535441b430",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

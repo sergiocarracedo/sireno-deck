@@ -1,0 +1,24 @@
+packages/cli/src/ui/primitives/__tests__/Text.test.tsx
+  s_111fe324359655::t_fa9d5a77b904ce 86,94,101,110-112,119-121,128-130,137-139
+  s_111fe324359655::t_23524c0b0de464 1-85,87-93,95-100,102-109,113-118,122-127,131-136,140-143
+packages/cli/src/ui/primitives/Text.tsx
+  s_111fe324359655::t_d582a84cf8a1f2 304-310,316-340
+  s_111fe324359655::t_c3f2f5021e3f17 386-388,404-411,421,424-429
+  s_111fe324359655::t_4fdcffe482ba1d 341
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "518f5d8d36d45a86af55faf0a7af980b9049b6c1",
+  "prompts": {},
+  "sessions": {
+    "s_111fe324359655": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08b16ea33ffeCuhlTuvIGIPPx1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

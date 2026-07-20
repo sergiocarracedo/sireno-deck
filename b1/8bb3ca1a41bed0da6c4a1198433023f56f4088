@@ -1,0 +1,26 @@
+packages/cli/src/render/icon-source-resolver.ts
+  s_0a5098cebd5351::t_384aa878e1cb1d 3,9,15-21
+packages/cli/src/cli/commands/run.ts
+  s_0a5098cebd5351::t_eaed1d50b62dfd 533-541,546
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "b18bb3ca1a41bed0da6c4a1198433023f56f4088",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_0a5098cebd5351": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0afd3478effeIJsDCif5EEO4Ft",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

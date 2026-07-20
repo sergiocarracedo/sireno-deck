@@ -1,0 +1,21 @@
+packages/cli/src/device/stream-deck.ts
+  s_8d74af9d4bfed8::t_32951dd35d4d21 27,32-42,75-85,270-344,371,379,383,397-400,416,424
+packages/cli/src/device/stream-deck.test.ts
+  s_8d74af9d4bfed8::t_e389bd6760578d 10,234-264
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "c450e4c8e70253b81b70c205e44108400e3e450c",
+  "prompts": {},
+  "sessions": {
+    "s_8d74af9d4bfed8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a4269384ffeN1puLn8w7RzN1B",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

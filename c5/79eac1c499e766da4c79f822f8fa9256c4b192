@@ -1,0 +1,85 @@
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck.ts
+  s_df3509a167c487::t_5e63debe298156 64-67
+packages/cli/src/builtin-addons/core-buttons/buttons/action.ts
+  s_df3509a167c487::t_5e63debe298156 63-66,74-79
+packages/cli/src/builtin-addons/core-buttons/buttons/media-demo.ts
+  s_df3509a167c487::t_5e63debe298156 104-109
+  s_df3509a167c487::t_deda7cb3677a2c 1-103,110-119
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_df3509a167c487::t_5e63debe298156 231-233,252-254,273-275
+packages/cli/src/render/dom-host.tsx
+  s_df3509a167c487::t_deda7cb3677a2c 125-128,140
+packages/cli/src/render/browser-renderer.test.ts
+  s_df3509a167c487::t_deda7cb3677a2c 134-186
+.planning/phases/18-react-dom-based-renderer-with-htmlcss/18-VERIFICATION.md
+  s_df3509a167c487::t_1d8ed857fa2f5f 4-7
+  s_df3509a167c487::t_0099e65cc88a11 1-2,10-56
+  s_df3509a167c487::t_3713306deb3954 3,8-9
+.planning/phases/18-react-dom-based-renderer-with-htmlcss/18-UAT.md
+  s_df3509a167c487::t_3713306deb3954 2,10,20,25-26,32-33,54-55,75-76,97,99,104,113
+  s_df3509a167c487::t_0099e65cc88a11 42,57-59,61-63,71,87-93,95,101,103
+  s_df3509a167c487::t_f3f8ea0b293f10 1,3-9,11-12,15-19,30-31,34-38,50,52-53,56,60,65-69,72-74,77-86,94,96,98,100,102,105-112
+  s_df3509a167c487::t_1d8ed857fa2f5f 21-24
+packages/cli/src/render/dom-host.test.tsx
+  s_df3509a167c487::t_deda7cb3677a2c 34,49
+packages/cli/src/render/browser-renderer.ts
+  s_df3509a167c487::t_deda7cb3677a2c 115-131,144,148,195-205,216,242
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  s_df3509a167c487::t_deda7cb3677a2c 6,19
+packages/cli/src/deck/runtime.ts
+  s_df3509a167c487::t_deda7cb3677a2c 69,305
+  s_df3509a167c487::t_5e63debe298156 284,300
+packages/cli/fixtures/phase-18/config.media-sampling.yml
+  s_df3509a167c487::t_0099e65cc88a11 1-60
+packages/cli/src/deck/runtime.test.ts
+  s_df3509a167c487::t_05d385ea14f2e5 1150-1206
+  s_df3509a167c487::t_49215ef4b9379e 2,18-20,457,1436
+packages/cli/src/config/loader.test.ts
+  s_df3509a167c487::t_49215ef4b9379e 3,13,1029
+packages/cli/src/builtin-addons/emoji-selector/index.test.ts
+  s_df3509a167c487::t_3b000a8cf3cb08 3
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_df3509a167c487::t_3b000a8cf3cb08 6
+packages/cli/src/addon/builtin.ts
+  s_df3509a167c487::t_3b000a8cf3cb08 1-3
+packages/cli/src/addon/api.ts
+  s_df3509a167c487::t_5e63debe298156 8,58-59,62,70,92
+  s_df3509a167c487::t_deda7cb3677a2c 20,94
+.planning/ROADMAP.md
+  s_df3509a167c487::t_3713306deb3954 155,196,198
+  s_df3509a167c487::t_1d8ed857fa2f5f 182,186-195,197
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle.ts
+  s_df3509a167c487::t_5e63debe298156 159-165,286-297
+packages/cli/src/cli/commands/start.test.ts
+  s_df3509a167c487::t_05d385ea14f2e5 3-4,11-13,16-18,34-41,46-50,72-73,80-82,87,361-409,416-470
+  s_df3509a167c487::t_66e92150726a97 410-415
+.planning/phases/18-react-dom-based-renderer-with-htmlcss/18-04-SUMMARY.md
+  s_df3509a167c487::t_ef116a0028a325 1-30
+packages/cli/fixtures/phase-9/jsx-addon-authoring-example.tsx
+  s_df3509a167c487::t_3b000a8cf3cb08 1,7
+packages/cli/src/cli/commands/start.ts
+  s_df3509a167c487::t_deda7cb3677a2c 272
+  s_df3509a167c487::t_5e63debe298156 186-227,285-304,361
+packages/cli/src/builtin-addons/core-buttons/index.test.ts
+  s_df3509a167c487::t_deda7cb3677a2c 409-460
+.planning/STATE.md
+  s_df3509a167c487::t_1d8ed857fa2f5f 142-143
+  s_df3509a167c487::t_3713306deb3954 8,14-15
+  s_df3509a167c487::t_ef116a0028a325 13,70,95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "c579eac1c499e766da4c79f822f8fa9256c4b192",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

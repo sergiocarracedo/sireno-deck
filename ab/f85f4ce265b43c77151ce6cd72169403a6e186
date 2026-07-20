@@ -1,0 +1,32 @@
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck.ts
+  s_59d030c8de308d::t_c26b09cfb15e10 4-17,32
+packages/cli/src/builtin-addons/core-buttons/buttons/action.tsx
+  s_59d030c8de308d::t_c26b09cfb15e10 4-5,39-59
+packages/cli/src/builtin-addons/core-buttons/buttons/media-sample.ts
+  s_59d030c8de308d::t_c26b09cfb15e10 4-5,52-54,60-62
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle.ts
+  s_59d030c8de308d::t_c26b09cfb15e10 5-6,51-73,255-259,276-280
+packages/cli/src/deck/runtime.ts
+  s_59d030c8de308d::t_c26b09cfb15e10 5,9,113-128
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "abf85f4ce265b43c77151ce6cd72169403a6e186",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_59d030c8de308d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19694ac2dffeX8MJU78d98rSIi",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

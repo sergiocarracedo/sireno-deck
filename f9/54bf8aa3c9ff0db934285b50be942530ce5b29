@@ -1,0 +1,28 @@
+packages/cli/src/builtin-addons/date-time/buttons/clock/config.ts
+  s_32e9e58a6a363a::t_6f88f46de5f98f 1-9
+packages/cli/src/builtin-addons/date-time/buttons/clock/backend.ts
+  s_32e9e58a6a363a::t_6f88f46de5f98f 1-10
+packages/cli/src/builtin-addons/date-time/buttons/clock/frontend.tsx
+  s_32e9e58a6a363a::t_6f88f46de5f98f 1-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "f954bf8aa3c9ff0db934285b50be942530ce5b29",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

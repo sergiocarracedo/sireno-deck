@@ -1,0 +1,29 @@
+.planning/quick/032-fontsize-camelcase/032-SUMMARY.md
+  s_43a1f95302eacf::t_bab6858bafee00 1-14
+.planning/STATE.md
+  s_43a1f95302eacf::t_f5ccbe0c76fb9a 327
+  s_43a1f95302eacf::t_cf25c551dc71d5 15
+.planning/quick/032-fontsize-camelcase/032-PLAN.md
+  s_43a1f95302eacf::t_e7e97f8d68f5cf 1-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "5025557267b91be3e51d60d9a01add7f465b3473",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_43a1f95302eacf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1713bb85cffeuUVJXNOTOl6k4H",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

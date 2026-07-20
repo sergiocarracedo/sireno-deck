@@ -1,0 +1,19 @@
+packages/cli/src/util/daemon.ts
+  s_344b68134ff779::t_4e2c3d4229c9d8 65-77,84,88-98,103-104,109-110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "4a97b940f92fad06f4d2c68b89f646a4ad54319f",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

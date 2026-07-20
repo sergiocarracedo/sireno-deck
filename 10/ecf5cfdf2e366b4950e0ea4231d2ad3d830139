@@ -1,0 +1,42 @@
+.planning/research/FEATURES.md
+  s_55abdbe20bc1a9::t_e222397274f2e5 1-47
+.planning/AGENTS.md
+  s_55abdbe20bc1a9::t_3aa3557f7ec266 1-107
+.planning/research/STACK.md
+  s_55abdbe20bc1a9::t_0fba4172893520 1-68
+.planning/research/SUMMARY.md
+  s_55abdbe20bc1a9::t_67d54e951d5925 1-44
+.planning/PROJECT.md
+  s_55abdbe20bc1a9::t_61aff495a05101 1-41
+.planning/research/PITFALLS.md
+  s_55abdbe20bc1a9::t_6f13a0e87182da 1-57
+.planning/research/ARCHITECTURE.md
+  s_55abdbe20bc1a9::t_fe020702af8ecf 1-583
+.planning/DECISIONS.md
+  s_55abdbe20bc1a9::t_a9bf05d2b76685 1-61
+.planning/STATE.md
+  s_55abdbe20bc1a9::t_5f6ae8fc4d2562 1-48
+.planning/ROADMAP.md
+  s_55abdbe20bc1a9::t_f04461af3370dd 1-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "10ecf5cfdf2e366b4950e0ea4231d2ad3d830139",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_55abdbe20bc1a9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0c2dcb067ffeT2vd4CebpVh5lf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

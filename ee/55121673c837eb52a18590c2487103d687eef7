@@ -1,0 +1,26 @@
+.planning/phases/06-base-contracts/06-02-SUMMARY.md
+  s_26099f9ddf91b0::t_83c1aaccb0348e 1-25
+.planning/STATE.md
+  s_26099f9ddf91b0::t_83c1aaccb0348e 14-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "ee55121673c837eb52a18590c2487103d687eef7",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

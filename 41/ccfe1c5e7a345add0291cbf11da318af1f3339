@@ -1,0 +1,108 @@
+config.yml
+  s_e9a2aac700506f::t_fc1478e5ebb12b 39,149,156,158
+packages/cli/src/system/providers/key-macro/__tests__/windows.test.ts
+  s_e9a2aac700506f::t_fc1478e5ebb12b 1-11,34-48,54-67,70-82,89-97,101-105,112-116,120-124,131,135-139,146-186,190-191,194,203-223,225-226,228-242
+  s_e9a2aac700506f::t_e5d52495cc34ee 227
+packages/cli/src/system/providers/clipboard/windows.ts
+  s_e9a2aac700506f::t_86b55a1f2d3c01 4,6,11,14-18,22-23,29-50,53-55,60-72
+packages/cli/src/builtin-addons/emoji-selector/decks/index.ts
+  s_e9a2aac700506f::t_fc1478e5ebb12b 30-31
+packages/cli/src/deck/__tests__/methods.test.ts
+  s_e9a2aac700506f::t_fc1478e5ebb12b 104,108,111,117-119,122,128-129,132,138-139,150,154-155,177,187-188,190,196-212,218
+packages/cli/src/builtin-addons/emoji-selector/__tests__/emoji.test.ts
+  s_e9a2aac700506f::t_fc1478e5ebb12b 33,42,54-55,59,67
+packages/cli/src/system/providers/clipboard/linux.ts
+  s_e9a2aac700506f::t_0181d4fd16c69d 15-25,29,32,45,48,58,60-61,65,74,86-88,90,92-104,106,109-125
+  s_e9a2aac700506f::t_a96d1e48353fab 39-44,49-57,73,77-85
+  s_e9a2aac700506f::t_362bc8b703359b 46-47,75-76
+packages/cli/src/addon/api.ts
+  s_e9a2aac700506f::t_fc1478e5ebb12b 283
+packages/cli/src/system/providers/key-macro.ts
+  s_e9a2aac700506f::t_fbb78fb0d8433a 76
+CHANGELOG.md
+  s_e9a2aac700506f::t_d0098e2aa164a5 64
+packages/cli/src/builtin-addons/emoji-selector/README.md
+  s_e9a2aac700506f::t_fc1478e5ebb12b 20-21
+  s_e9a2aac700506f::t_81076fd3cb5fd7 5
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_e9a2aac700506f::t_fc1478e5ebb12b 219,225-231,236,250,256-262,281,287-293,614,619,628,633,636-637,639
+packages/cli/src/system/providers/key-macro/windows.ts
+  s_e9a2aac700506f::t_651b739271834b 344-349
+  s_e9a2aac700506f::t_fc1478e5ebb12b 1-4,18-214,217-223,226-228,230-238,241-242,244-343,350-371,376-390,392-393,395,398-428,431,434-436,438-439
+packages/cli/src/system/providers/key-macro/darwin.ts
+  s_e9a2aac700506f::t_fc1478e5ebb12b 40-42
+  s_e9a2aac700506f::t_f7587449ddbc60 49-50
+packages/cli/src/system/providers/key-macro/__tests__/linux.test.ts
+  s_e9a2aac700506f::t_9c84813a0c71ce 214
+  s_e9a2aac700506f::t_fc1478e5ebb12b 91,101,118,140-143,145,158,161,186-189,202-205,241-244,268,292,295,310
+  s_e9a2aac700506f::t_4bcb670087a811 92,97,105,114,121,138,151-152,154,169-170,175-176,181-182,184,191,197,207,217,219-220,222-224,229,232-233,239,246-251,255,258-259,264,271-273,278,301
+  s_e9a2aac700506f::t_20e6b21598c8e4 218,221
+  s_e9a2aac700506f::t_218066d67bb4cd 98,106-110,115,122-134,139,146-150,155,162-166,168,171-174,177-180,185,192-196
+  s_e9a2aac700506f::t_2bbf59783bd112 24-25,61-88,200-201,208-213,215-216,225-226,234,240,252,265,279-280,282-289,291,318
+  s_e9a2aac700506f::t_962d3910635f81 153
+  s_e9a2aac700506f::t_ed0cdd5dc88d33 183
+packages/cli/src/builtin-addons/core/README.md
+  s_e9a2aac700506f::t_fc1478e5ebb12b 22
+packages/cli/src/deck/__tests__/addon-handler-bridge.test.ts
+  s_e9a2aac700506f::t_da1949fca324ff 71,109,135,161,198,226,263,291
+  s_e9a2aac700506f::t_f049258cf13f45 66
+packages/cli/src/system/providers/clipboard/__tests__/linux.test.ts
+  s_e9a2aac700506f::t_a9455c51d0f99d 116-124
+  s_e9a2aac700506f::t_3f9d40d19c8e38 77-79,98-99
+  s_e9a2aac700506f::t_44e01fc8a859cc 31,33-35,37
+  s_e9a2aac700506f::t_6e46bbf50f6285 5-6,25-30,38-40,43-60,65-70,73-76,80-83,88-91,94,97,101-102,110-112,115,130-134,137-162,168-170,173-178,183-184
+packages/cli/src/cli/commands/run.ts
+  s_e9a2aac700506f::t_f115b0897e7e17 470,477-521
+packages/cli/src/system/requirements.ts
+  s_e9a2aac700506f::t_fc1478e5ebb12b 43-45,120
+  s_e9a2aac700506f::t_d9b0fcc3304ef8 3,39-42,46-48,52,56-60
+packages/cli/src/system/__tests__/requirements.test.ts
+  s_e9a2aac700506f::t_db1caeb3fc64ae 26-27,33-35,38,83-96,103,106-107,112-127,130,147-151
+  s_e9a2aac700506f::t_7f5e1d49e4d563 51
+  s_e9a2aac700506f::t_fc1478e5ebb12b 39,46-50,52-70,73,104-105,108-111,141-146,155-156,159-160,163
+  s_e9a2aac700506f::t_5a384191c5350c 140
+packages/cli/src/deck/methods.ts
+  s_e9a2aac700506f::t_fc1478e5ebb12b 49-54,56-63,178,180-181,184,188-189,192,214
+packages/cli/src/system/providers/clipboard/darwin.ts
+  s_e9a2aac700506f::t_20ba7caef0ef07 4,6,11,17-18,27-49,55-63
+ARCHITECTURE.md
+  s_e9a2aac700506f::t_7c17224958e2b6 98
+  s_e9a2aac700506f::t_fc1478e5ebb12b 99,103
+  s_e9a2aac700506f::t_8cf708fa6981f5 62
+  s_e9a2aac700506f::t_6810623675f1d2 265
+packages/cli/src/system/providers/key-macro/linux.ts
+  s_e9a2aac700506f::t_ccec759bca4097 4
+  s_e9a2aac700506f::t_bf485efbfb6156 312-313,318
+  s_e9a2aac700506f::t_b749a2abf89575 502,569,571-585,588
+  s_e9a2aac700506f::t_dcaa24768e69ee 430,433-434,455,458-459
+  s_e9a2aac700506f::t_8207c93cae5bf7 16,19,21-245,249-288,291-303,305,309-310,314-317,320-322,324-338,340-349,351-358,360-371,374-377,385-386,388-389,391,395-399,403,405-407,413,415-418,421-426,431-432,435-450,453-454,476-501,504-505,515,528,540,545-548,550-551,557,566-567,570,586-587,589-594,598
+  s_e9a2aac700506f::t_c13dcc0a8c8364 394
+  s_e9a2aac700506f::t_fcf13a6c91863a 506-514,516-527,529-530,532-539
+  s_e9a2aac700506f::t_0649db61d52d1d 531
+  s_e9a2aac700506f::t_fc1478e5ebb12b 17,304,306,359,380,382-384,387,390,392-393,401-402,404,408-412,451,456-457,460-468,471,503,554
+  s_e9a2aac700506f::t_33f12d5f548d9f 414
+  s_e9a2aac700506f::t_6cf40a9b692cf9 452
+  s_e9a2aac700506f::t_693adffc895eb8 541
+  s_e9a2aac700506f::t_f5f1f724127145 568
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "41ccfe1c5e7a345add0291cbf11da318af1f3339",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_e9a2aac700506f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_093621374ffeAKtMQ3q1tUSdDi",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

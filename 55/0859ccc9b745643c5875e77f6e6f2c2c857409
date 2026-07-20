@@ -1,0 +1,34 @@
+packages/cli/src/device/stream-deck.ts
+  s_a44d509d67bdce::t_3a4b4126ffcf95 562-563
+  s_a44d509d67bdce::t_8368a214904163 564-565,580-584,609-613
+  s_a44d509d67bdce::t_386e44af688d75 36,42,297-299,374-375,484-503,532-561,578-579,585
+packages/cli/src/device/stream-deck.test.ts
+  s_a44d509d67bdce::t_9ab66ed7525ccb 325-328,333,335
+  s_a44d509d67bdce::t_9ba3c19c28b6b0 311-324,329-332,334,336-337
+  s_a44d509d67bdce::t_751bf4c3135158 338,344-347,349-352,358-359
+  s_a44d509d67bdce::t_d0104d1e3fe211 7
+  s_a44d509d67bdce::t_8eaea040b8ce94 339,341,348,355-356
+  s_a44d509d67bdce::t_25221b03401d78 14-15,18
+  s_a44d509d67bdce::t_2f3d42d5fefe48 340,342-343,353-354,357
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "550859ccc9b745643c5875e77f6e6f2c2c857409",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_a44d509d67bdce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15bf98bc0ffeHPaU1ZdoVTEBJ1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

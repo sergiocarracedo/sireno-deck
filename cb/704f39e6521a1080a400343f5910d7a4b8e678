@@ -1,0 +1,30 @@
+packages/cli/src/addon/loader.ts
+  s_26099f9ddf91b0::t_e1fd36bd373c34 6,110-113
+packages/cli/src/core/schemas.ts
+  s_26099f9ddf91b0::t_e1fd36bd373c34 92,157
+packages/cli/src/addon/manifest.ts
+  s_26099f9ddf91b0::t_e1fd36bd373c34 21-22,24-27,36,50
+packages/cli/src/cli/commands/start.ts
+  s_26099f9ddf91b0::t_68fde4267ed1c1 35-53,100,171
+  s_26099f9ddf91b0::t_e1fd36bd373c34 3-5,170,172-175,199
+packages/cli/src/config/loader.ts
+  s_26099f9ddf91b0::t_e1fd36bd373c34 3,7,10,18-23,136-140,152-156,170-197,201,206-207
+config.yml
+  s_26099f9ddf91b0::t_e1fd36bd373c34 15-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "cb704f39e6521a1080a400343f5910d7a4b8e678",
+  "prompts": {},
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

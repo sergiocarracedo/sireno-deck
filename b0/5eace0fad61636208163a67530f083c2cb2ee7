@@ -1,0 +1,112 @@
+packages/cli/src/builtin-addons/core/buttons/action/backend.ts
+  s_24144ac0a25725::t_8d0ec3fccb143b 1
+AGENTS.md
+  s_24144ac0a25725::t_838a404772008a 250
+packages/cli/frontend/src/__tests__/deck-render.test.tsx
+  s_24144ac0a25725::t_a6532c721cbfde 16
+  s_24144ac0a25725::t_78a038772f07af 22,24
+  s_24144ac0a25725::t_26812cf696cb56 76
+packages/cli/src/addon/__tests__/spec.test.ts
+  s_24144ac0a25725::t_1791434d9ab021 37
+  s_24144ac0a25725::t_59a03f587b41db 25
+packages/cli/src/__tests__/integration.test.ts
+  s_24144ac0a25725::t_8d9c81dde5b189 90-91
+  s_24144ac0a25725::t_c481006a7451d2 26
+  s_24144ac0a25725::t_6a09457447ebc2 8
+  s_24144ac0a25725::t_c2ccdc7b3eccb9 42,46-48,50
+packages/cli/src/builtin-addons/register-builtins.ts
+  s_24144ac0a25725::t_c184f54575d9bd 6
+  s_24144ac0a25725::t_ad91e9777c5314 18
+config.yml
+  s_24144ac0a25725::t_806ed1229faf06 119-121,123,125-127,129,131-133,135
+  h_f90ee31b03fc41 17,19-22,36-40
+  s_24144ac0a25725::t_6e8775c4e22fc2 95-97,99,101-103,105,107-109,111,113-115,117
+packages/cli/src/__tests__/config.test.ts
+  s_24144ac0a25725::t_8c0fd241a0aa85 335
+  s_24144ac0a25725::t_b631ae5e5b6552 343
+  s_24144ac0a25725::t_9d164553465885 116,118
+packages/cli/src/builtin-addons/core/sirenodeck.json
+  s_24144ac0a25725::t_2e88fa1e87a995 4
+packages/cli/src/config/__tests__/validation.test.ts
+  s_24144ac0a25725::t_71f7d21f199273 4
+  s_24144ac0a25725::t_18b572ee2be5e6 13
+  s_24144ac0a25725::t_b17c772e8fe639 88,97-98,106
+  s_24144ac0a25725::t_d22f1a44223408 43
+packages/cli/src/builtin-addons/core/buttons/toggle/backend.ts
+  s_24144ac0a25725::t_d8f45b119d3773 21
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  s_24144ac0a25725::t_27cfa2ac969a41 22
+  h_f90ee31b03fc41 1,3-5,9,23,30
+packages/cli/src/__tests__/addon.test.ts
+  s_24144ac0a25725::t_b12f2faeb02ba8 52
+  s_24144ac0a25725::t_6783eb5e6d300d 60,62
+  s_24144ac0a25725::t_ea630443df5be6 82
+  s_24144ac0a25725::t_c4b517b55ccdb5 79
+  s_24144ac0a25725::t_68199c91bb7671 194
+README.md
+  s_24144ac0a25725::t_186c0c39d54813 128
+packages/cli/src/builtin-addons/emoji-selector/README.md
+  s_24144ac0a25725::t_7392b94b29097a 59
+packages/cli/src/deck/paginate-deck.ts
+  s_24144ac0a25725::t_174ac2ecf73193 21
+packages/cli/src/addon/api.ts
+  s_24144ac0a25725::t_5ccf3c6400f788 206,210,217
+  s_24144ac0a25725::t_0f930694d5cb0f 211-216
+  s_24144ac0a25725::t_a906931a498d2f 218
+packages/cli/src/builtin-addons/core/index.ts
+  s_24144ac0a25725::t_50439c49c544ec 9-10,29-33,50-51
+  s_24144ac0a25725::t_8d3a9f22ed05ab 16-26,34-41
+packages/cli/src/builtin-addons/core/README.md
+  s_24144ac0a25725::t_d5a4ab27a67b69 1-48
+packages/cli/src/builtin-addons/weather/buttons/weather/frontend.tsx
+  h_f90ee31b03fc41 7-8,18,27,30,36-37,39-42,45-49,51-55,70
+  s_e45e71211989b5::t_16124f7e3650c0 1,50
+packages/cli/src/builtin-addons/core/__tests__/index.test.ts
+  s_24144ac0a25725::t_9a5774466fc90d 6-50
+packages/cli/src/builtin-addons/core/buttons/action/config.ts
+  s_24144ac0a25725::t_0970cd17179fc4 3-10
+packages/cli/frontend/vite.config.ts
+  s_24144ac0a25725::t_51a7613c6adde4 71-72
+  s_24144ac0a25725::t_598deb4a0ab476 120-122
+  s_24144ac0a25725::t_ad41d74bd93caa 68-70,73-102
+  s_24144ac0a25725::t_f76aa8eb408171 6
+packages/cli/src/builtin-addons/core/buttons/action/frontend.tsx
+  s_24144ac0a25725::t_f1488aa503bbcc 4-10,15-19
+  h_f90ee31b03fc41 1-3,12,14
+  s_24144ac0a25725::t_cf911202a840a1 11,13
+ARCHITECTURE.md
+  s_24144ac0a25725::t_e70e1946072590 337
+  s_24144ac0a25725::t_d95afdd6d83c4a 496
+  s_24144ac0a25725::t_e29962dccbdc27 332
+packages/cli/src/builtin-addons/index.ts
+  s_24144ac0a25725::t_91a24c32f8c4d3 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "b05eace0fad61636208163a67530f083c2cb2ee7",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_24144ac0a25725": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b37c1a18ffexUp78zufhHIXsi",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_e45e71211989b5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b393d525ffeT2913WLdgAJjHX",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

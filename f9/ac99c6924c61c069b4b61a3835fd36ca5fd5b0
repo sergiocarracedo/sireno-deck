@@ -1,0 +1,19 @@
+.planning/solutions/test-failures/theme-border-token-broke-legacy-manifests-2026-05-28.md
+  s_b21ef815cd71c9::t_af7a27a9151b2c 1-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f9ac99c6924c61c069b4b61a3835fd36ca5fd5b0",
+  "prompts": {},
+  "sessions": {
+    "s_b21ef815cd71c9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_194c6ab8dffeZgB4hXir7Qu8T0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

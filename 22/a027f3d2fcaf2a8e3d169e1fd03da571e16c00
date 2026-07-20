@@ -1,0 +1,33 @@
+packages/cli/src/ui/primitives/Icon.tsx
+  s_0a5098cebd5351::t_0b5ad3ec77778a 6,30,53-69,92,94-95,97-110,112-123,133-142,145-166,183-193
+packages/cli/src/core/icon-source.ts
+  s_0a5098cebd5351::t_07f49eb7e588e3 1-19
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  s_0a5098cebd5351::t_7033e827bbf18a 3
+packages/cli/src/ui/primitives/__tests__/Icon.test.tsx
+  s_0a5098cebd5351::t_fa24258c218473 5-6
+  s_0a5098cebd5351::t_57d5ef9f696df6 145-149
+  s_0a5098cebd5351::t_7d1bfe5ffcf42a 111-112,120-121,137-140
+  s_0a5098cebd5351::t_7f3ae29a6d4e67 2-4
+  s_0a5098cebd5351::t_7efbf743e512bd 7-9,108-110
+  s_0a5098cebd5351::t_507be9edb8c20c 113-115,117-119
+  s_0a5098cebd5351::t_290bf8a409bdb3 122-124,134-136
+  s_0a5098cebd5351::t_f8b0cd6b73f686 141-144
+  s_0a5098cebd5351::t_16de565a7d6d95 150-152
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "22a027f3d2fcaf2a8e3d169e1fd03da571e16c00",
+  "prompts": {},
+  "sessions": {
+    "s_0a5098cebd5351": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0afd3478effeIJsDCif5EEO4Ft",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

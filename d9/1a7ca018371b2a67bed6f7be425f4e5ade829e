@@ -1,0 +1,25 @@
+package.json
+  s_136b450bea3e1f::t_ca99ddeb5dd180 1-16
+.npmrc
+  s_136b450bea3e1f::t_ca99ddeb5dd180 1-2
+.gitignore
+  s_136b450bea3e1f::t_ca99ddeb5dd180 2-4
+pnpm-workspace.yaml
+  s_136b450bea3e1f::t_ca99ddeb5dd180 1-3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "d91a7ca018371b2a67bed6f7be425f4e5ade829e",
+  "prompts": {},
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

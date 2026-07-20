@@ -1,0 +1,26 @@
+.planning/phases/01-foundation/01-DISCUSSION-LOG.md
+  s_26099f9ddf91b0::t_f8e0b35c183ff3 1-94,98-99,103-104,107-108
+.planning/phases/01-foundation/01-CONTEXT.md
+  s_26099f9ddf91b0::t_f8e0b35c183ff3 1,3,10-11,17-27,30-31,38-41,49-59,66-69,72-74,77-80,86-88,93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "76db4f6e059df35da257ce7bbb1ecd19b16fc75a",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,60 @@
+packages/cli/src/vite/virtual-modules.ts
+  s_32e9e58a6a363a::t_211c634165a6db 8
+  s_32e9e58a6a363a::t_1fb74a4b49cd4e 121,131-134,136,141-148
+  s_32e9e58a6a363a::t_12caefe9a01144 155-156,174,184-185
+  s_32e9e58a6a363a::t_3be81da2b5ba5b 106,108-109,111,113
+  s_32e9e58a6a363a::t_cd5065e381a11d 2
+  s_32e9e58a6a363a::t_caca3385d9481b 138
+packages/cli/src/cli/commands/run.ts
+  s_32e9e58a6a363a::t_0d059d64ef951f 170,173-178,182
+  s_32e9e58a6a363a::t_7ff0209a5f7611 171-172
+  s_32e9e58a6a363a::t_9ae99747cbf482 44
+  s_32e9e58a6a363a::t_7256d30f09416d 299
+  s_32e9e58a6a363a::t_236d70d5a7c170 385
+  s_32e9e58a6a363a::t_19630985b1529e 98
+  s_32e9e58a6a363a::t_058a09dbccac23 3-4
+packages/cli/src/themes/default/sirenodeck.json
+  s_32e9e58a6a363a::t_943634979ad589 36-73,75-76
+packages/cli/src/themes/default/__tests__/ButtonFrame.test.tsx
+  s_32e9e58a6a363a::t_79a7c27f251dff 5
+packages/cli/src/themes/css.ts
+  s_32e9e58a6a363a::t_47746c48ec21d6 29-38,40-46,48-61,63-68,70-71,73-79,81,83-84,86-89,91
+packages/cli/src/themes/loader.ts
+  s_32e9e58a6a363a::t_c2b463e0fc5389 156-164,166,168-176
+  s_32e9e58a6a363a::t_4239205abda6ec 106,115-116
+  s_32e9e58a6a363a::t_d4c51cb02bddc8 3,11,66,69-72,80,88-91,97,146,180,183
+  s_32e9e58a6a363a::t_f4d34a8952b06d 125,129,137
+  s_32e9e58a6a363a::t_6abe120b4b012f 87,92,98,100-103
+  s_32e9e58a6a363a::t_0313598319b897 155,167,179,181-182
+packages/cli/src/themes/manifest.ts
+  s_32e9e58a6a363a::t_04bea63e4590c2 27-33,46,48
+packages/cli/src/addon/api.ts
+  s_32e9e58a6a363a::t_4d63add4546a54 95
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_32e9e58a6a363a::t_cf3123be5fabe9 46
+  s_32e9e58a6a363a::t_5c350229b8940e 73,75,86-87
+  s_32e9e58a6a363a::t_b0d31583eb13de 88
+packages/cli/src/themes/__tests__/loader.test.ts
+  s_32e9e58a6a363a::t_d849a3f43d4290 13-14,59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "1ce7400b52fb7ce8cc63cff90ffa733ec0dd35a1",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

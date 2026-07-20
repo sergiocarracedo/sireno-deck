@@ -1,0 +1,32 @@
+.planning/phases/34-button-action-command-interface/34-RESEARCH.md
+  s_ae90c119517753::t_d647d3bf80509a 1-50
+.planning/phases/34-button-action-command-interface/34-03-PLAN.md
+  s_ae90c119517753::t_d647d3bf80509a 1-78
+.planning/ROADMAP.md
+  s_ae90c119517753::t_d647d3bf80509a 131-133
+.planning/phases/34-button-action-command-interface/34-02-PLAN.md
+  s_ae90c119517753::t_d647d3bf80509a 1-75
+.planning/phases/34-button-action-command-interface/34-01-PLAN.md
+  s_ae90c119517753::t_d647d3bf80509a 1-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "c5be295d8337192b4bbabcfb7d1594dc17d60911",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_ae90c119517753": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_17709f905ffehOWAuC9CPZ8744",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

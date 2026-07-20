@@ -1,0 +1,48 @@
+packages/cli/src/system/key-macro/darwin.test.ts
+  s_9fabccd2e25c5b::t_977d644bccf030 1-38,40-52,54-66,68-78,80-95
+  s_9fabccd2e25c5b::t_f70d9e4694e467 39,53,67,79
+packages/cli/src/system/active-app/darwin.test.ts
+  s_9fabccd2e25c5b::t_170968e45aa45b 7
+  s_9fabccd2e25c5b::t_71cad7858d59c4 2-4,8-27,29-32,34-73
+  s_9fabccd2e25c5b::t_725e321aceebf1 33
+  s_9fabccd2e25c5b::t_ab0de286b06cd0 5-6
+  s_9fabccd2e25c5b::t_50970c9a853fc3 1
+  s_9fabccd2e25c5b::t_26a1e4fa5812c2 28
+packages/cli/src/system/key-macro/darwin.ts
+  s_9fabccd2e25c5b::t_1bd76f8f970626 1-70
+packages/cli/src/system/active-app/index.ts
+  s_9fabccd2e25c5b::t_d5b7a7e133b25f 13-14,36-41
+packages/cli/src/system/session-monitor/darwin.ts
+  s_9fabccd2e25c5b::t_c9f2c0449d41e6 1-77
+packages/cli/src/system/key-macro/index.ts
+  s_9fabccd2e25c5b::t_78fba3c476f0d2 14-15,37-39
+packages/cli/src/system/active-app/darwin.ts
+  s_9fabccd2e25c5b::t_a7349df8a6ba76 1-85
+packages/cli/src/system/media/darwin.test.ts
+  s_9fabccd2e25c5b::t_234fbc1934d806 1-40,42-52,54-97
+  s_9fabccd2e25c5b::t_f70d9e4694e467 41,53
+packages/cli/src/system/session-monitor/index.ts
+  s_9fabccd2e25c5b::t_307d1bc5dfa51a 10-14,18,37-43
+packages/cli/src/system/media/index.ts
+  s_9fabccd2e25c5b::t_10b5a709a44fb7 10-11,33-39
+packages/cli/src/system/media/darwin.ts
+  s_9fabccd2e25c5b::t_92188fec97c205 1-126
+packages/cli/src/system/session-monitor/darwin.test.ts
+  s_9fabccd2e25c5b::t_6ee7a563775a37 1-71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "48e85e83b44dc49a913e728cb0212fcec830497d",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

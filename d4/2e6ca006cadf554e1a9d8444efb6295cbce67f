@@ -1,0 +1,19 @@
+.planning/config.json
+  s_2cf0a7cb301f15::t_bc5d23cfff041c 1-60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "d42e6ca006cadf554e1a9d8444efb6295cbce67f",
+  "prompts": {},
+  "sessions": {
+    "s_2cf0a7cb301f15": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10c5913dbffeQRkzipq5yl95rA",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+tsconfig.json
+  s_8dee7b8335b94d::t_794ca3f6eb6a3b 15-16
+.gitignore
+  s_8dee7b8335b94d::t_8a8b3efccaa934 5-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "cb7b8847f69579cbd280cdac856d1d085fd443c8",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_8dee7b8335b94d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_158b69c7bffeqYQJX9jm91R2VC",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

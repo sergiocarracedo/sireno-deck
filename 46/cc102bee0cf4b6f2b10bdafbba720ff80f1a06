@@ -1,0 +1,130 @@
+packages/cli/src/builtin-addons/brightness/providers/index.ts
+  s_f05890b34e6e21::t_7d96d0a11e624f 1-81
+packages/cli/src/system/providers/key-macro/__tests__/darwin.test.ts
+  s_f05890b34e6e21::t_c58690a7481917 7-8
+  s_f05890b34e6e21::t_bfbe9e35406895 5
+  s_f05890b34e6e21::t_b9402234421403 1-4,6,9-122
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_f05890b34e6e21::t_070f38a4b20d7c 17,20,23,26
+  s_f05890b34e6e21::t_8f9d4788b9d4d8 105-107
+packages/cli/src/system/providers/active-app/__tests__/darwin.test.ts
+  s_f05890b34e6e21::t_b9402234421403 1-4,6-108
+  s_f05890b34e6e21::t_0b0fa8d5f9cfab 5
+packages/cli/src/system/providers/session/__tests__/darwin.test.ts
+  s_f05890b34e6e21::t_f0b1bb48e7742e 5-6
+  s_f05890b34e6e21::t_b9402234421403 1-4,7-93
+packages/cli/src/system/providers/key-macro/windows.ts
+  s_f05890b34e6e21::t_280651e73e9ee9 1-93
+packages/cli/src/system/providers/session/linux.ts
+  s_f05890b34e6e21::t_1e2bcd6d8bced7 1-112
+packages/cli/src/system/providers/key-macro/__tests__/linux.test.ts
+  s_f05890b34e6e21::t_b9402234421403 1-4,6,9-197
+  s_f05890b34e6e21::t_52a23570eb7eb9 5
+  s_f05890b34e6e21::t_9ac1ccb02e5ba1 7-8
+packages/cli/src/system/providers/active-app/darwin.ts
+  s_f05890b34e6e21::t_11216fad28fc3b 1-101
+packages/cli/src/builtin-addons/brightness/providers/windows.ts
+  s_f05890b34e6e21::t_f3ec1f720b1271 1-77
+packages/cli/src/system/providers/key-macro/__tests__/parser.test.ts
+  s_f05890b34e6e21::t_b9402234421403 1-103
+packages/cli/src/system/providers/clipboard.ts
+  s_f05890b34e6e21::t_62e31dbd60227c 4-7,56-60,63-66,69-72
+  s_f05890b34e6e21::t_e7527aa0048e56 1-3,8-55,61-62,67-68,73-79
+packages/cli/src/system/providers/clipboard/linux.ts
+  s_f05890b34e6e21::t_f6fc9aeb6c4e9f 1-68
+packages/cli/src/cli/commands/run.ts
+  s_f05890b34e6e21::t_832dff9aea6d07 89
+  s_f05890b34e6e21::t_c6131006f2aea7 19,30-34
+  s_f05890b34e6e21::t_8c69973ab5de50 214
+  s_f05890b34e6e21::t_b5315a202417b4 300,307-308,314,339,346,349-355,357,360
+  s_f05890b34e6e21::t_4dbe7dce6f32bb 26,28
+  s_f05890b34e6e21::t_2300bd3d667dc8 396
+  s_f05890b34e6e21::t_e6b3fe0306a9ea 412-413,415,433,443-444
+  s_f05890b34e6e21::t_bfebd14dfaeb2a 29
+packages/cli/src/system/providers/key-macro/linux.ts
+  s_f05890b34e6e21::t_7df38658854fd9 1-143
+packages/cli/src/system/providers/active-app/linux.ts
+  s_f05890b34e6e21::t_5125d8c726f1ed 1-213
+packages/cli/src/system/providers/session/darwin.ts
+  s_f05890b34e6e21::t_f61f7200bb8286 1-77
+packages/cli/src/builtin-addons/brightness/providers/__tests__/linux.test.ts
+  s_f05890b34e6e21::t_8ad8b829015525 1-96
+packages/cli/src/system/providers/clipboard/windows.ts
+  s_f05890b34e6e21::t_0f76674eeded80 1-44
+packages/cli/src/deck/runtime.ts
+  s_f05890b34e6e21::t_68aa47b8679257 6
+packages/cli/src/system/providers/active-app/__tests__/windows.test.ts
+  s_f05890b34e6e21::t_b9402234421403 1-4,6-104
+  s_f05890b34e6e21::t_a42b5d416d4129 5
+packages/cli/src/system/providers/shared.ts
+  s_f05890b34e6e21::t_cf8afb5679f11d 1-63
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_f05890b34e6e21::t_a7ad9638dbe293 17,20,23,26
+  s_f05890b34e6e21::t_ef99380d8ec69b 81-83
+packages/cli/src/system/providers/active-app/__tests__/linux.test.ts
+  s_f05890b34e6e21::t_b9402234421403 1-4,6-10,12-206
+  s_f05890b34e6e21::t_4dc52ff1833d37 5,11
+packages/cli/src/system/providers/session/__tests__/windows.test.ts
+  s_f05890b34e6e21::t_8de59157834a4d 5-6
+  s_f05890b34e6e21::t_b9402234421403 1-4,7-101
+packages/cli/src/system/providers/key-macro/parser.ts
+  s_f05890b34e6e21::t_e11a846d87f926 1-168
+packages/cli/src/system/providers/session/__tests__/linux.test.ts
+  s_f05890b34e6e21::t_b9402234421403 1-4,6-9,11-128
+  s_f05890b34e6e21::t_c6b4efb1c1c91e 5,10
+packages/cli/src/builtin-addons/brightness/poller.ts
+  s_f05890b34e6e21::t_d8cecfa004caff 3
+  s_f05890b34e6e21::t_22b10dc208870a 4
+packages/cli/src/system/providers/clipboard/darwin.ts
+  s_f05890b34e6e21::t_91b130dc2d56b8 1-40
+packages/cli/src/system/providers/key-macro/__tests__/windows.test.ts
+  s_f05890b34e6e21::t_c150904ef679ad 7-8
+  s_f05890b34e6e21::t_b9402234421403 1-4,6,9-117
+  s_f05890b34e6e21::t_b2d09b5db39c14 5
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_f05890b34e6e21::t_ecdb8b42c7639a 6
+packages/cli/src/system/providers/active-app.ts
+  s_f05890b34e6e21::t_5b8346b353ea30 1-99
+packages/cli/src/system/glob-match.ts
+  s_f05890b34e6e21::t_6a115c7257dd7d 1
+packages/cli/src/deck/index.ts
+  s_f05890b34e6e21::t_299e7de54b7dcb 7
+packages/cli/src/system/providers/session/windows.ts
+  s_f05890b34e6e21::t_c363ea3b33f0c8 1-73
+packages/cli/src/system/providers/key-macro/darwin.ts
+  s_f05890b34e6e21::t_12889411a68165 1-68
+packages/cli/src/system/providers/session.ts
+  s_f05890b34e6e21::t_63b1595d0de39a 1-79
+packages/cli/src/builtin-addons/brightness/providers/linux.ts
+  s_f05890b34e6e21::t_cfbdcd621dba31 1-108
+packages/cli/src/system/providers/key-macro.ts
+  s_f05890b34e6e21::t_f4de730e18735f 1-2,5-10,13-74
+  s_f05890b34e6e21::t_b5f7b7eabfe2d4 3-4,11-12
+packages/cli/src/system/providers/active-app/windows.ts
+  s_f05890b34e6e21::t_3026af673ce0e8 1-97
+packages/cli/src/builtin-addons/internal-settings/backend.ts
+  s_f05890b34e6e21::t_21aa6631d72dab 12
+  s_f05890b34e6e21::t_0b7e8cc45d2751 7-11
+packages/cli/src/system/providers/error.ts
+  s_f05890b34e6e21::t_0d23a3446d335a 1-16
+packages/cli/src/deck/methods.ts
+  s_f05890b34e6e21::t_f5cf4995c27308 5-6,12-13
+packages/cli/src/builtin-addons/brightness/providers/darwin.ts
+  s_f05890b34e6e21::t_0ed4616cf372e3 1-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "46cc102bee0cf4b6f2b10bdafbba720ff80f1a06",
+  "prompts": {},
+  "sessions": {
+    "s_f05890b34e6e21": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0ba469a0bffe525IkPSqEHqna4",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

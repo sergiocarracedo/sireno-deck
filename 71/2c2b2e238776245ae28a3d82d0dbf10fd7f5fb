@@ -1,0 +1,23 @@
+packages/cli/scripts/profile-runtime.ts
+  s_0c62b680825d4a::t_1450fe043ab4c1 14,90-94,97-109,114,125-126,129,233-235,238,245-247,249-253,255,257-258,260-267,269-270,273-277,283,286-288,290,293,297-298,303,308,310-314,318-321,334,344,349-352,355-358,366-367,373,375,385-397
+.planning/phases/57-render-pipeline-emoji-research/profile-emulator-back.txt
+  s_0c62b680825d4a::t_33f2c18939524e 2-3,8-11,14-17,27-29,33-35,39-41,45-58
+.planning/phases/57-render-pipeline-emoji-research/profile-weather-page.txt
+  s_0c62b680825d4a::t_33f2c18939524e 2-3,8-11,14-17,27-29,33-35,39-41,45-58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "712c2b2e238776245ae28a3d82d0dbf10fd7f5fb",
+  "prompts": {},
+  "sessions": {
+    "s_0c62b680825d4a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14fa596feffedU17ZzovT65yl1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+.planning/phases/06-lock-deck/06-LEARNINGS.md
+  s_586986ca02db2f::t_ced7fd4d81b014 1-145
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "ac4bd6c890826c339d3756a736b4b8a84b0a404a",
+  "prompts": {},
+  "sessions": {
+    "s_586986ca02db2f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08ee995cbffedn8iRvToXsQvlX",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

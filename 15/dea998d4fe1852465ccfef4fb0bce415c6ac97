@@ -1,0 +1,40 @@
+packages/cli/src/builtin-addons/weather/buttons/weather.test.tsx
+  s_3261d8b10ef836::t_dc7f711f9f01d9 111-146
+  s_3261d8b10ef836::t_65cf07b507b3ec 40
+packages/cli/src/builtin-addons/weather/buttons/components/Forecast.tsx
+  s_3261d8b10ef836::t_8f2005239ecabb 43
+  s_3261d8b10ef836::t_88c5c5c6896325 1-42,44-51
+packages/cli/src/builtin-addons/weather/buttons/components/Surface.tsx
+  s_d5b68b03467d25::t_3fdcbebec5a5bf 54,58,61
+  s_3261d8b10ef836::t_957b2186a7e44a 11
+  s_3261d8b10ef836::t_afbf396584823a 67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "15dea998d4fe1852465ccfef4fb0bce415c6ac97",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_3261d8b10ef836": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1667395a0fferl43AlHc5lyRrf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_d5b68b03467d25": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_166753d5bffeGTvuMTi8Do9ioN",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,54 @@
+packages/cli/src/render/browser-renderer.ts
+  s_344b68134ff779::t_a97c4631e6a8a2 51
+  s_344b68134ff779::t_f37ae95c86ba78 259-269
+packages/cli/src/cli/visual-server/prod.ts
+  s_344b68134ff779::t_ac0adf0b9ec64c 8-13,16-36
+  s_344b68134ff779::t_7d29a9710eb21a 1-7,14-15,37
+packages/cli/src/render/app/styles.css
+  s_344b68134ff779::t_ed93bdecf75c93 1
+.planning/phases/78-dev-server-scaffold/78-01-SUMMARY.md
+  s_344b68134ff779::t_a30ca64eca2328 1-71
+packages/cli/src/render/app/App.tsx
+  s_344b68134ff779::t_99b3ee65d2fcf0 1-55
+packages/cli/src/render/app/index.html
+  s_344b68134ff779::t_8e7202483a2948 1-12
+packages/cli/src/cli/visual-server/dev.ts
+  s_344b68134ff779::t_7c637cf9b8c41c 1-27
+packages/cli/package.json
+  s_344b68134ff779::t_d34a8b5a1ff21b 40,43-44,50,55,57
+packages/cli/src/cli/commands/start.ts
+  s_344b68134ff779::t_a6598b0befbcae 1330
+  s_344b68134ff779::t_b34b49ccb62930 334,350
+  s_344b68134ff779::t_abace86655f852 1120-1126,1133
+  s_344b68134ff779::t_7cc22792d88c8a 1345
+  s_344b68134ff779::t_1e88687fdf4c6d 60-65
+  s_344b68134ff779::t_a3628077f93aed 1056
+packages/cli/src/cli/visual-server/index.ts
+  s_344b68134ff779::t_1cb1c6ceb8bf4f 1-6,10-19,21-29,31-33,35
+  s_344b68134ff779::t_aafd9aeb2d6c9d 7-9,20,30,34,36
+packages/cli/src/cli/visual-server/index.test.ts
+  s_344b68134ff779::t_b9308d54f77502 1-77,79-96
+  s_344b68134ff779::t_6d1d36f99073b3 78
+packages/cli/src/render/app/App.test.tsx
+  s_344b68134ff779::t_761181c11f15a6 1-27
+packages/cli/vite.config.ts
+  s_344b68134ff779::t_94fb57f384334f 1-29
+packages/cli/src/render/app/main.tsx
+  s_344b68134ff779::t_4955c1f528bef3 1-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "0a787426635f888dc831239ec378140de628c2b3",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

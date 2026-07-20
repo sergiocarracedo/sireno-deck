@@ -1,0 +1,21 @@
+packages/cli/src/cli/commands/run.ts
+  s_8ca911650149ee::t_d1858eb85a33eb 283-284
+packages/cli/src/render/ws-bridge.ts
+  s_8ca911650149ee::t_b781d9c6a6ddaa 15-16,33,36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "2f9da8e86280ddeef98fb9d4d257223ceee12ba5",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+.planning/phases/09-calendar-authoring-clarity/09-UAT.md
+  s_07525a126d5ed9::t_5e6482b377d544 6,8,35,38,44-56
+packages/cli/src/core/schemas.ts
+  s_07525a126d5ed9::t_3b84d805859b76 255
+README.md
+  s_07525a126d5ed9::t_5e6482b377d544 1-32
+packages/cli/fixtures/phase-9/jsx-addon-authoring-example.tsx
+  s_07525a126d5ed9::t_5e6482b377d544 1-36
+packages/cli/fixtures/phase-9/tsconfig.jsx-authoring-example.json
+  s_07525a126d5ed9::t_5e6482b377d544 1-22
+packages/cli/src/render/reconciler.test.tsx
+  s_07525a126d5ed9::t_5e6482b377d544 10-17,236-240
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "3bd3fdef3be9249d9d4f0ac1c55cc41c7949cdc8",
+  "prompts": {},
+  "sessions": {
+    "s_07525a126d5ed9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d02b34d4ffefwtui9X14TkpRF",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

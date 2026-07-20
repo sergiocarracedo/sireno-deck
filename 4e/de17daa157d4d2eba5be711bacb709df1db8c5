@@ -1,0 +1,20 @@
+.planning/phases/78-dev-server-scaffold/78-UAT.md
+  s_344b68134ff779::t_bb3d668ddd24d5 122,124
+  s_344b68134ff779::t_df5ace2f846a21 144
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "4ede17daa157d4d2eba5be711bacb709df1db8c5",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

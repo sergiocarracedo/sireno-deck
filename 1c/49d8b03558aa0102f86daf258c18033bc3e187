@@ -1,0 +1,26 @@
+packages/cli/src/cli/commands/run.ts
+  s_9fabccd2e25c5b::t_282febc0f3ba1b 23
+packages/cli/src/builtin-addons/register-builtins.ts
+  s_9fabccd2e25c5b::t_6bc3f3b54b368e 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "1c49d8b03558aa0102f86daf258c18033bc3e187",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

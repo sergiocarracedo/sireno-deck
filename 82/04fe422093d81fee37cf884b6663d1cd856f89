@@ -1,0 +1,121 @@
+packages/cli/src/cli/commands/start.test.ts
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 117-121,273-277
+  s_9fabccd2e25c5b::t_7662612824a1d2 270-272,278
+  s_9fabccd2e25c5b::t_afc728bf76d54d 114-116,122
+vitest.config.ts
+  s_9fabccd2e25c5b::t_b8c3e8c8cf6ce4 12-15,17
+  s_9fabccd2e25c5b::t_e33fc084647898 16
+packages/cli/src/themes/default/components/TapIndicator.tsx
+  s_9fabccd2e25c5b::t_7e867402f39451 1-18
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 19
+packages/cli/src/themes/default/components/Label.tsx
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 26
+  s_9fabccd2e25c5b::t_3b80729de1481f 1-25
+packages/cli/src/themes/default/components/Chip.tsx
+  s_9fabccd2e25c5b::t_b07c79d99c375f 1-35
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 36
+packages/cli/src/themes/default/components/Icon.tsx
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 37
+  s_9fabccd2e25c5b::t_93f7cb257a2372 1-36
+packages/cli/src/themes/default/components/Text.tsx
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 56
+  s_9fabccd2e25c5b::t_6c4afd978b0af5 1-55
+packages/cli/src/vite/virtual-modules.ts
+  s_9fabccd2e25c5b::t_28e3fe8c70b43d 1,4-9,13,22-27,51-75,79,86-87,93-94
+packages/cli/frontend/src/__mocks__/theme.ts
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 1
+packages/cli/src/themes/default/theme.css
+  s_9fabccd2e25c5b::t_82a5ec0e7f41b2 1-58
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 59
+packages/cli/src/themes/default/surfaces/LabelValueList.tsx
+  s_9fabccd2e25c5b::t_3fd84ceb3869ec 1-38
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 39
+packages/cli/frontend/vite.config.ts
+  s_9fabccd2e25c5b::t_4b1903a32fab34 6-31,33-40
+packages/cli/src/themes/use-resolved-theme.tsx
+  s_9fabccd2e25c5b::t_2b938bcf60a287 1-11,13-30
+  s_9fabccd2e25c5b::t_02f5c02d567547 12
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 31
+packages/cli/src/cli/commands/run.test.ts
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 130-134
+  s_9fabccd2e25c5b::t_8cea2889c5ca05 127-129,135
+packages/cli/src/themes/loader.ts
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 46
+  s_9fabccd2e25c5b::t_46fa373ffdfbdd 1-45
+packages/cli/src/builtin-addons/register-builtins.ts
+  s_9fabccd2e25c5b::t_d6df33ed4cb2cb 3-4,10
+packages/cli/src/themes/default/__tests__/ButtonFrame.test.tsx
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 111
+  s_9fabccd2e25c5b::t_bb96ee7dfe0299 1-110
+packages/cli/src/themes/index.ts
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 11-16
+  s_9fabccd2e25c5b::t_055e88c46a4046 1-10
+.planning/phases/08-builtin-themes/08-DISCUSSION-LOG.md
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 25
+packages/cli/frontend/src/__mocks__/themes-manifest.tsx
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 1-75
+packages/cli/src/themes/default/surfaces/IconLabel.tsx
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 17
+  s_9fabccd2e25c5b::t_e3f710af0a788d 1-16
+packages/cli/src/themes/__tests__/loader.test.ts
+  s_9fabccd2e25c5b::t_23b46dfc276678 1-5,7-54,61
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 55-60,62
+  s_9fabccd2e25c5b::t_76d77fec7c95ca 6
+packages/cli/src/themes/default/surfaces/Bars.tsx
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 46
+  s_9fabccd2e25c5b::t_5666d1cb17f87b 1-45
+packages/cli/src/themes/default/ButtonFrame.tsx
+  s_9fabccd2e25c5b::t_dd8c413723706b 1-83
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 84
+.planning/phases/08-builtin-themes/08-CONTEXT.md
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 82,93-94,104,124,151,161-162
+packages/cli/src/addon/registry.ts
+  s_9fabccd2e25c5b::t_565eaec7795299 4,17,72-105,110
+packages/cli/src/addon/manifest.ts
+  s_9fabccd2e25c5b::t_b50c3885339483 39-45,48-51,53,77,79,83-85
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 52,78
+.planning/phases/08-builtin-themes/08-RESEARCH.md
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 13,120,149,163
+packages/cli/frontend/src/App.tsx
+  s_9fabccd2e25c5b::t_145266463e254f 3,6,32-47,50,76-83,85-100
+packages/cli/frontend/src/index.css
+  s_9fabccd2e25c5b::t_61f319bde2ea63 2,5-14
+packages/cli/src/themes/default/surfaces/SplitAction.tsx
+  s_9fabccd2e25c5b::t_f5fc18722e88ad 1-20
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 21
+packages/cli/src/addon/loader.ts
+  s_9fabccd2e25c5b::t_6449cac18d5e85 5-10,29,70-86,111-113,115,117,128,160,188
+.planning/phases/08-builtin-themes/08-01-PLAN.md
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 125-127
+packages/cli/src/addon/api.ts
+  s_9fabccd2e25c5b::t_521beed123a70f 7-8,74-75,77,83-88
+packages/cli/src/cli/commands/run.ts
+  s_9fabccd2e25c5b::t_44829d6e65ecdc 23
+  s_9fabccd2e25c5b::t_96ea3d7d59bfc7 120-126
+.planning/phases/08-builtin-themes/08-02-PLAN.md
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 29-30
+packages/cli/frontend/src/components/ButtonFrame.tsx
+  s_9fabccd2e25c5b::t_33d83e46be0df8 2,20-34,42-43,45-46,48-51,54,60
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 4
+  s_9fabccd2e25c5b::t_2dc4896edf01fd 7,9,14,17-18,65-67,76-84,86-119,128-139,141-142
+  s_9fabccd2e25c5b::t_d7f1a5d86925f6 1,19,35-41,44,47,59,61-63,85,120-125
+packages/cli/src/themes/default/index.tsx
+  s_9fabccd2e25c5b::t_4c8e8101972283 1-40
+  s_9fabccd2e25c5b::t_c0ada01cf8731e 41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "8204fe422093d81fee37cf884b6663d1cd856f89",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

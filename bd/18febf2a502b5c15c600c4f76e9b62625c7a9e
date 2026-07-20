@@ -1,0 +1,31 @@
+.planning/phases/02-device-rendering/02-02-PLAN.md
+  s_136b450bea3e1f::t_8b26fd1475043f 1-91
+.planning/phases/02-device-rendering/02-03-PLAN.md
+  s_136b450bea3e1f::t_d2cc7da120bbfc 1-86
+.planning/phases/02-device-rendering/02-01-PLAN.md
+  s_136b450bea3e1f::t_8b26fd1475043f 1-7,10-21,23-26,28-60,62-64,67-68,70-71,73-74,76-94
+  s_136b450bea3e1f::t_d2cc7da120bbfc 8-9,22,27,61,65-66,69,72,75
+.planning/phases/02-device-rendering/02-RESEARCH.md
+  s_136b450bea3e1f::t_3d6aa0167ae98b 1-78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "bd18febf2a502b5c15c600c4f76e9b62625c7a9e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

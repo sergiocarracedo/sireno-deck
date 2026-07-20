@@ -1,0 +1,28 @@
+.planning/phases/12-backgrounds-text-fitting/12-01-PLAN.md
+  s_50714901791ebe::t_93118a13dc0d08 1-103
+.planning/phases/12-backgrounds-text-fitting/12-02-PLAN.md
+  s_50714901791ebe::t_93118a13dc0d08 1-99
+.planning/phases/12-backgrounds-text-fitting/12-RESEARCH.md
+  s_50714901791ebe::t_c2fcd87cb823ac 1-46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "d226e01da88cbedcd814fda99827741ab115fcd7",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_50714901791ebe": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cad490d1ffe7qtGxWMYgUngfy",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

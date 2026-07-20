@@ -1,0 +1,30 @@
+.planning/phases/04-verification-and-contract-cleanup/04-01-PLAN.md
+  s_bd261d9d2ee90a::t_487bbd54e49138 1-68
+.planning/phases/04-verification-and-contract-cleanup/04-RESEARCH.md
+  s_bd261d9d2ee90a::t_15f507d3079f6b 1-100
+.planning/phases/04-verification-and-contract-cleanup/04-02-PLAN.md
+  s_bd261d9d2ee90a::t_fa8ca79dfa7f89 58
+  s_bd261d9d2ee90a::t_d51bd309da2b00 42
+  s_bd261d9d2ee90a::t_487bbd54e49138 1-41,43-57,59-69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "cc2088349f1488483c5e97d97ab5a118c968f90d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_bd261d9d2ee90a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_191f2cdb0ffeLEC0tibNQY6g6z",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

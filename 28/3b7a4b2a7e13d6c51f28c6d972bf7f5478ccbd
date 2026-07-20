@@ -1,0 +1,57 @@
+packages/cli/src/react/hooks.test.tsx
+  s_9fabccd2e25c5b::t_8652ecc27dd21c 3-4,8-13,16-18,21-23,25-26,29-42,45-47,49-51,53-54
+  s_9fabccd2e25c5b::t_168885c5f195e6 1
+  s_9fabccd2e25c5b::t_e3aa6ecc470589 2,6-7,14-15,19-20,24,27-28,43-44,48,52
+  s_9fabccd2e25c5b::t_9edf89a97e9652 5
+packages/cli/src/react/registry.ts
+  s_9fabccd2e25c5b::t_b7760e94aab07a 3-4
+  s_9fabccd2e25c5b::t_0aeb2333fb70fc 1
+  s_9fabccd2e25c5b::t_be3535970dd398 5
+  s_9fabccd2e25c5b::t_5031aafab8b28f 2,6-50
+packages/cli/frontend/src/bridge/client.ts
+  s_9fabccd2e25c5b::t_36ad901c0b93ce 1
+  s_9fabccd2e25c5b::t_d7a689501b48a3 2-70,79-103
+  s_9fabccd2e25c5b::t_8c570ed7d6e537 71-78
+packages/cli/frontend/src/App.tsx
+  s_9fabccd2e25c5b::t_28609126dfa004 3-5,12,15,20-27,34-54,62-70
+vitest.config.ts
+  s_9fabccd2e25c5b::t_ef275ef05c53e7 9-11
+packages/cli/src/react/use-addon-channel.ts
+  s_9fabccd2e25c5b::t_4911ea4342ed8b 1-2,4-10,14-24
+  s_9fabccd2e25c5b::t_0261865384c3bc 3
+  s_9fabccd2e25c5b::t_ef275ef05c53e7 11-13
+packages/cli/src/react/use-deck.ts
+  s_9fabccd2e25c5b::t_ef275ef05c53e7 10-11,15-20
+  s_9fabccd2e25c5b::t_af4e68b8e9f855 1-9,12-14,21-24
+packages/cli/frontend/src/__mocks__/token.ts
+  s_9fabccd2e25c5b::t_de8270dcfc63dc 1-2
+packages/cli/frontend/src/bridge/client.test.ts
+  s_9fabccd2e25c5b::t_7ccd77ac06568e 3
+  s_9fabccd2e25c5b::t_80780a66b5e67b 1-2,4-94
+packages/cli/src/react/use-button-action.ts
+  s_9fabccd2e25c5b::t_7d86a958f40cac 1-22
+packages/cli/src/react/index.ts
+  s_9fabccd2e25c5b::t_0a1e5579969528 1-4
+.planning/phases/04-ws-frontend/04-03-SUMMARY.md
+  s_9fabccd2e25c5b::t_a4dc66685bc2b6 1-81
+packages/cli/frontend/src/__tests__/ws-integration.test.tsx
+  s_9fabccd2e25c5b::t_23f64fb02de570 1-4,6-18,20-29
+  s_9fabccd2e25c5b::t_3d613e4671ece4 5
+  s_9fabccd2e25c5b::t_ef275ef05c53e7 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "283b7a4b2a7e13d6c51f28c6d972bf7f5478ccbd",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

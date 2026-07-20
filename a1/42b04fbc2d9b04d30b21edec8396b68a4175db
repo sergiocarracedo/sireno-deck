@@ -1,0 +1,23 @@
+.planning/phases/71-gesture-state-machine-hardening/71-UAT.md
+  s_1eb393451cb328::t_22126638f1e390 20-24,32-34
+  s_1eb393451cb328::t_2477b1ed2572f1 35-42,45,67-69,75,81
+  s_1eb393451cb328::t_949f54c79953cb 25-31
+  s_1eb393451cb328::t_3955fa5b4a8c9f 1,3-7,9-11,14,43-44,48-50,53-55,58-60,64-66,70-73,78-80
+  s_1eb393451cb328::t_cac1d3af5a7197 2,8,12-13,15-19,46-47,51-52,56-57,61-63,74,76-77,82-90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "a142b04fbc2d9b04d30b21edec8396b68a4175db",
+  "prompts": {},
+  "sessions": {
+    "s_1eb393451cb328": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_12da2f406ffecZQ7Y4h0yXu6ko",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

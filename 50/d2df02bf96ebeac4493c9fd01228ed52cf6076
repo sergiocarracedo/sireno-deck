@@ -1,0 +1,24 @@
+.planning/v0.1.0-MILESTONE-AUDIT.md
+  s_9fabccd2e25c5b::t_63dd274c960752 2,5
+  s_9fabccd2e25c5b::t_b8be8c3cea4954 100,102-107
+.planning/quick/007-fix-remaining-gaps/007-PLAN.md
+  s_9fabccd2e25c5b::t_462864a6c4a93f 1-77
+.planning/quick/007-fix-remaining-gaps/007-SUMMARY.md
+  s_9fabccd2e25c5b::t_a18e60afd2edad 1-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "50d2df02bf96ebeac4493c9fd01228ed52cf6076",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

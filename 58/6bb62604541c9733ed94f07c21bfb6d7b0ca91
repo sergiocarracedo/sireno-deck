@@ -1,0 +1,29 @@
+packages/cli/src/builtin-addons/media/providers/linux.ts
+  s_1536f7656586f7::t_0e1983437fa159 98,102-103
+  s_1536f7656586f7::t_1a177ba4941050 47,52
+packages/cli/src/builtin-addons/media/providers/__tests__/linux.test.ts
+  s_1536f7656586f7::t_d65bb60642d591 25,38
+  s_1536f7656586f7::t_2d6f31f63e57f6 116,118,123,130,132,136-137,145-171
+  s_1536f7656586f7::t_037be88342793b 172
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.11",
+  "base_commit_sha": "586bb62604541c9733ed94f07c21bfb6d7b0ca91",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_1536f7656586f7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b4ec28b6ffei6PluMvMMjTOGE",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

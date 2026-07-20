@@ -1,0 +1,26 @@
+packages/cli/src/cli/commands/start.ts
+  s_4e4ee307096ddc::t_078f3674dbfef2 64
+packages/cli/src/cli/index.ts
+  s_4e4ee307096ddc::t_6fab456e11cc97 31-42,59-63,71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "aa18d533e7580222b7201048b56fff71f2a2bc47",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

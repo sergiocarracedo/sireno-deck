@@ -1,0 +1,31 @@
+.planning/phases/58-performance-fixes/profile-browser-weather.txt
+  s_0c62b680825d4a::t_d83b6a20f872f1 2,26-27,33-34,40-41,45
+packages/cli/src/render/browser-renderer.test.ts
+  s_0c62b680825d4a::t_a10c95e34bff2c 641-642,645
+  s_0c62b680825d4a::t_3643241bcaa902 609-633,643-644,646-651
+  s_0c62b680825d4a::t_c959289bcffacd 634-640
+packages/cli/src/render/browser-renderer.ts
+  s_0c62b680825d4a::t_23ad98179f58f9 55
+  s_0c62b680825d4a::t_d854431e6ef6a8 385-388,393
+  s_0c62b680825d4a::t_4c9a0ac3c5f9b0 230-241
+  s_0c62b680825d4a::t_8c04d35b164bf8 428
+  s_0c62b680825d4a::t_e9677ae3833e88 406
+.planning/phases/58-performance-fixes/profile-browser-back.txt
+  s_0c62b680825d4a::t_d83b6a20f872f1 2,26-27,33-34,40-41,45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "559ba805e7057f31b73146bb008f95ad12bc65d9",
+  "prompts": {},
+  "sessions": {
+    "s_0c62b680825d4a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14fa596feffedU17ZzovT65yl1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

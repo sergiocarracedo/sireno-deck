@@ -1,0 +1,30 @@
+packages/cli/src/util/daemon.ts
+  s_9fabccd2e25c5b::t_bfc7ac4d97028e 3,13-14,41-42,71-80,88-126
+  s_9fabccd2e25c5b::t_f10827556ff4cd 81-87
+  s_9fabccd2e25c5b::t_9b65a0e48a2b12 1-2
+  s_9fabccd2e25c5b::t_22fce8038710bc 127
+packages/cli/src/util/daemon.test.ts
+  s_9fabccd2e25c5b::t_36a13945d6ea78 1-17,23,26-30,32-141
+  s_9fabccd2e25c5b::t_6c9193a263ef43 18-22,24-25,31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "53abeebbfd0c7c212b32fd63ff50ae06159d3910",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,61 @@
+packages/cli/src/builtin-addons/session/index.ts
+  s_55abdbe20bc1a9::t_a1ef3b90a8b4af 15
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_55abdbe20bc1a9::t_e240f9a6b39dd5 523-532
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-9,11-23,25-26,29-39,43-47,51-52,54-57,59-60,63-65,68,71-77,79,83-84,86,88,91,93,96,100,102,104-105,110-111,113-115,117,119-121,123-124,126-129,131,134-138,141-147,150-153,155-156,158-161,163-170,177-179,181-190,193-199,201,205-206,208,210,213,215,218,222,224,226-229,231-233,235,237-239,241-242,244-247,249,252-256,259-262,264-268,270-277,281-283,285-294,299-300,302-303,305-307,309,312-313,316,318-321,323,325-328,330,333,335,394-399,404-411,413-414,418-424,429-430,432,442-443,453,463-464,466,468-470,474-476,478-482,485-490,492,494,496,506,508-509,519-520,535-537,544,547,549-550,553-554
+  s_55abdbe20bc1a9::t_5756f93b36f9a8 10
+  s_55abdbe20bc1a9::t_debaff9c2409b8 341-384,386-388
+packages/cli/src/builtin-addons/emoji-selector/index.tsx
+  s_55abdbe20bc1a9::t_f4a0664cc4618c 6,15,20,25,30
+  h_f90ee31b03fc41 16,21,26,31-33
+packages/cli/src/builtin-addons/brightness/index.ts
+  s_55abdbe20bc1a9::t_89977366c737f7 12
+packages/cli/src/cli/commands/__tests__/emulator-mode-build-config.test.ts
+  s_55abdbe20bc1a9::t_bd8106910258f5 64-153
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 14
+packages/cli/src/builtin-addons/media/index.ts
+  s_55abdbe20bc1a9::t_0fe986d64881ea 19,23,27,31
+packages/cli/src/config/validation.ts
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 97-104
+  s_55abdbe20bc1a9::t_115d58cf7c22e4 52,54
+packages/cli/src/builtin-addons/core-buttons/index.ts
+  s_55abdbe20bc1a9::t_3cd87a2ea584c7 18,22,26,30,41,43,45
+packages/cli/src/builtin-addons/weather/index.ts
+  s_55abdbe20bc1a9::t_0dbc9882520d9b 12
+packages/cli/src/cli/commands/run.ts
+  s_55abdbe20bc1a9::t_95e504162b8595 670-676
+  s_55abdbe20bc1a9::t_168939ef65bc88 363-365
+  s_55abdbe20bc1a9::t_6a0ff053d58b1e 510-516
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 1-20,25-30,36,38,45,50-56,59,64-65,67-69,71,74-85,89-98,100-105,109-111,114,116-117,121-122,126,128,131-132,134,140,142-143,146,152,155,158,160,162,164,167-168,171-182,186,193,195-196,198-199,217,230-255,260,265-266,268-269,271-274,276,278-280,282,285-287,289-291,293-294,298-299,301-304,310-312,316-317,319,329,331,333,337-338,340,347,352,354,362,367,369,373,376-378,380,382-383,390,392-394,396,398,400,415-416,418-419,422-423,437,439,441-442,444,447,451-452,455,458,462-463,465,473-474,476-477,491,495-497,507-508,522-524,526,528,530,533,535,541-542,546-547,550-552,554,557-558,560-561,567-568,570,575,580-581,584,586,588-589,591,593-595,601-602,605,607-612,621-622,624,626-628,631-634,638-643,645,651,656,658,668-669,677-681,684-686,689-690,692-693,695,697,699-701,703-706,708,711,715-716,719,723,729-730,744,746-749,751,754,763-764,768,770,773,775-778,780,782
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_55abdbe20bc1a9::t_da9a230fb1dceb 22,26,30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "0a10d384fdda4025859b6d1ad61634ece22a4668",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_2f9cf0bce2d3f2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0c34dca1dffeMWwXRmmOkm50oI",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_55abdbe20bc1a9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0c2dcb067ffeT2vd4CebpVh5lf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

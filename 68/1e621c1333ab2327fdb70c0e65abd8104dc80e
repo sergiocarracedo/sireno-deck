@@ -1,0 +1,29 @@
+themes/light.yml
+  s_71e6a060343f2a::t_82c5e2b50f3844 11-13,16-18,21
+  h_f90ee31b03fc41 10,15,20
+packages/cli/fixtures/phase-7/config.shared-light.yml
+  s_71e6a060343f2a::t_82c5e2b50f3844 10
+packages/cli/fixtures/phase-7/config.shared-dark.yml
+  s_71e6a060343f2a::t_82c5e2b50f3844 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "681e621c1333ab2327fdb70c0e65abd8104dc80e",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_71e6a060343f2a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d4ea86edffetdTde7xRydjX5C",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

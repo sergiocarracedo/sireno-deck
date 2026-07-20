@@ -1,0 +1,34 @@
+.planning/STATE.md
+  s_e06ba814786f41::t_13085047b3ab31 5,8,12,14,17,50-51,64,89,91
+  s_e06ba814786f41::t_efc022735fb3ab 13
+  s_50714901791ebe::t_6ec09521c20868 15,52-55,65,90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "4920e91335ab49d9e59c4861f72762f8b6844390",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_50714901791ebe": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cad490d1ffe7qtGxWMYgUngfy",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_e06ba814786f41": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cdbbfeb7ffeiGr3NE6kyhBbXk",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

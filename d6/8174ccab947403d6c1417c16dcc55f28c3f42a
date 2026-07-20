@@ -1,0 +1,28 @@
+.planning/quick/040-weather-forecast-reduce-to-2/040-SUMMARY.md
+  s_908d014142bc69::t_c62ab64a4a040c 1-20
+.planning/quick/040-weather-forecast-reduce-to-2/040-PLAN.md
+  s_908d014142bc69::t_ed870d1d819c0c 1-29
+packages/cli/src/builtin-addons/weather/buttons/components/Forecast.tsx
+  s_908d014142bc69::t_7328495cec4128 27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d68174ccab947403d6c1417c16dcc55f28c3f42a",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_908d014142bc69": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15e0e3cfbffe6xh6RWjPEUvQJN",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_64b0a20264500f::t_5d24c136dd5e79 1-4,30
+packages/cli/src/builtin-addons/date-time/buttons/calendar-sheet.tsx
+  s_ae90c119517753::t_c6b58733a74e77 1-5,33
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock.tsx
+  s_ae90c119517753::t_c6b58733a74e77 2-5
+packages/cli/src/builtin-addons/date-time/buttons/date-time.tsx
+  s_ae90c119517753::t_c6b58733a74e77 1,38,49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "c2b98690106613cfaae89bbdc806ba20e2945a91",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_64b0a20264500f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_177461909ffeUmLmSRYWKcY35o",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_ae90c119517753": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_17709f905ffehOWAuC9CPZ8744",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

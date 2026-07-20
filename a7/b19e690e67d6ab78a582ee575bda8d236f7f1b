@@ -1,0 +1,39 @@
+packages/cli/src/builtin-addons/date-time/buttons/calendar-sheet.tsx
+  s_b21ef815cd71c9::t_b396bb58bb9a1c 1-55
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile.tsx
+  s_b21ef815cd71c9::t_b396bb58bb9a1c 1-55
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_b21ef815cd71c9::t_b396bb58bb9a1c 1-2,8-16
+  s_b21ef815cd71c9::t_950b978fcceb31 3-6
+packages/cli/src/builtin-addons/date-time/index.test.ts
+  s_b21ef815cd71c9::t_950b978fcceb31 176,207-208,233-234
+  s_b21ef815cd71c9::t_b396bb58bb9a1c 3,14-50,146,150-153,158-159,162,169-174,195,201-203,221,227-229
+packages/cli/src/builtin-addons/date-time/buttons/date-time.tsx
+  s_b21ef815cd71c9::t_b396bb58bb9a1c 3-7,9,44
+  h_f90ee31b03fc41 14-19,38
+packages/cli/src/builtin-addons/date-time/schemas.ts
+  s_b21ef815cd71c9::t_b396bb58bb9a1c 1-36
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock.tsx
+  s_b21ef815cd71c9::t_b396bb58bb9a1c 1-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "a7b19e690e67d6ab78a582ee575bda8d236f7f1b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b21ef815cd71c9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_194c6ab8dffeZgB4hXir7Qu8T0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

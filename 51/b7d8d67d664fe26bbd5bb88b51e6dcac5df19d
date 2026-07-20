@@ -1,0 +1,20 @@
+packages/cli/frontend/src/App.tsx
+  s_8ca911650149ee::t_0133c7cd1b32fa 73
+  s_8ca911650149ee::t_2ba24ee0cc2c77 40-54,56,58,60,62,64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "51b7d8d67d664fe26bbd5bb88b51e6dcac5df19d",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

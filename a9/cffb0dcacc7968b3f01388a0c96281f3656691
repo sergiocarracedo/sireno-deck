@@ -1,0 +1,25 @@
+packages/cli/src/builtin-addons/core-buttons/index.test.ts
+  s_b5888af49640de::t_bfcc6c0d6c2092 535-536,538-546,548-550,553-559,562-564,566-598
+  s_b5888af49640de::t_1ed751c2474c75 534,537,547,551-552,560-561,565
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a9cffb0dcacc7968b3f01388a0c96281f3656691",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b5888af49640de": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15438c969ffeR54heuHaj7FhxV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+packages/cli/src/builtin-addons/core/index.ts
+  s_586986ca02db2f::t_ab2e270c66e104 41,46-49,55-57
+  s_586986ca02db2f::t_53f5b328516db6 40,42-45,50-54,58-60
+packages/cli/src/deck/runtime.ts
+  s_586986ca02db2f::t_e00c03fbe151cf 104
+  s_586986ca02db2f::t_490c3085e24d1e 141-144
+packages/cli/src/deck/__tests__/lock-deck.test.ts
+  s_586986ca02db2f::t_03189fe853c3b9 1,10,21-46,91-94,96,104-106,109-117,131-136,148-154,171-174,187-193,214,233,251-257,280,285,291,306,322-327,334
+  s_586986ca02db2f::t_e3a77a74de4789 47
+packages/cli/src/cli/commands/addon-decks.ts
+  s_586986ca02db2f::t_a5a70f22935a17 164,172-177
+  s_586986ca02db2f::t_8e5aa554fdadc0 166
+packages/cli/src/cli/commands/run.ts
+  s_586986ca02db2f::t_738ab3174388c8 486
+  s_586986ca02db2f::t_fe5fd13ea62bf0 481-485,487
+packages/cli/src/deck/__tests__/overlay-lock-resume.test.ts
+  s_586986ca02db2f::t_2529ec687f594f 110,137,172,208-214,239
+  s_586986ca02db2f::t_bd36f8704a8841 11,16-40
+  s_586986ca02db2f::t_038a7326ee365f 78
+  s_586986ca02db2f::t_fad25ce53f7064 41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "47a25252b3e6703bd8ff67edd74c127f719c5d40",
+  "prompts": {},
+  "sessions": {
+    "s_586986ca02db2f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08ee995cbffedn8iRvToXsQvlX",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

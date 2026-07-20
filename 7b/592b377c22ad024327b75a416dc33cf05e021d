@@ -1,0 +1,29 @@
+packages/cli/frontend/src/index.css
+  s_8ca911650149ee::t_04380e898503c2 5
+packages/cli/src/themes/default/assets/README.txt
+  s_8ca911650149ee::t_b1380d08524219 1-106
+packages/cli/src/themes/light/theme.css
+  s_8ca911650149ee::t_daea8801ced532 2-17,22-37
+packages/cli/src/themes/default/assets/OFL.txt
+  s_8ca911650149ee::t_b1380d08524219 1-93
+packages/cli/src/themes/default/assets/IBM_Plex_Mono/OFL.txt
+  s_8ca911650149ee::t_b1380d08524219 1-93
+packages/cli/src/themes/default/theme.css
+  s_8ca911650149ee::t_afa8fb7267a65b 1-23,25-40,71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "7b592b377c22ad024327b75a416dc33cf05e021d",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

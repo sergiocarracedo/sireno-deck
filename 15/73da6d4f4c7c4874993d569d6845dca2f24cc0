@@ -1,0 +1,21 @@
+packages/cli/src/themes/default/surfaces/LabelValueList.tsx
+  s_8ca911650149ee::t_bc756d2478c47d 1,13
+packages/cli/src/themes/default/components/Text.tsx
+  s_8ca911650149ee::t_20bb84024d75fb 58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "1573da6d4f4c7c4874993d569d6845dca2f24cc0",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

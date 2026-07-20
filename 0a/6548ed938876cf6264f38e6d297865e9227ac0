@@ -1,0 +1,33 @@
+.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-01-PLAN.md
+  s_4a24c7997d2c84::t_03d48f9ac527da 1-73
+.planning/ROADMAP.md
+  s_4a24c7997d2c84::t_03d48f9ac527da 253-254
+.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-02-PLAN.md
+  s_4a24c7997d2c84::t_03d48f9ac527da 1,5-73
+  s_4a24c7997d2c84::t_bd1139151187e1 2-4
+.planning/phases/23-jsx-tsx-addon-buttons-startup-image/23-RESEARCH.md
+  s_4a24c7997d2c84::t_03d48f9ac527da 1-69
+.planning/STATE.md
+  s_4a24c7997d2c84::t_03d48f9ac527da 8,13-15,88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "0a6548ed938876cf6264f38e6d297865e9227ac0",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4a24c7997d2c84": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1a091daeaffeKrjgERsZBqFExO",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

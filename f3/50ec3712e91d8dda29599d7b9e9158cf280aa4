@@ -1,0 +1,28 @@
+packages/cli/src/cli/commands/__tests__/emulator-mode.test.ts
+  s_32e9e58a6a363a::t_14d96bd02bd2cd 143,148
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_32e9e58a6a363a::t_0f583d9cfc63b9 201,203
+  h_f90ee31b03fc41 17-18,127,136,164-165,239,266-267,300
+  s_32e9e58a6a363a::t_715b336acb8ec8 89,91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "f350ec3712e91d8dda29599d7b9e9158cf280aa4",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_32e9e58a6a363a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0eb4b8a2bffeiKQarMTqNaR94W",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

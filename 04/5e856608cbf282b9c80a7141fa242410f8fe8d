@@ -1,0 +1,29 @@
+packages/cli/src/builtin-addons/emoji-selector/support.tsx
+  s_bab938378ab377::t_600493db9fc483 7-14,16-18,20-21,40-42,46-48,53,55
+  s_bab938378ab377::t_2a167489f48320 15,19,22-39,43-45,49-52,54
+packages/cli/src/builtin-addons/emoji-selector/data/categories.json
+  s_bab938378ab377::t_b50c9047f6d1fa 1-462
+packages/cli/src/builtin-addons/emoji-selector/index.test.ts
+  s_bab938378ab377::t_0b4c002e4a2ed8 211-212,214-215,231,234
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "045e856608cbf282b9c80a7141fa242410f8fe8d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_bab938378ab377": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16388a05dffeQ84UIVBVOB9XaV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

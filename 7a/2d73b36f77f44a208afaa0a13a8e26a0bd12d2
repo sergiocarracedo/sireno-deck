@@ -1,0 +1,53 @@
+.planning/phases/09-builtin-addons/09-PHASE.md
+  s_9fabccd2e25c5b::t_13eee32df89266 1-36
+.planning/phases/11-release/11-PHASE.md
+  s_9fabccd2e25c5b::t_7215679429802e 1-23
+.planning/phases/07-os-providers/07-PHASE.md
+  s_9fabccd2e25c5b::t_d13865bb0e33af 1-39
+.planning/phases/02-config-addons/02-PHASE.md
+  s_9fabccd2e25c5b::t_26b631e1e6962d 1-80
+.planning/phases/10-daemon-polish/10-PHASE.md
+  s_9fabccd2e25c5b::t_3fd15bb4dc2751 1-52
+.planning/STATE.md
+  s_9fabccd2e25c5b::t_32127d9ca05c4e 1-82
+.planning/phases/01-scaffold/01-PHASE.md
+  s_9fabccd2e25c5b::t_33025e55b261b0 1-65
+.planning/phases/05-emulator/05-PHASE.md
+  s_9fabccd2e25c5b::t_84b3c4dd03f3cd 1-49
+.planning/phases/08-builtin-themes/08-PHASE.md
+  s_9fabccd2e25c5b::t_b3c70de17f636d 1-49
+.planning/ROADMAP.md
+  s_9fabccd2e25c5b::t_dae841bec45e41 1-58
+.planning/AGENTS.md
+  s_9fabccd2e25c5b::t_4567bf6760b8ea 1-94
+.planning/phases/01-scaffold/01-00-SUMMARY.md
+  s_9fabccd2e25c5b::t_3280cb8bf1fc0b 1-45
+.planning/phases/03-deck-runtime/03-CONTEXT.md
+  s_9fabccd2e25c5b::t_aa5b039b15ac98 1-132
+.planning/phases/02-config-addons/02-00-SUMMARY.md
+  s_9fabccd2e25c5b::t_8ef70489c38e2c 1-43
+.planning/phases/06-hardware/06-PHASE.md
+  s_9fabccd2e25c5b::t_4ea1a1a230512a 1-43
+.planning/PROJECT.md
+  s_9fabccd2e25c5b::t_2a0d5eac026037 1-124
+.planning/phases/04-ws-frontend/04-PHASE.md
+  s_9fabccd2e25c5b::t_24411e74a363c7 1-78
+.planning/phases/03-deck-runtime/03-PHASE.md
+  s_9fabccd2e25c5b::t_2b109f652b659d 1-141
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "7a2d73b36f77f44a208afaa0a13a8e26a0bd12d2",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

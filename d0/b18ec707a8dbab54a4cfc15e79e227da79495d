@@ -1,0 +1,19 @@
+.planning/phases/04-advanced-buttons/04-01-SUMMARY.md
+  s_136b450bea3e1f::t_b0f837b3d01b5d 1-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "d0b18ec707a8dbab54a4cfc15e79e227da79495d",
+  "prompts": {},
+  "sessions": {
+    "s_136b450bea3e1f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1e4ee251affenBC7Y06LtHjKz0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

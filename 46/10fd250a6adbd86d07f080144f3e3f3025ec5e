@@ -1,0 +1,23 @@
+.planning/quick/002-paste-launcher-debug/002-SUMMARY.md
+  s_fd4c9efcb04c88::t_1a25cfedcfca5a 1-19
+.planning/quick/002-paste-launcher-debug/002-PLAN.md
+  s_fd4c9efcb04c88::t_8ae0d4f804f07e 1-68
+.planning/STATE.md
+  s_fd4c9efcb04c88::t_cdf7c44b2ba727 1-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "4610fd250a6adbd86d07f080144f3e3f3025ec5e",
+  "prompts": {},
+  "sessions": {
+    "s_fd4c9efcb04c88": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0a020801effeDxd0RkXpU8rWsJ",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+packages/cli/src/builtin-addons/core-buttons/buttons/toggle.tsx
+  s_b21ef815cd71c9::t_a0f6779cbf9913 257,260,262
+packages/cli/src/builtin-addons/date-time/buttons/date-time.tsx
+  s_b21ef815cd71c9::t_a0f6779cbf9913 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "701229af462a08f0343ad1f5a2b89569f6766a0c",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b21ef815cd71c9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_194c6ab8dffeZgB4hXir7Qu8T0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

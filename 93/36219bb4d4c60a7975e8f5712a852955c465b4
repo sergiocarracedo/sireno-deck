@@ -1,0 +1,141 @@
+packages/cli/frontend/src/__tests__/system-buttons-render.test.tsx
+  s_86a2e64c4daa87::t_6b46d03b7c319d 100-126
+  s_86a2e64c4daa87::t_46df4a1dd5d392 1-99,127
+packages/cli/src/cli/commands/addon-decks.ts
+  s_0a5098cebd5351::t_90486280f337ee 1,3
+  s_0a5098cebd5351::t_1cd71cc6121253 33-77,96-105
+  s_0a5098cebd5351::t_47929ab477ac4c 182
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/config.ts
+  s_0a5098cebd5351::t_e5b30793a9ad1f 3-5
+packages/cli/src/builtin-addons/core/buttons/change-deck/config.ts
+  s_0a5098cebd5351::t_660a37f0bca307 3-12
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/backend.ts
+  s_0a5098cebd5351::t_32c422d316a24d 8-14
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/backend.ts
+  s_0a5098cebd5351::t_a0116ea9a705b5 7-12
+packages/cli/src/cli/commands/__tests__/emulator-mode-build-config.test.ts
+  s_86a2e64c4daa87::t_3b19548bf78897 47
+  s_86a2e64c4daa87::t_7d61b26fe669bd 128
+  s_86a2e64c4daa87::t_e53f8b0ae237d2 87
+  s_86a2e64c4daa87::t_50dc0dccb8aa93 107
+packages/cli/src/__tests__/integration.test.ts
+  s_0a5098cebd5351::t_69dfb5d10baca3 45
+packages/cli/src/deck/paginate-deck.ts
+  s_0a5098cebd5351::t_70d5245d165be7 65
+  s_0a5098cebd5351::t_b488e759ba931e 23
+  s_0a5098cebd5351::t_fb0dc94740f705 24-26
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_0a5098cebd5351::t_deed92a707b997 24
+packages/cli/src/addon/api.ts
+  s_0a5098cebd5351::t_a32eb3144dc7e2 259-261
+packages/cli/src/index.ts
+  s_86a2e64c4daa87::t_542dd2a8ca04a3 52,54,59-60
+packages/cli/src/deck/deck-config.ts
+  s_86a2e64c4daa87::t_608a5160a81262 150
+packages/cli/src/builtin-addons/core/buttons/change-deck/backend.ts
+  s_0a5098cebd5351::t_c81114a3fb150e 12
+  s_0a5098cebd5351::t_838fc22103808e 10-11,16
+packages/cli/src/deck/system-buttons/registry.tsx
+  s_86a2e64c4daa87::t_64bfa379cd07f4 1-29
+packages/cli/src/cli/commands/run.ts
+  s_0a5098cebd5351::t_f6e75719fb5b35 243-244
+  s_0a5098cebd5351::t_797db2d6fd8b6a 148
+  s_0a5098cebd5351::t_3af0dfe3a48395 149
+  s_0a5098cebd5351::t_3c38d822f187d8 229-242,245-248
+  s_0a5098cebd5351::t_9b324086aa390d 258
+  s_86a2e64c4daa87::t_913dd1dbd3848e 554
+  s_0a5098cebd5351::t_56012d26236a18 113
+  s_0a5098cebd5351::t_3a9f3bd9f08954 260
+  s_0a5098cebd5351::t_aaf5e3c2174954 510
+  s_0a5098cebd5351::t_cd975faef1a6e3 181-209
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/config.ts
+  s_0a5098cebd5351::t_92a37009aea870 3-5
+packages/cli/frontend/src/components/Deck.tsx
+  s_86a2e64c4daa87::t_64acce0f1f1532 179-180,201-204,213
+  s_86a2e64c4daa87::t_157106795f8159 17-20
+  s_86a2e64c4daa87::t_885da565774de6 154-157
+  s_86a2e64c4daa87::t_123e7f76bfa0f3 13
+  s_86a2e64c4daa87::t_9f379b9ff8616b 86,95,98-118
+  s_86a2e64c4daa87::t_eaf12c54ca9ded 42
+packages/cli/src/api/protocol-internal.ts
+  s_86a2e64c4daa87::t_4e888a4133afd1 43
+packages/cli/src/cli/commands/__tests__/addon-decks.test.ts
+  s_0a5098cebd5351::t_643120d8bfe24b 372-390,393-417
+  s_0a5098cebd5351::t_4330cb5ed8c956 391
+  s_0a5098cebd5351::t_8bdcb0e9455c9e 392
+config.yml
+  h_f90ee31b03fc41 17,20,138,143
+  s_0a5098cebd5351::t_b234557615c184 19
+  s_0a5098cebd5351::t_0f31944c73ced9 136-137,139-142,144-170
+  s_0a5098cebd5351::t_48f58f27ccd0db 21
+packages/cli/src/builtin-addons/core/buttons/change-deck/frontend.tsx
+  s_0a5098cebd5351::t_c6c23cd7e88b08 1-16
+packages/cli/frontend/src/App.tsx
+  s_86a2e64c4daa87::t_e8291757e4a224 35,43
+  s_86a2e64c4daa87::t_be945f12501064 145
+packages/cli/src/builtin-addons/emoji-selector/__tests__/launcher.test.ts
+  s_0a5098cebd5351::t_504b04ccf77900 32,41,52
+packages/cli/src/deck/runtime.ts
+  s_0a5098cebd5351::t_74f09c73582539 348,352-360
+  s_0a5098cebd5351::t_a1f9e4db73e0cb 189-191,194-208
+  s_0a5098cebd5351::t_10c1e0d559930c 244-250
+  s_0a5098cebd5351::t_7d6c261cb251e6 151,158
+  s_0a5098cebd5351::t_7650bada5e08e7 138
+  s_86a2e64c4daa87::t_f3a5b4d0fb2554 90
+  s_86a2e64c4daa87::t_5f41c69318b810 443
+  s_0a5098cebd5351::t_c793d3196e4b08 164,174,178-180
+  s_0a5098cebd5351::t_5c5e3bfe4a4f2d 105
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_86a2e64c4daa87::t_a7d09d92e90a08 372,383,386
+  s_86a2e64c4daa87::t_7e086313af9a1f 513
+  s_0a5098cebd5351::t_0018687844fa77 550,558-559
+  s_86a2e64c4daa87::t_349ede203ae3dd 347-371,373-382,384-385,387-389
+  s_0a5098cebd5351::t_efcc567a687a06 502,508,510
+  s_0a5098cebd5351::t_1e08830748ec26 501,503-507,509,511-512,514-525,527-549,551-557,560-562
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_0a5098cebd5351::t_2782631b79fd10 174
+  s_0a5098cebd5351::t_7ad694e2197d5a 169-173,175-177
+  s_0a5098cebd5351::t_7987ad8ff7c973 261-264
+  s_0a5098cebd5351::t_fd249c54ca7d3d 338-364
+packages/cli/src/builtin-addons/emoji-selector/README.md
+  s_0a5098cebd5351::t_4bde584903a767 3,5,9-11,15-21,30,32,34,37,39,43
+packages/cli/src/config/__tests__/validation.test.ts
+  s_0a5098cebd5351::t_28510bcba377c4 44
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  s_0a5098cebd5351::t_01ab37e03d2c9b 38
+  s_0a5098cebd5351::t_932af56ecfdca9 15-16,30-37,41
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/backend.ts
+  s_0a5098cebd5351::t_dc5bab269057e8 9
+packages/cli/src/builtin-addons/emoji-selector/decks/index.ts
+  s_0a5098cebd5351::t_3500b338b9fdc6 40,43-44,49
+  s_0a5098cebd5351::t_991ce294260d2d 33-39,42,52-61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "9336219bb4d4c60a7975e8f5712a852955c465b4",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_0a5098cebd5351": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0afd3478effeIJsDCif5EEO4Ft",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_86a2e64c4daa87": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0b230ca14ffeEzLn8dqLFIPW3f",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    }
+  }
+}

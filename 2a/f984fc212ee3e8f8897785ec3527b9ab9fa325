@@ -1,0 +1,19 @@
+.planning/phases/75.1-arch-split-cli-fe-fs-ws-bridge/75.1-02-SUMMARY.md
+  s_f5622df155228a::t_43413707bdd1cd 1-116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "2af984fc212ee3e8f8897785ec3527b9ab9fa325",
+  "prompts": {},
+  "sessions": {
+    "s_f5622df155228a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_114ecc375ffehJL8FVEupdUruf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,56 @@
+.planning/phases/03-deck-runtime/03-01-SUMMARY.md
+  s_9fabccd2e25c5b::t_2c05103afa1254 1-59
+packages/cli/src/core/gesture-state.test.ts
+  s_9fabccd2e25c5b::t_74a42e6df19f5e 1-4,11-73,75-79
+  s_9fabccd2e25c5b::t_b6c1901b9dcff8 5-10,74
+packages/cli/src/core/pub-sub.test.ts
+  s_9fabccd2e25c5b::t_f0861c932385da 1-83
+packages/cli/src/addon/api.ts
+  s_9fabccd2e25c5b::t_e588b56b16dd00 80
+packages/cli/src/core/store.ts
+  s_9fabccd2e25c5b::t_84d08585f56cbe 1-18,20-31,37-85
+  s_9fabccd2e25c5b::t_a1b2ad1075912d 32-36
+  s_9fabccd2e25c5b::t_b6c1901b9dcff8 19
+packages/cli/src/core/index.ts
+  s_9fabccd2e25c5b::t_de3afdb36e9668 1-19,21-30
+  s_9fabccd2e25c5b::t_b6c1901b9dcff8 20
+packages/cli/src/core/pagination.ts
+  s_9fabccd2e25c5b::t_ecf2b07c9b53e6 1-78
+packages/cli/src/core/gesture-state.ts
+  s_9fabccd2e25c5b::t_f9852e24f02835 1-25,33-34,43-52,54-56,59,61-63,72-126,135-138
+  s_9fabccd2e25c5b::t_69eaa24a942404 35-42,53,57-58,60,64-71
+  s_9fabccd2e25c5b::t_8b3b12268067ad 127-129
+  s_9fabccd2e25c5b::t_b6c1901b9dcff8 26-32,130-134
+packages/cli/package.json
+  s_9fabccd2e25c5b::t_b6c1901b9dcff8 39
+packages/cli/src/core/store.test.ts
+  s_9fabccd2e25c5b::t_bdb017c9726d37 1-86
+packages/cli/src/config/loader.ts
+  s_9fabccd2e25c5b::t_53677166438ac6 74
+packages/cli/src/core/watcher.ts
+  s_9fabccd2e25c5b::t_38d07c83b92e9d 43-45
+packages/cli/src/core/pub-sub.ts
+  s_9fabccd2e25c5b::t_b6c1901b9dcff8 65
+  s_9fabccd2e25c5b::t_9d33b40001a527 1-48,52-64,66-85,89-118
+  s_9fabccd2e25c5b::t_76d1087e988165 86-88
+  s_9fabccd2e25c5b::t_1286d4439b88f8 49-51
+packages/cli/src/core/pagination.test.ts
+  s_9fabccd2e25c5b::t_b6c1901b9dcff8 23-26,34-37,47-50,61-64,73-76,84-87
+  s_9fabccd2e25c5b::t_08d102b07b8387 1-22,27-33,38-46,51-60,65-72,77-83,88-100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "a2ea53d7083ed53649397816d6a9dc88bd2d7506",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

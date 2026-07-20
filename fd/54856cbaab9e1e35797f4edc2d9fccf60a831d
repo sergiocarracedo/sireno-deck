@@ -1,0 +1,28 @@
+.planning/phases/55-active-app-overlay-decks/55-UAT.md
+  s_8eaa4083520faf::t_1138fb88ae609c 2
+  s_8eaa4083520faf::t_1fcf587c45a12b 12-13,15-17
+  s_8eaa4083520faf::t_d26c3255d9b82b 88-124
+  s_8eaa4083520faf::t_a70d809d44437a 129-136,144-155,162-171,177-189,197-205,211-218
+  s_8eaa4083520faf::t_77e86374e79d1d 221-224,226-240,243-258
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "fd54856cbaab9e1e35797f4edc2d9fccf60a831d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_8eaa4083520faf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_151dd58eeffeFt0TLJhZBrtyC3",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

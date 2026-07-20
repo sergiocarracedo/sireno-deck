@@ -1,0 +1,30 @@
+.planning/phases/20-theme-packages-and-locked-time-layout/20-VERIFICATION.md
+  s_df3509a167c487::t_a5f621af0269bb 17-18,26-27,36,45-50,53-55,60-64,67-71
+  s_df3509a167c487::t_080be75f510c41 19-20,38,42,44,52,56-59,65-66,72,78
+  s_df3509a167c487::t_a996f381305094 4,37,51
+  s_df3509a167c487::t_1372b438a15e61 3,73-77
+.planning/phases/20-theme-packages-and-locked-time-layout/20-UAT.md
+  s_df3509a167c487::t_ff3f8598c64c1d 86
+  s_df3509a167c487::t_75cf7cf6a2c289 9,89-90,98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "b96e0b3c8a3a87b5d2569b75023c191e9cd424d4",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

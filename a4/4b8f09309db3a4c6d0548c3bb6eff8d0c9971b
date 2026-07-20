@@ -1,0 +1,57 @@
+packages/cli/src/deck/runtime.ts
+  s_dfb164a1050854::t_a95b7250704e88 358
+  s_dfb164a1050854::t_13cdf7df4d50ec 357,359-360
+packages/cli/src/deck/__tests__/deck-config-full-flag.test.ts
+  s_af26f8f28d6753::t_ea5165dfb30400 124-125
+  s_dfb164a1050854::t_814323a4e7d221 2-6,10-19,61-123
+packages/cli/src/deck/deck-config.ts
+  s_dfb164a1050854::t_57d496d44acae4 126-128,145
+  s_dfb164a1050854::t_b740699be749b9 129-131
+packages/cli/src/core/icon-asset-registry.ts
+  s_dfb164a1050854::t_a27621acf68137 7,27-84,99,103-109
+  s_af26f8f28d6753::t_ea5165dfb30400 110-111
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_dfb164a1050854::t_8caec4e0211117 963,970,974-975,978,985-988,992-993
+  s_dfb164a1050854::t_ddf2966d04055c 964-969,971-973,976-977
+  s_dfb164a1050854::t_cd0ac549369e80 979-984,989-991,994-995
+packages/cli/src/cli/commands/run.ts
+  s_dfb164a1050854::t_0f148ade6ebafa 220
+  s_dfb164a1050854::t_b740699be749b9 556
+  s_dfb164a1050854::t_a90d9f63a51435 50
+  s_dfb164a1050854::t_b9c63ee76f3297 709
+packages/cli/src/render/icon-source-resolver.ts
+  s_dfb164a1050854::t_2a443cb2186dc8 59-60
+packages/cli/src/core/__tests__/icon-asset-registry.test.ts
+  s_dfb164a1050854::t_3b282f6f345a48 11
+  s_dfb164a1050854::t_b740699be749b9 114
+  s_dfb164a1050854::t_4bc9a92e2d0661 88-113,115-124
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "a44b8f09309db3a4c6d0548c3bb6eff8d0c9971b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_af26f8f28d6753": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_08e033112ffei95jMDHjzPdezf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_dfb164a1050854": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_089e0b222ffe0N3qW6bmdFl9Rl",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,126 @@
+packages/cli/fixtures/phase-5/version-mismatch-addon/src/index.js
+  s_b3b06132623da8::t_a5fa34a688f77e 1-31
+packages/cli/fixtures/phase-5/community-addon/package.json
+  s_b3b06132623da8::t_a5fa34a688f77e 1-17
+packages/cli/package.json
+  ai_agent 34,43
+.planning/quick/010-add-phase-5-verification-fixtures-under-packages-cli-fixtures/010-SUMMARY.md
+  s_b3b06132623da8::t_a5fa34a688f77e 1-22
+.planning/quick/010-add-phase-5-verification-fixtures-under-packages-cli-fixtures/010-PLAN.md
+  s_b3b06132623da8::t_a5fa34a688f77e 1-78
+packages/cli/src/addon/builtin.ts
+  h_f90ee31b03fc41 1-3,5,8
+.planning/quick/012-date-time-token-formatting/012-VERIFICATION.md
+  h_f90ee31b03fc41 1-23
+packages/cli/fixtures/phase-5/community-addon/src/index.js
+  s_b3b06132623da8::t_a5fa34a688f77e 1-31
+packages/cli/fixtures/phase-5/README.md
+  s_b3b06132623da8::t_a5fa34a688f77e 1-17
+.planning/research/STACK.md
+  s_26099f9ddf91b0::t_43787fb8f4c602 3-4,9,11-17,19,21-26,30-35,41-44,48,50-54,57-58
+packages/cli/fixtures/phase-5/version-mismatch-addon/package.json
+  s_b3b06132623da8::t_a5fa34a688f77e 1-17
+.planning/phases/07-typography-text-behavior/07-UAT.md
+  s_d6536d4fe186f7::t_c851250b873349 2,9,13-14,16-17,36,41,43
+  s_68917f824defe5::t_5d64c45f59c8f7 7-8,22
+  s_d6536d4fe186f7::t_af6fbe000745c6 31
+  s_d6536d4fe186f7::t_a72a6f5fe5499c 26
+builtin-addons/date-time/package.json
+  h_f90ee31b03fc41 1-17
+.planning/research/PITFALLS.md
+  s_26099f9ddf91b0::t_43787fb8f4c602 3-4,9-16,22-26,30-37,40-41
+.planning/quick/012-date-time-token-formatting/012-SUMMARY.md
+  h_f90ee31b03fc41 1-16
+packages/cli/fixtures/phase-5/broken-local-addon/package.json
+  s_b3b06132623da8::t_a5fa34a688f77e 1-13
+.planning/quick/012-date-time-token-formatting/012-RESEARCH.md
+  h_f90ee31b03fc41 1-21
+.planning/phases/05-addon-system/05-04-SUMMARY.md
+  s_26099f9ddf91b0::t_3c467b5e4b220e 1-18
+packages/cli/src/config/loader.test.ts
+  s_26099f9ddf91b0::t_76bdd4ccb5cdf5 61-97
+.planning/phases/05-addon-system/05-05-SUMMARY.md
+  s_26099f9ddf91b0::t_3c467b5e4b220e 1-22
+config.yml
+  h_f90ee31b03fc41 9-10,16
+.planning/phases/08-clock-visuals/08-UAT.md
+  s_d6536d4fe186f7::t_9c2dafb2b04e35 2,8,12-13,15-16,31,36,38
+pnpm-lock.yaml
+  ai_agent 13-40,92,95,101-104,110,164-169,176-181,188-193,200-205,212-217,224-229,236-241,248-253,260-265,272-277,284-289,296-301,308-313,320-325,332-337,344-349,356-361,368-373,380-385,392-397,404-409,416-421,428-433,440-445,452-457,464-469,637-638,643-644,649-650,655-656,661-662,667-668,673-674,679-680,685-686,691-692,697-698,703-704,709-710,715-716,721-722,727-728,733-734,739-740,745-746,751-752,757-758,763-764,769-770,775-776,781-782,787-788,793-794,799-800,805-806,811-812,817-818,823-824,829-830,835-836,841-842,847-848,853-854,859-860,1307-1311,1496-1497,1506-1507,1816-1820,2038-2040,2044-2046,2050-2052,2056-2058,2062-2064,2068-2070,2074-2076,2080-2082,2086-2088,2092-2094,2098-2100,2104-2106,2110-2112,2116-2118,2122-2124,2128-2130,2134-2136,2140-2142,2146-2148,2152-2154,2158-2160,2164-2166,2170-2172,2176-2178,2182-2184,2188-2190,2322,2325,2328,2331,2334,2337,2340,2343,2346,2349,2352,2355,2358,2361,2364,2367,2370,2373,2376,2379,2382,2385,2388,2391,2394,2397,2400,2403,2406,2409,2412,2415,2418,2421,2424,2427,2430,2433,2618,2624,2793-2821,2967,2971-2991,2993-3011,3317,3335,3345-3350,3366,3372,3387,3398,3400,3404,3422-3423
+.planning/research/SUMMARY.md
+  s_26099f9ddf91b0::t_43787fb8f4c602 3-4,9,11-29,31,33-36,38,40-49,51,54-55
+packages/cli/fixtures/phase-5/config.warning-isolation.yml
+  s_b3b06132623da8::t_a5fa34a688f77e 1-20
+packages/cli/fixtures/phase-5/config.api-version-mismatch.yml
+  s_b3b06132623da8::t_a5fa34a688f77e 1-16
+packages/cli/fixtures/phase-5/config.local-addon.yml
+  s_b3b06132623da8::t_a5fa34a688f77e 1-8,14,16-17,19-20
+  h_f90ee31b03fc41 9-13,15,18
+builtin-addons/core-buttons/src/index.ts
+  h_f90ee31b03fc41 1,3-4,6,24,31,37,43,51,61,67,74
+packages/cli/fixtures/phase-5/broken-local-addon/src/index.js
+  s_b3b06132623da8::t_a5fa34a688f77e 1
+.planning/phases/07-typography-text-behavior/07-03-PLAN.md
+  s_d6536d4fe186f7::t_a590aeedce77cc 1-77
+packages/cli/fixtures/phase-5/local-clock-addon/package.json
+  s_b3b06132623da8::t_a5fa34a688f77e 1-17
+.planning/quick/012-date-time-token-formatting/012-PLAN.md
+  h_f90ee31b03fc41 1-52
+packages/cli/fixtures/phase-5/local-clock-addon/src/index.js
+  s_b3b06132623da8::t_a5fa34a688f77e 1-19,21-31
+  h_f90ee31b03fc41 20
+packages/cli/fixtures/phase-5/config.npm-addon.yml
+  s_b3b06132623da8::t_a5fa34a688f77e 1-16
+.planning/phases/05-addon-system/05-UAT.md
+  s_26099f9ddf91b0::t_39e551185dd043 83-84,90-91,97-98,104-105
+  s_b3b06132623da8::t_a5fa34a688f77e 30,35,41,48
+.planning/research/FEATURES.md
+  s_26099f9ddf91b0::t_43787fb8f4c602 3-4,9,11-16,20,24-27,31,33-39,42-43
+.planning/research/ARCHITECTURE.md
+  s_26099f9ddf91b0::t_43787fb8f4c602 3-4,9-29,33-44,48-58,62-67,70-71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "601c03f4e16b7f7adaeef98f13c2e6c306b75877",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_68917f824defe5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d41dab2effeg6If1cSVoW0I3x",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_b3b06132623da8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1dcec6c95ffekJIM5OqBkwBj3G",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_d6536d4fe186f7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d7c51eddffe1f43C0djVdeiEx",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

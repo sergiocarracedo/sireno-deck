@@ -1,0 +1,45 @@
+packages/cli/src/render/dom-host.test.tsx
+  s_df3509a167c487::t_1df127eaa0378e 1-63
+packages/cli/src/builtin-addons/core-buttons/buttons/change-deck.ts
+  s_df3509a167c487::t_1df127eaa0378e 1,4,29-42
+packages/cli/src/deck/runtime.ts
+  s_df3509a167c487::t_1df127eaa0378e 27-28
+  s_df3509a167c487::t_85c8bdee34f6ae 346-347
+  s_df3509a167c487::t_e12bf958761eb5 1,5,66-80,154-177,194,324,330-345,348-385,407,592-596,598,600-606
+  s_df3509a167c487::t_cd6dfbd2ae5629 597,599
+packages/cli/fixtures/phase-18/config.browser-rendered-action.yml
+  s_df3509a167c487::t_1df127eaa0378e 1-22
+packages/cli/src/deck/runtime.test.ts
+  s_df3509a167c487::t_1df127eaa0378e 104-140,142-143
+  s_df3509a167c487::t_0d18e2d25a0f12 141
+packages/cli/src/builtin-addons/core-buttons/index.test.ts
+  s_df3509a167c487::t_1df127eaa0378e 3,5,9-10,38,41,48,67,77
+packages/cli/src/addon/api.ts
+  s_df3509a167c487::t_1df127eaa0378e 3,19,57-62,78-109,115-128,136
+packages/cli/src/render/button-frame.tsx
+  s_df3509a167c487::t_1df127eaa0378e 1-45
+packages/cli/package.json
+  s_df3509a167c487::t_1df127eaa0378e 34
+packages/cli/src/render/dom-host.tsx
+  s_df3509a167c487::t_1df127eaa0378e 1-61
+packages/cli/src/render/button-frame.test.tsx
+  s_df3509a167c487::t_1df127eaa0378e 1-14
+packages/cli/src/builtin-addons/core-buttons/buttons/action.ts
+  s_df3509a167c487::t_1df127eaa0378e 1,4,40-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "9815a77822c06bfc7c3bdef58b909dbdba1b5fba",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

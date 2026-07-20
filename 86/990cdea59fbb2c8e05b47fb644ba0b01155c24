@@ -1,0 +1,51 @@
+packages/cli/src/deck/methods.test.ts
+  s_9fabccd2e25c5b::t_bb880198184412 79-86
+packages/cli/src/system/clipboard/index.ts
+  s_9fabccd2e25c5b::t_e1c5034e63171e 1-48
+packages/cli/src/cli/commands/run.test.ts
+  s_9fabccd2e25c5b::t_c02314e734336e 57-63
+  s_9fabccd2e25c5b::t_067f8d66533611 209
+  s_9fabccd2e25c5b::t_3dc57bee7737fe 50-56
+packages/cli/src/system/clipboard/windows.ts
+  s_9fabccd2e25c5b::t_c16b722e3b51b6 1-2,4-45
+  s_9fabccd2e25c5b::t_b9f51fda0fe26c 3
+packages/cli/src/system/provider.ts
+  s_9fabccd2e25c5b::t_0477e49a721d0c 171-187
+packages/cli/src/cli/commands/start.test.ts
+  s_9fabccd2e25c5b::t_1071667d36995e 42-48
+  s_9fabccd2e25c5b::t_3baf73ea742d3e 35-41
+  s_9fabccd2e25c5b::t_0bfc183f219e33 218
+packages/cli/src/deck/methods.ts
+  s_9fabccd2e25c5b::t_d37caa5d53c375 130
+  s_9fabccd2e25c5b::t_f8722de16560a2 25
+  s_9fabccd2e25c5b::t_13fd09a045aca9 9
+  s_9fabccd2e25c5b::t_42afcbc683a24d 110-116
+  s_9fabccd2e25c5b::t_ff50ca6b052167 47,51-52
+  s_9fabccd2e25c5b::t_9bd9f563eca35a 42
+  s_9fabccd2e25c5b::t_fdd7cdbbbca226 53
+packages/cli/src/system/clipboard/darwin.ts
+  s_9fabccd2e25c5b::t_e307b86103a055 3
+  s_9fabccd2e25c5b::t_b0b98c1a45afb8 1-2,4-38
+packages/cli/src/system/clipboard/linux.ts
+  s_9fabccd2e25c5b::t_fc7d2639cfe38d 1-2,4-57
+  s_9fabccd2e25c5b::t_ac867760f3a1cc 3
+packages/cli/src/cli/commands/run.ts
+  s_9fabccd2e25c5b::t_fa495d5082baee 36
+  s_9fabccd2e25c5b::t_9628e83ee14f8e 230-236
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "86990cdea59fbb2c8e05b47fb644ba0b01155c24",
+  "prompts": {},
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

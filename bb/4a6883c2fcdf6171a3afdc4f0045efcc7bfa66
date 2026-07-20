@@ -1,0 +1,22 @@
+packages/cli/src/cli/commands/real-mode.ts
+  s_8ca911650149ee::t_4ead313a38ab3f 21
+packages/cli/frontend/src/components/Deck.tsx
+  s_8ca911650149ee::t_804aa35de49436 76-79,82,87
+  s_8ca911650149ee::t_8b021175ab0b05 17-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "bb4a6883c2fcdf6171a3afdc4f0045efcc7bfa66",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

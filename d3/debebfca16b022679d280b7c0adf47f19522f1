@@ -1,0 +1,26 @@
+packages/cli/src/builtin-addons/weather/domain/unit-conversion.ts
+  s_0580d7c7a41764::t_c3858da8a4eb56 1-24
+packages/cli/src/builtin-addons/weather/domain/unit-conversion.test.ts
+  s_0580d7c7a41764::t_be521358898d3b 1-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d3debebfca16b022679d280b7c0adf47f19522f1",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_0580d7c7a41764": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_166a141a1ffeuVB57GbHYAshIa",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

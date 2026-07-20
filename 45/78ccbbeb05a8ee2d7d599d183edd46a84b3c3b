@@ -1,0 +1,35 @@
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-up/backend.ts
+  s_fe3c83c8e2c33a::t_9d34abf91bed20 10-11
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_fe3c83c8e2c33a::t_6f50cb7ad10dba 54
+  s_fe3c83c8e2c33a::t_b135fd12d212d1 13,29
+  s_fe3c83c8e2c33a::t_f76014700ff634 247
+packages/cli/src/addon/api.ts
+  s_fe3c83c8e2c33a::t_82ef4cb40c3fc9 283-290
+  s_fe3c83c8e2c33a::t_c728ba226f6ab1 8
+packages/cli/src/cli/commands/run.ts
+  s_fe3c83c8e2c33a::t_163c0ecdf38367 171
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-down/backend.ts
+  s_fe3c83c8e2c33a::t_9dd5766c71c54e 10-11
+packages/cli/src/deck/__tests__/addon-handler-bridge.test.ts
+  s_fe3c83c8e2c33a::t_de5c2bd1a9269f 72,111,138,165,203,232,270,299
+  s_fe3c83c8e2c33a::t_8cef19bb0ae6d2 89,128,158,194,220,249,287,332,393
+  s_fe3c83c8e2c33a::t_195b71390090ac 11,60-67
+  s_fe3c83c8e2c33a::t_2578927406e99e 374-380
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "4578ccbbeb05a8ee2d7d599d183edd46a84b3c3b",
+  "prompts": {},
+  "sessions": {
+    "s_fe3c83c8e2c33a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_094981c87ffeVD0KNs45tp1Fh6",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+packages/cli/fixtures/phase-68/config.chrome-overlay-extensions.yml
+  s_51a5160d42324b::t_92ecabbb04f3bf 1-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "50f1d67a25d29b604f2816f50ad75f76c7546dda",
+  "prompts": {},
+  "sessions": {
+    "s_51a5160d42324b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1342eec50ffeHsPTE2Fo6D1na5",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

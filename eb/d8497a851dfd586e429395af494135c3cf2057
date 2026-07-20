@@ -1,0 +1,25 @@
+packages/cli/src/addon/loader.test.ts
+  s_26099f9ddf91b0::t_9f3129515ecd33 1-107
+packages/cli/src/addon/manifest.ts
+  s_26099f9ddf91b0::t_9f3129515ecd33 1-47
+packages/cli/src/addon/manifest.test.ts
+  s_26099f9ddf91b0::t_9f3129515ecd33 1-35
+packages/cli/src/addon/loader.ts
+  s_26099f9ddf91b0::t_9f3129515ecd33 1-118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "ebd8497a851dfd586e429395af494135c3cf2057",
+  "prompts": {},
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

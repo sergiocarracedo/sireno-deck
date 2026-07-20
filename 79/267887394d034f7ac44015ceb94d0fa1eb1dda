@@ -1,0 +1,32 @@
+.planning/solutions/documentation-gaps/overlay-dismiss-leaks-navigation-history-2026-06-10.md
+  s_5433b4003714ee::t_9ae4defccdfb7c 1-68
+.planning/solutions/best-practices/paginated-deck-suffix-constant-not-shared-2026-06-10.md
+  s_5433b4003714ee::t_0789a14e0da7e7 1-94
+.planning/solutions/best-practices/gesture-state-spread-not-replace-2026-06-10.md
+  s_5433b4003714ee::t_4b1a1402bfb000 1-79
+.planning/solutions/logic-errors/processnamesmatch-includes-empty-string-2026-06-10.md
+  s_5433b4003714ee::t_cf86b3331b3f54 1-67
+.planning/solutions/best-practices/collision-map-built-never-read-2026-06-10.md
+  s_5433b4003714ee::t_460278238ae836 1-92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "79267887394d034f7ac44015ceb94d0fa1eb1dda",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_5433b4003714ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14f3c3a83ffeK52a9GbPBNu8x1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

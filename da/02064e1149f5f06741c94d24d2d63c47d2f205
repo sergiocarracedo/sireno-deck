@@ -1,0 +1,28 @@
+.planning/phases/27-theme-fallback-and-emulator-shell/27-UAT.md
+  s_cbeacf4b04c860::t_459609b3484ae0 8,12-13,15-16,18-20,32-33,58-59,67-75
+  s_cbeacf4b04c860::t_fddbabb93692f3 50-51
+  s_cbeacf4b04c860::t_3db3f8cb39101d 61-65,76-122
+.planning/phases/27-theme-fallback-and-emulator-shell/27-VERIFICATION.md
+  s_cbeacf4b04c860::t_459609b3484ae0 4,8,25-30,40-46,49-50,55,57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "da02064e1149f5f06741c94d24d2d63c47d2f205",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_cbeacf4b04c860": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_19782c979ffeq8kNd4sXHfiLTr",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

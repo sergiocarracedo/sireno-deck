@@ -1,0 +1,26 @@
+.planning/phases/43-date-time-calendar-button/43-CONTEXT.md
+  s_4e4ee307096ddc::t_2da81ee1c1c6e2 1-123
+.planning/phases/43-date-time-calendar-button/43-DISCUSSION-LOG.md
+  s_4e4ee307096ddc::t_31ac26eeefc024 1-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "63af9c88de7025d07b14d0ae6abad11a45a2cd6d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

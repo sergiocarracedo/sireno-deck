@@ -1,0 +1,30 @@
+.planning/ROADMAP.md
+  s_70eeb05163558f::t_8b6a67ac2825be 95-96
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-01-PLAN.md
+  s_70eeb05163558f::t_8b6a67ac2825be 1-71
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-02-PLAN.md
+  s_70eeb05163558f::t_8b6a67ac2825be 1-67
+.planning/phases/31-cli-dev-watch-mode-argument-forwarding/31-RESEARCH.md
+  s_70eeb05163558f::t_8b6a67ac2825be 1-46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "8be797cf349b3ad12147cfed307a0c56edafa025",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_70eeb05163558f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_18597e378ffevCYrDZtni4nuEZ",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

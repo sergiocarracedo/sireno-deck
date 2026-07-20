@@ -1,0 +1,23 @@
+packages/cli/src/render/browser-renderer.ts
+  s_0c62b680825d4a::t_c17201d494c049 1
+  s_0c62b680825d4a::t_3e5d6f2030f43c 233-234
+  s_0c62b680825d4a::t_b6ea739b6efb0f 87-91
+  s_0c62b680825d4a::t_6de4e55fc2961d 372-377,382,384-406,420-421
+  s_0c62b680825d4a::t_a621de75ba2970 378-381,383
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "734ad95b6842255939afe2c40a5c7df48ff1de29",
+  "prompts": {},
+  "sessions": {
+    "s_0c62b680825d4a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_14fa596feffedU17ZzovT65yl1",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

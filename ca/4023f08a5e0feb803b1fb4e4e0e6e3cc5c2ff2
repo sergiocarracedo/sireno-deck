@@ -1,0 +1,40 @@
+config.yml
+  h_f90ee31b03fc41 8,21
+packages/cli/src/render/dom-host-deck-document.tsx
+  h_f90ee31b03fc41 24,45-46,71,81-82
+packages/cli/src/themes/default/manifest.yml
+  h_f90ee31b03fc41 12,15,17
+packages/cli/src/builtin-addons/date-time/buttons/locked-time-tile.tsx
+  h_f90ee31b03fc41 2,22,25-26,29-30,50
+packages/cli/src/themes/default/ButtonFrame.tsx
+  h_f90ee31b03fc41 33
+packages/cli/src/config/theme.ts
+  h_f90ee31b03fc41 36,54,110
+packages/cli/src/render/dom-host-deck-key-slot.tsx
+  h_f90ee31b03fc41 7,21-35,42,45
+packages/cli/src/builtin-addons/date-time/schemas.ts
+  h_f90ee31b03fc41 9,15
+packages/cli/src/builtin-addons/core-buttons/buttons/action.tsx
+  h_f90ee31b03fc41 4,22,36
+packages/cli/src/builtin-addons/date-time/format.ts
+  h_f90ee31b03fc41 13
+packages/cli/src/ui/Text.tsx
+  h_f90ee31b03fc41 1,3-4,7-9,13-17,21-32,36,39,49,53-57,61-63,67-73,75-87,97
+packages/cli/src/render/theme-utilities.ts
+  h_f90ee31b03fc41 43,90,129
+packages/cli/src/ui/index.ts
+  h_f90ee31b03fc41 1,8,14,17
+packages/cli/src/render/render-preset.ts
+  h_f90ee31b03fc41 7,13-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ca4023f08a5e0feb803b1fb4e4e0e6e3cc5c2ff2",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

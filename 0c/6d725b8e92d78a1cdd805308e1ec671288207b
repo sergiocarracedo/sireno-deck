@@ -1,0 +1,19 @@
+.planning/solutions/runtime-errors/emulator-output-client-descriptor-not-stored-2026-07-09.md
+  s_f05890b34e6e21::t_97f894b4e59847 1-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "0c6d725b8e92d78a1cdd805308e1ec671288207b",
+  "prompts": {},
+  "sessions": {
+    "s_f05890b34e6e21": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0ba469a0bffe525IkPSqEHqna4",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

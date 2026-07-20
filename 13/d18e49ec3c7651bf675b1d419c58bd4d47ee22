@@ -1,0 +1,28 @@
+AGENTS.md
+  s_55abdbe20bc1a9::t_e9db65a38a5783 171-174
+  s_2f9cf0bce2d3f2::t_90dd45fda15bc2 19,119,125,130,145,179,224,295-304,337,353
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "13d18e49ec3c7651bf675b1d419c58bd4d47ee22",
+  "prompts": {},
+  "sessions": {
+    "s_2f9cf0bce2d3f2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0c34dca1dffeMWwXRmmOkm50oI",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_55abdbe20bc1a9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0c2dcb067ffeT2vd4CebpVh5lf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

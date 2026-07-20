@@ -1,0 +1,23 @@
+.planning/quick/037-grid-overlaps-icons/037-SUMMARY.md
+  s_422e21ef30493a::t_8d0f1dba2d0c4d 1-22
+.planning/quick/037-grid-overlaps-icons/037-PLAN.md
+  s_422e21ef30493a::t_f07b6196c0386c 1-48
+.planning/STATE.md
+  s_422e21ef30493a::t_e2b072aca71943 14,20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "eae697a10f0d5e06cd6095b6452d503f7b7b879a",
+  "prompts": {},
+  "sessions": {
+    "s_422e21ef30493a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_166632b95ffer6DrMJlBFvHUvF",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+packages/cli/src/deck/__tests__/deck-config-back-button.test.ts
+  s_fe3c83c8e2c33a::t_bcedd16e10cb2d 52,69
+packages/cli/src/deck/__tests__/system-back-injection.test.ts
+  s_fe3c83c8e2c33a::t_8fcf666475bae1 35,38
+packages/cli/src/deck/system-back-injection.ts
+  s_fe3c83c8e2c33a::t_eee6320232dba7 25
+packages/cli/src/outputClient/real.ts
+  s_fe3c83c8e2c33a::t_1d261152594e64 138-162
+packages/cli/src/outputClient/emulator.ts
+  s_fe3c83c8e2c33a::t_82ef28cfe4f728 137-162
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "3eacff36d9e1c14baf3f37b05c57d02435e242f9",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_fe3c83c8e2c33a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_094981c87ffeVD0KNs45tp1Fh6",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

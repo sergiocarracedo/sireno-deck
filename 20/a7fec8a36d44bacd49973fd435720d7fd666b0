@@ -1,0 +1,41 @@
+.planning/phases/44-media-volume-buttons/44-UAT.md
+  s_4e4ee307096ddc::t_bb24758d86628f 31
+  s_4e4ee307096ddc::t_424551e5479552 2
+  s_4e4ee307096ddc::t_e2b2b88b7a3b97 25
+  s_4e4ee307096ddc::t_1498572b275526 28
+  s_4e4ee307096ddc::t_54f5ccfd05e3b7 55
+  s_4e4ee307096ddc::t_f1c8b2ef8ad9a6 19
+  s_4e4ee307096ddc::t_c34d4db510f96f 58
+  s_4e4ee307096ddc::t_bdb1b6eec19821 46
+  s_4e4ee307096ddc::t_a7441f3af27213 52
+  s_4e4ee307096ddc::t_1bb44203ab1758 1,3-9,12,14-18,20-21,23-24,26-27,29-30,32-33,35-36,38-39,41-42,44-45,47-48,50-51,53-54,56-57,59-62,64,66-70
+  s_4e4ee307096ddc::t_86e252cd692c43 63,65
+  s_4e4ee307096ddc::t_b025b61fdf6939 22
+  s_4e4ee307096ddc::t_48c6c26c33babb 10-11,13
+  s_4e4ee307096ddc::t_a44ced1ffa905b 37
+  s_4e4ee307096ddc::t_6efc023e80e1a3 40
+  s_4e4ee307096ddc::t_29744f3d53590c 49
+  s_4e4ee307096ddc::t_3d22135d787da6 43
+  s_4e4ee307096ddc::t_4ac9fffa96cc67 34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "20a7fec8a36d44bacd49973fd435720d7fd666b0",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_4e4ee307096ddc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16e6ff7deffevOTg0rbcn5t7TE",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

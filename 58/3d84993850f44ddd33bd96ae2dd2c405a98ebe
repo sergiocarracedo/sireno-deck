@@ -1,0 +1,66 @@
+packages/cli/frontend-emulator/src/App.tsx
+  s_9fabccd2e25c5b::t_9c929171eeac34 12-13
+  s_9fabccd2e25c5b::t_d313ee722c69fb 52-53,84-87
+  s_9fabccd2e25c5b::t_66ac767e1bdf61 91-96
+packages/cli/frontend-emulator/src/DeckFrame.tsx
+  s_9fabccd2e25c5b::t_44f51784fe47a6 48-50,54-59,64-69,77,81
+packages/cli/frontend/src/components/Deck.tsx
+  s_9fabccd2e25c5b::t_7e8101a7510dbb 1,12-13,19,49-56,60-61,65-73,78-101
+packages/cli/src/cli/commands/emulator-mode.test.ts
+  s_9fabccd2e25c5b::t_94eabec37d5279 198-200,208-210
+  s_9fabccd2e25c5b::t_567015e3c1f405 171,174
+  s_9fabccd2e25c5b::t_069a672dc024fc 318-320,328-330
+  s_9fabccd2e25c5b::t_885eccd786f43d 170,172-173,186-191
+  s_9fabccd2e25c5b::t_382535537378bf 127
+  s_9fabccd2e25c5b::t_e2964848a0607b 167-169,180-182
+  s_9fabccd2e25c5b::t_ce06eec8a02ace 146
+  s_9fabccd2e25c5b::t_f5c2240521862e 279-281,303-305
+  s_9fabccd2e25c5b::t_3d5985ab1a1002 151-153,158-160
+  s_9fabccd2e25c5b::t_d1a7505cab3651 227-229,268-270
+  s_9fabccd2e25c5b::t_d0a436e048dc4c 117-119,126,128-130,135-136,138-139,145
+  s_9fabccd2e25c5b::t_b10af3047c4efc 137
+  s_9fabccd2e25c5b::t_825a6a2b9938ec 240-241,261-262,275
+  s_9fabccd2e25c5b::t_a303531d391a20 342-344,349
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_9fabccd2e25c5b::t_4eb910ed8865e0 15
+  s_9fabccd2e25c5b::t_c3a1658d20adc3 231-232,250,252-255,257-259,261,266
+  s_9fabccd2e25c5b::t_3509213259a9b9 277-280
+  s_9fabccd2e25c5b::t_6fbf8308ea47db 19
+  s_9fabccd2e25c5b::t_71353045e9b81a 61-63
+  s_9fabccd2e25c5b::t_e8bf5f3bcd56d0 145-147
+  s_9fabccd2e25c5b::t_8e6ae81d6203b1 256
+  s_9fabccd2e25c5b::t_236e71d7d7f817 251
+  s_9fabccd2e25c5b::t_24a74d1a45b893 17
+  s_9fabccd2e25c5b::t_2d9665571c122e 212-220
+  s_9fabccd2e25c5b::t_90abc9cdf00d5e 38
+  s_9fabccd2e25c5b::t_78d1d0b3d5daf2 235-239,242-244
+  s_9fabccd2e25c5b::t_935e8ad126602c 240-241
+  s_9fabccd2e25c5b::t_6c9dfdc02e7579 64,74-79,83-124
+  s_9fabccd2e25c5b::t_7c6b5aba7b8366 132-134
+  s_9fabccd2e25c5b::t_b9dd9be2c6ed5f 80-82
+  s_9fabccd2e25c5b::t_3dbcd3b6842c00 305,312-313
+  s_9fabccd2e25c5b::t_01d852563acd30 125-127,129-131
+  s_9fabccd2e25c5b::t_634ccbe7a4446a 135
+  s_9fabccd2e25c5b::t_17bedd353048f6 245
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "583d84993850f44ddd33bd96ae2dd2c405a98ebe",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_9fabccd2e25c5b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10be93bf2ffeoTckUvjgyln7Qk",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

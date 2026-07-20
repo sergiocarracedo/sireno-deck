@@ -1,0 +1,30 @@
+.planning/STATE.md
+  s_b21ef815cd71c9::t_15a748a40565cb 15,210
+.planning/quick/018-fix-theme-resolver-regressions-blockin/018-PLAN.md
+  s_b21ef815cd71c9::t_8b717d847a0041 1-37
+.planning/quick/018-fix-theme-resolver-regressions-blockin/018-SUMMARY.md
+  s_b21ef815cd71c9::t_a9f6dc30e03e3a 1-14
+.planning/quick/018-fix-theme-resolver-regressions-blockin/018-VERIFICATION.md
+  s_b21ef815cd71c9::t_a9f6dc30e03e3a 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "4ebebec2fe97a9317641d32ea0453c89b4518439",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_b21ef815cd71c9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_194c6ab8dffeZgB4hXir7Qu8T0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

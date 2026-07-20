@@ -1,0 +1,37 @@
+.planning/phases/75.1-arch-split-cli-fe-fs-ws-bridge/75.1-RESEARCH.md
+  s_f5622df155228a::t_32acdb88b38c4c 1-163
+.planning/phases/75.1-arch-split-cli-fe-fs-ws-bridge/75.1-03-PLAN.md
+  s_f5622df155228a::t_399dec25352411 129-130,132-139
+  s_f5622df155228a::t_cff823dd94c3a7 1-90,92-95,104-106,108-128,131,140-199
+  s_f5622df155228a::t_5f7488a73dee0d 91,96-103,107
+.planning/phases/75.1-arch-split-cli-fe-fs-ws-bridge/75.1-04-PLAN.md
+  s_f5622df155228a::t_9cc79f2e599731 55-57,72-75
+  s_f5622df155228a::t_f76f6d0b595527 1-54,58-71,76-208
+.planning/phases/75.1-arch-split-cli-fe-fs-ws-bridge/75.1-01-PLAN.md
+  s_f5622df155228a::t_67f87121c19f2a 1-19,21-81,83-173,176-178,183-187,189-191,193-243
+  s_f5622df155228a::t_3b74c4254fef9c 20
+  s_f5622df155228a::t_733b06e7334258 82
+  s_f5622df155228a::t_c2e5552a56ae96 174-175,179-182,188,192
+.planning/phases/75.1-arch-split-cli-fe-fs-ws-bridge/75.1-02-PLAN.md
+  s_f5622df155228a::t_c604839b1f6822 10,15-17
+  s_f5622df155228a::t_ab87911bdbdbe1 131-172
+  s_f5622df155228a::t_17d207a3f72b02 1-9,11-14,18-130,173-181,183-311,314-323
+  s_f5622df155228a::t_4d940bd762b976 312-313
+  s_f5622df155228a::t_88cadefd6f8c04 182
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "bdde82b13ed0b9b30182dff5086560c73702738d",
+  "prompts": {},
+  "sessions": {
+    "s_f5622df155228a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_114ecc375ffehJL8FVEupdUruf",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

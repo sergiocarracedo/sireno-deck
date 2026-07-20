@@ -1,0 +1,167 @@
+.planning/v1.1-MILESTONE-AUDIT.md
+  s_07525a126d5ed9::t_6761522bb1aba6 1-64
+.planning/phases/10-public-authoring-exports/10-DISCUSSION-LOG.md
+  s_7c8bc2079f2b5a::t_a27359848fbba1 1-86
+.planning/STATE.md
+  s_e588706e0fc38d::t_b3d729488d2788 8,14-15,17,72,82
+  s_dfa9d8e0cfa23c::t_b52549514042fb 12,57,83
+  s_959be37f11274d::t_2c93f2cc5eb3d8 13,71
+config.yml
+  s_6010542d23f7ff::t_83b76a79269c4c 28
+packages/cli/src/render/jsx.ts
+  s_959be37f11274d::t_b718b3cd48c697 1-20
+packages/cli/fixtures/phase-9/tsconfig.jsx-authoring-example.json
+  s_959be37f11274d::t_138a4ff90727d4 10
+.planning/phases/10-public-authoring-exports/10-VERIFICATION.md
+  s_4e2f8c88534c28::t_c00d9c8d6aa0c2 45-46
+  s_e588706e0fc38d::t_b3d729488d2788 1,5-6,8,10,19,21,27,29,38,40,42,47
+  s_4e2f8c88534c28::t_92f21ebc4c501d 44
+  s_2323959c4f4c1e::t_367c9c80cbe838 2-4,7,9,11-18,20,22-26,28,30-37,39,41,43,48
+packages/cli/fixtures/phase-5/config.api-version-mismatch.yml
+  s_6010542d23f7ff::t_83b76a79269c4c 8
+builtin-addons/core-buttons/src/index.test.ts
+  s_6010542d23f7ff::t_83b76a79269c4c 14,36
+packages/cli/src/config/loader.test.ts
+  s_6010542d23f7ff::t_83b76a79269c4c 45,72,181,212,237,250,252
+packages/cli/src/deck/runtime.test.ts
+  s_6010542d23f7ff::t_83b76a79269c4c 23,37,81,85,235,275,315
+.planning/phases/09-calendar-authoring-clarity/09-VERIFICATION.md
+  s_cce10670d10ac5::t_e9f0baa6694821 3,15,39,41-43
+README.md
+  s_959be37f11274d::t_138a4ff90727d4 15-19,33-48
+packages/cli/src/render/reconciler.test.tsx
+  s_6010542d23f7ff::t_83b76a79269c4c 122,124,129
+.planning/phases/10-public-authoring-exports/10-01-PLAN.md
+  s_607649f645b625::t_8dc4e2fb852e1f 1-75
+.planning/ROADMAP.md
+  s_e588706e0fc38d::t_b3d729488d2788 102,113-115
+.planning/phases/09-calendar-authoring-clarity/09-UAT.md
+  s_cce10670d10ac5::t_e9f0baa6694821 12-13,15
+.planning/phases/10-public-authoring-exports/10-02-PLAN.md
+  s_607649f645b625::t_8dc4e2fb852e1f 1-80
+packages/cli/tsdown.config.ts
+  s_959be37f11274d::t_b718b3cd48c697 6-7
+package.json
+  s_d840ce71b5fb6f::t_9f44fd259f19fb 11-12
+packages/cli/src/addon/builtin.test.ts
+  s_6010542d23f7ff::t_83b76a79269c4c 9,14,20-23
+packages/cli/package.json
+  s_959be37f11274d::t_b718b3cd48c697 10-13
+  s_d840ce71b5fb6f::t_9f44fd259f19fb 22-23
+  s_6010542d23f7ff::t_1ab9ec15eb6da7 24
+packages/cli/vitest.config.ts
+  s_d840ce71b5fb6f::t_9f44fd259f19fb 1-2,6-11
+packages/cli/fixtures/phase-9/jsx-addon-authoring-example-data.ts
+  s_4e2f8c88534c28::t_92f21ebc4c501d 1-13
+CHANGELOG.md
+  s_959be37f11274d::t_2c93f2cc5eb3d8 3-10,13-16,19
+  s_d840ce71b5fb6f::t_9f44fd259f19fb 11,17
+  s_6010542d23f7ff::t_83b76a79269c4c 12,18
+.planning/solutions/best-practices/bespoke-live-visuals-can-stay-inside-the-deck-button-variant-seam-2026-05-15.md
+  ai_agent 1-53
+.planning/phases/10-public-authoring-exports/10-CONTEXT.md
+  s_7c8bc2079f2b5a::t_a27359848fbba1 1-110
+packages/cli/src/index.ts
+  s_959be37f11274d::t_b718b3cd48c697 1-11
+packages/cli/fixtures/phase-9/jsx-addon-authoring-example.tsx
+  s_959be37f11274d::t_138a4ff90727d4 7
+  s_4e2f8c88534c28::t_92f21ebc4c501d 9-25
+.planning/phases/10-public-authoring-exports/README.md
+  s_959be37f11274d::t_138a4ff90727d4 17-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "deaf2527b53e5f30b716307e99734f3f82097d0e",
+  "prompts": {},
+  "sessions": {
+    "s_07525a126d5ed9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1d02b34d4ffefwtui9X14TkpRF",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_2323959c4f4c1e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1ce529c31ffeGrIgBpuVCk0rVi",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_4e2f8c88534c28": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1ce4cd7bfffeyrU8f94OY4k61J",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_6010542d23f7ff": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cde00d51ffezycdMpJVTwkQGx",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_607649f645b625": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1ce9e34ccffeD2j83przn3LtXq",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_7c8bc2079f2b5a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cea16200ffeH923C0clHjvfZm",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_959be37f11274d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1ce9aa467ffeNc6pUdzI0tluGe",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_cce10670d10ac5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1ceada222ffed8QmFRDTGWlTsJ",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_d840ce71b5fb6f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cde627d4ffeDGz4FbNitYQVeF",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_dfa9d8e0cfa23c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1cea44a6dffew3eojeJ9ucUiSU",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_e588706e0fc38d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1ce977850ffenYZ2EhiBVRt0Xk",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

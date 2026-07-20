@@ -1,0 +1,23 @@
+.planning/quick/014-fix-phase-18-review-findings/014-SUMMARY.md
+  s_df3509a167c487::t_37dbf970cad7b9 1-15
+.planning/quick/014-fix-phase-18-review-findings/014-PLAN.md
+  s_df3509a167c487::t_e301fbe307abe9 1-40
+.planning/STATE.md
+  s_df3509a167c487::t_37dbf970cad7b9 15,161
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "56f152fd022fd4413a31514ae82d0ae105d19928",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

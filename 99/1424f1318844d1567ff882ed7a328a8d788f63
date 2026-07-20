@@ -1,0 +1,27 @@
+packages/cli/src/addon/api.ts
+  s_df3509a167c487::t_e931aed966d5c1 3,53-65,83-116
+packages/cli/src/render/button-frame.tsx
+  s_df3509a167c487::t_e931aed966d5c1 1-45
+packages/cli/src/render/dom-host.tsx
+  s_df3509a167c487::t_e931aed966d5c1 1-141
+packages/cli/src/render/dom-host.test.tsx
+  s_df3509a167c487::t_e931aed966d5c1 1-49
+packages/cli/src/render/button-frame.test.tsx
+  s_df3509a167c487::t_e931aed966d5c1 1-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "991424f1318844d1567ff882ed7a328a8d788f63",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

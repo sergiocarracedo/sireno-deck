@@ -1,0 +1,28 @@
+packages/cli/tsconfig.json
+  s_26099f9ddf91b0::t_4e19e2e88fbede 5
+packages/cli/src/render/reconciler.test.tsx
+  s_26099f9ddf91b0::t_4e19e2e88fbede 11-12,59-66,112-119
+packages/cli/vitest.config.ts
+  s_26099f9ddf91b0::t_73a630d2811a20 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "e854fbe53ef6965a53003cbd7ab1ccafc6644e0f",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_26099f9ddf91b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1debae20effeTa1LX6ESrbmo4d",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

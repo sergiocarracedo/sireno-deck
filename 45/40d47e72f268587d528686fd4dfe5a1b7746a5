@@ -1,0 +1,27 @@
+packages/cli/src/deck/runtime.ts
+  s_344b68134ff779::t_99269fbc4e543d 140
+  s_344b68134ff779::t_8706e112bef62e 1892-1902
+packages/cli/src/cli/commands/start.ts
+  s_344b68134ff779::t_926e5d9666dc81 1131
+  s_344b68134ff779::t_998d6320a64dc5 1471
+packages/cli/src/render/ws-server.ts
+  s_344b68134ff779::t_70794233b6934b 38
+  s_344b68134ff779::t_663163ecebb317 183-187,238-240
+  s_344b68134ff779::t_3e187774b538e9 69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "4540d47e72f268587d528686fd4dfe5a1b7746a5",
+  "prompts": {},
+  "sessions": {
+    "s_344b68134ff779": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1211f9764ffeg9OlKKQb17WE7w",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

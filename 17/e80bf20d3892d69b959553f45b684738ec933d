@@ -1,0 +1,27 @@
+packages/cli/src/ui/Chip.tsx
+  s_8ca911650149ee::t_17633dd5b2aa75 1-41
+packages/cli/src/ui/Icon.tsx
+  s_8ca911650149ee::t_f841440186746a 1-140
+packages/cli/src/addon/api.ts
+  s_8ca911650149ee::t_fe1d1b177f4c41 99-135
+packages/cli/src/ui/Label.tsx
+  s_8ca911650149ee::t_3c69f673607a92 1-29
+packages/cli/src/ui/TapIndicator.tsx
+  s_8ca911650149ee::t_d8daa5be12e9a5 1-60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "17e80bf20d3892d69b959553f45b684738ec933d",
+  "prompts": {},
+  "sessions": {
+    "s_8ca911650149ee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0f10c3897ffe5vrdvyHpZ9pbX1",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

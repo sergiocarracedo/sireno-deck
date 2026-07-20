@@ -1,0 +1,24 @@
+.planning/solutions/build-errors/node-sea-not-viable-for-native-deps-2026-06-05.md
+  s_228741f14b70e9::t_47570701e3e4de 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f4ab7edba5509ebad8157923dcf2f12e7c039572",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_228741f14b70e9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_167162d7affejXF6Te6G05qTh8",
+        "model": "minimax-m3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}

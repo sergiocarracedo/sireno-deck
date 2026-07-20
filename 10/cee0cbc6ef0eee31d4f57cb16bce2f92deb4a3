@@ -1,0 +1,31 @@
+packages/cli/src/builtin-addons/core-buttons/index.test.ts
+  s_df3509a167c487::t_9035f8503537ff 5,59,92
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_df3509a167c487::t_36fbd4939f99f8 91,114,141-143
+  s_df3509a167c487::t_10ca4c23277600 4
+  s_df3509a167c487::t_9035f8503537ff 31,57-90,92-113,115-127,140,144-154,157-158,160,162-165,181-203,216-217,229-230,247-248,265-266
+  s_df3509a167c487::t_0c2bc96b3cfa34 128-139,155-156,159,161,166-180,204-215
+packages/cli/fixtures/phase-18/config.dom-frame-defaults.yml
+  s_df3509a167c487::t_9035f8503537ff 1-47
+packages/cli/src/builtin-addons/date-time/index.test.ts
+  s_df3509a167c487::t_9035f8503537ff 1,3-4,99-101,110,112-119,130,133-135,156-158,161-167
+packages/cli/src/deck/runtime.test.ts
+  s_df3509a167c487::t_42884305a3dea6 70-73,501-502,1405-1406,1413-1414,1421-1422
+  s_df3509a167c487::t_9035f8503537ff 10,1240
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "10cee0cbc6ef0eee31d4f57cb16bce2f92deb4a3",
+  "prompts": {},
+  "sessions": {
+    "s_df3509a167c487": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9699dfffend7BTZgY1BB8rT",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
