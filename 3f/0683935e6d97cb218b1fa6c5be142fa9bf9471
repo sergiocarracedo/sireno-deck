@@ -1,0 +1,21 @@
+packages/cli/emulator/src/SidePanel.tsx
+  s_2cb355494cf289::t_4d7c113f049284 1-3,35,37-80
+packages/cli/src/version.ts
+  s_2cb355494cf289::t_07553788761bcd 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "3f0683935e6d97cb218b1fa6c5be142fa9bf9471",
+  "prompts": {},
+  "sessions": {
+    "s_2cb355494cf289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_088ac798dffe8mKKPKhoYsGfiP",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
