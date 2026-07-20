@@ -10,6 +10,7 @@ import { registerBuiltins } from "@/builtin-addons"
 import { registerSystemStatusAddon } from "@/builtin-addons/system-status"
 import { findConfigPath } from "@/config/discovery"
 import { loadConfig } from "@/config/loader"
+import { decksChanged } from "@/config/config-diff"
 import {
   formatFullIssues,
   isFullValid,
@@ -53,6 +54,7 @@ import {
 } from "@/core/icon-asset-registry"
 import { StatePublisher } from "@/render/state-publisher"
 import { startWsBridge } from "@/render/ws-bridge"
+import { ConfigWatcher } from "@/core/watcher"
 
 import { materializeAddonDecks } from "./addon-decks"
 import {
@@ -823,6 +825,101 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     options.onChildren([...outputHandle.childPids])
   }
 
+  // Hot-reload: watch the YAML config for changes. Deck-only changes
+  // rebuild the runtime deck set in-place and rebroadcast deck-config;
+  // anything else (theme, addons, lock, logging) tears down Vite and
+  // re-initialises the output client with the new theme.
+  let currentOutputHandle: OutputHandle = outputHandle
+  let currentLoadedConfig = loadedConfig
+  const configWatcher = new ConfigWatcher([loadedConfig.configPath], {
+    onChange: () => {
+      void handleConfigChange()
+    },
+  })
+  const handleConfigChange = async (): Promise<void> => {
+    try {
+      const nextLoaded = validateAndLoadConfig(options)
+      const prevConfig = currentLoadedConfig.config
+      const decksOnlyChange = decksChanged(prevConfig, nextLoaded.config)
+      if (decksOnlyChange) {
+        const rebuilt = buildRuntime(options, nextLoaded, descriptor.keyCount).decks
+        const activeId = runtime.getActiveDeckId()
+        runtime.setDecks(rebuilt)
+        if (!Object.prototype.hasOwnProperty.call(nextLoaded.config.decks, activeId)) {
+          const fallback =
+            nextLoaded.config.decks["main"] !== undefined
+              ? "main"
+              : Object.keys(nextLoaded.config.decks)[0] ?? activeId
+          runtime.navigateToDeck(fallback, { addToHistory: false })
+        }
+        const activeDeck = runtime.getActiveDeck()
+        const msg = buildDeckConfigMessage(
+          activeDeck,
+          addonBundle.addonByType,
+          resolverOptions,
+          {
+            navStackDepth: runtime.navStackDepth(),
+            hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+          },
+          descriptor.keyCount,
+          outputClient.kind === "real",
+          (fullPath) => getAssetByPath(fullPath)?.id,
+          runtime.getAvailableOverlayDeckIcon(),
+        )
+        bridge.broadcast(msg)
+        currentLoadedConfig = nextLoaded
+        logger.info(
+          {
+            deckId: msg.deckId,
+            buttonCount: msg.surfaces[msg.deckId]?.buttons.length,
+          },
+          "config hot-reloaded (decks only)",
+        )
+        return
+      }
+      // Theme / addons / lock / logging changed — full Vite restart so the
+      // frontend picks up new theme CSS + virtual modules.
+      logger.info(
+        { prevTheme: prevConfig.theme, nextTheme: nextLoaded.config.theme },
+        "config change outside decks — restarting Vite",
+      )
+      await currentOutputHandle.stop()
+      const nextHandle = await outputClient.init({
+        bridge,
+        runtime,
+        pubSub,
+        store,
+        decks: buildRuntime(options, nextLoaded, descriptor.keyCount).decks,
+        theme: {
+          name: nextLoaded.theme.name,
+          apiVersion: nextLoaded.theme.apiVersion,
+        },
+        themeDir: nextLoaded.themeDir,
+        logger,
+        rebuildDecksForKeyCount: (keyCount: number) =>
+          buildRuntime(options, nextLoaded, keyCount).decks,
+        ...(options.frontendUrl !== undefined
+          ? { frontendUrl: options.frontendUrl }
+          : {}),
+        ...(options.port !== undefined ? { port: options.port } : {}),
+        ...(options.intervalMs !== undefined
+          ? { intervalMs: options.intervalMs }
+          : {}),
+      })
+      currentOutputHandle = nextHandle
+      currentLoadedConfig = nextLoaded
+      if (options.onChildren !== undefined) {
+        options.onChildren([...nextHandle.childPids])
+      }
+    } catch (err) {
+      logger.warn(
+        { err: (err as Error).message },
+        "config change failed; keeping previous config",
+      )
+    }
+  }
+  await configWatcher.start({ ignoreInitial: true })
+
   let resolveDone: () => void = () => undefined
   const done = new Promise<void>((resolve) => {
     resolveDone = resolve
@@ -841,16 +938,17 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     bridgeSignal.abort()
     addonServices.dispose()
     statePublisher.stopAll()
-    if (options.emulator !== true && typeof outputHandle.pushBlackFrame === "function") {
+    if (options.emulator !== true && typeof currentOutputHandle.pushBlackFrame === "function") {
       try {
-        await outputHandle.pushBlackFrame()
+        await currentOutputHandle.pushBlackFrame()
       } catch (err) {
         logger.warn({ err: (err as Error).message }, "pushBlackFrame failed")
       }
     }
     process.removeListener("sireno:log", onServiceLog)
+    await configWatcher.close()
     await Promise.allSettled([
-      outputHandle.stop(),
+      currentOutputHandle.stop(),
       runtime.stopActiveAppPolling(),
       providers.activeApp.stop(),
       providers.session.stop(),
