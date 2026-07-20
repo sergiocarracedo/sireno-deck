@@ -62,7 +62,7 @@ const toRunOptions = (
 
 const resolveFrontendDist = (): string => {
   const here = dirname(fileURLToPath(import.meta.url))
-  return resolvePath(here, "../../frontend/dist")
+  return resolvePath(here, "../../../frontend/dist")
 }
 
 const promptConflict = async (pid: number): Promise<"restart" | "cancel"> => {
