@@ -1,0 +1,96 @@
+packages/cli/src/outputClient/emulator.ts
+  s_547b6a3eeb7585::t_ebf88c065b1648 29-31
+  s_547b6a3eeb7585::t_c8e39f9e57bb0e 24
+  s_547b6a3eeb7585::t_805c434fdc6bd2 6
+  s_547b6a3eeb7585::t_ffaa1fdbaab621 124-134,144-149
+  s_547b6a3eeb7585::t_70459d2f234b95 135-143
+packages/cli/frontend/src/App.tsx
+  s_547b6a3eeb7585::t_050258f1754140 162-167
+  s_547b6a3eeb7585::t_a9ce4802d42265 135-137
+  s_547b6a3eeb7585::t_f6a1b43cd32f64 264
+  s_547b6a3eeb7585::t_f8cfcf8701282d 17-21
+  s_547b6a3eeb7585::t_5c3ff682455e80 168-173
+packages/cli/src/cli/commands/run.ts
+  s_547b6a3eeb7585::t_a59f17e2ff78d0 681-683,698
+  s_547b6a3eeb7585::t_7f9545602170ee 358-364,366-367,399-408,513,529-535
+  s_547b6a3eeb7585::t_92fa9e3f2117e5 502,505
+  s_547b6a3eeb7585::t_cd2b6be9995108 450
+  s_547b6a3eeb7585::t_f4f3cd6fe9427e 665-667
+  s_547b6a3eeb7585::t_fda15b8b4183d6 670,679,689-697
+  s_547b6a3eeb7585::t_1018c7ec37e924 811-812
+  s_547b6a3eeb7585::t_191e5ad3926330 536
+  s_547b6a3eeb7585::t_89d27a79cb41b7 699-701
+packages/cli/src/render/ws-bridge.ts
+  s_547b6a3eeb7585::t_4dc2b3b2f343e8 116-118
+packages/cli/emulator/src/bridge.ts
+  s_547b6a3eeb7585::t_d3893c17f54b1f 220
+  s_547b6a3eeb7585::t_e5df78f343959b 54
+  s_547b6a3eeb7585::t_26917b9e0e5e4a 150
+packages/cli/src/api/protocol-internal.ts
+  s_547b6a3eeb7585::t_3cf44287d3e743 107-108,110-111
+  s_547b6a3eeb7585::t_5e35434d1187f5 154
+  s_547b6a3eeb7585::t_b872b36cdbe0c9 109
+  s_547b6a3eeb7585::t_5aae75452cab1e 176
+packages/cli/src/render/__tests__/protocol.test.ts
+  s_547b6a3eeb7585::t_1ace5857bb6c1b 10
+  s_547b6a3eeb7585::t_7508e253099133 90-104
+packages/cli/emulator/src/__tests__/DeckFrame.test.tsx
+  s_547b6a3eeb7585::t_0fc9cb0194d0d4 6,43,77
+  s_547b6a3eeb7585::t_293635da8119e8 78
+  s_547b6a3eeb7585::t_298bb943698d70 2,44-76
+packages/cli/emulator/src/App.tsx
+  s_547b6a3eeb7585::t_cfeda702540782 23-31,37,41-48
+  s_547b6a3eeb7585::t_5f325b52751444 4-7,10
+  s_547b6a3eeb7585::t_f650d381be9f1e 73,82-88,119,122-123,126,128,166,169-174,177-180
+  s_547b6a3eeb7585::t_d43650c2032231 112-117
+  s_547b6a3eeb7585::t_5cdab1bb0b2dac 22
+  s_547b6a3eeb7585::t_29605860dbe2d0 194,198,209,214,219-223,232-278,280-281,286-288,290-292
+  s_547b6a3eeb7585::t_d4ac118f185298 279,282-285
+  s_547b6a3eeb7585::t_d364acb80268c6 120-121,127,129-130
+  s_547b6a3eeb7585::t_224d37ab19a5e4 190-193,293-295
+packages/cli/frontend/src/__tests__/system-buttons-render.test.tsx
+  s_547b6a3eeb7585::t_76e2a7147c1642 64,82
+  s_547b6a3eeb7585::t_c44f9316221d8e 109-111,125-127,141-143
+  s_547b6a3eeb7585::t_d6930381c8301d 5
+packages/cli/src/deck/__tests__/system-back-injection.test.ts
+  s_547b6a3eeb7585::t_83c727d69c3de7 104-111
+  s_547b6a3eeb7585::t_0fdbed6fd49c30 132-140
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_547b6a3eeb7585::t_5a8db23de205ca 359-420
+packages/cli/frontend/src/components/Deck.tsx
+  s_547b6a3eeb7585::t_296917e2b7f58e 54
+  s_547b6a3eeb7585::t_d4a84e92c57379 241
+  s_547b6a3eeb7585::t_ddf4faccc9b226 272
+  s_547b6a3eeb7585::t_caa2f7e660f482 242
+packages/cli/frontend/src/__tests__/deck-render.test.tsx
+  s_547b6a3eeb7585::t_a53638e52b07c3 6,30-31,34,40,75
+  s_547b6a3eeb7585::t_ee4a67de2efa93 94-112
+packages/cli/src/outputClient/types.ts
+  s_547b6a3eeb7585::t_96090ed979bc00 34-40
+packages/cli/src/render/protocol.ts
+  s_547b6a3eeb7585::t_83baf2c7bfdd46 13,34
+packages/cli/emulator/src/DeckFrame.tsx
+  s_547b6a3eeb7585::t_ae4c334bd8b9d2 31-32,37-38,45
+packages/cli/src/deck/runtime.ts
+  s_547b6a3eeb7585::t_e76237f4dff4e1 769
+  s_547b6a3eeb7585::t_b37ab065947bee 79
+  s_547b6a3eeb7585::t_d76551861d2da0 145
+  s_547b6a3eeb7585::t_c32470f6dd9deb 105-106,129-144,146
+  s_547b6a3eeb7585::t_5b905ea7949c05 147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "03a70a51c53202a64e4c23efc709260f15c1f893",
+  "prompts": {},
+  "sessions": {
+    "s_547b6a3eeb7585": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07f9b513bffe15o8R4vY1N6QVC",
+        "model": "k3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
