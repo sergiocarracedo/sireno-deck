@@ -1,0 +1,27 @@
+.planning/phases/09-post-v1-polish/04-PLAN-system-status-addon.md
+  s_2cb355494cf289::t_9b57c289fe31a4 1-73
+.planning/phases/09-post-v1-polish/09-RESEARCH.md
+  s_2cb355494cf289::t_5e3073c600d0e1 1-38
+.planning/phases/09-post-v1-polish/01-PLAN-hardware-ux.md
+  s_2cb355494cf289::t_d403e95b0961ba 1-73
+.planning/phases/09-post-v1-polish/02-PLAN-service-log-schema.md
+  s_2cb355494cf289::t_780fd1ca000d56 1-66
+.planning/phases/09-post-v1-polish/03-PLAN-emulator-rework.md
+  s_2cb355494cf289::t_973c074bc71477 1-97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "9c0e81da784a8ef7975a9bad5d5f04b50baf2030",
+  "prompts": {},
+  "sessions": {
+    "s_2cb355494cf289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_088ac798dffe8mKKPKhoYsGfiP",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
