@@ -848,7 +848,7 @@ describe("createRuntime — system-button gestures", () => {
     expect(runtime.navStackDepth()).toBe(1)
   })
 
-  it("core:back hold while in regular layer is a no-op", async () => {
+  it("core:back hold in regular layer navigates back to main deck", async () => {
     const { runtime } = setup([
       makeDeck({
         id: "main",
@@ -859,7 +859,7 @@ describe("createRuntime — system-button gestures", () => {
     ])
     runtime.navigateToDeck("media")
     await runtime.dispatchGesture("14", "hold")
-    expect(runtime.getActiveDeckId()).toBe("media")
+    expect(runtime.getActiveDeckId()).toBe("main")
   })
 
   it("setOverlay(null) publishes runtime:activeDeck with the regular layer top, not the overlay top", () => {

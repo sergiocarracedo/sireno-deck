@@ -56,29 +56,10 @@ decks:
           label: Chrome
 
       - position: 0
-        type: 'system-status:status'
-        config:
-          variant: bars
-          metrics:
-            - metric: cpu_usage
-              label: CPU
-            - metric: memory_usage
-              label: RAM
-            - metric: swap_usage
-              label: Swap
-              unavailable_label: 'N/A'
+        type: 'system-status:cpu'
 
       - position: 5
-        type: 'system-status:status'
-        config:
-          metrics:
-            - metric: cpu_usage
-              label: CPU
-            - metric: fan_speed
-              label: Fan
-              unavailable_label: 'N/A'
-            - metric: uptime
-              label: Uptime
+        type: 'system-status:ram'
 
       - position: 6
         type: 'media:volume:down'
