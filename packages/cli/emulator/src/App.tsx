@@ -36,7 +36,7 @@ const ENV_WS_URL = (import.meta.env.VITE_WS_URL ??
 const ENV_FRONTEND_URL = (import.meta.env.VITE_FRONTEND_URL ??
   "http://127.0.0.1:5180") as string
 
-const Deviceselector = () => {
+const DeviceSelector = () => {
   const [params, setParams] = useSearchParams()
   const device = params.get("device") ?? "default"
   return (
