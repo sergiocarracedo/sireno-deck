@@ -7,6 +7,8 @@ import { sirenoDeck2 } from "../src/vite/index"
 const wsUrl = process.env["SIRENO_WS_URL"] ?? "ws://127.0.0.1:52937"
 const frontendUrl =
   process.env["SIRENO_FRONTEND_URL"] ?? "http://127.0.0.1:5180"
+const httpBackend =
+  process.env["SIRENO_HTTP_BACKEND"] ?? "http://127.0.0.1:3939"
 
 const parseThemeFromEnv = ():
   | { name: string; manifestPath: string; uiOverridesPath: string | null }
@@ -89,6 +91,16 @@ export default defineConfig({
     port: Number(process.env.SIRENO_EMULATOR_PORT ?? 52938),
     strictPort: false,
     host: "127.0.0.1",
+    proxy: {
+      "/api/config": {
+        target: httpBackend,
+        changeOrigin: true,
+      },
+      "/api/addons": {
+        target: httpBackend,
+        changeOrigin: true,
+      },
+    },
   },
   assetsInclude: ["**/*.html"],
 })
