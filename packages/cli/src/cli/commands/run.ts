@@ -798,6 +798,13 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     bridgeSignal.abort()
     addonServices.dispose()
     statePublisher.stopAll()
+    if (options.emulator !== true && typeof outputHandle.pushBlackFrame === "function") {
+      try {
+        await outputHandle.pushBlackFrame()
+      } catch (err) {
+        logger.warn({ err: (err as Error).message }, "pushBlackFrame failed")
+      }
+    }
     await Promise.allSettled([
       outputHandle.stop(),
       runtime.stopActiveAppPolling(),

@@ -197,11 +197,32 @@ export class RealOutputClient implements OutputClient {
     const frontendVitePid = frontendVite?.process.pid ?? 0
     const childPids = frontendVitePid > 0 ? [frontendVitePid] : []
 
+    const buildBlackBuffer = (): Buffer => {
+      const keyCount = device.getKeyCount()
+      const stride = 3 * 8
+      const total = keyCount * stride * 8
+      return Buffer.alloc(total)
+    }
+
     return {
       descriptor,
       frontendUrl,
       wsUrl: opts.bridge.url,
       childPids,
+      async pushBlackFrame(): Promise<void> {
+        try {
+          const buf = buildBlackBuffer()
+          for (let i = 0; i < device.getKeyCount(); i++) {
+            await device.fillKeyBuffer(i, buf.subarray(0, 3 * 8 * 8))
+          }
+          logger.info("real: pushed black frame")
+        } catch (err) {
+          logger.warn(
+            { err: (err as Error).message },
+            "real: pushBlackFrame failed (non-fatal)",
+          )
+        }
+      },
       async stop(): Promise<void> {
         gestureUnsubscribe()
         try {
