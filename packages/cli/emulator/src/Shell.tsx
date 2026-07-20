@@ -14,7 +14,10 @@ export const Shell = ({
   wsClient,
 }: ShellProps) => {
   return (
-    <div className="flex h-screen bg-neutral-900 text-neutral-100">
+    <div
+      data-testid="emulator-shell"
+      className="flex h-screen bg-neutral-900 text-neutral-100"
+    >
       <SidePanel
         activeSection={activeSection}
         onSelect={onSelect}
