@@ -1,0 +1,21 @@
+.planning/solutions/workflow-issues/git-corruption-recovery-via-fresh-clone-2026-07-20.md
+  s_2cb355494cf289::t_4eadf5eb1d01dc 1-70
+.planning/solutions/best-practices/react-useeffect-tdz-closure-trap-2026-07-20.md
+  s_2cb355494cf289::t_5e8bd122756948 1-86
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "cd7775ec7442a75abd9b6cde599282a90a11957a",
+  "prompts": {},
+  "sessions": {
+    "s_2cb355494cf289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_088ac798dffe8mKKPKhoYsGfiP",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
