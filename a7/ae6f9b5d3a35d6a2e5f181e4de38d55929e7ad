@@ -1,0 +1,40 @@
+packages/cli/src/cli/commands/run.ts
+  s_547b6a3eeb7585::t_01b8ed61a963a3 374-379,381-384,386
+  s_547b6a3eeb7585::t_546510c83fd270 509,519-524,547-636
+  s_547b6a3eeb7585::t_c70fd75f0b6c09 18
+  s_547b6a3eeb7585::t_c40a49829757a8 637
+packages/cli/src/config/validation.ts
+  s_547b6a3eeb7585::t_168d883d35f5d8 149-164,168,170,175-179,189
+  s_547b6a3eeb7585::t_0eba78cb82f958 75-84,89,97,106,118,121-129,131
+  s_547b6a3eeb7585::t_d3117c6dae9029 143
+packages/cli/src/config/__tests__/validation.test.ts
+  s_547b6a3eeb7585::t_36c93fa0d13f9f 9
+  s_547b6a3eeb7585::t_e741e72372b33e 134-189
+packages/cli/src/deck/deck-config.ts
+  s_547b6a3eeb7585::t_8880de44b1010f 140-149
+packages/cli/src/deck/runtime.ts
+  s_547b6a3eeb7585::t_1754e582eafb72 38-42
+packages/cli/frontend/src/App.tsx
+  s_547b6a3eeb7585::t_08b594c09f4c98 183-187,199-201
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "a7ae6f9b5d3a35d6a2e5f181e4de38d55929e7ad",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_547b6a3eeb7585": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07f9b513bffe15o8R4vY1N6QVC",
+        "model": "k3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
