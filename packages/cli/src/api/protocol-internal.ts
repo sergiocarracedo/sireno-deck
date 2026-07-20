@@ -104,6 +104,11 @@ export const selectDeckMessageSchema = baseClientMessage.extend({
   deckId: z.string(),
 })
 
+export const setDeviceMessageSchema = baseClientMessage.extend({
+  type: z.literal("set-device"),
+  deviceId: z.string().min(1),
+})
+
 export const deckActiveMessageSchema = baseClientMessage.extend({
   type: z.literal("deck-active"),
   deckId: z.string(),
@@ -146,6 +151,7 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
   methodCallMessageSchema,
   methodCallResultMessageSchema,
   selectDeckMessageSchema,
+  setDeviceMessageSchema,
   deckActiveMessageSchema,
   dismissOverlayMessageSchema,
   assetsMessageSchema,
@@ -167,6 +173,7 @@ export type MethodCallResultMessage = z.infer<
   typeof methodCallResultMessageSchema
 >
 export type SelectDeckMessage = z.infer<typeof selectDeckMessageSchema>
+export type SetDeviceMessage = z.infer<typeof setDeviceMessageSchema>
 export type DeckActiveMessage = z.infer<typeof deckActiveMessageSchema>
 export type DismissOverlayMessage = z.infer<typeof dismissOverlayMessageSchema>
 export type AssetsMessage = z.infer<typeof assetsMessageSchema>

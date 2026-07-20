@@ -76,6 +76,7 @@ export interface CreateRuntimeOptions {
 export interface Runtime {
   getActiveDeck(): RuntimeDeck
   getActiveDeckId(): string
+  setDecks(decks: ReadonlyArray<RuntimeDeck>): void
   navigateToDeck(id: string, options?: { addToHistory?: boolean }): void
   goBack(): void
   setOverlay(deckId: string | null, opts?: { source?: "autoShow" | "manual" }): void
@@ -101,7 +102,8 @@ export interface Runtime {
 }
 
 export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
-  const { decks, pubSub, store, logger, getMethods } = options
+  const { pubSub, store, logger, getMethods } = options
+  let { decks } = options
   let gestureListener: GestureListener | null = null
   const mainDeck = decks.find((d) => d.isMain) ?? decks[0]
   if (mainDeck === undefined) {
@@ -123,6 +125,25 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
 
   const deckById = (id: string): RuntimeDeck | undefined =>
     decks.find((d) => d.id === id)
+
+  const setDecks = (next: ReadonlyArray<RuntimeDeck>): void => {
+    decks = next
+    // Clear any navigation/overlay state that pointed at decks we no longer have.
+    const currentActive = transientDeckId ?? navStack[navStack.length - 1]
+    if (currentActive !== undefined && deckById(currentActive) === undefined) {
+      navStack.length = 0
+      const fallback = decks.find((d) => d.isMain) ?? decks[0]
+      if (fallback !== undefined) navStack.push(fallback.id)
+      transientDeckId = null
+    }
+    if (
+      overlayDeckId !== null &&
+      deckById(overlayDeckId) === undefined
+    ) {
+      overlayDeckId = null
+    }
+    pubSub.publish("runtime:activeDeck", { deckId: getActiveDeckId() })
+  }
 
   const findButton = (
     id: string,
@@ -745,6 +766,7 @@ const navigateToDeck = (
   const runtime: Runtime = {
     getActiveDeck,
     getActiveDeckId,
+    setDecks,
     navigateToDeck,
     goBack,
     setOverlay,

@@ -31,6 +31,13 @@ export interface InitOptions {
   readonly frontendUrl?: string
   readonly port?: number
   readonly intervalMs?: number
+  /**
+   * Rebuild the runtime deck set for a new device keyCount. The bridge then
+   * re-broadcasts a fresh deck-config so the frontend re-renders into the
+   * correct grid. Optional — emulator-only callers provide this; real
+   * devices have a fixed keyCount and skip the rebuild.
+   */
+  readonly rebuildDecksForKeyCount?: (keyCount: number) => ReadonlyArray<RuntimeDeck>
 }
 
 export interface OutputHandle {

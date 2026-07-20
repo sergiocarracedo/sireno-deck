@@ -2,6 +2,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
+import { getDeviceModel } from "@/device/models"
 import { WebSocketProvider, type WebSocketSend } from "../bridge/ws-context"
 import { Deck } from "../components/Deck"
 import {
@@ -60,7 +61,7 @@ describe("Deck with system buttons", () => {
       name: "Sub",
       buttons: [{ id: "14", type: "core:back", config: {} }],
     }
-    const { container } = render(<Deck deck={deck} />)
+    const { container } = render(<Deck deck={deck} deviceModel={getDeviceModel("mk2")} />)
     const cell = container.querySelector('[data-button-type="core:back"]')
     expect(cell).not.toBeNull()
     expect(screen.getByText("Back")).toBeTruthy()
@@ -78,7 +79,7 @@ describe("Deck with system buttons", () => {
     }
     const { container } = render(
       <WebSocketProvider value={send}>
-        <Deck deck={deck} />
+        <Deck deck={deck} deviceModel={getDeviceModel("mk2")} />
       </WebSocketProvider>,
     )
     const cell = container.querySelector('[data-button-type="core:back"]')
@@ -105,7 +106,9 @@ describe("Deck with system buttons", () => {
       hasOverlayDeckAvailable: true,
       buttons: [{ id: "14", type: "core:settings-entry", config: {} }],
     }
-    const { container } = render(<Deck deck={deck} />)
+    const { container } = render(
+      <Deck deck={deck} deviceModel={getDeviceModel("mk2")} />,
+    )
     const cell = container.querySelector('[data-split-action="true"]')
     expect(cell).not.toBeNull()
     expect(screen.getByText("Settings")).toBeTruthy()
@@ -119,7 +122,9 @@ describe("Deck with system buttons", () => {
       hasOverlayDeckAvailable: true,
       buttons: [{ id: "14", type: "core:back", config: {} }],
     }
-    const { container } = render(<Deck deck={deck} />)
+    const { container } = render(
+      <Deck deck={deck} deviceModel={getDeviceModel("mk2")} />,
+    )
     const cell = container.querySelector('[data-split-action="true"]')
     expect(cell).not.toBeNull()
     expect(screen.getByText("Back")).toBeTruthy()
@@ -133,7 +138,9 @@ describe("Deck with system buttons", () => {
       hasOverlayDeckAvailable: false,
       buttons: [{ id: "14", type: "core:back", config: {} }],
     }
-    const { container } = render(<Deck deck={deck} />)
+    const { container } = render(
+      <Deck deck={deck} deviceModel={getDeviceModel("mk2")} />,
+    )
     expect(container.querySelector('[data-split-action="true"]')).toBeNull()
   })
 })

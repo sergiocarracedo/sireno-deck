@@ -113,6 +113,9 @@ export const startWsBridge = (
               activeTheme !== undefined ? { theme: activeTheme.name } : {},
           })
           socket.send(JSON.stringify(ack))
+          if (currentDevice !== null) {
+            sendToSocket(socket, { type: "device-info", device: currentDevice })
+          }
           for (const handler of connectionHandlers) handler(socket)
           return
         }

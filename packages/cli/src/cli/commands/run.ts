@@ -355,12 +355,17 @@ interface LoadConfigAndThemeResult {
   readonly store: Store
 }
 
-const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
-  const { logger } = options
+interface LoadConfigResult {
+  readonly configPath: string
+  readonly config: ReturnType<typeof loadConfig>["config"]
+  readonly registry: AddonRegistry
+  readonly theme: ReturnType<typeof resolveActiveTheme>["theme"]
+  readonly themeDir: string
+}
+
+const validateAndLoadConfig = (options: RunOptions): LoadConfigResult => {
   const configPath = resolveConfigPath(options)
-
   const { config } = loadConfig({ configPath })
-
   const registry = new AddonRegistry()
   registerBuiltins(registry)
   const validation = validateFull(config, registry)
@@ -369,7 +374,6 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
       `Config validation failed:\n${formatFullIssues(validation.issues)}`,
     )
   }
-
   const { theme, getCss } = resolveActiveTheme(registry, {
     theme: config.theme,
   })
@@ -392,6 +396,16 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
     uiOverridesPath: theme.uiOverridesPath,
   })
   process.env["SIRENO_THEME_NAME"] = theme.name
+  return { configPath, config, registry, theme, themeDir }
+}
+
+const buildRuntime = (
+  options: RunOptions,
+  loaded: LoadConfigResult,
+  keyCount: number,
+): LoadConfigAndThemeResult => {
+  const { logger } = options
+  const { config, registry, theme, themeDir } = loaded
 
   const decks: RuntimeDeck[] = Object.entries(config.decks).flatMap(
     ([id, d]) => {
@@ -433,7 +447,7 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
         const pages = paginateDeck({
           baseDeckId: id,
           buttons: runtimeButtons,
-          keyCount: 15,
+          keyCount,
         })
         return pages.map((p) => {
           const mappedButtons: RuntimeDeck["buttons"] = (
@@ -485,10 +499,10 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
       registry,
       effectiveDecks,
       logger,
-      15,
+      keyCount,
       config.lock?.buttons,
     ),
-    15,
+    keyCount,
   )
   const { runtime, methods, pubSub, store } = createDeckRuntime({
     decks: allDecks,
@@ -496,7 +510,7 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
   })
 
   return {
-    configPath,
+    configPath: loaded.configPath,
     theme: {
       name: theme.name,
       apiVersion: theme.apiVersion,
@@ -510,6 +524,14 @@ const loadConfigAndTheme = (options: RunOptions): LoadConfigAndThemeResult => {
     methods,
     store,
   }
+}
+
+const loadConfigAndTheme = (
+  options: RunOptions,
+  keyCount: number = 15,
+): LoadConfigAndThemeResult => {
+  const loaded = validateAndLoadConfig(options)
+  return buildRuntime(options, loaded, keyCount)
 }
 
 interface SystemProviders {
@@ -640,15 +662,13 @@ const buildAddonBundle = async (): Promise<AddonRegistryBundle> => {
 
 export const preflight = async (options: RunOptions): Promise<void> => {
   const { logger } = options
-  const loaded = loadConfigAndTheme(options)
-  await startSystemProviders(options, loaded.runtime, loaded.methods)
-
-  const xdgConfigHome = resolveXdgConfigHome(options)
+  // Validate the config first so a broken YAML exits before we ever touch
+  // hardware or spawn an emulator.
+  validateAndLoadConfig(options)
   const outputClient = selectOutputClient({
     emulator: options.emulator === true,
-    xdgConfigHome,
+    xdgConfigHome: resolveXdgConfigHome(options),
   })
-
   await outputClient.validateReady()
   void logger
 }
@@ -656,16 +676,30 @@ export const preflight = async (options: RunOptions): Promise<void> => {
 export const runPipeline = async (options: RunOptions): Promise<void> => {
   const { logger } = options
 
-  const loaded = loadConfigAndTheme(options)
-  const { themeDir, decks, pubSub, runtime, methods, store } = loaded
-
-  const providers = await startSystemProviders(options, runtime, methods)
-
   const xdgConfigHome = resolveXdgConfigHome(options)
+
+  // Validate config first so a broken YAML exits without ever touching
+  // hardware (or spawning an emulator).
+  const loadedConfig = validateAndLoadConfig(options)
+
   const outputClient: OutputClient = selectOutputClient({
     emulator: options.emulator === true,
     xdgConfigHome,
   })
+  const devices = await outputClient.listDevices()
+  const savedDevice = loadDeviceConfig({ xdgConfigHome })
+  const descriptor = await outputClient.selectDevice(
+    devices,
+    savedDevice?.serial ?? null,
+    logger,
+  )
+  await outputClient.storeSelection(descriptor)
+
+  const loaded = buildRuntime(options, loadedConfig, descriptor.keyCount)
+  const { themeDir, decks, pubSub, runtime, methods, store } = loaded
+
+  const providers = await startSystemProviders(options, runtime, methods)
+
   const isCompact = outputClient.kind === "real"
 
   const addonBundle = await buildAddonBundle()
@@ -702,14 +736,6 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     logger,
   })
 
-  const devices = await outputClient.listDevices()
-  const savedDevice = loadDeviceConfig({ xdgConfigHome })
-  const descriptor = await outputClient.selectDevice(
-    devices,
-    savedDevice?.serial ?? null,
-    logger,
-  )
-  await outputClient.storeSelection(descriptor)
   for (const deck of decks) {
     registerDeckIcon(deck, resolverOptions, logger)
     registerIconForDeck(deck.buttons, resolverOptions, logger)
@@ -782,6 +808,8 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     theme: { name: loaded.theme.name, apiVersion: loaded.theme.apiVersion },
     themeDir,
     logger,
+    rebuildDecksForKeyCount: (keyCount: number) =>
+      buildRuntime(options, loadedConfig, keyCount).decks,
     ...(options.frontendUrl !== undefined
       ? { frontendUrl: options.frontendUrl }
       : {}),

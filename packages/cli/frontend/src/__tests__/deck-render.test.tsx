@@ -3,6 +3,7 @@ import { act, fireEvent, render } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
 import { ChannelRegistry } from "@sireno-deck/cli"
+import { getDeviceModel } from "@/device/models"
 
 import { WebSocketProvider, type WebSocketSend } from "../bridge/ws-context"
 import { Deck } from "../components/Deck"
@@ -26,15 +27,17 @@ const DECK = {
   ],
 }
 
+const MODEL = getDeviceModel("mk2")
+
 describe("Deck", () => {
   it("renders a button per entry with the right data-button-type", () => {
-    const { container } = render(<Deck deck={DECK} />)
+    const { container } = render(<Deck deck={DECK} deviceModel={MODEL} />)
     expect(container.querySelectorAll("[data-button-type]")).toHaveLength(2)
   })
 
   it("publishes to the per-button runtime:gesture channel when a gesture arrives", () => {
     ChannelRegistry.resetForTests()
-    render(<Deck deck={DECK} />)
+    render(<Deck deck={DECK} deviceModel={MODEL} />)
 
     const b0Received: Array<unknown> = []
     const b1Received: Array<unknown> = []
@@ -69,7 +72,7 @@ describe("Deck", () => {
     }
     const { container } = render(
       <WebSocketProvider value={send}>
-        <Deck deck={DECK} />
+        <Deck deck={DECK} deviceModel={MODEL} />
       </WebSocketProvider>,
     )
     const cell = container.querySelector('[data-button-type="core:action"]')
@@ -87,5 +90,24 @@ describe("Deck", () => {
         gesture: "tap",
       },
     ])
+  })
+
+  it("ignores buttons whose position is >= device keyCount", () => {
+    const mini = getDeviceModel("mini")
+    const oversizedDeck = {
+      ...DECK,
+      buttons: [
+        ...DECK.buttons,
+        { id: "6", type: "core:action", label: "Off-grid", config: {} },
+        { id: "7", type: "core:action", label: "Off-grid-2", config: {} },
+      ],
+    }
+    const { container } = render(
+      <Deck deck={oversizedDeck} deviceModel={mini} />,
+    )
+    expect(container.querySelectorAll("[data-button-type]")).toHaveLength(2)
+    expect(
+      container.querySelectorAll('[data-button-type="core:action"]'),
+    ).toHaveLength(1)
   })
 })

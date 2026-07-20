@@ -356,6 +356,68 @@ describe("createRuntime", () => {
     runtime.goBack()
     expect(runtime.getActiveDeckId()).toBe("parent")
   })
+
+  describe("setDecks", () => {
+    it("replaces the deck set so getActiveDeck reflects new decks", () => {
+      const { runtime } = setup([
+        makeDeck({ id: "main", isMain: true }),
+      ])
+      runtime.setDecks([
+        makeDeck({
+          id: "main",
+          isMain: true,
+          buttons: [{ id: "31", type: "core:back" }],
+        }),
+      ])
+      expect(runtime.getActiveDeck().buttons[0]?.id).toBe("31")
+    })
+
+    it("publishes runtime:activeDeck so subscribers re-broadcast deck-config", () => {
+      const pubSub = createPubSub()
+      const store = createStore()
+      const executor = createActionExecutor({ host: getHostContext() })
+      const methodsRef: { current: ReturnType<typeof createMethods> | undefined } =
+        { current: undefined }
+      const runtime = createRuntime({
+        decks: [makeDeck({ id: "main", isMain: true })],
+        pubSub,
+        store,
+        logger: silentLogger(),
+        getMethods: () => {
+          if (methodsRef.current === undefined) {
+            methodsRef.current = createMethods({
+              runtime,
+              pubSub,
+              store,
+              executor,
+              logger: silentLogger(),
+            })
+          }
+          return methodsRef.current
+        },
+      })
+      const events: Array<{ deckId: string }> = []
+      pubSub.subscribe("runtime:activeDeck", (p) => {
+        const payload = p as { deckId: string }
+        events.push(payload)
+      })
+      runtime.setDecks([
+        makeDeck({ id: "main", isMain: true, buttons: [{ id: "31", type: "core:back" }] }),
+      ])
+      expect(events).toHaveLength(1)
+      expect(events[0]?.deckId).toBe("main")
+    })
+
+    it("falls back to first available deck when active deck is removed", () => {
+      const { runtime } = setup([
+        makeDeck({ id: "main", isMain: true }),
+        makeDeck({ id: "sub" }),
+      ])
+      runtime.navigateToDeck("sub")
+      runtime.setDecks([makeDeck({ id: "main", isMain: true })])
+      expect(runtime.getActiveDeckId()).toBe("main")
+    })
+  })
 })
 
 interface FakeProvider extends Pick<ActiveAppProvider, "getActive" | "stop"> {

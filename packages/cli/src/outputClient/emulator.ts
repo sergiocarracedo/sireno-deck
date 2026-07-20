@@ -3,7 +3,7 @@ import { platform } from "node:os"
 
 import type pino from "pino"
 
-import type { ButtonActionMessage, WsMessage } from "@/api/protocol-internal"
+import type { ButtonActionMessage, SetDeviceMessage, WsMessage } from "@/api/protocol-internal"
 import { resolveKeyCount } from "@/device/models"
 import type { DeviceDescriptor } from "@/device/registry"
 
@@ -21,10 +21,13 @@ import type { InitOptions, OutputClient, OutputHandle } from "./types"
 
 const DEFAULT_TIMEOUT_MS = 30_000
 
-const VIRTUAL_MODELS = ["mk2", "xl"] as const
+const VIRTUAL_MODELS = ["mk2", "mini", "xl"] as const
 
 const isButtonAction = (m: WsMessage): m is ButtonActionMessage =>
   m.type === "button-action"
+
+const isSetDevice = (m: WsMessage): m is SetDeviceMessage =>
+  m.type === "set-device"
 
 const openBrowser = (url: string, logger: pino.Logger): void => {
   const os = platform()
@@ -118,6 +121,32 @@ export class EmulatorOutputClient implements OutputClient {
     opts.bridge.setDevice(descriptor)
 
     opts.bridge.onMessage((message) => {
+      if (isSetDevice(message)) {
+        if (!VIRTUAL_MODELS.includes(message.deviceId as (typeof VIRTUAL_MODELS)[number])) {
+          logger.warn(
+            { deviceId: message.deviceId },
+            "emulator: ignoring unsupported virtual device",
+          )
+          return
+        }
+        const descriptor = buildVirtualDescriptor(message.deviceId)
+        this.descriptor = descriptor
+        opts.bridge.setDevice(descriptor)
+        // The runtime was built once at startup with the original device's
+        // keyCount, so system-button injection + pagination baked in the
+        // wrong n-1 / n-2 positions. Rebuild with the new keyCount and
+        // swap the runtime's deck set so the next deck-config broadcast
+        // carries the correct layout.
+        if (opts.rebuildDecksForKeyCount !== undefined) {
+          const rebuilt = opts.rebuildDecksForKeyCount(descriptor.keyCount)
+          opts.runtime.setDecks(rebuilt)
+        }
+        logger.info(
+          { deviceId: message.deviceId },
+          "emulator: virtual device changed",
+        )
+        return
+      }
       if (!isButtonAction(message)) return
       logger.info(
         {

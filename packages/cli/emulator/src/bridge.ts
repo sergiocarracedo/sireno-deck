@@ -51,6 +51,7 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
   let ws: WebSocketLike | null = null
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null
   let closedByUser = false
+  let lastErrorValue: string | null = null
   let openListener: ((event: unknown) => void) | null = null
   let closeListener: ((event: unknown) => void) | null = null
   const messageListeners: Array<(event: unknown) => void> = []
@@ -146,7 +147,7 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
       closeListener = onWsClose
       const messageListener = onWsMessage
       const errorListener = (): void => {
-        lastError = "WebSocket connection error"
+        lastErrorValue = "WebSocket connection error"
         if (attempts >= WS_MAX_ATTEMPTS) setStatus("failed")
       }
       created.addEventListener("open", openListener)
@@ -216,7 +217,7 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
     },
     status: () => status,
     attemptCount: () => attempts,
-    lastError: () => lastError,
+    lastError: () => lastErrorValue,
   }
 }
 

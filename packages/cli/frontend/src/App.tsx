@@ -14,6 +14,11 @@ import {
   ThemeUiPresentationProvider,
   useAssetCacheMutations,
 } from "@sireno-deck/cli"
+import {
+  getDeviceModel,
+  isKnownDeviceModel,
+  type DeviceModelSpec,
+} from "@/device/models"
 import { createWsClient, type WsClient, type ConnectionStatus } from "./bridge/client"
 import { WebSocketProvider, type WebSocketSend } from "./bridge/ws-context"
 import { Deck } from "./components/Deck"
@@ -127,6 +132,9 @@ const AppContent = () => {
   const [attempt, setAttempt] = useState(0)
   const [lastError, setLastError] = useState<string | null>(null)
   const [now, setNow] = useState(() => Date.now())
+  const [deviceModel, setDeviceModel] = useState<DeviceModelSpec>(() =>
+    getDeviceModel("mk2"),
+  )
   const clientRef = useRef<WsClient | null>(null)
   const { setAsset } = useAssetCacheMutations()
   const navigate = useNavigate()
@@ -151,6 +159,18 @@ const AppContent = () => {
         }
       },
       onMessage: (message) => {
+        if (message.type === "hello-ack" && message.device !== undefined) {
+          const modelId = message.device.model
+          if (isKnownDeviceModel(modelId)) {
+            setDeviceModel(getDeviceModel(modelId))
+          }
+        }
+        if (message.type === "device-info") {
+          const modelId = message.device.model
+          if (isKnownDeviceModel(modelId)) {
+            setDeviceModel(getDeviceModel(modelId))
+          }
+        }
         if (message.type === "assets") {
           for (const asset of message.assets) {
             setAsset(asset.id, asset.src)
@@ -241,7 +261,7 @@ const AppContent = () => {
           attempt={attempt}
           now={now}
         />
-        <Deck deck={deck} />
+        <Deck deck={deck} deviceModel={deviceModel} />
         <DisconnectedOverlay
           status={connectionStatus}
           disconnectedSince={disconnectedSince}

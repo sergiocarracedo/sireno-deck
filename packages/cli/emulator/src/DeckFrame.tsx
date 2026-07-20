@@ -28,18 +28,21 @@ export const DeckFrame = ({
 }: DeckFrameProps): React.ReactElement => {
   const { columns, keyCount } = device
   const detectorRef = useRef<GestureDetector | null>(null)
+  const onGestureRef = useRef(onGesture)
+  onGestureRef.current = onGesture
   const [pressedIndex, setPressedIndex] = useState<number | null>(null)
 
   useEffect(() => {
     const detector = createEmulatorGestureDetector((result) => {
-      onGesture?.(gestureKindToWsMessage(result, deckId))
+      const cb = onGestureRef.current
+      if (cb !== undefined) cb(gestureKindToWsMessage(result, deckId))
     })
     detectorRef.current = detector
     return () => {
       detector.reset()
       detectorRef.current = null
     }
-  }, [deckId, onGesture])
+  }, [deckId])
 
   const handleDown = (keyIndex: number): void => {
     setPressedIndex(keyIndex)

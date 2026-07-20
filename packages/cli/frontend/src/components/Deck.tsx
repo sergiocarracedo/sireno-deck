@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react"
 import {
   BUTTON_SIZE_PX,
-  DEVICE_MODELS,
   gridForKeyCount,
   type DeviceModelSpec,
 } from "@/device/models"
@@ -52,21 +51,8 @@ export interface Deck {
 
 export interface DeckProps {
   readonly deck: Deck & { isCompact?: boolean }
+  readonly deviceModel: DeviceModelSpec
   readonly children?: ReactNode
-}
-
-const resolveDeviceModel = (): DeviceModelSpec => {
-  if (typeof window !== "undefined") {
-    const id =
-      (window as unknown as { __SIRENO_DEVICE_MODEL__?: string })
-        .__SIRENO_DEVICE_MODEL__ ??
-      new URLSearchParams(window.location.search).get("device")
-    if (id !== undefined && id !== null) {
-      const found = DEVICE_MODELS.find((m) => m.id === id)
-      if (found !== undefined) return found
-    }
-  }
-  return DEVICE_MODELS[0]!
 }
 
 const resolvePosition = (button: DeckButton, fallback: number): number => {
@@ -252,30 +238,8 @@ const ButtonSurface = ({ button }: ButtonSurfaceProps) => {
   )
 }
 
-export const Deck = ({ deck, children }: DeckProps) => {
-  const [modelOverride, setModelOverride] = useState<DeviceModelSpec | null>(
-    null,
-  )
-
-  useEffect(() => {
-    if (typeof window === "undefined") return
-    const onMessage = (event: MessageEvent): void => {
-      const data = event.data as { type?: string; device?: string } | null
-      if (
-        data !== null &&
-        typeof data === "object" &&
-        data.type === "device-model-changed" &&
-        typeof data.device === "string"
-      ) {
-        const found = DEVICE_MODELS.find((m) => m.id === data.device)
-        if (found !== undefined) setModelOverride(found)
-      }
-    }
-    window.addEventListener("message", onMessage)
-    return () => window.removeEventListener("message", onMessage)
-  }, [])
-
-  const model = modelOverride ?? resolveDeviceModel()
+export const Deck = ({ deck, deviceModel, children }: DeckProps) => {
+  const model = deviceModel
   const { columns, rows } = gridForKeyCount(model.keyCount)
   const compact = deck.isCompact ?? false
   const gap = compact ? 0 : BUTTON_GAP_PX
@@ -305,6 +269,7 @@ export const Deck = ({ deck, children }: DeckProps) => {
     >
       {deck.buttons.map((button, idx) => {
         const position = resolvePosition(button, idx)
+        if (position >= model.keyCount) return null
         const col = (position % columns) + 1
         const row = Math.floor(position / columns) + 1
         const isBackAtN1 =

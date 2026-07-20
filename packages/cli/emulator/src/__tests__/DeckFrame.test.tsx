@@ -1,9 +1,9 @@
 /** @vitest-environment jsdom */
-import { describe, expect, it } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { DEVICE_MODELS } from "@sireno-deck/cli"
 
-import { render } from "@testing-library/react"
+import { fireEvent, render } from "@testing-library/react"
 
 import { DeckFrame } from "../DeckFrame"
 
@@ -39,5 +39,41 @@ describe("DeckFrame (emulator)", () => {
         `Key ${i}`,
       )
     }
+  })
+
+  describe("gesture delivery", () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it("delivers tap gesture when key is pressed and released (re-render safe)", () => {
+      const onGesture = vi.fn()
+      const Wrapper = (): React.ReactElement => (
+        <DeckFrame
+          frontendUrl="http://127.0.0.1:5180"
+          deckId="main"
+          device={mk2}
+          onGesture={onGesture}
+        />
+      )
+      const { getByTestId, rerender } = render(<Wrapper />)
+      const key = getByTestId("deck-key-3")
+
+      fireEvent.mouseDown(key)
+      // parent re-renders between down and up — the detector must survive
+      rerender(<Wrapper />)
+      fireEvent.mouseUp(key)
+
+      vi.advanceTimersByTime(500)
+      expect(onGesture).toHaveBeenCalledWith({
+        type: "button-action",
+        deckId: "main",
+        position: 3,
+        gesture: "tap",
+      })
+    })
   })
 })

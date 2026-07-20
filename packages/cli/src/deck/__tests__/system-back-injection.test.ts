@@ -101,6 +101,14 @@ describe("injectSystemButtons", () => {
     expect(n1?.type).toBe("core:settings-entry")
   })
 
+  it("injects core:back at id '31' on XL (keyCount=32)", () => {
+    const sub = { ...deck({ id: "sub" }), buttons: [] }
+    const [result] = injectSystemButtons([sub], 32)
+    const n1 = result.buttons.find((b) => b.id === "31")
+    expect(n1?.type).toBe("core:back")
+    expect(result.buttons).toHaveLength(1)
+  })
+
   it("is idempotent when n-1 is already a system button", () => {
     const alreadyInjected = {
       ...deck({ isMain: true }),
@@ -120,5 +128,14 @@ describe("injectSystemButtons", () => {
     expect(result.id).toBe("media")
     expect(result.name).toBe("Media")
     expect(result.buttons).toHaveLength(2)
+  })
+
+  it("re-injection with new keyCount moves core:back to the new n-1 slot", () => {
+    const sub = { ...deck({ id: "sub" }), buttons: [] }
+    const [withMk2] = injectSystemButtons([sub], 15)
+    const [withXl] = injectSystemButtons([sub], 32)
+    expect(withMk2.buttons.find((b) => b.id === "14")?.type).toBe("core:back")
+    expect(withXl.buttons.find((b) => b.id === "31")?.type).toBe("core:back")
+    expect(withXl.buttons.find((b) => b.id === "14")).toBeUndefined()
   })
 })

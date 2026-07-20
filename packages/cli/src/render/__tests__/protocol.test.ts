@@ -7,6 +7,7 @@ import {
   deckConfigMessageSchema,
   helloMessageSchema,
   methodCallMessageSchema,
+  setDeviceMessageSchema,
   wsMessageSchema,
 } from "../protocol"
 
@@ -85,5 +86,20 @@ describe("ws protocol v1", () => {
 
   it("wsMessageSchema rejects unknown types", () => {
     expect(wsMessageSchema.safeParse({ type: "snapshot" }).success).toBe(false)
+  })
+
+  it("set-device requires a non-empty deviceId", () => {
+    expect(
+      setDeviceMessageSchema.safeParse({
+        type: "set-device",
+        deviceId: "mk2",
+      }).success,
+    ).toBe(true)
+    expect(
+      setDeviceMessageSchema.safeParse({
+        type: "set-device",
+        deviceId: "",
+      }).success,
+    ).toBe(false)
   })
 })
