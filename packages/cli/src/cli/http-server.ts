@@ -15,6 +15,12 @@ export interface StartHttpServerOptions {
   readonly distDir: string
   readonly getToken: () => string | null
   readonly logger: pino.Logger
+  readonly getConfigContent?: () => string | null
+  readonly getAddons?: () => Array<{
+    name: string
+    buttonTypes: string[]
+    defaultButton: string | null
+  }>
 }
 
 export interface RunningHttpServer {
@@ -111,6 +117,30 @@ export const startHttpServer = async (
             "content-length": Buffer.byteLength(injected),
           })
           res.end(injected)
+          return
+        }
+        if (url === "/api/config" || url === "/api/config/") {
+          const text = options.getConfigContent?.() ?? null
+          if (text === null) {
+            res.writeHead(404, { "content-type": "text/plain; charset=utf-8" })
+            res.end("Config not available")
+            return
+          }
+          res.writeHead(200, {
+            "content-type": "text/plain; charset=utf-8",
+            "content-length": Buffer.byteLength(text),
+          })
+          res.end(text)
+          return
+        }
+        if (url === "/api/addons" || url === "/api/addons/") {
+          const addons = options.getAddons?.() ?? []
+          const body = JSON.stringify({ addons })
+          res.writeHead(200, {
+            "content-type": "application/json; charset=utf-8",
+            "content-length": Buffer.byteLength(body),
+          })
+          res.end(body)
           return
         }
         if (url.startsWith("/assets/")) {

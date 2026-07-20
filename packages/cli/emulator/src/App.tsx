@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+
 import {
   ChannelRegistry,
   Deck,
@@ -7,7 +8,13 @@ import {
   type DeckButton,
 } from "@sireno-deck/cli"
 
-import { createWsClient, serializeHello, type WsClient } from "./bridge"
+import { createWsClient, serializeHello, type WsClient, type WsStatus } from "./bridge"
+import { Shell } from "./Shell"
+import { BridgeLogsPage } from "./pages/BridgeLogsPage"
+import { ServiceLogsPage } from "./pages/ServiceLogsPage"
+import { AddonsPage } from "./pages/AddonsPage"
+import { ConfigPage } from "./pages/ConfigPage"
+import { DevicePage } from "./pages/DevicePage"
 
 let _wsClientInitialized = false
 
@@ -44,12 +51,31 @@ const buildThemeContext = (): ThemeContextValue => ({
 export interface AppProps {
   readonly wsUrl?: string
   readonly initialDeviceModel?: string
+  readonly initialSection?: string
 }
+
+const SECTIONS = [
+  "device",
+  "bridge-logs",
+  "service-logs",
+  "addons",
+  "config",
+] as const
+
+const isValidSection = (s: string | null): s is (typeof SECTIONS)[number] =>
+  s !== null && (SECTIONS as ReadonlyArray<string>).includes(s)
 
 export const App = ({
   wsUrl = ENV_WS_URL,
+  initialSection = "device",
 }: AppProps = {}): React.ReactElement => {
   const [deck, setDeck] = useState<DeckState>(EMPTY_DECK)
+  const [activeSection, setActiveSection] = useState<string>(initialSection)
+  const [connectionStatus, setConnectionStatus] = useState<WsStatus>("connecting")
+  const [disconnectedSince, setDisconnectedSince] = useState<number | null>(null)
+  const [attempt, setAttempt] = useState(0)
+  const [lastError, setLastError] = useState<string | null>(null)
+  const [now, setNow] = useState(() => Date.now())
   const theme = useState<ThemeContextValue>(() => buildThemeContext())[0]
   const clientRef = useRef<WsClient | null>(null)
 
@@ -58,6 +84,17 @@ export const App = ({
     _wsClientInitialized = true
     const client: WsClient = createWsClient({
       url: wsUrl,
+      onStatus: (status) => {
+        setConnectionStatus(status)
+        setAttempt(client.attemptCount())
+        if (status === "open") {
+          setDisconnectedSince(null)
+        } else {
+          setDisconnectedSince((previous) =>
+            previous === null ? Date.now() : previous,
+          )
+        }
+      },
       wsFactory: (url: string) => {
         const ws = new WebSocket(url)
         ws.addEventListener("open", () => {
@@ -98,14 +135,47 @@ export const App = ({
             ChannelRegistry.instance().publish(channel, payload)
           }
         }
+        if (typeof m.type === "string" && m.type.endsWith("error")) {
+          setLastError(String(m.type))
+        }
       },
     })
     clientRef.current = client
+    const timer = setInterval(() => setNow(Date.now()), 250)
     return () => {
       _wsClientInitialized = false
+      clearInterval(timer)
       client.close()
     }
   }, [wsUrl])
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const hash = window.location.hash.replace(/^#\/?/, "")
+    if (isValidSection(hash)) {
+      setActiveSection(hash)
+    }
+  }, [])
+
+  const onSelect = (path: string): void => {
+    if (!isValidSection(path)) return
+    setActiveSection(path)
+    if (typeof window !== "undefined") {
+      window.location.hash = `#/${path}`
+    }
+  }
+
+  const renderActive = (): React.ReactNode => {
+    if (activeSection === "bridge-logs") return <BridgeLogsPage />
+    if (activeSection === "service-logs") return <ServiceLogsPage />
+    if (activeSection === "addons") return <AddonsPage />
+    if (activeSection === "config") return <ConfigPage />
+    return (
+      <DevicePage
+        wsUrl={wsUrl}
+      />
+    )
+  }
 
   const sendButtonAction = (
     buttonId: string,
@@ -132,28 +202,104 @@ export const App = ({
     ChannelRegistry.instance().publish("runtime:navigate", { deckId })
   }
 
+  const elapsed = disconnectedSince === null ? 0 : now - disconnectedSince
+  const showBsod =
+    connectionStatus !== "open" && disconnectedSince !== null && elapsed >= 30000
+  const showBanner =
+    connectionStatus !== "open" && disconnectedSince !== null && elapsed < 30000
+  void lastError
+
   return (
     <ThemeProvider value={theme}>
-      <main className="bg-bg text-fg flex min-h-screen flex-col items-center gap-4 p-6">
-        <header className="font-mono text-xs uppercase tracking-widest text-muted">
-          {deck.name} · ws: {wsUrl}
-        </header>
-        {deck.buttons.length === 0 ? (
-          <p className="font-mono text-xs uppercase tracking-widest text-muted">
-            Awaiting deck-config…
-          </p>
-        ) : (
-          <Deck
-            deck={{
-              id: deck.id,
-              name: deck.name,
-              buttons: deck.buttons,
-            }}
-            onAction={sendButtonAction}
-            onNavigate={sendNavigate}
-          />
-        )}
-      </main>
+      <Shell
+        activeSection={activeSection}
+        onSelect={onSelect}
+        content={
+          activeSection === "device" ? (
+            <div className="flex h-full flex-col">
+              <header className="border-b border-neutral-800 bg-neutral-950 px-4 py-2 font-mono text-xs uppercase tracking-widest text-neutral-400">
+                {deck.name} · ws: {wsUrl}
+              </header>
+              <div className="flex flex-1 overflow-hidden">
+                <aside className="w-44 border-r border-neutral-800 p-3">
+                  <DevicePage wsUrl={wsUrl} />
+                </aside>
+                <section className="flex-1 overflow-auto p-4">
+                  {deck.buttons.length === 0 ? (
+                    <p className="font-mono text-xs uppercase tracking-widest text-neutral-500">
+                      Awaiting deck-config…
+                    </p>
+                  ) : (
+                    <Deck
+                      deck={{
+                        id: deck.id,
+                        name: deck.name,
+                        buttons: deck.buttons,
+                      }}
+                      onAction={sendButtonAction}
+                      onNavigate={sendNavigate}
+                    />
+                  )}
+                </section>
+              </div>
+            </div>
+          ) : (
+            renderActive()
+          )
+        }
+        wsClient={clientRef.current}
+      />
+      {showBanner && (
+        <div
+          data-testid="reconnecting-banner"
+          className="fixed top-2 left-1/2 z-50 -translate-x-1/2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-center text-amber-200 backdrop-blur"
+        >
+          <span className="font-medium">Reconnecting…</span>
+          <span className="ml-2 text-amber-300/80">
+            attempt {attempt} · {Math.floor(elapsed / 1000)}s elapsed
+          </span>
+        </div>
+      )}
+      {showBsod && (
+        <div
+          data-testid="disconnected-overlay"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/90 backdrop-blur"
+        >
+          <div className="w-full max-w-md rounded-xl border border-red-500/40 bg-neutral-900/95 p-8 text-center shadow-2xl">
+            <h2 className="mb-2 text-2xl font-semibold text-red-400">
+              Connection lost
+            </h2>
+            <p className="mb-6 text-sm text-neutral-400">
+              {connectionStatus === "failed"
+                ? `Failed to reconnect after ${attempt} attempts`
+                : "Disconnected"}
+            </p>
+            <dl className="space-y-2 text-left text-sm">
+              <div className="flex justify-between">
+                <dt className="text-neutral-500">Status</dt>
+                <dd className="font-mono text-neutral-200">
+                  {connectionStatus}
+                </dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-neutral-500">Reconnect attempts</dt>
+                <dd className="font-mono text-neutral-200">{attempt}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-neutral-500">Elapsed</dt>
+                <dd className="font-mono text-neutral-200">
+                  {Math.floor(elapsed / 60)
+                    .toString()
+                    .padStart(2, "0")}
+                  :{(Math.floor(elapsed / 1000) % 60)
+                    .toString()
+                    .padStart(2, "0")}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      )}
     </ThemeProvider>
   )
 }

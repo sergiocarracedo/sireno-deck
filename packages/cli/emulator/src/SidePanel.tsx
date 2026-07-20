@@ -1,94 +1,50 @@
-import type { ReactElement } from "react"
+import { useState } from "react"
 
-import { DEVICE_MODELS, type DeviceModelSpec } from "@sireno-deck/cli"
+import type { WsClient } from "./bridge"
+
+const SECTIONS = [
+  { path: "device", label: "Device" },
+  { path: "bridge-logs", label: "Bridge logs" },
+  { path: "service-logs", label: "Service logs" },
+  { path: "addons", label: "Addons" },
+  { path: "config", label: "Config" },
+] as const
 
 export interface SidePanelProps {
-  readonly wsUrl: string
-  readonly deviceModel: DeviceModelSpec
-  readonly onDeviceModelChange: (next: DeviceModelSpec) => void
-  readonly decks: ReadonlyArray<{ id: string; name: string }>
-  readonly activeDeckId: string
-  readonly onSelectDeck: (id: string) => void
+  readonly activeSection: string
+  readonly onSelect: (path: string) => void
+  readonly wsClient: WsClient | null
 }
 
 export const SidePanel = ({
-  wsUrl,
-  deviceModel,
-  onDeviceModelChange,
-  decks,
-  activeDeckId,
-  onSelectDeck,
-}: SidePanelProps): ReactElement => {
+  activeSection,
+  onSelect,
+  wsClient,
+}: SidePanelProps) => {
+  const [status] = useState(wsClient?.status() ?? "connecting")
   return (
-    <div className="flex flex-col gap-6 text-sm">
-      <section>
-        <h2 className="text-xs font-medium uppercase tracking-wider text-neutral-400">
-          Connection
-        </h2>
-        <p
-          className="mt-2 font-mono text-xs text-neutral-300"
-          data-testid="ws-url"
+    <nav
+      data-testid="side-panel"
+      className="flex w-44 flex-col gap-1 border-r border-neutral-800 bg-neutral-950 p-3"
+    >
+      <div className="mb-2 font-mono text-[10px] uppercase tracking-widest text-neutral-500">
+        ws: {status}
+      </div>
+      {SECTIONS.map((s) => (
+        <button
+          key={s.path}
+          type="button"
+          onClick={() => onSelect(s.path)}
+          data-testid={`side-panel-${s.path}`}
+          className={`rounded px-3 py-2 text-left font-mono text-xs transition ${
+            activeSection === s.path
+              ? "bg-sky-600/40 text-sky-100"
+              : "text-neutral-300 hover:bg-neutral-800"
+          }`}
         >
-          {wsUrl}
-        </p>
-      </section>
-
-      <section>
-        <h2 className="text-xs font-medium uppercase tracking-wider text-neutral-400">
-          Device model
-        </h2>
-        <select
-          className="mt-2 w-full rounded border border-neutral-700 bg-neutral-800 px-2 py-1 text-sm"
-          value={deviceModel.id}
-          onChange={(e) => {
-            const next = DEVICE_MODELS.find((m) => m.id === e.target.value)
-            if (next !== undefined) onDeviceModelChange(next)
-          }}
-          data-testid="device-model-select"
-        >
-          {DEVICE_MODELS.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.name} ({m.keyCount} keys)
-            </option>
-          ))}
-        </select>
-      </section>
-
-      <section>
-        <h2 className="text-xs font-medium uppercase tracking-wider text-neutral-400">
-          Decks
-        </h2>
-        <ul className="mt-2 flex flex-col gap-1" data-testid="deck-list">
-          {decks.map((d) => (
-            <li key={d.id}>
-              <button
-                type="button"
-                onClick={() => onSelectDeck(d.id)}
-                className={`w-full rounded px-2 py-1 text-left transition ${
-                  d.id === activeDeckId
-                    ? "bg-blue-600 text-white"
-                    : "bg-neutral-800 text-neutral-200 hover:bg-neutral-700"
-                }`}
-                data-active={d.id === activeDeckId}
-              >
-                {d.name}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section>
-        <h2 className="text-xs font-medium uppercase tracking-wider text-neutral-400">
-          Action log
-        </h2>
-        <ul
-          className="mt-2 flex flex-col gap-1 font-mono text-xs text-neutral-300"
-          data-testid="action-log"
-        >
-          <li className="opacity-60">[shell] awaiting WS handshake…</li>
-        </ul>
-      </section>
-    </div>
+          {s.label}
+        </button>
+      ))}
+    </nav>
   )
 }
