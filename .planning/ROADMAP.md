@@ -54,6 +54,24 @@
 
 - Error logging if `sendKey()` fails after successful clipboard write
 
+## Phase 9: Post-v1 polish (hardware UX + emulator rework + system-status port)
+
+**Goal:** Close remaining hardware UX gaps (splash on boot, black on shutdown, back-button-onhold in split mode), rework the emulator side panel into a navigable multi-page console (device / bridge logs / service logs / addons / config), and port the system-status addon from the legacy repo into the new addon architecture.
+
+**Status:** [ ] Not started
+**Depends on:** Phase 8
+
+### Workstreams
+1. Back-button onhold in split mode: render only when action exists; onhold navigates to main deck's overlay layer
+2. Hardware splash on boot: send `packages/cli/src/assets/logoFull.png` to the real deck before Playwright initializes
+3. Hardware shutdown: render black image so the deck doesn't show the last-rendered frame
+4. Emulator side panel → multi-page menu (device / bridge logs / service logs / addons / config)
+5. Device-model swap: propagate changes through to the iframe
+6. System-status addon: port `packages/cli/src/builtin-addons/system-status` from legacy repo + surface helpers/
+
+*Not yet planned — run `plan-phase 9`*
+
+
 ---
 
 ## Phase 2: Categories Data Layer

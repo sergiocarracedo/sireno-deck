@@ -12,6 +12,7 @@
 | 002 | Launcher label overlay + paste diagnostic logging | 2026-07-14 | c970a7d | .planning/quick/002-paste-launcher-debug/ |
 
 ## Roadmap Evolution
+- Phase 9 added: post-v1 polish (hardware UX gaps + emulator rework + system-status addon port)
 
 - Phase 4 added: Settings Deck
 - Phase 5 added: Overlay Decks
