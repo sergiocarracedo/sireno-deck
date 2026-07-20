@@ -1,0 +1,30 @@
+packages/cli/src/cli/commands/run.ts
+  s_2cb355494cf289::t_4edc7271e139fe 682-685
+  s_2cb355494cf289::t_12cd87f8a57861 10
+packages/cli/src/builtin-addons/index.ts
+  s_2cb355494cf289::t_7cc117079e1e6e 10
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_2cb355494cf289::t_2cf2d65909c142 3,7-9,14,17
+  s_2cb355494cf289::t_731f66c55d88dd 1-2,4-5,10,12-13,15-16,18
+packages/cli/src/builtin-addons/system-status/manifest.ts
+  s_2cb355494cf289::t_9f03315a58060c 3-6,10-13,16-17,20-21,24-25,28-29,39-40
+  s_2cb355494cf289::t_0a15072ac3d08f 14,18,22,26,38
+packages/cli/src/builtin-addons/register-builtins.ts
+  s_2cb355494cf289::t_9f5fd46d0b8ecf 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "30233a7c69edce337f89434303ff822b71b8b3b0",
+  "prompts": {},
+  "sessions": {
+    "s_2cb355494cf289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_088ac798dffe8mKKPKhoYsGfiP",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
