@@ -227,7 +227,6 @@ export const App = ({
     connectionStatus !== "open" && disconnectedSince !== null && elapsed >= 30000
   const showBanner =
     connectionStatus !== "open" && disconnectedSince !== null && elapsed < 30000
-  void lastError
 
   return (
     <ThemeProvider value={theme}>
@@ -314,6 +313,14 @@ export const App = ({
                 <dt className="text-neutral-500">Reconnect attempts</dt>
                 <dd className="font-mono text-neutral-200">{attempt}</dd>
               </div>
+              {lastError !== null && (
+                <div className="flex justify-between">
+                  <dt className="text-neutral-500">Last error</dt>
+                  <dd className="truncate font-mono text-neutral-200">
+                    {lastError}
+                  </dd>
+                </div>
+              )}
               <div className="flex justify-between">
                 <dt className="text-neutral-500">Elapsed</dt>
                 <dd className="font-mono text-neutral-200">
