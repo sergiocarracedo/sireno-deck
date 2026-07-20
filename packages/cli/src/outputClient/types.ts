@@ -39,5 +39,7 @@ export interface OutputHandle {
   readonly emulatorUrl?: string
   readonly wsUrl?: string
   readonly childPids: ReadonlyArray<number>
+  pushBlackFrame?(): Promise<void>
+  pushRawImage?(filePath: string): Promise<void>
   stop(): Promise<void>
 }

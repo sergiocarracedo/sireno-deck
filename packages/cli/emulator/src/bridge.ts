@@ -1,3 +1,9 @@
+import {
+  appendBridgeMessage,
+  appendServiceLog,
+  type ServiceLogLevel,
+} from "./bridge-log-store"
+
 export const WS_BACKOFF_DELAYS_MS = [
   1000, 2000, 4000, 8000, 16000, 30000,
 ] as const
@@ -79,6 +85,37 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
       event instanceof MessageEvent
         ? event.data
         : ((event as { data?: unknown })?.data ?? event)
+    try {
+      const parsed = JSON.parse(String(data)) as {
+        type?: string
+        channel?: unknown
+        level?: string
+        msg?: string
+        ts?: number
+      }
+      appendBridgeMessage({
+        ts: Date.now(),
+        direction: "received",
+        type: parsed.type ?? "unknown",
+        channel: extractChannel(parsed),
+        payload: parsed,
+      })
+      if (parsed.type === "service-log") {
+        if (
+          typeof parsed.msg === "string" &&
+          typeof parsed.ts === "number" &&
+          typeof parsed.level === "string"
+        ) {
+          appendServiceLog({
+            ts: parsed.ts,
+            level: parsed.level as ServiceLogLevel,
+            msg: parsed.msg,
+          })
+        }
+      }
+    } catch {
+      // ignore unparseable
+    }
     options.onMessage?.(data)
   }
 
@@ -114,8 +151,44 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
 
   void open()
 
+  const extractChannel = (parsed: { type?: string; channel?: unknown }): string | null => {
+    if (parsed.channel === undefined) return null
+    if (typeof parsed.channel === "string") return parsed.channel
+    return null
+  }
+
   return {
     send(data) {
+      try {
+        const parsed = JSON.parse(data) as { type?: string; channel?: unknown }
+        appendBridgeMessage({
+          ts: Date.now(),
+          direction: "sent",
+          type: parsed.type ?? "unknown",
+          channel: extractChannel(parsed),
+          payload: parsed,
+        })
+        if (parsed.type === "service-log") {
+          const e = parsed as {
+            level?: string
+            msg?: string
+            ts?: number
+          }
+          if (
+            typeof e.msg === "string" &&
+            typeof e.ts === "number" &&
+            typeof e.level === "string"
+          ) {
+            appendServiceLog({
+              ts: e.ts,
+              level: e.level as ServiceLogLevel,
+              msg: e.msg,
+            })
+          }
+        }
+      } catch {
+        // ignore unparseable
+      }
       if (ws !== null && status === "open") ws.send(data)
     },
     close() {

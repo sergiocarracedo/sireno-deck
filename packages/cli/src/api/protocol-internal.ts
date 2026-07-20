@@ -67,6 +67,15 @@ export const buttonErrorMessageSchema = baseServerMessage.extend({
   deckId: z.string(),
   position: z.number().int().nonnegative(),
   durationMs: z.number().int().positive().default(5000),
+  buttonId: z.string().optional(),
+  details: z.string().optional(),
+})
+
+export const serviceLogMessageSchema = baseServerMessage.extend({
+  type: z.literal("service-log"),
+  level: z.enum(["trace", "debug", "info", "warn", "error", "fatal"]),
+  msg: z.string(),
+  ts: z.number().int().nonnegative(),
 })
 
 export const buttonActionMessageSchema = baseClientMessage.extend({
@@ -132,6 +141,7 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
   decksListMessageSchema,
   showOverlayMessageSchema,
   buttonErrorMessageSchema,
+  serviceLogMessageSchema,
   buttonActionMessageSchema,
   methodCallMessageSchema,
   methodCallResultMessageSchema,
