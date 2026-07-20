@@ -297,6 +297,12 @@ export const Deck = ({ deck, children }: DeckProps) => {
         const position = resolvePosition(button, idx)
         const col = (position % columns) + 1
         const row = Math.floor(position / columns) + 1
+        const isBackAtN1 =
+          position === n1Position && button.type === "core:back"
+        const backHasAction = splitAtN1
+        if (isBackAtN1 && !backHasAction) {
+          return null
+        }
         const splitAction =
           splitAtN1 &&
           position === n1Position &&

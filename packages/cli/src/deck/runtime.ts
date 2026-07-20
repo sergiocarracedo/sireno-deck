@@ -338,10 +338,25 @@ const navigateToDeck = (
         goBack()
         return true
       }
-      if (gesture === "hold" && overlayDeckId !== null) {
+      if (gesture === "hold") {
+        if (overlayDeckId !== null) {
+          navStack.length = 0
+          navStack.push(mainDeck.id)
+          setOverlay(null)
+          return true
+        }
+        if (availableOverlayDeckId !== null) {
+          setOverlay(availableOverlayDeckId)
+          return true
+        }
         navStack.length = 0
         navStack.push(mainDeck.id)
-        setOverlay(null)
+        const prevTransient = transientDeckId
+        transientDeckId = null
+        if (prevTransient !== null) {
+          pubSub.publish("runtime:deck-inactive", { deckId: prevTransient })
+        }
+        pubSub.publish("runtime:activeDeck", { deckId: mainDeck.id })
         return true
       }
       if (gesture === "dbl-tap") {
