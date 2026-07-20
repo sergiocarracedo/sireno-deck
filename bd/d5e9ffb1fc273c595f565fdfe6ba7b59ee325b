@@ -1,0 +1,60 @@
+packages/cli/src/deck/methods.ts
+  s_2cb355494cf289::t_4c8b807f56b4b7 77,102,104-109
+packages/cli/src/util/daemon.ts
+  s_2cb355494cf289::t_4c8b807f56b4b7 142-177
+packages/cli/frontend/src/components/DisconnectedOverlay.tsx
+  s_2cb355494cf289::t_4c8b807f56b4b7 1-76
+packages/cli/frontend/src/__tests__/reconnecting-banner.test.tsx
+  s_2cb355494cf289::t_4c8b807f56b4b7 1-75
+packages/cli/emulator/src/components/DisconnectedOverlay.tsx
+  s_2cb355494cf289::t_4c8b807f56b4b7 1-76
+packages/cli/frontend/src/bridge/client.ts
+  s_2cb355494cf289::t_4c8b807f56b4b7 28-29,48,121,159-166
+packages/cli/emulator/src/bridge.ts
+  s_2cb355494cf289::t_4c8b807f56b4b7 34,59
+packages/cli/src/config/validation.ts
+  s_2cb355494cf289::t_4c8b807f56b4b7 3,25-39,90-134,144,150-175
+  s_2cb355494cf289::t_e988edee814bd0 176
+packages/cli/src/deck/__tests__/methods.test.ts
+  s_2cb355494cf289::t_4c8b807f56b4b7 173-187
+packages/cli/src/deck/system-buttons/registry.tsx
+  s_2cb355494cf289::t_4c8b807f56b4b7 34,42-46
+packages/cli/src/util/__tests__/config-diff.test.ts
+  s_2cb355494cf289::t_4c8b807f56b4b7 1-70
+packages/cli/frontend/src/components/ReconnectingBanner.tsx
+  s_2cb355494cf289::t_4c8b807f56b4b7 1-33
+packages/cli/src/core/__tests__/settings.test.ts
+  s_2cb355494cf289::t_4c8b807f56b4b7 1-141
+packages/cli/src/core/settings.ts
+  s_2cb355494cf289::t_4c8b807f56b4b7 1-153
+packages/cli/src/util/config-diff.ts
+  s_2cb355494cf289::t_4c8b807f56b4b7 1-18
+packages/cli/src/deck/runtime.ts
+  s_2cb355494cf289::t_4c8b807f56b4b7 473,485
+packages/cli/frontend/src/components/Deck.tsx
+  s_2cb355494cf289::t_4c8b807f56b4b7 45-50,132-137
+packages/cli/emulator/src/components/ReconnectingBanner.tsx
+  s_2cb355494cf289::t_4c8b807f56b4b7 1-33
+packages/cli/frontend/src/App.tsx
+  s_2cb355494cf289::t_4c8b807f56b4b7 17,20-21,33-34,124-129,141-152,186-195,214-215,217-219,238-243,245-251
+packages/cli/frontend/src/__tests__/disconnected-overlay.test.tsx
+  s_2cb355494cf289::t_4c8b807f56b4b7 1-96
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_2cb355494cf289::t_4c8b807f56b4b7 268,300
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "bdd5e9ffb1fc273c595f565fdfe6ba7b59ee325b",
+  "prompts": {},
+  "sessions": {
+    "s_2cb355494cf289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_088ac798dffe8mKKPKhoYsGfiP",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
