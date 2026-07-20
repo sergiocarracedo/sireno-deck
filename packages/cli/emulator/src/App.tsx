@@ -215,17 +215,17 @@ export const App = ({
         activeSection={activeSection}
         onSelect={onSelect}
         content={
-          activeSection === "device" ? (
-            <div className="flex h-full flex-col">
-              <header className="border-b border-neutral-800 bg-neutral-950 px-4 py-2 font-mono text-xs uppercase tracking-widest text-neutral-400">
-                {deck.name} · ws: {wsUrl}
-              </header>
-              <div className="flex flex-1 overflow-hidden">
-                <aside className="w-44 border-r border-neutral-800 p-3">
-                  <DevicePage wsUrl={wsUrl} />
-                </aside>
-                <section className="flex-1 overflow-auto p-4">
-                  {deck.buttons.length === 0 ? (
+          <div className="flex h-full flex-col">
+            <header className="border-b border-neutral-800 bg-neutral-950 px-4 py-2 font-mono text-xs uppercase tracking-widest text-neutral-400">
+              {deck.name} · ws: {wsUrl}
+            </header>
+            <div className="flex flex-1 overflow-hidden">
+              <aside className="w-44 shrink-0 border-r border-neutral-800 p-3 overflow-y-auto">
+                <DevicePage wsUrl={wsUrl} />
+              </aside>
+              <section className="flex-1 overflow-auto p-4">
+                {activeSection === "device" ? (
+                  deck.buttons.length === 0 ? (
                     <p className="font-mono text-xs uppercase tracking-widest text-neutral-500">
                       Awaiting deck-config…
                     </p>
@@ -239,13 +239,13 @@ export const App = ({
                       onAction={sendButtonAction}
                       onNavigate={sendNavigate}
                     />
-                  )}
-                </section>
-              </div>
+                  )
+                ) : (
+                  renderActive()
+                )}
+              </section>
             </div>
-          ) : (
-            renderActive()
-          )
+          </div>
         }
         wsClient={clientRef.current}
       />
