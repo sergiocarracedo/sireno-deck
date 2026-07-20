@@ -243,7 +243,29 @@ const ButtonSurface = ({ button }: ButtonSurfaceProps) => {
 }
 
 export const Deck = ({ deck, children }: DeckProps) => {
-  const model = resolveDeviceModel()
+  const [modelOverride, setModelOverride] = useState<DeviceModelSpec | null>(
+    null,
+  )
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const onMessage = (event: MessageEvent): void => {
+      const data = event.data as { type?: string; device?: string } | null
+      if (
+        data !== null &&
+        typeof data === "object" &&
+        data.type === "device-model-changed" &&
+        typeof data.device === "string"
+      ) {
+        const found = DEVICE_MODELS.find((m) => m.id === data.device)
+        if (found !== undefined) setModelOverride(found)
+      }
+    }
+    window.addEventListener("message", onMessage)
+    return () => window.removeEventListener("message", onMessage)
+  }, [])
+
+  const model = modelOverride ?? resolveDeviceModel()
   const { columns, rows } = gridForKeyCount(model.keyCount)
   const compact = deck.isCompact ?? false
   const gap = compact ? 0 : BUTTON_GAP_PX
