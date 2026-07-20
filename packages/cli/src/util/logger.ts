@@ -165,5 +165,46 @@ export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
     return pino(loggerOptions)
   }
 
-  return pino(loggerOptions, new HumanWritable())
+  const dest = new HumanWritable()
+  const teeStream = {
+    write(chunk: string): void {
+      dest.write(chunk)
+      try {
+        const parsed = JSON.parse(chunk) as {
+          level?: number
+          time?: number
+          msg?: string
+        }
+        if (
+          typeof parsed.level === "number" &&
+          typeof parsed.time === "number" &&
+          typeof parsed.msg === "string"
+        ) {
+          const levelName = levelNameFromNumber(parsed.level)
+          if (levelName !== null) {
+            ;(process.emit as unknown as (e: string, p: unknown) => void)(
+              "sireno:log",
+              {
+                level: levelName,
+                msg: parsed.msg,
+                ts: parsed.time,
+              },
+            )
+          }
+        }
+      } catch {
+        // ignore non-JSON log lines
+      }
+    },
+  }
+  return pino(loggerOptions, teeStream as unknown as pino.DestinationStream)
+}
+
+const levelNameFromNumber = (level: number): string | null => {
+  if (level >= 60) return "fatal"
+  if (level >= 50) return "error"
+  if (level >= 40) return "warn"
+  if (level >= 30) return "info"
+  if (level >= 20) return "debug"
+  return "trace"
 }

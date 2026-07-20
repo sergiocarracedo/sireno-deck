@@ -763,6 +763,16 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     }
   })
 
+  const onServiceLog = (entry: { level: string; msg: string; ts: number }) => {
+    bridge.broadcast({
+      type: "service-log",
+      level: entry.level,
+      msg: entry.msg,
+      ts: entry.ts,
+    })
+  }
+  process.on("sireno:log", onServiceLog)
+
   const outputHandle: OutputHandle = await outputClient.init({
     bridge,
     runtime,
@@ -810,6 +820,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
         logger.warn({ err: (err as Error).message }, "pushBlackFrame failed")
       }
     }
+    process.removeListener("sireno:log", onServiceLog)
     await Promise.allSettled([
       outputHandle.stop(),
       runtime.stopActiveAppPolling(),
