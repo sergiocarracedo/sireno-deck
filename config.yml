@@ -56,10 +56,16 @@ decks:
           label: Chrome
 
       - position: 0
-        type: 'system-status:cpu'
+        type: 'system-status:status'
+        config:
+          metric: cpu
+          label: CPU
 
       - position: 5
-        type: 'system-status:ram'
+        type: 'system-status:status'
+        config:
+          metric: ram
+          label: RAM
 
       - position: 6
         type: 'media:volume:down'
