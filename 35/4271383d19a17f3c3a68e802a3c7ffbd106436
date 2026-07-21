@@ -1,0 +1,41 @@
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_125496d408ca37::t_20daea7e6fe463 42-48
+packages/cli/src/addon/registry.ts
+  s_125496d408ca37::t_2c94657ac9253b 29-45,90-152,154
+packages/cli/src/addon/api.ts
+  s_125496d408ca37::t_0c630d138ed855 162-197
+  s_125496d408ca37::t_57a76eebae5e70 216
+  s_125496d408ca37::t_50e4197c41f990 161
+packages/cli/src/__tests__/integration.test.ts
+  s_125496d408ca37::t_568606fb414475 123-124
+packages/cli/src/cli/commands/addon-decks.ts
+  s_125496d408ca37::t_2207d6916c939a 213-224,227,232,237,251
+packages/cli/src/cli/commands/__tests__/addon-decks.test.ts
+  s_125496d408ca37::t_08dc2dc5785d92 539,547,569,578,604,612,634,639
+  s_125496d408ca37::t_d98391cdf27c87 22-32,34
+packages/cli/src/__tests__/addon.test.ts
+  s_125496d408ca37::t_99c8b6ebd89dd4 213
+packages/cli/src/builtin-addons/core/index.ts
+  s_125496d408ca37::t_3357e778a10840 43-45,94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "354271383d19a17f3c3a68e802a3c7ffbd106436",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_125496d408ca37": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07b51eff1ffeNUGIuLb38hTGYQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
