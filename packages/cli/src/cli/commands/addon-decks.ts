@@ -1,5 +1,6 @@
 import type { AddonRegistry } from "@/addon/registry"
 import { paginateDeck } from "@/deck/paginate-deck"
+import { positionButtons } from "@/deck/position-buttons"
 import type { RuntimeDeck } from "@/deck/runtime"
 import type pino from "pino"
 
@@ -108,7 +109,10 @@ const mapAddonDeckToRuntimeDeck = (
     })
   }
 
-  const buttons: RuntimeDeck["buttons"] = (gdeck.buttons ?? []).map((b, i) => {
+  const buttons: RuntimeDeck["buttons"] = positionButtons(
+    (gdeck.buttons ?? []) as Array<{ position?: number }>,
+    keyCount,
+  ).map((b, i) => {
     const { position, type, config, actions, full: buttonFull, ...rest } = b as {
       position?: number
       type: string

@@ -27,6 +27,7 @@ import {
   type Store,
 } from "@/deck"
 import { paginateDeck } from "@/deck/paginate-deck"
+import { positionButtons } from "@/deck/position-buttons"
 import {
   createActiveAppProvider,
   type ActiveAppProvider,
@@ -421,21 +422,22 @@ const buildRuntime = (
 
   const decks: RuntimeDeck[] = Object.entries(config.decks).flatMap(
     ([id, d]) => {
-      const runtimeButtons: RuntimeDeck["buttons"] = d.buttons.flatMap(
-        (b, idx) => {
-          if (typeof b === "string") return []
-          return [
-            {
-              id: b.position?.toString() ?? `b${idx}`,
-              type: b.type,
-              ...(typeof b.config === "object" && b.config !== null
-                ? { config: b.config }
-                : {}),
-              ...(b.actions !== undefined ? { actions: b.actions } : {}),
-            },
-          ]
-        },
+      const objectButtons = d.buttons.filter(
+        (b): b is Exclude<(typeof d.buttons)[number], string> =>
+          typeof b !== "string",
       )
+      const runtimeButtons: RuntimeDeck["buttons"] = positionButtons(
+        objectButtons,
+        keyCount,
+        logger,
+      ).map((b, idx) => ({
+        id: b.position?.toString() ?? `b${idx}`,
+        type: b.type,
+        ...(typeof b.config === "object" && b.config !== null
+          ? { config: b.config }
+          : {}),
+        ...(b.actions !== undefined ? { actions: b.actions } : {}),
+      }))
       const processNames =
         d.trigger?.process_name !== undefined
           ? Array.isArray(d.trigger.process_name)

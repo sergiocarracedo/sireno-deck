@@ -477,9 +477,11 @@ describe("validateBootstrap", () => {
         },
       },
     })
-    expect(isBootstrapValid(result)).toBe(false)
+    expect(isBootstrapValid(result)).toBe(true)
     expect(
-      result.issues.some((i) => /Duplicate position/.test(i.message)),
+      result.issues.some(
+        (i) => i.level === "warning" && /Duplicate position/.test(i.message),
+      ),
     ).toBe(true)
   })
 

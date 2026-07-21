@@ -34,7 +34,7 @@ const reportDuplicatePositions = (
     const prev = seen.get(btn.position)
     if (prev !== undefined) {
       issues.push({
-        level: "error",
+        level: "warning",
         path: `decks.${deckId}.buttons[${index}]`,
         message: `Duplicate position ${btn.position} (also at index ${prev})`,
       })

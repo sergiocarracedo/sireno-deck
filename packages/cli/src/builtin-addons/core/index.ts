@@ -1,4 +1,5 @@
 import type { AddonManifestV1 } from '@/addon/api'
+import { positionButtons } from '@/deck/position-buttons'
 
 import actionBackend from './buttons/action/backend'
 import actionFrontend from './buttons/action/frontend'
@@ -75,7 +76,10 @@ export const manifest: AddonManifestV1 = {
             name: 'Lock',
             buttons:
               userButtons !== undefined && userButtons.length > 0
-                ? userButtons.map((b, i) => ({
+                ? positionButtons(
+                    userButtons as Array<{ position?: number }>,
+                    keyCount,
+                  ).map((b, i) => ({
                     id: b.position !== undefined ? String(b.position) : `b${i}`,
                     ...b,
                   }))
