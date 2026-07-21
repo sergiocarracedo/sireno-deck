@@ -1,0 +1,30 @@
+.planning/phases/10-deck-reliability-overlays-config-include/10-01-PLAN.md
+  s_2dcd22e5d466a7::t_b3a0ae5a1fd137 1-203
+.planning/phases/10-deck-reliability-overlays-config-include/10-05-PLAN.md
+  s_2dcd22e5d466a7::t_5cef8777b9579e 1-227
+.planning/phases/10-deck-reliability-overlays-config-include/10-02-PLAN.md
+  s_2dcd22e5d466a7::t_8acebc9f789b3f 1-65
+  s_2dcd22e5d466a7::t_82f24d7147dfd0 66-140
+.planning/phases/10-deck-reliability-overlays-config-include/10-RESEARCH.md
+  s_2dcd22e5d466a7::t_e44fd4c86a69d4 1-155
+.planning/phases/10-deck-reliability-overlays-config-include/10-03-PLAN.md
+  s_2dcd22e5d466a7::t_a1bd4adfb2d65a 1-206
+.planning/phases/10-deck-reliability-overlays-config-include/10-04-PLAN.md
+  s_2dcd22e5d466a7::t_5b3a5776183c92 1-161
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "397d9049c54b6f36d9ab09e7405df8a22d8c07e5",
+  "prompts": {},
+  "sessions": {
+    "s_2dcd22e5d466a7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07c42cafdffegNNCzj1fMfP2BL",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
