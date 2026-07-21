@@ -24,6 +24,10 @@ export const computeSystemButtonForSlotN1 = (
 ): SystemButtonType | null => {
   if (state.lockActive === true) return null
   if (deck.isMain) return "core:settings-entry"
+  // ponytail: at the root of an overlay deck, "back" is a no-op (you can't
+  // back out of the overlay root). Use the dedicated overlay toggle so the
+  // n-1 slot becomes a real toggle button (tap + dbltap).
+  if (deck.isOverlay === true) return "core:overlay-toggle"
   return "core:back"
 }
 

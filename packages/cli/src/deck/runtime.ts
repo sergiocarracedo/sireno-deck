@@ -399,10 +399,21 @@ const navigateToDeck = (
       navigateToDeck("internal-settings:settings", { addToHistory: true })
       return true
     }
-    if (
-      (type === "core:overlay-toggle" || type === "core:settings-entry") &&
-      gesture === "dbl-tap"
-    ) {
+    if (type === "core:overlay-toggle") {
+      // ponytail: tap and dbl-tap both toggle the overlay. hold is left
+      // unhandled (returns false) so it can fall through if the user
+      // assigns a hold action elsewhere.
+      if (gesture === "tap" || gesture === "dbl-tap") {
+        if (overlayDeckId !== null) {
+          setOverlay(null)
+        } else if (availableOverlayDeckId !== null) {
+          setOverlay(availableOverlayDeckId)
+        }
+        return true
+      }
+      return false
+    }
+    if (type === "core:settings-entry" && gesture === "dbl-tap") {
       if (overlayDeckId !== null) {
         setOverlay(null)
       } else if (availableOverlayDeckId !== null) {

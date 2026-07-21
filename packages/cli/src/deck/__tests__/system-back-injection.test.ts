@@ -29,10 +29,10 @@ describe("computeSystemButtonForSlotN1", () => {
     )
   })
 
-  it("overlay deck returns back (so SplitSurface renders with overlay-toggle secondary)", () => {
+  it("overlay deck returns overlay-toggle (n-1 becomes the toggle button)", () => {
     expect(
       computeSystemButtonForSlotN1(deck({ isOverlay: true }), state()),
-    ).toBe("core:back")
+    ).toBe("core:overlay-toggle")
   })
 
   it("regular deck with navStackDepth=1 returns back", () => {
@@ -56,13 +56,13 @@ describe("computeSystemButtonForSlotN1", () => {
     ).toBe("core:settings-entry")
   })
 
-  it("overlay deck with navStackDepth=3 returns back", () => {
+  it("overlay deck with navStackDepth=3 returns overlay-toggle", () => {
     expect(
       computeSystemButtonForSlotN1(
         deck({ isOverlay: true }),
         state({ navStackDepth: 3 }),
       ),
-    ).toBe("core:back")
+    ).toBe("core:overlay-toggle")
   })
 })
 
@@ -82,6 +82,16 @@ describe("injectSystemButtons", () => {
     const [result] = injectSystemButtons([sub], 15)
     const n1 = result.buttons.find((b) => b.id === "14")
     expect(n1?.type).toBe("core:back")
+  })
+
+  it("injects core:overlay-toggle at n-1 on overlay deck", () => {
+    const overlay = {
+      ...deck({ id: "overlay", name: "Overlay", isOverlay: true }),
+      buttons: [{ id: "0", type: "x" }],
+    }
+    const [result] = injectSystemButtons([overlay], 15)
+    const n1 = result.buttons.find((b) => b.id === "14")
+    expect(n1?.type).toBe("core:overlay-toggle")
   })
 
   it("overwrites existing user button at n-1", () => {
