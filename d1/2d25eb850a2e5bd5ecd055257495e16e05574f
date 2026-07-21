@@ -1,0 +1,19 @@
+.planning/phases/10-deck-reliability-overlays-config-include/10-02-SUMMARY.md
+  s_2dcd22e5d466a7::t_2659b156e954b2 1-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "d12d25eb850a2e5bd5ecd055257495e16e05574f",
+  "prompts": {},
+  "sessions": {
+    "s_2dcd22e5d466a7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07c42cafdffegNNCzj1fMfP2BL",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
