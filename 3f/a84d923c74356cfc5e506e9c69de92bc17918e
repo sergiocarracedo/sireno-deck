@@ -1,0 +1,27 @@
+packages/cli/src/builtin-addons/test-buildin/index.ts
+  s_125496d408ca37::t_abcef6f396e8ed 12
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_125496d408ca37::t_796262af22aba3 9,25
+packages/cli/src/builtin-addons/emoji-selector/decks/index.ts
+  s_125496d408ca37::t_238ee14fba975d 1,97-103,119,121
+packages/cli/src/builtin-addons/test-buildin/__tests__/action-buttons-test.test.ts
+  s_125496d408ca37::t_05fbdec7f2fb03 3,6-10,13-14,31,40,60
+packages/cli/src/builtin-addons/test-buildin/decks/action-buttons-test.ts
+  s_125496d408ca37::t_cb5dd819b27b3a 1,47-61,63-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "3fa84d923c74356cfc5e506e9c69de92bc17918e",
+  "prompts": {},
+  "sessions": {
+    "s_125496d408ca37": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07b51eff1ffeNUGIuLb38hTGYQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
