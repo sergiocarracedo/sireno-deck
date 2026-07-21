@@ -18,7 +18,10 @@ export const manifest: AddonManifestV1 = {
   buttonTypes: {
     'core:action': {
       frontend: actionFrontend,
-      service: actionBackend,
+      // ponytail: gestureHandlers: ['tap'] is REQUIRED for type:// macros and any
+      // addon-deck button that uses actions.tap. The addon registry's default-deny
+      // policy strips undeclared handlers — without this, taps silently no-op.
+      service: { ...actionBackend, gestureHandlers: ['tap'] as const },
     },
     'core:change-deck': {
       frontend: changeDeckFrontend,
