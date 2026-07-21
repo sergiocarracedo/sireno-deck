@@ -1,0 +1,23 @@
+.planning/STATE.md
+  s_2dcd22e5d466a7::t_bed6c773e90a15 20-24,29
+.planning/phases/10-deck-reliability-overlays-config-include/10-CONTEXT.md
+  s_2dcd22e5d466a7::t_adad293511f9db 1-154
+.planning/phases/10-deck-reliability-overlays-config-include/10-DISCUSSION-LOG.md
+  s_2dcd22e5d466a7::t_adc2b1dd003201 1-222
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "9e6a71a3f27798fed8f67ea9278c7db41bfc5797",
+  "prompts": {},
+  "sessions": {
+    "s_2dcd22e5d466a7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07c42cafdffegNNCzj1fMfP2BL",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
