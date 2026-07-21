@@ -38,6 +38,7 @@ export interface CreateKeyMacroProviderOptions {
   readonly executor: CommandExecutor
   readonly env: Readonly<Record<string, string>>
   readonly logger: pino.Logger
+  readonly extraFsProbe?: (tool: string) => boolean
 }
 
 export const createKeyMacroProvider = async (
@@ -50,6 +51,9 @@ export const createKeyMacroProvider = async (
       executor: options.executor,
       env: options.env,
       logger: options.logger,
+      ...(options.extraFsProbe !== undefined
+        ? { extraFsProbe: options.extraFsProbe }
+        : {}),
     })
   }
   if (platform === "darwin") {

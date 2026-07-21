@@ -766,7 +766,7 @@ const startSystemProviders = async (
   const [activeApp, session, keyMacro] = await Promise.all([
     createActiveAppProvider({ platform, executor, logger }),
     createSessionProvider({ platform, logger }),
-    createKeyMacroProvider({ platform, executor, env, logger }),
+    createKeyMacroProvider({ platform, executor, env, logger, extraFsProbe }),
   ])
 
   runtime.setActiveAppProvider(activeApp)

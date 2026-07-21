@@ -11,6 +11,7 @@ export interface LinuxKeyMacroDeps {
   readonly env: Readonly<Record<string, string>>
   readonly logger: pino.Logger
   readonly timeoutMs?: number
+  readonly extraFsProbe?: (tool: string) => boolean
 }
 
 const YDOTOOL_TOOL = "ydotool"
@@ -301,9 +302,14 @@ const keyToScancode = (key: string): number | null => {
 const probeTool = async (
   executor: CommandExecutor,
   tool: Tool,
+  extraFsProbe?: (tool: string) => boolean,
 ): Promise<boolean> => {
   const result = await executor.run("which", [tool])
-  return result.exitCode === 0 && result.stdout.trim().length > 0
+  if (result.exitCode === 0 && result.stdout.trim().length > 0) return true
+  // ponytail: fallback when CLI is launched with a stripped PATH (systemd,
+  // launchd, IDE runners) and `which` returns nothing even though ydotool is
+  // installed at e.g. /usr/local/bin. Mirror of the requirements.ts probe.
+  return extraFsProbe?.(tool) === true
 }
 
 const shellQuote = (value: string): string =>
@@ -542,8 +548,9 @@ const sendKeyYdotool = async (
 export const createLinuxKeyMacroProvider = async (
   deps: LinuxKeyMacroDeps,
 ): Promise<KeyMacroProvider> => {
-  const ydotoolOk = await probeTool(deps.executor, YDOTOOL_TOOL)
-  const wtypeOk = !ydotoolOk && (await probeTool(deps.executor, WTYPE_TOOL))
+  const ydotoolOk = await probeTool(deps.executor, YDOTOOL_TOOL, deps.extraFsProbe)
+  const wtypeOk =
+    !ydotoolOk && (await probeTool(deps.executor, WTYPE_TOOL, deps.extraFsProbe))
 
   if (!ydotoolOk && !wtypeOk) {
     deps.logger.warn(

@@ -261,6 +261,23 @@ describe("createLinuxKeyMacroProvider", () => {
     await provider.stop()
   })
 
+  it("extraFsProbe picks up ydotool when `which` returns nothing (stripped PATH)", async () => {
+    const { executor, calls } = makeExecutorWithTools([])
+    const extraFsProbe = (tool: string): boolean => tool === "ydotool"
+    const provider = await createLinuxKeyMacroProvider({
+      executor,
+      env: baseEnv(),
+      logger: silentLogger(),
+      extraFsProbe,
+    })
+    await provider.sendKey("ctrl+t")
+    const ydotoolCall = calls.find(
+      (c) => c.tool === "ydotool" && c.args[0] === "key",
+    )
+    expect(ydotoolCall).toBeDefined()
+    await provider.stop()
+  })
+
   it("unknown combo key (e.g. 'at') throws ProviderError", async () => {
     const { executor } = makeExecutorWithTools(["ydotool"])
     const provider = await createLinuxKeyMacroProvider({
