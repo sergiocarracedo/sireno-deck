@@ -2,7 +2,7 @@
 
 **Project:** sireno-deck-2
 **Active branch:** main
-**Last activity:** 2026-07-21 - Phase 10 complete + quick task 004 (UAT bug fixes)
+**Last activity:** 2026-07-21 - Completed quick task 005 (UAT bug fixes: icon persistence on overlay change, n-1 overlay toggle, requirements PATH fallback)
 
 ## Completed Phases
 
@@ -44,6 +44,7 @@
 | 001 | Extract expandTokens to ui/primitives/text-format (REVERTED) | 2026-07-14 | — | .planning/quick/001-extract-expandcomponents/ |
 | 002 | Launcher label overlay + paste diagnostic logging | 2026-07-14 | c970a7d | .planning/quick/002-paste-launcher-debug/ |
 | 004 | UAT bug fixes: type:// macros fire, addon deck icons + button labels render | 2026-07-21 | c74592ab | .planning/quick/004-icons-macros-uat/ |
+| 005 | UAT bug fixes: bitmap icons persist on overlay change, n-1 = toggle on overlay root, ydotool/wtype detected when PATH stripped, chrome deck uses type:// | 2026-07-21 | b2145485 | .planning/quick/005-overlay-icons-back-cli/ |
 
 ## Key Features (verified in codebase)
 
