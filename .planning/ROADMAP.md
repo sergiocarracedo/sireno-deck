@@ -385,3 +385,54 @@ P1 and P2 have **zero dependency** on each other — they can be worked in paral
 - [x] 10-03: Chrome overlay addon
 - [x] 10-04: Frontend asset timing reliability
 - [x] 10-05: Nested YAML config includes
+
+## Phase 11: Addon Manifest v2 + Per-Addon Deck Overrides
+
+**Goal:** Simplify addon manifest authoring by replacing the `<addon>:<deck>` keyed object with a `decks` array that supports static, single-dynamic, and multi-dynamic entries; let users pass `config` to addons in `config.yml` and override individual addon-deck fields (autoShow, name, icon, trigger, extra config keys).
+**Depends on:** Phase 10 (chrome-overlay/vscode-overlay/opencode-overlay addons exist; get migrated here)
+**Status:** [ ] Not started
+
+### Scope
+
+1. **Manifest `decks` → array** (`packages/cli/src/addon/api.ts`):
+   - Static: `{ id: "<addon>:<deck>", name, icon, paginated?, autoShow?, isOverlay?, trigger?, buttons }`
+   - Single-dynamic: `{ id: "<addon>:<deck>", createDeck: (cfg) => deckObject }`
+   - Multi-dynamic: `{ createDecks: (cfg) => Record<<addon>:<deck>, deckObject> }`
+   - Drop the `type` field (no longer needed for lookup; the `id` is the canonical key)
+   - Hard cutover: reject the old `Record<<addon>:<deck>, {type, createDecks}>` shape at manifest load
+
+2. **AddonRegistry rewrite** (`packages/cli/src/addon/registry.ts`):
+   - Walk the `decks` array; for each entry, register a deck-type keyed by the entry `id` (or each generated id from `createDecks`)
+   - Reject ids that don't match `manifest.name` as prefix (clear error pointing at the addon)
+
+3. **Config-side `addons[i].config`** (`packages/cli/src/config/schemas.ts`):
+   - Extend `AddonEntrySchema` object form: `{ source, enabled?, config?: { decks?: Record<<deckId>, { autoShow?, name?, icon?, trigger?, config? }> } }`
+   - Replaces the top-level `overlay:` key — `overlay:` removed in this phase (quick-006 work reverts)
+
+4. **Runtime merge order** (`packages/cli/src/cli/commands/addon-decks.ts`):
+   - For each addon, `createDeck(s)({config: { ...defaultButtonConfig, ...addonEntry.config ?? {} }, deck, keyCount})`
+   - After `createDeck(s)` returns, apply per-deck overrides from `addonEntry.config.decks` keyed by deck id
+
+5. **Migrate 3 addons** (Phase 10):
+   - `chrome-overlay/index.js` — `decks: { "chrome-overlay:shortcuts": { ... } }` → `decks: [{ id: "chrome-overlay:shortcuts", ...static fields, buttons }]`
+   - Same for vscode-overlay, opencode-overlay
+
+6. **Revert quick-006** (`packages/cli/src/config/schemas.ts`, `run.ts`):
+   - Remove `OverlayConfigSchema`, `AddonOverlayOverrideSchema`, `materializeAddonDecks` `addonOverrides` parameter, `materializeDeckFromConfig` helper, `effectiveDecks` overlay-first ordering
+   - Remove 5 schema tests + 3 addon-override tests from quick-006
+
+### Success Criteria
+
+- [ ] All 3 Phase-10 addons load via the new array format and their decks render on trigger match
+- [ ] User can put `{autoShow: false}` in `addons[i].config.decks.<deckId>` and it overrides the addon's default
+- [ ] User can put extra keys in `addons[i].config.decks.<deckId>.config` and they reach `createDeck(s)({config})`
+- [ ] `addons[i].config` (top-level, not under `decks`) merges into addonConfig and reaches `createDeck(s)`
+- [ ] Old `{type, createDecks}` manifest shape is rejected with a clear error
+- [ ] Top-level `overlay:` key is gone (no migration shim — user config moves to `addons[i].config.decks`)
+- [ ] All existing tests pass; new tests cover: array shape parsing, per-deck override apply, addonName-prefix validation, config-merge order
+
+### Out of Scope
+
+- Deck grouping / multi-deck overlays per addon
+- Remote addons (npm install / URL)
+- Schema versioning on the manifest (`apiVersion` is still 1; bump deferred)

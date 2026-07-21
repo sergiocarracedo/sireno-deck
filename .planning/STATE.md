@@ -64,3 +64,14 @@
 - Phase 6 added: Lock Deck (complete)
 - Phase 7 added: Text Line-Clamp & Ellipsis (complete)
 - Phase 8 added: Runtime Resilience (complete)
+
+## In Progress
+
+**Phase 11: Addon Manifest v2 + Per-Addon Deck Overrides**
+- Phase added 2026-07-21
+- Status: Not started — run `plan-phase 11`
+- Depends on Phase 10 (migrates chrome-overlay/vscode-overlay/opencode-overlay to the new array format)
+
+## Roadmap Evolution
+
+- Phase 11 added: simplify addon manifest `decks:` to an array (static + single-dynamic + multi-dynamic entries); allow per-addon `config` block in `config.yml` with `config.decks.<deckId>` for per-deck overrides (autoShow/name/icon/trigger/extra config); reverts quick-006 top-level `overlay:` key
