@@ -1,0 +1,25 @@
+packages/cli/src/cli/commands/run.ts
+  s_125496d408ca37::t_f28a5a493593bc 125-128
+  s_125496d408ca37::t_293e6d958f796f 165,222,244
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "d9699e5dc7e79ad2ff43cedfa02dc6df00156209",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_125496d408ca37": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07b51eff1ffeNUGIuLb38hTGYQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
