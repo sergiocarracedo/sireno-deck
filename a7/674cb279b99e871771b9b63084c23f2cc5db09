@@ -1,0 +1,23 @@
+packages/cli/frontend/src/App.tsx
+  s_2dcd22e5d466a7::t_8a328400cfee6b 182
+  s_2dcd22e5d466a7::t_a3b6c1270d33f9 275-281
+  s_2dcd22e5d466a7::t_65d0534ed4533b 138-141
+packages/cli/frontend/src/__tests__/asset-timing-gate.test.tsx
+  s_2dcd22e5d466a7::t_333edb99496dde 1-86
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "a7674cb279b99e871771b9b63084c23f2cc5db09",
+  "prompts": {},
+  "sessions": {
+    "s_2dcd22e5d466a7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07c42cafdffegNNCzj1fMfP2BL",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
