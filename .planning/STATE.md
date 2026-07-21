@@ -17,11 +17,16 @@
 
 ## In Progress
 
+**Phase 10: Deck Reliability, Application Overlays, Config Includes, and Hardware Lifecycle**
+- Context gathered 2026-07-21 (deep mode) — 4 workstreams, all decisions captured
+- See `.planning/phases/10-deck-reliability-overlays-config-include/10-CONTEXT.md`
+- Next: `plan-phase 10`
+
 **Phase 9: Post-v1 Polish**
 - Workstreams 1-4 partially complete (emulator side-panel, back-button, system-status addon)
 - Config hot-reload (watch) implemented
 - Button error variant + config error handling implemented
-- Remaining: hardware splash/shutdown, device-model swap
+- Remaining: hardware splash/shutdown (now folded into Phase 10), device-model swap
 
 ## Uncommitted Changes
 
