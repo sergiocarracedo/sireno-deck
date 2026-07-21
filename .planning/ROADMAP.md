@@ -376,8 +376,12 @@ P1 and P2 have **zero dependency** on each other — they can be worked in paral
 ## Phase 10: Deck Reliability, Application Overlays, Config Includes, and Hardware Lifecycle
 
 **Goal:** The main deck renders image assets immediately, Chrome/VS Code/OpenCode overlays activate reliably, config files support nested path-relative includes, and real hardware shows a startup splash then clears to black on exit.
-**Status:** [ ] Not started
+**Status:** [x] Complete (2026-07-21)
 **Depends on:** Phase 9
 
 ### Plans
-*Not yet planned — run `plan-phase 10`*
+- [x] 10-01: Real-hardware startup splash + black shutdown
+- [x] 10-02: Wayland+GNOME window title via D-Bus
+- [x] 10-03: Chrome overlay addon
+- [x] 10-04: Frontend asset timing reliability
+- [x] 10-05: Nested YAML config includes
