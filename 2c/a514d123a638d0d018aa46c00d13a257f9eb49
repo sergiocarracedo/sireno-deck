@@ -1,0 +1,30 @@
+packages/cli/src/cli/commands/run.ts
+  s_4edea74f2957ec::t_1ba8a8762b9838 425-427,429-440
+  s_4edea74f2957ec::t_07c909034e4513 30
+packages/cli/src/builtin-addons/core/index.ts
+  s_4edea74f2957ec::t_3441fc60ebc154 79-82
+  s_4edea74f2957ec::t_3b0bc1705e2fb7 2
+packages/cli/src/cli/commands/addon-decks.ts
+  s_4edea74f2957ec::t_edc201b66a5ca7 112-115
+  s_4edea74f2957ec::t_09b315522d9a4a 3
+packages/cli/src/__tests__/config.test.ts
+  s_4edea74f2957ec::t_3821b217462903 480,482-484
+packages/cli/src/config/validation.ts
+  s_4edea74f2957ec::t_ebe7835571b604 37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "2ca514d123a638d0d018aa46c00d13a257f9eb49",
+  "prompts": {},
+  "sessions": {
+    "s_4edea74f2957ec": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07c72b479ffeY1AcvlR5gCXTTQ",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
