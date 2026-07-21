@@ -1,0 +1,24 @@
+packages/cli/frontend/src/__tests__/system-buttons-render.test.tsx
+  s_547b6a3eeb7585::t_62bc834acaa795 134,145-147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "06a755b02fa9c3740ed4d27a05917513861c3c7b",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_547b6a3eeb7585": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07f9b513bffe15o8R4vY1N6QVC",
+        "model": "k3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
