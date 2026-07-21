@@ -1,0 +1,19 @@
+packages/cli/src/cli/commands/__tests__/emulator-mode-build-config.test.ts
+  s_125496d408ca37::t_2d0aac25759698 112,133
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "b2145485550ab6bcccc614ba73c4fb5394040490",
+  "prompts": {},
+  "sessions": {
+    "s_125496d408ca37": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07b51eff1ffeNUGIuLb38hTGYQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
