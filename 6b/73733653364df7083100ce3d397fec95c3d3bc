@@ -1,0 +1,22 @@
+packages/cli/src/render/__tests__/push-raw-image.test.ts
+  s_2dcd22e5d466a7::t_1713c9b0bb6e29 40-42,53,63-65,80-82,89
+packages/cli/src/outputClient/real.ts
+  s_2dcd22e5d466a7::t_4d14c83958c99c 227-240
+  s_2dcd22e5d466a7::t_b4df962f4d5224 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "6b73733653364df7083100ce3d397fec95c3d3bc",
+  "prompts": {},
+  "sessions": {
+    "s_2dcd22e5d466a7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07c42cafdffegNNCzj1fMfP2BL",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
