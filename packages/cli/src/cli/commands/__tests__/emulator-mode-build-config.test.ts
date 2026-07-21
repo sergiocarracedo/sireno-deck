@@ -109,7 +109,7 @@ describe("buildDeckConfigMessage", () => {
     expect(n1Button?.type).toBe("core:back")
   })
 
-  it("preserves injected n-1 back button on overlay deck with overlayDeckIcon", () => {
+  it("preserves injected n-1 overlay-toggle button on overlay deck with overlayDeckIcon", () => {
     const overlayDeck: RuntimeDeck = {
       id: "emoji-overlay",
       name: "Emoji",
@@ -130,7 +130,7 @@ describe("buildDeckConfigMessage", () => {
     const buttons = msg.surfaces["emoji-overlay"]!.buttons
     const n1Button = buttons.find((b) => b.id === "14" || b.position === 14)
     expect(n1Button).toBeDefined()
-    expect(n1Button?.type).toBe("core:back")
+    expect(n1Button?.type).toBe("core:overlay-toggle")
     expect(msg.hasOverlayDeckAvailable).toBe(true)
     expect(msg.overlayDeckIcon).toBe("icon://emoji")
   })
