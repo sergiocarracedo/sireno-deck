@@ -4,6 +4,7 @@ import { createGestureDetector } from "@/core/gesture-state"
 import type { DeviceDescriptor } from "@/device/registry"
 import { connectStreamDeck, type StreamDeckDevice } from "@/device/stream-deck"
 import { BrowserRenderer } from "@/render/browser-renderer"
+import { pushRawImage } from "@/render/push-raw-image"
 import { NoStreamDeckFoundError, selectDevice } from "@/system/device-selection"
 import { saveDeviceConfig } from "@/util/device-config"
 
@@ -220,6 +221,20 @@ export class RealOutputClient implements OutputClient {
           logger.warn(
             { err: (err as Error).message },
             "real: pushBlackFrame failed (non-fatal)",
+          )
+        }
+      },
+      async pushRawImage(filePath: string): Promise<void> {
+        try {
+          await pushRawImage({
+            imagePath: filePath,
+            device,
+            logger,
+          })
+        } catch (err) {
+          logger.warn(
+            { err: (err as Error).message, filePath },
+            "real: pushRawImage failed (non-fatal)",
           )
         }
       },

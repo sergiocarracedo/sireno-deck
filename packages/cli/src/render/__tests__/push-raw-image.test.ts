@@ -37,7 +37,9 @@ describe("pushRawImage", () => {
   })
 
   it("fills every key with a 72x72 raw RGB buffer when image is valid", async () => {
-    const fillKeyBuffer = vi.fn(async () => undefined)
+    const fillKeyBuffer = vi.fn<(i: number, b: Buffer) => Promise<void>>(
+      async () => undefined,
+    )
     const device = {
       getKeyCount: () => 15,
       fillKeyBuffer,
@@ -48,7 +50,7 @@ describe("pushRawImage", () => {
 
     expect(fillKeyBuffer).toHaveBeenCalledTimes(15)
     for (const call of fillKeyBuffer.mock.calls) {
-      const buf = call[1] as Buffer
+      const buf = call[1]
       expect(buf.length).toBe(72 * 72 * 3)
     }
     expect(logger.info).toHaveBeenCalledWith(
@@ -58,7 +60,9 @@ describe("pushRawImage", () => {
   })
 
   it("returns without throwing when image is missing", async () => {
-    const fillKeyBuffer = vi.fn(async () => undefined)
+    const fillKeyBuffer = vi.fn<(i: number, b: Buffer) => Promise<void>>(
+      async () => undefined,
+    )
     const device = { getKeyCount: () => 15, fillKeyBuffer }
     const logger = { warn: vi.fn(), info: vi.fn() }
 
@@ -73,18 +77,17 @@ describe("pushRawImage", () => {
   })
 
   it("uses the default black background — edges of the buffer are zero", async () => {
-    const fillKeyBuffer = vi.fn(async () => undefined)
+    const fillKeyBuffer = vi.fn<(i: number, b: Buffer) => Promise<void>>(
+      async () => undefined,
+    )
     const device = { getKeyCount: () => 1, fillKeyBuffer }
     const logger = { warn: vi.fn(), info: vi.fn() }
 
     await pushRawImage({ imagePath, device: device as never, logger: logger as never })
 
     expect(fillKeyBuffer).toHaveBeenCalledTimes(1)
-    const buf = fillKeyBuffer.mock.calls[0][1] as Buffer
+    const buf = fillKeyBuffer.mock.calls[0]?.[1] as Buffer
     expect(buf.length).toBe(72 * 72 * 3)
-    // top-left pixel of a single-key deck is the image background after centering;
-    // it should still be either red (image) or black (background). We just assert
-    // the buffer is well-formed raw RGB.
     expect(Buffer.isBuffer(buf)).toBe(true)
   })
 })
