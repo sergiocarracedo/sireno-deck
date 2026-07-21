@@ -1,0 +1,22 @@
+.planning/STATE.md
+  s_125496d408ca37::t_9bbe78699f0ea3 5
+  s_125496d408ca37::t_8982da16545ba4 47
+.planning/quick/005-overlay-icons-back-cli/005-SUMMARY.md
+  s_125496d408ca37::t_7d61f4e3cb88d8 1-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "8a1379d0f9ab8e6680794126a0e6cb2d8617afbd",
+  "prompts": {},
+  "sessions": {
+    "s_125496d408ca37": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07b51eff1ffeNUGIuLb38hTGYQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
