@@ -122,6 +122,10 @@ export interface SetupAddonServicesOptions {
   readonly signal: AbortSignal
   readonly store: Store
   readonly logger: pino.Logger
+  // ponytail: type is inferred from buildResolverOptions — adding a named
+  // type here would re-import a stale pre-existing module
+  // (`@/render/icon-resolver`) that doesn't exist on disk.
+  readonly resolverOptions: ReturnType<typeof buildResolverOptions>
 }
 
 export interface SetupAddonServicesResult {
@@ -158,6 +162,7 @@ export const setupAddonServices = (
     store,
     methods,
     logger,
+    resolverOptions,
   } = options
 
   void bridgeAddonServices({
@@ -214,7 +219,7 @@ export const setupAddonServices = (
       const msg = buildDeckConfigMessage(
         deck,
         addonByType,
-        {},
+        resolverOptions,
         {
           navStackDepth: runtime.navStackDepth(),
           hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
@@ -236,7 +241,7 @@ export const setupAddonServices = (
       const msg = buildDeckConfigMessage(
         activeDeck,
         addonByType,
-        {},
+        resolverOptions,
         {
           navStackDepth: runtime.navStackDepth(),
           hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
