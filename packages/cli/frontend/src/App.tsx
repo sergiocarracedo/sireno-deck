@@ -135,6 +135,10 @@ const AppContent = () => {
   const [deviceModel, setDeviceModel] = useState<DeviceModelSpec>(() =>
     getDeviceModel("mk2"),
   )
+  // ponytail: block first paint until the WS `assets` message has been received
+  // and the asset cache is populated. Without this gate, the deck renders with
+  // an empty asset cache and shows the broken-icon fallback on cold-start.
+  const [assetsReady, setAssetsReady] = useState(false)
   const clientRef = useRef<WsClient | null>(null)
   const { setAsset } = useAssetCacheMutations()
   const navigate = useNavigate()
@@ -175,6 +179,7 @@ const AppContent = () => {
           for (const asset of message.assets) {
             setAsset(asset.id, asset.src)
           }
+          setAssetsReady(true)
         }
         if (message.type === "deck-config") {
           const surface = (
@@ -267,7 +272,13 @@ const AppContent = () => {
           attempt={attempt}
           now={now}
         />
-        <Deck deck={deck} deviceModel={deviceModel} />
+        {assetsReady ? (
+          <Deck deck={deck} deviceModel={deviceModel} />
+        ) : (
+          <div className="deck-loading" data-testid="deck-loading">
+            Loading…
+          </div>
+        )}
         <DisconnectedOverlay
           status={connectionStatus}
           disconnectedSince={disconnectedSince}
