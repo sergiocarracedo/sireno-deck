@@ -2,7 +2,7 @@
 
 **Project:** sireno-deck-2
 **Active branch:** main
-**Last activity:** 2026-07-21 - Phase 9 in progress (emulator rework + system-status addon)
+**Last activity:** 2026-07-21 - Phase 10 complete + quick task 004 (UAT bug fixes)
 
 ## Completed Phases
 
@@ -35,8 +35,7 @@
 
 ## Uncommitted Changes
 
-- `config.yml` — config deck structure changes
-- `packages/cli/src/config/validation.ts` — enhanced `validateButton` to return `ButtonValidationResult`
+- (none)
 
 ## Quick Tasks Completed
 
@@ -44,6 +43,7 @@
 |---|-------------|------|--------|-----------|
 | 001 | Extract expandTokens to ui/primitives/text-format (REVERTED) | 2026-07-14 | — | .planning/quick/001-extract-expandcomponents/ |
 | 002 | Launcher label overlay + paste diagnostic logging | 2026-07-14 | c970a7d | .planning/quick/002-paste-launcher-debug/ |
+| 004 | UAT bug fixes: type:// macros fire, addon deck icons + button labels render | 2026-07-21 | c74592ab | .planning/quick/004-icons-macros-uat/ |
 
 ## Key Features (verified in codebase)
 
