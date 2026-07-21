@@ -79,6 +79,13 @@ const deriveLabel = (
       if (typeof cmd === "string" && cmd.length > 0) {
         return cmd.length > 14 ? `${cmd.slice(0, 13)}…` : cmd
       }
+      // ponytail: fallback to config.label so addon-deck buttons (e.g.
+      // chrome-overlay's {label: 'New Tab'}) render their label when no
+      // command is set. The legacy config-command path stays primary.
+      const label = config["label"]
+      if (typeof label === "string" && label.length > 0) {
+        return label
+      }
       return undefined
     }
     case "core:change-deck": {
