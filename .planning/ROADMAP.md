@@ -389,8 +389,8 @@ P1 and P2 have **zero dependency** on each other — they can be worked in paral
 ## Phase 11: Addon Manifest v2 + Per-Addon Deck Overrides
 
 **Goal:** Simplify addon manifest authoring by replacing the `<addon>:<deck>` keyed object with a `decks` array that supports static, single-dynamic, and multi-dynamic entries; let users pass `config` to addons in `config.yml` and override individual addon-deck fields (autoShow, name, icon, trigger, extra config keys).
-**Depends on:** Phase 10 (chrome-overlay/vscode-overlay/opencode-overlay addons exist; get migrated here)
-**Status:** [ ] Not started
+**Status:** ✓ Complete (2026-07-21)
+**Depends on:** Phase 10
 
 ### Scope
 

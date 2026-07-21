@@ -2,7 +2,7 @@
 
 **Project:** sireno-deck-2
 **Active branch:** main
-**Last activity:** 2026-07-21 - Completed quick task 006 (overlay: config key + addon deck overrides + autoShow priority fix)
+**Last activity:** 2026-07-21 - Completed phase 11 (Addon Manifest v2 array format + per-addon deck overrides)
 
 ## Completed Phases
 
@@ -67,11 +67,8 @@
 
 ## In Progress
 
-**Phase 11: Addon Manifest v2 + Per-Addon Deck Overrides**
-- Phase added 2026-07-21
-- Status: Not started — run `plan-phase 11`
-- Depends on Phase 10 (migrates chrome-overlay/vscode-overlay/opencode-overlay to the new array format)
+_Phase 11 complete. No new phases queued. Next: discuss-phase 12 or quick tasks as needed._
 
 ## Roadmap Evolution
 
-- Phase 11 added: simplify addon manifest `decks:` to an array (static + single-dynamic + multi-dynamic entries); allow per-addon `config` block in `config.yml` with `config.decks.<deckId>` for per-deck overrides (autoShow/name/icon/trigger/extra config); reverts quick-006 top-level `overlay:` key
+- Phase 11 complete: Addon Manifest v2 array format + per-addon deck overrides landed in 3 atomic commits (`3542713`, `0ee2df0`, `30b661e`); quick-006 `overlay:` schema reverted; 3 Phase-10 addons + 2 builtins migrated to the new array form.
