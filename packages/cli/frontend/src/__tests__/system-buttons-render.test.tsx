@@ -131,7 +131,7 @@ describe("Deck with system buttons", () => {
     expect(screen.getByText("Overlay")).toBeTruthy()
   })
 
-  it("does not render a SplitActionSurface when overlay is not available", () => {
+  it("renders a back cell at n-1 when overlay is not available", () => {
     const deck = {
       id: "sub",
       name: "Sub",
@@ -142,5 +142,8 @@ describe("Deck with system buttons", () => {
       <Deck deck={deck} deviceModel={getDeviceModel("mk2")} />,
     )
     expect(container.querySelector('[data-split-action="true"]')).toBeNull()
+    const cell = container.querySelector('[data-button-type="core:back"]')
+    expect(cell).not.toBeNull()
+    expect(screen.getByText("Back")).toBeTruthy()
   })
 })
