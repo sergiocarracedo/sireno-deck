@@ -1,0 +1,29 @@
+.planning/ROADMAP.md
+  s_df1d289b0329d1::t_859330c69f8efb 349,353-357,361-363
+  s_df1d289b0329d1::t_41658c06218ba5 61,65-70,72-75
+.planning/STATE.md
+  s_df1d289b0329d1::t_d2b3a341912a5a 4-29,38-45,48,50-53
+.planning/solutions/workflow-issues/preventing-rogue-git-reset-2026-07-21.md
+  s_df1d289b0329d1::t_99565bc5b6c892 1-67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "88a79ec32f992f11925ce18f44d742ec4bb7af88",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_df1d289b0329d1": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07e845f68ffeaQWQkF6LWBFQar",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
