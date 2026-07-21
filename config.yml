@@ -112,43 +112,43 @@ decks:
       - position: 0
         type: 'core:action'
         actions:
-          tap: 'xdotool key ctrl+t'
+          tap: 'type://ctrl+t'
         config:
           label: New Tab
       - position: 1
         type: 'core:action'
         actions:
-          tap: 'xdotool key ctrl+w'
+          tap: 'type://ctrl+w'
         config:
           label: Close Tab
       - position: 2
         type: 'core:action'
         actions:
-          tap: 'xdotool key ctrl+shift+t'
+          tap: 'type://ctrl+shift+t'
         config:
           label: Reopen Tab
       - position: 3
         type: 'core:action'
         actions:
-          tap: 'xdotool key ctrl+shift+n'
+          tap: 'type://ctrl+shift+n'
         config:
           label: New Window
       - position: 4
         type: 'core:action'
         actions:
-          tap: 'xdotool key ctrl+r'
+          tap: 'type://ctrl+r'
         config:
           label: Reload
       - position: 5
         type: 'core:action'
         actions:
-          tap: 'xdotool key ctrl+shift+r'
+          tap: 'type://ctrl+shift+r'
         config:
           label: Hard Reload
       - position: 6
         type: 'core:action'
         actions:
-          tap: 'xdotool key F12'
+          tap: 'type://F12'
         config:
           label: Dev Tools
 

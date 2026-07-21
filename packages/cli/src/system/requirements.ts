@@ -24,6 +24,11 @@ export interface RequirementsCheckDeps {
   readonly platform: string
   readonly executor: CommandExecutor
   readonly env?: Readonly<Record<string, string>>
+  // ponytail: fallback probe for stripped-PATH environments
+  // (systemd/launchd/IDE). `which` may return nothing even when the binary
+  // exists on disk at a non-default bin dir. The caller wires this with a
+  // statSync-based probe over `/usr/local/bin`, `~/.local/bin`, etc.
+  readonly extraFsProbe?: (command: string) => boolean
 }
 
 const capabilityConfig: Readonly<
@@ -68,22 +73,27 @@ const capabilityConfig: Readonly<
 const probeCommand = async (
   executor: CommandExecutor,
   command: string,
+  extraFsProbe?: (command: string) => boolean,
 ): Promise<boolean> => {
   const result = await executor.run("which", [command])
-  return result.exitCode === 0 && result.stdout.trim().length > 0
+  if (result.exitCode === 0 && result.stdout.trim().length > 0) return true
+  return extraFsProbe?.(command) === true
 }
 
 export const checkRequirements = async ({
   platform,
   executor,
   env = process.env,
+  extraFsProbe,
 }: RequirementsCheckDeps): Promise<RequirementsCheckResult> => {
   const result: Partial<Record<SystemCapability, CapabilityStatus>> = {}
   const processEnv = env as NodeJS.ProcessEnv
 
   for (const [name, config] of Object.entries(capabilityConfig)) {
     const availability = await Promise.all(
-      config.commands.map((command) => probeCommand(executor, command)),
+      config.commands.map((command) =>
+        probeCommand(executor, command, extraFsProbe),
+      ),
     )
     const found = config.commands.filter((_, index) => availability[index])
     const missing = config.commands.filter((_, index) => !availability[index])

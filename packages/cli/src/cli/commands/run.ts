@@ -721,7 +721,30 @@ const startSystemProviders = async (
   const env = { ...process.env } as Readonly<Record<string, string>>
   const platform = process.platform
 
-  const requirements = await checkRequirements({ platform, executor, env })
+  // ponytail: when the CLI is launched from a stripped-PATH environment
+  // (systemd/launchd/IDE), `which ydotool` returns nothing even when the
+  // binary exists at /usr/local/bin. Probe a few well-known install dirs
+  // as a fallback so the requirements check doesn't false-negative.
+  const wellKnownBinDirs = [
+    "/usr/local/bin",
+    "/usr/bin",
+    `${homedir()}/.local/bin`,
+    "/snap/bin",
+    "/opt/homebrew/bin",
+  ]
+  const extraFsProbe = (command: string): boolean => {
+    for (const dir of wellKnownBinDirs) {
+      if (existsSync(join(dir, command))) return true
+    }
+    return false
+  }
+
+  const requirements = await checkRequirements({
+    platform,
+    executor,
+    env,
+    extraFsProbe,
+  })
   methods.setRequirements(requirements)
   for (const [capability, status] of Object.entries(requirements)) {
     const warning = formatCapabilityWarning(

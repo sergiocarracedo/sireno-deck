@@ -116,6 +116,31 @@ describe("checkRequirements", () => {
     )
   })
 
+  it("uses extraFsProbe as fallback when which fails (stripped PATH)", async () => {
+    const executor = createExecutor([])
+    const extraFsProbe = (command: string): boolean => command === "ydotool"
+    const result = await checkRequirements({
+      platform: "linux",
+      executor,
+      env: {},
+      extraFsProbe,
+    })
+    expect(result.keyMacro.available).toBe(true)
+    expect(result.keyMacro.commands).toContain("ydotool")
+  })
+
+  it("treats extraFsProbe=false the same as no probe", async () => {
+    const executor = createExecutor([])
+    const extraFsProbe = (_command: string): boolean => false
+    const result = await checkRequirements({
+      platform: "linux",
+      executor,
+      env: {},
+      extraFsProbe,
+    })
+    expect(result.keyMacro.available).toBe(false)
+  })
+
   it("formatCapabilityWarning returns empty when preferred tool is available", async () => {
     const executor = createExecutor(["ydotool", "wl-copy"])
     const result = await checkRequirements({
