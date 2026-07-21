@@ -186,12 +186,22 @@ const collectAddonDefaultButtonConfig = (
   return result
 }
 
+export interface AddonOverlayOverride {
+  readonly addonName: string
+  readonly autoShow?: boolean
+  readonly name?: string
+  readonly icon?: string
+  readonly trigger?: { process_name?: string | string[]; window_name?: string | string[] }
+  readonly config?: Record<string, unknown>
+}
+
 export const materializeAddonDecks = (
   registry: AddonRegistry,
   userDecks: ReadonlyArray<RuntimeDeck>,
   logger: pino.Logger,
   keyCount: number,
   lockButtons?: ReadonlyArray<unknown>,
+  addonOverrides?: ReadonlyMap<string, AddonOverlayOverride>,
 ): RuntimeDeck[] => {
   // ponytail: keep the signature explicit even though we don't accept varargs — clarity beats cleverness
   const addonConfigs = collectAddonDefaultButtonConfig(
@@ -210,10 +220,27 @@ export const materializeAddonDecks = (
 
   for (const addon of registry.listAddons()) {
     if (addon.decks === undefined) continue
+    // ponytail: aggregate every override for this addon (by addon name) so
+    // the merged config reaches `createDecks({config})` before it runs.
+    // Overrides are keyed by generated deck id, so we cannot pre-merge by
+    // id, but we can by addon name: any override whose addonName matches
+    // this addon contributes its `config` to the merged addonConfig.
+    const addonWideConfigOverrides: Record<string, unknown> = {}
+    if (addonOverrides !== undefined) {
+      for (const ov of addonOverrides.values()) {
+        if (ov.addonName !== addon.name) continue
+        if (ov.config === undefined) continue
+        Object.assign(addonWideConfigOverrides, ov.config)
+      }
+    }
     for (const deckName of Object.keys(addon.decks)) {
       const deckType = registry.getDeckType(deckName)
       if (deckType === undefined) continue
-      const addonConfig = addonConfigs.get(addon.name) ?? {}
+      const baseAddonConfig = addonConfigs.get(addon.name) ?? {}
+      const addonConfig = {
+        ...baseAddonConfig,
+        ...addonWideConfigOverrides,
+      }
       let generated: Record<string, AddonGeneratedDeck>
       try {
         generated = deckType.def.createDecks({
@@ -236,7 +263,34 @@ export const materializeAddonDecks = (
           )
           continue
         }
-        addonDecks.push(...mapAddonDeckToRuntimeDeck(registry, id, gdeck, keyCount))
+        const override =
+          addonOverrides !== undefined ? addonOverrides.get(id) : undefined
+        const effectiveOverride =
+          override !== undefined && override.addonName === addon.name
+            ? override
+            : undefined
+        let effectiveGdeck: AddonGeneratedDeck = gdeck
+        if (effectiveOverride !== undefined) {
+          effectiveGdeck = {
+            ...gdeck,
+            ...(effectiveOverride.autoShow !== undefined
+              ? { autoShow: effectiveOverride.autoShow }
+              : {}),
+            ...(effectiveOverride.name !== undefined
+              ? { name: effectiveOverride.name }
+              : {}),
+            ...(effectiveOverride.icon !== undefined
+              ? { icon: effectiveOverride.icon }
+              : {}),
+            ...(effectiveOverride.trigger !== undefined
+              ? { trigger: effectiveOverride.trigger }
+              : {}),
+            isOverlay: true,
+          }
+        }
+        addonDecks.push(
+          ...mapAddonDeckToRuntimeDeck(registry, id, effectiveGdeck, keyCount),
+        )
       }
     }
   }

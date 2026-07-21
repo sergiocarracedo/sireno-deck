@@ -658,3 +658,98 @@ describe("materializeAddonDecks", () => {
     expect(deck.buttons[0]!.full).toBeUndefined()
   })
 })
+
+describe("materializeAddonDecks with addonOverrides", () => {
+  it("applies autoShow override from `overlay:` config", () => {
+    const addon = fakeManifestWithDecks("test-addon", {
+      "test-addon:deck-a": () => ({
+        "gen-deck": {
+          name: "Gen",
+          autoShow: true,
+          isOverlay: true,
+          trigger: { process_name: "chrome" },
+          buttons: [{ type: "test-addon:btn", position: 0 }],
+        },
+      }),
+    })
+    const reg = mockRegistry([addon])
+    const userDecks: RuntimeDeck[] = []
+    const overrides = new Map([
+      [
+        "gen-deck",
+        { addonName: "test-addon", autoShow: false },
+      ],
+    ])
+    const result = materializeAddonDecks(
+      reg,
+      userDecks,
+      silentLogger(),
+      15,
+      undefined,
+      overrides,
+    )
+    const gen = result.find((d) => d.id === "gen-deck")!
+    expect(gen.autoShow).toBe(false)
+    expect(gen.isOverlay).toBe(true)
+  })
+
+  it("merges user config into addonConfig passed to createDecks", () => {
+    let receivedConfig: unknown = null
+    const addon = fakeManifestWithDecks("test-addon", {
+      "test-addon:deck-a": (ctx: { config: Record<string, unknown> }) => {
+        receivedConfig = ctx.config
+        return {
+          "gen-deck": {
+            name: "Gen",
+            buttons: [{ type: "test-addon:btn", position: 0 }],
+          },
+        }
+      },
+    })
+    const reg = mockRegistry([addon])
+    const overrides = new Map([
+      [
+        "gen-deck",
+        { addonName: "test-addon", config: { hideTabs: true } },
+      ],
+    ])
+    materializeAddonDecks(
+      reg,
+      [{ id: "main", name: "Main", buttons: [] }],
+      silentLogger(),
+      15,
+      undefined,
+      overrides,
+    )
+    expect(receivedConfig).toMatchObject({ hideTabs: true })
+  })
+
+  it("ignores override whose addonName doesn't match the addon's name", () => {
+    const addon = fakeManifestWithDecks("test-addon", {
+      "test-addon:deck-a": () => ({
+        "gen-deck": {
+          name: "Gen",
+          autoShow: true,
+          buttons: [{ type: "test-addon:btn", position: 0 }],
+        },
+      }),
+    })
+    const reg = mockRegistry([addon])
+    const overrides = new Map([
+      [
+        "gen-deck",
+        { addonName: "OTHER-ADDON", autoShow: false },
+      ],
+    ])
+    const result = materializeAddonDecks(
+      reg,
+      [],
+      silentLogger(),
+      15,
+      undefined,
+      overrides,
+    )
+    const gen = result.find((d) => d.id === "gen-deck")!
+    expect(gen.autoShow).toBe(true)
+  })
+})
