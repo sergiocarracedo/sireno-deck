@@ -27,6 +27,7 @@ export interface LinuxDbusInterface {
   GetActive?(): Promise<boolean>
   GetIdletime?(): Promise<number>
   FocusClass?(): Promise<string>
+  FocusTitle?(): Promise<string>
   on?(event: string, handler: (...args: unknown[]) => void): void
   off?(event: string, handler: (...args: unknown[]) => void): void
 }

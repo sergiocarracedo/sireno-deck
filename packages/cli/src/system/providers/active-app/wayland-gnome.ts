@@ -56,6 +56,7 @@ export const shouldUseWaylandGnomeProvider = (
 interface ProbeResult {
   bus: LinuxDbusBus
   focusClass: () => Promise<string>
+  focusTitle?: () => Promise<string>
 }
 
 const probeExtension = async (
@@ -112,7 +113,10 @@ const probeExtension = async (
     return null
   }
 
-  return { bus, focusClass: focusClass.bind(iface) }
+  const focusTitle =
+    typeof iface.FocusTitle === "function" ? iface.FocusTitle.bind(iface) : undefined
+
+  return { bus, focusClass: focusClass.bind(iface), ...(focusTitle ? { focusTitle } : {}) }
 }
 
 export const createWaylandGnomeProvider = async (
@@ -137,25 +141,31 @@ export const createWaylandGnomeProvider = async (
   const pollMs = deps.pollIntervalMs ?? DEFAULT_POLL_MS
   let timer: ReturnType<typeof setTimeout> | null = null
   let lastName: string | null = null
+  let lastTitle: string | null = null
   let consecutiveFailures = 0
   let stopped = false
   const subscribers = new Set<(s: ActiveAppSnapshot | null) => void>()
 
-  const emit = (name: string | null): void => {
-    if (name === lastName) return
+  const emit = (name: string | null, title: string | null): void => {
+    if (name === lastName && title === lastTitle) return
     lastName = name
+    lastTitle = title
     const snapshot: ActiveAppSnapshot | null =
-      name === null ? null : { name, windowTitle: null, processId: null }
+      name === null ? null : { name, windowTitle: title, processId: null }
     for (const handler of subscribers) handler(snapshot)
   }
 
   const poll = async (): Promise<void> => {
     if (stopped) return
     try {
-      const raw = await probe.focusClass()
+      const [rawClass, rawTitle] = await Promise.all([
+        probe.focusClass(),
+        probe.focusTitle ? probe.focusTitle() : Promise.resolve(""),
+      ])
       consecutiveFailures = 0
-      const name = typeof raw === "string" && raw.length > 0 ? raw : null
-      emit(name)
+      const name = typeof rawClass === "string" && rawClass.length > 0 ? rawClass : null
+      const title = typeof rawTitle === "string" && rawTitle.length > 0 ? rawTitle : null
+      emit(name, title)
     } catch (error) {
       consecutiveFailures += 1
       deps.logger.debug(
@@ -182,17 +192,16 @@ export const createWaylandGnomeProvider = async (
 
   return {
     async getActive() {
-      const raw = lastName
-      return raw === null
+      return lastName === null
         ? null
-        : { name: raw, windowTitle: null, processId: null }
+        : { name: lastName, windowTitle: lastTitle, processId: null }
     },
     subscribe(handler) {
       subscribers.add(handler)
       const snapshot: ActiveAppSnapshot | null =
         lastName === null
           ? null
-          : { name: lastName, windowTitle: null, processId: null }
+          : { name: lastName, windowTitle: lastTitle, processId: null }
       handler(snapshot)
       return () => {
         subscribers.delete(handler)

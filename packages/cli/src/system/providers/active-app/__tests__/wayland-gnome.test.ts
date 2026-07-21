@@ -29,10 +29,12 @@ const silentLogger = (): pino.Logger => {
 
 const makeBus = (
   focusClass: () => Promise<string>,
+  focusTitle?: () => Promise<string>,
 ): { bus: LinuxDbusBus; disconnect: ReturnType<typeof vi.fn> } => {
   const disconnect = vi.fn()
   const iface: LinuxDbusInterface = {
     FocusClass: focusClass,
+    ...(focusTitle !== undefined ? { FocusTitle: focusTitle } : {}),
   }
   const proxy: LinuxDbusProxyObject = {
     getInterface: () => iface,
@@ -107,12 +109,63 @@ describe("createWaylandGnomeProvider", () => {
       logger: silentLogger(),
       pollIntervalMs: 100,
     })
+    // ponytail: flush the initial poll — Promise.all on focusClass adds an
+    // extra microtask hop vs the prior single-await path, so getActive() needs
+    // one poll cycle to populate lastName/lastTitle.
+    await vi.advanceTimersByTimeAsync(100)
     const snap = await provider.getActive()
     expect(snap).toEqual({
       name: "Google-chrome",
       windowTitle: null,
       processId: null,
     })
+    await provider.stop()
+  })
+
+  it("populates windowTitle when FocusTitle is available", async () => {
+    const { bus } = makeBus(
+      async () => "Google-chrome",
+      async () => "GitHub - sireno-deck-2",
+    )
+    const provider = await createWaylandGnomeProvider({
+      dbus: bus,
+      logger: silentLogger(),
+      pollIntervalMs: 100,
+    })
+    await vi.advanceTimersByTimeAsync(100)
+    const snap = await provider.getActive()
+    expect(snap).toEqual({
+      name: "Google-chrome",
+      windowTitle: "GitHub - sireno-deck-2",
+      processId: null,
+    })
+    await provider.stop()
+  })
+
+  it("emits a new snapshot when title changes but class stays", async () => {
+    let titleCall = 0
+    const { bus } = makeBus(
+      async () => "Google-chrome",
+      async () => {
+        titleCall += 1
+        if (titleCall === 1) return "GitHub - sireno-deck-2"
+        return "Pull Requests · anomalyco/opencode"
+      },
+    )
+    const provider = await createWaylandGnomeProvider({
+      dbus: bus,
+      logger: silentLogger(),
+      pollIntervalMs: 50,
+    })
+    const handler = vi.fn()
+    provider.subscribe(handler)
+    await vi.advanceTimersByTimeAsync(60)
+    await vi.advanceTimersByTimeAsync(60)
+    const titles = handler.mock.calls
+      .map((c) => (c[0] as { windowTitle: string | null } | null)?.windowTitle)
+      .filter((t): t is string => typeof t === "string")
+    expect(titles).toContain("GitHub - sireno-deck-2")
+    expect(titles).toContain("Pull Requests · anomalyco/opencode")
     await provider.stop()
   })
 
