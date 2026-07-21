@@ -9,9 +9,7 @@ export const manifest: AddonManifestV1 = {
   // button type so we can exercise the runtime's icon pipeline without
   // introducing new backend code.
   buttonTypes: {},
-  decks: {
-    "test-buildin:action-buttons-test": actionButtonsTestDeck(),
-  },
+  decks: [actionButtonsTestDeck],
 }
 
 export const testBuildinAddon = manifest

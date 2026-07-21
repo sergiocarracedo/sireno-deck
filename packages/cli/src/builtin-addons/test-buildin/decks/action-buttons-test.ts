@@ -1,4 +1,4 @@
-import type { AddonDeckDefinition, AddonGeneratedDeck } from "@/addon/api"
+import type { AddonDeckEntry } from "@/addon/api"
 
 /**
  * Action Buttons Test deck — one `core:action` button per icon-source
@@ -44,22 +44,21 @@ const ICON_CASES: ReadonlyArray<{ label: string; icon: string }> = [
   { label: "data: (invalid)", icon: "data:image/svg+xml;base64,PHN2Zy8+" },
 ]
 
-const createActionButtonsTestDeck = (): AddonDeckDefinition => ({
-  type: "test-buildin:action-buttons-test",
-  createDecks: () => {
-    const buttons = ICON_CASES.map(({ label, icon }, i) => ({
-      type: "core:action",
-      position: i,
-      ...(icon !== "" ? { config: { icon, label } } : { config: { label } }),
-    }))
-    const deck: AddonGeneratedDeck = {
-      name: "Action Buttons Test",
-      icon: "🧪",
-      buttons,
-    }
-    return { "action-buttons-test": deck }
-  },
-})
+// ponytail: phase 11 array form. The deck is now a static AddonDeckEntry
+// whose inline shape is the deck itself. No factory needed since the
+// icon cases are baked in.
+const ICON_BUTTONS = ICON_CASES.map(({ label, icon }, i) => ({
+  type: "core:action",
+  position: i,
+  ...(icon !== "" ? { config: { icon, label } } : { config: { label } }),
+}))
 
-export default createActionButtonsTestDeck
-export { createActionButtonsTestDeck }
+const actionButtonsTestDeck: AddonDeckEntry = {
+  id: "test-buildin:action-buttons-test",
+  name: "Action Buttons Test",
+  icon: "🧪",
+  buttons: ICON_BUTTONS,
+}
+
+export default actionButtonsTestDeck
+export { actionButtonsTestDeck }

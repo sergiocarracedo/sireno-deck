@@ -1,27 +1,17 @@
 import { describe, expect, it } from "vitest"
 
-import createActionButtonsTestDeck from "../decks/action-buttons-test"
+import actionButtonsTestDeck from "../decks/action-buttons-test"
 
 describe("test-buildin:action-buttons-test deck", () => {
-  it("is defined as a deck definition", () => {
-    const def = createActionButtonsTestDeck()
-    expect(def).toBeDefined()
-    expect(def.createDecks).toBeTypeOf("function")
-    expect(def.type).toBe("test-buildin:action-buttons-test")
+  it("is defined as a static deck entry", () => {
+    expect(actionButtonsTestDeck).toBeDefined()
+    expect(actionButtonsTestDeck.id).toBe("test-buildin:action-buttons-test")
+    expect(actionButtonsTestDeck.name).toBe("Action Buttons Test")
+    expect(actionButtonsTestDeck.icon).toBe("🧪")
   })
 
-  it("creates a deck with one button per icon-source shape", () => {
-    const def = createActionButtonsTestDeck()
-    const result = def.createDecks({
-      config: {},
-      deck: { id: "test-buildin:action-buttons-test" },
-      keyCount: 15,
-    })
-    expect(Object.keys(result)).toEqual(["action-buttons-test"])
-    const deck = result["action-buttons-test"]!
-    expect(deck.name).toBe("Action Buttons Test")
-    expect(deck.icon).toBe("🧪")
-    const buttons = deck.buttons as ReadonlyArray<{
+  it("contains one button per icon-source shape", () => {
+    const buttons = actionButtonsTestDeck.buttons as ReadonlyArray<{
       type: string
       position?: number
       config?: Record<string, unknown>
@@ -38,14 +28,7 @@ describe("test-buildin:action-buttons-test deck", () => {
   })
 
   it("uses core:action for every button (no custom backend needed)", () => {
-    const def = createActionButtonsTestDeck()
-    const result = def.createDecks({
-      config: {},
-      deck: { id: "test-buildin:action-buttons-test" },
-      keyCount: 15,
-    })
-    const buttons = (result["action-buttons-test"]!.buttons ??
-      []) as ReadonlyArray<{
+    const buttons = (actionButtonsTestDeck.buttons ?? []) as ReadonlyArray<{
       type: string
     }>
     for (const b of buttons) {
@@ -54,14 +37,7 @@ describe("test-buildin:action-buttons-test deck", () => {
   })
 
   it("includes a representative sample of every accepted icon source shape", () => {
-    const def = createActionButtonsTestDeck()
-    const result = def.createDecks({
-      config: {},
-      deck: { id: "test-buildin:action-buttons-test" },
-      keyCount: 15,
-    })
-    const buttons = (result["action-buttons-test"]!.buttons ??
-      []) as ReadonlyArray<{
+    const buttons = (actionButtonsTestDeck.buttons ?? []) as ReadonlyArray<{
       config?: { icon?: string }
     }>
     const icons = buttons.map((b) => b.config?.icon)
@@ -81,14 +57,7 @@ describe("test-buildin:action-buttons-test deck", () => {
   })
 
   it("includes invalid shapes to exercise the runtime fallback", () => {
-    const def = createActionButtonsTestDeck()
-    const result = def.createDecks({
-      config: {},
-      deck: { id: "test-buildin:action-buttons-test" },
-      keyCount: 15,
-    })
-    const buttons = (result["action-buttons-test"]!.buttons ??
-      []) as ReadonlyArray<{
+    const buttons = (actionButtonsTestDeck.buttons ?? []) as ReadonlyArray<{
       config?: { icon?: string }
     }>
     const icons = buttons.map((b) => b.config?.icon)

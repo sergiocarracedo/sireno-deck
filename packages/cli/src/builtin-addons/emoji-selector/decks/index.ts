@@ -1,4 +1,4 @@
-import type { AddonDeckDefinition, AddonGeneratedDeck } from '@/addon/api'
+import type { AddonDeckEntry, AddonGeneratedDeck } from '@/addon/api'
 
 import { categories, Emoji } from '../data/categories'
 import {
@@ -94,8 +94,13 @@ const generateDecks = (
   return decks
 }
 
-const emojiSelectorDeckDefinition: AddonDeckDefinition = {
-  type: 'emoji-selector',
+// ponytail: phase 11 array form. The factory takes the addon's
+// runtime config (favorites override) and produces the multi-dynamic
+// record keyed by deck id. Each generated deck id is the run-time
+// identifier — `emoji-selector` is the launcher; `emoji-selector-<category>`
+// are the category drill-downs; the synthetic multi key isn't used
+// here because the factory has a fixed id.
+const emojiSelectorDeckEntry: AddonDeckEntry = {
   createDecks: ({
     config,
   }: {
@@ -111,8 +116,8 @@ const emojiSelectorDeckDefinition: AddonDeckDefinition = {
   },
 }
 
-export default emojiSelectorDeckDefinition
+export default emojiSelectorDeckEntry
 export {
-  emojiSelectorDeckDefinition as emojiSelectorDeckFactory,
+  emojiSelectorDeckEntry as emojiSelectorDeckFactory,
   EmojiSelectorDeckSchema,
 }

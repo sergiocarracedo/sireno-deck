@@ -6,7 +6,7 @@ import emojiBackend from './buttons/emoji/backend'
 import emojiFrontend from './buttons/emoji/frontend'
 import launcherBackend from './buttons/launcher/backend'
 import launcherFrontend from './buttons/launcher/frontend'
-import emojiSelectorDeckFactory from './decks'
+import emojiSelectorDeckEntry from './decks'
 
 export const manifest: AddonManifestV1 = {
   apiVersion: 1,
@@ -22,9 +22,7 @@ export const manifest: AddonManifestV1 = {
       service: { ...launcherBackend, gestureHandlers: ['tap'] as const },
     },
   },
-  decks: {
-    'emoji-selector:emoji-selector': emojiSelectorDeckFactory,
-  },
+  decks: [emojiSelectorDeckEntry],
 }
 
 export const emojiSelectorAddon = manifest
