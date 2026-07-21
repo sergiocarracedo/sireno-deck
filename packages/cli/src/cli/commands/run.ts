@@ -457,6 +457,13 @@ const buildRuntime = (
           : undefined
       const sharedDeckFields = {
         isMain: id === "main",
+        // ponytail: a trigger makes this deck an overlay-mode deck (the
+        // runtime activates it via active-app matching, not via nav).
+        // Mirror that on the materialized deck so `computeSystemButtonForSlotN1`
+        // injects `core:overlay-toggle` instead of `core:back` at n-1.
+        isOverlay:
+          (processNames !== undefined && processNames.length > 0) ||
+          (windowNames !== undefined && windowNames.length > 0),
         ...(processNames !== undefined ? { processNames } : {}),
         ...(windowNames !== undefined ? { windowNames } : {}),
         ...(d.autoShow === true ? { autoShow: true } : {}),
