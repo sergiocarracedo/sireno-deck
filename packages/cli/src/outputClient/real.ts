@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url"
+
 import type pino from "pino"
 
 import { createGestureDetector } from "@/core/gesture-state"
@@ -100,6 +102,25 @@ export class RealOutputClient implements OutputClient {
       )
     }
     this.device = device
+
+    // ponytail: hardware-only splash — push the logo immediately after the
+    // device is connected and before Playwright/Vite takes over. pushRawImage
+    // swallows errors (non-fatal). Skipped on emulator (no pushRawImage method).
+    const splashPath = fileURLToPath(
+      new URL("../assets/logoFull.png", import.meta.url),
+    )
+    try {
+      await pushRawImage({
+        imagePath: splashPath,
+        device,
+        logger,
+      })
+    } catch (err) {
+      logger.warn(
+        { err: (err as Error).message, splashPath },
+        "real: splash push failed (non-fatal)",
+      )
+    }
 
     opts.bridge.setDevice(descriptor)
 
