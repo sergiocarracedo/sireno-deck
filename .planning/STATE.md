@@ -1,8 +1,32 @@
 # Project State
 
 **Project:** sireno-deck-2
-**Active branch:** chore/nuke-planning-reinit
-**Last activity:** 2026-07-18 - Phase 7 context captured: text line-clamp & ellipsis (deep mode)
+**Active branch:** main
+**Last activity:** 2026-07-21 - Phase 9 in progress (emulator rework + system-status addon)
+
+## Completed Phases
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 1-3 | Emoji-selector fixes + paste command | Complete |
+| 4 | Settings Deck | Complete |
+| 5 | Overlay Decks | Complete (2026-07-17) |
+| 6 | Lock Deck | Complete (2026-07-17) |
+| 7 | Text Line-Clamp & Ellipsis | Complete |
+| 8 | Runtime Resilience | Complete (merged phase-08-runtime-resilience) |
+
+## In Progress
+
+**Phase 9: Post-v1 Polish**
+- Workstreams 1-4 partially complete (emulator side-panel, back-button, system-status addon)
+- Config hot-reload (watch) implemented
+- Button error variant + config error handling implemented
+- Remaining: hardware splash/shutdown, device-model swap
+
+## Uncommitted Changes
+
+- `config.yml` — config deck structure changes
+- `packages/cli/src/config/validation.ts` — enhanced `validateButton` to return `ButtonValidationResult`
 
 ## Quick Tasks Completed
 
@@ -11,19 +35,19 @@
 | 001 | Extract expandTokens to ui/primitives/text-format (REVERTED) | 2026-07-14 | — | .planning/quick/001-extract-expandcomponents/ |
 | 002 | Launcher label overlay + paste diagnostic logging | 2026-07-14 | c970a7d | .planning/quick/002-paste-launcher-debug/ |
 
-## Roadmap Evolution
-- Phase 9 added: post-v1 polish (hardware UX gaps + emulator rework + system-status addon port)
+## Key Features (verified in codebase)
 
+- **Config watch**: `packages/cli/src/cli/commands/run.ts:834-949` (ConfigWatcher, hot-reload)
+- **Button error variant**: ButtonFrame.tsx, system-buttons/registry.tsx, protocol-internal.ts, methods.ts, runtime.ts, App.tsx, Deck.tsx
+- **Config error handling**: errors.ts (ConfigError), validation.ts (validateButton), requirements.ts
+- **Emulator side-panel**: App.tsx, SidePanel, DeviceSelector
+- **System-status addon**: system-status addon ported from legacy
+
+## Roadmap Evolution
+
+- Phase 9 added: post-v1 polish (hardware UX gaps + emulator rework + system-status addon port)
 - Phase 4 added: Settings Deck
-- Phase 5 added: Overlay Decks
-  - PLAN-1 (Wave 1) complete: backend runtime — matcher AND, autoShow gate, per-overlay nav stack, smoke test
-  - PLAN-2 (Wave 2) complete: frontend SplitSurface gestures (tap/dbl-tap/hold), icon override, back-hold → mainDeck
-  - UAT fixes committed: getActiveDeck overlay-aware, React hooks order, main deck n-1 SplitSurface, GNOME Wayland provider, n-1 dbl-tap/hold forwarding
-  - Pending user UAT: restart daemon and verify main deck n-1 overlay-toggle dbl-tap switches to overlay deck
-- Phase 6 added: Lock Deck — `lock:` config block (custom buttons + folder passthrough), session-locked → global mode that overrides overlay layer, disables gestures, suppresses system buttons; default 3-button time deck (HH : MM); `go-to-folder` is the only escape hatch from user-defined lock decks. Existing `session:locked` deck in `session` addon becomes the default; needs to be reshaped from 5 buttons → 3.
-  - PLAN-1 (Wave 1) complete: `lock:` schema + runtime lock state + default 3-button deck synthesis + session subscription + system-button suppression + session provider wired into run.ts; orphan `session.locked_deck` removed
-  - PLAN-2 (Wave 2) complete: user-defined `lock.buttons` synthesis + gesture-router pre-check (folder-nav escape only) + idempotent unlock + `runtime:lock-mode` pubsub event
-  - PLAN-3 (Wave 3) complete: overlay auto-resume on unlock (trigger-still-matches) + regular-layer deck snapshot + escape stickiness
-  - All 6 REQs (REQ-011..016) verified PASSED; 15 lock-deck tests + 5 overlay-resume tests added
-  - Pre-existing test failures (12) unchanged — verified on trunk
-- Phase 7 added: Text Line-Clamp & Ellipsis — `fit` prop accepts string or object with line-clamp, ellipsis, and reserveSpace options
+- Phase 5 added: Overlay Decks (complete)
+- Phase 6 added: Lock Deck (complete)
+- Phase 7 added: Text Line-Clamp & Ellipsis (complete)
+- Phase 8 added: Runtime Resilience (complete)

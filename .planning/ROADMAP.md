@@ -58,18 +58,21 @@
 
 **Goal:** Close remaining hardware UX gaps (splash on boot, black on shutdown, back-button-onhold in split mode), rework the emulator side panel into a navigable multi-page console (device / bridge logs / service logs / addons / config), and port the system-status addon from the legacy repo into the new addon architecture.
 
-**Status:** [ ] Not started
+**Status:** [~] In progress
 **Depends on:** Phase 8
 
 ### Workstreams
-1. Back-button onhold in split mode: render only when action exists; onhold navigates to main deck's overlay layer
-2. Hardware splash on boot: send `packages/cli/src/assets/logoFull.png` to the real deck before Playwright initializes
-3. Hardware shutdown: render black image so the deck doesn't show the last-rendered frame
-4. Emulator side panel → multi-page menu (device / bridge logs / service logs / addons / config)
-5. Device-model swap: propagate changes through to the iframe
-6. System-status addon: port `packages/cli/src/builtin-addons/system-status` from legacy repo + surface helpers/
+1. [x] Back-button onhold in split mode: render only when action exists; onhold navigates to main deck's overlay layer
+2. [ ] Hardware splash on boot: send `packages/cli/src/assets/logoFull.png` to the real deck before Playwright initializes
+3. [ ] Hardware shutdown: render black image so the deck doesn't show the last-rendered frame
+4. [x] Emulator side panel → multi-page menu (device / bridge logs / service logs / addons / config)
+5. [ ] Device-model swap: propagate changes through to the iframe
+6. [x] System-status addon: port `packages/cli/src/builtin-addons/system-status` from legacy repo + surface helpers/
 
-*Not yet planned — run `plan-phase 9`*
+### Additional Features (committed)
+- Config hot-reload (deck-only changes trigger fast reload, theme/addon changes trigger full Vite restart)
+- Button error variant (`core:temporary-error`) with error rendering in Deck
+- Config error handling improvements (`ButtonValidationResult`, schema issue logging)
 
 
 ---
@@ -343,21 +346,21 @@ P1 and P2 have **zero dependency** on each other — they can be worked in paral
 
 **Depends on:** None
 **Blocks:** None
-**Status:** [ ] Not started
+**Status:** [x] Complete
 
 ### Success Criteria
 
-- [ ] Text component accepts `fit` prop that can be either a string (`"ellipsis"`) or an object (`{ type: "line-clamp", lines: 2, reserveSpace: true }`)
-- [ ] When `fit` is set to `"ellipsis"`, it's treated as alias for `{ type: "ellipsis" }`
-- [ ] Line-clamp truncates text after specified number of lines with "..." appended
-- [ ] `reserveSpace: true` forces the component to use the line count even when content is empty
-- [ ] All existing Text component tests pass unchanged
+- [x] Text component accepts `fit` prop that can be either a string (`"ellipsis"`) or an object (`{ type: "line-clamp", lines: 2, reserveSpace: true }`)
+- [x] When `fit` is set to `"ellipsis"`, it's treated as alias for `{ type: "ellipsis" }`
+- [x] Line-clamp truncates text after specified number of lines with "..." appended
+- [x] `reserveSpace: true` forces the component to use the line count even when content is empty
+- [x] All existing Text component tests pass unchanged
 
 ### Tasks
 
-- [ ] T7.1: Define `FitConfig` type (string | object union) and update Text component props — `packages/cli/src/ui/primitives/text.tsx`
-- [ ] T7.2: Implement line-clamp logic with ellipsis truncation — `packages/cli/src/ui/primitives/text.tsx`
-- [ ] T7.3: Add tests for fit prop variations, line-clamp behavior, and reserveSpace — `packages/cli/src/ui/__tests__/text.test.tsx`
+- [x] T7.1: Define `FitConfig` type (string | object union) and update Text component props — `packages/cli/src/ui/primitives/text.tsx`
+- [x] T7.2: Implement line-clamp logic with ellipsis truncation — `packages/cli/src/ui/primitives/text.tsx`
+- [x] T7.3: Add tests for fit prop variations, line-clamp behavior, and reserveSpace — `packages/cli/src/ui/__tests__/text.test.tsx`
 
 ### Must-Haves
 
