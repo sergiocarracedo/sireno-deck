@@ -5,6 +5,7 @@ import { parseDocument, YAMLParseError } from "yaml"
 
 import { getOriginalCwd } from "@/cli/cwd"
 
+import { IncludeResolutionError, resolveIncludes } from "./include-resolver"
 import { RawConfigSchema, type RawConfig } from "./schemas"
 import { expandButtonReferences } from "./reference-expander"
 
@@ -82,6 +83,31 @@ export const loadConfigFile = (configPath: string): unknown => {
   }
   const doc = parseDocument(raw, { keepSourceTokens: true })
   const errors = doc.errors
+  // ponytail: textual include inlining — pre-process before yaml parses so
+  // included content participates in normal yaml merge semantics. Cycle
+  // detection and missing-file errors are raised here, before schema validation.
+  let inlinedRaw: string
+  try {
+    inlinedRaw = resolveIncludes(raw, absolutePath)
+  } catch (err) {
+    if (err instanceof IncludeResolutionError) {
+      throw new ConfigLoadError(err.message, err.issues)
+    }
+    throw err
+  }
+  if (inlinedRaw !== raw) {
+    const inlinedDoc = parseDocument(inlinedRaw, { keepSourceTokens: true })
+    const inlinedErrors = inlinedDoc.errors
+    if (inlinedErrors.length > 0) {
+      throw new ConfigLoadError(
+        `YAML parse errors in ${absolutePath} (after inlining includes):\n${inlinedErrors
+          .map((e) => ` - ${e.message}`)
+          .join("\n")}`,
+        convertYamlErrors(inlinedErrors),
+      )
+    }
+    return inlinedDoc.toJSON()
+  }
   if (errors.length > 0) {
     throw new ConfigLoadError(
       `YAML parse errors in ${absolutePath}:\n${errors.map((e) => ` - ${e.message}`).join("\n")}`,
