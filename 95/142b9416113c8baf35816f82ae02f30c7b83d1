@@ -1,0 +1,30 @@
+packages/cli/src/deck/__tests__/system-back-injection.test.ts
+  s_125496d408ca37::t_2809ebf8dd2f3d 59,65
+  s_125496d408ca37::t_8d8f3cac706206 32,35,87-94
+  s_125496d408ca37::t_5e892eaf26b28a 95-96
+packages/cli/src/deck/runtime.ts
+  s_125496d408ca37::t_15da81d8fb0be2 402-416
+packages/cli/src/deck/system-back-injection.ts
+  s_125496d408ca37::t_2c768291033e6f 27-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "95142b9416113c8baf35816f82ae02f30c7b83d1",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_125496d408ca37": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07b51eff1ffeNUGIuLb38hTGYQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
