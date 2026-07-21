@@ -372,3 +372,12 @@ P1 and P2 have **zero dependency** on each other — they can be worked in paral
 ### Nice-to-Haves
 
 - Configurable ellipsis character (default "...")
+
+## Phase 10: Deck Reliability, Application Overlays, Config Includes, and Hardware Lifecycle
+
+**Goal:** The main deck renders image assets immediately, Chrome/VS Code/OpenCode overlays activate reliably, config files support nested path-relative includes, and real hardware shows a startup splash then clears to black on exit.
+**Status:** [ ] Not started
+**Depends on:** Phase 9
+
+### Plans
+*Not yet planned — run `plan-phase 10`*

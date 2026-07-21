@@ -45,6 +45,7 @@
 
 ## Roadmap Evolution
 
+- Phase 10 added: deck reliability, application overlays, config includes, and hardware lifecycle
 - Phase 9 added: post-v1 polish (hardware UX gaps + emulator rework + system-status addon port)
 - Phase 4 added: Settings Deck
 - Phase 5 added: Overlay Decks (complete)
