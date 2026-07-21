@@ -1,0 +1,19 @@
+.planning/quick/004-icons-macros-uat/004-SUMMARY.md
+  s_2dcd22e5d466a7::t_94c8029d77a4f6 16-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "e2244339cc4b6415aa8edfbdfe933bb82f36e24c",
+  "prompts": {},
+  "sessions": {
+    "s_2dcd22e5d466a7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07c42cafdffegNNCzj1fMfP2BL",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
