@@ -333,7 +333,7 @@ describe("loadConfig", () => {
         "    buttons: []",
         "addons:",
         "  - core",
-        "  - source: './local-clock'",
+        "  - src: './local-clock'",
         "    enabled: false",
         "",
       ].join("\n"),
@@ -342,7 +342,7 @@ describe("loadConfig", () => {
     expect(result.config.addons).toHaveLength(2)
     expect(result.config.addons?.[0]).toBe("core")
     expect(result.config.addons?.[1]).toEqual({
-      source: "./local-clock",
+      src: "./local-clock",
       enabled: false,
     })
   })
@@ -499,5 +499,67 @@ describe("validateBootstrap", () => {
       },
     })
     expect(isBootstrapValid(result)).toBe(true)
+  })
+})
+
+describe("ConfigLoadError messages", () => {
+  it("surfaces zod union variant issues (e.g. unrecognized key inside addons[i])", () => {
+    const dir = makeTempDir()
+    const path = join(dir, DEFAULT_CONFIG_FILENAME)
+    writeFileSync(
+      path,
+      [
+        "decks:",
+        "  main:",
+        "    buttons: []",
+        "addons:",
+        "  - src: './x'",
+        "    bogus: true",
+        "",
+      ].join("\n"),
+    )
+    let captured: unknown = null
+    try {
+      loadConfig({ configPath: path })
+    } catch (err) {
+      captured = err
+    }
+    expect(captured).toBeInstanceOf(ConfigLoadError)
+    const ce = captured as ConfigLoadError
+    // ponytail: must surface the actual cause (Unrecognized key), not the
+    // generic "Invalid input" that zod's union discriminator throws.
+    expect(ce.message).toMatch(/Unrecognized key.*bogus/)
+    expect(ce.message).toMatch(/addons\.0/)
+  })
+
+  it("surfaces nested errors inside addons[i].config.decks.<deckId>", () => {
+    const dir = makeTempDir()
+    const path = join(dir, DEFAULT_CONFIG_FILENAME)
+    writeFileSync(
+      path,
+      [
+        "decks:",
+        "  main:",
+        "    buttons: []",
+        "addons:",
+        "  - src: './x'",
+        "    config:",
+        "      decks:",
+        "        chrome-overlay:shortcuts:",
+        "          autoShow: false",
+        "          whatIsThis: true",
+        "",
+      ].join("\n"),
+    )
+    let captured: unknown = null
+    try {
+      loadConfig({ configPath: path })
+    } catch (err) {
+      captured = err
+    }
+    expect(captured).toBeInstanceOf(ConfigLoadError)
+    const ce = captured as ConfigLoadError
+    expect(ce.message).toMatch(/Unrecognized key.*whatIsThis/)
+    expect(ce.message).toMatch(/addons\.0\.config\.decks/)
   })
 })

@@ -1,7 +1,13 @@
 theme: default
 
 addons:
-  - ~/works/opensource/sireno-deck-addons/vscode-overlay
+  - src: ~/works/opensource/sireno-deck-addons/vscode-overlay
+    config:
+      decks:
+        shortcuts:
+          autoShow: false
+          config:
+            extra: true
   - ~/works/opensource/sireno-deck-addons/opencode-overlay
   - ~/works/opensource/sireno-deck-addons/chrome-overlay
 
@@ -88,104 +94,13 @@ decks:
         type: 'date-time:analog-clock'
         # actions:
         #   tap: 'google-chrome https://calendar.google.com'
-
-  vcdode:
-    name: Code
-    icon: ./assets/chrome.svg
+  warp:
     trigger:
-      process_name: '*code*'
-    autoShow: false
+      process_name: warp
+    name: Warp
+    icon: icon://music
     buttons:
-      - position: 0
-        type: 'core:action'
-        actions:
-          tap: 'xdotool key ctrl+t'
-        config:
-          label: New Tab
-  chrome:
-    name: Chrome
-    icon: ./assets/chrome.svg
-    trigger:
-      process_name: '*chrome*'
-    autoShow: false
-    buttons:
-      - position: 0
-        type: 'core:action'
-        actions:
-          tap: 'type://ctrl+t'
-        config:
-          label: New Tab
-      - position: 1
-        type: 'core:action'
-        actions:
-          tap: 'type://ctrl+w'
-        config:
-          label: Close Tab
-      - position: 2
-        type: 'core:action'
-        actions:
-          tap: 'type://ctrl+shift+t'
-        config:
-          label: Reopen Tab
-      - position: 3
-        type: 'core:action'
-        actions:
-          tap: 'type://ctrl+shift+n'
-        config:
-          label: New Window
-      - position: 4
-        type: 'core:action'
-        actions:
-          tap: 'type://ctrl+r'
-        config:
-          label: Reload
-      - position: 5
-        type: 'core:action'
-        actions:
-          tap: 'type://ctrl+shift+r'
-        config:
-          label: Hard Reload
-      - position: 6
-        type: 'core:action'
-        actions:
-          tap: 'type://F12'
-        config:
-          label: Dev Tools
-
-  test-deck:
-    name: Test Deck
-    icon: '🧪'
-    buttons:
-      - position: 0
-        type: 'core:change-deck'
-        config:
-          label: 'TEst'
-          deck: 'main'
-
-      - position: 1
-        type: 'core:action'
-        actions:
-          tap: 'type://ctrl+shift+t'
-        config:
-          label: Macro
-
-      - position: 2
-        type: 'core:action'
-        actions:
-          tap: 'type://hello from sireno'
-        config:
-          label: Type
-
-      - position: 3
-        type: 'core:toggle'
-        config:
-          key: 'test-toggle'
-          default: false
-
-      - position: 4
-        type: 'brightness:brightness'
-        config:
-          action: up
+      - type: 'date-time:analog-clock'
 
 logging:
   level: info

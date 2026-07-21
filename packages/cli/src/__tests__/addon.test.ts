@@ -70,12 +70,12 @@ describe("normalizeAddonEntry", () => {
   })
 
   it("normalizes an object entry with default enabled", () => {
-    expect(normalizeAddonEntry({ source: "./x" })).toEqual({
+    expect(normalizeAddonEntry({ src: "./x" })).toEqual({
       enabled: true,
       source: "./x",
       isLocal: true,
     })
-    expect(normalizeAddonEntry({ source: "core", enabled: false })).toEqual({
+    expect(normalizeAddonEntry({ src: "core", enabled: false })).toEqual({
       enabled: false,
       source: "core",
       isLocal: false,
@@ -149,7 +149,7 @@ describe("loadAddons", () => {
 
   it("records info issue when addon is disabled", async () => {
     const result = await loadAddons({
-      entries: [{ source: "./anywhere", enabled: false }],
+      entries: [{ src: "./anywhere", enabled: false }],
       configDir: "/tmp",
       homeDir: "/tmp",
       currentApiVersion: SIRENO_ADDON_API_VERSION,

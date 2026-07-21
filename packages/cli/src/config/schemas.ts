@@ -97,7 +97,7 @@ export const AddonEntrySchema = z.union([
   z.string().min(1),
   z
     .object({
-      source: z.string().min(1),
+      src: z.string().min(1),
       enabled: z.boolean().optional(),
       config: AddonConfigSchema.optional(),
     })

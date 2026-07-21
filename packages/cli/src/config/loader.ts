@@ -117,6 +117,43 @@ export const loadConfigFile = (configPath: string): unknown => {
   return doc.toJSON()
 }
 
+// ponytail: zod 4's z.union() surfaces a top-level "Invalid input"
+// with the per-variant reasons buried under `errors: Array<Array<issue>>`.
+// We flatten those variant arrays into the top-level issue list so users
+// see the actual cause (e.g. "Unrecognized key: \"src\"") instead of a
+// useless top-level generic.
+type RawZodIssue = {
+  message: string
+  path?: Array<string | number>
+  errors?: ReadonlyArray<ReadonlyArray<RawZodIssue>>
+}
+
+const flattenZodIssues = (
+  rawIssues: ReadonlyArray<RawZodIssue>,
+  basePath: ReadonlyArray<string | number> = [],
+): ConfigError[] => {
+  const out: ConfigError[] = []
+  for (const issue of rawIssues) {
+    const path = [...basePath, ...(issue.path ?? [])]
+    if (issue.errors !== undefined && issue.errors.length > 0) {
+      // ponytail: union variant issues — flatten ALL variants' issues so
+      // the user sees every possible mismatch. Filter out empty arrays
+      // (variants that matched nothing).
+      for (const variant of issue.errors) {
+        if (variant.length > 0) {
+          out.push(...flattenZodIssues(variant, path))
+        }
+      }
+      continue
+    }
+    out.push({
+      message: issue.message,
+      ...(path.length > 0 ? { path: path.join(".") } : {}),
+    })
+  }
+  return out
+}
+
 const reportZodIssues = (issues: ConfigError[]): string =>
   issues
     .map((issue) => {
@@ -135,10 +172,12 @@ export const loadConfig = ({
   const expanded = expandButtonReferences(raw, configDir)
   const result = RawConfigSchema.safeParse(expanded)
   if (!result.success) {
-    const issues: ConfigError[] = result.error.issues.map((issue) => ({
-      message: issue.message,
-      path: issue.path.join("."),
-    }))
+    // ponytail: recurse into unionErrors so the user sees the actual
+    // discriminator failure (e.g. "Unrecognized key 'src'") instead of
+    // a useless top-level "Invalid input".
+    const issues = flattenZodIssues(
+      result.error.issues as ReadonlyArray<RawZodIssue>,
+    )
     throw new ConfigLoadError(
       `Invalid config at ${configPath}:\n${reportZodIssues(issues)}`,
       issues,

@@ -38,7 +38,7 @@ export interface NormalizeAddonEntry {
 }
 
 export const normalizeAddonEntry = (
-  entry: string | { source: string; enabled?: boolean },
+  entry: string | { src: string; enabled?: boolean },
 ): NormalizeAddonEntry => {
   if (typeof entry === "string") {
     return {
@@ -49,8 +49,8 @@ export const normalizeAddonEntry = (
   }
   return {
     enabled: entry.enabled ?? true,
-    source: entry.source,
-    isLocal: isLocalAddonSpec(entry.source),
+    source: entry.src,
+    isLocal: isLocalAddonSpec(entry.src),
   }
 }
 
