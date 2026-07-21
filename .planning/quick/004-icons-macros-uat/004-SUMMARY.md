@@ -13,6 +13,12 @@ Three small fixes addressed all four reported UAT symptoms:
 
 3. **External addon dirs registered in `addonDirs`** — `packages/cli/src/cli/commands/run.ts` + `packages/cli/src/deck/deck-config.ts`. `buildResolverOptions` previously built `addonDirs` only from builtin addons. External addons from `config.yml` (vscode-overlay, opencode-overlay, chrome-overlay) are now registered too, so `addon://<name>/assets/icon.png` resolves to the right directory. Tilde expansion (`~/...`) and config-relative paths both work.
 
+4. **Follow-up: deck icons use `icon://` (Lucide) instead of bundled PNGs** — After the addonDirs fix shipped, the user noted that `icon://` (Lucide) is simpler and avoids bundling per-addon icon PNGs. Updated the three overlay addons:
+   - chrome-overlay: `icon://globe` (Lucide `Globe` — no `Chrome` icon in Lucide)
+   - vscode-overlay: `icon://code` (Lucide `Code`)
+   - opencode-overlay: `icon://terminal` (Lucide `Terminal`)
+   The per-addon `assets/icon.png` files are left in place but no longer referenced. The addonDirs fix remains in place as a defensive layer for any addons that still use `addon://...`.
+
 ## Files changed
 
 - `packages/cli/src/builtin-addons/core/index.ts` — added `gestureHandlers: ['tap']` to `core:action`
