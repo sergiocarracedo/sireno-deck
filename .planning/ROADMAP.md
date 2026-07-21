@@ -423,13 +423,13 @@ P1 and P2 have **zero dependency** on each other — they can be worked in paral
 
 ### Success Criteria
 
-- [ ] All 3 Phase-10 addons load via the new array format and their decks render on trigger match
-- [ ] User can put `{autoShow: false}` in `addons[i].config.decks.<deckId>` and it overrides the addon's default
-- [ ] User can put extra keys in `addons[i].config.decks.<deckId>.config` and they reach `createDeck(s)({config})`
-- [ ] `addons[i].config` (top-level, not under `decks`) merges into addonConfig and reaches `createDeck(s)`
-- [ ] Old `{type, createDecks}` manifest shape is rejected with a clear error
-- [ ] Top-level `overlay:` key is gone (no migration shim — user config moves to `addons[i].config.decks`)
-- [ ] All existing tests pass; new tests cover: array shape parsing, per-deck override apply, addonName-prefix validation, config-merge order
+- [x] All 3 Phase-10 addons load via the new array format and their decks render on trigger match
+- [x] User can put `{autoShow: false}` in `addons[i].config.decks.<deckId>` and it overrides the addon's default
+- [x] User can put extra keys in `addons[i].config.decks.<deckId>.config` and they reach `createDeck(s)({config})`
+- [x] `addons[i].config` (top-level, not under `decks`) merges into addonConfig and reaches `createDeck(s)`
+- [x] Old `{type, createDecks}` manifest shape is rejected with a clear error
+- [x] Top-level `overlay:` key is gone (no migration shim — user config moves to `addons[i].config.decks`)
+- [x] All existing tests pass; new tests cover: array shape parsing, per-deck override apply, addonName-prefix validation, config-merge order
 
 ### Out of Scope
 
