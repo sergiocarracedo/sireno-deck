@@ -1,0 +1,22 @@
+packages/cli/src/deck/__tests__/chrome-icon-resolution.test.ts
+  s_125496d408ca37::t_18cf6b6e0dacc4 1,4-45
+  s_125496d408ca37::t_a4200c15a00158 2-3
+packages/cli/src/deck/runtime.ts
+  s_125496d408ca37::t_d33a4b2f58f04a 214
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "55e8d1a2acc62d31a4017290aee035895010a745",
+  "prompts": {},
+  "sessions": {
+    "s_125496d408ca37": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07b51eff1ffeNUGIuLb38hTGYQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
