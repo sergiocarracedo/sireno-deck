@@ -1,0 +1,20 @@
+packages/cli/src/outputClient/real.ts
+  s_2dcd22e5d466a7::t_a4b80dd66661dc 1-2
+  s_2dcd22e5d466a7::t_f9dc8b73ac629c 106-124
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "54dc758f25544f1592f11059549285fe60ce530a",
+  "prompts": {},
+  "sessions": {
+    "s_2dcd22e5d466a7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07c42cafdffegNNCzj1fMfP2BL",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
