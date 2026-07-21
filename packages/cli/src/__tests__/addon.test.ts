@@ -206,12 +206,11 @@ describe("AddonRegistry", () => {
     const registry = new AddonRegistry()
     const frontend = () => null
     const backend = { configSchema: {} }
-    const deckFactory = () => ({})
     const manifest: AddonManifestV1 = {
       apiVersion: 1,
       name: "test",
       buttonTypes: { "test:a": { frontend, backend } },
-      decks: { "test:test-deck": deckFactory },
+      decks: [{ id: "test:test-deck", name: "Test Deck" }],
     }
     registry.load(manifest)
     expect(registry.listAddons()).toHaveLength(1)

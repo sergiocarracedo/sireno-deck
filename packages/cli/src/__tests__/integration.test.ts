@@ -120,8 +120,8 @@ decks:
   })
 
   it("internal-settings deck factory returns a settings deck", () => {
-    const factory = internalSettingsAddon.decks!["internal-settings:settings"]!
-    const deck = factory(0)
+    const entry = internalSettingsAddon.decks![0]!
+    const deck = entry.createDeck!({ config: undefined, deck: { id: "internal-settings:settings" }, keyCount: 15 })
     expect(deck).toBeDefined()
     expect((deck.buttons ?? []).length).toBeGreaterThan(0)
   })

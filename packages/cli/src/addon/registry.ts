@@ -26,6 +26,23 @@ export class AddonRegistry {
       throw new Error(`Duplicate addon name: ${name}`)
     }
 
+    // ponytail: hard cutover from legacy Record<key, {type, createDecks}>
+    // shape. Addons shipping the old JS shape (e.g. the 3 Phase-10 addons
+    // before phase-11 migration) hit this branch with a clear migration
+    // hint. TypeScript-shape manifests fail at type-check, never runtime.
+    if (
+      manifest.decks !== undefined &&
+      !Array.isArray(manifest.decks) &&
+      typeof manifest.decks === "object" &&
+      manifest.decks !== null
+    ) {
+      throw new Error(
+        `Addon '${name}' uses legacy decks format (Record keyed by '<addon>:<deck>'). ` +
+          `Migrate to an array: [{ id: '<addon>:<deck>', ...static fields }, ...]. ` +
+          `See phase-11 docs.`,
+      )
+    }
+
     for (const buttonType of Object.keys(manifest.buttonTypes)) {
       if (!buttonType.startsWith(`${name}:`)) {
         throw new Error(
@@ -58,14 +75,6 @@ export class AddonRegistry {
       }
     }
 
-    for (const deckName of Object.keys(manifest.decks ?? {})) {
-      if (!deckName.startsWith(`${name}:`)) {
-        throw new Error(
-          `Deck '${deckName}' in addon '${name}' must be prefixed with '${name}:'`,
-        )
-      }
-    }
-
     this.addonsByName.set(name, manifest)
     for (const [buttonType, def] of Object.entries(manifest.buttonTypes)) {
       if (this.buttonsByType.has(buttonType)) {
@@ -78,32 +87,71 @@ export class AddonRegistry {
         this.buttonsByType.set(name, { addonName: name, def })
       }
     }
-    for (const [deckName, entry] of Object.entries(manifest.decks ?? {})) {
-      if (this.decksByType.has(deckName)) {
-        throw new Error(`Duplicate deck '${deckName}' in addon ${name}`)
+
+    for (const entry of manifest.decks ?? []) {
+      // ponytail: three shapes — static, single-dynamic, multi-dynamic. The
+      // id (or each key returned from createDecks) becomes the deck-type key.
+      // Validation: ids must start with `<addon>:` prefix.
+      const prefix = `${name}:`
+      if (typeof entry.createDeck === "function" && typeof entry.createDecks === "function") {
+        throw new Error(
+          `Addon '${name}' deck entry has both createDeck and createDecks; choose one.`,
+        )
       }
-      const def: AddonDeckDefinition =
-        typeof entry === "function"
-          ? {
-              type: deckName,
-              createDecks: (): Record<string, AddonGeneratedDeck> => {
-                const deck = (entry as AddonDeckFactory)(0)
-                return { [deckName]: deck }
-              },
-            }
-          : "deck" in (entry as Record<string, unknown>) &&
-              typeof (entry as { deck: unknown }).deck === "function"
-            ? {
-                type: deckName,
-                createDecks: (): Record<string, AddonGeneratedDeck> => {
-                  const factory = (entry as { deck: AddonDeckFactory }).deck
-                  const deck = factory(0)
-                  return { [deckName]: deck }
-                },
-                internal: (entry as { internal?: boolean }).internal,
-              }
-            : (entry as AddonDeckDefinition)
-      this.decksByType.set(deckName, { addonName: name, def })
+      if (typeof entry.createDecks === "function") {
+        const def: AddonDeckDefinition = {
+          type: `${name}:__multi__`,
+          createDecks: entry.createDecks,
+        }
+        const syntheticKey = `${name}:__multi__`
+        if (this.decksByType.has(syntheticKey)) {
+          throw new Error(
+            `Duplicate deck '${syntheticKey}' in addon ${name}`,
+          )
+        }
+        this.decksByType.set(syntheticKey, { addonName: name, def })
+        continue
+      }
+      if (typeof entry.createDeck === "function") {
+        if (entry.id === undefined || entry.id.length === 0) {
+          throw new Error(
+            `Addon '${name}' deck entry with createDeck must have an id.`,
+          )
+        }
+        if (!entry.id.startsWith(prefix)) {
+          throw new Error(
+            `Deck '${entry.id}' in addon '${name}' must be prefixed with '${prefix}'.`,
+          )
+        }
+        const def: AddonDeckDefinition = {
+          type: entry.id,
+          createDecks: (ctx) => ({ [entry.id]: entry.createDeck(ctx) }),
+        }
+        if (this.decksByType.has(entry.id)) {
+          throw new Error(`Duplicate deck '${entry.id}' in addon ${name}`)
+        }
+        this.decksByType.set(entry.id, { addonName: name, def })
+        continue
+      }
+      // ponytail: static — the entry IS the deck.
+      if (entry.id === undefined || entry.id.length === 0) {
+        throw new Error(
+          `Addon '${name}' static deck entry must have an id.`,
+        )
+      }
+      if (!entry.id.startsWith(prefix)) {
+        throw new Error(
+          `Deck '${entry.id}' in addon '${name}' must be prefixed with '${prefix}'.`,
+        )
+      }
+      const def: AddonDeckDefinition = {
+        type: entry.id,
+        createDecks: () => ({ [entry.id]: entry }),
+      }
+      if (this.decksByType.has(entry.id)) {
+        throw new Error(`Duplicate deck '${entry.id}' in addon ${name}`)
+      }
+      this.decksByType.set(entry.id, { addonName: name, def })
     }
   }
 

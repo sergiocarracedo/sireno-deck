@@ -580,7 +580,6 @@ const buildRuntime = (
       logger,
       keyCount,
       config.lock?.buttons,
-      addonOverrideMap,
     ),
     keyCount,
   )

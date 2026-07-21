@@ -159,6 +159,43 @@ export interface AddonGeneratedDeck {
 }
 
 /**
+ * Phase 11: addon manifest deck entries. Three shapes, each an item in
+ * the manifest's `decks: ReadonlyArray<AddonDeckEntry>`:
+ *
+ * - Static: the entry itself IS the generated deck (id + AddonGeneratedDeck fields).
+ * - Single-dynamic: `createDeck(ctx)` returns ONE AddonGeneratedDeck under `id`.
+ * - Multi-dynamic: `createDecks(ctx)` returns a record keyed by `<addon>:<deck>`.
+ *
+ * The `type` field is gone — `id` (or the keys returned from createDecks) is the
+ * canonical deck-type key. Hard cutover from the legacy Record<key, AddonDeckDefinition>
+ * shape; AddonRegistry.load() rejects that at runtime.
+ */
+export type AddonDeckEntryCtx = {
+  config: unknown
+  deck: { id: string }
+  keyCount: number
+}
+
+export type AddonDeckEntry =
+  | (AddonGeneratedDeck & {
+      id: string
+      createDeck?: never
+      createDecks?: never
+    })
+  | {
+      id: string
+      createDeck: (ctx: AddonDeckEntryCtx) => AddonGeneratedDeck
+      createDecks?: never
+    }
+  | {
+      id?: undefined
+      createDeck?: never
+      createDecks: (
+        ctx: AddonDeckEntryCtx,
+      ) => Record<string, AddonGeneratedDeck>
+    }
+
+/**
  * Runtime addon manifest. Both builtin and third-party addons export this from
  * their entry file (`index.ts` in dev, `index.js` in prod).
  *
@@ -176,9 +213,7 @@ export interface AddonManifestV1 {
   readonly kind?: AddonKind
   readonly buttonTypes: Readonly<Record<string, AddonButtonTypeDefAny>>
   readonly defaultButton?: string
-  readonly decks?: Readonly<
-    Record<string, AddonDeckFactory | AddonDeckDefinition>
-  >
+  readonly decks?: ReadonlyArray<AddonDeckEntry>
   readonly frontend?: AddonFrontend
   readonly poller?: {
     readonly channels: ReadonlyArray<{

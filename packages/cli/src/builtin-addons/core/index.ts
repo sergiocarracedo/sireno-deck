@@ -40,9 +40,9 @@ export const manifest: AddonManifestV1 = {
       service: { ...mediaSampleBackend, gestureHandlers: ['tap'] as const },
     },
   },
-  decks: {
-    'core:lock': {
-      type: 'core:lock',
+  decks: [
+    {
+      id: 'core:lock',
       createDecks: ({ config, keyCount }) => {
         const userButtons = (
           config as { lockButtons?: ReadonlyArray<Record<string, unknown>> }
@@ -91,7 +91,7 @@ export const manifest: AddonManifestV1 = {
         }
       },
     },
-  },
+  ],
 }
 
 export const coreAddon = manifest

@@ -39,9 +39,13 @@ export const manifest: AddonManifestV1 = {
       },
     },
   },
-  decks: {
-    'internal-settings:settings': { deck: settingsDeck, internal: true },
-  },
+  decks: [
+    {
+      id: 'internal-settings:settings',
+      createDeck: () => settingsDeck(0),
+      internal: true,
+    },
+  ],
 }
 
 export const internalSettingsAddon = manifest

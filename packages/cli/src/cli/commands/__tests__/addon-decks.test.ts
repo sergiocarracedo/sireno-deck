@@ -19,10 +19,19 @@ const fakeManifestWithDecks = (
   >,
   defaultButton?: string,
 ) => {
-  const decks: Record<string, unknown> = {}
-  for (const [deckName, createDecks] of Object.entries(deckEntries)) {
-    decks[deckName] = { createDecks }
+  // ponytail: each helper entry maps to a multi-dynamic AddonDeckEntry
+  // (createDecks). The test factories return a record keyed by the
+  // generated deck id — multi-dynamic preserves that key as the runtime
+  // deck id.
+  const createDecks = (ctx: { config: unknown; deck: { id: string } }) => {
+    const out: Record<string, unknown> = {}
+    for (const factory of Object.values(deckEntries)) {
+      const generated = factory(ctx) as Record<string, unknown>
+      Object.assign(out, generated)
+    }
+    return out
   }
+  const decks = [{ createDecks }]
   const buttonTypes: Record<string, unknown> = {}
   if (defaultButton !== undefined) {
     buttonTypes[defaultButton] = { type: "launcher" }
@@ -527,10 +536,7 @@ describe("materializeAddonDecks", () => {
           service: {},
         },
       },
-      decks: {
-        "test-addon:deck-a": {
-          type: "test-addon:deck-a",
-          createDecks: () => ({
+      decks: [{ id: "test-addon:deck-a", createDecks: () => ({
             "gen-deck": {
               name: "Gen",
               buttons: [
@@ -538,9 +544,7 @@ describe("materializeAddonDecks", () => {
                 { type: "test-addon:plain-btn", position: 1 },
               ],
             },
-          }),
-        },
-      },
+          }) }],
     })
     const reg = mockRegistry([addon])
     const userDecks: RuntimeDeck[] = []
@@ -562,10 +566,7 @@ describe("materializeAddonDecks", () => {
           service: { full: true },
         },
       },
-      decks: {
-        "test-addon:deck-a": {
-          type: "test-addon:deck-a",
-          createDecks: () => ({
+      decks: [{ id: "test-addon:deck-a", createDecks: () => ({
             "gen-deck": {
               name: "Gen",
               paginated: true,
@@ -574,9 +575,7 @@ describe("materializeAddonDecks", () => {
                 position: i,
               })),
             },
-          }),
-        },
-      },
+          }) }],
     })
     const reg = mockRegistry([addon])
     const userDecks: RuntimeDeck[] = []
@@ -602,10 +601,7 @@ describe("materializeAddonDecks", () => {
           service: {},
         },
       },
-      decks: {
-        "test-addon:deck-a": {
-          type: "test-addon:deck-a",
-          createDecks: () => ({
+      decks: [{ id: "test-addon:deck-a", createDecks: () => ({
             "gen-deck": {
               name: "Gen",
               buttons: [
@@ -613,9 +609,7 @@ describe("materializeAddonDecks", () => {
                 { type: "test-addon:plain-btn", position: 1 },
               ],
             },
-          }),
-        },
-      },
+          }) }],
     })
     const reg = mockRegistry([addon])
     const userDecks: RuntimeDeck[] = []
@@ -637,17 +631,12 @@ describe("materializeAddonDecks", () => {
           service: {},
         },
       },
-      decks: {
-        "test-addon:deck-a": {
-          type: "test-addon:deck-a",
-          createDecks: () => ({
+      decks: [{ id: "test-addon:deck-a", createDecks: () => ({
             "gen-deck": {
               name: "Gen",
               buttons: [{ type: "test-addon:plain-btn", position: 0, full: false }],
             },
-          }),
-        },
-      },
+          }) }],
     })
     const reg = mockRegistry([addon])
     const userDecks: RuntimeDeck[] = []
