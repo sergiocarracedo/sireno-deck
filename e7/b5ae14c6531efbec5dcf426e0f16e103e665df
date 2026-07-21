@@ -1,0 +1,35 @@
+.planning/ROADMAP.md
+  s_125496d408ca37::t_fbe39b6a2df4f7 392-393
+.planning/phases/11-addon-manifest-v2-and-per-addon-deck-overrides/11-01-SUMMARY.md
+  s_125496d408ca37::t_661912da26546e 1-47
+.planning/phases/11-addon-manifest-v2-and-per-addon-deck-overrides/11-02-SUMMARY.md
+  s_125496d408ca37::t_7888b1797ee226 1-38
+.planning/STATE.md
+  s_125496d408ca37::t_a9deb6db2f92bb 5
+  s_125496d408ca37::t_0b10daf85cde04 70,74
+.planning/phases/11-addon-manifest-v2-and-per-addon-deck-overrides/11-VERIFICATION.md
+  s_125496d408ca37::t_f55ee0d6df9c6e 1-46
+.planning/phases/11-addon-manifest-v2-and-per-addon-deck-overrides/11-03-SUMMARY.md
+  s_125496d408ca37::t_8fabc67d05650a 1-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "e7b5ae14c6531efbec5dcf426e0f16e103e665df",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_125496d408ca37": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07b51eff1ffeNUGIuLb38hTGYQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
