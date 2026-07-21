@@ -1,10 +1,8 @@
 import { describe, expect, it } from "vitest"
 
 import {
-  AddonOverlayOverrideSchema,
   ButtonActionsSchema,
   ButtonDefSchema,
-  OverlayConfigSchema,
   RawConfigSchema,
 } from "../schemas"
 
@@ -82,60 +80,5 @@ describe("ButtonDefSchema — actions field", () => {
       notAField: "error",
     })
     expect(result.success).toBe(false)
-  })
-})
-
-describe("OverlayConfigSchema", () => {
-  it("accepts a user-defined overlay deck (full def + trigger)", () => {
-    const result = OverlayConfigSchema.safeParse({
-      myapp: {
-        trigger: { process_name: "myapp" },
-        autoShow: true,
-        buttons: [{ type: "core:action" }],
-      },
-    })
-    expect(result.success).toBe(true)
-  })
-
-  it("accepts an addon overlay override", () => {
-    const result = OverlayConfigSchema.safeParse({
-      "chrome-overlay": {
-        shortcuts: {
-          addon: "chrome-overlay",
-          autoShow: false,
-          config: { hideTabs: true },
-        },
-      },
-    })
-    expect(result.success).toBe(true)
-  })
-
-  it("rejects unknown keys on addon override (strict)", () => {
-    const result = AddonOverlayOverrideSchema.safeParse({
-      addon: "x",
-      unknown: true,
-    })
-    expect(result.success).toBe(false)
-  })
-
-  it("rejects user overlay deck without trigger", () => {
-    const result = OverlayConfigSchema.safeParse({
-      bad: { autoShow: true, buttons: [] },
-    })
-    expect(result.success).toBe(false)
-  })
-
-  it("RawConfigSchema accepts overlay at top level", () => {
-    const result = RawConfigSchema.safeParse({
-      decks: { main: { buttons: [] } },
-      overlay: {
-        myapp: {
-          trigger: { process_name: "myapp" },
-          autoShow: true,
-          buttons: [],
-        },
-      },
-    })
-    expect(result.success).toBe(true)
   })
 })

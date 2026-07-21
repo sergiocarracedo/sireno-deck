@@ -131,18 +131,7 @@ export const ThemeEntrySchema = z.union([
     .strict(),
 ])
 
-export const AddonOverlayOverrideSchema = z
-  .object({
-    addon: z.string().min(1),
-    autoShow: z.boolean().optional(),
-    name: z.string().min(1).optional(),
-    icon: IconSourceSchema.optional(),
-    trigger: TriggerSchema.optional(),
-    config: z.record(z.string(), z.unknown()).optional(),
-  })
-  .strict()
-// ponytail: AddonOverlayOverrideSchema is dead code (kept temporarily for
-// the quick-006 describe-block in schemas.test.ts; deleted in 11-03).
+
 
 export const RawConfigSchema = z
   .object({

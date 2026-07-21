@@ -417,103 +417,6 @@ const validateAndLoadConfig = (options: RunOptions): LoadConfigResult => {
   return { configPath, config, registry, theme, themeDir }
 }
 
-const materializeDeckFromConfig = (
-  id: string,
-  d: import("@/config/schemas").RawDeckDef,
-  isOverlayDeck: boolean,
-  keyCount: number,
-  logger: pino.Logger,
-): RuntimeDeck[] => {
-  const objectButtons = d.buttons.filter(
-    (b): b is Exclude<(typeof d.buttons)[number], string> =>
-      typeof b !== "string",
-  )
-  const runtimeButtons: RuntimeDeck["buttons"] = positionButtons(
-    objectButtons,
-    keyCount,
-    logger,
-  ).map((b, idx) => ({
-    id: b.position?.toString() ?? `b${idx}`,
-    type: b.type,
-    ...(typeof b.config === "object" && b.config !== null
-      ? { config: b.config }
-      : {}),
-    ...(b.actions !== undefined ? { actions: b.actions } : {}),
-  }))
-  const processNames =
-    d.trigger?.process_name !== undefined
-      ? Array.isArray(d.trigger.process_name)
-        ? d.trigger.process_name
-        : [d.trigger.process_name]
-      : undefined
-  const windowNames =
-    d.trigger?.window_name !== undefined
-      ? Array.isArray(d.trigger.window_name)
-        ? d.trigger.window_name
-        : [d.trigger.window_name]
-      : undefined
-  const sharedDeckFields = {
-    isMain: !isOverlayDeck && id === "main",
-    // ponytail: a trigger makes this deck an overlay-mode deck (the
-    // runtime activates it via active-app matching, not via nav).
-    // Mirror that on the materialized deck so `computeSystemButtonForSlotN1`
-    // injects `core:overlay-toggle` instead of `core:back` at n-1.
-    isOverlay:
-      isOverlayDeck ||
-      (processNames !== undefined && processNames.length > 0) ||
-      (windowNames !== undefined && windowNames.length > 0),
-    ...(processNames !== undefined ? { processNames } : {}),
-    ...(windowNames !== undefined ? { windowNames } : {}),
-    ...(d.autoShow === true ? { autoShow: true } : {}),
-    ...(d.icon !== undefined ? { icon: d.icon } : {}),
-  }
-  if (d.paginated === true && runtimeButtons.length > 0) {
-    const pages = paginateDeck({
-      baseDeckId: id,
-      buttons: runtimeButtons,
-      keyCount,
-    })
-    return pages.map((p) => {
-      const mappedButtons: RuntimeDeck["buttons"] = (
-        p.deck.buttons ?? []
-      ).map((b, i) => {
-        const { position, type, config, ...rest } = b as {
-          position?: number
-          type: string
-          config?: unknown
-        }
-        const mergedConfig = {
-          ...(typeof config === "object" && config !== null
-            ? (config as Record<string, unknown>)
-            : {}),
-          ...rest,
-        }
-        return {
-          id: position !== undefined ? String(position) : String(i),
-          type,
-          ...(position !== undefined ? { position } : {}),
-          ...(Object.keys(mergedConfig).length > 0
-            ? { config: mergedConfig }
-            : {}),
-        }
-      })
-      return {
-        id: p.deckId,
-        name: d.name ?? id,
-        buttons: mappedButtons,
-        ...sharedDeckFields,
-      }
-    })
-  }
-  return [
-    {
-      id,
-      name: d.name ?? id,
-      buttons: runtimeButtons,
-      ...sharedDeckFields,
-    },
-  ]
-}
 
 const buildRuntime = (
   options: RunOptions,
@@ -524,7 +427,92 @@ const buildRuntime = (
   const { config, registry, theme, themeDir } = loaded
 
   const decks: RuntimeDeck[] = Object.entries(config.decks).flatMap(
-    ([id, d]) => materializeDeckFromConfig(id, d, false, keyCount, logger),
+    ([id, d]) => {
+      const objectButtons = d.buttons.filter(
+        (b): b is Exclude<(typeof d.buttons)[number], string> =>
+          typeof b !== "string",
+      )
+      const runtimeButtons: RuntimeDeck["buttons"] = positionButtons(
+        objectButtons,
+        keyCount,
+        logger,
+      ).map((b, idx) => ({
+        id: b.position?.toString() ?? `b${idx}`,
+        type: b.type,
+        ...(typeof b.config === "object" && b.config !== null
+          ? { config: b.config }
+          : {}),
+        ...(b.actions !== undefined ? { actions: b.actions } : {}),
+      }))
+      const processNames =
+        d.trigger?.process_name !== undefined
+          ? Array.isArray(d.trigger.process_name)
+            ? d.trigger.process_name
+            : [d.trigger.process_name]
+          : undefined
+      const windowNames =
+        d.trigger?.window_name !== undefined
+          ? Array.isArray(d.trigger.window_name)
+            ? d.trigger.window_name
+            : [d.trigger.window_name]
+          : undefined
+      const sharedDeckFields = {
+        isMain: id === "main",
+        isOverlay:
+          (processNames !== undefined && processNames.length > 0) ||
+          (windowNames !== undefined && windowNames.length > 0),
+        ...(processNames !== undefined ? { processNames } : {}),
+        ...(windowNames !== undefined ? { windowNames } : {}),
+        ...(d.autoShow === true ? { autoShow: true } : {}),
+        ...(d.icon !== undefined ? { icon: d.icon } : {}),
+      }
+      if (d.paginated === true && runtimeButtons.length > 0) {
+        const pages = paginateDeck({
+          baseDeckId: id,
+          buttons: runtimeButtons,
+          keyCount,
+        })
+        return pages.map((p) => {
+          const mappedButtons: RuntimeDeck["buttons"] = (
+            p.deck.buttons ?? []
+          ).map((b, i) => {
+            const { position, type, config, ...rest } = b as {
+              position?: number
+              type: string
+              config?: unknown
+            }
+            const mergedConfig = {
+              ...(typeof config === "object" && config !== null
+                ? (config as Record<string, unknown>)
+                : {}),
+              ...rest,
+            }
+            return {
+              id: position !== undefined ? String(position) : String(i),
+              type,
+              ...(position !== undefined ? { position } : {}),
+              ...(Object.keys(mergedConfig).length > 0
+                ? { config: mergedConfig }
+                : {}),
+            }
+          })
+          return {
+            id: p.deckId,
+            name: d.name ?? id,
+            buttons: mappedButtons,
+            ...sharedDeckFields,
+          }
+        })
+      }
+      return [
+        {
+          id,
+          name: d.name ?? id,
+          buttons: runtimeButtons,
+          ...sharedDeckFields,
+        },
+      ]
+    },
   )
 
   // ponytail: phase 11 — collect per-addon overrides from
@@ -554,51 +542,9 @@ const buildRuntime = (
     })
   }
 
-  const userOverlayDecks: RuntimeDeck[] = []
-  const addonOverrideMap = new Map<
-    string,
-    {
-      addonName: string
-      autoShow?: boolean
-      name?: string
-      icon?: string
-      trigger?: unknown
-      config?: Record<string, unknown>
-    }
-  >()
-  // ponytail: priority order for overlay matching — explicit `overlay:`
-  // entries come first, then nav-mode decks (which may carry legacy
-  // triggers). This is what fixes the autoShow bug when an addon's
-  // autoShow=true deck shadows a user's autoShow=false deck with the same
-  // trigger.
-  for (const [key, value] of Object.entries(config.overlay ?? {})) {
-    if ("trigger" in value) {
-      userOverlayDecks.push(
-        ...materializeDeckFromConfig(
-          key,
-          value as typeof config.decks[string],
-          true,
-          keyCount,
-          logger,
-        ),
-      )
-    } else {
-      for (const [deckId, ov] of Object.entries(value)) {
-        addonOverrideMap.set(deckId, {
-          addonName: ov.addon,
-          ...(ov.autoShow !== undefined ? { autoShow: ov.autoShow } : {}),
-          ...(ov.name !== undefined ? { name: ov.name } : {}),
-          ...(ov.icon !== undefined ? { icon: ov.icon } : {}),
-          ...(ov.trigger !== undefined ? { trigger: ov.trigger } : {}),
-          ...(ov.config !== undefined ? { config: ov.config } : {}),
-        })
-      }
-    }
-  }
-
   const effectiveDecks: RuntimeDeck[] =
-    userOverlayDecks.length > 0 || decks.length > 0
-      ? [...userOverlayDecks, ...decks]
+    decks.length > 0
+      ? decks
       : [{ id: "main", name: "Main", isMain: true, buttons: [] }]
   const allDecsWithSystemButtons = injectSystemButtons(
     materializeAddonDecks(
