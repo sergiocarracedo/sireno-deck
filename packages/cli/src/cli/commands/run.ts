@@ -821,8 +821,11 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   // ponytail: register external addon dirs (from config's `addons:` list) so
   // `addon://<name>/assets/icon.png` resolves for overlay deck icons. The
   // addonDirs built from addonBundle.addonByType only contains builtins.
+  // Note: `loaded` here is the RUNTIME result from buildRuntime — it shadows
+  // the config loader's `loaded`. Use `loadedConfig` (the LoadConfigResult) to
+  // access the parsed config and configPath.
   const externalAddonDirs = new Map<string, string>()
-  for (const entry of loaded.config.addons ?? []) {
+  for (const entry of loadedConfig.config.addons ?? []) {
     const source = typeof entry === "string" ? entry : entry.source
     if (typeof source !== "string" || source.length === 0) continue
     const expanded = source.startsWith("~/")
@@ -830,13 +833,13 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       : source
     const abs = isAbsolute(expanded)
       ? expanded
-      : resolvePath(dirname(loaded.configPath), expanded)
+      : resolvePath(dirname(loadedConfig.configPath), expanded)
     externalAddonDirs.set(basename(abs), abs)
   }
 
   const resolverOptions = buildResolverOptions(
     addonBundle.addonByType,
-    [dirname(loaded.configPath)],
+    [dirname(loadedConfig.configPath)],
     externalAddonDirs,
   )
 
