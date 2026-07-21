@@ -211,6 +211,7 @@ const enterLockMode = (): void => {
       "runtime: lock active",
     )
     pubSub.publish("runtime:lock-mode", { active: true, reason: "session-locked" })
+    pubSub.publish("runtime:activeDeck", { deckId: "core:lock" })
     pubSub.publish("runtime:invalidate", undefined)
   }
 
