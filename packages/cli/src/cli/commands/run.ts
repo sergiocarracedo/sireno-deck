@@ -527,6 +527,33 @@ const buildRuntime = (
     ([id, d]) => materializeDeckFromConfig(id, d, false, keyCount, logger),
   )
 
+  // ponytail: phase 11 — collect per-addon overrides from
+  // `addons[i].config.decks.<deckId>` into a single map keyed by addon
+  // name. addonWideConfig carries opaque keys (the addon reads them in
+  // createDeck(s)); perDeck is keyed by addon-deck-id.
+  const addonConfigOverrides = new Map<
+    string,
+    {
+      addonWideConfig: Record<string, unknown>
+      perDeck: Map<string, import("@/cli/commands/addon-decks").AddonDeckOverride>
+    }
+  >()
+  for (const entry of config.addons ?? []) {
+    if (typeof entry !== "object" || entry === null) continue
+    const cfg = entry.config
+    if (cfg === undefined) continue
+    // ponytail: addonWideConfig is everything under `entry.config` EXCEPT
+    // `decks` (which carries per-deck overrides). We accept unknown keys
+    // here because the schema only constrains the `decks` sub-record.
+    const { decks: perDeckRaw, ...rest } = cfg as {
+      decks?: Record<string, import("@/cli/commands/addon-decks").AddonDeckOverride>
+    } & Record<string, unknown>
+    addonConfigOverrides.set(entry.source, {
+      addonWideConfig: rest,
+      perDeck: new Map(Object.entries(perDeckRaw ?? {})),
+    })
+  }
+
   const userOverlayDecks: RuntimeDeck[] = []
   const addonOverrideMap = new Map<
     string,
@@ -580,6 +607,7 @@ const buildRuntime = (
       logger,
       keyCount,
       config.lock?.buttons,
+      addonConfigOverrides,
     ),
     keyCount,
   )

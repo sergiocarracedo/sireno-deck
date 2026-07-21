@@ -186,12 +186,33 @@ const collectAddonDefaultButtonConfig = (
   return result
 }
 
+/**
+ * Phase 11: per-deck overrides for an addon-deck. Built from
+ * `addons[i].config.decks.<deckId>` in config.yml. Field-level overrides
+ * apply on top of the generated deck; `trigger` override forces
+ * `isOverlay: true`.
+ */
+export interface AddonDeckOverride {
+  readonly autoShow?: boolean
+  readonly name?: string
+  readonly icon?: string
+  readonly trigger?: {
+    process_name?: string | string[]
+    window_name?: string | string[]
+  }
+  readonly config?: Record<string, unknown>
+}
+
 export const materializeAddonDecks = (
   registry: AddonRegistry,
   userDecks: ReadonlyArray<RuntimeDeck>,
   logger: pino.Logger,
   keyCount: number,
   lockButtons?: ReadonlyArray<unknown>,
+  addonConfigOverrides?: ReadonlyMap<
+    string,
+    { addonWideConfig: Record<string, unknown>; perDeck: Map<string, AddonDeckOverride> }
+  >,
 ): RuntimeDeck[] => {
   // ponytail: keep the signature explicit even though we don't accept varargs — clarity beats cleverness
   const addonConfigs = collectAddonDefaultButtonConfig(
@@ -210,11 +231,11 @@ export const materializeAddonDecks = (
 
   for (const addon of registry.listAddons()) {
     if (addon.decks === undefined) continue
-    // ponytail: phase 11 array shape — each entry registers a deck-type
-    // under either its `id` (static / single-dynamic) or a synthetic
-    // `<addon>:__multi__` key (multi-dynamic). Walk the array and look up
-    // each entry's type via `getDeckType`. The synthetic key carries no
-    // special meaning beyond being unique within the addon.
+    // ponytail: phase 11 — pre-aggregate addon-wide config overrides and
+    // per-deck overrides so each entry sees its merged view.
+    const addonEntry = addonConfigOverrides?.get(addon.name)
+    const addonWideOverride = addonEntry?.addonWideConfig ?? {}
+    const perDeckOverrides = addonEntry?.perDeck ?? new Map()
     for (const entry of addon.decks) {
       const lookupId =
         typeof entry.createDecks === "function"
@@ -224,7 +245,10 @@ export const materializeAddonDecks = (
       const deckType = registry.getDeckType(lookupId)
       if (deckType === undefined) continue
       const baseAddonConfig = addonConfigs.get(addon.name) ?? {}
-      const addonConfig = baseAddonConfig
+      const addonConfig = {
+        ...baseAddonConfig,
+        ...addonWideOverride,
+      }
       let generated: Record<string, AddonGeneratedDeck>
       try {
         generated = deckType.def.createDecks({
@@ -247,8 +271,33 @@ export const materializeAddonDecks = (
           )
           continue
         }
+        // ponytail: per-deck overrides match either the full addon deck id
+        // ("chrome-overlay:shortcuts") or just the suffix ("shortcuts").
+        // Suffix form is friendlier in config.yml.
+        const override =
+          perDeckOverrides.get(id) ??
+          perDeckOverrides.get(id.slice(addon.name.length + 1))
+        const effectiveGdeck: AddonGeneratedDeck =
+          override !== undefined
+            ? {
+                ...gdeck,
+                ...(override.autoShow !== undefined
+                  ? { autoShow: override.autoShow }
+                  : {}),
+                ...(override.name !== undefined
+                  ? { name: override.name }
+                  : {}),
+                ...(override.icon !== undefined
+                  ? { icon: override.icon }
+                  : {}),
+                ...(override.trigger !== undefined
+                  ? { trigger: override.trigger }
+                  : {}),
+                isOverlay: true,
+              }
+            : gdeck
         addonDecks.push(
-          ...mapAddonDeckToRuntimeDeck(registry, id, gdeck, keyCount),
+          ...mapAddonDeckToRuntimeDeck(registry, id, effectiveGdeck, keyCount),
         )
       }
     }
