@@ -1,0 +1,22 @@
+packages/cli/src/deck/deck-config.ts
+  s_2dcd22e5d466a7::t_f035b708c227cc 82-88
+packages/cli/src/deck/__tests__/deck-config-derive-label.test.ts
+  s_2dcd22e5d466a7::t_2dc6204de4ff77 1-27,29-42
+  s_2dcd22e5d466a7::t_8d487e8387432c 28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "a97a348ef46822ad31d4c0d5fe40810680b9dd9a",
+  "prompts": {},
+  "sessions": {
+    "s_2dcd22e5d466a7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07c42cafdffegNNCzj1fMfP2BL",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
