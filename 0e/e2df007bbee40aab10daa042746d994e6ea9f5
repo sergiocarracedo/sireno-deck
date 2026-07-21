@@ -1,0 +1,34 @@
+packages/cli/src/cli/commands/__tests__/addon-decks.test.ts
+  s_125496d408ca37::t_991e3b796ed7bf 651-652,655,660-663,665,670,672-674,678-707,711,717,720,723,728-733,735,737
+  s_125496d408ca37::t_a44d1417066db8 738
+packages/cli/src/cli/commands/addon-decks.ts
+  s_125496d408ca37::t_fab19bf3cc60e5 189-205,212-215,234-238,248-251,280-298,300
+  s_125496d408ca37::t_17e6ea986e4939 274-279
+packages/cli/src/cli/commands/run.ts
+  s_125496d408ca37::t_07064c43f7621d 530-556
+  s_125496d408ca37::t_878785aa83bd6d 610
+packages/cli/src/config/schemas.ts
+  s_125496d408ca37::t_eb2afca31a431b 144-145
+  s_125496d408ca37::t_bf88416145ca45 68-95,102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "0ee2df007bbee40aab10daa042746d994e6ea9f5",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_125496d408ca37": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07b51eff1ffeNUGIuLb38hTGYQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
