@@ -1,7 +1,7 @@
 import { exec } from "node:child_process"
 import { existsSync, mkdirSync, writeFileSync } from "node:fs"
 import { homedir } from "node:os"
-import { dirname, join, resolve as resolvePath } from "node:path"
+import { basename, dirname, isAbsolute, join, resolve as resolvePath } from "node:path"
 
 import type pino from "pino"
 
@@ -818,9 +818,27 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   const bridge = await startWsBridge({ port: 52937 })
   const wsPort = bridge.port
 
-  const resolverOptions = buildResolverOptions(addonBundle.addonByType, [
-    dirname(loaded.configPath),
-  ])
+  // ponytail: register external addon dirs (from config's `addons:` list) so
+  // `addon://<name>/assets/icon.png` resolves for overlay deck icons. The
+  // addonDirs built from addonBundle.addonByType only contains builtins.
+  const externalAddonDirs = new Map<string, string>()
+  for (const entry of loaded.config.addons ?? []) {
+    const source = typeof entry === "string" ? entry : entry.source
+    if (typeof source !== "string" || source.length === 0) continue
+    const expanded = source.startsWith("~/")
+      ? join(homedir(), source.slice(2))
+      : source
+    const abs = isAbsolute(expanded)
+      ? expanded
+      : resolvePath(dirname(loaded.configPath), expanded)
+    externalAddonDirs.set(basename(abs), abs)
+  }
+
+  const resolverOptions = buildResolverOptions(
+    addonBundle.addonByType,
+    [dirname(loaded.configPath)],
+    externalAddonDirs,
+  )
 
   const bridgeSignal = new AbortController()
   const statePublisher = new StatePublisher({ bridge, logger })

@@ -15,12 +15,19 @@ export interface AddonFrontendRef {
 export const buildResolverOptions = (
   addonByType: ReadonlyMap<string, AddonFrontendRef>,
   baseDirs: ReadonlyArray<string>,
+  // ponytail: external addons (loaded from config's addons: list) need their
+  // dirs registered so `addon://<name>/assets/icon.png` resolves. The basenames
+  // match the addon names in deck triggers.
+  extraAddonDirs?: ReadonlyMap<string, string>,
 ): ResolveIconPathOptions => {
   const addonDirs = new Map<string, string>()
   for (const ref of addonByType.values()) {
     if (ref.frontendEntry !== null) {
       addonDirs.set(ref.name, dirname(ref.frontendEntry))
     }
+  }
+  for (const [name, dir] of extraAddonDirs ?? []) {
+    addonDirs.set(name, dir)
   }
   return { addonDirs, baseDirs }
 }
