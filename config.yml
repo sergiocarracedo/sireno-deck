@@ -3,6 +3,7 @@ theme: default
 addons:
   - ~/works/opensource/sireno-deck-addons/vscode-overlay
   - ~/works/opensource/sireno-deck-addons/opencode-overlay
+  - ~/works/opensource/sireno-deck-addons/chrome-overlay
 
 # lock:
 #   buttons:
