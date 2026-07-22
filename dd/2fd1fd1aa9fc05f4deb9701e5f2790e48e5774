@@ -1,0 +1,19 @@
+packages/cli/src/core/icon-asset-registry.ts
+  s_391cfee983ce6a::t_cd983005c6761d 50-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "dd2fd1fd1aa9fc05f4deb9701e5f2790e48e5774",
+  "prompts": {},
+  "sessions": {
+    "s_391cfee983ce6a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_075882246ffe6z3pe6hSZa58eb",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
