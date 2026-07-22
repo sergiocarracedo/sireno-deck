@@ -1,0 +1,23 @@
+packages/cli/src/builtin-addons/system-status/domain/display-metrics.ts
+  s_158cba931b5bb8::t_cc21355bf9459b 1-120
+packages/cli/src/builtin-addons/system-status/domain/index.ts
+  s_158cba931b5bb8::t_21922f27030ac5 1-11
+packages/cli/src/builtin-addons/system-status/domain/live-metrics.ts
+  s_158cba931b5bb8::t_3261c80946bb7b 1-208
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "cfcaa3937da9d37d4d30c3604393df191afffb96",
+  "prompts": {},
+  "sessions": {
+    "s_158cba931b5bb8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_074da790fffe5bcgm3NeU1K8XK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
