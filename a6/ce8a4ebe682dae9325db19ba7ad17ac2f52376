@@ -1,0 +1,19 @@
+packages/cli/src/cli/commands/addon-decks.ts
+  s_7142ffaf6f55c2::t_b575c786223cb0 323-328
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "a6ce8a4ebe682dae9325db19ba7ad17ac2f52376",
+  "prompts": {},
+  "sessions": {
+    "s_7142ffaf6f55c2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_074a41268ffe3wC680zCwsLiCM",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
