@@ -1,0 +1,48 @@
+packages/cli/frontend/src/App.tsx
+  s_391cfee983ce6a::t_829ccebe03838a 197
+  s_391cfee983ce6a::t_3b067e67736426 208-210
+  s_391cfee983ce6a::t_0f5e4c373b1383 22-26,135-137,226-228
+packages/cli/src/addon/api.ts
+  s_391cfee983ce6a::t_3c9191befad3bb 154
+packages/cli/src/deck/runtime.ts
+  s_391cfee983ce6a::t_aacec089d9a786 38
+  s_391cfee983ce6a::t_0f5e4c373b1383 88-91,148,175-178,205-208,210,219-222,227,379,528-533,545-550,716-723,757-762,828-831
+packages/cli/src/ui/ButtonFrame.tsx
+  s_391cfee983ce6a::t_0f5e4c373b1383 14-18
+  s_391cfee983ce6a::t_bd437082ffa34c 9
+  s_391cfee983ce6a::t_0160752944eb7f 19-41,43-49
+packages/cli/src/cli/commands/addon-decks.ts
+  s_391cfee983ce6a::t_0f5e4c373b1383 69-76,109-114,129-136,167-172,239-242,315-316
+  s_391cfee983ce6a::t_7cef27b8582394 11
+packages/cli/src/deck/__tests__/deck-config-full-flag.test.ts
+  s_391cfee983ce6a::t_3361aeeaef0a97 62-72
+packages/cli/src/deck/deck-config.ts
+  s_391cfee983ce6a::t_0f5e4c373b1383 154-156
+packages/cli/frontend/src/components/Deck.tsx
+  s_391cfee983ce6a::t_a198143122f809 49
+  s_391cfee983ce6a::t_8d522b859bf4ec 91
+  s_391cfee983ce6a::t_665a62fc1ce8e8 321
+  s_391cfee983ce6a::t_0f5e4c373b1383 2-7,128-132,218-222
+  s_391cfee983ce6a::t_513f656e154f9a 103
+  s_391cfee983ce6a::t_42f1dbc47c2d71 173
+  s_391cfee983ce6a::t_6abc5a73639670 1
+packages/cli/src/cli/commands/__tests__/addon-decks.test.ts
+  s_391cfee983ce6a::t_5bfb65869c7a25 252-266,273-277
+  s_391cfee983ce6a::t_0f5e4c373b1383 267-272,565-568,576-578,600-603,612-614,640-643,651-653,675-678,681-683,685-687,703-708,713-719,721-728,741-747,749-756,767-773,775,779-785,789-796,813-826,828-835
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "e3a2af5bfb65c41c60b4d675a75da1457ee786f9",
+  "prompts": {},
+  "sessions": {
+    "s_391cfee983ce6a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_075882246ffe6z3pe6hSZa58eb",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
