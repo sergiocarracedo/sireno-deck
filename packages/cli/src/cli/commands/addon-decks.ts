@@ -320,6 +320,12 @@ export const materializeAddonDecks = (
                 isOverlay: true,
               }
             : gdeck
+        if (override !== undefined) {
+          logger.debug(
+            { addon: addon.name, deckId: id, autoShow: effectiveGdeck.autoShow },
+            "materializeAddonDecks: applying per-deck override",
+          )
+        }
         addonDecks.push(
           ...mapAddonDeckToRuntimeDeck(registry, id, effectiveGdeck, keyCount),
         )
