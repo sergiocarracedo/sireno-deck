@@ -1,0 +1,23 @@
+config.yml
+  s_158cba931b5bb8::t_18875d7d8abf53 66,68-73
+packages/cli/src/builtin-addons/system-status/__tests__/manifest.test.ts
+  s_158cba931b5bb8::t_5f686c6bce3313 1-39
+packages/cli/src/__tests__/fixtures/system-status-deck.ts
+  s_158cba931b5bb8::t_3053edca1880c5 1-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "830ffa9c5b7f70bf0c50adc814e9d635f9714d87",
+  "prompts": {},
+  "sessions": {
+    "s_158cba931b5bb8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_074da790fffe5bcgm3NeU1K8XK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
