@@ -541,7 +541,7 @@ describe("createRuntime with active-app provider", () => {
     await runtime.stopActiveAppPolling()
   })
 
-  it("switches overlay to the new matched overlay when active-app switches (overlay mode follows the match)", async () => {
+  it("switches overlay to the new matched overlay when both are autoShow (overlay mode follows the match)", async () => {
     const { runtime } = setup([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
@@ -552,7 +552,7 @@ describe("createRuntime with active-app provider", () => {
       makeDeck({
         id: "spotify-deck",
         processNames: ["spotify"],
-        autoShow: false,
+        autoShow: true,
       }),
     ])
     const provider = makeFakeProvider({
@@ -566,6 +566,35 @@ describe("createRuntime with active-app provider", () => {
     provider.snapshot = { name: "Spotify", windowTitle: null, processId: 2 }
     await flush(1_500)
     expect(runtime.getOverlay()?.id).toBe("spotify-deck")
+    await runtime.stopActiveAppPolling()
+  })
+
+  it("dismisses current overlay when active-app switches to a non-autoShow overlay match", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "chrome-deck",
+        processNames: ["chrome"],
+        autoShow: true,
+      }),
+      makeDeck({
+        id: "warp-deck",
+        processNames: ["warp"],
+        autoShow: false,
+      }),
+    ])
+    const provider = makeFakeProvider({
+      name: "Google Chrome",
+      windowTitle: null,
+      processId: 1,
+    })
+    runtime.setActiveAppProvider(provider)
+    await flush(1_200)
+    expect(runtime.getOverlay()?.id).toBe("chrome-deck")
+    provider.snapshot = { name: "Warp", windowTitle: null, processId: 3 }
+    await flush(1_500)
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("main")
     await runtime.stopActiveAppPolling()
   })
 
@@ -1282,7 +1311,7 @@ describe("createRuntime — overlay smoke (full chain)", () => {
     await runtime.stopActiveAppPolling()
   })
 
-  it("paginated overlay page (transientDeckId) is the active deck while overlay is on", async () => {
+  it("paginated overlay page (page-nav) is the active deck while overlay is on", async () => {
     const { runtime } = setup([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
@@ -1295,14 +1324,15 @@ describe("createRuntime — overlay smoke (full chain)", () => {
     runtime.setOverlay("chrome-overlay")
     expect(runtime.getActiveDeckId()).toBe("chrome-overlay")
 
-    // page-nav with addToHistory: false sets transientDeckId.
+    // page-nav with addToHistory: false pushes onto the overlay nav stack
+    // so the page is remembered across toggle-off / toggle-on cycles.
     runtime.navigateToDeck("chrome-overlay-p2", { addToHistory: false })
     expect(runtime.getActiveDeckId()).toBe("chrome-overlay-p2")
 
     await runtime.stopActiveAppPolling()
   })
 
-  it("dismissing overlay after a paginated page-nav restores the regular deck (not the page)", async () => {
+  it("dismissing overlay after a paginated page-nav restores the regular deck", async () => {
     const { runtime } = setup([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
@@ -1319,6 +1349,31 @@ describe("createRuntime — overlay smoke (full chain)", () => {
     runtime.setOverlay(null)
     expect(runtime.getOverlay()).toBeNull()
     expect(runtime.getActiveDeckId()).toBe("main")
+
+    await runtime.stopActiveAppPolling()
+  })
+
+  it("re-toggling an overlay after a paginated page-nav restores the page (overlay keeps its nav history)", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "chrome-overlay",
+        isOverlay: true,
+        autoShow: true,
+      }),
+      makeDeck({ id: "chrome-overlay-p2", isOverlay: true }),
+    ])
+    runtime.setOverlay("chrome-overlay")
+    runtime.navigateToDeck("chrome-overlay-p2", { addToHistory: false })
+    expect(runtime.getActiveDeckId()).toBe("chrome-overlay-p2")
+
+    runtime.setOverlay(null)
+    expect(runtime.getActiveDeckId()).toBe("main")
+
+    // Re-toggling the same overlay should restore the page the user was on,
+    // not the root.
+    runtime.setOverlay("chrome-overlay")
+    expect(runtime.getActiveDeckId()).toBe("chrome-overlay-p2")
 
     await runtime.stopActiveAppPolling()
   })

@@ -232,19 +232,20 @@ const navigateToDeck = (
     }
     const previousActiveId = getActiveDeckId()
     if (overlayDeckId !== null) {
-      if (navOptions?.addToHistory === false) {
-        transientDeckId = id
-      } else {
-        const stack = overlayNavStacks.get(overlayDeckId)
-        if (stack === undefined) {
-          overlayNavStacks.set(overlayDeckId, [overlayDeckId])
-        }
-        const current = overlayNavStacks.get(overlayDeckId)!
-        if (current[current.length - 1] !== id) {
-          current.push(id)
-        }
-        transientDeckId = null
+      // ponytail: while overlay mode is on, both change-deck (addToHistory:true)
+      // and page-nav (addToHistory:false) push onto the overlay's nav stack so
+      // re-toggling the overlay restores the user's last position. Page-nav
+      // used to set transientDeckId which the runtime dropped on every
+      // getActiveDeckId query — see https://example.invalid/quick-009.
+      const stack = overlayNavStacks.get(overlayDeckId)
+      if (stack === undefined) {
+        overlayNavStacks.set(overlayDeckId, [overlayDeckId])
       }
+      const current = overlayNavStacks.get(overlayDeckId)!
+      if (current[current.length - 1] !== id) {
+        current.push(id)
+      }
+      transientDeckId = null
     } else if (navOptions?.addToHistory === false) {
       transientDeckId = id
     } else {
@@ -319,7 +320,16 @@ const navigateToDeck = (
       } else {
         pubSub.publish("runtime:deck-inactive", { deckId: previousActiveId })
       }
-      pubSub.publish("runtime:activeDeck", { deckId })
+      // ponytail: if the overlay has nav history (stack top != deckId), the
+      // user was already navigating within this overlay. Publish the stack
+      // top so the broadcast matches what getActiveDeckId will report, and
+      // re-toggling restores the page the user was on.
+      const stack = overlayNavStacks.get(deckId)
+      const targetDeck =
+        stack !== undefined && stack.length > 0
+          ? (stack[stack.length - 1] ?? deckId)
+          : deckId
+      pubSub.publish("runtime:activeDeck", { deckId: targetDeck })
     } else {
       // ponytail: previousActiveId (e.g. a paginated page like -p2) is the
       // deck actually being deactivated; previousOverlayId is the overlay
@@ -635,14 +645,26 @@ const navigateToDeck = (
       return
     }
     if (overlayDeckId !== null && deckId !== overlayDeckId) {
-      // ponytail: overlay mode is a routing branch — when the matched overlay
-      // changes, follow the new match (state for the old overlay is kept in
-      // overlayNavStacks so re-activating later restores it).
-      logger.info(
-        { prevOverlayId: overlayDeckId, newMatch: deckId },
-        "active-app: switching overlay (match moved)",
-      )
-      setOverlay(deckId, { source: "autoShow" })
+      // ponytail: overlay mode is a routing branch. If the new match is
+      // auto-show it replaces the current overlay; if it's not auto-show the
+      // current overlay dismisses and the new match stays as available-only
+      // (manual toggle required). In both cases the previous overlay's
+      // overlayNavStacks entry is preserved for re-activation.
+      const newDeck = deckById(deckId)
+      if (newDeck === undefined) return
+      if (newDeck.autoShow === true) {
+        logger.info(
+          { prevOverlayId: overlayDeckId, newMatch: deckId },
+          "active-app: switching overlay (match moved, autoShow)",
+        )
+        setOverlay(deckId, { source: "autoShow" })
+      } else {
+        logger.info(
+          { prevOverlayId: overlayDeckId, newMatch: deckId },
+          "active-app: dismissing current overlay (new match is not autoShow)",
+        )
+        setOverlay(null, { source: "autoShow" })
+      }
       lastOverlayDeckId = deckId
       return
     }
