@@ -60,6 +60,39 @@ const writeFakePackage = (
   )
 }
 
+// ponytail: chrome-overlay and similar local addons wrap their manifest under
+// a `.manifest` key (and Node's CJS-to-ESM interop may also wrap as `.default`).
+// The loader must unwrap both so the manifest lands at the top level.
+const writeWrapperAddon = (
+  addonName: string,
+  wrapperKey: "manifest" | "default",
+): void => {
+  const installPath = addonNpmInstallPath(addonName, TEST_CACHE)
+  mkdirSync(installPath, { recursive: true })
+  writeFileSync(
+    join(installPath, "package.json"),
+    JSON.stringify({
+      name: addonName,
+      version: "1.0.0",
+      main: "index.js",
+      sirenoAddonApiVersion: 1,
+    }),
+    "utf8",
+  )
+  writeFileSync(
+    join(installPath, "sirenodeck.json"),
+    JSON.stringify({
+      kind: "addon",
+      apiVersion: 1,
+      name: addonName,
+      entry: "./index.js",
+    }),
+    "utf8",
+  )
+  const inner = `module.exports = { ${wrapperKey}: { apiVersion: 1, name: "${addonName}", buttonTypes: { "test:fake": {} }, decks: {} } };`
+  writeFileSync(join(installPath, "index.js"), inner, "utf8")
+}
+
 beforeEach(() => {
   if (existsSync(TEST_CACHE))
     rmSync(TEST_CACHE, { recursive: true, force: true })
@@ -162,6 +195,38 @@ describe("loadAddons — npm path", () => {
     expect(
       result.issues.some((i) => /apiVersion mismatch/.test(i.message)),
     ).toBe(false)
+  })
+})
+
+describe("loadAddons — export wrappers", () => {
+  it("unwraps a manifest wrapped under the .manifest key (chrome-overlay pattern)", async () => {
+    writeWrapperAddon("wrapped-manifest", "manifest")
+    const loadAddons = await loader()
+    const result = await loadAddons({
+      entries: ["wrapped-manifest"],
+      configDir: "/tmp",
+      homeDir: "/tmp",
+      currentApiVersion: SIRENO_ADDON_API_VERSION,
+      cacheDir: TEST_CACHE,
+    })
+    expect(result.issues).toEqual([])
+    expect(result.addons).toHaveLength(1)
+    expect(result.addons[0]?.manifest.name).toBe("wrapped-manifest")
+  })
+
+  it("unwraps a manifest wrapped under the .default key (CJS interop pattern)", async () => {
+    writeWrapperAddon("wrapped-default", "default")
+    const loadAddons = await loader()
+    const result = await loadAddons({
+      entries: ["wrapped-default"],
+      configDir: "/tmp",
+      homeDir: "/tmp",
+      currentApiVersion: SIRENO_ADDON_API_VERSION,
+      cacheDir: TEST_CACHE,
+    })
+    expect(result.issues).toEqual([])
+    expect(result.addons).toHaveLength(1)
+    expect(result.addons[0]?.manifest.name).toBe("wrapped-default")
   })
 })
 

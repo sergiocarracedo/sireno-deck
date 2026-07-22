@@ -82,6 +82,36 @@ const resolveEntryPaths = (
   return { ts: extTs, js: extJs }
 }
 
+// ponytail: ESM-CJS interop wraps CJS exports as `mod.default`, and some
+// addons also wrap the manifest under a named key (e.g. chrome-overlay uses
+// `module.exports = { manifest: {...} }`). Some combine both: the CJS wrapper
+// becomes `mod.default`, then chrome-overlay's `.manifest` lives one level
+// down. Walk at most two levels deep — never deeper, to avoid accidental
+// infinite recursion on hostile modules.
+const unwrapManifestExport = (mod: unknown): unknown => {
+  let cur: unknown = mod
+  for (let i = 0; i < 2; i += 1) {
+    if (cur === null || typeof cur !== "object") return cur
+    const rec = cur as Record<string, unknown>
+    const candidate = rec["manifest"] ?? rec["default"]
+    if (
+      candidate !== undefined &&
+      typeof candidate === "object" &&
+      candidate !== null &&
+      typeof (candidate as Record<string, unknown>)["apiVersion"] === "number" &&
+      typeof (candidate as Record<string, unknown>)["name"] === "string"
+    ) {
+      return candidate
+    }
+    if (candidate !== undefined) {
+      cur = candidate
+      continue
+    }
+    return cur
+  }
+  return cur
+}
+
 const validateAndLoadEntry = async (
   source: string,
   tsPath: string,
@@ -108,23 +138,21 @@ const validateAndLoadEntry = async (
     })
     return null
   }
-  const exported =
-    mod !== null &&
-    typeof mod === "object" &&
-    "default" in (mod as Record<string, unknown>) &&
-    (mod as { default: unknown }).default !== undefined
-      ? (mod as { default: unknown }).default
-      : mod
+  const exported = unwrapManifestExport(mod)
   if (
     exported === null ||
     typeof exported !== "object" ||
     typeof (exported as Record<string, unknown>)["apiVersion"] !== "number" ||
     typeof (exported as Record<string, unknown>)["name"] !== "string"
   ) {
+    const gotKeys =
+      exported !== null && typeof exported === "object"
+        ? Object.keys(exported as Record<string, unknown>).join(",")
+        : typeof exported
     recordIssue(issues, {
       level: "error",
       source,
-      message: `Entry at ${candidatePath} did not export a valid AddonManifestV1 (apiVersion + name required)`,
+      message: `Entry at ${candidatePath} did not export a valid AddonManifestV1 (apiVersion + name required). Got keys: [${gotKeys}]`,
     })
     return null
   }

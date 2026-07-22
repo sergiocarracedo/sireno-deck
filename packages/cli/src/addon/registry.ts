@@ -183,6 +183,13 @@ export class AddonRegistry {
     return this.decksByType.has(type)
   }
 
+  listDeckTypes(): ReadonlyArray<{ id: string; addonName: string }> {
+    return [...this.decksByType.entries()].map(([id, v]) => ({
+      id,
+      addonName: v.addonName,
+    }))
+  }
+
   loadTheme(theme: LoadedTheme): void {
     if (this.themesByName.has(theme.name)) {
       throw new Error(`Duplicate theme name: ${theme.name}`)

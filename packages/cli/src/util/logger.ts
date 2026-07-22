@@ -53,6 +53,12 @@ const CONTEXT_FIELDS = [
   "gesture",
   "host",
   "port",
+  "addon",
+  "source",
+  "message",
+  "addonDecks",
+  "userDecks",
+  "addonConfigEntries",
 ] as const
 
 const formatContext = (entry: Record<string, unknown>): string[] => {

@@ -1,15 +1,15 @@
 theme: default
 
 addons:
-  - src: ~/works/opensource/sireno-deck-addons/vscode-overlay
+  - src: /works/opensource/sireno-deck-addons/vscode-overlay
     config:
       decks:
         shortcuts:
           autoShow: false
           config:
             extra: true
-  - ~/works/opensource/sireno-deck-addons/opencode-overlay
-  - ~/works/opensource/sireno-deck-addons/chrome-overlay
+  - /works/opensource/sireno-deck-addons/opencode-overlay
+  - /works/opensource/sireno-deck-addons/chrome-overlay
 
 # lock:
 #   buttons:

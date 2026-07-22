@@ -6,6 +6,9 @@ import { basename, dirname, isAbsolute, join, resolve as resolvePath } from "nod
 import type pino from "pino"
 
 import { AddonRegistry } from "@/addon/registry"
+import { loadAddons } from "@/addon/loader"
+import { SIRENO_ADDON_API_VERSION } from "@/addon/api-types"
+import { resolveAddonCacheDir } from "@/util/cache-paths"
 import { registerBuiltins } from "@/builtin-addons"
 import { registerSystemStatusAddon } from "@/builtin-addons/system-status"
 import { findConfigPath } from "@/config/discovery"
@@ -372,11 +375,75 @@ interface LoadConfigResult {
   readonly themeDir: string
 }
 
-const validateAndLoadConfig = (options: RunOptions): LoadConfigResult => {
+const loadExternalAddonsIntoRegistry = async (
+  registry: AddonRegistry,
+  config: ReturnType<typeof loadConfig>["config"],
+  configDir: string,
+  homeDir: string,
+  logger: RunOptions["logger"],
+): Promise<void> => {
+  const entries = config.addons ?? []
+  if (entries.length === 0) return
+  const result = await loadAddons({
+    entries,
+    configDir,
+    homeDir,
+    currentApiVersion: SIRENO_ADDON_API_VERSION,
+    cacheDir: resolveAddonCacheDir(),
+  })
+  for (const issue of result.issues) {
+    const payload = { source: issue.source, message: issue.message }
+    if (issue.level === "error") logger.error(payload, "addon load error")
+    else if (issue.level === "warning")
+      logger.warn(payload, "addon load warning")
+    else logger.info(payload, "addon load info")
+  }
+  for (const loaded of result.addons) {
+    try {
+      registry.load(loaded.manifest)
+      logger.info(
+        { addon: loaded.manifest.name, source: loaded.source.specifier },
+        "addon loaded",
+      )
+    } catch (err) {
+      logger.error(
+        { err, addon: loaded.manifest.name },
+        "addon failed to register",
+      )
+    }
+  }
+}
+
+export const validateAndLoadConfig = async (
+  options: RunOptions,
+): Promise<LoadConfigResult> => {
   const configPath = resolveConfigPath(options)
   const { config } = loadConfig({ configPath })
   const registry = new AddonRegistry()
   registerBuiltins(registry)
+  // ponytail: wire `config.addons[]` into the registry. Without this the
+  // loader's only caller was the test suite, so chrome-overlay et al. were
+  // never registered — builtins only. Load failures stay non-fatal (one bad
+  // addon must not kill the daemon); issues are surfaced through the logger.
+  await loadExternalAddonsIntoRegistry(
+    registry,
+    config,
+    dirname(configPath),
+    options.homeDir ?? homedir(),
+    options.logger,
+  )
+  // ponytail: dump every deck type the registry holds so the operator can
+  // see at startup which addons registered and which got silently skipped.
+  options.logger.info(
+    {
+      addonDecks: registry.listDeckTypes(),
+      userDecks: Object.keys(config.decks),
+      addonConfigEntries: (config.addons ?? []).map((a) =>
+        typeof a === "string" ? a : a.src,
+      ),
+    },
+    "registry: deck types loaded",
+  )
   // Per-button config errors are non-fatal: each broken button is replaced
   // with a `core:temporary-error` cell at its position and logged in full
   // (the incorrect config + the schema issues) so the operator can see
@@ -676,11 +743,11 @@ const applyConfigErrorReplacements = (
   return { decks: patched, errorsByDeck }
 }
 
-const loadConfigAndTheme = (
+const loadConfigAndTheme = async (
   options: RunOptions,
   keyCount: number = 15,
-): LoadConfigAndThemeResult => {
-  const loaded = validateAndLoadConfig(options)
+): Promise<LoadConfigAndThemeResult> => {
+  const loaded = await validateAndLoadConfig(options)
   return buildRuntime(options, loaded, keyCount)
 }
 
@@ -837,7 +904,7 @@ export const preflight = async (options: RunOptions): Promise<void> => {
   const { logger } = options
   // Validate the config first so a broken YAML exits before we ever touch
   // hardware or spawn an emulator.
-  validateAndLoadConfig(options)
+  await validateAndLoadConfig(options)
   const outputClient = selectOutputClient({
     emulator: options.emulator === true,
     xdgConfigHome: resolveXdgConfigHome(options),
@@ -853,7 +920,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
   // Validate config first so a broken YAML exits without ever touching
   // hardware (or spawning an emulator).
-  const loadedConfig = validateAndLoadConfig(options)
+  const loadedConfig = await validateAndLoadConfig(options)
 
   const outputClient: OutputClient = selectOutputClient({
     emulator: options.emulator === true,
@@ -1030,7 +1097,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   })
   const handleConfigChange = async (): Promise<void> => {
     try {
-      const nextLoaded = validateAndLoadConfig(options)
+      const nextLoaded = await validateAndLoadConfig(options)
       const prevConfig = currentLoadedConfig.config
       const decksOnlyChange = decksChanged(prevConfig, nextLoaded.config)
       if (decksOnlyChange) {
