@@ -185,7 +185,12 @@ const LOCK_FOLDER_NAV_TYPES: ReadonlySet<string> = new Set([
 
   const getActiveDeckId = (): string => {
     if (lockActive) return "core:lock"
+    // ponytail: while overlay mode is on, transientDeckId (used by page-nav)
+    // must take precedence — otherwise paginated overlay pages are invisible
+    // to the runtime, and dismissing overlay after paginating restores the
+    // overlay root instead of the page the user was on.
     if (overlayDeckId !== null) {
+      if (transientDeckId !== null) return transientDeckId
       const stack = overlayNavStacks.get(overlayDeckId)
       if (stack !== undefined && stack.length > 0) {
         return stack[stack.length - 1] ?? overlayDeckId
@@ -316,9 +321,17 @@ const navigateToDeck = (
       }
       pubSub.publish("runtime:activeDeck", { deckId })
     } else {
-      if (previousOverlayId !== null) {
-        pubSub.publish("runtime:deck-inactive", { deckId: previousOverlayId })
+      // ponytail: previousActiveId (e.g. a paginated page like -p2) is the
+      // deck actually being deactivated; previousOverlayId is the overlay
+      // root. Publish the page so subscribers see the right deck going dark.
+      if (previousActiveId !== previousOverlayId) {
+        pubSub.publish("runtime:deck-inactive", { deckId: previousActiveId })
       }
+      // ponytail: clear transientDeckId so the dismissed overlay's paginated
+      // page doesn't bleed into the regular nav state. Without this,
+      // getActiveDeckId keeps returning the page even after overlayDeckId
+      // is null.
+      transientDeckId = null
       const restoreId = overlayPreviousActiveId ?? mainDeck.id
       overlayPreviousActiveId = null
       pubSub.publish("runtime:activeDeck", { deckId: restoreId })

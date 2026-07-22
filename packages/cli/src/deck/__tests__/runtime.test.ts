@@ -1281,6 +1281,47 @@ describe("createRuntime — overlay smoke (full chain)", () => {
 
     await runtime.stopActiveAppPolling()
   })
+
+  it("paginated overlay page (transientDeckId) is the active deck while overlay is on", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "chrome-overlay",
+        isOverlay: true,
+        autoShow: true,
+      }),
+      makeDeck({ id: "chrome-overlay-p2", isOverlay: true }),
+    ])
+    runtime.setOverlay("chrome-overlay")
+    expect(runtime.getActiveDeckId()).toBe("chrome-overlay")
+
+    // page-nav with addToHistory: false sets transientDeckId.
+    runtime.navigateToDeck("chrome-overlay-p2", { addToHistory: false })
+    expect(runtime.getActiveDeckId()).toBe("chrome-overlay-p2")
+
+    await runtime.stopActiveAppPolling()
+  })
+
+  it("dismissing overlay after a paginated page-nav restores the regular deck (not the page)", async () => {
+    const { runtime } = setup([
+      makeDeck({ id: "main", isMain: true }),
+      makeDeck({
+        id: "chrome-overlay",
+        isOverlay: true,
+        autoShow: true,
+      }),
+      makeDeck({ id: "chrome-overlay-p2", isOverlay: true }),
+    ])
+    runtime.setOverlay("chrome-overlay")
+    runtime.navigateToDeck("chrome-overlay-p2", { addToHistory: false })
+    expect(runtime.getActiveDeckId()).toBe("chrome-overlay-p2")
+
+    runtime.setOverlay(null)
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("main")
+
+    await runtime.stopActiveAppPolling()
+  })
 })
 
 describe("invokeAction — user actions", () => {
