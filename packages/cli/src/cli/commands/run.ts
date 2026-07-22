@@ -1085,11 +1085,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   const statePublisher = new StatePublisher({ bridge, logger })
 
   const addonRegistryForSystemStatus = new AddonRegistry()
-  registerSystemStatusAddon(
-    addonRegistryForSystemStatus,
-    pubSub,
-    bridgeSignal.signal,
-  )
+  registerSystemStatusAddon(addonRegistryForSystemStatus)
 
   const mainDeck = runtime.getActiveDeck()
   const addonServices = setupAddonServices({

@@ -1,56 +1,48 @@
 import { z } from "zod"
-import type { AddonManifestV1 } from "@/addon/api"
+import type { AddonManifestV1, AddonGlobalPoller } from "@/addon/api"
 
-import cpuFrontend from "./buttons/cpu/frontend"
-import ramFrontend from "./buttons/ram/frontend"
-import diskFrontend from "./buttons/disk/frontend"
-import netFrontend from "./buttons/net/frontend"
 import genericFrontend from "./buttons/generic/frontend"
+import {
+  GenericSystemStatusDefaults,
+  GenericSystemStatusSchema,
+} from "./buttons/generic/schemas"
+import {
+  probeMetric,
+  SYSTEM_METRIC_IDS,
+  type SystemMetricId,
+} from "./domain"
 
-const emptyConfigSchema = z.object({}).strict()
+const DEFAULT_POLL_INTERVAL_MS = 2_000
 
-const genericConfigSchema = z
-  .object({
-    metric: z.string().min(1),
-    label: z.string().optional(),
-  })
-  .strict()
+function makePoller(metricId: SystemMetricId): AddonGlobalPoller {
+  return {
+    id: `metric:${metricId}`,
+    channel: `runtime:system-status:${metricId}`,
+    intervalMs: DEFAULT_POLL_INTERVAL_MS,
+    poll: () => probeMetric(metricId),
+  }
+}
 
 export const systemStatusManifest: AddonManifestV1 = {
   apiVersion: 1,
   name: "system-status",
   buttonTypes: {
-    "system-status:cpu": {
-      frontend: cpuFrontend,
-      service: { configSchema: emptyConfigSchema, internal: false },
-    },
-    "system-status:ram": {
-      frontend: ramFrontend,
-      service: { configSchema: emptyConfigSchema, internal: false },
-    },
-    "system-status:disk": {
-      frontend: diskFrontend,
-      service: { configSchema: emptyConfigSchema, internal: false },
-    },
-    "system-status:net": {
-      frontend: netFrontend,
-      service: { configSchema: emptyConfigSchema, internal: false },
-    },
-    "system-status:status": {
+    "system-status": {
       frontend: genericFrontend,
-      service: { configSchema: genericConfigSchema, internal: false },
+      service: {
+        configSchema: GenericSystemStatusSchema,
+        internal: false,
+      },
     },
   },
-  publishIntervalMs: 1000,
+  globalService: {
+    pollers: SYSTEM_METRIC_IDS.map(makePoller),
+  },
 }
-
-export const systemStatusButtonTypes = [
-  "system-status:cpu",
-  "system-status:ram",
-  "system-status:disk",
-  "system-status:net",
-  "system-status:status",
-] as const
 
 export const systemStatusAddon = systemStatusManifest
 export default systemStatusManifest
+
+export { GenericSystemStatusDefaults, GenericSystemStatusSchema }
+export { SYSTEM_METRIC_IDS }
+export type { SystemMetricId }
