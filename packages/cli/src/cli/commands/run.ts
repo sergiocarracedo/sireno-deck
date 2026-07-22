@@ -373,6 +373,7 @@ interface LoadConfigResult {
   readonly registry: AddonRegistry
   readonly theme: ReturnType<typeof resolveActiveTheme>["theme"]
   readonly themeDir: string
+  readonly addonSpecToName: ReadonlyMap<string, string>
 }
 
 const loadExternalAddonsIntoRegistry = async (
@@ -381,9 +382,14 @@ const loadExternalAddonsIntoRegistry = async (
   configDir: string,
   homeDir: string,
   logger: RunOptions["logger"],
-): Promise<void> => {
+): Promise<Map<string, string>> => {
+  // ponytail: returns specifier→manifest name for addons that successfully
+  // registered. The override map in buildRuntime keys on manifest name (what
+  // materializeAddonDecks looks up) — the user wrote `src:` (path), so we
+  // resolve the two here.
+  const specToName = new Map<string, string>()
   const entries = config.addons ?? []
-  if (entries.length === 0) return
+  if (entries.length === 0) return specToName
   const result = await loadAddons({
     entries,
     configDir,
@@ -401,6 +407,7 @@ const loadExternalAddonsIntoRegistry = async (
   for (const loaded of result.addons) {
     try {
       registry.load(loaded.manifest)
+      specToName.set(loaded.source.specifier, loaded.manifest.name)
       logger.info(
         { addon: loaded.manifest.name, source: loaded.source.specifier },
         "addon loaded",
@@ -412,6 +419,7 @@ const loadExternalAddonsIntoRegistry = async (
       )
     }
   }
+  return specToName
 }
 
 export const validateAndLoadConfig = async (
@@ -425,7 +433,7 @@ export const validateAndLoadConfig = async (
   // loader's only caller was the test suite, so chrome-overlay et al. were
   // never registered — builtins only. Load failures stay non-fatal (one bad
   // addon must not kill the daemon); issues are surfaced through the logger.
-  await loadExternalAddonsIntoRegistry(
+  const addonSpecToName = await loadExternalAddonsIntoRegistry(
     registry,
     config,
     dirname(configPath),
@@ -481,9 +489,69 @@ export const validateAndLoadConfig = async (
     uiOverridesPath: theme.uiOverridesPath,
   })
   process.env["SIRENO_THEME_NAME"] = theme.name
-  return { configPath, config, registry, theme, themeDir }
+  return { configPath, config, registry, theme, themeDir, addonSpecToName }
 }
 
+
+export const buildAddonConfigOverrides = (
+  addonEntries: ReadonlyArray<unknown>,
+  addonSpecToName: ReadonlyMap<string, string>,
+  logger: pino.Logger,
+): Map<
+  string,
+  {
+    addonWideConfig: Record<string, unknown>
+    perDeck: Map<string, import("@/cli/commands/addon-decks").AddonDeckOverride>
+  }
+> => {
+  const overrides = new Map<
+    string,
+    {
+      addonWideConfig: Record<string, unknown>
+      perDeck: Map<string, import("@/cli/commands/addon-decks").AddonDeckOverride>
+    }
+  >()
+  for (const entry of addonEntries) {
+    // ponytail: `addons[]` entries are either a raw string spec or
+    // `{src, enabled?, config?}`. The user wrote `src:` (or just a string
+    // for the spec). Normalize here so we have a single source-of-truth key.
+    const src =
+      typeof entry === "string"
+        ? entry
+        : typeof entry === "object" && entry !== null && typeof (entry as { src?: unknown }).src === "string"
+          ? (entry as { src: string }).src
+          : null
+    if (src === null) continue
+    const cfg =
+      typeof entry === "object" && entry !== null
+        ? (entry as { config?: unknown }).config
+        : undefined
+    if (typeof cfg !== "object" || cfg === null) continue
+    // ponytail: addonWideConfig is everything under `entry.config` EXCEPT
+    // `decks` (which carries per-deck overrides). We accept unknown keys
+    // here because the schema only constrains the `decks` sub-record.
+    const { decks: perDeckRaw, ...rest } = cfg as {
+      decks?: Record<string, import("@/cli/commands/addon-decks").AddonDeckOverride>
+    } & Record<string, unknown>
+    // ponytail: key on the loaded addon's manifest name — that's what
+    // materializeAddonDecks looks up. The user wrote `src:` (path or npm
+    // specifier); `addonSpecToName` resolves it post-load. If the addon
+    // didn't load (path typo, missing module), warn and drop the override.
+    const addonName = addonSpecToName.get(src)
+    if (addonName === undefined) {
+      logger.warn(
+        { src },
+        "addon config override targets an addon that failed to load; ignoring",
+      )
+      continue
+    }
+    overrides.set(addonName, {
+      addonWideConfig: rest,
+      perDeck: new Map(Object.entries(perDeckRaw ?? {})),
+    })
+  }
+  return overrides
+}
 
 const buildRuntime = (
   options: RunOptions,
@@ -586,28 +654,11 @@ const buildRuntime = (
   // `addons[i].config.decks.<deckId>` into a single map keyed by addon
   // name. addonWideConfig carries opaque keys (the addon reads them in
   // createDeck(s)); perDeck is keyed by addon-deck-id.
-  const addonConfigOverrides = new Map<
-    string,
-    {
-      addonWideConfig: Record<string, unknown>
-      perDeck: Map<string, import("@/cli/commands/addon-decks").AddonDeckOverride>
-    }
-  >()
-  for (const entry of config.addons ?? []) {
-    if (typeof entry !== "object" || entry === null) continue
-    const cfg = entry.config
-    if (cfg === undefined) continue
-    // ponytail: addonWideConfig is everything under `entry.config` EXCEPT
-    // `decks` (which carries per-deck overrides). We accept unknown keys
-    // here because the schema only constrains the `decks` sub-record.
-    const { decks: perDeckRaw, ...rest } = cfg as {
-      decks?: Record<string, import("@/cli/commands/addon-decks").AddonDeckOverride>
-    } & Record<string, unknown>
-    addonConfigOverrides.set(entry.source, {
-      addonWideConfig: rest,
-      perDeck: new Map(Object.entries(perDeckRaw ?? {})),
-    })
-  }
+  const addonConfigOverrides = buildAddonConfigOverrides(
+    config.addons ?? [],
+    loaded.addonSpecToName,
+    logger,
+  )
 
   const effectiveDecks: RuntimeDeck[] =
     decks.length > 0
