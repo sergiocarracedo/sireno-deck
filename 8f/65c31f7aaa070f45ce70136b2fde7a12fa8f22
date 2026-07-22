@@ -1,0 +1,24 @@
+.planning/quick/010-addon-config-override-key/010-SUMMARY.md
+  s_682abde73982a8::t_a5492b9feb4767 1-78
+.planning/STATE.md
+  s_682abde73982a8::t_369e7d009c37f6 51
+  s_682abde73982a8::t_9a7180f094b1ea 5
+.planning/quick/010-addon-config-override-key/010-PLAN.md
+  s_682abde73982a8::t_a699cbd50e73fc 1-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "8f65c31f7aaa070f45ce70136b2fde7a12fa8f22",
+  "prompts": {},
+  "sessions": {
+    "s_682abde73982a8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0759868d9ffehmNmJkV2CPam2f",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
