@@ -1,0 +1,47 @@
+packages/cli/src/addon/loader.ts
+  s_b7cac178d05dec::t_23a9d372487c4f 85-86,91,113-114
+  s_b7cac178d05dec::t_de313c1196efff 87-90,92-112
+  s_b7cac178d05dec::t_c8678dee845360 148-151,155
+  s_b7cac178d05dec::t_d9df6a1fbc4a2c 141
+packages/cli/src/__tests__/integration.test.ts
+  s_b7cac178d05dec::t_15a67e3a46d0f2 202-205
+  s_b7cac178d05dec::t_4047336afdcf1b 1,4,7-8,13-14,18-21
+  s_b7cac178d05dec::t_72360b4895db21 167,169-170,172
+  s_b7cac178d05dec::t_e531edec4c7f69 137-166,168,171,173-201,206-337
+packages/cli/src/addon/registry.ts
+  s_b7cac178d05dec::t_db9cc0f754c939 186-192
+packages/cli/src/addon/__tests__/loader.test.ts
+  s_b7cac178d05dec::t_e609316e987a70 63-72,83-95
+  s_b7cac178d05dec::t_59dd5c0ddb8aba 201-232
+  s_b7cac178d05dec::t_2ed5eac089d160 73-82
+packages/cli/src/util/logger.ts
+  s_b7cac178d05dec::t_db22ecc83b4f21 56-61
+packages/cli/src/cli/commands/run.ts
+  s_b7cac178d05dec::t_15a3d4ed4b6fbf 1100
+  s_b7cac178d05dec::t_476ad6a0d514f6 424-434
+  s_b7cac178d05dec::t_bafde6bf62ec31 417
+  s_b7cac178d05dec::t_2af08c8ab3a5ef 378-416,418-419
+  s_b7cac178d05dec::t_061802d6950d43 9-11
+  s_b7cac178d05dec::t_5855c586aef7d9 435-446
+  s_b7cac178d05dec::t_8931d5fd9e11b3 907
+  s_b7cac178d05dec::t_ccf02cd4ff6047 746,749-750
+  s_b7cac178d05dec::t_ceca1bd7ef5ffe 923
+docs/DEBUG_OVERLAYS.md
+  s_b7cac178d05dec::t_c8291f89dbfb55 1-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "96f86bff27b3fea9aca55f8cb4ae06aeebaeaa5d",
+  "prompts": {},
+  "sessions": {
+    "s_b7cac178d05dec": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0773da0e5ffeCbwM2Ls4vCmZat",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
