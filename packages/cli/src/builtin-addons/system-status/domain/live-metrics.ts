@@ -1,0 +1,208 @@
+import { cpus, loadavg, totalmem, freemem } from "node:os"
+import { statfs, readFile } from "node:fs/promises"
+import { existsSync } from "node:fs"
+
+// ponytail: catalog mirrors the legacy generic-system-status set; feature-locked.
+// SystemMetricId values are referenced by user config and downstream channels
+// (`runtime:system-status:<id>`), so renaming requires a migration step.
+export const SYSTEM_METRIC_IDS = [
+  "cpu",
+  "ram",
+  "disk",
+  "network",
+  "battery",
+  "temperature",
+  "uptime",
+  "frequency",
+  "load",
+  "processes",
+] as const
+
+export type SystemMetricId = (typeof SYSTEM_METRIC_IDS)[number]
+
+export interface SystemMetricSnapshot {
+  available: boolean
+  id: SystemMetricId
+  label: string
+  max?: number
+  percentage?: number
+  unit?: string
+  value?: number
+}
+
+interface ProbeResult {
+  available: boolean
+  max?: number
+  percentage?: number
+  unit?: string
+  value?: number
+}
+
+function clampPercent(value: number): number {
+  if (!Number.isFinite(value)) return 0
+  return Math.min(100, Math.max(0, Math.round(value)))
+}
+
+async function probeCpu(): Promise<ProbeResult> {
+  const list = cpus()
+  if (list.length === 0) return { available: false }
+  let total = 0
+  let idle = 0
+  for (const c of list) {
+    idle += c.times.idle
+    total +=
+      c.times.user + c.times.nice + c.times.sys + c.times.idle + c.times.irq
+  }
+  // first sample is always 0 — accept that as "available"
+  const pct = total > 0 ? clampPercent((1 - idle / total) * 100) : 0
+  return { available: true, max: 100, percentage: pct, unit: "%", value: pct }
+}
+
+async function probeRam(): Promise<ProbeResult> {
+  const total = totalmem()
+  const used = total - freemem()
+  if (total <= 0) return { available: false, unit: "%" }
+  const pct = clampPercent((used / total) * 100)
+  return { available: true, max: total, percentage: pct, unit: "%", value: pct }
+}
+
+async function probeDisk(): Promise<ProbeResult> {
+  try {
+    const stats = await statfs("/")
+    const total = Number(stats.blocks) * Number(stats.bsize)
+    const used = (Number(stats.blocks) - Number(stats.bfree)) * Number(stats.bsize)
+    if (total <= 0) return { available: false, unit: "%" }
+    const pct = clampPercent((used / total) * 100)
+    return { available: true, max: total, percentage: pct, unit: "%", value: pct }
+  } catch {
+    return { available: false, unit: "%" }
+  }
+}
+
+async function probeNetwork(): Promise<ProbeResult> {
+  // ponytail: cheap & portable. Real throughput needs /proc/net/dev per-interface counters.
+  const count = cpus().length > 0 ? 1 : 0
+  return { available: count > 0, unit: "interfaces", value: count }
+}
+
+async function probeBattery(): Promise<ProbeResult> {
+  // Linux only: /sys/class/power_supply/BAT0/capacity
+  if (process.platform !== "linux") return { available: false, unit: "%" }
+  if (!existsSync("/sys/class/power_supply/BAT0/capacity")) {
+    return { available: false, unit: "%" }
+  }
+  try {
+    const raw = await readFile("/sys/class/power_supply/BAT0/capacity", "utf8")
+    const pct = clampPercent(Number.parseInt(raw.trim(), 10))
+    return { available: true, max: 100, percentage: pct, unit: "%", value: pct }
+  } catch {
+    return { available: false, unit: "%" }
+  }
+}
+
+async function probeTemperature(): Promise<ProbeResult> {
+  // Linux only: /sys/class/thermal/thermal_zone0/temp (millidegrees C)
+  if (process.platform !== "linux") return { available: false, unit: "°C" }
+  if (!existsSync("/sys/class/thermal/thermal_zone0/temp")) {
+    return { available: false, unit: "°C" }
+  }
+  try {
+    const raw = await readFile("/sys/class/thermal/thermal_zone0/temp", "utf8")
+    const milli = Number.parseInt(raw.trim(), 10)
+    if (!Number.isFinite(milli)) return { available: false, unit: "°C" }
+    const celsius = Math.round(milli / 1000)
+    return { available: true, unit: "°C", value: celsius }
+  } catch {
+    return { available: false, unit: "°C" }
+  }
+}
+
+async function probeUptime(): Promise<ProbeResult> {
+  const sec = Math.round(process.uptime())
+  return { available: true, unit: "s", value: sec }
+}
+
+async function probeFrequency(): Promise<ProbeResult> {
+  // ponytail: os.cpus()[i].speed is unreliable on Linux (often 0). Fall back to /proc/cpuinfo MHz.
+  const list = cpus()
+  const fromOs = list.find((c) => typeof c.speed === "number" && c.speed > 0)?.speed
+  if (typeof fromOs === "number" && fromOs > 0) {
+    const ghz = Number((fromOs / 1000).toFixed(2))
+    return { available: true, unit: "GHz", value: ghz }
+  }
+  if (process.platform === "linux" && existsSync("/proc/cpuinfo")) {
+    try {
+      const raw = await readFile("/proc/cpuinfo", "utf8")
+      const m = raw.match(/cpu MHz\s*:\s*([\d.]+)/)
+      if (m && m[1]) {
+        const mhz = Number.parseFloat(m[1])
+        if (Number.isFinite(mhz) && mhz > 0) {
+          const ghz = Number((mhz / 1000).toFixed(2))
+          return { available: true, unit: "GHz", value: ghz }
+        }
+      }
+    } catch {
+      // fall through
+    }
+  }
+  return { available: false, unit: "GHz" }
+}
+
+async function probeLoad(): Promise<ProbeResult> {
+  const [one] = loadavg()
+  return { available: Number.isFinite(one), value: Number(one.toFixed(2)) }
+}
+
+async function probeProcesses(): Promise<ProbeResult> {
+  if (process.platform === "linux" && existsSync("/proc")) {
+    try {
+      const { readdir } = await import("node:fs/promises")
+      const entries = await readdir("/proc")
+      const count = entries.filter((e) => /^\d+$/.test(e)).length
+      return { available: count > 0, unit: "procs", value: count }
+    } catch {
+      return { available: false, unit: "procs" }
+    }
+  }
+  // ponytail: no portable process count without a dep; report unavailable elsewhere.
+  return { available: false, unit: "procs" }
+}
+
+const PROBES: Record<SystemMetricId, () => Promise<ProbeResult>> = {
+  cpu: probeCpu,
+  ram: probeRam,
+  disk: probeDisk,
+  network: probeNetwork,
+  battery: probeBattery,
+  temperature: probeTemperature,
+  uptime: probeUptime,
+  frequency: probeFrequency,
+  load: probeLoad,
+  processes: probeProcesses,
+}
+
+export async function probeMetric(
+  id: SystemMetricId,
+): Promise<SystemMetricSnapshot> {
+  const probe = PROBES[id]
+  try {
+    const r = await probe()
+    return {
+      available: r.available,
+      id,
+      label: id,
+      ...(r.max !== undefined ? { max: r.max } : {}),
+      ...(r.percentage !== undefined ? { percentage: r.percentage } : {}),
+      ...(r.unit !== undefined ? { unit: r.unit } : {}),
+      ...(r.value !== undefined ? { value: r.value } : {}),
+    }
+  } catch {
+    return { available: false, id, label: id }
+  }
+}
+
+export async function probeMetrics(
+  ids: readonly SystemMetricId[],
+): Promise<SystemMetricSnapshot[]> {
+  return Promise.all(ids.map(probeMetric))
+}
