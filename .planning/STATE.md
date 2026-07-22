@@ -2,7 +2,7 @@
 
 **Project:** sireno-deck-2
 **Active branch:** main
-**Last activity:** 2026-07-22 - Completed quick-009 (overlay mode = routing branch: follows matched overlay; back dismisses; page-nav stays in page set)
+**Last activity:** 2026-07-22 - Completed quick-010 (addon config overrides keyed by manifest name; was silently dropped)
 
 ## Completed Phases
 
@@ -48,6 +48,7 @@
 | 006 | Top-level `overlay:` config key with user overlay decks + addon deck overrides (autoShow, name, icon, trigger, extra config); autoShow priority fix | 2026-07-21 | 4f6589b | .planning/quick/006-overlay-config-key/ |
 | 008 | Standalone overlay-root n-1 toggle shows matched deck icon + slash + layers icon and label `Toggle overlay` (visual follow-up to quick-005) | 2026-07-22 | f1dab3f2 | .planning/quick/008-overlay-toggle-deck-icons-label/ |
 | 009 | Overlay mode = routing branch: active overlay follows the matched overlay on app change; back inside overlay dismisses; page-nav targets stay inside the page set | 2026-07-22 | f2823e8e | .planning/quick/009-overlay-mode-routing/ |
+| 010 | Per-addon-deck config overrides (`addons[i].config.decks.<id>`) were silently dropped: keyed by `src` path but looked up by manifest name. Fix: key overrides by manifest name via `buildAddonConfigOverrides` (new exported helper) | 2026-07-22 | bc52f719 | .planning/quick/010-addon-config-override-key/ |
 
 ## Key Features (verified in codebase)
 
