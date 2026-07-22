@@ -2,7 +2,7 @@
 
 **Project:** sireno-deck-2
 **Active branch:** main
-**Last activity:** 2026-07-21 - Completed phase 11 (Addon Manifest v2 array format + per-addon deck overrides)
+**Last activity:** 2026-07-22 - Completed quick-008 (overlay toggle: deck icon + slash + layers + label 'Toggle overlay')
 
 ## Completed Phases
 
@@ -46,6 +46,7 @@
 | 004 | UAT bug fixes: type:// macros fire, addon deck icons + button labels render | 2026-07-21 | c74592ab | .planning/quick/004-icons-macros-uat/ |
 | 005 | UAT bug fixes: bitmap icons persist on overlay change, n-1 = toggle on overlay root, ydotool/wtype detected when PATH stripped, chrome deck uses type:// | 2026-07-21 | b2145485 | .planning/quick/005-overlay-icons-back-cli/ |
 | 006 | Top-level `overlay:` config key with user overlay decks + addon deck overrides (autoShow, name, icon, trigger, extra config); autoShow priority fix | 2026-07-21 | 4f6589b | .planning/quick/006-overlay-config-key/ |
+| 008 | Standalone overlay-root n-1 toggle shows matched deck icon + slash + layers icon and label `Toggle overlay` (visual follow-up to quick-005) | 2026-07-22 | f1dab3f2 | .planning/quick/008-overlay-toggle-deck-icons-label/ |
 
 ## Key Features (verified in codebase)
 
