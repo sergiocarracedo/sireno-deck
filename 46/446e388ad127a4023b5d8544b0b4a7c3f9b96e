@@ -1,0 +1,24 @@
+packages/cli/src/cli/commands/run.ts
+  s_391cfee983ce6a::t_cac1465a0db7d5 954-985
+  s_391cfee983ce6a::t_f4af89abeca29c 1039-1042
+packages/cli/src/cli/commands/__tests__/build-external-addon-dirs.test.ts
+  s_391cfee983ce6a::t_663942aff1c1f1 50
+  s_391cfee983ce6a::t_8b7daff307fa27 1-36,41-49,51-63,65-69
+  s_391cfee983ce6a::t_fc565810582942 37-40,64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "46446e388ad127a4023b5d8544b0b4a7c3f9b96e",
+  "prompts": {},
+  "sessions": {
+    "s_391cfee983ce6a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_075882246ffe6z3pe6hSZa58eb",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
