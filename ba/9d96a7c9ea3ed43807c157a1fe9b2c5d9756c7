@@ -1,0 +1,53 @@
+packages/cli/src/cli/commands/service/restart.ts
+  s_158cba931b5bb8::t_cdc44be6601cdd 1-45
+packages/cli/src/cli/commands/service/install.ts
+  s_158cba931b5bb8::t_e8432a186701c0 1-97
+packages/cli/src/__tests__/fixtures/system-status-deck.ts
+  s_158cba931b5bb8::t_21f02d5cb93c43 2-14
+packages/cli/src/cli/commands/service/stop.ts
+  s_158cba931b5bb8::t_3c70b3eefc5136 1-64
+packages/cli/src/cli/commands/service/render-template.ts
+  s_158cba931b5bb8::t_77b82992413330 1-97
+packages/cli/src/cli/commands/service/status.ts
+  s_158cba931b5bb8::t_e8e865073b86e6 1-42
+packages/cli/src/cli/commands/service/update-config.ts
+  s_158cba931b5bb8::t_55c4ac35258605 1-55
+packages/cli/src/cli/commands/service/reload.ts
+  s_158cba931b5bb8::t_4ace90defa3cf7 1-40
+packages/cli/src/cli/commands/service/run.ts
+  s_158cba931b5bb8::t_55237bfeeebdf8 47
+  s_158cba931b5bb8::t_6ec585f13dfd08 1-21,23-46,48-81
+  s_158cba931b5bb8::t_d4849a3b464ab2 22
+packages/cli/src/cli/index.ts
+  s_158cba931b5bb8::t_c7a71d6489c76a 193
+  s_158cba931b5bb8::t_34b3a9b6602a76 10
+  s_158cba931b5bb8::t_8c39b34a830fa0 15
+  s_158cba931b5bb8::t_62cda15e15e1eb 173-184
+  s_158cba931b5bb8::t_ba4b62f8d12f98 134
+packages/cli/src/__tests__/daemon-extensions.test.ts
+  s_158cba931b5bb8::t_abed9d252fc9f5 1
+  s_158cba931b5bb8::t_e2359628323a72 2-80
+packages/cli/src/util/daemon.ts
+  s_158cba931b5bb8::t_47b46ef03d2059 22
+  s_158cba931b5bb8::t_2bbc92321e4866 51
+  s_158cba931b5bb8::t_dc4fdd9563f650 144-220
+packages/cli/src/cli/commands/service/index.ts
+  s_158cba931b5bb8::t_cc75037e2babfb 1-10,12-18,20-27
+  s_158cba931b5bb8::t_f59de8a4cc3d5d 11,19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "ba9d96a7c9ea3ed43807c157a1fe9b2c5d9756c7",
+  "prompts": {},
+  "sessions": {
+    "s_158cba931b5bb8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_074da790fffe5bcgm3NeU1K8XK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
