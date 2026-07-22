@@ -1,0 +1,24 @@
+.planning/quick/011-chrome-shortcuts-overlay-colors/011-SUMMARY.md
+  s_391cfee983ce6a::t_fed31618ec544c 1-52
+.planning/quick/011-chrome-shortcuts-overlay-colors/011-PLAN.md
+  s_391cfee983ce6a::t_1294d24ccc90e3 1-56
+.planning/STATE.md
+  s_391cfee983ce6a::t_27b6302c47865a 5
+  s_391cfee983ce6a::t_e7e0f90df63dd4 52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "ad81b7c29b3f99a9f48c23c6a2b4715436ecb1e2",
+  "prompts": {},
+  "sessions": {
+    "s_391cfee983ce6a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_075882246ffe6z3pe6hSZa58eb",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
