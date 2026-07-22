@@ -2,7 +2,7 @@
 
 **Project:** sireno-deck-2
 **Active branch:** main
-**Last activity:** 2026-07-22 - Completed quick-008 (overlay toggle: deck icon + slash + layers + label 'Toggle overlay')
+**Last activity:** 2026-07-22 - Completed quick-009 (overlay mode = routing branch: follows matched overlay; back dismisses; page-nav stays in page set)
 
 ## Completed Phases
 
@@ -47,6 +47,7 @@
 | 005 | UAT bug fixes: bitmap icons persist on overlay change, n-1 = toggle on overlay root, ydotool/wtype detected when PATH stripped, chrome deck uses type:// | 2026-07-21 | b2145485 | .planning/quick/005-overlay-icons-back-cli/ |
 | 006 | Top-level `overlay:` config key with user overlay decks + addon deck overrides (autoShow, name, icon, trigger, extra config); autoShow priority fix | 2026-07-21 | 4f6589b | .planning/quick/006-overlay-config-key/ |
 | 008 | Standalone overlay-root n-1 toggle shows matched deck icon + slash + layers icon and label `Toggle overlay` (visual follow-up to quick-005) | 2026-07-22 | f1dab3f2 | .planning/quick/008-overlay-toggle-deck-icons-label/ |
+| 009 | Overlay mode = routing branch: active overlay follows the matched overlay on app change; back inside overlay dismisses; page-nav targets stay inside the page set | 2026-07-22 | f2823e8e | .planning/quick/009-overlay-mode-routing/ |
 
 ## Key Features (verified in codebase)
 
