@@ -19,9 +19,9 @@ export const ButtonFrame = ({
   const variantClass = {
     default: "bg-bg border-frame",
     error: "bg-red-600 border-red-700 text-white",
-    blue: "bg-blue-950 border-blue-700",
-    green: "bg-emerald-950 border-emerald-700",
-    purple: "bg-purple-950 border-purple-700",
+    blue: "bg-tint-blue/25 border-tint-blue/55",
+    green: "bg-tint-green/25 border-tint-green/55",
+    purple: "bg-tint-purple/25 border-tint-purple/55",
   }[variant]
 
   return (

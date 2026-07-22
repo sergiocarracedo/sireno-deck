@@ -10,6 +10,9 @@ export const ThemeColorTokenSchema = z
     accent: z.string().min(1),
     success: z.string().min(1),
     danger: z.string().min(1),
+    tintBlue: z.string().min(1),
+    tintGreen: z.string().min(1),
+    tintPurple: z.string().min(1),
   })
   .strict()
 

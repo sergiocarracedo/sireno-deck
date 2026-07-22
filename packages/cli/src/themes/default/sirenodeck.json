@@ -12,7 +12,10 @@
     "primary": "#7dd3fc",
     "accent": "#C3F5FF",
     "success": "#34d399",
-    "danger": "#FFB4AB"
+    "danger": "#FFB4AB",
+    "tintBlue": "#7dd3fc",
+    "tintGreen": "#34d399",
+    "tintPurple": "#c4b5fd"
   },
   "typography": {
     "main_text": {

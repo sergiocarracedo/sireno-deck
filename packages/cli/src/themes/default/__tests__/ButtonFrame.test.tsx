@@ -71,4 +71,38 @@ describe("themes/default/ButtonFrame", () => {
     expect(frame?.getAttribute("data-variant")).toBe("error")
     expect(frame?.className).toContain("bg-red-600")
   })
+
+  it.each(["blue", "green", "purple"] as const)(
+    "renders %s variant tinted from the theme",
+    (variant) => {
+      const container = document.createElement("div")
+      document.body.appendChild(container)
+      const root = document.createElement("div")
+      container.appendChild(root)
+
+      const React = require("react")
+      const ReactDOM = require("react-dom/client")
+      const act = require("react-dom/test-utils").act
+
+      act(() => {
+        ReactDOM.createRoot(root).render(
+          React.createElement(ButtonFrame, {
+            pressed: false,
+            isTapping: false,
+            isHolding: false,
+            holdProgress: 0,
+            buttonType: "test:btn",
+            variant,
+            children: React.createElement("span", null, variant),
+          }),
+        )
+      })
+
+      const frame = root.querySelector('[data-sireno-button-frame="true"]')
+      expect(frame).not.toBeNull()
+      expect(frame?.getAttribute("data-variant")).toBe(variant)
+      expect(frame?.className).toContain(`bg-tint-${variant}/25`)
+      expect(frame?.className).toContain(`border-tint-${variant}/55`)
+    },
+  )
 })

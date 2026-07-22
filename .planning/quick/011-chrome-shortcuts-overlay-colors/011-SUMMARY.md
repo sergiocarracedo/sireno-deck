@@ -32,7 +32,8 @@ Repository changes (committed as `e3a2af5`):
 - `packages/cli/src/deck/deck-config.ts`: each surface includes `buttonColor` when defined.
 - `packages/cli/frontend/src/App.tsx`: surface cast accepts `buttonColor` and forwards it to the frontend deck.
 - `packages/cli/frontend/src/components/Deck.tsx`: `Deck` and `DeckButtonCell` accept `buttonColor`; normal and split ButtonFrame variants receive it. Temporary error remains `variant="error"`.
-- `packages/cli/src/ui/ButtonFrame.tsx`: variants extended with blue, green, purple palettes; default and error unchanged.
+- `packages/cli/src/ui/ButtonFrame.tsx`: variants extended with blue, green, purple palettes derived from three new theme tint tokens (`tintBlue`/`tintGreen`/`tintPurple` in `default/sirenodeck.json`) via `bg-tint-X/25 border-tint-X/55` opacity overlays on the existing tokens; default and error unchanged. Schema accepts them in `ThemeColorTokenSchema`.
+- Follow-up tone-down: replaced hardcoded `bg-blue-950 border-blue-700` style with theme-tinted overlays so colored variants stay aligned with the deck palette instead of jumping to full-saturation Tailwind colors.
 - External addon files set distinct colors: chrome → blue, vscode → green, opencode → purple.
 
 ### Tests
