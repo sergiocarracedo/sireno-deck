@@ -1,0 +1,19 @@
+.planning/phases/12-deck-reliability-and-service/12-02-SUMMARY.md
+  s_158cba931b5bb8::t_5ab3b6065c7c4b 1-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "f117d6bd21adbdb6feb477de0dd764131aed8cc4",
+  "prompts": {},
+  "sessions": {
+    "s_158cba931b5bb8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_074da790fffe5bcgm3NeU1K8XK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
