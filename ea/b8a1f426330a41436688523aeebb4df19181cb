@@ -1,0 +1,19 @@
+.planning/quick/009-overlay-mode-routing/009-SUMMARY-ADDENDUM.md
+  s_09be9c292fd608::t_84dda7cf6cd559 1-67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "eab8a1f426330a41436688523aeebb4df19181cb",
+  "prompts": {},
+  "sessions": {
+    "s_09be9c292fd608": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_076a83aaeffeZJ0qX4sOT1w2xR",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
