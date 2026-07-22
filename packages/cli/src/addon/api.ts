@@ -151,6 +151,7 @@ export interface AddonGeneratedDeck {
   name?: string
   icon?: string
   background?: string
+  buttonColor?: "blue" | "green" | "purple"
   buttons?: unknown[]
   paginated?: boolean
   trigger?: unknown

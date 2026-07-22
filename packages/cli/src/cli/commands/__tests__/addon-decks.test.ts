@@ -249,6 +249,32 @@ describe("materializeAddonDecks", () => {
     expect(genDeck.isOverlay).toBe(true)
   })
 
+  it("propagates overlay button color to every paginated page", () => {
+    const addon = fakeManifestWithDecks("test-addon", {
+      "test-addon:deck-a": () => ({
+        "gen-deck": {
+          name: "Gen",
+          buttons: Array.from({ length: 20 }, () => ({ type: "core:action" })),
+          paginated: true,
+          isOverlay: true,
+          buttonColor: "purple",
+        },
+      }),
+    })
+    const reg = mockRegistry([addon])
+    const userDecks: RuntimeDeck[] = [{ id: "main", name: "Main", buttons: [] }]
+
+    const pages = materializeAddonDecks(
+      reg,
+      userDecks,
+      silentLogger(),
+      15,
+    ).filter((deck) => deck.id.startsWith("gen-deck"))
+
+    expect(pages.length).toBeGreaterThan(1)
+    expect(pages.every((deck) => deck.buttonColor === "purple")).toBe(true)
+  })
+
   it("passes launcher button config as deck-level createDecks config", () => {
     const addon = fakeManifestWithDecks(
       "emoji-selector",
@@ -536,7 +562,10 @@ describe("materializeAddonDecks", () => {
           service: {},
         },
       },
-      decks: [{ id: "test-addon:deck-a", createDecks: () => ({
+      decks: [
+        {
+          id: "test-addon:deck-a",
+          createDecks: () => ({
             "gen-deck": {
               name: "Gen",
               buttons: [
@@ -544,7 +573,9 @@ describe("materializeAddonDecks", () => {
                 { type: "test-addon:plain-btn", position: 1 },
               ],
             },
-          }) }],
+          }),
+        },
+      ],
     })
     const reg = mockRegistry([addon])
     const userDecks: RuntimeDeck[] = []
@@ -566,7 +597,10 @@ describe("materializeAddonDecks", () => {
           service: { full: true },
         },
       },
-      decks: [{ id: "test-addon:deck-a", createDecks: () => ({
+      decks: [
+        {
+          id: "test-addon:deck-a",
+          createDecks: () => ({
             "gen-deck": {
               name: "Gen",
               paginated: true,
@@ -575,7 +609,9 @@ describe("materializeAddonDecks", () => {
                 position: i,
               })),
             },
-          }) }],
+          }),
+        },
+      ],
     })
     const reg = mockRegistry([addon])
     const userDecks: RuntimeDeck[] = []
@@ -601,7 +637,10 @@ describe("materializeAddonDecks", () => {
           service: {},
         },
       },
-      decks: [{ id: "test-addon:deck-a", createDecks: () => ({
+      decks: [
+        {
+          id: "test-addon:deck-a",
+          createDecks: () => ({
             "gen-deck": {
               name: "Gen",
               buttons: [
@@ -609,7 +648,9 @@ describe("materializeAddonDecks", () => {
                 { type: "test-addon:plain-btn", position: 1 },
               ],
             },
-          }) }],
+          }),
+        },
+      ],
     })
     const reg = mockRegistry([addon])
     const userDecks: RuntimeDeck[] = []
@@ -631,12 +672,19 @@ describe("materializeAddonDecks", () => {
           service: {},
         },
       },
-      decks: [{ id: "test-addon:deck-a", createDecks: () => ({
+      decks: [
+        {
+          id: "test-addon:deck-a",
+          createDecks: () => ({
             "gen-deck": {
               name: "Gen",
-              buttons: [{ type: "test-addon:plain-btn", position: 0, full: false }],
+              buttons: [
+                { type: "test-addon:plain-btn", position: 0, full: false },
+              ],
             },
-          }) }],
+          }),
+        },
+      ],
     })
     const reg = mockRegistry([addon])
     const userDecks: RuntimeDeck[] = []
@@ -652,17 +700,32 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
   it("applies per-deck autoShow override from addonWideConfig", () => {
     const addon = fakeManifestWithDecks("test-addon", {
       "test-addon:deck-a": () => ({
-        "gen-deck": { name: "Gen", autoShow: true, isOverlay: true, buttons: [] },
+        "gen-deck": {
+          name: "Gen",
+          autoShow: true,
+          isOverlay: true,
+          buttons: [],
+        },
       }),
     })
     const reg = mockRegistry([addon])
     const overrides = new Map([
-      ["test-addon", {
-        addonWideConfig: {},
-        perDeck: new Map([["gen-deck", { autoShow: false }]]),
-      }],
+      [
+        "test-addon",
+        {
+          addonWideConfig: {},
+          perDeck: new Map([["gen-deck", { autoShow: false }]]),
+        },
+      ],
     ])
-    const result = materializeAddonDecks(reg, [], silentLogger(), 15, undefined, overrides)
+    const result = materializeAddonDecks(
+      reg,
+      [],
+      silentLogger(),
+      15,
+      undefined,
+      overrides,
+    )
     const gen = result.find((d) => d.id === "gen-deck")!
     expect(gen.autoShow).toBe(false)
   })
@@ -675,12 +738,22 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
     })
     const reg = mockRegistry([addon])
     const overrides = new Map([
-      ["test-addon", {
-        addonWideConfig: {},
-        perDeck: new Map([["gen-deck", { autoShow: false }]]),
-      }],
+      [
+        "test-addon",
+        {
+          addonWideConfig: {},
+          perDeck: new Map([["gen-deck", { autoShow: false }]]),
+        },
+      ],
     ])
-    const result = materializeAddonDecks(reg, [], silentLogger(), 15, undefined, overrides)
+    const result = materializeAddonDecks(
+      reg,
+      [],
+      silentLogger(),
+      15,
+      undefined,
+      overrides,
+    )
     const gen = result.find((d) => d.id === "test-addon:gen-deck")!
     expect(gen.autoShow).toBe(false)
   })
@@ -691,24 +764,36 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
       apiVersion: 1,
       name: "test-addon",
       buttonTypes: {},
-      decks: [{
-        id: "test-addon:deck-a",
-        createDecks: (ctx) => {
-          receivedConfig = ctx.config
-          return { "gen-deck": { name: "Gen", buttons: [] } }
+      decks: [
+        {
+          id: "test-addon:deck-a",
+          createDecks: (ctx) => {
+            receivedConfig = ctx.config
+            return { "gen-deck": { name: "Gen", buttons: [] } }
+          },
         },
-      }],
+      ],
     })
     const reg = mockRegistry([addon])
     const overrides = new Map([
-      ["test-addon", {
-        addonWideConfig: { customFlag: true },
-        perDeck: new Map(),
-      }],
+      [
+        "test-addon",
+        {
+          addonWideConfig: { customFlag: true },
+          perDeck: new Map(),
+        },
+      ],
     ])
     materializeAddonDecks(
       reg,
-      [{ id: "main", name: "Main", buttons: [], config: { launcherFlag: "x" } }],
+      [
+        {
+          id: "main",
+          name: "Main",
+          buttons: [],
+          config: { launcherFlag: "x" },
+        },
+      ],
       silentLogger(),
       15,
       undefined,
@@ -725,14 +810,29 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
     })
     const reg = mockRegistry([addon])
     const overrides = new Map([
-      ["test-addon", {
-        addonWideConfig: {},
-        perDeck: new Map([["gen-deck", {
-          trigger: { process_name: "chrome" },
-        }]]),
-      }],
+      [
+        "test-addon",
+        {
+          addonWideConfig: {},
+          perDeck: new Map([
+            [
+              "gen-deck",
+              {
+                trigger: { process_name: "chrome" },
+              },
+            ],
+          ]),
+        },
+      ],
     ])
-    const result = materializeAddonDecks(reg, [], silentLogger(), 15, undefined, overrides)
+    const result = materializeAddonDecks(
+      reg,
+      [],
+      silentLogger(),
+      15,
+      undefined,
+      overrides,
+    )
     const gen = result.find((d) => d.id === "gen-deck")!
     expect(gen.isOverlay).toBe(true)
     expect(gen.processNames).toEqual(["chrome"])

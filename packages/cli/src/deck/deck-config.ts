@@ -151,6 +151,9 @@ export const buildDeckConfigMessage = (
         id: deck.id,
         name: deck.name ?? deck.id,
         buttons,
+        ...(deck.buttonColor !== undefined
+          ? { buttonColor: deck.buttonColor }
+          : {}),
         ...(deck.buttonErrors !== undefined && deck.buttonErrors.length > 0
           ? {
               buttonErrors: deck.buttonErrors.map((e) => ({

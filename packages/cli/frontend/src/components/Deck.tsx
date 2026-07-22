@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react"
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react"
 import {
   BUTTON_SIZE_PX,
   gridForKeyCount,
@@ -40,6 +46,7 @@ export interface Deck {
   id: string
   name: string
   buttons: DeckButton[]
+  buttonColor?: "blue" | "green" | "purple"
   hasOverlayDeckAvailable?: boolean
   overlayDeckIcon?: string | null
   buttonErrors?: Array<{
@@ -81,6 +88,7 @@ interface DeckButtonCellProps {
   readonly row: number
   readonly splitAction?: boolean
   readonly isError?: boolean
+  readonly buttonColor?: "blue" | "green" | "purple"
   readonly overlayDeckIcon?: string | null
 }
 
@@ -92,6 +100,7 @@ const DeckButtonCell = ({
   row,
   splitAction = false,
   isError = false,
+  buttonColor,
   overlayDeckIcon: deckOverlayIcon,
 }: DeckButtonCellProps) => {
   const { fire } = useButtonAction(deckId, position)
@@ -116,7 +125,11 @@ const DeckButtonCell = ({
         }}
         data-button-type="core:temporary-error"
       >
-        <ButtonFrame buttonType="core:temporary-error" variant="error" onClick={() => fire("tap")}>
+        <ButtonFrame
+          buttonType="core:temporary-error"
+          variant="error"
+          onClick={() => fire("tap")}
+        >
           {renderSystemButton(
             "core:temporary-error",
             undefined,
@@ -157,6 +170,7 @@ const DeckButtonCell = ({
       >
         <ButtonFrame
           buttonType={button.type}
+          variant={buttonColor}
           onClick={handleClick}
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}
@@ -201,7 +215,11 @@ const DeckButtonCell = ({
       }}
       data-button-type={button.type}
     >
-      <ButtonFrame buttonType={button.type} onClick={() => fire("tap")}>
+      <ButtonFrame
+        buttonType={button.type}
+        variant={buttonColor}
+        onClick={() => fire("tap")}
+      >
         <ErrorBoundary resetKey={button.id}>
           <ButtonSurface
             button={button}
@@ -300,6 +318,7 @@ export const Deck = ({ deck, deviceModel, children }: DeckProps) => {
             col={col}
             row={row}
             isError={errorPositions.has(position)}
+            buttonColor={deck.buttonColor}
             overlayDeckIcon={deck.overlayDeckIcon ?? null}
             {...(splitAction ? { splitAction: true } : {})}
           />

@@ -8,6 +8,7 @@ interface AddonGeneratedDeck {
   name?: string
   icon?: string
   background?: string
+  buttonColor?: "blue" | "green" | "purple"
   buttons?: unknown[]
   paginated?: boolean
   trigger?: unknown
@@ -65,7 +66,14 @@ const mapAddonDeckToRuntimeDeck = (
     return pages.map((p) => {
       const mappedButtons: RuntimeDeck["buttons"] = (p.deck.buttons ?? []).map(
         (b, i) => {
-          const { position, type, config, actions, full: buttonFull, ...rest } = b as {
+          const {
+            position,
+            type,
+            config,
+            actions,
+            full: buttonFull,
+            ...rest
+          } = b as {
             position?: number
             type: string
             config?: unknown
@@ -98,7 +106,12 @@ const mapAddonDeckToRuntimeDeck = (
         name: gdeck.name ?? id,
         buttons: mappedButtons,
         ...(gdeck.icon !== undefined ? { icon: gdeck.icon } : {}),
-        ...(gdeck.background !== undefined ? { background: gdeck.background } : {}),
+        ...(gdeck.background !== undefined
+          ? { background: gdeck.background }
+          : {}),
+        ...(gdeck.buttonColor !== undefined
+          ? { buttonColor: gdeck.buttonColor }
+          : {}),
         ...(gdeck.autoShow !== undefined ? { autoShow: gdeck.autoShow } : {}),
         ...(gdeck.isOverlay !== undefined
           ? { isOverlay: gdeck.isOverlay }
@@ -113,7 +126,14 @@ const mapAddonDeckToRuntimeDeck = (
     (gdeck.buttons ?? []) as Array<{ position?: number }>,
     keyCount,
   ).map((b, i) => {
-    const { position, type, config, actions, full: buttonFull, ...rest } = b as {
+    const {
+      position,
+      type,
+      config,
+      actions,
+      full: buttonFull,
+      ...rest
+    } = b as {
       position?: number
       type: string
       config?: unknown
@@ -144,7 +164,12 @@ const mapAddonDeckToRuntimeDeck = (
       name: gdeck.name ?? id,
       buttons,
       ...(gdeck.icon !== undefined ? { icon: gdeck.icon } : {}),
-      ...(gdeck.background !== undefined ? { background: gdeck.background } : {}),
+      ...(gdeck.background !== undefined
+        ? { background: gdeck.background }
+        : {}),
+      ...(gdeck.buttonColor !== undefined
+        ? { buttonColor: gdeck.buttonColor }
+        : {}),
       ...(gdeck.autoShow !== undefined ? { autoShow: gdeck.autoShow } : {}),
       ...(gdeck.isOverlay !== undefined ? { isOverlay: gdeck.isOverlay } : {}),
       processNames: resolveTriggerProcessNames(gdeck.trigger),
@@ -211,7 +236,10 @@ export const materializeAddonDecks = (
   lockButtons?: ReadonlyArray<unknown>,
   addonConfigOverrides?: ReadonlyMap<
     string,
-    { addonWideConfig: Record<string, unknown>; perDeck: Map<string, AddonDeckOverride> }
+    {
+      addonWideConfig: Record<string, unknown>
+      perDeck: Map<string, AddonDeckOverride>
+    }
   >,
 ): RuntimeDeck[] => {
   // ponytail: keep the signature explicit even though we don't accept varargs — clarity beats cleverness
@@ -284,12 +312,8 @@ export const materializeAddonDecks = (
                 ...(override.autoShow !== undefined
                   ? { autoShow: override.autoShow }
                   : {}),
-                ...(override.name !== undefined
-                  ? { name: override.name }
-                  : {}),
-                ...(override.icon !== undefined
-                  ? { icon: override.icon }
-                  : {}),
+                ...(override.name !== undefined ? { name: override.name } : {}),
+                ...(override.icon !== undefined ? { icon: override.icon } : {}),
                 ...(override.trigger !== undefined
                   ? { trigger: override.trigger }
                   : {}),

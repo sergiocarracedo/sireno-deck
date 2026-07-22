@@ -19,7 +19,11 @@ import {
   isKnownDeviceModel,
   type DeviceModelSpec,
 } from "@/device/models"
-import { createWsClient, type WsClient, type ConnectionStatus } from "./bridge/client"
+import {
+  createWsClient,
+  type WsClient,
+  type ConnectionStatus,
+} from "./bridge/client"
 import { WebSocketProvider, type WebSocketSend } from "./bridge/ws-context"
 import { Deck } from "./components/Deck"
 import { ReconnectingBanner } from "./components/ReconnectingBanner"
@@ -128,7 +132,9 @@ const AppContent = () => {
   const [send, setSend] = useState<WebSocketSend | null>(null)
   const [connectionStatus, setConnectionStatus] =
     useState<ConnectionStatus>("connecting")
-  const [disconnectedSince, setDisconnectedSince] = useState<number | null>(null)
+  const [disconnectedSince, setDisconnectedSince] = useState<number | null>(
+    null,
+  )
   const [attempt, setAttempt] = useState(0)
   const [lastError, setLastError] = useState<string | null>(null)
   const [now, setNow] = useState(() => Date.now())
@@ -188,6 +194,7 @@ const AppContent = () => {
               {
                 name?: string
                 buttons?: DeckButton[]
+                buttonColor?: "blue" | "green" | "purple"
                 buttonErrors?: ButtonErrorState[]
               }
             >
@@ -198,6 +205,9 @@ const AppContent = () => {
               id: message.deckId,
               name: surface.name ?? message.deckId,
               buttons: surface.buttons,
+              ...(surface.buttonColor !== undefined
+                ? { buttonColor: surface.buttonColor }
+                : {}),
               isCompact: message.isCompact ?? false,
               hasOverlayDeckAvailable: message.hasOverlayDeckAvailable ?? false,
               overlayDeckIcon: message.overlayDeckIcon ?? null,
@@ -213,7 +223,9 @@ const AppContent = () => {
           setDeck((previous) => ({
             ...previous,
             buttonErrors: [
-              ...previous.buttonErrors.filter((error) => error.position !== position),
+              ...previous.buttonErrors.filter(
+                (error) => error.position !== position,
+              ),
               {
                 position,
                 expiresAt: Date.now() + durationMs,

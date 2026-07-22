@@ -35,6 +35,7 @@ export interface RuntimeDeck {
   autoShow?: boolean
   isOverlayDeck?: boolean
   icon?: string
+  buttonColor?: "blue" | "green" | "purple"
   buttonErrors?: ReadonlyArray<{
     position: number
     buttonId?: string
@@ -84,7 +85,10 @@ export interface Runtime {
   setDecks(decks: ReadonlyArray<RuntimeDeck>): void
   navigateToDeck(id: string, options?: { addToHistory?: boolean }): void
   goBack(): void
-  setOverlay(deckId: string | null, opts?: { source?: "autoShow" | "manual" }): void
+  setOverlay(
+    deckId: string | null,
+    opts?: { source?: "autoShow" | "manual" },
+  ): void
   getOverlay(): RuntimeDeck | null
   registerButtonHandler(buttonId: string, handler: RuntimeButtonHandler): void
   mountAddonButtons(
@@ -141,10 +145,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       if (fallback !== undefined) navStack.push(fallback.id)
       transientDeckId = null
     }
-    if (
-      overlayDeckId !== null &&
-      deckById(overlayDeckId) === undefined
-    ) {
+    if (overlayDeckId !== null && deckById(overlayDeckId) === undefined) {
       overlayDeckId = null
     }
     pubSub.publish("runtime:activeDeck", { deckId: getActiveDeckId() })
@@ -171,10 +172,10 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   }
 
   // ponytail: lock-mode escape hatch — only these button types can navigate out of lock mode
-const LOCK_FOLDER_NAV_TYPES: ReadonlySet<string> = new Set([
-  "core:change-deck",
-  "core:page-nav",
-])
+  const LOCK_FOLDER_NAV_TYPES: ReadonlySet<string> = new Set([
+    "core:change-deck",
+    "core:page-nav",
+  ])
 
   const getActiveDeck = (): RuntimeDeck => {
     const id = getActiveDeckId()
@@ -201,12 +202,12 @@ const LOCK_FOLDER_NAV_TYPES: ReadonlySet<string> = new Set([
   }
 
   const snapshotRegularActiveDeckId = (): string =>
-        overlayPreviousActiveId ??
-        transientDeckId ??
-        navStack[navStack.length - 1] ??
-        mainDeck.id
+    overlayPreviousActiveId ??
+    transientDeckId ??
+    navStack[navStack.length - 1] ??
+    mainDeck.id
 
-const enterLockMode = (): void => {
+  const enterLockMode = (): void => {
     if (lockActive) return
     preLockActiveDeckId = snapshotRegularActiveDeckId()
     preLockOverlayDeckId = overlayDeckId
@@ -215,12 +216,15 @@ const enterLockMode = (): void => {
       { preLockActiveDeckId, preLockOverlayDeckId },
       "runtime: lock active",
     )
-    pubSub.publish("runtime:lock-mode", { active: true, reason: "session-locked" })
+    pubSub.publish("runtime:lock-mode", {
+      active: true,
+      reason: "session-locked",
+    })
     pubSub.publish("runtime:activeDeck", { deckId: "core:lock" })
     pubSub.publish("runtime:invalidate", undefined)
   }
 
-const navigateToDeck = (
+  const navigateToDeck = (
     id: string,
     navOptions?: { addToHistory?: boolean },
   ): void => {
@@ -372,10 +376,7 @@ const navigateToDeck = (
     }
   }
 
-  const handleSystemButton = (
-    type: string,
-    gesture: GestureKind,
-  ): boolean => {
+  const handleSystemButton = (type: string, gesture: GestureKind): boolean => {
     if (type === "core:back") {
       if (gesture === "tap") {
         goBack()
@@ -524,7 +525,12 @@ const navigateToDeck = (
           "[runtime] action skipped: missing system requirement",
         )
         if (position >= 0) {
-          getMethods().showTemporaryError(found.deckId, position, undefined, found.button.id)
+          getMethods().showTemporaryError(
+            found.deckId,
+            position,
+            undefined,
+            found.button.id,
+          )
         }
         return
       }
@@ -536,7 +542,12 @@ const navigateToDeck = (
           "[addon:sireno-deck] user action failed",
         )
         if (position >= 0) {
-          getMethods().showTemporaryError(found.deckId, position, undefined, found.button.id)
+          getMethods().showTemporaryError(
+            found.deckId,
+            position,
+            undefined,
+            found.button.id,
+          )
         }
       }
       return
@@ -702,7 +713,14 @@ const navigateToDeck = (
       availableOverlayDeckId = bestId
       if (bestId !== null) {
         logger.info(
-          { from: prev, to: bestId, snapshot: { name: snapshot.name, windowTitle: snapshot.windowTitle } },
+          {
+            from: prev,
+            to: bestId,
+            snapshot: {
+              name: snapshot.name,
+              windowTitle: snapshot.windowTitle,
+            },
+          },
           "active-app: overlay deck available",
         )
       } else if (prev !== null) {
@@ -736,7 +754,12 @@ const navigateToDeck = (
         }
         latestActiveAppSnapshot = snapshot
         logger.debug(
-          { snapshot: { name: snapshot.name, windowTitle: snapshot.windowTitle } },
+          {
+            snapshot: {
+              name: snapshot.name,
+              windowTitle: snapshot.windowTitle,
+            },
+          },
           "active-app: snapshot",
         )
         scheduleOverlay(computeOverlayFor(snapshot))
@@ -802,7 +825,10 @@ const navigateToDeck = (
           )
           navigateToDeck(restoreId, { addToHistory: false })
         }
-        pubSub.publish("runtime:lock-mode", { active: false, reason: "session-unlocked" })
+        pubSub.publish("runtime:lock-mode", {
+          active: false,
+          reason: "session-unlocked",
+        })
         pubSub.publish("runtime:invalidate", undefined)
       }
     }

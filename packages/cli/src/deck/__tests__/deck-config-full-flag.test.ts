@@ -59,6 +59,17 @@ describe("buildDeckConfigMessage — full flag", () => {
   })
 })
 
+describe("buildDeckConfigMessage — button color", () => {
+  it("includes the deck button color on the surface", () => {
+    const msg = buildDeckConfigMessage(
+      { id: "overlay", name: "Overlay", buttons: [], buttonColor: "blue" },
+      new Map(),
+    )
+
+    expect(msg.surfaces["overlay"]?.buttonColor).toBe("blue")
+  })
+})
+
 describe("buildDeckConfigMessage — overlayDeckIcon resolution", () => {
   it("returns null when overlayDeckIcon is null", () => {
     const deck = { id: "d", name: "D", buttons: [] }
