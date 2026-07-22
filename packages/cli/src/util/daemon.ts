@@ -19,6 +19,7 @@ export interface DaemonPaths {
   pidFile: string
   tokenFile: string
   childrenFile: string
+  configPathFile: string
 }
 
 const DAEMON_NAME = "sireno-deck"
@@ -47,6 +48,7 @@ export const resolveDaemonPaths = (): DaemonPaths => {
     pidFile: join(runtimeDir, `${DAEMON_NAME}.pid`),
     tokenFile: join(runtimeDir, `${DAEMON_NAME}.token`),
     childrenFile: join(runtimeDir, `${DAEMON_NAME}.children.json`),
+    configPathFile: join(runtimeDir, `${DAEMON_NAME}.config`),
   }
 }
 
@@ -137,6 +139,83 @@ export const writeChildren = (
 
 export const removeChildrenFile = (paths = resolveDaemonPaths()): void => {
   if (existsSync(paths.childrenFile)) unlinkSync(paths.childrenFile)
+}
+
+export const readConfigPath = (
+  paths = resolveDaemonPaths(),
+): string | null => {
+  if (!existsSync(paths.configPathFile)) return null
+  const raw = readFileSync(paths.configPathFile, "utf8").trim()
+  return raw.length > 0 ? raw : null
+}
+
+export const writeConfigPath = (
+  configPath: string,
+  paths = resolveDaemonPaths(),
+): void => {
+  writeFileSync(paths.configPathFile, `${configPath}\n`, { encoding: "utf8" })
+}
+
+export const removeConfigPathFile = (
+  paths = resolveDaemonPaths(),
+): void => {
+  if (existsSync(paths.configPathFile)) unlinkSync(paths.configPathFile)
+}
+
+// ponytail: child tracking is best-effort — orphans from a hard kill are reaped
+// on next prune. terminateChildren uses process.kill(pid, 0) to check liveness.
+export const terminateChildren = async ({
+  timeoutMs = 5000,
+  logger,
+  paths = resolveDaemonPaths(),
+}: {
+  timeoutMs?: number
+  logger?: pino.Logger
+  paths?: DaemonPaths
+}): Promise<void> => {
+  const state = readChildren(paths)
+  if (state === null || state.pids.length === 0) return
+
+  const alive = state.pids.filter((p) => isRunning(p))
+  if (alive.length === 0) return
+
+  // Phase 1: SIGTERM all
+  for (const pid of alive) {
+    try {
+      process.kill(pid, "SIGTERM")
+      logger?.debug({ pid }, "daemon: sent SIGTERM to child")
+    } catch {
+      // already dead
+    }
+  }
+
+  // Wait for graceful shutdown
+  const deadline = Date.now() + timeoutMs
+  let remaining = alive.filter((p) => isRunning(p))
+  while (remaining.length > 0 && Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 200))
+    remaining = remaining.filter((p) => isRunning(p))
+  }
+
+  // Phase 2: SIGKILL stragglers
+  for (const pid of remaining) {
+    try {
+      process.kill(pid, "SIGKILL")
+      logger?.debug({ pid }, "daemon: sent SIGKILL to child")
+    } catch {
+      // already dead
+    }
+  }
+
+  // Prune dead from tracked list
+  const stillAlive = state.pids.filter((p) => isRunning(p))
+  writeChildren({ pids: stillAlive }, paths)
+  if (stillAlive.length < state.pids.length) {
+    logger?.info(
+      { killed: state.pids.length - stillAlive.length },
+      "daemon: cleaned up terminated children",
+    )
+  }
 }
 
 export const appendChild = (

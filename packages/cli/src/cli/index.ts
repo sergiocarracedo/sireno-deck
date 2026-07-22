@@ -7,10 +7,12 @@ import { run, type RunOptions } from "./commands/run"
 import start, { type StartOptions } from "./commands/start"
 import { status, type StatusOptions } from "./commands/status"
 import { stop, type StopOptions } from "./commands/stop"
+import { serviceCommands } from "./commands/service"
 
 export interface GlobalOptions {
   verbose?: boolean
   logLevel?: string
+  json?: boolean
 }
 
 interface RunArgs extends GlobalOptions {
@@ -129,7 +131,7 @@ const startCommand: CommandModule<object, StartArgs> = {
       ...(argv.deviceModel !== undefined
         ? { deviceModel: argv.deviceModel }
         : {}),
-      ...(argv.httpPort !== undefined ? { httpPort: argv.httpPort } : {}),
+      ...(argv.httpPort !== undefined ? { httpPort: argv.httpPort as number } : {}),
     }
     try {
       await start(options)
@@ -168,6 +170,18 @@ const statusCommand: CommandModule<object, StatusArgs> = {
   },
 }
 
+const serviceCommand: CommandModule<object, object> = {
+  command: "service <subcommand>",
+  describe: "Manage the sireno-deck native background service",
+  builder: (yargs) =>
+    yargs
+      .command(serviceCommands)
+      .demandCommand(1, "service <subcommand> required"),
+  handler: () => {
+    // all work done in subcommands
+  },
+}
+
 export const buildCli = async (): Promise<{
   scriptName: string
   commands: CommandModule<object, GlobalOptions>[]
@@ -176,7 +190,7 @@ export const buildCli = async (): Promise<{
   void buildLogger
   return {
     scriptName: PACKAGE_NAME,
-    commands: [runCommand, startCommand, stopCommand, statusCommand],
+    commands: [runCommand, startCommand, stopCommand, statusCommand, serviceCommand],
     packageName: PACKAGE_NAME,
   }
 }
