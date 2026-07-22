@@ -1,0 +1,29 @@
+packages/cli/src/cli/commands/run.ts
+  s_158cba931b5bb8::t_4406a033a380b1 1088
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_158cba931b5bb8::t_1a28556be4c92d 9-17
+packages/cli/src/builtin-addons/system-status/manifest.ts
+  s_158cba931b5bb8::t_22609bfca37e26 2,5-13,15,17-24,30,32-35,38-40,45-48
+packages/cli/src/builtin-addons/system-status/buttons/generic/schemas.ts
+  s_158cba931b5bb8::t_dd516955b76d70 1-26
+packages/cli/src/builtin-addons/system-status/buttons/generic/frontend.tsx
+  s_158cba931b5bb8::t_610fff5e7944b7 1-2,6-13,15-61,64-65,67,70-87,90,93-111,113-121,124-137,142-163
+packages/cli/src/builtin-addons/system-status/buttons/generic/index.ts
+  s_158cba931b5bb8::t_c84aeaed27c285 1-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "678c44d0f91e0ae3d6d1cad38f35850bca7b6194",
+  "prompts": {},
+  "sessions": {
+    "s_158cba931b5bb8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_074da790fffe5bcgm3NeU1K8XK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
