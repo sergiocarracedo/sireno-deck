@@ -951,6 +951,38 @@ const buildAddonBundle = async (): Promise<AddonRegistryBundle> => {
   return { scanned: registry.scanned, addonByType }
 }
 
+// ponytail: extracted so tests can exercise the addon-spec-to-dir mapping
+// without spinning up the full pipeline (WS bridge, output client, etc.).
+// Reads `addons[]` from the parsed config — entries are either a raw string
+// spec or `{src, enabled?, config?}`. The basename of the resolved path
+// becomes the addon key for icon resolution; e.g. `{src: /p/chrome-overlay}`
+// maps `addon://chrome-overlay/assets/foo.svg` to `/p/chrome-overlay/assets/foo.svg`.
+export const buildExternalAddonDirs = (
+  addonEntries: ReadonlyArray<unknown>,
+  configPath: string,
+): Map<string, string> => {
+  const result = new Map<string, string>()
+  for (const entry of addonEntries) {
+    const source =
+      typeof entry === "string"
+        ? entry
+        : typeof entry === "object" &&
+            entry !== null &&
+            typeof (entry as { src?: unknown }).src === "string"
+          ? (entry as { src: string }).src
+          : null
+    if (source === null) continue
+    const expanded = source.startsWith("~/")
+      ? join(homedir(), source.slice(2))
+      : source
+    const abs = isAbsolute(expanded)
+      ? expanded
+      : resolvePath(dirname(configPath), expanded)
+    result.set(basename(abs), abs)
+  }
+  return result
+}
+
 export const preflight = async (options: RunOptions): Promise<void> => {
   const { logger } = options
   // Validate the config first so a broken YAML exits before we ever touch
@@ -1004,18 +1036,10 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   // Note: `loaded` here is the RUNTIME result from buildRuntime — it shadows
   // the config loader's `loaded`. Use `loadedConfig` (the LoadConfigResult) to
   // access the parsed config and configPath.
-  const externalAddonDirs = new Map<string, string>()
-  for (const entry of loadedConfig.config.addons ?? []) {
-    const source = typeof entry === "string" ? entry : entry.source
-    if (typeof source !== "string" || source.length === 0) continue
-    const expanded = source.startsWith("~/")
-      ? join(homedir(), source.slice(2))
-      : source
-    const abs = isAbsolute(expanded)
-      ? expanded
-      : resolvePath(dirname(loadedConfig.configPath), expanded)
-    externalAddonDirs.set(basename(abs), abs)
-  }
+  const externalAddonDirs = buildExternalAddonDirs(
+    loadedConfig.config.addons ?? [],
+    loadedConfig.configPath,
+  )
 
   const resolverOptions = buildResolverOptions(
     addonBundle.addonByType,
