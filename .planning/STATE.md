@@ -72,7 +72,7 @@
 ## In Progress
 
 **Phase 12: Deck Reliability, Emulator UX, Logging, and Background Service**
-- Added 2026-07-22 from expanded scope: system-status migration, deterministic deck-array positions, error surfaces, emulator improvements, compact logging, and background service lifecycle.
+- Context gathered 2026-07-22 (deep mode) — system-status migration, deterministic deck positions, persistent error surfaces, emulator tags/config path, compact structured logging, and native background service decisions captured.
 - Plans not yet created — run `plan-phase 12`.
 
 ## Roadmap Evolution
