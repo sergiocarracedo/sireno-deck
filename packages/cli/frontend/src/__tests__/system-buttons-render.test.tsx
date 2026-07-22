@@ -146,4 +146,34 @@ describe("Deck with system buttons", () => {
     expect(cell).not.toBeNull()
     expect(screen.getByText("Back")).toBeTruthy()
   })
+
+  it("renders the composite overlay-toggle surface at n-1 on an overlay root with a deck icon", () => {
+    const deck = {
+      id: "overlay-root",
+      name: "Overlay Root",
+      hasOverlayDeckAvailable: false,
+      overlayDeckIcon: "icon://chrome",
+      buttons: [{ id: "14", type: "core:overlay-toggle", config: {} }],
+    }
+    const { container } = render(
+      <Deck deck={deck} deviceModel={getDeviceModel("mk2")} />,
+    )
+    const cell = container.querySelector(
+      '[data-button-type="core:overlay-toggle"]',
+    )
+    expect(cell).not.toBeNull()
+    expect(container.querySelector('[data-split-action="true"]')).toBeNull()
+    expect(
+      container.querySelector('[data-sireno-overlay-toggle="true"]'),
+    ).not.toBeNull()
+    expect(screen.getByText("Toggle overlay")).toBeTruthy()
+    const compositeIcons = cell?.querySelectorAll(
+      '[data-sireno-ui-icon="true"]',
+    )
+    expect(compositeIcons).toHaveLength(3)
+    expect(compositeIcons?.[0]?.getAttribute("data-sireno-icon-source")).toBe(
+      "generic",
+    )
+    expect(screen.queryByText("Overlay")).toBeNull()
+  })
 })

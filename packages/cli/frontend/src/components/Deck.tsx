@@ -15,6 +15,7 @@ import {
 } from "@sireno-deck/cli"
 import {
   isSystemButton,
+  renderOverlayToggleButton,
   renderSystemButton,
 } from "@/deck/system-buttons/registry"
 import { useButtonAction } from "../bridge/use-button-action"
@@ -69,6 +70,7 @@ const resolvePosition = (button: DeckButton, fallback: number): number => {
 
 interface ButtonSurfaceProps {
   readonly button: DeckButton
+  readonly deckOverlayIcon?: string | null
 }
 
 interface DeckButtonCellProps {
@@ -181,7 +183,10 @@ const DeckButtonCell = ({
         data-full="true"
       >
         <ErrorBoundary resetKey={button.id}>
-          <ButtonSurface button={button} />
+          <ButtonSurface
+            button={button}
+            deckOverlayIcon={deckOverlayIcon ?? null}
+          />
         </ErrorBoundary>
       </div>
     )
@@ -198,7 +203,10 @@ const DeckButtonCell = ({
     >
       <ButtonFrame buttonType={button.type} onClick={() => fire("tap")}>
         <ErrorBoundary resetKey={button.id}>
-          <ButtonSurface button={button} />
+          <ButtonSurface
+            button={button}
+            deckOverlayIcon={deckOverlayIcon ?? null}
+          />
         </ErrorBoundary>
       </ButtonFrame>
     </div>
@@ -211,7 +219,7 @@ const DeckButtonCell = ({
  * incoming event and never auto-cleared, so addons can compare against
  * `gesture.at` in a `useEffect` without losing the hide-timer race.
  */
-const ButtonSurface = ({ button }: ButtonSurfaceProps) => {
+const ButtonSurface = ({ button, deckOverlayIcon }: ButtonSurfaceProps) => {
   const registryEntry = addonRegistry[button.type]
   const [gesture, setGesture] = useState<AddonGestureEvent | null>(null)
   const channel = `runtime:gesture:${button.id}`
@@ -222,6 +230,13 @@ const ButtonSurface = ({ button }: ButtonSurfaceProps) => {
   }, [data])
 
   if (isSystemButton(button.type)) {
+    if (
+      button.type === "core:overlay-toggle" &&
+      typeof deckOverlayIcon === "string" &&
+      deckOverlayIcon.length > 0
+    ) {
+      return renderOverlayToggleButton(deckOverlayIcon)
+    }
     return renderSystemButton(button.type)
   }
 

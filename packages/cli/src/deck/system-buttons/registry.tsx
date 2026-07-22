@@ -1,5 +1,7 @@
 import { type ReactElement } from "react"
 
+import { Icon } from "@/ui/primitives/Icon"
+import { Label } from "@/ui/primitives/Label"
 import { IconLabelSurface } from "@/ui/surfaces/IconLabelSurface"
 
 import {
@@ -47,3 +49,29 @@ export const renderSystemButton = (
     />
   )
 }
+
+interface OverlayToggleSurfaceProps {
+  deckIcon: string
+}
+
+const OverlayToggleSurface = ({
+  deckIcon,
+}: OverlayToggleSurfaceProps): ReactElement => {
+  return (
+    <div
+      className="flex flex-col items-center justify-center gap-1"
+      data-sireno-overlay-toggle="true"
+    >
+      <div className="flex items-center gap-1">
+        <Icon source={deckIcon} size={26} />
+        <Icon source="icon://slash" size={14} />
+        <Icon source="icon://layers" size={26} />
+      </div>
+      <Label text="Toggle overlay" lines={2} />
+    </div>
+  )
+}
+
+export const renderOverlayToggleButton = (
+  deckIcon: string,
+): ReactElement => <OverlayToggleSurface deckIcon={deckIcon} />
