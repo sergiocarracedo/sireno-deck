@@ -47,7 +47,11 @@ const registerOneIcon = (
     stats = statSync(resolved.fullPath)
   } catch (err) {
     logger?.warn(
-      { fullPath: resolved.fullPath, err: (err as Error).message },
+      {
+        icon,
+        fullPath: resolved.fullPath,
+        err: (err as Error).message,
+      },
       "icon file missing or unreadable",
     )
     return
