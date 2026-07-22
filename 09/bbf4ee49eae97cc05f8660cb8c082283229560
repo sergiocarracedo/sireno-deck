@@ -1,0 +1,29 @@
+config.yml
+  s_391cfee983ce6a::t_c62710b109f9fe 5-6
+.planning/quick/005-overlay-icons-back-cli/005-PLAN.md
+  s_125496d408ca37::t_b31a2c9aff2606 1-184
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "09bbf4ee49eae97cc05f8660cb8c082283229560",
+  "prompts": {},
+  "sessions": {
+    "s_125496d408ca37": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_07b51eff1ffeNUGIuLb38hTGYQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_391cfee983ce6a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_075882246ffe6z3pe6hSZa58eb",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
