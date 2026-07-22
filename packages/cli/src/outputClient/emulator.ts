@@ -136,7 +136,10 @@ export class EmulatorOutputClient implements OutputClient {
         // keyCount, so system-button injection + pagination baked in the
         // wrong n-1 / n-2 positions. Rebuild with the new keyCount and
         // swap the runtime's deck set so the next deck-config broadcast
-        // carries the correct layout.
+        // carries the correct layout. The rebuild path runs
+        // positionButtons(runtimeDeck.config, keyCount) on every deck so
+        // positions always come from the original config snapshot, never
+        // from prior in-memory state.
         if (opts.rebuildDecksForKeyCount !== undefined) {
           const rebuilt = opts.rebuildDecksForKeyCount(descriptor.keyCount)
           opts.runtime.setDecks(rebuilt)

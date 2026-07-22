@@ -6,7 +6,8 @@ import type pino from "pino"
  * - Buttons with explicit `position` keep it (first-come wins for duplicates).
  * - Duplicate positions are bumped to the next available gap.
  * - Buttons without `position` fill remaining gaps in array order.
- * - Positions ≥ keyCount are dropped with a warning.
+ * - Positions ≥ keyCount or < 0 are dropped with a debug log.
+ * - Returns a sparse array — only assigned buttons (length ≤ keyCount).
  *
  * ponytail: O(n²) scan — fine for deck sizes (<30).
  */
@@ -26,11 +27,17 @@ export const positionButtons = <T extends { position?: number }>(
       continue
     }
     if (pos >= keyCount) {
-      logger?.warn({ position: pos, keyCount }, "button position overflow, dropping")
+      logger?.debug(
+        { position: pos, keyCount, reason: "overflow" },
+        "button position overflow, dropping",
+      )
       continue
     }
     if (occupied.has(pos)) {
-      logger?.warn({ position: pos }, "duplicate position, treating as unfixed")
+      logger?.debug(
+        { position: pos, reason: "duplicate" },
+        "duplicate position, treating as unfixed",
+      )
       unfixed.push(btn)
       continue
     }
@@ -42,7 +49,10 @@ export const positionButtons = <T extends { position?: number }>(
   for (const btn of unfixed) {
     while (gap < keyCount && occupied.has(gap)) gap++
     if (gap >= keyCount) {
-      logger?.warn({ keyCount }, "no room for remaining buttons, dropping")
+      logger?.debug(
+        { keyCount, reason: "exhausted" },
+        "no room for remaining buttons, dropping",
+      )
       break
     }
     occupied.add(gap)

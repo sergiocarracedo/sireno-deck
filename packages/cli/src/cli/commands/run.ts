@@ -602,6 +602,9 @@ const buildRuntime = (
         (b): b is Exclude<(typeof d.buttons)[number], string> =>
           typeof b !== 'string',
       )
+      // ponytail: recompute from snapshot every keyCount change — prior state
+      // is stale the moment keyCount differs. positionButtons is the
+      // authoritative assignment for the current device.
       const runtimeButtons: RuntimeDeck['buttons'] = positionButtons(
         objectButtons,
         keyCount,
