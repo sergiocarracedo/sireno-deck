@@ -1,0 +1,23 @@
+packages/cli/frontend/src/__tests__/system-buttons-render.test.tsx
+  s_09be9c292fd608::t_4215e491fd71d6 149-178
+packages/cli/src/deck/system-buttons/registry.tsx
+  s_09be9c292fd608::t_4215e491fd71d6 3-4,52-77
+packages/cli/frontend/src/components/Deck.tsx
+  s_09be9c292fd608::t_4215e491fd71d6 18,73,186-189,206-209,222,233-239
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "f1dab3f22fd30bfad3e9fa5babf4a31170e4ad75",
+  "prompts": {},
+  "sessions": {
+    "s_09be9c292fd608": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_076a83aaeffeZJ0qX4sOT1w2xR",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
