@@ -59,6 +59,8 @@ const CONTEXT_FIELDS = [
   "addonDecks",
   "userDecks",
   "addonConfigEntries",
+  "icon",
+  "fullPath",
 ] as const
 
 const formatContext = (entry: Record<string, unknown>): string[] => {
