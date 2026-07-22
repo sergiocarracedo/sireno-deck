@@ -1,6 +1,7 @@
 ---
 title: Overlay deck stays active when its trigger no longer applies
 date: 2026-07-17
+last_updated: 2026-07-22
 category: logic-errors
 module: deck/runtime (applyOverlay)
 problem_type: logic_error
@@ -9,11 +10,15 @@ tags: overlay, applyOverlay, trigger, autoShow, active-app, runtime, deck-config
 symptoms:
   - "Chrome overlay auto-applied (autoShow=true); switching active-app to a process matching a different overlay deck (e.g. Spotify, autoShow=false) left the chrome overlay visible"
   - "Layer did not flip back to the regular layer when the original trigger condition no longer matched"
-  - "n-1 SplitSurface on the chrome overlay kept rendering chrome's icon even though the chrome trigger no longer applied"
-root_cause: "applyOverlay only handled two cases: (1) deckId === lastOverlayDeckId → early-return, (2) deckId !== null → update lastOverlayDeckId and optionally setOverlay. The third case — active-app now matches a different deck than the currently active overlay, with the new match having autoShow=false — never dismissed the previous overlay. The condition `deckId !== null && deckId !== overlayDeckId` updated only the cache variable, not the runtime state."
+  - "n-1 SplitSurface on the chrome overlay kept rendering chrome's icon even though chrome's trigger no longer applied"
+  - "After re-introducing overlay-mode auto-follow (commit f2823e8e), chrome-overlay stayed mounted when switching to a non-autoShow overlay (e.g. warp) instead of falling back to the regular layer (user quote: 'show the regular deck')"
+root_cause: "applyOverlay only handled two cases: (1) deckId === lastOverlayDeckId → early-return, (2) deckId !== null → update lastOverlayDeckId and optionally setOverlay. The third case — active-app now matches a different deck than the currently active overlay, with the new match having autoShow=false — never dismissed the previous overlay. The condition `deckId !== null && deckId !== overlayDeckId` updated only the cache variable, not the runtime state. A later iteration (commit f2823e8e) added an auto-switch branch that ignored autoShow — restoring the bug for the non-autoShow case."
 resolution_type: code_fix
 related:
   - commit f52bccf
+  - commit f2823e8e
+  - commit eb5f013f
+  - .planning/quick/009-overlay-mode-routing/009-SUMMARY-ADDENDUM-2.md
   - .planning/phases/05-overlay-decks/05-CONTEXT.md
 ---
 
@@ -51,15 +56,22 @@ const applyOverlay = (deckId: string | null): void => {
     logger.warn({ deckId }, "active-app: overlay deck not found")
     return
   }
-  if (overlayDeckId !== null && deckId !== overlayDeckId) {
-    logger.info(
-      { prevOverlayId: overlayDeckId, newMatch: deckId },
-      "active-app: dismissing previous overlay (trigger no longer applies)",
-    )
-    setOverlay(null, { source: "autoShow" })
-  }
   if (deckId === null) {
+    if (overlayDeckId !== null) {
+      setOverlay(null, { source: "autoShow" })
+    }
     lastOverlayDeckId = null
+    return
+  }
+  if (overlayDeckId !== null && deckId !== overlayDeckId) {
+    const newDeck = deckById(deckId)
+    if (newDeck === undefined) return
+    if (newDeck.autoShow === true) {
+      setOverlay(deckId, { source: "autoShow" })
+    } else {
+      setOverlay(null, { source: "autoShow" })
+    }
+    lastOverlayDeckId = deckId
     return
   }
   if (deckId === lastOverlayDeckId) return
@@ -74,7 +86,14 @@ const applyOverlay = (deckId: string | null): void => {
 }
 ```
 
-The new shape: detect "current overlay's trigger no longer applies" first, dismiss unconditionally, then handle the new match. Three observable outcomes per match state:
+Three branches now decide overlay state from the active-app poll:
+
+1. `deckId === null` — dismiss the current overlay if any; clear `lastOverlayDeckId`.
+2. Overlay active AND match changed — auto-switch when the new match is `autoShow: true`; dismiss the current overlay when it is `autoShow: false`. `lastOverlayDeckId` is set so the next poll cycle is a no-op while the active-app stays the same.
+3. Overlay NOT active AND match is `autoShow: true` — apply it (existing first-activation path).
+4. Overlay NOT active AND match is `autoShow: false` — leave it as "available" only; manual toggle required.
+
+Four observable outcomes per match state:
 
 | Current overlay | New match | Result |
 |-----------------|-----------|--------|
@@ -87,16 +106,23 @@ The new shape: detect "current overlay's trigger no longer applies" first, dismi
 
 `applyOverlay` is the single chokepoint that turns active-app poll signals into layer state changes. The previous implementation conflated "new deck was selected by the matcher" with "current deck is still valid". The fix separates those concerns: when the matcher returns a deck different from the currently active one, the current one's trigger is by definition no longer satisfied, regardless of the new match's `autoShow`. Dismissing first then re-evaluating the new match keeps the invariant "`overlayDeckId === null || its trigger matches the current active-app`".
 
+The `autoShow` branch in the "match changed while overlay active" path was the second iteration of this fix (commit `eb5f013f`). The first iteration (`f2823e8e`) auto-switched unconditionally — which collapsed two distinct semantics ("overlay mode follows an autoShow match" vs. "overlay mode allows manual activation regardless of autoShow") into one. Splitting on `autoShow` restores both semantics: auto-switch for autoShow matches, manual toggle for the rest.
+
 ## Prevention
 
-- Added two regression tests in `packages/cli/src/deck/__tests__/runtime.test.ts`:
+- Added four regression tests in `packages/cli/src/deck/__tests__/runtime.test.ts`:
   - "dismisses current overlay when trigger no longer applies (active-app switches to different overlay)"
   - "dismisses current overlay when active-app switches to non-matching app"
-- Pattern to remember: when a state machine has an "auto" transition driven by an external poll, the "transition away from current state" condition must be checked against *what the matcher returned*, not just *whether it returned anything*. A null result is not the only signal that the current state is invalid.
+  - "switches overlay to the new matched overlay when both are autoShow (overlay mode follows the match)"
+  - "dismisses current overlay when active-app switches to a non-autoShow overlay match"
+- Pattern to remember: when a state machine has an "auto" transition driven by an external poll, the "transition away from current state" condition must be checked against *what the matcher returned*, not just *whether it returned anything*. A null result is not the only signal that the current state is invalid. And when the new match is "available only" (non-autoShow), never activate it from the poll — leave that to manual user action.
 - Related: the same poll also drives `availableOverlayDeckId` updates (which the runtime:overlay-available subscriber broadcasts to the frontend). Both signals — "available" and "active" — must be kept consistent with the matcher output.
 
 ## Related
 
 - `.planning/phases/05-overlay-decks/05-CONTEXT.md` — locks the AND-across-fields semantics and per-overlay-deck nav stack
 - `.planning/solutions/runtime-errors/emoji-paste-hangs-gnome-wayland-2026-07-17.md` — unrelated (Wayland key-injection issue)
-- Commit f52bccf — the fix
+- `.planning/solutions/logic-errors/overlay-page-nav-state-survives-toggle-2026-07-22.md` — the second half of quick-009: page-nav state preservation across toggle and across app switches (same architectural theme, different angle)
+- Commit `f52bccf` — the original fix
+- Commit `f2823e8e` — overlay-mode-follows-match iteration
+- Commit `eb5f013f` — autoShow-respecting iteration
