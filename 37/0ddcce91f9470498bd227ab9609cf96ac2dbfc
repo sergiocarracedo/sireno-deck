@@ -1,0 +1,24 @@
+.planning/quick/008-overlay-toggle-deck-icons-label/008-SUMMARY.md
+  s_09be9c292fd608::t_61ad2ca619499d 1-94
+.planning/quick/008-overlay-toggle-deck-icons-label/008-PLAN.md
+  s_09be9c292fd608::t_68318f332c37b3 1-201
+.planning/STATE.md
+  s_09be9c292fd608::t_86891dec4a97bb 49
+  s_09be9c292fd608::t_bab951a4605ffc 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "370ddcce91f9470498bd227ab9609cf96ac2dbfc",
+  "prompts": {},
+  "sessions": {
+    "s_09be9c292fd608": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_076a83aaeffeZJ0qX4sOT1w2xR",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
