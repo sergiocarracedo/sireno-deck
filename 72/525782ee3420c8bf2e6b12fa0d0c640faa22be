@@ -1,0 +1,21 @@
+.planning/phases/12-deck-reliability-and-service/12-CONTEXT.md
+  s_158cba931b5bb8::t_9eb20c1419376e 1-138
+.planning/phases/12-deck-reliability-and-service/12-DISCUSSION-LOG.md
+  s_158cba931b5bb8::t_677f5ae42de8eb 1-215
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "72525782ee3420c8bf2e6b12fa0d0c640faa22be",
+  "prompts": {},
+  "sessions": {
+    "s_158cba931b5bb8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_074da790fffe5bcgm3NeU1K8XK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
