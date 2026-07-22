@@ -1,0 +1,19 @@
+packages/cli/src/util/logger.ts
+  s_391cfee983ce6a::t_cbe9085ba9826c 62-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "a8a2926e6fb6414d89f44be5247f9c9629077c23",
+  "prompts": {},
+  "sessions": {
+    "s_391cfee983ce6a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_075882246ffe6z3pe6hSZa58eb",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
