@@ -1,0 +1,24 @@
+.planning/quick/009-overlay-mode-routing/009-SUMMARY.md
+  s_09be9c292fd608::t_f009737836e145 1-105
+.planning/quick/009-overlay-mode-routing/009-PLAN.md
+  s_09be9c292fd608::t_40bbe11626e569 1-411
+.planning/STATE.md
+  s_09be9c292fd608::t_356a329a025768 50
+  s_09be9c292fd608::t_094ade53720155 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "0bda17b9a2f98cf524f6cb6689c4f8475528b094",
+  "prompts": {},
+  "sessions": {
+    "s_09be9c292fd608": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_076a83aaeffeZJ0qX4sOT1w2xR",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
