@@ -2,7 +2,7 @@
 
 **Project:** sireno-deck-2
 **Active branch:** main
-**Last activity:** 2026-07-22 - Completed quick-010 (addon config overrides keyed by manifest name; was silently dropped)
+**Last activity:** 2026-07-22 - Completed quick-011 (chrome overlay shortcut IDs + favorites + inherited overlay button colors)
 
 ## Completed Phases
 
@@ -49,6 +49,7 @@
 | 008 | Standalone overlay-root n-1 toggle shows matched deck icon + slash + layers icon and label `Toggle overlay` (visual follow-up to quick-005) | 2026-07-22 | f1dab3f2 | .planning/quick/008-overlay-toggle-deck-icons-label/ |
 | 009 | Overlay mode = routing branch: active overlay follows the matched overlay on app change; back inside overlay dismisses; page-nav targets stay inside the page set | 2026-07-22 | f2823e8e | .planning/quick/009-overlay-mode-routing/ |
 | 010 | Per-addon-deck config overrides (`addons[i].config.decks.<id>`) were silently dropped: keyed by `src` path but looked up by manifest name. Fix: key overrides by manifest name via `buildAddonConfigOverrides` (new exported helper) | 2026-07-22 | bc52f719 | .planning/quick/010-addon-config-override-key/ |
+| 011 | Chrome overlay with stable shortcut ids + `favorites` (render selected first) and `shortcuts` (render only listed) config; every overlay branch (chrome/vscode/opencode) declares a distinct `buttonColor` that propagates through every paginated runtime page via ButtonFrame variants (blue/green/purple, error red preserved) | 2026-07-22 | e3a2af5 | .planning/quick/011-chrome-shortcuts-overlay-colors/ |
 
 ## Key Features (verified in codebase)
 
