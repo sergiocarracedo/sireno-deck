@@ -71,8 +71,11 @@
 
 ## In Progress
 
-_Phase 11 complete. No new phases queued. Next: discuss-phase 12 or quick tasks as needed._
+**Phase 12: Deck Reliability, Emulator UX, Logging, and Background Service**
+- Added 2026-07-22 from expanded scope: system-status migration, deterministic deck-array positions, error surfaces, emulator improvements, compact logging, and background service lifecycle.
+- Plans not yet created — run `plan-phase 12`.
 
 ## Roadmap Evolution
 
 - Phase 11 complete: Addon Manifest v2 array format + per-addon deck overrides landed in 3 atomic commits (`3542713`, `0ee2df0`, `30b661e`); quick-006 `overlay:` schema reverted; 3 Phase-10 addons + 2 builtins migrated to the new array form.
+- Phase 12 added: Deck Reliability, Emulator UX, Logging, and Background Service.
