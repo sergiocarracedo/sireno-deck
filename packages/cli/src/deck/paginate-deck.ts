@@ -37,17 +37,24 @@ export const paginateDeck = (opts: PaginateDeckOptions): PageDeckResult[] => {
     const isFirstPage = pageIndex === 0
     const isLastPage = pageIndex === result.pages.length - 1
     const totalPages = result.pages.length
+    const deckId =
+      totalPages === 1 ? baseDeckId : `${baseDeckId}-p${pageIndex + 1}`
 
     const deckButtons: unknown[] = []
     let emojiCount = 0
 
     for (const item of page.items) {
       if (isNextPageMarker(item)) {
+        // ponytail: keep page-nav targets inside the page set. The base deck
+        // id (e.g. chrome-overlay:shortcuts) is NOT a runtime deck (the pages
+        // are -p1, -p2, -p3); navigating to it would no-op. First page's
+        // prev and last page's next target the current page (no-op), so the
+        // entry/exit to the overlay is via core:overlay-toggle only.
         const prevDeckId = isFirstPage
-          ? baseDeckId
+          ? deckId
           : `${baseDeckId}-p${pageIndex}`
         const nextDeckId = isLastPage
-          ? baseDeckId
+          ? deckId
           : `${baseDeckId}-p${pageIndex + 2}`
         const pageNavPosition = keyCount - 2
         for (let i = deckButtons.length - 1; i >= 0; i--) {
@@ -74,9 +81,6 @@ export const paginateDeck = (opts: PaginateDeckOptions): PageDeckResult[] => {
         emojiCount++
       }
     }
-
-    const deckId =
-      totalPages === 1 ? baseDeckId : `${baseDeckId}-p${pageIndex + 1}`
 
     return {
       deckId,

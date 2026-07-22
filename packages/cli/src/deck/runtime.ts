@@ -252,17 +252,10 @@ const navigateToDeck = (
 
   const goBack = (): void => {
     if (overlayDeckId !== null) {
-      const stack = overlayNavStacks.get(overlayDeckId)
-      if (stack !== undefined && stack.length > 1) {
-        const popped = stack.pop()
-        const prev = stack[stack.length - 1]
-        if (popped !== undefined) {
-          pubSub.publish("runtime:deck-inactive", { deckId: popped })
-        }
-        if (prev !== undefined) {
-          pubSub.publish("runtime:activeDeck", { deckId: prev })
-        }
-      }
+      // ponytail: overlay mode is a routing branch, not a deck stack. Back
+      // dismisses the overlay outright; re-activating later restores the
+      // overlay's root page (overlayNavStacks entry is kept).
+      setOverlay(null)
       return
     }
     if (transientDeckId !== null) {
@@ -616,15 +609,28 @@ const navigateToDeck = (
       logger.warn({ deckId }, "active-app: overlay deck not found")
       return
     }
+    if (deckId === null) {
+      // ponytail: no overlay matches anymore. If we had one active, dismiss it.
+      if (overlayDeckId !== null) {
+        logger.info(
+          { prevOverlayId: overlayDeckId },
+          "active-app: dismissing previous overlay (no match)",
+        )
+        setOverlay(null, { source: "autoShow" })
+      }
+      lastOverlayDeckId = null
+      return
+    }
     if (overlayDeckId !== null && deckId !== overlayDeckId) {
+      // ponytail: overlay mode is a routing branch — when the matched overlay
+      // changes, follow the new match (state for the old overlay is kept in
+      // overlayNavStacks so re-activating later restores it).
       logger.info(
         { prevOverlayId: overlayDeckId, newMatch: deckId },
-        "active-app: dismissing previous overlay (trigger no longer applies)",
+        "active-app: switching overlay (match moved)",
       )
-      setOverlay(null, { source: "autoShow" })
-    }
-    if (deckId === null) {
-      lastOverlayDeckId = null
+      setOverlay(deckId, { source: "autoShow" })
+      lastOverlayDeckId = deckId
       return
     }
     if (deckId === lastOverlayDeckId) return

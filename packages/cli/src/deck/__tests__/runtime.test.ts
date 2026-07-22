@@ -541,7 +541,7 @@ describe("createRuntime with active-app provider", () => {
     await runtime.stopActiveAppPolling()
   })
 
-  it("dismisses current overlay when trigger no longer applies (active-app switches to different overlay)", async () => {
+  it("switches overlay to the new matched overlay when active-app switches (overlay mode follows the match)", async () => {
     const { runtime } = setup([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
@@ -565,8 +565,7 @@ describe("createRuntime with active-app provider", () => {
     expect(runtime.getOverlay()?.id).toBe("chrome-deck")
     provider.snapshot = { name: "Spotify", windowTitle: null, processId: 2 }
     await flush(1_500)
-    expect(runtime.getOverlay()).toBeNull()
-    expect(runtime.getActiveDeckId()).toBe("main")
+    expect(runtime.getOverlay()?.id).toBe("spotify-deck")
     await runtime.stopActiveAppPolling()
   })
 
@@ -809,7 +808,7 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
     expect(runtime.getActiveDeckId()).toBe("spotify-page")
   })
 
-  it("goBack at overlay root is a noop (overlay stays active)", () => {
+  it("goBack at overlay root dismisses overlay (overlay mode is a routing branch)", () => {
     const { runtime } = setup([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "spotify", isOverlay: true }),
@@ -817,11 +816,11 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
     runtime.setOverlay("spotify")
     expect(runtime.getActiveDeckId()).toBe("spotify")
     runtime.goBack()
-    expect(runtime.getOverlay()?.id).toBe("spotify")
-    expect(runtime.getActiveDeckId()).toBe("spotify")
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("main")
   })
 
-  it("goBack within overlay pops the overlay stack", () => {
+  it("goBack within overlay dismisses the overlay (overlay mode is a routing branch)", () => {
     const { runtime } = setup([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({ id: "spotify", isOverlay: true }),
@@ -831,8 +830,8 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
     runtime.navigateToDeck("spotify-page")
     expect(runtime.getActiveDeckId()).toBe("spotify-page")
     runtime.goBack()
-    expect(runtime.getActiveDeckId()).toBe("spotify")
-    expect(runtime.getOverlay()?.id).toBe("spotify")
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("main")
   })
 
   it("regular navStack is unaffected by overlay navigation", () => {
@@ -861,7 +860,7 @@ describe("createRuntime — system-button gestures", () => {
     vi.useRealTimers()
   })
 
-  it("core:back tap on overlay deck pops overlay stack", async () => {
+  it("core:back tap on overlay deck dismisses overlay (overlay mode is a routing branch)", async () => {
     const { runtime } = setup([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
@@ -874,7 +873,8 @@ describe("createRuntime — system-button gestures", () => {
     runtime.setOverlay("spotify")
     runtime.navigateToDeck("spotify-page")
     await runtime.dispatchGesture("14", "tap")
-    expect(runtime.getActiveDeckId()).toBe("spotify")
+    expect(runtime.getOverlay()).toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("main")
   })
 
   it("core:back hold while overlay active jumps to main + dismisses overlay", async () => {
