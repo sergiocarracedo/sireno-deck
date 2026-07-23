@@ -27,11 +27,12 @@ export const systemStatusManifest: AddonManifestV1 = {
   apiVersion: 1,
   name: "system-status",
   buttonTypes: {
-    "system-status": {
+    "system-status:system-status": {
       frontend: genericFrontend,
       service: {
         configSchema: GenericSystemStatusSchema,
         internal: false,
+        gestureHandlers: ["tap"] as const,
       },
     },
   },

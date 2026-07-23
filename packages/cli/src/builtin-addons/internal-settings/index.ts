@@ -35,6 +35,7 @@ export const manifest: AddonManifestV1 = {
       frontend: appInfoFrontend,
       service: {
         ...withInternal(appInfoBackend),
+        gestureHandlers: ['tap'] as const,
         full: true,
       },
     },

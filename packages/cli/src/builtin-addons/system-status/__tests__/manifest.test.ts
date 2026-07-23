@@ -3,9 +3,9 @@ import { describe, expect, it } from "vitest"
 import { systemStatusManifest } from "../manifest"
 
 describe("systemStatusManifest", () => {
-  it("registers exactly one button type named 'system-status'", () => {
+  it("registers exactly one button type named 'system-status:system-status'", () => {
     expect(Object.keys(systemStatusManifest.buttonTypes)).toEqual([
-      "system-status",
+      "system-status:system-status",
     ])
   })
 
