@@ -769,12 +769,19 @@ export const applyConfigErrorReplacements = (
 
   for (const deck of decks) {
     for (const btn of deck.buttons) {
+      // ponytail: skip addon-injected decks — their buttons have semantic ids
+      // (e.g. brightness-down, app-info, back) and `internal:true` services;
+      // re-validating them via the user-config schema always fails.
+      const isAddonInjectedDeck = deck.id.startsWith('internal-settings:')
+      if (isAddonInjectedDeck) continue
       const parsed = Number.parseInt(btn.id, 10)
       const position =
         btn.position ?? (Number.isFinite(parsed) ? parsed : undefined)
       if (position === undefined) continue
       // ponytail: skip system buttons — they are injected, not user-configured
       if (btn.type.startsWith('core:')) continue
+      // ponytail: skip addon-injected buttons (semantic id like 'brightness-down')
+      if (!Number.isFinite(parsed)) continue
 
       const path = `decks.${deck.id}.buttons[@position:${position}]`
       const { issues, schemaIssues } = validateButton(
