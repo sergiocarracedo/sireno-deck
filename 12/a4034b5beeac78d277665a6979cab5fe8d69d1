@@ -1,0 +1,31 @@
+packages/cli/src/builtin-addons/system-status/__tests__/swap-metric.test.ts
+  s_158cba931b5bb8::t_656cfa706dda0a 3
+  s_158cba931b5bb8::t_edd45419f2d06c 1-2,4-28
+packages/cli/src/builtin-addons/system-status/domain/live-metrics.ts
+  s_158cba931b5bb8::t_e8774ac98b4db3 202
+  s_158cba931b5bb8::t_49bb59685c0c23 11
+  s_158cba931b5bb8::t_a5e06c62be9bfe 70-96
+packages/cli/src/builtin-addons/system-status/__tests__/manifest.test.ts
+  s_158cba931b5bb8::t_49dc78edc9a2dc 34
+packages/cli/src/builtin-addons/system-status/__tests__/schema-metrics.test.ts
+  s_158cba931b5bb8::t_16b7435b9aaf0b 16-17
+  s_158cba931b5bb8::t_7319a7e70167f6 49
+packages/cli/src/builtin-addons/system-status/buttons/generic/schemas.ts
+  s_158cba931b5bb8::t_5bc64ce135b465 5,13,20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "12a4034b5beeac78d277665a6979cab5fe8d69d1",
+  "prompts": {},
+  "sessions": {
+    "s_158cba931b5bb8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_074da790fffe5bcgm3NeU1K8XK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
