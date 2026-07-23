@@ -1,0 +1,19 @@
+packages/cli/src/system/providers/clipboard/linux.ts
+  s_4db6c57841b904::t_6bed48a8ddc3f7 39-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "9986a9151af4fdd63ebbec48e90318d7b2a9244a",
+  "prompts": {},
+  "sessions": {
+    "s_4db6c57841b904": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_070410e40ffeIQ63WpcKw46h1Z",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
