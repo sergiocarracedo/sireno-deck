@@ -2,34 +2,11 @@ import { cpus, loadavg, totalmem, freemem } from "node:os"
 import { statfs, readFile } from "node:fs/promises"
 import { existsSync } from "node:fs"
 
-// ponytail: catalog mirrors the legacy generic-system-status set; feature-locked.
-// SystemMetricId values are referenced by user config and downstream channels
-// (`runtime:system-status:<id>`), so renaming requires a migration step.
-export const SYSTEM_METRIC_IDS = [
-  "cpu",
-  "ram",
-  "swap",
-  "disk",
-  "network",
-  "battery",
-  "temperature",
-  "uptime",
-  "frequency",
-  "load",
-  "processes",
-] as const
-
-export type SystemMetricId = (typeof SYSTEM_METRIC_IDS)[number]
-
-export interface SystemMetricSnapshot {
-  available: boolean
-  id: SystemMetricId
-  label: string
-  max?: number
-  percentage?: number
-  unit?: string
-  value?: number
-}
+export {
+  SYSTEM_METRIC_IDS,
+  type SystemMetricId,
+  type SystemMetricSnapshot,
+} from "./metric-ids"
 
 interface ProbeResult {
   available: boolean

@@ -63,14 +63,24 @@ decks:
           label: Chrome
 
       - position: 0
-        type: 'system-status'
+        type: 'system-status:system-status'
         config:
-          metrics: [cpu, ram, battery]
+          metrics:
+            - id: cpu
+              label: CPU
+            - id: ram
+              label: MEM
+            - swap
           display: text
-          labels:
-            cpu: CPU
-            ram: RAM
-            battery: Bat
+
+      - type: 'system-status:system-status'
+        config:
+          metrics:
+            - id: cpu
+              label: CPU
+            - id: ram
+              label: MEM
+            - swap
 
       - position: 6
         type: 'media:volume:down'

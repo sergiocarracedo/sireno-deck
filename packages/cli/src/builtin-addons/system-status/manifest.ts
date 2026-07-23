@@ -6,20 +6,20 @@ import {
   GenericSystemStatusDefaults,
   GenericSystemStatusSchema,
 } from "./buttons/generic/schemas"
-import {
-  probeMetric,
-  SYSTEM_METRIC_IDS,
-  type SystemMetricId,
-} from "./domain"
+import { SYSTEM_METRIC_IDS, type SystemMetricId } from "./domain"
 
-const DEFAULT_POLL_INTERVAL_MS = 2_000
-
+// ponytail: pollers are server-only; lazy-import live-metrics so the manifest
+// can be loaded by the frontend addon virtual module without dragging
+// node:os / node:fs into the browser bundle.
 function makePoller(metricId: SystemMetricId): AddonGlobalPoller {
   return {
     id: `metric:${metricId}`,
     channel: `runtime:system-status:${metricId}`,
-    intervalMs: DEFAULT_POLL_INTERVAL_MS,
-    poll: () => probeMetric(metricId),
+    intervalMs: 2_000,
+    poll: async () => {
+      const { probeMetric } = await import("./domain/live-metrics")
+      return probeMetric(metricId)
+    },
   }
 }
 

@@ -1,4 +1,4 @@
-import type { SystemMetricId, SystemMetricSnapshot } from "./live-metrics"
+import type { SystemMetricId, SystemMetricSnapshot } from "./metric-ids"
 
 export type SystemStatusFormatter =
   | "bytes"

@@ -1,9 +1,5 @@
-export {
-  SYSTEM_METRIC_IDS,
-  probeMetric,
-  probeMetrics,
-} from "./live-metrics"
-export type { SystemMetricId, SystemMetricSnapshot } from "./live-metrics"
+export { SYSTEM_METRIC_IDS } from "./metric-ids"
+export type { SystemMetricId, SystemMetricSnapshot } from "./metric-ids"
 export {
   resolveFormatter,
   toDisplayMetric,
