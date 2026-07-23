@@ -10,6 +10,7 @@ export interface CreateLoggerOptions {
   level?: LoggerOptions["level"]
   verbose?: boolean
   json?: boolean
+  compact?: boolean
 }
 
 const RESET = "\u001b[0m"
@@ -75,6 +76,32 @@ const formatContext = (entry: Record<string, unknown>): string[] => {
   return lines
 }
 
+// ponytail: compact format collapses context into one line "{msg} ({key: val, ...})"
+// — structured fields still queryable via ndjson, but readable on a terminal.
+const formatCompact = (entry: Record<string, unknown>): string => {
+  const levelNum = typeof entry["level"] === "number" ? entry["level"] : 30
+  const level = LEVEL_LABEL[levelNum] ?? "INFO"
+  const levelColor = LEVEL_COLOR[levelNum] ?? CYAN
+  const time =
+    typeof entry["time"] === "number"
+      ? new Date(entry["time"]).toISOString().slice(11, 19)
+      : ""
+  const ts = colorize(DIM, time.length > 0 ? `${time} ` : "")
+  const head = colorize(levelColor, level.padEnd(5))
+  const msg = typeof entry["msg"] === "string" ? entry["msg"] : ""
+
+  const ctxParts: string[] = []
+  for (const key of CONTEXT_FIELDS) {
+    const value = entry[key]
+    if (value === undefined || value === null) continue
+    const display = typeof value === "string" ? value : JSON.stringify(value)
+    if (display.length === 0) continue
+    ctxParts.push(`${colorize(DIM, `${key}:`)} ${display}`)
+  }
+  const ctxStr = ctxParts.length > 0 ? ` (${ctxParts.join(", ")})` : ""
+  return `${ts}${head} ${msg}${ctxStr}`
+}
+
 const formatHuman = (jsonLine: string): string | null => {
   let entry: Record<string, unknown>
   try {
@@ -118,6 +145,11 @@ const formatHuman = (jsonLine: string): string | null => {
 }
 
 class HumanWritable extends Writable {
+  private readonly compact: boolean
+  constructor(opts: { compact?: boolean } = {}) {
+    super()
+    this.compact = opts.compact ?? false
+  }
   override _write(
     chunk: Buffer | string,
     _encoding: BufferEncoding,
@@ -127,13 +159,25 @@ class HumanWritable extends Writable {
     const lines = text.split("\n")
     for (const line of lines) {
       if (line.length === 0) continue
-      const formatted = formatHuman(line)
+      const formatted = this.compact
+        ? formatCompactLine(line)
+        : formatHuman(line)
       if (formatted !== null) {
         process.stdout.write(`${formatted}\n`)
       }
     }
     callback()
   }
+}
+
+const formatCompactLine = (jsonLine: string): string | null => {
+  let entry: Record<string, unknown>
+  try {
+    entry = JSON.parse(jsonLine) as Record<string, unknown>
+  } catch {
+    return jsonLine
+  }
+  return formatCompact(entry)
 }
 
 const errorSerializer = (
@@ -152,7 +196,7 @@ const errorSerializer = (
 }
 
 export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
-  const { level, verbose = false, json = false } = options
+  const { level, verbose = false, json = false, compact = false } = options
 
   if (verbose) process.env["SIRENO_LOG_VERBOSE"] = "1"
   if (json) process.env["SIRENO_LOG_JSON"] = "1"
@@ -173,7 +217,10 @@ export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
     return pino(loggerOptions)
   }
 
-  const dest = new HumanWritable()
+  // ponytail: TTY + no service context = compact single-line format.
+  // Otherwise fall back to raw ndjson for journald/launchd capture.
+  const useCompact = compact || (process.stdout.isTTY && !process.env["INVOCATION_ID"] && !process.env["LAUNCH_PATH"])
+  const dest = new HumanWritable({ compact: useCompact })
   const teeStream = {
     write(chunk: string): void {
       dest.write(chunk)

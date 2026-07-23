@@ -174,14 +174,7 @@ export class EmulatorOutputClient implements OutputClient {
         {
           activeDeckId: activeDeck.id,
           position: message.position,
-          buttonFound: button !== undefined,
-          buttonType: button?.type,
-          buttonActions: button?.actions,
-          buttonsInDeck: activeDeck.buttons.map((b) => ({
-            id: b.id,
-            position: b.position,
-            type: b.type,
-          })),
+          gesture: message.gesture,
         },
         "[emulator] button lookup",
       )
