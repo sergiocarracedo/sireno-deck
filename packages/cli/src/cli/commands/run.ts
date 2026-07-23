@@ -18,6 +18,7 @@ import { registerBuiltins } from '@/builtin-addons'
 import { registerSystemStatusAddon } from '@/builtin-addons/system-status'
 import { decksChanged } from '@/config/config-diff'
 import { findConfigPath } from '@/config/discovery'
+import { getOriginalCwd } from '@/cli/cwd'
 import { loadConfig } from '@/config/loader'
 import {
   formatFullIssues,
@@ -135,6 +136,7 @@ export interface SetupAddonServicesOptions {
   // type here would re-import a stale pre-existing module
   // (`@/render/icon-resolver`) that doesn't exist on disk.
   readonly resolverOptions: ReturnType<typeof buildResolverOptions>
+  readonly configPath?: string
 }
 
 export interface SetupAddonServicesResult {
@@ -172,6 +174,7 @@ export const setupAddonServices = (
     methods,
     logger,
     resolverOptions,
+    configPath,
   } = options
 
   void bridgeAddonServices({
@@ -185,6 +188,7 @@ export const setupAddonServices = (
     bridge,
     store,
     methods,
+    configPath,
   })
 
   const unsubscribeDeck = pubSub.subscribe(
@@ -1144,6 +1148,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     signal: bridgeSignal.signal,
     store,
     logger,
+    configPath: loadedConfig.configPath,
   })
 
   for (const deck of decks) {
@@ -1389,6 +1394,11 @@ const resolveConfigPath = (options: RunOptions): string => {
   if (options.config !== undefined) {
     return options.config
   }
+  const cwd = getOriginalCwd()
+  const cwdConfig = resolvePath(cwd, "config.yml")
+  if (existsSync(cwdConfig)) {
+    return cwdConfig
+  }
   const home = options.homeDir ?? homedir()
   const found = findConfigPath({
     homeDir: home,
@@ -1397,12 +1407,10 @@ const resolveConfigPath = (options: RunOptions): string => {
       : {}),
   })
   if (found === null) {
-    const cwd = process.cwd()
     throw new Error(
       `Could not find config.yml.\n` +
-        `  Looked in: ${cwd}/config.yml (and walked up 10 parent directories)\n` +
-        `  Also: $XDG_CONFIG_HOME/sireno-deck/config.yml (default: ~/.config/sireno-deck/config.yml)\n` +
-        `  Fix: pass --config <path> or create one of the above.`,
+        `  Fix: pass --config <path> or create ./config.yml in the current directory.\n` +
+        `  Also looked in: ~/.config/sireno-deck/config.yml (and walked up from ${cwd}).`,
     )
   }
   return found
