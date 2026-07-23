@@ -1,0 +1,25 @@
+packages/cli/emulator/src/__tests__/AddonsPage.test.tsx
+  s_158cba931b5bb8::t_41b21ed6ef63bd 1
+  s_158cba931b5bb8::t_79e809a2318b2c 2-63
+packages/cli/emulator/src/__tests__/ConfigPage.test.tsx
+  s_158cba931b5bb8::t_5ddb9be44d0078 52
+  s_158cba931b5bb8::t_4c7e00480259e2 1
+  s_158cba931b5bb8::t_0d6c34eb676d07 2-37,39-51,53-80
+  s_158cba931b5bb8::t_7d463110a3fbf5 38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "10a06ad0562b4f387458a2f0f8574289f20da258",
+  "prompts": {},
+  "sessions": {
+    "s_158cba931b5bb8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_074da790fffe5bcgm3NeU1K8XK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
