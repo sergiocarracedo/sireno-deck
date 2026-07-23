@@ -1,0 +1,28 @@
+.planning/phases/12-deck-reliability-and-service/12-06-SUMMARY.md
+  s_158cba931b5bb8::t_203039a9e9595e 1-34
+packages/cli/emulator/src/__tests__/AddonsPage.test.tsx
+  s_158cba931b5bb8::t_6fb4afdd229871 33-34,37-38,57-58,76-78,85-90
+  s_158cba931b5bb8::t_c89e279038e059 94-96
+  s_158cba931b5bb8::t_0967f827000e17 99,101-104
+  s_158cba931b5bb8::t_2bc614b813d570 69-71,79-82
+  s_158cba931b5bb8::t_ae1e534f69c90e 11-12,21-22,24-31,35-36,39-56,68,72-73
+  s_158cba931b5bb8::t_08fd898553353e 7-10,14-20,32,59-61,63,93
+  s_158cba931b5bb8::t_204df9e2ce1882 13,23
+  s_158cba931b5bb8::t_2c487dbeb068bc 91-92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "76cd48d6404199f542608c09462a5cb33bb740c2",
+  "prompts": {},
+  "sessions": {
+    "s_158cba931b5bb8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_074da790fffe5bcgm3NeU1K8XK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
