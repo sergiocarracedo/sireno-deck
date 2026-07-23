@@ -1,0 +1,21 @@
+.gitignore
+  s_4db6c57841b904::t_93e0650832dd03 17-18
+.compound-engineering/config.local.example.yaml
+  s_4db6c57841b904::t_b3159e6a1bf1eb 1-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "30762df8835143050295e44a9f4232264aefe07a",
+  "prompts": {},
+  "sessions": {
+    "s_4db6c57841b904": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_070410e40ffeIQ63WpcKw46h1Z",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
