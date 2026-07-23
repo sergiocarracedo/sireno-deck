@@ -170,7 +170,7 @@ export class EmulatorOutputClient implements OutputClient {
         const parsed = Number.parseInt(b.id, 10)
         return Number.isFinite(parsed) && parsed === message.position
       })
-      logger.info(
+      logger.debug(
         {
           activeDeckId: activeDeck.id,
           position: message.position,

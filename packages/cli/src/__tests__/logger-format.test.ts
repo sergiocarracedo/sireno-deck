@@ -52,3 +52,34 @@ describe("TTY-aware logger", () => {
     expect(logger).toBeDefined()
   })
 })
+
+describe("compact format renders inline context", () => {
+  it("compact formatter produces a single line with msg and context", () => {
+    Object.defineProperty(process.stdout, "isTTY", { value: false })
+    // ponytail: capture the compact-format output by tapping into pino's
+    // stream. Since `compact: true` uses HumanWritable which writes to
+    // process.stdout, we monkey-patch write to capture the rendered string.
+    const writes: string[] = []
+    const originalWrite = process.stdout.write.bind(process.stdout)
+    process.stdout.write = ((chunk: string | Uint8Array): boolean => {
+      writes.push(typeof chunk === "string" ? chunk : chunk.toString("utf8"))
+      return true
+    }) as typeof process.stdout.write
+    try {
+      const logger = createLogger({ json: false, compact: true })
+      logger.info(
+        { deckId: "main", position: 11, gesture: "tap" },
+        "emulator: button-action received",
+      )
+    } finally {
+      process.stdout.write = originalWrite
+    }
+    const all = writes.join("")
+    expect(all).toContain("emulator: button-action received")
+    expect(all).toContain("deckId: main")
+    expect(all).toContain("position: 11")
+    expect(all).toContain("gesture: tap")
+    // ponytail: compact = single line. No newline within the rendered log line.
+    expect(all.split("\n").filter((l) => l.length > 0)).toHaveLength(1)
+  })
+})
