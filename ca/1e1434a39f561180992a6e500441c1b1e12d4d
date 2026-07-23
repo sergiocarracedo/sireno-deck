@@ -1,0 +1,27 @@
+packages/cli/src/builtin-addons/system-status/buttons/generic/schemas.ts
+  s_158cba931b5bb8::t_5fdfedcb7cbea0 2-21,26,39,42
+packages/cli/src/builtin-addons/system-status/buttons/generic/frontend.tsx
+  s_158cba931b5bb8::t_e241c9a9d0a65c 93,99,101-104
+  s_158cba931b5bb8::t_16306cd6de4adc 46,52,54-57
+  s_158cba931b5bb8::t_db846e14bc1f0e 155
+packages/cli/src/builtin-addons/system-status/__tests__/schema-metrics.test.ts
+  s_158cba931b5bb8::t_f6f44781fd6d3d 18,24
+  s_158cba931b5bb8::t_f4397e54e3cb03 1-2,4-17,19-23,25-53
+  s_158cba931b5bb8::t_1de79ee35c5f00 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "ca1e1434a39f561180992a6e500441c1b1e12d4d",
+  "prompts": {},
+  "sessions": {
+    "s_158cba931b5bb8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_074da790fffe5bcgm3NeU1K8XK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
