@@ -1,0 +1,23 @@
+.planning/ROADMAP.md
+  s_158cba931b5bb8::t_e001b309032f2a 443
+.planning/phases/12-deck-reliability-and-service/12-VERIFICATION.md
+  s_158cba931b5bb8::t_a26680bade126c 1-93
+.planning/STATE.md
+  s_158cba931b5bb8::t_e27bec7e16c099 76-84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "948f4a32a55d18d8390a8cea32c54b0256edccd4",
+  "prompts": {},
+  "sessions": {
+    "s_158cba931b5bb8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_074da790fffe5bcgm3NeU1K8XK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
