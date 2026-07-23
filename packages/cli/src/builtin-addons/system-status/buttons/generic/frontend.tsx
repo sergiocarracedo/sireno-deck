@@ -43,18 +43,18 @@ function readSnapshot(
 const TextRows: AddonFrontendButton<GenericSystemStatusConfig> = ({
   config,
 }) => {
-  const metrics = config.metrics.slice(0, 3) as SystemMetricId[]
+  const metrics = config.metrics.slice(0, 3)
   const labels = config.labels ?? {}
   const formatters = config.formatters ?? {}
 
   return (
     <div className="flex h-full w-full flex-col items-stretch justify-center gap-1 p-2">
-      {metrics.map((metricId) => (
+      {metrics.map((entry) => (
         <MetricRow
-          key={metricId}
-          metricId={metricId}
-          label={labels[metricId]}
-          formatter={formatters[metricId]}
+          key={entry.id}
+          metricId={entry.id}
+          label={entry.label ?? labels[entry.id]}
+          formatter={formatters[entry.id]}
         />
       ))}
     </div>
@@ -90,18 +90,18 @@ function MetricRow({ metricId, label, formatter }: MetricRowProps): JSX.Element 
 const BarsView: AddonFrontendButton<GenericSystemStatusConfig> = ({
   config,
 }) => {
-  const metrics = config.metrics.slice(0, 3) as SystemMetricId[]
+  const metrics = config.metrics.slice(0, 3)
   const labels = config.labels ?? {}
   const formatters = config.formatters ?? {}
 
   return (
     <div className="flex h-full w-full flex-col items-stretch justify-center gap-1 p-2">
-      {metrics.map((metricId) => (
+      {metrics.map((entry) => (
         <BarRow
-          key={metricId}
-          metricId={metricId}
-          label={labels[metricId]}
-          formatter={formatters[metricId]}
+          key={entry.id}
+          metricId={entry.id}
+          label={entry.label ?? labels[entry.id]}
+          formatter={formatters[entry.id]}
         />
       ))}
     </div>
@@ -152,7 +152,7 @@ const GenericSystemStatusButton: AddonFrontendButton<GenericSystemStatusConfig> 
   }, [props.config.renderInterval])
   // touch tick to keep React render-pure after interval; data is read inside child hooks
   void tick
-  if (!isMetricId(props.config.metrics[0] ?? "")) return null
+  if (!isMetricId(props.config.metrics[0]?.id ?? "")) return null
   return props.config.display === "bars" ? (
     <BarsView {...props} />
   ) : (
