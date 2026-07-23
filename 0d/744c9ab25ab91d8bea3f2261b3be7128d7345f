@@ -1,0 +1,43 @@
+.planning/phases/12-deck-reliability-and-service/12-03-SUMMARY.md
+  s_158cba931b5bb8::t_7c9017c24411ec 1-32
+packages/cli/src/deck/__tests__/validation-errors.test.ts
+  s_158cba931b5bb8::t_bfba6a859c1a36 32,39,43-65
+  s_158cba931b5bb8::t_165f5ac10b76fc 66-67
+packages/cli/src/config/validation.ts
+  s_158cba931b5bb8::t_12cb0205f33346 50
+  s_158cba931b5bb8::t_4a829145a620f5 15-21,26
+  s_158cba931b5bb8::t_bd2be5bf735984 111,122
+  s_158cba931b5bb8::t_a5444aab4d682e 67
+  s_158cba931b5bb8::t_ec2e7953af3b79 146
+packages/cli/src/deck/runtime-subscriptions.ts
+  s_158cba931b5bb8::t_9920e3e019ecca 1-47
+packages/cli/src/cli/commands/run.ts
+  s_158cba931b5bb8::t_7263861e9d47f2 121
+  s_158cba931b5bb8::t_1ba0561e48b1eb 1124-1128,1135
+  s_158cba931b5bb8::t_e89b31cf96859a 306
+  s_158cba931b5bb8::t_e383fef712fa39 467
+  s_158cba931b5bb8::t_53f1cf21abc304 40
+  s_158cba931b5bb8::t_0dbfd5b45d7bf9 986
+  s_158cba931b5bb8::t_ddae76c194c173 989-1018
+  s_158cba931b5bb8::t_93bcab6938f5fa 168,187
+  s_158cba931b5bb8::t_67b5fe64e3df97 987
+packages/cli/src/deck/__tests__/missing-nav.test.ts
+  s_158cba931b5bb8::t_531f20a1b2cace 7
+  s_158cba931b5bb8::t_c0cd4783318c59 57-107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "0d744c9ab25ab91d8bea3f2261b3be7128d7345f",
+  "prompts": {},
+  "sessions": {
+    "s_158cba931b5bb8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_074da790fffe5bcgm3NeU1K8XK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
