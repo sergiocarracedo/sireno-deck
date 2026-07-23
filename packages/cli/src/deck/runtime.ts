@@ -531,6 +531,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
             position,
             undefined,
             found.button.id,
+            `missing-requirement: ${capability}`,
           )
         }
         return
@@ -548,6 +549,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
             position,
             undefined,
             found.button.id,
+            `action-failed: ${userAction}`,
           )
         }
       }

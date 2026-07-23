@@ -42,7 +42,7 @@ describe("themes/default/ButtonFrame", () => {
     expect(frame?.textContent).toContain("Hello")
   })
 
-  it("renders error variant with red background", () => {
+  it("renders error variant with subtle danger tint", () => {
     const container = document.createElement("div")
     document.body.appendChild(container)
     const root = document.createElement("div")
@@ -69,7 +69,9 @@ describe("themes/default/ButtonFrame", () => {
     const frame = root.querySelector('[data-sireno-button-frame="true"]')
     expect(frame).not.toBeNull()
     expect(frame?.getAttribute("data-variant")).toBe("error")
-    expect(frame?.className).toContain("bg-red-600")
+    expect(frame?.className).toContain("bg-danger/15")
+    expect(frame?.className).toContain("border-danger/45")
+    expect(frame?.className).toContain("text-danger")
   })
 
   it.each(["blue", "green", "purple"] as const)(

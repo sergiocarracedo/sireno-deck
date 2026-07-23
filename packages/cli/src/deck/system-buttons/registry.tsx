@@ -3,6 +3,7 @@ import { type ReactElement } from "react"
 import { Icon } from "@/ui/primitives/Icon"
 import { Label } from "@/ui/primitives/Label"
 import { IconLabelSurface } from "@/ui/surfaces/IconLabelSurface"
+import { TemporaryErrorSurface } from "@/ui/surfaces/TemporaryErrorSurface"
 
 import {
   SYSTEM_BUTTON_TYPES,
@@ -21,7 +22,6 @@ const SYSTEM_BUTTON_LAYOUT: Record<
   "core:temporary-error": {
     source: "icon://triangle-alert",
     label: "Error",
-    details: "check logs",
   },
 }
 
@@ -30,6 +30,8 @@ export const SYSTEM_BUTTON_LABELS: ReadonlyArray<string> = SYSTEM_BUTTON_TYPES
 export const isSystemButton = (type: string): type is SystemButtonType =>
   isSystemButtonType(type)
 
+const FALLBACK_ERROR_DETAILS = "check logs"
+
 export const renderSystemButton = (
   type: string,
   iconOverride?: string,
@@ -37,6 +39,15 @@ export const renderSystemButton = (
 ): ReactElement | null => {
   if (!isSystemButtonType(type)) return null
   const layout = SYSTEM_BUTTON_LAYOUT[type]
+  if (type === "core:temporary-error") {
+    return (
+      <TemporaryErrorSurface
+        source={iconOverride ?? layout.source}
+        label={layout.label}
+        details={details ?? layout.details ?? FALLBACK_ERROR_DETAILS}
+      />
+    )
+  }
   return (
     <IconLabelSurface
       source={iconOverride ?? layout.source}
@@ -72,6 +83,6 @@ const OverlayToggleSurface = ({
   )
 }
 
-export const renderOverlayToggleButton = (
-  deckIcon: string,
-): ReactElement => <OverlayToggleSurface deckIcon={deckIcon} />
+export const renderOverlayToggleButton = (deckIcon: string): ReactElement => (
+  <OverlayToggleSurface deckIcon={deckIcon} />
+)

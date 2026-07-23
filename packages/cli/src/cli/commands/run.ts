@@ -1,31 +1,31 @@
-import { exec } from 'node:child_process'
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
-import { homedir } from 'node:os'
+import { exec } from "node:child_process"
+import { existsSync, mkdirSync, writeFileSync } from "node:fs"
+import { homedir } from "node:os"
 import {
   basename,
   dirname,
   isAbsolute,
   join,
   resolve as resolvePath,
-} from 'node:path'
+} from "node:path"
 
-import type pino from 'pino'
+import type pino from "pino"
 
-import { SIRENO_ADDON_API_VERSION } from '@/addon/api-types'
-import { loadAddons } from '@/addon/loader'
-import { AddonRegistry } from '@/addon/registry'
-import { registerBuiltins } from '@/builtin-addons'
-import { registerSystemStatusAddon } from '@/builtin-addons/system-status'
-import { decksChanged } from '@/config/config-diff'
-import { findConfigPath } from '@/config/discovery'
-import { getOriginalCwd } from '@/cli/cwd'
-import { loadConfig } from '@/config/loader'
+import { SIRENO_ADDON_API_VERSION } from "@/addon/api-types"
+import { loadAddons } from "@/addon/loader"
+import { AddonRegistry } from "@/addon/registry"
+import { registerBuiltins } from "@/builtin-addons"
+import { registerSystemStatusAddon } from "@/builtin-addons/system-status"
+import { decksChanged } from "@/config/config-diff"
+import { findConfigPath } from "@/config/discovery"
+import { getOriginalCwd } from "@/cli/cwd"
+import { loadConfig } from "@/config/loader"
 import {
   formatFullIssues,
   validateButton,
   validateFull,
   validatePerDeck,
-} from '@/config/validation'
+} from "@/config/validation"
 import {
   createDeckRuntime,
   injectSystemButtons,
@@ -34,53 +34,53 @@ import {
   type Runtime,
   type RuntimeDeck,
   type Store,
-} from '@/deck'
-import { paginateDeck } from '@/deck/paginate-deck'
-import { positionButtons } from '@/deck/position-buttons'
-import { subscribeNavigateDeck } from '@/deck/runtime-subscriptions'
+} from "@/deck"
+import { paginateDeck } from "@/deck/paginate-deck"
+import { positionButtons } from "@/deck/position-buttons"
+import { subscribeNavigateDeck } from "@/deck/runtime-subscriptions"
 import {
   createActiveAppProvider,
   type ActiveAppProvider,
-} from '@/system/providers/active-app'
-import { createKeyMacroProvider } from '@/system/providers/key-macro'
-import { createSessionProvider } from '@/system/providers/session'
+} from "@/system/providers/active-app"
+import { createKeyMacroProvider } from "@/system/providers/key-macro"
+import { createSessionProvider } from "@/system/providers/session"
 import {
   checkRequirements,
   formatCapabilityWarning,
-} from '@/system/requirements'
-import { resolveActiveTheme } from '@/themes/loader'
-import { resolveAddonCacheDir } from '@/util/cache-paths'
+} from "@/system/requirements"
+import { resolveActiveTheme } from "@/themes/loader"
+import { resolveAddonCacheDir } from "@/util/cache-paths"
 
-import { createActionExecutor } from '@/action/executor'
+import { createActionExecutor } from "@/action/executor"
 import {
   getAssetByPath,
   getUnsentAssets,
   registerDeckIcon,
   registerIconForDeck,
-} from '@/core/icon-asset-registry'
-import { ConfigWatcher } from '@/core/watcher'
-import { bridgeAddonServices } from '@/deck/addon-handler-bridge'
+} from "@/core/icon-asset-registry"
+import { ConfigWatcher } from "@/core/watcher"
+import { bridgeAddonServices } from "@/deck/addon-handler-bridge"
 import {
   buildDeckConfigMessage,
   buildResolverOptions,
   type AddonFrontendRef,
-} from '@/deck/deck-config'
-import { getHostContext } from '@/deck/host-context'
-import { StatePublisher } from '@/render/state-publisher'
-import { startWsBridge } from '@/render/ws-bridge'
+} from "@/deck/deck-config"
+import { getHostContext } from "@/deck/host-context"
+import { StatePublisher } from "@/render/state-publisher"
+import { startWsBridge } from "@/render/ws-bridge"
 
 import {
   selectOutputClient,
   type OutputClient,
   type OutputHandle,
-} from '@/outputClient'
-import { loadDeviceConfig } from '@/util/device-config'
-import { materializeAddonDecks } from './addon-decks'
+} from "@/outputClient"
+import { loadDeviceConfig } from "@/util/device-config"
+import { materializeAddonDecks } from "./addon-decks"
 import {
   collectBuiltinAddonRegistry,
   type ScannedAddon,
-} from './addon-registry'
-import { findWorkspaceRoot } from './emulator-mode'
+} from "./addon-registry"
+import { findWorkspaceRoot } from "./emulator-mode"
 
 export interface SignalProvider {
   onSignal(handler: () => void): () => void
@@ -88,11 +88,11 @@ export interface SignalProvider {
 
 export const defaultSignals: SignalProvider = {
   onSignal(handler: () => void): () => void {
-    process.once('SIGINT', handler)
-    process.once('SIGTERM', handler)
+    process.once("SIGINT", handler)
+    process.once("SIGTERM", handler)
     return () => {
-      process.off('SIGINT', handler)
-      process.off('SIGTERM', handler)
+      process.off("SIGINT", handler)
+      process.off("SIGTERM", handler)
     }
   },
 }
@@ -123,11 +123,11 @@ export interface SetupAddonServicesOptions {
   readonly executor: ReturnType<typeof createActionExecutor>
   readonly statePublisher: Pick<
     StatePublisher,
-    'registerChannel' | 'setActiveDeck'
+    "registerChannel" | "setActiveDeck"
   >
   readonly bridge: Pick<
     ReturnType<typeof startWsBridge>,
-    'broadcast' | 'registerCacheablePoller'
+    "broadcast" | "registerCacheablePoller"
   >
   readonly isCompact: boolean
   readonly initialDeck?: RuntimeDeck
@@ -196,10 +196,10 @@ export const setupAddonServices = (
   })
 
   const unsubscribeDeck = pubSub.subscribe(
-    'runtime:activeDeck',
+    "runtime:activeDeck",
     (payload: unknown) => {
       const deckId =
-        typeof payload === 'object' && payload !== null && 'deckId' in payload
+        typeof payload === "object" && payload !== null && "deckId" in payload
           ? String((payload as { deckId: unknown }).deckId)
           : undefined
       if (deckId === undefined) return
@@ -213,19 +213,19 @@ export const setupAddonServices = (
 
   const unsubscribeBrightnessBridge = pubSub.subscribe<{
     value: number
-  }>('sireno:settings:brightness', (payload) => {
+  }>("sireno:settings:brightness", (payload) => {
     bridge.broadcast({
-      type: 'state',
-      channels: { 'sireno:settings:brightness': payload },
+      type: "state",
+      channels: { "sireno:settings:brightness": payload },
     })
   })
 
   let lastBroadcastedDeckId: string | undefined
   const unsubscribeDeckBroadcast = pubSub.subscribe(
-    'runtime:activeDeck',
+    "runtime:activeDeck",
     (payload: unknown) => {
       const deckId =
-        typeof payload === 'object' && payload !== null && 'deckId' in payload
+        typeof payload === "object" && payload !== null && "deckId" in payload
           ? String((payload as { deckId: unknown }).deckId)
           : undefined
       if (deckId === undefined) return
@@ -251,7 +251,7 @@ export const setupAddonServices = (
   )
 
   const unsubscribeOverlayAvailableBroadcast = pubSub.subscribe(
-    'runtime:overlay-available',
+    "runtime:overlay-available",
     () => {
       const activeDeck = runtime.getActiveDeck()
       if (activeDeck === undefined) return
@@ -274,7 +274,7 @@ export const setupAddonServices = (
           hasOverlayDeckAvailable: msg.hasOverlayDeckAvailable,
           overlayDeckIcon: msg.overlayDeckIcon,
         },
-        'orchestrator: broadcasting overlay-available update',
+        "orchestrator: broadcasting overlay-available update",
       )
       bridge.broadcast(msg)
     },
@@ -301,17 +301,17 @@ export const setupAddonServices = (
     )
     bridge.broadcast(msg)
   }, 1000)
-  signal.addEventListener('abort', () => clearInterval(heartbeat))
+  signal.addEventListener("abort", () => clearInterval(heartbeat))
 
   const unsubscribeNavigate = subscribeNavigateDeck(pubSub, runtime)
 
   const unsubscribeDispatch = pubSub.subscribe(
-    'runtime:dispatch',
+    "runtime:dispatch",
     async (payload: unknown) => {
       if (
-        typeof payload !== 'object' ||
+        typeof payload !== "object" ||
         payload === null ||
-        !('value' in payload)
+        !("value" in payload)
       ) {
         return
       }
@@ -320,34 +320,40 @@ export const setupAddonServices = (
       try {
         await methods.dispatch(value)
       } catch (err) {
-        logger.error({ err }, '[runtime:dispatch] addon dispatch failed')
+        logger.error({ err }, "[runtime:dispatch] addon dispatch failed")
       }
     },
   )
 
   const unsubscribeButtonError = pubSub.subscribe(
-    'runtime:buttonError',
+    "runtime:buttonError",
     (payload: unknown) => {
       if (
-        typeof payload !== 'object' ||
+        typeof payload !== "object" ||
         payload === null ||
-        !('deckId' in payload) ||
-        !('position' in payload)
+        !("deckId" in payload) ||
+        !("position" in payload)
       ) {
         return
       }
       const deckId = String((payload as { deckId: unknown }).deckId)
       const position = Number((payload as { position: unknown }).position)
       const durationMs =
-        'durationMs' in payload
+        "durationMs" in payload
           ? Number((payload as { durationMs: unknown }).durationMs)
           : 5000
+      const details =
+        "details" in payload &&
+        typeof (payload as { details?: unknown }).details === "string"
+          ? (payload as { details: string }).details
+          : undefined
       if (!Number.isFinite(position) || position < 0) return
       bridge.broadcast({
-        type: 'button-error',
+        type: "button-error",
         deckId,
         position,
         durationMs: Number.isFinite(durationMs) ? durationMs : 5000,
+        ...(details !== undefined ? { details } : {}),
       })
     },
   )
@@ -389,19 +395,19 @@ interface LoadConfigAndThemeResult {
 
 interface LoadConfigResult {
   readonly configPath: string
-  readonly config: ReturnType<typeof loadConfig>['config']
+  readonly config: ReturnType<typeof loadConfig>["config"]
   readonly registry: AddonRegistry
-  readonly theme: ReturnType<typeof resolveActiveTheme>['theme']
+  readonly theme: ReturnType<typeof resolveActiveTheme>["theme"]
   readonly themeDir: string
   readonly addonSpecToName: ReadonlyMap<string, string>
 }
 
 const loadExternalAddonsIntoRegistry = async (
   registry: AddonRegistry,
-  config: ReturnType<typeof loadConfig>['config'],
+  config: ReturnType<typeof loadConfig>["config"],
   configDir: string,
   homeDir: string,
-  logger: RunOptions['logger'],
+  logger: RunOptions["logger"],
 ): Promise<Map<string, string>> => {
   // ponytail: returns specifier→manifest name for addons that successfully
   // registered. The override map in buildRuntime keys on manifest name (what
@@ -419,10 +425,10 @@ const loadExternalAddonsIntoRegistry = async (
   })
   for (const issue of result.issues) {
     const payload = { source: issue.source, message: issue.message }
-    if (issue.level === 'error') logger.error(payload, 'addon load error')
-    else if (issue.level === 'warning')
-      logger.warn(payload, 'addon load warning')
-    else logger.info(payload, 'addon load info')
+    if (issue.level === "error") logger.error(payload, "addon load error")
+    else if (issue.level === "warning")
+      logger.warn(payload, "addon load warning")
+    else logger.info(payload, "addon load info")
   }
   for (const loaded of result.addons) {
     try {
@@ -430,12 +436,12 @@ const loadExternalAddonsIntoRegistry = async (
       specToName.set(loaded.source.specifier, loaded.manifest.name)
       logger.info(
         { addon: loaded.manifest.name, source: loaded.source.specifier },
-        'addon loaded',
+        "addon loaded",
       )
     } catch (err) {
       logger.error(
         { err, addon: loaded.manifest.name },
-        'addon failed to register',
+        "addon failed to register",
       )
     }
   }
@@ -467,10 +473,10 @@ export const validateAndLoadConfig = async (
       addonDecks: registry.listDeckTypes?.(),
       userDecks: Object.keys(config.decks),
       addonConfigEntries: (config.addons ?? []).map((a) =>
-        typeof a === 'string' ? a : a.src,
+        typeof a === "string" ? a : a.src,
       ),
     },
-    'registry: deck types loaded',
+    "registry: deck types loaded",
   )
   // Per-button config errors are non-fatal: each broken button is replaced
   // with a `core:temporary-error` cell at its position and logged in full
@@ -480,9 +486,9 @@ export const validateAndLoadConfig = async (
   // unknown/invalid button types in non-config ways).
   const validation = validateFull(config, registry)
   const structuralErrors = validation.issues.filter(
-    (i) => !i.path.includes('.config.'),
+    (i) => !i.path.includes(".config."),
   )
-  if (structuralErrors.some((i) => i.level === 'error')) {
+  if (structuralErrors.some((i) => i.level === "error")) {
     throw new Error(
       `Config validation failed:\n${formatFullIssues(structuralErrors)}`,
     )
@@ -492,23 +498,23 @@ export const validateAndLoadConfig = async (
   })
   const themeDir: string = resolvePath(
     findWorkspaceRoot(),
-    'packages',
-    'cli',
-    'frontend',
+    "packages",
+    "cli",
+    "frontend",
   )
   const cssContent: string = getCss()
   if (cssContent.length > 0) {
-    const cssDir = join(themeDir, '.sireno-deck')
+    const cssDir = join(themeDir, ".sireno-deck")
     if (!existsSync(cssDir)) mkdirSync(cssDir, { recursive: true })
-    writeFileSync(join(cssDir, 'theme.css'), cssContent, 'utf8')
+    writeFileSync(join(cssDir, "theme.css"), cssContent, "utf8")
   }
-  process.env['SIRENO_THEME_DIR'] = themeDir
-  process.env['SIRENO_THEME'] = JSON.stringify({
+  process.env["SIRENO_THEME_DIR"] = themeDir
+  process.env["SIRENO_THEME"] = JSON.stringify({
     name: theme.name,
     manifestPath: theme.manifestPath,
     uiOverridesPath: theme.uiOverridesPath,
   })
-  process.env['SIRENO_THEME_NAME'] = theme.name
+  process.env["SIRENO_THEME_NAME"] = theme.name
   return { configPath, config, registry, theme, themeDir, addonSpecToName }
 }
 
@@ -520,7 +526,7 @@ export const buildAddonConfigOverrides = (
   string,
   {
     addonWideConfig: Record<string, unknown>
-    perDeck: Map<string, import('@/cli/commands/addon-decks').AddonDeckOverride>
+    perDeck: Map<string, import("@/cli/commands/addon-decks").AddonDeckOverride>
   }
 > => {
   const overrides = new Map<
@@ -529,7 +535,7 @@ export const buildAddonConfigOverrides = (
       addonWideConfig: Record<string, unknown>
       perDeck: Map<
         string,
-        import('@/cli/commands/addon-decks').AddonDeckOverride
+        import("@/cli/commands/addon-decks").AddonDeckOverride
       >
     }
   >()
@@ -538,26 +544,26 @@ export const buildAddonConfigOverrides = (
     // `{src, enabled?, config?}`. The user wrote `src:` (or just a string
     // for the spec). Normalize here so we have a single source-of-truth key.
     const src =
-      typeof entry === 'string'
+      typeof entry === "string"
         ? entry
-        : typeof entry === 'object' &&
+        : typeof entry === "object" &&
             entry !== null &&
-            typeof (entry as { src?: unknown }).src === 'string'
+            typeof (entry as { src?: unknown }).src === "string"
           ? (entry as { src: string }).src
           : null
     if (src === null) continue
     const cfg =
-      typeof entry === 'object' && entry !== null
+      typeof entry === "object" && entry !== null
         ? (entry as { config?: unknown }).config
         : undefined
-    if (typeof cfg !== 'object' || cfg === null) continue
+    if (typeof cfg !== "object" || cfg === null) continue
     // ponytail: addonWideConfig is everything under `entry.config` EXCEPT
     // `decks` (which carries per-deck overrides). We accept unknown keys
     // here because the schema only constrains the `decks` sub-record.
     const { decks: perDeckRaw, ...rest } = cfg as {
       decks?: Record<
         string,
-        import('@/cli/commands/addon-decks').AddonDeckOverride
+        import("@/cli/commands/addon-decks").AddonDeckOverride
       >
     } & Record<string, unknown>
     // ponytail: key on the loaded addon's manifest name — that's what
@@ -568,7 +574,7 @@ export const buildAddonConfigOverrides = (
     if (addonName === undefined) {
       logger.warn(
         { src },
-        'addon config override targets an addon that failed to load; ignoring',
+        "addon config override targets an addon that failed to load; ignoring",
       )
       continue
     }
@@ -592,19 +598,19 @@ const buildRuntime = (
     ([id, d]) => {
       const objectButtons = d.buttons.filter(
         (b): b is Exclude<(typeof d.buttons)[number], string> =>
-          typeof b !== 'string',
+          typeof b !== "string",
       )
       // ponytail: recompute from snapshot every keyCount change — prior state
       // is stale the moment keyCount differs. positionButtons is the
       // authoritative assignment for the current device.
-      const runtimeButtons: RuntimeDeck['buttons'] = positionButtons(
+      const runtimeButtons: RuntimeDeck["buttons"] = positionButtons(
         objectButtons,
         keyCount,
         logger,
       ).map((b, idx) => ({
         id: b.position?.toString() ?? `b${idx}`,
         type: b.type,
-        ...(typeof b.config === 'object' && b.config !== null
+        ...(typeof b.config === "object" && b.config !== null
           ? { config: b.config }
           : {}),
         ...(b.actions !== undefined ? { actions: b.actions } : {}),
@@ -622,7 +628,7 @@ const buildRuntime = (
             : [d.trigger.window_name]
           : undefined
       const sharedDeckFields = {
-        isMain: id === 'main',
+        isMain: id === "main",
         isOverlay:
           (processNames !== undefined && processNames.length > 0) ||
           (windowNames !== undefined && windowNames.length > 0),
@@ -638,7 +644,7 @@ const buildRuntime = (
           keyCount,
         })
         return pages.map((p) => {
-          const mappedButtons: RuntimeDeck['buttons'] = (
+          const mappedButtons: RuntimeDeck["buttons"] = (
             p.deck.buttons ?? []
           ).map((b, i) => {
             const { position, type, config, ...rest } = b as {
@@ -647,7 +653,7 @@ const buildRuntime = (
               config?: unknown
             }
             const mergedConfig = {
-              ...(typeof config === 'object' && config !== null
+              ...(typeof config === "object" && config !== null
                 ? (config as Record<string, unknown>)
                 : {}),
               ...rest,
@@ -693,7 +699,7 @@ const buildRuntime = (
   const effectiveDecks: RuntimeDeck[] =
     decks.length > 0
       ? decks
-      : [{ id: 'main', name: 'Main', isMain: true, buttons: [] }]
+      : [{ id: "main", name: "Main", isMain: true, buttons: [] }]
   const allDecsWithSystemButtons = injectSystemButtons(
     materializeAddonDecks(
       registry,
@@ -755,7 +761,7 @@ interface DeckButtonError {
  */
 export const applyConfigErrorReplacements = (
   decks: ReadonlyArray<RuntimeDeck>,
-  config: import('@/config/schemas').RawConfig,
+  config: import("@/config/schemas").RawConfig,
   registry: AddonRegistry,
   logger: pino.Logger,
 ): {
@@ -772,20 +778,20 @@ export const applyConfigErrorReplacements = (
       // ponytail: skip addon-injected decks — their buttons have semantic ids
       // (e.g. brightness-down, app-info, back) and `internal:true` services;
       // re-validating them via the user-config schema always fails.
-      const isAddonInjectedDeck = deck.id.startsWith('internal-settings:')
+      const isAddonInjectedDeck = deck.id.startsWith("internal-settings:")
       if (isAddonInjectedDeck) continue
       const parsed = Number.parseInt(btn.id, 10)
       const position =
         btn.position ?? (Number.isFinite(parsed) ? parsed : undefined)
       if (position === undefined) continue
       // ponytail: skip system buttons — they are injected, not user-configured
-      if (btn.type.startsWith('core:')) continue
+      if (btn.type.startsWith("core:")) continue
       // ponytail: skip addon-injected buttons (semantic id like 'brightness-down')
       if (!Number.isFinite(parsed)) continue
 
       const path = `decks.${deck.id}.buttons[@position:${position}]`
       const { issues, schemaIssues } = validateButton(
-        btn as unknown as import('@/config/schemas').RawButtonDef,
+        btn as unknown as import("@/config/schemas").RawButtonDef,
         registry,
         path,
         deck.id,
@@ -795,8 +801,8 @@ export const applyConfigErrorReplacements = (
 
       const details =
         schemaIssues
-          .map((i) => `${[...i.path].join('.') || '(root)'}: ${i.message}`)
-          .join('; ') || issues.map((i) => i.message).join('; ')
+          .map((i) => `${[...i.path].join(".") || "(root)"}: ${i.message}`)
+          .join("; ") || issues.map((i) => i.message).join("; ")
       logger.warn(
         {
           deckId: deck.id,
@@ -832,7 +838,7 @@ export const applyConfigErrorReplacements = (
       errors.push({ position, details: broken.details })
       return {
         id: String(position),
-        type: 'core:temporary-error' as const,
+        type: "core:temporary-error" as const,
         position,
         config: { details: broken.details },
       }
@@ -853,8 +859,8 @@ const loadConfigAndTheme = async (
 
 interface SystemProviders {
   readonly activeApp: ActiveAppProvider
-  readonly session: import('@/system/providers/session').SessionProvider
-  readonly keyMacro: import('@/system/providers/key-macro').KeyMacroProvider
+  readonly session: import("@/system/providers/session").SessionProvider
+  readonly keyMacro: import("@/system/providers/key-macro").KeyMacroProvider
 }
 
 const startSystemProviders = async (
@@ -863,7 +869,7 @@ const startSystemProviders = async (
   methods: Methods,
 ): Promise<SystemProviders> => {
   const { logger } = options
-  const { spawn } = await import('node:child_process')
+  const { spawn } = await import("node:child_process")
   const executor = {
     async run(
       command: string,
@@ -878,16 +884,16 @@ const startSystemProviders = async (
       const start = Date.now()
       return await new Promise((resolve) => {
         const proc = spawn(command, [...args], {
-          stdio: ['pipe', 'pipe', 'pipe'],
+          stdio: ["pipe", "pipe", "pipe"],
         })
-        let stdout = ''
-        let stderr = ''
+        let stdout = ""
+        let stderr = ""
         let timedOut = false
         let killTimer: ReturnType<typeof setTimeout> | undefined
-        proc.stdout.on('data', (chunk: Buffer) => {
+        proc.stdout.on("data", (chunk: Buffer) => {
           stdout += chunk.toString()
         })
-        proc.stderr.on('data', (chunk: Buffer) => {
+        proc.stderr.on("data", (chunk: Buffer) => {
           stderr += chunk.toString()
         })
         const onExit = (code: number | null): void => {
@@ -899,7 +905,7 @@ const startSystemProviders = async (
             elapsedMs: Date.now() - start,
           })
         }
-        proc.on('error', (err) => {
+        proc.on("error", (err) => {
           if (killTimer !== undefined) clearTimeout(killTimer)
           resolve({
             exitCode: -1,
@@ -908,11 +914,11 @@ const startSystemProviders = async (
             elapsedMs: Date.now() - start,
           })
         })
-        proc.on('exit', onExit)
+        proc.on("exit", onExit)
         if (timeoutMs !== undefined && timeoutMs > 0) {
           killTimer = setTimeout(() => {
             timedOut = true
-            proc.kill('SIGKILL')
+            proc.kill("SIGKILL")
           }, timeoutMs)
         }
       })
@@ -927,11 +933,11 @@ const startSystemProviders = async (
   // binary exists at /usr/local/bin. Probe a few well-known install dirs
   // as a fallback so the requirements check doesn't false-negative.
   const wellKnownBinDirs = [
-    '/usr/local/bin',
-    '/usr/bin',
+    "/usr/local/bin",
+    "/usr/bin",
     `${homedir()}/.local/bin`,
-    '/snap/bin',
-    '/opt/homebrew/bin',
+    "/snap/bin",
+    "/opt/homebrew/bin",
   ]
   const extraFsProbe = (command: string): boolean => {
     for (const dir of wellKnownBinDirs) {
@@ -978,7 +984,7 @@ interface AddonRegistryBundle {
 const buildAddonBundle = async (): Promise<AddonRegistryBundle> => {
   const registry = await collectBuiltinAddonRegistry()
 
-  if (process.env['SIRENO_ADDONS'] === undefined) {
+  if (process.env["SIRENO_ADDONS"] === undefined) {
     const addonSpecs = registry.scanned.map((s) => ({
       name: s.name,
       frontend:
@@ -987,7 +993,7 @@ const buildAddonBundle = async (): Promise<AddonRegistryBundle> => {
       buttonTypes: s.buttonTypes,
       defaultButton: s.defaultButton,
     }))
-    process.env['SIRENO_ADDONS'] = JSON.stringify(addonSpecs)
+    process.env["SIRENO_ADDONS"] = JSON.stringify(addonSpecs)
   }
 
   return { scanned: registry.scanned, addonByType: registry.byType }
@@ -1038,15 +1044,15 @@ export const buildExternalAddonDirs = (
   const result = new Map<string, string>()
   for (const entry of addonEntries) {
     const source =
-      typeof entry === 'string'
+      typeof entry === "string"
         ? entry
-        : typeof entry === 'object' &&
+        : typeof entry === "object" &&
             entry !== null &&
-            typeof (entry as { src?: unknown }).src === 'string'
+            typeof (entry as { src?: unknown }).src === "string"
           ? (entry as { src: string }).src
           : null
     if (source === null) continue
-    const expanded = source.startsWith('~/')
+    const expanded = source.startsWith("~/")
       ? join(homedir(), source.slice(2))
       : source
     const abs = isAbsolute(expanded)
@@ -1097,7 +1103,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
   const providers = await startSystemProviders(options, runtime, methods)
 
-  const isCompact = outputClient.kind === 'real'
+  const isCompact = outputClient.kind === "real"
 
   const addonBundle = await buildAddonBundle()
 
@@ -1170,8 +1176,8 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     if (allAssets.length > 0) {
       socket.send(
         JSON.stringify({
-          type: 'assets',
-          deckId: mainDeck?.id ?? '',
+          type: "assets",
+          deckId: mainDeck?.id ?? "",
           assets: allAssets.map((a) => ({
             id: a.id,
             filename: a.fullPath,
@@ -1191,7 +1197,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
         },
         descriptor.keyCount,
-        outputClient.kind === 'real',
+        outputClient.kind === "real",
         (fullPath) => getAssetByPath(fullPath)?.id,
         runtime.getAvailableOverlayDeckIcon(),
       )
@@ -1200,7 +1206,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           deckId: msg.deckId,
           buttonCount: msg.surfaces[msg.deckId]?.buttons.length,
         },
-        'orchestrator: sending deck-config',
+        "orchestrator: sending deck-config",
       )
       socket.send(JSON.stringify(msg))
     }
@@ -1208,13 +1214,13 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
   const onServiceLog = (entry: { level: string; msg: string; ts: number }) => {
     bridge.broadcast({
-      type: 'service-log',
+      type: "service-log",
       level: entry.level,
       msg: entry.msg,
       ts: entry.ts,
     })
   }
-  process.on('sireno:log', onServiceLog)
+  process.on("sireno:log", onServiceLog)
 
   const outputHandle: OutputHandle = await outputClient.init({
     bridge,
@@ -1271,8 +1277,8 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           )
         ) {
           const fallback =
-            nextLoaded.config.decks['main'] !== undefined
-              ? 'main'
+            nextLoaded.config.decks["main"] !== undefined
+              ? "main"
               : (Object.keys(nextLoaded.config.decks)[0] ?? activeId)
           runtime.navigateToDeck(fallback, { addToHistory: false })
         }
@@ -1286,7 +1292,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
             hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
           },
           descriptor.keyCount,
-          outputClient.kind === 'real',
+          outputClient.kind === "real",
           (fullPath) => getAssetByPath(fullPath)?.id,
           runtime.getAvailableOverlayDeckIcon(),
         )
@@ -1297,7 +1303,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
             deckId: msg.deckId,
             buttonCount: msg.surfaces[msg.deckId]?.buttons.length,
           },
-          'config hot-reloaded (decks only)',
+          "config hot-reloaded (decks only)",
         )
         return
       }
@@ -1305,7 +1311,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       // frontend picks up new theme CSS + virtual modules.
       logger.info(
         { prevTheme: prevConfig.theme, nextTheme: nextLoaded.config.theme },
-        'config change outside decks — restarting Vite',
+        "config change outside decks — restarting Vite",
       )
       await currentOutputHandle.stop()
       const nextHandle = await outputClient.init({
@@ -1338,7 +1344,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     } catch (err) {
       logger.warn(
         { err: (err as Error).message },
-        'config change failed; keeping previous config',
+        "config change failed; keeping previous config",
       )
     }
   }
@@ -1351,7 +1357,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
   const signals = options.signals ?? defaultSignals
   const unregister = signals.onSignal(() => {
-    logger.info('received signal, shutting down')
+    logger.info("received signal, shutting down")
     resolveDone()
   })
 
@@ -1364,15 +1370,15 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     statePublisher.stopAll()
     if (
       options.emulator !== true &&
-      typeof currentOutputHandle.pushBlackFrame === 'function'
+      typeof currentOutputHandle.pushBlackFrame === "function"
     ) {
       try {
         await currentOutputHandle.pushBlackFrame()
       } catch (err) {
-        logger.warn({ err: (err as Error).message }, 'pushBlackFrame failed')
+        logger.warn({ err: (err as Error).message }, "pushBlackFrame failed")
       }
     }
-    process.removeListener('sireno:log', onServiceLog)
+    process.removeListener("sireno:log", onServiceLog)
     await configWatcher.close()
     await Promise.allSettled([
       currentOutputHandle.stop(),
@@ -1382,14 +1388,14 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       providers.keyMacro.stop(),
       bridge.close(),
     ])
-    logger.info('shutdown complete')
+    logger.info("shutdown complete")
   }
   void wsPort
 }
 
 const resolveXdgConfigHome = (options: RunOptions): string =>
   options.xdgConfigHome ??
-  process.env['XDG_CONFIG_HOME'] ??
+  process.env["XDG_CONFIG_HOME"] ??
   `${options.homeDir ?? homedir()}/.config`
 
 const resolveConfigPath = (options: RunOptions): string => {
