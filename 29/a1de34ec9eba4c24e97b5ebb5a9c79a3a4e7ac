@@ -1,0 +1,44 @@
+packages/cli/src/builtin-addons/system-status/domain/metric-ids.ts
+  s_4db6c57841b904::t_5592b87d7bb206 1-33
+packages/cli/src/builtin-addons/system-status/sirenodeck.json
+  s_4db6c57841b904::t_8961da9ef65731 1-6
+packages/cli/src/builtin-addons/system-status/domain/index.ts
+  s_4db6c57841b904::t_cc0438081a81d9 1-2
+packages/cli/src/builtin-addons/system-status/manifest.ts
+  s_4db6c57841b904::t_b7b7002d7ab1b9 11-13,18-22
+  s_4db6c57841b904::t_5a5bf8ff080e13 9
+packages/cli/src/builtin-addons/system-status/domain/display-metrics.ts
+  s_4db6c57841b904::t_8343ca3e0a7b36 1
+packages/cli/src/builtin-addons/system-status/domain/live-metrics.ts
+  s_4db6c57841b904::t_a9b081567f3bd5 5-9
+packages/cli/src/builtin-addons/system-status/buttons/generic/frontend.tsx
+  s_4db6c57841b904::t_ebf3b50d724b2c 121-124,126-134,152
+  s_4db6c57841b904::t_7412a526cb4cb5 193
+  s_4db6c57841b904::t_835a3a614dcc21 27,30,32-35
+  s_4db6c57841b904::t_66e758075ade8c 63-66,68-76
+  s_4db6c57841b904::t_91d9503f113ccf 28-29
+  s_4db6c57841b904::t_84c1817bc157c2 31
+  s_4db6c57841b904::t_da14b5a5b96940 67
+  s_4db6c57841b904::t_9fe4aa1fffe395 120
+  s_4db6c57841b904::t_5e45f60718e3f7 125
+  s_4db6c57841b904::t_c2417d2be1bd1e 149-151
+  s_4db6c57841b904::t_3e6b7cfdc230d9 153
+  s_4db6c57841b904::t_a85d6cde146125 192
+  s_4db6c57841b904::t_c2990ae2959b69 194-195
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "29a1de34ec9eba4c24e97b5ebb5a9c79a3a4e7ac",
+  "prompts": {},
+  "sessions": {
+    "s_4db6c57841b904": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_070410e40ffeIQ63WpcKw46h1Z",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
