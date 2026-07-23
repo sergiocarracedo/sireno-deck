@@ -16,6 +16,8 @@ export interface FullValidationIssue {
   level: "error" | "warning"
   path: string
   message: string
+  deckId?: string
+  position?: number
 }
 
 export interface FullValidationResult {
@@ -86,13 +88,17 @@ export const validateButton = (
   btn: RawButtonDef,
   registry: AddonRegistry,
   path: string,
+  deckId?: string,
+  position?: number,
 ): ButtonValidationResult => {
+  const base = { deckId, position }
   const issues: FullValidationIssue[] = []
   if (!registry.hasButtonType(btn.type)) {
     issues.push({
       level: "error",
       path: `${path}.type`,
       message: `Unknown button type: ${btn.type}`,
+      ...base,
     })
     return { issues, schemaIssues: [] }
   }
@@ -102,6 +108,7 @@ export const validateButton = (
       level: "error",
       path: `${path}.type`,
       message: `Internal button type ${btn.type} cannot be used in user config`,
+      ...base,
     })
     return { issues, schemaIssues: [] }
   }
@@ -124,12 +131,17 @@ export const validateButton = (
         level: "error",
         path: `${path}.config.${[...issue.path].join(".")}`,
         message: issue.message,
+        ...base,
       })
     }
     return { issues, schemaIssues }
   }
   return { issues, schemaIssues: [] }
 }
+
+// ponytail: deckId/position lets the runtime replace the button in-place
+// without a second validation pass or path-string parsing.
+
 
 export const validateFull = (
   config: RawConfig,
@@ -138,9 +150,9 @@ export const validateFull = (
   const issues: FullValidationIssue[] = []
   for (const [deckId, deck] of Object.entries(config.decks)) {
     deck.buttons.forEach((btn, index) => {
-      if (typeof btn === "string") return
+      if (typeof btn === 'string') return
       const path = `decks.${deckId}.buttons[${index}]`
-      issues.push(...validateButton(btn, registry, path).issues)
+      issues.push(...validateButton(btn, registry, path, deckId, btn.position).issues)
     })
   }
   return { issues }
@@ -176,6 +188,8 @@ export const validatePerDeck = (
         btn,
         registry,
         path,
+        deckId,
+        btn.position,
       )
       const buttonId = btn.position?.toString() ?? `b${index}`
       perButton.push({

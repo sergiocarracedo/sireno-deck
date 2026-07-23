@@ -7,10 +7,11 @@ type Config = z.infer<typeof configSchema>
 
 export default {
   configSchema,
-  onTap: ({ config, publish }) => {
+  onTap: ({ config, publish, buttonId }) => {
     publish("runtime:navigate-deck", {
       deckId: config.deck,
       addToHistory: config.addToHistory ?? true,
+      buttonId,
     })
   },
 } satisfies AddonButtonTypeService<Config>

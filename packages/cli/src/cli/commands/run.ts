@@ -21,6 +21,7 @@ import { findConfigPath } from '@/config/discovery'
 import { loadConfig } from '@/config/loader'
 import {
   formatFullIssues,
+  validateButton,
   validateFull,
   validatePerDeck,
 } from '@/config/validation'
@@ -309,6 +310,29 @@ export const setupAddonServices = (
         'addToHistory' in payload
           ? Boolean((payload as { addToHistory: unknown }).addToHistory)
           : true
+      const buttonId =
+        'buttonId' in payload
+          ? String((payload as { buttonId: unknown }).buttonId)
+          : undefined
+      // ponytail: missing nav target is a button-level error, not a deck-level
+      // one — never mutate navigation state. Capture source position so we can
+      // publish the error to the correct slot if the target does not exist.
+      const sourceDeckId = runtime.getActiveDeckId()
+      const sourcePosition =
+        buttonId !== undefined && Number.isFinite(Number(buttonId))
+          ? Number(buttonId)
+          : undefined
+      // Check existence BEFORE calling navigateToDeck so we never mutate nav
+      // state for a missing target. deckExists is the runtime's public check.
+      if (!runtime.deckExists(deckId) && sourcePosition !== undefined) {
+        pubSub.publish('runtime:buttonError', {
+          deckId: sourceDeckId,
+          position: sourcePosition,
+          durationMs: 5000,
+          details: `missing-navigation-target: ${deckId}`,
+        })
+        return
+      }
       runtime.navigateToDeck(deckId, { addToHistory })
     },
   )
@@ -754,10 +778,14 @@ interface DeckButtonError {
  * broken button so the operator can fix the YAML without digging through
  * a stack trace.
  *
+ * ponytail: invalid buttons keep their assigned slot — the user sees exactly
+ * which slot is broken. Validation uses the runtime button's assigned
+ * position (from positionButtons), not the optional config-defined position.
+ *
  * Returns the patched decks plus a per-deck error map for downstream
  * surfacing in `deck-config` messages.
  */
-const applyConfigErrorReplacements = (
+export const applyConfigErrorReplacements = (
   decks: ReadonlyArray<RuntimeDeck>,
   config: import('@/config/schemas').RawConfig,
   registry: AddonRegistry,
@@ -766,39 +794,52 @@ const applyConfigErrorReplacements = (
   decks: RuntimeDeck[]
   errorsByDeck: Map<string, DeckButtonError[]>
 } => {
-  const perDeck = validatePerDeck(config, registry).perButton
   const brokenByDeckPosition = new Map<
     string,
-    Map<number, { buttonId?: string; details: string; button: unknown }>
+    Map<number, { details: string; button: unknown }>
   >()
-  for (const entry of perDeck) {
-    if (entry.issues.length === 0) continue
-    if (entry.position === undefined) continue
-    const details =
-      entry.schemaIssues
-        .map((i) => `${[...i.path].join('.') || '(root)'}: ${i.message}`)
-        .join('; ') || entry.issues.map((i) => i.message).join('; ')
-    logger.error(
-      {
-        deckId: entry.deckId,
-        position: entry.position,
-        buttonId: entry.buttonId,
-        path: entry.path,
-        config: entry.button,
-        schemaIssues: entry.schemaIssues,
-      },
-      `invalid button config at ${entry.path}: ${details}`,
-    )
-    let perDeckMap = brokenByDeckPosition.get(entry.deckId)
-    if (perDeckMap === undefined) {
-      perDeckMap = new Map()
-      brokenByDeckPosition.set(entry.deckId, perDeckMap)
+
+  for (const deck of decks) {
+    for (const btn of deck.buttons) {
+      const parsed = Number.parseInt(btn.id, 10)
+      const position =
+        btn.position ?? (Number.isFinite(parsed) ? parsed : undefined)
+      if (position === undefined) continue
+      // ponytail: skip system buttons — they are injected, not user-configured
+      if (btn.type.startsWith('core:')) continue
+
+      const path = `decks.${deck.id}.buttons[@position:${position}]`
+      const { issues, schemaIssues } = validateButton(
+        btn as unknown as import('@/config/schemas').RawButtonDef,
+        registry,
+        path,
+        deck.id,
+        position,
+      )
+      if (issues.length === 0) continue
+
+      const details =
+        schemaIssues
+          .map((i) => `${[...i.path].join('.') || '(root)'}: ${i.message}`)
+          .join('; ') || issues.map((i) => i.message).join('; ')
+      logger.warn(
+        {
+          deckId: deck.id,
+          position,
+          buttonId: btn.id,
+          path,
+          config: btn,
+          schemaIssues,
+        },
+        `invalid button at ${deck.id}:${position}: ${details}`,
+      )
+      let perDeckMap = brokenByDeckPosition.get(deck.id)
+      if (perDeckMap === undefined) {
+        perDeckMap = new Map()
+        brokenByDeckPosition.set(deck.id, perDeckMap)
+      }
+      perDeckMap.set(position, { details, button: btn })
     }
-    perDeckMap.set(entry.position, {
-      ...(entry.buttonId !== undefined ? { buttonId: entry.buttonId } : {}),
-      details,
-      button: entry.button,
-    })
   }
 
   const errorsByDeck = new Map<string, DeckButtonError[]>()
@@ -813,11 +854,7 @@ const applyConfigErrorReplacements = (
       if (position === undefined) return btn
       const broken = brokenMap.get(position)
       if (broken === undefined) return btn
-      errors.push({
-        position,
-        ...(broken.buttonId !== undefined ? { buttonId: broken.buttonId } : {}),
-        details: broken.details,
-      })
+      errors.push({ position, details: broken.details })
       return {
         id: String(position),
         type: 'core:temporary-error' as const,

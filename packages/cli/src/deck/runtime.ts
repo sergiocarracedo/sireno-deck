@@ -82,6 +82,7 @@ export interface CreateRuntimeOptions {
 export interface Runtime {
   getActiveDeck(): RuntimeDeck
   getActiveDeckId(): string
+  deckExists(id: string): boolean
   setDecks(decks: ReadonlyArray<RuntimeDeck>): void
   navigateToDeck(id: string, options?: { addToHistory?: boolean }): void
   goBack(): void
@@ -850,6 +851,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   const runtime: Runtime = {
     getActiveDeck,
     getActiveDeckId,
+    deckExists: (id: string) => deckById(id) !== undefined,
     setDecks,
     navigateToDeck,
     goBack,
