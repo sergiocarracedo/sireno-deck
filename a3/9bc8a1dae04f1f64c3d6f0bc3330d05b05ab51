@@ -1,0 +1,19 @@
+packages/cli/src/cli/commands/run.ts
+  s_158cba931b5bb8::t_0ecd3e175b320f 772-776,783-784
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "a39bc8a1dae04f1f64c3d6f0bc3330d05b05ab51",
+  "prompts": {},
+  "sessions": {
+    "s_158cba931b5bb8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_074da790fffe5bcgm3NeU1K8XK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
