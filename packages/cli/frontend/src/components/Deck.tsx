@@ -90,6 +90,7 @@ interface DeckButtonCellProps {
   readonly isError?: boolean
   readonly buttonColor?: "blue" | "green" | "purple"
   readonly overlayDeckIcon?: string | null
+  readonly buttonErrors?: Deck["buttonErrors"]
 }
 
 const DeckButtonCell = ({
@@ -102,6 +103,7 @@ const DeckButtonCell = ({
   isError = false,
   buttonColor,
   overlayDeckIcon: deckOverlayIcon,
+  buttonErrors,
 }: DeckButtonCellProps) => {
   const { fire } = useButtonAction(deckId, position)
   const lastClickAtRef = useRef(0)
@@ -133,7 +135,7 @@ const DeckButtonCell = ({
           {renderSystemButton(
             "core:temporary-error",
             undefined,
-            (deck.buttonErrors ?? []).find((e) => e.position === position)
+            (buttonErrors ?? []).find((e) => e.position === position)
               ?.details,
           )}
         </ButtonFrame>
@@ -320,6 +322,7 @@ export const Deck = ({ deck, deviceModel, children }: DeckProps) => {
             isError={errorPositions.has(position)}
             buttonColor={deck.buttonColor}
             overlayDeckIcon={deck.overlayDeckIcon ?? null}
+            buttonErrors={deck.buttonErrors}
             {...(splitAction ? { splitAction: true } : {})}
           />
         )
