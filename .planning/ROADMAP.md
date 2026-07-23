@@ -440,7 +440,7 @@ P1 and P2 have **zero dependency** on each other — they can be worked in paral
 ## Phase 12: Deck Reliability, Emulator UX, Logging, and Background Service
 
 **Goal:** Make system-status and invalid-button surfaces reliable, assign deck positions deterministically, improve emulator observability and logs, and run the backend as a persistent system service managed by the CLI.
-**Status:** [ ] Not started
+**Status:** [✓] Complete (2026-07-23)
 **Depends on:** Phase 11
 
 ### Plans
