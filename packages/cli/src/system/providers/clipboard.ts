@@ -46,6 +46,7 @@ export interface CreateClipboardProviderOptions {
   readonly platform?: NodeJS.Platform
   readonly env?: Readonly<Record<string, string>>
   readonly logger: pino.Logger
+  readonly extraFsProbe?: (tool: string) => boolean
 }
 
 export const createClipboardProvider = (
@@ -57,6 +58,9 @@ export const createClipboardProvider = (
       executor: options.executor,
       ...(options.env !== undefined ? { env: options.env } : {}),
       logger: options.logger,
+      ...(options.extraFsProbe !== undefined
+        ? { extraFsProbe: options.extraFsProbe }
+        : {}),
     })
   }
   if (platform === "darwin") {

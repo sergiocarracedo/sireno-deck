@@ -1,10 +1,6 @@
 # Sireno Deck — Architecture
 
-> Single source of truth for how the project is wired together. Replaces the
-> former `.planning/` phase / quick / solutions machinery.
->
-> Read top-to-bottom on first contact. Section 8 (proposed changes) is the
-> working plan; everything else describes the system as it exists today.
+> Read top-to-bottom on first contact describes the system as it exists today.
 
 ---
 
@@ -119,7 +115,7 @@ type; `AddonJsonManifest` is the on-disk discovery file
 interface AddonManifestV1 {
   readonly apiVersion: 1
   readonly name: string
-  readonly kind?: "runtime" | "theme"
+  readonly kind?: 'runtime' | 'theme'
   readonly buttonTypes: Record<string, AddonButtonTypeDefAny>
   readonly defaultButton?: string
   readonly decks?: Record<string, AddonDeckFactory | AddonDeckDefinition>
@@ -454,117 +450,6 @@ ActiveAppProvider tick (1 s, 200 ms debounce)
       → bridge.broadcast("dismiss-overlay", {})
 ```
 
-## 8. Proposed architectural changes
-
-The "P-list". Each item is sized to one release and a clear vertical slice.
-
-### P1 — Add React Router to the frontend
-
-**Today:** the frontend is a single-route SPA. The active deck is the only
-thing rendered, driven by `deck-config` WS messages.
-
-**Proposal:** add React Router so per-deck and per-addon pages become
-first-class. The runtime remains the source of truth for the active deck;
-the router reflects it. Routes enable deep-linking, isolated tests of an
-addon page in isolation, and stable URLs for emulator / preview links.
-
-**Surface:** `packages/cli/frontend/src/App.tsx`, `packages/cli/frontend/src/main.tsx`,
-and a new `routes.tsx`. The `deck-config` handler becomes a `navigate()` call
-in addition to `setDeck()`.
-
-### P2 (+P7) — `gestureHandlers` is the opt-in runtime filter, default-deny
-
-**Today:** the manifest field `gestureHandlers: ('tap' | 'dbl-tap' | 'hold')[]`
-exists and is declared by `media` and `emoji-selector`. It is **not** enforced
-at runtime — backends with `onTap / onDblTap / onHold` are always invoked.
-
-**Proposal:** enforce it. A backend that declares a gesture handler
-(`onTap` / `onDblTap` / onHold) must also list that gesture in
-`gestureHandlers`. Otherwise the handler is ignored and a warning is logged
-in dev. No `gestureHandlers` entry ⇒ default-deny ⇒ the addon must declare
-it explicitly to receive any gesture.
-
-**WS payload (P7 folded in):** `deck-config` carries the per-button
-`gestureHandlers` list so the frontend can decide whether to forward
-clicks (relevant once P1 is in and routes can deep-link into addon pages).
-
-**Required audit before ship:** every `builtin-addons/*/index.ts` must declare
-its `gestureHandlers`. Concretely:
-
-| Addon               | Backend handlers currently declared                                               | Needs manifest addition                        |
-| ------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `core`              | `change-deck.onTap`, `toggle.onTap`                                               | `gestureHandlers: ['tap']`                     |
-| `internal-settings` | `about.onTap`, `brightness.onTap`, `theme.onTap`                                  | `gestureHandlers: ['tap']`                     |
-| `session`           | `info.onTap`, `time.onTap`                                                        | `gestureHandlers: ['tap']`                     |
-| `date-time`         | `time` is read-only (no backend handler)                                          | none                                           |
-| `emoji-selector`    | `launcher.onTap`, `category.onTap`, `emoji.onTap`, `back.onTap`, `page-nav.onTap` | already declared — confirm it includes `'tap'` |
-| `media`             | `player.onTap`, `mute.onTap`                                                      | already declared                               |
-| `system-status`     | `status.onTap`                                                                    | `gestureHandlers: ['tap']`                     |
-| `value-display`     | `display.onTap`                                                                   | `gestureHandlers: ['tap']`                     |
-| `weather`           | `weather.onTap`                                                                   | `gestureHandlers: ['tap']`                     |
-| `brightness`        | `brightness.onTap`                                                                | `gestureHandlers: ['tap']`                     |
-
-**Surface:** `deck/runtime.ts` (filter in `dispatchGesture` /
-`invokeAction`), `deck/addon-handler-bridge.ts` (warn on mismatch), and the
-`deck-config` payload schema in `api/protocol-internal.ts`.
-
-### P4 + P5 — Auto-register all addon decks; `internal?: true` opts out of user config
-
-**Today:** `internal-settings:settings` and `session:locked` are
-auto-registered (in `registerBuiltins.ts`). Other addon decks (e.g.
-`emoji-selector`'s per-category decks) are referenced from `config.yml`.
-
-**Proposal:** every deck from a loaded addon is auto-registered on
-`registry.load(addon)`. `internal?: boolean` on `AddonDeckDefinition` hides
-a deck from user config surfaces (autocomplete, schema hints, default
-emitted config). `internal-settings:settings`, `session:locked`, and the
-`emoji-selector` per-category / per-page decks are the first candidates for
-`internal: true`.
-
-**Surface:** `addon/registry.ts`, `addon/api.ts` (add `internal?` to
-`AddonDeckDefinition`), `config/loader.ts` (skip `internal: true` decks when
-generating default configs), every `builtin-addons/*/decks/*` file.
-
-### P6 — `SplitActionSurface` on the n-1 slot for **every** deck, including main
-
-**Today:** the n-1 slot is filled by `computeSystemButtonForSlotN1` and
-rendered as a single primary tile. The `SplitActionSurface` exists but is
-not wired into the n-1 treatment.
-
-**Proposal:** every deck (main, sub-deck, overlay-deck) renders its n-1 slot
-as a `SplitActionSurface`:
-
-- **Main deck n-1:** primary = home / settings nav (opens
-  `internal-settings:settings`); secondary = empty / null (dimmed region —
-  no second action; the split visually signals "tap left half" without
-  committing to a follow-up).
-- **Sub-deck n-1:** primary = back (pops `navStack`); secondary = empty.
-- **Overlay deck n-1:** primary = dismiss overlay; secondary = empty.
-
-**Surface:** `deck/system-back-injection.ts` (return `{primary, secondary?}`
-instead of a single button ID), `frontend/src/components/Deck.tsx` (when
-the resolved button is a system slot, render `SplitActionSurface` instead of
-`ButtonFrame` + addon `ButtonSurface`), `ui/surfaces/SplitActionSurface.tsx`
-(accept the primary/secondary button descriptors).
-
----
-
-## 9. Known small issues
-
-- **Emulator outer `ButtonFrame` no longer flashes on press.** Intentional.
-  The chrome SPA no longer tracks per-tile gesture state from server echoes;
-  it only subscribes to `runtime:gesture:*` for the inner `ButtonSurface`.
-  The outer frame's pressed/isHolding/holdProgress props are accepted but
-  not driven. See §7.4.
-
-- **Two shapes for addon decks.** `AddonDeckFactory` (no config) and
-  `AddonDeckDefinition` (config-aware) coexist on `manifest.decks`. The
-  factory shape is a footgun for any addon that needs per-instance config.
-  Resolution: deprecate `AddonDeckFactory` in a future release once all
-  existing addons are on `AddonDeckDefinition`. Tracked in P4+P5.
-
----
-
 ## 10. Glossary
 
 | Term                     | Definition                                                                                                                                |
@@ -585,21 +470,6 @@ the resolved button is a system slot, render `SplitActionSurface` instead of
 | **System Slot**          | The n-1 (last) position on a deck, reserved for a back / settings / overlay-toggle button.                                                |
 | **Split Action Surface** | A two-tile surface for the system slot, divided by a diagonal line. Primary takes the action; secondary is decorative until further work. |
 | **Internal Addon**       | An addon (or a button / deck inside one) marked `internal: true` — hidden from user-facing config surfaces.                               |
-
----
-
-## 11. Out of scope / future work
-
-### P8 — Rename `backend` → `service` across the addon API
-
-Code uses `backend` everywhere it refers to the addon side: `AddonButtonBackend`,
-`AddonButtonBackendContext`, `AddonGlobalBackend`, `AddonBackendMethod`,
-`AddonGlobalPoller`, `AddonGlobalSubscription`, `AddonBackendContext`,
-`bridgeAddonBackends`, `fake-backend-no-poller`, `fake-button-backend`,
-`fake-media-backend`, `button/backend.ts` paths in every addon.
-
-Renames are a long-running migration. Not architectural on its own — it's a
-terminology pass. Punted to a separate doc when somebody picks it up.
 
 ### Config schemas and loader internals
 

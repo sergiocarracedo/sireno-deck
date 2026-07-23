@@ -154,6 +154,55 @@ describe("createLinuxClipboardProvider", () => {
     await provider.stop()
   })
 
+  it("writeText uses extraFsProbe fallback when `which` fails (stripped PATH)", async () => {
+    const calls: Array<{ tool: string; args: string[] }> = []
+    const executor: CommandExecutor = {
+      async run(tool, args) {
+        calls.push({ tool, args: [...args] })
+        if (tool === "which" && args[0] === "wl-copy") {
+          return { exitCode: 1, stdout: "", stderr: "" }
+        }
+        if (tool === "sh" && args[0] === "-c") {
+          return { exitCode: 0, stdout: "", stderr: "" }
+        }
+        return { exitCode: 0, stdout: "", stderr: "" }
+      },
+    }
+    const extraFsProbe = vi.fn((tool: string): boolean => tool === "wl-copy")
+    const provider = createLinuxClipboardProvider({
+      executor,
+      logger: silentLogger(),
+      extraFsProbe,
+    })
+    await provider.writeText("hello")
+    const shCall = calls.find((c) => c.tool === "sh")
+    expect(shCall).toBeDefined()
+    expect(shCall!.args[1]).toContain("wl-copy")
+    expect(extraFsProbe).toHaveBeenCalledWith("wl-copy")
+    await provider.stop()
+  })
+
+  it("writeText still throws NOT_AVAILABLE when extraFsProbe returns false", async () => {
+    const executor: CommandExecutor = {
+      async run(tool, args) {
+        if (tool === "which" && args[0] === "wl-copy") {
+          return { exitCode: 1, stdout: "", stderr: "" }
+        }
+        return { exitCode: 0, stdout: "", stderr: "" }
+      },
+    }
+    const provider = createLinuxClipboardProvider({
+      executor,
+      logger: silentLogger(),
+      extraFsProbe: () => false,
+    })
+    await expect(provider.writeText("hello")).rejects.toMatchObject({
+      code: "NOT_AVAILABLE",
+      message: expect.stringContaining("wl-clipboard"),
+    })
+    await provider.stop()
+  })
+
   it("readText returns wl-paste stdout", async () => {
     const executor = makeExecutor((tool) => {
       if (tool === "wl-paste") {

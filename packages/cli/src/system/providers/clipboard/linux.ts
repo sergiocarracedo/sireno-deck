@@ -10,14 +10,23 @@ export interface CreateLinuxClipboardProviderOptions {
   readonly env?: Readonly<Record<string, string>>
   readonly logger: pino.Logger
   readonly timeoutMs?: number
+  readonly extraFsProbe?: (tool: string) => boolean
 }
 
 const WL_COPY_TOOL = "wl-copy"
 const WL_PASTE_TOOL = "wl-paste"
 
-const probeWlCopy = async (executor: CommandExecutor): Promise<boolean> => {
+const probeWlCopy = async (
+  executor: CommandExecutor,
+  extraFsProbe?: (tool: string) => boolean,
+): Promise<boolean> => {
   const result = await executor.run("which", [WL_COPY_TOOL])
-  return result.exitCode === 0 && result.stdout.trim().length > 0
+  if (result.exitCode === 0 && result.stdout.trim().length > 0) return true
+  // ponytail: fallback when CLI is launched with a stripped PATH (systemd,
+  // launchd, IDE runners) and `which` returns nothing even though wl-copy
+  // is installed at e.g. /usr/bin. Mirror of the requirements.ts probe and
+  // key-macro/linux.ts probeTool.
+  return extraFsProbe?.(WL_COPY_TOOL) === true
 }
 
 const shellQuote = (value: string): string =>
@@ -100,7 +109,7 @@ export const createLinuxClipboardProvider = (
   let _probeOk = false
   const ensureProbed = async (): Promise<boolean> => {
     if (_probeDone) return _probeOk
-    _probeOk = await probeWlCopy(executor)
+    _probeOk = await probeWlCopy(executor, options.extraFsProbe)
     _probeDone = true
     if (!_probeOk) {
       logger.warn(

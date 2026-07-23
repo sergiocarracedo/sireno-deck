@@ -4,7 +4,6 @@
 
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — how the system is wired. Read top-to-bottom on first contact. Section 8 is the working plan; everything else describes the system as it exists today.
 - [`docs/STATE.md`](docs/STATE.md) — snapshot of completed and in-progress phases, plus quick-task log.
-- [`docs/solutions/`](docs/solutions/) — past problems and their fixes. Search by `module`, `tags`, `problem_type` in YAML frontmatter. Categories: `best-practices/`, `logic-errors/`, `runtime-errors/`, `workflow-issues/`.
 - [`STRATEGY.md`](STRATEGY.md) — product strategy grounding (populated via `/ce-strategy`).
 
 ## Stack
@@ -28,6 +27,11 @@ TypeScript (strict, ESM), React 19, Vite 6, Tailwind 4, Node ≥20, pnpm workspa
 - `/ce-brainstorm` + `/ce-plan` + `/ce-work` — for new features.
 - `/lfg` — autonomous end-to-end (plan → work → review → PR).
 - `/ce-setup` — verify CE health and `.compound-engineering/config.local.yaml`.
+
+## Verification
+
+After a new feature or a bugfix, run the cli `--emulator` flag and check the emulator (http://127.0.0.1:52938/#/device) and the frontend (http://127.0.0.1:5180)
+) using the skill agent-browser to verify the solucion and no other errors
 
 ## When stuck
 

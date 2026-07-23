@@ -580,6 +580,9 @@ export const createLinuxKeyMacroProvider = async (
         executor: deps.executor,
         env: deps.env,
         logger: deps.logger,
+        ...(deps.extraFsProbe !== undefined
+          ? { extraFsProbe: deps.extraFsProbe }
+          : {}),
       })
     } catch (err) {
       deps.logger.warn(
