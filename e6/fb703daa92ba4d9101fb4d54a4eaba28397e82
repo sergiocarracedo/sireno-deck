@@ -1,0 +1,25 @@
+.planning/phases/12-deck-reliability-and-service/12-04-SUMMARY.md
+  s_158cba931b5bb8::t_759f603f95b9e0 1-27
+packages/cli/src/__tests__/logger-format.test.ts
+  s_158cba931b5bb8::t_d4ceff42f5896f 55,84
+  s_158cba931b5bb8::t_3add1eab8a7109 56-83
+  s_158cba931b5bb8::t_60c3879bcc4545 85
+packages/cli/src/outputClient/emulator.ts
+  s_158cba931b5bb8::t_fe8c4ffcbf5ce5 173
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "e6fb703daa92ba4d9101fb4d54a4eaba28397e82",
+  "prompts": {},
+  "sessions": {
+    "s_158cba931b5bb8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_074da790fffe5bcgm3NeU1K8XK",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
