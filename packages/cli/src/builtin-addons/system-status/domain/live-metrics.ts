@@ -8,6 +8,7 @@ import { existsSync } from "node:fs"
 export const SYSTEM_METRIC_IDS = [
   "cpu",
   "ram",
+  "swap",
   "disk",
   "network",
   "battery",
@@ -64,6 +65,33 @@ async function probeRam(): Promise<ProbeResult> {
   if (total <= 0) return { available: false, unit: "%" }
   const pct = clampPercent((used / total) * 100)
   return { available: true, max: total, percentage: pct, unit: "%", value: pct }
+}
+
+// ponytail: Linux only — reads /proc/meminfo SwapTotal/SwapFree in kB.
+// Other platforms report unavailable rather than guessing.
+async function probeSwap(): Promise<ProbeResult> {
+  if (process.platform !== "linux") return { available: false, unit: "%" }
+  if (!existsSync("/proc/meminfo")) return { available: false, unit: "%" }
+  try {
+    const raw = await readFile("/proc/meminfo", "utf8")
+    const totalKb = Number.parseInt(/SwapTotal:\s*(\d+)\s*kB/.exec(raw)?.[1] ?? "", 10)
+    const freeKb = Number.parseInt(/SwapFree:\s*(\d+)\s*kB/.exec(raw)?.[1] ?? "", 10)
+    if (!Number.isFinite(totalKb) || totalKb <= 0) {
+      return { available: false, unit: "%" }
+    }
+    const totalBytes = totalKb * 1024
+    const usedBytes = Math.max(0, (totalKb - freeKb) * 1024)
+    const pct = clampPercent((usedBytes / totalBytes) * 100)
+    return {
+      available: true,
+      max: totalBytes,
+      percentage: pct,
+      unit: "%",
+      value: pct,
+    }
+  } catch {
+    return { available: false, unit: "%" }
+  }
 }
 
 async function probeDisk(): Promise<ProbeResult> {
@@ -171,6 +199,7 @@ async function probeProcesses(): Promise<ProbeResult> {
 const PROBES: Record<SystemMetricId, () => Promise<ProbeResult>> = {
   cpu: probeCpu,
   ram: probeRam,
+  swap: probeSwap,
   disk: probeDisk,
   network: probeNetwork,
   battery: probeBattery,

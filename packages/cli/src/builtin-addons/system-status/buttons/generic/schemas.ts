@@ -2,7 +2,7 @@ import { z } from "zod"
 import { SYSTEM_METRIC_IDS, type SystemMetricId } from "../../domain"
 
 // ponytail: each metric entry accepts either a plain string ("cpu") or an
-// object ({metric: "cpu", label: "CPU"}). The transform normalizes both into
+// object ({id: "cpu", label: "CPU"}). The transform normalizes both into
 // `{id, label?}`. Future fields (color, formatter, etc.) slot into the object
 // form without breaking the string shorthand.
 const MetricEntrySchema = z
@@ -10,14 +10,14 @@ const MetricEntrySchema = z
     z.enum(SYSTEM_METRIC_IDS),
     z
       .object({
-        metric: z.enum(SYSTEM_METRIC_IDS),
+        id: z.enum(SYSTEM_METRIC_IDS),
         label: z.string().min(1).optional(),
         color: z.string().optional(),
       })
       .strict(),
   ])
   .transform((entry): { id: SystemMetricId; label?: string } =>
-    typeof entry === "string" ? { id: entry } : { id: entry.metric, ...(entry.label !== undefined ? { label: entry.label } : {}) },
+    typeof entry === "string" ? { id: entry } : { id: entry.id, ...(entry.label !== undefined ? { label: entry.label } : {}) },
   )
 
 export const GenericSystemStatusSchema = z

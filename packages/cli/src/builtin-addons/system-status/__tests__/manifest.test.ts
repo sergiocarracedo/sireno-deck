@@ -31,6 +31,7 @@ describe("systemStatusManifest", () => {
         "runtime:system-status:network",
         "runtime:system-status:processes",
         "runtime:system-status:ram",
+        "runtime:system-status:swap",
         "runtime:system-status:temperature",
         "runtime:system-status:uptime",
       ],

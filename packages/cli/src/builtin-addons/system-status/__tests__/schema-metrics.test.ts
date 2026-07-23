@@ -13,8 +13,8 @@ describe("GenericSystemStatusSchema: metrics entry shape", () => {
   it("accepts the object form with a custom label", () => {
     const parsed = GenericSystemStatusSchema.parse({
       metrics: [
-        { metric: "cpu", label: "CPU" },
-        { metric: "ram", label: "RAM" },
+        { id: "cpu", label: "CPU" },
+        { id: "ram", label: "RAM" },
         "disk",
       ],
     })
@@ -46,7 +46,7 @@ describe("GenericSystemStatusSchema: metrics entry shape", () => {
   it("rejects an empty label string on the object form", () => {
     expect(() =>
       GenericSystemStatusSchema.parse({
-        metrics: [{ metric: "cpu", label: "" }],
+        metrics: [{ id: "cpu", label: "" }],
       }),
     ).toThrow()
   })
