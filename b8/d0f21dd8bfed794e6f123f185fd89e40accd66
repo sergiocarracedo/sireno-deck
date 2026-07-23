@@ -1,0 +1,19 @@
+STRATEGY.md
+  s_4db6c57841b904::t_f6026fc111fab2 1-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "b8d0f21dd8bfed794e6f123f185fd89e40accd66",
+  "prompts": {},
+  "sessions": {
+    "s_4db6c57841b904": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_070410e40ffeIQ63WpcKw46h1Z",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
