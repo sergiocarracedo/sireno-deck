@@ -12,10 +12,18 @@ export interface BootstrapResult {
   issues: BootstrapIssue[]
 }
 
+export type ValidationReason =
+  | "unknown-type"
+  | "internal-type"
+  | "malformed-config"
+  | "duplicate-position"
+  | "missing-main-deck"
+
 export interface FullValidationIssue {
   level: "error" | "warning"
   path: string
   message: string
+  reason?: ValidationReason
   deckId?: string
   position?: number
 }
@@ -39,6 +47,7 @@ const reportDuplicatePositions = (
         level: "warning",
         path: `decks.${deckId}.buttons[${index}]`,
         message: `Duplicate position ${btn.position} (also at index ${prev})`,
+        reason: "duplicate-position",
       })
     } else {
       seen.set(btn.position, index)
@@ -55,6 +64,7 @@ export const validateBootstrap = (config: RawConfig): BootstrapResult => {
       path: "decks",
       message:
         "Missing required `main` deck — synthetic main deck will be created",
+      reason: "missing-main-deck",
     })
   }
   for (const [id, deck] of Object.entries(config.decks)) {
@@ -98,6 +108,7 @@ export const validateButton = (
       level: "error",
       path: `${path}.type`,
       message: `Unknown button type: ${btn.type}`,
+      reason: "unknown-type",
       ...base,
     })
     return { issues, schemaIssues: [] }
@@ -108,6 +119,7 @@ export const validateButton = (
       level: "error",
       path: `${path}.type`,
       message: `Internal button type ${btn.type} cannot be used in user config`,
+      reason: "internal-type",
       ...base,
     })
     return { issues, schemaIssues: [] }
@@ -131,6 +143,7 @@ export const validateButton = (
         level: "error",
         path: `${path}.config.${[...issue.path].join(".")}`,
         message: issue.message,
+        reason: "malformed-config",
         ...base,
       })
     }

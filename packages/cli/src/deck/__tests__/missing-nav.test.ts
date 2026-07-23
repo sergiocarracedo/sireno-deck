@@ -4,6 +4,7 @@ import { createStore } from "@/core/store"
 import { createLogger } from "@/util/logger"
 import { createRuntime } from "@/deck/runtime"
 import { createMethods } from "@/deck/methods"
+import { subscribeNavigateDeck } from "@/deck/runtime-subscriptions"
 import { createActionExecutor } from "@/action/executor"
 import { getHostContext } from "../host-context"
 
@@ -51,5 +52,56 @@ describe("navigateToDeck missing target", () => {
     expect(runtime.getActiveDeckId()).toBe("main")
     runtime.navigateToDeck("nonexistent")
     expect(runtime.getActiveDeckId()).toBe("main")
+  })
+})
+
+describe("subscribeNavigateDeck: missing target publishes runtime:buttonError", () => {
+  it("emits a buttonError at the source slot and does not change active deck", () => {
+    const { runtime, pubSub } = setup(["main", "media"])
+    const errors: unknown[] = []
+    pubSub.subscribe("runtime:buttonError", (payload) => {
+      errors.push(payload)
+    })
+    const unsubscribe = subscribeNavigateDeck(pubSub, runtime)
+    try {
+      pubSub.publish("runtime:navigate-deck", {
+        deckId: "nonexistent",
+        addToHistory: true,
+        buttonId: "5",
+      })
+      expect(errors).toHaveLength(1)
+      const err = errors[0] as {
+        deckId: string
+        position: number
+        details: string
+      }
+      expect(err.deckId).toBe("main")
+      expect(err.position).toBe(5)
+      expect(err.details).toContain("missing-navigation-target")
+      expect(err.details).toContain("nonexistent")
+      expect(runtime.getActiveDeckId()).toBe("main")
+    } finally {
+      unsubscribe()
+    }
+  })
+
+  it("navigates to existing deck without emitting a buttonError", () => {
+    const { runtime, pubSub } = setup(["main", "media"])
+    const errors: unknown[] = []
+    pubSub.subscribe("runtime:buttonError", (payload) => {
+      errors.push(payload)
+    })
+    const unsubscribe = subscribeNavigateDeck(pubSub, runtime)
+    try {
+      pubSub.publish("runtime:navigate-deck", {
+        deckId: "media",
+        addToHistory: true,
+        buttonId: "0",
+      })
+      expect(errors).toHaveLength(0)
+      expect(runtime.getActiveDeckId()).toBe("media")
+    } finally {
+      unsubscribe()
+    }
   })
 })

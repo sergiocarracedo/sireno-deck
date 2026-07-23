@@ -29,14 +29,40 @@ const makeMockRegistry = (validTypes: Set<string>) => {
 }
 
 describe("validateButton issues include deckId/position", () => {
-  it("unknown type issues include deckId and position", () => {
+  it("unknown type issues include deckId, position, and reason", () => {
     const mockRegistry = makeMockRegistry(new Set())
     const btn: RawButtonDef = { type: "unknown:thing", position: 3 }
     const result = validateButton(btn, mockRegistry, "decks.main.buttons[0]", "main", 3)
     expect(result.issues).toHaveLength(1)
     expect(result.issues[0].deckId).toBe("main")
     expect(result.issues[0].position).toBe(3)
+    expect(result.issues[0].reason).toBe("unknown-type")
     expect(result.issues[0].message).toContain("Unknown button type")
+  })
+
+  it("malformed config issues include reason='malformed-config'", () => {
+    const mockRegistry = {
+      hasButtonType: vi.fn().mockReturnValue(true),
+      getButtonType: vi.fn().mockReturnValue({
+        def: {
+          service: {
+            configSchema: {
+              safeParse: () => ({
+                success: false,
+                error: { issues: [{ path: ["nested"], message: "expected string" }] },
+              }),
+            },
+            internal: false,
+          },
+        },
+      }),
+    } as unknown as AddonRegistry
+    const btn: RawButtonDef = { type: "ok:type", position: 0 }
+    const result = validateButton(btn, mockRegistry, "decks.main.buttons[0]", "main", 0)
+    expect(result.issues).toHaveLength(1)
+    expect(result.issues[0].reason).toBe("malformed-config")
+    expect(result.issues[0].deckId).toBe("main")
+    expect(result.issues[0].position).toBe(0)
   })
 
   it("valid button returns no issues", () => {

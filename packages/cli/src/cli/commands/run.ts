@@ -37,6 +37,7 @@ import {
 } from '@/deck'
 import { paginateDeck } from '@/deck/paginate-deck'
 import { positionButtons } from '@/deck/position-buttons'
+import { subscribeNavigateDeck } from '@/deck/runtime-subscriptions'
 import {
   createActiveAppProvider,
   type ActiveAppProvider,
@@ -117,6 +118,7 @@ export interface SetupAddonServicesOptions {
   readonly decks: ReadonlyArray<RuntimeDeck>
   readonly pubSub: PubSub
   readonly scanned: ReadonlyArray<ScannedAddon>
+  readonly externalAddons: ReadonlyArray<ScannedAddon>
   readonly addonByType: Map<string, AddonFrontendRef>
   readonly executor: ReturnType<typeof createActionExecutor>
   readonly statePublisher: Pick<
@@ -163,6 +165,7 @@ export const setupAddonServices = (
     decks,
     pubSub,
     scanned,
+    externalAddons,
     addonByType,
     executor,
     statePublisher,
@@ -181,6 +184,7 @@ export const setupAddonServices = (
     runtime,
     decks,
     scanned,
+    externalAddons,
     executor,
     pubSub,
     signal,
@@ -299,47 +303,7 @@ export const setupAddonServices = (
   }, 1000)
   signal.addEventListener('abort', () => clearInterval(heartbeat))
 
-  const unsubscribeNavigate = pubSub.subscribe(
-    'runtime:navigate-deck',
-    (payload: unknown) => {
-      if (
-        typeof payload !== 'object' ||
-        payload === null ||
-        !('deckId' in payload)
-      ) {
-        return
-      }
-      const deckId = String((payload as { deckId: unknown }).deckId)
-      const addToHistory =
-        'addToHistory' in payload
-          ? Boolean((payload as { addToHistory: unknown }).addToHistory)
-          : true
-      const buttonId =
-        'buttonId' in payload
-          ? String((payload as { buttonId: unknown }).buttonId)
-          : undefined
-      // ponytail: missing nav target is a button-level error, not a deck-level
-      // one — never mutate navigation state. Capture source position so we can
-      // publish the error to the correct slot if the target does not exist.
-      const sourceDeckId = runtime.getActiveDeckId()
-      const sourcePosition =
-        buttonId !== undefined && Number.isFinite(Number(buttonId))
-          ? Number(buttonId)
-          : undefined
-      // Check existence BEFORE calling navigateToDeck so we never mutate nav
-      // state for a missing target. deckExists is the runtime's public check.
-      if (!runtime.deckExists(deckId) && sourcePosition !== undefined) {
-        pubSub.publish('runtime:buttonError', {
-          deckId: sourceDeckId,
-          position: sourcePosition,
-          durationMs: 5000,
-          details: `missing-navigation-target: ${deckId}`,
-        })
-        return
-      }
-      runtime.navigateToDeck(deckId, { addToHistory })
-    },
-  )
+  const unsubscribeNavigate = subscribeNavigateDeck(pubSub, runtime)
 
   const unsubscribeDispatch = pubSub.subscribe(
     'runtime:dispatch',
@@ -500,7 +464,7 @@ export const validateAndLoadConfig = async (
   // see at startup which addons registered and which got silently skipped.
   options.logger.info(
     {
-      addonDecks: registry.listDeckTypes(),
+      addonDecks: registry.listDeckTypes?.(),
       userDecks: Object.keys(config.decks),
       addonConfigEntries: (config.addons ?? []).map((a) =>
         typeof a === 'string' ? a : a.src,
@@ -1019,14 +983,39 @@ const buildAddonBundle = async (): Promise<AddonRegistryBundle> => {
     process.env['SIRENO_ADDONS'] = JSON.stringify(addonSpecs)
   }
 
-  const addonByType = new Map<string, AddonFrontendRef>()
-  for (const s of registry.scanned) {
-    for (const t of s.types) {
-      addonByType.set(t, { name: s.name, frontendEntry: s.frontendEntry })
-    }
-  }
+  return { scanned: registry.scanned, addonByType: registry.byType }
+}
 
-  return { scanned: registry.scanned, addonByType }
+// ponytail: merge registry-loaded third-party addons into the bridge
+// inventory. The bridge only receives the builtin `scanned` array; without
+// this pass, AddonsPage shows builtins only and hides e.g. chrome-overlay.
+export const buildExternalScannedAddons = (
+  registry: AddonRegistry,
+  builtinScanned: ReadonlyArray<ScannedAddon>,
+  externalAddonDirs: ReadonlyMap<string, string>,
+): ReadonlyArray<ScannedAddon> => {
+  const builtinNames = new Set(builtinScanned.map((a) => a.name))
+  const out: ScannedAddon[] = []
+  for (const manifest of registry.listAddons()) {
+    if (builtinNames.has(manifest.name)) continue
+    const types = Object.keys(manifest.buttonTypes)
+    if (types.length === 0 && (manifest.decks ?? []).length === 0) continue
+    const path = externalAddonDirs.get(manifest.name) ?? ""
+    out.push({
+      name: manifest.name,
+      types,
+      frontendEntry: null,
+      publishIntervalMs: manifest.publishIntervalMs ?? null,
+      pollerEntry: null,
+      buttonTypes: {},
+      deckTypes: {},
+      source: "json",
+      globalServiceEntry: manifest.globalService !== undefined ? "" : null,
+      path,
+      internal: false,
+    })
+  }
+  return out
 }
 
 // ponytail: extracted so tests can exercise the addon-spec-to-dir mapping
@@ -1132,12 +1121,18 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   registerSystemStatusAddon(addonRegistryForSystemStatus)
 
   const mainDeck = runtime.getActiveDeck()
+  const externalScanned = buildExternalScannedAddons(
+    loadedConfig.registry,
+    addonBundle.scanned,
+    externalAddonDirs,
+  )
   const addonServices = setupAddonServices({
     runtime,
     methods,
     decks,
     pubSub,
     scanned: addonBundle.scanned,
+    externalAddons: externalScanned,
     addonByType: addonBundle.addonByType,
     executor: createActionExecutor({ host: getHostContext() }),
     statePublisher,
