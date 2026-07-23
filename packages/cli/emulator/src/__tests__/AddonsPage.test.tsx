@@ -4,60 +4,103 @@ import { render, screen } from "@testing-library/react"
 
 import { AddonsPage } from "../pages/AddonsPage"
 
+const inventory = {
+  addons: [
+    {
+      name: "core",
+      path: "/abs/builtin/core",
+      internal: true,
+      buttonTypes: ["core:back", "core:settings-entry", "core:overlay-toggle"],
+      decks: [
+        { id: "main", isOverlay: false, paginated: false, buttons: 3 },
+        { id: "core:lock", isOverlay: false, paginated: false, buttons: 3 },
+      ],
+    },
+    {
+      name: "weather",
+      path: "/abs/addons/weather",
+      internal: false,
+      buttonTypes: ["weather:weather"],
+      decks: [
+        {
+          id: "weather:overlay",
+          isOverlay: true,
+          paginated: true,
+          buttons: 2,
+        },
+      ],
+    },
+    {
+      name: "emoji-selector",
+      path: "/abs/builtin/emoji-selector",
+      internal: false,
+      buttonTypes: ["emoji-selector:emoji"],
+      decks: [
+        {
+          id: "emoji-selector-smileys-p1",
+          isOverlay: false,
+          paginated: true,
+          buttons: 13,
+        },
+        {
+          id: "emoji-selector-smileys-p2",
+          isOverlay: false,
+          paginated: true,
+          buttons: 13,
+        },
+        {
+          id: "emoji-selector-favorites",
+          isOverlay: false,
+          paginated: true,
+          buttons: 6,
+        },
+      ],
+    },
+  ],
+}
+
 describe("AddonsPage", () => {
-  it("renders loading state when addonInventory is null", () => {
+  it("renders loading state when inventory is null", () => {
     render(<AddonsPage addonInventory={null} />)
     expect(screen.getByText("loading…")).toBeInTheDocument()
   })
 
-  it("renders addon sections from inventory", () => {
-    const inventory = {
-      addons: [
-        {
-          name: "test-addon",
-          buttonTypes: ["test/type-a", "test/type-b"],
-          defaultButton: null,
-        },
-      ],
-    }
-    render(<AddonsPage addonInventory={inventory} />)
-    expect(screen.getByTestId("addons-page")).toBeInTheDocument()
-    expect(screen.getByText("test-addon")).toBeInTheDocument()
-    expect(screen.getByText("test/type-a")).toBeInTheDocument()
-    expect(screen.getByText("test/type-b")).toBeInTheDocument()
+  it("renders addon name as plain title and path as plain text", () => {
+    const { container } = render(<AddonsPage addonInventory={inventory} />)
+    expect(container.textContent).toContain("core")
+    expect(container.textContent).toContain("weather")
+    expect(container.textContent).toContain("/abs/builtin/core")
+    expect(container.textContent).toContain("/abs/addons/weather")
   })
 
-  it("renders multiple addons", () => {
-    const inventory = {
-      addons: [
-        { name: "addon-alpha", buttonTypes: ["alpha/a"], defaultButton: null },
-        { name: "addon-beta", buttonTypes: ["beta/b"], defaultButton: null },
-      ],
-    }
-    render(<AddonsPage addonInventory={inventory} />)
-    expect(screen.getByText("addon-alpha")).toBeInTheDocument()
-    expect(screen.getByText("addon-beta")).toBeInTheDocument()
+  it("renders grouped decks and button types", () => {
+    const { container } = render(<AddonsPage addonInventory={inventory} />)
+    expect(container.textContent).toContain("main")
+    expect(container.textContent).toContain("core:lock")
+    expect(container.textContent).toContain("weather:overlay")
+    expect(container.textContent).toContain("core:back")
+    expect(container.textContent).toContain("weather:weather")
   })
 
-  it("marks default button type with [default] badge", () => {
-    const inventory = {
-      addons: [
-        {
-          name: "defaults-addon",
-          buttonTypes: ["defaults/x", "defaults/y"],
-          defaultButton: "defaults/y",
-        },
-      ],
-    }
-    render(<AddonsPage addonInventory={inventory} />)
-    expect(screen.getByText("defaults/y")).toBeInTheDocument()
-    expect(screen.getByText("[default]")).toBeInTheDocument()
+  it("groups paginated decks by base name and marks them paginated", () => {
+    const { container } = render(<AddonsPage addonInventory={inventory} />)
+    expect(container.textContent).toContain("emoji-selector-smileys")
+    expect(container.textContent).toContain("(paginated)")
+    expect(container.textContent).not.toContain("emoji-selector-smileys-p1")
+    expect(container.textContent).not.toContain("emoji-selector-smileys-p2")
   })
 
-  it("renders empty addons array as empty page", () => {
-    const inventory = { addons: [] }
+  it("marks overlay decks with overlay text", () => {
+    const { container } = render(<AddonsPage addonInventory={inventory} />)
+    expect(container.textContent).toContain("weather:overlay")
+    expect(container.textContent).toContain("(overlay)")
+  })
+
+  it("renders a legend above the addon flow", () => {
     render(<AddonsPage addonInventory={inventory} />)
-    expect(screen.getByTestId("addons-page")).toBeInTheDocument()
-    expect(screen.queryByRole("section")).not.toBeInTheDocument()
+    expect(screen.getByTestId("addons-legend")).toBeInTheDocument()
+    expect(screen.getByTestId("addons-legend").textContent).toMatch(
+      /internal|deck|overlay|button/i,
+    )
   })
 })
