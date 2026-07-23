@@ -21,13 +21,40 @@ describe("emoji-selector:emoji backend", () => {
   })
 
   it("configSchema rejects missing emoji", () => {
-    const result = EmojiBackend.configSchema.safeParse({})
+    const result = EmojiBackend.configSchema.safeParse({ shortcode: "fire" })
     expect(result.success).toBe(false)
   })
 
   it("configSchema accepts emoji string", () => {
-    const result = EmojiBackend.configSchema.safeParse({ emoji: "🔥" })
+    const result = EmojiBackend.configSchema.safeParse({
+      emoji: "🔥",
+      shortcode: "fire",
+    })
     expect(result.success).toBe(true)
+  })
+
+  it("configSchema accepts flag emoji (multi-codepoint)", () => {
+    const result = EmojiBackend.configSchema.safeParse({
+      emoji: "🇪🇺",
+      shortcode: "eu",
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it("configSchema accepts ZWJ family emoji", () => {
+    const result = EmojiBackend.configSchema.safeParse({
+      emoji: "👨‍👩‍👧",
+      shortcode: "family",
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it("configSchema rejects two emojis concatenated", () => {
+    const result = EmojiBackend.configSchema.safeParse({
+      emoji: "🔥🔥",
+      shortcode: "double",
+    })
+    expect(result.success).toBe(false)
   })
 })
 
