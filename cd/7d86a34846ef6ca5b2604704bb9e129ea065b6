@@ -1,0 +1,19 @@
+AGENTS.md
+  s_4db6c57841b904::t_faf0fc56929183 1-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "cd7d86a34846ef6ca5b2604704bb9e129ea065b6",
+  "prompts": {},
+  "sessions": {
+    "s_4db6c57841b904": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_070410e40ffeIQ63WpcKw46h1Z",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
