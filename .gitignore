@@ -14,6 +14,8 @@ coverage/
 
 .opencode/
 
+.compound-engineering/*.local.yaml
+
 packages/cli/src/themes/light/index.js
 
 runtime/
