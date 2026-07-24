@@ -1,9 +1,9 @@
-import type { CSSProperties, ReactElement } from 'react'
+import type { CSSProperties, ReactElement } from "react"
 
-import { Text } from '../primitives'
-import { Icon } from '../primitives/Icon'
-import { useThemeUiPresentation } from '../theme-presentation'
-import { cn } from '../utils/cn'
+import { Text } from "../primitives"
+import { Icon } from "../primitives/Icon"
+import { useThemeUiPresentation } from "../theme-presentation"
+import { cn } from "../utils/cn"
 
 export interface LabelValueListLine {
   color?: string
@@ -37,17 +37,19 @@ function RowTile({
       className="flex h-full min-w-0 flex-1 flex-col text-center overflow-hidden"
       style={colorStyle}
     >
-      <div className="flex-1 flex items-center justify-center gap-1.5 min-h-0">
+      <div className="flex-1 flex items-center gap-1.5 min-h-0">
         {item.icon ? <Icon source={item.icon} size={14} /> : null}
-        <Text fontStack="mono" size="lg" weight="bold" text={item.value}></Text>
+        <div className="flex-1"></div>
+        <div className="flex-1 flex items-center min-h-0">
+          <Text size="lg" weight="bold" text={item.value} tone="primary"></Text>
+
+          {item.units ? (
+            <Text size="xs" weight="bold" text={item.units}></Text>
+          ) : null}
+        </div>
       </div>
       {showLabel ? (
-        <div
-          className={cn(
-            'flex items-center justify-center gap-1 truncate',
-            'opacity-75 uppercase tracking-wide',
-          )}
-        >
+        <div className={cn("flex items-center justify-center gap-1")}>
           <Text text={item.label} size="xs"></Text>
           {item.units ? <Text text={item.units} size="xs"></Text> : null}
         </div>
@@ -71,49 +73,49 @@ export function LabelValueListSurface(
   }
 
   const showLabel = props.lines.length <= 2
-  const tile = (item: LabelValueListLine, key: string) => (
-    <RowTile key={key} item={item} showLabel={showLabel} />
-  )
 
   if (props.lines.length === 1) {
     return (
       <div
         className={cn(props.className)}
-        style={{ color: 'var(--sireno-color-fg)', ...props.style }}
+        style={{ color: "var(--sireno-color-fg)", ...props.style }}
       >
-        {props.lines.map((item, index) =>
-          showLabel ? (
-            tile(item, `${item.label}-${index}`)
-          ) : (
-            <div
-              key={`${item.label}-${index}`}
-              className="min-h-[28px] flex-1 flex basis-1/2"
-            >
-              {tile(item, `${item.label}-${index}`)}
-            </div>
-          ),
-        )}
+        {props.lines.map((item, index) => (
+          <RowTile
+            key={`${item.label}-${index}`}
+            item={item}
+            showLabel={showLabel}
+          />
+        ))}
       </div>
     )
   }
   return (
     <div
       className={cn(
-        'flex w-full gap-1 p-1 items-stretch',
-        showLabel ? 'flex-col h-full' : 'flex-row flex-wrap',
+        "flex w-full gap-1 p-1",
+        showLabel ? "flex-col h-full" : "flex-row flex-wrap",
         props.className,
       )}
-      style={{ color: 'var(--sireno-color-fg)', ...props.style }}
+      style={{ color: "var(--sireno-color-fg)", ...props.style }}
     >
       {props.lines.map((item, index) =>
         showLabel ? (
-          tile(item, `${item.label}-${index}`)
+          <RowTile
+            key={`${item.label}-${index}`}
+            item={item}
+            showLabel={showLabel}
+          />
         ) : (
           <div
             key={`${item.label}-${index}`}
             className="min-h-[28px] flex-1 flex basis-1/2"
           >
-            {tile(item, `${item.label}-${index}`)}
+            <RowTile
+              key={`${item.label}-${index}`}
+              item={item}
+              showLabel={false}
+            />
           </div>
         ),
       )}
