@@ -1,0 +1,49 @@
+packages/cli/src/ui/theme-presentation.tsx
+  s_d64a250202e8d4::t_0e3e9d6fec6182 19
+  s_d64a250202e8d4::t_a132ac9fb44d39 38
+packages/cli/src/builtin-addons/system-status/buttons/kpis/frontend.tsx
+  s_d64a250202e8d4::t_155f0c50a2c627 12-16
+  s_d64a250202e8d4::t_7d4d667e9cc913 20-23,25-28,30,39-40,43-44,48-54
+  h_f90ee31b03fc41 2-3
+  s_30acb526b1996b::t_8954ebd03b7c49 1,11,17-19,56
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_30acb526b1996b::t_be50c71086b369 1,3-5,20,26,63-64,66,70-81,86-87,90,92-95,97-98,100,102-103
+  h_f90ee31b03fc41 27-33,35-58
+packages/cli/src/builtin-addons/system-status/buttons/_shared.ts
+  s_d64a250202e8d4::t_bbbbee76c6383e 1-7,9-94
+  s_d64a250202e8d4::t_b9ca74c1662b70 8
+  s_d64a250202e8d4::t_06a8fbb99cdfc8 95
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  s_d64a250202e8d4::t_112533cb4b457b 11-16
+packages/cli/src/ui/surfaces/index.ts
+  h_f90ee31b03fc41 1-5,7-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "cff7ee79840d34f623a3c55cd16c4ef673a7826d",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_30acb526b1996b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06b9fe266ffeeaURlXPxkkB10J",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_d64a250202e8d4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06bc99359ffeCnZpJbNUcWF0Tx",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    }
+  }
+}
