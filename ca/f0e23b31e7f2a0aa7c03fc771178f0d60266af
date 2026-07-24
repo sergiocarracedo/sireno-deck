@@ -1,0 +1,24 @@
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  s_dd472bc4ead7e9::t_9145061640b7e9 51-52
+packages/cli/src/ui/surfaces/__tests__/BarsSurface.test.tsx
+  s_dd472bc4ead7e9::t_bfd62b8e700497 21-22,24,30,38-40,52-54,114,149-156,161
+  s_dd472bc4ead7e9::t_2da3013637e33c 1-20,23,25-29,31-37,41-51,55-113,115-148,157-160
+packages/cli/src/ui/surfaces/BarsSurface.tsx
+  s_dd472bc4ead7e9::t_fcea6d3f5ebb19 14,30-33,35,37-58,60-94,121-123,135,146,172,176-188
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "caf0e23b31e7f2a0aa7c03fc771178f0d60266af",
+  "prompts": {},
+  "sessions": {
+    "s_dd472bc4ead7e9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06a78b20dffebinY2yeicuPj2u",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
