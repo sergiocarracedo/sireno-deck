@@ -1,8 +1,8 @@
-import type { CSSProperties, ReactElement } from 'react'
+import type { CSSProperties, ReactElement } from "react"
 
-import { Icon } from '../primitives/Icon'
-import { Text } from '../primitives/Text'
-import { cn } from '../utils/cn'
+import { Icon } from "../primitives/Icon"
+import { useThemeUiPresentation } from "../theme-presentation"
+import { cn } from "../utils/cn"
 
 export interface LabelValueListLine {
   color?: string
@@ -16,131 +16,91 @@ type LabelValueListLines =
   | readonly [LabelValueListLine]
   | readonly [LabelValueListLine, LabelValueListLine]
   | readonly [LabelValueListLine, LabelValueListLine, LabelValueListLine]
-  | readonly [
-      LabelValueListLine,
-      LabelValueListLine,
-      LabelValueListLine,
-      LabelValueListLine,
-    ]
 
-export interface LabelValueListSurfaceProps {
+export interface LabelValueListProps {
   className?: string
   lines: LabelValueListLines
   style?: CSSProperties
 }
 
-type LabelValueLayout = 'single' | 'double' | 'stack'
-
-function getLayout(lines: LabelValueListLines): LabelValueLayout {
-  if (lines.length === 1) {
-    return 'single'
-  }
-
-  if (lines.length === 2) {
-    return 'double'
-  }
-
-  return 'stack'
-}
-
-function renderValue(
-  line: LabelValueListLine,
-  layout: LabelValueLayout,
-): ReactElement {
-  const valueTone = layout === 'stack' ? 'foreground' : 'primary'
-
+function RowTile({
+  item,
+  showLabel,
+}: {
+  item: LabelValueListLine
+  showLabel: boolean
+}): ReactElement {
+  const colorStyle = item.color ? { color: item.color } : undefined
   return (
-    <div className={cn('min-w-0', layout === 'single' ? 'mt-1' : 'text-right')}>
-      <Text
-        align={layout === 'single' ? 'center' : 'right'}
-        className={cn(
-          layout === 'single' ? 'tracking-tight' : 'whitespace-nowrap',
-        )}
-        size={layout === 'single' ? '2xl' : layout === 'double' ? 'xl' : 'md'}
-        style={line.color ? { color: line.color } : undefined}
-        tone={valueTone}
-        text={line.value}
-      />
-      {line.units ? (
-        <Text
-          align={layout === 'single' ? 'center' : 'right'}
-          className="block opacity-70"
-          size={layout === 'single' ? 'sm' : 'xs'}
-          style={line.color ? { color: line.color } : undefined}
-          typography="aux"
-          text={line.units}
-        />
-      ) : (
-        <></>
-      )}
+    <div
+      className="flex h-full min-w-0 flex-1 flex-col text-center overflow-hidden"
+      style={colorStyle}
+    >
+      <div className="flex-1 flex items-center justify-center gap-1.5 min-h-0">
+        {item.icon ? <Icon source={item.icon} size={14} /> : null}
+        <span
+          className="font-mono text-lg font-bold leading-none truncate"
+          style={{ minWidth: 0 }}
+        >
+          {item.value}
+        </span>
+      </div>
+      {showLabel ? (
+        <div
+          className={cn(
+            "flex items-center justify-center gap-1 truncate",
+            "opacity-75 uppercase tracking-wide text-[9px] font-bold",
+          )}
+        >
+          <span className="truncate">{item.label}</span>
+          {item.units ? <span>{item.units}</span> : null}
+        </div>
+      ) : null}
     </div>
   )
 }
 
-export function LabelValueListSurface(
-  props: LabelValueListSurfaceProps,
-): ReactElement {
-  if (props.lines.length < 1 || props.lines.length > 4) {
+export function LabelValueList(props: LabelValueListProps): ReactElement {
+  if (props.lines.length < 1 || props.lines.length > 3) {
     throw new Error(
-      `LabelValueList supports 1-4 lines. Received ${props.lines.length}.`,
+      `LabelValueList supports 1-3 lines. Received ${props.lines.length}.`,
     )
   }
 
-  const layout = getLayout(props.lines)
+  const themeUi = useThemeUiPresentation()
+  if (themeUi?.surfaces?.labelValueList) {
+    return themeUi.surfaces.labelValueList(props)
+  }
+
+  // ponytail: 1-2 metrics render as stacked 2-row tiles (icon+value over
+  // label+units); 3 metrics collapse to icon-only rows because there isn't
+  // room without truncation.
+  const showLabel = props.lines.length <= 2
+  const tile = (item: LabelValueListLine, key: string) => (
+    <RowTile key={key} item={item} showLabel={showLabel} />
+  )
 
   return (
     <div
       className={cn(
-        'flex h-full min-h-0 w-full',
-        layout === 'single' && 'items-center justify-center',
-        layout === 'double' && 'flex-col justify-center gap-3',
-        layout === 'stack' && 'flex-col justify-center gap-1',
+        "flex w-full gap-1 p-1 items-stretch",
+        showLabel ? "flex-col h-full" : "flex-row flex-wrap",
         props.className,
       )}
-      data-sireno-label-value-layout={layout}
-      data-sireno-ui-label-value-list="true"
-      style={props.style}
+      style={{ color: "var(--sireno-color-fg)", ...props.style }}
     >
-      {props.lines.map((line, index) => {
-        const label = (
+      {props.lines.map((item, index) =>
+        showLabel ? (
+          tile(item, `${item.label}-${index}`)
+        ) : (
           <div
-            className={cn(
-              'flex min-w-0 items-center gap-2',
-              layout === 'single' && 'justify-center',
-              layout !== 'single' && 'flex-1',
-            )}
+            key={`${item.label}-${index}`}
+            className="min-h-[28px] flex-1 flex basis-1/2"
           >
-            {line.icon ? (
-              <span className="inline-flex shrink-0 items-center justify-center">
-                <Icon source={line.icon} size={16} />
-              </span>
-            ) : null}
-            <Text
-              align={layout === 'single' ? 'center' : 'left'}
-              className="min-w-0 uppercase opacity-75"
-              size={layout === 'single' ? 'sm' : 'xs'}
-              style={line.color ? { color: line.color } : undefined}
-              typography="aux"
-              text={line.label}
-            />
+            {tile(item, `${item.label}-${index}`)}
           </div>
-        )
-
-        return (
-          <div
-            className={cn(
-              'min-w-0',
-              layout === 'single' &&
-                'flex w-full flex-col items-center justify-center text-center',
-              layout !== 'single' && 'flex items-center justify-between gap-3',
-            )}
-            key={`${line.label}-${index}`}
-          >
-            {label}
-            {renderValue(line, layout)}
-          </div>
-        )
-      })}
+        ),
+      )}
     </div>
   )
 }

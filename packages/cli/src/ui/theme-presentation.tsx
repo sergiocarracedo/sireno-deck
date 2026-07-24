@@ -16,7 +16,7 @@ import {
   BarsProps,
   IconLabelProgressSurfaceProps,
   IconLabelSurfaceProps,
-  LabelValueListSurfaceProps,
+  LabelValueListProps,
   SplitActionSurfaceProps,
   TemporaryErrorSurfaceProps,
 } from "./surfaces"
@@ -35,7 +35,7 @@ export interface ThemeUiPresentation {
     iconLabelProgress?: (props: IconLabelProgressSurfaceProps) => ReactElement
     bars?: (props: BarsProps) => ReactElement
     splitAction?: (props: SplitActionSurfaceProps) => ReactElement
-    labelValueList?: (props: LabelValueListSurfaceProps) => ReactElement
+    labelValueList?: (props: LabelValueListProps) => ReactElement
     temporaryError?: (props: TemporaryErrorSurfaceProps) => ReactElement
   }
 }
