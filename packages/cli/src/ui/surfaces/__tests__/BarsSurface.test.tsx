@@ -62,18 +62,18 @@ describe("BarsSurface", () => {
     expect(overLayer.style.clipPath).toBe("inset(0% 0 0 0)")
   })
 
-  it("paints the above-fill layer with the bar color and the over-fill layer with a muted color", () => {
+  it("paints the above-fill layer with the bar color and the over-fill layer with a dark contrast color", () => {
     const { container } = render(
       <BarsSurface items={singleItem({ color: "#34d399", value: 30 })} />,
     )
-    const aboveLayer = container.querySelector(
-      '[data-sireno-bars-layer="above"]',
+    const aboveText = container.querySelector(
+      '[data-sireno-bars-layer="above"] [data-sireno-text-size="sm"]',
     ) as HTMLElement
-    const overLayer = container.querySelector(
-      '[data-sireno-bars-layer="over"]',
+    const overText = container.querySelector(
+      '[data-sireno-bars-layer="over"] [data-sireno-text-size="sm"]',
     ) as HTMLElement
-    expect(aboveLayer.style.color).toBe("rgb(52, 211, 153)")
-    expect(overLayer.style.color).toContain("color-mix")
+    expect(aboveText.style.color).toBe("rgb(52, 211, 153)")
+    expect(overText.style.color).toBe("var(--sireno-color-foreground-contrast)")
   })
 
   it("renders the units in a smaller size than the value when both are provided", () => {

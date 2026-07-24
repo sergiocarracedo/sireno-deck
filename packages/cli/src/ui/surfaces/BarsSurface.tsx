@@ -27,8 +27,7 @@ export interface BarsSurfaceProps {
   style?: CSSProperties
 }
 
-const MUTED_TEXT_COLOR =
-  "color-mix(in oklab, var(--sireno-color-fg) 65%, transparent)"
+const MUTED_TEXT_COLOR = "var(--sireno-color-foreground-contrast)"
 
 function getBarFillRatio(item: BarsItem): number {
   if (item.maxValue <= 0) {
@@ -75,6 +74,7 @@ function BarsValueLayer({
           align="center"
           fit="hidden"
           size="sm"
+          style={{ color }}
           typography="mono"
           weight="bold"
           text={text}
@@ -84,6 +84,7 @@ function BarsValueLayer({
             align="center"
             fit="hidden"
             size="xs"
+            style={{ color }}
             typography="mono"
             weight="bold"
             text={units}
