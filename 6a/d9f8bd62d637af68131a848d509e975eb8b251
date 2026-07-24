@@ -1,0 +1,22 @@
+packages/cli/src/ui/surfaces/BarsSurface.tsx
+  s_dd472bc4ead7e9::t_f79946df047b5e 30
+  s_dd472bc4ead7e9::t_bd4cf4779ee76b 77,87
+packages/cli/src/ui/surfaces/__tests__/BarsSurface.test.tsx
+  s_dd472bc4ead7e9::t_a3b4fcbbd57969 65,69-70,72-73,75-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "6ad9f8bd62d637af68131a848d509e975eb8b251",
+  "prompts": {},
+  "sessions": {
+    "s_dd472bc4ead7e9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06a78b20dffebinY2yeicuPj2u",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
