@@ -1,0 +1,19 @@
+config.yml
+  s_30acb526b1996b::t_96e2eb20cb38a8 208
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "4f2c999ac0a116e80559fd44e423c53ee0eb2f7e",
+  "prompts": {},
+  "sessions": {
+    "s_30acb526b1996b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06b9fe266ffeeaURlXPxkkB10J",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
