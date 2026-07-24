@@ -1,0 +1,264 @@
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness/common/frontend.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 52
+packages/cli/src/cli/index.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 134-136,195-201
+packages/cli/src/ui/primitives/Text.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 6,8-9,12-14,18-25,29-31,35-41,45-51,55-63,67-71,75-83,89-92,97-98,100,105,108-109,114-116,136,141,147,155,157,163,165,171,175,179,184-185,189,205-206,213,233,244,248-251,256-257,260,262-263,266-267,270-271,274,302,311,316,335,337,346,367-373,377-381,383,402,406-409,417-418,420-421,426,433,445,456
+MIGRATION-NOTES.md
+  s_ca09f09a6b011d::t_516e408d3a2f6e 7,14,23,25,35,41,48,56,62
+packages/cli/src/ui/surfaces/SplitActionSurface.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1,7-9,15,20,23-24,31-32,37-40,53,81
+packages/cli/src/builtin-addons/emoji-selector/data/categories.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 15-17,19-68,72-74,76-118,122-124,126-169,173-175,177-217,221-223,225-264,268-270,272-289,293-295,297-326,330-332,334-363,367-369,371-400,404-406,408-439,443-445,447-471
+packages/cli/src/deck/__tests__/addon-handler-bridge.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 71,108,133,158,194,221,257,284
+packages/cli/src/outputClient/emulator.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 6-10,129-133
+packages/cli/emulator/src/components/DisconnectedOverlay.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 21-22
+packages/cli/src/__tests__/fixtures/system-status-deck.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 14
+packages/cli/emulator/src/__tests__/bridge-logs-page.test.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 5
+packages/cli/src/system/providers/key-macro/windows.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 134,153,274,337
+packages/cli/src/builtin-addons/core/index.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1-2,4-13,17,19,24,26,28,30,32,34,36,38,40,45,55-57,62-64,69-71,78-79
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/frontend.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1-3
+packages/cli/src/deck/__tests__/chrome-icon-resolution.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 5-10,50
+packages/cli/src/core/__tests__/pagination.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 40
+packages/cli/src/config/__tests__/validation.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 77-81
+packages/cli/frontend/src/components/DisconnectedOverlay.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 21-22
+packages/cli/src/__tests__/integration.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 4-12,140-144,150,154
+packages/cli/src/addon/registry.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 96-99,111,139
+packages/cli/src/builtin-addons/emoji-selector/__tests__/decks.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 38-40,62-64,127-136
+packages/cli/src/builtin-addons/internal-settings/buttons/app-info/frontend.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1-2,4-5,7
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-up/frontend.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 8
+packages/cli/src/deck/__tests__/deck-config-derive-label.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 15-23,29-37,43-51,55-63,71-79,82
+packages/cli/src/deck/paginate-deck.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 53
+packages/cli/src/builtin-addons/session/__tests__/index.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 10
+packages/cli/src/deck/system-back-injection.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 6-11,60-63,67
+packages/cli/src/builtin-addons/session/README.md
+  s_ca09f09a6b011d::t_516e408d3a2f6e 7-9,14
+packages/cli/src/builtin-addons/emoji-selector/README.md
+  s_ca09f09a6b011d::t_516e408d3a2f6e 20-21
+packages/cli/src/cli/commands/__tests__/emulator-mode-build-config.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 197
+packages/cli/src/builtin-addons/emoji-selector/index.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1,3-9,13,15,19-20,22
+packages/cli/src/builtin-addons/internal-settings/decks/settings.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 6-21
+packages/cli/src/render/push-raw-image.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 15-18,100
+packages/cli/src/system/providers/clipboard/linux.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 73
+pnpm-workspace.yaml
+  s_ca09f09a6b011d::t_516e408d3a2f6e 5
+packages/cli/src/builtin-addons/system-status/index.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 4,15
+  s_ca09f09a6b011d::t_3f72b1a32afb3f 16
+packages/cli/src/deck/__tests__/lock-deck.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1,3-5,7-10,12,15-16,29-30,42-48,76,79,81,89,95-97,99,104,106,108,113,115-120,123,128,131-132,136-137,140,142-146,152-153,158,161-162,164,170,173,175-176,181,184-185,190-191,197-198,200-201,203,208-209,211,214,216-217,222-223,225,230,235,238,242,244,249,254-255,258,262,264-265,267,272,277-278,280,283-284,289,291,295,297,300,302,308,310,312,315,317,320,323,325,328-330,333,335,337,340,343,346
+packages/cli/src/deck/__tests__/system-back-injection.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 71-74,154
+packages/cli/emulator/src/bridge.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 163-166
+packages/cli/frontend/src/__tests__/disconnected-overlay.test.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 66
+packages/cli/src/config/__tests__/include-resolver.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 48-49,51,107,126
+packages/cli/src/builtin-addons/date-time/buttons/date/frontend.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 31-37
+packages/cli/src/config/config-diff.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 18
+packages/cli/src/ui/surfaces/IconLabelProgressSurface.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 17-20
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/config.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1
+packages/cli/src/cli/commands/addon-decks.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 325-329
+packages/cli/src/deck/__tests__/addon-core-lock.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 32-34,55,67-69,91
+packages/cli/src/builtin-addons/system-status/buttons/kpis/frontend.tsx
+  s_ca09f09a6b011d::t_bbfbeca2783b8c 1-33
+  s_ca09f09a6b011d::t_516e408d3a2f6e 34
+packages/cli/src/builtin-addons/system-status/buttons/system-status/MetricRow.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 44-46,124
+  s_ca09f09a6b011d::t_98eb46092f0482 77-85
+  s_ca09f09a6b011d::t_11e57744aa63ee 1-43,47-76,86-105,108-109,111-123
+  s_ca09f09a6b011d::t_46ef5715456bb0 106-107
+  s_ca09f09a6b011d::t_80ec26ff931e69 110
+packages/cli/src/index.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 31-35
+packages/cli/src/config/validation.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 165,167-169
+packages/cli/src/builtin-addons/system-status/domain/index.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 3-4
+packages/cli/src/builtin-addons/emoji-selector/buttons/category/frontend.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1,3-4,9-10
+packages/cli/src/builtin-addons/media/buttons/media-player/components/MediaSurface.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 30-36,39-46
+packages/cli/src/system/providers/active-app/__tests__/wayland-gnome.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 222
+packages/cli/src/builtin-addons/session/index.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 18
+packages/cli/src/render/__tests__/push-raw-image.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 28-31,52-56,93-97,104
+packages/cli/frontend/src/__tests__/asset-timing-gate.test.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 86
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/config.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1
+packages/cli/src/system/glob-match.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 74
+packages/cli/frontend/src/components/Deck.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 138
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1,3-6,10,26
+packages/cli/src/addon/loader.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 101-102
+packages/cli/src/system/requirements.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 45-52,136-138
+packages/cli/src/outputClient/types.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 40-42
+packages/cli/src/ui/primitives/TapIndicator.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1-4,6,10,14,23-25,36-38,41-42,45-46,55,57
+packages/cli/src/ui/primitives/Label.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1,3-5,7,32-34,37-39,42-43,47,54,59
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 34
+  s_ca09f09a6b011d::t_4b95c995ce22ae 1-33
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 374,389-391,416-420,1598-1600,1609-1611
+packages/cli/src/builtin-addons/core/buttons/page-nav/frontend.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1-2,12,15-17,20-22,25,32-33,57,61
+packages/cli/src/builtin-addons/system-status/__tests__/manifest.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 25-37,39
+  s_ca09f09a6b011d::t_75ac529ae32f5a 6-8
+packages/cli/src/builtin-addons/brightness/buttons/brightness/frontend.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 34-40
+packages/cli/src/system/providers/key-macro/linux.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 324,551-555,557-558
+packages/cli/src/builtin-addons/system-status/domain/live-metrics.ts
+  s_ca09f09a6b011d::t_d4e0b8cddc12ae 5,11
+  s_ca09f09a6b011d::t_516e408d3a2f6e 56-63,86-87,90-96,148-150,234
+  s_ca09f09a6b011d::t_bc92fc6f86a797 175-178
+  s_ca09f09a6b011d::t_d68ded1b9f2bc7 12
+packages/cli/src/deck/__tests__/missing-nav.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 17-18,31-37
+packages/cli/src/builtin-addons/internal-settings/buttons/brightness-down/frontend.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 8
+packages/cli/src/builtin-addons/system-status/manifest.ts
+  s_ca09f09a6b011d::t_d3089ecd807383 8
+  s_ca09f09a6b011d::t_4ce50440a14dd4 3-4,9,32-40,56-60
+  s_ca09f09a6b011d::t_516e408d3a2f6e 62
+packages/cli/src/builtin-addons/system-status/__tests__/schema-metrics.test.ts
+  s_ca09f09a6b011d::t_2e67ba65b42543 3,53-69
+packages/cli/src/builtin-addons/system-status/buttons/system-status/schemas.ts
+  s_ca09f09a6b011d::t_85feeba42a9523 1-14,22-41
+  s_ca09f09a6b011d::t_516e408d3a2f6e 15-21,42
+packages/cli/emulator/src/pages/ServiceLogsPage.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 71
+packages/cli/src/config/include-resolver.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 7-10,40-42,92
+packages/cli/src/builtin-addons/emoji-selector/support.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1,4-9,16-25,30
+ARCHITECTURE.md
+  s_ca09f09a6b011d::t_516e408d3a2f6e 118
+packages/cli/src/deck/index.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 12,34-37
+packages/cli/src/cli/commands/__tests__/build-addon-config-overrides.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 30-32,62-67,109,117
+packages/cli/src/ui/primitives/Chip.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 47
+packages/cli/src/util/daemon.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 144,157
+packages/cli/emulator/src/App.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 9-14,82-86,137-139,188-193,200-202
+packages/cli/src/system/__tests__/glob-match.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 108
+packages/cli/src/cli/commands/service/install.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 63-66,85-87
+packages/cli/src/builtin-addons/emoji-selector/decks/index.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1,3,8,13-15,25,65,80,89,112,115
+packages/cli/src/system/providers/clipboard/windows.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 17-18,32-34,38
+packages/cli/src/builtin-addons/date-time/buttons/custom/frontend.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1-2,4-6,14
+packages/cli/src/builtin-addons/value-display/buttons/value-display/frontend.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 38-42
+packages/cli/src/deck/__tests__/overlay-lock-resume.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 38-42,256
+config.yml
+  s_ca09f09a6b011d::t_516e408d3a2f6e 28,33,35,38,40,45,53,56,58-60,66,75,85,87,89,91,94,96-97,101,110
+packages/cli/src/util/config-diff.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 3
+packages/cli/emulator/src/pages/BridgeLogsPage.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 33-35,77-78
+packages/cli/src/deck/__tests__/validation-errors.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 35-41,58-60,69-75,85-91,114-116,123-125
+packages/cli/frontend/src/__tests__/system-buttons-render.test.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 64-66
+packages/cli/src/builtin-addons/media/buttons/volume/common/frontend.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1-5,9,20,26,44-45
+packages/cli/src/system/providers/clipboard/darwin.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 35
+packages/cli/src/cli/commands/service/run.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 18,74-76
+packages/cli/src/__tests__/daemon-extensions.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 2-8,12-17,34-35,39-44
+packages/cli/src/builtin-addons/internal-settings/index.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1,3-9,18,20,24,27,31,34,38,45
+packages/cli/src/cli/commands/service/render-template.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 51,85
+packages/cli/src/builtin-addons/date-time/index.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1,3-10,14,16,20-22
+packages/cli/src/system/providers/key-macro/__tests__/windows.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 1,179-181
+packages/cli/emulator/src/__tests__/bridge-log-store.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 86-87,106
+packages/cli/src/util/logger.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 222-226
+packages/cli/src/builtin-addons/system-status/domain/display-metrics.ts
+  s_ca09f09a6b011d::t_df6e0163a2dbfd 16,30
+  s_ca09f09a6b011d::t_516e408d3a2f6e 10-13,123-125,127
+packages/cli/src/system/providers/active-app/wayland-gnome.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 5,114-116,118-122,169-172,224
+packages/cli/src/system/providers/key-macro/__tests__/linux.test.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 164,301-302,334
+packages/cli/src/builtin-addons/weather/buttons/weather/pages.tsx
+  s_ca09f09a6b011d::t_516e408d3a2f6e 20-26,37-41,44-49,64-68,90-99
+packages/cli/src/cli/commands/service/update-config.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 21-23,36-39
+packages/cli/src/cli/commands/start.ts
+  s_ca09f09a6b011d::t_516e408d3a2f6e 126
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "33e1ba59f13c3922e0a12695ed8cb887efa8e904",
+  "prompts": {},
+  "sessions": {
+    "s_ca09f09a6b011d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06f0fbd80ffeZoupDdqeZlpW42",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
