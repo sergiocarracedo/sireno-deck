@@ -204,6 +204,26 @@ decks:
           deck: main
           icon: ⬅
           label: Main
+      - position: 13
+        type: "system-status:system-status"
+        config:
+          metrics:
+            - id: "cpu-boost"
+              label: Boost
+            - id: cpu-voltages
+              label: Vcore
+            - id: fan-rpm
+              label: Fan
+      - position: 14
+        type: "system-status:kpis"
+        config:
+          metrics:
+            - id: disk-io
+              label: Disk I/O
+            - id: network-read
+              label: Net RX
+            - id: network-write
+              label: Net TX
   warp:
     trigger:
       process_name: warp
