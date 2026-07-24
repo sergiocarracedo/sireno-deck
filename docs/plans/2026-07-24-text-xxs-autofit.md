@@ -23,7 +23,7 @@ Both changes are backward-compatible: every existing `<Text size="…" fit="…"
 | `xxs` CSS layer | Tailwind utility, not `components.css` rule | Co-located with the rest of `SIZE_CLASS`; same lookup path; arbitrary value is deterministic |
 | `autofit` driver | JS via `useRef` + `useEffect` + `ResizeObserver` on a wrapper `<span>` | Pure CSS cannot satisfy "fit *or* ellipsis on overflow at minSize" — needs measurement and a state switch |
 | `autofit` step strategy | Binary search between `current size` and `minSize`, clamped to integer px | O(log n) re-fits per ResizeObserver tick; linear was deemed wasteful for 6xl → 8px range |
-| `autofit` re-fit triggers | (a) text content change, (b) container resize, (c) `size`/`minSize`/`lines` props change | Standard ResizeObserver + dependency-array pattern; matches `useAddonChannel` precedent in `IconLabelProgressSurface.tsx` |
+| `autofit` re-fit triggers | (a) text content change, (b) container resize, (c) `size`/`minSize`/`lines` props change | Standard ResizeObserver + dependency-array pattern; precedent for hooks-in-primitives is `IconLabelProgressSurface.tsx` (`useState` + `useRef` + `useEffect`) |
 | `autofit` overflow check | Single line: `scrollWidth > clientWidth`. Multi-line: `scrollHeight > clientHeight` (container has explicit `height: lines * lineHeight` em) | Both roll up to the same predicate: text rendered size exceeds available box |
 | `autofit` minSize | Required (no default) | Forcing the caller to pick the floor prevents silent unreadable output; default `8` would be invisible on many themes |
 | `autofit` ellipsis at floor | Reuse existing multi-line `-webkit-line-clamp` inline style path | Already battle-tested for the `ellipsis` mode |
@@ -43,7 +43,8 @@ Both changes are backward-compatible: every existing `<Text size="…" fit="…"
 export type TextSize =
   | "xxs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl"
 
-// Fit: add "autofit" + optional minSize
+// Fit: add "autofit" + optional minSize.
+// `fit` stays polymorphic — string shorthand (`fit="ellipsis"`) continues to work.
 export type TextFitType = "ellipsis" | "shrink" | "hidden" | "autofit"
 export type TextFit = {
   type: TextFitType
@@ -51,6 +52,7 @@ export type TextFit = {
   reserveSpace?: boolean
   minSize?: number  // px; required when type === "autofit"
 }
+// prop type: `fit?: TextFit | TextFitType` (unchanged — both shapes still accepted)
 ```
 
 **Usage examples:**
@@ -86,8 +88,8 @@ export type TextFit = {
     - Render the existing `<span>` wrapper with a `ref`.
     - Add a `useEffect` that runs the **measure-and-step loop**:
       1. Read `containerRef.current.getBoundingClientRect()` and `scrollWidth` / `scrollHeight`.
-      2. If overflow → reduce font-size by binary-search step between current and `minSize`. Re-apply inline `style.fontSize`. Loop until it fits or floor hit.
-      3. If floor hit and **still** overflows → keep `minSize` and apply the existing multi-line ellipsis inline styles (`display:-webkit-box; -webkit-line-clamp: N`) with `lines` clamped to [1, 3].
+      2. If overflow → reduce font-size by binary-search step between current and `minSize`. Re-apply inline `style.fontSize`. Loop until it fits or floor hit. Termination: `high - low <= 1`; **always converge to `minSize` (the floor), never return a value below it**.
+      3. At `minSize`, **always** apply the ellipsis inline styles (`display:-webkit-box; -webkit-line-clamp: N`, `lines` clamped to [1, 3]) regardless of whether text actually overflows — keeps the floor state deterministic and avoids re-measuring clipped text.
     - Subscribe a `ResizeObserver` on `containerRef.current`; re-run the loop on each tick.
     - Re-run on `text`, `size`, `minSize`, `lines` changes.
     - **Cleanup**: `observer.disconnect()` in the effect return.
@@ -96,10 +98,11 @@ export type TextFit = {
 ### Tests
 
 - `packages/cli/src/ui/primitives/__tests__/Text.test.tsx`
-  - **Note (test drift):** the existing file references `ResolvedTextFit`, `"wrap"` mode, `"line-clamp"` type, `MAX_LINE_CLAMP = 6`, and default `fit: "wrap"` — none of which exist in the current source. These tests are **forward-looking / aspirational**. Two options:
-    - **Ponytail choice (recommended):** leave the existing drift alone in *this* plan. Add only the new tests for `xxs` + `autofit`. File a separate "test-drift cleanup" ticket so the cleanup PR is reviewable on its own.
-    - Otherwise: this plan would expand to a refactor of the test file beyond the requested change.
-  - **New tests:**
+  - **Test drift cleanup (in-scope, per user direction):** the existing file references `ResolvedTextFit`, `"wrap"` mode, `"line-clamp"` type, `MAX_LINE_CLAMP = 6`, and default `fit: "wrap"` — none of which exist in the current source. **Fix in this PR** so the test suite is green on day one:
+    - Replace `ResolvedTextFit` import with the actual return type of `resolveTextFit` (export it from `Text.tsx` if not already, e.g. `export type ResolvedTextFit = Required<TextFit>` — naming choice is up to the implementer).
+    - Update fixtures: drop `"wrap"` and `"line-clamp"` types; keep `"ellipsis" | "shrink" | "hidden"`. Update tests that asserted `"wrap"` default → assert the actual default (`{ type: "hidden", lines: 1, reserveSpace: false }`).
+    - `MAX_LINE_CLAMP`: tests asserted `6`; source is `3`. Update tests to `3`. If a test asserts `lines > 3` clamps to 3 (current source), keep that assertion; the `6` was the aspirational future value.
+  - **New tests (xxs + autofit):**
     - `resolveTextFit({ type: "autofit", minSize: 10 })` returns the same object (idempotent).
     - `resolveTextFit({ type: "autofit" })` throws with a message naming `minSize`.
     - `resolveTextFit({ type: "autofit", minSize: 10, lines: 7 })` clamps to 3.
@@ -118,11 +121,12 @@ export type TextFit = {
 
 ## 5. Implementation order
 
-1. **Static `xxs` first** — smallest, no React hooks, safest diff. `SIZE_CLASS` + `RICH_SIZE_TAGS` + tests.
-2. **Fit type extension** — `TextFitType` + `TextFit` shape + `resolveTextFit` (incl. throw on missing `minSize`) + tests.
-3. **Autofit implementation** — extract a `useAutofit(ref, { size, minSize, lines, text })` hook inside `Text.tsx` (file-local; not exported) that returns `{ fontSize, state }`. Wire it into the render path.
-4. **Test harness for `ResizeObserver`** — add a tiny mock at the top of the test file (or `__tests__/setup.ts` if it exists). No production dependency.
-5. **Verify** — `pnpm lint && pnpm format && pnpm typecheck && pnpm test` then emulator run.
+1. **Test drift cleanup first** — fix `ResolvedTextFit` references, drop `"wrap"`/`"line-clamp"` fixtures, update `MAX_LINE_CLAMP` to `3`, update default-fit assertions. Run `pnpm test packages/cli/src/ui/primitives/__tests__/Text.test.tsx` — must pass before adding new code. **Optional split**: commit this as the first commit so the diff separates "fix tests" from "add features".
+2. **Static `xxs`** — `SIZE_CLASS` + `RICH_SIZE_TAGS` + xxs tests.
+3. **Fit type extension** — `TextFitType` + `TextFit` shape + `resolveTextFit` (incl. throw on missing `minSize`) + tests.
+4. **Autofit implementation** — extract a `useAutofit(ref, { size, minSize, lines, text })` hook inside `Text.tsx` (file-local; not exported) that returns `{ fontSize, state }`. Wire it into the render path.
+5. **Test harness for `ResizeObserver`** — add a tiny mock at the top of the test file (or `__tests__/setup.ts` if it exists). No production dependency.
+6. **Verify** — `pnpm lint && pnpm format && pnpm typecheck && pnpm test` then emulator run.
 
 ## 6. Test scenarios
 
@@ -171,7 +175,7 @@ For each scenario, the test file path is `packages/cli/src/ui/primitives/__tests
 - **Auto-grow** (fit a fixed budget by *increasing* font-size) — different problem, different API; request was shrink-only.
 - **Smooth / animated transitions on resize** — instant re-fit matches the codebase.
 - **Theme-aware `minSize` defaults** (e.g., read from `typography.auxiliary_text.fontSize`) — keeps the API explicit; caller decides.
-- **Fixing the existing test drift** in `Text.test.tsx` (`ResolvedTextFit`, `wrap`, `MAX_LINE_CLAMP = 6`, etc.) — separate ticket; this plan does not touch those tests.
+- **Fixing the existing test drift** in `Text.test.tsx` (`ResolvedTextFit`, `wrap`, `MAX_LINE_CLAMP = 6`, etc.) — **in scope** per §5 step 1.
 - **Migration of any existing `fit` call sites** to `autofit` — no consumer changes; autofit is opt-in.
 - **Tailwind `@theme` block entries for `xxs`** — the arbitrary value path is sufficient and avoids touching the theme generator.
 - **Per-locale font-size presets** (CJK often wants different default sizes) — not requested.
