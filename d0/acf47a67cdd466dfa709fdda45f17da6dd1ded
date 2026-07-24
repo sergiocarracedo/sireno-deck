@@ -1,0 +1,22 @@
+packages/cli/src/builtin-addons/system-status/README.md
+  s_30acb526b1996b::t_270713092f4ffe 1-123
+config.yml
+  s_30acb526b1996b::t_e6f469864899d8 208-226
+  s_30acb526b1996b::t_19134870613a11 207
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "d0acf47a67cdd466dfa709fdda45f17da6dd1ded",
+  "prompts": {},
+  "sessions": {
+    "s_30acb526b1996b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06b9fe266ffeeaURlXPxkkB10J",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
