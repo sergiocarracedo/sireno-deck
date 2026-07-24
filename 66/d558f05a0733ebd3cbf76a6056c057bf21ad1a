@@ -1,0 +1,19 @@
+config.yml
+  s_ca09f09a6b011d::t_3937658bd8e88a 5-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "66d558f05a0733ebd3cbf76a6056c057bf21ad1a",
+  "prompts": {},
+  "sessions": {
+    "s_ca09f09a6b011d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06f0fbd80ffeZoupDdqeZlpW42",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
