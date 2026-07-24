@@ -1,8 +1,8 @@
-import type { CSSProperties, ReactElement } from "react"
+import type { CSSProperties, ReactElement } from 'react'
 
-import { Icon } from "../primitives/Icon"
-import { Text } from "../primitives/Text"
-import { cn } from "../utils/cn"
+import { Icon } from '../primitives/Icon'
+import { Text } from '../primitives/Text'
+import { cn } from '../utils/cn'
 
 export interface LabelValueListLine {
   color?: string
@@ -29,43 +29,43 @@ export interface LabelValueListSurfaceProps {
   style?: CSSProperties
 }
 
-type LabelValueLayout = "single" | "double" | "stack"
+type LabelValueLayout = 'single' | 'double' | 'stack'
 
 function getLayout(lines: LabelValueListLines): LabelValueLayout {
   if (lines.length === 1) {
-    return "single"
+    return 'single'
   }
 
   if (lines.length === 2) {
-    return "double"
+    return 'double'
   }
 
-  return "stack"
+  return 'stack'
 }
 
 function renderValue(
   line: LabelValueListLine,
   layout: LabelValueLayout,
 ): ReactElement {
-  const valueTone = layout === "stack" ? "foreground" : "primary"
+  const valueTone = layout === 'stack' ? 'foreground' : 'primary'
 
   return (
-    <div className={cn("min-w-0", layout === "single" ? "mt-1" : "text-right")}>
+    <div className={cn('min-w-0', layout === 'single' ? 'mt-1' : 'text-right')}>
       <Text
-        align={layout === "single" ? "center" : "right"}
+        align={layout === 'single' ? 'center' : 'right'}
         className={cn(
-          layout === "single" ? "tracking-tight" : "whitespace-nowrap",
+          layout === 'single' ? 'tracking-tight' : 'whitespace-nowrap',
         )}
-        size={layout === "single" ? "2xl" : layout === "double" ? "xl" : "md"}
+        size={layout === 'single' ? '2xl' : layout === 'double' ? 'xl' : 'md'}
         style={line.color ? { color: line.color } : undefined}
         tone={valueTone}
         text={line.value}
       />
       {line.units ? (
         <Text
-          align={layout === "single" ? "center" : "right"}
+          align={layout === 'single' ? 'center' : 'right'}
           className="block opacity-70"
-          size={layout === "single" ? "sm" : "xs"}
+          size={layout === 'single' ? 'sm' : 'xs'}
           style={line.color ? { color: line.color } : undefined}
           typography="aux"
           text={line.units}
@@ -91,10 +91,10 @@ export function LabelValueListSurface(
   return (
     <div
       className={cn(
-        "flex h-full min-h-0 w-full",
-        layout === "single" && "items-center justify-center",
-        layout === "double" && "flex-col justify-center gap-3",
-        layout === "stack" && "flex-col justify-center gap-2",
+        'flex h-full min-h-0 w-full',
+        layout === 'single' && 'items-center justify-center',
+        layout === 'double' && 'flex-col justify-center gap-3',
+        layout === 'stack' && 'flex-col justify-center gap-1',
         props.className,
       )}
       data-sireno-label-value-layout={layout}
@@ -105,9 +105,9 @@ export function LabelValueListSurface(
         const label = (
           <div
             className={cn(
-              "flex min-w-0 items-center gap-2",
-              layout === "single" && "justify-center",
-              layout !== "single" && "flex-1",
+              'flex min-w-0 items-center gap-2',
+              layout === 'single' && 'justify-center',
+              layout !== 'single' && 'flex-1',
             )}
           >
             {line.icon ? (
@@ -116,9 +116,9 @@ export function LabelValueListSurface(
               </span>
             ) : null}
             <Text
-              align={layout === "single" ? "center" : "left"}
+              align={layout === 'single' ? 'center' : 'left'}
               className="min-w-0 uppercase opacity-75"
-              size={layout === "single" ? "sm" : "xs"}
+              size={layout === 'single' ? 'sm' : 'xs'}
               style={line.color ? { color: line.color } : undefined}
               typography="aux"
               text={line.label}
@@ -129,10 +129,10 @@ export function LabelValueListSurface(
         return (
           <div
             className={cn(
-              "min-w-0",
-              layout === "single" &&
-                "flex w-full flex-col items-center justify-center text-center",
-              layout !== "single" && "flex items-center justify-between gap-3",
+              'min-w-0',
+              layout === 'single' &&
+                'flex w-full flex-col items-center justify-center text-center',
+              layout !== 'single' && 'flex items-center justify-between gap-3',
             )}
             key={`${line.label}-${index}`}
           >

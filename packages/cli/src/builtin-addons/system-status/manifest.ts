@@ -16,7 +16,11 @@ function makePoller(metricId: SystemMetricId): AddonGlobalPoller {
   return {
     id: `metric:${metricId}`,
     channel: `runtime:system-status:${metricId}`,
-    intervalMs: 2_000,
+    // ponytail: one cadence for all metrics. `GenericSystemStatusDefaults.pollInterval`
+    // is the single source of truth. Per-button overrides would require moving
+    // polling into per-button onMount handlers (multiple buttons on the same
+    // metric would race on one channel); not worth the refactor today.
+    intervalMs: GenericSystemStatusDefaults.pollInterval,
     poll: async () => {
       const { probeMetric } = await import("./domain/live-metrics")
       return probeMetric(metricId)

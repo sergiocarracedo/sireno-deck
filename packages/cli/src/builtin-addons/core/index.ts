@@ -50,23 +50,24 @@ export const manifest: AddonManifestV1 = {
 
         const centerButton = Math.floor(keyCount / 2)
 
+        // ponytail: default buttons omit `id` — the schema is `.strict()` and
+        // rejects unknown keys, and the runtime re-assigns `id` from `position`
+        // via `positionButtons` in run.ts. Spelling `id` here just emits
+        // "Unrecognized key: 'id'" warnings at startup (3 of them per daemon).
         const defaultButtons = [
           {
-            id: "0",
             type: "date-time",
             config: { format: "<strong><5xl>HH</5xl></strong>" },
             position: centerButton - 1,
             full: true,
           },
           {
-            id: "1",
             type: "date-time",
             config: { format: "<strong><5xl><blink>:</blink></5xl></strong>" },
             position: centerButton,
             full: true,
           },
           {
-            id: "2",
             type: "date-time",
             config: { format: "<strong><5xl>mm</5xl></strong>" },
             position: centerButton + 1,
@@ -82,10 +83,19 @@ export const manifest: AddonManifestV1 = {
                 ? positionButtons(
                     userButtons as Array<{ position?: number }>,
                     keyCount,
-                  ).map((b, i) => ({
-                    id: b.position !== undefined ? String(b.position) : `b${i}`,
-                    ...b,
-                  }))
+                  ).map((b, i) => {
+                    // ponytail: strip the user-supplied `id` (if any) before
+                    // spreading. The button schema is `.strict()` and rejects
+                    // unknown keys; without this, the runtime emits
+                    // "Unrecognized key: 'id'" warnings for each user button.
+                    const { id: _userId, ...rest } = b
+                    return {
+                      id: b.position !== undefined
+                        ? String(b.position)
+                        : `b${i}`,
+                      ...rest,
+                    }
+                  })
                 : defaultButtons,
           },
         }

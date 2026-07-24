@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactElement } from "react"
 
+import { Icon } from "../primitives/Icon"
 import { Text } from "../primitives/Text"
 import { useThemeUiPresentation } from "../theme-presentation"
 import { cn } from "../utils/cn"
@@ -10,6 +11,7 @@ export interface BarsItem {
   displayValue?: string
   maxValue: number
   title: string
+  titleIcon?: string
   value: number
 }
 
@@ -19,6 +21,7 @@ type BarsItems =
   | readonly [BarsItem, BarsItem, BarsItem]
 
 export interface BarsSurfaceProps {
+  barMaxWidthClass?: string
   className?: string
   items: BarsItems
   style?: CSSProperties
@@ -41,6 +44,7 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
   }
 
   const themeUi = useThemeUiPresentation()
+  const barMaxWidthClass = props.barMaxWidthClass ?? "max-w-[60%]"
 
   if (themeUi?.surfaces?.bars) {
     return themeUi.surfaces.bars(props)
@@ -79,41 +83,63 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
             className="flex min-w-0 flex-1 flex-col gap-0.5"
             key={`${item.title}-${index}`}
           >
-            <Text
-              align="center"
-              size="xs"
-              tone="primary"
-              typography="main"
-              fit="hidden"
-              text={item.title}
-            />
-            <div
-              aria-hidden="true"
-              className="relative flex-1 overflow-hidden rounded-xs"
-              style={{
-                backgroundColor:
-                  "color-mix(in oklab, currentColor 12%, transparent)",
-                minHeight: "24px",
-              }}
-            >
-              <div
-                className="absolute inset-x-0 bottom-0 rounded-xs"
-                data-sireno-bars-fill="true"
-                style={{
-                  backgroundColor: color,
-                  height: getBarFillHeight(item),
-                  minHeight: item.value > 0 ? "4px" : undefined,
-                }}
-              />
+            {props.items.length === 1 && item.titleIcon ? (
+              <div className="flex items-center justify-center gap-1">
+                <Icon source={item.titleIcon} size={12} />
+                <Text
+                  align="center"
+                  size="xs"
+                  tone="primary"
+                  typography="main"
+                  fit="hidden"
+                  weight="bold"
+                  text={item.title}
+                />
+              </div>
+            ) : (
               <Text
                 align="center"
-                className="sireno-bars-value pointer-events-none absolute inset-0 flex items-center justify-center whitespace-nowrap"
-                size="md"
-                style={valueTextStyle}
-                tone={props.useSharpPath ? undefined : "foreground"}
-                typography="mono"
-                text={valueText}
+                size="xs"
+                tone="primary"
+                typography="main"
+                fit="hidden"
+                weight="bold"
+                text={item.title}
               />
+            )}
+            <div className="flex flex-1 items-stretch justify-center">
+              <div
+                aria-hidden="true"
+                className={cn(
+                  "relative flex-1 overflow-hidden rounded-md",
+                  barMaxWidthClass,
+                )}
+                style={{
+                  backgroundColor:
+                    "color-mix(in oklab, currentColor 12%, transparent)",
+                  minHeight: "24px",
+                }}
+              >
+                <div
+                  className="absolute inset-x-0 bottom-0 rounded-md"
+                  data-sireno-bars-fill="true"
+                  style={{
+                    backgroundColor: color,
+                    height: getBarFillHeight(item),
+                    minHeight: item.value > 0 ? "4px" : undefined,
+                  }}
+                />
+                <Text
+                  align="center"
+                  className="sireno-bars-value pointer-events-none absolute inset-0 flex items-center justify-center whitespace-nowrap"
+                  size="sm"
+                  style={valueTextStyle}
+                  tone={props.useSharpPath ? undefined : "foreground"}
+                  typography="mono"
+                  weight="bold"
+                  text={valueText}
+                />
+              </div>
             </div>
           </div>
         )

@@ -1,4 +1,5 @@
-import type { SystemMetricId, SystemMetricSnapshot } from "./metric-ids"
+import { METRICS_CATALOG } from "./catalog"
+import type { SystemMetricSnapshot } from "./metric-ids"
 
 export type SystemStatusFormatter =
   | "bytes"
@@ -6,37 +7,6 @@ export type SystemStatusFormatter =
   | "frequency-ghz"
   | "percent"
   | "uptime"
-
-const DEFAULT_FORMATTERS: Record<
-  SystemMetricId,
-  SystemStatusFormatter | undefined
-> = {
-  cpu: "percent",
-  ram: "percent",
-  swap: "percent",
-  disk: "percent",
-  network: "count",
-  battery: "percent",
-  temperature: "count",
-  uptime: "uptime",
-  frequency: "frequency-ghz",
-  load: "count",
-  processes: "count",
-}
-
-const DEFAULT_LABELS: Record<SystemMetricId, string> = {
-  cpu: "CPU",
-  ram: "RAM",
-  swap: "Swap",
-  disk: "Disk",
-  network: "Net",
-  battery: "Battery",
-  temperature: "Temp",
-  uptime: "Uptime",
-  frequency: "Freq",
-  load: "Load",
-  processes: "Procs",
-}
 
 function formatBytes(value: number): string {
   if (value < 1024) return `${value} B`
@@ -65,7 +35,10 @@ function formatValue(
     case "frequency-ghz":
       return value.toFixed(2)
     case "percent":
-      return `${Math.round(value)}%`
+      // ponytail: integers when stable, one decimal when low. High values
+      // (10%+) hide <1% swing behind integer rounding; low values benefit
+      // from precision so a 0.4% idle actually shows as movement.
+      return value < 10 ? `${value.toFixed(1)}%` : `${Math.round(value)}%`
     case "uptime":
       return formatUptime(value)
     default:
@@ -90,7 +63,7 @@ export function resolveFormatter(
 }
 
 export interface DisplayMetric {
-  id: SystemMetricId
+  id: import("./metric-ids").SystemMetricId
   label: string
   available: boolean
   formattedValue: string
@@ -104,13 +77,13 @@ export function toDisplayMetric(
   snapshot: SystemMetricSnapshot,
   formatterName?: string,
 ): DisplayMetric {
-  const id = snapshot.id
-  const formatter = resolveFormatter(formatterName) ?? DEFAULT_FORMATTERS[id]
+  const def = METRICS_CATALOG[snapshot.id]
+  const formatter = resolveFormatter(formatterName) ?? def.formatter
   const base = {
-    id,
-    label: DEFAULT_LABELS[id],
+    id: snapshot.id,
+    label: def.defaultLabel,
     available: snapshot.available,
-    unit: snapshot.unit,
+    unit: def.unit ?? snapshot.unit,
   }
   if (!snapshot.available || snapshot.value === undefined) {
     return { ...base, formattedValue: "—" }

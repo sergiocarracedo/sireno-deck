@@ -24,7 +24,7 @@ const MetricEntrySchema = z
 export const GenericSystemStatusSchema = z
   .object({
     metrics: z.array(MetricEntrySchema).min(1).max(3),
-    pollInterval: z.number().int().positive().default(2000),
+    pollInterval: z.number().int().positive().default(1000),
     renderInterval: z.number().int().positive().default(1000),
     formatters: z.record(z.string(), z.string()).optional(),
     labels: z.record(z.string(), z.string()).optional(),
@@ -37,6 +37,6 @@ export type GenericSystemStatusConfig = z.infer<
 
 export const GenericSystemStatusDefaults: GenericSystemStatusConfig = {
   metrics: [{ id: "cpu" }],
-  pollInterval: 2000,
+  pollInterval: 1000,
   renderInterval: 1000,
 }

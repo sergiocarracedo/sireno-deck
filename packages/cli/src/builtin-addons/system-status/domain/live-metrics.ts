@@ -23,18 +23,34 @@ function clampPercent(value: number): number {
   return Math.min(100, Math.max(0, Math.round(value)))
 }
 
+// ponytail: `c.times` from `node:os` are cumulative jiffies since boot — not
+// instantaneous. Two back-to-back readings give nearly identical values
+// because the ratio barely moves; the metric would look frozen. We cache
+// the previous (idle, total) sample and report `(Δtotal - Δidle) / Δtotal`
+// as instant CPU usage over the inter-poll window (~1s). First sample has
+// no baseline → returns 0 to avoid a misleading one-shot.
+let prevCpuSample: { idle: number; total: number } | null = null
+
 async function probeCpu(): Promise<ProbeResult> {
   const list = cpus()
   if (list.length === 0) return { available: false }
-  let total = 0
   let idle = 0
+  let total = 0
   for (const c of list) {
     idle += c.times.idle
     total +=
       c.times.user + c.times.nice + c.times.sys + c.times.idle + c.times.irq
   }
-  // first sample is always 0 — accept that as "available"
-  const pct = total > 0 ? clampPercent((1 - idle / total) * 100) : 0
+  const prev = prevCpuSample
+  // Counter reset (boot, container restart) or first sample → re-baseline.
+  if (prev === null || total <= prev.total) {
+    prevCpuSample = { idle, total }
+    return { available: true, max: 100, percentage: 0, unit: "%", value: 0 }
+  }
+  const dTotal = total - prev.total
+  const dIdle = idle - prev.idle
+  prevCpuSample = { idle, total }
+  const pct = dTotal > 0 ? clampPercent((1 - dIdle / dTotal) * 100) : 0
   return { available: true, max: 100, percentage: pct, unit: "%", value: pct }
 }
 

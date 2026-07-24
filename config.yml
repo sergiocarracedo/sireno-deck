@@ -37,9 +37,9 @@ decks:
       - position: 1
         type: "core:change-deck"
         config:
-          deck: "action-buttons-test"
-          icon: 🧪
-          label: Icon Test
+          deck: "sys-status-demo"
+          icon: 📊
+          label: Sys Stats
 
       - position: 4
         type: "weather:weather"
@@ -101,6 +101,105 @@ decks:
         type: "date-time:analog-clock"
         # actions:
         #   tap: 'google-chrome https://calendar.google.com'
+  sys-status-demo:
+    name: Sys Stats
+    buttons:
+      - position: 0
+        type: "system-status:system-status"
+        config:
+          metrics: [cpu]
+      - position: 1
+        type: "system-status:system-status"
+        config:
+          metrics: [cpu, ram]
+      - position: 2
+        type: "system-status:system-status"
+        config:
+          metrics:
+            - id: cpu
+              label: CPU
+            - id: ram
+              label: MEM
+            - swap
+      - position: 3
+        type: "system-status:system-status"
+        config:
+          metrics:
+            - id: disk
+              label: Disk
+            - id: battery
+              label: Batt
+            - id: temperature
+              label: Temp
+      - position: 4
+        type: "system-status:system-status"
+        config:
+          metrics:
+            - id: network
+              label: Net
+            - id: uptime
+              label: Up
+            - id: frequency
+              label: Freq
+      - position: 5
+        type: "system-status:system-status"
+        config:
+          metrics:
+            - id: load
+              label: Load
+            - id: processes
+              label: Procs
+      - position: 6
+        type: "system-status:kpis"
+        config:
+          metrics: [cpu]
+      - position: 7
+        type: "system-status:kpis"
+        config:
+          metrics: [cpu, ram]
+      - position: 8
+        type: "system-status:kpis"
+        config:
+          metrics:
+            - id: cpu
+              label: CPU
+            - id: ram
+              label: MEM
+            - swap
+      - position: 9
+        type: "system-status:kpis"
+        config:
+          metrics:
+            - id: disk
+              label: Disk
+            - id: battery
+              label: Batt
+            - id: temperature
+              label: Temp
+      - position: 10
+        type: "system-status:kpis"
+        config:
+          metrics:
+            - id: network
+              label: Net
+            - id: uptime
+              label: Up
+            - id: frequency
+              label: Freq
+      - position: 11
+        type: "system-status:kpis"
+        config:
+          metrics:
+            - id: load
+              label: Load
+            - id: processes
+              label: Procs
+      - position: 12
+        type: "core:change-deck"
+        config:
+          deck: main
+          icon: ⬅
+          label: Main
   warp:
     trigger:
       process_name: warp
