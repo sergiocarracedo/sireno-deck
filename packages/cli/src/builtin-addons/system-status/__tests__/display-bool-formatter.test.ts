@@ -26,12 +26,14 @@ describe("toDisplayMetric: bool formatter", () => {
     expect(toDisplayMetric(snap(0.3)).formattedValue).toBe("OFF")
   })
 
-  it("renders unavailable snapshot as '—'", () => {
+  it("renders unavailable snapshot as '—' with no unit", () => {
     const s: SystemMetricSnapshot = {
       available: false,
       id: "cpu-boost",
       label: "cpu-boost",
     }
-    expect(toDisplayMetric(s).formattedValue).toBe("—")
+    const r = toDisplayMetric(s)
+    expect(r.formattedValue).toBe("—")
+    expect(r.unit).toBeUndefined()
   })
 })

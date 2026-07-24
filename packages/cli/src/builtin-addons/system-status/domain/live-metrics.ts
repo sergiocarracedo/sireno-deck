@@ -161,8 +161,11 @@ async function probeTemperature(): Promise<ProbeResult> {
 }
 
 async function probeUptime(): Promise<ProbeResult> {
+  // ponytail: uptime formats as "2h 14m" — a compound string with no
+  // separable unit. Leave `unit` undefined so the renderer doesn't append
+  // a stray "s" beside the formatted value.
   const sec = Math.round(process.uptime())
-  return { available: true, unit: "s", value: sec }
+  return { available: true, value: sec }
 }
 
 async function probeFrequency(): Promise<ProbeResult> {
