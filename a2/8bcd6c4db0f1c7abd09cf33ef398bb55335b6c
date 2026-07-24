@@ -1,0 +1,24 @@
+docs/plans/2026-07-24-text-xxs-autofit.md
+  s_859b806fa3d906::t_e54d0a95f01fbb 101-105
+  s_859b806fa3d906::t_d1c1791e13b765 46-47,55
+  s_859b806fa3d906::t_89f5ce5e5df72b 124-129
+  s_859b806fa3d906::t_f2b095c6527d17 178
+  s_859b806fa3d906::t_2f3255ca325c07 91-92
+  s_859b806fa3d906::t_9ba4b113025522 26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "a28bcd6c4db0f1c7abd09cf33ef398bb55335b6c",
+  "prompts": {},
+  "sessions": {
+    "s_859b806fa3d906": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06a7f6010ffeoNiUK1euefASYs",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
