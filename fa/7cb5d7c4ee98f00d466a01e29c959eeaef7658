@@ -1,0 +1,35 @@
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  s_30acb526b1996b::t_69d938c466acf9 46-51,57
+packages/cli/src/builtin-addons/system-status/__tests__/display-rate-bytes-formatter.test.ts
+  s_30acb526b1996b::t_cf03e045b19589 17-20,24-26,30-31,35-36,40-42,45,52-53
+  s_30acb526b1996b::t_ef50b1d8ba5681 54
+packages/cli/src/builtin-addons/system-status/__tests__/display-uptime-formatter.test.ts
+  s_30acb526b1996b::t_c60d40f28c5001 1-35
+packages/cli/src/builtin-addons/system-status/domain/live-metrics.ts
+  s_30acb526b1996b::t_d6683e0c5735d3 164-166,168
+packages/cli/src/builtin-addons/system-status/domain/display-metrics.ts
+  s_30acb526b1996b::t_f198a6dde41eb7 128-129
+  s_30acb526b1996b::t_ee850ae2bfe4f4 13-30,33,35-39,42-43,46,50-53,59,66-68,70,75-77,83,109-113,130-135,137,139-143
+packages/cli/src/builtin-addons/system-status/__tests__/display-count-formatter.test.ts
+  s_30acb526b1996b::t_39d18a812326f0 1-55
+packages/cli/src/builtin-addons/system-status/__tests__/display-bool-formatter.test.ts
+  s_30acb526b1996b::t_b0f44b0ef36450 29,35-37
+packages/cli/src/builtin-addons/system-status/__tests__/display-percent.test.ts
+  s_30acb526b1996b::t_9041706706385d 18-22,26-29,33-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "fa7cb5d7c4ee98f00d466a01e29c959eeaef7658",
+  "prompts": {},
+  "sessions": {
+    "s_30acb526b1996b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06b9fe266ffeeaURlXPxkkB10J",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
