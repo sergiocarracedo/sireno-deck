@@ -7,7 +7,6 @@ export {
 } from "./theme-presentation"
 export type { ThemeUiPresentation } from "./theme-presentation"
 export { cn } from "./utils/cn"
-export { computeNegativeColor } from "./utils/negative-color"
 
 export {
   AssetCacheProvider,

@@ -4,7 +4,6 @@ import { Icon } from "../primitives/Icon"
 import { Text } from "../primitives/Text"
 import { useThemeUiPresentation } from "../theme-presentation"
 import { cn } from "../utils/cn"
-import { computeNegativeColor } from "../utils/negative-color"
 
 export interface BarsItem {
   color?: string
@@ -12,6 +11,7 @@ export interface BarsItem {
   maxValue: number
   title: string
   titleIcon?: string
+  units?: string
   value: number
 }
 
@@ -25,17 +25,73 @@ export interface BarsSurfaceProps {
   className?: string
   items: BarsItems
   style?: CSSProperties
-  themePrimaryHex?: string
-  useSharpPath?: boolean
 }
 
-function getBarFillHeight(item: BarsItem): string {
-  if (item.maxValue <= 0) {
-    return "0%"
-  }
+const MUTED_TEXT_COLOR =
+  "color-mix(in oklab, var(--sireno-color-fg) 65%, transparent)"
 
-  const ratio = Math.max(0, Math.min(item.value / item.maxValue, 1))
-  return `${Math.round(ratio * 100)}%`
+function getBarFillRatio(item: BarsItem): number {
+  if (item.maxValue <= 0) {
+    return 0
+  }
+  return Math.max(0, Math.min(item.value / item.maxValue, 1))
+}
+
+interface BarsValueLayerProps {
+  color: string
+  fillPct: number
+  side: "over" | "above"
+  text: string
+  units: string | undefined
+}
+
+function BarsValueLayer({
+  color,
+  fillPct,
+  side,
+  text,
+  units,
+}: BarsValueLayerProps): ReactElement {
+  const clipPath =
+    side === "over"
+      ? `inset(${100 - fillPct}% 0 0 0)`
+      : `inset(0 0 ${fillPct}% 0)`
+
+  return (
+    <div
+      aria-hidden="true"
+      className="sireno-bars-value-layer pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
+      data-sireno-bars-layer={side}
+      style={{ clipPath, color }}
+    >
+      <div
+        className="flex items-baseline gap-0.5 whitespace-nowrap"
+        style={{
+          transform: "rotate(-90deg)",
+          transformOrigin: "center",
+        }}
+      >
+        <Text
+          align="center"
+          fit="hidden"
+          size="sm"
+          typography="mono"
+          weight="bold"
+          text={text}
+        />
+        {units ? (
+          <Text
+            align="center"
+            fit="hidden"
+            size="xs"
+            typography="mono"
+            weight="bold"
+            text={units}
+          />
+        ) : null}
+      </div>
+    </div>
+  )
 }
 
 export function BarsSurface(props: BarsSurfaceProps): ReactElement {
@@ -62,21 +118,9 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
     >
       {props.items.map((item, index) => {
         const color = item.color ?? "var(--sireno-color-primary)"
-        const valueText = item.displayValue ?? String(Math.round(item.value))
-        const valueTextStyle: CSSProperties = props.useSharpPath
-          ? {
-              transform: "rotate(-90deg)",
-              transformOrigin: "center",
-              color: computeNegativeColor(
-                item.color ?? "",
-                props.themePrimaryHex ?? null,
-              ),
-            }
-          : {
-              transform: "rotate(-90deg)",
-              transformOrigin: "center",
-              mixBlendMode: "difference",
-            }
+        const fillPct = Math.round(getBarFillRatio(item) * 100)
+        const text = item.displayValue ?? String(Math.round(item.value))
+        const units = item.units
 
         return (
           <div
@@ -88,10 +132,10 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
                 <Icon source={item.titleIcon} size={12} />
                 <Text
                   align="center"
+                  fit="hidden"
                   size="xs"
                   tone="primary"
                   typography="main"
-                  fit="hidden"
                   weight="bold"
                   text={item.title}
                 />
@@ -99,10 +143,10 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
             ) : (
               <Text
                 align="center"
+                fit="hidden"
                 size="xs"
                 tone="primary"
                 typography="main"
-                fit="hidden"
                 weight="bold"
                 text={item.title}
               />
@@ -125,19 +169,23 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
                   data-sireno-bars-fill="true"
                   style={{
                     backgroundColor: color,
-                    height: getBarFillHeight(item),
+                    height: `${fillPct}%`,
                     minHeight: item.value > 0 ? "4px" : undefined,
                   }}
                 />
-                <Text
-                  align="center"
-                  className="sireno-bars-value pointer-events-none absolute inset-0 flex items-center justify-center whitespace-nowrap"
-                  size="sm"
-                  style={valueTextStyle}
-                  tone={props.useSharpPath ? undefined : "foreground"}
-                  typography="mono"
-                  weight="bold"
-                  text={valueText}
+                <BarsValueLayer
+                  color={color}
+                  fillPct={fillPct}
+                  side="above"
+                  text={text}
+                  units={units}
+                />
+                <BarsValueLayer
+                  color={MUTED_TEXT_COLOR}
+                  fillPct={fillPct}
+                  side="over"
+                  text={text}
+                  units={units}
                 />
               </div>
             </div>

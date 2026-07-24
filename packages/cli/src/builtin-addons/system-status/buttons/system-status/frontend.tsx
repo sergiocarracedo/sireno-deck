@@ -43,18 +43,13 @@ const SystemStatusFrontend: AddonFrontendButton<GenericSystemStatusConfig> = ({
       resolveThresholdColor(display.value ?? 0, def.thresholds) as MetricColor,
     )
     const pct = pctFromDisplay(display.value, display.percentage, maxValue)
-    // ponytail: `formattedValue` is now unit-less — the unit lives in
-    // `display.unit`. Compose `displayValue` from both halves so the bar
-    // chip reads "42 %" / "5.2 MB/s" / "17.0 °C" exactly as before.
-    const displayValue = display.unit
-      ? `${display.formattedValue} ${display.unit}`
-      : display.formattedValue
     items.push({
       title: pickLabel(entry, def.defaultLabel),
       ...(def.icon ? { titleIcon: def.icon } : {}),
       value: pct,
       maxValue,
-      displayValue,
+      displayValue: display.formattedValue,
+      ...(display.unit ? { units: display.unit } : {}),
       color,
     })
   }
