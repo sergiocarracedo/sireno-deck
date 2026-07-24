@@ -2,6 +2,10 @@ theme: default
 
 addons:
   - src: /works/opensource/sireno-deck-addons/vscode-overlay
+    config:
+      decks:
+        shortcuts:
+          autoShow: false
   - /works/opensource/sireno-deck-addons/opencode-overlay
   - src: /works/opensource/sireno-deck-addons/chrome-overlay
     config:
