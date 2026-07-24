@@ -1,8 +1,9 @@
-import type { CSSProperties, ReactElement } from "react"
+import type { CSSProperties, ReactElement } from 'react'
 
-import { Icon } from "../primitives/Icon"
-import { useThemeUiPresentation } from "../theme-presentation"
-import { cn } from "../utils/cn"
+import { Text } from '../primitives'
+import { Icon } from '../primitives/Icon'
+import { useThemeUiPresentation } from '../theme-presentation'
+import { cn } from '../utils/cn'
 
 export interface LabelValueListLine {
   color?: string
@@ -38,29 +39,26 @@ function RowTile({
     >
       <div className="flex-1 flex items-center justify-center gap-1.5 min-h-0">
         {item.icon ? <Icon source={item.icon} size={14} /> : null}
-        <span
-          className="font-mono text-lg font-bold leading-none truncate"
-          style={{ minWidth: 0 }}
-        >
-          {item.value}
-        </span>
+        <Text fontStack="mono" size="lg" weight="bold" text={item.value}></Text>
       </div>
       {showLabel ? (
         <div
           className={cn(
-            "flex items-center justify-center gap-1 truncate",
-            "opacity-75 uppercase tracking-wide text-[9px] font-bold",
+            'flex items-center justify-center gap-1 truncate',
+            'opacity-75 uppercase tracking-wide',
           )}
         >
-          <span className="truncate">{item.label}</span>
-          {item.units ? <span>{item.units}</span> : null}
+          <Text text={item.label} size="xs"></Text>
+          {item.units ? <Text text={item.units} size="xs"></Text> : null}
         </div>
       ) : null}
     </div>
   )
 }
 
-export function LabelValueList(props: LabelValueListProps): ReactElement {
+export function LabelValueListSurface(
+  props: LabelValueListProps,
+): ReactElement {
   if (props.lines.length < 1 || props.lines.length > 3) {
     throw new Error(
       `LabelValueList supports 1-3 lines. Received ${props.lines.length}.`,
@@ -72,22 +70,40 @@ export function LabelValueList(props: LabelValueListProps): ReactElement {
     return themeUi.surfaces.labelValueList(props)
   }
 
-  // ponytail: 1-2 metrics render as stacked 2-row tiles (icon+value over
-  // label+units); 3 metrics collapse to icon-only rows because there isn't
-  // room without truncation.
   const showLabel = props.lines.length <= 2
   const tile = (item: LabelValueListLine, key: string) => (
     <RowTile key={key} item={item} showLabel={showLabel} />
   )
 
+  if (props.lines.length === 1) {
+    return (
+      <div
+        className={cn(props.className)}
+        style={{ color: 'var(--sireno-color-fg)', ...props.style }}
+      >
+        {props.lines.map((item, index) =>
+          showLabel ? (
+            tile(item, `${item.label}-${index}`)
+          ) : (
+            <div
+              key={`${item.label}-${index}`}
+              className="min-h-[28px] flex-1 flex basis-1/2"
+            >
+              {tile(item, `${item.label}-${index}`)}
+            </div>
+          ),
+        )}
+      </div>
+    )
+  }
   return (
     <div
       className={cn(
-        "flex w-full gap-1 p-1 items-stretch",
-        showLabel ? "flex-col h-full" : "flex-row flex-wrap",
+        'flex w-full gap-1 p-1 items-stretch',
+        showLabel ? 'flex-col h-full' : 'flex-row flex-wrap',
         props.className,
       )}
-      style={{ color: "var(--sireno-color-fg)", ...props.style }}
+      style={{ color: 'var(--sireno-color-fg)', ...props.style }}
     >
       {props.lines.map((item, index) =>
         showLabel ? (

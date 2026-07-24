@@ -23,7 +23,17 @@ describe("METRICS_CATALOG", () => {
   })
 
   it("metrics without maxValue are kpis-only", () => {
-    const kpisOnly = ["processes", "network", "uptime"] as const
+    const kpisOnly = [
+      "processes",
+      "network",
+      "uptime",
+      "cpu-boost",
+      "cpu-voltages",
+      "disk-io",
+      "fan-rpm",
+      "network-read",
+      "network-write",
+    ] as const
     for (const id of kpisOnly) {
       const def = METRICS_CATALOG[id]
       expect(def.views).toEqual(["kpis"])

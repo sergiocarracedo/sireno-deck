@@ -3,9 +3,11 @@ import type { SystemMetricSnapshot } from "./metric-ids"
 
 export type SystemStatusFormatter =
   | "bytes"
+  | "bool"
   | "count"
   | "frequency-ghz"
   | "percent"
+  | "rate-bytes"
   | "uptime"
 
 function formatBytes(value: number): string {
@@ -14,6 +16,19 @@ function formatBytes(value: number): string {
   if (value < 1024 ** 3) return `${(value / 1024 ** 2).toFixed(1)} MB`
   if (value < 1024 ** 4) return `${(value / 1024 ** 3).toFixed(1)} GB`
   return `${(value / 1024 ** 4).toFixed(1)} TB`
+}
+
+function formatRateBytes(value: number): string {
+  const v = Math.max(0, value)
+  if (v < 1024) return `${Math.round(v)} B/s`
+  if (v < 1024 ** 2) return `${(v / 1024).toFixed(1)} KB/s`
+  if (v < 1024 ** 3) return `${(v / 1024 ** 2).toFixed(1)} MB/s`
+  if (v < 1024 ** 4) return `${(v / 1024 ** 3).toFixed(1)} GB/s`
+  return `${(v / 1024 ** 4).toFixed(1)} TB/s`
+}
+
+function formatBool(value: number): string {
+  return value >= 0.5 ? "ON" : "OFF"
 }
 
 function formatUptime(totalSeconds: number): string {
@@ -30,6 +45,8 @@ function formatValue(
   switch (formatter) {
     case "bytes":
       return formatBytes(value)
+    case "bool":
+      return formatBool(value)
     case "count":
       return value >= 100 ? String(Math.round(value)) : value.toFixed(1)
     case "frequency-ghz":
@@ -39,6 +56,8 @@ function formatValue(
       // (10%+) hide <1% swing behind integer rounding; low values benefit
       // from precision so a 0.4% idle actually shows as movement.
       return value < 10 ? `${value.toFixed(1)}%` : `${Math.round(value)}%`
+    case "rate-bytes":
+      return formatRateBytes(value)
     case "uptime":
       return formatUptime(value)
     default:
@@ -52,9 +71,11 @@ export function resolveFormatter(
   if (!name) return undefined
   const allowed: SystemStatusFormatter[] = [
     "bytes",
+    "bool",
     "count",
     "frequency-ghz",
     "percent",
+    "rate-bytes",
     "uptime",
   ]
   return (allowed as string[]).includes(name)

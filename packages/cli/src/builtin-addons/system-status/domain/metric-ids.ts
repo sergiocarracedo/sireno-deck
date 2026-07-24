@@ -13,6 +13,14 @@ export const SYSTEM_METRIC_IDS = [
   "frequency",
   "load",
   "processes",
+  "cpu-boost",
+  "cpu-voltages",
+  "disk-io",
+  "fan-rpm",
+  "gpu-temp",
+  "gpu-usage",
+  "network-read",
+  "network-write",
 ] as const
 
 export type SystemMetricId = (typeof SYSTEM_METRIC_IDS)[number]

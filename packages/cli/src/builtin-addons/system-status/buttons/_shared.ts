@@ -59,6 +59,30 @@ export function useAllMetricChannels(): Record<
   const processes = useAddonChannel<MetricPayload>(
     "runtime:system-status:processes",
   )
+  const cpuBoost = useAddonChannel<MetricPayload>(
+    "runtime:system-status:cpu-boost",
+  )
+  const cpuVoltages = useAddonChannel<MetricPayload>(
+    "runtime:system-status:cpu-voltages",
+  )
+  const diskIo = useAddonChannel<MetricPayload>(
+    "runtime:system-status:disk-io",
+  )
+  const fanRpm = useAddonChannel<MetricPayload>(
+    "runtime:system-status:fan-rpm",
+  )
+  const gpuTemp = useAddonChannel<MetricPayload>(
+    "runtime:system-status:gpu-temp",
+  )
+  const gpuUsage = useAddonChannel<MetricPayload>(
+    "runtime:system-status:gpu-usage",
+  )
+  const networkRead = useAddonChannel<MetricPayload>(
+    "runtime:system-status:network-read",
+  )
+  const networkWrite = useAddonChannel<MetricPayload>(
+    "runtime:system-status:network-write",
+  )
   return {
     cpu: cpu.data,
     ram: ram.data,
@@ -71,6 +95,14 @@ export function useAllMetricChannels(): Record<
     frequency: frequency.data,
     load: load.data,
     processes: processes.data,
+    "cpu-boost": cpuBoost.data,
+    "cpu-voltages": cpuVoltages.data,
+    "disk-io": diskIo.data,
+    "fan-rpm": fanRpm.data,
+    "gpu-temp": gpuTemp.data,
+    "gpu-usage": gpuUsage.data,
+    "network-read": networkRead.data,
+    "network-write": networkWrite.data,
   }
 }
 
