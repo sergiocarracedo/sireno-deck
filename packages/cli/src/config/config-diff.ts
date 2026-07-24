@@ -15,10 +15,7 @@ const sameButtons = (a: RawDeckDef, b: RawDeckDef): boolean => {
   return true
 }
 
-export const decksChanged = (
-  prev: RawConfig,
-  next: RawConfig,
-): boolean => {
+export const decksChanged = (prev: RawConfig, next: RawConfig): boolean => {
   const prevKeys = Object.keys(prev.decks)
   const nextKeys = Object.keys(next.decks)
   if (prevKeys.length !== nextKeys.length) return true

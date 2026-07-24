@@ -1,5 +1,5 @@
-import type { AddonFrontendButton } from '@/addon/api'
-import { cn, Icon, TapIndicator, TapIndicatorType, Text } from '@/ui'
+import type { AddonFrontendButton } from "@/addon/api"
+import { cn, Icon, TapIndicator, TapIndicatorType, Text } from "@/ui"
 
 type Config = {
   currentPage: number
@@ -9,28 +9,28 @@ type Config = {
 }
 
 type NavActionProps = {
-  dir: 'next' | 'prev'
+  dir: "next" | "prev"
 }
 
-const icons: Record<NavActionProps['dir'], string> = {
-  next: 'chevron-right',
-  prev: 'chevron-left',
+const icons: Record<NavActionProps["dir"], string> = {
+  next: "chevron-right",
+  prev: "chevron-left",
 }
 
-const tapTypes: Record<NavActionProps['dir'], TapIndicatorType> = {
-  next: 'tap',
-  prev: 'hold',
+const tapTypes: Record<NavActionProps["dir"], TapIndicatorType> = {
+  next: "tap",
+  prev: "hold",
 }
 
-const NavAction = ({ dir = 'prev' }: NavActionProps) => {
+const NavAction = ({ dir = "prev" }: NavActionProps) => {
   const icon = icons[dir]
   const tapType = tapTypes[dir]
 
   return (
     <div
       className={cn(
-        'flex items-center gap-0',
-        dir === 'prev' ? 'flex-row' : 'flex-row-reverse',
+        "flex items-center gap-0",
+        dir === "prev" ? "flex-row" : "flex-row-reverse",
       )}
     >
       <Icon source={`icon://${icon}`} size={30} />
@@ -54,11 +54,11 @@ const PageNavButtonFrontend: AddonFrontendButton<Config> = ({ config }) => {
 
   return (
     <div className="size-full flex flex-col gap-0.5 justify-center items-center">
-      <div className={cn(isFirstPage ? 'invisible' : 'visible', '-ml-7')}>
+      <div className={cn(isFirstPage ? "invisible" : "visible", "-ml-7")}>
         <NavAction dir="prev" />
       </div>
       <PageIndicator current={currentPage} total={totalPages} />
-      <div className={cn(isLastPage ? 'invisible' : 'visible', 'ml-7')}>
+      <div className={cn(isLastPage ? "invisible" : "visible", "ml-7")}>
         <NavAction dir="next" />
       </div>
     </div>

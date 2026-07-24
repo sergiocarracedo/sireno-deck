@@ -115,7 +115,7 @@ type; `AddonJsonManifest` is the on-disk discovery file
 interface AddonManifestV1 {
   readonly apiVersion: 1
   readonly name: string
-  readonly kind?: 'runtime' | 'theme'
+  readonly kind?: "runtime" | "theme"
   readonly buttonTypes: Record<string, AddonButtonTypeDefAny>
   readonly defaultButton?: string
   readonly decks?: Record<string, AddonDeckFactory | AddonDeckDefinition>

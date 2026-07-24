@@ -3,7 +3,11 @@ import { platform } from "node:os"
 
 import type pino from "pino"
 
-import type { ButtonActionMessage, SetDeviceMessage, WsMessage } from "@/api/protocol-internal"
+import type {
+  ButtonActionMessage,
+  SetDeviceMessage,
+  WsMessage,
+} from "@/api/protocol-internal"
 import { resolveKeyCount } from "@/device/models"
 import type { DeviceDescriptor } from "@/device/registry"
 
@@ -122,7 +126,11 @@ export class EmulatorOutputClient implements OutputClient {
 
     opts.bridge.onMessage((message) => {
       if (isSetDevice(message)) {
-        if (!VIRTUAL_MODELS.includes(message.deviceId as (typeof VIRTUAL_MODELS)[number])) {
+        if (
+          !VIRTUAL_MODELS.includes(
+            message.deviceId as (typeof VIRTUAL_MODELS)[number],
+          )
+        ) {
           logger.warn(
             { deviceId: message.deviceId },
             "emulator: ignoring unsupported virtual device",

@@ -93,7 +93,10 @@ export class AddonRegistry {
       // id (or each key returned from createDecks) becomes the deck-type key.
       // Validation: ids must start with `<addon>:` prefix.
       const prefix = `${name}:`
-      if (typeof entry.createDeck === "function" && typeof entry.createDecks === "function") {
+      if (
+        typeof entry.createDeck === "function" &&
+        typeof entry.createDecks === "function"
+      ) {
         throw new Error(
           `Addon '${name}' deck entry has both createDeck and createDecks; choose one.`,
         )
@@ -105,9 +108,7 @@ export class AddonRegistry {
         }
         const syntheticKey = `${name}:__multi__`
         if (this.decksByType.has(syntheticKey)) {
-          throw new Error(
-            `Duplicate deck '${syntheticKey}' in addon ${name}`,
-          )
+          throw new Error(`Duplicate deck '${syntheticKey}' in addon ${name}`)
         }
         this.decksByType.set(syntheticKey, { addonName: name, def })
         continue
@@ -135,9 +136,7 @@ export class AddonRegistry {
       }
       // ponytail: static — the entry IS the deck.
       if (entry.id === undefined || entry.id.length === 0) {
-        throw new Error(
-          `Addon '${name}' static deck entry must have an id.`,
-        )
+        throw new Error(`Addon '${name}' static deck entry must have an id.`)
       }
       if (!entry.id.startsWith(prefix)) {
         throw new Error(

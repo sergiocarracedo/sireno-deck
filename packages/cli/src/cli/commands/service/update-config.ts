@@ -18,7 +18,9 @@ export const updateConfig = async (
   const resolved = existsSync(config)
     ? config
     : join(
-        options.xdgConfigHome ?? process.env["XDG_CONFIG_HOME"] ?? `${options.homeDir ?? process.env["HOME"] ?? ""}/.config`,
+        options.xdgConfigHome ??
+          process.env["XDG_CONFIG_HOME"] ??
+          `${options.homeDir ?? process.env["HOME"] ?? ""}/.config`,
         "sireno-deck",
         config,
       )
@@ -31,7 +33,10 @@ export const updateConfig = async (
 
   const current = readConfigPath()
   writeConfigPath(resolved)
-  logger.info({ config: resolved, previous: current }, "update-config: config path updated")
+  logger.info(
+    { config: resolved, previous: current },
+    "update-config: config path updated",
+  )
 }
 
 interface UpdateConfigArgs {

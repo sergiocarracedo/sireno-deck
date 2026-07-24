@@ -25,24 +25,24 @@ decks:
     name: Main Deck
     buttons:
       - position: 2
-        type: 'date-time:time'
+        type: "date-time:time"
         config:
           variant: big
 
       - position: 3
-        type: 'date-time:date'
+        type: "date-time:date"
         actions:
-          tap: 'xdg-open https://calendar.google.com'
+          tap: "xdg-open https://calendar.google.com"
 
       - position: 1
-        type: 'core:change-deck'
+        type: "core:change-deck"
         config:
-          deck: 'action-buttons-test'
+          deck: "action-buttons-test"
           icon: 🧪
           label: Icon Test
 
       - position: 4
-        type: 'weather:weather'
+        type: "weather:weather"
         config:
           location:
             latitude: 42.2304
@@ -50,20 +50,20 @@ decks:
             name: Vigo
 
       - position: 9
-        type: 'emoji-selector:launcher'
+        type: "emoji-selector:launcher"
 
       - position: 10
-        type: 'core:action'
+        type: "core:action"
         actions:
-          tap: 'google-chrome'
-          hold: 'google-chrome --incognito'
-          dbltap: 'type://ctrl+t'
+          tap: "google-chrome"
+          hold: "google-chrome --incognito"
+          dbltap: "type://ctrl+t"
         config:
           icon: ./assets/chrome.svg
           label: Chrome
 
       - position: 0
-        type: 'system-status:system-status'
+        type: "system-status:kpis"
         config:
           metrics:
             - id: cpu
@@ -71,9 +71,8 @@ decks:
             - id: ram
               label: MEM
             - swap
-          display: text
 
-      - type: 'system-status:system-status'
+      - type: "system-status:system-status"
         config:
           metrics:
             - id: cpu
@@ -83,23 +82,23 @@ decks:
             - swap
 
       - position: 6
-        type: 'media:volume:down'
+        type: "media:volume:down"
       - position: 7
-        type: 'media:volume:up'
+        type: "media:volume:up"
       - position: 8
-        type: 'media:mute'
+        type: "media:mute"
       - position: 12
-        type: 'media:player'
+        type: "media:player"
 
       - position: 11
-        type: 'core:change-deck'
+        type: "core:change-deck"
         config:
-          deck: 'core:lock'
-          icon: 'icon://lock'
+          deck: "core:lock"
+          icon: "icon://lock"
           label: Lock deck
 
       - position: 13
-        type: 'date-time:analog-clock'
+        type: "date-time:analog-clock"
         # actions:
         #   tap: 'google-chrome https://calendar.google.com'
   warp:
@@ -108,7 +107,7 @@ decks:
     name: Warp
     icon: icon://music
     buttons:
-      - type: 'date-time:analog-clock'
+      - type: "date-time:analog-clock"
 
 logging:
   level: info

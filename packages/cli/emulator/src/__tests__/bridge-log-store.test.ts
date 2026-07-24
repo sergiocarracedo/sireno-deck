@@ -83,12 +83,8 @@ describe("bridge-message ring buffer", () => {
       channel: null,
       payload: {},
     })
-    expect(
-      getBridgeMessages({ direction: "sent" }).length,
-    ).toBe(1)
-    expect(
-      getBridgeMessages({ direction: "received" }).length,
-    ).toBe(1)
+    expect(getBridgeMessages({ direction: "sent" }).length).toBe(1)
+    expect(getBridgeMessages({ direction: "received" }).length).toBe(1)
   })
 
   it("filters by type", () => {
@@ -107,8 +103,6 @@ describe("bridge-message ring buffer", () => {
       channel: null,
       payload: {},
     })
-    expect(
-      getBridgeMessages({ type: "deck-config" }).length,
-    ).toBe(1)
+    expect(getBridgeMessages({ type: "deck-config" }).length).toBe(1)
   })
 })

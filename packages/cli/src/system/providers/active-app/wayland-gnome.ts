@@ -2,10 +2,7 @@ import { sessionBus } from "dbus-next"
 
 import type pino from "pino"
 
-import type {
-  ActiveAppProvider,
-  ActiveAppSnapshot,
-} from "../active-app"
+import type { ActiveAppProvider, ActiveAppSnapshot } from "../active-app"
 import {
   logNull,
   type LinuxDbusBus,
@@ -114,9 +111,15 @@ const probeExtension = async (
   }
 
   const focusTitle =
-    typeof iface.FocusTitle === "function" ? iface.FocusTitle.bind(iface) : undefined
+    typeof iface.FocusTitle === "function"
+      ? iface.FocusTitle.bind(iface)
+      : undefined
 
-  return { bus, focusClass: focusClass.bind(iface), ...(focusTitle ? { focusTitle } : {}) }
+  return {
+    bus,
+    focusClass: focusClass.bind(iface),
+    ...(focusTitle ? { focusTitle } : {}),
+  }
 }
 
 export const createWaylandGnomeProvider = async (
@@ -163,8 +166,10 @@ export const createWaylandGnomeProvider = async (
         probe.focusTitle ? probe.focusTitle() : Promise.resolve(""),
       ])
       consecutiveFailures = 0
-      const name = typeof rawClass === "string" && rawClass.length > 0 ? rawClass : null
-      const title = typeof rawTitle === "string" && rawTitle.length > 0 ? rawTitle : null
+      const name =
+        typeof rawClass === "string" && rawClass.length > 0 ? rawClass : null
+      const title =
+        typeof rawTitle === "string" && rawTitle.length > 0 ? rawTitle : null
       emit(name, title)
     } catch (error) {
       consecutiveFailures += 1

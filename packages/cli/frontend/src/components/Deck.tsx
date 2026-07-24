@@ -135,8 +135,7 @@ const DeckButtonCell = ({
           {renderSystemButton(
             "core:temporary-error",
             undefined,
-            (buttonErrors ?? []).find((e) => e.position === position)
-              ?.details,
+            (buttonErrors ?? []).find((e) => e.position === position)?.details,
           )}
         </ButtonFrame>
       </div>

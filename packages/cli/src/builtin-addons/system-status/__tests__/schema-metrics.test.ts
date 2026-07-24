@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { GenericSystemStatusSchema } from "../buttons/generic/schemas"
+import { GenericSystemStatusSchema } from "../buttons/system-status/schemas"
 
 describe("GenericSystemStatusSchema: metrics entry shape", () => {
   it("accepts a plain string metric id (shorthand)", () => {
@@ -47,6 +47,23 @@ describe("GenericSystemStatusSchema: metrics entry shape", () => {
     expect(() =>
       GenericSystemStatusSchema.parse({
         metrics: [{ id: "cpu", label: "" }],
+      }),
+    ).toThrow()
+  })
+
+  it("rejects extra fields on the metric entry (no color / icon / units)", () => {
+    expect(() =>
+      GenericSystemStatusSchema.parse({
+        metrics: [{ id: "cpu", color: "red" }],
+      }),
+    ).toThrow()
+  })
+
+  it("does not accept a `display` field on the config (deprecated; per-button-type choice now)", () => {
+    expect(() =>
+      GenericSystemStatusSchema.parse({
+        metrics: ["cpu"],
+        display: "bars",
       }),
     ).toThrow()
   })

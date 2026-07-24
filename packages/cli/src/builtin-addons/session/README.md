@@ -4,9 +4,9 @@
 
 ## Buttons
 
-| Button id        | Purpose                                            |
-| ---------------- | -------------------------------------------------- |
-| `session:info`   | Shows current OS session state (locked/unlocked)   |
+| Button id      | Purpose                                          |
+| -------------- | ------------------------------------------------ |
+| `session:info` | Shows current OS session state (locked/unlocked) |
 
 ## See also
 

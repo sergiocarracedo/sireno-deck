@@ -2,7 +2,12 @@
 import { describe, expect, it } from "vitest"
 
 import { buildResolverOptions, buildDeckConfigMessage } from "../deck-config"
-import { registerDeckIcon, registerIconForDeck, getAssetByPath, clearAssets } from "@/core/icon-asset-registry"
+import {
+  registerDeckIcon,
+  registerIconForDeck,
+  getAssetByPath,
+  clearAssets,
+} from "@/core/icon-asset-registry"
 
 describe("chrome button icon resolution (user config)", () => {
   it("resolves ./assets/chrome.svg on the main deck chrome button to asset://<id>", () => {

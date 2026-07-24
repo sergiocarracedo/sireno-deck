@@ -32,10 +32,7 @@ export const createDarwinClipboardProvider = (
         timeoutMs + 500,
       )
       if (result.exitCode !== 0) {
-        logger.warn(
-          { stderr: result.stderr },
-          "clipboard: pbcopy failed",
-        )
+        logger.warn({ stderr: result.stderr }, "clipboard: pbcopy failed")
         throw new ProviderError(
           "EXEC_FAILED",
           `clipboard write failed: ${result.stderr || "unknown error"}`,

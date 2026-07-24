@@ -14,7 +14,8 @@ const setup = (deckIds: string[]) => {
   const pubSub = createPubSub()
   const store = createStore()
   const executor = createActionExecutor({ host: getHostContext() })
-  const methodsRef: { current: ReturnType<typeof createMethods> | undefined } = { current: undefined }
+  const methodsRef: { current: ReturnType<typeof createMethods> | undefined } =
+    { current: undefined }
   const runtime = createRuntime({
     decks: deckIds.map((id, i) => ({
       id,
@@ -27,7 +28,13 @@ const setup = (deckIds: string[]) => {
     logger: silentLogger(),
     getMethods: () => methodsRef.current!,
   })
-  const methods = createMethods({ runtime, pubSub, store, executor, logger: silentLogger() })
+  const methods = createMethods({
+    runtime,
+    pubSub,
+    store,
+    executor,
+    logger: silentLogger(),
+  })
   methodsRef.current = methods
   return { runtime, pubSub, store, methods }
 }

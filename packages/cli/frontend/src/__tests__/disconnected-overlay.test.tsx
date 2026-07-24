@@ -63,7 +63,7 @@ describe("DisconnectedOverlay", () => {
     )
     const overlay = getByTestId("disconnected-overlay")
     expect(overlay.querySelectorAll("button").length).toBe(0)
-    expect(overlay.querySelectorAll('input, select, textarea').length).toBe(0)
+    expect(overlay.querySelectorAll("input, select, textarea").length).toBe(0)
   })
 
   it("renders 'Failed to reconnect' when status is failed", () => {

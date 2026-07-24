@@ -1,18 +1,18 @@
-import type { AddonDeckEntry, AddonGeneratedDeck } from '@/addon/api'
+import type { AddonDeckEntry, AddonGeneratedDeck } from "@/addon/api"
 
-import { categories, Emoji } from '../data/categories'
+import { categories, Emoji } from "../data/categories"
 import {
   DEFAULT_FAVORITES,
   EmojiSelectorDeckSchema,
   type EmojiSelectorDeckConfig,
-} from '../support'
+} from "../support"
 
 const EMOJI_PAGE_SIZE = 13
 
 const FAVORITES = {
-  id: 'favorites',
-  label: 'Favorites',
-  icon: '⭐',
+  id: "favorites",
+  label: "Favorites",
+  icon: "⭐",
 } as const
 
 const buildCategoryDeckId = (baseDeckId: string, categoryId: string): string =>
@@ -22,7 +22,7 @@ const buildEmojiDeck = (name: string, emojis: readonly Emoji[]) => {
   return {
     name,
     buttons: emojis.map((emoji, offset) => ({
-      type: 'emoji-selector:emoji',
+      type: "emoji-selector:emoji",
       emoji: emoji.char,
       shortcode: emoji.shortcode,
       position: offset,
@@ -62,7 +62,7 @@ const generateDecks = (
     Math.ceil(favorites.length / EMOJI_PAGE_SIZE),
   )
   topButtons.push({
-    type: 'emoji-selector:category',
+    type: "emoji-selector:category",
     icon: FAVORITES.icon,
     label: FAVORITES.label,
     position: 0,
@@ -77,7 +77,7 @@ const generateDecks = (
     )
     decks[categoryDeckId] = buildEmojiDeck(category.label, category.emojis)
     topButtons.push({
-      type: 'emoji-selector:category',
+      type: "emoji-selector:category",
       icon: category.icon,
       label: category.label,
       position: idx + 1,
@@ -86,7 +86,7 @@ const generateDecks = (
   })
 
   decks[deck.id] = {
-    name: 'Emoji Selector',
+    name: "Emoji Selector",
     buttons: topButtons,
     paginated: true,
   }
@@ -109,10 +109,10 @@ const emojiSelectorDeckEntry: AddonDeckEntry = {
     keyCount: number
   }): Record<string, AddonGeneratedDeck> => {
     const cfg =
-      config && typeof config === 'object' && 'favorites' in config
+      config && typeof config === "object" && "favorites" in config
         ? (config as EmojiSelectorDeckConfig)
         : { favorites: [] }
-    return generateDecks({ id: 'emoji-selector' }, cfg)
+    return generateDecks({ id: "emoji-selector" }, cfg)
   },
 }
 

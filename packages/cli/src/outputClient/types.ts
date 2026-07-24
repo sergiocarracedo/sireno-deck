@@ -37,7 +37,9 @@ export interface InitOptions {
    * correct grid. Optional — emulator-only callers provide this; real
    * devices have a fixed keyCount and skip the rebuild.
    */
-  readonly rebuildDecksForKeyCount?: (keyCount: number) => ReadonlyArray<RuntimeDeck>
+  readonly rebuildDecksForKeyCount?: (
+    keyCount: number,
+  ) => ReadonlyArray<RuntimeDeck>
 }
 
 export interface OutputHandle {

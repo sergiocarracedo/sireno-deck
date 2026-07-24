@@ -1,9 +1,6 @@
 import type { RawConfig } from "@/config/schemas"
 
-export const onlyDecksChanged = (
-  prev: RawConfig,
-  next: RawConfig,
-): boolean => {
+export const onlyDecksChanged = (prev: RawConfig, next: RawConfig): boolean => {
   const prevKeys = Object.keys(prev)
   const nextKeys = Object.keys(next)
   if (prevKeys.length !== nextKeys.length) return false

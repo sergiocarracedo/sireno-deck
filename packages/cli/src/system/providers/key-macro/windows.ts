@@ -131,10 +131,7 @@ public static class SirenoKey
 }
 `
 
-const COMPILE_PS = (
-  cacheDir: string,
-  dllPath: string,
-): string => `
+const COMPILE_PS = (cacheDir: string, dllPath: string): string => `
 $ErrorActionPreference = 'Stop'
 $src = @'
 ${HELPED_SOURCE}
@@ -153,8 +150,7 @@ try {
 }
 `
 
-const escapeForPSSingleQuote = (s: string): string =>
-  s.replace(/'/g, "''")
+const escapeForPSSingleQuote = (s: string): string => s.replace(/'/g, "''")
 
 const encodePSCommand = (script: string): string => {
   const buf = Buffer.from(script, "utf16le")
@@ -275,10 +271,7 @@ const compileHelper = async (
       return null
     }
   } catch (err) {
-    deps.logger.warn(
-      { err },
-      "windows key-macro: helper compile threw",
-    )
+    deps.logger.warn({ err }, "windows key-macro: helper compile threw")
     return null
   }
   if (!existsSync(HELPER_DLL)) {
@@ -341,11 +334,7 @@ const sendViaPowerShell = async (
   const timeoutMs = deps.timeoutMs ?? 500
   const encoded = encodePSCommand(script)
   const result = await withTimeout(
-    deps.executor.run("powershell", [
-      "-NoProfile",
-      "-EncodedCommand",
-      encoded,
-    ]),
+    deps.executor.run("powershell", ["-NoProfile", "-EncodedCommand", encoded]),
     timeoutMs + 2500,
   )
   if (result.exitCode !== 0) {

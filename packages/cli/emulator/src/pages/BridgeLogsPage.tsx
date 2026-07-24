@@ -30,7 +30,9 @@ export const BridgeLogsPage = () => {
       <div className="flex flex-wrap items-center gap-2">
         <select
           value={direction}
-          onChange={(e) => setDirection(e.target.value as "all" | "sent" | "received")}
+          onChange={(e) =>
+            setDirection(e.target.value as "all" | "sent" | "received")
+          }
           className="rounded bg-neutral-800 px-2 py-1 text-xs text-neutral-200"
           data-testid="bridge-logs-direction"
         >
@@ -72,10 +74,8 @@ export const BridgeLogsPage = () => {
           >
             <span className="text-neutral-500">
               {new Date(m.ts).toISOString().slice(11, 19)}
-            </span>
-            {" "}
-            <span className="text-neutral-400">{m.direction}</span>
-            {" "}
+            </span>{" "}
+            <span className="text-neutral-400">{m.direction}</span>{" "}
             <span className="font-semibold text-neutral-200">{m.type}</span>
             {m.channel !== null && (
               <span className="ml-2 text-neutral-500">#{m.channel}</span>

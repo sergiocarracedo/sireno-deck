@@ -74,7 +74,11 @@ describe("validateFull", () => {
         main: {
           name: "Main",
           buttons: [
-            { position: 0, type: "internal-settings:brightness-down", config: {} },
+            {
+              position: 0,
+              type: "internal-settings:brightness-down",
+              config: {},
+            },
           ],
         },
       },

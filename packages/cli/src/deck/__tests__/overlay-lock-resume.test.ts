@@ -35,7 +35,11 @@ const coreLockDeckWith = (
 const defaultCoreLockDeck = (): RuntimeDeck =>
   coreLockDeckWith([
     { type: "date-time:date-time", position: 0, config: { format: "HH" } },
-    { type: "date-time:date-time", position: 1, config: { format: "<blink>:</blink>" } },
+    {
+      type: "date-time:date-time",
+      position: 1,
+      config: { format: "<blink>:</blink>" },
+    },
     { type: "date-time:date-time", position: 2, config: { format: "mm" } },
   ])
 

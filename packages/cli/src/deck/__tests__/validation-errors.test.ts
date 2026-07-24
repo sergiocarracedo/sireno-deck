@@ -32,7 +32,13 @@ describe("validateButton issues include deckId/position", () => {
   it("unknown type issues include deckId, position, and reason", () => {
     const mockRegistry = makeMockRegistry(new Set())
     const btn: RawButtonDef = { type: "unknown:thing", position: 3 }
-    const result = validateButton(btn, mockRegistry, "decks.main.buttons[0]", "main", 3)
+    const result = validateButton(
+      btn,
+      mockRegistry,
+      "decks.main.buttons[0]",
+      "main",
+      3,
+    )
     expect(result.issues).toHaveLength(1)
     expect(result.issues[0].deckId).toBe("main")
     expect(result.issues[0].position).toBe(3)
@@ -49,7 +55,9 @@ describe("validateButton issues include deckId/position", () => {
             configSchema: {
               safeParse: () => ({
                 success: false,
-                error: { issues: [{ path: ["nested"], message: "expected string" }] },
+                error: {
+                  issues: [{ path: ["nested"], message: "expected string" }],
+                },
               }),
             },
             internal: false,
@@ -58,7 +66,13 @@ describe("validateButton issues include deckId/position", () => {
       }),
     } as unknown as AddonRegistry
     const btn: RawButtonDef = { type: "ok:type", position: 0 }
-    const result = validateButton(btn, mockRegistry, "decks.main.buttons[0]", "main", 0)
+    const result = validateButton(
+      btn,
+      mockRegistry,
+      "decks.main.buttons[0]",
+      "main",
+      0,
+    )
     expect(result.issues).toHaveLength(1)
     expect(result.issues[0].reason).toBe("malformed-config")
     expect(result.issues[0].deckId).toBe("main")
@@ -68,7 +82,13 @@ describe("validateButton issues include deckId/position", () => {
   it("valid button returns no issues", () => {
     const mockRegistry = makeMockRegistry(new Set(["valid:button"]))
     const btn: RawButtonDef = { type: "valid:button", position: 7 }
-    const result = validateButton(btn, mockRegistry, "decks.deck2.buttons[5]", "deck2", 7)
+    const result = validateButton(
+      btn,
+      mockRegistry,
+      "decks.deck2.buttons[5]",
+      "deck2",
+      7,
+    )
     expect(result.issues).toHaveLength(0)
   })
 })
@@ -91,14 +111,18 @@ describe("error clears on rebuild", () => {
       {
         id: "main",
         name: "Main",
-        buttons: [{ id: "0", type: "unknown:bad", position: 0, config: invalidConfig }],
+        buttons: [
+          { id: "0", type: "unknown:bad", position: 0, config: invalidConfig },
+        ],
       },
     ]
     const correctedDecks: ReadonlyArray<RuntimeDeck> = [
       {
         id: "main",
         name: "Main",
-        buttons: [{ id: "0", type: "valid:button", position: 0, config: validConfig }],
+        buttons: [
+          { id: "0", type: "valid:button", position: 0, config: validConfig },
+        ],
       },
     ]
 

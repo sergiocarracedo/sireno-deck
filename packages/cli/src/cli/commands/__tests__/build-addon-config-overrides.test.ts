@@ -27,9 +27,9 @@ describe("buildAddonConfigOverrides", () => {
       silentLogger(),
     )
     expect(overrides.has("vscode-overlay")).toBe(true)
-    expect(overrides.has("/works/opensource/sireno-deck-addons/vscode-overlay")).toBe(
-      false,
-    )
+    expect(
+      overrides.has("/works/opensource/sireno-deck-addons/vscode-overlay"),
+    ).toBe(false)
     const vscode = overrides.get("vscode-overlay")!
     expect(vscode.perDeck.get("shortcuts")?.autoShow).toBe(false)
     expect(vscode.perDeck.get("shortcuts")?.config).toEqual({ extra: true })
@@ -59,12 +59,12 @@ describe("buildAddonConfigOverrides", () => {
       addonSpecToName,
       silentLogger(),
     )
-    expect(overrides.get("vscode-overlay")?.perDeck.get("shortcuts")?.autoShow).toBe(
-      false,
-    )
-    expect(overrides.get("chrome-overlay")?.perDeck.get("shortcuts")?.name).toBe(
-      "My Chrome",
-    )
+    expect(
+      overrides.get("vscode-overlay")?.perDeck.get("shortcuts")?.autoShow,
+    ).toBe(false)
+    expect(
+      overrides.get("chrome-overlay")?.perDeck.get("shortcuts")?.name,
+    ).toBe("My Chrome")
   })
 
   it("warns and drops the override when the addon failed to load", () => {
@@ -106,9 +106,7 @@ describe("buildAddonConfigOverrides", () => {
 
   it("ignores string-form addon entries (no per-entry config)", () => {
     const entries = ["/p/some-addon"]
-    const addonSpecToName = new Map([
-      ["/p/some-addon", "some-addon"],
-    ])
+    const addonSpecToName = new Map([["/p/some-addon", "some-addon"]])
     const overrides = buildAddonConfigOverrides(
       entries,
       addonSpecToName,

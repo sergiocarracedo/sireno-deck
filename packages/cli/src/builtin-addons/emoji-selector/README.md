@@ -17,8 +17,8 @@ The addon produces:
 | ------------------------- | ---------- | ---------------------------------------------- |
 | `emoji-selector:launcher` | tap        | Navigate to the `emoji-selector` routing deck  |
 | `emoji-selector:category` | tap        | Navigate to the target category deck           |
-| `emoji-selector:emoji`    | tap        | Dispatch `type://<emoji>` to type it             |
-| `emoji-selector:emoji`    | dblTap     | Dispatch `type://:<shortcode>:` to type it       |
+| `emoji-selector:emoji`    | tap        | Dispatch `type://<emoji>` to type it           |
+| `emoji-selector:emoji`    | dblTap     | Dispatch `type://:<shortcode>:` to type it     |
 | `emoji-selector:back`     | tap        | Navigate to previous deck                      |
 | `core:page-nav`           | tap/dbltap | Navigate to next/previous page (auto-injected) |
 

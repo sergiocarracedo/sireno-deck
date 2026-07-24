@@ -2,7 +2,7 @@ packages:
   - packages/*
 
 onlyBuiltDependencies:
-  - '@julusian/jpeg-turbo'
+  - "@julusian/jpeg-turbo"
   - esbuild
   - get-windows
   - node-hid

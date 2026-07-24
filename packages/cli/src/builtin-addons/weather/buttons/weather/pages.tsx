@@ -17,10 +17,13 @@ export const pages: ReadonlyArray<{
       <div className="flex h-full w-full flex-col items-center justify-center gap-1">
         <WeatherIcon code={snapshot.wmoCode} className="h-10 w-10" />
         <div className="-mt-1 flex flex-col gap-0.5">
-          <Text size="xl" tone="fg" className="font-semibold leading-none" text={`${snapshot.temperature?.toFixed(0) ?? ""}${unitTemp}`} />
-          {city && (
-            <Text size="sm" tone="fg" fit="ellipsis" text={city} />
-          )}
+          <Text
+            size="xl"
+            tone="fg"
+            className="font-semibold leading-none"
+            text={`${snapshot.temperature?.toFixed(0) ?? ""}${unitTemp}`}
+          />
+          {city && <Text size="sm" tone="fg" fit="ellipsis" text={city} />}
         </div>
       </div>
     ),
@@ -31,10 +34,19 @@ export const pages: ReadonlyArray<{
       <div>
         <Text size="sm" tone="primary" fit="ellipsis" text={city || "---"} />
         {snapshot.windSpeed !== undefined && (
-          <Chip tone="foreground" size="sm" text={`${snapshot.windSpeed.toFixed(0)} ${unitWind}`} />
+          <Chip
+            tone="foreground"
+            size="sm"
+            text={`${snapshot.windSpeed.toFixed(0)} ${unitWind}`}
+          />
         )}
         {snapshot.description && (
-          <Text size="xs" tone="fg" fit="ellipsis" text={snapshot.description} />
+          <Text
+            size="xs"
+            tone="fg"
+            fit="ellipsis"
+            text={snapshot.description}
+          />
         )}
       </div>
     ),
@@ -49,7 +61,11 @@ export const pages: ReadonlyArray<{
             <span key={e.time} className="flex flex-col items-center gap-0.5">
               <Text size="xs" tone="fg" text={`${e.time}h`} />
               <WeatherIcon code={e.wmoCode} className="h-8 w-8" />
-              <Text size="xs" tone="fg" text={`${e.temperature.toFixed(0)}${unitTemp}`} />
+              <Text
+                size="xs"
+                tone="fg"
+                text={`${e.temperature.toFixed(0)}${unitTemp}`}
+              />
             </span>
           ))}
         </div>
@@ -71,8 +87,16 @@ export const pages: ReadonlyArray<{
               <span key={e.date} className="flex flex-col items-center gap-0.5">
                 <Text size="xs" tone="fg" text={dayName} />
                 <WeatherIcon code={e.wmoCode} className="h-8 w-8" />
-                <Text size="xs" tone="primary" text={`${e.tempMin.toFixed(0)}${unitTemp}`} />
-                <Text size="xs" tone="fg" text={`${e.tempMax.toFixed(0)}${unitTemp}`} />
+                <Text
+                  size="xs"
+                  tone="primary"
+                  text={`${e.tempMin.toFixed(0)}${unitTemp}`}
+                />
+                <Text
+                  size="xs"
+                  tone="fg"
+                  text={`${e.tempMax.toFixed(0)}${unitTemp}`}
+                />
               </span>
             )
           })}

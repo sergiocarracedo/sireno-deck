@@ -1,11 +1,12 @@
-import { z } from "zod"
 import type { AddonManifestV1, AddonGlobalPoller } from "@/addon/api"
 
-import genericFrontend from "./buttons/generic/frontend"
+import kpisFrontend from "./buttons/kpis/frontend"
+import systemStatusFrontend from "./buttons/system-status/frontend"
 import {
   GenericSystemStatusDefaults,
   GenericSystemStatusSchema,
-} from "./buttons/generic/schemas"
+  type GenericSystemStatusConfig,
+} from "./buttons/system-status/schemas"
 import { SYSTEM_METRIC_IDS, type SystemMetricId } from "./domain"
 
 // ponytail: pollers are server-only; lazy-import live-metrics so the manifest
@@ -28,7 +29,15 @@ export const systemStatusManifest: AddonManifestV1 = {
   name: "system-status",
   buttonTypes: {
     "system-status:system-status": {
-      frontend: genericFrontend,
+      frontend: systemStatusFrontend,
+      service: {
+        configSchema: GenericSystemStatusSchema,
+        internal: false,
+        gestureHandlers: ["tap"] as const,
+      },
+    },
+    "system-status:kpis": {
+      frontend: kpisFrontend,
       service: {
         configSchema: GenericSystemStatusSchema,
         internal: false,
@@ -44,6 +53,10 @@ export const systemStatusManifest: AddonManifestV1 = {
 export const systemStatusAddon = systemStatusManifest
 export default systemStatusManifest
 
-export { GenericSystemStatusDefaults, GenericSystemStatusSchema }
+export {
+  GenericSystemStatusDefaults,
+  GenericSystemStatusSchema,
+  type GenericSystemStatusConfig,
+}
 export { SYSTEM_METRIC_IDS }
 export type { SystemMetricId }

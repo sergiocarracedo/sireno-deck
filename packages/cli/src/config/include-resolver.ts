@@ -4,7 +4,10 @@ import { dirname, isAbsolute, resolve as resolvePath } from "node:path"
 export class IncludeResolutionError extends Error {
   readonly issues: { message: string; path?: string }[]
 
-  constructor(message: string, issues: { message: string; path?: string }[] = []) {
+  constructor(
+    message: string,
+    issues: { message: string; path?: string }[] = [],
+  ) {
     super(message)
     this.name = "IncludeResolutionError"
     this.issues = issues
@@ -34,10 +37,9 @@ const processLine = (
     : resolvePath(dirname(definingFilePath), pathStr)
   if (visited.has(includePath)) {
     const cycle = [...visited, includePath].join(" -> ")
-    throw new IncludeResolutionError(
-      `Circular include detected: ${cycle}`,
-      [{ message: `cycle: ${cycle}`, path: definingFilePath }],
-    )
+    throw new IncludeResolutionError(`Circular include detected: ${cycle}`, [
+      { message: `cycle: ${cycle}`, path: definingFilePath },
+    ])
   }
   let raw: string
   try {

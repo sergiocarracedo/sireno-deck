@@ -37,9 +37,7 @@ describe("paginate", () => {
     )
     expect(result.pages).toHaveLength(2)
     for (const page of result.pages) {
-      expect(
-        page.items.some((it) => it?.value === NEXT_PAGE_MARKER),
-      ).toBe(true)
+      expect(page.items.some((it) => it?.value === NEXT_PAGE_MARKER)).toBe(true)
     }
     expect(result.pages[0]!.hasNext).toBe(true)
     expect(result.pages[1]!.hasNext).toBe(false)

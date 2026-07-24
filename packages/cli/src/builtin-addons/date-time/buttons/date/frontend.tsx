@@ -28,7 +28,13 @@ const DateButtonFrontend: AddonFrontendButton<ConfigSchema> = ({ config }) => {
         weight="bold"
         text={day}
       />
-      <Text tone="muted" size="md" typography="main" weight="semibold" text={weekday} />
+      <Text
+        tone="muted"
+        size="md"
+        typography="main"
+        weight="semibold"
+        text={weekday}
+      />
     </span>
   )
 }

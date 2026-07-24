@@ -42,7 +42,14 @@ const capabilityConfig: Readonly<
   >
 > = {
   keyMacro: {
-    commands: ["ydotool", "wtype", "xdotool", "dotool", "osascript", "powershell"],
+    commands: [
+      "ydotool",
+      "wtype",
+      "xdotool",
+      "dotool",
+      "osascript",
+      "powershell",
+    ],
     reason:
       "type:// keystrokes need a key input tool. Install ydotool (works on most compositors via uinput) or wtype (wlroots compositors only). macOS uses osascript; Windows uses PowerShell with Win32 SendInput.",
     preferred: (platform) => {
@@ -126,7 +133,9 @@ export const formatCapabilityWarning = (
   return `${name}: none of ${status.missingCommands.join(", ")} found — ${status.reason}`
 }
 
-export const getRequiredCapability = (action: string): SystemCapability | null => {
+export const getRequiredCapability = (
+  action: string,
+): SystemCapability | null => {
   if (action.startsWith("type://")) return "keyMacro"
   return null
 }

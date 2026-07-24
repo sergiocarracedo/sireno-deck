@@ -219,7 +219,11 @@ export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
 
   // ponytail: TTY + no service context = compact single-line format.
   // Otherwise fall back to raw ndjson for journald/launchd capture.
-  const useCompact = compact || (process.stdout.isTTY && !process.env["INVOCATION_ID"] && !process.env["LAUNCH_PATH"])
+  const useCompact =
+    compact ||
+    (process.stdout.isTTY &&
+      !process.env["INVOCATION_ID"] &&
+      !process.env["LAUNCH_PATH"])
   const dest = new HumanWritable({ compact: useCompact })
   const teeStream = {
     write(chunk: string): void {

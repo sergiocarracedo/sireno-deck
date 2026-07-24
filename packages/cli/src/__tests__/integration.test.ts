@@ -1,7 +1,15 @@
 import { mkdtempSync, writeFileSync, rmSync, mkdirSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { describe, expect, it, afterAll, afterEach, beforeEach, vi } from "vitest"
+import {
+  describe,
+  expect,
+  it,
+  afterAll,
+  afterEach,
+  beforeEach,
+  vi,
+} from "vitest"
 
 import { AddonRegistry } from "@/addon/registry"
 import { loadAddons } from "@/addon/loader"
@@ -129,20 +137,21 @@ decks:
 
   it("internal-settings deck factory returns a settings deck", () => {
     const entry = internalSettingsAddon.decks![0]!
-    const deck = entry.createDeck!({ config: undefined, deck: { id: "internal-settings:settings" }, keyCount: 15 })
+    const deck = entry.createDeck!({
+      config: undefined,
+      deck: { id: "internal-settings:settings" },
+      keyCount: 15,
+    })
     expect(deck).toBeDefined()
     expect((deck.buttons ?? []).length).toBeGreaterThan(0)
   })
 })
 
-interface FakeProvider
-  extends Pick<ActiveAppProvider, "getActive" | "stop"> {
+interface FakeProvider extends Pick<ActiveAppProvider, "getActive" | "stop"> {
   snapshot: ActiveAppSnapshot | null
   calls: { getActive: number; stop: number }
 }
-const makeFakeProvider = (
-  initial: ActiveAppSnapshot | null,
-): FakeProvider => {
+const makeFakeProvider = (initial: ActiveAppSnapshot | null): FakeProvider => {
   const provider: FakeProvider = {
     snapshot: initial,
     calls: { getActive: 0, stop: 0 },

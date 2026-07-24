@@ -2,10 +2,7 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
-import {
-  appendBridgeMessage,
-  clearBridgeMessages,
-} from "../bridge-log-store"
+import { appendBridgeMessage, clearBridgeMessages } from "../bridge-log-store"
 import { BridgeLogsPage } from "../pages/BridgeLogsPage"
 
 describe("BridgeLogsPage", () => {

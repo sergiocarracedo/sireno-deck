@@ -131,7 +131,9 @@ const startCommand: CommandModule<object, StartArgs> = {
       ...(argv.deviceModel !== undefined
         ? { deviceModel: argv.deviceModel }
         : {}),
-      ...(argv.httpPort !== undefined ? { httpPort: argv.httpPort as number } : {}),
+      ...(argv.httpPort !== undefined
+        ? { httpPort: argv.httpPort as number }
+        : {}),
     }
     try {
       await start(options)
@@ -190,7 +192,13 @@ export const buildCli = async (): Promise<{
   void buildLogger
   return {
     scriptName: PACKAGE_NAME,
-    commands: [runCommand, startCommand, stopCommand, statusCommand, serviceCommand],
+    commands: [
+      runCommand,
+      startCommand,
+      stopCommand,
+      statusCommand,
+      serviceCommand,
+    ],
     packageName: PACKAGE_NAME,
   }
 }

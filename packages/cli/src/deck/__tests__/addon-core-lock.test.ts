@@ -29,9 +29,9 @@ describe("materializeAddonDecks registers core:lock", () => {
     const coreLock = decks.find((d) => d.id === "core:lock")
     expect(coreLock).toBeDefined()
     expect(coreLock?.buttons.length).toBe(3)
-    expect(coreLock?.buttons.every((b) => b.type === "date-time:date-time")).toBe(
-      true,
-    )
+    expect(
+      coreLock?.buttons.every((b) => b.type === "date-time:date-time"),
+    ).toBe(true)
   })
 
   it("uses user lockButtons when passed", () => {
@@ -52,7 +52,7 @@ describe("materializeAddonDecks registers core:lock", () => {
     expect(coreLock?.buttons[0]?.type).toBe("core:change-deck")
   })
 
-  it("navigateToDeck(\"core:lock\") finds it via deckById after materialization", async () => {
+  it('navigateToDeck("core:lock") finds it via deckById after materialization', async () => {
     const registry = new AddonRegistry()
     registry.load(coreAddon)
     const decks = materializeAddonDecks(
@@ -64,8 +64,9 @@ describe("materializeAddonDecks registers core:lock", () => {
     const pubSub = createPubSub()
     const store = createStore()
     const executor = createActionExecutor({ host: getHostContext() })
-    const methodsRef: { current: ReturnType<typeof createMethods> | undefined } =
-      { current: undefined }
+    const methodsRef: {
+      current: ReturnType<typeof createMethods> | undefined
+    } = { current: undefined }
     const runtime = createRuntime({
       decks,
       pubSub,

@@ -12,7 +12,10 @@ export interface PushRawImageDevice {
 export interface PushRawImageOptions {
   readonly imagePath: string
   readonly device: PushRawImageDevice
-  readonly logger: { warn: (obj: unknown, msg?: string) => void; info: (obj: unknown, msg?: string) => void }
+  readonly logger: {
+    warn: (obj: unknown, msg?: string) => void
+    info: (obj: unknown, msg?: string) => void
+  }
   readonly background?: string
 }
 

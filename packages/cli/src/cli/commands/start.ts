@@ -123,9 +123,7 @@ const start = async (options: StartOptions): Promise<void> => {
 
   const home = options.homeDir ?? process.env["HOME"] ?? ""
   const xdgConfigHome =
-    options.xdgConfigHome ??
-    process.env["XDG_CONFIG_HOME"] ??
-    `${home}/.config`
+    options.xdgConfigHome ?? process.env["XDG_CONFIG_HOME"] ?? `${home}/.config`
   const configPath =
     options.config ??
     findConfigPath({

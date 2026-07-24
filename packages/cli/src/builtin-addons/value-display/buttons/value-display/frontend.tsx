@@ -35,7 +35,11 @@ const ValueDisplayButtonFrontend: AddonFrontendButton = () => {
             size="xs"
             tone="fg"
             fit="ellipsis"
-            text={v.units !== undefined && v.units.length > 0 ? `${v.value}${v.units}` : v.value}
+            text={
+              v.units !== undefined && v.units.length > 0
+                ? `${v.value}${v.units}`
+                : v.value
+            }
           />
         </span>
       ))}

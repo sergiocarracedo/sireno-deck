@@ -3,7 +3,12 @@ import type { SystemButtonType } from "./system-buttons/types"
 export interface RuntimeDeck {
   id: string
   name: string
-  buttons: ReadonlyArray<{ id: string; type: string; position?: number; config?: unknown }>
+  buttons: ReadonlyArray<{
+    id: string
+    type: string
+    position?: number
+    config?: unknown
+  }>
   isMain?: boolean
   isOverlay?: boolean
   processNames?: ReadonlyArray<string>
@@ -52,7 +57,10 @@ export const injectSystemButtons = <T extends RuntimeDeck>(
       ...deck,
       buttons: [
         ...filtered,
-        { id: String(n1Position), type: systemButtonType } as T["buttons"][number],
+        {
+          id: String(n1Position),
+          type: systemButtonType,
+        } as T["buttons"][number],
       ],
     }
   })

@@ -1,11 +1,4 @@
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
@@ -183,7 +176,9 @@ describe("createWindowsKeyMacroProvider", () => {
     } catch (err) {
       captured = err
     }
-    expect((captured as Error).message).toContain("SendInput failed (Win32 #87)")
+    expect((captured as Error).message).toContain(
+      "SendInput failed (Win32 #87)",
+    )
     await provider.stop()
   })
 

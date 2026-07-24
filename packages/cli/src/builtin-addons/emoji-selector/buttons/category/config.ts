@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from "zod"
 
 export const configSchema = z.object({
   target_deck: z.string().min(1),

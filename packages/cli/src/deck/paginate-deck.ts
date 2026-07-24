@@ -50,9 +50,7 @@ export const paginateDeck = (opts: PaginateDeckOptions): PageDeckResult[] => {
         // are -p1, -p2, -p3); navigating to it would no-op. First page's
         // prev and last page's next target the current page (no-op), so the
         // entry/exit to the overlay is via core:overlay-toggle only.
-        const prevDeckId = isFirstPage
-          ? deckId
-          : `${baseDeckId}-p${pageIndex}`
+        const prevDeckId = isFirstPage ? deckId : `${baseDeckId}-p${pageIndex}`
         const nextDeckId = isLastPage
           ? deckId
           : `${baseDeckId}-p${pageIndex + 2}`

@@ -28,7 +28,11 @@ export {
 } from "./core/gesture-state"
 
 export type { AddonGestureEvent } from "./addon/api"
-export { Deck, type DeckButton, type DeckProps } from "../frontend/src/components/Deck"
+export {
+  Deck,
+  type DeckButton,
+  type DeckProps,
+} from "../frontend/src/components/Deck"
 
 export { ChannelRegistry } from "./api/react/registry"
 export {

@@ -60,7 +60,10 @@ export const installService = async (
       execSync(`systemctl enable ${SERVICE_NAME}`, { stdio: "ignore" })
       logger.info(`install: ${SERVICE_NAME} enabled`)
     } catch (err) {
-      logger.error({ err }, "install: failed to install systemd service (needs root)")
+      logger.error(
+        { err },
+        "install: failed to install systemd service (needs root)",
+      )
       process.exitCode = 1
     }
   } else if (os === "darwin") {
@@ -79,7 +82,9 @@ export const installService = async (
       process.exitCode = 1
     }
   } else {
-    logger.error("install: native service installation not supported on this platform")
+    logger.error(
+      "install: native service installation not supported on this platform",
+    )
     process.exitCode = 1
   }
 }

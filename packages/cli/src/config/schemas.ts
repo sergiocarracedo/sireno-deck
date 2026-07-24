@@ -131,8 +131,6 @@ export const ThemeEntrySchema = z.union([
     .strict(),
 ])
 
-
-
 export const RawConfigSchema = z
   .object({
     theme: ThemeEntrySchema.optional(),

@@ -31,7 +31,13 @@ const BrightnessButtonFrontend: AddonFrontendButton = ({ config }) => {
       <span className="block h-1.5 w-full overflow-hidden rounded bg-bar">
         <span className="block h-full bg-accent" style={{ width: `${pct}%` }} />
       </span>
-      <Text size="xs" tone="muted" className="text-center" typography="aux" text={`Tap: ${action ?? "up"}`} />
+      <Text
+        size="xs"
+        tone="muted"
+        className="text-center"
+        typography="aux"
+        text={`Tap: ${action ?? "up"}`}
+      />
     </span>
   )
 }

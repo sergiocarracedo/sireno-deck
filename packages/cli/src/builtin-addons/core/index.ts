@@ -1,48 +1,48 @@
-import type { AddonManifestV1 } from '@/addon/api'
-import { positionButtons } from '@/deck/position-buttons'
+import type { AddonManifestV1 } from "@/addon/api"
+import { positionButtons } from "@/deck/position-buttons"
 
-import actionBackend from './buttons/action/backend'
-import actionFrontend from './buttons/action/frontend'
-import changeDeckBackend from './buttons/change-deck/backend'
-import changeDeckFrontend from './buttons/change-deck/frontend'
-import mediaSampleBackend from './buttons/media-sample/backend'
-import mediaSampleFrontend from './buttons/media-sample/frontend'
-import pageNavBackend from './buttons/page-nav/backend'
-import pageNavFrontend from './buttons/page-nav/frontend'
-import toggleBackend from './buttons/toggle/backend'
-import toggleFrontend from './buttons/toggle/frontend'
+import actionBackend from "./buttons/action/backend"
+import actionFrontend from "./buttons/action/frontend"
+import changeDeckBackend from "./buttons/change-deck/backend"
+import changeDeckFrontend from "./buttons/change-deck/frontend"
+import mediaSampleBackend from "./buttons/media-sample/backend"
+import mediaSampleFrontend from "./buttons/media-sample/frontend"
+import pageNavBackend from "./buttons/page-nav/backend"
+import pageNavFrontend from "./buttons/page-nav/frontend"
+import toggleBackend from "./buttons/toggle/backend"
+import toggleFrontend from "./buttons/toggle/frontend"
 
 export const manifest: AddonManifestV1 = {
   apiVersion: 1,
-  name: 'core',
+  name: "core",
   buttonTypes: {
-    'core:action': {
+    "core:action": {
       frontend: actionFrontend,
       // ponytail: gestureHandlers: ['tap'] is REQUIRED for type:// macros and any
       // addon-deck button that uses actions.tap. The addon registry's default-deny
       // policy strips undeclared handlers — without this, taps silently no-op.
-      service: { ...actionBackend, gestureHandlers: ['tap'] as const },
+      service: { ...actionBackend, gestureHandlers: ["tap"] as const },
     },
-    'core:change-deck': {
+    "core:change-deck": {
       frontend: changeDeckFrontend,
-      service: { ...changeDeckBackend, gestureHandlers: ['tap'] as const },
+      service: { ...changeDeckBackend, gestureHandlers: ["tap"] as const },
     },
-    'core:toggle': {
+    "core:toggle": {
       frontend: toggleFrontend,
-      service: { ...toggleBackend, gestureHandlers: ['tap'] as const },
+      service: { ...toggleBackend, gestureHandlers: ["tap"] as const },
     },
-    'core:page-nav': {
+    "core:page-nav": {
       frontend: pageNavFrontend,
-      service: { ...pageNavBackend, gestureHandlers: ['tap', 'hold'] as const },
+      service: { ...pageNavBackend, gestureHandlers: ["tap", "hold"] as const },
     },
-    'core:media-sample': {
+    "core:media-sample": {
       frontend: mediaSampleFrontend,
-      service: { ...mediaSampleBackend, gestureHandlers: ['tap'] as const },
+      service: { ...mediaSampleBackend, gestureHandlers: ["tap"] as const },
     },
   },
   decks: [
     {
-      id: 'core:lock',
+      id: "core:lock",
       createDecks: ({ config, keyCount }) => {
         const userButtons = (
           config as { lockButtons?: ReadonlyArray<Record<string, unknown>> }
@@ -52,31 +52,31 @@ export const manifest: AddonManifestV1 = {
 
         const defaultButtons = [
           {
-            id: '0',
-            type: 'date-time',
-            config: { format: '<strong><5xl>HH</5xl></strong>' },
+            id: "0",
+            type: "date-time",
+            config: { format: "<strong><5xl>HH</5xl></strong>" },
             position: centerButton - 1,
             full: true,
           },
           {
-            id: '1',
-            type: 'date-time',
-            config: { format: '<strong><5xl><blink>:</blink></5xl></strong>' },
+            id: "1",
+            type: "date-time",
+            config: { format: "<strong><5xl><blink>:</blink></5xl></strong>" },
             position: centerButton,
             full: true,
           },
           {
-            id: '2',
-            type: 'date-time',
-            config: { format: '<strong><5xl>mm</5xl></strong>' },
+            id: "2",
+            type: "date-time",
+            config: { format: "<strong><5xl>mm</5xl></strong>" },
             position: centerButton + 1,
             full: true,
           },
         ]
 
         return {
-          'core:lock': {
-            name: 'Lock',
+          "core:lock": {
+            name: "Lock",
             buttons:
               userButtons !== undefined && userButtons.length > 0
                 ? positionButtons(

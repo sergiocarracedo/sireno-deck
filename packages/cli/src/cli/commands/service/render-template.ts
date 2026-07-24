@@ -48,7 +48,7 @@ export const renderDarwinPlist = (vars: TemplateVars): string => {
   const lines = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
-    "<plist version=\"1.0\">",
+    '<plist version="1.0">',
     "<dict>",
     "  <key>Label</key>",
     `  <string>${vars.name}</string>`,
@@ -82,10 +82,7 @@ sc failure "${vars.name}" reset= 86400 actions= restart/5000/restart/10000/resta
 `
 }
 
-export const renderTemplate = (
-  os: OS,
-  vars: TemplateVars,
-): string => {
+export const renderTemplate = (os: OS, vars: TemplateVars): string => {
   switch (os) {
     case "linux":
       return renderSystemd(vars)

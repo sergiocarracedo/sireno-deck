@@ -1,43 +1,43 @@
-import { ReactNode, type ReactElement } from 'react'
+import { ReactNode, type ReactElement } from "react"
 
 import {
   TapIndicator,
   TapIndicatorType,
   type TapIndicatorProps,
-} from '../primitives/TapIndicator'
-import { useThemeUiPresentation } from '../theme-presentation'
-import { cn } from '../utils/cn'
+} from "../primitives/TapIndicator"
+import { useThemeUiPresentation } from "../theme-presentation"
+import { cn } from "../utils/cn"
 
 type ActionProps = {
   children: ReactNode
   tapType: TapIndicatorType
   className?: string
-  position: 'bottom-right' | 'top-left'
+  position: "bottom-right" | "top-left"
 }
 
 const Action = ({ tapType, children, className, position }: ActionProps) => {
   return (
-    <div className={cn('w-full', className)}>
+    <div className={cn("w-full", className)}>
       <div
         className={cn(
-          'absolute z-10',
-          position === 'bottom-right' ? 'bottom-0 left-1' : 'top-1 right-1',
+          "absolute z-10",
+          position === "bottom-right" ? "bottom-0 left-1" : "top-1 right-1",
         )}
       >
         <TapIndicator type={tapType} size="xs" />
       </div>
       <div
         className={cn([
-          'flex',
-          position === 'bottom-right' ? 'justify-end' : 'justify-start',
+          "flex",
+          position === "bottom-right" ? "justify-end" : "justify-start",
         ])}
       >
         <div
           className={cn([
-            'scale-[0.62]',
-            position === 'bottom-right'
-              ? 'origin-bottom-right'
-              : 'origin-top-left',
+            "scale-[0.62]",
+            position === "bottom-right"
+              ? "origin-bottom-right"
+              : "origin-top-left",
           ])}
         >
           {children}
@@ -50,7 +50,7 @@ const Action = ({ tapType, children, className, position }: ActionProps) => {
 export interface SplitActionSurfaceProps {
   primary: ReactElement
   secondary?: ReactElement
-  secondaryIndicatorType?: NonNullable<TapIndicatorProps['type']>
+  secondaryIndicatorType?: NonNullable<TapIndicatorProps["type"]>
 }
 
 export function SplitActionSurface(
@@ -78,7 +78,7 @@ export function SplitActionSurface(
       </Action>
       <Action
         className="absolute bottom-0 right-0 z-10"
-        tapType={props.secondaryIndicatorType ?? 'dbltap'}
+        tapType={props.secondaryIndicatorType ?? "dbltap"}
         position="bottom-right"
       >
         {props.secondary}

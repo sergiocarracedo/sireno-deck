@@ -1,9 +1,20 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
-import { existsSync, readFileSync, unlinkSync, writeFileSync, mkdirSync } from "node:fs"
+import {
+  existsSync,
+  readFileSync,
+  unlinkSync,
+  writeFileSync,
+  mkdirSync,
+} from "node:fs"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
 
-const { readConfigPath, writeConfigPath, removeConfigPathFile, terminateChildren } = await import("@/util/daemon")
+const {
+  readConfigPath,
+  writeConfigPath,
+  removeConfigPathFile,
+  terminateChildren,
+} = await import("@/util/daemon")
 
 const testDir = join(tmpdir(), `daemon-test-${Date.now()}`)
 const testPaths = {
@@ -20,11 +31,17 @@ beforeEach(() => {
 
 const cleanup = () => {
   try {
-    if (existsSync(testPaths.configPathFile)) unlinkSync(testPaths.configPathFile)
+    if (existsSync(testPaths.configPathFile))
+      unlinkSync(testPaths.configPathFile)
   } catch {}
   try {
     if (existsSync(testDir)) {
-      for (const f of ["Sireno-deck.pid", "Sireno-deck.token", "Sireno-deck.children.json", "Sireno-deck.config"]) {
+      for (const f of [
+        "Sireno-deck.pid",
+        "Sireno-deck.token",
+        "Sireno-deck.children.json",
+        "Sireno-deck.config",
+      ]) {
         const p = join(testDir, f)
         if (existsSync(p)) unlinkSync(p)
       }

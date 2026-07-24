@@ -161,9 +161,7 @@ describe("createLinuxKeyMacroProvider", () => {
     await provider.sendKey("alt+F4")
     const f4Call = calls.find(
       (c) =>
-        c.tool === "ydotool" &&
-        c.args[0] === "key" &&
-        c.args.includes("62:1"),
+        c.tool === "ydotool" && c.args[0] === "key" && c.args.includes("62:1"),
     )
     expect(f4Call!.args).toEqual(["key", "56:1", "62:1", "62:0", "56:0"]) // 56=LeftAlt, 62=F4
 
@@ -300,7 +298,8 @@ describe("createLinuxKeyMacroProvider", () => {
     const wrapped: CommandExecutor = {
       async run(tool, args) {
         const r = await executor.run(tool, args)
-        if (tool === "ydotool") return { exitCode: 1, stdout: "", stderr: r.stderr }
+        if (tool === "ydotool")
+          return { exitCode: 1, stdout: "", stderr: r.stderr }
         return r
       },
     }

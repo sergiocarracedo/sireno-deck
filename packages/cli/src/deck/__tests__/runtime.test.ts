@@ -371,9 +371,7 @@ describe("createRuntime", () => {
 
   describe("setDecks", () => {
     it("replaces the deck set so getActiveDeck reflects new decks", () => {
-      const { runtime } = setup([
-        makeDeck({ id: "main", isMain: true }),
-      ])
+      const { runtime } = setup([makeDeck({ id: "main", isMain: true })])
       runtime.setDecks([
         makeDeck({
           id: "main",
@@ -388,8 +386,9 @@ describe("createRuntime", () => {
       const pubSub = createPubSub()
       const store = createStore()
       const executor = createActionExecutor({ host: getHostContext() })
-      const methodsRef: { current: ReturnType<typeof createMethods> | undefined } =
-        { current: undefined }
+      const methodsRef: {
+        current: ReturnType<typeof createMethods> | undefined
+      } = { current: undefined }
       const runtime = createRuntime({
         decks: [makeDeck({ id: "main", isMain: true })],
         pubSub,
@@ -414,7 +413,11 @@ describe("createRuntime", () => {
         events.push(payload)
       })
       runtime.setDecks([
-        makeDeck({ id: "main", isMain: true, buttons: [{ id: "31", type: "core:back" }] }),
+        makeDeck({
+          id: "main",
+          isMain: true,
+          buttons: [{ id: "31", type: "core:back" }],
+        }),
       ])
       expect(events).toHaveLength(1)
       expect(events[0]?.deckId).toBe("main")
@@ -1592,7 +1595,9 @@ describe("invokeAction — user actions", () => {
     })
 
     it("setBrightness publishes sireno:settings:brightness and returns new value", () => {
-      const { runtime, pubSub } = setup([makeDeck({ id: "main", isMain: true })])
+      const { runtime, pubSub } = setup([
+        makeDeck({ id: "main", isMain: true }),
+      ])
       const events: unknown[] = []
       pubSub.subscribe("sireno:settings:brightness", (p) => events.push(p))
       runtime.setBrightness(60)
@@ -1601,7 +1606,9 @@ describe("invokeAction — user actions", () => {
     })
 
     it("setBrightness clamps to 10-100 and does not publish on unchanged value", () => {
-      const { runtime, pubSub } = setup([makeDeck({ id: "main", isMain: true })])
+      const { runtime, pubSub } = setup([
+        makeDeck({ id: "main", isMain: true }),
+      ])
       const events: unknown[] = []
       pubSub.subscribe("sireno:settings:brightness", (p) => events.push(p))
       runtime.setBrightness(80)

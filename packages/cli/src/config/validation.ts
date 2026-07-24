@@ -155,7 +155,6 @@ export const validateButton = (
 // ponytail: deckId/position lets the runtime replace the button in-place
 // without a second validation pass or path-string parsing.
 
-
 export const validateFull = (
   config: RawConfig,
   registry: AddonRegistry,
@@ -163,9 +162,11 @@ export const validateFull = (
   const issues: FullValidationIssue[] = []
   for (const [deckId, deck] of Object.entries(config.decks)) {
     deck.buttons.forEach((btn, index) => {
-      if (typeof btn === 'string') return
+      if (typeof btn === "string") return
       const path = `decks.${deckId}.buttons[${index}]`
-      issues.push(...validateButton(btn, registry, path, deckId, btn.position).issues)
+      issues.push(
+        ...validateButton(btn, registry, path, deckId, btn.position).issues,
+      )
     })
   }
   return { issues }

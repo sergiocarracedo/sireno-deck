@@ -18,7 +18,8 @@ const formatElapsed = (ms: number): string => {
 }
 
 const statusText = (status: WsStatus, attempt: number): string => {
-  if (status === "failed") return `Failed to reconnect after ${attempt} attempts`
+  if (status === "failed")
+    return `Failed to reconnect after ${attempt} attempts`
   if (status === "closed") return "Disconnected"
   if (status === "connecting") return "Connecting…"
   return status

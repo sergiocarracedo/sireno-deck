@@ -321,7 +321,7 @@ const YDOTOOL_CTRL_V_ARGS: string[] = [
   `${SC_V}:1`,
   `${SC_V}:0`,
   `${SC_LEFTCTRL}:0`,
-]  
+]
 
 const buildYdotoolComboArgs = (input: string): string[] | null => {
   const parsed = parseCombo(input)
@@ -548,9 +548,14 @@ const sendKeyYdotool = async (
 export const createLinuxKeyMacroProvider = async (
   deps: LinuxKeyMacroDeps,
 ): Promise<KeyMacroProvider> => {
-  const ydotoolOk = await probeTool(deps.executor, YDOTOOL_TOOL, deps.extraFsProbe)
+  const ydotoolOk = await probeTool(
+    deps.executor,
+    YDOTOOL_TOOL,
+    deps.extraFsProbe,
+  )
   const wtypeOk =
-    !ydotoolOk && (await probeTool(deps.executor, WTYPE_TOOL, deps.extraFsProbe))
+    !ydotoolOk &&
+    (await probeTool(deps.executor, WTYPE_TOOL, deps.extraFsProbe))
 
   if (!ydotoolOk && !wtypeOk) {
     deps.logger.warn(

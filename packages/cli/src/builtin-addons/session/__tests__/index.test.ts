@@ -7,5 +7,4 @@ describe("session addon", () => {
     expect(sessionAddon.apiVersion).toBe(1)
     expect(sessionAddon.name).toBe("session")
   })
-
-  })
+})

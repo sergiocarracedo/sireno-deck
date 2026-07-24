@@ -61,7 +61,9 @@ describe("Deck with system buttons", () => {
       name: "Sub",
       buttons: [{ id: "14", type: "core:back", config: {} }],
     }
-    const { container } = render(<Deck deck={deck} deviceModel={getDeviceModel("mk2")} />)
+    const { container } = render(
+      <Deck deck={deck} deviceModel={getDeviceModel("mk2")} />,
+    )
     const cell = container.querySelector('[data-button-type="core:back"]')
     expect(cell).not.toBeNull()
     expect(screen.getByText("Back")).toBeTruthy()

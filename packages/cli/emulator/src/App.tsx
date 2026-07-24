@@ -6,7 +6,12 @@ import {
   type DeviceModelSpec,
 } from "@/device/models"
 
-import { createWsClient, serializeHello, type WsClient, type WsStatus } from "./bridge"
+import {
+  createWsClient,
+  serializeHello,
+  type WsClient,
+  type WsStatus,
+} from "./bridge"
 import { DeckFrame } from "./DeckFrame"
 import { Shell } from "./Shell"
 import { BridgeLogsPage } from "./pages/BridgeLogsPage"
@@ -74,8 +79,11 @@ export const App = ({
   initialSection = "device",
 }: AppProps = {}): React.ReactElement => {
   const [activeSection, setActiveSection] = useState<string>(initialSection)
-  const [connectionStatus, setConnectionStatus] = useState<WsStatus>("connecting")
-  const [disconnectedSince, setDisconnectedSince] = useState<number | null>(null)
+  const [connectionStatus, setConnectionStatus] =
+    useState<WsStatus>("connecting")
+  const [disconnectedSince, setDisconnectedSince] = useState<number | null>(
+    null,
+  )
   const [attempt, setAttempt] = useState(0)
   const [lastError, setLastError] = useState<string | null>(null)
   const [now, setNow] = useState(() => Date.now())
@@ -126,7 +134,9 @@ export const App = ({
         if (m.type === "deck-config") {
           const id = typeof m.deckId === "string" ? m.deckId : ""
           setDeckId(id)
-          const surfaces = m.surfaces as Record<string, { name?: string }> | undefined
+          const surfaces = m.surfaces as
+            | Record<string, { name?: string }>
+            | undefined
           setDeckName(surfaces?.[id]?.name ?? id)
         }
         if (typeof m.type === "string" && m.type.endsWith("error")) {
@@ -175,14 +185,21 @@ export const App = ({
   }
 
   const setDevice = (deviceId: string): void => {
-    if (!VIRTUAL_DEVICE_IDS.includes(deviceId as (typeof VIRTUAL_DEVICE_IDS)[number])) return
+    if (
+      !VIRTUAL_DEVICE_IDS.includes(
+        deviceId as (typeof VIRTUAL_DEVICE_IDS)[number],
+      )
+    )
+      return
     setDeviceModel(getDeviceModel(deviceId))
     clientRef.current?.send(JSON.stringify({ type: "set-device", deviceId }))
   }
 
   const elapsed = disconnectedSince === null ? 0 : now - disconnectedSince
   const showBsod =
-    connectionStatus !== "open" && disconnectedSince !== null && elapsed >= 30000
+    connectionStatus !== "open" &&
+    disconnectedSince !== null &&
+    elapsed >= 30000
   const showBanner =
     connectionStatus !== "open" && disconnectedSince !== null && elapsed < 30000
 

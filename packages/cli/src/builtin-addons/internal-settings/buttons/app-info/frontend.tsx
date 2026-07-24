@@ -1,10 +1,10 @@
-import type { AddonFrontendButton } from '@/addon/api'
-import { Icon, Text } from '@/ui/index'
+import type { AddonFrontendButton } from "@/addon/api"
+import { Icon, Text } from "@/ui/index"
 
-import pkg from '../../../../../package.json' with { type: 'json' }
-import type { ConfigSchema } from './config'
+import pkg from "../../../../../package.json" with { type: "json" }
+import type { ConfigSchema } from "./config"
 
-const version: string = typeof pkg.version === 'string' ? pkg.version : '0.0.0'
+const version: string = typeof pkg.version === "string" ? pkg.version : "0.0.0"
 
 const AppInfoButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
   config,

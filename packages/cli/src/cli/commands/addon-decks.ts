@@ -322,7 +322,11 @@ export const materializeAddonDecks = (
             : gdeck
         if (override !== undefined) {
           logger.debug(
-            { addon: addon.name, deckId: id, autoShow: effectiveGdeck.autoShow },
+            {
+              addon: addon.name,
+              deckId: id,
+              autoShow: effectiveGdeck.autoShow,
+            },
             "materializeAddonDecks: applying per-deck override",
           )
         }

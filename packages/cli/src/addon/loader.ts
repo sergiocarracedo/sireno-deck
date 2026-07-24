@@ -98,7 +98,8 @@ const unwrapManifestExport = (mod: unknown): unknown => {
       candidate !== undefined &&
       typeof candidate === "object" &&
       candidate !== null &&
-      typeof (candidate as Record<string, unknown>)["apiVersion"] === "number" &&
+      typeof (candidate as Record<string, unknown>)["apiVersion"] ===
+        "number" &&
       typeof (candidate as Record<string, unknown>)["name"] === "string"
     ) {
       return candidate

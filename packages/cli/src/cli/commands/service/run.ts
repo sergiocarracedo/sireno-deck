@@ -15,9 +15,7 @@ export interface ServiceRunOptions {
   readonly logger: import("pino").Logger
 }
 
-export const serviceRun = async (
-  options: ServiceRunOptions,
-): Promise<void> => {
+export const serviceRun = async (options: ServiceRunOptions): Promise<void> => {
   const { logger } = options
   const start = (await import("../start")).default
   const home = options.homeDir ?? process.env["HOME"] ?? ""
@@ -44,7 +42,6 @@ export const serviceRun = async (
     httpPort: options.httpPort,
     homeDir: options.homeDir,
     xdgConfigHome: options.xdgConfigHome,
-
   })
 }
 
@@ -74,7 +71,9 @@ export const serviceRunCommand: CommandModule<object, ServiceRunArgs> = {
       ...(argv.config !== undefined ? { config: argv.config } : {}),
       ...(argv.port !== undefined ? { port: argv.port } : {}),
       ...(argv.emulator !== undefined ? { emulator: argv.emulator } : {}),
-      ...(argv.deviceModel !== undefined ? { deviceModel: argv.deviceModel } : {}),
+      ...(argv.deviceModel !== undefined
+        ? { deviceModel: argv.deviceModel }
+        : {}),
       ...(argv.httpPort !== undefined ? { httpPort: argv.httpPort } : {}),
     })
   },

@@ -1,6 +1,6 @@
-import type { AddonFrontendButton } from '@/addon/api'
-import { IconLabelSurface } from '@/ui'
-import { ConfigSchema } from './config'
+import type { AddonFrontendButton } from "@/addon/api"
+import { IconLabelSurface } from "@/ui"
+import { ConfigSchema } from "./config"
 
 const EmojiButtonFrontend: AddonFrontendButton<ConfigSchema> = ({ config }) => {
   const emoji = config.emoji

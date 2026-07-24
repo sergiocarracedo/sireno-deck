@@ -45,19 +45,10 @@ describe("resolveIncludes", () => {
 
   it("resolves recursive includes (file includes another file)", () => {
     const leaf = writeYml("leaf.yml", "leaf: true\n")
-    const mid = writeYml(
-      "mid.yml",
-      `mid: true\npayload: !include ${leaf}\n`,
-    )
-    const root = writeYml(
-      "root.yml",
-      `top: true\ndeeper: !include ${mid}\n`,
-    )
+    const mid = writeYml("mid.yml", `mid: true\npayload: !include ${leaf}\n`)
+    const root = writeYml("root.yml", `top: true\ndeeper: !include ${mid}\n`)
 
-    const out = resolveIncludes(
-      `top: true\ndeeper: !include ${mid}\n`,
-      root,
-    )
+    const out = resolveIncludes(`top: true\ndeeper: !include ${mid}\n`, root)
 
     expect(out).toContain("top: true")
     expect(out).toContain("mid: true")
@@ -113,10 +104,7 @@ describe("resolveIncludes", () => {
   })
 
   it("resolves sibling !includes to the same file as independent copies", () => {
-    const shared = writeYml(
-      "shared.yml",
-      "shared_key: shared_value\n",
-    )
+    const shared = writeYml("shared.yml", "shared_key: shared_value\n")
 
     const out = resolveIncludes(
       `first: !include ${shared}\nsecond: !include ${shared}\n`,

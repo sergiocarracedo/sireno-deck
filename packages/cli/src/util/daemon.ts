@@ -141,9 +141,7 @@ export const removeChildrenFile = (paths = resolveDaemonPaths()): void => {
   if (existsSync(paths.childrenFile)) unlinkSync(paths.childrenFile)
 }
 
-export const readConfigPath = (
-  paths = resolveDaemonPaths(),
-): string | null => {
+export const readConfigPath = (paths = resolveDaemonPaths()): string | null => {
   if (!existsSync(paths.configPathFile)) return null
   const raw = readFileSync(paths.configPathFile, "utf8").trim()
   return raw.length > 0 ? raw : null
@@ -156,9 +154,7 @@ export const writeConfigPath = (
   writeFileSync(paths.configPathFile, `${configPath}\n`, { encoding: "utf8" })
 }
 
-export const removeConfigPathFile = (
-  paths = resolveDaemonPaths(),
-): void => {
+export const removeConfigPathFile = (paths = resolveDaemonPaths()): void => {
   if (existsSync(paths.configPathFile)) unlinkSync(paths.configPathFile)
 }
 

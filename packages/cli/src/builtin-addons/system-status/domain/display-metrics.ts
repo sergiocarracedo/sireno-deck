@@ -7,9 +7,13 @@ export type SystemStatusFormatter =
   | "percent"
   | "uptime"
 
-const DEFAULT_FORMATTERS: Record<SystemMetricId, SystemStatusFormatter | undefined> = {
+const DEFAULT_FORMATTERS: Record<
+  SystemMetricId,
+  SystemStatusFormatter | undefined
+> = {
   cpu: "percent",
   ram: "percent",
+  swap: "percent",
   disk: "percent",
   network: "count",
   battery: "percent",
@@ -23,6 +27,7 @@ const DEFAULT_FORMATTERS: Record<SystemMetricId, SystemStatusFormatter | undefin
 const DEFAULT_LABELS: Record<SystemMetricId, string> = {
   cpu: "CPU",
   ram: "RAM",
+  swap: "Swap",
   disk: "Disk",
   network: "Net",
   battery: "Battery",
@@ -115,6 +120,8 @@ export function toDisplayMetric(
     formattedValue: formatValue(snapshot.value, formatter),
     value: snapshot.value,
     ...(snapshot.max !== undefined ? { max: snapshot.max } : {}),
-    ...(snapshot.percentage !== undefined ? { percentage: snapshot.percentage } : {}),
+    ...(snapshot.percentage !== undefined
+      ? { percentage: snapshot.percentage }
+      : {}),
   }
 }

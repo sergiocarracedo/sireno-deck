@@ -160,7 +160,10 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
 
   void open()
 
-  const extractChannel = (parsed: { type?: string; channel?: unknown }): string | null => {
+  const extractChannel = (parsed: {
+    type?: string
+    channel?: unknown
+  }): string | null => {
     if (parsed.channel === undefined) return null
     if (typeof parsed.channel === "string") return parsed.channel
     return null

@@ -14,8 +14,10 @@ import { useThemeUiPresentation } from "../theme-presentation"
 
 const DEFAULT_VISIBLE_MS = 2000
 
-export interface IconLabelProgressSurfaceProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, "children"> {
+export interface IconLabelProgressSurfaceProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "children"
+> {
   source?: string
   label: string
   progress: number

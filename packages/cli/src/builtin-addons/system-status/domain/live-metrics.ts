@@ -2,11 +2,13 @@ import { cpus, loadavg, totalmem, freemem } from "node:os"
 import { statfs, readFile } from "node:fs/promises"
 import { existsSync } from "node:fs"
 
-export {
+import {
   SYSTEM_METRIC_IDS,
   type SystemMetricId,
   type SystemMetricSnapshot,
 } from "./metric-ids"
+
+export { SYSTEM_METRIC_IDS }
 
 interface ProbeResult {
   available: boolean
@@ -51,8 +53,14 @@ async function probeSwap(): Promise<ProbeResult> {
   if (!existsSync("/proc/meminfo")) return { available: false, unit: "%" }
   try {
     const raw = await readFile("/proc/meminfo", "utf8")
-    const totalKb = Number.parseInt(/SwapTotal:\s*(\d+)\s*kB/.exec(raw)?.[1] ?? "", 10)
-    const freeKb = Number.parseInt(/SwapFree:\s*(\d+)\s*kB/.exec(raw)?.[1] ?? "", 10)
+    const totalKb = Number.parseInt(
+      /SwapTotal:\s*(\d+)\s*kB/.exec(raw)?.[1] ?? "",
+      10,
+    )
+    const freeKb = Number.parseInt(
+      /SwapFree:\s*(\d+)\s*kB/.exec(raw)?.[1] ?? "",
+      10,
+    )
     if (!Number.isFinite(totalKb) || totalKb <= 0) {
       return { available: false, unit: "%" }
     }
@@ -75,10 +83,17 @@ async function probeDisk(): Promise<ProbeResult> {
   try {
     const stats = await statfs("/")
     const total = Number(stats.blocks) * Number(stats.bsize)
-    const used = (Number(stats.blocks) - Number(stats.bfree)) * Number(stats.bsize)
+    const used =
+      (Number(stats.blocks) - Number(stats.bfree)) * Number(stats.bsize)
     if (total <= 0) return { available: false, unit: "%" }
     const pct = clampPercent((used / total) * 100)
-    return { available: true, max: total, percentage: pct, unit: "%", value: pct }
+    return {
+      available: true,
+      max: total,
+      percentage: pct,
+      unit: "%",
+      value: pct,
+    }
   } catch {
     return { available: false, unit: "%" }
   }
@@ -130,7 +145,9 @@ async function probeUptime(): Promise<ProbeResult> {
 async function probeFrequency(): Promise<ProbeResult> {
   // ponytail: os.cpus()[i].speed is unreliable on Linux (often 0). Fall back to /proc/cpuinfo MHz.
   const list = cpus()
-  const fromOs = list.find((c) => typeof c.speed === "number" && c.speed > 0)?.speed
+  const fromOs = list.find(
+    (c) => typeof c.speed === "number" && c.speed > 0,
+  )?.speed
   if (typeof fromOs === "number" && fromOs > 0) {
     const ghz = Number((fromOs / 1000).toFixed(2))
     return { available: true, unit: "GHz", value: ghz }
@@ -155,7 +172,10 @@ async function probeFrequency(): Promise<ProbeResult> {
 
 async function probeLoad(): Promise<ProbeResult> {
   const [one] = loadavg()
-  return { available: Number.isFinite(one), value: Number(one.toFixed(2)) }
+  if (one === undefined || !Number.isFinite(one)) {
+    return { available: false }
+  }
+  return { available: true, value: Number(one.toFixed(2)) }
 }
 
 async function probeProcesses(): Promise<ProbeResult> {

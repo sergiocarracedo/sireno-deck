@@ -14,7 +14,8 @@ export interface CreateWindowsClipboardProviderOptions {
 const escapeForPowerShellSingleQuote = (s: string): string =>
   s.replace(/'/g, "''")
 
-const escapeForDoubleQuote = (s: string): string => s.replace(/[\\"$`]/g, "``$&")
+const escapeForDoubleQuote = (s: string): string =>
+  s.replace(/[\\"$`]/g, "``$&")
 
 export const createWindowsClipboardProvider = (
   options: CreateWindowsClipboardProviderOptions,
@@ -28,18 +29,13 @@ export const createWindowsClipboardProvider = (
 
   const runPS = async (script: string): Promise<string> => {
     const result = await withTimeout(
-      executor.run(
-        "powershell",
-        ["-NoProfile", "-Command", script],
-        { timeoutMs },
-      ),
+      executor.run("powershell", ["-NoProfile", "-Command", script], {
+        timeoutMs,
+      }),
       timeoutMs + 500,
     )
     if (result.exitCode !== 0) {
-      logger.warn(
-        { stderr: result.stderr },
-        "clipboard: powershell failed",
-      )
+      logger.warn({ stderr: result.stderr }, "clipboard: powershell failed")
       throw new ProviderError(
         "EXEC_FAILED",
         `clipboard write failed: ${result.stderr.trim() || "unknown error"}`,

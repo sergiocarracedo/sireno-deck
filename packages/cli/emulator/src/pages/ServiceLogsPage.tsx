@@ -68,8 +68,7 @@ export const ServiceLogsPage = () => {
           >
             <span className="text-neutral-500">
               {new Date(l.ts).toISOString().slice(11, 19)}
-            </span>
-            {" "}
+            </span>{" "}
             <span className="uppercase">{l.level}</span>
             {" — "}
             <span>{l.msg}</span>

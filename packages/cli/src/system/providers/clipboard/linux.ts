@@ -70,10 +70,7 @@ export const createLinuxClipboardProvider = (
       "clipboard: wl-copy returned",
     )
     if (result.exitCode !== 0) {
-      logger.warn(
-        { stderr: result.stderr.trim() },
-        "clipboard: wl-copy failed",
-      )
+      logger.warn({ stderr: result.stderr.trim() }, "clipboard: wl-copy failed")
       throw new ProviderError(
         "EXEC_FAILED",
         `clipboard write failed: ${result.stderr.trim() || "unknown error"}`,

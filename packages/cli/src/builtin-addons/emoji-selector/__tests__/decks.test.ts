@@ -35,7 +35,9 @@ describe("emoji-selector decks — favorites as a dedicated entry", () => {
   it("places category buttons at positions 1..10 when favorites is empty (defaults used)", () => {
     const buttons = topButtons({ favorites: [] })
     expect(buttons).toHaveLength(11)
-    expect(buttons.map((b) => b.position)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    expect(buttons.map((b) => b.position)).toEqual([
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+    ])
     expect(buttons[0]?.label).toBe("Favorites")
     expect(buttons[1]?.label).toBe("Smileys")
   })
@@ -57,7 +59,9 @@ describe("emoji-selector decks — favorites as a dedicated entry", () => {
   it("shifts category buttons to positions 1..10 when favorites is present", () => {
     const buttons = topButtons({ favorites: ["🦄"] })
     expect(buttons).toHaveLength(11)
-    expect(buttons.map((b) => b.position)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    expect(buttons.map((b) => b.position)).toEqual([
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+    ])
     expect(buttons[1]?.label).toBe("Smileys")
     expect(buttons[10]?.label).toBe("Flags")
   })
@@ -120,8 +124,16 @@ describe("loadCategories", () => {
     const cats = loadCategories()
     expect(cats).toHaveLength(10)
     expect(cats.map((c) => c.id)).toEqual([
-      "smileys", "people", "nature", "food", "drink",
-      "activities", "travel", "objects", "symbols", "flags",
+      "smileys",
+      "people",
+      "nature",
+      "food",
+      "drink",
+      "activities",
+      "travel",
+      "objects",
+      "symbols",
+      "flags",
     ])
   })
 })

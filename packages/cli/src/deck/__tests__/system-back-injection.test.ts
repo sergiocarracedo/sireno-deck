@@ -68,7 +68,10 @@ describe("computeSystemButtonForSlotN1", () => {
 
 describe("injectSystemButtons", () => {
   it("injects core:settings-entry at n-1 on main deck", () => {
-    const main = { ...deck({ isMain: true }), buttons: [{ id: "0", type: "x" }] }
+    const main = {
+      ...deck({ isMain: true }),
+      buttons: [{ id: "0", type: "x" }],
+    }
     const [result] = injectSystemButtons([main], 15)
     const n1 = result.buttons.find((b) => b.id === "14")
     expect(n1?.type).toBe("core:settings-entry")

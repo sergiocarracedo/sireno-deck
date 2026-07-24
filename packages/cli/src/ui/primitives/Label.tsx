@@ -1,10 +1,10 @@
-import { type ReactElement } from 'react'
+import { type ReactElement } from "react"
 
-import { useThemeUiPresentation } from '../theme-presentation'
-import { cn } from '../utils/cn'
-import { Text, TextSize, TextWeight } from './Text'
+import { useThemeUiPresentation } from "../theme-presentation"
+import { cn } from "../utils/cn"
+import { Text, TextSize, TextWeight } from "./Text"
 
-export const labelVariants = ['primary', 'secondary', 'small'] as const
+export const labelVariants = ["primary", "secondary", "small"] as const
 export type LabelVariant = (typeof labelVariants)[number]
 
 export interface LabelProps {
@@ -29,34 +29,34 @@ export function Label(props: LabelProps): ReactElement {
     }
   > = {
     primary: {
-      size: 'md',
-      className: 'uppercase',
-      weight: 'bold',
+      size: "md",
+      className: "uppercase",
+      weight: "bold",
     },
     secondary: {
-      size: 'sm',
-      className: 'uppercase',
-      weight: 'bold',
+      size: "sm",
+      className: "uppercase",
+      weight: "bold",
     },
     small: {
-      size: 'xs',
-      weight: 'bold',
+      size: "xs",
+      weight: "bold",
     },
   }
 
-  const variantStyle = variantsStyle[props.variant ?? 'primary']
+  const variantStyle = variantsStyle[props.variant ?? "primary"]
 
   return (
     <Text
       data-sireno-ui-label="true"
       size={variantStyle.size}
       className={cn(
-        'tracking-tight max-w-full wrap-anywhere',
+        "tracking-tight max-w-full wrap-anywhere",
         variantStyle.className,
       )}
       lineHeight={1.25}
       fit={{
-        type: 'ellipsis',
+        type: "ellipsis",
         lines: props.lines || 1,
         reserveSpace: false,
       }}

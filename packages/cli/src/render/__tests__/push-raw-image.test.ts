@@ -25,7 +25,10 @@ describe("pushRawImage", () => {
   let tinyPng: Buffer
 
   beforeEach(async () => {
-    workDir = join(tmpdir(), `push-raw-image-test-${Date.now()}-${Math.random()}`)
+    workDir = join(
+      tmpdir(),
+      `push-raw-image-test-${Date.now()}-${Math.random()}`,
+    )
     mkdirSync(workDir, { recursive: true })
     tinyPng = await makeTinyPng(200)
     imagePath = join(workDir, "logo.png")
@@ -46,7 +49,11 @@ describe("pushRawImage", () => {
     }
     const logger = { warn: vi.fn(), info: vi.fn() }
 
-    await pushRawImage({ imagePath, device: device as never, logger: logger as never })
+    await pushRawImage({
+      imagePath,
+      device: device as never,
+      logger: logger as never,
+    })
 
     expect(fillKeyBuffer).toHaveBeenCalledTimes(15)
     for (const call of fillKeyBuffer.mock.calls) {
@@ -83,7 +90,11 @@ describe("pushRawImage", () => {
     const device = { getKeyCount: () => 1, fillKeyBuffer }
     const logger = { warn: vi.fn(), info: vi.fn() }
 
-    await pushRawImage({ imagePath, device: device as never, logger: logger as never })
+    await pushRawImage({
+      imagePath,
+      device: device as never,
+      logger: logger as never,
+    })
 
     expect(fillKeyBuffer).toHaveBeenCalledTimes(1)
     const buf = fillKeyBuffer.mock.calls[0]?.[1] as Buffer
