@@ -401,46 +401,71 @@ function useAutofit(
       const computed = parseFloat(getComputedStyle(el).fontSize)
       if (!Number.isFinite(computed) || computed <= 0) return
 
-      if (lines > 1) {
-        const prevWhitespace = el.style.whiteSpace
-        el.style.whiteSpace = "nowrap"
+      const restoreInline = () => {
         el.style.fontSize = ""
-        const naturalOneLineFits = el.scrollWidth <= el.clientWidth + 1
-        el.style.whiteSpace = prevWhitespace
+        el.style.whiteSpace = ""
+        el.style.display = ""
+        ;(el.style as CSSProperties & Record<string, string>)[
+          "WebkitLineClamp"
+        ] = ""
+      }
 
+      if (lines > 1) {
+        // Phase 1: natural 1-line check
+        restoreInline()
+        el.style.whiteSpace = "nowrap"
+        const naturalOneLineFits =
+          el.scrollWidth <= el.clientWidth + 1
         if (naturalOneLineFits) {
+          restoreInline()
           setFontSize(null)
           setState("fit")
           setEffectiveLines(1)
           return
         }
 
-        const compactPx = Math.max(minSize, computed - 2)
-        el.style.fontSize = `${compactPx}px`
-        el.style.whiteSpace = "nowrap"
-        const compactFits = el.scrollWidth <= el.clientWidth + 1
-        el.style.whiteSpace = prevWhitespace
+        // Phase 2: reduce step-by-step; check 1-line then multi-line
+        const STEP = 1
 
-        if (compactFits) {
-          setFontSize(compactPx)
-          setState("fit")
-          setEffectiveLines(1)
-          return
+        for (
+          let size = Math.floor(computed) - STEP;
+          size >= minSize;
+          size -= STEP
+        ) {
+          el.style.fontSize = `${size}px`
+
+          el.style.whiteSpace = "nowrap"
+          if (el.scrollWidth <= el.clientWidth + 1) {
+            restoreInline()
+            setFontSize(size)
+            setState("fit")
+            setEffectiveLines(1)
+            return
+          }
+
+          el.style.whiteSpace = ""
+          const lh = parseFloat(getComputedStyle(el).lineHeight)
+          const lineEm =
+            Number.isFinite(lh) && lh > 0 ? lh : size * 1.2
+          const expectedHeight = lines * lineEm
+          if (el.scrollHeight <= expectedHeight + 1) {
+            restoreInline()
+            setFontSize(size)
+            setState("fit")
+            setEffectiveLines(lines)
+            return
+          }
         }
 
-        el.style.fontSize = ""
-        const lh = parseFloat(getComputedStyle(el).lineHeight)
-        const lineEm =
-          Number.isFinite(lh) && lh > 0 ? lh : computed * 1.2
-        const expectedHeight = lines * lineEm
-        const multiFits = el.scrollHeight <= expectedHeight + 1
-
-        setFontSize(null)
-        setState(multiFits ? "fit" : "ellipsis")
+        // Phase 3: nothing fit, ellipsis at minSize
+        restoreInline()
+        setFontSize(minSize)
+        setState("ellipsis")
         setEffectiveLines(lines)
         return
       }
 
+      // lines === 1: binary search between natural and minSize
       const hi = Math.max(minSize, Math.round(computed))
 
       el.style.fontSize = `${hi}px`
@@ -575,12 +600,11 @@ export function Text(props: TextProps): ReactElement {
       ? { ...props.style, fontFamily: props.fontStack }
       : (props.style ?? {})
 
-  if (isMultiLineEllipsis) {
-    composedStyle.display = "-webkit-box"
-    composedStyle.WebkitBoxOrient = "vertical"
-    composedStyle.WebkitLineClamp = effectiveLines
+if (isMultiLineEllipsis) {
+    ;(composedStyle as CSSProperties & Record<string, string>)[
+      "--sireno-text-lines"
+    ] = String(effectiveLines)
     composedStyle.overflow = "hidden"
-    composedStyle.textOverflow = "ellipsis"
   }
 
   if (isAutofit) {
@@ -617,6 +641,7 @@ export function Text(props: TextProps): ReactElement {
         SIZE_CLASS[size],
         WEIGHT_CLASS[weight],
         fitModesClasses[resolvedFit.type],
+        isMultiLineEllipsis ? "sireno-text-fit-multiline" : "",
         props.className,
       ])}
       data-sireno-text-fit={dataFit}

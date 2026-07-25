@@ -67,27 +67,35 @@ function mockLayout(
   },
 ) {
   const {
-    fontSize,
+    fontSize: naturalFontSize,
     scrollWidth = 0,
     clientWidth = 0,
     scrollHeight = 0,
     clientHeight = 0,
   } = opts
+  const inlineFontPx = () =>
+    parseFloat(el.style.fontSize) || naturalFontSize
   Object.defineProperty(el, "scrollWidth", {
     configurable: true,
-    value: scrollWidth,
+    get: () => {
+      const inline = inlineFontPx()
+      return (scrollWidth * inline) / naturalFontSize
+    },
   })
   Object.defineProperty(el, "clientWidth", {
     configurable: true,
-    value: clientWidth,
+    get: () => clientWidth,
   })
   Object.defineProperty(el, "scrollHeight", {
     configurable: true,
-    value: scrollHeight,
+    get: () => {
+      const inline = inlineFontPx()
+      return (scrollHeight * inline) / naturalFontSize
+    },
   })
   Object.defineProperty(el, "clientHeight", {
     configurable: true,
-    value: clientHeight,
+    get: () => clientHeight,
   })
   const orig = window.getComputedStyle.bind(window)
   vi.spyOn(window, "getComputedStyle").mockImplementation((target, pseudo) => {
@@ -95,7 +103,11 @@ function mockLayout(
     if (target === el) {
       Object.defineProperty(style, "fontSize", {
         configurable: true,
-        get: () => `${fontSize}px`,
+        get: () => `${inlineFontPx()}px`,
+      })
+      Object.defineProperty(style, "lineHeight", {
+        configurable: true,
+        get: () => `${inlineFontPx() * 1.2}px`,
       })
     }
     return style
@@ -225,17 +237,15 @@ describe("Text render — string fit (backward-compat)", () => {
     )
     const root = container.firstElementChild as HTMLElement
     expect(root.className).toContain("overflow-hidden")
+    expect(root.className).toContain("sireno-text-fit-multiline")
     expect(root.className).not.toContain("text-ellipsis")
     expect(root.className).not.toContain("whitespace-nowrap")
     const inlineStyle = root.style as CSSStyleDeclaration & {
       WebkitBoxOrient?: string
       WebkitLineClamp?: string
     }
-    expect(inlineStyle.display).toBe("-webkit-box")
-    expect(inlineStyle.WebkitBoxOrient).toBe("vertical")
-    expect(inlineStyle.WebkitLineClamp).toBe("2")
+    expect(inlineStyle.getPropertyValue("--sireno-text-lines")).toBe("2")
     expect(inlineStyle.overflow).toBe("hidden")
-    expect(inlineStyle.textOverflow).toBe("ellipsis")
   })
 
   it("defaults to hidden when fit is omitted", () => {
@@ -392,51 +402,80 @@ describe("Text render — autofit", () => {
     expect(root.className).toContain("whitespace-nowrap")
   })
 
-  it("multi-line: falls back to natural size with clamp when 1-line does not fit", () => {
+  it("multi-line: reduces step-by-step until 1-line fits at minSize", () => {
     const { container } = render(
-      <Text fit={{ type: "autofit", minSize: 10, lines: 3 }} text="hello" />,
+      <Text fit={{ type: "autofit", minSize: 10, lines: 2 }} text="hi" />,
     )
     const root = container.firstElementChild as HTMLElement
+    // scrollWidth scales with fontSize; at natural 16 -> 200, at minSize 10 -> 125
+    // clientWidth=130 -> 1-line never fits above 10px
+    // scrollHeight=80 (multi-line never fits in 2 lines at any size)
     mockLayout(root, {
       fontSize: 16,
       scrollWidth: 200,
-      clientWidth: 1,
-      scrollHeight: 40,
-      clientHeight: 200,
+      clientWidth: 130,
+      scrollHeight: 80,
+      clientHeight: 50,
     })
     act(() => {
       ResizeObserverMock.instances[0].trigger([
-        { contentRect: new DOMRectReadOnly(0, 0, 1, 200) },
+        { contentRect: new DOMRectReadOnly(0, 0, 130, 50) },
       ])
     })
     expect(root.getAttribute("data-sireno-text-autofit-state")).toBe("fit")
-    expect(root.style.fontSize).toBe("")
-    expect(root.style.WebkitLineClamp).toBe("3")
-    expect(root.className).not.toContain("whitespace-nowrap")
+    expect(root.style.fontSize).toBe("10px")
+    expect(root.className).toContain("whitespace-nowrap")
   })
 
-  it("multi-line: marks ellipsis when content overflows even at natural size", () => {
+it("multi-line: stops reducing once user-lines fit (no further shrink)", () => {
     const { container } = render(
-      <Text fit={{ type: "autofit", minSize: 10, lines: 2 }} text="hello" />,
+      <Text fit={{ type: "autofit", minSize: 10, lines: 2 }} text="hi" />,
     )
     const root = container.firstElementChild as HTMLElement
+    // scrollWidth huge -> 1-line never fits. multi-line fits at size=15
+    // scrollHeight=38: at 15 -> 35.625; expected=36; fits
     mockLayout(root, {
       fontSize: 16,
-      scrollWidth: 200,
-      clientWidth: 1,
-      scrollHeight: 200,
-      clientHeight: 20,
+      scrollWidth: 400,
+      clientWidth: 80,
+      scrollHeight: 38,
+      clientHeight: 50,
     })
     act(() => {
       ResizeObserverMock.instances[0].trigger([
-        { contentRect: new DOMRectReadOnly(0, 0, 1, 20) },
+        { contentRect: new DOMRectReadOnly(0, 0, 80, 50) },
+      ])
+    })
+    expect(root.getAttribute("data-sireno-text-autofit-state")).toBe("fit")
+    expect(root.style.fontSize).toBe("15px")
+    expect(root.style.getPropertyValue("--sireno-text-lines")).toBe("2")
+    expect(root.className).not.toContain("whitespace-nowrap")
+  })
+
+  it("multi-line: ellipsis at minSize when nothing fits", () => {
+    const { container } = render(
+      <Text fit={{ type: "autofit", minSize: 10, lines: 2 }} text="hi" />,
+    )
+    const root = container.firstElementChild as HTMLElement
+    // 1-line never fits (scrollWidth huge); multi-line never fits either
+    // scrollHeight=41 at natural 16: at 10 -> 25.625, expected=2*10*1.2=24; 25.625 > 25 (+1 tolerance) doesn't fit
+    mockLayout(root, {
+      fontSize: 16,
+      scrollWidth: 400,
+      clientWidth: 80,
+      scrollHeight: 41,
+      clientHeight: 50,
+    })
+    act(() => {
+      ResizeObserverMock.instances[0].trigger([
+        { contentRect: new DOMRectReadOnly(0, 0, 80, 50) },
       ])
     })
     expect(root.getAttribute("data-sireno-text-autofit-state")).toBe(
       "ellipsis",
     )
-    expect(root.style.fontSize).toBe("")
-    expect(root.style.WebkitLineClamp).toBe("2")
+    expect(root.style.fontSize).toBe("10px")
+    expect(root.style.getPropertyValue("--sireno-text-lines")).toBe("2")
   })
 
   it("disconnects observer on unmount", () => {

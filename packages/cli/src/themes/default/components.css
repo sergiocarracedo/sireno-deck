@@ -82,3 +82,11 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.sireno-text-fit-multiline {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: var(--sireno-text-lines, 1);
+}
