@@ -285,9 +285,7 @@ async function probeCpuVoltages(): Promise<ProbeResult> {
     }
     const matched = hwmons
       .map((h, i) => ({ h, i }))
-      .filter(({ h }) =>
-        CPU_HWMON_NAME_PATTERNS.some((re) => re.test(h.name)),
-      )
+      .filter(({ h }) => CPU_HWMON_NAME_PATTERNS.some((re) => re.test(h.name)))
       .sort((a, b) => a.i - b.i)[0]
     if (!matched) return { available: false, unit: "V" }
     const in0 = `${matched.h.dir}/in0_input`
@@ -312,7 +310,8 @@ async function probeCpuVoltages(): Promise<ProbeResult> {
 // report a delta-over-poll-interval byte rate. Same trick as probeCpu —
 // the first sample has no baseline, so it returns 0 to avoid a misleading
 // "all disks went from 0 → N MB in zero seconds" spike.
-const DISKSTATS_SKIP_RE = /^(loop|ram|dm-|md|drbd)\d*|^(sr|nbd)\d+$|^[a-z]+\d+_|^dm-/
+const DISKSTATS_SKIP_RE =
+  /^(loop|ram|dm-|md|drbd)\d*|^(sr|nbd)\d+$|^[a-z]+\d+_|^dm-/
 let prevDiskIoSample: { ts: number; sectors: number } | null = null
 
 async function readDiskstatsSectors(): Promise<number | null> {
@@ -522,7 +521,11 @@ async function readNetBytes(
   return counted ? total : null
 }
 
-async function readNetworkDelta(): Promise<{ dt: number; rx: number; tx: number } | null> {
+async function readNetworkDelta(): Promise<{
+  dt: number
+  rx: number
+  tx: number
+} | null> {
   const rx = await readNetBytes("rx_bytes")
   const tx = await readNetBytes("tx_bytes")
   if (rx === null || tx === null) return null

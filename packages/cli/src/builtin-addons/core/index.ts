@@ -90,9 +90,8 @@ export const manifest: AddonManifestV1 = {
                     // "Unrecognized key: 'id'" warnings for each user button.
                     const { id: _userId, ...rest } = b
                     return {
-                      id: b.position !== undefined
-                        ? String(b.position)
-                        : `b${i}`,
+                      id:
+                        b.position !== undefined ? String(b.position) : `b${i}`,
                       ...rest,
                     }
                   })

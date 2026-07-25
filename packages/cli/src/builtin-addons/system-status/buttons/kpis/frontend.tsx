@@ -1,6 +1,6 @@
-import type { AddonFrontendButton } from '@/addon/api'
-import type { LabelValueListLine } from '@/ui'
-import { LabelValueListSurface } from '@/ui'
+import type { AddonFrontendButton } from "@/addon/api"
+import type { LabelValueListLine } from "@/ui"
+import { LabelValueListSurface } from "@/ui"
 
 import {
   METRICS_CATALOG,
@@ -8,14 +8,14 @@ import {
   thresholdColorHex,
   toDisplayMetric,
   type MetricColor,
-} from '../../domain'
+} from "../../domain"
 import {
   pickLabel,
   readSnapshot,
   resolveMetricId,
   useAllMetricChannels,
-} from '../_shared'
-import type { GenericSystemStatusConfig } from '../system-status/schemas'
+} from "../_shared"
+import type { GenericSystemStatusConfig } from "../system-status/schemas"
 
 type LabelValueListLines =
   | readonly [LabelValueListLine]
