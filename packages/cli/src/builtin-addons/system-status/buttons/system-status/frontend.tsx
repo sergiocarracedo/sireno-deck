@@ -2,12 +2,11 @@ import type { AddonFrontendButton } from "@/addon/api"
 import { BarsSurface, type BarsItem } from "@/ui/index"
 
 import {
-  METRICS_CATALOG,
   resolveThresholdColor,
   thresholdColorHex,
   toDisplayMetric,
-  type MetricColor,
 } from "../../domain"
+import { MetricColor, METRICS_CATALOG } from "../../shared/metrics-catalog"
 import {
   pickLabel,
   readSnapshot,

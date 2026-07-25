@@ -3,8 +3,9 @@ import { describe, expect, it } from "vitest"
 import { systemStatusManifest } from "../manifest"
 
 describe("systemStatusManifest", () => {
-  it("registers exactly two button types", () => {
+  it("registers exactly three button types", () => {
     expect(Object.keys(systemStatusManifest.buttonTypes).sort()).toEqual([
+      "system-status:chart",
       "system-status:kpis",
       "system-status:system-status",
     ])
@@ -19,11 +20,12 @@ describe("systemStatusManifest", () => {
     expect(types).not.toContain("system-status:status")
   })
 
-  it("binds a poller per metric to runtime:system-status:<id>", () => {
+  it("binds a poller per metric plus chart-history", () => {
     const pollers = systemStatusManifest.globalService?.pollers ?? []
     const channels = pollers.map((p) => p.channel).sort()
     expect(channels).toEqual([
       "runtime:system-status:battery",
+      "runtime:system-status:chart-history",
       "runtime:system-status:cpu",
       "runtime:system-status:cpu-boost",
       "runtime:system-status:cpu-voltages",

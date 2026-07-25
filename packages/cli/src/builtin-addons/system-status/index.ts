@@ -6,11 +6,11 @@ export const registerSystemStatusAddon = (registry: AddonRegistry): void => {
 }
 
 export {
-  systemStatusManifest,
-  systemStatusAddon,
   GenericSystemStatusDefaults,
   GenericSystemStatusSchema,
   SYSTEM_METRIC_IDS,
+  systemStatusAddon,
+  systemStatusManifest,
 } from "./manifest"
 export type { SystemMetricId } from "./manifest"
 export default systemStatusManifest

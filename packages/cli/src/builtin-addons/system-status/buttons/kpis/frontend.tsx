@@ -3,12 +3,11 @@ import type { LabelValueListLine } from "@/ui"
 import { LabelValueListSurface } from "@/ui"
 
 import {
-  METRICS_CATALOG,
   resolveThresholdColor,
   thresholdColorHex,
   toDisplayMetric,
-  type MetricColor,
 } from "../../domain"
+import { MetricColor, METRICS_CATALOG } from "../../shared/metrics-catalog"
 import {
   pickLabel,
   readSnapshot,

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { toDisplayMetric } from "../domain/display-metrics"
-import type { SystemMetricSnapshot } from "../domain/metric-ids"
+import type { SystemMetricSnapshot } from "../shared/metrics-catalog"
 
 function snap(value: number): SystemMetricSnapshot {
   return {

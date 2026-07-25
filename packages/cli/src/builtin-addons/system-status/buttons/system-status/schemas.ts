@@ -1,6 +1,9 @@
 import { z } from "zod"
 
-import { SYSTEM_METRIC_IDS, type SystemMetricId } from "../../domain"
+import {
+  SYSTEM_METRIC_IDS,
+  type SystemMetricId,
+} from "../../shared/metrics-catalog"
 
 const MetricEntrySchema = z
   .union([

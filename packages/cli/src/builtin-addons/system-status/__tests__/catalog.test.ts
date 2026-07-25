@@ -1,11 +1,9 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  METRICS_CATALOG,
-  resolveThresholdColor,
-  SYSTEM_METRIC_IDS,
-  thresholdColorHex,
-} from "../domain/catalog"
+import type { MetricDef } from "../shared/metrics-catalog"
+
+import { METRICS_CATALOG, SYSTEM_METRIC_IDS } from "../shared/metrics-catalog"
+import { resolveThresholdColor, thresholdColorHex } from "../domain/catalog"
 
 describe("METRICS_CATALOG", () => {
   it("covers every SystemMetricId", () => {
@@ -16,7 +14,7 @@ describe("METRICS_CATALOG", () => {
 
   it("every metric has a defaultLabel and formatter", () => {
     for (const id of SYSTEM_METRIC_IDS) {
-      const def: import("../domain/catalog").MetricDef = METRICS_CATALOG[id]
+      const def: MetricDef = METRICS_CATALOG[id]
       expect(def.defaultLabel.length).toBeGreaterThan(0)
       expect(def.formatter.length).toBeGreaterThan(0)
     }

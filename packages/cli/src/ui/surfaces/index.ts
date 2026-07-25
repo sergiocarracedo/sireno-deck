@@ -3,6 +3,7 @@ export * from "./IconLabelProgressSurface"
 export * from "./IconLabelSurface"
 export * from "./LabelValueListSurface"
 export * from "./TemporaryErrorSurface"
+export * from "./ValueChart"
 
 export { BarsSurface } from "./BarsSurface"
 export type { BarsItem, BarsSurfaceProps as BarsProps } from "./BarsSurface"
@@ -15,3 +16,9 @@ export { SplitActionSurface } from "./SplitActionSurface"
 export type { SplitActionSurfaceProps } from "./SplitActionSurface"
 export { TemporaryErrorSurface } from "./TemporaryErrorSurface"
 export type { TemporaryErrorSurfaceProps } from "./TemporaryErrorSurface"
+export { ValueChart } from "./ValueChart"
+export type {
+  ValueChartPoint,
+  ValueChartProps,
+  ValueChartSeries,
+} from "./ValueChart"

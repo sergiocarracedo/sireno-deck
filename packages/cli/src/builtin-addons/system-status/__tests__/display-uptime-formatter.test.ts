@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { toDisplayMetric } from "../domain/display-metrics"
-import type { SystemMetricSnapshot } from "../domain/metric-ids"
+import type { SystemMetricSnapshot } from "../shared/metrics-catalog"
 
 function snap(value: number): SystemMetricSnapshot {
   return {
@@ -13,9 +13,9 @@ function snap(value: number): SystemMetricSnapshot {
 }
 
 describe("toDisplayMetric: uptime formatter", () => {
-  it("emits compound 'Xh Ym' with no unit", () => {
+  it("emits single largest unit with no unit", () => {
     const r = toDisplayMetric(snap(7320))
-    expect(r.formattedValue).toBe("2h 2m")
+    expect(r.formattedValue).toBe("2h")
     expect(r.unit).toBeUndefined()
   })
 

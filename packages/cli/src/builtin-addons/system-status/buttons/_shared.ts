@@ -5,7 +5,7 @@ import {
   SYSTEM_METRIC_IDS,
   type SystemMetricId,
   type SystemMetricSnapshot,
-} from "../domain"
+} from "../shared/metrics-catalog"
 
 export interface MetricPayload {
   available: boolean

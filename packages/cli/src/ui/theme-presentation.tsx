@@ -19,6 +19,7 @@ import {
   LabelValueListProps,
   SplitActionSurfaceProps,
   TemporaryErrorSurfaceProps,
+  ValueChartProps,
 } from "./surfaces"
 
 export interface ThemeUiPresentation {
@@ -37,6 +38,7 @@ export interface ThemeUiPresentation {
     splitAction?: (props: SplitActionSurfaceProps) => ReactElement
     labelValueList?: (props: LabelValueListProps) => ReactElement
     temporaryError?: (props: TemporaryErrorSurfaceProps) => ReactElement
+    valueChart?: (props: ValueChartProps) => ReactElement
   }
 }
 

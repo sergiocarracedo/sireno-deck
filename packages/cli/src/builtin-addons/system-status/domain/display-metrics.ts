@@ -1,23 +1,10 @@
-import { METRICS_CATALOG } from "./catalog"
-import type { SystemMetricSnapshot } from "./metric-ids"
-
-export type SystemStatusFormatter =
-  | "bytes"
-  | "bool"
-  | "count"
-  | "frequency-ghz"
-  | "percent"
-  | "rate-bytes"
-  | "uptime"
-
-// ponytail: formatters emit value-only; the unit lives in `DisplayMetric.unit`
-// so the renderer can style the value and the unit independently (e.g. bigger
-// digits + smaller "%" suffix). When the unit is magnitude-dependent (bytes,
-// rate-bytes) the formatter picks the right scale and returns both halves.
-export interface FormattedValue {
-  value: string
-  unit?: string
-}
+import {
+  type DisplayMetric,
+  FormattedValue,
+  MetricFormatter,
+  METRICS_CATALOG,
+  type SystemMetricSnapshot,
+} from "../shared/metrics-catalog"
 
 function formatBytes(value: number): FormattedValue {
   if (value < 1024) return { value: String(value), unit: "B" }
@@ -44,17 +31,21 @@ function formatBool(value: number): FormattedValue {
 
 function formatUptime(totalSeconds: number): FormattedValue {
   const s = Math.max(0, Math.round(totalSeconds))
-  const h = Math.floor(s / 3600)
-  const m = Math.floor((s % 3600) / 60)
-  // ponytail: uptime is a compound format (h + m) with no separable unit —
-  // emit the whole string as value and let `unit` stay undefined so the
-  // renderer doesn't append a stray "s".
-  return { value: h > 0 ? `${h}h ${m}m` : `${m}m` }
+  const years = Math.floor(s / (365 * 24 * 60 * 60))
+  const days = Math.floor(s / (24 * 60 * 60))
+  const hours = Math.floor(s / (60 * 60))
+  const minutes = Math.floor((s % 3600) / 60)
+
+  if (years > 0) return { value: `${years}y` }
+  if (days > 0) return { value: `${days}d` }
+  if (hours > 0) return { value: `${hours}h` }
+  if (minutes > 0) return { value: `${minutes}m` }
+  return { value: "0m" }
 }
 
 function formatValue(
   value: number,
-  formatter: SystemStatusFormatter | undefined,
+  formatter: MetricFormatter | undefined,
 ): FormattedValue {
   switch (formatter) {
     case "bytes":
@@ -63,7 +54,7 @@ function formatValue(
       return formatBool(value)
     case "count":
       return {
-        value: value >= 100 ? String(Math.round(value)) : value.toFixed(1),
+        value: value.toFixed(0),
       }
     case "frequency-ghz":
       return { value: value.toFixed(2) }
@@ -85,9 +76,9 @@ function formatValue(
 
 export function resolveFormatter(
   name: string | undefined,
-): SystemStatusFormatter | undefined {
+): MetricFormatter | undefined {
   if (!name) return undefined
-  const allowed: SystemStatusFormatter[] = [
+  const allowed: MetricFormatter[] = [
     "bytes",
     "bool",
     "count",
@@ -97,31 +88,15 @@ export function resolveFormatter(
     "uptime",
   ]
   return (allowed as string[]).includes(name)
-    ? (name as SystemStatusFormatter)
+    ? (name as MetricFormatter)
     : undefined
-}
-
-export interface DisplayMetric {
-  id: import("./metric-ids").SystemMetricId
-  label: string
-  available: boolean
-  // ponytail: numeric/digit portion only — units live in `unit` so the
-  // renderer can style them independently. Magnitude-dependent formatters
-  // (bytes, rate-bytes) emit a scale-aware unit; static formatters (percent)
-  // emit "%"; magnitude-independent formatters (count, frequency-ghz,
-  // uptime, bool) emit no unit and let the probe/catalog supply it.
-  formattedValue: string
-  unit?: string
-  value?: number
-  max?: number
-  percentage?: number
 }
 
 export function toDisplayMetric(
   snapshot: SystemMetricSnapshot,
   formatterName?: string,
 ): DisplayMetric {
-  const def = METRICS_CATALOG[snapshot.id]
+  const def = METRICS_CATALOG[snapshot.id]!
   const formatter = resolveFormatter(formatterName) ?? def.formatter
   if (!snapshot.available || snapshot.value === undefined) {
     // ponytail: a missing value goes with a missing unit — the renderer
@@ -131,6 +106,7 @@ export function toDisplayMetric(
       label: def.defaultLabel,
       available: false,
       formattedValue: "—",
+      unit: def.unit ?? snapshot.unit,
     }
   }
   const formatted = formatValue(snapshot.value, formatter)

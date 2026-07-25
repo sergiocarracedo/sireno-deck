@@ -1,14 +1,14 @@
-import { cpus, loadavg, totalmem, freemem } from "node:os"
-import { statfs, readFile, readdir } from "node:fs/promises"
-import { existsSync } from "node:fs"
 import { execFile as execFileCb } from "node:child_process"
+import { existsSync } from "node:fs"
+import { readFile, readdir, statfs } from "node:fs/promises"
+import { cpus, freemem, loadavg, totalmem, uptime as osUptime } from "node:os"
 import { promisify } from "node:util"
 
 import {
   SYSTEM_METRIC_IDS,
   type SystemMetricId,
   type SystemMetricSnapshot,
-} from "./metric-ids"
+} from "../shared/metrics-catalog"
 
 // ponytail: vite-plugin-oxc (vitest transform) doesn't recognise
 // `node:child_process/promises` as a built-in module specifier. The
@@ -125,7 +125,7 @@ async function probeDisk(): Promise<ProbeResult> {
 async function probeNetwork(): Promise<ProbeResult> {
   // ponytail: cheap & portable. Real throughput needs /proc/net/dev per-interface counters.
   const count = cpus().length > 0 ? 1 : 0
-  return { available: count > 0, unit: "interfaces", value: count }
+  return { available: count > 0, unit: "inter.", value: count }
 }
 
 async function probeBattery(): Promise<ProbeResult> {
@@ -161,10 +161,8 @@ async function probeTemperature(): Promise<ProbeResult> {
 }
 
 async function probeUptime(): Promise<ProbeResult> {
-  // ponytail: uptime formats as "2h 14m" — a compound string with no
-  // separable unit. Leave `unit` undefined so the renderer doesn't append
-  // a stray "s" beside the formatted value.
-  const sec = Math.round(process.uptime())
+  // ponytail: uptime formats as "2h" — single largest unit.
+  const sec = Math.round(osUptime())
   return { available: true, value: sec }
 }
 

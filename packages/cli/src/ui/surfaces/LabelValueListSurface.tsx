@@ -1,9 +1,9 @@
-import type { CSSProperties, ReactElement } from "react"
+import type { CSSProperties, ReactElement } from 'react'
 
-import { Text } from "../primitives"
-import { Icon } from "../primitives/Icon"
-import { useThemeUiPresentation } from "../theme-presentation"
-import { cn } from "../utils/cn"
+import { Text, TextSize } from '../primitives'
+import { Icon } from '../primitives/Icon'
+import { useThemeUiPresentation } from '../theme-presentation'
+import { cn } from '../utils/cn'
 
 export interface LabelValueListLine {
   color?: string
@@ -24,36 +24,81 @@ export interface LabelValueListProps {
   style?: CSSProperties
 }
 
-function RowTile({
-  item,
-  showLabel,
-}: {
+type RowTileProps = {
   item: LabelValueListLine
-  showLabel: boolean
-}): ReactElement {
+  variant?: 'default' | 'big' | 'small'
+}
+
+function RowTile({ item, variant = 'default' }: RowTileProps): ReactElement {
+  const variantsProps: Record<
+    NonNullable<RowTileProps['variant']>,
+    {
+      value: TextSize
+      unit: TextSize
+      labelSize?: TextSize
+      showLabel?: boolean
+      multiline?: boolean
+      iconSize?: number
+      titleClass?: string
+    }
+  > = {
+    big: {
+      value: '5xl',
+      unit: 'md',
+      showLabel: true,
+      multiline: true,
+      iconSize: 23,
+      titleClass: 'items-center justify-center',
+      labelSize: 'md',
+    },
+    default: {
+      value: '3xl',
+      unit: 'sm',
+      iconSize: 16,
+      labelSize: 'sm',
+    },
+    small: {
+      value: 'lg',
+      unit: 'xs',
+      iconSize: 14,
+    },
+  }
+
   const colorStyle = item.color ? { color: item.color } : undefined
+  const variantProps = variantsProps[variant]
   return (
     <div
-      className="flex h-full min-w-0 flex-1 flex-col text-center overflow-hidden"
-      style={colorStyle}
+      className={cn(!variantProps.multiline && 'flex', 'items-start')}
+      style={{ ...colorStyle }}
     >
-      <div className="flex-1 flex items-center gap-1.5 min-h-0">
-        {item.icon ? <Icon source={item.icon} size={14} /> : null}
-        <div className="flex-1"></div>
-        <div className="flex-1 flex items-center min-h-0">
-          <Text size="lg" weight="bold" text={item.value} tone="primary"></Text>
-
-          {item.units ? (
-            <Text size="xs" weight="bold" text={item.units}></Text>
-          ) : null}
-        </div>
+      <div
+        className={cn('flex mt-1 gap-1 items-center', variantProps.titleClass)}
+      >
+        {item.icon ? (
+          <Icon source={item.icon} size={variantProps.iconSize} />
+        ) : null}
+        {variantProps.showLabel ? (
+          <Text
+            text={item.label}
+            size={variantProps.labelSize ?? 'xs'}
+            weight="semibold"
+            tone="primary"
+          />
+        ) : null}
       </div>
-      {showLabel ? (
-        <div className={cn("flex items-center justify-center gap-1")}>
-          <Text text={item.label} size="xs"></Text>
-          {item.units ? <Text text={item.units} size="xs"></Text> : null}
-        </div>
-      ) : null}
+      <div className="flex-1 flex min-h-0 gap-0.5 justify-end items-baseline">
+        <Text
+          size={variantProps.value}
+          weight="bold"
+          text={item.value}
+          tone="primary"
+          style={colorStyle}
+        />
+
+        {item.units ? (
+          <Text size={variantProps.unit} text={item.units} />
+        ) : null}
+      </div>
     </div>
   )
 }
@@ -72,53 +117,53 @@ export function LabelValueListSurface(
     return themeUi.surfaces.labelValueList(props)
   }
 
-  const showLabel = props.lines.length <= 2
+  // if (props.lines.length === 1) {
+  //   const item = props.lines[0]
+  //   const colorStyle = item.color ? { color: item.color } : undefined
+  //   return (
+  //     <div
+  //       className={cn(props.className, 'al')}
+  //       style={{ color: 'var(--sireno-color-fg)', ...props.style }}
+  //     >
+  //       <div className="flex gap-1 items-center justify-center">
+  //         {item.icon ? <Icon source={item.icon} size={23} /> : null}
+  //         <Text text={item.label} size="md" weight="semibold" tone="primary" />
+  //       </div>
 
-  if (props.lines.length === 1) {
-    return (
-      <div
-        className={cn(props.className)}
-        style={{ color: "var(--sireno-color-fg)", ...props.style }}
-      >
-        {props.lines.map((item, index) => (
-          <RowTile
-            key={`${item.label}-${index}`}
-            item={item}
-            showLabel={showLabel}
-          />
-        ))}
-      </div>
-    )
+  //       <div className="flex min-h-0 gap-0.5 justify-end items-baseline">
+  //         <Text
+  //           size="5xl"
+  //           weight="bold"
+  //           text={item.value}
+  //           tone="primary"
+  //           style={colorStyle}
+  //         />
+
+  //         {item.units ? <Text size="md" text={item.units} /> : null}
+  //       </div>
+  //     </div>
+  //   )
+  // }
+
+  const variants: Record<number, RowTileProps['variant']> = {
+    1: 'big',
+    2: 'default',
+    3: 'small',
   }
+
+  const variant =
+    variants[Math.min(props.lines.length, Object.values(variants).length)]
   return (
     <div
-      className={cn(
-        "flex w-full gap-1 p-1",
-        showLabel ? "flex-col h-full" : "flex-row flex-wrap",
-        props.className,
-      )}
-      style={{ color: "var(--sireno-color-fg)", ...props.style }}
+      className={cn('flex w-full gap-0.5 p-1', 'flex-col', props.className)}
+      style={{
+        color: 'var(--sireno-color-fg)',
+        ...props.style,
+      }}
     >
-      {props.lines.map((item, index) =>
-        showLabel ? (
-          <RowTile
-            key={`${item.label}-${index}`}
-            item={item}
-            showLabel={showLabel}
-          />
-        ) : (
-          <div
-            key={`${item.label}-${index}`}
-            className="min-h-[28px] flex-1 flex basis-1/2"
-          >
-            <RowTile
-              key={`${item.label}-${index}`}
-              item={item}
-              showLabel={false}
-            />
-          </div>
-        ),
-      )}
+      {props.lines.map((item, index) => (
+        <RowTile key={`${item.label}-${index}`} item={item} variant={variant} />
+      ))}
     </div>
   )
 }

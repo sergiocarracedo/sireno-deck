@@ -1,9 +1,9 @@
 # system-status
 
-OS metrics as Stream Deck buttons. Two visual modes — horizontal bars and a
-KPIs list — and 19 built-in metrics. Polls every second via a single
-addon-global poller per metric, publishes on `runtime:system-status:<id>`,
-and the frontend renders whichever metrics the button was configured with.
+OS metrics as Stream Deck buttons. Three visual modes — horizontal bars, a
+KPIs list, and a mini-chart — and 19 built-in metrics. Polls every second via
+addon-global pollers per metric, publishes on `runtime:system-status:<id>`,
+and chart history on `runtime:system-status:chart-history`.
 
 ## Buttons
 
@@ -11,6 +11,7 @@ and the frontend renders whichever metrics the button was configured with.
 | ----------------------------- | ----------------------------------------------------- |
 | `system-status:system-status` | 1–3 metrics rendered as horizontal bars + value chips |
 | `system-status:kpis`          | 1–3 metrics rendered as a label/value list            |
+| `system-status:chart`         | 1–2 metrics plotted as a real-time line chart         |
 
 ## Config
 
@@ -47,6 +48,22 @@ and the frontend renders whichever metrics the button was configured with.
       - disk
 ```
 
+### Chart variant
+
+```yaml
+- position: 7
+  type: "system-status:chart"
+  config:
+    metrics:
+      - id: cpu
+      - id: ram
+    windowSeconds: 60 # optional, default 60
+```
+
+Chart supports 1–2 metrics plotted over a sliding time window. The history is
+published on a dedicated `runtime:system-status:chart-history` channel,
+separate from the live metric channels.
+
 ## Metrics
 
 | Id              | Label (default) | Formatter     | Unit | Views      | Source                                                                            |
@@ -63,7 +80,7 @@ and the frontend renders whichever metrics the button was configured with.
 | `temperature`   | Temp            | count         | °C   | bars, kpis | `/sys/class/thermal/thermal_zone0/temp` (Linux)                                   |
 | `gpu-temp`      | GPU Temp        | count         | °C   | bars, kpis | amdgpu sysfs, fallback `nvidia-smi --query-gpu=temperature.gpu`                   |
 | `gpu-usage`     | GPU             | percent       | %    | bars, kpis | amdgpu `gpu_busy_percent`, fallback `nvidia-smi --query-gpu=utilization.gpu`      |
-| `uptime`        | Uptime          | uptime        | —    | kpis       | `process.uptime()`                                                                |
+| `uptime`        | Uptime          | uptime        | —    | kpis       | `os.uptime()`                                                                     |
 | `frequency`     | Freq            | frequency-ghz | GHz  | bars, kpis | `os.cpus()[].speed`, fallback `/proc/cpuinfo` MHz                                 |
 | `load`          | Load            | count         | —    | bars, kpis | `os.loadavg()[0]`                                                                 |
 | `processes`     | Procs           | count         | —    | kpis       | `/proc` numeric-dir count (Linux)                                                 |
@@ -84,7 +101,7 @@ slot. No silent zeros, no crashes.
 | `bytes`         | `5.2 MB`                                  |
 | `rate-bytes`    | `5.2 MB/s` (uses KiB/MiB/GiB/TiB scaling) |
 | `frequency-ghz` | `3.40`                                    |
-| `uptime`        | `2h 14m`                                  |
+| `uptime`        | `2h`                                      |
 | `bool`          | `ON` (≥0.5) / `OFF`                       |
 
 ## Example
