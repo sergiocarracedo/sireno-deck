@@ -17,22 +17,22 @@ Both changes are backward-compatible: every existing `<Text size="…" fit="…"
 
 ## 2. Settled decisions
 
-| Decision | Choice | Why |
-| --- | --- | --- |
-| `xxs` value | `text-[8px]` (Tailwind arbitrary value) | Matches `typography.auxiliary_text.fontSize: 8` in `sirenodeck.json`; **no theme / `@theme` block changes needed** — arbitrary values bypass the theme contract entirely |
-| `xxs` CSS layer | Tailwind utility, not `components.css` rule | Co-located with the rest of `SIZE_CLASS`; same lookup path; arbitrary value is deterministic |
-| `autofit` driver | JS via `useRef` + `useEffect` + `ResizeObserver` on a wrapper `<span>` | Pure CSS cannot satisfy "fit *or* ellipsis on overflow at minSize" — needs measurement and a state switch |
-| `autofit` step strategy | Binary search between `current size` and `minSize`, clamped to integer px | O(log n) re-fits per ResizeObserver tick; linear was deemed wasteful for 6xl → 8px range |
-| `autofit` re-fit triggers | (a) text content change, (b) container resize, (c) `size`/`minSize`/`lines` props change | Standard ResizeObserver + dependency-array pattern; precedent for hooks-in-primitives is `IconLabelProgressSurface.tsx` (`useState` + `useRef` + `useEffect`) |
-| `autofit` overflow check | Single line: `scrollWidth > clientWidth`. Multi-line: `scrollHeight > clientHeight` (container has explicit `height: lines * lineHeight` em) | Both roll up to the same predicate: text rendered size exceeds available box |
-| `autofit` minSize | Required (no default) | Forcing the caller to pick the floor prevents silent unreadable output; default `8` would be invisible on many themes |
-| `autofit` ellipsis at floor | Reuse existing multi-line `-webkit-line-clamp` inline style path | Already battle-tested for the `ellipsis` mode |
-| `TextFit` shape | Add optional `minSize?: number` field to the existing discriminated union; only meaningful when `type === "autofit"` | Smaller surface than introducing a fourth object variant — matches existing `lines` / `reserveSpace` precedent |
-| `RICH_SIZE_TAGS` | Add `"xxs"` to the inline-size-tag set | Same shape as existing `xs`/`sm`/`md` entries; no parser changes |
+| Decision                    | Choice                                                                                                                                       | Why                                                                                                                                                                      |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `xxs` value                 | `text-[8px]` (Tailwind arbitrary value)                                                                                                      | Matches `typography.auxiliary_text.fontSize: 8` in `sirenodeck.json`; **no theme / `@theme` block changes needed** — arbitrary values bypass the theme contract entirely |
+| `xxs` CSS layer             | Tailwind utility, not `components.css` rule                                                                                                  | Co-located with the rest of `SIZE_CLASS`; same lookup path; arbitrary value is deterministic                                                                             |
+| `autofit` driver            | JS via `useRef` + `useEffect` + `ResizeObserver` on a wrapper `<span>`                                                                       | Pure CSS cannot satisfy "fit _or_ ellipsis on overflow at minSize" — needs measurement and a state switch                                                                |
+| `autofit` step strategy     | Binary search between `current size` and `minSize`, clamped to integer px                                                                    | O(log n) re-fits per ResizeObserver tick; linear was deemed wasteful for 6xl → 8px range                                                                                 |
+| `autofit` re-fit triggers   | (a) text content change, (b) container resize, (c) `size`/`minSize`/`lines` props change                                                     | Standard ResizeObserver + dependency-array pattern; precedent for hooks-in-primitives is `IconLabelProgressSurface.tsx` (`useState` + `useRef` + `useEffect`)            |
+| `autofit` overflow check    | Single line: `scrollWidth > clientWidth`. Multi-line: `scrollHeight > clientHeight` (container has explicit `height: lines * lineHeight` em) | Both roll up to the same predicate: text rendered size exceeds available box                                                                                             |
+| `autofit` minSize           | Required (no default)                                                                                                                        | Forcing the caller to pick the floor prevents silent unreadable output; default `8` would be invisible on many themes                                                    |
+| `autofit` ellipsis at floor | Reuse existing multi-line `-webkit-line-clamp` inline style path                                                                             | Already battle-tested for the `ellipsis` mode                                                                                                                            |
+| `TextFit` shape             | Add optional `minSize?: number` field to the existing discriminated union; only meaningful when `type === "autofit"`                         | Smaller surface than introducing a fourth object variant — matches existing `lines` / `reserveSpace` precedent                                                           |
+| `RICH_SIZE_TAGS`            | Add `"xxs"` to the inline-size-tag set                                                                                                       | Same shape as existing `xs`/`sm`/`md` entries; no parser changes                                                                                                         |
 
 ### Explicit non-decisions (deferred)
 
-- **Auto-grow on the other axis** (fit a fixed pixel budget by *increasing* font-size) — out of scope; the request is shrink-to-fit only.
+- **Auto-grow on the other axis** (fit a fixed pixel budget by _increasing_ font-size) — out of scope; the request is shrink-to-fit only.
 - **CJK / word-break tuning** — `whitespace-normal break-words` is already applied; we inherit it.
 - **Animation on resize** — instant re-fit, no transition; matches the rest of the codebase's instant updates.
 
@@ -41,7 +41,7 @@ Both changes are backward-compatible: every existing `<Text size="…" fit="…"
 ```ts
 // Size: prepend "xxs"
 export type TextSize =
-  | "xxs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl"
+  "xxs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl"
 
 // Fit: add "autofit" + optional minSize.
 // `fit` stays polymorphic — string shorthand (`fit="ellipsis"`) continues to work.
@@ -50,7 +50,7 @@ export type TextFit = {
   type: TextFitType
   lines?: 1 | 2 | 3
   reserveSpace?: boolean
-  minSize?: number  // px; required when type === "autofit"
+  minSize?: number // px; required when type === "autofit"
 }
 // prop type: `fit?: TextFit | TextFitType` (unchanged — both shapes still accepted)
 ```
@@ -152,7 +152,7 @@ For each scenario, the test file path is `packages/cli/src/ui/primitives/__tests
 - On mount, after the first observer callback fires: `data-sireno-text-autofit-state` is either `"fit"` or `"ellipsis"` (never `"pending"`).
 - **Fit path**: container wide enough → `state === "fit"`, `style.fontSize` equals the resolved size (no clamp applied).
 - **Step path**: container width artificially set to 50% of natural width → `state === "fit"`, `style.fontSize` is between `minSize` and the starting size.
-- **Ellipsis path**: container width set to 1px → `state === "ellipsis"`, `style.fontSize === \`${minSize}px\``, `-webkit-line-clamp` equals configured `lines`.
+- **Ellipsis path**: container width set to 1px → `state === "ellipsis"`, `style.fontSize === \`${minSize}px\``, `-webkit-line-clamp`equals configured`lines`.
 - **Re-fit on resize**: container width grows after first fit → `style.fontSize` increases back (up to the starting size).
 - **Cleanup**: unmounting the component calls `observer.disconnect()` (assert via the mock).
 
@@ -166,13 +166,13 @@ For each scenario, the test file path is `packages/cli/src/ui/primitives/__tests
 
 - Tailwind v4 arbitrary values (`text-[8px]`) are guaranteed to emit a working class by the project's existing toolchain — they already work elsewhere (`Icon.tsx` uses `style={{ fontSize: \`${size}px\` }}`, but arbitrary value classes are also used in the codebase; will be confirmed by the build step).
 - `ResizeObserver` is available in jsdom **or** a 5-line polyfill is acceptable in the test file (no production polyfill needed — every runtime is a modern browser or Electron with native `ResizeObserver`).
-- The frontend (Vue) emulator does NOT override `Text` via `useThemeUiPresentation` for the demos that exercise this feature. If it does, the test must run on the *backend* `Text` only (current precedent — Text tests render the backend primitive directly).
+- The frontend (Vue) emulator does NOT override `Text` via `useThemeUiPresentation` for the demos that exercise this feature. If it does, the test must run on the _backend_ `Text` only (current precedent — Text tests render the backend primitive directly).
 - "Min font size" semantics: `minSize` is the **floor** for the autofit shrink. It is not a target. The caller picks it knowing the smallest legible size for their theme.
 - The 3-line cap (`MAX_LINE_CLAMP = 3`) applies to autofit's ellipsis fallback too. If a caller wants 4 lines at the floor, they must use a non-autofit mode.
 
 ## 8. Out of scope
 
-- **Auto-grow** (fit a fixed budget by *increasing* font-size) — different problem, different API; request was shrink-only.
+- **Auto-grow** (fit a fixed budget by _increasing_ font-size) — different problem, different API; request was shrink-only.
 - **Smooth / animated transitions on resize** — instant re-fit matches the codebase.
 - **Theme-aware `minSize` defaults** (e.g., read from `typography.auxiliary_text.fontSize`) — keeps the API explicit; caller decides.
 - **Fixing the existing test drift** in `Text.test.tsx` (`ResolvedTextFit`, `wrap`, `MAX_LINE_CLAMP = 6`, etc.) — **in scope** per §5 step 1.

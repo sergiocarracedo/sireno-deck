@@ -45,7 +45,7 @@ export function IconLabelSurface(props: IconLabelSurfaceProps): ReactElement {
       {iconContent}
       <Label text={props.label} variant={props.variant} lines={2} />
       {props.details !== undefined && props.details.length > 0 && (
-        <Label text={props.details} variant="small" />
+        <Label text={props.details} variant="small" fit="autofit" />
       )}
     </div>
   )

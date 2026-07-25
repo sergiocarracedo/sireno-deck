@@ -29,24 +29,24 @@ decks:
     name: Main Deck
     buttons:
       - position: 2
-        type: "date-time:time"
+        type: 'date-time:time'
         config:
           variant: big
 
       - position: 3
-        type: "date-time:date"
+        type: 'date-time:date'
         actions:
-          tap: "xdg-open https://calendar.google.com"
+          tap: 'xdg-open https://calendar.google.com'
 
       - position: 1
-        type: "core:change-deck"
+        type: 'core:change-deck'
         config:
-          deck: "sys-status-demo"
-          icon: 📊
+          deck: 'sys-status-demo'
+          icon: icon://chart
           label: Sys Stats
 
       - position: 4
-        type: "weather:weather"
+        type: 'weather:weather'
         config:
           location:
             latitude: 42.2304
@@ -54,20 +54,20 @@ decks:
             name: Vigo
 
       - position: 9
-        type: "emoji-selector:launcher"
+        type: 'emoji-selector:launcher'
 
       - position: 10
-        type: "core:action"
+        type: 'core:action'
         actions:
-          tap: "google-chrome"
-          hold: "google-chrome --incognito"
-          dbltap: "type://ctrl+t"
+          tap: 'google-chrome'
+          hold: 'google-chrome --incognito'
+          dbltap: 'type://ctrl+t'
         config:
           icon: ./assets/chrome.svg
           label: Chrome
 
       - position: 0
-        type: "system-status:kpis"
+        type: 'system-status:kpis'
         config:
           metrics:
             - id: cpu
@@ -76,7 +76,7 @@ decks:
               label: MEM
             - swap
 
-      - type: "system-status:system-status"
+      - type: 'system-status:system-status'
         config:
           metrics:
             - id: cpu
@@ -85,39 +85,44 @@ decks:
               label: MEM
             - swap
 
-      - position: 6
-        type: "media:volume:down"
-      - position: 7
-        type: "media:volume:up"
-      - position: 8
-        type: "media:mute"
+      - type: 'core:change-deck'
+        config:
+          deck: 'test'
+          icon: icon://flask-conical
+          label: Test
+      # - position: 6
+      #   type: "media:volume:down"
+      # - position: 7
+      #   type: "media:volume:up"
+      # - position: 8
+      #   type: "media:mute"
       - position: 12
-        type: "media:player"
+        type: 'media:player'
 
       - position: 11
-        type: "core:change-deck"
+        type: 'core:change-deck'
         config:
-          deck: "core:lock"
-          icon: "icon://lock"
+          deck: 'core:lock'
+          icon: 'icon://lock'
           label: Lock deck
 
       - position: 13
-        type: "date-time:analog-clock"
+        type: 'date-time:analog-clock'
         # actions:
         #   tap: 'google-chrome https://calendar.google.com'
   sys-status-demo:
     name: Sys Stats
     buttons:
       - position: 0
-        type: "system-status:system-status"
+        type: 'system-status:system-status'
         config:
           metrics: [cpu]
       - position: 1
-        type: "system-status:system-status"
+        type: 'system-status:system-status'
         config:
           metrics: [cpu, ram]
       - position: 2
-        type: "system-status:system-status"
+        type: 'system-status:system-status'
         config:
           metrics:
             - id: cpu
@@ -126,7 +131,7 @@ decks:
               label: MEM
             - swap
       - position: 3
-        type: "system-status:system-status"
+        type: 'system-status:system-status'
         config:
           metrics:
             - id: disk
@@ -136,7 +141,7 @@ decks:
             - id: temperature
               label: Temp
       - position: 4
-        type: "system-status:system-status"
+        type: 'system-status:system-status'
         config:
           metrics:
             - id: network
@@ -146,7 +151,7 @@ decks:
             - id: frequency
               label: Freq
       - position: 5
-        type: "system-status:system-status"
+        type: 'system-status:system-status'
         config:
           metrics:
             - id: load
@@ -154,15 +159,15 @@ decks:
             - id: processes
               label: Procs
       - position: 6
-        type: "system-status:kpis"
+        type: 'system-status:kpis'
         config:
           metrics: [cpu]
       - position: 7
-        type: "system-status:kpis"
+        type: 'system-status:kpis'
         config:
           metrics: [cpu, ram]
       - position: 8
-        type: "system-status:kpis"
+        type: 'system-status:kpis'
         config:
           metrics:
             - id: cpu
@@ -171,7 +176,7 @@ decks:
               label: MEM
             - swap
       - position: 9
-        type: "system-status:kpis"
+        type: 'system-status:kpis'
         config:
           metrics:
             - id: disk
@@ -181,7 +186,7 @@ decks:
             - id: temperature
               label: Temp
       - position: 10
-        type: "system-status:kpis"
+        type: 'system-status:kpis'
         config:
           metrics:
             - id: network
@@ -191,7 +196,7 @@ decks:
             - id: frequency
               label: Freq
       - position: 11
-        type: "system-status:kpis"
+        type: 'system-status:kpis'
         config:
           metrics:
             - id: load
@@ -199,16 +204,16 @@ decks:
             - id: processes
               label: Procs
       - position: 12
-        type: "core:change-deck"
+        type: 'core:change-deck'
         config:
           deck: main
           icon: ⬅
           label: Main
       - position: 13
-        type: "system-status:kpis"
+        type: 'system-status:kpis'
         config:
           metrics:
-            - id: "cpu-boost"
+            - id: 'cpu-boost'
               label: Boost
             - id: cpu-voltages
               label: Vcore
@@ -220,7 +225,30 @@ decks:
     name: Warp
     icon: icon://music
     buttons:
-      - type: "date-time:analog-clock"
+      - type: 'date-time:analog-clock'
+  test:
+    name: Test
+    icon: icon://flask-conical
+    buttons:
+      - type: 'core:change-deck'
+        config:
+          deck: main
+          icon: 'icon://arrow-left'
+          label: Main
+      - type: 'system-status:kpis'
+        config:
+          metrics:
+            - id: cpu
+              label: 'CPU'
+            - id: ram
+              label: 'An Extremely Long RAM Label That Should Overflow And Shrink'
+      - type: 'system-status:system-status'
+        config:
+          metrics:
+            - id: cpu
+              label: 'CPU Frequency In Gigahertz Which Is Quite Long'
+            - id: ram
+              label: 'Used / Total Memory Usage Indicator Label'
 
 logging:
   level: info

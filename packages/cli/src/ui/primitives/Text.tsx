@@ -1,8 +1,12 @@
 import {
   createElement,
   type CSSProperties,
+  type RefObject,
+  useEffect,
+  useRef,
   type ReactElement,
   type ReactNode,
+  useState,
 } from "react"
 
 import { useThemeUiPresentation } from "../theme-presentation"
@@ -52,6 +56,7 @@ const WEIGHT_CLASS = {
 } as const
 
 const SIZE_CLASS = {
+  xxs: "text-[8px]",
   xs: "text-xs",
   sm: "text-sm",
   md: "text-md",
@@ -72,6 +77,7 @@ const RICH_TONE_TAGS = [
 ] as const
 
 const RICH_SIZE_TAGS = [
+  "xxs",
   "xs",
   "sm",
   "md",
@@ -313,12 +319,20 @@ function renderTextChildren(
 
 export type TextAlign = keyof typeof ALIGN_CLASS
 
-export type TextFitType = "ellipsis" | "shrink" | "hidden"
+export type TextFitType = "ellipsis" | "shrink" | "hidden" | "autofit"
 
 export type TextFit = {
   type: TextFitType
   lines?: 1 | 2 | 3
   reserveSpace?: boolean
+  minSize?: number
+}
+
+export type ResolvedTextFit = {
+  type: TextFitType
+  lines: 1 | 2 | 3
+  reserveSpace: boolean
+  minSize?: number
 }
 
 export type TextTone = keyof typeof TONE_CLASS
@@ -329,9 +343,14 @@ export type TextWeight = (typeof TEXT_WEIGHT)[number]
 const MIN_LINE_CLAMP = 1
 const MAX_LINE_CLAMP = 3
 
+function clampLines(lines: number | undefined): 1 | 2 | 3 {
+  const raw = Math.floor(lines || 1)
+  return Math.max(MIN_LINE_CLAMP, Math.min(MAX_LINE_CLAMP, raw)) as 1 | 2 | 3
+}
+
 export function resolveTextFit(
   fit: TextFit | TextFitType | undefined,
-): Required<TextFit> {
+): ResolvedTextFit {
   if (fit === undefined || typeof fit === "string") {
     return {
       type: fit ?? "hidden",
@@ -340,16 +359,95 @@ export function resolveTextFit(
     }
   }
 
-  const lines = Math.max(
-    MIN_LINE_CLAMP,
-    Math.min(MAX_LINE_CLAMP, Math.floor(fit.lines || 1)),
-  ) as Required<TextFit>["lines"]
+  if (fit.type === "autofit") {
+    if (typeof fit.minSize !== "number" || !Number.isFinite(fit.minSize)) {
+      throw new Error(
+        "Text: autofit fit requires a numeric `minSize` (px floor).",
+      )
+    }
+    return {
+      type: "autofit",
+      lines: clampLines(fit.lines),
+      reserveSpace: false,
+      minSize: fit.minSize,
+    }
+  }
 
   return {
     type: fit.type,
-    lines,
+    lines: clampLines(fit.lines),
     reserveSpace: fit.reserveSpace ?? false,
   }
+}
+
+type AutofitState = "fit" | "ellipsis"
+
+function useAutofit(
+  ref: RefObject<HTMLDivElement | null>,
+  minSize: number,
+  text: string,
+): { fontSize: number | null; state: AutofitState } {
+  const [fontSize, setFontSize] = useState<number | null>(null)
+  const [state, setState] = useState<AutofitState>("fit")
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (minSize <= 0) return
+
+    const measure = () => {
+      const computed = parseFloat(getComputedStyle(el).fontSize)
+      if (!Number.isFinite(computed) || computed <= 0) return
+
+      const hi = Math.max(minSize, Math.round(computed))
+
+      el.style.fontSize = `${hi}px`
+      if (
+        el.scrollWidth <= el.clientWidth + 1 &&
+        el.scrollHeight <= el.clientHeight + 1
+      ) {
+        setFontSize(hi)
+        setState("fit")
+        return
+      }
+
+      let lo = minSize
+      let high = hi
+      let fitSize = lo
+
+      while (high - lo > 1) {
+        const mid = Math.floor((lo + high) / 2)
+        el.style.fontSize = `${mid}px`
+        if (
+          el.scrollWidth <= el.clientWidth + 1 &&
+          el.scrollHeight <= el.clientHeight + 1
+        ) {
+          fitSize = mid
+          lo = mid
+        } else {
+          high = mid
+        }
+      }
+
+      if (fitSize > minSize) {
+        el.style.fontSize = `${fitSize}px`
+        setFontSize(fitSize)
+        setState("fit")
+      } else {
+        el.style.fontSize = `${minSize}px`
+        setFontSize(minSize)
+        setState("ellipsis")
+      }
+    }
+
+    measure()
+
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [minSize, text, ref])
+
+  return { fontSize, state }
 }
 
 export interface TextProps {
@@ -397,9 +495,20 @@ export function Text(props: TextProps): ReactElement {
   }
 
   const resolvedFit = resolveTextFit(fit)
+  const isAutofit = resolvedFit.type === "autofit"
+  const containerRef = useRef<HTMLDivElement>(null)
+  const autofit = useAutofit(
+    containerRef,
+    isAutofit ? (resolvedFit.minSize ?? 0) : 0,
+    props.text,
+  )
+
+  const applyAutofitEllipsis =
+    isAutofit && autofit.state === "ellipsis" && resolvedFit.lines > 1
 
   const isMultiLineEllipsis =
-    resolvedFit.type === "ellipsis" && resolvedFit.lines > 1
+    (resolvedFit.type === "ellipsis" && resolvedFit.lines > 1) ||
+    applyAutofitEllipsis
 
   const fitModesClasses: Record<TextFitType, string> = {
     ellipsis: isMultiLineEllipsis
@@ -407,6 +516,7 @@ export function Text(props: TextProps): ReactElement {
       : "overflow-hidden whitespace-nowrap text-ellipsis",
     shrink: "sireno-text-fit-shrink whitespace-normal break-words",
     hidden: "overflow-hidden ",
+    autofit: "overflow-hidden whitespace-nowrap text-ellipsis",
   }
   const composedStyle: CSSProperties =
     props.fontStack !== undefined
@@ -419,6 +529,10 @@ export function Text(props: TextProps): ReactElement {
     composedStyle.WebkitLineClamp = resolvedFit.lines
     composedStyle.overflow = "hidden"
     composedStyle.textOverflow = "ellipsis"
+  }
+
+  if (isAutofit && autofit.fontSize !== null) {
+    composedStyle.fontSize = `${autofit.fontSize}px`
   }
 
   if (lineHeight !== 1) {
@@ -441,6 +555,7 @@ export function Text(props: TextProps): ReactElement {
   const dataFit = `${resolvedFit.type}-${resolvedFit.lines}`
   return (
     <div
+      ref={containerRef}
       className={cn([
         "block max-w-full min-w-0 leading-tight",
         TYPOGRAPHY_CLASS[typography],
@@ -456,6 +571,7 @@ export function Text(props: TextProps): ReactElement {
         resolvedFit.type === "shrink" ? "pending" : undefined
       }
       data-sireno-text-size={size}
+      data-sireno-text-autofit-state={isAutofit ? autofit.state : undefined}
       data-sireno-ui-text="true"
       style={composedStyle}
     >
