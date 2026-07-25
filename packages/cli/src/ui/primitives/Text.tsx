@@ -397,6 +397,18 @@ function useAutofit(
     if (!el) return
     if (minSize <= 0) return
 
+    const STEP = 1
+    const ONE_LINE_REDUCE_LIMIT = 3
+    let pending: number | null = null
+
+    const schedule = () => {
+      if (pending !== null) return
+      pending = requestAnimationFrame(() => {
+        pending = null
+        measure()
+      })
+    }
+
     const measure = () => {
       const computed = parseFloat(getComputedStyle(el).fontSize)
       if (!Number.isFinite(computed) || computed <= 0) return
@@ -410,13 +422,28 @@ function useAutofit(
         ] = ""
       }
 
+      const measureTextWidth = () => {
+        const prevOverflow = el.style.overflow
+        const prevTextOverflow = el.style.textOverflow
+        el.style.overflow = "visible"
+        el.style.textOverflow = ""
+        el.style.whiteSpace = "nowrap"
+        const w = el.scrollWidth
+        el.style.overflow = prevOverflow
+        el.style.textOverflow = prevTextOverflow
+        return w
+      }
+      const measureTextHeight = () => {
+        el.style.whiteSpace = ""
+        return el.scrollHeight
+      }
+      const containerWidth = () => el.clientWidth
+
       if (lines > 1) {
         // Phase 1: natural 1-line check
         restoreInline()
-        el.style.whiteSpace = "nowrap"
-        const naturalOneLineFits =
-          el.scrollWidth <= el.clientWidth + 1
-        if (naturalOneLineFits) {
+        const containerW = containerWidth()
+        if (measureTextWidth() <= containerW + 1) {
           restoreInline()
           setFontSize(null)
           setState("fit")
@@ -424,40 +451,53 @@ function useAutofit(
           return
         }
 
-        // Phase 2: reduce step-by-step; check 1-line then multi-line
-        const STEP = 1
-
-        for (
-          let size = Math.floor(computed) - STEP;
-          size >= minSize;
-          size -= STEP
-        ) {
+        // Phase 2: reduce 1-line, capped at natural - ONE_LINE_REDUCE_LIMIT
+        const oneLineFloor = Math.max(
+          minSize,
+          Math.floor(computed) - ONE_LINE_REDUCE_LIMIT,
+        )
+        let size = Math.floor(computed) - STEP
+        for (; size >= oneLineFloor; size -= STEP) {
           el.style.fontSize = `${size}px`
-
-          el.style.whiteSpace = "nowrap"
-          if (el.scrollWidth <= el.clientWidth + 1) {
+          if (measureTextWidth() <= containerW + 1) {
             restoreInline()
             setFontSize(size)
             setState("fit")
             setEffectiveLines(1)
             return
           }
+        }
 
-          el.style.whiteSpace = ""
-          const lh = parseFloat(getComputedStyle(el).lineHeight)
-          const lineEm =
-            Number.isFinite(lh) && lh > 0 ? lh : size * 1.2
-          const expectedHeight = lines * lineEm
-          if (el.scrollHeight <= expectedHeight + 1) {
+        // Phase 3: reset to natural, try multi-line at natural
+        restoreInline()
+        el.style.fontSize = ""
+        const naturalMultiHeight = measureTextHeight()
+        const naturalLineEm = parseFloat(getComputedStyle(el).lineHeight) || computed * 1.2
+        if (naturalMultiHeight <= lines * naturalLineEm + 1) {
+          restoreInline()
+          setFontSize(null)
+          setState("fit")
+          setEffectiveLines(lines)
+          return
+        }
+
+        // Phase 4: reduce for multi-line, down to minSize
+        const multiStart = Math.floor(computed) - STEP
+        for (let s = multiStart; s >= minSize; s -= STEP) {
+          el.style.fontSize = `${s}px`
+          const sh = measureTextHeight()
+          const lh =
+            parseFloat(getComputedStyle(el).lineHeight) || s * 1.2
+          if (sh <= lines * lh + 1) {
             restoreInline()
-            setFontSize(size)
+            setFontSize(s)
             setState("fit")
             setEffectiveLines(lines)
             return
           }
         }
 
-        // Phase 3: nothing fit, ellipsis at minSize
+        // Phase 5: nothing fit, ellipsis at minSize
         restoreInline()
         setFontSize(minSize)
         setState("ellipsis")
@@ -510,11 +550,23 @@ function useAutofit(
       }
     }
 
-    measure()
+    schedule()
 
-    const observer = new ResizeObserver(measure)
+    const observer = new ResizeObserver(schedule)
     observer.observe(el)
-    return () => observer.disconnect()
+
+    let cancelled = false
+    if (typeof document !== "undefined" && document.fonts?.ready) {
+      document.fonts.ready.then(() => {
+        if (!cancelled) schedule()
+      })
+    }
+
+    return () => {
+      cancelled = true
+      if (pending !== null) cancelAnimationFrame(pending)
+      observer.disconnect()
+    }
   }, [minSize, text, lines, ref])
 
   return { fontSize, state, effectiveLines }

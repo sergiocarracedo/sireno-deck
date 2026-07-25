@@ -12,6 +12,7 @@ const getShrinkState = (container: HTMLElement) =>
 
 afterEach(() => {
   cleanup()
+  vi.useRealTimers()
   vi.unstubAllGlobals()
   vi.restoreAllMocks()
 })
@@ -53,6 +54,7 @@ class ResizeObserverMock {
       entries.map((e) => ({ ...defaults, ...e })) as ResizeObserverEntry[],
       this,
     )
+    if (typeof vi !== "undefined") vi.runAllTimers()
   }
 }
 
@@ -116,6 +118,7 @@ function mockLayout(
 
 beforeEach(() => {
   ResizeObserverMock.instances = []
+  vi.useFakeTimers()
   vi.stubGlobal(
     "ResizeObserver",
     ResizeObserverMock as unknown as typeof ResizeObserver,
@@ -402,19 +405,19 @@ describe("Text render — autofit", () => {
     expect(root.className).toContain("whitespace-nowrap")
   })
 
-  it("multi-line: reduces step-by-step until 1-line fits at minSize", () => {
+  it("multi-line: 1-line reduces only down to natural-3, then falls back to multi-line", () => {
     const { container } = render(
       <Text fit={{ type: "autofit", minSize: 10, lines: 2 }} text="hi" />,
     )
     const root = container.firstElementChild as HTMLElement
-    // scrollWidth scales with fontSize; at natural 16 -> 200, at minSize 10 -> 125
-    // clientWidth=130 -> 1-line never fits above 10px
-    // scrollHeight=80 (multi-line never fits in 2 lines at any size)
+    // 1-line never fits (scrollWidth=200, clientWidth=130, scaled scrollWidth always >131)
+    // Multi-line fits at natural 16px (scrollHeight=20, expected=2*16*1.2=38.4)
+    // Expected: Phase 1 fails, Phase 2 reduces 1-line down to 13 (no fit), Phase 3 natural multi-line fits
     mockLayout(root, {
       fontSize: 16,
       scrollWidth: 200,
       clientWidth: 130,
-      scrollHeight: 80,
+      scrollHeight: 20,
       clientHeight: 50,
     })
     act(() => {
@@ -423,47 +426,53 @@ describe("Text render — autofit", () => {
       ])
     })
     expect(root.getAttribute("data-sireno-text-autofit-state")).toBe("fit")
-    expect(root.style.fontSize).toBe("10px")
-    expect(root.className).toContain("whitespace-nowrap")
-  })
-
-it("multi-line: stops reducing once user-lines fit (no further shrink)", () => {
-    const { container } = render(
-      <Text fit={{ type: "autofit", minSize: 10, lines: 2 }} text="hi" />,
-    )
-    const root = container.firstElementChild as HTMLElement
-    // scrollWidth huge -> 1-line never fits. multi-line fits at size=15
-    // scrollHeight=38: at 15 -> 35.625; expected=36; fits
-    mockLayout(root, {
-      fontSize: 16,
-      scrollWidth: 400,
-      clientWidth: 80,
-      scrollHeight: 38,
-      clientHeight: 50,
-    })
-    act(() => {
-      ResizeObserverMock.instances[0].trigger([
-        { contentRect: new DOMRectReadOnly(0, 0, 80, 50) },
-      ])
-    })
-    expect(root.getAttribute("data-sireno-text-autofit-state")).toBe("fit")
-    expect(root.style.fontSize).toBe("15px")
+    expect(root.style.fontSize).toBe("")
     expect(root.style.getPropertyValue("--sireno-text-lines")).toBe("2")
     expect(root.className).not.toContain("whitespace-nowrap")
   })
 
-  it("multi-line: ellipsis at minSize when nothing fits", () => {
+  it("multi-line: 1-line fits at natural-3 (e.g. 13px), use that size", () => {
     const { container } = render(
       <Text fit={{ type: "autofit", minSize: 10, lines: 2 }} text="hi" />,
     )
     const root = container.firstElementChild as HTMLElement
-    // 1-line never fits (scrollWidth huge); multi-line never fits either
-    // scrollHeight=41 at natural 16: at 10 -> 25.625, expected=2*10*1.2=24; 25.625 > 25 (+1 tolerance) doesn't fit
+    // 1-line doesn't fit at natural 16 (scrollWidth=200 > clientWidth=130+1)
+    // At size=13: scrollWidth=200*(13/16)=162.5 > 131
+    // At size=13 with clientWidth=164: 200*(13/16)=162.5 <= 165 fits 1-line
+    mockLayout(root, {
+      fontSize: 16,
+      scrollWidth: 200,
+      clientWidth: 164,
+      scrollHeight: 50,
+      clientHeight: 50,
+    })
+    act(() => {
+      ResizeObserverMock.instances[0].trigger([
+        { contentRect: new DOMRectReadOnly(0, 0, 164, 50) },
+      ])
+    })
+    expect(root.getAttribute("data-sireno-text-autofit-state")).toBe("fit")
+    expect(root.style.fontSize).toBe("13px")
+    expect(root.className).toContain("whitespace-nowrap")
+  })
+
+it("multi-line: natural multi-line overflows -> reduce until multi-line fits", () => {
+    const { container } = render(
+      <Text fit={{ type: "autofit", minSize: 10, lines: 2 }} text="hi" />,
+    )
+    const root = container.firstElementChild as HTMLElement
+    // 1-line never fits (scrollWidth huge).
+    // natural multi-line doesn't fit either (scrollHeight=80 > 38.4)
+    // Phase 4 reduces multi-line. At size=14: sh=70, lh=16.8, expected=33.6; doesn't fit.
+    // At size=12: sh=60, lh=14.4, expected=28.8; doesn't fit.
+    // At size=11: sh=55, lh=13.2, expected=26.4; doesn't fit.
+    // At size=10: sh=50, lh=12, expected=24; doesn't fit (+1: 50>25).
+    // Phase 5 ellipsis.
     mockLayout(root, {
       fontSize: 16,
       scrollWidth: 400,
       clientWidth: 80,
-      scrollHeight: 41,
+      scrollHeight: 80,
       clientHeight: 50,
     })
     act(() => {
@@ -476,6 +485,37 @@ it("multi-line: stops reducing once user-lines fit (no further shrink)", () => {
     )
     expect(root.style.fontSize).toBe("10px")
     expect(root.style.getPropertyValue("--sireno-text-lines")).toBe("2")
+  })
+
+  it("multi-line: stops reducing once multi-line fits", () => {
+    const { container } = render(
+      <Text fit={{ type: "autofit", minSize: 10, lines: 2 }} text="hi" />,
+    )
+    const root = container.firstElementChild as HTMLElement
+    // 1-line never fits (scrollWidth huge). natural multi-line doesn't fit (40 > 38.4).
+    // Phase 4 reduces until multi-line fits. scrollHeight scales with fontSize:
+    //   size=15: 37.5; expected=36; 37.5>37 doesn't fit
+    //   size=14: 35; expected=33.6; 35>34.6 doesn't fit
+    //   size=13: 32.5; expected=31.2; 32.5>32.2 doesn't fit
+    //   size=12: 30; expected=28.8; 30>29.8 doesn't fit
+    //   size=11: 27.5; expected=26.4; 27.5>27.4 doesn't fit
+    //   size=10: 25; expected=24; 25<=25 fits -> algorithm returns fs=10
+    mockLayout(root, {
+      fontSize: 16,
+      scrollWidth: 400,
+      clientWidth: 80,
+      scrollHeight: 40,
+      clientHeight: 50,
+    })
+    act(() => {
+      ResizeObserverMock.instances[0].trigger([
+        { contentRect: new DOMRectReadOnly(0, 0, 80, 50) },
+      ])
+    })
+    expect(root.getAttribute("data-sireno-text-autofit-state")).toBe("fit")
+    expect(root.style.fontSize).toBe("10px")
+    expect(root.style.getPropertyValue("--sireno-text-lines")).toBe("2")
+    expect(root.className).not.toContain("whitespace-nowrap")
   })
 
   it("disconnects observer on unmount", () => {

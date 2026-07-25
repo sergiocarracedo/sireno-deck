@@ -264,6 +264,26 @@ decks:
         config:
           icon: icon://scroll-text
           label: An Absurdly Excessive Extraordinarily Verbose Extra Long Action Button Label That Will Certainly Overflow Even On The Widest Of Button Configurations Indefinitely Repeating Pad Pad Pad
+      - type: 'core:action'
+        config:
+          icon: icon://layout-grid
+          label: OVERVIEW
+      - type: 'core:action'
+        config:
+          icon: icon://menu
+          label: MAIN MENU
+      - type: 'core:action'
+        config:
+          icon: icon://zap
+          label: QUICK VIEW
+      - type: 'core:action'
+        config:
+          icon: icon://gauge
+          label: DASHBOARD
+      - type: 'core:action'
+        config:
+          icon: icon://cpu
+          label: SYSTEM INFO
 
 logging:
   level: info
