@@ -1,0 +1,131 @@
+packages/cli/src/builtin-addons/system-status/index.ts
+  h_f90ee31b03fc41 12-13
+packages/cli/src/builtin-addons/system-status/domain/live-metrics.ts
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 2-3,11,128
+  s_a419f6381ecb31::t_b229381fd96bc9 4
+  s_a419f6381ecb31::t_7bde3bd3ab9be1 164-165
+packages/cli/src/builtin-addons/system-status/domain/index.ts
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 1,8-10
+  s_637a62fc44ee2c::t_c3ccf31d2ec040 3-5,7
+  s_a419f6381ecb31::t_0a1282775a57fa 6
+packages/cli/src/builtin-addons/system-status/buttons/chart/__tests__/frontend.test.tsx
+  s_637a62fc44ee2c::t_8a64935d564e49 50-58
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 95,117-119
+  s_637a62fc44ee2c::t_25db8397dd6d0a 2
+  s_637a62fc44ee2c::t_76bdb4d0698e81 4,47-48
+  s_637a62fc44ee2c::t_4bb9ade5cee038 1,3,5,7-10,14-46,49,59-94,96-116,120-121
+  s_637a62fc44ee2c::t_5a2a92684f0ac8 6,11-13
+packages/cli/src/builtin-addons/system-status/buttons/chart/schemas.ts
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 1,3,16,35
+  s_637a62fc44ee2c::t_9574c3262a4d89 2,4-15,17-34,36-38
+config.yml
+  s_637a62fc44ee2c::t_e984648eecd3a2 93,95-99
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 32,37,39,42,44,49,57,60,62-64,70,79,88,90,94,107,110,112-113,117,124,128,132,141,151,161,169,173,177,186,196,206,214,220,223,235,260,263-264
+  s_a419f6381ecb31::t_d7a4b0e540c845 240-259
+packages/cli/src/builtin-addons/system-status/__tests__/display-uptime-formatter.test.ts
+  s_a419f6381ecb31::t_edf13104450d89 4,16,18
+packages/cli/src/builtin-addons/system-status/shared/metrics-catalog.ts
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 2-8,19-20,76-82,85-87,91-96,99-101,105-111,114-116,120-126,129-131,135-141,144-146,150-156,159-161,165-171,173,176-181,184-186,193-197,200-204,207-251,254-256,259-266,269-271,274-286
+  h_f90ee31b03fc41 1,9-18,21-75,83-84,88-90,97-98,102-104,112-113,117-119,127-128,132-134,142-143,147-149,157-158,162-164,172,174-175,182-183,187-192,198-199,205-206,252-253,257-258,267-268,272-273,287-294
+packages/cli/src/ui/surfaces/index.ts
+  s_637a62fc44ee2c::t_1c2edfe6e1806b 6,19-24
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 9
+packages/cli/src/builtin-addons/system-status/domain/chart-sampler.ts
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 1,13
+  h_f90ee31b03fc41 2
+  s_637a62fc44ee2c::t_e18d26d4e709f4 3-7,10-12,14-46,48-53,58
+  s_a419f6381ecb31::t_193526324d0998 47,54-57
+  s_637a62fc44ee2c::t_7e60f82084371a 8-9
+packages/cli/src/builtin-addons/system-status/buttons/kpis/frontend.tsx
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 10
+packages/cli/src/builtin-addons/system-status/__tests__/chart-sampler.test.ts
+  s_637a62fc44ee2c::t_3b8b1abdcf11f7 1,3-8,10-12,18-36,39-45,64-65
+  s_a419f6381ecb31::t_fd95f138c120ed 2,9,13-17,50-63
+  s_637a62fc44ee2c::t_aee43762cc12b2 46-49
+  s_637a62fc44ee2c::t_39b8723b727fdb 37-38
+packages/cli/src/builtin-addons/system-status/buttons/_shared.ts
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 8
+packages/cli/src/builtin-addons/system-status/__tests__/display-bool-formatter.test.ts
+  s_a419f6381ecb31::t_70fe4ad275404c 4
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 159,162
+  h_f90ee31b03fc41 1,3-6,27,29-66,68,71,74-89,91,95,98-100,120-131,133-151,153-155,158,160-161,165
+packages/cli/src/builtin-addons/system-status/buttons/chart/frontend.tsx
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 1-2,7,15-18,34,56-58
+  s_637a62fc44ee2c::t_7f6515ad492a0f 3-6,8-14,19-33,35-55,59-79
+packages/cli/src/builtin-addons/system-status/domain/display-metrics.ts
+  h_f90ee31b03fc41 2-6,38,48,57,79,81,91,99,109
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 7
+  s_a419f6381ecb31::t_3eedd3baae7d2a 34-37,39-43
+packages/cli/src/builtin-addons/system-status/__tests__/manifest.test.ts
+  s_a419f6381ecb31::t_e5622dc8a85490 6,8
+  s_a419f6381ecb31::t_55e3a7b3744bdf 23,28
+packages/cli/src/builtin-addons/system-status/__tests__/catalog.test.ts
+  s_a419f6381ecb31::t_63922dbc0f4bf2 3-6,17
+packages/cli/src/builtin-addons/system-status/__tests__/display-rate-bytes-formatter.test.ts
+  s_a419f6381ecb31::t_4c81a71e4c2d31 4
+packages/cli/src/ui/surfaces/__tests__/ValueChart.test.tsx
+  s_637a62fc44ee2c::t_8aa7cefb7d4953 118,120,122-123,126-127
+  s_637a62fc44ee2c::t_b841c8b3bfabca 124-125,128-131
+  s_637a62fc44ee2c::t_231fdeec41f565 1-28,43-50,55-60,66-68,79,81-85,92-100,105-117,119,132-145
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 29-42,51,61,69-78,80,86-91,101-104,121
+  s_637a62fc44ee2c::t_5f13f338e970ad 52
+  s_637a62fc44ee2c::t_d2468e1da4a853 53-54,62-65
+packages/cli/src/builtin-addons/system-status/manifest.ts
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 1,3-4,12-13,31,59,64
+  s_a419f6381ecb31::t_4a3fe744355a92 69-80
+  s_637a62fc44ee2c::t_59f98dda528324 29-30,32-34,60-63,65-66
+  h_f90ee31b03fc41 90
+packages/cli/src/builtin-addons/system-status/domain/catalog.ts
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 1,3
+  s_637a62fc44ee2c::t_2e13eb79ce91ef 5
+packages/cli/src/builtin-addons/system-status/__tests__/display-percent.test.ts
+  s_a419f6381ecb31::t_e4e738b03d3a2b 4
+packages/cli/src/ui/surfaces/ValueChart.tsx
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 72,81-84,120-121
+  s_637a62fc44ee2c::t_be8ffaf259cd0d 1-71,73-80,85-119,122-191
+packages/cli/src/builtin-addons/system-status/README.md
+  s_a419f6381ecb31::t_a6cf480cdde1bf 3-6,14,51-65
+  s_a419f6381ecb31::t_1389f419b51ac4 104
+  s_a419f6381ecb31::t_20c62774ada085 83
+  s_a419f6381ecb31::t_bb7b30de6b747a 66
+packages/cli/src/builtin-addons/system-status/__tests__/display-count-formatter.test.ts
+  s_a419f6381ecb31::t_4df6dd84658524 4
+packages/cli/src/builtin-addons/system-status/buttons/system-status/schemas.ts
+  s_637a62fc44ee2c::t_6cb457d7ac78f7 6
+  h_f90ee31b03fc41 5
+  s_637a62fc44ee2c::t_010a3c6bd4900b 3-4
+packages/cli/src/ui/theme-presentation.tsx
+  s_637a62fc44ee2c::t_41457f747a60f2 41
+  s_637a62fc44ee2c::t_bfbdd2d75b1d9c 22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "4da25c72fcdc061a19f09881989297bdba246633",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_637a62fc44ee2c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_069c79cd0ffeg4njMzU7bxCE6e",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_a419f6381ecb31": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_065dac2a1ffezs6LX8wiVL8NFP",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
