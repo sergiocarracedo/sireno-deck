@@ -1,0 +1,19 @@
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  s_b950d780eb14d4::t_51ecf359821201 48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "cd477a0b3a5bfeb87ec8efe944362f55ed60b6fd",
+  "prompts": {},
+  "sessions": {
+    "s_b950d780eb14d4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_069e7eb25ffekdFZRfK8YPbVP1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
