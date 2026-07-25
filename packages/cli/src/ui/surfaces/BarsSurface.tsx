@@ -133,7 +133,7 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
                 <Icon source={item.titleIcon} size={12} />
                 <Text
                   align="center"
-                  fit="hidden"
+                  fit="ellipsis"
                   size="xs"
                   tone="primary"
                   typography="main"
@@ -144,7 +144,7 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
             ) : (
               <Text
                 align="center"
-                fit="hidden"
+                fit="ellipsis"
                 size="xs"
                 tone="primary"
                 typography="main"

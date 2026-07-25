@@ -10,6 +10,7 @@ import {
 } from "../../domain"
 import {
   pickLabel,
+  pickShortLabel,
   readSnapshot,
   resolveMetricId,
   useAllMetricChannels,
@@ -30,6 +31,7 @@ const SystemStatusFrontend: AddonFrontendButton<GenericSystemStatusConfig> = ({
   config,
 }) => {
   const channels = useAllMetricChannels()
+  const useShortLabels = config.metrics.length === 3
 
   const items: BarsItem[] = []
   for (const entry of config.metrics) {
@@ -43,8 +45,11 @@ const SystemStatusFrontend: AddonFrontendButton<GenericSystemStatusConfig> = ({
       resolveThresholdColor(display.value ?? 0, def.thresholds) as MetricColor,
     )
     const pct = pctFromDisplay(display.value, display.percentage, maxValue)
+    const title = useShortLabels
+      ? pickShortLabel(entry, pickLabel(entry, def.defaultLabel))
+      : pickLabel(entry, def.defaultLabel)
     items.push({
-      title: pickLabel(entry, def.defaultLabel),
+      title,
       ...(def.icon ? { titleIcon: def.icon } : {}),
       value: pct,
       maxValue,

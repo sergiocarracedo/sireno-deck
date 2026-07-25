@@ -121,3 +121,11 @@ export function pickLabel(entry: unknown, fallback: string): string {
   }
   return fallback
 }
+
+export function pickShortLabel(entry: unknown, fallback: string): string {
+  if (entry && typeof entry === "object" && "shortLabel" in entry) {
+    const value = (entry as { shortLabel?: unknown }).shortLabel
+    if (typeof value === "string" && value.length > 0) return value
+  }
+  return fallback
+}

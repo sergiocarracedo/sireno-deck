@@ -9,16 +9,21 @@ const MetricEntrySchema = z
       .object({
         id: z.enum(SYSTEM_METRIC_IDS),
         label: z.string().min(1).optional(),
+        shortLabel: z.string().min(1).max(3).optional(),
       })
       .strict(),
   ])
-  .transform((entry): { id: SystemMetricId; label?: string } =>
-    typeof entry === "string"
-      ? { id: entry }
-      : {
-          id: entry.id,
-          ...(entry.label !== undefined ? { label: entry.label } : {}),
-        },
+  .transform(
+    (entry): { id: SystemMetricId; label?: string; shortLabel?: string } =>
+      typeof entry === "string"
+        ? { id: entry }
+        : {
+            id: entry.id,
+            ...(entry.label !== undefined ? { label: entry.label } : {}),
+            ...(entry.shortLabel !== undefined
+              ? { shortLabel: entry.shortLabel }
+              : {}),
+          },
   )
 
 export const GenericSystemStatusSchema = z
