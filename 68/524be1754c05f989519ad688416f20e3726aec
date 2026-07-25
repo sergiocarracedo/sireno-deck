@@ -1,0 +1,25 @@
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  s_859b806fa3d906::t_fd08666323424d 33,48-50
+packages/cli/src/ui/surfaces/BarsSurface.tsx
+  s_859b806fa3d906::t_6dac3e2b9043e6 144-147
+packages/cli/src/builtin-addons/system-status/domain/catalog.ts
+  s_859b806fa3d906::t_e232a410989e01 204,219
+  s_859b806fa3d906::t_f9aba60316a5e9 34,49,64,79,94,109,124,135
+  s_859b806fa3d906::t_e52302b9d2e112 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "68524be1754c05f989519ad688416f20e3726aec",
+  "prompts": {},
+  "sessions": {
+    "s_859b806fa3d906": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06a7f6010ffeoNiUK1euefASYs",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
