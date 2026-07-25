@@ -1,0 +1,30 @@
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_b950d780eb14d4::t_51ecf359821201 54
+packages/cli/src/ui/primitives/Label.tsx
+  s_b950d780eb14d4::t_51ecf359821201 71
+packages/cli/src/__tests__/logger-format.test.ts
+  s_b950d780eb14d4::t_c04e3a51a12021 56-57,66,79-101
+packages/cli/src/util/logger.ts
+  s_b950d780eb14d4::t_d1db877f2ee4d5 141,162-164
+  s_b950d780eb14d4::t_51ecf359821201 97-99
+  s_b950d780eb14d4::t_000cdd81a050f1 102-103,116
+  s_b950d780eb14d4::t_c60ffe9e4d5550 65-70,75
+packages/cli/src/ui/primitives/__tests__/Text.test.tsx
+  s_b950d780eb14d4::t_51ecf359821201 225
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "df1a051aa2a8bd4457ce2c87fbe13e3920c7b6a9",
+  "prompts": {},
+  "sessions": {
+    "s_b950d780eb14d4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_069e7eb25ffekdFZRfK8YPbVP1",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
