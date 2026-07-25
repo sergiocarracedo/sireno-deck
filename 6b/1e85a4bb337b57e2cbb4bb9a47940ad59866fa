@@ -1,0 +1,21 @@
+packages/cli/src/ui/primitives/__tests__/Text.test.tsx
+  s_859b806fa3d906::t_0e43683dcbd713 372,390
+packages/cli/src/ui/primitives/Text.tsx
+  s_859b806fa3d906::t_eb19ee4abd2f7f 405-417
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "6b1e85a4bb337b57e2cbb4bb9a47940ad59866fa",
+  "prompts": {},
+  "sessions": {
+    "s_859b806fa3d906": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06a7f6010ffeoNiUK1euefASYs",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
