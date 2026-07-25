@@ -1,0 +1,19 @@
+packages/cli/src/ui/surfaces/ValueChart.tsx
+  s_637a62fc44ee2c::t_49bdf07e523207 111,117
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "6eee3fdcc503d4903e63e94456e49a5b6ce5b80a",
+  "prompts": {},
+  "sessions": {
+    "s_637a62fc44ee2c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_069c79cd0ffeg4njMzU7bxCE6e",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
