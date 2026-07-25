@@ -369,9 +369,55 @@ describe("Text render — autofit", () => {
     expect(root.style.fontSize).toBe("10px")
   })
 
-  it("respects lines prop for multi-line ellipsis at minSize", () => {
+  it("multi-line: compact 1-line preferred when it fits (1-2px shrink)", () => {
     const { container } = render(
-      <Text fit={{ type: "autofit", minSize: 12, lines: 3 }} text="hello" />,
+      <Text fit={{ type: "autofit", minSize: 10, lines: 2 }} text="hi" />,
+    )
+    const root = container.firstElementChild as HTMLElement
+    mockLayout(root, {
+      fontSize: 16,
+      scrollWidth: 80,
+      clientWidth: 200,
+      scrollHeight: 20,
+      clientHeight: 50,
+    })
+    act(() => {
+      ResizeObserverMock.instances[0].trigger([
+        { contentRect: new DOMRectReadOnly(0, 0, 200, 50) },
+      ])
+    })
+    expect(root.getAttribute("data-sireno-text-autofit-state")).toBe("fit")
+    expect(root.style.fontSize).toBe("14px")
+    expect(root.style.WebkitLineClamp).toBe("")
+    expect(root.className).toContain("whitespace-nowrap")
+  })
+
+  it("multi-line: falls back to natural size with clamp when 1-line does not fit", () => {
+    const { container } = render(
+      <Text fit={{ type: "autofit", minSize: 10, lines: 3 }} text="hello" />,
+    )
+    const root = container.firstElementChild as HTMLElement
+    mockLayout(root, {
+      fontSize: 16,
+      scrollWidth: 200,
+      clientWidth: 1,
+      scrollHeight: 40,
+      clientHeight: 200,
+    })
+    act(() => {
+      ResizeObserverMock.instances[0].trigger([
+        { contentRect: new DOMRectReadOnly(0, 0, 1, 200) },
+      ])
+    })
+    expect(root.getAttribute("data-sireno-text-autofit-state")).toBe("fit")
+    expect(root.style.fontSize).toBe("")
+    expect(root.style.WebkitLineClamp).toBe("3")
+    expect(root.className).not.toContain("whitespace-nowrap")
+  })
+
+  it("multi-line: marks ellipsis when content overflows even at natural size", () => {
+    const { container } = render(
+      <Text fit={{ type: "autofit", minSize: 10, lines: 2 }} text="hello" />,
     )
     const root = container.firstElementChild as HTMLElement
     mockLayout(root, {
@@ -379,15 +425,18 @@ describe("Text render — autofit", () => {
       scrollWidth: 200,
       clientWidth: 1,
       scrollHeight: 200,
-      clientHeight: 50,
+      clientHeight: 20,
     })
     act(() => {
       ResizeObserverMock.instances[0].trigger([
-        { contentRect: new DOMRectReadOnly(0, 0, 1, 50) },
+        { contentRect: new DOMRectReadOnly(0, 0, 1, 20) },
       ])
     })
-    expect(root.style.WebkitLineClamp).toBe("3")
-    expect(root.style.fontSize).toBe("12px")
+    expect(root.getAttribute("data-sireno-text-autofit-state")).toBe(
+      "ellipsis",
+    )
+    expect(root.style.fontSize).toBe("")
+    expect(root.style.WebkitLineClamp).toBe("2")
   })
 
   it("disconnects observer on unmount", () => {

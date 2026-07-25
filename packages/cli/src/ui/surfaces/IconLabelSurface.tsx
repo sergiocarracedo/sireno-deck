@@ -23,7 +23,8 @@ export function IconLabelSurface(props: IconLabelSurfaceProps): ReactElement {
   }
 
   const { className: consumerClassName, source, ...rest } = props
-  const layoutClassName = "flex flex-col items-center justify-center gap-1"
+  const layoutClassName =
+    "flex h-full w-full min-w-0 flex-col items-center justify-center gap-1 overflow-hidden"
   const mergedClassName = consumerClassName
     ? `${layoutClassName} ${consumerClassName}`
     : layoutClassName

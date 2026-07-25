@@ -386,9 +386,11 @@ function useAutofit(
   ref: RefObject<HTMLDivElement | null>,
   minSize: number,
   text: string,
-): { fontSize: number | null; state: AutofitState } {
+  lines: number,
+): { fontSize: number | null; state: AutofitState; effectiveLines: number } {
   const [fontSize, setFontSize] = useState<number | null>(null)
   const [state, setState] = useState<AutofitState>("fit")
+  const [effectiveLines, setEffectiveLines] = useState(lines)
 
   useEffect(() => {
     const el = ref.current
@@ -399,6 +401,34 @@ function useAutofit(
       const computed = parseFloat(getComputedStyle(el).fontSize)
       if (!Number.isFinite(computed) || computed <= 0) return
 
+      if (lines > 1) {
+        const compactPx = Math.max(minSize, computed - 2)
+        el.style.fontSize = `${compactPx}px`
+        const prevWhitespace = el.style.whiteSpace
+        el.style.whiteSpace = "nowrap"
+        const compactFits = el.scrollWidth <= el.clientWidth + 1
+        el.style.whiteSpace = prevWhitespace
+
+        if (compactFits) {
+          setFontSize(compactPx)
+          setState("fit")
+          setEffectiveLines(1)
+          return
+        }
+
+        el.style.fontSize = ""
+        const lh = parseFloat(getComputedStyle(el).lineHeight)
+        const lineEm =
+          Number.isFinite(lh) && lh > 0 ? lh : computed * 1.2
+        const expectedHeight = lines * lineEm
+        const multiFits = el.scrollHeight <= expectedHeight + 1
+
+        setFontSize(null)
+        setState(multiFits ? "fit" : "ellipsis")
+        setEffectiveLines(lines)
+        return
+      }
+
       const hi = Math.max(minSize, Math.round(computed))
 
       el.style.fontSize = `${hi}px`
@@ -408,6 +438,7 @@ function useAutofit(
       ) {
         setFontSize(hi)
         setState("fit")
+        setEffectiveLines(1)
         return
       }
 
@@ -433,10 +464,12 @@ function useAutofit(
         el.style.fontSize = `${fitSize}px`
         setFontSize(fitSize)
         setState("fit")
+        setEffectiveLines(1)
       } else {
         el.style.fontSize = `${minSize}px`
         setFontSize(minSize)
         setState("ellipsis")
+        setEffectiveLines(1)
       }
     }
 
@@ -445,9 +478,9 @@ function useAutofit(
     const observer = new ResizeObserver(measure)
     observer.observe(el)
     return () => observer.disconnect()
-  }, [minSize, text, ref])
+  }, [minSize, text, lines, ref])
 
-  return { fontSize, state }
+  return { fontSize, state, effectiveLines }
 }
 
 export interface TextProps {
@@ -501,10 +534,15 @@ export function Text(props: TextProps): ReactElement {
     containerRef,
     isAutofit ? (resolvedFit.minSize ?? 0) : 0,
     props.text,
+    resolvedFit.lines,
   )
 
-  const applyAutofitEllipsis =
-    isAutofit && resolvedFit.lines > 1
+  const effectiveLines = isAutofit
+    ? (autofit.effectiveLines ?? resolvedFit.lines)
+    : resolvedFit.lines
+  const isMultiLineEffective = effectiveLines > 1
+
+  const applyAutofitEllipsis = isAutofit && isMultiLineEffective
 
   const isMultiLineEllipsis =
     (resolvedFit.type === "ellipsis" && resolvedFit.lines > 1) ||
@@ -516,10 +554,9 @@ export function Text(props: TextProps): ReactElement {
       : "overflow-hidden whitespace-nowrap text-ellipsis",
     shrink: "sireno-text-fit-shrink whitespace-normal break-words",
     hidden: "overflow-hidden ",
-    autofit:
-      isAutofit && resolvedFit.lines > 1
-        ? "overflow-hidden"
-        : "overflow-hidden whitespace-nowrap text-ellipsis",
+    autofit: isMultiLineEffective
+      ? "overflow-hidden"
+      : "overflow-hidden whitespace-nowrap text-ellipsis",
   }
   const composedStyle: CSSProperties =
     props.fontStack !== undefined
@@ -529,13 +566,14 @@ export function Text(props: TextProps): ReactElement {
   if (isMultiLineEllipsis) {
     composedStyle.display = "-webkit-box"
     composedStyle.WebkitBoxOrient = "vertical"
-    composedStyle.WebkitLineClamp = resolvedFit.lines
+    composedStyle.WebkitLineClamp = effectiveLines
     composedStyle.overflow = "hidden"
     composedStyle.textOverflow = "ellipsis"
   }
 
-  if (isAutofit && autofit.fontSize !== null) {
-    composedStyle.fontSize = `${autofit.fontSize}px`
+  if (isAutofit) {
+    composedStyle.fontSize =
+      autofit.fontSize !== null ? `${autofit.fontSize}px` : ""
   }
 
   if (lineHeight !== 1) {
