@@ -2,15 +2,25 @@ import { type ReactElement } from "react"
 
 import { useThemeUiPresentation } from "../theme-presentation"
 import { cn } from "../utils/cn"
-import { Text, TextSize, TextWeight } from "./Text"
+import { Text, type TextFit, TextSize, TextWeight } from "./Text"
 
-export const labelVariants = ["primary", "secondary", "small"] as const
+export const labelVariants = ["primary", "secondary", "small", "xxs"] as const
 export type LabelVariant = (typeof labelVariants)[number]
+
+export type LabelFit = "ellipsis" | "autofit"
+
+const VARIANT_AUTOFIT_MIN_PX: Record<LabelVariant, number> = {
+  primary: 10,
+  secondary: 8,
+  small: 8,
+  xxs: 6,
+}
 
 export interface LabelProps {
   text: string
   lines?: 1 | 2 | 3
   variant?: LabelVariant
+  fit?: LabelFit
 }
 
 export function Label(props: LabelProps): ReactElement {
@@ -42,9 +52,24 @@ export function Label(props: LabelProps): ReactElement {
       size: "xs",
       weight: "bold",
     },
+    xxs: {
+      size: "xxs",
+      weight: "bold",
+    },
   }
 
   const variantStyle = variantsStyle[props.variant ?? "primary"]
+  const fitMode = props.fit ?? "ellipsis"
+  const lines = props.lines || 1
+
+  const fit: TextFit =
+    fitMode === "autofit"
+      ? {
+          type: "autofit",
+          minSize: VARIANT_AUTOFIT_MIN_PX[props.variant ?? "primary"],
+          lines,
+        }
+      : { type: "ellipsis", lines, reserveSpace: false }
 
   return (
     <Text
@@ -55,11 +80,7 @@ export function Label(props: LabelProps): ReactElement {
         variantStyle.className,
       )}
       lineHeight={1.25}
-      fit={{
-        type: "ellipsis",
-        lines: props.lines || 1,
-        reserveSpace: false,
-      }}
+      fit={fit}
       tone="primary"
       typography="main"
       text={props.text}

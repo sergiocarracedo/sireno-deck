@@ -68,7 +68,7 @@ already keys both shapes by id string, so quoting does not change semantics
 
 ## Why This Matters
 
-vite-plugin-oxc throws at *transform* time, which means:
+vite-plugin-oxc throws at _transform_ time, which means:
 
 - The Vitest run fails with `transformWithOxc` parse errors and **reports
   zero tests run** for every file that imports the broken module — easy to

@@ -65,12 +65,8 @@ export function useAllMetricChannels(): Record<
   const cpuVoltages = useAddonChannel<MetricPayload>(
     "runtime:system-status:cpu-voltages",
   )
-  const diskIo = useAddonChannel<MetricPayload>(
-    "runtime:system-status:disk-io",
-  )
-  const fanRpm = useAddonChannel<MetricPayload>(
-    "runtime:system-status:fan-rpm",
-  )
+  const diskIo = useAddonChannel<MetricPayload>("runtime:system-status:disk-io")
+  const fanRpm = useAddonChannel<MetricPayload>("runtime:system-status:fan-rpm")
   const gpuTemp = useAddonChannel<MetricPayload>(
     "runtime:system-status:gpu-temp",
   )

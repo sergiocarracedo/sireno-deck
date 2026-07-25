@@ -44,14 +44,29 @@ function RowTile({
           <Text size="lg" weight="bold" text={item.value} tone="primary"></Text>
 
           {item.units ? (
-            <Text size="xs" weight="bold" text={item.units}></Text>
+            <Text
+              size="xs"
+              weight="bold"
+              fit={{ type: "autofit", minSize: 6 }}
+              text={item.units}
+            ></Text>
           ) : null}
         </div>
       </div>
       {showLabel ? (
         <div className={cn("flex items-center justify-center gap-1")}>
-          <Text text={item.label} size="xs"></Text>
-          {item.units ? <Text text={item.units} size="xs"></Text> : null}
+          <Text
+            text={item.label}
+            size="xs"
+            fit={{ type: "autofit", minSize: 6 }}
+          ></Text>
+          {item.units ? (
+            <Text
+              text={item.units}
+              size="xs"
+              fit={{ type: "autofit", minSize: 6 }}
+            ></Text>
+          ) : null}
         </div>
       ) : null}
     </div>

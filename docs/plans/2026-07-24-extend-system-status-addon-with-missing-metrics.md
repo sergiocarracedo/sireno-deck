@@ -12,14 +12,14 @@ Add 8 missing metrics to the `system-status` addon so users can surface every re
 
 ## 2. Settled decisions
 
-| Decision            | Choice                                                                                  | Why                                                            |
-| ------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Network placeholder | Keep `network` (interface count) stub; add `network-read` + `network-write`               | Backward-compat; opt-in throughput                             |
-| GPU vendor scope    | sysfs (amdgpu) + `nvidia-smi` fallback via `execa`                                         | amdgpu zero-cost; NVIDIA works if `nvidia-smi` is installed    |
-| Per-device collapse | First match by preference order                                                         | Fits the 1–3 line kpis surface; per-device IDs deferred        |
-| New formatters      | Add `bool` ("ON"/"OFF") + `rate-bytes` ("5.2 MB/s")                                        | Cleanest UX; ~30 LOC in `display-metrics.ts`                   |
-| Platform policy     | Linux-first; `available:false` elsewhere                                                  | Matches `swap`, `battery`, `temperature`, `processes`           |
-| Unavailable display | `—` via existing `toDisplayMetric` branch                                                 | No change                                                      |
+| Decision            | Choice                                                                      | Why                                                         |
+| ------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Network placeholder | Keep `network` (interface count) stub; add `network-read` + `network-write` | Backward-compat; opt-in throughput                          |
+| GPU vendor scope    | sysfs (amdgpu) + `nvidia-smi` fallback via `execa`                          | amdgpu zero-cost; NVIDIA works if `nvidia-smi` is installed |
+| Per-device collapse | First match by preference order                                             | Fits the 1–3 line kpis surface; per-device IDs deferred     |
+| New formatters      | Add `bool` ("ON"/"OFF") + `rate-bytes` ("5.2 MB/s")                         | Cleanest UX; ~30 LOC in `display-metrics.ts`                |
+| Platform policy     | Linux-first; `available:false` elsewhere                                    | Matches `swap`, `battery`, `temperature`, `processes`       |
+| Unavailable display | `—` via existing `toDisplayMetric` branch                                   | No change                                                   |
 
 ## 3. Metric specifications
 
@@ -27,16 +27,16 @@ Add 8 missing metrics to the `system-status` addon so users can surface every re
 
 New metrics:
 
-| ID              | Source                                                                                                                                                                          | Unit   | Views       | Formatter  | Default label | Icon                       |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ----------- | ---------- | ------------- | -------------------------- |
-| `cpu-boost`     | `/sys/devices/system/cpu/cpufreq/boost` (Intel); `/sys/devices/system/cpu/intel_pstate/no_turbo` (negated) — preference order                                                  | on/off | kpis        | bool       | Boost         | `icon://zap`               |
-| `disk-io`       | Sum `sectors_read` + `sectors_written` from `/proc/diskstats` across non-virtual block devices (skip loop/ram/dm-/md-); delta over poll interval                                | B/s    | kpis        | rate-bytes | Disk I/O      | `icon://arrow-down-up`     |
-| `gpu-temp`      | sysfs `/sys/class/drm/card*/device/hwmon/hwmon*/temp1_input` (m°C → °C); fallback `nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits` (execa, 100 ms timeout) | °C     | bars, kpis  | count      | GPU Temp      | `icon://thermometer-sun`   |
-| `gpu-usage`     | sysfs `/sys/class/drm/card*/device/gpu_busy_percent`; fallback `nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits`                                            | %      | bars, kpis  | percent    | GPU           | `icon://microchip`         |
-| `fan-rpm`       | First `fan1_input` across `/sys/class/hwmon/hwmon*/fan1_input`                                                                                                                  | RPM    | kpis        | count      | Fan           | `icon://fan`               |
-| `network-read`  | Sum `rx_bytes` across non-loopback / non-virtual `/sys/class/net/*/statistics/rx_bytes`; delta over poll interval                                                                | B/s    | kpis        | rate-bytes | Net RX        | `icon://arrow-down`        |
-| `network-write` | Same path, `tx_bytes`                                                                                                                                                          | B/s    | kpis        | rate-bytes | Net TX        | `icon://arrow-up`          |
-| `cpu-voltages`  | First `in0_input` (mV) from a hwmon whose `name` matches `/k10temp|zenpower|coretemp/`; convert mV → V                                                                          | V      | kpis        | count      | Vcore         | `icon://bolt`              |
+| ID              | Source                                                                                                                                                                           | Unit     | Views                      | Formatter  | Default label | Icon                     |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------------------------- | ---------- | ------------- | ------------------------ |
+| `cpu-boost`     | `/sys/devices/system/cpu/cpufreq/boost` (Intel); `/sys/devices/system/cpu/intel_pstate/no_turbo` (negated) — preference order                                                    | on/off   | kpis                       | bool       | Boost         | `icon://zap`             |
+| `disk-io`       | Sum `sectors_read` + `sectors_written` from `/proc/diskstats` across non-virtual block devices (skip loop/ram/dm-/md-); delta over poll interval                                 | B/s      | kpis                       | rate-bytes | Disk I/O      | `icon://arrow-down-up`   |
+| `gpu-temp`      | sysfs `/sys/class/drm/card*/device/hwmon/hwmon*/temp1_input` (m°C → °C); fallback `nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits` (execa, 100 ms timeout) | °C       | bars, kpis                 | count      | GPU Temp      | `icon://thermometer-sun` |
+| `gpu-usage`     | sysfs `/sys/class/drm/card*/device/gpu_busy_percent`; fallback `nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits`                                            | %        | bars, kpis                 | percent    | GPU           | `icon://microchip`       |
+| `fan-rpm`       | First `fan1_input` across `/sys/class/hwmon/hwmon*/fan1_input`                                                                                                                   | RPM      | kpis                       | count      | Fan           | `icon://fan`             |
+| `network-read`  | Sum `rx_bytes` across non-loopback / non-virtual `/sys/class/net/*/statistics/rx_bytes`; delta over poll interval                                                                | B/s      | kpis                       | rate-bytes | Net RX        | `icon://arrow-down`      |
+| `network-write` | Same path, `tx_bytes`                                                                                                                                                            | B/s      | kpis                       | rate-bytes | Net TX        | `icon://arrow-up`        |
+| `cpu-voltages`  | First `in0_input` (mV) from a hwmon whose `name` matches `/k10temp                                                                                                               | zenpower | coretemp/`; convert mV → V | V          | kpis          | count                    | Vcore | `icon://bolt` |
 
 All new probes return `available:false` on non-Linux platforms and on missing/empty files (existing `try { ... } catch { available:false }` wrapper). Delta-based probes (`disk-io`, `network-read`, `network-write`) follow the existing `probeCpu` pattern: module-level `prevSample` snapshot, return `value:0` on first sample or counter reset (guard `total <= prev.total`).
 

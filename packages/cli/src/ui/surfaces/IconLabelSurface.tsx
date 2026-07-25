@@ -23,7 +23,8 @@ export function IconLabelSurface(props: IconLabelSurfaceProps): ReactElement {
   }
 
   const { className: consumerClassName, source, ...rest } = props
-  const layoutClassName = "flex flex-col items-center justify-center gap-1"
+  const layoutClassName =
+    "flex h-full w-full min-w-0 flex-col items-center justify-center gap-1 overflow-hidden"
   const mergedClassName = consumerClassName
     ? `${layoutClassName} ${consumerClassName}`
     : layoutClassName
@@ -43,9 +44,9 @@ export function IconLabelSurface(props: IconLabelSurfaceProps): ReactElement {
   return (
     <div className={mergedClassName} {...rest}>
       {iconContent}
-      <Label text={props.label} variant={props.variant} lines={2} />
+      <Label text={props.label} variant={props.variant} lines={2} fit="autofit" />
       {props.details !== undefined && props.details.length > 0 && (
-        <Label text={props.details} variant="small" />
+        <Label text={props.details} variant="small" fit="autofit" />
       )}
     </div>
   )

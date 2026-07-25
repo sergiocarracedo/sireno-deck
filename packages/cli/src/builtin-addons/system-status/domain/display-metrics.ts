@@ -21,8 +21,7 @@ export interface FormattedValue {
 
 function formatBytes(value: number): FormattedValue {
   if (value < 1024) return { value: String(value), unit: "B" }
-  if (value < 1024 ** 2)
-    return { value: (value / 1024).toFixed(1), unit: "KB" }
+  if (value < 1024 ** 2) return { value: (value / 1024).toFixed(1), unit: "KB" }
   if (value < 1024 ** 3)
     return { value: (value / 1024 ** 2).toFixed(1), unit: "MB" }
   if (value < 1024 ** 4)
