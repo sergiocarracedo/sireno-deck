@@ -17,6 +17,7 @@ export interface MetricThreshold {
 export interface MetricDef {
   readonly id: SystemMetricId
   readonly defaultLabel: string
+  readonly defaultShortLabel?: string
   readonly icon?: string
   readonly unit?: string
   readonly formatter: SystemStatusFormatter
@@ -30,6 +31,7 @@ export const METRICS_CATALOG: Readonly<Record<SystemMetricId, MetricDef>> = {
   cpu: {
     id: "cpu",
     defaultLabel: "CPU",
+    defaultShortLabel: "CPU",
     icon: "icon://cpu",
     unit: "%",
     formatter: "percent",
@@ -44,6 +46,7 @@ export const METRICS_CATALOG: Readonly<Record<SystemMetricId, MetricDef>> = {
   ram: {
     id: "ram",
     defaultLabel: "RAM",
+    defaultShortLabel: "RAM",
     icon: "icon://memory-stick",
     unit: "%",
     formatter: "percent",
@@ -58,6 +61,7 @@ export const METRICS_CATALOG: Readonly<Record<SystemMetricId, MetricDef>> = {
   swap: {
     id: "swap",
     defaultLabel: "Swap",
+    defaultShortLabel: "SWP",
     icon: "icon://repeat",
     unit: "%",
     formatter: "percent",
@@ -72,6 +76,7 @@ export const METRICS_CATALOG: Readonly<Record<SystemMetricId, MetricDef>> = {
   disk: {
     id: "disk",
     defaultLabel: "Disk",
+    defaultShortLabel: "DSK",
     icon: "icon://hard-drive",
     unit: "%",
     formatter: "percent",
@@ -86,6 +91,7 @@ export const METRICS_CATALOG: Readonly<Record<SystemMetricId, MetricDef>> = {
   battery: {
     id: "battery",
     defaultLabel: "Battery",
+    defaultShortLabel: "BAT",
     icon: "icon://battery",
     unit: "%",
     formatter: "percent",
@@ -100,6 +106,7 @@ export const METRICS_CATALOG: Readonly<Record<SystemMetricId, MetricDef>> = {
   temperature: {
     id: "temperature",
     defaultLabel: "Temp",
+    defaultShortLabel: "TMP",
     icon: "icon://thermometer",
     unit: "°C",
     formatter: "count",
@@ -114,6 +121,7 @@ export const METRICS_CATALOG: Readonly<Record<SystemMetricId, MetricDef>> = {
   frequency: {
     id: "frequency",
     defaultLabel: "Freq",
+    defaultShortLabel: "FRQ",
     icon: "icon://activity",
     unit: "GHz",
     formatter: "frequency-ghz",
@@ -124,6 +132,7 @@ export const METRICS_CATALOG: Readonly<Record<SystemMetricId, MetricDef>> = {
   load: {
     id: "load",
     defaultLabel: "Load",
+    defaultShortLabel: "LD",
     icon: "icon://gauge",
     formatter: "count",
     views: ["bars", "kpis"],
@@ -192,6 +201,7 @@ export const METRICS_CATALOG: Readonly<Record<SystemMetricId, MetricDef>> = {
   "gpu-temp": {
     id: "gpu-temp",
     defaultLabel: "GPU Temp",
+    defaultShortLabel: "GTT",
     icon: "icon://thermometer-sun",
     formatter: "count",
     unit: "°C",
@@ -206,6 +216,7 @@ export const METRICS_CATALOG: Readonly<Record<SystemMetricId, MetricDef>> = {
   "gpu-usage": {
     id: "gpu-usage",
     defaultLabel: "GPU",
+    defaultShortLabel: "GPU",
     icon: "icon://microchip",
     formatter: "percent",
     unit: "%",

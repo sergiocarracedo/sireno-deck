@@ -141,6 +141,10 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
                   text={item.title}
                 />
               </div>
+            ) : item.titleIcon ? (
+              <div className="flex items-center justify-center">
+                <Icon source={item.titleIcon} size={12} />
+              </div>
             ) : (
               <Text
                 align="center"
