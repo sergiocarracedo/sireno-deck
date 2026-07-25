@@ -1,0 +1,50 @@
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  s_859b806fa3d906::t_ce6abb5e6bed55 48
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_859b806fa3d906::t_53e1ea76721eb6 47-52,58-69
+config.yml
+  s_859b806fa3d906::t_571e128ff4d7b8 229-251
+  h_f90ee31b03fc41 32,37,39,42,44-45,49,57,60,62-64,70,79,88-90,92-98,100,103,105-106,110,117,121,125,134,144,154,162,166,170,179,189,199,207,213,216,228
+  s_859b806fa3d906::t_7462ae2ea77747 91
+packages/cli/src/ui/primitives/__tests__/Text.test.tsx
+  s_859b806fa3d906::t_67a1173f90bed9 59-75,92,103
+  s_859b806fa3d906::t_3ba83051456ec2 347-351,363-367,383-387
+  s_859b806fa3d906::t_146a7126726fb1 16
+  s_859b806fa3d906::t_2fe08b9e1658e4 361-362,376-382,388
+  s_859b806fa3d906::t_0d59c8b26d5374 5,49-50,52-55,76-91,93-99,101,259,374
+  s_859b806fa3d906::t_7b7b4ab85231d6 3
+  s_859b806fa3d906::t_0ca2f07fefe9e3 285
+  s_859b806fa3d906::t_d16fa8a872ed5e 2,10-12,15,19-22,24-48,51,56-58,105-108,110-117,120,122-135,141-143,147-148,152-154,161-163,168-206,209,241,244-245,252,268,280,291,301,307-308,314-346,352-360,368-373,375,389-400
+  s_859b806fa3d906::t_1c5a8cfa878172 109
+  s_859b806fa3d906::t_bd39e276535ef5 401-403
+docs/plans/2026-07-24-text-xxs-autofit.md
+  s_859b806fa3d906::t_0d59c8b26d5374 20-31,35,44,53,155,169,175,197
+packages/cli/src/ui/primitives/Text.tsx
+  s_859b806fa3d906::t_0ce9f87eea4382 396
+  s_859b806fa3d906::t_7e344cbc180c62 4-6,9,59,80,322,328-335,346-347,349-350,353,362-374,378,383-395,397-452,498-504,506-507,510-511,519,534-535,558,574
+  s_859b806fa3d906::t_0d59c8b26d5374 348
+  s_859b806fa3d906::t_bd39e276535ef5 505,536-537
+packages/cli/src/ui/primitives/Label.tsx
+  s_859b806fa3d906::t_27a13b04a1a0bb 5,7,10-18,23,55-58,62-72,83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "dafa64b2f183878c44ff3a8e013273624485f763",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_859b806fa3d906": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06a7f6010ffeoNiUK1euefASYs",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
