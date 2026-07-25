@@ -1,0 +1,36 @@
+packages/cli/src/ui/primitives/__tests__/Text.test.tsx
+  s_859b806fa3d906::t_e6c004deeca883 15
+  s_859b806fa3d906::t_ddc06dfd2ec603 121
+  s_859b806fa3d906::t_f85e2eeb17323b 495-502,507
+  s_859b806fa3d906::t_ea4f956503f443 57
+  s_859b806fa3d906::t_934a9ef8460f02 408,413-415,420,429-455,459,464-470,475,483-486,490,515,518
+packages/cli/src/ui/primitives/Text.tsx
+  s_859b806fa3d906::t_3e4673e71032ea 426-429,431-433
+  s_859b806fa3d906::t_ec3fd84f1051e6 445-446,462,474,488
+  s_859b806fa3d906::t_16e3be777cdb87 553,555,561,567
+  s_859b806fa3d906::t_dc403ddc64e7bc 402,404-407,409-410
+  s_859b806fa3d906::t_b9477761992067 425,434,436,440
+  s_859b806fa3d906::t_c0d16e774dc536 408
+  s_859b806fa3d906::t_829e76f4ea76b5 400-401,403,430,435,437-439,454-460,469,471-473,475-487,489-491,493,500
+  s_859b806fa3d906::t_0e6506958a91fc 557-560,562-566,568-569
+  s_859b806fa3d906::t_3ebe73cc2f301f 411
+  s_859b806fa3d906::t_22ecc807e422b1 441
+config.yml
+  s_859b806fa3d906::t_8232e26dbb31a0 267-286
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "a8764cdaf32adec6d80108292a30722570d40633",
+  "prompts": {},
+  "sessions": {
+    "s_859b806fa3d906": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06a7f6010ffeoNiUK1euefASYs",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
