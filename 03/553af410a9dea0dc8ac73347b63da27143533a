@@ -1,0 +1,31 @@
+packages/cli/src/ui/primitives/Text.tsx
+  s_859b806fa3d906::t_30c4c27d69fba6 318
+  s_859b806fa3d906::t_8419ed0489654d 409,423,426
+config.yml
+  s_859b806fa3d906::t_dfe174a8169933 233,235-237,239-241
+packages/cli/src/ui/primitives/Label.tsx
+  s_859b806fa3d906::t_d0e6d632a4f321 53,71
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  s_859b806fa3d906::t_ad7683a5356748 47
+  s_859b806fa3d906::t_6faee27d84bbe9 49
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_859b806fa3d906::t_7cd038a8d5c30d 47,53,55
+packages/cli/src/ui/primitives/__tests__/Text.test.tsx
+  s_859b806fa3d906::t_355e4c0556c9ff 2-3,225
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "03553af410a9dea0dc8ac73347b63da27143533a",
+  "prompts": {},
+  "sessions": {
+    "s_859b806fa3d906": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06a7f6010ffeoNiUK1euefASYs",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
