@@ -402,9 +402,21 @@ function useAutofit(
       if (!Number.isFinite(computed) || computed <= 0) return
 
       if (lines > 1) {
+        const prevWhitespace = el.style.whiteSpace
+        el.style.whiteSpace = "nowrap"
+        el.style.fontSize = ""
+        const naturalOneLineFits = el.scrollWidth <= el.clientWidth + 1
+        el.style.whiteSpace = prevWhitespace
+
+        if (naturalOneLineFits) {
+          setFontSize(null)
+          setState("fit")
+          setEffectiveLines(1)
+          return
+        }
+
         const compactPx = Math.max(minSize, computed - 2)
         el.style.fontSize = `${compactPx}px`
-        const prevWhitespace = el.style.whiteSpace
         el.style.whiteSpace = "nowrap"
         const compactFits = el.scrollWidth <= el.clientWidth + 1
         el.style.whiteSpace = prevWhitespace

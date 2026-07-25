@@ -369,7 +369,7 @@ describe("Text render — autofit", () => {
     expect(root.style.fontSize).toBe("10px")
   })
 
-  it("multi-line: compact 1-line preferred when it fits (1-2px shrink)", () => {
+  it("multi-line: natural 1-line preferred when it fits (no shrink)", () => {
     const { container } = render(
       <Text fit={{ type: "autofit", minSize: 10, lines: 2 }} text="hi" />,
     )
@@ -387,7 +387,7 @@ describe("Text render — autofit", () => {
       ])
     })
     expect(root.getAttribute("data-sireno-text-autofit-state")).toBe("fit")
-    expect(root.style.fontSize).toBe("14px")
+    expect(root.style.fontSize).toBe("")
     expect(root.style.WebkitLineClamp).toBe("")
     expect(root.className).toContain("whitespace-nowrap")
   })
