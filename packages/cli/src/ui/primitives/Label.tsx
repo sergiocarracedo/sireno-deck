@@ -7,20 +7,10 @@ import { Text, type TextFit, TextSize, TextWeight } from "./Text"
 export const labelVariants = ["primary", "secondary", "small", "xxs"] as const
 export type LabelVariant = (typeof labelVariants)[number]
 
-export type LabelFit = "ellipsis" | "autofit"
-
-const VARIANT_AUTOFIT_MIN_PX: Record<LabelVariant, number> = {
-  primary: 10,
-  secondary: 8,
-  small: 8,
-  xxs: 6,
-}
-
 export interface LabelProps {
   text: string
   lines?: 1 | 2 | 3
   variant?: LabelVariant
-  fit?: LabelFit
 }
 
 export function Label(props: LabelProps): ReactElement {
@@ -59,17 +49,8 @@ export function Label(props: LabelProps): ReactElement {
   }
 
   const variantStyle = variantsStyle[props.variant ?? "primary"]
-  const fitMode = props.fit ?? "ellipsis"
   const lines = props.lines || 1
-
-  const fit: TextFit =
-    fitMode === "autofit"
-      ? {
-          type: "autofit",
-          minSize: VARIANT_AUTOFIT_MIN_PX[props.variant ?? "primary"],
-          lines,
-        }
-      : { type: "ellipsis", lines, reserveSpace: false }
+  const fit: TextFit = { type: "ellipsis", lines, reserveSpace: false }
 
   return (
     <Text

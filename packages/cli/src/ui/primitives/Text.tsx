@@ -1,12 +1,8 @@
 import {
   createElement,
   type CSSProperties,
-  type RefObject,
-  useEffect,
-  useRef,
   type ReactElement,
   type ReactNode,
-  useState,
 } from "react"
 
 import { useThemeUiPresentation } from "../theme-presentation"
@@ -319,20 +315,18 @@ function renderTextChildren(
 
 export type TextAlign = keyof typeof ALIGN_CLASS
 
-export type TextFitType = "ellipsis" | "shrink" | "hidden" | "autofit"
+export type TextFitType = "ellipsis" | "shrink" | "hidden"
 
 export type TextFit = {
   type: TextFitType
   lines?: 1 | 2 | 3
   reserveSpace?: boolean
-  minSize?: number
 }
 
 export type ResolvedTextFit = {
   type: TextFitType
   lines: 1 | 2 | 3
   reserveSpace: boolean
-  minSize?: number
 }
 
 export type TextTone = keyof typeof TONE_CLASS
@@ -359,217 +353,11 @@ export function resolveTextFit(
     }
   }
 
-  if (fit.type === "autofit") {
-    if (typeof fit.minSize !== "number" || !Number.isFinite(fit.minSize)) {
-      throw new Error(
-        "Text: autofit fit requires a numeric `minSize` (px floor).",
-      )
-    }
-    return {
-      type: "autofit",
-      lines: clampLines(fit.lines),
-      reserveSpace: false,
-      minSize: fit.minSize,
-    }
-  }
-
   return {
     type: fit.type,
     lines: clampLines(fit.lines),
     reserveSpace: fit.reserveSpace ?? false,
   }
-}
-
-type AutofitState = "fit" | "ellipsis"
-
-function useAutofit(
-  ref: RefObject<HTMLDivElement | null>,
-  minSize: number,
-  text: string,
-  lines: number,
-): { fontSize: number | null; state: AutofitState; effectiveLines: number } {
-  const [fontSize, setFontSize] = useState<number | null>(null)
-  const [state, setState] = useState<AutofitState>("fit")
-  const [effectiveLines, setEffectiveLines] = useState(lines)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    if (minSize <= 0) return
-
-    const STEP = 1
-    const ONE_LINE_REDUCE_LIMIT = 3
-    let pending: number | null = null
-
-    const schedule = () => {
-      if (pending !== null) return
-      pending = requestAnimationFrame(() => {
-        pending = null
-        measure()
-      })
-    }
-
-    const measure = () => {
-      const computed = parseFloat(getComputedStyle(el).fontSize)
-      if (!Number.isFinite(computed) || computed <= 0) return
-
-      const restoreInline = () => {
-        el.style.fontSize = ""
-        el.style.whiteSpace = ""
-        el.style.display = ""
-        ;(el.style as CSSProperties & Record<string, string>)[
-          "WebkitLineClamp"
-        ] = ""
-      }
-
-      const measureTextWidth = () => {
-        const prevOverflow = el.style.overflow
-        const prevTextOverflow = el.style.textOverflow
-        el.style.overflow = "visible"
-        el.style.textOverflow = ""
-        el.style.whiteSpace = "nowrap"
-        const w = el.scrollWidth
-        el.style.overflow = prevOverflow
-        el.style.textOverflow = prevTextOverflow
-        return w
-      }
-      const measureTextHeight = () => {
-        el.style.whiteSpace = ""
-        return el.scrollHeight
-      }
-      const containerWidth = () => el.clientWidth
-
-      if (lines > 1) {
-        // Phase 1: natural 1-line check
-        restoreInline()
-        const containerW = containerWidth()
-        if (measureTextWidth() <= containerW + 1) {
-          restoreInline()
-          setFontSize(null)
-          setState("fit")
-          setEffectiveLines(1)
-          return
-        }
-
-        // Phase 2: reduce 1-line, capped at natural - ONE_LINE_REDUCE_LIMIT
-        const oneLineFloor = Math.max(
-          minSize,
-          Math.floor(computed) - ONE_LINE_REDUCE_LIMIT,
-        )
-        let size = Math.floor(computed) - STEP
-        for (; size >= oneLineFloor; size -= STEP) {
-          el.style.fontSize = `${size}px`
-          if (measureTextWidth() <= containerW + 1) {
-            restoreInline()
-            setFontSize(size)
-            setState("fit")
-            setEffectiveLines(1)
-            return
-          }
-        }
-
-        // Phase 3: reset to natural, try multi-line at natural
-        restoreInline()
-        el.style.fontSize = ""
-        const naturalMultiHeight = measureTextHeight()
-        const naturalLineEm = parseFloat(getComputedStyle(el).lineHeight) || computed * 1.2
-        if (naturalMultiHeight <= lines * naturalLineEm + 1) {
-          restoreInline()
-          setFontSize(null)
-          setState("fit")
-          setEffectiveLines(lines)
-          return
-        }
-
-        // Phase 4: reduce for multi-line, down to minSize
-        const multiStart = Math.floor(computed) - STEP
-        for (let s = multiStart; s >= minSize; s -= STEP) {
-          el.style.fontSize = `${s}px`
-          const sh = measureTextHeight()
-          const lh =
-            parseFloat(getComputedStyle(el).lineHeight) || s * 1.2
-          if (sh <= lines * lh + 1) {
-            restoreInline()
-            setFontSize(s)
-            setState("fit")
-            setEffectiveLines(lines)
-            return
-          }
-        }
-
-        // Phase 5: nothing fit, ellipsis at minSize
-        restoreInline()
-        setFontSize(minSize)
-        setState("ellipsis")
-        setEffectiveLines(lines)
-        return
-      }
-
-      // lines === 1: binary search between natural and minSize
-      const hi = Math.max(minSize, Math.round(computed))
-
-      el.style.fontSize = `${hi}px`
-      if (
-        el.scrollWidth <= el.clientWidth + 1 &&
-        el.scrollHeight <= el.clientHeight + 1
-      ) {
-        setFontSize(hi)
-        setState("fit")
-        setEffectiveLines(1)
-        return
-      }
-
-      let lo = minSize
-      let high = hi
-      let fitSize = lo
-
-      while (high - lo > 1) {
-        const mid = Math.floor((lo + high) / 2)
-        el.style.fontSize = `${mid}px`
-        if (
-          el.scrollWidth <= el.clientWidth + 1 &&
-          el.scrollHeight <= el.clientHeight + 1
-        ) {
-          fitSize = mid
-          lo = mid
-        } else {
-          high = mid
-        }
-      }
-
-      if (fitSize > minSize) {
-        el.style.fontSize = `${fitSize}px`
-        setFontSize(fitSize)
-        setState("fit")
-        setEffectiveLines(1)
-      } else {
-        el.style.fontSize = `${minSize}px`
-        setFontSize(minSize)
-        setState("ellipsis")
-        setEffectiveLines(1)
-      }
-    }
-
-    schedule()
-
-    const observer = new ResizeObserver(schedule)
-    observer.observe(el)
-
-    let cancelled = false
-    if (typeof document !== "undefined" && document.fonts?.ready) {
-      document.fonts.ready.then(() => {
-        if (!cancelled) schedule()
-      })
-    }
-
-    return () => {
-      cancelled = true
-      if (pending !== null) cancelAnimationFrame(pending)
-      observer.disconnect()
-    }
-  }, [minSize, text, lines, ref])
-
-  return { fontSize, state, effectiveLines }
 }
 
 export interface TextProps {
@@ -617,25 +405,8 @@ export function Text(props: TextProps): ReactElement {
   }
 
   const resolvedFit = resolveTextFit(fit)
-  const isAutofit = resolvedFit.type === "autofit"
-  const containerRef = useRef<HTMLDivElement>(null)
-  const autofit = useAutofit(
-    containerRef,
-    isAutofit ? (resolvedFit.minSize ?? 0) : 0,
-    props.text,
-    resolvedFit.lines,
-  )
-
-  const effectiveLines = isAutofit
-    ? (autofit.effectiveLines ?? resolvedFit.lines)
-    : resolvedFit.lines
-  const isMultiLineEffective = effectiveLines > 1
-
-  const applyAutofitEllipsis = isAutofit && isMultiLineEffective
-
   const isMultiLineEllipsis =
-    (resolvedFit.type === "ellipsis" && resolvedFit.lines > 1) ||
-    applyAutofitEllipsis
+    resolvedFit.type === "ellipsis" && resolvedFit.lines > 1
 
   const fitModesClasses: Record<TextFitType, string> = {
     ellipsis: isMultiLineEllipsis
@@ -643,25 +414,17 @@ export function Text(props: TextProps): ReactElement {
       : "overflow-hidden whitespace-nowrap text-ellipsis",
     shrink: "sireno-text-fit-shrink whitespace-normal break-words",
     hidden: "overflow-hidden ",
-    autofit: isMultiLineEffective
-      ? "overflow-hidden"
-      : "overflow-hidden whitespace-nowrap text-ellipsis",
   }
   const composedStyle: CSSProperties =
     props.fontStack !== undefined
       ? { ...props.style, fontFamily: props.fontStack }
       : (props.style ?? {})
 
-if (isMultiLineEllipsis) {
+  if (isMultiLineEllipsis) {
     ;(composedStyle as CSSProperties & Record<string, string>)[
       "--sireno-text-lines"
-    ] = String(effectiveLines)
+    ] = String(resolvedFit.lines)
     composedStyle.overflow = "hidden"
-  }
-
-  if (isAutofit) {
-    composedStyle.fontSize =
-      autofit.fontSize !== null ? `${autofit.fontSize}px` : ""
   }
 
   if (lineHeight !== 1) {
@@ -684,7 +447,6 @@ if (isMultiLineEllipsis) {
   const dataFit = `${resolvedFit.type}-${resolvedFit.lines}`
   return (
     <div
-      ref={containerRef}
       className={cn([
         "block max-w-full min-w-0 leading-tight",
         TYPOGRAPHY_CLASS[typography],
@@ -701,7 +463,6 @@ if (isMultiLineEllipsis) {
         resolvedFit.type === "shrink" ? "pending" : undefined
       }
       data-sireno-text-size={size}
-      data-sireno-text-autofit-state={isAutofit ? autofit.state : undefined}
       data-sireno-ui-text="true"
       style={composedStyle}
     >

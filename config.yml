@@ -230,60 +230,15 @@ decks:
     name: Test
     icon: icon://flask-conical
     buttons:
-      - type: 'system-status:kpis'
+      - type: 'date-time:time'
         config:
-          metrics:
-            - id: cpu
-              label: 'CPU'
-            - id: ram
-              label: 'An Extremely Long RAM Label That Should Overflow And Shrink'
-      - type: 'system-status:system-status'
+          variant: big
+      - type: 'date-time:date'
+      - type: 'core:change-deck'
         config:
-          metrics:
-            - id: cpu
-              label: 'CPU Frequency In Gigahertz Which Is Quite Long'
-            - id: ram
-              label: 'Used / Total Memory Usage Indicator Label'
-      - type: 'core:action'
-        config:
-          icon: icon://check
-          label: Short
-      - type: 'core:action'
-        config:
-          icon: icon://globe
-          label: Medium Length Label Here
-      - type: 'core:action'
-        config:
-          icon: icon://message-square
-          label: A Rather Long Action Button Label That Will Probably Overflow
-      - type: 'core:action'
-        config:
-          icon: icon://file-text
-          label: An Extremely Long Action Label That Should Definitely Overflow And Trigger The Autofit Shrinking Behavior
-      - type: 'core:action'
-        config:
-          icon: icon://scroll-text
-          label: An Absurdly Excessive Extraordinarily Verbose Extra Long Action Button Label That Will Certainly Overflow Even On The Widest Of Button Configurations Indefinitely Repeating Pad Pad Pad
-      - type: 'core:action'
-        config:
-          icon: icon://layout-grid
-          label: OVERVIEW
-      - type: 'core:action'
-        config:
-          icon: icon://menu
-          label: MAIN MENU
-      - type: 'core:action'
-        config:
-          icon: icon://zap
-          label: QUICK VIEW
-      - type: 'core:action'
-        config:
-          icon: icon://gauge
-          label: DASHBOARD
-      - type: 'core:action'
-        config:
-          icon: icon://cpu
-          label: SYSTEM INFO
+          deck: main
+          icon: icon://arrow-left
+          label: Main
 
 logging:
   level: info
