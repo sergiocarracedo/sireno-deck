@@ -51,9 +51,7 @@ function RowTile({
       {showLabel ? (
         <div className={cn("flex items-center justify-center gap-1")}>
           <Text text={item.label} size="xs"></Text>
-          {item.units ? (
-            <Text text={item.units} size="xs"></Text>
-          ) : null}
+          {item.units ? <Text text={item.units} size="xs"></Text> : null}
         </div>
       ) : null}
     </div>

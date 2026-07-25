@@ -10,7 +10,6 @@ export interface CreateLoggerOptions {
   level?: LoggerOptions["level"]
   verbose?: boolean
   json?: boolean
-  compact?: boolean
 }
 
 const RESET = "\u001b[0m"
@@ -18,7 +17,6 @@ const DIM = "\u001b[2m"
 const RED = "\u001b[31m"
 const YELLOW = "\u001b[33m"
 const CYAN = "\u001b[36m"
-const MAGENTA = "\u001b[35m"
 const GRAY = "\u001b[90m"
 
 const LEVEL_COLOR: Record<number, string> = {
@@ -64,44 +62,6 @@ const CONTEXT_FIELDS = [
   "fullPath",
 ] as const
 
-const formatContext = (entry: Record<string, unknown>): string[] => {
-  const lines: string[] = []
-  for (const key of CONTEXT_FIELDS) {
-    const value = entry[key]
-    if (value === undefined || value === null) continue
-    const display = typeof value === "string" ? value : JSON.stringify(value)
-    if (display.length === 0) continue
-    lines.push(`  ${colorize(DIM, `${key}:`)} ${display}`)
-  }
-  return lines
-}
-
-// ponytail: compact format collapses context into one line "{msg} ({key: val, ...})"
-// — structured fields still queryable via ndjson, but readable on a terminal.
-const formatCompact = (entry: Record<string, unknown>): string => {
-  const levelNum = typeof entry["level"] === "number" ? entry["level"] : 30
-  const level = LEVEL_LABEL[levelNum] ?? "INFO"
-  const levelColor = LEVEL_COLOR[levelNum] ?? CYAN
-  const time =
-    typeof entry["time"] === "number"
-      ? new Date(entry["time"]).toISOString().slice(11, 19)
-      : ""
-  const ts = colorize(DIM, time.length > 0 ? `${time} ` : "")
-  const head = colorize(levelColor, level.padEnd(5))
-  const msg = typeof entry["msg"] === "string" ? entry["msg"] : ""
-
-  const ctxParts: string[] = []
-  for (const key of CONTEXT_FIELDS) {
-    const value = entry[key]
-    if (value === undefined || value === null) continue
-    const display = typeof value === "string" ? value : JSON.stringify(value)
-    if (display.length === 0) continue
-    ctxParts.push(`${colorize(DIM, `${key}:`)} ${display}`)
-  }
-  const ctxStr = ctxParts.length > 0 ? ` (${ctxParts.join(", ")})` : ""
-  return `${ts}${head} ${msg}${ctxStr}`
-}
-
 const formatHuman = (jsonLine: string): string | null => {
   let entry: Record<string, unknown>
   try {
@@ -117,39 +77,33 @@ const formatHuman = (jsonLine: string): string | null => {
     typeof entry["time"] === "number"
       ? new Date(entry["time"]).toISOString().slice(11, 19)
       : ""
-  const tool =
-    typeof entry["provider"] === "string"
-      ? entry["provider"]
-      : typeof entry["component"] === "string"
-        ? entry["component"]
-        : typeof entry["name"] === "string"
-          ? entry["name"]
-          : ""
+  const ts = colorize(DIM, time.length > 0 ? `${time} ` : "")
+  const head = colorize(levelColor, level.padEnd(5))
+
+  const ctxParts: string[] = []
+  for (const key of CONTEXT_FIELDS) {
+    const value = entry[key]
+    if (value === undefined || value === null) continue
+    const display = typeof value === "string" ? value : JSON.stringify(value)
+    if (display.length === 0) continue
+    ctxParts.push(`${colorize(DIM, `${key}:`)} ${display}`)
+  }
   const err = entry["err"]
-  let errLine = ""
   if (err !== null && typeof err === "object") {
     const e = err as { type?: unknown; message?: unknown }
     const errType = typeof e.type === "string" ? e.type : "Error"
     const errMsg = typeof e.message === "string" ? e.message : ""
     if (errMsg.length > 0) {
-      errLine = `\n  ${colorize(RED, `${errType}: ${errMsg}`)}`
+      ctxParts.push(
+        `${colorize(DIM, "err:")} ${colorize(RED, `${errType}: ${errMsg}`)}`,
+      )
     }
   }
-  const tag = colorize(MAGENTA, tool.length > 0 ? `(${tool})` : "")
-  const head = colorize(levelColor, level.padEnd(5))
-  const ts = colorize(DIM, time.length > 0 ? `${time} ` : "")
-  const contextLines = formatContext(entry)
-  const contextBlock =
-    contextLines.length > 0 ? `\n${contextLines.join("\n")}` : ""
-  return `${ts}${head} ${tag} ${msg}${errLine}${contextBlock}`.trimEnd()
+  const ctxStr = ctxParts.length > 0 ? ` (${ctxParts.join(", ")})` : ""
+  return `${ts}${head} ${msg}${ctxStr}`
 }
 
 class HumanWritable extends Writable {
-  private readonly compact: boolean
-  constructor(opts: { compact?: boolean } = {}) {
-    super()
-    this.compact = opts.compact ?? false
-  }
   override _write(
     chunk: Buffer | string,
     _encoding: BufferEncoding,
@@ -159,25 +113,13 @@ class HumanWritable extends Writable {
     const lines = text.split("\n")
     for (const line of lines) {
       if (line.length === 0) continue
-      const formatted = this.compact
-        ? formatCompactLine(line)
-        : formatHuman(line)
+      const formatted = formatHuman(line)
       if (formatted !== null) {
         process.stdout.write(`${formatted}\n`)
       }
     }
     callback()
   }
-}
-
-const formatCompactLine = (jsonLine: string): string | null => {
-  let entry: Record<string, unknown>
-  try {
-    entry = JSON.parse(jsonLine) as Record<string, unknown>
-  } catch {
-    return jsonLine
-  }
-  return formatCompact(entry)
 }
 
 const errorSerializer = (
@@ -196,7 +138,7 @@ const errorSerializer = (
 }
 
 export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
-  const { level, verbose = false, json = false, compact = false } = options
+  const { level, verbose = false, json = false } = options
 
   if (verbose) process.env["SIRENO_LOG_VERBOSE"] = "1"
   if (json) process.env["SIRENO_LOG_JSON"] = "1"
@@ -217,14 +159,9 @@ export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
     return pino(loggerOptions)
   }
 
-  // ponytail: TTY + no service context = compact single-line format.
-  // Otherwise fall back to raw ndjson for journald/launchd capture.
-  const useCompact =
-    compact ||
-    (process.stdout.isTTY &&
-      !process.env["INVOCATION_ID"] &&
-      !process.env["LAUNCH_PATH"])
-  const dest = new HumanWritable({ compact: useCompact })
+  // ponytail: always inline context for human output.
+  // Use raw ndjson via `--json`, INVOCATION_ID (journald), or LAUNCH_PATH (launchd).
+  const dest = new HumanWritable()
   const teeStream = {
     write(chunk: string): void {
       dest.write(chunk)

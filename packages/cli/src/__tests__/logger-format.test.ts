@@ -53,12 +53,9 @@ describe("TTY-aware logger", () => {
   })
 })
 
-describe("compact format renders inline context", () => {
-  it("compact formatter produces a single line with msg and context", () => {
+describe("default human format renders inline context", () => {
+  it("renders a single line with msg and context, no (sireno-deck) tag", () => {
     Object.defineProperty(process.stdout, "isTTY", { value: false })
-    // ponytail: capture the compact-format output by tapping into pino's
-    // stream. Since `compact: true` uses HumanWritable which writes to
-    // process.stdout, we monkey-patch write to capture the rendered string.
     const writes: string[] = []
     const originalWrite = process.stdout.write.bind(process.stdout)
     process.stdout.write = ((chunk: string | Uint8Array): boolean => {
@@ -66,7 +63,7 @@ describe("compact format renders inline context", () => {
       return true
     }) as typeof process.stdout.write
     try {
-      const logger = createLogger({ json: false, compact: true })
+      const logger = createLogger({ json: false })
       logger.info(
         { deckId: "main", position: 11, gesture: "tap" },
         "emulator: button-action received",
@@ -79,7 +76,29 @@ describe("compact format renders inline context", () => {
     expect(all).toContain("deckId: main")
     expect(all).toContain("position: 11")
     expect(all).toContain("gesture: tap")
-    // ponytail: compact = single line. No newline within the rendered log line.
+    expect(all).not.toContain("sireno-deck")
+    expect(all.split("\n").filter((l) => l.length > 0)).toHaveLength(1)
+  })
+
+  it("renders error details inline on the same line", () => {
+    Object.defineProperty(process.stdout, "isTTY", { value: false })
+    const writes: string[] = []
+    const originalWrite = process.stdout.write.bind(process.stdout)
+    process.stdout.write = ((chunk: string | Uint8Array): boolean => {
+      writes.push(typeof chunk === "string" ? chunk : chunk.toString("utf8"))
+      return true
+    }) as typeof process.stdout.write
+    try {
+      const logger = createLogger({ json: false })
+      logger.error({ err: new Error("boom") }, "something broke")
+    } finally {
+      process.stdout.write = originalWrite
+    }
+    const all = writes.join("")
+    expect(all).toContain("something broke")
+    expect(all).toContain("err:")
+    expect(all).toContain("Error: boom")
+    // All on one line
     expect(all.split("\n").filter((l) => l.length > 0)).toHaveLength(1)
   })
 })
