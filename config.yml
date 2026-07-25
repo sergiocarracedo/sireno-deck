@@ -230,11 +230,6 @@ decks:
     name: Test
     icon: icon://flask-conical
     buttons:
-      - type: 'core:change-deck'
-        config:
-          deck: main
-          icon: 'icon://arrow-left'
-          label: Main
       - type: 'system-status:kpis'
         config:
           metrics:
@@ -249,6 +244,26 @@ decks:
               label: 'CPU Frequency In Gigahertz Which Is Quite Long'
             - id: ram
               label: 'Used / Total Memory Usage Indicator Label'
+      - type: 'core:action'
+        config:
+          icon: icon://check
+          label: Short
+      - type: 'core:action'
+        config:
+          icon: icon://globe
+          label: Medium Length Label Here
+      - type: 'core:action'
+        config:
+          icon: icon://message-square
+          label: A Rather Long Action Button Label That Will Probably Overflow
+      - type: 'core:action'
+        config:
+          icon: icon://file-text
+          label: An Extremely Long Action Label That Should Definitely Overflow And Trigger The Autofit Shrinking Behavior
+      - type: 'core:action'
+        config:
+          icon: icon://scroll-text
+          label: An Absurdly Excessive Extraordinarily Verbose Extra Long Action Button Label That Will Certainly Overflow Even On The Widest Of Button Configurations Indefinitely Repeating Pad Pad Pad
 
 logging:
   level: info

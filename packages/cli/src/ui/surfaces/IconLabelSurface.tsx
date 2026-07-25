@@ -43,7 +43,7 @@ export function IconLabelSurface(props: IconLabelSurfaceProps): ReactElement {
   return (
     <div className={mergedClassName} {...rest}>
       {iconContent}
-      <Label text={props.label} variant={props.variant} lines={2} />
+      <Label text={props.label} variant={props.variant} lines={2} fit="autofit" />
       {props.details !== undefined && props.details.length > 0 && (
         <Label text={props.details} variant="small" fit="autofit" />
       )}

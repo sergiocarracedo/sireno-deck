@@ -504,7 +504,7 @@ export function Text(props: TextProps): ReactElement {
   )
 
   const applyAutofitEllipsis =
-    isAutofit && autofit.state === "ellipsis" && resolvedFit.lines > 1
+    isAutofit && resolvedFit.lines > 1
 
   const isMultiLineEllipsis =
     (resolvedFit.type === "ellipsis" && resolvedFit.lines > 1) ||
@@ -516,7 +516,10 @@ export function Text(props: TextProps): ReactElement {
       : "overflow-hidden whitespace-nowrap text-ellipsis",
     shrink: "sireno-text-fit-shrink whitespace-normal break-words",
     hidden: "overflow-hidden ",
-    autofit: "overflow-hidden whitespace-nowrap text-ellipsis",
+    autofit:
+      isAutofit && resolvedFit.lines > 1
+        ? "overflow-hidden"
+        : "overflow-hidden whitespace-nowrap text-ellipsis",
   }
   const composedStyle: CSSProperties =
     props.fontStack !== undefined
