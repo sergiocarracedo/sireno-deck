@@ -45,9 +45,7 @@ const SystemStatusFrontend: AddonFrontendButton<GenericSystemStatusConfig> = ({
     )
     const pct = pctFromDisplay(display.value, display.percentage, maxValue)
     items.push({
-      title: useIconInsteadOfTitle
-        ? ""
-        : pickLabel(entry, def.defaultLabel),
+      title: useIconInsteadOfTitle ? "" : pickLabel(entry, def.defaultLabel),
       ...(def.icon ? { titleIcon: def.icon } : {}),
       value: pct,
       maxValue,
