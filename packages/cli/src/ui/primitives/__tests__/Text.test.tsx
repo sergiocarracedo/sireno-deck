@@ -4,87 +4,231 @@ import { cleanup, render } from "@testing-library/react"
 
 import { Text, resolveTextFit } from "../Text"
 
+// ponytail: jsdom does not implement ResizeObserver; the autofit hook uses it
+// only to re-measure on container resize, so a no-op stub is enough.
+globalThis.ResizeObserver = class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
 const getFitAttr = (container: HTMLElement) =>
   container.firstElementChild?.getAttribute("data-sireno-text-fit")
 
-const getShrinkState = (container: HTMLElement) =>
-  container.firstElementChild?.getAttribute("data-sireno-text-shrink-state")
+const getEllipsisAttr = (container: HTMLElement) =>
+  container.firstElementChild?.getAttribute("data-sireno-text-ellipsis")
+
+const getAutofitState = (container: HTMLElement) =>
+  container.firstElementChild?.getAttribute("data-sireno-text-autofit-state")
 
 afterEach(() => {
   cleanup()
 })
 
 describe("resolveTextFit", () => {
-  it("defaults undefined to hidden mode", () => {
+  it("defaults undefined to fit mode without ellipsis", () => {
     expect(resolveTextFit(undefined)).toEqual({
-      type: "hidden",
+      type: "fit",
       lines: 1,
       reserveSpace: false,
+      ellipsis: false,
+      minSize: undefined,
     })
   })
 
-  it("returns string aliases as-is", () => {
-    const cases = ["ellipsis", "shrink", "hidden"] as const
-    for (const fit of cases) {
-      expect(resolveTextFit(fit)).toEqual({
-        type: fit,
-        lines: 1,
-        reserveSpace: false,
-      })
-    }
+  it("maps string aliases to the unified fit model", () => {
+    expect(resolveTextFit("ellipsis")).toEqual({
+      type: "fit",
+      lines: 1,
+      reserveSpace: false,
+      ellipsis: true,
+      minSize: undefined,
+    })
+    expect(resolveTextFit("clipped")).toEqual({
+      type: "fit",
+      lines: 1,
+      reserveSpace: false,
+      ellipsis: false,
+      minSize: undefined,
+    })
+    expect(resolveTextFit("hidden")).toEqual({
+      type: "fit",
+      lines: 1,
+      reserveSpace: false,
+      ellipsis: false,
+      minSize: undefined,
+    })
+    expect(resolveTextFit("shrink")).toEqual({
+      type: "fit",
+      lines: 1,
+      reserveSpace: false,
+      ellipsis: false,
+      minSize: undefined,
+    })
   })
 
-  it("normalizes ellipsis object: clamps lines to [1, 3], defaults reserveSpace to false", () => {
-    expect(resolveTextFit({ type: "ellipsis", lines: 2 })).toEqual({
-      type: "ellipsis",
+  it("maps autofit string alias to type autofit with xs floor and no ellipsis", () => {
+    expect(resolveTextFit("autofit")).toEqual({
+      type: "autofit",
+      lines: 1,
+      reserveSpace: false,
+      ellipsis: false,
+      minSize: 12,
+    })
+  })
+
+  it("normalizes fit object: clamps lines and defaults flags", () => {
+    expect(resolveTextFit({ type: "fit", lines: 2 })).toEqual({
+      type: "fit",
       lines: 2,
       reserveSpace: false,
+      ellipsis: false,
+      minSize: undefined,
     })
   })
 
-  it("clamps lines > 3 to 3 and lines < 1 to 1", () => {
-    expect(resolveTextFit({ type: "ellipsis", lines: 0 })).toEqual({
-      type: "ellipsis",
+  it("honors ellipsis flag on fit object", () => {
+    expect(resolveTextFit({ type: "fit", ellipsis: true })).toEqual({
+      type: "fit",
       lines: 1,
       reserveSpace: false,
+      ellipsis: true,
+      minSize: undefined,
     })
-    expect(resolveTextFit({ type: "ellipsis", lines: -3 })).toEqual({
-      type: "ellipsis",
+  })
+
+  it("clamps lines to [1, 3]", () => {
+    expect(resolveTextFit({ type: "fit", lines: 0 })).toEqual({
+      type: "fit",
       lines: 1,
       reserveSpace: false,
+      ellipsis: false,
+      minSize: undefined,
     })
-    expect(resolveTextFit({ type: "ellipsis", lines: 99 })).toEqual({
-      type: "ellipsis",
+    expect(resolveTextFit({ type: "fit", lines: -3 })).toEqual({
+      type: "fit",
+      lines: 1,
+      reserveSpace: false,
+      ellipsis: false,
+      minSize: undefined,
+    })
+    expect(resolveTextFit({ type: "fit", lines: 99 })).toEqual({
+      type: "fit",
       lines: 3,
       reserveSpace: false,
+      ellipsis: false,
+      minSize: undefined,
     })
   })
 
   it("propagates reserveSpace when set", () => {
     expect(
-      resolveTextFit({ type: "ellipsis", lines: 3, reserveSpace: true }),
+      resolveTextFit({ type: "fit", lines: 3, reserveSpace: true }),
     ).toEqual({
-      type: "ellipsis",
+      type: "fit",
       lines: 3,
       reserveSpace: true,
+      ellipsis: false,
+      minSize: undefined,
+    })
+  })
+
+  it("resolves autofit minSize from number and TextSize aliases", () => {
+    expect(resolveTextFit({ type: "autofit", minSize: 10 })).toEqual({
+      type: "autofit",
+      lines: 1,
+      reserveSpace: false,
+      ellipsis: false,
+      minSize: 10,
+    })
+    expect(resolveTextFit({ type: "autofit", minSize: "xs" })).toEqual({
+      type: "autofit",
+      lines: 1,
+      reserveSpace: false,
+      ellipsis: false,
+      minSize: 12,
+    })
+    expect(resolveTextFit({ type: "autofit", minSize: "5xl" })).toEqual({
+      type: "autofit",
+      lines: 1,
+      reserveSpace: false,
+      ellipsis: false,
+      minSize: 48,
+    })
+  })
+
+  it("defaults autofit minSize to xs (12px) and ellipsis to false", () => {
+    expect(resolveTextFit({ type: "autofit" })).toEqual({
+      type: "autofit",
+      lines: 1,
+      reserveSpace: false,
+      ellipsis: false,
+      minSize: 12,
+    })
+  })
+
+  it("honors autofit ellipsis flag", () => {
+    expect(resolveTextFit({ type: "autofit", ellipsis: true })).toEqual({
+      type: "autofit",
+      lines: 1,
+      reserveSpace: false,
+      ellipsis: true,
+      minSize: 12,
     })
   })
 })
 
-describe("Text render — string fit (backward-compat)", () => {
+describe("Text render — fit aliases", () => {
   it("uses overflow-hidden whitespace-nowrap text-ellipsis for fit='ellipsis'", () => {
     const { container } = render(<Text fit="ellipsis" text="hello" />)
     const root = container.firstElementChild as HTMLElement
     expect(root.className).toContain("text-ellipsis")
     expect(root.className).toContain("overflow-hidden")
     expect(root.className).toContain("whitespace-nowrap")
-    expect(getFitAttr(container)).toBe("ellipsis-1")
+    expect(getFitAttr(container)).toBe("fit-1")
+    expect(getEllipsisAttr(container)).toBe("true")
   })
 
-  it("uses webkit-box multi-line clamp for ellipsis with lines>1", () => {
+  it("clips without ellipsis for fit='clipped'", () => {
+    const { container } = render(<Text fit="clipped" text="hello" />)
+    const root = container.firstElementChild as HTMLElement
+    expect(root.className).toContain("overflow-hidden")
+    expect(root.className).toContain("whitespace-nowrap")
+    expect(root.className).not.toContain("text-ellipsis")
+    expect(getEllipsisAttr(container)).toBe("false")
+  })
+
+  it("defaults to clipped fit when fit is omitted", () => {
+    const { container } = render(<Text text="hello" />)
+    const root = container.firstElementChild as HTMLElement
+    expect(root.className).toContain("overflow-hidden")
+    expect(root.className).not.toContain("text-ellipsis")
+    expect(getFitAttr(container)).toBe("fit-1")
+    expect(getEllipsisAttr(container)).toBe("false")
+  })
+
+  it("maps legacy 'hidden' alias to clipped fit", () => {
+    const { container } = render(<Text fit="hidden" text="hello" />)
+    const root = container.firstElementChild as HTMLElement
+    expect(root.className).toContain("overflow-hidden")
+    expect(root.className).not.toContain("text-ellipsis")
+    expect(getFitAttr(container)).toBe("fit-1")
+  })
+
+  it("maps legacy 'shrink' alias to clipped fit", () => {
+    const { container } = render(<Text fit="shrink" text="hello" />)
+    const root = container.firstElementChild as HTMLElement
+    expect(root.className).toContain("overflow-hidden")
+    expect(root.className).not.toContain("text-ellipsis")
+    expect(getFitAttr(container)).toBe("fit-1")
+  })
+})
+
+describe("Text render — multi-line fit", () => {
+  it("uses multi-line clamp for fit object with lines>1 and ellipsis", () => {
     const { container } = render(
       <Text
-        fit={{ type: "ellipsis", lines: 2, reserveSpace: true }}
+        fit={{ type: "fit", lines: 2, reserveSpace: true, ellipsis: true }}
         text="hello"
       />,
     )
@@ -100,26 +244,21 @@ describe("Text render — string fit (backward-compat)", () => {
     expect(inlineStyle.getPropertyValue("--sireno-text-lines")).toBe("2")
     expect(inlineStyle.overflow).toBe("hidden")
   })
+})
 
-  it("defaults to hidden when fit is omitted", () => {
-    const { container } = render(<Text text="hello" />)
-    const root = container.firstElementChild as HTMLElement
-    expect(root.className).toContain("overflow-hidden")
-    expect(getFitAttr(container)).toBe("hidden-1")
-  })
-
-  it("uses sireno-text-fit-shrink for fit='shrink'", () => {
-    const { container } = render(<Text fit="shrink" text="hello" />)
-    const root = container.firstElementChild as HTMLElement
-    expect(root.className).toContain("sireno-text-fit-shrink")
-    expect(getShrinkState(container)).toBe("pending")
+describe("Text render — autofit", () => {
+  it("marks autofit state on render", () => {
+    const { container } = render(<Text fit="autofit" text="hello" />)
+    expect(getFitAttr(container)).toBe("autofit-1")
+    expect(getEllipsisAttr(container)).toBe("false")
+    expect(getAutofitState(container)).toBeOneOf(["fit", "ellipsis", "clipped"])
   })
 })
 
 describe("Text render — reserveSpace", () => {
   it("applies min-height for reserveSpace: true with default lineHeight=1", () => {
     const { container } = render(
-      <Text fit={{ type: "ellipsis", lines: 3, reserveSpace: true }} text="" />,
+      <Text fit={{ type: "fit", lines: 3, reserveSpace: true }} text="" />,
     )
     const root = container.firstElementChild as HTMLElement
     expect(root.style.minHeight).toBe("3em")
@@ -128,7 +267,7 @@ describe("Text render — reserveSpace", () => {
   it("scales min-height by custom lineHeight", () => {
     const { container } = render(
       <Text
-        fit={{ type: "ellipsis", lines: 2, reserveSpace: true }}
+        fit={{ type: "fit", lines: 2, reserveSpace: true }}
         lineHeight={1.5}
         text=""
       />,
@@ -139,10 +278,7 @@ describe("Text render — reserveSpace", () => {
 
   it("reserves full height even when content is short", () => {
     const { container } = render(
-      <Text
-        fit={{ type: "ellipsis", lines: 4, reserveSpace: true }}
-        text="hi"
-      />,
+      <Text fit={{ type: "fit", lines: 4, reserveSpace: true }} text="hi" />,
     )
     const root = container.firstElementChild as HTMLElement
     expect(root.style.minHeight).toBe("3em")
@@ -150,10 +286,7 @@ describe("Text render — reserveSpace", () => {
 
   it("does not apply min-height when reserveSpace is false", () => {
     const { container } = render(
-      <Text
-        fit={{ type: "ellipsis", lines: 2, reserveSpace: false }}
-        text=""
-      />,
+      <Text fit={{ type: "fit", lines: 2, reserveSpace: false }} text="" />,
     )
     const root = container.firstElementChild as HTMLElement
     expect(root.style.minHeight).toBe("")
@@ -161,14 +294,8 @@ describe("Text render — reserveSpace", () => {
 
   it("does not apply min-height when reserveSpace is omitted", () => {
     const { container } = render(
-      <Text fit={{ type: "ellipsis", lines: 2 }} text="" />,
+      <Text fit={{ type: "fit", lines: 2 }} text="" />,
     )
-    const root = container.firstElementChild as HTMLElement
-    expect(root.style.minHeight).toBe("")
-  })
-
-  it("does not apply min-height for non-ellipsis modes", () => {
-    const { container } = render(<Text fit="hidden" text="" />)
     const root = container.firstElementChild as HTMLElement
     expect(root.style.minHeight).toBe("")
   })

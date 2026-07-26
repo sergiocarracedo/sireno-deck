@@ -50,7 +50,12 @@ export function Label(props: LabelProps): ReactElement {
 
   const variantStyle = variantsStyle[props.variant ?? "primary"]
   const lines = props.lines || 1
-  const fit: TextFit = { type: "ellipsis", lines, reserveSpace: false }
+  const fit: TextFit = {
+    type: "fit",
+    lines,
+    reserveSpace: false,
+    ellipsis: true,
+  }
 
   return (
     <Text

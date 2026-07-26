@@ -1,9 +1,9 @@
-import type { CSSProperties, ReactElement } from 'react'
+import type { CSSProperties, ReactElement } from "react"
 
-import { Text, TextSize } from '../primitives'
-import { Icon } from '../primitives/Icon'
-import { useThemeUiPresentation } from '../theme-presentation'
-import { cn } from '../utils/cn'
+import { Text, TextSize } from "../primitives"
+import { Icon } from "../primitives/Icon"
+import { useThemeUiPresentation } from "../theme-presentation"
+import { cn } from "../utils/cn"
 
 export interface LabelValueListLine {
   color?: string
@@ -26,12 +26,12 @@ export interface LabelValueListProps {
 
 type RowTileProps = {
   item: LabelValueListLine
-  variant?: 'default' | 'big' | 'small'
+  variant?: "default" | "big" | "small"
 }
 
-function RowTile({ item, variant = 'default' }: RowTileProps): ReactElement {
+function RowTile({ item, variant = "default" }: RowTileProps): ReactElement {
   const variantsProps: Record<
-    NonNullable<RowTileProps['variant']>,
+    NonNullable<RowTileProps["variant"]>,
     {
       value: TextSize
       unit: TextSize
@@ -43,23 +43,23 @@ function RowTile({ item, variant = 'default' }: RowTileProps): ReactElement {
     }
   > = {
     big: {
-      value: '5xl',
-      unit: 'md',
+      value: "5xl",
+      unit: "md",
       showLabel: true,
       multiline: true,
       iconSize: 23,
-      titleClass: 'items-center justify-center',
-      labelSize: 'md',
+      titleClass: "items-center justify-center",
+      labelSize: "md",
     },
     default: {
-      value: '3xl',
-      unit: 'sm',
+      value: "3xl",
+      unit: "sm",
       iconSize: 16,
-      labelSize: 'sm',
+      labelSize: "sm",
     },
     small: {
-      value: 'lg',
-      unit: 'xs',
+      value: "lg",
+      unit: "xs",
       iconSize: 14,
     },
   }
@@ -68,11 +68,11 @@ function RowTile({ item, variant = 'default' }: RowTileProps): ReactElement {
   const variantProps = variantsProps[variant]
   return (
     <div
-      className={cn(!variantProps.multiline && 'flex', 'items-start')}
+      className={cn(!variantProps.multiline && "flex", "items-start")}
       style={{ ...colorStyle }}
     >
       <div
-        className={cn('flex mt-1 gap-1 items-center', variantProps.titleClass)}
+        className={cn("flex mt-1 gap-1 items-center", variantProps.titleClass)}
       >
         {item.icon ? (
           <Icon source={item.icon} size={variantProps.iconSize} />
@@ -80,7 +80,7 @@ function RowTile({ item, variant = 'default' }: RowTileProps): ReactElement {
         {variantProps.showLabel ? (
           <Text
             text={item.label}
-            size={variantProps.labelSize ?? 'xs'}
+            size={variantProps.labelSize ?? "xs"}
             weight="semibold"
             tone="primary"
           />
@@ -93,6 +93,7 @@ function RowTile({ item, variant = 'default' }: RowTileProps): ReactElement {
           text={item.value}
           tone="primary"
           style={colorStyle}
+          fit="autofit"
         />
 
         {item.units ? (
@@ -117,47 +118,19 @@ export function LabelValueListSurface(
     return themeUi.surfaces.labelValueList(props)
   }
 
-  // if (props.lines.length === 1) {
-  //   const item = props.lines[0]
-  //   const colorStyle = item.color ? { color: item.color } : undefined
-  //   return (
-  //     <div
-  //       className={cn(props.className, 'al')}
-  //       style={{ color: 'var(--sireno-color-fg)', ...props.style }}
-  //     >
-  //       <div className="flex gap-1 items-center justify-center">
-  //         {item.icon ? <Icon source={item.icon} size={23} /> : null}
-  //         <Text text={item.label} size="md" weight="semibold" tone="primary" />
-  //       </div>
-
-  //       <div className="flex min-h-0 gap-0.5 justify-end items-baseline">
-  //         <Text
-  //           size="5xl"
-  //           weight="bold"
-  //           text={item.value}
-  //           tone="primary"
-  //           style={colorStyle}
-  //         />
-
-  //         {item.units ? <Text size="md" text={item.units} /> : null}
-  //       </div>
-  //     </div>
-  //   )
-  // }
-
-  const variants: Record<number, RowTileProps['variant']> = {
-    1: 'big',
-    2: 'default',
-    3: 'small',
+  const variants: Record<number, RowTileProps["variant"]> = {
+    1: "big",
+    2: "default",
+    3: "small",
   }
 
   const variant =
     variants[Math.min(props.lines.length, Object.values(variants).length)]
   return (
     <div
-      className={cn('flex w-full gap-0.5 p-1', 'flex-col', props.className)}
+      className={cn("flex w-full gap-0.5 p-1", "flex-col", props.className)}
       style={{
-        color: 'var(--sireno-color-fg)',
+        color: "var(--sireno-color-fg)",
         ...props.style,
       }}
     >

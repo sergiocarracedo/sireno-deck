@@ -319,20 +319,38 @@ function renderTextChildren(
 
 export type TextAlign = keyof typeof ALIGN_CLASS
 
-export type TextFitType = "ellipsis" | "shrink" | "hidden" | "autofit"
+export type TextFitMode = "fit" | "autofit"
 
 export type TextFit = {
-  type: TextFitType
+  type: TextFitMode
   lines?: 1 | 2 | 3
   reserveSpace?: boolean
-  minSize?: number
+  /** When true, show an ellipsis when the text overflows the container. */
+  ellipsis?: boolean
+  /**
+   * Floor for `type: "autofit"`. A number is treated as px. A TextSize alias
+   * is resolved to the theme's px floor (xxs=8, xs=12, sm=14, md=16, lg=18,
+   * xl=20, 2xl=24, 3xl=30, 4xl=36, 5xl=48). Defaults to "xs" when omitted.
+   */
+  minSize?: number | TextSize
 }
 
-export type ResolvedTextFit = {
-  type: TextFitType
+/** Legacy / convenience string aliases for {@link TextFit}. */
+export type TextFitType =
+  | "ellipsis"
+  | "clipped"
+  | "autofit"
+  | "hidden"
+  | "shrink"
+
+export type TextFitInput = TextFit | TextFitType
+
+export type TextFitResolved = {
+  type: TextFitMode
   lines: 1 | 2 | 3
   reserveSpace: boolean
-  minSize?: number
+  ellipsis: boolean
+  minSize: number | undefined
 }
 
 export type TextTone = keyof typeof TONE_CLASS
@@ -343,50 +361,114 @@ export type TextWeight = (typeof TEXT_WEIGHT)[number]
 const MIN_LINE_CLAMP = 1
 const MAX_LINE_CLAMP = 3
 
+const MIN_SIZE_PX: Record<TextSize, number> = {
+  xxs: 8,
+  xs: 12,
+  sm: 14,
+  md: 16,
+  lg: 18,
+  xl: 20,
+  "2xl": 24,
+  "3xl": 30,
+  "4xl": 36,
+  "5xl": 48,
+}
+
 function clampLines(lines: number | undefined): 1 | 2 | 3 {
   const raw = Math.floor(lines || 1)
   return Math.max(MIN_LINE_CLAMP, Math.min(MAX_LINE_CLAMP, raw)) as 1 | 2 | 3
 }
 
-export function resolveTextFit(
-  fit: TextFit | TextFitType | undefined,
-): ResolvedTextFit {
-  if (fit === undefined || typeof fit === "string") {
+function resolveMinSize(
+  minSize: number | TextSize | undefined,
+): number | undefined {
+  if (minSize === undefined) return undefined
+  if (typeof minSize === "number") return minSize
+  return MIN_SIZE_PX[minSize]
+}
+
+export function resolveTextFit(fit: TextFitInput | undefined): TextFitResolved {
+  if (fit === undefined) {
     return {
-      type: fit ?? "hidden",
-      reserveSpace: false,
+      type: "fit",
       lines: 1,
+      reserveSpace: false,
+      ellipsis: false,
+      minSize: undefined,
     }
   }
 
-  if (fit.type === "autofit") {
-    if (typeof fit.minSize !== "number" || !Number.isFinite(fit.minSize)) {
-      throw new Error(
-        "Text: autofit fit requires a numeric `minSize` (px floor).",
-      )
+  if (typeof fit === "string") {
+    switch (fit) {
+      case "ellipsis":
+        return {
+          type: "fit",
+          lines: 1,
+          reserveSpace: false,
+          ellipsis: true,
+          minSize: undefined,
+        }
+      case "clipped":
+      case "hidden":
+      case "shrink":
+        return {
+          type: "fit",
+          lines: 1,
+          reserveSpace: false,
+          ellipsis: false,
+          minSize: undefined,
+        }
+      case "autofit":
+        return {
+          type: "autofit",
+          lines: 1,
+          reserveSpace: false,
+          ellipsis: false,
+          minSize: 12,
+        }
+      default:
+        // Treat unknown strings as clipped fit.
+        return {
+          type: "fit",
+          lines: 1,
+          reserveSpace: false,
+          ellipsis: false,
+          minSize: undefined,
+        }
     }
+  }
+
+  const lines = clampLines(fit.lines)
+  const reserveSpace = fit.reserveSpace ?? false
+  const ellipsis = fit.ellipsis ?? false
+
+  if (fit.type === "autofit") {
     return {
       type: "autofit",
-      lines: clampLines(fit.lines),
-      reserveSpace: false,
-      minSize: fit.minSize,
+      lines,
+      reserveSpace,
+      ellipsis,
+      minSize: resolveMinSize(fit.minSize ?? "xs"),
     }
   }
 
   return {
-    type: fit.type,
-    lines: clampLines(fit.lines),
-    reserveSpace: fit.reserveSpace ?? false,
+    type: "fit",
+    lines,
+    reserveSpace,
+    ellipsis,
+    minSize: undefined,
   }
 }
 
-type AutofitState = "fit" | "ellipsis"
+type AutofitState = "fit" | "ellipsis" | "clipped"
 
 function useAutofit(
   ref: RefObject<HTMLDivElement | null>,
   minSize: number,
   text: string,
   lines: number,
+  ellipsis: boolean,
 ): { fontSize: number | null; state: AutofitState; effectiveLines: number } {
   const [fontSize, setFontSize] = useState<number | null>(null)
   const [state, setState] = useState<AutofitState>("fit")
@@ -409,34 +491,35 @@ function useAutofit(
       })
     }
 
+    const restoreInline = () => {
+      el.style.fontSize = ""
+      el.style.whiteSpace = ""
+      el.style.display = ""
+      ;(el.style as CSSProperties & Record<string, string>)["WebkitLineClamp"] =
+        ""
+    }
+
+    const measureTextWidth = () => {
+      const prevOverflow = el.style.overflow
+      const prevTextOverflow = el.style.textOverflow
+      el.style.overflow = "visible"
+      el.style.textOverflow = ""
+      el.style.whiteSpace = "nowrap"
+      const w = el.scrollWidth
+      el.style.overflow = prevOverflow
+      el.style.textOverflow = prevTextOverflow
+      return w
+    }
+
+    const measureTextHeight = () => {
+      el.style.whiteSpace = ""
+      return el.scrollHeight
+    }
+
     const measure = () => {
       const computed = parseFloat(getComputedStyle(el).fontSize)
       if (!Number.isFinite(computed) || computed <= 0) return
 
-      const restoreInline = () => {
-        el.style.fontSize = ""
-        el.style.whiteSpace = ""
-        el.style.display = ""
-        ;(el.style as CSSProperties & Record<string, string>)[
-          "WebkitLineClamp"
-        ] = ""
-      }
-
-      const measureTextWidth = () => {
-        const prevOverflow = el.style.overflow
-        const prevTextOverflow = el.style.textOverflow
-        el.style.overflow = "visible"
-        el.style.textOverflow = ""
-        el.style.whiteSpace = "nowrap"
-        const w = el.scrollWidth
-        el.style.overflow = prevOverflow
-        el.style.textOverflow = prevTextOverflow
-        return w
-      }
-      const measureTextHeight = () => {
-        el.style.whiteSpace = ""
-        return el.scrollHeight
-      }
       const containerWidth = () => el.clientWidth
 
       if (lines > 1) {
@@ -497,10 +580,10 @@ function useAutofit(
           }
         }
 
-        // Phase 5: nothing fit, ellipsis at minSize
+        // Phase 5: nothing fit, floor at minSize
         restoreInline()
         setFontSize(minSize)
-        setState("ellipsis")
+        setState(ellipsis ? "ellipsis" : "clipped")
         setEffectiveLines(lines)
         return
       }
@@ -545,7 +628,7 @@ function useAutofit(
       } else {
         el.style.fontSize = `${minSize}px`
         setFontSize(minSize)
-        setState("ellipsis")
+        setState(ellipsis ? "ellipsis" : "clipped")
         setEffectiveLines(1)
       }
     }
@@ -567,7 +650,7 @@ function useAutofit(
       if (pending !== null) cancelAnimationFrame(pending)
       observer.disconnect()
     }
-  }, [minSize, text, lines, ref])
+  }, [minSize, text, lines, ellipsis, ref])
 
   return { fontSize, state, effectiveLines }
 }
@@ -575,7 +658,7 @@ function useAutofit(
 export interface TextProps {
   align?: TextAlign
   className?: string
-  fit?: TextFit | TextFitType
+  fit?: TextFitInput
   fontStack?: string
   style?: CSSProperties
   text: string
@@ -624,35 +707,26 @@ export function Text(props: TextProps): ReactElement {
     isAutofit ? (resolvedFit.minSize ?? 0) : 0,
     props.text,
     resolvedFit.lines,
+    resolvedFit.ellipsis,
   )
 
   const effectiveLines = isAutofit
     ? (autofit.effectiveLines ?? resolvedFit.lines)
     : resolvedFit.lines
-  const isMultiLineEffective = effectiveLines > 1
+  const isMultiLine = effectiveLines > 1
 
-  const applyAutofitEllipsis = isAutofit && isMultiLineEffective
+  const fitClass = isMultiLine
+    ? "overflow-hidden sireno-text-fit-multiline"
+    : resolvedFit.ellipsis
+      ? "overflow-hidden whitespace-nowrap text-ellipsis"
+      : "overflow-hidden whitespace-nowrap"
 
-  const isMultiLineEllipsis =
-    (resolvedFit.type === "ellipsis" && resolvedFit.lines > 1) ||
-    applyAutofitEllipsis
-
-  const fitModesClasses: Record<TextFitType, string> = {
-    ellipsis: isMultiLineEllipsis
-      ? "overflow-hidden"
-      : "overflow-hidden whitespace-nowrap text-ellipsis",
-    shrink: "sireno-text-fit-shrink whitespace-normal break-words",
-    hidden: "overflow-hidden ",
-    autofit: isMultiLineEffective
-      ? "overflow-hidden"
-      : "overflow-hidden whitespace-nowrap text-ellipsis",
-  }
   const composedStyle: CSSProperties =
     props.fontStack !== undefined
       ? { ...props.style, fontFamily: props.fontStack }
       : (props.style ?? {})
 
-  if (isMultiLineEllipsis) {
+  if (isMultiLine) {
     ;(composedStyle as CSSProperties & Record<string, string>)[
       "--sireno-text-lines"
     ] = String(effectiveLines)
@@ -681,7 +755,7 @@ export function Text(props: TextProps): ReactElement {
     composedStyle.height = `${resolvedFit.lines * lh}em`
   }
 
-  const dataFit = `${resolvedFit.type}-${resolvedFit.lines}`
+  const dataFit = `${resolvedFit.type}-${effectiveLines}`
   return (
     <div
       ref={containerRef}
@@ -692,16 +766,13 @@ export function Text(props: TextProps): ReactElement {
         ALIGN_CLASS[align],
         SIZE_CLASS[size],
         WEIGHT_CLASS[weight],
-        fitModesClasses[resolvedFit.type],
-        isMultiLineEllipsis ? "sireno-text-fit-multiline" : "",
+        fitClass,
         props.className,
       ])}
       data-sireno-text-fit={dataFit}
-      data-sireno-text-shrink-state={
-        resolvedFit.type === "shrink" ? "pending" : undefined
-      }
-      data-sireno-text-size={size}
+      data-sireno-text-ellipsis={resolvedFit.ellipsis ? "true" : "false"}
       data-sireno-text-autofit-state={isAutofit ? autofit.state : undefined}
+      data-sireno-text-size={size}
       data-sireno-ui-text="true"
       style={composedStyle}
     >
