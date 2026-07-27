@@ -1,0 +1,36 @@
+packages/cli/src/cli/commands/start.ts
+  s_af75ec3a85e6ec::t_4c6fd48b1e5034 53,66
+  s_af75ec3a85e6ec::t_69321f4f83490e 142-143
+  s_af75ec3a85e6ec::t_6404df719c8791 158-168
+  s_af75ec3a85e6ec::t_c30304be0147f0 30-34
+  s_af75ec3a85e6ec::t_552f02091d65b4 199,201-202
+packages/cli/src/cli/commands/addon-registry.ts
+  s_af75ec3a85e6ec::t_9746e3746b09c7 27-28
+  s_af75ec3a85e6ec::t_728ff8a94dee35 145-146
+  s_af75ec3a85e6ec::t_2ae1fcf2fa8914 255-256
+packages/cli/src/cli/commands/run.ts
+  s_af75ec3a85e6ec::t_d59638582fd0c9 1024-1061,1068,1074
+  s_af75ec3a85e6ec::t_c93cb21d660c80 1188
+  s_af75ec3a85e6ec::t_64d6d436a05948 112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "3dddce589ffab59fb67cdb1141f9e77a0ba21782",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_af75ec3a85e6ec": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_064eb8db5ffeb4tzl9x7wH1MI8",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
