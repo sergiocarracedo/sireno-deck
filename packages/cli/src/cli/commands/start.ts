@@ -27,7 +27,7 @@ import {
   type RunOptions,
   type SignalProvider,
 } from "./run"
-import { collectBuiltinAddonRegistry } from "./addon-registry"
+import { collectBuiltinAddonRegistry, builtinDir } from "./addon-registry"
 
 export interface StartOptions {
   readonly config?: string
@@ -180,11 +180,16 @@ const start = async (options: StartOptions): Promise<void> => {
             return null
           }
         },
+        getConfigPath: () => configPath,
         getAddons: () =>
           scannedAddons.map((s) => ({
             name: s.name,
+            path: join(builtinDir, s.name),
+            internal: true,
+            source: s.source,
             buttonTypes: [...s.types],
             defaultButton: null,
+            decks: [...s.decks],
           })),
       })
     } catch (err) {

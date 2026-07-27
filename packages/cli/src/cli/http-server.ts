@@ -16,10 +16,20 @@ export interface StartHttpServerOptions {
   readonly getToken: () => string | null
   readonly logger: pino.Logger
   readonly getConfigContent?: () => string | null
+  readonly getConfigPath?: () => string | null
   readonly getAddons?: () => Array<{
     name: string
+    path: string
+    internal: boolean
+    source: string
     buttonTypes: string[]
     defaultButton: string | null
+    decks: Array<{
+      id: string
+      isOverlay: boolean
+      paginated: boolean
+      buttons: number
+    }>
   }>
 }
 
@@ -131,6 +141,16 @@ export const startHttpServer = async (
             "content-length": Buffer.byteLength(text),
           })
           res.end(text)
+          return
+        }
+        if (url === "/api/config-path") {
+          const path = options.getConfigPath?.() ?? null
+          const body = JSON.stringify({ path })
+          res.writeHead(200, {
+            "content-type": "application/json; charset=utf-8",
+            "content-length": Buffer.byteLength(body),
+          })
+          res.end(body)
           return
         }
         if (url === "/api/addons" || url === "/api/addons/") {

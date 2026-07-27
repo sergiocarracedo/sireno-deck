@@ -5,6 +5,13 @@ import { fileURLToPath } from "node:url"
 
 import type { AddonPoller, AddonPollerChannel } from "@/addon/api"
 
+export interface ScannedDeck {
+  readonly id: string
+  readonly isOverlay: boolean
+  readonly paginated: boolean
+  readonly buttons: number
+}
+
 export interface ScannedAddon {
   readonly name: string
   readonly types: ReadonlyArray<string>
@@ -15,6 +22,7 @@ export interface ScannedAddon {
   readonly deckTypes: Readonly<Record<string, string>>
   readonly source: "json" | "regex"
   readonly globalServiceEntry: string | null
+  readonly decks: ReadonlyArray<ScannedDeck>
 }
 
 export interface AddonFrontendRef {
@@ -51,7 +59,7 @@ export const collectBuiltinAddonRegistry = async (): Promise<{
 }
 
 const here = dirname(fileURLToPath(import.meta.url))
-const builtinDir = resolvePath(here, "..", "..", "builtin-addons")
+export const builtinDir = resolvePath(here, "..", "..", "builtin-addons")
 
 const scanAddonDir = async (
   addonDir: string,
@@ -130,6 +138,7 @@ const scanAddonDir = async (
     source: "regex",
     globalServiceEntry:
       hasGlobalService && indexFile !== null ? indexFile : null,
+    decks: [],
   }
 }
 
@@ -159,6 +168,12 @@ const scanAddonJsonManifest = async (
   const buttonTypes: Record<string, string> = {}
   let publishIntervalMs: number | null = null
   let hasGlobalService = false
+  const decks: Array<{
+    id: string
+    isOverlay: boolean
+    paginated: boolean
+    buttons: number
+  }> = []
   try {
     const mod = (await import(entryPath)) as {
       default?: {
@@ -195,6 +210,20 @@ const scanAddonJsonManifest = async (
       if (candidate.globalService !== undefined) {
         hasGlobalService = true
       }
+      if (candidate.decks !== null && typeof candidate.decks === "object") {
+        for (const [deckId, deckDef] of Object.entries(
+          candidate.decks as Record<string, unknown>,
+        )) {
+          if (deckDef === null || typeof deckDef !== "object") continue
+          const d = deckDef as Record<string, unknown>
+          decks.push({
+            id: deckId,
+            isOverlay: d["isOverlay"] === true,
+            paginated: d["paginated"] === true,
+            buttons: Array.isArray(d["buttons"]) ? d["buttons"].length : 0,
+          })
+        }
+      }
     }
   } catch {
     // Fall through with empty types — caller will fall back to regex scan.
@@ -210,6 +239,7 @@ const scanAddonJsonManifest = async (
     deckTypes: {},
     source: "json",
     globalServiceEntry: hasGlobalService ? entryPath : null,
+    decks,
   }
 }
 
