@@ -1,0 +1,28 @@
+packages/cli/src/ui/surfaces/PaginatedSurface.tsx
+  s_31e6cfdc9aaf2d::t_c249a17781532c 90
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  h_f90ee31b03fc41 1-2,8-10,13-14,22-23,29-30,42,52,60,90,131,142,164-166,192
+  s_31e6cfdc9aaf2d::t_15825403b0ee2c 205-209,211-213
+  s_31e6cfdc9aaf2d::t_15a531dbddfc0e 210
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "17d3e2513d506d96d4323aa37d160728ac3a75e1",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_31e6cfdc9aaf2d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_064e81e59ffehFyv52XIR9c422",
+        "model": "glm-5.1"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
