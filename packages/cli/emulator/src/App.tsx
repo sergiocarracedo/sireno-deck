@@ -95,18 +95,47 @@ export const App = ({
       : DEFAULT_DEVICE_MODEL,
   )
   const clientRef = useRef<WsClient | null>(null)
+  // ponytail: ignore the first `closed` after an `open` — happens during
+  // WS-replacement that some React navigations trigger. Latch only after a
+  // short delay so transient reconnects don't pop the banner.
+  const lastStatusRef = useRef<WsStatus | null>(null)
+  const reconnectLatchTimerRef = useRef<number | null>(null)
 
   useEffect(() => {
     clientRef.current = createWsClient({
       url: wsUrl,
       onStatus: (status) => {
+        const previous = lastStatusRef.current
+        lastStatusRef.current = status
         setConnectionStatus(status)
         setAttempt(clientRef.current?.attemptCount() ?? 0)
         if (status === "open") {
+          if (reconnectLatchTimerRef.current !== null) {
+            window.clearTimeout(reconnectLatchTimerRef.current)
+            reconnectLatchTimerRef.current = null
+          }
           setDisconnectedSince(null)
-        } else {
-          setDisconnectedSince((previous) =>
-            previous === null ? Date.now() : previous,
+          return
+        }
+        if (status === "connecting") {
+          return
+        }
+        if (status === "closed") {
+          if (previous === "open") {
+            if (reconnectLatchTimerRef.current !== null) {
+              window.clearTimeout(reconnectLatchTimerRef.current)
+            }
+            const openedAt = Date.now()
+            reconnectLatchTimerRef.current = window.setTimeout(() => {
+              reconnectLatchTimerRef.current = null
+              setDisconnectedSince((current) =>
+                current === null ? openedAt : current,
+              )
+            }, 500)
+            return
+          }
+          setDisconnectedSince((current) =>
+            current === null ? Date.now() : current,
           )
         }
       },
@@ -149,6 +178,10 @@ export const App = ({
       clearInterval(timer)
       clientRef.current?.close()
       clientRef.current = null
+      if (reconnectLatchTimerRef.current !== null) {
+        window.clearTimeout(reconnectLatchTimerRef.current)
+        reconnectLatchTimerRef.current = null
+      }
     }
   }, [wsUrl])
 

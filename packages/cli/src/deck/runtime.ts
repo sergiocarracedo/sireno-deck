@@ -107,6 +107,7 @@ export interface Runtime {
   navStackDepth(): number
   hasOverlayDeckAvailable(): boolean
   getAvailableOverlayDeckIcon(): string | null
+  getAvailableOverlayDeckName(): string | null
   getBrightness(): number
   setBrightness(value: number): void
 }
@@ -877,6 +878,12 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       if (id === null) return null
       const deck = deckById(id)
       return deck?.icon ?? null
+    },
+    getAvailableOverlayDeckName: (): string | null => {
+      const id = availableOverlayDeckId ?? pendingOverlayDeckId
+      if (id === null) return null
+      const deck = deckById(id)
+      return deck?.name ?? null
     },
     getBrightness: () => brightness,
     setBrightness: (value: number) => {

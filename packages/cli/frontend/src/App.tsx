@@ -50,6 +50,7 @@ interface DeckState {
   isCompact?: boolean
   hasOverlayDeckAvailable?: boolean
   overlayDeckIcon?: string | null
+  overlayDeckName?: string | null
   buttonErrors: ButtonErrorState[]
 }
 
@@ -148,6 +149,13 @@ const AppContent = () => {
   const clientRef = useRef<WsClient | null>(null)
   const { setAsset } = useAssetCacheMutations()
   const navigate = useNavigate()
+  // ponytail: ignore the first `closed` after an `open` — happens during
+  // WS-replacement that some React navigations trigger (StrictMode /
+  // hot-reload / route transitions). The WS client reports the old socket's
+  // close, then the new one opens within milliseconds. Without this guard the
+  // banner pops on every deck change.
+  const lastStatusRef = useRef<ConnectionStatus | null>(null)
+  const reconnectLatchTimerRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (_wsClientInitialized) return
@@ -157,14 +165,41 @@ const AppContent = () => {
       url,
       ...(token !== "" ? { token } : {}),
       onStatus: (status) => {
+        const previous = lastStatusRef.current
+        lastStatusRef.current = status
         setConnectionStatus(status)
         setAttempt(client.getAttempt())
         setLastError(client.getLastError())
         if (status === "open") {
+          if (reconnectLatchTimerRef.current !== null) {
+            window.clearTimeout(reconnectLatchTimerRef.current)
+            reconnectLatchTimerRef.current = null
+          }
           setDisconnectedSince(null)
-        } else {
-          setDisconnectedSince((previous) =>
-            previous === null ? Date.now() : previous,
+          return
+        }
+        if (status === "connecting") {
+          return
+        }
+        if (status === "closed") {
+          if (previous === "open") {
+            // Short-lived close after an open connection is treated as
+            // transient noise — wait 500ms before latching. If a new
+            // connection opens before the timer fires, the latch is cancelled.
+            if (reconnectLatchTimerRef.current !== null) {
+              window.clearTimeout(reconnectLatchTimerRef.current)
+            }
+            const openedAt = Date.now()
+            reconnectLatchTimerRef.current = window.setTimeout(() => {
+              reconnectLatchTimerRef.current = null
+              setDisconnectedSince((current) =>
+                current === null ? openedAt : current,
+              )
+            }, 500)
+            return
+          }
+          setDisconnectedSince((current) =>
+            current === null ? Date.now() : current,
           )
         }
       },
@@ -211,6 +246,7 @@ const AppContent = () => {
               isCompact: message.isCompact ?? false,
               hasOverlayDeckAvailable: message.hasOverlayDeckAvailable ?? false,
               overlayDeckIcon: message.overlayDeckIcon ?? null,
+              overlayDeckName: message.overlayDeckName ?? null,
               buttonErrors: Array.isArray(surface.buttonErrors)
                 ? surface.buttonErrors
                 : [],
@@ -272,6 +308,10 @@ const AppContent = () => {
       setSend(null)
       client.close()
       clearInterval(timer)
+      if (reconnectLatchTimerRef.current !== null) {
+        window.clearTimeout(reconnectLatchTimerRef.current)
+        reconnectLatchTimerRef.current = null
+      }
     }
   }, [setAsset, navigate])
 

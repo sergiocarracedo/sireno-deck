@@ -1,3 +1,5 @@
+import { sessionBus } from "dbus-next"
+
 import type pino from "pino"
 
 import {
@@ -26,17 +28,24 @@ const toState = (locked: boolean): SessionState =>
 export const createLinuxSessionProvider = async (
   deps: LinuxSessionDeps,
 ): Promise<SessionProvider> => {
-  if (deps.dbus === undefined) {
-    return createNullSessionProvider(deps.logger)
-  }
   const idleMs = deps.idleMs ?? 5 * 60 * 1000
   const listeners = new Set<(s: SessionState) => void>()
   let state: SessionState = "unknown"
   let stopped = false
   let idleSupported = false
+  let bus: LinuxDbusBus | null = deps.dbus ?? null
+  if (bus === null) {
+    try {
+      bus = (await sessionBus()) as unknown as LinuxDbusBus
+    } catch (err) {
+      deps.logger.debug({ err }, "session: dbus sessionBus unavailable")
+      return createNullSessionProvider(deps.logger)
+    }
+  }
 
+  let screensaverOk = false
   try {
-    const proxy = await deps.dbus.getProxyObject(
+    const proxy = await bus.getProxyObject(
       SCREENSAVER_SERVICE,
       SCREENSAVER_PATH,
     )
@@ -45,17 +54,22 @@ export const createLinuxSessionProvider = async (
     state = toState(initial)
     saver.on?.("ActiveChanged", (locked: unknown) => {
       if (typeof locked === "boolean") {
-        state = toState(locked)
-        for (const l of listeners) l(state)
+        const next = toState(locked)
+        if (next !== state) {
+          state = next
+          for (const l of listeners) l(state)
+        }
       }
     })
+    screensaverOk = true
   } catch (err) {
+    // ponytail: ScreenSaver can be unavailable on non-GNOME sessions; keep
+    // the provider alive so the idle-monitor fallback can still fire.
     deps.logger.debug({ err }, "session: ScreenSaver init failed")
-    return createNullSessionProvider(deps.logger)
   }
 
   try {
-    const idleProxy = await deps.dbus.getProxyObject(
+    const idleProxy = await bus.getProxyObject(
       IDLE_MONITOR_SERVICE,
       IDLE_MONITOR_PATH,
     )
@@ -69,20 +83,30 @@ export const createLinuxSessionProvider = async (
     )
   }
 
+  if (!screensaverOk && !idleSupported) {
+    deps.logger.debug("session: no lock source available, returning null")
+    return createNullSessionProvider(deps.logger)
+  }
+
+  void screensaverOk
+
   let interval: ReturnType<typeof setInterval> | null = null
   if (idleSupported) {
     interval = setInterval(() => {
       if (stopped) return
-      void deps
-        .dbus!.getProxyObject(IDLE_MONITOR_SERVICE, IDLE_MONITOR_PATH)
+      void bus!
+        .getProxyObject(IDLE_MONITOR_SERVICE, IDLE_MONITOR_PATH)
         .then((p) => p.getInterface(IDLE_MONITOR_IFACE).GetIdletime?.())
         .then((idleMsRaw) => {
+          // ponytail: an idle-timeout fires the lock transition (not the
+          // previous no-op `state = "unlocked"`) and only when the state
+          // actually changed to avoid redundant listener notifications.
           if (
             typeof idleMsRaw === "number" &&
             idleMsRaw > idleMs &&
             state === "unlocked"
           ) {
-            state = "unlocked"
+            state = "locked"
             for (const l of listeners) l(state)
           }
         })
@@ -107,7 +131,7 @@ export const createLinuxSessionProvider = async (
         interval = null
       }
       try {
-        deps.dbus?.disconnect?.()
+        bus?.disconnect?.()
       } catch {
         // ignore
       }

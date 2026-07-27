@@ -49,6 +49,7 @@ export interface Deck {
   buttonColor?: "blue" | "green" | "purple"
   hasOverlayDeckAvailable?: boolean
   overlayDeckIcon?: string | null
+  overlayDeckName?: string | null
   buttonErrors?: Array<{
     position: number
     expiresAt: number
@@ -90,6 +91,7 @@ interface DeckButtonCellProps {
   readonly isError?: boolean
   readonly buttonColor?: "blue" | "green" | "purple"
   readonly overlayDeckIcon?: string | null
+  readonly overlayDeckName?: string | null
   readonly buttonErrors?: Deck["buttonErrors"]
 }
 
@@ -103,6 +105,7 @@ const DeckButtonCell = ({
   isError = false,
   buttonColor,
   overlayDeckIcon: deckOverlayIcon,
+  overlayDeckName,
   buttonErrors,
 }: DeckButtonCellProps) => {
   const { fire } = useButtonAction(deckId, position)
@@ -179,7 +182,12 @@ const DeckButtonCell = ({
         >
           <SplitActionSurface
             primary={renderSystemButton(button.type)}
-            secondary={renderSystemButton("core:overlay-toggle", overlayIcon)}
+            secondary={renderSystemButton(
+              "core:overlay-toggle",
+              overlayIcon,
+              undefined,
+              overlayDeckName ?? undefined,
+            )}
           />
         </ButtonFrame>
       </div>
@@ -321,6 +329,7 @@ export const Deck = ({ deck, deviceModel, children }: DeckProps) => {
             isError={errorPositions.has(position)}
             buttonColor={deck.buttonColor}
             overlayDeckIcon={deck.overlayDeckIcon ?? null}
+            overlayDeckName={deck.overlayDeckName ?? null}
             buttonErrors={deck.buttonErrors}
             {...(splitAction ? { splitAction: true } : {})}
           />

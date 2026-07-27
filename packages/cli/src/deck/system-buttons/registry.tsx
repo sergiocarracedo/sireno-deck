@@ -36,6 +36,7 @@ export const renderSystemButton = (
   type: string,
   iconOverride?: string,
   details?: string,
+  labelOverride?: string,
 ): ReactElement | null => {
   if (!isSystemButtonType(type)) return null
   const layout = SYSTEM_BUTTON_LAYOUT[type]
@@ -51,7 +52,7 @@ export const renderSystemButton = (
   return (
     <IconLabelSurface
       source={iconOverride ?? layout.source}
-      label={layout.label}
+      label={labelOverride ?? layout.label}
       {...(details !== undefined
         ? { details }
         : layout.details !== undefined

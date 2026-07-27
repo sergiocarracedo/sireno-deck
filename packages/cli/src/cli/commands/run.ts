@@ -245,6 +245,7 @@ export const setupAddonServices = (
         isCompact,
         (fullPath) => getAssetByPath(fullPath)?.id,
         runtime.getAvailableOverlayDeckIcon(),
+        runtime.getAvailableOverlayDeckName(),
       )
       bridge.broadcast(msg)
     },
@@ -267,6 +268,7 @@ export const setupAddonServices = (
         isCompact,
         (fullPath) => getAssetByPath(fullPath)?.id,
         runtime.getAvailableOverlayDeckIcon(),
+        runtime.getAvailableOverlayDeckName(),
       )
       logger.info(
         {
@@ -965,7 +967,11 @@ const startSystemProviders = async (
 
   const [activeApp, session, keyMacro] = await Promise.all([
     createActiveAppProvider({ platform, executor, logger }),
-    createSessionProvider({ platform, logger }),
+    createSessionProvider({
+      platform,
+      executor,
+      logger,
+    }),
     createKeyMacroProvider({ platform, executor, env, logger, extraFsProbe }),
   ])
 

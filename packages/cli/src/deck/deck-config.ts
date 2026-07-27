@@ -116,6 +116,7 @@ export const buildDeckConfigMessage = (
   isCompact?: boolean,
   assetLookup: AssetLookup = () => undefined,
   overlayDeckIcon: string | null = null,
+  overlayDeckName: string | null = null,
 ): DeckConfigMessage => {
   void keyCount
   const buttons = deck.buttons.map((b) => {
@@ -170,5 +171,6 @@ export const buildDeckConfigMessage = (
     isCompact: isCompact ?? false,
     hasOverlayDeckAvailable: navState?.hasOverlayDeckAvailable ?? false,
     overlayDeckIcon: resolvedOverlayIcon,
+    overlayDeckName,
   }
 }

@@ -48,7 +48,7 @@ describe("ValueChart", () => {
     const { container } = render(
       <ValueChart series={singleSeries()} windowSeconds={60} />,
     )
-    const svg = container.querySelector('svg[preserveAspectRatio="none"]')!
+    const svg = container.querySelector("[data-sireno-chart-svg]")!
     const chartPaths = svg.querySelectorAll("path")
     expect(chartPaths.length).toBe(1)
     expect(chartPaths[0]!.getAttribute("d")).not.toBe("")
@@ -58,11 +58,64 @@ describe("ValueChart", () => {
     const { container } = render(
       <ValueChart series={twoSeries()} windowSeconds={60} />,
     )
-    const svg = container.querySelector('svg[preserveAspectRatio="none"]')!
+    const svg = container.querySelector("[data-sireno-chart-svg]")!
     const chartPaths = svg.querySelectorAll("path")
     expect(chartPaths.length).toBe(2)
     expect(chartPaths[0]!.getAttribute("stroke")).toBe("#34d399")
     expect(chartPaths[1]!.getAttribute("stroke")).toBe("#f59e0b")
+  })
+
+  it("applies distinct stroke variants to two series so same-color curves differ", () => {
+    const sameColor: readonly [
+      ReturnType<typeof twoSeries>[0],
+      ReturnType<typeof twoSeries>[0],
+    ] = [
+      {
+        ...twoSeries()[0],
+      },
+      {
+        ...twoSeries()[0],
+        id: "cpu2",
+      },
+    ]
+    const { container } = render(
+      <ValueChart series={sameColor} windowSeconds={60} />,
+    )
+    const svg = container.querySelector("[data-sireno-chart-svg]")!
+    const chartPaths = svg.querySelectorAll("path")
+    expect(chartPaths.length).toBe(2)
+    expect(chartPaths[0]!.getAttribute("stroke-dasharray")).toBeNull()
+    expect(chartPaths[1]!.getAttribute("stroke-dasharray")).toBe("4 3")
+    expect(chartPaths[0]!.getAttribute("fill")).not.toBe(
+      chartPaths[1]!.getAttribute("fill"),
+    )
+  })
+
+  it("renders a legend swatch per series, dropping the instant numeric value", () => {
+    const { container } = render(
+      <ValueChart
+        series={singleSeries({
+          points: [{ at: Date.now() - 1000, value: 73 }],
+        })}
+        windowSeconds={60}
+      />,
+    )
+    const legendRows = container.querySelectorAll("[data-series-id]")
+    expect(legendRows.length).toBe(1)
+    const swatch = legendRows[0]!.querySelector("svg[data-variant]")!
+    expect(swatch.getAttribute("data-variant")).toBe("solid")
+    expect(container.textContent).not.toContain("73")
+  })
+
+  it("uses a dashed legend swatch and fill pattern for the second series", () => {
+    const { container } = render(
+      <ValueChart series={twoSeries()} windowSeconds={60} />,
+    )
+    const rows = container.querySelectorAll("[data-series-id]")
+    expect(rows.length).toBe(2)
+    expect(rows[0]!.getAttribute("data-variant")).toBe("solid")
+    expect(rows[1]!.getAttribute("data-variant")).toBe("dashed")
+    expect(rows[1]!.querySelector("svg[data-variant]")).not.toBeNull()
   })
 
   it("throws when given three series", () => {
@@ -81,7 +134,7 @@ describe("ValueChart", () => {
     ).toThrow(/supports 1-2 series/)
   })
 
-  it("renders legend icon and value for each series", () => {
+  it("renders legend icon and stroke swatch for each series", () => {
     const { container } = render(
       <ValueChart
         series={singleSeries({
@@ -92,7 +145,8 @@ describe("ValueChart", () => {
     )
     const legends = container.querySelectorAll("[data-sireno-icon-source]")
     expect(legends.length).toBe(1)
-    expect(container.textContent).toContain("73")
+    const swatches = container.querySelectorAll("svg[data-variant]")
+    expect(swatches.length).toBeGreaterThan(0)
   })
 
   it("renders baseline line when all points are outside window", () => {
@@ -103,7 +157,8 @@ describe("ValueChart", () => {
         windowSeconds={10}
       />,
     )
-    const lines = container.querySelectorAll("line")
+    const svg = container.querySelector("[data-sireno-chart-svg]")!
+    const lines = svg.querySelectorAll("line")
     expect(lines.length).toBe(1)
   })
 
@@ -118,7 +173,7 @@ describe("ValueChart", () => {
       <ValueChart series={singleSeries({ points })} windowSeconds={60} />,
     )
     // Points at 40s and 20s ago are within 60s window; 120s ago is clipped
-    const svg = container.querySelector('svg[preserveAspectRatio="none"]')!
+    const svg = container.querySelector("[data-sireno-chart-svg]")!
     const paths = svg.querySelectorAll("path")
     // A single series → one path (the clipped series has 2 points)
     // Point 1: value 20 → y = (100-20) = 80
@@ -131,7 +186,7 @@ describe("ValueChart", () => {
     expect(d).not.toContain("90.0")
   })
 
-  it("displays latest value in legend even when clipped", () => {
+  it("renders stroke swatch for one series even when the latest point is clipped", () => {
     const now = Date.now()
     const points = [
       { at: now - 120_000, value: 10 },
@@ -140,6 +195,8 @@ describe("ValueChart", () => {
     const { container } = render(
       <ValueChart series={singleSeries({ points })} windowSeconds={10} />,
     )
-    expect(container.textContent).toContain("99")
+    const swatches = container.querySelectorAll("svg[data-variant]")
+    expect(swatches.length).toBe(1)
+    expect(container.textContent).not.toContain("99")
   })
 })

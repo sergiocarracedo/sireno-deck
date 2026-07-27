@@ -86,6 +86,36 @@ function buildAreaPath(
   return parts.join(" ")
 }
 
+function LegendSwatch({
+  color,
+  variant,
+}: {
+  color: string
+  variant: "solid" | "dashed"
+}): ReactElement {
+  return (
+    <svg
+      width={14}
+      height={4}
+      viewBox="0 0 14 4"
+      preserveAspectRatio="none"
+      aria-hidden
+      data-variant={variant}
+    >
+      <line
+        x1="0"
+        y1="2"
+        x2="14"
+        y2="2"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        {...(variant === "dashed" ? { strokeDasharray: "3 2" } : {})}
+      />
+    </svg>
+  )
+}
+
 export function ValueChart(props: ValueChartProps): ReactElement {
   if (props.series.length < 1 || props.series.length > 2) {
     throw new Error(
@@ -104,6 +134,8 @@ export function ValueChart(props: ValueChartProps): ReactElement {
   }))
 
   const resolution = props.resolution ?? 120
+  const variantFor = (index: number): "solid" | "dashed" =>
+    index === 0 ? "solid" : "dashed"
 
   return (
     <div
@@ -115,25 +147,17 @@ export function ValueChart(props: ValueChartProps): ReactElement {
       style={props.style}
     >
       <div className="flex shrink-0 items-center justify-center gap-2">
-        {clipped.map((s) => {
-          const latest = s.points[s.points.length - 1]
-          const displayValue =
-            latest !== undefined ? String(Math.round(latest.value)) : "—"
+        {clipped.map((s, index) => {
+          const variant = variantFor(index)
           return (
             <div
-              className="flex items-center gap-0.5 whitespace-nowrap"
+              className="flex items-center gap-1 whitespace-nowrap"
               key={s.id}
+              data-series-id={s.id}
+              data-variant={variant}
             >
               <Icon source={s.icon} size={10} />
-              <Text
-                align="center"
-                fit="hidden"
-                size="xxs"
-                typography="mono"
-                weight="bold"
-                text={displayValue}
-                style={{ color: s.color }}
-              />
+              <LegendSwatch color={s.color} variant={variant} />
               {s.unit ? (
                 <Text
                   align="center"
@@ -154,8 +178,36 @@ export function ValueChart(props: ValueChartProps): ReactElement {
           className="h-full w-full"
           preserveAspectRatio="none"
           viewBox={`0 0 ${CHART_VIEWBOX_SIZE} ${CHART_VIEWBOX_SIZE}`}
+          data-sireno-chart-svg="true"
         >
-          {clipped.map((s) => {
+          <defs>
+            {clipped.map((s, index) => (
+              <pattern
+                key={`pattern-${s.id}`}
+                id={`pattern-${variantFor(index)}-${index}`}
+                patternUnits="userSpaceOnUse"
+                width={6}
+                height={6}
+                patternTransform="rotate(45)"
+              >
+                {variantFor(index) === "solid" ? (
+                  <rect width={6} height={6} fill={s.color} fillOpacity={0.3} />
+                ) : (
+                  <line
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2={6}
+                    stroke={s.color}
+                    strokeOpacity={0.3}
+                    strokeWidth={2}
+                  />
+                )}
+              </pattern>
+            ))}
+          </defs>
+          {clipped.map((s, index) => {
+            const variant = variantFor(index)
             const downsampled = downsample(s.clipped, resolution)
             if (downsampled.length === 0) {
               return (
@@ -168,6 +220,7 @@ export function ValueChart(props: ValueChartProps): ReactElement {
                   stroke={s.color}
                   strokeWidth={1.5}
                   opacity={0.3}
+                  {...(variant === "dashed" ? { strokeDasharray: "4 3" } : {})}
                 />
               )
             }
@@ -175,12 +228,12 @@ export function ValueChart(props: ValueChartProps): ReactElement {
               <path
                 key={s.id}
                 d={buildAreaPath(downsampled, s.yMax)}
-                fill={s.color}
-                fillOpacity={0.3}
+                fill={`url(#pattern-${variant}-${index})`}
                 stroke={s.color}
                 strokeWidth={1.5}
                 strokeLinejoin="round"
                 strokeLinecap="round"
+                {...(variant === "dashed" ? { strokeDasharray: "4 3" } : {})}
               />
             )
           })}
