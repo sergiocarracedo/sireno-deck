@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react"
-
 import type { AddonFrontendButton } from "@/addon/api"
 import { useAddonChannel } from "@/api/react"
-import { IconLabelSurface } from "@/ui/index"
+import { IconLabelSurface, PaginatedSurface, type PaginatedPage } from "@/ui"
 import { cityKey } from "../../provider/city-key"
 import type { WeatherSnapshot } from "../../provider/types"
 import type { ConfigSchema } from "./config"
-import { pages } from "./pages"
+import { type WeatherPageProps, weatherPageRenderers } from "./pages"
 
 const AUTO_RETURN_MS = 10_000
 
@@ -17,9 +15,6 @@ const WeatherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
   config,
   gesture,
 }) => {
-  const [page, setPage] = useState(0)
-  const [pageChangedAt, setPageChangedAt] = useState<number | undefined>()
-
   const name =
     typeof config?.location === "object"
       ? config.location.name
@@ -32,47 +27,36 @@ const WeatherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
       ? data.byCity[lookupKey(loc)]
       : undefined
 
-  useEffect(() => {
-    if (gesture?.gesture !== "tap") {
-      return
-    }
-    const nextPage = (page + 1) % pages.length
-    setPage(nextPage)
-    setPageChangedAt(nextPage === 0 ? undefined : Date.now())
-  }, [gesture?.at])
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (page === 0 || pageChangedAt === undefined) return
-      const now = Date.now()
-      if (now - pageChangedAt >= AUTO_RETURN_MS) {
-        setPage(0)
-        setPageChangedAt(undefined)
-      }
-    }, AUTO_RETURN_MS)
-
-    return () => clearTimeout(timer)
-  }, [page, pageChangedAt])
-
   if (!snapshot?.available) {
     return (
-      <IconLabelSurface
-        source="icon://cloud-off"
-        label="---"
-        tone="primary"
-      ></IconLabelSurface>
+      <IconLabelSurface source="icon://cloud-off" label="---" tone="primary" />
     )
   }
 
   const unitTemp = snapshot.units === "imperial" ? "°F" : "°C"
   const unitWind = snapshot.units === "imperial" ? "mph" : "km/h"
 
-  return pages[page]!.render({
+  const weatherProps: WeatherPageProps = {
     snapshot,
     unitTemp,
     unitWind,
     city: name,
-  })
+  }
+
+  const pages: PaginatedPage<WeatherPageProps>[] = weatherPageRenderers.map(
+    (render) => ({
+      render,
+      config: weatherProps,
+    }),
+  )
+
+  return (
+    <PaginatedSurface
+      pages={pages}
+      gesture={gesture}
+      autoReturnMs={AUTO_RETURN_MS}
+    />
+  )
 }
 
 export default WeatherButtonFrontend

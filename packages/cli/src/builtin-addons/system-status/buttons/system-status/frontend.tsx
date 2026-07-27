@@ -1,5 +1,5 @@
-import type { AddonFrontendButton } from '@/addon/api'
-import { useAddonChannel } from '@/api/react'
+import type { AddonFrontendButton } from "@/addon/api"
+import { useAddonChannel } from "@/api/react"
 import {
   BarsSurface,
   LabelValueListSurface,
@@ -10,8 +10,8 @@ import {
   type PaginatedPage,
   type ValueChartPoint,
   type ValueChartSeries,
-} from '@/ui/index'
-import type { ReactElement } from 'react'
+} from "@/ui/index"
+import type { ReactElement } from "react"
 
 import {
   CHART_HISTORY_CHANNEL,
@@ -19,15 +19,15 @@ import {
   thresholdColorHex,
   toDisplayMetric,
   type ChartSamplerState,
-} from '../../domain'
-import { MetricColor, METRICS_CATALOG } from '../../shared/metrics-catalog'
+} from "../../domain"
+import { MetricColor, METRICS_CATALOG } from "../../shared/metrics-catalog"
 import {
   pickLabel,
   readSnapshot,
   resolveMetricId,
   useAllMetricChannels,
-} from '../_shared'
-import type { SystemPageConfig, SystemStatusConfig } from './schemas'
+} from "../_shared"
+import type { SystemPageConfig, SystemStatusConfig } from "./schemas"
 
 function pctFromDisplay(
   value: number | undefined,
@@ -39,7 +39,7 @@ function pctFromDisplay(
   return Math.min(100, Math.max(0, Math.round((value / maxValue) * 100)))
 }
 
-function BarsPage({ metrics }: Extract<SystemPageConfig, { type: 'bars' }>) {
+function BarsPage({ metrics }: Extract<SystemPageConfig, { type: "bars" }>) {
   const channels = useAllMetricChannels()
   const useIconInsteadOfTitle = metrics.length === 3
 
@@ -49,7 +49,7 @@ function BarsPage({ metrics }: Extract<SystemPageConfig, { type: 'bars' }>) {
     if (id === null) continue
     const def = METRICS_CATALOG[id]
     if (!def) continue
-    if (!def.views.includes('bars')) continue
+    if (!def.views.includes("bars")) continue
     const maxValue = def.maxValue ?? 100
     const display = toDisplayMetric(readSnapshot(channels[id], id))
     const color = thresholdColorHex(
@@ -57,7 +57,7 @@ function BarsPage({ metrics }: Extract<SystemPageConfig, { type: 'bars' }>) {
     )
     const pct = pctFromDisplay(display.value, display.percentage, maxValue)
     items.push({
-      title: useIconInsteadOfTitle ? '' : pickLabel(entry, def.defaultLabel),
+      title: useIconInsteadOfTitle ? "" : pickLabel(entry, def.defaultLabel),
       ...(def.icon ? { titleIcon: def.icon } : {}),
       value: pct,
       maxValue,
@@ -87,7 +87,7 @@ function BarsPage({ metrics }: Extract<SystemPageConfig, { type: 'bars' }>) {
   )
 }
 
-function KpisPage({ metrics }: Extract<SystemPageConfig, { type: 'kpis' }>) {
+function KpisPage({ metrics }: Extract<SystemPageConfig, { type: "kpis" }>) {
   const channels = useAllMetricChannels()
 
   const lines: LabelValueListLine[] = []
@@ -128,7 +128,7 @@ function KpisPage({ metrics }: Extract<SystemPageConfig, { type: 'kpis' }>) {
 function ChartPage({
   metrics,
   windowSeconds,
-}: Extract<SystemPageConfig, { type: 'chart' }>) {
+}: Extract<SystemPageConfig, { type: "chart" }>) {
   const { data: history } = useAddonChannel<ChartSamplerState>(
     CHART_HISTORY_CHANNEL,
   )
@@ -139,7 +139,7 @@ function ChartPage({
     if (id === null) return []
     const def = METRICS_CATALOG[id]
     if (!def) return []
-    if (!def.views.includes('chart')) return []
+    if (!def.views.includes("chart")) return []
 
     const rawSamples = history?.samples[id] ?? []
     const now = Date.now()
@@ -161,9 +161,9 @@ function ChartPage({
               latest.value ?? 0,
               def.thresholds,
             ) as MetricColor,
-          ) ?? 'var(--sireno-color-primary)',
-        icon: def.icon ?? 'icon://activity',
-        ...(typeof entry === 'object' && entry.label
+          ) ?? "var(--sireno-color-primary)",
+        icon: def.icon ?? "icon://activity",
+        ...(typeof entry === "object" && entry.label
           ? { label: entry.label }
           : {}),
         ...(latest.unit ? { unit: latest.unit } : {}),
@@ -189,7 +189,7 @@ function ChartPage({
 }
 
 const PAGE_COMPONENTS: {
-  [K in SystemPageConfig['type']]: (
+  [K in SystemPageConfig["type"]]: (
     props: Extract<SystemPageConfig, { type: K }>,
   ) => ReactElement
 } = {

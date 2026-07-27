@@ -7,119 +7,119 @@ import {
   useEffect,
   useRef,
   useState,
-} from 'react'
+} from "react"
 
-import { useThemeUiPresentation } from '../theme-presentation'
-import { cn } from '../utils/cn'
+import { useThemeUiPresentation } from "../theme-presentation"
+import { cn } from "../utils/cn"
 
 const ALIGN_CLASS = {
-  center: 'text-center',
-  left: 'text-left',
-  right: 'text-right',
+  center: "text-center",
+  left: "text-left",
+  right: "text-right",
 } as const
 
 const TONE_CLASS = {
-  accent: 'text-accent',
-  danger: 'text-danger',
-  fg: 'text-fg',
-  foreground: 'text-fg',
-  'foreground-contrast': 'text-foreground-contrast',
-  primary: 'text-primary',
-  success: 'text-success',
-  muted: 'text-muted',
+  accent: "text-accent",
+  danger: "text-danger",
+  fg: "text-fg",
+  foreground: "text-fg",
+  "foreground-contrast": "text-foreground-contrast",
+  primary: "text-primary",
+  success: "text-success",
+  muted: "text-muted",
 } as const
 
 const TYPOGRAPHY_CLASS = {
-  aux: 'font-aux',
-  main: 'font-main',
-  mono: 'font-mono',
+  aux: "font-aux",
+  main: "font-main",
+  mono: "font-mono",
 } as const
 
 const TEXT_WEIGHT = [
-  'normal',
-  'semibold',
-  'bold',
-  'light',
-  'thin',
-  'extralight',
-  'black',
+  "normal",
+  "semibold",
+  "bold",
+  "light",
+  "thin",
+  "extralight",
+  "black",
 ] as const
 
 const WEIGHT_CLASS = {
-  normal: 'font-normal',
-  semibold: 'font-semibold',
-  bold: 'font-bold',
-  light: 'font-light',
-  thin: 'font-thin',
-  extralight: 'font-extralight',
-  black: 'font-black',
+  normal: "font-normal",
+  semibold: "font-semibold",
+  bold: "font-bold",
+  light: "font-light",
+  thin: "font-thin",
+  extralight: "font-extralight",
+  black: "font-black",
 } as const
 
 const SIZE_CLASS = {
-  xxs: 'text-[8px]',
-  xs: 'text-xs',
-  sm: 'text-sm',
-  md: 'text-md',
-  lg: 'text-lg',
-  xl: 'text-xl',
-  '2xl': 'text-2xl',
-  '3xl': 'text-3xl',
-  '4xl': 'text-4xl',
-  '5xl': 'text-5xl',
+  xxs: "text-[8px]",
+  xs: "text-xs",
+  sm: "text-sm",
+  md: "text-md",
+  lg: "text-lg",
+  xl: "text-xl",
+  "2xl": "text-2xl",
+  "3xl": "text-3xl",
+  "4xl": "text-4xl",
+  "5xl": "text-5xl",
 } as const
 
 const RICH_TONE_TAGS = [
-  'accent',
-  'danger',
-  'foreground',
-  'primary',
-  'success',
+  "accent",
+  "danger",
+  "foreground",
+  "primary",
+  "success",
 ] as const
 
 const RICH_SIZE_TAGS = [
-  'xxs',
-  'xs',
-  'sm',
-  'md',
-  'lg',
-  'xl',
-  '2xl',
-  '3xl',
-  '4xl',
-  '5xl',
+  "xxs",
+  "xs",
+  "sm",
+  "md",
+  "lg",
+  "xl",
+  "2xl",
+  "3xl",
+  "4xl",
+  "5xl",
 ] as const
 
 type RichToneTag = (typeof RICH_TONE_TAGS)[number]
 type RichSizeTag = (typeof RICH_SIZE_TAGS)[number]
 type RichMarkupTag =
-  | 'blink'
-  | 'dim'
-  | 'highlight'
-  | 'strong'
+  | "blink"
+  | "dim"
+  | "highlight"
+  | "strong"
   | RichToneTag
   | RichSizeTag
 
 type RichTextNode =
-  | { type: 'line-break' }
-  | { type: 'nbsp' }
+  | { type: "line-break" }
+  | { type: "nbsp" }
   | {
-      type: 'tag'
+      type: "tag"
       tag: string
       extraClasses?: string[]
       children: RichTextNode[]
     }
-  | { type: 'text'; value: string }
+  | { type: "text"; value: string }
 
 type ParseStop =
-  | { kind: 'highlight' }
-  | { kind: 'tag'; tag: Exclude<RichMarkupTag, 'highlight'> }
+  | { kind: "highlight" }
+  | { kind: "tag"; tag: Exclude<RichMarkupTag, "highlight"> }
 
 const RICH_TAG_NAMES = new Set<string>([
   ...RICH_TONE_TAGS,
   ...RICH_SIZE_TAGS,
-  'blink',
-  'dim',
-  'strong',
+  "blink",
+  "dim",
+  "strong",
 ])
 
 function isRichToneTag(tag: string): tag is RichToneTag {
@@ -139,18 +139,18 @@ function parseRichText(input: string): RichTextNode[] | null {
 
     const flushText = () => {
       if (textStart < index) {
-        nodes.push({ type: 'text', value: input.slice(textStart, index) })
+        nodes.push({ type: "text", value: input.slice(textStart, index) })
       }
     }
 
     while (index < input.length) {
-      if (stop?.kind === 'highlight' && input[index] === '*') {
+      if (stop?.kind === "highlight" && input[index] === "*") {
         flushText()
         index += 1
         return nodes
       }
 
-      if (stop?.kind === 'tag' && input.startsWith(`</${stop.tag}>`, index)) {
+      if (stop?.kind === "tag" && input.startsWith(`</${stop.tag}>`, index)) {
         flushText()
         index += stop.tag.length + 3
         return nodes
@@ -158,41 +158,41 @@ function parseRichText(input: string): RichTextNode[] | null {
 
       const current = input[index]
 
-      if (current === '|') {
+      if (current === "|") {
         flushText()
-        nodes.push({ type: 'line-break' })
+        nodes.push({ type: "line-break" })
         index += 1
         textStart = index
         continue
       }
 
-      if (current === '&' && input.slice(index, index + 6) === '&nbsp;') {
+      if (current === "&" && input.slice(index, index + 6) === "&nbsp;") {
         flushText()
-        nodes.push({ type: 'nbsp' })
+        nodes.push({ type: "nbsp" })
         index += 6
         textStart = index
         continue
       }
 
-      if (current === '*') {
+      if (current === "*") {
         flushText()
         index += 1
         textStart = index
-        const children = parseSequence({ kind: 'highlight' })
+        const children = parseSequence({ kind: "highlight" })
         if (children === null) {
           return null
         }
-        nodes.push({ type: 'tag', tag: 'highlight', children })
+        nodes.push({ type: "tag", tag: "highlight", children })
         textStart = index
         continue
       }
 
-      if (current === '<') {
-        if (input.startsWith('</', index)) {
+      if (current === "<") {
+        if (input.startsWith("</", index)) {
           return null
         }
 
-        const closeIndex = input.indexOf('>', index + 1)
+        const closeIndex = input.indexOf(">", index + 1)
         if (closeIndex === -1) {
           return null
         }
@@ -208,15 +208,15 @@ function parseRichText(input: string): RichTextNode[] | null {
         textStart = index
 
         const children = parseSequence({
-          kind: 'tag',
-          tag: baseTag as Exclude<RichMarkupTag, 'highlight'>,
+          kind: "tag",
+          tag: baseTag as Exclude<RichMarkupTag, "highlight">,
         })
         if (children === null) {
           return null
         }
 
         nodes.push({
-          type: 'tag',
+          type: "tag",
           tag: baseTag,
           extraClasses: rest.length > 0 ? rest : undefined,
           children,
@@ -236,7 +236,7 @@ function parseRichText(input: string): RichTextNode[] | null {
 }
 
 function isPlainTextTree(nodes: RichTextNode[]): boolean {
-  return nodes.every((node) => node.type === 'text')
+  return nodes.every((node) => node.type === "text")
 }
 
 function renderRichTextNodes(
@@ -247,37 +247,37 @@ function renderRichTextNodes(
   return nodes.map((node, index) => {
     const key = `${keyPrefix}-${index}`
 
-    if (node.type === 'text') {
+    if (node.type === "text") {
       return node.value
     }
 
-    if (node.type === 'line-break') {
-      return createElement('span', {
-        className: 'sireno-rich-text-break',
-        'data-sireno-rich-text-tag': 'line-break',
+    if (node.type === "line-break") {
+      return createElement("span", {
+        className: "sireno-rich-text-break",
+        "data-sireno-rich-text-tag": "line-break",
         key,
       })
     }
 
-    if (node.type === 'nbsp') {
-      return createElement('span', { key, 'aria-hidden': 'true' }, '\u00A0')
+    if (node.type === "nbsp") {
+      return createElement("span", { key, "aria-hidden": "true" }, "\u00A0")
     }
 
-    const classNames = ['sireno-rich-text-node', className]
+    const classNames = ["sireno-rich-text-node", className]
 
-    if (node.tag === 'blink') {
-      classNames.push('sireno-rich-text-blink')
+    if (node.tag === "blink") {
+      classNames.push("sireno-rich-text-blink")
     }
 
-    if (node.tag === 'dim') {
-      classNames.push('opacity-50')
+    if (node.tag === "dim") {
+      classNames.push("opacity-50")
     }
 
-    if (node.tag === 'strong' || node.tag === 'highlight') {
-      classNames.push('sireno-rich-text-strong')
+    if (node.tag === "strong" || node.tag === "highlight") {
+      classNames.push("sireno-rich-text-strong")
     }
 
-    if (node.tag === 'highlight') {
+    if (node.tag === "highlight") {
       classNames.push(TONE_CLASS.primary)
     } else if (isRichToneTag(node.tag)) {
       classNames.push(TONE_CLASS[node.tag])
@@ -305,7 +305,7 @@ function renderTextChildren(
   children: ReactNode,
   _lineHeight: number | string,
 ): ReactNode {
-  if (typeof children !== 'string') {
+  if (typeof children !== "string") {
     return children
   }
 
@@ -314,12 +314,12 @@ function renderTextChildren(
     return children
   }
 
-  return renderRichTextNodes(parsed, 'rich', '!leading-[inherit]')
+  return renderRichTextNodes(parsed, "rich", "!leading-[inherit]")
 }
 
 export type TextAlign = keyof typeof ALIGN_CLASS
 
-export type TextFitMode = 'fit' | 'autofit'
+export type TextFitMode = "fit" | "autofit"
 
 export type TextFit = {
   type: TextFitMode
@@ -337,11 +337,11 @@ export type TextFit = {
 
 /** Legacy / convenience string aliases for {@link TextFit}. */
 export type TextFitType =
-  | 'ellipsis'
-  | 'clipped'
-  | 'autofit'
-  | 'hidden'
-  | 'shrink'
+  | "ellipsis"
+  | "clipped"
+  | "autofit"
+  | "hidden"
+  | "shrink"
 
 export type TextFitInput = TextFit | TextFitType
 
@@ -368,10 +368,10 @@ const MIN_SIZE_PX: Record<TextSize, number> = {
   md: 12,
   lg: 12,
   xl: 14,
-  '2xl': 14,
-  '3xl': 14,
-  '4xl': 14,
-  '5xl': 14,
+  "2xl": 14,
+  "3xl": 14,
+  "4xl": 14,
+  "5xl": 14,
 }
 
 function clampLines(lines: number | undefined): 1 | 2 | 3 {
@@ -383,14 +383,14 @@ function resolveMinSize(
   minSize: number | TextSize | undefined,
 ): number | undefined {
   if (minSize === undefined) return undefined
-  if (typeof minSize === 'number') return minSize
+  if (typeof minSize === "number") return minSize
   return MIN_SIZE_PX[minSize]
 }
 
 export function resolveTextFit(fit: TextFitInput | undefined): TextFitResolved {
   if (fit === undefined) {
     return {
-      type: 'fit',
+      type: "fit",
       lines: 1,
       reserveSpace: false,
       ellipsis: false,
@@ -398,29 +398,29 @@ export function resolveTextFit(fit: TextFitInput | undefined): TextFitResolved {
     }
   }
 
-  if (typeof fit === 'string') {
+  if (typeof fit === "string") {
     switch (fit) {
-      case 'ellipsis':
+      case "ellipsis":
         return {
-          type: 'fit',
+          type: "fit",
           lines: 1,
           reserveSpace: false,
           ellipsis: true,
           minSize: undefined,
         }
-      case 'clipped':
-      case 'hidden':
-      case 'shrink':
+      case "clipped":
+      case "hidden":
+      case "shrink":
         return {
-          type: 'fit',
+          type: "fit",
           lines: 1,
           reserveSpace: false,
           ellipsis: false,
           minSize: undefined,
         }
-      case 'autofit':
+      case "autofit":
         return {
-          type: 'autofit',
+          type: "autofit",
           lines: 1,
           reserveSpace: false,
           ellipsis: false,
@@ -429,7 +429,7 @@ export function resolveTextFit(fit: TextFitInput | undefined): TextFitResolved {
       default:
         // Treat unknown strings as clipped fit.
         return {
-          type: 'fit',
+          type: "fit",
           lines: 1,
           reserveSpace: false,
           ellipsis: false,
@@ -442,18 +442,18 @@ export function resolveTextFit(fit: TextFitInput | undefined): TextFitResolved {
   const reserveSpace = fit.reserveSpace ?? false
   const ellipsis = fit.ellipsis ?? false
 
-  if (fit.type === 'autofit') {
+  if (fit.type === "autofit") {
     return {
-      type: 'autofit',
+      type: "autofit",
       lines,
       reserveSpace,
       ellipsis,
-      minSize: resolveMinSize(fit.minSize ?? 'xs'),
+      minSize: resolveMinSize(fit.minSize ?? "xs"),
     }
   }
 
   return {
-    type: 'fit',
+    type: "fit",
     lines,
     reserveSpace,
     ellipsis,
@@ -461,7 +461,7 @@ export function resolveTextFit(fit: TextFitInput | undefined): TextFitResolved {
   }
 }
 
-type AutofitState = 'fit' | 'ellipsis' | 'clipped'
+type AutofitState = "fit" | "ellipsis" | "clipped"
 
 function useAutofit(
   ref: RefObject<HTMLDivElement | null>,
@@ -471,7 +471,7 @@ function useAutofit(
   ellipsis: boolean,
 ): { fontSize: number | null; state: AutofitState; effectiveLines: number } {
   const [fontSize, setFontSize] = useState<number | null>(null)
-  const [state, setState] = useState<AutofitState>('fit')
+  const [state, setState] = useState<AutofitState>("fit")
   const [effectiveLines, setEffectiveLines] = useState(lines)
 
   useEffect(() => {
@@ -492,19 +492,19 @@ function useAutofit(
     }
 
     const restoreInline = () => {
-      el.style.fontSize = ''
-      el.style.whiteSpace = ''
-      el.style.display = ''
-      ;(el.style as CSSProperties & Record<string, string>)['WebkitLineClamp'] =
-        ''
+      el.style.fontSize = ""
+      el.style.whiteSpace = ""
+      el.style.display = ""
+      ;(el.style as CSSProperties & Record<string, string>)["WebkitLineClamp"] =
+        ""
     }
 
     const measureTextWidth = () => {
       const prevOverflow = el.style.overflow
       const prevTextOverflow = el.style.textOverflow
-      el.style.overflow = 'visible'
-      el.style.textOverflow = ''
-      el.style.whiteSpace = 'nowrap'
+      el.style.overflow = "visible"
+      el.style.textOverflow = ""
+      el.style.whiteSpace = "nowrap"
       const w = el.scrollWidth
       el.style.overflow = prevOverflow
       el.style.textOverflow = prevTextOverflow
@@ -512,7 +512,7 @@ function useAutofit(
     }
 
     const measureTextHeight = () => {
-      el.style.whiteSpace = ''
+      el.style.whiteSpace = ""
       return el.scrollHeight
     }
 
@@ -529,7 +529,7 @@ function useAutofit(
         if (measureTextWidth() <= containerW + 1) {
           restoreInline()
           setFontSize(null)
-          setState('fit')
+          setState("fit")
           setEffectiveLines(1)
           return
         }
@@ -545,7 +545,7 @@ function useAutofit(
           if (measureTextWidth() <= containerW + 1) {
             restoreInline()
             setFontSize(size)
-            setState('fit')
+            setState("fit")
             setEffectiveLines(1)
             return
           }
@@ -553,14 +553,14 @@ function useAutofit(
 
         // Phase 3: reset to natural, try multi-line at natural
         restoreInline()
-        el.style.fontSize = ''
+        el.style.fontSize = ""
         const naturalMultiHeight = measureTextHeight()
         const naturalLineEm =
           parseFloat(getComputedStyle(el).lineHeight) || computed * 1.2
         if (naturalMultiHeight <= lines * naturalLineEm + 1) {
           restoreInline()
           setFontSize(null)
-          setState('fit')
+          setState("fit")
           setEffectiveLines(lines)
           return
         }
@@ -574,7 +574,7 @@ function useAutofit(
           if (sh <= lines * lh + 1) {
             restoreInline()
             setFontSize(s)
-            setState('fit')
+            setState("fit")
             setEffectiveLines(lines)
             return
           }
@@ -583,7 +583,7 @@ function useAutofit(
         // Phase 5: nothing fit, floor at minSize
         restoreInline()
         setFontSize(minSize)
-        setState(ellipsis ? 'ellipsis' : 'clipped')
+        setState(ellipsis ? "ellipsis" : "clipped")
         setEffectiveLines(lines)
         return
       }
@@ -597,7 +597,7 @@ function useAutofit(
         el.scrollHeight <= el.clientHeight + 1
       ) {
         setFontSize(hi)
-        setState('fit')
+        setState("fit")
         setEffectiveLines(1)
         return
       }
@@ -623,12 +623,12 @@ function useAutofit(
       if (fitSize > minSize) {
         el.style.fontSize = `${fitSize}px`
         setFontSize(fitSize)
-        setState('fit')
+        setState("fit")
         setEffectiveLines(1)
       } else {
         el.style.fontSize = `${minSize}px`
         setFontSize(minSize)
-        setState(ellipsis ? 'ellipsis' : 'clipped')
+        setState(ellipsis ? "ellipsis" : "clipped")
         setEffectiveLines(1)
       }
     }
@@ -639,7 +639,7 @@ function useAutofit(
     observer.observe(el)
 
     let cancelled = false
-    if (typeof document !== 'undefined' && document.fonts?.ready) {
+    if (typeof document !== "undefined" && document.fonts?.ready) {
       document.fonts.ready.then(() => {
         if (!cancelled) schedule()
       })
@@ -667,23 +667,23 @@ export interface TextProps {
   size?: TextSize
   lineHeight?: number | string
   weight?:
-    | 'normal'
-    | 'semibold'
-    | 'bold'
-    | 'light'
-    | 'thin'
-    | 'extralight'
-    | 'black'
+    | "normal"
+    | "semibold"
+    | "bold"
+    | "light"
+    | "thin"
+    | "extralight"
+    | "black"
 }
 
 export function Text(props: TextProps): ReactElement {
-  const fit = props.fit ?? 'hidden'
-  const align = props.align ?? 'center'
-  const tone = props.tone ?? 'foreground'
-  const typography = props.typography ?? 'main'
-  const size = props.size ?? 'md'
+  const fit = props.fit ?? "hidden"
+  const align = props.align ?? "center"
+  const tone = props.tone ?? "foreground"
+  const typography = props.typography ?? "main"
+  const size = props.size ?? "md"
   const lineHeight = props.lineHeight ?? 1
-  const weight = props.weight ?? 'normal'
+  const weight = props.weight ?? "normal"
   const themeUi = useThemeUiPresentation()
   const renderedChildren = renderTextChildren(props.text, lineHeight)
 
@@ -700,7 +700,7 @@ export function Text(props: TextProps): ReactElement {
   }
 
   const resolvedFit = resolveTextFit(fit)
-  const isAutofit = resolvedFit.type === 'autofit'
+  const isAutofit = resolvedFit.type === "autofit"
   const containerRef = useRef<HTMLDivElement>(null)
   const autofit = useAutofit(
     containerRef,
@@ -716,10 +716,10 @@ export function Text(props: TextProps): ReactElement {
   const isMultiLine = effectiveLines > 1
 
   const fitClass = isMultiLine
-    ? 'overflow-hidden sireno-text-fit-multiline'
+    ? "overflow-hidden sireno-text-fit-multiline"
     : resolvedFit.ellipsis
-      ? 'overflow-hidden whitespace-nowrap text-ellipsis'
-      : 'overflow-hidden whitespace-nowrap'
+      ? "overflow-hidden whitespace-nowrap text-ellipsis"
+      : "overflow-hidden whitespace-nowrap"
 
   const composedStyle: CSSProperties = {
     ...(props.style ?? {}),
@@ -728,26 +728,26 @@ export function Text(props: TextProps): ReactElement {
 
   if (isMultiLine) {
     ;(composedStyle as CSSProperties & Record<string, string>)[
-      '--sireno-text-lines'
+      "--sireno-text-lines"
     ] = String(effectiveLines)
-    composedStyle.overflow = 'hidden'
+    composedStyle.overflow = "hidden"
   }
 
   if (isAutofit) {
     composedStyle.fontSize =
-      autofit.fontSize !== null ? `${autofit.fontSize}px` : ''
+      autofit.fontSize !== null ? `${autofit.fontSize}px` : ""
   }
 
   if (lineHeight !== 1) {
     composedStyle.lineHeight =
-      typeof lineHeight === 'number' && Number.isFinite(lineHeight)
+      typeof lineHeight === "number" && Number.isFinite(lineHeight)
         ? `${lineHeight}em`
         : (lineHeight as string)
   }
 
   if (resolvedFit.reserveSpace) {
     const lh =
-      typeof lineHeight === 'number' && Number.isFinite(lineHeight)
+      typeof lineHeight === "number" && Number.isFinite(lineHeight)
         ? lineHeight
         : 1.2
 
@@ -760,7 +760,7 @@ export function Text(props: TextProps): ReactElement {
     <div
       ref={containerRef}
       className={cn([
-        'block max-w-full min-w-0 leading-tight',
+        "block max-w-full min-w-0 leading-tight",
         TYPOGRAPHY_CLASS[typography],
         TONE_CLASS[tone],
         ALIGN_CLASS[align],
@@ -770,7 +770,7 @@ export function Text(props: TextProps): ReactElement {
         props.className,
       ])}
       data-sireno-text-fit={dataFit}
-      data-sireno-text-ellipsis={resolvedFit.ellipsis ? 'true' : 'false'}
+      data-sireno-text-ellipsis={resolvedFit.ellipsis ? "true" : "false"}
       data-sireno-text-autofit-state={isAutofit ? autofit.state : undefined}
       data-sireno-text-size={size}
       data-sireno-ui-text="true"
