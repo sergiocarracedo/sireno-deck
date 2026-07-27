@@ -1,0 +1,40 @@
+packages/cli/src/ui/surfaces/PaginatedSurface.tsx
+  s_31e6cfdc9aaf2d::t_a9a2d497dec309 1-17,19-29,33-88,90-108
+  s_31e6cfdc9aaf2d::t_82b4aa75983fe7 18
+  s_859b806fa3d906::t_50d3067a5784da 30-32,89
+packages/cli/src/ui/surfaces/index.ts
+  s_31e6cfdc9aaf2d::t_651d786281b02c 15-22
+packages/cli/src/ui/surfaces/__tests__/PaginatedSurface.test.tsx
+  s_31e6cfdc9aaf2d::t_997760bdd71dad 72
+  s_31e6cfdc9aaf2d::t_3dbe61570af1c4 1-71,73-135,148-154
+  s_31e6cfdc9aaf2d::t_ee0a98296ee20c 136-147
+packages/cli/src/ui/surfaces/__tests__/paginated-schema.test.ts
+  s_31e6cfdc9aaf2d::t_d67f9e80d72fac 1-55
+packages/cli/src/ui/surfaces/paginated-schema.ts
+  s_31e6cfdc9aaf2d::t_49c0cc3c335f36 1-12,19
+  s_859b806fa3d906::t_50d3067a5784da 13-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "b3a03f99d50644269a8f3efbb926ad366c16de8b",
+  "prompts": {},
+  "sessions": {
+    "s_31e6cfdc9aaf2d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_064e81e59ffehFyv52XIR9c422",
+        "model": "glm-5.1"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_859b806fa3d906": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_06a7f6010ffeoNiUK1euefASYs",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
