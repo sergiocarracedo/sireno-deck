@@ -1,0 +1,19 @@
+packages/cli/src/ui/surfaces/PaginatedSurface.tsx
+  s_31e6cfdc9aaf2d::t_e9c0c9ae67cf2f 108,111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "639219e0c9a511483e835c51f7d60b480635bb31",
+  "prompts": {},
+  "sessions": {
+    "s_31e6cfdc9aaf2d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_064e81e59ffehFyv52XIR9c422",
+        "model": "glm-5.1"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
