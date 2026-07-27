@@ -35,7 +35,7 @@ const DataPage = ({
   unitWind,
   city,
 }: WeatherPageProps): ReactElement => (
-  <div>
+  <div className="flex h-full w-full flex-col items-center justify-center gap-1">
     <Text size="sm" tone="primary" fit="ellipsis" text={city || "---"} />
     {snapshot.windSpeed !== undefined && (
       <Chip

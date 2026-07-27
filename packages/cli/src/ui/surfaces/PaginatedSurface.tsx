@@ -108,7 +108,7 @@ export function PaginatedSurface<T>({
     <div className={cn("flex h-full w-full flex-col", className)} style={style}>
       <div className="min-h-0 flex-1">{page.render(page.config as T)}</div>
       {count > 1 && (
-        <div className="flex shrink-0 items-center justify-center gap-1 py-px">
+        <div className="flex shrink-0 items-center justify-center gap-1 pb-1 mt-auto">
           {allPages.map((_, i) => (
             <div
               key={i}
