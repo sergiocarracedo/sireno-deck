@@ -1,11 +1,13 @@
 import { z } from "zod"
 
+import { pagesSchema } from "@/ui/index"
+
 import {
   SYSTEM_METRIC_IDS,
   type SystemMetricId,
 } from "../../shared/metrics-catalog"
 
-const MetricEntrySchema = z
+export const MetricEntrySchema = z
   .union([
     z.enum(SYSTEM_METRIC_IDS),
     z
@@ -29,22 +31,37 @@ const MetricEntrySchema = z
           },
   )
 
-export const GenericSystemStatusSchema = z
+export const BarPageSchema = z
   .object({
+    type: z.literal("bars"),
     metrics: z.array(MetricEntrySchema).min(1).max(3),
-    pollInterval: z.number().int().positive().default(1000),
-    renderInterval: z.number().int().positive().default(1000),
-    formatters: z.record(z.string(), z.string()).optional(),
-    labels: z.record(z.string(), z.string()).optional(),
   })
   .strict()
 
-export type GenericSystemStatusConfig = z.infer<
-  typeof GenericSystemStatusSchema
->
+export const KpiPageSchema = z
+  .object({
+    type: z.literal("kpis"),
+    metrics: z.array(MetricEntrySchema).min(1).max(3),
+  })
+  .strict()
 
-export const GenericSystemStatusDefaults: GenericSystemStatusConfig = {
-  metrics: [{ id: "cpu" }],
-  pollInterval: 1000,
-  renderInterval: 1000,
-}
+export const ChartPageSchema = z
+  .object({
+    type: z.literal("chart"),
+    metrics: z.array(MetricEntrySchema).min(1).max(2),
+    windowSeconds: z.number().int().positive().max(60).default(60),
+  })
+  .strict()
+
+export const PageSchema = z.discriminatedUnion("type", [
+  BarPageSchema,
+  KpiPageSchema,
+  ChartPageSchema,
+])
+
+export const SystemStatusConfigSchema = pagesSchema(PageSchema)
+
+export type SystemStatusConfig = z.infer<typeof SystemStatusConfigSchema>
+export type SystemPageConfig = z.infer<typeof PageSchema>
+
+export const POLL_INTERVAL_MS = 1000 as const

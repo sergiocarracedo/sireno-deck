@@ -67,8 +67,9 @@ decks:
           label: Chrome
 
       - position: 0
-        type: "system-status:kpis"
+        type: "system-status:system-status"
         config:
+          type: kpis
           metrics:
             - id: cpu
               label: CPU
@@ -78,6 +79,7 @@ decks:
 
       - type: "system-status:system-status"
         config:
+          type: bars
           metrics:
             - id: cpu
               label: CPU
@@ -91,8 +93,9 @@ decks:
           icon: icon://flask-conical
           label: Test
       - position: 7
-        type: "system-status:chart"
+        type: "system-status:system-status"
         config:
+          type: chart
           metrics:
             - id: cpu
             - id: ram
@@ -123,14 +126,17 @@ decks:
       - position: 0
         type: "system-status:system-status"
         config:
+          type: bars
           metrics: [cpu]
       - position: 1
         type: "system-status:system-status"
         config:
+          type: bars
           metrics: [cpu, ram]
       - position: 2
         type: "system-status:system-status"
         config:
+          type: bars
           metrics:
             - id: cpu
               label: CPU
@@ -140,6 +146,7 @@ decks:
       - position: 3
         type: "system-status:system-status"
         config:
+          type: bars
           metrics:
             - id: disk
               label: Disk
@@ -150,6 +157,7 @@ decks:
       - position: 4
         type: "system-status:system-status"
         config:
+          type: bars
           metrics:
             - id: network
               label: Net
@@ -160,22 +168,26 @@ decks:
       - position: 5
         type: "system-status:system-status"
         config:
+          type: bars
           metrics:
             - id: load
               label: Load
             - id: processes
               label: Procs
       - position: 6
-        type: "system-status:kpis"
+        type: "system-status:system-status"
         config:
+          type: kpis
           metrics: [cpu]
       - position: 7
-        type: "system-status:kpis"
+        type: "system-status:system-status"
         config:
+          type: kpis
           metrics: [cpu, ram]
       - position: 8
-        type: "system-status:kpis"
+        type: "system-status:system-status"
         config:
+          type: kpis
           metrics:
             - id: cpu
               label: CPU
@@ -183,8 +195,9 @@ decks:
               label: MEM
             - swap
       - position: 9
-        type: "system-status:kpis"
+        type: "system-status:system-status"
         config:
+          type: kpis
           metrics:
             - id: disk
               label: Disk
@@ -193,8 +206,9 @@ decks:
             - id: temperature
               label: Temp
       - position: 10
-        type: "system-status:kpis"
+        type: "system-status:system-status"
         config:
+          type: kpis
           metrics:
             - id: network
               label: Net
@@ -203,8 +217,9 @@ decks:
             - id: frequency
               label: Freq
       - position: 11
-        type: "system-status:kpis"
+        type: "system-status:system-status"
         config:
+          type: kpis
           metrics:
             - id: load
               label: Load
@@ -217,8 +232,9 @@ decks:
           icon: ⬅
           label: Main
       - position: 13
-        type: "system-status:kpis"
+        type: "system-status:system-status"
         config:
+          type: kpis
           metrics:
             - id: "cpu-boost"
               label: Boost
@@ -240,6 +256,7 @@ decks:
       - position: 0
         type: "system-status:system-status"
         config:
+          type: bars
           metrics:
             - id: cpu
               label: CPU
@@ -247,12 +264,14 @@ decks:
               label: MEM
             - swap
       - position: 1
-        type: "system-status:kpis"
+        type: "system-status:system-status"
         config:
+          type: kpis
           metrics: [disk-io, network-read, network-write]
       - position: 2
-        type: "system-status:chart"
+        type: "system-status:system-status"
         config:
+          type: chart
           metrics:
             - id: cpu
             - id: ram

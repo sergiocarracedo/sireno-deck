@@ -3,10 +3,8 @@ import { describe, expect, it } from "vitest"
 import { systemStatusManifest } from "../manifest"
 
 describe("systemStatusManifest", () => {
-  it("registers exactly three button types", () => {
-    expect(Object.keys(systemStatusManifest.buttonTypes).sort()).toEqual([
-      "system-status:chart",
-      "system-status:kpis",
+  it("registers exactly one button type", () => {
+    expect(Object.keys(systemStatusManifest.buttonTypes)).toEqual([
       "system-status:system-status",
     ])
   })
