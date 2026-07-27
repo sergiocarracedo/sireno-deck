@@ -24,6 +24,8 @@ export interface ScannedAddon {
   readonly source: "json" | "regex"
   readonly globalServiceEntry: string | null
   readonly decks: ReadonlyArray<ScannedDeck>
+  readonly path?: string
+  readonly internal?: boolean
 }
 
 export interface AddonFrontendRef {
@@ -140,6 +142,8 @@ const scanAddonDir = async (
     globalServiceEntry:
       hasGlobalService && indexFile !== null ? indexFile : null,
     decks: [],
+    internal: true,
+    path: addonDir,
   }
 }
 
@@ -248,6 +252,8 @@ const scanAddonJsonManifest = async (
     source: "json",
     globalServiceEntry: hasGlobalService ? entryPath : null,
     decks,
+    internal: true,
+    path: addonDir,
   }
 }
 

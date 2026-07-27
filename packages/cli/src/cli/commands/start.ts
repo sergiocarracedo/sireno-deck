@@ -27,7 +27,11 @@ import {
   type RunOptions,
   type SignalProvider,
 } from "./run"
-import { collectBuiltinAddonRegistry, builtinDir } from "./addon-registry"
+import {
+  collectBuiltinAddonRegistry,
+  builtinDir,
+  type ScannedAddon,
+} from "./addon-registry"
 
 export interface StartOptions {
   readonly config?: string
@@ -46,6 +50,7 @@ export interface StartOptions {
 const toRunOptions = (
   options: StartOptions,
   onChildren: (pids: ReadonlyArray<number>) => void,
+  onAddonsUpdate?: (addons: ReadonlyArray<ScannedAddon>) => void,
 ): RunOptions => ({
   logger: options.logger,
   config: options.config,
@@ -58,6 +63,7 @@ const toRunOptions = (
   homeDir: options.homeDir,
   signals: options.signals,
   onChildren,
+  onAddonsUpdate,
 })
 
 const resolveFrontendDist = (): string => {
@@ -133,7 +139,8 @@ const start = async (options: StartOptions): Promise<void> => {
         : {}),
     }) ??
     join(xdgConfigHome, "sireno-deck", "config.yml")
-  const scannedAddons = (await collectBuiltinAddonRegistry()).scanned
+  const builtinAddons = (await collectBuiltinAddonRegistry()).scanned
+  const allScanned: ScannedAddon[] = [...builtinAddons]
 
   const existing = readPid()
   if (existing !== null && isRunning(existing)) {
@@ -148,10 +155,17 @@ const start = async (options: StartOptions): Promise<void> => {
     removeChildrenFile()
   }
 
-  const runOptions = toRunOptions(options, (pids) => {
-    writeChildren({ pids: [...pids] })
-    logger.info({ pids }, "daemon: tracked children")
-  })
+  const runOptions = toRunOptions(
+    options,
+    (pids) => {
+      writeChildren({ pids: [...pids] })
+      logger.info({ pids }, "daemon: tracked children")
+    },
+    (addons) => {
+      allScanned.length = 0
+      allScanned.push(...addons)
+    },
+  )
 
   await preflight(runOptions)
 
@@ -182,10 +196,10 @@ const start = async (options: StartOptions): Promise<void> => {
         },
         getConfigPath: () => configPath,
         getAddons: () =>
-          scannedAddons.map((s) => ({
+          allScanned.map((s) => ({
             name: s.name,
-            path: join(builtinDir, s.name),
-            internal: true,
+            path: s.path ?? join(builtinDir, s.name),
+            internal: s.internal,
             source: s.source,
             buttonTypes: [...s.types],
             defaultButton: null,

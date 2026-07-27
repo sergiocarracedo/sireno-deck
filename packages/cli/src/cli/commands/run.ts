@@ -109,6 +109,7 @@ export interface RunOptions {
   readonly homeDir?: string
   readonly signals?: SignalProvider
   readonly onChildren?: (pids: ReadonlyArray<number>) => void
+  readonly onAddonsUpdate?: (addons: ReadonlyArray<ScannedAddon>) => void
   readonly logger: pino.Logger
 }
 
@@ -1020,19 +1021,57 @@ export const buildExternalScannedAddons = (
     const types = Object.keys(manifest.buttonTypes)
     if (types.length === 0 && (manifest.decks ?? []).length === 0) continue
     const path = externalAddonDirs.get(manifest.name) ?? ""
+    const buttonTypes: Record<string, string> = {}
+    for (const [type, def] of Object.entries(manifest.buttonTypes)) {
+      buttonTypes[type] = def.name ?? type
+    }
+    const decks: Array<{
+      id: string
+      isOverlay: boolean
+      paginated: boolean
+      buttons: number
+      internal: boolean
+    }> = []
+    for (const entry of manifest.decks ?? []) {
+      if (typeof entry.createDecks === "function") {
+        decks.push({
+          id: `${manifest.name}:__multi__`,
+          isOverlay: false,
+          paginated: true,
+          buttons: -1,
+          internal: entry.internal ?? false,
+        })
+      } else if (typeof entry.createDeck === "function") {
+        decks.push({
+          id: entry.id,
+          isOverlay: entry.isOverlay ?? false,
+          paginated: entry.paginated ?? false,
+          buttons: -1,
+          internal: entry.internal ?? false,
+        })
+      } else {
+        decks.push({
+          id: entry.id,
+          isOverlay: entry.isOverlay ?? false,
+          paginated: entry.paginated ?? false,
+          buttons: Array.isArray(entry.buttons) ? entry.buttons.length : 0,
+          internal: entry.internal ?? false,
+        })
+      }
+    }
     out.push({
       name: manifest.name,
       types,
       frontendEntry: null,
       publishIntervalMs: manifest.publishIntervalMs ?? null,
       pollerEntry: null,
-      buttonTypes: {},
+      buttonTypes,
       deckTypes: {},
       source: "json",
       globalServiceEntry: manifest.globalService !== undefined ? "" : null,
       path,
       internal: false,
-      decks: [],
+      decks,
     })
   }
   return out
@@ -1146,6 +1185,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     addonBundle.scanned,
     externalAddonDirs,
   )
+  options.onAddonsUpdate?.([...addonBundle.scanned, ...externalScanned])
   const addonServices = setupAddonServices({
     runtime,
     methods,
