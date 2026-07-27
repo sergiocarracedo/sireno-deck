@@ -1,0 +1,38 @@
+packages/cli/src/ui/primitives/Text.tsx
+  h_f90ee31b03fc41 4-5,10,12-13,16-18,22-29,33-35,39-45,49-55,59-68,72-76,80-89,95-98,103-104,106,111,114-115,120-122,142,147,153,161,163,169,171,177,181,185,190-191,195,211-212,219,239,250,254-257,262-263,266,268-269,272-273,276-277,280,308,317,322,340-344,367-374,386,393,401,403,405,411-413,415,421,423,432,445,447,451,456,464,474,495-499,505-507,515,532,548,556,563,577,586,600,626,631,642,670-676,680-684,686,703,719,721-722,731,733,738,743,750,763,773
+  s_31e6cfdc9aaf2d::t_e19a2283afac5d 724-727
+config.yml
+  s_31e6cfdc9aaf2d::t_939d5e69255c48 72-85
+  h_f90ee31b03fc41 32,37,39,42,44,49,57,60,62-64,70,87,97,99,103,117,120,122-123,127,134,139,144,154,165,176,185,190,195,205,216,227,236,242,246,258,264,274,279,286,289-290
+.gitignore
+  s_af75ec3a85e6ec::t_08a49c1b05a9a4 30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "d961d6e0f9a59c7dc4c3b41f727410952f1626d3",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_31e6cfdc9aaf2d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_064e81e59ffehFyv52XIR9c422",
+        "model": "glm-5.1"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_af75ec3a85e6ec": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_064eb8db5ffeb4tzl9x7wH1MI8",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
