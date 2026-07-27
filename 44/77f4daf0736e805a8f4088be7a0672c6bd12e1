@@ -1,0 +1,63 @@
+packages/cli/src/cli/commands/run.ts
+  s_8ee4a57e72e855::t_e4ff443f5dda37 970-974
+  s_8ee4a57e72e855::t_68399800c79c98 248,271
+packages/cli/emulator/src/App.tsx
+  s_8ee4a57e72e855::t_f13f115aeadc97 181-184
+  s_8ee4a57e72e855::t_c2dfd36f150106 98-102,108-109,113-116,118-138
+packages/cli/src/ui/surfaces/ValueChart.tsx
+  s_8ee4a57e72e855::t_5a5aa7e5af9115 89-112,114-118,137-138,150-151,154,156-157,160,183-193,195-210,231
+  s_8ee4a57e72e855::t_6b57dbe83f9929 113,194,223,236
+  s_8ee4a57e72e855::t_3a153c601fd444 181
+packages/cli/frontend/src/components/Deck.tsx
+  s_8ee4a57e72e855::t_200dc5e22411dc 94,108
+  s_8ee4a57e72e855::t_10c6238f39c5d2 52
+  s_8ee4a57e72e855::t_7d070d7891a063 185-190
+  s_8ee4a57e72e855::t_d5efbf72ec60ae 332
+packages/cli/src/deck/runtime.ts
+  s_8ee4a57e72e855::t_bccccbd0066204 882-887
+  s_8ee4a57e72e855::t_8e50db1d750e7b 110
+packages/cli/src/deck/deck-config.ts
+  s_8ee4a57e72e855::t_e1aeea8bf3f56d 174
+  s_8ee4a57e72e855::t_9d9c2fb21c0c8f 119
+packages/cli/src/ui/surfaces/__tests__/ValueChart.test.tsx
+  s_8ee4a57e72e855::t_6b57dbe83f9929 51,61,84,160,176
+  s_8ee4a57e72e855::t_e9d60b2302505e 137,148-149
+  s_8ee4a57e72e855::t_0243818bb31c6c 68-83,85-120
+  s_8ee4a57e72e855::t_fe4d2e2c52c045 161
+  s_8ee4a57e72e855::t_1b22c2d9f1070f 189,198-200
+packages/cli/emulator/src/components/ReconnectingBanner.tsx
+  s_8ee4a57e72e855::t_3a58dee158907b 25,27-32
+packages/cli/src/api/protocol-internal.ts
+  s_8ee4a57e72e855::t_5222a9e0558254 45
+packages/cli/src/deck/system-buttons/registry.tsx
+  s_8ee4a57e72e855::t_7aaa6acb2d11d5 39,55
+packages/cli/frontend/src/App.tsx
+  s_8ee4a57e72e855::t_ecb616ab761451 311-314
+  s_8ee4a57e72e855::t_6f197403c297cb 249
+  s_8ee4a57e72e855::t_0790eb5a17c204 53
+  s_8ee4a57e72e855::t_662a078e18ce5a 152-158,168-169,174-177,179-202
+packages/cli/src/system/providers/session/linux.ts
+  s_8ee4a57e72e855::t_6b57dbe83f9929 97-98
+  s_8ee4a57e72e855::t_02d582eee647ed 101-103,109
+  s_8ee4a57e72e855::t_4cf1c0eedf17fb 134
+  s_8ee4a57e72e855::t_d38dbbbef541b4 1-2,36-44,46,48,57-61,64,66-67,72,86-91
+  s_8ee4a57e72e855::t_924fd413823be8 92
+packages/cli/frontend/src/components/ReconnectingBanner.tsx
+  s_8ee4a57e72e855::t_3ad6aed63f7073 25,27-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "4477f4daf0736e805a8f4088be7a0672c6bd12e1",
+  "prompts": {},
+  "sessions": {
+    "s_8ee4a57e72e855": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05d78c5cbffextwL4yJdq4H77M",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
