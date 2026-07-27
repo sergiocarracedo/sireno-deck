@@ -83,12 +83,11 @@ export function PaginatedSurface<T>({
   }, [count])
 
   const page = allPages[current]!
-  const PageComponent = page.render
 
   return (
     <div className={cn("flex h-full w-full flex-col", className)} style={style}>
       <div className="min-h-0 flex-1">
-        <PageComponent {...page.config} />
+        {page.render(page.config as T)}
       </div>
       {count > 1 && (
         <div className="flex shrink-0 items-center justify-center gap-1 py-px">
