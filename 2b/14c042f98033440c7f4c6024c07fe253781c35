@@ -1,0 +1,34 @@
+packages/cli/src/cli/commands/run.ts
+  s_af75ec3a85e6ec::t_12d68f58884cd0 1029
+packages/cli/emulator/src/pages/AddonsPage.tsx
+  s_af75ec3a85e6ec::t_b371207d240de8 8,41-43,47,51,66,119-129,138-139,141,153,163,169-173
+packages/cli/src/cli/http-server.ts
+  s_af75ec3a85e6ec::t_2a70cbcbbfd1f6 32
+packages/cli/src/cli/commands/addon-registry.ts
+  s_af75ec3a85e6ec::t_af17e3dc8fe163 13
+  s_af75ec3a85e6ec::t_1069ddc057c443 220-225,228-231
+packages/cli/emulator/src/__tests__/AddonsPage.test.tsx
+  s_af75ec3a85e6ec::t_0eb880f78eb9a7 15-16,30,45,52,59
+  s_af75ec3a85e6ec::t_f350144fdabbad 87-88,94,99,102
+packages/cli/src/deck/__tests__/addon-handler-bridge.test.ts
+  s_af75ec3a85e6ec::t_6641a60bc15f76 30
+packages/cli/src/cli/commands/__tests__/addon-registry.test.ts
+  s_af75ec3a85e6ec::t_b2513243a54474 84
+  s_af75ec3a85e6ec::t_d7c81898646562 22,34,46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "2b14c042f98033440c7f4c6024c07fe253781c35",
+  "prompts": {},
+  "sessions": {
+    "s_af75ec3a85e6ec": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_064eb8db5ffeb4tzl9x7wH1MI8",
+        "model": "big-pickle"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
