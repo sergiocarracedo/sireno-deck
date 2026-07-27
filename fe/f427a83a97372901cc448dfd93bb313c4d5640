@@ -1,0 +1,40 @@
+packages/cli/src/ui/surfaces/__tests__/PaginatedSurface.test.tsx
+  s_31e6cfdc9aaf2d::t_30412fc4d63db9 2
+packages/cli/src/ui/primitives/Text.tsx
+  s_31e6cfdc9aaf2d::t_5a5c2fa8a987f6 10,12-13,16-18,22-29,33-35,39-45,49-55,59-68,72-76,80-89,95-98,103-104,106,111,114-115,120-122,142,147,153,161,163,169,171,177,181,185,190-191,195,211-212,219,239,250,254-257,262-263,266,268-269,272-273,276-277,280,308,317,322,340-344,371-374,386,393,401,403,405,411-413,415,421,423,432,445,447,451,456,464,474,495-499,505-507,515,532,548,556,563,577,586,600,626,631,642,670-676,680-684,686,703,719,721-722,731,733,738,743,750,763,773
+packages/cli/src/builtin-addons/weather/__tests__/frontend.test.tsx
+  s_31e6cfdc9aaf2d::t_8160e899d010a4 42,46
+  s_31e6cfdc9aaf2d::t_5a5c2fa8a987f6 19-22
+  s_31e6cfdc9aaf2d::t_e392a94b097474 2,7,17-18,31,37,39,50,66-69,72-83,88,108,112,129,132-133,149-152,154-166
+packages/cli/src/ui/surfaces/PaginatedSurface.tsx
+  s_31e6cfdc9aaf2d::t_d94cd053be29c0 90-99
+  s_31e6cfdc9aaf2d::t_717757a54624d2 53,62-65
+  s_31e6cfdc9aaf2d::t_105307f47fa8e7 44
+  s_31e6cfdc9aaf2d::t_5a5c2fa8a987f6 109
+  s_31e6cfdc9aaf2d::t_f1b7d7afb62f42 26
+  s_31e6cfdc9aaf2d::t_a24711fb9aa1eb 66-68
+packages/cli/src/builtin-addons/weather/buttons/weather/frontend.tsx
+  s_31e6cfdc9aaf2d::t_06cb87bcb8231f 3,7,39,44-45,48-49,52-59
+  s_31e6cfdc9aaf2d::t_5a5c2fa8a987f6 32,46-47,50-51
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  s_31e6cfdc9aaf2d::t_5a5c2fa8a987f6 1-2,13-14,22-23,29-30,42,52,60,90,131,142,164-166,192
+packages/cli/src/builtin-addons/weather/buttons/weather/pages.tsx
+  s_31e6cfdc9aaf2d::t_5a5c2fa8a987f6 14-18,33-37,48,53-56,75-78
+  s_31e6cfdc9aaf2d::t_d0a218cb1492aa 1-2,7-13,19-32,38-47,49-52,57-63,67,69-74,79-109
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "fef427a83a97372901cc448dfd93bb313c4d5640",
+  "prompts": {},
+  "sessions": {
+    "s_31e6cfdc9aaf2d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_064e81e59ffehFyv52XIR9c422",
+        "model": "glm-5.1"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
