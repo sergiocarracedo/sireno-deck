@@ -12,8 +12,8 @@ const inventory = {
       internal: true,
       buttonTypes: ["core:back", "core:settings-entry", "core:overlay-toggle"],
       decks: [
-        { id: "main", isOverlay: false, paginated: false, buttons: 3 },
-        { id: "core:lock", isOverlay: false, paginated: false, buttons: 3 },
+        { id: "main", isOverlay: false, paginated: false, buttons: 3, internal: false },
+        { id: "core:lock", isOverlay: false, paginated: false, buttons: 3, internal: false },
       ],
     },
     {
@@ -27,6 +27,7 @@ const inventory = {
           isOverlay: true,
           paginated: true,
           buttons: 2,
+          internal: false,
         },
       ],
     },
@@ -41,18 +42,21 @@ const inventory = {
           isOverlay: false,
           paginated: true,
           buttons: 13,
+          internal: false,
         },
         {
           id: "emoji-selector-smileys-p2",
           isOverlay: false,
           paginated: true,
           buttons: 13,
+          internal: false,
         },
         {
           id: "emoji-selector-favorites",
           isOverlay: false,
           paginated: true,
           buttons: 6,
+          internal: false,
         },
       ],
     },
@@ -80,20 +84,22 @@ describe("AddonsPage", () => {
     expect(container.textContent).toContain("weather:overlay")
     expect(container.textContent).toContain("core:back")
     expect(container.textContent).toContain("weather:weather")
+    expect(container.textContent).toContain("core:settings-entry")
+    expect(container.textContent).toContain("🔒")
   })
 
   it("groups paginated decks by base name and marks them paginated", () => {
     const { container } = render(<AddonsPage addonInventory={inventory} />)
     expect(container.textContent).toContain("emoji-selector-smileys")
-    expect(container.textContent).toContain("(paginated)")
+    expect(container.textContent).toContain("⠿")
     expect(container.textContent).not.toContain("emoji-selector-smileys-p1")
     expect(container.textContent).not.toContain("emoji-selector-smileys-p2")
   })
 
-  it("marks overlay decks with overlay text", () => {
+  it("marks overlay decks with overlay emoji", () => {
     const { container } = render(<AddonsPage addonInventory={inventory} />)
     expect(container.textContent).toContain("weather:overlay")
-    expect(container.textContent).toContain("(overlay)")
+    expect(container.textContent).toContain("◐")
   })
 
   it("renders a legend above the addon flow", () => {

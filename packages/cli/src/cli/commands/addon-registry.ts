@@ -10,6 +10,7 @@ export interface ScannedDeck {
   readonly isOverlay: boolean
   readonly paginated: boolean
   readonly buttons: number
+  readonly internal: boolean
 }
 
 export interface ScannedAddon {
@@ -216,11 +217,18 @@ const scanAddonJsonManifest = async (
         )) {
           if (deckDef === null || typeof deckDef !== "object") continue
           const d = deckDef as Record<string, unknown>
+          const isOverlay = d["isOverlay"] === true
+          const paginated = d["paginated"] === true
+          const buttonCount = Array.isArray(d["buttons"])
+            ? d["buttons"].length
+            : 0
+          const deckInternal = d["internal"] === true
           decks.push({
             id: deckId,
-            isOverlay: d["isOverlay"] === true,
-            paginated: d["paginated"] === true,
-            buttons: Array.isArray(d["buttons"]) ? d["buttons"].length : 0,
+            isOverlay,
+            paginated,
+            buttons: buttonCount,
+            internal: deckInternal,
           })
         }
       }

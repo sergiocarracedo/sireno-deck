@@ -1026,6 +1026,7 @@ export const buildExternalScannedAddons = (
       globalServiceEntry: manifest.globalService !== undefined ? "" : null,
       path,
       internal: false,
+      decks: [],
     })
   }
   return out

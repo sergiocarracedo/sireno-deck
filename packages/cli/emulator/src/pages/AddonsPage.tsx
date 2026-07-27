@@ -5,6 +5,7 @@ interface DeckInfo {
   isOverlay: boolean
   paginated: boolean
   buttons: number
+  internal: boolean
 }
 
 interface AddonInfo {
@@ -37,12 +38,17 @@ const groupPaginated = (decks: DeckInfo[]): DeckInfo[] => {
   return [...groups.values()]
 }
 
+const suffix = (items: string[]): string =>
+  items.length > 0 ? ` ${items.join(" ")}` : ""
+
 const Chip = ({
   label,
   tone,
+  emoji,
 }: {
   label: string
   tone: "deck" | "overlay" | "button" | "internal"
+  emoji?: string
 }) => {
   const cls =
     tone === "deck"
@@ -57,6 +63,7 @@ const Chip = ({
       className={`inline-block rounded-full border px-2 py-0 font-mono text-[10px] font-bold uppercase tracking-wide ${cls}`}
     >
       {label}
+      {emoji !== undefined ? suffix([emoji]) : ""}
     </span>
   )
 }
@@ -109,6 +116,17 @@ export const AddonsPage = ({ addonInventory }: AddonsPageProps) => {
     return <div className="p-3 text-neutral-500">loading…</div>
   }
 
+  const deckLabel = (deck: DeckInfo, addonInternal: boolean): string => {
+    const emojis: string[] = []
+    if (deck.isOverlay) emojis.push("◐")
+    else if (deck.paginated) emojis.push("⠿")
+    if (addonInternal || deck.internal) emojis.push("🔒")
+    return emojis.length > 0 ? `${deck.id} ${emojis.join(" ")}` : deck.id
+  }
+
+  const btnLabel = (bt: string, addonInternal: boolean): string =>
+    addonInternal ? `${bt} 🔒` : bt
+
   return (
     <div className="space-y-3 p-3" data-testid="addons-page">
       <div
@@ -117,9 +135,10 @@ export const AddonsPage = ({ addonInventory }: AddonsPageProps) => {
       >
         <span className="font-semibold uppercase tracking-wide">Legend:</span>
         <Chip label="deck" tone="deck" />
-        <Chip label="overlay" tone="overlay" />
+        <Chip label="overlay ◐" tone="overlay" />
+        <Chip label="paginated ⠿" tone="deck" />
         <Chip label="button" tone="button" />
-        <Chip label="internal" tone="internal" />
+        <Chip label="internal 🔒" tone="internal" />
       </div>
 
       {data.addons.map((addon) => (
@@ -131,7 +150,7 @@ export const AddonsPage = ({ addonInventory }: AddonsPageProps) => {
             <h3 className="font-mono text-sm font-semibold text-neutral-100">
               {addon.name}
             </h3>
-            {addon.internal && <Chip label="internal" tone="internal" />}
+            {addon.internal && <Chip label="internal 🔒" tone="internal" />}
             <span className="font-mono text-[10px] text-neutral-500">
               {addon.path}
             </span>
@@ -141,19 +160,17 @@ export const AddonsPage = ({ addonInventory }: AddonsPageProps) => {
             {groupPaginated(addon.decks).map((deck) => (
               <span key={deck.id} className="inline-flex items-center gap-1">
                 <Chip
-                  label={
-                    deck.isOverlay
-                      ? `${deck.id} (overlay)`
-                      : deck.paginated
-                        ? `${deck.id} (paginated)`
-                        : deck.id
-                  }
+                  label={deckLabel(deck, addon.internal)}
                   tone={deck.isOverlay ? "overlay" : "deck"}
                 />
               </span>
             ))}
             {addon.buttonTypes.map((bt) => (
-              <Chip key={bt} label={bt} tone="button" />
+              <Chip
+                key={bt}
+                label={btnLabel(bt, addon.internal)}
+                tone="button"
+              />
             ))}
           </div>
         </section>

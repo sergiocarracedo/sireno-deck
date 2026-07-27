@@ -27,6 +27,7 @@ const baseScanned: ReadonlyArray<ScannedAddon> = [
     deckTypes: {},
     source: "json",
     globalServiceEntry: fixturePath,
+    decks: [],
   },
 ]
 

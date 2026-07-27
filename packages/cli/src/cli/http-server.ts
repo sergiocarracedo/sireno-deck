@@ -29,6 +29,7 @@ export interface StartHttpServerOptions {
       isOverlay: boolean
       paginated: boolean
       buttons: number
+      internal: boolean
     }>
   }>
 }
