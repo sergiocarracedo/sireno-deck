@@ -1,0 +1,21 @@
+packages/cli/src/ui/surfaces/PaginatedSurface.tsx
+  s_31e6cfdc9aaf2d::t_24268ac00e612e 111
+packages/cli/src/builtin-addons/weather/buttons/weather/pages.tsx
+  s_31e6cfdc9aaf2d::t_37421ad47d25c0 38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "8310edc835653714487e52703d2d6f6caf2870d9",
+  "prompts": {},
+  "sessions": {
+    "s_31e6cfdc9aaf2d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_064e81e59ffehFyv52XIR9c422",
+        "model": "glm-5.1"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
