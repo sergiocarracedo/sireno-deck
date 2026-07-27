@@ -1,0 +1,108 @@
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactElement,
+} from "react"
+
+import { cn } from "../utils/cn"
+
+export interface PaginatedGestureEvent {
+  gesture: "tap" | "dbl-tap" | "hold"
+  at: number
+}
+
+export interface PaginatedPage<T> {
+  render: (props: T) => ReactElement
+  config: T
+}
+
+export interface PaginatedSurfaceProps<T> {
+  pages: PaginatedPage<T> | PaginatedPage<T>[]
+  gesture?: PaginatedGestureEvent | null
+  intervalMs?: number
+  className?: string
+  style?: CSSProperties
+}
+
+function normalizePages<T>(
+  pages: PaginatedPage<T> | PaginatedPage<T>[],
+): PaginatedPage<T>[] {
+  return Array.isArray(pages) ? pages : [pages]
+}
+
+const DOT_ACTIVE = "bg-white"
+const DOT_INACTIVE = "bg-white/30"
+
+export function PaginatedSurface<T>({
+  pages,
+  gesture,
+  intervalMs,
+  className,
+  style,
+}: PaginatedSurfaceProps<T>): ReactElement {
+  const allPages = normalizePages(pages)
+  const count = allPages.length
+  const [current, setCurrent] = useState(0)
+  const lastGestureAt = useRef(0)
+  const timerRef = useRef<number | null>(null)
+
+  const clearTimer = useCallback(() => {
+    if (timerRef.current !== null) {
+      window.clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+  }, [])
+
+  const advance = useCallback(() => {
+    setCurrent((p) => (p + 1) % count)
+  }, [count])
+
+  // gesture-driven cycling
+  useEffect(() => {
+    if (gesture?.gesture === "tap" && gesture.at !== lastGestureAt.current) {
+      lastGestureAt.current = gesture.at
+      clearTimer()
+      advance()
+    }
+  }, [gesture, advance, clearTimer])
+
+  // auto-advance timer
+  useEffect(() => {
+    if (intervalMs === undefined || count <= 1) return
+    clearTimer()
+    timerRef.current = window.setInterval(advance, intervalMs)
+    return clearTimer
+  }, [intervalMs, count, advance, clearTimer])
+
+  // reset current page when pages array changes length
+  useEffect(() => {
+    setCurrent((p) => (p >= count ? 0 : p))
+  }, [count])
+
+  const page = allPages[current]!
+  const PageComponent = page.render
+
+  return (
+    <div className={cn("flex h-full w-full flex-col", className)} style={style}>
+      <div className="min-h-0 flex-1">
+        <PageComponent {...page.config} />
+      </div>
+      {count > 1 && (
+        <div className="flex shrink-0 items-center justify-center gap-1 py-px">
+          {allPages.map((_, i) => (
+            <div
+              key={i}
+              className={cn(
+                "h-1 w-1 rounded-full",
+                i === current ? DOT_ACTIVE : DOT_INACTIVE,
+              )}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}

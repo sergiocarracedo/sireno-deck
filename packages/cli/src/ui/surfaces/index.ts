@@ -12,6 +12,14 @@ export type { IconLabelProgressSurfaceProps } from "./IconLabelProgressSurface"
 export { IconLabelSurface } from "./IconLabelSurface"
 export type { IconLabelSurfaceProps } from "./IconLabelSurface"
 
+export { PaginatedSurface } from "./PaginatedSurface"
+export type {
+  PaginatedGestureEvent,
+  PaginatedPage,
+  PaginatedSurfaceProps,
+} from "./PaginatedSurface"
+export { pagesSchema } from "./paginated-schema"
+
 export { SplitActionSurface } from "./SplitActionSurface"
 export type { SplitActionSurfaceProps } from "./SplitActionSurface"
 export { TemporaryErrorSurface } from "./TemporaryErrorSurface"
