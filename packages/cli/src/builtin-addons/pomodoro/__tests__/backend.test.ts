@@ -20,14 +20,23 @@ const makeCtx = () => {
   }
 }
 
+const load = (ctx: ReturnType<typeof makeCtx>["ctx"]): void => {
+  globalService.onLoad?.(ctx)
+}
+
+const unload = (ctx: ReturnType<typeof makeCtx>["ctx"]): void => {
+  globalService.onUnload?.(ctx)
+}
+
 describe("pomodoro globalService", () => {
   afterEach(() => {
-    globalService.onUnload()
+    const { ctx } = makeCtx()
+    unload(ctx)
   })
 
   it("publishes state on poll", () => {
     const { ctx, pubSub } = makeCtx()
-    globalService.onLoad(ctx)
+    load(ctx)
     const poll = globalService.pollers?.[0]
     expect(poll).toBeDefined()
     if (poll) {
@@ -38,7 +47,7 @@ describe("pomodoro globalService", () => {
 
   it("start/stop methods track button state", () => {
     const { ctx, pubSub } = makeCtx()
-    globalService.onLoad(ctx)
+    load(ctx)
     globalService.methods?.["start"]?.("btn1", 60)
     globalService.methods?.["stop"]?.("btn1")
     expect(pubSub.publish).toHaveBeenCalled()
@@ -46,25 +55,21 @@ describe("pomodoro globalService", () => {
 
   it("isFinished returns true when elapsed past duration", () => {
     const { ctx } = makeCtx()
-    globalService.onLoad(ctx)
-    globalService.methods?.["startWith"]?.(
-      "btn1",
-      Date.now() - 10_000,
-      5,
-    )
+    load(ctx)
+    globalService.methods?.["startWith"]?.("btn1", Date.now() - 10_000, 5)
     expect(globalService.methods?.["isFinished"]?.("btn1")).toBe(true)
   })
 
   it("isFinished returns false for stopped button", () => {
     const { ctx } = makeCtx()
-    globalService.onLoad(ctx)
+    load(ctx)
     globalService.methods?.["stop"]?.("btn1")
     expect(globalService.methods?.["isFinished"]?.("btn1")).toBe(false)
   })
 
   it("register is a no-op when durationSec is invalid", () => {
     const { ctx } = makeCtx()
-    globalService.onLoad(ctx)
+    load(ctx)
     expect(() =>
       globalService.methods?.["register"]?.("btn1", -1),
     ).not.toThrow()
@@ -75,9 +80,9 @@ describe("pomodoro globalService", () => {
 
   it("onUnload clears state", () => {
     const { ctx } = makeCtx()
-    globalService.onLoad(ctx)
+    load(ctx)
     globalService.methods?.["start"]?.("btn1", 60)
-    globalService.onUnload()
+    unload(ctx)
     expect(globalService.methods?.["isFinished"]?.("btn1")).toBe(false)
   })
 })
