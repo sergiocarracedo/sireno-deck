@@ -1,0 +1,40 @@
+packages/cli/src/cli/commands/subprocess-supervisor.ts
+  s_accd15ff1e3daf::t_06234f62226272 1-103
+packages/cli/src/outputClient/emulator.ts
+  s_accd15ff1e3daf::t_06234f62226272 23-26,99-109,111,113-135,139-157,238-239,244-245,251,253,259-260,264-269
+packages/cli/emulator/src/App.tsx
+  s_accd15ff1e3daf::t_06234f62226272 98,175-181,282-284
+packages/cli/emulator/src/DeckFrame.tsx
+  s_accd15ff1e3daf::t_06234f62226272 21-24,32,90
+packages/cli/emulator/src/__tests__/DeckFrame.test.tsx
+  s_accd15ff1e3daf::t_06234f62226272 44-59
+packages/cli/src/outputClient/real.ts
+  s_accd15ff1e3daf::t_06234f62226272 15,19-22,199-200,202-221,237,291-294
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_accd15ff1e3daf::t_06234f62226272 33-41,43-55,66-75,224,353-354,467-532,571-621,629-680
+  s_accd15ff1e3daf::t_a8ad632ac2e60d 622-628
+packages/cli/src/cli/commands/run.ts
+  s_accd15ff1e3daf::t_06234f62226272 535,567-574,579,596,1135,1139-1170,1383-1388,1464-1468,1471,1474,1485,1488
+packages/cli/src/outputClient/types.ts
+  s_accd15ff1e3daf::t_06234f62226272 44-50
+packages/cli/src/api/protocol-internal.ts
+  s_accd15ff1e3daf::t_06234f62226272 141-144,164,189
+packages/cli/src/cli/commands/__tests__/subprocess-supervisor.test.ts
+  s_accd15ff1e3daf::t_06234f62226272 1-168
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "b8623fed428464dfad304cd171aff0f5c543a367",
+  "prompts": {},
+  "sessions": {
+    "s_accd15ff1e3daf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_057a9c7e0ffe5N8a2S6y3rs3V7",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    }
+  }
+}
