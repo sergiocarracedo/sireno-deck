@@ -1,0 +1,19 @@
+pnpm-lock.yaml
+  s_accd15ff1e3daf::t_833709880b203c 31-36,3187-3191,6396-6397
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "136d178c8c6652521e180350b96e5562ee199efc",
+  "prompts": {},
+  "sessions": {
+    "s_accd15ff1e3daf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_057a9c7e0ffe5N8a2S6y3rs3V7",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
