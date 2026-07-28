@@ -79,6 +79,7 @@ import { materializeAddonDecks } from "./addon-decks"
 import {
   collectBuiltinAddonRegistry,
   type ScannedAddon,
+  type ScannedButtonType,
 } from "./addon-registry"
 import { findWorkspaceRoot } from "./emulator-mode"
 
@@ -997,7 +998,12 @@ const buildAddonBundle = async (): Promise<AddonRegistryBundle> => {
       frontend:
         s.frontendEntry !== null ? { main: s.frontendEntry } : undefined,
       buttons: s.types.map((t) => ({ type: t })),
-      buttonTypes: s.buttonTypes,
+      buttonTypes: Object.fromEntries(
+        Object.entries(s.buttonTypes).map(([type, info]) => [
+          type,
+          info.exportName,
+        ]),
+      ),
       defaultButton: s.defaultButton,
     }))
     process.env["SIRENO_ADDONS"] = JSON.stringify(addonSpecs)
@@ -1021,9 +1027,12 @@ export const buildExternalScannedAddons = (
     const types = Object.keys(manifest.buttonTypes)
     if (types.length === 0 && (manifest.decks ?? []).length === 0) continue
     const path = externalAddonDirs.get(manifest.name) ?? ""
-    const buttonTypes: Record<string, string> = {}
+    const buttonTypes: Record<string, ScannedButtonType> = {}
     for (const [type, def] of Object.entries(manifest.buttonTypes)) {
-      buttonTypes[type] = def.name ?? type
+      buttonTypes[type] = {
+        exportName: def.name ?? type,
+        internal: def.service?.internal === true || def.internal === true,
+      }
     }
     const decks: Array<{
       id: string
@@ -1127,209 +1136,149 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
   const xdgConfigHome = resolveXdgConfigHome(options)
 
-  // Validate config first so a broken YAML exits without ever touching
-  // hardware (or spawning an emulator).
-  const loadedConfig = await validateAndLoadConfig(options)
+  // ponytail: hoist every long-lived resource so the unconditional cleanup
+  // block below runs even when outputClient.init() throws (e.g. Vite can't
+  // bind the frontend port). Without this, the heartbeat setInterval, the
+  // WS bridge, providers, and onConnection listeners all stay alive after
+  // the rejection — the daemon process never exits and the user reports
+  // "the app gets stuck and the service never starts".
+  let loadedConfig: Awaited<ReturnType<typeof validateAndLoadConfig>> | null =
+    null
+  let outputClient: OutputClient | null = null
+  let providers: Awaited<ReturnType<typeof startSystemProviders>> | null = null
+  let addonBundle: Awaited<ReturnType<typeof buildAddonBundle>> | null = null
+  let bridge: Awaited<ReturnType<typeof startWsBridge>> | null = null
+  let addonServices: ReturnType<typeof setupAddonServices> | null = null
+  let runtime: ReturnType<typeof buildRuntime>["runtime"] | null = null
+  let methods: ReturnType<typeof buildRuntime>["methods"] | null = null
+  let decks: ReadonlyArray<RuntimeDeck> | null = null
+  let themeDir: string | null = null
+  let pubSub: PubSub | null = null
+  let store: Store | null = null
+  let descriptor: Awaited<ReturnType<OutputClient["selectDevice"]>> | null =
+    null
+  let addonServicesDispose: (() => void) | null = null
+  let bridgeSignal: AbortController | null = null
+  let statePublisher: StatePublisher | null = null
+  let configWatcher: ConfigWatcher | null = null
+  let outputHandle: OutputHandle | null = null
+  let currentOutputHandle: OutputHandle | null = null
+  let unregisterSignal: (() => void) | null = null
+  let removeServiceLogListener: (() => void) | null = null
 
-  const outputClient: OutputClient = selectOutputClient({
-    emulator: options.emulator === true,
-    xdgConfigHome,
-  })
-  const devices = await outputClient.listDevices()
-  const savedDevice = loadDeviceConfig({ xdgConfigHome })
-  const descriptor = await outputClient.selectDevice(
-    devices,
-    savedDevice?.serial ?? null,
-    logger,
-  )
-  await outputClient.storeSelection(descriptor)
+  try {
+    // Validate config first so a broken YAML exits before we ever touch
+    // hardware or spawn an emulator.
+    loadedConfig = await validateAndLoadConfig(options)
 
-  const loaded = buildRuntime(options, loadedConfig, descriptor.keyCount)
-  const { themeDir, decks, pubSub, runtime, methods, store } = loaded
-
-  const providers = await startSystemProviders(options, runtime, methods)
-
-  const isCompact = outputClient.kind === "real"
-
-  const addonBundle = await buildAddonBundle()
-
-  const bridge = await startWsBridge({ port: 52937 })
-  const wsPort = bridge.port
-
-  // ponytail: register external addon dirs (from config's `addons:` list) so
-  // `addon://<name>/assets/icon.png` resolves for overlay deck icons. The
-  // addonDirs built from addonBundle.addonByType only contains builtins.
-  // Note: `loaded` here is the RUNTIME result from buildRuntime — it shadows
-  // the config loader's `loaded`. Use `loadedConfig` (the LoadConfigResult) to
-  // access the parsed config and configPath.
-  const externalAddonDirs = buildExternalAddonDirs(
-    loadedConfig.config.addons ?? [],
-    loadedConfig.configPath,
-  )
-
-  const resolverOptions = buildResolverOptions(
-    addonBundle.addonByType,
-    [dirname(loadedConfig.configPath)],
-    externalAddonDirs,
-  )
-
-  const bridgeSignal = new AbortController()
-  const statePublisher = new StatePublisher({ bridge, logger })
-
-  const addonRegistryForSystemStatus = new AddonRegistry()
-  registerSystemStatusAddon(addonRegistryForSystemStatus)
-
-  const mainDeck = runtime.getActiveDeck()
-  const externalScanned = buildExternalScannedAddons(
-    loadedConfig.registry,
-    addonBundle.scanned,
-    externalAddonDirs,
-  )
-  options.onAddonsUpdate?.([...addonBundle.scanned, ...externalScanned])
-  const addonServices = setupAddonServices({
-    runtime,
-    methods,
-    decks,
-    pubSub,
-    scanned: addonBundle.scanned,
-    externalAddons: externalScanned,
-    addonByType: addonBundle.addonByType,
-    executor: createActionExecutor({ host: getHostContext() }),
-    statePublisher,
-    bridge,
-    isCompact,
-    resolverOptions,
-    ...(mainDeck !== undefined ? { initialDeck: mainDeck } : {}),
-    signal: bridgeSignal.signal,
-    store,
-    logger,
-    configPath: loadedConfig.configPath,
-  })
-
-  for (const deck of decks) {
-    registerDeckIcon(deck, resolverOptions, logger)
-    registerIconForDeck(deck.buttons, resolverOptions, logger)
-  }
-
-  bridge.onConnection((socket) => {
-    // Send the full asset bundle to every new connection. The previous
-    // dedupe-by-id approach caused the React frontend to render the
-    // fallback icon after a hot-reload or page refresh: the FIRST
-    // connection consumed the assets, every subsequent connection got
-    // an empty list, and the new client started with an empty cache.
-    // Assets are tiny (a 1.4KB chrome.svg), so re-sending them on
-    // reconnect is cheaper than the bug.
-    const allAssets = getUnsentAssets(new Set())
-    if (allAssets.length > 0) {
-      socket.send(
-        JSON.stringify({
-          type: "assets",
-          deckId: mainDeck?.id ?? "",
-          assets: allAssets.map((a) => ({
-            id: a.id,
-            filename: a.fullPath,
-            src: a.src,
-          })),
-        }),
-      )
-    }
-    const activeDeck = runtime.getActiveDeck()
-    if (activeDeck !== undefined) {
-      const msg = buildDeckConfigMessage(
-        activeDeck,
-        addonBundle.addonByType,
-        resolverOptions,
-        {
-          navStackDepth: runtime.navStackDepth(),
-          hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
-        },
-        descriptor.keyCount,
-        outputClient.kind === "real",
-        (fullPath) => getAssetByPath(fullPath)?.id,
-        runtime.getAvailableOverlayDeckIcon(),
-      )
-      logger.info(
-        {
-          deckId: msg.deckId,
-          buttonCount: msg.surfaces[msg.deckId]?.buttons.length,
-        },
-        "orchestrator: sending deck-config",
-      )
-      socket.send(JSON.stringify(msg))
-    }
-  })
-
-  const onServiceLog = (entry: { level: string; msg: string; ts: number }) => {
-    bridge.broadcast({
-      type: "service-log",
-      level: entry.level,
-      msg: entry.msg,
-      ts: entry.ts,
+    outputClient = selectOutputClient({
+      emulator: options.emulator === true,
+      xdgConfigHome,
     })
-  }
-  process.on("sireno:log", onServiceLog)
+    const devices = await outputClient.listDevices()
+    const savedDevice = loadDeviceConfig({ xdgConfigHome })
+    descriptor = await outputClient.selectDevice(
+      devices,
+      savedDevice?.serial ?? null,
+      logger,
+    )
+    await outputClient.storeSelection(descriptor)
 
-  const outputHandle: OutputHandle = await outputClient.init({
-    bridge,
-    runtime,
-    pubSub,
-    store,
-    decks,
-    theme: { name: loaded.theme.name, apiVersion: loaded.theme.apiVersion },
-    themeDir,
-    logger,
-    rebuildDecksForKeyCount: (keyCount: number) =>
-      buildRuntime(options, loadedConfig, keyCount).decks,
-    ...(options.frontendUrl !== undefined
-      ? { frontendUrl: options.frontendUrl }
-      : {}),
-    ...(options.port !== undefined ? { port: options.port } : {}),
-    ...(options.intervalMs !== undefined
-      ? { intervalMs: options.intervalMs }
-      : {}),
-  })
+    const loaded = buildRuntime(options, loadedConfig, descriptor.keyCount)
+    themeDir = loaded.themeDir
+    decks = loaded.decks
+    pubSub = loaded.pubSub
+    runtime = loaded.runtime
+    methods = loaded.methods
+    store = loaded.store
 
-  if (options.onChildren !== undefined) {
-    options.onChildren([...outputHandle.childPids])
-  }
+    providers = await startSystemProviders(options, runtime, methods)
 
-  // Hot-reload: watch the YAML config for changes. Deck-only changes
-  // rebuild the runtime deck set in-place and rebroadcast deck-config;
-  // anything else (theme, addons, lock, logging) tears down Vite and
-  // re-initialises the output client with the new theme.
-  let currentOutputHandle: OutputHandle = outputHandle
-  let currentLoadedConfig = loadedConfig
-  const configWatcher = new ConfigWatcher([loadedConfig.configPath], {
-    onChange: () => {
-      void handleConfigChange()
-    },
-  })
-  const handleConfigChange = async (): Promise<void> => {
-    try {
-      const nextLoaded = await validateAndLoadConfig(options)
-      const prevConfig = currentLoadedConfig.config
-      const decksOnlyChange = decksChanged(prevConfig, nextLoaded.config)
-      if (decksOnlyChange) {
-        const rebuilt = buildRuntime(
-          options,
-          nextLoaded,
-          descriptor.keyCount,
-        ).decks
-        const activeId = runtime.getActiveDeckId()
-        runtime.setDecks(rebuilt)
-        if (
-          !Object.prototype.hasOwnProperty.call(
-            nextLoaded.config.decks,
-            activeId,
-          )
-        ) {
-          const fallback =
-            nextLoaded.config.decks["main"] !== undefined
-              ? "main"
-              : (Object.keys(nextLoaded.config.decks)[0] ?? activeId)
-          runtime.navigateToDeck(fallback, { addToHistory: false })
-        }
-        const activeDeck = runtime.getActiveDeck()
+    const isCompact = outputClient.kind === "real"
+
+    addonBundle = await buildAddonBundle()
+
+    bridge = await startWsBridge({ port: 52937 })
+    const wsPort = bridge.port
+
+    // ponytail: register external addon dirs (from config's `addons:` list) so
+    // `addon://<name>/assets/icon.png` resolves for overlay deck icons. The
+    // addonDirs built from addonBundle.addonByType only contains builtins.
+    const externalAddonDirs = buildExternalAddonDirs(
+      loadedConfig.config.addons ?? [],
+      loadedConfig.configPath,
+    )
+
+    const resolverOptions = buildResolverOptions(
+      addonBundle.addonByType,
+      [dirname(loadedConfig.configPath)],
+      externalAddonDirs,
+    )
+
+    bridgeSignal = new AbortController()
+    statePublisher = new StatePublisher({ bridge, logger })
+
+    const addonRegistryForSystemStatus = new AddonRegistry()
+    registerSystemStatusAddon(addonRegistryForSystemStatus)
+
+    const mainDeck = runtime.getActiveDeck()
+    const externalScanned = buildExternalScannedAddons(
+      loadedConfig.registry,
+      addonBundle.scanned,
+      externalAddonDirs,
+    )
+    options.onAddonsUpdate?.([...addonBundle.scanned, ...externalScanned])
+
+    addonServices = setupAddonServices({
+      runtime,
+      methods,
+      decks,
+      pubSub,
+      scanned: addonBundle.scanned,
+      externalAddons: externalScanned,
+      addonByType: addonBundle.addonByType,
+      executor: createActionExecutor({ host: getHostContext() }),
+      statePublisher,
+      bridge,
+      isCompact,
+      resolverOptions,
+      ...(mainDeck !== undefined ? { initialDeck: mainDeck } : {}),
+      signal: bridgeSignal.signal,
+      store,
+      logger,
+      configPath: loadedConfig.configPath,
+    })
+    addonServicesDispose = () => addonServices?.dispose()
+
+    for (const deck of decks) {
+      registerDeckIcon(deck, resolverOptions, logger)
+      registerIconForDeck(deck.buttons, resolverOptions, logger)
+    }
+
+    bridge.onConnection((socket) => {
+      // Send the full asset bundle to every new connection. The previous
+      // dedupe-by-id approach caused the React frontend to render the
+      // fallback icon after a hot-reload or page refresh: the FIRST
+      // connection consumed the assets, every subsequent connection got
+      // an empty list, and the new client started with an empty cache.
+      // Assets are tiny (a 1.4KB chrome.svg), so re-sending them on
+      // reconnect is cheaper than the bug.
+      const allAssets = getUnsentAssets(new Set())
+      if (allAssets.length > 0) {
+        socket.send(
+          JSON.stringify({
+            type: "assets",
+            deckId: mainDeck?.id ?? "",
+            assets: allAssets.map((a) => ({
+              id: a.id,
+              filename: a.fullPath,
+              src: a.src,
+            })),
+          }),
+        )
+      }
+      const activeDeck = runtime.getActiveDeck()
+      if (activeDeck !== undefined) {
         const msg = buildDeckConfigMessage(
           activeDeck,
           addonBundle.addonByType,
@@ -1343,80 +1292,197 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           (fullPath) => getAssetByPath(fullPath)?.id,
           runtime.getAvailableOverlayDeckIcon(),
         )
-        bridge.broadcast(msg)
-        currentLoadedConfig = nextLoaded
         logger.info(
           {
             deckId: msg.deckId,
             buttonCount: msg.surfaces[msg.deckId]?.buttons.length,
           },
-          "config hot-reloaded (decks only)",
+          "orchestrator: sending deck-config",
         )
-        return
+        socket.send(JSON.stringify(msg))
       }
-      // Theme / addons / lock / logging changed — full Vite restart so the
-      // frontend picks up new theme CSS + virtual modules.
-      logger.info(
-        { prevTheme: prevConfig.theme, nextTheme: nextLoaded.config.theme },
-        "config change outside decks — restarting Vite",
-      )
-      await currentOutputHandle.stop()
-      const nextHandle = await outputClient.init({
-        bridge,
-        runtime,
-        pubSub,
-        store,
-        decks: buildRuntime(options, nextLoaded, descriptor.keyCount).decks,
-        theme: {
-          name: nextLoaded.theme.name,
-          apiVersion: nextLoaded.theme.apiVersion,
-        },
-        themeDir: nextLoaded.themeDir,
-        logger,
-        rebuildDecksForKeyCount: (keyCount: number) =>
-          buildRuntime(options, nextLoaded, keyCount).decks,
-        ...(options.frontendUrl !== undefined
-          ? { frontendUrl: options.frontendUrl }
-          : {}),
-        ...(options.port !== undefined ? { port: options.port } : {}),
-        ...(options.intervalMs !== undefined
-          ? { intervalMs: options.intervalMs }
-          : {}),
+    })
+
+    const onServiceLog = (entry: {
+      level: string
+      msg: string
+      ts: number
+    }) => {
+      bridge.broadcast({
+        type: "service-log",
+        level: entry.level,
+        msg: entry.msg,
+        ts: entry.ts,
       })
-      currentOutputHandle = nextHandle
-      currentLoadedConfig = nextLoaded
-      if (options.onChildren !== undefined) {
-        options.onChildren([...nextHandle.childPids])
-      }
-    } catch (err) {
-      logger.warn(
-        { err: (err as Error).message },
-        "config change failed; keeping previous config",
-      )
     }
-  }
-  await configWatcher.start({ ignoreInitial: true })
+    process.on("sireno:log", onServiceLog)
+    removeServiceLogListener = () =>
+      process.removeListener("sireno:log", onServiceLog)
 
-  let resolveDone: () => void = () => undefined
-  const done = new Promise<void>((resolve) => {
-    resolveDone = resolve
-  })
+    const trackedPids = new Set<number>()
 
-  const signals = options.signals ?? defaultSignals
-  const unregister = signals.onSignal(() => {
-    logger.info("received signal, shutting down")
-    resolveDone()
-  })
+    outputHandle = await outputClient.init({
+      bridge,
+      runtime,
+      pubSub,
+      store,
+      decks,
+      theme: {
+        name: loaded.theme.name,
+        apiVersion: loaded.theme.apiVersion,
+      },
+      themeDir,
+      logger,
+      rebuildDecksForKeyCount: (keyCount: number) =>
+        buildRuntime(options, loadedConfig, keyCount).decks,
+      onChildPid: (pid) => {
+        if (trackedPids.has(pid)) return
+        trackedPids.add(pid)
+        options.onChildren?.([...trackedPids])
+      },
+      ...(options.frontendUrl !== undefined
+        ? { frontendUrl: options.frontendUrl }
+        : {}),
+      ...(options.port !== undefined ? { port: options.port } : {}),
+      ...(options.intervalMs !== undefined
+        ? { intervalMs: options.intervalMs }
+        : {}),
+    })
 
-  try {
+    currentOutputHandle = outputHandle
+    let currentLoadedConfig = loadedConfig
+
+    if (options.onChildren !== undefined) {
+      options.onChildren([...outputHandle.childPids])
+    }
+
+    // Hot-reload: watch the YAML config for changes. Deck-only changes
+    // rebuild the runtime deck set in-place and rebroadcast deck-config;
+    // anything else (theme, addons, lock, logging) tears down Vite and
+    // re-initialises the output client with the new theme.
+    configWatcher = new ConfigWatcher([loadedConfig.configPath], {
+      onChange: () => {
+        void handleConfigChange()
+      },
+    })
+    const handleConfigChange = async (): Promise<void> => {
+      try {
+        const nextLoaded = await validateAndLoadConfig(options)
+        const prevConfig = currentLoadedConfig.config
+        const decksOnlyChange = decksChanged(prevConfig, nextLoaded.config)
+        if (decksOnlyChange) {
+          const rebuilt = buildRuntime(
+            options,
+            nextLoaded,
+            descriptor.keyCount,
+          ).decks
+          const activeId = runtime.getActiveDeckId()
+          runtime.setDecks(rebuilt)
+          if (
+            !Object.prototype.hasOwnProperty.call(
+              nextLoaded.config.decks,
+              activeId,
+            )
+          ) {
+            const fallback =
+              nextLoaded.config.decks["main"] !== undefined
+                ? "main"
+                : (Object.keys(nextLoaded.config.decks)[0] ?? activeId)
+            runtime.navigateToDeck(fallback, { addToHistory: false })
+          }
+          const activeDeck = runtime.getActiveDeck()
+          const msg = buildDeckConfigMessage(
+            activeDeck,
+            addonBundle.addonByType,
+            resolverOptions,
+            {
+              navStackDepth: runtime.navStackDepth(),
+              hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+            },
+            descriptor.keyCount,
+            outputClient.kind === "real",
+            (fullPath) => getAssetByPath(fullPath)?.id,
+            runtime.getAvailableOverlayDeckIcon(),
+          )
+          bridge.broadcast(msg)
+          currentLoadedConfig = nextLoaded
+          logger.info(
+            {
+              deckId: msg.deckId,
+              buttonCount: msg.surfaces[msg.deckId]?.buttons.length,
+            },
+            "config hot-reloaded (decks only)",
+          )
+          return
+        }
+        // Theme / addons / lock / logging changed — full Vite restart so the
+        // frontend picks up new theme CSS + virtual modules.
+        logger.info(
+          { prevTheme: prevConfig.theme, nextTheme: nextLoaded.config.theme },
+          "config change outside decks — restarting Vite",
+        )
+        await currentOutputHandle.stop()
+        const nextHandle = await outputClient.init({
+          bridge,
+          runtime,
+          pubSub,
+          store,
+          decks: buildRuntime(options, nextLoaded, descriptor.keyCount).decks,
+          theme: {
+            name: nextLoaded.theme.name,
+            apiVersion: nextLoaded.theme.apiVersion,
+          },
+          themeDir: nextLoaded.themeDir,
+          logger,
+          rebuildDecksForKeyCount: (keyCount: number) =>
+            buildRuntime(options, nextLoaded, keyCount).decks,
+          onChildPid: (pid) => {
+            if (trackedPids.has(pid)) return
+            trackedPids.add(pid)
+            options.onChildren?.([...trackedPids])
+          },
+          ...(options.frontendUrl !== undefined
+            ? { frontendUrl: options.frontendUrl }
+            : {}),
+          ...(options.port !== undefined ? { port: options.port } : {}),
+          ...(options.intervalMs !== undefined
+            ? { intervalMs: options.intervalMs }
+            : {}),
+        })
+        currentOutputHandle = nextHandle
+        currentLoadedConfig = nextLoaded
+        if (options.onChildren !== undefined) {
+          options.onChildren([...nextHandle.childPids])
+        }
+      } catch (err) {
+        logger.warn(
+          { err: (err as Error).message },
+          "config change failed; keeping previous config",
+        )
+      }
+    }
+    await configWatcher.start({ ignoreInitial: true })
+
+    let resolveDone: () => void = () => undefined
+    const done = new Promise<void>((resolve) => {
+      resolveDone = resolve
+    })
+
+    const signals = options.signals ?? defaultSignals
+    unregisterSignal = signals.onSignal(() => {
+      logger.info("received signal, shutting down")
+      resolveDone()
+    })
+
     await done
   } finally {
-    unregister()
-    bridgeSignal.abort()
-    addonServices.dispose()
-    statePublisher.stopAll()
+    if (unregisterSignal !== null) unregisterSignal()
+    if (bridgeSignal !== null) bridgeSignal.abort()
+    if (addonServicesDispose !== null) addonServicesDispose()
+    if (statePublisher !== null) statePublisher.stopAll()
     if (
       options.emulator !== true &&
+      currentOutputHandle !== null &&
       typeof currentOutputHandle.pushBlackFrame === "function"
     ) {
       try {
@@ -1425,19 +1491,26 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
         logger.warn({ err: (err as Error).message }, "pushBlackFrame failed")
       }
     }
-    process.removeListener("sireno:log", onServiceLog)
-    await configWatcher.close()
+    if (removeServiceLogListener !== null) removeServiceLogListener()
+    if (configWatcher !== null) {
+      try {
+        await configWatcher.close()
+      } catch {
+        // already closed or failed during init — ignore
+      }
+    }
     await Promise.allSettled([
-      currentOutputHandle.stop(),
-      runtime.stopActiveAppPolling(),
-      providers.activeApp.stop(),
-      providers.session.stop(),
-      providers.keyMacro.stop(),
-      bridge.close(),
+      currentOutputHandle !== null
+        ? currentOutputHandle.stop()
+        : Promise.resolve(),
+      runtime !== null ? runtime.stopActiveAppPolling() : Promise.resolve(),
+      providers !== null ? providers.activeApp.stop() : Promise.resolve(),
+      providers !== null ? providers.session.stop() : Promise.resolve(),
+      providers !== null ? providers.keyMacro.stop() : Promise.resolve(),
+      bridge !== null ? bridge.close() : Promise.resolve(),
     ])
     logger.info("shutdown complete")
   }
-  void wsPort
 }
 
 const resolveXdgConfigHome = (options: RunOptions): string =>

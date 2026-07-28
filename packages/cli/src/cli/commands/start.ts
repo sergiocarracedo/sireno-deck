@@ -5,33 +5,47 @@ import { fileURLToPath } from "node:url"
 import { select } from "@inquirer/prompts"
 import type pino from "pino"
 
+import { findConfigPath } from "@/config/discovery"
 import {
   generateToken,
   isRunning,
+  pruneStaleChildren,
+  readConfigPath,
+  readFlags,
   readPid,
   readToken,
   removeChildrenFile,
   removePidFile,
   removeTokenFile,
+  resolveDaemonPaths,
+  terminateChildren,
   writeChildren,
+  writeConfigPath,
+  writeFlags,
   writePid,
   writeToken,
+  type RuntimeFlags,
 } from "@/util/daemon"
-import { findConfigPath } from "@/config/discovery"
 
 import { startHttpServer, type RunningHttpServer } from "../http-server"
-
+import { tailLogs } from "@/util/log-tail"
+import {
+  builtinDir,
+  collectBuiltinAddonRegistry,
+  type ScannedAddon,
+} from "./addon-registry"
+import { ensureInstalled, invokeManager } from "./service-manager"
+import {
+  isUnderServiceManager,
+  spawnDetached,
+  watchFastFail,
+} from "./spawn-daemon"
 import {
   preflight,
   runPipeline,
   type RunOptions,
   type SignalProvider,
 } from "./run"
-import {
-  collectBuiltinAddonRegistry,
-  builtinDir,
-  type ScannedAddon,
-} from "./addon-registry"
 
 export interface StartOptions {
   readonly config?: string
@@ -43,6 +57,8 @@ export interface StartOptions {
   readonly xdgConfigHome?: string
   readonly homeDir?: string
   readonly httpPort?: number
+  readonly logs?: boolean
+  readonly system?: boolean
   readonly signals?: SignalProvider
   readonly logger: pino.Logger
 }
@@ -69,6 +85,14 @@ const toRunOptions = (
 const resolveFrontendDist = (): string => {
   const here = dirname(fileURLToPath(import.meta.url))
   return resolvePath(here, "../../../frontend/dist")
+}
+
+const resolveBinPath = (): string => {
+  return process.argv[1] ?? process.execPath
+}
+
+const isDevInvocation = (): boolean => {
+  return (process.argv[1] ?? "").endsWith(".ts")
 }
 
 const promptConflict = async (pid: number): Promise<"restart" | "cancel"> => {
@@ -102,6 +126,8 @@ const stopExisting = async (
   if (!isRunning(pid)) {
     logger.warn({ pid }, "existing pid file is stale, removing")
     removePidFile()
+    await terminateChildren({ logger, timeoutMs: 2_000 })
+    removeChildrenFile()
     return
   }
   logger.info({ pid }, "stopping existing daemon")
@@ -122,16 +148,19 @@ const stopExisting = async (
       logger.warn({ err, pid }, "failed to send SIGKILL to existing daemon")
     }
   }
+  await terminateChildren({ logger, timeoutMs: 2_000 })
+  removePidFile()
+  removeTokenFile()
+  removeChildrenFile()
 }
 
-const start = async (options: StartOptions): Promise<void> => {
-  const { logger } = options
-
+const resolveConfigPath = (options: StartOptions): string => {
   const home = options.homeDir ?? process.env["HOME"] ?? ""
   const xdgConfigHome =
     options.xdgConfigHome ?? process.env["XDG_CONFIG_HOME"] ?? `${home}/.config`
-  const configPath =
+  return (
     options.config ??
+    readConfigPath() ??
     findConfigPath({
       homeDir: home,
       ...(options.xdgConfigHome !== undefined
@@ -139,24 +168,41 @@ const start = async (options: StartOptions): Promise<void> => {
         : {}),
     }) ??
     join(xdgConfigHome, "sireno-deck", "config.yml")
+  )
+}
+
+const buildRuntimeFlags = (options: StartOptions): RuntimeFlags => ({
+  emulator: options.emulator === true,
+  httpPort: options.httpPort ?? 3939,
+  ...(options.deviceModel !== undefined
+    ? { deviceModel: options.deviceModel }
+    : {}),
+  ...(options.port !== undefined ? { port: options.port } : {}),
+})
+
+const runInProcess = async (options: StartOptions): Promise<void> => {
+  const { logger } = options
+
+  const home = options.homeDir ?? process.env["HOME"] ?? ""
+  const xdgConfigHome =
+    options.xdgConfigHome ?? process.env["XDG_CONFIG_HOME"] ?? `${home}/.config`
+  const configPath = resolveConfigPath(options)
+  const runtimeFlags = readFlags() ?? buildRuntimeFlags(options)
+  writeConfigPath(configPath)
+  writeFlags(runtimeFlags)
+
   const builtinAddons = (await collectBuiltinAddonRegistry()).scanned
   const allScanned: ScannedAddon[] = [...builtinAddons]
 
-  const existing = readPid()
-  if (existing !== null && isRunning(existing)) {
-    const action = await promptConflict(existing)
-    if (action === "cancel") {
-      logger.info("start cancelled")
-      return
-    }
-    await stopExisting(existing, logger)
-    removePidFile()
-    removeTokenFile()
-    removeChildrenFile()
-  }
-
   const runOptions = toRunOptions(
-    options,
+    {
+      ...options,
+      config: configPath,
+      port: runtimeFlags.port,
+      emulator: runtimeFlags.emulator,
+      deviceModel: runtimeFlags.deviceModel,
+      httpPort: runtimeFlags.httpPort,
+    },
     (pids) => {
       writeChildren({ pids: [...pids] })
       logger.info({ pids }, "daemon: tracked children")
@@ -172,10 +218,7 @@ const start = async (options: StartOptions): Promise<void> => {
   writePid(process.pid)
   const token = generateToken()
   writeToken(token)
-  logger.info(
-    { pid: process.pid, tokenLen: token.length },
-    "daemon: pid + token written",
-  )
+  logger.info({ tokenLen: token.length }, "daemon: pid + token written")
 
   let httpServer: RunningHttpServer | null = null
   const distDir = resolveFrontendDist()
@@ -183,7 +226,7 @@ const start = async (options: StartOptions): Promise<void> => {
   if (existsSync(indexPath)) {
     try {
       httpServer = await startHttpServer({
-        port: options.httpPort ?? 3939,
+        port: runtimeFlags.httpPort,
         distDir,
         getToken: () => readToken(),
         logger,
@@ -201,7 +244,10 @@ const start = async (options: StartOptions): Promise<void> => {
             path: s.path ?? join(builtinDir, s.name),
             internal: s.internal,
             source: s.source,
-            buttonTypes: [...s.types],
+            buttonTypes: Object.entries(s.buttonTypes).map(([type, info]) => ({
+              type,
+              internal: info.internal,
+            })),
             defaultButton: null,
             decks: [...s.decks],
           })),
@@ -237,7 +283,100 @@ const start = async (options: StartOptions): Promise<void> => {
       removeTokenFile()
       removeChildrenFile()
       logger.info("daemon: shutdown complete")
+      // ponytail: explicit exit — without this, lingering handles in the
+      // emulator's active-app polling or lingering ws-bridge connections keep
+      // the event loop alive and the daemon process never terminates after
+      // a startup failure. The systemd / fork-off flows don't go through
+      // runInProcess, so this only affects the in-process daemon path.
+      process.exit(process.exitCode ?? 0)
     })
+}
+
+const forkOffDev = async (options: StartOptions): Promise<void> => {
+  const { logger } = options
+  const configPath = resolveConfigPath(options)
+  const runtimeFlags = buildRuntimeFlags(options)
+  writeConfigPath(configPath)
+  writeFlags(runtimeFlags)
+  pruneStaleChildren(undefined, logger)
+  await terminateChildren({ logger, timeoutMs: 2_000 })
+
+  const binPath = resolveBinPath()
+  const args: string[] = ["start"]
+  const { pid, child } = spawnDetached({ binPath, args })
+  if (pid <= 0) {
+    throw new Error("start: failed to spawn daemon (no pid returned)")
+  }
+  writePid(pid)
+  logger.info({ childPid: pid, configPath }, "start: daemon spawned (dev)")
+  await watchFastFail(child, `${resolveDaemonPaths().runtimeDir}/service.log`)
+}
+
+const startProduction = async (options: StartOptions): Promise<void> => {
+  const { logger } = options
+  const configPath = resolveConfigPath(options)
+  const runtimeFlags = buildRuntimeFlags(options)
+  writeConfigPath(configPath)
+  writeFlags(runtimeFlags)
+
+  await ensureInstalled({
+    logger,
+    ...(options.system === true ? { system: true } : {}),
+  })
+  await invokeManager({ action: "restart", logger })
+
+  const paths = resolveDaemonPaths()
+  const deadline = Date.now() + 5_000
+  let pid: number | null = null
+  while (Date.now() < deadline) {
+    pid = readPid(paths)
+    if (pid !== null && isRunning(pid)) break
+    await new Promise((r) => setTimeout(r, 100))
+  }
+  logger.info(
+    { childPid: pid, configPath },
+    pid !== null
+      ? "start: daemon started via service manager"
+      : "start: daemon started (pid not yet visible)",
+  )
+
+  if (options.logs === true && process.exitCode !== 1) {
+    const logPath = `${paths.runtimeDir}/service.log`
+    await tailLogs({ logPath, follow: true, lines: 50 })
+  }
+}
+
+const start = async (options: StartOptions): Promise<void> => {
+  const { logger } = options
+
+  if (isUnderServiceManager()) {
+    await runInProcess(options)
+    return
+  }
+
+  const existing = readPid()
+  if (existing !== null && isRunning(existing)) {
+    const action = await promptConflict(existing)
+    if (action === "cancel") {
+      logger.info("start cancelled")
+      return
+    }
+    await stopExisting(existing, logger)
+    removePidFile()
+    removeTokenFile()
+    removeChildrenFile()
+  } else if (existing !== null) {
+    removePidFile()
+    removeTokenFile()
+    removeChildrenFile()
+    pruneStaleChildren(undefined, logger)
+  }
+
+  if (isDevInvocation()) {
+    await forkOffDev(options)
+  } else {
+    await startProduction(options)
+  }
 }
 
 export default start
