@@ -11,6 +11,7 @@ import pageNavBackend from "./buttons/page-nav/backend"
 import pageNavFrontend from "./buttons/page-nav/frontend"
 import toggleBackend from "./buttons/toggle/backend"
 import toggleFrontend from "./buttons/toggle/frontend"
+import { globalService as toggleGlobalService } from "./buttons/toggle/global-service"
 
 export const manifest: AddonManifestV1 = {
   apiVersion: 1,
@@ -40,6 +41,7 @@ export const manifest: AddonManifestV1 = {
       service: { ...mediaSampleBackend, gestureHandlers: ["tap"] as const },
     },
   },
+  globalService: toggleGlobalService,
   decks: [
     {
       id: "core:lock",

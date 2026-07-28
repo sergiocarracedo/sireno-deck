@@ -13,3 +13,18 @@ buttons:
         - label: Up
           command: "uptime -p"
           formatter: strip
+  - position: 1
+    type: "core:toggle"
+    config:
+      statusCommand: "playerctl status"
+      intervalMs: 2000
+      timeoutMs: 5000
+      states:
+        Playing:
+          label: "<xl>$(playerctl title)</xl>"
+          icon: "icon://play"
+          onTap: "playerctl pause"
+        Paused:
+          label: "Paused"
+          icon: "icon://pause"
+          onTap: "playerctl play"
