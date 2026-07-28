@@ -1,0 +1,52 @@
+packages/cli/src/builtin-addons/index.ts
+  s_5b19018252d9e0::t_6034a88b28f153 8
+demos/demo-pomodoro.yml
+  s_5b19018252d9e0::t_072a0b77674dca 1-12
+packages/cli/src/builtin-addons/register-builtins.ts
+  s_5b19018252d9e0::t_38f3dd22c89f9f 11,31
+packages/cli/src/builtin-addons/pomodoro/__tests__/backend.test.ts
+  s_5b19018252d9e0::t_854fcee1c0e2e3 61
+  s_5b19018252d9e0::t_d841ee2966057e 2-23,28-60,62-83
+  s_5b19018252d9e0::t_4ee381a798bc42 1
+  s_5b19018252d9e0::t_abf24a87bedbe8 24-27
+packages/cli/src/builtin-addons/pomodoro/state.ts
+  s_5b19018252d9e0::t_04d9b4535d0390 1-25
+packages/cli/src/builtin-addons/pomodoro/timer.ts
+  s_5b19018252d9e0::t_4fd9e096799268 1-93
+packages/cli/src/builtin-addons/pomodoro/buttons/pomodoro/backend.ts
+  s_5b19018252d9e0::t_0f8310440c1032 1-102
+packages/cli/src/builtin-addons/pomodoro/index.ts
+  s_5b19018252d9e0::t_7339d605e0b111 1-25
+packages/cli/src/builtin-addons/pomodoro/buttons/pomodoro/config.ts
+  s_5b19018252d9e0::t_a3da93855e5cca 1-17
+packages/cli/src/builtin-addons/pomodoro/__tests__/manifest.test.ts
+  s_5b19018252d9e0::t_4fb7bf8ef7870a 1-27
+packages/cli/src/builtin-addons/pomodoro/buttons/pomodoro/frontend.css
+  s_5b19018252d9e0::t_a7bf4b8f22ce0f 1-16
+config.yml
+  s_5b19018252d9e0::t_9884e481aa81a1 98
+packages/cli/src/builtin-addons/pomodoro/README.md
+  s_5b19018252d9e0::t_fabab54f1370a2 1-43
+packages/cli/src/builtin-addons/pomodoro/__tests__/timer.test.ts
+  s_5b19018252d9e0::t_7836aa10c5db83 1-78
+packages/cli/src/builtin-addons/pomodoro/backend.ts
+  s_5b19018252d9e0::t_60de1572f2bcbe 1-117
+packages/cli/src/builtin-addons/pomodoro/buttons/pomodoro/frontend.tsx
+  s_5b19018252d9e0::t_0f395e65184548 1-89
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "5583f98ee41d68e489b8e225bafa629f1cb8b56a",
+  "prompts": {},
+  "sessions": {
+    "s_5b19018252d9e0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05574b72affemfEF7rBuPKjodf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
