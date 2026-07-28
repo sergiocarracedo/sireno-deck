@@ -9,6 +9,7 @@ export interface ViteServerOptions {
   readyMatcher?: RegExp
   maxRestarts?: number
   restartBackoffMs?: ReadonlyArray<number>
+  onPid?: (pid: number) => void
 }
 
 export interface ViteServerHandle {
@@ -29,6 +30,7 @@ export const spawnViteServer = (
     readyMatcher = /READY\s+(\d+)/,
     maxRestarts = 3,
     restartBackoffMs = [500, 1000, 2000],
+    onPid,
   } = options
 
   return new Promise((resolve, reject) => {
@@ -55,11 +57,21 @@ export const spawnViteServer = (
 
     const start = (): void => {
       if (stopped) return
+      // ponytail: detached:true puts vite in its own process group — kill
+      // -pgid (terminateChildren) takes the whole group down at once so a
+      // crashed or SIGKILL'd daemon doesn't leave vite holding :5180/:52938.
       current = spawn(command, [...args], {
         cwd,
         env: env !== undefined ? { ...process.env, ...env } : process.env,
+        detached: true,
       })
-      pid = current.pid ?? null
+      current.unref()
+      const newPid = current.pid ?? null
+      pid = newPid
+      if (newPid !== null) {
+        emitter.emit("pid", newPid)
+        onPid?.(newPid)
+      }
 
       const onReady = (matchedPort: number): void => {
         port = matchedPort

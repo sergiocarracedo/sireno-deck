@@ -275,6 +275,14 @@ const runInProcess = async (options: StartOptions): Promise<void> => {
           logger.warn({ err }, "daemon: http server stop failed")
         }
       }
+      // ponytail: kill tracked children (frontend vite, emulator vite, ...)
+      // BEFORE removing the children file. Without this, when the daemon
+      // exits cleanly the children outlive it as init-adopted orphans, keep
+      // their ports, and the next `start` invocation fails with EADDRINUSE
+      // — exactly the user's "the frontend port still in use by children"
+      // symptom. TerminateChildren sends SIGTERM (then SIGKILL after 2s)
+      // and is awaited so the operation completes before process.exit.
+      await terminateChildren({ logger, timeoutMs: 3_000 })
       removePidFile()
       removeTokenFile()
       removeChildrenFile()
@@ -379,11 +387,26 @@ const start = async (options: StartOptions): Promise<void> => {
     removePidFile()
     removeTokenFile()
     removeChildrenFile()
-  } else if (existing !== null) {
-    removePidFile()
-    removeTokenFile()
-    removeChildrenFile()
+  } else {
+    // ponytail: previous daemon is dead (or never started cleanly) — kill any
+    // children it left behind (frontend vite on :5180, emulator vite on :52938,
+    // ws-bridge on :52937). Without this, the children's ports stay bound
+    // by orphans and the new daemon's preflight can't bind them — user's
+    // complaint: "the frontend port still in use by children". terminateChildren
+    // sends SIGTERM, waits 2s, then SIGKILL on stragglers.
+    if (existing !== null) {
+      logger.warn(
+        { pid: existing },
+        "start: existing daemon pid is dead — cleaning up before starting",
+      )
+    }
+    await terminateChildren({ logger, timeoutMs: 2_000 })
     pruneStaleChildren(undefined, logger)
+    if (existing !== null) {
+      removePidFile()
+      removeTokenFile()
+      removeChildrenFile()
+    }
   }
 
   if (isDevInvocation()) {

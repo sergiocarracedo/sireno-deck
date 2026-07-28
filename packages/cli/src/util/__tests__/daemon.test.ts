@@ -15,6 +15,7 @@ import {
   readChildren,
   readToken,
   resolveDaemonPaths,
+  terminateChildren,
   writeChildren,
   writeToken,
 } from "../daemon"
@@ -143,5 +144,22 @@ describe("writeToken overwrites", () => {
     const stat = statSync(join(TEST_DIR, "sireno-deck.token"))
     const mode = stat.mode & 0o777
     expect(mode).toBe(0o600)
+  })
+})
+
+describe("terminateChildren", () => {
+  it("no-op when there is no children file", async () => {
+    await expect(
+      terminateChildren({ logger: undefined }),
+    ).resolves.toBeUndefined()
+  })
+
+  it("prunes stale entries (dead pids) and leaves the file empty", async () => {
+    // writeChildren is bound to the real runtimeDir; use a real but
+    // unreachable pid for the stale entry.
+    writeChildren({ pids: [2_000_000_001] })
+    await terminateChildren({ logger: undefined })
+    const state = readChildren()
+    expect(state?.pids ?? []).toEqual([])
   })
 })

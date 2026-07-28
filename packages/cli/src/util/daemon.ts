@@ -20,6 +20,14 @@ export interface DaemonPaths {
   tokenFile: string
   childrenFile: string
   configPathFile: string
+  flagsFile: string
+}
+
+export interface RuntimeFlags {
+  emulator: boolean
+  deviceModel?: string
+  port?: number
+  httpPort: number
 }
 
 const DAEMON_NAME = "sireno-deck"
@@ -49,6 +57,7 @@ export const resolveDaemonPaths = (): DaemonPaths => {
     tokenFile: join(runtimeDir, `${DAEMON_NAME}.token`),
     childrenFile: join(runtimeDir, `${DAEMON_NAME}.children.json`),
     configPathFile: join(runtimeDir, `${DAEMON_NAME}.config`),
+    flagsFile: join(runtimeDir, `${DAEMON_NAME}.flags.json`),
   }
 }
 
@@ -158,8 +167,63 @@ export const removeConfigPathFile = (paths = resolveDaemonPaths()): void => {
   if (existsSync(paths.configPathFile)) unlinkSync(paths.configPathFile)
 }
 
+export const readFlags = (
+  paths = resolveDaemonPaths(),
+): RuntimeFlags | null => {
+  if (!existsSync(paths.flagsFile)) return null
+  try {
+    const raw = readFileSync(paths.flagsFile, "utf8")
+    const parsed = JSON.parse(raw) as Partial<RuntimeFlags>
+    if (
+      typeof parsed.emulator !== "boolean" ||
+      typeof parsed.httpPort !== "number"
+    ) {
+      return null
+    }
+    return {
+      emulator: parsed.emulator,
+      httpPort: parsed.httpPort,
+      ...(typeof parsed.deviceModel === "string"
+        ? { deviceModel: parsed.deviceModel }
+        : {}),
+      ...(typeof parsed.port === "number" ? { port: parsed.port } : {}),
+    }
+  } catch {
+    return null
+  }
+}
+
+export const writeFlags = (
+  flags: RuntimeFlags,
+  paths = resolveDaemonPaths(),
+): void => {
+  writeFileSync(paths.flagsFile, JSON.stringify(flags), { encoding: "utf8" })
+}
+
+export const removeFlagsFile = (paths = resolveDaemonPaths()): void => {
+  if (existsSync(paths.flagsFile)) unlinkSync(paths.flagsFile)
+}
+
 // ponytail: child tracking is best-effort — orphans from a hard kill are reaped
-// on next prune. terminateChildren uses process.kill(pid, 0) to check liveness.
+// ponytail: terminateChildren first tries the pid as a process (the child
+// itself) and then falls back to the pid as a NEGATIVE pid (process group
+// leader). When vite is spawned with `detached: true` its pid IS the pgid,
+// so kill(-pgid, SIGTERM) takes down the whole group in one shot — that's
+// how we guarantee the frontend port doesn't stay bound by orphans after
+// the daemon dies. Windows ignores the negative pid form silently.
+const signalChildGroup = (pid: number, signal: NodeJS.Signals): void => {
+  try {
+    process.kill(pid, signal)
+  } catch {
+    // pid already dead or no permission — try as process group
+  }
+  try {
+    process.kill(-pid, signal)
+  } catch {
+    // not a pgid or already gone
+  }
+}
+
 export const terminateChildren = async ({
   timeoutMs = 5000,
   logger,
@@ -173,16 +237,15 @@ export const terminateChildren = async ({
   if (state === null || state.pids.length === 0) return
 
   const alive = state.pids.filter((p) => isRunning(p))
-  if (alive.length === 0) return
+  if (alive.length === 0) {
+    writeChildren({ pids: [] }, paths)
+    return
+  }
 
   // Phase 1: SIGTERM all
   for (const pid of alive) {
-    try {
-      process.kill(pid, "SIGTERM")
-      logger?.debug({ pid }, "daemon: sent SIGTERM to child")
-    } catch {
-      // already dead
-    }
+    signalChildGroup(pid, "SIGTERM")
+    logger?.debug({ pid }, "daemon: sent SIGTERM to child (+ group)")
   }
 
   // Wait for graceful shutdown
@@ -195,12 +258,8 @@ export const terminateChildren = async ({
 
   // Phase 2: SIGKILL stragglers
   for (const pid of remaining) {
-    try {
-      process.kill(pid, "SIGKILL")
-      logger?.debug({ pid }, "daemon: sent SIGKILL to child")
-    } catch {
-      // already dead
-    }
+    signalChildGroup(pid, "SIGKILL")
+    logger?.debug({ pid }, "daemon: sent SIGKILL to child (+ group)")
   }
 
   // Prune dead from tracked list
