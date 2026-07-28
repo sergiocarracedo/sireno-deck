@@ -532,6 +532,7 @@ export const buildAddonConfigOverrides = (
   {
     addonWideConfig: Record<string, unknown>
     perDeck: Map<string, import("@/cli/commands/addon-decks").AddonDeckOverride>
+    defaults?: { autoShow?: boolean }
   }
 > => {
   const overrides = new Map<
@@ -563,13 +564,19 @@ export const buildAddonConfigOverrides = (
         : undefined
     if (typeof cfg !== "object" || cfg === null) continue
     // ponytail: addonWideConfig is everything under `entry.config` EXCEPT
-    // `decks` (which carries per-deck overrides). We accept unknown keys
-    // here because the schema only constrains the `decks` sub-record.
-    const { decks: perDeckRaw, ...rest } = cfg as {
+    // `decks` (which carries per-deck overrides) and `defaults` (which carries
+    // addon-wide deck defaults). We accept unknown keys here because the
+    // schema only constrains the `decks` sub-record.
+    const {
+      decks: perDeckRaw,
+      defaults,
+      ...rest
+    } = cfg as {
       decks?: Record<
         string,
         import("@/cli/commands/addon-decks").AddonDeckOverride
       >
+      defaults?: { autoShow?: boolean }
     } & Record<string, unknown>
     // ponytail: key on the loaded addon's manifest name — that's what
     // materializeAddonDecks looks up. The user wrote `src:` (path or npm
@@ -586,6 +593,7 @@ export const buildAddonConfigOverrides = (
     overrides.set(addonName, {
       addonWideConfig: rest,
       perDeck: new Map(Object.entries(perDeckRaw ?? {})),
+      defaults,
     })
   }
   return overrides
@@ -1124,12 +1132,43 @@ export const preflight = async (options: RunOptions): Promise<void> => {
   // Validate the config first so a broken YAML exits before we ever touch
   // hardware or spawn an emulator.
   await validateAndLoadConfig(options)
-  const outputClient = selectOutputClient({
+  let outputClient = selectOutputClient({
     emulator: options.emulator === true,
     xdgConfigHome: resolveXdgConfigHome(options),
   })
+  // ponytail: when running on real hardware with no device attached, prompt
+  // the user to fall back to --emulator instead of failing hard. TTY only —
+  // non-interactive callers (CI, scripts) keep the original "no device"
+  // error. The fallback mutates `options.emulator` so runPipeline re-uses
+  // the same RunOptions and re-selects the emulator client.
+  if (outputClient.kind === "real") {
+    const devices = await outputClient.listDevices()
+    if (devices.length === 0) {
+      if (!process.stdin.isTTY) {
+        throw new Error(
+          "No Stream Deck devices found. Connect a device and try again. On Linux, udev rules for vendor 0fd9 may be required — see packages/cli/src/device/linux-udev.ts for the rule file template.",
+        )
+      }
+      const { confirm } = await import("@inquirer/prompts")
+      const fallback = await confirm({
+        message: "No Stream Deck found. Start in --emulator mode instead?",
+        default: true,
+      })
+      if (fallback) {
+        logger.info("no Stream Deck detected; falling back to --emulator mode")
+        ;(options as { emulator?: boolean }).emulator = true
+        outputClient = selectOutputClient({
+          emulator: true,
+          xdgConfigHome: resolveXdgConfigHome(options),
+        })
+      } else {
+        throw new Error(
+          "No Stream Deck devices found. Connect a device and try again. On Linux, udev rules for vendor 0fd9 may be required — see packages/cli/src/device/linux-udev.ts for the rule file template.",
+        )
+      }
+    }
+  }
   await outputClient.validateReady()
-  void logger
 }
 
 export const runPipeline = async (options: RunOptions): Promise<void> => {
@@ -1341,6 +1380,12 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
         trackedPids.add(pid)
         options.onChildren?.([...trackedPids])
       },
+      onChildCrash: () => {
+        logger.fatal(
+          "supervised vite child exhausted its retry budget, shutting down",
+        )
+        resolveDoneForCrash()
+      },
       ...(options.frontendUrl !== undefined
         ? { frontendUrl: options.frontendUrl }
         : {}),
@@ -1416,45 +1461,17 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           )
           return
         }
-        // Theme / addons / lock / logging changed — full Vite restart so the
-        // frontend picks up new theme CSS + virtual modules.
+        // Theme / addons / lock / logging changed — Vite's HMR re-reads
+        // SIRENO_THEME / SIRENO_ADDONS from process.env on rebuild, so we
+        // just nudge the emulator SPA to reload the iframe. No Vite restart,
+        // no deck-config resend (the runtime's in-memory decks are unaffected
+        // because the theme change only touches CSS / virtual modules).
         logger.info(
           { prevTheme: prevConfig.theme, nextTheme: nextLoaded.config.theme },
-          "config change outside decks — restarting Vite",
+          "config change outside decks — broadcasting iframe-reload",
         )
-        await currentOutputHandle.stop()
-        const nextHandle = await outputClient.init({
-          bridge,
-          runtime,
-          pubSub,
-          store,
-          decks: buildRuntime(options, nextLoaded, descriptor.keyCount).decks,
-          theme: {
-            name: nextLoaded.theme.name,
-            apiVersion: nextLoaded.theme.apiVersion,
-          },
-          themeDir: nextLoaded.themeDir,
-          logger,
-          rebuildDecksForKeyCount: (keyCount: number) =>
-            buildRuntime(options, nextLoaded, keyCount).decks,
-          onChildPid: (pid) => {
-            if (trackedPids.has(pid)) return
-            trackedPids.add(pid)
-            options.onChildren?.([...trackedPids])
-          },
-          ...(options.frontendUrl !== undefined
-            ? { frontendUrl: options.frontendUrl }
-            : {}),
-          ...(options.port !== undefined ? { port: options.port } : {}),
-          ...(options.intervalMs !== undefined
-            ? { intervalMs: options.intervalMs }
-            : {}),
-        })
-        currentOutputHandle = nextHandle
         currentLoadedConfig = nextLoaded
-        if (options.onChildren !== undefined) {
-          options.onChildren([...nextHandle.childPids])
-        }
+        bridge.broadcast({ type: "iframe-reload" })
       } catch (err) {
         logger.warn(
           { err: (err as Error).message },
@@ -1465,8 +1482,10 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     await configWatcher.start({ ignoreInitial: true })
 
     let resolveDone: () => void = () => undefined
+    let resolveDoneForCrash: () => void = () => undefined
     const done = new Promise<void>((resolve) => {
       resolveDone = resolve
+      resolveDoneForCrash = resolve
     })
 
     const signals = options.signals ?? defaultSignals

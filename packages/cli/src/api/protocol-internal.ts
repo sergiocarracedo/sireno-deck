@@ -138,6 +138,10 @@ export const subscribeChannelsMessageSchema = baseClientMessage.extend({
   channels: z.array(z.string()).min(1),
 })
 
+export const iframeReloadMessageSchema = baseServerMessage.extend({
+  type: z.literal("iframe-reload"),
+})
+
 export const wsMessageSchema = z.discriminatedUnion("type", [
   helloMessageSchema,
   helloAckMessageSchema,
@@ -157,6 +161,7 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
   dismissOverlayMessageSchema,
   assetsMessageSchema,
   subscribeChannelsMessageSchema,
+  iframeReloadMessageSchema,
 ])
 
 export type HelloMessage = z.infer<typeof helloMessageSchema>
@@ -181,4 +186,5 @@ export type AssetsMessage = z.infer<typeof assetsMessageSchema>
 export type SubscribeChannelsMessage = z.infer<
   typeof subscribeChannelsMessageSchema
 >
+export type IframeReloadMessage = z.infer<typeof iframeReloadMessageSchema>
 export type WsMessage = z.infer<typeof wsMessageSchema>

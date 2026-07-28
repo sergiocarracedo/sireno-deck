@@ -41,6 +41,22 @@ describe("DeckFrame (emulator)", () => {
     }
   })
 
+  it("exposes the iframe DOM node via onIframeRef so the SPA can reload it", () => {
+    const onIframeRef = vi.fn()
+    const { container } = render(
+      <DeckFrame
+        frontendUrl="http://127.0.0.1:5180"
+        deckId="main"
+        device={mk2}
+        onIframeRef={onIframeRef}
+      />,
+    )
+    expect(onIframeRef).toHaveBeenCalled()
+    const iframe = onIframeRef.mock.calls.at(-1)?.[0]
+    expect(iframe).toBeInstanceOf(HTMLIFrameElement)
+    expect(iframe).toBe(container.querySelector("iframe"))
+  })
+
   describe("gesture delivery", () => {
     beforeEach(() => {
       vi.useFakeTimers()

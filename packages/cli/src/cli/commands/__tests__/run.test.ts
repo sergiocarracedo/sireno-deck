@@ -30,16 +30,29 @@ vi.mock("@/system/providers/clipboard", () => ({
     stop: vi.fn(async () => undefined),
   })),
 }))
+let capturedBridge: {
+  port: number
+  url: string
+  broadcast: ReturnType<typeof vi.fn>
+  sendToCaller: ReturnType<typeof vi.fn>
+  onMessage: () => () => undefined
+  onConnection: () => () => undefined
+  close: () => Promise<undefined>
+} | null = null
 vi.mock("@/render/ws-bridge", () => ({
-  startWsBridge: vi.fn(async () => ({
-    port: 52937,
-    url: "ws://127.0.0.1:52937",
-    broadcast: vi.fn(),
-    sendToCaller: vi.fn(),
-    onMessage: () => () => undefined,
-    onConnection: () => () => undefined,
-    close: async () => undefined,
-  })),
+  startWsBridge: vi.fn(async () => {
+    const handle = {
+      port: 52937,
+      url: "ws://127.0.0.1:52937",
+      broadcast: vi.fn(),
+      sendToCaller: vi.fn(),
+      onMessage: () => () => undefined,
+      onConnection: () => () => undefined,
+      close: async () => undefined,
+    }
+    capturedBridge = handle
+    return handle
+  }),
 }))
 vi.mock("@/render/state-publisher", () => ({
   StatePublisher: vi.fn(function FakeStatePublisher() {
@@ -47,6 +60,16 @@ vi.mock("@/render/state-publisher", () => ({
       registerChannel: vi.fn(),
       setActiveDeck: vi.fn(),
       stopAll: vi.fn(),
+    }
+  }),
+}))
+let configChangeCallback: (() => void) | null = null
+vi.mock("@/core/watcher", () => ({
+  ConfigWatcher: vi.fn(function FakeConfigWatcher(_paths, opts) {
+    configChangeCallback = opts.onChange
+    return {
+      start: vi.fn(async () => undefined),
+      close: vi.fn(async () => undefined),
     }
   }),
 }))
@@ -198,6 +221,7 @@ const setHappyPath = (
     return {
       hasButtonType: () => true,
       getButtonType: () => ({ def: { internal: false } }),
+      load: () => undefined,
       resolveActiveTheme: () => ({
         name: "default",
         apiVersion: 1,
@@ -326,6 +350,8 @@ const setHappyPath = (
 describe("run", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    configChangeCallback = null
+    capturedBridge = null
   })
   afterEach(() => {
     vi.restoreAllMocks()
@@ -438,6 +464,72 @@ describe("run", () => {
       expect.objectContaining({ emulator: true }),
     )
   })
+
+  it("non-deck config change broadcasts iframe-reload instead of restarting Vite", async () => {
+    const outputClient = setHappyPath()
+    const signals = makeFakeSignals()
+    // First config load: no theme. Second config load: theme added — forces
+    // the non-deck branch in handleConfigChange.
+    let configCall = 0
+    loaderMock.mockImplementation(() => {
+      configCall += 1
+      if (configCall === 1) {
+        return { config: { decks: {} }, configDir: "/dir" }
+      }
+      return {
+        config: { decks: {}, theme: "dark" },
+        configDir: "/dir",
+      }
+    })
+    const runPromise = run({
+      config: "/abs/cfg.yml",
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      signals,
+      logger: silentLogger(),
+    })
+    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    await vi.waitFor(() => expect(configChangeCallback).not.toBeNull())
+    // Trigger the config change callback registered by ConfigWatcher mock.
+    configChangeCallback!()
+    // handleConfigChange is fire-and-forget; wait until broadcast fires.
+    expect(capturedBridge).not.toBeNull()
+    await vi.waitFor(() =>
+      expect(capturedBridge!.broadcast).toHaveBeenCalledWith({
+        type: "iframe-reload",
+      }),
+    )
+    // Critical: no vite restart — outputHandle.stop was not called again.
+    const handle = await outputClient.init.mock.results[0]!.value
+    expect(handle.stop).not.toHaveBeenCalled()
+    expect(outputClient.init).toHaveBeenCalledTimes(1)
+    signals.trigger()
+    await runPromise
+  })
+
+  it("supervised child crash resolves the pipeline's done promise", async () => {
+    const outputClient = setHappyPath()
+    const signals = makeFakeSignals()
+    const runPromise = run({
+      config: "/abs/cfg.yml",
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      signals,
+      logger: silentLogger(),
+    })
+    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    const initOpts = outputClient.init.mock.calls[0]?.[0] as {
+      onChildCrash?: () => void
+    }
+    expect(typeof initOpts.onChildCrash).toBe("function")
+    // Simulate a supervised child crashing and exhausting its retry budget.
+    initOpts.onChildCrash?.()
+    await runPromise
+    const handle = await outputClient.init.mock.results[0]!.value
+    expect(handle.stop).toHaveBeenCalledTimes(1)
+  })
 })
 
 describe("preflight", () => {
@@ -475,5 +567,115 @@ describe("preflight", () => {
         logger: silentLogger(),
       }),
     ).rejects.toThrow(/No Stream Deck devices found/)
+  })
+
+  it("real client with no devices in non-TTY throws the friendly error", async () => {
+    const realClient = makeFakeOutputClient("real", [])
+    setHappyPath({ outputClient: realClient })
+    const originalIsTTY = process.stdin.isTTY
+    Object.defineProperty(process.stdin, "isTTY", {
+      value: false,
+      configurable: true,
+    })
+    try {
+      await expect(
+        preflight({
+          config: "/abs/cfg.yml",
+          xdgConfigHome: "/xdg",
+          homeDir: "/home",
+          logger: silentLogger(),
+        }),
+      ).rejects.toThrow(/No Stream Deck devices found/)
+      expect(realClient.validateReady).not.toHaveBeenCalled()
+    } finally {
+      Object.defineProperty(process.stdin, "isTTY", {
+        value: originalIsTTY,
+        configurable: true,
+      })
+    }
+  })
+
+  it("real client with no devices in TTY prompts and falls back to emulator on confirm", async () => {
+    const realClient = makeFakeOutputClient("real", [])
+    const emulatorClient = makeFakeOutputClient("emulator", [
+      {
+        id: "emulator:mk2",
+        model: "mk2",
+        keyCount: 15,
+        label: "Emulator MK.2",
+        transport: "emulated",
+      },
+    ])
+    // First selectOutputClient call → realClient. Second call (after fallback)
+    // → emulatorClient.
+    selectOutputClientMock
+      .mockReturnValueOnce(realClient)
+      .mockReturnValueOnce(emulatorClient)
+    const confirmMock = vi.fn(async () => true)
+    vi.doMock("@inquirer/prompts", () => ({ confirm: confirmMock }))
+    const originalIsTTY = process.stdin.isTTY
+    Object.defineProperty(process.stdin, "isTTY", {
+      value: true,
+      configurable: true,
+    })
+    try {
+      const opts: {
+        config: string
+        xdgConfigHome: string
+        homeDir: string
+        logger: ReturnType<typeof silentLogger>
+        emulator?: boolean
+      } = {
+        config: "/abs/cfg.yml",
+        xdgConfigHome: "/xdg",
+        homeDir: "/home",
+        logger: silentLogger(),
+      }
+      await preflight(opts)
+      expect(confirmMock).toHaveBeenCalledWith(
+        expect.objectContaining({ default: true }),
+      )
+      expect(opts.emulator).toBe(true)
+      expect(selectOutputClientMock).toHaveBeenCalledTimes(2)
+      expect(selectOutputClientMock.mock.calls[1]?.[0]).toMatchObject({
+        emulator: true,
+      })
+      expect(emulatorClient.validateReady).toHaveBeenCalled()
+    } finally {
+      Object.defineProperty(process.stdin, "isTTY", {
+        value: originalIsTTY,
+        configurable: true,
+      })
+      vi.doUnmock("@inquirer/prompts")
+    }
+  })
+
+  it("real client with no devices in TTY throws when user declines fallback", async () => {
+    const realClient = makeFakeOutputClient("real", [])
+    setHappyPath({ outputClient: realClient })
+    const confirmMock = vi.fn(async () => false)
+    vi.doMock("@inquirer/prompts", () => ({ confirm: confirmMock }))
+    const originalIsTTY = process.stdin.isTTY
+    Object.defineProperty(process.stdin, "isTTY", {
+      value: true,
+      configurable: true,
+    })
+    try {
+      await expect(
+        preflight({
+          config: "/abs/cfg.yml",
+          xdgConfigHome: "/xdg",
+          homeDir: "/home",
+          logger: silentLogger(),
+        }),
+      ).rejects.toThrow(/No Stream Deck devices found/)
+      expect(confirmMock).toHaveBeenCalled()
+    } finally {
+      Object.defineProperty(process.stdin, "isTTY", {
+        value: originalIsTTY,
+        configurable: true,
+      })
+      vi.doUnmock("@inquirer/prompts")
+    }
   })
 })

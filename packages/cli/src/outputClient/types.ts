@@ -41,6 +41,13 @@ export interface InitOptions {
     keyCount: number,
   ) => ReadonlyArray<RuntimeDeck>
   readonly onChildPid?: (pid: number) => void
+  /**
+   * Called when a supervised child (frontend/emulator vite) gives up after
+   * exhausting its retry budget. The pipeline uses this to resolve `done` and
+   * trigger the full shutdown sequence. ponytail: kept optional so existing
+   * tests that don't simulate subprocess crashes don't have to wire it.
+   */
+  readonly onChildCrash?: () => void
 }
 
 export interface OutputHandle {
