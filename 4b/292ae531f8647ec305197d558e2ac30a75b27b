@@ -1,0 +1,19 @@
+docs/solutions/conventions/stale-addon-dist-causes-lucide-icons-overlay-name-blink.md
+  s_7f4e05c2c7d0cc::t_11dcf7a5e71d5f 1-77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "4b292ae531f8647ec305197d558e2ac30a75b27b",
+  "prompts": {},
+  "sessions": {
+    "s_7f4e05c2c7d0cc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_056aff37effe3jtBlGilHqv8RY",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
