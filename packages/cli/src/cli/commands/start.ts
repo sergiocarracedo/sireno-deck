@@ -6,6 +6,13 @@ import { fileURLToPath } from "node:url"
 import { select } from "@inquirer/prompts"
 import type pino from "pino"
 
+import {
+  cmdlineMentionsCliRoot,
+  isOrphan,
+  isOurViteChild,
+  readProcCmdline,
+} from "./port-identity"
+
 import { findConfigPath } from "@/config/discovery"
 import {
   generateToken,
@@ -93,23 +100,16 @@ const isDevInvocation = (): boolean => {
 }
 
 // ponytail: kill every process currently listening on the daemon's expected
-// ports. Used as a last-resort cleanup before the new daemon binds, because
-// orphans from a previous daemon (parent adopted by systemd after a hard
-// kill) outlive the children.json tracking — the pid file is gone, the
-// children file is gone, but the vite/bridge are still bound. We can't tell
-// orphans from legitimately-started processes, so we kill any listener on
-// the daemon's ports. ss(8) is the only cross-distro way to get the pid
-// bound to a local port; macOS uses `lsof -nP -iTCP:PORT` instead but
-// lsof isn't always installed on minimal images — fall back to fuser.
+// ports — but ONLY if the identity gate (cmdline + orphan check) says it's
+// ours. Otherwise the port collision stays and the new daemon's preflight
+// surfaces a clear EADDRINUSE, which is the correct signal to the user.
 const killPortListeners = async (
   ports: ReadonlyArray<number>,
   logger: pino.Logger,
 ): Promise<void> => {
-  // ss -ltnp format: "LISTEN ... 127.0.0.1:5180 ... users:(("name",pid=N,fd=F))"
-  // The name may be a process name or "*" for un-named sockets. Just look
-  // for ",pid=N," inside the users:() block on the same line as the port.
   const ssLineRegex = (port: number): RegExp =>
     new RegExp(`:${port}\\b[\\s\\S]*?users:\\([^)]*?pid=(\\d+)[,\\)]`)
+  const daemonPid = readPid()
   for (const port of ports) {
     const pids = new Set<number>()
     try {
@@ -122,27 +122,36 @@ const killPortListeners = async (
         if (m && m[1]) pids.add(Number.parseInt(m[1], 10))
       }
     } catch {
-      // ss not available — try lsof as fallback
-      try {
-        const out = execFileSync(
-          "lsof",
-          ["-nP", "-iTCP:" + String(port), "-sTCP:LISTEN", "-t"],
-          { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] },
-        )
-        for (const ln of out.split("\n")) {
-          const pid = Number.parseInt(ln.trim(), 10)
-          if (Number.isFinite(pid) && pid > 0) pids.add(pid)
-        }
-      } catch {
-        // neither tool available — skip this port
-      }
+      // ss unavailable — skip silently. lsof fallback isn't worth the
+      // portability pain for an internal-cleanup helper.
     }
     for (const pid of pids) {
+      if (!isOurViteChild(pid)) {
+        logger.warn(
+          { pid, port },
+          "start: port in use by a process that is NOT a sireno-deck child — leaving it alone",
+        )
+        continue
+      }
+      if (!cmdlineMentionsCliRoot(readProcCmdline(pid) ?? "")) {
+        logger.warn(
+          { pid, port },
+          "start: port in use by a vite, but not under packages/cli/ — leaving it alone",
+        )
+        continue
+      }
+      if (!isOrphan(pid, daemonPid)) {
+        logger.warn(
+          { pid, port },
+          "start: port in use by a live (non-orphan) sireno-deck vite — leaving it alone",
+        )
+        continue
+      }
       try {
         process.kill(pid, "SIGTERM")
         logger.warn(
           { pid, port },
-          "start: killed stale process bound to daemon port",
+          "start: killed orphan sireno-deck vite bound to daemon port",
         )
       } catch {
         // already dead
