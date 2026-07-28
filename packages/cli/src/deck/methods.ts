@@ -3,6 +3,10 @@ import type pino from "pino"
 import type { PubSub } from "@/core/pub-sub"
 import type { Store } from "@/core/store"
 import type { KeyMacroProvider } from "@/system/providers/key-macro"
+import type {
+  NotificationArgs,
+  NotificationProvider,
+} from "@/system/providers/notification"
 import {
   type RequirementsCheckResult,
   type SystemCapability,
@@ -34,6 +38,7 @@ export interface MethodsContext {
   executor: ActionExecutor
   logger: pino.Logger
   keyMacroProvider?: KeyMacroProvider
+  notificationProvider?: NotificationProvider
 }
 
 export interface Methods {
@@ -68,6 +73,13 @@ export interface Methods {
   publish<T>(channel: string, payload: T): void
   subscribe<T>(channel: string, cb: (payload: T) => void): () => void
   setKeyMacroProvider(provider: KeyMacroProvider): void
+  /**
+   * Fire an OS notification. Falls back to a no-op (logged at warn) when no
+   * notification provider is configured for this platform. Used by addons
+   * via `coreMethods.notify`.
+   */
+  notify(args: NotificationArgs): Promise<void>
+  setNotificationProvider(provider: NotificationProvider): void
   setRequirements(requirements: RequirementsCheckResult): void
   checkRequirement(capability: SystemCapability): boolean
   showTemporaryError(
@@ -83,9 +95,23 @@ export interface Methods {
 
 export const createMethods = (ctx: MethodsContext): Methods => {
   let keyMacroProvider: KeyMacroProvider | undefined = ctx.keyMacroProvider
+  let notificationProvider: NotificationProvider | undefined = ctx.notificationProvider
   const logger = ctx.logger
   const setKeyMacroProvider: Methods["setKeyMacroProvider"] = (provider) => {
     keyMacroProvider = provider
+  }
+  const setNotificationProvider: Methods["setNotificationProvider"] = (provider) => {
+    notificationProvider = provider
+  }
+  const notify: Methods["notify"] = async (args) => {
+    if (notificationProvider === undefined) {
+      logger.warn(
+        { title: args.title },
+        "methods.notify: no notification provider configured; skipping",
+      )
+      return
+    }
+    await notificationProvider.notify(args)
   }
 
   let requirements: RequirementsCheckResult | undefined = undefined
@@ -265,6 +291,8 @@ export const createMethods = (ctx: MethodsContext): Methods => {
     publish,
     subscribe,
     setKeyMacroProvider,
+    setNotificationProvider,
+    notify,
     setRequirements,
     checkRequirement,
     showTemporaryError,

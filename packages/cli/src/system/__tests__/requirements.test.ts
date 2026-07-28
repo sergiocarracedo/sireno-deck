@@ -174,6 +174,50 @@ describe("checkRequirements", () => {
       "none of",
     )
   })
+
+  it("reports notification available when notify-send is present (Linux)", async () => {
+    const executor = createExecutor(["notify-send"])
+    const result = await checkRequirements({
+      platform: "linux",
+      executor,
+      env: {},
+    })
+    expect(result.notification.available).toBe(true)
+    expect(result.notification.commands).toContain("notify-send")
+    expect(result.notification.preferred).toBe("notify-send")
+  })
+
+  it("reports notification available when osascript is present (macOS)", async () => {
+    const executor = createExecutor(["osascript"])
+    const result = await checkRequirements({
+      platform: "darwin",
+      executor,
+      env: {},
+    })
+    expect(result.notification.available).toBe(true)
+    expect(result.notification.preferred).toBe("osascript")
+  })
+
+  it("reports notification available when powershell is present (Windows)", async () => {
+    const executor = createExecutor(["powershell"])
+    const result = await checkRequirements({
+      platform: "win32",
+      executor,
+      env: {},
+    })
+    expect(result.notification.available).toBe(true)
+    expect(result.notification.preferred).toBe("powershell")
+  })
+
+  it("reports notification missing when no notification tools are present", async () => {
+    const executor = createExecutor([])
+    const result = await checkRequirements({
+      platform: "linux",
+      executor,
+      env: {},
+    })
+    expect(result.notification.available).toBe(false)
+  })
 })
 
 describe("getRequiredCapability", () => {

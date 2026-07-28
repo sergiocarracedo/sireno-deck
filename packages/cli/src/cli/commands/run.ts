@@ -43,6 +43,7 @@ import {
   type ActiveAppProvider,
 } from "@/system/providers/active-app"
 import { createKeyMacroProvider } from "@/system/providers/key-macro"
+import { createNotificationProvider } from "@/system/providers/notification"
 import { createSessionProvider } from "@/system/providers/session"
 import {
   checkRequirements,
@@ -874,6 +875,7 @@ interface SystemProviders {
   readonly activeApp: ActiveAppProvider
   readonly session: import("@/system/providers/session").SessionProvider
   readonly keyMacro: import("@/system/providers/key-macro").KeyMacroProvider
+  readonly notification: import("@/system/providers/notification").NotificationProvider
 }
 
 const startSystemProviders = async (
@@ -976,7 +978,7 @@ const startSystemProviders = async (
     }
   }
 
-  const [activeApp, session, keyMacro] = await Promise.all([
+  const [activeApp, session, keyMacro, notification] = await Promise.all([
     createActiveAppProvider({ platform, executor, logger }),
     createSessionProvider({
       platform,
@@ -984,13 +986,15 @@ const startSystemProviders = async (
       logger,
     }),
     createKeyMacroProvider({ platform, executor, env, logger, extraFsProbe }),
+    createNotificationProvider({ platform, executor, env, logger, extraFsProbe }),
   ])
 
   runtime.setActiveAppProvider(activeApp)
   runtime.setSessionProvider(session)
   methods.setKeyMacroProvider(keyMacro)
+  methods.setNotificationProvider(notification)
 
-  return { activeApp, session, keyMacro }
+  return { activeApp, session, keyMacro, notification }
 }
 
 interface AddonRegistryBundle {

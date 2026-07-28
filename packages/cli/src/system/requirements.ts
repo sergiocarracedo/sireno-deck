@@ -1,6 +1,6 @@
 import type { CommandExecutor } from "./providers/shared"
 
-export type SystemCapability = "keyMacro" | "clipboard"
+export type SystemCapability = "keyMacro" | "clipboard" | "notification"
 
 export interface CapabilityRequirement {
   readonly name: SystemCapability
@@ -73,6 +73,16 @@ const capabilityConfig: Readonly<
         return "wl-copy"
       }
       return "xclip"
+    },
+  },
+  notification: {
+    commands: ["notify-send", "osascript", "powershell"],
+    reason:
+      "OS-level notifications (toast/notification-center) need a host tool. Linux uses notify-send (libnotify); macOS uses osascript; Windows uses PowerShell with System.Windows.Forms.NotifyIcon.",
+    preferred: (platform) => {
+      if (platform === "darwin") return "osascript"
+      if (platform === "win32") return "powershell"
+      return "notify-send"
     },
   },
 }
