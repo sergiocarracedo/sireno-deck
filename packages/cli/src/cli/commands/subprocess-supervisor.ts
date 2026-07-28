@@ -18,22 +18,55 @@ export interface SuperviseOptions {
   readonly logger: pino.Logger
   readonly delayMs?: number
   readonly maxRetries?: number
+  readonly kill?: (child: ChildProcess) => Promise<void>
 }
 
 export interface SuperviseHandle {
   readonly process: ChildProcess
-  readonly stop: () => void
+  readonly stop: () => Promise<void>
 }
+
+const defaultKill = (child: ChildProcess): Promise<void> =>
+  new Promise<void>((resolve) => {
+    if (child.exitCode !== null || child.signalCode !== null) {
+      resolve()
+      return
+    }
+    let killTimer: ReturnType<typeof setTimeout> | null = null
+    child.once("exit", () => {
+      if (killTimer !== null) clearTimeout(killTimer)
+      resolve()
+    })
+    try {
+      child.kill("SIGTERM")
+    } catch {
+      if (killTimer !== null) clearTimeout(killTimer)
+      resolve()
+      return
+    }
+    killTimer = setTimeout(() => {
+      killTimer = null
+      if (child.exitCode === null && child.signalCode === null) {
+        try {
+          child.kill("SIGKILL")
+        } catch {
+          // already gone
+        }
+      }
+    }, 2_000)
+  })
 
 export const supervise = async (
   options: SuperviseOptions,
 ): Promise<SuperviseHandle> => {
   const delayMs = options.delayMs ?? 60_000
   const maxRetries = options.maxRetries ?? 2
+  const killChild = options.kill ?? defaultKill
   let stopped = false
   let respawnTimer: ReturnType<typeof setTimeout> | null = null
   let retriesUsed = 0
   let current: ChildProcess | null = null
+  let initial: ChildProcess | null = null
 
   const clearTimer = (): void => {
     if (respawnTimer !== null) {
@@ -91,13 +124,21 @@ export const supervise = async (
     return child
   }
 
-  const initial = await spawnAndWire()
+  initial = await spawnAndWire()
+
   return {
-    process: initial,
-    stop: () => {
+    get process(): ChildProcess {
+      // Return the current mutable child so callers that capture the handle
+      // after a respawn still see the live process. Falls back to the initial
+      // child before the first spawn resolves (defensive — shouldn't happen).
+      return current ?? initial ?? (undefined as unknown as ChildProcess)
+    },
+    stop: async (): Promise<void> => {
       stopped = true
       clearTimer()
-      void current
+      const target = current ?? initial
+      if (target === null) return
+      await killChild(target)
     },
   }
 }

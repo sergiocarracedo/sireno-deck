@@ -2,6 +2,8 @@ import { Text } from "@/ui/index"
 import { useAddonChannel } from "@/api/react"
 import type { AddonFrontendButton } from "@/addon/api"
 
+import type { ConfigSchema } from "./config"
+
 interface ValueEntry {
   readonly label: string
   readonly value: string
@@ -9,12 +11,14 @@ interface ValueEntry {
 }
 
 interface ValuesState {
-  readonly values: ReadonlyArray<ValueEntry>
+  readonly byButton: Record<string, ReadonlyArray<ValueEntry>>
 }
 
-const ValueDisplayButtonFrontend: AddonFrontendButton = () => {
+const ValueDisplayButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
+  buttonId,
+}) => {
   const { data } = useAddonChannel<ValuesState>("value-display:values")
-  const values = data?.values ?? []
+  const values = data?.byButton[buttonId] ?? []
   if (values.length === 0) {
     return (
       <Text

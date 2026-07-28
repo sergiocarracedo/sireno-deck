@@ -3,6 +3,8 @@ import { spawn } from "node:child_process"
 import { fileURLToPath } from "node:url"
 import { dirname, resolve } from "node:path"
 
+import { reapOrphanProcessGroup, setWrapperTitle } from "./_wrapper-shared.js"
+
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const cliRoot = resolve(__dirname, "..")
 const cliEntry = resolve(cliRoot, "src/cli/main.ts")
@@ -43,16 +45,26 @@ const args = [
   ...process.argv.slice(2),
 ]
 
+setWrapperTitle("sirenodeck:wrp")
+
 const child = spawn(tsxBin, args, {
   stdio: "inherit",
   cwd: cliRoot,
   env: {
     ...process.env,
     SIRENO_CWD: process.cwd(),
+    SIRENO_WRAPPER_CHILD: "1",
     TSX_TSCONFIG_PATH: resolve(cliRoot, "tsconfig.json"),
   },
 })
 
 child.on("exit", (code) => {
+  // Bash `pnpm dev` killing the wrapper (Ctrl+C) leaves the daemon's vite
+  // descendants reparented to init. Try to reap the orphaned process group
+  // before propagating the exit code. The daemon is forked via spawnDetached
+  // (detached: true), so child.pid is the pgid.
+  if (child.pid !== undefined) {
+    reapOrphanProcessGroup(child.pid)
+  }
   process.exit(code ?? 0)
 })
