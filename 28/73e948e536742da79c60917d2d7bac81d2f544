@@ -1,0 +1,49 @@
+packages/cli/src/deck/methods.ts
+  s_5b19018252d9e0::t_9cafb967cd1751 6-9
+  s_5b19018252d9e0::t_1752eff1a50340 98,103-115
+  s_5b19018252d9e0::t_73b77b11af369d 76-82
+  s_5b19018252d9e0::t_cfc194e1489ffb 294-295
+  s_5b19018252d9e0::t_3b9f991887c460 41
+packages/cli/src/system/providers/notification/darwin.ts
+  s_5b19018252d9e0::t_4c80a128deb8aa 1-36
+packages/cli/src/system/__tests__/requirements.test.ts
+  s_5b19018252d9e0::t_06b04ea5158ea0 177-220
+packages/cli/src/cli/commands/run.ts
+  s_5b19018252d9e0::t_c93394c0d75161 981,989,995,997
+  s_5b19018252d9e0::t_c595c34f424cb6 878
+  s_5b19018252d9e0::t_430241dd734c94 46
+packages/cli/src/system/providers/notification/__tests__/index.test.ts
+  s_5b19018252d9e0::t_50688a7522c035 10
+  s_5b19018252d9e0::t_3731e8fd455f0d 1-9,11-121
+packages/cli/src/system/providers/notification.ts
+  s_5b19018252d9e0::t_e09f29636d3f5f 1-74
+packages/cli/src/system/requirements.ts
+  s_5b19018252d9e0::t_6039031236f486 78-87
+  s_5b19018252d9e0::t_76371cf38171e1 3
+packages/cli/src/system/providers/notification/__tests__/linux.test.ts
+  s_5b19018252d9e0::t_b2494e13fed1ff 71
+  s_5b19018252d9e0::t_883807d0144b21 1-67,69-70,73-118
+  s_5b19018252d9e0::t_853caaf0b882d2 68,72
+packages/cli/src/system/providers/notification/linux.ts
+  s_5b19018252d9e0::t_b4dd203e7af5b4 1-96
+docs/plans/2026-07-28-pomodoro-addon.md
+  s_5b19018252d9e0::t_37cdeb16122e99 1-211
+packages/cli/src/system/providers/notification/windows.ts
+  s_5b19018252d9e0::t_d4a9c30089aaed 1-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "2873e948e536742da79c60917d2d7bac81d2f544",
+  "prompts": {},
+  "sessions": {
+    "s_5b19018252d9e0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05574b72affemfEF7rBuPKjodf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
