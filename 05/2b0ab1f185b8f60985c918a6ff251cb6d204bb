@@ -1,0 +1,33 @@
+packages/addon-app-shortcuts/assets/slack.svg
+  s_7f4e05c2c7d0cc::t_3fe3678c0c50c0 1
+packages/addon-app-shortcuts/assets/vscode.svg
+  s_7f4e05c2c7d0cc::t_8fb9c3ac53ba01 1
+packages/addon-app-shortcuts/assets/claude-code.svg
+  s_7f4e05c2c7d0cc::t_12a27544741a4b 1
+packages/addon-app-shortcuts/assets/google-meet.svg
+  s_7f4e05c2c7d0cc::t_33f43d3968a007 1
+packages/addon-app-shortcuts/assets/teams.svg
+  s_7f4e05c2c7d0cc::t_1f9b1ae0bd7547 1
+packages/addon-app-shortcuts/assets/chrome.svg
+  s_7f4e05c2c7d0cc::t_d354b69cda97a8 1
+packages/addon-app-shortcuts/assets/discord.svg
+  s_7f4e05c2c7d0cc::t_272ff80291e4f2 1
+packages/addon-app-shortcuts/assets/opencode.svg
+  s_7f4e05c2c7d0cc::t_2d3b1417c1f6a6 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "052b0ab1f185b8f60985c918a6ff251cb6d204bb",
+  "prompts": {},
+  "sessions": {
+    "s_7f4e05c2c7d0cc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_056aff37effe3jtBlGilHqv8RY",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
