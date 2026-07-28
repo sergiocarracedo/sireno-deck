@@ -24,32 +24,32 @@ The work introduces:
 
 ## 2. Settled decisions
 
-| Decision              | Choice                                                                                            | Why                                                                                       |
-| --------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Addon location        | New workspace package `packages/addon-pomodoro/`                                                  | Third-party addon pattern (matches `addon-app-shortcuts`); keeps `cli` lean                |
-| Button type id        | `pomodoro:pomodoro`                                                                               | Registry rule: buttonTypes prefixed with `<addonName>:`                                    |
-| State model           | `idle` \| `running` \| `finished` (no `paused`)                                                    | Spec call-out — no pause/resume                                                            |
-| Tap cycle             | `idle→start`, `running→stop` (returns to `idle`), `finished→reset→start`                           | Restart from finished is the spec; `stopped` is a true stop, not a reset                  |
-| Blink duration        | 10 s, pure CSS `animation: blink-red 1s 10` (no backend timer, no auto-state-change)              | Spec call-out; stateless, zero ticker overhead                                             |
-| Persistence           | `startTsMs` + `durationSec` per button via `store.buttonScope("pomodoro", buttonId)`               | Survives daemon restart and decoder reboot                                                 |
-| Single ticker         | One 1 s global ticker in `globalService.onLoad` publishes `pomodoro:state` for all buttons       | Avoids N timers per button; matches `weather` / `media` patterns                            |
-| Sound                 | OGG bundled with addon at `packages/addon-pomodoro/assets/pomodoro-complete.ogg` (≤ 10 KB)        | Addon self-contained; no downloader needed                                                 |
-| Icon source           | `🍅` raw emoji via existing `Icon` component (`EMOJI_RE` path)                                    | One emoji, no asset id plumbing                                                            |
-| Notifications API     | `notify({title, body, sound?})` on `Methods`; provider optional (no-op if missing)                | Addons stay decoupled from platform shell                                                  |
-| Notification sound    | Provider plays OGG via `ffplay` / `paplay` (Linux), `afplay` (macOS), `Windows.Media.MediaPlayer`; graceful skip if missing | Matches platform-shell pattern; never blocks the toast |
-| Requirements capability | New `notification` capability in `system/requirements.ts` (`notify-send`, PowerShell toast)      | Reuses existing capability-warn UI                                                         |
+| Decision                | Choice                                                                                                                      | Why                                                                         |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Addon location          | New workspace package `packages/addon-pomodoro/`                                                                            | Third-party addon pattern (matches `addon-app-shortcuts`); keeps `cli` lean |
+| Button type id          | `pomodoro:pomodoro`                                                                                                         | Registry rule: buttonTypes prefixed with `<addonName>:`                     |
+| State model             | `idle` \| `running` \| `finished` (no `paused`)                                                                             | Spec call-out — no pause/resume                                             |
+| Tap cycle               | `idle→start`, `running→stop` (returns to `idle`), `finished→reset→start`                                                    | Restart from finished is the spec; `stopped` is a true stop, not a reset    |
+| Blink duration          | 10 s, pure CSS `animation: blink-red 1s 10` (no backend timer, no auto-state-change)                                        | Spec call-out; stateless, zero ticker overhead                              |
+| Persistence             | `startTsMs` + `durationSec` per button via `store.buttonScope("pomodoro", buttonId)`                                        | Survives daemon restart and decoder reboot                                  |
+| Single ticker           | One 1 s global ticker in `globalService.onLoad` publishes `pomodoro:state` for all buttons                                  | Avoids N timers per button; matches `weather` / `media` patterns            |
+| Sound                   | OGG bundled with addon at `packages/addon-pomodoro/assets/pomodoro-complete.ogg` (≤ 10 KB)                                  | Addon self-contained; no downloader needed                                  |
+| Icon source             | `🍅` raw emoji via existing `Icon` component (`EMOJI_RE` path)                                                              | One emoji, no asset id plumbing                                             |
+| Notifications API       | `notify({title, body, sound?})` on `Methods`; provider optional (no-op if missing)                                          | Addons stay decoupled from platform shell                                   |
+| Notification sound      | Provider plays OGG via `ffplay` / `paplay` (Linux), `afplay` (macOS), `Windows.Media.MediaPlayer`; graceful skip if missing | Matches platform-shell pattern; never blocks the toast                      |
+| Requirements capability | New `notification` capability in `system/requirements.ts` (`notify-send`, PowerShell toast)                                 | Reuses existing capability-warn UI                                          |
 
 ## 3. State + channel specification
 
 ### Per-button state
 
 ```ts
-type PomodoroStatus = "idle" | "running" | "finished";
+type PomodoroStatus = "idle" | "running" | "finished"
 
 interface PomodoroButtonState {
-  status: PomodoroStatus;
-  remainingSec: number; // 0 when finished or idle
-  totalSec: number;     // configured duration
+  status: PomodoroStatus
+  remainingSec: number // 0 when finished or idle
+  totalSec: number // configured duration
 }
 ```
 
@@ -64,8 +64,8 @@ interface PomodoroButtonState {
 ```ts
 interface Methods {
   // ...existing
-  notify(args: { title: string; body: string; sound?: boolean }): Promise<void>;
-  setNotificationProvider(provider: NotificationProvider): void;
+  notify(args: { title: string; body: string; sound?: boolean }): Promise<void>
+  setNotificationProvider(provider: NotificationProvider): void
 }
 ```
 
@@ -110,8 +110,16 @@ interface Methods {
 - `src/buttons/pomodoro/frontend.css` — **NEW** (or co-located string, see code).
 
   ```css
-  @keyframes blink-red { 50% { color: #ef4444; opacity: 0.4 } }
-  .blink-red { animation: blink-red 1s 10; color: #ef4444; }
+  @keyframes blink-red {
+    50% {
+      color: #ef4444;
+      opacity: 0.4;
+    }
+  }
+  .blink-red {
+    animation: blink-red 1s 10;
+    color: #ef4444;
+  }
   ```
 
   10 iterations × 1 s = 10 s total blink; after the animation ends the button stays red (via the static `color` rule) with no further motion until the next tap.
