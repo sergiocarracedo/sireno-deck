@@ -1,0 +1,38 @@
+packages/addon-app-shortcuts/assets/claude-code.svg
+  s_7f4e05c2c7d0cc::t_5eaf92ab27d2fc 1
+packages/addon-app-shortcuts/assets/vscode.svg
+  s_7f4e05c2c7d0cc::t_95f6702f6fd785 1
+packages/addon-app-shortcuts/assets/google-meet.svg
+  s_7f4e05c2c7d0cc::t_f6a567fbef3a92 1
+packages/addon-app-shortcuts/assets/discord.svg
+  s_7f4e05c2c7d0cc::t_c29022a515ee5a 1
+packages/addon-app-shortcuts/assets/teams.svg
+  s_7f4e05c2c7d0cc::t_53ab7461b03220 1
+packages/addon-app-shortcuts/assets/slack.svg
+  s_7f4e05c2c7d0cc::t_9799101f6eb2d2 1
+packages/addon-app-shortcuts/assets/chrome.svg
+  s_7f4e05c2c7d0cc::t_79556a7c3277e3 1
+packages/addon-app-shortcuts/assets/opencode.svg
+  s_7f4e05c2c7d0cc::t_53e2c11675f90e 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "47f565fc0cbb0373537189c2c51c54d33815191f",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_7f4e05c2c7d0cc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_056aff37effe3jtBlGilHqv8RY",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
