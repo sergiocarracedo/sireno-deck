@@ -1,0 +1,176 @@
+---
+title: Addon API
+description: TypeScript interfaces for addon development
+audience: developer
+order: 3
+tags: [addon, api, typescript, reference]
+---
+
+# Addon API
+
+TypeScript interfaces for creating addons.
+
+## Core Types
+
+### AddonManifestV1
+
+```typescript
+interface AddonManifestV1 {
+  readonly apiVersion: 1
+  readonly name: string
+  readonly kind?: "runtime" | "theme"
+  readonly buttonTypes: Readonly<Record<string, AddonButtonTypeDefAny>>
+  readonly defaultButton?: string
+  readonly decks?: ReadonlyArray<AddonDeckEntry>
+  readonly frontend?: AddonFrontend
+  readonly publishIntervalMs?: number
+  readonly globalService?: AddonGlobalService
+}
+```
+
+### AddonButtonTypeDef
+
+```typescript
+interface AddonButtonTypeDef<Config = unknown> {
+  readonly frontend: AddonFrontendButton<Config>
+  readonly service: AddonButtonTypeService<Config>
+}
+
+type AddonFrontendButton<Config> = ComponentType<AddonFrontendButtonProps<Config>>
+
+interface AddonFrontendButtonProps<Config> {
+  readonly config: Config
+  readonly state: unknown
+  readonly addonName: string
+  readonly buttonType: string
+  readonly buttonId: string
+  readonly gesture: AddonGestureEvent | null
+}
+```
+
+### AddonButtonTypeService
+
+```typescript
+interface AddonButtonTypeService<Config = unknown> {
+  readonly configSchema?: unknown
+  readonly defaultRenderIntervalMs?: number
+  readonly internal?: boolean
+  readonly full?: boolean
+  readonly gestureHandlers?: ReadonlyArray<GestureKind>
+  readonly onMount?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
+  readonly onTap?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
+  readonly onDblTap?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
+  readonly onHold?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
+  readonly dispose?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
+}
+```
+
+### AddonButtonServiceContext
+
+```typescript
+interface AddonButtonServiceContext<Config = unknown> {
+  readonly config: Config
+  readonly buttonId: string
+  readonly addonName: string
+  readonly methods: Readonly<Record<string, AddonServiceMethod>>
+  readonly coreMethods: Methods
+  readonly publish: (channel: string, data: unknown) => void
+  readonly executor: ActionExecutor
+  readonly signal: AbortSignal
+  readonly store: Store
+}
+```
+
+### AddonGlobalService
+
+```typescript
+interface AddonGlobalService {
+  readonly pollers?: ReadonlyArray<AddonGlobalPoller>
+  readonly subscriptions?: ReadonlyArray<AddonGlobalSubscription>
+  readonly methods?: Readonly<Record<string, AddonServiceMethod>>
+  readonly onLoad?: (ctx: AddonServiceContext) => void | Promise<void>
+  readonly onUnload?: (ctx: AddonServiceContext) => void | Promise<void>
+}
+
+interface AddonGlobalPoller {
+  readonly id: string
+  readonly channel: string
+  readonly intervalMs: number
+  readonly poll: (ctx: AddonServiceContext) => unknown | Promise<unknown>
+}
+
+interface AddonServiceContext {
+  readonly publish: (data: unknown) => void
+  readonly poll: (id: string) => Promise<void>
+  readonly signal: AbortSignal
+  readonly executor: ActionExecutor
+}
+```
+
+### AddonDeckEntry
+
+```typescript
+type AddonDeckEntry =
+  | (AddonGeneratedDeck & { id: string })
+  | { id: string; createDeck: (ctx: AddonDeckEntryCtx) => AddonGeneratedDeck }
+  | { createDecks: (ctx: AddonDeckEntryCtx) => Record<string, AddonGeneratedDeck> }
+
+interface AddonDeckEntryCtx {
+  config: unknown
+  deck: { id: string }
+  keyCount: number
+}
+
+interface AddonGeneratedDeck {
+  name?: string
+  icon?: string
+  background?: string
+  buttonColor?: "blue" | "green" | "purple"
+  buttons?: unknown[]
+  paginated?: boolean
+  trigger?: unknown
+  autoShow?: boolean
+  isOverlay?: boolean
+}
+```
+
+## Store API
+
+```typescript
+interface Store {
+  addonScope<T = unknown>(addonName: string): Scope<T>
+  buttonScope<T = unknown>(addonName: string, buttonId: string): Scope<T>
+  clearAddon(addonName: string): void
+  clearButton(addonName: string, buttonId: string): void
+  clearAll(): void
+}
+
+interface Scope<T = unknown> {
+  get(key: string): T | undefined
+  set(key: string, value: T): void
+  update(key: string, fn: (current: T | undefined) => T): T
+  clear(): void
+  snapshot(): Readonly<Record<string, T>>
+}
+```
+
+## Pub/Sub
+
+```typescript
+interface PubSub {
+  publish<T extends Payload>(channel: string, payload: T): void
+  subscribe<T extends Payload>(channel: string, cb: (payload: T) => void): Unsubscribe
+  last<T extends Payload>(channel: string): T | undefined
+}
+```
+
+## Gesture Types
+
+```typescript
+type GestureKind = "tap" | "dbl-tap" | "hold"
+
+interface AddonGestureEvent {
+  readonly gesture: GestureKind
+  readonly timestamp: number
+}
+```

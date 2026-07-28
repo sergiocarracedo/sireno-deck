@@ -1,0 +1,142 @@
+---
+title: Troubleshooting
+description: Common issues and solutions
+audience: user
+order: 11
+tags: [troubleshooting, issues, help, errors]
+---
+
+# Troubleshooting
+
+Solutions to common issues.
+
+## Installation Issues
+
+### Command not found
+
+```bash
+# Check installation
+which sireno
+
+# Reinstall
+pnpm install -g @sireno-deck/cli
+```
+
+### Permission denied
+
+```bash
+# Use sudo (not recommended) or fix npm prefix
+npm config set prefix ~/.npm-global
+export PATH="$PATH:$HOME/.npm-global/bin"
+```
+
+## Daemon Issues
+
+### Daemon won't start
+
+```bash
+# Check status
+sireno status
+
+# View logs
+sireno logs
+
+# Stop and restart
+sireno stop
+sireno start
+```
+
+### Port already in use
+
+```bash
+# Check what's using the port
+lsof -i :3939
+
+# Kill the process
+kill <PID>
+```
+
+### Daemon crashes on startup
+
+```bash
+# Run in foreground for debugging
+sireno run --verbose
+```
+
+## Configuration Issues
+
+### Config not found
+
+```bash
+# Check config discovery
+sireno run --config /path/to/config.yml
+```
+
+### Invalid config
+
+```bash
+# Validate YAML syntax
+# Sireno will show validation errors on startup
+```
+
+## Device Issues
+
+### No device found
+
+- Ensure Stream Deck is connected
+- Try a different USB port
+- Use `--emulator` for testing
+
+### Device not responding
+
+```bash
+# Restart the daemon
+sireno restart
+```
+
+## Emulator Issues
+
+### Emulator won't load
+
+```bash
+# Check ports
+lsof -i :52938
+
+# Clear cache
+rm -rf ~/.cache/sireno-deck
+```
+
+## Addon Issues
+
+### Addon not loading
+
+- Check addon path is correct
+- Verify `sirenodeck.json` exists
+- Check for missing dependencies
+
+### Addon causing crashes
+
+```bash
+# Disable addon in config
+# Restart daemon
+```
+
+## Performance Issues
+
+### Slow response
+
+- Check system resources
+- Reduce number of active pollers
+- Simplify button configurations
+
+### High CPU usage
+
+- Check addon poll intervals
+- Review system-status metrics
+- Disable unused addons
+
+## Getting Help
+
+- Check [GitHub Issues](https://github.com/anomalyco/sireno-deck/issues)
+- Enable verbose logging: `sireno run --verbose`
+- Collect logs: `sireno logs > debug.log`

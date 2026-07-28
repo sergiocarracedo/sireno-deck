@@ -1,0 +1,166 @@
+---
+title: Built-in Addons
+description: Reference for all bundled addons
+audience: user
+order: 8
+tags: [addons, builtin, reference]
+---
+
+# Built-in Addons
+
+Sireno Deck includes several built-in addons that provide common functionality.
+
+## Adding Built-in Addons
+
+Built-in addons are enabled by default. No additional configuration needed unless you want to customize them.
+
+```yaml
+# Default - all built-ins enabled
+addons:
+  - date-time
+  - media
+  - system-status
+```
+
+## Addon Reference
+
+### date-time
+
+Displays current date and time.
+
+**Button Types:**
+- `date-time:date-time` — Full date and time
+- `date-time:time` — Time only
+- `date-time:date` — Date only
+- `date-time:analog-clock` — Analog clock face
+
+**Configuration:**
+```yaml
+- position: 0
+  type: "date-time:time"
+  config:
+    variant: "default"  # or "big"
+```
+
+### media
+
+Media player controls and display.
+
+**Button Types:**
+- `media:player` — Play/pause toggle
+- `media:mute` — Mute toggle
+- `media:volume:up` — Volume up
+- `media:volume:down` — Volume down
+
+**Features:**
+- Displays current track info
+- Shows playback state
+- Volume level display
+
+### system-status
+
+System metrics display.
+
+**Button Types:**
+- `system-status:system-status` — Bars view
+- `system-status:kpis` — Key metrics
+- `system-status:chart` — Chart view
+
+**Metrics Available:**
+- CPU usage
+- RAM usage
+- Swap usage
+- Disk usage
+- Battery level
+- Temperature
+- Network stats
+- And more...
+
+**Configuration:**
+```yaml
+- position: 0
+  type: "system-status:system-status"
+  config:
+    metrics:
+      - id: cpu
+        label: CPU
+      - id: ram
+        label: RAM
+      - swap
+```
+
+### value-display
+
+Display dynamic values from shell commands.
+
+**Button Type:**
+- `value-display:display`
+
+**Configuration:**
+```yaml
+- position: 0
+  type: "value-display:display"
+  config:
+    values:
+      - label: "IP"
+        command: "curl -s ifconfig.me"
+        formatter: "strip"
+      - label: "Uptime"
+        command: "uptime"
+        formatter: "line"
+```
+
+### weather
+
+Weather information display.
+
+**Button Type:**
+- `weather:weather`
+
+**Configuration:**
+```yaml
+- position: 0
+  type: "weather:weather"
+  config:
+    location: "San Francisco"
+    units: "metric"  # or "imperial"
+```
+
+### emoji-selector
+
+Emoji picker with categories.
+
+**Button Types:**
+- `emoji-selector:launcher` — Opens emoji selector
+- `emoji-selector:category` — Category button
+- `emoji-selector:emoji` — Individual emoji
+
+**Usage:**
+```yaml
+- position: 0
+  type: "emoji-selector"
+  config:
+    favorites: ["😀", "😃", "😄"]
+```
+
+### brightness
+
+Screen brightness controls.
+
+**Button Type:**
+- `brightness:brightness`
+
+**Configuration:**
+```yaml
+- position: 0
+  type: "brightness:brightness"
+  config:
+    action: "up"  # up, down, or set
+```
+
+### session
+
+Current session information.
+
+**Button Type:**
+- `session:info` — Lock/session status

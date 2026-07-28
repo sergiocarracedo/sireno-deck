@@ -1,0 +1,61 @@
+---
+title: Installation
+description: Set up Sireno Deck on your system
+audience: user
+order: 1
+tags: [installation, setup, quickstart]
+---
+
+# Installation
+
+Get Sireno Deck running on your computer in minutes.
+
+## Prerequisites
+
+- **Node.js** 20 or later
+- **pnpm** 8 or later (or npm/yarn)
+- A Stream Deck device (optional — emulator available for testing)
+
+## Quick Install
+
+```bash
+# Install the CLI globally
+pnpm install -g @sireno-deck/cli
+
+# Or use npx
+npx @sireno-deck/cli --help
+```
+
+## From Source
+
+```bash
+# Clone the repository
+git clone https://github.com/anomalyco/sireno-deck.git
+cd sireno-deck
+
+# Install dependencies
+pnpm install
+
+# Build the CLI
+pnpm build
+
+# Run directly
+pnpm sireno --help
+```
+
+## Verify Installation
+
+```bash
+sireno --version
+```
+
+You should see output like:
+```
+sireno-deck v0.1.0
+```
+
+## Next Steps
+
+- [Running the Service](/user/running-the-service) — Start the daemon
+- [Configuration Files](/user/configuration-files) — Set up your config
+- [Emulator vs Hardware](/user/emulator-vs-hardware) — Test without a device

@@ -1,0 +1,122 @@
+---
+title: Actions
+description: How button actions work
+audience: user
+order: 5
+tags: [actions, gestures, shortcuts, commands]
+---
+
+# Actions
+
+Actions define what happens when you press a button. Sireno Deck supports multiple gesture types and action formats.
+
+## Gestures
+
+Each button can respond to different gestures:
+
+| Gesture | Description |
+|---------|-------------|
+| `tap` | Single button press |
+| `dbl-tap` | Double press within 200ms |
+| `hold` | Press and hold for 200ms+ |
+
+## Action Types
+
+### Shell Commands
+
+Run any shell command:
+
+```yaml
+actions:
+  tap: "open https://example.com"
+  hold: "echo 'held'"
+```
+
+### Keyboard Shortcuts
+
+Send keyboard shortcuts using `type://` protocol:
+
+```yaml
+actions:
+  # Simple text
+  tap: "type://hello world"
+
+  # Platform-specific shortcuts
+  tap: 'type://{"all":"ctrl+shift+p","osx":"cmd+shift+p","windows":"ctrl+shift+p"}'
+
+  # Modifier keys
+  tap: "type://ctrl+c"
+  tap: "type://alt+tab"
+  tap: "type://cmd+space"
+```
+
+### Built-in Actions
+
+| Protocol | Description |
+|----------|-------------|
+| `type://...` | Send keyboard input |
+| `brightness://up` | Increase brightness |
+| `brightness://down` | Decrease brightness |
+
+## Examples
+
+### Open URL
+
+```yaml
+- position: 0
+  type: "core:action"
+  actions:
+    tap: "xdg-open https://github.com"
+  config:
+    icon: "icon://github"
+    label: "GitHub"
+```
+
+### Media Controls
+
+```yaml
+- position: 0
+  type: "media:player"
+  config:
+    icon: "icon://play"
+```
+
+### Deck Navigation
+
+```yaml
+- position: 0
+  type: "core:change-deck"
+  config:
+    deck: "settings"
+    icon: "icon://settings"
+    label: "Settings"
+```
+
+### Toggle State
+
+```yaml
+- position: 0
+  type: "core:toggle"
+  config:
+    key: "mute-toggle"
+    default: false
+  config:
+    icon: "icon://volume-x"
+    label: "Mute"
+```
+
+## Host Placeholders
+
+Interpolate system information in commands:
+
+```yaml
+actions:
+  tap: "echo User: {{ host.username }}, Host: {{ host.hostname }}"
+```
+
+Available placeholders:
+- `{{ host.hostname }}` — Computer hostname
+- `{{ host.platform }}` — OS (linux, darwin, win32)
+- `{{ host.username }}` — Current user
+- `{{ host.homedir }}` — Home directory
+- `{{ host.arch }}` — Architecture

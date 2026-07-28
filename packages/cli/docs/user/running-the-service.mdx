@@ -1,0 +1,184 @@
+---
+title: Running the Service
+description: CLI commands and daemon management
+audience: user
+order: 2
+tags: [cli, commands, daemon, service]
+---
+
+# Running the Service
+
+Sireno Deck runs as a background daemon that connects to your Stream Deck and serves the frontend.
+
+## Commands
+
+### `sireno run`
+
+Run in the foreground (development mode):
+
+```bash
+sireno run [options]
+```
+
+Options:
+- `--config <path>` — Path to config.yml
+- `--port <number>` — Local server port (0 = random)
+- `--emulator` — Run with emulator instead of real device
+- `--dev` — Enable HMR for development
+- `--device-model <model>` — Emulator device model (mk2, plus, mini, xl)
+
+Example:
+```bash
+# Run with emulator
+sireno run --emulator
+
+# Run with custom device
+sireno run --emulator --device-model xl
+
+# Development with hot reload
+sireno run --dev --emulator
+```
+
+### `sireno start`
+
+Install and start the daemon:
+
+```bash
+sireno start [options]
+```
+
+Options:
+- `--config <path>` — Path to config.yml
+- `--port <number>` — Local server port
+- `--emulator` — Run in emulator mode
+- `--device-model <model>` — Device model
+- `--http-port <number>` — HTTP server port (default: 3939)
+- `--system` — Install as system service (requires root)
+- `--logs` — Follow logs after starting
+
+Example:
+```bash
+# Start in background
+sireno start
+
+# Start and follow logs
+sireno start --logs
+
+# Start as system service
+sudo sireno start --system
+```
+
+### `sireno stop`
+
+Stop the running daemon:
+
+```bash
+sireno stop
+```
+
+### `sireno status`
+
+Check daemon status:
+
+```bash
+sireno status
+```
+
+Output shows:
+- Running/stopped state
+- Daemon PID
+- Child process IDs
+- Token info
+
+### `sireno restart`
+
+Restart the daemon:
+
+```bash
+sireno restart [options]
+```
+
+Options:
+- `--logs` — Follow logs after restart
+
+### `sireno reload`
+
+Send SIGUSR1 for in-place reload (preserves runtime state):
+
+```bash
+sireno reload [options]
+```
+
+Options:
+- `--logs` — Follow logs after reload
+
+### `sireno update-config`
+
+Update the config path the daemon uses:
+
+```bash
+sireno update-config --config <path> [options]
+```
+
+Options:
+- `--reload` — Use in-place reload instead of restart
+- `--logs` — Follow logs after update
+
+### `sireno logs`
+
+Tail the service log:
+
+```bash
+sireno logs [options]
+```
+
+Options:
+- `--follow / -f` — Follow log output (default: true)
+- `--lines / -n` — Initial lines to show (default: 50)
+
+## Global Options
+
+All commands support:
+
+- `--verbose / -v` — Enable verbose debug logging
+- `--json` — Emit logs as JSON
+- `--log-level <level>` — Override log level (trace, debug, info, warn, error, fatal)
+
+## Daemon Lifecycle
+
+The daemon writes runtime files to:
+
+- **Linux**: `$XDG_RUNTIME_DIR` or `$TMPDIR`
+- **macOS**: `~/Library/Application Support/sireno-deck`
+- **Windows**: `$LOCALAPPDATA/sireno-deck` or `$TMPDIR`
+
+Files created:
+- `sireno-deck.pid` — Daemon process ID
+- `sireno-deck.token` — WebSocket authentication token
+- `sireno-deck.children.json` — Child process IDs
+- `sireno-deck.config` — Config file path
+- `sireno-deck.flags.json` — Runtime flags
+
+## Service Manager Integration
+
+### Linux (systemd)
+
+User-level:
+```bash
+systemctl --user status sireno-deck.service
+```
+
+System-level (requires root):
+```bash
+sudo systemctl status sireno-deck.service
+```
+
+### macOS (launchd)
+
+```bash
+launchctl list | grep sireno
+```
+
+## Troubleshooting
+
+See [Troubleshooting](/user/troubleshooting) for common issues.

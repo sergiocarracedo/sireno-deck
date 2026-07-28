@@ -1,0 +1,181 @@
+---
+title: Config Schema
+description: Complete config.yml reference
+audience: developer
+order: 2
+tags: [config, schema, reference, yaml]
+---
+
+# Config Schema
+
+Complete reference for all config options.
+
+## Root Schema
+
+```typescript
+interface RawConfig {
+  theme?: ThemeEntry
+  logging?: LoggingConfig
+  decks: Record<string, DeckDefinition>
+  addons?: AddonEntry[]
+  lock?: LockConfig
+}
+```
+
+## ThemeEntry
+
+```typescript
+type ThemeEntry = string | {
+  name?: string
+  path: string
+}
+```
+
+```yaml
+# Built-in theme
+theme: "default"
+
+# Custom theme
+theme:
+  name: "my-theme"
+  path: "./themes/my-theme"
+```
+
+## LoggingConfig
+
+```typescript
+interface LoggingConfig {
+  level?: "trace" | "debug" | "info" | "warn" | "error" | "fatal" | "silent"
+  verbose?: boolean
+}
+```
+
+```yaml
+logging:
+  level: "debug"
+  verbose: true
+```
+
+## DeckDefinition
+
+```typescript
+interface DeckDefinition {
+  name?: string
+  icon?: string
+  background?: string
+  paginated?: boolean
+  trigger?: TriggerConfig
+  autoShow?: boolean
+  buttonColor?: "blue" | "green" | "purple"
+  buttons?: ButtonEntry[]
+}
+```
+
+### TriggerConfig
+
+```typescript
+interface TriggerConfig {
+  process_name?: string | string[]
+  window_name?: string | string[]
+}
+```
+
+```yaml
+trigger:
+  process_name: ["code", "code-oss"]
+  window_name: ["*VS Code*"]
+```
+
+## ButtonEntry
+
+```typescript
+type ButtonEntry = string | {
+  position: number
+  type: string
+  config?: unknown
+  actions?: {
+    tap?: string
+    dbltap?: string
+    hold?: string
+  }
+}
+```
+
+## AddonEntry
+
+```typescript
+type AddonEntry = string | {
+  src: string
+  enabled?: boolean
+  config?: AddonConfig
+}
+```
+
+### AddonConfig
+
+```typescript
+interface AddonConfig {
+  defaults?: {
+    autoShow?: boolean
+  }
+  decks?: Record<string, DeckOverride>
+}
+```
+
+## LockConfig
+
+```typescript
+interface LockConfig {
+  buttons?: ButtonEntry[]
+}
+```
+
+## Complete Example
+
+```yaml
+theme: "default"
+
+logging:
+  level: "info"
+
+decks:
+  main:
+    name: "Main"
+    icon: "icon://Deck"
+    background: "#000000"
+    buttons:
+      - position: 0
+        type: "core:action"
+        config:
+          icon: "icon://globe"
+          label: "Open"
+        actions:
+          tap: "xdg-open https://example.com"
+      - position: 1
+        type: "core:blank"
+
+  vscode:
+    name: "VS Code"
+    icon: "icon://Code"
+    buttonColor: "green"
+    paginated: true
+    autoShow: true
+    isOverlay: true
+    trigger:
+      process_name: ["code", "code-oss"]
+    buttons:
+      - { position: 0, type: "core:blank" }
+
+addons:
+  - "date-time"
+  - "system-status"
+  - src: "my-addon"
+    enabled: true
+    config:
+      defaults:
+        autoShow: false
+
+lock:
+  buttons:
+    - { position: 0, type: "core:blank" }
+```

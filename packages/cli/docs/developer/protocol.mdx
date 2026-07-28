@@ -1,0 +1,223 @@
+---
+title: Protocol Reference
+description: WebSocket message formats
+audience: developer
+order: 2
+tags: [protocol, websocket, messages, api]
+---
+
+# Protocol Reference
+
+Sireno Deck uses WebSocket for real-time communication between frontend and backend.
+
+## Protocol Version
+
+Current: `1`
+
+## Connection
+
+1. Client connects to WebSocket server
+2. Client sends `hello` message with token
+3. Server validates and sends `hello-ack`
+4. Bidirectional message exchange begins
+
+## Message Types
+
+### Client → Server
+
+#### hello
+
+```typescript
+{
+  type: "hello"
+  token: string      // Authentication token
+  clientId: string   // Client identifier
+}
+```
+
+#### button-action
+
+```typescript
+{
+  type: "button-action"
+  deckId: string
+  position: number   // 0-indexed button position
+  gesture: "tap" | "dbl-tap" | "hold"
+}
+```
+
+#### method-call
+
+```typescript
+{
+  type: "method-call"
+  callId: string     // Unique request ID
+  name: string       // Method name
+  args: unknown[]    // Method arguments
+}
+```
+
+#### select-deck
+
+```typescript
+{
+  type: "select-deck"
+  deckId: string
+}
+```
+
+#### deck-active
+
+```typescript
+{
+  type: "deck-active"
+  deckId: string
+}
+```
+
+#### dismiss-overlay
+
+```typescript
+{
+  type: "dismiss-overlay"
+}
+```
+
+#### subscribe-channels
+
+```typescript
+{
+  type: "subscribe-channels"
+  channels: string[]
+}
+```
+
+### Server → Client
+
+#### hello-ack
+
+```typescript
+{
+  type: "hello-ack"
+  protocolVersion: 1
+  deviceInfo: {
+    id: string
+    model: string
+    keyCount: number
+    label: string
+    transport: "real" | "emulated"
+  }
+  theme: {
+    name: string
+    cssPath: string
+  }
+}
+```
+
+#### device-info
+
+```typescript
+{
+  type: "device-info"
+  id: string
+  model: string
+  keyCount: number
+  label: string
+  transport: "real" | "emulated"
+}
+```
+
+#### deck-config
+
+```typescript
+{
+  type: "deck-config"
+  deckId: string
+  surfaces: Record<string, unknown>
+  navMode: "regular" | "paginated" | "overlay"
+  isCompact: boolean
+  hasOverlayDeckAvailable: boolean
+  overlayDeckIcon: string | null
+  overlayDeckName: string | null
+}
+```
+
+#### state
+
+```typescript
+{
+  type: "state"
+  channels: Record<string, unknown>
+  cadence?: Record<string, number>  // Poll intervals in ms
+}
+```
+
+#### decks-list
+
+```typescript
+{
+  type: "decks-list"
+  decks: Array<{ id: string; name: string }>
+}
+```
+
+#### show-overlay
+
+```typescript
+{
+  type: "show-overlay"
+  deckId: string
+}
+```
+
+#### button-error
+
+```typescript
+{
+  type: "button-error"
+  deckId: string
+  position: number
+  durationMs: number
+  buttonId?: string
+  details?: string
+}
+```
+
+#### method-call-result
+
+```typescript
+{
+  type: "method-call-result"
+  callId: string
+  success: boolean
+  result?: unknown
+  error?: string
+}
+```
+
+#### assets
+
+```typescript
+{
+  type: "assets"
+  assets: Array<{ id: string; data: string }>
+}
+```
+
+## Channel Conventions
+
+| Channel | Description |
+|---------|-------------|
+| `date-time:now` | Current timestamp (every 1s) |
+| `media:state` | Media player state (every 1s) |
+| `weather:current` | Weather data (every 10min) |
+| `value-display:values` | Shell command outputs (every 5s) |
+| `runtime:system-status:*` | System metrics |
+| `runtime:overlay` | Overlay deck state |
+| `runtime:activeDeck` | Active deck changes |
+
+## Authentication
+
+The server validates the `token` in the `hello` message against `sireno-deck.token` in the runtime directory.
+
+Invalid token results in WebSocket close with code `4001`.

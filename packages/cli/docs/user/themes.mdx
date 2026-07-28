@@ -1,0 +1,145 @@
+---
+title: Themes
+description: Customizing the visual appearance
+audience: user
+order: 9
+tags: [themes, colors, styling, customization]
+---
+
+# Themes
+
+Themes control the visual appearance of your Stream Deck interface.
+
+## Using Themes
+
+### Built-in Themes
+
+```yaml
+theme: "default"
+```
+
+### Custom Themes
+
+```yaml
+theme:
+  name: "my-theme"
+  path: "./themes/my-theme"
+```
+
+## Theme Structure
+
+A theme is a directory containing:
+
+```
+my-theme/
+├── sirenodeck.json    # Theme manifest
+├── components.css     # Component styles
+└── assets/            # Font files, etc.
+```
+
+### Theme Manifest (sirenodeck.json)
+
+```json
+{
+  "kind": "theme",
+  "apiVersion": 1,
+  "name": "my-theme",
+  "version": "1.0.0",
+  "description": "My custom theme",
+  "colorTokens": {
+    "background": "#000000",
+    "frame": "#333333",
+    "foreground": "#ffffff",
+    "foreground-contrast": "#ffffff",
+    "primary": "#3b82f6",
+    "accent": "#8b5cf6",
+    "success": "#22c55e",
+    "danger": "#ef4444",
+    "tintBlue": "#3b82f6",
+    "tintGreen": "#22c55e",
+    "tintPurple": "#8b5cf6"
+  },
+  "typography": {
+    "main_text": {
+      "fontFamily": "IBM Plex Sans",
+      "fontSize": 12,
+      "fontWeight": 500
+    },
+    "auxiliary_text": {
+      "fontFamily": "IBM Plex Sans",
+      "fontSize": 10,
+      "fontWeight": 400
+    },
+    "monospace": {
+      "fontFamily": "IBM Plex Mono",
+      "fontSize": 11,
+      "fontWeight": 400
+    }
+  },
+  "fonts": [
+    {
+      "fontFamily": "IBM Plex Sans",
+      "fontWeight": 500,
+      "fontStyle": "normal",
+      "src": "./assets/IBMPlexSans-Medium.ttf"
+    }
+  ]
+}
+```
+
+## Color Tokens
+
+| Token | Description |
+|-------|-------------|
+| `background` | Main background |
+| `frame` | Button border/frame |
+| `foreground` | Primary text |
+| `foreground-contrast` | High-contrast text |
+| `primary` | Primary accent |
+| `accent` | Secondary accent |
+| `success` | Success state |
+| `danger` | Error/danger state |
+| `tintBlue` | Blue tint variant |
+| `tintGreen` | Green tint variant |
+| `tintPurple` | Purple tint variant |
+
+## Typography
+
+Define font styles:
+
+```json
+{
+  "main_text": {
+    "fontFamily": "IBM Plex Sans",
+    "fontSize": 12,
+    "fontWeight": 500,
+    "letterSpacing": 0
+  },
+  "auxiliary_text": {
+    "fontFamily": "IBM Plex Sans",
+    "fontSize": 10,
+    "fontWeight": 400
+  },
+  "monospace": {
+    "fontFamily": "IBM Plex Mono",
+    "fontSize": 11,
+    "fontWeight": 400
+  }
+}
+```
+
+## Component Styling
+
+Add custom CSS in `components.css`:
+
+```css
+/* Custom button styles */
+.sireno-button {
+  border-radius: 8px;
+  transition: transform 0.1s;
+}
+
+.sireno-button:active {
+  transform: scale(0.95);
+}
+```

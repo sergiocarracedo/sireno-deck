@@ -1,0 +1,253 @@
+---
+title: Configuration Files
+description: config.yml reference and syntax
+audience: user
+order: 3
+tags: [config, yaml, configuration]
+---
+
+# Configuration Files
+
+Sireno Deck uses a `config.yml` file to define your decks, buttons, addons, and themes.
+
+## File Discovery
+
+The config file is searched in this order:
+
+1. Explicit path via `--config` option
+2. `$SIRENO_CONFIG` environment variable
+3. Walk up from current directory looking for `config.yml`
+4. `$XDG_CONFIG_HOME/sireno-deck/config.yml`
+5. `~/.config/sireno-deck/config.yml`
+
+## Config Structure
+
+```yaml
+# Theme configuration
+theme: "default"
+# OR
+theme:
+  name: "mytheme"
+  path: "/path/to/theme"
+
+# Logging settings
+logging:
+  level: "info"    # trace, debug, info, warn, error, fatal, silent
+  verbose: true    # optional
+
+# Deck definitions
+decks:
+  main:
+    name: "Main Deck"
+    icon: "icon://Deck"
+    background: "#000000"
+    paginated: false
+    trigger:           # optional - for overlay decks
+      process_name: "chrome"
+      window_name: "VSCode"
+    autoShow: true
+    buttons:
+      - { position: 0, type: "core:blank" }
+      - position: 1
+        type: "core:action"
+        config:
+          icon: "icon://globe"
+          label: "Open"
+        actions:
+          tap: "xdg-open https://example.com"
+
+# Addons
+addons:
+  - "local-addon"        # local path ./local-addon
+  - "/absolute/path"      # absolute path
+  - "npm-addon"          # npm package
+  - "npm-addon@1.2.3"   # npm with version
+  # OR with config:
+  - src: "my-addon"
+    enabled: true
+    config:
+      defaults:
+        autoShow: false
+      decks:
+        shortcuts:
+          name: "Chrome Shortcuts"
+          autoShow: true
+      someKey: value
+
+# Lock configuration (optional)
+lock:
+  buttons:
+    - { position: 0, type: "core:blank" }
+```
+
+## Theme
+
+```yaml
+# Use built-in theme
+theme: "default"
+
+# OR use local theme
+theme:
+  name: "mytheme"
+  path: "./themes/my-theme"
+```
+
+## Logging
+
+```yaml
+logging:
+  level: "info"     # trace, debug, info, warn, error, fatal, silent
+  verbose: true     # enables extra debug output
+```
+
+## Decks
+
+### Basic Deck
+
+```yaml
+decks:
+  main:
+    name: "Main Deck"
+    icon: "icon://Deck"
+    background: "#000000"
+    buttons:
+      - { position: 0, type: "core:blank" }
+      - position: 1
+        type: "core:action"
+        config:
+          icon: "icon://play"
+          label: "Play"
+        actions:
+          tap: "spotify play"
+```
+
+### Overlay Deck
+
+Overlay decks appear automatically when specific apps are active:
+
+```yaml
+decks:
+  vscode:
+    name: "VS Code"
+    icon: "icon://Code"
+    buttonColor: "green"
+    paginated: true
+    autoShow: true
+    isOverlay: true
+    trigger:
+      process_name: ["code", "code-oss", "Code"]
+      window_name: ["*Visual Studio Code*"]
+    buttons:
+      - position: 0
+        type: "core:action"
+        actions:
+          tap: 'type://{"all":"ctrl+shift+p","osx":"cmd+shift+p"}'
+        config:
+          label: "Command Palette"
+```
+
+### Paginated Deck
+
+```yaml
+decks:
+  shortcuts:
+    name: "Shortcuts"
+    paginated: true
+    buttons:
+      - { position: 0, type: "core:action", ... }
+      # ... more than keyCount - 2 buttons
+```
+
+## Buttons
+
+### Button Shorthand
+
+```yaml
+# Full form
+- position: 0
+  type: "core:action"
+  config:
+    icon: "icon://globe"
+    label: "Open"
+  actions:
+    tap: "xdg-open https://example.com"
+
+# Short form (type only)
+- "core:blank"
+
+# Short form (type with position)
+- { position: 0, type: "core:blank" }
+```
+
+### Button Position
+
+Positions are 0-indexed. The last position is reserved for system buttons (back/settings).
+
+## Addons
+
+### Addon Entry Formats
+
+```yaml
+# Local relative path
+addons:
+  - "./my-addon"
+
+# Local absolute path
+addons:
+  - "/Users/me/sireno-addons/my-addon"
+
+# NPM package
+addons:
+  - "sireno-my-addon"
+  - "sireno-my-addon@1.0.0"
+
+# With configuration
+addons:
+  - src: "my-addon"
+    enabled: true
+    config:
+      defaults:
+        autoShow: false
+      decks:
+        shortcuts:
+          name: "My Shortcuts"
+```
+
+## Lock Mode
+
+Lock mode prevents accidental button presses. Only specific button types can escape it:
+
+```yaml
+lock:
+  buttons:
+    - { position: 0, type: "core:blank" }
+```
+
+## Includes
+
+You can use YAML anchors and aliases for reusable button definitions:
+
+```yaml
+# Define a button template
+.base-button: &base-button
+  type: "core:action"
+  config:
+    icon: "icon://globe"
+
+# Use it
+decks:
+  main:
+    buttons:
+      - position: 0
+        <<: *base-button
+        config:
+          label: "One"
+      - position: 1
+        <<: *base-button
+        config:
+          label: "Two"
+```
+
+## Validation
+
+Sireno Deck validates your config on startup. Invalid configurations will prevent the service from starting with clear error messages.

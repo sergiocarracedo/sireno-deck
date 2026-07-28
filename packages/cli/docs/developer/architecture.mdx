@@ -1,0 +1,130 @@
+---
+title: Architecture Overview
+description: System design and data flows
+audience: developer
+order: 1
+tags: [architecture, design, system]
+---
+
+# Architecture Overview
+
+Sireno Deck is built with a client-server architecture using WebSocket communication.
+
+## System Components
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      Sireno Deck CLI                        │
+├─────────────────────────────────────────────────────────────┤
+│  Config Loader  │  Addon Loader  │  Theme Loader           │
+├─────────────────────────────────────────────────────────────┤
+│                    Runtime Engine                           │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │ Deck Manager │  │ Action Exec  │  │ State Pub/Sub│     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
+├─────────────────────────────────────────────────────────────┤
+│  Output Client (Real Device / Emulator)                     │
+├─────────────────────────────────────────────────────────────┤
+│  WS Bridge  │  HTTP Server (Frontend)                     │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                    WebSocket / HTTP
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Frontend (React)                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │ Deck View   │  │ Button Render│  │ Theme System │     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Core Systems
+
+### Config Loading
+
+1. Discover config file (multiple paths)
+2. Parse YAML
+3. Expand includes
+4. Validate with Zod schema
+5. Load addons
+6. Build runtime decks
+
+### Deck Management
+
+- **Main deck**: Primary deck at startup
+- **Sub-decks**: Navigated via `core:change-deck`
+- **Overlay decks**: Auto-show based on active app
+- **Paginated decks**: Split across multiple pages
+
+### Action Execution
+
+1. User gesture on button
+2. Runtime receives `button-action` message
+3. Look up button type and config
+4. Execute action (shell command, key macro, etc.)
+5. Publish state updates
+
+### State Management
+
+- **Pub/Sub**: Channel-based state distribution
+- **Polling**: Periodic data collection (system-status, media, etc.)
+- **Caching**: Last-known values for new subscribers
+
+### Output Clients
+
+#### Real Device
+- Stream Deck SDK communication
+- HID protocol
+
+#### Emulator
+- Virtual device in browser
+- Same WebSocket protocol as real device
+
+## Data Flows
+
+### Button Press
+
+```
+Frontend Button Click
+  → Gesture Detection (tap/dbl-tap/hold)
+  → WS Message: { type: "button-action", gesture, position }
+  → Runtime.invokeAction()
+  → Execute action (runCommand/keyMacro/etc.)
+  → State Publisher broadcasts updates
+  → Frontend receives state update
+  → Button re-renders
+```
+
+### Theme Loading
+
+```
+Config → Theme Entry
+  → Theme Loader discovers manifest
+  → CSS Generator creates theme CSS
+  → Virtual Module provides tokens to frontend
+  → React Context provides theme values
+```
+
+### Addon Loading
+
+```
+Config → Addon Entry
+  → Addon Loader discovers sirenodeck.json
+  → Registry validates manifest
+  → Load frontend components
+  → Register backend services
+  → Connect to runtime
+```
+
+## Key Files
+
+| Component | Path |
+|-----------|------|
+| Config loading | `src/config/loader.ts` |
+| Runtime engine | `src/deck/runtime.ts` |
+| Methods API | `src/deck/methods.ts` |
+| WS Bridge | `src/render/ws-bridge.ts` |
+| Pub/Sub | `src/core/pub-sub.ts` |
+| Addon loader | `src/addon/loader.ts` |
+| Theme loader | `src/themes/loader.ts` |

@@ -1,0 +1,152 @@
+---
+title: Runtime API
+description: Programmatic deck control
+audience: developer
+order: 3
+tags: [runtime, api, methods, typescript]
+---
+
+# Runtime API
+
+The Runtime interface provides programmatic control over decks, navigation, and actions.
+
+## Runtime Interface
+
+```typescript
+interface Runtime {
+  // Navigation
+  getActiveDeck(): RuntimeDeck
+  getActiveDeckId(): string
+  deckExists(id: string): boolean
+  setDecks(decks: ReadonlyArray<RuntimeDeck>): void
+  navigateToDeck(id: string, options?: { addToHistory?: boolean }): void
+  goBack(): void
+
+  // Overlays
+  setOverlay(deckId: string | null, opts?: { source?: "autoShow" | "manual" }): void
+  getOverlay(): RuntimeDeck | null
+  hasOverlayDeckAvailable(): boolean
+
+  // Button handling
+  dispatchGesture(buttonId: string, gesture: GestureKind): Promise<void>
+  invokeAction(buttonId: string, gesture: GestureKind): Promise<void>
+  invalidate(): void
+
+  // Providers
+  setActiveAppProvider(provider: ActiveAppProviderLike): void
+  setSessionProvider(provider: SessionProvider): void
+
+  // State
+  isLockActive(): boolean
+  navStackDepth(): number
+
+  // Brightness
+  getBrightness(): number
+  setBrightness(value: number): void
+}
+```
+
+## Methods Interface
+
+```typescript
+interface Methods {
+  // Shell commands
+  runCommand(command: string, options?: ActionExecutorOptions): Promise<{
+    stdout: string
+    stderr: string
+    exitCode: number
+    durationMs: number
+  }>
+
+  // Keyboard input
+  keyMacro(action: KeyMacroAction): Promise<void>
+  typeText(text: string): Promise<void>
+
+  // Navigation
+  navigateToDeck(args: { id: string; addToHistory?: boolean }): void
+  goBack(): void
+  getActiveDeckId(): string
+
+  // Updates
+  invalidate(): void
+
+  // Pub/Sub
+  publish<T>(channel: string, payload: T): void
+  subscribe<T>(channel: string, cb: (payload: T) => void): () => void
+
+  // System
+  setKeyMacroProvider(provider: KeyMacroProvider): void
+  setRequirements(requirements: RequirementsCheckResult): void
+  checkRequirement(capability: SystemCapability): boolean
+  showTemporaryError(
+    deckId: string,
+    position: number,
+    durationMs?: number,
+    buttonId?: string,
+    details?: string
+  ): void
+  adjustBrightness(args: { direction: "up" | "down" }): void
+
+  // Dispatch
+  dispatch(value: string): Promise<void>
+}
+```
+
+## KeyMacroAction
+
+```typescript
+type KeyMacroAction =
+  | { kind: "key"; value: string }      // Single key
+  | { kind: "combo"; value: string }    // Key combination
+  | { kind: "text"; value: string }     // Literal text
+  | { kind: "delay"; ms: number }       // Wait
+```
+
+## GestureKind
+
+```typescript
+type GestureKind = "tap" | "dbl-tap" | "hold"
+```
+
+## RuntimeDeck
+
+```typescript
+interface RuntimeDeck {
+  id: string
+  name: string
+  buttons: ReadonlyArray<RuntimeButton>
+  isMain?: boolean
+  isOverlay?: boolean
+  processNames?: ReadonlyArray<string>
+  windowNames?: ReadonlyArray<string>
+  autoShow?: boolean
+  icon?: string
+  buttonColor?: "blue" | "green" | "purple"
+  buttonErrors?: ReadonlyArray<{
+    position: number
+    buttonId?: string
+    details: string
+  }>
+}
+```
+
+## Usage in Addons
+
+Addons receive the runtime and methods through their service context:
+
+```typescript
+// In addon backend service
+const MyButtonService = {
+  onMount(ctx: AddonButtonServiceContext) {
+    // Access methods
+    ctx.coreMethods.navigateToDeck({ id: "settings" })
+    ctx.coreMethods.invalidate()
+
+    // Publish to channels
+    ctx.publish("my-channel", { data: "value" })
+
+    // Access store
+    ctx.store.buttonScope("my-addon", ctx.buttonId).set("key", "value")
+  }
+}
+```
