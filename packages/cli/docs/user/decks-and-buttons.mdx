@@ -1,0 +1,126 @@
+---
+title: Decks and Buttons
+description: Understanding deck structure and button types
+audience: user
+order: 4
+tags: [decks, buttons, navigation, pages]
+---
+
+# Decks and Buttons
+
+Sireno Deck organizes content into **decks** of **buttons**.
+
+## Decks
+
+A deck is a collection of buttons that display on your Stream Deck. Decks can be:
+
+- **Main deck** — The primary deck shown at startup
+- **Sub-deck** — Navigated to from another deck
+- **Overlay deck** — Appears automatically when specific apps are active
+
+### Deck Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `name` | string | Display name |
+| `icon` | string | Icon source (see [Icons](/user/icons)) |
+| `background` | string | Background color (hex) |
+| `paginated` | boolean | Enable pagination |
+| `trigger` | object | Process/window conditions for overlays |
+| `autoShow` | boolean | Show automatically when triggered |
+| `buttonColor` | string | Button highlight color (blue, green, purple) |
+| `buttons` | array | Button definitions |
+
+### Navigation
+
+Navigate between decks using `core:change-deck` buttons:
+
+```yaml
+- position: 0
+  type: "core:change-deck"
+  config:
+    deck: "settings"
+    icon: "icon://Settings"
+    label: "Settings"
+```
+
+### Page Navigation
+
+For decks with more buttons than available key slots, use pagination:
+
+```yaml
+decks:
+  shortcuts:
+    name: "Shortcuts"
+    paginated: true
+    buttons:
+      - { position: 0, type: "core:action", ... }
+      - { position: 1, type: "core:action", ... }
+      # ... more buttons
+```
+
+The system automatically adds page navigation buttons.
+
+## Buttons
+
+### Button Structure
+
+```yaml
+- position: 0                    # Required: slot position
+  type: "core:action"            # Required: button type
+  config:                        # Optional: button configuration
+    icon: "icon://globe"
+    label: "Open Browser"
+  actions:                       # Optional: action definitions
+    tap: "xdg-open https://example.com"
+    dbltap: "echo double tap"
+    hold: "echo hold"
+```
+
+### Button Types
+
+#### Core Button Types
+
+| Type | Description |
+|------|-------------|
+| `core:blank` | Empty button |
+| `core:action` | Execute shell commands or keyboard shortcuts |
+| `core:change-deck` | Navigate to another deck |
+| `core:toggle` | Toggle between two states |
+| `core:page-nav` | Page navigation (system-managed) |
+
+#### Built-in Addon Types
+
+| Addon | Button Types |
+|-------|--------------|
+| date-time | `date-time:date-time`, `date-time:time`, `date-time:date`, `date-time:analog-clock` |
+| emoji-selector | `emoji-selector:launcher`, `emoji-selector:category`, `emoji-selector:emoji` |
+| media | `media:player`, `media:mute`, `media:volume:up`, `media:volume:down` |
+| system-status | `system-status:system-status`, `system-status:kpis`, `system-status:chart` |
+| value-display | `value-display:display` |
+| weather | `weather:weather` |
+| brightness | `brightness:brightness` |
+| session | `session:info` |
+
+## System Buttons
+
+The last button position is reserved for system functions:
+
+- **Main deck**: Settings button
+- **Sub-decks**: Back button
+- **Overlay decks**: Dismiss overlay button
+
+## Button Color
+
+Highlight buttons with color:
+
+```yaml
+# In deck definition
+decks:
+  main:
+    buttonColor: "green"
+    buttons:
+      - ...
+```
+
+Options: `blue`, `green`, `purple`

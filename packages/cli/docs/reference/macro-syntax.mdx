@@ -1,0 +1,136 @@
+---
+title: Macro Syntax
+description: Keyboard shortcut expressions
+audience: developer
+order: 5
+tags: [macro, keyboard, shortcuts, reference]
+---
+
+# Macro Syntax
+
+Keyboard shortcut expressions for the `type://` protocol.
+
+## Basic Syntax
+
+### Text Input
+
+Send literal text:
+
+```yaml
+actions:
+  tap: "type://hello world"
+```
+
+### Single Keys
+
+Send a single key:
+
+```yaml
+actions:
+  tap: "type://enter"
+  tap: "type://tab"
+  tap: "type://space"
+```
+
+### Key Combinations
+
+Send modifier + key:
+
+```yaml
+actions:
+  tap: "type://ctrl+c"
+  tap: "type://ctrl+shift+p"
+  tap: "type://cmd+space"
+```
+
+### Platform-Specific
+
+Different shortcuts per OS:
+
+```yaml
+actions:
+  tap: 'type://{"all":"ctrl+shift+p","osx":"cmd+shift+p","windows":"ctrl+shift+p"}'
+```
+
+## Delay
+
+Insert delays between actions:
+
+```yaml
+actions:
+  tap: "type://ctrl+c; delay(100ms); ctrl+v"
+```
+
+## Modifier Keys
+
+### Linux/macOS
+
+- `ctrl` or `control`
+- `alt`
+- `cmd` (macOS only)
+- `super` or `win`
+- `shift`
+
+### All Platforms
+
+- `cmd` → `Command` (macOS), `Control` (Linux)
+- `ctrl` → `Control` (all)
+- `alt` → `Alt` (all)
+- `shift` → `Shift` (all)
+- `super` → `Super` (Linux), `Command` (macOS)
+
+## Common Shortcuts
+
+| Action | Linux | macOS | Windows |
+|--------|-------|-------|---------|
+| Copy | `ctrl+c` | `cmd+c` | `ctrl+c` |
+| Paste | `ctrl+v` | `cmd+v` | `ctrl+v` |
+| Cut | `ctrl+x` | `cmd+x` | `ctrl+x` |
+| Save | `ctrl+s` | `cmd+s` | `ctrl+s` |
+| Open | `ctrl+o` | `cmd+o` | `ctrl+o` |
+| Close | `ctrl+w` | `cmd+w` | `ctrl+w` |
+| Quit | `ctrl+q` | `cmd+q` | `alt+f4` |
+| Command Palette | `ctrl+shift+p` | `cmd+shift+p` | `ctrl+shift+p` |
+
+## Emoji Input
+
+Emoji are sent via clipboard:
+
+```yaml
+actions:
+  tap: "type://🔥"
+  tap: "type://😀"
+```
+
+## Action Reference
+
+### type:// Protocol
+
+```yaml
+# Literal text
+type://text here
+
+# Single key
+type://keyname
+
+# Key combination
+type://ctrl+key
+
+# Platform-specific
+type://{"linux":"...","osx":"...","windows":"..."}
+```
+
+### delay() Function
+
+```yaml
+# Delay in milliseconds
+delay(100ms)
+delay(1s)
+```
+
+### Combined Example
+
+```yaml
+actions:
+  tap: "type://ctrl+a; delay(50ms); ctrl+c; delay(50ms); down; ctrl+v"
+```

@@ -1,0 +1,86 @@
+---
+title: Emulator vs Hardware
+description: Testing without a physical Stream Deck
+audience: user
+order: 10
+tags: [emulator, hardware, testing, device]
+---
+
+# Emulator vs Hardware
+
+Sireno Deck supports both real Stream Deck hardware and an emulator for development and testing.
+
+## Emulator
+
+The emulator provides a virtual Stream Deck interface in your browser.
+
+### Starting the Emulator
+
+```bash
+# Run with emulator
+sireno run --emulator
+
+# With specific device model
+sireno run --emulator --device-model xl
+
+# Start daemon with emulator
+sireno start --emulator
+```
+
+### Emulator URL
+
+When running with emulator:
+- **Frontend**: http://127.0.0.1:5180
+- **Emulator UI**: http://127.0.0.1:52938
+
+### Emulator Features
+
+- Click buttons to trigger gestures
+- Device model switching (mk2, plus, mini, xl)
+- Deck tree navigation
+- Real-time logs
+- Configuration viewer
+
+## Hardware
+
+Connect to a real Stream Deck device.
+
+### Supported Devices
+
+| Model | Key Count | Dimensions |
+|-------|-----------|------------|
+| Stream Deck Original/MK.2 | 15 | 5x3 |
+| Stream Deck + | 32 | 8x4 |
+| Stream Deck Mini | 6 | 3x2 |
+| Stream Deck XL | 32 | 8x4 |
+
+### Running with Hardware
+
+```bash
+# Run with real device (default if connected)
+sireno run
+
+# Specify device model for emulator
+sireno run --device-model mk2
+```
+
+### Device Detection
+
+If no device is found:
+- **Interactive mode**: Prompts to fall back to emulator
+- **Non-interactive mode**: Errors with message to use `--emulator`
+
+## Choosing Between Emulator and Hardware
+
+| Use Case | Recommendation |
+|----------|----------------|
+| Initial setup/testing | Emulator |
+| Development with HMR | Emulator with `--dev` |
+| Daily use | Hardware |
+| CI/automated testing | Emulator |
+
+## Workflow
+
+1. **Develop** with emulator (`sireno run --emulator --dev`)
+2. **Test** on emulator
+3. **Deploy** to hardware (`sireno start`)

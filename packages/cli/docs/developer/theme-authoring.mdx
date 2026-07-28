@@ -1,0 +1,219 @@
+---
+title: Theme Authoring
+description: Creating custom themes
+audience: developer
+order: 5
+tags: [themes, authoring, styling, css]
+---
+
+# Theme Authoring
+
+Create custom themes to customize Sireno Deck's appearance.
+
+## Theme Structure
+
+```
+my-theme/
+├── sirenodeck.json    # Manifest
+├── components.css     # Component styles
+└── assets/            # Fonts and images
+    ├── IBM_Plex_Sans/
+    │   └── IBMPlexSans-Medium.ttf
+    └── IBM_Plex_Mono/
+        └── IBMPlexMono-Regular.ttf
+```
+
+## Manifest (sirenodeck.json)
+
+```json
+{
+  "kind": "theme",
+  "apiVersion": 1,
+  "name": "my-theme",
+  "version": "1.0.0",
+  "description": "My custom theme",
+  "colorTokens": {
+    "background": "#000000",
+    "frame": "#333333",
+    "foreground": "#ffffff",
+    "foreground-contrast": "#ffffff",
+    "primary": "#3b82f6",
+    "accent": "#8b5cf6",
+    "success": "#22c55e",
+    "danger": "#ef4444",
+    "tintBlue": "#3b82f6",
+    "tintGreen": "#22c55e",
+    "tintPurple": "#8b5cf6"
+  },
+  "typography": {
+    "main_text": {
+      "fontFamily": "IBM Plex Sans",
+      "fontSize": 12,
+      "fontWeight": 500,
+      "letterSpacing": 0
+    },
+    "auxiliary_text": {
+      "fontFamily": "IBM Plex Sans",
+      "fontSize": 10,
+      "fontWeight": 400,
+      "letterSpacing": 0
+    },
+    "monospace": {
+      "fontFamily": "IBM Plex Mono",
+      "fontSize": 11,
+      "fontWeight": 400,
+      "letterSpacing": 0
+    }
+  },
+  "fonts": [
+    {
+      "fontFamily": "IBM Plex Sans",
+      "fontWeight": 500,
+      "fontStyle": "normal",
+      "src": "./assets/IBMPlexSans-Medium.ttf"
+    }
+  ],
+  "assets": {
+    "styles": ["./components.css"]
+  }
+}
+```
+
+## Color Tokens
+
+### Available Tokens
+
+| Token | CSS Variable | Description |
+|-------|--------------|-------------|
+| `background` | `--sireno-color-bg` | Main background |
+| `frame` | `--sireno-color-frame` | Button border |
+| `foreground` | `--sireno-color-fg` | Primary text |
+| `foreground-contrast` | `--sireno-color-fg-contrast` | High-contrast text |
+| `primary` | `--sireno-color-primary` | Primary accent |
+| `accent` | `--sireno-color-accent` | Secondary accent |
+| `success` | `--sireno-color-success` | Success state |
+| `danger` | `--sireno-color-danger` | Error state |
+| `tintBlue` | `--sireno-color-tint-blue` | Blue variant |
+| `tintGreen` | `--sireno-color-tint-green` | Green variant |
+| `tintPurple` | `--sireno-color-tint-purple` | Purple variant |
+
+## Typography
+
+### Role Definitions
+
+```json
+{
+  "typography": {
+    "main_text": {
+      "fontFamily": "IBM Plex Sans",
+      "fontSize": 12,
+      "fontWeight": 500,
+      "letterSpacing": 0
+    },
+    "auxiliary_text": {
+      "fontFamily": "IBM Plex Sans",
+      "fontSize": 10,
+      "fontWeight": 400
+    },
+    "monospace": {
+      "fontFamily": "IBM Plex Mono",
+      "fontSize": 11,
+      "fontWeight": 400
+    }
+  }
+}
+```
+
+### Usage in CSS
+
+```css
+.main-text {
+  font-family: var(--sireno-font-main_text);
+  font-size: var(--sireno-font-size-main_text);
+  font-weight: var(--sireno-font-weight-main_text);
+}
+```
+
+## Font Loading
+
+### Font Face Format
+
+```json
+{
+  "fonts": [
+    {
+      "fontFamily": "IBM Plex Sans",
+      "fontWeight": 500,
+      "fontStyle": "normal",
+      "src": "./assets/IBMPlexSans-Medium.ttf"
+    }
+  ]
+}
+```
+
+## Component Styling
+
+### components.css
+
+```css
+/* Button styles */
+.sireno-button {
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.sireno-button:active {
+  transform: scale(0.95);
+}
+
+/* Custom surface */
+.my-surface {
+  background: var(--sireno-color-bg);
+  border: 1px solid var(--sireno-color-frame);
+}
+
+/* Animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+```
+
+### CSS Variables Available
+
+- `--sireno-color-*` — All color tokens
+- `--sireno-font-*` — Typography values
+- `--sireno-spacing-*` — Spacing values
+
+## Testing Themes
+
+```bash
+# Use theme during development
+sireno run --config config.yml
+
+# Config references theme
+theme:
+  name: "my-theme"
+  path: "./themes/my-theme"
+```
+
+## Theme UI Overrides
+
+Advanced: Replace React components entirely:
+
+```json
+{
+  "ui-overrides": "./components"
+}
+```
+
+```typescript
+// components/index.ts
+export const components = {
+  ButtonFrame: MyCustomButtonFrame
+}
+
+export const surfaces = {
+  IconLabel: MyCustomIconLabel
+}
+```

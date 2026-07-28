@@ -1,0 +1,117 @@
+---
+title: Icons
+description: Using the icon system
+audience: user
+order: 6
+tags: [icons, images, assets]
+---
+
+# Icons
+
+Sireno Deck supports multiple icon sources through a flexible icon protocol.
+
+## Icon Sources
+
+### Lucide Icons
+
+Use any Lucide icon:
+
+```yaml
+icon: "icon://play"
+icon: "icon://settings"
+icon: "icon://github"
+```
+
+### Emoji
+
+Use single emoji characters:
+
+```yaml
+icon: "🔥"
+icon: "✈️"
+icon: "🎵"
+```
+
+### Local Files
+
+Reference local image files:
+
+```yaml
+# Relative to config directory
+icon: "./icons/my-button.png"
+icon: "./icons/my-button.svg"
+
+# Absolute path
+icon: "/Users/me/icons/button.png"
+
+# Home directory
+icon: "~/icons/button.png"
+```
+
+### Asset References
+
+Reference registered assets:
+
+```yaml
+icon: "asset://abc123"
+```
+
+### Addon Assets
+
+Reference assets from addons:
+
+```yaml
+icon: "addon://my-addon/assets/icon.svg"
+```
+
+### Builtin Assets
+
+Reference builtin addon assets:
+
+```yaml
+icon: "builtin://path/to/asset"
+```
+
+## Icon Size
+
+Icons automatically scale to fit the button. For best results, use:
+- Square images (recommended)
+- SVG format for scalability
+- PNG with transparency
+
+## Icon Tone
+
+Some components support icon tone:
+
+```yaml
+config:
+  icon: "icon://alert-circle"
+  # tone: "accent" | "danger" | "primary" | "success" | "foreground"
+```
+
+## Available Lucide Icons
+
+Sireno Deck includes all Lucide icons. Common ones include:
+
+- **Media**: play, pause, skip-forward, skip-back, volume, volume-x
+- **Navigation**: home, settings, arrow-left, arrow-right, menu
+- **Actions**: plus, minus, refresh, copy, edit, trash
+- **Status**: check, x-circle, alert-circle, info
+- **Apps**: github, terminal, file, folder, calendar
+
+## Custom Icons
+
+Place custom icons in your config directory:
+
+```
+config.yml
+icons/
+  my-icon.svg
+  button.png
+```
+
+Then reference them:
+
+```yaml
+icon: "./icons/my-icon.svg"
+```

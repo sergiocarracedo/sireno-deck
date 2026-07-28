@@ -1,0 +1,115 @@
+---
+title: CLI Commands
+description: Complete CLI command reference
+audience: developer
+order: 1
+tags: [cli, commands, reference]
+---
+
+# CLI Commands
+
+Complete reference for all Sireno Deck CLI commands.
+
+## Global Options
+
+| Option | Alias | Description |
+|--------|-------|-------------|
+| `--verbose` | `-v` | Enable verbose logging |
+| `--json` | — | Output logs as JSON |
+| `--log-level` | — | Set log level |
+
+## Commands
+
+### run
+
+Run in foreground for development.
+
+```bash
+sireno run [options]
+```
+
+**Options:**
+- `--config <path>` — Config file path
+- `--port <number>` — Server port (0 = random)
+- `--emulator` — Use emulator
+- `--dev` — Enable HMR
+- `--device-model <model>` — Device model (mk2, plus, mini, xl)
+
+### start
+
+Start daemon in background.
+
+```bash
+sireno start [options]
+```
+
+**Options:**
+- `--config <path>` — Config file path
+- `--port <number>` — Server port
+- `--emulator` — Use emulator
+- `--device-model <model>` — Device model
+- `--http-port <number>` — HTTP server port (default: 3939)
+- `--system` — Install as system service
+- `--logs` — Follow logs after start
+
+### stop
+
+Stop the daemon.
+
+```bash
+sireno stop
+```
+
+### status
+
+Check daemon status.
+
+```bash
+sireno status
+```
+
+### restart
+
+Restart the daemon.
+
+```bash
+sireno restart [options]
+```
+
+**Options:**
+- `--logs` — Follow logs
+
+### reload
+
+In-place reload (preserves state).
+
+```bash
+sireno reload [options]
+```
+
+**Options:**
+- `--logs` — Follow logs
+
+### update-config
+
+Update daemon config path.
+
+```bash
+sireno update-config --config <path> [options]
+```
+
+**Options:**
+- `--reload` — Use in-place reload
+- `--logs` — Follow logs
+
+### logs
+
+Tail service logs.
+
+```bash
+sireno logs [options]
+```
+
+**Options:**
+- `--follow`, `-f` — Follow output (default: true)
+- `--lines`, `-n` — Lines to show (default: 50)

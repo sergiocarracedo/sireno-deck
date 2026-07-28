@@ -1,0 +1,109 @@
+---
+title: Text Formatting
+description: Rich text tags for button labels
+audience: user
+order: 7
+tags: [text, formatting, labels, tags]
+---
+
+# Text Formatting
+
+Button labels support rich text formatting through tags. These work in label fields and other text displays.
+
+## Size Tags
+
+Control text size:
+
+| Tag | Effect |
+|-----|--------|
+| `<xxs>` | Extra extra small |
+| `<xs>` | Extra small |
+| `<sm>` | Small |
+| `<md>` | Medium (default) |
+| `<lg>` | Large |
+| `<xl>` | Extra large |
+| `<2xl>` | 2x large |
+| `<3xl>` | 3x large |
+| `<4xl>` | 4x large |
+| `<5xl>` | 5x large |
+
+Example:
+```yaml
+config:
+  label: "<xl>Large</xl> <sm>small</sm>"
+```
+
+## Tone Tags
+
+Color text:
+
+| Tag | Effect |
+|-----|--------|
+| `<primary>` | Primary color |
+| `<accent>` | Accent color |
+| `<success>` | Success/green |
+| `<danger>` | Error/red |
+| `<foreground>` | Default text color |
+
+Example:
+```yaml
+config:
+  label: "<success>Online</success> <danger>Offline</danger>"
+```
+
+## Markup Tags
+
+Additional formatting:
+
+| Tag | Effect |
+|-----|--------|
+| `<strong>` | Bold text |
+| `<dim>` | 50% opacity |
+| `<blink>` | Blinking animation |
+| `*text*` | Highlight (asterisk syntax) |
+
+Example:
+```yaml
+config:
+  label: "<strong>Important</strong> *highlighted*"
+```
+
+## Special Characters
+
+| Syntax | Effect |
+|--------|--------|
+| `\|` | Line break |
+| `&nbsp;` | Non-breaking space |
+
+## Examples
+
+### Time Display
+
+```yaml
+config:
+  label: "<4xl>&nbsp;*HH*<blink>:</blink>|mm</4xl>"
+```
+
+Renders: Large time with blinking separator.
+
+### Multi-line Label
+
+```yaml
+config:
+  label: "Line 1|Line 2"
+```
+
+Renders:
+```
+Line 1
+Line 2
+```
+
+### Status with Color
+
+```yaml
+config:
+  label: "<success>●</success> Playing"
+```
+
+Renders: Green dot with "Playing" text.

@@ -1,0 +1,256 @@
+---
+title: Addon Authoring
+description: Creating custom addons
+audience: developer
+order: 4
+tags: [addons, authoring, development, plugins]
+---
+
+# Addon Authoring
+
+Create custom addons to extend Sireno Deck functionality.
+
+## Addon Structure
+
+```
+my-addon/
+├── sirenodeck.json    # Manifest
+├── src/
+│   ├── index.ts       # Entry point
+│   ├── manifest.ts    # Button types and decks
+│   ├── frontend.tsx  # React components
+│   └── backend.ts    # Backend services
+└── dist/              # Compiled output
+```
+
+## Manifest (sirenodeck.json)
+
+```json
+{
+  "kind": "addon",
+  "apiVersion": 1,
+  "name": "my-addon",
+  "entry": "./dist/index.js"
+}
+```
+
+## Complete Addon Example
+
+### Step 1: Create Manifest
+
+```typescript
+// manifest.ts
+import type { AddonManifestV1 } from "@sireno-deck/cli"
+
+export const manifest: AddonManifestV1 = {
+  apiVersion: 1,
+  name: "my-addon",
+  buttonTypes: {
+    "my-addon:greet": {
+      frontend: GreetButton,
+      service: {
+        gestureHandlers: ["tap"] as const,
+        onTap: async (ctx) => {
+          ctx.publish("my-addon:greeted", { name: "World" })
+        }
+      }
+    }
+  },
+  decks: [
+    {
+      id: "my-addon:menu",
+      name: "My Menu",
+      icon: "icon://menu",
+      buttons: [
+        { position: 0, type: "my-addon:greet" }
+      ]
+    }
+  ]
+}
+```
+
+### Step 2: Create Frontend Component
+
+```typescript
+// frontend.tsx
+import React from "react"
+import type { AddonFrontendButtonProps } from "@sireno-deck/cli"
+
+export function GreetButton({ config }: AddonFrontendButtonProps<{}>) {
+  return (
+    <div>
+      <Icon source="icon://hand" />
+      <Label text="Greet" />
+    </div>
+  )
+}
+```
+
+### Step 3: Create Backend Service
+
+```typescript
+// backend.ts
+import type { AddonButtonTypeService } from "@sireno-deck/cli"
+
+export const GreetService: AddonButtonTypeService<{}> = {
+  gestureHandlers: ["tap"],
+  async onTap(ctx) {
+    console.log("Button tapped!")
+    ctx.methods.invalidate()
+  }
+}
+```
+
+## Button Types API
+
+### AddonButtonTypeDef
+
+```typescript
+interface AddonButtonTypeDef<Config> {
+  readonly frontend: React.ComponentType<AddonFrontendButtonProps<Config>>
+  readonly service: AddonButtonTypeService<Config>
+}
+```
+
+### AddonButtonTypeService
+
+```typescript
+interface AddonButtonTypeService<Config> {
+  readonly configSchema?: unknown           // Zod schema for validation
+  readonly defaultRenderIntervalMs?: number // Frontend refresh rate
+  readonly internal?: boolean               // Hidden from UI
+  readonly full?: boolean                  // Takes full button area
+  readonly gestureHandlers?: ReadonlyArray<GestureKind>
+  readonly onMount?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
+  readonly onTap?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
+  readonly onDblTap?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
+  readonly onHold?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
+  readonly dispose?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
+}
+```
+
+### AddonButtonServiceContext
+
+```typescript
+interface AddonButtonServiceContext<Config> {
+  readonly config: Config
+  readonly buttonId: string
+  readonly addonName: string
+  readonly methods: Readonly<Record<string, AddonServiceMethod>>  // Namespaced addon methods
+  readonly coreMethods: Methods                                    // Core runtime methods
+  readonly publish: (channel: string, data: unknown) => void
+  readonly executor: ActionExecutor
+  readonly signal: AbortSignal
+  readonly store: Store
+}
+```
+
+## Deck Generation
+
+### Static Decks
+
+```typescript
+decks: [
+  {
+    id: "my-addon:static",
+    name: "Static Deck",
+    buttons: [
+      { position: 0, type: "my-addon:action" }
+    ]
+  }
+]
+```
+
+### Dynamic Decks
+
+```typescript
+decks: [
+  {
+    id: "my-addon:dynamic",
+    createDeck: (ctx) => ({
+      name: "Generated",
+      buttons: ctx.config.items.map((item, i) => ({
+        position: i,
+        type: "my-addon:item",
+        config: item
+      }))
+    })
+  }
+]
+```
+
+### Multi-Deck Generation
+
+```typescript
+decks: [
+  {
+    createDecks: (ctx) => ({
+      "my-addon:deck1": { name: "Deck 1", buttons: [...] },
+      "my-addon:deck2": { name: "Deck 2", buttons: [...] }
+    })
+  }
+]
+```
+
+## Global Services
+
+Addons can provide global services that run continuously:
+
+```typescript
+export const manifest: AddonManifestV1 = {
+  apiVersion: 1,
+  name: "my-addon",
+  buttonTypes: { ... },
+  globalService: {
+    pollers: [
+      {
+        id: "my-poll",
+        channel: "my-addon:data",
+        intervalMs: 5000,
+        poll: async (ctx) => ({ value: Date.now() })
+      }
+    ],
+    methods: {
+      myMethod: (ctx, arg) => { ... }
+    },
+    onLoad: async (ctx) => { ... },
+    onUnload: async (ctx) => { ... }
+  }
+}
+```
+
+## Store API
+
+Persist data per-addon:
+
+```typescript
+// Per-button storage
+const scope = ctx.store.buttonScope(addonName, buttonId)
+scope.set("key", value)
+const value = scope.get("key")
+
+// Per-addon storage
+const scope = ctx.store.addonScope(addonName)
+scope.set("key", value)
+```
+
+## Publishing
+
+Distribute data to frontend:
+
+```typescript
+// Backend
+ctx.publish("my-channel", { data: "value" })
+
+// Frontend
+const { data } = useAddonChannel("my-channel")
+```
+
+## Building
+
+```bash
+# Build the addon
+npx tsc
+
+# Output to dist/
+```
