@@ -1,297 +1,94 @@
 theme: default
 
 addons:
-  - src: /works/opensource/sireno-deck-addons/vscode-overlay
-    config:
-      decks:
-        shortcuts:
-          autoShow: false
-  - /works/opensource/sireno-deck-addons/opencode-overlay
-  - src: /works/opensource/sireno-deck-addons/chrome-overlay
-    config:
-      decks:
-        shortcuts:
-          autoShow: false
-          config:
-            extra: true
+  - src: ./packages/addon-app-shortcuts
 
-# lock:
-#   buttons:
-#     - type: 'weather:weather'
-#       config:
-#         location:
-#           latitude: 42.2304
-#           longitude: -8.7256
-#           name: Vigo
+logging:
+  level: info
 
 decks:
   main:
     name: Main Deck
     buttons:
+      - position: 0
+        type: "system-status:system-status"
+        config:
+          pages:
+            - type: bars
+              metrics:
+                - cpu
+                - ram
+                - swap
+            - type: kpis
+              metrics:
+                - disk-io
+                - network-read
+                - network-write
+            - type: kpis
+              metrics:
+                - temperature
+                - gpu-temp
+                - fan-rpm
+            - type: kpis
+              metrics:
+                - uptime
+                - load
+
+      - position: 1
+        type: "core:change-deck"
+        config:
+          deck: demo-decks-index
+          icon: icon://layout-grid
+          label: Demos
+
       - position: 2
-        type: 'date-time:time'
+        type: "date-time:time"
         config:
           variant: big
 
       - position: 3
-        type: 'date-time:date'
+        type: "date-time:date"
         actions:
-          tap: 'xdg-open https://calendar.google.com'
-
-      - position: 1
-        type: 'core:change-deck'
-        config:
-          deck: 'sys-status-demo'
-          icon: icon://chart
-          label: Sys Stats
+          tap: "xdg-open https://calendar.google.com"
 
       - position: 4
-        type: 'weather:weather'
+        type: "weather:weather"
         config:
           location:
             latitude: 42.2304
             longitude: -8.7256
             name: Vigo
 
-      - position: 9
-        type: 'emoji-selector:launcher'
-
-      - position: 10
-        type: 'core:action'
-        actions:
-          tap: 'google-chrome'
-          hold: 'google-chrome --incognito'
-          dbltap: 'type://ctrl+t'
-        config:
-          icon: ./assets/chrome.svg
-          label: Chrome
-
-      - position: 0
-        type: 'system-status:system-status'
+      - position: 5
+        type: "system-status:system-status"
         config:
           pages:
-            - type: kpis
+            - type: chart
               metrics:
-                - id: cpu
-                  label: CPU
-                - id: ram
-                  label: MEM
-                - swap
-            - type: bars
-              metrics:
-                - id: load
-                  label: Load
-                - id: processes
-                  label: Procs
+                - cpu
+              windowSeconds: 60
 
-      - type: 'system-status:system-status'
-        config:
-          type: bars
-          metrics:
-            - id: cpu
-              label: CPU
-            - id: ram
-              label: MEM
-            - swap
-
-      - type: 'core:change-deck'
-        config:
-          deck: 'test'
-          icon: icon://flask-conical
-          label: Test
-      - position: 7
-        type: 'system-status:system-status'
-        config:
-          type: chart
-          metrics:
-            - id: cpu
-            - id: ram
-          windowSeconds: 60
-      # - position: 6
-      #   type: "media:volume:down"
-      # - position: 7
-      #   type: "media:volume:up"
-      # - position: 8
-      #   type: "media:mute"
-      - position: 12
-        type: 'media:player'
-
-      - position: 11
-        type: 'core:change-deck'
-        config:
-          deck: 'core:lock'
-          icon: 'icon://lock'
-          label: Lock deck
-
-      - position: 13
-        type: 'date-time:analog-clock'
-        # actions:
-        #   tap: 'google-chrome https://calendar.google.com'
-  sys-status-demo:
-    name: Sys Stats
-    buttons:
-      - position: 0
-        type: 'system-status:system-status'
-        config:
-          type: bars
-          metrics: [cpu]
-      - position: 1
-        type: 'system-status:system-status'
-        config:
-          type: bars
-          metrics: [cpu, ram]
-      - position: 2
-        type: 'system-status:system-status'
-        config:
-          type: bars
-          metrics:
-            - id: cpu
-              label: CPU
-            - id: ram
-              label: MEM
-            - swap
-      - position: 3
-        type: 'system-status:system-status'
-        config:
-          type: bars
-          metrics:
-            - id: disk
-              label: Disk
-            - id: battery
-              label: Batt
-            - id: temperature
-              label: Temp
-      - position: 4
-        type: 'system-status:system-status'
-        config:
-          type: bars
-          metrics:
-            - id: network
-              label: Net
-            - id: uptime
-              label: Up
-            - id: frequency
-              label: Freq
-      - position: 5
-        type: 'system-status:system-status'
-        config:
-          type: bars
-          metrics:
-            - id: load
-              label: Load
-            - id: processes
-              label: Procs
       - position: 6
-        type: 'system-status:system-status'
-        config:
-          type: kpis
-          metrics: [cpu]
-      - position: 7
-        type: 'system-status:system-status'
-        config:
-          type: kpis
-          metrics: [cpu, ram]
-      - position: 8
-        type: 'system-status:system-status'
-        config:
-          type: kpis
-          metrics:
-            - id: cpu
-              label: CPU
-            - id: ram
-              label: MEM
-            - swap
-      - position: 9
-        type: 'system-status:system-status'
-        config:
-          type: kpis
-          metrics:
-            - id: disk
-              label: Disk
-            - id: battery
-              label: Batt
-            - id: temperature
-              label: Temp
-      - position: 10
-        type: 'system-status:system-status'
-        config:
-          type: kpis
-          metrics:
-            - id: network
-              label: Net
-            - id: uptime
-              label: Up
-            - id: frequency
-              label: Freq
-      - position: 11
-        type: 'system-status:system-status'
-        config:
-          type: kpis
-          metrics:
-            - id: load
-              label: Load
-            - id: processes
-              label: Procs
-      - position: 12
-        type: 'core:change-deck'
-        config:
-          deck: main
-          icon: ⬅
-          label: Main
-      - position: 13
-        type: 'system-status:system-status'
-        config:
-          type: kpis
-          metrics:
-            - id: 'cpu-boost'
-              label: Boost
-            - id: cpu-voltages
-              label: Vcore
-            - id: fan-rpm
-              label: Fan
-  warp:
-    trigger:
-      process_name: warp
-    name: Warp
-    icon: icon://music
-    buttons:
-      - type: 'date-time:analog-clock'
-  test:
-    name: Test
-    icon: icon://flask-conical
-    buttons:
-      - position: 0
-        type: 'system-status:system-status'
-        config:
-          type: bars
-          metrics:
-            - id: cpu
-              label: CPU
-            - id: ram
-              label: MEM
-            - swap
-      - position: 1
-        type: 'system-status:system-status'
-        config:
-          type: kpis
-          metrics: [disk-io, network-read, network-write]
-      - position: 2
-        type: 'system-status:system-status'
-        config:
-          type: chart
-          metrics:
-            - id: cpu
-            - id: ram
-          windowSeconds: 60
-      - type: 'date-time:time'
-        config:
-          variant: big
-      - type: 'date-time:date'
-      - type: 'core:change-deck'
-        config:
-          deck: main
-          icon: icon://arrow-left
-          label: Main
+        type: "media:volume:down"
 
-logging:
-  level: info
+      - position: 7
+        type: "media:volume:up"
+
+      - position: 8
+        type: "media:mute"
+
+      - position: 9
+        type: "emoji-selector:launcher"
+
+      - position: 12
+        type: "media:player"
+
+  demo-decks-index: !include demos/demo-decks-index.yml
+  demo-app-shortcuts: !include demos/demo-app-shortcuts.yml
+  demo-system-status: !include demos/demo-system-status.yml
+  demo-media: !include demos/demo-media.yml
+  demo-weather: !include demos/demo-weather.yml
+  demo-emoji-selector: !include demos/demo-emoji-selector.yml
+  demo-date-time: !include demos/demo-date-time.yml
+  demo-value-display: !include demos/demo-value-display.yml
+  demo-core: !include demos/demo-core.yml

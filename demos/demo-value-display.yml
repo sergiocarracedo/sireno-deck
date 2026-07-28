@@ -1,0 +1,15 @@
+name: Value Display Demo
+buttons:
+  - position: 0
+    type: "value-display:display"
+    config:
+      values:
+        - label: CPU
+          command: "nproc"
+          formatter: raw
+        - label: RAM
+          command: 'free -m | awk ''/^Mem:/{print $3"/"$2}'''
+          units: MB
+        - label: Up
+          command: "uptime -p"
+          formatter: strip

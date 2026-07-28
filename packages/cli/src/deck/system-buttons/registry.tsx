@@ -64,10 +64,12 @@ export const renderSystemButton = (
 
 interface OverlayToggleSurfaceProps {
   deckIcon: string
+  overlayDeckName?: string
 }
 
 const OverlayToggleSurface = ({
   deckIcon,
+  overlayDeckName,
 }: OverlayToggleSurfaceProps): ReactElement => {
   return (
     <div
@@ -79,11 +81,14 @@ const OverlayToggleSurface = ({
         <Icon source="icon://slash" size={14} />
         <Icon source="icon://layers" size={26} />
       </div>
-      <Label text="Toggle overlay" lines={2} />
+      <Label text={overlayDeckName ?? "Overlay"} lines={2} />
     </div>
   )
 }
 
-export const renderOverlayToggleButton = (deckIcon: string): ReactElement => (
-  <OverlayToggleSurface deckIcon={deckIcon} />
+export const renderOverlayToggleButton = (
+  deckIcon: string,
+  overlayDeckName?: string,
+): ReactElement => (
+  <OverlayToggleSurface deckIcon={deckIcon} overlayDeckName={overlayDeckName} />
 )

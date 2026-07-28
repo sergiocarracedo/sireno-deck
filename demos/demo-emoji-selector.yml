@@ -1,0 +1,4 @@
+name: Emoji Demo
+buttons:
+  - position: 0
+    type: "emoji-selector:launcher"

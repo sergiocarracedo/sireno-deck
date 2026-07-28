@@ -62,7 +62,7 @@ const CONTEXT_FIELDS = [
   "fullPath",
 ] as const
 
-const formatHuman = (jsonLine: string): string | null => {
+export const formatHuman = (jsonLine: string): string | null => {
   let entry: Record<string, unknown>
   try {
     entry = JSON.parse(jsonLine) as Record<string, unknown>
@@ -137,11 +137,55 @@ const errorSerializer = (
   return out as SerializedError
 }
 
+// ponytail: stray INVOCATION_ID + JOURNAL_STREAM in a user's shell (from a
+// prior systemd context) makes human-format detection false-positive. Match
+// the same heuristic as isUnderServiceManager: ppid === 1 is the only reliable
+// signal that we're actually being supervised by init.
+import { readFileSync } from "node:fs"
+
+export const isOrphanedToInit = (): boolean => {
+  if (process.platform !== "linux") return true
+  try {
+    const stat = readFileSync("/proc/self/stat", "utf8")
+    const closeParen = stat.lastIndexOf(")")
+    const tail = stat.slice(closeParen + 2)
+    const ppid = Number.parseInt(tail.split(" ")[1] ?? "", 10)
+    return Number.isFinite(ppid) && ppid === 1
+  } catch {
+    return false
+  }
+}
+
+// ponytail: factory so tests can inject a mocked isOrphanedToInit without
+// hitting ESM binding issues (the closure above captures the real one).
+export interface ServiceModeDeps {
+  readonly isOrphaned: () => boolean
+}
+
+export const createIsServiceMode = (deps: ServiceModeDeps) => (): boolean => {
+  if (process.env["SIRENO_DAEMON_CHILD"]) return true
+  if (process.env["LAUNCH_JOB_NAME"]) return deps.isOrphaned()
+  if (
+    process.env["INVOCATION_ID"] &&
+    process.env["JOURNAL_STREAM"] &&
+    deps.isOrphaned()
+  ) {
+    return true
+  }
+  return false
+}
+
+export const isServiceMode = createIsServiceMode({
+  isOrphaned: isOrphanedToInit,
+})
+
 export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
   const { level, verbose = false, json = false } = options
 
   if (verbose) process.env["SIRENO_LOG_VERBOSE"] = "1"
   if (json) process.env["SIRENO_LOG_JSON"] = "1"
+
+  const wantRaw = json || isServiceMode() || !process.stdout.isTTY
 
   const loggerOptions: LoggerOptions = {
     name: "sireno-deck",
@@ -155,12 +199,10 @@ export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
     },
   }
 
-  if (json) {
+  if (wantRaw) {
     return pino(loggerOptions)
   }
 
-  // ponytail: always inline context for human output.
-  // Use raw ndjson via `--json`, INVOCATION_ID (journald), or LAUNCH_PATH (launchd).
   const dest = new HumanWritable()
   const teeStream = {
     write(chunk: string): void {

@@ -6,6 +6,7 @@ import { hideBin } from "yargs/helpers"
 
 import { buildCli } from "./index"
 import { createLogger } from "@/util/logger"
+import { terminateChildren } from "@/util/daemon"
 
 /**
  * Install global handlers for uncaught exceptions and unhandled promise
@@ -21,6 +22,21 @@ import { createLogger } from "@/util/logger"
  */
 let processExitInProgress = false
 
+const killChildrenAndExit = (
+  logger: ReturnType<typeof createLogger>,
+  code: number,
+): void => {
+  if (processExitInProgress) return
+  processExitInProgress = true
+  void terminateChildren({ logger, timeoutMs: 2_000 })
+    .catch((err: unknown) => {
+      logger.warn({ err }, "main: terminate children failed")
+    })
+    .finally(() => {
+      process.exit(code)
+    })
+}
+
 const installProcessGuards = (
   logger: ReturnType<typeof createLogger>,
 ): void => {
@@ -29,20 +45,24 @@ const installProcessGuards = (
       { err, origin },
       "uncaughtException — exiting to surface the failure",
     )
-    if (!processExitInProgress) {
-      processExitInProgress = true
-      process.exit(1)
-    }
+    killChildrenAndExit(logger, 1)
   })
   process.on("unhandledRejection", (reason) => {
     logger.fatal(
       { reason },
       "unhandledRejection — exiting to surface the failure",
     )
-    if (!processExitInProgress) {
-      processExitInProgress = true
-      process.exit(1)
-    }
+    killChildrenAndExit(logger, 1)
+  })
+  // ponytail: SIGINT/SIGTERM also reap children — supervisors (systemd,
+  // launchd, our `stop`) send SIGTERM and we don't want orphaned vite/playwright.
+  process.on("SIGTERM", () => {
+    logger.info("main: SIGTERM received")
+    killChildrenAndExit(logger, 0)
+  })
+  process.on("SIGINT", () => {
+    logger.info("main: SIGINT received")
+    killChildrenAndExit(logger, 0)
   })
 }
 

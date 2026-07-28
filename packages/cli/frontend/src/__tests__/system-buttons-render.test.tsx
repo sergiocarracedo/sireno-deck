@@ -168,7 +168,7 @@ describe("Deck with system buttons", () => {
     expect(
       container.querySelector('[data-sireno-overlay-toggle="true"]'),
     ).not.toBeNull()
-    expect(screen.getByText("Toggle overlay")).toBeTruthy()
+    expect(screen.getByText("Overlay")).toBeTruthy()
     const compositeIcons = cell?.querySelectorAll(
       '[data-sireno-ui-icon="true"]',
     )
@@ -176,6 +176,5 @@ describe("Deck with system buttons", () => {
     expect(compositeIcons?.[0]?.getAttribute("data-sireno-icon-source")).toBe(
       "generic",
     )
-    expect(screen.queryByText("Overlay")).toBeNull()
   })
 })

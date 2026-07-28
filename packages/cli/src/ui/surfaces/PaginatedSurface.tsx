@@ -105,7 +105,10 @@ export function PaginatedSurface<T>({
   const page = allPages[current]!
 
   return (
-    <div className={cn("relative flex h-full w-full flex-col", className)} style={style}>
+    <div
+      className={cn("relative flex h-full w-full flex-col", className)}
+      style={style}
+    >
       <div className="min-h-0 flex-1">{page.render(page.config as T)}</div>
       {count > 1 && (
         <div className="absolute bottom-[-4px] left-0 right-0 flex items-center justify-center gap-1">

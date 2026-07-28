@@ -50,6 +50,7 @@ interface ViteSpawnOptions {
   themeDir?: string
   childLabel: "frontend vite" | "emulator vite"
   exitFatalMessage: string
+  onPid?: (pid: number) => void
 }
 
 const spawnViteAndWaitForReady = (
@@ -65,6 +66,7 @@ const spawnViteAndWaitForReady = (
     themeDir,
     childLabel,
     exitFatalMessage,
+    onPid,
   } = options
 
   return new Promise((resolve, reject) => {
@@ -92,6 +94,8 @@ const spawnViteAndWaitForReady = (
         stdio: ["ignore", "pipe", "pipe"],
       },
     )
+    const spawnedPid = child.pid
+    if (spawnedPid !== undefined) onPid?.(spawnedPid)
 
     const stdoutChunks: string[] = []
     const stderrChunks: string[] = []
@@ -184,6 +188,7 @@ export const spawnFrontendVite = (options: {
   logger: pino.Logger
   wsUrl?: string
   themeDir?: string
+  onPid?: (pid: number) => void
 }): Promise<{ process: ChildProcess; url: string }> =>
   spawnViteAndWaitForReady({
     ...options,
@@ -200,6 +205,7 @@ export const spawnEmulatorVite = (options: {
   logger: pino.Logger
   wsUrl?: string
   frontendUrl?: string
+  onPid?: (pid: number) => void
 }): Promise<{ process: ChildProcess; url: string }> =>
   spawnViteAndWaitForReady({
     ...options,

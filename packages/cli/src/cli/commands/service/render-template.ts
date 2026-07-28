@@ -16,36 +16,72 @@ export interface TemplateVars {
   execStart: string
   restartPolicy: string
   workingDirectory: string
-  user: string
-  group: string
+  user?: string
+  group?: string
+  logPath: string
 }
 
-export const renderSystemd = (vars: TemplateVars): string => {
-  const lines = [
+export interface SystemdOptions {
+  userLevel: boolean
+}
+
+export const renderSystemd = (
+  vars: TemplateVars,
+  options: SystemdOptions,
+): string => {
+  const lines: string[] = [
     "[Unit]",
     `Description=${vars.description}`,
     "After=network-online.target",
     "Wants=network-online.target",
     "",
     "[Service]",
-    `Type=simple`,
+    "Type=simple",
     `ExecStart=${vars.execStart}`,
     `Restart=${vars.restartPolicy}`,
-    `RestartSec=5`,
+    "RestartSec=5",
     `WorkingDirectory=${vars.workingDirectory}`,
-    `User=${vars.user}`,
-    `Group=${vars.group}`,
-    `Environment=NODE_ENV=production`,
-    `Environment=HOME=${vars.user === "root" ? "/root" : `/home/${vars.user}`}`,
-    "",
-    "[Install]",
-    "WantedBy=multi-user.target",
   ]
-  return lines.join("\n") + "\n"
+  if (vars.user !== undefined) lines.push(`User=${vars.user}`)
+  if (vars.group !== undefined) lines.push(`Group=${vars.group}`)
+  lines.push("Environment=NODE_ENV=production")
+  lines.push("")
+  lines.push("[Install]")
+  lines.push(
+    `WantedBy=${options.userLevel ? "default.target" : "multi-user.target"}`,
+  )
+  return `${lines.join("\n")}\n`
+}
+
+const splitExec = (execStart: string): readonly string[] => {
+  const tokens: string[] = []
+  let buf = ""
+  let quote: string | null = null
+  for (const ch of execStart) {
+    if (quote !== null) {
+      if (ch === quote) {
+        quote = null
+      } else {
+        buf += ch
+      }
+    } else if (ch === '"' || ch === "'") {
+      quote = ch
+    } else if (ch === " ") {
+      if (buf.length > 0) {
+        tokens.push(buf)
+        buf = ""
+      }
+    } else {
+      buf += ch
+    }
+  }
+  if (buf.length > 0) tokens.push(buf)
+  return tokens
 }
 
 export const renderDarwinPlist = (vars: TemplateVars): string => {
-  const lines = [
+  const [program, ...restArgs] = splitExec(vars.execStart)
+  const lines: string[] = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
     '<plist version="1.0">',
@@ -54,8 +90,8 @@ export const renderDarwinPlist = (vars: TemplateVars): string => {
     `  <string>${vars.name}</string>`,
     "  <key>ProgramArguments</key>",
     "  <array>",
-    `    <string>${vars.execStart.split(" ")[0]}</string>`,
-    `    <string>${vars.execStart.split(" ").slice(1).join(" ")}</string>`,
+    ...(program !== undefined ? [`    <string>${program}</string>`] : []),
+    ...restArgs.map((arg) => `    <string>${arg}</string>`),
     "  </array>",
     "  <key>RunAtLoad</key>",
     "  <true/>",
@@ -64,13 +100,13 @@ export const renderDarwinPlist = (vars: TemplateVars): string => {
     "  <key>WorkingDirectory</key>",
     `  <string>${vars.workingDirectory}</string>`,
     "  <key>StandardOutPath</key>",
-    "  <string>/var/log/sireno-deck.log</string>",
+    `  <string>${vars.logPath}</string>`,
     "  <key>StandardErrorPath</key>",
-    "  <string>/var/log/sireno-deck.log</string>",
+    `  <string>${vars.logPath}</string>`,
     "</dict>",
     "</plist>",
   ]
-  return lines.join("\n") + "\n"
+  return `${lines.join("\n")}\n`
 }
 
 export const renderWindowsSvc = (vars: TemplateVars): string => {
@@ -82,10 +118,14 @@ sc failure "${vars.name}" reset= 86400 actions= restart/5000/restart/10000/resta
 `
 }
 
-export const renderTemplate = (os: OS, vars: TemplateVars): string => {
+export const renderTemplate = (
+  os: OS,
+  vars: TemplateVars,
+  options: SystemdOptions,
+): string => {
   switch (os) {
     case "linux":
-      return renderSystemd(vars)
+      return renderSystemd(vars, options)
     case "darwin":
       return renderDarwinPlist(vars)
     case "win32":

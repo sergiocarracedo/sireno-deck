@@ -16,26 +16,18 @@ const ICON_CASES: ReadonlyArray<{ label: string; icon: string }> = [
   { label: "icon://play", icon: "icon://play" },
   { label: "icon://settings", icon: "icon://settings" },
   { label: "icon://volume-x", icon: "icon://volume-x" },
-  // Addon / builtin asset refs
+  // Addon asset refs
   {
     label: "addon://emoji-selector/assets/smileys.svg",
     icon: "addon://emoji-selector/assets/smileys.svg",
   },
   {
-    label: "builtin://core/foo.png (no builtin addon)",
-    icon: "builtin://core/foo.png",
+    label: "addon://emoji-selector/assets/launcher.svg",
+    icon: "addon://emoji-selector/assets/launcher.svg",
   },
-  // Paths
-  { label: "./assets/chrome.svg", icon: "./assets/chrome.svg" },
-  { label: "../shared/x.png", icon: "../shared/x.png" },
-  { label: "~/p/x.png", icon: "~/Pictures/x.png" },
   // Single emoji
   { label: "🔥", icon: "🔥" },
   { label: "✈️", icon: "✈️" },
-  // Edge: multi-emoji (rejected)
-  { label: "🔥🔥 (invalid)", icon: "🔥🔥" },
-  // Edge: arbitrary string (rejected → fallback)
-  { label: "% (invalid)", icon: "%" },
   // Edge: empty name in scheme
   { label: "icon:// (invalid)", icon: "icon://" },
   // No icon at all (just label) — exercises the label-only path

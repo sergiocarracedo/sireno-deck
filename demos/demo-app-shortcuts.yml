@@ -1,0 +1,44 @@
+name: App Shortcuts Demo
+buttons:
+  - position: 0
+    type: "core:action"
+    actions:
+      tap: "code"
+    config:
+      icon: icon://code
+      label: VS Code
+  - position: 1
+    type: "core:action"
+    actions:
+      tap: "google-chrome"
+    config:
+      icon: icon://globe
+      label: Chrome
+  - position: 2
+    type: "core:action"
+    actions:
+      tap: "slack"
+    config:
+      icon: icon://message-square
+      label: Slack
+  - position: 3
+    type: "core:action"
+    actions:
+      tap: "discord"
+    config:
+      icon: icon://message-circle
+      label: Discord
+  - position: 4
+    type: "core:action"
+    actions:
+      tap: "teams"
+    config:
+      icon: icon://users
+      label: Teams
+  - position: 5
+    type: "core:action"
+    actions:
+      tap: "google-meet"
+    config:
+      icon: icon://video
+      label: Google Meet

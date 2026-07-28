@@ -302,6 +302,7 @@ export const setupAddonServices = (
       isCompact,
       (fullPath) => getAssetByPath(fullPath)?.id,
       runtime.getAvailableOverlayDeckIcon(),
+      runtime.getAvailableOverlayDeckName(),
     )
     bridge.broadcast(msg)
   }, 1000)

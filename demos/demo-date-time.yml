@@ -1,0 +1,20 @@
+name: Date/Time Demo
+buttons:
+  - position: 0
+    type: "date-time:time"
+    config:
+      variant: big
+  - position: 1
+    type: "date-time:date"
+  - position: 2
+    type: "date-time:analog-clock"
+  - position: 3
+    type: "date-time:time"
+  - position: 4
+    type: "date-time:date-time"
+    config:
+      format: "DD/MM/YYYY HH:mm:ss"
+  - position: 5
+    type: "date-time:date-time"
+    config:
+      format: "HH:mm — ddd DD MMM"

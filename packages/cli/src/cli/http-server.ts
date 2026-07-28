@@ -22,7 +22,7 @@ export interface StartHttpServerOptions {
     path: string
     internal: boolean
     source: string
-    buttonTypes: string[]
+    buttonTypes: Array<{ type: string; internal: boolean }>
     defaultButton: string | null
     decks: Array<{
       id: string

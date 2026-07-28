@@ -385,16 +385,8 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
         return true
       }
       if (gesture === "hold") {
-        if (overlayDeckId !== null) {
-          navStack.length = 0
-          navStack.push(mainDeck.id)
-          setOverlay(null)
-          return true
-        }
-        if (availableOverlayDeckId !== null) {
-          setOverlay(availableOverlayDeckId)
-          return true
-        }
+        // ponytail: hold always goes to main, never toggles overlay
+        if (overlayDeckId !== null) setOverlay(null)
         navStack.length = 0
         navStack.push(mainDeck.id)
         const prevTransient = transientDeckId

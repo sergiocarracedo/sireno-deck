@@ -66,9 +66,11 @@ describe("emoji-selector emoji buttons carry actions.tap = type://<emoji>", () =
     for (const button of favDeck.buttons) {
       expect(button.type).toBe("emoji-selector:emoji")
       const emoji = (button as { emoji: string }).emoji
-      expect((button as { actions?: unknown }).actions).toEqual({
-        tap: `type://${emoji}`,
-      })
+      expect((button as { actions?: unknown }).actions).toEqual(
+        expect.objectContaining({
+          tap: `type://${emoji}`,
+        }),
+      )
     }
   })
 

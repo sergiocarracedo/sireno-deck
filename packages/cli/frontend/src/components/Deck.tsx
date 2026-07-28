@@ -79,6 +79,7 @@ const resolvePosition = (button: DeckButton, fallback: number): number => {
 interface ButtonSurfaceProps {
   readonly button: DeckButton
   readonly deckOverlayIcon?: string | null
+  readonly overlayDeckName?: string | null
 }
 
 interface DeckButtonCellProps {
@@ -209,6 +210,7 @@ const DeckButtonCell = ({
           <ButtonSurface
             button={button}
             deckOverlayIcon={deckOverlayIcon ?? null}
+            overlayDeckName={overlayDeckName ?? null}
           />
         </ErrorBoundary>
       </div>
@@ -233,6 +235,7 @@ const DeckButtonCell = ({
           <ButtonSurface
             button={button}
             deckOverlayIcon={deckOverlayIcon ?? null}
+            overlayDeckName={overlayDeckName ?? null}
           />
         </ErrorBoundary>
       </ButtonFrame>
@@ -246,7 +249,11 @@ const DeckButtonCell = ({
  * incoming event and never auto-cleared, so addons can compare against
  * `gesture.at` in a `useEffect` without losing the hide-timer race.
  */
-const ButtonSurface = ({ button, deckOverlayIcon }: ButtonSurfaceProps) => {
+const ButtonSurface = ({
+  button,
+  deckOverlayIcon,
+  overlayDeckName,
+}: ButtonSurfaceProps) => {
   const registryEntry = addonRegistry[button.type]
   const [gesture, setGesture] = useState<AddonGestureEvent | null>(null)
   const channel = `runtime:gesture:${button.id}`
@@ -262,7 +269,10 @@ const ButtonSurface = ({ button, deckOverlayIcon }: ButtonSurfaceProps) => {
       typeof deckOverlayIcon === "string" &&
       deckOverlayIcon.length > 0
     ) {
-      return renderOverlayToggleButton(deckOverlayIcon)
+      return renderOverlayToggleButton(
+        deckOverlayIcon,
+        overlayDeckName ?? undefined,
+      )
     }
     return renderSystemButton(button.type)
   }

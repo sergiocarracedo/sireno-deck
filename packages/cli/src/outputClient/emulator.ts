@@ -110,6 +110,9 @@ export class EmulatorOutputClient implements OutputClient {
             readyTimeoutMs: DEFAULT_TIMEOUT_MS,
             logger,
             wsUrl: opts.bridge.url,
+            ...(opts.onChildPid !== undefined
+              ? { onPid: opts.onChildPid }
+              : {}),
           })
 
     const emulatorVite = await spawnEmulatorVite({
@@ -120,6 +123,7 @@ export class EmulatorOutputClient implements OutputClient {
       logger,
       wsUrl: opts.bridge.url,
       frontendUrl: frontendVite.url,
+      ...(opts.onChildPid !== undefined ? { onPid: opts.onChildPid } : {}),
     })
 
     opts.bridge.setDevice(descriptor)

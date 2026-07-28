@@ -1,0 +1,49 @@
+name: System Status Demo
+buttons:
+  - position: 0
+    type: "system-status:system-status"
+    config:
+      type: bars
+      metrics: [cpu]
+  - position: 1
+    type: "system-status:system-status"
+    config:
+      type: bars
+      metrics: [cpu, ram]
+  - position: 2
+    type: "system-status:system-status"
+    config:
+      type: bars
+      metrics: [cpu, ram, swap]
+  - position: 3
+    type: "system-status:system-status"
+    config:
+      type: bars
+      metrics: [disk, battery, temperature]
+  - position: 4
+    type: "system-status:system-status"
+    config:
+      type: kpis
+      metrics: [disk-io, network-read, network-write]
+  - position: 5
+    type: "system-status:system-status"
+    config:
+      type: chart
+      metrics: [cpu, ram]
+      windowSeconds: 60
+  - position: 6
+    type: "system-status:system-status"
+    config:
+      type: kpis
+      metrics: [gpu-temp]
+  - position: 7
+    type: "system-status:system-status"
+    config:
+      type: kpis
+      metrics: [temperature, frequency]
+  - position: 8
+    type: "system-status:system-status"
+    config:
+      type: chart
+      metrics: [load]
+      windowSeconds: 30

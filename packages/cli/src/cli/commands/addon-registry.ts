@@ -19,13 +19,18 @@ export interface ScannedAddon {
   readonly frontendEntry: string | null
   readonly publishIntervalMs: number | null
   readonly pollerEntry: string | null
-  readonly buttonTypes: Readonly<Record<string, string>>
+  readonly buttonTypes: Readonly<Record<string, ScannedButtonType>>
   readonly deckTypes: Readonly<Record<string, string>>
   readonly source: "json" | "regex"
   readonly globalServiceEntry: string | null
   readonly decks: ReadonlyArray<ScannedDeck>
   readonly path?: string
   readonly internal?: boolean
+}
+
+export interface ScannedButtonType {
+  readonly exportName: string
+  readonly internal: boolean
 }
 
 export interface AddonFrontendRef {
@@ -114,7 +119,7 @@ const scanAddonDir = async (
   const hasGlobalService = /\bglobalService\b/.test(raw)
   if (types.size === 0 && pollerEntry === null && !hasGlobalService)
     return jsonScanned
-  const buttonTypes: Record<string, string> = {}
+  const buttonTypes: Record<string, ScannedButtonType> = {}
   const entryMapRegex =
     /["']([a-z0-9-]+:[a-z0-9-]+)["']\s*:\s*\{\s*(?=[^}]*frontend\s*:\s*([A-Za-z_$][A-Za-z0-9_$]*))/g
   for (const src of allSources) {
@@ -126,7 +131,7 @@ const scanAddonDir = async (
         exportName !== undefined &&
         !buttonTypes[type]
       ) {
-        buttonTypes[type] = exportName
+        buttonTypes[type] = { exportName, internal: false }
       }
     }
   }
@@ -170,7 +175,7 @@ const scanAddonJsonManifest = async (
 
   const entryPath = resolvePath(addonDir, entry)
   const types = new Set<string>()
-  const buttonTypes: Record<string, string> = {}
+  const buttonTypes: Record<string, ScannedButtonType> = {}
   let publishIntervalMs: number | null = null
   let hasGlobalService = false
   const decks: Array<{
@@ -178,6 +183,7 @@ const scanAddonJsonManifest = async (
     isOverlay: boolean
     paginated: boolean
     buttons: number
+    internal: boolean
   }> = []
   try {
     const mod = (await import(entryPath)) as {
@@ -205,9 +211,16 @@ const scanAddonJsonManifest = async (
           })
         : null
     if (candidate !== null) {
-      for (const [type] of Object.entries(candidate.buttonTypes ?? {})) {
+      for (const [type, def] of Object.entries(candidate.buttonTypes ?? {})) {
         types.add(type)
-        buttonTypes[type] = "default"
+        const d = def as Record<string, unknown> | null
+        const service =
+          d !== null && typeof d === "object"
+            ? (d["service"] as Record<string, unknown> | undefined)
+            : undefined
+        const internal =
+          service?.["internal"] === true || d?.["internal"] === true
+        buttonTypes[type] = { exportName: "default", internal }
       }
       if (typeof candidate.publishIntervalMs === "number") {
         publishIntervalMs = candidate.publishIntervalMs
@@ -216,24 +229,66 @@ const scanAddonJsonManifest = async (
         hasGlobalService = true
       }
       if (candidate.decks !== null && typeof candidate.decks === "object") {
-        for (const [deckId, deckDef] of Object.entries(
-          candidate.decks as Record<string, unknown>,
-        )) {
-          if (deckDef === null || typeof deckDef !== "object") continue
-          const d = deckDef as Record<string, unknown>
-          const isOverlay = d["isOverlay"] === true
-          const paginated = d["paginated"] === true
-          const buttonCount = Array.isArray(d["buttons"])
-            ? d["buttons"].length
-            : 0
-          const deckInternal = d["internal"] === true
-          decks.push({
-            id: deckId,
-            isOverlay,
-            paginated,
-            buttons: buttonCount,
-            internal: deckInternal,
-          })
+        const isArray = Array.isArray(candidate.decks)
+        if (isArray) {
+          for (const entry of candidate.decks as Array<
+            Record<string, unknown>
+          >) {
+            if (entry === null || typeof entry !== "object") continue
+            // Static entry: { id: string, buttons?: [], isOverlay?: bool, ... }
+            if (
+              typeof entry["id"] === "string" &&
+              entry["createDeck"] === undefined &&
+              entry["createDecks"] === undefined
+            ) {
+              decks.push({
+                id: entry["id"] as string,
+                isOverlay: entry["isOverlay"] === true,
+                paginated: entry["paginated"] === true,
+                buttons: Array.isArray(entry["buttons"])
+                  ? (entry["buttons"] as unknown[]).length
+                  : 0,
+                internal: entry["internal"] === true,
+              })
+              continue
+            }
+            // Single-dynamic: { createDeck: fn } — id is the entry's id field
+            if (
+              typeof entry["createDeck"] === "function" &&
+              typeof entry["id"] === "string"
+            ) {
+              decks.push({
+                id: entry["id"] as string,
+                isOverlay: entry["isOverlay"] === true,
+                paginated: entry["paginated"] === true,
+                buttons: 0,
+                internal: entry["internal"] === true,
+              })
+              continue
+            }
+            // Multi-dynamic: { createDecks: fn } — id unknown without calling it; skip
+          }
+        } else {
+          // Legacy Record<string, AddonDeckDefinition> form
+          for (const [deckId, deckDef] of Object.entries(
+            candidate.decks as Record<string, unknown>,
+          )) {
+            if (deckDef === null || typeof deckDef !== "object") continue
+            const d = deckDef as Record<string, unknown>
+            const isOverlay = d["isOverlay"] === true
+            const paginated = d["paginated"] === true
+            const buttonCount = Array.isArray(d["buttons"])
+              ? d["buttons"].length
+              : 0
+            const deckInternal = d["internal"] === true
+            decks.push({
+              id: deckId,
+              isOverlay,
+              paginated,
+              buttons: buttonCount,
+              internal: deckInternal,
+            })
+          }
         }
       }
     }

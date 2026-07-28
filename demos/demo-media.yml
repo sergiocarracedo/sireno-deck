@@ -1,0 +1,10 @@
+name: Media Demo
+buttons:
+  - position: 0
+    type: "media:player"
+  - position: 1
+    type: "media:volume:down"
+  - position: 2
+    type: "media:volume:up"
+  - position: 3
+    type: "media:mute"

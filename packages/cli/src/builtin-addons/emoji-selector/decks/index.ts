@@ -1,11 +1,22 @@
 import type { AddonDeckEntry, AddonGeneratedDeck } from "@/addon/api"
 
-import { categories, Emoji } from "../data/categories"
+import { categories, type Emoji } from "../data/categories"
 import {
   DEFAULT_FAVORITES,
   EmojiSelectorDeckSchema,
   type EmojiSelectorDeckConfig,
 } from "../support"
+
+// ponytail: build a char→shortcode lookup at module load so favorites
+// get their shortcode filled in without a separate data file.
+const CHAR_TO_SHORTCODE: ReadonlyMap<string, string | undefined> = new Map(
+  categories.flatMap((c) =>
+    c.emojis.map((e) => [e.char, e.shortcode] as const),
+  ),
+)
+
+const lookupShortcode = (char: string): string | undefined =>
+  CHAR_TO_SHORTCODE.get(char)
 
 const EMOJI_PAGE_SIZE = 13
 
@@ -24,11 +35,13 @@ const buildEmojiDeck = (name: string, emojis: readonly Emoji[]) => {
     buttons: emojis.map((emoji, offset) => ({
       type: "emoji-selector:emoji",
       emoji: emoji.char,
-      shortcode: emoji.shortcode,
+      ...(emoji.shortcode !== undefined ? { shortcode: emoji.shortcode } : {}),
       position: offset,
       actions: {
         tap: `type://${emoji.char}`,
-        ...(emoji.shortcode ? { dbltap: `type://:${emoji.shortcode}:` } : {}),
+        ...(emoji.shortcode !== undefined
+          ? { dbltap: `type://:${emoji.shortcode}:` }
+          : {}),
       },
     })),
     paginated: true,
@@ -44,6 +57,7 @@ const generateDecks = (
     config.favorites.length > 0 ? config.favorites : [...DEFAULT_FAVORITES]
   ).map((emoji) => ({
     char: emoji,
+    shortcode: lookupShortcode(emoji),
   }))
 
   const favoritesDeckId = buildCategoryDeckId(deck.id, FAVORITES.id)

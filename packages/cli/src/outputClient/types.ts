@@ -40,6 +40,7 @@ export interface InitOptions {
   readonly rebuildDecksForKeyCount?: (
     keyCount: number,
   ) => ReadonlyArray<RuntimeDeck>
+  readonly onChildPid?: (pid: number) => void
 }
 
 export interface OutputHandle {

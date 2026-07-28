@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72" width="72" height="72">
+  <circle cx="24" cy="28" r="20" fill="#fde68a"/>
+  <circle cx="48" cy="28" r="20" fill="#fca5a5"/>
+  <circle cx="36" cy="52" r="20" fill="#86efac"/>
+  <text x="24" y="36" font-size="22" text-anchor="middle">😀</text>
+  <text x="48" y="36" font-size="22" text-anchor="middle">😂</text>
+  <text x="36" y="60" font-size="22" text-anchor="middle">😍</text>
+</svg>

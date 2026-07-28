@@ -1,0 +1,16 @@
+name: Core Demo
+buttons:
+  - position: 0
+    type: "core:action"
+    actions:
+      tap: "xdg-open https://google.com"
+    config:
+      icon: icon://search
+      label: Search
+  - position: 1
+    type: "core:action"
+    actions:
+      tap: "xdg-open https://github.com"
+    config:
+      icon: icon://github
+      label: GitHub

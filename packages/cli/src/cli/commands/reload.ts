@@ -1,8 +1,11 @@
-import { readPid, isRunning } from "@/util/daemon"
-import type { CommandModule } from "yargs"
+import type pino from "pino"
+
+import { readPid, isRunning, resolveDaemonPaths } from "@/util/daemon"
+import { tailLogs } from "@/util/log-tail"
 
 export interface ReloadOptions {
-  readonly logger: import("pino").Logger
+  readonly logger: pino.Logger
+  readonly logs?: boolean
 }
 
 export const reload = async (options: ReloadOptions): Promise<void> => {
@@ -24,17 +27,11 @@ export const reload = async (options: ReloadOptions): Promise<void> => {
   } catch (err) {
     logger.error({ err, pid }, "reload: failed to send signal")
     process.exitCode = 1
+    return
   }
-}
 
-interface ServiceReloadArgs {}
-
-export const reloadCommand: CommandModule<object, ServiceReloadArgs> = {
-  command: "reload",
-  describe: "Send SIGUSR1 to the daemon to reload its configuration",
-  handler: async (argv) => {
-    const { createLogger } = await import("@/util/logger")
-    const logger = createLogger({ verbose: false })
-    await reload({ logger })
-  },
+  if (options.logs === true && process.exitCode !== 1) {
+    const logPath = `${resolveDaemonPaths().runtimeDir}/service.log`
+    await tailLogs({ logPath, follow: true, lines: 50 })
+  }
 }

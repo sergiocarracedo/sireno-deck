@@ -8,12 +8,17 @@ interface DeckInfo {
   internal: boolean
 }
 
+interface ButtonTypeInfo {
+  type: string
+  internal: boolean
+}
+
 interface AddonInfo {
   name: string
   path: string
   internal: boolean
   source: string
-  buttonTypes: string[]
+  buttonTypes: ButtonTypeInfo[]
   defaultButton: string | null
   decks: DeckInfo[]
 }
@@ -38,35 +43,55 @@ const groupPaginated = (decks: DeckInfo[]): DeckInfo[] => {
   return [...groups.values()]
 }
 
-const suffix = (items: string[]): string =>
-  items.length > 0 ? ` ${items.join(" ")}` : ""
+const stripAddonPrefix = (id: string): string => {
+  const idx = id.indexOf(":")
+  return idx >= 0 ? id.slice(idx + 1) : id
+}
+
+const deckModifiers = (deck: DeckInfo): string[] => {
+  const out: string[] = []
+  if (deck.isOverlay) out.push("◐")
+  else if (deck.paginated) out.push("⠿")
+  if (deck.internal) out.push("🔒")
+  return out
+}
 
 const Chip = ({
+  id,
   label,
   tone,
-  emoji,
+  modifiers,
 }: {
+  id: string
   label: string
-  tone: "deck" | "overlay" | "button" | "internal"
-  emoji?: string
+  tone: "deck" | "button"
+  modifiers?: string[]
 }) => {
   const cls =
     tone === "deck"
-      ? "border-amber-500/60 text-amber-300 bg-amber-500/10"
-      : tone === "overlay"
-        ? "border-red-500/60 text-red-300 bg-red-500/10"
-        : tone === "button"
-          ? "border-sky-500/60 text-sky-300 bg-sky-500/10"
-          : "border-emerald-500/60 text-emerald-300 bg-emerald-500/10"
+      ? "border-sky-500/60 text-sky-300 bg-sky-500/10"
+      : "border-emerald-500/60 text-emerald-300 bg-emerald-500/10"
+  const modSuffix =
+    modifiers !== undefined && modifiers.length > 0
+      ? ` ${modifiers.join("")}`
+      : ""
   return (
     <span
+      title={id}
       className={`inline-block rounded-full border px-2 py-0 font-mono text-[10px] font-bold uppercase tracking-wide ${cls}`}
     >
       {label}
-      {emoji !== undefined ? suffix([emoji]) : ""}
+      {modSuffix}
     </span>
   )
 }
+
+const LegendModifier = ({ emoji, label }: { emoji: string; label: string }) => (
+  <span className="inline-flex items-center gap-1 text-neutral-400">
+    <span aria-hidden="true">{emoji}</span>
+    <span>{label}</span>
+  </span>
+)
 
 export interface AddonsPageProps {
   addonInventory?: AddonInventory | null
@@ -116,29 +141,19 @@ export const AddonsPage = ({ addonInventory }: AddonsPageProps) => {
     return <div className="p-3 text-neutral-500">loading…</div>
   }
 
-  const deckLabel = (deck: DeckInfo, addonInternal: boolean): string => {
-    const emojis: string[] = []
-    if (deck.isOverlay) emojis.push("◐")
-    else if (deck.paginated) emojis.push("⠿")
-    if (addonInternal || deck.internal) emojis.push("🔒")
-    return emojis.length > 0 ? `${deck.id} ${emojis.join(" ")}` : deck.id
-  }
-
-  const btnLabel = (bt: string, addonInternal: boolean): string =>
-    addonInternal ? `${bt} 🔒` : bt
-
   return (
     <div className="space-y-3 p-3" data-testid="addons-page">
       <div
         data-testid="addons-legend"
-        className="flex flex-wrap gap-2 border-b border-neutral-800 pb-2 text-[10px] text-neutral-400"
+        className="flex flex-wrap items-center gap-2 border-b border-neutral-800 pb-2 text-[10px] text-neutral-400"
       >
         <span className="font-semibold uppercase tracking-wide">Legend:</span>
-        <Chip label="deck" tone="deck" />
-        <Chip label="overlay ◐" tone="overlay" />
-        <Chip label="paginated ⠿" tone="deck" />
-        <Chip label="button" tone="button" />
-        <Chip label="internal 🔒" tone="internal" />
+        <Chip id="kind-deck" label="deck" tone="deck" />
+        <Chip id="kind-button" label="button" tone="button" />
+        <LegendModifier emoji="◐" label="overlay" />
+        <LegendModifier emoji="⠿" label="paginated" />
+        <LegendModifier emoji="🔒" label="internal" />
+        <LegendModifier emoji="📦" label="builtin" />
       </div>
 
       {data.addons.map((addon) => (
@@ -149,8 +164,15 @@ export const AddonsPage = ({ addonInventory }: AddonsPageProps) => {
           <div className="flex items-baseline gap-2">
             <h3 className="font-mono text-sm font-semibold text-neutral-100">
               {addon.name}
+              {addon.internal === true && (
+                <span
+                  title="builtin addon"
+                  className="ml-1.5 font-mono text-[10px] text-neutral-500"
+                >
+                  📦
+                </span>
+              )}
             </h3>
-            {addon.internal && <Chip label="internal 🔒" tone="internal" />}
             <span className="font-mono text-[10px] text-neutral-500">
               {addon.path}
             </span>
@@ -158,18 +180,21 @@ export const AddonsPage = ({ addonInventory }: AddonsPageProps) => {
 
           <div className="mt-2 flex flex-wrap gap-1.5">
             {groupPaginated(addon.decks).map((deck) => (
-              <span key={deck.id} className="inline-flex items-center gap-1">
-                <Chip
-                  label={deckLabel(deck, addon.internal)}
-                  tone={deck.isOverlay ? "overlay" : "deck"}
-                />
-              </span>
+              <Chip
+                key={deck.id}
+                id={deck.id}
+                label={stripAddonPrefix(deck.id)}
+                tone="deck"
+                modifiers={deckModifiers(deck)}
+              />
             ))}
             {addon.buttonTypes.map((bt) => (
               <Chip
-                key={bt}
-                label={btnLabel(bt, addon.internal)}
+                key={bt.type}
+                id={bt.type}
+                label={stripAddonPrefix(bt.type)}
                 tone="button"
+                modifiers={bt.internal ? ["🔒"] : []}
               />
             ))}
           </div>

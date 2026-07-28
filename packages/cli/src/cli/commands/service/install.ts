@@ -1,35 +1,28 @@
 import { execSync } from "node:child_process"
+import { existsSync, mkdirSync, writeFileSync } from "node:fs"
 import { homedir } from "node:os"
-import { writeFileSync, chmodSync, existsSync } from "node:fs"
 import { join } from "node:path"
-import type { CommandModule } from "yargs"
+
 import { currentOS, renderTemplate, type TemplateVars } from "./render-template"
-import { readConfigPath } from "@/util/daemon"
-import { findConfigPath } from "@/config/discovery"
-import { join as joinPath } from "node:path"
 
 export interface InstallOptions {
   readonly logger: import("pino").Logger
+  readonly system?: boolean
 }
 
 const DAEMON_NAME = "sireno-deck"
 const SERVICE_NAME = `${DAEMON_NAME}.service`
 
+// ponytail: ExecStart calls `start` — no flags. The systemd-started process
+// detects `INVOCATION_ID` and runs in-process, reading config + flags from
+// runtimeDir. Keeps the unit stable; config changes don't require reinstall.
 const getExecStart = (): string => {
   const binPath = process.argv[1] ?? `sireno-deck`
-  const configArg = readConfigPath() ?? ""
-  return `${binPath} service run ${configArg ? `--config ${configArg}` : ""}`
+  return `${binPath} start`
 }
 
 const getTemplateVars = (): TemplateVars => {
-  const user = homedir()
-  const userName = user.split("/").pop() ?? "sireno"
   const home = homedir()
-  const xdgConfigHome = process.env["XDG_CONFIG_HOME"] ?? `${home}/.config`
-  const defaultConfig =
-    findConfigPath({ homeDir: home, xdgConfigHome }) ??
-    joinPath(xdgConfigHome, "sireno-deck", "config.yml")
-
   return {
     name: DAEMON_NAME,
     displayName: "Sireno Deck",
@@ -37,46 +30,67 @@ const getTemplateVars = (): TemplateVars => {
     execStart: getExecStart(),
     restartPolicy: "always",
     workingDirectory: home,
-    user: userName,
-    group: userName,
+    logPath: join(home, "Library", "Logs", `${DAEMON_NAME}.log`),
   }
+}
+
+const ensureDir = (dir: string, mode: number): void => {
+  if (!existsSync(dir)) mkdirSync(dir, { recursive: true, mode })
 }
 
 export const installService = async (
   options: InstallOptions,
 ): Promise<void> => {
-  const { logger } = options
+  const { logger, system = false } = options
   const os = currentOS()
   const vars = getTemplateVars()
-  const content = renderTemplate(os, vars)
+  const userLevel = !system
 
   if (os === "linux") {
-    const unitPath = `/etc/systemd/system/${SERVICE_NAME}`
+    const unitDir = userLevel
+      ? join(homedir(), ".config", "systemd", "user")
+      : "/etc/systemd/system"
+    const unitPath = join(unitDir, SERVICE_NAME)
+    const content = renderTemplate(
+      os,
+      {
+        ...vars,
+        ...(userLevel ? {} : { user: "root", group: "root" }),
+      },
+      { userLevel },
+    )
+
     try {
+      if (userLevel) ensureDir(unitDir, 0o755)
       writeFileSync(unitPath, content, { mode: 0o644 })
       logger.info({ path: unitPath }, "install: systemd unit installed")
-      execSync("systemctl daemon-reload", { stdio: "ignore" })
-      logger.info("install: systemd daemon reloaded")
-      execSync(`systemctl enable ${SERVICE_NAME}`, { stdio: "ignore" })
-      logger.info(`install: ${SERVICE_NAME} enabled`)
+
+      const systemctl = userLevel ? "systemctl --user" : "systemctl"
+      execSync(`${systemctl} daemon-reload`, { stdio: "ignore" })
+      logger.info({ userLevel }, "install: systemd daemon reloaded")
+      execSync(`${systemctl} enable ${SERVICE_NAME}`, { stdio: "ignore" })
+      logger.info({ service: SERVICE_NAME, userLevel }, "install: enabled")
     } catch (err) {
       logger.error(
-        { err },
-        "install: failed to install systemd service (needs root)",
+        { err, userLevel },
+        userLevel
+          ? "install: failed to install user-level systemd service"
+          : "install: failed to install system systemd service (needs root)",
       )
       process.exitCode = 1
     }
   } else if (os === "darwin") {
     const plistDir = join(homedir(), "Library", "LaunchAgents")
     const plistPath = join(plistDir, `${DAEMON_NAME}.plist`)
+    const logDir = join(homedir(), "Library", "Logs")
     try {
-      if (!existsSync(plistDir)) {
-        execSync(`mkdir -p "${plistDir}"`, { stdio: "ignore" })
-      }
+      ensureDir(plistDir, 0o755)
+      ensureDir(logDir, 0o755)
+      const content = renderTemplate(os, vars, { userLevel })
       writeFileSync(plistPath, content, { mode: 0o644 })
       logger.info({ path: plistPath }, "install: launchd plist installed")
       execSync(`launchctl load "${plistPath}"`, { stdio: "ignore" })
-      logger.info(`install: ${SERVICE_NAME} loaded`)
+      logger.info({ service: SERVICE_NAME }, "install: loaded")
     } catch (err) {
       logger.error({ err }, "install: failed to install launchd service")
       process.exitCode = 1
@@ -87,16 +101,4 @@ export const installService = async (
     )
     process.exitCode = 1
   }
-}
-
-interface ServiceInstallArgs {}
-
-export const installCommand: CommandModule<object, ServiceInstallArgs> = {
-  command: "install",
-  describe: "Install sireno-deck as a native system service (systemd/launchd)",
-  handler: async (argv) => {
-    const { createLogger } = await import("@/util/logger")
-    const logger = createLogger({ verbose: false })
-    await installService({ logger })
-  },
 }

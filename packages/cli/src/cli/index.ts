@@ -3,11 +3,17 @@ import type { ArgumentsCamelCase, CommandModule } from "yargs"
 import { createLogger } from "@/util/logger"
 import { PACKAGE_NAME } from "@/version"
 
+import { logsCommand } from "./commands/logs"
+import { reload, type ReloadOptions } from "./commands/reload"
+import { restart, type RestartOptions } from "./commands/restart"
 import { run, type RunOptions } from "./commands/run"
 import start, { type StartOptions } from "./commands/start"
 import { status, type StatusOptions } from "./commands/status"
 import { stop, type StopOptions } from "./commands/stop"
-import { serviceCommands } from "./commands/service"
+import {
+  updateConfig,
+  type UpdateConfigOptions,
+} from "./commands/update-config"
 
 export interface GlobalOptions {
   verbose?: boolean
@@ -28,10 +34,28 @@ interface StartArgs extends GlobalOptions {
   port?: number
   emulator?: boolean
   deviceModel?: string
+  httpPort?: number
+  logs?: boolean
+  system?: boolean
 }
 
 interface StatusArgs extends GlobalOptions {}
 interface StopArgs extends GlobalOptions {}
+interface LogsArgs extends GlobalOptions {
+  follow?: boolean
+  lines?: number
+}
+interface ReloadArgs extends GlobalOptions {
+  logs?: boolean
+}
+interface RestartArgs extends GlobalOptions {
+  logs?: boolean
+}
+interface UpdateConfigArgs extends GlobalOptions {
+  config: string
+  reload?: boolean
+  logs?: boolean
+}
 
 const buildLogger = (
   argv: ArgumentsCamelCase<GlobalOptions>,
@@ -98,7 +122,7 @@ const runCommand: CommandModule<object, RunArgs> = {
 
 const startCommand: CommandModule<object, StartArgs> = {
   command: "start",
-  describe: "Start the sireno-deck daemon (detached)",
+  describe: "Install (if missing) + start the sireno-deck daemon",
   builder: (yargs) =>
     yargs
       .option("config", { type: "string", description: "Path to config.yml" })
@@ -120,6 +144,17 @@ const startCommand: CommandModule<object, StartArgs> = {
         default: 3939,
         description:
           "Port for the prod HTTP server that serves the bundled frontend with WS token injection",
+      })
+      .option("system", {
+        type: "boolean",
+        default: false,
+        description:
+          "Auto-install as system-wide service (requires root). Default: user-level.",
+      })
+      .option("logs", {
+        type: "boolean",
+        default: false,
+        description: "After start, follow the service log (Ctrl+C to exit)",
       }),
   handler: async (argv) => {
     const logger = buildLogger(argv)
@@ -134,6 +169,8 @@ const startCommand: CommandModule<object, StartArgs> = {
       ...(argv.httpPort !== undefined
         ? { httpPort: argv.httpPort as number }
         : {}),
+      ...(argv.system === true ? { system: true } : {}),
+      ...(argv.logs === true ? { logs: true } : {}),
     }
     try {
       await start(options)
@@ -172,15 +209,74 @@ const statusCommand: CommandModule<object, StatusArgs> = {
   },
 }
 
-const serviceCommand: CommandModule<object, object> = {
-  command: "service <subcommand>",
-  describe: "Manage the sireno-deck native background service",
+const reloadCommand: CommandModule<object, ReloadArgs> = {
+  command: "reload",
+  describe: "Send SIGUSR1 to the daemon (in-place reload)",
+  builder: (yargs) =>
+    yargs.option("logs", {
+      type: "boolean",
+      default: false,
+      description: "After reload, follow the service log",
+    }),
+  handler: async (argv) => {
+    const logger = buildLogger(argv)
+    const options: ReloadOptions = {
+      logger,
+      ...(argv.logs === true ? { logs: true } : {}),
+    }
+    await reload(options)
+  },
+}
+
+const restartCommand: CommandModule<object, RestartArgs> = {
+  command: "restart",
+  describe: "Restart the sireno-deck daemon",
+  builder: (yargs) =>
+    yargs.option("logs", {
+      type: "boolean",
+      default: false,
+      description: "After restart, follow the service log",
+    }),
+  handler: async (argv) => {
+    const logger = buildLogger(argv)
+    const options: RestartOptions = {
+      logger,
+      ...(argv.logs === true ? { logs: true } : {}),
+    }
+    await restart(options)
+  },
+}
+
+const updateConfigCommand: CommandModule<object, UpdateConfigArgs> = {
+  command: "update-config",
+  describe: "Update the config path the daemon uses (restarts)",
   builder: (yargs) =>
     yargs
-      .command(serviceCommands)
-      .demandCommand(1, "service <subcommand> required"),
-  handler: () => {
-    // all work done in subcommands
+      .option("config", {
+        type: "string",
+        demandOption: true,
+        description: "Path to config.yml",
+      })
+      .option("reload", {
+        type: "boolean",
+        default: false,
+        description:
+          "Send SIGUSR1 instead of restarting (in-place reload; runtime state preserved)",
+      })
+      .option("logs", {
+        type: "boolean",
+        default: false,
+        description: "After update, follow the service log",
+      }),
+  handler: async (argv) => {
+    const logger = buildLogger(argv)
+    const options: UpdateConfigOptions = {
+      config: argv.config,
+      logger,
+      ...(argv.reload === true ? { reload: true } : {}),
+      ...(argv.logs === true ? { logs: true } : {}),
+    }
+    await updateConfig(options)
   },
 }
 
@@ -197,7 +293,10 @@ export const buildCli = async (): Promise<{
       startCommand,
       stopCommand,
       statusCommand,
-      serviceCommand,
+      restartCommand,
+      reloadCommand,
+      updateConfigCommand,
+      logsCommand as CommandModule<object, GlobalOptions>,
     ],
     packageName: PACKAGE_NAME,
   }

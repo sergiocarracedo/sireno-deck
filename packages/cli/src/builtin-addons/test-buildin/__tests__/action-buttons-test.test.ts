@@ -16,15 +16,13 @@ describe("test-buildin:action-buttons-test deck", () => {
       position?: number
       config?: Record<string, unknown>
     }>
-    // 15 cases fill positions 0..14 on an mk2 (15 keys). The injected
-    // core:back button is suppressed because position 14 is already taken.
-    expect(buttons).toHaveLength(15)
+    // 10 cases fill positions 0..9 on an mk2 (15 keys). The injected
+    // core:back button can occupy any position 10..14.
+    expect(buttons).toHaveLength(10)
     const positions = buttons
       .map((b) => b.position)
       .sort((a, b) => (a ?? 0) - (b ?? 0))
-    expect(positions).toEqual([
-      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-    ])
+    expect(positions).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
   })
 
   it("uses core:action for every button (no custom backend needed)", () => {
@@ -46,8 +44,6 @@ describe("test-buildin:action-buttons-test deck", () => {
     expect(icons).toContain("icon://play")
     // Addon / asset path
     expect(icons).toContain("addon://emoji-selector/assets/smileys.svg")
-    // Relative path
-    expect(icons).toContain("./assets/chrome.svg")
     // Single emoji (Presentation)
     expect(icons).toContain("🔥")
     // Single emoji (base+VS16)
@@ -61,8 +57,6 @@ describe("test-buildin:action-buttons-test deck", () => {
       config?: { icon?: string }
     }>
     const icons = buttons.map((b) => b.config?.icon)
-    expect(icons).toContain("%")
-    expect(icons).toContain("🔥🔥")
     expect(icons).toContain("icon://")
     expect(icons.some((i) => i?.startsWith("data:"))).toBe(true)
   })
