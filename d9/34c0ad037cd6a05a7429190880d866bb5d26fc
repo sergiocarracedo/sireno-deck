@@ -1,0 +1,76 @@
+packages/cli/src/builtin-addons/value-display/buttons/value-display/backend.ts
+  s_1b6fa3b27d8a04::t_b3a605a70d35c9 6,10-15,17
+  s_1b6fa3b27d8a04::t_fbe22bd4322c94 1-4
+packages/cli/bin/sirenodeck.js
+  s_006756703e6871::t_ab78c92abb50d9 6-7,14-15,21,27-30,32
+packages/cli/src/builtin-addons/value-display/__tests__/backend.test.ts
+  s_1b6fa3b27d8a04::t_dfcfe2a453572a 1-25,27-53,58-156
+  s_1b6fa3b27d8a04::t_fbe22bd4322c94 26,54-57
+packages/cli/src/builtin-addons/value-display/buttons/value-display/frontend.tsx
+  s_1b6fa3b27d8a04::t_fbdd68d35b74c0 5-6,14,21
+  s_1b6fa3b27d8a04::t_fbe22bd4322c94 17-19
+packages/cli/src/system/providers/session/__tests__/factory.test.ts
+  s_a8f25e6e0adb6b::t_0b3edc3251a4bf 5-6
+  s_a8f25e6e0adb6b::t_d101fe8ed5d81a 31,35,39
+  s_a8f25e6e0adb6b::t_c4f589076f9b24 1-4,7-21,29-30,33-34,37-38,41-48,50-57,59-66,68-85
+  s_a8f25e6e0adb6b::t_154ce3a8e72fbf 22-28,32,36,40,49,58,67
+packages/cli/bin/dev.js
+  s_006756703e6871::t_0087a691a0888a 6-7,48-49,56,62-68,70
+packages/cli/bin/_wrapper-shared.js
+  s_006756703e6871::t_36110c800c45bf 1-41
+  s_006756703e6871::t_77b065dae9caa3 42
+packages/cli/src/util/process-title.ts
+  s_006756703e6871::t_e8af3765b6ba10 2,26-42
+  s_006756703e6871::t_77722e2a9a5612 4-5,43-78
+  s_006756703e6871::t_691da0c1bea3b1 1,3,6-25
+  s_1b6fa3b27d8a04::t_44e5092ba7b00b 79
+packages/cli/src/util/__tests__/process-title.test.ts
+  s_1b6fa3b27d8a04::t_44e5092ba7b00b 133
+  s_006756703e6871::t_5a6f4bb698d5d2 1-132
+packages/cli/src/cli/commands/subprocess-supervisor.ts
+  s_006756703e6871::t_c2e529a611ee74 21,26,29-58,64,69,127-128,130-136,139-141
+packages/cli/src/cli/commands/__tests__/subprocess-supervisor.test.ts
+  s_006756703e6871::t_6132c229cfa81e 23-27,29-30,35-52,61,73,77-78,184,189-241
+packages/cli/src/builtin-addons/value-display/backend.ts
+  s_1b6fa3b27d8a04::t_c7a94f08705fc9 1-25,34-50,56-63,69-86
+  s_1b6fa3b27d8a04::t_fbe22bd4322c94 26-33,51-55,64-68
+packages/cli/src/builtin-addons/value-display/index.ts
+  s_1b6fa3b27d8a04::t_28e9a622691af8 3,7-8,19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "d934c0ad037cd6a05a7429190880d866bb5d26fc",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_006756703e6871": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0567f20b0ffeitiUYMQ5qzadmS",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_1b6fa3b27d8a04": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_055b88972ffeZ0kS0d18iOUSb0",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_a8f25e6e0adb6b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0566e31dbffeYQQxeHFZ7illsv",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
