@@ -1,0 +1,30 @@
+packages/cli/src/cli/commands/__tests__/port-identity.test.ts
+  s_0df9ddf9363fff::t_b73c9b67485f2a 1-8,10-14,23-109,111-115,145-146
+  s_0df9ddf9363fff::t_60d9e3ea1ee33e 116-144
+  s_0df9ddf9363fff::t_f459ea2c8c2fc8 15-22
+  s_0df9ddf9363fff::t_471112ec3f2abd 9
+  s_0df9ddf9363fff::t_8a568f72dbcbbc 110
+packages/cli/src/cli/commands/port-identity.ts
+  s_0df9ddf9363fff::t_f459ea2c8c2fc8 56-58,65-67
+  s_0df9ddf9363fff::t_4be322420e2a88 70-77,82-83
+  s_0df9ddf9363fff::t_4b7d70e6f7582c 1-55,59-64,68-69,78-81,84
+packages/cli/src/cli/commands/start.ts
+  s_0df9ddf9363fff::t_528f554c71dc22 103-105,112,125-126,129-149,154
+  s_0df9ddf9363fff::t_ca3f1c3062656c 9-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "b862d93f4589dcebd1464cb44e5a2603ed2cd8d9",
+  "prompts": {},
+  "sessions": {
+    "s_0df9ddf9363fff": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05d08b0e4ffew58eYfX8Gq7g75",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
