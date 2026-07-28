@@ -1,0 +1,53 @@
+packages/cli/src/system/providers/notification/linux.ts
+  s_5b19018252d9e0::t_d04d458b5e3271 58-65,71-76,92-96,99-103,115
+packages/cli/src/system/providers/notification/__tests__/linux.test.ts
+  s_5b19018252d9e0::t_d04d458b5e3271 118
+packages/cli/src/builtin-addons/pomodoro/README.md
+  s_5b19018252d9e0::t_71f57efb80b4f5 14,43
+packages/cli/src/builtin-addons/pomodoro/__tests__/timer.test.ts
+  s_5b19018252d9e0::t_d04d458b5e3271 78
+packages/cli/src/builtin-addons/pomodoro/index.ts
+  s_5b19018252d9e0::t_d04d458b5e3271 25
+packages/cli/src/system/providers/notification/__tests__/index.test.ts
+  s_5b19018252d9e0::t_d04d458b5e3271 121
+packages/cli/src/builtin-addons/pomodoro/backend.ts
+  s_5b19018252d9e0::t_d04d458b5e3271 1,36-38,116
+demos/demo-pomodoro.yml
+  s_5b19018252d9e0::t_d04d458b5e3271 12
+packages/cli/src/builtin-addons/pomodoro/buttons/pomodoro/backend.ts
+  s_5b19018252d9e0::t_d04d458b5e3271 102
+packages/cli/src/builtin-addons/pomodoro/buttons/pomodoro/config.ts
+  s_5b19018252d9e0::t_d04d458b5e3271 17
+packages/cli/src/builtin-addons/pomodoro/__tests__/manifest.test.ts
+  s_5b19018252d9e0::t_d04d458b5e3271 27
+packages/cli/src/system/providers/notification/windows.ts
+  s_5b19018252d9e0::t_d04d458b5e3271 56-60,64-67,72
+packages/cli/src/builtin-addons/pomodoro/buttons/pomodoro/frontend.tsx
+  s_5b19018252d9e0::t_bc03ab6464198d 23-24,40-89
+packages/cli/src/builtin-addons/pomodoro/state.ts
+  s_5b19018252d9e0::t_d04d458b5e3271 25-26
+packages/cli/src/builtin-addons/pomodoro/timer.ts
+  s_5b19018252d9e0::t_d04d458b5e3271 93
+packages/cli/src/cli/commands/run.ts
+  s_5b19018252d9e0::t_d04d458b5e3271 989-995
+packages/cli/src/deck/methods.ts
+  s_5b19018252d9e0::t_d04d458b5e3271 98-99,104-106
+packages/cli/src/system/providers/notification/darwin.ts
+  s_5b19018252d9e0::t_d04d458b5e3271 36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "49490e580ff152a00e37d0d6f876d3e8c332c439",
+  "prompts": {},
+  "sessions": {
+    "s_5b19018252d9e0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05574b72affemfEF7rBuPKjodf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
