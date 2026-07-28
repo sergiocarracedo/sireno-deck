@@ -1,0 +1,44 @@
+packages/cli/src/cli/commands/start.ts
+  s_0df9ddf9363fff::t_2dff7accf30750 352
+  s_0df9ddf9363fff::t_98028f1440f54b 39-42,177-179,247-250,322-325
+  s_0df9ddf9363fff::t_466b0c734c78c3 8,13-14,20,24,27,32-38,60-61,92-95,157,161,163,171-176,180-184,186-190,192,198-205,229,295,297-298,300,305,311,313-321,326-337,341,375-379
+  s_0df9ddf9363fff::t_52dce1ae636bab 12,21,23,90-91,96-97,129-130,151-154,185,191,193,221,296,299,301-304,307-310,347-351,353-374
+  s_0df9ddf9363fff::t_6a4221a6f4aeda 338-340,342-346
+  s_0df9ddf9363fff::t_a871790dc71428 286-291
+  s_0df9ddf9363fff::t_1293971c7c3402 31
+  s_0df9ddf9363fff::t_d02df9fbe29095 312
+  s_0df9ddf9363fff::t_2020fe22314dc4 306
+  s_3ca89014154668::t_a330ae862ee63c 380-381
+packages/cli/src/cli/commands/run.ts
+  s_0df9ddf9363fff::t_52dce1ae636bab 82,1001-1006,1030,1032-1035
+  s_0df9ddf9363fff::t_471615c0bc0646 1154-1157,1188-1190,1193,1235-1236,1253
+  s_0df9ddf9363fff::t_8191664d21babb 1158-1159,1306-1310,1430,1503-1505
+  s_0df9ddf9363fff::t_87f3366bf211e6 1259-1281,1300,1302,1304-1305,1311-1315,1317-1429,1431-1461,1464,1466-1469,1471-1475,1479-1482,1485,1494-1499,1506-1510
+  s_0df9ddf9363fff::t_5fe8f41ba4b7df 1500-1501
+  s_0df9ddf9363fff::t_f851b7cd958cf9 1151,1163,1169,1232-1234,1237-1249
+  s_0df9ddf9363fff::t_882087e997c1e6 1139-1150,1152-1153,1160-1162,1164-1167,1170-1172,1174-1185,1187,1191-1192,1195,1197,1199,1201-1202,1204-1210,1212-1216,1218-1219,1221-1222,1224-1230,1251,1254-1256,1258
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "1d8e9146d81fc1857cef9f90a248259cc8f9ce16",
+  "prompts": {},
+  "sessions": {
+    "s_0df9ddf9363fff": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05d08b0e4ffew58eYfX8Gq7g75",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    },
+    "s_3ca89014154668": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05cbfb984ffeMWY3hPnAOyo2xp",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    }
+  }
+}
