@@ -95,3 +95,4 @@ decks:
   demo-date-time: !include demos/demo-date-time.yml
   demo-value-display: !include demos/demo-value-display.yml
   demo-core: !include demos/demo-core.yml
+  demo-pomodoro: !include demos/demo-pomodoro.yml

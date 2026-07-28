@@ -1,0 +1,16 @@
+@keyframes pomodoro-blink {
+  0%,
+  100% {
+    color: #ef4444;
+    opacity: 1;
+  }
+  50% {
+    color: #ef4444;
+    opacity: 0.35;
+  }
+}
+
+.pomodoro-blink {
+  color: #ef4444;
+  animation: pomodoro-blink 1s 10;
+}

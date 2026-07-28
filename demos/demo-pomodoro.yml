@@ -1,0 +1,12 @@
+name: Pomodoro Demo
+buttons:
+  - position: 0
+    type: "pomodoro:pomodoro"
+    config:
+      durationSec: 1500
+  - position: 1
+    type: "pomodoro:pomodoro"
+    config:
+      durationSec: 300
+  - position: 2
+    type: "pomodoro:pomodoro"
