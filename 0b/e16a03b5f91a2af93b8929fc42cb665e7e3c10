@@ -1,0 +1,34 @@
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  h_f90ee31b03fc41 185
+packages/cli/src/deck/system-buttons/registry.tsx
+  h_f90ee31b03fc41 41,43,45,55
+  s_accd15ff1e3daf::t_c91875861e05ad 42
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/frontend.tsx
+  h_f90ee31b03fc41 11,13
+  s_accd15ff1e3daf::t_e865283b6488d6 23,27
+packages/cli/frontend/src/components/Deck.tsx
+  s_accd15ff1e3daf::t_62651b151c2541 1-5,16-20
+packages/cli/src/ui/surfaces/ValueChart.tsx
+  s_accd15ff1e3daf::t_629600b9fb1255 142
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "0be16a03b5f91a2af93b8929fc42cb665e7e3c10",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_accd15ff1e3daf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_057a9c7e0ffe5N8a2S6y3rs3V7",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
