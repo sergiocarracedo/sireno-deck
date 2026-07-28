@@ -1,0 +1,77 @@
+packages/cli/src/builtin-addons/core/buttons/toggle/__tests__/frontend.test.tsx
+  s_315122ce7f2833::t_47add8761ce43b 1-7,12-98
+  s_315122ce7f2833::t_e510b675f636b1 8-11
+demos/demo-value-display.yml
+  s_315122ce7f2833::t_3942e05b964c0c 16-30
+packages/cli/src/builtin-addons/core/buttons/toggle/frontend.tsx
+  s_315122ce7f2833::t_2fabf9ac420c98 1,5,8-13,15-16,18-19,21-36,40-44,47-55
+  s_315122ce7f2833::t_de9bbd6701125c 14
+  s_315122ce7f2833::t_9ed693158656f0 6-7,45-46
+  s_315122ce7f2833::t_dc869b565f4761 38-39
+  s_315122ce7f2833::t_a6b5bc6ed40730 2-3
+  s_315122ce7f2833::t_be1f8bd7d1bab5 4,17,20,56-57
+  s_315122ce7f2833::t_0a4dc9fe4088f9 37
+packages/cli/src/builtin-addons/core/README.md
+  s_315122ce7f2833::t_061081e02a00f3 45-85
+  s_315122ce7f2833::t_73389ec87db522 13
+  s_315122ce7f2833::t_9ed693158656f0 9-12,14-15
+packages/cli/src/builtin-addons/core/buttons/toggle/__tests__/backend.test.ts
+  s_315122ce7f2833::t_a6e9a24b59f523 75-78
+  s_315122ce7f2833::t_e2450d97ab5a8c 117-120,138-141,171-174,203-206,229-232,259-262,291-294
+  s_315122ce7f2833::t_bb2839c713fb79 30,53
+  s_315122ce7f2833::t_165dff96e4d59f 55
+  s_315122ce7f2833::t_6f2fc33b4cd94b 48
+  s_315122ce7f2833::t_d338819e77a6d1 79,101,123,128,144-145,178,210,236,266,298
+  s_315122ce7f2833::t_3a36db7823968d 41
+  s_315122ce7f2833::t_6fc180dd6ec44b 3-4,12-13
+  s_315122ce7f2833::t_0154106541aa7a 31-39,42-47,49-52,54
+  s_315122ce7f2833::t_37693043b384cd 14
+  s_315122ce7f2833::t_fde263eea4375a 1-2,5-11,15-29,40,56-74,80-100,104-116,121-122,124-127,129-137,142-143,146-170,175-177,179-202,207-209,211-228,233-235,237-258,263-265,267-290,295-297,299-304
+  s_315122ce7f2833::t_6f83fe984fe9f2 102-103
+packages/cli/src/builtin-addons/core/index.ts
+  s_315122ce7f2833::t_7956038da47ddb 14
+  s_315122ce7f2833::t_3175160f19ef24 44
+packages/cli/src/builtin-addons/core/buttons/toggle/backend.ts
+  s_315122ce7f2833::t_a672e35f3fa420 90-95,105-110
+  s_315122ce7f2833::t_24e9cc3c832d2a 12
+  s_315122ce7f2833::t_dbc2fbcd08422c 63
+  s_315122ce7f2833::t_4669dee028e8b7 3-6,8-11,13-22,24-29,33-34,42-44,52,64-65,67-69,75-81,88-89,98-99,101-104,111-113,115-117,121
+  s_315122ce7f2833::t_977d0e66d7147a 53,62
+  s_315122ce7f2833::t_27e85548b2a3de 41,51
+  s_315122ce7f2833::t_9ed693158656f0 54-61,66
+  s_315122ce7f2833::t_4a86d66b9c23bb 70-74,82-83,85-86
+  s_315122ce7f2833::t_a244097ba4424d 35-40,45-50
+  s_315122ce7f2833::t_eb5cd414cbbe25 118-119
+  s_315122ce7f2833::t_2bec26ab55fcce 96-97,100,114,120
+packages/cli/src/builtin-addons/core/buttons/toggle/__tests__/config.test.ts
+  s_315122ce7f2833::t_03254442f42cbe 1-100
+packages/cli/src/builtin-addons/core/buttons/toggle/config.ts
+  s_315122ce7f2833::t_9ed693158656f0 51-52,56-57
+  s_315122ce7f2833::t_0b93d27a239c6c 3-46,48-50,53-55
+packages/cli/src/builtin-addons/core/buttons/toggle/global-service.ts
+  s_315122ce7f2833::t_44d4ea2f834064 48
+  s_315122ce7f2833::t_e510b675f636b1 1,46-47,51,126-127
+  s_315122ce7f2833::t_9eb7c0a55b5769 2-39,44-45,49-50,52-125,128-166
+  s_315122ce7f2833::t_8408a3f35cc55f 40
+  s_315122ce7f2833::t_f288ee21fd900f 41-43
+packages/cli/src/builtin-addons/core/buttons/toggle/__tests__/global-service.test.ts
+  s_315122ce7f2833::t_083f7390a4a775 216-221
+  s_315122ce7f2833::t_f6dfb91b8e4ccb 1-22,28-111,116-215,222-243
+  s_315122ce7f2833::t_e510b675f636b1 23-27,112-115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "74e318f9d65ed7e4b20bd32dfbd790489de3cbd7",
+  "prompts": {},
+  "sessions": {
+    "s_315122ce7f2833": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_055b0ba19ffepI53Teqpgh6abE",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
