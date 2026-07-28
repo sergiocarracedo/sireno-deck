@@ -1,0 +1,28 @@
+packages/cli/src/cli/commands/addon-decks.ts
+  s_accd15ff1e3daf::t_9762be4e548bd3 313-314
+  s_accd15ff1e3daf::t_06234f62226272 242,309-312,315-329
+packages/cli/src/cli/commands/__tests__/addon-decks.test.ts
+  s_accd15ff1e3daf::t_06234f62226272 700-800
+packages/cli/src/config/schemas.ts
+  s_accd15ff1e3daf::t_06234f62226272 85-90,92-93,95,99
+packages/cli/src/cli/commands/__tests__/build-addon-config-overrides.test.ts
+  s_accd15ff1e3daf::t_06234f62226272 86-108
+config.yml
+  s_accd15ff1e3daf::t_06234f62226272 5-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "32ac271646ce5f261240bfb3fca38348c4dbea03",
+  "prompts": {},
+  "sessions": {
+    "s_accd15ff1e3daf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_057a9c7e0ffe5N8a2S6y3rs3V7",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
