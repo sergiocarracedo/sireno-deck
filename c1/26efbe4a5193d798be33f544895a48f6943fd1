@@ -1,0 +1,23 @@
+packages/cli/src/builtin-addons/pomodoro/__tests__/backend.test.ts
+  s_5b19018252d9e0::t_f25fc579c97466 85
+  s_5b19018252d9e0::t_8dc7780a467f6d 27-28
+  s_5b19018252d9e0::t_f6bf40e7177923 33-34
+  s_5b19018252d9e0::t_c3330474c35d57 23-26,29-30,39,50,58-59,65,72,83
+  s_5b19018252d9e0::t_2b9c97aa5b5c3a 88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "c126efbe4a5193d798be33f544895a48f6943fd1",
+  "prompts": {},
+  "sessions": {
+    "s_5b19018252d9e0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05574b72affemfEF7rBuPKjodf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
