@@ -1,0 +1,50 @@
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_0df9ddf9363fff::t_52dce1ae636bab 49,52-53,59,360,372-373,376-377,380-385,388-389,391-392,407-426,428-436,438-442
+  s_0df9ddf9363fff::t_3f164a9d5f3b22 60-65,67
+  s_0df9ddf9363fff::t_afd5eb883d3c36 77-80,100,104-105
+  s_0df9ddf9363fff::t_672531115ce2e7 94-96,101-103
+  s_0df9ddf9363fff::t_65f89da2d4c591 352-359,370,386,404
+  s_0df9ddf9363fff::t_6ba3b56cf27a5c 86-89,91-93,98
+  s_0df9ddf9363fff::t_e9ef0f89570ede 84-85,90,97,99
+  s_0df9ddf9363fff::t_2faafdb309964f 340,343-345,349
+  s_0df9ddf9363fff::t_bb0c6066145f60 378
+  s_0df9ddf9363fff::t_bae48365bd2939 362-363,371,379,387
+  s_0df9ddf9363fff::t_98028f1440f54b 81-82
+  s_0df9ddf9363fff::t_7843765af346fb 83
+  s_0df9ddf9363fff::t_acb0bea6565b38 50-51,66,70,106-109
+  s_0df9ddf9363fff::t_f506586a1b365b 110
+packages/cli/src/cli/commands/spawn-daemon.ts
+  s_0df9ddf9363fff::t_1cfee1dd7d4cd0 7
+  s_0df9ddf9363fff::t_2001c49414361d 28-29,31-32
+  s_0df9ddf9363fff::t_d6deaec32a1739 10-21
+  s_0df9ddf9363fff::t_e8b48aa782b6b6 27,218
+  s_0df9ddf9363fff::t_eea27b8ada7e3f 56-62,65-68,70-73,75-79,81,117-118,121,124
+  s_0df9ddf9363fff::t_45442e86b6eb5e 169-170,192-214
+  s_0df9ddf9363fff::t_41e176c5cad180 178,180-181
+  s_0df9ddf9363fff::t_cb0204b15183c5 2,48,87,91-114,130-160
+  s_0df9ddf9363fff::t_fcc66ce7fd5b62 1,5-6,8,42-47,49-55,84-86,88-90,115-116,119-120,122-123,125-129,161-163,217
+  s_0df9ddf9363fff::t_d265bac2128bd4 3-4,63-64,69,82-83
+  s_0df9ddf9363fff::t_6d89de7f121aac 24
+  s_0df9ddf9363fff::t_75e89773b186c7 74,80,164-166,171-173,175,177,182,187-191,215-216
+  s_0df9ddf9363fff::t_51fba58b4a67e0 9,22-23,25-26,30,33-41
+  s_0df9ddf9363fff::t_51db8f8ade44ed 167-168,174,176,179,183-186
+packages/cli/src/cli/commands/start.ts
+  s_0df9ddf9363fff::t_ce09c6e0576cbc 302-307,313-326
+  s_0df9ddf9363fff::t_3624e877080b7f 38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "447fffce8652f830a55ba13ca89357780adcd7b5",
+  "prompts": {},
+  "sessions": {
+    "s_0df9ddf9363fff": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05d08b0e4ffew58eYfX8Gq7g75",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
