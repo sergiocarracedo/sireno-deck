@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from "node:fs"
+import { execFileSync } from "node:child_process"
 import { dirname, join, resolve as resolvePath } from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -89,6 +90,67 @@ const resolveBinPath = (): string => {
 
 const isDevInvocation = (): boolean => {
   return (process.argv[1] ?? "").endsWith(".ts")
+}
+
+// ponytail: kill every process currently listening on the daemon's expected
+// ports. Used as a last-resort cleanup before the new daemon binds, because
+// orphans from a previous daemon (parent adopted by systemd after a hard
+// kill) outlive the children.json tracking — the pid file is gone, the
+// children file is gone, but the vite/bridge are still bound. We can't tell
+// orphans from legitimately-started processes, so we kill any listener on
+// the daemon's ports. ss(8) is the only cross-distro way to get the pid
+// bound to a local port; macOS uses `lsof -nP -iTCP:PORT` instead but
+// lsof isn't always installed on minimal images — fall back to fuser.
+const killPortListeners = async (
+  ports: ReadonlyArray<number>,
+  logger: pino.Logger,
+): Promise<void> => {
+  // ss -ltnp format: "LISTEN ... 127.0.0.1:5180 ... users:(("name",pid=N,fd=F))"
+  // The name may be a process name or "*" for un-named sockets. Just look
+  // for ",pid=N," inside the users:() block on the same line as the port.
+  const ssLineRegex = (port: number): RegExp =>
+    new RegExp(`:${port}\\b[\\s\\S]*?users:\\([^)]*?pid=(\\d+)[,\\)]`)
+  for (const port of ports) {
+    const pids = new Set<number>()
+    try {
+      const out = execFileSync("ss", ["-ltnp"], {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+      })
+      for (const line of out.split("\n")) {
+        const m = line.match(ssLineRegex(port))
+        if (m && m[1]) pids.add(Number.parseInt(m[1], 10))
+      }
+    } catch {
+      // ss not available — try lsof as fallback
+      try {
+        const out = execFileSync(
+          "lsof",
+          ["-nP", "-iTCP:" + String(port), "-sTCP:LISTEN", "-t"],
+          { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] },
+        )
+        for (const ln of out.split("\n")) {
+          const pid = Number.parseInt(ln.trim(), 10)
+          if (Number.isFinite(pid) && pid > 0) pids.add(pid)
+        }
+      } catch {
+        // neither tool available — skip this port
+      }
+    }
+    for (const pid of pids) {
+      try {
+        process.kill(pid, "SIGTERM")
+        logger.warn(
+          { pid, port },
+          "start: killed stale process bound to daemon port",
+        )
+      } catch {
+        // already dead
+      }
+    }
+  }
+  // brief grace so SIGTERM takes effect before the new daemon binds
+  await new Promise((r) => setTimeout(r, 500))
 }
 
 const promptConflict = async (pid: number): Promise<"restart" | "cancel"> => {
@@ -375,6 +437,19 @@ const start = async (options: StartOptions): Promise<void> => {
     await runInProcess(options)
     return
   }
+
+  // ponytail: clear the daemon's expected ports before spawning. This is
+  // the load-bearing fix for "the frontend port is in use by children":
+  // even when the previous daemon's children file is gone (e.g. after a
+  // SIGKILL that left orphans adopted by systemd), the port still binds
+  // the orphan. ss -ltnp → SIGTERM every listener → 500ms grace → start.
+  // Cost: bounded, no-op when the ports are free.
+  await killPortListeners(
+    options.emulator === true
+      ? [5180, 3939, 52937, 52938]
+      : [5180, 3939, 52937],
+    logger,
+  )
 
   const existing = readPid()
   if (existing !== null && isRunning(existing)) {

@@ -351,6 +351,13 @@ describe("start", () => {
 
   const awaitFork = async (): Promise<void> => {
     const { spawnDetached } = await import("../spawn-daemon")
+    // ponytail: killPortListeners runs before forkOffDev inside start(), so
+    // we need to wait for that microtask chain to settle before reading
+    // mock.results. `waitFor` retries the assertion until spawnDetached has
+    // been called, then fires the mock exit so the awaiting start() resolves.
+    await vi.waitFor(() => {
+      expect(spawnDetached).toHaveBeenCalledTimes(1)
+    })
     const mock = vi.mocked(spawnDetached).mock.results[
       vi.mocked(spawnDetached).mock.results.length - 1
     ] as { type: string; value: { child: { __triggerExit: () => void } } }
