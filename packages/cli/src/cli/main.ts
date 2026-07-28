@@ -7,6 +7,20 @@ import { hideBin } from "yargs/helpers"
 import { buildCli } from "./index"
 import { createLogger } from "@/util/logger"
 import { terminateChildren } from "@/util/daemon"
+import {
+  DAEMON_TITLE,
+  FOREGROUND_TITLE,
+  setProcessTitle,
+  startParentDeathWatchdog,
+} from "@/util/process-title"
+
+// ponytail: process name shows up in `ps`/`top`/`pstree` so operators can
+// tell which role is holding a port. The detached daemon is `sirenodeck:dm`
+// (12 chars, fits Linux 15-char `comm`); foreground CLI invocations are
+// `sirenodeck:cli`. Naming is diagnostic only — the kill identity gate
+// still relies on cmdline + port + tracked PIDs.
+const isDaemon = process.env["SIRENO_DAEMON_CHILD"] === "1"
+setProcessTitle(isDaemon ? DAEMON_TITLE : FOREGROUND_TITLE)
 
 /**
  * Install global handlers for uncaught exceptions and unhandled promise
@@ -64,6 +78,17 @@ const installProcessGuards = (
     logger.info("main: SIGINT received")
     killChildrenAndExit(logger, 0)
   })
+  // ponytail: parent-death watchdog — when the dev wrapper dies (tsx watcher
+  // killed, `bin/dev.js` SIGKILL'd, ...) the daemon is reparented to init and
+  // its vite children keep their ports. The 1s ppid poll catches that and
+  // routes through the same teardown as a graceful shutdown. Linux-only and
+  // inactive when the daemon already runs under systemd (ppid=1 from boot).
+  if (isDaemon) {
+    startParentDeathWatchdog({
+      logger,
+      onOrphan: () => killChildrenAndExit(logger, 0),
+    })
+  }
 }
 
 const main = async (): Promise<void> => {

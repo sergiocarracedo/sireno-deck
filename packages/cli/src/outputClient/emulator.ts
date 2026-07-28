@@ -116,6 +116,7 @@ export class EmulatorOutputClient implements OutputClient {
           })()
         : await supervise({
             label: "frontend vite",
+            kill: killChild,
             spawn: async () => {
               const r = await spawnFrontendVite({
                 port: DEFAULT_FRONTEND_PORT,
@@ -138,6 +139,7 @@ export class EmulatorOutputClient implements OutputClient {
 
     const emulatorSupervisor = await supervise({
       label: "emulator vite",
+      kill: killChild,
       spawn: async () => {
         const r = await spawnEmulatorVite({
           port: DEFAULT_EMULATOR_PORT,
@@ -262,12 +264,14 @@ export class EmulatorOutputClient implements OutputClient {
       childPids,
       async stop(): Promise<void> {
         shuttingDown = true
-        emulatorSupervisor.stop()
-        frontendSupervisor?.stop()
-        await killChild(emulatorSupervisor.process)
-        if (frontendSupervisor !== null) {
-          await killChild(frontendSupervisor.process)
-        }
+        // The supervisor's stop() now SIGTERMs the current mutable child and
+        // falls back to SIGKILL after a grace period. After a respawn the
+        // live vite is the one killed — the previous stale-.process bug
+        // leaked the respawned child and bound the port.
+        await Promise.allSettled([
+          emulatorSupervisor.stop(),
+          frontendSupervisor?.stop() ?? Promise.resolve(),
+        ])
       },
     }
   }

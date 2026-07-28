@@ -201,6 +201,7 @@ export class RealOutputClient implements OutputClient {
     if (opts.frontendUrl === undefined) {
       frontendSupervisor = await supervise({
         label: "frontend vite",
+        kill: killChild,
         spawn: async () => {
           const r = await spawnFrontendVite({
             port: opts.port ?? DEFAULT_FRONTEND_PORT,
@@ -290,8 +291,10 @@ export class RealOutputClient implements OutputClient {
         }
         if (frontendSupervisor !== null) {
           shuttingDown = true
-          frontendSupervisor.stop()
-          await killChild(frontendSupervisor.process)
+          // supervisor.stop() SIGTERMs the live child (respawn-aware) and
+          // falls back to SIGKILL. The previous killChild(handle.process)
+          // captured the initial child and leaked the respawned vite.
+          await frontendSupervisor.stop()
         }
       },
     }

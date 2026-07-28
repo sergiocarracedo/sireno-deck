@@ -1,22 +1,15 @@
 import { spawn, type ChildProcess } from "node:child_process"
-import { appendFileSync, existsSync, openSync, readFileSync } from "node:fs"
+import { appendFileSync, existsSync, openSync } from "node:fs"
 import { dirname, resolve as resolvePath } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import { resolveDaemonPaths } from "@/util/daemon"
 import { formatHuman } from "@/util/logger"
+import { readParentPid } from "@/util/process-title"
 
 export const isOrphanedToInit = (): boolean => {
-  if (process.platform !== "linux") return true
-  try {
-    const stat = readFileSync("/proc/self/stat", "utf8")
-    const closeParen = stat.lastIndexOf(")")
-    const tail = stat.slice(closeParen + 2)
-    const ppid = Number.parseInt(tail.split(" ")[1] ?? "", 10)
-    return Number.isFinite(ppid) && ppid === 1
-  } catch {
-    return false
-  }
+  const ppid = readParentPid()
+  return ppid === 1
 }
 
 export interface UnderServiceManagerDeps {

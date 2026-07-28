@@ -1398,9 +1398,12 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     currentOutputHandle = outputHandle
     let currentLoadedConfig = loadedConfig
 
-    if (options.onChildren !== undefined) {
-      options.onChildren([...outputHandle.childPids])
-    }
+    // Note: do NOT overwrite the accumulated `trackedPids` Set with the initial
+    // `outputHandle.childPids` snapshot — that erased the respawned-PID entries
+    // and orphaned the live vite after the supervisor's respawn. The
+    // `onChildPid` callback above already added every spawned PID (initial +
+    // respawns) into `trackedPids` and reported it via `options.onChildren`,
+    // so the children file stays complete without this second write.
 
     // Hot-reload: watch the YAML config for changes. Deck-only changes
     // rebuild the runtime deck set in-place and rebroadcast deck-config;
