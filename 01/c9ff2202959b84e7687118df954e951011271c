@@ -1,0 +1,19 @@
+docs/plans/2026-07-28-pomodoro-addon.md
+  s_5b19018252d9e0::t_d04d458b5e3271 27-40,47,50-52,67-68,113-122,219
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "01c9ff2202959b84e7687118df954e951011271c",
+  "prompts": {},
+  "sessions": {
+    "s_5b19018252d9e0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05574b72affemfEF7rBuPKjodf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
