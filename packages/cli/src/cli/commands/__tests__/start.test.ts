@@ -46,20 +46,67 @@ vi.mock("../http-server", () => ({
 }))
 vi.mock("@/util/daemon", () => ({
   writePid: vi.fn(),
+  writeConfigPath: vi.fn(),
+  writeFlags: vi.fn(),
+  readFlags: vi.fn(() => null),
+  pruneStaleChildren: vi.fn(),
+  terminateChildren: vi.fn(async () => undefined),
   removePidFile: vi.fn(),
   readPid: vi.fn(),
   startDaemon: vi.fn(),
   stopDaemon: vi.fn(),
   checkStatus: vi.fn(),
-  isRunning: vi.fn(),
-  resolveDaemonPaths: vi.fn(),
+  isRunning: vi.fn(() => false),
+  resolveDaemonPaths: vi.fn(() => ({
+    runtimeDir: "/run/user/0",
+    pidFile: "/run/user/0/sireno-deck.pid",
+    tokenFile: "/run/user/0/sireno-deck.token",
+    childrenFile: "/run/user/0/sireno-deck.children.json",
+    configPathFile: "/run/user/0/sireno-deck.config",
+    flagsFile: "/run/user/0/sireno-deck.flags.json",
+  })),
   generateToken: vi.fn(() => "test-token"),
   readToken: vi.fn(() => null),
+  readConfigPath: vi.fn(() => null),
   writeToken: vi.fn(),
   removeTokenFile: vi.fn(),
   readChildren: vi.fn(() => null),
   writeChildren: vi.fn(),
   removeChildrenFile: vi.fn(),
+}))
+vi.mock("../spawn-daemon", async (importOriginal) => {
+  const actual = (await importOriginal()) as Record<string, unknown>
+  return {
+    ...actual,
+    isUnderServiceManager: vi.fn(() =>
+      Boolean(process.env["SIRENO_DAEMON_CHILD"]),
+    ),
+    spawnDetached: vi.fn(() => {
+      const listeners: Record<string, Array<() => void>> = {}
+      const child = {
+        unref: (): void => undefined,
+        once: (event: string, cb: () => void): void => {
+          ;(listeners[event] ??= []).push(cb)
+        },
+        __triggerExit: (): void => {
+          for (const cb of listeners.exit ?? []) cb()
+        },
+        __triggerSignal: (): void => {
+          for (const cb of listeners.SIGINT ?? []) cb()
+        },
+      }
+      return { pid: 99_999, child }
+    }),
+    watchFastFail: vi.fn(async () => undefined),
+    __testHelpers: {
+      triggerLastExit: (): void => undefined,
+    },
+  }
+})
+vi.mock("../service-manager", () => ({
+  ensureInstalled: vi.fn(async () => undefined),
+  invokeManager: vi.fn(async () => undefined),
+  isUnitInstalled: vi.fn(() => true),
 }))
 vi.mock("@/deck", () => ({
   createDeckRuntime: vi.fn(),
@@ -126,9 +173,6 @@ const loadDeviceConfigMock = cfgMod.loadDeviceConfig as unknown as ReturnType<
 const selectOutputClientMock =
   outputClientMod.selectOutputClient as unknown as ReturnType<typeof vi.fn>
 const writePidMock = daemonMod.writePid as unknown as ReturnType<typeof vi.fn>
-const removePidFileMock = daemonMod.removePidFile as unknown as ReturnType<
-  typeof vi.fn
->
 const createDeckRuntimeMock = (
   deckMod as unknown as { createDeckRuntime: ReturnType<typeof vi.fn> }
 ).createDeckRuntime
@@ -293,31 +337,59 @@ const setHappyPath = (): ReturnType<typeof makeFakeOutputClient> => {
 }
 
 describe("start", () => {
+  let savedArgv1: string | undefined
   beforeEach(() => {
     vi.clearAllMocks()
+    savedArgv1 = process.argv[1]
+    // Simulate dev invocation (argv[1] is .ts) so forkOffDev path runs.
+    process.argv[1] = "/tmp/sireno-deck/src/cli/main.ts"
   })
   afterEach(() => {
     vi.restoreAllMocks()
+    process.argv[1] = savedArgv1
   })
 
-  it("calls writePid with current process pid", async () => {
+  const awaitFork = async (): Promise<void> => {
+    const { spawnDetached } = await import("../spawn-daemon")
+    const mock = vi.mocked(spawnDetached).mock.results[
+      vi.mocked(spawnDetached).mock.results.length - 1
+    ] as { type: string; value: { child: { __triggerExit: () => void } } }
+    if (mock.type === "return") mock.value.child.__triggerExit()
+  }
+
+  it("forks off: calls spawnDetached and writePid with the spawned pid", async () => {
     setHappyPath()
-    await start({
+    const { spawnDetached } = await import("../spawn-daemon")
+    const startPromise = start({
       config: "/abs/cfg.yml",
       frontendUrl: "http://x",
       xdgConfigHome: "/xdg",
       homeDir: "/home",
       logger: silentLogger(),
     })
-    expect(writePidMock).toHaveBeenCalledWith(process.pid)
+    await awaitFork()
+    await startPromise
+    expect(spawnDetached).toHaveBeenCalledTimes(1)
+    expect(writePidMock).toHaveBeenCalledWith(99_999)
   })
 
-  it("resolves immediately without blocking on the background pipeline", async () => {
-    const outputClient = setHappyPath()
-    outputClient.init.mockImplementation(
-      () => new Promise<never>(() => undefined),
-    )
+  it("persists the resolved config path so service run can find it", async () => {
+    setHappyPath()
+    const { writeConfigPath } = await import("@/util/daemon")
+    const startPromise = start({
+      config: "/abs/cfg.yml",
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      logger: silentLogger(),
+    })
+    await awaitFork()
+    await startPromise
+    expect(writeConfigPath).toHaveBeenCalledWith("/abs/cfg.yml")
+  })
 
+  it("resolves immediately without blocking on the forked pipeline", async () => {
+    setHappyPath()
     const startPromise = start({
       config: "/abs/cfg.yml",
       frontendUrl: "http://x",
@@ -329,39 +401,44 @@ describe("start", () => {
     await expect(
       Promise.race([startPromise, new Promise((r) => setTimeout(r, 10))]),
     ).resolves.toBeUndefined()
-    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    await awaitFork()
   })
 
-  it("rejects with a clear error if preflight fails before the pipeline starts", async () => {
-    loaderMock.mockReturnValue({ config: { decks: {} }, configDir: "/d" })
-    registryCtorMock.mockImplementation(function FakeRegistry() {
-      return {
-        hasButtonType: () => true,
-        getButtonType: () => ({ def: { internal: false } }),
-        resolveActiveTheme: () => ({
-          name: "default",
-          cssPath: "/theme.css",
-          frontendPath: "/index",
+  it("rejects with a clear error if preflight fails in-process (SIRENO_DAEMON_CHILD=1)", async () => {
+    process.env["SIRENO_DAEMON_CHILD"] = "1"
+    try {
+      loaderMock.mockReturnValue({ config: { decks: {} }, configDir: "/d" })
+      registryCtorMock.mockImplementation(function FakeRegistry() {
+        return {
+          hasButtonType: () => true,
+          getButtonType: () => ({ def: { internal: false } }),
+          resolveActiveTheme: () => ({
+            name: "default",
+            cssPath: "/theme.css",
+            frontendPath: "/index",
+          }),
+        }
+      })
+      builtinsMock.mockReturnValue(undefined)
+      validateFullMock.mockReturnValue({
+        issues: [{ level: "error", path: "x", message: "bad" }],
+      })
+      isFullValidMock.mockReturnValue(false)
+
+      await expect(
+        start({
+          config: "/abs/cfg.yml",
+          frontendUrl: "http://x",
+          xdgConfigHome: "/xdg",
+          homeDir: "/home",
+          logger: silentLogger(),
         }),
-      }
-    })
-    builtinsMock.mockReturnValue(undefined)
-    validateFullMock.mockReturnValue({
-      issues: [{ level: "error", path: "x", message: "bad" }],
-    })
-    isFullValidMock.mockReturnValue(false)
+      ).rejects.toThrow(/Config validation failed/)
 
-    await expect(
-      start({
-        config: "/abs/cfg.yml",
-        frontendUrl: "http://x",
-        xdgConfigHome: "/xdg",
-        homeDir: "/home",
-        logger: silentLogger(),
-      }),
-    ).rejects.toThrow(/Config validation failed/)
-
-    expect(writePidMock).not.toHaveBeenCalled()
-    expect(selectOutputClientMock).not.toHaveBeenCalled()
+      expect(writePidMock).not.toHaveBeenCalled()
+      expect(selectOutputClientMock).not.toHaveBeenCalled()
+    } finally {
+      delete process.env["SIRENO_DAEMON_CHILD"]
+    }
   })
 })

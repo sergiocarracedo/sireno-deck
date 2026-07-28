@@ -35,11 +35,7 @@ import {
   type ScannedAddon,
 } from "./addon-registry"
 import { ensureInstalled, invokeManager } from "./service-manager"
-import {
-  isUnderServiceManager,
-  spawnDetached,
-  watchFastFail,
-} from "./spawn-daemon"
+import { isUnderServiceManager, spawnDetached } from "./spawn-daemon"
 import {
   preflight,
   runPipeline,
@@ -303,13 +299,31 @@ const forkOffDev = async (options: StartOptions): Promise<void> => {
 
   const binPath = resolveBinPath()
   const args: string[] = ["start"]
-  const { pid, child } = spawnDetached({ binPath, args })
+  // ponytail: devMode true makes spawnDetached pipe stdout/stderr through a
+  // tee — each ndjson line is appended to runtimeDir/service.log AND emitted
+  // formatted to the parent's terminal. Without this, `pnpm dev start
+  // --emulator` shows "daemon spawned" and then goes silent until the
+  // operator kills it.
+  const { pid, child } = spawnDetached({ binPath, args, devMode: true })
   if (pid <= 0) {
     throw new Error("start: failed to spawn daemon (no pid returned)")
   }
   writePid(pid)
   logger.info({ childPid: pid, configPath }, "start: daemon spawned (dev)")
-  await watchFastFail(child, `${resolveDaemonPaths().runtimeDir}/service.log`)
+  // ponytail: in dev mode the daemon IS the user's working surface — don't
+  // bail out on the grace window. Keep the parent hooked to the child's
+  // stdio until the child exits naturally (or the user hits Ctrl+C).
+  await new Promise<void>((resolve) => {
+    child.once("exit", () => resolve())
+    process.once("SIGINT", () => {
+      try {
+        process.kill(pid, "SIGTERM")
+      } catch {
+        // already gone
+      }
+      resolve()
+    })
+  })
 }
 
 const startProduction = async (options: StartOptions): Promise<void> => {
