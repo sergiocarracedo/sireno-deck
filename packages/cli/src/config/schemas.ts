@@ -82,13 +82,21 @@ export const AddonDeckOverrideSchema = z
   })
   .strict()
 
+export const AddonDeckDefaultsSchema = z
+  .object({
+    autoShow: z.boolean().optional(),
+  })
+  .strict()
+
 /**
- * Phase 11: addon-config block under `addons[i]`. Hosts two shape variants:
- * - addon-wide opaque config (anything; merged into `createDeck(s)({config})`)
+ * Phase 11: addon-config block under `addons[i]`. Hosts three shape variants:
+ * - `defaults:` addon-wide deck defaults (applied before per-deck overrides)
  * - `decks:` record keyed by addon deck id, with per-deck overrides
+ * - addon-wide opaque config (anything else; merged into `createDeck(s)({config})`)
  */
 export const AddonConfigSchema = z
   .object({
+    defaults: AddonDeckDefaultsSchema.optional(),
     decks: z.record(z.string(), AddonDeckOverrideSchema).optional(),
   })
   .strict()

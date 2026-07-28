@@ -2,6 +2,9 @@ theme: default
 
 addons:
   - src: ./packages/addon-app-shortcuts
+    config:
+      defaults:
+        autoShow: false
 
 logging:
   level: info

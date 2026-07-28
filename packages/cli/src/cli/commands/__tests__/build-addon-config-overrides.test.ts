@@ -83,6 +83,29 @@ describe("buildAddonConfigOverrides", () => {
     expect(overrides.size).toBe(0)
   })
 
+  it("extracts defaults from config alongside decks and addonWideConfig", () => {
+    const entries = [
+      {
+        src: "/p/test-addon",
+        config: {
+          defaults: { autoShow: false },
+          decks: { shortcuts: { name: "My Shortcuts" } },
+        },
+      },
+    ]
+    const addonSpecToName = new Map([["/p/test-addon", "test-addon"]])
+    const overrides = buildAddonConfigOverrides(
+      entries,
+      addonSpecToName,
+      silentLogger(),
+    )
+    expect(overrides.get("test-addon")?.defaults).toEqual({ autoShow: false })
+    expect(overrides.get("test-addon")?.perDeck.get("shortcuts")?.name).toBe(
+      "My Shortcuts",
+    )
+    expect(overrides.get("test-addon")?.addonWideConfig).toEqual({})
+  })
+
   it("passes addonWideConfig (config keys outside `decks`) through unchanged", () => {
     const entries = [
       {
