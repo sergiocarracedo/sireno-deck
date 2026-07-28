@@ -8,9 +8,9 @@ import type { ConfigSchema } from "./config.ts"
 const LauncherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
   config,
 }) => (
-  <div className="relative w-full h-full">
+  <div className="flex flex-col gap-1">
     <div
-      className="grid grid-cols-3 grid-rows-2 w-full h-full gap-0 p-1"
+      className="grid grid-cols-3 grid-rows-2 w-15 h-10 gap-0 p-1"
       data-sireno-launcher-grid="true"
     >
       {EMOJI_LAUNCHER_GRID.map((char) => (
@@ -20,13 +20,11 @@ const LauncherButtonFrontend: AddonFrontendButton<ConfigSchema> = ({
           key={char}
           style={{ fontFamily: EMOJI_FONT_STACK }}
         >
-          <div className="">{char}</div>
+          {char}
         </div>
       ))}
     </div>
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-black/40 px-1 py-0.5">
-      <Label text={config.label} />
-    </div>
+    <Label text={config.label ?? "Emojis"} />
   </div>
 )
 

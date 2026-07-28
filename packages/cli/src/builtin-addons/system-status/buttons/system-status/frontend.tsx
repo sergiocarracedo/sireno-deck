@@ -182,7 +182,7 @@ function ChartPage({
     series.length === 1 ? [series[0]!] : [series[0]!, series[1]!]
 
   return (
-    <div className="h-full w-full p-1">
+    <div className="h-full -mx-1">
       <ValueChart series={tuple} windowSeconds={windowSeconds} />
     </div>
   )

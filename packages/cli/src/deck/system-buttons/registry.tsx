@@ -38,8 +38,11 @@ export const renderSystemButton = (
   details?: string,
   labelOverride?: string,
 ): ReactElement | null => {
-  if (!isSystemButtonType(type)) return null
+  if (!isSystemButtonType(type)) {
+    return null
+  }
   const layout = SYSTEM_BUTTON_LAYOUT[type]
+
   if (type === "core:temporary-error") {
     return (
       <TemporaryErrorSurface
@@ -49,6 +52,7 @@ export const renderSystemButton = (
       />
     )
   }
+
   return (
     <IconLabelSurface
       source={iconOverride ?? layout.source}

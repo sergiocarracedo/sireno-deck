@@ -1,7 +1,6 @@
 import type { CSSProperties, ReactElement } from "react"
 
 import { Icon } from "../primitives/Icon"
-import { Text } from "../primitives/Text"
 import { useThemeUiPresentation } from "../theme-presentation"
 import { cn } from "../utils/cn"
 
@@ -140,7 +139,7 @@ export function ValueChart(props: ValueChartProps): ReactElement {
   return (
     <div
       className={cn(
-        "flex h-full min-h-[24px] min-w-0 w-full flex-col",
+        "flex h-full min-h-6 min-w-0 w-full flex-col",
         props.className,
       )}
       data-sireno-ui-valuechart="true"
@@ -158,16 +157,6 @@ export function ValueChart(props: ValueChartProps): ReactElement {
             >
               <Icon source={s.icon} size={10} />
               <LegendSwatch color={s.color} variant={variant} />
-              {s.unit ? (
-                <Text
-                  align="center"
-                  fit="hidden"
-                  size="xxs"
-                  typography="mono"
-                  text={s.unit}
-                  style={{ color: s.color, opacity: 0.7 }}
-                />
-              ) : null}
             </div>
           )
         })}

@@ -1,29 +1,29 @@
 import {
+  BUTTON_SIZE_PX,
+  gridForKeyCount,
+  type DeviceModelSpec,
+} from "@/device/models"
+import {
   useEffect,
   useRef,
   useState,
   type CSSProperties,
   type ReactNode,
 } from "react"
-import {
-  BUTTON_SIZE_PX,
-  gridForKeyCount,
-  type DeviceModelSpec,
-} from "@/device/models"
 
 import { addonRegistry } from "virtual:sireno/addons/registry"
 
+import {
+  isSystemButton,
+  renderOverlayToggleButton,
+  renderSystemButton,
+} from "@/deck/system-buttons/registry"
 import {
   ButtonFrame,
   SplitActionSurface,
   useAddonChannel,
   type AddonGestureEvent,
 } from "@sireno-deck/cli"
-import {
-  isSystemButton,
-  renderOverlayToggleButton,
-  renderSystemButton,
-} from "@/deck/system-buttons/registry"
 import { useButtonAction } from "../bridge/use-button-action"
 import { ErrorBoundary } from "./ErrorBoundary"
 
