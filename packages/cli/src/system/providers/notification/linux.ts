@@ -55,14 +55,25 @@ export const createLinuxNotificationProvider = async (
     FFPLAY_TOOL,
     deps.extraFsProbe,
   )
-  const paplayOk = !ffplayOk && (await probeTool(deps.executor, PAPLAY_TOOL, deps.extraFsProbe))
-  const soundTool: string | null = ffplayOk ? FFPLAY_TOOL : paplayOk ? PAPLAY_TOOL : null
+  const paplayOk =
+    !ffplayOk &&
+    (await probeTool(deps.executor, PAPLAY_TOOL, deps.extraFsProbe))
+  const soundTool: string | null = ffplayOk
+    ? FFPLAY_TOOL
+    : paplayOk
+      ? PAPLAY_TOOL
+      : null
 
   const timeoutMs = deps.timeoutMs ?? DEFAULT_TIMEOUT_MS
 
   return {
     async notify(args) {
-      const sendArgs = ["-t", "5000", shellQuote(args.title), shellQuote(args.body)]
+      const sendArgs = [
+        "-t",
+        "5000",
+        shellQuote(args.title),
+        shellQuote(args.body),
+      ]
       try {
         const result = await withTimeout(
           deps.executor.run(NOTIFY_SEND_TOOL, sendArgs),
@@ -78,10 +89,18 @@ export const createLinuxNotificationProvider = async (
         deps.logger.warn({ err }, "linux notification: notify-send failed")
       }
 
-      if (args.sound === true && deps.soundPath !== undefined && soundTool !== null) {
+      if (
+        args.sound === true &&
+        deps.soundPath !== undefined &&
+        soundTool !== null
+      ) {
         try {
           await withTimeout(
-            deps.executor.run(soundTool, ["-nodisp", "-autoexit", deps.soundPath]),
+            deps.executor.run(soundTool, [
+              "-nodisp",
+              "-autoexit",
+              deps.soundPath,
+            ]),
             SOUND_TIMEOUT_MS,
           )
         } catch (err) {

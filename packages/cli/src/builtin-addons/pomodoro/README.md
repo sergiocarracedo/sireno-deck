@@ -11,7 +11,7 @@ A built-in addon that surfaces a Pomodoro timer as a button. Tap to start, tap a
 ```yaml
 type: pomodoro:pomodoro
 config:
-  durationSec: 1500   # optional; default 1500 (25 min)
+  durationSec: 1500 # optional; default 1500 (25 min)
 ```
 
 ## State machine

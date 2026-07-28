@@ -1,7 +1,4 @@
-import type {
-  AddonGlobalService,
-  AddonServiceContext,
-} from "@/addon/api"
+import type { AddonGlobalService, AddonServiceContext } from "@/addon/api"
 
 import { createPomodoroTimer, type PomodoroTimer } from "./timer"
 import {
@@ -36,7 +33,9 @@ const rebuildSnapshot = (now: number): PomodoroSnapshot => {
 
 const publishNow = (): void => {
   if (ctxRef === undefined) return
-  lastSnapshot = rebuildSnapshot(ctxRef.signal.aborted ? Date.now() : Date.now())
+  lastSnapshot = rebuildSnapshot(
+    ctxRef.signal.aborted ? Date.now() : Date.now(),
+  )
   ctxRef.publish(lastSnapshot)
 }
 

@@ -22,4 +22,5 @@ export const computeRemaining = (
   startTsMs: number,
   durationSec: number,
   now: number,
-): number => Math.max(0, Math.ceil((startTsMs + durationSec * 1000 - now) / 1000))
+): number =>
+  Math.max(0, Math.ceil((startTsMs + durationSec * 1000 - now) / 1000))

@@ -986,7 +986,13 @@ const startSystemProviders = async (
       logger,
     }),
     createKeyMacroProvider({ platform, executor, env, logger, extraFsProbe }),
-    createNotificationProvider({ platform, executor, env, logger, extraFsProbe }),
+    createNotificationProvider({
+      platform,
+      executor,
+      env,
+      logger,
+      extraFsProbe,
+    }),
   ])
 
   runtime.setActiveAppProvider(activeApp)

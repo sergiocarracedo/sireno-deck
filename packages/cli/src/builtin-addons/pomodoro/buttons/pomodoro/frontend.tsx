@@ -7,7 +7,6 @@ import type {
 } from "../../state"
 import { POMO_CHANNEL } from "../../state"
 import type { ConfigSchema } from "./config"
-import "./frontend.css"
 
 const CIRCUMFERENCE = 2 * Math.PI * 42
 
@@ -20,6 +19,8 @@ const formatMmSs = (sec: number): string => {
     .padStart(2, "0")
   return `${m}:${s}`
 }
+
+const BLINK_KEYFRAMES = `@keyframes pomodoro-blink { 0%,100% { color: #ef4444; opacity: 1 } 50% { color: #ef4444; opacity: 0.35 } } .pomodoro-blink { color: #ef4444; animation: pomodoro-blink 1s 10 }`
 
 const PomodoroButtonFrontend: AddonFrontendButton<ConfigSchema> = (props) => {
   const { data } = useAddonChannel<PomodoroSnapshot>(POMO_CHANNEL)
@@ -36,53 +37,56 @@ const PomodoroButtonFrontend: AddonFrontendButton<ConfigSchema> = (props) => {
   const finished = status === "finished"
 
   return (
-    <div
-      className={`flex h-full w-full items-center justify-center ${
-        finished ? "pomodoro-blink" : ""
-      }`}
-    >
-      <svg viewBox="0 0 100 100" className="h-full w-full">
-        <circle
-          cx="50"
-          cy="50"
-          r="42"
-          fill="none"
-          stroke="var(--color-bg)"
-          strokeWidth={4}
-        />
-        <circle
-          cx="50"
-          cy="50"
-          r="42"
-          fill="none"
-          stroke="var(--color-accent)"
-          strokeWidth={4}
-          strokeLinecap="round"
-          strokeDasharray={CIRCUMFERENCE}
-          strokeDashoffset={dashOffset}
-          transform="rotate(-90 50 50)"
-        />
-        <text
-          x="50"
-          y="46"
-          textAnchor="middle"
-          fontSize="28"
-          dominantBaseline="middle"
-        >
-          🍅
-        </text>
-        <text
-          x="50"
-          y="70"
-          textAnchor="middle"
-          fontSize="12"
-          fill="currentColor"
-          fontFamily="var(--font-mono, monospace)"
-        >
-          {formatMmSs(remainingSec)}
-        </text>
-      </svg>
-    </div>
+    <>
+      <style>{BLINK_KEYFRAMES}</style>
+      <div
+        className={`flex h-full w-full items-center justify-center ${
+          finished ? "pomodoro-blink" : ""
+        }`}
+      >
+        <svg viewBox="0 0 100 100" className="h-full w-full">
+          <circle
+            cx="50"
+            cy="50"
+            r="42"
+            fill="none"
+            stroke="var(--color-bg)"
+            strokeWidth={4}
+          />
+          <circle
+            cx="50"
+            cy="50"
+            r="42"
+            fill="none"
+            stroke="var(--color-accent)"
+            strokeWidth={4}
+            strokeLinecap="round"
+            strokeDasharray={CIRCUMFERENCE}
+            strokeDashoffset={dashOffset}
+            transform="rotate(-90 50 50)"
+          />
+          <text
+            x="50"
+            y="46"
+            textAnchor="middle"
+            fontSize="28"
+            dominantBaseline="middle"
+          >
+            🍅
+          </text>
+          <text
+            x="50"
+            y="70"
+            textAnchor="middle"
+            fontSize="12"
+            fill="currentColor"
+            fontFamily="var(--font-mono, monospace)"
+          >
+            {formatMmSs(remainingSec)}
+          </text>
+        </svg>
+      </div>
+    </>
   )
 }
 

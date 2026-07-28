@@ -53,18 +53,18 @@ export const createWindowsNotificationProvider = async (
       if (args.sound === true && deps.soundPath !== undefined) {
         try {
           await withTimeout(
-            deps.executor.run(
-              "powershell",
-              [
-                "-NoProfile",
-                "-Command",
-                `(New-Object Media.SoundPlayer '${shellQuote(deps.soundPath)}').PlaySync()`,
-              ],
-            ),
+            deps.executor.run("powershell", [
+              "-NoProfile",
+              "-Command",
+              `(New-Object Media.SoundPlayer '${shellQuote(deps.soundPath)}').PlaySync()`,
+            ]),
             timeoutMs,
           )
         } catch (err) {
-          deps.logger.warn({ err }, "windows notification: sound playback failed")
+          deps.logger.warn(
+            { err },
+            "windows notification: sound playback failed",
+          )
         }
       }
     },

@@ -95,12 +95,15 @@ export interface Methods {
 
 export const createMethods = (ctx: MethodsContext): Methods => {
   let keyMacroProvider: KeyMacroProvider | undefined = ctx.keyMacroProvider
-  let notificationProvider: NotificationProvider | undefined = ctx.notificationProvider
+  let notificationProvider: NotificationProvider | undefined =
+    ctx.notificationProvider
   const logger = ctx.logger
   const setKeyMacroProvider: Methods["setKeyMacroProvider"] = (provider) => {
     keyMacroProvider = provider
   }
-  const setNotificationProvider: Methods["setNotificationProvider"] = (provider) => {
+  const setNotificationProvider: Methods["setNotificationProvider"] = (
+    provider,
+  ) => {
     notificationProvider = provider
   }
   const notify: Methods["notify"] = async (args) => {
