@@ -1,6 +1,5 @@
 import type pino from "pino"
 
-import { ProviderError } from "./error"
 import { logNull, type CommandExecutor } from "./shared"
 
 export interface NotificationArgs {
@@ -25,11 +24,7 @@ export interface CreateNotificationProviderOptions {
 export const createNullNotificationProvider = (
   logger?: pino.Logger,
 ): NotificationProvider => {
-  logNull(
-    logger,
-    "notification",
-    "platform unsupported, notify() is a no-op",
-  )
+  logNull(logger, "notification", "platform unsupported, notify() is a no-op")
   return {
     async notify() {
       return
@@ -50,7 +45,9 @@ export const createNotificationProvider = async (
       ...(options.extraFsProbe !== undefined
         ? { extraFsProbe: options.extraFsProbe }
         : {}),
-      ...(options.soundPath !== undefined ? { soundPath: options.soundPath } : {}),
+      ...(options.soundPath !== undefined
+        ? { soundPath: options.soundPath }
+        : {}),
     })
   }
   if (platform === "darwin") {
@@ -58,7 +55,9 @@ export const createNotificationProvider = async (
       await import("./notification/darwin")
     return createDarwinNotificationProvider({
       executor: options.executor,
-      ...(options.soundPath !== undefined ? { soundPath: options.soundPath } : {}),
+      ...(options.soundPath !== undefined
+        ? { soundPath: options.soundPath }
+        : {}),
     })
   }
   if (platform === "win32") {
@@ -67,7 +66,9 @@ export const createNotificationProvider = async (
     return createWindowsNotificationProvider({
       executor: options.executor,
       logger: options.logger,
-      ...(options.soundPath !== undefined ? { soundPath: options.soundPath } : {}),
+      ...(options.soundPath !== undefined
+        ? { soundPath: options.soundPath }
+        : {}),
     })
   }
   return createNullNotificationProvider(options.logger)
