@@ -1,0 +1,25 @@
+packages/cli/frontend/src/App.tsx
+  s_accd15ff1e3daf::t_75af01a44005b9 239,248-249,251-254,256-257,261
+  s_accd15ff1e3daf::t_e6f79fb8cd56cf 250,255
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "4fd33e2af51a390fe8a6fce7f16e3995caf35dec",
+  "prompts": {},
+  "humans": {
+    "h_f90ee31b03fc41": {
+      "author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  },
+  "sessions": {
+    "s_accd15ff1e3daf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_057a9c7e0ffe5N8a2S6y3rs3V7",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
