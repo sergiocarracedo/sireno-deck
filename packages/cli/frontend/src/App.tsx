@@ -236,7 +236,7 @@ const AppContent = () => {
           )[message.deckId]
           if (surface && Array.isArray(surface.buttons)) {
             navigate(`/decks/${message.deckId}`, { replace: true })
-            setDeck({
+            setDeck((previous) => ({
               id: message.deckId,
               name: surface.name ?? message.deckId,
               buttons: surface.buttons,
@@ -245,12 +245,20 @@ const AppContent = () => {
                 : {}),
               isCompact: message.isCompact ?? false,
               hasOverlayDeckAvailable: message.hasOverlayDeckAvailable ?? false,
-              overlayDeckIcon: message.overlayDeckIcon ?? null,
-              overlayDeckName: message.overlayDeckName ?? null,
+              overlayDeckIcon:
+                message.overlayDeckIcon ??
+                null ??
+                previous.overlayDeckIcon ??
+                null,
+              overlayDeckName:
+                message.overlayDeckName ??
+                null ??
+                previous.overlayDeckName ??
+                null,
               buttonErrors: Array.isArray(surface.buttonErrors)
                 ? surface.buttonErrors
                 : [],
-            })
+            }))
           }
         }
         if (message.type === "button-error") {
