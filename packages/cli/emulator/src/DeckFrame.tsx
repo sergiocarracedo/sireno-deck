@@ -18,6 +18,10 @@ export interface DeckFrameProps {
     position: number
     gesture: "tap" | "dbl-tap" | "hold"
   }) => void
+  // ponytail: lets the parent trigger `iframe.contentWindow.location.reload()`
+  // on `iframe-reload` WS messages without giving the parent a real DOM ref
+  // (which would force React to re-render and discard internal state).
+  readonly onIframeRef?: (iframe: HTMLIFrameElement | null) => void
 }
 
 export const DeckFrame = ({
@@ -25,6 +29,7 @@ export const DeckFrame = ({
   device,
   deckId,
   onGesture,
+  onIframeRef,
 }: DeckFrameProps): React.ReactElement => {
   const { columns, keyCount } = device
   const detectorRef = useRef<GestureDetector | null>(null)
@@ -82,6 +87,7 @@ export const DeckFrame = ({
       }}
     >
       <iframe
+        ref={onIframeRef ?? undefined}
         src={iframeUrl}
         className="block"
         style={{

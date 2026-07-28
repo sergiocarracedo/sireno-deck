@@ -95,6 +95,7 @@ export const App = ({
       : DEFAULT_DEVICE_MODEL,
   )
   const clientRef = useRef<WsClient | null>(null)
+  const iframeRef = useRef<HTMLIFrameElement | null>(null)
   // ponytail: ignore the first `closed` after an `open` — happens during
   // WS-replacement that some React navigations trigger. Latch only after a
   // short delay so transient reconnects don't pop the banner.
@@ -170,6 +171,13 @@ export const App = ({
         }
         if (typeof m.type === "string" && m.type.endsWith("error")) {
           setLastError(String(m.type))
+        }
+        if (m.type === "iframe-reload") {
+          // ponytail: asked by the CLI to reload the frontend iframe. The
+          // SPA stays mounted (so device/connection state survives) — only
+          // the inner iframe is reloaded, picking up the latest frontend
+          // bundle from vite (which has HMR'd the source).
+          iframeRef.current?.contentWindow?.location.reload()
         }
       },
     })
@@ -271,6 +279,9 @@ export const App = ({
                       device={deviceModel}
                       deckId={deckId}
                       onGesture={sendButtonAction}
+                      onIframeRef={(el) => {
+                        iframeRef.current = el
+                      }}
                     />
                   )
                 ) : (

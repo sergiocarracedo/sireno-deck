@@ -239,6 +239,7 @@ export const materializeAddonDecks = (
     {
       addonWideConfig: Record<string, unknown>
       perDeck: Map<string, AddonDeckOverride>
+      defaults: { autoShow?: boolean } | undefined
     }
   >,
 ): RuntimeDeck[] => {
@@ -305,21 +306,27 @@ export const materializeAddonDecks = (
         const override =
           perDeckOverrides.get(id) ??
           perDeckOverrides.get(id.slice(addon.name.length + 1))
-        const effectiveGdeck: AddonGeneratedDeck =
-          override !== undefined
-            ? {
-                ...gdeck,
-                ...(override.autoShow !== undefined
-                  ? { autoShow: override.autoShow }
-                  : {}),
-                ...(override.name !== undefined ? { name: override.name } : {}),
-                ...(override.icon !== undefined ? { icon: override.icon } : {}),
-                ...(override.trigger !== undefined
-                  ? { trigger: override.trigger }
-                  : {}),
-                isOverlay: true,
-              }
-            : gdeck
+        // ponytail: merge order (Option Z): addon code < defaults < per-deck.
+        // Each layer unconditionally overwrites the previous.
+        const effectiveGdeck: AddonGeneratedDeck = (() => {
+          let base: AddonGeneratedDeck = gdeck
+          if (addonEntry?.defaults?.autoShow !== undefined) {
+            base = { ...base, autoShow: addonEntry.defaults.autoShow }
+          }
+          if (override === undefined) return base
+          return {
+            ...base,
+            ...(override.autoShow !== undefined
+              ? { autoShow: override.autoShow }
+              : {}),
+            ...(override.name !== undefined ? { name: override.name } : {}),
+            ...(override.icon !== undefined ? { icon: override.icon } : {}),
+            ...(override.trigger !== undefined
+              ? { trigger: override.trigger }
+              : {}),
+            isOverlay: true,
+          }
+        })()
         if (override !== undefined) {
           logger.debug(
             {

@@ -697,6 +697,107 @@ describe("materializeAddonDecks", () => {
 })
 
 describe("materializeAddonDecks with addons[i].config overrides", () => {
+  it("defaults.autoShow overwrites addon code autoShow", () => {
+    const addon = fakeManifestWithDecks("test-addon", {
+      "test-addon:deck-a": () => ({
+        "gen-deck": {
+          name: "Gen",
+          autoShow: true,
+          isOverlay: true,
+          buttons: [],
+        },
+      }),
+    })
+    const reg = mockRegistry([addon])
+    const overrides = new Map([
+      [
+        "test-addon",
+        {
+          addonWideConfig: {},
+          perDeck: new Map(),
+          defaults: { autoShow: false },
+        },
+      ],
+    ])
+    const result = materializeAddonDecks(
+      reg,
+      [],
+      silentLogger(),
+      15,
+      undefined,
+      overrides,
+    )
+    const gen = result.find((d) => d.id === "gen-deck")!
+    expect(gen.autoShow).toBe(false)
+  })
+
+  it("per-deck override wins over defaults", () => {
+    const addon = fakeManifestWithDecks("test-addon", {
+      "test-addon:deck-a": () => ({
+        "gen-deck": {
+          name: "Gen",
+          autoShow: true,
+          isOverlay: true,
+          buttons: [],
+        },
+      }),
+    })
+    const reg = mockRegistry([addon])
+    const overrides = new Map([
+      [
+        "test-addon",
+        {
+          addonWideConfig: {},
+          perDeck: new Map([["gen-deck", { autoShow: true }]]),
+          defaults: { autoShow: false },
+        },
+      ],
+    ])
+    const result = materializeAddonDecks(
+      reg,
+      [],
+      silentLogger(),
+      15,
+      undefined,
+      overrides,
+    )
+    const gen = result.find((d) => d.id === "gen-deck")!
+    expect(gen.autoShow).toBe(true)
+  })
+
+  it("defaults.autoShow sets autoShow when addon code has none", () => {
+    const addon = fakeManifestWithDecks("test-addon", {
+      "test-addon:deck-a": () => ({
+        "gen-deck": {
+          name: "Gen",
+          isOverlay: true,
+          buttons: [],
+        },
+      }),
+    })
+    const reg = mockRegistry([addon])
+    const overrides = new Map([
+      [
+        "test-addon",
+        {
+          addonWideConfig: {},
+          perDeck: new Map(),
+          defaults: { autoShow: false },
+        },
+      ],
+    ])
+    const result = materializeAddonDecks(
+      reg,
+      [],
+      silentLogger(),
+      15,
+      undefined,
+      overrides,
+    )
+    const gen = result.find((d) => d.id === "gen-deck")!
+    expect(gen.autoShow).toBe(false)
+  })
+
   it("applies per-deck autoShow override from addonWideConfig", () => {
     const addon = fakeManifestWithDecks("test-addon", {
       "test-addon:deck-a": () => ({

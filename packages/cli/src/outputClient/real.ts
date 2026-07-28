@@ -12,9 +12,14 @@ import { saveDeviceConfig } from "@/util/device-config"
 
 import {
   DEFAULT_FRONTEND_PORT,
+  killChild,
   resolveFrontendCwd,
   spawnFrontendVite,
 } from "../cli/commands/emulator-mode"
+import {
+  supervise,
+  type SuperviseHandle,
+} from "../cli/commands/subprocess-supervisor"
 
 import type { InitOptions, OutputClient, OutputHandle } from "./types"
 
@@ -191,19 +196,31 @@ export class RealOutputClient implements OutputClient {
     let frontendUrl =
       opts.frontendUrl ??
       `http://127.0.0.1:${opts.port ?? DEFAULT_FRONTEND_PORT}`
-    let frontendVite: Awaited<ReturnType<typeof spawnFrontendVite>> | undefined
+    let shuttingDown = false
+    let frontendSupervisor: SuperviseHandle | null = null
     if (opts.frontendUrl === undefined) {
-      frontendVite = await spawnFrontendVite({
-        port: opts.port ?? DEFAULT_FRONTEND_PORT,
-        cwd: resolveFrontendCwd(),
-        pnpmCommand: "pnpm",
-        readyTimeoutMs: 30_000,
-        wsUrl: `ws://127.0.0.1:${opts.bridge.port}`,
+      frontendSupervisor = await supervise({
+        label: "frontend vite",
+        spawn: async () => {
+          const r = await spawnFrontendVite({
+            port: opts.port ?? DEFAULT_FRONTEND_PORT,
+            cwd: resolveFrontendCwd(),
+            pnpmCommand: "pnpm",
+            readyTimeoutMs: 30_000,
+            wsUrl: `ws://127.0.0.1:${opts.bridge.port}`,
+            logger,
+            themeDir: opts.themeDir,
+            ...(opts.onChildPid !== undefined
+              ? { onPid: opts.onChildPid }
+              : {}),
+          })
+          frontendUrl = r.url
+          return r.process
+        },
+        onGiveUp: () => opts.onChildCrash?.(),
+        isShuttingDown: () => shuttingDown,
         logger,
-        themeDir: opts.themeDir,
-        ...(opts.onChildPid !== undefined ? { onPid: opts.onChildPid } : {}),
       })
-      frontendUrl = frontendVite.url
     }
 
     logger.info({ frontendUrl }, "real mode: frontend URL")
@@ -217,7 +234,7 @@ export class RealOutputClient implements OutputClient {
     })
     await renderer.start()
 
-    const frontendVitePid = frontendVite?.process.pid ?? 0
+    const frontendVitePid = frontendSupervisor?.process.pid ?? 0
     const childPids = frontendVitePid > 0 ? [frontendVitePid] : []
 
     const buildBlackBuffer = (): Buffer => {
@@ -271,8 +288,10 @@ export class RealOutputClient implements OutputClient {
             void 0
           }
         }
-        if (frontendVite !== undefined) {
-          frontendVite.process.kill("SIGTERM")
+        if (frontendSupervisor !== null) {
+          shuttingDown = true
+          frontendSupervisor.stop()
+          await killChild(frontendSupervisor.process)
         }
       },
     }

@@ -20,6 +20,10 @@ import {
   spawnEmulatorVite,
   spawnFrontendVite,
 } from "../cli/commands/emulator-mode"
+import {
+  supervise,
+  type SuperviseHandle,
+} from "../cli/commands/subprocess-supervisor"
 
 import type { InitOptions, OutputClient, OutputHandle } from "./types"
 
@@ -92,38 +96,66 @@ export class EmulatorOutputClient implements OutputClient {
     }
     const descriptor = this.descriptor
     const logger = opts.logger
+    let shuttingDown = false
 
-    const frontendVite =
+    // ponytail: supervise each vite child independently — frontend crash
+    // respawns only the frontend, emulator crash respawns only the emulator.
+    // Both share the same `onChildCrash` so the pipeline exits cleanly when
+    // either exhausts its retry budget. The supervisor spawn closure captures
+    // the resolved URL into a hoisted `frontendUrl`/`emulatorUrl` so callers
+    // see it after the initial await; subsequent respawns bind the same port
+    // so the URL stays accurate.
+    let frontendUrl = ""
+    let emulatorUrl = ""
+
+    const frontendSupervisor: SuperviseHandle | null =
       opts.frontendUrl !== undefined
-        ? {
-            process: {
-              kill: (sig: string): void => {
-                void sig
-              },
-            } as { pid?: number; kill(signal: string): void },
-            url: opts.frontendUrl,
-          }
-        : await spawnFrontendVite({
-            port: DEFAULT_FRONTEND_PORT,
-            cwd: resolveFrontendCwd(),
-            pnpmCommand: "pnpm",
-            readyTimeoutMs: DEFAULT_TIMEOUT_MS,
+        ? (() => {
+            frontendUrl = opts.frontendUrl
+            return null
+          })()
+        : await supervise({
+            label: "frontend vite",
+            spawn: async () => {
+              const r = await spawnFrontendVite({
+                port: DEFAULT_FRONTEND_PORT,
+                cwd: resolveFrontendCwd(),
+                pnpmCommand: "pnpm",
+                readyTimeoutMs: DEFAULT_TIMEOUT_MS,
+                logger,
+                wsUrl: opts.bridge.url,
+                ...(opts.onChildPid !== undefined
+                  ? { onPid: opts.onChildPid }
+                  : {}),
+              })
+              frontendUrl = r.url
+              return r.process
+            },
+            onGiveUp: () => opts.onChildCrash?.(),
+            isShuttingDown: () => shuttingDown,
             logger,
-            wsUrl: opts.bridge.url,
-            ...(opts.onChildPid !== undefined
-              ? { onPid: opts.onChildPid }
-              : {}),
           })
 
-    const emulatorVite = await spawnEmulatorVite({
-      port: DEFAULT_EMULATOR_PORT,
-      cwd: resolveEmulatorCwd(),
-      pnpmCommand: "pnpm",
-      readyTimeoutMs: DEFAULT_TIMEOUT_MS,
+    const emulatorSupervisor = await supervise({
+      label: "emulator vite",
+      spawn: async () => {
+        const r = await spawnEmulatorVite({
+          port: DEFAULT_EMULATOR_PORT,
+          cwd: resolveEmulatorCwd(),
+          pnpmCommand: "pnpm",
+          readyTimeoutMs: DEFAULT_TIMEOUT_MS,
+          logger,
+          wsUrl: opts.bridge.url,
+          frontendUrl:
+            opts.frontendUrl ?? `http://127.0.0.1:${DEFAULT_FRONTEND_PORT}`,
+          ...(opts.onChildPid !== undefined ? { onPid: opts.onChildPid } : {}),
+        })
+        emulatorUrl = r.url
+        return r.process
+      },
+      onGiveUp: () => opts.onChildCrash?.(),
+      isShuttingDown: () => shuttingDown,
       logger,
-      wsUrl: opts.bridge.url,
-      frontendUrl: frontendVite.url,
-      ...(opts.onChildPid !== undefined ? { onPid: opts.onChildPid } : {}),
     })
 
     opts.bridge.setDevice(descriptor)
@@ -203,35 +235,38 @@ export class EmulatorOutputClient implements OutputClient {
       )
     })
 
-    const frontendPid = frontendVite.process.pid ?? 0
-    const emulatorPid = emulatorVite.process.pid ?? 0
+    const frontendPid = frontendSupervisor?.process.pid ?? 0
+    const emulatorPid = emulatorSupervisor.process.pid ?? 0
     const childPids = [frontendPid, emulatorPid].filter((p) => p > 0)
 
     logger.info(
       {
-        emulatorUrl: emulatorVite.url,
-        frontendUrl: frontendVite.url,
+        emulatorUrl,
+        frontendUrl,
         wsUrl: opts.bridge.url,
       },
       "emulator mode ready",
     )
     process.stdout.write(
-      `\n  Emulator:  ${emulatorVite.url}\n  Frontend:  ${frontendVite.url}\n\n`,
+      `\n  Emulator:  ${emulatorUrl}\n  Frontend:  ${frontendUrl}\n\n`,
     )
-    openBrowser(emulatorVite.url, logger)
+    openBrowser(emulatorUrl, logger)
 
     opts.runtime.setBrightness(opts.runtime.getBrightness())
 
     return {
       descriptor,
-      frontendUrl: frontendVite.url,
-      emulatorUrl: emulatorVite.url,
+      frontendUrl,
+      emulatorUrl,
       wsUrl: opts.bridge.url,
       childPids,
       async stop(): Promise<void> {
-        await killChild(emulatorVite.process)
-        if (opts.frontendUrl === undefined) {
-          await killChild(frontendVite.process)
+        shuttingDown = true
+        emulatorSupervisor.stop()
+        frontendSupervisor?.stop()
+        await killChild(emulatorSupervisor.process)
+        if (frontendSupervisor !== null) {
+          await killChild(frontendSupervisor.process)
         }
       },
     }
