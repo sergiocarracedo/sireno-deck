@@ -1,0 +1,33 @@
+packages/cli/src/cli/commands/start.ts
+  s_0df9ddf9363fff::t_5a18fb5afd64e6 278-285
+  s_0df9ddf9363fff::t_9c270b6870a3e7 390-403,405-409
+packages/cli/src/util/daemon.ts
+  s_0df9ddf9363fff::t_41db14a93c79b7 23-30
+  s_0df9ddf9363fff::t_98028f1440f54b 170-172,177-180,186-188
+  s_0df9ddf9363fff::t_f6600f7140837e 205,208-226,240-243,247-248,261-262
+  s_0df9ddf9363fff::t_90d744ea7bb0e1 173-176,181-185,189-204
+  s_0df9ddf9363fff::t_03d72d23019d66 60
+  s_0df9ddf9363fff::t_23a94243f7c6c7 206
+packages/cli/src/util/__tests__/daemon.test.ts
+  s_0df9ddf9363fff::t_431e16d3c30cd3 149-165
+  s_0df9ddf9363fff::t_8268755197a61d 18
+packages/cli/src/render/vite-server.ts
+  s_0df9ddf9363fff::t_52dce1ae636bab 12,33,69-74
+  s_0df9ddf9363fff::t_401b6c8464203e 60-62,66,68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "3dedcd9c9ddf38e203bce21f966de81f51d6d965",
+  "prompts": {},
+  "sessions": {
+    "s_0df9ddf9363fff": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05d08b0e4ffew58eYfX8Gq7g75",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio Carracedo <hi@sergiocarracedo.es>"
+    }
+  }
+}
