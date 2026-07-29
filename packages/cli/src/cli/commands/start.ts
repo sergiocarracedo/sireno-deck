@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs"
+import { existsSync, readFileSync, readdirSync, readlinkSync } from "node:fs"
 import { execFileSync } from "node:child_process"
 import { dirname, join, resolve as resolvePath } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -15,6 +15,8 @@ import {
 
 import { findConfigPath } from "@/config/discovery"
 import {
+  acquireStartLock,
+  generateSentinel,
   generateToken,
   isRunning,
   pruneStaleChildren,
@@ -26,6 +28,7 @@ import {
   removePidFile,
   removeTokenFile,
   resolveDaemonPaths,
+  SENTINEL_ENV_VAR,
   terminateChildren,
   writeChildren,
   writeConfigPath,
@@ -103,28 +106,129 @@ const isDevInvocation = (): boolean => {
 // ports — but ONLY if the identity gate (cmdline + orphan check) says it's
 // ours. Otherwise the port collision stays and the new daemon's preflight
 // surfaces a clear EADDRINUSE, which is the correct signal to the user.
+const trySs = (port: number): ReadonlyArray<number> => {
+  const ssLineRegex = (p: number): RegExp =>
+    new RegExp(`:${p}\\b[\\s\\S]*?users:\\([^)]*?pid=(\\d+)[,\\)]`)
+  try {
+    const out = execFileSync("ss", ["-ltnp"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    })
+    const pids: number[] = []
+    for (const line of out.split("\n")) {
+      const m = line.match(ssLineRegex(port))
+      if (m && m[1]) pids.push(Number.parseInt(m[1], 10))
+    }
+    return pids
+  } catch {
+    return []
+  }
+}
+
+const tryLsof = (port: number): ReadonlyArray<number> => {
+  try {
+    const out = execFileSync("lsof", [`-iTCP:${port}`, "-sTCP:LISTEN", "-t"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    })
+    return out
+      .split("\n")
+      .map((line) => Number.parseInt(line.trim(), 10))
+      .filter((n) => Number.isFinite(n) && n > 0)
+  } catch {
+    return []
+  }
+}
+
+const tryProcNet = (port: number): ReadonlyArray<number> => {
+  if (process.platform !== "linux") return []
+  try {
+    const hex = port.toString(16).toUpperCase().padStart(4, "0")
+    const out = readFileSync("/proc/net/tcp", "utf8")
+    const pids = new Set<number>()
+    const inodes: string[] = []
+    for (const line of out.split("\n").slice(1)) {
+      const cols = line.trim().split(/\s+/)
+      if (cols.length < 10) continue
+      const localAddr = cols[1] ?? ""
+      const [, localPortHex] = localAddr.split(":")
+      if (localPortHex !== hex) continue
+      const inode = cols[9]
+      if (inode) inodes.push(inode)
+    }
+    const procDirs = readdirSyncSync("/proc")
+    for (const pidStr of procDirs) {
+      if (!/^\d+$/.test(pidStr)) continue
+      try {
+        const fdList = readdirSyncSync(`/proc/${pidStr}/fd`)
+        for (const fd of fdList) {
+          try {
+            const link = readlinkSyncFn(`/proc/${pidStr}/fd/${fd}`)
+            for (const inode of inodes) {
+              if (link === `socket:[${inode}]`) {
+                pids.add(Number.parseInt(pidStr, 10))
+              }
+            }
+          } catch {
+            // ignore
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+    return Array.from(pids)
+  } catch {
+    return []
+  }
+}
+
+const readdirSyncSync = (dir: string): string[] => {
+  try {
+    return readdirSync(dir)
+  } catch {
+    return []
+  }
+}
+
+const readlinkSyncFn = (path: string): string | null => {
+  try {
+    return readlinkSync(path)
+  } catch {
+    return null
+  }
+}
+
+const detectPortPids = (
+  port: number,
+  logger: pino.Logger,
+): ReadonlyArray<number> => {
+  const ss = trySs(port)
+  if (ss.length > 0) return ss
+  const lsof = tryLsof(port)
+  if (lsof.length > 0) {
+    logger.debug({ port }, "port detection: ss failed, used lsof")
+    return lsof
+  }
+  const procNet = tryProcNet(port)
+  if (procNet.length > 0) {
+    logger.debug({ port }, "port detection: ss/lsof failed, used /proc/net/tcp")
+    return procNet
+  }
+  logger.warn(
+    { port },
+    "port detection: all backends failed (ss, lsof, /proc/net/tcp) — orphan cleanup may miss stale vites",
+  )
+  return []
+}
+
 const killPortListeners = async (
   ports: ReadonlyArray<number>,
   logger: pino.Logger,
 ): Promise<void> => {
-  const ssLineRegex = (port: number): RegExp =>
-    new RegExp(`:${port}\\b[\\s\\S]*?users:\\([^)]*?pid=(\\d+)[,\\)]`)
   const daemonPid = readPid()
   for (const port of ports) {
-    const pids = new Set<number>()
-    try {
-      const out = execFileSync("ss", ["-ltnp"], {
-        encoding: "utf8",
-        stdio: ["ignore", "pipe", "ignore"],
-      })
-      for (const line of out.split("\n")) {
-        const m = line.match(ssLineRegex(port))
-        if (m && m[1]) pids.add(Number.parseInt(m[1], 10))
-      }
-    } catch {
-      // ss unavailable — skip silently. lsof fallback isn't worth the
-      // portability pain for an internal-cleanup helper.
-    }
+    const pids = new Set(detectPortPids(port, logger))
     for (const pid of pids) {
       if (!isOurViteChild(pid)) {
         logger.warn(
@@ -250,6 +354,11 @@ const buildRuntimeFlags = (options: StartOptions): RuntimeFlags => ({
 const runInProcess = async (options: StartOptions): Promise<void> => {
   const { logger } = options
 
+  const startLock = acquireStartLock()
+  if (startLock === null) {
+    throw new Error("another start is already in progress")
+  }
+
   const home = options.homeDir ?? process.env["HOME"] ?? ""
   const xdgConfigHome =
     options.xdgConfigHome ?? process.env["XDG_CONFIG_HOME"] ?? `${home}/.config`
@@ -285,6 +394,8 @@ const runInProcess = async (options: StartOptions): Promise<void> => {
   writePid(process.pid)
   const token = generateToken()
   writeToken(token)
+  const sentinel = generateSentinel(process.pid)
+  process.env[SENTINEL_ENV_VAR] = sentinel
   logger.info({ tokenLen: token.length }, "daemon: pid + token written")
 
   let httpServer: RunningHttpServer | null = null
