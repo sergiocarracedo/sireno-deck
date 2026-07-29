@@ -22,16 +22,19 @@ sireno-deck/
 ├── ARCHITECTURE.md            ← you are here
 ├── README.md
 ├── config.yml                 ← user-facing example/default config
-├── packages/
-│   └── cli/
-│       ├── src/               ← Node service (TypeScript)
-│       ├── frontend/          ← Vite SPA — renders the active deck
-│       ├── emulator/          ← Vite SPA — embeds frontend, adds click overlay
-│       ├── themes/            ← Built-in theme YAML files
-│       ├── fixtures/          ← Config + schema fixtures
-│       └── package.json
-├── builtin-addons/            ← First-party addons shipped as TS source
-└── addons/                    ← User-installed addons (npm / local)
+├── docs/
+│   ├── plans/                 ← design + implementation plans
+│   └── solutions/             ← institutional learnings (runtime-errors, conventions)
+└── packages/
+    └── cli/
+        ├── src/               ← Node service (TypeScript)
+        │   ├── builtin-addons/   ← First-party addons shipped as TS source
+        │   └── addons/           ← User-installed addons (npm / local)
+        ├── frontend/          ← Vite SPA — renders the active deck
+        ├── emulator/          ← Vite SPA — embeds frontend, adds click overlay
+        ├── themes/            ← Built-in theme YAML files
+        ├── fixtures/          ← Config + schema fixtures
+        └── package.json
 ```
 
 ## 3. Service (`packages/cli/src/`)
@@ -172,7 +175,7 @@ underlying `timestamps`.
 
 State per key: `idle → holding → waiting-second → second-down → idle`.
 
-Constants: `HOLD_ACTION_DELAY_MS = 500`, `DOUBLE_TAP_DELAY_MS = 500`.
+Constants: `HOLD_ACTION_DELAY_MS = 200`, `DOUBLE_TAP_DELAY_MS = 200`.
 
 ### 3.8 Addon-handler-bridge — `deck/addon-handler-bridge.ts`
 
@@ -304,8 +307,10 @@ service's HTTP server in real mode.
   `token`.
 
 The deck surface is built from the `deck-config` message. The active deck is
-the only one rendered at a time. **No React Router** today — navigation is
-driven entirely by the runtime.
+the only one rendered at a time. `react-router-dom` (BrowserRouter) is used
+in `main.tsx` for route-to-deck mapping, but gesture routing inside the
+active deck is driven entirely by the runtime — react-router only owns the
+top-level URL ↔ deck mapping.
 
 ## 5. Emulator — `packages/cli/emulator/`
 
@@ -486,5 +491,8 @@ models are added by listing them in `device/registry.ts`. Out of scope.
 
 ### Test harness details
 
-Vitest config lives in `vitest.config.ts` at the repo root. Each package has
-its own `__tests__/` and `__mocks__/` directories. Out of scope.
+Vitest config lives in `vitest.config.ts` at the repo root. Every package has
+its own `__tests__/` directories (colocated with the code); `frontend/` is
+the only one that ships `__mocks__/` as well — these back the
+`virtual:sireno/{token,theme,addons/registry}` aliases the vite plugins
+mount. Out of scope.

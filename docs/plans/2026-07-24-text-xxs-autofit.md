@@ -4,7 +4,7 @@
 - **Branch suggestion:** `feat/text-xxs-autofit`
 - **Product contract source:** ce-plan-bootstrap
 - **Plan depth:** Standard
-- **Status:** Draft
+- **Status:** Complete (2026-07-29)
 
 ## 1. Goal
 
@@ -166,7 +166,7 @@ For each scenario, the test file path is `packages/cli/src/ui/primitives/__tests
 
 - Tailwind v4 arbitrary values (`text-[8px]`) are guaranteed to emit a working class by the project's existing toolchain — they already work elsewhere (`Icon.tsx` uses `style={{ fontSize: \`${size}px\` }}`, but arbitrary value classes are also used in the codebase; will be confirmed by the build step).
 - `ResizeObserver` is available in jsdom **or** a 5-line polyfill is acceptable in the test file (no production polyfill needed — every runtime is a modern browser or Electron with native `ResizeObserver`).
-- The frontend (Vue) emulator does NOT override `Text` via `useThemeUiPresentation` for the demos that exercise this feature. If it does, the test must run on the _backend_ `Text` only (current precedent — Text tests render the backend primitive directly).
+- The frontend emulator does NOT override `Text` via `useThemeUiPresentation` for the demos that exercise this feature. If it does, the test must run on the _backend_ `Text` only (current precedent — Text tests render the backend primitive directly).
 - "Min font size" semantics: `minSize` is the **floor** for the autofit shrink. It is not a target. The caller picks it knowing the smallest legible size for their theme.
 - The 3-line cap (`MAX_LINE_CLAMP = 3`) applies to autofit's ellipsis fallback too. If a caller wants 4 lines at the floor, they must use a non-autofit mode.
 
@@ -179,7 +179,7 @@ For each scenario, the test file path is `packages/cli/src/ui/primitives/__tests
 - **Migration of any existing `fit` call sites** to `autofit` — no consumer changes; autofit is opt-in.
 - **Tailwind `@theme` block entries for `xxs`** — the arbitrary value path is sufficient and avoids touching the theme generator.
 - **Per-locale font-size presets** (CJK often wants different default sizes) — not requested.
-- **Frontend (Vue) emulator primitives** — backend `Text` only; the emulator already delegates to the backend via the bridge.
+- **Frontend emulator primitives** — backend `Text` only; the emulator already delegates to the backend via the bridge.
 
 ## 9. Verification
 

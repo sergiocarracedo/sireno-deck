@@ -4,7 +4,7 @@
 - **Branch suggestion:** `feat/system-status-missing-metrics`
 - **Product contract source:** ce-plan-bootstrap
 - **Plan depth:** Standard
-- **Status:** Draft
+- **Status:** Complete (2026-07-29)
 
 ## 1. Goal
 
