@@ -129,6 +129,23 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   let availableOverlayDeckId: string | null = null
   let overlayPreviousActiveId: string | null = null
   const overlayNavStacks = new Map<string, string[]>()
+  const buttonIndex = new Map<
+    string,
+    { deckId: string; button: RuntimeDeck["buttons"][number] }
+  >()
+  for (const deck of decks) {
+    for (const button of deck.buttons) {
+      if (!buttonIndex.has(button.id)) {
+        buttonIndex.set(button.id, { deckId: deck.id, button })
+      }
+      // ponytail: also index the composite "{deckId}:{button.id}" so callers
+      // can dispatch by either form. findButton consults both maps.
+      const composite = `${deck.id}:${button.id}`
+      if (!buttonIndex.has(composite)) {
+        buttonIndex.set(composite, { deckId: deck.id, button })
+      }
+    }
+  }
   let brightness = 50
   let lockActive = false
   let preLockActiveDeckId: string | null = null
@@ -140,6 +157,21 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
 
   const setDecks = (next: ReadonlyArray<RuntimeDeck>): void => {
     decks = next
+    // ponytail: rebuild a global button-id → ref map so bare-id lookups in
+    // findButton are O(1) instead of scanning all decks in deck order. Set
+    // first-wins (not last-wins) to preserve the legacy scan behavior.
+    buttonIndex.clear()
+    for (const deck of decks) {
+      for (const button of deck.buttons) {
+        if (!buttonIndex.has(button.id)) {
+          buttonIndex.set(button.id, { deckId: deck.id, button })
+        }
+        const composite = `${deck.id}:${button.id}`
+        if (!buttonIndex.has(composite)) {
+          buttonIndex.set(composite, { deckId: deck.id, button })
+        }
+      }
+    }
     // Clear any navigation/overlay state that pointed at decks we no longer have.
     const currentActive = transientDeckId ?? navStack[navStack.length - 1]
     if (currentActive !== undefined && deckById(currentActive) === undefined) {
@@ -149,7 +181,10 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       transientDeckId = null
     }
     if (overlayDeckId !== null && deckById(overlayDeckId) === undefined) {
+      // ponytail: clear both bits so a later setOverlay(null) doesn't restore
+      // a deck id that no longer exists in the registry.
       overlayDeckId = null
+      overlayPreviousActiveId = null
     }
     pubSub.publish("runtime:activeDeck", { deckId: getActiveDeckId() })
   }
@@ -157,21 +192,9 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   const findButton = (
     id: string,
   ): { deckId: string; button: RuntimeDeck["buttons"][number] } | null => {
-    const colonIdx = id.lastIndexOf(":")
-    if (colonIdx === -1) {
-      for (const deck of decks) {
-        const button = deck.buttons.find((b) => b.id === id)
-        if (button !== undefined) return { deckId: deck.id, button }
-      }
-      return null
-    }
-    const deckId = id.slice(0, colonIdx)
-    const buttonId = id.slice(colonIdx + 1)
-    const deck = deckById(deckId)
-    if (deck === undefined) return null
-    const button = deck.buttons.find((b) => b.id === buttonId)
-    if (button === undefined) return null
-    return { deckId: deck.id, button }
+    // ponytail: build a global button-id index in setDecks so bare-id
+    // lookups don't depend on deck order.
+    return buttonIndex.get(id) ?? null
   }
 
   // ponytail: lock-mode escape hatch — only these button types can navigate out of lock mode
@@ -412,9 +435,23 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       }
       return true
     }
-    if (type === "core:settings-entry" && gesture === "tap") {
-      navigateToDeck("internal-settings:settings", { addToHistory: true })
-      return true
+    // ponytail: gesture table — see ARCHITECTURE §5.
+    // core:settings-entry tap = open settings overlay; dbl-tap = toggle overlay.
+    // core:overlay-toggle tap/dbl-tap = toggle overlay (legacy fallback).
+    if (type === "core:settings-entry") {
+      if (gesture === "tap") {
+        navigateToDeck("internal-settings:settings", { addToHistory: true })
+        return true
+      }
+      if (gesture === "dbl-tap") {
+        if (overlayDeckId !== null) {
+          setOverlay(null)
+        } else if (availableOverlayDeckId !== null) {
+          setOverlay(availableOverlayDeckId)
+        }
+        return true
+      }
+      return false
     }
     if (type === "core:overlay-toggle") {
       // ponytail: tap and dbl-tap both toggle the overlay. hold is left
@@ -429,14 +466,6 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
         return true
       }
       return false
-    }
-    if (type === "core:settings-entry" && gesture === "dbl-tap") {
-      if (overlayDeckId !== null) {
-        setOverlay(null)
-      } else if (availableOverlayDeckId !== null) {
-        setOverlay(availableOverlayDeckId)
-      }
-      return true
     }
     return false
   }

@@ -1,3 +1,5 @@
+import type pino from "pino"
+
 import type { ActionExecutor } from "@/action/executor"
 import type {
   AddonServiceContext,
@@ -27,6 +29,7 @@ export interface BridgeAddonServicesParams {
   readonly pubSub: PubSub
   readonly store: Store
   readonly signal: AbortSignal
+  readonly logger: pino.Logger
   readonly statePublisher: Pick<StatePublisher, "registerChannel">
   readonly bridge: Pick<WsBridge, "broadcast" | "registerCacheablePoller">
   readonly methods: Methods
@@ -147,7 +150,7 @@ export const bridgeAddonServices = async (
             channels: { [poller.channel]: value },
           })
         } catch (err) {
-          console.error(`[${addonName}] poll('${id}') failed:`, err)
+          logger.error({ addonName, id, err }, `addon poll failed`)
         }
       },
       signal: abortController.signal,
@@ -170,7 +173,7 @@ export const bridgeAddonServices = async (
       const result = globalService.onLoad?.(ctx)
       if (result instanceof Promise) {
         result.catch((err) => {
-          console.error(`[${addonName}] onLoad failed:`, err)
+          logger.error({ addonName, err }, `addon onLoad failed`)
         })
       }
 
@@ -178,7 +181,7 @@ export const bridgeAddonServices = async (
         addonMethods.set(addonName, globalService.methods)
       }
     } catch (err) {
-      console.error(`[${addonName}] onLoad threw:`, err)
+      logger.error({ addonName, err }, `addon onLoad threw`)
     }
   }
 
@@ -282,7 +285,7 @@ export const bridgeAddonServices = async (
       try {
         buttonService.onMount?.(wrappedCtx)
       } catch (err) {
-        console.error(`[${addonName}] ${buttonType} onMount threw:`, err)
+        logger.error({ addonName, buttonType, err }, `addon onMount threw`)
       }
 
       const allowedGestures = buttonService.gestureHandlers
@@ -297,9 +300,9 @@ export const bridgeAddonServices = async (
           try {
             await buttonService.onTap?.(wrappedCtx)
           } catch (err) {
-            console.error(
-              `[${addonName}] ${resolvedButtonType} onTap failed:`,
-              err,
+            logger.error(
+              { addonName, buttonType: resolvedButtonType, err },
+              `addon onTap failed`,
             )
           }
         },
@@ -316,9 +319,9 @@ export const bridgeAddonServices = async (
           try {
             await buttonService.onDblTap?.(wrappedCtx)
           } catch (err) {
-            console.error(
-              `[${addonName}] ${resolvedButtonType} onDblTap failed:`,
-              err,
+            logger.error(
+              { addonName, buttonType: resolvedButtonType, err },
+              `addon onDblTap failed`,
             )
           }
         },
@@ -335,9 +338,9 @@ export const bridgeAddonServices = async (
           try {
             await buttonService.onHold?.(wrappedCtx)
           } catch (err) {
-            console.error(
-              `[${addonName}] ${resolvedButtonType} onHold failed:`,
-              err,
+            logger.error(
+              { addonName, buttonType: resolvedButtonType, err },
+              `addon onHold failed`,
             )
           }
         },
@@ -346,7 +349,7 @@ export const bridgeAddonServices = async (
           try {
             buttonService.dispose?.(wrappedCtx)
           } catch (err) {
-            console.error(`[${addonName}] ${buttonType} dispose failed:`, err)
+            logger.error({ addonName, buttonType, err }, `addon dispose failed`)
           }
         },
       }
@@ -373,7 +376,7 @@ export const bridgeAddonServices = async (
         try {
           buttonService.onUnmount?.(wrappedCtx)
         } catch (err) {
-          console.error(`[bridge] ${deckId} onUnmount failed:`, err)
+          logger.error({ deckId, err }, `bridge onUnmount failed`)
         }
         buttonAbort.abort()
       }
@@ -392,7 +395,7 @@ export const bridgeAddonServices = async (
         }
         globalService.onUnload?.(ctx)
       } catch (err) {
-        console.error(`[${addonName}] onUnload failed:`, err)
+        logger.error({ addonName, err }, `addon onUnload failed`)
       }
     }
   })
@@ -411,7 +414,7 @@ export const bridgeAddonServices = async (
         try {
           buttonService.onUnmount?.(wrappedCtx)
         } catch (err) {
-          console.error(`[bridge] onUnmount failed:`, err)
+          logger.error({ err }, `bridge onUnmount failed`)
         }
         buttonAbort.abort()
       }
@@ -427,7 +430,7 @@ export const bridgeAddonServices = async (
         }
         globalService.onUnload?.(ctx)
       } catch (err) {
-        console.error(`[${addonName}] onUnload failed:`, err)
+        logger.error({ addonName, err }, `addon onUnload failed`)
       }
     }
     abortController.abort()

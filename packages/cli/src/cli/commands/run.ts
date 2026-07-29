@@ -191,6 +191,7 @@ export const setupAddonServices = (
     executor,
     pubSub,
     signal,
+    logger,
     statePublisher,
     bridge,
     store,
