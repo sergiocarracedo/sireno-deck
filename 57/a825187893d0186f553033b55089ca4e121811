@@ -1,0 +1,45 @@
+config.yml
+  s_7b1f3df66b12cf::t_74f7526f999c7f 18,42,49,54,56,59,67,76,79,82,85,88,93,95
+packages/addon-pomodoro/src/buttons/pomodoro/frontend.tsx
+  s_7b1f3df66b12cf::t_7bf437dbfd0d89 1
+packages/cli/frontend/src/components/Deck.tsx
+  s_7b1f3df66b12cf::t_eed35f628ca9bb 122-131
+packages/cli/src/builtin-addons/brightness/README.md
+  s_7b1f3df66b12cf::t_1265494f28fbee 13-14
+packages/cli/src/builtin-addons/date-time/README.md
+  s_7b1f3df66b12cf::t_44eca81e43afa1 7-12
+packages/cli/src/builtin-addons/internal-settings/README.md
+  s_7b1f3df66b12cf::t_2068ea4a46cd69 9-13,17-19
+packages/cli/src/builtin-addons/media/README.md
+  s_7b1f3df66b12cf::t_ad7f7f0e8f3bfc 13-18
+packages/cli/src/builtin-addons/value-display/README.md
+  s_7b1f3df66b12cf::t_016fea5c0b17eb 9-10
+packages/cli/src/builtin-addons/weather/README.md
+  s_7b1f3df66b12cf::t_31c327953d0720 7-8
+packages/cli/src/deck/methods.ts
+  s_7b1f3df66b12cf::t_52a72384861d31 72-76
+packages/cli/src/system/providers/key-macro/darwin.ts
+  s_7b1f3df66b12cf::t_7866ac695f82b2 37-40
+packages/cli/src/system/providers/key-macro/linux.ts
+  s_7b1f3df66b12cf::t_134c4966b223a3 377-378
+packages/cli/src/system/providers/key-macro/windows.ts
+  s_7b1f3df66b12cf::t_583c859e6f6322 428-430
+packages/cli/src/ui/ButtonFrame.tsx
+  s_7b1f3df66b12cf::t_99e6f376327340 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "57a825187893d0186f553033b55089ca4e121811",
+  "prompts": {},
+  "sessions": {
+    "s_7b1f3df66b12cf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_050d9560affelcug8YsyX6TNr7",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
