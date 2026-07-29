@@ -1,0 +1,95 @@
+packages/addon-pomodoro/README.md
+  s_5b19018252d9e0::t_4afa280e14d8e6 1-76
+packages/addon-pomodoro/src/types.ts
+  s_5b19018252d9e0::t_ae77871c231041 26
+  s_5b19018252d9e0::t_5404963de5bb5d 30
+  s_5b19018252d9e0::t_3be187160961d4 1-25,27-29,31-54
+packages/cli/src/deck/__tests__/__fixtures__/fake-external-addon.ts
+  s_5b19018252d9e0::t_e4b7a93fc89291 1-58
+packages/addon-pomodoro/package.json
+  s_5b19018252d9e0::t_86aba3a9c5cc01 1-22,28-29
+  s_5b19018252d9e0::t_e17610cbc567ee 23-27
+packages/addon-pomodoro/tsconfig.json
+  s_5b19018252d9e0::t_6d15dc42b7bf60 1-16
+packages/addon-pomodoro/src/buttons/pomodoro/backend.ts
+  s_5b19018252d9e0::t_cf17fa8e48ca90 1-114
+packages/addon-pomodoro/src/manifest.ts
+  s_5b19018252d9e0::t_19b5c9e876e07b 20
+  s_5b19018252d9e0::t_90eb37e3a75ce1 1-19,21-22
+packages/addon-pomodoro/sirenodeck.json
+  s_5b19018252d9e0::t_b7635481b9d219 1-6
+packages/addon-pomodoro/src/__tests__/manifest.test.ts
+  s_5b19018252d9e0::t_139e32d5f993a3 1-29
+packages/addon-pomodoro/vitest.config.ts
+  s_5b19018252d9e0::t_aa6bb6ab48f5d9 1-8
+packages/addon-pomodoro/tsconfig.build.json
+  s_5b19018252d9e0::t_47ef310bed98b5 1-21
+packages/addon-pomodoro/src/shared/timer.ts
+  s_5b19018252d9e0::t_70b1cdaafaa719 1-82
+packages/addon-pomodoro/src/buttons/pomodoro/config.ts
+  s_5b19018252d9e0::t_9e9db0407b820d 1-17
+packages/addon-pomodoro/src/__tests__/backend.test.ts
+  s_5b19018252d9e0::t_8a48ae706433a9 1-27,29-76
+  s_5b19018252d9e0::t_9b34a0ef3ebce2 28
+config.yml
+  s_5b19018252d9e0::t_4ff291f2689840 8
+packages/cli/src/cli/commands/addon-registry.ts
+  s_5b19018252d9e0::t_3ef26ebe104e34 29
+packages/addon-pomodoro/src/global/backend.ts
+  s_5b19018252d9e0::t_0ec1177433bdb6 84-85
+  s_5b19018252d9e0::t_3af22651b4862a 87
+  s_5b19018252d9e0::t_dde00b0b36d27c 7
+  s_5b19018252d9e0::t_07313ebcab90a7 1-6,8-83,86,88-90
+  s_5b19018252d9e0::t_ba39f2de87bf0c 91
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_5b19018252d9e0::t_3a034299d8dbb5 22-25,50,60-63
+  s_5b19018252d9e0::t_cd5f4965625c26 81,193,215
+packages/cli/src/deck/__tests__/addon-handler-bridge-external.test.ts
+  s_5b19018252d9e0::t_14d9b3b15fd52f 1-148
+packages/cli/src/deck/__tests__/addon-handler-bridge.test.ts
+  s_5b19018252d9e0::t_2e61c6fa60c953 81,119,148,236,273,317,377
+  s_5b19018252d9e0::t_783a108fc16559 183
+  s_5b19018252d9e0::t_b13914034e84c9 208
+packages/addon-pomodoro/src/buttons/pomodoro/frontend.tsx
+  s_5b19018252d9e0::t_67a5534abfd770 1-108
+  s_5b19018252d9e0::t_2e23ec2dfed298 111
+packages/cli/src/cli/commands/run.ts
+  s_5b19018252d9e0::t_4f89afb55db667 1057,1066,1108-1116,1120,1126
+  s_5b19018252d9e0::t_bd3bc38791779e 532-540
+  s_5b19018252d9e0::t_358e2c4819601a 409
+  s_5b19018252d9e0::t_c7c976b7a8447a 418-421,425-426,428,430,449
+  s_5b19018252d9e0::t_f89f2e98b7cf70 475-482
+  s_5b19018252d9e0::t_78bd8a2a9aea64 1306
+packages/addon-pomodoro/src/index.ts
+  s_5b19018252d9e0::t_6f5b09240ae6c4 1
+packages/cli/src/addon/loader.ts
+  s_5b19018252d9e0::t_bf3fd512344ee5 125,173
+  s_5b19018252d9e0::t_7b38f0d57c7402 36-39
+  s_5b19018252d9e0::t_cef823eae07e6a 225-226,228,230
+  s_5b19018252d9e0::t_147f23d087003b 368-369,371,373
+packages/addon-pomodoro/src/shared/state.ts
+  s_5b19018252d9e0::t_d720f0e45d54ac 1-17
+packages/addon-pomodoro/scripts/post-build.mjs
+  s_5b19018252d9e0::t_2bc7b38ccd0897 9,17
+  s_5b19018252d9e0::t_9584a7c417803a 1-8,10-16
+packages/addon-pomodoro/src/__tests__/timer.test.ts
+  s_5b19018252d9e0::t_8128cb53b5d248 1-73
+pnpm-lock.yaml
+  s_5b19018252d9e0::t_a7a4f467f59a2f 37-54,3524-3526,6705-6706
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "b95b1c6feafb1a589716c11be40e8fc17e246c6c",
+  "prompts": {},
+  "sessions": {
+    "s_5b19018252d9e0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05574b72affemfEF7rBuPKjodf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
