@@ -53,9 +53,7 @@ vi.mock("@/util/daemon", () => ({
   terminateChildren: vi.fn(async () => undefined),
   removePidFile: vi.fn(),
   readPid: vi.fn(),
-  startDaemon: vi.fn(),
-  stopDaemon: vi.fn(),
-  checkStatus: vi.fn(),
+  acquireStartLock: vi.fn(() => ({ release: vi.fn() })),
   isRunning: vi.fn(() => false),
   resolveDaemonPaths: vi.fn(() => ({
     runtimeDir: "/run/user/0",
@@ -302,6 +300,7 @@ const setHappyPath = (): ReturnType<typeof makeFakeOutputClient> => {
     runtime: fakeRuntime,
     methods: {
       setKeyMacroProvider: () => undefined,
+      setNotificationProvider: () => undefined,
       setClipboardProvider: () => undefined,
       setRequirements: () => undefined,
       checkRequirement: () => true,

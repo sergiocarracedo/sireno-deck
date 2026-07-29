@@ -12,13 +12,13 @@ Uses the OS provider from `os-providers/`:
 
 | Type              | Description                                      |
 | ----------------- | ------------------------------------------------ |
-| `core:brightness` | Single button: shows + adjusts screen brightness |
+| `brightness:brightness` | Single button: shows + adjusts screen brightness |
 
 ## Config
 
 ```yaml
 - position: 5
-  type: core:brightness
+  type: brightness:brightness
   config:
     action: up # "up" (default), "down", or "set"
     value: 75 # required for "set" (0-100); ignored for up/down
@@ -26,8 +26,8 @@ Uses the OS provider from `os-providers/`:
 
 ### Gesture semantics
 
-- **Tap** on a `core:brightness` button → executes the configured `action`.
-- **Hold** on a `core:brightness` button → toggles between `up` and `down` for fine-grained adjustment.
+- **Tap** on a `brightness:brightness` button → executes the configured `action`.
+- **Hold** on a `brightness:brightness` button → toggles between `up` and `down` for fine-grained adjustment.
 
 ## Example
 
@@ -39,7 +39,7 @@ decks:
     name: Settings
     buttons:
       - position: 0
-        type: core:brightness
+        type: brightness:brightness
         config: { action: up }
 ```
 

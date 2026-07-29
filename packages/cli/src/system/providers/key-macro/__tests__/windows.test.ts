@@ -60,12 +60,15 @@ const makeExecutor = (
 }
 
 describe("createWindowsKeyMacroProvider", () => {
+  const HELPER_SRC_HASH = join(CACHE_DIR, "sirenokey-input.dll.src.sha256")
+
   beforeEach(() => {
     vi.clearAllMocks()
     ensureHelperDll()
   })
   afterEach(() => {
     if (existsSync(HELPER_DLL)) rmSync(HELPER_DLL)
+    if (existsSync(HELPER_SRC_HASH)) rmSync(HELPER_SRC_HASH)
   })
 
   it("sendKey('ctrl+t') emits KeyDown(17)+TapKey(84)+KeyUp(17) via -EncodedCommand", async () => {

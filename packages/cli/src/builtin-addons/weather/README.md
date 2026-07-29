@@ -6,13 +6,13 @@ Current weather for a fixed location. Hits Open-Meteo (https://open-meteo.com/) 
 
 | Type           | Description                                        |
 | -------------- | -------------------------------------------------- |
-| `core:weather` | Single button: temperature, wind speed, conditions |
+| `weather:weather` | Single button: temperature, wind speed, conditions |
 
 ## Config
 
 ```yaml
 - position: 4
-  type: core:weather
+  type: weather:weather
   config:
     location:
       latitude: 42.2304
@@ -30,7 +30,7 @@ WMO weather codes (https://open-meteo.com/en/docs) are mapped to descriptions: c
 
 ```yaml
 - position: 4
-  type: core:weather
+  type: weather:weather
   config:
     location:
       latitude: 40.4168
@@ -43,4 +43,4 @@ Run `curl "https://api.open-meteo.com/v1/forecast?latitude=40.4&longitude=-3.7&c
 
 ## See also
 
-- [value-display](../value-display/README.md) — `core:value-display` for arbitrary command output (no API)
+- [value-display](../value-display/README.md) — `value-display:display` for arbitrary command output (no API)

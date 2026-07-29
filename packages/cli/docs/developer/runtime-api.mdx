@@ -23,7 +23,10 @@ interface Runtime {
   goBack(): void
 
   // Overlays
-  setOverlay(deckId: string | null, opts?: { source?: "autoShow" | "manual" }): void
+  setOverlay(
+    deckId: string | null,
+    opts?: { source?: "autoShow" | "manual" },
+  ): void
   getOverlay(): RuntimeDeck | null
   hasOverlayDeckAvailable(): boolean
 
@@ -51,7 +54,10 @@ interface Runtime {
 ```typescript
 interface Methods {
   // Shell commands
-  runCommand(command: string, options?: ActionExecutorOptions): Promise<{
+  runCommand(
+    command: string,
+    options?: ActionExecutorOptions,
+  ): Promise<{
     stdout: string
     stderr: string
     exitCode: number
@@ -83,7 +89,7 @@ interface Methods {
     position: number,
     durationMs?: number,
     buttonId?: string,
-    details?: string
+    details?: string,
   ): void
   adjustBrightness(args: { direction: "up" | "down" }): void
 
@@ -96,10 +102,10 @@ interface Methods {
 
 ```typescript
 type KeyMacroAction =
-  | { kind: "key"; value: string }      // Single key
-  | { kind: "combo"; value: string }    // Key combination
-  | { kind: "text"; value: string }     // Literal text
-  | { kind: "delay"; ms: number }       // Wait
+  | { kind: "key"; value: string } // Single key
+  | { kind: "combo"; value: string } // Key combination
+  | { kind: "text"; value: string } // Literal text
+  | { kind: "delay"; ms: number } // Wait
 ```
 
 ## GestureKind
@@ -147,6 +153,6 @@ const MyButtonService = {
 
     // Access store
     ctx.store.buttonScope("my-addon", ctx.buttonId).set("key", "value")
-  }
+  },
 }
 ```

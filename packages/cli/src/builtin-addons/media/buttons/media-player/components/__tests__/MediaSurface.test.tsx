@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest"
 
 import { MediaSurface } from "../MediaSurface"
-import type { MediaButtonStatus } from "../../../../state"
+import type { MediaButtonStatus } from "@/builtin-addons/media/state"
 
 const renderInJsdom = (element: React.ReactElement): HTMLElement => {
   const container = document.createElement("div")

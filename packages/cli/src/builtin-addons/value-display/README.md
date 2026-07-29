@@ -8,13 +8,13 @@ Each button has up to 4 `values` entries; each entry runs a command via the acti
 
 | Type                 | Description                                            |
 | -------------------- | ------------------------------------------------------ |
-| `core:value-display` | Single button: shows N values (label + command output) |
+| `value-display:display` | Single button: shows N values (label + command output) |
 
 ## Config
 
 ```yaml
 - position: 6
-  type: core:value-display
+  type: value-display:display
   config:
     poll_interval_ms: 5000 # optional, default 5000
     timeout_ms: 5000 # optional, default 5000 (per command)
@@ -43,7 +43,7 @@ Each button has up to 4 `values` entries; each entry runs a command via the acti
 
 ```yaml
 - position: 6
-  type: core:value-display
+  type: value-display:display
   config:
     values:
       - label: Disk
@@ -55,5 +55,5 @@ Each button has up to 4 `values` entries; each entry runs a command via the acti
 
 ## See also
 
-- [weather](../weather/README.md) — `core:weather` is a wrapper around Open-Meteo; `core:value-display` is the manual version
+- [weather](../weather/README.md) — `weather:weather` is a wrapper around Open-Meteo; `value-display:display` is the manual version
 - [system-status](../system-status/README.md) — same polling pattern, but for built-in OS metrics

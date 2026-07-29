@@ -1,8 +1,8 @@
-import React from "react";
+import React from "react"
 
 interface CodeBlockProps {
-  children: string;
-  language?: string;
+  children: string
+  language?: string
 }
 
 export function CodeBlock({ children, language = "bash" }: CodeBlockProps) {
@@ -12,12 +12,12 @@ export function CodeBlock({ children, language = "bash" }: CodeBlockProps) {
         {children}
       </code>
     </pre>
-  );
+  )
 }
 
 interface FileBlockProps {
-  filename: string;
-  children: React.ReactNode;
+  filename: string
+  children: React.ReactNode
 }
 
 export function FileBlock({ filename, children }: FileBlockProps) {
@@ -26,9 +26,7 @@ export function FileBlock({ filename, children }: FileBlockProps) {
       <div className="bg-gray-800 px-4 py-2 text-sm font-mono text-gray-400 border-b border-gray-700">
         {filename}
       </div>
-      <div className="bg-gray-900 p-4 overflow-x-auto">
-        {children}
-      </div>
+      <div className="bg-gray-900 p-4 overflow-x-auto">{children}</div>
     </div>
-  );
+  )
 }

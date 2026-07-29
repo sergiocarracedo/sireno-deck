@@ -6,6 +6,7 @@ import {
   PROTOCOL_VERSION,
   helloAckMessageSchema,
   helloMessageSchema,
+  helloMessageStrictSchema,
   wsMessageSchema,
   type WsMessage,
 } from "./protocol"
@@ -91,7 +92,11 @@ export const startWsBridge = (
             socket.close(4004, "expected hello")
             return
           }
-          const helloResult = helloMessageSchema.safeParse(message)
+          const helloSchema =
+            expectedToken !== undefined
+              ? helloMessageStrictSchema
+              : helloMessageSchema
+          const helloResult = helloSchema.safeParse(message)
           if (!helloResult.success) {
             socket.close(4001, "invalid hello")
             return

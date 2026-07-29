@@ -30,8 +30,8 @@ Current: `1`
 ```typescript
 {
   type: "hello"
-  token: string      // Authentication token
-  clientId: string   // Client identifier
+  token: string // Authentication token
+  clientId: string // Client identifier
 }
 ```
 
@@ -41,7 +41,7 @@ Current: `1`
 {
   type: "button-action"
   deckId: string
-  position: number   // 0-indexed button position
+  position: number // 0-indexed button position
   gesture: "tap" | "dbl-tap" | "hold"
 }
 ```
@@ -206,15 +206,15 @@ Current: `1`
 
 ## Channel Conventions
 
-| Channel | Description |
-|---------|-------------|
-| `date-time:now` | Current timestamp (every 1s) |
-| `media:state` | Media player state (every 1s) |
-| `weather:current` | Weather data (every 10min) |
-| `value-display:values` | Shell command outputs (every 5s) |
-| `runtime:system-status:*` | System metrics |
-| `runtime:overlay` | Overlay deck state |
-| `runtime:activeDeck` | Active deck changes |
+| Channel                   | Description                      |
+| ------------------------- | -------------------------------- |
+| `date-time:now`           | Current timestamp (every 1s)     |
+| `media:state`             | Media player state (every 1s)    |
+| `weather:current`         | Weather data (every 10min)       |
+| `value-display:values`    | Shell command outputs (every 5s) |
+| `runtime:system-status:*` | System metrics                   |
+| `runtime:overlay`         | Overlay deck state               |
+| `runtime:activeDeck`      | Active deck changes              |
 
 ## Authentication
 

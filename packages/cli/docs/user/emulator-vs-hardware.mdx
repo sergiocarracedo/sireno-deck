@@ -30,6 +30,7 @@ sireno start --emulator
 ### Emulator URL
 
 When running with emulator:
+
 - **Frontend**: http://127.0.0.1:5180
 - **Emulator UI**: http://127.0.0.1:52938
 
@@ -47,12 +48,12 @@ Connect to a real Stream Deck device.
 
 ### Supported Devices
 
-| Model | Key Count | Dimensions |
-|-------|-----------|------------|
-| Stream Deck Original/MK.2 | 15 | 5x3 |
-| Stream Deck + | 32 | 8x4 |
-| Stream Deck Mini | 6 | 3x2 |
-| Stream Deck XL | 32 | 8x4 |
+| Model                     | Key Count | Dimensions |
+| ------------------------- | --------- | ---------- |
+| Stream Deck Original/MK.2 | 15        | 5x3        |
+| Stream Deck +             | 32        | 8x4        |
+| Stream Deck Mini          | 6         | 3x2        |
+| Stream Deck XL            | 32        | 8x4        |
 
 ### Running with Hardware
 
@@ -67,17 +68,18 @@ sireno run --device-model mk2
 ### Device Detection
 
 If no device is found:
+
 - **Interactive mode**: Prompts to fall back to emulator
 - **Non-interactive mode**: Errors with message to use `--emulator`
 
 ## Choosing Between Emulator and Hardware
 
-| Use Case | Recommendation |
-|----------|----------------|
-| Initial setup/testing | Emulator |
-| Development with HMR | Emulator with `--dev` |
-| Daily use | Hardware |
-| CI/automated testing | Emulator |
+| Use Case              | Recommendation        |
+| --------------------- | --------------------- |
+| Initial setup/testing | Emulator              |
+| Development with HMR  | Emulator with `--dev` |
+| Daily use             | Hardware              |
+| CI/automated testing  | Emulator              |
 
 ## Workflow
 

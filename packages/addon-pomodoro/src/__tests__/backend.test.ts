@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-import { globalService } from "../global/backend.js"
-import { POMO_CHANNEL } from "../shared/state.js"
+import { globalService } from "../global/backend"
+import { POMO_CHANNEL } from "../shared/state"
 
 const makeCtx = () => {
   return {

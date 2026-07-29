@@ -1,6 +1,6 @@
 import { Label } from "@/ui"
 
-import { EMOJI_FONT_STACK, EMOJI_LAUNCHER_GRID } from "../../support.ts"
+import { EMOJI_FONT_STACK, EMOJI_LAUNCHER_GRID } from "../../support"
 
 import type { AddonFrontendButton } from "@/addon/api"
 import type { ConfigSchema } from "./config.ts"

@@ -293,6 +293,7 @@ const setHappyPath = (
     runtime: fakeRuntime,
     methods: {
       setKeyMacroProvider: () => undefined,
+      setNotificationProvider: () => undefined,
       setClipboardProvider: () => undefined,
       setRequirements: () => undefined,
       checkRequirement: () => true,

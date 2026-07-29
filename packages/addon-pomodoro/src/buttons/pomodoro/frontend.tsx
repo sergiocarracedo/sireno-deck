@@ -1,9 +1,9 @@
 import type {
   PomodoroButtonState,
   PomodoroSnapshot,
-} from "../../shared/state.js"
-import { POMO_CHANNEL } from "../../shared/state.js"
-import type { ConfigSchema } from "./config.js"
+} from "../../shared/state"
+import { POMO_CHANNEL } from "../../shared/state"
+import type { ConfigSchema } from "./config"
 
 interface FrontendButtonProps<Config> {
   readonly config: Config

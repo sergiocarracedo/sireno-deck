@@ -1,6 +1,6 @@
 # sireno-deck
 
-CLI for managing Elgato Stream Deck devices via a config-driven deck system. Write a `config.yml`, register addons, and the same UI runs in the emulator, on real hardware, or behind a `pnpm build` HTTP server.
+CLI for managing Elgato Stream Deck devices via a config-driven deck system. Write a `config.yml`, register addons, and the same UI runs in the emulator, on real hardware, or behind a `pnpm dev` daemon.
 
 ## Quick start
 
@@ -9,13 +9,13 @@ CLI for managing Elgato Stream Deck devices via a config-driven deck system. Wri
 pnpm install
 
 # Run the emulator (browser auto-opens)
-pnpm --filter sireno-deck dev start --emulator
+pnpm --filter sirenodeck dev start --emulator
 
 # Stop it
-pnpm --filter sireno-deck dev stop
+pnpm --filter sirenodeck dev stop
 
 # Or, run foreground (Ctrl-C to exit)
-pnpm --filter sireno-deck dev run --emulator
+pnpm --filter sirenodeck dev run --emulator
 ```
 
 On first run, `dev` spawns the WS bridge + a vite dev server for the React 19 + Tailwind 4 frontend. The emulator shell opens at `http://127.0.0.1:52938/` and forwards button clicks to the runtime via WS.
@@ -29,12 +29,12 @@ decks:
     name: Main
     buttons:
       - position: 2
-        type: core:time
+        type: date-time:time
         config:
           variant: big
 
       - position: 3
-        type: core:date
+        type: date-time:date
 
       - position: 1
         type: core:action
@@ -42,7 +42,7 @@ decks:
           command: "xdg-open https://example.com"
 
       - position: 4
-        type: core:weather
+        type: weather:weather
         config:
           location:
             latitude: 42.2304
@@ -50,7 +50,7 @@ decks:
             name: Vigo
 
       - position: 0
-        type: core:system-status
+        type: system-status:system-status
         config:
           variant: bars
           metrics:
@@ -90,7 +90,7 @@ sireno --version
 - `start` — daemon. Writes PID + token + children files to `$XDG_RUNTIME_DIR/sireno-deck/`. Stop with `sireno stop`.
 - `--emulator` — render in browser instead of writing to real hardware.
 - `--dev` — use the vite dev server (faster iteration, no build needed).
-- `--http-port <N>` — port for the prod HTTP server (default 3939). Only starts when `pnpm --filter sireno-deck-frontend build` has been run.
+- `--http-port <N>` — port for the prod HTTP server (default 3939). Only starts when `pnpm --filter sirenodeck-frontend build` has been run.
 - `--device-model <mk2|plus|mini|xl>` — change the device layout. `mk2` is the default (15 keys, 5×3).
 
 ## How it works
@@ -125,19 +125,19 @@ Every button gets its own WS handshake. The frontend reads the deck-config + per
 
 Each builtin addon ships its own README with button types, config schema, and an example:
 
-- [`core`](packages/cli/src/builtin-addons/core/README.md) — internal: `core:change-deck`, `core:action`
-- [`internal-settings`](packages/cli/src/builtin-addons/internal-settings/README.md) — internal: `core:settings-*`
+- [`core`](packages/cli/src/builtin-addons/core/README.md) — internal: `core:change-deck`, `core:action`, `core:toggle`, `core:page-nav`
+- [`internal-settings`](packages/cli/src/builtin-addons/internal-settings/README.md) — internal: `internal-settings:*` (settings overlay)
 - [`session`](packages/cli/src/builtin-addons/session/README.md) — the `session:locked` deck
-- [`date-time`](packages/cli/src/builtin-addons/date-time/README.md) — `core:time`, `core:date`, `core:clock`, `core:analog-clock`, `core:date-time`, `core:locked-time-tile`
+- [`date-time`](packages/cli/src/builtin-addons/date-time/README.md) — `date-time:time`, `date-time:date`, `date-time:date-time`, `date-time:analog-clock`
 - [`emoji-selector`](packages/cli/src/builtin-addons/emoji-selector/README.md) — emoji deck generator
-- [`media-player`](packages/cli/src/builtin-addons/media-player/README.md) — `core:media-player`
-- [`system-status`](packages/cli/src/builtin-addons/system-status/README.md) — `core:system-status`
-- [`value-display`](packages/cli/src/builtin-addons/value-display/README.md) — `core:value-display`
-- [`weather`](packages/cli/src/builtin-addons/weather/README.md) — `core:weather`
-- [`brightness`](packages/cli/src/builtin-addons/brightness/README.md) — `core:brightness`
+- [`media`](packages/cli/src/builtin-addons/media/README.md) — `media:player`, `media:mute`, `media:volume:*`
+- [`system-status`](packages/cli/src/builtin-addons/system-status/README.md) — `system-status:system-status`
+- [`value-display`](packages/cli/src/builtin-addons/value-display/README.md) — `value-display:display`
+- [`weather`](packages/cli/src/builtin-addons/weather/README.md) — `weather:weather`
+- [`brightness`](packages/cli/src/builtin-addons/brightness/README.md) — `brightness:brightness`
 
 The addon API is at [`packages/cli/src/addon/api.ts`](packages/cli/src/addon/api.ts). To write a 3rd-party addon, package it as `npm`, set `sirenoAddonApiVersion` in `package.json`, and add its name to `config.yml`'s `addons:` list. The loader installs it to `~/.cache/sireno-deck/node_modules/` on first run.
 
 ## License
 
-MIT.
+MIT. See [`LICENSE`](LICENSE).

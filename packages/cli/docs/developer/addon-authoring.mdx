@@ -52,20 +52,18 @@ export const manifest: AddonManifestV1 = {
         gestureHandlers: ["tap"] as const,
         onTap: async (ctx) => {
           ctx.publish("my-addon:greeted", { name: "World" })
-        }
-      }
-    }
+        },
+      },
+    },
   },
   decks: [
     {
       id: "my-addon:menu",
       name: "My Menu",
       icon: "icon://menu",
-      buttons: [
-        { position: 0, type: "my-addon:greet" }
-      ]
-    }
-  ]
+      buttons: [{ position: 0, type: "my-addon:greet" }],
+    },
+  ],
 }
 ```
 
@@ -97,7 +95,7 @@ export const GreetService: AddonButtonTypeService<{}> = {
   async onTap(ctx) {
     console.log("Button tapped!")
     ctx.methods.invalidate()
-  }
+  },
 }
 ```
 
@@ -116,16 +114,26 @@ interface AddonButtonTypeDef<Config> {
 
 ```typescript
 interface AddonButtonTypeService<Config> {
-  readonly configSchema?: unknown           // Zod schema for validation
+  readonly configSchema?: unknown // Zod schema for validation
   readonly defaultRenderIntervalMs?: number // Frontend refresh rate
-  readonly internal?: boolean               // Hidden from UI
-  readonly full?: boolean                  // Takes full button area
+  readonly internal?: boolean // Hidden from UI
+  readonly full?: boolean // Takes full button area
   readonly gestureHandlers?: ReadonlyArray<GestureKind>
-  readonly onMount?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
-  readonly onTap?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
-  readonly onDblTap?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
-  readonly onHold?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
-  readonly dispose?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
+  readonly onMount?: (
+    ctx: AddonButtonServiceContext<Config>,
+  ) => void | Promise<void>
+  readonly onTap?: (
+    ctx: AddonButtonServiceContext<Config>,
+  ) => void | Promise<void>
+  readonly onDblTap?: (
+    ctx: AddonButtonServiceContext<Config>,
+  ) => void | Promise<void>
+  readonly onHold?: (
+    ctx: AddonButtonServiceContext<Config>,
+  ) => void | Promise<void>
+  readonly dispose?: (
+    ctx: AddonButtonServiceContext<Config>,
+  ) => void | Promise<void>
 }
 ```
 
@@ -136,8 +144,8 @@ interface AddonButtonServiceContext<Config> {
   readonly config: Config
   readonly buttonId: string
   readonly addonName: string
-  readonly methods: Readonly<Record<string, AddonServiceMethod>>  // Namespaced addon methods
-  readonly coreMethods: Methods                                    // Core runtime methods
+  readonly methods: Readonly<Record<string, AddonServiceMethod>> // Namespaced addon methods
+  readonly coreMethods: Methods // Core runtime methods
   readonly publish: (channel: string, data: unknown) => void
   readonly executor: ActionExecutor
   readonly signal: AbortSignal
@@ -154,10 +162,8 @@ decks: [
   {
     id: "my-addon:static",
     name: "Static Deck",
-    buttons: [
-      { position: 0, type: "my-addon:action" }
-    ]
-  }
+    buttons: [{ position: 0, type: "my-addon:action" }],
+  },
 ]
 ```
 
@@ -172,10 +178,10 @@ decks: [
       buttons: ctx.config.items.map((item, i) => ({
         position: i,
         type: "my-addon:item",
-        config: item
-      }))
-    })
-  }
+        config: item,
+      })),
+    }),
+  },
 ]
 ```
 

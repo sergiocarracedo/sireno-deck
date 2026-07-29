@@ -1,5 +1,6 @@
 export {
   helloMessageSchema,
+  helloMessageStrictSchema,
   helloAckMessageSchema,
   deckConfigMessageSchema,
   stateMessageSchema,

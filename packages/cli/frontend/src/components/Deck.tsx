@@ -111,6 +111,7 @@ const DeckButtonCell = ({
 }: DeckButtonCellProps) => {
   const { fire } = useButtonAction(deckId, position)
   const lastClickAtRef = useRef(0)
+  const pendingTapTimerRef = useRef<number | null>(null)
   const holdTimerRef = useRef<number | null>(null)
   const clearHoldTimer = () => {
     if (holdTimerRef.current !== null) {
@@ -118,7 +119,13 @@ const DeckButtonCell = ({
       holdTimerRef.current = null
     }
   }
-  useEffect(() => clearHoldTimer, [])
+  useEffect(() => () => {
+    clearHoldTimer()
+    if (pendingTapTimerRef.current !== null) {
+      window.clearTimeout(pendingTapTimerRef.current)
+      pendingTapTimerRef.current = null
+    }
+  }, [])
 
   if (isError) {
     return (
@@ -149,9 +156,19 @@ const DeckButtonCell = ({
     const overlayIcon = deckOverlayIcon ?? undefined
     const handleClick = () => {
       const now = Date.now()
-      const isDouble = now - lastClickAtRef.current < 300
+      if (now - lastClickAtRef.current < 300) {
+        lastClickAtRef.current = 0
+        window.clearTimeout(pendingTapTimerRef.current)
+        pendingTapTimerRef.current = null
+        fire("dbl-tap")
+        return
+      }
       lastClickAtRef.current = now
-      fire(isDouble ? "dbl-tap" : "tap")
+      window.clearTimeout(pendingTapTimerRef.current)
+      pendingTapTimerRef.current = window.setTimeout(() => {
+        pendingTapTimerRef.current = null
+        fire("tap")
+      }, 300)
     }
     const handlePointerDown = () => {
       clearHoldTimer()
@@ -285,6 +302,7 @@ const ButtonSurface = ({
       state={null}
       buttonType={button.type}
       buttonId={button.id}
+      addonName={registryEntry.addonName}
       gesture={gesture}
     />
   )

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
 
-import { createPomodoroTimer } from "../shared/timer.js"
-import type { PomodoroSnapshot } from "../shared/state.js"
+import { createPomodoroTimer } from "../shared/timer"
+import type { PomodoroSnapshot } from "../shared/state"
 
 const fakeClock = (start: number) => {
   let now = start

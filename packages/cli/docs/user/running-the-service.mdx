@@ -21,6 +21,7 @@ sireno run [options]
 ```
 
 Options:
+
 - `--config <path>` — Path to config.yml
 - `--port <number>` — Local server port (0 = random)
 - `--emulator` — Run with emulator instead of real device
@@ -28,6 +29,7 @@ Options:
 - `--device-model <model>` — Emulator device model (mk2, plus, mini, xl)
 
 Example:
+
 ```bash
 # Run with emulator
 sireno run --emulator
@@ -48,6 +50,7 @@ sireno start [options]
 ```
 
 Options:
+
 - `--config <path>` — Path to config.yml
 - `--port <number>` — Local server port
 - `--emulator` — Run in emulator mode
@@ -57,6 +60,7 @@ Options:
 - `--logs` — Follow logs after starting
 
 Example:
+
 ```bash
 # Start in background
 sireno start
@@ -85,6 +89,7 @@ sireno status
 ```
 
 Output shows:
+
 - Running/stopped state
 - Daemon PID
 - Child process IDs
@@ -99,6 +104,7 @@ sireno restart [options]
 ```
 
 Options:
+
 - `--logs` — Follow logs after restart
 
 ### `sireno reload`
@@ -110,6 +116,7 @@ sireno reload [options]
 ```
 
 Options:
+
 - `--logs` — Follow logs after reload
 
 ### `sireno update-config`
@@ -121,6 +128,7 @@ sireno update-config --config <path> [options]
 ```
 
 Options:
+
 - `--reload` — Use in-place reload instead of restart
 - `--logs` — Follow logs after update
 
@@ -133,6 +141,7 @@ sireno logs [options]
 ```
 
 Options:
+
 - `--follow / -f` — Follow log output (default: true)
 - `--lines / -n` — Initial lines to show (default: 50)
 
@@ -153,6 +162,7 @@ The daemon writes runtime files to:
 - **Windows**: `$LOCALAPPDATA/sireno-deck` or `$TMPDIR`
 
 Files created:
+
 - `sireno-deck.pid` — Daemon process ID
 - `sireno-deck.token` — WebSocket authentication token
 - `sireno-deck.children.json` — Child process IDs
@@ -164,11 +174,13 @@ Files created:
 ### Linux (systemd)
 
 User-level:
+
 ```bash
 systemctl --user status sireno-deck.service
 ```
 
 System-level (requires root):
+
 ```bash
 sudo systemctl status sireno-deck.service
 ```

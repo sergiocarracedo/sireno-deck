@@ -25,10 +25,12 @@ interface RawConfig {
 ## ThemeEntry
 
 ```typescript
-type ThemeEntry = string | {
-  name?: string
-  path: string
-}
+type ThemeEntry =
+  | string
+  | {
+      name?: string
+      path: string
+    }
 ```
 
 ```yaml
@@ -89,26 +91,30 @@ trigger:
 ## ButtonEntry
 
 ```typescript
-type ButtonEntry = string | {
-  position: number
-  type: string
-  config?: unknown
-  actions?: {
-    tap?: string
-    dbltap?: string
-    hold?: string
-  }
-}
+type ButtonEntry =
+  | string
+  | {
+      position: number
+      type: string
+      config?: unknown
+      actions?: {
+        tap?: string
+        dbltap?: string
+        hold?: string
+      }
+    }
 ```
 
 ## AddonEntry
 
 ```typescript
-type AddonEntry = string | {
-  src: string
-  enabled?: boolean
-  config?: AddonConfig
-}
+type AddonEntry =
+  | string
+  | {
+      src: string
+      enabled?: boolean
+      config?: AddonConfig
+    }
 ```
 
 ### AddonConfig

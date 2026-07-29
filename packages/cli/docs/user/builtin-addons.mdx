@@ -29,17 +29,19 @@ addons:
 Displays current date and time.
 
 **Button Types:**
+
 - `date-time:date-time` — Full date and time
 - `date-time:time` — Time only
 - `date-time:date` — Date only
 - `date-time:analog-clock` — Analog clock face
 
 **Configuration:**
+
 ```yaml
 - position: 0
   type: "date-time:time"
   config:
-    variant: "default"  # or "big"
+    variant: "default" # or "big"
 ```
 
 ### media
@@ -47,12 +49,14 @@ Displays current date and time.
 Media player controls and display.
 
 **Button Types:**
+
 - `media:player` — Play/pause toggle
 - `media:mute` — Mute toggle
 - `media:volume:up` — Volume up
 - `media:volume:down` — Volume down
 
 **Features:**
+
 - Displays current track info
 - Shows playback state
 - Volume level display
@@ -62,11 +66,13 @@ Media player controls and display.
 System metrics display.
 
 **Button Types:**
+
 - `system-status:system-status` — Bars view
 - `system-status:kpis` — Key metrics
 - `system-status:chart` — Chart view
 
 **Metrics Available:**
+
 - CPU usage
 - RAM usage
 - Swap usage
@@ -77,6 +83,7 @@ System metrics display.
 - And more...
 
 **Configuration:**
+
 ```yaml
 - position: 0
   type: "system-status:system-status"
@@ -94,9 +101,11 @@ System metrics display.
 Display dynamic values from shell commands.
 
 **Button Type:**
+
 - `value-display:display`
 
 **Configuration:**
+
 ```yaml
 - position: 0
   type: "value-display:display"
@@ -115,15 +124,17 @@ Display dynamic values from shell commands.
 Weather information display.
 
 **Button Type:**
+
 - `weather:weather`
 
 **Configuration:**
+
 ```yaml
 - position: 0
   type: "weather:weather"
   config:
     location: "San Francisco"
-    units: "metric"  # or "imperial"
+    units: "metric" # or "imperial"
 ```
 
 ### emoji-selector
@@ -131,11 +142,13 @@ Weather information display.
 Emoji picker with categories.
 
 **Button Types:**
+
 - `emoji-selector:launcher` — Opens emoji selector
 - `emoji-selector:category` — Category button
 - `emoji-selector:emoji` — Individual emoji
 
 **Usage:**
+
 ```yaml
 - position: 0
   type: "emoji-selector"
@@ -148,14 +161,16 @@ Emoji picker with categories.
 Screen brightness controls.
 
 **Button Type:**
+
 - `brightness:brightness`
 
 **Configuration:**
+
 ```yaml
 - position: 0
   type: "brightness:brightness"
   config:
-    action: "up"  # up, down, or set
+    action: "up" # up, down, or set
 ```
 
 ### session
@@ -163,4 +178,5 @@ Screen brightness controls.
 Current session information.
 
 **Button Type:**
+
 - `session:info` — Lock/session status

@@ -10,7 +10,6 @@ import { internalSettingsAddon } from "./internal-settings/index"
 import mediaPlayerAddon from "./media/index"
 import { sessionAddon } from "./session/index"
 import { systemStatusAddon } from "./system-status/index"
-import testBuildinAddon from "./test-buildin/index"
 import valueDisplayAddon from "./value-display/index"
 import weatherAddon from "./weather/index"
 
@@ -26,5 +25,4 @@ export const registerBuiltins = (registry: AddonRegistry): void => {
   registry.load(valueDisplayAddon)
   registry.load(weatherAddon)
   registry.load(brightnessAddon)
-  registry.load(testBuildinAddon)
 }

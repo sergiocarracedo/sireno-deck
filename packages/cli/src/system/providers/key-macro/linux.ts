@@ -327,23 +327,10 @@ const buildYdotoolComboArgs = (input: string): string[] | null => {
   const parsed = parseCombo(input)
   if (parsed === null) return null
 
-  const seen = new Set<string>()
+  const seenSc = new Set<number>()
   const orderedMods: number[] = []
   for (const mod of MOD_ORDER) {
-    if (parsed.mods.includes(mod) && !seen.has(mod)) {
-      const sc = modToScancode(mod)
-      if (sc === null) {
-        throw new ProviderError(
-          "EXEC_FAILED",
-          `ydotool: cannot map modifier '${mod}' to scancode`,
-        )
-      }
-      seen.add(mod)
-      orderedMods.push(sc)
-    }
-  }
-  for (const mod of parsed.mods) {
-    if (seen.has(mod)) continue
+    if (!parsed.mods.includes(mod)) continue
     const sc = modToScancode(mod)
     if (sc === null) {
       throw new ProviderError(
@@ -351,7 +338,20 @@ const buildYdotoolComboArgs = (input: string): string[] | null => {
         `ydotool: cannot map modifier '${mod}' to scancode`,
       )
     }
-    seen.add(mod)
+    if (seenSc.has(sc)) continue
+    seenSc.add(sc)
+    orderedMods.push(sc)
+  }
+  for (const mod of parsed.mods) {
+    const sc = modToScancode(mod)
+    if (sc === null) {
+      throw new ProviderError(
+        "EXEC_FAILED",
+        `ydotool: cannot map modifier '${mod}' to scancode`,
+      )
+    }
+    if (seenSc.has(sc)) continue
+    seenSc.add(sc)
     orderedMods.push(sc)
   }
 
@@ -424,7 +424,7 @@ const buildWtypeArgs = (input: string): string[] => {
   return buildWtypeLiteralArgs(input)
 }
 
-const isPureAscii = (text: string): boolean => /^[\x00-\x7F]*$/.test(text)
+const isPureAscii = (text: string): boolean => /^[\x20-\x7E]*$/.test(text)
 
 const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms))

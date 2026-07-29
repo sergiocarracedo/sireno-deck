@@ -18,7 +18,6 @@ const SYSTEM_BUTTON_LAYOUT: Record<
   "core:back": { source: "icon://arrow-left", label: "Back" },
   "core:settings-entry": { source: "icon://settings", label: "Settings" },
   "core:overlay-toggle": { source: "icon://layers", label: "Overlay" },
-  "core:next-page": { source: "icon://chevrons-right", label: "Next" },
   "core:temporary-error": {
     source: "icon://triangle-alert",
     label: "Error",

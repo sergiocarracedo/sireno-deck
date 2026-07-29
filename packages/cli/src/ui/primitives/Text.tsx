@@ -367,11 +367,11 @@ const MIN_SIZE_PX: Record<TextSize, number> = {
   sm: 12,
   md: 12,
   lg: 12,
-  xl: 14,
-  "2xl": 14,
-  "3xl": 14,
-  "4xl": 14,
-  "5xl": 14,
+  xl: 20,
+  "2xl": 24,
+  "3xl": 30,
+  "4xl": 36,
+  "5xl": 48,
 }
 
 function clampLines(lines: number | undefined): 1 | 2 | 3 {

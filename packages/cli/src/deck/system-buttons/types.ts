@@ -1,8 +1,10 @@
+// ponytail: pagination is handled by the `core:page-nav` addon button
+// (tap=next, hold=prev) in builtin-addons/core/buttons/page-nav/, not by a
+// system button. Keeping the system-button surface small and deliberate.
 export const SYSTEM_BUTTON_TYPES = [
   "core:back",
   "core:settings-entry",
   "core:overlay-toggle",
-  "core:next-page",
   "core:temporary-error",
 ] as const
 

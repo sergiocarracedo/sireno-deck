@@ -55,8 +55,18 @@ export default defineConfig({
     setupFiles: ["./packages/cli/emulator/src/__tests__/setup.ts"],
     coverage: {
       provider: "v8",
-      include: ["packages/cli/src/**/*.ts"],
-      exclude: ["packages/cli/src/**/__tests__/**"],
+      include: [
+        "packages/cli/src/**/*.{ts,tsx}",
+        "packages/cli/frontend/src/**/*.{ts,tsx}",
+        "packages/cli/emulator/src/**/*.{ts,tsx}",
+      ],
+      exclude: [
+        "packages/cli/src/**/__tests__/**",
+        "packages/cli/frontend/src/**/__tests__/**",
+        "packages/cli/frontend/src/**/__mocks__/**",
+        "packages/cli/emulator/src/**/__tests__/**",
+        "packages/cli/emulator/src/**/__mocks__/**",
+      ],
     },
   },
 })

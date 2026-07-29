@@ -14,20 +14,21 @@ Button labels support rich text formatting through tags. These work in label fie
 
 Control text size:
 
-| Tag | Effect |
-|-----|--------|
+| Tag     | Effect            |
+| ------- | ----------------- |
 | `<xxs>` | Extra extra small |
-| `<xs>` | Extra small |
-| `<sm>` | Small |
-| `<md>` | Medium (default) |
-| `<lg>` | Large |
-| `<xl>` | Extra large |
-| `<2xl>` | 2x large |
-| `<3xl>` | 3x large |
-| `<4xl>` | 4x large |
-| `<5xl>` | 5x large |
+| `<xs>`  | Extra small       |
+| `<sm>`  | Small             |
+| `<md>`  | Medium (default)  |
+| `<lg>`  | Large             |
+| `<xl>`  | Extra large       |
+| `<2xl>` | 2x large          |
+| `<3xl>` | 3x large          |
+| `<4xl>` | 4x large          |
+| `<5xl>` | 5x large          |
 
 Example:
+
 ```yaml
 config:
   label: "<xl>Large</xl> <sm>small</sm>"
@@ -37,15 +38,16 @@ config:
 
 Color text:
 
-| Tag | Effect |
-|-----|--------|
-| `<primary>` | Primary color |
-| `<accent>` | Accent color |
-| `<success>` | Success/green |
-| `<danger>` | Error/red |
+| Tag            | Effect             |
+| -------------- | ------------------ |
+| `<primary>`    | Primary color      |
+| `<accent>`     | Accent color       |
+| `<success>`    | Success/green      |
+| `<danger>`     | Error/red          |
 | `<foreground>` | Default text color |
 
 Example:
+
 ```yaml
 config:
   label: "<success>Online</success> <danger>Offline</danger>"
@@ -55,14 +57,15 @@ config:
 
 Additional formatting:
 
-| Tag | Effect |
-|-----|--------|
-| `<strong>` | Bold text |
-| `<dim>` | 50% opacity |
-| `<blink>` | Blinking animation |
-| `*text*` | Highlight (asterisk syntax) |
+| Tag        | Effect                      |
+| ---------- | --------------------------- |
+| `<strong>` | Bold text                   |
+| `<dim>`    | 50% opacity                 |
+| `<blink>`  | Blinking animation          |
+| `*text*`   | Highlight (asterisk syntax) |
 
 Example:
+
 ```yaml
 config:
   label: "<strong>Important</strong> *highlighted*"
@@ -70,9 +73,9 @@ config:
 
 ## Special Characters
 
-| Syntax | Effect |
-|--------|--------|
-| `\|` | Line break |
+| Syntax   | Effect             |
+| -------- | ------------------ |
+| `\|`     | Line break         |
 | `&nbsp;` | Non-breaking space |
 
 ## Examples
@@ -94,6 +97,7 @@ config:
 ```
 
 Renders:
+
 ```
 Line 1
 Line 2

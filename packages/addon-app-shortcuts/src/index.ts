@@ -1,3 +1,3 @@
-import type { AddonManifestV1 } from "./types.js"
+import type { AddonManifestV1 } from "./types"
 
-export { manifest } from "./manifest.js"
+export { manifest } from "./manifest"

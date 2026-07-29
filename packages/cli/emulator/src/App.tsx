@@ -84,6 +84,9 @@ export const App = ({
   const [disconnectedSince, setDisconnectedSince] = useState<number | null>(
     null,
   )
+  useEffect(() => {
+    disconnectedSinceRef.current = disconnectedSince
+  }, [disconnectedSince])
   const [attempt, setAttempt] = useState(0)
   const [lastError, setLastError] = useState<string | null>(null)
   const [now, setNow] = useState(() => Date.now())
@@ -101,6 +104,7 @@ export const App = ({
   // short delay so transient reconnects don't pop the banner.
   const lastStatusRef = useRef<WsStatus | null>(null)
   const reconnectLatchTimerRef = useRef<number | null>(null)
+  const disconnectedSinceRef = useRef<number | null>(null)
 
   useEffect(() => {
     clientRef.current = createWsClient({
@@ -181,7 +185,12 @@ export const App = ({
         }
       },
     })
-    const timer = setInterval(() => setNow(Date.now()), 250)
+    const timer = setInterval(() => {
+      if (disconnectedSinceRef.current === null) {
+        return
+      }
+      setNow(Date.now())
+    }, 250)
     return () => {
       clearInterval(timer)
       clientRef.current?.close()

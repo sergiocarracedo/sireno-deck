@@ -1,4 +1,4 @@
-import type { AddonDeckEntry } from "../types.js"
+import type { AddonDeckEntry } from "../types"
 
 const action = (icon: string, label: string, tap: string) => ({
   type: "core:action",

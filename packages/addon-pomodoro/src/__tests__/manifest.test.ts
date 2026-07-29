@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { manifest } from "../manifest.js"
+import { manifest } from "../manifest"
 
 describe("pomodoro manifest", () => {
   it("exports a valid AddonManifestV1", () => {

@@ -92,11 +92,26 @@ export const createLinuxSessionProvider = async (
 
   let interval: ReturnType<typeof setInterval> | null = null
   if (idleSupported) {
+    let cachedIdleIface: {
+      GetIdletime?: () => Promise<unknown>
+    } | null = null
+    const getIdleIface = async (): Promise<{
+      GetIdletime?: () => Promise<unknown>
+    } | null> => {
+      if (cachedIdleIface !== null) return cachedIdleIface
+      const p = await bus!.getProxyObject(
+        IDLE_MONITOR_SERVICE,
+        IDLE_MONITOR_PATH,
+      )
+      cachedIdleIface = p.getInterface(IDLE_MONITOR_IFACE) as {
+        GetIdletime?: () => Promise<unknown>
+      }
+      return cachedIdleIface
+    }
     interval = setInterval(() => {
       if (stopped) return
-      void bus!
-        .getProxyObject(IDLE_MONITOR_SERVICE, IDLE_MONITOR_PATH)
-        .then((p) => p.getInterface(IDLE_MONITOR_IFACE).GetIdletime?.())
+      void getIdleIface()
+        .then((iface) => iface?.GetIdletime?.())
         .then((idleMsRaw) => {
           // ponytail: an idle-timeout fires the lock transition (not the
           // previous no-op `state = "unlocked"`) and only when the state
@@ -119,9 +134,19 @@ export const createLinuxSessionProvider = async (
       return state
     },
     subscribe(handler) {
-      listeners.add(handler)
+      let initialFired = false
+      const wrappedHandler = (s: SessionState): void => {
+        initialFired = true
+        handler(s)
+      }
+      listeners.add(wrappedHandler)
+      if (!initialFired && state !== "unknown") {
+        queueMicrotask(() => {
+          if (!initialFired) handler(state)
+        })
+      }
       return () => {
-        listeners.delete(handler)
+        listeners.delete(wrappedHandler)
       }
     },
     async stop() {

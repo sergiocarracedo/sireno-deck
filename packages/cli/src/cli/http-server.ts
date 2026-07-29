@@ -130,6 +130,26 @@ export const startHttpServer = async (
           res.end(injected)
           return
         }
+        if (url.startsWith("/api/")) {
+          const expectedToken = options.getToken()
+          if (expectedToken === null) {
+            res.writeHead(503, { "content-type": "text/plain; charset=utf-8" })
+            res.end("Auth unavailable: no token configured")
+            return
+          }
+          const auth = req.headers["authorization"]
+          if (typeof auth !== "string" || !auth.startsWith("Bearer ")) {
+            res.writeHead(401, { "content-type": "text/plain; charset=utf-8" })
+            res.end("Missing bearer token")
+            return
+          }
+          const presented = auth.slice("Bearer ".length)
+          if (presented !== expectedToken) {
+            res.writeHead(403, { "content-type": "text/plain; charset=utf-8" })
+            res.end("Invalid bearer token")
+            return
+          }
+        }
         if (url === "/api/config" || url === "/api/config/") {
           const text = options.getConfigContent?.() ?? null
           if (text === null) {

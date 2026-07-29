@@ -458,9 +458,9 @@ describe("validateBootstrap", () => {
     },
   }
 
-  it("errors when main deck is missing", () => {
+  it("warns when main deck is missing", () => {
     const result = validateBootstrap({ decks: { other: { buttons: [] } } })
-    expect(isBootstrapValid(result)).toBe(false)
+    expect(isBootstrapValid(result)).toBe(true)
     expect(
       result.issues.some((i) => /Missing required `main`/.test(i.message)),
     ).toBe(true)

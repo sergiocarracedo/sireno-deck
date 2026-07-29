@@ -92,6 +92,7 @@ export interface Runtime {
   ): void
   getOverlay(): RuntimeDeck | null
   registerButtonHandler(buttonId: string, handler: RuntimeButtonHandler): void
+  unregisterButtonHandler(buttonId: string): void
   mountAddonButtons(
     addonName: string,
     buttons: ReadonlyArray<MountedButton>,
@@ -364,6 +365,10 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     handler: RuntimeButtonHandler,
   ): void => {
     handlers.set(buttonId, handler)
+  }
+
+  const unregisterButtonHandler = (buttonId: string): void => {
+    handlers.delete(buttonId)
   }
 
   const mountAddonButtons = (
@@ -853,6 +858,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     setOverlay,
     getOverlay,
     registerButtonHandler,
+    unregisterButtonHandler,
     mountAddonButtons,
     dispatchGesture,
     invokeAction,

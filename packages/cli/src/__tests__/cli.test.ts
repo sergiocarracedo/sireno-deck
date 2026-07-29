@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest"
 import { PROTOCOL_VERSION, SIRENO_ADDON_API_VERSION, cliVersion } from "@/index"
 import { createLogger } from "@/util/logger"
 import {
-  checkStatus,
   isRunning,
   readPid,
   removePidFile,
@@ -50,12 +49,5 @@ describe("daemon pid file", () => {
     writePid(12345, paths)
     expect(readPid(paths)).toBe(12345)
     expect(isRunning(12345)).toBe(false)
-  })
-
-  it("runs checkStatus without throwing when no pid is present", () => {
-    const paths = resolveDaemonPaths()
-    removePidFile(paths)
-    const logger = createLogger({ level: "silent" })
-    expect(() => checkStatus({ logger })).not.toThrow()
   })
 })

@@ -58,19 +58,19 @@ export const manifest: AddonManifestV1 = {
         // "Unrecognized key: 'id'" warnings at startup (3 of them per daemon).
         const defaultButtons = [
           {
-            type: "date-time",
+            type: "date-time:date-time",
             config: { format: "<strong><5xl>HH</5xl></strong>" },
             position: centerButton - 1,
             full: true,
           },
           {
-            type: "date-time",
+            type: "date-time:date-time",
             config: { format: "<strong><5xl><blink>:</blink></5xl></strong>" },
             position: centerButton,
             full: true,
           },
           {
-            type: "date-time",
+            type: "date-time:date-time",
             config: { format: "<strong><5xl>mm</5xl></strong>" },
             position: centerButton + 1,
             full: true,

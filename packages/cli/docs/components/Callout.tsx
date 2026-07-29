@@ -1,9 +1,9 @@
-import React from "react";
+import React from "react"
 
 interface CalloutProps {
-  type?: "note" | "warning" | "tip" | "info";
-  title?: string;
-  children: React.ReactNode;
+  type?: "note" | "warning" | "tip" | "info"
+  title?: string
+  children: React.ReactNode
 }
 
 const styles = {
@@ -31,17 +31,15 @@ const styles = {
     title: "text-purple-400",
     icon: "ℹ️",
   },
-};
+}
 
-export function Callout({
-  type = "note",
-  title,
-  children,
-}: CalloutProps) {
-  const style = styles[type];
+export function Callout({ type = "note", title, children }: CalloutProps) {
+  const style = styles[type]
 
   return (
-    <div className={`${style.bg} border-l-4 ${style.border} p-4 rounded-r my-4`}>
+    <div
+      className={`${style.bg} border-l-4 ${style.border} p-4 rounded-r my-4`}
+    >
       <div className="flex items-center gap-2 mb-2">
         <span className="text-lg">{style.icon}</span>
         <span className={`font-semibold ${style.title}`}>
@@ -50,5 +48,5 @@ export function Callout({
       </div>
       <div className="text-gray-300">{children}</div>
     </div>
-  );
+  )
 }

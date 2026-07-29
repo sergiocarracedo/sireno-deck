@@ -15,13 +15,13 @@
 
 ## Priority counts
 
-| Priority | Count | Meaning                                                        |
-| -------- | ----: | -------------------------------------------------------------- |
-| P0       |    12 | Must fix to ship                                               |
-| P1       |    22 | Must fix in next patch                                         |
-| P2       |    30 | Quality (ship-block only if cheap)                            |
-| P3       |    18 | Nice-to-have                                                   |
-| P4       |    12 | Nit                                                             |
+| Priority | Count | Meaning                            |
+| -------- | ----: | ---------------------------------- |
+| P0       |    12 | Must fix to ship                   |
+| P1       |    22 | Must fix in next patch             |
+| P2       |    30 | Quality (ship-block only if cheap) |
+| P3       |    18 | Nice-to-have                       |
+| P4       |    12 | Nit                                |
 
 Totals approximate; see per-area files for individual findings.
 
@@ -29,43 +29,43 @@ Totals approximate; see per-area files for individual findings.
 
 ## Top blockers (P0)
 
-| # | Area | Title | Evidence |
-| - | ---- | ----- | -------- |
-| 1 | foundation | `pnpm build` is a no-op; SPAs never build | `packages/cli/package.json:35`; `assetsInclude` in both Vite configs |
-| 2 | foundation | No CI configuration exists | No `.github/workflows/` |
-| 3 | foundation | Token not enforced in production WS bridge | `cli/commands/run.ts:1241` |
-| 4 | foundation | Token not propagated to Vite children | `cli/commands/emulator-mode.ts` |
-| 5 | foundation | `packages/cli/src/index.ts` violates process boundary | `packages/cli/src/index.ts:31-35` |
-| 6 | foundation | Version constants contradict each other | `version.ts` vs `addon/api-types.ts` vs `api/protocol-internal.ts` |
-| 7 | foundation | `service-manager.ts` imports a non-existent module | `cli/commands/service-manager.ts:64` |
-| 8 | architecture | `core:next-page` declared but has no handler | `deck/system-buttons/types.ts:5` |
-| 9 | architecture | Hot-reload leaks old addon services | `addon-handler-bridge.ts:62` |
-| 10 | system-providers | `hyper+super+a` causes stuck keys on Linux | `key-macro/linux.ts:325-374` |
-| 11 | system-providers | Windows key-macro DLL cache has no version check | `key-macro/windows.ts:19, 277-283` |
-| 12 | system-providers | Linux session provider misses locked-at-startup | `session/linux.ts:48-69` |
-| 13 | system-providers | D-Bus proxy leak in Linux session provider | `session/linux.ts:96-114` |
-| 14 | system-providers | `isPureAscii` regex matches control characters | `key-macro/linux.ts:427` |
-| 15 | security | WS bridge does not enforce the token in production | `cli/commands/run.ts:1241` |
-| 16 | security | HTTP server exposes raw config without auth | `cli/http-server.ts` |
-| 17 | security | `validateAndLoadConfig` reads YAML from disk via cwd override | `cwd.ts` |
-| 18 | security | PID file identity not verified | `util/daemon.ts` |
-| 19 | security | Service log race between parent + child | `spawn-daemon.ts:124-152` |
-| 20 | frontend-ui | `Text.test.tsx` is red | `Text.tsx` vs test |
-| 21 | frontend-ui | `ws-integration.test.tsx` is empty placeholder | `frontend/src/__tests__/ws-integration.test.tsx` |
-| 22 | frontend-ui | Frontend `Deck.tsx` missing `addonName` in addon props | `Deck.tsx:283-289` |
-| 23 | frontend-ui | Frontend `Deck.tsx` passes pointer handlers that `ButtonFrame` drops | `Deck.tsx` |
-| 24 | frontend-ui | Manual dbl-click in `Deck.tsx` emits `tap` then `dbl-tap` | same |
-| 25 | frontend-ui | Both `App.tsx` files re-render every 250ms unconditionally | `frontend/App.tsx` + `emulator/App.tsx` |
-| 26 | addon-ecosystem | `test-buildin/` addon has no manifest, no README, is registered | `register-builtins.ts` |
-| 27 | addon-ecosystem | Addon READMEs use stale `core:*` names | most addon READMEs |
-| 28 | addon-ecosystem | `media/README.md` calls addon `media-player`, actual is `media` | `media/README.md` |
-| 29 | testing-quality | 15 tests failing across 24 suites | `pnpm test` output |
-| 30 | testing-quality | `pnpm typecheck` ~304 diagnostics | `pnpm typecheck` output |
-| 31 | testing-quality | `pnpm lint` fails (4 errors) | `pnpm lint` output |
-| 32 | testing-quality | Coverage excludes SPA, .tsx, most UI | `vitest.config.ts` |
-| 33 | docs-oss | No `LICENSE` at repository root | absent |
-| 34 | docs-oss | `README.md` references wrong package name | `pnpm --filter sireno-deck` |
-| 35 | docs-oss | `README.md` button-type examples are obsolete | `core:*` references |
+| #   | Area             | Title                                                                | Evidence                                                             |
+| --- | ---------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| 1   | foundation       | `pnpm build` is a no-op; SPAs never build                            | `packages/cli/package.json:35`; `assetsInclude` in both Vite configs |
+| 2   | foundation       | No CI configuration exists                                           | No `.github/workflows/`                                              |
+| 3   | foundation       | Token not enforced in production WS bridge                           | `cli/commands/run.ts:1241`                                           |
+| 4   | foundation       | Token not propagated to Vite children                                | `cli/commands/emulator-mode.ts`                                      |
+| 5   | foundation       | `packages/cli/src/index.ts` violates process boundary                | `packages/cli/src/index.ts:31-35`                                    |
+| 6   | foundation       | Version constants contradict each other                              | `version.ts` vs `addon/api-types.ts` vs `api/protocol-internal.ts`   |
+| 7   | foundation       | `service-manager.ts` imports a non-existent module                   | `cli/commands/service-manager.ts:64`                                 |
+| 8   | architecture     | `core:next-page` declared but has no handler                         | `deck/system-buttons/types.ts:5`                                     |
+| 9   | architecture     | Hot-reload leaks old addon services                                  | `addon-handler-bridge.ts:62`                                         |
+| 10  | system-providers | `hyper+super+a` causes stuck keys on Linux                           | `key-macro/linux.ts:325-374`                                         |
+| 11  | system-providers | Windows key-macro DLL cache has no version check                     | `key-macro/windows.ts:19, 277-283`                                   |
+| 12  | system-providers | Linux session provider misses locked-at-startup                      | `session/linux.ts:48-69`                                             |
+| 13  | system-providers | D-Bus proxy leak in Linux session provider                           | `session/linux.ts:96-114`                                            |
+| 14  | system-providers | `isPureAscii` regex matches control characters                       | `key-macro/linux.ts:427`                                             |
+| 15  | security         | WS bridge does not enforce the token in production                   | `cli/commands/run.ts:1241`                                           |
+| 16  | security         | HTTP server exposes raw config without auth                          | `cli/http-server.ts`                                                 |
+| 17  | security         | `validateAndLoadConfig` reads YAML from disk via cwd override        | `cwd.ts`                                                             |
+| 18  | security         | PID file identity not verified                                       | `util/daemon.ts`                                                     |
+| 19  | security         | Service log race between parent + child                              | `spawn-daemon.ts:124-152`                                            |
+| 20  | frontend-ui      | `Text.test.tsx` is red                                               | `Text.tsx` vs test                                                   |
+| 21  | frontend-ui      | `ws-integration.test.tsx` is empty placeholder                       | `frontend/src/__tests__/ws-integration.test.tsx`                     |
+| 22  | frontend-ui      | Frontend `Deck.tsx` missing `addonName` in addon props               | `Deck.tsx:283-289`                                                   |
+| 23  | frontend-ui      | Frontend `Deck.tsx` passes pointer handlers that `ButtonFrame` drops | `Deck.tsx`                                                           |
+| 24  | frontend-ui      | Manual dbl-click in `Deck.tsx` emits `tap` then `dbl-tap`            | same                                                                 |
+| 25  | frontend-ui      | Both `App.tsx` files re-render every 250ms unconditionally           | `frontend/App.tsx` + `emulator/App.tsx`                              |
+| 26  | addon-ecosystem  | `test-buildin/` addon has no manifest, no README, is registered      | `register-builtins.ts`                                               |
+| 27  | addon-ecosystem  | Addon READMEs use stale `core:*` names                               | most addon READMEs                                                   |
+| 28  | addon-ecosystem  | `media/README.md` calls addon `media-player`, actual is `media`      | `media/README.md`                                                    |
+| 29  | testing-quality  | 15 tests failing across 24 suites                                    | `pnpm test` output                                                   |
+| 30  | testing-quality  | `pnpm typecheck` ~304 diagnostics                                    | `pnpm typecheck` output                                              |
+| 31  | testing-quality  | `pnpm lint` fails (4 errors)                                         | `pnpm lint` output                                                   |
+| 32  | testing-quality  | Coverage excludes SPA, .tsx, most UI                                 | `vitest.config.ts`                                                   |
+| 33  | docs-oss         | No `LICENSE` at repository root                                      | absent                                                               |
+| 34  | docs-oss         | `README.md` references wrong package name                            | `pnpm --filter sireno-deck`                                          |
+| 35  | docs-oss         | `README.md` button-type examples are obsolete                        | `core:*` references                                                  |
 
 (The top blockers table above is the full P0 list, 35 items.)
 
@@ -73,16 +73,16 @@ Totals approximate; see per-area files for individual findings.
 
 ## Table of contents
 
-| File | Scope |
-| ---- | ----- |
-| [`01-foundation.md`](01-foundation.md) | Repo baseline, build/CI, version drift, tsconfig/lint/format, daemon lifecycle, PID/token |
-| [`02-architecture.md`](02-architecture.md) | Runtime, deck methods, addon-handler-bridge, gesture state machine, WS bridge, protocol |
-| [`03-system-providers.md`](03-system-providers.md) | Linux/macOS/Windows providers, requirements probe, shared helpers, null-provider trap |
-| [`04-security.md`](04-security.md) | All trust-boundary surfaces (S1–S14) |
-| [`05-frontend-ui.md`](05-frontend-ui.md) | Frontend SPA, emulator SPA, shared UI library, theme overrides, accessibility |
-| [`06-addon-ecosystem.md`](06-addon-ecosystem.md) | Builtin addon patterns, addon loader, registry, third-party addon, addon README drift |
-| [`07-testing-and-quality.md`](07-testing-and-quality.md) | Test inventory, failing tests, typecheck/lint/format gates, missing CI, coverage blind spots |
-| [`08-documentation-and-oss.md`](08-documentation-and-oss.md) | README/ARCHITECTURE/AGENTS/MIGRATION-NOTES drift, missing files, OSS-impression lens |
+| File                                                         | Scope                                                                                        |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| [`01-foundation.md`](01-foundation.md)                       | Repo baseline, build/CI, version drift, tsconfig/lint/format, daemon lifecycle, PID/token    |
+| [`02-architecture.md`](02-architecture.md)                   | Runtime, deck methods, addon-handler-bridge, gesture state machine, WS bridge, protocol      |
+| [`03-system-providers.md`](03-system-providers.md)           | Linux/macOS/Windows providers, requirements probe, shared helpers, null-provider trap        |
+| [`04-security.md`](04-security.md)                           | All trust-boundary surfaces (S1–S14)                                                         |
+| [`05-frontend-ui.md`](05-frontend-ui.md)                     | Frontend SPA, emulator SPA, shared UI library, theme overrides, accessibility                |
+| [`06-addon-ecosystem.md`](06-addon-ecosystem.md)             | Builtin addon patterns, addon loader, registry, third-party addon, addon README drift        |
+| [`07-testing-and-quality.md`](07-testing-and-quality.md)     | Test inventory, failing tests, typecheck/lint/format gates, missing CI, coverage blind spots |
+| [`08-documentation-and-oss.md`](08-documentation-and-oss.md) | README/ARCHITECTURE/AGENTS/MIGRATION-NOTES drift, missing files, OSS-impression lens         |
 
 ---
 

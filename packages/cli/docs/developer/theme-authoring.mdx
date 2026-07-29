@@ -83,19 +83,19 @@ my-theme/
 
 ### Available Tokens
 
-| Token | CSS Variable | Description |
-|-------|--------------|-------------|
-| `background` | `--sireno-color-bg` | Main background |
-| `frame` | `--sireno-color-frame` | Button border |
-| `foreground` | `--sireno-color-fg` | Primary text |
+| Token                 | CSS Variable                 | Description        |
+| --------------------- | ---------------------------- | ------------------ |
+| `background`          | `--sireno-color-bg`          | Main background    |
+| `frame`               | `--sireno-color-frame`       | Button border      |
+| `foreground`          | `--sireno-color-fg`          | Primary text       |
 | `foreground-contrast` | `--sireno-color-fg-contrast` | High-contrast text |
-| `primary` | `--sireno-color-primary` | Primary accent |
-| `accent` | `--sireno-color-accent` | Secondary accent |
-| `success` | `--sireno-color-success` | Success state |
-| `danger` | `--sireno-color-danger` | Error state |
-| `tintBlue` | `--sireno-color-tint-blue` | Blue variant |
-| `tintGreen` | `--sireno-color-tint-green` | Green variant |
-| `tintPurple` | `--sireno-color-tint-purple` | Purple variant |
+| `primary`             | `--sireno-color-primary`     | Primary accent     |
+| `accent`              | `--sireno-color-accent`      | Secondary accent   |
+| `success`             | `--sireno-color-success`     | Success state      |
+| `danger`              | `--sireno-color-danger`      | Error state        |
+| `tintBlue`            | `--sireno-color-tint-blue`   | Blue variant       |
+| `tintGreen`           | `--sireno-color-tint-green`  | Green variant      |
+| `tintPurple`          | `--sireno-color-tint-purple` | Purple variant     |
 
 ## Typography
 
@@ -174,8 +174,13 @@ my-theme/
 
 /* Animation */
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 ```
 
@@ -210,10 +215,10 @@ Advanced: Replace React components entirely:
 ```typescript
 // components/index.ts
 export const components = {
-  ButtonFrame: MyCustomButtonFrame
+  ButtonFrame: MyCustomButtonFrame,
 }
 
 export const surfaces = {
-  IconLabel: MyCustomIconLabel
+  IconLabel: MyCustomIconLabel,
 }
 ```

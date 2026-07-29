@@ -36,7 +36,9 @@ interface AddonButtonTypeDef<Config = unknown> {
   readonly service: AddonButtonTypeService<Config>
 }
 
-type AddonFrontendButton<Config> = ComponentType<AddonFrontendButtonProps<Config>>
+type AddonFrontendButton<Config> = ComponentType<
+  AddonFrontendButtonProps<Config>
+>
 
 interface AddonFrontendButtonProps<Config> {
   readonly config: Config
@@ -57,11 +59,21 @@ interface AddonButtonTypeService<Config = unknown> {
   readonly internal?: boolean
   readonly full?: boolean
   readonly gestureHandlers?: ReadonlyArray<GestureKind>
-  readonly onMount?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
-  readonly onTap?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
-  readonly onDblTap?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
-  readonly onHold?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
-  readonly dispose?: (ctx: AddonButtonServiceContext<Config>) => void | Promise<void>
+  readonly onMount?: (
+    ctx: AddonButtonServiceContext<Config>,
+  ) => void | Promise<void>
+  readonly onTap?: (
+    ctx: AddonButtonServiceContext<Config>,
+  ) => void | Promise<void>
+  readonly onDblTap?: (
+    ctx: AddonButtonServiceContext<Config>,
+  ) => void | Promise<void>
+  readonly onHold?: (
+    ctx: AddonButtonServiceContext<Config>,
+  ) => void | Promise<void>
+  readonly dispose?: (
+    ctx: AddonButtonServiceContext<Config>,
+  ) => void | Promise<void>
 }
 ```
 
@@ -113,7 +125,11 @@ interface AddonServiceContext {
 type AddonDeckEntry =
   | (AddonGeneratedDeck & { id: string })
   | { id: string; createDeck: (ctx: AddonDeckEntryCtx) => AddonGeneratedDeck }
-  | { createDecks: (ctx: AddonDeckEntryCtx) => Record<string, AddonGeneratedDeck> }
+  | {
+      createDecks: (
+        ctx: AddonDeckEntryCtx,
+      ) => Record<string, AddonGeneratedDeck>
+    }
 
 interface AddonDeckEntryCtx {
   config: unknown
@@ -159,7 +175,10 @@ interface Scope<T = unknown> {
 ```typescript
 interface PubSub {
   publish<T extends Payload>(channel: string, payload: T): void
-  subscribe<T extends Payload>(channel: string, cb: (payload: T) => void): Unsubscribe
+  subscribe<T extends Payload>(
+    channel: string,
+    cb: (payload: T) => void,
+  ): Unsubscribe
   last<T extends Payload>(channel: string): T | undefined
 }
 ```

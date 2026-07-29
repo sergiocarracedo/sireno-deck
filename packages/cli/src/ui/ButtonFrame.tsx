@@ -1,4 +1,8 @@
-import type { MouseEvent, ReactNode } from "react"
+import type {
+  MouseEvent,
+  PointerEvent,
+  ReactNode,
+} from "react"
 
 export interface ButtonFrameProps {
   pressed?: boolean
@@ -8,6 +12,11 @@ export interface ButtonFrameProps {
   buttonType: string
   variant?: "default" | "error" | "blue" | "green" | "purple"
   onClick?: (event: MouseEvent<HTMLDivElement>) => void
+  onPointerDown?: (event: PointerEvent<HTMLDivElement>) => void
+  onPointerUp?: (event: PointerEvent<HTMLDivElement>) => void
+  onPointerMove?: (event: PointerEvent<HTMLDivElement>) => void
+  onPointerLeave?: (event: PointerEvent<HTMLDivElement>) => void
+  onPointerCancel?: (event: PointerEvent<HTMLDivElement>) => void
   children: ReactNode
 }
 
@@ -15,6 +24,11 @@ export const ButtonFrame = ({
   children,
   variant = "default",
   onClick,
+  onPointerDown,
+  onPointerUp,
+  onPointerMove,
+  onPointerLeave,
+  onPointerCancel,
 }: ButtonFrameProps) => {
   const variantClass = {
     default: "bg-bg border-frame",
@@ -30,6 +44,11 @@ export const ButtonFrame = ({
       data-sireno-button-frame="true"
       data-variant={variant}
       onClick={onClick}
+      onPointerDown={onPointerDown}
+      onPointerUp={onPointerUp}
+      onPointerMove={onPointerMove}
+      onPointerLeave={onPointerLeave}
+      onPointerCancel={onPointerCancel}
       role={onClick !== undefined ? "button" : undefined}
       tabIndex={onClick !== undefined ? 0 : undefined}
       onKeyDown={

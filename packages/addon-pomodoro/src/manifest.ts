@@ -1,8 +1,8 @@
-import type { AddonManifestV1 } from "./types.js"
+import type { AddonManifestV1 } from "./types"
 
-import { globalService } from "./global/backend.js"
-import pomodoroBackend from "./buttons/pomodoro/backend.js"
-import pomodoroFrontend from "./buttons/pomodoro/frontend.js"
+import { globalService } from "./global/backend"
+import pomodoroBackend from "./buttons/pomodoro/backend"
+import pomodoroFrontend from "./buttons/pomodoro/frontend"
 
 export const manifest: AddonManifestV1 = {
   apiVersion: 1,

@@ -14,6 +14,12 @@ export const helloMessageSchema = baseClientMessage.extend({
   token: z.string().min(1).optional(),
 })
 
+export const helloMessageStrictSchema = baseClientMessage.extend({
+  type: z.literal("hello"),
+  version: z.literal(PROTOCOL_VERSION),
+  token: z.string().min(1),
+})
+
 export const deviceInfoSchema = z.object({
   id: z.string(),
   model: z.string(),

@@ -1,4 +1,5 @@
-import { existsSync, mkdirSync } from "node:fs"
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
+import { createHash } from "node:crypto"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
@@ -17,6 +18,26 @@ export interface WindowsKeyMacroDeps {
 
 const CACHE_DIR = join(tmpdir(), "sireno-deck", "key-macro-windows")
 const HELPER_DLL = join(CACHE_DIR, "sirenokey-input.dll")
+const HELPER_SRC_HASH = join(CACHE_DIR, "sirenokey-input.dll.src.sha256")
+
+const sourceHash = (src: string): string =>
+  createHash("sha256").update(src, "utf8").digest("hex")
+
+const readCachedHash = (): string | null => {
+  try {
+    return readFileSync(HELPER_SRC_HASH, "utf8").trim()
+  } catch {
+    return null
+  }
+}
+
+const writeCachedHash = (hash: string): void => {
+  try {
+    writeFileSync(HELPER_SRC_HASH, `${hash}\n`, "utf8")
+  } catch {
+    // best-effort; missing sidecar just forces a recompile next time
+  }
+}
 
 const HELPED_SOURCE = String.raw`
 using System;
@@ -255,6 +276,15 @@ const compileHelper = async (
       return null
     }
   }
+  const expectedHash = sourceHash(HELPED_SOURCE)
+  const cachedHash = readCachedHash()
+  if (cachedHash === expectedHash && existsSync(HELPER_DLL)) {
+    deps.logger.debug(
+      { dllPath: HELPER_DLL },
+      "windows key-macro: using cached DLL (source hash unchanged)",
+    )
+    return { dllPath: HELPER_DLL }
+  }
   const script = COMPILE_PS(CACHE_DIR, HELPER_DLL)
   const encoded = encodePSCommand(script)
   try {
@@ -281,6 +311,7 @@ const compileHelper = async (
     )
     return null
   }
+  writeCachedHash(expectedHash)
   return { dllPath: HELPER_DLL }
 }
 
@@ -386,23 +417,10 @@ export const createWindowsKeyMacroProvider = async (
     async sendKey(input: string) {
       const parsed = parseCombo(input)
       if (parsed !== null) {
-        const seen = new Set<string>()
+        const seenVk = new Set<number>()
         const orderedMods: number[] = []
         for (const mod of MOD_ORDER) {
-          if (parsed.mods.includes(mod) && !seen.has(mod)) {
-            const vk = modToVk(mod)
-            if (vk === null) {
-              throw new ProviderError(
-                "EXEC_FAILED",
-                `windows: cannot map modifier '${mod}' to VK code`,
-              )
-            }
-            seen.add(mod)
-            orderedMods.push(vk)
-          }
-        }
-        for (const mod of parsed.mods) {
-          if (seen.has(mod)) continue
+          if (!parsed.mods.includes(mod)) continue
           const vk = modToVk(mod)
           if (vk === null) {
             throw new ProviderError(
@@ -410,7 +428,20 @@ export const createWindowsKeyMacroProvider = async (
               `windows: cannot map modifier '${mod}' to VK code`,
             )
           }
-          seen.add(mod)
+          if (seenVk.has(vk)) continue
+          seenVk.add(vk)
+          orderedMods.push(vk)
+        }
+        for (const mod of parsed.mods) {
+          const vk = modToVk(mod)
+          if (vk === null) {
+            throw new ProviderError(
+              "EXEC_FAILED",
+              `windows: cannot map modifier '${mod}' to VK code`,
+            )
+          }
+          if (seenVk.has(vk)) continue
+          seenVk.add(vk)
           orderedMods.push(vk)
         }
         const keyVk = keyToVk(parsed.key)

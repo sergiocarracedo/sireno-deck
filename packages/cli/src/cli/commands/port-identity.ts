@@ -76,7 +76,7 @@ export const cmdlineMentionsCliRoot = (cmdline: string): boolean => {
 // child of it. An orphan with ppid NOT in the live daemons list is
 // classified as orphan and killed.
 export const isOrphan = (pid: number, daemonPid: number | null): boolean => {
-  if (process.platform !== "linux") return true // trust on non-Linux
+  if (process.platform !== "linux") return false // can't tell — be safe
   const ppid = readProcPpid(pid)
   if (ppid === null) return false // can't tell — be safe
   if (daemonPid !== null && ppid === daemonPid) return false // live child

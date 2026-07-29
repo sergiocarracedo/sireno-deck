@@ -3,6 +3,7 @@ import { spawn } from "node:child_process"
 import { fileURLToPath } from "node:url"
 import { dirname, resolve } from "node:path"
 
+// eslint-disable-next-line import/extensions
 import { reapOrphanProcessGroup, setWrapperTitle } from "./_wrapper-shared.js"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))

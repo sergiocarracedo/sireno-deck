@@ -14,11 +14,11 @@ Actions define what happens when you press a button. Sireno Deck supports multip
 
 Each button can respond to different gestures:
 
-| Gesture | Description |
-|---------|-------------|
-| `tap` | Single button press |
+| Gesture   | Description               |
+| --------- | ------------------------- |
+| `tap`     | Single button press       |
 | `dbl-tap` | Double press within 200ms |
-| `hold` | Press and hold for 200ms+ |
+| `hold`    | Press and hold for 200ms+ |
 
 ## Action Types
 
@@ -52,10 +52,10 @@ actions:
 
 ### Built-in Actions
 
-| Protocol | Description |
-|----------|-------------|
-| `type://...` | Send keyboard input |
-| `brightness://up` | Increase brightness |
+| Protocol            | Description         |
+| ------------------- | ------------------- |
+| `type://...`        | Send keyboard input |
+| `brightness://up`   | Increase brightness |
 | `brightness://down` | Decrease brightness |
 
 ## Examples
@@ -115,6 +115,7 @@ actions:
 ```
 
 Available placeholders:
+
 - `{{ host.hostname }}` — Computer hostname
 - `{{ host.platform }}` — OS (linux, darwin, win32)
 - `{{ host.username }}` — Current user

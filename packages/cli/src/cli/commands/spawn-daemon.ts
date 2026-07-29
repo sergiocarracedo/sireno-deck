@@ -1,5 +1,5 @@
 import { spawn, type ChildProcess } from "node:child_process"
-import { appendFileSync, existsSync, openSync } from "node:fs"
+import { createWriteStream, existsSync, openSync } from "node:fs"
 import { dirname, resolve as resolvePath } from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -63,14 +63,20 @@ const resolveInterpreter = (binPath: string): Interpreter => {
   const cliRoot = resolvePath(here, "../../..")
   const tsxBin = resolvePath(cliRoot, "node_modules/.bin/tsx")
   const tsconfig = resolvePath(cliRoot, "tsconfig.json")
+  const tsconfigExists = existsSync(tsconfig)
   if (!existsSync(tsxBin)) {
-    return { cmd: process.execPath, prefixArgs: ["--import", "tsx"] }
+    return {
+      cmd: process.execPath,
+      prefixArgs: ["--import", "tsx"],
+      cwd: cliRoot,
+      env: tsconfigExists ? { TSX_TSCONFIG_PATH: tsconfig } : {},
+    }
   }
   return {
     cmd: tsxBin,
-    prefixArgs: existsSync(tsconfig) ? ["--tsconfig", tsconfig] : [],
+    prefixArgs: tsconfigExists ? ["--tsconfig", tsconfig] : [],
     cwd: cliRoot,
-    env: existsSync(tsconfig) ? { TSX_TSCONFIG_PATH: tsconfig } : {},
+    env: tsconfigExists ? { TSX_TSCONFIG_PATH: tsconfig } : {},
   }
 }
 
@@ -122,32 +128,59 @@ export const spawnDetached = (
   child.unref()
 
   if (devMode) {
+    let stream: ReturnType<typeof createWriteStream> | null = null
+    const writeQueue: string[] = []
+    let draining = false
+    const drain = async (): Promise<void> => {
+      if (draining) return
+      draining = true
+      try {
+        while (writeQueue.length > 0) {
+          const line = writeQueue.shift() ?? ""
+          if (line.length === 0) continue
+          if (stream !== null) {
+            await new Promise<void>((resolve) => {
+              stream!.write(`${line}\n`, () => resolve())
+            })
+          }
+        }
+      } finally {
+        draining = false
+      }
+    }
+    try {
+      stream = createWriteStream(log, { flags: "a", highWaterMark: 64 * 1024 })
+    } catch {
+      stream = null
+    }
     const tee = (chunk: Buffer | string): void => {
       const text = typeof chunk === "string" ? chunk : chunk.toString("utf8")
       for (const rawLine of text.split("\n")) {
         if (rawLine.length === 0) continue
-        try {
-          appendFileSync(log, `${rawLine}\n`, "utf8")
-        } catch {
-          // log path unavailable (tests without a runtimeDir); still emit
-          // to terminal below so the user sees something.
-        }
+        writeQueue.push(rawLine)
         const formatted = formatHuman(rawLine)
         process.stdout.write(`${formatted ?? rawLine}\n`)
       }
+      void drain()
     }
     child.stdout?.on("data", tee)
     child.stderr?.on("data", (chunk: Buffer | string): void => {
       const text = typeof chunk === "string" ? chunk : chunk.toString("utf8")
       for (const rawLine of text.split("\n")) {
         if (rawLine.length === 0) continue
-        try {
-          appendFileSync(log, `${rawLine}\n`, "utf8")
-        } catch {
-          // ignore
-        }
+        writeQueue.push(rawLine)
         process.stderr.write(`${rawLine}\n`)
       }
+      void drain()
+    })
+    child.on("exit", () => {
+      void (async (): Promise<void> => {
+        await drain()
+        await new Promise<void>((resolve) => {
+          if (stream === null) return resolve()
+          stream.end(() => resolve())
+        })
+      })()
     })
   }
 

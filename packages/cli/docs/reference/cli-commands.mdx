@@ -12,11 +12,11 @@ Complete reference for all Sireno Deck CLI commands.
 
 ## Global Options
 
-| Option | Alias | Description |
-|--------|-------|-------------|
-| `--verbose` | `-v` | Enable verbose logging |
-| `--json` | — | Output logs as JSON |
-| `--log-level` | — | Set log level |
+| Option        | Alias | Description            |
+| ------------- | ----- | ---------------------- |
+| `--verbose`   | `-v`  | Enable verbose logging |
+| `--json`      | —     | Output logs as JSON    |
+| `--log-level` | —     | Set log level          |
 
 ## Commands
 
@@ -29,6 +29,7 @@ sireno run [options]
 ```
 
 **Options:**
+
 - `--config <path>` — Config file path
 - `--port <number>` — Server port (0 = random)
 - `--emulator` — Use emulator
@@ -44,6 +45,7 @@ sireno start [options]
 ```
 
 **Options:**
+
 - `--config <path>` — Config file path
 - `--port <number>` — Server port
 - `--emulator` — Use emulator
@@ -77,6 +79,7 @@ sireno restart [options]
 ```
 
 **Options:**
+
 - `--logs` — Follow logs
 
 ### reload
@@ -88,6 +91,7 @@ sireno reload [options]
 ```
 
 **Options:**
+
 - `--logs` — Follow logs
 
 ### update-config
@@ -99,6 +103,7 @@ sireno update-config --config <path> [options]
 ```
 
 **Options:**
+
 - `--reload` — Use in-place reload
 - `--logs` — Follow logs
 
@@ -111,5 +116,6 @@ sireno logs [options]
 ```
 
 **Options:**
+
 - `--follow`, `-f` — Follow output (default: true)
 - `--lines`, `-n` — Lines to show (default: 50)
