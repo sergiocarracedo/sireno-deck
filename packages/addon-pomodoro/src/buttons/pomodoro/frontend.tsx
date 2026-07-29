@@ -113,7 +113,7 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
             className="overflow-visible"
           >
             <div className="flex h-full w-full flex-col items-center justify-center gap-0.5 leading-none">
-              <span className="text-base leading-none">🍅</span>
+              <span className="text-3xl leading-none">🍅</span>
               <Label
                 text={formatMmSs(remainingSec)}
                 variant={finished ? "secondary" : "primary"}
