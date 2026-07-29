@@ -1,0 +1,26 @@
+packages/cli/src/system/providers/key-macro/windows.ts
+  s_7b1f3df66b12cf::t_8bada081463ec3 427-430,432,444
+  s_7b1f3df66b12cf::t_51dd195b5841e1 232-236
+packages/cli/src/system/providers/key-macro/darwin.ts
+  s_7b1f3df66b12cf::t_752b4d6c370f0e 24-31,35-42
+packages/cli/src/system/providers/key-macro/linux.ts
+  s_7b1f3df66b12cf::t_7e4c9dc4ca66ba 292-299,301-302,304,306
+  s_7b1f3df66b12cf::t_66f2266319d9dd 335-336,377-380
+  s_7b1f3df66b12cf::t_f876f9137d54a4 381-382
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "27167bf485a033d32b9b408417e84078a53cdcb7",
+  "prompts": {},
+  "sessions": {
+    "s_7b1f3df66b12cf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_050d9560affelcug8YsyX6TNr7",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
