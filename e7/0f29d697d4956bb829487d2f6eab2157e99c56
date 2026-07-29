@@ -1,0 +1,38 @@
+packages/cli/src/deck/__tests__/addon-handler-bridge.test.ts
+  s_adb3cba007b617::t_0bfdc07a6ed733 466-469,478,490,494,501-503,516
+  s_adb3cba007b617::t_5b43891e7e8f35 400-465,470-477,479-489,491-493,495-500,504-515,517
+packages/cli/src/deck/runtime/index.ts
+  s_adb3cba007b617::t_e78d0b2a4a78e2 1
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_adb3cba007b617::t_f793d9805b6a18 64-68
+  s_adb3cba007b617::t_ab5bc606bb836f 125
+  s_adb3cba007b617::t_4231d01ec8e737 371-388
+  s_adb3cba007b617::t_b98a6c31c046e9 291-293
+  s_adb3cba007b617::t_fe7c6198c5151f 47-63,69-92,94-95,102,104-110
+  s_adb3cba007b617::t_a0ef7b3abc3621 237-248
+  s_adb3cba007b617::t_c4229938cb9492 135-161
+  s_adb3cba007b617::t_b5470ae790eda3 417
+  s_adb3cba007b617::t_ab3974360bc0bc 356-361
+  s_adb3cba007b617::t_8bc449e3ad891b 93,96-101,103
+  s_adb3cba007b617::t_594df35bb1b950 439-449,457-463,479-481,485
+  s_adb3cba007b617::t_cf347358054b22 282,288-290,302
+.gitignore
+  s_adb3cba007b617::t_9d08deffc98ba8 22
+  s_adb3cba007b617::t_b5afd6edb54bfd 23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "e70f29d697d4956bb829487d2f6eab2157e99c56",
+  "prompts": {},
+  "sessions": {
+    "s_adb3cba007b617": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0501ede01ffeIg0hBGhV1ZRV7a",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
