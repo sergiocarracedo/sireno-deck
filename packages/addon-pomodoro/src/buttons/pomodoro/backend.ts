@@ -108,6 +108,11 @@ export default {
     writePersisted(ctx, { status: "running", startTsMs, durationSec })
     ctx.methods["pomodoro:start"]?.(ctx.buttonId, durationSec)
   },
+  onHold: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
+    const durationSec = ctx.config?.durationSec ?? DEFAULT_DURATION_SEC
+    writePersisted(ctx, { status: "idle", startTsMs: null, durationSec })
+    ctx.methods["pomodoro:stop"]?.(ctx.buttonId)
+  },
   dispose: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
     ctx.methods["pomodoro:stop"]?.(ctx.buttonId)
   },

@@ -1150,6 +1150,33 @@ export const buildExternalScannedAddons = (
   return out
 }
 
+const mergeAddonByType = (
+  baseByType: Map<string, AddonFrontendRef>,
+  externalScanned: ReadonlyArray<ScannedAddon>,
+): Map<string, AddonFrontendRef> => {
+  const merged = new Map(baseByType)
+  for (const addon of externalScanned) {
+    for (const type of addon.types) {
+      if (!merged.has(type)) {
+        merged.set(type, {
+          name: addon.name,
+          frontendEntry: addon.frontendEntry,
+        })
+      }
+      if (
+        type === `${addon.name}:${addon.name}` &&
+        !merged.has(addon.name)
+      ) {
+        merged.set(addon.name, {
+          name: addon.name,
+          frontendEntry: addon.frontendEntry,
+        })
+      }
+    }
+  }
+  return merged
+}
+
 // ponytail: extracted so tests can exercise the addon-spec-to-dir mapping
 // without spinning up the full pipeline (WS bridge, output client, etc.).
 // Reads `addons[]` from the parsed config — entries are either a raw string
@@ -1333,7 +1360,10 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       pubSub,
       scanned: addonBundle.scanned,
       externalAddons: externalScanned,
-      addonByType: addonBundle.addonByType,
+      // ponytail: addonBundle.addonByType only has builtins — merge in
+      // third-party addons so collectActiveDeckAddonNames can resolve their
+      // types and the state publisher starts their pollers.
+      addonByType: mergeAddonByType(addonBundle.addonByType, externalScanned),
       executor: createActionExecutor({ host: getHostContext() }),
       statePublisher,
       bridge,

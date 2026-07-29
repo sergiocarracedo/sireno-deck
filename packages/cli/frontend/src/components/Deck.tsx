@@ -27,6 +27,15 @@ import {
 import { useButtonAction } from "../bridge/use-button-action"
 import { ErrorBoundary } from "./ErrorBoundary"
 
+// ponytail: the pomodoro addon's frontend subscribes to its
+// `pomodoro:state` channel through this injected hook. Without it, the
+// addon's hook falls back to a no-op and the countdown never renders.
+// Set once at module load — `useAddonChannel` from the host uses the
+// singleton `ChannelRegistry`, so the addon's components pick up state
+// updates the same way built-in addons do.
+;(globalThis as { __pomodoroUseAddonChannel?: typeof useAddonChannel }).__pomodoroUseAddonChannel =
+  useAddonChannel
+
 const BUTTON_SIZE = BUTTON_SIZE_PX
 const BUTTON_GAP_PX = 8
 const DECK_PADDING_PX = 16

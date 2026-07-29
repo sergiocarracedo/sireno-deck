@@ -150,13 +150,23 @@ export const createLinuxActiveAppProvider = async (
     deps.logger.info(
       "active-app: detected GNOME Wayland session, using 'Window Calls Extended' provider",
     )
-    return createWaylandGnomeProvider({
-      ...(deps.dbus !== undefined ? { dbus: deps.dbus } : {}),
-      logger: deps.logger,
-      ...(deps.pollIntervalMs !== undefined
-        ? { pollIntervalMs: deps.pollIntervalMs }
-        : {}),
-    })
+    try {
+      return await createWaylandGnomeProvider({
+        ...(deps.dbus !== undefined ? { dbus: deps.dbus } : {}),
+        logger: deps.logger,
+        ...(deps.pollIntervalMs !== undefined
+          ? { pollIntervalMs: deps.pollIntervalMs }
+          : {}),
+      })
+    } catch (err) {
+      // ponytail: extension probe or interface lookup can throw if GNOME Shell
+      // is reachable but the extension isn't installed; fall through to the
+      // null provider below instead of crashing the daemon.
+      deps.logger.warn(
+        { err },
+        "active-app: GNOME Wayland provider init failed, using null provider",
+      )
+    }
   }
 
   const pollMs = deps.pollIntervalMs ?? DEFAULT_POLL_MS
