@@ -1,0 +1,23 @@
+packages/addon-pomodoro/package.json
+  s_5b19018252d9e0::t_d2de4bb8791fc8 23
+config.yml
+  s_5b19018252d9e0::t_9cb373a808e291 87-91
+pnpm-lock.yaml
+  s_5b19018252d9e0::t_94dd9021c52038 39-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "e027728a7b8e49c99700173466970560f239a670",
+  "prompts": {},
+  "sessions": {
+    "s_5b19018252d9e0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05574b72affemfEF7rBuPKjodf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
