@@ -12,6 +12,7 @@ declare module "@/ui/primitives/Label" {
     text: string
     lines?: 1 | 2 | 3
     variant?: LabelVariant
+    className?: string
   }
   export function Label(props: LabelProps): ReactElement
 }

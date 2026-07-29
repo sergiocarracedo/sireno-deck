@@ -113,10 +113,10 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
             height="56"
             className="overflow-visible"
           >
-            <div className="flex h-full w-full flex-col items-center justify-center gap-1 leading-none">
+            <div className="flex h-full w-full flex-col items-center justify-center gap-0.5 leading-none">
               <span
                 className="inline-block shrink-0 leading-none"
-                style={{ fontSize: 36 }}
+                style={{ fontSize: 20 }}
               >
                 🍅
               </span>
@@ -124,6 +124,7 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
                 text={formatMmSs(remainingSec)}
                 variant={finished ? "secondary" : "primary"}
                 lines={2}
+                className="text-2xl"
               />
             </div>
           </foreignObject>
@@ -131,7 +132,7 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
         {paused && (
           <svg
             viewBox="0 0 24 24"
-            className="pointer-events-none absolute inset-0 m-auto h-1/2 w-1/2"
+            className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-5 w-5"
             fill="currentColor"
             aria-label="paused"
           >
