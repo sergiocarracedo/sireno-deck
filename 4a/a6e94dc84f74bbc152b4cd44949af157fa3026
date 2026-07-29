@@ -1,0 +1,44 @@
+packages/cli/src/ui/surfaces/TemporaryErrorSurface.tsx
+  s_a5b211c1c61696::t_11f64e970980d5 28-34,41-42
+packages/cli/frontend/src/App.tsx
+  s_a5b211c1c61696::t_9ad0a72ca164cf 123
+packages/cli/src/ui/ButtonFrame.tsx
+  s_a5b211c1c61696::t_adda235b5b7ef1 25-29,45-46,50,53-56
+packages/cli/emulator/src/bridge.ts
+  s_a5b211c1c61696::t_055c39910c5fc0 75-78
+packages/cli/src/builtin-addons/brightness/README.md
+  s_a5b211c1c61696::t_6ddc087c808334 51
+  s_a5b211c1c61696::t_d4fa1a03f1e1aa 5
+packages/cli/src/builtin-addons/system-status/README.md
+  s_a5b211c1c61696::t_62d3e33f63794b 13-18
+  s_a5b211c1c61696::t_bf3b762213a1dd 43,45-46,48-52,55-56,58,64-67
+packages/cli/src/ui/surfaces/ValueChart.tsx
+  s_a5b211c1c61696::t_adfd15864d3ac8 177
+  s_a5b211c1c61696::t_116500e112398f 1
+  s_a5b211c1c61696::t_8d9f9059662a91 119
+packages/cli/src/builtin-addons/media/README.md
+  s_a5b211c1c61696::t_27861a9d455bb2 5
+  s_a5b211c1c61696::t_18d1887884a265 44
+packages/cli/frontend/src/bridge/client.ts
+  s_a5b211c1c61696::t_b52293410d5d3b 133-139
+__beta-review__/05-frontend-ui.md
+  s_a5b211c1c61696::t_2618011d07bd33 63,95,103,111,119,127
+__beta-review__/06-addon-ecosystem.md
+  s_a5b211c1c61696::t_4ecee4cbfd9ffc 39,103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "4aa6e94dc84f74bbc152b4cd44949af157fa3026",
+  "prompts": {},
+  "sessions": {
+    "s_a5b211c1c61696": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05352bc65ffecnUvhJ62tfCNxQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
