@@ -1,0 +1,33 @@
+__beta-review__/02-architecture.md
+  s_fd67621b3f5a28::t_8244eb2fd25c7e 39,47,55,71,127,143,151,167,175
+package.json
+  s_fd67621b3f5a28::t_62ad0cd9f81393 8
+packages/cli/src/cli/commands/run.ts
+  s_fd67621b3f5a28::t_f632f06bffc772 194
+packages/cli/src/deck/__tests__/addon-handler-bridge-external.test.ts
+  s_fd67621b3f5a28::t_fe39c7efbc5493 106,139
+packages/cli/src/deck/__tests__/addon-handler-bridge.test.ts
+  s_fd67621b3f5a28::t_65aa392205a658 85,124,154,243,281,326,387
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_fd67621b3f5a28::t_bf635472efad8b 1-2,32,153,176,184,288,303-305,322-324,341-343,352,379,398,417,433
+packages/cli/src/deck/runtime/runtime.ts
+  s_fd67621b3f5a28::t_4d31861477524b 132-148,160-174,184-185,187,195-197,438-454
+packages/cli/src/render/ws-bridge.ts
+  s_fd67621b3f5a28::t_0ee03faabbcd3e 5,24,51,76-82,89-93,99-102,239-253
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "0f52a52e9ad3acdd69c7e2df47598b6c8566b22e",
+  "prompts": {},
+  "sessions": {
+    "s_fd67621b3f5a28": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0521f40fcffeFq8tI6BCf2nyfe",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
