@@ -19,6 +19,43 @@ TypeScript (strict, ESM), React 19, Vite 6, Tailwind 4, Node ≥20, pnpm workspa
 - **Lint/format/typecheck**: `pnpm lint && pnpm format && pnpm typecheck` before pushing.
 - **ponytail mode**: shortest working solution, stdlib/native first, delete over add. Mark deliberate shortcuts with `ponytail:` comments.
 
+## Worktrees
+
+All feature branches live in dedicated worktrees under `/works/__worktrees/opensource/sireno-deck-2/<branch-name>`. **Never create a worktree inside the repo** (the `.worktrees/` path in `.gitignore` is legacy drift, not a convention).
+
+### Create
+
+- New branch: `git worktree add /works/__worktrees/opensource/sireno-deck-2/<branch-name> -b <branch-name>`
+- Existing branch: `git worktree add /works/__worktrees/opensource/sireno-deck-2/<branch-name> <branch-name>`
+- All subsequent repo commands run from the new path.
+
+### Remove (safe)
+
+- `git status` must be clean in the worktree. If dirty, snapshot first:
+  - `git stash push -m "<branch>-snapshot-<date>"` for tracked changes
+  - `git stash push -u -m "<branch>-snapshot-<date>"` to also capture untracked files
+- `git worktree remove /works/__worktrees/opensource/sireno-deck-2/<branch-name>` (no `--force`)
+- Optionally `git branch -d <branch-name>` to drop the branch ref (only safe if fully merged; refuses otherwise)
+- `git worktree prune` to drop stale metadata
+
+### NEVER do
+
+- `rm -rf` on a worktree directory — destroys uncommitted work without warning.
+- `git worktree remove --force` — skips the dirty-check.
+- `git branch -D <branch>` — deletes unmerged branches, losing the only ref to those commits.
+- `git worktree prune` while live worktrees still reference those paths.
+
+### Recover / bring back a deleted worktree
+
+Worktrees are disposable; branches and stashes are not.
+
+- **Branch ref still exists** (typical case): `git worktree add /works/__worktrees/opensource/sireno-deck-2/<branch-name> <branch-name>` rebuilds the directory and checks out the branch tip. **No data loss.**
+- **Branch ref was deleted but commits exist**: `git reflog --all | grep <branch>` to find the last commit SHA, then `git branch <branch> <sha>` to recreate, then the worktree-add command above.
+- **Uncommitted changes were lost** (you did `rm -rf`): only recoverable if previously stashed — `git stash list | grep <branch>` then `git stash apply`.
+- **You `git worktree remove --force`'d**: same as `rm -rf`; recoverable only via stash reflog (`git stash list`, then `git stash apply`).
+
+If in doubt: **do not remove**. Stash first (`git stash push -u -m "<branch>-snapshot-<date>"`), then remove the worktree, leaving the branch ref and stash intact. Drop the stash only after confirming the work is committed elsewhere.
+
 ## Workflow (compound-engineering)
 
 - `/ce-compound` — after a non-trivial fix, capture the learning into `docs/solutions/`. One learning per run.
