@@ -458,7 +458,7 @@ const loadExternalAddonsIntoRegistry = async (
       )
     }
   }
-  return specToName
+  return { specToName, nameToEntryPath }
 }
 
 export const validateAndLoadConfig = async (
