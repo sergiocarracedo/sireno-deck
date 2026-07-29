@@ -1,0 +1,24 @@
+packages/cli/src/deck/methods.ts
+  s_7b1f3df66b12cf::t_485caa4387ac79 298
+  s_7b1f3df66b12cf::t_802f835250f2f6 167-170
+  s_7b1f3df66b12cf::t_3b356418e2602b 72
+packages/cli/src/deck/runtime/runtime.ts
+  s_7b1f3df66b12cf::t_89341901bb7969 112
+  s_7b1f3df66b12cf::t_1fd3f2560ab62e 887
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "98d7add5306c75022254ee23757c5ab93524acab",
+  "prompts": {},
+  "sessions": {
+    "s_7b1f3df66b12cf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_050d9560affelcug8YsyX6TNr7",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    }
+  }
+}
