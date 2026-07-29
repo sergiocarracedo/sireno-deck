@@ -26,6 +26,7 @@ export interface ScannedAddon {
   readonly decks: ReadonlyArray<ScannedDeck>
   readonly path?: string
   readonly internal?: boolean
+  readonly defaultButton?: string | null
 }
 
 export interface ScannedButtonType {

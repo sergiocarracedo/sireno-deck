@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { manifest } from "../index"
+import { manifest } from "../manifest.js"
 
 describe("pomodoro manifest", () => {
   it("exports a valid AddonManifestV1", () => {
@@ -22,6 +22,8 @@ describe("pomodoro manifest", () => {
     expect(def).toBeDefined()
     expect(def?.frontend).toBeDefined()
     expect(def?.service).toBeDefined()
-    expect(def?.service.gestureHandlers).toContain("tap")
+    expect(
+      (def?.service as { gestureHandlers?: string[] })?.gestureHandlers,
+    ).toContain("tap")
   })
 })

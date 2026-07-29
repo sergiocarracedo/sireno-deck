@@ -10,14 +10,6 @@ export type PomodoroSnapshot = Readonly<Record<string, PomodoroButtonState>>
 
 export const POMO_CHANNEL = "pomodoro:state"
 
-export const EMPTY_SNAPSHOT: PomodoroSnapshot = Object.freeze({})
-
-export const idleState = (totalSec: number): PomodoroButtonState => ({
-  status: "idle",
-  remainingSec: totalSec,
-  totalSec,
-})
-
 export const computeRemaining = (
   startTsMs: number,
   durationSec: number,

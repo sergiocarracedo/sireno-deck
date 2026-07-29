@@ -1,19 +1,38 @@
-import type {
-  AddonButtonServiceContext,
-  AddonButtonTypeService,
-} from "@/addon/api"
-
 import {
   configSchema,
   DEFAULT_DURATION_SEC,
   type ConfigSchema,
   type PersistedState,
-} from "./config"
+} from "./config.js"
+import type { CoreMethods } from "../../types.js"
+
+interface ButtonServiceContextLike<Config> {
+  readonly config: Config
+  readonly buttonId: string
+  readonly addonName: string
+  readonly methods: Readonly<Record<string, (...args: unknown[]) => unknown>>
+  readonly coreMethods: CoreMethods
+  readonly publish: (channel: string, data: unknown) => void
+  readonly executor: { run: (...args: unknown[]) => Promise<unknown> }
+  readonly signal: AbortSignal
+  readonly store: {
+    buttonScope<T>(
+      addonName: string,
+      buttonId: string,
+    ): {
+      get(key: string): T | undefined
+      set(key: string, value: T): void
+      update(key: string, fn: (current: T | undefined) => T): T
+      clear(): void
+      snapshot(): Readonly<Record<string, T>>
+    }
+  }
+}
 
 const ADDON_NAME = "pomodoro"
 
 const getPersisted = (
-  ctx: AddonButtonServiceContext<ConfigSchema>,
+  ctx: ButtonServiceContextLike<ConfigSchema>,
 ): PersistedState => {
   const scope = ctx.store.buttonScope<PersistedState>(ADDON_NAME, ctx.buttonId)
   const value = scope.get("state")
@@ -25,7 +44,7 @@ const getPersisted = (
 }
 
 const writePersisted = (
-  ctx: AddonButtonServiceContext<ConfigSchema>,
+  ctx: ButtonServiceContextLike<ConfigSchema>,
   next: PersistedState,
 ): void => {
   const scope = ctx.store.buttonScope<PersistedState>(ADDON_NAME, ctx.buttonId)
@@ -33,7 +52,7 @@ const writePersisted = (
 }
 
 const fireCompletionNotification = (
-  ctx: AddonButtonServiceContext<ConfigSchema>,
+  ctx: ButtonServiceContextLike<ConfigSchema>,
 ): void => {
   void ctx.coreMethods.notify({
     title: "Pomodoro",
@@ -45,7 +64,7 @@ const fireCompletionNotification = (
 export default {
   configSchema,
   defaultRenderIntervalMs: 1000,
-  onMount: (ctx: AddonButtonServiceContext<ConfigSchema>) => {
+  onMount: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
     const persisted = getPersisted(ctx)
     const durationSec = ctx.config?.durationSec ?? DEFAULT_DURATION_SEC
     ctx.methods["pomodoro:register"]?.(ctx.buttonId, durationSec)
@@ -55,8 +74,6 @@ export default {
     ) {
       const elapsedSec = (Date.now() - persisted.startTsMs) / 1000
       if (elapsedSec >= durationSec) {
-        // ponytail: timer ran past its deadline while daemon was down — mark
-        // finished immediately rather than scheduling a delayed wake-up.
         writePersisted(ctx, {
           status: "finished",
           startTsMs: persisted.startTsMs,
@@ -72,7 +89,7 @@ export default {
       }
     }
   },
-  onTap: (ctx: AddonButtonServiceContext<ConfigSchema>) => {
+  onTap: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
     const persisted = getPersisted(ctx)
     const durationSec = ctx.config?.durationSec ?? DEFAULT_DURATION_SEC
 
@@ -83,20 +100,15 @@ export default {
       return
     }
     if (persisted.status === "running") {
-      writePersisted(ctx, {
-        status: "idle",
-        startTsMs: null,
-        durationSec,
-      })
+      writePersisted(ctx, { status: "idle", startTsMs: null, durationSec })
       ctx.methods["pomodoro:stop"]?.(ctx.buttonId)
       return
     }
-    // finished → reset and start a fresh cycle
     const startTsMs = Date.now()
     writePersisted(ctx, { status: "running", startTsMs, durationSec })
     ctx.methods["pomodoro:start"]?.(ctx.buttonId, durationSec)
   },
-  dispose: (ctx: AddonButtonServiceContext<ConfigSchema>) => {
+  dispose: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
     ctx.methods["pomodoro:stop"]?.(ctx.buttonId)
   },
-} satisfies AddonButtonTypeService<ConfigSchema>
+}

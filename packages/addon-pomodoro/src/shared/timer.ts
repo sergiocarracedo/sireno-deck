@@ -3,7 +3,7 @@ import {
   type PomodoroButtonState,
   type PomodoroSnapshot,
   type PomodoroStatus,
-} from "./state"
+} from "./state.js"
 
 export interface PomodoroTimerOptions {
   readonly now: () => number
@@ -31,10 +31,9 @@ export const createPomodoroTimer = (
   let snapshot: PomodoroSnapshot = {}
   const active = new Map<string, ActiveButton>()
 
-  const recomputeSnapshot = (): void => {
+  const tick = (): void => {
     const now = options.now()
     const next: Record<string, PomodoroButtonState> = {}
-    let changed = false
     for (const [buttonId, info] of active) {
       const remaining = computeRemaining(info.startTsMs, info.totalSec, now)
       const status: PomodoroStatus = remaining <= 0 ? "finished" : "running"
@@ -43,18 +42,8 @@ export const createPomodoroTimer = (
         remainingSec: remaining,
         totalSec: info.totalSec,
       }
-      if (status === "finished" && remaining === 0) {
-        // ponytail: keep the entry until the user taps reset, so the blink
-        // CSS keeps firing for 10 s before the wrapper state goes static.
-        changed = true
-      }
     }
     snapshot = Object.freeze(next)
-    void changed
-  }
-
-  const tick = (): void => {
-    recomputeSnapshot()
   }
 
   return {

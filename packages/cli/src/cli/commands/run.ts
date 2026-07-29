@@ -406,6 +406,7 @@ interface LoadConfigResult {
   readonly theme: ReturnType<typeof resolveActiveTheme>["theme"]
   readonly themeDir: string
   readonly addonSpecToName: ReadonlyMap<string, string>
+  readonly addonEntryPaths: ReadonlyMap<string, string>
 }
 
 const loadExternalAddonsIntoRegistry = async (
@@ -414,14 +415,19 @@ const loadExternalAddonsIntoRegistry = async (
   configDir: string,
   homeDir: string,
   logger: RunOptions["logger"],
-): Promise<Map<string, string>> => {
+): Promise<{
+  specToName: Map<string, string>
+  nameToEntryPath: Map<string, string>
+}> => {
   // ponytail: returns specifier→manifest name for addons that successfully
   // registered. The override map in buildRuntime keys on manifest name (what
   // materializeAddonDecks looks up) — the user wrote `src:` (path), so we
-  // resolve the two here.
+  // resolve the two here. nameToEntryPath feeds buildExternalScannedAddons
+  // so the bridge can import the entry file at runtime.
   const specToName = new Map<string, string>()
+  const nameToEntryPath = new Map<string, string>()
   const entries = config.addons ?? []
-  if (entries.length === 0) return specToName
+  if (entries.length === 0) return { specToName, nameToEntryPath }
   const result = await loadAddons({
     entries,
     configDir,
@@ -440,6 +446,7 @@ const loadExternalAddonsIntoRegistry = async (
     try {
       registry.load(loaded.manifest)
       specToName.set(loaded.source.specifier, loaded.manifest.name)
+      nameToEntryPath.set(loaded.manifest.name, loaded.entryPath)
       logger.info(
         { addon: loaded.manifest.name, source: loaded.source.specifier },
         "addon loaded",
@@ -465,13 +472,14 @@ export const validateAndLoadConfig = async (
   // loader's only caller was the test suite, so chrome-overlay et al. were
   // never registered — builtins only. Load failures stay non-fatal (one bad
   // addon must not kill the daemon); issues are surfaced through the logger.
-  const addonSpecToName = await loadExternalAddonsIntoRegistry(
-    registry,
-    config,
-    dirname(configPath),
-    options.homeDir ?? homedir(),
-    options.logger,
-  )
+  const { specToName: addonSpecToName, nameToEntryPath: addonEntryPaths } =
+    await loadExternalAddonsIntoRegistry(
+      registry,
+      config,
+      dirname(configPath),
+      options.homeDir ?? homedir(),
+      options.logger,
+    )
   // ponytail: dump every deck type the registry holds so the operator can
   // see at startup which addons registered and which got silently skipped.
   options.logger.info(
@@ -521,7 +529,15 @@ export const validateAndLoadConfig = async (
     uiOverridesPath: theme.uiOverridesPath,
   })
   process.env["SIRENO_THEME_NAME"] = theme.name
-  return { configPath, config, registry, theme, themeDir, addonSpecToName }
+  return {
+    configPath,
+    config,
+    registry,
+    theme,
+    themeDir,
+    addonSpecToName,
+    addonEntryPaths,
+  }
 }
 
 export const buildAddonConfigOverrides = (
@@ -1038,6 +1054,7 @@ export const buildExternalScannedAddons = (
   registry: AddonRegistry,
   builtinScanned: ReadonlyArray<ScannedAddon>,
   externalAddonDirs: ReadonlyMap<string, string>,
+  externalEntryPaths: ReadonlyMap<string, string>,
 ): ReadonlyArray<ScannedAddon> => {
   const builtinNames = new Set(builtinScanned.map((a) => a.name))
   const out: ScannedAddon[] = []
@@ -1046,6 +1063,7 @@ export const buildExternalScannedAddons = (
     const types = Object.keys(manifest.buttonTypes)
     if (types.length === 0 && (manifest.decks ?? []).length === 0) continue
     const path = externalAddonDirs.get(manifest.name) ?? ""
+    const entryPath = externalEntryPaths.get(manifest.name) ?? ""
     const buttonTypes: Record<string, ScannedButtonType> = {}
     for (const [type, def] of Object.entries(manifest.buttonTypes)) {
       buttonTypes[type] = {
@@ -1087,16 +1105,25 @@ export const buildExternalScannedAddons = (
         })
       }
     }
+    const hasButtonTypes = types.length > 0
+    const hasGlobalService = manifest.globalService !== undefined
+    // ponytail: both slots point to the same entry file because one module
+    // exports both `manifest.buttonTypes` and `manifest.globalService`. A
+    // third-party addon that supplies only decks gets `null` for both and
+    // the bridge skips its frontend/global service wiring (today's behavior).
+    const frontendEntry = hasButtonTypes && entryPath !== "" ? entryPath : null
+    const globalServiceEntry =
+      hasGlobalService && entryPath !== "" ? entryPath : null
     out.push({
       name: manifest.name,
       types,
-      frontendEntry: null,
+      frontendEntry,
       publishIntervalMs: manifest.publishIntervalMs ?? null,
       pollerEntry: null,
       buttonTypes,
       deckTypes: {},
       source: "json",
-      globalServiceEntry: manifest.globalService !== undefined ? "" : null,
+      globalServiceEntry,
       path,
       internal: false,
       decks,
@@ -1276,6 +1303,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       loadedConfig.registry,
       addonBundle.scanned,
       externalAddonDirs,
+      loadedConfig.addonEntryPaths,
     )
     options.onAddonsUpdate?.([...addonBundle.scanned, ...externalScanned])
 

@@ -33,6 +33,10 @@ export interface LoadAddonsOptions {
 export interface ResolvedExternalAddon {
   manifest: AddonManifestV1
   source: { kind: "local" | "npm"; specifier: string; resolvedPath: string }
+  // ponytail: resolved module path the bridge should import to load this
+  // addon's frontend + globalService. Same file exports both; one path
+  // serves both import slots.
+  entryPath: string
 }
 
 export interface LoadAddonsResult {
@@ -118,7 +122,7 @@ const validateAndLoadEntry = async (
   tsPath: string,
   jsPath: string,
   issues: AddonLoadIssue[],
-): Promise<AddonManifestV1 | null> => {
+): Promise<{ manifest: AddonManifestV1; entryPath: string } | null> => {
   const candidatePath = existsSync(tsPath) ? tsPath : jsPath
   if (!existsSync(candidatePath)) {
     recordIssue(issues, {
@@ -166,7 +170,7 @@ const validateAndLoadEntry = async (
     })
     return null
   }
-  return manifest
+  return { manifest, entryPath: candidatePath }
 }
 
 const loadLocalAddon = async (
@@ -218,11 +222,12 @@ const loadLocalAddon = async (
     })
   }
   const { ts, js } = resolveEntryPaths(root, json)
-  const manifest = await validateAndLoadEntry(source, ts, js, issues)
-  if (!manifest) return null
+  const loaded = await validateAndLoadEntry(source, ts, js, issues)
+  if (!loaded) return null
   return {
-    manifest,
+    manifest: loaded.manifest,
     source: { kind: "local", specifier: source, resolvedPath: root },
+    entryPath: loaded.entryPath,
   }
 }
 
@@ -360,11 +365,12 @@ const loadNpmAddon = async (
   }
 
   const { ts, js } = resolveEntryPaths(installPath, json)
-  const manifest = await validateAndLoadEntry(source, ts, js, issues)
-  if (!manifest) return null
+  const loaded = await validateAndLoadEntry(source, ts, js, issues)
+  if (!loaded) return null
   return {
-    manifest,
+    manifest: loaded.manifest,
     source: { kind: "npm", specifier: source, resolvedPath: installPath },
+    entryPath: loaded.entryPath,
   }
 }
 

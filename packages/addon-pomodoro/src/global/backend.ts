@@ -1,22 +1,25 @@
-import type { AddonGlobalService, AddonServiceContext } from "@/addon/api"
-
-import { createPomodoroTimer, type PomodoroTimer } from "./timer"
 import {
   computeRemaining,
   POMO_CHANNEL,
   type PomodoroButtonState,
   type PomodoroSnapshot,
-} from "./state"
+} from "../shared/state.js"
+import type { AddonGlobalServiceShape } from "../types.js"
 
 interface ButtonRuntime {
   startTsMs: number
   durationSec: number
 }
 
+interface AddonServiceContextLike {
+  publish: (data: unknown) => void
+  poll: (id: string) => Promise<void>
+  signal: AbortSignal
+  executor: { run: (...args: unknown[]) => Promise<unknown> }
+}
+
 const buttons = new Map<string, ButtonRuntime>()
-let ctxRef: AddonServiceContext | undefined
-let timer: PomodoroTimer | null = null
-let lastSnapshot: PomodoroSnapshot = {}
+let ctxRef: AddonServiceContextLike | undefined
 
 const rebuildSnapshot = (now: number): PomodoroSnapshot => {
   const next: Record<string, PomodoroButtonState> = {}
@@ -33,48 +36,27 @@ const rebuildSnapshot = (now: number): PomodoroSnapshot => {
 
 const publishNow = (): void => {
   if (ctxRef === undefined) return
-  lastSnapshot = rebuildSnapshot(
-    ctxRef.signal.aborted ? Date.now() : Date.now(),
-  )
-  ctxRef.publish(lastSnapshot)
+  ctxRef.publish(rebuildSnapshot(Date.now()))
 }
 
-const ensureTimer = (): PomodoroTimer | null => {
-  if (timer !== null) return timer
-  if (ctxRef === undefined) return null
-  timer = createPomodoroTimer({
-    now: () => Date.now(),
-    setInterval: (fn, ms) => setInterval(fn, ms),
-    clearInterval: (handle) => clearInterval(handle),
-  })
-  timer.start()
-  return timer
-}
-
-export const globalService: AddonGlobalService = {
+export const globalService = {
   pollers: [
     {
       id: "state",
       channel: POMO_CHANNEL,
       intervalMs: 1000,
-      poll: () => {
-        publishNow()
-        return lastSnapshot
-      },
+      poll: () => rebuildSnapshot(Date.now()),
     },
   ],
   methods: {
     register: (buttonId: unknown, durationSec: unknown): void => {
       const id = String(buttonId)
       if (typeof durationSec !== "number" || durationSec <= 0) return
-      ensureTimer()
-      ctxRef?.publish(lastSnapshot)
       void id
     },
     start: (buttonId: unknown, durationSec: unknown): void => {
       const id = String(buttonId)
       if (typeof durationSec !== "number" || durationSec <= 0) return
-      ensureTimer()
       buttons.set(id, { startTsMs: Date.now(), durationSec })
       publishNow()
     },
@@ -86,31 +68,24 @@ export const globalService: AddonGlobalService = {
       const id = String(buttonId)
       if (typeof durationSec !== "number" || durationSec <= 0) return
       if (typeof startTsMs !== "number") return
-      ensureTimer()
       buttons.set(id, { startTsMs, durationSec })
       publishNow()
     },
     stop: (buttonId: unknown): void => {
-      const id = String(buttonId)
-      buttons.delete(id)
+      buttons.delete(String(buttonId))
       publishNow()
     },
     isFinished: (buttonId: unknown): boolean => {
-      const id = String(buttonId)
-      const info = buttons.get(id)
+      const info = buttons.get(String(buttonId))
       if (info === undefined) return false
       return computeRemaining(info.startTsMs, info.durationSec, Date.now()) <= 0
     },
   },
-  onLoad: (ctx: AddonServiceContext) => {
-    ctxRef = ctx
-    ensureTimer()
+  onLoad: (ctx: unknown) => {
+    ctxRef = ctx as AddonServiceContextLike
   },
-  onUnload: () => {
-    timer?.stop()
-    timer = null
+  onUnload: (_ctx?: unknown) => {
     ctxRef = undefined
     buttons.clear()
-    lastSnapshot = {}
   },
-}
+} satisfies AddonGlobalServiceShape

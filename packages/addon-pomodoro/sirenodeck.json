@@ -1,0 +1,6 @@
+{
+  "kind": "addon",
+  "apiVersion": 1,
+  "name": "pomodoro",
+  "entry": "dist/index.js"
+}
