@@ -1,0 +1,39 @@
+ARCHITECTURE.md
+  s_a5b211c1c61696::t_a648796961324c 178
+  s_a5b211c1c61696::t_d0329de87938fb 25-37
+  s_a5b211c1c61696::t_921bb45f91dfbc 310-313
+  s_a5b211c1c61696::t_635fe39ebc187a 494-498
+AGENTS.md
+  s_a5b211c1c61696::t_8a8d94d7f5571b 15
+  s_a5b211c1c61696::t_e221a5ae8f6c8c 16
+  s_a5b211c1c61696::t_bec6b8be2aae26 5-6
+  s_a5b211c1c61696::t_b79ff236f1fc27 77
+docs/plans/2026-07-24-text-xxs-autofit.md
+  s_a5b211c1c61696::t_47a8f7a80ec830 7
+  s_a5b211c1c61696::t_c94f3625a41aa2 169
+  s_a5b211c1c61696::t_e6d3039d9fc269 182
+docs/plans/2026-07-24-extend-system-status-addon-with-missing-metrics.md
+  s_a5b211c1c61696::t_f98ed97f5f5769 7
+docs/solutions/README.md
+  s_a5b211c1c61696::t_13da352817cbfd 1-27
+MIGRATION-NOTES.md
+  s_a5b211c1c61696::t_1c6268628bcafc 6-9,12-15,58-62,64-65,67-73,78
+__beta-review__/08-documentation-and-oss.md
+  s_a5b211c1c61696::t_e81e4e8fb8d4f9 67,75,83,91,99,107,115,123,131,147,163,171
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "d87944776cb1436e1301cb426e55274b1bc154f9",
+  "prompts": {},
+  "sessions": {
+    "s_a5b211c1c61696": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05352bc65ffecnUvhJ62tfCNxQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
