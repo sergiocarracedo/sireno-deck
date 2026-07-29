@@ -120,7 +120,7 @@ export const App = () => {
   return (
     <AssetCacheProvider>
       <ThemeProvider value={theme}>
-        <ThemeUiPresentationProvider value={{}}>
+        <ThemeUiPresentationProvider>
           <AppContent />
         </ThemeUiPresentationProvider>
       </ThemeProvider>

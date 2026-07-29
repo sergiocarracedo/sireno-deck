@@ -36,7 +36,7 @@ Scope: builtin addon patterns, addon loader, registry, third-party addon contrac
 **Fix sketch:** Update README to 10 (or revert tests to 8); add schema-doc test.
 **OSS-impression:** Doc/code drift.
 
-### [06-addon-ecosystem #5] [P1] `system-status/README.md` documents 3 button types; manifest registers 1
+### [x] [06-addon-ecosystem #5] [P1] `system-status/README.md` documents 3 button types; manifest registers 1
 
 **Evidence:** `packages/cli/src/builtin-addons/system-status/README.md` vs `manifest.test.ts`.
 **Impact:** Users expect features that aren't available.
@@ -100,7 +100,7 @@ Scope: builtin addon patterns, addon loader, registry, third-party addon contrac
 **Fix sketch:** Sweep; pick one.
 **OSS-impression:** Mixed conventions in examples.
 
-### [06-addon-ecosystem #13] [P1] Several addon READMEs link to nonexistent `os-providers` docs
+### [x] [06-addon-ecosystem #13] [P1] Several addon READMEs link to nonexistent `os-providers` docs
 
 **Evidence:** Multiple READMEs.
 **Impact:** 404 links in docs.

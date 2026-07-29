@@ -10,8 +10,12 @@ and chart history on `runtime:system-status:chart-history`.
 | Type                          | Description                                           |
 | ----------------------------- | ----------------------------------------------------- |
 | `system-status:system-status` | 1–3 metrics rendered as horizontal bars + value chips |
-| `system-status:kpis`          | 1–3 metrics rendered as a label/value list            |
-| `system-status:chart`         | 1–2 metrics plotted as a real-time line chart         |
+
+> Note: earlier README drafts documented `system-status:kpis` and
+> `system-status:chart` as alternate surface types. The current manifest
+> only registers the bars + value chip surface; alternate surfaces are
+> surfaces of the same single button type via the `surface:` config
+> field.
 
 ## Config
 
@@ -36,33 +40,31 @@ and chart history on `runtime:system-status:chart-history`.
 `metrics` accepts either a string id (`"cpu"`) or an object
 (`{id: "cpu", label: "CPU"}`). At least one, at most three.
 
-### KPIs variant
+### Surface variants
+
+The single registered button type accepts a `surface:` config field with
+three values:
+
+| Surface   | Config key      | Notes                                          |
+| --------- | --------------- | ---------------------------------------------- |
+| `bars`    | (default)       | 1–3 metrics as horizontal bars + value chips   |
+| `kpis`    | `surface: kpis` | 1–3 metrics as label/value list (compact)      |
+| `chart`   | `surface: chart`| 1–2 metrics plotted over a sliding time window |
 
 ```yaml
 - position: 6
-  type: "system-status:kpis"
+  type: "system-status:system-status"
   config:
+    surface: kpis
     metrics:
       - id: cpu
       - id: ram
-      - disk
 ```
 
-### Chart variant
-
-```yaml
-- position: 7
-  type: "system-status:chart"
-  config:
-    metrics:
-      - id: cpu
-      - id: ram
-    windowSeconds: 60 # optional, default 60
-```
-
-Chart supports 1–2 metrics plotted over a sliding time window. The history is
-published on a dedicated `runtime:system-status:chart-history` channel,
-separate from the live metric channels.
+`chart` supports an optional `windowSeconds` (default 60); the per-metric
+history is published on a dedicated
+`runtime:system-status:chart-history` channel, separate from the live
+metric channels.
 
 ## Metrics
 

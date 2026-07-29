@@ -2,7 +2,7 @@
 
 Single button that adjusts screen brightness. Tap = action (up/down/set). The button shows the current brightness as a bar.
 
-Uses the OS provider from `os-providers/`:
+Uses the OS provider from `packages/cli/src/system/providers/`:
 
 - Linux: `xrandr` / `brightnessctl` (whichever is available)
 - macOS: `osascript`
@@ -48,4 +48,4 @@ Run `xrandr --output eDP-1 --brightness 0.75` (Linux) to verify the action works
 ## See also
 
 - [system-status](../system-status/README.md) — same polling pattern; brightness is just a one-button metric
-- [OS providers](../../os-providers/README.md) — brightness provider per OS
+- [OS providers](../../../../system/providers/README.md) — brightness provider per OS

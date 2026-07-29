@@ -72,6 +72,10 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
   }
 
   const onWsOpen = (event: unknown): void => {
+    // ponytail: reset attempt counter on successful open so a long-lived
+    // emitter can reconnect after a transient blip without permanently
+    // burning its WS_MAX_ATTEMPTS budget.
+    attempts = 0
     setStatus("open")
     options.onOpen?.()
     void event

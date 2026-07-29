@@ -2,7 +2,7 @@
 
 Single button that shows the current track + play/pause state. Tap = play/pause. Hold = next track. The left half of the button is prev/play/pause, the right half is next/volume (split button).
 
-Uses the OS media provider from `os-providers/`:
+Uses the OS media provider from `packages/cli/src/system/providers/`:
 
 - Linux: `playerctl` (MPRIS)
 - macOS: `osascript`
@@ -41,5 +41,5 @@ Run `playerctl status` (Linux) or open Music (macOS) / Windows Media Player to s
 
 ## See also
 
-- [OS providers](../../os-providers/README.md) — media player integration per OS
+- [OS providers](../../../../system/providers/README.md) — media player integration per OS
 - [system-status](../system-status/README.md) — same addon pattern (no config, polls OS)

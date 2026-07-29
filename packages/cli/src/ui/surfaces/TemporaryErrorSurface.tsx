@@ -25,15 +25,21 @@ export function TemporaryErrorSurface(
     return themeUi.surfaces.temporaryError(props)
   }
 
-  const { className: consumerClassName, source, ...rest } = props
+  const {
+    className: consumerClassName,
+    source,
+    label: labelProp,
+    details: detailsProp,
+    ...rest
+  } = props
   const layoutClassName =
     "flex h-full w-full flex-col items-center justify-center gap-1"
   const mergedClassName = consumerClassName
     ? `${layoutClassName} ${consumerClassName}`
     : layoutClassName
 
-  const label = props.label ?? FALLBACK_LABEL
-  const details = props.details.length > 0 ? props.details : FALLBACK_DETAILS
+  const label = labelProp ?? FALLBACK_LABEL
+  const details = (detailsProp ?? "").length > 0 ? detailsProp : FALLBACK_DETAILS
 
   return (
     <div
