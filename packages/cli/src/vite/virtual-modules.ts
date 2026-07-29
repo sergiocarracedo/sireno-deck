@@ -260,7 +260,12 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
       writeFileSync(filePath, sourceDirective + themeCss, "utf8")
     },
     config: (config) => {
-      if (themeCss.length === 0) return config
+      // ponytail: never spread the incoming config — it carries `esbuild`
+      // and `optimizeDeps.esbuildOptions` from earlier plugins
+      // (`@vitejs/plugin-react`'s vite:react-babel hook). Re-emitting them
+      // via our `config` return makes Vite attribute the deprecation
+      // warnings to this plugin.
+      if (themeCss.length === 0) return
       const root = config.root ?? process.cwd()
       const alias = (config.resolve?.alias ?? []) as Array<{
         find: string | RegExp
@@ -271,7 +276,6 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
         replacement: join(root, ".sireno-deck", "theme.css"),
       }
       return {
-        ...config,
         resolve: {
           ...config.resolve,
           alias: [...alias, themeAlias],
