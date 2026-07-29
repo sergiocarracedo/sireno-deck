@@ -1,0 +1,29 @@
+packages/cli/src/builtin-addons/core/buttons/toggle/backend.ts
+  s_9b19c582e70e03::t_c5b9ddd1cae913 110,112,118
+packages/cli/src/builtin-addons/core/buttons/toggle/global-service.ts
+  s_9b19c582e70e03::t_50041a7b6681e2 89-97
+packages/cli/src/ui/primitives/__tests__/Text.test.tsx
+  s_9b19c582e70e03::t_4bdcec325703f9 333
+  s_9b19c582e70e03::t_279a294db6679a 323-332,334-339
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "abb4b9e7be5274aac610556cfc3cd81a0ffc6122",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_9b19c582e70e03": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0553aafcfffeQLWk6PijYo7kOa",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
