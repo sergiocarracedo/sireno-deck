@@ -1,0 +1,35 @@
+.oxlintrc.json
+  s_5b19018252d9e0::t_3f922f6eedd25f 29-30
+  s_5b19018252d9e0::t_194faaa614b961 9-10
+  s_5b19018252d9e0::t_f79020b23517e6 7-8
+packages/cli/package.json
+  s_5b19018252d9e0::t_6b3ccf46bd04ef 78
+  s_5b19018252d9e0::t_a27cf3d4d9bf91 69
+packages/cli/src/builtin-addons/media/buttons/media-player/components/__tests__/MediaSurface.test.tsx
+  s_5b19018252d9e0::t_e826621676a286 6
+  s_5b19018252d9e0::t_67d77e7a9cd6e7 2-4
+  s_5b19018252d9e0::t_c943682822fed2 21
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/frontend.tsx
+  s_5b19018252d9e0::t_3201140420e010 3
+  s_5b19018252d9e0::t_99e65270f747a5 6
+packages/cli/src/builtin-addons/emoji-selector/buttons/launcher/config.ts
+  s_5b19018252d9e0::t_b4f77ba8d9d5e9 3
+pnpm-lock.yaml
+  s_5b19018252d9e0::t_2bbe4b6ec740d7 111,137-138,164-165,168,1329-1331,1333-1340,2823-2841,3771,3776,3906,3908-3909,5323-5324
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "68b02102def107ba51252cc9b657decfe57d9ea8",
+  "prompts": {},
+  "sessions": {
+    "s_5b19018252d9e0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05574b72affemfEF7rBuPKjodf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
