@@ -37,6 +37,13 @@ const KNOWN_HOST_KEYS: ReadonlySet<keyof HostContext | string> = new Set([
   "arch",
 ])
 
+const shellSingleQuote = (value: string): string => {
+  // ponytail: shell-quote a value so it can be embedded inside a single-quoted
+  // POSIX sh string. The only escape sequence for that is '\'' (close, escape,
+  // reopen). Anything else is passed through verbatim.
+  return `'${value.replaceAll(`'`, `'\\''`)}'`
+}
+
 const interpolate = (command: string, host: HostContext): string => {
   const remaining = new Set<string>()
   const replaced = command.replace(PLACEHOLDER_RE, (_match, key: string) => {
@@ -44,11 +51,11 @@ const interpolate = (command: string, host: HostContext): string => {
       remaining.add(key)
       return `{{ host.${key} }}`
     }
-    if (key === "hostname") return host.hostname
-    if (key === "platform") return host.platform
-    if (key === "arch") return host.arch
-    if (key === "username") return host.userInfo.username
-    if (key === "homedir") return host.userInfo.homedir
+    if (key === "hostname") return shellSingleQuote(host.hostname)
+    if (key === "platform") return shellSingleQuote(host.platform)
+    if (key === "arch") return shellSingleQuote(host.arch)
+    if (key === "username") return shellSingleQuote(host.userInfo.username)
+    if (key === "homedir") return shellSingleQuote(host.userInfo.homedir)
     return `{{ host.${key} }}`
   })
   if (remaining.size > 0) {

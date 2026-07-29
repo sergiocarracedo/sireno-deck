@@ -11,6 +11,11 @@ export interface CreateWindowsClipboardProviderOptions {
   readonly timeoutMs?: number
 }
 
+const encodePSCommand = (script: string): string => {
+  const buf = Buffer.from(script, "utf16le")
+  return buf.toString("base64")
+}
+
 const escapeForPowerShellSingleQuote = (s: string): string =>
   s.replace(/'/g, "''")
 
@@ -46,9 +51,25 @@ export const createWindowsClipboardProvider = (
 
   const writeText = async (text: string): Promise<void> => {
     if (disposed) throw new Error("Clipboard provider is disposed")
+    // ponytail: -EncodedCommand avoids shell/interpolation entirely. The text
+    // is embedded inside a base64 UTF-16LE blob PowerShell parses as a script.
     const escaped = escapeForDoubleQuote(text)
     const psValue = `'${escapeForPowerShellSingleQuote(escaped)}'`
-    await runPS(`Set-Clipboard -Value ${psValue}`)
+    const script = `Set-Clipboard -Value ${psValue}`
+    const encoded = encodePSCommand(script)
+    const result = await withTimeout(
+      executor.run("powershell", ["-NoProfile", "-EncodedCommand", encoded], {
+        timeoutMs,
+      }),
+      timeoutMs + 500,
+    )
+    if (result.exitCode !== 0) {
+      logger.warn({ stderr: result.stderr }, "clipboard: powershell failed")
+      throw new ProviderError(
+        "EXEC_FAILED",
+        `clipboard write failed: ${result.stderr.trim() || "unknown error"}`,
+      )
+    }
   }
 
   const readText = async (): Promise<string> => {

@@ -32,9 +32,25 @@ const processLine = (
       [{ message: "empty path after !include", path: definingFilePath }],
     )
   }
+  const rootDir = resolvePath(dirname(definingFilePath))
+  const normalizedRoot = rootDir.endsWith("/") ? rootDir : `${rootDir}/`
   const includePath = isAbsolute(pathStr)
     ? pathStr
     : resolvePath(dirname(definingFilePath), pathStr)
+  // ponytail: !include must stay within the defining file's directory —
+  // resolvePath(..) silently walks out of it, and absolute paths read any
+  // file on the box. Pin both forms to the config dir.
+  if (!includePath.startsWith(normalizedRoot)) {
+    throw new IncludeResolutionError(
+      `!include path escapes config directory: ${includePath} (from ${definingFilePath})`,
+      [
+        {
+          message: `path traversal blocked: ${pathStr}`,
+          path: definingFilePath,
+        },
+      ],
+    )
+  }
   if (visited.has(includePath)) {
     const cycle = [...visited, includePath].join(" -> ")
     throw new IncludeResolutionError(`Circular include detected: ${cycle}`, [
