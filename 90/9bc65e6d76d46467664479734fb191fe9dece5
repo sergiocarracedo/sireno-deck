@@ -1,0 +1,34 @@
+packages/addon-pomodoro/src/types/host-shims.d.ts
+  s_fd67621b3f5a28::t_226e393e080569 1-17
+packages/cli/frontend/src/components/Deck.tsx
+  s_fd67621b3f5a28::t_d74ae6e6e0028b 30-38
+packages/addon-pomodoro/src/buttons/pomodoro/backend.ts
+  s_fd67621b3f5a28::t_51d66de7ae0c8a 111-115
+packages/cli/src/system/providers/active-app/linux.ts
+  s_fd67621b3f5a28::t_11e14ccef693fc 153-169
+packages/addon-pomodoro/src/manifest.ts
+  s_fd67621b3f5a28::t_03f1c31a482a75 15
+packages/addon-pomodoro/src/buttons/pomodoro/frontend.tsx
+  s_fd67621b3f5a28::t_4604d15fd08c26 1-2,22-25,77-78,88-89,91,100,106,119-121
+  s_fd67621b3f5a28::t_fcc6fb2752d99f 30-38
+  s_fd67621b3f5a28::t_893836bb541190 65-69,76,81-82,93-94,104,110,112,118
+packages/cli/src/cli/commands/run.ts
+  s_fd67621b3f5a28::t_363938d7f959c1 1153-1179
+  s_fd67621b3f5a28::t_2d64d60d06fb7d 1363-1366
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "909bc65e6d76d46467664479734fb191fe9dece5",
+  "prompts": {},
+  "sessions": {
+    "s_fd67621b3f5a28": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0521f40fcffeFq8tI6BCf2nyfe",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
