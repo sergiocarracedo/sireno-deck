@@ -1,0 +1,45 @@
+__beta-review__/01-foundation.md
+  s_a5b211c1c61696::t_d639ca44859f54 2,5,13,20,22-27,29-34,36-41,43-48,50-54
+  s_5c77e0ef2a62e8::t_00c8cacb291c88 1,3-4,6-12,14-19,21,28,35,42,49,55-214
+__beta-review__/02-architecture.md
+  s_5c77e0ef2a62e8::t_8ee5293122d5c1 1-257
+__beta-review__/REPORT.md
+  s_5c77e0ef2a62e8::t_194eed75701990 1-167
+__beta-review__/04-security.md
+  s_5c77e0ef2a62e8::t_8455971e36bd8f 1,3,5,7,11,17-191
+  s_a5b211c1c61696::t_7c360a021f9052 2,4,6,8-10,12-16
+__beta-review__/08-documentation-and-oss.md
+  s_5c77e0ef2a62e8::t_53c2f4f82a5d76 1-304
+__beta-review__/05-frontend-ui.md
+  s_5c77e0ef2a62e8::t_12feec542b367b 1-348
+__beta-review__/07-testing-and-quality.md
+  s_5c77e0ef2a62e8::t_038e93c87d0a43 1-201
+__beta-review__/03-system-providers.md
+  s_5c77e0ef2a62e8::t_2edbb324a57777 1-215
+__beta-review__/06-addon-ecosystem.md
+  s_5c77e0ef2a62e8::t_930e609765f90c 1-243
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "efaae97e3335240b169f00e1f69e4b43b6155e85",
+  "prompts": {},
+  "sessions": {
+    "s_5c77e0ef2a62e8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0557a28a8ffeWDYOJIWEfiux4Z",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_a5b211c1c61696": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05352bc65ffecnUvhJ62tfCNxQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
