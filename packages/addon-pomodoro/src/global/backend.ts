@@ -9,6 +9,7 @@ import type { AddonGlobalServiceShape } from "../types.js"
 interface ButtonRuntime {
   startTsMs: number
   durationSec: number
+  pausedRemainingSec?: number
 }
 
 interface AddonServiceContextLike {
@@ -24,6 +25,14 @@ let ctxRef: AddonServiceContextLike | undefined
 const rebuildSnapshot = (now: number): PomodoroSnapshot => {
   const next: Record<string, PomodoroButtonState> = {}
   for (const [buttonId, info] of buttons) {
+    if (info.pausedRemainingSec !== undefined) {
+      next[buttonId] = {
+        status: "paused",
+        remainingSec: info.pausedRemainingSec,
+        totalSec: info.durationSec,
+      }
+      continue
+    }
     const remaining = computeRemaining(info.startTsMs, info.durationSec, now)
     next[buttonId] = {
       status: remaining <= 0 ? "finished" : "running",
@@ -71,6 +80,28 @@ export const globalService = {
       buttons.set(id, { startTsMs, durationSec })
       publishNow()
     },
+    pause: (buttonId: unknown): void => {
+      const id = String(buttonId)
+      const info = buttons.get(id)
+      if (info === undefined || info.pausedRemainingSec !== undefined) return
+      const remaining = computeRemaining(
+        info.startTsMs,
+        info.durationSec,
+        Date.now(),
+      )
+      if (remaining <= 0) return
+      info.pausedRemainingSec = remaining
+      publishNow()
+    },
+    resume: (buttonId: unknown): void => {
+      const id = String(buttonId)
+      const info = buttons.get(id)
+      if (info === undefined || info.pausedRemainingSec === undefined) return
+      const remaining = info.pausedRemainingSec
+      delete info.pausedRemainingSec
+      info.startTsMs = Date.now() - (info.durationSec - remaining) * 1000
+      publishNow()
+    },
     stop: (buttonId: unknown): void => {
       buttons.delete(String(buttonId))
       publishNow()
@@ -78,6 +109,7 @@ export const globalService = {
     isFinished: (buttonId: unknown): boolean => {
       const info = buttons.get(String(buttonId))
       if (info === undefined) return false
+      if (info.pausedRemainingSec !== undefined) return false
       return computeRemaining(info.startTsMs, info.durationSec, Date.now()) <= 0
     },
   },

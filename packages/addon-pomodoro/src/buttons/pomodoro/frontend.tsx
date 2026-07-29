@@ -68,12 +68,13 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
   // track to represent what's left.
   const accentDashOffset = CIRCUMFERENCE * (1 - progress)
   const finished = status === "finished"
+  const paused = status === "paused"
 
   return (
     <>
       <style>{BLINK_KEYFRAMES}</style>
       <div
-        className={`flex h-full w-full items-center justify-center ${
+        className={`relative flex h-full w-full items-center justify-center ${
           finished ? "pomodoro-blink" : ""}
         `}
       >
@@ -127,6 +128,17 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
             </div>
           </foreignObject>
         </svg>
+        {paused && (
+          <svg
+            viewBox="0 0 24 24"
+            className="pointer-events-none absolute inset-0 m-auto h-1/2 w-1/2"
+            fill="currentColor"
+            aria-label="paused"
+          >
+            <rect x="6" y="4" width="4" height="16" rx="1" />
+            <rect x="14" y="4" width="4" height="16" rx="1" />
+          </svg>
+        )}
       </div>
     </>
   )
