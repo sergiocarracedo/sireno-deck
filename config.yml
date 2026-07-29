@@ -84,6 +84,11 @@ decks:
       - position: 9
         type: "emoji-selector:launcher"
 
+      - position: 10
+        type: "pomodoro:pomodoro"
+        config:
+          durationSec: 1500
+
       - position: 12
         type: "media:player"
 

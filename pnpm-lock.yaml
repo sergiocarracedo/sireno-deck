@@ -36,6 +36,9 @@ importers:
 
   packages/addon-pomodoro:
     devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.20.0
       '@types/react':
         specifier: ^19.0.0
         version: 19.2.17
