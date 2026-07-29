@@ -19,6 +19,10 @@ export interface BridgeAddonServicesParams {
   readonly runtime: Runtime
   readonly decks: ReadonlyArray<RuntimeDeck>
   readonly scanned: ReadonlyArray<ScannedAddon>
+  // ponytail: third-party (registry-loaded) addons that supply buttonTypes
+  // and/or globalService. Wired identically to built-ins; only the module
+  // path differs.
+  readonly externalAddons: ReadonlyArray<ScannedAddon>
   readonly executor: ActionExecutor
   readonly pubSub: PubSub
   readonly store: Store
@@ -43,6 +47,7 @@ export const bridgeAddonServices = async (
     runtime,
     decks,
     scanned,
+    externalAddons,
     executor,
     pubSub,
     store,
@@ -51,6 +56,10 @@ export const bridgeAddonServices = async (
     bridge,
     methods,
   } = params
+
+  // ponytail: built-in and third-party addons wire through the same loop;
+  // built-ins come from the static registry, third-parties from the loader.
+  const allAddons: ReadonlyArray<ScannedAddon> = [...scanned, ...externalAddons]
 
   runtime.setGestureListener((buttonId, event) => {
     bridge.broadcast({
@@ -69,7 +78,7 @@ export const bridgeAddonServices = async (
     Readonly<Record<string, AddonServiceMethod>>
   >()
 
-  for (const addon of scanned) {
+  for (const addon of allAddons) {
     if (addon.globalServiceEntry === null) continue
 
     try {
@@ -181,7 +190,7 @@ export const bridgeAddonServices = async (
 
       let addonName: string | null = null
       let resolvedButtonType: string | null = null
-      for (const addon of scanned) {
+      for (const addon of allAddons) {
         if (addon.types.includes(buttonType)) {
           addonName = addon.name
           resolvedButtonType = buttonType
@@ -203,7 +212,7 @@ export const bridgeAddonServices = async (
       }
 
       let addonMod: AddonModule | null = null
-      for (const addon of scanned) {
+      for (const addon of allAddons) {
         if (addon.name !== addonName) continue
         if (addon.frontendEntry === null) continue
         try {

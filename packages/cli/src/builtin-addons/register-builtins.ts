@@ -8,7 +8,6 @@ import dateTimeAddon from "./date-time/index"
 import emojiSelectorAddon from "./emoji-selector/index"
 import { internalSettingsAddon } from "./internal-settings/index"
 import mediaPlayerAddon from "./media/index"
-import { pomodoroAddon } from "./pomodoro/index"
 import { sessionAddon } from "./session/index"
 import { systemStatusAddon } from "./system-status/index"
 import testBuildinAddon from "./test-buildin/index"
@@ -28,5 +27,4 @@ export const registerBuiltins = (registry: AddonRegistry): void => {
   registry.load(weatherAddon)
   registry.load(brightnessAddon)
   registry.load(testBuildinAddon)
-  registry.load(pomodoroAddon)
 }

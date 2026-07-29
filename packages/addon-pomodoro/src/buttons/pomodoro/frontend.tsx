@@ -1,12 +1,30 @@
-import type { AddonFrontendButton } from "@/addon/api"
-import { useAddonChannel } from "@/api/react"
-
 import type {
   PomodoroButtonState,
   PomodoroSnapshot,
-} from "../../state"
-import { POMO_CHANNEL } from "../../state"
-import type { ConfigSchema } from "./config"
+} from "../../shared/state.js"
+import { POMO_CHANNEL } from "../../shared/state.js"
+import type { ConfigSchema } from "./config.js"
+
+interface FrontendButtonProps<Config> {
+  readonly config: Config
+  readonly state: unknown
+  readonly addonName: string
+  readonly buttonType: string
+  readonly buttonId: string
+  readonly gesture: unknown
+}
+
+type UseAddonChannelHook = <T>(channel: string) => { data: T | undefined }
+
+declare global {
+  // ponytail: the cli host injects this hook via the addon loader's
+  // import-rewriting; declare a local signature so the file type-checks.
+  // eslint-disable-next-line no-var
+  var __pomodoroUseAddonChannel: UseAddonChannelHook | undefined
+}
+
+const useAddonChannel: UseAddonChannelHook =
+  globalThis.__pomodoroUseAddonChannel ?? (() => ({ data: undefined }))
 
 const CIRCUMFERENCE = 2 * Math.PI * 42
 
@@ -22,7 +40,7 @@ const formatMmSs = (sec: number): string => {
 
 const BLINK_KEYFRAMES = `@keyframes pomodoro-blink { 0%,100% { color: #ef4444; opacity: 1 } 50% { color: #ef4444; opacity: 0.35 } } .pomodoro-blink { color: #ef4444; animation: pomodoro-blink 1s 10 }`
 
-const PomodoroButtonFrontend: AddonFrontendButton<ConfigSchema> = (props) => {
+const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
   const { data } = useAddonChannel<PomodoroSnapshot>(POMO_CHANNEL)
   const snapshot = data ?? ({} as PomodoroSnapshot)
   const state: PomodoroButtonState | undefined = snapshot[props.buttonId]

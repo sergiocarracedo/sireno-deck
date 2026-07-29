@@ -5,6 +5,7 @@ addons:
     config:
       defaults:
         autoShow: false
+  - src: ./packages/addon-pomodoro
 
 logging:
   level: info

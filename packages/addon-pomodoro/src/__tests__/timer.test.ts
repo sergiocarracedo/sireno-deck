@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
 
-import { createPomodoroTimer } from "../timer"
-import type { PomodoroSnapshot } from "../state"
+import { createPomodoroTimer } from "../shared/timer.js"
+import type { PomodoroSnapshot } from "../shared/state.js"
 
 const fakeClock = (start: number) => {
   let now = start
@@ -10,16 +10,12 @@ const fakeClock = (start: number) => {
     advance: (ms: number): void => {
       now += ms
     },
-    set: (ms: number): void => {
-      now = ms
-    },
   })
 }
 
 describe("createPomodoroTimer", () => {
   it("starts a 1s ticker that recomputes remaining time", () => {
     const now = fakeClock(1_000_000)
-    const onTick = vi.fn()
     const intervals: Array<() => void> = []
     const timer = createPomodoroTimer({
       now,
@@ -37,7 +33,6 @@ describe("createPomodoroTimer", () => {
     intervals[0]?.()
     now.advance(1_000)
     intervals[0]?.()
-    expect(onTick).not.toHaveBeenCalled()
   })
 
   it("transitions to finished when elapsed", () => {
