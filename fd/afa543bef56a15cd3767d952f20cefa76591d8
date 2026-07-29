@@ -1,0 +1,39 @@
+packages/addon-apps-decks/src/decks/vscode.ts
+  s_7b1f3df66b12cf::t_99da9bd2e25c98 10-12
+packages/addon-apps-decks/src/manifest.ts
+  s_7b1f3df66b12cf::t_61398bee2efb57 13
+packages/addon-apps-decks/sirenodeck.json
+  s_7b1f3df66b12cf::t_15f4b6db3baccf 4
+packages/addon-apps-decks/package.json
+  s_7b1f3df66b12cf::t_37f1bd87344d17 2-4
+packages/addon-apps-decks/src/decks/chrome.ts
+  s_7b1f3df66b12cf::t_88c044344517d9 10-12
+packages/addon-apps-decks/src/decks/claude-code.ts
+  s_7b1f3df66b12cf::t_e6f91dbac9327d 10,12
+packages/addon-apps-decks/src/decks/discord.ts
+  s_7b1f3df66b12cf::t_d071c546e3b32f 10,12
+packages/addon-apps-decks/src/decks/google-meet.ts
+  s_7b1f3df66b12cf::t_b0f05dd9e52809 10,12
+packages/addon-apps-decks/src/decks/opencode.ts
+  s_7b1f3df66b12cf::t_2c523fe0e93a7f 10,12
+packages/addon-apps-decks/src/decks/slack.ts
+  s_7b1f3df66b12cf::t_44ae4ddcb09466 10,12
+packages/addon-apps-decks/src/decks/teams.ts
+  s_7b1f3df66b12cf::t_567bec7de9878f 10,12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "fdafa543bef56a15cd3767d952f20cefa76591d8",
+  "prompts": {},
+  "sessions": {
+    "s_7b1f3df66b12cf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_050d9560affelcug8YsyX6TNr7",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
