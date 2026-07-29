@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactElement } from "react"
+import { useId, type CSSProperties, type ReactElement } from "react"
 
 import { Icon } from "../primitives/Icon"
 import { useThemeUiPresentation } from "../theme-presentation"
@@ -116,6 +116,7 @@ function LegendSwatch({
 }
 
 export function ValueChart(props: ValueChartProps): ReactElement {
+  const instanceId = useId()
   if (props.series.length < 1 || props.series.length > 2) {
     throw new Error(
       `ValueChart supports 1-2 series. Received ${props.series.length}.`,
@@ -173,7 +174,7 @@ export function ValueChart(props: ValueChartProps): ReactElement {
             {clipped.map((s, index) => (
               <pattern
                 key={`pattern-${s.id}`}
-                id={`pattern-${variantFor(index)}-${index}`}
+                id={`${instanceId}-pattern-${variantFor(index)}-${index}`}
                 patternUnits="userSpaceOnUse"
                 width={6}
                 height={6}

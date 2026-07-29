@@ -60,7 +60,7 @@ Scope: `packages/cli/frontend/`, `packages/cli/emulator/`, `packages/cli/src/ui/
 **Fix sketch:** Wrap `App` and each page in an `ErrorBoundary` mirroring the frontend pattern.
 **OSS-impression:** Missing safety net.
 
-### [05-frontend-ui #8] [P1] `ThemeUiPresentationProvider` receives `value={{}}` instead of `presentation`
+### [x] [05-frontend-ui #8] [P1] `ThemeUiPresentationProvider` receives `value={{}}` instead of `presentation`
 
 **Evidence:** `packages/cli/frontend/src/App.tsx:123`.
 **Impact:** Generated `uiOverrides` export is never imported; theme overrides silently disabled.
@@ -92,7 +92,7 @@ Scope: `packages/cli/frontend/`, `packages/cli/emulator/`, `packages/cli/src/ui/
 **Fix sketch:** Always run hooks, branch on the override after.
 **OSS-impression:** Same class as #10.
 
-### [05-frontend-ui #12] [P1] `ButtonFrame` ignores `pressed/isTapping/isHolding/holdProgress/buttonType`
+### [x] [05-frontend-ui #12] [P1] `ButtonFrame` ignores `pressed/isTapping/isHolding/holdProgress/buttonType`
 
 **Evidence:** `packages/cli/src/ui/ButtonFrame.tsx`.
 **Impact:** Props documented but ignored; downstream UX state is wrong.
@@ -100,7 +100,7 @@ Scope: `packages/cli/frontend/`, `packages/cli/emulator/`, `packages/cli/src/ui/
 **Fix sketch:** Wire each prop to its visual effect.
 **OSS-impression:** Dead props are a senior review concern.
 
-### [05-frontend-ui #13] [P1] `Bridge.client` does not close a connecting socket
+### [x] [05-frontend-ui #13] [P1] `Bridge.client` does not close a connecting socket
 
 **Evidence:** `packages/cli/frontend/src/bridge/client.ts`; `close()` checks `readyState` and only closes if OPEN.
 **Impact:** A socket stuck in CONNECTING can fire events after unmount; pending messages queue grows.
@@ -108,7 +108,7 @@ Scope: `packages/cli/frontend/`, `packages/cli/emulator/`, `packages/cli/src/ui/
 **Fix sketch:** Call `socket.terminate()` unconditionally; cap pending queue.
 **OSS-impression:** Lifecycle race.
 
-### [05-frontend-ui #14] [P1] Emulator `bridge.ts` never resets `attempts` after success
+### [x] [05-frontend-ui #14] [P1] Emulator `bridge.ts` never resets `attempts` after success
 
 **Evidence:** `packages/cli/emulator/src/bridge.ts`.
 **Impact:** Ten successful connects over the process lifetime can permanently fail later if attempts count is global.
@@ -116,7 +116,7 @@ Scope: `packages/cli/frontend/`, `packages/cli/emulator/`, `packages/cli/src/ui/
 **Fix sketch:** Reset attempts in `onopen`.
 **OSS-impression:** Cumulative-counter bug.
 
-### [05-frontend-ui #15] [P1] `ValueChart.tsx` uses static pattern IDs
+### [x] [05-frontend-ui #15] [P1] `ValueChart.tsx` uses static pattern IDs
 
 **Evidence:** `packages/cli/src/ui/surfaces/ValueChart.tsx`; pattern IDs like `chart-pattern` are hard-coded.
 **Impact:** Multiple charts in one document resolve another chart's SVG pattern.
@@ -124,7 +124,7 @@ Scope: `packages/cli/frontend/`, `packages/cli/emulator/`, `packages/cli/src/ui/
 **Fix sketch:** Generate a unique ID per chart instance (`useId`).
 **OSS-impression:** ID collision is a senior concern.
 
-### [05-frontend-ui #16] [P1] `TemporaryErrorSurface.tsx` spreads `label/details` onto DOM
+### [x] [05-frontend-ui #16] [P1] `TemporaryErrorSurface.tsx` spreads `label/details` onto DOM
 
 **Evidence:** `packages/cli/src/ui/surfaces/TemporaryErrorSurface.tsx`.
 **Impact:** React DOM warnings; unknown HTML attributes leak.

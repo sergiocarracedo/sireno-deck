@@ -22,6 +22,11 @@ export interface ButtonFrameProps {
 
 export const ButtonFrame = ({
   children,
+  pressed = false,
+  isTapping = false,
+  isHolding = false,
+  holdProgress = 0,
+  buttonType,
   variant = "default",
   onClick,
   onPointerDown,
@@ -37,12 +42,18 @@ export const ButtonFrame = ({
     green: "bg-tint-green/25 border-tint-green/55",
     purple: "bg-tint-purple/25 border-tint-purple/55",
   }[variant]
+  const pressedClass = pressed || isTapping ? "scale-[0.98] opacity-90 " : ""
+  const holdingClass = isHolding ? "ring-2 ring-tint-blue/70 " : ""
 
   return (
     <div
-      className={`flex h-full w-full items-center justify-center overflow-hidden rounded-2xl p-1 border-2 border-solid ${variantClass}`}
+      className={`${pressedClass}${holdingClass}flex h-full w-full items-center justify-center overflow-hidden rounded-2xl p-1 border-2 border-solid ${variantClass}`}
       data-sireno-button-frame="true"
       data-variant={variant}
+      data-button-type={buttonType}
+      data-pressed={pressed || isTapping ? "true" : "false"}
+      data-holding={isHolding ? "true" : "false"}
+      data-hold-progress={holdProgress > 0 ? holdProgress.toFixed(2) : undefined}
       onClick={onClick}
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
