@@ -107,15 +107,13 @@ const statusTap = async (
       string,
       ((...a: unknown[]) => unknown) | undefined
     >
-  )[REPUBLISH_METHOD] as (() => void) | undefined
+  )[REPUBLISH_METHOD] as ((buttonId?: unknown) => void) | undefined
   if (command === undefined || command.length === 0) {
-    // ponytail: no onTap for this state — still trigger a republish so the
-    // deck reflects the latest status without waiting for the next tick.
-    republish?.()
+    republish?.(ctx.buttonId)
     return
   }
   await ctx.coreMethods.runCommand(command, {
     timeoutMs: config.timeoutMs,
   } as Parameters<typeof ctx.coreMethods.runCommand>[1])
-  republish?.()
+  republish?.(ctx.buttonId)
 }

@@ -320,6 +320,23 @@ describe("Text render — xxs size", () => {
   })
 })
 
+describe("Text render — xs size", () => {
+  it("SIZE_CLASS.xs maps to text-xs", () => {
+    const { container } = render(<Text size="xs" text="hi" />)
+    const root = container.firstElementChild as HTMLElement
+    expect(root.className).toContain("text-xs")
+    expect(root.getAttribute("data-sireno-text-size")).toBe("xs")
+  })
+
+  it("renders <xs>...</xs> rich tag with text-xs class", () => {
+    const { container } = render(<Text text="<xs>small</xs>" />)
+    const span = container.querySelector('span[data-sireno-rich-text-tag="xs"]')
+    expect(span).not.toBeNull()
+    expect(span?.className).toContain("text-xs")
+    expect(span?.textContent).toBe("small")
+  })
+})
+
 describe("Text rich-text tags", () => {
   it("renders <strong>...</strong> as a bold span", () => {
     const { container } = render(<Text text="<strong>HH</strong>" />)

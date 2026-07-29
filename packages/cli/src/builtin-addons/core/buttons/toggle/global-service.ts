@@ -86,7 +86,15 @@ export const globalService: AddonGlobalService = {
     // ponytail: tap side-channel. The per-button `onTap` calls this so the
     // next poll happens before the global tick interval — keeps the deck in
     // sync with the new state immediately after a user action.
-    republish: (): void => {
+    // When buttonId is provided, resets that specific entry's lastPolledAt so
+    // the next global tick forces a fresh statusCommand run.
+    republish: (buttonId?: unknown): void => {
+      if (buttonId !== undefined) {
+        const entry = registry.get(String(buttonId))
+        if (entry !== undefined) {
+          entry.lastPolledAt = 0
+        }
+      }
       void ctxRef?.poll("states")
     },
     // ponytail: used by the per-button tap to look up the matched state's
