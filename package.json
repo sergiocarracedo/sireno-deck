@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r build",
-    "dev": "pnpm --filter sirenodeck run dev",
+    "dev": "pnpm --silent --filter sirenodeck run dev",
     "lint": "oxlint packages",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",

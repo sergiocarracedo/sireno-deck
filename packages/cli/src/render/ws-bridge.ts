@@ -2,6 +2,7 @@ import type { Server as HttpServer } from "node:http"
 import { WebSocketServer, type WebSocket } from "ws"
 
 import type { DeviceDescriptor } from "@/device/registry"
+import { createLogger, type Logger } from "@/util/logger"
 import {
   PROTOCOL_VERSION,
   helloAckMessageSchema,
@@ -20,6 +21,7 @@ export interface WsBridgeOptions {
   expectedToken?: string
   handshakeTimeoutMs?: number
   activeTheme?: { name: string; version?: number }
+  logger?: Logger
 }
 
 export interface WsBridge {
@@ -46,6 +48,7 @@ export const startWsBridge = (
     expectedToken,
     handshakeTimeoutMs = HANDSHAKE_TIMEOUT_MS,
     activeTheme,
+    logger = createLogger({ level: "warn", name: "ws-bridge" }),
   } = options
 
   return new Promise((resolve, reject) => {
@@ -70,19 +73,33 @@ export const startWsBridge = (
       let handshakeDone = false
 
       const handshakeTimer = setTimeout(() => {
-        if (!handshakeDone) socket.close(4000, "handshake timeout")
+        if (!handshakeDone) {
+          logger.warn(
+            { peer: socket.remoteAddress ?? "unknown" },
+            "ws handshake timed out",
+          )
+          socket.close(4000, "handshake timeout")
+        }
       }, handshakeTimeoutMs)
 
       socket.on("message", (raw) => {
         let parsed: unknown
         try {
           parsed = JSON.parse(raw.toString())
-        } catch {
+        } catch (err) {
+          logger.warn(
+            { reason: err instanceof Error ? err.message : String(err) },
+            "ws message: invalid json",
+          )
           socket.close(4002, "invalid json")
           return
         }
         const result = wsMessageSchema.safeParse(parsed)
         if (!result.success) {
+          logger.warn(
+            { issues: result.error.issues },
+            "ws message: schema mismatch",
+          )
           socket.close(4003, "invalid message")
           return
         }
@@ -219,20 +236,21 @@ export const startWsBridge = (
           const waiting = pendingChannelSubs.get(channel)
           if (waiting !== undefined) {
             pendingChannelSubs.delete(channel)
-            for (const sock of waiting) {
-              void Promise.resolve(pollFn())
-                .then((value) => {
-                  const msg: WsMessage = {
-                    type: "state",
-                    channels: { [channel]: value },
-                  }
-                  sendToSocket(sock, msg)
-                  lastChannels[channel] = value
-                })
-                .catch(() => {
-                  // poll on demand failed — ignore, next interval will retry
-                })
-            }
+            // ponytail: poll once and broadcast to every waiting socket. The
+            // legacy loop fired the probe N times for N sockets — the cache
+            // exists to avoid that exact amplification.
+            void Promise.resolve(pollFn())
+              .then((value) => {
+                const msg: WsMessage = {
+                  type: "state",
+                  channels: { [channel]: value },
+                }
+                for (const sock of waiting) sendToSocket(sock, msg)
+                lastChannels[channel] = value
+              })
+              .catch(() => {
+                // poll on demand failed — ignore, next interval will retry
+              })
           }
         },
         onMessage: (handler) => messageHandlers.push(handler),

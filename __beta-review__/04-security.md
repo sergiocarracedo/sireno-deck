@@ -56,7 +56,7 @@ Local-process trust. WS bridge and HTTP server bind to `127.0.0.1` only (with on
 **Fix sketch:** Create `${tmpdir}/sireno-deck-${uid}/` with `0700`; refuse on EACCES.
 **OSS-impression:** Senior reviewer will spot immediately.
 
-### [04-security #7] [P1] S13 — `installNpmAddon` not pinned to lockfile
+### [x] [04-security #7] [P1] S13 — `installNpmAddon` not pinned to lockfile
 
 **Evidence:** Loader runs `npm install <arbitrary-spec>` against user-supplied addon entries.
 **Impact:** Supply-chain risk; later installs can drift.
@@ -64,7 +64,7 @@ Local-process trust. WS bridge and HTTP server bind to `127.0.0.1` only (with on
 **Fix sketch:** Generate `package-lock.json` in addon dir; verify on subsequent installs.
 **OSS-impression:** No pinning is a supply-chain flag.
 
-### [04-security #8] [P1] S2 — `installNpmAddon` accepts arbitrary specs
+### [x] [04-security #8] [P1] S2 — `installNpmAddon` accepts arbitrary specs
 
 **Evidence:** Addon entry can be `"somepkg@latest"` or any spec.
 **Impact:** Pulls arbitrary code into the daemon's process tree.
@@ -80,7 +80,7 @@ Local-process trust. WS bridge and HTTP server bind to `127.0.0.1` only (with on
 **Fix sketch:** Run addons in a worker_thread with a restricted capability surface; document trust model.
 **OSS-impression:** Full-Node addon context is a senior review item.
 
-### [04-security #10] [P1] S4 — `include-resolver` reads arbitrary files
+### [x] [04-security #10] [P1] S4 — `include-resolver` reads arbitrary files
 
 **Evidence:** `config/include-resolver.ts` reads paths from `!include` directives.
 **Impact:** A crafted config can include secrets or binaries (though parsed as YAML).
@@ -96,7 +96,7 @@ Local-process trust. WS bridge and HTTP server bind to `127.0.0.1` only (with on
 **Fix sketch:** Pass a capability-restricted `loadCtx`; bound network, fs, child_process.
 **OSS-impression:** No capability gating for addon lifecycle.
 
-### [04-security #12] [P1] S1 — `runCommand` shells via `/bin/sh -c <user-config>`
+### [x] [04-security #12] [P1] S1 — `runCommand` shells via `/bin/sh -c <user-config>`
 
 **Evidence:** `action/executor.ts:79` `execa("/bin/sh", ["-c", command])`; `methods.runCommand` is a thin pass-through.
 **Impact:** Intentional command execution; the user writes shell into config and it runs. No allowlist, no dry-run, no audit log.
@@ -104,7 +104,7 @@ Local-process trust. WS bridge and HTTP server bind to `127.0.0.1` only (with on
 **Fix sketch:** Log every `runCommand` invocation (addon + command + args) to a separate audit log; document the trust model.
 **OSS-impression:** Intentional shell is acceptable if visible; "silent exec" is not.
 
-### [04-security #13] [P1] S9 — Windows key-macro PowerShell injection surface
+### [x] [04-security #13] [P1] S9 — Windows key-macro PowerShell injection surface
 
 **Evidence:** `key-macro/windows.ts` builds PowerShell scripts via string template + `EncodedCommand`.
 **Impact:** The escape is correct for ASCII, but `escapeForPSDoubleQuote` semantics are inconsistent (see 03-system-providers #11).
@@ -112,7 +112,7 @@ Local-process trust. WS bridge and HTTP server bind to `127.0.0.1` only (with on
 **Fix sketch:** Use single-quoted PowerShell strings with single-quote escape only; add fuzz tests.
 **OSS-impression:** Shell-in-PowerShell footgun.
 
-### [04-security #14] [P1] S10 — Windows clipboard PowerShell injection
+### [x] [04-security #14] [P1] S10 — Windows clipboard PowerShell injection
 
 **Evidence:** `clipboard/windows.ts:47-52`; same double-quote escape bug as S9.
 **Impact:** `Set-Clipboard` payload can be misinterpreted.

@@ -23,7 +23,6 @@ export class StatePublisher {
   private readonly logger: pino.Logger
   private readonly channels = new Map<string, StatePublisherChannel>()
   private readonly timers = new Map<string, NodeJS.Timeout>()
-  private readonly cadence = new Map<string, number>()
   private activeAddonNames: ReadonlyArray<string> = []
 
   constructor(options: StatePublisherOptions) {
@@ -33,7 +32,6 @@ export class StatePublisher {
 
   registerChannel(channel: StatePublisherChannel): void {
     this.channels.set(channel.channel, channel)
-    this.cadence.set(channel.channel, channel.intervalMs)
     if (this.activeAddonNames.includes(channel.addonName)) {
       this.startChannel(channel)
     }
@@ -42,7 +40,6 @@ export class StatePublisher {
   unregisterChannel(channelName: string): void {
     this.stopChannel(channelName)
     this.channels.delete(channelName)
-    this.cadence.delete(channelName)
   }
 
   setActiveDeck(snapshot: DeckSnapshot): void {

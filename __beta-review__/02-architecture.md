@@ -36,7 +36,7 @@ Scope: runtime, deck methods, addon-handler-bridge, gesture state machine, WS br
 **Fix sketch:** Extract `createOverlayController()`, `createLockModeController()`, `createActiveAppSubscriber()` as composable controllers consumed by `createRuntime`.
 **OSS-impression:** Largest class in the system; review fatigue starts here.
 
-### [02-architecture #5] [P1] `handleSystemButton` switch has overlapping branches
+### [x] [02-architecture #5] [P1] `handleSystemButton` switch has overlapping branches
 
 **Evidence:** `runtime.ts:381-437`; both `core:settings-entry` `tap` (line 410-413) and `dbl-tap` (line 428-435) navigate, plus the hold case falls through to handler lookup.
 **Impact:** Ambiguous intent; hard to reason about which gesture wins when extensions are added.
@@ -44,7 +44,7 @@ Scope: runtime, deck methods, addon-handler-bridge, gesture state machine, WS br
 **Fix sketch:** Move to a table `Record<SystemButtonType, Record<Gesture, Handler>>`; reject unknown gestures explicitly.
 **OSS-impression:** Switch-overlap is the kind of bug a senior reviewer flags.
 
-### [02-architecture #6] [P1] `findButton` scans all decks on no-colon IDs
+### [x] [02-architecture #6] [P1] `findButton` scans all decks on no-colon IDs
 
 **Evidence:** `runtime.ts:156-174` splits by last colon; if absent, iterates every deck and returns the first match.
 **Impact:** Addon-injected `info`/`back`/`brightness-down` IDs depend on deck order; non-deterministic.
@@ -52,7 +52,7 @@ Scope: runtime, deck methods, addon-handler-bridge, gesture state machine, WS br
 **Fix sketch:** Normalize to `addon:type` always; reject bare button IDs in `validateButton`; resolve via `Map<buttonId, ref>` built once on `setDecks`.
 **OSS-impression:** Order-dependent lookups are bugs waiting.
 
-### [02-architecture #7] [P1] `core:settings-entry` tap and dbl-tap both navigate
+### [x] [02-architecture #7] [P1] `core:settings-entry` tap and dbl-tap both navigate
 
 **Evidence:** `runtime.ts:410-413` (tap) and 428-435 (dbl-tap) both open settings or toggle overlay.
 **Impact:** Two gestures on one button doing similar things → user confusion.
@@ -68,7 +68,7 @@ Scope: runtime, deck methods, addon-handler-bridge, gesture state machine, WS br
 **Fix sketch:** Add a `lock.escape` opt-in to button config; consult it in addition to the static set.
 **OSS-impression:** Hard-coded allowlists are exactly where extension authors get stuck.
 
-### [02-architecture #9] [P1] `addon-handler-bridge.ts` uses `console.error` 10× instead of the logger
+### [x] [02-architecture #9] [P1] `addon-handler-bridge.ts` uses `console.error` 10× instead of the logger
 
 **Evidence:** Lines 134, 157, 165, 269, 284, 303, 322, 333, 357, 374.
 **Impact:** Errors bypass pino; not in service log file; not filterable; untyped.
@@ -124,7 +124,7 @@ Scope: runtime, deck methods, addon-handler-bridge, gesture state machine, WS br
 **Fix sketch:** Remove the debounce timer or lower the poll interval below the debounce window.
 **OSS-impression:** Ineffective code smells worse than missing code.
 
-### [02-architecture #16] [P1] `setDecks` resets `overlayDeckId` but not `overlayPreviousActiveId`
+### [x] [02-architecture #16] [P1] `setDecks` resets `overlayDeckId` but not `overlayPreviousActiveId`
 
 **Evidence:** `runtime.ts:150-153`.
 **Impact:** Hot-reload while overlay is active leaves stale `overlayPreviousActiveId`; `setOverlay(null)` tries to restore a dead id then falls back.
@@ -140,7 +140,7 @@ Scope: runtime, deck methods, addon-handler-bridge, gesture state machine, WS br
 **Fix sketch:** Broadcast only to the requesting socket; or add an explicit `isPrivate` flag in channel registration.
 **OSS-impression:** Cross-client broadcast is exactly the bug privacy-conscious reviewers look for.
 
-### [02-architecture #18] [P1] `ws-bridge` parse errors are silent (no log)
+### [x] [02-architecture #18] [P1] `ws-bridge` parse errors are silent (no log)
 
 **Evidence:** `render/ws-bridge.ts:75-165`; `JSON.parse` and `safeParse` failures close the socket with codes 4002/4003 but no log line.
 **Impact:** Operator sees "WS connection lost" with no reason; debugging impossible.
@@ -148,7 +148,7 @@ Scope: runtime, deck methods, addon-handler-bridge, gesture state machine, WS br
 **Fix sketch:** `logger.warn({ reason, raw }, "ws message rejected")` before close.
 **OSS-impression:** No log = no signal in production.
 
-### [02-architecture #19] [P1] `ws-bridge` cacheable poller runs N times for N waiting sockets
+### [x] [02-architecture #19] [P1] `ws-bridge` cacheable poller runs N times for N waiting sockets
 
 **Evidence:** `render/ws-bridge.ts:212-232` `for (const sock of waiting)` calls poll() per socket.
 **Impact:** 10 sockets × 100ms = 1s channel latency.
@@ -164,7 +164,7 @@ Scope: runtime, deck methods, addon-handler-bridge, gesture state machine, WS br
 **Fix sketch:** For each message, re-include a nonce bound at hello; verify on subsequent frames.
 **OSS-impression:** Trust-once is a known anti-pattern.
 
-### [02-architecture #21] [P1] `ws-bridge` handshake timeout is silent (no log)
+### [x] [02-architecture #21] [P1] `ws-bridge` handshake timeout is silent (no log)
 
 **Evidence:** `render/ws-bridge.ts:13` `HANDSHAKE_TIMEOUT_MS = 5000`; close with no log entry.
 **Impact:** Misbehaving clients die quietly.
@@ -172,7 +172,7 @@ Scope: runtime, deck methods, addon-handler-bridge, gesture state machine, WS br
 **Fix sketch:** Log on timeout with peer ip/port.
 **OSS-impression:** Silent timeouts are a debugging blind spot.
 
-### [02-architecture #22] [P1] `state-publisher.cadence` field is dead
+### [x] [02-architecture #22] [P1] `state-publisher.cadence` field is dead
 
 **Evidence:** `render/state-publisher.ts:21-28`; set in `registerChannel`, never read.
 **Impact:** Confuses readers; signals incomplete refactor.

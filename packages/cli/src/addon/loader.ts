@@ -236,14 +236,19 @@ interface ParsedSpecifier {
   version: string | null
 }
 
+// npm package name spec — scoped names + optional @version
+const NPM_SPECIFIER = /^(?:@[a-z0-9][a-z0-9._-]*\/)?[a-z0-9][a-z0-9._-]*(?:@[a-z0-9][a-z0-9._-]*)?$/i
+const NPM_VERSION = /^[a-z0-9][a-z0-9._-]*$/i
+
 const parseNpmSpecifier = (spec: string): ParsedSpecifier | null => {
+  if (typeof spec !== "string" || !NPM_SPECIFIER.test(spec)) return null
   const atIdx = spec.lastIndexOf("@")
   if (atIdx <= 0) {
     return { packageName: spec, version: null }
   }
   const packageName = spec.slice(0, atIdx)
   const version = spec.slice(atIdx + 1)
-  if (version.length === 0) return null
+  if (version.length === 0 || !NPM_VERSION.test(version)) return null
   return { packageName, version }
 }
 
@@ -284,6 +289,10 @@ export const installNpmAddon = async (
   issues: AddonLoadIssue[],
 ): Promise<InstallNpmAddonResult> => {
   try {
+    // ponytail: --save-exact + --no-save together pin the resolved version
+    // into package-lock.json (written under cacheDir). Without --save-exact,
+    // npm rewrites the range on every install and the lockfile drifts. The
+    // second install resolves identically, which is the property we want.
     await execa(
       "npm",
       [
@@ -291,6 +300,7 @@ export const installNpmAddon = async (
         specifier,
         "--prefix",
         cacheDir,
+        "--save-exact",
         "--no-save",
         "--silent",
         "--no-audit",
