@@ -1,0 +1,51 @@
+AGENTS.md
+  s_5c77e0ef2a62e8::t_504aba54beaecc 22-58
+__beta-review__/05-frontend-ui.md
+  s_5c77e0ef2a62e8::t_1f2100df61d012 1-348
+__beta-review__/02-architecture.md
+  s_5c77e0ef2a62e8::t_1f2100df61d012 1-257
+__beta-review__/06-addon-ecosystem.md
+  s_5c77e0ef2a62e8::t_1f2100df61d012 1-243
+__beta-review__/REPORT.md
+  s_5c77e0ef2a62e8::t_1f2100df61d012 1-167
+__beta-review__/01-foundation.md
+  s_a5b211c1c61696::t_2948f03124b3ea 35
+  s_a5b211c1c61696::t_982f4aed492743 28
+  s_5c77e0ef2a62e8::t_1f2100df61d012 1-20,22-27,29-34,36-41,43-48,50-214
+  s_a5b211c1c61696::t_275ab28cc2f74c 42
+  s_a5b211c1c61696::t_709eacaa3aa7ec 21
+  s_a5b211c1c61696::t_b7e68a48c86993 49
+__beta-review__/08-documentation-and-oss.md
+  s_5c77e0ef2a62e8::t_1f2100df61d012 1-304
+__beta-review__/04-security.md
+  s_a5b211c1c61696::t_1e9850efd70b5a 11
+  s_5c77e0ef2a62e8::t_1f2100df61d012 1-10,12-191
+__beta-review__/07-testing-and-quality.md
+  s_5c77e0ef2a62e8::t_1f2100df61d012 1-201
+__beta-review__/03-system-providers.md
+  s_5c77e0ef2a62e8::t_1f2100df61d012 1-215
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "d5e5cc0bc129e2f4082670bf7ae984ebf1181c48",
+  "prompts": {},
+  "sessions": {
+    "s_5c77e0ef2a62e8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0557a28a8ffeWDYOJIWEfiux4Z",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_a5b211c1c61696": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05352bc65ffecnUvhJ62tfCNxQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
