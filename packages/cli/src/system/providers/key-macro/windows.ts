@@ -229,6 +229,11 @@ const VK_NAMED: ReadonlyMap<string, number> = new Map<string, number>([
   ["Pause", 0x13],
   ["Menu", 0x5d],
   ["Print", 0x2a],
+  ["plus", 0xbb],
+  ["minus", 0xbd],
+  ["equal", 0xbb],
+  ["comma", 0xbc],
+  ["period", 0xbe],
 ])
 
 const MOD_TO_VK: ReadonlyMap<string, number> = new Map<string, number>([
@@ -419,8 +424,12 @@ export const createWindowsKeyMacroProvider = async (
       if (parsed !== null) {
         const seenVk = new Set<number>()
         const orderedMods: number[] = []
+
+        const needsShift = (parsed.key === "plus" || parsed.key === "minus") && !parsed.mods.includes("shift")
+        const mods = needsShift ? [...parsed.mods, "shift"] : parsed.mods
+
         for (const mod of MOD_ORDER) {
-          if (!parsed.mods.includes(mod)) continue
+          if (!mods.includes(mod)) continue
           const vk = modToVk(mod)
           if (vk === null) {
             throw new ProviderError(
@@ -432,7 +441,7 @@ export const createWindowsKeyMacroProvider = async (
           seenVk.add(vk)
           orderedMods.push(vk)
         }
-        for (const mod of parsed.mods) {
+        for (const mod of mods) {
           const vk = modToVk(mod)
           if (vk === null) {
             throw new ProviderError(

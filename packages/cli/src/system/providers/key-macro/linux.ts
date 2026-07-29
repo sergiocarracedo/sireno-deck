@@ -194,6 +194,14 @@ const namedKeyToScancode = (name: string): number | null => {
       return SC_LEFT
     case "Right":
       return SC_RIGHT
+    case "equal":
+      return SC_EQUAL
+    case "minus":
+      return SC_MINUS
+    case "comma":
+      return SC_COMMA
+    case "period":
+      return SC_PERIOD
     case "F1":
       return SC_F1
     case "F2":
@@ -289,12 +297,21 @@ const DIGIT_SC: ReadonlyMap<string, number> = new Map<string, number>([
   ["9", SC_9],
 ])
 
+const KEY_ALIASES: ReadonlyMap<string, string> = new Map([
+  ["plus", "equal"],
+  ["minus", "minus"],
+  ["equal", "equal"],
+  ["comma", "comma"],
+  ["period", "period"],
+])
+
 const keyToScancode = (key: string): number | null => {
-  const fromNamed = namedKeyToScancode(key)
+  const normalized = KEY_ALIASES.get(key) ?? key
+  const fromNamed = namedKeyToScancode(normalized)
   if (fromNamed !== null) return fromNamed
-  const fromLetter = LETTER_SC.get(key)
+  const fromLetter = LETTER_SC.get(normalized)
   if (fromLetter !== undefined) return fromLetter
-  const fromDigit = DIGIT_SC.get(key)
+  const fromDigit = DIGIT_SC.get(normalized)
   if (fromDigit !== undefined) return fromDigit
   return null
 }
@@ -322,6 +339,8 @@ const YDOTOOL_CTRL_V_ARGS: string[] = [
   `${SC_V}:0`,
   `${SC_LEFTCTRL}:0`,
 ]
+
+const SHIFT_NEEDED_KEYS = new Set(["plus", "minus"])
 
 const buildYdotoolComboArgs = (input: string): string[] | null => {
   const parsed = parseCombo(input)
@@ -361,6 +380,12 @@ const buildYdotoolComboArgs = (input: string): string[] | null => {
       "EXEC_FAILED",
       `ydotool: cannot map key '${parsed.key}' to scancode (combo keys must be alphanumeric or a named key)`,
     )
+  }
+
+  const needsShift = SHIFT_NEEDED_KEYS.has(parsed.key) && !parsed.mods.includes("shift")
+  if (needsShift && !seenSc.has(SC_LEFTSHIFT)) {
+    seenSc.add(SC_LEFTSHIFT)
+    orderedMods.push(SC_LEFTSHIFT)
   }
 
   const args: string[] = ["key"]
