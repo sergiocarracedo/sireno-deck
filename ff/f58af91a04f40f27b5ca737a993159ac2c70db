@@ -1,0 +1,27 @@
+__beta-review__/04-security.md
+  s_fd67621b3f5a28::t_49580d2180b6d8 59,67,83,99,107,115
+packages/cli/src/action/executor.ts
+  s_fd67621b3f5a28::t_7f1ebdeb4d2a8b 40-46,54-58
+packages/cli/src/addon/loader.ts
+  s_fd67621b3f5a28::t_a7139eb4f4e798 239-242,244,251,292-295,303
+packages/cli/src/config/include-resolver.ts
+  s_fd67621b3f5a28::t_0f0dacbe162eaf 35-36,40-53
+packages/cli/src/system/providers/clipboard/windows.ts
+  s_fd67621b3f5a28::t_ea75ac4d749142 14-18,54-55,58-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "fff58af91a04f40f27b5ca737a993159ac2c70db",
+  "prompts": {},
+  "sessions": {
+    "s_fd67621b3f5a28": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0521f40fcffeFq8tI6BCf2nyfe",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
