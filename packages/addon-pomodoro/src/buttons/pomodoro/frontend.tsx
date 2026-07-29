@@ -37,7 +37,7 @@ const useAddonChannel = <T,>(channel: string): { data: T | undefined } => {
   return hook ? hook<T>(channel) : { data: undefined }
 }
 
-const CIRCUMFERENCE = 2 * Math.PI * 42
+const CIRCUMFERENCE = 2 * Math.PI * 46
 
 const formatMmSs = (sec: number): string => {
   const m = Math.floor(sec / 60)
@@ -73,7 +73,7 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
     <>
       <style>{BLINK_KEYFRAMES}</style>
       <div
-        className={`flex h-full w-full flex-col items-center justify-center gap-1 ${
+        className={`flex h-full w-full items-center justify-center ${
           finished ? "pomodoro-blink" : ""}
         `}
       >
@@ -83,7 +83,7 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
           <circle
             cx="50"
             cy="50"
-            r="42"
+            r="46"
             fill="none"
             stroke="currentColor"
             strokeOpacity={0.25}
@@ -95,7 +95,7 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
           <circle
             cx="50"
             cy="50"
-            r="42"
+            r="46"
             fill="none"
             stroke="currentColor"
             strokeWidth={4}
@@ -105,20 +105,19 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
             transform="rotate(-90 50 50)"
             className="text-accent"
           />
-          <text
-            x="50"
-            y="50"
-            textAnchor="middle"
-            fontSize="32"
-            dominantBaseline="middle"
+          <foreignObject
+            x="10"
+            y="36"
+            width="80"
+            height="28"
+            className="overflow-visible"
           >
-            🍅
-          </text>
+            <Label
+              text={formatMmSs(remainingSec)}
+              variant={finished ? "secondary" : "primary"}
+            />
+          </foreignObject>
         </svg>
-        <Label
-          text={formatMmSs(remainingSec)}
-          variant={finished ? "secondary" : "primary"}
-        />
       </div>
     </>
   )
