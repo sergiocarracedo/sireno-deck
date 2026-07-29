@@ -112,11 +112,17 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
             height="56"
             className="overflow-visible"
           >
-            <div className="flex h-full w-full flex-col items-center justify-center gap-0.5 leading-none">
-              <span className="text-3xl leading-none">🍅</span>
+            <div className="flex h-full w-full flex-col items-center justify-center gap-1 leading-none">
+              <span
+                className="inline-block shrink-0 leading-none"
+                style={{ fontSize: 36 }}
+              >
+                🍅
+              </span>
               <Label
                 text={formatMmSs(remainingSec)}
                 variant={finished ? "secondary" : "primary"}
+                lines={2}
               />
             </div>
           </foreignObject>
