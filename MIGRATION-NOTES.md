@@ -3,10 +3,16 @@
 The prior `.planning/` tree (now removed) held these locked decisions. They
 remain **valid**. If the new project replays them, point at this file.
 
+> Snapshot last reconciled against the source tree on 2026-07-29. Counts
+> and module paths below reflect that reconciliation; see
+> `__beta-review__/` for the open workstream.
+
 ## Frontend / navigation
 
-- **Service-driven nav** (P1, 2026-07-07) — `react-router-dom`, the service
-  picks the active deck; URL `/decks/:deckId` is the read-only projection.
+- **Service-driven nav** — `react-router-dom` (`BrowserRouter` mounted in
+  `packages/cli/frontend/src/main.tsx`); the service picks the active deck;
+  URL `/decks/:deckId` is the read-only projection. (P1, 2026-07-07;
+  confirmed shipped.)
 - **`gestureHandlers` default-deny** (P2, 2026-07-07) — declared-or-stripped
   filter. `SIRENO_ADDON_API_VERSION` stays at 1; no compat shim.
 
@@ -49,16 +55,25 @@ device, intervalMs?})` wraps `RealOutputClient` / `EmulatorOutputClient`.
 - YAML config: `snake_case`. Addon manifest: `${addonName}:` namespace.
 - Two deck shapes: `AddonDeckFactory` (no config) vs `AddonDeckDefinition`
   (config-aware) — **prefer `AddonDeckDefinition` for new code**.
-- Zod: `.min().max("msg")` directly, never `.refine()/.superRefine()` (they
-  wrap in `ZodEffects` and break `.shape` consumers).
+- Zod: `.min().max("msg")` directly; `.refine()` / `.superRefine()` are
+  allowed but discouraged (they wrap in `ZodEffects` and break `.shape`
+  consumers).
 
-## Pre-existing known issues (do not touch)
+## Known issues — to be revalidated
 
-- 79 failures in `runtime.test.ts` (Phase 42/67) — needs forensics.
-- Frontend-UI clicks bypass the gesture stream — out of scope.
-- Per-addon frontend authoring — only `date-time/frontend.tsx` exists.
+The historical entries below reference snapshots that no longer match the
+tree. They remain here for traceability but should not be relied on.
+
+- Historical `runtime.test.ts` failure count was 79 (Phase 42/67). Current
+  count is 11 (after the P0/P1 batches in `__beta-review__/07-testing-and-quality.md`).
+  Remaining 11 are catalogued there.
+- Frontend-UI clicks bypass the gesture stream — reaudit.
+- Per-addon frontend authoring — was historically only `date-time/frontend.tsx`;
+  the modern rewrite now uses `packages/cli/src/builtin-addons/core/buttons/*`
+  templates.
 
 ## What's NOT in this file
 
 - The architecture itself lives in `ARCHITECTURE.md` (repo root, preserved).
+- Active review-driven workstream is tracked in `__beta-review__/*.md`.
 - This file is the **legacy decisions index**, not a new plan.

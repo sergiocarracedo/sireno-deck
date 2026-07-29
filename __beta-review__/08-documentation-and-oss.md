@@ -64,7 +64,7 @@ Scope: README/ARCHITECTURE/AGENTS/MIGRATION-NOTES drift, missing files, OSS-impr
 **Fix sketch:** Either add §8 or remove the reference.
 **OSS-impression:** Incomplete doc.
 
-### [08-documentation-and-oss #7] [P1] `ARCHITECTURE.md` contradictory gesture constants
+### [x] [08-documentation-and-oss #7] [P1] `ARCHITECTURE.md` contradictory gesture constants
 
 **Evidence:** `:175` says 500ms; `:418` says 200ms; source uses 200ms.
 **Impact:** Reviewers confused.
@@ -72,7 +72,7 @@ Scope: README/ARCHITECTURE/AGENTS/MIGRATION-NOTES drift, missing files, OSS-impr
 **Fix sketch:** Pick 200ms; remove the 500ms reference.
 **OSS-impression:** Doc drift.
 
-### [08-documentation-and-oss #8] [P1] `ARCHITECTURE.md` says no React Router, but `frontend/App.tsx` uses it
+### [x] [08-documentation-and-oss #8] [P1] `ARCHITECTURE.md` says no React Router, but `frontend/App.tsx` uses it
 
 **Evidence:** `packages/cli/frontend/src/App.tsx`; `react-router-dom` installed.
 **Impact:** Contradicts code.
@@ -80,7 +80,7 @@ Scope: README/ARCHITECTURE/AGENTS/MIGRATION-NOTES drift, missing files, OSS-impr
 **Fix sketch:** Update ARCHITECTURE to describe BrowserRouter.
 **OSS-impression:** Wrong architecture summary.
 
-### [08-documentation-and-oss #9] [P1] `ARCHITECTURE.md` describes wrong paths
+### [x] [08-documentation-and-oss #9] [P1] `ARCHITECTURE.md` describes wrong paths
 
 **Evidence:** Says `builtin-addons/` at root, `addons/` at root; actual is `packages/cli/src/builtin-addons/`.
 **Impact:** Path references broken.
@@ -88,7 +88,7 @@ Scope: README/ARCHITECTURE/AGENTS/MIGRATION-NOTES drift, missing files, OSS-impr
 **Fix sketch:** Re-align with current tree.
 **OSS-impression:** Out-of-date architecture.
 
-### [08-documentation-and-oss #10] [P1] `ARCHITECTURE.md` says each package has `__mocks__/` — only frontend does
+### [x] [08-documentation-and-oss #10] [P1] `ARCHITECTURE.md` says each package has `__mocks__/` — only frontend does
 
 **Evidence:** Mocks only under `frontend/src/__mocks__/`.
 **Impact:** Document lies.
@@ -96,7 +96,7 @@ Scope: README/ARCHITECTURE/AGENTS/MIGRATION-NOTES drift, missing files, OSS-impr
 **Fix sketch:** Update or remove.
 **OSS-impression:** Doc drift.
 
-### [08-documentation-and-oss #11] [P1] `AGENTS.md` references missing `docs/STATE.md`
+### [x] [08-documentation-and-oss #11] [P1] `AGENTS.md` references missing `docs/STATE.md`
 
 **Evidence:** File doesn't exist.
 **Impact:** Cross-reference broken.
@@ -104,7 +104,7 @@ Scope: README/ARCHITECTURE/AGENTS/MIGRATION-NOTES drift, missing files, OSS-impr
 **Fix sketch:** Either create `docs/STATE.md` (link to `docs/solutions/`) or remove the reference.
 **OSS-impression:** Broken cross-reference.
 
-### [08-documentation-and-oss #12] [P1] `AGENTS.md` says "No `.refine()`" but `.refine()` is used
+### [x] [08-documentation-and-oss #12] [P1] `AGENTS.md` says "No `.refine()`" but `.refine()` is used
 
 **Evidence:** `packages/cli/src/config/schemas.ts` and addon config schemas.
 **Impact:** Instruction wrong.
@@ -112,7 +112,7 @@ Scope: README/ARCHITECTURE/AGENTS/MIGRATION-NOTES drift, missing files, OSS-impr
 **Fix sketch:** Remove the rule or align with reality.
 **OSS-impression:** Wrong instruction.
 
-### [08-documentation-and-oss #13] [P1] `AGENTS.md` says no default exports but they exist widely
+### [x] [08-documentation-and-oss #13] [P1] `AGENTS.md` says no default exports but they exist widely
 
 **Evidence:** Addon code, test files, several components.
 **Impact:** Inconsistent rule.
@@ -120,7 +120,7 @@ Scope: README/ARCHITECTURE/AGENTS/MIGRATION-NOTES drift, missing files, OSS-impr
 **Fix sketch:** Either enforce (oxlint rule) or soften the rule.
 **OSS-impression:** Rule vs reality.
 
-### [08-documentation-and-oss #14] [P1] `MIGRATION-NOTES.md` is stale and documents failures that don't match current state
+### [x] [08-documentation-and-oss #14] [P1] `MIGRATION-NOTES.md` is stale and documents failures that don't match current state
 
 **Evidence:** Claims 79 failures in `runtime.test.ts`; current is 15.
 **Impact:** Misleading.
@@ -128,7 +128,7 @@ Scope: README/ARCHITECTURE/AGENTS/MIGRATION-NOTES drift, missing files, OSS-impr
 **Fix sketch:** Update to reflect current state; mark as historical.
 **OSS-impression:** Stale document.
 
-### [08-documentation-and-oss #15] [P1] `MIGRATION-NOTES.md` describes React Router as future decision while it's already in use
+### [x] [08-documentation-and-oss #15] [P1] `MIGRATION-NOTES.md` describes React Router as future decision while it's already in use
 
 **Evidence:** `frontend/App.tsx`.
 **Impact:** Out of date.
@@ -144,7 +144,7 @@ Scope: README/ARCHITECTURE/AGENTS/MIGRATION-NOTES drift, missing files, OSS-impr
 **Fix sketch:** Audit each; resolve or move to docs/solutions.
 **OSS-impression:** Untouched concerns.
 
-### [08-documentation-and-oss #17] [P1] `docs/plans/2026-07-24-text-xxs-autofit.md` refers to Vue emulator
+### [x] [08-documentation-and-oss #17] [P1] `docs/plans/2026-07-24-text-xxs-autofit.md` refers to Vue emulator
 
 **Evidence:** Plan text mentions Vue; project uses React.
 **Impact:** Plan references wrong stack.
@@ -160,7 +160,7 @@ Scope: README/ARCHITECTURE/AGENTS/MIGRATION-NOTES drift, missing files, OSS-impr
 **Fix sketch:** Fix the table.
 **OSS-impression:** Doc quality.
 
-### [08-documentation-and-oss #19] [P1] Both plans are still `Status: Draft` despite implementation in tree
+### [x] [08-documentation-and-oss #19] [P1] Both plans are still `Status: Draft` despite implementation in tree
 
 **Evidence:** `docs/plans/2026-07-24-*.md`.
 **Impact:** Reviewers confused about what's done.
@@ -168,7 +168,7 @@ Scope: README/ARCHITECTURE/AGENTS/MIGRATION-NOTES drift, missing files, OSS-impr
 **Fix sketch:** Mark complete or split into implementation records.
 **OSS-impression:** Plan lifecycle.
 
-### [08-documentation-and-oss #20] [P1] `docs/solutions/` lacks an index file
+### [x] [08-documentation-and-oss #20] [P1] `docs/solutions/` lacks an index file
 
 **Evidence:** `docs/solutions/{runtime-errors,conventions}/*.md` but no `README.md`.
 **Impact:** Discoverability weak.

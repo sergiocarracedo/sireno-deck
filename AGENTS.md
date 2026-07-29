@@ -2,8 +2,8 @@
 
 ## Source of truth
 
-- [`ARCHITECTURE.md`](ARCHITECTURE.md) — how the system is wired. Read top-to-bottom on first contact. Section 8 is the working plan; everything else describes the system as it exists today.
-- [`docs/STATE.md`](docs/STATE.md) — snapshot of completed and in-progress phases, plus quick-task log.
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) — how the system is wired. Read top-to-bottom on first contact; describes the system as it exists today.
+- [`docs/solutions/`](docs/solutions/) — institutional learnings captured after non-trivial fixes; index file pending (`docs/solutions/README.md`).
 - [`STRATEGY.md`](STRATEGY.md) — product strategy grounding (populated via `/ce-strategy`).
 
 ## Stack
@@ -12,8 +12,8 @@ TypeScript (strict, ESM), React 19, Vite 6, Tailwind 4, Node ≥20, pnpm workspa
 
 ## Conventions
 
-- **No default exports** for new logic — named exports only.
-- **Zod schemas** with `.strict()` for config/protocol. No `.refine()`.
+- **No default exports** for new logic — named exports only. Existing default exports in `packages/cli/src/builtin-addons/*/index.ts` predate this rule and are kept for addon-API compatibility; new modules should not add them.
+- **Zod schemas** with `.strict()` for config/protocol. Avoid `.refine()`; if cross-field validation is required, prefer composition (`z.intersection`) or a follow-up `.superRefine` with explicit error codes.
 - **Boundaries**: oxlint forbids `packages/cli/src/**` → `frontend/` or `emulator/` imports. Cross-process comms go through the WS bridge only.
 - **Testing**: vitest, node default; jsdom for `frontend/` and `emulator/`. Co-located `__tests__/` dirs.
 - **Lint/format/typecheck**: `pnpm lint && pnpm format && pnpm typecheck` before pushing.
@@ -74,4 +74,4 @@ After a new feature or a bugfix, run the cli `--emulator` flag and check the emu
 
 1. Search `docs/solutions/` for the symptom module (`grep -r "<module>" docs/solutions/`).
 2. Check `ARCHITECTURE.md` for the affected subsystem.
-3. Check `docs/STATE.md` for context on recent phases.
+3. Check `__beta-review__/*.md` for context on review-driven tracking.
