@@ -107,15 +107,18 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
           />
           <foreignObject
             x="10"
-            y="36"
+            y="22"
             width="80"
-            height="28"
+            height="56"
             className="overflow-visible"
           >
-            <Label
-              text={formatMmSs(remainingSec)}
-              variant={finished ? "secondary" : "primary"}
-            />
+            <div className="flex h-full w-full flex-col items-center justify-center gap-0.5 leading-none">
+              <span className="text-base leading-none">🍅</span>
+              <Label
+                text={formatMmSs(remainingSec)}
+                variant={finished ? "secondary" : "primary"}
+              />
+            </div>
           </foreignObject>
         </svg>
       </div>
