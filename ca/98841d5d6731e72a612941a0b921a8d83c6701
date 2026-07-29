@@ -1,0 +1,37 @@
+packages/cli/src/cli/commands/start.ts
+  s_a5b211c1c61696::t_2110583a0f4baf 109-129,134-147,150-156,170-171,174-175,178-179,181-187,189-193,202-224,231
+  s_a5b211c1c61696::t_a1caaae1d31a56 130-133
+  s_5b19018252d9e0::t_0f38889d2fb812 188
+  s_5b19018252d9e0::t_46cddc8d97721a 1
+  s_a5b211c1c61696::t_eddd7a203728ea 18
+  s_a5b211c1c61696::t_ddea6823cb314c 148-149,157-169,172-173,176-177,180
+  s_5b19018252d9e0::t_831f004ba6b262 196
+  s_a5b211c1c61696::t_de1b36671ec172 357-361
+  s_a5b211c1c61696::t_b901576e42bdd1 397-398
+  s_a5b211c1c61696::t_f20439ebfe41a0 19,31
+  s_a5b211c1c61696::t_be147cb5390951 194-195,197-201
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "ca98841d5d6731e72a612941a0b921a8d83c6701",
+  "prompts": {},
+  "sessions": {
+    "s_5b19018252d9e0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05574b72affemfEF7rBuPKjodf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_a5b211c1c61696": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05352bc65ffecnUvhJ62tfCNxQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
