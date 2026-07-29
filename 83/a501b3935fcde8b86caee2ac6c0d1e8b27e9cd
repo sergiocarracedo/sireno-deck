@@ -1,0 +1,43 @@
+packages/cli/src/util/daemon.ts
+  s_a5b211c1c61696::t_bb819a5eac6086 21,24-27
+  s_a5b211c1c61696::t_b27c362bf4898a 9
+  s_a5b211c1c61696::t_3ddf1cd224cbeb 2
+  s_a5b211c1c61696::t_d6e6c7f7b0a327 249
+  s_a5b211c1c61696::t_e806d918059f7f 40-49
+  s_a5b211c1c61696::t_5a3eeb54770238 97-104,106,108,127-128,131-133,138-142
+  s_a5b211c1c61696::t_a42a59df357067 210
+  s_a5b211c1c61696::t_1f20cad8160317 105,107,109-126,129-130,134-137
+  s_a5b211c1c61696::t_ff0c7a245e9327 193
+  s_a5b211c1c61696::t_c76790cbd1b6bc 266
+  s_a5b211c1c61696::t_2c586b3aac6741 83-85
+  s_a5b211c1c61696::t_b7ffb18c5ff552 50,158-183,189,191-192,194-195
+  s_a5b211c1c61696::t_543d8447930a08 70-75
+  s_5b19018252d9e0::t_6d9d4d828e5642 4,6,10,14,18-20,22-23
+  s_a5b211c1c61696::t_7276208b4f56d5 151
+  s_a5b211c1c61696::t_9fce00a19cf889 303
+  s_a5b211c1c61696::t_52fe70e37d768f 51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "83a501b3935fcde8b86caee2ac6c0d1e8b27e9cd",
+  "prompts": {},
+  "sessions": {
+    "s_5b19018252d9e0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05574b72affemfEF7rBuPKjodf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_a5b211c1c61696": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05352bc65ffecnUvhJ62tfCNxQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
