@@ -1,0 +1,19 @@
+config.yml
+  s_7b1f3df66b12cf::t_51f832405d1e33 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "2c8ff81539f4fde40b058ab723ececdab0ca901f",
+  "prompts": {},
+  "sessions": {
+    "s_7b1f3df66b12cf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_050d9560affelcug8YsyX6TNr7",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
