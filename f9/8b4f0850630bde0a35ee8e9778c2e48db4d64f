@@ -1,0 +1,19 @@
+packages/cli/src/cli/commands/run.ts
+  s_5b19018252d9e0::t_17d5a3f261a165 461
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "f98b4f0850630bde0a35ee8e9778c2e48db4d64f",
+  "prompts": {},
+  "sessions": {
+    "s_5b19018252d9e0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05574b72affemfEF7rBuPKjodf",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
