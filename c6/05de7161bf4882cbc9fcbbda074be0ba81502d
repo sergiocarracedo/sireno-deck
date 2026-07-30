@@ -1,0 +1,38 @@
+packages/cli/src/system/providers/active-app/darwin.ts
+  s_cd9de94bc3baa2::t_821917adb8d46b 6-7,47,49,57,61-66,73,76
+packages/cli/src/system/providers/active-app/windows.ts
+  s_cd9de94bc3baa2::t_eae877bd4d5c87 6-7,44,46,54,58-63,70,73
+packages/cli/src/system/providers/active-app/__tests__/interval-provider.test.ts
+  s_cd9de94bc3baa2::t_4ed92a21ead3bd 79-80
+  s_cd9de94bc3baa2::t_826eff27d1dca8 130-131,137,139
+  s_cd9de94bc3baa2::t_b88a7350aad6d8 136
+  s_cd9de94bc3baa2::t_26cc3e20be1292 22
+  s_cd9de94bc3baa2::t_e2c519ac1cf10e 114,116,118
+  s_cd9de94bc3baa2::t_8c8fea2cb1ff58 132
+  s_cd9de94bc3baa2::t_74c2cdaa0ae633 2-20,27-35,37-38,43,45-46,49-55,57-58,62-73,75-76,78,81-89,91-92,96-108,110-112,119-120,122-129,133-135,138,140-147,149-154,158-161
+  s_cd9de94bc3baa2::t_aa7620a997030e 21,25,36,39-42,56,59-61,74,77,90,93-95,109,113,115,117,121,148,155-157
+  s_cd9de94bc3baa2::t_7accc4fd313741 44,47-48
+  s_cd9de94bc3baa2::t_4e1ca795f61387 1,23-24,26
+packages/cli/src/system/providers/active-app/__tests__/linux.test.ts
+  s_cd9de94bc3baa2::t_f8f83a2598a1cd 152
+packages/cli/src/system/providers/active-app/interval-provider.ts
+  s_cd9de94bc3baa2::t_5f9650d6fa8f1c 1-76
+packages/cli/src/system/providers/active-app/linux.ts
+  s_cd9de94bc3baa2::t_66450cca2323b3 14-15,212,216-221,228,231
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "c605de7161bf4882cbc9fcbbda074be0ba81502d",
+  "prompts": {},
+  "sessions": {
+    "s_cd9de94bc3baa2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04d7c44ceffezza8UQZiVdPeFc",
+        "model": "MiniMax-M2.7"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
