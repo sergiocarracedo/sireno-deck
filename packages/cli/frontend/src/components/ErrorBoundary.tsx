@@ -56,14 +56,14 @@ export class ErrorBoundary extends Component<
 
     return (
       <div
-        className="flex h-full w-full flex-col items-center justify-center gap-1 p-1 text-center"
+        className="flex h-full w-full flex-col items-center justify-center gap-1.5 p-1.5 text-center"
         data-sireno-error-boundary="true"
       >
-        <Icon source="icon://alert-circle" size={18} tone="danger" />
-        <span className="truncate font-mono text-[9px] uppercase opacity-70">
+        <Icon source="icon://alert-circle" size={28} tone="danger" />
+        <span className="font-mono text-xs font-bold uppercase tracking-wide text-danger">
           HMR error
         </span>
-        <span className="line-clamp-2 font-mono text-[8px] opacity-50">
+        <span className="font-mono text-[11px] leading-tight break-words opacity-80">
           {String(error.message)}
         </span>
       </div>
