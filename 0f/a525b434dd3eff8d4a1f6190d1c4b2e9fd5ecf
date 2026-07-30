@@ -1,0 +1,81 @@
+packages/cli/src/builtin-addons/weather/README.md
+  s_851eff0056cb16::t_1e78f3ee1f6052 7-8
+packages/web/videos/tsconfig.json
+  s_851eff0056cb16::t_1e78f3ee1f6052 23
+packages/cli/src/system/providers/key-macro/darwin.ts
+  s_851eff0056cb16::t_1e78f3ee1f6052 37-40
+packages/cli/src/builtin-addons/value-display/README.md
+  s_851eff0056cb16::t_1e78f3ee1f6052 9-10
+packages/web/astro/README.md
+  s_851eff0056cb16::t_1e78f3ee1f6052 32-34
+packages/web/scripts/sync-tokens.mjs
+  s_851eff0056cb16::t_1e78f3ee1f6052 18-21
+packages/cli/src/ui/ButtonFrame.tsx
+  s_851eff0056cb16::t_1e78f3ee1f6052 1,52-54
+packages/addon-pomodoro/src/buttons/pomodoro/frontend.tsx
+  s_851eff0056cb16::t_1e78f3ee1f6052 3,75-76
+packages/cli/src/builtin-addons/date-time/README.md
+  s_851eff0056cb16::t_1e78f3ee1f6052 7-12
+packages/cli/frontend/src/components/Deck.tsx
+  s_851eff0056cb16::t_1e78f3ee1f6052 36-38,132-141
+packages/web/astro/package.json
+  s_851eff0056cb16::t_1e78f3ee1f6052 6
+packages/cli/src/addon/loader.ts
+  s_851eff0056cb16::t_1e78f3ee1f6052 240-241
+packages/cli/src/system/providers/key-macro/windows.ts
+  s_851eff0056cb16::t_1e78f3ee1f6052 428-430
+packages/cli/src/builtin-addons/system-status/README.md
+  s_851eff0056cb16::t_1e78f3ee1f6052 48-52
+docs/plans/2026-07-30-001-fix-session-provider-linux-and-vite-react-plugin-deprecation-plan.md
+  s_851eff0056cb16::t_1e78f3ee1f6052 32,175
+packages/cli/src/cli/commands/run.ts
+  s_851eff0056cb16::t_1e78f3ee1f6052 1167
+packages/cli/src/builtin-addons/media/README.md
+  s_851eff0056cb16::t_1e78f3ee1f6052 13-18
+config.yml
+  s_851eff0056cb16::t_1e78f3ee1f6052 18,42,49,54,56,59,67,76,79,82,85,88,93,95
+packages/cli/src/builtin-addons/internal-settings/README.md
+  s_851eff0056cb16::t_1e78f3ee1f6052 9-13,17-19
+packages/cli/src/cli/commands/start.ts
+  s_851eff0056cb16::t_1e78f3ee1f6052 338
+packages/cli/src/builtin-addons/brightness/README.md
+  s_851eff0056cb16::t_1e78f3ee1f6052 13-14
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_851eff0056cb16::t_1e78f3ee1f6052 1-9,396-398
+docs/solutions/tooling-decisions/adding-deep-sub-packages-to-root-pnpm-workspace.md
+  s_851eff0056cb16::t_1e78f3ee1f6052 70-73,111-116,119-132
+packages/web/videos/.oxlintrc.json
+  s_851eff0056cb16::t_1e78f3ee1f6052 12
+packages/cli/src/system/providers/key-macro/linux.ts
+  s_851eff0056cb16::t_1e78f3ee1f6052 385-386
+packages/web/videos/.oxfmtrc.json
+  s_851eff0056cb16::t_1e78f3ee1f6052 9
+packages/addon-pomodoro/src/buttons/pomodoro/backend.ts
+  s_851eff0056cb16::t_1e78f3ee1f6052 76-79,114-119,154-159
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_851eff0056cb16::t_1e78f3ee1f6052 1-9,413-415
+packages/cli/src/ui/surfaces/TemporaryErrorSurface.tsx
+  s_851eff0056cb16::t_1e78f3ee1f6052 42-43
+packages/web/videos/package.json
+  s_851eff0056cb16::t_1e78f3ee1f6052 33
+packages/addon-app-shortcuts/src/decks/chrome.ts
+  s_851eff0056cb16::t_1e78f3ee1f6052 78
+docs/solutions/runtime-errors/vite-plugin-react-v4-esbuild-deprecation.md
+  s_851eff0056cb16::t_1e78f3ee1f6052 11-12,67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "0fa525b434dd3eff8d4a1f6190d1c4b2e9fd5ecf",
+  "prompts": {},
+  "sessions": {
+    "s_851eff0056cb16": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04d931e91ffesaWQQF204H2ueV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
