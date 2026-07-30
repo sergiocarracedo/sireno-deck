@@ -1,0 +1,19 @@
+packages/addon-app-shortcuts/src/decks/chrome.ts
+  s_914cb253a494a9::t_7f19eaf996b433 9-34,76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "67b08270bc93dd6ec59ad2e104e47bf186d97d3d",
+  "prompts": {},
+  "sessions": {
+    "s_914cb253a494a9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04dc0a6c1ffezeiszYDfb93RtV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    }
+  }
+}
