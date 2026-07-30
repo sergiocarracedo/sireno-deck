@@ -1,0 +1,33 @@
+{
+  "name": "sirenodeck-videos",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Marketing & feature videos for Sireno Deck. Renders the real deck UI through Remotion.",
+  "scripts": {
+    "sync-tokens": "node ../scripts/sync-tokens.mjs",
+    "predev": "pnpm run sync-tokens",
+    "dev": "remotion studio",
+    "prebuild": "pnpm run sync-tokens",
+    "build": "remotion bundle",
+    "prerender": "pnpm run sync-tokens",
+    "render": "remotion render",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint src remotion.config.ts",
+    "format": "oxfmt src remotion.config.ts",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.501",
+    "@remotion/media": "4.0.501",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.501"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "oxfmt": "latest",
+    "oxlint": "latest",
+    "typescript": "5.9.3"
+  }
+}

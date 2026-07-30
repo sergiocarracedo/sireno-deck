@@ -1,0 +1,7 @@
+packages:
+  - astro
+  - videos
+
+onlyBuiltDependencies:
+  - "@tailwindcss/oxide"
+  - sharp

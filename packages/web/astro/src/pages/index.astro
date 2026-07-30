@@ -1,0 +1,40 @@
+---
+import "../styles/global.css"
+import Hero from "../components/sections/Hero.astro"
+import Pillars from "../components/sections/Pillars.astro"
+import OverlayDeckDeep from "../components/sections/OverlayDeckDeep.astro"
+import Themable from "../components/sections/Themable.astro"
+import Addons from "../components/sections/Addons.astro"
+import Install from "../components/sections/Install.astro"
+import Footer from "../components/sections/Footer.astro"
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Sireno Deck — Declarative Stream Deck Control</title>
+    <meta
+      name="description"
+      content="Declarative Elgato Stream Deck control. Linux-first, dotfile-friendly, themable."
+    />
+    <meta property="og:title" content="Sireno Deck" />
+    <meta
+      property="og:description"
+      content="Buttons belong in your dotfiles."
+    />
+    <meta property="og:type" content="website" />
+  </head>
+  <body class="bg-sireno-background text-sireno-foreground">
+    <Hero />
+    <Pillars />
+    <OverlayDeckDeep />
+    <Themable />
+    <Addons />
+    <Install />
+    <Footer />
+  </body>
+</html>

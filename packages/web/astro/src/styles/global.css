@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens are read from packages/cli/src/themes/default/sirenodeck.json
+ * by packages/web/scripts/sync-tokens.mjs. They are mirrored as Tailwind 4
+ * @theme tokens here so utility classes (bg-sireno-background, etc.) work.
+ * When the source JSON changes, re-run `pnpm sync-tokens` and update the
+ * values below to match.
+ */
+@theme {
+  --color-sireno-background: #2e3540;
+  --color-sireno-frame: #53738b;
+  --color-sireno-foreground: #eef2f7;
+  --color-sireno-foreground-contrast: #333333;
+  --color-sireno-primary: #7dd3fc;
+  --color-sireno-accent: #c3f5ff;
+  --color-sireno-success: #34d399;
+  --color-sireno-danger: #ffb4ab;
+  --color-sireno-tint-blue: #7dd3fc;
+  --color-sireno-tint-green: #34d399;
+  --color-sireno-tint-purple: #c4b5fd;
+}
+
+html {
+  background: var(--color-sireno-background);
+  color: var(--color-sireno-foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
