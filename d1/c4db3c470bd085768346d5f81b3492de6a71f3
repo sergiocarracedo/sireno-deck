@@ -1,0 +1,47 @@
+packages/cli/src/builtin-addons/core/README.md
+  s_419d149c1c1ac9::t_500d180f948e21 51,59-60
+packages/cli/src/config/validation.ts
+  s_419d149c1c1ac9::t_6d69f4cc45d584 129-130,134-143
+  s_419d149c1c1ac9::t_c61bb432ae887a 144-146
+packages/cli/src/builtin-addons/core/buttons/toggle/__tests__/backend.test.ts
+  s_419d149c1c1ac9::t_ffe788754690dd 271,285
+packages/cli/src/builtin-addons/system-status/__tests__/schema-metrics.test.ts
+  s_419d149c1c1ac9::t_017a3897650e72 92,96,101
+packages/cli/src/builtin-addons/system-status/buttons/system-status/schemas.ts
+  s_419d149c1c1ac9::t_9922c37fe3da8d 52
+packages/cli/src/builtin-addons/emoji-selector/README.md
+  s_419d149c1c1ac9::t_e32bebc72853e7 3
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  s_419d149c1c1ac9::t_41c9cef59d25b6 186
+  s_419d149c1c1ac9::t_ecc2d89f302848 130,146
+packages/cli/src/builtin-addons/core/buttons/toggle/global-service.ts
+  s_419d149c1c1ac9::t_2b5edea448ddcc 44
+  s_419d149c1c1ac9::t_121a56fb77b50a 133
+packages/cli/src/builtin-addons/system-status/README.md
+  s_419d149c1c1ac9::t_3385cd65630132 62
+  s_419d149c1c1ac9::t_06def63dcb31ea 46-50
+packages/cli/src/builtin-addons/core/buttons/toggle/backend.ts
+  s_419d149c1c1ac9::t_defb5253fbb0eb 116
+packages/cli/src/builtin-addons/core/buttons/toggle/config.ts
+  s_419d149c1c1ac9::t_ec6ed11beb9634 39-44
+  s_419d149c1c1ac9::t_7f603189ebfe6c 27,32,45,50
+  s_419d149c1c1ac9::t_0367bbbced5c77 19,28-31,33-38,46-48,51
+  s_419d149c1c1ac9::t_ac0af93de71df3 22-23
+  s_419d149c1c1ac9::t_ffb2ec2870f443 49,56-59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "d1c4db3c470bd085768346d5f81b3492de6a71f3",
+  "prompts": {},
+  "sessions": {
+    "s_419d149c1c1ac9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04d5d39eaffepB1T8ccIE40Lb1",
+        "model": "MiniMax-M2.7"
+      },
+      "human_author": null
+    }
+  }
+}
