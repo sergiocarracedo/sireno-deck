@@ -1,0 +1,46 @@
+packages/cli/src/system/providers/shared.ts
+  s_8c99820b9059b7::t_4dfdfc08626fc1 72,75
+packages/cli/src/system/providers/clipboard/windows.ts
+  s_8c99820b9059b7::t_7bbb417a693176 51
+packages/cli/src/system/providers/active-app/wayland-gnome.ts
+  s_8c99820b9059b7::t_af1b12886e4482 150-152
+  s_8c99820b9059b7::t_3dd72c475c2c13 198
+  s_8c99820b9059b7::t_a1cf61d8a055c1 174
+  s_8c99820b9059b7::t_171835bb02b63a 166-173,175-178
+  s_8c99820b9059b7::t_e7551962574926 185
+packages/cli/src/system/providers/active-app/linux.ts
+  s_8c99820b9059b7::t_a98e3a378a7761 178-187,193-199,208-212,215-226
+packages/cli/src/system/providers/__tests__/shared.test.ts
+  s_8c99820b9059b7::t_f5799327df2c16 115-123,125-132
+packages/cli/src/system/providers/clipboard/__tests__/windows.test.ts
+  s_8c99820b9059b7::t_b0f4637fa93739 8,25,43-44,48
+  s_8c99820b9059b7::t_735bab79deb5e9 26,28-29,39-42,49,51-52,62-64
+  s_8c99820b9059b7::t_6732f5e256a25d 1-7,9-24,27,30-38,45-47,50,53-61,65-120
+packages/cli/src/system/providers/session/__tests__/darwin.test.ts
+  s_8c99820b9059b7::t_4509a08b5cfef6 49,87
+  s_8c99820b9059b7::t_8434c8c0518928 38,41,44
+  s_8c99820b9059b7::t_70dd0368aa8089 39-40,42-43,45-48,50-51,76-86,88
+  s_8c99820b9059b7::t_5978f2bfb2cf45 89
+packages/cli/src/system/providers/session/darwin.ts
+  s_8c99820b9059b7::t_8b4f2027b07cb2 63
+  s_8c99820b9059b7::t_520ffc7edc090a 30
+  s_8c99820b9059b7::t_c6879167e01d39 25-26
+packages/cli/src/system/providers/active-app/__tests__/wayland-gnome.test.ts
+  s_8c99820b9059b7::t_bcf15ed34eb6d3 222-250
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "4621f84379b03ec8a7ea7e86b4544df48948885c",
+  "prompts": {},
+  "sessions": {
+    "s_8c99820b9059b7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04d944876ffeXCv93pTnTlKylV",
+        "model": "MiniMax-M2.7"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
