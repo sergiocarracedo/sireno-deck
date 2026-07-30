@@ -1,5 +1,7 @@
 import type { MouseEvent, PointerEvent, ReactNode } from "react"
 
+import { useThemeUiPresentation } from "./theme-presentation"
+
 export interface ButtonFrameProps {
   pressed?: boolean
   isTapping?: boolean
@@ -31,6 +33,24 @@ export const ButtonFrame = ({
   onPointerLeave,
   onPointerCancel,
 }: ButtonFrameProps) => {
+  const themeUi = useThemeUiPresentation()
+  if (themeUi?.buttonFrame) {
+    return themeUi.buttonFrame({
+      pressed,
+      isTapping,
+      isHolding,
+      holdProgress,
+      buttonType,
+      variant,
+      onClick,
+      onPointerDown,
+      onPointerUp,
+      onPointerMove,
+      onPointerLeave,
+      onPointerCancel,
+      children,
+    })
+  }
   const variantClass = {
     default: "bg-bg border-frame",
     error: "bg-danger/15 border-danger/45 text-danger",
@@ -49,6 +69,7 @@ export const ButtonFrame = ({
       data-button-type={buttonType}
       data-pressed={pressed || isTapping ? "true" : "false"}
       data-holding={isHolding ? "true" : "false"}
+      data-held={isHolding ? "true" : undefined}
       data-hold-progress={
         holdProgress > 0 ? holdProgress.toFixed(2) : undefined
       }

@@ -15,15 +15,24 @@ const makeTheme = (name: string): LoadedTheme => ({
 })
 
 describe("themes/loader", () => {
-  it("registerBuiltInThemes registers the default and light themes", () => {
+  it("registerBuiltInThemes registers the default, light, and neon-grids themes", () => {
     const registry = new AddonRegistry()
     registerBuiltInThemes(registry)
-    for (const name of ["default", "light"]) {
+    for (const name of ["default", "light", "neon-grids"]) {
       const theme = registry.getTheme(name)
       expect(theme, `theme ${name} should be registered`).toBeDefined()
       expect(theme?.apiVersion).toBe(1)
       expect(theme?.source.kind).toBe("builtin")
     }
+  })
+
+  it("neon-grids theme declares a ui-overrides path", () => {
+    const registry = new AddonRegistry()
+    registerBuiltInThemes(registry)
+    const theme = registry.getTheme("neon-grids")
+    expect(theme?.uiOverridesPath).not.toBeNull()
+    expect(theme?.uiOverridesPath ?? "").toContain("neon-grids")
+    expect(theme?.uiOverridesPath ?? "").toContain("components")
   })
 
   it("resolveActiveTheme returns the default theme when name is undefined", () => {
@@ -60,6 +69,6 @@ describe("themes/loader", () => {
         .listThemes()
         .map((t) => t.name)
         .sort(),
-    ).toEqual(["custom", "default", "light"])
+    ).toEqual(["custom", "default", "light", "neon-grids"])
   })
 })

@@ -58,6 +58,7 @@ export {
   type ButtonFrameProps,
   type IconLabelSurfaceProps,
   type SplitActionSurfaceProps,
+  type ThemeUiPresentation,
 } from "./ui"
 
 export const cliVersion = "0.1.0"

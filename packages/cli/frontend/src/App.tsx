@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { token } from "virtual:sireno/token"
 import {
   activeTheme,
   colorTokens,
   typography,
+  uiOverrides,
 } from "virtual:sireno/themes/manifest"
 
 import { ChannelRegistry } from "sireno-deck/react"
@@ -13,6 +14,7 @@ import {
   AssetCacheProvider,
   ThemeUiPresentationProvider,
   useAssetCacheMutations,
+  type ThemeUiPresentation,
 } from "@sireno-deck/cli"
 import {
   getDeviceModel,
@@ -114,13 +116,33 @@ const buildThemeContext = (): ThemeContextValue => {
 
 let _wsClientInitialized = false
 
+const buildPresentation = (): ThemeUiPresentation | undefined => {
+  if (uiOverrides === null) return undefined
+  const components = (uiOverrides as { components?: unknown }).components as
+    | { ButtonFrame?: ThemeUiPresentation["buttonFrame"] }
+    | undefined
+  const surfaces = (uiOverrides as { surfaces?: unknown }).surfaces as
+    | ThemeUiPresentation["surfaces"]
+    | undefined
+  const primitives = (uiOverrides as { primitives?: unknown }).primitives as
+    | ThemeUiPresentation["primitives"]
+    | undefined
+  if (!components?.ButtonFrame && !surfaces && !primitives) return undefined
+  return {
+    ...(components?.ButtonFrame ? { buttonFrame: components.ButtonFrame } : {}),
+    ...(surfaces ? { surfaces } : {}),
+    ...(primitives ? { primitives } : {}),
+  }
+}
+
 export const App = () => {
   const [theme] = useState<ThemeContextValue>(() => buildThemeContext())
+  const presentation = useMemo(() => buildPresentation(), [])
 
   return (
     <AssetCacheProvider>
       <ThemeProvider value={theme}>
-        <ThemeUiPresentationProvider>
+        <ThemeUiPresentationProvider presentation={presentation}>
           <AppContent />
         </ThemeUiPresentationProvider>
       </ThemeProvider>
