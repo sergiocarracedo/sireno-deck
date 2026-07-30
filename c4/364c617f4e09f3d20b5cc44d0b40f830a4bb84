@@ -1,0 +1,28 @@
+packages/cli/src/render/__tests__/ws-bridge.test.ts
+  s_adb3cba007b617::t_2e25702c8b3b0e 542-588,592,596,606-623
+  s_adb3cba007b617::t_f7cadea9a28e69 589-591,593-595,597-605
+packages/cli/src/api/protocol-internal.ts
+  s_adb3cba007b617::t_9110cacc1630be 7-12
+  s_adb3cba007b617::t_b0826d2b38dbbf 41-43
+ARCHITECTURE.md
+  s_adb3cba007b617::t_6247f6991d3162 204-213
+packages/cli/src/render/ws-bridge.ts
+  s_adb3cba007b617::t_795a8ee6ddaad3 1,18
+  s_adb3cba007b617::t_5d681d7abdaac2 76,133,140,150-163,189-191,196
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "c4364c617f4e09f3d20b5cc44d0b40f830a4bb84",
+  "prompts": {},
+  "sessions": {
+    "s_adb3cba007b617": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0501ede01ffeIg0hBGhV1ZRV7a",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
