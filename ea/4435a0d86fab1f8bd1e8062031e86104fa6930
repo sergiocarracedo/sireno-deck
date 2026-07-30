@@ -1,0 +1,19 @@
+packages/cli/frontend/src/bridge/client.ts
+  s_fd67621b3f5a28::t_4d0614836ebd93 133-136
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "ea4435a0d86fab1f8bd1e8062031e86104fa6930",
+  "prompts": {},
+  "sessions": {
+    "s_fd67621b3f5a28": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0521f40fcffeFq8tI6BCf2nyfe",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
