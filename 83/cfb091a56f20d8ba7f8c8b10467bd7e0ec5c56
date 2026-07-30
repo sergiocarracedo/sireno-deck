@@ -1,0 +1,19 @@
+packages/cli/src/config/validation.ts
+  s_adb3cba007b617::t_a5526af992195b 129-133,137-142,144-151,153-166
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "83cfb091a56f20d8ba7f8c8b10467bd7e0ec5c56",
+  "prompts": {},
+  "sessions": {
+    "s_adb3cba007b617": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0501ede01ffeIg0hBGhV1ZRV7a",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
