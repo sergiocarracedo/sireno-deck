@@ -1,0 +1,19 @@
+docs/plans/2026-07-30-p1-batch5.md
+  s_adb3cba007b617::t_203d130652ee8c 1-314
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "1c0241d167e8e9eb7c0a582c19f3003887a3a8ff",
+  "prompts": {},
+  "sessions": {
+    "s_adb3cba007b617": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0501ede01ffeIg0hBGhV1ZRV7a",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    }
+  }
+}
