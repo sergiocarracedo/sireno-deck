@@ -6,6 +6,32 @@ const action = (icon: string, label: string, tap: string) => ({
   actions: { tap },
 })
 
+const CHROME_PROCESS_NAMES = [
+  "chrome",
+  "chromium",
+  "google-chrome",
+  "google-chrome-stable",
+  "Brave",
+]
+
+const CHROME_RSS_COMMAND = `ps -eo rss,comm --no-headers | awk '$2 ~ /^(${CHROME_PROCESS_NAMES.join("|")})/ {sum+=$1} END {printf "%.0f", sum/1024}'`
+
+const chromeMemoryButton = {
+  type: "value-display:display",
+  config: {
+    poll_interval_ms: 5000,
+    timeout_ms: 2000,
+    values: [
+      {
+        label: "Chrome",
+        command: CHROME_RSS_COMMAND,
+        formatter: "strip" as const,
+        units: " MB",
+      },
+    ],
+  },
+}
+
 export const chromeDeck: AddonDeckEntry = {
   id: "app-shortcuts:chrome",
   name: "Chrome",
@@ -30,8 +56,8 @@ export const chromeDeck: AddonDeckEntry = {
     action("rotate-ccw", "Reopen Tab", "type://ctrl+shift+t"),
     action("copy", "New Window", "type://ctrl+n"),
     action("eye-off", "Incognito", "type://ctrl+shift+n"),
-    action("arrow-right", "Next Tab", "type://ctrl+alt+right"),
-    action("arrow-left", "Prev Tab", "type://ctrl+alt+left"),
+    action("arrow-right", "Next Tab", "type://ctrl+tab"),
+    action("arrow-left", "Prev Tab", "type://ctrl+shift+tab"),
     action("search", "Find", "type://ctrl+f"),
     action("chevron-right", "Find Next", "type://ctrl+g"),
     action("terminal", "DevTools", "type://ctrl+shift+i"),
@@ -46,5 +72,7 @@ export const chromeDeck: AddonDeckEntry = {
     action("zoom-out", "Zoom Out", "type://ctrl+minus"),
     action("square", "Zoom Reset", "type://ctrl+0"),
     action("maximize", "Fullscreen", "type://f11"),
+    action("activity", "Task Manager", "type://ctrl+shift+esc"),
+    chromeMemoryButton,
   ],
 }

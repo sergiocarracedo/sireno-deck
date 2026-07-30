@@ -290,6 +290,72 @@ describe("createLinuxKeyMacroProvider", () => {
     await provider.stop()
   })
 
+  it("plus maps to equal scancode (13) and auto-injects shift", async () => {
+    const { executor, calls } = makeExecutorWithTools(["ydotool", "wl-copy"])
+    const provider = await createLinuxKeyMacroProvider({
+      executor,
+      env: baseEnv(),
+      logger: silentLogger(),
+    })
+    await provider.sendKey("ctrl+plus")
+    const ydotoolCall = calls.find(
+      (c) => c.tool === "ydotool" && c.args[0] === "key",
+    )
+    expect(ydotoolCall).toBeDefined()
+    expect(ydotoolCall!.args).toEqual([
+      "key",
+      "29:1", // ctrl down
+      "42:1", // shift down (auto-injected)
+      "13:1", // equal down (= is the unscancode for +)
+      "13:0",
+      "42:0",
+      "29:0",
+    ])
+    await provider.stop()
+  })
+
+  it("minus maps to minus scancode (12) and auto-injects shift", async () => {
+    const { executor, calls } = makeExecutorWithTools(["ydotool", "wl-copy"])
+    const provider = await createLinuxKeyMacroProvider({
+      executor,
+      env: baseEnv(),
+      logger: silentLogger(),
+    })
+    await provider.sendKey("ctrl+minus")
+    const ydotoolCall = calls.find(
+      (c) => c.tool === "ydotool" && c.args[0] === "key",
+    )
+    expect(ydotoolCall).toBeDefined()
+    expect(ydotoolCall!.args).toEqual([
+      "key",
+      "29:1", // ctrl down
+      "42:1", // shift down (auto-injected)
+      "12:1", // minus down
+      "12:0",
+      "42:0",
+      "29:0",
+    ])
+    await provider.stop()
+  })
+
+  it("plus with explicit shift does not double-inject", async () => {
+    const { executor, calls } = makeExecutorWithTools(["ydotool", "wl-copy"])
+    const provider = await createLinuxKeyMacroProvider({
+      executor,
+      env: baseEnv(),
+      logger: silentLogger(),
+    })
+    await provider.sendKey("ctrl+shift+plus")
+    const ydotoolCall = calls.find(
+      (c) => c.tool === "ydotool" && c.args[0] === "key",
+    )
+    expect(ydotoolCall).toBeDefined()
+    // 29=ctrl, 42=shift, 13=equal — shift count must be 2 (one :1, one :0)
+    const shiftArgs = ydotoolCall!.args.filter((a) => a.startsWith("42:"))
+    expect(shiftArgs).toEqual(["42:1", "42:0"])
+    await provider.stop()
+  })
+
   it("throws ProviderError with EXEC_FAILED when ydotool exits non-zero", async () => {
     const { executor } = makeExecutorWithTools(["ydotool"], {
       ydotool: "ydotoold not running",
