@@ -1,0 +1,21 @@
+packages/addon-pomodoro/vitest.config.ts
+  s_fd67621b3f5a28::t_df2f070adc8909 4-14
+packages/addon-pomodoro/src/__tests__/__stubs__/label.tsx
+  s_fd67621b3f5a28::t_4e3c1f60af7bd6 1-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "822a209db449ecdfd278d5b244021b431b7f7054",
+  "prompts": {},
+  "sessions": {
+    "s_fd67621b3f5a28": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0521f40fcffeFq8tI6BCf2nyfe",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
