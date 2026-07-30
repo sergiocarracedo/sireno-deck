@@ -1,0 +1,19 @@
+packages/addon-app-shortcuts/src/decks/chrome.ts
+  s_914cb253a494a9::t_7f19eaf996b433 9-35,77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "b3e81efa4172b5c816f0952ed795e2e3fbedcc86",
+  "prompts": {},
+  "sessions": {
+    "s_914cb253a494a9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04dc0a6c1ffezeiszYDfb93RtV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
