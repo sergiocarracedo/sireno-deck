@@ -1,0 +1,157 @@
+packages/web/astro/src/components/sections/Pillars.astro
+  s_f546598fdf71fd::t_a3fa3e18679f99 1-67
+packages/web/astro/src/components/sections/Themable.astro
+  s_f546598fdf71fd::t_6a9005ade4d641 1-126
+packages/web/videos/src/compositions/DeckStack.tsx
+  s_f546598fdf71fd::t_d18f001746f9ee 100
+  s_f546598fdf71fd::t_cbda8f34ec6de2 2
+  s_f546598fdf71fd::t_de3fdf41410aaa 49
+  s_f546598fdf71fd::t_fb663ef9479f5c 1,3-48,50-99,101-111
+packages/web/astro/src/components/sections/Install.astro
+  s_f546598fdf71fd::t_a5b3f8d1903fed 1-83
+packages/web/videos/package.json
+  s_f546598fdf71fd::t_f7d78eb0d90dcc 2-32
+  s_a5b211c1c61696::t_5a384c2a4951a0 1,33
+packages/web/videos/src/lib/ThemeShell.tsx
+  s_f546598fdf71fd::t_cd197896786d40 3-4,6,16,82,87
+  s_f546598fdf71fd::t_98d39411a2a433 1-2,5,7-15,17-58,71-73,78-81,83-84,86
+  s_f546598fdf71fd::t_72d4920efe0cfd 59-70,74,77,85
+  s_f546598fdf71fd::t_2a7cb164dc7e69 75-76
+packages/web/astro/src/content/docs/architecture.md
+  s_f546598fdf71fd::t_6eaddb76c7bc03 1-69
+packages/web/astro/astro.config.mjs
+  s_f546598fdf71fd::t_a05ed810113d92 2-13,21-27
+  s_f546598fdf71fd::t_f976618e6391fa 14-20
+  s_f546598fdf71fd::t_06f926ce95d1b7 1
+packages/web/astro/src/content/docs/addon-authoring.md
+  s_f546598fdf71fd::t_6dd55d80259e33 1-75
+packages/web/README.md
+  s_f546598fdf71fd::t_f10d85fbe0259f 1-38
+packages/web/videos/.oxlintrc.json
+  s_f546598fdf71fd::t_d1e204743cb2cf 1-12
+packages/web/videos/src/Root.tsx
+  s_f546598fdf71fd::t_3f7e65b5f9afa0 1-44
+packages/web/videos/src/index.ts
+  s_f546598fdf71fd::t_69f9b4383f6e9d 1-4
+packages/web/astro/src/components/sections/OverlayDeckDeep.astro
+  s_f546598fdf71fd::t_7b81052cb06c4c 68-69
+  s_f546598fdf71fd::t_458cd3b1ea49dc 1-67,70-90
+packages/web/astro/src/components/sections/Addons.astro
+  s_f546598fdf71fd::t_0e0afd2047826f 1-110
+packages/web/astro/src/content/docs/troubleshooting.md
+  s_f546598fdf71fd::t_720a2b0ccce2c8 1-71
+packages/web/videos/src/lib/DeckPrimitives.tsx
+  s_f546598fdf71fd::t_3603f34989415e 250
+  s_f546598fdf71fd::t_7a2962187ee8d6 268-277
+  s_f546598fdf71fd::t_7f0250f8809ce3 1-12,14-162,165-244,248,251-267,278-281,290-296
+  s_f546598fdf71fd::t_c2f32cb574d7e3 163-164
+  s_f546598fdf71fd::t_7402f0446f7635 245
+  s_f546598fdf71fd::t_8b615925fec287 282-289
+  s_f546598fdf71fd::t_72fb551dbd5eaa 13
+  s_f546598fdf71fd::t_c32c89b049985b 246-247,249
+packages/web/videos/src/compositions/ButtonVariants.tsx
+  s_f546598fdf71fd::t_4265f4f1a4a797 1,3-48,50-72,74-86
+  s_f546598fdf71fd::t_18a250d8c7a228 2
+  s_f546598fdf71fd::t_a2638e36fff1b9 49
+  s_f546598fdf71fd::t_3f6f649f039a2d 73
+packages/web/astro/package.json
+  s_f546598fdf71fd::t_657325c5df1bfd 21
+  s_f546598fdf71fd::t_aeccbf921b0147 2-20,22-33
+  s_a5b211c1c61696::t_e619cd8ef8c9d0 1
+packages/web/astro/src/content.config.ts
+  s_f546598fdf71fd::t_55b6bfae830717 1-10
+packages/web/astro/src/pages/index.astro
+  s_f546598fdf71fd::t_29002d2c126b4d 2,13-18,20-22,28,30,39
+  s_f546598fdf71fd::t_80d114bcddb256 3-9,19,23-27,29,31-38
+  s_f546598fdf71fd::t_3c7d5c38b818eb 1
+  s_f546598fdf71fd::t_1cc1191ded7adc 10-12
+  s_f546598fdf71fd::t_b07688fc24b96d 40
+packages/web/videos/tsconfig.json
+  s_f546598fdf71fd::t_5faac0b67d25e3 3-23
+  s_fd67621b3f5a28::t_8c858dae0ae695 1-2
+packages/web/pnpm-workspace.yaml
+  s_f546598fdf71fd::t_7d094151a6c53e 1-7
+packages/web/.gitignore
+  s_f546598fdf71fd::t_f6d4c6811a01a9 1-19
+packages/web/scripts/sync-tokens.mjs
+  s_f546598fdf71fd::t_2c4cc1e63bdbbc 1-42
+packages/web/astro/src/components/Video.astro
+  s_f546598fdf71fd::t_a5f20c5b36deb4 1-27,32-34
+  s_f546598fdf71fd::t_db3f6dfca21b9a 28-31
+packages/web/astro/src/content/docs/install.md
+  s_f546598fdf71fd::t_cc1076a0ad20f1 1-48
+packages/web/videos/src/compositions/OverlayDeckShowcase.tsx
+  s_f546598fdf71fd::t_774de512fd96ff 2-3,6,8-9,15,18,20,22-23,27-30,32-49,51-53,55-59,62,64-69,72-125,127-131,135,137-140,145-146
+  s_f546598fdf71fd::t_a55f3fe3af1f36 1,4-5,7,10-14,16-17,19,21,24-26,31,50,54,60-61,63,70-71,126,132-134,136,141-144,147-149
+packages/web/videos/.oxfmtrc.json
+  s_f546598fdf71fd::t_9472ebb41058e3 1-9
+packages/web/astro/src/styles/global.css
+  s_f546598fdf71fd::t_18e6db9cd1cbd6 1-3,9-10,22-37
+  s_f546598fdf71fd::t_af9a5314dce42c 4-8,11-21,38
+packages/web/videos/remotion.config.ts
+  s_f546598fdf71fd::t_285fbf2bec4cc5 2-10
+  s_f546598fdf71fd::t_59bb2a7b8f4bce 1
+packages/web/videos/src/compositions/HeroLoop.tsx
+  s_f546598fdf71fd::t_6bebfade0aef4e 3
+  s_f546598fdf71fd::t_b785dce2e348ad 6,8-10,16-17,19-24,26,29-32,34-51,53-59,61-122,124-129,132,134-139
+  s_f546598fdf71fd::t_9ef2471e58f92b 1,4-5,7,11-15,18,25,27-28,33,52,60,123,130-131,133,140-141
+  s_f546598fdf71fd::t_0b10ca1e53996c 2
+packages/web/astro/src/components/sections/Hero.astro
+  s_f546598fdf71fd::t_5cff7a0044312c 1-86
+packages/web/astro/src/content/docs/theming.md
+  s_f546598fdf71fd::t_92331338bbfb06 1-84
+packages/web/astro/src/components/sections/Footer.astro
+  s_f546598fdf71fd::t_55090dff3c08cc 1-95
+packages/web/astro/.gitignore
+  s_f546598fdf71fd::t_3fd535a9619a4a 1-24
+packages/web/astro/AGENTS.md
+  s_f546598fdf71fd::t_e74d0277b5131f 1-22
+packages/web/astro/CLAUDE.md
+  s_f546598fdf71fd::t_f5c1f8ea39de35 1
+packages/web/astro/README.md
+  s_f546598fdf71fd::t_7ac1e0050b9cbd 1-43
+packages/web/astro/public/favicon.svg
+  s_f546598fdf71fd::t_5ab52cc5a015eb 1-9
+packages/web/astro/src/design/tokens.generated.ts
+  s_f546598fdf71fd::t_7f37bb13dec909 1-76
+packages/web/astro/tsconfig.json
+  s_f546598fdf71fd::t_9b4b375caccbc3 1-5
+packages/web/pnpm-lock.yaml
+  s_f546598fdf71fd::t_2450228c51f93e 1-7836
+packages/web/videos/.gitignore
+  s_f546598fdf71fd::t_72fc9ec8143d29 1-7
+packages/web/videos/README.md
+  s_f546598fdf71fd::t_ff178effc41694 1-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "5071d1f37a6ab4ce7bd61f4bb059c22555ab65a3",
+  "prompts": {},
+  "sessions": {
+    "s_a5b211c1c61696": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05352bc65ffecnUvhJ62tfCNxQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_f546598fdf71fd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_050e9a41fffeMRxcKoHQ5up15J",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_fd67621b3f5a28": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0521f40fcffeFq8tI6BCf2nyfe",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
