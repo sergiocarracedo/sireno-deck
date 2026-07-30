@@ -1,0 +1,51 @@
+packages/cli/src/system/providers/clipboard/linux.ts
+  s_54f8cc683c19df::t_5e14f6b9f7cefb 6
+  s_54f8cc683c19df::t_aea11bca8e449c 95
+packages/cli/src/system/requirements.ts
+  s_54f8cc683c19df::t_af91f5fd9d8f3d 102
+  s_54f8cc683c19df::t_a5bebf1d1aa984 1
+packages/cli/src/system/providers/shared.ts
+  s_54f8cc683c19df::t_9e8363273110cc 66-116
+packages/cli/src/system/providers/key-macro/linux.ts
+  s_54f8cc683c19df::t_001b67b5a0840e 494-499
+  s_54f8cc683c19df::t_128ed708beaaf7 443-448,453-458
+  s_54f8cc683c19df::t_896689f8a96151 5-11
+  s_54f8cc683c19df::t_26e29c8e1afe44 428-433
+packages/cli/src/system/providers/notification/linux.ts
+  s_54f8cc683c19df::t_f7d4cd72307260 3
+packages/cli/src/system/providers/notification/windows.ts
+  s_54f8cc683c19df::t_1d95f08ed134a0 3
+  s_54f8cc683c19df::t_713751f5b88b03 56
+packages/cli/src/system/providers/clipboard/darwin.ts
+  s_54f8cc683c19df::t_ca9cf3579afffa 6
+  s_54f8cc683c19df::t_4244616703b364 28
+packages/cli/src/system/providers/__tests__/shared.test.ts
+  s_54f8cc683c19df::t_2d3ba71d20ad3a 174
+  s_54f8cc683c19df::t_07fb217762ea3a 180-186,190,197-203,207,214-220,225,232-238,243
+  s_54f8cc683c19df::t_aa78f07c08979c 193,210
+  s_54f8cc683c19df::t_77efd0ae6f88d9 74,84-85
+  s_54f8cc683c19df::t_8a130c144cf1c9 170
+  s_54f8cc683c19df::t_4332cfd9d5377e 1-73,75-83,86-165,167-169,171-173,175-179,187-189,191-192,194-196,204-206,208-209,211-213,221-224,226-231,239-242,244-248
+  s_54f8cc683c19df::t_e4082226f589cf 166
+packages/cli/src/system/providers/clipboard/windows.ts
+  s_54f8cc683c19df::t_49c04bd5cbdfd8 6-10
+  s_54f8cc683c19df::t_fd6cbd9a63a9ff 54-55
+packages/cli/src/system/providers/key-macro/windows.ts
+  s_54f8cc683c19df::t_b1686afa3dcc58 9-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "5adac15aec8a75fa546edd79deea01b2663f2eaf",
+  "prompts": {},
+  "sessions": {
+    "s_54f8cc683c19df": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04db7f05bffe6nQmjUR8vpUNwM",
+        "model": "MiniMax-M2.7"
+      },
+      "human_author": null
+    }
+  }
+}
