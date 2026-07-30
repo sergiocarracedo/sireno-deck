@@ -1,0 +1,25 @@
+docs/solutions/runtime-errors/session-lock-provider-never-fires.md
+  s_851eff0056cb16::t_e11b9205712204 222,224-225
+  s_851eff0056cb16::t_65f1a8515b638d 235
+  s_851eff0056cb16::t_39582acb2313f8 99-149
+  s_851eff0056cb16::t_78a97dadf0d4e5 209-218
+  s_851eff0056cb16::t_f9a8e4b9552793 4
+docs/solutions/runtime-errors/vite-plugin-react-v4-esbuild-deprecation.md
+  s_851eff0056cb16::t_c2d4acf73f7fcb 1-147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "bbf38ca82b42f14206efa0227c6f51b108f8b149",
+  "prompts": {},
+  "sessions": {
+    "s_851eff0056cb16": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04d931e91ffesaWQQF204H2ueV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
