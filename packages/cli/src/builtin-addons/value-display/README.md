@@ -6,8 +6,8 @@ Each button has up to 4 `values` entries; each entry runs a command via the acti
 
 ## Buttons
 
-| Type                 | Description                                            |
-| -------------------- | ------------------------------------------------------ |
+| Type                    | Description                                            |
+| ----------------------- | ------------------------------------------------------ |
 | `value-display:display` | Single button: shows N values (label + command output) |
 
 ## Config

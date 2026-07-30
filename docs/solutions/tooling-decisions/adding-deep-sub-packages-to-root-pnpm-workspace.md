@@ -67,7 +67,10 @@ import { fileURLToPath } from "node:url"
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, "..", "..", "..")
-const sourcePath = resolve(root, "packages/cli/src/themes/default/sirenodeck.json")
+const sourcePath = resolve(
+  root,
+  "packages/cli/src/themes/default/sirenodeck.json",
+)
 const outDir = resolve(here, "..", "astro/src/design")
 const outPath = resolve(outDir, "tokens.generated.ts")
 
@@ -105,16 +108,28 @@ Remotion cannot import `packages/cli/src/ui/*` directly (different TypeScript co
 ```tsx
 import { colors } from "../../../astro/src/design/tokens.generated"
 
-export const DeckButton = ({ variant = "default", children, style, onClick }) => {
+export const DeckButton = ({
+  variant = "default",
+  children,
+  style,
+  onClick,
+}) => {
   const v = VARIANT_STYLES[variant]
   return (
-    <div style={{
-      ...style,                                    // custom props first
-      width: "100%", height: "100%",               // then defaults
-      borderRadius: 14, padding: 4,
-      background: v.background, border: `1.5px solid ${v.border}`,
-      display: "flex", alignItems: "center", justifyContent: "center",
-    }}>
+    <div
+      style={{
+        ...style, // custom props first
+        width: "100%",
+        height: "100%", // then defaults
+        borderRadius: 14,
+        padding: 4,
+        background: v.background,
+        border: `1.5px solid ${v.border}`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       {children}
     </div>
   )

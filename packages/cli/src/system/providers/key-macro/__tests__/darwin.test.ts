@@ -119,4 +119,38 @@ describe("createDarwinKeyMacroProvider", () => {
     })
     await provider.stop()
   })
+
+  it("plus maps to '+' literal and auto-injects shift", async () => {
+    let captured: string[] = []
+    const executor = makeExecutor((cmd, args) => {
+      if (cmd === "osascript") captured = [...args]
+      return { exitCode: 0, stdout: "", stderr: "" }
+    })
+    const provider = await createDarwinKeyMacroProvider({
+      executor,
+      logger: silentLogger(),
+    })
+    await provider.sendKey("ctrl+plus")
+    expect(captured[1]).toContain('keystroke "+"')
+    expect(captured[1]).toContain("command down")
+    expect(captured[1]).toContain("shift down")
+    await provider.stop()
+  })
+
+  it("minus maps to '-' literal and auto-injects shift", async () => {
+    let captured: string[] = []
+    const executor = makeExecutor((cmd, args) => {
+      if (cmd === "osascript") captured = [...args]
+      return { exitCode: 0, stdout: "", stderr: "" }
+    })
+    const provider = await createDarwinKeyMacroProvider({
+      executor,
+      logger: silentLogger(),
+    })
+    await provider.sendKey("ctrl+minus")
+    expect(captured[1]).toContain('keystroke "-"')
+    expect(captured[1]).toContain("command down")
+    expect(captured[1]).toContain("shift down")
+    await provider.stop()
+  })
 })

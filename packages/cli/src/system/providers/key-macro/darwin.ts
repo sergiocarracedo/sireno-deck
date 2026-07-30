@@ -21,11 +21,25 @@ const MOD_OSASCRIPT: ReadonlyMap<string, string> = new Map([
 const escapeOsascriptString = (s: string): string =>
   s.replace(/\\/g, "\\\\").replace(/"/g, '\\"')
 
+const KEY_ALIASES: ReadonlyMap<string, string> = new Map([
+  ["plus", "+"],
+  ["minus", "-"],
+  ["equal", "="],
+  ["comma", ","],
+  ["period", "."],
+])
+
 const buildComboArgs = (input: string): string[] | null => {
   const parsed = parseCombo(input)
   if (parsed === null) return null
-  const modList = parsed.mods.map((m) => MOD_OSASCRIPT.get(m) ?? m).join(", ")
-  const script = `tell application "System Events" to keystroke "${escapeOsascriptString(parsed.key)}" using {${modList}}`
+
+  const key = KEY_ALIASES.get(parsed.key) ?? parsed.key
+  const needsShift =
+    (parsed.key === "plus" || parsed.key === "minus") &&
+    !parsed.mods.includes("shift")
+  const mods = needsShift ? [...parsed.mods, "shift"] : parsed.mods
+  const modList = mods.map((m) => MOD_OSASCRIPT.get(m) ?? m).join(", ")
+  const script = `tell application "System Events" to keystroke "${escapeOsascriptString(key)}" using {${modList}}`
   return ["-e", script]
 }
 

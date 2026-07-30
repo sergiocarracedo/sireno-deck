@@ -1,9 +1,9 @@
 {
   "name": "sirenodeck-web",
-  "type": "module",
   "version": "0.0.1",
   "private": true,
   "description": "Sireno Deck marketing site + documentation (Astro 5 + Starlight).",
+  "type": "module",
   "scripts": {
     "sync-tokens": "node ../scripts/sync-tokens.mjs",
     "predev": "pnpm run sync-tokens",

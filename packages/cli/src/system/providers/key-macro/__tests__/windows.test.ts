@@ -240,4 +240,42 @@ describe("createWindowsKeyMacroProvider", () => {
       code: "NOT_AVAILABLE",
     })
   })
+
+  it("plus maps to VK_OEM_PLUS (187) and auto-injects shift", async () => {
+    const psCalls: string[] = []
+    const { executor } = makeExecutor((cmd, args) => {
+      if (cmd === "powershell") psCalls.push(decodePSPayload(args))
+      return { exitCode: 0, stdout: "ok:0:", stderr: "" }
+    })
+    const provider = await createWindowsKeyMacroProvider({
+      executor,
+      logger: silentLogger(),
+    })
+    await provider.sendKey("ctrl+plus")
+    expect(psCalls[1]!).toContain("KeyDown(17)") // ctrl
+    expect(psCalls[1]!).toContain("KeyDown(16)") // shift (auto-injected)
+    expect(psCalls[1]!).toContain("TapKey(187)") // VK_OEM_PLUS
+    expect(psCalls[1]!).toContain("KeyUp(16)")
+    expect(psCalls[1]!).toContain("KeyUp(17)")
+    await provider.stop()
+  })
+
+  it("minus maps to VK_OEM_MINUS (189) and auto-injects shift", async () => {
+    const psCalls: string[] = []
+    const { executor } = makeExecutor((cmd, args) => {
+      if (cmd === "powershell") psCalls.push(decodePSPayload(args))
+      return { exitCode: 0, stdout: "ok:0:", stderr: "" }
+    })
+    const provider = await createWindowsKeyMacroProvider({
+      executor,
+      logger: silentLogger(),
+    })
+    await provider.sendKey("ctrl+minus")
+    expect(psCalls[1]!).toContain("KeyDown(17)")
+    expect(psCalls[1]!).toContain("KeyDown(16)")
+    expect(psCalls[1]!).toContain("TapKey(189)") // VK_OEM_MINUS
+    expect(psCalls[1]!).toContain("KeyUp(16)")
+    expect(psCalls[1]!).toContain("KeyUp(17)")
+    await provider.stop()
+  })
 })

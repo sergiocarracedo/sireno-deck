@@ -1,4 +1,12 @@
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest"
 import { writeFileSync, mkdtempSync } from "node:fs"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
@@ -385,7 +393,9 @@ describe("run", () => {
     signals.trigger()
     await runPromise
 
-    expect(loaderMock).toHaveBeenCalledWith({ configPath: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml` })
+    expect(loaderMock).toHaveBeenCalledWith({
+      configPath: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
+    })
     expect(builtinsMock).toHaveBeenCalled()
     expect(validateFullMock).toHaveBeenCalled()
     expect(outputClient.listDevices).toHaveBeenCalled()

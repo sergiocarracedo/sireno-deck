@@ -33,8 +33,9 @@ import { ErrorBoundary } from "./ErrorBoundary"
 // Set once at module load — `useAddonChannel` from the host uses the
 // singleton `ChannelRegistry`, so the addon's components pick up state
 // updates the same way built-in addons do.
-;(globalThis as { __pomodoroUseAddonChannel?: typeof useAddonChannel }).__pomodoroUseAddonChannel =
-  useAddonChannel
+;(
+  globalThis as { __pomodoroUseAddonChannel?: typeof useAddonChannel }
+).__pomodoroUseAddonChannel = useAddonChannel
 
 const BUTTON_SIZE = BUTTON_SIZE_PX
 const BUTTON_GAP_PX = 8
@@ -128,13 +129,16 @@ const DeckButtonCell = ({
       holdTimerRef.current = null
     }
   }
-  useEffect(() => () => {
-    clearHoldTimer()
-    if (pendingTapTimerRef.current !== null) {
-      window.clearTimeout(pendingTapTimerRef.current)
-      pendingTapTimerRef.current = null
-    }
-  }, [])
+  useEffect(
+    () => () => {
+      clearHoldTimer()
+      if (pendingTapTimerRef.current !== null) {
+        window.clearTimeout(pendingTapTimerRef.current)
+        pendingTapTimerRef.current = null
+      }
+    },
+    [],
+  )
 
   if (isError) {
     return (

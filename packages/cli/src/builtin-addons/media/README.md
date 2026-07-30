@@ -10,12 +10,12 @@ Uses the OS media provider from `packages/cli/src/system/providers/`:
 
 ## Buttons
 
-| Type            | Description                                                     |
-| --------------- | --------------------------------------------------------------- |
-| `media:player`  | Single button: prev / play-pause / next + volume (split action) |
-| `media:mute`    | Toggle mute                                                     |
-| `media:volume:up`   | Volume up by step                                          |
-| `media:volume:down` | Volume down by step                                        |
+| Type                | Description                                                     |
+| ------------------- | --------------------------------------------------------------- |
+| `media:player`      | Single button: prev / play-pause / next + volume (split action) |
+| `media:mute`        | Toggle mute                                                     |
+| `media:volume:up`   | Volume up by step                                               |
+| `media:volume:down` | Volume down by step                                             |
 
 ## Config
 

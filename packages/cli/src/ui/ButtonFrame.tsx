@@ -1,8 +1,4 @@
-import type {
-  MouseEvent,
-  PointerEvent,
-  ReactNode,
-} from "react"
+import type { MouseEvent, PointerEvent, ReactNode } from "react"
 
 export interface ButtonFrameProps {
   pressed?: boolean
@@ -53,7 +49,9 @@ export const ButtonFrame = ({
       data-button-type={buttonType}
       data-pressed={pressed || isTapping ? "true" : "false"}
       data-holding={isHolding ? "true" : "false"}
-      data-hold-progress={holdProgress > 0 ? holdProgress.toFixed(2) : undefined}
+      data-hold-progress={
+        holdProgress > 0 ? holdProgress.toFixed(2) : undefined
+      }
       onClick={onClick}
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}

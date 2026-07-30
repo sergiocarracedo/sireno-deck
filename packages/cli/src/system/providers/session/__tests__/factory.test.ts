@@ -4,6 +4,7 @@ import type pino from "pino"
 
 import { createSessionProvider } from "@/system/providers/session"
 import type { SessionProvider } from "@/system/providers/session"
+import { createLinuxSessionProvider } from "@/system/providers/session/linux"
 
 const silentLogger = (): pino.Logger => {
   const noop = (): void => undefined
@@ -47,6 +48,7 @@ describe("createSessionProvider factory", () => {
       logger: silentLogger(),
     })
     expect(provider.getState()).toBe("unlocked")
+    expect(createLinuxSessionProvider).toHaveBeenCalledTimes(1)
   })
 
   it("delegates to darwin provider when executor is injected", async () => {

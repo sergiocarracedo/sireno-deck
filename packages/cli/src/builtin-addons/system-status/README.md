@@ -45,11 +45,11 @@ and chart history on `runtime:system-status:chart-history`.
 The single registered button type accepts a `surface:` config field with
 three values:
 
-| Surface   | Config key      | Notes                                          |
-| --------- | --------------- | ---------------------------------------------- |
-| `bars`    | (default)       | 1–3 metrics as horizontal bars + value chips   |
-| `kpis`    | `surface: kpis` | 1–3 metrics as label/value list (compact)      |
-| `chart`   | `surface: chart`| 1–2 metrics plotted over a sliding time window |
+| Surface | Config key       | Notes                                          |
+| ------- | ---------------- | ---------------------------------------------- |
+| `bars`  | (default)        | 1–3 metrics as horizontal bars + value chips   |
+| `kpis`  | `surface: kpis`  | 1–3 metrics as label/value list (compact)      |
+| `chart` | `surface: chart` | 1–2 metrics plotted over a sliding time window |
 
 ```yaml
 - position: 6

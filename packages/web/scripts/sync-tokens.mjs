@@ -15,7 +15,10 @@ import { fileURLToPath } from "node:url"
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, "..", "..", "..")
-const sourcePath = resolve(root, "packages/cli/src/themes/default/sirenodeck.json")
+const sourcePath = resolve(
+  root,
+  "packages/cli/src/themes/default/sirenodeck.json",
+)
 const outDir = resolve(here, "..", "astro/src/design")
 const outPath = resolve(outDir, "tokens.generated.ts")
 

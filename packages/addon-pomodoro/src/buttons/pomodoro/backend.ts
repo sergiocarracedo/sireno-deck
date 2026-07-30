@@ -73,7 +73,10 @@ export default {
     const persisted = getPersisted(ctx)
     const durationSec = ctx.config?.durationSec ?? DEFAULT_DURATION_SEC
     ctx.methods["pomodoro:register"]?.(ctx.buttonId, durationSec)
-    if (persisted.status === "running" && typeof persisted.startTsMs === "number") {
+    if (
+      persisted.status === "running" &&
+      typeof persisted.startTsMs === "number"
+    ) {
       const elapsedSec = (Date.now() - persisted.startTsMs) / 1000
       if (elapsedSec >= durationSec) {
         writePersisted(ctx, {
@@ -108,7 +111,12 @@ export default {
     // idle → start
     if (persisted.status === "idle") {
       const startTsMs = Date.now()
-      writePersisted(ctx, { status: "running", startTsMs, durationSec, remainingSec: durationSec })
+      writePersisted(ctx, {
+        status: "running",
+        startTsMs,
+        durationSec,
+        remainingSec: durationSec,
+      })
       ctx.methods["pomodoro:start"]?.(ctx.buttonId, durationSec)
       return
     }
@@ -143,7 +151,12 @@ export default {
     }
     // finished → reset + start
     const startTsMs = Date.now()
-    writePersisted(ctx, { status: "running", startTsMs, durationSec, remainingSec: durationSec })
+    writePersisted(ctx, {
+      status: "running",
+      startTsMs,
+      durationSec,
+      remainingSec: durationSec,
+    })
     ctx.methods["pomodoro:start"]?.(ctx.buttonId, durationSec)
   },
   onHold: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {

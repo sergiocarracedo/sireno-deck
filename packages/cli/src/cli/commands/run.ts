@@ -1164,10 +1164,7 @@ const mergeAddonByType = (
           frontendEntry: addon.frontendEntry,
         })
       }
-      if (
-        type === `${addon.name}:${addon.name}` &&
-        !merged.has(addon.name)
-      ) {
+      if (type === `${addon.name}:${addon.name}` && !merged.has(addon.name)) {
         merged.set(addon.name, {
           name: addon.name,
           frontendEntry: addon.frontendEntry,

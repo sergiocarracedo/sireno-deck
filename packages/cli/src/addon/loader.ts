@@ -237,7 +237,8 @@ interface ParsedSpecifier {
 }
 
 // npm package name spec — scoped names + optional @version
-const NPM_SPECIFIER = /^(?:@[a-z0-9][a-z0-9._-]*\/)?[a-z0-9][a-z0-9._-]*(?:@[a-z0-9][a-z0-9._-]*)?$/i
+const NPM_SPECIFIER =
+  /^(?:@[a-z0-9][a-z0-9._-]*\/)?[a-z0-9][a-z0-9._-]*(?:@[a-z0-9][a-z0-9._-]*)?$/i
 const NPM_VERSION = /^[a-z0-9][a-z0-9._-]*$/i
 
 const parseNpmSpecifier = (spec: string): ParsedSpecifier | null => {

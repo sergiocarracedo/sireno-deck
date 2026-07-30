@@ -1,4 +1,12 @@
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest"
 import { writeFileSync, mkdtempSync } from "node:fs"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
@@ -402,7 +410,9 @@ describe("start", () => {
     })
     await awaitFork()
     await startPromise
-    expect(writeConfigPath).toHaveBeenCalledWith(`${process.env.START_TEST_CFG_DIR}/cfg.yml`)
+    expect(writeConfigPath).toHaveBeenCalledWith(
+      `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
+    )
   })
 
   it("resolves immediately without blocking on the forked pipeline", async () => {

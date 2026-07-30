@@ -39,7 +39,8 @@ export function TemporaryErrorSurface(
     : layoutClassName
 
   const label = labelProp ?? FALLBACK_LABEL
-  const details = (detailsProp ?? "").length > 0 ? detailsProp : FALLBACK_DETAILS
+  const details =
+    (detailsProp ?? "").length > 0 ? detailsProp : FALLBACK_DETAILS
 
   return (
     <div

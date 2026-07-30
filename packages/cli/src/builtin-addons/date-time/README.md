@@ -4,12 +4,12 @@ Time + date buttons. All refresh on a 1-second interval.
 
 ## Buttons
 
-| Type                      | Description                                             |
-| ------------------------- | ------------------------------------------------------- |
-| `date-time:time`          | Digital time (HH:mm or big variant)                     |
-| `date-time:date`          | Day + month + weekday                                   |
-| `date-time:date-time`     | Combined date + time (custom format string)             |
-| `date-time:analog-clock`  | SVG analog clock face                                   |
+| Type                     | Description                                 |
+| ------------------------ | ------------------------------------------- |
+| `date-time:time`         | Digital time (HH:mm or big variant)         |
+| `date-time:date`         | Day + month + weekday                       |
+| `date-time:date-time`    | Combined date + time (custom format string) |
+| `date-time:analog-clock` | SVG analog clock face                       |
 
 ## Config
 

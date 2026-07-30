@@ -6,17 +6,17 @@ You don't reference this addon directly in `config.yml`. The settings overlay is
 
 ## Buttons
 
-| Type                                   | Description                                          |
-| -------------------------------------- | ---------------------------------------------------- |
-| `internal-settings:brightness-up`      | Increase screen brightness                          |
-| `internal-settings:brightness-down`    | Decrease screen brightness                          |
-| `internal-settings:app-info`           | Shows the about / app info panel                    |
+| Type                                | Description                      |
+| ----------------------------------- | -------------------------------- |
+| `internal-settings:brightness-up`   | Increase screen brightness       |
+| `internal-settings:brightness-down` | Decrease screen brightness       |
+| `internal-settings:app-info`        | Shows the about / app info panel |
 
 ## Decks
 
-| Deck id                          | Buttons                                          |
-| -------------------------------- | ------------------------------------------------ |
-| `internal-settings:settings`    | brightness-up (0), brightness-down (1), app-info (2) |
+| Deck id                      | Buttons                                              |
+| ---------------------------- | ---------------------------------------------------- |
+| `internal-settings:settings` | brightness-up (0), brightness-down (1), app-info (2) |
 
 The `settings` deck is auto-generated. The brightness buttons delegate to the OS provider's brightness control (see [brightness](../brightness/README.md)).
 
