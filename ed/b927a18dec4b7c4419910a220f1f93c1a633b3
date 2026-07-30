@@ -1,0 +1,22 @@
+packages/cli/src/system/providers/session/__tests__/factory.test.ts
+  s_851eff0056cb16::t_febe3db6b8955f 7
+  s_851eff0056cb16::t_82594b7ad1dc91 51
+packages/cli/src/system/providers/session.ts
+  s_851eff0056cb16::t_7bc5610b2bff4a 48-51,54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "edb927a18dec4b7c4419910a220f1f93c1a633b3",
+  "prompts": {},
+  "sessions": {
+    "s_851eff0056cb16": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04d931e91ffesaWQQF204H2ueV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
