@@ -1,0 +1,31 @@
+packages/cli/src/ui/surfaces/IconLabelProgressSurface.tsx
+  s_7ab08ef7bdc7f9::t_a318d78de89503 49-52
+packages/cli/src/ui/primitives/Icon.tsx
+  s_7ab08ef7bdc7f9::t_c73e379bd460e9 132,166
+packages/cli/src/ui/surfaces/__tests__/IconLabelProgressSurface.test.tsx
+  s_7ab08ef7bdc7f9::t_5e5e38e74580e2 97-112
+packages/cli/src/ui/surfaces/__tests__/IconLabelSurface.test.tsx
+  s_7ab08ef7bdc7f9::t_c3f69d64398859 5
+  s_7ab08ef7bdc7f9::t_45ad34b468414e 1-4,6-15,21-31
+  s_7ab08ef7bdc7f9::t_95ad4341953056 16-20
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  s_7ab08ef7bdc7f9::t_8dced204ad85bc 31
+packages/cli/src/ui/primitives/__tests__/Icon.test.tsx
+  s_7ab08ef7bdc7f9::t_2e57f6d85afbaa 189-218
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "afd0bfccca1cc26755733df05bf5c42d36a2d089",
+  "prompts": {},
+  "sessions": {
+    "s_7ab08ef7bdc7f9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04d3b900cffeEWOxH9timst4jr",
+        "model": "MiniMax-M2.7"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
