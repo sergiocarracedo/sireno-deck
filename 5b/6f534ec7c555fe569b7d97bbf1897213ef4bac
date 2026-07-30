@@ -1,0 +1,24 @@
+packages/cli/src/render/ws-bridge.ts
+  s_adb3cba007b617::t_58368d603ed71e 153-154,157,159
+packages/cli/src/render/icon-source-resolver.ts
+  s_adb3cba007b617::t_e1587c35297cd3 42-44
+packages/cli/src/deck/__tests__/addon-handler-bridge.test.ts
+  s_adb3cba007b617::t_4df4705f6a3a85 435
+  s_adb3cba007b617::t_2a9b88797c0607 297
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "5b6f534ec7c555fe569b7d97bbf1897213ef4bac",
+  "prompts": {},
+  "sessions": {
+    "s_adb3cba007b617": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0501ede01ffeIg0hBGhV1ZRV7a",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
