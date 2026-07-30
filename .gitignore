@@ -18,7 +18,7 @@ coverage/
 
 packages/cli/src/themes/light/index.js
 
-runtime/
+/runtime/
 *.pid
 
 packages/cli/frontend/.sireno-deck/

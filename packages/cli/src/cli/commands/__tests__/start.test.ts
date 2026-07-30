@@ -1,4 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import { writeFileSync, mkdtempSync } from "node:fs"
+import { join } from "node:path"
+import { tmpdir } from "node:os"
 
 vi.mock("@/config/loader", () => ({
   loadConfig: vi.fn(),
@@ -337,6 +340,14 @@ const setHappyPath = (): ReturnType<typeof makeFakeOutputClient> => {
 
 describe("start", () => {
   let savedArgv1: string | undefined
+  beforeAll(() => {
+    // ponytail: --config now validates the path exists up-front.
+    // Tests use a literal `${process.env.START_TEST_CFG_DIR}/cfg.yml`; create it on disk once so
+    // the validator accepts it.
+    const dir = mkdtempSync(join(tmpdir(), "start-test-"))
+    process.env["START_TEST_CFG_DIR"] = dir
+    writeFileSync(join(dir, "cfg.yml"), "decks: {}\n")
+  })
   beforeEach(() => {
     vi.clearAllMocks()
     savedArgv1 = process.argv[1]
@@ -367,7 +378,7 @@ describe("start", () => {
     setHappyPath()
     const { spawnDetached } = await import("../spawn-daemon")
     const startPromise = start({
-      config: "/abs/cfg.yml",
+      config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
       frontendUrl: "http://x",
       xdgConfigHome: "/xdg",
       homeDir: "/home",
@@ -383,7 +394,7 @@ describe("start", () => {
     setHappyPath()
     const { writeConfigPath } = await import("@/util/daemon")
     const startPromise = start({
-      config: "/abs/cfg.yml",
+      config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
       frontendUrl: "http://x",
       xdgConfigHome: "/xdg",
       homeDir: "/home",
@@ -391,13 +402,13 @@ describe("start", () => {
     })
     await awaitFork()
     await startPromise
-    expect(writeConfigPath).toHaveBeenCalledWith("/abs/cfg.yml")
+    expect(writeConfigPath).toHaveBeenCalledWith(`${process.env.START_TEST_CFG_DIR}/cfg.yml`)
   })
 
   it("resolves immediately without blocking on the forked pipeline", async () => {
     setHappyPath()
     const startPromise = start({
-      config: "/abs/cfg.yml",
+      config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
       frontendUrl: "http://x",
       xdgConfigHome: "/xdg",
       homeDir: "/home",
@@ -433,7 +444,7 @@ describe("start", () => {
 
       await expect(
         start({
-          config: "/abs/cfg.yml",
+          config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
           frontendUrl: "http://x",
           xdgConfigHome: "/xdg",
           homeDir: "/home",

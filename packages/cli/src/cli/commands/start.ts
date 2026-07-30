@@ -329,9 +329,17 @@ const resolveConfigPath = (options: StartOptions): string => {
   const home = options.homeDir ?? process.env["HOME"] ?? ""
   const xdgConfigHome =
     options.xdgConfigHome ?? process.env["XDG_CONFIG_HOME"] ?? `${home}/.config`
+  // ponytail: when --config isn't passed we fall back to the cached
+  // path (readConfigPath) that the previous daemon session wrote. If
+  // the cached path no longer exists (e.g. worktree removed between
+  // sessions), drop it and re-search the filesystem instead of
+  // failing on a stale pointer.
+  const cached = readConfigPath()
+  const cachedUsable =
+    cached !== null && existsSync(cached) ? cached : null
   return (
     options.config ??
-    readConfigPath() ??
+    cachedUsable ??
     findConfigPath({
       homeDir: home,
       ...(options.xdgConfigHome !== undefined
