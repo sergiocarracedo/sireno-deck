@@ -11,7 +11,8 @@ export type ConfigSchema = z.infer<typeof configSchema>
 export const DEFAULT_DURATION_SEC = 1500
 
 export interface PersistedState {
-  status: "idle" | "running" | "finished"
+  status: "idle" | "running" | "paused" | "finished"
   startTsMs: number | null
   durationSec: number
+  remainingSec: number | null
 }

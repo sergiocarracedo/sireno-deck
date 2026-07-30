@@ -1,4 +1,4 @@
-export type PomodoroStatus = "idle" | "running" | "finished"
+export type PomodoroStatus = "idle" | "running" | "paused" | "finished"
 
 export interface PomodoroButtonState {
   readonly status: PomodoroStatus

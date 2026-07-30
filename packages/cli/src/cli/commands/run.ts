@@ -1025,27 +1025,45 @@ interface AddonRegistryBundle {
   readonly addonByType: Map<string, AddonFrontendRef>
 }
 
+// ponytail: shape a ScannedAddon into the addon-spec the frontend vite
+// plugin expects (see packages/cli/src/vite/virtual-modules.ts). Both
+// builtins and third-party addons share the same shape — only the source
+// of `frontendEntry` differs. Reused by the runPipeline pass that merges
+// externalScanned into SIRENO_ADDONS after both scanned arrays exist.
+export const addonSpecFromScanned = (s: ScannedAddon) => ({
+  name: s.name,
+  frontend: s.frontendEntry !== null ? { main: s.frontendEntry } : undefined,
+  buttons: s.types.map((t) => ({ type: t })),
+  buttonTypes: Object.fromEntries(
+    Object.entries(s.buttonTypes).map(([type, info]) => [
+      type,
+      info.exportName,
+    ]),
+  ),
+  defaultButton: s.defaultButton,
+})
+
 const buildAddonBundle = async (): Promise<AddonRegistryBundle> => {
   const registry = await collectBuiltinAddonRegistry()
 
-  if (process.env["SIRENO_ADDONS"] === undefined) {
-    const addonSpecs = registry.scanned.map((s) => ({
-      name: s.name,
-      frontend:
-        s.frontendEntry !== null ? { main: s.frontendEntry } : undefined,
-      buttons: s.types.map((t) => ({ type: t })),
-      buttonTypes: Object.fromEntries(
-        Object.entries(s.buttonTypes).map(([type, info]) => [
-          type,
-          info.exportName,
-        ]),
-      ),
-      defaultButton: s.defaultButton,
-    }))
-    process.env["SIRENO_ADDONS"] = JSON.stringify(addonSpecs)
-  }
-
   return { scanned: registry.scanned, addonByType: registry.byType }
+}
+
+// ponytail: previously SIRENO_ADDONS was populated inside buildAddonBundle
+// from builtins only, so third-party addons (e.g. addon-pomodoro) never
+// reached the frontend vite plugin's addonRegistry — ButtonSurface hit
+// the `registryEntry === undefined` branch and rendered an empty
+// ButtonFrame. External addons are registered via buildExternalScannedAddons
+// after validateAndLoadConfig, so the merged env-var write has to happen
+// here in runPipeline, after both scanned arrays exist.
+export const publishSIRENO_ADDONS = (
+  scanned: ReadonlyArray<ScannedAddon>,
+  externalScanned: ReadonlyArray<ScannedAddon>,
+): void => {
+  if (process.env["SIRENO_ADDONS"] !== undefined) return
+  process.env["SIRENO_ADDONS"] = JSON.stringify(
+    [...scanned, ...externalScanned].map(addonSpecFromScanned),
+  )
 }
 
 // ponytail: merge registry-loaded third-party addons into the bridge
@@ -1131,6 +1149,33 @@ export const buildExternalScannedAddons = (
     })
   }
   return out
+}
+
+const mergeAddonByType = (
+  baseByType: Map<string, AddonFrontendRef>,
+  externalScanned: ReadonlyArray<ScannedAddon>,
+): Map<string, AddonFrontendRef> => {
+  const merged = new Map(baseByType)
+  for (const addon of externalScanned) {
+    for (const type of addon.types) {
+      if (!merged.has(type)) {
+        merged.set(type, {
+          name: addon.name,
+          frontendEntry: addon.frontendEntry,
+        })
+      }
+      if (
+        type === `${addon.name}:${addon.name}` &&
+        !merged.has(addon.name)
+      ) {
+        merged.set(addon.name, {
+          name: addon.name,
+          frontendEntry: addon.frontendEntry,
+        })
+      }
+    }
+  }
+  return merged
 }
 
 // ponytail: extracted so tests can exercise the addon-spec-to-dir mapping
@@ -1306,6 +1351,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       externalAddonDirs,
       loadedConfig.addonEntryPaths,
     )
+    publishSIRENO_ADDONS(addonBundle.scanned, externalScanned)
     options.onAddonsUpdate?.([...addonBundle.scanned, ...externalScanned])
 
     addonServices = setupAddonServices({
@@ -1315,7 +1361,10 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       pubSub,
       scanned: addonBundle.scanned,
       externalAddons: externalScanned,
-      addonByType: addonBundle.addonByType,
+      // ponytail: addonBundle.addonByType only has builtins — merge in
+      // third-party addons so collectActiveDeckAddonNames can resolve their
+      // types and the state publisher starts their pollers.
+      addonByType: mergeAddonByType(addonBundle.addonByType, externalScanned),
       executor: createActionExecutor({ host: getHostContext() }),
       statePublisher,
       bridge,

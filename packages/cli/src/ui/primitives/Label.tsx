@@ -11,6 +11,7 @@ export interface LabelProps {
   text: string
   lines?: 1 | 2 | 3
   variant?: LabelVariant
+  className?: string
 }
 
 export function Label(props: LabelProps): ReactElement {
@@ -64,6 +65,7 @@ export function Label(props: LabelProps): ReactElement {
       className={cn(
         "tracking-tight max-w-full wrap-anywhere",
         variantStyle.className,
+        props.className,
       )}
       lineHeight={1.25}
       fit={fit}
