@@ -1,0 +1,44 @@
+packages/cli/src/system/providers/key-macro/windows.ts
+  s_914cb253a494a9::t_9a1ac5a45acf41 428
+  s_7b1f3df66b12cf::t_51dd195b5841e1 232-236
+  s_7b1f3df66b12cf::t_8bada081463ec3 427,429-430,432,444
+packages/cli/src/system/providers/key-macro/darwin.ts
+  s_7b1f3df66b12cf::t_752b4d6c370f0e 24-31,35-36,41-42
+  s_914cb253a494a9::t_9a1ac5a45acf41 37-40
+packages/cli/src/system/providers/key-macro/__tests__/darwin.test.ts
+  s_914cb253a494a9::t_f6a5368d192ebc 122-155
+packages/cli/src/system/providers/key-macro/__tests__/windows.test.ts
+  s_914cb253a494a9::t_7312d21821edb6 243-280
+packages/cli/src/system/providers/key-macro/__tests__/linux.test.ts
+  s_914cb253a494a9::t_78453034188368 293-358
+packages/cli/src/system/providers/key-macro/linux.ts
+  s_914cb253a494a9::t_e9d3cc6c745fd1 385
+  s_7b1f3df66b12cf::t_f876f9137d54a4 389-390
+  s_7b1f3df66b12cf::t_7e4c9dc4ca66ba 300-307,309-310,312,314
+  s_914cb253a494a9::t_073fd628197b6e 197-204
+  s_7b1f3df66b12cf::t_66f2266319d9dd 343-344,386-388
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "cbf1a7d39bf57f84f6e453ae247c6732e2b95939",
+  "prompts": {},
+  "sessions": {
+    "s_7b1f3df66b12cf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_050d9560affelcug8YsyX6TNr7",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_914cb253a494a9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04dc0a6c1ffezeiszYDfb93RtV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": null
+    }
+  }
+}
