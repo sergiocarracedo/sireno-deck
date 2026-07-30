@@ -39,6 +39,14 @@ export interface ThemeUiPresentation {
     props: ButtonFrameProps,
     ctx?: ThemeOverrideContext,
   ) => ReactElement
+  /**
+   * Optional deck-chrome background hook. Themes can paint a full-deck
+   * background (e.g. a perspective grid) behind the tiles without
+   * needing core-deck patches. Receives the default `className` and
+   * returns any extra classes to merge in. Returning undefined is a
+   * no-op (default behavior).
+   */
+  deckBackground?: (props: { className: string }) => string | undefined
   primitives?: {
     chip?: (props: ChipProps, ctx?: ThemeOverrideContext) => ReactElement
     icon?: (props: IconProps, ctx?: ThemeOverrideContext) => ReactElement

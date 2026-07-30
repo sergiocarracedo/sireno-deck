@@ -5,6 +5,7 @@ import {
 } from "@/device/models"
 import {
   useEffect,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
@@ -12,6 +13,7 @@ import {
 } from "react"
 
 import { addonRegistry } from "virtual:sireno/addons/registry"
+import { uiOverrides } from "virtual:sireno/themes/manifest"
 
 import {
   isSystemButton,
@@ -334,9 +336,28 @@ export const Deck = ({ deck, deviceModel, children }: DeckProps) => {
   const errorPositions = new Set(
     (deck.buttonErrors ?? []).map((error) => error.position),
   )
+  /**
+   * Theme-supplied deck-chrome background. Themes can paint a full-deck
+   * perspective grid (or any other background) by exporting a
+   * `deckBackground` fn from their ui-overrides module. Default is
+   * bg-neutral-950 — unchanged when no hook is registered.
+   */
+  const extras = useMemo(() => {
+    const overrides = uiOverrides as {
+      deckBackground?: (props: { className: string }) => string | undefined
+    } | null
+    const hook = overrides?.deckBackground
+    if (typeof hook !== "function") return ""
+    return (
+      hook({ className: `bg-neutral-950 ${compact ? "p-0" : "p-4"}` }) ?? ""
+    )
+  }, [compact])
+  const baseClass = `grid rounded-xl ${compact ? "p-0" : "p-4"}`
+  const deckClass =
+    extras.length > 0 ? `${baseClass} ${extras}` : `${baseClass} bg-neutral-950`
   return (
     <div
-      className={`grid rounded-xl bg-neutral-950 ${compact ? "p-0" : "p-4"}`}
+      className={deckClass}
       style={
         {
           gridTemplateColumns: `repeat(${columns}, ${BUTTON_SIZE}px)`,

@@ -13,8 +13,8 @@ import { ThemeProvider, type ThemeContextValue } from "@/themes/index"
 import {
   AssetCacheProvider,
   ThemeUiPresentationProvider,
+  buildPresentation,
   useAssetCacheMutations,
-  type ThemeUiPresentation,
 } from "@sireno-deck/cli"
 import {
   getDeviceModel,
@@ -113,31 +113,11 @@ const buildThemeContext = (): ThemeContextValue => {
     typography: null,
   }
 }
-
 let _wsClientInitialized = false
-
-const buildPresentation = (): ThemeUiPresentation | undefined => {
-  if (uiOverrides === null) return undefined
-  const components = (uiOverrides as { components?: unknown }).components as
-    | { ButtonFrame?: ThemeUiPresentation["buttonFrame"] }
-    | undefined
-  const surfaces = (uiOverrides as { surfaces?: unknown }).surfaces as
-    | ThemeUiPresentation["surfaces"]
-    | undefined
-  const primitives = (uiOverrides as { primitives?: unknown }).primitives as
-    | ThemeUiPresentation["primitives"]
-    | undefined
-  if (!components?.ButtonFrame && !surfaces && !primitives) return undefined
-  return {
-    ...(components?.ButtonFrame ? { buttonFrame: components.ButtonFrame } : {}),
-    ...(surfaces ? { surfaces } : {}),
-    ...(primitives ? { primitives } : {}),
-  }
-}
 
 export const App = () => {
   const [theme] = useState<ThemeContextValue>(() => buildThemeContext())
-  const presentation = useMemo(() => buildPresentation(), [])
+  const presentation = useMemo(() => buildPresentation(uiOverrides), [])
 
   return (
     <AssetCacheProvider>
@@ -149,7 +129,6 @@ export const App = () => {
     </AssetCacheProvider>
   )
 }
-
 const AppContent = () => {
   const [deck, setDeck] = useState<DeckState>(EMPTY_DECK)
   const [send, setSend] = useState<WebSocketSend | null>(null)

@@ -212,6 +212,10 @@ Advanced: Replace React components entirely:
 }
 ```
 
+The ui-overrides path resolves to a module that exports three optional
+buckets. Each is shallow-merged into the default presentation; missing
+slots fall back to the built-in component.
+
 ```typescript
 // components/index.ts
 export const components = {
@@ -220,5 +224,24 @@ export const components = {
 
 export const surfaces = {
   IconLabel: MyCustomIconLabel,
+  IconLabelProgress: MyCustomIconLabelProgress,
+  TemporaryError: MyCustomTemporaryError,
 }
+
+export const primitives = {
+  Label: MyCustomLabel,
+  TapIndicator: MyCustomTapIndicator,
+}
+```
+
+Override fns receive the same props as the default component plus an
+optional second argument — a `ThemeOverrideContext` with the active theme
+name, colors, and typography — so they can read sibling tokens without
+parsing CSS variables.
+
+Top-level helpers (`deckBackground`) also live in the same module:
+
+```typescript
+export const deckBackground = ({ className }) =>
+  `${className} bg-[radial-gradient(...)]`
 ```
