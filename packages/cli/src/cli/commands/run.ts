@@ -1501,6 +1501,19 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       onChange: () => {
         void handleConfigChange()
       },
+      // ponytail: chokidar emits "unlink" when the watched file
+      // disappears — e.g. the worktree holding the config was removed
+      // out from under the daemon. Without this hook the daemon keeps
+      // running with stale state and the next config-touch throws a
+      // confusing `Config file not found`. Shut down cleanly so the
+      // operator gets one obvious message instead of a flood.
+      onUnlink: (path) => {
+        logger.fatal(
+          { configPath: path },
+          "config file was deleted (worktree removed?) — shutting down daemon; restart with a valid config",
+        )
+        resolveDoneForCrash()
+      },
     })
     const handleConfigChange = async (): Promise<void> => {
       try {
@@ -1631,6 +1644,19 @@ const resolveXdgConfigHome = (options: RunOptions): string =>
 
 const resolveConfigPath = (options: RunOptions): string => {
   if (options.config !== undefined) {
+    // ponytail: validate the explicit path up-front. Without this the
+    // daemon would happily boot, then every config-touch (chokidar event,
+    // reload, addon revalidation) would surface a confusing
+    // `ConfigLoadError: Config file not found` against a path the
+    // operator no longer recognises. Surface it once, at startup, so
+    // the failure mode is obvious and the user can fix the --config
+    // flag instead of chasing a phantom error from a deleted worktree.
+    if (!existsSync(options.config)) {
+      throw new Error(
+        `Config file not found: ${options.config}\n` +
+          `  Fix: pass a valid --config path, or remove --config to let sireno-deck auto-discover config.yml.`,
+      )
+    }
     return options.config
   }
   const cwd = getOriginalCwd()

@@ -1,4 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import { writeFileSync, mkdtempSync } from "node:fs"
+import { join } from "node:path"
+import { tmpdir } from "node:os"
 
 vi.mock("@/config/loader", () => ({
   loadConfig: vi.fn(),
@@ -349,6 +352,14 @@ const setHappyPath = (
 }
 
 describe("run", () => {
+  beforeAll(() => {
+    // ponytail: --config now validates the path exists up-front. Tests
+    // use a literal `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`; create it on disk once so the
+    // validator accepts it. Removed in afterAll (vitest cleans tmp).
+    const dir = mkdtempSync(join(tmpdir(), "run-test-"))
+    process.env["RUN_TEST_CFG_DIR"] = dir
+    writeFileSync(join(dir, "cfg.yml"), "decks: {}\n")
+  })
   beforeEach(() => {
     vi.clearAllMocks()
     configChangeCallback = null
@@ -362,7 +373,7 @@ describe("run", () => {
     const outputClient = setHappyPath()
     const signals = makeFakeSignals()
     const runPromise = run({
-      config: "/abs/cfg.yml",
+      config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
       frontendUrl: "http://x",
       xdgConfigHome: "/xdg",
       homeDir: "/home",
@@ -374,7 +385,7 @@ describe("run", () => {
     signals.trigger()
     await runPromise
 
-    expect(loaderMock).toHaveBeenCalledWith({ configPath: "/abs/cfg.yml" })
+    expect(loaderMock).toHaveBeenCalledWith({ configPath: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml` })
     expect(builtinsMock).toHaveBeenCalled()
     expect(validateFullMock).toHaveBeenCalled()
     expect(outputClient.listDevices).toHaveBeenCalled()
@@ -397,7 +408,7 @@ describe("run", () => {
     const outputClient = setHappyPath()
     const signals = makeFakeSignals()
     const runPromise = run({
-      config: "/abs/cfg.yml",
+      config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
       frontendUrl: "http://x",
       xdgConfigHome: "/xdg",
       homeDir: "/home",
@@ -412,6 +423,23 @@ describe("run", () => {
     await runPromise
 
     expect(handle.stop).toHaveBeenCalledTimes(1)
+  })
+
+  it("rejects with clear error when --config points at a missing file", async () => {
+    // ponytail: without this, a daemon started with a stale --config
+    // (e.g. worktree removed) would boot, then every config-touch would
+    // throw a confusing ConfigLoadError from inside chokidar's hot-reload.
+    // Surface it once, at startup, with a fix-it message.
+    await expect(
+      run({
+        config: "/definitely/does/not/exist/config.yml",
+        frontendUrl: "http://x",
+        xdgConfigHome: "/xdg",
+        homeDir: "/home",
+        signals: makeFakeSignals(),
+        logger: silentLogger(),
+      }),
+    ).rejects.toThrow(/Config file not found/)
   })
 
   it("rejects when config validation fails (does not call outputClient)", async () => {
@@ -431,7 +459,7 @@ describe("run", () => {
 
     await expect(
       run({
-        config: "/abs/cfg.yml",
+        config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
         frontendUrl: "http://x",
         xdgConfigHome: "/xdg",
         homeDir: "/home",
@@ -448,7 +476,7 @@ describe("run", () => {
     setHappyPath({ outputClient: emulatorClient })
     const signals = makeFakeSignals()
     const runPromise = run({
-      config: "/abs/cfg.yml",
+      config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
       frontendUrl: "http://x",
       emulator: true,
       xdgConfigHome: "/xdg",
@@ -483,7 +511,7 @@ describe("run", () => {
       }
     })
     const runPromise = run({
-      config: "/abs/cfg.yml",
+      config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
       frontendUrl: "http://x",
       xdgConfigHome: "/xdg",
       homeDir: "/home",
@@ -513,7 +541,7 @@ describe("run", () => {
     const outputClient = setHappyPath()
     const signals = makeFakeSignals()
     const runPromise = run({
-      config: "/abs/cfg.yml",
+      config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
       frontendUrl: "http://x",
       xdgConfigHome: "/xdg",
       homeDir: "/home",
@@ -544,7 +572,7 @@ describe("preflight", () => {
   it("calls outputClient.validateReady()", async () => {
     const outputClient = setHappyPath()
     await preflight({
-      config: "/abs/cfg.yml",
+      config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
       xdgConfigHome: "/xdg",
       homeDir: "/home",
       logger: silentLogger(),
@@ -562,7 +590,7 @@ describe("preflight", () => {
     setHappyPath({ outputClient: realClient })
     await expect(
       preflight({
-        config: "/abs/cfg.yml",
+        config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
         xdgConfigHome: "/xdg",
         homeDir: "/home",
         logger: silentLogger(),
@@ -581,7 +609,7 @@ describe("preflight", () => {
     try {
       await expect(
         preflight({
-          config: "/abs/cfg.yml",
+          config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
           xdgConfigHome: "/xdg",
           homeDir: "/home",
           logger: silentLogger(),
@@ -627,7 +655,7 @@ describe("preflight", () => {
         logger: ReturnType<typeof silentLogger>
         emulator?: boolean
       } = {
-        config: "/abs/cfg.yml",
+        config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
         xdgConfigHome: "/xdg",
         homeDir: "/home",
         logger: silentLogger(),
@@ -664,7 +692,7 @@ describe("preflight", () => {
     try {
       await expect(
         preflight({
-          config: "/abs/cfg.yml",
+          config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
           xdgConfigHome: "/xdg",
           homeDir: "/home",
           logger: silentLogger(),
