@@ -45,12 +45,13 @@ export const createSessionProvider = async (
 ): Promise<SessionProvider> => {
   const platform = options.platform ?? process.platform
   if (platform === "linux") {
-    if (options.dbus === undefined) {
-      return createNullSessionProvider(options.logger)
-    }
+    // ponytail: let createLinuxSessionProvider self-own a dbus session bus when
+    // none is injected (mirrors active-app/wayland-gnome.ts:62-74). Returning a
+    // null provider here turned every Linux run into a silent no-op, which is
+    // why core:lock never fired.
     const { createLinuxSessionProvider } = await import("./session/linux")
     return createLinuxSessionProvider({
-      dbus: options.dbus,
+      ...(options.dbus !== undefined ? { dbus: options.dbus } : {}),
       logger: options.logger,
       ...(options.idleMs !== undefined ? { idleMs: options.idleMs } : {}),
     })
