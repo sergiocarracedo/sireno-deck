@@ -1,0 +1,26 @@
+docs/solutions/tooling-decisions/adding-deep-sub-packages-to-root-pnpm-workspace.md
+  s_f546598fdf71fd::t_9ab9076913fdb7 1-139
+pnpm-workspace.yaml
+  s_f546598fdf71fd::t_74e212c28c8884 3-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "1ffb0222f6c0921c5b9cdfc098e02e21938242d0",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_f546598fdf71fd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_050e9a41fffeMRxcKoHQ5up15J",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
