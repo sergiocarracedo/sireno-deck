@@ -425,7 +425,9 @@ export const createWindowsKeyMacroProvider = async (
         const seenVk = new Set<number>()
         const orderedMods: number[] = []
 
-        const needsShift = (parsed.key === "plus" || parsed.key === "minus") && !parsed.mods.includes("shift")
+        const needsShift =
+          (parsed.key === "plus" || parsed.key === "minus") &&
+          !parsed.mods.includes("shift")
         const mods = needsShift ? [...parsed.mods, "shift"] : parsed.mods
 
         for (const mod of MOD_ORDER) {

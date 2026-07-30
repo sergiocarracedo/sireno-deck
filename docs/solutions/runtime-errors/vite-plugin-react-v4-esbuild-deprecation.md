@@ -8,8 +8,8 @@ problem_type: runtime_error
 component: tooling
 severity: low
 symptoms:
-  - "[vite] warning: `esbuild` option was specified by \"vite:react-babel\" plugin"
-  - "[vite] warning: `optimizeDeps.esbuildOptions` option was specified by \"vite:react-babel\" plugin"
+  - '[vite] warning: `esbuild` option was specified by "vite:react-babel" plugin'
+  - '[vite] warning: `optimizeDeps.esbuildOptions` option was specified by "vite:react-babel" plugin'
   - "You or a plugin you are using have set `optimizeDeps.esbuildOptions` but this option is now deprecated"
   - "All three warning lines appear on every `vite` startup and every `node bin/dev.js run`"
 root_cause: config_error
@@ -64,7 +64,7 @@ lower in the log, and they pollute every CI/dev log forever.
 - **Trying `@vitejs/plugin-react@^6`.** v6 removes the Babel plugin entirely
   and is the cleanest target, but its peer-dep is `vite@^8.0.0`. The project
   is on Vite 6.4.3; `pnpm install` rejects the upgrade with `unmet peer
-  vite@^8.0.0: found 6.4.3`. v6 is not installable without also bumping Vite,
+vite@^8.0.0: found 6.4.3`. v6 is not installable without also bumping Vite,
   which is its own migration.
 - **Configuring the warnings away.** Vite 6 does not expose a flag to
   suppress plugin-level deprecation warnings — they are hard-coded in the

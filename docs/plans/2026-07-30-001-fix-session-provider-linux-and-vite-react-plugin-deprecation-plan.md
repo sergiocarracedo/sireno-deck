@@ -29,7 +29,7 @@ The session bug is the regression that broke the lock deck; the vite warnings ar
 ```ts
 if (platform === "linux") {
   if (options.dbus === undefined) {
-    return createNullSessionProvider(options.logger)   // <-- short-circuit
+    return createNullSessionProvider(options.logger) // <-- short-circuit
   }
   const { createLinuxSessionProvider } = await import("./session/linux")
   return createLinuxSessionProvider({

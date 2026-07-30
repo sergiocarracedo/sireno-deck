@@ -4,8 +4,8 @@ Current weather for a fixed location. Hits Open-Meteo (https://open-meteo.com/) 
 
 ## Buttons
 
-| Type           | Description                                        |
-| -------------- | -------------------------------------------------- |
+| Type              | Description                                        |
+| ----------------- | -------------------------------------------------- |
 | `weather:weather` | Single button: temperature, wind speed, conditions |
 
 ## Config

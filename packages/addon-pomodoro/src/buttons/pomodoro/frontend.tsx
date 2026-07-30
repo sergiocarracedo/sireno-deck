@@ -1,9 +1,6 @@
 import { Label } from "@/ui/primitives/Label"
 
-import type {
-  PomodoroButtonState,
-  PomodoroSnapshot,
-} from "../../shared/state"
+import type { PomodoroButtonState, PomodoroSnapshot } from "../../shared/state"
 import { POMO_CHANNEL } from "../../shared/state"
 import type { ConfigSchema } from "./config"
 
@@ -75,7 +72,8 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
       <style>{BLINK_KEYFRAMES}</style>
       <div
         className={`relative flex h-full w-full items-center justify-center ${
-          finished ? "pomodoro-blink" : ""}
+          finished ? "pomodoro-blink" : ""
+        }
         `}
       >
         <svg viewBox="0 0 100 100" className="h-full w-full">

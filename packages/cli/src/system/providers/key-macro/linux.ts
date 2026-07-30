@@ -382,7 +382,8 @@ const buildYdotoolComboArgs = (input: string): string[] | null => {
     )
   }
 
-  const needsShift = SHIFT_NEEDED_KEYS.has(parsed.key) && !parsed.mods.includes("shift")
+  const needsShift =
+    SHIFT_NEEDED_KEYS.has(parsed.key) && !parsed.mods.includes("shift")
   if (needsShift && !seenSc.has(SC_LEFTSHIFT)) {
     seenSc.add(SC_LEFTSHIFT)
     orderedMods.push(SC_LEFTSHIFT)

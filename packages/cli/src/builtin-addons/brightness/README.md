@@ -10,8 +10,8 @@ Uses the OS provider from `packages/cli/src/system/providers/`:
 
 ## Buttons
 
-| Type              | Description                                      |
-| ----------------- | ------------------------------------------------ |
+| Type                    | Description                                      |
+| ----------------------- | ------------------------------------------------ |
 | `brightness:brightness` | Single button: shows + adjusts screen brightness |
 
 ## Config

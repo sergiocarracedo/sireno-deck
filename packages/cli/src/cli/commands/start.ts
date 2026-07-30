@@ -335,8 +335,7 @@ const resolveConfigPath = (options: StartOptions): string => {
   // sessions), drop it and re-search the filesystem instead of
   // failing on a stale pointer.
   const cached = readConfigPath()
-  const cachedUsable =
-    cached !== null && existsSync(cached) ? cached : null
+  const cachedUsable = cached !== null && existsSync(cached) ? cached : null
   return (
     options.config ??
     cachedUsable ??
