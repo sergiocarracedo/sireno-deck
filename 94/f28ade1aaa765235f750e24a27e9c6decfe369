@@ -1,0 +1,36 @@
+packages/cli/docs/developer/theme-authoring.mdx
+  s_70036ce8862e97::t_996c30dc4568c6 215-218,227-233,236-246
+  s_70036ce8862e97::t_9edade4d9f58cc 247
+packages/cli/frontend/src/components/Deck.tsx
+  s_70036ce8862e97::t_dcbbece29768e3 339-345,349-350,354-355,360
+  s_70036ce8862e97::t_394eb3199edd2d 346-348,351-353,356-357
+  s_70036ce8862e97::t_199decece9b5c5 8,16
+packages/cli/src/ui/theme-presentation-builder.ts
+  s_70036ce8862e97::t_7049eb27d8786e 1-24,26-29
+  s_70036ce8862e97::t_394eb3199edd2d 25
+packages/cli/src/ui/theme-presentation.tsx
+  s_70036ce8862e97::t_f0855ef2e0d8d4 42-49
+packages/cli/src/addon/loader.ts
+  s_70036ce8862e97::t_8f243723f7f6a1 210-215,219
+packages/cli/frontend/src/App.tsx
+  s_70036ce8862e97::t_738c2546e3a04b 120
+  s_70036ce8862e97::t_c580767da07444 16
+packages/cli/src/ui/index.ts
+  s_70036ce8862e97::t_3eac7a0648475c 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "94f28ade1aaa765235f750e24a27e9c6decfe369",
+  "prompts": {},
+  "sessions": {
+    "s_70036ce8862e97": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04b9af39cffePw9D6O3std5M9T",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
