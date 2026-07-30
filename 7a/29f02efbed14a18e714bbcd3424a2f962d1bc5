@@ -1,0 +1,19 @@
+docs/plans/2026-07-29-02-architecture-p1-batch4.md
+  s_adb3cba007b617::t_ab3974360bc0bc 1-182
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "7a29f02efbed14a18e714bbcd3424a2f962d1bc5",
+  "prompts": {},
+  "sessions": {
+    "s_adb3cba007b617": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0501ede01ffeIg0hBGhV1ZRV7a",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
