@@ -53,6 +53,18 @@
   pointer-events: none;
 }
 
+/* Default pressed / holding glow — every theme gets this for free. Themes
+ * can override by re-declaring the same selectors under @layer
+ * theme-override (which has higher cascade precedence than utility classes).
+ */
+[data-sireno-button-frame="true"][data-pressed="true"] {
+  box-shadow: var(--sireno-pressed-glow);
+}
+
+[data-sireno-button-frame="true"][data-holding="true"] {
+  box-shadow: var(--sireno-held-glow);
+}
+
 .sireno-rich-text-break {
   display: block;
   height: 0;

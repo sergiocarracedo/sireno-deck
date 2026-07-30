@@ -31,6 +31,23 @@ function formatTypographyRoleVariables(
   ]
 }
 
+const FORMAT_BY_EXT: Record<string, string> = {
+  ".woff2": "woff2",
+  ".woff": "woff",
+  ".ttf": "truetype",
+  ".otf": "opentype",
+}
+
+/**
+ * Derive the CSS `format()` token from the font src extension. Falls back to
+ * truetype for unknown / extensionless paths so legacy manifests keep working.
+ */
+function fontFormatForSrc(src: string): string {
+  const match = src.match(/\.[a-z0-9]+(?:\?.*)?$/i)
+  if (match === null) return "truetype"
+  return FORMAT_BY_EXT[match[0].toLowerCase()] ?? "truetype"
+}
+
 const MANIFEST_TO_CSS_TOKEN: Record<string, string> = {
   background: "bg",
   foreground: "fg",
@@ -74,11 +91,18 @@ export function buildThemeCss(
   // @font-face declarations
   if (fonts.length > 0) {
     const fontFaces = fonts.map((f) => {
+      // Variable fonts — emit a single @font-face with from..to range when
+      // the manifest declares axes. Otherwise preserve the single weight.
+      const axes = f.axes
+      const weightRange = axes?.weight
       const weight =
-        f.fontStyle === "italic"
-          ? `${f.fontWeight} italic`
-          : String(f.fontWeight)
-      return `@font-face {\n  font-family: '${f.fontFamily}';\n  font-style: ${f.fontStyle};\n  font-weight: ${weight};\n  src: url('${f.src}') format('truetype');\n}`
+        weightRange !== undefined
+          ? `${weightRange[0]} ${weightRange[1]}`
+          : f.fontStyle === "italic"
+            ? `${f.fontWeight} italic`
+            : String(f.fontWeight)
+      const format = fontFormatForSrc(f.src)
+      return `@font-face {\n  font-family: '${f.fontFamily}';\n  font-style: ${f.fontStyle};\n  font-weight: ${weight};\n  src: url('${f.src}') format('${format}');\n}`
     })
     parts.push(fontFaces.join("\n\n"))
   }
@@ -100,12 +124,39 @@ export function buildThemeCss(
   for (const [roleName, role] of Object.entries(typography)) {
     rootLines.push(...formatTypographyRoleVariables(roleName, role))
   }
+  // Effect tokens — glow / shadow / blur, optional. Themes without effects
+  // still get sane defaults so component CSS never reads `undefined` for a
+  // token.
+  const effects = manifest.effects
+  rootLines.push(
+    `  --sireno-glow-sm: ${effects?.glow?.sm ?? "0 0 4px transparent"};`,
+  )
+  rootLines.push(
+    `  --sireno-glow-md: ${effects?.glow?.md ?? "0 0 12px transparent"};`,
+  )
+  rootLines.push(
+    `  --sireno-glow-lg: ${effects?.glow?.lg ?? "0 0 24px transparent"};`,
+  )
+  rootLines.push(
+    `  --sireno-shadow-soft: ${effects?.shadow?.soft ?? "0 1px 2px transparent"};`,
+  )
+  rootLines.push(
+    `  --sireno-shadow-hard: ${effects?.shadow?.hard ?? "0 4px 12px transparent"};`,
+  )
+  rootLines.push(`  --sireno-blur-sm: ${effects?.blur?.sm ?? "4px"};`)
+  rootLines.push(`  --sireno-blur-md: ${effects?.blur?.md ?? "10px"};`)
+  // Default pressed / holding glow hooks — every theme gets these for free
+  // (Gaps 10). Themes can override in their own stylesheet under @layer.
+  rootLines.push(`  --sireno-pressed-glow: var(--sireno-glow-md);`)
+  rootLines.push(`  --sireno-held-glow: var(--sireno-glow-lg);`)
   rootLines.push("}")
   parts.push(rootLines.join("\n"))
 
-  // Concatenated stylesheets
+  // Concatenated stylesheets — wrap in @layer so theme styles override
+  // built-in styles predictably (Tailwind v4 layer order is fixed:
+  // theme < base < components < utilities < user-overrides).
   if (stylesheetContents.length > 0) {
-    parts.push(stylesheetContents.join("\n\n"))
+    parts.push(`@layer theme-override {\n${stylesheetContents.join("\n\n")}\n}`)
   }
 
   // @theme block emitted last — see comment above the @theme block.
