@@ -1,0 +1,26 @@
+ARCHITECTURE.md
+  s_adb3cba007b617::t_fa18304dee93f1 85-95
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_adb3cba007b617::t_3c1a2624141d6a 559-581
+packages/cli/src/deck/__tests__/lock-deck.test.ts
+  s_adb3cba007b617::t_ce62cb117b1969 195-236
+packages/cli/src/deck/runtime/runtime.ts
+  s_adb3cba007b617::t_0db378c0c3e97a 770-785,787-795
+  s_adb3cba007b617::t_2a6e413a2b0046 488-491
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "0dcc395f9cd6a5c1880d19262ff97f02b6d2f4a3",
+  "prompts": {},
+  "sessions": {
+    "s_adb3cba007b617": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0501ede01ffeIg0hBGhV1ZRV7a",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
