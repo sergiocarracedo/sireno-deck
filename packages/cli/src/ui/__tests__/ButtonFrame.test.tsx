@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest"
 
 import { ButtonFrame } from "@/ui"
 
-describe("themes/default/ButtonFrame", () => {
+describe("ui/ButtonFrame", () => {
   it("renders children inside a div with default frame tokens", () => {
     const container = document.createElement("div")
     document.body.appendChild(container)
