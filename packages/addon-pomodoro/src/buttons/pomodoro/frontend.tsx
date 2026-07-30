@@ -132,7 +132,7 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
         {paused && (
           <svg
             viewBox="0 0 24 24"
-            className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-5 w-5"
+            className="pointer-events-none absolute left-1/2 top-[34%] -translate-x-1/2 -translate-y-1/2 h-4 w-4"
             fill="currentColor"
             aria-label="paused"
           >
