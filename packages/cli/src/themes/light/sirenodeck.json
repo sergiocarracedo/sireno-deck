@@ -1,0 +1,80 @@
+{
+  "kind": "theme",
+  "apiVersion": 1,
+  "name": "light",
+  "version": "0.1.0",
+  "description": "Light theme for Sireno Deck.",
+  "colorTokens": {
+    "background": "#f5f7fa",
+    "frame": "#9eb4c5",
+    "foreground": "#1a202c",
+    "foreground-contrast": "#fafafa",
+    "primary": "#0284c7",
+    "accent": "#075985",
+    "success": "#059669",
+    "danger": "#dc2626",
+    "tintBlue": "#0284c7",
+    "tintGreen": "#059669",
+    "tintPurple": "#7c3aed"
+  },
+  "typography": {
+    "main_text": {
+      "fontFamily": "IBM Plex Sans",
+      "fontSize": 12,
+      "fontWeight": 100
+    },
+    "auxiliary_text": {
+      "fontFamily": "IBM Plex Sans",
+      "fontSize": 8,
+      "fontWeight": 300,
+      "letterSpacing": 1.2
+    },
+    "monospace": {
+      "fontFamily": "IBM Plex Mono",
+      "fontSize": 10,
+      "fontWeight": 300,
+      "letterSpacing": 0.4
+    }
+  },
+  "fonts": [
+    {
+      "fontFamily": "IBM Plex Sans",
+      "fontWeight": 100,
+      "fontStyle": "normal",
+      "src": "./assets/static/IBMPlexSans-Thin.ttf"
+    },
+    {
+      "fontFamily": "IBM Plex Sans",
+      "fontWeight": 300,
+      "fontStyle": "normal",
+      "src": "./assets/static/IBMPlexSans-Light.ttf"
+    },
+    {
+      "fontFamily": "IBM Plex Sans",
+      "fontWeight": 300,
+      "fontStyle": "italic",
+      "src": "./assets/static/IBMPlexSans-LightItalic.ttf"
+    },
+    {
+      "fontFamily": "IBM Plex Mono",
+      "fontWeight": 300,
+      "fontStyle": "normal",
+      "src": "./assets/IBM_Plex_Mono/IBMPlexMono-Regular.ttf"
+    },
+    {
+      "fontFamily": "IBM Plex Mono",
+      "fontWeight": 500,
+      "fontStyle": "normal",
+      "src": "./assets/IBM_Plex_Mono/IBMPlexMono-Medium.ttf"
+    },
+    {
+      "fontFamily": "IBM Plex Mono",
+      "fontWeight": 700,
+      "fontStyle": "normal",
+      "src": "./assets/IBM_Plex_Mono/IBMPlexMono-Bold.ttf"
+    }
+  ],
+  "assets": {
+    "styles": ["./components.css"]
+  }
+}

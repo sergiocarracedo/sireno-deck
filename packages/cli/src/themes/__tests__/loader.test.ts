@@ -15,13 +15,15 @@ const makeTheme = (name: string): LoadedTheme => ({
 })
 
 describe("themes/loader", () => {
-  it("registerBuiltInThemes registers the default theme", () => {
+  it("registerBuiltInThemes registers the default and light themes", () => {
     const registry = new AddonRegistry()
     registerBuiltInThemes(registry)
-    const theme = registry.getTheme("default")
-    expect(theme).toBeDefined()
-    expect(theme?.apiVersion).toBe(1)
-    expect(theme?.source.kind).toBe("builtin")
+    for (const name of ["default", "light"]) {
+      const theme = registry.getTheme(name)
+      expect(theme, `theme ${name} should be registered`).toBeDefined()
+      expect(theme?.apiVersion).toBe(1)
+      expect(theme?.source.kind).toBe("builtin")
+    }
   })
 
   it("resolveActiveTheme returns the default theme when name is undefined", () => {
@@ -58,6 +60,6 @@ describe("themes/loader", () => {
         .listThemes()
         .map((t) => t.name)
         .sort(),
-    ).toEqual(["custom", "default"])
+    ).toEqual(["custom", "default", "light"])
   })
 })
