@@ -1,0 +1,19 @@
+packages/cli/frontend/src/components/ErrorBoundary.tsx
+  s_fd67621b3f5a28::t_33694b7231956d 59,62-63,66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "9816c1798853d2b1c84fcf480da1f1b14a4045b2",
+  "prompts": {},
+  "sessions": {
+    "s_fd67621b3f5a28": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0521f40fcffeFq8tI6BCf2nyfe",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
