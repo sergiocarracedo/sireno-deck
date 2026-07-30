@@ -1,0 +1,90 @@
+---
+/**
+ * OverlayDeckDeep — spotlight on the overlay deck feature.
+ *
+ * Shows a mock 5×3 deck grid with one highlighted tile and a short explanation.
+ * Phase D: OverlayDeckShowcase.mp4 replaces the static mockup.
+ */
+---
+
+<section class="py-28 px-6" style="background: #2e3540;">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <!-- Left: text -->
+      <div>
+        <p
+          class="text-xs font-semibold tracking-[0.2em] uppercase mb-4"
+          style="color: #34d399;"
+        >
+          Overlay Decks
+        </p>
+        <h2
+          class="text-4xl font-semibold leading-tight mb-6"
+          style="color: #eef2f7;"
+        >
+          The deck follows<br />what you're doing.
+        </h2>
+        <p class="text-lg leading-relaxed mb-8" style="color: #8a9bb5;">
+          An overlay deck activates when an application window gains focus.
+          The Stream Deck switches its entire button set — you don't navigate
+          to a different page, you just switch contexts and the deck follows.
+        </p>
+        <ul class="space-y-4" style="color: #c8d3e5;">
+          {
+            [
+              "OBS Studio → streaming controls",
+              "Terminal → system monitoring",
+              "Browser → reading mode shortcuts",
+              "Music app → playback + queue",
+            ].map((item) => (
+              <li class="flex items-start gap-3 text-base">
+                <span style="color: #34d399;" aria-hidden="true">✓</span>
+                {item}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Right: deck mockup -->
+      <div class="flex justify-center">
+        <div
+          class="rounded-3xl p-4 relative"
+          style="background: #1a1f2a; box-shadow: 0 32px 64px rgba(0,0,0,0.5);"
+        >
+          <!-- Frame label -->
+          <div
+            class="text-center text-xs font-medium tracking-widest uppercase mb-3"
+            style="color: #53738b; letter-spacing: 0.2em;"
+          >
+            Spotify Overlay
+          </div>
+
+          <!-- 5×3 grid -->
+          <div
+            class="grid gap-3"
+            style="grid-template-columns: repeat(5, 80px); grid-template-rows: repeat(3, 80px);"
+          >
+              {
+                Array.from({ length: 15 }, (_, i) => {
+                const isHighlighted = i === 7
+                return (
+                  <div
+                    class="rounded-xl flex items-center justify-center text-sm font-medium transition-all duration-200"
+                    style={
+                      isHighlighted
+                        ? "background: #1f6b5e; color: #c3f5ff; border: 1.5px solid #34d399; transform: scale(1.05);"
+                        : "background: #252b36; color: #53738b;"
+                    }
+                  >
+                    {i === 7 ? "♫" : i === 0 ? "⏮" : i === 4 ? "⏭" : ""}
+                  </div>
+                )
+              })
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

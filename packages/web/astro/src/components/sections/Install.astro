@@ -1,0 +1,83 @@
+---
+/**
+ * Install — shell commands to get Sireno Deck running.
+ */
+const steps = [
+  {
+    step: 1,
+    label: "Install",
+    code: "pnpm dlx sirenodeck start --emulator",
+    note: "Opens the emulator in your browser. No real hardware needed.",
+  },
+  {
+    step: 2,
+    label: "Configure",
+    code: "sireno config edit",
+    note: "Opens config.yml in your $EDITOR. Restart to apply changes.",
+  },
+  {
+    step: 3,
+    label: "Go",
+    code: "sireno start",
+    note: "Daemon starts. Press any button on the Stream Deck or emulator.",
+  },
+]
+---
+
+<section class="py-28 px-6" style="background: #252b36;">
+  <div class="max-w-4xl mx-auto text-center">
+    <p
+      class="text-xs font-semibold tracking-[0.2em] uppercase mb-4"
+      style="color: #34d399;"
+    >
+      Get started
+    </p>
+    <h2 class="text-4xl font-semibold mb-6" style="color: #eef2f7;">
+      Up in 60 seconds.
+    </h2>
+    <p class="text-lg mb-16" style="color: #8a9bb5;">
+      Requires Node 20+. Everything else is automatic.
+    </p>
+
+    <div class="flex flex-col gap-6 text-left">
+      {
+        steps.map((s) => (
+          <div
+            class="rounded-xl overflow-hidden"
+            style="background: #1a1f2a; border: 1px solid #2a3040;"
+          >
+            <div class="flex items-center gap-4 px-6 py-4">
+              <div
+                class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                style="background: #34d399; color: #1a1f2a;"
+              >
+                {s.step}
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-semibold mb-1" style="color: #eef2f7;">
+                  {s.label}
+                </p>
+                <div class="rounded-md px-4 py-2 font-mono text-sm" style="background: #252b36; color: #7dd3fc;">
+                  {s.code}
+                </div>
+              </div>
+            </div>
+            <div
+              class="px-6 pb-4 text-xs"
+              style="color: #53738b;"
+            >
+              {s.note}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="mt-12 text-sm" style="color: #53738b;">
+      Full install docs:{" "}
+      <a href="/docs/install/" class="underline" style="color: #7dd3fc;">
+        /docs/install/
+      </a>
+    </p>
+  </div>
+</section>

@@ -1,0 +1,12 @@
+{
+  "categories": {
+    "correctness": "error",
+    "perf": "warn",
+    "style": "warn",
+    "suspicious": "error"
+  },
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-console": "warn"
+  }
+}

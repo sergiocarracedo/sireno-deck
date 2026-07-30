@@ -1,0 +1,86 @@
+---
+/**
+ * Hero — top section of the landing page.
+ *
+ * Background: subtle radial gradient over the Sireno background.
+ * Foreground: wordmark, tagline, and two CTAs.
+ * Video: HeroLoop.mp4 loops silently behind the text (Phase D asset).
+ */
+---
+
+<section
+  class="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+>
+  <!-- Gradient backdrop -->
+  <div
+    class="absolute inset-0 pointer-events-none"
+    style="background: radial-gradient(ellipse 80% 60% at 50% 40%, #1a2a3a 0%, #2e3540 60%, #2e3540 100%);"
+    aria-hidden="true"
+  >
+  </div>
+
+  <!-- Phase D: HeroLoop.mp4 renders here, replacing the gradient -->
+  <div
+    class="absolute inset-0 opacity-30 pointer-events-none"
+    aria-hidden="true"
+  >
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-sireno-background/60 to-sireno-background">
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 text-center px-6 py-24 max-w-5xl mx-auto">
+    <p
+      class="text-sireno-accent text-xs font-semibold tracking-[0.25em] uppercase mb-6"
+    >
+      Sireno Deck
+    </p>
+
+    <h1
+      class="text-5xl sm:text-7xl font-semibold tracking-tight leading-[1.05]"
+      style="color: #eef2f7;"
+    >
+      Buttons belong<br />in your dotfiles.
+    </h1>
+
+    <p
+      class="mt-8 max-w-2xl mx-auto text-xl leading-relaxed"
+      style="color: #c8d3e5;"
+    >
+      Declarative control for your Elgato Stream Deck. Theme it. Theme it
+      again. Reshape the deck based on what's focused.
+    </p>
+
+    <div class="mt-12 flex flex-wrap items-center justify-center gap-4">
+      <a
+        href="/docs/install/"
+        class="rounded-full px-8 py-3.5 text-sm font-semibold transition-all duration-200 cursor-pointer"
+        style="background: #eef2f7; color: #2e3540;"
+        onmouseover="this.style.background='#c3f5ff'; this.style.color='#2e3540';"
+        onmouseout="this.style.background='#eef2f7'; this.style.color='#2e3540';"
+      >
+        Install
+      </a>
+      <a
+        href="/docs/"
+        class="rounded-full px-8 py-3.5 text-sm font-semibold transition-all duration-200 cursor-pointer"
+        style="background: transparent; color: #eef2f7; border: 1.5px solid #53738b;"
+        onmouseover="this.style.borderColor='#7dd3fc'; this.style.color='#7dd3fc';"
+        onmouseout="this.style.borderColor='#53738b'; this.style.color='#eef2f7';"
+      >
+        Read the docs
+      </a>
+    </div>
+
+    <!-- Platform badges -->
+    <div class="mt-16 flex items-center justify-center gap-6 text-xs" style="color: #7a8fa8;">
+      <span>Linux</span>
+      <span aria-hidden="true">·</span>
+      <span>macOS</span>
+      <span aria-hidden="true">·</span>
+      <span>Windows</span>
+      <span aria-hidden="true">·</span>
+      <span>MIT License</span>
+    </div>
+  </div>
+</section>
