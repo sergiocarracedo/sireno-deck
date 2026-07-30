@@ -1,0 +1,19 @@
+docs/plans/2026-07-30-001-fix-session-provider-linux-and-vite-react-plugin-deprecation-plan.md
+  s_851eff0056cb16::t_a3b85fa7c56191 1-175
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "9e4d2c32d75cab6eef017301fa78c610b2d199d1",
+  "prompts": {},
+  "sessions": {
+    "s_851eff0056cb16": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04d931e91ffesaWQQF204H2ueV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
