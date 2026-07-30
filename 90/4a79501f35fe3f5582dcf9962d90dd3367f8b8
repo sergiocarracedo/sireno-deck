@@ -1,0 +1,25 @@
+packages/cli/src/cli/commands/run.ts
+  s_851eff0056cb16::t_82cb557cb600d8 745
+  s_851eff0056cb16::t_2897f27bf4d76e 904
+  s_851eff0056cb16::t_98e4854065f709 1001
+  s_851eff0056cb16::t_4f4e2c5038a071 624
+  s_851eff0056cb16::t_9a1a191f038a96 1304-1321,1328,1330
+  s_851eff0056cb16::t_138fd74e677019 1545
+  s_851eff0056cb16::t_aa3a3d57076ae4 1477-1482
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "904a79501f35fe3f5582dcf9962d90dd3367f8b8",
+  "prompts": {},
+  "sessions": {
+    "s_851eff0056cb16": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04d931e91ffesaWQQF204H2ueV",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
