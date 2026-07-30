@@ -1,5 +1,7 @@
 packages:
   - packages/*
+  - packages/web/astro
+  - packages/web/videos
 
 onlyBuiltDependencies:
   - "@julusian/jpeg-turbo"
