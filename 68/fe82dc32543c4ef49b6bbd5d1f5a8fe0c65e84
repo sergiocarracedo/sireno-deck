@@ -1,0 +1,46 @@
+packages/cli/src/themes/neon-grids/components.css
+  s_70036ce8862e97::t_c85fc968cd4d59 1-40,42,45,50-63,94-104,109-114,121-142,147-176,179-190,193-194
+  s_70036ce8862e97::t_fa5a0c9f1c7a37 41,43-44,46-49,64-93,105-108,115-120,143-146,177-178,191-192
+packages/cli/src/index.ts
+  s_70036ce8862e97::t_b16d81f958038c 61
+packages/cli/src/themes/neon-grids/sirenodeck.json
+  s_70036ce8862e97::t_27af07ad59cd55 1-44,46-50,52-56,58-70
+  s_70036ce8862e97::t_43dd59ab3bd389 45,51,57
+packages/cli/frontend/src/App.tsx
+  s_70036ce8862e97::t_0a7ace55b8c5df 1,8,17
+  s_70036ce8862e97::t_fa5a0c9f1c7a37 132
+  s_70036ce8862e97::t_bfcc3748233b1a 119-131,133-137,140,145
+packages/cli/src/themes/neon-grids/components/index.tsx
+  s_70036ce8862e97::t_0f4823827d0edd 14,30,68,89,91,95-107
+  s_70036ce8862e97::t_fa5a0c9f1c7a37 90
+  s_70036ce8862e97::t_77418c592576c8 3-13
+  s_70036ce8862e97::t_58690516e0179f 1-2,15-29,31-67,69-88,92-94,108-123
+packages/cli/src/themes/__tests__/loader.test.ts
+  s_70036ce8862e97::t_e9c7fec8fc6526 72
+  s_70036ce8862e97::t_53557c864448a4 18,21,29-35
+  s_70036ce8862e97::t_8c65515d8d854c 36-37
+packages/cli/src/ui/ButtonFrame.tsx
+  s_70036ce8862e97::t_311cb1e4adedd7 3-4,36-53,72
+packages/cli/src/ui/__tests__/ButtonFrame-override.test.tsx
+  s_70036ce8862e97::t_569aecaa6c6a70 1-46
+packages/cli/src/themes/neon-grids/assets/IBM_Plex_Mono/OFL.txt
+  s_70036ce8862e97::t_85ea32b34801e2 1-93
+packages/cli/src/themes/neon-grids/assets/brush/OFL.txt
+  s_70036ce8862e97::t_b5fb26a67935d8 1-93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "68fe82dc32543c4ef49b6bbd5d1f5a8fe0c65e84",
+  "prompts": {},
+  "sessions": {
+    "s_70036ce8862e97": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04b9af39cffePw9D6O3std5M9T",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
