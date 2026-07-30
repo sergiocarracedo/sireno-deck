@@ -1,0 +1,71 @@
+packages/cli/src/system/providers/__tests__/error-smoke.test.ts
+  s_53c6e9c5f4d5f1::t_dd9729216674f8 1-28
+packages/cli/src/deck/__tests__/setDecks.test.ts
+  s_53c6e9c5f4d5f1::t_609f6f253312e1 1
+  s_53c6e9c5f4d5f1::t_ef927a9deb1d6a 2-108
+packages/cli/src/render/__tests__/ws-bridge.test.ts
+  s_53c6e9c5f4d5f1::t_758457c96153c3 118-141
+packages/cli/src/config/__tests__/reference-expander-smoke.test.ts
+  s_53c6e9c5f4d5f1::t_c15380c7492b89 1,4,6
+  s_53c6e9c5f4d5f1::t_c5e320c96eb3ea 2-3,5,7-8,10,12-13
+  s_53c6e9c5f4d5f1::t_ee16a8225c52e3 9,11
+packages/cli/src/cli/commands/service/__tests__/render-template.test.ts
+  s_53c6e9c5f4d5f1::t_08b2cafee8cd04 1-78
+packages/cli/src/deck/__tests__/host-context-smoke.test.ts
+  s_53c6e9c5f4d5f1::t_a5263c878c32b3 1
+  s_53c6e9c5f4d5f1::t_447f466e975437 2-15
+packages/cli/src/deck/__tests__/runtime-subscriptions-smoke.test.ts
+  s_53c6e9c5f4d5f1::t_e1e0dad7c0a514 1-30
+packages/cli/src/builtin-addons/__tests__/schema-doc-drift.test.ts
+  s_53c6e9c5f4d5f1::t_a7e4f10cdf0c86 14
+  s_53c6e9c5f4d5f1::t_17fb169be5ee63 1-13,15-129
+  s_53c6e9c5f4d5f1::t_44f655ea4261bc 130-131
+packages/cli/src/deck/__tests__/system-buttons-registry-smoke.test.tsx
+  s_53c6e9c5f4d5f1::t_5ff7f7cbb805e2 1-30
+packages/cli/src/core/__tests__/watcher-smoke.test.ts
+  s_53c6e9c5f4d5f1::t_bb5d176febc554 1-2,4-22
+  s_53c6e9c5f4d5f1::t_3a5b0fec0ff207 3
+packages/cli/src/cli/http-server.ts
+  s_53c6e9c5f4d5f1::t_0aaec2d1c3f1c0 209-217
+packages/cli/src/cli/commands/__tests__/commands-smoke.test.ts
+  s_53c6e9c5f4d5f1::t_5bdd81e7893a26 1-9,11-42,48-53,59-63,67-68,70-89,95-96
+  s_53c6e9c5f4d5f1::t_66941d30d09724 10,43-47,54-58,64-66,69,90-94
+packages/cli/src/core/__tests__/icon-source-smoke.test.ts
+  s_53c6e9c5f4d5f1::t_4fed99a5beb989 1-64
+packages/cli/src/util/__tests__/logger-format.test.ts
+  s_53c6e9c5f4d5f1::t_0af0c82342bd44 1-2,4-77
+  s_53c6e9c5f4d5f1::t_af88b423cfbf39 3
+packages/cli/src/cli/__tests__/main-smoke.test.ts
+  s_53c6e9c5f4d5f1::t_5a257cbbfde105 1-13
+packages/cli/src/cli/__tests__/cwd.test.ts
+  s_53c6e9c5f4d5f1::t_297bbcf55d6ff9 1
+  s_53c6e9c5f4d5f1::t_3741bbbafc6fec 2-37
+  s_53c6e9c5f4d5f1::t_95d5783949a81e 38-39
+packages/cli/src/cli/commands/service/__tests__/install-smoke.test.ts
+  s_53c6e9c5f4d5f1::t_20cb0793f2f057 17-18,40
+  s_53c6e9c5f4d5f1::t_bba5e03de56e02 1-16,19-39,41-50
+packages/cli/src/config/__tests__/modules-smoke.test.ts
+  s_53c6e9c5f4d5f1::t_172d52a8e9ab5a 53-55
+  s_53c6e9c5f4d5f1::t_dc2fa634a7dd3c 1-52,56-64
+packages/cli/src/cli/__tests__/http-server.test.ts
+  s_53c6e9c5f4d5f1::t_9fc57f8226cffa 144-176,178
+  s_53c6e9c5f4d5f1::t_7d7e14775ab410 177
+packages/cli/vitest.config.ts
+  s_53c6e9c5f4d5f1::t_17e8f99e4537eb 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "267732e4b401e40c32ce35e1d53628323d637fe4",
+  "prompts": {},
+  "sessions": {
+    "s_53c6e9c5f4d5f1": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04d4f69e6ffeGQAHM3HK185A7C",
+        "model": "MiniMax-M2.7"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
