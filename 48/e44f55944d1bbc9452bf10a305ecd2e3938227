@@ -1,0 +1,21 @@
+docs/solutions/README.md
+  s_adb3cba007b617::t_8048f877937cee 21-29
+docs/solutions/architecture/shared-teardown-helper-for-runtime-event-and-explicit-dispose.md
+  s_adb3cba007b617::t_f96256212f26f5 1-130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "48e44f55944d1bbc9452bf10a305ecd2e3938227",
+  "prompts": {},
+  "sessions": {
+    "s_adb3cba007b617": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0501ede01ffeIg0hBGhV1ZRV7a",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
