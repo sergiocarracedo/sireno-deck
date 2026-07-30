@@ -621,6 +621,7 @@ const buildRuntime = (
   options: RunOptions,
   loaded: LoadConfigResult,
   keyCount: number,
+  lockActive: boolean = false,
 ): LoadConfigAndThemeResult => {
   const { logger } = options
   const { config, registry, theme, themeDir } = loaded
@@ -741,6 +742,7 @@ const buildRuntime = (
       addonConfigOverrides,
     ),
     keyCount,
+    { lockActive },
   )
   const { decks: allDecks, errorsByDeck } = applyConfigErrorReplacements(
     allDecsWithSystemButtons,
@@ -899,6 +901,7 @@ const startSystemProviders = async (
   options: RunOptions,
   runtime: Runtime,
   methods: Methods,
+  session: import("@/system/providers/session").SessionProvider,
 ): Promise<SystemProviders> => {
   const { logger } = options
   const { spawn } = await import("node:child_process")
@@ -995,13 +998,8 @@ const startSystemProviders = async (
     }
   }
 
-  const [activeApp, session, keyMacro, notification] = await Promise.all([
+  const [activeApp, keyMacro, notification] = await Promise.all([
     createActiveAppProvider({ platform, executor, logger }),
-    createSessionProvider({
-      platform,
-      executor,
-      logger,
-    }),
     createKeyMacroProvider({ platform, executor, env, logger, extraFsProbe }),
     createNotificationProvider({
       platform,
@@ -1013,7 +1011,6 @@ const startSystemProviders = async (
   ])
 
   runtime.setActiveAppProvider(activeApp)
-  runtime.setSessionProvider(session)
   methods.setKeyMacroProvider(keyMacro)
   methods.setNotificationProvider(notification)
 
@@ -1304,15 +1301,33 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     )
     await outputClient.storeSelection(descriptor)
 
-    const loaded = buildRuntime(options, loadedConfig, descriptor.keyCount)
+    // ponytail: create the session provider BEFORE buildRuntime so the initial
+    // lock state can flow into injectSystemButtons. Without this, the n-1 slot
+    // of every deck would carry core:back even when the user's screen is
+    // already locked at startup — they'd see the back button on a locked
+    // session. createLinuxSessionProvider awaits the screensaver GetActive
+    // call before returning, so getState() reflects the real initial state.
+    const session = await createSessionProvider({
+      platform: process.platform,
+      logger,
+    })
+    const initialLockActive = session.getState() === "locked"
+
+    const loaded = buildRuntime(
+      options,
+      loadedConfig,
+      descriptor.keyCount,
+      initialLockActive,
+    )
     themeDir = loaded.themeDir
     decks = loaded.decks
     pubSub = loaded.pubSub
     runtime = loaded.runtime
     methods = loaded.methods
     store = loaded.store
+    runtime.setSessionProvider(session)
 
-    providers = await startSystemProviders(options, runtime, methods)
+    providers = await startSystemProviders(options, runtime, methods, session)
 
     const isCompact = outputClient.kind === "real"
 
@@ -1459,7 +1474,12 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       themeDir,
       logger,
       rebuildDecksForKeyCount: (keyCount: number) =>
-        buildRuntime(options, loadedConfig, keyCount).decks,
+        buildRuntime(
+          options,
+          loadedConfig,
+          keyCount,
+          runtime.isLockActive(),
+        ).decks,
       onChildPid: (pid) => {
         if (trackedPids.has(pid)) return
         trackedPids.add(pid)
@@ -1522,6 +1542,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
             options,
             nextLoaded,
             descriptor.keyCount,
+            runtime.isLockActive(),
           ).decks
           const activeId = runtime.getActiveDeckId()
           runtime.setDecks(rebuilt)
