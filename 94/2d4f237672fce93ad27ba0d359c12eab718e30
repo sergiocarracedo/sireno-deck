@@ -1,0 +1,43 @@
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_0545b64a09ac0b::t_7b188a70c31a4d 93-94
+  s_0545b64a09ac0b::t_054b4f27f53c5b 410
+  s_0545b64a09ac0b::t_24fd35be8d61fd 446
+  s_0545b64a09ac0b::t_9ecd0cacea1ba2 5-6
+  s_0545b64a09ac0b::t_1b7511b5de506c 172
+  s_0545b64a09ac0b::t_34460b8daa2f0b 48-57
+packages/cli/src/addon/api.ts
+  s_0545b64a09ac0b::t_fec0121b473c8c 268-276,291-292
+  s_0545b64a09ac0b::t_d1cf12954c9c34 366
+packages/cli/src/addon/loader.ts
+  s_0545b64a09ac0b::t_02fa85b44bcd53 44
+  s_0545b64a09ac0b::t_522700613b5d96 6,25-43,45-48
+  s_0545b64a09ac0b::t_bac98914a1a4df 207,216-225,228-230
+  s_0545b64a09ac0b::t_378d7df2e80d47 49-53,95-97,226-227,257,275-276,406
+packages/cli/src/builtin-addons/core/buttons/toggle/__tests__/global-service.test.ts
+  s_0545b64a09ac0b::t_d282e769b228ff 41-46,57-62
+packages/cli/src/builtin-addons/media/__tests__/backend.test.ts
+  s_0545b64a09ac0b::t_1c19b70afa56d7 65-70
+packages/cli/src/addon/__tests__/loader.test.ts
+  s_0545b64a09ac0b::t_914fa73bc3ffef 200-243
+  s_0545b64a09ac0b::t_829b20b46c6d34 9
+packages/cli/src/__tests__/addon.test.ts
+  s_0545b64a09ac0b::t_156347af4262c0 248
+  s_0545b64a09ac0b::t_9ee1bc16d97c0d 251
+  s_0545b64a09ac0b::t_83ce90c9f772bb 202-247,249-250,252-288
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "942d4f237672fce93ad27ba0d359c12eab718e30",
+  "prompts": {},
+  "sessions": {
+    "s_0545b64a09ac0b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04d6a3e6effekpynXxKBYhbXay",
+        "model": "MiniMax-M2.7"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
