@@ -1,0 +1,32 @@
+packages/cli/src/render/icon-source-resolver.ts
+  s_adb3cba007b617::t_875f285ce74f11 10-14,30-39
+packages/cli/src/render/__tests__/icon-source-resolver.test.ts
+  s_adb3cba007b617::t_13865a5c44caa4 48-63,66-81
+packages/cli/src/ui/primitives/Icon.tsx
+  s_adb3cba007b617::t_31acf2ba803114 187-210
+ARCHITECTURE.md
+  s_adb3cba007b617::t_e6a74689cf4d53 255-273
+  s_adb3cba007b617::t_0cce68cb20b65d 199-210
+packages/cli/src/core/icon-source.ts
+  s_adb3cba007b617::t_bf5c898e163869 18-20,28,46-47,54,61-62
+packages/cli/src/ui/primitives/__tests__/Icon.test.tsx
+  s_adb3cba007b617::t_008da738f1a6fb 61-71
+  s_adb3cba007b617::t_27d1fe202a51e7 72,181-202
+  s_adb3cba007b617::t_f6b6ac1ff3a0ab 73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "01e1ad92358bf4f6006f93ab87d9420031eb4175",
+  "prompts": {},
+  "sessions": {
+    "s_adb3cba007b617": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0501ede01ffeIg0hBGhV1ZRV7a",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
