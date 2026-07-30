@@ -1,0 +1,32 @@
+packages/cli/src/themes/manifest.ts
+  s_70036ce8862e97::t_e9f3115ccc56bd 42-53
+  s_70036ce8862e97::t_b0f6672c93ccc7 101
+  s_70036ce8862e97::t_7931b548fcf14f 57-84
+packages/cli/src/themes/css.ts
+  s_70036ce8862e97::t_8e0f9760f94bbd 94-97,99-105
+  s_70036ce8862e97::t_b0f6672c93ccc7 131-145,159
+  s_70036ce8862e97::t_85a667b5de7ef9 34-50
+  s_70036ce8862e97::t_41ad652f5c3cc4 127-130,146-151,155-157
+packages/cli/src/ui/theme-presentation.tsx
+  s_70036ce8862e97::t_e16a096b57245e 25-36,38-41,43-50,53-77
+packages/cli/src/themes/__tests__/css.test.ts
+  s_70036ce8862e97::t_fe81d1778e96f4 1-120
+packages/cli/src/themes/default/components.css
+  s_70036ce8862e97::t_1c75a7511977e8 56-67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "3bf1a7c5dc7cf0a0550d822dfbf22d13f131e4e9",
+  "prompts": {},
+  "sessions": {
+    "s_70036ce8862e97": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04b9af39cffePw9D6O3std5M9T",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
