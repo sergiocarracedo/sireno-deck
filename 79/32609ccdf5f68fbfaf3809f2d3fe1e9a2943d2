@@ -1,0 +1,19 @@
+packages/addon-pomodoro/src/buttons/pomodoro/frontend.tsx
+  s_fd67621b3f5a28::t_56e483cdd3cd4e 135
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "7932609ccdf5f68fbfaf3809f2d3fe1e9a2943d2",
+  "prompts": {},
+  "sessions": {
+    "s_fd67621b3f5a28": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0521f40fcffeFq8tI6BCf2nyfe",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
