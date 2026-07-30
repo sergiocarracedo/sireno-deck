@@ -130,14 +130,10 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
     subscribedChannels.clear()
     if (timer !== null) clearTimeout(timer)
     if (socket === null) return
-    if (socket.readyState === WebSocket.CONNECTING) {
-      // ponytail: a CONNECTING socket has no close handshake; fire
-      // terminate() to cancel the in-flight handshake so events stop.
-      socket.terminate()
-      setStatus("closed")
-      return
-    }
-    if (socket.readyState === WebSocket.OPEN) {
+    if (
+      socket.readyState === WebSocket.CONNECTING ||
+      socket.readyState === WebSocket.OPEN
+    ) {
       socket.close()
     }
   }
