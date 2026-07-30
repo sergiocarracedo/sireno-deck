@@ -1,0 +1,19 @@
+packages/cli/src/deck/__tests__/addon-handler-bridge.test.ts
+  s_adb3cba007b617::t_81b6404bbfaac0 441
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "43c8db790b55533b5e50591a92c7715f87590517",
+  "prompts": {},
+  "sessions": {
+    "s_adb3cba007b617": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0501ede01ffeIg0hBGhV1ZRV7a",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
