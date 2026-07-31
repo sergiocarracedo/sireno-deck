@@ -36,6 +36,7 @@ packages/cli/src/themes/loader.ts
   s_685b9daf08ed36::t_5f1040984cae46 17,19
   s_685b9daf08ed36::t_4f03b8a11ea0ec 16,18
   s_685b9daf08ed36::t_83528c563d5e62 50,150-170
+  s_685b9daf08ed36::t_badbca10e244ef 231
 packages/cli/frontend/src/App.tsx
   s_685b9daf08ed36::t_5060277f96b3eb 234,248-249
   s_685b9daf08ed36::t_6c4d6cd5d1696f 250
