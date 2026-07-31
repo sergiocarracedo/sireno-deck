@@ -1,0 +1,66 @@
+config.yml
+  s_5b8b49fed29d56::t_9792cfc9e485dd 4,8
+docs/plans/2026-07-28-pomodoro-addon.md
+  s_5b8b49fed29d56::t_5797a16f0a65a2 188
+  s_5b8b49fed29d56::t_d61fab0decf504 11
+  s_5b8b49fed29d56::t_de3b7b0dc847db 27-40
+  s_5b8b49fed29d56::t_36f521241c2025 87,89,91
+  s_5b8b49fed29d56::t_1b1d515043fbd9 129
+  s_5b8b49fed29d56::t_05b44ecd5d9bf2 139,144-145
+packages/addons/app-shortcuts/src/decks/chrome.ts
+  s_5b8b49fed29d56::t_3999a9fdaec981 38
+packages/addons/app-shortcuts/src/decks/slack.ts
+  s_5b8b49fed29d56::t_1a0acea915988f 12
+packages/addons/app-shortcuts/src/decks/teams.ts
+  s_5b8b49fed29d56::t_6043b2afcf3c3b 12
+docs/solutions/tooling-decisions/adding-deep-sub-packages-to-root-pnpm-workspace.md
+  s_5b8b49fed29d56::t_99cd94ecb43bfe 37,42
+  s_5b8b49fed29d56::t_8c011002417ce0 22
+packages/addons/app-shortcuts/src/decks/google-meet.ts
+  s_5b8b49fed29d56::t_d703c59bb3819d 12
+packages/addons/app-shortcuts/src/decks/claude-code.ts
+  s_5b8b49fed29d56::t_d426c098da454f 12
+pnpm-workspace.yaml
+  s_5b8b49fed29d56::t_2d6798afcfd3c7 3
+packages/addons/pomodoro/README.md
+  s_5b8b49fed29d56::t_a45ac93bd44fca 17
+__beta-review__/06-addon-ecosystem.md
+  s_5b8b49fed29d56::t_f8b21e44c22e09 241
+docs/solutions/conventions/stale-addon-dist-causes-lucide-icons-overlay-name-blink.md
+  s_5b8b49fed29d56::t_b0cdca5bb6393f 46-47
+  s_5b8b49fed29d56::t_59dae14103c60d 75
+  s_5b8b49fed29d56::t_959fc57cdb9603 5
+  s_5b8b49fed29d56::t_98ab06c2c185f3 21
+  s_5b8b49fed29d56::t_98871319320553 29
+packages/addons/app-shortcuts/src/decks/discord.ts
+  s_5b8b49fed29d56::t_6847bc8c04a7e5 12
+packages/addons/app-shortcuts/src/decks/opencode.ts
+  s_5b8b49fed29d56::t_a33d96d834a135 12
+__beta-review__/REPORT.md
+  s_5b8b49fed29d56::t_219c78f1cccb07 4
+packages/addons/app-shortcuts/src/decks/vscode.ts
+  s_5b8b49fed29d56::t_52d04a28f9635c 12
+pnpm-lock.yaml
+  s_5b8b49fed29d56::t_aa1e3bb4834881 31,37,44,47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "3bc4a708f6468be3e3e1e6f8301b9941e3f0c7d4",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_5b8b49fed29d56": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0488f3a3bffeApdEwLChLbQ3Xe",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
