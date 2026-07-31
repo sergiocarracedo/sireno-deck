@@ -1,7 +1,7 @@
 # Sireno Deck — Beta Review
 
 **Review date:** 2026-07-29
-**Scope:** full repository (`packages/cli`, `packages/addon-app-shortcuts`)
+**Scope:** full repository (`packages/cli`, `packages/addons/app-shortcuts`)
 **Reviewer mode:** senior engineer + OSS-impression lens
 **Mode:** report only; no fixes
 

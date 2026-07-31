@@ -180,9 +180,16 @@ export function loadThemeFromPath(
     kind: "local",
     resolvedPath,
   })
-  registry.loadTheme(theme)
+  // ponytail: theme may already be registered by `registerSiblingThemes`
+  // (sibling scan at boot) or a previous load. Skip the duplicate-registration
+  // throw — the manifest-driven getCss callback is still produced either way.
+  if (registry.getTheme(theme.name) === undefined) {
+    registry.loadTheme(theme)
+  }
   if (aliasName !== undefined && aliasName !== manifest.name) {
-    registry.loadTheme({ ...theme, name: aliasName })
+    if (registry.getTheme(aliasName) === undefined) {
+      registry.loadTheme({ ...theme, name: aliasName })
+    }
   }
   return { theme, getCss }
 }

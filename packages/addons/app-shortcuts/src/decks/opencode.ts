@@ -9,7 +9,7 @@ const action = (icon: string, label: string, tap: string) => ({
 export const opencodeDeck: AddonDeckEntry = {
   id: "app-shortcuts:opencode",
   name: "OpenCode",
-  icon: "addon://addon-app-shortcuts/assets/opencode.svg",
+  icon: "addon://app-shortcuts/assets/opencode.svg",
   buttonColor: "purple",
   paginated: true,
   autoShow: true,

@@ -14,7 +14,7 @@ with a bundled bell sound.
 ```yaml
 # config.yml
 addons:
-  - src: ./packages/addon-pomodoro
+  - src: ./packages/addons/pomodoro
 ```
 
 ## Config

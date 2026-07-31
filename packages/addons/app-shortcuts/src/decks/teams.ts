@@ -9,7 +9,7 @@ const action = (icon: string, label: string, tap: string) => ({
 export const teamsDeck: AddonDeckEntry = {
   id: "app-shortcuts:teams",
   name: "Teams",
-  icon: "addon://addon-app-shortcuts/assets/teams.svg",
+  icon: "addon://app-shortcuts/assets/teams.svg",
   buttonColor: "blue",
   paginated: true,
   autoShow: true,

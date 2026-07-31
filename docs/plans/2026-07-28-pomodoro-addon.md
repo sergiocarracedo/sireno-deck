@@ -8,7 +8,7 @@
 
 ## 1. Goal
 
-Deliver a Pomodoro timer addon (`packages/addon-pomodoro/` as a third-party workspace package, modeled on `packages/addon-app-shortcuts/`) and the matching core notification infrastructure so any addon can fire OS notifications.
+Deliver a Pomodoro timer addon (`packages/addons/pomodoro/` as a third-party workspace package, modeled on `packages/addons/app-shortcuts/`) and the matching core notification infrastructure so any addon can fire OS notifications.
 
 Per button:
 
@@ -24,20 +24,20 @@ The work introduces:
 
 ## 2. Settled decisions
 
-| Decision                | Choice                                                                                                                      | Why                                                                         |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| Addon location          | New workspace package `packages/addon-pomodoro/`                                                                            | Third-party addon pattern (matches `addon-app-shortcuts`); keeps `cli` lean |
-| Button type id          | `pomodoro:pomodoro`                                                                                                         | Registry rule: buttonTypes prefixed with `<addonName>:`                     |
-| State model             | `idle` \| `running` \| `finished` (no `paused`)                                                                             | Spec call-out — no pause/resume                                             |
-| Tap cycle               | `idle→start`, `running→stop` (returns to `idle`), `finished→reset→start`                                                    | Restart from finished is the spec; `stopped` is a true stop, not a reset    |
-| Blink duration          | 10 s, pure CSS `animation: blink-red 1s 10` (no backend timer, no auto-state-change)                                        | Spec call-out; stateless, zero ticker overhead                              |
-| Persistence             | `startTsMs` + `durationSec` per button via `store.buttonScope("pomodoro", buttonId)`                                        | Survives daemon restart and decoder reboot                                  |
-| Single ticker           | One 1 s global ticker in `globalService.onLoad` publishes `pomodoro:state` for all buttons                                  | Avoids N timers per button; matches `weather` / `media` patterns            |
-| Sound                   | OGG bundled with addon at `packages/addon-pomodoro/assets/pomodoro-complete.ogg` (≤ 10 KB)                                  | Addon self-contained; no downloader needed                                  |
-| Icon source             | `🍅` raw emoji via existing `Icon` component (`EMOJI_RE` path)                                                              | One emoji, no asset id plumbing                                             |
-| Notifications API       | `notify({title, body, sound?})` on `Methods`; provider optional (no-op if missing)                                          | Addons stay decoupled from platform shell                                   |
-| Notification sound      | Provider plays OGG via `ffplay` / `paplay` (Linux), `afplay` (macOS), `Windows.Media.MediaPlayer`; graceful skip if missing | Matches platform-shell pattern; never blocks the toast                      |
-| Requirements capability | New `notification` capability in `system/requirements.ts` (`notify-send`, PowerShell toast)                                 | Reuses existing capability-warn UI                                          |
+| Decision                | Choice                                                                                                                      | Why                                                                      |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Addon location          | New workspace package `packages/addons/pomodoro/`                                                                           | Third-party addon pattern (matches `app-shortcuts`); keeps `cli` lean    |
+| Button type id          | `pomodoro:pomodoro`                                                                                                         | Registry rule: buttonTypes prefixed with `<addonName>:`                  |
+| State model             | `idle` \| `running` \| `finished` (no `paused`)                                                                             | Spec call-out — no pause/resume                                          |
+| Tap cycle               | `idle→start`, `running→stop` (returns to `idle`), `finished→reset→start`                                                    | Restart from finished is the spec; `stopped` is a true stop, not a reset |
+| Blink duration          | 10 s, pure CSS `animation: blink-red 1s 10` (no backend timer, no auto-state-change)                                        | Spec call-out; stateless, zero ticker overhead                           |
+| Persistence             | `startTsMs` + `durationSec` per button via `store.buttonScope("pomodoro", buttonId)`                                        | Survives daemon restart and decoder reboot                               |
+| Single ticker           | One 1 s global ticker in `globalService.onLoad` publishes `pomodoro:state` for all buttons                                  | Avoids N timers per button; matches `weather` / `media` patterns         |
+| Sound                   | OGG bundled with addon at `packages/addons/pomodoro/assets/pomodoro-complete.ogg` (≤ 10 KB)                                 | Addon self-contained; no downloader needed                               |
+| Icon source             | `🍅` raw emoji via existing `Icon` component (`EMOJI_RE` path)                                                              | One emoji, no asset id plumbing                                          |
+| Notifications API       | `notify({title, body, sound?})` on `Methods`; provider optional (no-op if missing)                                          | Addons stay decoupled from platform shell                                |
+| Notification sound      | Provider plays OGG via `ffplay` / `paplay` (Linux), `afplay` (macOS), `Windows.Media.MediaPlayer`; graceful skip if missing | Matches platform-shell pattern; never blocks the toast                   |
+| Requirements capability | New `notification` capability in `system/requirements.ts` (`notify-send`, PowerShell toast)                                 | Reuses existing capability-warn UI                                       |
 
 ## 3. State + channel specification
 
@@ -84,11 +84,11 @@ interface Methods {
 - `deck/methods.ts` — extend `Methods` interface with `notify` + `setNotificationProvider`. Concrete method delegates to provider (no-op when none set).
 - `cli/commands/run.ts` (`run.ts:962-993` block) — add `createNotificationProvider(...)` awaited in the existing parallel providers list; call `methods.setNotificationProvider(provider)` after construction.
 
-### Addon (`packages/addon-pomodoro/` — NEW)
+### Addon (`packages/addons/pomodoro/` — NEW)
 
-- `package.json` — `{ name: "@sirenodeck/addon-pomodoro", version: "0.1.0", type: "module", main: "dist/index.js", exports: { ".": "./dist/index.js", "./types": "./dist/types.d.ts" }, scripts: { build, typecheck, lint, test } }`. Dev deps aligned with `packages/addon-app-shortcuts/package.json`.
+- `package.json` — `{ name: "@sirenodeck/addon-pomodoro", version: "0.1.0", type: "module", main: "dist/index.js", exports: { ".": "./dist/index.js", "./types": "./dist/types.d.ts" }, scripts: { build, typecheck, lint, test } }`. Dev deps aligned with `packages/addons/app-shortcuts/package.json`.
 - `sirenodeck.json` — `{ name: "pomodoro", entry: "./dist/index.js", buttonTypes: ["pomodoro:pomodoro"] }`.
-- `tsconfig.json` + `tsconfig.build.json` — mirrored from `addon-app-shortcuts`.
+- `tsconfig.json` + `tsconfig.build.json` — mirrored from `app-shortcuts`.
 - `scripts/post-build.mjs` — copies `sirenodeck.json` **and** `assets/` into `dist/` (asset bundling is new — sibling only copies JSON).
 - `src/types.ts` — re-declares `AddonManifestV1`, `AddonDeckEntry`, `AddonGeneratedDeck`, **plus** `CoreMethods` local type that mirrors the addon-visible subset of `Methods`, including `notify({title, body, sound?})`.
 - `src/manifest.ts` — exports one button type `pomodoro:pomodoro` with configSchema (`{ durationSec?: number = 1800 }`, zod `.strict()`) and a `decks` entry referencing the per-button frontend + backend.
@@ -126,7 +126,7 @@ interface Methods {
 
 - `src/assets/pomodoro-complete.ogg` — **NEW binary, ≤ 10 KB.** Stub with a tiny synthesized ping in implementation.
 
-### Tests (`packages/addon-pomodoro/src/__tests__/`)
+### Tests (`packages/addons/pomodoro/src/__tests__/`)
 
 - `manifest.test.ts` — button type prefixed correctly; re-declared types align with `AddonManifestV1` shape; global service methods listed.
 - `timer.test.ts` — fake `now()`: ticking emits decreasing `remainingSec`, transitions to `finished` at deadline, publishes once per tick, no publish if no buttons running.
@@ -136,13 +136,13 @@ interface Methods {
 
 ### Docs
 
-- `packages/addon-pomodoro/README.md` — **NEW.** Mirror `packages/addon-app-shortcuts/README.md` shape: install snippet for `config.yml`, button config schema, state machine (text), one screenshot each of `idle` / `running` / `finished-blinking`.
+- `packages/addons/pomodoro/README.md` — **NEW.** Mirror `packages/addons/app-shortcuts/README.md` shape: install snippet for `config.yml`, button config schema, state machine (text), one screenshot each of `idle` / `running` / `finished-blinking`.
 - Root `config.yml` — add a `pomodoro-demo` deck with one Pomodoro button (per existing demo convention).
 
 ### Workspace plumbing
 
-- `pnpm-workspace.yaml` — `packages/*` already globs `addon-pomodoro` (no edit).
-- `.oxlintrc.json` — verified no rule stops addon packages from bundling assets; sibling `addon-app-shortcuts` proves addons don't import `cli/src`.
+- `pnpm-workspace.yaml` — `packages/*` + `packages/addons/*` globs pick up the new addon (no edit).
+- `.oxlintrc.json` — verified no rule stops addon packages from bundling assets; sibling `app-shortcuts` proves addons don't import `cli/src`.
 
 ## 5. Implementation order
 
@@ -185,7 +185,7 @@ Per implementation unit:
 - Sound is best-effort: provider never blocks on missing audio binary; the OS notification still fires.
 - Notification provider can be absent in tests (null factory); addons' `notify` calls degrade to a logger warn in the null case.
 - The 🍅 emoji renders identically across the supported target OSes (the `Icon` component's `EMOJI_RE` path handles font fallback).
-- Addons cannot currently bundle binary assets through the existing `post-build.mjs` (`addon-app-shortcuts` only copies `sirenodeck.json`); extending it to also copy `assets/` is a one-line addition.
+- Addons cannot currently bundle binary assets through the existing `post-build.mjs` (`app-shortcuts` only copies `sirenodeck.json`); extending it to also copy `assets/` is a one-line addition.
 - The blink-red animation runs purely in the browser; no JS timer is set for it. We do not need to coordinate blink end with state changes because state never auto-clears.
 
 ## 8. Out of scope

@@ -35,7 +35,7 @@ const chromeMemoryButton = {
 export const chromeDeck: AddonDeckEntry = {
   id: "app-shortcuts:chrome",
   name: "Chrome",
-  icon: "addon://addon-app-shortcuts/assets/chrome.svg",
+  icon: "addon://app-shortcuts/assets/chrome.svg",
   buttonColor: "blue",
   paginated: true,
   autoShow: true,

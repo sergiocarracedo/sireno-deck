@@ -9,7 +9,7 @@ const action = (icon: string, label: string, tap: string) => ({
 export const vscodeDeck: AddonDeckEntry = {
   id: "app-shortcuts:vscode",
   name: "VS Code",
-  icon: "addon://addon-app-shortcuts/assets/vscode.svg",
+  icon: "addon://app-shortcuts/assets/vscode.svg",
   buttonColor: "green",
   paginated: true,
   autoShow: true,

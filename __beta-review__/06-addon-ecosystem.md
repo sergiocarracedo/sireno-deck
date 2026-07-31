@@ -238,7 +238,7 @@ Scope: builtin addon patterns, addon loader, registry, third-party addon contrac
 
 ### [06-addon-ecosystem #30] [P3] No first-party example addon published
 
-**Evidence:** `packages/addon-app-shortcuts/` is the only external example; it's a workspace package, not a publishable template.
+**Evidence:** `packages/addons/app-shortcuts/` is the only external example; it's a workspace package, not a publishable template.
 **Impact:** External authors don't have a clear starting point.
 **Effort:** M
 **Fix sketch:** Add a `examples/` addon published as `@sireno-deck/example-addon`.
