@@ -1,0 +1,116 @@
+packages/cli/src/ui/__tests__/ButtonFrame.test.tsx
+  s_685b9daf08ed36::t_4e71623e83bd37 3,9-10,85-86,88,91-94
+  s_685b9daf08ed36::t_df892e039a51ef 106-108
+  s_685b9daf08ed36::t_5793cc1675d433 8,11-40,43-47,65-66,72-76,78-82,98-105,109-117
+  s_685b9daf08ed36::t_9e2be70e551cab 97
+packages/cli/src/deck/runtime/runtime.ts
+  s_685b9daf08ed36::t_3cbfd92095c2f1 25
+  s_685b9daf08ed36::t_2a5aecebf8d861 40-44
+packages/cli/src/themes/default/sirenodeck.json
+  s_685b9daf08ed36::t_15c8f4a46dcc6c 15-42
+packages/themes/riptide/package.json
+  s_685b9daf08ed36::t_03e6af873d6cfb 1-4,6-14
+  s_685b9daf08ed36::t_df892e039a51ef 5
+packages/cli/src/addon/api.ts
+  s_685b9daf08ed36::t_df892e039a51ef 64-67
+  s_685b9daf08ed36::t_68984358be37fd 157-168
+packages/cli/src/cli/commands/addon-decks.ts
+  s_685b9daf08ed36::t_44b6544481c0ef 5,12
+  s_685b9daf08ed36::t_2d39ed725e6436 178-180
+  s_685b9daf08ed36::t_3f9d0b91f7e830 117-119
+packages/cli/src/themes/__tests__/css.test.ts
+  s_685b9daf08ed36::t_5c4e7be4848b7b 28-34
+packages/themes/riptide/components/index.tsx
+  s_685b9daf08ed36::t_f18e277ad6d52e 1-2,10,15-79,83-121
+  s_685b9daf08ed36::t_c1ec381c1f0c36 3-9,11-14
+  s_685b9daf08ed36::t_fd696e52ff00e8 80-82
+packages/cli/src/themes/manifest.ts
+  s_685b9daf08ed36::t_d961bde225abdf 16-55
+  s_685b9daf08ed36::t_aae39ad48aa324 151-156
+  s_685b9daf08ed36::t_bfe1d11c9eb7b1 140
+  s_685b9daf08ed36::t_468e14368bc996 56
+packages/cli/src/themes/loader.ts
+  s_685b9daf08ed36::t_405bce1953b5a9 14-15,26-30,34,36,41-49
+  s_685b9daf08ed36::t_601afea95b9363 51
+  s_685b9daf08ed36::t_5e71dca56d9f56 108
+  s_685b9daf08ed36::t_5f1040984cae46 17,19
+  s_685b9daf08ed36::t_4f03b8a11ea0ec 16,18
+  s_685b9daf08ed36::t_83528c563d5e62 50,150-170
+packages/cli/frontend/src/App.tsx
+  s_685b9daf08ed36::t_5060277f96b3eb 234,248-249
+  s_685b9daf08ed36::t_6c4d6cd5d1696f 250
+packages/cli/frontend/src/components/Deck.tsx
+  s_685b9daf08ed36::t_dfa96b7188c989 219
+  s_685b9daf08ed36::t_0964fdedeb5854 153
+  s_685b9daf08ed36::t_df892e039a51ef 152
+  s_685b9daf08ed36::t_13ba4db1261225 63
+  s_685b9daf08ed36::t_e31ded66a1109e 55
+  s_685b9daf08ed36::t_6e52cb697612cf 108
+  s_685b9daf08ed36::t_7f879613b10762 123
+  s_685b9daf08ed36::t_4cd3cedb887a59 149-151
+  s_685b9daf08ed36::t_3b56d8fe8ce21f 402
+packages/cli/src/index.ts
+  s_685b9daf08ed36::t_99c0e492d4a9f7 49
+  s_685b9daf08ed36::t_68656aab885964 57,63-64
+packages/cli/src/ui/ButtonFrame.tsx
+  s_685b9daf08ed36::t_391994c9c37c79 21-28,30-33,70,74-76,79
+  s_685b9daf08ed36::t_df892e039a51ef 34-35
+  s_685b9daf08ed36::t_5d9be438bccf53 1,11,29,36,72-73,77-78,80-81,85,95
+packages/cli/src/builtin-addons/register-builtins.ts
+  s_685b9daf08ed36::t_b33c0b7b899440 3
+  s_685b9daf08ed36::t_4376fdb1a7a1b5 18
+packages/cli/src/deck/index.ts
+  s_685b9daf08ed36::t_50268c0f975fa7 44-48
+packages/cli/src/config/__tests__/schemas.test.ts
+  s_685b9daf08ed36::t_0b35fdb1e11ba1 85-124
+packages/cli/src/cli/commands/run.ts
+  s_685b9daf08ed36::t_9da8191b2b78ca 648-650
+packages/cli/src/themes/__tests__/loader.test.ts
+  s_685b9daf08ed36::t_ec10729eff1b26 190-194
+  s_685b9daf08ed36::t_f2d45225e54522 14
+  s_685b9daf08ed36::t_f050c4745d0f67 11
+  s_685b9daf08ed36::t_02b49bbf0e8294 195-204
+  s_685b9daf08ed36::t_f98b7b1efaa520 205-224
+packages/cli/src/deck/variant-migration.ts
+  s_685b9daf08ed36::t_40361fa45770a6 1-46
+packages/cli/src/config/schemas.ts
+  s_685b9daf08ed36::t_31017a3e1fc0f3 51-58
+packages/cli/src/themes/light/sirenodeck.json
+  s_685b9daf08ed36::t_7e577b195771ff 15-42
+packages/themes/riptide/components.css
+  s_685b9daf08ed36::t_e7aca0fccd009f 1-32,45-56,59-125,127-148,151-163
+  s_685b9daf08ed36::t_df892e039a51ef 33-44,57-58,126,149-150
+packages/themes/neon-grids/sirenodeck.json
+  s_685b9daf08ed36::t_bb826c5f82d7b9 15-42
+packages/themes/riptide/tsconfig.json
+  s_685b9daf08ed36::t_53a2bcdfd511b1 3-6,8-22,24-25,28
+  s_685b9daf08ed36::t_ec3ed0d12cc26e 1-2,7,23,26-27,29
+packages/cli/src/themes/css.ts
+  s_685b9daf08ed36::t_0e1b9bc8266072 127-130,137-143
+  s_685b9daf08ed36::t_df892e039a51ef 131-136
+packages/cli/src/deck/deck-config.ts
+  s_685b9daf08ed36::t_04db5d5058ecc2 162-172
+  s_685b9daf08ed36::t_e5e80daf48cf42 140-142
+  s_685b9daf08ed36::t_65a78062bf7971 5
+packages/themes/riptide/sirenodeck.json
+  s_685b9daf08ed36::t_41e973421edd90 79,85,91
+  s_685b9daf08ed36::t_cf67f40662987a 1-78,80-84,86-90,92-109
+packages/themes/neon-grids/package.json
+  s_685b9daf08ed36::t_2a6434f521fcab 5-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "32ee0baea707678a4ed2728aba0cea9da23bde42",
+  "prompts": {},
+  "sessions": {
+    "s_685b9daf08ed36": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04b8bb007ffeCNLqHxckOP6N45",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
