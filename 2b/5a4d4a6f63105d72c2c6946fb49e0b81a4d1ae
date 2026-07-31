@@ -1,0 +1,40 @@
+packages/cli/docs/developer/theme-authoring.mdx
+  s_70036ce8862e97::t_d91b20de9338c6 199-202,205-213
+  s_5b8b49fed29d56::t_bd733c42f287f8 214
+packages/cli/src/themes/loader.ts
+  s_70036ce8862e97::t_5cf726fdb423f4 206-208
+  s_70036ce8862e97::t_383d7aa06f3b30 158-205,209-229,237,239
+  s_70036ce8862e97::t_37e88bbede8867 2
+packages/cli/src/themes/__tests__/loader.test.ts
+  s_70036ce8862e97::t_295b98eda8a91c 162,167-171,173
+  s_70036ce8862e97::t_fee216716c3e5a 124-161
+  s_70036ce8862e97::t_e928662ce6ebe5 165
+packages/cli/src/config/schemas.ts
+  s_70036ce8862e97::t_ce7f0abdd1a3d1 132
+config.yml
+  s_70036ce8862e97::t_d22021f3d67a0c 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "2b5a4d4a6f63105d72c2c6946fb49e0b81a4d1ae",
+  "prompts": {},
+  "sessions": {
+    "s_5b8b49fed29d56": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0488f3a3bffeApdEwLChLbQ3Xe",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_70036ce8862e97": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04b9af39cffePw9D6O3std5M9T",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
