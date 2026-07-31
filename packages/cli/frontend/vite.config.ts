@@ -106,8 +106,8 @@ export default defineConfig({
     alias: [
       { find: /^@\//, replacement: resolve(__dirname, "../src") + "/" },
       {
-        find: /^@sireno-deck\/cli$/,
-        replacement: resolve(__dirname, "../src/index"),
+        find: /^@sireno-deck\/cli(\/.*)?$/,
+        replacement: resolve(__dirname, "../src") + "$1",
       },
       {
         find: /^sireno-deck\/react$/,

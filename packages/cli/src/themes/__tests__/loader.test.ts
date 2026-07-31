@@ -113,6 +113,42 @@ describe("themes/loader", () => {
     expect(theme.uiOverridesPath).toContain("components")
   })
 
+  it("loadThemeFromPath is idempotent — re-loading an already-registered theme is a no-op", () => {
+    const dir = mkdtempSync(join(tmpdir(), "theme-fixture-"))
+    writeFixtureTheme(dir, {
+      name: "fixture-theme",
+      description: "Test fixture",
+    })
+
+    const registry = new AddonRegistry()
+    const first = loadThemeFromPath(registry, dir)
+    const firstSnapshot = registry.getTheme("fixture-theme")
+    expect(first.theme.name).toBe("fixture-theme")
+
+    // Second load — should not throw 'Duplicate theme name'.
+    const second = loadThemeFromPath(registry, dir)
+    expect(second.theme.name).toBe("fixture-theme")
+    // Same registration object survives (not overwritten).
+    expect(registry.getTheme("fixture-theme")).toBe(firstSnapshot)
+  })
+
+  it("loadThemeFromPath with an alias skips the duplicate registration when the alias already exists", () => {
+    const dir = mkdtempSync(join(tmpdir(), "theme-fixture-"))
+    writeFixtureTheme(dir, {
+      name: "fixture-theme",
+      description: "Test fixture",
+    })
+
+    const registry = new AddonRegistry()
+    loadThemeFromPath(registry, dir, "fixture-alias")
+    expect(registry.getTheme("fixture-alias")).toBeDefined()
+
+    // Second load with the same alias should not throw.
+    expect(() =>
+      loadThemeFromPath(registry, dir, "fixture-alias"),
+    ).not.toThrow()
+  })
+
   it("resolveActiveTheme returns the default theme when name is undefined", () => {
     const registry = new AddonRegistry()
     registerBuiltInThemes(registry)
