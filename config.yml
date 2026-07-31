@@ -1,4 +1,6 @@
-theme: default
+theme:
+  name: neon-grids
+  path: ./packages/themes/neon-grids
 
 addons:
   - src: ./packages/addon-app-shortcuts

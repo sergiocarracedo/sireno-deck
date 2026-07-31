@@ -27,6 +27,34 @@
     "./cli": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./ui": {
+      "types": "./src/ui/index.ts",
+      "default": "./src/ui/index.ts"
+    },
+    "./ui/ButtonFrame": {
+      "types": "./src/ui/ButtonFrame.tsx",
+      "default": "./src/ui/ButtonFrame.tsx"
+    },
+    "./ui/surfaces/IconLabelSurface": {
+      "types": "./src/ui/surfaces/IconLabelSurface.tsx",
+      "default": "./src/ui/surfaces/IconLabelSurface.tsx"
+    },
+    "./ui/surfaces/IconLabelProgressSurface": {
+      "types": "./src/ui/surfaces/IconLabelProgressSurface.tsx",
+      "default": "./src/ui/surfaces/IconLabelProgressSurface.tsx"
+    },
+    "./ui/surfaces/TemporaryErrorSurface": {
+      "types": "./src/ui/surfaces/TemporaryErrorSurface.tsx",
+      "default": "./src/ui/surfaces/TemporaryErrorSurface.tsx"
+    },
+    "./ui/primitives/Label": {
+      "types": "./src/ui/primitives/Label.tsx",
+      "default": "./src/ui/primitives/Label.tsx"
+    },
+    "./ui/primitives/Text": {
+      "types": "./src/ui/primitives/Text.tsx",
+      "default": "./src/ui/primitives/Text.tsx"
     }
   },
   "scripts": {
