@@ -1,0 +1,29 @@
+packages/cli/emulator/vite.config.ts
+  s_70036ce8862e97::t_39187d50fd5134 78-79
+packages/cli/frontend/vite.config.ts
+  s_70036ce8862e97::t_05b6e2af49f56d 109-110
+packages/cli/src/themes/loader.ts
+  s_70036ce8862e97::t_c99f0c35b32553 192
+  s_70036ce8862e97::t_eb459dea955451 183-188,190-191
+vitest.config.ts
+  s_70036ce8862e97::t_15cd68b8aa7689 16
+packages/cli/src/themes/__tests__/loader.test.ts
+  s_70036ce8862e97::t_3e212216f07ba0 116-146,150-151
+  s_70036ce8862e97::t_d359f637fe7f01 147-149
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "b10840aade187de615977e9d85cc0ef58a903a3a",
+  "prompts": {},
+  "sessions": {
+    "s_70036ce8862e97": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04b9af39cffePw9D6O3std5M9T",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
