@@ -22,23 +22,67 @@ import {
   ValueChartProps,
 } from "./surfaces"
 
+/**
+ * Theme context passed to every override fn as the second argument. Lets
+ * override code read sibling tokens (`ctx.tokens.primary`) without reaching
+ * across the DOM/CSS to parse a CSS variable. Optional — pre-existing
+ * 1-arg overrides keep working.
+ */
+export interface ThemeOverrideContext {
+  name: string
+  colorTokens: Readonly<Record<string, string>> | null
+  typography: Readonly<Record<string, unknown>> | null
+}
+
 export interface ThemeUiPresentation {
-  buttonFrame?: (props: ButtonFrameProps) => ReactElement
+  buttonFrame?: (
+    props: ButtonFrameProps,
+    ctx?: ThemeOverrideContext,
+  ) => ReactElement
+  /**
+   * Optional deck-chrome background hook. Themes can paint a full-deck
+   * background (e.g. a perspective grid) behind the tiles without
+   * needing core-deck patches. Receives the default `className` and
+   * returns any extra classes to merge in. Returning undefined is a
+   * no-op (default behavior).
+   */
+  deckBackground?: (props: { className: string }) => string | undefined
   primitives?: {
-    chip?: (props: ChipProps) => ReactElement
-    icon?: (props: IconProps) => ReactElement
-    text?: (props: TextProps) => ReactElement
-    label?: (props: LabelProps) => ReactElement
-    tapIndicator?: (props: TapIndicatorProps) => ReactElement
+    chip?: (props: ChipProps, ctx?: ThemeOverrideContext) => ReactElement
+    icon?: (props: IconProps, ctx?: ThemeOverrideContext) => ReactElement
+    text?: (props: TextProps, ctx?: ThemeOverrideContext) => ReactElement
+    label?: (props: LabelProps, ctx?: ThemeOverrideContext) => ReactElement
+    tapIndicator?: (
+      props: TapIndicatorProps,
+      ctx?: ThemeOverrideContext,
+    ) => ReactElement
   }
   surfaces?: {
-    iconLabel?: (props: IconLabelSurfaceProps) => ReactElement
-    iconLabelProgress?: (props: IconLabelProgressSurfaceProps) => ReactElement
-    bars?: (props: BarsProps) => ReactElement
-    splitAction?: (props: SplitActionSurfaceProps) => ReactElement
-    labelValueList?: (props: LabelValueListProps) => ReactElement
-    temporaryError?: (props: TemporaryErrorSurfaceProps) => ReactElement
-    valueChart?: (props: ValueChartProps) => ReactElement
+    iconLabel?: (
+      props: IconLabelSurfaceProps,
+      ctx?: ThemeOverrideContext,
+    ) => ReactElement
+    iconLabelProgress?: (
+      props: IconLabelProgressSurfaceProps,
+      ctx?: ThemeOverrideContext,
+    ) => ReactElement
+    bars?: (props: BarsProps, ctx?: ThemeOverrideContext) => ReactElement
+    splitAction?: (
+      props: SplitActionSurfaceProps,
+      ctx?: ThemeOverrideContext,
+    ) => ReactElement
+    labelValueList?: (
+      props: LabelValueListProps,
+      ctx?: ThemeOverrideContext,
+    ) => ReactElement
+    temporaryError?: (
+      props: TemporaryErrorSurfaceProps,
+      ctx?: ThemeOverrideContext,
+    ) => ReactElement
+    valueChart?: (
+      props: ValueChartProps,
+      ctx?: ThemeOverrideContext,
+    ) => ReactElement
   }
 }
 

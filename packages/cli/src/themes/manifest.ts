@@ -39,8 +39,48 @@ export const ThemeFontFaceSchema = z
     fontWeight: z.number().int().positive(),
     fontStyle: z.enum(["normal", "italic", "oblique"]).default("normal"),
     src: z.string().min(1),
+    /**
+     * Optional variable-font axes — accepts a [min, max] tuple per axis.
+     * When set, css.ts emits a single @font-face with `font-weight: from..to`
+     * shorthand so one entry can serve a range without duplicating files.
+     */
+    axes: z
+      .object({
+        weight: z.tuple([z.number().int(), z.number().int()]).optional(),
+        slant: z.tuple([z.number(), z.number()]).optional(),
+        width: z.tuple([z.number(), z.number()]).optional(),
+      })
+      .optional(),
   })
   .strict()
+
+export const ThemeEffectsSchema = z
+  .object({
+    glow: z
+      .object({
+        sm: z.string().min(1),
+        md: z.string().min(1),
+        lg: z.string().min(1),
+      })
+      .partial()
+      .optional(),
+    shadow: z
+      .object({
+        soft: z.string().min(1),
+        hard: z.string().min(1),
+      })
+      .partial()
+      .optional(),
+    blur: z
+      .object({
+        sm: z.string().min(1),
+        md: z.string().min(1),
+      })
+      .partial()
+      .optional(),
+  })
+  .strict()
+  .optional()
 
 export const ThemeAssetsSchema = z
   .object({
@@ -58,6 +98,7 @@ export const ThemeJsonManifestSchema = z
     colorTokens: ThemeColorTokenSchema,
     typography: ThemeTypographySchema,
     fonts: z.array(ThemeFontFaceSchema).default([]),
+    effects: ThemeEffectsSchema,
     assets: ThemeAssetsSchema.optional(),
     "ui-overrides": z.string().min(1).optional(),
   })

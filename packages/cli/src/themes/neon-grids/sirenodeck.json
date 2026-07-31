@@ -1,0 +1,70 @@
+{
+  "kind": "theme",
+  "apiVersion": 1,
+  "name": "neon-grids",
+  "version": "0.1.0",
+  "description": "Synthwave theme: black background, magenta/pink neon, per-tile perspective grid, neon-line icons on purple radial.",
+  "colorTokens": {
+    "background": "#000000",
+    "frame": "#ff00ff",
+    "foreground": "#ff5fd0",
+    "foreground-contrast": "#ffffff",
+    "primary": "#ff00ff",
+    "accent": "#8a2be2",
+    "success": "#00ff9f",
+    "danger": "#ff003c",
+    "tintBlue": "#00d4ff",
+    "tintGreen": "#00ff9f",
+    "tintPurple": "#8a2be2"
+  },
+  "typography": {
+    "main_text": {
+      "fontFamily": "IBM Plex Mono",
+      "fontSize": 12,
+      "fontWeight": 300,
+      "letterSpacing": 0.4
+    },
+    "auxiliary_text": {
+      "fontFamily": "IBM Plex Mono",
+      "fontSize": 8,
+      "fontWeight": 700,
+      "letterSpacing": 1.6
+    },
+    "monospace": {
+      "fontFamily": "IBM Plex Mono",
+      "fontSize": 10,
+      "fontWeight": 400,
+      "letterSpacing": 0.4
+    }
+  },
+  "fonts": [
+    {
+      "fontFamily": "IBM Plex Mono",
+      "fontWeight": 300,
+      "fontStyle": "normal",
+      "src": "./assets/IBM_Plex_Mono/IBMPlexMono-Regular.ttf"
+    },
+    {
+      "fontFamily": "IBM Plex Mono",
+      "fontWeight": 400,
+      "fontStyle": "normal",
+      "src": "./assets/IBM_Plex_Mono/IBMPlexMono-Regular.ttf"
+    },
+    {
+      "fontFamily": "IBM Plex Mono",
+      "fontWeight": 700,
+      "fontStyle": "normal",
+      "src": "./assets/IBM_Plex_Mono/IBMPlexMono-Bold.ttf"
+    },
+    {
+      "fontFamily": "Bungee",
+      "fontWeight": 400,
+      "fontStyle": "normal",
+      "src": "./assets/brush/Bungee-Regular.ttf"
+    }
+  ],
+  "assets": {
+    "styles": ["./components.css"]
+  },
+  "ui-overrides": "./components"
+}

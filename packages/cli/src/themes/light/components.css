@@ -1,20 +1,21 @@
-.sireno-default-chip[data-sireno-ui-chip="true"] {
+.sireno-light-chip[data-sireno-ui-chip="true"] {
   background: color-mix(
     in oklab,
     var(--sireno-color-background) 78%,
     transparent
   );
-  box-shadow: inset 0 1px 0 color-mix(in oklab, white 18%, transparent);
+  box-shadow: inset 0 1px 0
+    color-mix(in oklab, var(--sireno-color-foreground) 18%, transparent);
 }
 
-.sireno-default-icon[data-sireno-ui-icon="true"] {
+.sireno-light-icon[data-sireno-ui-icon="true"] {
   filter: drop-shadow(
     0 1px 2px
       color-mix(in oklab, var(--sireno-color-background) 68%, transparent)
   );
 }
 
-.sireno-default-text[data-sireno-ui-text="true"] {
+.sireno-light-text[data-sireno-ui-text="true"] {
   text-shadow: 0 1px 0
     color-mix(in oklab, var(--sireno-color-background) 55%, transparent);
 }
@@ -51,18 +52,6 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-}
-
-/* Default pressed / holding glow — every theme gets this for free. Themes
- * can override by re-declaring the same selectors under @layer
- * theme-override (which has higher cascade precedence than utility classes).
- */
-[data-sireno-button-frame="true"][data-pressed="true"] {
-  box-shadow: var(--sireno-pressed-glow);
-}
-
-[data-sireno-button-frame="true"][data-holding="true"] {
-  box-shadow: var(--sireno-held-glow);
 }
 
 .sireno-rich-text-break {

@@ -207,10 +207,16 @@ const loadLocalAddon = async (
     return null
   }
   if (json.kind === "theme") {
+    // ponytail: 3rd-party themes are loaded via the themes loader, not the
+    // addons loader. A theme author drops their package into
+    // `packages/cli/src/themes/<name>/` (or wires a custom themeDir via
+    // the CLI) and the discovery loop picks it up. Rejecting theme-kind
+    // entries from addons[] keeps the contracts clean and surfaces a
+    // clear error to anyone trying to put a theme in the wrong place.
     recordIssue(issues, {
       level: "warning",
       source,
-      message: `Theme addon '${json.name}' declared via addons[] — themes must be loaded via registerBuiltInThemes()`,
+      message: `Theme '${json.name}' declared via addons[] — drop themes into packages/cli/src/themes/<name>/ or pass --theme-dir; they aren't addons.`,
     })
     return null
   }

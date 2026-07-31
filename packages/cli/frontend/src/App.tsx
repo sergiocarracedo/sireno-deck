@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { token } from "virtual:sireno/token"
 import {
   activeTheme,
   colorTokens,
   typography,
+  uiOverrides,
 } from "virtual:sireno/themes/manifest"
 
 import { ChannelRegistry } from "sireno-deck/react"
@@ -12,6 +13,7 @@ import { ThemeProvider, type ThemeContextValue } from "@/themes/index"
 import {
   AssetCacheProvider,
   ThemeUiPresentationProvider,
+  buildPresentation,
   useAssetCacheMutations,
 } from "@sireno-deck/cli"
 import {
@@ -111,23 +113,22 @@ const buildThemeContext = (): ThemeContextValue => {
     typography: null,
   }
 }
-
 let _wsClientInitialized = false
 
 export const App = () => {
   const [theme] = useState<ThemeContextValue>(() => buildThemeContext())
+  const presentation = useMemo(() => buildPresentation(uiOverrides), [])
 
   return (
     <AssetCacheProvider>
       <ThemeProvider value={theme}>
-        <ThemeUiPresentationProvider>
+        <ThemeUiPresentationProvider presentation={presentation}>
           <AppContent />
         </ThemeUiPresentationProvider>
       </ThemeProvider>
     </AssetCacheProvider>
   )
 }
-
 const AppContent = () => {
   const [deck, setDeck] = useState<DeckState>(EMPTY_DECK)
   const [send, setSend] = useState<WebSocketSend | null>(null)
