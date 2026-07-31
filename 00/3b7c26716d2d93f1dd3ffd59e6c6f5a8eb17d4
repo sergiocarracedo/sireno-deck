@@ -1,0 +1,44 @@
+packages/cli/src/builtin-addons/internal-settings/buttons/app-info/frontend.tsx
+  s_f3b2c876b53ecb::t_7f9f7dc035acdf 13-14
+packages/cli/src/render/__tests__/ws-bridge.test.ts
+  s_f3b2c876b53ecb::t_3b916500a75c46 75-89
+packages/cli/src/config/__tests__/resolve-background.test.ts
+  s_f3b2c876b53ecb::t_1a66e75e7a29c3 1-19,23-29,31-35,39-61
+  s_f3b2c876b53ecb::t_e0e17446b3b88e 20-22,30,36-38
+packages/cli/frontend/src/App.tsx
+  s_f3b2c876b53ecb::t_b2b757490520ee 340-342,344-345
+  s_f3b2c876b53ecb::t_ccd8aaef824f75 208,210-221
+  s_f3b2c876b53ecb::t_fdb114bcf7191d 145
+  s_f3b2c876b53ecb::t_e0e17446b3b88e 209,343
+packages/cli/src/config/__tests__/schemas.test.ts
+  s_f3b2c876b53ecb::t_1955d8536a4ee0 85-120
+packages/cli/src/ui/surfaces/PaginatedSurface.tsx
+  s_f3b2c876b53ecb::t_94acb46aa5eb14 37-38
+packages/cli/src/config/resolve-background.ts
+  s_f3b2c876b53ecb::t_ae55692b444abd 1-39
+packages/cli/src/render/ws-bridge.ts
+  s_f3b2c876b53ecb::t_5ed0f20981e8d8 52
+  s_f3b2c876b53ecb::t_c7dbff5a5db7af 24
+  s_f3b2c876b53ecb::t_a54d07985ca726 136-139
+packages/cli/src/cli/commands/run.ts
+  s_f3b2c876b53ecb::t_9a5041aadc23a2 1322-1332
+  s_f3b2c876b53ecb::t_360e66a5946c3f 23
+packages/cli/src/config/schemas.ts
+  s_f3b2c876b53ecb::t_d546f85f7408e9 149
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "003b7c26716d2d93f1dd3ffd59e6c6f5a8eb17d4",
+  "prompts": {},
+  "sessions": {
+    "s_f3b2c876b53ecb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04bd93d0bffenElampWMuAgHvM",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
