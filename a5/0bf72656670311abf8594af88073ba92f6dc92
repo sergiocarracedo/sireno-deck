@@ -1,0 +1,23 @@
+packages/cli/frontend/vite.config.ts
+  s_70036ce8862e97::t_9ae479183d6a54 109-110
+vitest.config.ts
+  s_70036ce8862e97::t_f5bec93da6cf61 16
+packages/cli/emulator/vite.config.ts
+  s_70036ce8862e97::t_c0bba22dd2e656 78-79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "a50bf72656670311abf8594af88073ba92f6dc92",
+  "prompts": {},
+  "sessions": {
+    "s_70036ce8862e97": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04b9af39cffePw9D6O3std5M9T",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
