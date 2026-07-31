@@ -1,5 +1,6 @@
 packages:
   - packages/*
+  - packages/addons/*
   - packages/web/astro
   - packages/web/videos
 

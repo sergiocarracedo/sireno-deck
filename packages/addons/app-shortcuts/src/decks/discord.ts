@@ -9,7 +9,7 @@ const action = (icon: string, label: string, tap: string) => ({
 export const discordDeck: AddonDeckEntry = {
   id: "app-shortcuts:discord",
   name: "Discord",
-  icon: "addon://addon-app-shortcuts/assets/discord.svg",
+  icon: "addon://app-shortcuts/assets/discord.svg",
   buttonColor: "purple",
   paginated: true,
   autoShow: true,

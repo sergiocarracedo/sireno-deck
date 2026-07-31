@@ -1,11 +1,11 @@
 theme: ./packages/themes/neon-grids
 
 addons:
-  - src: ./packages/addon-app-shortcuts
+  - src: ./packages/addons/app-shortcuts
     config:
       defaults:
         autoShow: false
-  - src: ./packages/addon-pomodoro
+  - src: ./packages/addons/pomodoro
 
 logging:
   level: info

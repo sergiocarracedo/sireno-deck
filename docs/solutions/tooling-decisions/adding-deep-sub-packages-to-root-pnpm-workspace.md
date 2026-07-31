@@ -19,7 +19,7 @@ tags: [pnpm, workspace, monorepo, astro, remotion]
 
 The Sireno Deck marketing site (`packages/web/astro`, Astro + Starlight) and Remotion video compositions (`packages/web/videos`) needed to be visible to the root workspace so that `pnpm --filter` and root-level tooling could target them.
 
-The root `pnpm-workspace.yaml` declares `packages: ['packages/*']`. This glob resolves one directory level deep: it picks up `packages/addon-app-shortcuts`, `packages/addon-pomodoro`, `packages/cli`, `packages/web`, but **not** `packages/web/astro` or `packages/web/videos`.
+The root `pnpm-workspace.yaml` declares `packages: ['packages/*']`. This glob resolves one directory level deep: it picks up `packages/cli`, `packages/web`, `packages/addons` (the directory itself, **not** its sub-packages), but **not** `packages/web/astro`, `packages/web/videos`, or `packages/addons/app-shortcuts` / `packages/addons/pomodoro`.
 
 The project had a constraint: file/folder creation should stay within `packages/web/`. This meant the root `pnpm-workspace.yaml` could be **edited** (adding entries), but no new files or directories should be created outside `packages/web/`.
 
@@ -34,11 +34,12 @@ The correct fix is to add the deep sub-packages directly to the root workspace d
 ```yaml
 packages:
   - packages/*
+  - packages/addons/*
   - packages/web/astro
   - packages/web/videos
 ```
 
-Because `packages/web/` itself has **no `package.json`**, it is invisible to the root workspace glob (`packages/*`) — the glob stops at `packages/web` since it finds no manifest there. Adding `packages/web/astro` and `packages/web/videos` explicitly bypasses this gap.
+Because `packages/web/` itself has **no `package.json`**, it is invisible to the root workspace glob (`packages/*`) — the glob stops at `packages/web` since it finds no manifest there. Adding `packages/web/astro` and `packages/web/videos` explicitly bypasses this gap. The same pattern applies to `packages/addons/`, which now hosts the third-party addons (e.g. `app-shortcuts`, `pomodoro`).
 
 After editing the root `pnpm-workspace.yaml`, run `pnpm install` to update the lockfile and register the new workspace members.
 

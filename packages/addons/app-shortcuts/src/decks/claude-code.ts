@@ -9,7 +9,7 @@ const action = (icon: string, label: string, tap: string) => ({
 export const claudeCodeDeck: AddonDeckEntry = {
   id: "app-shortcuts:claude-code",
   name: "Claude Code",
-  icon: "addon://addon-app-shortcuts/assets/claude-code.svg",
+  icon: "addon://app-shortcuts/assets/claude-code.svg",
   buttonColor: "purple",
   paginated: true,
   autoShow: true,

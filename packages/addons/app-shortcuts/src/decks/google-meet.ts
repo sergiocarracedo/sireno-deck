@@ -9,7 +9,7 @@ const action = (icon: string, label: string, tap: string) => ({
 export const googleMeetDeck: AddonDeckEntry = {
   id: "app-shortcuts:google-meet",
   name: "Google Meet",
-  icon: "addon://addon-app-shortcuts/assets/google-meet.svg",
+  icon: "addon://app-shortcuts/assets/google-meet.svg",
   buttonColor: "blue",
   paginated: true,
   autoShow: false,

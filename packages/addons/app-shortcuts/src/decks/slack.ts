@@ -9,7 +9,7 @@ const action = (icon: string, label: string, tap: string) => ({
 export const slackDeck: AddonDeckEntry = {
   id: "app-shortcuts:slack",
   name: "Slack",
-  icon: "addon://addon-app-shortcuts/assets/slack.svg",
+  icon: "addon://app-shortcuts/assets/slack.svg",
   buttonColor: "green",
   paginated: true,
   autoShow: true,
