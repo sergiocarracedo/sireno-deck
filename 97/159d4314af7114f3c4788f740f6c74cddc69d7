@@ -1,0 +1,40 @@
+packages/cli/src/cli/commands/run.ts
+  s_5b8b49fed29d56::t_597031db37b1ad 1403-1409
+  s_5b8b49fed29d56::t_c15cc661d27625 512-521
+  s_5b8b49fed29d56::t_e51c6fbf61d9e6 1058-1093
+  s_5b8b49fed29d56::t_82dee53a6cc7c0 1094-1095
+packages/cli/src/render/ws-bridge.ts
+  s_5b8b49fed29d56::t_089d34a1ddde92 14
+  s_5b8b49fed29d56::t_2e5eac90154d43 26-29
+  s_5b8b49fed29d56::t_d5fc98921c061c 36-41
+  s_5b8b49fed29d56::t_cd2b4ab77c6e28 237-239
+  s_5b8b49fed29d56::t_88e03b231ea7ba 64
+  s_5b8b49fed29d56::t_8fad684d4f48c6 153-158
+packages/cli/emulator/src/App.tsx
+  s_5b8b49fed29d56::t_6aff2e815c0eec 237
+  s_5b8b49fed29d56::t_0176760964b59b 95-101
+  s_5b8b49fed29d56::t_4dd5d30c0ca554 183-188
+  s_5b8b49fed29d56::t_4c20dd640fe0ec 19
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_5b8b49fed29d56::t_c2df63de7fafcc 60
+packages/cli/src/api/protocol-internal.ts
+  s_5b8b49fed29d56::t_00e14ae49e2634 226-227
+  s_5b8b49fed29d56::t_5c3d832da1f94b 200
+  s_5b8b49fed29d56::t_118fffd0463fcf 151-179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "97159d4314af7114f3c4788f740f6c74cddc69d7",
+  "prompts": {},
+  "sessions": {
+    "s_5b8b49fed29d56": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0488f3a3bffeApdEwLChLbQ3Xe",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
