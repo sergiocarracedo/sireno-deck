@@ -509,7 +509,16 @@ export const validateAndLoadConfig = async (
     )
   }
   const { theme, getCss } = resolveActiveTheme(registry, {
-    theme: config.theme,
+    // ponytail: theme paths in config.yml are relative to the config file's
+    // directory, not to process.cwd(). `loadThemeFromPath` resolves via
+    // `path.resolve(themePath)`, which uses cwd — and the dev wrapper sets
+    // cwd to packages/cli/. Pre-resolve here so `./packages/themes/...`
+    // works regardless of where the daemon is launched from.
+    theme:
+      config.theme !== undefined &&
+      (config.theme.startsWith("./") || config.theme.startsWith("../"))
+        ? resolvePath(dirname(configPath), config.theme)
+        : config.theme,
   })
   const themeDir: string = resolvePath(
     findWorkspaceRoot(),
@@ -1046,6 +1055,44 @@ export const addonSpecFromScanned = (s: ScannedAddon) => ({
   defaultButton: s.defaultButton,
 })
 
+// ponytail: shape a ScannedAddon into the AddonsPage inventory entry the
+// emulator renders. Mirrors the AddonsPage TypeScript shape so the WS
+// message can flow straight into a prop without further mapping.
+export const addonInventoryFromScanned = (
+  s: ScannedAddon,
+): {
+  name: string
+  path?: string
+  internal: boolean
+  source: string
+  buttonTypes: Array<{ type: string; internal: boolean }>
+  defaultButton: string | null
+  decks: Array<{
+    id: string
+    isOverlay: boolean
+    paginated: boolean
+    buttons: number
+    internal: boolean
+  }>
+} => ({
+  name: s.name,
+  ...(s.path !== undefined ? { path: s.path } : {}),
+  internal: s.internal === true,
+  source: s.source,
+  buttonTypes: Object.entries(s.buttonTypes).map(([type, info]) => ({
+    type,
+    internal: info.internal,
+  })),
+  defaultButton: s.defaultButton ?? null,
+  decks: s.decks.map((d) => ({
+    id: d.id,
+    isOverlay: d.isOverlay,
+    paginated: d.paginated,
+    buttons: d.buttons,
+    internal: d.internal,
+  })),
+})
+
 const buildAddonBundle = async (): Promise<AddonRegistryBundle> => {
   const registry = await collectBuiltinAddonRegistry()
 
@@ -1353,6 +1400,13 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     )
     publishSIRENO_ADDONS(addonBundle.scanned, externalScanned)
     options.onAddonsUpdate?.([...addonBundle.scanned, ...externalScanned])
+    // ponytail: ship the merged inventory to the bridge so the emulator's
+    // Addons tab can render it on connect. Builtins are bundled; third-party
+    // addons (from config.yml `addons:`) join here. --emulator mode never
+    // binds the start-mode HTTP API on 3939, so this is the only path.
+    bridge.setAddonInventory(
+      [...addonBundle.scanned, ...externalScanned].map(addonInventoryFromScanned),
+    )
 
     addonServices = setupAddonServices({
       runtime,

@@ -16,7 +16,7 @@ import { DeckFrame } from "./DeckFrame"
 import { Shell } from "./Shell"
 import { BridgeLogsPage } from "./pages/BridgeLogsPage"
 import { ServiceLogsPage } from "./pages/ServiceLogsPage"
-import { AddonsPage } from "./pages/AddonsPage"
+import { AddonsPage, type AddonInventory } from "./pages/AddonsPage"
 import { ConfigPage } from "./pages/ConfigPage"
 
 const ENV_WS_URL = (import.meta.env.VITE_WS_URL ??
@@ -92,6 +92,13 @@ export const App = ({
   const [now, setNow] = useState(() => Date.now())
   const [deckId, setDeckId] = useState<string>("")
   const [deckName, setDeckName] = useState<string>("")
+  // ponytail: addon inventory arrives over the WS bridge as a follow-up
+  // to hello-ack (see protocol-internal.addonsInventoryMessageSchema).
+  // Receiving it here avoids the previous `/api/addons` fetch, which the
+  // start-mode daemon used to serve but isn't bound in --emulator mode.
+  const [addonInventory, setAddonInventory] = useState<AddonInventory | null>(
+    null,
+  )
   const [deviceModel, setDeviceModel] = useState<DeviceModelSpec>(() =>
     initialDeviceModel !== undefined && isKnownDeviceModel(initialDeviceModel)
       ? getDeviceModel(initialDeviceModel)
@@ -173,6 +180,12 @@ export const App = ({
             | undefined
           setDeckName(surfaces?.[id]?.name ?? id)
         }
+        if (m.type === "addons-inventory") {
+          const addons = m.addons
+          if (Array.isArray(addons)) {
+            setAddonInventory({ addons } as AddonInventory)
+          }
+        }
         if (typeof m.type === "string" && m.type.endsWith("error")) {
           setLastError(String(m.type))
         }
@@ -221,7 +234,7 @@ export const App = ({
   const renderActive = (): React.ReactNode => {
     if (activeSection === "bridge-logs") return <BridgeLogsPage />
     if (activeSection === "service-logs") return <ServiceLogsPage />
-    if (activeSection === "addons") return <AddonsPage />
+    if (activeSection === "addons") return <AddonsPage addonInventory={addonInventory} />
     if (activeSection === "config") return <ConfigPage />
     return null
   }

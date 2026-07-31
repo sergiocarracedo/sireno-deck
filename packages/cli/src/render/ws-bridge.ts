@@ -11,6 +11,7 @@ import {
   wsMessageSchema,
   type WsMessage,
 } from "./protocol"
+import type { AddonsInventoryMessage } from "@/api/protocol-internal"
 
 const HANDSHAKE_TIMEOUT_MS = 5000
 const TOKEN_MISMATCH_CLOSE_CODE = 4001
@@ -22,12 +23,22 @@ export interface WsBridgeOptions {
   handshakeTimeoutMs?: number
   activeTheme?: { name: string; version?: number }
   logger?: Logger
+  // ponytail: when provided, sent as a follow-up to hello-ack so the
+  // emulator's Addons tab can render without needing a separate HTTP
+  // fetch (which doesn't exist in --emulator mode).
+  addonInventory?: AddonsInventoryMessage["addons"]
 }
 
 export interface WsBridge {
   readonly port: number
   readonly url: string
   setDevice(device: DeviceDescriptor): void
+  // ponytail: late-bound so callers can ship addon inventory after
+  // external addons register (e.g. buildExternalScannedAddons runs
+  // after the bridge starts in runPipeline). Subsequent connects get
+  // the new value; already-connected clients aren't resent (would be
+  // redundant — the page is mounting fresh anyway).
+  setAddonInventory(inventory: AddonsInventoryMessage["addons"]): void
   broadcast(message: WsMessage): void
   sendToCaller(message: WsMessage): void
   registerCacheablePoller(
@@ -50,6 +61,7 @@ export const startWsBridge = (
     activeTheme,
     logger = createLogger({ level: "warn", name: "ws-bridge" }),
   } = options
+  let { addonInventory } = options
 
   return new Promise((resolve, reject) => {
     const wss = new WebSocketServer({ port, host })
@@ -138,6 +150,12 @@ export const startWsBridge = (
           if (currentDevice !== null) {
             sendToSocket(socket, { type: "device-info", device: currentDevice })
           }
+          if (addonInventory !== undefined) {
+            sendToSocket(socket, {
+              type: "addons-inventory",
+              addons: addonInventory,
+            })
+          }
           for (const handler of connectionHandlers) handler(socket)
           return
         }
@@ -215,6 +233,9 @@ export const startWsBridge = (
           for (const client of wss.clients) {
             if (client.readyState === client.OPEN) client.send(payload)
           }
+        },
+        setAddonInventory: (inventory) => {
+          addonInventory = inventory
         },
         broadcast: (message) => {
           if (message.type === "state") {

@@ -148,6 +148,35 @@ export const iframeReloadMessageSchema = baseServerMessage.extend({
   type: z.literal("iframe-reload"),
 })
 
+// ponytail: ships the addon inventory the emulator's Addons tab renders.
+// Replaces a separate HTTP `/api/addons` fetch on the start-mode daemon
+// (port 3939) that isn't bound in `--emulator` mode — the emulator only
+// exposes the WS bridge, so the inventory rides along on connect.
+export const addonsInventoryMessageSchema = baseServerMessage.extend({
+  type: z.literal("addons-inventory"),
+  addons: z.array(
+    z.object({
+      name: z.string(),
+      path: z.string().optional(),
+      internal: z.boolean().default(false),
+      source: z.string(),
+      buttonTypes: z.array(
+        z.object({ type: z.string(), internal: z.boolean().default(false) }),
+      ),
+      defaultButton: z.string().nullable().optional(),
+      decks: z.array(
+        z.object({
+          id: z.string(),
+          isOverlay: z.boolean().default(false),
+          paginated: z.boolean().default(false),
+          buttons: z.number().int().nonnegative().default(0),
+          internal: z.boolean().default(false),
+        }),
+      ),
+    }),
+  ),
+})
+
 export const wsMessageSchema = z.discriminatedUnion("type", [
   helloMessageSchema,
   helloAckMessageSchema,
@@ -168,6 +197,7 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
   assetsMessageSchema,
   subscribeChannelsMessageSchema,
   iframeReloadMessageSchema,
+  addonsInventoryMessageSchema,
 ])
 
 export type HelloMessage = z.infer<typeof helloMessageSchema>
@@ -193,4 +223,6 @@ export type SubscribeChannelsMessage = z.infer<
   typeof subscribeChannelsMessageSchema
 >
 export type IframeReloadMessage = z.infer<typeof iframeReloadMessageSchema>
+export type AddonsInventoryMessage = z.infer<typeof addonsInventoryMessageSchema>
+export type AddonInventoryEntry = AddonsInventoryMessage["addons"][number]
 export type WsMessage = z.infer<typeof wsMessageSchema>
