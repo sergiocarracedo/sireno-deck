@@ -22,6 +22,7 @@ export interface RuntimeButton {
     hold?: string
   }
   full?: boolean
+  variant?: string
 }
 
 export interface RuntimeDeck {
@@ -36,6 +37,11 @@ export interface RuntimeDeck {
   isOverlayDeck?: boolean
   icon?: string
   buttonColor?: "blue" | "green" | "purple"
+  /**
+   * Variant token name resolved from the active theme. Falls back to
+   * "default" when the theme doesn't declare the requested variant.
+   */
+  variant?: string
   buttonErrors?: ReadonlyArray<{
     position: number
     buttonId?: string

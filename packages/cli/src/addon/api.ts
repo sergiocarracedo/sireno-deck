@@ -61,7 +61,10 @@ export interface AddonManifest {
 export interface LoadedTheme {
   name: string
   apiVersion: number
-  source: { kind: "builtin" | "local" | "npm"; resolvedPath: string }
+  source: {
+    kind: "builtin" | "sibling" | "local" | "npm"
+    resolvedPath: string
+  }
   manifestPath: string
   uiOverridesPath: string | null
   cssPath: string
@@ -151,6 +154,18 @@ export interface AddonGeneratedDeck {
   name?: string
   icon?: string
   background?: string
+  /**
+   * Variant token name. Themes declare which variants they support in
+   * their manifest; addon authors pick from the active theme's set.
+   * Unknown names fall back to "default" with a console.warn at render.
+   */
+  variant?: string
+  /**
+   * Deprecated alias for `variant`. Accepts the legacy closed enum
+   * (`blue|green|purple`) for backward compatibility — values get mapped
+   * to `highlighted|success|highlighted` and a console.warn is emitted.
+   * Addons should migrate to `variant`.
+   */
   buttonColor?: "blue" | "green" | "purple"
   buttons?: unknown[]
   paginated?: boolean

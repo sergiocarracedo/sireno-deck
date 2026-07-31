@@ -1,6 +1,6 @@
 import type { AddonRegistry } from "@/addon/registry"
 
-import { registerBuiltInThemes } from "@/themes/loader"
+import { registerBuiltInThemes, registerSiblingThemes } from "@/themes/loader"
 
 import brightnessAddon from "./brightness/index"
 import { coreAddon } from "./core/index"
@@ -15,6 +15,7 @@ import weatherAddon from "./weather/index"
 
 export const registerBuiltins = (registry: AddonRegistry): void => {
   registerBuiltInThemes(registry)
+  registerSiblingThemes(registry)
   registry.load(coreAddon)
   registry.load(internalSettingsAddon)
   registry.load(sessionAddon)

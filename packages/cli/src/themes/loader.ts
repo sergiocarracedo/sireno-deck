@@ -11,23 +11,42 @@ import type { ThemeEntry } from "@/config/schemas"
 
 const here = dirname(fileURLToPath(import.meta.url))
 const themesRoot = here
+// ponytail: sibling scan — first-party themes shipped outside the CLI package
+// (e.g. packages/themes/<name>) get registered as "sibling" so authors can
+// iterate on a theme in a separate workspace. `here` is
+// `<repo>/packages/cli/src/themes`, so `../../../themes` lands in
+// `<repo>/packages/themes`.
+const siblingThemesRoot = resolvePath(here, "..", "..", "..", "themes")
 
 export interface BuiltInThemeSpec {
   name: string
   dir: string
 }
 
-function _discoverThemesDir(): ReadonlyArray<{ dir: string; name: string }> {
-  if (!existsSync(themesRoot)) return []
-  const entries = readdirSync(themesRoot, { withFileTypes: true })
+function _discoverThemesInRoot(
+  root: string,
+): ReadonlyArray<{ dir: string; name: string }> {
+  if (!existsSync(root)) return []
+  const entries = readdirSync(root, { withFileTypes: true })
   const themes: { dir: string; name: string }[] = []
   for (const entry of entries) {
     if (!entry.isDirectory()) continue
-    const manifestPath = join(themesRoot, entry.name, "sirenodeck.json")
+    const manifestPath = join(root, entry.name, "sirenodeck.json")
     if (!existsSync(manifestPath)) continue
-    themes.push({ dir: join(themesRoot, entry.name), name: entry.name })
+    themes.push({ dir: join(root, entry.name), name: entry.name })
   }
   return themes
+}
+
+function _discoverThemesDir(): ReadonlyArray<{ dir: string; name: string }> {
+  return _discoverThemesInRoot(themesRoot)
+}
+
+function _discoverSiblingThemesDir(): ReadonlyArray<{
+  dir: string
+  name: string
+}> {
+  return _discoverThemesInRoot(siblingThemesRoot)
 }
 
 export const BUILT_IN_THEMES: ReadonlyArray<BuiltInThemeSpec> =
@@ -86,6 +105,7 @@ function buildLoadedTheme(
   themeDir: string,
   source:
     | { kind: "builtin"; resolvedPath: string }
+    | { kind: "sibling"; resolvedPath: string }
     | { kind: "local"; resolvedPath: string },
 ): { theme: LoadedTheme; getCss: () => string } {
   const uiOverridesPath = manifest["ui-overrides"]
@@ -123,6 +143,27 @@ export function loadBuiltInThemes(): Array<{
 export const registerBuiltInThemes = (registry: AddonRegistry): void => {
   const builtIns = loadBuiltInThemes()
   for (const { theme } of builtIns) {
+    registry.loadTheme(theme)
+  }
+}
+
+export function loadSiblingThemes(): Array<{
+  theme: LoadedTheme
+  getCss: () => string
+}> {
+  const discovered = _discoverSiblingThemesDir()
+  return discovered.map(({ dir, name }) => {
+    const manifest = readAndValidateManifest(join(dir, "sirenodeck.json"), name)
+    return buildLoadedTheme(manifest, dir, {
+      kind: "sibling",
+      resolvedPath: dir,
+    })
+  })
+}
+
+export const registerSiblingThemes = (registry: AddonRegistry): void => {
+  const siblings = loadSiblingThemes()
+  for (const { theme } of siblings) {
     registry.loadTheme(theme)
   }
 }
@@ -187,7 +228,7 @@ const resolveBuiltinTheme = (
   registry: AddonRegistry,
   theme: LoadedTheme,
 ): ResolveThemeResult => {
-  if (theme.source.kind === "builtin") {
+  if (theme.source.kind === "builtin" || theme.source.kind === "sibling") {
     const themeDir = dirname(theme.manifestPath)
     const manifest = readAndValidateManifest(theme.manifestPath, theme.name)
     return {

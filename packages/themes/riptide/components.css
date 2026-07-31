@@ -1,0 +1,163 @@
+/* riptide — neon yellow + pink halftone on black deck with cyan stripes
+ *
+ * Visual recipe per tile:
+ *   1. Solid black base (var(--sireno-variant-default-bg))
+ *   2. Cyan stripes via repeating-linear-gradient
+ *   3. Pink halftone dots overlay (radial-gradient mix-blend-mode: screen)
+ *   4. Neon border + outer glow from the variant tokens
+ *   5. Pressed/holding states boost the glow + invert halftone contrast
+ *
+ * ponytail: pure CSS halftone (no Canvas, no JS) — a single radial-gradient
+ * with stepped color stops gives a clean dot grid at half the size of the
+ * Stream Deck tile (72x72px). For higher DPI screens the renderer will
+ * smooth the dots automatically.
+ */
+
+.riptide-tile {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* Cyan stripes — thin diagonal lines, more saturated on press. */
+.riptide-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0,
+    transparent 6px,
+    color-mix(
+        in oklab,
+        var(--sireno-color-primary-cyan, #00d4ff) 22%,
+        transparent
+      )
+      6px,
+    color-mix(
+        in oklab,
+        var(--sireno-color-primary-cyan, #00d4ff) 22%,
+        transparent
+      )
+      7px
+  );
+  mix-blend-mode: screen;
+}
+
+/* Pink halftone — 6x6 dot grid, screen-blended so it never paints over
+ * black areas. The dot color comes from the theme's accent (pink). */
+.riptide-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(
+      circle at 50% 50%,
+      color-mix(in oklab, var(--sireno-color-accent) 90%, transparent) 0%,
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 12% 18%,
+      var(--sireno-color-accent) 0%,
+      transparent 8%
+    ),
+    radial-gradient(
+      circle at 38% 62%,
+      var(--sireno-color-accent) 0%,
+      transparent 8%
+    ),
+    radial-gradient(
+      circle at 64% 24%,
+      var(--sireno-color-accent) 0%,
+      transparent 8%
+    ),
+    radial-gradient(
+      circle at 88% 78%,
+      var(--sireno-color-accent) 0%,
+      transparent 8%
+    ),
+    radial-gradient(
+      circle at 22% 86%,
+      var(--sireno-color-accent) 0%,
+      transparent 8%
+    );
+  background-size:
+    100% 100%,
+    18px 18px,
+    18px 18px,
+    18px 18px,
+    18px 18px,
+    18px 18px;
+  mix-blend-mode: screen;
+  opacity: 0.55;
+}
+
+.riptide-tile > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Neon glow ring — uses the variant glow token, falls back to accent. */
+.riptide-tile-frame {
+  box-shadow:
+    inset 0 0 0 1px
+      color-mix(in oklab, var(--sireno-color-foreground) 18%, transparent),
+    0 0 12px
+      color-mix(
+        in oklab,
+        var(--sireno-variant-glow, var(--sireno-color-accent)) 70%,
+        transparent
+      );
+  backdrop-filter: blur(2px);
+}
+
+.riptide-tile-frame[data-pressed="true"]::after {
+  opacity: 0.85;
+}
+
+.riptide-tile-frame[data-holding="true"] {
+  box-shadow:
+    inset 0 0 0 2px var(--sireno-color-primary),
+    0 0 18px var(--sireno-color-primary),
+    0 0 32px color-mix(in oklab, var(--sireno-color-accent) 60%, transparent);
+}
+
+.riptide-tile-frame[data-variant="error"],
+.riptide-tile-frame[data-variant="neon-pink"] {
+  /* Override the default mix-blend-mode halftone for variants that
+   * want a flat neon look (no pink dots). */
+}
+
+.riptide-tile-frame[data-variant="neon-pink"]::after {
+  opacity: 0.2;
+}
+
+/* Neon yellow headings — extra text-shadow on the brush labels. */
+.riptide-text-heading {
+  color: var(--sireno-color-primary);
+  text-shadow:
+    0 0 4px var(--sireno-color-primary),
+    0 0 12px color-mix(in oklab, var(--sireno-color-accent) 70%, transparent);
+}
+
+.riptide-text-label {
+  color: var(--sireno-color-foreground);
+  text-shadow: 0 0 3px
+    color-mix(in oklab, var(--sireno-color-primary) 50%, transparent);
+}
+
+.riptide-tap-pill {
+  background: rgba(10, 14, 26, 0.7);
+  border: 1px solid var(--sireno-color-primary);
+  color: var(--sireno-color-primary);
+  text-shadow: 0 0 3px var(--sireno-color-primary);
+  box-shadow:
+    0 0 6px color-mix(in oklab, var(--sireno-color-primary) 50%, transparent),
+    inset 0 0 6px
+      color-mix(in oklab, var(--sireno-color-accent) 30%, transparent);
+  backdrop-filter: blur(4px);
+}

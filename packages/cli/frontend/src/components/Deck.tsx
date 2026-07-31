@@ -52,6 +52,7 @@ export interface DeckButton {
   addonName?: string
   frontendEntry?: string
   full?: boolean
+  variant?: string
 }
 
 export interface Deck {
@@ -59,6 +60,7 @@ export interface Deck {
   name: string
   buttons: DeckButton[]
   buttonColor?: "blue" | "green" | "purple"
+  variant?: string
   hasOverlayDeckAvailable?: boolean
   overlayDeckIcon?: string | null
   overlayDeckName?: string | null
@@ -103,6 +105,7 @@ interface DeckButtonCellProps {
   readonly splitAction?: boolean
   readonly isError?: boolean
   readonly buttonColor?: "blue" | "green" | "purple"
+  readonly variant?: string
   readonly overlayDeckIcon?: string | null
   readonly overlayDeckName?: string | null
   readonly buttonErrors?: Deck["buttonErrors"]
@@ -117,6 +120,7 @@ const DeckButtonCell = ({
   splitAction = false,
   isError = false,
   buttonColor,
+  variant,
   overlayDeckIcon: deckOverlayIcon,
   overlayDeckName,
   buttonErrors,
@@ -141,6 +145,11 @@ const DeckButtonCell = ({
     },
     [],
   )
+
+  // ponytail: per-button variant from user config beats deck-level
+  // variant (which beats the legacy `buttonColor` enum). Unknown names
+  // fall back to "default" at the ButtonFrame layer.
+  const effectiveVariant = button.variant ?? variant ?? buttonColor ?? "default"
 
   if (isError) {
     return (
@@ -207,7 +216,7 @@ const DeckButtonCell = ({
       >
         <ButtonFrame
           buttonType={button.type}
-          variant={buttonColor}
+          variant={effectiveVariant}
           onClick={handleClick}
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}
@@ -390,6 +399,7 @@ export const Deck = ({ deck, deviceModel, children }: DeckProps) => {
             row={row}
             isError={errorPositions.has(position)}
             buttonColor={deck.buttonColor}
+            variant={deck.variant}
             overlayDeckIcon={deck.overlayDeckIcon ?? null}
             overlayDeckName={deck.overlayDeckName ?? null}
             buttonErrors={deck.buttonErrors}

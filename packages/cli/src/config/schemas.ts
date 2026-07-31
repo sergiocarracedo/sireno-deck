@@ -48,6 +48,14 @@ export const ButtonDefSchema = z
     accent: z.string().optional(),
     background: z.string().optional(),
     actions: ButtonActionsSchema.optional(),
+    /**
+     * Variant token name. Resolved by ButtonFrame against the active
+     * theme's CSS vars at render time. Themes may declare extra
+     * variants beyond the 5-required set; users pick from whatever the
+     * active theme supports. Unknown names fall back to "default" with
+     * a console.warn.
+     */
+    variant: z.string().min(1).optional(),
   })
   .strict()
 

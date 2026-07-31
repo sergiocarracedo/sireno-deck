@@ -1,0 +1,109 @@
+{
+  "kind": "theme",
+  "apiVersion": 1,
+  "name": "riptide",
+  "version": "0.1.0",
+  "description": "Riptide — neon yellow + pink halftone icons on a black deck with cyan stripes. Inspired by late-night surf-posters.",
+  "colorTokens": {
+    "background": "#0a0e1a",
+    "frame": "#00d4ff",
+    "foreground": "#fff89e",
+    "foreground-contrast": "#0a0e1a",
+    "primary": "#f5ff00",
+    "accent": "#ff0099",
+    "success": "#00ff9f",
+    "danger": "#ff3355"
+  },
+  "variants": {
+    "default": {
+      "background": "#0a0e1a",
+      "border": "#1a2540",
+      "foreground": "#fff89e"
+    },
+    "highlighted": {
+      "background": "#00d4ff26",
+      "border": "#00d4ff8c",
+      "foreground": "#fff89e",
+      "glow": "#00d4ff80"
+    },
+    "warning": {
+      "background": "#f5ff0026",
+      "border": "#f5ff008c",
+      "foreground": "#f5ff00",
+      "glow": "#f5ff0080"
+    },
+    "success": {
+      "background": "#00ff9f26",
+      "border": "#00ff9f8c",
+      "foreground": "#00ff9f",
+      "glow": "#00ff9f80"
+    },
+    "error": {
+      "background": "#ff335526",
+      "border": "#ff33558c",
+      "foreground": "#ff3355",
+      "glow": "#ff335580"
+    },
+    "neon-pink": {
+      "background": "#ff009926",
+      "border": "#ff0099cc",
+      "foreground": "#ff5cb3",
+      "glow": "#ff0099b3"
+    }
+  },
+  "typography": {
+    "main_text": {
+      "fontFamily": "IBM Plex Sans",
+      "fontSize": 12,
+      "fontWeight": 700,
+      "letterSpacing": 0.4
+    },
+    "auxiliary_text": {
+      "fontFamily": "IBM Plex Sans",
+      "fontSize": 8,
+      "fontWeight": 400,
+      "letterSpacing": 1.4
+    },
+    "monospace": {
+      "fontFamily": "IBM Plex Mono",
+      "fontSize": 10,
+      "fontWeight": 500,
+      "letterSpacing": 0.4
+    }
+  },
+  "fonts": [
+    {
+      "fontFamily": "IBM Plex Sans",
+      "fontWeight": 400,
+      "fontStyle": "normal",
+      "src": "../../cli/src/themes/default/assets/IBMPlexSans-Regular.ttf"
+    },
+    {
+      "fontFamily": "IBM Plex Sans",
+      "fontWeight": 700,
+      "fontStyle": "normal",
+      "src": "../../cli/src/themes/default/assets/IBMPlexSans-Bold.ttf"
+    },
+    {
+      "fontFamily": "IBM Plex Mono",
+      "fontWeight": 500,
+      "fontStyle": "normal",
+      "src": "../../cli/src/themes/default/assets/IBMPlexMono-Medium.ttf"
+    }
+  ],
+  "effects": {
+    "glow": {
+      "sm": "0 0 6px var(--sireno-color-primary)",
+      "md": "0 0 12px var(--sireno-color-primary), 0 0 22px var(--sireno-color-accent)",
+      "lg": "0 0 18px var(--sireno-color-primary), 0 0 38px var(--sireno-color-accent)"
+    },
+    "blur": {
+      "sm": "blur(4px)",
+      "md": "blur(10px)"
+    }
+  },
+  "assets": {
+    "styles": ["./components.css"]
+  },
+  "ui-overrides": "./components"
+}

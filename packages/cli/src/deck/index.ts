@@ -41,6 +41,11 @@ export {
   SYSTEM_BUTTON_TYPES,
   type SystemButtonType,
 } from "./system-buttons/types"
+export {
+  BUTTON_COLOR_TO_VARIANT,
+  resolveVariantFromButtonColor,
+  resolveDeckVariant,
+} from "./variant-migration"
 
 export interface CreateDeckRuntimeOptions {
   decks: ReadonlyArray<RuntimeDeck>

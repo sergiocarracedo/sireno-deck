@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "types": ["node", "vite/client"],
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "useUnknownInCatchVariables": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+
+    "skipLibCheck": true,
+    "noEmit": true,
+
+    "paths": {
+      "@sireno-deck/cli": ["../../cli/src/index.ts"],
+      "@sireno-deck/cli/*": ["../../cli/src/*"]
+    }
+  },
+  "include": ["components/**/*"]
+}

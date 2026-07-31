@@ -645,6 +645,9 @@ const buildRuntime = (
           ? { config: b.config }
           : {}),
         ...(b.actions !== undefined ? { actions: b.actions } : {}),
+        ...(b.variant !== undefined && b.variant.length > 0
+          ? { variant: b.variant }
+          : {}),
       }))
       const processNames =
         d.trigger?.process_name !== undefined

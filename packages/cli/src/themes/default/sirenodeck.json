@@ -12,10 +12,34 @@
     "primary": "#7dd3fc",
     "accent": "#C3F5FF",
     "success": "#34d399",
-    "danger": "#FFB4AB",
-    "tintBlue": "#7dd3fc",
-    "tintGreen": "#34d399",
-    "tintPurple": "#c4b5fd"
+    "danger": "#FFB4AB"
+  },
+  "variants": {
+    "default": {
+      "background": "#2e3540",
+      "border": "#53738B",
+      "foreground": "#eef2f7"
+    },
+    "highlighted": {
+      "background": "#7dd3fc40",
+      "border": "#7dd3fc8c",
+      "foreground": "#eef2f7"
+    },
+    "warning": {
+      "background": "#C3F5FF40",
+      "border": "#C3F5FF8c",
+      "foreground": "#eef2f7"
+    },
+    "success": {
+      "background": "#34d39940",
+      "border": "#34d3998c",
+      "foreground": "#eef2f7"
+    },
+    "error": {
+      "background": "#FFB4AB26",
+      "border": "#FFB4AB73",
+      "foreground": "#FFB4AB"
+    }
   },
   "typography": {
     "main_text": {
