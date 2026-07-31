@@ -2,12 +2,14 @@ import type { AddonRegistry } from "@/addon/registry"
 import { paginateDeck } from "@/deck/paginate-deck"
 import { positionButtons } from "@/deck/position-buttons"
 import type { RuntimeDeck } from "@/deck/runtime"
+import { resolveDeckVariant } from "@/deck/variant-migration"
 import type pino from "pino"
 
 interface AddonGeneratedDeck {
   name?: string
   icon?: string
   background?: string
+  variant?: string
   buttonColor?: "blue" | "green" | "purple"
   buttons?: unknown[]
   paginated?: boolean
@@ -112,6 +114,9 @@ const mapAddonDeckToRuntimeDeck = (
         ...(gdeck.buttonColor !== undefined
           ? { buttonColor: gdeck.buttonColor }
           : {}),
+        ...(resolveDeckVariant(gdeck, id) !== undefined
+          ? { variant: resolveDeckVariant(gdeck, id) }
+          : {}),
         ...(gdeck.autoShow !== undefined ? { autoShow: gdeck.autoShow } : {}),
         ...(gdeck.isOverlay !== undefined
           ? { isOverlay: gdeck.isOverlay }
@@ -169,6 +174,9 @@ const mapAddonDeckToRuntimeDeck = (
         : {}),
       ...(gdeck.buttonColor !== undefined
         ? { buttonColor: gdeck.buttonColor }
+        : {}),
+      ...(resolveDeckVariant(gdeck, id) !== undefined
+        ? { variant: resolveDeckVariant(gdeck, id) }
         : {}),
       ...(gdeck.autoShow !== undefined ? { autoShow: gdeck.autoShow } : {}),
       ...(gdeck.isOverlay !== undefined ? { isOverlay: gdeck.isOverlay } : {}),

@@ -2,8 +2,13 @@
   "name": "@sireno-deck/theme-neon-grids",
   "version": "0.1.0",
   "description": "Synthwave neon-grids theme for Sireno Deck.",
+  "files": [
+    "sirenodeck.json",
+    "components.css",
+    "components",
+    "assets"
+  ],
   "type": "module",
-  "files": ["sirenodeck.json", "components.css", "components", "assets"],
   "peerDependencies": {
     "@sireno-deck/cli": "^0.1.0"
   },

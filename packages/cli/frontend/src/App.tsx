@@ -231,6 +231,7 @@ const AppContent = () => {
                 name?: string
                 buttons?: DeckButton[]
                 buttonColor?: "blue" | "green" | "purple"
+                variant?: string
                 buttonErrors?: ButtonErrorState[]
               }
             >
@@ -243,6 +244,9 @@ const AppContent = () => {
               buttons: surface.buttons,
               ...(surface.buttonColor !== undefined
                 ? { buttonColor: surface.buttonColor }
+                : {}),
+              ...(surface.variant !== undefined
+                ? { variant: surface.variant }
                 : {}),
               isCompact: message.isCompact ?? false,
               hasOverlayDeckAvailable: message.hasOverlayDeckAvailable ?? false,

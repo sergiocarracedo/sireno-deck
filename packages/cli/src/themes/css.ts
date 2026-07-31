@@ -124,6 +124,23 @@ export function buildThemeCss(
   for (const [roleName, role] of Object.entries(typography)) {
     rootLines.push(...formatTypographyRoleVariables(roleName, role))
   }
+  // Variant tokens — every theme must declare the 5 required keys; themes
+  // may add extras. ButtonFrame reads --sireno-variant-<name>-{bg,border,fg,glow}
+  // directly, so addons and themes both go through one surface.
+  for (const [variantName, styles] of Object.entries(manifest.variants)) {
+    rootLines.push(
+      `  --sireno-variant-${variantName}-bg: ${styles.background};`,
+    )
+    rootLines.push(
+      `  --sireno-variant-${variantName}-border: ${styles.border};`,
+    )
+    rootLines.push(
+      `  --sireno-variant-${variantName}-fg: ${styles.foreground};`,
+    )
+    rootLines.push(
+      `  --sireno-variant-${variantName}-glow: ${styles.glow ?? "0 0 0 transparent"};`,
+    )
+  }
   // Effect tokens — glow / shadow / blur, optional. Themes without effects
   // still get sane defaults so component CSS never reads `undefined` for a
   // token.

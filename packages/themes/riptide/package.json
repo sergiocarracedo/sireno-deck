@@ -1,0 +1,14 @@
+{
+  "name": "@sireno-deck/theme-riptide",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Riptide — neon yellow + pink halftone icons on a black deck with cyan stripes. 3rd-party theme package.",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}

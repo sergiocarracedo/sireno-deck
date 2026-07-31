@@ -17,9 +17,6 @@ const baseManifest: ThemeJsonManifest = ThemeJsonManifestSchema.parse({
     accent: "#f0f",
     success: "#0f0",
     danger: "#f00",
-    tintBlue: "#00f",
-    tintGreen: "#0f0",
-    tintPurple: "#a0a",
   },
   typography: {
     main_text: { fontFamily: "A", fontSize: 12, fontWeight: 400 },
@@ -28,6 +25,13 @@ const baseManifest: ThemeJsonManifest = ThemeJsonManifestSchema.parse({
   },
   fonts: [],
   effects: {},
+  variants: {
+    default: { background: "#000", border: "#fff", foreground: "#abc" },
+    highlighted: { background: "#00f26", border: "#00f8c", foreground: "#abc" },
+    warning: { background: "#ff026", border: "#ff08c", foreground: "#abc" },
+    success: { background: "#0f026", border: "#0f08c", foreground: "#abc" },
+    error: { background: "#f0026", border: "#f0073", foreground: "#f00" },
+  },
 })
 
 describe("themes/css", () => {

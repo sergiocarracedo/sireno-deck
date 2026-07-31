@@ -8,8 +8,10 @@ import { AddonRegistry } from "@/addon/registry"
 import type { LoadedTheme } from "@/addon/api"
 
 import {
+  loadSiblingThemes,
   loadThemeFromPath,
   registerBuiltInThemes,
+  registerSiblingThemes,
   resolveActiveTheme,
 } from "../loader"
 
@@ -48,9 +50,13 @@ const writeFixtureTheme = (
         accent: "#f0f",
         success: "#0f0",
         danger: "#f00",
-        tintBlue: "#00f",
-        tintGreen: "#0f0",
-        tintPurple: "#a0a",
+      },
+      variants: {
+        default: { background: "#000", border: "#fff", foreground: "#fff" },
+        highlighted: { background: "#0ff", border: "#0ff", foreground: "#fff" },
+        warning: { background: "#ff0", border: "#ff0", foreground: "#000" },
+        success: { background: "#0f0", border: "#0f0", foreground: "#000" },
+        error: { background: "#f00", border: "#f00", foreground: "#fff" },
       },
       typography: {
         main_text: { fontFamily: "A", fontSize: 12, fontWeight: 400 },
@@ -184,5 +190,40 @@ describe("themes/loader", () => {
         .map((t) => t.name)
         .sort(),
     ).toEqual(["custom", "default", "light"])
+  })
+
+  it("registerSiblingThemes does not throw when no sibling themes exist", () => {
+    const registry = new AddonRegistry()
+    expect(() => registerSiblingThemes(registry)).not.toThrow()
+  })
+
+  it("registerSiblingThemes discovers the riptide theme under packages/themes", () => {
+    const registry = new AddonRegistry()
+    registerSiblingThemes(registry)
+    const riptide = registry.getTheme("riptide")
+    expect(riptide).toBeDefined()
+    expect(riptide?.apiVersion).toBe(1)
+    expect(riptide?.source.kind).toBe("sibling")
+    expect(riptide?.uiOverridesPath ?? "").toContain("riptide")
+  })
+
+  it("riptide CSS exposes required variants plus theme-declared extras", () => {
+    const siblings = loadSiblingThemes()
+    const riptide = siblings.find((s) => s.theme.name === "riptide")
+    expect(riptide).toBeDefined()
+    const css = riptide!.getCss()
+    for (const variant of [
+      "default",
+      "highlighted",
+      "warning",
+      "success",
+      "error",
+    ]) {
+      expect(css).toContain(`--sireno-variant-${variant}-bg`)
+      expect(css).toContain(`--sireno-variant-${variant}-border`)
+      expect(css).toContain(`--sireno-variant-${variant}-fg`)
+    }
+    expect(css).toContain("--sireno-variant-neon-pink-bg")
+    expect(css).toContain("--sireno-variant-neon-pink-glow")
   })
 })

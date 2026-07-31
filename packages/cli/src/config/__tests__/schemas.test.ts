@@ -82,3 +82,43 @@ describe("ButtonDefSchema — actions field", () => {
     expect(result.success).toBe(false)
   })
 })
+
+describe("ButtonDefSchema — variant field", () => {
+  it("accepts a variant token name", () => {
+    const result = ButtonDefSchema.safeParse({
+      position: 0,
+      type: "core:action",
+      variant: "warning",
+    })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.variant).toBe("warning")
+    }
+  })
+
+  it("accepts custom theme-declared variants", () => {
+    const result = ButtonDefSchema.safeParse({
+      position: 1,
+      type: "core:action",
+      variant: "neon-pink",
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it("accepts button without variant", () => {
+    const result = ButtonDefSchema.safeParse({
+      position: 0,
+      type: "core:action",
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it("rejects empty variant string", () => {
+    const result = ButtonDefSchema.safeParse({
+      position: 0,
+      type: "core:action",
+      variant: "",
+    })
+    expect(result.success).toBe(false)
+  })
+})

@@ -10,11 +10,49 @@ export const ThemeColorTokenSchema = z
     accent: z.string().min(1),
     success: z.string().min(1),
     danger: z.string().min(1),
-    tintBlue: z.string().min(1),
-    tintGreen: z.string().min(1),
-    tintPurple: z.string().min(1),
   })
   .strict()
+
+/**
+ * Required variant keys every theme must declare. Addons can rely on these
+ * five for highlights, warnings, success and error states without falling
+ * back to a hardcoded palette.
+ *
+ * Themes may declare EXTRA variants on top — those surface as `--sireno-variant-<name>-*`
+ * CSS vars and become available to user config.
+ */
+export const REQUIRED_VARIANT_KEYS = [
+  "default",
+  "highlighted",
+  "warning",
+  "success",
+  "error",
+] as const
+
+export type RequiredVariantKey = (typeof REQUIRED_VARIANT_KEYS)[number]
+
+export const ThemeVariantStylesSchema = z
+  .object({
+    background: z.string().min(1),
+    border: z.string().min(1),
+    foreground: z.string().min(1),
+    glow: z.string().optional(),
+  })
+  .strict()
+
+export const ThemeVariantsSchema = z
+  .record(z.string().min(1), ThemeVariantStylesSchema)
+  .superRefine((variants, ctx) => {
+    const missing = REQUIRED_VARIANT_KEYS.filter((k) => !(k in variants))
+    if (missing.length === 0) return
+    for (const key of missing) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [key],
+        message: `theme manifest is missing required variant "${key}" — every theme must declare variants: { ${REQUIRED_VARIANT_KEYS.map((k) => `"${k}"`).join(", ")} } at minimum`,
+      })
+    }
+  })
 
 export const ThemeTypographyRoleSchema = z
   .object({
@@ -99,6 +137,7 @@ export const ThemeJsonManifestSchema = z
     typography: ThemeTypographySchema,
     fonts: z.array(ThemeFontFaceSchema).default([]),
     effects: ThemeEffectsSchema,
+    variants: ThemeVariantsSchema,
     assets: ThemeAssetsSchema.optional(),
     "ui-overrides": z.string().min(1).optional(),
   })
@@ -109,3 +148,9 @@ export type ThemeJsonManifest = z.infer<typeof ThemeJsonManifestSchema>
 export type ThemeColorToken = keyof z.infer<typeof ThemeColorTokenSchema>
 
 export type ThemeTypographyRole = keyof z.infer<typeof ThemeTypographySchema>
+
+export type ThemeVariantStyles = z.infer<typeof ThemeVariantStylesSchema>
+
+export type ThemeVariantName = string
+
+export type ThemeVariants = z.infer<typeof ThemeVariantsSchema>

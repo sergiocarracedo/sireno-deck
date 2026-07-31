@@ -2,6 +2,7 @@ import { dirname } from "node:path"
 
 import type { DeckConfigMessage } from "@/api/protocol-internal"
 import type { RuntimeDeck } from "@/deck"
+import { resolveDeckVariant } from "@/deck/variant-migration"
 import {
   resolveIconSource,
   type ResolveIconPathOptions,
@@ -136,6 +137,9 @@ export const buildDeckConfigMessage = (
         ? { frontendEntry: addon.frontendEntry }
         : {}),
       ...(b.full === true ? { full: true } : {}),
+      ...(b.variant !== undefined && b.variant.length > 0
+        ? { variant: b.variant }
+        : {}),
     }
   })
   const resolvedOverlayIcon =
@@ -154,6 +158,17 @@ export const buildDeckConfigMessage = (
         buttons,
         ...(deck.buttonColor !== undefined
           ? { buttonColor: deck.buttonColor }
+          : {}),
+        ...(resolveDeckVariant(
+          { variant: deck.variant, buttonColor: deck.buttonColor },
+          deck.id,
+        ) !== undefined
+          ? {
+              variant: resolveDeckVariant(
+                { variant: deck.variant, buttonColor: deck.buttonColor },
+                deck.id,
+              ),
+            }
           : {}),
         ...(deck.buttonErrors !== undefined && deck.buttonErrors.length > 0
           ? {

@@ -12,10 +12,34 @@
     "primary": "#0284c7",
     "accent": "#075985",
     "success": "#059669",
-    "danger": "#dc2626",
-    "tintBlue": "#0284c7",
-    "tintGreen": "#059669",
-    "tintPurple": "#7c3aed"
+    "danger": "#dc2626"
+  },
+  "variants": {
+    "default": {
+      "background": "#f5f7fa",
+      "border": "#9eb4c5",
+      "foreground": "#1a202c"
+    },
+    "highlighted": {
+      "background": "#0284c726",
+      "border": "#0284c773",
+      "foreground": "#1a202c"
+    },
+    "warning": {
+      "background": "#07598526",
+      "border": "#07598573",
+      "foreground": "#1a202c"
+    },
+    "success": {
+      "background": "#05966926",
+      "border": "#05966973",
+      "foreground": "#1a202c"
+    },
+    "error": {
+      "background": "#dc262626",
+      "border": "#dc262673",
+      "foreground": "#dc2626"
+    }
   },
   "typography": {
     "main_text": {

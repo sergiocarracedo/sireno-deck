@@ -46,6 +46,7 @@ export {
   useAssetCache,
   useAssetCacheMutations,
   type AssetCache,
+  buildPresentation,
   ButtonFrame,
   Chip,
   Icon,
@@ -53,11 +54,14 @@ export {
   Label,
   SplitActionSurface,
   TapIndicator,
+  TemporaryErrorSurface,
   Text,
   ThemeUiPresentationProvider,
   type ButtonFrameProps,
   type IconLabelSurfaceProps,
   type SplitActionSurfaceProps,
+  type TapIndicatorProps,
+  type TemporaryErrorSurfaceProps,
   type ThemeUiPresentation,
 } from "./ui"
 
