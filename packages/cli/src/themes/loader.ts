@@ -1,4 +1,5 @@
 import { fileURLToPath } from "node:url"
+import { createRequire } from "node:module"
 import { dirname, resolve as resolvePath, join } from "node:path"
 import { existsSync, readFileSync, readdirSync } from "node:fs"
 
@@ -154,6 +155,78 @@ export interface ResolveThemeResult {
   getCss: () => string
 }
 
+/**
+ * Detect whether a string looks like a filesystem path. Strict prefix
+ * detection — only `./`, `../`, `/`, or a Windows drive letter. Anything
+ * else is treated as a registered theme name or an npm package.
+ */
+function isPathLike(s: string): boolean {
+  return (
+    s.startsWith("./") ||
+    s.startsWith("../") ||
+    s.startsWith("/") ||
+    /^[a-zA-Z]:[\\/]/.test(s)
+  )
+}
+
+/**
+ * Resolve an npm package name to its installed directory via Node's
+ * resolver. Returns null when the package isn't found.
+ */
+function resolvePackagePath(name: string): string | null {
+  try {
+    const require = createRequire(import.meta.url)
+    const pkgJsonPath = require.resolve(`${name}/package.json`)
+    return dirname(pkgJsonPath)
+  } catch {
+    return null
+  }
+}
+
+const resolveBuiltinTheme = (
+  registry: AddonRegistry,
+  theme: LoadedTheme,
+): ResolveThemeResult => {
+  if (theme.source.kind === "builtin") {
+    const themeDir = dirname(theme.manifestPath)
+    const manifest = readAndValidateManifest(theme.manifestPath, theme.name)
+    return {
+      theme,
+      getCss: () => buildThemeCssFromManifest(manifest, themeDir),
+    }
+  }
+  return { theme, getCss: () => "" }
+}
+
+const resolveStringTheme = (
+  entry: string,
+  registry: AddonRegistry,
+): ResolveThemeResult => {
+  // 1. Registered theme name (built-in auto-discovery or a previously
+  //    loaded theme). Use getTheme (returns undefined when missing);
+  //    resolveActiveTheme throws, which short-circuits the dispatcher.
+  const registered = registry.getTheme(entry)
+  if (registered) {
+    return resolveBuiltinTheme(registry, registered)
+  }
+
+  // 2. Path — `./`, `../`, `/`, or a Windows drive letter.
+  if (isPathLike(entry)) {
+    return loadThemeFromPath(registry, entry)
+  }
+
+  // 3. npm package — resolve to the installed package directory and load
+  //    the theme files inside it.
+  const packagePath = resolvePackagePath(entry)
+  if (packagePath !== null) {
+    return loadThemeFromPath(registry, packagePath)
+  }
+
+  throw new Error(
+    `Theme '${entry}' is not a registered theme, not a path, and not a known npm package.`,
+  )
+}
+
 export const resolveActiveTheme = (
   registry: AddonRegistry,
   options: ResolveThemeOptions,
@@ -161,32 +234,7 @@ export const resolveActiveTheme = (
   const { theme: themeEntry } = options
   if (themeEntry === undefined) {
     const theme = registry.resolveActiveTheme(undefined)
-    if (theme.source.kind === "builtin") {
-      const themeDir = dirname(theme.manifestPath)
-      const manifest = readAndValidateManifest(theme.manifestPath, theme.name)
-      return {
-        theme,
-        getCss: () => buildThemeCssFromManifest(manifest, themeDir),
-      }
-    }
-    return { theme, getCss: () => "" }
+    return resolveBuiltinTheme(registry, theme)
   }
-  if (typeof themeEntry === "string") {
-    const theme = registry.resolveActiveTheme(themeEntry)
-    if (theme.source.kind === "builtin") {
-      const themeDir = dirname(theme.manifestPath)
-      const manifest = readAndValidateManifest(theme.manifestPath, theme.name)
-      return {
-        theme,
-        getCss: () => buildThemeCssFromManifest(manifest, themeDir),
-      }
-    }
-    return { theme, getCss: () => "" }
-  }
-  const { name: aliasName, path } = themeEntry
-  const { theme, getCss } = loadThemeFromPath(registry, path, aliasName)
-  return {
-    theme: aliasName ? (registry.getTheme(aliasName) ?? theme) : theme,
-    getCss,
-  }
+  return resolveStringTheme(themeEntry, registry)
 }

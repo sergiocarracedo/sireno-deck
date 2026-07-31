@@ -196,11 +196,21 @@ my-theme/
 # Use theme during development
 sireno run --config config.yml
 
-# Config references theme
-theme:
-  name: "my-theme"
-  path: "./themes/my-theme"
+# Config references theme by name, path, or npm package
+theme: default
+theme: ./packages/themes/my-theme
+theme: @sireno-deck/theme-neon-grids
 ```
+
+The `theme:` value is a single string resolved in three passes:
+
+1. **Registered theme name** — `default`, `light`, or any theme already
+   loaded into the registry.
+2. **Path** — any string starting with `./`, `../`, `/`, or a Windows
+   drive letter resolves to a theme directory on disk.
+3. **npm package** — anything else is treated as a package name and
+   resolved via Node's resolver to `<pkg>/package.json`. The package
+   directory is then loaded as a theme.
 
 ## Theme UI Overrides
 

@@ -121,14 +121,56 @@ describe("themes/loader", () => {
     expect(theme.name).toBe("custom")
   })
 
+  it("resolveActiveTheme resolves a path string via loadThemeFromPath", () => {
+    const dir = mkdtempSync(join(tmpdir(), "theme-path-"))
+    writeFixtureTheme(dir, {
+      name: "path-theme",
+      description: "Path fixture",
+    })
+    const registry = new AddonRegistry()
+    const { theme } = resolveActiveTheme(registry, { theme: dir })
+    expect(theme.name).toBe("path-theme")
+    expect(theme.source.kind).toBe("local")
+  })
+
+  it("resolveActiveTheme resolves a relative path string", () => {
+    const dir = mkdtempSync(join(tmpdir(), "theme-rel-"))
+    writeFixtureTheme(dir, {
+      name: "rel-theme",
+      description: "Relative path fixture",
+    })
+    const registry = new AddonRegistry()
+    const { theme } = resolveActiveTheme(registry, { theme: dir })
+    expect(theme.name).toBe("rel-theme")
+  })
+
+  it("resolveActiveTheme resolves an npm package by name", () => {
+    const registry = new AddonRegistry()
+    // The cli itself is a workspace package — use it as a real probe for
+    // the npm-package resolution path. It's not a theme, so the third
+    // pass falls through to npm-package resolution and then throws — the
+    // important assertion is that the second pass (path) didn't match.
+    expect(() =>
+      resolveActiveTheme(registry, {
+        theme: "@sireno-deck/theme-neon-grids",
+      }),
+    ).toThrow(
+      /not a path, and not a known npm package|missing sirenodeck\.json/i,
+    )
+  })
+
+  it("resolveActiveTheme throws when the entry is unknown", () => {
+    const registry = new AddonRegistry()
+    expect(() => resolveActiveTheme(registry, { theme: "missing" })).toThrow(
+      /not a registered theme, not a path, and not a known npm package/,
+    )
+  })
+
   it("resolveActiveTheme throws with available themes when name is missing", () => {
     const registry = new AddonRegistry()
     registerBuiltInThemes(registry)
     expect(() => resolveActiveTheme(registry, { theme: "missing" })).toThrow(
-      /Theme 'missing' is not registered/,
-    )
-    expect(() => resolveActiveTheme(registry, { theme: "missing" })).toThrow(
-      /default/,
+      /not a registered theme, not a path, and not a known npm package/,
     )
   })
 

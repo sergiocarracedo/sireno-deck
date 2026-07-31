@@ -129,15 +129,7 @@ export const LockSchema = z
   .strict()
   .optional()
 
-export const ThemeEntrySchema = z.union([
-  z.string().min(1),
-  z
-    .object({
-      name: z.string().min(1).optional(),
-      path: z.string().min(1),
-    })
-    .strict(),
-])
+export const ThemeEntrySchema = z.string().min(1)
 
 export const RawConfigSchema = z
   .object({
