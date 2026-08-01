@@ -1,0 +1,125 @@
+packages/cli/src/system/providers/session/__tests__/linux.test.ts
+  s_4191f40277305b::t_14ea19db179547 133-134,140-155,161-178,184-200
+  s_4191f40277305b::t_85de1230fd5cae 30-34,44,47,66
+  s_4191f40277305b::t_3743753848e2a9 135-139,156-160,179-183
+AGENTS.md
+  s_4191f40277305b::t_9f241a962b1ac1 47-48
+  s_4191f40277305b::t_eecc82bbaecf43 61-73
+  s_4191f40277305b::t_60b77af9c91279 85-108
+packages/cli/src/ui/surfaces/BarsSurface.tsx
+  s_4191f40277305b::t_4d6ed17b3e98d6 106,110-111,113-114
+  s_4191f40277305b::t_84f56a6e167e43 109,112,116-117
+  s_4191f40277305b::t_0921b194f032ab 115
+  s_4191f40277305b::t_8f7f9288f92991 118
+packages/cli/src/ui/theme-presentation.tsx
+  s_4191f40277305b::t_f2f25a7c8fb74f 12,21
+  s_4191f40277305b::t_7e92a046751e8f 43,54-73,77-82,89,94-99,104,109,114,119-124
+packages/cli/src/ui/surfaces/TemporaryErrorSurface.tsx
+  s_4191f40277305b::t_6df56024c11835 32-34
+  s_4191f40277305b::t_3743753848e2a9 25-29,35-37
+packages/cli/src/ui/surfaces/ValueChart.tsx
+  s_4191f40277305b::t_401da44b438917 130,133-134
+  s_4191f40277305b::t_ded0ee09291da7 127-129,131-132,135-138
+packages/cli/src/ui/surfaces/PaginatedSurface.tsx
+  s_4191f40277305b::t_94ea721f56756b 49-51,64-65,74-75,77-82
+  s_4191f40277305b::t_3743753848e2a9 53-60,66-73
+  s_4191f40277305b::t_663eeb74e96afa 11,52,61-63,76
+  s_4191f40277305b::t_fd0874eefc7a51 48
+packages/cli/src/system/providers/session/linux.ts
+  s_4191f40277305b::t_7ea7e5e3425f46 116-122,127-129,134-135
+  s_4191f40277305b::t_3743753848e2a9 123-126,130-133
+packages/cli/src/ui/primitives/Icon.tsx
+  s_4191f40277305b::t_36e609d1f629f3 140
+  s_4191f40277305b::t_55921055526aff 134,137-139
+packages/cli/src/ui/primitives/TapIndicator.tsx
+  s_4191f40277305b::t_dd686826db9bdd 24
+  s_4191f40277305b::t_78110c99e127ec 18,21-22,25-32,34,66
+  s_4191f40277305b::t_817aaa0a2ea319 23
+packages/cli/src/ui/surfaces/IconLabelSurface.tsx
+  s_4191f40277305b::t_3743753848e2a9 28-30
+  s_4191f40277305b::t_fa19671b2f394b 22,25-27
+packages/themes/neon-grids/components/index.tsx
+  s_4191f40277305b::t_3743753848e2a9 105-107
+  s_4191f40277305b::t_13c48f49579a0a 21-25,75-80,85-86,88,93-94,96,99-103,112-116
+docs/solutions/runtime-errors/build-presentation-missing-export-blocks-frontend.md
+  s_4191f40277305b::t_3743753848e2a9 1-141
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_4191f40277305b::t_3c9666b7eebf8c 123-127,131-134
+  s_4191f40277305b::t_3743753848e2a9 118-122,128-130
+packages/web/videos/.gitignore
+  s_4191f40277305b::t_3b316a95252dc2 8
+packages/cli/emulator/src/App.tsx
+  s_4191f40277305b::t_3743753848e2a9 237-238
+docs/solutions/runtime-errors/heartbeat-deck-config-rebroadcast-freeze.md
+  s_4191f40277305b::t_584bef70b2cd2c 1-133
+packages/cli/src/ui/primitives/ProgressBar.tsx
+  s_4191f40277305b::t_bad9d4d8e7cebd 23
+  s_4191f40277305b::t_9a1f4dd35d6c63 4-6,11-22
+  s_4191f40277305b::t_3743753848e2a9 24-29
+packages/cli/src/cli/commands/run.ts
+  s_4191f40277305b::t_e31db4dd36a8c1 292-296,300-309,325
+  s_4191f40277305b::t_bdf25e67bd782f 1423-1425
+packages/cli/src/ui/surfaces/IconLabelProgressSurface.tsx
+  s_4191f40277305b::t_6d64559e453168 36-47,49-51,67-71
+  s_4191f40277305b::t_b57d29eaad1eb0 48
+packages/cli/src/ui/primitives/Label.tsx
+  s_4191f40277305b::t_4832b650ee1cd5 21,24-27
+packages/cli/src/ui/primitives/Text.tsx
+  s_4191f40277305b::t_f43c0ccd6f5853 690,701-703,706-720,722-729
+  s_4191f40277305b::t_150deb8989acc2 721
+  s_4191f40277305b::t_2b9c86b3f7c128 498
+  s_4191f40277305b::t_3743753848e2a9 691-700
+  s_4191f40277305b::t_8910d4941f2a19 730
+packages/cli/src/ui/surfaces/SplitActionSurface.tsx
+  s_4191f40277305b::t_3743753848e2a9 62-66,72-74
+  s_4191f40277305b::t_c2ab5c33ed4b4f 69-71
+packages/cli/src/ui/primitives/Chip.tsx
+  s_4191f40277305b::t_b5e868b7795fe2 39
+  s_4191f40277305b::t_3d94e4be507c60 29-33,36-38,40
+  s_4191f40277305b::t_b180901dfcfc8c 41
+packages/cli/src/ui/theme-presentation-builder.ts
+  s_4191f40277305b::t_fa4dd2a651f47c 1
+  s_4191f40277305b::t_3743753848e2a9 44-47,52-55,60-63,68-71,109-113,118-121,170-173,176-177
+  s_4191f40277305b::t_b724dca81169d4 2-16,39-43,48-51,56-59,64-67,72-77,79-85,87-98,100-106,108,114-117,122-127,129-135,137-144,146-153,155-161,163-169,174-175,178,180-182
+  s_4191f40277305b::t_abb5ef41e4cea2 78,86,99,107,128,136,145,154,162
+packages/cli/src/ui/index.ts
+  s_4191f40277305b::t_3743753848e2a9 8-11
+packages/cli/src/api/protocol-internal.ts
+  s_4191f40277305b::t_3743753848e2a9 226-228
+packages/cli/src/ui/ButtonFrame.tsx
+  s_4191f40277305b::t_3743753848e2a9 1-7
+  s_4191f40277305b::t_4bebfc91b0c921 99-114
+  s_4191f40277305b::t_28bc06868c5ece 60-78,81-96
+  s_4191f40277305b::t_d735b714574a25 97-98
+docs/solutions/runtime-errors/overlay-deck-n1-split-surface-regression.md
+  s_685b9daf08ed36::t_e51894ebcc6e89 1-174
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.19",
+  "base_commit_sha": "8664d833acd1c64c47d00aff205203bd078cb127",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_4191f40277305b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_047002f8fffekqKfUTir9UPW5h",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_685b9daf08ed36": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_04b8bb007ffeCNLqHxckOP6N45",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
