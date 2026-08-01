@@ -2,6 +2,7 @@ import { dirname } from "node:path"
 
 import type { DeckConfigMessage } from "@/api/protocol-internal"
 import type { RuntimeDeck } from "@/deck"
+import { isSystemButtonType } from "@/deck/system-buttons/types"
 import { resolveDeckVariant } from "@/deck/variant-migration"
 import {
   resolveIconSource,
@@ -118,30 +119,44 @@ export const buildDeckConfigMessage = (
   assetLookup: AssetLookup = () => undefined,
   overlayDeckIcon: string | null = null,
   overlayDeckName: string | null = null,
+  options?: { lockActive?: boolean },
 ): DeckConfigMessage => {
-  void keyCount
-  const buttons = deck.buttons.map((b) => {
-    const position = Number.parseInt(b.id, 10)
-    const addon = addonByType.get(b.type)
-    const cfg = (b.config ?? {}) as Record<string, unknown>
-    const label = deriveLabel(b.type, cfg)
-    const resolvedConfig = resolveConfigIcons(cfg, resolverOptions, assetLookup)
-    return {
-      id: b.id,
-      type: b.type,
-      config: resolvedConfig,
-      ...(Number.isFinite(position) ? { position } : {}),
-      ...(label !== undefined ? { label } : {}),
-      ...(addon !== undefined ? { addonName: addon.name } : {}),
-      ...(addon?.frontendEntry !== undefined && addon.frontendEntry !== null
-        ? { frontendEntry: addon.frontendEntry }
-        : {}),
-      ...(b.full === true ? { full: true } : {}),
-      ...(b.variant !== undefined && b.variant.length > 0
-        ? { variant: b.variant }
-        : {}),
-    }
-  })
+  const n1Position = keyCount !== undefined ? keyCount - 1 : -1
+  const buttons = deck.buttons
+    .filter((b) => {
+      // ponytail: when locked the injected n-1 system button is a dead
+      // control (back/settings do nothing on the lock deck) — hide it.
+      if (options?.lockActive !== true) return true
+      const position = Number.parseInt(b.id, 10)
+      if (position !== n1Position) return true
+      return !isSystemButtonType(b.type)
+    })
+    .map((b) => {
+      const position = Number.parseInt(b.id, 10)
+      const addon = addonByType.get(b.type)
+      const cfg = (b.config ?? {}) as Record<string, unknown>
+      const label = deriveLabel(b.type, cfg)
+      const resolvedConfig = resolveConfigIcons(
+        cfg,
+        resolverOptions,
+        assetLookup,
+      )
+      return {
+        id: b.id,
+        type: b.type,
+        config: resolvedConfig,
+        ...(Number.isFinite(position) ? { position } : {}),
+        ...(label !== undefined ? { label } : {}),
+        ...(addon !== undefined ? { addonName: addon.name } : {}),
+        ...(addon?.frontendEntry !== undefined && addon.frontendEntry !== null
+          ? { frontendEntry: addon.frontendEntry }
+          : {}),
+        ...(b.full === true ? { full: true } : {}),
+        ...(b.variant !== undefined && b.variant.length > 0
+          ? { variant: b.variant }
+          : {}),
+      }
+    })
   const resolvedOverlayIcon =
     overlayDeckIcon === null
       ? null

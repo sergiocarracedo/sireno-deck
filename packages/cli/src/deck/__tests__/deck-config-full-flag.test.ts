@@ -134,3 +134,73 @@ describe("buildDeckConfigMessage — overlayDeckIcon resolution", () => {
     expect(msg.overlayDeckIcon).toBe("addon://demo/icon.png")
   })
 })
+
+describe("buildDeckConfigMessage — lockActive hides injected n-1 system button", () => {
+  const deck = {
+    id: "core:lock",
+    name: "Lock",
+    buttons: [
+      { id: "5", type: "date-time:date-time", config: {} },
+      { id: "13", type: "date-time:date-time", config: {} },
+      { id: "14", type: "core:back", config: {} },
+    ],
+  }
+
+  it("strips the n-1 system button when locked", () => {
+    const msg = buildDeckConfigMessage(
+      deck,
+      new Map(),
+      {},
+      { navStackDepth: 1, hasOverlayDeckAvailable: false },
+      15,
+      false,
+      () => undefined,
+      null,
+      null,
+      { lockActive: true },
+    )
+    const ids = msg.surfaces[deck.id].buttons.map((b) => b.id)
+    expect(ids).toEqual(["5", "13"])
+  })
+
+  it("keeps the n-1 system button when not locked", () => {
+    const msg = buildDeckConfigMessage(
+      deck,
+      new Map(),
+      {},
+      { navStackDepth: 1, hasOverlayDeckAvailable: false },
+      15,
+      false,
+      () => undefined,
+      null,
+      null,
+      { lockActive: false },
+    )
+    const ids = msg.surfaces[deck.id].buttons.map((b) => b.id)
+    expect(ids).toContain("14")
+  })
+
+  it("keeps a user button at n-1 when locked (only system buttons are stripped)", () => {
+    const userDeck = {
+      ...deck,
+      buttons: [
+        { id: "5", type: "date-time:date-time", config: {} },
+        { id: "14", type: "weather:weather", config: {} },
+      ],
+    }
+    const msg = buildDeckConfigMessage(
+      userDeck,
+      new Map(),
+      {},
+      { navStackDepth: 1, hasOverlayDeckAvailable: false },
+      15,
+      false,
+      () => undefined,
+      null,
+      null,
+      { lockActive: true },
+    )
+    const ids = msg.surfaces[userDeck.id].buttons.map((b) => b.id)
+    expect(ids).toEqual(["5", "14"])
+  })
+})

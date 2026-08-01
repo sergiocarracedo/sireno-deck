@@ -250,6 +250,7 @@ export const setupAddonServices = (
         (fullPath) => getAssetByPath(fullPath)?.id,
         runtime.getAvailableOverlayDeckIcon(),
         runtime.getAvailableOverlayDeckName(),
+        { lockActive: runtime.isLockActive() },
       )
       bridge.broadcast(msg)
     },
@@ -273,6 +274,7 @@ export const setupAddonServices = (
         (fullPath) => getAssetByPath(fullPath)?.id,
         runtime.getAvailableOverlayDeckIcon(),
         runtime.getAvailableOverlayDeckName(),
+        { lockActive: runtime.isLockActive() },
       )
       logger.info(
         {
@@ -320,6 +322,7 @@ export const setupAddonServices = (
       (fullPath) => getAssetByPath(fullPath)?.id,
       runtime.getAvailableOverlayDeckIcon(),
       runtime.getAvailableOverlayDeckName(),
+      { lockActive: runtime.isLockActive() },
     )
     bridge.broadcast(msg)
   }, 2000)
@@ -1490,6 +1493,8 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           outputClient.kind === "real",
           (fullPath) => getAssetByPath(fullPath)?.id,
           runtime.getAvailableOverlayDeckIcon(),
+          runtime.getAvailableOverlayDeckName(),
+          { lockActive: runtime.isLockActive() },
         )
         logger.info(
           {
@@ -1624,6 +1629,8 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
             outputClient.kind === "real",
             (fullPath) => getAssetByPath(fullPath)?.id,
             runtime.getAvailableOverlayDeckIcon(),
+            runtime.getAvailableOverlayDeckName(),
+            { lockActive: runtime.isLockActive() },
           )
           bridge.broadcast(msg)
           currentLoadedConfig = nextLoaded
