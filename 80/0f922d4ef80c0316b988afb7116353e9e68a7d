@@ -1,0 +1,24 @@
+packages/cli/src/deck/deck-config.ts
+  s_4191f40277305b::t_0d6d9506cbf5dd 5,122,124-134
+  s_4191f40277305b::t_5111531e14cc22 135-159
+packages/cli/src/cli/commands/run.ts
+  s_4191f40277305b::t_0d6d9506cbf5dd 253,277,325,1496-1497,1632-1633
+packages/cli/src/deck/__tests__/deck-config-full-flag.test.ts
+  s_4191f40277305b::t_0d6d9506cbf5dd 137-206
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.19",
+  "base_commit_sha": "800f922d4ef80c0316b988afb7116353e9e68a7d",
+  "prompts": {},
+  "sessions": {
+    "s_4191f40277305b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_047002f8fffekqKfUTir9UPW5h",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
