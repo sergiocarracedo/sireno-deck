@@ -223,6 +223,8 @@ export type SubscribeChannelsMessage = z.infer<
   typeof subscribeChannelsMessageSchema
 >
 export type IframeReloadMessage = z.infer<typeof iframeReloadMessageSchema>
-export type AddonsInventoryMessage = z.infer<typeof addonsInventoryMessageSchema>
+export type AddonsInventoryMessage = z.infer<
+  typeof addonsInventoryMessageSchema
+>
 export type AddonInventoryEntry = AddonsInventoryMessage["addons"][number]
 export type WsMessage = z.infer<typeof wsMessageSchema>

@@ -15,18 +15,23 @@ export const TapIndicator = (props: TapIndicatorProps) => {
   const themeUi = useThemeUiPresentation()
 
   if (themeUi?.primitives?.tapIndicator) {
-    return themeUi.primitives.tapIndicator(props)
+    return themeUi.primitives.tapIndicator(props, undefined, tapIndicatorBase)
   }
 
-  const label = useMemo(() => {
-    const labelMap: Record<NonNullable<TapIndicatorType>, string> = {
-      tap: "TAP",
-      dbltap: "DBL",
-      hold: "HOLD",
-    }
+  return tapIndicatorBase(props)
+}
 
-    return labelMap[tapType]
-  }, [tapType])
+export function tapIndicatorBase(props: TapIndicatorProps) {
+  const tapType = props.type || "tap"
+  const size = props.size ?? "sm"
+
+  const labelMap: Record<NonNullable<TapIndicatorType>, string> = {
+    tap: "TAP",
+    dbltap: "DBL",
+    hold: "HOLD",
+  }
+
+  const label = labelMap[tapType]
 
   const themeTypes: Record<
     TapIndicatorType,
@@ -58,7 +63,7 @@ export const TapIndicator = (props: TapIndicatorProps) => {
         themeType.border,
       ])}
     >
-      <Text size={props.size} tone={themeType.textTone} text={label} />
+      <Text size={size} tone={themeType.textTone} text={label} />
     </span>
   )
 }

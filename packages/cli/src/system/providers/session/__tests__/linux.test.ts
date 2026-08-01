@@ -27,7 +27,11 @@ const makeBus = (opts: {
   initialLocked: boolean
   idleMs?: number
   hasIdle: boolean
-}): { bus: LinuxDbusBus; handlers: Array<(...args: unknown[]) => void> } => {
+}): {
+  bus: LinuxDbusBus
+  handlers: Array<(...args: unknown[]) => void>
+  idleMsFn: () => number
+} => {
   const handlers: Array<(...args: unknown[]) => void> = []
   const screenSaver: LinuxDbusInterface = {
     async GetActive() {
@@ -37,9 +41,10 @@ const makeBus = (opts: {
       if (event === "ActiveChanged") handlers.push(handler)
     },
   }
+  const idleMsFn = vi.fn(() => opts.idleMs ?? 0)
   const idleIface: LinuxDbusInterface = {
     async GetIdletime() {
-      return opts.idleMs ?? 0
+      return idleMsFn()
     },
   }
   const proxy: LinuxDbusProxyObject = {
@@ -58,7 +63,7 @@ const makeBus = (opts: {
     },
     disconnect: vi.fn(),
   }
-  return { bus, handlers }
+  return { bus, handlers, idleMsFn }
 }
 
 describe("createLinuxSessionProvider", () => {
@@ -124,5 +129,73 @@ describe("createLinuxSessionProvider", () => {
     })
     await provider.stop()
     expect(bus.disconnect).toHaveBeenCalled()
+  })
+
+  it("idle monitor transitions unlocked → locked when idle exceeds threshold", async () => {
+    const { bus, idleMsFn } = makeBus({
+      initialLocked: false,
+      hasIdle: true,
+      idleMs: 600_000,
+    })
+    const provider = await createLinuxSessionProvider({
+      dbus: bus,
+      logger: silentLogger(),
+      idleMs: 300_000,
+    })
+    expect(provider.getState()).toBe("unlocked")
+    const handler = vi.fn()
+    provider.subscribe(handler)
+    idleMsFn.mockReturnValue(400_000)
+    await vi.advanceTimersByTimeAsync(5_000)
+    expect(provider.getState()).toBe("locked")
+    expect(handler).toHaveBeenCalledWith("locked")
+    await provider.stop()
+  })
+
+  it("idle monitor transitions locked → unlocked when activity resumes", async () => {
+    const { bus, idleMsFn } = makeBus({
+      initialLocked: false,
+      hasIdle: true,
+      idleMs: 600_000,
+    })
+    const provider = await createLinuxSessionProvider({
+      dbus: bus,
+      logger: silentLogger(),
+      idleMs: 300_000,
+    })
+    const handler = vi.fn()
+    provider.subscribe(handler)
+    idleMsFn.mockReturnValue(400_000)
+    await vi.advanceTimersByTimeAsync(5_000)
+    expect(provider.getState()).toBe("locked")
+    idleMsFn.mockReturnValue(10_000)
+    await vi.advanceTimersByTimeAsync(5_000)
+    expect(provider.getState()).toBe("unlocked")
+    expect(handler).toHaveBeenCalledWith("unlocked")
+    await provider.stop()
+  })
+
+  it("idle monitor does not re-notify when state already matches", async () => {
+    const { bus, idleMsFn } = makeBus({
+      initialLocked: false,
+      hasIdle: true,
+      idleMs: 600_000,
+    })
+    const provider = await createLinuxSessionProvider({
+      dbus: bus,
+      logger: silentLogger(),
+      idleMs: 300_000,
+    })
+    const handler = vi.fn()
+    provider.subscribe(handler)
+    idleMsFn.mockReturnValue(400_000)
+    await vi.advanceTimersByTimeAsync(5_000)
+    expect(provider.getState()).toBe("locked")
+    handler.mockClear()
+    idleMsFn.mockReturnValue(500_000)
+    await vi.advanceTimersByTimeAsync(5_000)
+    expect(provider.getState()).toBe("locked")
+    expect(handler).not.toHaveBeenCalled()
+    await provider.stop()
   })
 })

@@ -234,7 +234,8 @@ export const App = ({
   const renderActive = (): React.ReactNode => {
     if (activeSection === "bridge-logs") return <BridgeLogsPage />
     if (activeSection === "service-logs") return <ServiceLogsPage />
-    if (activeSection === "addons") return <AddonsPage addonInventory={addonInventory} />
+    if (activeSection === "addons")
+      return <AddonsPage addonInventory={addonInventory} />
     if (activeSection === "config") return <ConfigPage />
     return null
   }

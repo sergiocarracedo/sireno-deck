@@ -131,9 +131,13 @@ export function Icon(props: IconProps): ReactElement {
   const themeUi = useThemeUiPresentation()
 
   if (themeUi?.primitives?.icon) {
-    return themeUi.primitives.icon(props)
+    return themeUi.primitives.icon(props, undefined, iconBase)
   }
 
+  return iconBase(props)
+}
+
+export function iconBase(props: IconProps): ReactElement {
   const source = props.source
   const size = props.size ?? 20
 

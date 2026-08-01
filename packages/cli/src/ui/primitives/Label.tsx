@@ -18,9 +18,13 @@ export function Label(props: LabelProps): ReactElement {
   const themeUi = useThemeUiPresentation()
 
   if (themeUi?.primitives?.label) {
-    return themeUi.primitives.label(props)
+    return themeUi.primitives.label(props, undefined, labelBase)
   }
 
+  return labelBase(props)
+}
+
+export function labelBase(props: LabelProps): ReactElement {
   const variantsStyle: Record<
     LabelVariant,
     {

@@ -1,4 +1,10 @@
-import type { CSSProperties, MouseEvent, PointerEvent, ReactNode } from "react"
+import type {
+  CSSProperties,
+  MouseEvent,
+  PointerEvent,
+  ReactElement,
+  ReactNode,
+} from "react"
 
 import { useThemeUiPresentation } from "./theme-presentation"
 
@@ -51,22 +57,60 @@ export const ButtonFrame = ({
 }: ButtonFrameProps) => {
   const themeUi = useThemeUiPresentation()
   if (themeUi?.buttonFrame) {
-    return themeUi.buttonFrame({
-      pressed,
-      isTapping,
-      isHolding,
-      holdProgress,
-      buttonType,
-      variant,
-      onClick,
-      onPointerDown,
-      onPointerUp,
-      onPointerMove,
-      onPointerLeave,
-      onPointerCancel,
-      children,
-    })
+    return themeUi.buttonFrame(
+      {
+        pressed,
+        isTapping,
+        isHolding,
+        holdProgress,
+        buttonType,
+        variant,
+        onClick,
+        onPointerDown,
+        onPointerUp,
+        onPointerMove,
+        onPointerLeave,
+        onPointerCancel,
+        children,
+      },
+      undefined,
+      buttonFrameBase,
+    )
   }
+  warnUnknownVariant(variant)
+  return buttonFrameBase({
+    children,
+    pressed,
+    isTapping,
+    isHolding,
+    holdProgress,
+    buttonType,
+    variant,
+    onClick,
+    onPointerDown,
+    onPointerUp,
+    onPointerMove,
+    onPointerLeave,
+    onPointerCancel,
+  })
+}
+
+export function buttonFrameBase(props: ButtonFrameProps): ReactElement {
+  const {
+    children,
+    pressed = false,
+    isTapping = false,
+    isHolding = false,
+    holdProgress = 0,
+    buttonType,
+    variant = "default",
+    onClick,
+    onPointerDown,
+    onPointerUp,
+    onPointerMove,
+    onPointerLeave,
+    onPointerCancel,
+  } = props
   warnUnknownVariant(variant)
   const pressedClass = pressed || isTapping ? "scale-[0.98] opacity-90 " : ""
   const holdingClass = isHolding ? "ring-2 ring-frame/70 " : ""

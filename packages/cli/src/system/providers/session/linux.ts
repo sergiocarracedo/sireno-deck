@@ -113,16 +113,26 @@ export const createLinuxSessionProvider = async (
       void getIdleIface()
         .then((iface) => iface?.GetIdletime?.())
         .then((idleMsRaw) => {
-          // ponytail: an idle-timeout fires the lock transition (not the
-          // previous no-op `state = "unlocked"`) and only when the state
-          // actually changed to avoid redundant listener notifications.
-          if (
-            typeof idleMsRaw === "number" &&
-            idleMsRaw > idleMs &&
-            state === "unlocked"
-          ) {
-            state = "locked"
-            for (const l of listeners) l(state)
+          deps.logger.debug(
+            { idleMsRaw, idleMs, currentState: state },
+            "session: idle monitor tick",
+          )
+          if (typeof idleMsRaw === "number") {
+            if (idleMsRaw > idleMs && state === "unlocked") {
+              state = "locked"
+              deps.logger.info(
+                { idleMsRaw, idleMs },
+                "session: locked via idle monitor",
+              )
+              for (const l of listeners) l(state)
+            } else if (idleMsRaw <= idleMs && state === "locked") {
+              state = "unlocked"
+              deps.logger.info(
+                { idleMsRaw, idleMs },
+                "session: unlocked via idle monitor",
+              )
+              for (const l of listeners) l(state)
+            }
           }
         })
         .catch(() => undefined)

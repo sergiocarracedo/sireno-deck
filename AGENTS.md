@@ -44,6 +44,8 @@ All feature branches live in dedicated worktrees under `/works/__worktrees/opens
 - `git worktree remove --force` — skips the dirty-check.
 - `git branch -D <branch>` — deletes unmerged branches, losing the only ref to those commits.
 - `git worktree prune` while live worktrees still reference those paths.
+- **`lsof` + `kill -9` on user-facing ports** (e.g. `lsof -ti :5180 | xargs kill -9`) — this kills **every** process holding that port, including unrelated browser tabs and other user apps. Use only `kill` on the project's own named processes.
+- **`kill -9` on processes you did not start** — always verify the target is the daemon (`sirenodeck`) before killing.
 
 ### Recover / bring back a deleted worktree
 
@@ -56,6 +58,19 @@ Worktrees are disposable; branches and stashes are not.
 
 If in doubt: **do not remove**. Stash first (`git stash push -u -m "<branch>-snapshot-<date>"`), then remove the worktree, leaving the branch ref and stash intact. Drop the stash only after confirming the work is committed elsewhere.
 
+### Safely stopping the daemon
+
+To stop a running `sirenodeck` daemon started by this session:
+
+```bash
+# Find only sirenodeck processes (not unrelated apps on the same ports)
+ps aux | grep sirenodeck | grep -v grep
+# Kill only those PIDs
+kill <PID>
+```
+
+Or use the daemon's stop command if a pidfile exists. Never use `lsof | xargs kill` on ports used by user apps (Chrome, Slack, etc).
+
 ## Workflow (compound-engineering)
 
 - `/ce-compound` — after a non-trivial fix, capture the learning into `docs/solutions/`. One learning per run.
@@ -67,8 +82,30 @@ If in doubt: **do not remove**. Stash first (`git stash push -u -m "<branch>-sna
 
 ## Verification
 
-After a new feature or a bugfix, run the cli `--emulator` flag and check the emulator (http://127.0.0.1:52938/#/device) and the frontend (http://127.0.0.1:5180)
-) using the skill agent-browser to verify the solucion and no other errors
+After any change that touches the WebSocket bridge, the session provider, the runtime, the frontend, or the emulator:
+
+1. `pnpm lint && pnpm format && pnpm typecheck`
+2. `pnpm test --run`
+3. Start the emulator:
+   ```bash
+   node packages/cli/bin/sirenodeck.js run --config config.yml --emulator --port 52937 --dev
+   ```
+4. With `agent-browser`, verify both surfaces:
+   ```bash
+   # Open emulator — wait for WS open, confirm no iframe freeze
+   agent-browser open "http://127.0.0.1:52938/#/device"
+   agent-browser wait "ws://127.0.0.1:52937"  # wait for WS to connect
+   agent-browser eval "document.querySelectorAll('iframe').length"  # should be ≥1
+   agent-browser snapshot  # should show deck grid, not "loading…"
+
+   # Open frontend — confirm it shows main deck, not /decks/core:lock
+   agent-browser open "http://127.0.0.1:5180/"
+   agent-browser eval "window.location.pathname"  # should be /decks/main
+   agent-browser eval "document.querySelectorAll('[data-button-type]').length"  # should be >0
+   ```
+5. Stop the daemon (`Ctrl+C`) and confirm it exits cleanly.
+
+If the emulator iframe shows "loading…" indefinitely, check the bridge WS port matches the iframe's `VITE_WS_URL` env. If the frontend redirects to `/decks/core:lock`, the session provider is reporting `locked` — check `docs/solutions/runtime-errors/session-lock-provider-never-fires.md` for the idle-monitor state machine fix.
 
 ## When stuck
 

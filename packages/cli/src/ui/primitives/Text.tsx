@@ -495,8 +495,7 @@ function useAutofit(
       el.style.fontSize = ""
       el.style.whiteSpace = ""
       el.style.display = ""
-      ;(el.style as CSSProperties & Record<string, string>)["WebkitLineClamp"] =
-        ""
+      el.style.webkitLineClamp = ""
     }
 
     const measureTextWidth = () => {
@@ -688,16 +687,46 @@ export function Text(props: TextProps): ReactElement {
   const renderedChildren = renderTextChildren(props.text, lineHeight)
 
   if (themeUi?.primitives?.text) {
-    return themeUi.primitives.text({
-      align,
-      text: props.text,
-      fit,
-      tone,
-      typography,
-      size: size,
-      lineHeight,
-    })
+    return themeUi.primitives.text(
+      {
+        align,
+        text: props.text,
+        fit,
+        tone,
+        typography,
+        size,
+        lineHeight,
+        weight,
+      },
+      undefined,
+      textBase,
+    )
   }
+
+  return textBase({
+    align,
+    text: props.text,
+    fit,
+    tone,
+    typography,
+    size,
+    lineHeight,
+    weight,
+    className: props.className,
+    style: props.style,
+    fontStack: props.fontStack,
+  })
+}
+
+export function textBase(props: TextProps): ReactElement {
+  const fit = props.fit ?? "hidden"
+  const align = props.align ?? "center"
+  const tone = props.tone ?? "foreground"
+  const typography = props.typography ?? "main"
+  const size = props.size ?? "md"
+  const lineHeight = props.lineHeight ?? 1
+  const weight = props.weight ?? "normal"
+  const renderedChildren = renderTextChildren(props.text, lineHeight)
 
   const resolvedFit = resolveTextFit(fit)
   const isAutofit = resolvedFit.type === "autofit"

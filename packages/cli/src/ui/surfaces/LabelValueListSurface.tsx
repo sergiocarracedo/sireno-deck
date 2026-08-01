@@ -115,7 +115,23 @@ export function LabelValueListSurface(
 
   const themeUi = useThemeUiPresentation()
   if (themeUi?.surfaces?.labelValueList) {
-    return themeUi.surfaces.labelValueList(props)
+    return themeUi.surfaces.labelValueList(
+      props,
+      undefined,
+      labelValueListSurfaceBase,
+    )
+  }
+
+  return labelValueListSurfaceBase(props)
+}
+
+export function labelValueListSurfaceBase(
+  props: LabelValueListProps,
+): ReactElement {
+  if (props.lines.length < 1 || props.lines.length > 3) {
+    throw new Error(
+      `LabelValueList supports 1-3 lines. Received ${props.lines.length}.`,
+    )
   }
 
   const variants: Record<number, RowTileProps["variant"]> = {

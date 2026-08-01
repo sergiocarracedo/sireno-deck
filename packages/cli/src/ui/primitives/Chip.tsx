@@ -26,12 +26,18 @@ export function Chip(props: ChipProps): ReactElement {
   const themeUi = useThemeUiPresentation()
 
   if (themeUi?.primitives?.chip) {
-    return themeUi.primitives.chip({
-      text: props.text,
-      tone,
-      size: props.size,
-    })
+    return themeUi.primitives.chip(
+      { text: props.text, tone, size: props.size },
+      undefined,
+      chipBase,
+    )
   }
+
+  return chipBase({ text: props.text, tone, size: props.size })
+}
+
+export function chipBase(props: ChipProps): ReactElement {
+  const tone = props.tone ?? "foreground"
 
   return (
     <Text

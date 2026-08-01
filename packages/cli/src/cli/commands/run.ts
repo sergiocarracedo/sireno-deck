@@ -289,9 +289,24 @@ export const setupAddonServices = (
   // ponytail: periodic heartbeat — ensures the frontend's overlay state
   // stays in sync after a transient disconnect or missed event. Fires every
   // 2s, cheap (one deck-config per cycle), and idempotent on the frontend.
+  // Skip the broadcast when nothing observable changed since the last tick:
+  // an unconditional tick at 1s forced every client to re-render twice a
+  // second even with identical state, which drowned the emulator shell and
+  // starved the bridge's event loop during the 5s handshake window.
+  let lastHeartbeatKey = ""
   const heartbeat = setInterval(() => {
     const activeDeck = runtime.getActiveDeck()
     if (activeDeck === undefined) return
+    const key = [
+      activeDeck.id,
+      runtime.navStackDepth(),
+      runtime.hasOverlayDeckAvailable(),
+      runtime.getAvailableOverlayDeckIcon(),
+      runtime.getAvailableOverlayDeckName(),
+      isCompact,
+    ].join("|")
+    if (key === lastHeartbeatKey) return
+    lastHeartbeatKey = key
     const msg = buildDeckConfigMessage(
       activeDeck,
       addonByType,
@@ -307,7 +322,7 @@ export const setupAddonServices = (
       runtime.getAvailableOverlayDeckName(),
     )
     bridge.broadcast(msg)
-  }, 1000)
+  }, 2000)
   signal.addEventListener("abort", () => clearInterval(heartbeat))
 
   const unsubscribeNavigate = subscribeNavigateDeck(pubSub, runtime)
@@ -1405,7 +1420,9 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     // addons (from config.yml `addons:`) join here. --emulator mode never
     // binds the start-mode HTTP API on 3939, so this is the only path.
     bridge.setAddonInventory(
-      [...addonBundle.scanned, ...externalScanned].map(addonInventoryFromScanned),
+      [...addonBundle.scanned, ...externalScanned].map(
+        addonInventoryFromScanned,
+      ),
     )
 
     addonServices = setupAddonServices({

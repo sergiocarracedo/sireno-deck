@@ -116,7 +116,6 @@ function LegendSwatch({
 }
 
 export function ValueChart(props: ValueChartProps): ReactElement {
-  const instanceId = useId()
   if (props.series.length < 1 || props.series.length > 2) {
     throw new Error(
       `ValueChart supports 1-2 series. Received ${props.series.length}.`,
@@ -125,7 +124,18 @@ export function ValueChart(props: ValueChartProps): ReactElement {
 
   const themeUi = useThemeUiPresentation()
   if (themeUi?.surfaces?.valueChart) {
-    return themeUi.surfaces.valueChart(props)
+    return themeUi.surfaces.valueChart(props, undefined, valueChartBase)
+  }
+
+  return valueChartBase(props)
+}
+
+export function valueChartBase(props: ValueChartProps): ReactElement {
+  const instanceId = useId()
+  if (props.series.length < 1 || props.series.length > 2) {
+    throw new Error(
+      `ValueChart supports 1-2 series. Received ${props.series.length}.`,
+    )
   }
 
   const clipped = props.series.map((s) => ({

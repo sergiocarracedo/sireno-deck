@@ -18,7 +18,11 @@ const HEADING_TEXT = "neon-grids-text-heading"
 const LABEL_TEXT = "neon-grids-text-label"
 const TAP_PILL = "neon-grids-tap-pill"
 
-function NeonGridsButtonFrame(props: ButtonFrameProps): ReactElement {
+function NeonGridsButtonFrame(
+  props: ButtonFrameProps,
+  _ctx?: unknown,
+  _base?: (props: ButtonFrameProps) => ReactElement,
+): ReactElement {
   const variant = (props.variant ?? "default") as
     | "default"
     | "error"
@@ -68,30 +72,48 @@ function NeonGridsButtonFrame(props: ButtonFrameProps): ReactElement {
   )
 }
 
-function NeonGridsIconLabel(props: IconLabelSurfaceProps): ReactElement {
-  return <DefaultIconLabelSurface {...props} />
+function NeonGridsIconLabel(
+  props: IconLabelSurfaceProps,
+  _ctx?: unknown,
+  base?: (props: IconLabelSurfaceProps) => ReactElement,
+): ReactElement {
+  return base ? base(props) : <DefaultIconLabelSurface {...props} />
 }
 
 function NeonGridsIconLabelProgress(
   props: IconLabelProgressSurfaceProps,
+  _ctx?: unknown,
+  base?: (props: IconLabelProgressSurfaceProps) => ReactElement,
 ): ReactElement {
-  return <DefaultIconLabelProgressSurface {...props} />
+  return base ? base(props) : <DefaultIconLabelProgressSurface {...props} />
 }
 
 function NeonGridsTemporaryError(
   props: TemporaryErrorSurfaceProps,
+  _ctx?: unknown,
+  base?: (props: TemporaryErrorSurfaceProps) => ReactElement,
 ): ReactElement {
-  return <DefaultTemporaryErrorSurface {...props} />
+  return base ? base(props) : <DefaultTemporaryErrorSurface {...props} />
 }
 
-function NeonGridsLabel(props: LabelProps): ReactElement {
+function NeonGridsLabel(
+  props: LabelProps,
+  _ctx?: unknown,
+  base?: (props: LabelProps) => ReactElement,
+): ReactElement {
   const heading = props.variant === "primary" || props.variant === "secondary"
-  return (
+  return base ? (
+    base({ ...props, className: heading ? HEADING_TEXT : LABEL_TEXT })
+  ) : (
     <DefaultLabel {...props} className={heading ? HEADING_TEXT : LABEL_TEXT} />
   )
 }
 
-function NeonGridsTapIndicator(props: TapIndicatorProps): ReactElement {
+function NeonGridsTapIndicator(
+  props: TapIndicatorProps,
+  _ctx?: unknown,
+  _base?: (props: TapIndicatorProps) => ReactElement,
+): ReactElement {
   const tapType = props.type ?? "tap"
   const size = props.size ?? "sm"
   const labelMap: Record<NonNullable<TapIndicatorProps["type"]>, string> = {

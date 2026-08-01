@@ -9,6 +9,7 @@ import {
   ChipProps,
   IconProps,
   LabelProps,
+  ProgressBarProps,
   TapIndicatorProps,
   TextProps,
 } from "./primitives"
@@ -17,6 +18,7 @@ import {
   IconLabelProgressSurfaceProps,
   IconLabelSurfaceProps,
   LabelValueListProps,
+  PaginatedSurfaceProps,
   SplitActionSurfaceProps,
   TemporaryErrorSurfaceProps,
   ValueChartProps,
@@ -38,6 +40,7 @@ export interface ThemeUiPresentation {
   buttonFrame?: (
     props: ButtonFrameProps,
     ctx?: ThemeOverrideContext,
+    base?: (props: ButtonFrameProps) => ReactElement,
   ) => ReactElement
   /**
    * Optional deck-chrome background hook. Themes can paint a full-deck
@@ -48,40 +51,77 @@ export interface ThemeUiPresentation {
    */
   deckBackground?: (props: { className: string }) => string | undefined
   primitives?: {
-    chip?: (props: ChipProps, ctx?: ThemeOverrideContext) => ReactElement
-    icon?: (props: IconProps, ctx?: ThemeOverrideContext) => ReactElement
-    text?: (props: TextProps, ctx?: ThemeOverrideContext) => ReactElement
-    label?: (props: LabelProps, ctx?: ThemeOverrideContext) => ReactElement
+    chip?: (
+      props: ChipProps,
+      ctx?: ThemeOverrideContext,
+      base?: (props: ChipProps) => ReactElement,
+    ) => ReactElement
+    icon?: (
+      props: IconProps,
+      ctx?: ThemeOverrideContext,
+      base?: (props: IconProps) => ReactElement,
+    ) => ReactElement
+    text?: (
+      props: TextProps,
+      ctx?: ThemeOverrideContext,
+      base?: (props: TextProps) => ReactElement,
+    ) => ReactElement
+    label?: (
+      props: LabelProps,
+      ctx?: ThemeOverrideContext,
+      base?: (props: LabelProps) => ReactElement,
+    ) => ReactElement
     tapIndicator?: (
       props: TapIndicatorProps,
       ctx?: ThemeOverrideContext,
+      base?: (props: TapIndicatorProps) => ReactElement,
+    ) => ReactElement
+    progressBar?: (
+      props: ProgressBarProps,
+      ctx?: ThemeOverrideContext,
+      base?: (props: ProgressBarProps) => ReactElement,
     ) => ReactElement
   }
   surfaces?: {
     iconLabel?: (
       props: IconLabelSurfaceProps,
       ctx?: ThemeOverrideContext,
+      base?: (props: IconLabelSurfaceProps) => ReactElement,
     ) => ReactElement
     iconLabelProgress?: (
       props: IconLabelProgressSurfaceProps,
       ctx?: ThemeOverrideContext,
+      base?: (props: IconLabelProgressSurfaceProps) => ReactElement,
     ) => ReactElement
-    bars?: (props: BarsProps, ctx?: ThemeOverrideContext) => ReactElement
+    bars?: (
+      props: BarsProps,
+      ctx?: ThemeOverrideContext,
+      base?: (props: BarsProps) => ReactElement,
+    ) => ReactElement
     splitAction?: (
       props: SplitActionSurfaceProps,
       ctx?: ThemeOverrideContext,
+      base?: (props: SplitActionSurfaceProps) => ReactElement,
     ) => ReactElement
     labelValueList?: (
       props: LabelValueListProps,
       ctx?: ThemeOverrideContext,
+      base?: (props: LabelValueListProps) => ReactElement,
     ) => ReactElement
     temporaryError?: (
       props: TemporaryErrorSurfaceProps,
       ctx?: ThemeOverrideContext,
+      base?: (props: TemporaryErrorSurfaceProps) => ReactElement,
     ) => ReactElement
     valueChart?: (
       props: ValueChartProps,
       ctx?: ThemeOverrideContext,
+      base?: (props: ValueChartProps) => ReactElement,
+    ) => ReactElement
+    paginated?: (
+      props: PaginatedSurfaceProps<unknown>,
+      ctx?: ThemeOverrideContext,
+      base?: (props: PaginatedSurfaceProps<unknown>) => ReactElement,
     ) => ReactElement
   }
 }

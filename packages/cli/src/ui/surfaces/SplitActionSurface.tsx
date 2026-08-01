@@ -59,9 +59,19 @@ export function SplitActionSurface(
   const themeUi = useThemeUiPresentation()
 
   if (themeUi?.surfaces?.splitAction) {
-    return themeUi.surfaces.splitAction(props)
+    return themeUi.surfaces.splitAction(
+      props,
+      undefined,
+      splitActionSurfaceBase,
+    )
   }
 
+  return splitActionSurfaceBase(props)
+}
+
+export function splitActionSurfaceBase(
+  props: SplitActionSurfaceProps,
+): ReactElement {
   if (!props.secondary) {
     return <div className="contents">{props.primary}</div>
   }

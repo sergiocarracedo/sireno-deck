@@ -33,6 +33,22 @@ export function IconLabelProgressSurface(
   props: IconLabelProgressSurfaceProps,
 ): ReactElement {
   const themeUi = useThemeUiPresentation()
+
+  if (themeUi?.surfaces?.iconLabelProgress) {
+    return themeUi.surfaces.iconLabelProgress(
+      props,
+      undefined,
+      iconLabelProgressSurfaceBase,
+    )
+  }
+
+  return iconLabelProgressSurfaceBase(props)
+}
+
+export function iconLabelProgressSurfaceBase(
+  props: IconLabelProgressSurfaceProps,
+): ReactElement {
+  const themeUi = useThemeUiPresentation()
   const {
     className: consumerClassName,
     source,
@@ -48,7 +64,11 @@ export function IconLabelProgressSurface(
   } = props
 
   if (themeUi?.surfaces?.iconLabelProgress) {
-    return themeUi.surfaces.iconLabelProgress(props)
+    return themeUi.surfaces.iconLabelProgress(
+      props,
+      undefined,
+      iconLabelProgressSurfaceBase,
+    )
   }
 
   const [shown, setShown] = useState(visible)

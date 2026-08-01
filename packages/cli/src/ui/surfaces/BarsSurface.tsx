@@ -101,11 +101,20 @@ export function BarsSurface(props: BarsSurfaceProps): ReactElement {
   }
 
   const themeUi = useThemeUiPresentation()
-  const barMaxWidthClass = props.barMaxWidthClass ?? "max-w-[60%]"
 
   if (themeUi?.surfaces?.bars) {
-    return themeUi.surfaces.bars(props)
+    return themeUi.surfaces.bars(props, undefined, barsSurfaceBase)
   }
+
+  return barsSurfaceBase(props)
+}
+
+export function barsSurfaceBase(props: BarsSurfaceProps): ReactElement {
+  if (props.items.length < 1 || props.items.length > 3) {
+    throw new Error(`Bars supports 1-3 items. Received ${props.items.length}.`)
+  }
+
+  const barMaxWidthClass = props.barMaxWidthClass ?? "max-w-[60%]"
 
   return (
     <div

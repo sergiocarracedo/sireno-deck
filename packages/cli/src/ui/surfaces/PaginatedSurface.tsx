@@ -8,6 +8,7 @@ import {
 } from "react"
 
 import { cn } from "../utils/cn"
+import { useThemeUiPresentation } from "../theme-presentation"
 
 export interface PaginatedGestureEvent {
   gesture: "tap" | "dbl-tap" | "hold"
@@ -38,6 +39,41 @@ const DOT_ACTIVE = "bg-white"
 const DOT_INACTIVE = "bg-white/30"
 
 export function PaginatedSurface<T>({
+  pages,
+  gesture,
+  intervalMs,
+  autoReturnMs,
+  className,
+  style,
+}: PaginatedSurfaceProps<T>): ReactElement {
+  const themeUi = useThemeUiPresentation()
+
+  if (themeUi?.surfaces?.paginated) {
+    return themeUi.surfaces.paginated(
+      {
+        pages,
+        gesture,
+        intervalMs,
+        autoReturnMs,
+        className,
+        style,
+      } as PaginatedSurfaceProps<unknown>,
+      undefined,
+      paginatedSurfaceBase,
+    )
+  }
+
+  return paginatedSurfaceBase({
+    pages,
+    gesture,
+    intervalMs,
+    autoReturnMs,
+    className,
+    style,
+  } as PaginatedSurfaceProps<T>)
+}
+
+export function paginatedSurfaceBase<T>({
   pages,
   gesture,
   intervalMs,

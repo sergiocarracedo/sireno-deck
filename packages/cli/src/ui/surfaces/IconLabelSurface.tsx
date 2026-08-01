@@ -19,9 +19,15 @@ export function IconLabelSurface(props: IconLabelSurfaceProps): ReactElement {
   const themeUi = useThemeUiPresentation()
 
   if (themeUi?.surfaces?.iconLabel) {
-    return themeUi.surfaces.iconLabel(props)
+    return themeUi.surfaces.iconLabel(props, undefined, iconLabelSurfaceBase)
   }
 
+  return iconLabelSurfaceBase(props)
+}
+
+export function iconLabelSurfaceBase(
+  props: IconLabelSurfaceProps,
+): ReactElement {
   const { className: consumerClassName, source, ...rest } = props
   const layoutClassName =
     "flex h-full w-full min-w-0 flex-col items-center justify-center gap-1 overflow-hidden"

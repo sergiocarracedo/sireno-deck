@@ -22,9 +22,19 @@ export function TemporaryErrorSurface(
   const themeUi = useThemeUiPresentation()
 
   if (themeUi?.surfaces?.temporaryError) {
-    return themeUi.surfaces.temporaryError(props)
+    return themeUi.surfaces.temporaryError(
+      props,
+      undefined,
+      temporaryErrorSurfaceBase,
+    )
   }
 
+  return temporaryErrorSurfaceBase(props)
+}
+
+export function temporaryErrorSurfaceBase(
+  props: TemporaryErrorSurfaceProps,
+): ReactElement {
   const {
     className: consumerClassName,
     source,

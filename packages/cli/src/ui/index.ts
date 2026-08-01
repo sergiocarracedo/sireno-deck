@@ -5,7 +5,10 @@ export {
   ThemeUiPresentationProvider,
   useThemeUiPresentation,
 } from "./theme-presentation"
-export type { ThemeUiPresentation } from "./theme-presentation"
+export type {
+  ThemeUiPresentation,
+  ThemeOverrideContext,
+} from "./theme-presentation"
 export { buildPresentation } from "./theme-presentation-builder"
 export { cn } from "./utils/cn"
 
