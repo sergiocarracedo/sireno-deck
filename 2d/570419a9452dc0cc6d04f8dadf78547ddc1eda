@@ -1,0 +1,21 @@
+packages/themes/neon-grids/sirenodeck.json
+  s_4191f40277305b::t_28c72c7028c84e 6
+  s_4191f40277305b::t_5af5d759482d51 20
+  s_4191f40277305b::t_a47e94158ff57b 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "2d570419a9452dc0cc6d04f8dadf78547ddc1eda",
+  "prompts": {},
+  "sessions": {
+    "s_4191f40277305b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_047002f8fffekqKfUTir9UPW5h",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
