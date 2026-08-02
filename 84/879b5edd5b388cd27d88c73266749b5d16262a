@@ -1,0 +1,57 @@
+packages/themes/neon-grids/components.css
+  s_4191f40277305b::t_ac5d7f496c3922 2-6,16,18,22-26,41-42,45-46,55,60,65,70,75,80,90-114
+  s_4191f40277305b::t_d52dcca3ff2bb6 145,147
+  s_4191f40277305b::t_f7c7db5eeed911 164-168,170-171
+  s_4191f40277305b::t_f116482d7b2955 85-89,115
+  s_4191f40277305b::t_e89064cd0d9b3d 13-15,21,27-31,33,37-39
+  s_4191f40277305b::t_4a569f1aaed896 116
+packages/themes/neon-grids/components/index.tsx
+  s_4191f40277305b::t_986cd6c01fa35c 149
+  s_4191f40277305b::t_e78fd080663e1c 7,21-23
+  s_4191f40277305b::t_14e4478115671f 136-148,150-152,165
+packages/themes/neon-grids/tsconfig.json
+  s_4191f40277305b::t_c052cdccfac91e 1-29
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_4191f40277305b::t_b2acade2965fb1 252
+  s_4191f40277305b::t_db7d466d853de3 11
+packages/cli/src/themes/__tests__/loader.test.ts
+  s_4191f40277305b::t_56e4a67efeac7f 1,255
+  s_4191f40277305b::t_990a70da8c0a1d 247-254,256-264
+  s_4191f40277305b::t_96afdb6e2f8091 11
+packages/cli/src/themes/loader.ts
+  s_4191f40277305b::t_56e4a67efeac7f 106
+  s_4191f40277305b::t_01bfb5740f0eee 4
+  s_4191f40277305b::t_938c06e3bcbd3f 103-105,107-111
+packages/cli/src/cli/commands/run.ts
+  s_4191f40277305b::t_56e4a67efeac7f 52
+  s_4191f40277305b::t_cc628c96a23929 552
+packages/cli/frontend/src/App.tsx
+  s_4191f40277305b::t_b423414c6d79a9 272-295
+packages/cli/src/ui/__tests__/IconLabelProgressSurface-override.test.tsx
+  s_4191f40277305b::t_fbd6119dc66a2b 1-16,22-33,37-40
+  s_4191f40277305b::t_986cd6c01fa35c 17-21,34-36
+packages/themes/neon-grids/package.json
+  s_4191f40277305b::t_df9ed2066b31ec 12-14
+packages/cli/frontend/src/__tests__/app-navigation.test.tsx
+  s_4191f40277305b::t_774ab6dc79bd8b 103-113,117-146,150-179
+  s_4191f40277305b::t_f565ab79dd24c7 114-116,147-149
+packages/themes/neon-grids/sirenodeck.json
+  s_4191f40277305b::t_3e011084f02a22 46,48,65-70
+  s_4191f40277305b::t_84ef2d2ec04b34 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "84879b5edd5b388cd27d88c73266749b5d16262a",
+  "prompts": {},
+  "sessions": {
+    "s_4191f40277305b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_047002f8fffekqKfUTir9UPW5h",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
