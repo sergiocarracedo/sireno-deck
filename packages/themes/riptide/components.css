@@ -145,7 +145,7 @@
 }
 
 .riptide-text-label {
-  color: var(--sireno-color-foreground);
+  color: var(--sireno-color-primary);
   text-shadow: 0 0 3px
     color-mix(in oklab, var(--sireno-color-primary) 50%, transparent);
 }
