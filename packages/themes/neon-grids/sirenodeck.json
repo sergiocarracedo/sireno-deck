@@ -3,13 +3,13 @@
   "apiVersion": 1,
   "name": "neon-grids",
   "version": "0.1.0",
-  "description": "Synthwave theme: black background, magenta/pink neon, deck-wide perspective grid, neon-line icons on purple radial.",
+  "description": "Synthwave theme: black background, electric-cyan primary with magenta/pink contrast, deck-wide perspective grid, neon-line icons on purple radial.",
   "colorTokens": {
     "background": "#000000",
     "frame": "#ff00ff",
     "foreground": "#ff5fd0",
     "foreground-contrast": "#ffffff",
-    "primary": "#ff00ff",
+    "primary": "#00e5ff",
     "accent": "#8a2be2",
     "success": "#00ff9f",
     "danger": "#ff003c"
@@ -17,7 +17,7 @@
   "variants": {
     "default": {
       "background": "#000000",
-      "border": "#ff00ff",
+      "border": "#00e5ff",
       "foreground": "#ff5fd0"
     },
     "highlighted": {
