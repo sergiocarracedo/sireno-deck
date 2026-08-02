@@ -1,0 +1,28 @@
+packages/themes/neon-grids/components.css
+  s_4191f40277305b::t_806fcc8f1a37de 178,183-184,187
+  s_4191f40277305b::t_db8d59986aa954 164,166
+  s_4191f40277305b::t_558e41e420b726 149,157
+packages/themes/riptide/components.css
+  s_4191f40277305b::t_0f315598d1c396 148
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "0229e63583ce9318a6c7abb81c09d2b552c3dd2a",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_4191f40277305b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_047002f8fffekqKfUTir9UPW5h",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
