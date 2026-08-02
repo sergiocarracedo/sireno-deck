@@ -100,4 +100,81 @@ describe("App navigation", () => {
 
     expect(paths.at(-1)).toBe("/decks/main")
   })
+
+  it("shows a button error for the active deck", () => {
+    const { handlers } = buildMockWsClient()
+
+    const { container } = render(
+      <MemoryRouter initialEntries={["/"]}>
+        <App />
+      </MemoryRouter>,
+    )
+
+    act(() => {
+      handlers.onMessage({ type: "assets", assets: [] })
+    })
+    act(() => {
+      handlers.onMessage({
+        type: "deck-config",
+        deckId: "media",
+        surfaces: {
+          media: { name: "Media", buttons: [{ id: "0", type: "x:btn" }] },
+        },
+      })
+    })
+    act(() => {
+      handlers.onMessage({
+        type: "button-error",
+        deckId: "media",
+        position: 0,
+      })
+    })
+
+    expect(
+      container.querySelector('[data-button-type="core:temporary-error"]'),
+    ).not.toBeNull()
+  })
+
+  it("ignores a button error for a previous deck after navigation", () => {
+    const { handlers } = buildMockWsClient()
+
+    const { container } = render(
+      <MemoryRouter initialEntries={["/"]}>
+        <App />
+      </MemoryRouter>,
+    )
+
+    act(() => {
+      handlers.onMessage({ type: "assets", assets: [] })
+    })
+    act(() => {
+      handlers.onMessage({
+        type: "deck-config",
+        deckId: "media",
+        surfaces: {
+          media: { name: "Media", buttons: [{ id: "0", type: "x:btn" }] },
+        },
+      })
+    })
+    act(() => {
+      handlers.onMessage({
+        type: "deck-config",
+        deckId: "other",
+        surfaces: {
+          other: { name: "Other", buttons: [{ id: "0", type: "y:btn" }] },
+        },
+      })
+    })
+    act(() => {
+      handlers.onMessage({
+        type: "button-error",
+        deckId: "media",
+        position: 0,
+      })
+    })
+
+    expect(
+      container.querySelector('[data-button-type="core:temporary-error"]'),
+    ).toBeNull()
+  })
 })

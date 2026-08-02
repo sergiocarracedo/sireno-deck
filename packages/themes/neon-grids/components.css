@@ -1,45 +1,107 @@
 /* neon-grids — synthwave theme overrides
- * Layered radial / linear gradients paint a per-tile perspective grid
- * (cheap; no Canvas). Outer glow + inset highlight on each tile. Radial
- * bloom behind icons. Stars scattered via repeating-radial-gradient dots.
- * Neon text-shadow utilities for the brush-font headings.
+ * A deck-wide perspective grid is painted behind the tiles by
+ * `deckBackground` (see components/index.tsx). Tiles keep a translucent
+ * fill + neon border + glow so they float above the grid. Radial bloom
+ * behind icons. Stars scattered via repeating-radial-gradient dots.
+ * Neon text-shadow utilities for the Unica One headings.
  *
  * ponytail: pick colors via var(--sireno-color-*) so re-tinting the theme
  * is a one-line change in sirenodeck.json — these classes never hardcode
  * a hex.
  */
 
-.neon-grids-tile {
+/* Deck-wide perspective grid — converging vertical lines radiating from a
+ * vanishing point near the top ("horizon") + horizontal depth lines, all
+ * subtle so tiles stay the focal point. Cheap: no Canvas, two gradients. */
+.neon-grids-deck-bg {
   position: relative;
-  isolation: isolate;
+  overflow: hidden;
   background-color: #000;
   background-image:
-    /* Perspective fade — vertical line that disappears toward "horizon" */
-    linear-gradient(
-      to bottom,
-      transparent 0%,
-      transparent 35%,
-      color-mix(in oklab, var(--sireno-color-primary) 35%, transparent) 36%,
-      color-mix(in oklab, var(--sireno-color-primary) 55%, transparent) 100%
+    /* Horizon bloom — soft glow band where the verticals converge */
+    radial-gradient(
+      ellipse at 50% 8%,
+      color-mix(in oklab, var(--sireno-color-accent) 22%, transparent) 0%,
+      transparent 45%
     ),
-    /* Horizontal grid lines */
+    /* Converging verticals — radiating from the vanishing point (50% 8%) */
+    repeating-conic-gradient(
+      from -90deg at 50% 8%,
+      color-mix(in oklab, var(--sireno-color-primary) 9%, transparent) 0deg 1deg,
+      transparent 1deg 7deg
+    ),
+    /* Horizontal depth lines — fade toward the horizon */
     repeating-linear-gradient(
       to bottom,
       transparent 0,
-      transparent 11px,
-      color-mix(in oklab, var(--sireno-color-primary) 45%, transparent) 11px,
-      color-mix(in oklab, var(--sireno-color-primary) 45%, transparent) 12px
+      transparent 30px,
+      color-mix(in oklab, var(--sireno-color-primary) 6%, transparent) 30px,
+      color-mix(in oklab, var(--sireno-color-primary) 6%, transparent) 31px
     ),
-    /* Vanishing-point radial — strong at top, faded at bottom */
+    /* Soft fill so the deck isn't pure black */
+    linear-gradient(180deg, #05000d 0%, #000000 60%, #0d0020 100%);
+}
+
+/* Stars — small fixed dots scattered across the deck chrome. */
+.neon-grids-deck-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(
+      1px 1px at 18% 22%,
+      rgba(255, 255, 255, 0.7) 50%,
+      transparent 51%
+    ),
+    radial-gradient(
+      1px 1px at 73% 14%,
+      rgba(255, 255, 255, 0.55) 50%,
+      transparent 51%
+    ),
+    radial-gradient(
+      1px 1px at 42% 38%,
+      rgba(255, 95, 208, 0.6) 50%,
+      transparent 51%
+    ),
+    radial-gradient(
+      1px 1px at 86% 56%,
+      rgba(255, 255, 255, 0.5) 50%,
+      transparent 51%
+    ),
+    radial-gradient(
+      1px 1px at 11% 71%,
+      rgba(138, 43, 226, 0.75) 50%,
+      transparent 51%
+    ),
+    radial-gradient(
+      1px 1px at 56% 78%,
+      rgba(255, 255, 255, 0.45) 50%,
+      transparent 51%
+    );
+}
+
+.neon-grids-deck-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+.neon-grids-tile {
+  position: relative;
+  isolation: isolate;
+  background-color: rgba(0, 0, 0, 0.55);
+  background-image:
+    /* Vanishing-point shade — darker toward the bottom so tiles recede */
     radial-gradient(
       ellipse at 50% 100%,
       transparent 0%,
       transparent 50%,
-      rgba(0, 0, 0, 0.55) 100%
+      rgba(0, 0, 0, 0.45) 100%
     ),
     /* Soft fill so the tile isn't pure black */
-    linear-gradient(135deg, #110018 0%, #000000 60%, #1a0030 100%);
-  background-blend-mode: normal, screen, multiply, normal;
+    linear-gradient(135deg, rgba(17, 0, 24, 0.9) 0%, rgba(0, 0, 0, 0.7) 60%, rgba(26, 0, 48, 0.9) 100%);
+  background-blend-mode: multiply, normal;
   border: 2px solid
     color-mix(in oklab, var(--sireno-color-primary) 80%, transparent);
   box-shadow:
@@ -50,47 +112,6 @@
     0 0 10px color-mix(in oklab, var(--sireno-color-primary) 55%, transparent),
     0 0 22px color-mix(in oklab, var(--sireno-color-accent) 30%, transparent);
   overflow: hidden;
-}
-
-/* Stars — small fixed dots scattered across the tile. Cheap (no JS),
- * pseudo-element so the parent can still paint the grid background. */
-.neon-grids-tile::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background-image:
-    radial-gradient(
-      1px 1px at 18% 22%,
-      rgba(255, 255, 255, 0.85) 50%,
-      transparent 51%
-    ),
-    radial-gradient(
-      1px 1px at 73% 14%,
-      rgba(255, 255, 255, 0.7) 50%,
-      transparent 51%
-    ),
-    radial-gradient(
-      1px 1px at 42% 38%,
-      rgba(255, 95, 208, 0.8) 50%,
-      transparent 51%
-    ),
-    radial-gradient(
-      1px 1px at 86% 56%,
-      rgba(255, 255, 255, 0.6) 50%,
-      transparent 51%
-    ),
-    radial-gradient(
-      1px 1px at 11% 71%,
-      rgba(138, 43, 226, 0.9) 50%,
-      transparent 51%
-    ),
-    radial-gradient(
-      1px 1px at 56% 78%,
-      rgba(255, 255, 255, 0.55) 50%,
-      transparent 51%
-    );
 }
 
 .neon-grids-tile > * {
@@ -121,9 +142,9 @@
     0 0 36px color-mix(in oklab, var(--sireno-color-primary) 55%, transparent);
 }
 
-/* Neon text styles — brush-font headings + neon glow on labels. */
+/* Neon text styles — Unica One headings + neon glow on labels. */
 .neon-grids-text-heading {
-  font-family: "Bungee", var(--sireno-font-main-family), sans-serif;
+  font-family: "Unica One", var(--sireno-font-main-family), sans-serif;
   letter-spacing: 0.08em;
   color: var(--sireno-color-foreground);
   text-shadow:
@@ -140,9 +161,14 @@
 }
 
 .neon-grids-icon-glow {
-  filter: drop-shadow(0 0 3px var(--sireno-color-primary))
+  filter: drop-shadow(0 0 2px var(--sireno-color-primary))
+    drop-shadow(0 0 5px var(--sireno-color-primary))
     drop-shadow(
-      0 0 6px color-mix(in oklab, var(--sireno-color-accent) 70%, transparent)
+      0 0 10px color-mix(in oklab, var(--sireno-color-accent) 80%, transparent)
+    )
+    drop-shadow(
+      0 0 18px
+        color-mix(in oklab, var(--sireno-color-accent) 45%, transparent)
     );
 }
 

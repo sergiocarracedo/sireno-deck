@@ -4,6 +4,7 @@ import type { ButtonFrameProps } from "@sireno-deck/cli/ui/ButtonFrame"
 import type { IconLabelSurfaceProps } from "@sireno-deck/cli/ui/surfaces/IconLabelSurface"
 import type { IconLabelProgressSurfaceProps } from "@sireno-deck/cli/ui/surfaces/IconLabelProgressSurface"
 import type { TemporaryErrorSurfaceProps } from "@sireno-deck/cli/ui/surfaces/TemporaryErrorSurface"
+import type { IconProps } from "@sireno-deck/cli/ui/primitives/Icon"
 import type { LabelProps } from "@sireno-deck/cli/ui/primitives/Label"
 import type { TapIndicatorProps } from "@sireno-deck/cli/ui/primitives/TapIndicator"
 
@@ -17,6 +18,9 @@ const TILE_BASE = "neon-grids-tile"
 const HEADING_TEXT = "neon-grids-text-heading"
 const LABEL_TEXT = "neon-grids-text-label"
 const TAP_PILL = "neon-grids-tap-pill"
+const ICON_GLOW = "neon-grids-icon-glow"
+const ICON_RADIAL = "neon-grids-icon-radial"
+const DECK_BG = "neon-grids-deck-bg"
 
 function NeonGridsButtonFrame(
   props: ButtonFrameProps,
@@ -129,6 +133,23 @@ function NeonGridsTapIndicator(
   )
 }
 
+function NeonGridsIcon(
+  props: IconProps,
+  _ctx?: unknown,
+  base?: (props: IconProps) => ReactElement,
+): ReactElement {
+  const rendered = base ? base(props) : undefined
+  return (
+    <span className={`inline-block ${ICON_GLOW} ${ICON_RADIAL}`}>
+      {rendered}
+    </span>
+  )
+}
+
+export function deckBackground(_props: { className: string }): string {
+  return DECK_BG
+}
+
 export const components = {
   ButtonFrame: NeonGridsButtonFrame,
 }
@@ -141,5 +162,6 @@ export const surfaces = {
 
 export const primitives = {
   label: NeonGridsLabel,
+  icon: NeonGridsIcon,
   tapIndicator: NeonGridsTapIndicator,
 }

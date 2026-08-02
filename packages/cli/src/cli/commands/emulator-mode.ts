@@ -8,6 +8,7 @@ import type pino from "pino"
 import {
   BUILT_IN_THEMES,
   buildThemeCssFromManifest,
+  copyThemeAssets,
   readAndValidateManifest,
 } from "@/themes/loader"
 
@@ -248,4 +249,5 @@ export const ensureDefaultThemeEnv = (frontendCwd: string): void => {
   const manifest = readAndValidateManifest(manifestPath, defaultSpec.name)
   const cssContent = buildThemeCssFromManifest(manifest, defaultSpec.dir)
   writeFileSync(join(cssDir, "theme.css"), cssContent, "utf8")
+  copyThemeAssets(defaultSpec.dir, cssDir)
 }

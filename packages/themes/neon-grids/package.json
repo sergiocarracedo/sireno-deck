@@ -9,6 +9,9 @@
     "assets"
   ],
   "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
   "peerDependencies": {
     "@sireno-deck/cli": "^0.1.0"
   },

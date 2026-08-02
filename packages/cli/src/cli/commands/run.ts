@@ -49,7 +49,7 @@ import {
   checkRequirements,
   formatCapabilityWarning,
 } from "@/system/requirements"
-import { resolveActiveTheme } from "@/themes/loader"
+import { copyThemeAssets, resolveActiveTheme } from "@/themes/loader"
 import { resolveAddonCacheDir } from "@/util/cache-paths"
 
 import { createActionExecutor } from "@/action/executor"
@@ -549,6 +549,7 @@ export const validateAndLoadConfig = async (
     const cssDir = join(themeDir, ".sireno-deck")
     if (!existsSync(cssDir)) mkdirSync(cssDir, { recursive: true })
     writeFileSync(join(cssDir, "theme.css"), cssContent, "utf8")
+    copyThemeAssets(dirname(theme.manifestPath), cssDir)
   }
   process.env["SIRENO_THEME_DIR"] = themeDir
   process.env["SIRENO_THEME"] = JSON.stringify({

@@ -269,24 +269,30 @@ const AppContent = () => {
         if (message.type === "button-error") {
           const position = message.position
           const durationMs = message.durationMs ?? 5000
-          setDeck((previous) => ({
-            ...previous,
-            buttonErrors: [
-              ...previous.buttonErrors.filter(
-                (error) => error.position !== position,
-              ),
-              {
-                position,
-                expiresAt: Date.now() + durationMs,
-                ...(typeof message.buttonId === "string"
-                  ? { buttonId: message.buttonId }
-                  : {}),
-                ...(typeof message.details === "string"
-                  ? { details: message.details }
-                  : {}),
-              },
-            ],
-          }))
+          setDeck((previous) => {
+            // ponytail: drop errors for a deck we're no longer on — an
+            // in-flight action error arriving after navigation must not
+            // land on the new deck's buttons.
+            if (previous.id !== message.deckId) return previous
+            return {
+              ...previous,
+              buttonErrors: [
+                ...previous.buttonErrors.filter(
+                  (error) => error.position !== position,
+                ),
+                {
+                  position,
+                  expiresAt: Date.now() + durationMs,
+                  ...(typeof message.buttonId === "string"
+                    ? { buttonId: message.buttonId }
+                    : {}),
+                  ...(typeof message.details === "string"
+                    ? { details: message.details }
+                    : {}),
+                },
+              ],
+            }
+          })
         }
         if (message.type === "state") {
           for (const [channel, payload] of Object.entries(message.channels)) {

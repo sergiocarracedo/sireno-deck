@@ -48,7 +48,6 @@ export function IconLabelProgressSurface(
 export function iconLabelProgressSurfaceBase(
   props: IconLabelProgressSurfaceProps,
 ): ReactElement {
-  const themeUi = useThemeUiPresentation()
   const {
     className: consumerClassName,
     source,
@@ -62,14 +61,6 @@ export function iconLabelProgressSurfaceBase(
     bgColorAlt,
     ...rest
   } = props
-
-  if (themeUi?.surfaces?.iconLabelProgress) {
-    return themeUi.surfaces.iconLabelProgress(
-      props,
-      undefined,
-      iconLabelProgressSurfaceBase,
-    )
-  }
 
   const [shown, setShown] = useState(visible)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)

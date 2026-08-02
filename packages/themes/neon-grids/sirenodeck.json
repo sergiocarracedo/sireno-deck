@@ -3,7 +3,7 @@
   "apiVersion": 1,
   "name": "neon-grids",
   "version": "0.1.0",
-  "description": "Synthwave theme: black background, magenta/pink neon, per-tile perspective grid, neon-line icons on purple radial.",
+  "description": "Synthwave theme: black background, magenta/pink neon, deck-wide perspective grid, neon-line icons on purple radial.",
   "colorTokens": {
     "background": "#000000",
     "frame": "#ff00ff",
@@ -43,9 +43,9 @@
   },
   "typography": {
     "main_text": {
-      "fontFamily": "IBM Plex Mono",
+      "fontFamily": "Unica One",
       "fontSize": 12,
-      "fontWeight": 300,
+      "fontWeight": 400,
       "letterSpacing": 0.4
     },
     "auxiliary_text": {
@@ -63,6 +63,12 @@
   },
   "fonts": [
     {
+      "fontFamily": "Unica One",
+      "fontWeight": 400,
+      "fontStyle": "normal",
+      "src": "./assets/Unica_One/UnicaOne-Regular.ttf"
+    },
+    {
       "fontFamily": "IBM Plex Mono",
       "fontWeight": 300,
       "fontStyle": "normal",
@@ -79,12 +85,6 @@
       "fontWeight": 700,
       "fontStyle": "normal",
       "src": "./assets/IBM_Plex_Mono/IBMPlexMono-Bold.ttf"
-    },
-    {
-      "fontFamily": "Bungee",
-      "fontWeight": 400,
-      "fontStyle": "normal",
-      "src": "./assets/brush/Bungee-Regular.ttf"
     }
   ],
   "assets": {

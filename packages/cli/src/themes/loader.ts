@@ -1,7 +1,7 @@
 import { fileURLToPath } from "node:url"
 import { createRequire } from "node:module"
 import { dirname, resolve as resolvePath, join } from "node:path"
-import { existsSync, readFileSync, readdirSync } from "node:fs"
+import { cpSync, existsSync, readFileSync, readdirSync } from "node:fs"
 
 import type { AddonRegistry } from "@/addon/registry"
 import type { LoadedTheme } from "@/addon/api"
@@ -98,6 +98,15 @@ export function buildThemeCssFromManifest(
     }
   })
   return buildThemeCss(manifest, stylesheetContents)
+}
+
+// ponytail: theme.css is emitted into the vite frontend's `.sireno-deck/`
+// dir, but its `url('./assets/...')` font/asset paths are relative to THAT
+// file — so the theme's assets/ must be copied next to it or every font 404s.
+export function copyThemeAssets(themeDir: string, cssDir: string): void {
+  const assetsDir = join(themeDir, "assets")
+  if (!existsSync(assetsDir)) return
+  cpSync(assetsDir, join(cssDir, "assets"), { recursive: true })
 }
 
 function buildLoadedTheme(

@@ -1,4 +1,4 @@
-import { mkdtempSync, writeFileSync, mkdirSync } from "node:fs"
+import { existsSync, mkdtempSync, writeFileSync, mkdirSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
@@ -8,6 +8,7 @@ import { AddonRegistry } from "@/addon/registry"
 import type { LoadedTheme } from "@/addon/api"
 
 import {
+  copyThemeAssets,
   loadSiblingThemes,
   loadThemeFromPath,
   registerBuiltInThemes,
@@ -241,6 +242,24 @@ describe("themes/loader", () => {
     expect(riptide?.apiVersion).toBe(1)
     expect(riptide?.source.kind).toBe("sibling")
     expect(riptide?.uiOverridesPath ?? "").toContain("riptide")
+  })
+
+  it("copyThemeAssets copies the theme assets dir next to the emitted css", () => {
+    const themeDir = mkdtempSync(join(tmpdir(), "theme-assets-"))
+    mkdirSync(join(themeDir, "assets", "fonts"), { recursive: true })
+    writeFileSync(join(themeDir, "assets", "fonts", "a.ttf"), "font-data")
+
+    const cssDir = mkdtempSync(join(tmpdir(), "theme-css-"))
+    copyThemeAssets(themeDir, cssDir)
+
+    expect(existsSync(join(cssDir, "assets", "fonts", "a.ttf"))).toBe(true)
+  })
+
+  it("copyThemeAssets is a no-op when the theme has no assets dir", () => {
+    const themeDir = mkdtempSync(join(tmpdir(), "theme-noassets-"))
+    const cssDir = mkdtempSync(join(tmpdir(), "theme-css-"))
+    expect(() => copyThemeAssets(themeDir, cssDir)).not.toThrow()
+    expect(existsSync(join(cssDir, "assets"))).toBe(false)
   })
 
   it("riptide CSS exposes required variants plus theme-declared extras", () => {
