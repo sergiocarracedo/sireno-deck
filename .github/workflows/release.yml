@@ -1,0 +1,67 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "@sirenodeck/*"
+
+permissions:
+  contents: read
+
+jobs:
+  detect:
+    name: Detect packages in tag ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    outputs:
+      package: ${{ steps.parse.outputs.package }}
+      package-path: ${{ steps.parse.outputs.package-path }}
+      needs-build: ${{ steps.parse.outputs.needs-build }}
+    steps:
+      - id: parse
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          # Tag format: @sirenodeck/<component>-<version>
+          # e.g. @sirenodeck/cli-0.1.1, @sirenodeck/addon-pomodoro-0.1.0
+          PACKAGE="$TAG"
+          case "$TAG" in
+            '@sirenodeck/cli-'*)
+              PATH='packages/cli'
+              NEEDS_BUILD='false'
+              ;;
+            '@sirenodeck/addon-app-shortcuts-'*)
+              PATH='packages/addons/app-shortcuts'
+              NEEDS_BUILD='true'
+              ;;
+            '@sirenodeck/addon-pomodoro-'*)
+              PATH='packages/addons/pomodoro'
+              NEEDS_BUILD='true'
+              ;;
+            '@sirenodeck/theme-neon-grids-'*)
+              PATH='packages/themes/neon-grids'
+              NEEDS_BUILD='false'
+              ;;
+            '@sirenodeck/theme-riptide-'*)
+              PATH='packages/themes/riptide'
+              NEEDS_BUILD='false'
+              ;;
+            *)
+              echo "Unknown release tag: $TAG"
+              exit 1
+              ;;
+          esac
+          echo "package=$PACKAGE" >> "$GITHUB_OUTPUT"
+          echo "package-path=$PATH" >> "$GITHUB_OUTPUT"
+          echo "needs-build=$NEEDS_BUILD" >> "$GITHUB_OUTPUT"
+
+  publish:
+    name: Publish ${{ needs.detect.outputs.package }}
+    needs: detect
+    uses: ./.github/workflows/publish-npm.yml
+    with:
+      package: ${{ needs.detect.outputs.package }}
+      package-path: ${{ needs.detect.outputs.package-path }}
+      needs-build: ${{ needs.detect.outputs.needs-build }}
+    permissions:
+      contents: read
+      id-token: write

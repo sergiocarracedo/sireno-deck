@@ -6,9 +6,24 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  conventional-commits:
+    if: github.event_name == 'pull_request'
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title uses conventional commits
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "$PR_TITLE" | grep -Eq '^(feat|fix|docs|refactor|test|build|ci|chore|perf)(\([^)]+\))?(!)?: .+'
+
   build:
-    name: lint, format, typecheck, test
+    name: lint, format, typecheck, test, build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,3 +39,5 @@ jobs:
       - run: pnpm format:check
       - run: pnpm typecheck
       - run: pnpm test
+      - name: Build all publishable packages
+        run: pnpm -r --filter "@sirenodeck/*" build

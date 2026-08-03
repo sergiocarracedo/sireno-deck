@@ -1,0 +1,101 @@
+name: publish-npm
+
+on:
+  workflow_call:
+    inputs:
+      package:
+        description: Publishable package name (e.g. @sirenodeck/cli)
+        required: true
+        type: string
+      package-path:
+        description: Path to the package within the repo (e.g. packages/cli)
+        required: true
+        type: string
+      needs-build:
+        description: Whether to run the package build before publishing
+        required: false
+        type: boolean
+        default: false
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Publishable package name (e.g. @sirenodeck/cli)
+        required: true
+        type: string
+      package-path:
+        description: Path to the package within the repo (e.g. packages/cli)
+        required: true
+        type: string
+      needs-build:
+        description: Whether to run the package build before publishing
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Publish ${{ inputs.package }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.package-path }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build package
+        if: ${{ inputs.needs-build }}
+        run: pnpm run build
+
+      - name: Determine version and dist-tag
+        id: meta
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *-alpha.* ]]; then
+            echo "dist_tag=alpha" >> "$GITHUB_OUTPUT"
+          elif [[ "$VERSION" == *-beta.* ]]; then
+            echo "dist_tag=beta" >> "$GITHUB_OUTPUT"
+          else
+            echo "dist_tag=latest" >> "$GITHUB_OUTPUT"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Publish package
+        run: npm publish --provenance --tag "${{ steps.meta.outputs.dist_tag }}" --access public
+
+      - name: Verify published package
+        env:
+          PACKAGE: ${{ inputs.package }}
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          for attempt in 1 2 3 4 5; do
+            PUBLISHED_VERSION=$(npm view "$PACKAGE" version)
+            if [[ "$PUBLISHED_VERSION" == "$VERSION" ]]; then
+              break
+            fi
+            if [[ "$attempt" -eq 5 ]]; then
+              echo "expected npm version $VERSION, got $PUBLISHED_VERSION"
+              exit 1
+            fi
+            sleep 5
+          done
+          npm view "$PACKAGE" dist-tags --json
