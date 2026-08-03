@@ -1,0 +1,90 @@
+packages/themes/riptide/components/index.tsx
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 3-5,9,11-14
+package.json
+  s_7d2fcbe778c3d0::t_755847bb54f00b 8
+packages/themes/riptide/package.json
+  s_7d2fcbe778c3d0::t_b760fc583c7220 5-7
+  s_7d2fcbe778c3d0::t_0ad0ab3cc67fdf 2,8-18,20-22
+packages/cli/src/version.ts
+  s_7d2fcbe778c3d0::t_164165ded4cf96 1
+packages/cli/bin/sireno.js
+  s_7d2fcbe778c3d0::t_9385d330c30d32 1-5,7-10,12-14,28,30-36
+  s_7d2fcbe778c3d0::t_be74fc4e781e4f 6
+  s_7d2fcbe778c3d0::t_b760fc583c7220 37
+  s_7d2fcbe778c3d0::t_73d28b24f49d93 11,15-27,29
+packages/cli/docs/developer/addon-authoring.mdx
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 43,75,91
+ARCHITECTURE.md
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 435
+packages/themes/neon-grids/tsconfig.json
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 24-25
+packages/cli/emulator/src/__tests__/DeckFrame.test.tsx
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 4
+docs/architecture/boundaries.md
+  s_7d2fcbe778c3d0::t_b760fc583c7220 8,92-98,105-111,118-124,131-137,145-151,159-165,173-179,191-197,212-218,225-231,239-245,252-258,266-272,357,384-406
+packages/cli/frontend/src/components/Deck.tsx
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 28
+packages/cli/docs/user/installation.mdx
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 23,26
+packages/cli/frontend/src/__tests__/deck-render.test.tsx
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 5
+packages/themes/neon-grids/components/index.tsx
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 3-9,11-15
+packages/cli/package.json
+  s_7d2fcbe778c3d0::t_b760fc583c7220 5-7,83-84
+  s_7d2fcbe778c3d0::t_02c6e0dd4e2890 2,8-13,17-22,31,85
+  s_7d2fcbe778c3d0::t_6a4e06dae1ca0e 23-30
+  s_7d2fcbe778c3d0::t_9ddcade273df11 108
+packages/addons/app-shortcuts/package.json
+  s_7d2fcbe778c3d0::t_6d624e05144320 8-13
+  s_7d2fcbe778c3d0::t_b760fc583c7220 5-7,26-27
+  s_7d2fcbe778c3d0::t_9385d330c30d32 28
+packages/cli/docs/user/troubleshooting.mdx
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 22
+AGENTS.md
+  s_7d2fcbe778c3d0::t_449f42396a0bc6 92
+  s_7d2fcbe778c3d0::t_5cb770a005d987 8
+packages/cli/emulator/src/DeckFrame.tsx
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 3
+packages/themes/neon-grids/package.json
+  s_7d2fcbe778c3d0::t_b760fc583c7220 5-7
+  s_7d2fcbe778c3d0::t_b5c4713de5a004 2,8-13,21-23,28
+packages/cli/frontend/src/App.tsx
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 18
+packages/themes/neon-grids/components.css
+  s_7d2fcbe778c3d0::t_b760fc583c7220 103-108
+vitest.config.ts
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 15-16
+packages/addons/pomodoro/package.json
+  s_7d2fcbe778c3d0::t_6e8eb736afb419 8-13,28
+  s_7d2fcbe778c3d0::t_b760fc583c7220 5-7,26-27
+packages/cli/emulator/src/gesture.ts
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 5
+packages/themes/riptide/tsconfig.json
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 24-25
+packages/cli/frontend/src/components/ErrorBoundary.tsx
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 2
+README.md
+  s_7d2fcbe778c3d0::t_8627cc4923cef6 12,15,18
+  s_7d2fcbe778c3d0::t_082441969563b0 93
+packages/cli/emulator/src/__tests__/gesture.test.ts
+  s_7d2fcbe778c3d0::t_923b92b91d1dbc 3
+pnpm-lock.yaml
+  s_7d2fcbe778c3d0::t_3bd72108915491 96-98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "7e152934c2181e04b37e3ab304f47c4b9d3d8033",
+  "prompts": {},
+  "sessions": {
+    "s_7d2fcbe778c3d0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_038423d3affe0ck29gB2OWKzYU",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
