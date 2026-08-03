@@ -1,0 +1,23 @@
+ARCHITECTURE.md
+  s_4b1fe0094e8132::t_48a8f787ff9278 43-49
+  s_4b1fe0094e8132::t_69bd3b386b99e0 5-7
+docs/architecture/boundaries.md
+  s_4b1fe0094e8132::t_22f367f46662dd 1-200,202,212-213,215,217-406
+  s_4b1fe0094e8132::t_8202ef7aace815 201,203-211,214,216
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "46b7c6aa18859806598644707e9bd218e18de21a",
+  "prompts": {},
+  "sessions": {
+    "s_4b1fe0094e8132": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_03908a77effeBhqSHC3M5Xtzqb",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
