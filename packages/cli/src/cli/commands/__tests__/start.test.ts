@@ -65,6 +65,7 @@ vi.mock("@/util/daemon", () => ({
   removePidFile: vi.fn(),
   readPid: vi.fn(),
   acquireStartLock: vi.fn(() => ({ release: vi.fn() })),
+  removeStartLock: vi.fn(),
   isRunning: vi.fn(() => false),
   resolveDaemonPaths: vi.fn(() => ({
     runtimeDir: "/run/user/0",
@@ -75,6 +76,7 @@ vi.mock("@/util/daemon", () => ({
     flagsFile: "/run/user/0/sireno-deck.flags.json",
   })),
   generateToken: vi.fn(() => "test-token"),
+  generateSentinel: vi.fn(() => "test-sentinel"),
   readToken: vi.fn(() => null),
   readConfigPath: vi.fn(() => null),
   writeToken: vi.fn(),
@@ -82,6 +84,7 @@ vi.mock("@/util/daemon", () => ({
   readChildren: vi.fn(() => null),
   writeChildren: vi.fn(),
   removeChildrenFile: vi.fn(),
+  SENTINEL_ENV_VAR: "SIRENO_DAEMON_SENTINEL",
 }))
 vi.mock("../spawn-daemon", async (importOriginal) => {
   const actual = (await importOriginal()) as Record<string, unknown>
@@ -465,6 +468,79 @@ describe("start", () => {
       expect(writePidMock).not.toHaveBeenCalled()
       expect(selectOutputClientMock).not.toHaveBeenCalled()
     } finally {
+      delete process.env["SIRENO_DAEMON_CHILD"]
+    }
+  })
+
+  // ponytail: Fix A1 — the start lock used to leak on every runInProcess exit
+  // because nothing called startLock.release(). Verify it's released both on
+  // a thrown setup (preflight failure) and on a clean in-process run that
+  // races through the pipeline.
+  const lastRelease = async (): Promise<ReturnType<typeof vi.fn>> => {
+    const { acquireStartLock } = await import("@/util/daemon")
+    const last = (
+      acquireStartLock as unknown as { mock: { results: unknown[] } }
+    ).mock.results.at(-1) as {
+      type: string
+      value: { release: ReturnType<typeof vi.fn> }
+    }
+    expect(last.type).toBe("return")
+    return last.value.release
+  }
+
+  it("releases the start lock when preflight throws", async () => {
+    process.env["SIRENO_DAEMON_CHILD"] = "1"
+    try {
+      loaderMock.mockReturnValue({ config: { decks: {} }, configDir: "/d" })
+      builtinsMock.mockReturnValue(undefined)
+      validateFullMock.mockReturnValue({
+        issues: [{ level: "error", path: "x", message: "bad" }],
+      })
+      isFullValidMock.mockReturnValue(false)
+
+      await expect(
+        start({
+          config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
+          frontendUrl: "http://x",
+          xdgConfigHome: "/xdg",
+          homeDir: "/home",
+          logger: silentLogger(),
+        }),
+      ).rejects.toThrow(/Config validation failed/)
+
+      expect(await lastRelease()).toHaveBeenCalledTimes(1)
+    } finally {
+      delete process.env["SIRENO_DAEMON_CHILD"]
+    }
+  })
+
+  it("releases the start lock on a successful in-process start", async () => {
+    process.env["SIRENO_DAEMON_CHILD"] = "1"
+    // ponytail: runInProcess's runPipeline().finally() calls process.exit(0)
+    // after cleanup. Without a spy, that would kill the vitest worker before
+    // we can assert against the lock release. Stub it for the duration.
+    const exitSpy = vi
+      .spyOn(process, "exit")
+      .mockImplementation((() => undefined) as never)
+    try {
+      setHappyPath()
+      const startPromise = start({
+        config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
+        frontendUrl: "http://x",
+        xdgConfigHome: "/xdg",
+        homeDir: "/home",
+        logger: silentLogger(),
+      })
+      // runInProcess awaits runPipeline().finally(...) before returning;
+      // give the microtask queue a turn to settle, then assert release ran.
+      await vi.waitFor(async () => {
+        expect(await lastRelease()).toHaveBeenCalled()
+      })
+      await startPromise
+      expect(await lastRelease()).toHaveBeenCalledTimes(1)
+      expect(exitSpy).toHaveBeenCalled()
+    } finally {
+      exitSpy.mockRestore()
       delete process.env["SIRENO_DAEMON_CHILD"]
     }
   })

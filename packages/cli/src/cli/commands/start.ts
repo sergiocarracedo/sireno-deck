@@ -26,6 +26,7 @@ import {
   readToken,
   removeChildrenFile,
   removePidFile,
+  removeStartLock,
   removeTokenFile,
   resolveDaemonPaths,
   SENTINEL_ENV_VAR,
@@ -299,6 +300,7 @@ const stopExisting = async (
     removePidFile()
     await terminateChildren({ logger, timeoutMs: 2_000 })
     removeChildrenFile()
+    removeStartLock()
     return
   }
   logger.info({ pid }, "stopping existing daemon")
@@ -323,6 +325,7 @@ const stopExisting = async (
   removePidFile()
   removeTokenFile()
   removeChildrenFile()
+  removeStartLock()
 }
 
 const resolveConfigPath = (options: StartOptions): string => {
@@ -366,9 +369,27 @@ const runInProcess = async (options: StartOptions): Promise<void> => {
     throw new Error("another start is already in progress")
   }
 
-  const home = options.homeDir ?? process.env["HOME"] ?? ""
-  const xdgConfigHome =
-    options.xdgConfigHome ?? process.env["XDG_CONFIG_HOME"] ?? `${home}/.config`
+  // ponytail: the start lock is only released by the post-runPipeline
+  // .finally on a clean pipeline exit. But preflight/setup code below
+  // (config read, addon scan, http server boot) can throw EADDRINUSE or
+  // similar BEFORE runPipeline ever starts, leaving the lock orphaned
+  // for 60s — which is exactly the user's "another start is already in
+  // progress" error after a previous start crashed. Wrap the setup in a
+  // try/catch that releases on throw, and also call release() in the
+  // existing .finally so the runtime-exit path stays covered.
+  try {
+    await runInProcessSetup(options, logger, startLock.release)
+  } catch (err) {
+    startLock.release()
+    throw err
+  }
+}
+
+const runInProcessSetup = async (
+  options: StartOptions,
+  logger: pino.Logger,
+  releaseLock: () => void,
+): Promise<void> => {
   const configPath = resolveConfigPath(options)
   const runtimeFlags = readFlags() ?? buildRuntimeFlags(options)
   writeConfigPath(configPath)
@@ -456,6 +477,7 @@ const runInProcess = async (options: StartOptions): Promise<void> => {
       logger.error({ err }, "background run failed")
     })
     .finally(async () => {
+      releaseLock()
       if (httpServer !== null) {
         try {
           await httpServer.stop()
@@ -475,6 +497,7 @@ const runInProcess = async (options: StartOptions): Promise<void> => {
       removePidFile()
       removeTokenFile()
       removeChildrenFile()
+      removeStartLock()
       logger.info("daemon: shutdown complete")
       // ponytail: explicit exit — without this, lingering handles in the
       // emulator's active-app polling or lingering ws-bridge connections keep
@@ -589,6 +612,7 @@ const start = async (options: StartOptions): Promise<void> => {
     removePidFile()
     removeTokenFile()
     removeChildrenFile()
+    removeStartLock()
   } else {
     // ponytail: previous daemon is dead (or never started cleanly) — kill any
     // children it left behind (frontend vite on :5180, emulator vite on :52938,
@@ -608,6 +632,7 @@ const start = async (options: StartOptions): Promise<void> => {
       removePidFile()
       removeTokenFile()
       removeChildrenFile()
+      removeStartLock()
     }
   }
 

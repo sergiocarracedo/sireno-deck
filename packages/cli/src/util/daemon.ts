@@ -106,24 +106,28 @@ export const acquireStartLock = (
   try {
     fd = openSync(lockFile, "wx", 0o600)
   } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === "EEXIST") {
+    if ((err as NodeJS.ErrnoException).code !== "EEXIST") throw err
+    // ponytail: lock already exists. Two ways out:
+    //  1. The PID inside it is dead (previous daemon crashed or was
+    //     SIGKILL'd without releasing). Clear and re-acquire immediately.
+    //  2. The lock is stale by mtime (>60s) — same outcome, defensive
+    //     fallback if the PID is unreadable or the live-check is unsure.
+    // Either case unblocks a fast retry that would otherwise have to wait
+    // out the full window. Without this, the user's exact symptom
+    // ("another start is already in progress") recurs after every daemon
+    // crash during a session of repeated restarts.
+    const holderPid = readLockHolderPid(lockFile)
+    const holderDead = holderPid !== null && !isRunning(holderPid)
+    const ageMs = safeStatAgeMs(lockFile)
+    if (holderDead || (ageMs !== null && ageMs > 60_000)) {
       try {
-        const ageMs = Date.now() - statSync(lockFile).mtimeMs
-        if (ageMs > 60_000) {
-          try {
-            unlinkSync(lockFile)
-            fd = openSync(lockFile, "wx", 0o600)
-          } catch {
-            return null
-          }
-        } else {
-          return null
-        }
+        unlinkSync(lockFile)
+        fd = openSync(lockFile, "wx", 0o600)
       } catch {
         return null
       }
     } else {
-      throw err
+      return null
     }
   }
   if (fd === undefined!) return null
@@ -137,6 +141,35 @@ export const acquireStartLock = (
         // ignore
       }
     },
+  }
+}
+
+const readLockHolderPid = (lockFile: string): number | null => {
+  try {
+    const raw = readFileSync(lockFile, "utf8").trim()
+    const pid = Number.parseInt(raw, 10)
+    return Number.isFinite(pid) && pid > 0 ? pid : null
+  } catch {
+    return null
+  }
+}
+
+const safeStatAgeMs = (lockFile: string): number | null => {
+  try {
+    return Date.now() - statSync(lockFile).mtimeMs
+  } catch {
+    return null
+  }
+}
+
+export const removeStartLock = (paths = resolveDaemonPaths()): void => {
+  const lockFile = `${paths.pidFile}.lock`
+  if (existsSync(lockFile)) {
+    try {
+      unlinkSync(lockFile)
+    } catch {
+      // ignore — best-effort cleanup of an orphaned lock from a dead daemon
+    }
   }
 }
 

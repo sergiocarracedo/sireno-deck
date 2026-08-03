@@ -11,9 +11,11 @@ import { join } from "node:path"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 
 import {
+  acquireStartLock,
   generateToken,
   readChildren,
   readToken,
+  removeStartLock,
   resolveDaemonPaths,
   terminateChildren,
   writeChildren,
@@ -161,5 +163,65 @@ describe("terminateChildren", () => {
     await terminateChildren({ logger: undefined })
     const state = readChildren()
     expect(state?.pids ?? []).toEqual([])
+  })
+})
+
+describe("acquireStartLock / removeStartLock", () => {
+  const lockPath = (): string => join(TEST_DIR, "sireno-deck.pid.lock")
+
+  const { writeFileSync } = require("node:fs") as typeof import("node:fs")
+
+  it("acquires when no lock file exists and release() removes it", () => {
+    const lock = acquireStartLock()
+    expect(lock).not.toBeNull()
+    expect(existsSync(lockPath())).toBe(true)
+    expect(readFileSync(lockPath(), "utf8")).toBe(`${process.pid}\n`)
+    lock!.release()
+    expect(existsSync(lockPath())).toBe(false)
+  })
+
+  it("returns null while a live lock is held by the current process", () => {
+    const first = acquireStartLock()
+    expect(first).not.toBeNull()
+    const second = acquireStartLock()
+    expect(second).toBeNull()
+    first!.release()
+  })
+
+  it("clears a stale lock whose holder pid is dead and re-acquires", () => {
+    // Simulate a previous daemon that crashed without releasing — its lock
+    // points at a pid that isn't running. Without the dead-PID fast clear
+    // we'd have to wait 60s for the mtime fallback.
+    writeFileSync(lockPath(), "2000000001\n", "utf8")
+    expect(existsSync(lockPath())).toBe(true)
+
+    const lock = acquireStartLock()
+    expect(lock).not.toBeNull()
+    expect(readFileSync(lockPath(), "utf8")).toBe(`${process.pid}\n`)
+    lock!.release()
+  })
+
+  it("clears a lock older than 60s even when its pid is unreadable", () => {
+    // Backdate the lock file's mtime past the staleness threshold.
+    const { utimesSync } = require("node:fs") as typeof import("node:fs")
+    writeFileSync(lockPath(), "garbage\n", "utf8")
+    const past = (Date.now() - 120_000) / 1000
+    utimesSync(lockPath(), past, past)
+
+    const lock = acquireStartLock()
+    expect(lock).not.toBeNull()
+    lock!.release()
+  })
+
+  it("removeStartLock deletes an orphaned lock file", () => {
+    writeFileSync(lockPath(), "12345\n", "utf8")
+    expect(existsSync(lockPath())).toBe(true)
+    removeStartLock()
+    expect(existsSync(lockPath())).toBe(false)
+  })
+
+  it("removeStartLock is a no-op when no lock file exists", () => {
+    expect(existsSync(lockPath())).toBe(false)
+    expect(() => removeStartLock()).not.toThrow()
   })
 })
