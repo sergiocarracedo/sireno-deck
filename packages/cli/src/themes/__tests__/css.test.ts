@@ -121,4 +121,25 @@ describe("themes/css", () => {
     expect(css).toContain("--sireno-pressed-glow")
     expect(css).toContain("--sireno-held-glow")
   })
+
+  it.each(["cyan", "magenta", "amber", "lime"] as const)(
+    "emits --sireno-variant-%s-* CSS vars for extra buttonColor variants",
+    (name) => {
+      const custom: ThemeJsonManifest = {
+        ...baseManifest,
+        variants: {
+          ...baseManifest.variants,
+          [name]: {
+            background: `#${name}026`,
+            border: `#${name}073`,
+            foreground: `#${name}`,
+          },
+        },
+      }
+      const css = buildThemeCss(custom, [])
+      expect(css).toContain(`--sireno-variant-${name}-bg:`)
+      expect(css).toContain(`--sireno-variant-${name}-border:`)
+      expect(css).toContain(`--sireno-variant-${name}-fg:`)
+    },
+  )
 })

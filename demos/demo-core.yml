@@ -6,11 +6,92 @@ buttons:
       tap: "xdg-open https://google.com"
     config:
       icon: icon://search
-      label: Search
+      label: Default
   - position: 1
     type: "core:action"
+    variant: highlighted
     actions:
       tap: "xdg-open https://github.com"
     config:
       icon: icon://github
-      label: GitHub
+      label: Highlighted
+  - position: 2
+    type: "core:action"
+    variant: success
+    actions:
+      tap: "true"
+    config:
+      icon: icon://check
+      label: Success
+  - position: 3
+    type: "core:action"
+    variant: warning
+    actions:
+      tap: "true"
+    config:
+      icon: icon://alert-triangle
+      label: Warning
+  - position: 4
+    type: "core:action"
+    variant: error
+    actions:
+      tap: "true"
+    config:
+      icon: icon://x
+      label: Error
+  - position: 5
+    type: "core:action"
+    buttonColor: blue
+    actions:
+      tap: "true"
+    config:
+      icon: icon://globe
+      label: Blue
+  - position: 6
+    type: "core:action"
+    buttonColor: green
+    actions:
+      tap: "true"
+    config:
+      icon: icon://check
+      label: Green
+  - position: 7
+    type: "core:action"
+    buttonColor: purple
+    actions:
+      tap: "true"
+    config:
+      icon: icon://music
+      label: Purple
+  - position: 8
+    type: "core:action"
+    buttonColor: cyan
+    actions:
+      tap: "true"
+    config:
+      icon: icon://cloud-sun
+      label: Cyan
+  - position: 9
+    type: "core:action"
+    buttonColor: magenta
+    actions:
+      tap: "true"
+    config:
+      icon: icon://smile
+      label: Magenta
+  - position: 10
+    type: "core:action"
+    buttonColor: amber
+    actions:
+      tap: "true"
+    config:
+      icon: icon://chart-bar
+      label: Amber
+  - position: 11
+    type: "core:action"
+    buttonColor: lime
+    actions:
+      tap: "true"
+    config:
+      icon: icon://play
+      label: Lime

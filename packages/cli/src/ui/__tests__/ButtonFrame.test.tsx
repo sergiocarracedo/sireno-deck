@@ -35,6 +35,18 @@ describe("ui/ButtonFrame", () => {
         --sireno-variant-neon-pink-border: rgba(255, 92, 208, 0.85);
         --sireno-variant-neon-pink-fg: rgb(255, 5, 208);
         --sireno-variant-neon-pink-glow: rgba(255, 5, 208, 0.8);
+        --sireno-variant-cyan-bg: rgba(34, 211, 238, 0.15);
+        --sireno-variant-cyan-border: rgba(34, 211, 238, 0.45);
+        --sireno-variant-cyan-fg: rgb(34, 211, 238);
+        --sireno-variant-magenta-bg: rgba(232, 121, 249, 0.15);
+        --sireno-variant-magenta-border: rgba(232, 121, 249, 0.45);
+        --sireno-variant-magenta-fg: rgb(232, 121, 249);
+        --sireno-variant-amber-bg: rgba(251, 191, 36, 0.15);
+        --sireno-variant-amber-border: rgba(251, 191, 36, 0.45);
+        --sireno-variant-amber-fg: rgb(251, 191, 36);
+        --sireno-variant-lime-bg: rgba(163, 230, 53, 0.15);
+        --sireno-variant-lime-border: rgba(163, 230, 53, 0.45);
+        --sireno-variant-lime-fg: rgb(163, 230, 53);
       }
     `
     document.head.appendChild(style)
@@ -101,6 +113,23 @@ describe("ui/ButtonFrame", () => {
     const style = frame?.getAttribute("style") ?? ""
     expect(style).toContain("--sireno-variant-neon-pink-bg")
   })
+
+  it.each(["cyan", "magenta", "amber", "lime"] as const)(
+    "resolves buttonColor variant %s via CSS vars (no console.warn)",
+    (variant) => {
+      const warnSpy = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => undefined)
+      const { frame } = renderButtonFrame(variant)
+      expect(frame).not.toBeNull()
+      const style = frame?.getAttribute("style") ?? ""
+      expect(style).toContain(`--sireno-variant-${variant}-bg`)
+      expect(style).toContain(`--sireno-variant-${variant}-border`)
+      expect(style).toContain(`--sireno-variant-${variant}-fg`)
+      expect(warnSpy).not.toHaveBeenCalled()
+      warnSpy.mockRestore()
+    },
+  )
 
   it("falls back to default CSS vars when variant is unknown", () => {
     const warnSpy = vi

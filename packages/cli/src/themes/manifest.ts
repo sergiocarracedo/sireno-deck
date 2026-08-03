@@ -31,12 +31,24 @@ export const REQUIRED_VARIANT_KEYS = [
 
 export type RequiredVariantKey = (typeof REQUIRED_VARIANT_KEYS)[number]
 
+const ThemeVariantTokenOverridesSchema = z
+  .object({
+    primary: z.string().min(1).optional(),
+    accent: z.string().min(1).optional(),
+    foreground: z.string().min(1).optional(),
+    "foreground-contrast": z.string().min(1).optional(),
+    success: z.string().min(1).optional(),
+    danger: z.string().min(1).optional(),
+  })
+  .strict()
+
 export const ThemeVariantStylesSchema = z
   .object({
     background: z.string().min(1),
     border: z.string().min(1),
     foreground: z.string().min(1),
     glow: z.string().optional(),
+    tokens: ThemeVariantTokenOverridesSchema.optional(),
   })
   .strict()
 

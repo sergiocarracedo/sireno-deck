@@ -26,7 +26,24 @@ export interface ButtonFrameProps {
 
 const warnedVariants = new Set<string>()
 
+const isVariantDeclared = (variant: string): boolean => {
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return true
+  }
+  const probe = `var(--sireno-variant-${variant}-bg)`
+  try {
+    const resolved = window
+      .getComputedStyle(document.documentElement)
+      .getPropertyValue(`--sireno-variant-${variant}-bg`)
+    return resolved.trim().length > 0
+  } catch {
+    return true
+  }
+}
+
 const warnUnknownVariant = (variant: string): void => {
+  if (variant === "default") return
+  if (isVariantDeclared(variant)) return
   if (warnedVariants.has(variant)) return
   warnedVariants.add(variant)
   console.warn(
@@ -39,6 +56,28 @@ const variantVar = (
   slot: "bg" | "border" | "fg" | "glow",
 ): string =>
   `var(--sireno-variant-${variant}-${slot}, var(--sireno-variant-default-${slot}))`
+
+const VARIANT_COLOR_TOKENS = [
+  "primary",
+  "accent",
+  "foreground",
+  "foreground-contrast",
+  "success",
+  "danger",
+] as const
+
+function variantColorVar(
+  variant: string,
+  token: (typeof VARIANT_COLOR_TOKENS)[number],
+): string {
+  const cssToken =
+    token === "foreground"
+      ? "fg"
+      : token === "foreground-contrast"
+        ? "foreground-contrast"
+        : token
+  return `var(--sireno-variant-${variant}-${cssToken}, var(--sireno-color-${cssToken}))`
+}
 
 export const ButtonFrame = ({
   children,
@@ -124,6 +163,18 @@ export function buttonFrameBase(props: ButtonFrameProps): ReactElement {
         : undefined,
   }
 
+  const cascadeVars: Record<string, string> = {
+    "--sireno-color-primary": variantColorVar(variant, "primary"),
+    "--sireno-color-accent": variantColorVar(variant, "accent"),
+    "--sireno-color-foreground": variantColorVar(variant, "foreground"),
+    "--sireno-color-foreground-contrast": variantColorVar(
+      variant,
+      "foreground-contrast",
+    ),
+    "--sireno-color-success": variantColorVar(variant, "success"),
+    "--sireno-color-danger": variantColorVar(variant, "danger"),
+  }
+
   return (
     <div
       className={`${pressedClass}${holdingClass}flex h-full w-full items-center justify-center overflow-hidden rounded-2xl p-1 border-2 border-solid`}
@@ -136,7 +187,7 @@ export function buttonFrameBase(props: ButtonFrameProps): ReactElement {
       data-hold-progress={
         holdProgress > 0 ? holdProgress.toFixed(2) : undefined
       }
-      style={style}
+      style={{ ...style, ...cascadeVars }}
       onClick={onClick}
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}

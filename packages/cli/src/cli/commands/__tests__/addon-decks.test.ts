@@ -938,4 +938,54 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
     expect(gen.isOverlay).toBe(true)
     expect(gen.processNames).toEqual(["chrome"])
   })
+
+  it.each([
+    "blue",
+    "green",
+    "purple",
+    "cyan",
+    "magenta",
+    "amber",
+    "lime",
+  ] as const)(
+    "passes buttonColor %s through unchanged (no variant coercion)",
+    (color) => {
+      const addon = fakeManifestWithDecks("test-addon", {
+        "test-addon:deck-a": () => ({
+          "gen-deck": {
+            name: "Gen",
+            buttons: [],
+            buttonColor: color,
+          },
+        }),
+      })
+      const reg = mockRegistry([addon])
+      const userDecks: RuntimeDeck[] = [
+        { id: "main", name: "Main", buttons: [] },
+      ]
+      const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
+      const genDeck = result.find((d) => d.id === "gen-deck")!
+      expect(genDeck.buttonColor).toBe(color)
+      expect(genDeck.variant).toBeUndefined()
+    },
+  )
+
+  it("does not coerce variant when buttonColor is set (orthogonal axes)", () => {
+    const addon = fakeManifestWithDecks("test-addon", {
+      "test-addon:deck-a": () => ({
+        "gen-deck": {
+          name: "Gen",
+          buttons: [],
+          buttonColor: "cyan",
+          variant: "highlighted",
+        },
+      }),
+    })
+    const reg = mockRegistry([addon])
+    const userDecks: RuntimeDeck[] = [{ id: "main", name: "Main", buttons: [] }]
+    const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
+    const genDeck = result.find((d) => d.id === "gen-deck")!
+    expect(genDeck.buttonColor).toBe("cyan")
+    expect(genDeck.variant).toBe("highlighted")
+  })
 })

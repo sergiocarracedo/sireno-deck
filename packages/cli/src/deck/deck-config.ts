@@ -3,7 +3,6 @@ import { dirname } from "node:path"
 import type { DeckConfigMessage } from "@/api/protocol-internal"
 import type { RuntimeDeck } from "@/deck"
 import { isSystemButtonType } from "@/deck/system-buttons/types"
-import { resolveDeckVariant } from "@/deck/variant-migration"
 import {
   resolveIconSource,
   type ResolveIconPathOptions,
@@ -155,6 +154,7 @@ export const buildDeckConfigMessage = (
         ...(b.variant !== undefined && b.variant.length > 0
           ? { variant: b.variant }
           : {}),
+        ...(b.buttonColor !== undefined ? { buttonColor: b.buttonColor } : {}),
       }
     })
   const resolvedOverlayIcon =
@@ -174,16 +174,8 @@ export const buildDeckConfigMessage = (
         ...(deck.buttonColor !== undefined
           ? { buttonColor: deck.buttonColor }
           : {}),
-        ...(resolveDeckVariant(
-          { variant: deck.variant, buttonColor: deck.buttonColor },
-          deck.id,
-        ) !== undefined
-          ? {
-              variant: resolveDeckVariant(
-                { variant: deck.variant, buttonColor: deck.buttonColor },
-                deck.id,
-              ),
-            }
+        ...(deck.variant !== undefined && deck.variant.length > 0
+          ? { variant: deck.variant }
           : {}),
         ...(deck.buttonErrors !== undefined && deck.buttonErrors.length > 0
           ? {

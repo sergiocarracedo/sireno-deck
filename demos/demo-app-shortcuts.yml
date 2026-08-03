@@ -1,7 +1,9 @@
 name: App Shortcuts Demo
+paginated: true
 buttons:
   - position: 0
     type: "core:action"
+    buttonColor: blue
     actions:
       tap: "code"
     config:
@@ -9,6 +11,7 @@ buttons:
       label: VS Code
   - position: 1
     type: "core:action"
+    buttonColor: green
     actions:
       tap: "google-chrome"
     config:
@@ -16,6 +19,7 @@ buttons:
       label: Chrome
   - position: 2
     type: "core:action"
+    buttonColor: purple
     actions:
       tap: "slack"
     config:
@@ -23,6 +27,7 @@ buttons:
       label: Slack
   - position: 3
     type: "core:action"
+    buttonColor: cyan
     actions:
       tap: "discord"
     config:
@@ -30,6 +35,7 @@ buttons:
       label: Discord
   - position: 4
     type: "core:action"
+    buttonColor: magenta
     actions:
       tap: "teams"
     config:
@@ -37,8 +43,17 @@ buttons:
       label: Teams
   - position: 5
     type: "core:action"
+    buttonColor: amber
     actions:
       tap: "google-meet"
     config:
       icon: icon://video
       label: Google Meet
+  - position: 6
+    type: "core:action"
+    buttonColor: lime
+    actions:
+      tap: "firefox"
+    config:
+      icon: icon://compass
+      label: Firefox

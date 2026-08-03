@@ -158,15 +158,27 @@ export interface AddonGeneratedDeck {
    * Variant token name. Themes declare which variants they support in
    * their manifest; addon authors pick from the active theme's set.
    * Unknown names fall back to "default" with a console.warn at render.
+   *
+   * `variant` is the *semantic* axis: highlighted / warning / success / error.
+   * Use it when the colour carries meaning (recording, paused, errored).
    */
   variant?: string
   /**
-   * Deprecated alias for `variant`. Accepts the legacy closed enum
-   * (`blue|green|purple`) for backward compatibility — values get mapped
-   * to `highlighted|success|highlighted` and a console.warn is emitted.
-   * Addons should migrate to `variant`.
+   * Per-button hue customisation — closed enum, distinct from `variant`.
+   * Themes declare a variant entry for each enum value they want to
+   * expose (e.g. `blue`, `cyan`); unknown names fall back to `default`
+   * with a console.warn at render. Use it to distinguish buttons
+   * inside a deck by colour (e.g. six app-shortcuts, each a different
+   * hue) without claiming semantic meaning.
    */
-  buttonColor?: "blue" | "green" | "purple"
+  buttonColor?:
+    | "blue"
+    | "green"
+    | "purple"
+    | "cyan"
+    | "magenta"
+    | "amber"
+    | "lime"
   buttons?: unknown[]
   paginated?: boolean
   trigger?: unknown

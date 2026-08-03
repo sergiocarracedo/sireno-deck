@@ -59,7 +59,14 @@ export interface Deck {
   id: string
   name: string
   buttons: DeckButton[]
-  buttonColor?: "blue" | "green" | "purple"
+  buttonColor?:
+    | "blue"
+    | "green"
+    | "purple"
+    | "cyan"
+    | "magenta"
+    | "amber"
+    | "lime"
   variant?: string
   hasOverlayDeckAvailable?: boolean
   overlayDeckIcon?: string | null
@@ -104,7 +111,14 @@ interface DeckButtonCellProps {
   readonly row: number
   readonly splitAction?: boolean
   readonly isError?: boolean
-  readonly buttonColor?: "blue" | "green" | "purple"
+  readonly buttonColor?:
+    | "blue"
+    | "green"
+    | "purple"
+    | "cyan"
+    | "magenta"
+    | "amber"
+    | "lime"
   readonly variant?: string
   readonly overlayDeckIcon?: string | null
   readonly overlayDeckName?: string | null
@@ -149,7 +163,8 @@ const DeckButtonCell = ({
   // ponytail: per-button variant from user config beats deck-level
   // variant (which beats the legacy `buttonColor` enum). Unknown names
   // fall back to "default" at the ButtonFrame layer.
-  const effectiveVariant = button.variant ?? variant ?? buttonColor ?? "default"
+  const effectiveVariant =
+    button.variant ?? variant ?? button.buttonColor ?? buttonColor ?? "default"
 
   if (isError) {
     return (
@@ -269,7 +284,7 @@ const DeckButtonCell = ({
     >
       <ButtonFrame
         buttonType={button.type}
-        variant={buttonColor}
+        variant={effectiveVariant}
         onClick={() => fire("tap")}
       >
         <ErrorBoundary resetKey={button.id}>

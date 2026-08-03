@@ -2,7 +2,14 @@ export interface AddonGeneratedDeck {
   name?: string
   icon?: string
   background?: string
-  buttonColor?: "blue" | "green" | "purple"
+  buttonColor?:
+    | "blue"
+    | "green"
+    | "purple"
+    | "cyan"
+    | "magenta"
+    | "amber"
+    | "lime"
   buttons?: unknown[]
   paginated?: boolean
   trigger?: {

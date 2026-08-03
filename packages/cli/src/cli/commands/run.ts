@@ -676,6 +676,7 @@ const buildRuntime = (
         ...(b.variant !== undefined && b.variant.length > 0
           ? { variant: b.variant }
           : {}),
+        ...(b.buttonColor !== undefined ? { buttonColor: b.buttonColor } : {}),
       }))
       const processNames =
         d.trigger?.process_name !== undefined
@@ -709,10 +710,18 @@ const buildRuntime = (
           const mappedButtons: RuntimeDeck["buttons"] = (
             p.deck.buttons ?? []
           ).map((b, i) => {
-            const { position, type, config, ...rest } = b as {
+            const { position, type, config, buttonColor, ...rest } = b as {
               position?: number
               type: string
               config?: unknown
+              buttonColor?:
+                | "blue"
+                | "green"
+                | "purple"
+                | "cyan"
+                | "magenta"
+                | "amber"
+                | "lime"
             }
             const mergedConfig = {
               ...(typeof config === "object" && config !== null
@@ -724,6 +733,7 @@ const buildRuntime = (
               id: position !== undefined ? String(position) : String(i),
               type,
               ...(position !== undefined ? { position } : {}),
+              ...(buttonColor !== undefined ? { buttonColor } : {}),
               ...(Object.keys(mergedConfig).length > 0
                 ? { config: mergedConfig }
                 : {}),

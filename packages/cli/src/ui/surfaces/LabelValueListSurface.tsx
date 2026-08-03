@@ -89,7 +89,7 @@ function RowTile({ item, variant = "default" }: RowTileProps): ReactElement {
       <div className="flex-1 flex min-h-0 gap-0.5 justify-end items-baseline">
         <Text
           size={variantProps.value}
-          weight="bold"
+          weight={variant === "big" ? "normal" : "bold"}
           text={item.value}
           tone="primary"
           style={colorStyle}

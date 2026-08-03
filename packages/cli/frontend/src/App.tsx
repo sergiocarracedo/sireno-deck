@@ -230,7 +230,14 @@ const AppContent = () => {
               {
                 name?: string
                 buttons?: DeckButton[]
-                buttonColor?: "blue" | "green" | "purple"
+                buttonColor?:
+                  | "blue"
+                  | "green"
+                  | "purple"
+                  | "cyan"
+                  | "magenta"
+                  | "amber"
+                  | "lime"
                 variant?: string
                 buttonErrors?: ButtonErrorState[]
               }

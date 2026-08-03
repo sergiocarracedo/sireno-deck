@@ -40,6 +40,24 @@ export const IconSourceSchema = z.string().min(1).refine(isIconSource, {
 
 export const ButtonConfigSchema = z.record(z.string(), z.unknown()).optional()
 
+/**
+ * Closed core set of per-button hue names. Themes declare which of these
+ * (or which additional names like riptide's `neon-pink`) they support
+ * by adding entries to `variants.<name>` in their manifest. Themes are
+ * authoritative — this list is a convention hint, not a constraint on
+ * the theme. Names not declared in the active theme fall back to
+ * "default" with a console.warn at render time (ButtonFrame).
+ */
+export const ButtonColorSchema = z.enum([
+  "blue",
+  "green",
+  "purple",
+  "cyan",
+  "magenta",
+  "amber",
+  "lime",
+])
+
 export const ButtonDefSchema = z
   .object({
     position: z.number().int().nonnegative().optional(),
@@ -56,6 +74,15 @@ export const ButtonDefSchema = z
      * a console.warn.
      */
     variant: z.string().min(1).optional(),
+    /**
+     * Per-button hue customisation. Themes declare a `variants.<name>`
+     * entry for each buttonColor they support. See ButtonColorSchema
+     * for the closed core set; themes may add their own names
+     * (e.g. riptide's `neon-pink`) and the runtime accepts them — but
+     * this Zod schema restricts to the core set so typos fail-fast at
+     * config load.
+     */
+    buttonColor: ButtonColorSchema.optional(),
   })
   .strict()
 

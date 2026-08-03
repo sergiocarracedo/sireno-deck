@@ -122,3 +122,51 @@ describe("ButtonDefSchema — variant field", () => {
     expect(result.success).toBe(false)
   })
 })
+
+describe("ButtonDefSchema — buttonColor field", () => {
+  it.each([
+    "blue",
+    "green",
+    "purple",
+    "cyan",
+    "magenta",
+    "amber",
+    "lime",
+  ] as const)("accepts buttonColor %s", (color) => {
+    const result = ButtonDefSchema.safeParse({
+      position: 0,
+      type: "core:action",
+      buttonColor: color,
+    })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.buttonColor).toBe(color)
+    }
+  })
+
+  it("accepts button without buttonColor", () => {
+    const result = ButtonDefSchema.safeParse({
+      position: 0,
+      type: "core:action",
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it("rejects theme-extras like neon-pink at the Zod boundary (closed core set)", () => {
+    const result = ButtonDefSchema.safeParse({
+      position: 0,
+      type: "core:action",
+      buttonColor: "neon-pink",
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it("rejects empty buttonColor string", () => {
+    const result = ButtonDefSchema.safeParse({
+      position: 0,
+      type: "core:action",
+      buttonColor: "",
+    })
+    expect(result.success).toBe(false)
+  })
+})

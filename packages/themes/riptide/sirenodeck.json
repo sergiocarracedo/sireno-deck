@@ -49,17 +49,59 @@
       "border": "#ff0099cc",
       "foreground": "#ff5cb3",
       "glow": "#ff0099b3"
+    },
+    "blue": {
+      "background": "#00d4ff26",
+      "border": "#00d4ff8c",
+      "foreground": "#fff89e",
+      "glow": "#00d4ff80"
+    },
+    "green": {
+      "background": "#00ff9f26",
+      "border": "#00ff9f8c",
+      "foreground": "#00ff9f",
+      "glow": "#00ff9f80"
+    },
+    "purple": {
+      "background": "#b026ff26",
+      "border": "#b026ff8c",
+      "foreground": "#d896ff",
+      "glow": "#b026ff80"
+    },
+    "cyan": {
+      "background": "#00d4ff26",
+      "border": "#00d4ff8c",
+      "foreground": "#aef9ff",
+      "glow": "#00d4ff80"
+    },
+    "magenta": {
+      "background": "#ff00d426",
+      "border": "#ff00d48c",
+      "foreground": "#ff8de8",
+      "glow": "#ff00d480"
+    },
+    "amber": {
+      "background": "#ffa50026",
+      "border": "#ffa5008c",
+      "foreground": "#ffd166",
+      "glow": "#ffa50080"
+    },
+    "lime": {
+      "background": "#b9ff0026",
+      "border": "#b9ff008c",
+      "foreground": "#b9ff00",
+      "glow": "#b9ff0080"
     }
   },
   "typography": {
     "main_text": {
-      "fontFamily": "IBM Plex Sans",
+      "fontFamily": "Bitcount Single",
       "fontSize": 12,
       "fontWeight": 700,
       "letterSpacing": 0.4
     },
     "auxiliary_text": {
-      "fontFamily": "IBM Plex Sans",
+      "fontFamily": "Bitcount Single",
       "fontSize": 8,
       "fontWeight": 400,
       "letterSpacing": 1.4
@@ -73,22 +115,19 @@
   },
   "fonts": [
     {
-      "fontFamily": "IBM Plex Sans",
+      "fontFamily": "Bitcount Single",
       "fontWeight": 400,
       "fontStyle": "normal",
-      "src": "../../cli/src/themes/default/assets/IBMPlexSans-Regular.ttf"
-    },
-    {
-      "fontFamily": "IBM Plex Sans",
-      "fontWeight": 700,
-      "fontStyle": "normal",
-      "src": "../../cli/src/themes/default/assets/IBMPlexSans-Bold.ttf"
+      "src": "./assets/Bitcount_Single/BitcountSingle-VariableFont_wght.woff2",
+      "axes": {
+        "weight": [300, 800]
+      }
     },
     {
       "fontFamily": "IBM Plex Mono",
       "fontWeight": 500,
       "fontStyle": "normal",
-      "src": "../../cli/src/themes/default/assets/IBMPlexMono-Medium.ttf"
+      "src": "./assets/IBM_Plex_Mono/IBMPlexMono-Medium.ttf"
     }
   ],
   "effects": {

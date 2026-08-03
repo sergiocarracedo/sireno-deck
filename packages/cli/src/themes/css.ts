@@ -127,6 +127,19 @@ export function buildThemeCss(
   // Variant tokens — every theme must declare the 5 required keys; themes
   // may add extras. ButtonFrame reads --sireno-variant-<name>-{bg,border,fg,glow}
   // directly, so addons and themes both go through one surface.
+  //
+  // buttonColor variants may also declare a `tokens` block to override
+  // primary/accent/foreground/foreground-contrast/success/danger per-variant.
+  // For 4-slot variants (no tokens block), fall back to theme colorTokens so
+  // primitives reading --sireno-color-* via cascade get the right value.
+  const VARIANT_TOKEN_KEYS = [
+    "primary",
+    "accent",
+    "foreground",
+    "foreground-contrast",
+    "success",
+    "danger",
+  ] as const
   for (const [variantName, styles] of Object.entries(manifest.variants)) {
     rootLines.push(
       `  --sireno-variant-${variantName}-bg: ${styles.background};`,
@@ -140,6 +153,19 @@ export function buildThemeCss(
     rootLines.push(
       `  --sireno-variant-${variantName}-glow: ${styles.glow ?? "0 0 0 transparent"};`,
     )
+    const tokens = styles.tokens
+    for (const tokenKey of VARIANT_TOKEN_KEYS) {
+      const cssToken =
+        MANIFEST_TO_CSS_TOKEN[tokenKey] ??
+        tokenKey.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase()
+      const themeValue =
+        colorTokens[tokenKey as keyof typeof colorTokens] ?? "#000000"
+      const variantValue =
+        tokens?.[tokenKey as keyof typeof tokens] ?? themeValue
+      rootLines.push(
+        `  --sireno-variant-${variantName}-${cssToken}: ${variantValue};`,
+      )
+    }
   }
   // Effect tokens — glow / shadow / blur, optional. Themes without effects
   // still get sane defaults so component CSS never reads `undefined` for a

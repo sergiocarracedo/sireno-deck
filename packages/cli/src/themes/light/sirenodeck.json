@@ -39,6 +39,41 @@
       "background": "#dc262626",
       "border": "#dc262673",
       "foreground": "#dc2626"
+    },
+    "blue": {
+      "background": "#0284c726",
+      "border": "#0284c773",
+      "foreground": "#1a202c"
+    },
+    "green": {
+      "background": "#05966926",
+      "border": "#05966973",
+      "foreground": "#1a202c"
+    },
+    "purple": {
+      "background": "#a855f726",
+      "border": "#a855f773",
+      "foreground": "#1a202c"
+    },
+    "cyan": {
+      "background": "#06b6d426",
+      "border": "#06b6d473",
+      "foreground": "#1a202c"
+    },
+    "magenta": {
+      "background": "#d946ef26",
+      "border": "#d946ef73",
+      "foreground": "#1a202c"
+    },
+    "amber": {
+      "background": "#f59e0b26",
+      "border": "#f59e0b73",
+      "foreground": "#1a202c"
+    },
+    "lime": {
+      "background": "#84cc1626",
+      "border": "#84cc1673",
+      "foreground": "#1a202c"
     }
   },
   "typography": {
