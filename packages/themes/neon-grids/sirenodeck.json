@@ -39,6 +39,76 @@
       "background": "#ff003c40",
       "border": "#ff003c8c",
       "foreground": "#ff003c"
+    },
+    "blue": {
+      "background": "#00e5ff40",
+      "border": "#00e5ff8c",
+      "foreground": "#ff5fd0",
+      "glow": "#00e5ff80",
+      "tokens": {
+        "primary": "#00e5ff",
+        "accent": "#00b8cc"
+      }
+    },
+    "green": {
+      "background": "#00ff9f40",
+      "border": "#00ff9f8c",
+      "foreground": "#ff5fd0",
+      "glow": "#00ff9f80",
+      "tokens": {
+        "primary": "#00ff9f",
+        "accent": "#00cc7f"
+      }
+    },
+    "purple": {
+      "background": "#8a2be240",
+      "border": "#8a2be28c",
+      "foreground": "#ff5fd0",
+      "glow": "#8a2be280",
+      "tokens": {
+        "primary": "#8a2be2",
+        "accent": "#6a1fb2"
+      }
+    },
+    "cyan": {
+      "background": "#00e5ff40",
+      "border": "#00e5ff8c",
+      "foreground": "#ff5fd0",
+      "glow": "#00e5ff80",
+      "tokens": {
+        "primary": "#00e5ff",
+        "accent": "#00b8cc"
+      }
+    },
+    "magenta": {
+      "background": "#ff00d440",
+      "border": "#ff00d48c",
+      "foreground": "#ff5fd0",
+      "glow": "#ff00d480",
+      "tokens": {
+        "primary": "#ff00d4",
+        "accent": "#cc00aa"
+      }
+    },
+    "amber": {
+      "background": "#ffa50040",
+      "border": "#ffa5008c",
+      "foreground": "#ff5fd0",
+      "glow": "#ffa50080",
+      "tokens": {
+        "primary": "#ffa500",
+        "accent": "#cc8400"
+      }
+    },
+    "lime": {
+      "background": "#b9ff0040",
+      "border": "#b9ff008c",
+      "foreground": "#ff5fd0",
+      "glow": "#b9ff0080",
+      "tokens": {
+        "primary": "#b9ff00",
+        "accent": "#95cc00"
+      }
     }
   },
   "typography": {

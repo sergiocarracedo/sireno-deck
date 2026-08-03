@@ -47,3 +47,47 @@ buttons:
       type: chart
       metrics: [load]
       windowSeconds: 30
+  - position: 9
+    type: "system-status:system-status"
+    buttonColor: blue
+    config:
+      type: bars
+      metrics: [cpu]
+  - position: 10
+    type: "system-status:system-status"
+    buttonColor: green
+    config:
+      type: bars
+      metrics: [ram]
+  - position: 11
+    type: "system-status:system-status"
+    buttonColor: purple
+    config:
+      type: kpis
+      metrics: [cpu]
+  - position: 12
+    type: "system-status:system-status"
+    buttonColor: cyan
+    config:
+      type: chart
+      metrics: [cpu]
+      windowSeconds: 60
+  - position: 13
+    type: "system-status:system-status"
+    buttonColor: magenta
+    config:
+      type: bars
+      metrics: [temperature]
+  - position: 14
+    type: "system-status:system-status"
+    buttonColor: amber
+    config:
+      type: kpis
+      metrics: [disk-io]
+  - position: 15
+    type: "system-status:system-status"
+    buttonColor: lime
+    config:
+      type: chart
+      metrics: [load]
+      windowSeconds: 30

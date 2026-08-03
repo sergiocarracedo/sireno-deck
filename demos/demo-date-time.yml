@@ -18,3 +18,32 @@ buttons:
     type: "date-time:date-time"
     config:
       format: "HH:mm — ddd DD MMM"
+  - position: 6
+    type: "date-time:time"
+    buttonColor: blue
+    config:
+      variant: big
+  - position: 7
+    type: "date-time:time"
+    buttonColor: green
+  - position: 8
+    type: "date-time:date"
+    buttonColor: purple
+  - position: 9
+    type: "date-time:date-time"
+    buttonColor: cyan
+    config:
+      format: "DD/MM/YYYY HH:mm:ss"
+  - position: 10
+    type: "date-time:date-time"
+    buttonColor: magenta
+    config:
+      format: "HH:mm — ddd DD MMM"
+  - position: 11
+    type: "date-time:time"
+    buttonColor: amber
+    config:
+      variant: big
+  - position: 12
+    type: "date-time:date"
+    buttonColor: lime
