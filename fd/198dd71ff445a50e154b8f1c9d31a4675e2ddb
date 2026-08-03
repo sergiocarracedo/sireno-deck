@@ -1,0 +1,25 @@
+packages/themes/riptide/sirenodeck.json
+  s_dc73750984d345::t_680ff3f1b65b24 57-61,67-71,77-81,87-91,97-101,107-111,117-121
+packages/themes/neon-grids/sirenodeck.json
+  s_dc73750984d345::t_9096a747be0c03 42-111
+demos/demo-system-status.yml
+  s_dc73750984d345::t_22ce8a01490387 50-93
+demos/demo-date-time.yml
+  s_dc73750984d345::t_4d22f7e2edf617 21-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "fd198dd71ff445a50e154b8f1c9d31a4675e2ddb",
+  "prompts": {},
+  "sessions": {
+    "s_dc73750984d345": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0398b39cbffe4qh8FYh6I8G7Ah",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
