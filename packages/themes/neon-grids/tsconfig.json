@@ -21,8 +21,8 @@
     "noEmit": true,
 
     "paths": {
-      "@sireno-deck/cli": ["../../cli/src/index.ts"],
-      "@sireno-deck/cli/*": ["../../cli/src/*"]
+      "@sirenodeck/cli": ["../../cli/src/index.ts"],
+      "@sirenodeck/cli/*": ["../../cli/src/*"]
     }
   },
   "include": ["components/**/*"]

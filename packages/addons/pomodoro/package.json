@@ -2,6 +2,15 @@
   "name": "@sirenodeck/addon-pomodoro",
   "version": "0.1.0",
   "description": "Pomodoro timer button with arc progress, blink on completion, and OS notification + bundled bell sound",
+  "bugs": {
+    "url": "https://github.com/sergiocarracedo/sireno-deck/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sergiocarracedo/sireno-deck.git",
+    "directory": "packages/addons/pomodoro"
+  },
   "files": [
     "dist"
   ],
@@ -13,6 +22,9 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "tsc --project tsconfig.build.json && node scripts/post-build.mjs",

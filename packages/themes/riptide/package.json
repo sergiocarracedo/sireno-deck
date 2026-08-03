@@ -1,9 +1,25 @@
 {
-  "name": "@sireno-deck/theme-riptide",
+  "name": "@sirenodeck/theme-riptide",
   "version": "0.1.0",
-  "private": true,
   "description": "Riptide — neon yellow + pink halftone icons on a black deck with cyan stripes. 3rd-party theme package.",
+  "bugs": {
+    "url": "https://github.com/sergiocarracedo/sireno-deck/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sergiocarracedo/sireno-deck.git",
+    "directory": "packages/themes/riptide"
+  },
+  "files": [
+    "sirenodeck.json",
+    "components.css",
+    "components"
+  ],
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit"
   },

@@ -9,13 +9,13 @@ CLI for managing Elgato Stream Deck devices via a config-driven deck system. Wri
 pnpm install
 
 # Run the emulator (browser auto-opens)
-pnpm --filter sirenodeck dev start --emulator
+pnpm --filter @sirenodeck/cli dev start --emulator
 
 # Stop it
-pnpm --filter sirenodeck dev stop
+pnpm --filter @sirenodeck/cli dev stop
 
 # Or, run foreground (Ctrl-C to exit)
-pnpm --filter sirenodeck dev run --emulator
+pnpm --filter @sirenodeck/cli dev run --emulator
 ```
 
 On first run, `dev` spawns the WS bridge + a vite dev server for the React 19 + Tailwind 4 frontend. The emulator shell opens at `http://127.0.0.1:52938/` and forwards button clicks to the runtime via WS.
@@ -90,7 +90,7 @@ sireno --version
 - `start` — daemon. Writes PID + token + children files to `$XDG_RUNTIME_DIR/sireno-deck/`. Stop with `sireno stop`.
 - `--emulator` — render in browser instead of writing to real hardware.
 - `--dev` — use the vite dev server (faster iteration, no build needed).
-- `--http-port <N>` — port for the prod HTTP server (default 3939). Only starts when `pnpm --filter sirenodeck-frontend build` has been run.
+- `--http-port <N>` — port for the prod HTTP server (default 3939). Only starts when `pnpm --filter @sirenodeck/cli build` has produced the frontend bundle.
 - `--device-model <mk2|plus|mini|xl>` — change the device layout. `mk2` is the default (15 keys, 5×3).
 
 ## How it works

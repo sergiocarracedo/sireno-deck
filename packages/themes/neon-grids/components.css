@@ -100,7 +100,12 @@
       rgba(0, 0, 0, 0.45) 100%
     ),
     /* Soft fill so the tile isn't pure black */
-    linear-gradient(135deg, rgba(17, 0, 24, 0.9) 0%, rgba(0, 0, 0, 0.7) 60%, rgba(26, 0, 48, 0.9) 100%);
+    linear-gradient(
+      135deg,
+      rgba(17, 0, 24, 0.9) 0%,
+      rgba(0, 0, 0, 0.7) 60%,
+      rgba(26, 0, 48, 0.9) 100%
+    );
   background-blend-mode: multiply, normal;
   border: 2px solid
     color-mix(in oklab, var(--sireno-color-primary) 80%, transparent);

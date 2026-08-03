@@ -40,7 +40,7 @@ my-addon/
 
 ```typescript
 // manifest.ts
-import type { AddonManifestV1 } from "@sireno-deck/cli"
+import type { AddonManifestV1 } from "@sirenodeck/cli"
 
 export const manifest: AddonManifestV1 = {
   apiVersion: 1,
@@ -72,7 +72,7 @@ export const manifest: AddonManifestV1 = {
 ```typescript
 // frontend.tsx
 import React from "react"
-import type { AddonFrontendButtonProps } from "@sireno-deck/cli"
+import type { AddonFrontendButtonProps } from "@sirenodeck/cli"
 
 export function GreetButton({ config }: AddonFrontendButtonProps<{}>) {
   return (
@@ -88,7 +88,7 @@ export function GreetButton({ config }: AddonFrontendButtonProps<{}>) {
 
 ```typescript
 // backend.ts
-import type { AddonButtonTypeService } from "@sireno-deck/cli"
+import type { AddonButtonTypeService } from "@sirenodeck/cli"
 
 export const GreetService: AddonButtonTypeService<{}> = {
   gestureHandlers: ["tap"],

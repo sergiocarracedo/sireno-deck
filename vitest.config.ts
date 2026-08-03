@@ -12,8 +12,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./packages/cli/src", import.meta.url)),
-      "@sireno-deck/cli": resolve(here, "packages/cli/src/index.ts"),
-      "@sireno-deck/cli/": resolve(here, "packages/cli/src/") + "/",
+      "@sirenodeck/cli": resolve(here, "packages/cli/src/index.ts"),
+      "@sirenodeck/cli/": resolve(here, "packages/cli/src/") + "/",
       "sireno-deck/react": resolve(here, "packages/cli/src/api/react/index.ts"),
       "virtual:sireno/token": fileURLToPath(
         new URL(

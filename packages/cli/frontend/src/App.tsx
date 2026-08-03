@@ -15,7 +15,7 @@ import {
   ThemeUiPresentationProvider,
   buildPresentation,
   useAssetCacheMutations,
-} from "@sireno-deck/cli"
+} from "@sirenodeck/cli"
 import {
   getDeviceModel,
   isKnownDeviceModel,

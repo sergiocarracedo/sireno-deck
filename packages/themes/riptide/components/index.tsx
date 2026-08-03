@@ -1,17 +1,17 @@
 import type { ReactElement } from "react"
 
-import type { ButtonFrameProps } from "@sireno-deck/cli"
-import type { LabelProps } from "@sireno-deck/cli"
-import type { TapIndicatorProps } from "@sireno-deck/cli"
+import type { ButtonFrameProps } from "@sirenodeck/cli"
+import type { LabelProps } from "@sirenodeck/cli"
+import type { TapIndicatorProps } from "@sirenodeck/cli"
 import type {
   TemporaryErrorSurfaceProps,
   SplitActionSurfaceProps,
-} from "@sireno-deck/cli"
+} from "@sirenodeck/cli"
 
-import { Label as DefaultLabel } from "@sireno-deck/cli"
-import { Text } from "@sireno-deck/cli"
-import { TemporaryErrorSurface as DefaultTemporaryErrorSurface } from "@sireno-deck/cli"
-import { SplitActionSurface as DefaultSplitActionSurface } from "@sireno-deck/cli"
+import { Label as DefaultLabel } from "@sirenodeck/cli"
+import { Text } from "@sirenodeck/cli"
+import { TemporaryErrorSurface as DefaultTemporaryErrorSurface } from "@sirenodeck/cli"
+import { SplitActionSurface as DefaultSplitActionSurface } from "@sirenodeck/cli"
 
 const TILE_BASE = "riptide-tile"
 const FRAME_BASE = "riptide-tile-frame"

@@ -5,6 +5,7 @@
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — how the system is wired. Read top-to-bottom on first contact; describes the system as it exists today.
 - [`docs/solutions/`](docs/solutions/) — institutional learnings captured after non-trivial fixes; index file pending (`docs/solutions/README.md`).
 - [`STRATEGY.md`](STRATEGY.md) — product strategy grounding (populated via `/ce-strategy`).
+- [`RELEASING.md`](RELEASING.md) — release flow, npm Trusted Publishing setup, package list.
 
 ## Stack
 
@@ -88,7 +89,7 @@ After any change that touches the WebSocket bridge, the session provider, the ru
 2. `pnpm test --run`
 3. Start the emulator:
    ```bash
-   node packages/cli/bin/sirenodeck.js run --config config.yml --emulator --port 52937 --dev
+   node packages/cli/bin/sireno.js run --config config.yml --emulator --port 52937 --dev
    ```
 4. With `agent-browser`, verify both surfaces:
    ```bash

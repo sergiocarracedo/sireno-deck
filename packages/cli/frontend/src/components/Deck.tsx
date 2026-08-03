@@ -25,7 +25,7 @@ import {
   SplitActionSurface,
   useAddonChannel,
   type AddonGestureEvent,
-} from "@sireno-deck/cli"
+} from "@sirenodeck/cli"
 import { useButtonAction } from "../bridge/use-button-action"
 import { ErrorBoundary } from "./ErrorBoundary"
 

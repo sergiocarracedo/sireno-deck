@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-import { BUTTON_SIZE_PX, type DeviceModelSpec } from "@sireno-deck/cli"
+import { BUTTON_SIZE_PX, type DeviceModelSpec } from "@sirenodeck/cli"
 
 import {
   createEmulatorGestureDetector,
