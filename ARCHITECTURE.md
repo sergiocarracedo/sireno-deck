@@ -2,6 +2,9 @@
 
 > Read top-to-bottom on first contact describes the system as it exists today.
 
+> See also: [`docs/architecture/boundaries.md`](docs/architecture/boundaries.md)
+> for what crosses each seam, who owns each side, and what may change.
+
 ---
 
 ## 1. What it is
@@ -36,6 +39,13 @@ sireno-deck/
         ├── fixtures/          ← Config + schema fixtures
         └── package.json
 ```
+
+## 2.5 Boundaries
+
+See [`docs/architecture/boundaries.md`](docs/architecture/boundaries.md) for the
+full list of seams (process, ws bridge, protocol, addon API, OS abstraction,
+transport, ui, theme, asset, oxlint). The TL;DR: anything that crosses a
+boundary is JSON over the WS bridge; everything else is a function call.
 
 ## 3. Service (`packages/cli/src/`)
 
