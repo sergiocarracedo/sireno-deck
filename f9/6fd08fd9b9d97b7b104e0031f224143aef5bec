@@ -1,0 +1,49 @@
+packages/cli/src/cli/commands/start.ts
+  s_4191f40277305b::t_8a49c8bf656d67 328
+  s_4191f40277305b::t_14b694d1cfb4a8 635
+  s_4191f40277305b::t_d1742262c69117 372-389
+  s_4191f40277305b::t_86a882b3f6991e 391-392
+  s_4191f40277305b::t_9595306171221d 615
+  s_4191f40277305b::t_e89ab5c6fed37a 500
+  s_4191f40277305b::t_68f371cb91aa4b 480
+  s_4191f40277305b::t_4cb30c513d8946 390
+  s_4191f40277305b::t_b70d0bdf97e885 29
+  s_4191f40277305b::t_4963a721ec2260 303
+packages/cli/src/util/daemon.ts
+  s_4191f40277305b::t_d5cf21e50dfa98 109-122,124-125,130,147-174
+  s_4191f40277305b::t_25176e250f1434 175
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_4191f40277305b::t_5f0e751e5b8302 474-478,484-510,512-518,525-535,538-539,542,544-546
+  s_4191f40277305b::t_6ecdc47abf4398 480-483
+  s_4191f40277305b::t_51c825d550e1b5 87
+  s_4191f40277305b::t_d08a72d1bc1357 79
+  s_4191f40277305b::t_a8987af41e67db 479
+  s_4191f40277305b::t_0564cecff6f94e 511,536-537,540
+  s_4191f40277305b::t_73e8f9b1759353 519-524,541,543
+  s_4191f40277305b::t_5f40f009d71dc9 68
+packages/cli/src/util/__tests__/daemon.test.ts
+  s_4191f40277305b::t_fa0560a3af16e0 168-169,171-227
+  s_4191f40277305b::t_671d9a8dd015fb 170
+  s_4191f40277305b::t_8c2efc12373569 14,18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "f96fd08fd9b9d97b7b104e0031f224143aef5bec",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_4191f40277305b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_047002f8fffekqKfUTir9UPW5h",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
