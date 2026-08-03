@@ -1,0 +1,41 @@
+release-please-manifest.json
+  s_7d2fcbe778c3d0::t_34283750066f7b 1-6
+  s_7d2fcbe778c3d0::t_b760fc583c7220 7
+.github/workflows/auto-merge-release-please.yml
+  s_7d2fcbe778c3d0::t_c3c13da6bd9981 1-65
+  s_7d2fcbe778c3d0::t_b760fc583c7220 66
+.github/workflows/ci.yml
+  s_7d2fcbe778c3d0::t_cf0e3bdaf28bc3 9-12,14-24,26,42
+  s_7d2fcbe778c3d0::t_b760fc583c7220 43
+.github/workflows/publish-npm.yml
+  s_7d2fcbe778c3d0::t_b760fc583c7220 101
+  s_7d2fcbe778c3d0::t_da67ba6ca6b39d 1-100
+release-please-config.json
+  s_7d2fcbe778c3d0::t_b760fc583c7220 53
+  s_7d2fcbe778c3d0::t_910af5f0d26328 1-52
+.github/workflows/release-please.yml
+  s_7d2fcbe778c3d0::t_b760fc583c7220 21
+  s_7d2fcbe778c3d0::t_8c764e551c073f 1-20
+RELEASING.md
+  s_7d2fcbe778c3d0::t_8adc549737f2e2 1-11,19-83
+  s_7d2fcbe778c3d0::t_b760fc583c7220 12-18,84
+.github/workflows/release.yml
+  s_7d2fcbe778c3d0::t_db9c5c314c14b4 1-5,7-66
+  s_7d2fcbe778c3d0::t_b760fc583c7220 6,67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "cfdd5e5b6af33f7fa7e807eef4661247fa8d0888",
+  "prompts": {},
+  "sessions": {
+    "s_7d2fcbe778c3d0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_038423d3affe0ck29gB2OWKzYU",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
