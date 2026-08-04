@@ -1,0 +1,21 @@
+packages/addons/pomodoro/src/__tests__/backend.test.ts
+  s_dc73750984d345::t_27af3417754aef 159
+docs/architecture/boundaries.md
+  s_dc73750984d345::t_27af3417754aef 8,92-98,105-111,118-124,131-137,145-151,159-165,173-179,191-197,212-218,225-231,239-245,252-258,266-272,357,384-406
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "cee1f00e95ac331d70841dddec4f2557d4071a10",
+  "prompts": {},
+  "sessions": {
+    "s_dc73750984d345": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0398b39cbffe4qh8FYh6I8G7Ah",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
