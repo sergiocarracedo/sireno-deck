@@ -120,7 +120,7 @@ const PomodoroButtonFrontend = (props: FrontendButtonProps<ConfigSchema>) => {
               </span>
               <Label
                 text={formatMmSs(remainingSec)}
-                variant={finished ? "secondary" : "primary"}
+                variant="primary"
                 lines={2}
                 className="text-2xl"
               />
