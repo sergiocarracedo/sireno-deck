@@ -1,0 +1,29 @@
+demos/demo-system-status.yml
+  s_dc73750984d345::t_fa364097feb508 51,57-131,136-211,214-263,267,270-349,354,357-375,378-391,396-471,476-484
+  s_dc73750984d345::t_13acd6ea47e51a 2
+demos/demo-weather.yml
+  s_dc73750984d345::t_303b149ea15a51 59-170
+demos/demo-media.yml
+  s_dc73750984d345::t_a2b0cb309a3053 11-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "04d8aa811c9af4d6ecad7832a2532bdcffee699a",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_dc73750984d345": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0398b39cbffe4qh8FYh6I8G7Ah",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
