@@ -64,6 +64,7 @@ const VARIANT_COLOR_TOKENS = [
   "foreground-contrast",
   "success",
   "danger",
+  "muted",
 ] as const
 
 function variantColorVar(
@@ -77,6 +78,32 @@ function variantColorVar(
         ? "foreground-contrast"
         : token
   return `var(--sireno-variant-${variant}-${cssToken}, var(--sireno-color-${cssToken}))`
+}
+
+/**
+ * Ponytail: every cascade token emits under both `--sireno-color-*` (for
+ * primitives that read the variable directly via `getPropertyValue` or
+ * in style attrs) AND `--color-*` (for Tailwind v4 utility classes such
+ * as `text-primary` → `color: var(--color-primary)`). CSS custom properties
+ * inherit, so children using either form pick up the buttonColor override.
+ *
+ * Themes without a per-buttonColor `tokens` block fall back to theme-level
+ * `colorTokens` because the variant-level entry resolves to undefined.
+ */
+export function buildVariantCascade(variant: string): Record<string, string> {
+  const result: Record<string, string> = {}
+  for (const token of VARIANT_COLOR_TOKENS) {
+    const value = variantColorVar(variant, token)
+    result[`--sireno-color-${token === "foreground" ? "fg" : token}`] = value
+    const cssToken =
+      token === "foreground"
+        ? "fg"
+        : token === "foreground-contrast"
+          ? "foreground-contrast"
+          : token
+    result[`--color-${cssToken}`] = value
+  }
+  return result
 }
 
 export const ButtonFrame = ({
@@ -163,17 +190,7 @@ export function buttonFrameBase(props: ButtonFrameProps): ReactElement {
         : undefined,
   }
 
-  const cascadeVars: Record<string, string> = {
-    "--sireno-color-primary": variantColorVar(variant, "primary"),
-    "--sireno-color-accent": variantColorVar(variant, "accent"),
-    "--sireno-color-foreground": variantColorVar(variant, "foreground"),
-    "--sireno-color-foreground-contrast": variantColorVar(
-      variant,
-      "foreground-contrast",
-    ),
-    "--sireno-color-success": variantColorVar(variant, "success"),
-    "--sireno-color-danger": variantColorVar(variant, "danger"),
-  }
+  const cascadeVars: Record<string, string> = buildVariantCascade(variant)
 
   return (
     <div

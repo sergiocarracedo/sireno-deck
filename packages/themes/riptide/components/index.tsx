@@ -10,6 +10,7 @@ import { Label as DefaultLabel } from "@sireno-deck/cli/ui/primitives/Label"
 import { Text } from "@sireno-deck/cli/ui/primitives/Text"
 import { TemporaryErrorSurface as DefaultTemporaryErrorSurface } from "@sireno-deck/cli/ui/surfaces/TemporaryErrorSurface"
 import { SplitActionSurface as DefaultSplitActionSurface } from "@sireno-deck/cli/ui/surfaces/SplitActionSurface"
+import { buildVariantCascade } from "@sireno-deck/cli/ui/ButtonFrame"
 
 const TILE_BASE = "riptide-tile"
 const FRAME_BASE = "riptide-tile-frame"
@@ -43,14 +44,7 @@ function RiptideButtonFrame(
           "--sireno-variant-border": `var(--sireno-variant-${variant}-border)`,
           "--sireno-variant-fg": `var(--sireno-variant-${variant}-fg)`,
           "--sireno-variant-glow": `var(--sireno-variant-${variant}-glow)`,
-          // Cascade vars for all 10 color tokens so primitives reading
-          // --sireno-color-* via CSS cascade get the buttonColor override.
-          "--sireno-color-primary": `var(--sireno-variant-${variant}-primary, var(--sireno-color-primary))`,
-          "--sireno-color-accent": `var(--sireno-variant-${variant}-accent, var(--sireno-color-accent))`,
-          "--sireno-color-foreground": `var(--sireno-variant-${variant}-fg, var(--sireno-color-fg))`,
-          "--sireno-color-foreground-contrast": `var(--sireno-variant-${variant}-foreground-contrast, var(--sireno-color-foreground-contrast))`,
-          "--sireno-color-success": `var(--sireno-variant-${variant}-success, var(--sireno-color-success))`,
-          "--sireno-color-danger": `var(--sireno-variant-${variant}-danger, var(--sireno-color-danger))`,
+          ...buildVariantCascade(variant),
         } as React.CSSProperties
       }
       onClick={props.onClick}

@@ -180,32 +180,6 @@ export function valueChartBase(props: ValueChartProps): ReactElement {
           viewBox={`0 0 ${CHART_VIEWBOX_SIZE} ${CHART_VIEWBOX_SIZE}`}
           data-sireno-chart-svg="true"
         >
-          <defs>
-            {clipped.map((s, index) => (
-              <pattern
-                key={`pattern-${s.id}`}
-                id={`${instanceId}-pattern-${variantFor(index)}-${index}`}
-                patternUnits="userSpaceOnUse"
-                width={6}
-                height={6}
-                patternTransform="rotate(45)"
-              >
-                {variantFor(index) === "solid" ? (
-                  <rect width={6} height={6} fill={s.color} fillOpacity={0.3} />
-                ) : (
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2={6}
-                    stroke={s.color}
-                    strokeOpacity={0.3}
-                    strokeWidth={2}
-                  />
-                )}
-              </pattern>
-            ))}
-          </defs>
           {clipped.map((s, index) => {
             const variant = variantFor(index)
             const downsampled = downsample(s.clipped, resolution)
@@ -228,7 +202,8 @@ export function valueChartBase(props: ValueChartProps): ReactElement {
               <path
                 key={s.id}
                 d={buildAreaPath(downsampled, s.yMax)}
-                fill={`url(#pattern-${variant}-${index})`}
+                fill={s.color}
+                fillOpacity={0.5}
                 stroke={s.color}
                 strokeWidth={1.5}
                 strokeLinejoin="round"

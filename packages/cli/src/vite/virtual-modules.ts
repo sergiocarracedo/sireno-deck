@@ -209,7 +209,7 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
   const addons = options.addons ?? []
   const theme = options.theme
   const themeDir = process.env["SIRENO_THEME_DIR"]
-  const themeCss = readThemeCss(themeDir)
+  let themeCss = readThemeCss(themeDir)
 
   return {
     name: "sireno-deck",
@@ -226,7 +226,7 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
       if (id === ADDONS_RESOLVED_ID) return buildAddonsImports(addons)
       if (id === ADDONS_REGISTRY_RESOLVED_ID)
         return buildAddonsRegistryModule(addons)
-      if (id === THEME_RESOLVED_ID) return themeCss
+      if (id === THEME_RESOLVED_ID) return readThemeCss(themeDir)
       if (id === THEMES_MANIFEST_RESOLVED_ID)
         return buildThemesManifestModule(theme)
       return null
@@ -307,6 +307,23 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
         }
         void warmup()
       })
+
+      // Theme.css lives on disk and the daemon re-stages it when the
+      // active theme changes. Watch the staged file and reload the
+      // THEME_VIRTUAL_ID module so the browser gets the new CSS via
+      // vite's HMR without a full reload.
+      if (themeDir) {
+        const stagedCss = join(themeDir, ".sireno-deck", "theme.css")
+        if (existsSync(stagedCss)) {
+          server.watcher.add(stagedCss)
+          server.watcher.on("change", (file) => {
+            if (file !== stagedCss) return
+            themeCss = readThemeCss(themeDir)
+            const mod = server.moduleGraph.getModuleById(THEME_RESOLVED_ID)
+            if (mod) server.reloadModule(mod)
+          })
+        }
+      }
     },
     handleHotUpdate: ({ file, server }) => {
       // When an addon frontend file changes, run any registered cleanup

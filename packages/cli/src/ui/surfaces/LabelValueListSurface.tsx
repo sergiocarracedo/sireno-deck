@@ -83,10 +83,11 @@ function RowTile({ item, variant = "default" }: RowTileProps): ReactElement {
             size={variantProps.labelSize ?? "xs"}
             weight="semibold"
             tone="primary"
+            style={colorStyle}
           />
         ) : null}
       </div>
-      <div className="flex-1 flex min-h-0 gap-0.5 justify-end items-baseline">
+      <div className="flex-1 flex min-w-0 min-h-0 gap-0.5 justify-end items-baseline">
         <Text
           size={variantProps.value}
           weight={variant === "big" ? "normal" : "bold"}
@@ -97,7 +98,9 @@ function RowTile({ item, variant = "default" }: RowTileProps): ReactElement {
         />
 
         {item.units ? (
-          <Text size={variantProps.unit} text={item.units} />
+          <div className={cn("shrink-0", variant !== "small" && "max-w-[20%]")}>
+            <Text size={variantProps.unit} text={item.units} />
+          </div>
         ) : null}
       </div>
     </div>
