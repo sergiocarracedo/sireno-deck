@@ -1,0 +1,48 @@
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_dc73750984d345::t_bfd2c8dd5c3379 86,90,101-103
+packages/cli/src/ui/ButtonFrame.tsx
+  s_dc73750984d345::t_ec5f0ec3247f24 67,83-106
+  s_dc73750984d345::t_a7d42b2815abd7 193
+  s_dc73750984d345::t_43fc17c5438a76 107-108
+packages/cli/src/ui/surfaces/__tests__/ValueChart.test.tsx
+  s_dc73750984d345::t_10fef939f81bab 89-91
+packages/themes/riptide/components/index.tsx
+  s_dc73750984d345::t_d6335f52c645a0 47
+  s_dc73750984d345::t_127edb39b8481f 13
+packages/themes/neon-grids/components/index.tsx
+  s_dc73750984d345::t_498f40f18f177e 54
+  s_dc73750984d345::t_1efb162201be8c 16
+packages/cli/src/ui/surfaces/ValueChart.tsx
+  s_dc73750984d345::t_5b15d7f5e45ca5 205-206
+packages/cli/src/builtin-addons/date-time/buttons/analog-clock/frontend.tsx
+  s_dc73750984d345::t_728e8dda3db0b2 61,70
+  s_dc73750984d345::t_861f17e4b783b8 79
+  s_dc73750984d345::t_d2a4cc6ea70e6d 83
+  s_dc73750984d345::t_ba640564985959 52
+  s_dc73750984d345::t_9c02290abffc6e 40
+packages/cli/src/vite/virtual-modules.ts
+  s_dc73750984d345::t_e32e680a8a3d90 212
+  s_dc73750984d345::t_c0f81f145877d6 229
+  s_dc73750984d345::t_c021c30ff5639b 310-326
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "366178d8c0d720d89b5398781db6f6f89b36769b",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_dc73750984d345": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0398b39cbffe4qh8FYh6I8G7Ah",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
