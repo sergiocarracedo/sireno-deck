@@ -156,11 +156,7 @@ describe("pomodoro button onMount config-change reset", () => {
     pomodoroBackend.onMount?.(ctx)
     expect(stop).not.toHaveBeenCalled()
     expect(buttonScope.set).not.toHaveBeenCalled()
-    expect(startWith).toHaveBeenCalledWith(
-      "btn1",
-      expect.any(Number),
-      1500,
-    )
+    expect(startWith).toHaveBeenCalledWith("btn1", expect.any(Number), 1500)
   })
 })
 
