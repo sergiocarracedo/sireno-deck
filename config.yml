@@ -1,4 +1,4 @@
-theme: ./packages/themes/neon-grids
+theme: default
 
 addons:
   - src: ./packages/addons/app-shortcuts
@@ -87,7 +87,7 @@ decks:
       - position: 10
         type: "pomodoro:pomodoro"
         config:
-          durationSec: 1500
+          durationSec: 5
 
       - position: 12
         type: "media:player"
