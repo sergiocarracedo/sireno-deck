@@ -56,3 +56,115 @@ buttons:
         latitude: 52.5200
         longitude: 13.4050
         name: Berlin
+  - position: 8
+    type: "weather:weather"
+    buttonColor: blue
+    config:
+      location:
+        latitude: 42.2304
+        longitude: -8.7256
+        name: Vigo
+  - position: 9
+    type: "weather:weather"
+    buttonColor: blue
+    config:
+      location:
+        latitude: 42.2304
+        longitude: -8.7256
+        name: Vigo
+  - position: 10
+    type: "weather:weather"
+    buttonColor: green
+    config:
+      location:
+        latitude: 42.2304
+        longitude: -8.7256
+        name: Vigo
+  - position: 11
+    type: "weather:weather"
+    buttonColor: green
+    config:
+      location:
+        latitude: 42.2304
+        longitude: -8.7256
+        name: Vigo
+  - position: 12
+    type: "weather:weather"
+    buttonColor: purple
+    config:
+      location:
+        latitude: 42.2304
+        longitude: -8.7256
+        name: Vigo
+  - position: 13
+    type: "weather:weather"
+    buttonColor: purple
+    config:
+      location:
+        latitude: 42.2304
+        longitude: -8.7256
+        name: Vigo
+  - position: 14
+    type: "weather:weather"
+    buttonColor: cyan
+    config:
+      location:
+        latitude: 41.3874
+        longitude: 2.1686
+        name: Barcelona
+  - position: 15
+    type: "weather:weather"
+    buttonColor: cyan
+    config:
+      location:
+        latitude: 41.3874
+        longitude: 2.1686
+        name: Barcelona
+  - position: 16
+    type: "weather:weather"
+    buttonColor: magenta
+    config:
+      location:
+        latitude: 41.3874
+        longitude: 2.1686
+        name: Barcelona
+  - position: 17
+    type: "weather:weather"
+    buttonColor: magenta
+    config:
+      location:
+        latitude: 41.3874
+        longitude: 2.1686
+        name: Barcelona
+  - position: 18
+    type: "weather:weather"
+    buttonColor: amber
+    config:
+      location:
+        latitude: 41.3874
+        longitude: 2.1686
+        name: Barcelona
+  - position: 19
+    type: "weather:weather"
+    buttonColor: amber
+    config:
+      location:
+        latitude: 41.3874
+        longitude: 2.1686
+        name: Barcelona
+  - position: 20
+    type: "weather:weather"
+    buttonColor: lime
+    config:
+      location:
+        latitude: 41.3874
+        longitude: 2.1686
+        name: Barcelona
+  - position: 21
+    type: "weather:weather"
+    buttonColor: lime
+    config:
+      location:
+        latitude: 41.3874
+        longitude: 2.1686
+        name: Barcelona

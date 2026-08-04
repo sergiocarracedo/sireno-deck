@@ -1,4 +1,5 @@
 name: System Status Demo
+paginated: true
 buttons:
   - position: 0
     type: "system-status:system-status"
@@ -47,47 +48,437 @@ buttons:
       type: chart
       metrics: [load]
       windowSeconds: 30
-  - position: 9
+  - position: 16
     type: "system-status:system-status"
     buttonColor: blue
     config:
       type: bars
       metrics: [cpu]
-  - position: 10
+  - position: 17
+    type: "system-status:system-status"
+    buttonColor: blue
+    config:
+      type: bars
+      metrics: [cpu, ram]
+  - position: 18
+    type: "system-status:system-status"
+    buttonColor: blue
+    config:
+      type: bars
+      metrics: [cpu, ram, swap]
+  - position: 19
+    type: "system-status:system-status"
+    buttonColor: blue
+    config:
+      type: bars
+      metrics: [disk, battery, temperature, gpu-temp]
+  - position: 20
+    type: "system-status:system-status"
+    buttonColor: blue
+    config:
+      type: kpis
+      metrics: [cpu]
+  - position: 21
+    type: "system-status:system-status"
+    buttonColor: blue
+    config:
+      type: kpis
+      metrics: [cpu, ram]
+  - position: 22
+    type: "system-status:system-status"
+    buttonColor: blue
+    config:
+      type: kpis
+      metrics: [cpu, ram, disk]
+  - position: 23
+    type: "system-status:system-status"
+    buttonColor: blue
+    config:
+      type: kpis
+      metrics: [cpu, ram, disk, load]
+  - position: 24
+    type: "system-status:system-status"
+    buttonColor: blue
+    config:
+      type: chart
+      metrics: [cpu]
+      windowSeconds: 60
+  - position: 25
+    type: "system-status:system-status"
+    buttonColor: blue
+    config:
+      type: chart
+      metrics: [cpu, ram]
+      windowSeconds: 60
+  - position: 26
     type: "system-status:system-status"
     buttonColor: green
     config:
       type: bars
-      metrics: [ram]
-  - position: 11
+      metrics: [cpu]
+  - position: 27
+    type: "system-status:system-status"
+    buttonColor: green
+    config:
+      type: bars
+      metrics: [cpu, ram]
+  - position: 28
+    type: "system-status:system-status"
+    buttonColor: green
+    config:
+      type: bars
+      metrics: [cpu, ram, swap]
+  - position: 29
+    type: "system-status:system-status"
+    buttonColor: green
+    config:
+      type: bars
+      metrics: [disk, battery, temperature, gpu-temp]
+  - position: 30
+    type: "system-status:system-status"
+    buttonColor: green
+    config:
+      type: kpis
+      metrics: [cpu]
+  - position: 31
+    type: "system-status:system-status"
+    buttonColor: green
+    config:
+      type: kpis
+      metrics: [cpu, ram]
+  - position: 32
+    type: "system-status:system-status"
+    buttonColor: green
+    config:
+      type: kpis
+      metrics: [cpu, ram, disk]
+  - position: 33
+    type: "system-status:system-status"
+    buttonColor: green
+    config:
+      type: kpis
+      metrics: [cpu, ram, disk, load]
+  - position: 34
+    type: "system-status:system-status"
+    buttonColor: green
+    config:
+      type: chart
+      metrics: [cpu]
+      windowSeconds: 60
+  - position: 35
+    type: "system-status:system-status"
+    buttonColor: green
+    config:
+      type: chart
+      metrics: [cpu, ram]
+      windowSeconds: 60
+  - position: 36
+    type: "system-status:system-status"
+    buttonColor: purple
+    config:
+      type: bars
+      metrics: [cpu]
+  - position: 37
+    type: "system-status:system-status"
+    buttonColor: purple
+    config:
+      type: bars
+      metrics: [cpu, ram]
+  - position: 38
+    type: "system-status:system-status"
+    buttonColor: purple
+    config:
+      type: bars
+      metrics: [cpu, ram, swap]
+  - position: 39
+    type: "system-status:system-status"
+    buttonColor: purple
+    config:
+      type: bars
+      metrics: [disk, battery, temperature, gpu-temp]
+  - position: 40
     type: "system-status:system-status"
     buttonColor: purple
     config:
       type: kpis
       metrics: [cpu]
-  - position: 12
+  - position: 41
+    type: "system-status:system-status"
+    buttonColor: purple
+    config:
+      type: kpis
+      metrics: [cpu, ram]
+  - position: 42
+    type: "system-status:system-status"
+    buttonColor: purple
+    config:
+      type: kpis
+      metrics: [cpu, ram, disk]
+  - position: 43
+    type: "system-status:system-status"
+    buttonColor: purple
+    config:
+      type: kpis
+      metrics: [cpu, ram, disk, load]
+  - position: 44
+    type: "system-status:system-status"
+    buttonColor: purple
+    config:
+      type: chart
+      metrics: [cpu]
+      windowSeconds: 60
+  - position: 45
+    type: "system-status:system-status"
+    buttonColor: purple
+    config:
+      type: chart
+      metrics: [cpu, ram]
+      windowSeconds: 60
+  - position: 46
+    type: "system-status:system-status"
+    buttonColor: cyan
+    config:
+      type: bars
+      metrics: [cpu]
+  - position: 47
+    type: "system-status:system-status"
+    buttonColor: cyan
+    config:
+      type: bars
+      metrics: [cpu, ram]
+  - position: 48
+    type: "system-status:system-status"
+    buttonColor: cyan
+    config:
+      type: bars
+      metrics: [cpu, ram, swap]
+  - position: 49
+    type: "system-status:system-status"
+    buttonColor: cyan
+    config:
+      type: bars
+      metrics: [disk, battery, temperature, gpu-temp]
+  - position: 50
+    type: "system-status:system-status"
+    buttonColor: cyan
+    config:
+      type: kpis
+      metrics: [cpu]
+  - position: 51
+    type: "system-status:system-status"
+    buttonColor: cyan
+    config:
+      type: kpis
+      metrics: [cpu, ram]
+  - position: 52
+    type: "system-status:system-status"
+    buttonColor: cyan
+    config:
+      type: kpis
+      metrics: [cpu, ram, disk]
+  - position: 53
+    type: "system-status:system-status"
+    buttonColor: cyan
+    config:
+      type: kpis
+      metrics: [cpu, ram, disk, load]
+  - position: 54
     type: "system-status:system-status"
     buttonColor: cyan
     config:
       type: chart
       metrics: [cpu]
       windowSeconds: 60
-  - position: 13
+  - position: 55
+    type: "system-status:system-status"
+    buttonColor: cyan
+    config:
+      type: chart
+      metrics: [cpu, ram]
+      windowSeconds: 60
+  - position: 56
     type: "system-status:system-status"
     buttonColor: magenta
     config:
       type: bars
-      metrics: [temperature]
-  - position: 14
+      metrics: [cpu]
+  - position: 57
+    type: "system-status:system-status"
+    buttonColor: magenta
+    config:
+      type: bars
+      metrics: [cpu, ram]
+  - position: 58
+    type: "system-status:system-status"
+    buttonColor: magenta
+    config:
+      type: bars
+      metrics: [cpu, ram, swap]
+  - position: 59
+    type: "system-status:system-status"
+    buttonColor: magenta
+    config:
+      type: bars
+      metrics: [disk, battery, temperature, gpu-temp]
+  - position: 60
+    type: "system-status:system-status"
+    buttonColor: magenta
+    config:
+      type: kpis
+      metrics: [cpu]
+  - position: 61
+    type: "system-status:system-status"
+    buttonColor: magenta
+    config:
+      type: kpis
+      metrics: [cpu, ram]
+  - position: 62
+    type: "system-status:system-status"
+    buttonColor: magenta
+    config:
+      type: kpis
+      metrics: [cpu, ram, disk]
+  - position: 63
+    type: "system-status:system-status"
+    buttonColor: magenta
+    config:
+      type: kpis
+      metrics: [cpu, ram, disk, load]
+  - position: 64
+    type: "system-status:system-status"
+    buttonColor: magenta
+    config:
+      type: chart
+      metrics: [cpu]
+      windowSeconds: 60
+  - position: 65
+    type: "system-status:system-status"
+    buttonColor: magenta
+    config:
+      type: chart
+      metrics: [cpu, ram]
+      windowSeconds: 60
+  - position: 66
+    type: "system-status:system-status"
+    buttonColor: amber
+    config:
+      type: bars
+      metrics: [cpu]
+  - position: 67
+    type: "system-status:system-status"
+    buttonColor: amber
+    config:
+      type: bars
+      metrics: [cpu, ram]
+  - position: 68
+    type: "system-status:system-status"
+    buttonColor: amber
+    config:
+      type: bars
+      metrics: [cpu, ram, swap]
+  - position: 69
+    type: "system-status:system-status"
+    buttonColor: amber
+    config:
+      type: bars
+      metrics: [disk, battery, temperature, gpu-temp]
+  - position: 70
     type: "system-status:system-status"
     buttonColor: amber
     config:
       type: kpis
-      metrics: [disk-io]
-  - position: 15
+      metrics: [cpu]
+  - position: 71
+    type: "system-status:system-status"
+    buttonColor: amber
+    config:
+      type: kpis
+      metrics: [cpu, ram]
+  - position: 72
+    type: "system-status:system-status"
+    buttonColor: amber
+    config:
+      type: kpis
+      metrics: [cpu, ram, disk]
+  - position: 73
+    type: "system-status:system-status"
+    buttonColor: amber
+    config:
+      type: kpis
+      metrics: [cpu, ram, disk, load]
+  - position: 74
+    type: "system-status:system-status"
+    buttonColor: amber
+    config:
+      type: chart
+      metrics: [cpu]
+      windowSeconds: 60
+  - position: 75
+    type: "system-status:system-status"
+    buttonColor: amber
+    config:
+      type: chart
+      metrics: [cpu, ram]
+      windowSeconds: 60
+  - position: 76
+    type: "system-status:system-status"
+    buttonColor: lime
+    config:
+      type: bars
+      metrics: [cpu]
+  - position: 77
+    type: "system-status:system-status"
+    buttonColor: lime
+    config:
+      type: bars
+      metrics: [cpu, ram]
+  - position: 78
+    type: "system-status:system-status"
+    buttonColor: lime
+    config:
+      type: bars
+      metrics: [cpu, ram, swap]
+  - position: 79
+    type: "system-status:system-status"
+    buttonColor: lime
+    config:
+      type: bars
+      metrics: [disk, battery, temperature, gpu-temp]
+  - position: 80
+    type: "system-status:system-status"
+    buttonColor: lime
+    config:
+      type: kpis
+      metrics: [cpu]
+  - position: 81
+    type: "system-status:system-status"
+    buttonColor: lime
+    config:
+      type: kpis
+      metrics: [cpu, ram]
+  - position: 82
+    type: "system-status:system-status"
+    buttonColor: lime
+    config:
+      type: kpis
+      metrics: [cpu, ram, disk]
+  - position: 83
+    type: "system-status:system-status"
+    buttonColor: lime
+    config:
+      type: kpis
+      metrics: [cpu, ram, disk, load]
+  - position: 84
     type: "system-status:system-status"
     buttonColor: lime
     config:
       type: chart
-      metrics: [load]
-      windowSeconds: 30
+      metrics: [cpu]
+      windowSeconds: 60
+  - position: 85
+    type: "system-status:system-status"
+    buttonColor: lime
+    config:
+      type: chart
+      metrics: [cpu, ram]
+      windowSeconds: 60
