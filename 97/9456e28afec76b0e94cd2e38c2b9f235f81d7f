@@ -1,0 +1,41 @@
+packages/cli/src/themes/light/sirenodeck.json
+  s_dc73750984d345::t_953c8783c592a3 14,22-27,32-37,42-47,52-57,62-67,72-77,82-87,92-97,102-107
+packages/cli/src/themes/default/sirenodeck.json
+  s_dc73750984d345::t_dda0c667e0f074 14,22-27,32-37,42-47,52-57,62-67,72-77,82-87,92-97,102-107
+packages/themes/riptide/sirenodeck.json
+  s_dc73750984d345::t_f791ababe24929 14
+  s_dc73750984d345::t_05a1e2d4849657 22-27,33-38,44-49,55-60,66-71,77-82,91-92,102-103,113-114,124-125,135-136,146-147,157-158
+packages/themes/neon-grids/sirenodeck.json
+  s_dc73750984d345::t_29afa1b482de56 14,22-27,32-37,42-47,52-57,62-67,76-77,87-88,98-99,109-110,120-121,131-132,142-143
+packages/cli/src/themes/manifest.ts
+  s_dc73750984d345::t_3f6f7ac08056a2 37
+  s_dc73750984d345::t_f1d4967715e6b0 25
+  s_dc73750984d345::t_c06255886f2a7b 11
+packages/addons/pomodoro/src/buttons/pomodoro/frontend.tsx
+  s_dc73750984d345::t_56d6d423325dcd 49
+packages/cli/src/themes/__tests__/css.test.ts
+  s_dc73750984d345::t_7f95296a9dbcce 145-181
+packages/cli/src/themes/css.ts
+  s_dc73750984d345::t_9649a6d2850af7 142
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "979456e28afec76b0e94cd2e38c2b9f235f81d7f",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_dc73750984d345": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0398b39cbffe4qh8FYh6I8G7Ah",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
