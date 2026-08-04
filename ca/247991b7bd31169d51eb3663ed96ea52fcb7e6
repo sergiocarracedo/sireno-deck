@@ -1,0 +1,14 @@
+packages/addons/pomodoro/src/buttons/pomodoro/frontend.tsx
+  h_31bfcf89e26281 123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "ca247991b7bd31169d51eb3663ed96ea52fcb7e6",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
