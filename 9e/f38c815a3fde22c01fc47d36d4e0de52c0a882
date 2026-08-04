@@ -1,0 +1,14 @@
+config.yml
+  h_31bfcf89e26281 1,90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "9ef38c815a3fde22c01fc47d36d4e0de52c0a882",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
