@@ -139,6 +139,7 @@ export function buildThemeCss(
     "foreground-contrast",
     "success",
     "danger",
+    "muted",
   ] as const
   for (const [variantName, styles] of Object.entries(manifest.variants)) {
     rootLines.push(

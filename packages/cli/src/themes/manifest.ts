@@ -8,6 +8,7 @@ export const ThemeColorTokenSchema = z
     "foreground-contrast": z.string().min(1),
     primary: z.string().min(1),
     accent: z.string().min(1),
+    muted: z.string().min(1).optional(),
     success: z.string().min(1),
     danger: z.string().min(1),
   })
@@ -21,13 +22,7 @@ export const ThemeColorTokenSchema = z
  * Themes may declare EXTRA variants on top — those surface as `--sireno-variant-<name>-*`
  * CSS vars and become available to user config.
  */
-export const REQUIRED_VARIANT_KEYS = [
-  "default",
-  "highlighted",
-  "warning",
-  "success",
-  "error",
-] as const
+export const REQUIRED_VARIANT_KEYS = ["default", "error"] as const
 
 export type RequiredVariantKey = (typeof REQUIRED_VARIANT_KEYS)[number]
 
@@ -39,6 +34,7 @@ const ThemeVariantTokenOverridesSchema = z
     "foreground-contrast": z.string().min(1).optional(),
     success: z.string().min(1).optional(),
     danger: z.string().min(1).optional(),
+    muted: z.string().min(1).optional(),
   })
   .strict()
 
