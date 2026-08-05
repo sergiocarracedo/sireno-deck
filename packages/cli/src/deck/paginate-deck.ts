@@ -33,6 +33,8 @@ export const paginateDeck = (opts: PaginateDeckOptions): PageDeckResult[] => {
     return []
   }
 
+  const pageNavPosition = keyCount - 2
+
   return result.pages.map((page, pageIndex) => {
     const isFirstPage = pageIndex === 0
     const isLastPage = pageIndex === result.pages.length - 1
@@ -53,7 +55,7 @@ export const paginateDeck = (opts: PaginateDeckOptions): PageDeckResult[] => {
         const nextDeckId = isLastPage
           ? deckId
           : `${baseDeckId}-p${pageIndex + 2}`
-        const pageNavPosition = keyCount - 2
+
         for (let i = deckButtons.length - 1; i >= 0; i--) {
           const existing = deckButtons[i] as Record<string, unknown>
           if (existing?.position === pageNavPosition) {
@@ -72,15 +74,14 @@ export const paginateDeck = (opts: PaginateDeckOptions): PageDeckResult[] => {
           },
         })
       } else if (item !== null) {
-        // ponytail: emit the original button with the global key index as
-        // its position. paginate() groups by page = floor(position / (K-2))
-        // and slot = position % (K-2); item.id is `${pageIndex}-${slot}`.
-        const pageSize = keyCount - 2
+        // ponytail: emit each page-deck with LOCAL slot positions 0..N-1,
+        // not the global page * (K-2) + slot encoding. The frontend renders
+        // a fixed K-key grid per page; n-1 (sysBack) and n-2 (pageNav) are
+        // reserved on every page independently.
         const slot = Number(item.id.split("-").pop() ?? "0")
-        const position = pageIndex * pageSize + slot
         deckButtons.push({
           ...(item.value as Record<string, unknown>),
-          position,
+          position: slot,
         })
       }
     }

@@ -75,6 +75,7 @@ describe("injectSystemButtons", () => {
     const [result] = injectSystemButtons([main], 15)
     const n1 = result.buttons.find((b) => b.id === "14-d1-0")
     expect(n1?.type).toBe("core:settings-entry")
+    expect(n1?.position).toBe(14)
   })
 
   it("injects core:back at n-1 on non-main deck", () => {
@@ -85,6 +86,7 @@ describe("injectSystemButtons", () => {
     const [result] = injectSystemButtons([sub], 15)
     const n1 = result.buttons.find((b) => b.id === "14-sub-0")
     expect(n1?.type).toBe("core:back")
+    expect(n1?.position).toBe(14)
   })
 
   it("injects core:overlay-toggle at n-1 on overlay deck", () => {
@@ -95,6 +97,7 @@ describe("injectSystemButtons", () => {
     const [result] = injectSystemButtons([overlay], 15)
     const n1 = result.buttons.find((b) => b.id === "14-overlay-0")
     expect(n1?.type).toBe("core:overlay-toggle")
+    expect(n1?.position).toBe(14)
   })
 
   it("overwrites existing user button at n-1", () => {

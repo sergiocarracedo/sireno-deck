@@ -57,6 +57,7 @@ export const injectSystemButtons = <T extends RuntimeDeck>(
         {
           id: `${n1Position}-${deck.id}-0`,
           type: systemButtonType,
+          position: n1Position,
         } as T["buttons"][number],
       ],
     }

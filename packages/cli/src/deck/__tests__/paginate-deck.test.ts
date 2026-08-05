@@ -3,10 +3,12 @@ import { describe, expect, it } from "vitest"
 
 import { paginateDeck } from "../paginate-deck"
 
-// ponytail: real runtime buttons are flat objects with a `position`
-// field — page = floor(position / (K-2)), slot = position % (K-2).
-// n-1 and n-2 on each page stay reserved for system buttons (page-nav
-// at K-2, settings at K-1).
+// ponytail: input positions are ordering hints. After positionButtons
+// they're renumbered 0..N-1. paginate() then groups by floor(pos/(K-2))
+// and slot = pos % (K-2). paginateDeck emits each page with LOCAL slot
+// positions 0..K-1 — the frontend renders a fixed K-key grid per page,
+// so n-1 (sysBack) and n-2 (pageNav) stay reserved on every page
+// independently.
 const btn = (position: number) => ({
   type: "test:btn",
   label: `b${position}`,
@@ -88,7 +90,7 @@ describe("paginateDeck", () => {
     expect(pageNav).toBeUndefined()
   })
 
-  it("preserves global key positions on pages beyond the first (K=15, 16 buttons)", () => {
+  it("resets user positions to local slot indices on every page (K=15, 16 buttons)", () => {
     const result = paginateDeck({
       baseDeckId: "deck",
       buttons: Array.from({ length: 16 }, (_, i) => btn(i)),
@@ -97,8 +99,10 @@ describe("paginateDeck", () => {
     expect(result).toHaveLength(2)
     const page2 = result[1]!.deck.buttons as Array<Record<string, unknown>>
     const userButtons = page2.filter((b) => b["type"] === "test:btn")
-    // page-nav occupies K-2 (position 13), so surviving user buttons are at
-    // positions 14 and 15.
-    expect(userButtons.map((b) => b["position"])).toEqual([14, 15])
+    // 16 buttons with positions 0..15 → pageSize=13 splits them at 0..12
+    // (page 0) and 13..15 (page 1). paginateDeck emits page 1's three
+    // user buttons at LOCAL slots 0, 1, 2. n-2 (pageNav) is added at 13,
+    // n-1 (sysBack) at 14.
+    expect(userButtons.map((b) => b["position"])).toEqual([0, 1, 2])
   })
 })
