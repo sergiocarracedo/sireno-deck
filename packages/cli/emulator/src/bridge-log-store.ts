@@ -10,6 +10,12 @@ export interface ServiceLogEntry {
   readonly ts: number
   readonly level: ServiceLogLevel
   readonly msg: string
+  readonly component?: string
+  readonly deckId?: string
+  readonly position?: number
+  readonly addonName?: string
+  readonly gesture?: "tap" | "dbl-tap" | "hold"
+  readonly keyIndex?: number
 }
 
 export interface BridgeMessageEntry {

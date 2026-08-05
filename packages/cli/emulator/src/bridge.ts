@@ -100,6 +100,12 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
         level?: string
         msg?: string
         ts?: number
+        component?: string
+        deckId?: string
+        position?: number
+        addonName?: string
+        gesture?: string
+        keyIndex?: number
       }
       appendBridgeMessage({
         ts: Date.now(),
@@ -118,6 +124,26 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
             ts: parsed.ts,
             level: parsed.level as ServiceLogLevel,
             msg: parsed.msg,
+            ...(typeof parsed.component === "string"
+              ? { component: parsed.component }
+              : {}),
+            ...(typeof parsed.deckId === "string"
+              ? { deckId: parsed.deckId }
+              : {}),
+            ...(typeof parsed.position === "number"
+              ? { position: parsed.position }
+              : {}),
+            ...(typeof parsed.addonName === "string"
+              ? { addonName: parsed.addonName }
+              : {}),
+            ...(parsed.gesture === "tap" ||
+            parsed.gesture === "dbl-tap" ||
+            parsed.gesture === "hold"
+              ? { gesture: parsed.gesture }
+              : {}),
+            ...(typeof parsed.keyIndex === "number"
+              ? { keyIndex: parsed.keyIndex }
+              : {}),
           })
         }
       }
@@ -189,6 +215,12 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
             level?: string
             msg?: string
             ts?: number
+            component?: string
+            deckId?: string
+            position?: number
+            addonName?: string
+            gesture?: string
+            keyIndex?: number
           }
           if (
             typeof e.msg === "string" &&
@@ -199,6 +231,24 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
               ts: e.ts,
               level: e.level as ServiceLogLevel,
               msg: e.msg,
+              ...(typeof e.component === "string"
+                ? { component: e.component }
+                : {}),
+              ...(typeof e.deckId === "string" ? { deckId: e.deckId } : {}),
+              ...(typeof e.position === "number"
+                ? { position: e.position }
+                : {}),
+              ...(typeof e.addonName === "string"
+                ? { addonName: e.addonName }
+                : {}),
+              ...(e.gesture === "tap" ||
+              e.gesture === "dbl-tap" ||
+              e.gesture === "hold"
+                ? { gesture: e.gesture }
+                : {}),
+              ...(typeof e.keyIndex === "number"
+                ? { keyIndex: e.keyIndex }
+                : {}),
             })
           }
         }

@@ -191,6 +191,7 @@ describe("bridgeAddonServices", () => {
       statePublisher,
       bridge,
       methods,
+      logger: silentLogger(),
     })
 
     expect(subSpy).toHaveBeenCalledWith({ initial: true })
@@ -211,6 +212,7 @@ describe("bridgeAddonServices", () => {
       externalAddons: [],
       executor,
       pubSub,
+      logger: silentLogger(),
       store,
       signal,
       statePublisher,

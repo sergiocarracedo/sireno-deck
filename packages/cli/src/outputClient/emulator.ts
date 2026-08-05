@@ -96,7 +96,7 @@ export class EmulatorOutputClient implements OutputClient {
       )
     }
     const descriptor = this.descriptor
-    const logger = opts.logger
+    const logger = opts.logger.child({ component: "emulator" })
     let shuttingDown = false
 
     // ponytail: supervise each vite child independently — frontend crash
@@ -200,7 +200,7 @@ export class EmulatorOutputClient implements OutputClient {
         return
       }
       if (!isButtonAction(message)) return
-      logger.info(
+      logger.debug(
         {
           deckId: message.deckId,
           position: message.position,

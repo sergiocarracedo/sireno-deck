@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
-import { createLogger } from "@/util/logger"
+import { createLogger, formatHuman } from "@/util/logger"
 
 const originalIsTTY = process.stdout.isTTY
 const originalInv = process.env["INVOCATION_ID"]
@@ -100,5 +100,30 @@ describe("default human format renders inline context", () => {
     expect(all).toContain("Error: boom")
     // All on one line
     expect(all.split("\n").filter((l) => l.length > 0)).toHaveLength(1)
+  })
+
+  it("renders a [component] bracket between level and msg when component is present", () => {
+    const formatted = formatHuman(
+      JSON.stringify({
+        level: 30,
+        time: 0,
+        component: "runtime",
+        msg: "invokeAction resolved",
+      }),
+    )
+    expect(formatted).toContain("[runtime]")
+    expect(formatted).toContain("invokeAction resolved")
+  })
+
+  it("omits the [component] bracket when component is absent", () => {
+    const formatted = formatHuman(
+      JSON.stringify({
+        level: 30,
+        time: 0,
+        msg: "plain message",
+      }),
+    )
+    expect(formatted).not.toMatch(/\[[a-z-]+\]/)
+    expect(formatted).toContain("plain message")
   })
 })

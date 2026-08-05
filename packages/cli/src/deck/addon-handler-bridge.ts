@@ -63,6 +63,7 @@ export const bridgeAddonServices = async (
     bridge,
     methods,
   } = params
+  const logger = params.logger.child({ component: "addon-handler" })
 
   // ponytail: built-in and third-party addons wire through the same loop;
   // built-ins come from the static registry, third-parties from the loader.

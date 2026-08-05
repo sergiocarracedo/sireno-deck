@@ -10,12 +10,16 @@ export interface CreateLoggerOptions {
   level?: LoggerOptions["level"]
   verbose?: boolean
   json?: boolean
+  component?: string
 }
 
 const RESET = "\u001b[0m"
 const DIM = "\u001b[2m"
 const RED = "\u001b[31m"
+const GREEN = "\u001b[32m"
 const YELLOW = "\u001b[33m"
+const BLUE = "\u001b[34m"
+const MAGENTA = "\u001b[35m"
 const CYAN = "\u001b[36m"
 const GRAY = "\u001b[90m"
 
@@ -40,6 +44,31 @@ const LEVEL_LABEL: Record<number, string> = {
 const colorize = (color: string, text: string): string =>
   process.stdout.isTTY ? `${color}${text}${RESET}` : text
 
+const COMPONENT_COLOR: Record<string, string> = {
+  runtime: CYAN,
+  methods: CYAN,
+  executor: CYAN,
+  "state-publisher": CYAN,
+  real: GREEN,
+  emulator: GREEN,
+  "ws-bridge": MAGENTA,
+  "addon-handler": MAGENTA,
+  "active-app": YELLOW,
+  "key-macro": YELLOW,
+  clipboard: YELLOW,
+  notification: YELLOW,
+  session: YELLOW,
+  "browser-renderer": BLUE,
+  "emulator-server": BLUE,
+  daemon: BLUE,
+  requirements: BLUE,
+  orchestrator: CYAN,
+  cli: GRAY,
+}
+
+const colorForComponent = (component: string): string =>
+  COMPONENT_COLOR[component] ?? GRAY
+
 const CONTEXT_FIELDS = [
   "frontendUrl",
   "wsUrl",
@@ -62,6 +91,15 @@ const CONTEXT_FIELDS = [
   "fullPath",
 ] as const
 
+const FORWARDED_CONTEXT_FIELDS = [
+  "component",
+  "deckId",
+  "position",
+  "addonName",
+  "gesture",
+  "keyIndex",
+] as const
+
 export const formatHuman = (jsonLine: string): string | null => {
   let entry: Record<string, unknown>
   try {
@@ -79,6 +117,13 @@ export const formatHuman = (jsonLine: string): string | null => {
       : ""
   const ts = colorize(DIM, time.length > 0 ? `${time} ` : "")
   const head = colorize(levelColor, level.padEnd(5))
+
+  const component =
+    typeof entry["component"] === "string" ? entry["component"] : ""
+  const componentTag =
+    component.length > 0
+      ? ` ${colorize(colorForComponent(component), `[${component}]`)}`
+      : ""
 
   const ctxParts: string[] = []
   for (const key of CONTEXT_FIELDS) {
@@ -100,7 +145,7 @@ export const formatHuman = (jsonLine: string): string | null => {
     }
   }
   const ctxStr = ctxParts.length > 0 ? ` (${ctxParts.join(", ")})` : ""
-  return `${ts}${head} ${msg}${ctxStr}`
+  return `${ts}${head}${componentTag} ${msg}${ctxStr}`
 }
 
 class HumanWritable extends Writable {
@@ -180,7 +225,7 @@ export const isServiceMode = createIsServiceMode({
 })
 
 export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
-  const { level, verbose = false, json = false } = options
+  const { level, verbose = false, json = false, component } = options
 
   if (verbose) process.env["SIRENO_LOG_VERBOSE"] = "1"
   if (json) process.env["SIRENO_LOG_JSON"] = "1"
@@ -199,6 +244,13 @@ export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
     },
   }
 
+  if (component === undefined) {
+    return makeLogger(loggerOptions, wantRaw)
+  }
+  return makeLogger(loggerOptions, wantRaw).child({ component })
+}
+
+const makeLogger = (loggerOptions: LoggerOptions, wantRaw: boolean): Logger => {
   if (wantRaw) {
     return pino(loggerOptions)
   }
@@ -212,6 +264,12 @@ export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
           level?: number
           time?: number
           msg?: string
+          component?: unknown
+          deckId?: unknown
+          position?: unknown
+          addonName?: unknown
+          gesture?: unknown
+          keyIndex?: unknown
         }
         if (
           typeof parsed.level === "number" &&
@@ -220,13 +278,21 @@ export const createLogger = (options: CreateLoggerOptions = {}): Logger => {
         ) {
           const levelName = levelNameFromNumber(parsed.level)
           if (levelName !== null) {
+            const payload: Record<string, unknown> = {
+              level: levelName,
+              msg: parsed.msg,
+              ts: parsed.time,
+            }
+            for (const key of FORWARDED_CONTEXT_FIELDS) {
+              const v = parsed[key]
+              if (v === undefined || v === null) continue
+              if (typeof v === "string" || typeof v === "number") {
+                payload[key] = v
+              }
+            }
             ;(process.emit as unknown as (e: string, p: unknown) => void)(
               "sireno:log",
-              {
-                level: levelName,
-                msg: parsed.msg,
-                ts: parsed.time,
-              },
+              payload,
             )
           }
         }

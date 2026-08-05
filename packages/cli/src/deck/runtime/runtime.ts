@@ -137,7 +137,8 @@ export interface Runtime {
 }
 
 export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
-  const { pubSub, store, logger, getMethods } = options
+  const { pubSub, store, getMethods } = options
+  const logger = options.logger.child({ component: "runtime" })
   let { decks } = options
   let gestureListener: GestureListener | null = null
   const mainDeck = decks.find((d) => d.isMain) ?? decks[0]
@@ -557,10 +558,18 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
           ? found.button.actions?.dbltap
           : found.button.actions?.hold
 
+    const deck = deckById(found.deckId)
+    const position =
+      found.button.position ??
+      (deck !== undefined
+        ? deck.buttons.findIndex((b) => b.id === found.button.id)
+        : -1)
+
     logger.info(
       {
         buttonId,
         deckId: found.deckId,
+        position,
         gesture,
         buttonType: found.button.type,
         buttonActions: found.button.actions,
@@ -568,13 +577,6 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       },
       "[runtime] invokeAction resolved",
     )
-
-    const deck = deckById(found.deckId)
-    const position =
-      found.button.position ??
-      (deck !== undefined
-        ? deck.buttons.findIndex((b) => b.id === found.button.id)
-        : -1)
 
     if (userAction !== undefined) {
       logger.info(
