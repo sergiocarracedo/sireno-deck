@@ -76,11 +76,13 @@ export interface ButtonActionContext {
   deckId: string
   config: unknown
   gesture: GestureKind
+  position: number | undefined
 }
 
 export interface GestureEvent {
   readonly gesture: GestureKind
   readonly at: number
+  readonly position: number | undefined
 }
 
 export type GestureListener = (buttonId: string, event: GestureEvent) => void
@@ -276,7 +278,19 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     navOptions?: { addToHistory?: boolean },
   ): void => {
     if (id === getActiveDeckId()) return
-    const target = deckById(id)
+    let resolvedId = id
+    let target = deckById(id)
+    // ponytail: paginated decks drop the base id (e.g. `demo-media` becomes
+    // `demo-media-p1`/`demo-media-p2`). Fall back to the first paginated page
+    // when the base id no longer exists, so `core:change-deck` targets keep
+    // working without callers knowing about pagination.
+    if (target === undefined) {
+      const firstPage = deckById(`${id}-p1`)
+      if (firstPage !== undefined) {
+        target = firstPage
+        resolvedId = firstPage.id
+      }
+    }
     if (target === undefined) {
       logger.warn({ deckId: id }, "navigateToDeck: deck not found")
       return
@@ -293,18 +307,18 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
         overlayNavStacks.set(overlayDeckId, [overlayDeckId])
       }
       const current = overlayNavStacks.get(overlayDeckId)!
-      if (current[current.length - 1] !== id) {
-        current.push(id)
+      if (current[current.length - 1] !== resolvedId) {
+        current.push(resolvedId)
       }
       transientDeckId = null
     } else if (navOptions?.addToHistory === false) {
-      transientDeckId = id
+      transientDeckId = resolvedId
     } else {
-      navStack.push(id)
+      navStack.push(resolvedId)
       transientDeckId = null
     }
     pubSub.publish("runtime:deck-inactive", { deckId: previousActiveId })
-    pubSub.publish("runtime:activeDeck", { deckId: id })
+    pubSub.publish("runtime:activeDeck", { deckId: resolvedId })
   }
 
   const goBack = (): void => {
@@ -614,6 +628,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       deckId: found.deckId,
       config: found.button.config,
       gesture,
+      position: found.button.position,
     }
     const fn =
       gesture === "tap"
@@ -636,7 +651,11 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       logger.warn({ buttonId }, "dispatchGesture: button not found")
       return
     }
-    gestureListener?.(found.button.id, { gesture, at: Date.now() })
+    gestureListener?.(found.button.id, {
+      gesture,
+      at: Date.now(),
+      position: found.button.position,
+    })
     await invokeAction(buttonId, gesture)
   }
 
@@ -901,7 +920,8 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
   const runtime: Runtime = {
     getActiveDeck,
     getActiveDeckId,
-    deckExists: (id: string) => deckById(id) !== undefined,
+    deckExists: (id: string) =>
+      deckById(id) !== undefined || deckById(`${id}-p1`) !== undefined,
     setDecks,
     navigateToDeck,
     goBack,

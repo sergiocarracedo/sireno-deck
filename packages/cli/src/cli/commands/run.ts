@@ -666,9 +666,10 @@ const buildRuntime = (
         objectButtons,
         keyCount,
         logger,
-      ).map((b, idx) => ({
-        id: b.position?.toString() ?? `b${idx}`,
+      ).map((b) => ({
+        id: `${b.position}-${id}-0`,
         type: b.type,
+        ...(b.position !== undefined ? { position: b.position } : {}),
         ...(typeof b.config === "object" && b.config !== null
           ? { config: b.config }
           : {}),
@@ -700,7 +701,7 @@ const buildRuntime = (
         ...(d.autoShow === true ? { autoShow: true } : {}),
         ...(d.icon !== undefined ? { icon: d.icon } : {}),
       }
-      if (d.paginated === true && runtimeButtons.length > 0) {
+      if (runtimeButtons.length > keyCount - 1) {
         const pages = paginateDeck({
           baseDeckId: id,
           buttons: runtimeButtons,
@@ -710,7 +711,14 @@ const buildRuntime = (
           const mappedButtons: RuntimeDeck["buttons"] = (
             p.deck.buttons ?? []
           ).map((b, i) => {
-            const { position, type, config, buttonColor, ...rest } = b as {
+            const {
+              position,
+              type,
+              config,
+              buttonColor,
+              id: _btnId,
+              ...rest
+            } = b as {
               position?: number
               type: string
               config?: unknown
@@ -722,6 +730,7 @@ const buildRuntime = (
                 | "magenta"
                 | "amber"
                 | "lime"
+              id?: string
             }
             const mergedConfig = {
               ...(typeof config === "object" && config !== null
@@ -730,7 +739,7 @@ const buildRuntime = (
               ...rest,
             }
             return {
-              id: position !== undefined ? String(position) : String(i),
+              id: `${position}-${id}-${p.pageIndex}`,
               type,
               ...(position !== undefined ? { position } : {}),
               ...(buttonColor !== undefined ? { buttonColor } : {}),
@@ -852,14 +861,10 @@ export const applyConfigErrorReplacements = (
       // re-validating them via the user-config schema always fails.
       const isAddonInjectedDeck = deck.id.startsWith("internal-settings:")
       if (isAddonInjectedDeck) continue
-      const parsed = Number.parseInt(btn.id, 10)
-      const position =
-        btn.position ?? (Number.isFinite(parsed) ? parsed : undefined)
+      const position = btn.position
       if (position === undefined) continue
       // ponytail: skip system buttons — they are injected, not user-configured
       if (btn.type.startsWith("core:")) continue
-      // ponytail: skip addon-injected buttons (semantic id like 'brightness-down')
-      if (!Number.isFinite(parsed)) continue
 
       const path = `decks.${deck.id}.buttons[@position:${position}]`
       const { issues, schemaIssues } = validateButton(
@@ -901,15 +906,13 @@ export const applyConfigErrorReplacements = (
     if (brokenMap === undefined || brokenMap.size === 0) return deck
     const errors: DeckButtonError[] = []
     const buttons = deck.buttons.map((btn) => {
-      const parsed = Number.parseInt(btn.id, 10)
-      const position =
-        btn.position ?? (Number.isFinite(parsed) ? parsed : undefined)
+      const position = btn.position
       if (position === undefined) return btn
       const broken = brokenMap.get(position)
       if (broken === undefined) return btn
       errors.push({ position, details: broken.details })
       return {
-        id: String(position),
+        id: `${position}-${deck.id}-0`,
         type: "core:temporary-error" as const,
         position,
         config: { details: broken.details },
@@ -1099,7 +1102,6 @@ export const addonInventoryFromScanned = (
   decks: Array<{
     id: string
     isOverlay: boolean
-    paginated: boolean
     buttons: number
     internal: boolean
   }>
@@ -1116,7 +1118,6 @@ export const addonInventoryFromScanned = (
   decks: s.decks.map((d) => ({
     id: d.id,
     isOverlay: d.isOverlay,
-    paginated: d.paginated,
     buttons: d.buttons,
     internal: d.internal,
   })),
@@ -1172,7 +1173,6 @@ export const buildExternalScannedAddons = (
     const decks: Array<{
       id: string
       isOverlay: boolean
-      paginated: boolean
       buttons: number
       internal: boolean
     }> = []
@@ -1181,7 +1181,6 @@ export const buildExternalScannedAddons = (
         decks.push({
           id: `${manifest.name}:__multi__`,
           isOverlay: false,
-          paginated: true,
           buttons: -1,
           internal: entry.internal ?? false,
         })
@@ -1189,7 +1188,6 @@ export const buildExternalScannedAddons = (
         decks.push({
           id: entry.id,
           isOverlay: entry.isOverlay ?? false,
-          paginated: entry.paginated ?? false,
           buttons: -1,
           internal: entry.internal ?? false,
         })
@@ -1197,7 +1195,6 @@ export const buildExternalScannedAddons = (
         decks.push({
           id: entry.id,
           isOverlay: entry.isOverlay ?? false,
-          paginated: entry.paginated ?? false,
           buttons: Array.isArray(entry.buttons) ? entry.buttons.length : 0,
           internal: entry.internal ?? false,
         })

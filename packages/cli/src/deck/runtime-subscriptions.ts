@@ -19,18 +19,16 @@ export const subscribeNavigateDeck = (
       "addToHistory" in payload
         ? Boolean((payload as { addToHistory: unknown }).addToHistory)
         : true
-    const buttonId =
-      "buttonId" in payload
-        ? String((payload as { buttonId: unknown }).buttonId)
-        : undefined
-    // ponytail: missing nav target is a button-level error, not a deck-level
-    // one — never mutate navigation state. Capture source position so we can
-    // publish the error to the correct slot if the target does not exist.
-    const sourceDeckId = runtime.getActiveDeckId()
+    // ponytail: position arrives as a real field on the payload — never parse it
+    // from buttonId. The id format `[position]-[deck]-[page]` is opaque; pages
+    // 2+ collide with the page-nav slot's bare-digit prefix if you try.
     const sourcePosition =
-      buttonId !== undefined && Number.isFinite(Number(buttonId))
-        ? Number(buttonId)
+      "position" in payload &&
+      (payload as { position: unknown }).position !== undefined &&
+      Number.isFinite(Number((payload as { position: unknown }).position))
+        ? Number((payload as { position: unknown }).position)
         : undefined
+    const sourceDeckId = runtime.getActiveDeckId()
     // ponytail: check existence BEFORE calling navigateToDeck so we never mutate
     // nav state for a missing target. deckExists is the runtime's public check.
     if (!runtime.deckExists(deckId) && sourcePosition !== undefined) {

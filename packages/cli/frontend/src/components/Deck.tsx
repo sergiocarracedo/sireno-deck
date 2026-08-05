@@ -93,8 +93,7 @@ const resolvePosition = (button: DeckButton, fallback: number): number => {
   ) {
     return button.position
   }
-  const parsed = Number.parseInt(button.id, 10)
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback
+  return fallback
 }
 
 interface ButtonSurfaceProps {

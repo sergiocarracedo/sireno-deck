@@ -13,6 +13,7 @@ const makeCtx = (config: {
     ctx: {
       config,
       buttonId: "page-nav",
+      position: 13,
       addonName: "core",
       methods: Object.freeze({}),
       publish,
@@ -36,6 +37,8 @@ describe("core:page-nav backend", () => {
     expect(publish).toHaveBeenCalledWith("runtime:navigate-deck", {
       deckId: "deck-p2",
       addToHistory: false,
+      buttonId: "page-nav",
+      position: 13,
     })
   })
 
@@ -50,6 +53,8 @@ describe("core:page-nav backend", () => {
     expect(publish).toHaveBeenCalledWith("runtime:navigate-deck", {
       deckId: "deck-p1",
       addToHistory: false,
+      buttonId: "page-nav",
+      position: 13,
     })
   })
 
@@ -68,6 +73,8 @@ describe("core:page-nav backend", () => {
     expect(publish).toHaveBeenCalledWith("runtime:navigate-deck", {
       deckId: "deck-base",
       addToHistory: false,
+      buttonId: "page-nav",
+      position: 13,
     })
   })
 
@@ -82,6 +89,8 @@ describe("core:page-nav backend", () => {
     expect(publish).toHaveBeenCalledWith("runtime:navigate-deck", {
       deckId: "deck-base",
       addToHistory: false,
+      buttonId: "page-nav",
+      position: 13,
     })
   })
 

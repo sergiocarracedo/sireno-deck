@@ -13,14 +13,16 @@ const DECK = {
   name: "Home",
   buttons: [
     {
-      id: "b0",
+      id: "0-main-0",
       type: "core:change-deck",
+      position: 0,
       label: "Media",
       config: { deck: "media" },
     },
     {
-      id: "b1",
+      id: "1-main-0",
       type: "core:action",
+      position: 1,
       label: "Run",
       config: { label: "Run" },
     },
@@ -42,16 +44,16 @@ describe("Deck", () => {
     const b0Received: Array<unknown> = []
     const b1Received: Array<unknown> = []
     const unsub0 = ChannelRegistry.instance().subscribe(
-      "runtime:gesture:b0",
+      "runtime:gesture:0-main-0",
       (p) => b0Received.push(p),
     )
     const unsub1 = ChannelRegistry.instance().subscribe(
-      "runtime:gesture:b1",
+      "runtime:gesture:1-main-0",
       (p) => b1Received.push(p),
     )
 
     act(() => {
-      ChannelRegistry.instance().publish("runtime:gesture:b1", {
+      ChannelRegistry.instance().publish("runtime:gesture:1-main-0", {
         gesture: "tap",
         at: 1,
       })
@@ -98,8 +100,20 @@ describe("Deck", () => {
       ...DECK,
       buttons: [
         ...DECK.buttons,
-        { id: "6", type: "core:action", label: "Off-grid", config: {} },
-        { id: "7", type: "core:action", label: "Off-grid-2", config: {} },
+        {
+          id: "6-main-0",
+          type: "core:action",
+          position: 6,
+          label: "Off-grid",
+          config: {},
+        },
+        {
+          id: "7-main-0",
+          type: "core:action",
+          position: 7,
+          label: "Off-grid-2",
+          config: {},
+        },
       ],
     }
     const { container } = render(

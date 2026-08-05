@@ -70,37 +70,37 @@ describe("injectSystemButtons", () => {
   it("injects core:settings-entry at n-1 on main deck", () => {
     const main = {
       ...deck({ isMain: true }),
-      buttons: [{ id: "0", type: "x" }],
+      buttons: [{ id: "0-d1-0", position: 0, type: "x" }],
     }
     const [result] = injectSystemButtons([main], 15)
-    const n1 = result.buttons.find((b) => b.id === "14")
+    const n1 = result.buttons.find((b) => b.id === "14-d1-0")
     expect(n1?.type).toBe("core:settings-entry")
   })
 
   it("injects core:back at n-1 on non-main deck", () => {
     const sub = {
       ...deck({ id: "sub", name: "Sub" }),
-      buttons: [{ id: "0", type: "x" }],
+      buttons: [{ id: "0-sub-0", position: 0, type: "x" }],
     }
     const [result] = injectSystemButtons([sub], 15)
-    const n1 = result.buttons.find((b) => b.id === "14")
+    const n1 = result.buttons.find((b) => b.id === "14-sub-0")
     expect(n1?.type).toBe("core:back")
   })
 
   it("injects core:overlay-toggle at n-1 on overlay deck", () => {
     const overlay = {
       ...deck({ id: "overlay", name: "Overlay", isOverlay: true }),
-      buttons: [{ id: "0", type: "x" }],
+      buttons: [{ id: "0-overlay-0", position: 0, type: "x" }],
     }
     const [result] = injectSystemButtons([overlay], 15)
-    const n1 = result.buttons.find((b) => b.id === "14")
+    const n1 = result.buttons.find((b) => b.id === "14-overlay-0")
     expect(n1?.type).toBe("core:overlay-toggle")
   })
 
   it("overwrites existing user button at n-1", () => {
     const withN1 = {
       ...deck({ id: "sub" }),
-      buttons: [{ id: "14", type: "user:custom" }],
+      buttons: [{ id: "14-sub-0", position: 14, type: "user:custom" }],
     }
     const [result] = injectSystemButtons([withN1], 15)
     expect(result.buttons).toHaveLength(1)
@@ -110,14 +110,14 @@ describe("injectSystemButtons", () => {
   it("uses keyCount to determine n-1 position", () => {
     const main = { ...deck({ isMain: true }), buttons: [] }
     const [result] = injectSystemButtons([main], 6)
-    const n1 = result.buttons.find((b) => b.id === "5")
+    const n1 = result.buttons.find((b) => b.id === "5-d1-0")
     expect(n1?.type).toBe("core:settings-entry")
   })
 
   it("injects core:back at id '31' on XL (keyCount=32)", () => {
     const sub = { ...deck({ id: "sub" }), buttons: [] }
     const [result] = injectSystemButtons([sub], 32)
-    const n1 = result.buttons.find((b) => b.id === "31")
+    const n1 = result.buttons.find((b) => b.id === "31-sub-0")
     expect(n1?.type).toBe("core:back")
     expect(result.buttons).toHaveLength(1)
   })
@@ -125,17 +125,17 @@ describe("injectSystemButtons", () => {
   it("is idempotent when n-1 is already a system button", () => {
     const alreadyInjected = {
       ...deck({ isMain: true }),
-      buttons: [{ id: "14", type: "core:settings-entry" }],
+      buttons: [{ id: "14-d1-0", position: 14, type: "core:settings-entry" }],
     }
     const [result] = injectSystemButtons([alreadyInjected], 15)
-    const n1Count = result.buttons.filter((b) => b.id === "14").length
+    const n1Count = result.buttons.filter((b) => b.id === "14-d1-0").length
     expect(n1Count).toBe(1)
   })
 
   it("preserves other deck properties", () => {
     const sub = {
       ...deck({ id: "media", name: "Media", isOverlay: false }),
-      buttons: [{ id: "0", type: "media:player" }],
+      buttons: [{ id: "0-media-0", position: 0, type: "media:player" }],
     }
     const [result] = injectSystemButtons([sub], 15)
     expect(result.id).toBe("media")
@@ -147,8 +147,12 @@ describe("injectSystemButtons", () => {
     const sub = { ...deck({ id: "sub" }), buttons: [] }
     const [withMk2] = injectSystemButtons([sub], 15)
     const [withXl] = injectSystemButtons([sub], 32)
-    expect(withMk2.buttons.find((b) => b.id === "14")?.type).toBe("core:back")
-    expect(withXl.buttons.find((b) => b.id === "31")?.type).toBe("core:back")
-    expect(withXl.buttons.find((b) => b.id === "14")).toBeUndefined()
+    expect(withMk2.buttons.find((b) => b.id === "14-sub-0")?.type).toBe(
+      "core:back",
+    )
+    expect(withXl.buttons.find((b) => b.id === "31-sub-0")?.type).toBe(
+      "core:back",
+    )
+    expect(withXl.buttons.find((b) => b.id === "14-sub-0")).toBeUndefined()
   })
 })

@@ -18,7 +18,6 @@ interface AddonGeneratedDeck {
     | "amber"
     | "lime"
   buttons?: unknown[]
-  paginated?: boolean
   trigger?: unknown
   autoShow?: boolean
   isOverlay?: boolean
@@ -65,10 +64,18 @@ const mapAddonDeckToRuntimeDeck = (
   gdeck: AddonGeneratedDeck,
   keyCount: number,
 ): RuntimeDeck[] => {
-  if (gdeck.paginated === true && (gdeck.buttons ?? []).length > 0) {
+  if ((gdeck.buttons ?? []).length > keyCount - 1) {
+    // ponytail: positionButtons guarantees every button has a unique position
+    // before paginate() buckets them by page. Without this, addon-deck
+    // buttons that omit `position` end up in the NaN bucket of paginate()
+    // and vanish — they never reach the frontend as buttons on page ≥ 2.
+    const positioned = positionButtons(
+      (gdeck.buttons ?? []) as Array<{ position?: number }>,
+      keyCount,
+    )
     const pages = paginateDeck({
       baseDeckId: id,
-      buttons: gdeck.buttons ?? [],
+      buttons: positioned,
       keyCount,
     })
     return pages.map((p) => {
@@ -80,13 +87,15 @@ const mapAddonDeckToRuntimeDeck = (
             config,
             actions,
             full: buttonFull,
+            id: _btnId,
             ...rest
           } = b as {
-            position?: number
+            position: number
             type: string
             config?: unknown
             actions?: unknown
             full?: unknown
+            id?: string
           }
           const mergedConfig = {
             ...(typeof config === "object" && config !== null
@@ -98,9 +107,9 @@ const mapAddonDeckToRuntimeDeck = (
             registry.getButtonType(type)?.def.service.full === true ||
             buttonFull === true
           return {
-            id: position !== undefined ? String(position) : String(i),
+            id: `${position}-${id}-${p.pageIndex}`,
             type,
-            ...(position !== undefined ? { position } : {}),
+            position,
             ...(Object.keys(mergedConfig).length > 0
               ? { config: mergedConfig }
               : {}),
@@ -143,13 +152,15 @@ const mapAddonDeckToRuntimeDeck = (
       config,
       actions,
       full: buttonFull,
+      id: _btnId,
       ...rest
     } = b as {
-      position?: number
+      position: number
       type: string
       config?: unknown
       actions?: unknown
       full?: unknown
+      id?: string
     }
     const mergedConfig = {
       ...(typeof config === "object" && config !== null
@@ -161,9 +172,9 @@ const mapAddonDeckToRuntimeDeck = (
       registry.getButtonType(type)?.def.service.full === true ||
       buttonFull === true
     return {
-      id: position !== undefined ? String(position) : String(i),
+      id: `${position}-${id}-0`,
       type,
-      ...(position !== undefined ? { position } : {}),
+      position,
       ...(Object.keys(mergedConfig).length > 0 ? { config: mergedConfig } : {}),
       ...(isActionMap(actions) ? { actions } : {}),
       ...(full ? { full: true } : {}),

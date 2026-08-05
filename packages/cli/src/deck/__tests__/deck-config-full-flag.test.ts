@@ -140,9 +140,19 @@ describe("buildDeckConfigMessage — lockActive hides injected n-1 system button
     id: "core:lock",
     name: "Lock",
     buttons: [
-      { id: "5", type: "date-time:date-time", config: {} },
-      { id: "13", type: "date-time:date-time", config: {} },
-      { id: "14", type: "core:back", config: {} },
+      {
+        id: "5-core:lock-0",
+        position: 5,
+        type: "date-time:date-time",
+        config: {},
+      },
+      {
+        id: "13-core:lock-0",
+        position: 13,
+        type: "date-time:date-time",
+        config: {},
+      },
+      { id: "14-core:lock-0", position: 14, type: "core:back", config: {} },
     ],
   }
 
@@ -160,7 +170,7 @@ describe("buildDeckConfigMessage — lockActive hides injected n-1 system button
       { lockActive: true },
     )
     const ids = msg.surfaces[deck.id].buttons.map((b) => b.id)
-    expect(ids).toEqual(["5", "13"])
+    expect(ids).toEqual(["5-core:lock-0", "13-core:lock-0"])
   })
 
   it("keeps the n-1 system button when not locked", () => {
@@ -177,15 +187,25 @@ describe("buildDeckConfigMessage — lockActive hides injected n-1 system button
       { lockActive: false },
     )
     const ids = msg.surfaces[deck.id].buttons.map((b) => b.id)
-    expect(ids).toContain("14")
+    expect(ids).toContain("14-core:lock-0")
   })
 
   it("keeps a user button at n-1 when locked (only system buttons are stripped)", () => {
     const userDeck = {
       ...deck,
       buttons: [
-        { id: "5", type: "date-time:date-time", config: {} },
-        { id: "14", type: "weather:weather", config: {} },
+        {
+          id: "5-core:lock-0",
+          position: 5,
+          type: "date-time:date-time",
+          config: {},
+        },
+        {
+          id: "14-core:lock-0",
+          position: 14,
+          type: "weather:weather",
+          config: {},
+        },
       ],
     }
     const msg = buildDeckConfigMessage(
@@ -201,6 +221,6 @@ describe("buildDeckConfigMessage — lockActive hides injected n-1 system button
       { lockActive: true },
     )
     const ids = msg.surfaces[userDeck.id].buttons.map((b) => b.id)
-    expect(ids).toEqual(["5", "14"])
+    expect(ids).toEqual(["5-core:lock-0", "14-core:lock-0"])
   })
 })

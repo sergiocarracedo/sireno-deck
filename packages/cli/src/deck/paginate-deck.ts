@@ -41,7 +41,6 @@ export const paginateDeck = (opts: PaginateDeckOptions): PageDeckResult[] => {
       totalPages === 1 ? baseDeckId : `${baseDeckId}-p${pageIndex + 1}`
 
     const deckButtons: unknown[] = []
-    let emojiCount = 0
 
     for (const item of page.items) {
       if (isNextPageMarker(item)) {
@@ -62,6 +61,7 @@ export const paginateDeck = (opts: PaginateDeckOptions): PageDeckResult[] => {
           }
         }
         deckButtons.push({
+          id: `${pageNavPosition}-${baseDeckId}-${pageIndex}`,
           type: PAGE_NAV_BUTTON_TYPE,
           position: pageNavPosition,
           config: {
@@ -72,11 +72,16 @@ export const paginateDeck = (opts: PaginateDeckOptions): PageDeckResult[] => {
           },
         })
       } else if (item !== null) {
+        // ponytail: emit the original button with the global key index as
+        // its position. paginate() groups by page = floor(position / (K-2))
+        // and slot = position % (K-2); item.id is `${pageIndex}-${slot}`.
+        const pageSize = keyCount - 2
+        const slot = Number(item.id.split("-").pop() ?? "0")
+        const position = pageIndex * pageSize + slot
         deckButtons.push({
-          ...((item as { value: unknown }).value as Record<string, unknown>),
-          position: emojiCount,
+          ...(item.value as Record<string, unknown>),
+          position,
         })
-        emojiCount++
       }
     }
 

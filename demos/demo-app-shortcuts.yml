@@ -1,5 +1,4 @@
 name: App Shortcuts Demo
-paginated: true
 buttons:
   - position: 0
     type: "core:action"
@@ -57,3 +56,83 @@ buttons:
     config:
       icon: icon://compass
       label: Firefox
+  - position: 7
+    type: "core:action"
+    buttonColor: blue
+    actions:
+      tap: "claude"
+    config:
+      icon: icon://bot
+      label: Claude
+  - position: 8
+    type: "core:action"
+    buttonColor: green
+    actions:
+      tap: "opencode"
+    config:
+      icon: icon://terminal
+      label: OpenCode
+  - position: 9
+    type: "core:action"
+    buttonColor: purple
+    actions:
+      tap: "spotify"
+    config:
+      icon: icon://music"
+      label: Spotify
+  - position: 10
+    type: "core:action"
+    buttonColor: cyan
+    actions:
+      tap: "telegram"
+    config:
+      icon: icon://send"
+      label: Telegram
+  - position: 11
+    type: "core:action"
+    buttonColor: magenta
+    actions:
+      tap: "whatsapp"
+    config:
+      icon: icon://message-circle"
+      label: WhatsApp
+  - position: 12
+    type: "core:action"
+    buttonColor: amber
+    actions:
+      tap: "signal"
+    config:
+      icon: icon://message-square"
+      label: Signal
+  - position: 13
+    type: "core:action"
+    buttonColor: lime
+    actions:
+      tap: "thunderbird"
+    config:
+      icon: icon://mail"
+      label: Thunderbird
+  - position: 14
+    type: "core:action"
+    buttonColor: blue
+    actions:
+      tap: "gimp"
+    config:
+      icon: icon://image"
+      label: GIMP
+  - position: 15
+    type: "core:action"
+    buttonColor: green
+    actions:
+      tap: "obsidian"
+    config:
+      icon: icon://book"
+      label: Obsidian
+  - position: 16
+    type: "core:action"
+    buttonColor: purple
+    actions:
+      tap: "calculator"
+    config:
+      icon: icon://calculator"
+      label: Calculator

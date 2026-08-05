@@ -258,6 +258,7 @@ export const bridgeAddonServices = async (
       const buttonCtx: AddonButtonServiceContext<unknown> = {
         config: button.config ?? {},
         buttonId: button.id,
+        position: button.position,
         addonName,
         methods: Object.freeze(buttonMethods),
         coreMethods: methods,

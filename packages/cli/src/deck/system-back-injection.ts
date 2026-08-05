@@ -49,16 +49,13 @@ export const injectSystemButtons = <T extends RuntimeDeck>(
       lockActive: options?.lockActive === true,
     })
     if (systemButtonType === null) return deck
-    const filtered = deck.buttons.filter((b) => {
-      const parsed = Number.parseInt(b.id, 10)
-      return parsed !== n1Position && b.position !== n1Position
-    })
+    const filtered = deck.buttons.filter((b) => b.position !== n1Position)
     return {
       ...deck,
       buttons: [
         ...filtered,
         {
-          id: String(n1Position),
+          id: `${n1Position}-${deck.id}-0`,
           type: systemButtonType,
         } as T["buttons"][number],
       ],

@@ -126,12 +126,11 @@ export const buildDeckConfigMessage = (
       // ponytail: when locked the injected n-1 system button is a dead
       // control (back/settings do nothing on the lock deck) — hide it.
       if (options?.lockActive !== true) return true
-      const position = Number.parseInt(b.id, 10)
-      if (position !== n1Position) return true
+      if (b.position !== n1Position) return true
       return !isSystemButtonType(b.type)
     })
     .map((b) => {
-      const position = Number.parseInt(b.id, 10)
+      const position = b.position
       const addon = addonByType.get(b.type)
       const cfg = (b.config ?? {}) as Record<string, unknown>
       const label = deriveLabel(b.type, cfg)
@@ -143,8 +142,8 @@ export const buildDeckConfigMessage = (
       return {
         id: b.id,
         type: b.type,
-        config: resolvedConfig,
         ...(Number.isFinite(position) ? { position } : {}),
+        config: resolvedConfig,
         ...(label !== undefined ? { label } : {}),
         ...(addon !== undefined ? { addonName: addon.name } : {}),
         ...(addon?.frontendEntry !== undefined && addon.frontendEntry !== null

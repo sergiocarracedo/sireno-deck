@@ -27,10 +27,10 @@ export const positionButtons = <T extends { position?: number }>(
       continue
     }
     if (pos >= keyCount) {
-      logger?.debug(
-        { position: pos, keyCount, reason: "overflow" },
-        "button position overflow, dropping",
-      )
+      // ponytail: overflow positions are valid — pagination maps
+      // floor(pos / (K-2)) / mod(K-2) for each page. n-1 and n-2 stay
+      // reserved for the system, so e.g. position 15 on a 15-key
+      // device maps to page 1, slot 2.
       continue
     }
     if (occupied.has(pos)) {

@@ -3,30 +3,36 @@ import { describe, expect, it } from "vitest"
 
 import { paginateDeck } from "../paginate-deck"
 
+// ponytail: real runtime buttons are flat objects with a `position`
+// field — page = floor(position / (K-2)), slot = position % (K-2).
+// n-1 and n-2 on each page stay reserved for system buttons (page-nav
+// at K-2, settings at K-1).
+const btn = (position: number) => ({
+  type: "test:btn",
+  label: `b${position}`,
+  position,
+})
+
 describe("paginateDeck", () => {
   it("14 items split into 2 pages", () => {
+    // positions 0..13 on K=15: page 0 (0..12), page 1 (13)
     const result = paginateDeck({
       baseDeckId: "deck",
-      buttons: Array.from({ length: 14 }, (_, i) => ({
-        id: `btn${i}`,
-        value: { type: "test:btn", label: `b${i}` },
-      })),
+      buttons: Array.from({ length: 14 }, (_, i) => btn(i)),
       keyCount: 15,
     })
     expect(result.length).toBe(2)
   })
 
   it("20 items on keyCount=32 fits in 1 page", () => {
+    // positions 0..19 on K=32: pageSize=30; 20 ≤ 30 → 1 page
     const result = paginateDeck({
       baseDeckId: "deck",
-      buttons: Array.from({ length: 20 }, (_, i) => ({
-        id: `btn${i}`,
-        value: { type: "test:btn", label: `b${i}` },
-      })),
+      buttons: Array.from({ length: 20 }, (_, i) => btn(i)),
       keyCount: 32,
     })
     expect(result.length).toBe(1)
-    const page1 = result[0]!.deck.buttons as unknown[]
+    const page1 = result[0]!.deck.buttons as Array<Record<string, unknown>>
     const page1Any = page1 as Array<Record<string, unknown>>
     expect(page1Any.length).toBe(20)
     const hasPageNav = page1Any.some((b) => b["type"] === "core:page-nav")
@@ -36,10 +42,7 @@ describe("paginateDeck", () => {
   it("page-nav and last emoji do not collide on page 1 of 14 items (keyCount=15)", () => {
     const result = paginateDeck({
       baseDeckId: "deck",
-      buttons: Array.from({ length: 14 }, (_, i) => ({
-        type: "test:btn",
-        label: `b${i}`,
-      })),
+      buttons: Array.from({ length: 14 }, (_, i) => btn(i)),
       keyCount: 15,
     })
     expect(result.length).toBe(2)
@@ -61,10 +64,7 @@ describe("paginateDeck", () => {
   it("last page also gets a page-nav for going back (keyCount=15, 14 items)", () => {
     const result = paginateDeck({
       baseDeckId: "deck",
-      buttons: Array.from({ length: 14 }, (_, i) => ({
-        type: "test:btn",
-        label: `b${i}`,
-      })),
+      buttons: Array.from({ length: 14 }, (_, i) => btn(i)),
       keyCount: 15,
     })
     const page2 = result[1]!.deck.buttons as Array<Record<string, unknown>>
@@ -78,10 +78,7 @@ describe("paginateDeck", () => {
   it("single page (13 items, pageSize 13) has no page-nav", () => {
     const result = paginateDeck({
       baseDeckId: "deck",
-      buttons: Array.from({ length: 13 }, (_, i) => ({
-        type: "test:btn",
-        label: `b${i}`,
-      })),
+      buttons: Array.from({ length: 13 }, (_, i) => btn(i)),
       keyCount: 15,
     })
     expect(result).toHaveLength(1)
@@ -89,5 +86,19 @@ describe("paginateDeck", () => {
       result[0]!.deck.buttons as Array<Record<string, unknown>>
     ).find((b) => b["type"] === "core:page-nav")
     expect(pageNav).toBeUndefined()
+  })
+
+  it("preserves global key positions on pages beyond the first (K=15, 16 buttons)", () => {
+    const result = paginateDeck({
+      baseDeckId: "deck",
+      buttons: Array.from({ length: 16 }, (_, i) => btn(i)),
+      keyCount: 15,
+    })
+    expect(result).toHaveLength(2)
+    const page2 = result[1]!.deck.buttons as Array<Record<string, unknown>>
+    const userButtons = page2.filter((b) => b["type"] === "test:btn")
+    // page-nav occupies K-2 (position 13), so surviving user buttons are at
+    // positions 14 and 15.
+    expect(userButtons.map((b) => b["position"])).toEqual([14, 15])
   })
 })

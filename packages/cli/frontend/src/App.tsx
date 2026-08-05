@@ -34,6 +34,7 @@ import { DisconnectedOverlay } from "./components/DisconnectedOverlay"
 interface DeckButton {
   id: string
   type: string
+  position?: number
   config: Record<string, unknown>
   full?: boolean
 }

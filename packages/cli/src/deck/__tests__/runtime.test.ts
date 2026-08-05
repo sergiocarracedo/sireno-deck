@@ -164,7 +164,7 @@ describe("createRuntime", () => {
       makeDeck({
         id: "main",
         isMain: true,
-        buttons: [{ id: "b1", type: "x" }],
+        buttons: [{ id: "b1", type: "x", position: 7 }],
       }),
     ])
     runtime.registerButtonHandler("main:b1", { onTap: vi.fn() })
@@ -177,6 +177,7 @@ describe("createRuntime", () => {
     const [buttonId, event] = listener.mock.calls[0]!
     expect(buttonId).toBe("b1")
     expect(event.gesture).toBe("tap")
+    expect(event.position).toBe(7)
     expect(event.at).toBeGreaterThanOrEqual(before)
     expect(event.at).toBeLessThanOrEqual(after)
   })
@@ -187,6 +188,40 @@ describe("createRuntime", () => {
     runtime.setGestureListener(listener)
     await runtime.dispatchGesture("missing", "tap")
     expect(listener).not.toHaveBeenCalled()
+  })
+
+  it("dispatchGesture on [position]-[deck]-0 routes to the matching button, not button 0", async () => {
+    // ponytail: regression for the bug where every tap triggered button 0's
+    // handler. Root cause: runtime buttons were indexed by undefined id, so
+    // `Map.set(undefined, …)` collapsed all buttons onto the same key. Fix:
+    // user-deck buttons now carry `id: ${position}-${deckId}-${page}`.
+    const { runtime } = setup([
+      makeDeck({
+        id: "main",
+        isMain: true,
+        buttons: [
+          { id: "0-main-0", type: "core:btn0", position: 0 },
+          { id: "1-main-0", type: "core:btn1", position: 1 },
+          { id: "2-main-0", type: "core:btn2", position: 2 },
+        ],
+      }),
+    ])
+    const handler0 = vi.fn()
+    const handler1 = vi.fn()
+    const handler2 = vi.fn()
+    runtime.registerButtonHandler("main:0-main-0", { onTap: handler0 })
+    runtime.registerButtonHandler("main:1-main-0", { onTap: handler1 })
+    runtime.registerButtonHandler("main:2-main-0", { onTap: handler2 })
+
+    await runtime.dispatchGesture("main:1-main-0", "tap")
+    expect(handler1).toHaveBeenCalledOnce()
+    expect(handler0).not.toHaveBeenCalled()
+    expect(handler2).not.toHaveBeenCalled()
+
+    await runtime.dispatchGesture("main:2-main-0", "tap")
+    expect(handler2).toHaveBeenCalledOnce()
+    expect(handler0).not.toHaveBeenCalled()
+    expect(handler1).toHaveBeenCalledOnce()
   })
 
   it("invokeAction runs the handler but does not fire the gestureListener", async () => {

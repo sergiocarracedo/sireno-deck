@@ -211,11 +211,9 @@ export class EmulatorOutputClient implements OutputClient {
       // to resolve the actual deck — this avoids relying on the client's
       // sometimes-stale local view of the active deck.
       const activeDeck = opts.runtime.getActiveDeck()
-      const button = activeDeck.buttons.find((b) => {
-        if (b.position === message.position) return true
-        const parsed = Number.parseInt(b.id, 10)
-        return Number.isFinite(parsed) && parsed === message.position
-      })
+      const button = activeDeck.buttons.find(
+        (b) => b.position === message.position,
+      )
       logger.debug(
         {
           activeDeckId: activeDeck.id,
