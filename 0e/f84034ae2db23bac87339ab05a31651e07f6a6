@@ -1,0 +1,24 @@
+demos/demo-system-status.yml
+  s_dc73750984d345::t_42fbefded87f0a 73,97,135,159,197,221,259,283,321,345,383,407,445,469
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "0ef84034ae2db23bac87339ab05a31651e07f6a6",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_dc73750984d345": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0398b39cbffe4qh8FYh6I8G7Ah",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
