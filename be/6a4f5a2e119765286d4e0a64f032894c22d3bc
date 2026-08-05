@@ -1,0 +1,38 @@
+packages/cli/src/deck/__tests__/position-buttons.test.ts
+  s_dc73750984d345::t_c91fa27e0f88ae 6-9,45-46,69-72,74
+  s_dc73750984d345::t_046b16ba01ad61 78-82,86
+  s_dc73750984d345::t_01714f8dffab89 18,24,30,33,42,62,68,77,85
+packages/cli/src/deck/__tests__/paginate-deck.test.ts
+  s_dc73750984d345::t_83d1ded117dd7d 6-11,93,102-106
+demos/demo-app-shortcuts.yml
+  s_dc73750984d345::t_dc9697d308722b 41,47,50,57,63,65-66,71,74,79,81-82,87,89-90,97,105,111,113-114,119,121-122,127,129-130,135,137-138
+packages/cli/src/deck/system-back-injection.ts
+  s_dc73750984d345::t_ce0922082cedcd 60
+packages/cli/src/deck/paginate-deck.ts
+  s_dc73750984d345::t_ae856831108766 36-37,58,77-80,84
+packages/cli/src/deck/position-buttons.ts
+  s_dc73750984d345::t_fbcdaf00e6d11c 4,6-13,15,32-35,50
+packages/cli/src/deck/__tests__/system-back-injection.test.ts
+  s_dc73750984d345::t_720a4b0707619f 78,89,100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "be6a4f5a2e119765286d4e0a64f032894c22d3bc",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_dc73750984d345": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0398b39cbffe4qh8FYh6I8G7Ah",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
