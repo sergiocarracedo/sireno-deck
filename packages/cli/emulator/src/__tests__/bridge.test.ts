@@ -8,6 +8,7 @@ import {
   serializeHello,
 } from "../bridge"
 import type { WebSocketLike } from "../bridge"
+import { clearServiceLogs, getServiceLogs } from "../bridge-log-store"
 
 class MockWebSocket implements WebSocketLike {
   public static instances: MockWebSocket[] = []
@@ -109,6 +110,38 @@ describe("bridge (emulator)", () => {
       )
     }
     expect(client.status()).toBe("failed")
+    client.close()
+  })
+
+  it("ingests received service-log messages with component and context fields", () => {
+    clearServiceLogs()
+    const client = createWsClient({
+      url: "ws://x",
+      wsFactory: (u) => new MockWebSocket(u),
+    })
+    const ws = MockWebSocket.instances[0]!
+    const messageListener = [...(ws.listeners.get("message") ?? [])][0]
+    expect(messageListener).toBeDefined()
+    messageListener!({
+      data: JSON.stringify({
+        type: "service-log",
+        level: "info",
+        msg: "[runtime] invokeAction resolved",
+        ts: 1234,
+        component: "runtime",
+        deckId: "main",
+        position: 4,
+        gesture: "tap",
+        addonName: "system-status",
+      }),
+    })
+    const all = getServiceLogs()
+    expect(all).toHaveLength(1)
+    expect(all[0]?.component).toBe("runtime")
+    expect(all[0]?.deckId).toBe("main")
+    expect(all[0]?.position).toBe(4)
+    expect(all[0]?.gesture).toBe("tap")
+    expect(all[0]?.addonName).toBe("system-status")
     client.close()
   })
 })

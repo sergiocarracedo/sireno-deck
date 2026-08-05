@@ -83,6 +83,12 @@ export const serviceLogMessageSchema = baseServerMessage.extend({
   level: z.enum(["trace", "debug", "info", "warn", "error", "fatal"]),
   msg: z.string(),
   ts: z.number().int().nonnegative(),
+  component: z.string().optional(),
+  deckId: z.string().optional(),
+  position: z.number().int().nonnegative().optional(),
+  addonName: z.string().optional(),
+  gesture: z.enum(["tap", "dbl-tap", "hold"]).optional(),
+  keyIndex: z.number().int().nonnegative().optional(),
 })
 
 export const buttonActionMessageSchema = baseClientMessage.extend({

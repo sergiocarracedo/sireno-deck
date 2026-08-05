@@ -75,20 +75,22 @@ export class BrowserRenderer {
   private context: ContextLike | null = null
   private page: PageLike | null = null
   private running = false
+  private readonly logger: pino.Logger
 
   constructor(private readonly options: BrowserRendererOptions) {
+    this.logger = options.logger.child({ component: "browser-renderer" })
     this.intervalMs = options.intervalMs ?? DEFAULT_INTERVAL_MS
     this.eventDebounceMs = options.eventDebounceMs ?? DEFAULT_EVENT_DEBOUNCE_MS
     this.pubSub = options.pubSub
     this.cadence = new CadenceTimer({
       intervalMs: this.intervalMs,
       onTick: () => this.tick("timer"),
-      logger: options.logger,
+      logger: this.logger,
     })
     this.debouncer = new EventDebouncer({
       delayMs: this.eventDebounceMs,
       onFlush: () => this.tick("event"),
-      logger: options.logger,
+      logger: this.logger,
     })
   }
 
@@ -175,15 +177,15 @@ export class BrowserRenderer {
       if (writes.length > 0) {
         await Promise.all(writes)
         this.staticBlankTickCount = 0
-        this.options.logger.debug(
+        this.logger.debug(
           { source, writes: writes.length },
           "renderer tick wrote keys",
         )
       } else {
         this.staticBlankTickCount += 1
-        this.options.logger.debug({ source }, "renderer tick no changes")
+        this.logger.debug({ source }, "renderer tick no changes")
         if (this.staticBlankTickCount === BrowserRenderer.BLANK_THRESHOLD) {
-          this.options.logger.warn(
+          this.logger.warn(
             {
               consecutiveTicks: this.staticBlankTickCount,
               source,
@@ -193,7 +195,7 @@ export class BrowserRenderer {
         }
       }
     } catch (err) {
-      this.options.logger.warn({ err, source }, "renderer tick failed")
+      this.logger.warn({ err, source }, "renderer tick failed")
     }
   }
 }

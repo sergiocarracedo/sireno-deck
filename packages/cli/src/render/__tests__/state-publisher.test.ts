@@ -96,8 +96,11 @@ describe("StatePublisher", () => {
   it("logs warnings when poll throws", () => {
     const bridge = makeBridge()
     const log = silentLogger()
-    const warnSpy = vi.spyOn(log, "warn")
     const publisher = new StatePublisher({ bridge, logger: log })
+    const boundLogger = publisher as unknown as {
+      logger: { warn: ReturnType<typeof vi.fn> }
+    }
+    const warnSpy = vi.spyOn(boundLogger.logger, "warn")
     publisher.registerChannel({
       channel: "broken:state",
       addonName: "broken-addon",

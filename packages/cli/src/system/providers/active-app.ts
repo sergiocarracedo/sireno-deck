@@ -47,6 +47,7 @@ export interface CreateActiveAppProviderOptions {
 export const createActiveAppProvider = async (
   options: CreateActiveAppProviderOptions,
 ): Promise<ActiveAppProvider> => {
+  const logger = options.logger.child({ component: "active-app" })
   const platform = options.platform ?? process.platform
   if (platform === "linux") {
     if (options.executor === undefined) {

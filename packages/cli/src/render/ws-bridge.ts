@@ -59,7 +59,7 @@ export const startWsBridge = (
     expectedToken,
     handshakeTimeoutMs = HANDSHAKE_TIMEOUT_MS,
     activeTheme,
-    logger = createLogger({ level: "warn", name: "ws-bridge" }),
+    logger = createLogger({ level: "warn", component: "ws-bridge" }),
   } = options
   let { addonInventory } = options
 

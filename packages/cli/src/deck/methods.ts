@@ -97,7 +97,7 @@ export const createMethods = (ctx: MethodsContext): Methods => {
   let keyMacroProvider: KeyMacroProvider | undefined = ctx.keyMacroProvider
   let notificationProvider: NotificationProvider | undefined =
     ctx.notificationProvider
-  const logger = ctx.logger
+  const logger = ctx.logger.child({ component: "methods" })
   const setKeyMacroProvider: Methods["setKeyMacroProvider"] = (provider) => {
     keyMacroProvider = provider
   }

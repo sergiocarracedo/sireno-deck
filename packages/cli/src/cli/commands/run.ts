@@ -1519,12 +1519,28 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       level: string
       msg: string
       ts: number
+      component?: string
+      deckId?: string
+      position?: number
+      addonName?: string
+      gesture?: "tap" | "dbl-tap" | "hold"
+      keyIndex?: number
     }) => {
       bridge.broadcast({
         type: "service-log",
         level: entry.level,
         msg: entry.msg,
         ts: entry.ts,
+        ...(entry.component !== undefined
+          ? { component: entry.component }
+          : {}),
+        ...(entry.deckId !== undefined ? { deckId: entry.deckId } : {}),
+        ...(entry.position !== undefined ? { position: entry.position } : {}),
+        ...(entry.addonName !== undefined
+          ? { addonName: entry.addonName }
+          : {}),
+        ...(entry.gesture !== undefined ? { gesture: entry.gesture } : {}),
+        ...(entry.keyIndex !== undefined ? { keyIndex: entry.keyIndex } : {}),
       })
     }
     process.on("sireno:log", onServiceLog)

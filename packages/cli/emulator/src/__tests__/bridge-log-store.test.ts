@@ -50,6 +50,26 @@ describe("service-log ring buffer", () => {
     clearServiceLogs()
     expect(getServiceLogs().length).toBe(0)
   })
+
+  it("preserves component and context fields on the entry", () => {
+    clearServiceLogs()
+    appendServiceLog({
+      ts: 1,
+      level: "info",
+      msg: "[runtime] invokeAction resolved",
+      component: "runtime",
+      deckId: "main",
+      position: 4,
+      gesture: "tap",
+      addonName: "system-status",
+    })
+    const all = getServiceLogs()
+    expect(all[0]?.component).toBe("runtime")
+    expect(all[0]?.deckId).toBe("main")
+    expect(all[0]?.position).toBe(4)
+    expect(all[0]?.gesture).toBe("tap")
+    expect(all[0]?.addonName).toBe("system-status")
+  })
 })
 
 describe("bridge-message ring buffer", () => {

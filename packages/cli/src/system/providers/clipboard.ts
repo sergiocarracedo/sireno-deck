@@ -52,6 +52,7 @@ export interface CreateClipboardProviderOptions {
 export const createClipboardProvider = (
   options: CreateClipboardProviderOptions,
 ): ClipboardProvider => {
+  const logger = options.logger.child({ component: "clipboard" })
   const platform = options.platform ?? process.platform
   if (platform === "linux") {
     return createLinuxClipboardProvider({

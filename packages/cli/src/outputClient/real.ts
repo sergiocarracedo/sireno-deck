@@ -98,7 +98,7 @@ export class RealOutputClient implements OutputClient {
       throw new Error("RealOutputClient.init: selectDevice() must run first")
     }
     const descriptor = this.descriptor
-    const logger = opts.logger
+    const logger = opts.logger.child({ component: "real" })
 
     let device: StreamDeckDevice
     try {
@@ -158,16 +158,23 @@ export class RealOutputClient implements OutputClient {
     const gestureDetector = createGestureDetector({
       onGesture: (result) => {
         const keyIndex = result.keyIndex ?? -1
-        logger.info(
-          { keyIndex, gesture: result.kind },
-          "real mode: gesture detected, resolving against active deck",
-        )
         const activeDeck = opts.runtime.getActiveDeck()
         const button = activeDeck.buttons.find((b) => {
           if (b.position === keyIndex) return true
           const parsed = Number.parseInt(b.id, 10)
           return Number.isFinite(parsed) && parsed === keyIndex
         })
+        const position = button?.position ?? -1
+        logger.debug(
+          {
+            keyIndex,
+            gesture: result.kind,
+            position,
+            activeDeckId: activeDeck.id,
+            buttonId: button?.id ?? null,
+          },
+          "real mode: gesture detected",
+        )
         if (button === undefined) {
           logger.warn(
             { keyIndex, activeDeckId: activeDeck.id },
@@ -183,7 +190,7 @@ export class RealOutputClient implements OutputClient {
     })
 
     const gestureUnsubscribe = device.onKeyEvent((event) => {
-      logger.info(
+      logger.debug(
         { keyIndex: event.keyIndex, type: event.type },
         "real mode: key event received",
       )

@@ -92,7 +92,7 @@ const runCommand: CommandModule<object, RunArgs> = {
           "Emulator device model (mk2, plus, mini, xl) — affects keyCount",
       }),
   handler: async (argv) => {
-    const logger = buildLogger(argv)
+    const logger = buildLogger(argv).child({ component: "orchestrator" })
     const options: RunOptions = {
       logger,
       ...(argv.config !== undefined ? { config: argv.config } : {}),
