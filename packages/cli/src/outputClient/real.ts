@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url"
 import type pino from "pino"
 
 import { createGestureDetector } from "@/core/gesture-state"
+import { pushBlackFrame } from "@/device/black-frame"
 import type { DeviceDescriptor } from "@/device/registry"
 import { connectStreamDeck, type StreamDeckDevice } from "@/device/stream-deck"
 import { BrowserRenderer } from "@/render/browser-renderer"
@@ -17,6 +18,7 @@ import {
   spawnFrontendVite,
 } from "../cli/commands/emulator-mode"
 import {
+  DEFAULT_VITE_RETRY_SCHEDULE_MS,
   supervise,
   type SuperviseHandle,
 } from "../cli/commands/subprocess-supervisor"
@@ -161,7 +163,11 @@ export class RealOutputClient implements OutputClient {
           "real mode: gesture detected, resolving against active deck",
         )
         const activeDeck = opts.runtime.getActiveDeck()
-        const button = activeDeck.buttons.find((b) => b.position === keyIndex)
+        const button = activeDeck.buttons.find((b) => {
+          if (b.position === keyIndex) return true
+          const parsed = Number.parseInt(b.id, 10)
+          return Number.isFinite(parsed) && parsed === keyIndex
+        })
         if (button === undefined) {
           logger.warn(
             { keyIndex, activeDeckId: activeDeck.id },
@@ -198,6 +204,7 @@ export class RealOutputClient implements OutputClient {
       frontendSupervisor = await supervise({
         label: "frontend vite",
         kill: killChild,
+        delayScheduleMs: DEFAULT_VITE_RETRY_SCHEDULE_MS,
         spawn: async () => {
           const r = await spawnFrontendVite({
             port: opts.port ?? DEFAULT_FRONTEND_PORT,
@@ -234,31 +241,13 @@ export class RealOutputClient implements OutputClient {
     const frontendVitePid = frontendSupervisor?.process.pid ?? 0
     const childPids = frontendVitePid > 0 ? [frontendVitePid] : []
 
-    const buildBlackBuffer = (): Buffer => {
-      const keyCount = device.getKeyCount()
-      const stride = 3 * 8
-      const total = keyCount * stride * 8
-      return Buffer.alloc(total)
-    }
-
     return {
       descriptor,
       frontendUrl,
       wsUrl: opts.bridge.url,
       childPids,
       async pushBlackFrame(): Promise<void> {
-        try {
-          const buf = buildBlackBuffer()
-          for (let i = 0; i < device.getKeyCount(); i++) {
-            await device.fillKeyBuffer(i, buf.subarray(0, 3 * 8 * 8))
-          }
-          logger.info("real: pushed black frame")
-        } catch (err) {
-          logger.warn(
-            { err: (err as Error).message },
-            "real: pushBlackFrame failed (non-fatal)",
-          )
-        }
+        await pushBlackFrame(device, logger)
       },
       async pushRawImage(filePath: string): Promise<void> {
         try {

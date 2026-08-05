@@ -47,7 +47,8 @@ import {
   type ScannedAddon,
 } from "./addon-registry"
 import { ensureInstalled, invokeManager } from "./service-manager"
-import { isUnderServiceManager, spawnDetached } from "./spawn-daemon"
+import { superviseService } from "./service-supervisor"
+import { isUnderServiceManager } from "./spawn-daemon"
 import {
   preflight,
   runPipeline,
@@ -93,10 +94,6 @@ const toRunOptions = (
 const resolveFrontendDist = (): string => {
   const here = dirname(fileURLToPath(import.meta.url))
   return resolvePath(here, "../../../frontend/dist")
-}
-
-const resolveBinPath = (): string => {
-  return process.argv[1] ?? process.execPath
 }
 
 const isDevInvocation = (): boolean => {
@@ -517,32 +514,20 @@ const forkOffDev = async (options: StartOptions): Promise<void> => {
   pruneStaleChildren(undefined, logger)
   await terminateChildren({ logger, timeoutMs: 2_000 })
 
-  const binPath = resolveBinPath()
   const args: string[] = ["start"]
-  // ponytail: devMode true makes spawnDetached pipe stdout/stderr through a
-  // tee — each ndjson line is appended to runtimeDir/service.log AND emitted
-  // formatted to the parent's terminal. Without this, `pnpm dev start
-  // --emulator` shows "daemon spawned" and then goes silent until the
-  // operator kills it.
-  const { pid, child } = spawnDetached({ binPath, args, devMode: true })
-  if (pid <= 0) {
-    throw new Error("start: failed to spawn daemon (no pid returned)")
-  }
-  writePid(pid)
-  logger.info({ childPid: pid, configPath }, "start: daemon spawned (dev)")
-  // ponytail: in dev mode the daemon IS the user's working surface — don't
-  // bail out on the grace window. Keep the parent hooked to the child's
-  // stdio until the child exits naturally (or the user hits Ctrl+C).
-  await new Promise<void>((resolve) => {
-    child.once("exit", () => resolve())
-    process.once("SIGINT", () => {
-      try {
-        process.kill(pid, "SIGTERM")
-      } catch {
-        // already gone
-      }
-      resolve()
-    })
+  // ponytail: devMode supervisor. The parent watches the daemon child, on
+  // unexpected exit pushes a black frame to the hardware (best-effort) and
+  // respawns the daemon with the standard retry schedule. On give-up the
+  // parent cleans the runtime dir and exits 1. superviseService owns SIGINT/
+  // SIGTERM forwarding — the parent process becomes the supervisor, so it
+  // controls the child lifecycle from then on.
+  await superviseService({
+    xdgConfigHome: options.xdgConfigHome ?? "",
+    logger,
+    args,
+    onGiveUp: async () => {
+      await terminateChildren({ logger, timeoutMs: 2_000 })
+    },
   })
 }
 

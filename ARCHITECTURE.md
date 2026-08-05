@@ -251,6 +251,39 @@ SPAs.
 `findWorkspaceRoot()` and `resolveFrontendCwd()` are local helpers used to
 locate the Vite projects from the monorepo.
 
+### 3.11.1 Process supervisors (vite + service)
+
+Vite children (frontend / emulator dev servers) and the daemon process itself
+are supervised by `cli/commands/subprocess-supervisor.ts` and
+`cli/commands/service-supervisor.ts`. Both reuse the same `supervise()`
+primitive — the retry state machine lives in one place.
+
+**Vite supervisor** — `outputClient/real.ts:202` and `outputClient/emulator.ts:117,140`.
+On unexpected exit, the supervisor respawns the vite child using the
+incremental schedule `DEFAULT_VITE_RETRY_SCHEDULE_MS = [2s, 5s, 15s, 30s, 60s]`
+(5 retries, total worst-case ~2 min). After the budget is exhausted, the
+supervisor calls `onChildCrash` on the runtime, which resolves the pipeline's
+`done` promise and triggers a clean shutdown.
+
+**Service supervisor** — `cli/commands/service-supervisor.ts`. Active only in
+dev mode (`forkOffDev` in `start.ts`). Production goes through
+systemd/launchd with `Restart=always`, which owns that lifecycle. In dev mode
+the parent process becomes the supervisor: watches the daemon child, and on
+unexpected exit:
+
+1. Pushes a black frame to the device (`device/black-frame.ts` — opens a fresh
+   device, fills all keys with a black buffer, closes). Idempotent: only the
+   first crash in a chain pushes; retries don't re-push.
+2. Respawns the daemon with `DEFAULT_SERVICE_RETRY_SCHEDULE_MS` (same shape).
+3. On give-up: clears the runtime dir (`removePidFile`, `removeTokenFile`,
+   `removeChildrenFile`, `removeStartLock`), terminates tracked children, and
+   `process.exit(1)`.
+
+`pushBlackFrameToDevice` reuses `connectStreamDeck` from
+`device/stream-deck.ts:51` so the parent process can push a frame without
+going through the full daemon init. Errors are non-fatal — the device may be
+unplugged at the moment of crash.
+
 ### 3.12 UI primitives & surfaces — `ui/`
 
 React component library shared between the frontend and the addons'
