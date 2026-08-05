@@ -1,5 +1,4 @@
 name: System Status Demo
-paginated: true
 buttons:
   - position: 0
     type: "system-status:system-status"
@@ -71,7 +70,7 @@ buttons:
     buttonColor: blue
     config:
       type: bars
-      metrics: [disk, battery, temperature, gpu-temp]
+      metrics: [cpu]
   - position: 20
     type: "system-status:system-status"
     buttonColor: blue
@@ -95,7 +94,7 @@ buttons:
     buttonColor: blue
     config:
       type: kpis
-      metrics: [cpu, ram, disk, load]
+      metrics: [cpu]
   - position: 24
     type: "system-status:system-status"
     buttonColor: blue
@@ -133,7 +132,7 @@ buttons:
     buttonColor: green
     config:
       type: bars
-      metrics: [disk, battery, temperature, gpu-temp]
+      metrics: [cpu]
   - position: 30
     type: "system-status:system-status"
     buttonColor: green
@@ -157,7 +156,7 @@ buttons:
     buttonColor: green
     config:
       type: kpis
-      metrics: [cpu, ram, disk, load]
+      metrics: [cpu]
   - position: 34
     type: "system-status:system-status"
     buttonColor: green
@@ -195,7 +194,7 @@ buttons:
     buttonColor: purple
     config:
       type: bars
-      metrics: [disk, battery, temperature, gpu-temp]
+      metrics: [cpu]
   - position: 40
     type: "system-status:system-status"
     buttonColor: purple
@@ -219,7 +218,7 @@ buttons:
     buttonColor: purple
     config:
       type: kpis
-      metrics: [cpu, ram, disk, load]
+      metrics: [cpu]
   - position: 44
     type: "system-status:system-status"
     buttonColor: purple
@@ -257,7 +256,7 @@ buttons:
     buttonColor: cyan
     config:
       type: bars
-      metrics: [disk, battery, temperature, gpu-temp]
+      metrics: [cpu]
   - position: 50
     type: "system-status:system-status"
     buttonColor: cyan
@@ -281,7 +280,7 @@ buttons:
     buttonColor: cyan
     config:
       type: kpis
-      metrics: [cpu, ram, disk, load]
+      metrics: [cpu]
   - position: 54
     type: "system-status:system-status"
     buttonColor: cyan
@@ -319,7 +318,7 @@ buttons:
     buttonColor: magenta
     config:
       type: bars
-      metrics: [disk, battery, temperature, gpu-temp]
+      metrics: [cpu]
   - position: 60
     type: "system-status:system-status"
     buttonColor: magenta
@@ -343,7 +342,7 @@ buttons:
     buttonColor: magenta
     config:
       type: kpis
-      metrics: [cpu, ram, disk, load]
+      metrics: [cpu]
   - position: 64
     type: "system-status:system-status"
     buttonColor: magenta
@@ -381,7 +380,7 @@ buttons:
     buttonColor: amber
     config:
       type: bars
-      metrics: [disk, battery, temperature, gpu-temp]
+      metrics: [cpu]
   - position: 70
     type: "system-status:system-status"
     buttonColor: amber
@@ -405,7 +404,7 @@ buttons:
     buttonColor: amber
     config:
       type: kpis
-      metrics: [cpu, ram, disk, load]
+      metrics: [cpu]
   - position: 74
     type: "system-status:system-status"
     buttonColor: amber
@@ -443,7 +442,7 @@ buttons:
     buttonColor: lime
     config:
       type: bars
-      metrics: [disk, battery, temperature, gpu-temp]
+      metrics: [cpu]
   - position: 80
     type: "system-status:system-status"
     buttonColor: lime
@@ -467,7 +466,7 @@ buttons:
     buttonColor: lime
     config:
       type: kpis
-      metrics: [cpu, ram, disk, load]
+      metrics: [cpu]
   - position: 84
     type: "system-status:system-status"
     buttonColor: lime
