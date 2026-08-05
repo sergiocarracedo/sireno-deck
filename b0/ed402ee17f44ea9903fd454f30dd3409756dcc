@@ -1,0 +1,40 @@
+packages/cli/src/cli/commands/__tests__/service-supervisor.test.ts
+  s_3a03da9b365e8c::t_2adc9eb3e43cbb 1-191
+packages/cli/src/cli/commands/start.ts
+  s_3a03da9b365e8c::t_2adc9eb3e43cbb 50-51,518-530
+packages/cli/src/cli/commands/subprocess-supervisor.ts
+  s_3a03da9b365e8c::t_2adc9eb3e43cbb 5-17,19-22,24-28,35,39-47,85-104,108,138,149,152-155,161-170
+packages/cli/src/outputClient/real.ts
+  s_3a03da9b365e8c::t_2adc9eb3e43cbb 6,21,166-170,207,250
+packages/cli/src/cli/commands/__tests__/subprocess-supervisor.test.ts
+  s_3a03da9b365e8c::t_2adc9eb3e43cbb 242-384
+packages/cli/src/device/black-frame.ts
+  s_3a03da9b365e8c::t_2adc9eb3e43cbb 1-64
+ARCHITECTURE.md
+  s_3a03da9b365e8c::t_2adc9eb3e43cbb 254-286
+packages/cli/src/cli/commands/service-supervisor.ts
+  s_3a03da9b365e8c::t_2adc9eb3e43cbb 1-180
+packages/cli/src/outputClient/emulator.ts
+  s_3a03da9b365e8c::t_2adc9eb3e43cbb 24,121,145,217-221
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "b0ed402ee17f44ea9903fd454f30dd3409756dcc",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_3a03da9b365e8c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_033fceadcffeLP7h5l47TcBt5p",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
