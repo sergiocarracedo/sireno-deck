@@ -652,7 +652,14 @@ describe("preflight", () => {
       .mockReturnValueOnce(realClient)
       .mockReturnValueOnce(emulatorClient)
     const confirmMock = vi.fn(async () => true)
-    vi.doMock("@inquirer/prompts", () => ({ confirm: confirmMock }))
+    vi.doMock("@clack/prompts", async (importOriginal) => {
+      const actual = (await importOriginal()) as Record<string, unknown>
+      return {
+        ...actual,
+        confirm: confirmMock,
+        isCancel: (v: unknown) => typeof v === "symbol",
+      }
+    })
     const originalIsTTY = process.stdin.isTTY
     Object.defineProperty(process.stdin, "isTTY", {
       value: true,
@@ -673,7 +680,7 @@ describe("preflight", () => {
       }
       await preflight(opts)
       expect(confirmMock).toHaveBeenCalledWith(
-        expect.objectContaining({ default: true }),
+        expect.objectContaining({ initialValue: true }),
       )
       expect(opts.emulator).toBe(true)
       expect(selectOutputClientMock).toHaveBeenCalledTimes(2)
@@ -686,7 +693,7 @@ describe("preflight", () => {
         value: originalIsTTY,
         configurable: true,
       })
-      vi.doUnmock("@inquirer/prompts")
+      vi.doUnmock("@clack/prompts")
     }
   })
 
@@ -694,7 +701,14 @@ describe("preflight", () => {
     const realClient = makeFakeOutputClient("real", [])
     setHappyPath({ outputClient: realClient })
     const confirmMock = vi.fn(async () => false)
-    vi.doMock("@inquirer/prompts", () => ({ confirm: confirmMock }))
+    vi.doMock("@clack/prompts", async (importOriginal) => {
+      const actual = (await importOriginal()) as Record<string, unknown>
+      return {
+        ...actual,
+        confirm: confirmMock,
+        isCancel: (v: unknown) => typeof v === "symbol",
+      }
+    })
     const originalIsTTY = process.stdin.isTTY
     Object.defineProperty(process.stdin, "isTTY", {
       value: true,
@@ -715,7 +729,7 @@ describe("preflight", () => {
         value: originalIsTTY,
         configurable: true,
       })
-      vi.doUnmock("@inquirer/prompts")
+      vi.doUnmock("@clack/prompts")
     }
   })
 })

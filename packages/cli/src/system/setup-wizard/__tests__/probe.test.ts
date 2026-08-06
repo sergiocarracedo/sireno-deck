@@ -13,12 +13,18 @@ const createExecutor = (
   ) => { exitCode: number; stdout: string; stderr: string } | null = () => null,
 ): CommandExecutor => ({
   run: vi.fn().mockImplementation(async (command, args) => {
-    if (command === "which") {
-      const target = args[0]
+    if (command === "command" && args[0] === "-v" && args.length === 2) {
+      const target = args[1]
       if (target !== undefined && availableCommands.includes(target)) {
         return { exitCode: 0, stdout: `/usr/bin/${target}`, stderr: "" }
       }
       return { exitCode: 1, stdout: "", stderr: "not found" }
+    }
+    if (
+      args[0] === "--version" &&
+      availableCommands.includes(command)
+    ) {
+      return { exitCode: 0, stdout: `${command} 1.0`, stderr: "" }
     }
     const override = extra(command, args)
     if (override !== null) return override

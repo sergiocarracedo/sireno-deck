@@ -30,6 +30,32 @@ vi.mock("@/system/setup-wizard", () => ({
   seedDefaultConfig: seedDefaultConfigMock,
 }))
 
+const logMock = {
+  info: vi.fn(),
+  success: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+}
+const spinnerMock = vi.fn(() => ({
+  start: vi.fn(),
+  stop: vi.fn(),
+  message: vi.fn(),
+}))
+vi.mock("@/ui/console", () => ({
+  intro: vi.fn(),
+  outro: vi.fn(),
+  note: vi.fn(),
+  log: logMock,
+  spinner: spinnerMock,
+  select: vi.fn(),
+  confirm: vi.fn(),
+  text: vi.fn(),
+  password: vi.fn(),
+  isCancel: (v: unknown) => typeof v === "symbol",
+  cancel: vi.fn(),
+  tasks: vi.fn(),
+}))
+
 const { createLogger } = await import("@/util/logger")
 const { systemRequirements, systemRequirementsCommand } =
   await import("../system-requirements")
@@ -84,7 +110,55 @@ const capabilityMissingSummary = (): FakeSummary => ({
 })
 
 const setReport = (summary: FakeSummary): void => {
-  probeAllMock.mockResolvedValue({} as never)
+  const capabilities = {
+    keyMacro: {
+      available: !summary.missingCapabilities.includes("keyMacro"),
+      name: "keyMacro" as const,
+      missing: summary.missingCapabilities.includes("keyMacro") ? ["ydotool"] : [],
+      preferred: "ydotool",
+      reason: "",
+    },
+    clipboard: {
+      available: !summary.missingCapabilities.includes("clipboard"),
+      name: "clipboard" as const,
+      missing: [],
+      preferred: "wl-copy",
+      reason: "",
+    },
+    notification: {
+      available: !summary.missingCapabilities.includes("notification"),
+      name: "notification" as const,
+      missing: [],
+      preferred: "notify-send",
+      reason: "",
+    },
+    activeApp: {
+      available: !summary.missingCapabilities.includes("activeApp"),
+      name: "activeApp" as const,
+      missing: [],
+      preferred: "xdotool",
+      reason: "",
+    },
+  }
+  const report = {
+    platform: "linux",
+    homeDir: "/home/test",
+    xdgConfigHome: "/home/test/.config",
+    session: summary.session,
+    packageManager: summary.packageManager,
+    capabilities,
+    udev: {
+      rulesInstalled: !summary.udevMissing,
+      rulesPath: "/etc/udev/rules.d/70-sireno-deck.rules",
+      streamDeckConnected: summary.streamDeckConnected,
+      matchedProductIds: [],
+    },
+    config: {
+      exists: !summary.configMissing,
+      path: summary.configPath,
+    },
+  }
+  probeAllMock.mockResolvedValue(report as never)
   summarizeReportMock.mockReturnValue(summary)
 }
 

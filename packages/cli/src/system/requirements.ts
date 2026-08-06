@@ -87,14 +87,36 @@ const capabilityConfig: Readonly<
   },
 }
 
+const probeCommandV = async (
+  executor: CommandExecutor,
+  command: string,
+): Promise<boolean> => {
+  const result = await executor.run("command", ["-v", command])
+  return result.exitCode === 0 && result.stdout.trim().length > 0
+}
+
+const probeVersion = async (
+  executor: CommandExecutor,
+  command: string,
+): Promise<boolean> => {
+  try {
+    const result = await executor.run(command, ["--version"], {
+      timeoutMs: 1_000,
+    })
+    return result.exitCode === 0
+  } catch {
+    return false
+  }
+}
+
 const probeCommand = async (
   executor: CommandExecutor,
   command: string,
   extraFsProbe?: (command: string) => boolean,
 ): Promise<boolean> => {
-  const result = await executor.run("which", [command])
-  if (result.exitCode === 0 && result.stdout.trim().length > 0) return true
-  return extraFsProbe?.(command) === true
+  if (await probeCommandV(executor, command)) return true
+  if (extraFsProbe?.(command) === true) return true
+  return await probeVersion(executor, command)
 }
 
 export const checkRequirements = async ({

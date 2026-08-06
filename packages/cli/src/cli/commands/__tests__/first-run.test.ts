@@ -152,9 +152,19 @@ vi.mock("../system-requirements", () => ({
   systemRequirementsCommand: { command: "system-requirements" },
 }))
 const inquirerConfirmMock = vi.fn()
-vi.mock("@inquirer/prompts", () => ({
+vi.mock("@clack/prompts", () => ({
+  intro: vi.fn(),
+  outro: vi.fn(),
+  note: vi.fn(),
+  log: { info: vi.fn(), success: vi.fn(), warn: vi.fn(), error: vi.fn() },
+  spinner: vi.fn(() => ({ start: vi.fn(), stop: vi.fn(), message: vi.fn() })),
   select: vi.fn(),
   confirm: inquirerConfirmMock,
+  text: vi.fn(),
+  password: vi.fn(),
+  isCancel: vi.fn(),
+  cancel: vi.fn(),
+  tasks: vi.fn(),
 }))
 
 const probeAllMock = (
