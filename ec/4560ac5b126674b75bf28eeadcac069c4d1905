@@ -1,0 +1,19 @@
+ARCHITECTURE.md
+  s_eeac6539cee62e::t_aef60005d169a2 458-469,476
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "ec4560ac5b126674b75bf28eeadcac069c4d1905",
+  "prompts": {},
+  "sessions": {
+    "s_eeac6539cee62e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_027d1096bffeknRqaHj8569ur5",
+        "model": "deepseek-ai/deepseek-v4-pro"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
