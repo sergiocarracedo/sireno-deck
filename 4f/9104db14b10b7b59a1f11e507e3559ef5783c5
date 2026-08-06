@@ -1,0 +1,31 @@
+packages/cli/src/system/setup-wizard/__tests__/probe.test.ts
+  s_137cc2ea17c484::t_13bcaffc250eb3 29-30,173-175
+packages/cli/src/cli/commands/__tests__/system-requirements.test.ts
+  s_137cc2ea17c484::t_13bcaffc250eb3 34-35,61-65
+packages/cli/src/cli/commands/__tests__/first-run.test.ts
+  s_137cc2ea17c484::t_13bcaffc250eb3 5-13,86-88,167-176,179-182,186-187,308-314
+packages/cli/src/system/setup-wizard/__tests__/format.test.ts
+  s_137cc2ea17c484::t_13bcaffc250eb3 8,63,151-153,243-245
+packages/cli/package.json
+  s_137cc2ea17c484::t_13bcaffc250eb3 97
+packages/cli/src/cli/commands/start.ts
+  s_137cc2ea17c484::t_e9e9c8c6399de9 614,625
+packages/cli/src/system/setup-wizard/__tests__/plan.test.ts
+  s_137cc2ea17c484::t_13bcaffc250eb3 6,122,129-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "4f9104db14b10b7b59a1f11e507e3559ef5783c5",
+  "prompts": {},
+  "sessions": {
+    "s_137cc2ea17c484": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_02c42b4a8ffetzUK7FlebF3AKq",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
