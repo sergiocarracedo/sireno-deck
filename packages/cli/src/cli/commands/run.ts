@@ -113,6 +113,7 @@ export interface RunOptions {
   readonly onChildren?: (pids: ReadonlyArray<number>) => void
   readonly onAddonsUpdate?: (addons: ReadonlyArray<ScannedAddon>) => void
   readonly logger: pino.Logger
+  token?: string
 }
 
 export interface SetupAddonServicesOptions {
@@ -1398,7 +1399,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
     addonBundle = await buildAddonBundle()
 
-    bridge = await startWsBridge({ port: 52937 })
+    bridge = await startWsBridge({ port: 52937, expectedToken: options.token })
     const wsPort = bridge.port
 
     // ponytail: register external addon dirs (from config's `addons:` list) so

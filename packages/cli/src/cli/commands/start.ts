@@ -426,6 +426,7 @@ const runInProcessSetup = async (
   writePid(process.pid)
   const token = generateToken()
   writeToken(token)
+  runOptions.token = token
   const sentinel = generateSentinel(process.pid)
   process.env[SENTINEL_ENV_VAR] = sentinel
   logger.info({ tokenLen: token.length }, "daemon: pid + token written")

@@ -246,11 +246,15 @@ export const startWsBridge = (
             if (client.readyState === client.OPEN) client.send(payload)
           }
         },
-        sendToCaller: (message) => {
-          for (const client of wss.clients) {
-            if (client.readyState === client.OPEN)
-              client.send(JSON.stringify(message))
-          }
+        sendToCaller: (_message) => {
+          // ponytail: the WsBridge interface doesn't carry per-socket context, so
+          // sendToCaller can't route to a specific client. The caller socket is
+          // only available inside message handlers (registered via onMessage —
+          // the handler receives `(message, socket)`). If point-to-point replies
+          // become needed, add a per-session reply callback or a socket-ID map.
+          // For now, no-op: broadcasting method-call results to every client
+          // would leak addon data across connections.
+          logger?.warn("sendToCaller called but no caller context — ignoring")
         },
         registerCacheablePoller: (channel, pollFn) => {
           cacheablePollers.set(channel, pollFn)
