@@ -1,0 +1,21 @@
+packages/cli/frontend/src/capture/Capture.tsx
+  s_056a76f2c1bc45::t_e7ac799188ae8b 1-189
+docs/solutions/tooling-decisions/capture-pipeline-blocked-daemon-boot.md
+  s_056a76f2c1bc45::t_1c3aa8a1cfad3f 1-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "01726d142ce7e215f3b5f7b813a763f939fdbb20",
+  "prompts": {},
+  "sessions": {
+    "s_056a76f2c1bc45": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_028bc9581ffeory29PJCXAUMkw",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
