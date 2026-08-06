@@ -412,6 +412,7 @@ interface LoadConfigAndThemeResult {
   }
   readonly themeDir: string
   readonly decks: ReadonlyArray<RuntimeDeck>
+  readonly sourceDecks: ReadonlyArray<RuntimeDeck>
   readonly pubSub: PubSub
   readonly runtime: Runtime
   readonly methods: Methods
@@ -649,6 +650,7 @@ const buildRuntime = (
   options: RunOptions,
   loaded: LoadConfigResult,
   keyCount: number,
+  lockActive: boolean = false,
 ): LoadConfigAndThemeResult => {
   const { logger } = options
   const { config, registry, theme, themeDir } = loaded
@@ -781,17 +783,17 @@ const buildRuntime = (
     decks.length > 0
       ? decks
       : [{ id: "main", name: "Main", isMain: true, buttons: [] }]
-  const allDecsWithSystemButtons = injectSystemButtons(
-    materializeAddonDecks(
-      registry,
-      effectiveDecks,
-      logger,
-      keyCount,
-      config.lock?.buttons,
-      addonConfigOverrides,
-    ),
+  const sourceDecks = materializeAddonDecks(
+    registry,
+    effectiveDecks,
+    logger,
     keyCount,
+    config.lock?.buttons,
+    addonConfigOverrides,
   )
+  const allDecsWithSystemButtons = injectSystemButtons(sourceDecks, keyCount, {
+    lockActive,
+  })
   const { decks: allDecks, errorsByDeck } = applyConfigErrorReplacements(
     allDecsWithSystemButtons,
     config,
@@ -813,6 +815,7 @@ const buildRuntime = (
     },
     themeDir,
     decks: allDecks,
+    sourceDecks,
     pubSub,
     runtime,
     methods,
@@ -1360,6 +1363,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   let outputHandle: OutputHandle | null = null
   let currentOutputHandle: OutputHandle | null = null
   let unregisterSignal: (() => void) | null = null
+  let unsubscribeLockMode: (() => void) | null = null
   let removeServiceLogListener: (() => void) | null = null
 
   try {
@@ -1410,6 +1414,56 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       [dirname(loadedConfig.configPath)],
       externalAddonDirs,
     )
+
+    // ponytail: gate the n-1 system button on the session's lock state from
+    // the first frame. The startup injection in buildRuntime ran before the
+    // session provider existed; if the OS is locked at boot, re-inject
+    // without the n-1 so the deck structure is honest. Re-inject on every
+    // subsequent lock transition so the source stays correct.
+    const reInjectedDecks = (isLocked: boolean): ReadonlyArray<RuntimeDeck> =>
+      injectSystemButtons(loaded.sourceDecks, descriptor.keyCount, {
+        lockActive: isLocked,
+      })
+    const broadcastActiveDeck = (): void => {
+      const activeDeck = runtime.getActiveDeck()
+      if (activeDeck === undefined) return
+      const msg = buildDeckConfigMessage(
+        activeDeck,
+        addonBundle.addonByType,
+        resolverOptions,
+        {
+          navStackDepth: runtime.navStackDepth(),
+          hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+        },
+        descriptor.keyCount,
+        outputClient.kind === "real",
+        (fullPath) => getAssetByPath(fullPath)?.id,
+        runtime.getAvailableOverlayDeckIcon(),
+        runtime.getAvailableOverlayDeckName(),
+        { lockActive: runtime.isLockActive() },
+      )
+      bridge.broadcast(msg)
+    }
+    if (providers.session.getState() === "locked") {
+      const reInjected = reInjectedDecks(true)
+      runtime.setDecks(reInjected)
+      decks = reInjected
+      broadcastActiveDeck()
+    }
+    unsubscribeLockMode = pubSub.subscribe("runtime:lock-mode", (payload) => {
+      const isLocked =
+        typeof payload === "object" &&
+        payload !== null &&
+        (payload as { active?: unknown }).active === true
+      const reInjected = reInjectedDecks(isLocked)
+      runtime.setDecks(reInjected)
+      decks = reInjected
+      // ponytail: runtime:setDecks publishes runtime:activeDeck, but the
+      // deck-id-equality dedup in the bridge subscriber skips the
+      // re-broadcast when the active deck id is unchanged. Force a fresh
+      // broadcast so the wire filter sees the lock state on the new decks.
+      broadcastActiveDeck()
+    })
 
     bridgeSignal = new AbortController()
     statePublisher = new StatePublisher({ bridge, logger })
@@ -1562,7 +1616,12 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       themeDir,
       logger,
       rebuildDecksForKeyCount: (keyCount: number) =>
-        buildRuntime(options, loadedConfig, keyCount).decks,
+        buildRuntime(
+          options,
+          loadedConfig,
+          keyCount,
+          providers?.session.getState() === "locked",
+        ).decks,
       onChildPid: (pid) => {
         if (trackedPids.has(pid)) return
         trackedPids.add(pid)
@@ -1625,6 +1684,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
             options,
             nextLoaded,
             descriptor.keyCount,
+            providers?.session.getState() === "locked",
           ).decks
           const activeId = runtime.getActiveDeckId()
           runtime.setDecks(rebuilt)
@@ -1705,6 +1765,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     if (unregisterSignal !== null) unregisterSignal()
     if (bridgeSignal !== null) bridgeSignal.abort()
     if (addonServicesDispose !== null) addonServicesDispose()
+    if (unsubscribeLockMode !== null) unsubscribeLockMode()
     if (statePublisher !== null) statePublisher.stopAll()
     if (
       options.emulator !== true &&

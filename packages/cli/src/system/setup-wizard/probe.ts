@@ -91,7 +91,12 @@ const probeViaCommandV = async (
   executor: CommandExecutor,
   command: string,
 ): Promise<boolean> => {
-  const result = await executor.run("command", ["-v", command])
+  // ponytail: `command` is a POSIX shell builtin, not a binary.
+  // execFile can't run builtins directly — wrap in sh -c so the call
+  // works under real executors as well as test mocks. Argument is
+  // shell-quoted to keep the call single-token.
+  const quoted = `'${command.replaceAll(`'`, `'\\''`)}'`
+  const result = await executor.run("sh", ["-c", `command -v ${quoted}`])
   return result.exitCode === 0 && result.stdout.trim().length > 0
 }
 

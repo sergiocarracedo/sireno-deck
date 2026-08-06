@@ -6,9 +6,12 @@ import type { CommandModule } from "yargs"
 
 import type pino from "pino"
 
+import { UDEV_RULES } from "@/device/linux-udev"
+
 import {
   type InstallStep,
   type InstallStepResult,
+  type SudoRunResult,
   type SystemReport,
   buildInstallPlan,
   capturePassword,
@@ -35,6 +38,28 @@ import {
 } from "@/ui/console"
 
 const execFileAsync = promisify(execFile)
+
+// ponytail: failed sudo runs return stderr in the result. The spinners
+// used to swallow it ("udev write failed" with no hint why). Surface the
+// last line of stderr so the user sees the real reason
+// (Permission denied, command not found, "udevadm: not found", etc.).
+const formatFailure = (result: SudoRunResult): string => {
+  const tail = (s: string): string => {
+    const line = s
+      .split("\n")
+      .map((l) => l.trimEnd())
+      .filter((l) => l.length > 0)
+      .at(-1)
+    return line ?? ""
+  }
+  const pieces = [
+    `exit ${result.exitCode}`,
+    result.neededPassword ? "sudo rejected password" : null,
+    tail(result.stderr) || null,
+    tail(result.stdout) || null,
+  ].filter((p): p is string => p !== null && p.length > 0)
+  return pieces.join(" — ")
+}
 
 const realExecutor = {
   async run(command: string, args: ReadonlyArray<string>) {
@@ -259,11 +284,7 @@ const runInstallStep = async (
     install.stop(`${step.packages.join(", ")} installed`)
     return "installed"
   }
-  install.stop(
-    result.neededPassword
-      ? "sudo rejected password"
-      : `Install failed (exit ${result.exitCode})`,
-  )
+  install.stop(`Install failed: ${formatFailure(result)}`)
   return "failed"
 }
 
@@ -294,29 +315,36 @@ const runUdevStep = async (
   }
   const write = spinner()
   write.start("Installing udev rules")
+  // ponytail: `sudo -S` reads the password + newline, then forwards the rest
+  // of stdin to the child (`tee`). Append the rules content so tee actually
+  // writes the udev rules — not just the password.
+  const udevRules = step.manualInstructions.match(/\n[\s\S]*\n/)?.[0] ?? ""
+  const writeStdin = password.length > 0 ? password + "\n" + udevRules : udevRules
   const w = await runWithSudo({
     command: "tee",
     args: ["/etc/udev/rules.d/70-sireno-deck.rules"],
-    ...(password.length > 0 ? { stdinInput: password + "\n" } : {}),
+    ...(writeStdin.length > 0 ? { stdinInput: writeStdin } : {}),
     logger,
     timeoutMs: 30_000,
   })
   if (!w.succeeded) {
-    write.stop("udev write failed")
+    write.stop(`udev write failed: ${formatFailure(w)}`)
     return "failed"
   }
-  const reload = await runWithSudo({
+  const reload = spinner()
+  reload.start("Reloading udev rules")
+  const reloadResult = await runWithSudo({
     command: "sh",
     args: ["-c", "udevadm control --reload-rules && udevadm trigger"],
     ...(password.length > 0 ? { stdinInput: password + "\n" } : {}),
     logger,
     timeoutMs: 30_000,
   })
-  if (!reload.succeeded) {
-    write.stop("udev reload failed")
+  if (!reloadResult.succeeded) {
+    reload.stop(`udev reload failed: ${formatFailure(reloadResult)}`)
     return "failed"
   }
-  write.stop("udev rules installed")
+  reload.stop("udev rules installed")
   return "installed"
 }
 

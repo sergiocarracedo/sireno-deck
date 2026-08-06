@@ -25,8 +25,8 @@ export interface SelectDeviceOptions {
 const formatChoice = (
   descriptor: DeviceDescriptor,
   hint: string | undefined,
-): { name: string; value: string; hint?: string } => ({
-  name: descriptor.label,
+): { label: string; value: string; hint?: string } => ({
+  label: descriptor.label,
   value: descriptor.id,
   ...(hint !== undefined ? { hint } : {}),
 })

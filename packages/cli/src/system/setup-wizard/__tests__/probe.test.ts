@@ -7,18 +7,18 @@ const noFsProbe = (_command: string): boolean => false
 
 const createExecutor = (
   availableCommands: ReadonlyArray<string>,
-  extra: (
-    cmd: string,
-    args: ReadonlyArray<string>,
-  ) => { exitCode: number; stdout: string; stderr: string } | null = () => null,
 ): CommandExecutor => ({
   run: vi.fn().mockImplementation(async (command, args) => {
-    if (command === "command" && args[0] === "-v" && args.length === 2) {
-      const target = args[1]
-      if (target !== undefined && availableCommands.includes(target)) {
-        return { exitCode: 0, stdout: `/usr/bin/${target}`, stderr: "" }
+    if (command === "sh" && args[0] === "-c" && args.length === 2) {
+      const script = args[1] ?? ""
+      const match = script.match(/^command -v (.+)$/)
+      if (match) {
+        const target = match[1]!.replaceAll(`'`, "")
+        if (availableCommands.includes(target)) {
+          return { exitCode: 0, stdout: `/usr/bin/${target}`, stderr: "" }
+        }
+        return { exitCode: 1, stdout: "", stderr: "not found" }
       }
-      return { exitCode: 1, stdout: "", stderr: "not found" }
     }
     if (
       args[0] === "--version" &&
@@ -26,8 +26,6 @@ const createExecutor = (
     ) {
       return { exitCode: 0, stdout: `${command} 1.0`, stderr: "" }
     }
-    const override = extra(command, args)
-    if (override !== null) return override
     return { exitCode: 1, stdout: "", stderr: "" }
   }),
 })

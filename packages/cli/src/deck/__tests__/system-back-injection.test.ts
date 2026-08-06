@@ -64,6 +64,45 @@ describe("computeSystemButtonForSlotN1", () => {
       ),
     ).toBe("core:overlay-toggle")
   })
+
+  it("returns null when lockActive is true (main deck)", () => {
+    expect(
+      computeSystemButtonForSlotN1(
+        deck({ isMain: true }),
+        state({ lockActive: true }),
+      ),
+    ).toBe(null)
+  })
+
+  it("returns null when lockActive is true (overlay deck)", () => {
+    expect(
+      computeSystemButtonForSlotN1(
+        deck({ isOverlay: true }),
+        state({ lockActive: true }),
+      ),
+    ).toBe(null)
+  })
+
+  it("returns null when lockActive is true (regular deck)", () => {
+    expect(
+      computeSystemButtonForSlotN1(deck(), state({ lockActive: true })),
+    ).toBe(null)
+  })
+
+  it("lockActive overrides overlay-available flag", () => {
+    expect(
+      computeSystemButtonForSlotN1(
+        deck({ isOverlay: true }),
+        state({ lockActive: true, hasOverlayDeckAvailable: true }),
+      ),
+    ).toBe(null)
+  })
+
+  it("lockActive undefined is treated as unlocked", () => {
+    expect(computeSystemButtonForSlotN1(deck({ isMain: true }), state())).toBe(
+      "core:settings-entry",
+    )
+  })
 })
 
 describe("injectSystemButtons", () => {
@@ -157,5 +196,75 @@ describe("injectSystemButtons", () => {
       "core:back",
     )
     expect(withXl.buttons.find((b) => b.id === "14-sub-0")).toBeUndefined()
+  })
+
+  it("does not inject n-1 on main deck when lockActive is true", () => {
+    const main = {
+      ...deck({ isMain: true }),
+      buttons: [{ id: "0-d1-0", position: 0, type: "x" }],
+    }
+    const [result] = injectSystemButtons([main], 15, { lockActive: true })
+    const n1 = result.buttons.find((b) => b.id === "14-d1-0")
+    expect(n1).toBeUndefined()
+    expect(result.buttons).toHaveLength(1)
+  })
+
+  it("does not inject n-1 on regular deck when lockActive is true", () => {
+    const sub = {
+      ...deck({ id: "sub", name: "Sub" }),
+      buttons: [{ id: "0-sub-0", position: 0, type: "x" }],
+    }
+    const [result] = injectSystemButtons([sub], 15, { lockActive: true })
+    const n1 = result.buttons.find((b) => b.id === "14-sub-0")
+    expect(n1).toBeUndefined()
+    expect(result.buttons).toHaveLength(1)
+  })
+
+  it("does not inject n-1 on overlay deck when lockActive is true", () => {
+    const overlay = {
+      ...deck({ id: "overlay", name: "Overlay", isOverlay: true }),
+      buttons: [{ id: "0-overlay-0", position: 0, type: "x" }],
+    }
+    const [result] = injectSystemButtons([overlay], 15, { lockActive: true })
+    const n1 = result.buttons.find((b) => b.id === "14-overlay-0")
+    expect(n1).toBeUndefined()
+    expect(result.buttons).toHaveLength(1)
+  })
+
+  it(
+    "does not strip a pre-existing n-1 system button when lockActive is true " +
+      "(orchestrator strips via re-injection from sourceDecks)",
+    () => {
+      const alreadyInjected = {
+        ...deck({ isMain: true }),
+        buttons: [{ id: "14-d1-0", position: 14, type: "core:settings-entry" }],
+      }
+      const [result] = injectSystemButtons([alreadyInjected], 15, {
+        lockActive: true,
+      })
+      expect(result.buttons).toHaveLength(1)
+    },
+  )
+
+  it("uses lockActive: true as default when no options provided (back-compat)", () => {
+    const main = {
+      ...deck({ isMain: true }),
+      buttons: [{ id: "0-d1-0", position: 0, type: "x" }],
+    }
+    const [result] = injectSystemButtons([main], 15)
+    const n1 = result.buttons.find((b) => b.id === "14-d1-0")
+    expect(n1?.type).toBe("core:settings-entry")
+    expect(n1?.position).toBe(14)
+  })
+
+  it("lockActive: false is explicit-unlocked", () => {
+    const sub = {
+      ...deck({ id: "sub" }),
+      buttons: [{ id: "0-sub-0", position: 0, type: "x" }],
+    }
+    const [result] = injectSystemButtons([sub], 15, { lockActive: false })
+    const n1 = result.buttons.find((b) => b.id === "14-sub-0")
+    expect(n1?.type).toBe("core:back")
+    expect(n1?.position).toBe(14)
   })
 })

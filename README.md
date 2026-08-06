@@ -1,7 +1,8 @@
 <p align="center">
-  <img src="packages/cli/docs/screenshots/emulator-main-deck.png" width="720" alt="Sireno Deck emulator showing the main deck" />
+  <img src="docs/assets/logo.png" width="120" alt="Sireno Deck logo" />
   <br />
-  <img src="packages/cli/docs/assets/logo.png" width="120" alt="Sireno Deck logo" />
+  <br />
+  <img src="docs/screenshots/emulator-main-deck.png" width="720" alt="Sireno Deck emulator showing the main deck" />
 </p>
 
 <h1 align="center">Sireno Deck</h1>
@@ -86,7 +87,7 @@ decks:
       - position: 1
         type: core:action
         config:
-          command: "xdg-open https://example.com"
+          command: 'xdg-open https://example.com'
 
       - position: 4
         type: weather:weather

@@ -107,6 +107,21 @@ After any change that touches the WebSocket bridge, the session provider, the ru
 
 If the emulator iframe shows "loading…" indefinitely, check the bridge WS port matches the iframe's `VITE_WS_URL` env. If the frontend redirects to `/decks/core:lock`, the session provider is reporting `locked` — check `docs/solutions/runtime-errors/session-lock-provider-never-fires.md` for the idle-monitor state machine fix.
 
+## Task completion status
+
+When a task is finished (work committed, verified, and ready to hand back), end the response with a status block:
+
+```
+========================================
+[Task one-line summary] - FINISHED
+WORKTREE: /works/__worktrees/opensource/sireno-deck-2/<branch-name>
+========================================
+```
+
+- One-line summary = the user-visible outcome, not the diff.
+- `WORKTREE:` line carries the absolute worktree path when there is one; on the main repo checkout it falls back to the branch name (e.g. `WORKTREE: main`).
+- No status block on blocked/partial tasks — say so in prose instead.
+
 ## When stuck
 
 1. Search `docs/solutions/` for the symptom module (`grep -r "<module>" docs/solutions/`).
