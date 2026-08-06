@@ -1,29 +1,76 @@
-# sireno-deck
+<p align="center">
+  <img src="docs/screenshots/emulator-main-deck.png" width="720" alt="Sireno Deck emulator showing the main deck" />
+  <br />
+  <img src="docs/assets/logo.png" width="120" alt="Sireno Deck logo" />
+</p>
 
-CLI for managing Elgato Stream Deck devices via a config-driven deck system. Write a `config.yml`, register addons, and the same UI runs in the emulator, on real hardware, or behind a `pnpm dev` daemon.
+<h1 align="center">Sireno Deck</h1>
 
-## Quick start
+<p align="center">
+  A Node CLI that drives an Elgato Stream Deck from a YAML config.
+  Same UI in a browser emulator, on real hardware, or behind a dev daemon.
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue.svg" /></a>
+  <img alt="Node ≥20" src="https://img.shields.io/badge/node-%E2%89%A520-339933.svg" />
+  <img alt="pnpm 10" src="https://img.shields.io/badge/pnpm-10-F69220.svg" />
+  <img alt="TypeScript strict" src="https://img.shields.io/badge/typescript-strict-3178C6.svg" />
+</p>
+
+## Features
+
+- **YAML-driven decks** — one file, no JS required to use an addon.
+- **Three surfaces from one code path** — emulator browser shell, real hardware, and a Vite dev SPA all run the same React 19 + Tailwind 4 frontend.
+- **Addon API** — register custom button types, decks, and frontends. Eight built-in addons ship as TS source.
+- **Cross-platform input** — `ydotool` (Linux), `osascript` (macOS), SendInput (Windows). Per-button gesture state machine for tap / dbl-tap / hold.
+- **WebSocket bridge protocol** — single JSON protocol over `127.0.0.1`; surfaces are stateless.
+
+## Getting started
+
+### Install
 
 ```bash
-# Install
 pnpm install
-
-# Run the emulator (browser auto-opens)
-pnpm --filter sirenodeck dev start --emulator
-
-# Stop it
-pnpm --filter sirenodeck dev stop
-
-# Or, run foreground (Ctrl-C to exit)
-pnpm --filter sirenodeck dev run --emulator
 ```
 
-On first run, `dev` spawns the WS bridge + a vite dev server for the React 19 + Tailwind 4 frontend. The emulator shell opens at `http://127.0.0.1:52938/` and forwards button clicks to the runtime via WS.
+### First run
 
-## `config.yml` example
+The daemon writes a default `config.yml` to `$XDG_CONFIG_HOME/sireno-deck/config.yml` on first start, then walks you through the device model and addon catalog.
+
+```bash
+# Start the emulator (browser auto-opens at http://127.0.0.1:52938)
+pnpm --silent run dev start --emulator
+
+# Tail the daemon log
+pnpm --silent run dev logs --follow
+
+# Stop
+pnpm --silent run dev stop
+```
+
+Drop your own `config.yml` next to the package you run from (or pass `--config <path>`) to override the default.
+
+### CLI
+
+```text
+sirenodeck start    [--config <path>] [--port <N>] [--emulator]
+                    [--device-model mk2|plus|mini|xl] [--http-port <N>]
+                    [--logs]
+sirenodeck stop
+sirenodeck status
+sirenodeck restart  [--logs]
+sirenodeck reload   [--logs]            # in-place reload via SIGUSR1
+sirenodeck logs     [--follow] [--lines <N>]
+```
+
+`start` daemonizes (writes PID + token under `$XDG_RUNTIME_DIR/sireno-deck/`); the foreground recipe for development is `pnpm run dev start` (wraps `tsx watch`, ignoring `frontend/**` so Vite keeps running).
+
+### `config.yml` example
 
 ```yaml
 theme: default
+
 decks:
   main:
     name: Main
@@ -69,75 +116,72 @@ decks:
         type: core:change-deck
         config:
           deck: main
-
-logging:
-  level: info
 ```
 
-Put this at the repo root as `config.yml`. Run `sireno run --emulator` and the deck renders in the browser.
+### Documentation
 
-## CLI
-
-```
-sireno run   [--emulator] [--dev] [--config <path>] [--device-model <m>] [--port <N>]
-sireno start [--emulator] [--config <path>] [--device-model <m>] [--port <N>] [--http-port <N>]
-sireno stop
-sireno status
-sireno --version
-```
-
-- `run` — foreground. Ctrl-C stops everything.
-- `start` — daemon. Writes PID + token + children files to `$XDG_RUNTIME_DIR/sireno-deck/`. Stop with `sireno stop`.
-- `--emulator` — render in browser instead of writing to real hardware.
-- `--dev` — use the vite dev server (faster iteration, no build needed).
-- `--http-port <N>` — port for the prod HTTP server (default 3939). Only starts when `pnpm --filter sirenodeck-frontend build` has been run.
-- `--device-model <mk2|plus|mini|xl>` — change the device layout. `mk2` is the default (15 keys, 5×3).
+- Architecture — [`docs/architecture/boundaries.md`](docs/architecture/boundaries.md), [`ARCHITECTURE.md`](ARCHITECTURE.md)
+- Institutional learnings:
+  - [`docs/solutions/runtime-errors/`](docs/solutions/runtime-errors/) — recurring failure modes and fixes
+  - [`docs/solutions/conventions/`](docs/solutions/conventions/) — repo conventions captured after the fact
+  - [`docs/solutions/tooling-decisions/`](docs/solutions/tooling-decisions/) — tool choices and the trade-offs
+- Plans — [`docs/plans/`](docs/plans/) — design + implementation plans
+- Strategy — [`STRATEGY.md`](STRATEGY.md)
+- Built-in addons — each ships its own README:
+  - [`core`](packages/cli/src/builtin-addons/core/README.md)
+  - [`internal-settings`](packages/cli/src/builtin-addons/internal-settings/README.md)
+  - [`session`](packages/cli/src/builtin-addons/session/README.md)
+  - [`date-time`](packages/cli/src/builtin-addons/date-time/README.md)
+  - [`emoji-selector`](packages/cli/src/builtin-addons/emoji-selector/README.md)
+  - [`media`](packages/cli/src/builtin-addons/media/README.md)
+  - [`system-status`](packages/cli/src/builtin-addons/system-status/README.md)
+  - [`weather`](packages/cli/src/builtin-addons/weather/README.md)
+  - [`brightness`](packages/cli/src/builtin-addons/brightness/README.md)
 
 ## How it works
 
-```
-                config.yml
-                    |
-                    v
-       loadConfig + validateFull
-                    |
-                    v
-   AddonRegistry { builtins + local addons }
-                    |
-                    v
-   DeckRuntime { pub-sub, gesture state machine }
-        |                 |
-        v                 v
-   WS bridge        vite frontend
-   (3937)          (5180)
-        |                 |
-        v                 v
-   emulator shell  <-- iframe --  frontend
-   (52938)                         |
-                                    v
-                              <Deck> + <ButtonFrame>
-                              (your addon renders here)
+```mermaid
+flowchart LR
+  cfg[config.yml]:::cfg --> load[loadConfig + validate]
+  load --> reg[AddonRegistry<br/>builtins + addons]
+  reg --> rt[DeckRuntime<br/>pub-sub + gestures]
+  rt --> ws[WS bridge<br/>127.0.0.1:52937]
+  ws <--> vite[Vite frontend<br/>127.0.0.1:5180]
+  ws <--> emu[Emulator shell<br/>127.0.0.1:52938]
+  emu -. iframe .-> vite
+  vite --> deck[Deck + ButtonFrame<br/>your addon renders here]
+
+  classDef cfg fill:#1f2937,stroke:#3b82f6,color:#fff
 ```
 
-Every button gets its own WS handshake. The frontend reads the deck-config + per-button-type surfaces from the theme; addons register React components via `packages/cli/src/addon/api.ts`. Button taps flow back through the WS bridge to the runtime's gesture state machine.
+A button click flows back through the bridge to the runtime:
+
+```mermaid
+sequenceDiagram
+  participant U as User
+  participant E as Emulator
+  participant W as WS bridge
+  participant R as Runtime
+  participant H as Addon backend
+  participant S as Pub/Sub
+  participant V as Vite frontend
+
+  U->>E: click Key 0
+  E->>W: button-action {deckId, position, gesture:"tap"}
+  W->>R: dispatchGesture(buttonId, gesture)
+  R->>H: invoke handler
+  H-->>S: publish(channel, payload)
+  S-->>W: broadcast state update
+  W-->>V: state {channels, cadence}
+  V-->>U: re-render Key 0
+```
+
+Every button gets its own WS handshake. The frontend reads `deck-config` and per-button-type surfaces from the theme; addons register React components via [`packages/cli/src/addon/api.ts`](packages/cli/src/addon/api.ts).
 
 ## For addon authors
 
-Each builtin addon ships its own README with button types, config schema, and an example:
-
-- [`core`](packages/cli/src/builtin-addons/core/README.md) — internal: `core:change-deck`, `core:action`, `core:toggle`, `core:page-nav`
-- [`internal-settings`](packages/cli/src/builtin-addons/internal-settings/README.md) — internal: `internal-settings:*` (settings overlay)
-- [`session`](packages/cli/src/builtin-addons/session/README.md) — the `session:locked` deck
-- [`date-time`](packages/cli/src/builtin-addons/date-time/README.md) — `date-time:time`, `date-time:date`, `date-time:date-time`, `date-time:analog-clock`
-- [`emoji-selector`](packages/cli/src/builtin-addons/emoji-selector/README.md) — emoji deck generator
-- [`media`](packages/cli/src/builtin-addons/media/README.md) — `media:player`, `media:mute`, `media:volume:*`
-- [`system-status`](packages/cli/src/builtin-addons/system-status/README.md) — `system-status:system-status`
-- [`value-display`](packages/cli/src/builtin-addons/value-display/README.md) — `value-display:display`
-- [`weather`](packages/cli/src/builtin-addons/weather/README.md) — `weather:weather`
-- [`brightness`](packages/cli/src/builtin-addons/brightness/README.md) — `brightness:brightness`
-
-The addon API is at [`packages/cli/src/addon/api.ts`](packages/cli/src/addon/api.ts). To write a 3rd-party addon, package it as `npm`, set `sirenoAddonApiVersion` in `package.json`, and add its name to `config.yml`'s `addons:` list. The loader installs it to `~/.cache/sireno-deck/node_modules/` on first run.
+Each addon packages as npm with `sirenodeck.json` manifest at version `1`. The loader installs it to `~/.cache/sireno-deck/node_modules/` on first run. See [`packages/cli/src/addon/api.ts`](packages/cli/src/addon/api.ts) for the API and [`docs/architecture/boundaries.md`](docs/architecture/boundaries.md) for what crosses each seam.
 
 ## License
 
-MIT. See [`LICENSE`](LICENSE).
+MIT — see [`LICENSE`](LICENSE).
