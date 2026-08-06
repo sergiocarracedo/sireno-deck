@@ -19,7 +19,7 @@ const TOKEN_MISMATCH_CLOSE_CODE = 4001
 export interface WsBridgeOptions {
   port?: number
   host?: string
-  expectedToken?: string
+  expectedToken: string
   handshakeTimeoutMs?: number
   activeTheme?: { name: string; version?: number }
   logger?: Logger
@@ -51,7 +51,7 @@ export interface WsBridge {
 }
 
 export const startWsBridge = (
-  options: WsBridgeOptions = {},
+  options: WsBridgeOptions,
 ): Promise<WsBridge> => {
   const {
     port = 0,
@@ -122,7 +122,7 @@ export const startWsBridge = (
             return
           }
           const helloSchema =
-            expectedToken !== undefined
+            expectedToken
               ? helloMessageStrictSchema
               : helloMessageSchema
           const helloResult = helloSchema.safeParse(message)
@@ -131,7 +131,7 @@ export const startWsBridge = (
             return
           }
           if (
-            expectedToken !== undefined &&
+            expectedToken &&
             helloResult.data.token !== expectedToken
           ) {
             socket.close(TOKEN_MISMATCH_CLOSE_CODE, "token mismatch")

@@ -76,6 +76,7 @@ import {
   type OutputHandle,
 } from "@/outputClient"
 import { loadDeviceConfig } from "@/util/device-config"
+import { readToken } from "@/util/daemon"
 import { materializeAddonDecks } from "./addon-decks"
 import {
   collectBuiltinAddonRegistry,
@@ -1398,7 +1399,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
     addonBundle = await buildAddonBundle()
 
-    bridge = await startWsBridge({ port: 52937 })
+    bridge = await startWsBridge({ port: 52937, expectedToken: readToken() ?? "" })
     const wsPort = bridge.port
 
     // ponytail: register external addon dirs (from config's `addons:` list) so
