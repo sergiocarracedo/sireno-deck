@@ -1,0 +1,30 @@
+packages/cli/src/system/setup-wizard/probe.ts
+  s_ca50e587858d4f::t_495c6859d9feb7 135,137-142,146
+  s_ca50e587858d4f::t_b07c3e8d70dda3 372,378,396,403
+packages/cli/src/cli/commands/system-requirements.ts
+  s_137cc2ea17c484::t_9753b717111a9d 319-325,329
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "671aa4aec4478964067664de220b76ceb97efcb4",
+  "prompts": {},
+  "sessions": {
+    "s_137cc2ea17c484": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_02c42b4a8ffetzUK7FlebF3AKq",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_ca50e587858d4f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_028773fbaffe0rGXf2uC36Ox9o",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
