@@ -149,6 +149,30 @@ export const superviseService = async (
       return child
     },
     onChildExit: async (code, signal) => {
+      // ponytail: clean shutdown — code 0 or a graceful signal means the daemon
+      // exited on purpose (pipeline's `process.exit(0)`, or an external
+      // SIGTERM/SIGINT/SIGHUP). The daemon already cleared its screen on the
+      // way out (black-frame push in the pipeline's `finally`), so don't
+      // re-push, don't burn the retry schedule on a successful run, and don't
+      // pretend it was unexpected. Exit the parent so `pnpm dev` returns
+      // control to the terminal instead of hanging through the
+      // 2s/5s/15s/30s/60s schedule before process.exit(1).
+      const graceful =
+        code === 0 ||
+        signal === "SIGTERM" ||
+        signal === "SIGINT" ||
+        signal === "SIGHUP"
+      if (graceful) {
+        logger.info({ code, signal }, "parent: service exited cleanly")
+        removePidFile()
+        removeTokenFile()
+        removeChildrenFile()
+        removeStartLock()
+        process.removeListener("SIGINT", sigintHandler)
+        process.removeListener("SIGTERM", sigtermHandler)
+        process.exit(code ?? 0)
+        return
+      }
       logger.warn({ code, signal }, "parent: service exited unexpectedly")
       await pushBlackOnce()
     },
