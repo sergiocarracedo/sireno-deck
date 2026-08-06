@@ -1,0 +1,44 @@
+README.md
+  s_137cc2ea17c484::t_fa6a4c2f2a57fc 2,4-5,90
+packages/cli/src/system/setup-wizard/probe.ts
+  s_137cc2ea17c484::t_f8553b588cd46e 94-99
+packages/cli/package.json
+  s_137cc2ea17c484::t_fa6a4c2f2a57fc 97
+packages/cli/src/system/setup-wizard/__tests__/probe.test.ts
+  s_137cc2ea17c484::t_342cdd9bc15205 12-20
+packages/cli/src/deck/__tests__/system-back-injection.test.ts
+  s_137cc2ea17c484::t_fa6a4c2f2a57fc 67-105,200-268
+  s_137cc2ea17c484::t_0ccc4c2bc4e2a4 269
+packages/cli/src/cli/commands/run.ts
+  s_137cc2ea17c484::t_fa6a4c2f2a57fc 415,653,786-789,791-792,794-796,818,1366,1418-1467,1619-1624,1687,1768
+AGENTS.md
+  s_137cc2ea17c484::t_fa6a4c2f2a57fc 110-124
+docs/solutions/runtime-errors/n-1-injection-ignores-lock-state.md
+  s_137cc2ea17c484::t_0ccc4c2bc4e2a4 1-275
+packages/cli/src/cli/commands/system-requirements.ts
+  s_137cc2ea17c484::t_2f627f436999e4 287
+  s_137cc2ea17c484::t_44770578c81ff4 318-322,326,331,334-336,343-344,347
+  s_137cc2ea17c484::t_4b2f9742786945 9-10
+  s_137cc2ea17c484::t_452cc18832369d 14
+  s_137cc2ea17c484::t_d7888cb77a50bb 42-63
+packages/cli/src/system/device-selection.ts
+  s_137cc2ea17c484::t_8c2b690c22144c 28-29
+.npmrc
+  s_137cc2ea17c484::t_fa6a4c2f2a57fc 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "37d7c241eb18c56a7c7158da08ef87ab11732818",
+  "prompts": {},
+  "sessions": {
+    "s_137cc2ea17c484": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_02c42b4a8ffetzUK7FlebF3AKq",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
