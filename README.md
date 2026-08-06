@@ -1,7 +1,7 @@
 <p align="center">
-  <img src="docs/screenshots/emulator-main-deck.png" width="720" alt="Sireno Deck emulator showing the main deck" />
+  <img src="packages/cli/docs/screenshots/emulator-main-deck.png" width="720" alt="Sireno Deck emulator showing the main deck" />
   <br />
-  <img src="docs/assets/logo.png" width="120" alt="Sireno Deck logo" />
+  <img src="packages/cli/docs/assets/logo.png" width="120" alt="Sireno Deck logo" />
 </p>
 
 <h1 align="center">Sireno Deck</h1>
@@ -120,23 +120,13 @@ decks:
 
 ### Documentation
 
-- Architecture — [`docs/architecture/boundaries.md`](docs/architecture/boundaries.md), [`ARCHITECTURE.md`](ARCHITECTURE.md)
-- Institutional learnings:
-  - [`docs/solutions/runtime-errors/`](docs/solutions/runtime-errors/) — recurring failure modes and fixes
-  - [`docs/solutions/conventions/`](docs/solutions/conventions/) — repo conventions captured after the fact
-  - [`docs/solutions/tooling-decisions/`](docs/solutions/tooling-decisions/) — tool choices and the trade-offs
-- Plans — [`docs/plans/`](docs/plans/) — design + implementation plans
-- Strategy — [`STRATEGY.md`](STRATEGY.md)
-- Built-in addons — each ships its own README:
-  - [`core`](packages/cli/src/builtin-addons/core/README.md)
-  - [`internal-settings`](packages/cli/src/builtin-addons/internal-settings/README.md)
-  - [`session`](packages/cli/src/builtin-addons/session/README.md)
-  - [`date-time`](packages/cli/src/builtin-addons/date-time/README.md)
-  - [`emoji-selector`](packages/cli/src/builtin-addons/emoji-selector/README.md)
-  - [`media`](packages/cli/src/builtin-addons/media/README.md)
-  - [`system-status`](packages/cli/src/builtin-addons/system-status/README.md)
-  - [`weather`](packages/cli/src/builtin-addons/weather/README.md)
-  - [`brightness`](packages/cli/src/builtin-addons/brightness/README.md)
+Full docs live in [`packages/cli/docs/`](packages/cli/docs/) (rendered by the Astro docs site):
+
+- Getting started — [Installation](packages/cli/docs/user/installation.mdx), [Running the service](packages/cli/docs/user/running-the-service.mdx), [Configuration files](packages/cli/docs/user/configuration-files.mdx)
+- Using Sireno Deck — [Decks and buttons](packages/cli/docs/user/decks-and-buttons.mdx), [Actions](packages/cli/docs/user/actions.mdx), [Text formatting](packages/cli/docs/user/text-formatting.mdx), [Icons](packages/cli/docs/user/icons.mdx), [Themes](packages/cli/docs/user/themes.mdx), [Emulator vs hardware](packages/cli/docs/user/emulator-vs-hardware.mdx), [Troubleshooting](packages/cli/docs/user/troubleshooting.mdx)
+- Built-in addons — [Reference](packages/cli/docs/user/builtin-addons.mdx)
+- Extending Sireno Deck — [Addon authoring](packages/cli/docs/developer/addon-authoring.mdx), [Theme authoring](packages/cli/docs/developer/theme-authoring.mdx), [Architecture](packages/cli/docs/developer/architecture.mdx), [Runtime API](packages/cli/docs/developer/runtime-api.mdx), [Protocol](packages/cli/docs/developer/protocol.mdx)
+- Reference — [CLI commands](packages/cli/docs/reference/cli-commands.mdx), [Config schema](packages/cli/docs/reference/config-schema.mdx), [Addon API](packages/cli/docs/reference/addon-api.mdx), [Text tags](packages/cli/docs/reference/text-tags.mdx), [Macro syntax](packages/cli/docs/reference/macro-syntax.mdx)
 
 ## How it works
 
