@@ -1,0 +1,26 @@
+packages/cli/src/cli/commands/run.ts
+  s_eeac6539cee62e::t_5f5b81bac4a780 1402
+  s_eeac6539cee62e::t_6e8acf5ad0ee2f 79
+packages/cli/src/render/ws-bridge.ts
+  s_eeac6539cee62e::t_49024da794c6da 54
+  s_eeac6539cee62e::t_c8fb08a7d3a203 125,134
+  s_eeac6539cee62e::t_ed7ca2226900d2 22
+packages/cli/src/render/__tests__/ws-bridge.test.ts
+  s_eeac6539cee62e::t_6883d6567141eb 40,46,76,119,142,165,178,189,208,227,247,271,289,319,346,377,426,467,516,536
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "758c35b2d1b24a785ee31ddb5bd9e72d4b6e0af9",
+  "prompts": {},
+  "sessions": {
+    "s_eeac6539cee62e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_027d1096bffeknRqaHj8569ur5",
+        "model": "deepseek-ai/deepseek-v4-pro"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
