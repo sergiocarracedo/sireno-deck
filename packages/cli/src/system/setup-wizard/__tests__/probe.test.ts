@@ -26,7 +26,8 @@ const createExecutor = (
   }),
 })
 
-const fileExists = (path: string): boolean => path === "/etc/udev/rules.d/70-sireno-deck.rules"
+const fileExists = (path: string): boolean =>
+  path === "/etc/udev/rules.d/70-sireno-deck.rules"
 
 describe("probeAll", () => {
   it("reports keyMacro available on Linux when ydotool is present", async () => {
@@ -169,7 +170,9 @@ describe("probeAll", () => {
     })
     expect(report.session).toBe("wayland")
     expect(report.capabilities.activeApp.available).toBe(true)
-    expect(report.capabilities.activeApp.preferred).toBe("gnome-shell-extension")
+    expect(report.capabilities.activeApp.preferred).toBe(
+      "gnome-shell-extension",
+    )
     expect(report.capabilities.activeApp.reason).toContain(
       "Window Calls Extended",
     )

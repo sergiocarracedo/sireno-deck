@@ -611,7 +611,7 @@ const probeSystemForFirstRun = async (
       },
     })
     return { report, summary: summarizeReport(report) }
-  } catch (err) {
+  } catch {
     return null
   }
 }
@@ -622,7 +622,7 @@ const runFirstRunCheckIfNeeded = async (
 ): Promise<void> => {
   const probed = await probeSystemForFirstRun(options)
   if (probed === null) return
-  const { report, summary } = probed
+  const { summary } = probed
   const missing =
     summary.missingCapabilities.length > 0 ||
     summary.udevMissing ||

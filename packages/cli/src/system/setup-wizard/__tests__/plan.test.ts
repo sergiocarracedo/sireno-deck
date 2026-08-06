@@ -3,9 +3,7 @@ import { describe, expect, it } from "vitest"
 import { buildInstallPlan, needsConfigSeed } from "../plan"
 import type { SystemReport } from "../types"
 
-const baseReport = (
-  overrides: Partial<SystemReport> = {},
-): SystemReport => ({
+const baseReport = (overrides: Partial<SystemReport> = {}): SystemReport => ({
   platform: "linux",
   homeDir: "/home/u",
   xdgConfigHome: "/home/u/.config",
@@ -121,16 +119,16 @@ describe("buildInstallPlan", () => {
     const step = plan.find((s) => s.id === "cap:activeApp:gnome-extension")
     expect(step?.manualOnly).toBe(true)
     expect(step?.sudo).toBe(false)
-    expect(step?.manualInstructions).toContain(
-      "extensions.gnome.org",
-    )
+    expect(step?.manualInstructions).toContain("extensions.gnome.org")
   })
 
   it("udev step is always sudo", () => {
     const plan = buildInstallPlan(baseReport())
     const step = plan.find((s) => s.id === "udev:rules")
     expect(step?.sudo).toBe(true)
-    expect(step?.manualInstructions).toContain("/etc/udev/rules.d/70-sireno-deck.rules")
+    expect(step?.manualInstructions).toContain(
+      "/etc/udev/rules.d/70-sireno-deck.rules",
+    )
   })
 
   it("udev step description changes when Stream Deck is connected", () => {

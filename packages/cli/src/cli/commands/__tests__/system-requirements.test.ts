@@ -31,10 +31,8 @@ vi.mock("@/system/setup-wizard", () => ({
 }))
 
 const { createLogger } = await import("@/util/logger")
-const {
-  systemRequirements,
-  systemRequirementsCommand,
-} = await import("../system-requirements")
+const { systemRequirements, systemRequirementsCommand } =
+  await import("../system-requirements")
 const { buildCli } = await import("@/cli")
 
 const silentLogger = () => createLogger({ level: "silent" })
@@ -60,7 +58,11 @@ const okSummary = (): FakeSummary => ({
   configMissing: false,
   configPath: "/home/x/.config/sireno-deck/config.yml",
   streamDeckConnected: false,
-  lines: ["Platform: linux (X11)", "Capabilities: all present", "Config: present"],
+  lines: [
+    "Platform: linux (X11)",
+    "Capabilities: all present",
+    "Config: present",
+  ],
 })
 
 const configMissingSummary = (): FakeSummary => ({

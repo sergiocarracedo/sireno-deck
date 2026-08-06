@@ -5,11 +5,7 @@ import {
   formatStepInstructions,
   summarizeReport,
 } from "../format"
-import type {
-  InstallStep,
-  InstallStepResult,
-  SystemReport,
-} from "../types"
+import type { InstallStep, InstallStepResult, SystemReport } from "../types"
 
 const baseReport = (overrides: Partial<SystemReport> = {}): SystemReport => ({
   platform: "linux",
@@ -64,9 +60,7 @@ describe("summarizeReport", () => {
     expect(summary.missingCapabilities).toEqual(["clipboard"])
     expect(summary.udevMissing).toBe(true)
     expect(summary.configMissing).toBe(true)
-    expect(summary.configPath).toBe(
-      "/home/u/.config/sireno-deck/config.yml",
-    )
+    expect(summary.configPath).toBe("/home/u/.config/sireno-deck/config.yml")
     expect(summary.session).toBe("wayland")
     expect(summary.packageManager).toBe("apt")
   })
@@ -154,9 +148,9 @@ describe("summarizeReport", () => {
         },
       }),
     )
-    expect(summary.lines.some((l) => l.includes("Stream Deck: connected"))).toBe(
-      true,
-    )
+    expect(
+      summary.lines.some((l) => l.includes("Stream Deck: connected")),
+    ).toBe(true)
   })
 })
 
@@ -246,7 +240,9 @@ describe("formatResultLine", () => {
   ]
   for (const [result, expectedPrefix] of cases) {
     it(`renders ${result} with prefix ${expectedPrefix}`, () => {
-      expect(formatResultLine(step, result).startsWith(expectedPrefix)).toBe(true)
+      expect(formatResultLine(step, result).startsWith(expectedPrefix)).toBe(
+        true,
+      )
     })
   }
 })

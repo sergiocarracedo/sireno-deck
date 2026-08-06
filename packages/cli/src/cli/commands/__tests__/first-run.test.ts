@@ -2,7 +2,15 @@ import { mkdtempSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest"
 
 vi.mock("@/config/loader", () => ({ loadConfig: vi.fn() }))
 vi.mock("@/addon/registry", () => ({ AddonRegistry: vi.fn() }))
@@ -75,7 +83,9 @@ vi.mock("../spawn-daemon", async (importOriginal) => {
   const actual = (await importOriginal()) as Record<string, unknown>
   return {
     ...actual,
-    isUnderServiceManager: vi.fn(() => Boolean(process.env["SIRENO_DAEMON_CHILD"])),
+    isUnderServiceManager: vi.fn(() =>
+      Boolean(process.env["SIRENO_DAEMON_CHILD"]),
+    ),
     spawnDetached: vi.fn(() => {
       const listeners: Record<string, Array<() => void>> = {}
       const child = {
@@ -154,30 +164,27 @@ const summarizeReportMock = (
   setupWizardMock as unknown as { summarizeReport: ReturnType<typeof vi.fn> }
 ).summarizeReport
 
-const loaderMock = (await import("@/config/loader")).loadConfig as unknown as
-  ReturnType<typeof vi.fn>
-const builtinsMock = (await import("@/builtin-addons")).registerBuiltins as
-  unknown as ReturnType<typeof vi.fn>
-const validateFullMock = (await import("@/config/validation")).validateFull as
-  unknown as ReturnType<typeof vi.fn>
-const isFullValidMock = (await import("@/config/validation")).isFullValid as
-  unknown as ReturnType<typeof vi.fn>
-const registryCtorMock = (await import("@/addon/registry")).AddonRegistry as
-  unknown as ReturnType<typeof vi.fn>
+const loaderMock = (await import("@/config/loader"))
+  .loadConfig as unknown as ReturnType<typeof vi.fn>
+const builtinsMock = (await import("@/builtin-addons"))
+  .registerBuiltins as unknown as ReturnType<typeof vi.fn>
+const validateFullMock = (await import("@/config/validation"))
+  .validateFull as unknown as ReturnType<typeof vi.fn>
+const isFullValidMock = (await import("@/config/validation"))
+  .isFullValid as unknown as ReturnType<typeof vi.fn>
+const registryCtorMock = (await import("@/addon/registry"))
+  .AddonRegistry as unknown as ReturnType<typeof vi.fn>
 const loadDeviceConfigMock = (await import("@/util/device-config"))
   .loadDeviceConfig as unknown as ReturnType<typeof vi.fn>
-const selectOutputClientMock = (
-  await import("@/outputClient")
-).selectOutputClient as unknown as ReturnType<typeof vi.fn>
-const createDeckRuntimeMock = (
-  await import("@/deck")
-).createDeckRuntime as unknown as ReturnType<typeof vi.fn>
+const selectOutputClientMock = (await import("@/outputClient"))
+  .selectOutputClient as unknown as ReturnType<typeof vi.fn>
+const createDeckRuntimeMock = (await import("@/deck"))
+  .createDeckRuntime as unknown as ReturnType<typeof vi.fn>
 const createActiveAppProviderMock = (
   await import("@/system/providers/active-app")
 ).createActiveAppProvider as unknown as ReturnType<typeof vi.fn>
-const createSessionProviderMock = (
-  await import("@/system/providers/session")
-).createSessionProvider as unknown as ReturnType<typeof vi.fn>
+const createSessionProviderMock = (await import("@/system/providers/session"))
+  .createSessionProvider as unknown as ReturnType<typeof vi.fn>
 const createKeyMacroProviderMock = (
   await import("@/system/providers/key-macro")
 ).createKeyMacroProvider as unknown as ReturnType<typeof vi.fn>
@@ -298,7 +305,13 @@ const setHappyPath = (): void => {
     selectDevice: vi.fn(async () => undefined),
     storeSelection: vi.fn(async () => undefined),
     init: vi.fn(async () => ({
-      descriptor: { id: "X", model: "mk2", keyCount: 15, label: "X", transport: "real" as const },
+      descriptor: {
+        id: "X",
+        model: "mk2",
+        keyCount: 15,
+        label: "X",
+        transport: "real" as const,
+      },
       frontendUrl: "http://x",
       childPids: [],
       stop: vi.fn(async () => undefined),
