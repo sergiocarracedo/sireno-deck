@@ -1,0 +1,39 @@
+packages/cli/src/api/protocol-internal.ts
+  s_eeac6539cee62e::t_e2e5b90170ebcd 113
+  s_eeac6539cee62e::t_b6fa7ebdc5f703 65
+  s_eeac6539cee62e::t_4356260e334307 99
+  s_eeac6539cee62e::t_dc895f20de2920 15
+  s_eeac6539cee62e::t_4314fcc050cda5 21
+  s_eeac6539cee62e::t_20785e80f8d23e 70
+  s_eeac6539cee62e::t_c53727266e2ad2 130
+  s_eeac6539cee62e::t_84c4faf44d68b1 146
+  s_eeac6539cee62e::t_7c4b430a367d6e 58
+  s_eeac6539cee62e::t_9dbd3a38b84abe 155
+  s_eeac6539cee62e::t_f4416204eaaa40 52
+  s_eeac6539cee62e::t_d9a955cc35d328 118
+  s_eeac6539cee62e::t_172899d7fb01e1 151
+  s_eeac6539cee62e::t_11aac4ea9c22e8 123
+  s_eeac6539cee62e::t_12f7d8e055e938 41
+  s_eeac6539cee62e::t_4c2f21ab924838 79
+  s_eeac6539cee62e::t_2bee5436de23ea 92
+  s_eeac6539cee62e::t_2ae403dc4148b4 106
+  s_eeac6539cee62e::t_ac37ff4076c36d 134
+  s_eeac6539cee62e::t_4d5a76252a46d8 184
+  s_eeac6539cee62e::t_7c45b843b46bc2 36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "bbb1c759c4471b83fd0a1b275e73e20f04a8d36d",
+  "prompts": {},
+  "sessions": {
+    "s_eeac6539cee62e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_027d1096bffeknRqaHj8569ur5",
+        "model": "deepseek-ai/deepseek-v4-pro"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
