@@ -1,0 +1,53 @@
+packages/cli/package.json
+  s_137cc2ea17c484::t_61e28972476c80 70
+packages/cli/src/cli/commands/start.ts
+  s_137cc2ea17c484::t_c23cab7e39fdf1 6
+packages/cli/src/ui/console.ts
+  s_137cc2ea17c484::t_83889ea0ab6c90 1-14
+packages/cli/src/cli/commands/system-requirements.ts
+  s_137cc2ea17c484::t_ef46187bbbc684 26-35,84-88,90-105,109-162,167,173-186,190,192,194,222-224,226-234,241,246-247,258-260,262-266,278,280,286,295-297,304-307,315-319,338,340-342,345,349,366-368,385-387,389,392,395-399,406,410-413,420,422-426,430,436,439-440,443-444,446,448-449
+packages/cli/src/system/setup-wizard/probe.ts
+  s_137cc2ea17c484::t_e8e7329608a78e 90-111,117-119
+packages/cli/src/system/__tests__/requirements.test.ts
+  s_137cc2ea17c484::t_0398762980a174 14-19,21-25,27
+packages/cli/src/system/requirements.ts
+  s_137cc2ea17c484::t_07357e63986529 90-111,117-119
+packages/cli/src/cli/commands/run.ts
+  s_137cc2ea17c484::t_f419fef5a566e6 1308,1311
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_137cc2ea17c484::t_29b2091805a63a 696,732
+  s_137cc2ea17c484::t_1aa57b7089f284 655-662,704-711
+  s_137cc2ea17c484::t_9e108593984bd3 683
+packages/cli/src/system/device-selection.ts
+  s_137cc2ea17c484::t_0b1e7a1d4a0de9 72,74
+  s_137cc2ea17c484::t_34b2d50258096e 1
+packages/cli/src/system/setup-wizard/__tests__/probe.test.ts
+  s_137cc2ea17c484::t_34d49c29797e28 16-17,23-27
+  s_137cc2ea17c484::t_2977aa4f15d825 28
+packages/cli/src/cli/commands/__tests__/first-run.test.ts
+  s_137cc2ea17c484::t_464ca401cc8acd 155-160,163-167
+packages/cli/src/system/__tests__/device-selection.test.ts
+  s_137cc2ea17c484::t_3fe9aebb11cec0 73,75-76,83,87,89-91
+  s_137cc2ea17c484::t_3d53c8766cc1dc 3,7
+packages/cli/src/cli/commands/__tests__/system-requirements.test.ts
+  s_137cc2ea17c484::t_09d80d60143bdb 113-161
+  s_137cc2ea17c484::t_b1fd2c68fbd2e7 33-58
+pnpm-lock.yaml
+  s_137cc2ea17c484::t_6b1c54d4a9af4c 60-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "fc601f1c114328d575d078f137f9e56714202461",
+  "prompts": {},
+  "sessions": {
+    "s_137cc2ea17c484": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_02c42b4a8ffetzUK7FlebF3AKq",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
