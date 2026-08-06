@@ -155,6 +155,76 @@ describe("service-supervisor", () => {
     await stopAndExit(handle, child)
   })
 
+  it("exits parent immediately when the daemon exits cleanly with code 0", async () => {
+    const child = mkChild(501)
+    vi.mocked(spawnDetached).mockReturnValue({
+      pid: 501,
+      child: child as unknown as ChildProcess,
+    })
+    const exitSpy = vi
+      .spyOn(process, "exit")
+      .mockImplementation(
+        (() => undefined) as unknown as (code?: number) => never,
+      )
+    const handle = await superviseService({
+      xdgConfigHome: "/tmp/sireno",
+      logger: silentLogger(),
+      args: ["start"],
+      onGiveUp: () => undefined,
+    })
+    child.emit("exit", 0, null)
+    await flushMicrotasks(20)
+    expect(exitSpy).toHaveBeenCalledWith(0)
+    await stopAndExit(handle, child)
+  })
+
+  it("exits parent immediately when the daemon exits via SIGTERM", async () => {
+    const child = mkChild(502)
+    vi.mocked(spawnDetached).mockReturnValue({
+      pid: 502,
+      child: child as unknown as ChildProcess,
+    })
+    const exitSpy = vi
+      .spyOn(process, "exit")
+      .mockImplementation(
+        (() => undefined) as unknown as (code?: number) => never,
+      )
+    const handle = await superviseService({
+      xdgConfigHome: "/tmp/sireno",
+      logger: silentLogger(),
+      args: ["start"],
+      onGiveUp: () => undefined,
+    })
+    child.emit("exit", null, "SIGTERM")
+    await flushMicrotasks(20)
+    expect(exitSpy).toHaveBeenCalledWith(0)
+    await stopAndExit(handle, child)
+  })
+
+  it("does not exit parent on crash exit code (regression: still retries)", async () => {
+    const child = mkChild(503)
+    vi.mocked(spawnDetached).mockReturnValue({
+      pid: 503,
+      child: child as unknown as ChildProcess,
+    })
+    vi.mocked(loadDeviceConfig).mockReturnValue(null)
+    const exitSpy = vi
+      .spyOn(process, "exit")
+      .mockImplementation(
+        (() => undefined) as unknown as (code?: number) => never,
+      )
+    const handle = await superviseService({
+      xdgConfigHome: "/tmp/sireno",
+      logger: silentLogger(),
+      args: ["start"],
+      onGiveUp: () => undefined,
+    })
+    child.emit("exit", 1, null)
+    await flushMicrotasks(20)
+    expect(exitSpy).not.toHaveBeenCalled()
+    await stopAndExit(handle, child)
+  })
+
   it("does not push black frame more than once across multiple crashes", async () => {
     const children = [mkChild(301), mkChild(302)]
     let i = 0
