@@ -22,7 +22,7 @@ const PROBE_TIMEOUT_MS = 3_000
 const GNOME_SHELL_SERVICE = "org.gnome.Shell"
 const GNOME_EXTENSION_PATH = "/org/gnome/Shell/Extensions/WindowsExt"
 const GNOME_EXTENSION_IFACE = "org.gnome.Shell.Extensions.WindowsExt"
-const EXTENSION_INSTALL_URL =
+export const EXTENSION_INSTALL_URL =
   "https://extensions.gnome.org/extension/4974/window-calls-extended/"
 
 const serializeError = (error: unknown): unknown => {

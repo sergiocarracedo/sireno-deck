@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process"
 import { dirname, join, resolve as resolvePath } from "node:path"
 import { fileURLToPath } from "node:url"
 
-import { select } from "@inquirer/prompts"
+import { confirm, select } from "@inquirer/prompts"
 import type pino from "pino"
 
 import {
@@ -55,6 +55,13 @@ import {
   type RunOptions,
   type SignalProvider,
 } from "./run"
+import {
+  type SystemReport,
+  probeAll,
+  summarizeReport,
+} from "@/system/setup-wizard"
+import { systemRequirements } from "./system-requirements"
+import { executeCommand } from "@/action/executor"
 
 export interface StartOptions {
   readonly config?: string
@@ -565,8 +572,112 @@ const startProduction = async (options: StartOptions): Promise<void> => {
   }
 }
 
+const wizardCommandExecutor = {
+  async run(command: string, args: ReadonlyArray<string>) {
+    const result = await executeCommand(command, [...args], {
+      timeoutMs: 5_000,
+    })
+    return {
+      exitCode: result.exitCode,
+      stdout: result.stdout,
+      stderr: result.stderr,
+    }
+  },
+}
+
+const probeSystemForFirstRun = async (
+  options: StartOptions,
+): Promise<{
+  report: SystemReport
+  summary: ReturnType<typeof summarizeReport>
+} | null> => {
+  const home = options.homeDir ?? process.env["HOME"] ?? ""
+  const xdgConfigHome =
+    options.xdgConfigHome ?? process.env["XDG_CONFIG_HOME"] ?? `${home}/.config`
+  try {
+    const report = await probeAll({
+      platform: process.platform,
+      homeDir: home,
+      xdgConfigHome,
+      env: process.env,
+      executor: wizardCommandExecutor,
+      fileExists: (p) => existsSync(p),
+      readFile: (p) => {
+        try {
+          return readFileSync(p, "utf8")
+        } catch {
+          return null
+        }
+      },
+    })
+    return { report, summary: summarizeReport(report) }
+  } catch {
+    return null
+  }
+}
+
+const runFirstRunCheckIfNeeded = async (
+  options: StartOptions,
+  logger: pino.Logger,
+): Promise<void> => {
+  const probed = await probeSystemForFirstRun(options)
+  if (probed === null) return
+  const { summary } = probed
+  const missing =
+    summary.missingCapabilities.length > 0 ||
+    summary.udevMissing ||
+    summary.configMissing
+  if (!missing) return
+
+  if (!process.stdin.isTTY) {
+    logger.warn(
+      { lines: summary.lines },
+      "start: missing requirements and no TTY — run `sirenodeck system-requirements` interactively to fix",
+    )
+    process.exitCode = 1
+    return
+  }
+
+  const shouldRunWizard = await confirm({
+    message:
+      "It looks like this is your first run (missing config or system capabilities). Run the setup wizard now?",
+    default: true,
+  })
+  if (!shouldRunWizard) {
+    logger.warn(
+      { lines: summary.lines },
+      "start: requirements missing — continuing anyway. Run `sirenodeck system-requirements` later to fix.",
+    )
+    return
+  }
+
+  await systemRequirements({
+    logger,
+    ...(options.homeDir !== undefined ? { homeDir: options.homeDir } : {}),
+    ...(options.xdgConfigHome !== undefined
+      ? { xdgConfigHome: options.xdgConfigHome }
+      : {}),
+  })
+
+  const reprobed = await probeSystemForFirstRun(options)
+  if (reprobed === null) return
+  const stillMissing =
+    reprobed.summary.missingCapabilities.length > 0 ||
+    reprobed.summary.udevMissing ||
+    reprobed.summary.configMissing
+  if (stillMissing) {
+    logger.warn(
+      { lines: reprobed.summary.lines },
+      "start: some requirements still missing — exiting",
+    )
+    process.exitCode = 1
+  }
+}
+
 const start = async (options: StartOptions): Promise<void> => {
   const { logger } = options
+
+  await runFirstRunCheckIfNeeded(options, logger)
 
   if (isUnderServiceManager()) {
     await runInProcess(options)
