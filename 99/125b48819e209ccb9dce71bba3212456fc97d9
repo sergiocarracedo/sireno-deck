@@ -1,0 +1,21 @@
+packages/cli/src/cli/commands/service-supervisor.ts
+  s_4b5dc1baa76751::t_e88ef7359f6f7a 152-175
+packages/cli/src/cli/commands/__tests__/service-supervisor.test.ts
+  s_4b5dc1baa76751::t_960e244ee0a421 158-227
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "99125b48819e209ccb9dce71bba3212456fc97d9",
+  "prompts": {},
+  "sessions": {
+    "s_4b5dc1baa76751": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_02c2f08bdffe1N4PHbA14h5E6X",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
