@@ -1,0 +1,22 @@
+packages/cli/frontend/src/App.tsx
+  s_eeac6539cee62e::t_3b0abbe72a2267 321-322
+packages/cli/emulator/src/App.tsx
+  s_eeac6539cee62e::t_189b4cd9894462 212-216
+  s_eeac6539cee62e::t_d3524d9bcb1b9d 211
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "eb591d84c86f5e7e5518b60d5102dde93b270226",
+  "prompts": {},
+  "sessions": {
+    "s_eeac6539cee62e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_027d1096bffeknRqaHj8569ur5",
+        "model": "deepseek-ai/deepseek-v4-pro"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
