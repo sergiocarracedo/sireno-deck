@@ -198,14 +198,7 @@ export const App = ({
         }
       },
     })
-    const timer = setInterval(() => {
-      if (disconnectedSinceRef.current === null) {
-        return
-      }
-      setNow(Date.now())
-    }, 250)
     return () => {
-      clearInterval(timer)
       clientRef.current?.close()
       clientRef.current = null
       if (reconnectLatchTimerRef.current !== null) {
@@ -214,6 +207,12 @@ export const App = ({
       }
     }
   }, [wsUrl])
+
+  useEffect(() => {
+    if (disconnectedSince === null) return
+    const timer = setInterval(() => setNow(Date.now()), 250)
+    return () => clearInterval(timer)
+  }, [disconnectedSince])
 
   useEffect(() => {
     if (typeof window === "undefined") return

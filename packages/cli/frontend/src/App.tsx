@@ -317,8 +317,9 @@ const AppContent = () => {
     )
 
     const timer = setInterval(() => {
-      const tickNow = Date.now()
       setDeck((previous) => {
+        if (previous.buttonErrors.length === 0) return previous
+        const tickNow = Date.now()
         const remaining = previous.buttonErrors.filter(
           (error) => error.expiresAt > tickNow,
         )
