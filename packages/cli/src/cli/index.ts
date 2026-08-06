@@ -6,27 +6,14 @@ import { PACKAGE_NAME } from "@/version"
 import { logsCommand } from "./commands/logs"
 import { reload, type ReloadOptions } from "./commands/reload"
 import { restart, type RestartOptions } from "./commands/restart"
-import { run, type RunOptions } from "./commands/run"
 import start, { type StartOptions } from "./commands/start"
 import { status, type StatusOptions } from "./commands/status"
 import { stop, type StopOptions } from "./commands/stop"
-import {
-  updateConfig,
-  type UpdateConfigOptions,
-} from "./commands/update-config"
 
 export interface GlobalOptions {
   verbose?: boolean
   logLevel?: string
   json?: boolean
-}
-
-interface RunArgs extends GlobalOptions {
-  config?: string
-  port?: number
-  emulator?: boolean
-  dev?: boolean
-  deviceModel?: string
 }
 
 interface StartArgs extends GlobalOptions {
@@ -51,11 +38,6 @@ interface ReloadArgs extends GlobalOptions {
 interface RestartArgs extends GlobalOptions {
   logs?: boolean
 }
-interface UpdateConfigArgs extends GlobalOptions {
-  config: string
-  reload?: boolean
-  logs?: boolean
-}
 
 const buildLogger = (
   argv: ArgumentsCamelCase<GlobalOptions>,
@@ -65,60 +47,6 @@ const buildLogger = (
     json: argv.json ?? false,
     ...(argv.logLevel !== undefined ? { level: argv.logLevel } : {}),
   })
-
-const runCommand: CommandModule<object, RunArgs> = {
-  command: "run",
-  describe: "Run sireno-deck in the foreground (development mode)",
-  builder: (yargs) =>
-    yargs
-      .option("config", { type: "string", description: "Path to config.yml" })
-      .option("port", {
-        type: "number",
-        description: "Port for the local server (0 = random free port)",
-      })
-      .option("emulator", {
-        type: "boolean",
-        default: false,
-        description: "Run in emulator mode",
-      })
-      .option("dev", {
-        type: "boolean",
-        default: false,
-        description: "Enable HMR (vite dev servers)",
-      })
-      .option("device-model", {
-        type: "string",
-        description:
-          "Emulator device model (mk2, plus, mini, xl) — affects keyCount",
-      }),
-  handler: async (argv) => {
-    const logger = buildLogger(argv).child({ component: "orchestrator" })
-    const options: RunOptions = {
-      logger,
-      ...(argv.config !== undefined ? { config: argv.config } : {}),
-      ...(argv.port !== undefined ? { port: argv.port } : {}),
-      ...(argv.emulator !== undefined ? { emulator: argv.emulator } : {}),
-      ...(argv.dev !== undefined ? { dev: argv.dev } : {}),
-      ...(argv.deviceModel !== undefined
-        ? { deviceModel: argv.deviceModel }
-        : {}),
-    }
-    try {
-      await run(options)
-    } catch (err) {
-      const e = err as { issues?: unknown; message?: string }
-      const message =
-        e &&
-        typeof e === "object" &&
-        "message" in e &&
-        typeof e.message === "string"
-          ? e.message
-          : "command failed"
-      logger.error({ err }, message)
-      process.exitCode = 1
-    }
-  },
-}
 
 const startCommand: CommandModule<object, StartArgs> = {
   command: "start",
@@ -247,39 +175,6 @@ const restartCommand: CommandModule<object, RestartArgs> = {
   },
 }
 
-const updateConfigCommand: CommandModule<object, UpdateConfigArgs> = {
-  command: "update-config",
-  describe: "Update the config path the daemon uses (restarts)",
-  builder: (yargs) =>
-    yargs
-      .option("config", {
-        type: "string",
-        demandOption: true,
-        description: "Path to config.yml",
-      })
-      .option("reload", {
-        type: "boolean",
-        default: false,
-        description:
-          "Send SIGUSR1 instead of restarting (in-place reload; runtime state preserved)",
-      })
-      .option("logs", {
-        type: "boolean",
-        default: false,
-        description: "After update, follow the service log",
-      }),
-  handler: async (argv) => {
-    const logger = buildLogger(argv)
-    const options: UpdateConfigOptions = {
-      config: argv.config,
-      logger,
-      ...(argv.reload === true ? { reload: true } : {}),
-      ...(argv.logs === true ? { logs: true } : {}),
-    }
-    await updateConfig(options)
-  },
-}
-
 export const buildCli = async (): Promise<{
   scriptName: string
   commands: CommandModule<object, GlobalOptions>[]
@@ -289,13 +184,11 @@ export const buildCli = async (): Promise<{
   return {
     scriptName: PACKAGE_NAME,
     commands: [
-      runCommand,
       startCommand,
       stopCommand,
       statusCommand,
       restartCommand,
       reloadCommand,
-      updateConfigCommand,
       logsCommand as CommandModule<object, GlobalOptions>,
     ],
     packageName: PACKAGE_NAME,
