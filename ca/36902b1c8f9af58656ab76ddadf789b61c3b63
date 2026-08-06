@@ -1,0 +1,19 @@
+packages/cli/bin/dev.js
+  s_4b5dc1baa76751::t_ad23846f9cbf29 42-59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "ca36902b1c8f9af58656ab76ddadf789b61c3b63",
+  "prompts": {},
+  "sessions": {
+    "s_4b5dc1baa76751": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_02c2f08bdffe1N4PHbA14h5E6X",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
