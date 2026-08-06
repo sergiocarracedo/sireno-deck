@@ -103,24 +103,14 @@ const spawnViteAndWaitForReady = (
     let settled = false
     let settledUrl: string | null = null
 
-    const formatOutput = (text: string, label: "stdout" | "stderr"): string => {
-      const trimmed = text.trimEnd()
-      if (trimmed.length === 0) return ""
-      const lines = trimmed
-        .split("\n")
-        .map((line) => `  ${line}`)
-        .join("\n")
-      return `${label}:\n${lines}\n`
-    }
-
     const collectOutput = (text: string, label: "stdout" | "stderr"): void => {
-      const formatted = formatOutput(text, label)
-      if (formatted.length > 0) {
-        if (label === "stdout") stdoutChunks.push(formatted)
-        else stderrChunks.push(formatted)
-        if (label === "stderr") logger.warn(formatted.trimEnd(), childLabel)
-        else logger.info(formatted.trimEnd(), childLabel)
-      }
+      const stripped = text.replace(ANSI_REGEX, "").trimEnd()
+      if (stripped.length === 0) return
+      const formatted = `${label}:\n${stripped}`
+      if (label === "stdout") stdoutChunks.push(formatted)
+      else stderrChunks.push(formatted)
+      if (label === "stderr") logger.warn(formatted, childLabel)
+      else logger.info(formatted, childLabel)
     }
 
     const timer = setTimeout(() => {
