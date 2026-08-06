@@ -132,11 +132,18 @@ const probeCapability = async (
   executor: CommandExecutor,
   extraFsProbe?: (command: string) => boolean,
 ): Promise<CapabilityProbe> => {
+  process.stdout.write(`[probe] ${name} start candidates=${candidates.join(",")}\n`)
   const availability = await Promise.all(
-    candidates.map((cmd) => probeCommand(executor, cmd, extraFsProbe)),
+    candidates.map(async (cmd) => {
+      const t0 = Date.now()
+      const r = await probeCommand(executor, cmd, extraFsProbe)
+      process.stdout.write(`[probe] ${name} ${cmd} -> ${r} (${Date.now() - t0}ms)\n`)
+      return r
+    }),
   )
   const found = candidates.filter((_, idx) => availability[idx])
   const missing = candidates.filter((_, idx) => !availability[idx])
+  process.stdout.write(`[probe] ${name} done found=${found.join(",")} missing=${missing.join(",")}\n`)
   return {
     name,
     available: found.length > 0,
@@ -362,11 +369,13 @@ export const probeAll = async (deps: ProbeDeps): Promise<SystemReport> => {
   } = deps
 
   const session = detectSession(env)
+  process.stdout.write(`[probe] detectPackageManager begin\n`)
   const packageManager = await detectPackageManager(
     platform,
     executor,
     extraFsProbe,
   )
+  process.stdout.write(`[probe] detectPackageManager done -> ${packageManager}\n`)
 
   const lsusbSync = (binary: string): string => {
     try {
@@ -384,12 +393,14 @@ export const probeAll = async (deps: ProbeDeps): Promise<SystemReport> => {
   const streamDeck = detectStreamDeck([platform], lsusbSync)
   void readFile
 
+  process.stdout.write(`[probe] keyMacro begin\n`)
   const capabilities = {
     keyMacro: await probeKeyMacro(platform, executor, extraFsProbe),
     clipboard: await probeClipboard(platform, env, executor, extraFsProbe),
     notification: await probeNotification(platform, executor, extraFsProbe),
     activeApp: await probeActiveApp(platform, env, executor, extraFsProbe),
   } as const
+  process.stdout.write(`[probe] all capabilities done\n`)
 
   const udev = probeUdev(platform, UDEV_RULES_PATH, fileExists, streamDeck)
   const config = probeConfig(xdgConfigHome, fileExists)

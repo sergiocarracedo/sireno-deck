@@ -316,14 +316,17 @@ const runUdevStep = async (
   const write = spinner()
   write.start("Installing udev rules")
   // ponytail: `sudo -S` reads the password + newline, then forwards the rest
-  // of stdin to the child (`tee`). Append the rules content so tee actually
-  // writes the udev rules — not just the password.
-  const udevRules = step.manualInstructions.match(/\n[\s\S]*\n/)?.[0] ?? ""
-  const writeStdin = password.length > 0 ? password + "\n" + udevRules : udevRules
+  // of stdin to the child (`tee`). The pipe MUST include the udev rules —
+  // otherwise tee writes the password to the rules file and nothing else.
+  // Use the canonical `UDEV_RULES` constant rather than reverse-parsing the
+  // display-formatted `manualInstructions` string.
+  const writeStdin = password.length > 0
+    ? `${password}\n${UDEV_RULES}\n`
+    : `${UDEV_RULES}\n`
   const w = await runWithSudo({
     command: "tee",
     args: ["/etc/udev/rules.d/70-sireno-deck.rules"],
-    ...(writeStdin.length > 0 ? { stdinInput: writeStdin } : {}),
+    stdinInput: writeStdin,
     logger,
     timeoutMs: 30_000,
   })
