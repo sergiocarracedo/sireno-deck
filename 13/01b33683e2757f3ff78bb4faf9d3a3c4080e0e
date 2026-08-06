@@ -1,0 +1,26 @@
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_5f4f025d753117::t_7c35d090e18be0 107
+  s_5f4f025d753117::t_310b785eb99cce 108-113
+packages/cli/src/util/logger.ts
+  s_5f4f025d753117::t_30319ccbea1b49 148-153,155-159
+  s_5f4f025d753117::t_3c2535a06f397d 154
+packages/cli/src/__tests__/logger-format.test.ts
+  s_5f4f025d753117::t_bb75edc7e9ffde 130-142,145-181
+  s_5f4f025d753117::t_3c2535a06f397d 143-144
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "1301b33683e2757f3ff78bb4faf9d3a3c4080e0e",
+  "prompts": {},
+  "sessions": {
+    "s_5f4f025d753117": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0314d5457ffeACNMV6jK8ev60f",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
