@@ -1,0 +1,80 @@
+packages/web/astro/functions/api/whitelist.ts
+  s_056a76f2c1bc45::t_10045d88e3e991 1-123
+packages/web/astro/src/components/hero/WhitelistForm.astro
+  s_056a76f2c1bc45::t_c18e371e110f0a 1-94
+packages/web/astro/src/components/sections/Footer.astro
+  s_056a76f2c1bc45::t_b4e554159c5200 3,5-6,10-21,23-27,29-66,68-85,88-92
+  s_056a76f2c1bc45::t_2ee38a4dbe4929 93
+packages/web/astro/src/components/sections/SoonBadge.astro
+  s_056a76f2c1bc45::t_ecb6c7f17f81d0 1-12
+packages/web/astro/wrangler.toml
+  s_056a76f2c1bc45::t_1b21b547c52bee 1-17
+packages/web/astro/src/components/sections/Hero.astro
+  s_056a76f2c1bc45::t_8fa13c9e277a62 3,5-7,15,17-18,20,25,29,31-37,41,43-45,48,50
+  s_056a76f2c1bc45::t_f664f323a68695 9-11
+packages/web/astro/src/components/sections/SectionHeader.astro
+  s_056a76f2c1bc45::t_c8ba4e54f19d31 1-62
+packages/web/scripts/capture-smoke.mjs
+  s_056a76f2c1bc45::t_1cdf9effce369c 1-57,74-80,82-85,90-94,98-106,108-109,111-129,134-141,143
+  s_056a76f2c1bc45::t_2d81c58e9f5f36 58-73,81,86-89,95-97,107,110,130-133,142,144
+packages/web/astro/src/components/hero/PaperShader.tsx
+  s_056a76f2c1bc45::t_1026dcc03c554a 1-42
+packages/web/astro/astro.config.mjs
+  s_056a76f2c1bc45::t_c60f80eb4a935b 33-34
+  s_056a76f2c1bc45::t_a9c002ce0cc839 4,11
+  s_056a76f2c1bc45::t_f57ae78955cb94 28-32,35-37
+packages/web/astro/src/components/hero/HeroDeckVideo.astro
+  s_056a76f2c1bc45::t_3f73946b01c4a2 4,10,14,17,19-23,25-26
+  s_056a76f2c1bc45::t_e56469d7210ad2 1-3,5-9,11-13,15-16,18,24,27-32
+packages/web/astro/src/components/hero/HeroShader.astro
+  s_056a76f2c1bc45::t_f7f3a68bbd781a 1-6,8-24
+  s_056a76f2c1bc45::t_6d4cb5b3f9e795 7
+.capture-configs/smoke.yml
+  s_056a76f2c1bc45::t_a87cc729cd9469 1-14
+docs/solutions/tooling-decisions/marketing-remotion-only-pivot.md
+  s_056a76f2c1bc45::t_4fe203d9a1e2ff 1-45
+packages/web/videos/package.json
+  s_056a76f2c1bc45::t_c9b26c586d70be 24-25
+packages/web/astro/package.json
+  s_056a76f2c1bc45::t_14f08ca50bf6b3 21-22,24,26-27,29-30
+demos/_captures.mjs
+  s_056a76f2c1bc45::t_718e905792f0e6 1-50
+packages/web/astro/src/pages/index.astro
+  s_056a76f2c1bc45::t_1b0f986d256f2d 4-5,16,19,22,25,27-30
+packages/web/astro/src/components/carousel/DeckCarousel.tsx
+  s_056a76f2c1bc45::t_4ec008b6ec7bea 1-140
+packages/web/scripts/capture-decks.mjs
+  s_056a76f2c1bc45::t_9f198a151c3404 1-262
+packages/web/astro/src/styles/global.css
+  s_056a76f2c1bc45::t_79732318ec1ad1 5-8,11-18,21,24-27,33
+  s_056a76f2c1bc45::t_d4dbb3f20766ac 1
+packages/web/astro/src/components/carousel/DeckCarousel.astro
+  s_056a76f2c1bc45::t_09cf2e8d0be0a6 6
+  s_056a76f2c1bc45::t_ff06727182088f 1-5,7-17
+packages/web/astro/src/components/sections/PlatformRow.astro
+  s_056a76f2c1bc45::t_06d5cf0230cb3d 1-19
+packages/web/scripts/sync-tokens.mjs
+  s_056a76f2c1bc45::t_4b010c824d018e 4-9,27,49
+packages/web/astro/src/components/sections/ShowcasesCarousel.astro
+  s_056a76f2c1bc45::t_f5e61690906e76 1-80
+packages/web/astro/src/design/tokens-from-cli.generated.ts
+  s_056a76f2c1bc45::t_a4f9207c8f3000 1-74
+pnpm-lock.yaml
+  s_056a76f2c1bc45::t_fecb33417a58f5 20,23,147,150,175-180,184-186,190-195,199-204,242-244,371-375,380-388,442-445,472-483,1316-1327,1544-1546,1860-1871,1934-1936,2084-2089,2693-2696,2765-2767,2783-2786,2852-2854,2904-2907,3012-3015,3237-3240,3810-3813,3818-3821,4028-4031,4321-4324,4579-4585,4592-4594,4695-4698,4903-4906,5665-5673,5678-5703,5821-5822,5842-5851,6523-6531,6839-6840,7136-7156,7222-7225,7230-7233,7320-7331,8053-8054,8119-8120,8135-8136,8231-8232,8285-8286,8413-8414,8791-8798,8860,9627-9628,9633-9636,9852-9855,10184-10185,10552-10569,10575-10576,10712-10713,10891-10892
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "be28bb655aaaff95bdee818144fb215653241243",
+  "prompts": {},
+  "sessions": {
+    "s_056a76f2c1bc45": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_028bc9581ffeory29PJCXAUMkw",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
