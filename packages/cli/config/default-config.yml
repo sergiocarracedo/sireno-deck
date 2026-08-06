@@ -1,0 +1,116 @@
+# sireno-deck — bundled default config
+# This is the same config shipped at the project root. The `!include` directives
+# reference paths relative to the project root (e.g. ./demos/...). When placed
+# at ~/.config/sireno-deck/config.yml those include paths will not resolve —
+# remove the demo `!include` lines or point them at absolute paths to your own
+# deck files. The `main` deck works without includes.
+theme: default
+
+addons:
+  - src: ./packages/addons/app-shortcuts
+    config:
+      defaults:
+        autoShow: false
+  - src: ./packages/addons/pomodoro
+
+logging:
+  level: info
+
+decks:
+  main:
+    name: Main Deck
+    buttons:
+      - position: 0
+        type: "system-status:system-status"
+        config:
+          pages:
+            - type: bars
+              metrics:
+                - cpu
+                - ram
+                - swap
+            - type: kpis
+              metrics:
+                - disk-io
+                - network-read
+                - network-write
+            - type: kpis
+              metrics:
+                - temperature
+                - gpu-temp
+                - fan-rpm
+            - type: kpis
+              metrics:
+                - uptime
+                - load
+
+      - position: 1
+        type: "core:change-deck"
+        config:
+          deck: demo-decks-index
+          icon: icon://layout-grid
+          label: Demos
+
+      - position: 2
+        type: "date-time:time"
+        config:
+          variant: big
+
+      - position: 3
+        type: "date-time:date"
+        actions:
+          tap: "xdg-open https://calendar.google.com"
+
+      - position: 4
+        type: "weather:weather"
+        config:
+          location:
+            latitude: 42.2304
+            longitude: -8.7256
+            name: Vigo
+
+      - position: 5
+        type: "system-status:system-status"
+        config:
+          pages:
+            - type: chart
+              metrics:
+                - cpu
+              windowSeconds: 60
+
+      - position: 6
+        type: "media:volume:down"
+
+      - position: 7
+        type: "media:volume:up"
+
+      - position: 8
+        type: "media:mute"
+
+      - position: 9
+        type: "emoji-selector:launcher"
+
+      - position: 10
+        type: "pomodoro:pomodoro"
+        config:
+          durationSec: 5
+
+      - position: 12
+        type: "media:player"
+
+      - type: "system-status"
+        config:
+          type: kpis
+          metrics:
+            - uptime
+
+  demo-decks-index: !include demos/demo-decks-index.yml
+  demo-app-shortcuts: !include demos/demo-app-shortcuts.yml
+  demo-system-status: !include demos/demo-system-status.yml
+  demo-media: !include demos/demo-media.yml
+  demo-weather: !include demos/demo-weather.yml
+  demo-emoji-selector: !include demos/demo-emoji-selector.yml
+  demo-date-time: !include demos/demo-date-time.yml
+  demo-value-display: !include demos/demo-value-display.yml
+  demo-core: !include demos/demo-core.yml
+  demo-pomodoro: !include demos/demo-pomodoro.yml

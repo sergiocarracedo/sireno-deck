@@ -153,6 +153,20 @@ vi.mock("@/cli/commands/addon-registry", () => ({
     byType: new Map(),
   })),
 }))
+vi.mock("@/system/setup-wizard", () => ({
+  probeAll: vi.fn(async () => ({})),
+  summarizeReport: vi.fn(() => ({
+    ok: true,
+    session: "unknown",
+    packageManager: "none",
+    missingCapabilities: [],
+    udevMissing: false,
+    configMissing: false,
+    configPath: "",
+    streamDeckConnected: false,
+    lines: [],
+  })),
+}))
 
 const loaderMod = await import("@/config/loader")
 const registryMod = await import("@/addon/registry")

@@ -9,6 +9,7 @@ import { restart, type RestartOptions } from "./commands/restart"
 import start, { type StartOptions } from "./commands/start"
 import { status, type StatusOptions } from "./commands/status"
 import { stop, type StopOptions } from "./commands/stop"
+import { systemRequirementsCommand } from "./commands/system-requirements"
 
 export interface GlobalOptions {
   verbose?: boolean
@@ -190,6 +191,7 @@ export const buildCli = async (): Promise<{
       restartCommand,
       reloadCommand,
       logsCommand as CommandModule<object, GlobalOptions>,
+      systemRequirementsCommand as CommandModule<object, GlobalOptions>,
     ],
     packageName: PACKAGE_NAME,
   }
