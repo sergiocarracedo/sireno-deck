@@ -1,0 +1,19 @@
+README.md
+  s_136c111956a2fa::t_fbe54c7a77c063 1-5,7,9-31,35,37,39,41-49,52-65,67-69,73,121-139,143-154,156-176,179,183,187
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "10191d2e0085fdca15dd02bc61ee035a1ba73121",
+  "prompts": {},
+  "sessions": {
+    "s_136c111956a2fa": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_029c6f67cffeJDCS7luJaqrgn3",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
