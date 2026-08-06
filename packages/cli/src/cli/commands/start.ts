@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process"
 import { dirname, join, resolve as resolvePath } from "node:path"
 import { fileURLToPath } from "node:url"
 
-import { confirm, select } from "@inquirer/prompts"
+import { confirm, select } from "@/ui/console"
 import type pino from "pino"
 
 import {

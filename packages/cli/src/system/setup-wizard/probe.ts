@@ -87,14 +87,36 @@ const detectStreamDeck = (
   return { connected: matched.length > 0, matched }
 }
 
+const probeViaCommandV = async (
+  executor: CommandExecutor,
+  command: string,
+): Promise<boolean> => {
+  const result = await executor.run("command", ["-v", command])
+  return result.exitCode === 0 && result.stdout.trim().length > 0
+}
+
+const probeViaVersion = async (
+  executor: CommandExecutor,
+  command: string,
+): Promise<boolean> => {
+  try {
+    const result = await executor.run(command, ["--version"], {
+      timeoutMs: 1_000,
+    })
+    return result.exitCode === 0
+  } catch {
+    return false
+  }
+}
+
 const probeCommand = async (
   executor: CommandExecutor,
   command: string,
   extraFsProbe?: (command: string) => boolean,
 ): Promise<boolean> => {
-  const result = await executor.run("which", [command])
-  if (result.exitCode === 0 && result.stdout.trim().length > 0) return true
-  return extraFsProbe?.(command) === true
+  if (await probeViaCommandV(executor, command)) return true
+  if (extraFsProbe?.(command) === true) return true
+  return await probeViaVersion(executor, command)
 }
 
 const probeCapability = async (

@@ -2,7 +2,6 @@ import { execFile } from "node:child_process"
 import { existsSync, readFileSync } from "node:fs"
 import { promisify } from "node:util"
 
-import { confirm } from "@inquirer/prompts"
 import type { CommandModule } from "yargs"
 
 import type pino from "pino"
@@ -24,6 +23,16 @@ import {
   formatResultLine,
   formatStepInstructions,
 } from "@/system/setup-wizard/format"
+import {
+  cancel,
+  confirm,
+  intro,
+  isCancel,
+  log,
+  note,
+  outro,
+  spinner,
+} from "@/ui/console"
 
 const execFileAsync = promisify(execFile)
 
@@ -72,32 +81,117 @@ export interface SystemRequirementsOptions {
   readonly logger: pino.Logger
 }
 
-const HEADING = (s: string): string => `\n${s}`
-const LABEL = (s: string): string => `  ${s}`
+const SESSION_LABEL: Readonly<Record<string, string>> = {
+  wayland: "Wayland",
+  x11: "X11",
+  unknown: "unknown",
+}
 
-const printReportLines = (report: SystemReport): void => {
-  const summary = summarizeReport(report)
-  for (const line of summary.lines) {
-    process.stdout.write(`${line}\n`)
+const pmLabel = (pm: string): string => {
+  switch (pm) {
+    case "apt":
+      return "apt"
+    case "dnf":
+      return "dnf"
+    case "pacman":
+      return "pacman (Arch)"
+    case "zypper":
+      return "zypper (openSUSE)"
+    case "brew":
+      return "Homebrew"
+    case "none":
+      return "none detected"
+    default:
+      return pm
   }
+}
+
+const printProbeSummary = (report: SystemReport): void => {
+  const lines: string[] = []
+  lines.push(`Platform  ${report.platform} · ${SESSION_LABEL[report.session] ?? "unknown"} session`)
+  lines.push(`Packages  ${pmLabel(report.packageManager)}`)
+  if (report.platform === "linux") {
+    lines.push(
+      `udev      ${report.udev.rulesInstalled ? "installed" : "missing at " + report.udev.rulesPath}`,
+    )
+    lines.push(
+      `Stream Deck  ${report.udev.streamDeckConnected ? `connected (${report.udev.matchedProductIds.join(", ")})` : "not detected"}`,
+    )
+  }
+  lines.push(
+    `Config    ${report.config.exists ? "present" : "missing — " + report.config.path}`,
+  )
+  note(lines.join("\n"), "Detected")
+}
+
+const capabilityLine = (cap: {
+  available: boolean
+  preferred: string
+  reason: string
+}): string => {
+  const mark = cap.available ? "●" : "○"
+  return `${mark}  ${cap.preferred}  ${cap.reason}`
+}
+
+const reProbeCapability = async (
+  step: InstallStep,
+  deps: SystemRequirementsOptions,
+): Promise<boolean> => {
+  if (step.capability === "udev" || step.capability === "config") {
+    return false
+  }
+  const home = resolveHome(deps)
+  const xdg = resolveXdgConfigHome(deps)
+  const fresh = await probeAll({
+    platform: process.platform,
+    homeDir: home,
+    xdgConfigHome: xdg,
+    env: process.env,
+    executor: realExecutor,
+    fileExists: (p) => existsSync(p),
+    readFile: (p) => {
+      try {
+        return readFileSync(p, "utf8")
+      } catch {
+        return null
+      }
+    },
+  })
+  return fresh.capabilities[step.capability].available
 }
 
 const runInstallStep = async (
   step: InstallStep,
   yesBatched: boolean,
   logger: pino.Logger,
+  deps: SystemRequirementsOptions,
 ): Promise<InstallStepResult> => {
   if (step.manualOnly) return "manual"
   if (step.packages.length === 0 || step.packageManager === "none") {
     return "manual"
   }
+
+  // ponytail: re-probe before shell-out. If the binary is already on PATH
+  // (e.g. user installed manually between runs), skip the install step
+  // entirely. The user explicitly asked for this — false-positive installs
+  // when the tool is already present are the bug.
+  const s = spinner()
+  s.start(`Checking ${step.packages.join(", ")}`)
+  const alreadyInstalled = await reProbeCapability(step, deps)
+  if (alreadyInstalled) {
+    s.stop(`${step.packages.join(", ")} already installed`)
+    return "installed"
+  }
+  s.stop(`${step.packages.join(", ")} not found — install needed`)
+
   if (!yesBatched) {
     const shouldRun = await confirm({
       message: `Run: ${formatStepInstructions(step)}?`,
-      default: !step.sudo,
+      initialValue: !step.sudo,
     })
-    if (!shouldRun) return "skipped"
+    if (isCancel(shouldRun) || !shouldRun) return "skipped"
   }
+
   let command: string
   let args: ReadonlyArray<string>
   switch (step.packageManager) {
@@ -125,28 +219,32 @@ const runInstallStep = async (
       return "manual"
   }
 
+  const install = spinner()
+  install.start(`Installing ${step.packages.join(", ")}`)
+
   if (!step.sudo) {
-    const result = await execFileAsync(command, [...args], {
-      timeout: 120_000,
-    })
-    if (result === undefined) return "failed"
-    return "installed"
+    try {
+      await execFileAsync(command, [...args], { timeout: 120_000 })
+      install.stop(`${step.packages.join(", ")} installed`)
+      return "installed"
+    } catch (err) {
+      install.stop(`Install failed: ${(err as Error).message ?? "unknown"}`)
+      logger.warn({ err, step: step.id }, "non-sudo install failed")
+      return "failed"
+    }
   }
 
   const nopasswd = await isSudoNopasswd()
   let password = ""
   if (!nopasswd) {
     if (!process.stdin.isTTY) {
-      logger.warn(
-        { step: step.id },
-        "sudo requires a password but no TTY; skipping",
-      )
+      install.stop("sudo password required but no TTY — skipping")
       return "skipped"
     }
     try {
       password = await capturePassword("[sudo] password: ")
-    } catch (err) {
-      logger.warn({ err, step: step.id }, "password prompt cancelled")
+    } catch {
+      install.stop("password prompt cancelled")
       return "skipped"
     }
   }
@@ -157,13 +255,15 @@ const runInstallStep = async (
     timeoutMs: 120_000,
     logger,
   })
-  if (result.succeeded) return "installed"
-  if (result.neededPassword) {
-    logger.warn(
-      { step: step.id, stderr: result.stderr.slice(0, 200) },
-      "sudo rejected password",
-    )
+  if (result.succeeded) {
+    install.stop(`${step.packages.join(", ")} installed`)
+    return "installed"
   }
+  install.stop(
+    result.neededPassword
+      ? "sudo rejected password"
+      : `Install failed (exit ${result.exitCode})`,
+  )
   return "failed"
 }
 
@@ -175,15 +275,15 @@ const runUdevStep = async (
   if (!yesBatched) {
     const shouldRun = await confirm({
       message: `Install udev rules to ${process.platform === "linux" ? "/etc/udev/rules.d/70-sireno-deck.rules" : "system location"}?`,
-      default: false,
+      initialValue: false,
     })
-    if (!shouldRun) return "skipped"
+    if (isCancel(shouldRun) || !shouldRun) return "skipped"
   }
   const nopasswd = await isSudoNopasswd()
   let password = ""
   if (!nopasswd) {
     if (!process.stdin.isTTY) {
-      logger.warn("sudo requires a password but no TTY; skipping udev")
+      log.warn("sudo requires a password but no TTY — skipping udev")
       return "skipped"
     }
     try {
@@ -192,14 +292,19 @@ const runUdevStep = async (
       return "skipped"
     }
   }
-  const write = await runWithSudo({
+  const write = spinner()
+  write.start("Installing udev rules")
+  const w = await runWithSudo({
     command: "tee",
     args: ["/etc/udev/rules.d/70-sireno-deck.rules"],
     ...(password.length > 0 ? { stdinInput: password + "\n" } : {}),
     logger,
     timeoutMs: 30_000,
   })
-  if (!write.succeeded) return "failed"
+  if (!w.succeeded) {
+    write.stop("udev write failed")
+    return "failed"
+  }
   const reload = await runWithSudo({
     command: "sh",
     args: ["-c", "udevadm control --reload-rules && udevadm trigger"],
@@ -207,7 +312,11 @@ const runUdevStep = async (
     logger,
     timeoutMs: 30_000,
   })
-  if (!reload.succeeded) return "failed"
+  if (!reload.succeeded) {
+    write.stop("udev reload failed")
+    return "failed"
+  }
+  write.stop("udev rules installed")
   return "installed"
 }
 
@@ -226,14 +335,18 @@ const runConfigSeed = async (
   }
   const shouldSeed = await confirm({
     message: `Seed default config to ${report.config.path}?`,
-    default: true,
+    initialValue: true,
   })
-  if (!shouldSeed) return false
+  if (isCancel(shouldSeed) || !shouldSeed) return false
+  const s = spinner()
+  s.start(`Seeding ${report.config.path}`)
   try {
     const result = seedDefaultConfig(report.config.path)
+    s.stop(`Seeded default config to ${result.targetPath}`)
     logger.info({ path: result.targetPath }, "config seeded")
     return true
   } catch (err) {
+    s.stop(`Seed failed: ${(err as Error).message ?? "unknown"}`)
     logger.warn({ err, path: report.config.path }, "config seed failed")
     return false
   }
@@ -249,6 +362,9 @@ export const systemRequirements = async (
   const homeDir = resolveHome(options)
   const xdgConfigHome = resolveXdgConfigHome(options)
   const platform = process.platform
+
+  const probe = spinner()
+  probe.start("Probing system")
 
   const report = await probeAll({
     platform,
@@ -266,74 +382,71 @@ export const systemRequirements = async (
     },
   })
 
-  const summary = summarizeReport(report)
-  printReportLines(report)
+  probe.stop("Probe complete")
+  intro("sireno-deck — system requirements")
+  printProbeSummary(report)
 
+  const summary = summarizeReport(report)
   if (nonInteractive) {
     if (summary.ok) {
-      logger.info("system-requirements: all present")
+      log.success("All requirements present.")
       return
     }
-    logger.warn("system-requirements: missing pieces (non-interactive)")
+    log.warn("Missing pieces detected (non-interactive mode — exiting).")
+    log.warn(`Run \`sirenodeck system-requirements\` interactively to fix.`)
+    for (const line of summary.lines) {
+      process.stdout.write(`  ${line}\n`)
+    }
     process.exitCode = 1
     return
   }
 
   const missingSteps = buildInstallPlan(report)
   if (missingSteps.length === 0 && !needsConfigSeed(report)) {
-    logger.info("system-requirements: nothing to install")
+    outro("Everything looks good. Run `sirenodeck start` to begin.")
     return
   }
 
-  process.stdout.write(HEADING("Install steps:"))
-  for (const step of missingSteps) {
-    process.stdout.write(LABEL(`[${step.id}] ${step.title}`))
-    if (step.manualOnly) {
-      process.stdout.write(
-        LABEL(`  manual: ${step.manualInstructions.slice(0, 80)}...`),
-      )
-    } else if (step.packages.length > 0) {
-      const verb =
-        step.packageManager === "brew"
-          ? "brew install"
-          : `sudo ${step.packageManager} install -y`
-      process.stdout.write(LABEL(`  ${verb} ${step.packages.join(" ")}`))
-    }
-  }
-  if (needsConfigSeed(report)) {
-    process.stdout.write(LABEL(`[config] seed ${report.config.path}`))
-  }
+  const capLines = Object.entries(report.capabilities)
+    .map(([name, cap]) => `  ${capabilityLine(cap)}  (${name})`)
+    .join("\n")
+  note(capLines, "Capabilities")
 
   const results: Record<string, InstallStepResult> = {}
   for (const step of missingSteps) {
-    process.stdout.write(HEADING(`Step: ${step.title}`))
     const result =
       step.capability === "udev"
         ? await runUdevStep(step, options.yes === true, logger)
-        : await runInstallStep(step, options.yes === true, logger)
+        : await runInstallStep(step, options.yes === true, logger, options)
     results[step.id] = result
-    process.stdout.write(LABEL(formatResultLine(step, result)))
+    if (result === "manual" || result === "failed") {
+      log.warn(formatResultLine(step, result))
+    } else {
+      log.info(formatResultLine(step, result))
+    }
   }
 
   if (needsConfigSeed(report)) {
-    const seeded = await runConfigSeed(report, options, logger)
-    if (seeded) {
-      process.stdout.write(LABEL("✓ default config seeded"))
-    }
+    await runConfigSeed(report, options, logger)
   }
 
   const anyFailed = Object.values(results).some((r) => r === "failed")
   const anyManual = Object.values(results).some((r) => r === "manual")
   if (anyFailed || anyManual) {
-    process.stdout.write(HEADING("Manual steps remaining:"))
+    const lines: string[] = []
     for (const step of missingSteps) {
       if (results[step.id] === "manual" || results[step.id] === "failed") {
-        process.stdout.write(LABEL(`[${step.id}] ${step.title}`))
-        process.stdout.write(LABEL(formatStepInstructions(step)))
+        lines.push(`[${step.id}] ${step.title}`)
+        lines.push(`  ${formatStepInstructions(step)}`)
       }
     }
+    if (lines.length > 0) note(lines.join("\n"), "Manual steps remaining")
+    cancel("Setup incomplete. Run `sirenodeck system-requirements` again after manual steps.")
     process.exitCode = 1
+    return
   }
+
+  outro("Setup complete. Run `sirenodeck start` to begin.")
 }
 
 interface SystemRequirementsArgs {
