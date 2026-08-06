@@ -127,3 +127,55 @@ describe("default human format renders inline context", () => {
     expect(formatted).toContain("plain message")
   })
 })
+
+describe("multi-line msg gutter", () => {
+  it("indents continuation lines under the msg column with a vertical bar", () => {
+    const formatted = formatHuman(
+      JSON.stringify({
+        level: 30,
+        time: 0,
+        component: "real",
+        msg: "stdout:\nVITE v6.4.3  ready in 186 ms\n  ➜  Local:   http://127.0.0.1:5180/",
+      }),
+    )
+    const lines = formatted.split("\n")
+    expect(lines.length).toBe(3)
+    const prefixLen =
+      lines[0]!.length - lines[0]!.replace(/\u001b\[[0-9;]*m/g, "").length
+    const stripped0 = lines[0]!.replace(/\u001b\[[0-9;]*m/g, "")
+    const expectedStripped1 = `${" ".repeat(stripped0.length - "stdout:".length)}│ VITE v6.4.3  ready in 186 ms`
+    const expectedStripped2 = `${" ".repeat(stripped0.length - "stdout:".length)}│   ➜  Local:   http://127.0.0.1:5180/`
+    expect(lines[1]!.replace(/\u001b\[[0-9;]*m/g, "")).toBe(expectedStripped1)
+    expect(lines[2]!.replace(/\u001b\[[0-9;]*m/g, "")).toBe(expectedStripped2)
+    void prefixLen
+  })
+
+  it("renders a shorter gutter when no component is set", () => {
+    const formatted = formatHuman(
+      JSON.stringify({
+        level: 30,
+        time: 0,
+        msg: "header\nbody",
+      }),
+    )
+    const lines = formatted.split("\n")
+    const stripped0 = lines[0]!.replace(/\u001b\[[0-9;]*m/g, "")
+    const stripped1 = lines[1]!.replace(/\u001b\[[0-9;]*m/g, "")
+    const expectedIndent = " ".repeat(stripped0.length - "header".length)
+    expect(stripped1.startsWith(expectedIndent)).toBe(true)
+    expect(stripped1.endsWith("│ body")).toBe(true)
+  })
+
+  it("leaves single-line msg untouched", () => {
+    const formatted = formatHuman(
+      JSON.stringify({
+        level: 30,
+        time: 0,
+        component: "real",
+        msg: "single line",
+      }),
+    )
+    expect(formatted).not.toContain("\n")
+    expect(formatted).toContain("single line")
+  })
+})

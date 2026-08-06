@@ -145,7 +145,18 @@ export const formatHuman = (jsonLine: string): string | null => {
     }
   }
   const ctxStr = ctxParts.length > 0 ? ` (${ctxParts.join(", ")})` : ""
-  return `${ts}${head}${componentTag} ${msg}${ctxStr}`
+  const prefix = `${ts}${head}${componentTag} `
+  return `${prefix}${indentContinuationLines(msg, visibleWidth(prefix))}${ctxStr}`
+}
+
+const ANSI_ESCAPE = /\u001b\[[0-9;]*m/g
+
+const visibleWidth = (s: string): number => s.replace(ANSI_ESCAPE, "").length
+
+const indentContinuationLines = (msg: string, prefixLen: number): string => {
+  if (!msg.includes("\n")) return msg
+  const gutter = `${" ".repeat(prefixLen)}${colorize(DIM, "│ ")}`
+  return msg.replace(/\n/g, `\n${gutter}`)
 }
 
 class HumanWritable extends Writable {
