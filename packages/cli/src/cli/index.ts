@@ -50,7 +50,7 @@ const buildLogger = (
 
 const startCommand: CommandModule<object, StartArgs> = {
   command: "start",
-  describe: "Install (if missing) + start the sireno-deck daemon",
+  describe: "Start the sireno-deck daemon",
   builder: (yargs) =>
     yargs
       .option("config", { type: "string", description: "Path to config.yml" })
