@@ -23,7 +23,6 @@ export {
   summarizeReport,
 } from "./format"
 export {
-  copyDefaultConfig,
   defaultConfigSourcePath,
   seedDefaultConfig,
 } from "./config-seed"
