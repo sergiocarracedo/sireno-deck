@@ -1,0 +1,79 @@
+packages/cli/src/system/setup-wizard/__tests__/probe.test.ts
+  s_ca50e587858d4f::t_bafdd5c9ff056a 23
+__beta-review-prerelease__/05-testing-quality.md
+  s_eeac6539cee62e::t_f173adb0dc3c2a 1-114
+__beta-review-prerelease__/02-code-smells.md
+  s_eeac6539cee62e::t_1ecf4a698202d4 1-110
+__beta-review-prerelease__/01-security.md
+  s_eeac6539cee62e::t_57e0208419fce5 1-146
+packages/cli/bin/dev.js
+  s_7c83d19b6b9402::t_3d38d4a4ca381f 7
+  s_7c83d19b6b9402::t_55fcfe8963fc0a 15,52,54-65,69,95,109,121
+  s_7c83d19b6b9402::t_4403b0b4dce14f 66-68,70-94,96-108,110-117,122-124,126-133,135-152
+packages/cli/src/cli/commands/system-requirements.ts
+  s_7c83d19b6b9402::t_a9fa0d1e1a8550 336
+  s_7c83d19b6b9402::t_562b59e938d5c4 446
+  s_7c83d19b6b9402::t_4199b0390b6262 364
+  s_7c83d19b6b9402::t_349d62c3bbd670 350
+  s_7c83d19b6b9402::t_0a9e20a8bbc409 9
+packages/cli/src/system/setup-wizard/index.ts
+  s_ca50e587858d4f::t_bafdd5c9ff056a 25
+__beta-review-prerelease__/REPORT.md
+  s_eeac6539cee62e::t_190c73d5fb6fe9 1-122
+__beta-review-prerelease__/03-performance.md
+  s_eeac6539cee62e::t_54a13ffaae2bb7 1-89
+packages/cli/src/cli/commands/start.ts
+  s_7c83d19b6b9402::t_2a5d11cd42b07f 638-645
+  s_ca50e587858d4f::t_ae1d9bf149706a 694-701,707
+  s_ca50e587858d4f::t_b8687509567f13 576-584,587-589
+  s_ca50e587858d4f::t_631afa7438ed3a 708
+README.md
+  s_ca50e587858d4f::t_bafdd5c9ff056a 90
+packages/cli/src/system/setup-wizard/probe.ts
+  s_ca50e587858d4f::t_3075f32cbaec35 136
+packages/cli/src/cli/commands/__tests__/system-requirements.test.ts
+  s_ca50e587858d4f::t_bafdd5c9ff056a 117-119
+packages/cli/src/system/__tests__/requirements.test.ts
+  s_ca50e587858d4f::t_bafdd5c9ff056a 21
+__beta-review-prerelease__/04-architecture.md
+  s_eeac6539cee62e::t_741a5c0e7d31c8 1-92
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_eeac6539cee62e::t_7545b273350690 44-58
+  s_eeac6539cee62e::t_0a67861063cdd3 689
+  s_eeac6539cee62e::t_fda0a20ffafe06 724
+  s_eeac6539cee62e::t_e754aa2fcedff8 526,535
+  s_eeac6539cee62e::t_76561c157e601a 669
+  s_eeac6539cee62e::t_a0cea8929b73a1 709
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "cd437667f4f279b5a3c77486aee55ef620728ac8",
+  "prompts": {},
+  "sessions": {
+    "s_7c83d19b6b9402": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_02472015cffeq0XZvSFoeuapWz",
+        "model": "deepseek/deepseek-v4-pro"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_ca50e587858d4f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_028773fbaffe0rGXf2uC36Ox9o",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_eeac6539cee62e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_027d1096bffeknRqaHj8569ur5",
+        "model": "deepseek-ai/deepseek-v4-pro"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
