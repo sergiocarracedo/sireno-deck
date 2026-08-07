@@ -1,6 +1,9 @@
 export const HOLD_ACTION_DELAY_MS = 200
 export const DOUBLE_TAP_DELAY_MS = 200
 
+export const SPA_HOLD_DELAY_MS = 500
+export const SPA_DOUBLE_TAP_DELAY_MS = 300
+
 export type GestureType = "down" | "up"
 
 export interface GestureEvent {

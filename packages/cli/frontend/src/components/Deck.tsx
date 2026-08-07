@@ -22,6 +22,8 @@ import {
 } from "@/deck/system-buttons/registry"
 import {
   ButtonFrame,
+  SPA_DOUBLE_TAP_DELAY_MS,
+  SPA_HOLD_DELAY_MS,
   SplitActionSurface,
   useAddonChannel,
   type AddonGestureEvent,
@@ -194,7 +196,7 @@ const DeckButtonCell = ({
     const overlayIcon = deckOverlayIcon ?? undefined
     const handleClick = () => {
       const now = Date.now()
-      if (now - lastClickAtRef.current < 300) {
+       if (now - lastClickAtRef.current < SPA_DOUBLE_TAP_DELAY_MS) {
         lastClickAtRef.current = 0
         window.clearTimeout(pendingTapTimerRef.current)
         pendingTapTimerRef.current = null
@@ -206,14 +208,14 @@ const DeckButtonCell = ({
       pendingTapTimerRef.current = window.setTimeout(() => {
         pendingTapTimerRef.current = null
         fire("tap")
-      }, 300)
+      }, SPA_DOUBLE_TAP_DELAY_MS)
     }
     const handlePointerDown = () => {
       clearHoldTimer()
       holdTimerRef.current = window.setTimeout(() => {
         holdTimerRef.current = null
         fire("hold")
-      }, 500)
+      }, SPA_HOLD_DELAY_MS)
     }
     const handlePointerUp = () => clearHoldTimer()
     const handlePointerLeave = () => clearHoldTimer()
