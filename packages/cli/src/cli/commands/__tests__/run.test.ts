@@ -148,7 +148,8 @@ const loadDeviceConfigMock = cfgMod.loadDeviceConfig as unknown as ReturnType<
 >
 
 const { createLogger } = await import("@/util/logger")
-const { run, preflight } = await import("../run")
+const { run } = await import("../run")
+const { preflight } = await import("../pipeline/preflight")
 
 const silentLogger = () => createLogger({ level: "silent" })
 

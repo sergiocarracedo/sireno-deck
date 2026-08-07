@@ -50,11 +50,11 @@ import { ensureInstalled, invokeManager } from "./service-manager"
 import { superviseService } from "./service-supervisor"
 import { isUnderServiceManager } from "./spawn-daemon"
 import {
-  preflight,
   runPipeline,
   type RunOptions,
   type SignalProvider,
 } from "./run"
+import { preflight } from "./pipeline/preflight"
 import {
   type SystemReport,
   probeAll,
