@@ -1,0 +1,37 @@
+packages/cli/src/builtin-addons/system-status/__tests__/display-rate-bytes-formatter.test.ts
+  s_eeac6539cee62e::t_9e0c356717937a 54
+packages/cli/src/config/__tests__/include-resolver.test.ts
+  s_eeac6539cee62e::t_9e0c356717937a 93
+packages/cli/src/cli/commands/__tests__/emulator-mode-build-config.test.ts
+  s_eeac6539cee62e::t_9e0c356717937a 16-17,37,43,86,96,107,131,143,152,156,166,170,177,188-189,194
+packages/cli/src/cli/commands/__tests__/addon-decks.test.ts
+  s_eeac6539cee62e::t_9e0c356717937a 118-119,154,160,468
+packages/cli/src/__tests__/logger-format.test.ts
+  s_eeac6539cee62e::t_9e0c356717937a 58,75-83,87
+packages/cli/src/action/__tests__/executor.test.ts
+  s_eeac6539cee62e::t_9e0c356717937a 24,29
+packages/cli/frontend/src/__tests__/deck-render.test.tsx
+  s_eeac6539cee62e::t_9e0c356717937a 37,122,125
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_eeac6539cee62e::t_9e0c356717937a 44-52,57,519,662-663,683,697,704-705,720,726
+packages/cli/src/outputClient/__tests__/emulator.test.ts
+  s_eeac6539cee62e::t_9e0c356717937a 20,23,25
+packages/cli/src/builtin-addons/system-status/__tests__/display-count-formatter.test.ts
+  s_eeac6539cee62e::t_9e0c356717937a 29,52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "4887a106627ce99f79401314471d8f2318795be2",
+  "prompts": {},
+  "sessions": {
+    "s_eeac6539cee62e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_027d1096bffeknRqaHj8569ur5",
+        "model": "deepseek-ai/deepseek-v4-pro"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
