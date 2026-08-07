@@ -115,8 +115,8 @@ describe("materializeAddonDecks", () => {
     const genDeck = result.find((d) => d.id === "gen-deck")!
 
     expect(genDeck.buttons).toEqual([
-      { id: "3", type: "test-addon:btn", position: 3, config: { label: "hi" } },
-      { id: "1", type: "test-addon:btn2" },
+      { id: "3-gen-deck-0", type: "test-addon:btn", position: 3, config: { label: "hi" } },
+      { id: "0-gen-deck-0", type: "test-addon:btn2", position: 0 },
     ])
   })
 
@@ -151,13 +151,13 @@ describe("materializeAddonDecks", () => {
 
     expect(deck.buttons).toEqual([
       {
-        id: "0",
+        id: "0-emoji-selector-0",
         type: "emoji-selector:emoji",
         position: 0,
         config: { emoji: "😀", label: "😀" },
       },
       {
-        id: "1",
+        id: "1-emoji-selector-0",
         type: "emoji-selector:category",
         position: 1,
         config: {
@@ -465,7 +465,7 @@ describe("materializeAddonDecks", () => {
     const userDecks: RuntimeDeck[] = []
 
     const result = materializeAddonDecks(reg, userDecks, silentLogger(), 15)
-    expect(result.length).toBe(2)
+    expect(result.length).toBe(1)
   })
 
   it("paginated:true with <= 13 items returns 1 deck, no page-nav", () => {

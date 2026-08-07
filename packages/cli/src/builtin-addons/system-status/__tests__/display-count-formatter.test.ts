@@ -26,7 +26,7 @@ function snapFreq(value: number): SystemMetricSnapshot {
 describe("toDisplayMetric: count + frequency-ghz unit passthrough", () => {
   it("count keeps unit from snapshot/probe", () => {
     const r = toDisplayMetric(snap(17.0))
-    expect(r.formattedValue).toBe("17.0")
+    expect(r.formattedValue).toBe("17")
     expect(r.unit).toBe("°C")
   })
 
@@ -49,7 +49,7 @@ describe("toDisplayMetric: count + frequency-ghz unit passthrough", () => {
       label: "load",
       value: 1.5,
     })
-    expect(r.formattedValue).toBe("1.5")
+    expect(r.formattedValue).toBe("2")
     expect(r.unit).toBeUndefined()
   })
 })

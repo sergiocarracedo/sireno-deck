@@ -17,12 +17,12 @@ const silentLogger = (): pino.Logger =>
   }) as unknown as pino.Logger
 
 describe("EmulatorOutputClient.listDevices", () => {
-  it("returns virtual descriptors for mk2, xl", async () => {
+  it("returns virtual descriptors for mk2, mini, xl", async () => {
     const client = new EmulatorOutputClient()
     const devices = await client.listDevices()
-    expect(devices).toHaveLength(2)
+    expect(devices).toHaveLength(3)
     const ids = devices.map((d) => d.id).sort()
-    expect(ids).toEqual(["emulator:mk2", "emulator:xl"])
+    expect(ids).toEqual(["emulator:mini", "emulator:mk2", "emulator:xl"])
     for (const d of devices) {
       expect(d.transport).toBe("emulated")
       expect(d.label).toMatch(/^Emulator /)

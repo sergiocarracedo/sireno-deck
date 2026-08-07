@@ -55,7 +55,7 @@ describe("TTY-aware logger", () => {
 
 describe("default human format renders inline context", () => {
   it("renders a single line with msg and context, no (sireno-deck) tag", () => {
-    Object.defineProperty(process.stdout, "isTTY", { value: false })
+    Object.defineProperty(process.stdout, "isTTY", { value: true })
     const writes: string[] = []
     const originalWrite = process.stdout.write.bind(process.stdout)
     process.stdout.write = ((chunk: string | Uint8Array): boolean => {
@@ -72,16 +72,19 @@ describe("default human format renders inline context", () => {
       process.stdout.write = originalWrite
     }
     const all = writes.join("")
-    expect(all).toContain("emulator: button-action received")
-    expect(all).toContain("deckId: main")
-    expect(all).toContain("position: 11")
-    expect(all).toContain("gesture: tap")
-    expect(all).not.toContain("sireno-deck")
-    expect(all.split("\n").filter((l) => l.length > 0)).toHaveLength(1)
+    const stripped = all.replace(/\u001b\[[0-9;]*m/g, "")
+    expect(stripped).toContain("emulator: button-action received")
+    expect(stripped).toContain("deckId: main")
+    expect(stripped).toContain("position: 11")
+    expect(stripped).toContain("gesture: tap")
+    expect(stripped).not.toContain("sireno-deck")
+    expect(
+      stripped.split("\n").filter((l: string) => l.length > 0),
+    ).toHaveLength(1)
   })
 
   it("renders error details inline on the same line", () => {
-    Object.defineProperty(process.stdout, "isTTY", { value: false })
+    Object.defineProperty(process.stdout, "isTTY", { value: true })
     const writes: string[] = []
     const originalWrite = process.stdout.write.bind(process.stdout)
     process.stdout.write = ((chunk: string | Uint8Array): boolean => {

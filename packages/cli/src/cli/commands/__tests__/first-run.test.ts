@@ -116,7 +116,6 @@ vi.mock("@/render/ws-bridge", () => ({
     port: 52937,
     url: "ws://127.0.0.1:52937",
     broadcast: vi.fn(),
-    sendToCaller: vi.fn(),
     onMessage: () => () => undefined,
     onConnection: () => () => undefined,
     close: async () => undefined,
