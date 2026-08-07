@@ -20,10 +20,7 @@ const createExecutor = (
         return { exitCode: 1, stdout: "", stderr: "not found" }
       }
     }
-    if (
-      args[0] === "--version" &&
-      availableCommands.includes(command)
-    ) {
+    if (args[0] === "--version" && availableCommands.includes(command)) {
       return { exitCode: 0, stdout: `${command} 1.0`, stderr: "" }
     }
     return { exitCode: 1, stdout: "", stderr: "" }

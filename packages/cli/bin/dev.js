@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url"
 import { dirname, resolve } from "node:path"
 
 // eslint-disable-next-line import/extensions
+import { createInterface } from "node:readline"
 import { reapOrphanProcessGroup, setWrapperTitle } from "./_wrapper-shared.js"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -11,6 +12,7 @@ const cliRoot = resolve(__dirname, "..")
 const cliEntry = resolve(cliRoot, "src/cli/main.ts")
 
 const tsxBin = resolve(cliRoot, "node_modules", ".bin", "tsx")
+const tsconfigPath = resolve(cliRoot, "tsconfig.json")
 
 /**
  * Tell tsx --watch to ignore the frontend workspace and theme assets. Those
@@ -47,37 +49,104 @@ const excludePatterns = [
 // Everything else runs under plain `tsx`, which exits with the script.
 const LONG_LIVED_COMMANDS = new Set(["start", "logs"])
 const firstArg = process.argv[2]
-const useWatch = firstArg !== undefined && LONG_LIVED_COMMANDS.has(firstArg)
+const restArgs = process.argv.slice(2)
 
-const args = useWatch
-  ? [
-      "watch",
-      ...excludePatterns.flatMap((p) => ["--exclude", p]),
-      cliEntry,
-      ...process.argv.slice(2),
-    ]
-  : [cliEntry, ...process.argv.slice(2)]
+const spawnTsx = (args, envExtra = {}) =>
+  spawn(tsxBin, args, {
+    stdio: "inherit",
+    cwd: cliRoot,
+    env: {
+      ...process.env,
+      SIRENO_CWD: process.cwd(),
+      TSX_TSCONFIG_PATH: tsconfigPath,
+      ...envExtra,
+    },
+  })
+
+const exitChild = (child) =>
+  new Promise((resolve) => child.on("exit", resolve))
 
 setWrapperTitle("sirenodeck:wrp")
 
-const child = spawn(tsxBin, args, {
-  stdio: "inherit",
-  cwd: cliRoot,
-  env: {
-    ...process.env,
-    SIRENO_CWD: process.cwd(),
-    SIRENO_WRAPPER_CHILD: "1",
-    TSX_TSCONFIG_PATH: resolve(cliRoot, "tsconfig.json"),
-  },
-})
+// ponytail: tsx watch installs process.stdin.on("data") that restarts the
+// child on any keypress. Interactive prompts (readline, @clack/prompts,
+// capturePassword) send data on stdin → tsx sees it → restarts → loop.
+// Run the first-run wizard with plain tsx (no watch) before starting
+// tsx watch. Set SIRENO_SKIP_WIZARD so start.ts doesn't double-prompt.
+if (firstArg === "start") {
+  let skipWizard = false
 
-child.on("exit", (code) => {
-  // Bash `pnpm dev` killing the wrapper (Ctrl+C) leaves the daemon's vite
-  // descendants reparented to init. Try to reap the orphaned process group
-  // before propagating the exit code. The daemon is forked via spawnDetached
-  // (detached: true), so child.pid is the pgid.
-  if (child.pid !== undefined) {
-    reapOrphanProcessGroup(child.pid)
+  const probe = spawn(tsxBin, [cliEntry, "system-requirements", "--non-interactive"], {
+    stdio: [process.stdin, "pipe", process.stderr],
+    cwd: cliRoot,
+    env: {
+      ...process.env,
+      SIRENO_CWD: process.cwd(),
+      TSX_TSCONFIG_PATH: tsconfigPath,
+    },
+  })
+  let probeOutput = ""
+  probe.stdout.on("data", (chunk) => { probeOutput += chunk.toString() })
+  const probeCode = await exitChild(probe)
+
+  if (probeCode !== 0) {
+    process.stdout.write(probeOutput)
+    skipWizard = true
+
+    const shouldRunWizard = await new Promise((resolve) => {
+      const rl = createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      })
+      rl.question(
+        "Run the setup wizard now? [Y/n] ",
+        (answer) => {
+          rl.close()
+          resolve(answer.trim().toLowerCase() !== "n")
+        },
+      )
+    })
+
+    if (shouldRunWizard) {
+      const wizard = spawnTsx([cliEntry, "system-requirements"])
+      await exitChild(wizard)
+    }
   }
-  process.exit(code ?? 0)
-})
+
+  const child = spawnTsx(
+    [
+      "watch",
+      ...excludePatterns.flatMap((p) => ["--exclude", p]),
+      cliEntry,
+      ...restArgs,
+    ],
+    { SIRENO_WRAPPER_CHILD: "1", ...(skipWizard ? { SIRENO_SKIP_WIZARD: "1" } : {}) },
+  )
+
+  child.on("exit", (code) => {
+    if (child.pid !== undefined) {
+      reapOrphanProcessGroup(child.pid)
+    }
+    process.exit(code ?? 0)
+  })
+} else {
+  const useWatch = firstArg !== undefined && LONG_LIVED_COMMANDS.has(firstArg)
+
+  const args = useWatch
+    ? [
+        "watch",
+        ...excludePatterns.flatMap((p) => ["--exclude", p]),
+        cliEntry,
+        ...restArgs,
+      ]
+    : [cliEntry, ...restArgs]
+
+  const child = spawnTsx(args, { SIRENO_WRAPPER_CHILD: "1" })
+
+  child.on("exit", (code) => {
+    if (child.pid !== undefined) {
+      reapOrphanProcessGroup(child.pid)
+    }
+    process.exit(code ?? 0)
+  })
+}

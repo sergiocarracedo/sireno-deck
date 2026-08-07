@@ -22,8 +22,5 @@ export {
   formatSummaryLine,
   summarizeReport,
 } from "./format"
-export {
-  defaultConfigSourcePath,
-  seedDefaultConfig,
-} from "./config-seed"
+export { defaultConfigSourcePath, seedDefaultConfig } from "./config-seed"
 export { isSudoNopasswd, runWithSudo, capturePassword } from "./sudo"

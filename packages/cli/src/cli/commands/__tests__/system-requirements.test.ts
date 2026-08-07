@@ -114,7 +114,9 @@ const setReport = (summary: FakeSummary): void => {
     keyMacro: {
       available: !summary.missingCapabilities.includes("keyMacro"),
       name: "keyMacro" as const,
-      missing: summary.missingCapabilities.includes("keyMacro") ? ["ydotool"] : [],
+      missing: summary.missingCapabilities.includes("keyMacro")
+        ? ["ydotool"]
+        : [],
       preferred: "ydotool",
       reason: "",
     },

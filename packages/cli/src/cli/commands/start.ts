@@ -61,7 +61,6 @@ import {
   summarizeReport,
 } from "@/system/setup-wizard"
 import { systemRequirements } from "./system-requirements"
-import { executeCommand } from "@/action/executor"
 
 export interface StartOptions {
   readonly config?: string
@@ -574,14 +573,20 @@ const startProduction = async (options: StartOptions): Promise<void> => {
 }
 
 const wizardCommandExecutor = {
-  async run(command: string, args: ReadonlyArray<string>) {
-    const result = await executeCommand(command, [...args], {
-      timeoutMs: 5_000,
+  async run(
+    command: string,
+    args: ReadonlyArray<string>,
+    options?: { timeoutMs?: number },
+  ) {
+    const { execa } = await import("execa")
+    const result = await execa(command, [...args], {
+      reject: false,
+      timeout: options?.timeoutMs ?? 5_000,
     })
     return {
-      exitCode: result.exitCode,
-      stdout: result.stdout,
-      stderr: result.stderr,
+      exitCode: result.exitCode ?? -1,
+      stdout: result.stdout ?? "",
+      stderr: result.stderr ?? "",
     }
   },
 }
@@ -629,6 +634,14 @@ const runFirstRunCheckIfNeeded = async (
     summary.udevMissing ||
     summary.configMissing
   if (!missing) return
+
+  if (process.env["SIRENO_SKIP_WIZARD"]) {
+    logger.warn(
+      { lines: summary.lines },
+      "start: some requirements still missing — run `sirenodeck system-requirements` to fix",
+    )
+    return
+  }
 
   if (!process.stdin.isTTY) {
     logger.warn(
@@ -678,12 +691,20 @@ const runFirstRunCheckIfNeeded = async (
 const start = async (options: StartOptions): Promise<void> => {
   const { logger } = options
 
-  await runFirstRunCheckIfNeeded(options, logger)
-
+  // ponytail: skip the first-run wizard in the daemon child. The forked
+  // daemon has `SIRENO_DAEMON_CHILD=1` and `stdio: ["ignore", "pipe", "pipe"]`
+  // — stdin is closed, so the wizard's `!process.stdin.isTTY` branch fires,
+  // sets `process.exitCode = 1`, and the daemon's `process.exit(exitCode)`
+  // then exits 1. The supervisor reads that as "unexpected exit" and respawns
+  // the child, which re-runs the wizard, exits 1, respawns — visible to the
+  // operator as the CLI restarting in a tight loop. The parent already ran
+  // the wizard before forking, so the child has no business re-running it.
   if (isUnderServiceManager()) {
     await runInProcess(options)
     return
   }
+
+  await runFirstRunCheckIfNeeded(options, logger)
 
   // ponytail: clear the daemon's expected ports before spawning. This is
   // the load-bearing fix for "the frontend port is in use by children":

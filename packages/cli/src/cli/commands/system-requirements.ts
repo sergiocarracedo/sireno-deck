@@ -6,7 +6,7 @@ import type { CommandModule } from "yargs"
 
 import type pino from "pino"
 
-import { UDEV_RULES } from "@/device/linux-udev"
+import { formatInstallInstructions, UDEV_RULES } from "@/device/linux-udev"
 
 import {
   type InstallStep,
@@ -333,6 +333,7 @@ const runUdevStep = async (
   })
   if (!w.succeeded) {
     write.stop(`udev write failed: ${formatFailure(w)}`)
+    note(formatInstallInstructions(), "You can install udev rules manually:")
     return "failed"
   }
   // ponytail: verify the file actually got the rules. sudo + tee can
@@ -346,6 +347,7 @@ const runUdevStep = async (
       { writtenLen: written.length },
       "udev: tee succeeded but rules file does not contain expected content",
     )
+    note(formatInstallInstructions(), "You can install udev rules manually:")
     return "failed"
   }
   const reload = spinner()
@@ -359,6 +361,7 @@ const runUdevStep = async (
   })
   if (!reloadResult.succeeded) {
     reload.stop(`udev reload failed: ${formatFailure(reloadResult)}`)
+    note(formatInstallInstructions(), "You can install udev rules manually:")
     return "failed"
   }
   reload.stop("udev rules installed")
@@ -440,7 +443,7 @@ export const systemRequirements = async (
     log.warn("Missing pieces detected (non-interactive mode — exiting).")
     log.warn(`Run \`sirenodeck system-requirements\` interactively to fix.`)
     for (const line of summary.lines) {
-      process.stdout.write(`  ${line}\n`)
+      process.stdout.write(`   ${line}\n`)
     }
     process.exitCode = 1
     return
