@@ -24,7 +24,7 @@ class FakeWebSocket {
   }
   close(): void {
     this.readyState = FakeWebSocket.CLOSED
-    for (const l of this.closeListeners) l()
+    for (const l of this.closeListeners) l({ code: 0, reason: "" } as CloseEvent)
   }
   addEventListener(name: string, cb: unknown): void {
     if (name === "open") this.openListeners.push(cb as () => void)
@@ -42,7 +42,7 @@ class FakeWebSocket {
   }
   emitClose(): void {
     this.readyState = FakeWebSocket.CLOSED
-    for (const l of this.closeListeners) l()
+    for (const l of this.closeListeners) l({ code: 0, reason: "" } as CloseEvent)
   }
 }
 

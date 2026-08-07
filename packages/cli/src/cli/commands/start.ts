@@ -428,6 +428,7 @@ const runInProcessSetup = async (
   runOptions.token = token
   const sentinel = generateSentinel(process.pid)
   process.env[SENTINEL_ENV_VAR] = sentinel
+  process.env["SIRENO_TOKEN"] = token
   logger.info({ tokenLen: token.length }, "daemon: pid + token written")
 
   let httpServer: RunningHttpServer | null = null
