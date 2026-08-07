@@ -436,6 +436,86 @@ describe("run", () => {
     expect(handle.stop).toHaveBeenCalledTimes(1)
   })
 
+  it("SIGINT triggers pushBlackFrame() on the real output handle before stop()", async () => {
+    const outputClient = setHappyPath()
+    const signals = makeFakeSignals()
+    // ponytail: the real output handle exposes pushBlackFrame(); the run
+    // pipeline's finally block calls it to clear the device before closing.
+    // Mock the handle to track call ordering against stop().
+    const pushBlackFrame = vi.fn(async () => undefined)
+    outputClient.init.mockImplementation(async () => ({
+      descriptor: {
+        id: "ABC",
+        model: "mk2",
+        keyCount: 15,
+        label: "MK.2 (ABC)",
+        transport: "real",
+      },
+      frontendUrl: "http://x",
+      wsUrl: "ws://x",
+      childPids: [],
+      pushBlackFrame,
+      stop: vi.fn(async () => undefined),
+    }))
+    const runPromise = run({
+      config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      signals,
+      logger: silentLogger(),
+    })
+
+    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    const handle = await outputClient.init.mock.results[0]!.value
+    signals.trigger()
+    await runPromise
+
+    expect(pushBlackFrame).toHaveBeenCalledTimes(1)
+    expect(handle.stop).toHaveBeenCalledTimes(1)
+    // ponytail: clear must happen before close — otherwise the queued USB
+    // writes are dropped at disconnect and the device keeps the last frame.
+    const pushOrder = pushBlackFrame.mock.invocationCallOrder[0]!
+    const stopOrder = handle.stop.mock.invocationCallOrder[0]!
+    expect(pushOrder).toBeLessThan(stopOrder)
+  })
+
+  it("SIGINT: pushBlackFrame() failures do not block stop()", async () => {
+    const outputClient = setHappyPath()
+    const signals = makeFakeSignals()
+    outputClient.init.mockImplementation(async () => ({
+      descriptor: {
+        id: "ABC",
+        model: "mk2",
+        keyCount: 15,
+        label: "MK.2 (ABC)",
+        transport: "real",
+      },
+      frontendUrl: "http://x",
+      wsUrl: "ws://x",
+      childPids: [],
+      pushBlackFrame: vi.fn(async () => {
+        throw new Error("device unplugged")
+      }),
+      stop: vi.fn(async () => undefined),
+    }))
+    const runPromise = run({
+      config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      signals,
+      logger: silentLogger(),
+    })
+
+    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    const handle = await outputClient.init.mock.results[0]!.value
+    signals.trigger()
+    await runPromise
+
+    expect(handle.stop).toHaveBeenCalledTimes(1)
+  })
+
   it("rejects with clear error when --config points at a missing file", async () => {
     // ponytail: without this, a daemon started with a stale --config
     // (e.g. worktree removed) would boot, then every config-touch would

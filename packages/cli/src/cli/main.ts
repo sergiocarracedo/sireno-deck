@@ -42,7 +42,9 @@ const killChildrenAndExit = (
 ): void => {
   if (processExitInProgress) return
   processExitInProgress = true
-  void terminateChildren({ logger, timeoutMs: 2_000 })
+  // ponytail: 5s grace matches the run-pipeline's pushBlackFrame + drain delay
+  // so the SIGINT handler doesn't cut off the in-flight device clear writes.
+  void terminateChildren({ logger, timeoutMs: 5_000 })
     .catch((err: unknown) => {
       logger.warn({ err }, "main: terminate children failed")
     })
