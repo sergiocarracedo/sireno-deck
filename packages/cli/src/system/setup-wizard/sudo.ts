@@ -61,7 +61,15 @@ export const runWithSudo = async (
     }
     const exitCode = typeof e.code === "number" ? e.code : 1
     const stderr = e.stderr ?? ""
-    const neededPassword = /password is required/i.test(stderr)
+    // ponytail: catch the real-world sudo failure patterns:
+    //   - "Sorry, try again."          → wrong password
+    //   - "Authentication required..." → stdin was empty / not a TTY
+    //   - "password is required"       → standard sudo prompt message
+    const neededPassword =
+      /password is required/i.test(stderr) ||
+      /sorry,? try again/i.test(stderr) ||
+      /incorrect password attempt/i.test(stderr) ||
+      /authentication required but not attempted/i.test(stderr)
     options.logger?.warn(
       { exitCode, stderr: stderr.slice(0, 200) },
       "sudo run failed",

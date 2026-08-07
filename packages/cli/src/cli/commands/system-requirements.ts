@@ -133,7 +133,9 @@ const pmLabel = (pm: string): string => {
 
 const printProbeSummary = (report: SystemReport): void => {
   const lines: string[] = []
-  lines.push(`Platform  ${report.platform} · ${SESSION_LABEL[report.session] ?? "unknown"} session`)
+  lines.push(
+    `Platform  ${report.platform} · ${SESSION_LABEL[report.session] ?? "unknown"} session`,
+  )
   lines.push(`Packages  ${pmLabel(report.packageManager)}`)
   if (report.platform === "linux") {
     lines.push(
@@ -320,9 +322,8 @@ const runUdevStep = async (
   // otherwise tee writes the password to the rules file and nothing else.
   // Use the canonical `UDEV_RULES` constant rather than reverse-parsing the
   // display-formatted `manualInstructions` string.
-  const writeStdin = password.length > 0
-    ? `${password}\n${UDEV_RULES}\n`
-    : `${UDEV_RULES}\n`
+  const writeStdin =
+    password.length > 0 ? `${password}\n${UDEV_RULES}\n` : `${UDEV_RULES}\n`
   const w = await runWithSudo({
     command: "tee",
     args: ["/etc/udev/rules.d/70-sireno-deck.rules"],
@@ -332,6 +333,19 @@ const runUdevStep = async (
   })
   if (!w.succeeded) {
     write.stop(`udev write failed: ${formatFailure(w)}`)
+    return "failed"
+  }
+  // ponytail: verify the file actually got the rules. sudo + tee can
+  // return exit 0 while writing nothing (e.g. if the password was
+  // followed only by EOF without the rules content — happens on shells
+  // that strip trailing data after sudo's read).
+  const written = readFileSync("/etc/udev/rules.d/70-sireno-deck.rules", "utf8")
+  if (!written.includes("ATTRS{idVendor}")) {
+    write.stop("udev write failed: tee exited 0 but file is empty or incomplete")
+    logger.warn(
+      { writtenLen: written.length },
+      "udev: tee succeeded but rules file does not contain expected content",
+    )
     return "failed"
   }
   const reload = spinner()
@@ -472,7 +486,9 @@ export const systemRequirements = async (
       }
     }
     if (lines.length > 0) note(lines.join("\n"), "Manual steps remaining")
-    cancel("Setup incomplete. Run `sirenodeck system-requirements` again after manual steps.")
+    cancel(
+      "Setup incomplete. Run `sirenodeck system-requirements` again after manual steps.",
+    )
     process.exitCode = 1
     return
   }
