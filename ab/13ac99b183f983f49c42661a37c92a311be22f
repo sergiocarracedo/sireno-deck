@@ -1,0 +1,29 @@
+packages/cli/src/system/setup-wizard/sudo.ts
+  s_eeac6539cee62e::t_33b27efc79be73 64-72
+packages/cli/src/cli/commands/system-requirements.ts
+  s_ca50e587858d4f::t_bafdd5c9ff056a 136-138,325-326,338-350,489-491
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "ab13ac99b183f983f49c42661a37c92a311be22f",
+  "prompts": {},
+  "sessions": {
+    "s_ca50e587858d4f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_028773fbaffe0rGXf2uC36Ox9o",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_eeac6539cee62e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_027d1096bffeknRqaHj8569ur5",
+        "model": "deepseek-ai/deepseek-v4-pro"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
