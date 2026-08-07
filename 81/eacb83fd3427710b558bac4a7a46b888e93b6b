@@ -1,0 +1,19 @@
+.github/workflows/ci.yml
+  s_eeac6539cee62e::t_51ca803fca2edc 9,11-12,15,18-19,22,24,26,28,30,32-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "81eacb83fd3427710b558bac4a7a46b888e93b6b",
+  "prompts": {},
+  "sessions": {
+    "s_eeac6539cee62e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_027d1096bffeknRqaHj8569ur5",
+        "model": "deepseek-ai/deepseek-v4-pro"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
