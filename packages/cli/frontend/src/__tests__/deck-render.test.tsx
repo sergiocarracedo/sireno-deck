@@ -34,7 +34,7 @@ const MODEL = getDeviceModel("mk2")
 describe("Deck", () => {
   it("renders a button per entry with the right data-button-type", () => {
     const { container } = render(<Deck deck={DECK} deviceModel={MODEL} />)
-    expect(container.querySelectorAll("[data-button-type]")).toHaveLength(2)
+    expect(container.querySelectorAll("[data-button-type]")).toHaveLength(4)
   })
 
   it("publishes to the per-button runtime:gesture channel when a gesture arrives", () => {
@@ -119,9 +119,9 @@ describe("Deck", () => {
     const { container } = render(
       <Deck deck={oversizedDeck} deviceModel={mini} />,
     )
-    expect(container.querySelectorAll("[data-button-type]")).toHaveLength(2)
+    expect(container.querySelectorAll("[data-button-type]")).toHaveLength(4)
     expect(
       container.querySelectorAll('[data-button-type="core:action"]'),
-    ).toHaveLength(1)
+    ).toHaveLength(2)
   })
 })

@@ -15,7 +15,6 @@ const silentLogger = (): ReturnType<typeof Object> => ({
 
 const makeBridge = () => ({
   broadcast: vi.fn(),
-  sendToCaller: vi.fn(),
   onMessage: () => () => undefined,
   onConnection: () => () => undefined,
   close: async () => undefined,

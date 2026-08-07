@@ -41,11 +41,20 @@ vi.mock("@/system/providers/clipboard", () => ({
     stop: vi.fn(async () => undefined),
   })),
 }))
+const clackConfirmMock = vi.fn(async () => true)
+vi.mock("@/ui/console", async () => {
+  const actual =
+    await vi.importActual<typeof import("@/ui/console")>("@/ui/console")
+  return {
+    ...actual,
+    confirm: clackConfirmMock,
+  }
+})
 let capturedBridge: {
   port: number
   url: string
   broadcast: ReturnType<typeof vi.fn>
-  sendToCaller: ReturnType<typeof vi.fn>
+  registerCacheablePoller: ReturnType<typeof vi.fn>
   onMessage: () => () => undefined
   onConnection: () => () => undefined
   close: () => Promise<undefined>
@@ -56,7 +65,6 @@ vi.mock("@/render/ws-bridge", () => ({
       port: 52937,
       url: "ws://127.0.0.1:52937",
       broadcast: vi.fn(),
-      sendToCaller: vi.fn(),
       setAddonInventory: vi.fn(),
       onMessage: () => () => undefined,
       onConnection: () => () => undefined,
@@ -517,7 +525,7 @@ describe("run", () => {
         return { config: { decks: {} }, configDir: "/dir" }
       }
       return {
-        config: { decks: {}, theme: "dark" },
+        config: { decks: {}, lock: { enabled: true } },
         configDir: "/dir",
       }
     })
@@ -652,14 +660,7 @@ describe("preflight", () => {
       .mockReturnValueOnce(realClient)
       .mockReturnValueOnce(emulatorClient)
     const confirmMock = vi.fn(async () => true)
-    vi.doMock("@clack/prompts", async (importOriginal) => {
-      const actual = (await importOriginal()) as Record<string, unknown>
-      return {
-        ...actual,
-        confirm: confirmMock,
-        isCancel: (v: unknown) => typeof v === "symbol",
-      }
-    })
+    clackConfirmMock.mockImplementation(confirmMock)
     const originalIsTTY = process.stdin.isTTY
     Object.defineProperty(process.stdin, "isTTY", {
       value: true,
@@ -693,7 +694,7 @@ describe("preflight", () => {
         value: originalIsTTY,
         configurable: true,
       })
-      vi.doUnmock("@clack/prompts")
+      clackConfirmMock.mockReset()
     }
   })
 
@@ -701,14 +702,7 @@ describe("preflight", () => {
     const realClient = makeFakeOutputClient("real", [])
     setHappyPath({ outputClient: realClient })
     const confirmMock = vi.fn(async () => false)
-    vi.doMock("@clack/prompts", async (importOriginal) => {
-      const actual = (await importOriginal()) as Record<string, unknown>
-      return {
-        ...actual,
-        confirm: confirmMock,
-        isCancel: (v: unknown) => typeof v === "symbol",
-      }
-    })
+    clackConfirmMock.mockImplementation(confirmMock)
     const originalIsTTY = process.stdin.isTTY
     Object.defineProperty(process.stdin, "isTTY", {
       value: true,
@@ -729,7 +723,7 @@ describe("preflight", () => {
         value: originalIsTTY,
         configurable: true,
       })
-      vi.doUnmock("@clack/prompts")
+      clackConfirmMock.mockReset()
     }
   })
 })
