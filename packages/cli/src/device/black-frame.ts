@@ -22,11 +22,19 @@ export const pushBlackFrame = async (
     for (let i = 0; i < device.getKeyCount(); i++) {
       await device.fillKeyBuffer(i, buf.subarray(0, 3 * 8 * 8))
     }
+    // ponytail: brightness is a feature report processed synchronously by the
+    // device firmware, so dimming to 0 is a guaranteed "off" signal even if the
+    // queued image writes above are dropped at USB disconnect.
+    await device.setBrightness(0)
+    // ponytail: give the queued USB writes a moment to drain before the caller
+    // closes the device; otherwise node-hid may flush to a closed handle and
+    // the panel keeps the last fully-rendered frame.
+    await new Promise<void>((r) => setTimeout(r, 200))
     logger.info("black-frame: pushed")
   } catch (err) {
     logger.warn(
       { err: (err as Error).message },
-      "black-frame: fillKeyBuffer failed (non-fatal)",
+      "black-frame: push failed (non-fatal)",
     )
   }
 }
