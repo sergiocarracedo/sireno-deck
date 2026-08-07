@@ -1,0 +1,23 @@
+packages/cli/src/device/black-frame.ts
+  s_54a83059d66f94::t_92b20c6b50231c 25-32,37
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_54a83059d66f94::t_36a009a3bcea1e 439-518
+packages/cli/src/cli/main.ts
+  s_54a83059d66f94::t_0015cc19d7da6f 45-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "cceb2e7a8a242121ddf3700f55eee791a3cf2431",
+  "prompts": {},
+  "sessions": {
+    "s_54a83059d66f94": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0245eb324ffewLuinvMKsYeRzQ",
+        "model": "MiniMax-M3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
