@@ -41,26 +41,20 @@ vi.mock("@/system/providers/clipboard", () => ({
     stop: vi.fn(async () => undefined),
   })),
 }))
-const clackConfirmMock = vi.fn()
-vi.mock("@/ui/console", () => ({
-  intro: vi.fn(),
-  outro: vi.fn(),
-  note: vi.fn(),
-  log: { info: vi.fn(), success: vi.fn(), warn: vi.fn(), error: vi.fn() },
-  spinner: vi.fn(() => ({ start: vi.fn(), stop: vi.fn(), message: vi.fn() })),
-  select: vi.fn(),
-  confirm: clackConfirmMock,
-  text: vi.fn(),
-  password: vi.fn(),
-  isCancel: (v: unknown) => typeof v === "symbol",
-  cancel: vi.fn(),
-  tasks: vi.fn(),
-}))
+const clackConfirmMock = vi.fn(async () => true)
+vi.mock("@/ui/console", async () => {
+  const actual =
+    await vi.importActual<typeof import("@/ui/console")>("@/ui/console")
+  return {
+    ...actual,
+    confirm: clackConfirmMock,
+  }
+})
 let capturedBridge: {
   port: number
   url: string
   broadcast: ReturnType<typeof vi.fn>
-  sendToCaller: ReturnType<typeof vi.fn>
+  registerCacheablePoller: ReturnType<typeof vi.fn>
   onMessage: () => () => undefined
   onConnection: () => () => undefined
   close: () => Promise<undefined>
@@ -71,7 +65,6 @@ vi.mock("@/render/ws-bridge", () => ({
       port: 52937,
       url: "ws://127.0.0.1:52937",
       broadcast: vi.fn(),
-      sendToCaller: vi.fn(),
       setAddonInventory: vi.fn(),
       onMessage: () => () => undefined,
       onConnection: () => () => undefined,
@@ -523,7 +516,7 @@ describe("run", () => {
   it("non-deck config change broadcasts iframe-reload instead of restarting Vite", async () => {
     const outputClient = setHappyPath()
     const signals = makeFakeSignals()
-    // First config load: no lock. Second config load: lock added — forces
+    // First config load: no theme. Second config load: theme added — forces
     // the non-deck branch in handleConfigChange.
     let configCall = 0
     loaderMock.mockImplementation(() => {
@@ -666,7 +659,8 @@ describe("preflight", () => {
     selectOutputClientMock
       .mockReturnValueOnce(realClient)
       .mockReturnValueOnce(emulatorClient)
-    clackConfirmMock.mockResolvedValueOnce(true)
+    const confirmMock = vi.fn(async () => true)
+    clackConfirmMock.mockImplementation(confirmMock)
     const originalIsTTY = process.stdin.isTTY
     Object.defineProperty(process.stdin, "isTTY", {
       value: true,
@@ -686,7 +680,7 @@ describe("preflight", () => {
         logger: silentLogger(),
       }
       await preflight(opts)
-      expect(clackConfirmMock).toHaveBeenCalledWith(
+      expect(confirmMock).toHaveBeenCalledWith(
         expect.objectContaining({ initialValue: true }),
       )
       expect(opts.emulator).toBe(true)
@@ -700,13 +694,15 @@ describe("preflight", () => {
         value: originalIsTTY,
         configurable: true,
       })
+      clackConfirmMock.mockReset()
     }
   })
 
   it("real client with no devices in TTY throws when user declines fallback", async () => {
     const realClient = makeFakeOutputClient("real", [])
     setHappyPath({ outputClient: realClient })
-    clackConfirmMock.mockResolvedValueOnce(false)
+    const confirmMock = vi.fn(async () => false)
+    clackConfirmMock.mockImplementation(confirmMock)
     const originalIsTTY = process.stdin.isTTY
     Object.defineProperty(process.stdin, "isTTY", {
       value: true,
@@ -721,12 +717,13 @@ describe("preflight", () => {
           logger: silentLogger(),
         }),
       ).rejects.toThrow(/No Stream Deck devices found/)
-      expect(clackConfirmMock).toHaveBeenCalled()
+      expect(confirmMock).toHaveBeenCalled()
     } finally {
       Object.defineProperty(process.stdin, "isTTY", {
         value: originalIsTTY,
         configurable: true,
       })
+      clackConfirmMock.mockReset()
     }
   })
 })

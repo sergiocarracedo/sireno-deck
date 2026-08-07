@@ -51,6 +51,6 @@ describe("toDisplayMetric: rate-bytes formatter", () => {
     }
     const r = toDisplayMetric(s)
     expect(r.formattedValue).toBe("—")
-    expect(r.unit).toBeUndefined()
+    expect(r.unit).toBe("B/s")
   })
 })
