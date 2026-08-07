@@ -114,6 +114,7 @@ export interface RunOptions {
   readonly onChildren?: (pids: ReadonlyArray<number>) => void
   readonly onAddonsUpdate?: (addons: ReadonlyArray<ScannedAddon>) => void
   readonly logger: pino.Logger
+  token?: string
 }
 
 export interface SetupAddonServicesOptions {

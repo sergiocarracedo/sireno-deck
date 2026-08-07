@@ -12,13 +12,13 @@ export const helloMessageSchema = baseClientMessage.extend({
   type: z.literal("hello"),
   version: z.literal(PROTOCOL_VERSION),
   token: z.string().min(1).optional(),
-})
+}).strict()
 
 export const helloMessageStrictSchema = baseClientMessage.extend({
   type: z.literal("hello"),
   version: z.literal(PROTOCOL_VERSION),
   token: z.string().min(1),
-})
+}).strict()
 
 export const deviceInfoSchema = z.object({
   id: z.string(),
@@ -33,12 +33,12 @@ export const helloAckMessageSchema = baseServerMessage.extend({
   version: z.literal(PROTOCOL_VERSION),
   device: deviceInfoSchema.optional(),
   config: z.unknown(),
-})
+}).strict()
 
 export const deviceInfoMessageSchema = baseServerMessage.extend({
   type: z.literal("device-info"),
   device: deviceInfoSchema,
-})
+}).strict()
 
 export const deckConfigMessageSchema = baseServerMessage.extend({
   type: z.literal("deck-config"),
@@ -49,25 +49,25 @@ export const deckConfigMessageSchema = baseServerMessage.extend({
   hasOverlayDeckAvailable: z.boolean().default(false),
   overlayDeckIcon: z.string().nullable().default(null),
   overlayDeckName: z.string().nullable().default(null),
-})
+}).strict()
 
 export const stateMessageSchema = baseServerMessage.extend({
   type: z.literal("state"),
   channels: z.record(z.string(), z.unknown()),
   cadence: z.record(z.string(), z.number().int().positive()).optional(),
-})
+}).strict()
 
 export const decksListMessageSchema = baseServerMessage.extend({
   type: z.literal("decks-list"),
   decks: z.array(
     z.object({ id: z.string(), name: z.string(), icon: z.string().optional() }),
   ),
-})
+}).strict()
 
 export const showOverlayMessageSchema = baseServerMessage.extend({
   type: z.literal("show-overlay"),
   deckId: z.string().nullable(),
-})
+}).strict()
 
 export const buttonErrorMessageSchema = baseServerMessage.extend({
   type: z.literal("button-error"),
@@ -76,7 +76,7 @@ export const buttonErrorMessageSchema = baseServerMessage.extend({
   durationMs: z.number().int().positive().default(5000),
   buttonId: z.string().optional(),
   details: z.string().optional(),
-})
+}).strict()
 
 export const serviceLogMessageSchema = baseServerMessage.extend({
   type: z.literal("service-log"),
@@ -89,49 +89,49 @@ export const serviceLogMessageSchema = baseServerMessage.extend({
   addonName: z.string().optional(),
   gesture: z.enum(["tap", "dbl-tap", "hold"]).optional(),
   keyIndex: z.number().int().nonnegative().optional(),
-})
+}).strict()
 
 export const buttonActionMessageSchema = baseClientMessage.extend({
   type: z.literal("button-action"),
   deckId: z.string(),
   position: z.number().int().nonnegative(),
   gesture: gestureKindSchema,
-})
+}).strict()
 
 export const methodCallMessageSchema = baseClientMessage.extend({
   type: z.literal("method-call"),
   callId: z.string(),
   name: z.string(),
   args: z.array(z.unknown()).default([]),
-})
+}).strict()
 
 export const methodCallResultMessageSchema = baseServerMessage.extend({
   type: z.literal("method-call-result"),
   callId: z.string(),
   result: z.unknown().optional(),
   error: z.string().optional(),
-})
+}).strict()
 
 export const selectDeckMessageSchema = baseClientMessage.extend({
   type: z.literal("select-deck"),
   deckId: z.string(),
-})
+}).strict()
 
 export const setDeviceMessageSchema = baseClientMessage.extend({
   type: z.literal("set-device"),
   deviceId: z.string().min(1),
-})
+}).strict()
 
 export const deckActiveMessageSchema = baseClientMessage.extend({
   type: z.literal("deck-active"),
   deckId: z.string(),
   mode: z.enum(["navigation", "overlay"]),
   history: z.enum(["push", "replace"]).default("push"),
-})
+}).strict()
 
 export const dismissOverlayMessageSchema = baseClientMessage.extend({
   type: z.literal("dismiss-overlay"),
-})
+}).strict()
 
 export const assetsMessageSchema = baseServerMessage.extend({
   type: z.literal("assets"),
@@ -143,16 +143,16 @@ export const assetsMessageSchema = baseServerMessage.extend({
       src: z.string(),
     }),
   ),
-})
+}).strict()
 
 export const subscribeChannelsMessageSchema = baseClientMessage.extend({
   type: z.literal("subscribe-channels"),
   channels: z.array(z.string()).min(1),
-})
+}).strict()
 
 export const iframeReloadMessageSchema = baseServerMessage.extend({
   type: z.literal("iframe-reload"),
-})
+}).strict()
 
 // ponytail: ships the addon inventory the emulator's Addons tab renders.
 // Replaces a separate HTTP `/api/addons` fetch on the start-mode daemon
@@ -181,7 +181,7 @@ export const addonsInventoryMessageSchema = baseServerMessage.extend({
       ),
     }),
   ),
-})
+}).strict()
 
 export const wsMessageSchema = z.discriminatedUnion("type", [
   helloMessageSchema,

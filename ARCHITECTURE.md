@@ -455,19 +455,25 @@ on the host. The backend dispatches the gesture; the runtime broadcasts
 
 ### 7.4 Decoupling rule
 
-Each transport owns its own gesture detection. The wire format on the
-emulator path is the **final gesture** (`button-action` with
-`gesture: 'tap' | 'dbl-tap' | 'hold'`); raw `down` / `up` events never
-cross the bridge. The chrome SPA in `packages/cli/frontend/` is pure
-display: it subscribes to `runtime:gesture:*` (per button) and the generic
-`state` channels. **It never emits any button event.**
+Each transport owns its own gesture detection. The wire format on every
+path (real hardware, emulator SPA, chrome SPA) is the **final gesture**
+(`button-action` with `gesture: 'tap' | 'dbl-tap' | 'hold'`); raw
+`down` / `up` events never cross the bridge.
+
+The chrome SPA in `packages/cli/frontend/` is interactive display: it
+emits `button-action` for user clicks and subscribes to `runtime:gesture:*`
+(per button) and generic `state` channels to render button feedback. The
+emulator SPA in `packages/cli/emulator/` likewise emits `button-action` for
+virtual button presses and subscribes to state for rendering. The real
+hardware transport emits `button-action` via the hardware Stream Deck's
+native key events.
 
 Shared logic lives in `packages/cli/src/core/gesture-state.ts` — the
 constants `HOLD_ACTION_DELAY_MS = 200` and `DOUBLE_TAP_DELAY_MS = 200` are
 imported by both transports (RealOutputClient directly, the emulator SPA
 via `@sireno-deck/cli`) so any future change applies to both at once.
 
-Neither the backend nor the chrome knows how each transport derives
+Neither the backend nor any SPA knows how another transport derives
 gestures. A change in tap-detection semantics is local to the transport
 that owns it.
 
