@@ -50,4 +50,9 @@ describe("daemon pid file", () => {
     expect(readPid(paths)).toBe(12345)
     expect(isRunning(12345)).toBe(false)
   })
+
+  it("rejects non-positive pids", () => {
+    expect(isRunning(0)).toBe(false)
+    expect(isRunning(-1)).toBe(false)
+  })
 })
