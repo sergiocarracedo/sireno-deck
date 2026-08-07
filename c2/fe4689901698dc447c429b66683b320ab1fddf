@@ -1,0 +1,22 @@
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_eeac6539cee62e::t_48fc6683e12883 15-19
+  s_eeac6539cee62e::t_855e88074bd488 23,31,41,52,58,69,89,103,117,128,135,158,170,200,217,248,285,323,339,351,368,381,434,483,499,519,542,567,595,624,653,662,670,686,705,726,746,771,796,809,819,830,849,863,875,889,915,932,950,965,979,1005,1032,1048,1062,1077,1092,1110,1137,1154,1187,1199,1222,1249,1301,1337,1358,1379,1406,1424,1442,1460,1481,1500,1514,1529,1545,1563,1574,1585,1600,1605,1616
+packages/cli/src/deck/__tests__/__fixtures__/runtime-test-helpers.ts
+  s_eeac6539cee62e::t_b9a7548cd85295 1-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "c2fe4689901698dc447c429b66683b320ab1fddf",
+  "prompts": {},
+  "sessions": {
+    "s_eeac6539cee62e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_027d1096bffeknRqaHj8569ur5",
+        "model": "deepseek-ai/deepseek-v4-pro"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
