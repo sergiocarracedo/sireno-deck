@@ -1,0 +1,28 @@
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_eeac6539cee62e::t_4ffd167f390588 151-152
+packages/cli/src/cli/commands/start.ts
+  s_eeac6539cee62e::t_061c32279e35ed 57
+packages/cli/src/cli/commands/pipeline/preflight.ts
+  s_eeac6539cee62e::t_36ca562b33cc39 3-40
+  s_eeac6539cee62e::t_abe626161d262f 1-2
+packages/cli/src/cli/commands/pipeline/helpers.ts
+  s_eeac6539cee62e::t_e97694a62a46b6 8
+  s_eeac6539cee62e::t_52160608244265 5-7
+  s_eeac6539cee62e::t_88a6a969cf1a2a 9-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "4f47a6cccee915a198506ef6b7712c47d809c682",
+  "prompts": {},
+  "sessions": {
+    "s_eeac6539cee62e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_027d1096bffeknRqaHj8569ur5",
+        "model": "deepseek-ai/deepseek-v4-pro"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
