@@ -1,0 +1,19 @@
+docs/beta/os-integration-checklist.es.md
+  s_e1521912e3d92a::t_273f8477638882 1-58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "28c03629444c3c245e344117c4d7d3b2370bbc18",
+  "prompts": {},
+  "sessions": {
+    "s_e1521912e3d92a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0153282d0ffeYiDixjLVSDUzSh",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
