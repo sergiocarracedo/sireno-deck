@@ -1,0 +1,21 @@
+packages/cli/src/outputClient/emulator.ts
+  s_cfceb3c4e5181d::t_d220832c07c32f 45
+packages/cli/src/deck/runtime/runtime.ts
+  s_cfceb3c4e5181d::t_b1615b5b1aa73c 564
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "7b94a3b2f3e35ca848a6f90af99ca30ada03e9ee",
+  "prompts": {},
+  "sessions": {
+    "s_cfceb3c4e5181d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0152a331affenKNgoLJleGbC01",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": null
+    }
+  }
+}
