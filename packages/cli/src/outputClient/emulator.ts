@@ -42,7 +42,7 @@ const openBrowser = (url: string, logger: pino.Logger): void => {
   const os = platform()
   const cmd = os === "win32" ? "cmd" : os === "darwin" ? "open" : "xdg-open"
   const args = os === "win32" ? ["/c", "start", "", url] : [url]
-  exec(cmd, args, (err) => {
+  execFile(cmd, args, (err) => {
     if (err !== null) {
       logger.debug(
         { err: err.message },

@@ -561,7 +561,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     const deck = deckById(found.deckId)
     const position =
       found.button.position ??
-      (deck !== undefined
+      (deck?.buttons !== undefined
         ? deck.buttons.findIndex((b) => b.id === found.button.id)
         : -1)
 
