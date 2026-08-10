@@ -1,6 +1,6 @@
 # emoji-selector
 
-Adds an emoji deck to your config. Users open it via the `emoji-selector:launcher` button (or any `core:change-deck` pointing to `emoji-selector`), pick from 8 categories (Smileys, Nature, Food, Activities, Travel, Objects, Symbols, Flags). Each category deck is paginated automatically using `core:page-nav` buttons.
+Adds an emoji deck to your config. Users open it via the `emoji-selector:launcher` button (or any `core:change-deck` pointing to `emoji-selector`), pick from 11 categories (Smileys, People, Animals, Nature, Food, Drink, Activities, Travel, Objects, Symbols, Flags). Each category deck is paginated automatically using `core:page-nav` buttons.
 
 Tapping an emoji sends it directly through the core `type://` dispatch channel — the OS key-input tool (ydotool on Linux with `wtype` as wlroots-only fallback, osascript on macOS, Win32 SendInput on Windows) types the character verbatim, including emoji. On Linux non-ASCII text routes through `wl-copy` + ctrl+v because `ydotool type` does not handle non-BMP characters; the `wl-clipboard` package and `ydotoold` daemon are both required. Double-tapping an emoji with a shortcode types `:shortcode:` as literal text instead.
 
