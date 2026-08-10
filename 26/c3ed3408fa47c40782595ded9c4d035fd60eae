@@ -1,0 +1,155 @@
+packages/addons/app-shortcuts/src/decks/discord.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 21-32
+packages/cli/src/__tests__/integration.test.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 202-203
+__beta-review-prerelease__/05-testing-quality.md
+  s_cfceb3c4e5181d::t_17d0c816b56c98 7-12,22-29,34,47-55,72
+packages/cli/src/builtin-addons/system-status/domain/display-metrics.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 38-40,116
+packages/cli/src/render/ws-bridge.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 52,103,113,120,124-126,129,133-134
+packages/cli/src/builtin-addons/media/buttons/media-player/components/MediaSurface.tsx
+  s_cfceb3c4e5181d::t_17d0c816b56c98 27-28
+packages/cli/docs/user/configuration-files.mdx
+  s_cfceb3c4e5181d::t_17d0c816b56c98 144
+packages/cli/src/system/setup-wizard/format.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 14-30,119,121,123,125
+packages/cli/src/ui/primitives/Text.tsx
+  s_cfceb3c4e5181d::t_17d0c816b56c98 10,12-13,16-18,22-29,33-35,39-45,49-55,59-68,72-76,80-89,95,98-99,101,106,109-110,115-117,137,142,148,156,158,164,166,172,176,180,185-186,190,206-207,214,234,245,249-252,257-258,261,263-264,267-268,271-272,275,303,312,317,335,362-365,377,384,392,394,396,402-404,406,412,414,423,436,438,442,447,455,465,486-489,495-497,505,522,538,546,553,567,576,590,616,621,632,660,664-668,670,707-711,713,717,733,735-736,745,747,752,757,764,777,787
+packages/cli/bin/dev.js
+  s_cfceb3c4e5181d::t_17d0c816b56c98 66,78-88,90,92-94,106-109,125-128
+packages/cli/frontend/src/bridge/__tests__/client.test.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 27-28,46-47
+packages/cli/src/system/setup-wizard/__tests__/format.test.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 6,244-246
+packages/cli/src/themes/default/sirenodeck.json
+  s_cfceb3c4e5181d::t_17d0c816b56c98 14,26,46,56,66,76,86,96,106
+packages/addons/app-shortcuts/src/decks/slack.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 21-32
+packages/cli/emulator/src/App.tsx
+  s_cfceb3c4e5181d::t_17d0c816b56c98 9-10,84-88,126,165,281,284-290,292-348,350
+packages/cli/src/core/icon-source.ts
+  s_cfceb3c4e5181d::t_d81172654cd450 1,22
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 52-54,130-132,162-164,387-389,661-663,1509,1514,1610-1612
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/config.ts
+  s_cfceb3c4e5181d::t_d81172654cd450 3-9,12
+packages/cli/frontend/src/App.tsx
+  s_cfceb3c4e5181d::t_17d0c816b56c98 2,357-363
+packages/cli/src/cli/commands/pipeline/helpers.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 5,15-34,36-40,42,46-57,59,68-69,72-73
+packages/cli/docs/user/actions.mdx
+  s_cfceb3c4e5181d::t_17d0c816b56c98 35,37,41,43-49,52,54-55,62-63
+packages/addons/app-shortcuts/src/decks/teams.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 21-32
+packages/addons/app-shortcuts/src/decks/claude-code.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 23-37
+__beta-review-prerelease__/02-code-smells.md
+  s_cfceb3c4e5181d::t_17d0c816b56c98 16,31,37-39,51
+__beta-review-prerelease__/04-architecture.md
+  s_cfceb3c4e5181d::t_17d0c816b56c98 12,24,30,36-37,46,69
+packages/addons/app-shortcuts/src/decks/vscode.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 25,27,31,36,38-41,45,47,51,56,58-63
+packages/cli/src/config/discovery.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 15,20-24,32,35-41,43-62
+packages/cli/src/builtin-addons/system-status/domain/live-metrics.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 146-148,151-188,196
+packages/cli/src/system/setup-wizard/__tests__/sudo.test.ts
+  s_cfceb3c4e5181d::t_c8721dbffa458a 1-177
+packages/cli/emulator/src/__tests__/App.test.tsx
+  s_cfceb3c4e5181d::t_c8721dbffa458a 1-25
+packages/addons/app-shortcuts/src/decks/google-meet.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 29-36
+packages/cli/src/builtin-addons/system-status/__tests__/display-uptime-formatter.test.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 16,18-20,23,25-27,31-34,37-55
+packages/cli/src/outputClient/emulator.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 1
+packages/cli/src/system/providers/key-macro/linux.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 204
+demos/capture-deck-video.sh
+  s_cfceb3c4e5181d::t_c8721dbffa458a 1-96
+packages/cli/src/api/protocol-internal.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 11-25,35-199,205-230
+packages/cli/src/cli/commands/system-requirements.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 28,136-149,151-164,166-177,182,187-194,237-240,245-247,252,356-361,363-365,374-377,380,383,493-495,497,502,509-518,522-544
+  s_cfceb3c4e5181d::t_99259cca70e809 545-546
+packages/cli/src/cli/commands/__tests__/emulator-mode-build-config.test.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 16-21,91-93,114-116,140-142
+packages/addons/app-shortcuts/src/decks/opencode.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 21-36
+packages/cli/src/builtin-addons/system-status/shared/metrics-catalog.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 13,17,37-39,42,213
+__beta-review-prerelease__/REPORT.md
+  s_cfceb3c4e5181d::t_17d0c816b56c98 32-36,50-54,74-80
+packages/cli/src/system/requirements.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 172
+packages/cli/src/deck/methods.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 228-238,241,251,256,274
+packages/cli/src/builtin-addons/emoji-selector/README.md
+  s_cfceb3c4e5181d::t_d81172654cd450 3
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_cfceb3c4e5181d::t_17d0c816b56c98 1,3-6,13,30,33,35,38-41,48-49,53-58,61-63,66-69,71-72,75-76,78-79,85,88,91,98,101,105-109,111-117,119-124,126,131-138,176-179,184,187,189
+packages/cli/frontend/src/bridge/client.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 118-119,122-124
+packages/cli/src/__tests__/config.test.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 420,428,431-434,436,439-441,443-445,448
+packages/cli/frontend/src/main.tsx
+  s_cfceb3c4e5181d::t_17d0c816b56c98 3,14
+packages/cli/src/cli/commands/__tests__/addon-decks.test.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 118-123
+packages/cli/src/ui/surfaces/__tests__/LabelValueListSurface.test.tsx
+  s_cfceb3c4e5181d::t_c8721dbffa458a 1-59
+packages/cli/src/cli/commands/start.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 16-17,53,331-335,338-348,389-394,516-521,547-552
+packages/cli/src/system/providers/key-macro/parser.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 126-160,162-166,169-185
+packages/cli/src/system/__tests__/requirements.test.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 235-238
+__beta-review-prerelease__/01-security.md
+  s_cfceb3c4e5181d::t_17d0c816b56c98 8,10,14,16,28,30-33,43,48,61,65,123,125-128
+packages/cli/frontend/src/components/Deck.tsx
+  s_cfceb3c4e5181d::t_17d0c816b56c98 199
+__beta-review-prerelease__/03-performance.md
+  s_cfceb3c4e5181d::t_17d0c816b56c98 10,15,18-24,34,37-42,50,53-55
+packages/themes/riptide/components/index.tsx
+  s_cfceb3c4e5181d::t_17d0c816b56c98 1,3-7,9-13,15-19,26,30,34-35,43-46,56,61,65,83,108,121-126
+packages/cli/src/cli/commands/run.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 21,488-493,1363-1366,1768
+packages/cli/src/builtin-addons/system-status/buttons/system-status/frontend.tsx
+  s_cfceb3c4e5181d::t_17d0c816b56c98 108
+packages/cli/src/config/__tests__/include-resolver.test.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 93-95
+packages/cli/src/builtin-addons/system-status/__tests__/temperature-probe.test.ts
+  s_cfceb3c4e5181d::t_c8721dbffa458a 1-21
+packages/cli/emulator/src/DeckFrame.tsx
+  s_cfceb3c4e5181d::t_17d0c816b56c98 133,135-137,139
+packages/cli/src/system/setup-wizard/sudo.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 1,38-58,63-75,77-135,137
+packages/addons/app-shortcuts/src/decks/chrome.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 54-75
+packages/cli/src/deck/__tests__/methods.test.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 122,128,249,255,290,308,312,318,322,327,331,335
+packages/cli/docs/reference/macro-syntax.mdx
+  s_cfceb3c4e5181d::t_17d0c816b56c98 2-3,9,11,13,15,20-21,24,26-28,32-39,46-48,57,66,75-94
+packages/cli/emulator/src/__tests__/bridge.test.ts
+  s_cfceb3c4e5181d::t_17d0c816b56c98 116-131
+  s_cfceb3c4e5181d::t_0eaa4647aa1183 114-115
+packages/cli/emulator/src/Shell.tsx
+  s_cfceb3c4e5181d::t_17d0c816b56c98 8,16,18-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "26c3ed3408fa47c40782595ded9c4d035fd60eae",
+  "prompts": {},
+  "sessions": {
+    "s_cfceb3c4e5181d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0152a331affenKNgoLJleGbC01",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
