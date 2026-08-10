@@ -1,0 +1,33 @@
+packages/cli/src/config/__tests__/icon-source-schema.test.ts
+  s_9de0f64b5cec83::t_1f82386caf0969 27-34,43
+packages/cli/src/core/icon-source.ts
+  s_9de0f64b5cec83::t_036492bef8189c 1-7
+  s_9de0f64b5cec83::t_6d813cf8285ba9 8-9
+  s_9de0f64b5cec83::t_c840ce1b1e86f0 30-32
+packages/cli/src/builtin-addons/emoji-selector/data/categories.ts
+  s_9de0f64b5cec83::t_2de18d551858a6 841-1081
+  s_9de0f64b5cec83::t_cd145d35d4b309 69-94,145-176,228-279,328-348,396-436,462-468,506-532,570-607,645-705,745-808
+packages/cli/src/builtin-addons/emoji-selector/buttons/emoji/config.ts
+  s_9de0f64b5cec83::t_df987cbdc600c3 3,6
+packages/cli/src/builtin-addons/emoji-selector/README.md
+  s_9de0f64b5cec83::t_6452724b40aea1 3
+packages/cli/src/ui/primitives/__tests__/Icon.test.tsx
+  s_9de0f64b5cec83::t_b83adbee369b20 121-153
+  s_9de0f64b5cec83::t_c12840780a9ea3 49-61,74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "28c4f715b80f66f36e7896863f4e9b79437f3a73",
+  "prompts": {},
+  "sessions": {
+    "s_9de0f64b5cec83": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0153d5129ffeYdJYGFcYRjxgla",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
