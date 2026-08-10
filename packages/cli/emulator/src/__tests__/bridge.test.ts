@@ -113,6 +113,24 @@ describe("bridge (emulator)", () => {
     client.close()
   })
 
+  it("serializeHello forwards the token to the wsFactory on open", () => {
+    const TOKEN = "secret-xyz"
+    const client = createWsClient({
+      url: "ws://x",
+      token: TOKEN,
+      wsFactory: (u) => new MockWebSocket(u),
+    })
+    const ws = MockWebSocket.instances[0]!
+    const openListener = [...(ws.listeners.get("open") ?? [])][0]
+    expect(openListener).toBeDefined()
+    openListener!({})
+    ws.send(serializeHello(TOKEN))
+    expect(ws.sent).toEqual([
+      '{"type":"hello","version":1,"token":"secret-xyz"}',
+    ])
+    client.close()
+  })
+
   it("ingests received service-log messages with component and context fields", () => {
     clearServiceLogs()
     const client = createWsClient({

@@ -32,29 +32,35 @@ actions:
   hold: "echo 'held'"
 ```
 
-### Keyboard Shortcuts
+### Keyboard Input
 
-Send keyboard shortcuts using `type://` protocol:
+Send keystroke combos with `macro://` and literal text with `type://`:
 
 ```yaml
 actions:
-  # Simple text
+  # Literal text (typed verbatim)
   tap: "type://hello world"
+  tap: "type://🔥"
+
+  # Single keys and combos
+  tap: "macro://ctrl+c"
+  tap: "macro://alt+tab"
+  tap: "macro://Escape"
+  tap: "macro://Up"
 
   # Platform-specific shortcuts
-  tap: 'type://{"all":"ctrl+shift+p","osx":"cmd+shift+p","windows":"ctrl+shift+p"}'
+  tap: 'macro://{"all":"ctrl+shift+p","osx":"cmd+shift+p","windows":"ctrl+shift+p"}'
 
-  # Modifier keys
-  tap: "type://ctrl+c"
-  tap: "type://alt+tab"
-  tap: "type://cmd+space"
+  # Delays between steps
+  tap: "macro://ctrl+a; delay(50ms); ctrl+c"
 ```
 
 ### Built-in Actions
 
 | Protocol            | Description         |
 | ------------------- | ------------------- |
-| `type://...`        | Send keyboard input |
+| `type://...`        | Send text verbatim  |
+| `macro://...`       | Keystroke combos    |
 | `brightness://up`   | Increase brightness |
 | `brightness://down` | Decrease brightness |
 

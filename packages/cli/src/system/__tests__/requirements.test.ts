@@ -232,6 +232,10 @@ describe("getRequiredCapability", () => {
     expect(getRequiredCapability("type://ctrl+c")).toBe("keyMacro")
   })
 
+  it("maps macro:// to keyMacro", () => {
+    expect(getRequiredCapability("macro://ctrl+c")).toBe("keyMacro")
+  })
+
   it("returns null for non-type actions", () => {
     expect(getRequiredCapability("echo hello")).toBeNull()
   })

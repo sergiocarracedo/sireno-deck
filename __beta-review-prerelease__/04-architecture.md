@@ -9,6 +9,7 @@
 See code-smells report [CS1] for details.
 
 **Architecture angle:** The file owns the entire daemon lifecycle — config validation, system provider startup, addon registration, runtime construction, WS bridge wiring, hot-reload, signal handling. There is no separation between "what to do" (orchestration) and "how to do it" (implementation). This makes it hard to:
+
 - Test pipeline stages in isolation
 - Understand the startup flow without reading the whole file
 - Add new pipeline stages (e.g. a health-check or metrics provider)
@@ -20,17 +21,20 @@ See code-smells report [CS1] for details.
 **Evidence:**
 
 `ARCHITECTURE.md §2` says:
+
 > "the chrome SPA in packages/cli/frontend/ is pure display: it subscribes to runtime:gesture:* (per button) and the generic state channels. It never emits any button event."
 
 `packages/cli/frontend/src/components/Deck.tsx:142-218` implements manual double-tap (300ms) and hold (500ms) detection and calls `useButtonAction(deckId, position)` which sends `button-action` WS messages.
 
 `packages/cli/frontend/src/hooks/use-button-action.ts` sends:
+
 ```ts
 { type: "button-action", deckId, buttonIndex, action: "tap" | "dbl-tap" | "hold" }
 ```
 
 **Impact:** The architecture doc is wrong about the frontend's role. Either:
-1. The doc is stale and the frontend *does* emit button events (for emulator mode) — fix the doc.
+
+1. The doc is stale and the frontend _does_ emit button events (for emulator mode) — fix the doc.
 2. The code is wrong and should be removed — fix the code.
 
 Either way, a new contributor reading the doc and then the code will be confused. This is the worst kind of doc-code mismatch: a stated invariant that the code violates.
@@ -39,6 +43,7 @@ Either way, a new contributor reading the doc and then the code will be confused
 
 **Fix sketch (if intentional):**
 Update `ARCHITECTURE.md §2` to say:
+
 > "the chrome SPA in packages/cli/frontend/ is display-first: it subscribes to `runtime:gesture:*` channels for real-hardware mode and emits `button-action` events for emulator mode."
 
 **Fix sketch (if unintentional):**
@@ -61,6 +66,7 @@ See security report [S2] for full details.
 **Evidence:** `packages/cli/src/cli/commands/run.ts:1401` — `startWsBridge` called without `expectedToken`. The token is generated in preflight and stored in `config.token` but never propagated to the WS bridge.
 
 **Architecture angle:** The auth chain has three hops:
+
 1. `preflight` → generates token → stores in `config.token`
 2. `startHttpServer` → receives token → enforces Bearer auth (FIXED)
 3. `startWsBridge` → should receive token → does NOT (BROKEN)

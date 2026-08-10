@@ -11,6 +11,23 @@ const SESSION_LABEL: Readonly<Record<string, string>> = {
   unknown: "unknown",
 }
 
+// ponytail: ANSI helpers, no dep. `colorette` would pull in transitive types
+// for a single use site — terminal escape sequences are stable. Returns the
+// input untouched when stdout is not a TTY so piped output stays clean.
+const useColor = (): boolean =>
+  Boolean(process.stdout.isTTY) && process.env["NO_COLOR"] === undefined
+
+const ESC = "\u001b["
+export const color = {
+  green: (s: string): string => (useColor() ? `${ESC}32m${s}${ESC}0m` : s),
+  red: (s: string): string => (useColor() ? `${ESC}31m${s}${ESC}0m` : s),
+  yellow: (s: string): string => (useColor() ? `${ESC}33m${s}${ESC}0m` : s),
+  dim: (s: string): string => (useColor() ? `${ESC}2m${s}${ESC}0m` : s),
+}
+
+export const stripAnsi = (s: string): string =>
+  s.replace(/\u001b\[[0-9;]*m/g, "")
+
 export const summarizeReport = (report: SystemReport): SystemReportSummary => {
   const missingCapabilities: Array<
     "keyMacro" | "clipboard" | "notification" | "activeApp"
@@ -99,12 +116,12 @@ export const formatResultLine = (
 ): string => {
   switch (result) {
     case "installed":
-      return `✓ ${step.title}`
+      return `${color.green("✓")} ${step.title}`
     case "skipped":
-      return `· ${step.title} (skipped)`
+      return `${color.dim("·")} ${step.title} ${color.dim("(skipped)")}`
     case "failed":
-      return `✗ ${step.title} (failed — see ${step.manualInstructions.length > 0 ? "instructions below" : "logs"})`
+      return `${color.red("✗")} ${step.title} ${color.red(`(failed — see ${step.manualInstructions.length > 0 ? "instructions below" : "logs"})`)}`
     case "manual":
-      return `→ ${step.title} (manual — ${step.manualInstructions.slice(0, 60)}…)`
+      return `${color.dim("→")} ${step.title} ${color.dim(`(manual — ${step.manualInstructions.slice(0, 60)}…)`)}`
   }
 }

@@ -169,5 +169,6 @@ export const getRequiredCapability = (
   action: string,
 ): SystemCapability | null => {
   if (action.startsWith("type://")) return "keyMacro"
+  if (action.startsWith("macro://")) return "keyMacro"
   return null
 }

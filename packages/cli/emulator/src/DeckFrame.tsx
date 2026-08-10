@@ -130,12 +130,13 @@ export const DeckFrame = ({
                 if (e.buttons === 1) handleUp(i)
               }}
               className={[
-                "rounded-lg border border-white/10",
+                "rounded-lg border",
                 "bg-gradient-to-br from-black/40 via-black/20 to-white/5",
-                "transition-all duration-75",
-                "hover:from-black/30 hover:via-black/10 hover:to-white/10",
+                "border-white/10",
+                "transition-all duration-200",
+                "hover:from-black/20 hover:via-black/0 hover:to-white/10 hover:border-white/25",
                 isPressed
-                  ? "from-white/30 via-white/15 to-white/5 border-white/30"
+                  ? "from-white/60 via-white/30 to-white/10 border-white/60 shadow-[0_0_18px_rgba(255,255,255,0.5)] scale-[0.96]"
                   : "",
               ].join(" ")}
               style={{ aspectRatio: "1" }}

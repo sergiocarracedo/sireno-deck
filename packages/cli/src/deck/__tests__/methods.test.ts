@@ -119,13 +119,13 @@ describe("createMethods", () => {
     expect(sendKey).toHaveBeenCalledWith("🔥")
   })
 
-  it("dispatch routes type:// to keyMacro with combos parsed", async () => {
+  it("dispatch routes macro:// to keyMacro with combos parsed", async () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },
     ])
     const sendKey = vi.fn().mockResolvedValue(undefined)
     methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
-    await methods.dispatch("type://ctrl+c")
+    await methods.dispatch("macro://ctrl+c")
     expect(sendKey).toHaveBeenCalledWith("ctrl+c")
   })
 
@@ -246,13 +246,13 @@ describe("createMethods", () => {
     expect(methods.checkRequirement("keyMacro")).toBe(false)
   })
 
-  it("dispatch runs type with delay", async () => {
+  it("dispatch runs macro with delay", async () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },
     ])
     const sendKey = vi.fn().mockResolvedValue(undefined)
     methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
-    await methods.dispatch("type://ctrl+t;delay(50ms);ctrl+v")
+    await methods.dispatch("macro://ctrl+t;delay(50ms);ctrl+v")
     expect(sendKey).toHaveBeenCalledTimes(2)
     expect(sendKey).toHaveBeenNthCalledWith(1, "ctrl+t")
     expect(sendKey).toHaveBeenNthCalledWith(2, "ctrl+v")
@@ -287,7 +287,7 @@ describe("createMethods", () => {
     expect(runtime.getBrightness()).toBe(70)
   })
 
-  it("dispatch resolves type://{...} per-OS variant for current platform", async () => {
+  it("dispatch resolves macro://{...} per-OS variant for current platform", async () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },
     ])
@@ -305,34 +305,34 @@ describe("createMethods", () => {
       linux: "ctrl+x",
       windows: "ctrl+x",
     })
-    await methods.dispatch(`type://${payload}`)
+    await methods.dispatch(`macro://${payload}`)
     expect(sendKey).toHaveBeenCalledWith(platKey === "osx" ? "cmd+x" : "ctrl+x")
   })
 
-  it("dispatch falls back to type://{...} 'all' when no platform key matches", async () => {
+  it("dispatch falls back to macro://{...} 'all' when no platform key matches", async () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },
     ])
     const sendKey = vi.fn().mockResolvedValue(undefined)
     methods.setKeyMacroProvider({ sendKey, stop: async () => undefined })
-    await methods.dispatch(`type://${JSON.stringify({ all: "ctrl+k" })}`)
+    await methods.dispatch(`macro://${JSON.stringify({ all: "ctrl+k" })}`)
     expect(sendKey).toHaveBeenCalledWith("ctrl+k")
   })
 
-  it("dispatch throws when type://{...} has no platform match and no 'all'", async () => {
+  it("dispatch throws when macro://{...} has no platform match and no 'all'", async () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },
     ])
     await expect(
-      methods.dispatch(`type://${JSON.stringify({ osx: "cmd+k" })}`),
+      methods.dispatch(`macro://${JSON.stringify({ osx: "cmd+k" })}`),
     ).rejects.toThrow(/no value for platform/)
   })
 
-  it("dispatch throws when type://{...} payload is not valid JSON", async () => {
+  it("dispatch throws when macro://{...} payload is not valid JSON", async () => {
     const { methods } = setup([
       { id: "main", name: "Main", buttons: [], isMain: true },
     ])
-    await expect(methods.dispatch("type://{not-json}")).rejects.toThrow(
+    await expect(methods.dispatch("macro://{not-json}")).rejects.toThrow(
       /not valid JSON/,
     )
   })

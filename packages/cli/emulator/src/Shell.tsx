@@ -5,6 +5,7 @@ export interface ShellProps {
   readonly onSelect: (path: string) => void
   readonly content: React.ReactNode
   readonly wsClient: import("./bridge").WsClient | null
+  readonly hideSidebar?: boolean
 }
 
 export const Shell = ({
@@ -12,7 +13,18 @@ export const Shell = ({
   onSelect,
   content,
   wsClient,
+  hideSidebar = false,
 }: ShellProps) => {
+  if (hideSidebar) {
+    return (
+      <main
+        data-testid="emulator-shell"
+        className="flex h-screen flex-1 overflow-hidden bg-neutral-900 text-neutral-100"
+      >
+        {content}
+      </main>
+    )
+  }
   return (
     <div
       data-testid="emulator-shell"

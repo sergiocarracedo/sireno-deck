@@ -1,4 +1,4 @@
-import { exec } from "node:child_process"
+import { execFile } from "node:child_process"
 import { platform } from "node:os"
 
 import type pino from "pino"

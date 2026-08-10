@@ -25,6 +25,7 @@ import {
 import {
   formatResultLine,
   formatStepInstructions,
+  color,
 } from "@/system/setup-wizard/format"
 import {
   cancel,
@@ -132,32 +133,65 @@ const pmLabel = (pm: string): string => {
 }
 
 const printProbeSummary = (report: SystemReport): void => {
-  const lines: string[] = []
-  lines.push(
-    `Platform  ${report.platform} · ${SESSION_LABEL[report.session] ?? "unknown"} session`,
-  )
-  lines.push(`Packages  ${pmLabel(report.packageManager)}`)
+  // ponytail: pad labels to the longest one ("Stream Deck" → 11) plus ":" so
+  // every row's value starts at the same column. The icon is green/red
+  // depending on whether the row represents a "ready" state.
+  const rows: Array<{ label: string; value: string; ok: boolean }> = []
+  rows.push({
+    label: "Platform",
+    value: `${report.platform} · ${SESSION_LABEL[report.session] ?? "unknown"} session`,
+    ok: true,
+  })
+  rows.push({
+    label: "Packages",
+    value: pmLabel(report.packageManager),
+    ok: true,
+  })
   if (report.platform === "linux") {
-    lines.push(
-      `udev      ${report.udev.rulesInstalled ? "installed" : "missing at " + report.udev.rulesPath}`,
-    )
-    lines.push(
-      `Stream Deck  ${report.udev.streamDeckConnected ? `connected (${report.udev.matchedProductIds.join(", ")})` : "not detected"}`,
-    )
+    rows.push({
+      label: "udev",
+      value: report.udev.rulesInstalled
+        ? "installed"
+        : `missing at ${report.udev.rulesPath}`,
+      ok: report.udev.rulesInstalled,
+    })
+    rows.push({
+      label: "Stream Deck",
+      value: report.udev.streamDeckConnected
+        ? `connected (${report.udev.matchedProductIds.join(", ")})`
+        : "not detected",
+      ok: report.udev.streamDeckConnected,
+    })
   }
-  lines.push(
-    `Config    ${report.config.exists ? "present" : "missing — " + report.config.path}`,
-  )
+  rows.push({
+    label: "Config",
+    value: report.config.exists ? "present" : `missing — ${report.config.path}`,
+    ok: report.config.exists,
+  })
+
+  const labelWidth = Math.max(...rows.map((r) => r.label.length))
+  const lines = rows.map((r) => {
+    const padded = `${r.label}:`.padEnd(labelWidth + 2)
+    const icon = r.ok ? color.green("✓") : color.red("✗")
+    return `${icon} ${color.dim(padded)} ${r.value}`
+  })
   note(lines.join("\n"), "Detected")
 }
 
 const capabilityLine = (cap: {
+  name: string
   available: boolean
   preferred: string
   reason: string
 }): string => {
-  const mark = cap.available ? "●" : "○"
-  return `${mark}  ${cap.preferred}  ${cap.reason}`
+  // ponytail: ● for installed (green), ○ for missing (red). Different shapes
+  // so the dot is greppable without color. The status text carries the
+  // install hint — `cap.reason` was already built for that purpose.
+  const mark = cap.available ? color.green("●") : color.red("○")
+  const status = cap.available
+    ? color.green("Installed")
+    : color.red(`Not installed — ${cap.reason}`)
+  return `${mark}  ${cap.preferred}: ${status} (used for ${cap.name})`
 }
 
 const reProbeCapability = async (
@@ -200,20 +234,22 @@ const runInstallStep = async (
 
   // ponytail: re-probe before shell-out. If the binary is already on PATH
   // (e.g. user installed manually between runs), skip the install step
-  // entirely. The user explicitly asked for this — false-positive installs
-  // when the tool is already present are the bug.
-  const s = spinner()
-  s.start(`Checking ${step.packages.join(", ")}`)
+  // entirely — silently. The Capabilities panel already shows "Installed"
+  // for this capability, so any spinner or result line here would duplicate
+  // the same fact. The user explicitly asked for "only ask about the
+  // missing ones" — installed ones are silent.
   const alreadyInstalled = await reProbeCapability(step, deps)
   if (alreadyInstalled) {
-    s.stop(`${step.packages.join(", ")} already installed`)
     return "installed"
   }
+
+  const s = spinner()
+  s.start(`Checking ${step.packages.join(", ")}`)
   s.stop(`${step.packages.join(", ")} not found — install needed`)
 
   if (!yesBatched) {
     const shouldRun = await confirm({
-      message: `Run: ${formatStepInstructions(step)}?`,
+      message: `Install ${step.title}?`,
       initialValue: !step.sudo,
     })
     if (isCancel(shouldRun) || !shouldRun) return "skipped"
@@ -317,17 +353,16 @@ const runUdevStep = async (
   }
   const write = spinner()
   write.start("Installing udev rules")
-  // ponytail: `sudo -S` reads the password + newline, then forwards the rest
-  // of stdin to the child (`tee`). The pipe MUST include the udev rules —
-  // otherwise tee writes the password to the rules file and nothing else.
-  // Use the canonical `UDEV_RULES` constant rather than reverse-parsing the
-  // display-formatted `manualInstructions` string.
-  const writeStdin =
-    password.length > 0 ? `${password}\n${UDEV_RULES}\n` : `${UDEV_RULES}\n`
+  // ponytail: write the rules via `sudo sh -c "cat > /path <<'EOF'..."` instead
+  // of `sudo -- tee`. `execFile`'s `input` option writes stdin then closes the
+  // pipe, so `tee` inherits a closed pipe and reads EOF (writes nothing). The
+  // heredoc is embedded in the command string — the child doesn't need stdin.
+  // `SIRENO_UDEV_EOF` is unique enough to not collide with UDEV_RULES content.
+  const writeCmd = `cat > /etc/udev/rules.d/70-sireno-deck.rules <<'SIRENO_UDEV_EOF'\n${UDEV_RULES}SIRENO_UDEV_EOF`
   const w = await runWithSudo({
-    command: "tee",
-    args: ["/etc/udev/rules.d/70-sireno-deck.rules"],
-    stdinInput: writeStdin,
+    command: "sh",
+    args: ["-c", writeCmd],
+    ...(password.length > 0 ? { stdinInput: password + "\n" } : {}),
     logger,
     timeoutMs: 30_000,
   })
@@ -336,16 +371,16 @@ const runUdevStep = async (
     note(formatInstallInstructions(), "You can install udev rules manually:")
     return "failed"
   }
-  // ponytail: verify the file actually got the rules. sudo + tee can
-  // return exit 0 while writing nothing (e.g. if the password was
-  // followed only by EOF without the rules content — happens on shells
-  // that strip trailing data after sudo's read).
+  // ponytail: still verify. A successful `cat` over `sudo` is the highest
+  // confidence signal short of running `udevadm test`, but the verify step
+  // below catches the rare case where sudo+cwd/permissions landed the file in
+  // the wrong place (e.g. EPERM on the parent dir).
   const written = readFileSync("/etc/udev/rules.d/70-sireno-deck.rules", "utf8")
   if (!written.includes("ATTRS{idVendor}")) {
-    write.stop("udev write failed: tee exited 0 but file is empty or incomplete")
+    write.stop("udev write failed: file is empty or incomplete")
     logger.warn(
       { writtenLen: written.length },
-      "udev: tee succeeded but rules file does not contain expected content",
+      "udev: write succeeded but rules file does not contain expected content",
     )
     note(formatInstallInstructions(), "You can install udev rules manually:")
     return "failed"
@@ -455,23 +490,58 @@ export const systemRequirements = async (
     return
   }
 
+  // ponytail: no leading "  " here — `note()` already pads the content to the
+  // title column. Adding more shifts the list right of "Capabilities" and the
+  // rows wrap with the wrong indent on long lines.
   const capLines = Object.entries(report.capabilities)
-    .map(([name, cap]) => `  ${capabilityLine(cap)}  (${name})`)
+    .map(([, cap]) => capabilityLine(cap))
     .join("\n")
   note(capLines, "Capabilities")
 
   const results: Record<string, InstallStepResult> = {}
+  let anyInstalled = false
   for (const step of missingSteps) {
     const result =
       step.capability === "udev"
         ? await runUdevStep(step, options.yes === true, logger)
         : await runInstallStep(step, options.yes === true, logger, options)
     results[step.id] = result
-    if (result === "manual" || result === "failed") {
-      log.warn(formatResultLine(step, result))
-    } else {
-      log.info(formatResultLine(step, result))
+    if (result === "installed") anyInstalled = true
+    // ponytail: the Capabilities panel already shows "Installed" once the
+    // install succeeds. Surface only failures/skipped/manual here — the
+    // user does not need a duplicate ✓ line per step.
+    if (result !== "installed") {
+      if (result === "manual" || result === "failed") {
+        log.warn(formatResultLine(step, result))
+      } else {
+        log.info(formatResultLine(step, result))
+      }
     }
+  }
+
+  // ponytail: re-print the Capabilities panel after installs so the user can
+  // see what changed without scrolling up. Skipped when nothing installed —
+  // the original panel still reflects reality.
+  if (anyInstalled) {
+    const freshReport = await probeAll({
+      platform,
+      homeDir,
+      xdgConfigHome,
+      env: process.env,
+      executor: realExecutor,
+      fileExists: (p) => existsSync(p),
+      readFile: (p) => {
+        try {
+          return readFileSync(p, "utf8")
+        } catch {
+          return null
+        }
+      },
+    })
+    const freshCaps = Object.values(freshReport.capabilities)
+      .map((cap) => capabilityLine(cap))
+      .join("\n")
+    note(freshCaps, "Capabilities")
   }
 
   if (needsConfigSeed(report)) {

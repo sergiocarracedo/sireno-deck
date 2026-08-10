@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom"
 import { token } from "virtual:sireno/token"
 import {
   activeTheme,
@@ -354,7 +354,13 @@ const AppContent = () => {
           now={now}
         />
         {assetsReady ? (
-          <Deck deck={deck} deviceModel={deviceModel} />
+          <Routes>
+            <Route
+              path="/decks/:deckId"
+              element={<Deck deck={deck} deviceModel={deviceModel} />}
+            />
+            <Route path="*" element={<Navigate to="/decks/main" replace />} />
+          </Routes>
         ) : (
           <div className="deck-loading" data-testid="deck-loading">
             Loading…

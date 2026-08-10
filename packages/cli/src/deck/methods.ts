@@ -225,10 +225,20 @@ export const createMethods = (ctx: MethodsContext): Methods => {
 
   const dispatch: Methods["dispatch"] = async (value) => {
     if (value.startsWith("type://")) {
-      const inner = value.slice("type://".length)
+      const text = value.slice("type://".length)
+      if (text.length === 0) {
+        throw new NotImplementedError(
+          "dispatch: type:// requires a value, e.g. type://hello",
+        )
+      }
+      await keyMacro({ kind: "text", value: text })
+      return
+    }
+    if (value.startsWith("macro://")) {
+      const inner = value.slice("macro://".length)
       if (inner.length === 0) {
         throw new NotImplementedError(
-          "dispatch: type:// requires a value, e.g. type://ctrl+c",
+          "dispatch: macro:// requires a value, e.g. macro://ctrl+c",
         )
       }
       let macro = inner
@@ -238,12 +248,12 @@ export const createMethods = (ctx: MethodsContext): Methods => {
           parsed = JSON.parse(inner)
         } catch {
           throw new NotImplementedError(
-            "dispatch: type://{...} payload is not valid JSON",
+            "dispatch: macro://{...} payload is not valid JSON",
           )
         }
         if (typeof parsed !== "object" || parsed === null) {
           throw new NotImplementedError(
-            "dispatch: type://{...} payload must be a JSON object",
+            "dispatch: macro://{...} payload must be a JSON object",
           )
         }
         const variants = parsed as Record<string, unknown>
@@ -261,7 +271,7 @@ export const createMethods = (ctx: MethodsContext): Methods => {
               : undefined
         if (pick === undefined || pick.length === 0) {
           throw new NotImplementedError(
-            `dispatch: type://{...} has no value for platform '${process.platform}' and no 'all' fallback`,
+            `dispatch: macro://{...} has no value for platform '${process.platform}' and no 'all' fallback`,
           )
         }
         macro = pick

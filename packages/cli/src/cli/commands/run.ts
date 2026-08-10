@@ -17,9 +17,8 @@ import { AddonRegistry } from "@/addon/registry"
 import { registerBuiltins } from "@/builtin-addons"
 import { registerSystemStatusAddon } from "@/builtin-addons/system-status"
 import { decksChanged } from "@/config/config-diff"
-import { findConfigPath } from "@/config/discovery"
-import { getOriginalCwd } from "@/cli/cwd"
 import { loadConfig } from "@/config/loader"
+import { resolveConfigPath, resolveXdgConfigHome } from "./pipeline/helpers"
 import {
   formatFullIssues,
   validateButton,
@@ -486,7 +485,12 @@ const loadExternalAddonsIntoRegistry = async (
 export const validateAndLoadConfig = async (
   options: RunOptions,
 ): Promise<LoadConfigResult> => {
-  const configPath = resolveConfigPath(options)
+  const resolved = resolveConfigPath(options)
+  const configPath = resolved.path
+  options.logger.info(
+    { configPath, source: resolved.source },
+    `start: using config ${configPath} (source: ${resolved.source})`,
+  )
   const { config } = loadConfig({ configPath })
   const registry = new AddonRegistry()
   registerBuiltins(registry)
@@ -1356,7 +1360,10 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
     addonBundle = await buildAddonBundle()
 
-    bridge = await startWsBridge({ port: 52937, expectedToken: readToken() ?? "" })
+    bridge = await startWsBridge({
+      port: 52937,
+      expectedToken: readToken() ?? "",
+    })
     const wsPort = bridge.port
 
     // ponytail: register external addon dirs (from config's `addons:` list) so
@@ -1758,50 +1765,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   }
 }
 
-const resolveXdgConfigHome = (options: RunOptions): string =>
-  options.xdgConfigHome ??
-  process.env["XDG_CONFIG_HOME"] ??
-  `${options.homeDir ?? homedir()}/.config`
-
-const resolveConfigPath = (options: RunOptions): string => {
-  if (options.config !== undefined) {
-    // ponytail: validate the explicit path up-front. Without this the
-    // daemon would happily boot, then every config-touch (chokidar event,
-    // reload, addon revalidation) would surface a confusing
-    // `ConfigLoadError: Config file not found` against a path the
-    // operator no longer recognises. Surface it once, at startup, so
-    // the failure mode is obvious and the user can fix the --config
-    // flag instead of chasing a phantom error from a deleted worktree.
-    if (!existsSync(options.config)) {
-      throw new Error(
-        `Config file not found: ${options.config}\n` +
-          `  Fix: pass a valid --config path, or remove --config to let sireno-deck auto-discover config.yml.`,
-      )
-    }
-    return options.config
-  }
-  const cwd = getOriginalCwd()
-  const cwdConfig = resolvePath(cwd, "config.yml")
-  if (existsSync(cwdConfig)) {
-    return cwdConfig
-  }
-  const home = options.homeDir ?? homedir()
-  const found = findConfigPath({
-    homeDir: home,
-    ...(options.xdgConfigHome !== undefined
-      ? { xdgConfigHome: options.xdgConfigHome }
-      : {}),
-  })
-  if (found === null) {
-    throw new Error(
-      `Could not find config.yml.\n` +
-        `  Fix: pass --config <path> or create ./config.yml in the current directory.\n` +
-        `  Also looked in: ~/.config/sireno-deck/config.yml (and walked up from ${cwd}).`,
-    )
-  }
-  return found
-}
-
+void resolveXdgConfigHome
 void exec
 
 export const run = runPipeline

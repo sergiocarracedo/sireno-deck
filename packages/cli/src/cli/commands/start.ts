@@ -13,7 +13,8 @@ import {
   readProcCmdline,
 } from "./port-identity"
 
-import { findConfigPath } from "@/config/discovery"
+import { resolveConfigPath as resolveRunConfigPath } from "./pipeline/helpers"
+import type { ResolveConfigPathResult } from "./pipeline/helpers"
 import {
   acquireStartLock,
   generateSentinel,
@@ -49,11 +50,7 @@ import {
 import { ensureInstalled, invokeManager } from "./service-manager"
 import { superviseService } from "./service-supervisor"
 import { isUnderServiceManager } from "./spawn-daemon"
-import {
-  runPipeline,
-  type RunOptions,
-  type SignalProvider,
-} from "./run"
+import { runPipeline, type RunOptions, type SignalProvider } from "./run"
 import { preflight } from "./pipeline/preflight"
 import {
   type SystemReport,
@@ -331,28 +328,24 @@ const stopExisting = async (
   removeStartLock()
 }
 
-const resolveConfigPath = (options: StartOptions): string => {
-  const home = options.homeDir ?? process.env["HOME"] ?? ""
-  const xdgConfigHome =
-    options.xdgConfigHome ?? process.env["XDG_CONFIG_HOME"] ?? `${home}/.config`
-  // ponytail: when --config isn't passed we fall back to the cached
-  // path (readConfigPath) that the previous daemon session wrote. If
-  // the cached path no longer exists (e.g. worktree removed between
-  // sessions), drop it and re-search the filesystem instead of
-  // failing on a stale pointer.
+const resolveConfigPath = (options: StartOptions): ResolveConfigPathResult => {
+  // ponytail: the daemon honors the cached pointer first so the running
+  // session keeps editing the same config it was launched with. When the
+  // cached path is gone (e.g. worktree removed) we fall through to the
+  // shared precedence: cli arg → XDG → run folder.
   const cached = readConfigPath()
   const cachedUsable = cached !== null && existsSync(cached) ? cached : null
-  return (
-    options.config ??
-    cachedUsable ??
-    findConfigPath({
-      homeDir: home,
-      ...(options.xdgConfigHome !== undefined
-        ? { xdgConfigHome: options.xdgConfigHome }
-        : {}),
-    }) ??
-    join(xdgConfigHome, "sireno-deck", "config.yml")
-  )
+  if (cachedUsable !== null) {
+    return { path: cachedUsable, source: "cli" }
+  }
+  return resolveRunConfigPath({
+    ...(options.config !== undefined ? { config: options.config } : {}),
+    ...(options.xdgConfigHome !== undefined
+      ? { xdgConfigHome: options.xdgConfigHome }
+      : {}),
+    ...(options.homeDir !== undefined ? { homeDir: options.homeDir } : {}),
+    logger: options.logger,
+  })
 }
 
 const buildRuntimeFlags = (options: StartOptions): RuntimeFlags => ({
@@ -393,7 +386,12 @@ const runInProcessSetup = async (
   logger: pino.Logger,
   releaseLock: () => void,
 ): Promise<void> => {
-  const configPath = resolveConfigPath(options)
+  const resolved = resolveConfigPath(options)
+  const configPath = resolved.path
+  options.logger.info(
+    { configPath, source: resolved.source },
+    `start: using config ${configPath} (source: ${resolved.source})`,
+  )
   const runtimeFlags = readFlags() ?? buildRuntimeFlags(options)
   writeConfigPath(configPath)
   writeFlags(runtimeFlags)
@@ -515,7 +513,12 @@ const runInProcessSetup = async (
 
 const forkOffDev = async (options: StartOptions): Promise<void> => {
   const { logger } = options
-  const configPath = resolveConfigPath(options)
+  const resolved = resolveConfigPath(options)
+  const configPath = resolved.path
+  logger.info(
+    { configPath, source: resolved.source },
+    `start: using config ${configPath} (source: ${resolved.source})`,
+  )
   const runtimeFlags = buildRuntimeFlags(options)
   writeConfigPath(configPath)
   writeFlags(runtimeFlags)
@@ -541,7 +544,12 @@ const forkOffDev = async (options: StartOptions): Promise<void> => {
 
 const startProduction = async (options: StartOptions): Promise<void> => {
   const { logger } = options
-  const configPath = resolveConfigPath(options)
+  const resolved = resolveConfigPath(options)
+  const configPath = resolved.path
+  logger.info(
+    { configPath, source: resolved.source },
+    `start: using config ${configPath} (source: ${resolved.source})`,
+  )
   const runtimeFlags = buildRuntimeFlags(options)
   writeConfigPath(configPath)
   writeFlags(runtimeFlags)

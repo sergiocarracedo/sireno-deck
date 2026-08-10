@@ -13,6 +13,7 @@ Contains: `runRealModePipeline`, `runEmulatorLifecycle`, `preflight` logic, hot-
 **Effort:** Medium — split into co-located modules (not new packages).
 
 **Fix sketch:**
+
 - `pipeline/preflight.ts` — config loading, validation, directory creation
 - `pipeline/providers.ts` — system provider startup
 - `pipeline/addons.ts` — addon registration and lifecycle
@@ -27,14 +28,15 @@ Contains: `runRealModePipeline`, `runEmulatorLifecycle`, `preflight` logic, hot-
 **Evidence:** `packages/cli/frontend/src/components/Deck.tsx:142-218`
 
 `DeckButtonCell` implements:
+
 - **Double-tap:** `lastClickAtRef` + 300ms threshold
 - **Hold:** `holdTimerRef` + 500ms threshold, `isHoldingRef` flag
 - **Feedback:** CSS class toggling for button press/release states
 
 ```ts
-const lastClickAtRef = useRef(0);
-const holdTimerRef = useRef<ReturnType<typeof setTimeout>>();
-const isHoldingRef = useRef(false);
+const lastClickAtRef = useRef(0)
+const holdTimerRef = useRef<ReturnType<typeof setTimeout>>()
+const isHoldingRef = useRef(false)
 ```
 
 This logic already lives in `packages/cli/src/runtime/core/gesture-state-machine.ts` and `packages/cli/src/runtime/core/deck-methods/button.ts`. The frontend is duplicating it.
@@ -46,6 +48,7 @@ Under the architecture the runtime owns gesture detection; the frontend SPA subs
 **Effort:** Medium — depends on whether this is intentional for emulator mode. See architecture report [A2].
 
 **Fix sketch:**
+
 - If the SPA should never emit button events (as ARCHITECTURE.md claims): remove `useButtonAction` and gesture detection from `DeckButtonCell`, route everything through the bridge gesturer.
 - If emulator mode needs local gesture detection: update ARCHITECTURE.md to document the exception, and add a code comment marking the duplication.
 

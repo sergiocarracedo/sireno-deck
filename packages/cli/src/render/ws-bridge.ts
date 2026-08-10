@@ -49,9 +49,7 @@ export interface WsBridge {
   close(): Promise<void>
 }
 
-export const startWsBridge = (
-  options: WsBridgeOptions,
-): Promise<WsBridge> => {
+export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
   const {
     port = 0,
     host = "127.0.0.1",
@@ -102,6 +100,7 @@ export const startWsBridge = (
             { reason: err instanceof Error ? err.message : String(err) },
             "ws message: invalid json",
           )
+          clearTimeout(handshakeTimer)
           socket.close(4002, "invalid json")
           return
         }
@@ -111,28 +110,28 @@ export const startWsBridge = (
             { issues: result.error.issues },
             "ws message: schema mismatch",
           )
+          clearTimeout(handshakeTimer)
           socket.close(4003, "invalid message")
           return
         }
         const message = result.data
         if (!handshakeDone) {
           if (message.type !== "hello") {
+            clearTimeout(handshakeTimer)
             socket.close(4004, "expected hello")
             return
           }
-          const helloSchema =
-            expectedToken
-              ? helloMessageStrictSchema
-              : helloMessageSchema
+          const helloSchema = expectedToken
+            ? helloMessageStrictSchema
+            : helloMessageSchema
           const helloResult = helloSchema.safeParse(message)
           if (!helloResult.success) {
+            clearTimeout(handshakeTimer)
             socket.close(4001, "invalid hello")
             return
           }
-          if (
-            expectedToken &&
-            helloResult.data.token !== expectedToken
-          ) {
+          if (expectedToken && helloResult.data.token !== expectedToken) {
+            clearTimeout(handshakeTimer)
             socket.close(TOKEN_MISMATCH_CLOSE_CODE, "token mismatch")
             return
           }

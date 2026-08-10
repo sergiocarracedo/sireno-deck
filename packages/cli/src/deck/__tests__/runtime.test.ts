@@ -49,7 +49,9 @@ describe("createRuntime", () => {
   })
 
   it("goBack at root is a no-op", () => {
-    const { runtime } = setupRuntimeWithMethods([makeDeck({ id: "main", isMain: true })])
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+    ])
     runtime.goBack()
     expect(runtime.getActiveDeckId()).toBe("main")
   })
@@ -125,7 +127,9 @@ describe("createRuntime", () => {
   })
 
   it("dispatchGesture missing button is a no-op", async () => {
-    const { runtime } = setupRuntimeWithMethods([makeDeck({ id: "main", isMain: true })])
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+    ])
     await expect(
       runtime.dispatchGesture("missing", "tap"),
     ).resolves.toBeUndefined()
@@ -155,7 +159,9 @@ describe("createRuntime", () => {
   })
 
   it("dispatchGesture does not fire gestureListener when button is missing", async () => {
-    const { runtime } = setupRuntimeWithMethods([makeDeck({ id: "main", isMain: true })])
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+    ])
     const listener = vi.fn()
     runtime.setGestureListener(listener)
     await runtime.dispatchGesture("missing", "tap")
@@ -378,7 +384,9 @@ describe("createRuntime", () => {
 
   describe("setDecks", () => {
     it("replaces the deck set so getActiveDeck reflects new decks", () => {
-      const { runtime } = setupRuntimeWithMethods([makeDeck({ id: "main", isMain: true })])
+      const { runtime } = setupRuntimeWithMethods([
+        makeDeck({ id: "main", isMain: true }),
+      ])
       runtime.setDecks([
         makeDeck({
           id: "main",
@@ -650,7 +658,9 @@ describe("createRuntime with active-app provider", () => {
   })
 
   it("stopActiveAppPolling stops the provider", async () => {
-    const { runtime } = setupRuntimeWithMethods([makeDeck({ id: "main", isMain: true })])
+    const { runtime } = setupRuntimeWithMethods([
+      makeDeck({ id: "main", isMain: true }),
+    ])
     const provider = makeFakeProvider(null)
     runtime.setActiveAppProvider(provider)
     await flush(100)
@@ -1496,12 +1506,12 @@ describe("invokeAction — user actions", () => {
     expect(dispatch).not.toHaveBeenCalled()
   })
 
-  it("dispatch routes type:// to keyMacro", async () => {
+  it("dispatch routes macro:// to keyMacro", async () => {
     const { runtime, methods } = setupRuntimeWithMethods([
       makeDeck({
         id: "main",
         isMain: true,
-        buttons: [{ id: "b1", type: "x", actions: { tap: "type://ctrl+c" } }],
+        buttons: [{ id: "b1", type: "x", actions: { tap: "macro://ctrl+c" } }],
       }),
     ])
     const sendKey = vi.fn().mockResolvedValue(undefined)
@@ -1597,7 +1607,9 @@ describe("invokeAction — user actions", () => {
 
   describe("brightness", () => {
     it("defaults to 50", () => {
-      const { runtime } = setupRuntimeWithMethods([makeDeck({ id: "main", isMain: true })])
+      const { runtime } = setupRuntimeWithMethods([
+        makeDeck({ id: "main", isMain: true }),
+      ])
       expect(runtime.getBrightness()).toBe(50)
     })
 

@@ -29,11 +29,11 @@ Totals approximate; see per-area files for individual findings.
 
 ## Top blockers (P0)
 
-| # | Area        | Title                                              | Evidence                   |
-| - | ----------- | -------------------------------------------------- | -------------------------- |
-| 1 | security    | Token not enforced in production WS bridge         | `run.ts:1401`              |
-| 2 | security    | `sendToCaller` broadcasts method-call results to all clients | `ws-bridge.ts:249-254` |
-| 3 | architecture | Frontend Deck.tsx gesture detection contradicts architecture doc | `Deck.tsx:142-218` vs ARCHITECTURE.md §2 |
+| #   | Area         | Title                                                            | Evidence                                 |
+| --- | ------------ | ---------------------------------------------------------------- | ---------------------------------------- |
+| 1   | security     | Token not enforced in production WS bridge                       | `run.ts:1401`                            |
+| 2   | security     | `sendToCaller` broadcasts method-call results to all clients     | `ws-bridge.ts:249-254`                   |
+| 3   | architecture | Frontend Deck.tsx gesture detection contradicts architecture doc | `Deck.tsx:142-218` vs ARCHITECTURE.md §2 |
 
 ---
 
@@ -47,11 +47,11 @@ Totals approximate; see per-area files for individual findings.
 
 ## What regressed since beta review
 
-| Metric          | Beta review (Jul 29) | Pre-release (Aug 6) | Delta     |
-| --------------- | -------------------- | ------------------- | --------- |
-| Typecheck errors | ~304                 | 357                 | +53 worse |
-| Failing tests   | 15 (across 24 suites) | 24 (across 24 suites) | +9 worse  |
-| Lint            | 4 errors             | OOM (inconclusive)  | worse     |
+| Metric           | Beta review (Jul 29)  | Pre-release (Aug 6)   | Delta     |
+| ---------------- | --------------------- | --------------------- | --------- |
+| Typecheck errors | ~304                  | 357                   | +53 worse |
+| Failing tests    | 15 (across 24 suites) | 24 (across 24 suites) | +9 worse  |
+| Lint             | 4 errors              | OOM (inconclusive)    | worse     |
 
 ---
 
@@ -71,13 +71,13 @@ Totals approximate; see per-area files for individual findings.
 
 ## Table of contents
 
-| File                                       | Scope                                    |
-| ------------------------------------------ | ---------------------------------------- |
-| [`01-security.md`](01-security.md)         | Token chain, sendToCaller leak, protocol schema strictness, addon loader trust |
-| [`02-code-smells.md`](02-code-smells.md)   | run.ts monolith, Deck.tsx gesture detection, .strict() absence, sendToCaller name, test monolith |
-| [`03-performance.md`](03-performance.md)   | 250ms re-render loops, gesture detection timers, lint OOM |
-| [`04-architecture.md`](04-architecture.md) | Monolithic run.ts, gesture detection vs architecture doc, sendToCaller broadcast, boundary violation |
-| [`05-testing-quality.md`](05-testing-quality.md) | 357 typecheck errors, 24 failing tests, lint OOM, large test files |
+| File                                             | Scope                                                                                                |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| [`01-security.md`](01-security.md)               | Token chain, sendToCaller leak, protocol schema strictness, addon loader trust                       |
+| [`02-code-smells.md`](02-code-smells.md)         | run.ts monolith, Deck.tsx gesture detection, .strict() absence, sendToCaller name, test monolith     |
+| [`03-performance.md`](03-performance.md)         | 250ms re-render loops, gesture detection timers, lint OOM                                            |
+| [`04-architecture.md`](04-architecture.md)       | Monolithic run.ts, gesture detection vs architecture doc, sendToCaller broadcast, boundary violation |
+| [`05-testing-quality.md`](05-testing-quality.md) | 357 typecheck errors, 24 failing tests, lint OOM, large test files                                   |
 
 ---
 

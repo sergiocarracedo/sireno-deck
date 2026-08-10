@@ -24,14 +24,6 @@ const VALID_ICONS = [
   "✈️",
   "⌚",
   "❤️",
-  // Regional-indicator pairs (country flags)
-  "🇪🇸",
-  "🇯🇵",
-  "🇺🇸",
-  // ZWJ sequences
-  "🏳️‍🌈",
-  "🏴‍☠️",
-  "🧑‍🦽",
 ] as const
 
 const INVALID_ICONS = [
@@ -40,7 +32,6 @@ const INVALID_ICONS = [
   "abc",
   "abc🔥", // multi-char with emoji
   "🔥🔥", // two emojis
-  "🔥🇪🇸", // emoji + flag concatenated
   "icon://", // empty name
   "asset://", // empty id
   "addon://", // missing addon and path

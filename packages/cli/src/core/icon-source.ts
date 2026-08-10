@@ -1,12 +1,4 @@
-// Single-emoji source matcher. Accepts:
-//   - one extended-pictographic char (with optional VS16 after each
-//     segment; ZWJ chains extend it — covers 🏳️‍🌈, 🧑‍🦽, 👨‍👩‍👧, etc.),
-//   - OR two regional-indicator chars (a country flag like 🇪🇸).
-// Two regional indicators don't have `Emoji_Presentation` individually
-// (the flag is only "complete" as a pair), so the old single-codepoint
-// regex rejected every country flag.
-export const EMOJI_RE =
-  /^(?:[\p{Extended_Pictographic}\p{Emoji_Component}]\uFE0F?(?:\u200D[\p{Extended_Pictographic}\p{Emoji_Component}]\uFE0F?)*|\p{Regional_Indicator}{2})$/u
+export const EMOJI_RE = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u
 
 export const ICON_FALLBACK = "icon://alert-circle"
 
@@ -27,9 +19,7 @@ const ABSOLUTE_PATH_RE = /^(?:\/|\\|[A-Za-z]:[\\/])/
  *   - relative path     — asset resolved against the config's baseDirs
  *                         (e.g. `./assets/chrome.svg`, `../shared/icon.svg`,
  *                         `~/Pictures/x.png`)
- *   - a single emoji (Presentation, or base+VS16 like ✈️; also
- *     regional-indicator pair flags like 🇪🇸, and ZWJ sequences
- *     like 🏳️‍🌈 or 👨‍👩‍👧)
+ *   - a single emoji (Presentation, or base+VS16 like ✈️)
  *
  * Rejected: empty string, "%", "abc", multi-char (e.g. "abc🔥"),
  * inline URLs (data:, http://, https://, file://) — these must be

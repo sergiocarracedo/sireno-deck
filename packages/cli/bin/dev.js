@@ -63,8 +63,7 @@ const spawnTsx = (args, envExtra = {}) =>
     },
   })
 
-const exitChild = (child) =>
-  new Promise((resolve) => child.on("exit", resolve))
+const exitChild = (child) => new Promise((resolve) => child.on("exit", resolve))
 
 setWrapperTitle("sirenodeck:wrp")
 
@@ -76,17 +75,23 @@ setWrapperTitle("sirenodeck:wrp")
 if (firstArg === "start") {
   let skipWizard = false
 
-  const probe = spawn(tsxBin, [cliEntry, "system-requirements", "--non-interactive"], {
-    stdio: [process.stdin, "pipe", process.stderr],
-    cwd: cliRoot,
-    env: {
-      ...process.env,
-      SIRENO_CWD: process.cwd(),
-      TSX_TSCONFIG_PATH: tsconfigPath,
+  const probe = spawn(
+    tsxBin,
+    [cliEntry, "system-requirements", "--non-interactive"],
+    {
+      stdio: [process.stdin, "pipe", process.stderr],
+      cwd: cliRoot,
+      env: {
+        ...process.env,
+        SIRENO_CWD: process.cwd(),
+        TSX_TSCONFIG_PATH: tsconfigPath,
+      },
     },
-  })
+  )
   let probeOutput = ""
-  probe.stdout.on("data", (chunk) => { probeOutput += chunk.toString() })
+  probe.stdout.on("data", (chunk) => {
+    probeOutput += chunk.toString()
+  })
   const probeCode = await exitChild(probe)
 
   if (probeCode !== 0) {
@@ -98,13 +103,10 @@ if (firstArg === "start") {
         input: process.stdin,
         output: process.stdout,
       })
-      rl.question(
-        "Run the setup wizard now? [Y/n] ",
-        (answer) => {
-          rl.close()
-          resolve(answer.trim().toLowerCase() !== "n")
-        },
-      )
+      rl.question("Run the setup wizard now? [Y/n] ", (answer) => {
+        rl.close()
+        resolve(answer.trim().toLowerCase() !== "n")
+      })
     })
 
     if (shouldRunWizard) {
@@ -120,7 +122,10 @@ if (firstArg === "start") {
       cliEntry,
       ...restArgs,
     ],
-    { SIRENO_WRAPPER_CHILD: "1", ...(skipWizard ? { SIRENO_SKIP_WIZARD: "1" } : {}) },
+    {
+      SIRENO_WRAPPER_CHILD: "1",
+      ...(skipWizard ? { SIRENO_SKIP_WIZARD: "1" } : {}),
+    },
   )
 
   child.on("exit", (code) => {

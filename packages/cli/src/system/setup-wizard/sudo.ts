@@ -1,4 +1,4 @@
-import { execFile } from "node:child_process"
+import { execFile, spawn } from "node:child_process"
 import { promisify } from "node:util"
 
 import type pino from "pino"
@@ -35,53 +35,106 @@ export const isSudoNopasswd = async (): Promise<boolean> => {
   }
 }
 
+// ponytail: match the real-world sudo failure patterns. The last pattern
+// catches the PAM-style prompt sudo emits when it has eaten the password
+// from stdin and decides auth failed — `[sudo: authenticate] Password:` is
+// what appears when -S doesn't read from a TTY and the user didn't type
+// anything. Without this match the wizard reports a bare "exit 1" with no
+// hint that the password was the cause.
+const NEEDS_PASSWORD = [
+  /password is required/i,
+  /sorry,? try again/i,
+  /incorrect password attempt/i,
+  /authentication required but not attempted/i,
+  /^\[sudo:?\s*\w*\]?\s*Password:?$/m,
+]
+
+const stderrNeedsPassword = (stderr: string): boolean =>
+  NEEDS_PASSWORD.some((re) => re.test(stderr))
+
+// ponytail: spawn (not execFile) so we control the stdin lifecycle. The
+// previous execFile + `input` race lost the password to the pipe close —
+// `child.stdin.write(input)` is queued, but sudo reads EOF before Node.js
+// flushes it. spawn gives us an explicit write → drain → close sequence.
 export const runWithSudo = async (
   options: SudoRunOptions,
 ): Promise<SudoRunResult> => {
   const args = ["-S", "--", options.command, ...options.args]
-  try {
-    const result = await execFileAsync("sudo", args, {
-      timeout: options.timeoutMs ?? 60_000,
-      ...(options.stdinInput !== undefined
-        ? { input: options.stdinInput }
-        : {}),
-    } as Parameters<typeof execFileAsync>[1])
-    return {
-      exitCode: 0,
-      stdout: result.stdout ?? "",
-      stderr: result.stderr ?? "",
-      neededPassword: false,
-      succeeded: true,
+  const timeoutMs = options.timeoutMs ?? 60_000
+  const logger = options.logger
+
+  return new Promise((resolve) => {
+    const child = spawn("sudo", args, { stdio: ["pipe", "pipe", "pipe"] })
+    let stdout = ""
+    let stderr = ""
+    let settled = false
+
+    const settle = (result: SudoRunResult): void => {
+      if (settled) return
+      settled = true
+      resolve(result)
     }
-  } catch (err) {
-    const e = err as {
-      code?: number | string
-      stdout?: string
-      stderr?: string
+
+    child.stdout.on("data", (c: Buffer) => {
+      stdout += c.toString()
+    })
+    child.stderr.on("data", (c: Buffer) => {
+      stderr += c.toString()
+    })
+    child.stdin.on("error", () => {
+      // ignore EPIPE if sudo exits before we finish writing
+    })
+
+    const timeout = setTimeout(() => {
+      child.kill("SIGKILL")
+      settle({
+        exitCode: 124,
+        stdout,
+        stderr: stderr + "\n[sirenodeck] sudo timed out",
+        neededPassword: stderrNeedsPassword(stderr),
+        succeeded: false,
+      })
+    }, timeoutMs)
+
+    child.on("error", (err) => {
+      clearTimeout(timeout)
+      settle({
+        exitCode: 1,
+        stdout,
+        stderr: stderr + (stderr.length > 0 ? "\n" : "") + err.message,
+        neededPassword: false,
+        succeeded: false,
+      })
+    })
+
+    child.on("close", (code) => {
+      clearTimeout(timeout)
+      const exitCode = code ?? 1
+      const neededPassword = stderrNeedsPassword(stderr)
+      if (exitCode !== 0) {
+        logger?.warn(
+          { exitCode, stderr: stderr.slice(0, 500) },
+          "sudo run failed",
+        )
+      }
+      settle({
+        exitCode,
+        stdout,
+        stderr,
+        neededPassword,
+        succeeded: code === 0,
+      })
+    })
+
+    if (options.stdinInput !== undefined && options.stdinInput.length > 0) {
+      child.stdin.write(options.stdinInput, (err) => {
+        if (err) return
+        child.stdin.end()
+      })
+    } else {
+      child.stdin.end()
     }
-    const exitCode = typeof e.code === "number" ? e.code : 1
-    const stderr = e.stderr ?? ""
-    // ponytail: catch the real-world sudo failure patterns:
-    //   - "Sorry, try again."          → wrong password
-    //   - "Authentication required..." → stdin was empty / not a TTY
-    //   - "password is required"       → standard sudo prompt message
-    const neededPassword =
-      /password is required/i.test(stderr) ||
-      /sorry,? try again/i.test(stderr) ||
-      /incorrect password attempt/i.test(stderr) ||
-      /authentication required but not attempted/i.test(stderr)
-    options.logger?.warn(
-      { exitCode, stderr: stderr.slice(0, 200) },
-      "sudo run failed",
-    )
-    return {
-      exitCode,
-      stdout: e.stdout ?? "",
-      stderr,
-      neededPassword,
-      succeeded: false,
-    }
-  }
+  })
 }
 
 export const capturePassword = (prompt: string): Promise<string> =>

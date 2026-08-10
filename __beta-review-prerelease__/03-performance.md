@@ -7,20 +7,21 @@ No profiling was run. This report flags visible patterns that cause unnecessary 
 ## [P1] [P2] Frontend App.tsx re-renders every 250ms unconditionally
 
 **Evidence:** `packages/cli/frontend/src/App.tsx:319-331`
+
 ```tsx
 useEffect(() => {
   const timer = setInterval(() => {
     setDeck((prev) => {
-      const now = Date.now();
+      const now = Date.now()
       const remaining = prev.buttonErrors.filter(
         (e) => now - e.timestamp < 5000,
-      );
-      if (remaining.length === prev.buttonErrors.length) return prev;
-      return { ...prev, buttonErrors: remaining };
-    });
-  }, 250);
-  return () => clearInterval(timer);
-}, []);
+      )
+      if (remaining.length === prev.buttonErrors.length) return prev
+      return { ...prev, buttonErrors: remaining }
+    })
+  }, 250)
+  return () => clearInterval(timer)
+}, [])
 ```
 
 The timer fires every 250ms regardless of whether button errors exist. When none exist, `remaining.length === prev.buttonErrors.length` saves a state update (good), but the interval callback still runs and `setDeck` still executes the updater function.
@@ -30,12 +31,15 @@ The timer fires every 250ms regardless of whether button errors exist. When none
 **Effort:** Low — either clear the interval when `buttonErrors` is empty, or use a ref to track expiring timestamps and only set the interval when errors exist.
 
 **Fix sketch:**
+
 ```tsx
 useEffect(() => {
-  if (deck.buttonErrors.length === 0) return;
-  const timer = setInterval(() => { /* ... */ }, 250);
-  return () => clearInterval(timer);
-}, [deck.buttonErrors.length]);
+  if (deck.buttonErrors.length === 0) return
+  const timer = setInterval(() => {
+    /* ... */
+  }, 250)
+  return () => clearInterval(timer)
+}, [deck.buttonErrors.length])
 ```
 
 ---
@@ -43,11 +47,12 @@ useEffect(() => {
 ## [P2] [P3] Emulator App.tsx has same 250ms unconditional timer
 
 **Evidence:** `packages/cli/emulator/src/App.tsx:201-206`
+
 ```tsx
 useEffect(() => {
-  const timer = setInterval(() => setNow(Date.now()), 250);
-  return () => clearInterval(timer);
-}, []);
+  const timer = setInterval(() => setNow(Date.now()), 250)
+  return () => clearInterval(timer)
+}, [])
 ```
 
 Tracks "now" for a disconnected overlay. Runs every 250ms regardless of connection state. Should only run while disconnected.

@@ -90,7 +90,9 @@ describe("resolveIncludes", () => {
         root,
       )
     } catch (err) {
-      expect((err as IncludeResolutionError).message).toContain("escapes config directory")
+      expect((err as IncludeResolutionError).message).toContain(
+        "escapes config directory",
+      )
     }
   })
 

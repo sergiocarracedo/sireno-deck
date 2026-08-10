@@ -13,7 +13,12 @@ const deck: RuntimeDeck = {
   name: "Main",
   isMain: true,
   buttons: [
-    { id: "2-main-0", type: "date-time:time", config: { variant: "big" }, position: 2 },
+    {
+      id: "2-main-0",
+      type: "date-time:time",
+      config: { variant: "big" },
+      position: 2,
+    },
     { id: "3-main-0", type: "date-time:date", position: 3 },
     { id: "unknown", type: "custom-addon:custom" },
   ],
@@ -83,7 +88,9 @@ describe("buildDeckConfigMessage", () => {
       15,
     )
     const buttons = msg.surfaces["main"]!.buttons
-    const n1Button = buttons.find((b) => b.id === "14-main-0" || b.position === 14)
+    const n1Button = buttons.find(
+      (b) => b.id === "14-main-0" || b.position === 14,
+    )
     expect(n1Button).toBeDefined()
     expect(n1Button?.type).toBe("core:settings-entry")
     expect(msg.hasOverlayDeckAvailable).toBe(false)
@@ -104,7 +111,9 @@ describe("buildDeckConfigMessage", () => {
       15,
     )
     const buttons = msg.surfaces["media"]!.buttons
-    const n1Button = buttons.find((b) => b.id === "14-main-0" || b.position === 14)
+    const n1Button = buttons.find(
+      (b) => b.id === "14-main-0" || b.position === 14,
+    )
     expect(n1Button).toBeDefined()
     expect(n1Button?.type).toBe("core:back")
   })
@@ -128,7 +137,9 @@ describe("buildDeckConfigMessage", () => {
       "icon://emoji",
     )
     const buttons = msg.surfaces["emoji-overlay"]!.buttons
-    const n1Button = buttons.find((b) => b.id === "14-main-0" || b.position === 14)
+    const n1Button = buttons.find(
+      (b) => b.id === "14-main-0" || b.position === 14,
+    )
     expect(n1Button).toBeDefined()
     expect(n1Button?.type).toBe("core:overlay-toggle")
     expect(msg.hasOverlayDeckAvailable).toBe(true)

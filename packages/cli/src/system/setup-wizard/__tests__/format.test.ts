@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import {
   formatResultLine,
   formatStepInstructions,
+  stripAnsi,
   summarizeReport,
 } from "../format"
 import type { InstallStep, InstallStepResult, SystemReport } from "../types"
@@ -240,9 +241,9 @@ describe("formatResultLine", () => {
   ]
   for (const [result, expectedPrefix] of cases) {
     it(`renders ${result} with prefix ${expectedPrefix}`, () => {
-      expect(formatResultLine(step, result).startsWith(expectedPrefix)).toBe(
-        true,
-      )
+      expect(
+        stripAnsi(formatResultLine(step, result)).startsWith(expectedPrefix),
+      ).toBe(true)
     })
   }
 })

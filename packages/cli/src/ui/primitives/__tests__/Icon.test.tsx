@@ -46,19 +46,6 @@ describe("isIconSource", () => {
     expect(isIconSource("⌚")).toBe(true) // \p{Emoji_Presentation}
   })
 
-  it("accepts regional-indicator pairs (country flags)", () => {
-    expect(isIconSource("🇪🇸")).toBe(true)
-    expect(isIconSource("🇯🇵")).toBe(true)
-    expect(isIconSource("🇺🇸")).toBe(true)
-  })
-
-  it("accepts ZWJ emoji sequences", () => {
-    expect(isIconSource("🏳️‍🌈")).toBe(true) // rainbow flag (ZWJ + FE0F)
-    expect(isIconSource("🏳️‍⚧️")).toBe(true) // transgender flag
-    expect(isIconSource("🏴‍☠️")).toBe(true) // pirate flag
-    expect(isIconSource("🧑‍🦽")).toBe(true) // person in manual wheelchair
-  })
-
   it("rejects invalid sources", () => {
     expect(isIconSource("")).toBe(false)
     expect(isIconSource(undefined)).toBe(false)
@@ -71,7 +58,6 @@ describe("isIconSource", () => {
     expect(isIconSource("data:image/png;base64,AAAA")).toBe(false)
     expect(isIconSource("http://example.com/x.png")).toBe(false)
     expect(isIconSource("🔥🔥")).toBe(false) // multi-char
-    expect(isIconSource("🔥🇪🇸")).toBe(false) // emoji + flag concatenated
   })
 
   it("accepts runtime-resolvable paths", () => {
@@ -116,39 +102,6 @@ describe("Icon render", () => {
     expect(span).not.toBeNull()
     expect(span?.textContent).toBe("🔥")
     expect(span?.getAttribute("style")).toContain("font-size: 32px")
-  })
-
-  it("renders country flag as emoji span, not alert-circle fallback", () => {
-    const warnSpy = vi
-      .spyOn(console, "warn")
-      .mockImplementation(() => undefined)
-    const { container } = renderWithCache(<Icon source="🇪🇸" />)
-    const span = container.querySelector('[data-sireno-icon-source="emoji"]')
-    expect(span).not.toBeNull()
-    expect(span?.textContent).toBe("🇪🇸")
-    expect(warnSpy).not.toHaveBeenCalled()
-  })
-
-  it("renders ZWJ rainbow flag as emoji span, not fallback", () => {
-    const warnSpy = vi
-      .spyOn(console, "warn")
-      .mockImplementation(() => undefined)
-    const { container } = renderWithCache(<Icon source="🏳️‍🌈" />)
-    const span = container.querySelector('[data-sireno-icon-source="emoji"]')
-    expect(span).not.toBeNull()
-    expect(span?.textContent).toBe("🏳️‍🌈")
-    expect(warnSpy).not.toHaveBeenCalled()
-  })
-
-  it("renders ZWJ person-in-wheelchair as emoji span, not fallback", () => {
-    const warnSpy = vi
-      .spyOn(console, "warn")
-      .mockImplementation(() => undefined)
-    const { container } = renderWithCache(<Icon source="🧑‍🦽" />)
-    const span = container.querySelector('[data-sireno-icon-source="emoji"]')
-    expect(span).not.toBeNull()
-    expect(span?.textContent).toBe("🧑‍🦽")
-    expect(warnSpy).not.toHaveBeenCalled()
   })
 
   it("renders icon:// as Lucide component", () => {

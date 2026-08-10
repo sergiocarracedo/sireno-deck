@@ -6,6 +6,8 @@ import {
   type DeviceModelSpec,
 } from "@/device/models"
 
+import { token } from "virtual:sireno/token"
+
 import {
   createWsClient,
   serializeHello,
@@ -79,6 +81,11 @@ export const App = ({
   initialSection = "device",
 }: AppProps = {}): React.ReactElement => {
   const [activeSection, setActiveSection] = useState<string>(initialSection)
+  const [deckOnly] = useState<boolean>(
+    () =>
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("deckOnly") === "1",
+  )
   const [connectionStatus, setConnectionStatus] =
     useState<WsStatus>("connecting")
   const [disconnectedSince, setDisconnectedSince] = useState<number | null>(
@@ -116,6 +123,7 @@ export const App = ({
   useEffect(() => {
     clientRef.current = createWsClient({
       url: wsUrl,
+      ...(token !== "" ? { token } : {}),
       onStatus: (status) => {
         const previous = lastStatusRef.current
         lastStatusRef.current = status
@@ -154,7 +162,7 @@ export const App = ({
       wsFactory: (url: string) => {
         const ws = new WebSocket(url)
         ws.addEventListener("open", () => {
-          ws.send(serializeHello())
+          ws.send(serializeHello(token !== "" ? token : undefined))
         })
         return ws as unknown as { send: (d: string) => void; close: () => void }
       },
@@ -270,48 +278,76 @@ export const App = ({
     <Shell
       activeSection={activeSection}
       onSelect={onSelect}
+      hideSidebar={deckOnly}
       content={
         <>
-          <div className="flex h-full flex-col">
-            <header className="flex shrink-0 items-center gap-4 border-b border-neutral-800 bg-neutral-950 px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-neutral-400">
-              <span className="truncate text-neutral-500">
-                {deckName || "Awaiting deck-config"}
-              </span>
-              <span className="text-neutral-500">·</span>
-              <span className="truncate" title={wsUrl}>
-                ws: {wsUrl}
-              </span>
-              <span className="text-neutral-500">·</span>
-              <span className="truncate" title={ENV_FRONTEND_URL}>
-                fe: {ENV_FRONTEND_URL}
-              </span>
-              <span className="flex-1" />
-              <DeviceSelector device={deviceModel.id} onChange={setDevice} />
-            </header>
-            <div className="flex flex-1 overflow-hidden">
-              <section className="flex-1 overflow-auto p-4">
-                {activeSection === "device" ? (
-                  deckId === "" ? (
-                    <p className="font-mono text-xs uppercase tracking-widest text-neutral-500">
-                      Awaiting deck-config…
-                    </p>
-                  ) : (
-                    <DeckFrame
-                      frontendUrl={ENV_FRONTEND_URL}
-                      device={deviceModel}
-                      deckId={deckId}
-                      onGesture={sendButtonAction}
-                      onIframeRef={(el) => {
-                        iframeRef.current = el
-                      }}
-                    />
-                  )
+          {deckOnly ? (
+            <div className="flex h-full items-start justify-start">
+              {activeSection === "device" ? (
+                deckId === "" ? (
+                  <p className="font-mono text-xs uppercase tracking-widest text-neutral-500">
+                    Awaiting deck-config…
+                  </p>
                 ) : (
-                  renderActive()
-                )}
-              </section>
+                  <DeckFrame
+                    frontendUrl={ENV_FRONTEND_URL}
+                    device={deviceModel}
+                    deckId={deckId}
+                    onGesture={sendButtonAction}
+                    onIframeRef={(el) => {
+                      iframeRef.current = el
+                    }}
+                  />
+                )
+              ) : (
+                renderActive()
+              )}
             </div>
-          </div>
+          ) : (
+            <div className="flex h-full flex-col">
+              <header
+                data-testid="deck-header"
+                className="flex shrink-0 items-center gap-4 border-b border-neutral-800 bg-neutral-950 px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-neutral-400"
+              >
+                <span className="truncate text-neutral-500">
+                  {deckName || "Awaiting deck-config"}
+                </span>
+                <span className="text-neutral-500">·</span>
+                <span className="truncate" title={wsUrl}>
+                  ws: {wsUrl}
+                </span>
+                <span className="text-neutral-500">·</span>
+                <span className="truncate" title={ENV_FRONTEND_URL}>
+                  fe: {ENV_FRONTEND_URL}
+                </span>
+                <span className="flex-1" />
+                <DeviceSelector device={deviceModel.id} onChange={setDevice} />
+              </header>
+              <div className="flex flex-1 overflow-hidden">
+                <section className="flex-1 overflow-auto p-4">
+                  {activeSection === "device" ? (
+                    deckId === "" ? (
+                      <p className="font-mono text-xs uppercase tracking-widest text-neutral-500">
+                        Awaiting deck-config…
+                      </p>
+                    ) : (
+                      <DeckFrame
+                        frontendUrl={ENV_FRONTEND_URL}
+                        device={deviceModel}
+                        deckId={deckId}
+                        onGesture={sendButtonAction}
+                        onIframeRef={(el) => {
+                          iframeRef.current = el
+                        }}
+                      />
+                    )
+                  ) : (
+                    renderActive()
+                  )}
+                </section>
+              </div>
+            </div>
+          )}
           {showBanner && (
             <div
               data-testid="reconnecting-banner"

@@ -196,7 +196,7 @@ const DeckButtonCell = ({
     const overlayIcon = deckOverlayIcon ?? undefined
     const handleClick = () => {
       const now = Date.now()
-       if (now - lastClickAtRef.current < SPA_DOUBLE_TAP_DELAY_MS) {
+      if (now - lastClickAtRef.current < SPA_DOUBLE_TAP_DELAY_MS) {
         lastClickAtRef.current = 0
         window.clearTimeout(pendingTapTimerRef.current)
         pendingTapTimerRef.current = null

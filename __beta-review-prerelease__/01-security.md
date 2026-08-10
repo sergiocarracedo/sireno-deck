@@ -5,15 +5,15 @@
 ## [S1] [P0] Token not enforced in production WS bridge
 
 **Evidence:** `packages/cli/src/cli/commands/run.ts:1401`
+
 ```ts
-await startWsBridge({ port: config.wsPort ?? 52937 });
+await startWsBridge({ port: config.wsPort ?? 52937 })
 ```
 
 `expectedToken` is never passed. In `packages/cli/src/ws-bridge.ts:124-139`:
+
 ```ts
-const schema = expectedToken
-  ? wsMessage.withToken(expectedToken)
-  : wsMessage; // ANY message accepted — no auth
+const schema = expectedToken ? wsMessage.withToken(expectedToken) : wsMessage // ANY message accepted — no auth
 ```
 
 Every WS client can send any message without authentication.
@@ -25,8 +25,12 @@ Every WS client can send any message without authentication.
 **Effort:** Low — one-line fix: pass `expectedToken` (already available in `config.token` or generated in preflight).
 
 **Fix sketch:**
+
 ```ts
-await startWsBridge({ port: config.wsPort ?? 52937, expectedToken: config.token });
+await startWsBridge({
+  port: config.wsPort ?? 52937,
+  expectedToken: config.token,
+})
 ```
 
 **OSS-impression:** Reviewer asks "is this safe?" — answer is no. Immediate red flag.
@@ -36,11 +40,12 @@ await startWsBridge({ port: config.wsPort ?? 52937, expectedToken: config.token 
 ## [S2] [P0] `sendToCaller` broadcasts method-call results to all clients
 
 **Evidence:** `packages/cli/src/ws-bridge.ts:249-254`
+
 ```ts
 function sendToCaller(caller: ws.WebSocket, data: object) {
   for (const client of wss.clients) {
     if (client.readyState === ws.WebSocket.OPEN) {
-      client.send(JSON.stringify(data));
+      client.send(JSON.stringify(data))
     }
   }
 }
@@ -53,10 +58,11 @@ The `caller` parameter is received but ignored. The function iterates all client
 **Effort:** Low — change the loop to send only to `caller`.
 
 **Fix sketch:**
+
 ```ts
 function sendToCaller(caller: ws.WebSocket, data: object) {
   if (caller.readyState === ws.WebSocket.OPEN) {
-    caller.send(JSON.stringify(data));
+    caller.send(JSON.stringify(data))
   }
 }
 ```
@@ -114,9 +120,12 @@ Uses `execSync("npm install", { cwd: addonDir })` to install external addon depe
 **Effort:** Low — use `npm ci` when a lockfile exists, `npm install --no-package-lock` otherwise.
 
 **Fix sketch:**
+
 ```ts
-const hasLockfile = fs.existsSync(path.join(addonDir, 'package-lock.json'));
-execSync(hasLockfile ? 'npm ci' : 'npm install --no-package-lock', { cwd: addonDir });
+const hasLockfile = fs.existsSync(path.join(addonDir, "package-lock.json"))
+execSync(hasLockfile ? "npm ci" : "npm install --no-package-lock", {
+  cwd: addonDir,
+})
 ```
 
 ---

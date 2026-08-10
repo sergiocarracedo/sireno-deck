@@ -105,6 +105,7 @@ function KpisPage({ metrics }: Extract<SystemPageConfig, { type: "kpis" }>) {
       label: pickLabel(entry, def.defaultLabel),
       value: display.formattedValue,
       ...(display.unit ? { units: display.unit } : {}),
+      ...(display.unitLong ? { unitLong: display.unitLong } : {}),
       ...(color ? { color } : {}),
     })
   }

@@ -4,12 +4,12 @@
 
 ## Quality gates (current)
 
-| Gate      | Beta review (Jul 29)    | Pre-release (Aug 6) | Trend     |
-| --------- | ----------------------- | ------------------- | --------- |
-| Typecheck | ~304 errors             | 357 errors          | Worse     |
-| Tests     | 15 failures, 24 suites  | 24 failures, 24 suites | Worse     |
-| Format    | Passes                  | Passes              | Stable    |
-| Lint      | 4 errors                | OOM (inconclusive)  | Worse     |
+| Gate      | Beta review (Jul 29)   | Pre-release (Aug 6)    | Trend  |
+| --------- | ---------------------- | ---------------------- | ------ |
+| Typecheck | ~304 errors            | 357 errors             | Worse  |
+| Tests     | 15 failures, 24 suites | 24 failures, 24 suites | Worse  |
+| Format    | Passes                 | Passes                 | Stable |
+| Lint      | 4 errors               | OOM (inconclusive)     | Worse  |
 
 ---
 
@@ -19,18 +19,19 @@
 
 **Key categories observed:**
 
-| Category                                    | Approx count | Root cause                                                          |
-| ------------------------------------------- | ------------ | ------------------------------------------------------------------- |
-| Missing `.strict()` on protocol schemas     | ~40-60       | All 21 schemas lack `.strict()`; type inference widens unexpectedly |
-| Missing imports / stale type references     | ~80-100      | Stale references to removed/moved modules                           |
-| `noUncheckedIndexedAccess` violations       | ~50-70       | Indexed access without undefined guard                              |
-| Missing `coreMethods` in test fixtures      | ~30-50       | Test fixtures construct partial objects                             |
-| Implicit `any` parameters                   | ~20-30       | Untyped callback params                                             |
-| Other (misc type mismatches)                | ~50-70       | Various                                                             |
+| Category                                | Approx count | Root cause                                                          |
+| --------------------------------------- | ------------ | ------------------------------------------------------------------- |
+| Missing `.strict()` on protocol schemas | ~40-60       | All 21 schemas lack `.strict()`; type inference widens unexpectedly |
+| Missing imports / stale type references | ~80-100      | Stale references to removed/moved modules                           |
+| `noUncheckedIndexedAccess` violations   | ~50-70       | Indexed access without undefined guard                              |
+| Missing `coreMethods` in test fixtures  | ~30-50       | Test fixtures construct partial objects                             |
+| Implicit `any` parameters               | ~20-30       | Untyped callback params                                             |
+| Other (misc type mismatches)            | ~50-70       | Various                                                             |
 
 **Impact:** Typecheck cannot run in CI as a blocking gate. Real type errors are hidden in the noise.
 
 **Recommended approach:** Fix by category, not by file:
+
 1. Add `.strict()` to all protocol schemas first (may fix 40-60 errors at once)
 2. Fix stale imports
 3. Extract test fixture factories with `coreMethods`
@@ -43,15 +44,15 @@
 
 **Count:** 24 failed suites, 24 failed tests, 446 passed suites, 1465 passed tests. Up from 15 failures in beta review.
 
-| Suite                                      | Failure count | Likely cause                      |
-| ------------------------------------------ | ------------: | --------------------------------- |
-| `runtime.test.ts`                          |             4 | Stale expectations after refactor |
-| `addon-handler-bridge.test.ts`             |             3 | Missing `.strict()` cascading     |
-| `ws-bridge.test.ts`                        |             2 | Schema changes not reflected      |
-| `http-server.test.ts`                      |             2 | Auth changes broke tests          |
-| `media-addon.test.ts`                      |             2 | Plugin interface drift            |
-| `weather-addon.test.ts`                    |             1 | API shape changed                 |
-| Various small suites                       |            10 | Assorted                          |
+| Suite                          | Failure count | Likely cause                      |
+| ------------------------------ | ------------: | --------------------------------- |
+| `runtime.test.ts`              |             4 | Stale expectations after refactor |
+| `addon-handler-bridge.test.ts` |             3 | Missing `.strict()` cascading     |
+| `ws-bridge.test.ts`            |             2 | Schema changes not reflected      |
+| `http-server.test.ts`          |             2 | Auth changes broke tests          |
+| `media-addon.test.ts`          |             2 | Plugin interface drift            |
+| `weather-addon.test.ts`        |             1 | API shape changed                 |
+| Various small suites           |            10 | Assorted                          |
 
 **Note:** Exact counts estimated from test output. A full `pnpm test --run --reporter=verbose` dump needed for precise breakdown.
 
@@ -68,6 +69,7 @@
 **Impact:** Cannot verify lint rules. Oxlint's boundary-checking rule (forbidding `packages/cli/src/**` → frontend imports) cannot be verified.
 
 **Possible causes:**
+
 1. Large files (`run.ts` 1849 lines, `runtime.test.ts` 1664 lines) exhausting AST memory
 2. Oxlint configuration issue (parser, plugins)
 3. Machine memory (CI environment with <4GB RAM)

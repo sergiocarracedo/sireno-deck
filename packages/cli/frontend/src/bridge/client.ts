@@ -115,10 +115,13 @@ export const createWsClient = (options: WsClientOptions): WsClient => {
     socket.addEventListener("close", (event: CloseEvent) => {
       connected = false
       if (event.code === 4001) {
-        lastError = "Token mismatch — check that SIRENO_TOKEN matches the daemon"
+        lastError =
+          "Token mismatch — check that SIRENO_TOKEN matches the daemon"
       } else if (event.code !== 1000 && event.code !== 0) {
         lastError =
-          event.reason?.length > 0 ? event.reason : `WS closed with code ${event.code}`
+          event.reason?.length > 0
+            ? event.reason
+            : `WS closed with code ${event.code}`
       }
       setStatus("closed")
       scheduleReconnect()
