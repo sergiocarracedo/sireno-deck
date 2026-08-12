@@ -1,0 +1,41 @@
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_364a3d4e61d135::t_4700d31501a129 159-166,168
+  s_364a3d4e61d135::t_b9318615363196 20-27
+packages/cli/emulator/vite.config.ts
+  s_364a3d4e61d135::t_ed03a2a706f182 94-97
+docs/plans/2026-08-11-001-feat-decouple-dev-mode-and-emulator-plan.md
+  s_364a3d4e61d135::t_656f6a2ac3497a 598
+  s_364a3d4e61d135::t_f624c3fd510a5d 101-108
+  s_364a3d4e61d135::t_c865d5ae4a09e6 549-550
+  s_364a3d4e61d135::t_bb88ba821e8978 374,380-384
+  s_364a3d4e61d135::t_a118cc47c049fd 627,641-647
+  s_364a3d4e61d135::t_c80fade0262380 628-640
+  s_364a3d4e61d135::t_37130fe2122638 441,444-445,450-457
+  s_364a3d4e61d135::t_b11f5ea880aec1 251-261
+  s_364a3d4e61d135::t_d9ca85dba127aa 161-173
+  s_364a3d4e61d135::t_eac0ba0aba45d4 242-250
+  s_364a3d4e61d135::t_f9a1eed219fa17 1-77,92-100,109-113,120-160,174-241,262-373,375-379,385-440,442-443,446-449,458-520,525-548,551-597,599-626
+  s_364a3d4e61d135::t_1324e19fccbf4c 78-91
+  s_364a3d4e61d135::t_37619f6f6d5978 521-524
+  s_364a3d4e61d135::t_820b3dee6e0907 114-119
+packages/cli/src/outputClient/emulator.ts
+  s_364a3d4e61d135::t_914a7e2927afb6 118-119,139,167
+packages/cli/frontend/vite.config.ts
+  s_364a3d4e61d135::t_9216b336de4b9c 104-110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c742d9118560475c8eb1e2181b2292528824f280",
+  "prompts": {},
+  "sessions": {
+    "s_364a3d4e61d135": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00e39aa83ffeUIZ2ZU1rSlKRiL",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
