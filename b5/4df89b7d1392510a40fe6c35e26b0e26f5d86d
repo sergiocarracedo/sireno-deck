@@ -1,0 +1,26 @@
+packages/cli/src/util/daemon.ts
+  s_364a3d4e61d135::t_b87f08327e0c43 321
+packages/cli/emulator/src/App.tsx
+  s_364a3d4e61d135::t_f9583adde12bb8 78
+  s_364a3d4e61d135::t_662790527cd871 79-83,85
+  s_364a3d4e61d135::t_6d3cd444c2290f 86-97,104
+  s_364a3d4e61d135::t_662b130035af6b 84
+packages/cli/emulator/vite.config.ts
+  s_364a3d4e61d135::t_50efdc10e3dad2 87-92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b54df89b7d1392510a40fe6c35e26b0e26f5d86d",
+  "prompts": {},
+  "sessions": {
+    "s_364a3d4e61d135": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00e39aa83ffeUIZ2ZU1rSlKRiL",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
