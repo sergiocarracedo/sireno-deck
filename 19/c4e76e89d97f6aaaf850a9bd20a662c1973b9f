@@ -1,0 +1,21 @@
+packages/cli/src/cli/commands/start.ts
+  s_364a3d4e61d135::t_b07a82aa0a418d 65,87
+packages/cli/src/cli/index.ts
+  s_364a3d4e61d135::t_b07a82aa0a418d 23,63-68,72-73,98-104,109-110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "19c4e76e89d97f6aaaf850a9bd20a662c1973b9f",
+  "prompts": {},
+  "sessions": {
+    "s_364a3d4e61d135": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00e39aa83ffeUIZ2ZU1rSlKRiL",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
