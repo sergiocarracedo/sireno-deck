@@ -1,0 +1,32 @@
+packages/cli/src/cli/commands/network-bind.ts
+  s_364a3d4e61d135::t_95427074078f12 1
+  s_364a3d4e61d135::t_396ddbc916bb65 9
+  s_364a3d4e61d135::t_44ab5d51e8be07 39
+packages/cli/src/cli/commands/__tests__/network-bind.test.ts
+  s_364a3d4e61d135::t_d2bb532f24e9c2 11,20
+  s_364a3d4e61d135::t_1710f034301c6e 2
+packages/cli/src/cli/commands/run.ts
+  s_364a3d4e61d135::t_4a22a930e47b12 87
+  s_364a3d4e61d135::t_7142b04026768a 1366-1376,1379-1380
+  s_364a3d4e61d135::t_0b6cdd7e96c338 4
+packages/cli/src/render/ws-bridge.ts
+  s_364a3d4e61d135::t_cb4da3c544e2f5 69,76-78
+  s_364a3d4e61d135::t_125f6f962a8108 240
+  s_364a3d4e61d135::t_a90a5faa466714 21-25,27-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3feaae6021bc7343259a983f0f86ebd376a94df8",
+  "prompts": {},
+  "sessions": {
+    "s_364a3d4e61d135": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00e39aa83ffeUIZ2ZU1rSlKRiL",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
