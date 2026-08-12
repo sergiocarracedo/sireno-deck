@@ -1,0 +1,44 @@
+packages/cli/src/outputClient/types.ts
+  s_364a3d4e61d135::t_6c4b5ab1f52490 35-42
+  s_450fdef1b34375::t_353de55a1f69dd 34
+packages/cli/src/outputClient/index.ts
+  s_364a3d4e61d135::t_1c2863a28d9f45 7
+packages/cli/src/cli/commands/run.ts
+  s_364a3d4e61d135::t_a6554f93271421 1338
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_364a3d4e61d135::t_28d36aa2f05f5d 80-81
+  s_364a3d4e61d135::t_31d501eac1d3c7 52-63
+  s_364a3d4e61d135::t_3cce71bcca3f2c 102-109
+  s_364a3d4e61d135::t_99bf7e9f3757f8 204-205,223-224
+packages/cli/src/outputClient/emulator.ts
+  s_364a3d4e61d135::t_44e7242e32623d 112-118,137,164
+packages/cli/src/util/daemon.ts
+  s_364a3d4e61d135::t_d3dcf34d904ac8 53
+packages/cli/src/cli/commands/start.ts
+  s_364a3d4e61d135::t_8d98bfe03c0b1f 354
+  s_364a3d4e61d135::t_63d4bd16142658 410
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c92778ac6d6cde3c7ba0d427d5ded0ed5dcf3c6d",
+  "prompts": {},
+  "sessions": {
+    "s_364a3d4e61d135": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00e39aa83ffeUIZ2ZU1rSlKRiL",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_450fdef1b34375": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_012707425ffediR52lsix6KXWR",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
