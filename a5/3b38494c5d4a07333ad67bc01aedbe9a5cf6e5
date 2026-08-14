@@ -1,0 +1,51 @@
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_c0cb5cfaffabd8::t_c948f296b422e8 132-133
+packages/cli/src/cli/commands/__tests__/first-run.test.ts
+  s_c0cb5cfaffabd8::t_fae763fb1c0d8c 119-120
+packages/cli/src/deck/runtime/runtime.ts
+  s_c0cb5cfaffabd8::t_40994cbd67bbc3 318-321
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_c0cb5cfaffabd8::t_ba3b8dd9569644 69
+demos/demo-app-shortcuts.yml
+  s_c0cb5cfaffabd8::t_195bd10f806fc7 2-3
+packages/addons/pomodoro/src/buttons/pomodoro/backend.ts
+  s_c0cb5cfaffabd8::t_5f7c499cfa5630 75-76,95,105,123-127,167-171
+packages/addons/pomodoro/src/buttons/pomodoro/config.ts
+  s_c0cb5cfaffabd8::t_d6ed9ba8607f42 6-12
+packages/addons/pomodoro/src/global/backend.ts
+  s_c0cb5cfaffabd8::t_7aa2daa92c16f5 9-13,18-19,27,45-53,55,78-82,85-94,96-100,103-114,121,126-137
+packages/cli/emulator/src/App.tsx
+  s_c0cb5cfaffabd8::t_0257a190bfb149 23,73,111-114,203-207,257,327-329,335-341,343
+packages/cli/emulator/src/SidePanel.tsx
+  s_c0cb5cfaffabd8::t_5c2a52d65d50e2 11
+packages/cli/emulator/src/pages/DecksPage.tsx
+  s_c0cb5cfaffabd8::t_6028f2041264ab 1-104
+packages/cli/src/addon/api.ts
+  s_c0cb5cfaffabd8::t_c7c63b46003e57 309-310
+packages/cli/src/api/protocol-internal.ts
+  s_c0cb5cfaffabd8::t_c05e473aaa281e 232-251,273,303
+packages/cli/src/cli/commands/run.ts
+  s_c0cb5cfaffabd8::t_42e22fb575f856 65,86,158,549,863,1454-1456,1483
+packages/cli/src/deck/addon-handler-bridge.ts
+  s_c0cb5cfaffabd8::t_588129a0c0984f 159
+packages/cli/src/deck/deck-config.ts
+  s_c0cb5cfaffabd8::t_bf69b688d0348f 198-233
+packages/cli/src/render/ws-bridge.ts
+  s_c0cb5cfaffabd8::t_74a4a748d586e7 42,63,159-161,243-245
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "a53b38494c5d4a07333ad67bc01aedbe9a5cf6e5",
+  "prompts": {},
+  "sessions": {
+    "s_c0cb5cfaffabd8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0008dc8eaffexGn0Q6AoQOHIdO",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": null
+    }
+  }
+}
