@@ -1,0 +1,108 @@
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  s_c0cb5cfaffabd8::t_9d4749dfccdee6 1,3-6,30,33,35,39,49,53-55,57-58,62-63,66-67,69,71-72,75-76,78-79,88,91,98,105,113-114,124,126,131-132,136,176-179,187,189
+packages/cli/src/cli/commands/run.ts
+  s_c0cb5cfaffabd8::t_764827e264e470 313,324
+  s_c0cb5cfaffabd8::t_47846037d8c3b3 1126
+  s_c0cb5cfaffabd8::t_f8838201b5d38a 1413
+  s_c0cb5cfaffabd8::t_99f556326cb19f 249,274
+  s_c0cb5cfaffabd8::t_af2b64e91e9a22 1533
+  s_c0cb5cfaffabd8::t_e5e41eed0c886e 1692
+  s_c0cb5cfaffabd8::t_8aeb6ae1961953 1194-1200,1203,1208-1214,1217
+ARCHITECTURE.md
+  s_c0cb5cfaffabd8::t_9b32ab6e56867f 172-174,177-179
+  s_c0cb5cfaffabd8::t_0c0afa649734b0 503-506,511-514,516-518,521-523
+  s_c0cb5cfaffabd8::t_cd81619f9c069f 94-97
+  s_c0cb5cfaffabd8::t_612806115cc3c5 535
+  s_c0cb5cfaffabd8::t_9d4749dfccdee6 527-534,536-544
+  s_c0cb5cfaffabd8::t_dab33ceb814cf2 524
+packages/cli/src/deck/__tests__/runtime.test.ts
+  s_c0cb5cfaffabd8::t_dbac1bd211db51 924,931,936-937
+  s_c0cb5cfaffabd8::t_d00a1c5fd4ac2d 884,887-888,894-895
+packages/cli/src/__tests__/integration.test.ts
+  s_c0cb5cfaffabd8::t_30711eed7f0da2 266-269
+packages/cli/src/ui/surfaces/paginated-schema.ts
+  s_c0cb5cfaffabd8::t_9d4749dfccdee6 13-21
+packages/cli/scripts/installer/_shared/prepare-runtime-tree.mjs
+  s_c0cb5cfaffabd8::t_9d4749dfccdee6 1-94
+packages/cli/config/default-config.yml
+  s_c0cb5cfaffabd8::t_12e77b7bd0c053 109
+packages/cli/src/deck/deck-config.ts
+  s_c0cb5cfaffabd8::t_f617b310b62743 116-120,162-172,174-183,189-193
+  s_c0cb5cfaffabd8::t_9d4749dfccdee6 173,184-188
+  s_c0cb5cfaffabd8::t_ee87e3afcfb3df 263-265
+  s_c0cb5cfaffabd8::t_e660c6ea20642f 6
+  s_c0cb5cfaffabd8::t_57fdbce0082219 207
+packages/cli/src/cli/commands/__tests__/addon-decks.test.ts
+  s_c0cb5cfaffabd8::t_c3592b4299dfaa 236,243,254
+packages/cli/src/deck/system-back-injection.ts
+  s_c0cb5cfaffabd8::t_fc90a8232ffb57 23,32
+docs/beta/os-integration-checklist.es.md
+  s_c0cb5cfaffabd8::t_9d4749dfccdee6 7,13,20,25,30,36,43,49,55,60,65
+docs/installation.mdx
+  s_c0cb5cfaffabd8::t_9d4749dfccdee6 1-71
+packages/themes/riptide/components/index.tsx
+  s_c0cb5cfaffabd8::t_9d4749dfccdee6 1,3-7,9-13,15-19,26,34-35,43-46,56,61,65,83,108,121-126
+packages/cli/src/deck/runtime/runtime.ts
+  s_c0cb5cfaffabd8::t_f00395c96fa037 326-334
+  s_c0cb5cfaffabd8::t_161d2af9fc8ab6 497-504
+packages/cli/src/cli/commands/addon-registry.ts
+  s_c0cb5cfaffabd8::t_96bb04ec48c8b1 13
+  s_c0cb5cfaffabd8::t_f9653b10a68d2c 293-297,305
+  s_c0cb5cfaffabd8::t_b41af7d0f8a3af 239,245-251,254,268-274,277
+  s_c0cb5cfaffabd8::t_c112a0b888b1c5 184
+demos/demo-decks-index.yml
+  s_c0cb5cfaffabd8::t_bfcbf55773ae45 51-56
+config.yml
+  s_c0cb5cfaffabd8::t_93df0c4b7af63d 103
+packages/cli/src/cli/commands/__tests__/emulator-mode-build-config.test.ts
+  s_c0cb5cfaffabd8::t_59d0289a43c144 121,125,129,132,137,140
+demos/demo-app-overlays.yml
+  s_c0cb5cfaffabd8::t_a8eac14ead8982 1-50
+packages/cli/src/deck/__tests__/system-back-injection.test.ts
+  s_c0cb5cfaffabd8::t_ad3ebfea5e8600 33,35
+  s_c0cb5cfaffabd8::t_0b00186fa2fe03 60,63-64
+  s_c0cb5cfaffabd8::t_bc7755b10efa1e 22
+  s_c0cb5cfaffabd8::t_0939f84caf000b 132,134,139
+packages/cli/src/cli/commands/addon-decks.ts
+  s_c0cb5cfaffabd8::t_9d4749dfccdee6 238
+packages/cli/src/ui/primitives/Text.tsx
+  s_c0cb5cfaffabd8::t_9d4749dfccdee6 10,12-13,16-18,22-29,33-35,39-45,49-55,59-68,72-76,80-89,95-100,103-104,106,111,114-115,120-122,142,147,153,161,163,169,171,177,181,185,190-191,195,211-212,219,239,250,254-257,262-263,266,268-269,272-273,276-277,280,308,317,322,340-344,371-374,386,393,401,403,405,411-413,415,421,423,432,445,447,451,456,464,474,495-498,504-506,514,531,547,555,562,576,585,599,625,630,641,669-675,679-683,685,722-726,728,732,748,750-751,760,762,767,772,779,792,802
+packages/cli/src/cli/first-run.ts
+  s_450fdef1b34375::t_75e1f8b47b9cc8 1-128
+packages/cli/src/cli/install-root.ts
+  s_450fdef1b34375::t_6742d8d075cd6b 1-26
+packages/cli/src/outputClient/__tests__/open-browser.test.ts
+  s_450fdef1b34375::t_11e9fb97db169d 1-46
+packages/cli/src/outputClient/open-browser.ts
+  s_450fdef1b34375::t_43306ebc563de7 1-26
+packages/cli/tsdown.config.ts
+  s_450fdef1b34375::t_2ec7e3ad7bf99c 1-24
+packages/cli/scripts/installer/windows-inno.iss
+  s_450fdef1b34375::t_31da9221f0cd4e 1-46
+packages/cli/scripts/installer/windows-winget/sireno-deck.yaml
+  s_450fdef1b34375::t_a7ba3b02380423 1-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8fae561348aa99136fc0fa008cf207e1a7678827",
+  "prompts": {},
+  "sessions": {
+    "s_450fdef1b34375": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_012707425ffediR52lsix6KXWR",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    },
+    "s_c0cb5cfaffabd8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0008dc8eaffexGn0Q6AoQOHIdO",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
