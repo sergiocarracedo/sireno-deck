@@ -315,6 +315,10 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     } else if (navOptions?.addToHistory === false) {
       transientDeckId = resolvedId
     } else {
+      if (target.isOverlay === true) {
+        setOverlay(resolvedId, { source: "manual" })
+        return
+      }
       navStack.push(resolvedId)
       transientDeckId = null
     }

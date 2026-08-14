@@ -6,10 +6,17 @@ import {
 } from "../shared/state"
 import type { AddonGlobalServiceShape } from "../types"
 
+interface NotificationConfig {
+  title: string
+  body: string
+}
+
 interface ButtonRuntime {
   startTsMs: number
   durationSec: number
   pausedRemainingSec?: number
+  notified?: boolean
+  notification?: NotificationConfig
 }
 
 interface AddonServiceContextLike {
@@ -17,6 +24,7 @@ interface AddonServiceContextLike {
   poll: (id: string) => Promise<void>
   signal: AbortSignal
   executor: { run: (...args: unknown[]) => Promise<unknown> }
+  notify(args: { title: string; body: string; sound?: boolean }): Promise<void>
 }
 
 const buttons = new Map<string, ButtonRuntime>()
@@ -34,8 +42,17 @@ const rebuildSnapshot = (now: number): PomodoroSnapshot => {
       continue
     }
     const remaining = computeRemaining(info.startTsMs, info.durationSec, now)
+    const isFinished = remaining <= 0
+    const wasFinished = info.notified === true
+    if (isFinished && !wasFinished) {
+      info.notified = true
+      void ctxRef?.notify({
+        title: info.notification?.title ?? "Pomodoro",
+        body: info.notification?.body ?? "Time's up!",
+      })
+    }
     next[buttonId] = {
-      status: remaining <= 0 ? "finished" : "running",
+      status: isFinished ? "finished" : "running",
       remainingSec: remaining,
       totalSec: info.durationSec,
     }
@@ -58,26 +75,66 @@ export const globalService = {
     },
   ],
   methods: {
-    register: (buttonId: unknown, durationSec: unknown): void => {
+    register: (
+      buttonId: unknown,
+      durationSec: unknown,
+      notification?: { title?: string; body?: string },
+    ): void => {
       const id = String(buttonId)
       if (typeof durationSec !== "number" || durationSec <= 0) return
-      void id
+      buttons.set(id, {
+        startTsMs: Date.now(),
+        durationSec,
+        notification: notification
+          ? {
+              title: notification.title ?? "Pomodoro",
+              body: notification.body ?? "Time's up!",
+            }
+          : undefined,
+      })
     },
-    start: (buttonId: unknown, durationSec: unknown): void => {
+    start: (
+      buttonId: unknown,
+      durationSec: unknown,
+      notification?: { title?: string; body?: string },
+    ): void => {
       const id = String(buttonId)
       if (typeof durationSec !== "number" || durationSec <= 0) return
-      buttons.set(id, { startTsMs: Date.now(), durationSec })
+      const existing = buttons.get(id)
+      buttons.set(id, {
+        startTsMs: Date.now(),
+        durationSec,
+        notified: existing?.notified,
+        notification: notification
+          ? {
+              title: notification.title ?? "Pomodoro",
+              body: notification.body ?? "Time's up!",
+            }
+          : existing?.notification,
+      })
       publishNow()
     },
     startWith: (
       buttonId: unknown,
       startTsMs: unknown,
       durationSec: unknown,
+      notification?: { title?: string; body?: string },
     ): void => {
       const id = String(buttonId)
       if (typeof durationSec !== "number" || durationSec <= 0) return
       if (typeof startTsMs !== "number") return
-      buttons.set(id, { startTsMs, durationSec })
+      const existing = buttons.get(id)
+      buttons.set(id, {
+        startTsMs,
+        durationSec,
+        notified: existing?.notified,
+        notification: notification
+          ? {
+              title: notification.title ?? "Pomodoro",
+              body: notification.body ?? "Time's up!",
+            }
+          : existing?.notification,
+      })
       publishNow()
     },
     pause: (buttonId: unknown): void => {

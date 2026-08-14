@@ -1,4 +1,6 @@
 name: App Shortcuts Demo
+trigger:
+  process_name: ["__never_match_app_shortcuts__"]
 buttons:
   - position: 0
     type: "core:action"

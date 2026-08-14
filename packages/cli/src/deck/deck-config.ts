@@ -195,3 +195,39 @@ export const buildDeckConfigMessage = (
     overlayDeckName,
   }
 }
+
+export type DeckTreeEntry = {
+  readonly id: string
+  readonly name: string
+  readonly isOverlay: boolean
+  readonly links: ReadonlyArray<{
+    readonly target: string
+    readonly label?: string
+  }>
+}
+
+export const buildDeckTree = (
+  decks: ReadonlyArray<RuntimeDeck>,
+  mainDeckId: string,
+): { rootId: string; decks: DeckTreeEntry[] } => {
+  const entries: DeckTreeEntry[] = decks.map((deck) => {
+    const links: { target: string; label?: string }[] = []
+    for (const btn of deck.buttons ?? []) {
+      if (btn.type === "core:change-deck") {
+        const config = btn.config as
+          | { deck?: string; label?: string }
+          | undefined
+        if (config?.deck !== undefined) {
+          links.push({ target: config.deck, label: config.label })
+        }
+      }
+    }
+    return {
+      id: deck.id,
+      name: deck.name ?? deck.id,
+      isOverlay: deck.isOverlay ?? false,
+      links: Object.freeze(links),
+    }
+  })
+  return { rootId: mainDeckId, decks: entries }
+}

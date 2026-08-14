@@ -156,6 +156,7 @@ export const bridgeAddonServices = async (
       },
       signal: abortController.signal,
       executor,
+      notify: methods.notify,
     }
 
     if (globalService.pollers !== undefined) {

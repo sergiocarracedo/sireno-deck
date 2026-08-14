@@ -62,6 +62,7 @@ import { ConfigWatcher } from "@/core/watcher"
 import { bridgeAddonServices } from "@/deck/addon-handler-bridge"
 import {
   buildDeckConfigMessage,
+  buildDeckTree,
   buildResolverOptions,
   type AddonFrontendRef,
 } from "@/deck/deck-config"
@@ -82,7 +83,7 @@ import {
   type ScannedAddon,
   type ScannedButtonType,
 } from "./addon-registry"
-import { findWorkspaceRoot } from "./emulator-mode"
+import { resolveFrontendCwd } from "./emulator-mode"
 
 export interface SignalProvider {
   onSignal(handler: () => void): () => void
@@ -154,7 +155,7 @@ const collectActiveDeckAddonNames = (
   addonByType: Map<string, AddonFrontendRef>,
 ): string[] => {
   const addonNames = new Set<string>()
-  for (const button of deck.buttons) {
+  for (const button of deck.buttons ?? []) {
     const entry = addonByType.get(button.type)
     if (entry !== undefined) addonNames.add(entry.name)
   }
@@ -545,12 +546,7 @@ export const validateAndLoadConfig = async (
         ? resolvePath(dirname(configPath), config.theme)
         : config.theme,
   })
-  const themeDir: string = resolvePath(
-    findWorkspaceRoot(),
-    "packages",
-    "cli",
-    "frontend",
-  )
+  const themeDir: string = resolveFrontendCwd()
   const cssContent: string = getCss()
   if (cssContent.length > 0) {
     const cssDir = join(themeDir, ".sireno-deck")
@@ -864,7 +860,7 @@ export const applyConfigErrorReplacements = (
   >()
 
   for (const deck of decks) {
-    for (const btn of deck.buttons) {
+    for (const btn of deck.buttons ?? []) {
       // ponytail: skip addon-injected decks — their buttons have semantic ids
       // (e.g. brightness-down, app-info, back) and `internal:true` services;
       // re-validating them via the user-config schema always fails.
@@ -1455,6 +1451,9 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       ),
     )
 
+    const mainDeckId = mainDeck?.id ?? "main"
+    bridge.setDeckTree(buildDeckTree(decks, mainDeckId))
+
     addonServices = setupAddonServices({
       runtime,
       methods,
@@ -1481,7 +1480,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
     for (const deck of decks) {
       registerDeckIcon(deck, resolverOptions, logger)
-      registerIconForDeck(deck.buttons, resolverOptions, logger)
+      registerIconForDeck(deck.buttons ?? [], resolverOptions, logger)
     }
 
     bridge.onConnection((socket) => {

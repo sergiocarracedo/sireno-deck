@@ -20,6 +20,7 @@ import { BridgeLogsPage } from "./pages/BridgeLogsPage"
 import { ServiceLogsPage } from "./pages/ServiceLogsPage"
 import { AddonsPage, type AddonInventory } from "./pages/AddonsPage"
 import { ConfigPage } from "./pages/ConfigPage"
+import { DecksPage } from "./pages/DecksPage"
 
 const ENV_WS_URL = (import.meta.env.VITE_WS_URL ??
   "ws://127.0.0.1:52937") as string
@@ -69,6 +70,7 @@ const SECTIONS = [
   "bridge-logs",
   "service-logs",
   "addons",
+  "decks",
   "config",
 ] as const
 
@@ -106,6 +108,10 @@ export const App = ({
   const [addonInventory, setAddonInventory] = useState<AddonInventory | null>(
     null,
   )
+  const [deckTree, setDeckTree] = useState<{
+    rootId: string
+    decks: unknown[]
+  } | null>(null)
   const [deviceModel, setDeviceModel] = useState<DeviceModelSpec>(() =>
     initialDeviceModel !== undefined && isKnownDeviceModel(initialDeviceModel)
       ? getDeviceModel(initialDeviceModel)
@@ -194,6 +200,11 @@ export const App = ({
             setAddonInventory({ addons } as AddonInventory)
           }
         }
+        if (m.type === "deck-tree") {
+          if (typeof m.rootId === "string" && Array.isArray(m.decks)) {
+            setDeckTree({ rootId: m.rootId, decks: m.decks })
+          }
+        }
         if (typeof m.type === "string" && m.type.endsWith("error")) {
           setLastError(String(m.type))
         }
@@ -243,6 +254,7 @@ export const App = ({
     if (activeSection === "service-logs") return <ServiceLogsPage />
     if (activeSection === "addons")
       return <AddonsPage addonInventory={addonInventory} />
+    if (activeSection === "decks") return <DecksPage deckTree={deckTree} />
     if (activeSection === "config") return <ConfigPage />
     return null
   }
@@ -312,14 +324,23 @@ export const App = ({
                 <span className="truncate text-neutral-500">
                   {deckName || "Awaiting deck-config"}
                 </span>
+                <span className="font-mono text-[10px] text-neutral-600">
+                  #{deckId}
+                </span>
                 <span className="text-neutral-500">·</span>
                 <span className="truncate" title={wsUrl}>
                   ws: {wsUrl}
                 </span>
                 <span className="text-neutral-500">·</span>
-                <span className="truncate" title={ENV_FRONTEND_URL}>
+                <a
+                  href={ENV_FRONTEND_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="truncate text-sky-400 hover:underline"
+                  title={ENV_FRONTEND_URL}
+                >
                   fe: {ENV_FRONTEND_URL}
-                </span>
+                </a>
                 <span className="flex-1" />
                 <DeviceSelector device={deviceModel.id} onChange={setDevice} />
               </header>

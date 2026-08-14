@@ -72,7 +72,8 @@ export default {
   onMount: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
     const persisted = getPersisted(ctx)
     const durationSec = ctx.config?.durationSec ?? DEFAULT_DURATION_SEC
-    ctx.methods["pomodoro:register"]?.(ctx.buttonId, durationSec)
+    const notification = ctx.config?.notification
+    ctx.methods["pomodoro:register"]?.(ctx.buttonId, durationSec, notification)
     if (
       persisted.status === "running" &&
       typeof persisted.startTsMs === "number"
@@ -91,6 +92,7 @@ export default {
           ctx.buttonId,
           persisted.startTsMs,
           durationSec,
+          notification,
         )
       }
       return
@@ -100,6 +102,7 @@ export default {
         ctx.buttonId,
         Date.now() - (durationSec - persisted.remainingSec) * 1000,
         durationSec,
+        notification,
       )
       ctx.methods["pomodoro:pause"]?.(ctx.buttonId)
     }
@@ -117,7 +120,11 @@ export default {
         durationSec,
         remainingSec: durationSec,
       })
-      ctx.methods["pomodoro:start"]?.(ctx.buttonId, durationSec)
+      ctx.methods["pomodoro:start"]?.(
+        ctx.buttonId,
+        durationSec,
+        ctx.config?.notification,
+      )
       return
     }
     // running → pause
@@ -157,7 +164,11 @@ export default {
       durationSec,
       remainingSec: durationSec,
     })
-    ctx.methods["pomodoro:start"]?.(ctx.buttonId, durationSec)
+    ctx.methods["pomodoro:start"]?.(
+      ctx.buttonId,
+      durationSec,
+      ctx.config?.notification,
+    )
   },
   onHold: (ctx: ButtonServiceContextLike<ConfigSchema>): void => {
     const durationSec = ctx.config?.durationSec ?? DEFAULT_DURATION_SEC

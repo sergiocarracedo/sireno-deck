@@ -229,6 +229,26 @@ export const addonsInventoryMessageSchema = baseServerMessage
   })
   .strict()
 
+export const deckTreeMessageSchema = baseServerMessage
+  .extend({
+    type: z.literal("deck-tree"),
+    rootId: z.string(),
+    decks: z.array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        isOverlay: z.boolean().default(false),
+        links: z.array(
+          z.object({
+            target: z.string(),
+            label: z.string().optional(),
+          }),
+        ),
+      }),
+    ),
+  })
+  .strict()
+
 export const wsMessageSchema = z.discriminatedUnion("type", [
   helloMessageSchema,
   helloAckMessageSchema,
@@ -250,6 +270,7 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
   subscribeChannelsMessageSchema,
   iframeReloadMessageSchema,
   addonsInventoryMessageSchema,
+  deckTreeMessageSchema,
 ])
 
 export type HelloMessage = z.infer<typeof helloMessageSchema>
@@ -279,4 +300,5 @@ export type AddonsInventoryMessage = z.infer<
   typeof addonsInventoryMessageSchema
 >
 export type AddonInventoryEntry = AddonsInventoryMessage["addons"][number]
+export type DeckTreeMessage = z.infer<typeof deckTreeMessageSchema>
 export type WsMessage = z.infer<typeof wsMessageSchema>

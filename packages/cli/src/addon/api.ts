@@ -306,6 +306,8 @@ export interface AddonServiceContext {
   signal: AbortSignal
   /** Run host commands (e.g. `brightness set 80`). */
   executor: ActionExecutor
+  /** Fire an OS notification. */
+  notify(args: { title: string; body: string; sound?: boolean }): Promise<void>
 }
 
 /**
