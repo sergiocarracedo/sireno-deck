@@ -39,7 +39,6 @@ export const chromeDeck: AddonDeckEntry = {
   buttonColor: "blue",
   paginated: true,
   autoShow: true,
-  isOverlay: true,
   trigger: {
     process_name: [
       "chromium",

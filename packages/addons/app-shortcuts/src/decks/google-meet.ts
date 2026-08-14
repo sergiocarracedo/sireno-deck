@@ -13,7 +13,6 @@ export const googleMeetDeck: AddonDeckEntry = {
   buttonColor: "blue",
   paginated: true,
   autoShow: false,
-  isOverlay: true,
   trigger: {
     process_name: [
       "chromium",

@@ -263,7 +263,10 @@ describe("integration: chrome-overlay overlay wiring", () => {
     expect(overlayPages.length).toBeGreaterThan(0)
     expect(overlayPages[0]!.processNames).toContain("chrome")
     expect(overlayPages[0]!.autoShow).toBe(true)
-    expect(overlayPages[0]!.isOverlay).toBe(true)
+    expect(
+      overlayPages[0]!.processNames !== undefined &&
+        overlayPages[0]!.processNames!.length > 0,
+    ).toBe(true)
 
     const { runtime } = createDeckRuntime({
       decks: runtimeDecks,

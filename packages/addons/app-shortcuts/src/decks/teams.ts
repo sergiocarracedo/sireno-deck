@@ -13,7 +13,6 @@ export const teamsDeck: AddonDeckEntry = {
   buttonColor: "blue",
   paginated: true,
   autoShow: true,
-  isOverlay: true,
   trigger: {
     process_name: ["teams", "ms-teams", "Microsoft Teams"],
   },

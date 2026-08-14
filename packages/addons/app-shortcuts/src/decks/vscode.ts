@@ -13,7 +13,6 @@ export const vscodeDeck: AddonDeckEntry = {
   buttonColor: "green",
   paginated: true,
   autoShow: true,
-  isOverlay: true,
   trigger: {
     process_name: ["code", "code-oss", "Code", "Code Helper"],
     window_name: ["*Visual Studio Code*", "*Code - *"],

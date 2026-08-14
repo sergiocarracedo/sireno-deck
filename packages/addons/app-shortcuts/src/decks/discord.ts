@@ -13,7 +13,6 @@ export const discordDeck: AddonDeckEntry = {
   buttonColor: "purple",
   paginated: true,
   autoShow: true,
-  isOverlay: true,
   trigger: {
     process_name: ["discord", "Discord"],
   },

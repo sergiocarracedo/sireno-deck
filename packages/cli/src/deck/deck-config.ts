@@ -3,6 +3,7 @@ import { dirname } from "node:path"
 import type { DeckConfigMessage } from "@/api/protocol-internal"
 import type { RuntimeDeck } from "@/deck"
 import { isSystemButtonType } from "@/deck/system-buttons/types"
+import { computeSystemButtonForSlotN1 } from "@/deck/system-back-injection"
 import {
   resolveIconSource,
   type ResolveIconPathOptions,
@@ -112,7 +113,11 @@ export const buildDeckConfigMessage = (
   deck: RuntimeDeck,
   addonByType: Map<string, AddonFrontendRef>,
   resolverOptions: ResolveIconPathOptions = {},
-  navState?: { navStackDepth: number; hasOverlayDeckAvailable: boolean },
+  navState?: {
+    navStackDepth: number
+    hasOverlayDeckAvailable: boolean
+    inOverlayMode?: boolean
+  },
   keyCount?: number,
   isCompact?: boolean,
   assetLookup: AssetLookup = () => undefined,
@@ -123,8 +128,6 @@ export const buildDeckConfigMessage = (
   const n1Position = keyCount !== undefined ? keyCount - 1 : -1
   const buttons = deck.buttons
     .filter((b) => {
-      // ponytail: when locked the injected n-1 system button is a dead
-      // control (back/settings do nothing on the lock deck) — hide it.
       if (options?.lockActive !== true) return true
       if (b.position !== n1Position) return true
       return !isSystemButtonType(b.type)
@@ -156,6 +159,38 @@ export const buildDeckConfigMessage = (
         ...(b.buttonColor !== undefined ? { buttonColor: b.buttonColor } : {}),
       }
     })
+
+  let finalButtons = buttons
+  if (n1Position >= 0 && options?.lockActive !== true) {
+    const systemBtn = computeSystemButtonForSlotN1(deck, {
+      navStackDepth: navState?.navStackDepth ?? 1,
+      hasOverlayDeckAvailable: navState?.hasOverlayDeckAvailable ?? false,
+      lockActive: options?.lockActive,
+      inOverlayMode: navState?.inOverlayMode,
+    })
+    if (systemBtn !== null) {
+      const hasN1 = buttons.some(
+        (b) => b.position === n1Position && isSystemButtonType(b.type),
+      )
+      if (hasN1) {
+        finalButtons = buttons.map((b) =>
+          b.position === n1Position && isSystemButtonType(b.type)
+            ? { ...b, type: systemBtn }
+            : b,
+        )
+      } else {
+        finalButtons = [
+          ...buttons,
+          {
+            id: `${n1Position}-${deck.id}-0`,
+            type: systemBtn,
+            position: n1Position,
+          },
+        ]
+      }
+    }
+  }
+
   const resolvedOverlayIcon =
     overlayDeckIcon === null
       ? null
@@ -169,7 +204,7 @@ export const buildDeckConfigMessage = (
       [deck.id]: {
         id: deck.id,
         name: deck.name ?? deck.id,
-        buttons,
+        buttons: finalButtons,
         ...(deck.buttonColor !== undefined
           ? { buttonColor: deck.buttonColor }
           : {}),
@@ -225,7 +260,9 @@ export const buildDeckTree = (
     return {
       id: deck.id,
       name: deck.name ?? deck.id,
-      isOverlay: deck.isOverlay ?? false,
+      isOverlay:
+        (deck.processNames?.length ?? 0) > 0 ||
+        (deck.windowNames?.length ?? 0) > 0,
       links: Object.freeze(links),
     }
   })

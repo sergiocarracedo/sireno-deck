@@ -48,6 +48,12 @@ buttons:
       deck: demo-core
       icon: icon://settings
       label: Core
+  - position: 8
+    type: "core:change-deck"
+    config:
+      deck: demo-app-overlays
+      icon: icon://layers
+      label: App Overlays
   - position: 13
     type: "core:change-deck"
     config:

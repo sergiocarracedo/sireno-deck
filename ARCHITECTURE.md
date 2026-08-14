@@ -91,6 +91,10 @@ Internal state:
 - `navStack: string[]` — initialized with `[mainDeck.id]`.
 - `transientDeckId` — for ephemeral / modal decks.
 - `overlayDeckId` — current overlay, if any.
+- `overlayNavStacks: Map<deckId, string[]>` — each overlay deck owns an
+  independent navigation path, preserved across dismiss/reactivate. Push via
+  `navigateToDeck` while in overlay mode; pop via `goBack` (tap); dismissed
+  by `core:overlay-toggle` dbl-tap or when the user holds `core:back`.
 
 The active-app loop polls `ActiveAppProvider` every 1 s, debounces for 200 ms,
 matches `process_name` / `window_name` against per-addon overlay-deck globs
@@ -165,12 +169,14 @@ for addon frontends.
 
 ### 3.6 System slot injection — `deck/system-back-injection.ts`
 
-`computeSystemButtonForSlotN1(deck, state)` returns the button that fills
-the n-1 (last) slot on a deck:
+`computeSystemButtonForSlotN1(deck, state)` returns the button that fills the
+n-1 (last) slot on a deck. The button type is computed **dynamically at
+broadcast time** from the current runtime mode, not baked in at startup:
 
 - Main deck → `core:settings-entry` (opens `internal-settings:settings`).
-- Overlay deck → `core:overlay-toggle` (dismisses the overlay).
-- Any other deck, `navStackDepth > 1` → `core:back` (pops the nav stack).
+- In overlay mode → `core:overlay-toggle` (tap = step back within overlay path;
+  dbl-tap = dismiss overlay).
+- Non-main regular deck, `navStackDepth > 1` → `core:back` (pops nav stack).
 - Else → `null` (the slot is free for a user button).
 
 The slot is purely declarative; the visual treatment of the n-1 tile is the
@@ -494,36 +500,48 @@ State messages are only sent for channels owned by the addons of the
 
 ### 7.6 Active-app overlay
 
+Overlay entry is **trigger-only** (auto-show or manual toggle). An overlay deck
+owns an independent navigation path (`overlayNavStacks[deckId]`), preserved
+across dismiss/reactivate.
+
 ```
 ActiveAppProvider tick (1 s, 200 ms debounce)
   → match against addon overlay-deck globs (system/glob-match.ts)
     → hit: runtime.setOverlay(deckId)
-      → bridge.broadcast("show-overlay", {deckId})
-        → frontend renders the overlay above the active deck
+      → pubSub.publish("runtime:overlay", {deckId, source: "autoShow"})
+        → pubSub.publish("runtime:activeDeck", {deckId}) [stack top]
+          → bridge.broadcast(deck-config) with inOverlayMode=true
+            → frontend renders the overlay above the active deck
     → miss after a previous hit: runtime.setOverlay(null)
-      → bridge.broadcast("dismiss-overlay", {})
+      → pubSub.publish("runtime:overlay", {deckId: null})
+        → pubSub.publish("runtime:activeDeck", {deckId}) [restores previous]
+          → bridge.broadcast(deck-config) with inOverlayMode=false
 ```
+
+**Manual toggle**: `core:overlay-toggle` dbl-tap on the available overlay deck
+activates it; `core:overlay-toggle` dbl-tap again dismisses. `core:back`
+hold also dismisses.
 
 ## 10. Glossary
 
-| Term                     | Definition                                                                                                                                |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| **Button**               | A single Stream Deck key with a display and behavior.                                                                                     |
-| **Button Type**          | A class of button (display-only, action, toggle) with a rendering model. Defined by an addon.                                             |
-| **Button Instance**      | A configured button of a type — the row in `config.yml`.                                                                                  |
-| **Deck**                 | A set of button instances displayed together.                                                                                             |
-| **Main Deck**            | The default / root deck. Has no back button.                                                                                              |
-| **Sub-deck**             | A nested deck navigable from another deck. Includes a back button.                                                                        |
-| **Overlay Deck**         | A deck shown _above_ the active deck when an active-app match fires. Dismissed by the overlay toggle.                                     |
-| **Addon**                | A TypeScript module providing button types, deck types, and (optionally) a global backend + theme.                                        |
-| **Theme**                | A YAML file defining global visual tokens.                                                                                                |
-| **Gesture**              | A key event: `tap`, `dbl-tap`, or `hold`.                                                                                                 |
-| **Poller**               | A periodic publish in an addon global backend.                                                                                            |
-| **Subscription**         | A push-based publish (file watcher, socket).                                                                                              |
-| **Channel**              | A named pub/sub topic. Frontends subscribe via `useAddonChannel`.                                                                         |
-| **System Slot**          | The n-1 (last) position on a deck, reserved for a back / settings / overlay-toggle button.                                                |
-| **Split Action Surface** | A two-tile surface for the system slot, divided by a diagonal line. Primary takes the action; secondary is decorative until further work. |
-| **Internal Addon**       | An addon (or a button / deck inside one) marked `internal: true` — hidden from user-facing config surfaces.                               |
+| Term                     | Definition                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Button**               | A single Stream Deck key with a display and behavior.                                                                                                                                                                                                                                                                                                                                                                                  |
+| **Button Type**          | A class of button (display-only, action, toggle) with a rendering model. Defined by an addon.                                                                                                                                                                                                                                                                                                                                          |
+| **Button Instance**      | A configured button of a type — the row in `config.yml`.                                                                                                                                                                                                                                                                                                                                                                               |
+| **Deck**                 | A set of button instances displayed together.                                                                                                                                                                                                                                                                                                                                                                                          |
+| **Main Deck**            | The default / root deck. Has no back button.                                                                                                                                                                                                                                                                                                                                                                                           |
+| **Sub-deck**             | A nested deck navigable from another deck. Includes a back button.                                                                                                                                                                                                                                                                                                                                                                     |
+| **Overlay Deck**         | A deck that owns an independent navigation path (`overlayNavStacks[deckId]`). Entered only via trigger auto-show (`autoShow:true`) or `core:overlay-toggle` dbl-tap of the available overlay. `navigateToDeck` never changes mode; it pushes to the current path. Each overlay has its own back stack — tap `core:overlay-toggle` to step back, dbl-tap to dismiss. An overlay deck is a deck with a `trigger` (process/window names). |
+| **Addon**                | A TypeScript module providing button types, deck types, and (optionally) a global backend + theme.                                                                                                                                                                                                                                                                                                                                     |
+| **Theme**                | A YAML file defining global visual tokens.                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Gesture**              | A key event: `tap`, `dbl-tap`, or `hold`.                                                                                                                                                                                                                                                                                                                                                                                              |
+| **Poller**               | A periodic publish in an addon global backend.                                                                                                                                                                                                                                                                                                                                                                                         |
+| **Subscription**         | A push-based publish (file watcher, socket).                                                                                                                                                                                                                                                                                                                                                                                           |
+| **Channel**              | A named pub/sub topic. Frontends subscribe via `useAddonChannel`.                                                                                                                                                                                                                                                                                                                                                                      |
+| **System Slot**          | The n-1 (last) position on a deck, reserved for a back / settings / overlay-toggle button. In overlay mode this slot carries `core:overlay-toggle`; in regular mode it carries `core:back` (or `core:settings-entry` on the main deck). Dynamically computed at broadcast time from the current runtime mode.                                                                                                                          |
+| **Split Action Surface** | A two-tile surface for the system slot, divided by a diagonal line. Primary takes the action; secondary is decorative until further work.                                                                                                                                                                                                                                                                                              |
+| **Internal Addon**       | An addon (or a button / deck inside one) marked `internal: true` — hidden from user-facing config surfaces.                                                                                                                                                                                                                                                                                                                            |
 
 ### Config schemas and loader internals
 

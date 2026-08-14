@@ -106,6 +106,7 @@ decks:
 
   demo-decks-index: !include demos/demo-decks-index.yml
   demo-app-shortcuts: !include demos/demo-app-shortcuts.yml
+  demo-app-overlays: !include demos/demo-app-overlays.yml
   demo-system-status: !include demos/demo-system-status.yml
   demo-media: !include demos/demo-media.yml
   demo-weather: !include demos/demo-weather.yml

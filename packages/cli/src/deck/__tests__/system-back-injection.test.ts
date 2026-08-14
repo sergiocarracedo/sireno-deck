@@ -19,6 +19,7 @@ const state = (
 ) => ({
   navStackDepth: 1,
   hasOverlayDeckAvailable: false,
+  inOverlayMode: false,
   ...overrides,
 })
 
@@ -29,9 +30,9 @@ describe("computeSystemButtonForSlotN1", () => {
     )
   })
 
-  it("overlay deck returns overlay-toggle (n-1 becomes the toggle button)", () => {
+  it("inOverlayMode returns overlay-toggle (n-1 becomes the toggle button)", () => {
     expect(
-      computeSystemButtonForSlotN1(deck({ isOverlay: true }), state()),
+      computeSystemButtonForSlotN1(deck(), state({ inOverlayMode: true })),
     ).toBe("core:overlay-toggle")
   })
 
@@ -56,11 +57,11 @@ describe("computeSystemButtonForSlotN1", () => {
     ).toBe("core:settings-entry")
   })
 
-  it("overlay deck with navStackDepth=3 returns overlay-toggle", () => {
+  it("inOverlayMode with navStackDepth=3 returns overlay-toggle", () => {
     expect(
       computeSystemButtonForSlotN1(
-        deck({ isOverlay: true }),
-        state({ navStackDepth: 3 }),
+        deck(),
+        state({ navStackDepth: 3, inOverlayMode: true }),
       ),
     ).toBe("core:overlay-toggle")
   })
@@ -128,14 +129,14 @@ describe("injectSystemButtons", () => {
     expect(n1?.position).toBe(14)
   })
 
-  it("injects core:overlay-toggle at n-1 on overlay deck", () => {
+  it("injects core:back at n-1 for overlay deck at startup (override happens at broadcast time)", () => {
     const overlay = {
-      ...deck({ id: "overlay", name: "Overlay", isOverlay: true }),
+      ...deck({ id: "overlay", name: "Overlay" }),
       buttons: [{ id: "0-overlay-0", position: 0, type: "x" }],
     }
     const [result] = injectSystemButtons([overlay], 15)
     const n1 = result.buttons.find((b) => b.id === "14-overlay-0")
-    expect(n1?.type).toBe("core:overlay-toggle")
+    expect(n1?.type).toBe("core:back")
     expect(n1?.position).toBe(14)
   })
 

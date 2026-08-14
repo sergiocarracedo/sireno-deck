@@ -1,0 +1,50 @@
+name: App Overlays
+buttons:
+  - position: 0
+    type: "core:change-deck"
+    config:
+      deck: app-shortcuts:vscode
+      icon: icon://code
+      label: VS Code
+  - position: 1
+    type: "core:change-deck"
+    config:
+      deck: app-shortcuts:chrome
+      icon: icon://globe
+      label: Chrome
+  - position: 2
+    type: "core:change-deck"
+    config:
+      deck: app-shortcuts:slack
+      icon: icon://message-square
+      label: Slack
+  - position: 3
+    type: "core:change-deck"
+    config:
+      deck: app-shortcuts:discord
+      icon: icon://message-circle
+      label: Discord
+  - position: 4
+    type: "core:change-deck"
+    config:
+      deck: app-shortcuts:teams
+      icon: icon://video
+      label: Teams
+  - position: 5
+    type: "core:change-deck"
+    config:
+      deck: app-shortcuts:opencode
+      icon: icon://code
+      label: OpenCode
+  - position: 6
+    type: "core:change-deck"
+    config:
+      deck: app-shortcuts:claude-code
+      icon: icon://bot
+      label: Claude Code
+  - position: 7
+    type: "core:change-deck"
+    config:
+      deck: app-shortcuts:google-meet
+      icon: icon://video
+      label: Google Meet

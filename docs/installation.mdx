@@ -1,0 +1,71 @@
+---
+title: Installation
+---
+
+# Installing sireno-deck
+
+One download, no Node.js, no npm. Choose your OS:
+
+## macOS
+
+1. Download `sireno-deck-<version>-macos-<arch>.dmg` from the
+   [releases page](https://github.com/sireno-deck/sireno-deck/releases).
+2. Open the `.dmg`, drag **SirenoDeck.app** into Applications.
+3. Right-click the app → **Open** (the first launch of an unsigned app shows a
+   Gatekeeper warning — dismiss via right-click → Open).
+
+Or with Homebrew (personal tap):
+
+```sh
+brew install sergiocarracedo/tap/sirenodeck
+```
+
+## Linux
+
+### Flatpak (recommended)
+
+```sh
+flatpak install ./sireno-deck-<version>-linux-<arch>.flatpak
+flatpak run io.sireno.SirenoDeck
+```
+
+### Debian / RPM
+
+```sh
+sudo dpkg -i sireno-deck-<version>-linux-<arch>.deb     # Debian/Ubuntu
+sudo rpm -i sireno-deck-<version>-linux-<arch>.rpm      # Fedora/RHEL
+```
+
+## Windows
+
+1. Download `sireno-deck-<version>-windows-<arch>.exe`.
+2. Run it (SmartScreen warns for unsigned apps — choose _More info → Run anyway_).
+3. `sirenodeck` is installed under `%ProgramFiles%\SirenoDeck` with a Start
+   Menu shortcut.
+
+## First run
+
+The first launch does two one-time things (subsequent launches skip both):
+
+- **Downloads the rendering browser** into `~/.cache/sireno-deck/playwright/`
+  (~150MB). Override the location with the `PLAYWRIGHT_BROWSERS_PATH` env var.
+- **Shows the setup wizard** in the terminal, which checks that your system has
+  everything the deck needs.
+
+Then run `sirenodeck start` and open <http://localhost:5180> for the frontend
+(<http://localhost:52938> for the emulator).
+
+## Linux Wayland GNOME prerequisite
+
+Active-app detection (the `windowNames` rules that drive lock-mode and the
+`core:lock` deck) requires the **Window Calls Extended** GNOME extension:
+
+<https://extensions.gnome.org/extension/4974/window-calls-extended/>
+
+1. Open the link and toggle the extension **ON**.
+2. Log out and back in (or restart GNOME Shell: <kbd>Alt</kbd>+<kbd>F2</kbd>,
+   type `r`, Enter).
+
+The first-run wizard prints this URL when it detects the extension is missing.
+Without it, active-app tracking quietly returns no window — hardware output and
+the rest of the deck keep working.

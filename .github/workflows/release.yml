@@ -1,0 +1,73 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  installers:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            script: installer:flatpak
+            extra: |
+              sudo apt-get update
+              sudo apt-get install -y flatpak flatpak-builder
+          - os: macos-latest
+            script: installer:macos
+            extra: |
+              npm install -g create-dmg
+          - os: windows-latest
+            script: installer:windows
+            extra: |
+              choco install inno-setup -y
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: ${{ matrix.extra }}
+
+      - name: Build CLI + frontend + emulator
+        run: pnpm --filter sirenodeck build
+
+      - name: Build installer
+        run: pnpm --filter sirenodeck ${{ matrix.script }}
+
+      - name: Upload installer artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.os }}
+          path: packages/cli/dist/installer/
+          if-no-files-found: error
+
+  attach:
+    needs: installers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*

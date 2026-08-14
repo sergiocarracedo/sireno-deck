@@ -233,14 +233,14 @@ describe("materializeAddonDecks", () => {
     expect(genDeck.background).toBe("#000")
   })
 
-  it("propagates autoShow and isOverlay when set", () => {
+  it("propagates autoShow and trigger when set", () => {
     const addon = fakeManifestWithDecks("test-addon", {
       "test-addon:deck-a": () => ({
         "gen-deck": {
           name: "Gen",
           buttons: [],
           autoShow: true,
-          isOverlay: true,
+          trigger: { process_name: "chrome" },
         },
       }),
     })
@@ -251,7 +251,7 @@ describe("materializeAddonDecks", () => {
     const genDeck = result.find((d) => d.id === "gen-deck")!
 
     expect(genDeck.autoShow).toBe(true)
-    expect(genDeck.isOverlay).toBe(true)
+    expect(genDeck.processNames).toEqual(["chrome"])
   })
 
   it("propagates overlay button color to every paginated page", () => {
@@ -940,7 +940,6 @@ describe("materializeAddonDecks with addons[i].config overrides", () => {
       overrides,
     )
     const gen = result.find((d) => d.id === "gen-deck")!
-    expect(gen.isOverlay).toBe(true)
     expect(gen.processNames).toEqual(["chrome"])
   })
 

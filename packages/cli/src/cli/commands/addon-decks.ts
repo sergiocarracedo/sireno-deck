@@ -133,9 +133,6 @@ const mapAddonDeckToRuntimeDeck = (
           ? { variant: gdeck.variant }
           : {}),
         ...(gdeck.autoShow !== undefined ? { autoShow: gdeck.autoShow } : {}),
-        ...(gdeck.isOverlay !== undefined
-          ? { isOverlay: gdeck.isOverlay }
-          : {}),
         processNames: resolveTriggerProcessNames(gdeck.trigger),
         windowNames: resolveTriggerWindowNames(gdeck.trigger),
       }
@@ -196,7 +193,6 @@ const mapAddonDeckToRuntimeDeck = (
         ? { variant: gdeck.variant }
         : {}),
       ...(gdeck.autoShow !== undefined ? { autoShow: gdeck.autoShow } : {}),
-      ...(gdeck.isOverlay !== undefined ? { isOverlay: gdeck.isOverlay } : {}),
       processNames: resolveTriggerProcessNames(gdeck.trigger),
       windowNames: resolveTriggerWindowNames(gdeck.trigger),
     },
@@ -239,8 +235,7 @@ const collectAddonDefaultButtonConfig = (
 /**
  * Phase 11: per-deck overrides for an addon-deck. Built from
  * `addons[i].config.decks.<deckId>` in config.yml. Field-level overrides
- * apply on top of the generated deck; `trigger` override forces
- * `isOverlay: true`.
+ * apply on top of the generated deck.
  */
 export interface AddonDeckOverride {
   readonly autoShow?: boolean
@@ -349,7 +344,6 @@ export const materializeAddonDecks = (
             ...(override.trigger !== undefined
               ? { trigger: override.trigger }
               : {}),
-            isOverlay: true,
           }
         })()
         if (override !== undefined) {

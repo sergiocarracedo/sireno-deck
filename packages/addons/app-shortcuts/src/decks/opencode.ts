@@ -13,7 +13,6 @@ export const opencodeDeck: AddonDeckEntry = {
   buttonColor: "purple",
   paginated: true,
   autoShow: true,
-  isOverlay: true,
   trigger: {
     window_name: ["*opencode*", "*OpenCode*", "*opencode*"],
   },

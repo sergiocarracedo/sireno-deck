@@ -118,28 +118,26 @@ describe("buildDeckConfigMessage", () => {
     expect(n1Button?.type).toBe("core:back")
   })
 
-  it("preserves injected n-1 overlay-toggle button on overlay deck with overlayDeckIcon", () => {
+  it("computes n-1 as overlay-toggle when inOverlayMode=true", () => {
     const overlayDeck: RuntimeDeck = {
       id: "emoji-overlay",
       name: "Emoji",
-      isOverlay: true,
+      processNames: ["emoji"],
       buttons: [],
     }
-    const injected = injectSystemButtons([overlayDeck], 15)[0]!
     const msg = buildDeckConfigMessage(
-      injected,
+      overlayDeck,
       new Map(),
       {},
-      { navStackDepth: 3, hasOverlayDeckAvailable: true },
+      { navStackDepth: 3, hasOverlayDeckAvailable: true, inOverlayMode: true },
       15,
       false,
       () => undefined,
       "icon://emoji",
+      null,
     )
     const buttons = msg.surfaces["emoji-overlay"]!.buttons
-    const n1Button = buttons.find(
-      (b) => b.id === "14-main-0" || b.position === 14,
-    )
+    const n1Button = buttons.find((b) => b.position === 14)
     expect(n1Button).toBeDefined()
     expect(n1Button?.type).toBe("core:overlay-toggle")
     expect(msg.hasOverlayDeckAvailable).toBe(true)

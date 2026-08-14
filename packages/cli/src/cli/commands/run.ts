@@ -246,6 +246,7 @@ export const setupAddonServices = (
         {
           navStackDepth: runtime.navStackDepth(),
           hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+          inOverlayMode: runtime.getOverlay() !== null,
         },
         undefined,
         isCompact,
@@ -270,6 +271,7 @@ export const setupAddonServices = (
         {
           navStackDepth: runtime.navStackDepth(),
           hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+          inOverlayMode: runtime.getOverlay() !== null,
         },
         undefined,
         isCompact,
@@ -308,6 +310,7 @@ export const setupAddonServices = (
       runtime.getAvailableOverlayDeckIcon(),
       runtime.getAvailableOverlayDeckName(),
       isCompact,
+      runtime.getOverlay() !== null,
     ].join("|")
     if (key === lastHeartbeatKey) return
     lastHeartbeatKey = key
@@ -318,6 +321,7 @@ export const setupAddonServices = (
       {
         navStackDepth: runtime.navStackDepth(),
         hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+        inOverlayMode: runtime.getOverlay() !== null,
       },
       undefined,
       isCompact,
@@ -697,9 +701,6 @@ const buildRuntime = (
           : undefined
       const sharedDeckFields = {
         isMain: id === "main",
-        isOverlay:
-          (processNames !== undefined && processNames.length > 0) ||
-          (windowNames !== undefined && windowNames.length > 0),
         ...(processNames !== undefined ? { processNames } : {}),
         ...(windowNames !== undefined ? { windowNames } : {}),
         ...(d.autoShow === true ? { autoShow: true } : {}),
@@ -1122,7 +1123,7 @@ export const addonInventoryFromScanned = (
   defaultButton: s.defaultButton ?? null,
   decks: s.decks.map((d) => ({
     id: d.id,
-    isOverlay: d.isOverlay,
+    isOverlay: d.hasTrigger,
     buttons: d.buttons,
     internal: d.internal,
   })),
@@ -1190,16 +1191,30 @@ export const buildExternalScannedAddons = (
           internal: entry.internal ?? false,
         })
       } else if (typeof entry.createDeck === "function") {
+        const trigger = (entry as { trigger?: unknown }).trigger as
+          | Record<string, unknown>
+          | undefined
+        const hasTrigger =
+          trigger !== undefined &&
+          (trigger["process_name"] !== undefined ||
+            trigger["window_name"] !== undefined)
         decks.push({
           id: entry.id,
-          isOverlay: entry.isOverlay ?? false,
+          isOverlay: hasTrigger,
           buttons: -1,
           internal: entry.internal ?? false,
         })
       } else {
+        const trigger = (entry as { trigger?: unknown }).trigger as
+          | Record<string, unknown>
+          | undefined
+        const hasTrigger =
+          trigger !== undefined &&
+          (trigger["process_name"] !== undefined ||
+            trigger["window_name"] !== undefined)
         decks.push({
           id: entry.id,
-          isOverlay: entry.isOverlay ?? false,
+          isOverlay: hasTrigger,
           buttons: Array.isArray(entry.buttons) ? entry.buttons.length : 0,
           internal: entry.internal ?? false,
         })
@@ -1395,6 +1410,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
         {
           navStackDepth: runtime.navStackDepth(),
           hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+          inOverlayMode: runtime.getOverlay() !== null,
         },
         descriptor.keyCount,
         outputClient.kind === "real",
@@ -1514,6 +1530,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
           {
             navStackDepth: runtime.navStackDepth(),
             hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+            inOverlayMode: runtime.getOverlay() !== null,
           },
           descriptor.keyCount,
           outputClient.kind === "real",
@@ -1672,6 +1689,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
             {
               navStackDepth: runtime.navStackDepth(),
               hasOverlayDeckAvailable: runtime.hasOverlayDeckAvailable(),
+              inOverlayMode: runtime.getOverlay() !== null,
             },
             descriptor.keyCount,
             outputClient.kind === "real",

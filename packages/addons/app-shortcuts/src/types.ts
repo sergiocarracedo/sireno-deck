@@ -17,7 +17,6 @@ export interface AddonGeneratedDeck {
     window_name?: string | string[]
   }
   autoShow?: boolean
-  isOverlay?: boolean
 }
 
 export type AddonDeckEntry = AddonGeneratedDeck & {

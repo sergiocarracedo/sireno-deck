@@ -13,7 +13,6 @@ export const slackDeck: AddonDeckEntry = {
   buttonColor: "green",
   paginated: true,
   autoShow: true,
-  isOverlay: true,
   trigger: {
     process_name: ["slack", "Slack"],
   },

@@ -38,7 +38,6 @@ export interface RuntimeDeck {
   name: string
   buttons: ReadonlyArray<RuntimeButton>
   isMain?: boolean
-  isOverlay?: boolean
   processNames?: ReadonlyArray<string>
   windowNames?: ReadonlyArray<string>
   autoShow?: boolean
@@ -315,10 +314,6 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     } else if (navOptions?.addToHistory === false) {
       transientDeckId = resolvedId
     } else {
-      if (target.isOverlay === true) {
-        setOverlay(resolvedId, { source: "manual" })
-        return
-      }
       navStack.push(resolvedId)
       transientDeckId = null
     }
@@ -328,10 +323,15 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
 
   const goBack = (): void => {
     if (overlayDeckId !== null) {
-      // ponytail: overlay mode is a routing branch, not a deck stack. Back
-      // dismisses the overlay outright; re-activating later restores the
-      // overlay's root page (overlayNavStacks entry is kept).
-      setOverlay(null)
+      const stack = overlayNavStacks.get(overlayDeckId)
+      if (stack !== undefined && stack.length > 1) {
+        stack.pop()
+        const prev = stack[stack.length - 1]!
+        pubSub.publish("runtime:deck-inactive", { deckId: prev })
+        pubSub.publish("runtime:activeDeck", { deckId: prev })
+      } else {
+        setOverlay(null)
+      }
       return
     }
     if (transientDeckId !== null) {
@@ -494,10 +494,14 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
       return false
     }
     if (type === "core:overlay-toggle") {
-      // ponytail: tap and dbl-tap both toggle the overlay. hold is left
-      // unhandled (returns false) so it can fall through if the user
-      // assigns a hold action elsewhere.
-      if (gesture === "tap" || gesture === "dbl-tap") {
+      // ponytail: tap = step back within overlay path; dbl-tap = toggle
+      // overlay on/off; hold is left unhandled so it can fall through if the
+      // user assigns a hold action elsewhere.
+      if (gesture === "tap") {
+        goBack()
+        return true
+      }
+      if (gesture === "dbl-tap") {
         if (overlayDeckId !== null) {
           setOverlay(null)
         } else if (availableOverlayDeckId !== null) {

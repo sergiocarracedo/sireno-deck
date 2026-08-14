@@ -1,9 +1,9 @@
-import type { CSSProperties, ReactElement } from 'react'
+import type { CSSProperties, ReactElement } from "react"
 
-import { Text, TextSize } from '../primitives'
-import { Icon } from '../primitives/Icon'
-import { useThemeUiPresentation } from '../theme-presentation'
-import { cn } from '../utils/cn'
+import { Text, TextSize } from "../primitives"
+import { Icon } from "../primitives/Icon"
+import { useThemeUiPresentation } from "../theme-presentation"
+import { cn } from "../utils/cn"
 
 export interface LabelValueListLine {
   color?: string
@@ -27,16 +27,16 @@ export interface LabelValueListProps {
 
 type RowTileProps = {
   item: LabelValueListLine
-  variant?: 'default' | 'big' | 'small'
+  variant?: "default" | "big" | "small"
 }
 
-function RowTile({ item, variant = 'default' }: RowTileProps): ReactElement {
+function RowTile({ item, variant = "default" }: RowTileProps): ReactElement {
   const variantsProps: Record<
-    NonNullable<RowTileProps['variant']>,
+    NonNullable<RowTileProps["variant"]>,
     {
       value: TextSize
       valueLineClass?: string
-      valueTone?: 'foreground' | 'primary'
+      valueTone?: "foreground" | "primary"
       valueWidthUnits?: TextSize
       valueMultiline?: boolean
       unit: TextSize
@@ -46,37 +46,37 @@ function RowTile({ item, variant = 'default' }: RowTileProps): ReactElement {
       iconSize?: number
       titleClass?: string
       unitsClass?: string
-      unitsPosition?: 'prev' | 'next'
+      unitsPosition?: "prev" | "next"
     }
   > = {
     big: {
-      value: '5xl',
-      valueTone: 'foreground',
-      valueWidthUnits: '4xl',
+      value: "5xl",
+      valueTone: "foreground",
+      valueWidthUnits: "4xl",
       valueMultiline: true,
-      unitsClass: '-mt-1 text-center',
-      unit: 'md',
+      unitsClass: "-mt-1 text-center",
+      unit: "md",
       showLabel: true,
       multiline: true,
       iconSize: 18,
-      titleClass: 'items-center justify-center',
-      labelSize: 'md',
+      titleClass: "items-center justify-center",
+      labelSize: "md",
     },
     default: {
-      value: 'xl',
-      unit: 'sm',
+      value: "xl",
+      unit: "sm",
       multiline: true,
-      unitsPosition: 'prev',
+      unitsPosition: "prev",
       iconSize: 16,
-      labelSize: 'sm',
-      valueLineClass: 'flex -mt-1',
+      labelSize: "sm",
+      valueLineClass: "flex -mt-1",
     },
     small: {
-      value: 'lg',
-      unit: 'xs',
+      value: "lg",
+      unit: "xs",
       iconSize: 14,
-      unitsClass: 'max-w-[20%]',
-      valueLineClass: 'flex',
+      unitsClass: "max-w-[20%]",
+      valueLineClass: "flex",
     },
   }
 
@@ -85,24 +85,24 @@ function RowTile({ item, variant = 'default' }: RowTileProps): ReactElement {
 
   return (
     <div
-      className={cn(!variantProps.multiline && 'flex', 'items-start')}
+      className={cn(!variantProps.multiline && "flex", "items-start")}
       style={{ ...colorStyle }}
     >
-      <div className={cn('flex gap-1 items-center', variantProps.titleClass)}>
+      <div className={cn("flex gap-1 items-center", variantProps.titleClass)}>
         {item.icon ? (
           <Icon source={item.icon} size={variantProps.iconSize} />
         ) : null}
         {variantProps.showLabel ? (
           <Text
             text={item.label}
-            size={variantProps.labelSize ?? 'xs'}
+            size={variantProps.labelSize ?? "xs"}
             weight="semibold"
             tone="primary"
             fit="autofit"
             style={colorStyle}
           />
         ) : null}
-        {variantProps.unitsPosition === 'prev' && item.units ? (
+        {variantProps.unitsPosition === "prev" && item.units ? (
           <div className={cn(variantProps.unitsClass)}>
             <Text size={variantProps.unit} text={item.units} />
           </div>
@@ -110,8 +110,8 @@ function RowTile({ item, variant = 'default' }: RowTileProps): ReactElement {
       </div>
       <div
         className={cn(
-          'flex-1 flex min-w-0 min-h-0 gap-0.5 justify-end items-baseline',
-          variantProps.valueMultiline ? 'flex-col items-center' : '',
+          "flex-1 flex min-w-0 min-h-0 gap-0.5 justify-end items-baseline",
+          variantProps.valueMultiline ? "flex-col items-center" : "",
           variantProps.valueLineClass,
         )}
       >
@@ -121,19 +121,19 @@ function RowTile({ item, variant = 'default' }: RowTileProps): ReactElement {
               ? (variantProps.valueWidthUnits ?? variantProps.value)
               : variantProps.value
           }
-          weight={variant === 'big' ? 'normal' : 'bold'}
+          weight={variant === "big" ? "normal" : "bold"}
           text={item.value}
-          tone={variantProps.valueTone ?? 'primary'}
+          tone={variantProps.valueTone ?? "primary"}
           style={colorStyle}
           fit="autofit"
         />
 
-        {item.units && variantProps.unitsPosition !== 'prev' ? (
-          <div className={cn('shrink-0', variantProps.unitsClass)}>
+        {item.units && variantProps.unitsPosition !== "prev" ? (
+          <div className={cn("shrink-0", variantProps.unitsClass)}>
             <Text
               size={variantProps.unit}
               text={
-                variant === 'big' ? (item.unitLong ?? item.units) : item.units
+                variant === "big" ? (item.unitLong ?? item.units) : item.units
               }
             />
           </div>
@@ -173,10 +173,10 @@ export function labelValueListSurfaceBase(
     )
   }
 
-  const variants: Record<number, RowTileProps['variant']> = {
-    1: 'big',
-    2: 'default',
-    3: 'small',
+  const variants: Record<number, RowTileProps["variant"]> = {
+    1: "big",
+    2: "default",
+    3: "small",
   }
 
   const variant =
@@ -184,9 +184,9 @@ export function labelValueListSurfaceBase(
 
   return (
     <div
-      className={cn('flex w-full gap-0.5 p-1', 'flex-col', props.className)}
+      className={cn("flex w-full gap-0.5 p-1", "flex-col", props.className)}
       style={{
-        color: 'var(--sireno-color-fg)',
+        color: "var(--sireno-color-fg)",
         ...props.style,
       }}
     >

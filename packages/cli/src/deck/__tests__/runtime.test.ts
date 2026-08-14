@@ -881,18 +881,18 @@ describe("createRuntime — per-overlay-deck nav stack", () => {
     expect(runtime.getActiveDeckId()).toBe("main")
   })
 
-  it("goBack within overlay dismisses the overlay (overlay mode is a routing branch)", () => {
+  it("goBack within overlay pops the overlay stack, stays in overlay mode at root", () => {
     const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
-      makeDeck({ id: "spotify", isOverlay: true }),
-      makeDeck({ id: "spotify-page", isOverlay: true }),
+      makeDeck({ id: "spotify" }),
+      makeDeck({ id: "spotify-page" }),
     ])
     runtime.setOverlay("spotify")
     runtime.navigateToDeck("spotify-page")
     expect(runtime.getActiveDeckId()).toBe("spotify-page")
     runtime.goBack()
-    expect(runtime.getOverlay()).toBeNull()
-    expect(runtime.getActiveDeckId()).toBe("main")
+    expect(runtime.getOverlay()).not.toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("spotify")
   })
 
   it("regular navStack is unaffected by overlay navigation", () => {
@@ -921,21 +921,20 @@ describe("createRuntime — system-button gestures", () => {
     vi.useRealTimers()
   })
 
-  it("core:back tap on overlay deck dismisses overlay (overlay mode is a routing branch)", async () => {
+  it("core:back tap on overlay deck pops overlay stack (stays in overlay mode)", async () => {
     const { runtime } = setupRuntimeWithMethods([
       makeDeck({ id: "main", isMain: true }),
       makeDeck({
         id: "spotify",
-        isOverlay: true,
         buttons: [{ id: "14", type: "core:back" }],
       }),
-      makeDeck({ id: "spotify-page", isOverlay: true }),
+      makeDeck({ id: "spotify-page" }),
     ])
     runtime.setOverlay("spotify")
     runtime.navigateToDeck("spotify-page")
     await runtime.dispatchGesture("14", "tap")
-    expect(runtime.getOverlay()).toBeNull()
-    expect(runtime.getActiveDeckId()).toBe("main")
+    expect(runtime.getOverlay()).not.toBeNull()
+    expect(runtime.getActiveDeckId()).toBe("spotify")
   })
 
   it("core:back hold while overlay active jumps to main + dismisses overlay", async () => {

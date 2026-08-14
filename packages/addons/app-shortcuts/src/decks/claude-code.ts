@@ -13,7 +13,6 @@ export const claudeCodeDeck: AddonDeckEntry = {
   buttonColor: "purple",
   paginated: true,
   autoShow: true,
-  isOverlay: true,
   trigger: {
     process_name: ["claude"],
     window_name: ["*Claude Code*", "*claude*", "*claude code*"],
