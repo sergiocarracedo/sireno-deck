@@ -1,0 +1,21 @@
+packages/cli/frontend/vite.config.ts
+  s_364a3d4e61d135::t_03c276e50b404e 105-107
+packages/cli/emulator/vite.config.ts
+  s_364a3d4e61d135::t_19a844d9f81c3d 95-97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "99bfd9edf1fc916ff820b8c7728f6568c931b19b",
+  "prompts": {},
+  "sessions": {
+    "s_364a3d4e61d135": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00e39aa83ffeUIZ2ZU1rSlKRiL",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
