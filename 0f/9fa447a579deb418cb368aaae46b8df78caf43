@@ -1,0 +1,33 @@
+packages/cli/emulator/src/DeckFrame.tsx
+  s_364a3d4e61d135::t_c0207d2dd4002f 39-43,75-102,122,124,138-172
+packages/cli/frontend/src/App.tsx
+  s_364a3d4e61d135::t_c0207d2dd4002f 78-81,83-89
+packages/cli/emulator/src/App.tsx
+  s_364a3d4e61d135::t_c0207d2dd4002f 96,121,124,239-275,284-293,331-339,356-359,366-374,376-386,506-515
+  s_364a3d4e61d135::t_73bd765ad900b1 516
+packages/cli/emulator/src/__tests__/App.test.tsx
+  s_364a3d4e61d135::t_c0207d2dd4002f 25-30
+packages/cli/emulator/src/__tests__/DeckFrame.test.tsx
+  s_364a3d4e61d135::t_c0207d2dd4002f 60-97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0f9fa447a579deb418cb368aaae46b8df78caf43",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_364a3d4e61d135": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00e39aa83ffeUIZ2ZU1rSlKRiL",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
