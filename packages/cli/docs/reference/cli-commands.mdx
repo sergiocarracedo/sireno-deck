@@ -12,11 +12,14 @@ Complete reference for all Sireno Deck CLI commands.
 
 ## Global Options
 
-| Option        | Alias | Description            |
-| ------------- | ----- | ---------------------- |
-| `--verbose`   | `-v`  | Enable verbose logging |
-| `--json`      | —     | Output logs as JSON    |
-| `--log-level` | —     | Set log level          |
+| Option        | Alias | Description                                                             |
+| ------------- | ----- | ----------------------------------------------------------------------- |
+| `--verbose`   | `-v`  | Enable verbose debug logging (`debug` level)                            |
+| `--dev-mode`  | —     | Enable developer mode logging (`info` level)                            |
+| `--log-level` | —     | Override log level (`trace`, `debug`, `info`, `warn`, `error`, `fatal`) |
+| `--json`      | —     | Output logs as JSON                                                     |
+
+By default, the CLI only logs errors. Use `--dev-mode` for normal operational output during development, `--verbose` for debug output, or `--log-level` for full control.
 
 ## Commands
 

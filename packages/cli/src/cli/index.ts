@@ -14,6 +14,7 @@ import { systemRequirementsCommand } from "./commands/system-requirements"
 export interface GlobalOptions {
   verbose?: boolean
   logLevel?: string
+  devMode?: boolean
   json?: boolean
 }
 
@@ -40,14 +41,17 @@ interface RestartArgs extends GlobalOptions {
   logs?: boolean
 }
 
-const buildLogger = (
+export const buildLogger = (
   argv: ArgumentsCamelCase<GlobalOptions>,
-): ReturnType<typeof createLogger> =>
-  createLogger({
+): ReturnType<typeof createLogger> => {
+  const level =
+    argv.logLevel ?? (argv.verbose ? "debug" : argv.devMode ? "info" : "error")
+  return createLogger({
     verbose: argv.verbose,
     json: argv.json ?? false,
-    ...(argv.logLevel !== undefined ? { level: argv.logLevel } : {}),
+    level,
   })
+}
 
 const startCommand: CommandModule<object, StartArgs> = {
   command: "start",
@@ -181,7 +185,6 @@ export const buildCli = async (): Promise<{
   commands: CommandModule<object, GlobalOptions>[]
   packageName: string
 }> => {
-  void buildLogger
   return {
     scriptName: PACKAGE_NAME,
     commands: [

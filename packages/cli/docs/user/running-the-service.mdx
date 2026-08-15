@@ -150,8 +150,11 @@ Options:
 All commands support:
 
 - `--verbose / -v` — Enable verbose debug logging
+- `--dev-mode` — Enable developer mode logging (`info` level)
+- `--log-level <level>` — Override log level (`trace`, `debug`, `info`, `warn`, `error`, `fatal`)
 - `--json` — Emit logs as JSON
-- `--log-level <level>` — Override log level (trace, debug, info, warn, error, fatal)
+
+By default, the CLI only logs errors. Use `--dev-mode` for normal operational output, `--verbose` for debug output, or `--log-level` for full control.
 
 ## Daemon Lifecycle
 
