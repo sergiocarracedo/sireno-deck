@@ -22,4 +22,10 @@ describe("App (emulator)", () => {
     expect(screen.queryByTestId("side-panel")).not.toBeInTheDocument()
     expect(screen.queryByTestId("deck-header")).not.toBeInTheDocument()
   })
+
+  it("shows a fullscreen toggle in deck-only mode", () => {
+    window.history.replaceState(null, "", "/?deckOnly=1")
+    render(<App />)
+    expect(screen.getByTestId("fullscreen-toggle")).toBeInTheDocument()
+  })
 })

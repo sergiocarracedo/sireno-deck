@@ -57,6 +57,44 @@ describe("DeckFrame (emulator)", () => {
     expect(iframe).toBe(container.querySelector("iframe"))
   })
 
+  it("derives iframe src from window.location.hostname while keeping the injected frontend port", () => {
+    vi.stubGlobal("location", {
+      ...window.location,
+      hostname: "phone.lan",
+      protocol: "http:",
+    })
+    const { container } = render(
+      <DeckFrame
+        frontendUrl="http://127.0.0.1:5180"
+        deckId="main"
+        device={mk2}
+      />,
+    )
+    const iframe = container.querySelector("iframe")
+    expect(iframe).toHaveAttribute(
+      "src",
+      expect.stringContaining("http://phone.lan:5180"),
+    )
+    expect(iframe).toHaveAttribute("src", expect.stringContaining("device=mk2"))
+    vi.unstubAllGlobals()
+  })
+
+  it("shows a loading overlay until the iframe fires onLoad", () => {
+    const { container, getByTestId, queryByTestId } = render(
+      <DeckFrame
+        frontendUrl="http://127.0.0.1:5180"
+        deckId="main"
+        device={mk2}
+      />,
+    )
+    expect(getByTestId("iframe-status").getAttribute("data-status")).toBe(
+      "loading",
+    )
+    const iframe = container.querySelector("iframe")!
+    fireEvent.load(iframe)
+    expect(queryByTestId("iframe-status")).not.toBeInTheDocument()
+  })
+
   describe("gesture delivery", () => {
     beforeEach(() => {
       vi.useFakeTimers()

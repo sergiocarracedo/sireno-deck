@@ -75,9 +75,18 @@ const resolvePortFromWindow = (): number | undefined => {
 }
 
 const wsUrl = (): string => {
+  if (typeof window === "undefined") return ENV_WS_URL
+  // ponytail: use the page's current hostname so the WS bridge is reachable
+  // from whichever interface the browser used (LAN, Tailscale, VPN, etc.).
+  const hostname = window.location.hostname
   const port = resolvePortFromWindow()
-  if (port !== undefined) return `ws://127.0.0.1:${port}`
-  return ENV_WS_URL
+  if (port !== undefined) return `ws://${hostname}:${port}`
+  try {
+    const parsed = new URL(ENV_WS_URL)
+    return `${parsed.protocol}//${hostname}:${parsed.port}${parsed.pathname}${parsed.search}`
+  } catch {
+    return ENV_WS_URL
+  }
 }
 
 const buildThemeContext = (): ThemeContextValue => {

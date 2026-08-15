@@ -93,6 +93,7 @@ export const App = ({
   const [disconnectedSince, setDisconnectedSince] = useState<number | null>(
     null,
   )
+  const [deckScale, setDeckScale] = useState(1)
   useEffect(() => {
     disconnectedSinceRef.current = disconnectedSince
   }, [disconnectedSince])
@@ -117,8 +118,10 @@ export const App = ({
       ? getDeviceModel(initialDeviceModel)
       : DEFAULT_DEVICE_MODEL,
   )
+  const [isFullscreen, setIsFullscreen] = useState(false)
   const clientRef = useRef<WsClient | null>(null)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
+  const deckContainerRef = useRef<HTMLDivElement | null>(null)
   // ponytail: ignore the first `closed` after an `open` — happens during
   // WS-replacement that some React navigations trigger. Latch only after a
   // short delay so transient reconnects don't pop the banner.
@@ -234,11 +237,58 @@ export const App = ({
   }, [disconnectedSince])
 
   useEffect(() => {
+    const computeDeckScale = () => {
+      const el = deckContainerRef.current
+      if (el === null || typeof window === "undefined") return
+      // Use the container's actual size (not window.innerWidth/Height) so the
+      // deck scales to the visible viewport, excluding mobile browser chrome.
+      const padding = 32
+      const containerW = el.clientWidth - padding
+      const containerH = el.clientHeight - padding
+      if (containerW <= 0 || containerH <= 0) return
+      const BUTTON_SIZE_PX = 96
+      const BUTTON_GAP_PX = 8
+      const DECK_PADDING_PX = 16
+      const rows = Math.ceil(deviceModel.keyCount / deviceModel.columns)
+      const deckWidth =
+        deviceModel.columns * BUTTON_SIZE_PX +
+        (deviceModel.columns - 1) * BUTTON_GAP_PX +
+        DECK_PADDING_PX * 2
+      const deckHeight =
+        rows * BUTTON_SIZE_PX + (rows - 1) * BUTTON_GAP_PX + DECK_PADDING_PX * 2
+      setDeckScale(Math.min(containerW / deckWidth, containerH / deckHeight, 1))
+    }
+    computeDeckScale()
+    const ro =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(() => computeDeckScale())
+        : null
+    if (ro !== null && deckContainerRef.current !== null) {
+      ro.observe(deckContainerRef.current)
+    }
+    window.addEventListener("resize", computeDeckScale)
+    return () => {
+      ro?.disconnect()
+      window.removeEventListener("resize", computeDeckScale)
+    }
+  }, [deviceModel])
+
+  useEffect(() => {
     if (typeof window === "undefined") return
     const hash = window.location.hash.replace(/^#\/?/, "")
     if (isValidSection(hash)) {
       setActiveSection(hash)
     }
+  }, [])
+
+  useEffect(() => {
+    if (typeof document === "undefined") return
+    const handleChange = (): void => {
+      setIsFullscreen(document.fullscreenElement !== null)
+    }
+    document.addEventListener("fullscreenchange", handleChange)
+    handleChange()
+    return () => document.removeEventListener("fullscreenchange", handleChange)
   }, [])
 
   const onSelect = (path: string): void => {
@@ -278,6 +328,15 @@ export const App = ({
     clientRef.current?.send(JSON.stringify({ type: "set-device", deviceId }))
   }
 
+  const toggleFullscreen = (): void => {
+    if (typeof document === "undefined") return
+    if (document.fullscreenElement !== null) {
+      void document.exitFullscreen()
+    } else {
+      void document.documentElement.requestFullscreen()
+    }
+  }
+
   const elapsed = disconnectedSince === null ? 0 : now - disconnectedSince
   const showBsod =
     connectionStatus !== "open" &&
@@ -294,22 +353,37 @@ export const App = ({
       content={
         <>
           {deckOnly ? (
-            <div className="flex h-full items-start justify-start">
+            <div
+              ref={deckContainerRef}
+              className="flex h-full w-full items-center justify-center overflow-hidden p-4"
+            >
               {activeSection === "device" ? (
                 deckId === "" ? (
                   <p className="font-mono text-xs uppercase tracking-widest text-neutral-500">
                     Awaiting deck-config…
                   </p>
                 ) : (
-                  <DeckFrame
-                    frontendUrl={ENV_FRONTEND_URL}
-                    device={deviceModel}
-                    deckId={deckId}
-                    onGesture={sendButtonAction}
-                    onIframeRef={(el) => {
-                      iframeRef.current = el
+                  // ponytail: wrap the fixed-size deck so flexbox can't shrink
+                  // it before the scale transform is applied; without shrink-0
+                  // the deck is squeezed to the container width and then scaled
+                  // again, making it far smaller than the intended fit.
+                  <div
+                    className="shrink-0"
+                    style={{
+                      transform: `scale(${deckScale})`,
+                      transformOrigin: "center",
                     }}
-                  />
+                  >
+                    <DeckFrame
+                      frontendUrl={ENV_FRONTEND_URL}
+                      device={deviceModel}
+                      deckId={deckId}
+                      onGesture={sendButtonAction}
+                      onIframeRef={(el) => {
+                        iframeRef.current = el
+                      }}
+                    />
+                  </div>
                 )
               ) : (
                 renderActive()
@@ -428,6 +502,17 @@ export const App = ({
                 </dl>
               </div>
             </div>
+          )}
+          {deckOnly && (
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+              data-testid="fullscreen-toggle"
+              className="fixed bottom-4 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-neutral-800/80 text-[10px] font-medium uppercase tracking-wide text-neutral-100 shadow-lg backdrop-blur hover:bg-neutral-700/80"
+            >
+              {isFullscreen ? "Exit" : "Full"}
+            </button>
           )}
         </>
       }
