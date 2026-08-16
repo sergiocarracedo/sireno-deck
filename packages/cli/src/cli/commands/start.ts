@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process"
 import { dirname, join, resolve as resolvePath } from "node:path"
 import { fileURLToPath } from "node:url"
 
-import { confirm, select } from "@/ui/console"
+import { confirm, select, spinner } from "@/ui/console"
 import type pino from "pino"
 
 import {
@@ -554,30 +554,47 @@ const startProduction = async (options: StartOptions): Promise<void> => {
   writeConfigPath(configPath)
   writeFlags(runtimeFlags)
 
-  await ensureInstalled({
-    logger,
-    ...(options.system === true ? { system: true } : {}),
-  })
-  await invokeManager({ action: "restart", logger })
+  // ponytail: spinner covers ensureInstalled + invokeManager + pid-wait. Skipped
+  // when stdout isn't a TTY so pipes/CI don't get a static "⠋" line.
+  const s = process.stdout.isTTY ? spinner() : null
+  if (s) s.start("Starting sireno-deck daemon")
+  try {
+    await ensureInstalled({
+      logger,
+      ...(options.system === true ? { system: true } : {}),
+    })
+    await invokeManager({ action: "restart", logger })
 
-  const paths = resolveDaemonPaths()
-  const deadline = Date.now() + 5_000
-  let pid: number | null = null
-  while (Date.now() < deadline) {
-    pid = readPid(paths)
-    if (pid !== null && isRunning(pid)) break
-    await new Promise((r) => setTimeout(r, 100))
-  }
-  logger.info(
-    { childPid: pid, configPath },
-    pid !== null
-      ? "start: daemon started via service manager"
-      : "start: daemon started (pid not yet visible)",
-  )
+    const paths = resolveDaemonPaths()
+    const deadline = Date.now() + 5_000
+    let pid: number | null = null
+    while (Date.now() < deadline) {
+      pid = readPid(paths)
+      if (pid !== null && isRunning(pid)) break
+      await new Promise((r) => setTimeout(r, 100))
+    }
+    if (s) {
+      s.stop(
+        pid !== null
+          ? "Daemon started"
+          : "Daemon started (pid not yet visible)",
+      )
+    } else {
+      logger.info(
+        { childPid: pid, configPath },
+        pid !== null
+          ? "start: daemon started via service manager"
+          : "start: daemon started (pid not yet visible)",
+      )
+    }
 
-  if (options.logs === true && process.exitCode !== 1) {
-    const logPath = `${paths.runtimeDir}/service.log`
-    await tailLogs({ logPath, follow: true, lines: 50 })
+    if (options.logs === true && process.exitCode !== 1) {
+      const logPath = `${paths.runtimeDir}/service.log`
+      await tailLogs({ logPath, follow: true, lines: 50 })
+    }
+  } catch (err) {
+    if (s) s.stop("Failed to start daemon")
+    throw err
   }
 }
 
