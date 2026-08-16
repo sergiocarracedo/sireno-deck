@@ -1,0 +1,74 @@
+packages/cli/src/system/setup-wizard/__tests__/probe-cache.test.ts
+  s_364a3d4e61d135::t_0873bd2c8ede3c 18-23,72
+  s_364a3d4e61d135::t_925157e883b3f8 39-42
+  s_364a3d4e61d135::t_8c1ac009ac6a4c 1-17,24-38,43-71
+packages/cli/src/cli/probe-deps.ts
+  s_364a3d4e61d135::t_c3aabd2ad81986 1-44
+  s_364a3d4e61d135::t_e399fe0259c9ea 45
+packages/cli/docs/user/running-the-service.mdx
+  s_364a3d4e61d135::t_8271ecb2a94e9c 154-155,158-175
+packages/cli/src/cli/index.ts
+  s_364a3d4e61d135::t_20c69bfbfe855b 13-18
+  s_364a3d4e61d135::t_b50f5222ba79a9 54,56-57
+  s_364a3d4e61d135::t_e399fe0259c9ea 58-59
+  s_364a3d4e61d135::t_1a1bd3cca5c269 24
+  s_364a3d4e61d135::t_d6e83d6c7576fd 120-133,135
+packages/cli/src/system/setup-wizard/index.ts
+  s_364a3d4e61d135::t_06775f20c4315a 19-24
+  s_364a3d4e61d135::t_4e7fdeea368879 18
+packages/cli/src/cli/startup-display.ts
+  s_364a3d4e61d135::t_d0a643ab290e57 16-17
+  s_364a3d4e61d135::t_e399fe0259c9ea 46,52-56,153,185-188
+  s_364a3d4e61d135::t_03646f0c377ec9 1-15,18-45,47-51,57-134,136-152,154-184
+  s_364a3d4e61d135::t_0a3f95f0240dd1 135
+packages/cli/src/system/setup-wizard/probe-cache.ts
+  s_364a3d4e61d135::t_a81dbae69c4ba5 1-25
+  s_364a3d4e61d135::t_e399fe0259c9ea 26
+packages/cli/src/cli/main.ts
+  s_364a3d4e61d135::t_a818e37321719c 122
+  s_364a3d4e61d135::t_87b55777141be3 129-134
+packages/cli/src/cli/commands/start.ts
+  s_364a3d4e61d135::t_4d9c5d5a49198c 61
+  s_364a3d4e61d135::t_292e1fafa7dad8 6
+  s_364a3d4e61d135::t_b636bdb52852ee 558-565,567-573,575-580,582-584
+  s_364a3d4e61d135::t_4e7fb61bf0374b 597,600-601
+  s_364a3d4e61d135::t_2af645be3a607f 599
+  s_364a3d4e61d135::t_ebce70eda232e4 57
+  s_364a3d4e61d135::t_1f187b9d4f102d 585
+packages/cli/src/cli/__tests__/index.test.ts
+  s_364a3d4e61d135::t_9b041bf1d02f00 39-53
+packages/cli/src/system/setup-wizard/__tests__/runtime-features.test.ts
+  s_364a3d4e61d135::t_0873bd2c8ede3c 64
+  s_364a3d4e61d135::t_d3c8c9937ddf38 1-63
+packages/cli/src/cli/__tests__/startup-display.test.ts
+  s_364a3d4e61d135::t_5807d250c5c0e6 1-33,62,69-133,138-147,153-157,162-177,182-186,191-193,201-209,214-218,223-227,232,236-257
+  s_364a3d4e61d135::t_0873bd2c8ede3c 34-61,63-68,134-137,148-152,158-161,178-181,187-190,194-200,210-213,219-222,228-231,233-235,258
+packages/cli/docs/reference/cli-commands.mdx
+  s_364a3d4e61d135::t_5d4aef4dbfe4e0 20,23
+  s_364a3d4e61d135::t_721bf7f0992d22 15-19,21
+  s_364a3d4e61d135::t_c3048081af1584 22
+packages/cli/src/system/setup-wizard/runtime-features.ts
+  s_364a3d4e61d135::t_e399fe0259c9ea 66
+  s_364a3d4e61d135::t_81dbe1792a2e35 1-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4fc7525636993263d2cc42b0d094092d549f12e8",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_364a3d4e61d135": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00e39aa83ffeUIZ2ZU1rSlKRiL",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
