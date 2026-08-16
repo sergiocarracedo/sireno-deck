@@ -1,0 +1,25 @@
+packages/cli/src/ui/surfaces/LabelValueListSurface.tsx
+  h_31bfcf89e26281 99,108
+  s_364a3d4e61d135::t_867e95e32104c9 105-107,109
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "558debe16750ff1188b14e7e52ced2a0b0116095",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_364a3d4e61d135": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00e39aa83ffeUIZ2ZU1rSlKRiL",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
