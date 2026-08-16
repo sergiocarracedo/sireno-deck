@@ -12,14 +12,15 @@ Complete reference for all Sireno Deck CLI commands.
 
 ## Global Options
 
-| Option        | Alias | Description                                                             |
-| ------------- | ----- | ----------------------------------------------------------------------- |
-| `--verbose`   | `-v`  | Enable verbose debug logging (`debug` level)                            |
-| `--dev-mode`  | —     | Enable developer mode logging (`info` level)                            |
-| `--log-level` | —     | Override log level (`trace`, `debug`, `info`, `warn`, `error`, `fatal`) |
-| `--json`      | —     | Output logs as JSON                                                     |
+| Option        | Alias | Description                                                                               |
+| ------------- | ----- | ----------------------------------------------------------------------------------------- |
+| `--verbose`   | `-v`  | Enable verbose debug logging (`debug` level)                                              |
+| `--dev-mode`  | —     | Enable developer mode logging (`info` level)                                              |
+| `--quiet`     | `-q`  | Suppress all logs and the startup banner (`silent` level)                                 |
+| `--log-level` | —     | Override log level (`trace`, `debug`, `info`, `warn`, `error`, `fatal`, `silent`, `none`) |
+| `--json`      | —     | Output logs as JSON                                                                       |
 
-By default, the CLI only logs errors. Use `--dev-mode` for normal operational output during development, `--verbose` for debug output, or `--log-level` for full control.
+By default, the CLI only logs errors. Use `--dev-mode` for normal operational output during development, `--verbose` for debug output, or `--log-level` for full control. Use `--quiet` (or `--log-level silent` / `--log-level none`) to silence logs and suppress the startup banner.
 
 ## Commands
 

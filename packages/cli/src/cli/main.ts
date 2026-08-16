@@ -119,12 +119,18 @@ const main = async (): Promise<void> => {
     .option("log-level", {
       type: "string",
       description:
-        "Override log level (trace, debug, info, warn, error, fatal)",
+        "Override log level (trace, debug, info, warn, error, fatal, silent, none)",
     })
     .option("dev-mode", {
       type: "boolean",
       default: false,
       description: "Enable developer mode logging (info level by default)",
+    })
+    .option("quiet", {
+      alias: "q",
+      type: "boolean",
+      default: false,
+      description: "Suppress all logs and the startup banner (silent level)",
     })
     .demandCommand(1, "Run $0 --help to see available commands.")
     .strict()

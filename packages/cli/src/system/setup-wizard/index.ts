@@ -15,6 +15,13 @@ export {
 } from "./types"
 
 export { probeAll } from "./probe"
+export { probeAllCached, resetProbeCache } from "./probe-cache"
+export {
+  probeMediaAccess,
+  probeCommandExecution,
+  probeInternetAccess,
+  type RuntimeFeatureProbe,
+} from "./runtime-features"
 export { buildInstallPlan, needsConfigSeed } from "./plan"
 export {
   formatResultLine,

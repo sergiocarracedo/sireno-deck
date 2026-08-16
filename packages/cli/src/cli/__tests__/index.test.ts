@@ -36,4 +36,19 @@ describe("buildLogger", () => {
     const logger = buildLogger({ verbose: true, devMode: true })
     expect(logger.level).toBe("debug")
   })
+
+  it("uses silent level when --quiet", () => {
+    const logger = buildLogger({ quiet: true })
+    expect(logger.level).toBe("silent")
+  })
+
+  it("normalizes --log-level none to silent", () => {
+    const logger = buildLogger({ logLevel: "none" })
+    expect(logger.level).toBe("silent")
+  })
+
+  it("respects --log-level silent", () => {
+    const logger = buildLogger({ logLevel: "silent" })
+    expect(logger.level).toBe("silent")
+  })
 })

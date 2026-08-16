@@ -10,11 +10,18 @@ import start, { type StartOptions } from "./commands/start"
 import { status, type StatusOptions } from "./commands/status"
 import { stop, type StopOptions } from "./commands/stop"
 import { systemRequirementsCommand } from "./commands/system-requirements"
+import {
+  buildStartupBanner,
+  printStartupComplete,
+  printStartupFailed,
+  waitForDaemonReady,
+} from "./startup-display"
 
 export interface GlobalOptions {
   verbose?: boolean
   logLevel?: string
   devMode?: boolean
+  quiet?: boolean
   json?: boolean
 }
 
@@ -44,8 +51,12 @@ interface RestartArgs extends GlobalOptions {
 export const buildLogger = (
   argv: ArgumentsCamelCase<GlobalOptions>,
 ): ReturnType<typeof createLogger> => {
+  const normalized = argv.logLevel === "none" ? "silent" : argv.logLevel
   const level =
-    argv.logLevel ?? (argv.verbose ? "debug" : argv.devMode ? "info" : "error")
+    argv.quiet || normalized === "silent"
+      ? "silent"
+      : (normalized ??
+        (argv.verbose ? "debug" : argv.devMode ? "info" : "error"))
   return createLogger({
     verbose: argv.verbose,
     json: argv.json ?? false,
@@ -106,8 +117,22 @@ const startCommand: CommandModule<object, StartArgs> = {
       ...(argv.logs === true ? { logs: true } : {}),
     }
     try {
-      await start(options)
+      await buildStartupBanner(
+        {
+          emulator: argv.emulator === true,
+          ...(argv.deviceModel !== undefined
+            ? { deviceModel: argv.deviceModel }
+            : {}),
+          ...(argv.port !== undefined ? { port: argv.port } : {}),
+        },
+        argv,
+      )
+      const startPromise = start(options)
+      await waitForDaemonReady(options.port ?? 52937).catch(() => undefined)
+      printStartupComplete()
+      await startPromise
     } catch (err) {
+      printStartupFailed(err)
       const e = err as { issues?: unknown; message?: string }
       const message =
         e &&

@@ -151,10 +151,28 @@ All commands support:
 
 - `--verbose / -v` — Enable verbose debug logging
 - `--dev-mode` — Enable developer mode logging (`info` level)
-- `--log-level <level>` — Override log level (`trace`, `debug`, `info`, `warn`, `error`, `fatal`)
+- `--quiet / -q` — Suppress all logs and the startup banner (`silent` level)
+- `--log-level <level>` — Override log level (`trace`, `debug`, `info`, `warn`, `error`, `fatal`, `silent`, `none`)
 - `--json` — Emit logs as JSON
 
-By default, the CLI only logs errors. Use `--dev-mode` for normal operational output, `--verbose` for debug output, or `--log-level` for full control.
+By default, the CLI only logs errors. Use `--dev-mode` for normal operational output, `--verbose` for debug output, or `--log-level` for full control. Use `--quiet` (or `--log-level silent` / `--log-level none`) to silence logs and suppress the startup banner.
+
+## Startup Banner
+
+When you run `sireno start`, the CLI prints a structured banner to stderr summarizing the startup state:
+
+```
+┌  Starting SirenoDeck
+│
+◇  Device: Emulator (mk2)
+│
+│  [✓ keystrokes] [✓ clipboard] [✗ notifications — notify-send]
+│  [✓ active-win] [✓ media] [✓ exec] [✗ http — unreachable]
+│
+└  ✓ SirenoDeck started
+```
+
+The banner shows the detected device (or emulator model), a horizontal list of OS features with availability status, and a completion line once the daemon is serving. It is independent of the log level and is suppressed by `--quiet`, `--log-level silent`, `--log-level none`, or non-interactive output (pipes, CI).
 
 ## Daemon Lifecycle
 

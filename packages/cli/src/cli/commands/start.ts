@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process"
 import { dirname, join, resolve as resolvePath } from "node:path"
 import { fileURLToPath } from "node:url"
 
-import { confirm, select, spinner } from "@/ui/console"
+import { confirm, select } from "@/ui/console"
 import type pino from "pino"
 
 import {
@@ -54,10 +54,11 @@ import { runPipeline, type RunOptions, type SignalProvider } from "./run"
 import { preflight } from "./pipeline/preflight"
 import {
   type SystemReport,
-  probeAll,
+  probeAllCached,
   summarizeReport,
 } from "@/system/setup-wizard"
 import { systemRequirements } from "./system-requirements"
+import { buildStandardProbeDeps } from "@/cli/probe-deps"
 
 export interface StartOptions {
   readonly config?: string
@@ -554,67 +555,34 @@ const startProduction = async (options: StartOptions): Promise<void> => {
   writeConfigPath(configPath)
   writeFlags(runtimeFlags)
 
-  // ponytail: spinner covers ensureInstalled + invokeManager + pid-wait. Skipped
-  // when stdout isn't a TTY so pipes/CI don't get a static "⠋" line.
-  const s = process.stdout.isTTY ? spinner() : null
-  if (s) s.start("Starting sireno-deck daemon")
-  try {
-    await ensureInstalled({
-      logger,
-      ...(options.system === true ? { system: true } : {}),
-    })
-    await invokeManager({ action: "restart", logger })
+  // ponytail: startup banner (printed by the command handler) replaces what
+  // used to be a spinner here. The handler's waitForDaemonReady prints the
+  // outro when the daemon is actually serving.
+  await ensureInstalled({
+    logger,
+    ...(options.system === true ? { system: true } : {}),
+  })
+  await invokeManager({ action: "restart", logger })
 
-    const paths = resolveDaemonPaths()
-    const deadline = Date.now() + 5_000
-    let pid: number | null = null
-    while (Date.now() < deadline) {
-      pid = readPid(paths)
-      if (pid !== null && isRunning(pid)) break
-      await new Promise((r) => setTimeout(r, 100))
-    }
-    if (s) {
-      s.stop(
-        pid !== null
-          ? "Daemon started"
-          : "Daemon started (pid not yet visible)",
-      )
-    } else {
-      logger.info(
-        { childPid: pid, configPath },
-        pid !== null
-          ? "start: daemon started via service manager"
-          : "start: daemon started (pid not yet visible)",
-      )
-    }
-
-    if (options.logs === true && process.exitCode !== 1) {
-      const logPath = `${paths.runtimeDir}/service.log`
-      await tailLogs({ logPath, follow: true, lines: 50 })
-    }
-  } catch (err) {
-    if (s) s.stop("Failed to start daemon")
-    throw err
+  const paths = resolveDaemonPaths()
+  const deadline = Date.now() + 5_000
+  let pid: number | null = null
+  while (Date.now() < deadline) {
+    pid = readPid(paths)
+    if (pid !== null && isRunning(pid)) break
+    await new Promise((r) => setTimeout(r, 100))
   }
-}
+  logger.info(
+    { childPid: pid, configPath },
+    pid !== null
+      ? "start: daemon started via service manager"
+      : "start: daemon started (pid not yet visible)",
+  )
 
-const wizardCommandExecutor = {
-  async run(
-    command: string,
-    args: ReadonlyArray<string>,
-    options?: { timeoutMs?: number },
-  ) {
-    const { execa } = await import("execa")
-    const result = await execa(command, [...args], {
-      reject: false,
-      timeout: options?.timeoutMs ?? 5_000,
-    })
-    return {
-      exitCode: result.exitCode ?? -1,
-      stdout: result.stdout ?? "",
-      stderr: result.stderr ?? "",
-    }
-  },
+  if (options.logs === true && process.exitCode !== 1) {
+    const logPath = `${paths.runtimeDir}/service.log`
+    await tailLogs({ logPath, follow: true, lines: 50 })
+  }
 }
 
 const probeSystemForFirstRun = async (
@@ -626,21 +594,12 @@ const probeSystemForFirstRun = async (
   const home = options.homeDir ?? process.env["HOME"] ?? ""
   const xdgConfigHome =
     options.xdgConfigHome ?? process.env["XDG_CONFIG_HOME"] ?? `${home}/.config`
+  const baseDeps = buildStandardProbeDeps()
   try {
-    const report = await probeAll({
-      platform: process.platform,
-      homeDir: home,
+    const report = await probeAllCached({
+      ...baseDeps,
+      homeDir: home !== "" ? home : baseDeps.homeDir,
       xdgConfigHome,
-      env: process.env,
-      executor: wizardCommandExecutor,
-      fileExists: (p) => existsSync(p),
-      readFile: (p) => {
-        try {
-          return readFileSync(p, "utf8")
-        } catch {
-          return null
-        }
-      },
     })
     return { report, summary: summarizeReport(report) }
   } catch {
