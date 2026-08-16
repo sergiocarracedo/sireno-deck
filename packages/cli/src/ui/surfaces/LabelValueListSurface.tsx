@@ -51,7 +51,6 @@ function RowTile({ item, variant = "default" }: RowTileProps): ReactElement {
   > = {
     big: {
       value: "5xl",
-      valueTone: "foreground",
       valueWidthUnits: "4xl",
       valueMultiline: true,
       unitsClass: "-mt-1 text-center",
@@ -97,14 +96,17 @@ function RowTile({ item, variant = "default" }: RowTileProps): ReactElement {
             text={item.label}
             size={variantProps.labelSize ?? "xs"}
             weight="semibold"
-            tone="primary"
+            tone="foreground"
             fit="autofit"
-            style={colorStyle}
           />
         ) : null}
         {variantProps.unitsPosition === "prev" && item.units ? (
           <div className={cn(variantProps.unitsClass)}>
-            <Text size={variantProps.unit} text={item.units} />
+            <Text
+              size={variantProps.unit}
+              text={item.units}
+              style={colorStyle}
+            />
           </div>
         ) : null}
       </div>
