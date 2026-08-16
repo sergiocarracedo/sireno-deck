@@ -1,0 +1,21 @@
+.github/workflows/ci.yml
+  s_7630e4a04f959e::t_17874776e73709 20
+.github/workflows/release.yml
+  s_7630e4a04f959e::t_3f59854bb12ed4 40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1f3dfc07aca06087072a40f583eb131aea5c2863",
+  "prompts": {},
+  "sessions": {
+    "s_7630e4a04f959e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_ff417a52bffeIXR9BXHAY6DIi6",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
