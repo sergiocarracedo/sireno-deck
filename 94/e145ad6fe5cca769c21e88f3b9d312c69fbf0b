@@ -1,0 +1,26 @@
+packages/cli/src/cli/commands/start.ts
+  s_364a3d4e61d135::t_f117e9e72981e0 6
+  s_364a3d4e61d135::t_88784a12cd2993 577-581
+  s_364a3d4e61d135::t_0130dcae9b9c99 557-576,582-589,591-597
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "94e145ad6fe5cca769c21e88f3b9d312c69fbf0b",
+  "prompts": {},
+  "humans": {
+    "h_31bfcf89e26281": {
+      "author": "Sergio <sergio@sireno-deck.local>"
+    }
+  },
+  "sessions": {
+    "s_364a3d4e61d135": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00e39aa83ffeUIZ2ZU1rSlKRiL",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
