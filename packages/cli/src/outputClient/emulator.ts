@@ -1,5 +1,7 @@
 import { execFile } from "node:child_process"
-import { platform } from "node:os"
+import { networkInterfaces, platform } from "node:os"
+
+import qrcode from "qrcode"
 
 import type pino from "pino"
 
@@ -20,6 +22,10 @@ import {
   spawnEmulatorVite,
   spawnFrontendVite,
 } from "../cli/commands/emulator-mode"
+import {
+  printEmulatorBanner,
+  selectLanAddresses,
+} from "../cli/commands/network-bind"
 import {
   DEFAULT_VITE_RETRY_SCHEDULE_MS,
   supervise,
@@ -252,9 +258,23 @@ export class EmulatorOutputClient implements OutputClient {
       },
       "emulator mode ready",
     )
-    process.stdout.write(
-      `\n  Emulator:  ${emulatorUrl}\n  Frontend:  ${frontendUrl}\n\n`,
-    )
+    const isTty = Boolean(process.stdout.isTTY)
+    const output = (text: string): void => {
+      process.stdout.write(text)
+    }
+    await printEmulatorBanner({
+      emulatorUrlFn: (lan: string) =>
+        `${emulatorUrl.replace(/^[^:]+:\/\/[^:]+/, `http://${lan}`)}`,
+      lanAddresses: selectLanAddresses({ networkInterfaces }),
+      isTty,
+      securityWarning:
+        "warning: --emulator binds the WS bridge to 0.0.0.0; anyone on the same network can connect using the URL above (token-gated).",
+      output,
+      qrGenerate: isTty
+        ? (text: string) =>
+            qrcode.toString(text, { type: "terminal", small: true })
+        : undefined,
+    })
     openBrowser(emulatorUrl, logger)
 
     opts.runtime.setBrightness(opts.runtime.getBrightness())
