@@ -1,0 +1,21 @@
+packages/cli/src/cli/commands/network-bind.ts
+  s_c0cb5cfaffabd8::t_2c66fc046452b3 117
+  s_c0cb5cfaffabd8::t_8ebc4c548d0a76 98,100
+  s_c0cb5cfaffabd8::t_4aafe00ffd7c71 107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "698fc34516ff2606f026ba4b09059534c12b0f81",
+  "prompts": {},
+  "sessions": {
+    "s_c0cb5cfaffabd8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0008dc8eaffexGn0Q6AoQOHIdO",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
