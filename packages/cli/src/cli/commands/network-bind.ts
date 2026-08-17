@@ -95,16 +95,16 @@ export const printEmulatorBanner = async (
   if (lanAddresses.length === 0) {
     output("\n  Emulator:  http://127.0.0.1:52938\n")
     output(
-      "  warning: no LAN interfaces detected — QR may not reach your phone.\n\n",
+      "\x1b[33m  warning: no LAN interfaces detected — QR may not reach your phone.\x1b[0m\n\n",
     )
-    output(`  ${securityWarning}\n\n`)
+    output(`\x1b[33m  ${securityWarning}\x1b[0m\n\n`)
     return
   }
 
   output("\n  Emulator (LAN):\n")
   for (const entry of lanAddresses) {
     const url = emulatorUrlFn(entry.address)
-    if (isTty && qrGenerate !== undefined) {
+    if (qrGenerate !== undefined) {
       output("\n")
       const qr = await qrGenerate(url)
       output(qr)
@@ -114,5 +114,5 @@ export const printEmulatorBanner = async (
     }
   }
   output("\n")
-  output(`  ${securityWarning}\n\n`)
+  output(`\x1b[33m  ${securityWarning}\x1b[0m\n\n`)
 }
