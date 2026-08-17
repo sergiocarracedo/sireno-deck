@@ -1,0 +1,33 @@
+packages/cli/src/cli/commands/network-bind.ts
+  s_c0cb5cfaffabd8::t_e66f014fa2f072 9-11,54,67-68
+  s_c0cb5cfaffabd8::t_5eb9a5ccfafd4d 1-8,12-53,55-66,69-82,84,86-108,111-118
+  s_c0cb5cfaffabd8::t_19c1962bac3e0f 83,85,109-110
+packages/cli/src/outputClient/emulator.ts
+  s_c0cb5cfaffabd8::t_3231e94428f740 265
+  s_c0cb5cfaffabd8::t_109e12ac522a82 261-264,266-273,276-277
+  s_c0cb5cfaffabd8::t_e66f014fa2f072 274-275
+  s_c0cb5cfaffabd8::t_8f2066845e3955 2-4
+  s_c0cb5cfaffabd8::t_1cec0ae3e5e0e7 26-28
+  s_c0cb5cfaffabd8::t_2e29c8859f9714 25
+packages/cli/package.json
+  s_c0cb5cfaffabd8::t_e66f014fa2f072 94
+  s_c0cb5cfaffabd8::t_c195628c0bd3c9 79
+pnpm-lock.yaml
+  s_c0cb5cfaffabd8::t_f3e6bd47f8b43b 87-89,127-129,2193-2195,2703-2706,2764-2766,2937-2940,2986-2988,3243-3246,3818-3821,4363-4366,4371-4374,4395-4398,4433-4436,4509-4512,4615-4619,4797-4799,5659-5661,5685-5688,5734-5736,5765-5768,5777-5780,7618-7621,8207-8208,8248-8253,8428-8429,8461-8462,8765-8769,9464-9467,10372-10375,10380-10383,10405-10406,10460-10461,10540-10541,10637-10642,10903-10904,11018,11793-11794,11818-11823,11860-11861,11889-11893,11898-11911
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "eb8c4d0a995fd60d039f33f2c4acd5f0232a6f76",
+  "prompts": {},
+  "sessions": {
+    "s_c0cb5cfaffabd8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0008dc8eaffexGn0Q6AoQOHIdO",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
