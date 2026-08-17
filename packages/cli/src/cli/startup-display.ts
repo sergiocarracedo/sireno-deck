@@ -1,4 +1,7 @@
 import { connect, type Socket } from "node:net"
+import { networkInterfaces } from "node:os"
+
+import qrcode from "qrcode"
 
 import { listDevices, type DeviceDescriptor } from "@/device"
 
@@ -15,6 +18,10 @@ import {
 import { cancel, intro, log, outro } from "@/ui/console"
 
 import { buildStandardProbeDeps } from "./probe-deps"
+import {
+  printEmulatorBanner,
+  selectLanAddresses,
+} from "./commands/network-bind"
 
 interface BannerOptions {
   readonly emulator: boolean
@@ -185,4 +192,25 @@ export const printStartupFailed = (err: unknown): void => {
   cancel(
     `✗ Failed to start SirenoDeck: ${err instanceof Error ? err.message : String(err)}`,
   )
+}
+
+export const printEmulatorQrBanner = async (options: {
+  readonly emulatorPort: number
+}): Promise<void> => {
+  const { emulatorPort } = options
+  const isTty = Boolean(process.stdout.isTTY)
+  const output = (text: string): void => {
+    process.stdout.write(text)
+  }
+  await printEmulatorBanner({
+    emulatorUrlFn: (lan: string) => `http://${lan}:${emulatorPort}`,
+    lanAddresses: selectLanAddresses({ networkInterfaces }),
+    securityWarning:
+      "warning: --emulator binds the WS bridge to 0.0.0.0; anyone on the same network can connect using the URL above (token-gated).",
+    output,
+    qrGenerate: isTty
+      ? (text: string) =>
+          qrcode.toString(text, { type: "terminal", small: true })
+      : undefined,
+  })
 }

@@ -72,7 +72,6 @@ export const selectLanAddresses = (
 export interface PrintEmulatorBannerOptions {
   readonly emulatorUrlFn: (lanAddress: string) => string
   readonly lanAddresses: ReadonlyArray<LanAddress>
-  readonly isTty: boolean
   readonly securityWarning: string
   readonly output: (text: string) => void
   readonly qrGenerate?: (text: string) => string | Promise<string>
@@ -83,14 +82,8 @@ const formatInterfaceLabel = (name: string): string => name
 export async function printEmulatorBanner(
   options: PrintEmulatorBannerOptions,
 ): Promise<void> {
-  const {
-    emulatorUrlFn,
-    lanAddresses,
-    isTty,
-    securityWarning,
-    output,
-    qrGenerate,
-  } = options
+  const { emulatorUrlFn, lanAddresses, securityWarning, output, qrGenerate } =
+    options
 
   if (lanAddresses.length === 0) {
     output("\n  Emulator:  http://127.0.0.1:52938\n")

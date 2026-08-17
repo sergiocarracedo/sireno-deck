@@ -4,6 +4,7 @@ import { createLogger } from "@/util/logger"
 import { PACKAGE_NAME } from "@/version"
 
 import { logsCommand } from "./commands/logs"
+import { DEFAULT_EMULATOR_PORT } from "./commands/emulator-mode"
 import { reload, type ReloadOptions } from "./commands/reload"
 import { restart, type RestartOptions } from "./commands/restart"
 import start, { type StartOptions } from "./commands/start"
@@ -12,6 +13,7 @@ import { stop, type StopOptions } from "./commands/stop"
 import { systemRequirementsCommand } from "./commands/system-requirements"
 import {
   buildStartupBanner,
+  printEmulatorQrBanner,
   printStartupComplete,
   printStartupFailed,
   waitForDaemonReady,
@@ -129,6 +131,9 @@ const startCommand: CommandModule<object, StartArgs> = {
       )
       const startPromise = start(options)
       await waitForDaemonReady(options.port ?? 52937).catch(() => undefined)
+      if (argv.emulator === true) {
+        await printEmulatorQrBanner({ emulatorPort: DEFAULT_EMULATOR_PORT })
+      }
       printStartupComplete()
       await startPromise
     } catch (err) {

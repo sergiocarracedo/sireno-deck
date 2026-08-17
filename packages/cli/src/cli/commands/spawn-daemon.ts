@@ -123,6 +123,7 @@ export const spawnDetached = (
       ...(interpEnv ?? {}),
       ...(env ?? {}),
       SIRENO_DAEMON_CHILD: "1",
+      SIRENO_DEV_MODE: devMode ? "1" : "0",
     },
   })
   child.unref()
