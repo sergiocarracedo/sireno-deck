@@ -80,7 +80,7 @@ export interface PrintEmulatorBannerOptions {
 
 const formatInterfaceLabel = (name: string): string => name
 
-export const printEmulatorBanner = async (
+export async function printEmulatorBanner(
   options: PrintEmulatorBannerOptions,
 ): Promise<void> {
   const {
@@ -91,8 +91,6 @@ export const printEmulatorBanner = async (
     output,
     qrGenerate,
   } = options
-
-  output(`\x1b[36m[DEBUG banner] isTty=${isTty} qrGenerate=${qrGenerate !== undefined} lanCount=${lanAddresses.length}\x1b[0m\n`)
 
   if (lanAddresses.length === 0) {
     output("\n  Emulator:  http://127.0.0.1:52938\n")
