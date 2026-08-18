@@ -4,13 +4,13 @@ import { createLogger } from "@/util/logger"
 import { PACKAGE_NAME } from "@/version"
 
 import { logsCommand } from "./commands/logs"
-import { DEFAULT_EMULATOR_PORT } from "./commands/emulator-mode"
 import { reload, type ReloadOptions } from "./commands/reload"
 import { restart, type RestartOptions } from "./commands/restart"
 import start, { type StartOptions } from "./commands/start"
 import { status, type StatusOptions } from "./commands/status"
 import { stop, type StopOptions } from "./commands/stop"
 import { systemRequirementsCommand } from "./commands/system-requirements"
+import { readRuntimeState } from "@/util/daemon"
 import {
   buildStartupBanner,
   printEmulatorQrBanner,
@@ -22,7 +22,6 @@ import {
 export interface GlobalOptions {
   verbose?: boolean
   logLevel?: string
-  devMode?: boolean
   quiet?: boolean
   json?: boolean
 }
@@ -31,6 +30,7 @@ interface StartArgs extends GlobalOptions {
   config?: string
   port?: number
   emulator?: boolean
+  remote?: boolean
   deviceModel?: string
   httpPort?: number
   logs?: boolean
@@ -57,8 +57,7 @@ export const buildLogger = (
   const level =
     argv.quiet || normalized === "silent"
       ? "silent"
-      : (normalized ??
-        (argv.verbose ? "debug" : argv.devMode ? "info" : "error"))
+      : (normalized ?? (argv.verbose ? "debug" : "error"))
   return createLogger({
     verbose: argv.verbose,
     json: argv.json ?? false,
@@ -79,7 +78,14 @@ const startCommand: CommandModule<object, StartArgs> = {
       .option("emulator", {
         type: "boolean",
         default: false,
-        description: "Run in emulator mode",
+        description:
+          "Run the emulator (full UI with sidebar, toolbar, device selector) at 127.0.0.1. Browser auto-opens.",
+      })
+      .option("remote", {
+        type: "boolean",
+        default: false,
+        description:
+          "Open the emulator server to LAN clients. Implies --emulator. Binds 0.0.0.0; prints a QR for the deck-only view with token-gated HTTP.",
       })
       .option("device-model", {
         type: "string",
@@ -109,6 +115,7 @@ const startCommand: CommandModule<object, StartArgs> = {
       ...(argv.config !== undefined ? { config: argv.config } : {}),
       ...(argv.port !== undefined ? { port: argv.port } : {}),
       ...(argv.emulator !== undefined ? { emulator: argv.emulator } : {}),
+      ...(argv.remote !== undefined ? { remote: argv.remote } : {}),
       ...(argv.deviceModel !== undefined
         ? { deviceModel: argv.deviceModel }
         : {}),
@@ -131,8 +138,25 @@ const startCommand: CommandModule<object, StartArgs> = {
       )
       const startPromise = start(options)
       await waitForDaemonReady(options.port ?? 52937).catch(() => undefined)
-      if (argv.emulator === true) {
-        await printEmulatorQrBanner({ emulatorPort: DEFAULT_EMULATOR_PORT })
+      if (argv.remote === true) {
+        // ponytail: poll for runtime-state.json — the daemon writes it after
+        // its WS bridge + vite supervisors come up, which races the CLI's
+        // waitForDaemonReady (TCP 52937 opens before the emulator flow
+        // writes the state file). Retry up to 5s.
+        let state = readRuntimeState()
+        const deadline = Date.now() + 5_000
+        while (state === null && Date.now() < deadline) {
+          await new Promise((r) => setTimeout(r, 100))
+          state = readRuntimeState()
+        }
+        if (state !== null) {
+          await printEmulatorQrBanner({
+            emulatorUrl: state.emulatorUrl,
+            token: state.token,
+            addresses: state.addresses,
+            deckOnly: true,
+          })
+        }
       }
       printStartupComplete()
       await startPromise

@@ -288,6 +288,52 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
         const port = typeof addr === "object" && addr !== null ? addr.port : 0
         process.stdout.write(`READY ${port}\n`)
       }
+
+      // ponytail: --remote gates HTTP access with the daemon's token. The
+      // emulator/frontend vite is bound to 0.0.0.0 so any host on the LAN
+      // can reach it; without this gate, anyone with the URL could load
+      // the bundle and (via the bundle's baked token) replay commands on
+      // the WS bridge. Accept the token via `?token=` query OR a
+      // `sireno-token` cookie (the HTML page parses the URL token and sets
+      // the cookie on first load so subsequent module/HMR requests stay
+      // authenticated). Vite's HMR webSocket is exempt — it's a debug-only
+      // surface and tying it to token would break dev refresh.
+      const requiredToken = process.env["SIRENO_REQUIRE_TOKEN"]
+      if (requiredToken !== undefined && requiredToken.length > 0) {
+        const checkToken = (req: {
+          url?: string
+          headers?: Record<string, string | string[] | undefined>
+        }): boolean => {
+          const url = req.url ?? ""
+          if (url.startsWith("/@vite/") || url.startsWith("/__vite_ping")) {
+            return true
+          }
+          const queryIdx = url.indexOf("?")
+          if (queryIdx !== -1) {
+            const params = new URLSearchParams(url.slice(queryIdx + 1))
+            if (params.get("token") === requiredToken) return true
+          }
+          const cookieHeader = req.headers?.["cookie"]
+          if (typeof cookieHeader === "string") {
+            for (const part of cookieHeader.split(";")) {
+              const [rawName, ...rest] = part.trim().split("=")
+              if (rawName === "sireno-token" && rest.join("=") === requiredToken) {
+                return true
+              }
+            }
+          }
+          return false
+        }
+        server.middlewares.use((req, res, next) => {
+          if (checkToken(req)) {
+            next()
+            return
+          }
+          res.statusCode = 403
+          res.end("token required")
+        })
+      }
+
       server.httpServer?.once("listening", () => {
         // Wait for vite's dep optimizer to finish so the first browser
         // request doesn't hit a 504 "Outdated Optimize Dep" while deps
@@ -324,6 +370,24 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
           })
         }
       }
+    },
+    // ponytail: --remote requires a way to authenticate subsequent module
+    // requests after the HTML loads. Inject a small script that parses
+    // `?token=X` from the URL and stores it in `document.cookie` so vite's
+    // middleware accepts the cascade of `/src/...` and asset requests.
+    transformIndexHtml: {
+      order: "pre",
+      handler: (html, ctx) => {
+        if (process.env["SIRENO_REQUIRE_TOKEN"] === undefined) return html
+        const script =
+          `<script>(function(){try{var p=new URLSearchParams(location.search);` +
+          `var t=p.get("token");if(t){document.cookie="sireno-token="+` +
+          `encodeURIComponent(t)+"; path=/; SameSite=Lax";` +
+          `p.delete("token");var q=p.toString();` +
+          `var u=location.pathname+(q?"?"+q:"")+location.hash;` +
+          `history.replaceState(null,"",u);}}catch(e){}})();</script>`
+        return html.replace("<head>", `<head>${script}`)
+      },
     },
     handleHotUpdate: ({ file, server }) => {
       // When an addon frontend file changes, run any registered cleanup

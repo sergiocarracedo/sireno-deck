@@ -1,6 +1,6 @@
 import { exec } from "node:child_process"
 import { existsSync, mkdirSync, writeFileSync } from "node:fs"
-import { homedir } from "node:os"
+import { homedir, networkInterfaces } from "node:os"
 import {
   basename,
   dirname,
@@ -84,6 +84,7 @@ import {
   type ScannedButtonType,
 } from "./addon-registry"
 import { resolveFrontendCwd } from "./emulator-mode"
+import { selectLanAddresses } from "./network-bind"
 
 export interface SignalProvider {
   onSignal(handler: () => void): () => void
@@ -104,7 +105,7 @@ export interface RunOptions {
   readonly config?: string
   readonly port?: number
   readonly emulator?: boolean
-  readonly dev?: boolean
+  readonly remote?: boolean
   readonly deviceModel?: string
   readonly frontendUrl?: string
   readonly intervalMs?: number
@@ -1371,11 +1372,23 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
     addonBundle = await buildAddonBundle()
 
+    const remote = options.remote === true
+    const emulatorMode = options.emulator === true || remote
+    const lanAddresses =
+      emulatorMode
+        ? selectLanAddresses({ networkInterfaces: networkInterfaces })
+        : []
+    const lanHost = lanAddresses[0]?.address
+    const bridgeHost: "127.0.0.1" | "0.0.0.0" = remote
+      ? "0.0.0.0"
+      : "127.0.0.1"
+
     bridge = await startWsBridge({
       port: 52937,
+      host: bridgeHost,
+      ...(lanHost !== undefined ? { lanHost } : {}),
       expectedToken: readToken() ?? "",
     })
-    const wsPort = bridge.port
 
     // ponytail: register external addon dirs (from config's `addons:` list) so
     // `addon://<name>/assets/icon.png` resolves for overlay deck icons. The
@@ -1621,6 +1634,9 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       ...(options.intervalMs !== undefined
         ? { intervalMs: options.intervalMs }
         : {}),
+      remote: options.remote === true,
+      lanHost,
+      lanAddresses: lanAddresses.map((a) => a.address),
     })
 
     currentOutputHandle = outputHandle

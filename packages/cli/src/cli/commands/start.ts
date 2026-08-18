@@ -27,6 +27,7 @@ import {
   readToken,
   removeChildrenFile,
   removePidFile,
+  removeRuntimeStateFile,
   removeStartLock,
   removeTokenFile,
   resolveDaemonPaths,
@@ -64,6 +65,7 @@ export interface StartOptions {
   readonly config?: string
   readonly port?: number
   readonly emulator?: boolean
+  readonly remote?: boolean
   readonly deviceModel?: string
   readonly frontendUrl?: string
   readonly intervalMs?: number
@@ -85,6 +87,7 @@ const toRunOptions = (
   config: options.config,
   port: options.port,
   emulator: options.emulator,
+  remote: options.remote,
   deviceModel: options.deviceModel,
   frontendUrl: options.frontendUrl,
   intervalMs: options.intervalMs,
@@ -325,6 +328,7 @@ const stopExisting = async (
   await terminateChildren({ logger, timeoutMs: 2_000 })
   removePidFile()
   removeTokenFile()
+  removeRuntimeStateFile()
   removeChildrenFile()
   removeStartLock()
 }
@@ -350,7 +354,8 @@ const resolveConfigPath = (options: StartOptions): ResolveConfigPathResult => {
 }
 
 const buildRuntimeFlags = (options: StartOptions): RuntimeFlags => ({
-  emulator: options.emulator === true,
+  emulator: options.emulator === true || options.remote === true,
+  remote: options.remote,
   httpPort: options.httpPort ?? 3939,
   ...(options.deviceModel !== undefined
     ? { deviceModel: options.deviceModel }
@@ -406,6 +411,7 @@ const runInProcessSetup = async (
       config: configPath,
       port: runtimeFlags.port,
       emulator: runtimeFlags.emulator,
+      remote: runtimeFlags.remote,
       deviceModel: runtimeFlags.deviceModel,
       httpPort: runtimeFlags.httpPort,
     },
@@ -500,6 +506,7 @@ const runInProcessSetup = async (
       await terminateChildren({ logger, timeoutMs: 3_000 })
       removePidFile()
       removeTokenFile()
+      removeRuntimeStateFile()
       removeChildrenFile()
       removeStartLock()
       logger.info("daemon: shutdown complete")
@@ -527,7 +534,7 @@ const forkOffDev = async (options: StartOptions): Promise<void> => {
   await terminateChildren({ logger, timeoutMs: 2_000 })
 
   const args: string[] = ["start"]
-  // ponytail: devMode supervisor. The parent watches the daemon child, on
+  // ponytail: pnpm dev supervisor. The parent watches the daemon child, on
   // unexpected exit pushes a black frame to the hardware (best-effort) and
   // respawns the daemon with the standard retry schedule. On give-up the
   // parent cleans the runtime dir and exits 1. superviseService owns SIGINT/
@@ -537,6 +544,7 @@ const forkOffDev = async (options: StartOptions): Promise<void> => {
     xdgConfigHome: options.xdgConfigHome ?? "",
     logger,
     args,
+    remote: runtimeFlags.remote,
     onGiveUp: async () => {
       await terminateChildren({ logger, timeoutMs: 2_000 })
     },
@@ -714,6 +722,7 @@ const start = async (options: StartOptions): Promise<void> => {
     await stopExisting(existing, logger)
     removePidFile()
     removeTokenFile()
+    removeRuntimeStateFile()
     removeChildrenFile()
     removeStartLock()
   } else {
@@ -734,6 +743,7 @@ const start = async (options: StartOptions): Promise<void> => {
     if (existing !== null) {
       removePidFile()
       removeTokenFile()
+      removeRuntimeStateFile()
       removeChildrenFile()
       removeStartLock()
     }

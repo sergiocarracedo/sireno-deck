@@ -1,5 +1,4 @@
 import { connect, type Socket } from "node:net"
-import { networkInterfaces } from "node:os"
 
 import qrcode from "qrcode"
 
@@ -18,10 +17,6 @@ import {
 import { cancel, intro, log, outro } from "@/ui/console"
 
 import { buildStandardProbeDeps } from "./probe-deps"
-import {
-  printEmulatorBanner,
-  selectLanAddresses,
-} from "./commands/network-bind"
 
 interface BannerOptions {
   readonly emulator: boolean
@@ -195,22 +190,56 @@ export const printStartupFailed = (err: unknown): void => {
 }
 
 export const printEmulatorQrBanner = async (options: {
-  readonly emulatorPort: number
+  readonly emulatorUrl: string
+  readonly token: string
+  readonly addresses: ReadonlyArray<string>
+  readonly deckOnly?: boolean
 }): Promise<void> => {
-  const { emulatorPort } = options
+  const { emulatorUrl, token, addresses, deckOnly = false } = options
+  const port = emulatorUrl.split(":").pop() ?? ""
+  const buildUrl = (host: string): string => {
+    const params = new URLSearchParams()
+    if (token.length > 0) params.set("token", token)
+    if (deckOnly) params.set("deckOnly", "1")
+    return `http://${host}:${port}?${params.toString()}`
+  }
+  const localUrl = buildUrl("127.0.0.1")
   const isTty = Boolean(process.stdout.isTTY)
   const output = (text: string): void => {
     process.stdout.write(text)
   }
-  await printEmulatorBanner({
-    emulatorUrlFn: (lan: string) => `http://${lan}:${emulatorPort}`,
-    lanAddresses: selectLanAddresses({ networkInterfaces }),
-    securityWarning:
-      "warning: --emulator binds the WS bridge to 0.0.0.0; anyone on the same network can connect using the URL above (token-gated).",
-    output,
-    qrGenerate: isTty
-      ? (text: string) =>
-          qrcode.toString(text, { type: "terminal", small: true })
-      : undefined,
-  })
+  const qrGenerate = isTty
+    ? (text: string) => qrcode.toString(text, { type: "terminal", small: true })
+    : undefined
+
+  if (addresses.length === 0) {
+    output("\n  Emulator:  ")
+    output(localUrl)
+    output("\n")
+    output(
+      "\x1b[33m  warning: no LAN interfaces detected — QR may not reach your phone.\x1b[0m\n\n",
+    )
+    output(
+      "\x1b[33m  warning: --remote binds the WS bridge to 0.0.0.0; anyone on the same network can connect using the URL above (token-gated).\x1b[0m\n\n",
+    )
+    return
+  }
+
+  output("\n  Emulator (LAN):\n")
+  for (const addr of addresses) {
+    const iface = "LAN"
+    const qrUrl = buildUrl(addr)
+    if (qrGenerate !== undefined) {
+      output("\n")
+      const qr = await qrGenerate(qrUrl)
+      output(qr)
+      output(`  ${qrUrl}  ← ${iface}\n`)
+    } else {
+      output(`  ${qrUrl}  ← ${iface}\n`)
+    }
+  }
+  output("\n")
+  output(
+    "\x1b[33m  warning: --remote binds the WS bridge to 0.0.0.0; anyone on the same network can connect using the URL above (token-gated).\x1b[0m\n\n",
+  )
 }

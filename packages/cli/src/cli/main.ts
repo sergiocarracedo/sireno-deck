@@ -121,11 +121,6 @@ const main = async (): Promise<void> => {
       description:
         "Override log level (trace, debug, info, warn, error, fatal, silent, none)",
     })
-    .option("dev-mode", {
-      type: "boolean",
-      default: false,
-      description: "Enable developer mode logging (info level by default)",
-    })
     .option("quiet", {
       alias: "q",
       type: "boolean",

@@ -17,8 +17,12 @@ export const DEFAULT_EMULATOR_PORT = 52938
 const DEFAULT_TIMEOUT_MS = 30_000
 // eslint-disable-next-line no-control-regex
 const ANSI_REGEX = /\u001b\[[0-9;]*m/g
-const READY_REGEX =
-  /(?:Local|➜\s*Local|Network use --host)[^\n]*?https?:\/\/[^:\s]+(?::(\d+))?/
+// Matches Vite's Local: line — localhost binding
+const LOCAL_URL_REGEX =
+  /(?:Local|➜\s*Local)[^\n]*?(https?):\/\/([0-9.]+|[^:\s]+)(?::(\d+))?/
+// Matches Vite's Network: line — 0.0.0.0 binding
+const NETWORK_URL_REGEX =
+  /(?:Network)[^\n]*?(https?):\/\/([0-9.]+|[^:\s]+)(?::(\d+))?/
 
 export const findWorkspaceRoot = (): string => {
   const here = dirname(fileURLToPath(import.meta.url))
@@ -49,6 +53,8 @@ interface ViteSpawnOptions {
   wsUrl?: string
   frontendUrl?: string
   themeDir?: string
+  host?: string
+  requireToken?: string
   childLabel: "frontend vite" | "emulator vite"
   exitFatalMessage: string
   onPid?: (pid: number) => void
@@ -65,6 +71,8 @@ const spawnViteAndWaitForReady = (
     wsUrl,
     frontendUrl,
     themeDir,
+    host,
+    requireToken,
     childLabel,
     exitFatalMessage,
     onPid,
@@ -85,16 +93,27 @@ const spawnViteAndWaitForReady = (
     if (themeDir !== undefined) {
       env["SIRENO_THEME_DIR"] = themeDir
     }
+    if (host !== undefined) {
+      env["SIRENO_VITE_HOST"] = host
+    }
+    if (requireToken !== undefined) {
+      env["SIRENO_REQUIRE_TOKEN"] = requireToken
+    }
     const viteBin = findWorkspaceRoot() + "/node_modules/.bin/vite"
-    const child = spawn(
-      viteBin,
-      ["--config", resolvePath(cwd, "vite.config.ts"), "--port", String(port)],
-      {
-        cwd,
-        env,
-        stdio: ["ignore", "pipe", "pipe"],
-      },
-    )
+    const viteArgs = [
+      "--config",
+      resolvePath(cwd, "vite.config.ts"),
+      "--port",
+      String(port),
+    ]
+    if (host !== undefined) {
+      viteArgs.push("--host", host)
+    }
+    const child = spawn(viteBin, viteArgs, {
+      cwd,
+      env,
+      stdio: ["ignore", "pipe", "pipe"],
+    })
     const spawnedPid = child.pid
     if (spawnedPid !== undefined) onPid?.(spawnedPid)
 
@@ -128,10 +147,12 @@ const spawnViteAndWaitForReady = (
       const text = chunk.toString()
       collectOutput(text, "stdout")
       const stripped = text.replace(ANSI_REGEX, "")
-      const match = stripped.match(READY_REGEX)
-      if (match && match[1]) {
+      const regex = host === "0.0.0.0" ? NETWORK_URL_REGEX : LOCAL_URL_REGEX
+      const match = stripped.match(regex)
+      if (match && match[1] && match[2] && match[3]) {
         clearTimeout(timer)
-        const url = `http://127.0.0.1:${match[1]}`
+        const resolvedHost = host ?? "127.0.0.1"
+        const url = `${match[1]}://${resolvedHost}:${match[3]}`
         if (childLabel === "frontend vite") {
           setTimeout(() => {
             settled = true
@@ -179,6 +200,8 @@ export const spawnFrontendVite = (options: {
   logger: pino.Logger
   wsUrl?: string
   themeDir?: string
+  host?: string
+  requireToken?: string
   onPid?: (pid: number) => void
 }): Promise<{ process: ChildProcess; url: string }> =>
   spawnViteAndWaitForReady({
@@ -196,6 +219,8 @@ export const spawnEmulatorVite = (options: {
   logger: pino.Logger
   wsUrl?: string
   frontendUrl?: string
+  host?: string
+  requireToken?: string
   onPid?: (pid: number) => void
 }): Promise<{ process: ChildProcess; url: string }> =>
   spawnViteAndWaitForReady({

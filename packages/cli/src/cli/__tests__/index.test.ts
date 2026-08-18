@@ -8,11 +8,6 @@ describe("buildLogger", () => {
     expect(logger.level).toBe("error")
   })
 
-  it("uses info level in dev mode", () => {
-    const logger = buildLogger({ devMode: true })
-    expect(logger.level).toBe("info")
-  })
-
   it("uses debug level when verbose", () => {
     const logger = buildLogger({ verbose: true })
     expect(logger.level).toBe("debug")
@@ -23,18 +18,12 @@ describe("buildLogger", () => {
     expect(logger.level).toBe("warn")
   })
 
-  it("lets explicit log level override verbose and dev mode", () => {
+  it("lets explicit log level override verbose", () => {
     const logger = buildLogger({
       logLevel: "fatal",
       verbose: true,
-      devMode: true,
     })
     expect(logger.level).toBe("fatal")
-  })
-
-  it("prefers verbose over dev mode", () => {
-    const logger = buildLogger({ verbose: true, devMode: true })
-    expect(logger.level).toBe("debug")
   })
 
   it("uses silent level when --quiet", () => {

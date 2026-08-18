@@ -101,7 +101,11 @@ export default defineConfig({
       },
     },
   ],
-  server: { host: "127.0.0.1", port: 5180, strictPort: true },
+  server: {
+    host: process.env["SIRENO_VITE_HOST"] ?? "127.0.0.1",
+    port: 5180,
+    strictPort: true,
+  },
   resolve: {
     alias: [
       { find: /^@\//, replacement: resolve(__dirname, "../src") + "/" },

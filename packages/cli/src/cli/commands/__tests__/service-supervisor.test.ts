@@ -88,10 +88,11 @@ describe("service-supervisor", () => {
       xdgConfigHome: "/tmp/sireno",
       logger: silentLogger(),
       args: ["start"],
+      remote: true,
       onGiveUp: () => undefined,
     })
     expect(spawnDetached).toHaveBeenCalledWith(
-      expect.objectContaining({ args: ["start"], devMode: true }),
+      expect.objectContaining({ args: ["start"], remote: true }),
     )
     expect(handle.pid).toBe(4321)
     await stopAndExit(handle, child)

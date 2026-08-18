@@ -32,6 +32,21 @@ export interface InitOptions {
   readonly port?: number
   readonly intervalMs?: number
   /**
+   * --remote: bind WS bridge and Vite to 0.0.0.0 and token-gate the HTTP
+   * servers. The CLI prints a LAN-accessible QR code. Default false.
+   */
+  readonly remote?: boolean
+  /**
+   * The resolved LAN IP to use in the runtime-state.json. Only set when
+   * remote is true or --emulator is set.
+   */
+  readonly lanHost?: string
+  /**
+   * All discovered LAN addresses, used in runtime-state.json so the CLI can
+   * enumerate them in the QR banner.
+   */
+  readonly lanAddresses?: ReadonlyArray<string>
+  /**
    * Rebuild the runtime deck set for a new device keyCount. The bridge then
    * re-broadcasts a fresh deck-config so the frontend re-renders into the
    * correct grid. Optional — emulator-only callers provide this; real

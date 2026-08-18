@@ -10,6 +10,10 @@ import type {
 } from "@/api/protocol-internal"
 import { resolveKeyCount } from "@/device/models"
 import type { DeviceDescriptor } from "@/device/registry"
+import {
+  writeRuntimeState,
+  type RuntimeState,
+} from "@/util/daemon"
 
 import {
   DEFAULT_EMULATOR_PORT,
@@ -99,6 +103,11 @@ export class EmulatorOutputClient implements OutputClient {
     const logger = opts.logger.child({ component: "emulator" })
     let shuttingDown = false
 
+    const remote = opts.remote === true
+    const host: "127.0.0.1" | "0.0.0.0" = remote ? "0.0.0.0" : "127.0.0.1"
+    const token = process.env["SIRENO_TOKEN"] ?? ""
+    const requireToken = remote ? token : undefined
+
     // ponytail: supervise each vite child independently — frontend crash
     // respawns only the frontend, emulator crash respawns only the emulator.
     // Both share the same `onChildCrash` so the pipeline exits cleanly when
@@ -127,6 +136,8 @@ export class EmulatorOutputClient implements OutputClient {
                 readyTimeoutMs: DEFAULT_TIMEOUT_MS,
                 logger,
                 wsUrl: opts.bridge.url,
+                host,
+                ...(requireToken !== undefined ? { requireToken } : {}),
                 ...(opts.onChildPid !== undefined
                   ? { onPid: opts.onChildPid }
                   : {}),
@@ -151,8 +162,10 @@ export class EmulatorOutputClient implements OutputClient {
           readyTimeoutMs: DEFAULT_TIMEOUT_MS,
           logger,
           wsUrl: opts.bridge.url,
+          host,
           frontendUrl:
             opts.frontendUrl ?? `http://127.0.0.1:${DEFAULT_FRONTEND_PORT}`,
+          ...(requireToken !== undefined ? { requireToken } : {}),
           ...(opts.onChildPid !== undefined ? { onPid: opts.onChildPid } : {}),
         })
         emulatorUrl = r.url
@@ -252,15 +265,38 @@ export class EmulatorOutputClient implements OutputClient {
       },
       "emulator mode ready",
     )
-    const isDevMode = process.env["SIRENO_DEV_MODE"] === "1"
-    if (isDevMode) {
+    if (remote) {
+      process.stdout.write(`\n  Emulator:  ${emulatorUrl}\n\n`)
+      const lanHost = opts.lanHost ?? "127.0.0.1"
+      const state: RuntimeState = {
+        emulatorUrl,
+        wsUrl: opts.bridge.url,
+        frontendUrl,
+        token,
+        lanHost,
+        addresses: opts.lanAddresses ?? [],
+        emulatorMode: true,
+        remote: true,
+      }
+      writeRuntimeState(state)
+    } else {
       process.stdout.write(
         `\n  Emulator:  ${emulatorUrl}\n  Frontend:  ${frontendUrl}\n\n`,
       )
-    } else {
-      process.stdout.write(`\n  Emulator:  ${emulatorUrl}\n\n`)
+      openBrowser(emulatorUrl, logger)
+      const lanHost = opts.lanHost ?? "127.0.0.1"
+      const state: RuntimeState = {
+        emulatorUrl,
+        wsUrl: opts.bridge.url,
+        frontendUrl,
+        token,
+        lanHost,
+        addresses: opts.lanAddresses ?? [],
+        emulatorMode: true,
+        remote: false,
+      }
+      writeRuntimeState(state)
     }
-    openBrowser(emulatorUrl, logger)
 
     opts.runtime.setBrightness(opts.runtime.getBrightness())
 

@@ -18,7 +18,13 @@ const TOKEN_MISMATCH_CLOSE_CODE = 4001
 
 export interface WsBridgeOptions {
   port?: number
+  /** Bind address for the WebSocket server. Defaults to "127.0.0.1". */
   host?: string
+  /**
+   * Advertised host for the URL returned by the bridge. Use when the server
+   * binds to 0.0.0.0 but clients must connect via a specific LAN/VPN IP.
+   */
+  lanHost?: string
   expectedToken: string
   handshakeTimeoutMs?: number
   activeTheme?: { name: string; version?: number }
@@ -54,6 +60,7 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
   const {
     port = 0,
     host = "127.0.0.1",
+    lanHost,
     expectedToken,
     handshakeTimeoutMs = HANDSHAKE_TIMEOUT_MS,
     activeTheme,
@@ -225,7 +232,8 @@ export const startWsBridge = (options: WsBridgeOptions): Promise<WsBridge> => {
         return
       }
       const port = addr.port
-      const url = `ws://127.0.0.1:${port}`
+      const urlHost = lanHost ?? host
+      const url = `ws://${urlHost}:${port}`
       const bridge: WsBridge = {
         port,
         url,

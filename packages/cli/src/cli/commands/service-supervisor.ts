@@ -36,6 +36,7 @@ export interface ServiceSupervisorOptions {
   readonly xdgConfigHome: string
   readonly logger: pino.Logger
   readonly args: ReadonlyArray<string>
+  readonly remote?: boolean
   readonly delayScheduleMs?: ReadonlyArray<number>
   /**
    * Called after the retry budget is exhausted. Caller is responsible for
@@ -136,7 +137,7 @@ export const superviseService = async (
       const { pid, child } = spawnDetached({
         binPath,
         args: options.args,
-        devMode: true,
+        remote: options.remote ?? false,
       })
       if (pid <= 0) {
         throw new Error("service-supervisor: failed to spawn daemon (no pid)")

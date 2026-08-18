@@ -38,7 +38,7 @@ export interface SpawnDetachedOptions {
   readonly args: ReadonlyArray<string>
   readonly logPath?: string
   readonly env?: Readonly<Record<string, string>>
-  readonly devMode?: boolean
+  readonly remote?: boolean
 }
 
 export interface SpawnDetachedResult {
@@ -83,7 +83,7 @@ const resolveInterpreter = (binPath: string): Interpreter => {
 export const spawnDetached = (
   options: SpawnDetachedOptions,
 ): SpawnDetachedResult => {
-  const { binPath, args, logPath, env, devMode = false } = options
+  const { binPath, args, logPath, env, remote = false } = options
   const paths = resolveDaemonPaths()
   const log = logPath ?? `${paths.runtimeDir}/service.log`
 
@@ -95,7 +95,7 @@ export const spawnDetached = (
   // supervisor's journal owns the output stream — keep the fds pointing at
   // the log file and skip the formatter entirely.
   let stdio: ["ignore", number | "pipe" | "ignore", number | "pipe" | "ignore"]
-  if (devMode) {
+  if (remote) {
     stdio = ["ignore", "pipe", "pipe"]
   } else {
     let outFd: number | null = null
@@ -123,12 +123,12 @@ export const spawnDetached = (
       ...(interpEnv ?? {}),
       ...(env ?? {}),
       SIRENO_DAEMON_CHILD: "1",
-      SIRENO_DEV_MODE: devMode ? "1" : "0",
+      SIRENO_REMOTE: remote ? "1" : "0",
     },
   })
   child.unref()
 
-  if (devMode) {
+  if (remote) {
     let stream: ReturnType<typeof createWriteStream> | null = null
     const writeQueue: string[] = []
     let draining = false

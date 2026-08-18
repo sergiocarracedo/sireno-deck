@@ -81,6 +81,7 @@ vi.mock("@/util/daemon", () => ({
   readConfigPath: vi.fn(() => null),
   writeToken: vi.fn(),
   removeTokenFile: vi.fn(),
+  removeRuntimeStateFile: vi.fn(),
   readChildren: vi.fn(() => null),
   writeChildren: vi.fn(),
   removeChildrenFile: vi.fn(),
