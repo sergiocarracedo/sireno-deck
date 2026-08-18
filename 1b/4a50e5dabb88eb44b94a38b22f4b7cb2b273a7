@@ -1,0 +1,23 @@
+packages/cli/emulator/src/DeckFrame.tsx
+  s_c0cb5cfaffabd8::t_e3c5e2d6601286 90-101
+  s_c0cb5cfaffabd8::t_41faded466ab89 16,32
+packages/cli/emulator/src/App.tsx
+  s_c0cb5cfaffabd8::t_e82aa201f1cb82 381
+  s_c0cb5cfaffabd8::t_573a65ac0a6531 434
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1b4a50e5dabb88eb44b94a38b22f4b7cb2b273a7",
+  "prompts": {},
+  "sessions": {
+    "s_c0cb5cfaffabd8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0008dc8eaffexGn0Q6AoQOHIdO",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
