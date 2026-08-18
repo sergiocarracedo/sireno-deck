@@ -378,6 +378,7 @@ export const App = ({
                       frontendUrl={ENV_FRONTEND_URL}
                       device={deviceModel}
                       deckId={deckId}
+                      token={token}
                       onGesture={sendButtonAction}
                       onIframeRef={(el) => {
                         iframeRef.current = el
@@ -430,6 +431,7 @@ export const App = ({
                         frontendUrl={ENV_FRONTEND_URL}
                         device={deviceModel}
                         deckId={deckId}
+                        token={token}
                         onGesture={sendButtonAction}
                         onIframeRef={(el) => {
                           iframeRef.current = el

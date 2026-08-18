@@ -13,6 +13,7 @@ export interface DeckFrameProps {
   readonly frontendUrl: string
   readonly device: DeviceModelSpec
   readonly deckId: string
+  readonly token?: string
   readonly onGesture?: (msg: {
     deckId: string
     position: number
@@ -28,6 +29,7 @@ export const DeckFrame = ({
   frontendUrl,
   device,
   deckId,
+  token = "",
   onGesture,
   onIframeRef,
 }: DeckFrameProps): React.ReactElement => {
@@ -85,7 +87,18 @@ export const DeckFrame = ({
     }
   })()
 
-  const iframeUrl = `${resolvedFrontendUrl}${resolvedFrontendUrl.includes("?") ? "&" : "?"}device=${device.id}&_r=${reloadNonce}`
+  const iframeUrl = ((): string => {
+    const base = `${resolvedFrontendUrl}${resolvedFrontendUrl.includes("?") ? "&" : "?"}device=${device.id}&_r=${reloadNonce}`
+    // ponytail: --remote puts the deck behind the daemon's token. The
+    // emulator's own bundle already authenticates via the sireno-token
+    // cookie, but the iframe loads the *frontend* on a different origin
+    // (port 5180), which can't read the emulator's cookie. Append the
+    // token to the iframe URL so the frontend's middleware lets the
+    // request through on first paint — the injected cookie script in
+    // that HTML then keeps subsequent module requests authenticated.
+    if (typeof window === "undefined" || token.length === 0) return base
+    return `${base}&token=${encodeURIComponent(token)}`
+  })()
 
   useEffect(() => {
     setIframeState("loading")
