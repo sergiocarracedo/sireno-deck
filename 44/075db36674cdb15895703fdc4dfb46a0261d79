@@ -1,0 +1,108 @@
+packages/cli/src/cli/commands/run.ts
+  s_c0cb5cfaffabd8::t_0545c80e7ee0fe 1638-1639
+  s_c0cb5cfaffabd8::t_1d1a09c5179ccf 1382
+  s_c0cb5cfaffabd8::t_812c57e3b5aae2 1375
+  s_c0cb5cfaffabd8::t_fe5757fa2127fe 1377-1378,1380-1381,1383-1385,1388-1389
+  s_c0cb5cfaffabd8::t_ea0c6888533a6e 87
+  s_c0cb5cfaffabd8::t_7914d72fd91d14 1376
+  s_c0cb5cfaffabd8::t_b2adb4eebb3141 3
+  s_c0cb5cfaffabd8::t_243f32bb1b4190 1637
+  s_c0cb5cfaffabd8::t_b1d72edbe18bc3 1379
+  s_c0cb5cfaffabd8::t_82d4ecc312611e 108
+packages/cli/src/cli/commands/emulator-mode.ts
+  s_c0cb5cfaffabd8::t_c24457144926a9 56
+  s_c0cb5cfaffabd8::t_29e88b28e2585f 74,96-97,101,103-116
+  s_c0cb5cfaffabd8::t_e20a2083113cda 203,222
+  s_c0cb5cfaffabd8::t_6a8ee2b963af8f 20-25
+  s_c0cb5cfaffabd8::t_28ccec61154403 150-152,154-155
+  s_c0cb5cfaffabd8::t_6da434f43acb58 75,98-100
+  s_c0cb5cfaffabd8::t_2f5f9b6950d689 204,223
+  s_c0cb5cfaffabd8::t_3b1aed18cdae87 57
+packages/cli/src/cli/commands/spawn-daemon.ts
+  s_c0cb5cfaffabd8::t_8cc09a8920f0ed 126,131
+  s_c0cb5cfaffabd8::t_5e3a2fd54dca1b 86
+  s_c0cb5cfaffabd8::t_6813c17c0e4a3b 98
+  s_c0cb5cfaffabd8::t_317de8500c05dc 41
+packages/cli/src/vite/virtual-modules.ts
+  s_c0cb5cfaffabd8::t_19ef08bb95ee12 291-295,301-302,307-311,326-336
+  s_c0cb5cfaffabd8::t_cf0ef15bfe03fc 296-300,303-306,312-325
+  s_c0cb5cfaffabd8::t_e984ff1d379b9f 374-391
+packages/cli/frontend/vite.config.ts
+  s_c0cb5cfaffabd8::t_51c1b17947c1ff 104-108
+packages/cli/src/cli/index.ts
+  s_c0cb5cfaffabd8::t_3f3009233e1241 141,157
+  s_c0cb5cfaffabd8::t_dd0e8ca0078b74 33
+  s_c0cb5cfaffabd8::t_30f08be23705fc 82-84,88
+  s_c0cb5cfaffabd8::t_89e7de63322718 118
+  s_c0cb5cfaffabd8::t_868ba0cae95901 60
+  s_c0cb5cfaffabd8::t_74102317cfed4e 13
+  s_c0cb5cfaffabd8::t_d1a5bb32a031e1 142-151
+  s_c0cb5cfaffabd8::t_acf24bb679ef49 152-156,158-159
+  s_c0cb5cfaffabd8::t_7ab6131a43c2e9 81,85-87
+packages/cli/emulator/vite.config.ts
+  s_c0cb5cfaffabd8::t_91a88564221e23 91
+packages/cli/src/outputClient/emulator.ts
+  s_c0cb5cfaffabd8::t_fea9cf3fbe1c1b 106-107
+  s_c0cb5cfaffabd8::t_be059b4510f872 268-282,296
+  s_c0cb5cfaffabd8::t_fc863664d3446a 110,139,165
+  s_c0cb5cfaffabd8::t_d245e59f294614 168
+  s_c0cb5cfaffabd8::t_af1df09d7c567f 13-16
+  s_c0cb5cfaffabd8::t_d3d4601b3ee056 140
+  s_c0cb5cfaffabd8::t_666549ffbca9e0 286-295,297-298
+  s_c0cb5cfaffabd8::t_55781c40ff6df5 108-109
+packages/cli/src/render/ws-bridge.ts
+  s_c0cb5cfaffabd8::t_c0e2788a0f3f2f 235-236
+  s_c0cb5cfaffabd8::t_72e3403dc8e462 63
+  s_c0cb5cfaffabd8::t_5c2f77443eff64 21,23-27
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_c0cb5cfaffabd8::t_d44bea8414aecf 84
+packages/cli/src/util/daemon.ts
+  s_c0cb5cfaffabd8::t_88395b6b8f4828 347-354,356-387,390-406
+  s_c0cb5cfaffabd8::t_dad36df79f0593 54
+  s_c0cb5cfaffabd8::t_e4266c233dd940 325
+  s_c0cb5cfaffabd8::t_e2ce5886a5f352 355,388-389
+  s_c0cb5cfaffabd8::t_9dbdd077935a6e 323-324
+packages/cli/src/outputClient/types.ts
+  s_c0cb5cfaffabd8::t_cf48baff41775a 35-36,38,41
+  s_c0cb5cfaffabd8::t_da0e6e63802b81 37,39
+  s_c0cb5cfaffabd8::t_b01d8d0aefd122 34,40,42-48
+packages/cli/src/cli/startup-display.ts
+  s_c0cb5cfaffabd8::t_77fb19a18816ac 196,198-206,217,223,231,243
+  s_c0cb5cfaffabd8::t_fb1a0f94662e31 193-195,211-216,218-222,224-230,232-242,244
+packages/cli/src/cli/commands/service-supervisor.ts
+  s_c0cb5cfaffabd8::t_05bf7b2092b526 39
+  s_c0cb5cfaffabd8::t_ab34a5442a2025 140
+packages/cli/src/cli/__tests__/index.test.ts
+  s_c0cb5cfaffabd8::t_40ecd92a2e8cf9 21
+packages/cli/src/cli/commands/start.ts
+  s_c0cb5cfaffabd8::t_8b8459417fad36 68
+  s_c0cb5cfaffabd8::t_ef6c4c825ce07b 414
+  s_c0cb5cfaffabd8::t_dc1bba7830b536 509
+  s_c0cb5cfaffabd8::t_f940a21e81284e 537
+  s_c0cb5cfaffabd8::t_ae512440dd3e1e 90
+  s_c0cb5cfaffabd8::t_efd3e3bb3d6f62 547
+  s_c0cb5cfaffabd8::t_090f92c17ba8e3 357
+  s_c0cb5cfaffabd8::t_17e4fb748d4cd9 358
+  s_c0cb5cfaffabd8::t_db0cfc9a834c01 746
+  s_c0cb5cfaffabd8::t_41bd947a2705ea 725
+  s_c0cb5cfaffabd8::t_98e018139797cb 331
+  s_c0cb5cfaffabd8::t_4083c1e823a648 30
+packages/cli/src/cli/commands/__tests__/service-supervisor.test.ts
+  s_c0cb5cfaffabd8::t_5e26a24ae91013 91,95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "44075db36674cdb15895703fdc4dfb46a0261d79",
+  "prompts": {},
+  "sessions": {
+    "s_c0cb5cfaffabd8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0008dc8eaffexGn0Q6AoQOHIdO",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
