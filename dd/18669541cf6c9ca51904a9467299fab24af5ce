@@ -1,0 +1,49 @@
+plans/design/captures/capture-one.sh
+  s_3623cb272a1fbf::t_dd48105b34dcf7 47
+  s_3623cb272a1fbf::t_680da5cb0706fe 7-13,37,70-71,101,103,109,115,117
+  s_3623cb272a1fbf::t_66c7b72b107cd0 74-79
+  s_3623cb272a1fbf::t_17940cc4750ebd 42-44
+  s_3623cb272a1fbf::t_4cee15fa6d1260 48
+  s_3623cb272a1fbf::t_51707310bd248f 2-4,18-36,61-63,66-69,72,80-100,104-108,110-114,116,118-148
+  s_3623cb272a1fbf::t_e6d0bc9641f924 65
+  s_3623cb272a1fbf::t_6dc69d86dede14 38-41,45-46,49-60,64
+  s_3623cb272a1fbf::t_6793be24ad7973 73,102
+  s_3623cb272a1fbf::t_d0b7cd54e3a59e 1
+  s_3623cb272a1fbf::t_c72a66cfca3141 5-6
+  s_3623cb272a1fbf::t_bef87a996be0a2 14-17
+plans/design/captures/capture.sh
+  s_3623cb272a1fbf::t_0da2605eeaa86a 60
+  s_3623cb272a1fbf::t_456f3a403e082d 7-10,14-15,47-55,61,71
+  s_3623cb272a1fbf::t_e640a9338a6402 1-6,11,17-31,33-38,42-46,56-57,62,65-70,72-75,79-83,87-90,92,94-96,100-103,106-109
+  s_3623cb272a1fbf::t_5880c58d199365 12-13,16,32,39-41,58-59,63-64,76-78,84-86,91,93,97-99,104-105
+plans/design/copy.md
+  s_3623cb272a1fbf::t_e1741a1c48a871 1-130
+plans/design/sitemap.md
+  s_3623cb272a1fbf::t_c80a03b1d14229 6,38-53
+  s_3623cb272a1fbf::t_cca7c2277f61b0 1-5,7-37
+plans/design/captures/capture-deck.sh
+  s_3623cb272a1fbf::t_7bfe1f43a604e3 6-8,51-55,61,64-66,68-69,71-72
+  s_3623cb272a1fbf::t_021afec3df18c0 46,59,62-63,67,70,73,75,77
+  s_3623cb272a1fbf::t_e66195f56fba0a 1-5,9-45,47-50,56-58,60,74,76,78-89
+plans/design/PLAN.md
+  s_3623cb272a1fbf::t_c62a60d8794bcb 10,13,17-23,43,47-50,71,75-91,121-128
+  s_3623cb272a1fbf::t_634695816f85d1 1-9,11-12,14-16,24-42,44-46,51-70,72-74,92-120
+plans/design/captures/capture-all.sh
+  s_3623cb272a1fbf::t_213659c219c728 1-60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "dd18669541cf6c9ca51904a9467299fab24af5ce",
+  "prompts": {},
+  "sessions": {
+    "s_3623cb272a1fbf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe5d8b805ffeJtdD34vN1HnAlm",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
