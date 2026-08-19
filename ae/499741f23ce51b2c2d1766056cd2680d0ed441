@@ -1,0 +1,33 @@
+plans/design/PLAN.md
+  s_3623cb272a1fbf::t_427d257aab810a 10,20-21,24-26,45,49-53,73,77-93,123-167,169-188
+plans/design/captures/_write_wrapper.py
+  s_3623cb272a1fbf::t_a1618dbbdc6dc0 20,25-37,41-56
+  s_3623cb272a1fbf::t_8f16e86fb5d82c 1-19,21-24,38-40,57-63
+plans/design/sitemap.md
+  s_3623cb272a1fbf::t_1fe2d7eee08562 38-58
+plans/design/captures/recapture.sh
+  s_3623cb272a1fbf::t_304eb84d33421e 1-9,15-16,23-26,33-35,46-63,68-80,82-93,96-98,100-115,118,121,123,125-127,130,132,134-136,139,141,144,147-149,151-153
+  s_3623cb272a1fbf::t_3de2175983c9da 27
+  s_3623cb272a1fbf::t_3ba86d42832d77 17-20,22,36-43,45,64-65,81,94-95,99,116-117,119-120,122,124,128-129,131,133,137-138,140,142,145-146,154
+  s_3623cb272a1fbf::t_d1737fe9946158 44
+  s_3623cb272a1fbf::t_2dbc57661e15f8 11-14,66-67
+  s_3623cb272a1fbf::t_2ccd6299aaba92 28-32,143,150
+  s_3623cb272a1fbf::t_068d1241309d78 21
+  s_3623cb272a1fbf::t_e61727d4fc6ab0 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ae499741f23ce51b2c2d1766056cd2680d0ed441",
+  "prompts": {},
+  "sessions": {
+    "s_3623cb272a1fbf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe5d8b805ffeJtdD34vN1HnAlm",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
