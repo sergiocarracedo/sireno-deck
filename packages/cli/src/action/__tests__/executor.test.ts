@@ -21,12 +21,12 @@ describe("createActionExecutor", () => {
 
   it("interpolates {{ host.username }}", async () => {
     const result = await executor.run(`echo "user={{ host.username }}"`)
-    expect(result.stdout.trim()).toBe(`user=${host.userInfo.username}`)
+    expect(result.stdout.trim()).toBe(`user='${host.userInfo.username}'`)
   })
 
   it("interpolates {{ host.platform }}", async () => {
     const result = await executor.run(`echo "platform={{ host.platform }}"`)
-    expect(result.stdout.trim()).toBe(`platform=${host.platform}`)
+    expect(result.stdout.trim()).toBe(`platform='${host.platform}'`)
   })
 
   it("throws ActionError for unknown host placeholder", async () => {

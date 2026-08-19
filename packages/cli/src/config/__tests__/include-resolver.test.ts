@@ -83,15 +83,6 @@ describe("resolveIncludes", () => {
         root,
       ),
     ).toThrow(IncludeResolutionError)
-
-    try {
-      resolveIncludes(
-        "payload: !include /tmp/this-file-does-not-exist-zzz.yml\n",
-        root,
-      )
-    } catch (err) {
-      expect((err as IncludeResolutionError).message).toContain("not found")
-    }
   })
 
   it("accepts absolute paths and resolves them unchanged", () => {

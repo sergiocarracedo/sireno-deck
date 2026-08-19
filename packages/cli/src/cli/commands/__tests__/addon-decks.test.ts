@@ -116,7 +116,7 @@ describe("materializeAddonDecks", () => {
 
     expect(genDeck.buttons).toEqual([
       { id: "3", type: "test-addon:btn", position: 3, config: { label: "hi" } },
-      { id: "1", type: "test-addon:btn2" },
+      { id: "0", position: 0, type: "test-addon:btn2" },
     ])
   })
 

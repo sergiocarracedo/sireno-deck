@@ -508,8 +508,9 @@ describe("run", () => {
   it("non-deck config change broadcasts iframe-reload instead of restarting Vite", async () => {
     const outputClient = setHappyPath()
     const signals = makeFakeSignals()
-    // First config load: no theme. Second config load: theme added — forces
-    // the non-deck branch in handleConfigChange.
+    // First config load: no lock. Second config load: lock enabled — forces
+    // the non-deck branch in handleConfigChange without tripping theme
+    // resolution (which would throw on a non-existent theme name).
     let configCall = 0
     loaderMock.mockImplementation(() => {
       configCall += 1
@@ -517,7 +518,7 @@ describe("run", () => {
         return { config: { decks: {} }, configDir: "/dir" }
       }
       return {
-        config: { decks: {}, theme: "dark" },
+        config: { decks: {}, lock: { enabled: true } },
         configDir: "/dir",
       }
     })

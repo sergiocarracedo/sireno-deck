@@ -53,8 +53,8 @@ describe("TTY-aware logger", () => {
   })
 })
 
-describe("default human format renders inline context", () => {
-  it("renders a single line with msg and context, no (sireno-deck) tag", () => {
+describe("raw ndjson format when not a TTY", () => {
+  it("renders a single line with msg and context fields", () => {
     Object.defineProperty(process.stdout, "isTTY", { value: false })
     const writes: string[] = []
     const originalWrite = process.stdout.write.bind(process.stdout)
@@ -72,15 +72,16 @@ describe("default human format renders inline context", () => {
       process.stdout.write = originalWrite
     }
     const all = writes.join("")
-    expect(all).toContain("emulator: button-action received")
-    expect(all).toContain("deckId: main")
-    expect(all).toContain("position: 11")
-    expect(all).toContain("gesture: tap")
-    expect(all).not.toContain("sireno-deck")
+    const parsed = JSON.parse(all.trim()) as Record<string, unknown>
+    expect(parsed["msg"]).toBe("emulator: button-action received")
+    expect(parsed["deckId"]).toBe("main")
+    expect(parsed["position"]).toBe(11)
+    expect(parsed["gesture"]).toBe("tap")
+    expect(parsed["name"]).toBe("sireno-deck")
     expect(all.split("\n").filter((l) => l.length > 0)).toHaveLength(1)
   })
 
-  it("renders error details inline on the same line", () => {
+  it("serializes error details in the err field on the same line", () => {
     Object.defineProperty(process.stdout, "isTTY", { value: false })
     const writes: string[] = []
     const originalWrite = process.stdout.write.bind(process.stdout)
@@ -95,10 +96,11 @@ describe("default human format renders inline context", () => {
       process.stdout.write = originalWrite
     }
     const all = writes.join("")
-    expect(all).toContain("something broke")
-    expect(all).toContain("err:")
-    expect(all).toContain("Error: boom")
-    // All on one line
+    const parsed = JSON.parse(all.trim()) as Record<string, unknown>
+    expect(parsed["msg"]).toBe("something broke")
+    const errField = parsed["err"] as { type: string; message: string }
+    expect(errField["type"]).toBe("Error")
+    expect(errField["message"]).toBe("boom")
     expect(all.split("\n").filter((l) => l.length > 0)).toHaveLength(1)
   })
 })
