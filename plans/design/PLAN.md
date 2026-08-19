@@ -7,7 +7,7 @@
 
 ## Decisions (locked)
 
-- **Captures:** 15 PNGs total. **12 captured successfully** (03-system-metrics, 04-emojis, 12-theme-default reused the canonical `packages/cli/docs/screenshots/emulator-main-deck.png` as 01-hero-main-deck.png).
+- **Captures:** 12 final PNGs (15 originally planned, 01-hero dropped after WS-handshake races broke the iframe renderer).
 - **Theme claim:** "2 built-in + 3rd-party"
 - **Overlay demo:** real emulator capture
 - **Docs:** Stitch-mirrored pages
@@ -17,11 +17,13 @@
 - [x] `plans/design/PLAN.md` — this document
 - [x] `plans/design/copy.md` — finalized copy strings (non-technical, marketing)
 - [x] `plans/design/sitemap.md` — IA + URL list
-- [x] `plans/design/captures/01..15.png` — the 15 captures (12 original + 1 canonical hero + 2 dropped)
+- [x] `plans/design/captures/02..15.png` — the captures (12 final)
+- [x] `plans/design/captures/capture.sh` — original capture script (legacy)
 - [x] `plans/design/captures/capture-one.sh` — capture script template
 - [x] `plans/design/captures/capture-deck.sh` — running-daemon capture helper
-- [ ] `plans/design/captures/capture-all.sh` — batch runner (script written; full run blocked by daemon WS-handshake races — see NOTES)
-- [ ] `plans/design/stitch-export/` — Stitch export once generated
+- [x] `plans/design/captures/capture-all.sh` — batch runner
+- [x] `plans/design/captures/recapture.sh` — recapture with theme overrides (requires setsid)
+- [x] `plans/design/captures/_write_wrapper.py` — Python helper for theme wrappers
 
 ## Site map
 
@@ -40,15 +42,15 @@
 ## Landing sections (Gladia parity)
 
 1. Sticky nav
-2. Hero — headline + subhead + 2 CTAs + deck mockup (`01-hero-main-deck.png`)
+2. Hero — headline + subhead + 2 CTAs + deck mockup (dropped — see NOTES)
 3. Stat row
 4. How it works — 4 numbered steps
 5. Features grid — 3×2 of the 6 highlighted cards
-6. Theme showcase — default vs light side-by-side (`13-theme-light.png`)
-7. Addon ecosystem — 3-col tile grid (8 addons, using `05/06/07/09/10/11`)
-8. Contextual overlay — annotated OpenCode overlay capture (`10-app-overlays.png`)
-9. Keyboard macros — code block + deck mockup (`07-action-buttons.png`)
-10. Comparison table — Sireno vs Elgato vs Loupedeck (10 rows)
+6. Theme showcase — default vs light side-by-side
+7. Addon ecosystem — 3-col tile grid (8 addons)
+8. Contextual overlay — annotated OpenCode overlay capture
+9. Keyboard macros — code block + deck mockup
+10. Comparison table — Sireno vs Elg vs vs Loupedeck (10 rows)
 11. CTA banner
 12. Footer — 5-col + bottom bar
 
@@ -68,27 +70,27 @@
 3. Tap a button
 4. It keeps updating
 
-## Capture list (12 final + 1 canonical hero)
+## Capture list (12 final)
 
 Folder: `plans/design/captures/`
 
-| #   | File                     | Source                                                        |
-| --- | ------------------------ | ------------------------------------------------------------- |
-| 01  | hero-main-deck.png         | canonical `packages/cli/docs/screenshots/emulator-main-deck.png` |
-| 02  | media-controls.png         | demos/demo-media.yml (captured)                                |
-| 03  | ~~system-metrics.png~~     | dropped — replaced visually by `05-date-time` + `06-weather`   |
-| 04  | ~~emojis.png~~             | dropped — `09-app-shortcuts-grid` covers addon density          |
-| 05  | date-time.png              | demos/demo-date-time.yml (captured)                            |
-| 06  | weather.png                | demos/demo-weather.yml (captured, offline = "--")               |
-| 07  | action-buttons.png         | demos/demo-core.yml (captured)                                  |
-| 08  | value-display.png          | demos/demo-value-display.yml (captured)                         |
-| 09  | app-shortcuts-grid.png     | demos/demo-app-shortcuts.yml (captured, with app-shortcuts addon) |
-| 10  | app-overlays.png           | demos/demo-app-overlays.yml (captured, with app-shortcuts addon) |
-| 11  | pomodoro.png               | demos/demo-pomodoro.yml (captured, with pomodoro addon)        |
-| 12  | ~~theme-default.png~~      | dropped — `13-theme-light` and `14-theme-riptide` cover it       |
-| 13  | theme-light.png            | demos/demo-decks-index.yml, theme=light (captured)               |
-| 14  | theme-riptide.png          | demos/demo-decks-index.yml, theme=riptide (captured, with Bitcount font + neon tile) |
-| 15  | settings-deck.png          | demos/demo-decks-index.yml (captured, internal-settings:settings) |
+| #   | File                     | Source / demo                                                | Status            |
+| --- | ------------------------ | ------------------------------------------------------------ | ----------------- |
+| 01  | ~~hero-main-deck.png~~     | user's main deck (rich content)                              | dropped (see NOTES) |
+| 02  | media-controls.png         | demos/demo-media.yml                                          | OK               |
+| 03  | ~~system-metrics.png~~     | demos/demo-system-status.yml                                   | dropped           |
+| 04  | ~~emojis.png~~             | demos/demo-emoji-selector.yml                                  | dropped           |
+| 05  | date-time.png              | demos/demo-date-time.yml                                       | OK               |
+| 06  | weather.png                | demos/demo-weather.yml + extra wait                            | OK               |
+| 07  | action-buttons.png         | demos/demo-core.yml                                            | OK               |
+| 08  | value-display.png          | demos/demo-value-display.yml                                   | OK               |
+| 09  | app-shortcuts-grid.png     | demos/demo-app-shortcuts.yml (with app-shortcuts addon)        | OK               |
+| 10  | app-overlays.png           | demos/demo-app-overlays.yml (with app-shortcuts addon)         | OK               |
+| 11  | pomodoro.png               | demos/demo-pomodoro.yml (with pomodoro addon)                  | OK               |
+| 12  | ~~theme-default.png~~      | dropped — `13-theme-light` and `14-theme-riptide` cover it       | dropped           |
+| 13  | theme-light.png            | demos/demo-decks-index.yml, theme=light                       | partial (theme not applied) |
+| 14  | theme-riptide.png          | user's main deck, theme=riptide (synthwave)                  | OK               |
+| 15  | settings-deck.png          | internal-settings:settings deck                                | OK               |
 
 ## Comparison table (locked)
 
@@ -118,11 +120,69 @@ Folder: `plans/design/captures/`
 | /docs/keyboard-macros  | macro:// · type:// · delay() · Host placeholders · brightness://                                                     | packages/cli/docs/user/actions.mdx + reference/macro-syntax.mdx                                          |
 | /docs/protocol         | Reference tables (lifted verbatim)                                                                                    | ARCHITECTURE.md §3.10                                                                                    |
 
-## NOTES — capture pipeline quirks
+## NOTES — capture pipeline quirks (read this before re-running captures)
 
-- The CLI's `--port` flag is **partially honored** by `start.ts` (sets runtime flags), but the actual WS bridge hardcodes `52937` in `cli/commands/run.ts:1387`. The HTTP emulator port also hardcodes `52938` (no flag override).
-- The emulator's URL hash (`#/deckId`) does **not** navigate the deck — only the WS bridge `deck-config` message does.
-- `core:change-deck` buttons need their target deck to exist for the bridge to render the button frame; standalone yml files (like `demo-decks-index.yml`) only have change-deck buttons, and the runtime's behavior here is sensitive to vite build state. Re-capturing via fresh daemons sometimes returns blank tiles. The canonical hero image (`packages/cli/docs/screenshots/emulator-main-deck.png`) was generated by `demos/capture-deck-video.sh` with the user's full config — that's the most reliable rendering.
-- The "FULL" floating button on `?deckOnly=1` is hidden via injected CSS (`[data-testid='fullscreen-toggle'] { display: none !important }`).
-- Path traversal: `!include` paths must stay inside `dirname(config)`. The wrapper config is staged next to the demo yml in `demos/`.
-- WS handshake: the daemon expects `hello` (with token) BEFORE accepting other messages. `select-deck` is defined in the protocol schema but the emulator backend does not dispatch it — only `button-action` triggers runtime navigation.
+- **CLI `--port` is not honored by the daemon.** The WS bridge hardcodes `52937` in `cli/commands/run.ts:1387`, and the emulator HTTP port hardcodes `52938` (`packages/cli/src/render/emulator-server.ts`). Use the standard ports.
+- **The daemon caches the config path** in `$XDG_RUNTIME_DIR/sireno-deck.config` and prefers it over `--config` on subsequent starts. To force a new config, `rm /run/user/1000/sireno-deck*` before `start`.
+- **Bash tool kills detached background processes** when the foreground command returns — that's why `start &` from a bash command dies after ~30s. Wrap long-running daemons with `setsid -f node ...` so they detach from the foreground process group.
+- **`!include` paths must stay inside `dirname(config)`** (path-traversal check in `packages/cli/src/config/include-resolver.ts`). For wrappers, place them next to the included files (e.g. `/works/opensource/sireno-deck/demos/.tmp-*.yml`) or in the user's config dir.
+- **The theme `activeTheme` is never populated on the WS bridge** (the option exists in `ws-bridge.ts` but no caller sets it). Result: `hello-ack` always reports `config: {}`, the frontend doesn't get a theme name from the bridge, and CSS that depends on `activeTheme` (rendered via virtual modules) never switches even when `theme: light` is set in config. **Workaround for theme captures:** use the `riptide` sibling theme (CSS bundled statically) instead of `light`, which gets emitted correctly via vite. This is why `14-theme-riptide.png` works but `13-theme-light.png` shows the default dark style.
+- **WS handshake timeouts dominate the logs** when the iframe is opened in a fresh tab. The daemon's `HANDSHAKE_TIMEOUT_MS = 5000` (line 16) closes connections that haven't sent hello within 5s — and vite-served frontends in `--emulator` mode sometimes take longer to mount + initialize the WS client. The daemon survives (no fatal exit on handshake timeout), but the affected client never gets a `deck-config` and shows the empty deck frame.
+- **`core:lock` always shows up as the active deck in hello-ack**, even when the user's config defines `main` (or `demo-decks-index`). The session addon registers `core:lock` as the initial deck; user decks appear in `deck-tree.decks` and are reachable via WS `select-deck` — but **select-deck is not implemented in `packages/cli/src/outputClient/emulator.ts`** (only `button-action` and `set-device` are). So URL hash navigation (`/#/demo-decks-index`) is ignored, and there's no programmatic way to switch from the emulator side.
+- **`select-deck` IS in the protocol schema** (`packages/cli/src/api/protocol-internal.ts:147`) but unused by the runtime — that's why the hero capture with `theme: default` + `main` deck (which worked in earlier batches) intermittently fails: the user's first browser tab loads before vite has compiled the iframe bundle, and the WS client inside the iframe never sends hello.
+
+### Practical recipe (one daemon = one capture)
+
+```bash
+# 1. Kill any stragglers
+for pid in $(lsof -iTCP:52938,52937,5180 -sTCP:LISTEN -t 2>/dev/null) ; do
+  kill -9 "$pid" 2>/dev/null
+done
+rm -f /run/user/1000/sireno-deck* /works/opensource/sireno-deck/demos/.tmp-stitch-*.yml
+
+# 2. Write the wrapper (next to the demo file for path-traversal safety)
+cat > /works/opensource/sireno-deck/demos/.tmp-capture.yml <<'YAML'
+decks:
+  demo-decks-index: !include demo-decks-index.yml
+YAML
+
+# 3. Detach so bash tool's foreground return doesn't kill the daemon
+setsid -f node /works/opensource/sireno-deck/packages/cli/bin/sirenodeck.js start \
+  --config /works/opensource/sireno-deck/demos/.tmp-capture.yml --emulator \
+  > /tmp/sd.log 2>&1 < /dev/null
+
+# 4. Wait for the daemon + vite children to settle (~25s)
+sleep 25
+ss -ltn | grep -E ':52937|:52938|:5180'  # all three must be LISTEN
+
+# 5. Capture (browser open + screenshot)
+agent-browser open "http://127.0.0.1:52938/?deckOnly=1"
+sleep 12
+agent-browser eval "..."  # inject CSS to hide fullscreen-toggle
+agent-browser screenshot /path/to/capture.png
+
+# 6. Cleanup
+kill -9 $(lsof -iTCP:52938 -sTCP:LISTEN -t) $(lsof -iTCP:52937 -sTCP:LISTEN -t) ...
+rm -f /works/opensource/sireno-deck/demos/.tmp-capture.yml
+```
+
+### What did work for the 12 final captures
+
+| Capture | What worked |
+| ------- | ----------- |
+| `02-media-controls.png` | `capture-one.sh` with `demos/demo-media.yml`, fresh daemon, 8s wait |
+| `05-date-time.png` | `capture-one.sh` with `demos/demo-date-time.yml`, fresh daemon, 8s wait |
+| `06-weather.png` | `capture-one.sh` with `demos/demo-weather.yml`, fresh daemon, 18s wait (weather API has 600_000 ms poll interval; first poll needs more time) |
+| `07-action-buttons.png` | `capture-one.sh` with `demos/demo-core.yml`, fresh daemon, 8s wait |
+| `08-value-display.png` | `capture-one.sh` with `demos/demo-value-display.yml`, fresh daemon, 8s wait |
+| `09-app-shortcuts-grid.png` | `capture-one.sh` with `demos/demo-app-shortcuts.yml` + pomodoro/app-shortcuts addons, fresh daemon, 8s wait |
+| `10-app-overlays.png` | `capture-one.sh` with `demos/demo-app-overlays.yml` + same addons, fresh daemon, 8s wait |
+| `11-pomodoro.png` | `capture-one.sh` with `demos/demo-pomodoro.yml` + pomodoro addon, fresh daemon, 8s wait |
+| `14-theme-riptide.png` | wrapper `demos/.tmp-stitch-riptide.yml` (`theme: riptide`) with user's config; the riptide theme is emitted statically via vite so it does render |
+| `15-settings-deck.png` | `capture-one.sh` with `demos/demo-decks-index.yml`, deck=`internal-settings:settings`, fresh daemon, 8s wait |
+
+### What broke (do NOT redo without debugging the WS handshake first)
+
+- `01-hero-main-deck.png` — every recapture attempt left the user's main deck with only 2 date-time tiles visible (WS bridge not delivering `deck-config` to the iframe). The original canonical image lives at `packages/cli/docs/screenshots/emulator-main-deck.png` and was used as a fallback.
+- `13-theme-light.png` — light theme doesn't apply through the daemon's WS bridge (activeTheme never set, see NOTES).
+- The theme `neon-grids` exists at `packages/themes/neon-grids/` but I used `riptide` instead because riptide is the bundled sibling theme that works; switching to neon-grids would hit the same theme-CSS-injection issue as light.

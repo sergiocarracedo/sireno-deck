@@ -35,19 +35,24 @@ Logo · Product · Themes · Addons · Docs · GitHub · **Get started**
 
 - Product · Use cases · Resources · Community · Legal
 
-## Image map (final, 12 captures + 1 canonical hero)
+## Image map (12 captures — hero dropped, see PLAN.md §NOTES)
 
-| Image                          | Used in                          | Source                                                       |
-| ------------------------------ | -------------------------------- | ------------------------------------------------------------ |
-| `01-hero-main-deck.png`        | `#hero`, `#themes` (default)        | canonical `packages/cli/docs/screenshots/emulator-main-deck.png` |
-| `02-media-controls.png`        | `#features` (Built-in types)        | captures/demo-media                                          |
-| `05-date-time.png`             | `#features` (Built-in types)        | captures/demo-date-time                                     |
-| `06-weather.png`               | `#features` (Built-in types), `#addons` | captures/demo-weather                                       |
-| `07-action-buttons.png`        | `#features` (Built-in types), `#macros` | captures/demo-core                                          |
-| `08-value-display.png`         | `#addons`                            | captures/demo-value-display                                 |
-| `09-app-shortcuts-grid.png`    | `#addons`                            | captures/demo-app-shortcuts (with app-shortcuts addon)       |
-| `10-app-overlays.png`          | `#overlay`, `#addons`                | captures/demo-app-overlays (with app-shortcuts addon)         |
-| `11-pomodoro.png`              | `#addons`                            | captures/demo-pomodoro (with pomodoro addon)                  |
-| `13-theme-light.png`           | `#themes` (light)                    | captures/demo-decks-index, theme=light                       |
-| `14-theme-riptide.png`          | `#themes` (third-party example)      | captures/demo-decks-index, theme=riptide                     |
-| `15-settings-deck.png`          | `/docs/builtin-addons` (internal-settings) | captures/demo-decks-index, deck=internal-settings:settings  |
+The hero image (01-hero-main-deck.png) was lost during recapture. The canonical
+hero is `packages/cli/docs/screenshots/emulator-main-deck.png` — that file
+exists in the repo and shows the full main deck (system stats, weather, time,
+date, emojis launcher, music, overlay toggle) and should be used for Stitch
+import instead.
+
+| Image                          | Used in                          |
+| ------------------------------ | -------------------------------- |
+| `02-media-controls.png`         | `#features` (Built-in types)      |
+| `05-date-time.png`              | `#features` (Built-in types)      |
+| `06-weather.png`                | `#features` (Built-in types)      |
+| `07-action-buttons.png`         | `#features` (Built-in types)      |
+| `08-value-display.png`         | `#addons`                         |
+| `09-app-shortcuts-grid.png`    | `#addons`                         |
+| `10-app-overlays.png`          | `#overlay`, `#addons`             |
+| `11-pomodoro.png`              | `#addons`                         |
+| `13-theme-light.png`           | `#themes` (light)                 |
+| `14-theme-riptide.png`         | `#themes` (third-party example)   |
+| `15-settings-deck.png`         | `/docs/builtin-addons` (internal-settings) |
