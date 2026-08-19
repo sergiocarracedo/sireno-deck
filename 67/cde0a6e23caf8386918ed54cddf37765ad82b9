@@ -1,0 +1,19 @@
+plans/design/AI_PROMPT.md
+  s_3623cb272a1fbf::t_58b3f163c733a0 1-309
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "67cde0a6e23caf8386918ed54cddf37765ad82b9",
+  "prompts": {},
+  "sessions": {
+    "s_3623cb272a1fbf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe5d8b805ffeJtdD34vN1HnAlm",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
