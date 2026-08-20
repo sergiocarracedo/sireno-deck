@@ -17,7 +17,7 @@ export const preflight = async (options: RunOptions): Promise<void> => {
           "No Stream Deck devices found. Connect a device and try again. On Linux, udev rules for vendor 0fd9 may be required — see packages/cli/src/device/linux-udev.ts for the rule file template.",
         )
       }
-      const { confirm } = await import("@/ui/console")
+      const { confirm } = await import("@/cli/prompt")
       const fallback = await confirm({
         message: "No Stream Deck found. Start in --emulator mode instead?",
         initialValue: true,

@@ -42,9 +42,9 @@ vi.mock("@/system/providers/clipboard", () => ({
   })),
 }))
 const clackConfirmMock = vi.fn(async () => true)
-vi.mock("@/ui/console", async () => {
+vi.mock("@/cli/prompt", async () => {
   const actual =
-    await vi.importActual<typeof import("@/ui/console")>("@/ui/console")
+    await vi.importActual<typeof import("@/cli/prompt")>("@/cli/prompt")
   return {
     ...actual,
     confirm: clackConfirmMock,

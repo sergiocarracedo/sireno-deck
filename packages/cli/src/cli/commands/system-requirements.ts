@@ -36,7 +36,7 @@ import {
   note,
   outro,
   spinner,
-} from "@/ui/console"
+} from "@/cli/prompt"
 
 const execFileAsync = promisify(execFile)
 

@@ -7,7 +7,7 @@ const outroMock = vi.fn()
 const cancelMock = vi.fn()
 const logInfoMock = vi.fn()
 
-vi.mock("@/ui/console", () => ({
+vi.mock("@/cli/prompt", () => ({
   intro: introMock,
   outro: outroMock,
   cancel: cancelMock,

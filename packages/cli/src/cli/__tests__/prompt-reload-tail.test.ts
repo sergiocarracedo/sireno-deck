@@ -10,7 +10,7 @@ const { mockConfirm, mockConfirmImpl, mockTailLogs, mockReload } = vi.hoisted(
   }),
 )
 
-vi.mock("@/ui/console", () => ({
+vi.mock("@/cli/prompt", () => ({
   confirm: (...args: unknown[]) => {
     mockConfirm(...args)
     return mockConfirmImpl()

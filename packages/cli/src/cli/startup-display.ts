@@ -16,7 +16,7 @@ import {
   type SystemReport,
 } from "@/system/setup-wizard"
 
-import { cancel, intro, log, outro } from "@/ui/console"
+import { cancel, intro, log, outro } from "@/cli/prompt"
 
 import { buildStandardProbeDeps } from "./probe-deps"
 
@@ -224,7 +224,7 @@ export const promptReloadAndTail = async (
   // immediately after `printStartupComplete`.
   if (!process.stdout.isTTY || !process.stdin.isTTY) return
 
-  const { confirm, isCancel } = await import("@/ui/console")
+  const { confirm, isCancel } = await import("@/cli/prompt")
   const { resolveDaemonPaths } = await import("@/util/daemon")
   const { reload } = await import("./commands/reload")
   const { tailLogs } = await import("@/util/log-tail")
