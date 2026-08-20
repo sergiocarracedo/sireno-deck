@@ -1,0 +1,21 @@
+docs/solutions/conventions/cli-as-daemon-interface.md
+  s_cebb45f4470938::t_283b0e9871aad1 1-190
+docs/solutions/README.md
+  s_cebb45f4470938::t_b3817c86eb4976 15-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f56eb9c31f9fd62c9fa43816d93b0aacd5d1e243",
+  "prompts": {},
+  "sessions": {
+    "s_cebb45f4470938": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe1fe5a2fffeLv2ZLCRqsdhw7c",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
