@@ -1,4 +1,4 @@
-import { select as clackSelect } from "@/ui/console"
+import { select as clackSelect } from "@/cli/prompt"
 import type pino from "pino"
 
 import type { DeviceDescriptor } from "@/device/registry"

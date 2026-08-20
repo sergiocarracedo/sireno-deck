@@ -16,7 +16,6 @@ import {
   printEmulatorQrBanner,
   printStartupComplete,
   printStartupFailed,
-  promptReloadAndTail,
   waitForDaemonReady,
 } from "./startup-display"
 
@@ -160,15 +159,14 @@ const startCommand: CommandModule<object, StartArgs> = {
         }
       }
       printStartupComplete()
-      // ponytail: dev-only operator affordance. After the daemon is up,
-      // offer a one-shot SIGUSR1 reload + tail. Verifies the reload
-      // path works and gives the operator something to look at without
-      // forcing them to type `pnpm dev reload` and `pnpm dev logs` as
-      // separate steps. Production flows (systemd / launchd) don't
-      // hit this branch — bin/dev.js is dev-only by construction.
-      if (process.argv[1]?.endsWith(".ts") === true && argv.logs !== true) {
-        await promptReloadAndTail({ logger })
-      }
+      // ponytail: dev mode exits cleanly after `pnpm dev start` — the
+      // operator drives reload/tail/status via the dedicated subcommands
+      // (`pnpm dev reload`, `pnpm dev logs`, `pnpm dev status`), matching
+      // production where `sirenodeck start` returns without prompting.
+      // The startup-banner already conveys what was started and the next
+      // step; an inline reload+tail Y/n prompt was redundant and made the
+      // wrapper appear stuck or, under certain stdin/tty states, crash
+      // via clack's readline/setRawMode interaction.
       await startPromise
     } catch (err) {
       printStartupFailed(err)

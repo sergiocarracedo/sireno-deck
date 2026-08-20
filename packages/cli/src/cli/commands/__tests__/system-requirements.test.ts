@@ -41,7 +41,7 @@ const spinnerMock = vi.fn(() => ({
   stop: vi.fn(),
   message: vi.fn(),
 }))
-vi.mock("@/ui/console", () => ({
+vi.mock("@/cli/prompt", () => ({
   intro: vi.fn(),
   outro: vi.fn(),
   note: vi.fn(),
