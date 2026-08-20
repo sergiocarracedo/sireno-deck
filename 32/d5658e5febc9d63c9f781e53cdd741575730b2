@@ -1,0 +1,50 @@
+docs/plans/2026-08-20-dev-detach-match-production.md
+  s_cebb45f4470938::t_00d080df5b4a0f 1-356
+  s_cebb45f4470938::t_a5d65e266a95e4 357-379
+packages/cli/src/cli/commands/__tests__/start.test.ts
+  s_cebb45f4470938::t_82770ce3adc20e 390-393,418,443-447,449-455,458-462,464-475,478-491,493-499,502
+  s_cebb45f4470938::t_126c4219f61ed2 456-457,476-477,500-501,503
+  s_cebb45f4470938::t_83f1b5605a98ef 448,463,492
+packages/cli/src/device/black-frame.ts
+  s_cebb45f4470938::t_30a944664268a4 5-10
+docs/solutions/conventions/dev-detach-match-production.md
+  s_cebb45f4470938::t_cde1d6bfcf3449 1-115
+packages/cli/bin/dev.js
+  s_cebb45f4470938::t_608f6793e0f074 46-54,74,76-77,82-83,85,87-92
+packages/cli/src/cli/commands/start.ts
+  s_cebb45f4470938::t_2e938a615d90bc 532
+  s_cebb45f4470938::t_7e5b9691082db6 52
+  s_cebb45f4470938::t_39dd3710c34948 776
+  s_cebb45f4470938::t_66e439e9a74103 521-531,533-549,563-566,568,570-574
+packages/cli/src/cli/commands/__tests__/restart.test.ts
+  s_cebb45f4470938::t_66c250339aced0 4-11,13,16,19-20
+  s_cebb45f4470938::t_759eeba2b76df3 28-32
+  s_cebb45f4470938::t_99b2106b966e27 15,18
+  s_cebb45f4470938::t_9b395ba046359b 1-3,12,14,17,21-27,33-46,50-90,95-111,115-129,131-145,147-148,151
+  s_cebb45f4470938::t_2f18d29f03446e 47-49,91-94,112-114,130,146,149-150
+ARCHITECTURE.md
+  s_cebb45f4470938::t_037791654abfa6 260,262-264,273-286
+packages/cli/src/cli/commands/restart.ts
+  s_cebb45f4470938::t_c6aad542360140 3-8,12-13,21-22,34-35,37-39,41-54,58-72
+  s_cebb45f4470938::t_8d7318a8745f57 36,40,55,74
+  s_cebb45f4470938::t_e1092e469c4553 73,75-77,91-92
+packages/cli/src/cli/commands/spawn-daemon.ts
+  s_cebb45f4470938::t_262eda93d99a8a 54-61
+  s_cebb45f4470938::t_cdf9d00d79004b 96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "32d5658e5febc9d63c9f781e53cdd741575730b2",
+  "prompts": {},
+  "sessions": {
+    "s_cebb45f4470938": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe1fe5a2fffeLv2ZLCRqsdhw7c",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
