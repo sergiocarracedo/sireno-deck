@@ -1,0 +1,33 @@
+packages/cli/src/cli/commands/run.ts
+  s_cebb45f4470938::t_c40b6ab27e2f64 1377-1379,1381
+packages/cli/src/outputClient/emulator.ts
+  s_cebb45f4470938::t_8f37a780799739 13
+packages/cli/src/util/daemon.ts
+  s_cebb45f4470938::t_8037db480305cb 323,397
+packages/cli/src/vite/virtual-modules.ts
+  s_cebb45f4470938::t_b51daf1b28aff0 320-323
+plans/design/AI_PROMPT.md
+  s_cebb45f4470938::t_7342a624a73c8d 14,38,44,96,102,112,119,129,131,133,135,137,139,142,150,164,173,183,187-188,201,209,224,238-240,247,250,254,318,326
+plans/design/PLAN.md
+  s_cebb45f4470938::t_2c4c12f61c085f 77-93,97-108,112-121,171-182,188
+plans/design/copy.md
+  s_cebb45f4470938::t_846e9b6c00a53d 26,32,38,44,50,56,136
+plans/design/sitemap.md
+  s_cebb45f4470938::t_9c6eff44909a61 5-15,46-58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d2f190161b68d93af68fc1b7f39de14d05acb262",
+  "prompts": {},
+  "sessions": {
+    "s_cebb45f4470938": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe1fe5a2fffeLv2ZLCRqsdhw7c",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
