@@ -1374,14 +1374,11 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
 
     const remote = options.remote === true
     const emulatorMode = options.emulator === true || remote
-    const lanAddresses =
-      emulatorMode
-        ? selectLanAddresses({ networkInterfaces: networkInterfaces })
-        : []
+    const lanAddresses = emulatorMode
+      ? selectLanAddresses({ networkInterfaces: networkInterfaces })
+      : []
     const lanHost = remote ? lanAddresses[0]?.address : undefined
-    const bridgeHost: "127.0.0.1" | "0.0.0.0" = remote
-      ? "0.0.0.0"
-      : "127.0.0.1"
+    const bridgeHost: "127.0.0.1" | "0.0.0.0" = remote ? "0.0.0.0" : "127.0.0.1"
 
     bridge = await startWsBridge({
       port: 52937,

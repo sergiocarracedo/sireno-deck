@@ -74,51 +74,51 @@
 
 Folder: `plans/design/captures/`
 
-| #   | File                     | Source / demo                                                | Status            |
-| --- | ------------------------ | ------------------------------------------------------------ | ----------------- |
-| 01  | ~~hero-main-deck.png~~     | user's main deck (rich content)                              | dropped (see NOTES) |
-| 02  | media-controls.png         | demos/demo-media.yml                                          | OK               |
-| 03  | ~~system-metrics.png~~     | demos/demo-system-status.yml                                   | dropped           |
-| 04  | ~~emojis.png~~             | demos/demo-emoji-selector.yml                                  | dropped           |
-| 05  | date-time.png              | demos/demo-date-time.yml                                       | OK               |
-| 06  | weather.png                | demos/demo-weather.yml + extra wait                            | OK               |
-| 07  | action-buttons.png         | demos/demo-core.yml                                            | OK               |
-| 08  | value-display.png          | demos/demo-value-display.yml                                   | OK               |
-| 09  | app-shortcuts-grid.png     | demos/demo-app-shortcuts.yml (with app-shortcuts addon)        | OK               |
-| 10  | app-overlays.png           | demos/demo-app-overlays.yml (with app-shortcuts addon)         | OK               |
-| 11  | pomodoro.png               | demos/demo-pomodoro.yml (with pomodoro addon)                  | OK               |
-| 12  | ~~theme-default.png~~      | dropped — `13-theme-light` and `14-theme-riptide` cover it       | dropped           |
-| 13  | theme-light.png            | demos/demo-decks-index.yml, theme=light                       | partial (theme not applied) |
-| 14  | theme-riptide.png          | user's main deck, theme=riptide (synthwave)                  | OK               |
-| 15  | settings-deck.png          | internal-settings:settings deck                                | OK               |
+| #   | File                   | Source / demo                                              | Status                      |
+| --- | ---------------------- | ---------------------------------------------------------- | --------------------------- |
+| 01  | ~~hero-main-deck.png~~ | user's main deck (rich content)                            | dropped (see NOTES)         |
+| 02  | media-controls.png     | demos/demo-media.yml                                       | OK                          |
+| 03  | ~~system-metrics.png~~ | demos/demo-system-status.yml                               | dropped                     |
+| 04  | ~~emojis.png~~         | demos/demo-emoji-selector.yml                              | dropped                     |
+| 05  | date-time.png          | demos/demo-date-time.yml                                   | OK                          |
+| 06  | weather.png            | demos/demo-weather.yml + extra wait                        | OK                          |
+| 07  | action-buttons.png     | demos/demo-core.yml                                        | OK                          |
+| 08  | value-display.png      | demos/demo-value-display.yml                               | OK                          |
+| 09  | app-shortcuts-grid.png | demos/demo-app-shortcuts.yml (with app-shortcuts addon)    | OK                          |
+| 10  | app-overlays.png       | demos/demo-app-overlays.yml (with app-shortcuts addon)     | OK                          |
+| 11  | pomodoro.png           | demos/demo-pomodoro.yml (with pomodoro addon)              | OK                          |
+| 12  | ~~theme-default.png~~  | dropped — `13-theme-light` and `14-theme-riptide` cover it | dropped                     |
+| 13  | theme-light.png        | demos/demo-decks-index.yml, theme=light                    | partial (theme not applied) |
+| 14  | theme-riptide.png      | user's main deck, theme=riptide (synthwave)                | OK                          |
+| 15  | settings-deck.png      | internal-settings:settings deck                            | OK                          |
 
 ## Comparison table (locked)
 
-| Feature                        | Sireno Deck                              | Elgato Stream Deck SW     | Loupedeck          |
-| ------------------------------ | ---------------------------------------- | ------------------------- | ------------------ |
-| Works on Linux                 | Yes, first-class                         | No                        | No                 |
-| Configure in plain text        | Yes                                      | Click-only                | Click-only         |
-| Track changes in git           | Yes                                      | No                        | No                 |
-| Themes (fonts, colors, layout) | Two built-in, plus install your own      | A few skins               | Profiles only      |
-| Add new button types           | Anyone can publish one, like an app      | Closed marketplace        | Closed             |
-| Buttons change by app          | Yes — automatically                      | Manual profiles           | Manual profiles    |
-| Tap / double-tap / hold        | All three, per button                    | Tap and hold              | Tap and hold       |
-| Type emoji and special chars   | Yes                                      | No                        | No                 |
-| Try without the device         | Yes — full browser preview               | No                        | No                 |
-| Price                          | Free                                     | Free (with device)        | Free (with device) |
+| Feature                        | Sireno Deck                         | Elgato Stream Deck SW | Loupedeck          |
+| ------------------------------ | ----------------------------------- | --------------------- | ------------------ |
+| Works on Linux                 | Yes, first-class                    | No                    | No                 |
+| Configure in plain text        | Yes                                 | Click-only            | Click-only         |
+| Track changes in git           | Yes                                 | No                    | No                 |
+| Themes (fonts, colors, layout) | Two built-in, plus install your own | A few skins           | Profiles only      |
+| Add new button types           | Anyone can publish one, like an app | Closed marketplace    | Closed             |
+| Buttons change by app          | Yes — automatically                 | Manual profiles       | Manual profiles    |
+| Tap / double-tap / hold        | All three, per button               | Tap and hold          | Tap and hold       |
+| Type emoji and special chars   | Yes                                 | No                    | No                 |
+| Try without the device         | Yes — full browser preview          | No                    | No                 |
+| Price                          | Free                                | Free (with device)    | Free (with device) |
 
 ## Docs pages — content scaffold
 
-| Page                   | Sections                                                                                                              | Source                                                                                                  |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| /docs landing          | 6-chapter card grid                                                                                                   | new copy                                                                                                |
-| /docs/getting-started  | Install · First run · --emulator · CLI cheatsheet · Next steps                                                         | packages/cli/docs/user/installation.mdx + running-the-service.mdx                                        |
-| /docs/configuration    | decks: · Button anatomy · Gestures · Triggers · Variants · Pointer to /docs/themes                                    | packages/cli/docs/user/configuration-files.mdx + decks-and-buttons.mdx + actions.mdx                     |
-| /docs/builtin-addons   | One anchor per addon (date-time, weather, system-status, media, emoji-selector, value-display, brightness, session)   | packages/cli/src/builtin-addons/*/README.md                                                              |
-| /docs/themes           | Tokens reference · Built-in (default, light) · Sibling / npm themes · Authoring pointer                               | packages/cli/docs/user/themes.mdx + developer/theme-authoring.mdx                                        |
-| /docs/addon-authoring  | Manifest · Button types · Decks (static + dynamic) · Global backend · Store · Publishing · Building                   | packages/cli/docs/developer/addon-authoring.mdx                                                         |
-| /docs/keyboard-macros  | macro:// · type:// · delay() · Host placeholders · brightness://                                                     | packages/cli/docs/user/actions.mdx + reference/macro-syntax.mdx                                          |
-| /docs/protocol         | Reference tables (lifted verbatim)                                                                                    | ARCHITECTURE.md §3.10                                                                                    |
+| Page                  | Sections                                                                                                            | Source                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| /docs landing         | 6-chapter card grid                                                                                                 | new copy                                                                             |
+| /docs/getting-started | Install · First run · --emulator · CLI cheatsheet · Next steps                                                      | packages/cli/docs/user/installation.mdx + running-the-service.mdx                    |
+| /docs/configuration   | decks: · Button anatomy · Gestures · Triggers · Variants · Pointer to /docs/themes                                  | packages/cli/docs/user/configuration-files.mdx + decks-and-buttons.mdx + actions.mdx |
+| /docs/builtin-addons  | One anchor per addon (date-time, weather, system-status, media, emoji-selector, value-display, brightness, session) | packages/cli/src/builtin-addons/*/README.md                                          |
+| /docs/themes          | Tokens reference · Built-in (default, light) · Sibling / npm themes · Authoring pointer                             | packages/cli/docs/user/themes.mdx + developer/theme-authoring.mdx                    |
+| /docs/addon-authoring | Manifest · Button types · Decks (static + dynamic) · Global backend · Store · Publishing · Building                 | packages/cli/docs/developer/addon-authoring.mdx                                      |
+| /docs/keyboard-macros | macro:// · type:// · delay() · Host placeholders · brightness://                                                    | packages/cli/docs/user/actions.mdx + reference/macro-syntax.mdx                      |
+| /docs/protocol        | Reference tables (lifted verbatim)                                                                                  | ARCHITECTURE.md §3.10                                                                |
 
 ## NOTES — capture pipeline quirks (read this before re-running captures)
 
@@ -168,18 +168,18 @@ rm -f /works/opensource/sireno-deck/demos/.tmp-capture.yml
 
 ### What did work for the 12 final captures
 
-| Capture | What worked |
-| ------- | ----------- |
-| `02-media-controls.png` | `capture-one.sh` with `demos/demo-media.yml`, fresh daemon, 8s wait |
-| `05-date-time.png` | `capture-one.sh` with `demos/demo-date-time.yml`, fresh daemon, 8s wait |
-| `06-weather.png` | `capture-one.sh` with `demos/demo-weather.yml`, fresh daemon, 18s wait (weather API has 600_000 ms poll interval; first poll needs more time) |
-| `07-action-buttons.png` | `capture-one.sh` with `demos/demo-core.yml`, fresh daemon, 8s wait |
-| `08-value-display.png` | `capture-one.sh` with `demos/demo-value-display.yml`, fresh daemon, 8s wait |
-| `09-app-shortcuts-grid.png` | `capture-one.sh` with `demos/demo-app-shortcuts.yml` + pomodoro/app-shortcuts addons, fresh daemon, 8s wait |
-| `10-app-overlays.png` | `capture-one.sh` with `demos/demo-app-overlays.yml` + same addons, fresh daemon, 8s wait |
-| `11-pomodoro.png` | `capture-one.sh` with `demos/demo-pomodoro.yml` + pomodoro addon, fresh daemon, 8s wait |
-| `14-theme-riptide.png` | wrapper `demos/.tmp-stitch-riptide.yml` (`theme: riptide`) with user's config; the riptide theme is emitted statically via vite so it does render |
-| `15-settings-deck.png` | `capture-one.sh` with `demos/demo-decks-index.yml`, deck=`internal-settings:settings`, fresh daemon, 8s wait |
+| Capture                     | What worked                                                                                                                                       |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `02-media-controls.png`     | `capture-one.sh` with `demos/demo-media.yml`, fresh daemon, 8s wait                                                                               |
+| `05-date-time.png`          | `capture-one.sh` with `demos/demo-date-time.yml`, fresh daemon, 8s wait                                                                           |
+| `06-weather.png`            | `capture-one.sh` with `demos/demo-weather.yml`, fresh daemon, 18s wait (weather API has 600_000 ms poll interval; first poll needs more time)     |
+| `07-action-buttons.png`     | `capture-one.sh` with `demos/demo-core.yml`, fresh daemon, 8s wait                                                                                |
+| `08-value-display.png`      | `capture-one.sh` with `demos/demo-value-display.yml`, fresh daemon, 8s wait                                                                       |
+| `09-app-shortcuts-grid.png` | `capture-one.sh` with `demos/demo-app-shortcuts.yml` + pomodoro/app-shortcuts addons, fresh daemon, 8s wait                                       |
+| `10-app-overlays.png`       | `capture-one.sh` with `demos/demo-app-overlays.yml` + same addons, fresh daemon, 8s wait                                                          |
+| `11-pomodoro.png`           | `capture-one.sh` with `demos/demo-pomodoro.yml` + pomodoro addon, fresh daemon, 8s wait                                                           |
+| `14-theme-riptide.png`      | wrapper `demos/.tmp-stitch-riptide.yml` (`theme: riptide`) with user's config; the riptide theme is emitted statically via vite so it does render |
+| `15-settings-deck.png`      | `capture-one.sh` with `demos/demo-decks-index.yml`, deck=`internal-settings:settings`, fresh daemon, 8s wait                                      |
 
 ### What broke (do NOT redo without debugging the WS handshake first)
 

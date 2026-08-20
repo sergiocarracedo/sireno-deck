@@ -317,7 +317,10 @@ export const sirenoDeck2 = (options: SirenoVitePluginOptions = {}): Plugin => {
           if (typeof cookieHeader === "string") {
             for (const part of cookieHeader.split(";")) {
               const [rawName, ...rest] = part.trim().split("=")
-              if (rawName === "sireno-token" && rest.join("=") === requiredToken) {
+              if (
+                rawName === "sireno-token" &&
+                rest.join("=") === requiredToken
+              ) {
                 return true
               }
             }

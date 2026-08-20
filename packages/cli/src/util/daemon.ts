@@ -320,9 +320,7 @@ export const readFlags = (
     return {
       emulator: parsed.emulator,
       httpPort: parsed.httpPort,
-      ...(typeof parsed.remote === "boolean"
-        ? { remote: parsed.remote }
-        : {}),
+      ...(typeof parsed.remote === "boolean" ? { remote: parsed.remote } : {}),
       ...(typeof parsed.deviceModel === "string"
         ? { deviceModel: parsed.deviceModel }
         : {}),
@@ -396,9 +394,7 @@ export const readRuntimeState = (
   return null
 }
 
-export const removeRuntimeStateFile = (
-  paths = resolveDaemonPaths(),
-): void => {
+export const removeRuntimeStateFile = (paths = resolveDaemonPaths()): void => {
   if (existsSync(join(paths.runtimeDir, RUNTIME_STATE_FILE))) {
     unlinkSync(join(paths.runtimeDir, RUNTIME_STATE_FILE))
   }

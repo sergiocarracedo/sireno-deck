@@ -10,10 +10,7 @@ import type {
 } from "@/api/protocol-internal"
 import { resolveKeyCount } from "@/device/models"
 import type { DeviceDescriptor } from "@/device/registry"
-import {
-  writeRuntimeState,
-  type RuntimeState,
-} from "@/util/daemon"
+import { writeRuntimeState, type RuntimeState } from "@/util/daemon"
 
 import {
   DEFAULT_EMULATOR_PORT,
