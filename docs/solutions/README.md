@@ -12,6 +12,9 @@ fix, and a citation to the originating commits.
 
 ## conventions
 
+- [`cli-as-daemon-interface`](conventions/cli-as-daemon-interface.md) —
+  readiness probes, event surfacing, and URL display when the CLI is the
+  operator's interface to a forked daemon.
 - [`stale-addon-dist-causes-lucide-icons-overlay-name-blink`](conventions/stale-addon-dist-causes-lucide-icons-overlay-name-blink.md) —
   why `npm run build` for the addon must clear its `dist/` before re-bundling.
 - [`vite-plugin-oxc-requires-quoted-hyphen-keys`](conventions/vite-plugin-oxc-requires-quoted-hyphen-keys.md) —
