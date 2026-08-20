@@ -1,0 +1,55 @@
+packages/cli/src/cli/__tests__/startup-display.test.ts
+  s_cebb45f4470938::t_49f7a2e978f864 240-244,260-265,282-287
+  s_cebb45f4470938::t_fa32f9e9630f97 226-239,245-259,266-281,288-289
+  s_cebb45f4470938::t_af4356e1259d32 25
+packages/cli/src/addon/__tests__/check-runner.test.ts
+  s_cebb45f4470938::t_a67072ee3a325c 1-54,63-96
+  s_cebb45f4470938::t_743fba509c1252 55-62,97
+packages/cli/src/builtin-addons/media/executor.ts
+  s_cebb45f4470938::t_743fba509c1252 36
+  s_cebb45f4470938::t_4eb4dc8a9e0cff 1-35
+packages/cli/src/addon/api.ts
+  s_cebb45f4470938::t_a681e9360e9c42 238-258,276-282
+packages/cli/src/cli/index.ts
+  s_cebb45f4470938::t_e158c8cea0fdbe 19
+  s_cebb45f4470938::t_879bdb104f0095 167-170
+  s_cebb45f4470938::t_4c312c4aaa8af2 27
+packages/cli/src/cli/commands/system-requirements.ts
+  s_cebb45f4470938::t_eae64f88f45d9e 40
+  s_cebb45f4470938::t_97cf3e8d502229 473-493
+packages/cli/src/addon/check-runner.ts
+  s_cebb45f4470938::t_7bd92d4e018716 2,55-64,66-69
+  s_cebb45f4470938::t_743fba509c1252 65,70-72
+  s_cebb45f4470938::t_0f1c647dc1da07 1,3-54
+packages/cli/src/builtin-addons/media/index.ts
+  s_cebb45f4470938::t_9ab50a1732d535 4,49-50,52
+  s_cebb45f4470938::t_667a39bcf909e9 5,51
+packages/cli/src/builtin-addons/media/checks.ts
+  s_cebb45f4470938::t_743fba509c1252 46-47,59-60,90
+  s_cebb45f4470938::t_55b87c75f51ec5 1-45,48-58,61-89
+packages/cli/src/cli/startup-display.ts
+  s_cebb45f4470938::t_1ac6d5994d56b5 8
+  s_cebb45f4470938::t_e602988f8f756e 374-401
+packages/cli/src/builtin-addons/media/__tests__/checks.test.ts
+  s_cebb45f4470938::t_b4165739ba4976 1-5,7-104
+  s_cebb45f4470938::t_743fba509c1252 6,105
+docs/plans/2026-08-20-per-addon-requirement-checks.md
+  s_cebb45f4470938::t_743fba509c1252 23,32,144,190,196,205,212,218,225,233,241
+  s_cebb45f4470938::t_a93d33bab34926 1-22,24-31,33-143,145-189,191-195,197-204,206-211,213-217,219-224,226-232,234-240,242-249
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "26c9be29482ed0d9eb264e3b40498402f5eb41e4",
+  "prompts": {},
+  "sessions": {
+    "s_cebb45f4470938": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe1fe5a2fffeLv2ZLCRqsdhw7c",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
