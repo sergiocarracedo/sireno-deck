@@ -110,7 +110,17 @@ const isDevInvocation = (): boolean => {
 // ports — but ONLY if the identity gate (cmdline + orphan check) says it's
 // ours. Otherwise the port collision stays and the new daemon's preflight
 // surfaces a clear EADDRINUSE, which is the correct signal to the user.
-const trySs = (port: number): ReadonlyArray<number> => {
+
+// ponytail: each backend distinguishes "tool ran, found nothing" (the common
+// preflight case when no daemon is up) from "tool unavailable / crashed"
+// (rare — binary missing on PATH, permission denied, etc.). Only the latter
+// surfaces as a WARN; empty results stay silent so a clean `p dev start`
+// doesn't flood with 4 false-positive "all backends failed" lines.
+export type PortScanResult =
+  | { readonly ok: true; readonly pids: ReadonlyArray<number> }
+  | { readonly ok: false; readonly reason: string }
+
+const trySs = (port: number): PortScanResult => {
   const ssLineRegex = (p: number): RegExp =>
     new RegExp(`:${p}\\b[\\s\\S]*?users:\\([^)]*?pid=(\\d+)[,\\)]`)
   try {
@@ -123,29 +133,32 @@ const trySs = (port: number): ReadonlyArray<number> => {
       const m = line.match(ssLineRegex(port))
       if (m && m[1]) pids.push(Number.parseInt(m[1], 10))
     }
-    return pids
-  } catch {
-    return []
+    return { ok: true, pids }
+  } catch (err) {
+    return { ok: false, reason: describeExecFailure(err, "ss") }
   }
 }
 
-const tryLsof = (port: number): ReadonlyArray<number> => {
+const tryLsof = (port: number): PortScanResult => {
   try {
     const out = execFileSync("lsof", [`-iTCP:${port}`, "-sTCP:LISTEN", "-t"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
     })
-    return out
+    const pids = out
       .split("\n")
       .map((line) => Number.parseInt(line.trim(), 10))
       .filter((n) => Number.isFinite(n) && n > 0)
-  } catch {
-    return []
+    return { ok: true, pids }
+  } catch (err) {
+    return { ok: false, reason: describeExecFailure(err, "lsof") }
   }
 }
 
-const tryProcNet = (port: number): ReadonlyArray<number> => {
-  if (process.platform !== "linux") return []
+const tryProcNet = (port: number): PortScanResult => {
+  if (process.platform !== "linux") {
+    return { ok: false, reason: "/proc/net/tcp: not on linux" }
+  }
   try {
     const hex = port.toString(16).toUpperCase().padStart(4, "0")
     const out = readFileSync("/proc/net/tcp", "utf8")
@@ -181,10 +194,21 @@ const tryProcNet = (port: number): ReadonlyArray<number> => {
         // ignore
       }
     }
-    return Array.from(pids)
-  } catch {
-    return []
+    return { ok: true, pids: Array.from(pids) }
+  } catch (err) {
+    const e = err as NodeJS.ErrnoException
+    return {
+      ok: false,
+      reason: `/proc/net/tcp: ${e.code ?? e.message}`,
+    }
   }
+}
+
+const describeExecFailure = (err: unknown, tool: string): string => {
+  const e = err as NodeJS.ErrnoException
+  if (e.code === "ENOENT") return `${tool}: binary not found on PATH`
+  if (typeof e.code === "string") return `${tool}: ${e.code}`
+  return `${tool}: ${e.message}`
 }
 
 const readdirSyncSync = (dir: string): string[] => {
@@ -203,25 +227,35 @@ const readlinkSyncFn = (path: string): string | null => {
   }
 }
 
-const detectPortPids = (
+export const detectPortPids = (
   port: number,
   logger: pino.Logger,
 ): ReadonlyArray<number> => {
   const ss = trySs(port)
-  if (ss.length > 0) return ss
+  if (ss.ok && ss.pids.length > 0) return ss.pids
   const lsof = tryLsof(port)
-  if (lsof.length > 0) {
+  if (lsof.ok && lsof.pids.length > 0) {
     logger.debug({ port }, "port detection: ss failed, used lsof")
-    return lsof
+    return lsof.pids
   }
   const procNet = tryProcNet(port)
-  if (procNet.length > 0) {
+  if (procNet.ok && procNet.pids.length > 0) {
     logger.debug({ port }, "port detection: ss/lsof failed, used /proc/net/tcp")
-    return procNet
+    return procNet.pids
   }
+  // ponytail: only WARN when EVERY backend is unavailable. "nothing listening"
+  // (the common preflight case) is a clean empty result, not a failure.
+  // On macOS /proc/net/tcp is absent by design — ss+lsof are still consulted
+  // and a clean empty from both means "no listener", not "backend down".
+  if (ss.ok || lsof.ok || procNet.ok) return []
   logger.warn(
-    { port },
-    "port detection: all backends failed (ss, lsof, /proc/net/tcp) — orphan cleanup may miss stale vites",
+    {
+      port,
+      ss: ss.ok ? undefined : ss.reason,
+      lsof: lsof.ok ? undefined : lsof.reason,
+      procNet: procNet.ok ? undefined : procNet.reason,
+    },
+    "port detection: no port-detection backends available — orphan cleanup may miss stale vites",
   )
   return []
 }
