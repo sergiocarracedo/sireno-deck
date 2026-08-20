@@ -2,6 +2,8 @@ import { connect, type Socket } from "node:net"
 
 import qrcode from "qrcode"
 
+import type pino from "pino"
+
 import { listDevices, type DeviceDescriptor } from "@/device"
 
 import {
@@ -180,6 +182,46 @@ const toSystemCap = (
 export const printStartupComplete = (): void => {
   if (!process.stdout.isTTY) return
   outro("✓ SirenoDeck started")
+}
+
+// ponytail: dev-mode operator affordance. After `pnpm dev start` succeeds,
+// the operator hasn't seen the daemon do anything yet — there's no
+// signal that the reload path works or that the log is live. Prompt
+// them with a Y/n reload + tail for ~2 s. The reload triggers SIGUSR1
+// against the daemon (which the runtime now handles via
+// runtime.invalidate() — see signal-provider in commands/run.ts), and
+// the bounded tail window keeps control flowing without forcing the
+// operator to type Ctrl+C. Skipped on non-TTY (CI, ssh without tty,
+// systemd) and on --quiet / --log-level silent.
+const RELOAD_TAIL_WINDOW_MS = 2_000
+export const RELOAD_TAIL_WINDOW = RELOAD_TAIL_WINDOW_MS
+
+export interface PromptReloadAndTailOptions {
+  readonly logger: pino.Logger
+}
+
+export const promptReloadAndTail = async (
+  options: PromptReloadAndTailOptions,
+): Promise<void> => {
+  if (!process.stdout.isTTY) return
+  const { confirm } = await import("@/ui/console")
+  const { resolveDaemonPaths } = await import("@/util/daemon")
+  const { reload } = await import("./commands/reload")
+  const { tailLogs } = await import("@/util/log-tail")
+
+  const answer = await confirm({
+    message: "Reload + tail logs now? [Y/n]",
+    initialValue: true,
+  })
+  if (!answer) return
+
+  await reload({ logger: options.logger })
+
+  const logPath = `${resolveDaemonPaths().runtimeDir}/service.log`
+  await Promise.race([
+    tailLogs({ logPath, follow: true, lines: 50 }),
+    new Promise<void>((resolve) => setTimeout(resolve, RELOAD_TAIL_WINDOW_MS)),
+  ])
 }
 
 export const printStartupFailed = (err: unknown): void => {

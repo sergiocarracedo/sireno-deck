@@ -156,28 +156,45 @@ const silentLogger = () => createLogger({ level: "silent" })
 
 type FakeSignal = import("../run").SignalProvider & {
   onSignalSpy: ReturnType<typeof vi.fn>
+  onReloadSpy: ReturnType<typeof vi.fn>
   trigger: () => void
+  triggerReload: () => void
 }
 
 const makeFakeSignals = (): FakeSignal => {
-  const handlers: Array<() => void> = []
+  const signalHandlers: Array<() => void> = []
+  const reloadHandlers: Array<() => void> = []
   const onSignalSpy = vi.fn((handler: () => void): (() => void) => {
-    handlers.push(handler)
+    signalHandlers.push(handler)
     return () => {
-      const i = handlers.indexOf(handler)
-      if (i >= 0) handlers.splice(i, 1)
+      const i = signalHandlers.indexOf(handler)
+      if (i >= 0) signalHandlers.splice(i, 1)
+    }
+  })
+  const onReloadSpy = vi.fn((handler: () => void): (() => void) => {
+    reloadHandlers.push(handler)
+    return () => {
+      const i = reloadHandlers.indexOf(handler)
+      if (i >= 0) reloadHandlers.splice(i, 1)
     }
   })
   const signalProvider: import("../run").SignalProvider = {
     onSignal(handler: () => void): () => void {
       return onSignalSpy(handler)
     },
+    onReload(handler: () => void): () => void {
+      return onReloadSpy(handler)
+    },
   }
   return {
     ...signalProvider,
     onSignalSpy,
+    onReloadSpy,
     trigger: () => {
-      for (const h of handlers) h()
+      for (const h of signalHandlers) h()
+    },
+    triggerReload: () => {
+      for (const h of reloadHandlers) h()
     },
   }
 }
@@ -305,6 +322,7 @@ const setHappyPath = (
     setSessionProvider: vi.fn(),
     setGestureListener: vi.fn(),
     stopActiveAppPolling: vi.fn(async () => undefined),
+    invalidate: vi.fn(),
     getActiveDeck: vi.fn(() => undefined),
     navStackDepth: vi.fn(() => 1),
     dispatchGesture: vi.fn(),
@@ -326,7 +344,6 @@ const setHappyPath = (
       navigateToDeck: () => undefined,
       goBack: () => undefined,
       getActiveDeckId: () => undefined,
-      invalidate: () => undefined,
       publish: () => undefined,
       subscribe: () => () => undefined,
     },
@@ -444,6 +461,51 @@ describe("run", () => {
     await runPromise
 
     expect(handle.stop).toHaveBeenCalledTimes(1)
+  })
+
+  it("SIGUSR1 (in-place reload) triggers runtime.invalidate() without shutdown", async () => {
+    // ponytail: previously the daemon had no SIGUSR1 handler — Node's
+    // default action for SIGUSR1 was to terminate, meaning every
+    // `pnpm dev reload` (and production's systemctl reload-or-restart)
+    // was a latent daemon crash. Wire it through runPipeline so SIGUSR1
+    // calls runtime.invalidate() (= re-broadcast deck-config, nudge the
+    // BrowserRenderer's tick) and the daemon keeps running.
+    const outputClient = setHappyPath()
+    const signals = makeFakeSignals()
+    const runPromise = run({
+      config: `${process.env.RUN_TEST_CFG_DIR}/cfg.yml`,
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      signals,
+      logger: silentLogger(),
+    })
+
+    await vi.waitFor(() => expect(outputClient.init).toHaveBeenCalledTimes(1))
+    const createDeckRuntimeMock = deckMod as unknown as {
+      createDeckRuntime: ReturnType<typeof vi.fn>
+    }
+    const runtime = (
+      createDeckRuntimeMock.createDeckRuntime.mock.results[0]!.value as {
+        runtime: { invalidate: ReturnType<typeof vi.fn> }
+      }
+    ).runtime
+    expect(signals.onReloadSpy).toHaveBeenCalledTimes(1)
+    expect(runtime.invalidate).not.toHaveBeenCalled()
+
+    signals.triggerReload()
+
+    expect(runtime.invalidate).toHaveBeenCalledTimes(1)
+    // The daemon must keep running — reload is in-place, not shutdown.
+    expect(signals.onSignalSpy).toHaveBeenCalledTimes(1)
+
+    // Trigger a second reload to confirm the handler stays wired.
+    signals.triggerReload()
+    expect(runtime.invalidate).toHaveBeenCalledTimes(2)
+
+    // Clean shutdown at end so the test exits cleanly.
+    signals.trigger()
+    await runPromise
   })
 
   it("SIGINT triggers pushBlackFrame() on the real output handle before stop()", async () => {
