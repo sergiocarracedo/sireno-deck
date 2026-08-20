@@ -1,0 +1,24 @@
+packages/cli/src/cli/startup-display.ts
+  s_cebb45f4470938::t_35d53080b24b6c 194-208,219-227,232-244,246-250,254
+docs/plans/2026-08-18-land-release-please-publish.md
+  s_cebb45f4470938::t_6f8a2a6cc054b4 1-290
+packages/cli/src/cli/__tests__/prompt-reload-tail.test.ts
+  s_cebb45f4470938::t_135a817f9124a3 4-11,14-18,52-70,72-73,76-78,82,86-87,91-104,114,125-155,157,175-183
+  s_cebb45f4470938::t_96dec7f94e1768 184
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b17bdf23bed8a2d79c55382d5f397d934141a8b3",
+  "prompts": {},
+  "sessions": {
+    "s_cebb45f4470938": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe1fe5a2fffeLv2ZLCRqsdhw7c",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
