@@ -1,0 +1,27 @@
+docs/plans/2026-08-20-cleanup-startup-banner.md
+  s_cebb45f4470938::t_1710aa2d69b26e 1-33,35-39,41-49,51-82,84-117,119-125,127-132
+  s_cebb45f4470938::t_91a53c174e4798 34,40,50,83,118,126,133
+packages/cli/src/util/logger.ts
+  s_cebb45f4470938::t_de60edd983a7b0 114-117,147
+packages/cli/src/cli/startup-display.ts
+  s_cebb45f4470938::t_cba06ee5df3a32 220,227-231
+  s_cebb45f4470938::t_96bf7468a816ff 270-272,288,290
+packages/cli/src/__tests__/logger-format.test.ts
+  s_cebb45f4470938::t_92fe61c12e2c07 135,146-147,150,158-160,162
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "69edd0c7f878c5f4751907166b48bdd4bdc39962",
+  "prompts": {},
+  "sessions": {
+    "s_cebb45f4470938": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe1fe5a2fffeLv2ZLCRqsdhw7c",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
