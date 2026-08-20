@@ -132,7 +132,7 @@ describe("default human format renders inline context", () => {
 })
 
 describe("multi-line msg gutter", () => {
-  it("indents continuation lines under the msg column with a vertical bar", () => {
+  it("leaves continuation lines un-indented (no gutter)", () => {
     const formatted = formatHuman(
       JSON.stringify({
         level: 30,
@@ -143,17 +143,11 @@ describe("multi-line msg gutter", () => {
     )
     const lines = formatted.split("\n")
     expect(lines.length).toBe(3)
-    const prefixLen =
-      lines[0]!.length - lines[0]!.replace(/\u001b\[[0-9;]*m/g, "").length
-    const stripped0 = lines[0]!.replace(/\u001b\[[0-9;]*m/g, "")
-    const expectedStripped1 = `${" ".repeat(stripped0.length - "stdout:".length)}│ VITE v6.4.3  ready in 186 ms`
-    const expectedStripped2 = `${" ".repeat(stripped0.length - "stdout:".length)}│   ➜  Local:   http://127.0.0.1:5180/`
-    expect(lines[1]!.replace(/\u001b\[[0-9;]*m/g, "")).toBe(expectedStripped1)
-    expect(lines[2]!.replace(/\u001b\[[0-9;]*m/g, "")).toBe(expectedStripped2)
-    void prefixLen
+    expect(lines[1]).toBe("VITE v6.4.3  ready in 186 ms")
+    expect(lines[2]).toBe("  ➜  Local:   http://127.0.0.1:5180/")
   })
 
-  it("renders a shorter gutter when no component is set", () => {
+  it("renders single-line msg with no trailing newline", () => {
     const formatted = formatHuman(
       JSON.stringify({
         level: 30,
@@ -161,12 +155,11 @@ describe("multi-line msg gutter", () => {
         msg: "header\nbody",
       }),
     )
+    // ponytail: operator-facing logs dropped the gutter. Newlines in the
+    // msg stay (so multi-line stdout is readable) but they're NOT prefixed
+    // with `│ ` indentation.
     const lines = formatted.split("\n")
-    const stripped0 = lines[0]!.replace(/\u001b\[[0-9;]*m/g, "")
-    const stripped1 = lines[1]!.replace(/\u001b\[[0-9;]*m/g, "")
-    const expectedIndent = " ".repeat(stripped0.length - "header".length)
-    expect(stripped1.startsWith(expectedIndent)).toBe(true)
-    expect(stripped1.endsWith("│ body")).toBe(true)
+    expect(lines[1]).toBe("body")
   })
 
   it("leaves single-line msg untouched", () => {

@@ -111,11 +111,10 @@ export const formatHuman = (jsonLine: string): string | null => {
   const level = LEVEL_LABEL[levelNum] ?? "INFO"
   const levelColor = LEVEL_COLOR[levelNum] ?? CYAN
   const msg = typeof entry["msg"] === "string" ? entry["msg"] : ""
-  const time =
-    typeof entry["time"] === "number"
-      ? new Date(entry["time"]).toISOString().slice(11, 19)
-      : ""
-  const ts = colorize(DIM, time.length > 0 ? `${time} ` : "")
+  // ponytail: operator-facing logs drop the [HH:MM:SS] prefix and the
+  // continuation-line indent. Timestamps belong in service.log (where the
+  // structured `time` field stays intact for forensics); the terminal only
+  // needs enough info to read the line at a glance.
   const head = colorize(levelColor, level.padEnd(5))
 
   const component =
@@ -145,18 +144,7 @@ export const formatHuman = (jsonLine: string): string | null => {
     }
   }
   const ctxStr = ctxParts.length > 0 ? ` (${ctxParts.join(", ")})` : ""
-  const prefix = `${ts}${head}${componentTag} `
-  return `${prefix}${indentContinuationLines(msg, visibleWidth(prefix))}${ctxStr}`
-}
-
-const ANSI_ESCAPE = /\u001b\[[0-9;]*m/g
-
-const visibleWidth = (s: string): number => s.replace(ANSI_ESCAPE, "").length
-
-const indentContinuationLines = (msg: string, prefixLen: number): string => {
-  if (!msg.includes("\n")) return msg
-  const gutter = `${" ".repeat(prefixLen)}${colorize(DIM, "│ ")}`
-  return msg.replace(/\n/g, `\n${gutter}`)
+  return `${head}${componentTag} ${msg}${ctxStr}`
 }
 
 class HumanWritable extends Writable {
