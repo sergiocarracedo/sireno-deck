@@ -1,3 +1,5 @@
+import { join } from "node:path"
+
 import type { ArgumentsCamelCase, CommandModule } from "yargs"
 
 import { createLogger } from "@/util/logger"
@@ -10,13 +12,16 @@ import start, { type StartOptions } from "./commands/start"
 import { status, type StatusOptions } from "./commands/status"
 import { stop, type StopOptions } from "./commands/stop"
 import { systemRequirementsCommand } from "./commands/system-requirements"
-import { readRuntimeState } from "@/util/daemon"
+import { resolveDaemonPaths } from "@/util/daemon"
+import { snapshotDaemonLog } from "@/util/log-reader"
 import {
   buildStartupBanner,
-  printEmulatorQrBanner,
+  printDaemonEvents,
+  printDaemonUrl,
   printStartupComplete,
   printStartupFailed,
-  waitForDaemonReady,
+  waitForFullStart,
+  type StartOutcome,
 } from "./startup-display"
 
 export interface GlobalOptions {
@@ -123,7 +128,6 @@ const startCommand: CommandModule<object, StartArgs> = {
         ? { httpPort: argv.httpPort as number }
         : {}),
       ...(argv.system === true ? { system: true } : {}),
-      ...(argv.logs === true ? { logs: true } : {}),
     }
     try {
       await buildStartupBanner(
@@ -136,41 +140,55 @@ const startCommand: CommandModule<object, StartArgs> = {
         },
         argv,
       )
+      // ponytail: snapshot the daemon log size BEFORE the daemon's
+      // restart writes anything new. We use this to surface
+      // daemon-emitted warnings inline after the start completes,
+      // without reading the full log history.
+      const logSnapshot = snapshotDaemonLog()
+      const logPath = join(resolveDaemonPaths().runtimeDir, "service.log")
       const startPromise = start(options)
-      await waitForDaemonReady(options.port ?? 52937).catch(() => undefined)
-      if (argv.remote === true) {
-        // ponytail: poll for runtime-state.json — the daemon writes it after
-        // its WS bridge + vite supervisors come up, which races the CLI's
-        // waitForDaemonReady (TCP 52937 opens before the emulator flow
-        // writes the state file). Retry up to 5s.
-        let state = readRuntimeState()
-        const deadline = Date.now() + 5_000
-        while (state === null && Date.now() < deadline) {
-          await new Promise((r) => setTimeout(r, 100))
-          state = readRuntimeState()
-        }
-        if (state !== null) {
-          await printEmulatorQrBanner({
-            emulatorUrl: state.emulatorUrl,
-            token: state.token,
-            addresses: state.addresses,
-            deckOnly: true,
-          })
-        }
+      const outcome: StartOutcome = await waitForFullStart({
+        port: options.port ?? 52937,
+        tcpTimeoutMs: 30_000,
+        runtimeTimeoutMs: 5_000,
+        logPath,
+        logSnapshot,
+      })
+      // ponytail: print events the daemon emitted between the snapshot
+      // and now, BEFORE the success/failure line — operator's eye
+      // lands on each one even when stdout is a pipe. Silent on 0
+      // events.
+      printDaemonEvents(outcome.events)
+
+      if (outcome.runtimeReady && outcome.state !== null) {
+        printDaemonUrl(outcome.state)
+        printStartupComplete()
+      } else if (outcome.tcpReady) {
+        // ponytail: TCP is bound but the daemon didn't write runtime
+        // state in 5s. The daemon is alive but the runtime pipeline
+        // is still booting (or stuck). Fail loudly with whatever
+        // warnings the daemon emitted so the operator doesn't have to
+        // dig into the log file.
+        const message =
+          "daemon: TCP bound on 52937 but runtime state did not appear in 5s"
+        logger.warn(message)
+        process.exitCode = 1
+        printStartupFailed(message)
+        return
+      } else {
+        // ponytail: TCP never bound. Either the daemon crashed during
+        // boot, or port 52937 is held by an unrelated process. Either
+        // way, the start failed — the operator needs to know.
+        const message = `daemon: port ${options.port ?? 52937} did not accept connections in 30s`
+        logger.warn(message)
+        process.exitCode = 1
+        printStartupFailed(message)
+        return
       }
-      printStartupComplete()
-      // ponytail: dev mode exits cleanly after `pnpm dev start` — the
-      // operator drives reload/tail/status via the dedicated subcommands
-      // (`pnpm dev reload`, `pnpm dev logs`, `pnpm dev status`), matching
-      // production where `sirenodeck start` returns without prompting.
-      // The startup-banner already conveys what was started and the next
-      // step; an inline reload+tail Y/n prompt was redundant and made the
-      // wrapper appear stuck or, under certain stdin/tty states, crash
-      // via clack's readline/setRawMode interaction.
       await startPromise
     } catch (err) {
       printStartupFailed(err)
-      const e = err as { issues?: unknown; message?: string }
+      const e = err as { issues?: unknown; message?: unknown }
       const message =
         e &&
         typeof e === "object" &&
@@ -207,18 +225,9 @@ const statusCommand: CommandModule<object, StatusArgs> = {
 const reloadCommand: CommandModule<object, ReloadArgs> = {
   command: "reload",
   describe: "Send SIGUSR1 to the daemon (in-place reload)",
-  builder: (yargs) =>
-    yargs.option("logs", {
-      type: "boolean",
-      default: false,
-      description: "After reload, follow the service log",
-    }),
   handler: async (argv) => {
     const logger = buildLogger(argv)
-    const options: ReloadOptions = {
-      logger,
-      ...(argv.logs === true ? { logs: true } : {}),
-    }
+    const options: ReloadOptions = { logger }
     await reload(options)
   },
 }
@@ -226,18 +235,9 @@ const reloadCommand: CommandModule<object, ReloadArgs> = {
 const restartCommand: CommandModule<object, RestartArgs> = {
   command: "restart",
   describe: "Restart the sireno-deck daemon",
-  builder: (yargs) =>
-    yargs.option("logs", {
-      type: "boolean",
-      default: false,
-      description: "After restart, follow the service log",
-    }),
   handler: async (argv) => {
     const logger = buildLogger(argv)
-    const options: RestartOptions = {
-      logger,
-      ...(argv.logs === true ? { logs: true } : {}),
-    }
+    const options: RestartOptions = { logger }
     await restart(options)
   },
 }

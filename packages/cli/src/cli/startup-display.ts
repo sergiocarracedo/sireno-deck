@@ -1,4 +1,4 @@
-import { connect, type Socket } from "node:net"
+import { connect, type Server, createServer, type Socket } from "node:net"
 
 import qrcode from "qrcode"
 
@@ -17,6 +17,13 @@ import {
 } from "@/system/setup-wizard"
 
 import { cancel, intro, log, outro } from "@/cli/prompt"
+
+import {
+  readDaemonEventsFromSnapshot,
+  type DaemonEvent,
+  type DaemonLogSnapshot,
+} from "@/util/log-reader"
+import { readRuntimeState, type RuntimeState } from "@/util/daemon"
 
 import { buildStandardProbeDeps } from "./probe-deps"
 
@@ -52,6 +59,8 @@ export const isLogSuppressed = (
 const DEFAULT_PORT = 52937
 const READY_TIMEOUT_MS = 30_000
 const READY_INTERVAL_MS = 100
+const RUNTIME_STATE_TIMEOUT_MS = 5_000
+const PORT_FREE_TIMEOUT_MS = 3_000
 
 const checkTcp = (
   host: string,
@@ -72,6 +81,12 @@ const checkTcp = (
     setTimeout(() => finish(false), timeoutMs)
   })
 
+// ponytail: wrapper around `checkTcp` that polls until the daemon's
+// WS port accepts a connection, or until `timeoutMs` elapses. The
+// caller decides what to do on timeout (CLI: fail loudly with the
+// accumulated daemon events). The TCP probe is intentionally cheap —
+// a single `connect()` per interval — and Node handles the OS-level
+// `ECONNREFUSED` on a closed port without holding the event loop.
 export const waitForDaemonReady = async (
   port: number = DEFAULT_PORT,
   timeoutMs: number = READY_TIMEOUT_MS,
@@ -81,7 +96,76 @@ export const waitForDaemonReady = async (
     if (await checkTcp("127.0.0.1", port, READY_INTERVAL_MS)) return
     await new Promise((r) => setTimeout(r, READY_INTERVAL_MS))
   }
+  throw new DaemonNotReadyError(port, timeoutMs)
 }
+
+export class DaemonNotReadyError extends Error {
+  readonly port: number
+  readonly timeoutMs: number
+  constructor(port: number, timeoutMs: number) {
+    super(
+      `daemon: port ${port} did not accept connections within ${timeoutMs}ms — daemon may have failed to start`,
+    )
+    this.name = "DaemonNotReadyError"
+    this.port = port
+    this.timeoutMs = timeoutMs
+  }
+}
+
+// ponytail: the daemon writes `runtime-state.json` only after its WS
+// bridge + vite supervisors are up. Polling for the file is the
+// canonical "fully ready" signal — much stronger than TCP-on-port
+// (which fires the moment the WS server binds, before supervisors
+// have stabilized). Returns the parsed state, or `null` on timeout.
+export const waitForRuntimeState = async (
+  timeoutMs: number = RUNTIME_STATE_TIMEOUT_MS,
+): Promise<RuntimeState | null> => {
+  const deadline = Date.now() + timeoutMs
+  while (Date.now() < deadline) {
+    const state = readRuntimeState()
+    if (state !== null) return state
+    await new Promise((r) => setTimeout(r, READY_INTERVAL_MS))
+  }
+  return null
+}
+
+// ponytail: bind a `Server` to the target port. If `EADDRINUSE` fires,
+// the port is bound by some other process (most likely the daemon we
+// just stopped, with a stuck TIME_WAIT or an orphan vite). If the
+// bind succeeds, the port is genuinely free. Used by `stop` to
+// confirm the daemon has fully released its socket.
+export const waitForPortFree = async (
+  port: number,
+  timeoutMs: number = PORT_FREE_TIMEOUT_MS,
+): Promise<boolean> => {
+  const deadline = Date.now() + timeoutMs
+  while (Date.now() < deadline) {
+    const ok = await tryBind(port)
+    if (ok) return true
+    await new Promise((r) => setTimeout(r, READY_INTERVAL_MS))
+  }
+  return false
+}
+
+const tryBind = (port: number): Promise<boolean> =>
+  new Promise<boolean>((resolve) => {
+    let server: Server | null = null
+    const cleanup = (ok: boolean): void => {
+      if (server !== null) {
+        server.close()
+        server = null
+      }
+      resolve(ok)
+    }
+    server = createServer()
+    server.once("error", () => cleanup(false))
+    server.once("listening", () => cleanup(true))
+    try {
+      server.listen(port, "127.0.0.1")
+    } catch {
+      cleanup(false)
+    }
+  })
 
 interface FeatureItem {
   readonly name: string
@@ -89,7 +173,7 @@ interface FeatureItem {
   readonly reason?: string
 }
 
-export const formatFeaturesLine = (items: ReadonlyArray<FeatureItem>): string =>
+const formatFeaturesLine = (items: ReadonlyArray<FeatureItem>): string =>
   items
     .map((it) =>
       it.available
@@ -179,81 +263,116 @@ const toSystemCap = (
   }
 }
 
+// ponytail: warning / error lines from the daemon, surfaced inline. The
+// CLI is the operator's interface to the daemon — they shouldn't have
+// to grep `service.log` to find out what went wrong during start /
+// restart / stop. Each event becomes a single dim-yellow or red
+// bullet so the operator's eye lands on it even when stdout is a pipe.
+export const printDaemonEvents = (
+  events: ReadonlyArray<DaemonEvent>,
+  output: (text: string) => void = (text) => process.stdout.write(text),
+): void => {
+  if (events.length === 0) return
+  for (const ev of events) {
+    const color =
+      ev.level === "fatal"
+        ? "\x1b[31m"
+        : ev.level === "error"
+          ? "\x1b[31m"
+          : "\x1b[33m"
+    const label = ev.level.toUpperCase().padEnd(5)
+    const component =
+      ev.component.length > 0
+        ? ` \x1b[90m[\x1b[0m${ev.component}\x1b[90m]\x1b[0m`
+        : ""
+    const componentClose = ev.component.length > 0 ? "\x1b[90m]\x1b[0m" : ""
+    const time = new Date(ev.time).toISOString().slice(11, 19)
+    output(
+      `${color}  ${label}${component}${componentClose} ${ev.message}\x1b[0m  \x1b[90m(${time})\x1b[0m\n`,
+    )
+  }
+}
+
+// ponytail: the URL the operator needs to open in their browser. The
+// token is regenerated per daemon session, so we always show it in the
+// URL — operators copy-paste the URL into the browser. For `--remote`
+// we use the existing QR banner (phone-friendly); for plain
+// `--emulator` we print a plain text URL.
+export const printDaemonUrl = (
+  state: RuntimeState,
+  output: (text: string) => void = (text) => process.stdout.write(text),
+): void => {
+  const port = state.emulatorUrl.split(":").pop() ?? ""
+  const buildUrl = (host: string, deckOnly: boolean): string => {
+    const params = new URLSearchParams()
+    if (state.token.length > 0) params.set("token", state.token)
+    if (deckOnly) params.set("deckOnly", "1")
+    return `http://${host}:${port}?${params.toString()}`
+  }
+  const localUrl = buildUrl("127.0.0.1", false)
+  output(`\n  Emulator:  ${localUrl}\n`)
+  if (state.addresses.length > 0) {
+    const isTty = Boolean(process.stdout.isTTY)
+    if (isTty) {
+      output("\n  Emulator (LAN):\n")
+      for (const addr of state.addresses) {
+        const url = buildUrl(addr, true)
+        const qr = qrcode.toString(url, { type: "terminal", small: true })
+        output(`\n${qr}  ${url}\n`)
+      }
+    } else {
+      for (const addr of state.addresses) {
+        output(`  ${addr}: ${buildUrl(addr, false)}\n`)
+      }
+    }
+  }
+  output("\n  Manage with: `p dev status`, `p dev reload`, `p dev stop`.\n")
+}
+
+// ponytail: the load-bearing function for the CLI's "wait until fully
+// started, then show the URL" flow. The CLI calls this from the
+// `start` handler and surfaces events + URL inline. On any failure
+// path the caller exits non-zero — operators expect the CLI to fail
+// loudly if the daemon didn't come up, not silently exit 0.
+export interface StartOutcome {
+  readonly state: RuntimeState | null
+  readonly events: ReadonlyArray<DaemonEvent>
+  readonly tcpReady: boolean
+  readonly runtimeReady: boolean
+}
+
+export interface WaitForStartOptions {
+  readonly port: number
+  readonly tcpTimeoutMs: number
+  readonly runtimeTimeoutMs: number
+  readonly logPath: string
+  readonly logSnapshot: DaemonLogSnapshot
+}
+
+export const waitForFullStart = async (
+  options: WaitForStartOptions,
+): Promise<StartOutcome> => {
+  let tcpReady = false
+  try {
+    await waitForDaemonReady(options.port, options.tcpTimeoutMs)
+    tcpReady = true
+  } catch (err) {
+    if (!(err instanceof DaemonNotReadyError)) throw err
+  }
+  const runtimeReady = tcpReady
+  const state = runtimeReady
+    ? await waitForRuntimeState(options.runtimeTimeoutMs)
+    : null
+  const events = readDaemonEventsFromSnapshot(
+    options.logPath,
+    options.logSnapshot,
+  )
+  return { state, events, tcpReady, runtimeReady }
+}
+
 export const printStartupComplete = (): void => {
   if (!process.stdout.isTTY) return
-  outro("✓ SirenoDeck started")
-}
-
-// ponytail: dev-mode operator affordance. After `pnpm dev start` succeeds,
-// the operator hasn't seen the daemon do anything yet — there's no
-// signal that the reload path works or that the log is live. Prompt
-// them with a Y/n reload + tail for ~2 s. The reload triggers SIGUSR1
-// against the daemon (which the runtime now handles via
-// runtime.invalidate() — see signal-provider in commands/run.ts), and
-// the bounded tail window keeps control flowing without forcing the
-// operator to type Ctrl+C.
-//
-// Skipped on:
-//  - Non-TTY stdout (CI, ssh without tty, systemd).
-//  - Non-TTY stdin (the wrapper's stdin is closed via spawnDetached's
-//    stdio[0]:"ignore" when forked, but the wrapper itself inherits
-//    its parent's stdin. If the wrapper is run from a redirect
-//    (`node … < /dev/null`, `| cat`, etc.) the prompt can't operate
-//    and would throw a readline "TTY" error. Bailing on
-//    `process.stdin.isTTY` keeps the wrapper clean.)
-//  - The operator explicitly disabled logs (`--quiet` /
-//    `--log-level silent`).
-//  - The cancelled state (`isCancel(answer) === true`), which
-//    `@clack/prompts` returns when the user hits Ctrl+C during the
-//    prompt. Treat it as "no".
-const RELOAD_TAIL_WINDOW_MS = 2_000
-export const RELOAD_TAIL_WINDOW = RELOAD_TAIL_WINDOW_MS
-
-export interface PromptReloadAndTailOptions {
-  readonly logger: pino.Logger
-}
-
-export const promptReloadAndTail = async (
-  options: PromptReloadAndTailOptions,
-): Promise<void> => {
-  // ponytail: bail on either side of the tty being missing. clack's
-  // confirm uses readline + setRawMode, both of which throw under
-  // redirect. Letting the rejection escape would surface as
-  // unhandledRejection on the wrapper and tear the daemon down via
-  // installProcessGuards — visible as a "FATAL unhandledRejection"
-  // immediately after `printStartupComplete`.
-  if (!process.stdout.isTTY || !process.stdin.isTTY) return
-
-  const { confirm, isCancel } = await import("@/cli/prompt")
-  const { resolveDaemonPaths } = await import("@/util/daemon")
-  const { reload } = await import("./commands/reload")
-  const { tailLogs } = await import("@/util/log-tail")
-
-  let answer: boolean | symbol
-  try {
-    answer = await confirm({
-      message: "Reload + tail logs now? [Y/n]",
-      initialValue: true,
-    })
-  } catch {
-    // ponytail: readline / setRawMode threw under a non-tty parent
-    // (we re-checked above but clack reads process.stdin lazily and
-    // the wrapper can be wrapped by `| cat` etc.) — treat as "no".
-    return
-  }
-  if (isCancel(answer) || answer !== true) return
-
-  try {
-    await reload({ logger: options.logger })
-  } catch {
-    return
-  }
-
-  const logPath = `${resolveDaemonPaths().runtimeDir}/service.log`
-  await Promise.race([
-    tailLogs({ logPath, follow: true, lines: 50 }).catch(() => undefined),
-    new Promise<void>((resolve) => setTimeout(resolve, RELOAD_TAIL_WINDOW_MS)),
-  ])
+  outro("✓ Sireno Deck started")
 }
 
 export const printStartupFailed = (err: unknown): void => {
@@ -263,57 +382,25 @@ export const printStartupFailed = (err: unknown): void => {
   )
 }
 
-export const printEmulatorQrBanner = async (options: {
-  readonly emulatorUrl: string
-  readonly token: string
-  readonly addresses: ReadonlyArray<string>
-  readonly deckOnly?: boolean
-}): Promise<void> => {
-  const { emulatorUrl, token, addresses, deckOnly = false } = options
-  const port = emulatorUrl.split(":").pop() ?? ""
-  const buildUrl = (host: string): string => {
-    const params = new URLSearchParams()
-    if (token.length > 0) params.set("token", token)
-    if (deckOnly) params.set("deckOnly", "1")
-    return `http://${host}:${port}?${params.toString()}`
-  }
-  const localUrl = buildUrl("127.0.0.1")
-  const isTty = Boolean(process.stdout.isTTY)
-  const output = (text: string): void => {
-    process.stdout.write(text)
-  }
-  const qrGenerate = isTty
-    ? (text: string) => qrcode.toString(text, { type: "terminal", small: true })
-    : undefined
+export const printRestartComplete = (): void => {
+  if (!process.stdout.isTTY) return
+  outro("✓ Sireno Deck restarted")
+}
 
-  if (addresses.length === 0) {
-    output("\n  Emulator:  ")
-    output(localUrl)
-    output("\n")
-    output(
-      "\x1b[33m  warning: no LAN interfaces detected — QR may not reach your phone.\x1b[0m\n\n",
-    )
-    output(
-      "\x1b[33m  warning: --remote binds the WS bridge to 0.0.0.0; anyone on the same network can connect using the URL above (token-gated).\x1b[0m\n\n",
-    )
-    return
-  }
-
-  output("\n  Emulator (LAN):\n")
-  for (const addr of addresses) {
-    const iface = "LAN"
-    const qrUrl = buildUrl(addr)
-    if (qrGenerate !== undefined) {
-      output("\n")
-      const qr = await qrGenerate(qrUrl)
-      output(qr)
-      output(`  ${qrUrl}  ← ${iface}\n`)
-    } else {
-      output(`  ${qrUrl}  ← ${iface}\n`)
-    }
-  }
-  output("\n")
-  output(
-    "\x1b[33m  warning: --remote binds the WS bridge to 0.0.0.0; anyone on the same network can connect using the URL above (token-gated).\x1b[0m\n\n",
+export const printRestartFailed = (err: unknown): void => {
+  if (!process.stdout.isTTY) return
+  cancel(
+    `✗ Failed to restart SirenoDeck: ${err instanceof Error ? err.message : String(err)}`,
   )
+}
+
+export const printStopComplete = (portFree: boolean): void => {
+  if (!process.stdout.isTTY) return
+  if (portFree) {
+    outro("✓ Sireno Deck stopped")
+  } else {
+    cancel(
+      "✗ Sireno Deck process exited but port 52937 is still bound — see `p dev status` for orphans",
+    )
+  }
 }

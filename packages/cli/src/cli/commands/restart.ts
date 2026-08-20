@@ -1,41 +1,40 @@
 import type pino from "pino"
 
+import { join } from "node:path"
+
 import {
   isRunning,
   readFlags,
   readPid,
   resolveDaemonPaths,
 } from "@/util/daemon"
-import { tailLogs } from "@/util/log-tail"
+import {
+  readDaemonEventsFromSnapshot,
+  snapshotDaemonLog,
+} from "@/util/log-reader"
 
 import { ensureInstalled, invokeManager } from "./service-manager"
 import start, { type StartOptions } from "./start"
 import stop from "./stop"
+import {
+  printDaemonEvents,
+  printRestartComplete,
+  printRestartFailed,
+  waitForFullStart,
+  waitForPortFree,
+  type StartOutcome,
+} from "../startup-display"
 
 export interface RestartOptions {
   readonly logger: pino.Logger
   readonly system?: boolean
-  readonly logs?: boolean
-}
-
-const isDevInvocation = (): boolean => (process.argv[1] ?? "").endsWith(".ts")
-
-const pollForPid = async (timeoutMs: number): Promise<number | null> => {
-  const paths = resolveDaemonPaths()
-  const deadline = Date.now() + timeoutMs
-  while (Date.now() < deadline) {
-    const pid = readPid(paths)
-    if (pid !== null && isRunning(pid)) return pid
-    await new Promise((r) => setTimeout(r, 100))
-  }
-  return readPid(paths)
 }
 
 // ponytail: dev mode forks the daemon via spawnDetached from the wrapper,
-// not via systemctl/launchctl. invokeManager in dev would shell out to the
-// OS service manager and either fail or no-op against a daemon it never
-// started. Read the cached flags.json (written by startInBackground) and
-// run the in-process stop + start pair instead.
+// not via systemctl/launchctl. invokeManager in dev would shell out to
+// the OS service manager and either fail or no-op against a daemon it
+// never started. Read the cached flags.json (written by startInBackground)
+// and run the in-process stop + start pair instead.
 const flagsToStartOptions = (
   flags: ReturnType<typeof readFlags>,
   logger: pino.Logger,
@@ -53,6 +52,9 @@ const flagsToStartOptions = (
   }
 }
 
+const logPathFor = (): string =>
+  join(resolveDaemonPaths().runtimeDir, "service.log")
+
 export const restart = async (options: RestartOptions): Promise<void> => {
   const { logger } = options
 
@@ -64,13 +66,27 @@ export const restart = async (options: RestartOptions): Promise<void> => {
       )
       return
     }
+    const snapshot = snapshotDaemonLog()
+    const logPath = logPathFor()
     await stop({ logger })
     await start(startOptions)
-    const pid = await pollForPid(5_000)
-    logger.info({ pid }, "restart: daemon restarted")
-    if (options.logs === true && process.exitCode !== 1) {
-      const logPath = `${resolveDaemonPaths().runtimeDir}/service.log`
-      await tailLogs({ logPath, follow: true, lines: 50 })
+    const outcome: StartOutcome = await waitForFullStart({
+      port: startOptions.port ?? 52937,
+      tcpTimeoutMs: 30_000,
+      runtimeTimeoutMs: 5_000,
+      logPath,
+      logSnapshot: snapshot,
+    })
+    printDaemonEvents(outcome.events)
+    if (outcome.runtimeReady && outcome.state !== null) {
+      printRestartComplete()
+    } else {
+      const message = outcome.tcpReady
+        ? "daemon: TCP bound but runtime state did not appear in 5s"
+        : "daemon: port 52937 did not accept connections in 30s"
+      logger.warn(message)
+      process.exitCode = 1
+      printRestartFailed(message)
     }
     return
   }
@@ -79,14 +95,45 @@ export const restart = async (options: RestartOptions): Promise<void> => {
     logger,
     ...(options.system === true ? { system: true } : {}),
   })
+  const snapshot = snapshotDaemonLog()
+  const logPath = logPathFor()
   await invokeManager({ action: "restart", logger })
-  const pid = await pollForPid(5_000)
-  logger.info({ pid }, "restart: daemon restarted")
-
-  if (options.logs === true && process.exitCode !== 1) {
-    const logPath = `${resolveDaemonPaths().runtimeDir}/service.log`
-    await tailLogs({ logPath, follow: true, lines: 50 })
+  // ponytail: in production, systemctl restart doesn't return a pid,
+  // so we wait for the new daemon's WS port to accept connections,
+  // then poll the pid file for the new pid (written by the daemon's
+  // runInProcessSetup), then read its runtime state.
+  const port = 52937
+  await waitForPortFree(port, 3_000)
+  const pid = readPid()
+  if (pid === null || !isRunning(pid)) {
+    const message =
+      "daemon: systemctl restart succeeded but no daemon is running"
+    logger.warn(message)
+    process.exitCode = 1
+    printRestartFailed(message)
+    return
+  }
+  logger.info({ pid }, "restart: daemon restarted (waiting for readiness)")
+  const outcome = await waitForFullStart({
+    port,
+    tcpTimeoutMs: 30_000,
+    runtimeTimeoutMs: 5_000,
+    logPath,
+    logSnapshot: snapshot,
+  })
+  printDaemonEvents(outcome.events)
+  if (outcome.runtimeReady && outcome.state !== null) {
+    printRestartComplete()
+  } else {
+    const message = outcome.tcpReady
+      ? "daemon: TCP bound but runtime state did not appear in 5s"
+      : "daemon: port 52937 did not accept connections in 30s"
+    logger.warn(message)
+    process.exitCode = 1
+    printRestartFailed(message)
   }
 }
+
+const isDevInvocation = (): boolean => (process.argv[1] ?? "").endsWith(".ts")
 
 export default restart
