@@ -1,0 +1,52 @@
+packages/cli/src/cli/commands/restart.ts
+  s_cebb45f4470938::t_24e8b06bd9f094 3-4,11-14,19-26,34-37,55-57,69-70,73-89,98-99,101-133,137-138
+packages/cli/src/util/__tests__/log-reader.test.ts
+  s_cebb45f4470938::t_8b9cbd73b2ad5e 13-18
+  s_cebb45f4470938::t_4c19e87612bf23 1-12,19-146
+packages/cli/src/util/log-reader.ts
+  s_cebb45f4470938::t_3fd4c1489bc9ad 1-114
+packages/cli/src/cli/commands/stop.ts
+  s_cebb45f4470938::t_6489037c38f78b 3-4,11,13,15-24,27,30-31,69-75,85-92,95,97-117
+packages/cli/src/cli/commands/status.ts
+  s_cebb45f4470938::t_c9c43e6c7a2e11 7,12-13,58-67
+  s_cebb45f4470938::t_5ac7dd432cc4b8 68
+packages/cli/src/cli/index.ts
+  s_cebb45f4470938::t_f174435e6c1a1b 15
+  s_cebb45f4470938::t_12c1efc9d1abf1 16
+  s_cebb45f4470938::t_de8032d8585784 230,240
+  s_cebb45f4470938::t_55feace87cbe63 143-148,150-186,191
+  s_cebb45f4470938::t_77fd680c3ab576 1-2,19-20,23-24
+packages/cli/src/cli/__tests__/startup-display.test.ts
+  s_cebb45f4470938::t_77884c180a95e5 3
+  s_cebb45f4470938::t_201b9c50a7c611 5-12
+  s_cebb45f4470938::t_0c865965c63b81 1,25-31,68-69,72-74,77-83,86-91,95-113,116-121,128-152,154,157,159,162-163,169-172,178,180,185-187,192-194,196,198-201,208
+  s_cebb45f4470938::t_83f700e5d6a5c4 34-40,42-46,48-63
+  s_cebb45f4470938::t_954e69a6bb3ccf 67
+  s_cebb45f4470938::t_24a791e206070e 190-191
+  s_cebb45f4470938::t_5c3c5ea40b6997 165,167-168
+  s_cebb45f4470938::t_ad47342e69fe9e 122-124
+  s_cebb45f4470938::t_9876bf31921c5e 18-21
+  s_cebb45f4470938::t_0a1618be484ba7 202,204,210,215-217,220-222
+packages/cli/src/cli/commands/__tests__/restart.test.ts
+  s_cebb45f4470938::t_d3715613a6155e 4-42,62-66,77-88
+packages/cli/src/cli/startup-display.ts
+  s_cebb45f4470938::t_b8f183c4abdf91 346,365,368
+  s_cebb45f4470938::t_f584af2c9ac772 1,21-27,62-63,84-89,99-129,132-169,176,266-293,296-329,332-342,344-345,347-355,357-360,362-364,366-367,369-371,373-375,385-388,390-393,396-404
+  s_cebb45f4470938::t_36b0e6421afc78 405-406
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4831b78142faf20b03c50bf436f8edf82dbfb755",
+  "prompts": {},
+  "sessions": {
+    "s_cebb45f4470938": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe1fe5a2fffeLv2ZLCRqsdhw7c",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
