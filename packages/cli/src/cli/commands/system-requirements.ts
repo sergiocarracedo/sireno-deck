@@ -470,10 +470,14 @@ export const systemRequirements = async (
   intro("sireno-deck — system requirements")
   printProbeSummary(report)
 
+  const summary = summarizeReport(report)
+
   // ponytail: per-addon requirement checks (playerctl for media on Linux,
   // osascript on macOS, etc.) — each addon owns its own list of OS-specific
-  // probes and renders pass/fail here. Probe failures don't block the
-  // wizard — they're informational, matching the system capability check.
+  // probes and renders pass/fail here. Run before the early-return paths so
+  // operators see addon status even when core system requirements are clean.
+  // Probe failures don't block the wizard — they're informational, matching
+  // the system capability check.
   const addonCheckInputs = collectBuiltinAddonChecks()
   if (addonCheckInputs.length > 0) {
     const addonOutcomes = await runAddonChecks(addonCheckInputs)
@@ -491,7 +495,6 @@ export const systemRequirements = async (
     }
   }
 
-  const summary = summarizeReport(report)
   if (nonInteractive) {
     if (summary.ok) {
       log.success("All requirements present.")
