@@ -11,6 +11,7 @@ The user-facing copy, sitemap, and deck captures are already finalized. **You ar
 ## Section 0 — Brand assets
 
 ### Logo
+
 - File: `packages/cli/src/assets/logoFull.png` (full mark: red fin + "Sireno Deck" wordmark, white background)
 - File: `packages/cli/src/assets/logo.png` (mark only — red fin)
 - File: `packages/cli/src/assets/logo72x72.png` (small icon, 72×72)
@@ -34,11 +35,13 @@ The user-facing copy, sitemap, and deck captures are already finalized. **You ar
 **Logo red** (sampled from the fin): gradient from `#7a0a0a` (deep crimson) → `#d62828` (vivid red) → `#f8a5a5` (soft pink highlight). Use a single solid `#d62828` for the stylized logo/wordmark on the website — the gradient is only in the raster asset.
 
 ### Typography
+
 - **Wordmark** (logo): the existing brushed-silver font from the asset — use it as-is for the logo lockup, do NOT try to redraw it.
 - **Body / UI**: serif with editorial confidence — pair something like **Newsreader** (body) + **JetBrains Mono** (code) + **Inter** (UI labels). Gladia uses a clean sans-serif throughout; lean toward that for headings but pick a serif body for editorial weight if the tool supports it. If the tool restricts to one family, use **Inter** at 400/500/600/700.
 - **Eyebrow / kbd**: uppercase, tracked, 12–13px, `letter-spacing: 0.12em`.
 
 ### Visual idioms (from Gladia.io)
+
 - Dark hero on the slate background; subhead in pale cyan (`#C3F5FF`); CTAs as solid sky-blue pills with a soft glow.
 - Section transitions: alternating dark slate and slightly darker `#262b35` panels.
 - "How it works" steps: large numeric badge (48px) in pale cyan, with text alongside.
@@ -90,11 +93,13 @@ The landing page has 12 sections, top-to-bottom:
 ## Section 3 — Page-by-page content (copy verbatim)
 
 ### Top nav
+
 - Left: red fin mark (32px tall) linking to /
 - Links: `Product` · `Themes` · `Addons` · `Docs` · `GitHub`
 - Right CTA: `Get started` (filled sky-blue, hover glow)
 
 ### Hero
+
 - **Eyebrow:** `Your Stream Deck, your way`
 - **H1:** `A Stream Deck that's truly yours.`
 - **Subhead:** `Sireno Deck turns your Elgato Stream Deck into something you'd actually want to use — every button consistent, every screen themed, every shortcut exactly where you expect it. Configure it once in plain text, and it works the same on your desk, in the browser, and on the device.`
@@ -104,12 +109,14 @@ The landing page has 12 sections, top-to-bottom:
 - **Background:** `#2e3540` with a 4–6% opacity red chevron-scale watermark in the top-right corner
 
 ### Stat row (4 columns, no section heading)
+
 - `8 button types ready to use`
 - `2 themes, plus any you want`
 - `Same look on screen and on device`
 - `Free and open source`
 
 ### "How it works" — 4 numbered steps, single row
+
 1. **Describe your deck** — Tell Sireno Deck what you want each screen to show — clocks, apps, shortcuts. Plain text.
 2. **Press start** — One command and it's running in the background. It picks up your settings and stays up.
 3. **Tap a button** — Click in the browser to test, or press the physical key on your device. Same behavior either way.
@@ -119,19 +126,20 @@ The landing page has 12 sections, top-to-bottom:
 
 Each card has a small icon (24px), bold title, 2-line body, and a "Learn more" link.
 
-1. **Built-in button types** — *"Every button you actually need, already included. Play and skip music without leaving your keyboard. Glance at your CPU and RAM. Drop in an emoji with one tap. Show the time, the date, the weather. Open apps, run scripts, switch profiles. Eight button types ship out of the box — turn them on, drop them onto your deck, done."*
+1. **Built-in button types** — _"Every button you actually need, already included. Play and skip music without leaving your keyboard. Glance at your CPU and RAM. Drop in an emoji with one tap. Show the time, the date, the weather. Open apps, run scripts, switch profiles. Eight button types ship out of the box — turn them on, drop them onto your deck, done."_
 
-2. **Linear navigation** — *"Back, forward, that's it. Tap to step into a screen, tap to come back. Every deck is just a flat list — no menus buried three levels deep. When a sub-screen pops up (because you opened a particular app, say), it remembers where you were before, so you can bounce between contexts without losing your place."*
+2. **Linear navigation** — _"Back, forward, that's it. Tap to step into a screen, tap to come back. Every deck is just a flat list — no menus buried three levels deep. When a sub-screen pops up (because you opened a particular app, say), it remembers where you were before, so you can bounce between contexts without losing your place."_
 
-3. **Themable — two built-in, plus yours** — *"One look across your whole desk. Pick a dark look or a light look out of the box, and every button matches — fonts, colors, corners. Don't like either? Make your own. Drop a theme folder into your config, or install one like any other app. Your deck, your colors."*
+3. **Themable — two built-in, plus yours** — _"One look across your whole desk. Pick a dark look or a light look out of the box, and every button matches — fonts, colors, corners. Don't like either? Make your own. Drop a theme folder into your config, or install one like any other app. Your deck, your colors."_
 
-4. **Extend it without forking** — *"Need a button that doesn't exist yet? Add it. Sireno Deck is built to be extended. Anyone can publish a small package that adds a new button type — a Pomodoro timer, a Jira ticket tile, an OBS scene switcher — and it'll appear in your deck alongside the built-ins. No patching the app. No waiting for a release."*
+4. **Extend it without forking** — _"Need a button that doesn't exist yet? Add it. Sireno Deck is built to be extended. Anyone can publish a small package that adds a new button type — a Pomodoro timer, a Jira ticket tile, an OBS scene switcher — and it'll appear in your deck alongside the built-ins. No patching the app. No waiting for a release."_
 
-5. **Decks that know what you're doing** — *"The right buttons when you need them. Open VS Code and your editor shortcuts appear. Switch to Chrome and your tab and window controls show up. Open a chat app and your most-used emoji and quick replies are right there. When you close the app, your normal deck comes back. No setup menus, no profiles to remember — it just does the right thing."*
+5. **Decks that know what you're doing** — _"The right buttons when you need them. Open VS Code and your editor shortcuts appear. Switch to Chrome and your tab and window controls show up. Open a chat app and your most-used emoji and quick replies are right there. When you close the app, your normal deck comes back. No setup menus, no profiles to remember — it just does the right thing."_
 
-6. **Buttons that do things on your computer** — *"A button is anything you can type. Open a URL. Launch an app. Send a keystroke — a shortcut, a phrase, even an emoji. Hold a key to do something different from tapping it. Mix and match: a single button can launch Spotify, send a key combo, and then type your playlist name. Your deck becomes a remote control for your whole computer."*
+6. **Buttons that do things on your computer** — _"A button is anything you can type. Open a URL. Launch an app. Send a keystroke — a shortcut, a phrase, even an emoji. Hold a key to do something different from tapping it. Mix and match: a single button can launch Spotify, send a key combo, and then type your playlist name. Your deck becomes a remote control for your whole computer."_
 
 ### Theme showcase section
+
 - **Heading:** `Two looks out of the box. Make it your own.`
 - **Subhead:** `Every theme — built-in or third-party — gives every button the same fonts, the same colors, the same corners. So your deck always feels like one product, not ten.`
 - **Two cards side-by-side:**
@@ -139,6 +147,7 @@ Each card has a small icon (24px), bold title, 2-line body, and a "Learn more" l
   - Card 2: caption `Light` / body `Bright and clear. Good for daytime, presentations, or just preferring paper over pixels.` + image of the deck in light theme
 
 ### Add-on ecosystem section
+
 - **Heading:** `Buttons that grow with you.`
 - **Subhead:** `Eight button types ship today. Anything else, someone in the community has probably already built it — and if not, you can.`
 - **8 tiles in a 3-column grid:**
@@ -152,6 +161,7 @@ Each card has a small icon (24px), bold title, 2-line body, and a "Learn more" l
   - **Pomodoro** — A focus timer tile. Tap to start, tap to reset, hold for a long break.
 
 ### Contextual overlay section
+
 - **Heading:** `Your deck reacts to what you're doing.`
 - **Subhead:** `When you focus a specific app, Sireno Deck notices and slides in the right buttons for it. When you leave, your regular deck comes back. No mode switching. No menus.`
 - **Image:** annotated screenshot of an overlay deck (e.g. OpenCode) appearing on top of a faded main deck, with three callouts:
@@ -160,6 +170,7 @@ Each card has a small icon (24px), bold title, 2-line body, and a "Learn more" l
   - `Tap to step back, double-tap to dismiss.`
 
 ### Keyboard macros section
+
 - **Heading:** `Buttons that work like you do.`
 - **Subhead:** `Send a keystroke. Type a phrase. Open an app. Or chain them all together.`
 - **Three bullets:**
@@ -169,11 +180,12 @@ Each card has a small icon (24px), bold title, 2-line body, and a "Learn more" l
 - **Right side:** a deck mockup showing a button with a macro icon and a small "tap" hint
 
 ### Comparison table (10 rows)
+
 Section heading: `Open-source, Linux-first, file-as-config.`
 Subhead: `Side-by-side, so you don't have to take our word for it.`
 
-| Feature                        | Sireno Deck                         | Elgato Stream Deck Software | Loupedeck          |
-| ------------------------------ | ----------------------------------- | --------------------------- | ------------------ |
+| Feature                        | Sireno Deck                             | Elgato Stream Deck Software | Loupedeck          |
+| ------------------------------ | --------------------------------------- | --------------------------- | ------------------ |
 | Works on Linux                 | **Yes, first-class**                    | No                          | No                 |
 | Configure in plain text        | **Yes**                                 | Click-only                  | Click-only         |
 | Track changes in git           | **Yes**                                 | No                          | No                 |
@@ -186,6 +198,7 @@ Subhead: `Side-by-side, so you don't have to take our word for it.`
 | Price                          | **Free**                                | Free (with device)          | Free (with device) |
 
 ### CTA banner
+
 - Full-bleed gradient (red `#d62828` left → slate `#2e3540` right) with the white logo on the left
 - **H1:** `Make your Stream Deck feel like yours.`
 - **Subhead:** `One config file. Eight button types. Two themes. Your deck, in your dotfiles, version-controlled like the rest of your setup.`
@@ -193,6 +206,7 @@ Subhead: `Side-by-side, so you don't have to take our word for it.`
 - **Secondary CTA:** `Read the docs` (white outline)
 
 ### Footer
+
 - 5 columns:
   - **Product** — Features · Themes · Add-ons · Compare
   - **Use cases** — Developers · Streamers · Creators · Sysadmins
@@ -207,6 +221,7 @@ Subhead: `Side-by-side, so you don't have to take our word for it.`
 ## Section 4 — Docs pages (Stitch shells)
 
 Each docs page shares the same nav and footer. The body is a single `<article>` with:
+
 - Page title (H1)
 - One-paragraph intro
 - 3–6 section headings (H2) with prose
@@ -220,22 +235,23 @@ For the Stitch export, mark each docs page as a separate route with the same lay
 
 These are real screenshots of the running Sireno Deck emulator. Embed them with descriptive alt text. Place them in `plans/design/captures/` of the project repo.
 
-| File                                                 | Use in                                     | Notes                                                                                                                                              |
-| ---------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/cli/docs/screenshots/emulator-main-deck.png` | Hero (right side)                          | The canonical hero — the user's actual main deck with live system stats, weather, time, emojis, music, overlay toggle. Use this for Stitch import. |
+| File                                                   | Use in                                       | Notes                                                                                                                                              |
+| ------------------------------------------------------ | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/cli/docs/screenshots/emulator-main-deck.png` | Hero (right side)                            | The canonical hero — the user's actual main deck with live system stats, weather, time, emojis, music, overlay toggle. Use this for Stitch import. |
 | `02-media-controls.png`                                | `#features` (Built-in types card)            | Media player, volume up/down, mute buttons in multiple colors                                                                                      |
 | `05-date-time.png`                                     | `#features` (Built-in types card)            | 12 date/time variants — big clock, analog, date, custom format                                                                                     |
 | `06-weather.png`                                       | `#features` (Built-in types card)            | Weather tiles for multiple cities (offline rendering shows "--")                                                                                   |
 | `07-action-buttons.png`                                | `#features` (Built-in types, Macros section) | Action buttons in all variants + colors                                                                                                            |
 | `08-value-display.png`                                 | `#addons` tile                               | Value display showing CPU/RAM/uptime                                                                                                               |
 | `09-app-shortcuts-grid.png`                            | `#addons` tile                               | App shortcuts deck (VS Code, Chrome, Slack, etc.)                                                                                                  |
-| `10-app-overlays.png`                                  | `#overlay` section + `#addons`                 | App overlays menu (the "VS Code / Chrome / Slack / OpenCode / Discord / Teams / Meet" entry points)                                                |
+| `10-app-overlays.png`                                  | `#overlay` section + `#addons`               | App overlays menu (the "VS Code / Chrome / Slack / OpenCode / Discord / Teams / Meet" entry points)                                                |
 | `11-pomodoro.png`                                      | `#addons` tile                               | Three pomodoro timer tiles                                                                                                                         |
 | `13-theme-light.png`                                   | `#themes` (light card)                       | Light theme demo-decks-index (theme may not apply on capture — see NOTES)                                                                          |
-| `14-theme-riptide.png`                                 | `#themes` (third-party example card)         | The user's main deck in `riptide` synthwave theme — vivid pink/yellow on dark                                                                        |
+| `14-theme-riptide.png`                                 | `#themes` (third-party example card)         | The user's main deck in `riptide` synthwave theme — vivid pink/yellow on dark                                                                      |
 | `15-settings-deck.png`                                 | `/docs/builtin-addons` (internal-settings)   | Settings deck (About, Brightness, Theme manager)                                                                                                   |
 
 Images must be:
+
 - Cropped to the 5×3 deck frame only (no emulator chrome, no bare browser viewport)
 - Displayed at the device's native pixel ratio (Stream Deck MK.2 LCD is 96px per key)
 - Set with a 1px border in `--sireno-frame` so the deck frame is visible on the dark page
@@ -299,6 +315,7 @@ Sireno Deck is a Node CLI that drives an Elgato Stream Deck from a YAML config. 
 ## Section 10 — Output
 
 Deliver one of:
+
 - A Stitch design file (if Stitch is the target), or
 - A single self-contained `index.html` (or `index.html` + `style.css` + `script.js`) with all 12 landing sections + 7 docs shells, fully responsive, dark by default, using the brand tokens above.
 

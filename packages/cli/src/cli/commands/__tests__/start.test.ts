@@ -387,18 +387,14 @@ describe("start", () => {
   })
 
   const awaitFork = async (): Promise<void> => {
+    // ponytail: killPortListeners runs before startInBackground inside
+    // start(), so we need to wait for that microtask chain to settle before
+    // reading mock.results. startInBackground returns synchronously after
+    // spawnDetached — no __triggerExit needed (the wrapper doesn't watch).
     const { spawnDetached } = await import("../spawn-daemon")
-    // ponytail: killPortListeners runs before forkOffDev inside start(), so
-    // we need to wait for that microtask chain to settle before reading
-    // mock.results. `waitFor` retries the assertion until spawnDetached has
-    // been called, then fires the mock exit so the awaiting start() resolves.
     await vi.waitFor(() => {
       expect(spawnDetached).toHaveBeenCalledTimes(1)
     })
-    const mock = vi.mocked(spawnDetached).mock.results[
-      vi.mocked(spawnDetached).mock.results.length - 1
-    ] as { type: string; value: { child: { __triggerExit: () => void } } }
-    if (mock.type === "return") mock.value.child.__triggerExit()
   }
 
   it("forks off: calls spawnDetached and writePid with the spawned pid", async () => {
@@ -411,7 +407,6 @@ describe("start", () => {
       homeDir: "/home",
       logger: silentLogger(),
     })
-    await awaitFork()
     await startPromise
     expect(spawnDetached).toHaveBeenCalledTimes(1)
     expect(writePidMock).toHaveBeenCalledWith(99_999)
@@ -420,15 +415,13 @@ describe("start", () => {
   it("persists the resolved config path so service run can find it", async () => {
     setHappyPath()
     const { writeConfigPath } = await import("@/util/daemon")
-    const startPromise = start({
+    await start({
       config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
       frontendUrl: "http://x",
       xdgConfigHome: "/xdg",
       homeDir: "/home",
       logger: silentLogger(),
     })
-    await awaitFork()
-    await startPromise
     expect(writeConfigPath).toHaveBeenCalledWith(
       `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
     )
@@ -447,7 +440,67 @@ describe("start", () => {
     await expect(
       Promise.race([startPromise, new Promise((r) => setTimeout(r, 10))]),
     ).resolves.toBeUndefined()
-    await awaitFork()
+  })
+
+  it("spawns the production bin path in dev (bin/sirenodeck.js, not argv[1])", async () => {
+    setHappyPath()
+    const { spawnDetached } = await import("../spawn-daemon")
+    vi.mocked(spawnDetached).mockClear()
+    await start({
+      config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      logger: silentLogger(),
+    })
+    const lastCall = vi.mocked(spawnDetached).mock.calls.at(-1)?.[0]
+    expect(lastCall?.binPath).toMatch(/bin[\\/]sirenodeck\.js$/)
+  })
+
+  it("forwards every CLI flag to the spawned daemon", async () => {
+    setHappyPath()
+    const { spawnDetached } = await import("../spawn-daemon")
+    vi.mocked(spawnDetached).mockClear()
+    await start({
+      config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
+      emulator: true,
+      remote: false,
+      port: 52937,
+      deviceModel: "mk2",
+      httpPort: 4040,
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      logger: silentLogger(),
+    })
+    const lastCall = vi.mocked(spawnDetached).mock.calls.at(-1)?.[0]
+    expect(lastCall?.args).toEqual([
+      "start",
+      "--emulator",
+      "--port",
+      "52937",
+      "--device-model",
+      "mk2",
+      "--http-port",
+      "4040",
+    ])
+  })
+
+  it("omits flags at their default values", async () => {
+    setHappyPath()
+    const { spawnDetached } = await import("../spawn-daemon")
+    vi.mocked(spawnDetached).mockClear()
+    await start({
+      config: `${process.env.START_TEST_CFG_DIR}/cfg.yml`,
+      frontendUrl: "http://x",
+      xdgConfigHome: "/xdg",
+      homeDir: "/home",
+      logger: silentLogger(),
+    })
+    const lastCall = vi.mocked(spawnDetached).mock.calls.at(-1)?.[0]
+    expect(lastCall?.args).toEqual(["start"])
+    // httpPort defaults to 3939; must NOT be forwarded.
+    expect(lastCall?.args).not.toContain("--http-port")
   })
 
   it("rejects with a clear error if preflight fails in-process (SIRENO_DAEMON_CHILD=1)", async () => {

@@ -23,31 +23,37 @@ Tone: confident, plain English, benefit-first, no YAML keys / type names / proto
 ## The six features
 
 ### 1. Built-in button types
+
 > **Every button you actually need, already included.**
 >
 > Play and skip music without leaving your keyboard. Glance at your CPU and RAM. Drop in an emoji with one tap. Show the time, the date, the weather. Open apps, run scripts, switch profiles. Eight button types ship out of the box — turn them on, drop them onto your deck, done.
 
 ### 2. Linear navigation
+
 > **Back, forward, that's it.**
 >
 > Tap to step into a screen, tap to come back. Every deck is just a flat list — no menus buried three levels deep. When a sub-screen pops up (because you opened a particular app, say), it remembers where you were before, so you can bounce between contexts without losing your place.
 
 ### 3. Themable — two built-in, plus yours
+
 > **One look across your whole desk.**
 >
 > Pick a dark look or a light look out of the box, and every button matches — fonts, colors, corners. Don't like either? Make your own. Drop a theme folder into your config, or install one like any other app. Your deck, your colors.
 
 ### 4. Extend it without forking
+
 > **Need a button that doesn't exist yet? Add it.**
 >
 > Sireno Deck is built to be extended. Anyone can publish a small package that adds a new button type — a Pomodoro timer, a Jira ticket tile, an OBS scene switcher — and it'll appear in your deck alongside the built-ins. No patching the app. No waiting for a release.
 
 ### 5. Decks that know what you're doing
+
 > **The right buttons when you need them.**
 >
 > Open VS Code and your editor shortcuts appear. Switch to Chrome and your tab and window controls show up. Open a chat app and your most-used emoji and quick replies are right there. When you close the app, your normal deck comes back. No setup menus, no profiles to remember — it just does the right thing.
 
 ### 6. Buttons that do things on your computer
+
 > **A button is anything you can type.**
 >
 > Open a URL. Launch an app. Send a keystroke — a shortcut, a phrase, even an emoji. Hold a key to do something different from tapping it. Mix and match: a single button can launch Spotify, send a key combo, and then type your playlist name. Your deck becomes a remote control for your whole computer.
