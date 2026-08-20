@@ -1,6 +1,8 @@
 import type { AddonManifestV1 } from "@/addon/api"
 
 import { globalService } from "./backend"
+import { buildMediaAddonChecks } from "./checks"
+import { createChildProcessExecutor } from "./executor"
 import mediaPlayerBackend from "./buttons/media-player/backend"
 import mediaPlayerFrontend from "./buttons/media-player/frontend"
 import mediaMuteBackend from "./buttons/volume/mute/backend"
@@ -44,6 +46,10 @@ export const manifest: AddonManifestV1 = {
     },
   },
   globalService,
+  checks: buildMediaAddonChecks({
+    platform: process.platform,
+    executor: createChildProcessExecutor(),
+  }),
 }
 
 export default manifest

@@ -5,6 +5,7 @@ import qrcode from "qrcode"
 import type pino from "pino"
 
 import { listDevices, type DeviceDescriptor } from "@/device"
+import type { AddonCheckOutcome } from "@/addon/check-runner"
 
 import {
   probeAllCached,
@@ -368,6 +369,34 @@ export const waitForFullStart = async (
     options.logSnapshot,
   )
   return { state, events, tcpReady, runtimeReady }
+}
+
+// ponytail: per-addon requirement check results, surfaced inline next
+// to the URL. Same `[✓ ...]` / `[✗ ...]` pattern as the system feature
+// line so operators learn one visual language. Grouped by addon so the
+// operator can quickly locate the failing addon when something is wrong.
+export const printAddonCheckResults = (
+  outcomes: ReadonlyArray<AddonCheckOutcome>,
+  output: (text: string) => void = (text) => process.stdout.write(text),
+): void => {
+  if (outcomes.length === 0) return
+  const grouped = new Map<string, AddonCheckOutcome[]>()
+  for (const outcome of outcomes) {
+    const bucket = grouped.get(outcome.addonName) ?? []
+    bucket.push(outcome)
+    grouped.set(outcome.addonName, bucket)
+  }
+  output("\n  Addon checks:\n")
+  for (const [addonName, items] of grouped) {
+    const parts = items
+      .map((it) =>
+        it.available
+          ? `[✓ ${it.checkName}]`
+          : `[✗ ${it.checkName}${it.reason !== undefined ? ` — ${it.reason}` : ""}]`,
+      )
+      .join(" ")
+    output(`    ${addonName}: ${parts}\n`)
+  }
 }
 
 export const printStartupComplete = (): void => {

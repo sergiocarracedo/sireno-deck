@@ -16,6 +16,7 @@ import { resolveDaemonPaths } from "@/util/daemon"
 import { snapshotDaemonLog } from "@/util/log-reader"
 import {
   buildStartupBanner,
+  printAddonCheckResults,
   printDaemonEvents,
   printDaemonUrl,
   printStartupComplete,
@@ -23,6 +24,7 @@ import {
   waitForFullStart,
   type StartOutcome,
 } from "./startup-display"
+import { runBuiltinAddonChecks } from "@/addon/check-runner"
 
 export interface GlobalOptions {
   verbose?: boolean
@@ -162,6 +164,10 @@ const startCommand: CommandModule<object, StartArgs> = {
 
       if (outcome.runtimeReady && outcome.state !== null) {
         printDaemonUrl(outcome.state)
+        // ponytail: per-addon requirement checks (playerctl for media, etc.).
+        // Never blocks the daemon — failing checks are surfaced as warnings so
+        // the operator can act on them without digging into the log.
+        printAddonCheckResults(await runBuiltinAddonChecks())
         printStartupComplete()
       } else if (outcome.tcpReady) {
         // ponytail: TCP is bound but the daemon didn't write runtime

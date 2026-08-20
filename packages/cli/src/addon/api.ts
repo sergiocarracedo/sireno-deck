@@ -235,6 +235,27 @@ export type AddonDeckEntry =
  * `<defaultButton>` (e.g. `type: emoji-selector` resolves to
  * `emoji-selector:launcher`). The value must be a key of `buttonTypes`.
  */
+/**
+ * Result of a single addon requirement check. Probes external dependencies
+ * (e.g. `playerctl` for media on Linux); failures are expected when the
+ * tool isn't installed and are surfaced as warnings, not exceptions.
+ */
+export interface AddonCheckResult {
+  readonly available: boolean
+  readonly reason?: string
+}
+
+/**
+ * A named requirement check contributed by an addon. The check function
+ * probes external state and returns a structured result; it should not
+ * throw — unexpected errors are caught by the runner and reported as
+ * failures.
+ */
+export interface AddonCheck {
+  readonly name: string
+  readonly check: () => Promise<AddonCheckResult>
+}
+
 export interface AddonManifestV1 {
   readonly apiVersion: 1
   readonly name: string
@@ -252,6 +273,13 @@ export interface AddonManifestV1 {
   }
   readonly publishIntervalMs?: number
   readonly globalService?: AddonGlobalService
+  /**
+   * Optional list of OS-specific requirement checks. Core runs these
+   * for enabled addons on start/restart and displays pass/fail in the
+   * startup banner. Checks never block startup — they only surface
+   * configuration gaps so the operator can act on them.
+   */
+  readonly checks?: ReadonlyArray<AddonCheck>
 }
 
 /**
