@@ -1,13 +1,45 @@
 import type pino from "pino"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-const { mockStart, mockStop, mockEnsureInstalled, mockInvokeManager } =
-  vi.hoisted(() => ({
-    mockStart: vi.fn(async () => undefined),
-    mockStop: vi.fn(async () => undefined),
-    mockEnsureInstalled: vi.fn(async () => undefined),
-    mockInvokeManager: vi.fn(async () => undefined),
-  }))
+const {
+  mockStart,
+  mockStop,
+  mockEnsureInstalled,
+  mockInvokeManager,
+  mockSnapshotDaemonLog,
+  mockReadDaemonEventsFromSnapshot,
+  mockWaitForFullStart,
+  mockWaitForPortFree,
+  mockPrintDaemonEvents,
+  mockPrintRestartComplete,
+  mockPrintRestartFailed,
+} = vi.hoisted(() => ({
+  mockStart: vi.fn(async () => undefined),
+  mockStop: vi.fn(async () => undefined),
+  mockEnsureInstalled: vi.fn(async () => undefined),
+  mockInvokeManager: vi.fn(async () => undefined),
+  mockSnapshotDaemonLog: vi.fn(() => ({ sinceBytes: 0, takenAt: Date.now() })),
+  mockReadDaemonEventsFromSnapshot: vi.fn(() => []),
+  mockWaitForFullStart: vi.fn(async () => ({
+    state: {
+      emulatorUrl: "http://127.0.0.1:52938",
+      wsUrl: "ws://127.0.0.1:52937",
+      frontendUrl: "http://127.0.0.1:5180",
+      token: "test",
+      lanHost: "192.168.1.1",
+      addresses: [],
+      emulatorMode: true,
+      remote: false,
+    },
+    events: [],
+    tcpReady: true,
+    runtimeReady: true,
+  })),
+  mockWaitForPortFree: vi.fn(async () => true),
+  mockPrintDaemonEvents: vi.fn(),
+  mockPrintRestartComplete: vi.fn(),
+  mockPrintRestartFailed: vi.fn(),
+}))
 
 vi.mock("../start", () => ({
   default: mockStart,
@@ -24,13 +56,14 @@ vi.mock("@/util/daemon", async () => {
     await vi.importActual<typeof import("@/util/daemon")>("@/util/daemon")
   return {
     ...actual,
-    // ponytail: restart's pollForPid polls readPid+isRunning until the daemon
-    // appears or the 5s deadline elapses. Tests assert "restart called stop
-    // and start"; they don't care about polling, so make isRunning return
-    // true on the first read to short-circuit the loop.
     isRunning: vi.fn(() => true),
     readPid: vi.fn(() => 42),
     readFlags: vi.fn(() => null),
+    readChildren: vi.fn(() => ({ pids: [] })),
+    removePidFile: vi.fn(),
+    removeTokenFile: vi.fn(),
+    removeRuntimeStateFile: vi.fn(),
+    removeChildrenFile: vi.fn(),
     resolveDaemonPaths: vi.fn(() => ({
       runtimeDir: "/run/user/0",
       pidFile: "/run/user/0/sireno-deck.pid",
@@ -41,6 +74,18 @@ vi.mock("@/util/daemon", async () => {
     })),
   }
 })
+vi.mock("@/util/log-reader", () => ({
+  snapshotDaemonLog: mockSnapshotDaemonLog,
+  readDaemonEventsFromSnapshot: mockReadDaemonEventsFromSnapshot,
+}))
+vi.mock("../../startup-display", () => ({
+  waitForFullStart: mockWaitForFullStart,
+  waitForPortFree: mockWaitForPortFree,
+  printDaemonEvents: mockPrintDaemonEvents,
+  printRestartComplete: mockPrintRestartComplete,
+  printRestartFailed: mockPrintRestartFailed,
+  printStopComplete: vi.fn(),
+}))
 
 import { restart } from "../restart"
 import start from "../start"

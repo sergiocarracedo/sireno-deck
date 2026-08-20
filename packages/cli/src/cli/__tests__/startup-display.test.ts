@@ -1,258 +1,224 @@
-import { createServer } from "node:net"
+import { createServer, type Server } from "node:net"
 
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-const introMock = vi.fn()
-const outroMock = vi.fn()
-const cancelMock = vi.fn()
-const logInfoMock = vi.fn()
+const { introMock, outroMock, cancelMock, readRuntimeStateMock } = vi.hoisted(
+  () => ({
+    introMock: vi.fn(),
+    outroMock: vi.fn(),
+    cancelMock: vi.fn(),
+    readRuntimeStateMock: vi.fn(),
+  }),
+)
 
 vi.mock("@/cli/prompt", () => ({
   intro: introMock,
   outro: outroMock,
   cancel: cancelMock,
-  log: { info: logInfoMock },
+}))
+
+vi.mock("@/util/daemon", () => ({
+  readRuntimeState: (...args: unknown[]) => readRuntimeStateMock(...args),
 }))
 
 import {
-  buildStartupBanner,
-  formatFeaturesLine,
-  isLogSuppressed,
-  printStartupComplete,
-  printStartupFailed,
-  waitForDaemonReady,
+  printDaemonEvents,
+  printDaemonUrl,
+  printRestartComplete,
+  printRestartFailed,
+  printStopComplete,
+  waitForPortFree,
+  waitForRuntimeState,
 } from "../startup-display"
 
-const makeReport = () =>
-  ({
-    platform: "linux",
-    homeDir: "/home/test",
-    xdgConfigHome: "/home/test/.config",
-    session: "x11",
-    packageManager: "apt",
-    capabilities: {
-      keyMacro: {
-        name: "keyMacro",
-        available: true,
-        missing: [],
-        preferred: "ydotool",
-        reason: "",
-      },
-      clipboard: {
-        name: "clipboard",
-        available: true,
-        missing: [],
-        preferred: "xclip",
-        reason: "",
-      },
-      notification: {
-        name: "notification",
-        available: false,
-        missing: ["notify-send"],
-        preferred: "notify-send",
-        reason: "",
-      },
-      activeApp: {
-        name: "activeApp",
-        available: true,
-        missing: [],
-        preferred: "xdotool",
-        reason: "",
-      },
-    },
-    udev: {
-      rulesInstalled: true,
-      rulesPath: "/etc/udev/rules.d/70.rules",
-      streamDeckConnected: false,
-      matchedProductIds: [],
-    },
-    config: { exists: true, path: "/home/test/.config/sireno-deck/config.yml" },
-  }) as const
-
-const fakeDeps = {
-  probeAll: vi.fn(async () => makeReport()),
-  probeMedia: vi.fn(async () => ({ available: true })),
-  probeExec: vi.fn(async () => ({ available: true })),
-  probeHttp: vi.fn(async () => ({ available: false, reason: "unreachable" })),
-  listDevices: vi.fn(async () => []),
-  resetCache: vi.fn(),
-}
-
-const originalIsTTY = process.stdout.isTTY
-
-afterEach(() => {
-  vi.clearAllMocks()
-  Object.defineProperty(process.stdout, "isTTY", {
-    value: originalIsTTY,
-    configurable: true,
+describe("waitForRuntimeState", () => {
+  beforeEach(() => {
+    readRuntimeStateMock.mockReset()
   })
-})
-
-describe("isLogSuppressed", () => {
-  it("suppresses on --quiet", () => {
-    expect(isLogSuppressed({ quiet: true })).toBe(true)
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
-  it("suppresses on --log-level silent", () => {
-    expect(isLogSuppressed({ logLevel: "silent" })).toBe(true)
+  it("resolves null when runtime-state.json never appears", async () => {
+    readRuntimeStateMock.mockReturnValue(null)
+    const result = await waitForRuntimeState(200)
+    expect(result).toBe(null)
   })
 
-  it("suppresses on --log-level none", () => {
-    expect(isLogSuppressed({ logLevel: "none" })).toBe(true)
-  })
-
-  it("does not suppress by default", () => {
-    expect(isLogSuppressed({})).toBe(false)
-    expect(isLogSuppressed({ logLevel: "info" })).toBe(false)
-  })
-})
-
-describe("formatFeaturesLine", () => {
-  it("renders available items with checkmarks", () => {
-    const line = formatFeaturesLine([
-      { name: "keystrokes", available: true },
-      { name: "clipboard", available: true },
-    ])
-    expect(line).toBe("[✓ keystrokes] [✓ clipboard]")
-  })
-
-  it("renders unavailable items with reason", () => {
-    const line = formatFeaturesLine([
-      { name: "keystrokes", available: false, reason: "ydotool" },
-    ])
-    expect(line).toBe("[✗ keystrokes — ydotool]")
-  })
-
-  it("renders unavailable items without reason", () => {
-    const line = formatFeaturesLine([{ name: "http", available: false }])
-    expect(line).toBe("[✗ http]")
-  })
-})
-
-describe("buildStartupBanner", () => {
-  it("returns null when --quiet", async () => {
-    Object.defineProperty(process.stdout, "isTTY", {
-      value: true,
-      configurable: true,
-    })
-    const result = await buildStartupBanner(
-      { emulator: false },
-      { quiet: true },
-      fakeDeps,
-    )
-    expect(result).toBeNull()
-    expect(introMock).not.toHaveBeenCalled()
-  })
-
-  it("returns null when not a TTY", async () => {
-    Object.defineProperty(process.stdout, "isTTY", {
-      value: false,
-      configurable: true,
-    })
-    const result = await buildStartupBanner({ emulator: false }, {}, fakeDeps)
-    expect(result).toBeNull()
-    expect(introMock).not.toHaveBeenCalled()
-  })
-
-  it("prints the banner with intro, device, and features", async () => {
-    Object.defineProperty(process.stdout, "isTTY", {
-      value: true,
-      configurable: true,
-    })
-    const result = await buildStartupBanner(
-      { emulator: true, deviceModel: "xl" },
-      {},
-      fakeDeps,
-    )
-    expect(introMock).toHaveBeenCalledWith("Starting SirenoDeck")
-    expect(logInfoMock).toHaveBeenCalledWith("Device: Emulator (xl)")
-    expect(logInfoMock).toHaveBeenCalledWith(
-      expect.stringContaining("[✓ keystrokes]"),
-    )
-    expect(result?.featuresLine).toContain("[✗ notifications")
-    expect(result?.featuresLine).toContain("[✗ http — unreachable]")
-    expect(fakeDeps.resetCache).toHaveBeenCalled()
-  })
-
-  it("shows 'detecting…' when no devices and not emulator", async () => {
-    Object.defineProperty(process.stdout, "isTTY", {
-      value: true,
-      configurable: true,
-    })
-    await buildStartupBanner({ emulator: false }, {}, fakeDeps)
-    expect(logInfoMock).toHaveBeenCalledWith("Device: detecting…")
-  })
-
-  it("uses detected device label", async () => {
-    Object.defineProperty(process.stdout, "isTTY", {
-      value: true,
-      configurable: true,
-    })
-    const deps = {
-      ...fakeDeps,
-      listDevices: vi.fn(async () => [
-        {
-          id: "SERIAL123",
-          model: "MK2",
-          keyCount: 15,
-          label: "MK2",
-          transport: "real" as const,
-        },
-      ]),
+  it("returns state when file appears quickly", async () => {
+    const state = {
+      emulatorUrl: "http://127.0.0.1:52938",
+      wsUrl: "ws://127.0.0.1:52937",
+      frontendUrl: "http://127.0.0.1:5180",
+      token: "abc123",
+      lanHost: "192.168.1.10",
+      addresses: ["192.168.1.10"],
+      emulatorMode: true,
+      remote: false,
     }
-    await buildStartupBanner({ emulator: false }, {}, deps)
-    expect(logInfoMock).toHaveBeenCalledWith("Device: MK2 (SERIAL123)")
+    readRuntimeStateMock.mockReturnValue(state)
+    const result = await waitForRuntimeState(2_000)
+    expect(result).not.toBeNull()
+    expect(result!.emulatorUrl).toBe("http://127.0.0.1:52938")
+    expect(result!.token).toBe("abc123")
   })
 })
 
-describe("printStartupComplete/Failed", () => {
-  it("calls outro when TTY", () => {
-    Object.defineProperty(process.stdout, "isTTY", {
-      value: true,
-      configurable: true,
-    })
-    printStartupComplete()
-    expect(outroMock).toHaveBeenCalledWith("✓ SirenoDeck started")
+describe("waitForPortFree", () => {
+  afterEach(async () => {
+    vi.restoreAllMocks()
   })
 
-  it("skips when not TTY", () => {
+  it("resolves true immediately when no process is bound", async () => {
+    const result = await waitForPortFree(49199, 500)
+    expect(result).toBe(true)
+  })
+
+  it("resolves true after a bound server is closed", async () => {
+    const srv: Server = createServer()
+    await new Promise<void>((resolve) => srv.listen(49198, resolve))
+    const promise = waitForPortFree(49198, 1_000)
+    srv.close()
+    const result = await promise
+    expect(result).toBe(true)
+  })
+
+  it("resolves false when port stays bound", async () => {
+    const srv: Server = createServer()
+    await new Promise<void>((resolve) => srv.listen(49197, resolve))
+    const result = await waitForPortFree(49197, 300)
+    expect(result).toBe(false)
+    srv.close()
+  })
+})
+
+describe("printDaemonEvents", () => {
+  it("writes nothing when events array is empty", () => {
+    const output = vi.fn()
+    printDaemonEvents([], output)
+    expect(output).not.toHaveBeenCalled()
+  })
+
+  it("writes one line per event", () => {
+    const output = vi.fn()
+    printDaemonEvents(
+      [
+        { level: "warn", component: "http", message: "disk full", time: 1 },
+        { level: "error", component: "", message: "crash", time: 2 },
+      ],
+      output,
+    )
+    expect(output).toHaveBeenCalledTimes(2)
+    expect(output.mock.calls[0][0]).toContain("disk full")
+    expect(output.mock.calls[1][0]).toContain("crash")
+  })
+
+  it("includes component bracket when non-empty", () => {
+    const output = vi.fn()
+    printDaemonEvents(
+      [{ level: "fatal", component: "ws", message: "boom", time: 1 }],
+      output,
+    )
+    // ponytail: strip ANSI to check raw text content
+    const text = output.mock.calls[0][0].replace(/\x1b\[[0-9;]*m/g, "")
+    expect(text).toContain("[ws]")
+  })
+})
+
+describe("printDaemonUrl", () => {
+  const makeState = (overrides = {}) => ({
+    emulatorUrl: "http://127.0.0.1:52938",
+    wsUrl: "ws://127.0.0.1:52937",
+    frontendUrl: "http://127.0.0.1:5180",
+    token: "tok123",
+    lanHost: "192.168.1.10",
+    addresses: [] as string[],
+    emulatorMode: true,
+    remote: false,
+    ...overrides,
+  })
+
+  it("prints the local URL", () => {
+    const output = vi.fn()
+    printDaemonUrl(makeState(), output)
+    const text = output.mock.calls.map((c: [string]) => c[0]).join("")
+    expect(text).toContain("127.0.0.1")
+    expect(text).toContain("token=tok123")
+  })
+
+  it("includes LAN lines when addresses present", () => {
+    const output = vi.fn()
+    // Force non-TTY so we get plain URL output
+    const original = process.stdout.isTTY
     Object.defineProperty(process.stdout, "isTTY", {
       value: false,
       configurable: true,
     })
-    printStartupComplete()
-    expect(outroMock).not.toHaveBeenCalled()
+    printDaemonUrl(makeState({ addresses: ["192.168.1.10"] }), output)
+    Object.defineProperty(process.stdout, "isTTY", {
+      value: original,
+      configurable: true,
+    })
+    const text = output.mock.calls.map((c: [string]) => c[0]).join("")
+    expect(text).toContain("192.168.1.10")
   })
+})
 
-  it("prints cancel with error message", () => {
+describe("printStopComplete", () => {
+  const originalIsTTY = process.stdout.isTTY
+  beforeEach(() => {
+    introMock.mockClear()
+    outroMock.mockClear()
+    cancelMock.mockClear()
     Object.defineProperty(process.stdout, "isTTY", {
       value: true,
       configurable: true,
     })
-    printStartupFailed(new Error("boom"))
+  })
+  afterEach(() => {
+    Object.defineProperty(process.stdout, "isTTY", {
+      value: originalIsTTY,
+      configurable: true,
+    })
+  })
+
+  it("calls outro on clean stop (port free)", () => {
+    printStopComplete(true)
+    expect(outroMock).toHaveBeenCalledWith("✓ Sireno Deck stopped")
+  })
+
+  it("calls cancel when port still bound", () => {
+    printStopComplete(false)
     expect(cancelMock).toHaveBeenCalledWith(
-      "✗ Failed to start SirenoDeck: boom",
+      expect.stringContaining("port 52937 is still bound"),
     )
   })
 })
 
-describe("waitForDaemonReady", () => {
-  it("resolves when a TCP listener accepts", async () => {
-    const server = createServer((sock) => sock.end())
-    await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve))
-    const addr = server.address()
-    if (addr === null || typeof addr === "string") {
-      server.close()
-      throw new Error("no port")
-    }
-    try {
-      await waitForDaemonReady(addr.port, 2_000)
-    } finally {
-      server.close()
-    }
+describe("printRestartComplete / printRestartFailed", () => {
+  const originalIsTTY = process.stdout.isTTY
+  beforeEach(() => {
+    outroMock.mockClear()
+    cancelMock.mockClear()
+    Object.defineProperty(process.stdout, "isTTY", {
+      value: true,
+      configurable: true,
+    })
+  })
+  afterEach(() => {
+    Object.defineProperty(process.stdout, "isTTY", {
+      value: originalIsTTY,
+      configurable: true,
+    })
   })
 
-  it("throws when no listener accepts within the timeout", async () => {
-    await expect(waitForDaemonReady(1, 200)).rejects.toBeUndefined()
+  it("printRestartComplete calls outro", () => {
+    printRestartComplete()
+    expect(outroMock).toHaveBeenCalledWith("✓ Sireno Deck restarted")
+  })
+
+  it("printRestartFailed calls cancel with error message", () => {
+    printRestartFailed(new Error("timeout"))
+    expect(cancelMock).toHaveBeenCalledWith(expect.stringContaining("timeout"))
   })
 })

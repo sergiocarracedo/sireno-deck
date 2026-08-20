@@ -4,9 +4,12 @@ import {
   isRunning,
   readChildren,
   readPid,
+  readRuntimeState,
   readToken,
   resolveDaemonPaths,
 } from "@/util/daemon"
+
+import { printDaemonUrl } from "../startup-display"
 
 export interface StatusOptions {
   logger: pino.Logger
@@ -51,6 +54,17 @@ export const status = async ({ logger }: StatusOptions): Promise<void> => {
     )
   } else {
     logger.info("no tracked children")
+  }
+
+  // ponytail: surface the emulator URL when the daemon is up and has
+  // written its runtime state. Operators run `p dev status` to recall
+  // where to point their browser — showing the URL inline saves them
+  // from grepping the log or re-running start.
+  if (alive) {
+    const state = readRuntimeState(paths)
+    if (state !== null) {
+      printDaemonUrl(state)
+    }
   }
 }
 
