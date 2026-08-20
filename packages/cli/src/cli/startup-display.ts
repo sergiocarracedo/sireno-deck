@@ -299,10 +299,10 @@ export const printDaemonEvents = (
 // URL — operators copy-paste the URL into the browser. For `--remote`
 // we use the existing QR banner (phone-friendly); for plain
 // `--emulator` we print a plain text URL.
-export const printDaemonUrl = (
+export const printDaemonUrl = async (
   state: RuntimeState,
   output: (text: string) => void = (text) => process.stdout.write(text),
-): void => {
+): Promise<void> => {
   const port = state.emulatorUrl.split(":").pop() ?? ""
   const buildUrl = (host: string, deckOnly: boolean): string => {
     const params = new URLSearchParams()
@@ -318,7 +318,10 @@ export const printDaemonUrl = (
       output("\n  Emulator (LAN):\n")
       for (const addr of state.addresses) {
         const url = buildUrl(addr, true)
-        const qr = qrcode.toString(url, { type: "terminal", small: true })
+        // ponytail: qrcode.toString returns a Promise — awaiting renders the
+        // QR ASCII art inline. Without the await the raw Promise object
+        // stringifies as "[object Promise]" and the operator sees no QR.
+        const qr = await qrcode.toString(url, { type: "terminal", small: true })
         output(`\n${qr}  ${url}\n`)
       }
     } else {
