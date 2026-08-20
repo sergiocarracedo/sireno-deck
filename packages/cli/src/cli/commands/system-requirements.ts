@@ -37,6 +37,7 @@ import {
   outro,
   spinner,
 } from "@/cli/prompt"
+import { collectBuiltinAddonChecks, runAddonChecks } from "@/addon/check-runner"
 
 const execFileAsync = promisify(execFile)
 
@@ -468,6 +469,27 @@ export const systemRequirements = async (
   probe.stop("Probe complete")
   intro("sireno-deck — system requirements")
   printProbeSummary(report)
+
+  // ponytail: per-addon requirement checks (playerctl for media on Linux,
+  // osascript on macOS, etc.) — each addon owns its own list of OS-specific
+  // probes and renders pass/fail here. Probe failures don't block the
+  // wizard — they're informational, matching the system capability check.
+  const addonCheckInputs = collectBuiltinAddonChecks()
+  if (addonCheckInputs.length > 0) {
+    const addonOutcomes = await runAddonChecks(addonCheckInputs)
+    if (addonOutcomes.length > 0) {
+      const lines = addonOutcomes.map((o) => {
+        const mark = o.available ? color.green("●") : color.red("○")
+        const status = o.available
+          ? color.green("available")
+          : color.red(
+              `missing${o.reason !== undefined ? ` — ${o.reason}` : ""}`,
+            )
+        return `${mark}  ${o.addonName}/${o.checkName}: ${status}`
+      })
+      note(lines.join("\n"), "Addon checks")
+    }
+  }
 
   const summary = summarizeReport(report)
   if (nonInteractive) {

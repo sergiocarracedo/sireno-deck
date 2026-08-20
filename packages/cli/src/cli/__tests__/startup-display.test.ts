@@ -22,6 +22,7 @@ vi.mock("@/util/daemon", () => ({
 }))
 
 import {
+  printAddonCheckResults,
   printDaemonEvents,
   printDaemonUrl,
   printRestartComplete,
@@ -220,5 +221,69 @@ describe("printRestartComplete / printRestartFailed", () => {
   it("printRestartFailed calls cancel with error message", () => {
     printRestartFailed(new Error("timeout"))
     expect(cancelMock).toHaveBeenCalledWith(expect.stringContaining("timeout"))
+  })
+})
+
+describe("printAddonCheckResults", () => {
+  it("writes nothing when outcomes array is empty", () => {
+    const output = vi.fn()
+    printAddonCheckResults([], output)
+    expect(output).not.toHaveBeenCalled()
+  })
+
+  it("formats passing checks with green checkmark", () => {
+    const output = vi.fn()
+    printAddonCheckResults(
+      [{ addonName: "media", checkName: "playerctl", available: true }],
+      output,
+    )
+    const text = output.mock.calls
+      .map((c) => (c[0] as unknown as string) ?? "")
+      .join("")
+    expect(text).toContain("playerctl")
+    expect(text).toContain("✓")
+  })
+
+  it("formats failing checks with reason", () => {
+    const output = vi.fn()
+    printAddonCheckResults(
+      [
+        {
+          addonName: "media",
+          checkName: "playerctl",
+          available: false,
+          reason: "install playerctl",
+        },
+      ],
+      output,
+    )
+    const text = output.mock.calls
+      .map((c) => (c[0] as unknown as string) ?? "")
+      .join("")
+    expect(text).toContain("playerctl")
+    expect(text).toContain("✗")
+    expect(text).toContain("install playerctl")
+  })
+
+  it("groups multiple checks per addon on one line", () => {
+    const output = vi.fn()
+    printAddonCheckResults(
+      [
+        { addonName: "media", checkName: "playerctl", available: true },
+        {
+          addonName: "media",
+          checkName: "wpctl",
+          available: false,
+          reason: "missing",
+        },
+      ],
+      output,
+    )
+    const text = output.mock.calls
+      .map((c) => (c[0] as unknown as string) ?? "")
+      .join("")
+    expect(text).toContain("media:")
+    expect(text).toContain("playerctl")
+    expect(text).toContain("wpctl")
   })
 })
