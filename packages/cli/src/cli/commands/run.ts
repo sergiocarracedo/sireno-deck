@@ -88,6 +88,15 @@ import { selectLanAddresses } from "./network-bind"
 
 export interface SignalProvider {
   onSignal(handler: () => void): () => void
+  // ponytail: SIGUSR1 is the in-place-reload primitive (production's
+  // systemctl reload-or-restart and the dev `pnpm dev reload` both send
+  // it). Without a registered handler, Node's default action for SIGUSR1
+  // is to terminate the process — meaning every `reload` call today is
+  // a latent daemon crash. Wire the handler so SIGUSR1 triggers a
+  // runtime.invalidate() (re-broadcast deck-config + nudge the
+  // BrowserRenderer's screenshot tick). Tests construct their own
+  // SignalProvider; update them to supply onReload too.
+  onReload(handler: () => void): () => void
 }
 
 export const defaultSignals: SignalProvider = {
@@ -98,6 +107,15 @@ export const defaultSignals: SignalProvider = {
       process.off("SIGINT", handler)
       process.off("SIGTERM", handler)
     }
+  },
+  onReload(handler: () => void): () => void {
+    // ponytail: use `process.on` (not `process.once`) so the handler stays
+    // registered across reloads. `process.once` would fire once and then the
+    // second SIGUSR1 would fall through to Node's default (terminate).
+    // The returned unregister calls `process.off`, which works the same
+    // for either form — we just need the listener to persist.
+    process.on("SIGUSR1", handler)
+    return () => process.off("SIGUSR1", handler)
   },
 }
 
@@ -1337,6 +1355,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
   let outputHandle: OutputHandle | null = null
   let currentOutputHandle: OutputHandle | null = null
   let unregisterSignal: (() => void) | null = null
+  let unregisterReload: (() => void) | null = null
   let unsubscribeLockMode: (() => void) | null = null
   let removeServiceLogListener: (() => void) | null = null
 
@@ -1754,10 +1773,23 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
       logger.info("received signal, shutting down")
       resolveDone()
     })
+    // ponytail: SIGUSR1 is the in-place-reload signal. The reload command
+    // (CLI side) and `systemctl reload-or-restart` both send it. The
+    // handler triggers runtime.invalidate() which publishes
+    // `runtime:invalidate` on the pubsub — the BrowserRenderer subscribes
+    // to that and triggers a screenshot tick, so connected frontends
+    // re-render on demand without a full preflight re-run.
+    unregisterReload = signals.onReload(() => {
+      logger.info("runtime: reloaded via SIGUSR1")
+      // runtime is non-null here: buildRuntime assigned it at line ~1379,
+      // and the reload handler only fires after this point.
+      if (runtime !== null) runtime.invalidate()
+    })
 
     await done
   } finally {
     if (unregisterSignal !== null) unregisterSignal()
+    if (unregisterReload !== null) unregisterReload()
     if (bridgeSignal !== null) bridgeSignal.abort()
     if (addonServicesDispose !== null) addonServicesDispose()
     if (unsubscribeLockMode !== null) unsubscribeLockMode()

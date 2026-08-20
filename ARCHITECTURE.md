@@ -281,6 +281,34 @@ runs `pnpm dev restart` to recover. Production's auto-restart comes from
 systemd's `Restart=always`; dev matches that semantic exactly (no
 auto-restart at the wrapper layer).
 
+**In-place reload (SIGUSR1)** — The `reload` command sends `SIGUSR1` to
+the daemon; systemd's `reload-or-restart` does the same. The daemon
+registers a `SIGUSR1` handler via `SignalProvider.onReload`
+(`commands/run.ts`) that calls `runtime.invalidate()` — which re-broadcasts
+the deck-config to connected frontends and nudges the `BrowserRenderer`'s
+screenshot tick. Without this handler, Node's default action for
+`SIGUSR1` is to terminate the process, so previously every reload
+request was a latent daemon crash masked by `Restart=always`.
+
+**Dev operator affordance** — After a successful `pnpm dev start`, the
+cli handler in `cli/index.ts` calls `promptReloadAndTail`
+(`cli/startup-display.ts`). When stdout is a TTY, it prompts the
+operator with `Reload + tail logs now? [Y/n]` (default yes). On yes,
+it calls `reload()` (sends SIGUSR1, which now triggers
+`runtime.invalidate()` as documented above) and tails `service.log`
+for a bounded 2 s window. The bounded tail keeps control flowing without
+forcing the operator to type Ctrl+C. The prompt is suppressed on
+non-TTY environments (CI, ssh without pty, systemd) and on
+`--quiet` / `--log-level silent`.
+
+**Logger default level** — `buildLogger` (`cli/index.ts`) defaults the
+pino level to `info` (was `error` before this change). `info` is the
+minimum level that surfaces: `status.ts` reporting the running daemon,
+the runtime's per-tap `info` logs reaching `service.log`, and the
+`SIGUSR1 reload` confirmation line. `--verbose` switches to `debug`
+for the deepest signal; `--quiet` / `--log-level silent` suppress
+everything.
+
 There is no separate `service-supervisor.ts` in the current codebase —
 that file was the previous supervisor for dev mode and was removed when dev
 detached to match production's shape.

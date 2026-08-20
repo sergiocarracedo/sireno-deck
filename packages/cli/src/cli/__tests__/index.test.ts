@@ -3,9 +3,13 @@ import { describe, expect, it } from "vitest"
 import { buildLogger } from "../index"
 
 describe("buildLogger", () => {
-  it("defaults to error level when no flags are given", () => {
+  it("defaults to info level when no flags are given", () => {
+    // ponytail: was `error` before the dev-detach and reload-prompt
+    // changes. `info` is the lowest level that surfaces status lines,
+    // runtime per-tap logs, and the SIGUSR1 reload confirmation.
+    // --verbose / --log-level override the default.
     const logger = buildLogger({})
-    expect(logger.level).toBe("error")
+    expect(logger.level).toBe("info")
   })
 
   it("uses debug level when verbose", () => {

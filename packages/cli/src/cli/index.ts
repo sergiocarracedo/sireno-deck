@@ -16,6 +16,7 @@ import {
   printEmulatorQrBanner,
   printStartupComplete,
   printStartupFailed,
+  promptReloadAndTail,
   waitForDaemonReady,
 } from "./startup-display"
 
@@ -57,7 +58,7 @@ export const buildLogger = (
   const level =
     argv.quiet || normalized === "silent"
       ? "silent"
-      : (normalized ?? (argv.verbose ? "debug" : "error"))
+      : (normalized ?? (argv.verbose ? "debug" : "info"))
   return createLogger({
     verbose: argv.verbose,
     json: argv.json ?? false,
@@ -159,6 +160,15 @@ const startCommand: CommandModule<object, StartArgs> = {
         }
       }
       printStartupComplete()
+      // ponytail: dev-only operator affordance. After the daemon is up,
+      // offer a one-shot SIGUSR1 reload + tail. Verifies the reload
+      // path works and gives the operator something to look at without
+      // forcing them to type `pnpm dev reload` and `pnpm dev logs` as
+      // separate steps. Production flows (systemd / launchd) don't
+      // hit this branch — bin/dev.js is dev-only by construction.
+      if (process.argv[1]?.endsWith(".ts") === true && argv.logs !== true) {
+        await promptReloadAndTail({ logger })
+      }
       await startPromise
     } catch (err) {
       printStartupFailed(err)
