@@ -49,8 +49,7 @@ import {
   type ScannedAddon,
 } from "./addon-registry"
 import { ensureInstalled, invokeManager } from "./service-manager"
-import { superviseService } from "./service-supervisor"
-import { isUnderServiceManager } from "./spawn-daemon"
+import { isUnderServiceManager, spawnDetached } from "./spawn-daemon"
 import { runPipeline, type RunOptions, type SignalProvider } from "./run"
 import { preflight } from "./pipeline/preflight"
 import {
@@ -519,7 +518,35 @@ const runInProcessSetup = async (
     })
 }
 
-const forkOffDev = async (options: StartOptions): Promise<void> => {
+// ponytail: dev-mode `start`. Production goes through systemd/launchd — the
+// OS owns the daemon lifecycle and the wrapper exits as soon as `start` forks
+// the service manager. Dev's `pnpm dev start` mirrors that shape: spawn the
+// daemon via `spawnDetached`, write the pid file, return to the cli. The
+// wrapper exits cleanly so `pnpm dev status | stop | restart | reload | logs`
+// from any other shell work against the same pid-file contract production
+// uses. No auto-restart: the daemon stays dead on crash, the operator runs
+// `pnpm dev restart` to recover — same as production (systemd eventually
+// gives up too).
+const resolveCliRoot = (): string => {
+  const here = dirname(fileURLToPath(import.meta.url))
+  return resolvePath(here, "..", "..", "..")
+}
+
+const buildDetachedArgs = (flags: RuntimeFlags): string[] => {
+  const args: string[] = ["start"]
+  if (flags.emulator) args.push("--emulator")
+  if (flags.remote) args.push("--remote")
+  if (flags.port !== undefined) args.push("--port", String(flags.port))
+  if (flags.deviceModel !== undefined) {
+    args.push("--device-model", flags.deviceModel)
+  }
+  if (flags.httpPort !== undefined && flags.httpPort !== 3939) {
+    args.push("--http-port", String(flags.httpPort))
+  }
+  return args
+}
+
+const startInBackground = async (options: StartOptions): Promise<void> => {
   const { logger } = options
   const resolved = resolveConfigPath(options)
   const configPath = resolved.path
@@ -533,22 +560,18 @@ const forkOffDev = async (options: StartOptions): Promise<void> => {
   pruneStaleChildren(undefined, logger)
   await terminateChildren({ logger, timeoutMs: 2_000 })
 
-  const args: string[] = ["start"]
-  // ponytail: pnpm dev supervisor. The parent watches the daemon child, on
-  // unexpected exit pushes a black frame to the hardware (best-effort) and
-  // respawns the daemon with the standard retry schedule. On give-up the
-  // parent cleans the runtime dir and exits 1. superviseService owns SIGINT/
-  // SIGTERM forwarding — the parent process becomes the supervisor, so it
-  // controls the child lifecycle from then on.
-  await superviseService({
-    xdgConfigHome: options.xdgConfigHome ?? "",
-    logger,
+  const binPath = resolvePath(resolveCliRoot(), "bin", "sirenodeck.js")
+  const args = buildDetachedArgs(runtimeFlags)
+  const { pid } = spawnDetached({
+    binPath,
     args,
-    remote: runtimeFlags.remote,
-    onGiveUp: async () => {
-      await terminateChildren({ logger, timeoutMs: 2_000 })
-    },
+    remote: options.remote === true,
   })
+  writePid(pid)
+  logger.info(
+    { pid, configPath, args },
+    "start: daemon spawned, returning to cli",
+  )
 }
 
 const startProduction = async (options: StartOptions): Promise<void> => {
@@ -750,7 +773,7 @@ const start = async (options: StartOptions): Promise<void> => {
   }
 
   if (isDevInvocation()) {
-    await forkOffDev(options)
+    await startInBackground(options)
   } else {
     await startProduction(options)
   }

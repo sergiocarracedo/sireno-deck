@@ -257,12 +257,11 @@ SPAs.
 `findWorkspaceRoot()` and `resolveFrontendCwd()` are local helpers used to
 locate the Vite projects from the monorepo.
 
-### 3.11.1 Process supervisors (vite + service)
+### 3.11.1 Process supervisors (vite)
 
-Vite children (frontend / emulator dev servers) and the daemon process itself
-are supervised by `cli/commands/subprocess-supervisor.ts` and
-`cli/commands/service-supervisor.ts`. Both reuse the same `supervise()`
-primitive — the retry state machine lives in one place.
+Vite children (frontend / emulator dev servers) are supervised by
+`cli/commands/subprocess-supervisor.ts`. The retry state machine lives in
+one place.
 
 **Vite supervisor** — `outputClient/real.ts:202` and `outputClient/emulator.ts:117,140`.
 On unexpected exit, the supervisor respawns the vite child using the
@@ -271,19 +270,20 @@ incremental schedule `DEFAULT_VITE_RETRY_SCHEDULE_MS = [2s, 5s, 15s, 30s, 60s]`
 supervisor calls `onChildCrash` on the runtime, which resolves the pipeline's
 `done` promise and triggers a clean shutdown.
 
-**Service supervisor** — `cli/commands/service-supervisor.ts`. Active only in
-dev mode (`forkOffDev` in `start.ts`). Production goes through
-systemd/launchd with `Restart=always`, which owns that lifecycle. In dev mode
-the parent process becomes the supervisor: watches the daemon child, and on
-unexpected exit:
+**Daemon lifecycle** — In dev mode `start.ts:startInBackground` spawns the
+daemon via `spawnDetached` (`packages/cli/src/cli/commands/spawn-daemon.ts`)
+and returns. The wrapper exits cleanly; subsequent `pnpm dev status | stop
+| restart | reload | logs` work from any shell via the pid file at
+`$XDG_RUNTIME_DIR/sireno-deck/`. The forked daemon's `argv[1]` is
+`bin/sirenodeck.js` — the same entry point the systemd-installed daemon
+uses. If the daemon crashes in dev, the daemon stays dead; the operator
+runs `pnpm dev restart` to recover. Production's auto-restart comes from
+systemd's `Restart=always`; dev matches that semantic exactly (no
+auto-restart at the wrapper layer).
 
-1. Pushes a black frame to the device (`device/black-frame.ts` — opens a fresh
-   device, fills all keys with a black buffer, closes). Idempotent: only the
-   first crash in a chain pushes; retries don't re-push.
-2. Respawns the daemon with `DEFAULT_SERVICE_RETRY_SCHEDULE_MS` (same shape).
-3. On give-up: clears the runtime dir (`removePidFile`, `removeTokenFile`,
-   `removeChildrenFile`, `removeStartLock`), terminates tracked children, and
-   `process.exit(1)`.
+There is no separate `service-supervisor.ts` in the current codebase —
+that file was the previous supervisor for dev mode and was removed when dev
+detached to match production's shape.
 
 `pushBlackFrameToDevice` reuses `connectStreamDeck` from
 `device/stream-deck.ts:51` so the parent process can push a frame without

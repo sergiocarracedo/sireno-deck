@@ -2,11 +2,12 @@ import { connectStreamDeck, type StreamDeckDevice } from "@/device/stream-deck"
 
 import type pino from "pino"
 
-// ponytail: extracted from RealOutputClient.pushBlackFrame so the parent
-// process (service-supervisor) can push a black frame WITHOUT going through
-// the full daemon init. Used on supervisor crash-on-exit — the device may be
-// unplugged at that moment, so every step is best-effort and the errors are
-// warn-logged, never thrown.
+// ponytail: extracted from RealOutputClient.pushBlackFrame so any caller
+// (current or future) can push a black frame WITHOUT going through the full
+// daemon init. Today the daemon pushes a black frame on its own teardown in
+// runPipeline's finally block; the helper is preserved for that single use
+// site and stays best-effort because the device may be unplugged at the
+// moment of exit.
 const buildBlackBuffer = (keyCount: number): Buffer => {
   const stride = 3 * 8
   const total = keyCount * stride * 8

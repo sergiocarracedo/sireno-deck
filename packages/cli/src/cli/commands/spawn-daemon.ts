@@ -1,7 +1,5 @@
 import { spawn, type ChildProcess } from "node:child_process"
 import { createWriteStream, existsSync, openSync } from "node:fs"
-import { dirname, resolve as resolvePath } from "node:path"
-import { fileURLToPath } from "node:url"
 
 import { resolveDaemonPaths } from "@/util/daemon"
 import { formatHuman } from "@/util/logger"
@@ -53,32 +51,14 @@ interface Interpreter {
   readonly env?: Readonly<Record<string, string>>
 }
 
-// ponytail: dev mode (pnpm dev) wraps the CLI in tsx with argv[1]=*.ts.
-// Forking a plain `node <*.ts>` exits silently because Node can't parse TS.
-// Also tsx needs the project's tsconfig to resolve `@/` aliases — without
-// it the child throws ERR_MODULE_NOT_FOUND the moment it loads index.ts.
-const resolveInterpreter = (binPath: string): Interpreter => {
-  if (!binPath.endsWith(".ts")) return { cmd: process.execPath, prefixArgs: [] }
-  const here = dirname(fileURLToPath(import.meta.url))
-  const cliRoot = resolvePath(here, "../../..")
-  const tsxBin = resolvePath(cliRoot, "node_modules/.bin/tsx")
-  const tsconfig = resolvePath(cliRoot, "tsconfig.json")
-  const tsconfigExists = existsSync(tsconfig)
-  if (!existsSync(tsxBin)) {
-    return {
-      cmd: process.execPath,
-      prefixArgs: ["--import", "tsx"],
-      cwd: cliRoot,
-      env: tsconfigExists ? { TSX_TSCONFIG_PATH: tsconfig } : {},
-    }
-  }
-  return {
-    cmd: tsxBin,
-    prefixArgs: tsconfigExists ? ["--tsconfig", tsconfig] : [],
-    cwd: cliRoot,
-    env: tsconfigExists ? { TSX_TSCONFIG_PATH: tsconfig } : {},
-  }
-}
+// ponytail: dev mode (pnpm dev) spawns the daemon via `bin/sirenodeck.js`,
+// the same entry point the systemd-installed daemon uses. Plain `node`
+// resolves `@/` aliases through the bundled tsx (configured inside
+// bin/sirenodeck.js), so no interpreter shim is needed here.
+const resolveInterpreter = (): Interpreter => ({
+  cmd: process.execPath,
+  prefixArgs: [],
+})
 
 export const spawnDetached = (
   options: SpawnDetachedOptions,
@@ -113,7 +93,7 @@ export const spawnDetached = (
         : ["ignore", "ignore", "ignore"]
   }
 
-  const { cmd, prefixArgs, cwd, env: interpEnv } = resolveInterpreter(binPath)
+  const { cmd, prefixArgs, cwd, env: interpEnv } = resolveInterpreter()
   const child = spawn(cmd, [...prefixArgs, binPath, ...args], {
     detached: true,
     stdio,
