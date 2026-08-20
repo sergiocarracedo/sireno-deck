@@ -139,15 +139,15 @@ describe("printDaemonUrl", () => {
     ...overrides,
   })
 
-  it("prints the local URL", () => {
+  it("prints the local URL", async () => {
     const output = vi.fn()
-    printDaemonUrl(makeState(), output)
+    await printDaemonUrl(makeState(), output)
     const text = output.mock.calls.map((c: [string]) => c[0]).join("")
     expect(text).toContain("127.0.0.1")
     expect(text).toContain("token=tok123")
   })
 
-  it("includes LAN lines when addresses present", () => {
+  it("includes LAN lines when addresses present", async () => {
     const output = vi.fn()
     // Force non-TTY so we get plain URL output
     const original = process.stdout.isTTY
@@ -155,7 +155,7 @@ describe("printDaemonUrl", () => {
       value: false,
       configurable: true,
     })
-    printDaemonUrl(makeState({ addresses: ["192.168.1.10"] }), output)
+    await printDaemonUrl(makeState({ addresses: ["192.168.1.10"] }), output)
     Object.defineProperty(process.stdout, "isTTY", {
       value: original,
       configurable: true,

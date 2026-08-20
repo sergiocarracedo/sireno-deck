@@ -63,7 +63,7 @@ export const status = async ({ logger }: StatusOptions): Promise<void> => {
   if (alive) {
     const state = readRuntimeState(paths)
     if (state !== null) {
-      printDaemonUrl(state)
+      await printDaemonUrl(state)
     }
   }
 }

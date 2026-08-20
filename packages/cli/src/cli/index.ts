@@ -163,7 +163,7 @@ const startCommand: CommandModule<object, StartArgs> = {
       printDaemonEvents(outcome.events)
 
       if (outcome.runtimeReady && outcome.state !== null) {
-        printDaemonUrl(outcome.state)
+        await printDaemonUrl(outcome.state)
         // ponytail: per-addon requirement checks (playerctl for media, etc.).
         // Never blocks the daemon — failing checks are surfaced as warnings so
         // the operator can act on them without digging into the log.
