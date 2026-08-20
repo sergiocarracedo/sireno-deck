@@ -1,14 +1,21 @@
 import type pino from "pino"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-const { mockConfirm, mockTailLogs, mockReload } = vi.hoisted(() => ({
-  mockConfirm: vi.fn(),
-  mockTailLogs: vi.fn(async () => undefined),
-  mockReload: vi.fn(async () => undefined),
-}))
+const { mockConfirm, mockConfirmImpl, mockTailLogs, mockReload } = vi.hoisted(
+  () => ({
+    mockConfirm: vi.fn(),
+    mockConfirmImpl: vi.fn(),
+    mockTailLogs: vi.fn(async () => undefined),
+    mockReload: vi.fn(async () => undefined),
+  }),
+)
 
 vi.mock("@/ui/console", () => ({
-  confirm: mockConfirm,
+  confirm: (...args: unknown[]) => {
+    mockConfirm(...args)
+    return mockConfirmImpl()
+  },
+  isCancel: (v: unknown): boolean => typeof v === "symbol",
 }))
 vi.mock("@/util/daemon", () => ({
   resolveDaemonPaths: () => ({
@@ -42,31 +49,59 @@ const silentLogger = (): pino.Logger =>
     silent: () => undefined,
   }) as unknown as pino.Logger
 
+// ponytail: clack's confirm uses readline + setRawMode, both of which
+// throw when the wrapper's stdin is not a TTY (e.g. when invoked via
+// `| cat` or with `< /dev/null`). The wrapper previously surfaced that
+// as `unhandledRejection`, which installProcessGuards escalated into
+// a fatal exit. The defensive layer now bails out before calling
+// `confirm` when either `stdin` or `stdout` isn't a TTY.
+const setTty = (stdout: boolean, stdin: boolean): void => {
+  Object.defineProperty(process.stdout, "isTTY", {
+    value: stdout,
+    configurable: true,
+    writable: false,
+  })
+  Object.defineProperty(process.stdin, "isTTY", {
+    value: stdin,
+    configurable: true,
+    writable: false,
+  })
+}
+
 describe("promptReloadAndTail", () => {
-  let savedIsTTY: boolean | undefined
+  let savedStdoutIsTTY: boolean | undefined
+  let savedStdinIsTTY: boolean | undefined
   beforeEach(() => {
     vi.clearAllMocks()
-    savedIsTTY = process.stdout.isTTY
-    Object.defineProperty(process.stdout, "isTTY", {
-      value: true,
-      configurable: true,
-      writable: false,
-    })
+    savedStdoutIsTTY = process.stdout.isTTY
+    savedStdinIsTTY = process.stdin.isTTY
+    setTty(true, true)
   })
   afterEach(() => {
     Object.defineProperty(process.stdout, "isTTY", {
-      value: savedIsTTY,
+      value: savedStdoutIsTTY,
+      configurable: true,
+      writable: false,
+    })
+    Object.defineProperty(process.stdin, "isTTY", {
+      value: savedStdinIsTTY,
       configurable: true,
       writable: false,
     })
   })
 
-  it("returns immediately when not a TTY (skips the prompt)", async () => {
-    Object.defineProperty(process.stdout, "isTTY", {
-      value: false,
-      configurable: true,
-      writable: false,
-    })
+  it("returns immediately when stdout is not a TTY", async () => {
+    setTty(false, true)
+
+    await promptReloadAndTail({ logger: silentLogger() })
+
+    expect(mockConfirm).not.toHaveBeenCalled()
+    expect(mockReload).not.toHaveBeenCalled()
+    expect(mockTailLogs).not.toHaveBeenCalled()
+  })
+
+  it("returns immediately when stdin is not a TTY (the bug fix)", async () => {
+    setTty(true, false)
 
     await promptReloadAndTail({ logger: silentLogger() })
 
@@ -76,7 +111,7 @@ describe("promptReloadAndTail", () => {
   })
 
   it("skips reload + tail when the operator answers no", async () => {
-    mockConfirm.mockResolvedValue(false)
+    mockConfirmImpl.mockResolvedValue(false)
 
     await promptReloadAndTail({ logger: silentLogger() })
 
@@ -87,8 +122,39 @@ describe("promptReloadAndTail", () => {
     expect(mockTailLogs).not.toHaveBeenCalled()
   })
 
+  it("skips reload + tail when the operator cancels the prompt (Ctrl+C)", async () => {
+    // @clack/prompts returns a symbol when the user cancels — distinguish
+    // it from `false` (the operator answered No) by passing through
+    // `isCancel` to short-circuit.
+    const cancelSymbol = Symbol("cancel")
+    mockConfirmImpl.mockResolvedValue(cancelSymbol)
+
+    await promptReloadAndTail({ logger: silentLogger() })
+
+    expect(mockConfirm).toHaveBeenCalled()
+    expect(mockReload).not.toHaveBeenCalled()
+    expect(mockTailLogs).not.toHaveBeenCalled()
+  })
+
+  it("swallows readline / setRawMode errors instead of letting them reject", async () => {
+    // Ponytail: clack's confirm may throw under a host that lies about
+    // TTY (e.g. `script -qc` with no `-f` flag) — readline/setRawMode
+    // blow up. The defensive try/catch surfaces the case as "no
+    // reload" rather than letting it bubble into an
+    // unhandledRejection.
+    mockConfirmImpl.mockRejectedValueOnce(
+      Object.assign(new Error("TTY"), { code: "ERR_TTY" }),
+    )
+
+    await expect(
+      promptReloadAndTail({ logger: silentLogger() }),
+    ).resolves.toBeUndefined()
+    expect(mockReload).not.toHaveBeenCalled()
+    expect(mockTailLogs).not.toHaveBeenCalled()
+  })
+
   it("calls reload and tails logs when the operator answers yes", async () => {
-    mockConfirm.mockResolvedValue(true)
+    mockConfirmImpl.mockResolvedValue(true)
 
     await promptReloadAndTail({ logger: silentLogger() })
 
@@ -104,6 +170,16 @@ describe("promptReloadAndTail", () => {
         lines: 50,
       }),
     )
+  })
+
+  it("continues to tail even if reload() rejects", async () => {
+    mockConfirmImpl.mockResolvedValue(true)
+    mockReload.mockRejectedValueOnce(new Error("no pid"))
+
+    await expect(
+      promptReloadAndTail({ logger: silentLogger() }),
+    ).resolves.toBeUndefined()
+    expect(mockTailLogs).not.toHaveBeenCalled()
   })
 
   it("bounds the tail window so the prompt cannot strand the operator", () => {

@@ -191,8 +191,21 @@ export const printStartupComplete = (): void => {
 // against the daemon (which the runtime now handles via
 // runtime.invalidate() — see signal-provider in commands/run.ts), and
 // the bounded tail window keeps control flowing without forcing the
-// operator to type Ctrl+C. Skipped on non-TTY (CI, ssh without tty,
-// systemd) and on --quiet / --log-level silent.
+// operator to type Ctrl+C.
+//
+// Skipped on:
+//  - Non-TTY stdout (CI, ssh without tty, systemd).
+//  - Non-TTY stdin (the wrapper's stdin is closed via spawnDetached's
+//    stdio[0]:"ignore" when forked, but the wrapper itself inherits
+//    its parent's stdin. If the wrapper is run from a redirect
+//    (`node … < /dev/null`, `| cat`, etc.) the prompt can't operate
+//    and would throw a readline "TTY" error. Bailing on
+//    `process.stdin.isTTY` keeps the wrapper clean.)
+//  - The operator explicitly disabled logs (`--quiet` /
+//    `--log-level silent`).
+//  - The cancelled state (`isCancel(answer) === true`), which
+//    `@clack/prompts` returns when the user hits Ctrl+C during the
+//    prompt. Treat it as "no".
 const RELOAD_TAIL_WINDOW_MS = 2_000
 export const RELOAD_TAIL_WINDOW = RELOAD_TAIL_WINDOW_MS
 
@@ -203,23 +216,42 @@ export interface PromptReloadAndTailOptions {
 export const promptReloadAndTail = async (
   options: PromptReloadAndTailOptions,
 ): Promise<void> => {
-  if (!process.stdout.isTTY) return
-  const { confirm } = await import("@/ui/console")
+  // ponytail: bail on either side of the tty being missing. clack's
+  // confirm uses readline + setRawMode, both of which throw under
+  // redirect. Letting the rejection escape would surface as
+  // unhandledRejection on the wrapper and tear the daemon down via
+  // installProcessGuards — visible as a "FATAL unhandledRejection"
+  // immediately after `printStartupComplete`.
+  if (!process.stdout.isTTY || !process.stdin.isTTY) return
+
+  const { confirm, isCancel } = await import("@/ui/console")
   const { resolveDaemonPaths } = await import("@/util/daemon")
   const { reload } = await import("./commands/reload")
   const { tailLogs } = await import("@/util/log-tail")
 
-  const answer = await confirm({
-    message: "Reload + tail logs now? [Y/n]",
-    initialValue: true,
-  })
-  if (!answer) return
+  let answer: boolean | symbol
+  try {
+    answer = await confirm({
+      message: "Reload + tail logs now? [Y/n]",
+      initialValue: true,
+    })
+  } catch {
+    // ponytail: readline / setRawMode threw under a non-tty parent
+    // (we re-checked above but clack reads process.stdin lazily and
+    // the wrapper can be wrapped by `| cat` etc.) — treat as "no".
+    return
+  }
+  if (isCancel(answer) || answer !== true) return
 
-  await reload({ logger: options.logger })
+  try {
+    await reload({ logger: options.logger })
+  } catch {
+    return
+  }
 
   const logPath = `${resolveDaemonPaths().runtimeDir}/service.log`
   await Promise.race([
-    tailLogs({ logPath, follow: true, lines: 50 }),
+    tailLogs({ logPath, follow: true, lines: 50 }).catch(() => undefined),
     new Promise<void>((resolve) => setTimeout(resolve, RELOAD_TAIL_WINDOW_MS)),
   ])
 }
