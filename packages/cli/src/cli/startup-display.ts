@@ -11,7 +11,6 @@ import {
   probeAllCached,
   probeCommandExecution,
   probeInternetAccess,
-  probeMediaAccess,
   resetProbeCache,
   type RuntimeFeatureProbe,
   type SystemReport,
@@ -36,7 +35,6 @@ interface BannerOptions {
 
 interface BannerDeps {
   readonly probeAll: typeof probeAllCached
-  readonly probeMedia: typeof probeMediaAccess
   readonly probeExec: typeof probeCommandExecution
   readonly probeHttp: typeof probeInternetAccess
   readonly listDevices: typeof listDevices
@@ -45,7 +43,6 @@ interface BannerDeps {
 
 const defaultBannerDeps: BannerDeps = {
   probeAll: probeAllCached,
-  probeMedia: probeMediaAccess,
   probeExec: probeCommandExecution,
   probeHttp: probeInternetAccess,
   listDevices,
@@ -220,20 +217,23 @@ export const buildStartupBanner = async (
 
   deps.resetCache()
 
-  const [report, media, exec, http, devices] = await Promise.all([
+  const [report, exec, http, devices] = await Promise.all([
     deps.probeAll(buildStandardProbeDeps()),
-    deps.probeMedia(),
     deps.probeExec(),
     deps.probeHttp(),
     deps.listDevices(),
   ])
 
+  // ponytail: drop the misleading "media — chromium not installed" probe from
+  // the system-feature line. That probe is for Playwright tests (frontend
+  // chromium install), not the media addon. The actual media tooling check
+  // (playerctl / wpctl / osascript / powershell) lives in the addon-checks
+  // section printed after the URL — see runBuiltinAddonChecks / printAddonCheckResults.
   const items: FeatureItem[] = [
     toFeatureItem("keystrokes", toSystemCap(report, "keyMacro")),
     toFeatureItem("clipboard", toSystemCap(report, "clipboard")),
     toFeatureItem("notifications", toSystemCap(report, "notification")),
     toFeatureItem("active-win", toSystemCap(report, "activeApp")),
-    toFeatureItem("media", media),
     toFeatureItem("exec", exec),
     toFeatureItem("http", http),
   ]
@@ -267,8 +267,9 @@ const toSystemCap = (
 // ponytail: warning / error lines from the daemon, surfaced inline. The
 // CLI is the operator's interface to the daemon — they shouldn't have
 // to grep `service.log` to find out what went wrong during start /
-// restart / stop. Each event becomes a single dim-yellow or red
-// bullet so the operator's eye lands on it even when stdout is a pipe.
+// ponytail: same shape as formatHuman but applied to in-memory DaemonEvent
+// objects from log-reader. Drop the trailing `(HH:MM:SS)` — timestamps stay
+// in service.log for correlation; the terminal only needs level + msg.
 export const printDaemonEvents = (
   events: ReadonlyArray<DaemonEvent>,
   output: (text: string) => void = (text) => process.stdout.write(text),
@@ -284,13 +285,9 @@ export const printDaemonEvents = (
     const label = ev.level.toUpperCase().padEnd(5)
     const component =
       ev.component.length > 0
-        ? ` \x1b[90m[\x1b[0m${ev.component}\x1b[90m]\x1b[0m`
+        ? ` \x1b[90m[\x1b[0m${ev.component}\x1b[90m]\x1b[0m\x1b[0m`
         : ""
-    const componentClose = ev.component.length > 0 ? "\x1b[90m]\x1b[0m" : ""
-    const time = new Date(ev.time).toISOString().slice(11, 19)
-    output(
-      `${color}  ${label}${component}${componentClose} ${ev.message}\x1b[0m  \x1b[90m(${time})\x1b[0m\n`,
-    )
+    output(`${color}  ${label}${component} ${ev.message}\x1b[0m\n`)
   }
 }
 
