@@ -1,0 +1,41 @@
+packages/cli/src/cli/__tests__/startup-display.test.ts
+  s_cebb45f4470938::t_3fee9572cc09c9 10
+packages/cli/src/cli/commands/__tests__/system-requirements.test.ts
+  s_cebb45f4470938::t_bd9b8793e67265 44
+packages/cli/src/cli/commands/pipeline/preflight.ts
+  s_cebb45f4470938::t_bbcd051be3279b 20
+packages/cli/src/cli/__tests__/prompt-reload-tail.test.ts
+  s_cebb45f4470938::t_c9ef758a87bacd 13
+packages/cli/src/cli/commands/system-requirements.ts
+  s_cebb45f4470938::t_1d9ce78ff43283 39
+packages/cli/src/system/device-selection.ts
+  s_cebb45f4470938::t_424857d1d98303 1
+packages/cli/src/cli/startup-display.ts
+  s_cebb45f4470938::t_c6a767e7c97371 227
+  s_cebb45f4470938::t_1cca2e3e911d3d 19
+packages/cli/src/cli/commands/__tests__/run.test.ts
+  s_cebb45f4470938::t_be236533a4b982 47
+  s_cebb45f4470938::t_a1c2d88f18eb10 45
+packages/cli/src/cli/prompt.ts
+  s_cebb45f4470938::t_07ff77708bb980 1-8
+packages/cli/src/cli/index.ts
+  s_cebb45f4470938::t_193b5adf9ee234 162-169
+packages/cli/src/cli/commands/start.ts
+  s_cebb45f4470938::t_3a5a92e4e86ee6 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "73af01d83b69977e4ff1a567735bcc2d17a34240",
+  "prompts": {},
+  "sessions": {
+    "s_cebb45f4470938": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe1fe5a2fffeLv2ZLCRqsdhw7c",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
