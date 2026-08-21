@@ -1,5 +1,7 @@
 import type { AddonCheck, AddonCheckResult } from "./api"
 import mediaAddonManifest from "@/builtin-addons/media/index"
+import { buildMediaAddonChecks } from "@/builtin-addons/media/checks"
+import { createChildProcessExecutor } from "@/builtin-addons/media/executor"
 
 export interface AddonCheckInput {
   readonly name: string
@@ -60,8 +62,18 @@ export const runAddonChecks = async (
 // to enumerate their `checks` for the start banner. External addons are
 // out of scope — the registry is built inside the daemon process and the
 // CLI doesn't have a way to safely re-resolve their entry files.
+//
+// We import the manifest only for the addon NAME (used in banner output),
+// then build the checks at the Node edge here — the addon manifest itself
+// is bundled into the frontend vite graph, so importing node-only modules
+// (playerctl/wpctl probing) there would externalize them for the browser
+// and break the SPA on load. Keeping the executor + check-builder import
+// at the CLI edge keeps the manifest Node-pure.
 export const collectBuiltinAddonChecks = (): ReadonlyArray<AddonCheckInput> => {
-  const checks = mediaAddonManifest.checks ?? []
+  const checks = buildMediaAddonChecks({
+    platform: process.platform,
+    executor: createChildProcessExecutor(),
+  })
   return checks.length > 0 ? [{ name: mediaAddonManifest.name, checks }] : []
 }
 
