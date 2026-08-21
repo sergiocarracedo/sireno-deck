@@ -219,6 +219,30 @@ describe("createRuntime", () => {
     expect(listener).not.toHaveBeenCalled()
   })
 
+  it("invokeAction does not crash when the deck has buttons: undefined", async () => {
+    // ponytail: defensive guard against RuntimeDeck shapes that lack a
+    // buttons array. Position falls back to -1, no findIndex on undefined.
+    const { runtime } = setupRuntimeWithMethods([
+      // Cast through unknown to bypass the buttons-required type — that's
+      // exactly the malformed shape we're defending against.
+      { id: "main", isMain: true, name: "Main", buttons: [] as never } as never,
+    ])
+    // Inject a deck with buttons: undefined directly via setDecks.
+    runtime.setDecks([
+      {
+        id: "main",
+        name: "Main",
+        isMain: true,
+        buttons: undefined as never,
+      },
+    ])
+    // Should not throw — position falls back to -1 and the handler
+    // dispatches normally (or is silently absent).
+    await expect(
+      runtime.invokeAction("main:b0", "tap"),
+    ).resolves.toBeUndefined()
+  })
+
   it("invokeAction dispatches user action when capability is available", async () => {
     const { runtime, methods } = setupRuntimeWithMethods([
       makeDeck({

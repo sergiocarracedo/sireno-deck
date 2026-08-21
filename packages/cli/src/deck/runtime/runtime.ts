@@ -185,6 +185,7 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     // first-wins (not last-wins) to preserve the legacy scan behavior.
     buttonIndex.clear()
     for (const deck of decks) {
+      if (!Array.isArray(deck.buttons)) continue
       for (const button of deck.buttons) {
         if (!buttonIndex.has(button.id)) {
           buttonIndex.set(button.id, { deckId: deck.id, button })
@@ -518,138 +519,168 @@ export const createRuntime = (options: CreateRuntimeOptions): Runtime => {
     buttonId: string,
     gesture: GestureKind,
   ): Promise<void> => {
-    const found = findButton(buttonId)
+    let found: { deckId: string; button: RuntimeDeck["buttons"][number] } | null
+    try {
+      found = findButton(buttonId)
+    } catch (err) {
+      // ponytail: findButton indexes into a Map — should never throw, but
+      // a corrupted deck entry would otherwise crash the daemon on every
+      // gesture. Log + bail; let the next gesture try again.
+      logger.error({ err, buttonId }, "runtime: findButton threw")
+      return
+    }
     if (found === null) {
       logger.warn({ buttonId }, "invokeAction: button not found")
       return
     }
 
-    if (handleSystemButton(found.button.type, gesture)) {
-      return
-    }
+    try {
+      if (handleSystemButton(found.button.type, gesture)) {
+        return
+      }
 
-    if (lockActive && found.deckId === "core:lock") {
-      if (LOCK_FOLDER_NAV_TYPES.has(found.button.type)) {
-        lockActive = false
-        preLockActiveDeckId = null
-        preLockOverlayDeckId = null
-        if (overlayDeckId !== null) setOverlay(null)
-        pubSub.publish("runtime:lock-mode", {
-          active: false,
-          reason: "escape",
-        })
-        logger.info(
-          { buttonId, gesture, buttonType: found.button.type },
-          "runtime: lock escaped via folder-nav button",
-        )
-      } else {
+      if (lockActive && found.deckId === "core:lock") {
+        if (LOCK_FOLDER_NAV_TYPES.has(found.button.type)) {
+          lockActive = false
+          preLockActiveDeckId = null
+          preLockOverlayDeckId = null
+          if (overlayDeckId !== null) setOverlay(null)
+          pubSub.publish("runtime:lock-mode", {
+            active: false,
+            reason: "escape",
+          })
+          logger.info(
+            { buttonId, gesture, buttonType: found.button.type },
+            "runtime: lock escaped via folder-nav button",
+          )
+        } else {
+          logger.debug(
+            { buttonId, gesture, buttonType: found.button.type },
+            "runtime: lock-mode gesture suppressed",
+          )
+          return
+        }
+      }
+
+      if (found.deckId !== getActiveDeckId() && found.deckId !== "core:lock") {
         logger.debug(
-          { buttonId, gesture, buttonType: found.button.type },
-          "runtime: lock-mode gesture suppressed",
+          { buttonId, deckId: found.deckId, activeDeckId: getActiveDeckId() },
+          "invokeAction: gesture on inactive deck, dropping",
         )
         return
       }
-    }
 
-    if (found.deckId !== getActiveDeckId() && found.deckId !== "core:lock") {
-      logger.debug(
-        { buttonId, deckId: found.deckId, activeDeckId: getActiveDeckId() },
-        "invokeAction: gesture on inactive deck, dropping",
+      const userAction =
+        gesture === "tap"
+          ? found.button.actions?.tap
+          : gesture === "dbl-tap"
+            ? found.button.actions?.dbltap
+            : found.button.actions?.hold
+
+      const deck = deckById(found.deckId)
+      // ponytail: Array.isArray is tighter than  — rejects
+      // , , and non-array values uniformly. Defends
+      // against any RuntimeDeck that ends up with  missing
+      // (corrupted state, future refactor, runtime injection).
+      const position =
+        found.button.position ??
+        (Array.isArray(deck?.buttons)
+          ? deck.buttons.findIndex((b) => b.id === found.button.id)
+          : -1)
+
+      logger.info(
+        {
+          buttonId,
+          deckId: found.deckId,
+          position,
+          gesture,
+          buttonType: found.button.type,
+          buttonActions: found.button.actions,
+          userAction,
+        },
+        "[runtime] invokeAction resolved",
       )
-      return
-    }
 
-    const userAction =
-      gesture === "tap"
-        ? found.button.actions?.tap
-        : gesture === "dbl-tap"
-          ? found.button.actions?.dbltap
-          : found.button.actions?.hold
+      if (userAction !== undefined) {
+        logger.info(
+          { buttonId, gesture, action: userAction },
+          "[addon:sireno-deck] user action",
+        )
+        const capability = getRequiredCapability(userAction)
+        if (capability !== null && !getMethods().checkRequirement(capability)) {
+          logger.warn(
+            { buttonId, gesture, action: userAction, capability },
+            "[runtime] action skipped: missing system requirement",
+          )
+          if (position >= 0) {
+            getMethods().showTemporaryError(
+              found.deckId,
+              position,
+              undefined,
+              found.button.id,
+              `missing-requirement: ${capability}`,
+            )
+          }
+          return
+        }
+        try {
+          await getMethods().dispatch(userAction)
+        } catch (err) {
+          logger.error(
+            { buttonId, gesture, err },
+            "[addon:sireno-deck] user action failed",
+          )
+          if (position >= 0) {
+            getMethods().showTemporaryError(
+              found.deckId,
+              position,
+              undefined,
+              found.button.id,
+              `action-failed: ${userAction}`,
+            )
+          }
+        }
+        return
+      }
 
-    const deck = deckById(found.deckId)
-    const position =
-      found.button.position ??
-      (deck?.buttons !== undefined
-        ? deck.buttons.findIndex((b) => b.id === found.button.id)
-        : -1)
-
-    logger.info(
-      {
+      const handlerKey = `${found.deckId}:${found.button.id}`
+      const handler = handlers.get(handlerKey)
+      if (handler === undefined) {
+        return
+      }
+      const ctx: ButtonActionContext = {
         buttonId,
         deckId: found.deckId,
-        position,
+        config: found.button.config,
         gesture,
-        buttonType: found.button.type,
-        buttonActions: found.button.actions,
-        userAction,
-      },
-      "[runtime] invokeAction resolved",
-    )
-
-    if (userAction !== undefined) {
-      logger.info(
-        { buttonId, gesture, action: userAction },
-        "[addon:sireno-deck] user action",
-      )
-      const capability = getRequiredCapability(userAction)
-      if (capability !== null && !getMethods().checkRequirement(capability)) {
-        logger.warn(
-          { buttonId, gesture, action: userAction, capability },
-          "[runtime] action skipped: missing system requirement",
-        )
-        if (position >= 0) {
-          getMethods().showTemporaryError(
-            found.deckId,
-            position,
-            undefined,
-            found.button.id,
-            `missing-requirement: ${capability}`,
-          )
-        }
+        position: found.button.position,
+      }
+      const fn =
+        gesture === "tap"
+          ? handler.onTap
+          : gesture === "dbl-tap"
+            ? handler.onDblTap
+            : handler.onHold
+      if (fn === undefined) {
         return
       }
-      try {
-        await getMethods().dispatch(userAction)
-      } catch (err) {
-        logger.error(
-          { buttonId, gesture, err },
-          "[addon:sireno-deck] user action failed",
-        )
-        if (position >= 0) {
-          getMethods().showTemporaryError(
-            found.deckId,
-            position,
-            undefined,
-            found.button.id,
-            `action-failed: ${userAction}`,
-          )
-        }
-      }
-      return
+      await fn(ctx)
+    } catch (err) {
+      // ponytail: a single bad button-press must not crash the entire
+      // daemon. Log the failure with full context so operators see it in
+      // service.log and can file a bug — but keep serving subsequent
+      // gestures instead of exiting via killChildrenAndExit.
+      logger.error(
+        {
+          err,
+          buttonId,
+          gesture,
+          deckId: found.deckId,
+          buttonType: found.button.type,
+        },
+        "invokeAction: uncaught error in handler",
+      )
     }
-
-    const handlerKey = `${found.deckId}:${found.button.id}`
-    const handler = handlers.get(handlerKey)
-    if (handler === undefined) {
-      return
-    }
-    const ctx: ButtonActionContext = {
-      buttonId,
-      deckId: found.deckId,
-      config: found.button.config,
-      gesture,
-      position: found.button.position,
-    }
-    const fn =
-      gesture === "tap"
-        ? handler.onTap
-        : gesture === "dbl-tap"
-          ? handler.onDblTap
-          : handler.onHold
-    if (fn === undefined) {
-      return
-    }
-    await fn(ctx)
   }
 
   const dispatchGesture = async (
