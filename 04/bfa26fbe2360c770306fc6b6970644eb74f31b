@@ -1,0 +1,21 @@
+packages/cli/src/cli/startup-display.ts
+  s_cebb45f4470938::t_40bc6667ddf858 60
+packages/cli/src/cli/index.ts
+  s_cebb45f4470938::t_40bc6667ddf858 155,174,179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "04bfa26fbe2360c770306fc6b6970644eb74f31b",
+  "prompts": {},
+  "sessions": {
+    "s_cebb45f4470938": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe1fe5a2fffeLv2ZLCRqsdhw7c",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
