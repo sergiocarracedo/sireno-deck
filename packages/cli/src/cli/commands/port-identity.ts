@@ -10,6 +10,38 @@ export const readProcCmdline = (pid: number): string | null => {
   }
 }
 
+const readProcComm = (pid: number): string | null => {
+  try {
+    // ponytail: /proc/<pid>/comm is NUL-terminated. `String.trim()` only
+    // strips whitespace (per ECMA-262), and U+0000 isn't classified as
+    // whitespace — so a raw `.trim()` leaves the NUL in place. Strip NULs
+    // explicitly so comm === "sirenodeck:dm" matches.
+    return readFileSync(`/proc/${String(pid)}/comm`, "utf8")
+      .replace(/\u0000+$/, "")
+      .trim()
+  } catch {
+    return null
+  }
+}
+
+// ponytail: identify a previous-session daemon by Linux process title. The
+// daemon calls `setProcessTitle("sirenodeck:dm")` in main.ts:23, which sets
+// `/proc/<pid>/comm`. Reading `comm` is cheaper than `cmdline` and works
+// even when the original argv is replaced.
+//
+// Two checks — title match plus a cmdline fingerprint — so a non-daemon
+// binary that happens to be named "sirenodeck:dm" by its supervisor still
+// gets left alone. The cmdline fingerprint is intentionally loose (any
+// "sireno[-_]?deck" segment) because the daemon's argv can move across
+// versions, worktrees, and binaries (node, tsx, bin/sirenodeck.js).
+export const isOurDaemon = (pid: number): boolean => {
+  if (process.platform !== "linux") return false
+  const comm = readProcComm(pid)
+  if (comm !== "sirenodeck:dm") return false
+  const cmdline = readProcCmdline(pid) ?? ""
+  return /sireno[-_]?deck/i.test(cmdline)
+}
+
 export const readProcPpid = (pid: number): number | null => {
   try {
     const stat = readFileSync(`/proc/${String(pid)}/stat`, "utf8")
