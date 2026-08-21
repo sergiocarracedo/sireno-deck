@@ -351,6 +351,8 @@ export interface RuntimeState {
   readonly addresses: ReadonlyArray<string>
   readonly emulatorMode: boolean
   readonly remote: boolean
+  readonly startedAt: number
+  readonly theme: string
 }
 
 export const RUNTIME_STATE_FILE = "runtime-state.json"
@@ -386,7 +388,19 @@ export const readRuntimeState = (
       typeof (parsed as RuntimeState).emulatorMode === "boolean" &&
       typeof (parsed as RuntimeState).remote === "boolean"
     ) {
-      return parsed as RuntimeState
+      const p = parsed as RuntimeState
+      return {
+        emulatorUrl: p.emulatorUrl,
+        wsUrl: p.wsUrl,
+        frontendUrl: p.frontendUrl,
+        token: p.token,
+        lanHost: p.lanHost,
+        addresses: p.addresses,
+        emulatorMode: p.emulatorMode,
+        remote: p.remote,
+        startedAt: typeof p.startedAt === "number" ? p.startedAt : Date.now(),
+        theme: typeof p.theme === "string" ? p.theme : "default",
+      }
     }
   } catch {
     return null

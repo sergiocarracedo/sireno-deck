@@ -2,19 +2,20 @@ import { createServer, type Server } from "node:net"
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-const { introMock, outroMock, cancelMock, readRuntimeStateMock } = vi.hoisted(
-  () => ({
+const { introMock, outroMock, cancelMock, readRuntimeStateMock, logMock } =
+  vi.hoisted(() => ({
     introMock: vi.fn(),
     outroMock: vi.fn(),
     cancelMock: vi.fn(),
     readRuntimeStateMock: vi.fn(),
-  }),
-)
+    logMock: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), success: vi.fn() },
+  }))
 
 vi.mock("@/cli/prompt", () => ({
   intro: introMock,
   outro: outroMock,
   cancel: cancelMock,
+  log: logMock,
 }))
 
 vi.mock("@/util/daemon", () => ({
@@ -94,35 +95,36 @@ describe("waitForPortFree", () => {
 })
 
 describe("printDaemonEvents", () => {
-  it("writes nothing when events array is empty", () => {
-    const output = vi.fn()
-    printDaemonEvents([], output)
-    expect(output).not.toHaveBeenCalled()
+  beforeEach(() => {
+    logMock.info.mockClear()
+    logMock.warn.mockClear()
+    logMock.error.mockClear()
   })
 
-  it("writes one line per event", () => {
-    const output = vi.fn()
-    printDaemonEvents(
-      [
-        { level: "warn", component: "http", message: "disk full", time: 1 },
-        { level: "error", component: "", message: "crash", time: 2 },
-      ],
-      output,
+  it("writes nothing when events array is empty", () => {
+    printDaemonEvents([])
+    expect(logMock.info).not.toHaveBeenCalled()
+    expect(logMock.warn).not.toHaveBeenCalled()
+    expect(logMock.error).not.toHaveBeenCalled()
+  })
+
+  it("writes one line per event via log.*", () => {
+    printDaemonEvents([
+      { level: "warn", component: "http", message: "disk full", time: 1 },
+      { level: "error", component: "", message: "crash", time: 2 },
+    ])
+    expect(logMock.warn).toHaveBeenCalledWith(
+      expect.stringContaining("disk full"),
     )
-    expect(output).toHaveBeenCalledTimes(2)
-    expect(output.mock.calls[0][0]).toContain("disk full")
-    expect(output.mock.calls[1][0]).toContain("crash")
+    expect(logMock.error).toHaveBeenCalledWith(expect.stringContaining("crash"))
   })
 
   it("includes component bracket when non-empty", () => {
-    const output = vi.fn()
-    printDaemonEvents(
-      [{ level: "fatal", component: "ws", message: "boom", time: 1 }],
-      output,
-    )
-    // ponytail: strip ANSI to check raw text content
-    const text = output.mock.calls[0][0].replace(/\x1b\[[0-9;]*m/g, "")
-    expect(text).toContain("[ws]")
+    printDaemonEvents([
+      { level: "fatal", component: "ws", message: "boom", time: 1 },
+    ])
+    expect(logMock.error).toHaveBeenCalledWith(expect.stringContaining("[ws]"))
+    expect(logMock.error).toHaveBeenCalledWith(expect.stringContaining("boom"))
   })
 })
 
@@ -267,65 +269,61 @@ describe("printRestartComplete / printRestartFailed", () => {
 })
 
 describe("printAddonCheckResults", () => {
+  beforeEach(() => {
+    logMock.info.mockClear()
+    logMock.warn.mockClear()
+  })
+
   it("writes nothing when outcomes array is empty", () => {
-    const output = vi.fn()
-    printAddonCheckResults([], output)
-    expect(output).not.toHaveBeenCalled()
+    printAddonCheckResults([])
+    expect(logMock.info).not.toHaveBeenCalled()
+    expect(logMock.warn).not.toHaveBeenCalled()
   })
 
-  it("formats passing checks with green checkmark", () => {
-    const output = vi.fn()
-    printAddonCheckResults(
-      [{ addonName: "media", checkName: "playerctl", available: true }],
-      output,
+  it("logs available checks via log.info", () => {
+    printAddonCheckResults([
+      { addonName: "media", checkName: "playerctl", available: true },
+    ])
+    expect(logMock.info).toHaveBeenCalledWith(
+      expect.stringContaining("media/playerctl"),
     )
-    const text = output.mock.calls
-      .map((c) => (c[0] as unknown as string) ?? "")
-      .join("")
-    expect(text).toContain("playerctl")
-    expect(text).toContain("✓")
   })
 
-  it("formats failing checks with reason", () => {
-    const output = vi.fn()
-    printAddonCheckResults(
-      [
-        {
-          addonName: "media",
-          checkName: "playerctl",
-          available: false,
-          reason: "install playerctl",
-        },
-      ],
-      output,
+  it("logs failing checks via log.warn with reason", () => {
+    printAddonCheckResults([
+      {
+        addonName: "media",
+        checkName: "playerctl",
+        available: false,
+        reason: "install playerctl",
+      },
+    ])
+    expect(logMock.warn).toHaveBeenCalledWith(
+      expect.stringContaining("media/playerctl"),
     )
-    const text = output.mock.calls
-      .map((c) => (c[0] as unknown as string) ?? "")
-      .join("")
-    expect(text).toContain("playerctl")
-    expect(text).toContain("✗")
-    expect(text).toContain("install playerctl")
+    expect(logMock.warn).toHaveBeenCalledWith(
+      expect.stringContaining("install playerctl"),
+    )
   })
 
-  it("groups multiple checks per addon on one line", () => {
-    const output = vi.fn()
-    printAddonCheckResults(
-      [
-        { addonName: "media", checkName: "playerctl", available: true },
-        {
-          addonName: "media",
-          checkName: "wpctl",
-          available: false,
-          reason: "missing",
-        },
-      ],
-      output,
+  it("logs each outcome independently", () => {
+    printAddonCheckResults([
+      { addonName: "media", checkName: "playerctl", available: true },
+      {
+        addonName: "media",
+        checkName: "wpctl",
+        available: false,
+        reason: "missing",
+      },
+    ])
+    expect(logMock.info).toHaveBeenCalledWith(
+      expect.stringContaining("media/playerctl"),
     )
-    const text = output.mock.calls
-      .map((c) => (c[0] as unknown as string) ?? "")
-      .join("")
-    expect(text).toContain("media:")
-    expect(text).toContain("playerctl")
-    expect(text).toContain("wpctl")
+    expect(logMock.warn).toHaveBeenCalledWith(
+      expect.stringContaining("media/wpctl"),
+    )
+    expect(logMock.warn).toHaveBeenCalledWith(
+      expect.stringContaining("missing"),
+    )
   })
 })

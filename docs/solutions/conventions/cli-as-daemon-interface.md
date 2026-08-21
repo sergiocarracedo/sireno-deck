@@ -53,7 +53,10 @@ Use a snapshot-and-diff model to surface daemon log events inline:
    event as a colored bullet.
 
 ```ts
-import { snapshotDaemonLog, readDaemonEventsFromSnapshot } from "@/util/log-reader"
+import {
+  snapshotDaemonLog,
+  readDaemonEventsFromSnapshot,
+} from "@/util/log-reader"
 
 const logPath = join(resolveDaemonPaths().runtimeDir, "service.log")
 const snapshot = snapshotDaemonLog()
@@ -87,7 +90,7 @@ if (tcpReady) {
 }
 ```
 
-TCP opens *before* `runtime-state.json` is written (the WS server
+TCP opens _before_ `runtime-state.json` is written (the WS server
 binds before the vite supervisors stabilize). If you only check TCP,
 you'll report "started" while vite is still booting, and the operator
 will see "loading…" in the emulator iframe.

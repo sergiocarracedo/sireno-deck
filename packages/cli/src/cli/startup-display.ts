@@ -267,27 +267,18 @@ const toSystemCap = (
 // ponytail: warning / error lines from the daemon, surfaced inline. The
 // CLI is the operator's interface to the daemon — they shouldn't have
 // to grep `service.log` to find out what went wrong during start /
-// ponytail: same shape as formatHuman but applied to in-memory DaemonEvent
-// objects from log-reader. Drop the trailing `(HH:MM:SS)` — timestamps stay
-// in service.log for correlation; the terminal only needs level + msg.
-export const printDaemonEvents = (
-  events: ReadonlyArray<DaemonEvent>,
-  output: (text: string) => void = (text) => process.stdout.write(text),
-): void => {
+// ponytail: clack's log.* tools give us a color-coded icon + │ indent
+// for free, matching the rest of the banner. Available → log.info,
+// warn/fatal/error → log.warn/log.error. No manual ANSI escapes; no
+// trailing (HH:MM:SS) — timestamps stay in service.log for correlation.
+export const printDaemonEvents = (events: ReadonlyArray<DaemonEvent>): void => {
   if (events.length === 0) return
   for (const ev of events) {
-    const color =
-      ev.level === "fatal"
-        ? "\x1b[31m"
-        : ev.level === "error"
-          ? "\x1b[31m"
-          : "\x1b[33m"
-    const label = ev.level.toUpperCase().padEnd(5)
-    const component =
-      ev.component.length > 0
-        ? ` \x1b[90m[\x1b[0m${ev.component}\x1b[90m]\x1b[0m\x1b[0m`
-        : ""
-    output(`${color}  ${label}${component} ${ev.message}\x1b[0m\n`)
+    const ctx = ev.component.length > 0 ? ` [${ev.component}]` : ""
+    const line = `${ev.message}${ctx}`
+    if (ev.level === "fatal" || ev.level === "error") log.error(line)
+    else if (ev.level === "warn") log.warn(line)
+    else log.info(line)
   }
 }
 
@@ -372,30 +363,22 @@ export const waitForFullStart = async (
 }
 
 // ponytail: per-addon requirement check results, surfaced inline next
-// to the URL. Same `[✓ ...]` / `[✗ ...]` pattern as the system feature
-// line so operators learn one visual language. Grouped by addon so the
-// operator can quickly locate the failing addon when something is wrong.
+// to the URL. Clack's log.* tools give us a color-coded icon + │ indent
+// for free. Available checks → log.info (green ✓), failed → log.warn
+// (yellow ✗) with the reason inline. One log line per outcome so the
+// status banner shows every check independently. Grouping by addon
+// is preserved by the addon name in the message prefix.
 export const printAddonCheckResults = (
   outcomes: ReadonlyArray<AddonCheckOutcome>,
-  output: (text: string) => void = (text) => process.stdout.write(text),
 ): void => {
   if (outcomes.length === 0) return
-  const grouped = new Map<string, AddonCheckOutcome[]>()
   for (const outcome of outcomes) {
-    const bucket = grouped.get(outcome.addonName) ?? []
-    bucket.push(outcome)
-    grouped.set(outcome.addonName, bucket)
-  }
-  output("\n  Addon checks:\n")
-  for (const [addonName, items] of grouped) {
-    const parts = items
-      .map((it) =>
-        it.available
-          ? `[✓ ${it.checkName}]`
-          : `[✗ ${it.checkName}${it.reason !== undefined ? ` — ${it.reason}` : ""}]`,
-      )
-      .join(" ")
-    output(`    ${addonName}: ${parts}\n`)
+    const reason = outcome.reason !== undefined ? ` — ${outcome.reason}` : ""
+    if (outcome.available) {
+      log.info(`${outcome.addonName}/${outcome.checkName}`)
+    } else {
+      log.warn(`${outcome.addonName}/${outcome.checkName}${reason}`)
+    }
   }
 }
 

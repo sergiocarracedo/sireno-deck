@@ -3,11 +3,15 @@ import type pino from "pino"
 import {
   isRunning,
   readChildren,
+  readConfigPath,
+  readFlags,
   readPid,
   readRuntimeState,
   readToken,
   resolveDaemonPaths,
 } from "@/util/daemon"
+
+import { cancel, intro, log, outro } from "@/cli/prompt"
 
 import { printDaemonUrl } from "../startup-display"
 
@@ -15,56 +19,92 @@ export interface StatusOptions {
   logger: pino.Logger
 }
 
-const truncate = (s: string, maxLen = 8): string =>
-  s.length > maxLen ? `${s.slice(0, maxLen)}…` : s
+const formatUptime = (ms: number): string => {
+  if (ms < 0) return "—"
+  const totalSeconds = Math.floor(ms / 1000)
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
+  if (hours > 0) return `${hours}h ${minutes}m`
+  if (minutes > 0) return `${minutes}m ${seconds}s`
+  return `${seconds}s`
+}
 
 export const status = async ({ logger }: StatusOptions): Promise<void> => {
+  void logger // kept for callers that want pino logs out-of-band
+
   const paths = resolveDaemonPaths()
   const pid = readPid(paths)
-  const token = readToken(paths)
-  const childrenState = readChildren(paths)
-  const childPids = childrenState?.pids ?? []
 
   if (pid === null) {
-    logger.info("daemon is not running")
+    intro("sireno-deck status")
+    log.error("Daemon is not running")
+    cancel("✗ No daemon process found")
     return
   }
 
   const alive = isRunning(pid)
+  const token = readToken(paths)
+  const flags = readFlags(paths)
+  const state = alive ? readRuntimeState(paths) : null
+  const childrenState = readChildren(paths)
+  const childPids = childrenState?.pids ?? []
+  const configPath = readConfigPath(paths)
+
+  intro("sireno-deck status")
 
   if (alive) {
-    logger.info({ pid, pidFile: paths.pidFile }, "daemon is running")
+    const startedAt = state?.startedAt ?? null
+    const uptime =
+      startedAt !== null ? formatUptime(Date.now() - startedAt) : "—"
+    log.info(`Status:    running for ${uptime} (pid ${pid})`)
   } else {
-    logger.warn({ pid }, "stale pid file found")
+    log.warn(`Status:    stale pid file (pid ${pid} not alive)`)
   }
 
+  const mode =
+    state?.emulatorMode === true
+      ? "emulator"
+      : flags?.emulator === true
+        ? "emulator"
+        : "hardware"
+  const device =
+    state?.emulatorMode === true
+      ? `Emulator${typeof flags?.deviceModel === "string" ? ` (${flags.deviceModel})` : ""}`
+      : "—"
+  log.info(`Mode:      ${mode}${mode === "emulator" ? ` · ${device}` : ""}`)
+
+  const remoteOn = state?.remote === true || flags?.remote === true
+  log.info(`Remote:    ${remoteOn ? "on" : "off"}`)
+
+  log.info(`Config:    ${configPath ?? "—"}`)
+
+  const theme = state?.theme ?? "default"
+  log.info(`Theme:     ${theme}`)
+
   if (token !== null) {
-    logger.info(
-      { tokenPreview: truncate(token), tokenLen: token.length },
-      "token present",
-    )
+    log.info(`Token:     present (${token.length} chars)`)
   } else {
-    logger.warn("token file missing or empty")
+    log.warn("Token:     missing or empty")
   }
 
   if (childPids.length > 0) {
-    logger.info(
-      { count: childPids.length, pids: childPids },
-      "tracked children",
-    )
+    log.info(`Children:  ${childPids.length} (${childPids.join(", ")})`)
   } else {
-    logger.info("no tracked children")
+    log.info("Children:  none tracked")
   }
 
-  // ponytail: surface the emulator URL when the daemon is up and has
-  // written its runtime state. Operators run `p dev status` to recall
-  // where to point their browser — showing the URL inline saves them
-  // from grepping the log or re-running start.
   if (alive) {
-    const state = readRuntimeState(paths)
     if (state !== null) {
-      await printDaemonUrl(state)
+      log.info(`URL:       ${state.emulatorUrl}`)
     }
+    // ponytail: printDaemonUrl opens its own intro/outro block. Close
+    // *this* section first so the URL block renders as a sibling, not a
+    // nested child of the status dashboard.
+    outro("✓ Status snapshot")
+    if (state !== null) await printDaemonUrl(state)
+  } else {
+    cancel("✗ Stale pid file — run `p dev stop` to clean up")
   }
 }
 

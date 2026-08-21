@@ -274,6 +274,8 @@ export class EmulatorOutputClient implements OutputClient {
         addresses: opts.lanAddresses ?? [],
         emulatorMode: true,
         remote: true,
+        startedAt: Date.now(),
+        theme: opts.theme.name,
       }
       writeRuntimeState(state)
     } else {
@@ -291,6 +293,8 @@ export class EmulatorOutputClient implements OutputClient {
         addresses: opts.lanAddresses ?? [],
         emulatorMode: true,
         remote: false,
+        startedAt: Date.now(),
+        theme: opts.theme.name,
       }
       writeRuntimeState(state)
     }
