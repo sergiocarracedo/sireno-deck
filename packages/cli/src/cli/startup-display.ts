@@ -57,7 +57,7 @@ export const isLogSuppressed = (
 const DEFAULT_PORT = 52937
 const READY_TIMEOUT_MS = 30_000
 const READY_INTERVAL_MS = 100
-const RUNTIME_STATE_TIMEOUT_MS = 5_000
+const RUNTIME_STATE_TIMEOUT_MS = 10_000
 const PORT_FREE_TIMEOUT_MS = 3_000
 
 const checkTcp = (
