@@ -1,8 +1,6 @@
 import type { AddonManifestV1 } from "@/addon/api"
 
 import { globalService } from "./backend"
-import { buildMediaAddonChecks } from "./checks"
-import { createChildProcessExecutor } from "./executor"
 import mediaPlayerBackend from "./buttons/media-player/backend"
 import mediaPlayerFrontend from "./buttons/media-player/frontend"
 import mediaMuteBackend from "./buttons/volume/mute/backend"
@@ -46,10 +44,10 @@ export const manifest: AddonManifestV1 = {
     },
   },
   globalService,
-  checks: buildMediaAddonChecks({
-    platform: process.platform,
-    executor: createChildProcessExecutor(),
-  }),
+  // ponytail: addon-level OS checks (playerctl/wpctl/osascript/powershell)
+  // are built at the Node edge by check-runner, not here. This manifest
+  // is bundled into the frontend vite graph; importing node:child_process
+  // here would externalize it for the browser and break the SPA on load.
 }
 
 export default manifest
