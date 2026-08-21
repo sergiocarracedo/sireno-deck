@@ -1,0 +1,19 @@
+packages/cli/src/util/logger.ts
+  s_cebb45f4470938::t_fb22002d0d5d50 177-181,184-186,194-195
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "e9377ecbde9a54c02787d1f1137ce2d56fe1a9e4",
+  "prompts": {},
+  "sessions": {
+    "s_cebb45f4470938": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe1fe5a2fffeLv2ZLCRqsdhw7c",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
