@@ -880,6 +880,16 @@ const start = async (options: StartOptions): Promise<void> => {
     }
   }
 
+  // ponytail: a SIGKILL'd or crashed daemon leaves runtime-state.json behind
+  // (no cleanup ran) — and when there was no pid file at all, the branches
+  // above never removed it. The next start's waitForRuntimeState would read
+  // that stale state (old token, old remote flag, old URLs) before the new
+  // daemon writes its own — surfacing e.g. the LAN/QR banner from a previous
+  // `--remote` session during a plain `--emulator` start. Remove it
+  // unconditionally: the daemon writes a fresh file when its pipeline is
+  // ready, so the CLI only ever sees the state of the daemon it spawned.
+  removeRuntimeStateFile()
+
   if (isDevInvocation()) {
     await startInBackground(options)
   } else {
