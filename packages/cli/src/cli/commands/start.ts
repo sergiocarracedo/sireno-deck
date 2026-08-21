@@ -9,6 +9,7 @@ import type pino from "pino"
 import {
   cmdlineMentionsCliRoot,
   isOrphan,
+  isOurDaemon,
   isOurViteChild,
   readProcCmdline,
 } from "./port-identity"
@@ -258,6 +259,68 @@ export const detectPortPids = (
     "port detection: no port-detection backends available — orphan cleanup may miss stale vites",
   )
   return []
+}
+
+// ponytail: kill a previous-session daemon that's still bound to the WS port
+// (52937). The pid file is the primary source of truth for "is there a
+// daemon running" but it's stale-prone — a SIGKILL'd daemon leaves its
+// pid file behind, while a daemon that crashed during preflight never
+// wrote one. The Linux process title (`/proc/<pid>/comm`) is set by
+// main.ts:23 to `sirenodeck:dm` and survives across pid-file loss. Cross-
+// check the cmdline fingerprint (isOurDaemon) so an unrelated binary
+// named "sirenodeck:dm" by its supervisor doesn't get reaped.
+//
+// We only run this for the WS port — that's the one the new daemon
+// binds FIRST, and the one whose collision most reliably breaks startup.
+// HTTP and frontend ports are bound after; if the daemon reaps itself
+// cleanly the vites go with it (they're parented to the daemon, get
+// reparented to init on exit, and killPortListeners picks them up).
+export const reapStaleDaemon = async (
+  wsPort: number,
+  logger: pino.Logger,
+): Promise<void> => {
+  const pids = detectPortPids(wsPort, logger)
+  const daemonPids = pids.filter(isOurDaemon)
+  if (daemonPids.length === 0) return
+  for (const pid of daemonPids) {
+    try {
+      process.kill(pid, "SIGTERM")
+      logger.warn(
+        { pid, port: wsPort },
+        "start: SIGTERM to stale daemon holding WS port (self-heal)",
+      )
+    } catch (err) {
+      logger.warn(
+        { err, pid },
+        "start: SIGTERM to stale daemon failed (may already be dead)",
+      )
+    }
+  }
+  const deadline = Date.now() + 3_000
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 100))
+    if (detectPortPids(wsPort, logger).length === 0) return
+  }
+  // SIGKILL stragglers (only our own daemons — anything else is left
+  // alone with a warning so the user can intervene manually).
+  for (const pid of detectPortPids(wsPort, logger)) {
+    if (isOurDaemon(pid)) {
+      try {
+        process.kill(pid, "SIGKILL")
+        logger.warn(
+          { pid, port: wsPort },
+          "start: SIGKILL to stale daemon that ignored SIGTERM",
+        )
+      } catch {
+        // already dead
+      }
+    } else {
+      logger.warn(
+        { pid, port: wsPort },
+        "start: WS port held by a non-sireno-deck daemon — leaving it alone",
+      )
+    }
+  }
 }
 
 const killPortListeners = async (
@@ -755,6 +818,17 @@ const start = async (options: StartOptions): Promise<void> => {
   }
 
   await runFirstRunCheckIfNeeded(options, logger)
+
+  // ponytail: if a previous-session `sirenodeck:dm` daemon is still bound to
+  // the WS port (52937), reap it before spawning. The pid file is stale-
+  // prone (SIGKILL'd daemons leave it behind; crashed preflight daemons
+  // never wrote one). Identity check uses /proc/<pid>/comm === "sirenodeck:dm"
+  // cross-checked with the sireno-deck cmdline fingerprint, so unrelated
+  // processes holding 52937 (a Discord voice call, an `nc -l`, the user's
+  // own server) get left alone. The WS port is the load-bearing one —
+  // EADDRINUSE there causes the daemon's runPipeline to fail before the
+  // HTTP / frontend ports are even reached.
+  await reapStaleDaemon(options.port ?? 52937, logger)
 
   // ponytail: clear the daemon's expected ports before spawning. This is
   // the load-bearing fix for "the frontend port is in use by children":
