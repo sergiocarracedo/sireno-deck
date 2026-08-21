@@ -1,0 +1,25 @@
+packages/cli/src/cli/commands/status.ts
+  s_cebb45f4470938::t_9b3687807d05d5 99-100
+packages/cli/src/cli/startup-display.ts
+  s_cebb45f4470938::t_5ada383e03b19c 290,295-320,323-327
+  s_cebb45f4470938::t_ec9e91f30176f9 328-331
+packages/cli/src/outputClient/real.ts
+  s_cebb45f4470938::t_535400e038c259 27
+  s_cebb45f4470938::t_5c4859580ced94 252-267
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "5c7b4f7119c67763aaff9a3e12a0416d4fbd74a8",
+  "prompts": {},
+  "sessions": {
+    "s_cebb45f4470938": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe1fe5a2fffeLv2ZLCRqsdhw7c",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
