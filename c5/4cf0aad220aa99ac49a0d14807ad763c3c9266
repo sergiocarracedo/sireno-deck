@@ -1,0 +1,21 @@
+docs/plans/2026-08-21-fix-real-mode-runtime-state.md
+  s_cebb45f4470938::t_c4f2b9ed902ce8 39
+docs/solutions/runtime-errors/real-output-client-missing-runtime-state-write.md
+  s_cebb45f4470938::t_6336e14777ce00 2,12-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "c54cf0aad220aa99ac49a0d14807ad763c3c9266",
+  "prompts": {},
+  "sessions": {
+    "s_cebb45f4470938": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe1fe5a2fffeLv2ZLCRqsdhw7c",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
