@@ -1,5 +1,6 @@
 import { Writable } from "node:stream"
 
+import { log } from "@clack/prompts"
 import pino, {
   type Logger,
   type LoggerOptions,
@@ -147,6 +148,14 @@ export const formatHuman = (jsonLine: string): string | null => {
   return `${head}${componentTag} ${msg}${ctxStr}`
 }
 
+// ponytail: CLI startup logs (between intro/outro) should use the same
+// clack tool as the banner: log.info / log.warn / log.error. Those tools
+// render with a dim │ border + level-appropriate icon (● / ▲ / ■) and no
+// "INFO"/"WARN" text label — matching the banner's visual language.
+// HumanWritable maps pino levels to those tools so `logger.info(...)`
+// calls made between intro() and outro() automatically get the border and
+// icon. Outside a banner (or when stdout is not a TTY), fall back to the
+// plain formatHuman line so piped output stays greppable.
 class HumanWritable extends Writable {
   override _write(
     chunk: Buffer | string,
@@ -155,8 +164,46 @@ class HumanWritable extends Writable {
   ): void {
     const text = typeof chunk === "string" ? chunk : chunk.toString("utf8")
     const lines = text.split("\n")
+    const useClack = process.stdout.isTTY && !isServiceMode()
     for (const line of lines) {
       if (line.length === 0) continue
+      if (useClack) {
+        let entry: Record<string, unknown> | null = null
+        try {
+          entry = JSON.parse(line) as Record<string, unknown>
+        } catch {
+          // not JSON — fall back to plain
+        }
+        if (entry !== null && typeof entry["level"] === "number" && typeof entry["msg"] === "string") {
+          const levelNum = entry["level"] as number
+          const component =
+            typeof entry["component"] === "string" ? ` [${entry["component"]}]` : ""
+          // ponytail: keep CONTEXT_FIELDS + err inline so operators still see
+          // deckId / position / err details on the terminal, just without the
+          // "INFO"/"WARN" text label — the icon + color from log.* conveys level.
+          const ctxParts: string[] = []
+          for (const key of CONTEXT_FIELDS) {
+            const value = entry[key]
+            if (value === undefined || value === null) continue
+            const display = typeof value === "string" ? value : JSON.stringify(value)
+            if (display.length === 0) continue
+            ctxParts.push(`${key}: ${display}`)
+          }
+          const err = entry["err"]
+          if (err !== null && typeof err === "object") {
+            const e = err as { type?: unknown; message?: unknown }
+            const errType = typeof e.type === "string" ? e.type : "Error"
+            const errMsg = typeof e.message === "string" ? e.message : ""
+            if (errMsg.length > 0) ctxParts.push(`err: ${errType}: ${errMsg}`)
+          }
+          const ctxStr = ctxParts.length > 0 ? ` (${ctxParts.join(", ")})` : ""
+          const msg = `${entry["msg"] as string}${component}${ctxStr}`
+          if (levelNum >= 50) log.error(msg)
+          else if (levelNum >= 40) log.warn(msg)
+          else log.info(msg)
+          continue
+        }
+      }
       const formatted = formatHuman(line)
       if (formatted !== null) {
         process.stdout.write(`${formatted}\n`)

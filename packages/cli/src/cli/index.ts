@@ -152,7 +152,7 @@ const startCommand: CommandModule<object, StartArgs> = {
       const outcome: StartOutcome = await waitForFullStart({
         port: options.port ?? 52937,
         tcpTimeoutMs: 30_000,
-        runtimeTimeoutMs: 5_000,
+        runtimeTimeoutMs: 10_000,
         logPath,
         logSnapshot,
       })
@@ -171,12 +171,12 @@ const startCommand: CommandModule<object, StartArgs> = {
         printStartupComplete()
       } else if (outcome.tcpReady) {
         // ponytail: TCP is bound but the daemon didn't write runtime
-        // state in 5s. The daemon is alive but the runtime pipeline
+        // state in 10s. The daemon is alive but the runtime pipeline
         // is still booting (or stuck). Fail loudly with whatever
         // warnings the daemon emitted so the operator doesn't have to
         // dig into the log file.
         const message =
-          "daemon: TCP bound on 52937 but runtime state did not appear in 5s"
+          "daemon: TCP bound on 52937 but runtime state did not appear in 10s"
         logger.warn(message)
         process.exitCode = 1
         printStartupFailed(message)

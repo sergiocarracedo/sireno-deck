@@ -54,7 +54,13 @@ describe("TTY-aware logger", () => {
 })
 
 describe("default human format renders inline context", () => {
-  it("renders a single line with msg and context, no (sireno-deck) tag", () => {
+  it("renders msg + context on the clack log.* line", () => {
+    // ponytail: TTY + non-service mode routes logger.* through clack's
+    // log.* tools, which write a leading "│\n" indent line + an icon
+    // line (e.g. "●  emulator: button-action received (deckId: main, ...)")
+    // inside the active clack banner. The previous plain-text format put
+    // everything on one stdout line; clack splits the border from the
+    // icon. Tests assert content rather than line count.
     Object.defineProperty(process.stdout, "isTTY", { value: true })
     const writes: string[] = []
     const originalWrite = process.stdout.write.bind(process.stdout)
@@ -71,19 +77,17 @@ describe("default human format renders inline context", () => {
     } finally {
       process.stdout.write = originalWrite
     }
-    const all = writes.join("")
-    const stripped = all.replace(/\u001b\[[0-9;]*m/g, "")
+    const stripped = writes.join("").replace(/\u001b\[[0-9;]*m/g, "")
     expect(stripped).toContain("emulator: button-action received")
     expect(stripped).toContain("deckId: main")
     expect(stripped).toContain("position: 11")
     expect(stripped).toContain("gesture: tap")
     expect(stripped).not.toContain("sireno-deck")
-    expect(
-      stripped.split("\n").filter((l: string) => l.length > 0),
-    ).toHaveLength(1)
+    expect(stripped).not.toContain("INFO ")
+    expect(stripped).not.toContain("WARN ")
   })
 
-  it("renders error details inline on the same line", () => {
+  it("renders error details inline on the same clack log line", () => {
     Object.defineProperty(process.stdout, "isTTY", { value: true })
     const writes: string[] = []
     const originalWrite = process.stdout.write.bind(process.stdout)
@@ -97,12 +101,10 @@ describe("default human format renders inline context", () => {
     } finally {
       process.stdout.write = originalWrite
     }
-    const all = writes.join("")
-    expect(all).toContain("something broke")
-    expect(all).toContain("err:")
-    expect(all).toContain("Error: boom")
-    // All on one line
-    expect(all.split("\n").filter((l) => l.length > 0)).toHaveLength(1)
+    const stripped = writes.join("").replace(/\u001b\[[0-9;]*m/g, "")
+    expect(stripped).toContain("something broke")
+    expect(stripped).toContain("err:")
+    expect(stripped).toContain("Error: boom")
   })
 
   it("renders a [component] bracket between level and msg when component is present", () => {
