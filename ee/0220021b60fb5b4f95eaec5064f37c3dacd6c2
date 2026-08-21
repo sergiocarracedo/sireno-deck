@@ -1,0 +1,28 @@
+packages/cli/src/__tests__/logger-format.test.ts
+  s_cebb45f4470938::t_c6056edd015c5d 57-63,80,86-87,90,104-107
+packages/cli/src/util/logger.ts
+  s_cebb45f4470938::t_198dcb15293426 181-200
+  s_cebb45f4470938::t_8efb4bb8295bfa 3
+  s_cebb45f4470938::t_14088810258080 151-158,167,170-180,201-206
+packages/cli/src/cli/startup-display.ts
+  s_cebb45f4470938::t_b431ef2321d865 60
+packages/cli/src/cli/index.ts
+  s_cebb45f4470938::t_700befe7aaef3c 174,179
+  s_cebb45f4470938::t_7153597a582602 155
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "ee0220021b60fb5b4f95eaec5064f37c3dacd6c2",
+  "prompts": {},
+  "sessions": {
+    "s_cebb45f4470938": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe1fe5a2fffeLv2ZLCRqsdhw7c",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
