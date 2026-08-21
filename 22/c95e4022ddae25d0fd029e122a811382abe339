@@ -1,0 +1,21 @@
+packages/cli/src/builtin-addons/media/index.ts
+  s_cebb45f4470938::t_06885d7fa2d654 47-50
+packages/cli/src/addon/check-runner.ts
+  s_cebb45f4470938::t_0e14e5383085fa 3-4,65-71,73-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "22c95e4022ddae25d0fd029e122a811382abe339",
+  "prompts": {},
+  "sessions": {
+    "s_cebb45f4470938": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe1fe5a2fffeLv2ZLCRqsdhw7c",
+        "model": "minimax/minimax-m3"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
