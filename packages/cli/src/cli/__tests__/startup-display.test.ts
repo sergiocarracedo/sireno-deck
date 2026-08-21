@@ -155,7 +155,49 @@ describe("printDaemonUrl", () => {
       value: false,
       configurable: true,
     })
-    await printDaemonUrl(makeState({ addresses: ["192.168.1.10"] }), output)
+    await printDaemonUrl(
+      makeState({ remote: true, addresses: ["192.168.1.10"] }),
+      output,
+    )
+    Object.defineProperty(process.stdout, "isTTY", {
+      value: original,
+      configurable: true,
+    })
+    const text = output.mock.calls.map((c: [string]) => c[0]).join("")
+    expect(text).toContain("192.168.1.10")
+  })
+
+  it("omits LAN section when remote is false (emulator mode)", async () => {
+    const output = vi.fn()
+    const original = process.stdout.isTTY
+    Object.defineProperty(process.stdout, "isTTY", {
+      value: false,
+      configurable: true,
+    })
+    await printDaemonUrl(
+      makeState({ remote: false, addresses: ["192.168.1.10"] }),
+      output,
+    )
+    Object.defineProperty(process.stdout, "isTTY", {
+      value: original,
+      configurable: true,
+    })
+    const text = output.mock.calls.map((c: [string]) => c[0]).join("")
+    expect(text).not.toContain("192.168.1.10")
+    expect(text).not.toContain("Emulator (LAN)")
+  })
+
+  it("includes LAN URL when remote is true (non-TTY format)", async () => {
+    const output = vi.fn()
+    const original = process.stdout.isTTY
+    Object.defineProperty(process.stdout, "isTTY", {
+      value: false,
+      configurable: true,
+    })
+    await printDaemonUrl(
+      makeState({ remote: true, addresses: ["192.168.1.10"] }),
+      output,
+    )
     Object.defineProperty(process.stdout, "isTTY", {
       value: original,
       configurable: true,

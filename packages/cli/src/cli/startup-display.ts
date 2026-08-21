@@ -295,7 +295,7 @@ export const printDaemonEvents = (
 // token is regenerated per daemon session, so we always show it in the
 // URL — operators copy-paste the URL into the browser. For `--remote`
 // we use the existing QR banner (phone-friendly); for plain
-// `--emulator` we print a plain text URL.
+// `--emulator` we print a plain text URL — no QR/LAN section, since the daemon only binds 127.0.0.1.
 export const printDaemonUrl = async (
   state: RuntimeState,
   output: (text: string) => void = (text) => process.stdout.write(text),
@@ -309,7 +309,7 @@ export const printDaemonUrl = async (
   }
   const localUrl = buildUrl("127.0.0.1", false)
   output(`\n  Emulator:  ${localUrl}\n`)
-  if (state.addresses.length > 0) {
+  if (state.remote && state.addresses.length > 0) {
     const isTty = Boolean(process.stdout.isTTY)
     if (isTty) {
       output("\n  Emulator (LAN):\n")

@@ -1392,8 +1392,7 @@ export const runPipeline = async (options: RunOptions): Promise<void> => {
     addonBundle = await buildAddonBundle()
 
     const remote = options.remote === true
-    const emulatorMode = options.emulator === true || remote
-    const lanAddresses = emulatorMode
+    const lanAddresses = remote
       ? selectLanAddresses({ networkInterfaces: networkInterfaces })
       : []
     const lanHost = remote ? lanAddresses[0]?.address : undefined
