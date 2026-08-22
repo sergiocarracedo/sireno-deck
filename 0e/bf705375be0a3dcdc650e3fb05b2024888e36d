@@ -1,0 +1,19 @@
+packages/cli/src/lefthook-bad.ts
+  s_52792832750e4c::t_1102a8df9e0cb9 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "0ebf705375be0a3dcdc650e3fb05b2024888e36d",
+  "prompts": {},
+  "sessions": {
+    "s_52792832750e4c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fda8b8721ffe5IP4gQ8IDYgsjQ",
+        "model": "x-preview-f-free"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
