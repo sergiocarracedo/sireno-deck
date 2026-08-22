@@ -1,0 +1,26 @@
+package.json
+  s_52792832750e4c::t_d7764750105cab 14-15
+  s_52792832750e4c::t_a7730ffef19de9 22
+scripts/git/reset-pattern-warning.sh
+  s_52792832750e4c::t_52f6c70e948806 1-18
+pnpm-workspace.yaml
+  s_52792832750e4c::t_45df98a8dd0d68 11
+lefthook.yml
+  s_52792832750e4c::t_ae77a98d55b84e 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "bfa151f2c53a8d1204e10ffbdaf911935f200dd8",
+  "prompts": {},
+  "sessions": {
+    "s_52792832750e4c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fda8b8721ffe5IP4gQ8IDYgsjQ",
+        "model": "x-preview-f-free"
+      },
+      "human_author": "Sergio <sergio@sireno-deck.local>"
+    }
+  }
+}
